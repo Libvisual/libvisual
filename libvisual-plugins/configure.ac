@@ -49,8 +49,6 @@ if test x$libesd = xyes; then
 	build_input="esd $build_input"
 fi
 
-AM_PATH_ALSA(1.0.0,[ build_input="alsa $build_input" ],[])
-
 PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.6, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([
@@ -96,6 +94,19 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt])
 
 # Arguments to specify certain features.
+AC_ARG_ENABLE([alsa],
+            AC_HELP_STRING([--disable-alsa],
+                           [Do not build Alsa input plugin @<:@default=enabled@:>@]),
+	    [alsa=$enableval],
+	    [alsa=yes])
+AC_MSG_CHECKING([wheter to build Alsa input plugin])
+if test x$alsa = xyes; then
+  AC_MSG_RESULT([yes])
+  AM_PATH_ALSA(1.0.0,[ build_input="alsa $build_input" ],[])
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([infinite],
             AC_HELP_STRING([--disable-infinite],
                            [Do not build Infinite plugin @<:@default=enabled@:>@]),
