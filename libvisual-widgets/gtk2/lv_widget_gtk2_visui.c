@@ -30,12 +30,12 @@ typedef struct _PrivIdleData PrivIdleData;
 typedef struct _CallbackEntry CallbackEntry;
 
 struct _PrivIdleData {
-	const VisParamEntry	*param;
+	VisParamEntry		*param;
 	void			*priv;
 };
 
 struct _CallbackEntry {
-	const VisParamEntry	*param;
+	VisParamEntry		*param;
 	int			 id;
 };
 
@@ -58,25 +58,25 @@ static void cb_visui_radio (GtkToggleButton *radiobutton, gpointer user_data);
 static void cb_visui_checkbox (GtkToggleButton *togglebutton, gpointer user_data);
 
 /* Parameter change callbacks from within VisParam */
-static void cb_param_entry (const VisParamEntry *param, void *priv);
+static void cb_param_entry (VisParamEntry *param, void *priv);
 static gboolean cb_idle_entry (void *userdata);
 
-static void cb_param_slider (const VisParamEntry *param, void *priv);
+static void cb_param_slider (VisParamEntry *param, void *priv);
 static gboolean cb_idle_slider (void *userdata);
 
-static void cb_param_numeric (const VisParamEntry *param, void *priv);
+static void cb_param_numeric (VisParamEntry *param, void *priv);
 static gboolean cb_idle_numeric (void *userdata);
 
-static void cb_param_color (const VisParamEntry *param, void *priv);
+static void cb_param_color (VisParamEntry *param, void *priv);
 static gboolean cb_idle_color (void *userdata);
 
-static void cb_param_popup (const VisParamEntry *param, void *priv);
+static void cb_param_popup (VisParamEntry *param, void *priv);
 static gboolean cb_idle_popup (void *userdata);
 
-static void cb_param_radio (const VisParamEntry *param, void *priv);
+static void cb_param_radio (VisParamEntry *param, void *priv);
 static gboolean cb_idle_radio (void *userdata);
 
-static void cb_param_checkbox (const VisParamEntry *param, void *priv);
+static void cb_param_checkbox (VisParamEntry *param, void *priv);
 static gboolean cb_idle_checkbox (void *userdata);
 	
 #if (!HAVE_GTK_AT_LEAST_2_4_X)
@@ -762,12 +762,6 @@ lvwidget_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (cont));
 		choices = &options->choices;
 
-		if (options->type != VISUAL_CHOICE_TYPE_SINGLE) {
-			visual_log (VISUAL_LOG_CRITICAL, "Selection type for popup widget must be of type single");
-
-			return NULL;
-		}
-
 #if HAVE_GTK_AT_LEAST_2_4_X
 		widget = gtk_combo_box_new_text ();
 
@@ -836,12 +830,6 @@ lvwidget_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (cont));
 		choices = &options->choices;
 
-		if (options->type != VISUAL_CHOICE_TYPE_SINGLE) {
-			visual_log (VISUAL_LOG_CRITICAL, "Selection type for radio button widget must be of type single");
-
-			return NULL;
-		}
-
 		if (options->count < 2) {
 			visual_log (VISUAL_LOG_CRITICAL, "The number of choices for a radio button must be atleast 2");
 
@@ -900,12 +888,6 @@ lvwidget_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
 		options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (cont));
-
-		if (options->type != VISUAL_CHOICE_TYPE_SINGLE) {
-			visual_log (VISUAL_LOG_CRITICAL, "Selection type for checkbox widget must be of type single");
-
-			return NULL;
-		}
 
 		if (options->count != 2) {
 			visual_log (VISUAL_LOG_CRITICAL, "The number of choices for a checkbox must be 2");
@@ -1021,7 +1003,7 @@ cb_visui_popup (GtkComboBox *combobox, gpointer user_data)
 {
 	int active;
 	/* FIXME remove reference to param, is for debug purpose */
-	const VisParamEntry *param;
+	VisParamEntry *param;
 
 	active = gtk_combo_box_get_active (combobox);
 
@@ -1077,7 +1059,7 @@ cb_visui_radio (GtkToggleButton *togglebutton, gpointer user_data)
 	int entries = 0;
 	int cnt = 0;
 
-	const VisParamEntry *param;
+	VisParamEntry *param;
 
 	group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (togglebutton));
 
@@ -1117,7 +1099,7 @@ cb_visui_checkbox (GtkToggleButton *togglebutton, gpointer user_data)
 {
 	gboolean state;
 	/* FIXME remove reference to param, is for debug purpose */
-	const VisParamEntry *param;
+	VisParamEntry *param;
 
 	state = gtk_toggle_button_get_active (togglebutton);
 
@@ -1133,7 +1115,7 @@ cb_visui_checkbox (GtkToggleButton *togglebutton, gpointer user_data)
 
 /* Parameter change callbacks from within VisParam */
 static void
-cb_param_entry (const VisParamEntry *param, void *priv)
+cb_param_entry (VisParamEntry *param, void *priv)
 {
 	PrivIdleData *privdata;
 
@@ -1151,7 +1133,7 @@ static gboolean
 cb_idle_entry (void *userdata)
 {
 	PrivIdleData *data = userdata;
-	const VisParamEntry *param = data->param;
+	VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 
 	gtk_entry_set_text (GTK_ENTRY (visual_object_get_private (VISUAL_OBJECT (widget))),
@@ -1163,7 +1145,7 @@ cb_idle_entry (void *userdata)
 }
 
 static void
-cb_param_slider (const VisParamEntry *param, void *priv)
+cb_param_slider (VisParamEntry *param, void *priv)
 {
 	PrivIdleData *privdata;
 
@@ -1181,7 +1163,7 @@ static gboolean
 cb_idle_slider (void *userdata)
 {
 	PrivIdleData *data = userdata;
-	const VisParamEntry *param = data->param;
+	VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 	double val = 0;
 
@@ -1201,7 +1183,7 @@ cb_idle_slider (void *userdata)
 }
 
 static void
-cb_param_numeric (const VisParamEntry *param, void *priv)
+cb_param_numeric (VisParamEntry *param, void *priv)
 {
 	PrivIdleData *privdata;
 
@@ -1219,7 +1201,7 @@ static gboolean
 cb_idle_numeric (void *userdata)
 {
 	PrivIdleData *data = userdata;
-	const VisParamEntry *param = data->param;
+	VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 	GtkAdjustment *adj;
 	double val = 0;
@@ -1240,7 +1222,7 @@ cb_idle_numeric (void *userdata)
 }
 
 static void
-cb_param_color (const VisParamEntry *param, void *priv)
+cb_param_color (VisParamEntry *param, void *priv)
 {
 	PrivIdleData *privdata;
 
@@ -1256,7 +1238,7 @@ static gboolean
 cb_idle_color (void *userdata)
 {
 	PrivIdleData *data = userdata;
-	const VisParamEntry *param = data->param;
+	VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 	VisColor *color;
 	GdkColor gdkcol;
@@ -1285,7 +1267,7 @@ cb_idle_color (void *userdata)
 }
 
 static void
-cb_param_popup (const VisParamEntry *param, void *priv)
+cb_param_popup (VisParamEntry *param, void *priv)
 {
 	PrivIdleData *privdata;
 
@@ -1303,7 +1285,7 @@ static gboolean
 cb_idle_popup (void *userdata)
 {
 	PrivIdleData *data = userdata;
-	const VisParamEntry *param = data->param;
+	VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 
 #if HAVE_GTK_AT_LEAST_2_4_X
@@ -1317,8 +1299,9 @@ cb_idle_popup (void *userdata)
 }
 	
 static void
-cb_param_radio (const VisParamEntry *param, void *priv)
+cb_param_radio (VisParamEntry *param, void *priv)
 {
+	// FIXME maken.
 	printf ("Param RADIO callback\n");
 }
 
@@ -1326,7 +1309,7 @@ static gboolean
 cb_idle_radio (void *userdata)
 {
 	PrivIdleData *data = userdata;
-	const VisParamEntry *param = data->param;
+	VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 
 	g_free (data);
@@ -1335,7 +1318,7 @@ cb_idle_radio (void *userdata)
 }
 
 static void
-cb_param_checkbox (const VisParamEntry *param, void *priv)
+cb_param_checkbox (VisParamEntry *param, void *priv)
 {
 	PrivIdleData *privdata;
 
@@ -1353,7 +1336,7 @@ static gboolean
 cb_idle_checkbox (void *userdata)
 {
 	PrivIdleData *data = userdata;
-	const VisParamEntry *param = data->param;
+	VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (visual_object_get_private (VISUAL_OBJECT (widget))),
