@@ -9,7 +9,7 @@
 
 G_BEGIN_DECLS
 
-#define LVW_VISUI_TYPE            (lvw_visui_get_type ())
+#define LVW_VISUI_TYPE            (lvwidget_visui_get_type ())
 #define LVW_VISUI(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), LVW_VISUI_TYPE, LvwVisUI))
 #define LVW_VISUI_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), LVW_VISUI_TYPE, LvwVisUIClass))
 #define IS_LVW_VISUI(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), LVW_VISUI_TYPE))
@@ -31,11 +31,11 @@ struct _LvwVisUIClass
 {
 	GtkBinClass parent_class;
 
-	void (* lvwuicontainer) (LvwVisUI *vuic);
+	void (* lvwidgetuicontainer) (LvwVisUI *vuic);
 };
 
-GType          lvw_visui_get_type        (void);
-GtkWidget*     lvw_visui_new             (VisUIWidget *vuitree);
+GType          lvwidget_visui_get_type        (void);
+GtkWidget*     lvwidget_visui_new             (VisUIWidget *vuitree);
 
 G_END_DECLS
 

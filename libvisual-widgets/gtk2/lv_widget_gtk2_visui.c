@@ -4,7 +4,7 @@
 
 #include <libvisual/libvisual.h>
 
-#include "lvw_gtk2_visui.h"
+#include "lv_widget_gtk2_visui.h"
 
 /* FIXME Look how we can make sure there are no idle callbacks pending when destroying the widget, one solution
  * could be one big idle handle multiplexer that reads a flag */
@@ -39,10 +39,10 @@ struct _CallbackEntry {
 	int			 id;
 };
 
-static void lvw_visui_destroy (GtkObject *object);
-static void lvw_visui_class_init (LvwVisUIClass *klass);
-static void lvw_visui_init (LvwVisUI *vuic);
-static GtkWidget *lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont);
+static void lvwidget_visui_destroy (GtkObject *object);
+static void lvwidget_visui_class_init (LvwVisUIClass *klass);
+static void lvwidget_visui_init (LvwVisUI *vuic);
+static GtkWidget *lvwidget_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont);
 
 /* Parameter change callbacks from within GTK */
 static void cb_visui_entry (GtkEditable *editable, gpointer user_data);
@@ -120,10 +120,10 @@ type_name##_get_type (void) \
 }
 #endif
 
-G_DEFINE_TYPE (LvwVisUI, lvw_visui, GTK_TYPE_BIN)
+G_DEFINE_TYPE (LvwVisUI, lvwidget_visui, GTK_TYPE_BIN)
 
 static void 
-lvw_visui_destroy (GtkObject *object)
+lvwidget_visui_destroy (GtkObject *object)
 {
 	GSList *head;
 	CallbackEntry *cbentry;
@@ -190,7 +190,7 @@ lvw_visui_destroy (GtkObject *object)
 }
 
 static void
-lvw_visui_size_allocate (GtkWidget *widget,
+lvwidget_visui_size_allocate (GtkWidget *widget,
 		GtkAllocation *allocation)
 {
 	LvwVisUI *lvwuic = LVW_VISUI (widget);
@@ -217,7 +217,7 @@ lvw_visui_size_allocate (GtkWidget *widget,
 }
 
 static void
-lvw_visui_size_request (GtkWidget *widget,
+lvwidget_visui_size_request (GtkWidget *widget,
 		GtkRequisition *requisition)
 { 
 	LvwVisUI *lvwuic = LVW_VISUI (widget);
@@ -239,7 +239,7 @@ lvw_visui_size_request (GtkWidget *widget,
 }
 
 static void
-lvw_visui_realize (GtkWidget *widget)
+lvwidget_visui_realize (GtkWidget *widget)
 {
 	LvwVisUI *lvwuic;
 	GdkWindowAttr attributes;
@@ -278,17 +278,17 @@ lvw_visui_realize (GtkWidget *widget)
 }
 
 static void
-lvw_visui_class_init (LvwVisUIClass *klass)
+lvwidget_visui_class_init (LvwVisUIClass *klass)
 {
 	GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 	GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->destroy = lvw_visui_destroy;
+	object_class->destroy = lvwidget_visui_destroy;
 	
-	widget_class->realize = lvw_visui_realize;
-	widget_class->size_allocate = lvw_visui_size_allocate;
-	widget_class->size_request = lvw_visui_size_request;
+	widget_class->realize = lvwidget_visui_realize;
+	widget_class->size_allocate = lvwidget_visui_size_allocate;
+	widget_class->size_request = lvwidget_visui_size_request;
 
 #if HAVE_GTK_AT_LEAST_2_4_X
 	g_type_class_add_private (gobject_class, sizeof (LvwVisUIPrivate));
@@ -296,7 +296,7 @@ lvw_visui_class_init (LvwVisUIClass *klass)
 }
 
 static void
-lvw_visui_init (LvwVisUI *vuic)
+lvwidget_visui_init (LvwVisUI *vuic)
 {
 	g_return_if_fail (vuic != NULL);
 
@@ -320,7 +320,7 @@ lvw_visui_init (LvwVisUI *vuic)
  * @return A GtkWidget containing the in the VisUIWidget described user interface.
  */
 GtkWidget*
-lvw_visui_new (VisUIWidget *vuitree)
+lvwidget_visui_new (VisUIWidget *vuitree)
 {
 	GtkWidget *widget;
 	LvwVisUI *vuic;
@@ -328,7 +328,7 @@ lvw_visui_new (VisUIWidget *vuitree)
 	/* Ref it so it won't disappear under our feets */
 	visual_object_ref (VISUAL_OBJECT (vuitree));
 
-	vuic = g_object_new (lvw_visui_get_type (), NULL);
+	vuic = g_object_new (lvwidget_visui_get_type (), NULL);
 
 	/* FIXME should move into the object creation! */
 #if !HAVE_GTK_AT_LEAST_2_4_X
@@ -339,7 +339,7 @@ lvw_visui_new (VisUIWidget *vuitree)
 
 	vuic->priv->vuitree = vuitree;
 
-	widget = lvw_visui_create_gtk_widgets (vuic, vuitree);
+	widget = lvwidget_visui_create_gtk_widgets (vuic, vuitree);
 
 	gtk_container_add (GTK_CONTAINER (vuic), widget);
 
@@ -359,7 +359,7 @@ lvw_visui_new (VisUIWidget *vuitree)
  * VisUI tree and translate it to a super hot Gtk2 Widget function :)
  */
 static GtkWidget *
-lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
+lvwidget_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 {
 	const char *tooltip = NULL;
 	GtkWidget *widget;
@@ -389,7 +389,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		while ((wi = visual_list_next (childs, &le)) != NULL) {
 			GtkWidget *packer;
 			
-			packer = lvw_visui_create_gtk_widgets (vuic, wi);
+			packer = lvwidget_visui_create_gtk_widgets (vuic, wi);
 
 			gtk_box_pack_start (GTK_BOX (widget), packer, FALSE, FALSE, 0);
 		}
@@ -416,7 +416,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		while ((tentry = visual_list_next (childs, &le)) != NULL) {
 			GtkWidget *wi;
 
-			wi = lvw_visui_create_gtk_widgets (vuic, tentry->widget);
+			wi = lvwidget_visui_create_gtk_widgets (vuic, tentry->widget);
 
 			gtk_table_attach_defaults (GTK_TABLE (widget), wi,
 					tentry->col, tentry->col + 1, tentry->row, tentry->row + 1);
@@ -440,7 +440,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 				VISUAL_UI_WIDGET (cont)->height);
 
 		if (VISUAL_UI_CONTAINER (cont)->child != NULL) {
-			child = lvw_visui_create_gtk_widgets (vuic, VISUAL_UI_CONTAINER (cont)->child);
+			child = lvwidget_visui_create_gtk_widgets (vuic, VISUAL_UI_CONTAINER (cont)->child);
 
 			gtk_container_add (GTK_CONTAINER (widget), child);
 		}
@@ -610,11 +610,11 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
-		if (param->type == VISUAL_PARAM_TYPE_INTEGER)
+		if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
 			val = visual_param_entry_get_integer (param);
-		else if (param->type == VISUAL_PARAM_TYPE_FLOAT)
+		else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
 			val = visual_param_entry_get_float (param);
-		else if (param->type == VISUAL_PARAM_TYPE_DOUBLE)
+		else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
 			val = visual_param_entry_get_double (param);
 		else {
 			visual_log (VISUAL_LOG_CRITICAL, "Param for numeric widget must be of numeric type");
@@ -662,11 +662,11 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
-		if (param->type == VISUAL_PARAM_TYPE_INTEGER)
+		if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
 			val = visual_param_entry_get_integer (param);
-		else if (param->type == VISUAL_PARAM_TYPE_FLOAT)
+		else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
 			val = visual_param_entry_get_float (param);
-		else if (param->type == VISUAL_PARAM_TYPE_DOUBLE)
+		else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
 			val = visual_param_entry_get_double (param);
 		else {
 			visual_log (VISUAL_LOG_CRITICAL, "Param for numeric widget must be of numeric type");
@@ -711,7 +711,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
-		if (param->type != VISUAL_PARAM_TYPE_COLOR) {
+		if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR) {
 			visual_log (VISUAL_LOG_CRITICAL, "Param for color widget must be of color type");
 
 			return NULL;
@@ -966,11 +966,11 @@ cb_visui_slider (GtkRange *range, gpointer user_data)
 
 	value = gtk_range_get_value (range);
 
-	if (param->type == VISUAL_PARAM_TYPE_INTEGER)
+	if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
 		visual_param_entry_set_integer (param, value);
-	else if (param->type == VISUAL_PARAM_TYPE_FLOAT)
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
 		visual_param_entry_set_float (param, value);
-	else if (param->type == VISUAL_PARAM_TYPE_DOUBLE)
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
 		visual_param_entry_set_double (param, value);
 	else
 		visual_log (VISUAL_LOG_CRITICAL, "The param connected to the slider isn't a numeric param");
@@ -987,11 +987,11 @@ cb_visui_numeric (GtkEditable *editable, gpointer user_data)
 	param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (user_data)); 
 	value = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (editable));
 
-	if (param->type == VISUAL_PARAM_TYPE_INTEGER)
+	if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
 		visual_param_entry_set_integer (param, value);
-	else if (param->type == VISUAL_PARAM_TYPE_FLOAT)
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
 		visual_param_entry_set_float (param, value);
-	else if (param->type == VISUAL_PARAM_TYPE_DOUBLE)
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
 		visual_param_entry_set_double (param, value);
 	else
 		visual_log (VISUAL_LOG_CRITICAL, "The param connected to the numeric isn't a numeric param");
@@ -1009,7 +1009,7 @@ cb_visui_color (GtkColorSelection *colorselection, gpointer user_data)
 
 	param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (user_data));
 
-	if (param->type != VISUAL_PARAM_TYPE_COLOR)
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR)
 		visual_log (VISUAL_LOG_CRITICAL, "The param connected to the color selector isn't a color param");
 
 	visual_param_entry_set_color (param, color.red >> 8, color.green >> 8, color.blue >> 8);
@@ -1185,11 +1185,11 @@ cb_idle_slider (void *userdata)
 	VisUIWidget *widget = data->priv;
 	double val = 0;
 
-	if (param->type == VISUAL_PARAM_TYPE_INTEGER)
+	if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
 		val = visual_param_entry_get_integer (param);
-	else if (param->type == VISUAL_PARAM_TYPE_FLOAT)
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
 		val = visual_param_entry_get_float (param);
-	else if (param->type == VISUAL_PARAM_TYPE_DOUBLE)
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
 		val = visual_param_entry_get_double (param);
 
 	gtk_range_set_value (GTK_RANGE (visual_object_get_private (VISUAL_OBJECT (widget))),
@@ -1224,11 +1224,11 @@ cb_idle_numeric (void *userdata)
 	GtkAdjustment *adj;
 	double val = 0;
 
-	if (param->type == VISUAL_PARAM_TYPE_INTEGER)
+	if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
 		val = visual_param_entry_get_integer (param);
-	else if (param->type == VISUAL_PARAM_TYPE_FLOAT)
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
 		val = visual_param_entry_get_float (param);
-	else if (param->type == VISUAL_PARAM_TYPE_DOUBLE)
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
 		val = visual_param_entry_get_double (param);
 
 	adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (visual_object_get_private (VISUAL_OBJECT (widget))));
