@@ -1,3 +1,14 @@
+2005-03-08  dennis smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (depth_transform_8_to_24_c,
+	depth_transform_8_to_32_c, depth_transform_16_to_8_c,
+	depth_transform_16_to_24_c, depth_transform_24_to_8_c,
+	depth_transform_32_to_8_c, depth_transform_32_to_16_c):
+	finally fixed color conversions to be right. atleast on intel, now
+	if someone could take a look at apple ;)
+
+	also some small cleanups!
+
 2005-03-03  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c (video_depth_transform functions):

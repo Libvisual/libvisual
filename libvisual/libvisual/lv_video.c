@@ -1115,9 +1115,9 @@ static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, in
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			*(dest++) = pal->colors[*(src)].r;
-			*(dest++) = pal->colors[*(src)].g;
 			*(dest++) = pal->colors[*(src)].b;
+			*(dest++) = pal->colors[*(src)].g;
+			*(dest++) = pal->colors[*(src)].r;
 			src++;
 		}
 
@@ -1145,7 +1145,7 @@ static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, in
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++)
-			*destr++ = colors[*src++];
+			*(destr++) = colors[*src++];
 
 		destr += pitchdiff;
 	}
@@ -1168,14 +1168,13 @@ static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			b = srcr->b << 3;
 			srcr++;
 
-			/* FIXME optimize */
 			col = (r + g + b) / 3;
-
+			
 			pal->colors[col].r = r;
 			pal->colors[col].g = g;
 			pal->colors[col].b = b;
 
-			*dest = col;
+			*(dest++) = col;
 		}
 
 		*dest += pitchdiff;
@@ -1192,9 +1191,9 @@ static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, i
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			*(dest++) = srcr->r << 3;
-			*(dest++) = srcr->g << 2;
 			*(dest++) = srcr->b << 3;
+			*(dest++) = srcr->g << 2;
+			*(dest++) = srcr->r << 3;
 			srcr++;
 		}
 
@@ -1238,7 +1237,6 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			g = *(src++);
 			r = *(src++);
 
-			/* FIXME optimize */
 			col = (b + g + r) / 3;
 			
 			pal->colors[col].r = r;
@@ -1302,12 +1300,11 @@ static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			r = *(src++);
-			g = *(src++);
 			b = *(src++);
+			g = *(src++);
+			r = *(src++);
 			src++;
 
-			/* FIXME optimize */
 			col = (r + g + b) / 3;
 
 			pal->colors[col].r = r;
@@ -1332,9 +1329,9 @@ static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 	
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			destr->r = *(src++) >> 3;
-			destr->g = *(src++) >> 2;
 			destr->b = *(src++) >> 3;
+			destr->g = *(src++) >> 2;
+			destr->r = *(src++) >> 3;
 			destr++;
 			src++;
 		}
