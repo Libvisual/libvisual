@@ -339,16 +339,11 @@ int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
 	if (src->song != NULL)
 		dest->song = strdup (src->song);
 
-	/* Copy the coverart image */
-	if (visual_video_have_allocated_buffer (&dest->cover) == TRUE)
-		visual_video_free_buffer (&dest->cover);
-	
-	visual_video_clone (&dest->cover, &src->cover);
-	visual_video_allocate_buffer (&dest->cover);
+	/* Point the coverart VisVideo to that of the original and up it's refcount */
+	dest->cover = src->cover;
 
-	/* Check if we have the buffer */
-	if (visual_video_have_allocated_buffer (&dest->cover) == TRUE)
-		visual_video_blit_overlay (&dest->cover, &src->cover, 0, 0, FALSE);
+	if (src->cover != NULL)
+		visual_object_ref (VISUAL_OBJECT (src->cover));
 
 	return VISUAL_OK;
 }

@@ -1,3 +1,10 @@
+2004-12-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_songinfo.c (visual_songinfo_copy): Ooops
+	cover art copying borked totally, because of some changes.
+
+	We don't copy anylonger, instead just ref the object, yay! :)
+
 2004-12-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_songinfo.c (visual_songinfo_set_cover):
