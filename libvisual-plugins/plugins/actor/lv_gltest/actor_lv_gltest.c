@@ -166,6 +166,8 @@ int lv_gltest_events (VisActorPlugin *plugin, VisEventQueue *events)
 				lv_gltest_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
 				break;
+			default: /* to avoid warnings */
+				break;
 		}
 	}
 

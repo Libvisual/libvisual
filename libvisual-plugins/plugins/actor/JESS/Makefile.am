@@ -12,6 +12,13 @@ INCLUDES = $(all_includes) -I$(top_srcdir)
 
 actor_JESS_la_LDFLAGS = -module -avoid-version 
 
-actor_JESS_la_SOURCES = analyser.c distorsion.c draw.c draw_low_level.c \
-			jess.c pal.c projection.c renderer.c
+actor_JESS_la_SOURCES = analyser.c analyser.h analyser_struct.h\
+			distorsion.c distorsion.h\
+			draw.c draw.h\
+			draw_low_level.c draw_low_level.h\
+			jess.c jess.h\
+			pal.c pal.h\
+			projection.c projection.h\
+			renderer.c renderer.h\
+			def.h struct.h
 

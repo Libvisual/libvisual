@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -78,7 +79,6 @@ int lv_morph_tentacle_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio
 	TentaclePrivate *priv = plugin->private;
 	uint8_t *destbuf = dest->screenbuffer;
 	uint8_t *src1buf = src1->screenbuffer;
-	uint8_t *src2buf = src2->screenbuffer;
 
 	int height1;
 	int height2;

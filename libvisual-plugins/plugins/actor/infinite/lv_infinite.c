@@ -129,6 +129,8 @@ int act_infinite_events (VisActorPlugin *plugin, VisEventQueue *events)
 				act_infinite_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
 				break;
+			default: /* to avoid warnings */
+				break;
 		}
 	}
 

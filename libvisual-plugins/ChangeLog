@@ -1,3 +1,22 @@
+2004-06-26  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/*/*.c: cleanup to avoid warnings.
+	Removed many unused things.
+	* plugins/actor/infinite/Makefile.am: added header
+	files to SOURCES target.
+	* plugins/actor/oinksie/Makefile.am: added header
+	files to SOURCES target.
+	* plugins/actor/JESS/Makefile.am: added header
+	files to SOURCES target.
+	* configure.ac: videotest plugin removed from the
+	package. CFLAGS user variable overrided. Changed esound
+	dependency from >= 0.2.29 to >= 0.2.28, because it works
+	well on my system :-).
+	* AUTHORS: added myself.
+	* BUGS: note the installation problem when some plugin
+	is disabled and exists some older version of the plugins
+	installed on the system.
+
 2004-06-26  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Remove the videotest items, we don't

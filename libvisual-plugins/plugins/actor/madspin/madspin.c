@@ -147,8 +147,6 @@ int lv_madspin_requisition (VisActorPlugin *plugin, int *width, int *height)
 
 int lv_madspin_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
 {
-	GLfloat ratio;
-	
 	visual_video_set_dimension (video, width, height);
 
 	glViewport (0, 0, width, height);
@@ -165,6 +163,8 @@ int lv_madspin_events (VisActorPlugin *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_RESIZE:
 				lv_madspin_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
+				break;
+			default: /* to avoid warnings */
 				break;
 		}
 	}

@@ -110,6 +110,8 @@ int lv_analyzer_events (VisActorPlugin *plugin, VisEventQueue *events)
 				lv_analyzer_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
 				break;
+			default: /* to avoid warnings */
+				break;
 		}
 	}
 
@@ -135,7 +137,6 @@ int lv_analyzer_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio
 	AnalyzerPrivate *priv = plugin->private;
 	int size;
 	int i, j;
-	float col;
 	float height;
 	uint8_t *buf;
 

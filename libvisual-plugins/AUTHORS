@@ -1,9 +1,14 @@
+LibVisual Plugins Team
+----------------------
+
 Main author, project leader:
 Dennis Smit <synap@nerds-incorporated.org>
 	* Wrote the input/esd plugin.
 	* Wrote the actor/oinksie, lv_scope, lv_analyzer, video_test and goom2
 	  plugins
 	* Ported the JESS, infinite and lv_gltest plugins.
+
+Duilio J. Protti <dprotti@users.sourceforge.net>
 
 The original JESS work:
 Remi Arquier <arquier@crans.org>

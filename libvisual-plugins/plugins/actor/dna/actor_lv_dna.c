@@ -24,10 +24,9 @@ int lv_dna_events (VisActorPlugin *plugin, VisEventQueue *events);
 VisPalette *lv_dna_palette (VisActorPlugin *plugin);
 int lv_dna_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
 
-static void draw_bars (DNAPrivate *priv);
+/*static void draw_bars (DNAPrivate *priv);
 static void draw_rectangle (DNAPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2);
-static void draw_bar (DNAPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue);
-static void draw_bars (DNAPrivate *priv);
+static void draw_bar (DNAPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue);*/
 
 /* Main plugin stuff */
 LVPlugin *get_plugin_info (VisPluginRef *ref)
@@ -68,9 +67,6 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int lv_dna_init (VisActorPlugin *plugin)
 {
-	DNAPrivate *priv = plugin->private;
-	int x, y;
-
 	glMatrixMode (GL_PROJECTION);
 
 	glLoadIdentity ();
@@ -146,6 +142,8 @@ int lv_dna_events (VisActorPlugin *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_RESIZE:
 				lv_dna_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
+				break;
+			default: /* to avoid warnings */
 				break;
 		}
 	}

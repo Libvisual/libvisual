@@ -146,6 +146,8 @@ int lv_goom_events (VisActorPlugin *plugin, VisEventQueue *events)
 						ev.keyboard.keysym.sym,
 						ev.keyboard.keysym.mod);
 				break;
+			default: /* to avoid warnings */
+				break;
 		}
 	}
 

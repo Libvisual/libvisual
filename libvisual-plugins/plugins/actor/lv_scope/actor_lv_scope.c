@@ -111,6 +111,8 @@ int lv_scope_events (VisActorPlugin *plugin, VisEventQueue *events)
 				lv_scope_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
 				break;
+			default: /* to avoid warnings */
+				break;
 		}
 	}
 

@@ -12,5 +12,9 @@ INCLUDES = $(all_includes) -I$(top_srcdir)
 
 actor_infinite_la_LDFLAGS = -module -avoid-version 
 
-actor_infinite_la_SOURCES = compute.c display.c file.c lv_infinite.c renderer.c
+actor_infinite_la_SOURCES = compute.c compute.h\
+			    display.c display.h\
+			    renderer.c renderer.h\
+			    file.c lv_infinite.c\
+			    main.h
 

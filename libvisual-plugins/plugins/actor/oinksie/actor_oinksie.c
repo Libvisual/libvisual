@@ -176,6 +176,8 @@ int act_oinksie_events (VisActorPlugin *plugin, VisEventQueue *events)
 				act_oinksie_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
 				break;
+			default: /* to avoid warnings */
+				break;
 		}
 	}
 

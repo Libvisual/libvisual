@@ -29,7 +29,7 @@ fi
 
 # Checks for libraries.
 build_input=""
-build_actor="lv_analyzer lv_scope oinksie video_test"
+build_actor=""
 build_morph="alphablend tentacle flash"
 
 # FIXME: Replace `main' with a function in `-lGL':
@@ -37,7 +37,7 @@ AC_CHECK_LIB([GL], [main])
 # FIXME: Replace `main' with a function in `-lGLU':
 AC_CHECK_LIB([GLU], [main])
 
-PKG_CHECK_MODULES(LIBESD, esound >= 0.2.29, [libesd="yes"], [libesd="no"])
+PKG_CHECK_MODULES(LIBESD, esound >= 0.2.28, [libesd="yes"], [libesd="no"])
 if test x$libesd = xno; then
 	AC_MSG_WARN([
 *** esound not found or too old, the esound plugin won't be build
@@ -176,7 +176,11 @@ fi
 AC_SUBST(DEBUG_CFLAGS)
 
 
-# cflags, ld flags
+# Terrible hack, but otherwise the CFLAGS are passed as last arguments
+# to compiler, and this way these arguments (probably -g -O2) overrides
+# our -O3 flag on src/Makefile.am
+AC_SUBST(CFLAGS, "")
+
 libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
@@ -199,7 +203,6 @@ AC_CONFIG_FILES([
 	plugins/actor/infinite/Makefile
 	plugins/actor/JESS/Makefile
 	plugins/actor/goom2/Makefile
-	plugins/actor/video_test/Makefile
 	plugins/input/Makefile
 	plugins/input/esd/Makefile
 	plugins/morph/Makefile
@@ -227,12 +230,11 @@ input:                                : ${BUILD_INPUT}
 actor:                                : ${BUILD_ACTOR}
 morph:                                : ${BUILD_MORPH}
 
-Libvisual plugin data dir:            : ${DATADIR}
+Libvisual plugin data dir:            : ${prefix}/share
 
 Build options:
-prefix:                               : ${prefix}
+install path                          : ${prefix}/libvisual
 source code location:                 : ${srcdir}
 compiler:                             : ${CC}
-cflags:                               : ${CFLAGS}
 "
 
