@@ -133,9 +133,7 @@ VisMorph *visual_morph_new (const char *morphname)
 	morph = visual_mem_new0 (VisMorph, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (morph)->allocated = TRUE;
-	VISUAL_OBJECT (morph)->dtor = morph_dtor;
-	visual_object_ref (VISUAL_OBJECT (morph));
+	visual_object_initialize (VISUAL_OBJECT (morph), TRUE, morph_dtor);
 
 	visual_palette_allocate_colors (&morph->morphpal, 256);
 

@@ -9,6 +9,7 @@
 
 static int box_dtor (VisObject *object);
 static int table_dtor (VisObject *object);
+static int table_entry_dtor (VisObject *object);
 static int frame_dtor (VisObject *object);
 static int choice_dtor (VisObject *object);
 static int widget_dtor (VisObject *object);
@@ -35,6 +36,18 @@ static int table_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
+static int table_entry_dtor (VisObject *object)
+{
+	VisUITableEntry *tentry = VISUAL_UI_TABLE_ENTRY (object);
+
+	if (tentry->widget != NULL)
+		visual_object_unref (VISUAL_OBJECT (tentry->widget));
+
+	tentry->widget = NULL;
+
+	return VISUAL_OK;
+}
+
 static int frame_dtor (VisObject *object)
 {
 	VisUIContainer *container = VISUAL_UI_CONTAINER (object);
@@ -56,18 +69,6 @@ static int choice_dtor (VisObject *object)
 
 	widget_dtor (object);
 	
-	return VISUAL_OK;
-}
-
-static int table_entry_dtor (VisObject *object)
-{
-	VisUITableEntry *tentry = VISUAL_UI_TABLE_ENTRY (object);
-
-	if (tentry->widget != NULL)
-		visual_object_unref (VISUAL_OBJECT (tentry->widget));
-
-	tentry->widget = NULL;
-
 	return VISUAL_OK;
 }
 
@@ -101,9 +102,7 @@ VisUIWidget *visual_ui_widget_new ()
 	widget->type = VISUAL_WIDGET_TYPE_NULL;
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (widget)->allocated = TRUE;
-	VISUAL_OBJECT (widget)->dtor = widget_dtor;
-	visual_object_ref (VISUAL_OBJECT (widget));
+	visual_object_initialize (VISUAL_OBJECT (widget), TRUE, widget_dtor);
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (widget), -1, -1);
 
@@ -265,9 +264,7 @@ VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 	box = visual_mem_new0 (VisUIBox, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (box)->allocated = TRUE;
-	VISUAL_OBJECT (box)->dtor = box_dtor;
-	visual_object_ref (VISUAL_OBJECT (box));
+	visual_object_initialize (VISUAL_OBJECT (box), TRUE, box_dtor);
 
 	VISUAL_UI_WIDGET (box)->type = VISUAL_WIDGET_TYPE_BOX;
 
@@ -344,9 +341,7 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 	table = visual_mem_new0 (VisUITable, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (table)->allocated = TRUE;
-	VISUAL_OBJECT (table)->dtor = table_dtor;
-	visual_object_ref (VISUAL_OBJECT (table));
+	visual_object_initialize (VISUAL_OBJECT (table), TRUE, table_dtor);
 
 	VISUAL_UI_WIDGET (table)->type = VISUAL_WIDGET_TYPE_TABLE;
 
@@ -378,9 +373,7 @@ VisUITableEntry *visual_ui_table_entry_new (VisUIWidget *widget, int row, int co
 	tentry = visual_mem_new0 (VisUITableEntry, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (tentry)->allocated = TRUE;
-	VISUAL_OBJECT (tentry)->dtor = table_entry_dtor;
-	visual_object_ref (VISUAL_OBJECT (tentry));
+	visual_object_initialize (VISUAL_OBJECT (tentry), TRUE, table_entry_dtor);
 
 	tentry->row = row;
 	tentry->col = col;
@@ -442,9 +435,7 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 	frame = visual_mem_new0 (VisUIFrame, 1);
 	
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (frame)->allocated = TRUE;
-	VISUAL_OBJECT (frame)->dtor = frame_dtor;
-	visual_object_ref (VISUAL_OBJECT (frame));
+	visual_object_initialize (VISUAL_OBJECT (frame), TRUE, frame_dtor);
 
 	VISUAL_UI_WIDGET (frame)->type = VISUAL_WIDGET_TYPE_FRAME;
 
@@ -470,9 +461,7 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
 	label = visual_mem_new0 (VisUILabel, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (label)->allocated = TRUE;
-	VISUAL_OBJECT (label)->dtor = widget_dtor;
-	visual_object_ref (VISUAL_OBJECT (label));
+	visual_object_initialize (VISUAL_OBJECT (label), TRUE, widget_dtor);
 
 	VISUAL_UI_WIDGET (label)->type = VISUAL_WIDGET_TYPE_LABEL;
 
@@ -546,9 +535,7 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
 	image = visual_mem_new0 (VisUIImage, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (image)->allocated = TRUE;
-	VISUAL_OBJECT (image)->dtor = widget_dtor;
-	visual_object_ref (VISUAL_OBJECT (image));
+	visual_object_initialize (VISUAL_OBJECT (image), TRUE, widget_dtor);
 
 	VISUAL_UI_WIDGET (image)->type = VISUAL_WIDGET_TYPE_IMAGE;
 
@@ -605,9 +592,7 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 	separator = visual_mem_new0 (VisUISeparator, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (separator)->allocated = TRUE;
-	VISUAL_OBJECT (separator)->dtor = widget_dtor;
-	visual_object_ref (VISUAL_OBJECT (separator));
+	visual_object_initialize (VISUAL_OBJECT (separator), TRUE, widget_dtor);
 
 	VISUAL_UI_WIDGET (separator)->type = VISUAL_WIDGET_TYPE_SEPARATOR;
 
@@ -769,9 +754,7 @@ VisUIWidget *visual_ui_entry_new ()
 	entry = visual_mem_new0 (VisUIEntry, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (entry)->allocated = TRUE;
-	VISUAL_OBJECT (entry)->dtor = widget_dtor;
-	visual_object_ref (VISUAL_OBJECT (entry));
+	visual_object_initialize (VISUAL_OBJECT (entry), TRUE, widget_dtor);
 
 	VISUAL_UI_WIDGET (entry)->type = VISUAL_WIDGET_TYPE_ENTRY;
 
@@ -811,9 +794,7 @@ VisUIWidget *visual_ui_slider_new (int showvalue)
 	slider = visual_mem_new0 (VisUISlider, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (slider)->allocated = TRUE;
-	VISUAL_OBJECT (slider)->dtor = widget_dtor;
-	visual_object_ref (VISUAL_OBJECT (slider));
+	visual_object_initialize (VISUAL_OBJECT (slider), TRUE, widget_dtor);
 
 	VISUAL_UI_WIDGET (slider)->type = VISUAL_WIDGET_TYPE_SLIDER;
 
@@ -836,9 +817,7 @@ VisUIWidget *visual_ui_numeric_new ()
 	numeric = visual_mem_new0 (VisUINumeric, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (numeric)->allocated = TRUE;
-	VISUAL_OBJECT (numeric)->dtor = widget_dtor;
-	visual_object_ref (VISUAL_OBJECT (numeric));
+	visual_object_initialize (VISUAL_OBJECT (numeric), TRUE, widget_dtor);
 
 	VISUAL_UI_WIDGET (numeric)->type = VISUAL_WIDGET_TYPE_NUMERIC;
 
@@ -859,9 +838,7 @@ VisUIWidget *visual_ui_color_new ()
 	color = visual_mem_new0 (VisUIColor, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (color)->allocated = TRUE;
-	VISUAL_OBJECT (color)->dtor = widget_dtor;
-	visual_object_ref (VISUAL_OBJECT (color));
+	visual_object_initialize (VISUAL_OBJECT (color), TRUE, widget_dtor);
 	
 	VISUAL_UI_WIDGET (color)->type = VISUAL_WIDGET_TYPE_COLOR;
 
@@ -889,9 +866,7 @@ VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, const VisParamEn
 	centry = visual_mem_new0 (VisUIChoiceEntry, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (centry)->allocated = TRUE;
-	VISUAL_OBJECT (centry)->dtor = NULL;
-	visual_object_ref (VISUAL_OBJECT (centry));
+	visual_object_initialize (VISUAL_OBJECT (centry), TRUE, NULL);
 	
 	centry->name = name;
 	centry->value = value;
@@ -1073,9 +1048,7 @@ VisUIWidget *visual_ui_popup_new ()
 	popup = visual_mem_new0 (VisUIPopup, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (popup)->allocated = TRUE;
-	VISUAL_OBJECT (popup)->dtor = choice_dtor;
-	visual_object_ref (VISUAL_OBJECT (popup));
+	visual_object_initialize (VISUAL_OBJECT (popup), TRUE, choice_dtor);
 	
 	VISUAL_UI_WIDGET (popup)->type = VISUAL_WIDGET_TYPE_POPUP;
 
@@ -1099,9 +1072,7 @@ VisUIWidget *visual_ui_list_new ()
 	list = visual_mem_new0 (VisUIList, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (list)->allocated = TRUE;
-	VISUAL_OBJECT (list)->dtor = choice_dtor;
-	visual_object_ref (VISUAL_OBJECT (list));
+	visual_object_initialize (VISUAL_OBJECT (list), TRUE, choice_dtor);
 	
 	VISUAL_UI_WIDGET (list)->type = VISUAL_WIDGET_TYPE_LIST;
 
@@ -1127,9 +1098,7 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 	radio = visual_mem_new0 (VisUIRadio, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (radio)->allocated = TRUE;
-	VISUAL_OBJECT (radio)->dtor = choice_dtor;
-	visual_object_ref (VISUAL_OBJECT (radio));
+	visual_object_initialize (VISUAL_OBJECT (radio), TRUE, choice_dtor);
 
 	VISUAL_UI_WIDGET (radio)->type = VISUAL_WIDGET_TYPE_RADIO;
 
@@ -1162,9 +1131,7 @@ VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 	checkbox = visual_mem_new0 (VisUICheckbox, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (checkbox)->allocated = TRUE;
-	VISUAL_OBJECT (checkbox)->dtor = choice_dtor;
-	visual_object_ref (VISUAL_OBJECT (checkbox));
+	visual_object_initialize (VISUAL_OBJECT (checkbox), TRUE, choice_dtor);
 
 	VISUAL_UI_WIDGET (checkbox)->type = VISUAL_WIDGET_TYPE_CHECKBOX;
 

@@ -39,9 +39,7 @@ VisSongInfo *visual_songinfo_new (VisSongInfoType type)
 	songinfo = visual_mem_new0 (VisSongInfo, 1);
 	
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (songinfo)->allocated = TRUE;
-	VISUAL_OBJECT (songinfo)->dtor = songinfo_dtor;
-	visual_object_ref (VISUAL_OBJECT (songinfo));
+	visual_object_initialize (VISUAL_OBJECT (songinfo), TRUE, songinfo_dtor);
 
 	songinfo->type = type;
 

@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.18 2004-11-23 23:26:28 synap Exp $
+ *	$Id: lv_list.c,v 1.19 2004-12-08 22:54:25 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -63,9 +63,7 @@ VisList *visual_list_new (VisListDestroyerFunc destroyer)
 	list = visual_mem_new0 (VisList, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (list)->allocated = TRUE;
-	VISUAL_OBJECT (list)->dtor = list_dtor;
-	visual_object_ref (VISUAL_OBJECT (list));
+	visual_object_initialize (VISUAL_OBJECT (list), TRUE, list_dtor);
 
 	list->destroyer = destroyer;
 

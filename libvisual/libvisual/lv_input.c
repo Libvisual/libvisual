@@ -137,9 +137,7 @@ VisInput *visual_input_new (const char *inputname)
 	input->audio = visual_audio_new ();
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (input)->allocated = TRUE;
-	VISUAL_OBJECT (input)->dtor = input_dtor;
-	visual_object_ref (VISUAL_OBJECT (input));
+	visual_object_initialize (VISUAL_OBJECT (input), TRUE, input_dtor);
 
 	if (inputname == NULL)
 		return input;

@@ -23,9 +23,7 @@ VisColor *visual_color_new ()
 	color = visual_mem_new0 (VisColor, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (color)->allocated = TRUE;
-	VISUAL_OBJECT (color)->dtor = NULL;
-	visual_object_ref (VISUAL_OBJECT (color));
+	visual_object_initialize (VISUAL_OBJECT (color), TRUE, NULL);
 
 	return color;
 }

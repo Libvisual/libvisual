@@ -145,9 +145,7 @@ VisPluginInfo *visual_plugin_info_new ()
 	pluginfo = visual_mem_new0 (VisPluginInfo, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (pluginfo)->allocated = TRUE;
-	VISUAL_OBJECT (pluginfo)->dtor = plugin_info_dtor;
-	visual_object_ref (VISUAL_OBJECT (pluginfo));
+	visual_object_initialize (VISUAL_OBJECT (pluginfo), TRUE, plugin_info_dtor);
 
 	return pluginfo;
 }
@@ -329,9 +327,7 @@ VisPluginRef *visual_plugin_ref_new ()
 	ref = visual_mem_new0 (VisPluginRef, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (ref)->allocated = TRUE;
-	VISUAL_OBJECT (ref)->dtor = plugin_ref_dtor;
-	visual_object_ref (VISUAL_OBJECT (ref));
+	visual_object_initialize (VISUAL_OBJECT (ref), TRUE, plugin_ref_dtor);
 
 	return ref;
 }
@@ -348,9 +344,7 @@ VisPluginData *visual_plugin_new ()
 	plugin = visual_mem_new0 (VisPluginData, 1);
 	
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (plugin)->allocated = TRUE;
-	VISUAL_OBJECT (plugin)->dtor = plugin_dtor;
-	visual_object_ref (VISUAL_OBJECT (plugin));
+	visual_object_initialize (VISUAL_OBJECT (plugin), TRUE, plugin_dtor);
 
 	plugin->params = visual_param_container_new ();
 

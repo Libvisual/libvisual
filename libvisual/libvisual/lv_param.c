@@ -84,9 +84,7 @@ VisParamContainer *visual_param_container_new ()
 	paramcontainer = visual_mem_new0 (VisParamContainer, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (paramcontainer)->allocated = TRUE;
-	VISUAL_OBJECT (paramcontainer)->dtor = paramcontainer_dtor;
-	visual_object_ref (VISUAL_OBJECT (paramcontainer));
+	visual_object_initialize (VISUAL_OBJECT (paramcontainer), TRUE, paramcontainer_dtor);
 
 	visual_list_set_destroyer (&paramcontainer->entries, visual_object_list_destroyer);
 
@@ -247,9 +245,7 @@ VisParamEntry *visual_param_entry_new (char *name)
 	param = visual_mem_new0 (VisParamEntry, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (param)->allocated = TRUE;
-	VISUAL_OBJECT (param)->dtor = paramentry_dtor;
-	visual_object_ref (VISUAL_OBJECT (param));
+	visual_object_initialize (VISUAL_OBJECT (param), TRUE, paramentry_dtor);
 
 	param->name = name;
 
@@ -285,9 +281,7 @@ int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallba
 	pcall = visual_mem_new0 (VisParamEntryCallback, 1);
 
 	/* Do the VisObject initialization for the VisParamEntryCallback */
-	VISUAL_OBJECT (pcall)->allocated = TRUE;
-	VISUAL_OBJECT (pcall)->dtor = NULL;
-	visual_object_ref (VISUAL_OBJECT (pcall));
+	visual_object_initialize (VISUAL_OBJECT (pcall), TRUE, NULL);
 
 	pcall->id = id;
 	pcall->callback = callback;

@@ -25,9 +25,7 @@ VisTime *visual_time_new ()
 	time_ = visual_mem_new0 (VisTime, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (time_)->allocated = TRUE;
-	VISUAL_OBJECT (time_)->dtor = NULL;
-	visual_object_ref (VISUAL_OBJECT (time_));
+	visual_object_initialize (VISUAL_OBJECT (time_), TRUE, NULL);
 
 	return time_;
 }
@@ -158,9 +156,7 @@ VisTimer *visual_timer_new ()
 	timer = visual_mem_new0 (VisTimer, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (timer)->allocated = TRUE;
-	VISUAL_OBJECT (timer)->dtor = NULL;
-	visual_object_ref (VISUAL_OBJECT (timer));
+	visual_object_initialize (VISUAL_OBJECT (timer), TRUE, NULL);
 
 	return timer;
 }

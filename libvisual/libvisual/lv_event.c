@@ -50,9 +50,7 @@ VisEvent *visual_event_new ()
 	event = visual_mem_new0 (VisEvent, 1);
 
 	/* Do the VisObject initialization*/
-	VISUAL_OBJECT (event)->allocated = TRUE;
-	VISUAL_OBJECT (event)->dtor = NULL;
-	visual_object_ref (VISUAL_OBJECT (event));
+	visual_object_initialize (VISUAL_OBJECT (event), TRUE, NULL);
 
 	return event;
 }
@@ -69,9 +67,7 @@ VisEventQueue *visual_event_queue_new ()
 	eventqueue = visual_mem_new0 (VisEventQueue, 1);
 
 	/* Do the VisObject initialization*/
-	VISUAL_OBJECT (eventqueue)->allocated = TRUE;
-	VISUAL_OBJECT (eventqueue)->dtor = eventqueue_dtor;
-	visual_object_ref (VISUAL_OBJECT (eventqueue));
+	visual_object_initialize (VISUAL_OBJECT (eventqueue), TRUE, eventqueue_dtor);
 
 	eventqueue->mousestate = VISUAL_MOUSE_UP;
 

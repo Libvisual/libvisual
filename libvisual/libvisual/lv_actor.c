@@ -307,9 +307,7 @@ VisActor *visual_actor_new (const char *actorname)
 	actor = visual_mem_new0 (VisActor, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (actor)->allocated = TRUE;
-	VISUAL_OBJECT (actor)->dtor = actor_dtor;
-	visual_object_ref (VISUAL_OBJECT (actor));
+	visual_object_initialize (VISUAL_OBJECT (actor), TRUE, actor_dtor);
 
 	if (actorname == NULL)
 		return actor;

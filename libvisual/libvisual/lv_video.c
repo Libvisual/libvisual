@@ -102,9 +102,7 @@ VisVideo *visual_video_new ()
 	video = visual_mem_new0 (VisVideo, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (video)->allocated = TRUE;
-	VISUAL_OBJECT (video)->dtor = video_dtor;
-	visual_object_ref (VISUAL_OBJECT (video));
+	visual_object_initialize (VISUAL_OBJECT (video), TRUE, video_dtor);
 
 	video->pixels = NULL;
 

@@ -83,7 +83,8 @@ int visual_object_destroy (VisObject *object)
 }
 
 /**
- * Initializes a VisObject for usage.
+ * Initializes a VisObject for usage. This also ups the refcount by one, so this function really is for initial object
+ * creation.
  *
  * @param object Pointer to a VisObject that is initialized.
  * @param allocated Flag to indicate if the VisObject itself is an allocated piece of memory.
@@ -98,6 +99,8 @@ int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFun
 
 	object->allocated = allocated;
 	object->dtor = dtor;
+
+	visual_object_ref (object);
 
 	return VISUAL_OK;
 }

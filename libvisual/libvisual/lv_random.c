@@ -32,9 +32,7 @@ VisRandomContext *visual_random_context_new (uint32_t seed)
 	rcontext = visual_mem_new0 (VisRandomContext, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (rcontext)->allocated = TRUE;
-	VISUAL_OBJECT (rcontext)->dtor = NULL;
-	visual_object_ref (VISUAL_OBJECT (rcontext));
+	visual_object_initialize (VISUAL_OBJECT (rcontext), TRUE, NULL);
 
 	visual_random_context_set_seed (rcontext, seed);
 

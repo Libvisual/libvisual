@@ -92,9 +92,7 @@ VisBin *visual_bin_new ()
 	bin = visual_mem_new0 (VisBin, 1);
 
 	/* VisObject stuff.. */
-	VISUAL_OBJECT (bin)->allocated = TRUE;
-	VISUAL_OBJECT (bin)->dtor = bin_dtor;
-	visual_object_ref (VISUAL_OBJECT (bin));
+	visual_object_initialize (VISUAL_OBJECT (bin), TRUE, bin_dtor);
 
 	bin->morphautomatic = TRUE;
 

@@ -65,9 +65,7 @@ VisAudio *visual_audio_new ()
 	audio = visual_mem_new0 (VisAudio, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (audio)->allocated = TRUE;
-	VISUAL_OBJECT (audio)->dtor = audio_dtor;
-	visual_object_ref (VISUAL_OBJECT (audio));
+	visual_object_initialize (VISUAL_OBJECT (audio), TRUE, audio_dtor);
 
 	return audio;
 }

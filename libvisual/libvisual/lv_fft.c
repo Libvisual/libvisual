@@ -71,9 +71,7 @@ VisFFTState *visual_fft_init ()
 	state = visual_mem_new0 (VisFFTState, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (state)->allocated = TRUE;
-	VISUAL_OBJECT (state)->dtor = NULL;
-	visual_object_ref (VISUAL_OBJECT (state));
+	visual_object_initialize (VISUAL_OBJECT (state), TRUE, NULL);
 
 	if (state == NULL)
 		return NULL;

@@ -37,9 +37,7 @@ VisPalette *visual_palette_new (int ncolors)
 	pal = visual_mem_new0 (VisPalette, 1);
 
 	/* Do the VisObject initialization */
-	VISUAL_OBJECT (pal)->allocated = TRUE;
-	VISUAL_OBJECT (pal)->dtor = palette_dtor;
-	visual_object_ref (VISUAL_OBJECT (pal));
+	visual_object_initialize (VISUAL_OBJECT (pal), TRUE, palette_dtor);
 
 	visual_palette_allocate_colors (pal, ncolors);
 
