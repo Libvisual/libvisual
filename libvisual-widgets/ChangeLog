@@ -1,3 +1,8 @@
+2005-03-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Bump to 0.3.0, hopefully fixed
+	the gtk version detection.
+
 2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* gtk2/lv_widget_gtk2_visui.c (lvwidget_visui_new):

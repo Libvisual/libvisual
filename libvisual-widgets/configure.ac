@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual-widgets Library, 0.2.0, ds@nerds-incorporated.org, libvisual-widgets)
+AC_INIT(Libvisual-widgets Library, 0.3.0, ds@nerds-incorporated.org, libvisual-widgets)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_HEADER(config.h)
@@ -57,7 +57,7 @@ else
 fi
 AC_SUBST(DEBUG_CFLAGS)
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.2.0, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.3.0, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
 	AC_MSG_ERROR([libvisual not found, libvisual is needed to build this package,
 you can download libvisual at http://libvisual.sf.net/])
@@ -77,8 +77,8 @@ else
 		   [#if(GTK_MINOR_VERSION < 4)
 		     something that fails to compile
 		    #endif],
-		   [ AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [1], [gtk2 version < 2.4.x]) ],
-		   [ AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [0], [gtk2 version >= 2.4.x]) ])
+		   [ AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [0], [gtk2 version < 2.4.x]) ],
+		   [ AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [1], [gtk2 version >= 2.4.x]) ])
     CFLAGS=$lv_save_CFLAGS
 fi
 AC_SUBST(LIBGTK2_LIBS)
