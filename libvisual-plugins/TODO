@@ -17,8 +17,8 @@ inputs:
 		Esd plugin isn't timing, should be fixed when buffer queues land before 0.2 (post 0.1)
 		ESD BLOCKS ON LIKE EVERYTHING (post 0.1) (if it is fixable at all)
 	alsa:
-		I would be VERY VERY VERY VERY (VERY) happy if someone could make a good working
-			alsa capture plugin, i tried and failed. (someone else)
+		Fix the small issues within the plugin
+
 
 	usound:
 		Make an usound server plugin (someone else)

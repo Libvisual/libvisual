@@ -1,5 +1,9 @@
 2004-07-05  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* TODO, NEWS: Updates.
+
+2004-07-05  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/input/alsa/*: Added semi working ALSA
 	input plugin wrote by:
 	Vitaly V. Bursov  <vitalyvb@ukr.net>
