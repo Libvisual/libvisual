@@ -78,7 +78,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (MadspinPrivate));
 	memset (priv, 0, sizeof (MadspinPrivate));
 
-	lv_madspin->private = priv;
+	lv_madspin->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = lv_madspin;
@@ -88,7 +88,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int lv_madspin_init (VisActorPlugin *plugin)
 {
-	MadspinPrivate *priv = plugin->private;
+	MadspinPrivate *priv = plugin->priv;
 
 	priv->maxlines = 1;
 	priv->texsize = 0.25f;
@@ -114,7 +114,7 @@ int lv_madspin_init (VisActorPlugin *plugin)
 	glEnable (GL_TEXTURE_2D);
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	madspin_load_textures (plugin->private);
+	madspin_load_textures (plugin->priv);
 
 	priv->initialized = 1;
 
@@ -123,7 +123,7 @@ int lv_madspin_init (VisActorPlugin *plugin)
 
 int lv_madspin_cleanup (VisActorPlugin *plugin)
 {
-	MadspinPrivate *priv = plugin->private;
+	MadspinPrivate *priv = plugin->priv;
 
 	if (priv->initialized){
 		glDeleteTextures (2, priv->texture);
@@ -187,8 +187,8 @@ VisPalette *lv_madspin_palette (VisActorPlugin *plugin)
 
 int lv_madspin_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	madspin_sound (plugin->private, audio);
-	madspin_draw (plugin->private, video);
+	madspin_sound (plugin->priv, audio);
+	madspin_draw (plugin->priv, video);
 
 	return 0;
 }

@@ -57,7 +57,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (DNAPrivate));
 	memset (priv, 0, sizeof (DNAPrivate));
 
-	lv_dna->private = priv;
+	lv_dna->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = lv_dna;
@@ -87,7 +87,7 @@ int lv_dna_init (VisActorPlugin *plugin)
 
 int lv_dna_cleanup (VisActorPlugin *plugin)
 {
-	DNAPrivate *priv = plugin->private;
+	DNAPrivate *priv = plugin->priv;
 
 	free (priv);
 
@@ -158,7 +158,7 @@ VisPalette *lv_dna_palette (VisActorPlugin *plugin)
 
 int lv_dna_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	DNAPrivate *priv = plugin->private;
+	DNAPrivate *priv = plugin->priv;
 	float res;
 	float sinr = 0;
 	float height = -1.0;

@@ -65,7 +65,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (GLtestPrivate));
 	memset (priv, 0, sizeof (GLtestPrivate));
 
-	lv_gltest->private = priv;
+	lv_gltest->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = lv_gltest;
@@ -75,7 +75,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int lv_gltest_init (VisActorPlugin *plugin)
 {
-	GLtestPrivate *priv = plugin->private;
+	GLtestPrivate *priv = plugin->priv;
 	int x, y;
 
 	glMatrixMode (GL_PROJECTION);
@@ -110,7 +110,7 @@ int lv_gltest_init (VisActorPlugin *plugin)
 
 int lv_gltest_cleanup (VisActorPlugin *plugin)
 {
-	GLtestPrivate *priv = plugin->private;
+	GLtestPrivate *priv = plugin->priv;
 
 	free (priv);
 
@@ -181,7 +181,7 @@ VisPalette *lv_gltest_palette (VisActorPlugin *plugin)
 
 int lv_gltest_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	GLtestPrivate *priv = plugin->private;
+	GLtestPrivate *priv = plugin->priv;
 	int i,c;
 	int y;
 	GLfloat val;

@@ -57,7 +57,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 	memset (priv, 0, sizeof (alsaPrivate));
 
-	alsa_input->private = priv;
+	alsa_input->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_INPUT;
 	plugin->plugin.inputplugin = alsa_input;
@@ -76,7 +76,7 @@ int inp_alsa_init (VisInputPlugin *plugin)
 	int tmp;
 
 	visual_log_return_val_if_fail(plugin != NULL, -1);
-	priv = plugin->private;
+	priv = plugin->priv;
 	visual_log_return_val_if_fail(priv != NULL, -1);
 	
 
@@ -116,7 +116,7 @@ int inp_alsa_init (VisInputPlugin *plugin)
 		return(-1);
 	}
 	if (exact_rate != rate) {
- 	        visual_log(VISUAL_LOG_ERROR, 
+ 	        visual_log(VISUAL_LOG_WARNING, 
 			   "The rate %d Hz is not supported by your " \
 			   "hardware.\n" \
 			   "==> Using %d Hz instead.\n", rate, exact_rate);
@@ -164,14 +164,14 @@ int inp_alsa_cleanup (VisInputPlugin *plugin)
 	alsaPrivate *priv = NULL;
 
 	visual_log_return_val_if_fail(plugin != NULL, -1);
-	priv = plugin->private;
+	priv = plugin->priv;
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
 	if (priv->loaded == 1)
 		snd_pcm_close(priv->chandle);
 
 	free (priv);
-	plugin->private = NULL;
+	plugin->priv = NULL;
 	return 0;
 }
 
@@ -184,7 +184,7 @@ int inp_alsa_upload (VisInputPlugin *plugin, VisAudio *audio)
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
 	visual_log_return_val_if_fail(plugin != NULL, -1);
-	priv = plugin->private;
+	priv = plugin->priv;
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
 

@@ -53,7 +53,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (AnalyzerPrivate));
 	memset (priv, 0, sizeof (AnalyzerPrivate));
 
-	lv_analyzer->private = priv;
+	lv_analyzer->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = lv_analyzer;
@@ -68,7 +68,7 @@ int lv_analyzer_init (VisActorPlugin *plugin)
 
 int lv_analyzer_cleanup (VisActorPlugin *plugin)
 {
-	AnalyzerPrivate *priv = plugin->private;
+	AnalyzerPrivate *priv = plugin->priv;
 
 	free (priv);
 
@@ -120,7 +120,7 @@ int lv_analyzer_events (VisActorPlugin *plugin, VisEventQueue *events)
 
 VisPalette *lv_analyzer_palette (VisActorPlugin *plugin)
 {
-	AnalyzerPrivate *priv = plugin->private;
+	AnalyzerPrivate *priv = plugin->priv;
 	int i;
 	
 	for (i = 0; i < 256; i++) {
@@ -134,7 +134,7 @@ VisPalette *lv_analyzer_palette (VisActorPlugin *plugin)
 
 int lv_analyzer_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	AnalyzerPrivate *priv = plugin->private;
+	AnalyzerPrivate *priv = plugin->priv;
 	int size;
 	int i, j;
 	float height;

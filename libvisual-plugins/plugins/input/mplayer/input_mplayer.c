@@ -5,7 +5,7 @@
  * @author Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  * License: GNU Lesser General Public License (GNU/LGPL)
  ******************************************************************************
- * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.3 2004-07-13 01:06:39 gsbarbieri Exp $
+ * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.4 2004-07-23 13:29:34 synap Exp $
  */
 
 #include <stdio.h>
@@ -45,7 +45,7 @@ typedef struct
   mplayer_data_t *mmap_area; /**< mmap()'ed area */
 
   int loaded;                /**< plugin state */
-} mplayer_private_t;
+} mplayer_priv_t;
 
 
 
@@ -66,7 +66,7 @@ LVPlugin *get_plugin_info( VisPluginRef *ref )
 {
   LVPlugin          *plugin        = NULL;
   VisInputPlugin    *mplayer_input = NULL;
-  mplayer_private_t *priv          = NULL;
+  mplayer_priv_t *priv          = NULL;
 	
   /* Get plugin structure */
   plugin        = visual_plugin_new();
@@ -84,17 +84,17 @@ LVPlugin *get_plugin_info( VisPluginRef *ref )
   mplayer_input->info = visual_plugin_info_new( "mplayer", 
 						"Gustavo Sverzut Barbieri " \
 						"<gsbarbieri@users.sourceforge.net>", 
-						"$Revision: 1.3 $",
+						"$Revision: 1.4 $",
 						"Use data exported from "   \
 						"MPlayer", "This plugin "   \
 						"uses data exported from "  \
 						"'mplayer -af export'." );
   
 
-  priv = malloc( sizeof( mplayer_private_t ) );
+  priv = malloc( sizeof( mplayer_priv_t ) );
 
   visual_log_return_val_if_fail( priv != NULL, NULL );
-  memset( priv, 0, sizeof( mplayer_private_t ) );
+  memset( priv, 0, sizeof( mplayer_priv_t ) );
 
   priv->sharedfile = malloc( sizeof( char ) * 
 			     ( strlen( SHARED_FILE ) + 
@@ -104,7 +104,7 @@ LVPlugin *get_plugin_info( VisPluginRef *ref )
   strcat( priv->sharedfile, "/" );
   strcat( priv->sharedfile, SHARED_FILE );
 
-  mplayer_input->private = priv;
+  mplayer_input->priv = priv;
 
   plugin->type = VISUAL_PLUGIN_TYPE_INPUT;
   /* Link */
@@ -124,10 +124,10 @@ LVPlugin *get_plugin_info( VisPluginRef *ref )
  */
 int inp_mplayer_init( VisInputPlugin *plugin )
 {
-  mplayer_private_t *priv = NULL;
+  mplayer_priv_t *priv = NULL;
 
   visual_log_return_val_if_fail( plugin != NULL, -1 );
-  priv = plugin->private;
+  priv = plugin->priv;
 
   visual_log_return_val_if_fail( priv != NULL, -1 );
   visual_log_return_val_if_fail( priv->sharedfile != NULL, -1 );
@@ -194,10 +194,10 @@ int inp_mplayer_init( VisInputPlugin *plugin )
 int inp_mplayer_cleanup( VisInputPlugin *plugin )
 {
   int unclean = 0;
-  mplayer_private_t *priv = NULL;
+  mplayer_priv_t *priv = NULL;
 
   visual_log_return_val_if_fail( plugin != NULL, -1 );
-  priv = plugin->private;
+  priv = plugin->priv;
   visual_log_return_val_if_fail( priv != NULL, -1 );
 
   if ( priv->loaded == 1 )
@@ -234,7 +234,7 @@ int inp_mplayer_cleanup( VisInputPlugin *plugin )
     }
 
   free( priv );
-  plugin->private = NULL;
+  plugin->priv = NULL;
   
   return - unclean;
 }
@@ -250,11 +250,11 @@ int inp_mplayer_cleanup( VisInputPlugin *plugin )
  */
 int inp_mplayer_upload( VisInputPlugin *plugin, VisAudio *audio )
 {
-  mplayer_private_t *priv = NULL;
+  mplayer_priv_t *priv = NULL;
 
   visual_log_return_val_if_fail( audio != NULL, -1 );
   visual_log_return_val_if_fail( plugin != NULL, -1 );
-  priv = plugin->private;
+  priv = plugin->priv;
   visual_log_return_val_if_fail( priv != NULL, -1 );
   visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
 

@@ -55,7 +55,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (GoomPrivate));
 	memset (priv, 0, sizeof (GoomPrivate));
 
-	goom->private = priv;
+	goom->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = goom;
@@ -65,7 +65,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int lv_goom_init (VisActorPlugin *plugin)
 {
-	GoomPrivate *priv = plugin->private;
+	GoomPrivate *priv = plugin->priv;
 
 	priv->goominfo = goom_init (128, 128);
 	
@@ -74,7 +74,7 @@ int lv_goom_init (VisActorPlugin *plugin)
 
 int lv_goom_cleanup (VisActorPlugin *plugin)
 {
-	GoomPrivate *priv = plugin->private;
+	GoomPrivate *priv = plugin->priv;
 
 	if (priv->goominfo != NULL)
 		goom_close (priv->goominfo);
@@ -96,7 +96,7 @@ int lv_goom_requisition (VisActorPlugin *plugin, int *width, int *height)
 
 int lv_goom_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
 {
-	GoomPrivate *priv = plugin->private;
+	GoomPrivate *priv = plugin->priv;
 
 	visual_video_set_dimension (video, width, height);
 
@@ -161,7 +161,7 @@ VisPalette *lv_goom_palette (VisActorPlugin *plugin)
 
 int lv_goom_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	GoomPrivate *priv = plugin->private;
+	GoomPrivate *priv = plugin->priv;
 	VisSongInfo *songinfo = plugin->songinfo;
 	short pcmdata[2][512];
 	uint32_t *buf;

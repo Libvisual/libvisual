@@ -1,3 +1,12 @@
+2004-07-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Renamed private to priv everywhere to adopt to 
+	libvisual API changes.
+
+	* plugins/input/alsa/input_alsa.c: Use VISUAL_LOG_WARNING instead
+	of VISUAL_LOG_ERROR when the requested audio output hz is not
+	supported but a different one is used, since this is not fatal.
+
 2004-07-13  Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>
 	* plugins/input/mplayer: New input plugin
 

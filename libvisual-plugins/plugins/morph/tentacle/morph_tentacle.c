@@ -52,7 +52,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (TentaclePrivate));
 	memset (priv, 0, sizeof (TentaclePrivate));
 
-	morph->private = priv;
+	morph->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_MORPH;
 	plugin->plugin.morphplugin = morph;
@@ -67,7 +67,7 @@ int lv_morph_tentacle_init (VisMorphPlugin *plugin)
 
 int lv_morph_tentacle_cleanup (VisMorphPlugin *plugin)
 {
-	TentaclePrivate *priv = plugin->private;
+	TentaclePrivate *priv = plugin->priv;
 
 	free (priv);
 
@@ -76,7 +76,7 @@ int lv_morph_tentacle_cleanup (VisMorphPlugin *plugin)
 
 int lv_morph_tentacle_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	TentaclePrivate *priv = plugin->private;
+	TentaclePrivate *priv = plugin->priv;
 	uint8_t *destbuf = dest->screenbuffer;
 	uint8_t *src1buf = src1->screenbuffer;
 

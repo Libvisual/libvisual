@@ -51,7 +51,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (VideoTestPrivate));
 	memset (priv, 0, sizeof (VideoTestPrivate));
 
-	video_test->private = priv;
+	video_test->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = video_test;
@@ -66,7 +66,7 @@ int video_test_init (VisActorPlugin *plugin)
 
 int video_test_cleanup (VisActorPlugin *plugin)
 {
-	VideoTestPrivate *priv = plugin->private;
+	VideoTestPrivate *priv = plugin->priv;
 
 	free (priv);
 
@@ -120,7 +120,7 @@ int video_test_events (VisActorPlugin *plugin, VisEventQueue *events)
 
 VisPalette *video_test_palette (VisActorPlugin *plugin)
 {
-	VideoTestPrivate *priv = plugin->private;
+	VideoTestPrivate *priv = plugin->priv;
 	int i, j = 256;
 	
 	for (i = 0; i < 256; i++) {

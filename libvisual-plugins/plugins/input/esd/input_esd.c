@@ -48,7 +48,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	visual_log_return_val_if_fail(priv != NULL, NULL);
 	memset (priv, 0, sizeof (EsdPrivate));
 	
-	esd_input->private = priv;
+	esd_input->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_INPUT;
 	plugin->plugin.inputplugin = esd_input;
@@ -61,7 +61,7 @@ int inp_esd_init (VisInputPlugin *plugin)
 	EsdPrivate *priv = NULL;
 
 	visual_log_return_val_if_fail( plugin != NULL, -1 );
-	priv = plugin->private;
+	priv = plugin->priv;
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 	
 	priv->esdhandle = esd_monitor_stream (ESD_BITS16 | ESD_STEREO | ESD_STREAM | ESD_MONITOR, 44100, NULL, "lv_esd_plugin");
@@ -78,10 +78,10 @@ int inp_esd_init (VisInputPlugin *plugin)
 
 int inp_esd_cleanup (VisInputPlugin *plugin)
 {
-	EsdPrivate *priv = plugin->private;
+	EsdPrivate *priv = plugin->priv;
 
 	visual_log_return_val_if_fail( plugin != NULL, -1 );
-	priv = plugin->private;
+	priv = plugin->priv;
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 	
 	if (priv->loaded == 1)
@@ -101,7 +101,7 @@ int inp_esd_upload (VisInputPlugin *plugin, VisAudio *audio)
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
 	visual_log_return_val_if_fail(plugin != NULL, -1);
-	priv = plugin->private;
+	priv = plugin->priv;
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
 	rcnt = read (priv->esdhandle, esddata,

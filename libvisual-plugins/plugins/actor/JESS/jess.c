@@ -82,7 +82,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (JessPrivate));
 	memset (priv, 0, sizeof (JessPrivate));
 
-	jess->private = priv;
+	jess->priv = priv;
 	
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = jess;
@@ -96,7 +96,7 @@ int act_jess_init (VisActorPlugin *plugin)
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
-	priv = plugin->private;
+	priv = plugin->priv;
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 				"The given plugin doesn't have private info");
@@ -144,7 +144,7 @@ int act_jess_cleanup (VisActorPlugin *plugin)
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
-	priv = plugin->private;
+	priv = plugin->priv;
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 				"The given plugin doesn't have private info");
@@ -205,7 +205,7 @@ int act_jess_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int 
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
-	priv = plugin->private;
+	priv = plugin->priv;
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 				"The given plugin doesn't have private info");
@@ -257,7 +257,7 @@ VisPalette *act_jess_palette (VisActorPlugin *plugin)
 
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 
-	priv = plugin->private;
+	priv = plugin->priv;
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 				"The given plugin doesn't have private info");
@@ -277,10 +277,10 @@ int act_jess_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 	visual_log_return_val_if_fail (audio != NULL, -1);
 	visual_log_return_val_if_fail (video != NULL, -1);
 
-	priv = plugin->private;
+	priv = plugin->priv;
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-				"The given plugin doesn't have private info");
+				"The given plugin doesn't have priv info");
 		return -1;
 	}
 

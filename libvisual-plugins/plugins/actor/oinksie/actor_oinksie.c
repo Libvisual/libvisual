@@ -58,7 +58,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (OinksiePrivContainer));
 	memset (priv, 0, sizeof (OinksiePrivContainer));
 
-	oinksie->private = priv;
+	oinksie->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = oinksie;
@@ -68,7 +68,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int act_oinksie_init (VisActorPlugin *plugin)
 {
-	OinksiePrivContainer *priv = plugin->private;
+	OinksiePrivContainer *priv = plugin->priv;
 	
 	oinksie_init (&priv->priv1, 64, 64);
 	oinksie_init (&priv->priv2, 64, 64);
@@ -78,7 +78,7 @@ int act_oinksie_init (VisActorPlugin *plugin)
 
 int act_oinksie_cleanup (VisActorPlugin *plugin)
 {
-	OinksiePrivContainer *priv = plugin->private;
+	OinksiePrivContainer *priv = plugin->priv;
 
 	oinksie_quit (&priv->priv1);
 	oinksie_quit (&priv->priv2);
@@ -125,7 +125,7 @@ int act_oinksie_requisition (VisActorPlugin *plugin, int *width, int *height)
 
 int act_oinksie_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
 {
-	OinksiePrivContainer *priv = plugin->private;
+	OinksiePrivContainer *priv = plugin->priv;
 	
 	visual_video_set_dimension (video, width, height);
 
@@ -186,7 +186,7 @@ int act_oinksie_events (VisActorPlugin *plugin, VisEventQueue *events)
 
 VisPalette *act_oinksie_palette (VisActorPlugin *plugin)
 {
-	OinksiePrivContainer *priv = plugin->private;
+	OinksiePrivContainer *priv = plugin->priv;
 	VisPalette *pal;
 	
 	pal = oinksie_palette_get (&priv->priv1);
@@ -196,7 +196,7 @@ VisPalette *act_oinksie_palette (VisActorPlugin *plugin)
 
 int act_oinksie_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	OinksiePrivContainer *priv = plugin->private;
+	OinksiePrivContainer *priv = plugin->priv;
 	VisVideo transvid;
 	int pitch;
 

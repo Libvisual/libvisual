@@ -47,7 +47,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (ScopePrivate));
 	memset (priv, 0, sizeof (ScopePrivate));
 
-	lv_scope->private = priv;
+	lv_scope->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = lv_scope;
@@ -62,7 +62,7 @@ int lv_scope_init (VisActorPlugin *plugin)
 
 int lv_scope_cleanup (VisActorPlugin *plugin)
 {
-	ScopePrivate *priv = plugin->private;
+	ScopePrivate *priv = plugin->priv;
 
 	free (priv);
 
@@ -121,7 +121,7 @@ int lv_scope_events (VisActorPlugin *plugin, VisEventQueue *events)
 
 VisPalette *lv_scope_palette (VisActorPlugin *plugin)
 {
-	ScopePrivate *priv = plugin->private;
+	ScopePrivate *priv = plugin->priv;
 	int i;
 	
 	for (i = 0; i < 256; i++) {
