@@ -109,9 +109,6 @@ morph: (lots of these effects can be taken from the demo world, this should turn
 	tentacle:
 		optimize
 
-	slide:
-		make.
-
 	flash:
 		make 16, 24, 32 bits support.
 
