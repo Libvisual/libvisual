@@ -6,183 +6,182 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
-"POT-Creation-Date: 2004-10-02 18:17-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-10-14 15:51+0200\n"
 "PO-Revision-Date: 2004-07-13 16:56+0300\n"
 "Last-Translator: Vitaly V. Bursov <vitalyvb@users.sourceforge.net>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 
-#: src/main.c:122
+#: src/main.c:128
 #, fuzzy
 msgid "XMMS plugin"
 msgstr "Все дополнения"
 
-#: src/main.c:140
+#: src/main.c:146
 msgid "Cannot get options"
 msgstr "Невозможно загрузить опции"
 
-#: src/main.c:147
+#: src/main.c:153
 msgid "Cannot initialize SDL!\n"
 msgstr ""
 
-#: src/main.c:150
+#: src/main.c:156
 msgid " will not be loaded."
 msgstr ""
 
-#: src/main.c:151 src/lv_xmms_config.c:178 src/lv_xmms_config.c:630
-#: src/lv_xmms_config.c:694 src/lv_xmms_config.c:864 src/lv_xmms_config.c:918
-#: src/lv_xmms_config.c:960 src/lv_xmms_config.c:1065 src/config_gui.c:282
+#: src/main.c:157 src/lv_xmms_config.c:186 src/lv_xmms_config.c:586
+#: src/lv_xmms_config.c:650 src/lv_xmms_config.c:849 src/lv_xmms_config.c:903
+#: src/lv_xmms_config.c:945 src/lv_xmms_config.c:1053
 msgid "Accept"
 msgstr "OK"
 
-#: src/main.c:161
+#: src/main.c:167
 #, fuzzy, c-format
 msgid "Cannot not load icon: %s"
 msgstr "Невозможно загрузить опции"
 
-#: src/main.c:166
+#: src/main.c:173
 #, fuzzy
 msgid "Last plugin: (none)"
 msgstr "Только GL дополнения"
 
-#: src/main.c:168
+#: src/main.c:175
 #, fuzzy, c-format
 msgid "Last plugin: %s"
 msgstr "Все дополнения"
 
-#: src/main.c:173
+#: src/main.c:180
 #, c-format
 msgid "%s is not a valid actor plugin"
 msgstr ""
 
-#: src/main.c:180
+#: src/main.c:187
 msgid "Could not get actor plugin"
-msgstr ""
-
-#: src/main.c:189
-msgid "Cannot initialize plugin's visual stuff"
 msgstr ""
 
 #: src/main.c:318
 msgid "Could not get video info"
 msgstr ""
 
-#: src/main.c:371
+#: src/main.c:376
 #, fuzzy
 msgid "Cannot set video depth"
 msgstr "Невозможно загрузить опции"
 
-#: src/main.c:378
+#: src/main.c:383
 #, fuzzy
 msgid "Cannot set video"
 msgstr "Невозможно загрузить опции"
 
-#: src/main.c:403
+#: src/main.c:407
 msgid "Cannot set input plugin callback"
 msgstr ""
 
-#: src/lv_xmms_config.c:172
+#: src/main.c:466
+msgid "Cannot initialize plugin's visual stuff"
+msgstr ""
+
+#: src/lv_xmms_config.c:180
 msgid ""
 "The morph plugin specified on the config\n"
 "file is not a valid morph plugin.\n"
 "We will use "
 msgstr ""
 
-#: src/lv_xmms_config.c:175
+#: src/lv_xmms_config.c:183
 msgid ""
 " morph plugin instead.\n"
 "If you want another one, please choose it\n"
 "on the configure dialog."
 msgstr ""
 
-#: src/lv_xmms_config.c:193
+#: src/lv_xmms_config.c:201
 #, fuzzy
 msgid "GL plugins only"
 msgstr "Только GL дополнения"
 
-#: src/lv_xmms_config.c:195
+#: src/lv_xmms_config.c:203
 #, fuzzy
 msgid "non GL plugins only"
 msgstr "Только GL дополнения"
 
-#: src/lv_xmms_config.c:197
+#: src/lv_xmms_config.c:205
 #, fuzzy
 msgid "All plugins enabled"
 msgstr "Все дополнения"
 
-#: src/lv_xmms_config.c:202
+#: src/lv_xmms_config.c:210
 msgid "LibVisual XMMS plugin: config file contain errors, fixing..."
 msgstr ""
 
-#: src/lv_xmms_config.c:205
+#: src/lv_xmms_config.c:213
 msgid "LibVisual XMMS plugin: config file is from old version, updating..."
 msgstr ""
 
-#: src/lv_xmms_config.c:208
+#: src/lv_xmms_config.c:216
 msgid "LibVisual XMMS plugin: adding entry to config file..."
 msgstr ""
 
-#. Create a new item marked as enabled
-#: src/lv_xmms_config.c:563 src/lv_xmms_config.c:785
+#: src/lv_xmms_config.c:550 src/lv_xmms_config.c:787
 msgid " (enabled)"
 msgstr ""
 
-#: src/lv_xmms_config.c:626 src/lv_xmms_config.c:955
+#: src/lv_xmms_config.c:582 src/lv_xmms_config.c:940
 msgid "Version: "
 msgstr ""
 
-#: src/lv_xmms_config.c:628 src/lv_xmms_config.c:957
+#: src/lv_xmms_config.c:584 src/lv_xmms_config.c:942
 msgid "Author: "
 msgstr ""
 
-#: src/lv_xmms_config.c:682
+#: src/lv_xmms_config.c:638
 msgid "The list of actor plugins is empty."
 msgstr ""
 
-#: src/lv_xmms_config.c:689
+#: src/lv_xmms_config.c:645
 msgid " error"
 msgstr ""
 
-#: src/lv_xmms_config.c:690
+#: src/lv_xmms_config.c:646
 msgid "There are no actor plugins installed.\n"
 msgstr ""
 
-#: src/lv_xmms_config.c:691
+#: src/lv_xmms_config.c:647
 msgid ""
 " cannot be initialized.\n"
 "Please visit http://libvisual.sf.net to\n"
 "to get some nice plugins."
 msgstr ""
 
-#: src/lv_xmms_config.c:853 src/lv_xmms_config.c:907
+#: src/lv_xmms_config.c:838 src/lv_xmms_config.c:892
 msgid "The list of morph plugins is empty."
 msgstr ""
 
-#: src/lv_xmms_config.c:861 src/lv_xmms_config.c:915
+#: src/lv_xmms_config.c:846 src/lv_xmms_config.c:900
 msgid ""
 "There are no morph plugins, so switching\n"
 "between visualization plugins will be do it\n"
 "without any morphing."
 msgstr ""
 
-#: src/lv_xmms_config.c:871 src/lv_xmms_config.c:924 src/lv_xmms_config.c:950
+#: src/lv_xmms_config.c:856 src/lv_xmms_config.c:909 src/lv_xmms_config.c:935
 msgid "There is no info for this plugin"
 msgstr ""
 
-#: src/lv_xmms_config.c:943
+#: src/lv_xmms_config.c:928
 msgid "The list of input plugins is empty."
 msgstr ""
 
-#: src/lv_xmms_config.c:1063
+#: src/lv_xmms_config.c:1051
 msgid ""
 "We cannot initialize Libvisual library.\n"
 "Libvisual is necessary for this plugin to work."
 msgstr ""
 
-#: src/lv_xmms_config.c:1155
+#: src/lv_xmms_config.c:1143
 msgid "Invalid value for 'enabled_plugins' option"
 msgstr ""
 
@@ -195,23 +194,27 @@ msgstr "Libvisual дополнение к XMMS"
 msgid "Visualization Plugins"
 msgstr "Libvisual дополнение к XMMS"
 
-#: src/config_gui.c:132 src/config_gui.c:252
+#: src/config_gui.c:112
+msgid "Actors"
+msgstr ""
+
+#: src/config_gui.c:134 src/config_gui.c:254
 msgid "Configure"
 msgstr ""
 
-#: src/config_gui.c:140 src/config_gui.c:260
+#: src/config_gui.c:142 src/config_gui.c:262
 msgid "About"
 msgstr ""
 
-#: src/config_gui.c:148
+#: src/config_gui.c:150
 msgid "Enable/Disable"
 msgstr ""
 
-#: src/config_gui.c:156
+#: src/config_gui.c:158
 msgid "Fullscreen"
 msgstr "На весь экран"
 
-#: src/config_gui.c:162
+#: src/config_gui.c:164
 #, fuzzy
 msgid ""
 "You can toggle between normal and fullscreen mode pressing key TAB or F11"
@@ -219,55 +222,59 @@ msgstr ""
 "Вы также можете включать полноэкранный режим и возвращаться в обычный "
 "нажатием клавиш TAB или F11"
 
-#: src/config_gui.c:164
+#: src/config_gui.c:166
 msgid "All plugins"
 msgstr "Все дополнения"
 
-#: src/config_gui.c:172
+#: src/config_gui.c:174
 #, fuzzy
 msgid "Only non GL plugins"
 msgstr "Только не GL дополнения"
 
-#: src/config_gui.c:180
+#: src/config_gui.c:182
 msgid "Only GL plugins"
 msgstr "Только GL дополнения"
 
-#: src/config_gui.c:196
+#: src/config_gui.c:198
 msgid "Maximum Frames Per Second:"
 msgstr "Максимальное количество кадров в секунду:"
 
-#: src/config_gui.c:212
+#: src/config_gui.c:214
 msgid "Morph Plugin"
 msgstr ""
 
-#: src/config_gui.c:233
+#: src/config_gui.c:235
 msgid ""
 "Select the kind of morph that will be applied when switching from one "
 "visualization plugin to another "
 msgstr ""
 
-#: src/config_gui.c:268
+#: src/config_gui.c:270
 msgid "Select one morph plugin randomly"
 msgstr ""
 
-#: src/config_gui.c:290
-msgid "Apply"
-msgstr "Применить"
+#: src/config_gui.c:284
+msgid "Ok"
+msgstr ""
 
-#: src/config_gui.c:298
+#: src/config_gui.c:292
 msgid "Cancel"
 msgstr "Отмена"
 
-#: src/config_gui.c:356
+#: src/config_gui.c:300
+msgid "Apply"
+msgstr "Применить"
+
+#: src/config_gui.c:358
 msgid "Couldn't create replacement pixmap."
 msgstr "Невозможно создасть замещающий рисунок."
 
-#: src/config_gui.c:401
+#: src/config_gui.c:403
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Файл с рисунком не найден: %s"
 
-#: src/config_gui.c:410
+#: src/config_gui.c:412
 #, c-format
 msgid "Error loading pixmap file: %s"
 msgstr "Ошибка загрузки файла с рисунком: %s"

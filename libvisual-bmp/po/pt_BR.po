@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-06 19:06+0200\n"
+"POT-Creation-Date: 2004-10-14 15:47+0200\n"
 "PO-Revision-Date: 2004-07-12 16:05-0300\n"
 "Last-Translator: Gustavo Sverzut Barbieri <barbieri@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <linux_pt_BR@yahoo.com.br>\n"
@@ -64,26 +64,26 @@ msgstr ""
 msgid "Could not get actor plugin"
 msgstr ""
 
-#: src/main.c:189
-msgid "Cannot initialize plugin's visual stuff"
-msgstr ""
-
-#: src/main.c:318
+#: src/main.c:311
 msgid "Could not get video info"
 msgstr ""
 
-#: src/main.c:371
+#: src/main.c:364
 #, fuzzy
 msgid "Cannot set video depth"
 msgstr "Não consegui obter as opções"
 
-#: src/main.c:378
+#: src/main.c:371
 #, fuzzy
 msgid "Cannot set video"
 msgstr "Não consegui obter as opções"
 
-#: src/main.c:403
+#: src/main.c:396
 msgid "Cannot set input plugin callback"
+msgstr ""
+
+#: src/main.c:451
+msgid "Cannot initialize plugin's visual stuff"
 msgstr ""
 
 #: src/lv_bmp_config.c:172
