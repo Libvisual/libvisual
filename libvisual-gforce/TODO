@@ -12,6 +12,7 @@ has done a great job without doubt.
 
 ------------------------
 Cleanup all the headers, to avoid warnings.
+Use libvisual it's random context system.
 Fix font drawing (actually it's right but we can't overlay because we try to get rid of the double 8 bit copy...
 Remove font system in favor for the libvisual font system when it's done.
 Fix reentrancy (mostly done) (Make EgOSUtils reentrant, private in GF)
