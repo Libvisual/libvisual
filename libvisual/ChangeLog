@@ -1,3 +1,9 @@
+2005-02-10  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* configure.ac: Bumping up to 0.3.0
+
+	* libvisual/lv_plugin.h: Bumped PLUGIN_API version up to '3'.
+
 2005-02-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	TAGGING 0.2.0 RELEASE!

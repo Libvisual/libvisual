@@ -52,7 +52,7 @@ extern "C" {
 /**
  * Indicates at which version the plugin API is.
  */
-#define VISUAL_PLUGIN_API_VERSION	2
+#define VISUAL_PLUGIN_API_VERSION	3
 
 /**
  * Type defination that should be used in plugins to set the plugin type for a NULL plugin.
