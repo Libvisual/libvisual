@@ -233,7 +233,8 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, const char
 }
 
 /**
- * Clones the source VisParamContainer into the destination VisParamContainer.
+ * Clones the source VisParamContainer into the destination VisParamContainer. When an entry with a certain name
+ * already exists in the destination container, it will be overwritten with a new value.
  *
  * @param destcont A pointer to the VisParamContainer in which the VisParamEntry values are copied.
  * @param srccont A pointer to the VisParamContainer from which the VisParamEntry values are copied.
@@ -245,11 +246,22 @@ int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer 
 	VisListEntry *le = NULL;
 	VisParamEntry *destparam;
 	VisParamEntry *srcparam;
+	VisParamEntry *tempparam;
 
 	visual_log_return_val_if_fail (destcont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
 	visual_log_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
 
 	while ((srcparam = visual_list_next (&srccont->entries, &le)) != NULL) {
+		tempparam = visual_param_container_get (destcont, visual_param_entry_get_name (destparam));
+
+		/* Already exists, overwrite */
+		if (tempparam != NULL) {
+			visual_param_entry_set_from_param (tempparam, srcparam);
+			
+			break;
+		}
+		
+		/* Does not yet exist, create a new entry */
 		destparam = visual_param_entry_new (visual_param_entry_get_name (srcparam));
 		visual_param_entry_set_from_param (destparam, srcparam);
 
@@ -277,7 +289,7 @@ int visual_param_container_match_copy (VisParamContainer *destcont, VisParamCont
 	visual_log_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
 
 	while ((destparam = visual_list_next (&destcont->entries, &le)) != NULL) {
-		srcparam = visual_param_container_get (destcont, visual_param_entry_get_name (destparam));
+		srcparam = visual_param_container_get (srccont, visual_param_entry_get_name (destparam));
 
 		if (srcparam != NULL)
 			visual_param_entry_set_from_param (destparam, srcparam);
