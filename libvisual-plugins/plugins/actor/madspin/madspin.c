@@ -87,7 +87,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_madspin_init (VisPluginData *plugin)
 {
 	MadspinPrivate *priv;
-	VisParamContainer *paramcontainer = &plugin->params;
+	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 	VisParamEntry *param;
 
 	priv = visual_mem_new0 (MadspinPrivate, 1);

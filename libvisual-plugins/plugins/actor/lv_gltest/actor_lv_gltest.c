@@ -75,7 +75,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_gltest_init (VisPluginData *plugin)
 {
 	GLtestPrivate *priv;
-	VisParamContainer *paramcontainer = &plugin->params;
+	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 	VisParamEntry *param;
 	int x, y;
 

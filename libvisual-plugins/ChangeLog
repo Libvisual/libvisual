@@ -1,3 +1,9 @@
+2004-10-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Use the visual_plugin_get_params
+	method instead of direct access of the paramcontainer
+	with the VisPluginData structure.
+
 2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/infinite/lv_infite.c (lv_infinite_init):

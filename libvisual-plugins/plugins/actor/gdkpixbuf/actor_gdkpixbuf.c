@@ -56,7 +56,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 int act_gdkpixbuf_init (VisPluginData *plugin)
 {
 	PixbufPrivate *priv;
-	VisParamContainer *paramcontainer = &plugin->params;
+	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);;
 	VisParamEntry *param;
 
 	priv = visual_mem_new0 (PixbufPrivate, 1);
