@@ -3,7 +3,10 @@ of Libvisual XMMS Plugin
 
 These are only visible changes, for more details look at the ChangeLog.
 
-New in 0.1.7: 2004-xx-xx:
+New in 0.1.7: 2004-10-14:
+* Global maintaince and configure dailog. (Duilio)
+* Many bugfixes. (Duilio)
+* Fixed crash on startup with GL plugin enabled. (Dennis, Vitaly)
 * Fixed crashes on disable/quit. (Dennis)
 * Fixed the WM Quit event. (Dennis, Vitaly)
 
