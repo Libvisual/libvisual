@@ -84,7 +84,7 @@
 		<handler>on_list_vis_plugins_unselect_child</handler>
 		<last_modification_time>Mon, 27 Sep 2004 02:28:56 GMT</last_modification_time>
 	      </signal>
-	      <selection_mode>GTK_SELECTION_MULTIPLE</selection_mode>
+	      <selection_mode>GTK_SELECTION_SINGLE</selection_mode>
 	    </widget>
 	  </widget>
 	</widget>

@@ -320,9 +320,12 @@ static int sdl_create (int width, int height)
 
 		SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 
+		visual_log (VISUAL_LOG_DEBUG, "Setting video mode %dx%d", width, height);
 		screen = SDL_SetVideoMode (width, height, 16, videoflags);
-	} else
+	} else {
+		visual_log (VISUAL_LOG_DEBUG, "Setting video mode %dx%d", width, height);
 		screen = SDL_SetVideoMode (width, height, video->bpp * 8, SDL_RESIZABLE);
+	}
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY / 4, SDL_DEFAULT_REPEAT_INTERVAL / 4);
 

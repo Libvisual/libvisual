@@ -775,19 +775,19 @@ static gboolean read_config_file (ConfigFile *f)
 		strcpy (options.icon_file, CONFIG_DEFAULT_ICON);
 		errors = TRUE;
 	}
-	if (!xmms_cfg_read_int (f, "libvisual_xmms", "width", &options.width)) {
+	if (!xmms_cfg_read_int (f, "libvisual_xmms", "width", &options.width) || options.width <= 0) {
 		options.width = default_options.width;
 		errors = TRUE;
 	}
-	if (!xmms_cfg_read_int (f, "libvisual_xmms", "height", &options.height)) {
+	if (!xmms_cfg_read_int (f, "libvisual_xmms", "height", &options.height)	|| options.height <= 0) {
 		options.height = default_options.height;
 		errors = TRUE;
 	}
-	if (!xmms_cfg_read_int (f, "libvisual_xmms", "fps", &options.fps)) {
+	if (!xmms_cfg_read_int (f, "libvisual_xmms", "fps", &options.fps) || options.fps <= 0) {
 		options.fps = default_options.fps;
 		errors = TRUE;
 	}
-	if (!xmms_cfg_read_int (f, "libvisual_xmms", "color_depth", &options.depth)) {
+	if (!xmms_cfg_read_int (f, "libvisual_xmms", "color_depth", &options.depth) || options.depth <= 0) {
 		options.depth = default_options.depth;
 		errors = TRUE;
 	}

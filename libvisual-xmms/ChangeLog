@@ -6,6 +6,8 @@
 	Show configure window with my preferences, even if plugin
 	was not loaded yet.
 	Show actor's about dialogs.
+	We require positive values on fps, width, height and bpp
+	options.
 
 2004-09-28  Duilio Protti  <dprotti@users.sourceforge.net>
 
