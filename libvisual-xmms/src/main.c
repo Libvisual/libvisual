@@ -114,7 +114,7 @@ static void lv_xmms_init ()
 	bindtextdomain (PACKAGE, LOCALEDIR);
 	textdomain (PACKAGE);
 #endif
-    
+
 	options = lv_xmms_config_open ();
 	if (options == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Cannot get options"));
@@ -134,15 +134,12 @@ static void lv_xmms_init ()
 		return;
 	}
 
-	if (strlen(options->icon_file) > 0) {
-		icon = SDL_LoadBMP (options->icon_file);
-		if (icon != NULL) {
-			SDL_WM_SetIcon (icon, NULL);
-		} else {
-			visual_log (VISUAL_LOG_WARNING, _("Cannot not load icon: %s"), SDL_GetError());
-		}
-	}
-
+	icon = SDL_LoadBMP (options->icon_file);
+	if (icon != NULL)
+		SDL_WM_SetIcon (icon, NULL);
+	else
+		visual_log (VISUAL_LOG_WARNING, _("Cannot not load icon: %s"), SDL_GetError());
+	
 	pcm_mutex = SDL_CreateMutex ();
 
 	if (!visual_is_initialized ()) {
@@ -155,7 +152,7 @@ static void lv_xmms_init ()
         	g_free (argv[0]);
 	        g_free (argv);
 	}
-
+	
 	if (strlen (options->last_plugin) <= 0 ) {
 		visual_log (VISUAL_LOG_INFO, "last plugin: (none)");
 	} else {
@@ -167,7 +164,7 @@ static void lv_xmms_init ()
 		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
 
 	SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
-	
+
 	if (cur_lv_plugin == NULL) {
 		visual_log (VISUAL_LOG_INFO, "could not get actor plugin");
 		g_free (options->last_plugin);
@@ -180,7 +177,9 @@ static void lv_xmms_init ()
 		return;
 	}
 
+
 	visual_log (VISUAL_LOG_DEBUG, "calling SDL_CreateThread()");
+
 	render_thread = SDL_CreateThread ((void *) visual_render, NULL);
 }
 
@@ -188,8 +187,9 @@ static void lv_xmms_cleanup ()
 {
 	visual_log (VISUAL_LOG_DEBUG, "entering cleanup...");
 	visual_running = 0;
-        SDL_WaitThread (render_thread, NULL);
-	SDL_KillThread (render_thread);
+
+	SDL_WaitThread (render_thread, NULL);
+
 	render_thread = NULL;
 	visual_stopped = 1;
 
@@ -200,13 +200,13 @@ static void lv_xmms_cleanup ()
 	/*
 	 * WARNING This must be synchronized with config module.
 	 */
-	if (options->last_plugin != NULL)
-		g_free (options->last_plugin);
+
 	options->last_plugin = cur_lv_plugin;
 
 	visual_log (VISUAL_LOG_DEBUG, "calling lv_xmms_config_save_prefs()");
 	lv_xmms_config_save_prefs ();
 
+	visual_log (VISUAL_LOG_DEBUG, "closing config file");
 	lv_xmms_config_close ();
 
 	if (icon != NULL)
@@ -217,11 +217,9 @@ static void lv_xmms_cleanup ()
 
 	visual_log (VISUAL_LOG_DEBUG, "calling sdl_quit()");
 	sdl_quit ();
-
+	
 	visual_log (VISUAL_LOG_DEBUG, "calling visual_quit()");
 	visual_quit ();
-
-	visual_log (VISUAL_LOG_DEBUG, "leaving...");
 }
 
 static void lv_xmms_disable (VisPlugin* plugin)
@@ -443,7 +441,11 @@ static int visual_render (void *arg)
 		songinfo = visual_actor_get_songinfo (visual_bin_get_actor (bin));
 		visual_songinfo_set_type (songinfo, VISUAL_SONGINFO_TYPE_SIMPLE);
 
-		visual_songinfo_set_simple_name (songinfo, lv_xmms_get_songname ());
+		/* FIXME temp */
+		visual_songinfo_set_simple_name (songinfo, "Super COW powers.");
+
+		/* FIXME don't retrieve the songname from xmms in this thread, totally borks up */		
+//		visual_songinfo_set_simple_name (songinfo, lv_xmms_get_songname ());
 
 		if ((SDL_GetAppState () & SDL_APPACTIVE) == FALSE) {
 			usleep (100000);
@@ -465,8 +467,8 @@ static int visual_render (void *arg)
 				if (SDL_MUSTLOCK (screen) == SDL_TRUE)
 					SDL_UnlockSurface (screen);
 			}
-
-                        render_time = SDL_GetTicks ();
+                        
+			render_time = SDL_GetTicks ();
 			if (gl_plug == 1) {
 				visual_bin_run (bin);
 
@@ -486,12 +488,15 @@ static int visual_render (void *arg)
 
 				sdl_draw (screen);
 			}
-                        now = SDL_GetTicks ();
+
+			now = SDL_GetTicks ();
                         if ((idle_time = (now - render_time)) < frame_length)
                                 usleep (idle_time*900);
 		}
+
 		sdl_event_handle ();
-                if (options->fullscreen && !(screen->flags & SDL_FULLSCREEN))
+
+		if (options->fullscreen && !(screen->flags & SDL_FULLSCREEN))
                         SDL_WM_ToggleFullScreen (screen);
 		frames++;
 		/*

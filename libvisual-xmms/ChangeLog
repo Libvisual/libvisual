@@ -1,5 +1,22 @@
 2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* src/main.c (lv_xmms_init): Remove a few
+	unused bits regarding the app icon.
+
+	(lv_xmms_cleanup): Remove a stray free.
+
+	(visual_render): Remove the songinfo set,
+	we need to distribute the songname from the xmms
+	thread to the sdl thread ourself. Need to fix this still
+
+	However this fixes the on exit, on cleanup crashes.
+
+	Remaining issues:
+		Startup with GL borks totally.
+		Redo songinfo.
+
+2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* src/main.c (lv_xmms_init):
 	Set the WM caption after checking for plugin
 	existance.
