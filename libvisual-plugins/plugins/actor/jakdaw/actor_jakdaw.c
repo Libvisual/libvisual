@@ -152,7 +152,6 @@ int act_jakdaw_events (VisActorPlugin *plugin, VisEventQueue *events)
 
 				visual_log (VISUAL_LOG_DEBUG, "Param changed: %s\n", param->name);
 
-				/* FIXME We need a nicer API for doing this in the library */
 				if (visual_param_entry_is (param, "zoom mode")) {
 					visual_log (VISUAL_LOG_DEBUG, "New value for the zoom mode param: %d\n",
 							param->data.integer);

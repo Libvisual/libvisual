@@ -8,6 +8,8 @@
 
 #include "actor_gdkpixbuf.h"
 
+static int gdk_been_initialized = FALSE;
+
 static int load_new_file (PixbufPrivate *priv, const char *filename);
 static int update_scaled_pixbuf (PixbufPrivate *priv);
 static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src);
@@ -64,8 +66,12 @@ int act_gdkpixbuf_init (VisActorPlugin *plugin)
 	VisParamEntry *param;
 
 	/* Initialize gdk, needed for GdkPixbuf */
-	gdk_parse_args (NULL, NULL);
-
+	if (gdk_been_initialized == FALSE) {
+		gdk_parse_args (NULL, NULL);
+	
+		gdk_been_initialized = TRUE;
+	}
+	
 	/* Initialize our plugin parameters */
 	priv->set_scaled =	TRUE;
 	priv->aspect =		FALSE;
