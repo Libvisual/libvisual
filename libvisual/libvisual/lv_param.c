@@ -65,7 +65,7 @@ int visual_param_container_destroy (VisParamContainer *paramcontainer)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_param_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue)
+int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue)
 {
 	visual_log_return_val_if_fail (paramcontainer != NULL, -1);
 
@@ -81,7 +81,7 @@ int visual_param_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueu
  * 
  * @return Pointer to the VisEventQueue possibly NULL, NULL on error.
  */
-VisEventQueue *visual_param_get_eventqueue (VisParamContainer *paramcontainer)
+VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer)
 {
 	visual_log_return_val_if_fail (paramcontainer != NULL, NULL);
 

@@ -567,7 +567,7 @@ int visual_plugin_realize (VisPluginData *plugin)
 	plugin->realized = TRUE;
 
 	paramcontainer = visual_plugin_get_params (plugin);
-	visual_param_set_eventqueue (paramcontainer, &plugin->eventqueue);
+	visual_param_container_set_eventqueue (paramcontainer, &plugin->eventqueue);
 
 	return 0;
 }

@@ -1,5 +1,12 @@
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* src/lv_param.*: Fixed namespaces for the get_eventqueue,
+	set_eventqueue methods on the visual_param_container 'class'.
+
+	* src/lv_plugin.c: Adapt to changes in VisParam
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
 	 * src/lv_ui.c, src/lv_ui.h: Renamed VisUIText to VisUIEntry,
 	 same story.
 

@@ -58,8 +58,8 @@ struct _VisParamEntry {
 /* prototypes */
 VisParamContainer *visual_param_container_new (void);
 int visual_param_container_destroy (VisParamContainer *paramcontainer);
-int visual_param_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue);
-VisEventQueue *visual_param_get_eventqueue (VisParamContainer *paramcontainer);
+int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue);
+VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer);
 
 int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param);
 int visual_param_container_remove (VisParamContainer *paramcontainer, char *name);
