@@ -24,7 +24,7 @@ void _oink_gfx_palette_save_old (OinksiePrivate *priv)
 	 * this protects us from more event handles per screen draw
 	 */
 	if (priv->pal_data.pal_new == 1 && priv->pal_data.fade_stepsdone == priv->pal_data.fade_steps)
-		memcpy (&priv->pal_old, &priv->pal_cur, sizeof (VisPalette));
+		visual_palette_copy (&priv->pal_old, &priv->pal_cur);
 	
 	priv->pal_data.fade_start = 1;
 }
@@ -39,13 +39,13 @@ void _oink_gfx_palette_transform (OinksiePrivate *priv)
 		
 		for (i = 0; i < 256; i++)
 		{
-			priv->pal_fades[i].r = (float) (priv->pal_cur.r[i] - priv->pal_old.r[i]) / (float) priv->pal_data.fade_steps;
-			priv->pal_fades[i].g = (float) (priv->pal_cur.g[i] - priv->pal_old.g[i]) / (float) priv->pal_data.fade_steps;
-			priv->pal_fades[i].b = (float) (priv->pal_cur.b[i] - priv->pal_old.b[i]) / (float) priv->pal_data.fade_steps;
+			priv->pal_fades[i].r = (float) (priv->pal_cur.colors[i].r - priv->pal_old.colors[i].r) / (float) priv->pal_data.fade_steps;
+			priv->pal_fades[i].g = (float) (priv->pal_cur.colors[i].g - priv->pal_old.colors[i].g) / (float) priv->pal_data.fade_steps;
+			priv->pal_fades[i].b = (float) (priv->pal_cur.colors[i].b - priv->pal_old.colors[i].b) / (float) priv->pal_data.fade_steps;
 
-			priv->pal_fades[i].r_cur = priv->pal_old.r[i];
-			priv->pal_fades[i].g_cur = priv->pal_old.g[i];
-			priv->pal_fades[i].b_cur = priv->pal_old.b[i];
+			priv->pal_fades[i].r_cur = priv->pal_old.colors[i].r;
+			priv->pal_fades[i].g_cur = priv->pal_old.colors[i].g;
+			priv->pal_fades[i].b_cur = priv->pal_old.colors[i].b;
 		}
 	
 		priv->pal_data.fade_start = 0;
@@ -57,16 +57,16 @@ void _oink_gfx_palette_transform (OinksiePrivate *priv)
 		priv->pal_fades[i].g_cur += priv->pal_fades[i].g;
 		priv->pal_fades[i].b_cur += priv->pal_fades[i].b;
 	
-		priv->pal_old.r[i] = priv->pal_fades[i].r_cur;
-		priv->pal_old.g[i] = priv->pal_fades[i].g_cur;
-		priv->pal_old.b[i] = priv->pal_fades[i].b_cur;
+		priv->pal_old.colors[i].r = priv->pal_fades[i].r_cur;
+		priv->pal_old.colors[i].g = priv->pal_fades[i].g_cur;
+		priv->pal_old.colors[i].b = priv->pal_fades[i].b_cur;
 	}
 
 	priv->pal_data.fade_stepsdone++;
 
 	if (priv->pal_data.fade_stepsdone >= priv->pal_data.fade_poststeps)
 	{
-		memcpy (&priv->pal_cur, &priv->pal_old, sizeof (VisPalette));
+		visual_palette_copy (&priv->pal_cur, &priv->pal_old);
 
 		priv->pal_data.pal_new = 0;
 		priv->pal_data.fade_start = 1;
@@ -111,9 +111,9 @@ void _oink_gfx_palette_build (OinksiePrivate *priv, uint8_t funky)
 
 void _oink_gfx_palette_color (OinksiePrivate *priv, int color, int red, int green, int blue)
 {
-	priv->pal_cur.r[color] = red << 2;
-	priv->pal_cur.g[color] = green << 2;
-	priv->pal_cur.b[color] = blue << 2;
+	priv->pal_cur.colors[color].r = red << 2;
+	priv->pal_cur.colors[color].g = green << 2;
+	priv->pal_cur.colors[color].b = blue << 2;
 } 
 
 uint8_t _oink_gfx_palette_gradient_gen (OinksiePrivate *priv, uint8_t i, int mode)
@@ -171,9 +171,9 @@ void _oink_gfx_palette_build_gradient (OinksiePrivate *priv, uint8_t funky)
 	
 	for( i = 0; i <= 255; i++)
 	{
-		priv->pal_cur.r[i] = _oink_gfx_palette_gradient_gen (priv, i, j);
-		priv->pal_cur.g[i] = _oink_gfx_palette_gradient_gen (priv, i, k);
-		priv->pal_cur.b[i] = _oink_gfx_palette_gradient_gen (priv, i, l);
+		priv->pal_cur.colors[i].r = _oink_gfx_palette_gradient_gen (priv, i, j);
+		priv->pal_cur.colors[i].g = _oink_gfx_palette_gradient_gen (priv, i, k);
+		priv->pal_cur.colors[i].b = _oink_gfx_palette_gradient_gen (priv, i, l);
 	}
 }
 

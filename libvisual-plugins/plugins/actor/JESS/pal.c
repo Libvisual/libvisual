@@ -54,9 +54,9 @@ again_mister:
 		goto again_mister;
 
 	for (i = 0; i < 256; i++){
-		priv->jess_pal.r[i] = courbes_palette(priv, i, j);
-		priv->jess_pal.g[i] = courbes_palette(priv, i, k);
-		priv->jess_pal.b[i] = courbes_palette(priv, i, l);
+		priv->jess_pal.colors[i].r = courbes_palette(priv, i, j);
+		priv->jess_pal.colors[i].g = courbes_palette(priv, i, k);
+		priv->jess_pal.colors[i].b = courbes_palette(priv, i, l);
 	}
 }
 

@@ -72,6 +72,21 @@ if test x$libgoom = xyes; then
   build_actor="goom2 $build_actor"
 fi
 
+#FIXME We actually don't want to depend on gtk here..... 
+PKG_CHECK_MODULES(GDKPIXBUF, gdk-2.0 >= 2.0, [gdkpixbuf="yes"], [gdkpixbuf="no"])
+if test x$gdkpixbuf = xno; then
+	AC_MSG_WARN([
+*** GdkPixbuf >= 2.0 is not found, the libvisual gdkpixbuf image loader plugin
+*** won't be build. GdkPixbuf is included within gtk-2.0 and newer, which can be
+*** downloaded at http://www.gtk.org/
+	])
+fi
+AC_SUBST(GDKPIXBUF_LIBS)
+AC_SUBST(GDKPIXBUF_CFLAGS)
+if test x$gdkpixbuf = xyes; then
+  build_actor="$build_actor gdkpixbuf"
+fi
+  
 # Checks for header files.
 AC_HEADER_TIME
 AC_CHECK_HEADERS([fcntl.h unistd.h])
@@ -172,6 +187,58 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([jakdaw],
+            AC_HELP_STRING([--disable-jakdaw],
+                           [Do not build Jakdaw plugin @<:@default=enabled@:>@]),
+	    [jakdaw=$enableval],
+	    [jakdaw=yes])
+AC_MSG_CHECKING([wheter to build Jakdaw plugin])
+if test x$jakdaw = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor jakdaw"
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([xpyre],
+            AC_HELP_STRING([--disable-xpyre],
+                           [Do not build Xpyre plugin @<:@default=enabled@:>@]),
+	    [xpyre=$enableval],
+	    [xpyre=yes])
+AC_MSG_CHECKING([wheter to build Jakdaw plugin])
+if test x$xpyre = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor"
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([plazma],
+            AC_HELP_STRING([--disable-plazma],
+                           [Do not build plazma plugin @<:@default=enabled@:>@]),
+	    [plazma=$enableval],
+	    [plazma=yes])
+AC_MSG_CHECKING([wheter to build plazma plugin])
+if test x$plazma = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor plazma"
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([bumpscope],
+            AC_HELP_STRING([--disable-bumpscope],
+                           [Do not build bumpscope plugin @<:@default=enabled@:>@]),
+	    [bumpscope=$enableval],
+	    [bumpscope=yes])
+AC_MSG_CHECKING([wheter to build bumpscope plugin])
+if test x$bumpscope = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor bumpscope"
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([debug],
             AC_HELP_STRING([--enable-debug],
                            [Enable debug @<:@default=disabled@:>@]),
@@ -212,9 +279,14 @@ AC_CONFIG_FILES([
 	plugins/actor/madspin/Makefile
 	plugins/actor/dna/Makefile
 	plugins/actor/oinksie/Makefile
+	plugins/actor/jakdaw/Makefile
+	plugins/actor/xpyre/Makefile
+	plugins/actor/plazma/Makefile
+	plugins/actor/bumpscope/Makefile
 	plugins/actor/infinite/Makefile
 	plugins/actor/JESS/Makefile
 	plugins/actor/goom2/Makefile
+	plugins/actor/gdkpixbuf/Makefile
 	plugins/input/Makefile
 	plugins/input/esd/Makefile
 	plugins/input/alsa/Makefile
@@ -239,6 +311,7 @@ libgoom2:                             : ${libgoom}
 libesd:                               : ${libesd}
 alsa:                                 : ${alsa_found}
 opengl:                               : ${opengl}
+gdkpixbuf:                            : ${gdkpixbuf}
 
 Plugins being build:
 input:                                : ${BUILD_INPUT}

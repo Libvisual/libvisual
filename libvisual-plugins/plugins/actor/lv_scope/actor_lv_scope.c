@@ -57,12 +57,18 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int lv_scope_init (VisActorPlugin *plugin)
 {
+	ScopePrivate *priv = plugin->priv;
+
+	visual_palette_allocate_colors (&priv->pal, 256);
+
 	return 0;
 }
 
 int lv_scope_cleanup (VisActorPlugin *plugin)
 {
 	ScopePrivate *priv = plugin->priv;
+
+	visual_palette_free_colors (&priv->pal);
 
 	free (priv);
 
@@ -125,9 +131,9 @@ VisPalette *lv_scope_palette (VisActorPlugin *plugin)
 	int i;
 	
 	for (i = 0; i < 256; i++) {
-		priv->pal.r[i] = i;
-		priv->pal.g[i] = i;
-		priv->pal.b[i] = i;
+		priv->pal.colors[i].r = i;
+		priv->pal.colors[i].g = i;
+		priv->pal.colors[i].b = i;
 	}
 
 	return &priv->pal;

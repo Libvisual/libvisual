@@ -13,9 +13,6 @@
 
 typedef struct {
 	PluginInfo	*goominfo; /* The goom internal private struct */
-
-	char		*prevname;
-	int		 name_changed;
 } GoomPrivate;
 
 int lv_goom_init (VisActorPlugin *plugin);
@@ -52,8 +49,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 	goom->depth = VISUAL_VIDEO_DEPTH_32BIT;
 
-	priv = malloc (sizeof (GoomPrivate));
-	memset (priv, 0, sizeof (GoomPrivate));
+	priv = visual_mem_malloc0 (sizeof (GoomPrivate));
 
 	goom->priv = priv;
 
@@ -79,10 +75,7 @@ int lv_goom_cleanup (VisActorPlugin *plugin)
 	if (priv->goominfo != NULL)
 		goom_close (priv->goominfo);
 
-	if (priv->prevname != NULL)
-		free (priv->prevname);
-
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }
@@ -163,23 +156,27 @@ int lv_goom_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
 	GoomPrivate *priv = plugin->priv;
 	VisSongInfo *songinfo = plugin->songinfo;
+	VisParamContainer *paramcontainer;
+	VisParamEntry *param;
 	short pcmdata[2][512];
 	uint32_t *buf;
-	int i;
+	int showinfo = TRUE;
 
-	for (i = 0; i < 512; i++) {
-		pcmdata[0][i] = audio->pcm[0][i];
-		pcmdata[1][i] = audio->pcm[1][i];
-	}
+	memcpy (pcmdata, audio->pcm, sizeof (short) * 512 * 2);
 
-	/* FIXME add a prop to disable songinfo display, make that a global prop */
+	/* Check the global parameter for showing songinfo in plugins */
+	paramcontainer = visual_get_params ();
+	param = visual_param_container_get (paramcontainer, "songinfo in plugin");
+	if (param != NULL)
+		showinfo = visual_param_entry_get_integer (param);
+	
 	/* FIXME goom should support setting a pointer, so we don't need that final memcpy */
-	if (songinfo != NULL && visual_songinfo_age (songinfo) <= 1) {
-		if (songinfo->type == VISUAL_SONGINFO_TYPE_SIMPLE) {
+	if (songinfo != NULL && visual_songinfo_age (songinfo) <= 1 && showinfo == TRUE) {
+		if (songinfo->type == VISUAL_SONGINFO_TYPE_SIMPLE)
 			buf = goom_update (priv->goominfo, pcmdata, 0, 0, songinfo->songname, NULL);
-		} else if (songinfo->type == VISUAL_SONGINFO_TYPE_ADVANCED) {
+		else if (songinfo->type == VISUAL_SONGINFO_TYPE_ADVANCED)
 			buf = goom_update (priv->goominfo, pcmdata, 0, 0, songinfo->song, NULL);
-		} else
+		else
 			buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 	}
 	else

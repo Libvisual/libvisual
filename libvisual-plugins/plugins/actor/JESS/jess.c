@@ -133,6 +133,8 @@ int act_jess_init (VisActorPlugin *plugin)
 	priv->lys.E_moyen = 0;
 	priv->lys.dEdt_moyen = 0;
 
+	visual_palette_allocate_colors (&priv->jess_pal, 256);
+
 	start_ticks (priv);
 	return 0;
 }
@@ -165,6 +167,8 @@ int act_jess_cleanup (VisActorPlugin *plugin)
 	free (priv->table3);
 	free (priv->table4);
 	free (priv->buffer);
+
+	visual_palette_free_colors (&priv->jess_pal);
 
 	free (priv);
 	

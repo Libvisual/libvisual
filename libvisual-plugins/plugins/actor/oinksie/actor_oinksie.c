@@ -69,7 +69,13 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 int act_oinksie_init (VisActorPlugin *plugin)
 {
 	OinksiePrivContainer *priv = plugin->priv;
-	
+
+	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
+	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);
+
+	visual_palette_allocate_colors (&priv->priv2.pal_cur, 256);
+	visual_palette_allocate_colors (&priv->priv2.pal_old, 256);
+
 	oinksie_init (&priv->priv1, 64, 64);
 	oinksie_init (&priv->priv2, 64, 64);
 	
@@ -90,6 +96,12 @@ int act_oinksie_cleanup (VisActorPlugin *plugin)
 		free (priv->tbuf1);
 		free (priv->tbuf2);
 	}
+
+	visual_palette_free_colors (&priv->priv1.pal_cur);
+	visual_palette_free_colors (&priv->priv1.pal_old);
+
+	visual_palette_free_colors (&priv->priv2.pal_cur);
+	visual_palette_free_colors (&priv->priv2.pal_old);
 
 	free (priv);
 

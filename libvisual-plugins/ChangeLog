@@ -1,3 +1,20 @@
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* TODO: Updates.
+
+	* plugins/actor/bumpscope/*: Added, not finished yet.
+
+	* plugins/actor/gdkpixbuf/*: Added, quite ready, some things todo. (A
+	gdkpixbuf image loader).
+
+	* plugins/actor/jakdaw/*: Ported the xmms jakdaw plugin!
+
+	* plugins/actor/plazma/*: Ported the xmms plazma plugin!
+
+	* plugins/actor/xpyre/*: Start port of the xmms Xpyre plugin, not finished.
+
+	* plugins/*: Small cleanups all around.
+
 2004-07-23  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*: Renamed private to priv everywhere to adopt to 

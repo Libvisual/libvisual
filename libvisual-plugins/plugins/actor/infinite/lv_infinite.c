@@ -61,6 +61,8 @@ int act_infinite_init (VisActorPlugin *plugin)
 	priv->plugwidth = 32;
 	priv->plugheight = 32;
 
+	visual_palette_allocate_colors (&priv->pal, 256);
+
 	_inf_init_renderer (priv);
 
 	return 0;
@@ -75,6 +77,8 @@ int act_infinite_cleanup (VisActorPlugin *plugin)
 	priv = plugin->priv;
 
 	_inf_close_renderer (priv);
+
+	visual_palette_free_colors (&priv->pal);
 
 	free (priv);
 

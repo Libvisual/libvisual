@@ -111,7 +111,7 @@ typedef struct {
 
 typedef struct {
 	/* Major vars */
-	uint8_t		*drawbuf;
+	uint8_t			*drawbuf;
 	short			 pcmdata[2][512];
 
 	/* Palette vars */
