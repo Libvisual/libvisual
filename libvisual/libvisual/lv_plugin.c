@@ -113,7 +113,7 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 /**
  * Pumps the queued events into the plugin it's event handler if it has one.
  *
- * @param plugin Pointer to a LVPlugin of which the events need to be pumped into
+ * @param plugin Pointer to a VisPluginData of which the events need to be pumped into
  *	the handler.
  *
  * @return 0 on succes -1 on error.
@@ -132,12 +132,12 @@ int visual_plugin_events_pump (VisPluginData *plugin)
 }
 
 /**
- * Gives the event queue from a LVPlugin. This queue needs to be used
+ * Gives the event queue from a VisPluginData. This queue needs to be used
  * when you want to send events to the plugin.
  *
  * @see visual_plugin_events_pump
  *
- * @param plugin Pointer to the LVPlugin from which we want the queue.
+ * @param plugin Pointer to the VisPluginData from which we want the queue.
  *
  * @return A pointer to the requested VisEventQueue or NULL on error.
  */
@@ -149,11 +149,11 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
 }
 
 /**
- * Gives the VisPluginInfo related to a LVPlugin.
+ * Gives the VisPluginInfo related to a VisPluginData.
  *
- * @param plugin The LVPlugin of which the VisPluginInfo is requested.
+ * @param plugin The VisPluginData of which the VisPluginInfo is requested.
  *
- * @return The VisPluginInfo within the LVPlugin, or NULL on error.
+ * @return The VisPluginInfo within the VisPluginData, or NULL on error.
  */
 const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
 {
@@ -163,11 +163,11 @@ const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
 }
 
 /**
- * Gives the VisParamContainer related to a LVPlugin.
+ * Gives the VisParamContainer related to a VisPluginData.
  *
- * @param plugin The LVPlugin of which the VisParamContainer is requested.
+ * @param plugin The VisPluginData of which the VisParamContainer is requested.
  *
- * @return The VisParamContainer within the LVPlugin, or NULL on error.
+ * @return The VisParamContainer within the VisPluginData, or NULL on error.
  */
 VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
 {
@@ -317,9 +317,9 @@ int visual_plugin_morph_free (VisMorphPlugin *morphplugin)
 }
 
 /**
- * Creates a new LVPlugin structure.
+ * Creates a new VisPluginData structure.
  *
- * @return A newly allocated LVPlugin.
+ * @return A newly allocated VisPluginData.
  */
 VisPluginData *visual_plugin_new ()
 {
@@ -327,9 +327,9 @@ VisPluginData *visual_plugin_new ()
 }
 
 /**
- * Frees the LVPlugin. This frees the LVPlugin data structure.
+ * Frees the VisPluginData. This frees the VisPluginData data structure.
  *
- * @param plugin Pointer to the LVPlugin that needs to be freed.
+ * @param plugin Pointer to the VisPluginData that needs to be freed.
  *
  * @return 0 on succes -1 on error.
  */
@@ -505,9 +505,10 @@ static int plugin_add_dir_to_list (VisList *list, char *dir)
 }
 
 /**
- * Private function to unload a plugin.
+ * Private function to unload a plugin. After calling this function the
+ * given argument is no longer usable.
  *
- * @param plugin Pointer to the LVPlugin that needs to be unloaded.
+ * @param plugin Pointer to the VisPluginData that needs to be unloaded.
  *
  * @return 0 on succes -1 on error.
  */
@@ -521,6 +522,8 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 	/* Not loaded */
 	if (plugin->handle == NULL) {
+		visual_mem_free (plugin);
+
 		visual_log (VISUAL_LOG_CRITICAL, "Tried unloading a plugin that never has been loaded.");
 		return -1;
 	}
@@ -530,6 +533,8 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 	dlclose (plugin->handle);
 
+	visual_mem_free (plugin);
+	
 	visual_log_return_val_if_fail (ref != NULL, -1);
 	
 	if (ref->usecount > 0)
@@ -544,7 +549,7 @@ int visual_plugin_unload (VisPluginData *plugin)
  * @param ref Pointer to the VisPluginRef containing information about
  *	the plugin that needs to be loaded.
  *
- * @return A newly created and loaded LVPlugin.
+ * @return A newly created and loaded VisPluginData.
  */
 VisPluginData *visual_plugin_load (VisPluginRef *ref)
 {
@@ -599,7 +604,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 /**
  * Private function to realize the plugin. This initializes the plugin.
  *
- * @param plugin Pointer to the LVPlugin that needs to be realized.
+ * @param plugin Pointer to the VisPluginData that needs to be realized.
  * 
  * @return 0 on succes -1 on error.
  */

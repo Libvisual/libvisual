@@ -28,11 +28,11 @@ static VisInputPlugin *get_input_plugin (VisInput *input)
  */
 
 /**
- * Gives the encapsulated LVPlugin from a VisInput.
+ * Gives the encapsulated VisPluginData from a VisInput.
  *
- * @param input Pointer of a VisInput of which the LVPlugin needs to be returned.
+ * @param input Pointer of a VisInput of which the VisPluginData needs to be returned.
  *
- * @return LVPlugin that is encapsulated in the VisInput, possibly NULL.
+ * @return VisPluginData that is encapsulated in the VisInput, possibly NULL.
  */
 VisPluginData *visual_input_get_plugin (VisInput *input)
 {

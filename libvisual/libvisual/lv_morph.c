@@ -31,11 +31,11 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
  */
 
 /**
- * Gives the encapsulated LVPlugin from a VisMorph.
+ * Gives the encapsulated VisPluginData from a VisMorph.
  *
- * @param morph Pointer of a VisMorph of which the LVPlugin needs to be returned.
+ * @param morph Pointer of a VisMorph of which the VisPluginData needs to be returned.
  *
- * @return LVPlugin that is encapsulated in the VisMorph, possibly NULL.
+ * @return VisPluginData that is encapsulated in the VisMorph, possibly NULL.
  */
 VisPluginData *visual_morph_get_plugin (VisMorph *morph)
 {
