@@ -15,10 +15,15 @@ enum {
 	CPU_FLAGS_MMX	= 1 << 23,
 	CPU_FLAGS_SSE	= 1 << 25,
 	CPU_FLAGS_SSE2	= 1 << 26,
-	CPU_FLAGS_HT	= 1 << 28
+	CPU_FLAGS_HT	= 1 << 28,
 };
 
 enum {
+	/* 
+	 * FIXME this is only true on AMD machines!
+	 * i.e. on Intel machines bit 30 says if this
+	 * is an IA64 or not.
+	 */
 	CPU_FLAGS_EXT_3DNOWEXT	= 1 << 30,
 	CPU_FLAGS_EXT_3DNOW	= 1 << 31
 };
@@ -29,6 +34,11 @@ uint32_t cpuid (uint32_t type)
 {
 	uint32_t flags;
 
+/* 
+ * FIXME See what to do if we are on a 386 or 486 machine,
+ * which doesn't have the 'cpuid' instruction.
+ */
+#ifdef VISUAL_ARCH_Ix86
 	__asm__ ("movl %1, %%eax \n"
 			"cpuid          \n"
 			"movl %%edx, %0 \n"
@@ -36,6 +46,9 @@ uint32_t cpuid (uint32_t type)
 			:"m" (type)
 			:"%eax"
 		);
+#else
+	flags = 0;
+#endif
 
 	return flags;
 }

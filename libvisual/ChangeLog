@@ -1,3 +1,9 @@
+2004-11-09  Duilio Protti <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_cpu.c (cpuid): use cpuid instruction only
+	if we are on an Intel machine (486 or 386 checking need to
+	be done).
+
 2004-11-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/*: Mostly doc work, and some small cleanups.
