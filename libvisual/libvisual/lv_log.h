@@ -26,7 +26,7 @@ typedef enum {
 	VISUAL_LOG_CRITICAL,	/**< Critical message, when a critical situation happens.
 				 * Like a NULL pointer passed to a method. */
 	VISUAL_LOG_ERROR	/**< Error message, use to notify the user of fatals. 
-				 * After message showing, the program is aborted. */
+				 * After the message has been showed, the program is aborted. */
 } VisLogSeverity;
 
 /**

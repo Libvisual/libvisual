@@ -25,6 +25,7 @@
 #include <libvisual/lv_bmp.h>
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_random.h>
+#include <libvisual/lv_error.h>
 #include <libvisual/lv_common.h>
 
 #endif /* LV_LIBVISUAL_H */

@@ -7,6 +7,7 @@
 #include <signal.h>
 
 #include "lv_common.h"
+#include "lv_error.h"
 #include "lv_log.h"
 
 
@@ -203,9 +204,8 @@ void _lv_log (VisLogSeverity severity, const char *file,
 
 			if (verboseness >= VISUAL_LOG_VERBOSENESS_LOW)
 				message_handlers.error_handler (str, funcname, message_handlers.error_priv);
-			
-			raise (SIGTRAP);
-			exit (1);
+
+			visual_error_raise ();
 
 			break;
 	}
