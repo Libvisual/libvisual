@@ -160,19 +160,6 @@ else
   AC_MSG_RESULT([no])
 fi
 
-AC_ARG_ENABLE([videotest],
-            AC_HELP_STRING([--disable-videotest],
-                           [Do not build Video Test plugin @<:@default=enabled@:>@]),
-	    [videotest=$enableval],
-	    [videotest=yes])
-AC_MSG_CHECKING([wheter to build Video Test plugin])
-if test x$videotest = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor video_test"
-else
-  AC_MSG_RESULT([no])
-fi
-
 AC_ARG_ENABLE([debug],
             AC_HELP_STRING([--enable-debug],
                            [Enable debug @<:@default=disabled@:>@]),

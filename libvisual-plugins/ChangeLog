@@ -1,3 +1,8 @@
+2004-06-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Remove the videotest items, we don't
+	want to build this neither include it in the dist.
+
 2004-06-21  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: reorganized, more verbose. Some actor
