@@ -65,6 +65,14 @@ VisTime *visual_time_new ()
 int visual_time_get (VisTime *time_)
 {
 #if defined(VISUAL_OS_WIN32)
+	SYSTEMTIME systime;
+
+	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+
+	GetLocalTime (&systime);
+
+	visual_time_set (time_, (systime.wHour * 60 * 60) + (systime.wMinute * 60) + systime.mSeconds,
+			systime.mMilliseconds * 1000);
 
 #else
 	struct timeval tv;
@@ -152,6 +160,11 @@ int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
  */
 int visual_time_usleep (unsigned long microseconds)
 {
+#if defined(VISUAL_OS_WIN32)
+	Sleep (microseconds / 1000);
+
+	return VISUAL_OK;
+#else /* !VISAUL_OS_WIN32 */
 #ifdef HAVE_NANOSLEEP
 	struct timespec request, remaining;
 	request.tv_sec = microseconds / VISUAL_USEC_PER_SEC;
@@ -170,6 +183,7 @@ int visual_time_usleep (unsigned long microseconds)
 	return -VISUAL_ERROR_TIME_NO_USLEEP;
 #endif
 	return VISUAL_OK;
+#endif /* !VISUAL_OS_WIN32 */
 }
 
 /**
