@@ -1,3 +1,7 @@
+2005-01-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona/*: Added copyright headers.
+
 2005-01-19  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: G-Force fixes.
