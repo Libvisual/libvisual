@@ -1,3 +1,19 @@
+2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.* (visual_plugin_get_random_context):
+	Added function to obtain the VisRandomContext for this plugin.
+
+	(visual_plugin_actor_new, visual_plugin_actor_free, 
+	visual_plugin_input_new, visual_plugin_input_free,
+	visual_plugin_morph_new, visual_plugin_morph_free):
+	Removed unused and deprecated functions. Plugin 
+	specific data should never be allocated.
+
+	Added VisRandomContext to the VisPluginData structure.
+
+	* libvisual/lv_random.*: Implemented more, and added the 
+	VisRandomContext related functions.
+	
 2004-10-02  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* libvisual/lv_log.*: Added visual_log_set_all_messages_handler().

@@ -8,6 +8,7 @@
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param.h>
+#include <libvisual/lv_random.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -116,6 +117,10 @@ struct _VisPluginData {
 	VisSongInfo		*songinfo;	/**< Pointer to VisSongInfo that contains information about the current playing song.
 						  * This can be NULL. */
 
+	VisRandomContext	 random;	/**< Pointer to the plugin it's private random context. It's highly adviced to use
+						  * the plugin it's randomize functions. The reason is so more advanced apps can
+						  * semi reproduce visuals. */
+
 	int			 realized;	/**< Flag that indicates if the plugin is realized. */
 	void			*handle;	/**< The dlopen handle */
 	
@@ -181,20 +186,14 @@ int visual_plugin_events_pump (VisPluginData *plugin);
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
 
 const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
+
 VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
+
+VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin);
 
 VisPluginRef *visual_plugin_ref_new (void);
 int visual_plugin_ref_free (VisPluginRef *ref);
 int visual_plugin_ref_list_destroy (VisList *list);
-
-VisActorPlugin *visual_plugin_actor_new (void);
-int visual_plugin_actor_free (VisActorPlugin *actorplugin);
-
-VisInputPlugin *visual_plugin_input_new (void);
-int visual_plugin_input_free (VisInputPlugin *inputplugin);
-
-VisMorphPlugin *visual_plugin_morph_new (void);
-int visual_plugin_morph_free (VisMorphPlugin *morphplugin);
 
 VisPluginData *visual_plugin_new (void);
 int visual_plugin_free (VisPluginData *plugin);

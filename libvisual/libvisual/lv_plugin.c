@@ -177,6 +177,20 @@ VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
 }
 
 /**
+ * Gives the VisRandomContext related to a VisPluginData.
+ *
+ * @param plugin The VisPluginData of which the VisRandomContext is requested.
+ *
+ * @return The VisRandomContext within the VisPluginDAta, or NULL on error.
+ */
+VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
+{
+	visual_log_return_val_if_fail (plugin != NULL, NULL);
+
+	return &plugin->random;
+}
+
+/**
  * Creates a new VisPluginRef structure.
  *
  * The VisPluginRef contains data for the plugin loader.
@@ -230,90 +244,6 @@ int visual_plugin_ref_list_destroy (VisList *list)
 	list = NULL;
 
 	return ((ret1 == 0) ? 0 : -1);
-}
-
-/**
- * Creates a new VisActorPlugin structure.
- *
- * @return A newly allocated VisActorPlugin.
- */
-VisActorPlugin *visual_plugin_actor_new ()
-{
-	return (visual_mem_new0 (VisActorPlugin, 1));
-}
-
-/**
- * Frees the VisActorPlugin. This frees the VisActorPlugin data structure.
- *
- * @param actorplugin Pointer to the VisActorPlugin that needs to be freed.
- *
- * @return 0 on succes -1 on error.
- */
-int visual_plugin_actor_free (VisActorPlugin *actorplugin)
-{
-	visual_log_return_val_if_fail (actorplugin != NULL, -1);
-
-	visual_mem_free (actorplugin);
-
-	actorplugin = NULL;
-
-	return 0;
-}
-
-/**
- * Creates a new VisInputPlugin structure.
- *
- * @return A newly allocated VisInputPlugin.
- */
-VisInputPlugin *visual_plugin_input_new ()
-{
-	return (visual_mem_new0 (VisInputPlugin, 1));
-}
-
-/**
- * Frees the VisInputPlugin. This frees the VisInputPlugin data structure.
- *
- * @param inputplugin Pointer to the VisInputPlugin that needs to be freed.
- *
- * @return 0 on succes -1 on error.
- */
-int visual_plugin_input_free (VisInputPlugin *inputplugin)
-{
-	visual_log_return_val_if_fail (inputplugin != NULL, -1);
-
-	visual_mem_free (inputplugin);
-
-	inputplugin = NULL;
-	
-	return 0;
-}
-
-/**
- * Creates a new VisMorphPlugin structure.
- *
- * @return A newly allocated VisMorphPlugin.
- */
-VisMorphPlugin *visual_plugin_morph_new ()
-{
-	return (visual_mem_new0 (VisMorphPlugin, 1));
-}
-
-/**
- * Frees the VisMorphPlugin. This frees the VisMorphPlugin data structure.
- *
- * @param morphplugin Pointer to the VisMorphPlugin that needs to be freed.
- *
- * @return 0 on succes -1 on error.
- */
-int visual_plugin_morph_free (VisMorphPlugin *morphplugin)
-{
-	visual_log_return_val_if_fail (morphplugin != NULL, -1);
-
-	visual_mem_free (morphplugin);
-
-	morphplugin = NULL;
-
-	return 0;
 }
 
 /**
