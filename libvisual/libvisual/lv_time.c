@@ -267,10 +267,10 @@ int visual_timer_continue (VisTimer *timer)
 }
 
 /**
- * Retrieve the amount of time past since the timer started.
+ * Retrieve the amount of time passed since the timer has started.
  *
- * @param timer Pointer to the VisTimer from which we want to know the amount of time past.
- * @param time_ Pointer to the VisTime in which we put the amount of time past.
+ * @param timer Pointer to the VisTimer from which we want to know the amount of time passed.
+ * @param time_ Pointer to the VisTime in which we put the amount of time passed.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
  */
@@ -293,14 +293,33 @@ int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
 }
 
 /**
- * Checks if the timer has past a certain age.
+ * Returns the amount of milliseconds passed since the timer has started.
+ * Be aware to not confuse milliseconds with microseconds.
+ *
+ * @param timer Pointer to the VisTimer from which we want to know the amount of milliseconds passed since activation.
+ *
+ * @return The amount of milliseconds passed, or -1 on error, this function is not clockscrew safe.
+ */
+int visual_timer_elapsed_msecs (VisTimer *timer)
+{
+	VisTime cur;
+
+	visual_log_return_val_if_fail (timer != NULL, -1);
+
+	visual_timer_elapsed (timer, &cur);
+
+	return (cur.tv_sec * 1000) + (cur.tv_usec / 1000);
+}
+
+/**
+ * Checks if the timer has passed a certain age.
  *
  * @param timer Pointer to the VisTimer which we check for age.
  * @param time_ Pointer to the VisTime containing the age we check against.
  *
  * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
  */
-int visual_timer_has_past (VisTimer *timer, VisTime *time_)
+int visual_timer_has_passed (VisTimer *timer, VisTime *time_)
 {
 	VisTime elapsed;
 
@@ -318,7 +337,7 @@ int visual_timer_has_past (VisTimer *timer, VisTime *time_)
 }
 
 /**
- * Checks if the timer has past a certain age by values.
+ * Checks if the timer has passed a certain age by values.
  *
  * @param timer Pointer to the VisTimer which we check for age.
  * @param sec The number of seconds we check against.
@@ -326,15 +345,15 @@ int visual_timer_has_past (VisTimer *timer, VisTime *time_)
  *
  * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL on failure.
  */
-int visual_timer_has_past_by_values (VisTimer *timer, long sec, long usec)
+int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec)
 {
-	VisTime past;
+	VisTime passed;
 
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
-	visual_time_set (&past, sec, usec);
+	visual_time_set (&passed, sec, usec);
 
-	return visual_timer_has_past (timer, &past);
+	return visual_timer_has_passed (timer, &passed);
 }
 
 /**

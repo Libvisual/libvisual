@@ -73,8 +73,9 @@ int visual_timer_start (VisTimer *timer);
 int visual_timer_stop (VisTimer *timer);
 int visual_timer_continue (VisTimer *timer);
 int visual_timer_elapsed (VisTimer *timer, VisTime *time_);
-int visual_timer_has_past (VisTimer *timer, VisTime *time_);
-int visual_timer_has_past_by_values (VisTimer *timer, long sec, long usec);
+int visual_timer_elapsed_msecs (VisTimer *timer);
+int visual_timer_has_passed (VisTimer *timer, VisTime *time_);
+int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
 
 #ifdef __cplusplus
 }
