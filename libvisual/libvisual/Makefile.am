@@ -8,7 +8,8 @@ library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_video.h lv_libvisual.h lv_songinfo.h \
 			  lv_morph.h lv_bmp.h lv_param.h lv_mem.h \
 			  lv_endianess.h lv_cpu.h lv_color.h \
-			  lv_time.h lv_random.h lv_error.h lv_ui.h
+			  lv_time.h lv_random.h lv_error.h lv_ui.h \
+			  lv_types.h
 
 lib_LTLIBRARIES = libvisual.la
 

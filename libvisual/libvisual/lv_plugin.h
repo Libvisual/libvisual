@@ -10,10 +10,15 @@
 #include <libvisual/lv_param.h>
 #include <libvisual/lv_ui.h>
 #include <libvisual/lv_random.h>
+#include <libvisual/lv_types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+#define VISUAL_PLUGIN_ACTOR(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_ACTOR, VisActorPlugin))
+#define VISUAL_PLUGIN_INPUT(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_INPUT, VisInputPlugin))
+#define VISUAL_PLUGIN_MORPH(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_MORPH, VisMorphPlugin))
 
 /**
  * Indicates at which version the plugin API is.
@@ -332,6 +337,8 @@ VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
 
 VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin);
 
+void *visual_plugin_get_specific (VisPluginData *plugin);
+
 VisPluginRef *visual_plugin_ref_new (void);
 int visual_plugin_ref_free (VisPluginRef *ref);
 int visual_plugin_ref_list_destroy (VisList *list);
@@ -355,6 +362,8 @@ VisList *visual_plugin_get_list (const char **paths);
 VisPluginRef *visual_plugin_find (const VisList *list, const char *name);
 
 int visual_plugin_get_api_version (void);
+
+VisSongInfo *visual_plugin_actor_get_songinfo (VisActorPlugin *actplugin);
 
 #ifdef __cplusplus
 }

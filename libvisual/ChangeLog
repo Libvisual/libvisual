@@ -1,3 +1,23 @@
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_types.h: Added new file, that contains common types, and type
+	helper macros.
+
+	* libvisual/lv_plugin.* (visual_plugin_get_specific):
+	Added function that gives a void * to the plugin specific part of a
+	plugin.
+
+	(visual_plugin_actor_get_songinfo): Added function that gets the
+	songinfo from an actor plugin.
+
+	(VISUAL_PLUGIN_ACTOR, VISUAL_PLUGIN_INPUT, VISUAL_PLUGIN_MACROS):
+	Added these casting macros. Keep in mind that these are for casting
+	over the void * retrieved by the visual_plugin_get_specific function.
+
+	NOT complete VisPluginData structures.
+
+	* libvisual/lv_ui.h: Adapted to lv_types.h
+
 2004-11-04  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* ChangeLog: Renamed src to libvisual, I must be psychotic or

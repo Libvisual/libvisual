@@ -1,15 +1,10 @@
 #ifndef _LV_COMMON_H
 #define _LV_COMMON_H
 
-#include <sys/types.h>
-
 #include <libvisual/lv_mem.h>
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_error.h>
-
-#define uint8_t		u_int8_t
-#define uint16_t	u_int16_t
-#define uint32_t	u_int32_t
+#include <libvisual/lv_types.h>
 
 #ifdef __cplusplus
 extern "C" {
