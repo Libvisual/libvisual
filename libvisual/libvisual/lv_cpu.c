@@ -181,7 +181,7 @@ static void check_os_altivec_support( void )
  */
 static void check_os_katmai_support( void )
 {
-	printf ("omg\n");
+//	printf ("omg\n");
 #if defined(VISUAL_ARCH_X86)
 #if defined(VISUAL_OS_FREEBSD)
 	int has_sse=0, ret;
@@ -224,8 +224,8 @@ static void check_os_katmai_support( void )
 		SetUnhandledExceptionFilter(exc_fil);
 	}
 #elif defined(VISUAL_OS_LINUX)
-	printf ("omg1\n");
-	printf ("omg2\n");
+//	printf ("omg1\n");
+//	printf ("omg2\n");
 	struct sigaction saved_sigill;
 	struct sigaction saved_sigfpe;
 
@@ -270,15 +270,15 @@ static void check_os_katmai_support( void )
 	sigaction( SIGFPE, &saved_sigfpe, NULL );
 
 #else
-	printf ("hier dan3\n");
+//	printf ("hier dan3\n");
 	/* We can't use POSIX signal handling to test the availability of
 	 * SSE, so we disable it by default.
 	 */
 	_lv_cpu_caps.hasSSE=0;
 #endif /* __linux__ */
-	printf ("hier dan\n");
+//	printf ("hier dan\n");
 #endif
-	printf ("hier dan ha\n");
+//	printf ("hier dan ha\n");
 }
 
 
