@@ -3,9 +3,6 @@
 
 #include <libvisual/libvisual.h>
 
-#define FALSE 0
-#define TRUE 1
-
 #define NB_PALETTES 5
 
 struct infinite_col {
