@@ -1,0 +1,11 @@
+name="Mystery Unveiled - Jellyfish",
+A0="rnd( 1 )",
+
+H="a0",
+
+// Make the 14th shade from black into white
+// sqwv( 10 * ( i * 255 - 14 ) ) equals 1 when i == 14/255 and 0 otherwise
+S="(1-i)^.7 - sqwv( 10 * ( i * 255 - 14 ) )",
+V="i^.7     + sqwv( 10 * ( i * 255 - 14 ) )",
+
+Vers=100

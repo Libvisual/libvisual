@@ -1,0 +1,67 @@
+All my todo files are scrapbook style.
+
+If someone wants to help, or maintain this plugin please mail the
+libvisual mailing list regarding it. I enjoy working on plugins,
+looking through the code of others and learn from it. But at the moment
+I rather put time into making libvisual rock.
+
+The G-Force plugin is kinda a huge codebase, but I personally think
+it's a very nice code base to work with. The original G-Force author
+has done a great job without doubt.
+
+
+------------------------
+Cleanup all the headers, to avoid warnings.
+Use libvisual it's random context system.
+Fix font drawing (actually it's right but we can't overlay because we try to get rid of the double 8 bit copy...
+Remove font system in favor for the libvisual font system when it's done.
+Fix reentrancy (mostly done) (Make EgOSUtils reentrant, private in GF)
+Get rid of needless copies in 8bpp.
+Remove other cruft
+Cleanup source tree majorly so it's release ready!
+Resize in a libvisual plug -> plug morph causes a crash. (infinite -> G-Force only, the current bin so sucks :(( )
+Set mouse pointer x,y and do other mouse events for G-Force VM access.
+
+Check if there are dict entries in the scripts that are not in the engine (like the fft problem):
+	other vars that need implementation:
+	BASS
+
+Change the prefs backend so it will use the libvisual setting system (when it's done).
+
+Use the libvisual param interface for the gforce params.
+
+
+Long term, and help needed with this:
+	Determine the differences between this version and 2.0 versions of G-Force.
+	Try to support features of newer versions of G-Force.
+
+	Extra (togglable through params ofcourse):
+	Palette brightning like goom on certain moments.
+	See if it's possible to interpolate between deltafield modes. (like goom...)
+	Have a special mode to disable the delta field so the waveshape, particles
+		can be used within other plugins.
+	
+	Maybe, someday, see if it's actually possible to support whitecap
+		wireframe presets.
+
+	Look if the deltafield execution can be mmx, ssenized.
+
+	Add 4d functions ala: http://www.geocities.com/projectgreenshift/4dgraphs.html. support
+		(greenswitch has this as well).
+
+	Add support for combining two deltafields into one, (like GForce GOLD)
+
+	Look into adding native 32 bits support in G-Force, this could be especially nice
+		with deltafield disabled and then drawing into goom using the libvisual
+		goom visualFX (to be made).
+
+
+Presets:
+	We'd love a whole bunch of extra presets!!!
+
+
+BUGS:
+	Sometimes stepping in presets gets screwed up and it will look unsmooth.
+
+	Arena and a new hope preset hangs, especially when the plugin has been outputting
+		frames slowly, due to waits in apps. Might also relate to the bug above

@@ -1,0 +1,42 @@
+name="Sparkling Table Water",
+/*
+
+Sparkling Table Water
+By Thomas Geier
+
+ziggystar@gmx.de
+
+
+*/
+
+NUM="15",
+
+Stps=15,
+
+
+Aspc=1,
+
+A0="t",			//should be clear
+A1="END_TIME-t",	//the same
+
+B0="sin((t-A0)/A1*3.14)*.4",	//Y
+B1="sin((t-A0)/A1*3.14*4)*.4",
+B2="B0-ID/NUM",	//Y
+
+B3="ID/NUM*6.28",
+
+B4="cos(B3)*B0",
+B5="sin(B3)*B0",
+
+X0="b4+cos(s*6.28+t*.5)*B1",
+Y0="b5+sin(s*6.28+t*.5)*B1",
+
+
+Pen="1",
+
+
+LWdt="B0*8+1",
+
+ConB=0,
+
+Vers=100

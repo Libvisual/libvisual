@@ -1,0 +1,13 @@
+name="Diamond",
+
+// Created by Caleb Mulford
+// Original code and inspiration by Brad Anderson (javalizard@mac.com) for G-Force
+// e-mail: cyno@netcom.com
+
+
+Aspc=1,
+
+srcX="x - .01 * r * tan(x+y)",
+srcY="y - .01 * r * tan(y-x)",
+
+Vers=100

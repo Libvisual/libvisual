@@ -1,0 +1,27 @@
+name="DT - Explode",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ Stps=42,
+ NUM="1",
+ LWdt="1+12*B1*(s^2)",
+ 
+   //B0=starttime, B1=time(=size, 12*... is to move it of screen when done)
+   //B2, B3, B4= use big sound to restart, B5=speed,, B6=0:restart (new B0&B5)
+ B0="B0*B6+t*(1-B6)",
+ B1="clip(t-B0)+12*clip(sgn(t-B0-1))",
+ B2="(abs(mag(0.1))+abs(mag(0.3))+abs(mag(0.5))+abs(mag(0.7)))^2",
+ B3="B4",
+ B4="B4*0.87+1*pos(B2)",
+ B5="B5*B6+(2+rnd(3))*(1-B6)",
+ B6="1-clip(sgn(B2/(B3)-0.6))*clip(sgn(t-B0-1))",
+ C0="PI * s^2",
+ C1="B5 * B1 * sin( C0 )",
+ C2="B5 * B1 * 0.11 * cos( C0 ) * ( 0.4 + .6 * clip( sgn(s^2-0.5) ) )",
+ 
+ X0="C1",
+ Y0="C2",
+ X1="-C1",
+ Y1="C2",
+ 
+ Vers=100
+ 

@@ -1,0 +1,31 @@
+name="Falling Orbs",
+
+
+Aspc=0,
+
+Stps="25",
+
+
+NUM="1",
+
+A0="t",   // Record start time
+
+A1=".3 + rnd( .6 )",  // The greater this is, the larger the speed
+
+
+B0="1.5 - a1 * (t - a0)",
+
+
+
+Pen=".95",
+
+
+
+X0="2 * s - 1",
+Y0="b0",
+
+LWdt="( 12 * mag( s ) ) ^ 1.9",
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,46 @@
+name="Darren Quadhelix",
+/*Darren Quadhelix (by Darren Izzard, zysyshelp@yahoo.com)
+	- waveshape for G-Force.
+
+  A quadruple-helix waveform moves lengthways and rotates.
+*/
+
+Aspc=1,
+
+A0="0.01+rnd(.2)",	//Z-plane rotation speed
+A1="0.1+rnd(3)",	//Y-plane rotation speed (well, phase-change-rate)
+A2="12.0+12.0*rnd(1)",	//density of spirals
+A3="0.1+0.3*rnd(1)",	//width of spirals
+A4="6 + rnd( 30 )",  // wavelength of color band
+A5=".35 - rnd( .7 )",  // colorband speed
+
+B0="cos(t*a0)",
+B1="sin(t*a0)",
+
+C0="mag(s)*2.0",
+C1="(a2*s)+(a1*t)",
+C2="sin(c1)",
+C3="(c2+abs(c2)*c0)*a3",
+C4="s*4-2",
+C5="cos(c1)",
+C6="(c5+abs(c5)*c0)*a3",
+
+X0="c3*b0+c4*b1",
+Y0="c4*b0-c3*b1",
+
+X1="-c3*b0+c4*b1",
+Y1="c4*b0+c3*b1",
+
+X2="c6*b0+c4*b1",
+Y2="c4*b0-c6*b1",
+
+X3="-c6*b0+c4*b1",
+Y3="c4*b0+c6*b1",
+
+Pen="1-(sin(a4 * s + A5 * t))^4",
+
+Stps=0,
+
+ConB=1,
+
+Vers=100

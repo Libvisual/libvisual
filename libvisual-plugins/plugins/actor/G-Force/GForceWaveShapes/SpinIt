@@ -1,0 +1,28 @@
+name="SpinIt",
+/* SpinIt                       */
+/*  By Jay jasonmcbride@mac.com, modified by Andy O'Meara */
+
+
+A0=".25 + rnd( .4 )",  // Choose a rotation rate
+
+
+B0="cos( a0 * t )",
+B1="sin( a0 * t )",
+
+
+C1="mag( s ) * 0.6 * c0",
+C0="2 * s - 1",
+
+
+Aspc=1,
+
+X0=" - b0 * c0 - b1 * c1",
+Y0="   b0 * c1 - b1 * c0",
+
+
+X1=" - b0 * c0 + b1 * c1",
+Y1="   b0 * c1 + b1 * c0",
+
+ConB=1,
+
+Vers=100

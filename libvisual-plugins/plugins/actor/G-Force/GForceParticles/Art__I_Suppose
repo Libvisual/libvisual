@@ -1,0 +1,31 @@
+name="Art, I Suppose",
+
+
+
+
+A0="rnd( -.9 )",      // X
+A1="rnd( 2 ) - 1",    // Y
+
+
+A2="t + 5",
+
+
+
+X="A0 + .04 * sqr( pos( A2 - t ) )",
+Y="A1",
+
+
+TSze=12,
+
+
+// the higher exponent supresses a trail when the text is young
+EPen="FADER * dt ^ 2.5", 
+
+
+
+PDur="14",
+
+
+
+Vers=100
+ 

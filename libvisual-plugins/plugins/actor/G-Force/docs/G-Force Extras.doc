@@ -1,0 +1,114 @@
+{\rtf1\ansi\ansicpg1252\uc1 \deff0\deflang1033\deflangfe1033{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f2\fmodern\fcharset0\fprq1{\*\panose 02070309020205020404}Courier New;}{\f16\froman\fcharset0\fprq2{\*\panose 02050604050505020204}Bookman Old Style;}{\f131\froman\fcharset238\fprq2 Bookman Old Style CE;}{\f132\froman\fcharset204\fprq2 Bookman Old Style Cyr;}{\f134\froman\fcharset161\fprq2 Bookman Old Style Greek;}{\f135\froman\fcharset162\fprq2 Bookman Old Style Tur;}{\f136\froman\fcharset186\fprq2 Bookman Old Style Baltic;}}{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}{\stylesheet{\nowidctlpar\widctlpar\adjustright \fs20\cgrid \snext0 Normal;}{\*\cs10 \additive Default Paragraph Font;}{\s15\nowidctlpar\widctlpar\adjustright \f2\fs20\cgrid \sbasedon0 \snext15 Plain Text;}}{\info{\title WhiteCap}{\author Andy}{\operator Andy}{\creatim\yr2000\mo3\dy15\hr1\min51}{\revtim\yr2000\mo3\dy15\hr1\min51}{\version2}{\edmins0}{\nofpages4}{\nofwords1570}{\nofchars8952}{\*\company  }{\nofcharsws10993}{\vern71}}\margl1319\margr1319 \widowctrl\ftnbj\aenddoc\hyphcaps0\formshade\viewkind4\viewscale100\pgbrdrhead\pgbrdrfoot \fet0\sectd \linex0\endnhere\sectdefaultcl {\*\pnseclvl1\pnucrm\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl4\pnlcltr\pnstart1\pnindent720\pnhang{\pntxta )}}{\*\pnseclvl5\pndec\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl8\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}\pard\plain \s15\qc\nowidctlpar\widctlpar\tx360\adjustright \f2\fs20\cgrid {\f16\fs36 
+\par G-Force
+\par }{\f16\fs24 Extras
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par 
+\par 
+\par }{\f16\fs22\ul G-Force As A Standalone Application
+\par }{\f16 
+\par }\pard \s15\qj\nowidctlpar\widctlpar\tx360\adjustright {\f16 \tab G-Force for Macintosh includes a standalone application that visualizes from sound-input.  Because I still have to learn DirectSound and I know nothing about QuickTime in windows, there\rquote s currently no Windows standalone application.
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par 
+\par }{\f16\fs22\ul Background
+\par }{\f16 
+\par }\pard \s15\qj\nowidctlpar\widctlpar\tx360\adjustright {\f16 -\tab There\rquote s 4 main elements that affect what you see in the G-Force window, and they correspond to each of the 4 configs folders:  Waveshapes, DeltaFields, ColorMaps, and Particles.
+\par -\tab A waveshape is something that turns a short sound clip into lines and dots to be drawn (ie, something graphical).  
+\par -\tab Next, imagine a chalk drawing on a chalkboard.  Someone hands you a big list, and it\rquote s a list of commands that all resemble, "find the point (a, b) on the chalkboard, erase what's there, and in its place draw what you have drawn at point (c, d)."  If you follow every command on the list in order, you're left with a different picture on your chalkboard than when you started.  In effect, you\rquote ve transformed  your initial image into a new one.  In G-Force, something I call a DeltaField acts like this list of commands, except that instead of chalkboards, it's meant for the G-Force window.  A DeltaField is a recipe that makes a new image or "frame" from an existing one.  Like a recipe, it's meant to be used over and over.  If you open one up, you\rquote ll just see it contains two equations that express a \lquote source\rquote  coordinate as that depends on a destination (within the next frame)
+\par -\tab Whenever G-Force is running, it has one waveshape loaded and one deltafield loaded at any given time.  It's constantly repeats 4 steps: 
+\par 1) \tab Use the current deltafield on the current frame to get a new image/frame
+\par 2)\tab Sample some sound and give it to the current waveshape
+\par 3)\tab Draw the output from that waveshape on top of the new frame supplied from step 1
+\par 4)\tab Show the frame on the screen
+\par -\tab G-Force will randomly shuffles though waveshapes, deltafields, and colormaps (see the WInt, DInt, and CInt prefs)
+\par -\tab A ColorMap a list of 256 RGB colors.  G-Force does it's work on an "8-bit" image offscreen that you never see, meaning that each pixel within G-Force has has a value from 0 to 255.  When G-Force needs to draw a pixel, it uses the current ColorMap to lookup the RGB color for each pixel value.  In other words, a ColorMap is a one-way translator that turns pixel index values into RGB colors able to be drawn.
+\par -\tab Particles are the things that randomly appear and disappear every few seconds in G-Force.  They're the extra things you see flying around in the G-Force window now and then.  They're the same thing as waveshapes except that G-Force treats particles a little differently: Only one waveshape (or a morph of two) is ever being drawn at a time, while there can be one or more particles flying around at any given time in addition  to the current waveshape.  Particles are just waveshapes that appear when G-Force rolls some dice and the dice happen to come up a certain way (see the PPrb pref below). 
+\par 
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par }{\f16\fs22\ul Customizing G-Force
+\par }{\f16 
+\par \tab You can customize G-Force in many ways by editing variables stored its preferences file.  Find and open the "G-Force Prefs" text file in your Winamp\rquote s plugin folder, and you can edit various flags and values that affect how G-Force runs.  The following list describes what each parameter does.  It's recommended you become comfortable with how G-Force runs before editing your preferences file.  Finally, if you find G-Force acting strange after you edited its preferences file, just throw it out and it will make a new, "factory", one.
+\par 
+\par }{\b SSvr}{\f16  - }{\f16 (Screen Saver) }{\f16 Number of minutes GF waits before switching to full screen once your PC has been left idle.  If you set this to -1, GF will never go full screen from being idle.  This parameter is basically used to make GF a screen saver.
+\par 
+\par }{\b MaxX, MaxY}{\f16  - }{\f16 (Max Dimensions/Letterbox Size) }{\f16 These set a limit on the pixel dimentions of GF.  For example, 800x600 may be too slow for your computer, but setting MaxY to 300 will double your framerate and you'll still have most of your sceen filled up.
+\par 
+\par }{\b FS_X, FS_Y}{\f16  - }{\f16 (Fullscreen Dimensions) }{\f16 This tells GF what fullscreen resolution you prefer.  When you tell GF to go fullscreen, it will use the dimentions specified here.  Be sure you only put sizes you know your screen can support, and if bad things start to happen, just stick with 640x480. 
+\par 
+\par }{\b FS_D}{\f16  - }{\f16 (Fullscreen Depth) }{\f16 This is the depth GF will choose when it goes fullscreen (choose only 8, 16, or 32).  8 and 32 bit will produce the same color-quality frames, but 32 will be slower because more data is moving around.  16 will be slightly faster than 32 but may show small decreases in color quality.  The only time you don't want to use 8 for FS_D is if your system is having problems using 8.  The 'F' key shows you the current frame rate and can help you discover which depth is fastest for your system.
+\par 
+\par }\pard \s15\nowidctlpar\widctlpar\adjustright {\b ShwT}{\f16  - (Show Config Titles)  If this is 1, GF will tell you whenever its bringing on a new ColorMap, WaveShape, DeltaField, or Particle. 
+\par 
+\par }{\b CDur}{\f16  - (Console Duration) This is how many seconds GF's text console is displayed when GF outputs something to the console.  Remember that your frame rate will decrease whenever the console is visible, so it may get annoying if you set CDur really high (and don't have a really fast CPU) because the console will take such a long time to go away.
+\par 
+\par }{\b CLin}{\f16  - (Console Line Duration) This is how many seconds a line will remain in GF's console until its erased.  
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par }{\b TFnt}{\f16  - This is the text font GF will use when drawing track text.
+\par 
+\par }{\b TSze}{\f16  - This is the text size GF will use when drawing track text.
+\par 
+\par }\pard \s15\nowidctlpar\widctlpar\adjustright {\b TPos}{\f16  - Tells GF how to draw track info text:
+\par 0 = Don't show track info, 
+\par 1 = Top-left corner, 
+\par 2 = Bottom-left corner, 
+\par 3 = Centered in the screen, 
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 5 = Random position
+\par 
+\par }\pard \s15\nowidctlpar\widctlpar\adjustright {\b T?}{\f16  \endash  (Track Text Start?) Each frame, GF calculates what number you have expressed in T?.  If it's greater than 0, GF will draw the track text, and if it's less than 0, GF doesn't draw the draw the track text.  This expression can only access 't' and 'LAST_SONG_START' (both in seconds).  Here's some examples:
+\par }{\fs18 "3 + LAST_SONG_START - t"  // Draw the track text for 3 secs after new song starts
+\par "rnd( 1 ) - .5"            // Strobes the track text (Set TPos to 5 and TDur to .001)
+\par "1"                        // Track text always drawn
+\par "-1"                       // Track text never drawn
+\par "t % 10 - 8"               // Draws the track text for 2 secs, then off for 8 secs}{\f16 
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\fs18 
+\par }{\f16 
+\par }{\b TStr}{\f16  \endash  (Track Text String) This is the text GF will display.  You can put one or more of the following in this string:  #TITLE#, #ARTIST#.  You can place one or more "\\r" in the text to signify you want a new line.  Here's some examples:
+\par }{"#ARTIST# - #TITLE#"
+\par "#TITLE#\\rHappy Birthday Andy"
+\par "--== #TITLE# ==--"}{\f16 
+\par 
+\par }\pard \s15\nowidctlpar\widctlpar\adjustright {\b TDur}{\f16  \endash  (Track Text Duration) This is how many seconds GF will display the track text once T? is evaluated to be greater than zero.  Once T? > 0, GF will draw whatever is in TStr for TDur number of seconds, no matter what T? is during this interval.   Here's some examples: "6", "2 + rnd( 4 )", ".001" (a really small number of seconds like .001 is a short enough such that the text will draw for on only one frame).
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par }{\b WInt}{\f16  - (Waveshape Interval) Number of seconds GF uses a waveshape before switching to a new waveshape.  For example, if you want to see a new waveshape every 15 seconds, set this to 15.  In another example, you can force GF to always be morphing between waveshapes by setting this to 0. 
+\par 
+\par }{\b CInt}{\f16  - (ColorMap Interval) Number of seconds GF uses a colormap before switching to a new colormap.  This pref is similar to WInt and DInt.
+\par 
+\par }{\b DInt}{\f16  - (DeltaField Interval) Number of seconds GF uses a deltafield before switching to a new deltafield.  It takes a significant amount of CPU power to ready a deltafield for use, and GF chips away at this task each frame  (this is why you get a spinning cursor when you resize GF's window).  If you set DInt too low, GF will be unable to switch deltafields every DInt number of seconds because you're not giving GF enough time.  If this happens, GF will simply run normally until it's finished readying in oncoming deltafield.
+\par 
+\par }{\b TrHi. TrLo}{\f16  - (Transition Hi/Low) When GF switches waveshapes, it has to know how long to make the transition from one waveshape to the next waveshape.  It decides this length of time by picking a random number of seconds between TrLo and TrHi.  For example, setting TrLo to 5 and TrHi to 11 means every transition will never be shorter than 5 seconds or longer than 11 seconds.
+\par }\pard \s15\nowidctlpar\widctlpar\adjustright {\f16 
+\par }{\b NoBo}{\f16  - (No Border) If 1, GF will try to make its window borderless.
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par }{\b Kybd}{\f16  - If 0, GF will ignore all keystrokes.
+\par }\pard \s15\nowidctlpar\widctlpar\adjustright {\f16 
+\par }{\b KMap}{\f16  - (Key Map) This is how G-Force knows what to do when you press a certain key.  This param is a list of characters, and the following is a list of what character number does what (ex, since 'P' is the 4th character in "TLRY`SNF….\rdblquote , pressing 'Y' will trigger the 4th command, labeled below). 
+\par }{\fs18 01    Display Track Title
+\par 02    List the names of the currently loaded config
+\par 03    Calc the frame rate
+\par 04    Spawn New Particle
+\par 05    Toggle fullscreen
+\par 06    Toggle showing config name when loaded
+\par 07    Toggle Normalize
+\par 08    Start slideshow (all)
+\par 09    Stop/Freeze slideshow (all)
+\par 10-12 Prev/Next/Hold DeltaField
+\par 13-15 Prev/Next/Hold ColorMap
+\par 16-18 Prev/Next/Hold waveshape
+\par 19-20 Dec/Inc mag() scale
+\par 21-22 Dec/Inc Num S Steps
+\par 23    Toggle Particles
+\par 24-29 Unused
+\par 30-39 Set preset 0-9
+\par 40-49 Recall preset 0-9
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par }{\b MScl}{\f16  - (Magnitude Scale) Scales the amplitude of all music samples (x1000), so if most of the music you play is soft, try increasing this to 1500 or higher (1.5+).  See below to see how to change this in realtime using keystrokes.  You can increase/decrease this using the "[" and "]" keys.
+\par 
+\par }{\b Stps}{\f16  - (s Steps) Default number of samples in a waveshape.  This is how many samples are in a sound sample given to a waveshape (ie, the number of lines/dots in a typical waveshpe).  You can increase/decrease this using the "\{" and "\}" keys.
+\par 
+\par }{\b PPrb}{\f16  - (Particle Probability) Once per second, GF picks a random number from 0 to 1 and evaluates the PPrb expression.  If this number is less than PPrb, a new particle is spawned/started.  NUM_PARTICLES is how many particles are currently running.  The PPrb must somehow use NUM_PARTICLES to decrease in value, or else GF will just keep spawning new particles indefinitely!  (Note how the default expression for PPrb has this property)
+\par 
+\par }{\b PDur}{\f16  - (Particle Duration) When GF spawns a new particle, it assigns it a lifetime/duration.  When that lifetime is up, the particle fades out.  GF uses PDur whenever a particle is spawned and uses the value returned as the lifetime (in seconds).
+\par 
+\par }\pard \s15\nowidctlpar\widctlpar\adjustright {\b P_On}{\f16  - (Particles On)  If this is 0, GF will not automatically spawn any paticles on it's own (ie, this is a way to disable particles from automatically appearing if you don't want them to appear)
+\par }\pard \s15\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par }\pard \s15\qj\nowidctlpar\widctlpar\tx360\adjustright {\f16 
+\par }}

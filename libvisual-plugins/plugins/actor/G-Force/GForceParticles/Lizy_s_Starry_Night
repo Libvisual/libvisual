@@ -1,0 +1,61 @@
+name="Lizy's Starry Night",
+/* Lizy's Starry Night
+By Jeff Osborn (jo009j@mail.rochester.edu)
+
+Inspired by my love, Lizy.  One of her favorite paintings is Van Gogh's "Starry Night".  She loves it.  So, I decided to design this config for her.  In my darkest hours, she is there; my star in the night.  My soul.  She can be reached at lizysstarynight@hotmail.com, and she'd love to hear from you.  I love her :)
+I stole some code from Thomas Geier (ziggystar@gmx.de).
+*/
+
+//  Way to go on a cool config!     -Andy O 
+
+
+/* Years of C++ and PERL programming have left my brain twisted and broken.  And, now I have this strange compulsion to comment everything :-P */
+
+/* Just a general note about configs; Look at which statements take quotes and which don't.  The ones which do can have any combination of variables (provided they are available to that statement), commands, and anything else.  The ones which don't can only take numbers.  Thems the breaks :-/  
+Also, the most confusing thing about learning to write configs is the s variable.  Take some time to play with it; its hard to explain what it does.  Basicly, it controls animation...take a look, its a bit tricky.  */
+
+// 3-7 stars
+NUM="3 + rnd( 3.99 )",
+
+/* Increase this to increase the resolution of the stars.  This controls how many "points" G-Force has to calculate and draw (and connect with lines, too..we'll get to that later)  too few and the stars begin to look boxy and weird. */
+Stps="140",
+
+/* We set Aspc to 1 so that G-Force uses a 1:1 ratio for the coordinate plane.  If we set this to 0, G-Force will stretch the plane so that the corners are always -1, 1, 1, -1 clockwise from the top left.  IF we did this, the stars would be all sqished of the window isn't exactly square.  So, we set it to 1. */
+Aspc=1, 
+
+/* Now that we've set the environment, we need to set the variables.  The A variables a global for the whole config, and are calculated once when the config begins.  WOOHOO! */
+A0="rnd( 100 ) + t",
+A1="2 * sgn( sin( t ) )",  // Choose the direction and speed the stars rotate 
+
+// This is how we retive unchanging rnd() values for each ID (ie, for each star)
+B0="seed( ( ID + 1 ) * a0 )", 
+
+// Position for the star.
+B1="rnd(3) - 1.5",      // X
+B2="rnd(.95)",          // Y  (pseudo-horizon)
+
+// A random size for each star
+B3="rnd(0.11) + 0.14",
+
+// Some temp vars (that depend only on time)
+B4=".1 * sin(t*.1)",
+B5="a1 * t ",         // The star's rotary position
+
+// A temp var (that depends on s)
+C0="B3 * ( sqr( s ) + B4 )",
+
+
+/* Draw each star.  I stole this code from Thomas Geier, but I did some heavy tweaking :-)  */
+X0="C0 * cos( s*40 + B5 ) + B1",
+Y0="C0 * sin( s*40 + B5 ) + B2",
+
+
+
+/* This controls how many pixels G-Force uses to draw the lines.  Four is about right; five is okay as well, but anything above that and it begins to look silly.  Anything below, and it looks skimpy. */
+LWdt="4",
+
+/* ConB stands for ConnectedBins, and it controls whether or not G-Force connects the dots it draws.  Set it to 0 and you get just dots.  Set it to 1 and it draws lines inbetween them.  */
+ConB=1,
+
+/* This has to be the version the config was designed for, times 100.  :-P */
+Vers=100

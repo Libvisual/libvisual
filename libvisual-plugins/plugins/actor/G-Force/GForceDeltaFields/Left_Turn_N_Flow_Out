@@ -1,0 +1,9 @@
+name="Left Turn & Flow Out",
+
+
+Aspc=1,
+
+srcR=".94 * r",
+srcT="theta - .007",
+
+Vers=100

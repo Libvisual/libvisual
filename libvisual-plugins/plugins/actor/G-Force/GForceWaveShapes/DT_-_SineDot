@@ -1,0 +1,34 @@
+name="DT - SineDot",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ ConB=0,
+ LWdt="2+14*mag(s)",
+ Stps=68,
+ A0="rnd(0.8)",
+ Pen="clip(mag(0.1)+0.7+a0)",
+ 
+B0="0.97*sin(t*0.3)",
+B1="0.97*cos(t*0.1)",
+B2="0.7*sin(t*0.5)",
+
+B3="10*sin(t*0.03)",
+B4="14*sin(t*0.15)",
+B5="18*sin(t*0.3)",
+
+B6="4*sin(t*0.3)",
+
+C0="2 * s - 1",
+ 
+
+ 
+ X0="c0",
+ Y0="b0*sin( s*b3 + t*0.6 )",
+ X1="c0",
+ Y1="b1*sin( s*b4 - b6 )",
+ X2="c0",
+ Y2="b2*sin( s*b5 + t )",
+ //X3="c0",
+ //Y3="0.97*sin(t+sin(2*C0))",
+ 
+ Vers=100
+ 

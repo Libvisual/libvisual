@@ -1,0 +1,8 @@
+name="Mononoke",
+//Another color  config.  Reminded me of the anime Mononoke Hime, hence the name. --A.C.
+
+H="wrap( .25 + i^.75 )",
+S=".39",
+V="i^2",
+
+Vers=100

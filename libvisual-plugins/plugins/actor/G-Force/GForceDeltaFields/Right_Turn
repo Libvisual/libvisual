@@ -1,0 +1,9 @@
+name="Right Turn",
+
+
+Aspc=1,
+
+srcR="r * .99",
+srcT="theta + .009",
+
+Vers=100

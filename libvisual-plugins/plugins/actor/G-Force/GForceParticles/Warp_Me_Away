@@ -1,0 +1,36 @@
+name="Warp Me Away",
+/*
+
+"Warp Me Away" by Andy O
+
+*/
+
+NUM="1",
+
+Stps="150 + rnd( 250 )",
+
+
+Aspc=0,
+
+A0="rnd( 1000 )",			
+A1=".02 + rnd( .2 )", // speed
+
+B0="seed(A0)",
+
+
+C0="4 * ( 1.01 - wrap( a1 * t + rnd( 100 ) ) )",  // Z distance of star
+C1="( rnd(2) - 1 ) / C0",		// X
+C2="( rnd(2) - 1 ) / C0",		// Y
+
+
+X0="C1",
+Y0="C2",
+
+Pen="1",
+
+// dist == sqrt( x^2 + y^2 + z^2 )
+LWdt="8 / ( sqrt( sqr( C1 ) + sqr( C2 ) + sqr( 2 * C0 ) ) + .5 )",
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,19 @@
+name="Good ol LP",
+// Created by Thomas Geier
+// ziggystar@gmx.de
+//
+//Good Ol' LP
+
+Aspc=1,
+
+A0="rnd( 10 ) + 3",
+A1="rnd( 1000 )",
+
+D0="seed( A1 * trnc( A0 * r ) )",
+
+srcR="r",
+srcT="rnd(0.16)-0.08+theta",
+
+
+Vers=100
+

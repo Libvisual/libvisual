@@ -1,0 +1,20 @@
+name="Back in the 70s (red-blue)",
+/* ColorMap for G-Force                                  */
+/* ----------------------------------------------------- */
+/* Back in the 70s (red/blue) by Christian Lupp, Germany */
+/*                                                       */   
+/*                            c.lupp@chilli-lab.com      */   
+/* ----------------------------------------------------- */
+
+H="1 - (i * .33)", // Only the third of the colorweel is used 
+																			   // in that colormap (from red [0/360] to blue [240])
+
+S="1",             // Clear colors
+
+
+V="1- (sin ((i * 6.28) + (.6 * t) )/2)",
+				               // The animation of black mixed into this color splace
+
+Vers=100											// This should always equal the version of G-Force the 
+																						// colormap is written for (times one hundred)
+

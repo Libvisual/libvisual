@@ -1,0 +1,34 @@
+name="DT - Spectrum",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ Stps=1,
+ ConB=1,
+ LWdt="5",
+ 
+ X0="-0.95",
+ Y0="s*mag(0.05)+0.3*sin(t*2+0)",
+ X1="-0.78",
+ Y1="s*mag(0.13)+0.3*sin(t*2+0.4)",
+ X2="-0.6",
+ Y2="s*mag(0.21)+0.3*sin(t*2+0.8)",
+ X3="-0.43",
+ Y3="s*mag(0.3)+0.3*sin(t*2+1.2)",
+ X4="-0.26",
+ Y4="s*mag(0.38)+0.3*sin(t*2+1.6)",
+ X5="-0.09",
+ Y5="s*mag(0.46)+0.3*sin(t*2+2)",
+ X6="0.09",
+ Y6="s*mag(0.54)+0.3*sin(t*2+2.4)",
+ X7="0.26",
+ Y7="s*mag(0.62)+0.3*sin(t*2+2.8)",
+ X8="0.43",
+ Y8="s*mag(0.7)+0.3*sin(t*2+3.2)",
+ X9="0.6",
+ Y9="s*mag(0.79)+0.3*sin(t*2+3.6)",
+ X10="0.78",
+ Y10="s*mag(0.87)+0.3*sin(t*2+4)",
+ X11="0.95",
+ Y11="s*mag(0.95)+0.3*sin(t*2+4.4)",
+ 
+ Vers=100
+ 

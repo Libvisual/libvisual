@@ -1,0 +1,50 @@
+name="The Dot Line",
+/* Waveshapes for G-Force                     */
+/* ------------------------------------------ */
+/* The Dot Line    by Christian Lupp, Germany */
+/*                                            */   
+/*                 c.lupp@chilli-lab.com      */   
+/* ------------------------------------------ */
+
+Aspc=0,                        // When Aspc is 0, G-Force will "stretch" a 
+                                // coordinates to fit a rectangular frame.
+
+Stps="9",                    // The number of dots within one line (-> steps).
+
+// ****************** A-Variables are proceeded by the start of the effect.
+
+A0="t",   																				// Record start time.
+
+A1="1.6",                    // The greater this is, the larger the speed (x-axis)
+A2="0.3",                    // The greater this is, the larger the speed (y-axis)
+
+
+// ****************** B-Variables are proceeded by the start of the frame.
+
+B0="1.5 - a1 * (t - a0)", // b0 is used for the speed of the animation.
+
+B1="sin(b0) / 4",         // Function for the behavior within the x-axis.
+
+B2="cos(a2 * (t - a0)) / 3)",
+                              // Function for the behavior within the y-axis.
+
+
+// ****************** Variables are proceeded for every step and every ID.
+
+Pen="( 1.9 * mag( s ) ) ^ 3.2 + 0.1", 
+                              // The color of the dots is depending on the 
+                              // manitude of s.
+
+X0="(2 * s - 1) + b1",    // Every step s is behaving like b1.
+
+Y0="0",                      // The dots are fixed in the middle of the screen.
+
+LWdt="( 17 * mag( s ) ) ^ 1.9",
+																														// The diameter of the dots is processed out 
+																														// of the magnitude of the step.
+
+ConB=0,																						// We want to have dots, so no line should be drawn
+																														// between the steps.
+
+Vers=100                     // This should always equal the version of G-Force the 
+                              // colormap is written for (times one hundred).

@@ -1,0 +1,40 @@
+name="Metors",
+
+
+Aspc=0,
+
+Stps="1",
+
+
+NUM="4 + rnd( 8 ) + rnd( 18 )",
+
+A0="t",               // Record start time
+
+A1=".3 + rnd( .8 )",  // The greater this is, the more comet speed will vary
+A2=".1 + rnd( .3 )",  // The base/floor/min speed of the comets
+A3="1 + rnd( 5 )",    // Larger means particles are more distributed in time
+
+
+B0="seed( ID * a0 )", // Seed the particle thread
+B1="rnd( 2 * PI )",   // Pick comet direction
+
+// B2: How far done are we? (+ = begin, - = end)
+B2="( a2 + rnd( a1 ) )  * ( rnd( a3 ) + a0 - t ) + 1.3", 
+
+
+B3="rnd( 2 ) - 1",    // Comet head, x' (perp cord sys)
+
+
+Pen=".9",
+
+
+
+X0="b3 * cos( b1 ) - b2 * sin( b1 )",
+Y0="b3 * sin( b1 ) + b2 * cos( b1 )",
+
+A4="3 + rnd( 7.1 )",  // Random sized comets
+LWdt="a4",
+
+ConB=0,
+
+Vers=100

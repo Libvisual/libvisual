@@ -1,0 +1,35 @@
+name="Moon & Sun",
+/* Moon and Sun---
+makoto_i@hf.rim.or.jp
+*/
+
+Aspc=1,
+
+A0="2*(rnd(1)+.7)*PI/3",
+A1="2*PI",
+A2="1/trnc(2+rnd(2))",
+
+C0="sin(t/8)+sin(t)",
+C1="cos(t/8)+sin(t)",
+C2="mag(s)*(-.4)+.3",
+C3="sin(A0*s+t)*A2+.3333*C1",
+C4="cos(A0*s+t)*A2+.3333*C0",
+C5="C2*cos(A1*s)",
+C6="C2*sin(A1*s)",
+
+X0="C3",
+Y0="C4",
+X1="-C3",
+Y1="-C4",
+X2="C5",
+Y2="C6",
+
+LWdt="10*(mag(s)+.5)",
+
+Pen="1",
+
+Stps=18,
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,15 @@
+name="Poinsetta",
+// Poinsetta by Demonseed
+// Based on Boxilite
+// Looks like the Christmas Flower
+
+
+A0="32",
+A1=".01",
+
+Aspc=1,
+
+srcR="r + a1 * sin( a0 * theta )",
+srcT="theta + a1 * sin( a0 * r )",
+
+Vers=100

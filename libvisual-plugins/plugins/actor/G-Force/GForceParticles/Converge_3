@@ -1,0 +1,42 @@
+name="Converge 3",
+// Converge 3 by Demonseed
+// Downward spin unto Oblivion
+
+
+
+Stps="3 + rnd( 15 )",
+
+
+Aspc=0,
+
+A0="t", // starttime
+A1=".1 + rnd( .3 )", // dr rate
+A2="3 + rnd( 9 )",   // Dot size
+
+A3=".1 + rnd( .9 )", // Rotation rate
+
+
+
+B0="abs( ( t - a0 ) * a1 - 1.7 )",
+
+B1="A3 * t",
+
+
+C0="B0 * sin( B1 + 6.2831853 * s )",
+C1="B0 * cos( B1 + 6.2831853 * s )",
+
+X0="C0",
+Y0="C1",
+
+X1="C1 * .7",
+Y1="C0 * .7",
+
+X2="C0 * .5",
+Y2="C1 * .5",
+
+
+LWdt="A2",
+
+ConB=0,
+
+Vers=100

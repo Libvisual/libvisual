@@ -1,0 +1,34 @@
+name="Spiral",
+/*                                          */
+/* Spiral                                   */
+/*  Look at the Moon                        */
+/*                                          */
+/* By Thomas Geier                          */
+/*  E-mail: ziggystar@gmx.de                */
+
+
+Aspc= 1 ,
+
+A0="2 * PI * 15",
+
+B0="sgn(sin(t*.2))*t*10",
+B1=".2 * sin(t*.4)",
+
+
+C0="s*A0+B0",
+C1="s*s+B1",
+
+
+X0="cos(C0)*C1",
+Y0="sin(C0)*C1",
+
+Pen="1.1-(s^4)",
+
+Stps="500",
+
+LWdt="2",
+
+ConB=1,
+
+
+Vers=100

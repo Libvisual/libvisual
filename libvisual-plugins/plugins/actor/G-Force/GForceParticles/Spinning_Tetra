@@ -1,0 +1,86 @@
+name="Spinning Tetra",
+// By Andy O'Meara, based on Spinning plane
+
+Aspc=1,
+
+Stps="4",
+
+/*
+
+A simple coordinate system:  
+Offset the XY plane by D and then rotate it alone its x'-axis by some a:
+[x]              x'
+[y]  =  y' cos a + z' sin a 
+[z]     z' cos a - y' sin a + D 
+
+Perspective transformation:
+scrn_x = k1 * x / ( k2 + z )
+sxrn_y = k1 * y / ( k2 + z )
+
+*/
+
+
+
+NUM="1 + rnd( 7 )",
+
+
+Pen="1",
+
+
+
+// A1 is our "a", the angle from the camera view plane to the base plane of our obj
+A0="0",
+A1="sin( - 3.14 * .3 )",
+A2="cos( - 3.14 * .3 )",
+
+
+A5=".2 + rnd( .5 )",  // Choose a y'-axis rotation speed
+A7=".3 + rnd( .5 )",  // Choose a x'-axis rotation speed
+A8="cos( 109.471200377 * PI / 180 )",
+A6="sin( 109.471200377 * PI / 180 )",
+
+
+
+C0=" sqwv( 100 * ( s - .9999 ) )", 
+C1=" a6 * ( 1 - c0 ) * cos( s * 6.283185 )", // x', x
+C2=" a6 * ( 1 - c0 ) * sin( s * 6.283185 )", // y'
+C3=" - c0 - ( 1 - c0 ) * a8", // z' -- vertex 4 is at (0,0,1)
+// C1, C2, and C3 containt the tetra
+
+// First rotate around the y'-axis
+
+   B0="sin( t * a5 )",
+   B1="cos( t * a5 )",
+
+   C4="c3 * b1 - c1 * b0", // new x'
+   C5="c3 * b0 + c1 * b1", // new z'
+
+
+// Next rotate around x'-axis
+
+   B2="sin( t * a7 )",
+   B3="cos( t * a7 )",
+
+   C6="c2 * b3 - c5 * b2", // new y'
+   C7="c2 * b2 + c5 * b3", // new z'
+
+
+A3="10",         // This affects the perspective distortion
+A4="a3 * ( .3 + rnd( .6 ) )",   // This mixes up the total scale
+
+C8="c6 * a2 + c7 * a1",       // y
+C9="c7 * a2 - c6 * a1 + a3",  // z
+
+A9=".10 + rnd( .15 )",  // Random length of coincident verticies..
+
+B4="( 1 + a9 * ID ) * a4",
+
+// Now transform them to the camera's cord system
+X0="b4 * c4 / c9",
+Y0="b4 * c8 / c9",
+
+LWdt="13 - 2 * ID",
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,12 @@
+name="Accident",
+// Created by Thomas Geier
+//ziggystar@gmx.de
+//Accident I
+
+Aspc=1,
+
+
+srcX="x+0.0005*sin(theta)+0.02*cos(x*y*6)",
+srcY="y+0.0005*cos(x*6)",
+
+Vers=100

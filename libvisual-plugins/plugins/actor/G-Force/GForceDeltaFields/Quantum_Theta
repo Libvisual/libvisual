@@ -1,0 +1,16 @@
+name="Quantum Theta",
+// "Quantum Theta" by Andy
+// Inspired by Justin and Jesse Swidler's "Spinner"
+
+
+
+A0="2 * trnc( 2 + rnd( 5.5 ) )",  //  Quantum: How many pie pieces we have
+A1="1.03 + rnd( .4 )",            //  Speed factor
+
+A2=".92 + rnd( .10 )",   // Flow rate in/out
+A3=".005 + rnd( .03 )",  // Turn rate
+
+srcR="r * a2",
+srcT="theta + A3 * ( a1 + sin( a0 * theta ) )",
+
+Vers=100

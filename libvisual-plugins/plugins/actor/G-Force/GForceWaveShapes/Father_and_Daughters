@@ -1,0 +1,45 @@
+name="Father and Daughters",
+// Father & Daughters by Demonseed
+// based on Simple Horizontal
+// Additon of 8 smaller waves and Simple Vertical plus the Big and Bended Attribute
+
+Aspc=1,
+
+
+C0=".4 * fft( s ) + .3",
+C1="(2 * s - 1) *.4 + .6",
+
+
+X1="C1",
+Y1="C0",
+
+X2="C1",
+Y2="C0 + .3",
+
+X3="- C1",
+Y3="C0",
+
+X4="- C1",
+Y4="C0 + .3",
+
+X5="- C1",
+Y5="- C0",
+
+X6="- C1",
+Y6="- C0 -.3",
+
+X7="C1",
+Y7="- C0",
+
+X0="C1",
+Y0="- C0 - .3",
+
+
+Stps="NUM_FFT_BINS",
+
+
+//Pen="( 8 * abs( mag( s ) ) ) ^ 1.5",
+
+ConB=1,
+
+Vers=100

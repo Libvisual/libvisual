@@ -1,0 +1,24 @@
+name="Rotating Arcs",
+
+Aspc=1,
+Stps=-1,
+
+A0=".5 + rnd( .2 )",  // radius
+A1="rnd( 1.3 ) + 1.4", // arc len
+
+
+
+C0="a0 + .25 * mag( s )", // radius
+C1=".3 * t + a1 * s",    // s angle
+
+
+X0=" c0 * cos( c1 )",
+Y0=" c0 * sin( c1 )",
+
+
+X1=" c0 * cos( c1 + 3.14159 )",
+Y1=" c0 * sin( c1 + 3.14159 )",
+
+ConB=0,
+
+Vers=100

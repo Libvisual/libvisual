@@ -1,0 +1,17 @@
+name="The Spectrologist's Assistant",
+/*
+A mesmerizing display of soft glowing ivory and crimson tones
+				-E. Kodotai  																										kodotai@mi.freei.net
+
+*/
+
+H="0.5+0.2*sin(i*3.1456+t*0.004)+0.2*sin(t*0.08)", 																   							
+
+V="0.6+0.2*sin(i*15*cos(0.01*t)+t*0.01)+0.2*cos(t*0.1)",             
+
+S="0.6+0.4*cos(i*12+t*0.05)",
+				              
+
+Vers=100											
+																				
+

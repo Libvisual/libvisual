@@ -1,0 +1,47 @@
+name="DT - ZoomPlanet",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ NUM=1,
+ Aspc=1,
+ ConB=1,
+ Stps=42,
+ LWdt="50*(B0+0.2)^8",
+ Pen="1",
+ 
+ //A1=left/right, B0=time elapsed:0-1, B1=posX, B2=posY, B3=size
+ A0="t",
+ A1="sgn(rnd(2)-1)",
+ B0="(t - A0)/(END_TIME-A0)",
+ B1="-1*A1+A1*4.5*sin(B0)",
+ B2="0.6-0.8*B0",
+ B3="0.3*B0+50*clip(0.02*0.01*(3*B0)^12)",
+ 
+ C0="cos( 2*s*PI )",
+ C1="sin( 2*s*PI )",
+ 
+ X0="B1+B3 * c0",
+ Y0="B2+B3 * c1",
+ X1="B1+B3*0.667 * c0",
+ Y1="B2+B3 * c1",
+ X2="B1+B3*0.433 * c0",
+ Y2="B2+B3 * c1",
+ X3="B1+B3*0.167 * c0",
+ Y3="B2+B3 * c1",
+ 
+ X4="B1+B3 * c0",
+ Y4="B2+B3*0.1 * c1",
+ X5="B1+B3*0.933 * c0",
+ Y5="B2+B3*0.1 * c1 + B3*0.3",
+ X6="B1+B3*0.933 * c0",
+ Y6="B2+B3*0.1 * c1 - B3*0.3",
+ X7="B1+B3*0.767 * c0",
+ Y7="B2+B3*0.1 * c1 + B3*0.633",
+ X8="B1+B3*0.767 * c0",
+ Y8="B2+B3*0.1 * c1 - B3*0.633",
+ X9="B1+B3*0.433 * c0",
+ Y9="B2+B3*0.05 * c1 + B3*0.9",
+ X10="B1+B3*0.433 * c0",
+ Y10="B2+B3*0.05 * c1 - B3*0.9",
+ 
+ Vers=100
+ 

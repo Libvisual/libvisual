@@ -1,0 +1,12 @@
+name="Tiles",
+
+
+Aspc=1,
+
+A0="1.90 * ( 1 + rnd( 2 ) )", // Tile Size
+A1=".005 * ( 1 + rnd( 1 ) )", // Tile flow speed
+
+srcX="x + a1 * ( 2 * ( ( (y+1) * a0 ) % 2 ) - 1 )",
+srcY="y + a1 * ( 2 * ( ( (x+1) * a0 ) % 2 ) - 1 )",
+
+Vers=100

@@ -1,0 +1,28 @@
+name="Example Spectrum",
+
+
+/* This file is example config that shows how to access the frequency spectrum.  It's assumed you're already familar with how configs work in general, so be sure you've read the documentation and have studied the WaveShape config "Rotating Corridor".  */
+
+
+// Make the spectrum just touch the left and right edges
+Aspc=0,
+
+/* Set the number of s steps to the number of FFT bins we have (the number is steps is NUM_SAMPLE_STEPS by default and is set by the pref 'SNum').  Since Stps is how many steps G-Force takes s from 0 to 1 and we only have NUM_FFT_BINS values, only step NUM_FFT_BINS number of times. the pref 'FNum' sets NUM_FFT_BINS, telling G-Force how many bins wlll be in our freq spectrum. The prefs FSrt, FRge, and FSmo also control how the sprectum is processed.  */
+Stps="NUM_FFT_BINS",
+
+
+// Make a simple freq spectrum along the lower section of the window
+X0=" 2 * s - 1",
+Y0=" 1.5 * fft( s ) - .8",
+
+
+// Connect the dots with lines
+ConB=1,
+
+// Make the lines a little chubby
+LWdt="3",
+
+// Full intensity
+Pen="1",
+
+Vers=100

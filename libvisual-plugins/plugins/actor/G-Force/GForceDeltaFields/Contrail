@@ -1,0 +1,14 @@
+name="Contrail",
+// "Contrail" by Andy
+
+Aspc=1,
+
+A0="rnd( 2 * PI )",      // Random angle
+A1="rnd( .028 ) + .002", // Random flow rate
+A2="a1 * sin( a0 )",     // x component
+A3="a1 * cos( a0 )",     // y component
+
+srcX="x + a3",
+srcY="y + a2",
+
+Vers=100

@@ -1,0 +1,20 @@
+name="Random Corridor",
+A0="rnd(  6.28318 )",
+
+A1="cos( a0 )",
+A2="sin( a0 )",
+
+C0="mag( s ) * 0.3 + .25",
+C1="2.5 * ( s - .5 )",
+
+X0="  a1 * c1 + a2 * c0",
+Y0="- a1 * c0 + a2 * c1",
+
+X1="  a1 * c1 - a2 * c0",
+Y1="  a1 * c0 + a2 * c1",
+
+
+ConB=1,
+
+
+Vers=100

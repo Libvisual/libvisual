@@ -1,0 +1,16 @@
+name="Disco Ball",
+// "Burst" by Doug Fawley
+
+Aspc=0,
+
+//A0=size of same-color areas--lower numbers=bigger areas
+//A1=speed of pull from outside
+//A2=speed of rotation (maybe should be negative, too)
+A0="rnd(10)+15",
+A1="1-rnd(.0001)",
+A2=".003+rnd(.003)",
+
+srcR="A1*trnc(r*A0)/A0",
+srcT="theta - A2",
+
+Vers=100

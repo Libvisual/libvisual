@@ -1,0 +1,12 @@
+name="The Lake",
+/*	The Lake			*/
+/*	Deltafield by Thomas Geier	*/
+/*	eMail: ziggystar@gmx.de		*/
+
+
+Aspc=0,
+
+srcR="r+0.02*sin(theta)",
+srcT="theta+0.02*sin(r)",
+
+Vers=100

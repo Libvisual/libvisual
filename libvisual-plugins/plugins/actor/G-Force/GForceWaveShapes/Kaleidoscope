@@ -1,0 +1,40 @@
+name="Kaleidoscope",
+/* Kaleidoscope, by Jeff Osborn (jo009j@mail.rochester.edu) */
+/* This config just looks dope :-P  It was very easy to make as well.  I simply created a line from (0,0) to (0,1) which reacted to the music.  Then, I made corresponding lines allong each other axis starting from 0 and going in both directions (so each axis had 2 lines, each beginning at (0,0) and extending in an opposite direction).  When I had finished this, I did it again, making the line react in the opposite way to the music (IE, it moved in the other direction).  And then DAMN it looked cool!
+Try this config with the deltafield "Nowhere" and the colormap "Acid Gap".  Lordy! */
+
+
+Aspc=1, /* DOn't stretch the lines; if we set this to 0, the lines would be stretched.  This looks okay, but I like it better this way.  */
+
+/* We calculate these up here because they are used several times in the config.  We do this so we don't have to recalculate each time we use them.  Hoorah! */
+C0=".8 * mag(s)",
+
+X0="c0",
+Y0="s",
+
+X1="c0",
+Y1="-s",
+
+X2="s",
+Y2="c0",
+
+X3="-s",
+Y3="c0",
+
+X4="-C0",
+Y4="s",
+
+X5="-C0",
+Y5="-s",
+
+X6="s",
+Y6="-C0",
+
+X7="-s",
+Y7="-C0",
+
+LWdt="c0 * 23", //THey get thicker as the sound gets louder.  This looks cool ;-P
+
+ConB=0, // IT looks better as dots, so we don't connect the lines.
+
+Vers=100

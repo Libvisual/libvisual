@@ -1,0 +1,37 @@
+name="Tosser",
+//Created by Justin Swidler
+
+Aspc=1,
+Stps="121",
+NUM="1",
+Pen="a6",
+Pen="3",
+A0="trnc( sqrt( NUM_S_STEPS ) )",
+A1="sin( - 2.14 * .35 + wrap( END_TIME - t) )",
+A2="cos( - 2.14 * .35 + wrap( END_TIME - t) )",
+A4="8 * ( .4 + rnd( .7 ) )",   // Random size factor
+A5=".8 + rnd( .2 )",   // Random time scale
+A6=".85 + rnd( .2 )",  // Random pen intensity
+A7="NUM_S_STEPS-1", // How many bins from 0 to 1
+
+B0="sin( t * a5 )",
+B1="cos( t * a5 )",
+C0=" 2 * (        (s * a7+.005) % a0   ) / a0 - 1",
+C1=" 2 * ( trnc( (s * a7) /( a0) ) ) / a0 - 1",
+C2="c0 * a1 - c1 * b0",
+C3="c0 * b0 + c1 * b1",
+A3="2 + rnd( END_TIME + t^2 )", 
+          
+
+C4="a4 / ( 10 - c3 * a1 )",
+X0=" c2 * C4",
+Y0=" c3 * a2 * C4",
+
+
+// Choose a random dot size
+A8="2 + rnd( 2.2 )",
+LWdt="a8",
+
+ConB=0,
+
+Vers=100

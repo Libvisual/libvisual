@@ -1,0 +1,69 @@
+name="Five",
+/*                                                     */
+/* Five   v1.0                                         */
+/*   Satellite Lovers with kids                        */
+/*                                                     */
+/* By Jay Mc Bride                                     */
+/*  E-mail: jasonmcbride@mac.com  J;-)Â~               */
+
+
+Aspc= 1 ,
+
+ A0=" cos( .3 + rnd( .6 ) ) ",  // orbit radius
+ A1=" sin( .5 + rnd( .4 ) ) ",  // orbit radius
+ A2=" cos( .1 + rnd( .8 ) ) ",  // orbit radius
+ A3=" sin( .2 + rnd( .7 ) ) ",  // orbit radius
+ A4=" cos( .6 + rnd( .3 ) ) ",  // orbit radius
+
+ B0=" -1.0 * t ",               // theta from (0,0)
+ B1=" .3 * t ",                  // theta from center of rod
+
+ B2=" -.8 * t + 1.23213",        // theta from (0,0)
+ B3=" .3 * t ",                  // theta from center of rod
+
+ B4=" -1.3 * t ",                // theta from (0,0)
+ B5=" -1.1 * t + 4.45245  ",     // theta from (0,0)
+ B6=" -.63 * t + 2.13213  ",     // theta from (0,0)
+
+ B7=".7 * cos( b1 )",
+ B8=".7 * sin( b1 )",
+
+ C0=" b7 * ( s - .1 ) + a0 ",    //  x'
+ C1=" b8 * ( s - .1 ) + a0 ",    // y'
+
+ C2=" .7 * ( s - .1 ) * sin( b3 ) + a1 ",  //  x'
+ C3=" .7 * ( s - .1 ) * cos( b3 ) + a1 ",  // y'
+
+ C4=" b7 * ( s - .1 ) + a2 ",  //  x'
+ C5=" b8 * ( s - .1 ) + a2 ",  // y'
+
+ C6=" b7 * ( s - .1 ) + a3 ",  //  x'
+ C7=" b8 * ( s - .1 ) + a3 ",  // y'
+
+ C8=" b7 * ( s - .1 ) + a4 ",  //  x'
+ C9=" b8 * ( s - .1 ) + a4 ",  // y'
+
+ C10=".7 * mag( .7 * s )",
+
+X0=" C0 * cos( B0 ) - C1 * sin( B0 ) ",
+Y0=" C1 * sin( B0 ) + C0 * cos( B0 ) * c10 ",
+
+X1=" -( C0 * sin( B2 ) - C1 * cos( B2 ) ) ",
+Y1=" -( C1 * cos( B2 ) + C0 * sin( B2 ) * c10 ) ",
+
+X2=" -( C4 * sin( B4 ) - C5 * cos( B4 ) ) ",
+Y2=" -( C5 * cos( B4 ) + C4 * sin( B4 ) * c10 ) ",
+
+X3=" C6 * cos( B5 ) - C7 * sin( B5 ) ",
+Y3=" C7 * sin( B5 ) + C6 * cos( B5 ) * c10 ",
+
+X4=" -C8 * cos( B6 ) - C9 * sin( B6 ) ",
+Y4=" -C9 * sin( B6 ) + C8 * cos( B6 ) * c10 ",
+
+/*   Since the waveforms are smaller, we won't lose a noticeable quality by having less S-Steps (to saving some CPU)  */
+Stps="120",
+
+ConB=1,
+
+
+Vers=100

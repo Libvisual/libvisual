@@ -1,0 +1,56 @@
+
+G-Force was made using MertroWerks CodeWarrior
+http://www.metrowerks.com/
+
+
+The following is a list of all the files in the G-Force project for those that don't use CodeWarrior.
+
+
+InterfaceLib
+MathLib
+MSL C++.PPC.Lib
+MSL C.PPC.Lib
+MSL RuntimePPC.Lib
+G-Force.cpp
+GForcePixPort.cpp
+WaveShape.cpp
+GF_Palette.cpp
+DeltaField.cpp
+ParticleGroup.cpp
+DisplayLib
+Standalone.cpp
+G-Force.rsrc
+Standalone.rsrc
+DrawSprocketLib
+Arg.cpp
+ArgList.cpp
+XFloatList.cpp
+FileSpecList.cpp
+Hashtable.cpp
+nodeClass.cpp
+RectUtils.cpp
+TempMem.cpp
+UtilStr.cpp
+XLongList.cpp
+XPtrList.cpp
+XPtrMatrix.cpp
+XStrList.cpp
+CEgErr.cpp
+CEgFileSpec.cpp
+CEgIFile.cpp
+CEgIOFile.cpp
+CEgIStream.cpp
+CEgOStream.cpp
+ConfigFile.cpp
+Prefs.cpp
+ExprArray.cpp
+Expression.cpp
+ExpressionDict.cpp
+ExprVirtualMachine.cpp
+FourierAnalyzer.cpp
+R3Matrix.cpp
+V3.cpp
+EgOSUtils.cpp
+ScreenDevice.cpp
+PixPort.cpp
+SoundInputPort.cpp

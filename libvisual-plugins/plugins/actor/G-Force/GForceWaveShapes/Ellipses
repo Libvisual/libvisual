@@ -1,0 +1,50 @@
+name="Ellipses",
+/*                            	        */
+/* Ellipse	                           	*/
+/*                          	         	*/
+/*                                     */
+/* By Thomas Geier                     */
+/*  E-mail: ziggystar@gmx.de           */
+//	Title: "Elipse II"
+
+
+
+
+Aspc=1,
+
+C0="sin( 6.283 * s )",
+C1="cos( 6.283 * s )",
+C2=".17 * mag( s )",
+
+B2="sin( t * .4 )",
+B3="cos( t * .4 )",
+
+X0="c1*( b3 + c2 * 1.5 )",
+Y0="c0*( b2 + c2 * 1.5 )",
+
+
+B0=".7 * sin( t * .4 )",
+B1=".7 * cos( t * .4 )",
+
+
+
+
+C3="c1*( .3 * b3 + c2 )",
+C4="c0*( .3 * b2 + c2 )",
+
+X1="c3+b1",
+Y1="c4+b0",
+
+X2="c3-b1",
+Y2="c4-b0",
+
+X3="c3-b0",
+Y3="c4+b1",
+
+X4="c3+b0",
+Y4="c4-b1",
+
+ConB=1,
+
+
+Vers=100

@@ -1,0 +1,14 @@
+name="SOLs Waves",
+// Create by Brad Anderson for G-Force
+//e-mail: javalizard@mac.com
+//This one was a procrastination from class, :P
+
+//Sound of Lights Waves
+//Looks like a reflection in the waves...  or from underneath the ocean?
+
+Aspc=1,
+
+srcX="x * .97",
+srcY="y + (cos(((y+1)^2.7) * 10) + 1.5) / 40",
+
+Vers=100

@@ -1,0 +1,10 @@
+name="Gravity Ball",
+//Created by Justin Swidler
+//more configs at http://homepage.mac.com/whitecap
+
+Aspc=1,
+
+srcR="r * (.87 + .05 * (1+log( r * 15 ) ) )",
+srcT="theta",
+
+Vers=100

@@ -1,0 +1,33 @@
+name="Converge",
+// Converge by Andy
+
+
+
+Stps=27,
+
+
+Aspc=1,
+
+A0="t", // starttime
+A1=".1 + rnd( .3 )", // dr rate
+A2="3 + rnd( 7 )", // Dot size
+
+A3=".4 * ( ( rnd( 2 ) - 1 ) ^3 )", // Rotation rate
+
+
+NUM="1",
+
+B0="abs( ( t - a0 ) * a1 - 1.7 )",
+
+
+C0="a3 * t +  6.2831853 * s",
+
+X0="B0 * cos( c0 )",
+Y0="B0 * sin( c0 )",
+
+
+LWdt="a2",
+
+ConB=0,
+
+Vers=100

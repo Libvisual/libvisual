@@ -1,0 +1,8 @@
+name="Purple & Blues",
+// Purple & Blues by Andy O'Meara
+
+H=".6666 + .166 * i^1.4",
+S=".5 + .5 * (1.8*i-1)^2",
+V="i^.4",
+
+Vers=100

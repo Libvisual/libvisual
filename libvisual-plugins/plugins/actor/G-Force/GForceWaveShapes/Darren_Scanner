@@ -1,0 +1,38 @@
+name="Darren Scanner",
+/*Darren Scanner (by Darren Izzard, zysyshelp@yahoo.com)
+	- waveshape for G-Force.
+
+  Two lines bounce back and forth about the origin, changing size.
+	(actually, I was aiming for an effect more line Darren RScanner, but
+	this version had an accidental bug in it which made it look pretty
+	good in its own right!)
+*/
+
+Aspc=1,
+
+A0="0.3+rnd(.6)",	//scanrate
+A1="0.2+rnd(0.4)",	//rotation rate
+
+B0="cos(t*a0)",
+B1="sin(t*a0)",
+B2="cos(t*a1)",
+B3="sin(t*a1)",
+
+C0="mag(s)*0.25",
+C1="s*1.5",
+C2="c0*b0+c1*b1",
+C3="c0*b1-b1*b0",
+
+X0="c2*b2+c3*b3",
+Y0="c2*b3-c3*b2",
+
+X1="c2*b2-c3*b3",
+Y1="c2*b3+c3*b2",
+
+Pen="1",
+
+Stps=0,
+
+ConB=1,
+
+Vers=100

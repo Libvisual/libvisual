@@ -1,0 +1,31 @@
+name="Sprinkles",
+
+
+
+Stps="15 + rnd( 15 )",
+
+
+
+
+Aspc=1,
+
+
+
+// Only ever make one instance
+NUM="1",
+
+C0="rnd( .35 ) + rnd( .2 )",  // Random radius
+C1="rnd( 6.28 )", // Random angle
+
+X0="c0 * cos( c1 )",
+Y0="C0 * sin( c1 )",
+
+Pen=".89",
+
+// Just make dots
+ConB=0,
+
+// Dots that are 3x3 big
+LWdt="3",
+
+Vers=100

@@ -1,0 +1,8 @@
+name="Midnight Dream",
+
+
+H="wrap( (.713 - .4 * i )^.6 )", 
+S=".48",
+V="i^.29",
+
+Vers=100

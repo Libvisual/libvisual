@@ -1,0 +1,34 @@
+name="Tango Particles",
+
+Stps=20,
+
+
+
+
+Aspc=1,
+
+
+// Make getting 1,2,3, or 10-20 most likely
+NUM="trnc( 20 * (rnd(1))^9+1.99 )",
+
+// Record the start/load time
+A0="T", 
+A1="rnd( 4 ) + 2",  // mode
+A2=".6 + rnd( .3 )",  // r max
+A3=".1 + rnd( .3 )", // particle speed
+
+
+
+B0="2 * PI * ( ID / NUM )", // Phase offset
+
+C0="a3 * t - .08 * s",     // theta
+C1="a2 * sin( a1 * c0 )",    // r
+X0="c1 * cos( c0 + B0 )",
+Y0="c1 * sin( c0 + B0 )",
+
+
+
+
+ConB=1,
+
+Vers=100

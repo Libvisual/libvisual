@@ -1,0 +1,30 @@
+name="Flower Power",
+
+
+
+
+A0="2 + trnc(.99 * rnd(4))", //  Generate random mode number
+A1="PI * ( 2 - A0 % 2 )", // A1 must be 1 when A0 is odd, and 2 when A0 is even
+A2=".2 + rnd( .2 )",  // speed
+A3=".65 + rnd( .22 )", // size
+
+C0="A1 * S",	// theta
+C1="a3 * cos( A0 * C0 ) + .18 * mag( s )", // r
+
+
+
+Aspc=1,
+
+X0="c1 * cos( c0 + a2 * t )",
+Y0="c1 * sin( c0 + a2 * t )",
+
+LWdt="2",
+
+
+
+
+
+
+ConB=0,
+
+Vers=100

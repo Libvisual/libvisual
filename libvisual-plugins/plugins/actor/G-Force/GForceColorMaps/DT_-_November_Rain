@@ -1,0 +1,17 @@
+name="DT - November Rain",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+  // Red=0, Magenta=0.833
+  // Blue=0.667, Cyan=0.5
+  // Green=0.333 Yellow=0.167
+ H="0.667",
+ 
+  // 0=Grey, 1=Full Color
+ S="1-sin(i*1)",
+ 
+  // 0=Black, 1=Full Bright
+ V="sin(i)+2*sqwv(1.999-i)",
+ 
+ Vers=100
+ 

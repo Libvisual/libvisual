@@ -1,0 +1,14 @@
+name="DT - Swirl",
+ /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+  //A0=clockwise?, A1=swirlpower, A2=power
+ A0="sgn(rnd(2)-1)",
+ A1="7+rnd(13)",
+ A2="0.05 + rnd(.8)",
+
+ srcR="r + A2 * (0.006*(1-0.7*R)^3+0.005)",
+ srcT="theta + A0 * A2 * ((0.4+0.03*A1)*(1-0.7*R)^A1-0.02)",
+ 
+ Vers=100
+ 

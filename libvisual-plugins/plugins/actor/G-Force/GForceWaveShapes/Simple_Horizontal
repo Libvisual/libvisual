@@ -1,0 +1,12 @@
+name="Simple Horizontal",
+
+
+
+X0="2 * s - 1",
+Y0=".8 * mag( s )",
+
+ConB=1,
+
+LWdt="2",
+
+Vers=100

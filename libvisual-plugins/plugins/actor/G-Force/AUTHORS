@@ -1,0 +1,33 @@
+gforce - music-activated eye candy
+G-Force is Copyright (C) 2000 Andy O'Meara
+
+      Main Programming: Andy O'Meara <aco5@cornell.edu>
+
+      Original Unix/X11 porting: Boris Gjenero <bgjenero@sympatico.ca>
+
+      Redone the source tree, libvisual interface, bug fixes in G-Force,
+      current maintainer: Dennis Smit <ds@nerds-incorporated.org>
+
+Note by Dennis:
+Andy O'Meara has done a super job on this plugin, I (Dennis) really
+enjoyed making the libvisual interface, and doing bug fixes in the G-Force
+code. I personally really like the way G-Force is written, and although it's
+a giant codebase, it was one of the easiest plugins to port to libvisual.
+
+Also fixing some bugs regarding waveshape scripts that could put the VM
+into semi infinite loops was pretty easy and a joy to do.
+
+I learned a lot from working with this code in a very short time, simply great!
+
+
+Also Boris, thanks for the port you've done at the time!, without his work
+I would never have revived it and ported it to the libvisual framework.
+
+
+Newer versions of G-Force aren't released as opensource. I've heard that Andy
+choose for this path after a suspect commercial, or atleast closed G-Force rip off.
+
+It's Andy his good right to choose this path, and on the bright side, it just leaves
+more challenges for us. With that I mean working on support for newer G-Force scripts ! :)
+and other neat features.
+

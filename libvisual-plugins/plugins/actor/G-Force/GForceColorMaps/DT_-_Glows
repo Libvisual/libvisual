@@ -1,0 +1,17 @@
+name="DT - Glows",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+  // Red=0, Magenta=0.833
+  // Blue=0.667, Cyan=0.5
+  // Green=0.333 Yellow=0.167
+ H="wrap( 0.78+0.1*sin(t) )",
+ 
+  // 0=Grey, 1=Full Color
+ S="1-sin(i)-i^7",
+ 
+  // 0=Black, 1=Full Bright
+ V="-0.5+2.5*sin(i)+i^5",
+ 
+ Vers=100
+ 

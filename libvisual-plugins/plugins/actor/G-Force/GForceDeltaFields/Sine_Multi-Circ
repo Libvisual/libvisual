@@ -1,0 +1,12 @@
+name="Sine Multi-Circ",
+
+
+Aspc=1,
+
+A0="pos( rnd(0.2)-0.1 )*sgn(rnd(2)-1)",
+A1="5 + rnd( 15 )",
+
+srcR="r * (.88 + .05 * (1+sin( r * a1 ) ) )",
+srcT="theta + a0",
+
+Vers=100

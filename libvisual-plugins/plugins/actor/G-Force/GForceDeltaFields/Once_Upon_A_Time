@@ -1,0 +1,12 @@
+name="Once Upon A Time",
+// Created by Thomas Geier
+//ziggystar@gmx.de
+//Once Upon a Time
+
+Aspc=1,
+
+
+srcX="x-0.008*sin(x*3.14)*cos(y*3.14)",
+srcY="y-.05*y^3",
+
+Vers=100

@@ -1,0 +1,36 @@
+name="Explosion I",
+/*
+
+Explosion I
+
+By Thomas Geier
+
+ziggystar@gmx.de
+
+*/
+
+NUM="1",
+
+Stps="40 + rnd(100)",
+
+
+Aspc=1,
+
+A0="rnd( 1000 )",			// Used as a unique seed scale
+A1="t", // Start time
+A2=".06",				//g
+A3="6 + rnd( 5 )", // Max particle size
+
+B0="t-A1",		//time from start (ie, time elapsed)
+B1="seed( A0 * (1+ID) )",
+B2="rnd( .6 ) - .3",
+
+X0="B0*( rnd( .5 ) - .25 + B2 )",
+Y0="B0*( rnd( .5 ) + .2 ) - A2*sqr(B0) - .8",
+
+
+LWdt="1 + A3 * s",
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,43 @@
+name="Darren Bird",
+/*Darren Bird (by Darren Izzard, zysyshelp@yahoo.com)
+	- waveshape for G-Force.
+
+  A stylized bird flies around.
+	(a variation on Darren RScanner in fact.)
+*/
+
+Aspc=1,
+
+A0="1.0+rnd(1.0)",	//flaprate
+A1="0.2+rnd(0.4)",	//flight speed
+A2="0.2+rnd(0.5)",	//flapsize
+A3="0.2+rnd(0.5)",	//flight circle size
+
+B0="sin(sin(t*a0)*a2)",
+B1="cos(sin(t*a0)*a2)",
+B2="cos(t*a1)*a3",
+B3="sin(t*a1)*a3",
+
+C0="mag(s)*0.25",
+C1="c0*b1-s*b0",
+C2="c0*b0+s*b1",
+C3="c1*(3.2*s*s-2.2*s)*0.7+b3",
+
+X0="b2+c2",
+Y0="c3",
+
+X1="b2-c2",
+Y1="c3",
+
+X2="b2-0.1+0.2*s",
+Y2="b3+c0*1.6-0.1",
+
+LWdt="2",
+
+Pen="1",
+
+Stps=0,
+
+ConB=1,
+
+Vers=100

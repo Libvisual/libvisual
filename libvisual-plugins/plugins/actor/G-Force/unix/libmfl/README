@@ -1,0 +1,5 @@
+This is libmfl, the Minimal Font Library.
+
+It's very minimal at the moment and it's just being used to support
+text output in the Unix/X11 G-Force port.
+

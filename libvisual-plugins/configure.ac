@@ -9,8 +9,10 @@ AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_RANLIB
 
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
@@ -146,12 +148,12 @@ AM_CONDITIONAL(HAVE_X,  test x$have_x = xyes)
 AC_C_CONST
 # Checks for header files.
 AC_HEADER_TIME
-AC_CHECK_HEADERS([fcntl.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h unistd.h stdlib.h string.h sys/time.h])
 AC_C_INLINE
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt])
+AC_CHECK_FUNCS([floor gettimeofday memmove memset pow sqrt ])
 AC_CHECK_FUNC([munmap], lv_have_munmap=yes, lv_have_munmap=no)
 AC_FUNC_MMAP
 
@@ -391,6 +393,20 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([gforce],
+            AC_HELP_STRING([--disable-gforce],
+                           [Do not build gforce plugin @<:@default=enabled@:>@]),
+	    [gforce=$enableval],
+	    [gforce=yes])
+AC_MSG_CHECKING([whether to build bumpscope plugin])
+if test x$gforce = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor G-Force"
+  AC_SUBST([GFORCE], ['actor_gforce.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([alphablend],
             AC_HELP_STRING([--disable-alphablend],
                            [Do not build alphablend morph plugin @<:@default=enabled@:>@]),
@@ -501,7 +517,8 @@ else
 fi
 AC_SUBST(OPT_CFLAGS)
 
-AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
+AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} -DUNIX_X -D_REENTRANT")
+AC_SUBST(CXXFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} -DUNIX_X -D_REENTRANT")
 
 AC_ARG_WITH([plugins_base_dir],
             AC_HELP_STRING([--with-plugins_base_dir="dir"],
@@ -551,6 +568,27 @@ AC_CONFIG_FILES([
 	plugins/actor/corona/Makefile
 	plugins/actor/goom2/Makefile
 	plugins/actor/gdkpixbuf/Makefile
+	plugins/actor/G-Force/Makefile
+	plugins/actor/G-Force/Common/Makefile
+	plugins/actor/G-Force/Common/GeneralTools/Makefile
+	plugins/actor/G-Force/Common/GeneralTools/Headers/Makefile
+	plugins/actor/G-Force/Common/io/Makefile
+	plugins/actor/G-Force/Common/io/Headers/Makefile
+	plugins/actor/G-Force/Common/math/Makefile
+	plugins/actor/G-Force/Common/math/Headers/Makefile
+	plugins/actor/G-Force/Common/UI/Makefile
+	plugins/actor/G-Force/Common/UI/Headers/Makefile
+	plugins/actor/G-Force/GForceCommon/Makefile
+	plugins/actor/G-Force/GForceCommon/Headers/Makefile
+	plugins/actor/G-Force/unix/Makefile
+	plugins/actor/G-Force/unix/Headers/Makefile
+	plugins/actor/G-Force/unix/libmfl/Makefile
+	plugins/actor/G-Force/unix/libvisual/Makefile
+	plugins/actor/G-Force/GForceColorMaps/Makefile
+	plugins/actor/G-Force/GForceDeltaFields/Makefile
+	plugins/actor/G-Force/GForceParticles/Makefile
+	plugins/actor/G-Force/GForceWaveShapes/Makefile
+	plugins/actor/G-Force/NotWorkingWaveShapes/Makefile
 	plugins/input/Makefile
 	plugins/input/esd/Makefile
 	plugins/input/alsa/Makefile
