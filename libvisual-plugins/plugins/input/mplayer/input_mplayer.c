@@ -5,7 +5,7 @@
  * @author Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  * License: GNU Lesser General Public License (GNU/LGPL)
  ******************************************************************************
- * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.1 2004-07-12 23:51:12 gsbarbieri Exp $
+ * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.2 2004-07-13 00:16:01 gsbarbieri Exp $
  */
 
 #include <stdio.h>
@@ -249,8 +249,11 @@ int inp_mplayer_cleanup( VisInputPlugin *plugin )
  */
 int inp_mplayer_upload( VisInputPlugin *plugin, VisAudio *audio )
 {
-  mplayer_private_t *priv = plugin->private;
+  mplayer_private_t *priv = NULL;
 
+  visual_log_return_val_if_fail( audio != NULL, -1 );
+  visual_log_return_val_if_fail( plugin != NULL, -1 );
+  priv = plugin->private;
   visual_log_return_val_if_fail( priv != NULL, -1 );
   visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
