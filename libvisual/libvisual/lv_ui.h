@@ -310,6 +310,7 @@ VisUIWidget *visual_ui_color_new (void);
 int visual_ui_color_free (VisUIColor *color);
 
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value);
+int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramchoices);
 int visual_ui_choice_free_choices (VisUIChoice *choice);
 int visual_ui_choice_set_active (VisUIChoice *choice, int index);
 VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index);

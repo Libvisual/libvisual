@@ -148,7 +148,7 @@ static void widget_destroy (void *ptr)
 }
 
 /**
- * @defframe VisUI VisUI
+ * @defgroup VisUI VisUI
  * @{
  */
 
@@ -803,6 +803,24 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamE
 	choice->choices.count++;
 	/* FIXME be aware on object destroy, that this needs to be destroyed as well, watch out!! */
 	visual_list_add (&choice->choices.choices, centry);
+
+	return 0;
+}
+
+int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramchoices)
+{
+	VisUIChoiceEntry *centry;
+	int i = 0;
+
+	visual_log_return_val_if_fail (choice != NULL, -1);
+	visual_log_return_val_if_fail (paramchoices != NULL, -1);
+
+	while (paramchoices[i].type != VISUAL_PARAM_TYPE_END) {
+		printf ("ADDING CHOICE FROM MANY %s\n", paramchoices[i].name);
+		visual_ui_choice_add (choice, paramchoices[i].name, &paramchoices[i]);
+
+		i++;
+	}
 
 	return 0;
 }

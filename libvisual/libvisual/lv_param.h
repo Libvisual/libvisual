@@ -10,6 +10,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ NULL, name, VISUAL_PARAM_TYPE_STRING, string, {0, 0, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ NULL, name, VISUAL_PARAM_TYPE_INTEGER, NULL, {val, 0, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ NULL, name, VISUAL_PARAM_TYPE_FLOAT, NULL, {0, val, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ NULL, name, VISUAL_PARAM_TYPE_DOUBLE, NULL, {0, 0, val}}
+#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ NULL, name, VISUAL_PARAM_TYPE_COLOR, NULL, {0, 0, 0}, {r, g, b, 0}}
+#define VISUAL_PARAM_LIST_END				{ NULL, NULL, VISUAL_PARAM_TYPE_END }
+
 /**
  * Different types of parameters that can be used.
  */
@@ -20,6 +27,7 @@ typedef enum {
 	VISUAL_PARAM_TYPE_FLOAT,	/**< Floating point parameter. */
 	VISUAL_PARAM_TYPE_DOUBLE,	/**< Double floating point parameter. */
 	VISUAL_PARAM_TYPE_COLOR,	/**< VisColor parameter. */
+	VISUAL_PARAM_TYPE_END		/**< List end, and used as terminator for VisParamEntry lists. */
 } VisParamType;
 
 typedef struct _VisParamContainer VisParamContainer;
@@ -67,15 +75,16 @@ struct _VisParamEntry {
 	VisParamType		 type;		/**< Parameter type. */
 
 	char			*string;	/**< String data. */
-	VisColor		 color;		/**< VisColor data. */
-	
-	union {
+
+	/* No union, we can't choose a member of the union using static initializers */
+	struct {
 		int		 integer;		/**< Integer data. */
 		float		 floating;		/**< Floating point data. */
 		double		 doubleflt;		/**< Double floating point data. */
 	} numeric;
 
-	VisList			 callbacks;		/**< The change notify callbacks */
+	VisColor		 color;		/**< VisColor data. */
+	VisList			 callbacks;	/**< The change notify callbacks. */
 };
 
 /* prototypes */
@@ -85,6 +94,7 @@ int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, Vi
 VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer);
 
 int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param);
+int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params);
 int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name);
 VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name);
 

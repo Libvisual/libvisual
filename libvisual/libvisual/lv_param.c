@@ -108,6 +108,37 @@ int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry
 }
 
 /**
+ * Adds a list of VisParamEntry elements, the list is terminated by an entry of type VISUAL_PARAM_TYPE_END.
+ * All the elements are reallocated, so this function can be used for static param lists.
+ *
+ * @param paramcontainer A pointer to the VisParamContainer in which the VisParamEntry elements are added.
+ * @param params A pointer to the VisParamEntry elements that are added to the VisParamContainer.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params)
+{
+	VisParamEntry *pnew;
+	int i = 0;
+
+	visual_log_return_val_if_fail (paramcontainer != NULL && params != NULL, -1);
+
+	while (params[i].type != VISUAL_PARAM_TYPE_END) {
+		pnew = visual_param_entry_new (params[i].name);
+
+		printf ("NEW PARAM: %s\n", params[i].name);
+
+		memcpy (pnew, &params[i], sizeof (VisParamEntry));
+
+		visual_param_container_add (paramcontainer, pnew);
+		
+		i++;
+	}
+
+	return 0;
+}
+
+/**
  * Removes a VisParamEntry from the VisParamContainer by giving the name of the VisParamEntry that needs
  * to be removed.
  *
@@ -337,6 +368,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 	visual_log_return_val_if_fail (param != NULL, -1);
 	visual_log_return_val_if_fail (src != NULL, -1);
 
+	printf ("TYPE %d numeric: %d\n", src->type, src->numeric.integer);
 	switch (src->type) {
 		case VISUAL_PARAM_TYPE_NULL:
 
