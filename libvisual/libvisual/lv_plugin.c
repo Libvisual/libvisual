@@ -6,6 +6,7 @@
 #include <dirent.h>
 
 #include "lv_plugin.h"
+#include "lv_log.h"
 
 extern VisList *__lv_plugins;
 
@@ -166,14 +167,15 @@ int visual_plugin_ref_free (VisPluginRef *ref)
  */
 int visual_plugin_ref_list_destroy (VisList *list)
 {
-	if (list == NULL)
-		return -1;
+	int ret1, ret2;
+
+	visual_log_return_val_if_fail (list != NULL, -1);
 	
-	visual_list_destroy (list, ref_list_destroy);
+	ret1 = visual_list_destroy (list, ref_list_destroy);
 
-	visual_list_free (list);
+	ret2 = visual_list_free (list);
 
-	return 0;
+	return ((ret1 == 0 && ret2 == 0) ? 0 : -1);
 }
 
 /**

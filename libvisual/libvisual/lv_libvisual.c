@@ -89,11 +89,13 @@ int visual_init (int *argc, char ***argv)
                  * We must copy the argument, to let the client
                  * call this method from any context.
                  */
-                __lv_progname = (char*) malloc (strlen(*argv[0]));
+#ifdef __USE_GNU
+                __lv_progname = strndup (*argv[0], 1024);
+#else
+                __lv_progname = strdup (*argv[0]);
+#endif
                 if (__lv_progname == NULL)
                         visual_log (VISUAL_LOG_WARNING, "Could not set program name");
-                else
-                        strcpy (__lv_progname, *argv[0]);
         }
 
 	visual_init_path_add (PLUGPATH"/actor");
@@ -118,6 +120,8 @@ int visual_init (int *argc, char ***argv)
  */
 int visual_quit ()
 {
+	int ret;
+
 	if (__lv_initialized == FALSE) {
                 visual_log (VISUAL_LOG_WARNING, "Never initialized");
 		return -1;
@@ -126,10 +130,21 @@ int visual_quit ()
         if (__lv_progname != NULL)
                 free (__lv_progname);
 
-	visual_plugin_ref_list_destroy (__lv_plugins);
-	visual_list_destroy (__lv_plugins_actor, NULL);
-	visual_list_destroy (__lv_plugins_input, NULL);
-	visual_list_destroy (__lv_plugins_morph, NULL);
+	ret = visual_plugin_ref_list_destroy (__lv_plugins);
+	if (ret < 0)
+		visual_log (VISUAL_LOG_WARNING, "Plugins references list: destroy failed");
+
+	ret = visual_list_destroy (__lv_plugins_actor, NULL);
+	if (ret < 0)
+		visual_log (VISUAL_LOG_WARNING, "Actor plugins list: destroy failed");
+
+	ret = visual_list_destroy (__lv_plugins_input, NULL);
+	if (ret < 0)
+		visual_log (VISUAL_LOG_WARNING, "Input plugins list: destroy failed");
+
+	ret = visual_list_destroy (__lv_plugins_morph, NULL);
+	if (ret < 0)
+		visual_log (VISUAL_LOG_WARNING, "Morph plugins list: destroy failed");
 
 	__lv_initialized = FALSE;
 	return 0;

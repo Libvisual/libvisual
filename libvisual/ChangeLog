@@ -32,8 +32,7 @@
 	made relative to the current dir, to use the new libvisual
 	instead of the installed one.
 	* libvisual/lv_bin.h: added visual_bin_set_morph_by_name()
-	and visual_bin_set_steps() (incredibly, they wasn't on the
-	header file!).
+	and visual_bin_set_steps().
 	* libvisual/*.h: changed all function f() declarations to
 	funcion f(void), because f() are not valid ISOC99 prototypes.
 	* libvisual/lv_plugin.c: with the previous prototypes correction,
@@ -56,20 +55,20 @@
 
 2004-06-20  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* configure.ac added check for SDL, needed to
+	* configure.ac: added check for SDL, needed to
 	compile the examples.
-	* examples/Makefile.am added, replacing the old
+	* examples/Makefile.am: added, replacing the old
 	hand made Makefile.in.
-	* libvisual/Makefile.am included DEFS variable,
+	* libvisual/Makefile.am: included DEFS variable,
 	so things like inline will be defined as preprocessor
 	define's
 	
 2004-06-18  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* configure.in moved to configure.ac
-	* configure.ac updated to autoconf 2.57 requirements,
+	* configure.in: moved to configure.ac
+	* configure.ac: updated to autoconf 2.57 requirements,
 	and too much checks added.
-	* autogen.sh script added
+	* autogen.sh: script added
 	
 2004-06-17  Dennis Smit  <ds@nerds-incorporated.org>
 	Version 0.1.4 has been released.
