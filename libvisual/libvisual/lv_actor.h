@@ -35,10 +35,7 @@ struct _VisActor {
 	VisPalette	*ditherpal;	/**< Private member in which a palette is set when transforming
 					 * depth from true color to indexed.
 					 * @see visual_actor_get_palette */
-	VisSongInfo	*songinfo;	/**< Pointer to the songinfo structure which is used to set
-					 * informaton about the currently playing music.
-					 * @see visual_actor_get_songinfo */
-	VisSongInfo	*songcompare;	/**< Private member which is used to compare with new songinfo
+	VisSongInfo	 songcompare;	/**< Private member which is used to compare with new songinfo
 					  * to check if a new song event should be emitted. */
 	void		*priv;		/**< Private member for internal usage, currently unused. */
 };

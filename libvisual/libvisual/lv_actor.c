@@ -344,12 +344,6 @@ int visual_actor_free (VisActor *actor)
 	if (actor->fitting != NULL)
 		visual_video_free_with_buffer (actor->fitting);
 		
-	if (actor->songinfo != NULL)
-		visual_songinfo_free (actor->songinfo);
-
-	if (actor->songcompare != NULL)
-		visual_songinfo_free (actor->songcompare);
-
 	return visual_mem_free (actor);
 }
 
@@ -365,12 +359,14 @@ int visual_actor_free (VisActor *actor)
  */
 VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
 {
+	VisActorPlugin *actplugin;
+
 	visual_log_return_val_if_fail (actor != NULL, NULL);
 
-	if (actor->songinfo == NULL)
-		actor->songinfo = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
-	
-	return actor->songinfo;
+	actplugin = get_actor_plugin (actor);
+	visual_log_return_val_if_fail (actplugin != NULL, NULL);
+
+	return &actplugin->songinfo;
 }
 
 /**
@@ -631,31 +627,16 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	}
 
 	/* Songinfo handling */
-	if (actor->songinfo != NULL) {
-		if (actor->songcompare == NULL) {
-			visual_songinfo_mark (actor->songinfo);
+	if (visual_songinfo_compare (&actor->songcompare, &actplugin->songinfo) == FALSE) {
+		visual_songinfo_mark (&actplugin->songinfo);
 		
-			if (plugin->info->events != NULL)
-				visual_event_queue_add_newsong (&plugin->eventqueue, actor->songinfo);
+		visual_event_queue_add_newsong (
+			visual_plugin_get_eventqueue (plugin),
+			&actplugin->songinfo);
 
-			actor->songcompare = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
-
-			visual_songinfo_free_strings (actor->songcompare);
-			visual_songinfo_copy (actor->songcompare, actor->songinfo);
-		}
-
-		if (visual_songinfo_compare (actor->songinfo, actor->songcompare) == FALSE) {
-			visual_songinfo_mark (actor->songinfo);
-
-			if (plugin->info->events != NULL)
-				visual_event_queue_add_newsong (&plugin->eventqueue, actor->songinfo);
-
-			visual_songinfo_free_strings (actor->songcompare);
-			visual_songinfo_copy (actor->songcompare, actor->songinfo);
-		}
+		visual_songinfo_free_strings (&actor->songcompare);
+		visual_songinfo_copy (&actor->songcompare, &actplugin->songinfo);
 	}
-	
-	plugin->songinfo = actor->songinfo;
 
 	video = actor->video;
 	transform = actor->transform;
@@ -673,7 +654,6 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	/* Set the palette to the target video */
 	video->pal = visual_actor_get_palette (actor);
 
-	
 	/* Yeah some transformation magic is going on here when needed */
 	if (transform != NULL && (transform->depth != video->depth)) {
 		actplugin->render (plugin, transform, audio);

@@ -1,51 +1,73 @@
 2004-11-04  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/*: Loads of work on better error reporting, and many cleanups
+	* ChangeLog: Renamed src to libvisual, I must be psychotic or
+	something.. or maybe it's something deep in my mind telling me
+	I should rename a certain dir...
+
+	* libvisual/lv_actor.h: Removed songinfo entry, and made the
+	songcompare entry non pointer.
+
+	* libvisual/lv_actor.c: Point to the songinfo that is encapsulated in
+	the VisActorPlugin and adapt to other songinfo related changes. Really
+	made the songinfo check for update piece much much much shorter and
+	nicer, without stupid allocations all the time.
+
+	* libvisual/lv_error.h: Did a bit of docs, and added a few entries.
+
+	* libvisual/lv_plugin.h: Moved VisSongInfo from VisPluginData to
+	VisActorPlugin, where it, in my opinion belongs.
+
+	* libvisual/lv_ui.c: Added a bit of docs, and propogate errors from
+	the destroyer functions.
+
+2004-11-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: Loads of work on better error reporting, and many cleanups
 	all around.
 
 2004-11-02  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_error.h, src/lv_error.c
+	* libvisual/lv_error.h, libvisual/lv_error.c
 	(visual_error_to_string): Added function that translates
 	an error value into a string.
 
 2004-10-24  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_video.c (visual_video_blit_overlay): Splitted up into
+	* libvisual/lv_video.c (visual_video_blit_overlay): Splitted up into
 	smaller functions. Need to clean this up, and fix the negative offset
 	bug. AND optimize it :)
 
 2004-10-24  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.*: Added support for tooltips.
+	* libvisual/lv_ui.*: Added support for tooltips.
 
 2004-10-23  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_actor.c (visual_actor_run):
+	* libvisual/lv_actor.c (visual_actor_run):
 	Moved the event handler, to be really really first of everything.
 
-	* src/lv_color.c (visual_color_compare): Changed a bit.
+	* libvisual/lv_color.c (visual_color_compare): Changed a bit.
 
-	* src/lv_param.c (visual_param_container_add): Emit a change event
+	* libvisual/lv_param.c (visual_param_container_add): Emit a change event
 	when a param gets added. Now you can sync internal vars with the param
 	completely through the event loop in a plugin. So no double inits
 	in a plugin it's init function.
 
-	* src/lv_param.c (visual_param_entry_compare): Added to compare an
+	* libvisual/lv_param.c (visual_param_entry_compare): Added to compare an
 	entry.
 
-	* src/lv_plugin.c (visual_plugin_realize): Set eventqueue before init.
+	* libvisual/lv_plugin.c (visual_plugin_realize): Set eventqueue before init.
 
-	* src/lv_ui.c (visual_ui_choice_get_active): Added function, to
+	* libvisual/lv_ui.c (visual_ui_choice_get_active): Added function, to
 	retrieve the index of the active choice.
 
-	* src/lv_ui.c (visual_ui_checkbox_new): Added extra flag indicating if
+	* libvisual/lv_ui.c (visual_ui_checkbox_new): Added extra flag indicating if
 	the checkbox is a boolean param. If so, you don't have to provide the
 	TRUE, FALSE choices yourself.
 
 2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_param.*, src/lv_ui.c: Added support for paramlists, through
+	* libvisual/lv_param.*, libvisual/lv_ui.c: Added support for paramlists, through
 	the add_many interface, for both VISUAL_UI_CHOICE and paramcontainer.
 
 	Look at the jakdaw plugin how this is used.
@@ -54,53 +76,53 @@
 
 2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c: And the finishing touch.. hopefully :)
+	* libvisual/lv_ui.c: And the finishing touch.. hopefully :)
 
 2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.*: Adding methods to destroy widgets as well.
+	* libvisual/lv_ui.*: Adding methods to destroy widgets as well.
 
 2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_color.* (visual_color_compare): Added function.
+	* libvisual/lv_color.* (visual_color_compare): Added function.
 
-	* src/lv_param.*: Added support for change notify callback functions,
+	* libvisual/lv_param.*: Added support for change notify callback functions,
 	check if the value REALLY changed, on change notify.
 
-	* src/lv_ui.*: Implemented VisUITable.
+	* libvisual/lv_ui.*: Implemented VisUITable.
 
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.*: Adding some more handy functions. 
+	* libvisual/lv_ui.*: Adding some more handy functions. 
 
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_plugin.*: Added functions to support the VisUI config ui from
+	* libvisual/lv_plugin.*: Added functions to support the VisUI config ui from
 	within the plugins.
 
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/*:
+	* libvisual/*:
 
 	Renamed screenbuffer to pixels, regarding VisVideo.
 
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.*: Added 'bold' property for VisUILabel, and some
+	* libvisual/lv_ui.*: Added 'bold' property for VisUILabel, and some
 	small changes.
 
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_param.*: Added: visual_param_entry_set_from_param.
+	* libvisual/lv_param.*: Added: visual_param_entry_set_from_param.
 	And overhauled string param handling, color param handling.
 
 	And some more changes/fixes.
 
-	* src/lv_ui.*: Work on the choice group, get, set API.
+	* libvisual/lv_ui.*: Work on the choice group, get, set API.
 
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_param.c (visual_param_entry_set_string):
+	* libvisual/lv_param.c (visual_param_entry_set_string):
 	strdup string, so we always have the exact entry.
 
 	(visual_param_entry_free): Free the string if it's
@@ -108,105 +130,105 @@
 
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c: OOPS.
+	* libvisual/lv_ui.c: OOPS.
 
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c, src/lv_ui.h: Added VisUISeparator, and some more
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Added VisUISeparator, and some more
 	fixes/changes.
 
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c: For all instance creation functions, unset
+	* libvisual/lv_ui.c: For all instance creation functions, unset
 	size requisition on widgets, standard.
 
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.*: Yeah, lots of checkins today, there is a huge
+	* libvisual/lv_ui.*: Yeah, lots of checkins today, there is a huge
 	thunderstorm here, so, I'm getting a bit paranoia :)...
 
 	Anyway, more impl!
 
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.*: More impl.
+	* libvisual/lv_ui.*: More impl.
 
 2004-10-20  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* src/*: added const pointers on API functions anywhere.
+	* libvisual/*: added const pointers on API functions anywhere.
 
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_param.c (visual_param_entry_get_double):
+	* libvisual/lv_param.c (visual_param_entry_get_double):
 	sanity checked on FLOAT instead of DOUBLE, doh!
 
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.*: Added visual_ui_mutator_set_precision.
+	* libvisual/lv_ui.*: Added visual_ui_mutator_set_precision.
 
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_param.*: Fixed namespaces for the get_eventqueue,
+	* libvisual/lv_param.*: Fixed namespaces for the get_eventqueue,
 	set_eventqueue methods on the visual_param_container 'class'.
 
-	* src/lv_plugin.c: Adapt to changes in VisParam
+	* libvisual/lv_plugin.c: Adapt to changes in VisParam
 
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
-	 * src/lv_ui.c, src/lv_ui.h: Renamed VisUIText to VisUIEntry,
+	 * libvisual/lv_ui.c, libvisual/lv_ui.h: Renamed VisUIText to VisUIEntry,
 	 same story.
 
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c, src/lv_ui.h: Renamed VisUIGroup to VisUIFrame,
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Renamed VisUIGroup to VisUIFrame,
 	seen that is the GTK equalevant.
 
 2004-10-19  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c, src/lv_ui.h: Some details on VisUIBox.
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Some details on VisUIBox.
 
 2004-10-19  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c, src/lv_ui.h: Added functions to set and
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Added functions to set and
 	retrieve a private on a VisUI component, this is for client
 	use, not plugin use. Clients might want to add a pointer to
 	their own widget, and such.
 
 2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c: Most of the UI description work is done,
+	* libvisual/lv_ui.c: Most of the UI description work is done,
 	next we have to make a test widget, do the event and propogate UI
 	changes into the param.
 
 2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c: More work.
+	* libvisual/lv_ui.c: More work.
 
 2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.c: Load of work on the VisUI implementation.
+	* libvisual/lv_ui.c: Load of work on the VisUI implementation.
 
-	* src/lv_ui.h: Some fixes.
-
-2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
-
-	* src/lv_ui.c: Adding functions, still need to do the impl.
+	* libvisual/lv_ui.h: Some fixes.
 
 2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_list.h: Removed unused function define.
-	* src/lv_ui.h: Added many prototypes, defines, enums etc.
+	* libvisual/lv_ui.c: Adding functions, still need to do the impl.
 
 2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/lv_ui.h: Added many structures and typedefs
+	* libvisual/lv_list.h: Removed unused function define.
+	* libvisual/lv_ui.h: Added many prototypes, defines, enums etc.
+
+2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.h: Added many structures and typedefs
 	that should form the main structure for VisUI.
 
 2004-10-17  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* src/Makefile.am: Added lv_ui.*
+	* libvisual/Makefile.am: Added lv_ui.*
 
-	* src/lv_ui.c, src/lv_ui.h: Added files.
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Added files.
 
 2004-10-14  Dennis Smit  <ds@nerds-incorporated.org>
 
@@ -995,7 +1017,7 @@
 
 2004-06-25  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* src/lv_libvisual.h: visual_init() signature changed to
+	* libvisual/lv_libvisual.h: visual_init() signature changed to
 	int (*) (int*, char***). Added messages using visual_log().
 	* configure.ac: user variable CFLAGS overrided.
 	* examples/simplesdl.c: some cleanup to avoid warnings.

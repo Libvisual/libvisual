@@ -252,8 +252,6 @@ struct _VisPluginData {
 						  * rest of the user interface. */
 
 	int			 plugflags;	/**< Plugin flags, currently unused but will be used in the future. */
-	VisSongInfo		*songinfo;	/**< Pointer to VisSongInfo that contains information about the current playing song.
-						  * This can be NULL. */
 
 	VisRandomContext	 random;	/**< Pointer to the plugin it's private random context. It's highly adviced to use
 						  * the plugin it's randomize functions. The reason is so more advanced apps can
@@ -276,6 +274,9 @@ struct _VisActorPlugin {
 							 * get the desired VisVideo surface size of the plugin. */
 	plugin_actor_palette_func_t	 palette;	/**< Used to retrieve the desired palette from the plugin. */
 	plugin_actor_render_func_t	 render;	/**< The main render loop. This is called to draw a frame. */
+
+	VisSongInfo			 songinfo;	/**< Pointer to VisSongInfo that contains information about
+							 *the current playing song. This can be NULL. */
 
 	int				 depth;		/**< The depth flag for the VisActorPlugin. This contains an ORred
 							  * value of depths that are supported by the plugin. */

@@ -14,29 +14,29 @@ enum {
 
 	/* Standard error entries */
 	VISUAL_ERROR_GENERIC,				/**< Generic error. */
-	VISUAL_ERROR_NULL,				/**< One of the parameters is NULL. */
-	VISUAL_ERROR_IMPOSSIBLE,
+	VISUAL_ERROR_NULL,				/**< Something is NULL that shouldn't be. */
+	VISUAL_ERROR_IMPOSSIBLE,			/**< The impossible happened, this should never happen. */
 
 	/* Error entries for the VisActor system */
-	VISUAL_ERROR_ACTOR_NULL,			/**< The actor is NULL. */
-	VISUAL_ERROR_ACTOR_VIDEO_NULL,			/**< The video target member in the actor is NULL. */
-	VISUAL_ERROR_ACTOR_PLUGIN_NULL,			/**< The actor plugin in this context is NULL. */
-	VISUAL_ERROR_ACTOR_GL_NEGOTIATE,		/**< Tried depth forcing a GL actor. */
+	VISUAL_ERROR_ACTOR_NULL,			/**< The VisActor is NULL. */
+	VISUAL_ERROR_ACTOR_VIDEO_NULL,			/**< The VisVideo target member in the VisActor is NULL. */
+	VISUAL_ERROR_ACTOR_PLUGIN_NULL,			/**< The VisActor plugin in this context is NULL. */
+	VISUAL_ERROR_ACTOR_GL_NEGOTIATE,		/**< Tried depth forcing a GL VisACtor. */
 
 	/* Error entries for the VisAudio system */
-	VISUAL_ERROR_AUDIO_NULL,
+	VISUAL_ERROR_AUDIO_NULL,			/**< The VisAudio is NULL. */
 	
 	/* Error entries for the VisBMP system */
-	VISUAL_ERROR_BMP_NO_BMP,
-	VISUAL_ERROR_BMP_NOT_FOUND,
-	VISUAL_ERROR_BMP_NOT_SUPPORTED,
-	VISUAL_ERROR_BMP_CORRUPTED,
+	VISUAL_ERROR_BMP_NO_BMP,			/**< Not a bitmap file. */
+	VISUAL_ERROR_BMP_NOT_FOUND,			/**< File not found. */
+	VISUAL_ERROR_BMP_NOT_SUPPORTED,			/**< File format not supported. */
+	VISUAL_ERROR_BMP_CORRUPTED,			/**< Bitmap file is corrupted. */
 	
 	/* Error entries for the VisColor system */
-	VISUAL_ERROR_COLOR_NULL,
+	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
 	
 	/* Error entries for the VisError system */
-	VISUAL_ERROR_ERROR_HANDLER_NULL,
+	VISUAL_ERROR_ERROR_HANDLER_NULL,		/**< Error handler is NULL. */
 	
 	/* Error entries for the VisEvent system */
 	VISUAL_ERROR_EVENT_NULL,
@@ -115,6 +115,7 @@ enum {
 	VISUAL_ERROR_UI_CHECKBOX_NULL,
 	VISUAL_ERROR_UI_CHOICE_ENTRY_NULL,
 	VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE,
+	VISUAL_ERROR_UI_INVALID_TYPE,
 	VISUAL_ERROR_UI_NO_BOX,
 	VISUAL_ERROR_UI_NO_TABLE,
 	VISUAL_ERROR_UI_NO_FRAME,

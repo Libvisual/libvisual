@@ -8,8 +8,9 @@
 #include "lv_ui.h"
 
 
-static void widget_free (void *ptr);
-static void widget_destroy (void *ptr);
+static int widget_free (void *ptr);
+static void list_widget_destroy (void *ptr);
+static int widget_destroy (void *ptr);
 
 static void table_entry_destroyer (void *ptr);
 
@@ -23,128 +24,139 @@ static void table_entry_destroyer (void *ptr)
 	widget_destroy (tentry->widget);
 }
 
-static void widget_free (void *ptr)
+static int widget_free (void *ptr)
 {
 	VisUIWidget *widget = ptr;
 
-	visual_log_return_if_fail (widget != NULL);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	switch (widget->type) {
 		case VISUAL_WIDGET_TYPE_NULL:
-			visual_mem_free (widget);
+			return visual_mem_free (widget);
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_WIDGET:
-			visual_mem_free (widget);
+			return visual_mem_free (widget);
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_BOX:
-			visual_ui_box_free (VISUAL_UI_BOX (widget));
+			return visual_ui_box_free (VISUAL_UI_BOX (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_TABLE:
-			visual_ui_table_free (VISUAL_UI_TABLE (widget));
+			return visual_ui_table_free (VISUAL_UI_TABLE (widget));
 
 			break;
 		
 		case VISUAL_WIDGET_TYPE_FRAME:
-			visual_ui_frame_free (VISUAL_UI_FRAME (widget));
+			return visual_ui_frame_free (VISUAL_UI_FRAME (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_LABEL:
-			visual_ui_label_free (VISUAL_UI_LABEL (widget));
+			return visual_ui_label_free (VISUAL_UI_LABEL (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_IMAGE:
-			visual_ui_image_free (VISUAL_UI_IMAGE (widget));
+			return visual_ui_image_free (VISUAL_UI_IMAGE (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_SEPARATOR:
-			visual_ui_separator_free (VISUAL_UI_SEPARATOR (widget));
+			return visual_ui_separator_free (VISUAL_UI_SEPARATOR (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_ENTRY:
-			visual_ui_entry_free (VISUAL_UI_ENTRY (widget));
+			return visual_ui_entry_free (VISUAL_UI_ENTRY (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_SLIDER:
-			visual_ui_slider_free (VISUAL_UI_SLIDER (widget));
+			return visual_ui_slider_free (VISUAL_UI_SLIDER (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_NUMERIC:
-			visual_ui_numeric_free (VISUAL_UI_NUMERIC (widget));
+			return visual_ui_numeric_free (VISUAL_UI_NUMERIC (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_COLOR:
-			visual_ui_color_free (VISUAL_UI_COLOR (widget));
+			return visual_ui_color_free (VISUAL_UI_COLOR (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_POPUP:
-			visual_ui_popup_free (VISUAL_UI_POPUP (widget));
+			return visual_ui_popup_free (VISUAL_UI_POPUP (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_LIST:
-			visual_ui_list_free (VISUAL_UI_LIST (widget));
+			return visual_ui_list_free (VISUAL_UI_LIST (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_RADIO:
-			visual_ui_radio_free (VISUAL_UI_RADIO (widget));
+			return visual_ui_radio_free (VISUAL_UI_RADIO (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_CHECKBOX:
-			visual_ui_checkbox_free (VISUAL_UI_CHECKBOX (widget));
+			return visual_ui_checkbox_free (VISUAL_UI_CHECKBOX (widget));
 
 			break;
 
 		default:
 			visual_log (VISUAL_LOG_CRITICAL, "Trying to free an unknown VisUI widget type");
+			
+			return -VISUAL_ERROR_UI_INVALID_TYPE;
 
 			break;
 	}
+
+	return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
-static void widget_destroy (void *ptr)
+static void list_widget_destroy (void *ptr)
+{
+	widget_destroy (ptr);
+}
+
+static int widget_destroy (void *ptr)
 {
 	VisUIWidget *widget = ptr;
 
-	visual_log_return_if_fail (widget != NULL);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	switch (widget->type) {
 		case VISUAL_WIDGET_TYPE_BOX:
-			visual_ui_box_destroy (VISUAL_UI_BOX (widget));
+			return visual_ui_box_destroy (VISUAL_UI_BOX (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_TABLE:
-			visual_ui_table_destroy (VISUAL_UI_TABLE (widget));
+			return visual_ui_table_destroy (VISUAL_UI_TABLE (widget));
 
 			break;
 		
 		case VISUAL_WIDGET_TYPE_FRAME:
-			visual_ui_frame_destroy (VISUAL_UI_FRAME (widget));
+			return visual_ui_frame_destroy (VISUAL_UI_FRAME (widget));
 
 			break;
 
 		default:
 			/* The others are the same destroy/free wise. */
-			widget_free (widget);
+			return widget_free (widget);
 		
 			break;
 	}
+
+	return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
 /**
@@ -152,6 +164,11 @@ static void widget_destroy (void *ptr)
  * @{
  */
 
+/**
+ * Creates a new VisUIWidget structure.
+ *
+ * @return A newly allocated VisUIWidget, or NULL on error.
+ */
 VisUIWidget *visual_ui_widget_new ()
 {
 	VisUIWidget *widget;
@@ -164,24 +181,45 @@ VisUIWidget *visual_ui_widget_new ()
 	return widget;
 }
 
+/**
+ * Frees the VisUIWidget. This frees a VisUIWidget, when freeing a widget always
+ * use this function, it will automaticly call the right internal function.
+ *
+ * @param widget Pointer to the VisUIWidget that needs to be freed.
+ * 
+ * @return VISUAL_OK on succes, or errors that can be thrown by any of the free functions.
+ */
 int visual_ui_widget_free (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
-	widget_free (widget);
-
-	return VISUAL_OK;
+	return widget_free (widget);
 }
 
+/**
+ * Destroys the VisUIWidget. This destroys a VisUIWidget and all it's childeren.
+ * This function should be used to destroy a complete widget 'tree'
+ *
+ * @param widget Pointer to the VisUIWidget that needs to be destroyed.
+ *
+ * @return VISUAL_OK on succes, or errors that can be thrown by any of the destroyer functions.
+ */
 int visual_ui_widget_destroy (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
-	widget_destroy (widget);
-
-	return VISUAL_OK;
+	return widget_destroy (widget);
 }
 
+/**
+ * Sets a request for size to a VisUIWidget, to be used to request a certain dimension.
+ *
+ * @param widget Pointer to the VisUIWidget to which the size request is set.
+ * @param width The width in pixels of the size requested.
+ * @param height The height in pixels of the size requested.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_WIDGET_NULL on failure.
+ */
 int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int height)
 {
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
@@ -192,6 +230,14 @@ int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int heigh
 	return VISUAL_OK;
 }
 
+/**
+ * Sets a tooltip to a VisUIWidget.
+ *
+ * @param widget Pointer to the VisUIWidget to which the tooltip is set.
+ * @param tooltip A string containing the tooltip text.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_WIDGET_NULL on failure.
+ */
 int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
 {
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
@@ -302,7 +348,7 @@ int visual_ui_box_destroy (VisUIBox *box)
 		return -VISUAL_ERROR_UI_NO_BOX;
 	}
 
-	visual_list_destroy_elements (&box->childs, widget_destroy);
+	visual_list_destroy_elements (&box->childs, list_widget_destroy);
 
 	return visual_ui_box_free (box);
 }
