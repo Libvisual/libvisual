@@ -87,7 +87,7 @@ libvisual:
 		investigate bpm detection (post 0.4)
 
 	video:
-		visvideo in visvideo blit function (for cover art showing)
+		Make the screenbuffer an union alla the Pixel struct in goom. (major change...)
 
 		font system
 		

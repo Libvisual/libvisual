@@ -82,6 +82,8 @@ int visual_video_bpp_from_depth (VisVideoDepth depth);
 int visual_video_blit_fit (VisVideo *dest, VisVideo *src);
 int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
 
+int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, uint8_t density);
+
 int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
 int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch);

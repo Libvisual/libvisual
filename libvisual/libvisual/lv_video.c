@@ -625,7 +625,7 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	int xbpp;
 	uint8_t *destbuf;
 	uint8_t *srcpbuf;
-	uint8_t *srcbuf;
+	uint32_t *srcbuf;
 
 	/* We can't overlay GL surfaces so don't even try */
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
@@ -662,6 +662,8 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	srcbuf = src->screenbuffer;
 	srcpbuf = srcp->screenbuffer;
 
+	/** @todo something goes wrong when 32 -> 8 dest. */
+	
 	/* No alpha, fast method */
 	if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT) {
 		/* Blit it to the dest video */
@@ -681,6 +683,10 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 					amount);
 		}
 	} else {
+		/** @todo clean this up */
+		/** @todo bugs when not fitting!! */
+		int aindex = 0;
+		
 		xbpp = x * dest->bpp;
 
 		/* Blit it to the dest video */
@@ -695,8 +701,16 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 				amount = wrange;
 
 			for (xa = 0; xa < amount * dest->bpp; xa++) {
+				uint8_t alpha;
+				
+				/** @todo make a lot faster */
+				if (aindex % 4 == 0 || aindex == 0)
+					alpha = srcbuf[aindex / 4] >> 24;
+				
+				aindex++;
+				
 				destbuf[((ya + y) * dest->pitch) + xa + xbpp] =
-					(128 * (srcpbuf[(ya * srcp->pitch) + xa] -
+					(alpha * (srcpbuf[(ya * srcp->pitch) + xa] -
 						destbuf[((ya + y) * dest->pitch) + xa + xbpp]))
 					/ 255 + destbuf[((ya + y) * dest->pitch) + xa + xbpp];
 			}
@@ -705,6 +719,42 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 
 	if (transform != NULL)
 		visual_video_free_with_buffer (transform);
+
+	return 0;
+}
+
+/**
+ * Sets a certain color as the alpha channel and the density for the non alpha channel
+ * colors. This function can only be used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
+ *
+ * @param video Pointer to the VisVideo in which the alpha channel is made.
+ * @param r The red value for the alpha channel color.
+ * @param g The green value for the alpha channel color.
+ * @param b The blue value for the alpha channel color.
+ * @param density The alpha density for the other colors.
+ * 
+ * @return 0 on succes -1 on error.
+ */
+int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, uint8_t density)
+{
+	int col = 0;
+	int i;
+	uint32_t *vidbuf;
+
+	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -1);
+
+	col = (r << 16 | g << 8 | b);
+
+	vidbuf = video->screenbuffer;
+
+	for (i = 0; i < video->size / video->bpp; i++) {
+		if ((vidbuf[i] & 0x00ffffff) == col) {
+			vidbuf[i] = col;
+		} else {
+			vidbuf[i] += (density << 24);
+		}
+	}
 
 	return 0;
 }
