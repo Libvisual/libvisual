@@ -1,3 +1,9 @@
+2005-03-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.*, libvisual/lv_thread.*:
+	Ok revamped the VisThread system, now the only thing left is w32
+	native threads, might do that later today.
+
 2005-03-19  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_thread.*: Setting ifdefs right.

@@ -35,6 +35,7 @@
 #include "lv_libvisual.h"
 #include "lv_log.h"
 #include "lv_param.h"
+#include "lv_thread.h"
 #include "config.h"
 
 
@@ -238,6 +239,9 @@ int visual_init (int *argc, char ***argv)
 	/* Initialize CPU caps */
 	visual_cpu_initialize ();
 
+	/* Initialize Thread system */
+	visual_thread_initialize ();
+	
 	/* Add the standard plugin paths */
 	ret = visual_init_path_add (PLUGPATH"/actor");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);

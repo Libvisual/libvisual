@@ -51,7 +51,7 @@ struct _VisThread {
 	HANDLE thread;
 	DWORD threadId;
 #elif defined(VISUAL_THREAD_MODEL_GTHREAD) /* !VISUAL_THREAD_MODEL_WIN32 */
-
+	GThread *thread;
 #endif
 #endif /* VISUAL_HAVE_THREADS */
 };
@@ -67,21 +67,27 @@ struct _VisMutex {
 #elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
 
 #elif defined(VISUAL_THREAD_MODEL_GTHREAD) /* !VISUAL_THREAD_MODEL_WIN32 */
+	GMutex *mutex;
 
+	GStaticMutex static_mutex;
+	int static_mutex_used;
 #endif
 #endif /* VISUAL_HAVE_THREADS */
 };
+
+int visual_thread_initialize (void);
+int visual_thread_is_initialized (void);
 
 void visual_thread_enable (int enabled);
 int visual_thread_is_enabled (void);
 
 int visual_thread_is_supported (void);
+
 VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable);
 int visual_thread_free (VisThread *thread);
 void *visual_thread_join (VisThread *thread);
 void visual_thread_exit (void *retval);
 void visual_thread_yield (void);
-VisThread *visual_thread_self (void);
 
 VisMutex *visual_mutex_new (void);
 int visual_mutex_free (VisMutex *mutex);

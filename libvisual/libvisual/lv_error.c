@@ -103,7 +103,10 @@ static const char *__lv_error_human_readable[] = {
 	"VisSongInfo is NULL",							/* VISUAL_ERROR_SONGINFO_NULL */
 
 	"VisThread is NULL",							/* VISUAL_ERROR_THREAD_NULL */
-	"Threading is disabled or not supported",				/* VISUAL_ERROR_THREAD_NO_THREADING */
+	"The VisThread subsystem is not initialized",				/* VISUAL_ERROR_THREAD_NOT_INITIALIZED */
+	"The VisThread subsystem couldn't find any threading model to use",	/* VISUAL_ERROR_THREAD_NOT_SUPPORTED */
+	"The VisThread subsystem is not enabled",				/* VISUAL_ERROR_THREAD_NOT_ENABLED */ 
+
 	"VisMutex is NULL",							/* VISUAL_ERROR_MUTEX_NULL */
 	"VisMutex lock failed",							/* VISUAL_ERROR_MUTEX_LOCK_FAILURE */
 	"VisMutex trylock failed",						/* VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE */
