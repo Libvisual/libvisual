@@ -53,6 +53,8 @@ int visual_morph_set_rate (VisMorph *morph, float rate);
 
 VisPalette *visual_morph_get_palette (VisMorph *morph);
 
+int visual_morph_requests_audio (VisMorph *morph);
+
 int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
 
 #ifdef __cplusplus

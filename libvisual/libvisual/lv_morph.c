@@ -268,6 +268,31 @@ VisPalette *visual_morph_get_palette (VisMorph *morph)
 }
 
 /**
+ * Some morph plugins request an VisAudio context to draw properly. Using this function
+ * you can check if the VisMorphPlugin being used in the VisMorph requests this.
+ *
+ * @param morph Pointer to a VisMorph of which we want to know if it wants a VisAudio.
+ *
+ * @return TRUE or FALSE, -1 on error. 
+ */
+int visual_morph_requests_audio (VisMorph *morph)
+{
+	VisMorphPlugin *morphplugin;
+
+	visual_log_return_val_if_fail (morph != NULl, -1);
+
+	morphplugin = get_morph_plugin (morph);
+	
+	if (plugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"The given morph does not reference any plugin");
+		return -1;
+	}
+
+	return morphplugin->requests_audio;
+}
+
+/**
  * This is called to run the VisMorph. It will put the result in the buffer that is previously
  * set by visual_morph_set_video and also when the morph is being runned in 8 bits mode
  * it will automaticly interpolate between the two palettes if the plugin doesn't have
