@@ -31,6 +31,18 @@ static VisActorPlugin *get_actor_plugin (VisActor *actor)
  */
 
 /**
+ * Gives the encapsulated LVPlugin from a VisActor.
+ *
+ * @param actor Pointer of a VisActor of which the LVPlugin needs to be returned.
+ *
+ * @return LVPlugin that is encapsulated in the VisActor, possibly NULL.
+ */
+LVPlugin *visual_actor_get_plugin (VisActor *actor)
+{
+	return actor->plugin;
+}
+
+/**
  * Gives a list of VisActors in the current plugin registry.
  *
  * @return An VisList containing the VisActors in the plugin registry.
@@ -333,53 +345,6 @@ int visual_actor_free (VisActor *actor)
 }
 
 /**
- * Pumps events from the VisActor into the plugin event handler. When visual_actor_run
- * is used to run the actor, which is highly adviced. Events get pumped automatically
- * and there is no need to call this function manually.
- *
- * @param actor Pointer to a VisActor of which the events needs to be pumped.
- *
- * @return 0 on succes -1 on error.
- */
-int visual_actor_events_pump (VisActor *actor)
-{
-	VisActorPlugin *actplugin;
-
-	visual_log_return_val_if_fail (actor != NULL, -1);
-
-	actplugin = get_actor_plugin (actor);
-
-	if (actplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"The given actor does not reference any actor plugin");
-		return -1;
-	}
-
-	if (actplugin->events != NULL)
-		actplugin->events (actplugin, &actor->events);
-
-	return 0;
-}
-
-/**
- * Gives a pointer to the event queue within the VisActor. This event queue can be used to
- * queue user events like mouse and keyboard that need to be handled by the plugin.
- * 
- * @see VisEventQueue
- * @see VisEvent
- * 
- * @param actor Pointer to a VisActor of which the event queue is needed.
- *
- * @return Pointer to the event queue structure on succes or NULL on error.
- */
-VisEventQueue *visual_actor_get_eventqueue (VisActor *actor)
-{
-	visual_log_return_val_if_fail (actor != NULL, NULL);
-
-	return &actor->events;
-}
-
-/**
  * Gives a pointer to the song info data within the VisActor. This song info data can be used
  * to set name, artist and even coverart which can be used by the plugins and the framework itself.
  *
@@ -526,9 +491,9 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 		visual_log (VISUAL_LOG_INFO, "transpitch3 %d", actor->transform->pitch);
 		
 		if (noevent == FALSE) {
-			visual_event_queue_add_resize (&actor->events, actor->transform,
+			visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->transform,
 					actor->transform->width, actor->transform->height);
-			visual_actor_events_pump (actor);
+			visual_plugin_events_pump (actor->plugin);
 		} else {
 			/* Normally a visual_video_set_dimension get's called within the
 			 * event handler, but we won't come there right now so we've
@@ -552,9 +517,9 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 		actplugin->requisition (actplugin, &actor->video->width, &actor->video->height);
 		
 		if (noevent == FALSE) {
-			visual_event_queue_add_resize (&actor->events, actor->video,
+			visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->video,
 					actor->video->width, actor->video->height);
-			visual_actor_events_pump (actor);
+			visual_plugin_events_pump (actor->plugin);
 		}
 
 		/* Size fitting enviroment */
@@ -661,7 +626,7 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 			visual_songinfo_mark (actor->songinfo);
 		
 			if (actplugin->events != NULL)
-				visual_event_queue_add_newsong (&actor->events, actor->songinfo);
+				visual_event_queue_add_newsong (&actor->plugin->eventqueue, actor->songinfo);
 
 			actor->songcompare = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
 		}
@@ -670,7 +635,7 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 			visual_songinfo_mark (actor->songinfo);
 
 			if (actplugin->events != NULL)
-				visual_event_queue_add_newsong (&actor->events, actor->songinfo);
+				visual_event_queue_add_newsong (&actor->plugin->eventqueue, actor->songinfo);
 		}
 		/** @todo should be freeing and copying everytime, should done more effecient */
 		visual_songinfo_free_strings (actor->songcompare);
@@ -685,7 +650,7 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 
 	visual_video_set_palette (video, visual_actor_get_palette (actor));
 	
-	visual_actor_events_pump (actor);
+	visual_plugin_events_pump (actor->plugin);
 
 	/* Yeah some transformation magic is going on here when needed */
 	if (transform != NULL && (transform->depth != video->depth)) {

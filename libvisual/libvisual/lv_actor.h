@@ -40,12 +40,12 @@ struct _VisActor {
 					 * @see visual_actor_get_songinfo */
 	VisSongInfo	*songcompare;	/**< Private member which is used to compare with new songinfo
 					  * to check if a new song event should be emitted. */
-	VisEventQueue	events;		/**< The event queue which is used to queue new events.
-					  * @see visual_actor_get_eventqueue */
 	void		*private;	/**< Private member for internal usage, currently unused. */
 };
 
 /* prototypes */
+LVPlugin *visual_actor_get_plugin (VisActor *actor);
+
 VisList *visual_actor_get_list (void);
 char *visual_actor_get_next_by_name_gl (char *name);
 char *visual_actor_get_prev_by_name_gl (char *name);
@@ -61,9 +61,6 @@ int visual_actor_realize (VisActor *actor);
 int visual_actor_destroy (VisActor *actor);
 int visual_actor_free (VisActor *actor);
 
-int visual_actor_events_pump (VisActor *actor);
-
-VisEventQueue *visual_actor_get_eventqueue (VisActor *actor);
 VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
 VisPalette *visual_actor_get_palette (VisActor *actor);
 

@@ -25,6 +25,18 @@ static VisInputPlugin *get_input_plugin (VisInput *input)
  */
 
 /**
+ * Gives the encapsulated LVPlugin from a VisInput.
+ *
+ * @param input Pointer of a VisInput of which the LVPlugin needs to be returned.
+ *
+ * @return LVPlugin that is encapsulated in the VisInput, possibly NULL.
+ */
+LVPlugin *visual_input_get_plugin (VisInput *input)
+{
+	        return input->plugin;
+}
+
+/**
  * Gives a list of input plugins in the current plugin registry.
  *
  * @return An VisList containing the input plugins in the plugin registry.

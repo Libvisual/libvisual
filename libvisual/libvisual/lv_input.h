@@ -36,6 +36,8 @@ struct _VisInput {
 };
 
 /* prototypes */
+LVPlugin *visual_input_get_plugin (VisInput *input);
+
 VisList *visual_input_get_list (void);
 char *visual_input_get_next_by_name (char *name);
 char *visual_input_get_prev_by_name (char *name);

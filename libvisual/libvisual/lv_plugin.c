@@ -41,6 +41,62 @@ static void ref_list_destroy (void *data)
  */
 
 /**
+ * Pumps the queued events into the plugin it's event handler if it has one.
+ *
+ * @param plugin Pointer to a LVPlugin of which the events need to be pumped into
+ *	the handler.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_plugin_events_pump (LVPlugin *plugin)
+{
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
+	switch (plugin->type) {
+		case VISUAL_PLUGIN_TYPE_NULL:
+			return -1;
+			break;
+
+		case VISUAL_PLUGIN_TYPE_ACTOR:
+			if (plugin->plugin.actorplugin->events != NULL)
+				plugin->plugin.actorplugin->events (plugin->plugin.actorplugin, &plugin->eventqueue);
+
+			break;
+
+		case VISUAL_PLUGIN_TYPE_INPUT:
+			return -1;
+			break;
+
+		case VISUAL_PLUGIN_TYPE_MORPH:
+			return -1;
+			break;
+			
+		default:
+			return -1;
+			break;
+	}
+
+	return 0;
+}
+
+/**
+ * Gives the event queue from a LVPlugin. This queue needs to be used
+ * when you want to send events to the plugin.
+ *
+ * @see visual_plugin_events_pump
+ *
+ * @param plugin Pointer to the LVPlugin from which we want the queue.
+ *
+ * @return A pointer to the requested VisEventQueue or NULL on error.
+ */
+VisEventQueue *visual_plugin_get_eventqueue (LVPlugin *plugin)
+{
+	visual_log_return_val_if_fail (plugin != NULL, NULL);
+
+	return &plugin->eventqueue;
+}
+
+/**
  * Creates a new VisPluginInfo structure. Creates a VisPluginInfo and add information to it.
  *
  * @param name The name of the plugin.

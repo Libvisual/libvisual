@@ -31,6 +31,18 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
  */
 
 /**
+ * Gives the encapsulated LVPlugin from a VisMorph.
+ *
+ * @param morph Pointer of a VisMorph of which the LVPlugin needs to be returned.
+ *
+ * @return LVPlugin that is encapsulated in the VisMorph, possibly NULL.
+ */
+LVPlugin *visual_morph_get_plugin (VisMorph *morph)
+{
+	        return morph->plugin;
+}
+
+/**
  * Gives a list of morph plugins in the current plugin registry.
  *
  * @return a VisList containing the morph plugins in the plugin registry.

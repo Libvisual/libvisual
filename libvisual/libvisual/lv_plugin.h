@@ -198,6 +198,8 @@ struct _LVPlugin {
 	int		 realized;		/**< Is set when the plugin is realized. this
 						  * means that when the plugin it's init function
 						  * has been called. */
+	VisEventQueue	 eventqueue;		/**< The plugin it's private event queue. */
+	
 	union {
 		VisActorPlugin *actorplugin;	/**< Union entry used when the plugin is an actor plugin. */
 		VisInputPlugin *inputplugin;	/**< Union entry used when the plugin is an input plugin. */
@@ -206,6 +208,9 @@ struct _LVPlugin {
 };
 
 /* prototypes */
+int visual_plugin_events_pump (LVPlugin *plugin);
+VisEventQueue *visual_plugin_get_eventqueue (LVPlugin *plugin);
+
 VisPluginInfo *visual_plugin_info_new (char *name, char *author, char *version, char *about, char *help);
 VisPluginInfo *visual_plugin_info_duplicate (VisPluginInfo *pluginfo);
 int visual_plugin_info_free (VisPluginInfo *pluginfo);
