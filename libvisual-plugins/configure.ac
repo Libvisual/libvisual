@@ -11,7 +11,6 @@ AC_CONFIG_HEADER([config.h])
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_PROG_MAKE_SET
 
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
@@ -27,34 +26,43 @@ else
 fi
 
 # Checks for libraries.
+build_input=""
+build_actor="infinite JESS lv_scope oinksie"
+build_morph="alphablend tentacle flash"
+
 # FIXME: Replace `main' with a function in `-lGL':
 AC_CHECK_LIB([GL], [main])
 # FIXME: Replace `main' with a function in `-lGLU':
 AC_CHECK_LIB([GLU], [main])
 
-PKG_CHECK_MODULES(LIBESD, esound >= 0.2.28, [libesd="yes"], [libesd="no"])
-if test x"$libesd" = xno; then
-	AC_MSG_WARN([esound not found, the esound plugin won't be build])
-	AC_MSG_WARN([get a newer esound package])
+PKG_CHECK_MODULES(LIBESD, esound >= 0.2.29, [libesd="yes"], [libesd="no"])
+if test x$libesd = xno; then
+	AC_MSG_WARN([
+*** esound not found or too old, the esound plugin won't be build
+	])
 fi
 AC_SUBST(LIBESD_LIBS)
 AC_SUBST(LIBESD_CFLAGS)
-if test x"$libesd" = xyes; then
+if test x$libesd = xyes; then
 	build_input="esd $build_input"
 fi
 
 PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.5, [libvis="yes"], [libvis="no"])
-if test x"$libvis" = xno; then
-	AC_MSG_ERROR([libvisual not found, libvisual is needed to build this package,
-you can download libvisual at http://libvisual.sf.net/])
+if test x$libvis = xno; then
+	AC_MSG_ERROR([
+*** libvisual not found, libvisual is needed to build this package,
+*** you can download libvisual at http://libvisual.sf.net/
+	])
 fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
 	
 PKG_CHECK_MODULES(LIBGOOM2, libgoom2 = 2k4, [libgoom="yes"], [libgoom="no"])
-if test x"$libgoom" = xno; then
-	AC_MSG_WARN([libgoom 2k4 not found, the goom plugin won't be build])
-	AC_MSG_WARN([you can download goom at http://www.ios-software.com/])
+if test x$libgoom = xno; then
+	AC_MSG_WARN([
+*** libgoom 2k4 not found, the goom plugin won't be build
+*** you can download goom at http://www.ios-software.com/
+	])
 fi
 AC_SUBST(LIBGOOM2_LIBS)
 AC_SUBST(LIBGOOM2_CFLAGS)
@@ -64,10 +72,13 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/time.h unistd.h])
+AC_HEADER_TIME
+AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
 AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
 if test x"$opengl" = xno; then
-	AC_MSG_WARN([opengl and glu headers not found, the opengl plugins won't be build])
+	AC_MSG_WARN([
+*** OpenGl and Glu headers not found, the opengl plugins won't be build
+	])
 fi
 if test x"$opengl" = xyes; then
 	build_actor="lv_gltest dna madspin $build_actor"
@@ -76,7 +87,6 @@ fi
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
-AC_HEADER_TIME
 
 # Checks for library functions.
 AC_FUNC_MALLOC
@@ -85,10 +95,6 @@ AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt])
 # Default prefix
 AC_PREFIX_DEFAULT(/usr)
 prefix=$prefix
-
-build_input="esd"
-build_actor="dna goom2 infinite JESS lv_gltest lv_scope madspin oinksie"
-build_morph="alphablend tentacle flash"
 
 # check plugin data dir
 #datadir = pkg-config libvisual --variable=datadir

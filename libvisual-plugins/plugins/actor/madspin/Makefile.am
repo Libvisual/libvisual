@@ -1,3 +1,5 @@
+## Process this file with automake to generate a Makefile.in
+
 imagesdir = $(datadir)/libvisual/actor/actor_madspin
 images_DATA = star1.bmp \
 	      star2.bmp
@@ -10,7 +12,7 @@ libdir = $(prefix)/lib/libvisual/actor
 
 LIBS = -L. -L$(prefix)/lib -lGL -lGLU @LV_LIBS@
 
-CFLAGS = -DSTAR_DIR=\""$(imagesdir)/"\"
+AM_CFLAGS = -DSTAR_DIR=\""$(imagesdir)/"\"
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir) 

@@ -1,10 +1,12 @@
+## Process this file with automake to generate a Makefile.in
+
 lib_LTLIBRARIES = actor_lv_gltest.la
 
 libdir = $(prefix)/lib/libvisual/actor
 
 LIBS = -L. -L$(prefix)/lib -lGL -lGLU @LV_LIBS@
 
-CFLAGS =
+AM_CFLAGS =
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir) 

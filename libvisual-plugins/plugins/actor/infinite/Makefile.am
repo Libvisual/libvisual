@@ -1,10 +1,12 @@
+## Process this file with automake to generate a Makefile.in
+
 lib_LTLIBRARIES = actor_infinite.la
 
 libdir = $(prefix)/lib/libvisual/actor
 
 LIBS = -L. -L$(prefix)/lib @LV_LIBS@
 
-CFLAGS =
+AM_CFLAGS =
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir) 

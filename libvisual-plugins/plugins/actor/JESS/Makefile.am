@@ -1,10 +1,10 @@
+## Process this file with automake to generate a Makefile.in
+
 lib_LTLIBRARIES = actor_JESS.la
 
 libdir = $(prefix)/lib/libvisual/actor
 
 LIBS = -L. -L$(prefix)/lib @LV_LIBS@
-
-CFLAGS =
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir) 
