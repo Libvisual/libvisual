@@ -1,5 +1,9 @@
 2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_config.*: Some more work.
+
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_actor.*, libvisual/lv_input.*, libvisual/lv_morph.*,
 	libvisual/lv_transform.*, libvisual/lv_plugin.*,
 	libvisual/lv_libvisual.c:

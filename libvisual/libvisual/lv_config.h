@@ -34,6 +34,10 @@ extern "C" {
 #define VISUAL_CONFIG_REGISTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisConfigRegistry))
 #define VISUAL_CONFIG_REGISTRYSECTION(obj)		(VISUAL_CHECK_CAST ((obj), VisConfigRegistrySection))
 
+/**
+ * Indicates at which version the config registry file format is.
+ */
+#define VISUAL_CONFIG_VERSION	"LV CONFIG FILE  3"
 
 typedef struct _VisConfigRegistry VisConfigRegistry;
 typedef struct _VisConfigRegistrySection VisConfigRegistrySection;
@@ -69,10 +73,11 @@ struct _VisConfigRegistrySection {
 VisConfigRegistry *visual_config_registry_new (void);
 VisConfigRegistry *visual_config_registry_open (const char *configfile);
 
+VisConfigRegistrySection *visual_config_registry_find (VisConfigRegistry *registry, const char *name);
+int visual_config_registry_remove (VisConfigRegistry *registry, const char *name);
+int visual_config_registry_add (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
+
 VisConfigRegistrySection *visual_config_registry_section_new (void);
-VisConfigRegistrySection *visual_config_registry_section_find (VisConfigRegistry *registry, const char *name);
-int visual_config_registry_section_remove (VisConfigRegistry *registry, const char *name);
-int visual_config_registry_section_add (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
 VisConfigRegistrySection *visual_config_registry_section_open (const char *name, const char *configfile);
 
 int visual_config_registry_write_by_data (VisConfigRegistry *registry, const char *name, const char *data, int datalength);
