@@ -101,8 +101,7 @@ struct _VisUIWidget {
 
 	void			*priv;
 
-	int			 visible : 1;
-	int			 sensitive : 1;
+	const char		*tooltip;
 
 	int			 width;
 	int			 height;
@@ -246,6 +245,7 @@ VisUIWidget *visual_ui_widget_new (void);
 int visual_ui_widget_free (VisUIWidget *widget);
 int visual_ui_widget_destroy (VisUIWidget *widget);
 int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int height);
+int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip);
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget);
 VisUIWidget *visual_ui_widget_get_parent (VisUIWidget *widget);
 VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget);

@@ -192,6 +192,15 @@ int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int heigh
 	return 0;
 }
 
+int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
+{
+	visual_log_return_val_if_fail (widget != NULL, -1);
+
+	widget->tooltip = tooltip;
+
+	return 0;
+}
+
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget)
 {
 	VisUIWidget *above;
