@@ -318,6 +318,27 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
 }
 
 /**
+ * Sets the VisParamEntry to VISUAL_PARAM_TYPE_DOUBLE and assigns the double given as argument to it.
+ *
+ * @param param Pointer to the VisParamEntry to which a parameter is set.
+ * @param doubleflt The double value for this parameter.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
+{
+	visual_log_return_val_if_fail (param != NULL, -1);
+
+	param->type = VISUAL_PARAM_TYPE_DOUBLE;
+
+	param->data.doubleflt = doubleflt;
+
+	visual_param_entry_changed (param);
+	
+	return 0;
+}
+
+/**
  * Sets the VisParamEntry to VISUAL_PARAM_TYPE_COLOR and assigns the rgb values given as arguments to it.
  *
  * @param param Pointer to the VisParamEntry to which a parameter is set.
@@ -428,6 +449,23 @@ float visual_param_entry_get_float (VisParamEntry *param)
 		visual_log (VISUAL_LOG_WARNING, "Requesting float from a non float param\n");
 
 	return param->data.floating;
+}
+
+/**
+ * Get the double parameter from a VisParamEntry.
+ *
+ * @param param Pointer to the VisParamEntry from which the double parameter is requested.
+ *
+ * @return The double parameter from the VisParamEntry.
+ */
+double visual_param_entry_get_double (VisParamEntry *param)
+{
+	visual_log_return_val_if_fail (param != NULL, 0);
+
+	if (param->type != VISUAL_PARAM_TYPE_FLOAT)
+		visual_log (VISUAL_LOG_WARNING, "Requesting double from a non double param\n");
+
+	return param->data.doubleflt;
 }
 
 /**

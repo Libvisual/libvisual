@@ -18,6 +18,7 @@ typedef enum {
 	VISUAL_PARAM_TYPE_STRING,	/**< String parameter. */
 	VISUAL_PARAM_TYPE_INTEGER,	/**< Integer parameter. */
 	VISUAL_PARAM_TYPE_FLOAT,	/**< Floating point parameter. */
+	VISUAL_PARAM_TYPE_DOUBLE,	/**< Double floating point parameter. */
 	VISUAL_PARAM_TYPE_COLOR,	/**< VisColor parameter. */
 } VisParamType;
 
@@ -49,6 +50,7 @@ struct _VisParamEntry {
 		char		*string;		/**< String data. */
 		int		 integer;		/**< Integer data. */
 		float		 floating;		/**< Floating point data. */
+		double		 doubleflt;		/**< Double floating point data. */
 		VisColor	 color;			/**< VisColor data. */
 	} data;
 };
@@ -72,6 +74,7 @@ int visual_param_entry_set_name (VisParamEntry *param, char *name);
 int visual_param_entry_set_string (VisParamEntry *param, char *string);
 int visual_param_entry_set_integer (VisParamEntry *param, int integer);
 int visual_param_entry_set_float (VisParamEntry *param, float floating);
+int visual_param_entry_set_double (VisParamEntry *param, double doubleflt);
 int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, uint8_t b);
 int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color);
 
@@ -79,6 +82,7 @@ char *visual_param_entry_get_name (VisParamEntry *param);
 char *visual_param_entry_get_string (VisParamEntry *param);
 int visual_param_entry_get_integer (VisParamEntry *param);
 float visual_param_entry_get_float (VisParamEntry *param);
+double visual_param_entry_get_double (VisParamEntry *param);
 VisColor *visual_param_entry_get_color (VisParamEntry *param);
 
 #ifdef __cplusplus
