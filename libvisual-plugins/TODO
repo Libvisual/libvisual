@@ -61,7 +61,6 @@ actors:
 	infinity:
 		build tables in strides instead of blocking (post 0.2)
 		valgrind
-		Have a 32bits mode that does very nifty color things (like LiVES it's color alienation).		
 
 	lv_analyzer:
 		add two param VisColors to use it as a gradient for the palette.

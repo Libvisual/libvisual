@@ -66,7 +66,14 @@ int act_infinite_init (VisPluginData *plugin)
 
 	_inf_init_renderer (priv);
 	_inf_load_random_effect(priv, &priv->current_effect);
-	
+
+
+	priv->color = visual_random_context_int_range (priv->rcontext, 0, NB_PALETTES - 1);
+	_inf_change_color(priv, priv->old_color, priv->color, 256);
+	priv->old_color = priv->color;
+
+	priv->color = visual_random_context_int_range (priv->rcontext, 0, NB_PALETTES - 1);
+
 	return 0;
 }
 

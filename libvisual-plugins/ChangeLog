@@ -1,5 +1,10 @@
 2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/infinite/lv_infite.c (lv_infinite_init):
+	Randomized color at startup.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/*: Replaced the random system
 	of every plugin with that of libvisual.
 

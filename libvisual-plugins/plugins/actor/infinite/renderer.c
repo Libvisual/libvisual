@@ -55,7 +55,7 @@ void _inf_renderer(InfinitePrivate *priv)
 	}
 	if (priv->t_last_color%priv->tcol==0) {
 		priv->old_color=priv->color;
-		priv->color=visual_random_context_int(priv->rcontext)%NB_PALETTES;
+		priv->color=visual_random_context_int_range(priv->rcontext, 0, NB_PALETTES - 1);
 		priv->t_last_color=0;
 	}
 }
