@@ -31,7 +31,6 @@
 #include "lv_common.h"
 #include "lv_video.h"
 
-/* FIXME defines around assembly code */
 int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, int y)
 {
 #ifdef VISUAL_ARCH_X86
