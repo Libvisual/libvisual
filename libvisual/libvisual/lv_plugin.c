@@ -642,7 +642,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
 		return NULL;
 	}
-	
+
 	get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
 	
 	if (get_plugin_info == NULL) {

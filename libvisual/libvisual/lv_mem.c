@@ -123,8 +123,8 @@ void *visual_mem_copy (void *dest, const void *src, size_t n)
 				 :: "r" (s), "r" (d) : "memory");
 
 
-			d += 64;
-			s += 64;
+			d += 16;
+			s += 16;
 
 			n -= 64;
 		}
