@@ -75,9 +75,9 @@ typedef struct _VisUIEntry VisUIEntry;
 typedef struct _VisUISlider VisUISlider;
 typedef struct _VisUINumeric VisUINumeric;
 typedef struct _VisUIColor VisUIColor;
-typedef struct _VisUIChoice VisUIChoice;
 typedef struct _VisUIChoiceList VisUIChoiceList;
 typedef struct _VisUIChoiceEntry VisUIChoiceEntry;
+typedef struct _VisUIChoice VisUIChoice;
 typedef struct _VisUIPopup VisUIPopup;
 typedef struct _VisUIList VisUIList;
 typedef struct _VisUIRadio VisUIRadio;
@@ -158,13 +158,6 @@ struct _VisUIColor {
 	VisUIMutator		 mutator;
 };
 
-struct _VisUIChoice {
-	VisUIWidget		 widget;
-
-	/* FIXME make non pointer */
-	VisUIChoiceList		*choices;
-};
-
 struct _VisUIChoiceList {
 	VisUIChoiceType		 type;
 
@@ -174,6 +167,12 @@ struct _VisUIChoiceList {
 struct _VIsUIChoiceEntry {
 	VisParamEntry		*param;
 	VisParamEntry		*value;
+};
+
+struct _VisUIChoice {
+	VisUIWidget		 widget;
+
+	VisUIChoiceList		 choices;
 };
 
 struct _VisUIPopup {

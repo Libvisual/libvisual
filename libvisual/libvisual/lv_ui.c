@@ -246,6 +246,8 @@ int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *par
 	visual_log_return_val_if_fail (mutator != NULL, -1);
 	visual_log_return_val_if_fail (param != NULL, -1);
 
+	/* FIXME Check if param is valid with mutator type, if not, give a critical */
+
 	mutator->param = param;
 
 	return 0;
@@ -362,6 +364,8 @@ VisUIWidget *visual_ui_popup_new ()
 	popup = visual_mem_new0 (VisUIPopup, 1);
 	VISUAL_UI_WIDGET (popup)->type = VISUAL_WIDGET_TYPE_POPUP;
 
+	VISUAL_UI_CHOICE (popup)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
+
 	return VISUAL_UI_WIDGET (popup);
 }
 
@@ -372,6 +376,8 @@ VisUIWidget *visual_ui_list_new ()
 	list = visual_mem_new0 (VisUIList, 1);
 	VISUAL_UI_WIDGET (list)->type = VISUAL_WIDGET_TYPE_LIST;
 
+	VISUAL_UI_CHOICE (list)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
+
 	return VISUAL_UI_WIDGET (list);
 }
 
@@ -381,6 +387,8 @@ VisUIWidget *visual_ui_radio_new ()
 
 	radio = visual_mem_new0 (VisUIRadio, 1);
 	VISUAL_UI_WIDGET (radio)->type = VISUAL_WIDGET_TYPE_RADIO;
+
+	VISUAL_UI_CHOICE (radio)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 	
 	return VISUAL_UI_WIDGET (radio);
 }
@@ -391,6 +399,8 @@ VisUIWidget *visual_ui_checkbox_new ()
 
 	checkbox = visual_mem_new0 (VisUICheckbox, 1);
 	VISUAL_UI_WIDGET (checkbox)->type = VISUAL_WIDGET_TYPE_CHECKBOX;
+
+	VISUAL_UI_CHOICE (checkbox)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
 	return VISUAL_UI_WIDGET (checkbox);
 }
