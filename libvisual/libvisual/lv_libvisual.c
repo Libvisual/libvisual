@@ -47,6 +47,8 @@ VisList *__lv_plugins_actor = NULL;
 VisList *__lv_plugins_input = NULL;
 /** Contains all the morph plugins after initialize. */
 VisList *__lv_plugins_morph = NULL;
+/** Contains all the transform plugins after initialize. */
+VisList *__lv_plugins_transform = NULL;
 
 /** The global params container */
 VisParamContainer *__lv_paramcontainer = NULL;
@@ -242,6 +244,9 @@ int visual_init (int *argc, char ***argv)
 	ret = visual_init_path_add (PLUGPATH"/morph");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
+	ret = visual_init_path_add (PLUGPATH"/transform");
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+
 	/* And null terminate the list */
 	ret = visual_init_path_add (NULL);
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
@@ -252,6 +257,7 @@ int visual_init (int *argc, char ***argv)
 	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
 	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
 	__lv_plugins_morph = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_MORPH);
+	__lv_plugins_transform = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
 
 	__lv_paramcontainer = visual_param_container_new ();
 	init_params (__lv_paramcontainer);
@@ -303,6 +309,10 @@ int visual_quit ()
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_morph));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Morph plugins list: destroy failed");
+
+	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_transform));
+	if (ret < 0)
+		visual_log (VISUAL_LOG_WARNING, "Transform plugins list: destroy failed");
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_paramcontainer));
 	if (ret < 0)

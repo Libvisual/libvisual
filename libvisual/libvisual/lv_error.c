@@ -104,7 +104,13 @@ static const char *__lv_error_human_readable[] = {
 	"VisMutex lock failed",							/* VISUAL_ERROR_MUTEX_LOCK_FAILURE */
 	"VisMutex trylock failed",						/* VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE */
 	"VisMutex unlock failed",						/* VISUAL_ERROR_MUTEX_UNLOCK_FAILURE */
-	
+
+	"VisTransform is NULL",							/* VISUAL_ERROR_TRANSFORM_NULL */
+	"The VisTransform negotiate with the target VisVideo failed",		/* VISUAL_ERROR_TRANSFORM_NEGOTIATE */
+	"The VisTransform it's plugin is NULL",					/* VISUAL_ERROR_TRANSFORM_PLUGIN_NULL */
+	"The VisTransform it's video is NULL",					/* VISUAL_ERROR_TRANSFORM_VIDEO_NULL */
+	"The VisTransform it's palette is NULL",				/* VISUAL_ERROR_TRANSFORM_PALETTE_NULL */
+
 	"VisObject destruction failed",						/* VISUAL_ERROR_OBJECT_DTOR_FAILED */
 	"VisObject is NULL",							/* VISUAL_ERROR_OBJECT_NULL */
 	"VisObject is not allocated",						/* VISUAL_ERROR_OBJECT_NOT_ALLOCATED */

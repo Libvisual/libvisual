@@ -47,6 +47,7 @@ extern "C" {
 #define VISUAL_PLUGIN_ACTOR(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_ACTOR_ENUM, VisActorPlugin))
 #define VISUAL_PLUGIN_INPUT(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_INPUT_ENUM, VisInputPlugin))
 #define VISUAL_PLUGIN_MORPH(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_MORPH_ENUM, VisMorphPlugin))
+#define VISUAL_PLUGIN_TRANSFORM(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_TRANSFORM_ENUM, VisTransformPlugin))
 
 /**
  * Indicates at which version the plugin API is.
@@ -69,7 +70,11 @@ extern "C" {
  * Type defination that should be used in plugins to set the plugin type for a morph plugin.
  */
 #define VISUAL_PLUGIN_TYPE_MORPH	"Libvisual:core:morph"
-
+/**
+ * Type defination that should be used in plugins to set the plugin type for a transform plugin.
+ */
+#define VISUAL_PLUGIN_TYPE_TRANSFORM	"Libvisual:core:transform"
+	
 /**
  * Enumerate to define the plugin type. Especially used
  * within the VisPlugin system and for type checking within the core library itself.
@@ -84,12 +89,15 @@ extern "C" {
  * 	PCM data through, for example different sound servers.
  * 	-# Morph plugins: These are capable of morphing
  * 	between different plugins.
+ * 	-# Transform plugins: These are capable of transforming a video or palette
+ * 	into something new.
  */
 typedef enum {
-	VISUAL_PLUGIN_TYPE_NULL_ENUM,	/**< Used when there is no plugin. */
-	VISUAL_PLUGIN_TYPE_ACTOR_ENUM,	/**< Used when the plugin is an actor plugin. */
-	VISUAL_PLUGIN_TYPE_INPUT_ENUM,	/**< Used when the plugin is an input plugin. */
-	VISUAL_PLUGIN_TYPE_MORPH_ENUM	/**< Used when the plugin is a morph plugin. */
+	VISUAL_PLUGIN_TYPE_NULL_ENUM,		/**< Used when there is no plugin. */
+	VISUAL_PLUGIN_TYPE_ACTOR_ENUM,		/**< Used when the plugin is an actor plugin. */
+	VISUAL_PLUGIN_TYPE_INPUT_ENUM,		/**< Used when the plugin is an input plugin. */
+	VISUAL_PLUGIN_TYPE_MORPH_ENUM,		/**< Used when the plugin is a morph plugin. */
+	VISUAL_PLUGIN_TYPE_TRANSFORM_ENUM	/**< Used when the plugin is a transform plugin. */
 } VisPluginType;
 
 /**
@@ -123,6 +131,7 @@ typedef struct _VisPluginEnviron VisPluginEnviron;
 typedef struct _VisActorPlugin VisActorPlugin;
 typedef struct _VisInputPlugin VisInputPlugin;
 typedef struct _VisMorphPlugin VisMorphPlugin;
+typedef struct _VisTransformPlugin VisTransformPlugin;
 
 /* Actor plugin methods */
 
@@ -215,6 +224,31 @@ typedef int (*VisPluginMorphPaletteFunc)(VisPluginData *plugin, float rate, VisA
  */
 typedef int (*VisPluginMorphApplyFunc)(VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest,
 		VisVideo *src1, VisVideo *src2);
+
+/* Transform plugin methodes */
+
+/**
+ * A transform plugin needs this signature to transform VisPalettes.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg pal Pointer to the VisPalette that is to be morphed.
+ *	Only 256 entry VisPalettes have to be supported.
+ * @arg audio Optionally a pointer to the VisAudio, when requested.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*VisPluginTransformPaletteFunc)(VisPluginData *plugin, VisPalette *pal, VisAudio *audio);
+
+/**
+ * A transform plugin needs this signature to transform VisVideos.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg video Pointer to the VisVideo that needs to be transformed.
+ * @arg audio Optionally a pointer to the VisAudio, when requested.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*VisPluginTransformVideoFunc)(VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 /* Plugin standard get_plugin_info method */
 /**
@@ -396,6 +430,25 @@ struct _VisMorphPlugin {
 	int				 requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
 							  * requires an VisAudio context in order to render properly. */
 };
+
+/**
+ * The VisTransformPlugin structure is the main data structure
+ * for the transform plugin.
+ *
+ * The transform plugin is used to transform videos and palettes
+ * and can be used in visualisation pipelines.
+ */
+struct _VisTransformPlugin {
+	VisObject			 object;	/**< The VisObject data. */
+	VisPluginTransformPaletteFunc	 palette;	/**< Used to transform a VisPalette. Writes directly into the source. */
+	VisPluginTransformVideoFunc	 video;		/**< Used to transform a VisVideo. Writes directly into the source. */
+
+	int				 depth;		/**< The depth flag for the VisActorPlugin. This contains an ORred
+							  * value of depths that are supported by the plugin. */
+	int				 requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
+							  * requires an VisAudio context in order to render properly. */
+};
+
 
 /* prototypes */
 VisPluginInfo *visual_plugin_info_new (void);

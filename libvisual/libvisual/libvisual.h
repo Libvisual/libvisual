@@ -45,6 +45,7 @@
 #include <libvisual/lv_libvisual.h>
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_morph.h>
+#include <libvisual/lv_transform.h>
 #include <libvisual/lv_bmp.h>
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_random.h>

@@ -126,7 +126,14 @@ enum {
 	VISUAL_ERROR_MUTEX_LOCK_FAILURE,		/**< Failed locking the VisMutex. */
 	VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE,		/**< Failed trylocking the VisMutex. */
 	VISUAL_ERROR_MUTEX_UNLOCK_FAILURE,		/**< Failed unlocking the VisMutex. */
-	
+
+	/* Error entries for the VisTransform system */
+	VISUAL_ERROR_TRANSFORM_NULL,			/**< The VisTransform is NULL. */
+	VISUAL_ERROR_TRANSFORM_NEGOTIATE,		/**< The VisTransform negotiate with the VisVideo failed. */
+	VISUAL_ERROR_TRANSFORM_PLUGIN_NULL,		/**< The VisTransform plugin in this context is NULL. */
+	VISUAL_ERROR_TRANSFORM_VIDEO_NULL,		/**< The VisVideo target member in the VisTransform is NULL. */
+	VISUAL_ERROR_TRANSFORM_PALETTE_NULL,		/**< The VisPalette target member in this VisTransform is NULL. */
+
 	/* Error entries for the VisObject system */
 	VISUAL_ERROR_OBJECT_DTOR_FAILED,		/**< The destructor assigned to a VisObject failed destroying the VisObject. */
 	VISUAL_ERROR_OBJECT_NULL,			/**< The VisObject is NULL. */

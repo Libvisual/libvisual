@@ -625,7 +625,7 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video)
 }
 
 /**
- * This is called to run an VisActor. It also pump it's events when needed, checks for new song events and also does the fitting 
+ * This is called to run a VisActor. It also pump it's events when needed, checks for new song events and also does the fitting 
  * and depth transformation actions when needed.
  *
  * Every run cycle one frame is created, so this function needs to be used in the main draw loop of the application.
