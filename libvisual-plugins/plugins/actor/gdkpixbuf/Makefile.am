@@ -14,6 +14,5 @@ INCLUDES = $(all_includes) -I$(top_srcdir)
 
 actor_gdkpixbuf_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
-actor_gdkpixbuf_la_SOURCES = actor_gdkpixbuf.c \
-			     actor_gdkpixbuf.h
+actor_gdkpixbuf_la_SOURCES = actor_gdkpixbuf.c
 
