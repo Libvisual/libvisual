@@ -23,21 +23,52 @@
 
 #include "common.h"
 #include "gfx-blur.h"
+
 #include "gfx-misc.h"
 #include "screen.h"
 
 void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 {
+	VisCPU *cpucaps = visual_cpu_get_caps ();
 	int i;
 	uint8_t valuetab[256];
 
-	for (i = 0; i < 256; i++)
-		valuetab[i] = (i - fade) > 0 ? i - fade : 0;
+	if (cpucaps->hasMMX == 1) {
+#ifdef VISUAL_ARCH_X86
+		int fadeflag = fade | fade << 8 | fade << 16 | fade << 24;
+		
+		/* Prepare substraction register */
+		__asm __volatile
+			("\n\t movq %[fade], %%mm3"
+			 "\n\t movq %[fade], %%mm4"
+			 "\n\t psllq $32, %%mm3"
+			 "\n\t por %%mm4, %%mm3"
+			 :: [fade] "m" (fadeflag)
+			 : "mm3", "mm4");
 
-	for (i = 0; i < priv->screen_size; i++)
-		buf[i] = valuetab[buf[i]];
+		
+		for (i = 0; i < priv->screen_size; i += 8) {
+			__asm __volatile
+				("\n\t movq %[buf], %%mm0"
+				 "\n\t psubsb %%mm3, %%mm0"
+				 "\n\t movq %%mm0, %[buf]"
+				 :: [buf] "m" (*buf)
+				 : "mm0");
+		}
+
+		__asm __volatile
+			("\n\t emms");
+#endif
+	} else {
+		for (i = 0; i < 256; i++)
+			valuetab[i] = (i - fade) > 0 ? i - fade : 0;
+
+		for (i = 0; i < priv->screen_size; i++)
+			*++buf = valuetab[*buf];
+	}
 }
 
+/* FIXME also make mmx versions for these, let's rock this babe! */
 void _oink_gfx_blur_simple (OinksiePrivate *priv, uint8_t *buf)
 {
 	int i;

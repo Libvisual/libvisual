@@ -1,5 +1,12 @@
 2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/oinksie/gfx-blur.c (_oink_gfx_blur_fade):
+	MMXified the color fader.
+
+	Btw, the plugin it's performance doubled due to last changes :)
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/bumpscope/bump_scope.c (__bumpscope_cleanup):
 	Check for NULL.
 

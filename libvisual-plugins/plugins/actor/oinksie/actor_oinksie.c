@@ -190,10 +190,10 @@ int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height)
 	reqw = *width;
 	reqh = *height;
 
-	while (reqw % 2 || (reqw / 2) % 2)
+	while (reqw % 4)
 		reqw--;
 
-	while (reqh % 2 || (reqh / 2) % 2)
+	while (reqh % 4)
 		reqh--;
 
 	if (reqw < 32)
