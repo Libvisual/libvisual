@@ -74,9 +74,9 @@ int inp_alsa_init (VisInputPlugin *plugin)
 	int dir;
 	int err;
 
-	visual_log_return_val_if_fail(plugin != NULL, NULL);
+	visual_log_return_val_if_fail(plugin != NULL, -1);
 	priv = plugin->private;
-	visual_log_return_val_if_fail(priv != NULL, NULL);
+	visual_log_return_val_if_fail(priv != NULL, -1);
 	
 
 	if ((err = snd_pcm_open(&priv->chandle, strdup(inp_alsa_var_cdevice),
@@ -87,7 +87,7 @@ int inp_alsa_init (VisInputPlugin *plugin)
 	}
 
 	snd_pcm_hw_params_alloca(&hwparams);
-	visual_log_return_val_if_fail(hwparams != NULL, NULL);
+	visual_log_return_val_if_fail(hwparams != NULL, -1);
 
 	if (snd_pcm_hw_params_any(priv->chandle, hwparams) < 0) {
  	        visual_log(VISUAL_LOG_ERROR, 
@@ -146,9 +146,9 @@ int inp_alsa_cleanup (VisInputPlugin *plugin)
 {
 	alsaPrivate *priv = NULL;
 
-	visual_log_return_val_if_fail(plugin != NULL, NULL);
+	visual_log_return_val_if_fail(plugin != NULL, -1);
 	priv = plugin->private;
-	visual_log_return_val_if_fail(priv != NULL, NULL);
+	visual_log_return_val_if_fail(priv != NULL, -1);
 
 	if (priv->loaded == 1)
 		snd_pcm_close(priv->chandle);
@@ -165,10 +165,10 @@ int inp_alsa_upload (VisInputPlugin *plugin, VisAudio *audio)
 	int rcnt;
 	int i;
 
-	visual_log_return_val_if_fail(audio != NULL, NULL);
-	visual_log_return_val_if_fail(plugin != NULL, NULL);
+	visual_log_return_val_if_fail(audio != NULL, -1);
+	visual_log_return_val_if_fail(plugin != NULL, -1);
 	priv = plugin->private;
-	visual_log_return_val_if_fail(priv != NULL, NULL);
+	visual_log_return_val_if_fail(priv != NULL, -1);
 
 
 	rcnt = snd_pcm_readi(priv->chandle, data, PCM_BUF_SIZE/2);
