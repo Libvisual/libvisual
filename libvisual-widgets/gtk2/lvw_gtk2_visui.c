@@ -6,7 +6,8 @@
 
 #include "lvw_gtk2_visui.h"
 
-/* FIXME Look how we can make sure there are no idle callbacks pending when destroying the widget */
+/* FIXME Look how we can make sure there are no idle callbacks pending when destroying the widget, one solution
+ * could be one big idle handle multiplexer that reads a flag */
 /* FIXME HIGFY everything!!! */
 /* FIXME unreg param callbacks on destroy */
 /* FIXME implement tooltips */
@@ -75,7 +76,6 @@ static void
 lvw_visui_destroy (GtkObject *object)
 {
 	GSList *head;
-	GSList *next;
 	CallbackEntry *cbentry;
 	GtkObjectClass *klass;
 	GtkObjectClass *parent_class;
@@ -96,38 +96,26 @@ lvw_visui_destroy (GtkObject *object)
 	 */
 	
 	priv = LVW_VISUI_GET_PRIVATE (object);
+	head = priv->callbacksreg;
 
-	if (priv->destroyed == FALSE) {
-		/* FIXME lock the damn thread on cb unreg */	
+	if (priv->destroyed == FALSE && head != NULL) {
+		CallbackEntry *cbentry;
+		GSList *lentry = head;
+		GSList *ltmp;
 
+		/* FIXME lock the damn thread on cb unreg */
+		do {	
+			cbentry = lentry->data;
+
+			visual_param_entry_remove_callback (cbentry->param, cbentry->id);
+
+			ltmp = g_slist_next (lentry);
+			head = g_slist_delete_link (head, lentry);
+			lentry = ltmp;
+
+		} while (lentry != NULL) ;
 	}
-#if 0
-	head = LVW_VISUI (object)->callbacksreg;
-	printf ("HMMMM\n");
-	next = head;
 
-	if (head == NULL)
-		return;
-
-	/* FIXME is this thread safe ??, check this out, and if not, lock here */
-
-	/* You have to lock, this isn't thread safe, the signal handler could still
-	 * be called here -- deadchip */
-
-	do {
-		cbentry = next->data;
-
-		//		if (cbentry != NULL) {
-		//			printf ("%p %s\n", cbentry, cbentry->param->name);
-		//		}
-		//		visual_param_entry_remove_callback (cbentry->param, cbentry->callback);
-		//		g_free (cbentry);
-
-		next = g_slist_delete_link (head, next);
-	} while ((next = g_slist_next (next)) != NULL);
-
-	LVW_VISUI (object)->callbacksreg = NULL;
-#endif 
 	priv->destroyed = TRUE;	
 
 	klass = LVW_VISUI_CLASS (g_type_class_peek (LVW_VISUI_TYPE));
