@@ -203,8 +203,7 @@ if test x$examples = xyes ; then
 			of Libvisual before to build the examples.]))
   AC_SUBST(VISUAL_LIBS)
   AC_SUBST(VISUAL_CFLAGS)		 
-  AC_DEFINE([EXAMPLES], [simplesdl morphsdl], [Example programs to be built])
-  AC_SUBST(EXAMPLES)
+  AC_SUBST([EXAMPLES], ['simplesdl morphsdl'])
 else
   AC_MSG_RESULT([no])
   VISUAL_CFLAGS=""
