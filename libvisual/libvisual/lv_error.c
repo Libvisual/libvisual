@@ -53,6 +53,9 @@ static const char *__lv_error_human_readable[] = {
 
 	"VisColor is NULL",							/* VISUAL_ERROR_COLOR_NULL */
 	
+	"VisConfigRegistry is NULL",						/* VISUAL_ERROR_CONFIG_REGISTRY_NULL */
+	"VisConfigRegistrySection is NULL",					/* VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL */
+
 	"The code can not run on this architecture",				/* VISUAL_ERROR_CPU_INVALID_CODE */
 	
 	"Global error handler is NULL",						/* VISUAL_ERROR_ERROR_HANDLER_NULL */

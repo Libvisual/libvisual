@@ -1,5 +1,21 @@
 2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/Makefile.am: Adding lv_config.*
+
+	* libvisual/lv_config.*: Adding the beginning
+	of the config registry system.
+	
+	* libvisual/lv_error.*: Adding the config registry errors.
+
+	* libvisual/lv_param.c: Renaming the dtors a bit.
+
+	* libvisual/lv_time.h: Adding the object cast defines.
+
+	* libvisual/lv_plugin.c (visual_plugin_type_get_flags):
+	Fixing docs.
+
+2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* autogen.sh: New version by Duilio, derived
 	from the gnome-common autogen.sh
 

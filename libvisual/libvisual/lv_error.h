@@ -60,6 +60,10 @@ enum {
 	/* Error entries for the VisColor system */
 	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
 
+	/* Error entries for the VisConfig system */
+	VISUAL_ERROR_CONFIG_REGISTRY_NULL,		/**< The VisConfigRegistry is NULL. */
+	VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL,	/**< The VisConfigRegistrySection is NULL. */
+
 	/* Error entries for arch related errors and VisCPU system */
 	VISUAL_ERROR_CPU_INVALID_CODE,
 	
@@ -115,7 +119,7 @@ enum {
 	
 	/* Error entries for the VisRandom system */
 	VISUAL_ERROR_RANDOM_CONTEXT_NULL,		/**< The VisRandomContext is NULL. */
-	
+
 	/* Error entries for the VisSonginfo system */
 	VISUAL_ERROR_SONGINFO_NULL,			/**< The VisSongInfo is NULL. */
 

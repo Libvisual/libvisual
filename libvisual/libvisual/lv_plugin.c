@@ -1130,7 +1130,7 @@ int visual_plugin_type_member_of (const char *domain, const char *type)
 /**
  * Retrieves the flags section from the plugin type string.
  *
- * @param The type string, containing the plugin type and optional flags.
+ * @param type The type string, containing the plugin type and optional flags.
  *
  * return NULL if no flags are found, the flags between the '[' and ']' braces on succes.
  *	for example when the plugin type string is "Libvisual:core:actor.[special|something]"

@@ -29,12 +29,12 @@
 #include "lv_log.h"
 #include "lv_param.h"
 
-static int paramcontainer_dtor (VisObject *object);
-static int paramentry_dtor (VisObject *object);
+static int param_container_dtor (VisObject *object);
+static int param_entry_dtor (VisObject *object);
 
 static int get_next_pcall_id (VisList *callbacks);
 
-static int paramcontainer_dtor (VisObject *object)
+static int param_container_dtor (VisObject *object)
 {
 	VisParamContainer *paramcontainer = VISUAL_PARAMCONTAINER (object);
 
@@ -43,7 +43,7 @@ static int paramcontainer_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
-static int paramentry_dtor (VisObject *object)
+static int param_entry_dtor (VisObject *object)
 {
 	VisParamEntry *param = VISUAL_PARAMENTRY (object);
 
@@ -116,7 +116,7 @@ VisParamContainer *visual_param_container_new ()
 	paramcontainer = visual_mem_new0 (VisParamContainer, 1);
 
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (paramcontainer), TRUE, paramcontainer_dtor);
+	visual_object_initialize (VISUAL_OBJECT (paramcontainer), TRUE, param_container_dtor);
 
 	visual_list_set_destroyer (&paramcontainer->entries, visual_object_list_destroyer);
 
@@ -342,7 +342,7 @@ VisParamEntry *visual_param_entry_new (char *name)
 	param = visual_mem_new0 (VisParamEntry, 1);
 
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (param), TRUE, paramentry_dtor);
+	visual_object_initialize (VISUAL_OBJECT (param), TRUE, param_entry_dtor);
 
 	visual_param_entry_set_name (param, name);
 	

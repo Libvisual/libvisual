@@ -35,6 +35,9 @@ extern "C" {
 	
 #define VISUAL_USEC_PER_SEC	1000000
 
+#define VISUAL_TIME(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisTime))
+#define VISUAL_TIMER(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisTimer))
+
 typedef struct _VisTime VisTime;
 typedef struct _VisTimer VisTimer;
 
@@ -60,6 +63,7 @@ struct _VisTimer {
 	int		active;		/**< Private entry to indicate if the timer is currently active or inactive. */
 };
 
+/* prototypes */
 VisTime *visual_time_new (void);
 int visual_time_get (VisTime *time_);
 int visual_time_set (VisTime *time_, long sec, long usec);
