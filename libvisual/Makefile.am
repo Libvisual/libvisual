@@ -5,5 +5,5 @@ SUBDIRS = @BUILD_SUBDIRS@
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvisual.pc
 
-#EXTRA_DIST = autogen.sh
+EXTRA_DIST = Doxyfile
 
