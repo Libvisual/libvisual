@@ -1,5 +1,14 @@
 2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/infinite/*: Tried to vectorize, failed misserably.
+
+	Plan: Redo the whole interpolation stuff, with different vector
+	buffers so there is zero pre setup needed when an
+	interpolation/displacement is done. This is a shit job, and I'll do it
+	in the upcoming weeks, because I want it to be faster :)
+
+2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/bumpscope/bump_scope.c
 	(__bumpscope_generate_phongdat):
 
