@@ -10,8 +10,6 @@ libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
 LIBS = -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-AM_CFLAGS = @LIBVISUAL_CFLAGS@ -DUNIX_X -D_REENTRANT
-
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
 actor_gforce_la_LDFLAGS = -rpath $(libdir) -module -avoid-version

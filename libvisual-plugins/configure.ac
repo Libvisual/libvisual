@@ -421,6 +421,10 @@ if test x$gforce = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor G-Force"
   AC_SUBST([GFORCE], ['actor_gforce.la'])
+  
+  # Special flags for G-Force, make this only for G-Force FIXME FIXME!!! 
+  GFORCE_CFLAGS="-DUNIX_X -D_REENTRANT"
+  AC_SUBST(GFORCE_FLAGS, "${GFORCE_CFLAGS}")
 else
   AC_MSG_RESULT([no])
 fi
@@ -535,8 +539,8 @@ else
 fi
 AC_SUBST(OPT_CFLAGS)
 
-AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
-AC_SUBST(CXXFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
+AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
+AC_SUBST(CXXFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
 
 AC_ARG_WITH([plugins_base_dir],
             AC_HELP_STRING([--with-plugins_base_dir="dir"],
