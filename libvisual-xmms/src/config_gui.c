@@ -281,21 +281,13 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_widget_show (hbox_main_buttons);
   gtk_box_pack_start (GTK_BOX (vbox_main), hbox_main_buttons, FALSE, FALSE, 6);
 
-  button_ok = gtk_button_new_with_label (_("Accept"));
+  button_ok = gtk_button_new_with_label (_("Ok"));
   gtk_widget_ref (button_ok);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "button_ok", button_ok,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (button_ok);
   gtk_box_pack_start (GTK_BOX (hbox_main_buttons), button_ok, FALSE, TRUE, 0);
   GTK_WIDGET_SET_FLAGS (button_ok, GTK_CAN_DEFAULT);
-
-  button_apply = gtk_button_new_with_label (_("Apply"));
-  gtk_widget_ref (button_apply);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_apply", button_apply,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (button_apply);
-  gtk_box_pack_start (GTK_BOX (hbox_main_buttons), button_apply, FALSE, TRUE, 6);
-  GTK_WIDGET_SET_FLAGS (button_apply, GTK_CAN_DEFAULT);
 
   button_cancel = gtk_button_new_with_label (_("Cancel"));
   gtk_widget_ref (button_cancel);
@@ -305,6 +297,14 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_box_pack_start (GTK_BOX (hbox_main_buttons), button_cancel, FALSE, TRUE, 6);
   GTK_WIDGET_SET_FLAGS (button_cancel, GTK_CAN_DEFAULT);
 
+  button_apply = gtk_button_new_with_label (_("Apply"));
+  gtk_widget_ref (button_apply);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_apply", button_apply,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_apply);
+  gtk_box_pack_start (GTK_BOX (hbox_main_buttons), button_apply, FALSE, TRUE, 6);
+  GTK_WIDGET_SET_FLAGS (button_apply, GTK_CAN_DEFAULT);
+ 
   gtk_object_set_data (GTK_OBJECT (window_main), "tooltips", tooltips);
 
   config_gui = g_new0 (ConfigWin, 1);
