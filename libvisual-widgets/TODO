@@ -1,0 +1,13 @@
+This is a rough scrapbook like TODO list of what needs to be done.
+
+Libvisual-widgets:
+	GTK2:
+		Implement library, get the VisUI widget working.
+		Cleanup the widget a LOT!
+
+	GTK1:
+		Port GTK2 widget over to GTK1 for legacy.
+
+	QT:
+		Write neat QT widget to handle VisUI.
+
