@@ -156,6 +156,13 @@ VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget)
 	return NULL;
 }
 
+VisUIBoxType visual_ui_box_get_type (VisUIBox *box)
+{
+	visual_log_return_val_if_fail (box != NULL, VISUAL_BOX_TYPE_NONE);
+
+	return box->boxtype;
+}
+
 VisUIWidget *visual_ui_group_new (const char *name)
 {
 	VisUIGroup *group;

@@ -53,6 +53,7 @@ typedef enum {
 } VisUIWidgetType;
 
 typedef enum {
+	VISUAL_BOX_TYPE_NONE,
 	VISUAL_BOX_TYPE_HORIZONTAL,
 	VISUAL_BOX_TYPE_VERTICAL
 } VisUIBoxType;
@@ -206,6 +207,7 @@ VisUIWidget *visual_ui_container_get_child (VisUIContainer *container);
 VisUIWidget *visual_ui_box_new (VisUIBoxType boxtype);
 int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget);
 VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget);
+VisUIBoxType visual_ui_box_get_type (VisUIBox *box);
 
 VisUIWidget *visual_ui_group_new (const char *name);
 
