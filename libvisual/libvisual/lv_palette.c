@@ -183,6 +183,13 @@ VisColor *visual_palette_color_cycle (VisPalette *pal, float rate)
 
 	color = visual_color_new ();
 
+	/* If rate is exactly an item, return that item */
+	if (rdiff == 0) {
+		visual_color_copy (color, &pal->colors[irate]);
+
+		return color;
+	}
+
 	tmp1 = &pal->colors[irate];
 
 	if (irate == pal->ncolors - 1)
