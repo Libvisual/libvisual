@@ -452,7 +452,7 @@ int visual_mutex_unlock (VisMutex *mutex)
 /* Posix implementation */
 static VisThread *thread_create_posix (VisThreadFunc func, void *data, int joinable)
 {
-	VisThread *thread;
+	VisThread *thread = NULL;
 #ifdef VISUAL_THREAD_MODEL_POSIX
 
 	pthread_attr_t attr;
@@ -580,23 +580,57 @@ static int mutex_unlock_posix (VisMutex *mutex)
 /* Windows32 implementation */
 static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joinable)
 {
+	VisThread *thread = NULL;
 #ifdef VISUAL_THREAD_MODEL_WIN32
+	
+	thread = visual_mem_new0 (VisThread, 1);
 
+	thread->thread = CreateThread (NULL, 0, func, (PVOID) data, 0, &thread->threadId);
+
+	if (thread == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Error while creating thread");
+
+		visual_mem_free (thread);
+
+		return NULL;
+	}
+/*
+	printf("Waiting for thread to finish...\n");
+	if (WaitForSingleObject(a_thread, INFINITE) != WAIT_OBJECT_0) {
+		perror("Thread join failed");
+		exit(EXIT_FAILURE);
+	}
+*/
+	// Retrieve the code returned by the thread.
+	//     GetExitCodeThread(a_thread, &thread_result);
 #endif
+
+	return thread;
 }
 
 static int thread_free_win32 (VisThread *thread)
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
+	return visual_mem_free (thread);
 }
 
 static void *thread_join_win32 (VisThread *thread)
 {
+	void *result = NULL;
 #ifdef VISUAL_THREAD_MODEL_WIN32
+	DWORD thread_result; /* FIXME is this actually sane ?, refering to an variable that dies because of the scope */
 
+	if (WaitForSingleObject(thread->thread, INFINITE) != WAIT_OBJECT_0) {
+		visual_log (VISUAL_LOG_CRITICAL, "Error while joining thread");
+
+		return NULL;
+	}
+
+	GetExitCodeThread(thread->thread, &thread_result);
+
+	result = &thread_result;
 #endif
+
+	return result;
 }
 
 static void thread_exit_win32 (void *retval)
@@ -659,7 +693,7 @@ static int mutex_unlock_win32 (VisMutex *mutex)
 /* GThread implementation */
 static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joinable)
 {
-	VisThread *thread;
+	VisThread *thread = NULL;
 #ifdef VISUAL_THREAD_MODEL_GTHREAD2
 
 	thread = visual_mem_new0 (VisThread, 1);

@@ -1,3 +1,8 @@
+2005-03-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.c (visual_mem_realloc): Added function, same as
+	realloc 3.
+
 2005-03-20  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_plugin.*: With some luck, this is working windows dll
