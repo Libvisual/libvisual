@@ -1,0 +1,39 @@
+name="Melt O Rama",
+/* Inspired by a visual plug-in called Melt-O-Rama for SoundJamMP...  With help from Thomas Geier's "Airport" (consider it a compliment).  Enjoy...
+
+-Andy Cabrera
+
+Modified for fft() - Andy O  */
+
+ConB=0,
+Aspc=0,
+
+
+A0="(.5+rnd(2))",
+
+
+
+C0="s^1.5",
+C1="fft(s)",
+
+
+X0="C0",
+Y0=".5",
+X1="C0",
+Y1="0",
+X2="C0",
+Y2="-.5",
+X3="-C0",
+Y3=".5",
+X4="-C0",
+Y4="0",
+X5="-C0",
+Y5="-.5",
+
+
+Pen="7 * C1 + .2",
+Stps="15",
+LWdt="75 * C1 + 3",
+
+
+Vers=100

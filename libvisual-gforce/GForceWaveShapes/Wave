@@ -1,0 +1,39 @@
+name="Wave",
+/*  Wave                                    */
+/*                                          */
+/*  Look into the Sun                       */
+/*                                          */
+/* By Thomas Geier                          */
+/*  E-mail: ziggystar@gmx.de                */
+
+
+Aspc= 1 ,
+
+B0=".3 * sin( t )",
+
+
+C0=".2 + .4 * mag( s )",
+
+C1=".06 + cos(s*6.28)*c0",
+C2="b0 + sin(s*6.28)*c0",
+
+
+X0="3*s-1.5",
+Y0="(b0*sin(s*15*))+0.05*sin(s*100+t*8)",
+
+X1="C1",
+Y1=".5+C2",
+
+X2="C1",
+Y2="-.5+C2",
+
+Pen="(1+sin(s*10+t))/2",
+
+
+
+LWdt="2",
+
+ConB=1,
+
+
+Vers=100

@@ -1,0 +1,20 @@
+name="Particle Pulse",
+Stps=51,
+
+Aspc=1,
+
+A0="rnd( 3 ) + 1",
+
+B0="t * 0.0003",
+
+C0="abs( mag( s ) ) * 0.85 + .05",
+C1="s * 43.766877 - b0",
+
+LWdt="A0",
+
+X0="c0 * cos( c1 )",
+Y0="c0 * sin( c1 )",
+
+ConB=0,
+
+Vers=100

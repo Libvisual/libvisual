@@ -1,0 +1,14 @@
+name="Big & Banded",
+
+
+
+X0="2 * s - 1",
+Y0=".9 * mag( s )",
+
+LWdt="2",
+
+Pen="( 8 * abs( mag( s ) ) ) ^ 1.5",
+
+ConB=1,
+
+Vers=100

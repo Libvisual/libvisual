@@ -1,0 +1,39 @@
+name="NPTU Squared",
+// "NPTU Squared" by Andy
+
+Aspc=1,
+
+
+A0=".4 + rnd( .6 )",     // radius
+A1=".4 * a0", // mag scale factor
+
+B0="cos( t * 0.18 )",
+B1="sin( t * 0.18 )",
+
+
+C0="a1 * mag( s ) + a0",
+C1="2 * a0 * ( s - .5 )",
+
+Stps="100",
+
+
+X0="  b0 * c1 + b1 * c0",
+Y0="- b0 * c0 + b1 * c1",
+
+X1="  b0 * c1 - b1 * c0",
+Y1="  b0 * c0 + b1 * c1",
+
+Y2="- b0 * c1 - b1 * c0",
+X2="- b0 * c0 + b1 * c1",
+
+Y3="- b0 * c1 + b1 * c0",
+X3="  b0 * c0 + b1 * c1",
+
+
+
+ConB=1,
+
+LWdt="1",
+
+
+Vers=100

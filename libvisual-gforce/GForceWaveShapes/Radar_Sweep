@@ -1,0 +1,25 @@
+name="Radar Sweep",
+
+
+
+A0=".4 + rnd( 1.3 )",  // Choose rand rotation rate
+
+
+B0="1.1 * cos( t * a0 )",
+B1="1.1 * sin( t * a0 )",
+
+
+C0="mag( s ) * 0.4 * s",
+
+
+
+Aspc=1,
+
+X0=" - b0 * s  - b1 * c0",
+Y0="   b0 * c0 - b1 * s",
+
+
+
+ConB=1,
+
+Vers=100

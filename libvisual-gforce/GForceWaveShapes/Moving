@@ -1,0 +1,33 @@
+name="Moving",
+//Made by Justin Swidler
+//http://homepage.mac.com/whitecap for more configs
+
+Aspc=0,
+
+Stps=160,
+
+B0=".7 * sin( .3 * t )",
+
+C0="2 * (s - .3)",
+C1="b0 + mag( s ) * .25",
+
+
+
+Y1="c0 + .6",
+X1="c1 - 1.2",
+
+Y0="c0",
+X0="c1 - .6",
+
+Y2="c0 - .6",
+X2="c1",
+
+Y3="c0",
+X3="c1 + .6",
+
+Y4="c0 + .6",
+X4="c1 + 1.2",
+
+ConB=1,
+
+Vers=100

@@ -1,0 +1,15 @@
+name="Up Like A Cup",
+
+
+C0="- sin( 6.2831853 * s )",
+C1=".4 * mag( s )",
+
+X0="2 * s - 1 - c0 * c1",
+Y0=".7 * cos( 6.2831853 * s ) + sqrt( 1 - sqr(c0) ) * c1",
+
+ConB=1,
+
+LWdt="2",
+
+
+Vers=100

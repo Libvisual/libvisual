@@ -1,0 +1,27 @@
+name="DT - Sine",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ ConB=1,
+ LWdt="1+5*mag(s)",
+ 
+ //bright=mag(s)?
+ A0="rnd(0.8)",
+ Pen="clip(abs(mag(0.1))+0.7+a0)",
+ 
+ //A1=speed, A2=frequency
+ A1="2*rnd(1)^2+0.5",
+ A2="rnd(1.5)+0.1",
+
+A3="0.9-clip(A2-2)*0.1",
+ 
+ C0="2 * s - 1 - .6 * mag(s)",
+ C1="a3*sin(C0*A2-A1*t)",
+ C2="2.4 * sqr( mag(s) )",
+
+ X0="c0",
+ Y0="c1 + C2",
+ X1="c0",
+ Y1="c1 - C2+0.05",
+ 
+ Vers=100
+ 

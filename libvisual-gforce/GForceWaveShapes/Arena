@@ -1,0 +1,44 @@
+name="Arena",
+/*                            	            */
+/* Arena		                                 */
+/*                          	             	*/
+/*                                         */
+/* By Thomas Geier                         */
+/*  E-mail: ziggystar@gmx.de               */
+
+
+
+Aspc= 1 ,
+
+
+B0=".4 * ( sin( t * .55 ) + 1 )",
+
+C0=".3 * mag( s )",
+C1=" B0 + C0",
+
+X0="s - .5",
+Y0="c0 + b0",
+
+X1="s - .5",
+Y1="c0 - b0",
+
+C2="sin(s* PI )* C1",
+C3="cos(s* PI )* C1",
+
+X2=".5+c2",
+Y2="C3",
+
+X3="-.5-c2",
+Y3="C3",
+
+
+Pen="1",
+
+Stps="100",
+
+LWdt="3",
+
+ConB=1,
+
+
+Vers=100
