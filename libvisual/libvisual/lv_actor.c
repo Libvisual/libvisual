@@ -14,6 +14,9 @@ extern VisList *__lv_plugins_actor;
 static int actor_dtor (VisObject *object);
 
 static VisActorPlugin *get_actor_plugin (VisActor *actor);
+static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth, int noevent, int forced);
+static int negotiate_video (VisActor *actor, int noevent);
+
 
 static int actor_dtor (VisObject *object)
 {
@@ -424,13 +427,8 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
  */ 
 int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced)
 {
-	VisActorPlugin *actplugin = get_actor_plugin (actor);
-	int tmpwidth, tmpheight, tmppitch;
 	int depthflag;
 
-	/*
-	 * Uhau, we really check the structure sanity.
-	 */
 	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
 	visual_log_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 	visual_log_return_val_if_fail (actor->plugin->ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
@@ -457,79 +455,100 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 	depthflag = visual_actor_get_supported_depth (actor);
 
 	visual_log (VISUAL_LOG_INFO, "negotiating plugin %s", actor->plugin->info->name);
+
 	/* Set up depth transformation enviroment */
 	if (visual_video_depth_is_supported (depthflag, actor->video->depth) != TRUE ||
-			(forced == TRUE && actor->video->depth != rundepth)) {
+			(forced == TRUE && actor->video->depth != rundepth))
+		/* When the depth is not supported, or if we only switch the depth and not
+		 * the size */
+		return negotiate_video_with_unsupported_depth (actor, rundepth, noevent, forced);
+	else
+		return negotiate_video (actor, noevent);
 
-		/* Depth transform enviroment, it automaticly
-		 * fits size because it can use the pitch from
-		 * the dest video context */
-		actor->transform = visual_video_new ();
+	return -VISUAL_ERROR_IMPOSSIBLE;
+}
 
-		visual_log (VISUAL_LOG_INFO, "run depth %d forced %d\n", rundepth, forced);
-		
-		if (forced == TRUE)
-			visual_video_set_depth (actor->transform, rundepth);
-		else
-			visual_video_set_depth (actor->transform,
-					visual_video_depth_get_highest_nogl (depthflag));
+static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth, int noevent, int forced)
+{
+	VisActorPlugin *actplugin = get_actor_plugin (actor);
+	int depthflag = visual_actor_get_supported_depth (actor);
+	
+	/* Depth transform enviroment, it automaticly
+	 * fits size because it can use the pitch from
+	 * the dest video context */
+	actor->transform = visual_video_new ();
 
-		visual_log (VISUAL_LOG_INFO, "transpitch1 %d depth %d bpp %d", actor->transform->pitch, actor->transform->depth,
-				actor->transform->bpp);
-		/* If there is only GL (which gets returned by highest nogl if
-		 * nothing else is there, stop here */
-		if (actor->transform->depth == VISUAL_VIDEO_DEPTH_GL)
-			return -VISUAL_ERROR_ACTOR_GL_NEGOTIATE;
+	visual_log (VISUAL_LOG_INFO, "run depth %d forced %d\n", rundepth, forced);
 
-		visual_video_set_dimension (actor->transform, actor->video->width, actor->video->height);
-		visual_log (VISUAL_LOG_INFO, "transpitch2 %d %d", actor->transform->width, actor->transform->pitch);
-		
-		actplugin->requisition (visual_actor_get_plugin (actor), &actor->transform->width, &actor->transform->height);
-		visual_log (VISUAL_LOG_INFO, "transpitch3 %d", actor->transform->pitch);
-		
-		if (noevent == FALSE) {
-			visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->transform,
-					actor->transform->width, actor->transform->height);
-			visual_plugin_events_pump (actor->plugin);
-		} else {
-			/* Normally a visual_video_set_dimension get's called within the
-			 * event handler, but we won't come there right now so we've
-			 * got to set the pitch ourself */
-			visual_video_set_dimension (actor->transform,
-					actor->transform->width, actor->transform->height);
-		}
-		
-		visual_log (VISUAL_LOG_INFO, "rundepth: %d transpitch %d\n", rundepth, actor->transform->pitch);
-		visual_video_allocate_buffer (actor->transform);
+	if (forced == TRUE)
+		visual_video_set_depth (actor->transform, rundepth);
+	else
+		visual_video_set_depth (actor->transform,
+				visual_video_depth_get_highest_nogl (depthflag));
 
-		if (actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT)
-			actor->ditherpal = visual_palette_new (256);
+	visual_log (VISUAL_LOG_INFO, "transpitch1 %d depth %d bpp %d", actor->transform->pitch, actor->transform->depth,
+			actor->transform->bpp);
+	/* If there is only GL (which gets returned by highest nogl if
+	 * nothing else is there, stop here */
+	if (actor->transform->depth == VISUAL_VIDEO_DEPTH_GL)
+		return -VISUAL_ERROR_ACTOR_GL_NEGOTIATE;
 
+	visual_video_set_dimension (actor->transform, actor->video->width, actor->video->height);
+	visual_log (VISUAL_LOG_INFO, "transpitch2 %d %d", actor->transform->width, actor->transform->pitch);
+
+	actplugin->requisition (visual_actor_get_plugin (actor), &actor->transform->width, &actor->transform->height);
+	visual_log (VISUAL_LOG_INFO, "transpitch3 %d", actor->transform->pitch);
+
+	if (noevent == FALSE) {
+		visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->transform,
+				actor->transform->width, actor->transform->height);
+		visual_plugin_events_pump (actor->plugin);
 	} else {
-		tmpwidth = actor->video->width;
-		tmpheight = actor->video->height;
-		tmppitch = actor->video->pitch;
-
-		/* Pump the resize events and handle all the pending events */
-		actplugin->requisition (visual_actor_get_plugin (actor), &actor->video->width, &actor->video->height);
-		
-		if (noevent == FALSE) {
-			visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->video,
-					actor->video->width, actor->video->height);
-			visual_plugin_events_pump (actor->plugin);
-		}
-
-		/* Size fitting enviroment */
-		if (tmpwidth != actor->video->width || tmpheight != actor->video->height) {
-			actor->fitting = visual_video_new_with_buffer (actor->video->width,
-					actor->video->height, actor->video->depth);
-
-			visual_video_set_dimension (actor->video, tmpwidth, tmpheight);
-		}
-
-		/* Set the pitch seen this is the framebuffer context */
-		visual_video_set_pitch (actor->video, tmppitch);
+		/* Normally a visual_video_set_dimension get's called within the
+		 * event handler, but we won't come there right now so we've
+		 * got to set the pitch ourself */
+		visual_video_set_dimension (actor->transform,
+				actor->transform->width, actor->transform->height);
 	}
+
+	visual_log (VISUAL_LOG_INFO, "rundepth: %d transpitch %d\n", rundepth, actor->transform->pitch);
+	visual_video_allocate_buffer (actor->transform);
+
+	if (actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT)
+		actor->ditherpal = visual_palette_new (256);
+
+	return VISUAL_OK;
+}
+
+static int negotiate_video (VisActor *actor, int noevent)
+{
+	VisActorPlugin *actplugin = get_actor_plugin (actor);
+	int tmpwidth, tmpheight, tmppitch;
+
+	tmpwidth = actor->video->width;
+	tmpheight = actor->video->height;
+	tmppitch = actor->video->pitch;
+
+	/* Pump the resize events and handle all the pending events */
+	actplugin->requisition (visual_actor_get_plugin (actor), &actor->video->width, &actor->video->height);
+
+	if (noevent == FALSE) {
+		visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->video,
+				actor->video->width, actor->video->height);
+
+		visual_plugin_events_pump (actor->plugin);
+	}
+
+	/* Size fitting enviroment */
+	if (tmpwidth != actor->video->width || tmpheight != actor->video->height) {
+		actor->fitting = visual_video_new_with_buffer (actor->video->width,
+				actor->video->height, actor->video->depth);
+
+		visual_video_set_dimension (actor->video, tmpwidth, tmpheight);
+	}
+
+	/* Set the pitch seen this is the framebuffer context */
+	visual_video_set_pitch (actor->video, tmppitch);
 
 	return VISUAL_OK;
 }
