@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(libvisual-display, 0.0.0, Libvisual-devel@lists.sourceforge.net)
+AC_INIT(libvisual-display, 0.3.0, Libvisual-devel@lists.sourceforge.net)
 AC_CONFIG_SRCDIR([lvdisplay/lv_display.h])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 AC_CONFIG_HEADER([config.h])
@@ -32,7 +32,7 @@ fi
 
 # Checks for libraries.
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.2.0, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.3.0, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([*** libvisual not found.
 			libvisual is needed to build this package.
