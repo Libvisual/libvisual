@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.9 2004-07-24 18:22:27 synap Exp $
+ *	$Id: lv_list.c,v 1.10 2004-08-25 11:23:11 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -152,7 +152,7 @@ inline void *visual_list_next(VisList *list, VisListEntry **le)
  * 	currently. To begin traversing at the end of the list do:
  * 	VisList *le = NULL and pass it as &le in the argument.
  *
- * @return The Data element of the previous entry, or NULL.
+ * @return The data element of the previous entry, or NULL.
  */
 inline void *visual_list_prev(VisList *list, VisListEntry **le)
 {
@@ -414,55 +414,6 @@ int visual_list_count (VisList *list)
 
 	return count;
 }
-
-#if 0
-int visual_list_sort(VisList *list, visual_list_sort_func_t compare)
-{
-	VisListEntry *le, **al;
-	int count, i, ptr = 0;
-	
-	if (list == NULL || compare == NULL)
-		return -1;
-	
-	count = visual_list_count (list);
-	if (count < 1)
-		return -1;
-	
-	al = malloc (count * sizeof (VisListEntry *));
-
-	if (al == NULL)
-		return -1;
-
-	/* Clear pointer memory */
-	memset (al, 0, count * sizeof (VisListEntry *));
-	
-	/* Copy all list entry pointers into al */
-	le = list->head;
-	while (le != NULL)  {
-		al[ptr++] = le;
-		le = le->next;
-	}
-	
-	/* Use qsort to sort this list for us */
-	qsort (al, count, sizeof (VisListEntry *), compare);
-
-	/* Empty list, reconstruct it */
-	for (i = 0; i < count - 1; i++) {
-		al[i]->next = al[i+1];
-		al[i+1]->prev = al[i];
-	}
-	
-	al[0]->prev = NULL;
-	al[count-1]->next = NULL;
-
-	list->head = al[0];
-	list->tail = al[count-1];
-
-	/* Done */
-	visual_mem_free (al);
-	return 0;
-}
-#endif
 
 /**
  * @}

@@ -5,9 +5,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <sys/time.h>
-#include <time.h>
-
+#include <libvisual/lv_time.h>
 #include <libvisual/lv_video.h>
 
 /**
@@ -51,7 +49,7 @@ struct _VisSongInfo {
 					  * the advanced interface. */
 
 	/* Timing */
-	time_t		 start;		/**< Used to internal timing to keep track on the
+	VisTimer	 timer;		/**< Used to internal timing to keep track on the
 					  * age of the record. */
 	/* Cover art */
 	VisVideo	*cover;		/**< Pointer to a VisVideo that contains the cover art. */
@@ -69,7 +67,7 @@ int visual_songinfo_set_album (VisSongInfo *songinfo, char *album);
 int visual_songinfo_set_song (VisSongInfo *songinfo, char *song);
 int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover);
 int visual_songinfo_mark (VisSongInfo *songinfo);
-time_t visual_songinfo_age (VisSongInfo *songinfo);
+long visual_songinfo_age (VisSongInfo *songinfo);
 int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src);
 int visual_songinfo_compare (VisSongInfo *s1, VisSongInfo *s2);
 

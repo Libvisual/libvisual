@@ -11,7 +11,8 @@ extern "C" {
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_event.h>
-
+#include <libvisual/lv_param.h>
+	
 /**
  * Enumerate to define the plugin type. Especially used
  * within the VisPlugin system and also used within the plugin
@@ -99,6 +100,8 @@ struct _VisActorPlugin {
 	VisPluginRef			*ref;		/**< Pointer to the plugin reference. */
 	VisPluginInfo			*info;		/**< Pointer to the VisPluginInfo data structure
 							 * containing information about the plugin. */
+	VisParamContainer		 params;	/**< The VisParamContainer that contains the
+							  * parameters for this plugin. */
 	plugin_actor_init_func_t	 init;		/**< The plugin it's initialize function. */
 	plugin_actor_cleanup_func_t	 cleanup;	/**< The plugin it's cleanup function. */
 	plugin_actor_requisition_func_t	 requisition;	/**< The requisition function. This is used to
@@ -136,6 +139,8 @@ struct _VisInputPlugin {
 	VisPluginRef			*ref;		/**< Pointer to the plugin reference. */
 	VisPluginInfo			*info;		/**< Pointer to the VisPluginInfo data structure
 							  * containing information about the plugin. */
+	VisParamContainer		 params;	/**< The VisParamContainer that contains the
+							  * parameters for this plugin. */
 	plugin_input_init_func_t	 init;		/**< The plugin it's initialize function. */
 	plugin_input_cleanup_func_t	 cleanup;	/**< The plugin it's cleanup function. */
 	plugin_input_upload_func_t	 upload;	/**< The sample upload function. This is the main function
@@ -164,6 +169,8 @@ struct _VisMorphPlugin {
 	VisPluginRef			*ref;		/**< Pointer to the plugin reference. */
 	VisPluginInfo			*info;		/**< Pointer to the VisPluginInfo data structure
 							  * containing information about the plugin. */
+	VisParamContainer		 params;	/**< The VisParamContainer that contains the
+							  * parameters for this plugin. */
 	plugin_morph_init_func_t	 init;		/**< The plugin it's initialize function. */
 	plugin_morph_cleanup_func_t	 cleanup;	/**< The plugin it's cleanup function. */
 	plugin_morph_palette_func_t	 palette;	/**< The plugin it's palette function. This can be used
@@ -215,6 +222,7 @@ VisPluginInfo *visual_plugin_info_new (char *name, char *author, char *version, 
 VisPluginInfo *visual_plugin_info_duplicate (VisPluginInfo *pluginfo);
 int visual_plugin_info_free (VisPluginInfo *pluginfo);
 VisPluginInfo *visual_plugin_get_info (LVPlugin *plugin);
+VisParamContainer *visual_plugin_get_params (LVPlugin *plugin);
 
 VisPluginRef *visual_plugin_ref_new (void);
 int visual_plugin_ref_free (VisPluginRef *ref);

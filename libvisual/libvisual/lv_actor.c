@@ -506,7 +506,7 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 		visual_video_allocate_buffer (actor->transform);
 
 		if (actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT)
-			actor->ditherpal = visual_palette_new ();
+			actor->ditherpal = visual_palette_new (256);
 
 	} else {
 		tmpwidth = actor->video->width;

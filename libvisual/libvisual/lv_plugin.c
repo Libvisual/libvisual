@@ -28,7 +28,7 @@ static void ref_list_destroy (void *data)
 	if (data == NULL)
 		return;
 
-	ref = (VisPluginRef*) data;
+	ref = (VisPluginRef *) data;
 	if (ref->info != NULL)
 		visual_plugin_info_free (ref->info);
 
@@ -204,6 +204,42 @@ VisPluginInfo *visual_plugin_get_info (LVPlugin *plugin)
 
 		case VISUAL_PLUGIN_TYPE_MORPH:
 			return plugin->plugin.morphplugin->info;
+			break;
+
+		default:
+			return NULL;
+			break;
+	}
+
+	return NULL;
+}
+
+/**
+ * Gives the VisParamContainer related to a LVPlugin.
+ *
+ * @param plugin The LVPlugin of which the VisParamContainer is requested.
+ *
+ * @return The VisParamContainer within the LVPlugin, or NULL on error.
+ */
+VisParamContainer *visual_plugin_get_params (LVPlugin *plugin)
+{
+	visual_log_return_val_if_fail (plugin != NULL, NULL);
+
+	switch (plugin->type) {
+		case VISUAL_PLUGIN_TYPE_NULL:
+			return NULL;
+			break;
+
+		case VISUAL_PLUGIN_TYPE_ACTOR:
+			return &plugin->plugin.actorplugin->params;
+			break;
+
+		case VISUAL_PLUGIN_TYPE_INPUT:
+			return &plugin->plugin.inputplugin->params;
+			break;
+
+		case VISUAL_PLUGIN_TYPE_MORPH:
+			return &plugin->plugin.morphplugin->params;
 			break;
 
 		default:
@@ -413,6 +449,11 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type)
 	visual_log_return_val_if_fail (pluglist != NULL, NULL);
 
 	list = visual_list_new ();
+
+	if (list == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot create a new list");
+		return NULL;
+	}
 
 	while ((ref = visual_list_next (pluglist, &entry)) != NULL) {
 		if (ref->type == type)
@@ -770,6 +811,8 @@ LVPlugin *visual_plugin_load (VisPluginRef *ref)
  */
 int visual_plugin_realize (LVPlugin *plugin)
 {
+	VisParamContainer *paramcontainer;
+
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
 	if (plugin->realized == TRUE)
@@ -777,6 +820,9 @@ int visual_plugin_realize (LVPlugin *plugin)
 
 	plugin_init (plugin);
 	plugin->realized = TRUE;
+
+	paramcontainer = visual_plugin_get_params (plugin);
+	visual_param_set_eventqueue (paramcontainer, &plugin->eventqueue);
 
 	return 0;
 }
@@ -872,17 +918,10 @@ VisPluginRef *visual_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 VisList *visual_plugin_get_list (char **paths)
 {
 	VisList *list = visual_list_new();
-	int i = 0, ret;
+	int i = 0;
 
-	visual_log_return_val_if_fail (paths != NULL, NULL);
-
-	while (paths[i] != NULL) {
-		ret = plugin_add_dir_to_list (list, paths[i++]);
-		if (ret < 0) {
-			visual_list_destroy (list, NULL);
-			return NULL;
-		}
-	}
+	while (paths[i] != NULL)
+		plugin_add_dir_to_list (list, paths[i++]);
 
 	return list;
 }

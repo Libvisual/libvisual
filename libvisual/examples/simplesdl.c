@@ -215,9 +215,9 @@ void sdl_set_pal ()
 	int i;
 
 	for (i = 0; i < 256; i ++) {
-		colors[i].r = pal->r[i];
-		colors[i].g = pal->g[i];
-		colors[i].b = pal->b[i];
+		colors[i].r = pal->colors[i].r;
+		colors[i].g = pal->colors[i].g;
+		colors[i].b = pal->colors[i].b;
 	}
 	
 	SDL_SetColors (screen, colors, 0, 256);
@@ -236,22 +236,23 @@ int main (int argc, char *argv[])
 	time_t begin = time (NULL), end;
 	int frames = 0;
 	char *input_name = NULL;
-
-	printf ("hola pepe\n");
-	/*visual_init (&argc, &argv);*/
-	if (visual_init (NULL, NULL) < 0)
-		visual_log (VISUAL_LOG_ERROR, "Could not initialize Libvisual");
-	printf ("hola pipo\n");
+	
+	visual_init (&argc, &argv);
 	
 	/* Check libvisual version */
-	visual_log (VISUAL_LOG_INFO, "Libvisual version %s", visual_get_version ());
+	printf ("Libvisual version %s\n", visual_get_version ());
 
 	/* Make a new actor from actlist, with pluginname */
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
 	else
-		actor = visual_actor_new ("infinite");
+		actor = visual_actor_new ("oinksie");
 
+	if (actor->plugin == NULL) {
+		printf ("Couldn't create actor plugin\n");
+		return -1;
+	}
+	
 	depthflag = visual_actor_get_supported_depth (actor);
 	
 	if (argc > 2) {
@@ -260,14 +261,14 @@ int main (int argc, char *argv[])
 				
 		/* Check if the depth is supported */
 		if (visual_video_depth_is_supported (depthflag, depth) < 1) {
-			visual_log (VISUAL_LOG_INFO, "Plugin doesn't support this depth, but we'll set up an transformation enviroment.");
-			visual_log (VISUAL_LOG_INFO, "However showing you a nice list of supported depths anyway");
+			printf ("Plugin doesn't support this depth, but we'll set up an transformation enviroment.\n");
+			printf ("However showing you a nice list of supported depths anyway\n");
 
 			/* Show a list of supported depths */
 			i = VISUAL_VIDEO_DEPTH_NONE;
 
 			if (visual_video_depth_is_supported (depthflag, i) == 1)
-				visual_log (VISUAL_LOG_INFO, "Support visual video context NONE");
+				printf ("Support visual video context NONE\n");
 
 			do {
 				j = i;
@@ -276,7 +277,7 @@ int main (int argc, char *argv[])
 				if (i == j)
 					break;
 				
-				visual_log (VISUAL_LOG_INFO, "Support visual depth %d",
+				printf ("Support visual depth %d\n",
 						visual_video_depth_value_from_enum (i));
 
 			} while (i < VISUAL_VIDEO_DEPTH_GL);
@@ -333,7 +334,7 @@ int main (int argc, char *argv[])
 	if (argc >= 4)
 	        input_name = argv[3];
 	else
-	        input_name = "esd";
+	        input_name = "alsa";
 
 	input = visual_input_new (input_name);
 	visual_log_return_val_if_fail(input != NULL, -1 );
@@ -386,8 +387,17 @@ int main (int argc, char *argv[])
 		usleep (5000);
 		
 		while (SDL_PollEvent (&event)) {
+			VisEventQueue *vevent;
+
+			vevent = visual_plugin_get_eventqueue (visual_actor_get_plugin (visual_bin_get_actor (bin)));
+			
 			switch (event.type) {
+				case SDL_KEYUP:
+					visual_event_queue_add_keyboard (vevent, event.key.keysym.sym, event.key.keysym.mod, VISUAL_KEY_UP);
+					break;
+				
 				case SDL_KEYDOWN:
+					visual_event_queue_add_keyboard (vevent, event.key.keysym.sym, event.key.keysym.mod, VISUAL_KEY_DOWN);
 					switch (event.key.keysym.sym) {
 						case SDLK_F11:
 							sdl_fullscreen_toggle ();

@@ -1,7 +1,7 @@
 #ifndef _LV_ENDIANESS_H
 #define _LV_ENDIANESS_H
 
-#include <lvconfig.h>
+#include <libvisual/lvconfig.h>
 
 #ifdef __cplusplus
 extern "C" {

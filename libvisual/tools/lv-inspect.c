@@ -253,7 +253,10 @@ int main (int argc, char **argv)
 				break;
 
 			case 'h':
-				printf ("Help\n");
+				printf ("Usage %s <pluginname>\n", argv[0]);
+				printf ("-l Show list of all plugins in registry\n");
+				printf ("-d Show detailed list of all plugins in registry\n");
+				
 				return 0;
 				break;
 

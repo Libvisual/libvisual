@@ -150,23 +150,25 @@ int visual_bitmap_load (VisVideo *video, char *filename)
 
 	/* Load the palette */
 	if (bi_bitcount == 8) {
-		if (video->pal == NULL)
-			video->pal = visual_palette_new ();
-
 		if (bi_clrused == 0)
 			bi_clrused = 256;
 
+		if (video->pal == NULL)
+			visual_palette_free (video->pal);
+		
+		video->pal = visual_palette_new (bi_clrused);
+
 		if (bi_size == 12) {
 			for (i = 0; i < bi_clrused; i++) {
-				read (fd, &video->pal->b[i], 1);
-				read (fd, &video->pal->g[i], 1);
-				read (fd, &video->pal->b[i], 1);
+				read (fd, &video->pal->colors[i].b, 1);
+				read (fd, &video->pal->colors[i].g, 1);
+				read (fd, &video->pal->colors[i].r, 1);
 			}
 		} else {
 			for (i = 0; i < bi_clrused; i++) {
-				read (fd, &video->pal->b[i], 1);
-				read (fd, &video->pal->g[i], 1);
-				read (fd, &video->pal->b[i], 1);
+				read (fd, &video->pal->colors[i].b, 1);
+				read (fd, &video->pal->colors[i].g, 1);
+				read (fd, &video->pal->colors[i].r, 1);
 				lseek (fd, 1, SEEK_CUR);
 			}
 		}

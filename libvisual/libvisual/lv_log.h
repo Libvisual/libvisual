@@ -148,7 +148,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 			assert (0);
 	}
 	/*
-	 * Sorry, we doesn't have (file,line) information
+	 * Sorry, we don't have (file,line) information
 	 */
 	if (severity == VISUAL_LOG_INFO) {
 		printf ("libvisual %s: %s: %s\n",

@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/time.h>
-#include <time.h>
 
 #include "lv_common.h"
 #include "lv_songinfo.h"
@@ -249,30 +247,33 @@ int visual_songinfo_mark (VisSongInfo *songinfo)
 {
 	visual_log_return_val_if_fail (songinfo != NULL, -1);
 	
-	songinfo->start = time (NULL);
+	visual_timer_start (&songinfo->timer);
 
 	return 0;
 }
 
 /**
  * Gives the age of the VisSongInfo. Returns the age in seconds
- * stored in a time_t.
+ * stored in a long.
  *
  * @param songinfo Pointer to a VisSongInfo of which the age is requested.
  *
  * @return The age in seconds.
  */
-time_t visual_songinfo_age (VisSongInfo *songinfo)
-{
-	time_t cur;
 
-	cur = time (NULL);
+long visual_songinfo_age (VisSongInfo *songinfo)
+{
+	VisTime cur;
+
+	visual_time_get (&cur);
 
 	/* Clock has been changed */
-	if (cur < songinfo->start)
-		songinfo->start = cur;
+	if (cur.tv_sec < songinfo->timer.start.tv_sec)
+		visual_songinfo_mark (songinfo);
 
-	return cur - songinfo->start;
+	visual_time_difference (&cur, &songinfo->timer.start, &cur);
+
+	return cur.tv_sec;
 }
 
 /**
@@ -286,12 +287,12 @@ time_t visual_songinfo_age (VisSongInfo *songinfo)
  */
 int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
 {
+	visual_log_return_val_if_fail (dest != NULL && src != NULL, -1);
+
 	dest->type = src->type;
 	dest->length = src->length;
 	dest->elapsed = src->elapsed;
-	dest->start = src->start;
-
-	visual_log_return_val_if_fail (dest != NULL && src != NULL, -1);
+	memcpy (&dest->timer, &src->timer, sizeof (VisTimer));
 
 	if (src->songname != NULL)
 		dest->songname = strdup (src->songname);

@@ -6,7 +6,7 @@
 /*
  * lvconfig.h must be included in order to show correct log messages
  */
-#include <lvconfig.h>
+#include "lvconfig.h"
 #include "lv_log.h"
 
 #include "lv_list.h"

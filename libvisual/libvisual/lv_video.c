@@ -34,6 +34,11 @@ static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
 static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
 
+/* BGR to RGB conversions */
+static int bgr_to_rgb16 (VisVideo *dest, VisVideo *src);
+static int bgr_to_rgb24 (VisVideo *dest, VisVideo *src);
+static int bgr_to_rgb32 (VisVideo *dest, VisVideo *src);
+
 /**
  * @defgroup VisVideo VisVideo
  * @{
@@ -113,7 +118,7 @@ int visual_video_free (VisVideo *video)
 	visual_log_return_val_if_fail (video != NULL, -1);
 
 	if (HAVE_ALLOCATED_BUFFER(video)) {
-		visual_log (VISUAL_LOG_CRITICAL, "VisVideo structure have an allocated screen buffer, "
+		visual_log (VISUAL_LOG_CRITICAL, "VisVideo structure has an allocated screen buffer, "
 				"visual_video_free_with_buffer() must be used");
 		return -1;
 	}
@@ -232,6 +237,33 @@ int visual_video_clone (VisVideo *dest, VisVideo *src)
 
 	return 0;
 }
+
+/**
+ * Checks if two VisVideo objects are the same depth, pitch and dimension wise.
+ *
+ * @param src1 Pointer to the first VisVideo that is used in the compare.
+ * @param src2 Pointer to the second VisVideo that is used in the compare.
+ *
+ * @return TRUE when they are the same and FALSE when not.
+ */
+int visual_video_compare (VisVideo *src1, VisVideo *src2)
+{
+	if (src1->depth != src2->depth)
+		return FALSE;
+
+	if (src1->width != src2->width)
+		return FALSE;
+
+	if (src1->height != src2->height)
+		return FALSE;
+
+	if (src1->pitch != src2->pitch)
+		return FALSE;
+
+	/* We made it to the end, the VisVideos are likewise in depth, pitch, dimensions */
+	return TRUE;
+}
+
 
 /**
  * Sets a palette to a VisVideo. Links a VisPalette to the
@@ -697,9 +729,13 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	}
 	
 	/** @todo fix negative, broken as it is right now... */
-	
+
+	/* We're looking at exactly the same types of VisVideo objects */
+	if (visual_video_compare (dest, src) == TRUE && alpha == FALSE && x == 0 && y == 0) {
+		memcpy (dest->screenbuffer, src->screenbuffer, dest->size);
+
 	/* No alpha, fast method */
-	if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT) {
+	} else if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT) {
 		int xps = (x * dest->bpp) + srcp->pitch;
 		/* Blit it to the dest video */
 		for (height = y; height < (hrange + y) - ymoff; height++) {
@@ -837,6 +873,32 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
 }
 
 /**
+ * Video color transforms one VisVideo bgr pixel ordering into bgr pixel ordering.
+ * 
+ * @param dest Pointer to the destination VisVideo, which should be a clone of the source VisVideo
+ * 	depth, pitch, dimension wise.
+ * @param src Pointer to the source VisVideo from which the bgr data is read.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src)
+{
+	visual_log_return_val_if_fail (visual_video_compare (dest, src) == TRUE, -1);
+	visual_log_return_val_if_fail (dest->screenbuffer != NULL, -1);
+	visual_log_return_val_if_fail (src->screenbuffer != NULL, -1);
+	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_8BIT, -1);
+	
+	if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT)
+		bgr_to_rgb16 (dest, src);
+	else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT)
+		bgr_to_rgb24 (dest, src);
+	else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT)
+		bgr_to_rgb32 (dest, src);
+
+	return 0;
+}
+
+/**
  * Video depth transforms one VisVideo into another using the depth information
  * stored within the VisVideos. The dimension should be equal however the pitch
  * value of the destination may be set.
@@ -886,6 +948,8 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 		return 0;
 	}
 
+	visual_log_return_val_if_fail (pal != NULL && pal->ncolors == 256, -1);
+	
 	if (video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 
 		if (destdepth == VISUAL_VIDEO_DEPTH_16BIT)
@@ -963,9 +1027,9 @@ static int depth_transform_8_to_16_c (uint8_t *dest, uint8_t *src, int width, in
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			destr[i].r = pal->r[src[j]] >> 3;
-			destr[i].g = pal->g[src[j]] >> 2;
-			destr[i].b = pal->b[src[j]] >> 3;
+			destr[i].r = pal->colors[src[j]].r >> 3;
+			destr[i].g = pal->colors[src[j]].g >> 2;
+			destr[i].b = pal->colors[src[j]].b >> 3;
 			i++;
 			j++;
 		}
@@ -984,9 +1048,9 @@ static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, in
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			dest[i++] = pal->r[src[j]];
-			dest[i++] = pal->g[src[j]];
-			dest[i++] = pal->b[src[j]];
+			dest[i++] = pal->colors[src[j]].r;
+			dest[i++] = pal->colors[src[j]].g;
+			dest[i++] = pal->colors[src[j]].b;
 			j++;
 		}
 
@@ -1007,9 +1071,9 @@ static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, in
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
 			col = 0;
-			col += pal->r[src[j]] << 16;
-			col += pal->g[src[j]] << 8;
-			col += pal->b[src[j]];
+			col += pal->colors[src[j]].r << 16;
+			col += pal->colors[src[j]].g << 8;
+			col += pal->colors[src[j]].b;
 			j++;
 
 			destr[i++] = col;
@@ -1041,9 +1105,9 @@ static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			col |= (g >> 6) << 3;
 			col |= (b >> 5) << 5;
 
-			pal->r[col] = r;
-			pal->g[col] = g;
-			pal->b[col] = b;
+			pal->colors[col].r = r;
+			pal->colors[col].g = g;
+			pal->colors[col].b = b;
 
 			dest[i++] = col;
 		}
@@ -1107,17 +1171,17 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			r = src[j++];
-			g = src[j++];
 			b = src[j++];
+			g = src[j++];
+			r = src[j++];
 
 			col  = (r >> 5);
 			col |= (g >> 6) << 3;
 			col |= (b >> 5) << 5;
 
-			pal->r[col] = r;
-			pal->g[col] = g;
-			pal->b[col] = b;
+			pal->colors[col].r = r;
+			pal->colors[col].g = g;
+			pal->colors[col].b = b;
 
 			dest[i++] = col;
 		}
@@ -1137,9 +1201,9 @@ static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 	
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			destr[i].r = src[j++] >> 3;
-			destr[i].g = src[j++] >> 2;
 			destr[i].b = src[j++] >> 3;
+			destr[i].g = src[j++] >> 2;
+			destr[i].r = src[j++] >> 3;
 			i++;
 		}
 
@@ -1188,9 +1252,9 @@ static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			col |= (g >> 6) << 3;
 			col |= (b >> 5) << 5;
 
-			pal->r[col] = r;
-			pal->g[col] = g;
-			pal->b[col] = b;
+			pal->colors[col].r = r;
+			pal->colors[col].g = g;
+			pal->colors[col].b = b;
 
 			dest[i++] = col;
 		}
@@ -1240,6 +1304,82 @@ static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, i
 		i += pitchdiff;
 	}
 	
+	return 0;
+}
+
+static int bgr_to_rgb16 (VisVideo *dest, VisVideo *src)
+{
+	_color16 *destbuf, *srcbuf;
+	int x, y;
+	int i = 0;
+	int pitchdiff = (dest->pitch - (dest->width * 2)) >> 1;
+	
+	destbuf = (_color16 *) dest->screenbuffer;
+	srcbuf = (_color16 *) src->screenbuffer;
+	
+	for (y = 0; y < dest->height; y++) {
+		for (x = 0; x < dest->width; x++) {
+			destbuf[i].b = srcbuf[i].r;
+			destbuf[i].g = srcbuf[i].g;
+			destbuf[i].r = srcbuf[i].b;
+			i++;
+		}
+
+		i += pitchdiff;
+	}
+	
+	return 0;
+}
+
+static int bgr_to_rgb24 (VisVideo *dest, VisVideo *src)
+{
+	uint8_t *destbuf, *srcbuf;
+	int x, y;
+	int i = 0;
+	int pitchdiff = dest->pitch - (dest->width * 3);
+
+	destbuf = dest->screenbuffer;
+	srcbuf = src->screenbuffer;
+	
+	for (y = 0; y < dest->height; y++) {
+		for (x = 0; x < dest->width; x++) {
+			destbuf[i + 2] = srcbuf[i];
+			destbuf[i + 1] = srcbuf[i + 1];
+			destbuf[i] = srcbuf[i + 2];
+		
+			i += 3;
+		}
+
+		i += pitchdiff;
+	}
+
+	return 0;
+}
+
+static int bgr_to_rgb32 (VisVideo *dest, VisVideo *src)
+{
+	uint8_t *destbuf, *srcbuf;
+	int x, y;
+	int i = 0;
+	int pitchdiff = dest->pitch - (dest->width * 4);
+
+	destbuf = dest->screenbuffer;
+	srcbuf = src->screenbuffer;
+	
+	for (y = 0; y < dest->height; y++) {
+		for (x = 0; x < dest->width; x++) {
+			destbuf[i + 2] = srcbuf[i];
+			destbuf[i + 1] = srcbuf[i + 1];
+			destbuf[i] = srcbuf[i + 2];
+
+			destbuf[i + 3] = srcbuf[i + 3];
+
+			i += 4;
+		}
+
+		i += pitchdiff;
+	}
+
 	return 0;
 }
 

@@ -180,9 +180,9 @@ void sdl_palette (VisPalette *pal)
 		return;
 
 	for (i = 0; i < 256; i ++) {
-		colors[i].r = pal->r[i];
-		colors[i].g = pal->g[i];
-		colors[i].b = pal->b[i];
+		colors[i].r = pal->colors[i].r;
+		colors[i].g = pal->colors[i].g;
+		colors[i].b = pal->colors[i].b;
 	}
 	
 	SDL_SetColors (screen, colors, 0, 256);

@@ -16,11 +16,13 @@
  *
  * @return A newly allocated VisPalette.
  */
-VisPalette *visual_palette_new ()
+VisPalette *visual_palette_new (int ncolors)
 {
 	VisPalette *pal;
 
 	pal = visual_mem_new0 (VisPalette, 1);
+
+	visual_palette_allocate_colors (pal, ncolors);
 
 	return pal;
 }
@@ -37,7 +39,40 @@ int visual_palette_free (VisPalette *pal)
 	if (pal == NULL)
 		return -1;
 
+	if (pal->colors != NULL)
+		visual_palette_free_colors (pal);
+	
 	visual_mem_free (pal);
+
+	return 0;
+}
+
+int visual_palette_copy (VisPalette *dest, VisPalette *src)
+{
+	visual_log_return_val_if_fail (dest != NULL, -1);
+	visual_log_return_val_if_fail (src != NULL, -1);
+
+	memcpy (dest->colors, src->colors, sizeof (VisColor) * dest->ncolors);
+
+	return 0;
+}
+
+int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
+{
+	visual_log_return_val_if_fail (pal != NULL, -1);
+
+	pal->colors = visual_mem_new0 (VisColor, ncolors);
+	pal->ncolors = ncolors;
+
+	return 0;
+}
+
+int visual_palette_free_colors (VisPalette *pal)
+{
+	visual_log_return_val_if_fail (pal != NULL, -1);
+
+	if (pal->colors != NULL)
+		visual_mem_free (pal->colors);
 
 	return 0;
 }
@@ -59,11 +94,17 @@ int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, 
 
 	if (dest == NULL || src1 == NULL || src2 == NULL)
 		return -1;
+	
+	if (src1->ncolors != src2->ncolors)
+		return -1;
 
-	for (i = 0; i < 256; i++) {
-		dest->r[i] = src1->r[i] + ((src2->r[i] - src1->r[i]) * rate);
-		dest->g[i] = src1->g[i] + ((src2->g[i] - src1->g[i]) * rate);
-		dest->b[i] = src1->b[i] + ((src2->b[i] - src1->b[i]) * rate);
+	if (dest->ncolors != src1->ncolors)
+		return -1;
+	
+	for (i = 0; i < dest->ncolors; i++) {
+		dest->colors[i].r = src1->colors[i].r + ((src2->colors[i].r - src1->colors[i].r) * rate);
+		dest->colors[i].g = src1->colors[i].g + ((src2->colors[i].g - src1->colors[i].g) * rate);
+		dest->colors[i].b = src1->colors[i].b + ((src2->colors[i].b - src1->colors[i].b) * rate);
 	}
 
 	return 0;

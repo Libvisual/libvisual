@@ -4,7 +4,10 @@
 #include <libvisual/lvconfig.h>
 
 #include <libvisual/lv_endianess.h>
+#include <libvisual/lv_time.h>
+#include <libvisual/lv_color.h>
 #include <libvisual/lv_param.h>
+#include <libvisual/lv_cpu.h>
 #include <libvisual/lv_bin.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_keysym.h>

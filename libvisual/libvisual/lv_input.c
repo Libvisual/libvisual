@@ -104,8 +104,13 @@ VisInput *visual_input_new (char *inputname)
 	VisInput *input;
 	VisPluginRef *ref;
 
-	visual_log_return_val_if_fail (__lv_plugins_input != NULL && inputname == NULL, NULL);
+//	visual_log_return_val_if_fail (__lv_plugins_input != NULL && inputname == NULL, NULL);
 
+	if (__lv_plugins_input == NULL && inputname != NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "the plugin list is NULL");
+		return NULL;
+	}
+	
 	input = visual_mem_new0 (VisInput, 1);
 	
 	input->audio = visual_audio_new ();

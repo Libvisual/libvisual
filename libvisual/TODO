@@ -1,3 +1,5 @@
+FIX the VERSION define
+
 Fix that lv-inspect builds, after the lib has been installed.
 
 
@@ -27,6 +29,9 @@ x		* property to force morphs in high bpp
 
 	auto sched:
 		
+	random:
+		* easily filter out gl plugins
+
 	examples:
 		* find a way to compile examples AFTER installing the current library.
 		* port simplesdl to the new bin system.
@@ -75,7 +80,7 @@ libvisual:
 		investigate bpm detection (post 0.4)
 
 	video:
-		palette change to use VisColor and good helper functions.		
+		hsv-rgb etc conversions for VisColor
 
 		font system
 		
@@ -91,8 +96,6 @@ libvisual:
 		16 bits alpha optimize:	And do two at once using 32 bits ints (post 0.2)
 
 		test >all< the video transformation stuff very well
-
-		the fitter should still draw even if the buffer is too small
 
 		sizing: When not fitting, it doesn't place in the middle, this is easy
 			to do for the fitting enviroment but a bit less easy for the
@@ -122,17 +125,11 @@ libvisual:
 	
 	actor:
 		Honor plugin flags better (post 0.1)
+		Have a mechanism to request a depth from within the plugin, which is needed
+			for plugins like the pixbuf loader.
 
 	plugins:
-		add a cache facility that let plugins save some expensive data (tables,
-		etc) to can be used after switch. The library could administer this data,
-		and when there is too much load, just drop some.
-		
-		have a way to set plugin parameters like "gst-pipe", "blah blah | blah".
-		have a way to version tag plugins (post 0.1)
-		have a 'plugin type namespace' policy and fix this within the plugins (discuss)
-		
-		Emit events on param changes.
+		have a way to version tag plugins (post 0.1) (Within the new plugin system ?)
 		
 		global params:
 			a global prop to do settings for songinfo (to show, how long shown)
@@ -142,7 +139,6 @@ libvisual:
 
 	morph:
 		timed morph
-		framebuffer to gl morph thingy
 		a method to check if the morph needs audio
 
 	songinfo:
@@ -153,7 +149,7 @@ libvisual:
 
 	cleanups:
 		functions returning strings that cannot be changed, must be
-			typed with static returns.
+			typed with const returns.
 		cleanup the fixmes
 		make use of the lv_log system and do better error checking
 		void * -> byte/word types on other archs !?
@@ -163,7 +159,7 @@ libvisual:
 		move the headers to include/ ?? (really ??)
 		test against: http://www.linuxbase.org/
 		I've always been declaring vars at the top of the function, however
-			I think it's cleaner to declare them in their target
+			Ive started to think it's cleaner to declare them in their target
 			scope.
 
 	doxygen:
@@ -172,8 +168,9 @@ libvisual:
 		use # at places where this is useful.
 		fix docs for plugin function.
 
-	list:
-		Add a sort method.
+	portability:
+		have byteswap helper functions and use them where endianess issues
+		arise (lv_bmp.c)
 
 	Other:
 		Make Gstreamer elements from the actors.
@@ -188,9 +185,23 @@ libvisual:
 	Threading:
 		Have VisThread, VisMutex and threading api to wrap other
 			threading systems within, like pthreads or win32 native threading API.
+			this is for internal usage within the library, plugins shouldn't
+			be threaded.
 
 		Threadify some plugin opts, like the input plugin, two actor plugins at
 			morph
+
+	Params:
+		When libvisual settings backend lands, have a 'serialize' flag that does save, load parameters.
+	
+	VisCPU:
+		A small sub system to obtain information about the processor, processors, cpu flags, simd set flags.
+
+	VisTimer:
+		Good timer module
+		port over the coverart timeout stuff to this module.
+		Use this for the timed morph as well.
+
 
 INTERNAL:
 	LOG: (post 0.1)

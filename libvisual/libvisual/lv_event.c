@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include <lvconfig.h>
+#include "lvconfig.h"
 #include "lv_event.h"
 #include "lv_log.h"
 
@@ -311,6 +311,31 @@ int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *song
 
 	event->newsong.type = event->type;
 	event->newsong.songinfo = songinfo;
+
+	return visual_event_queue_add (eventqueue, event);
+}
+
+/**
+ * Adds a new parameter change event to the event queue. By giving the pointer to the
+ * VisParamEntry structure a new VisEvent will be created and added to the event queue.
+ *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
+ * @param param Pointer to the VisParamEntry containing the parameter that has been changed.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
+{
+	VisEvent *event;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (param != NULL, -1);
+
+	event = visual_event_new ();
+	event->type = VISUAL_EVENT_PARAM;
+
+	event->param.type = event->type;
+	event->param.param = param;
 
 	return visual_event_queue_add (eventqueue, event);
 }
