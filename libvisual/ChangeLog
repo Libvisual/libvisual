@@ -8,6 +8,8 @@
 	 - LV_WIN32 macro is defined if we are on one
 	of these systems.
 	 - LV_HAVE_OPENGL macro is defined accordingly.
+	 * libvisual/lv_time.c: visual_time_usleep()
+	 implemented.
 	
 2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
 

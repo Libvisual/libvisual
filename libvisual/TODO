@@ -27,6 +27,9 @@ x		* property to force morphs in high bpp
 		* FOR RERWITE: on morph do both actors in two thread when threading
 		  is available.
 
+	timer:
+		* implement usleep.
+
 	auto sched:
 		
 	random:

@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 #include <string.h>
 
+#include "config.h"
 #include "lv_common.h"
 #include "lv_time.h"
 
@@ -98,7 +100,22 @@ int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
  */
 int visual_time_usleep (unsigned long microseconds)
 {
-
+#ifdef HAVE_NANOSLEEP
+	struct timespec request, remaining;
+	request.tv_sec = microseconds / VISUAL_USEC_PER_SEC;
+	request.tv_nsec = 1000 * (microseconds % VISUAL_USEC_PER_SEC);
+	while (nanosleep (&request, &remaining) == EINTR)
+		request = remaining;
+#elif HAVE_USLEEP
+	return usleep (microseconds);
+#elif HAVE_SELECT
+	struct timeval tv;
+	tv.tv_sec = microseconds / VISUAL_USEC_PER_SEC;
+	tv.tv_usec = microseconds % VISUAL_USEC_PER_SEC;
+	select(0, NULL, NULL, NULL, &tv);
+#else
+#warning visual_time_usleep() will does not work!
+#endif
 	return 0;
 }
 

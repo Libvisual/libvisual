@@ -24,8 +24,13 @@ esac
 AC_MSG_RESULT([$lv_win32])
 
 # Checks for programs.
+AC_PROG_CXX
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
 
 AC_DISABLE_STATIC
 AC_LIBTOOL_WIN32_DLL
@@ -62,6 +67,7 @@ fi
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
+AC_HEADER_TIME
 
 AC_MSG_CHECKING(for ISO C99 varargs macros in C)
 AC_TRY_COMPILE([],[
@@ -84,11 +90,25 @@ AC_C_BIGENDIAN(bigendian=yes, bigendian=no, )
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([memset sqrt strdup])
-# FIXME: Replace `main' with a function in `-lGL':
-AC_CHECK_LIB([GL], [main])
-# FIXME: Replace `main' with a function in `-lGLU':
-AC_CHECK_LIB([GLU], [main])
+AC_FUNC_SELECT_ARGTYPES
+AC_CHECK_FUNCS([gettimeofday usleep nanosleep select memset sqrt strdup strndup])
+
+if test x"$lv_have_opengl" = xyes; then
+  # FIXME: Replace `main' with a function in `-lGL':
+  AC_CHECK_LIB([GL], [main])
+  # FIXME: Replace `main' with a function in `-lGLU':
+  AC_CHECK_LIB([GLU], [main])
+else
+  :
+fi
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
+# FIXME: Replace `main' with a function in `-lm':
+AC_CHECK_LIB([m], [main])
+# FIXME: Replace `main' with a function in `-lpthread':
+AC_CHECK_LIB([pthread], [main])
+# FIXME: Replace `main' with a function in `-lvisual':
+AC_CHECK_LIB([visual], [main])
 
 # check for type sizes
 AC_CHECK_SIZEOF(short)
@@ -138,6 +158,8 @@ if test "$examples" = yes; then
   # On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
   AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
   build_subdirs="$build_subdirs examples"
+  # FIXME: Replace `main' with a function in `-lSDL':
+  AC_CHECK_LIB([SDL], [main])
 else
   AC_MSG_RESULT([no])
 fi
@@ -233,7 +255,7 @@ _______EOF
         if test x$lv_win32 = xyes ; then
                 cat >>$outfile <<_______EOF
 
-#define LV_OS_WIN32
+#define VISUAL_OS_WIN32
 
 _______EOF
         fi
@@ -241,7 +263,7 @@ _______EOF
         if test x$lv_have_opengl = xyes ; then
                 cat >>$outfile <<_______EOF
 
-#define LV_HAVE_OPENGL
+#define VISUAL_HAVE_OPENGL
 
 _______EOF
         fi
