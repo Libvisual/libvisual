@@ -925,7 +925,8 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
 	/* FIXME byte order sensitive */
 	vidbuf = video->pixels + 3;
 
-	for (i = 0; i < video->size; i += 4)
+	i = video->size;
+	while (i -= 4)
 		*(vidbuf += 4) = density;
 
 	return VISUAL_OK;
