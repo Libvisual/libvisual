@@ -6,7 +6,6 @@ AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_HEADER(config.h)
 
-
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
@@ -74,12 +73,27 @@ else
 fi
 AM_CONDITIONAL(BUILD_EXAMPLES, test x$examples = xyes)
 
+
+AC_ARG_ENABLE([debug],
+            AC_HELP_STRING([--enable-debug],
+                           [Enable debug @<:@default=disabled@:>@]),
+	    [debug=$enableval],
+	    [debug=no])
+AC_MSG_CHECKING([wheter to enable debug])
+if test "$debug" = yes; then
+  AC_MSG_RESULT([yes])
+  DEBUG_CFLAGS="-ggdb3"
+else
+  AC_MSG_RESULT([no])
+  DEBUG_CFLAGS=""
+fi
+AC_SUBST(DEBUG_CFLAGS)
+
 libs_dynamic_loader="-ldl"
-AC_SUBST(CFLAGS, "-I./ -O2 -Wall -rdynamic -ggdb")
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
-VISUAL_LIBS="-L${libdir} -lvisual -lm -ldl"
 VISUAL_CFLAGS="-I${includedir}"
+VISUAL_LIBS="-L${libdir} -lvisual -lm -ldl"
 AC_SUBST(VISUAL_CFLAGS)
 AC_SUBST(VISUAL_LIBS)
 

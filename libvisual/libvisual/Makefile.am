@@ -18,10 +18,9 @@ LIBS = -L. -L$(prefix)/lib
 
 PLUGPATH = $(prefix)/lib/libvisual
 
-AM_CFLAGS = -ggdb -DPLUGPATH="\"$(PLUGPATH)\""
+AM_CFLAGS = -O2 -rdynamic -DPLUGPATH="\"$(PLUGPATH)\"" -Wall -Wmissing-prototypes @DEBUG_CFLAGS@
 
-INCLUDES = $(all_includes) \
-	-I$(top_srcdir)
+INCLUDES = $(all_includes) -I$(top_srcdir)
 
 libvisual_la_LDFLAGS = -export-dynamic
 
