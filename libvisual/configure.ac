@@ -94,15 +94,6 @@ AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h sys/types.h stdlib.h string.h sys/time.h unistd.h])
 
-lv_have_opengl=no
-AC_CHECK_HEADERS([GL/gl.h GL/glx.h],opengl="yes",opengl="no")
-if test x"$opengl" = xno; then
-	AC_MSG_WARN([*** GL headers not found.
-			The library will be built without GL support.])
-else
-	lv_have_opengl=yes
-fi
-
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
@@ -132,19 +123,6 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([gettimeofday usleep nanosleep select memset sqrt strdup strndup])
-
-if test x"$lv_have_opengl" = xyes; then
-  AC_CHECK_LIB([GL], [glBegin], [],
-	       [AC_MSG_WARN([*** GL headers has been found, but we cannot link against GL Library.
-			Libvisual will be built without OpenGL support.
-			If you have already installed GL Library, probably you need to edit
-			your /etc/ld.so.conf and run ldconfig before to try to configure Libvisual.
-			Other option could be to set and export the LDFLAGS environment variable
-			to the correct flags (see ./configure --help).])
-	       lv_have_opengl=no])
-else
-  :
-fi
 
 AC_CHECK_LIB([dl], [dlsym], [LIBS="-ldl $LIBS"],
 	     AC_MSG_WARN([*** You need dlsym() to make use of Libvisual.]))
@@ -404,6 +382,32 @@ else
     OPT_CFLAGS=""
   fi
 fi
+
+AC_ARG_ENABLE([fast-fp-rng],
+           AC_HELP_STRING([--enable-fast-fp-rng],
+                          [Enable faster random floating point generator (enabled by default if --enable-extra-optimization is passed) ]),
+           [fastfprng=$enableval],
+           [fastfprng=maybe])
+AC_MSG_CHECKING([wheter to enable fast FP RNG])
+
+if  test x$fastfprng = xyes; then
+  AC_MSG_RESULT([yes])
+elif test x$fastfprng = xmaybe; then
+  if test x$extra_opt = xyes; then
+    AC_MSG_RESULT([yes])
+    fastfprng=yes
+  else
+    AC_MSG_RESULT([no])
+    fastfprng=no
+  fi
+else
+  AC_MSG_RESULT([no])
+  fastfprng=no
+fi
+
+
+#define VISUAL_RANDOM_FAST_FP_RND 1
+
 AC_SUBST(OPT_CFLAGS)
 
 AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
@@ -474,10 +478,10 @@ typedef unsigned $visual_size_type visual_size_t;
 #define VISUAL_SIZE_T_FORMAT	$visual_size_format
 _______EOF
 
-        if test x$lv_have_opengl = xyes ; then
+        if test x$fastfprng = xyes ; then
                 cat >>$outfile <<_______EOF
 
-#define VISUAL_HAVE_OPENGL
+#define VISUAL_RANDOM_FAST_FP_RNG (1)
 _______EOF
         fi
 
@@ -673,8 +677,8 @@ echo >>$outfile
    lv_have_iso_c_varargs=$lv_have_iso_c_varargs
    lv_have_gnuc_varargs=$lv_have_gnuc_varargs
    visual_size_type=$visual_size_type
+   fastfprng=$fastfprng
    lv_win32=$lv_win32
-   lv_have_opengl=$lv_have_opengl
  
    lv_mips=$lv_mips
    lv_alpha=$lv_alpha
