@@ -8,7 +8,8 @@ library_include_HEADERS = libvisual.h lv_actor.h \
 			  lv_input.h lv_event.h lv_keysym.h \
 			  lv_list.h lv_log.h lv_palette.h lv_plugin.h \
 			  lv_video.h lv_libvisual.h lv_songinfo.h \
-			  lv_morph.h lv_bmp.h lv_param.h lv_mem.h
+			  lv_morph.h lv_bmp.h lv_param.h lv_mem.h \
+			  lv_endianess.h
 
 lib_LTLIBRARIES = libvisual.la
 
