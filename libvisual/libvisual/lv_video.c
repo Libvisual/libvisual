@@ -13,9 +13,24 @@
 #define HAVE_ALLOCATED_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER)
 #define HAVE_EXTERNAL_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER)
 
+/* 32-bit fixed point settings */
+#define FP_FRACTIONAL_SIZE_LOG2		(fixed32_t) 8
+#define FP_FRACTIONAL_SIZE		((fixed32_t) 1 << FP_FRACTIONAL_SIZE_LOG2)
+#define FP_INT(i)			((fixed32_t) (i) << FP_FRACTIONAL_SIZE_LOG2)
+#define FP_TO_INT(f)			((fixed32_t) (f) >> FP_FRACTIONAL_SIZE_LOG2)
+#define FP_FLOAT(f)			((float) (f) * FP_FRACTIONAL_SIZE)
+#define FP_TO_FLOAT(f)			((float) (f) / FP_FRACTIONAL_SIZE)
+
+
+typedef uint32_t fixed32_t;
+
+
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
+
+/* Precomputation functions */
+static void precompute_row_table (VisVideo *video);
 
 /* Blit overlay functions */
 static int blit_overlay_noalpha (VisVideo *dest, const VisVideo *src, int x, int y);
@@ -42,6 +57,10 @@ static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, i
 static int bgr_to_rgb16 (VisVideo *dest, const VisVideo *src);
 static int bgr_to_rgb24 (VisVideo *dest, const VisVideo *src);
 static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src);
+
+/* Scaling functions */
+static int scale_nearest_8 (VisVideo *dest, const VisVideo *src);
+
 
 /**
  * @defgroup VisVideo VisVideo
@@ -127,6 +146,8 @@ int visual_video_free (VisVideo *video)
 
 		return -VISUAL_ERROR_VIDEO_HAS_ALLOCATED;
 	}
+
+	visual_mem_free(video->pixel_rows);
 	
 	return visual_mem_free (video);
 }
@@ -138,7 +159,7 @@ int visual_video_free (VisVideo *video)
  * visual_video_new_with_buffer(), not visual_video_new().
  *
  * @param video Pointer to a VisVideo that needs to be freed together with
- * 	it's buffer.
+ *	it's buffer.
  *
  * @return 0 on succes -1 on error.
  */
@@ -164,10 +185,12 @@ int visual_video_free_buffer (VisVideo *video)
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (video->pixels != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 
-	if (HAVE_ALLOCATED_BUFFER (video))
+	if (HAVE_ALLOCATED_BUFFER (video)) {
+		visual_mem_free (video->pixel_rows);
 		visual_mem_free (video->pixels);
-	else
+	} else {
 		return -VISUAL_ERROR_VIDEO_NO_ALLOCATED;
+	}
 
 	video->pixels = NULL;
 
@@ -208,6 +231,9 @@ int visual_video_allocate_buffer (VisVideo *video)
 	
 	video->pixels = visual_mem_malloc0 (video->size);
 
+	video->pixel_rows = visual_mem_new0 (void *, video->height);
+	precompute_row_table (video);
+
 	video->flags = VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER;
 
 	return VISUAL_OK;
@@ -230,15 +256,28 @@ int visual_video_have_allocated_buffer (const VisVideo *video)
 	return FALSE;
 }
 
+static void precompute_row_table (VisVideo *video)
+{
+	void **table, *row;
+	int y;
+
+	visual_log_return_if_fail(video->pixel_rows != NULL);
+	
+	table = video->pixel_rows;
+	
+	for (y = 0, row = video->pixels; y < video->height; y++, row += video->pitch)
+		*table++ = row;
+}
+
 /**
  * Clones the information from a VisVideo to another.
  * This will clone the depth, dimension and screen pitch into another VisVideo.
  * It doesn't clone the palette or buffer.
  *
  * @param dest Pointer to a destination VisVideo in which the information needs to
- * 	be placed.
+ *	be placed.
  * @param src Pointer to a source VisVideo from which the information needs to
- * 	be obtained.
+ *	be obtained.
  *
  * @return 0 on succes -1 on error.
  */
@@ -325,6 +364,9 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 	}
 
 	video->pixels = buffer;
+
+	video->pixel_rows = visual_mem_new0 (void *, video->height);
+	precompute_row_table (video);
 
 	return VISUAL_OK;
 }
@@ -429,8 +471,8 @@ VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
 {
 	int i = depth;
 	
-        if (visual_video_depth_is_sane (depth) == 0)
-		                return VISUAL_VIDEO_DEPTH_ERROR;
+	if (visual_video_depth_is_sane (depth) == 0)
+				return VISUAL_VIDEO_DEPTH_ERROR;
 
 	if (i == VISUAL_VIDEO_DEPTH_NONE) {
 		i = VISUAL_VIDEO_DEPTH_8BIT;
@@ -580,7 +622,7 @@ int visual_video_depth_is_sane (VisVideoDepth depth)
  * Returns the number of bits per pixel from a VisVideoDepth enumerate value.
  *
  * @param depth The VisVideodepth enumerate value from which the bits per pixel
- * 	needs to be returned.
+ *	needs to be returned.
  *
  * @return The bits per pixel or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on error.
  */
@@ -640,7 +682,7 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
  * Returns the number of bytes per pixel from the VisVideoDepth enumerate.
  *
  * @param depth The VisVideodepth enumerate value from which the bytes per pixel
- * 	needs to be returned.
+ *	needs to be returned.
  *
  * @return The number of bytes per pixel or -1 on error.
  */
@@ -830,7 +872,7 @@ static int blit_overlay_alpha32 (VisVideo *dest, const VisVideo *src, int x, int
 
 	xbpp = x * dest->bpp;
 
-	if (dest->height - src->height  < 0)
+	if (dest->height - src->height	< 0)
 		yaddage = abs (dest->height - (src->height));
 
 	/* Blit it to the dest video */
@@ -853,7 +895,7 @@ static int blit_overlay_alpha32 (VisVideo *dest, const VisVideo *src, int x, int
 
 			for (bppl = 0; bppl < dest->bpp; bppl++) {
 				destbuf[di] =
-					(alpha * (srcpbuf[si] -  destbuf[di]) / 255 + destbuf[di]);
+					(alpha * (srcpbuf[si] -	 destbuf[di]) / 255 + destbuf[di]);
 
 				si++;
 				di++;
@@ -936,7 +978,7 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
  * Video color transforms one VisVideo bgr pixel ordering into bgr pixel ordering.
  * 
  * @param dest Pointer to the destination VisVideo, which should be a clone of the source VisVideo
- * 	depth, pitch, dimension wise.
+ *	depth, pitch, dimension wise.
  * @param src Pointer to the source VisVideo from which the bgr data is read.
  *
  * @return 0 on succes -1 on error.
@@ -964,7 +1006,7 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
  * value of the destination may be set.
  *
  * @param viddest Pointer to the destination VisVideo to which the source
- * 	VisVideo is transformed.
+ *	VisVideo is transformed.
  * @param vidsrc Pointer to the source VisVideo.
  *
  * @return 0 on succes -1 on error.
@@ -1443,3 +1485,79 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
 	return VISUAL_OK;
 }
 
+/**
+ * Scale video.
+ *
+ * @params dest Pointer to VisVideo object for storing scaled image.
+ * @params src Ppointer to VisVideo object whose image is to be scaled.
+ * @params scale_method Scaling method to use.
+ *
+ * returns VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ */
+int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod scale_method)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
+
+	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+		if (scale_method == VISUAL_VIDEO_SCALE_NEAREST)
+			return scale_nearest_8 (dest, src);
+
+                /* default to nearest if scale method is invalid */
+                return scale_nearest_8 (dest, src);
+	}
+
+	return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+}
+
+#ifndef FIXED_POINT_SCALER
+
+/* 8-bit nearest pixel scaler, floating point version */
+static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
+{
+	int x, y;
+	float u, v, du, dv;
+	uint8_t *dest_pixel, *src_pixel_row;
+
+	u = 0; du = src->width	/ dest->width;
+	v = 0; dv = src->height / dest->height;
+
+	dest_pixel = dest->pixels;
+
+	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (uint8_t *) dest->pixel_rows[(int) v];
+
+		for (x = 0, u = 0; x < dest->width; x++, u += du) {
+			*dest_pixel++ = src_pixel_row[(int) u];
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+#else
+
+/* 8-bit nearest pixel scaler, fixed point version */
+static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
+{	 
+	int x, y;
+	fixed32_t u, v, du, dv;
+	uint8_t *dest_pixel, *src_pixel_row;
+
+	u = 0; du = FP_INT(src->width)	/ dest->width;
+	v = 0; dv = FP_INT(src->height) / dest->height;
+
+	dest_pixel = dest->pixels;
+
+	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (uint8_t *) dest->pixel_rows[FP_TO_INT(v)];
+
+		for (x = 0, u = 0; x < dest->width; x++, u += du) {
+			*dest_pixel++ = src_pixel_row[FP_TO_INT(u)];
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+#endif

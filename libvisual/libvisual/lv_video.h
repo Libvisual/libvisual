@@ -38,6 +38,15 @@ typedef enum {
 					  VISUAL_VIDEO_DEPTH_GL /**< All graphical depths. */
 } VisVideoDepth;
 
+/**
+ * Enumerate that defines the different methods of scaling within VisVideo.
+ */
+typedef enum {
+	VISUAL_VIDEO_SCALE_NEAREST  = 0,    /**< Nearest neighbour. */
+	VISUAL_VIDEO_SCALE_BILINEAR = 1	    /**< Bilinearly interpolated. */
+} VisVideoScaleMethod;
+
+
 typedef struct _VisVideo VisVideo;
 
 /**
@@ -58,6 +67,7 @@ struct _VisVideo {
 	int		 pitch;		/**< Surface it's pitch value. Value contains
 					  * the number of bytes per line. */
 	void		*pixels;	/**< Pointer to the pixels. */
+	void		**pixel_rows;	/**< Pixel row start pointer table */
 	VisPalette	*pal;		/**< Optional pointer to the palette. */
 
 	VisVideoFlags	flags;		/**< Private field */
@@ -102,6 +112,8 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src);
 int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc);
 int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch);
+
+int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod scale_method);
 
 #ifdef __cplusplus
 }
