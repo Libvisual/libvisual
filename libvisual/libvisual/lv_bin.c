@@ -40,12 +40,19 @@ static int bin_dtor (VisObject *object)
 		visual_object_unref (VISUAL_OBJECT (bin->morph));
 
 	if (bin->actmorphmanaged == TRUE) {
-		visual_object_unref (VISUAL_OBJECT (bin->actmorph));
+		if (bin->actmorph != NULL)
+			visual_object_unref (VISUAL_OBJECT (bin->actmorph));
+
 		visual_video_free_with_buffer (bin->actmorphvideo);
 	}
 
 	if (bin->privvid != NULL)
 		visual_video_free_with_buffer (bin->privvid);
+
+	bin->actor = NULL;
+	bin->input = NULL;
+	bin->morph = NULL;
+	bin->actmorph = NULL;
 
 	return VISUAL_OK;
 }

@@ -16,6 +16,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginRef))
+#define VISUAL_PLUGININFO(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginInfo))
+#define VISUAL_PLUGINDATA(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginData))
+
 #define VISUAL_PLUGIN_ACTOR(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_ACTOR_ENUM, VisActorPlugin))
 #define VISUAL_PLUGIN_INPUT(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_INPUT_ENUM, VisInputPlugin))
 #define VISUAL_PLUGIN_MORPH(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_MORPH_ENUM, VisMorphPlugin))
@@ -238,6 +242,8 @@ typedef int (*VisPluginEventsFunc)(VisPluginData *plugin, VisEventQueue *events)
  * and does refcounting. It is also used as entries in the plugin registry.
  */
 struct _VisPluginRef {
+	VisObject		 object;	/**< The VisObject data. */	
+
 	char			*file;		/**< The file location of the plugin. */
 	int			 index;		/**< Contains the index number for the entry in the VisPluginInfo table. */
 	int			 usecount;	/**< The use count, this indicates how many instances are loaded. */
@@ -249,6 +255,8 @@ struct _VisPluginRef {
  * and is filled within the plugin itself.
  */
 struct _VisPluginInfo {
+	VisObject		 object;	/**< The VisObject data. */
+
 	uint32_t		 struct_size;	/**< Struct size, should always be set for compatability checks. */
 	uint32_t		 api_version;	/**< API version, compile plugins always with .api_version = VISUAL_PLUGIN_API_VERSION. */
 	const char		*type;		/**< Plugin type, in the format of "domain:package:type", as example,
@@ -276,7 +284,10 @@ struct _VisPluginInfo {
  * is encapsulated in this.
  */
 struct _VisPluginData {
+	VisObject		 object;	/**< The VisObject data. */
+
 	VisPluginRef		*ref;		/**< Pointer to the plugin references corresponding to this VisPluginData. */
+
 	const VisPluginInfo	*info;		/**< Pointer to the VisPluginInfo that is obtained from the plugin. */
 
 	VisEventQueue		 eventqueue;	/**< The plugin it's VisEventQueue for queueing events. */
@@ -351,7 +362,6 @@ struct _VisMorphPlugin {
 
 /* prototypes */
 VisPluginInfo *visual_plugin_info_new (void);
-int visual_plugin_info_free (VisPluginInfo *pluginfo);
 int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src);
 
 int visual_plugin_events_pump (VisPluginData *plugin);
@@ -368,11 +378,8 @@ VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin);
 void *visual_plugin_get_specific (VisPluginData *plugin);
 
 VisPluginRef *visual_plugin_ref_new (void);
-int visual_plugin_ref_free (VisPluginRef *ref);
-int visual_plugin_ref_list_destroy (VisList *list);
 
 VisPluginData *visual_plugin_new (void);
-int visual_plugin_free (VisPluginData *plugin);
 
 const VisList *visual_plugin_get_registry (void);
 VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *domain);

@@ -262,7 +262,7 @@ int visual_quit ()
 	}
 
 	/* FIXME: Use VisError here, for human readable error strings */
-	ret = visual_plugin_ref_list_destroy (__lv_plugins);
+	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Plugins references list: destroy failed");
 

@@ -13,22 +13,78 @@
 
 extern VisList *__lv_plugins;
 
-static void ref_list_destroy (void *ref);
+static int plugin_info_dtor (VisObject *object);
+static int plugin_ref_dtor (VisObject *object);
+static int plugin_dtor (VisObject *object);
 
 static int plugin_add_dir_to_list (VisList *list, const char *dir);
 static const char *get_delim_node (char *str, char delim, int index);
 
-static void ref_list_destroy (void *data)
+static int plugin_info_dtor (VisObject *object)
 {
-	VisPluginRef *ref;
+	VisPluginInfo *pluginfo = VISUAL_PLUGININFO (object);
 
-	if (data == NULL)
-		return;
+	if (pluginfo->plugname != NULL)
+		visual_mem_free (pluginfo->plugname);
 
-	ref = (VisPluginRef *) data;
+	if (pluginfo->type != NULL)
+		visual_mem_free (pluginfo->type);
 
-	visual_plugin_info_free (ref->info);
-	visual_plugin_ref_free (ref);
+	if (pluginfo->name != NULL)
+		visual_mem_free (pluginfo->name);
+
+	if (pluginfo->author != NULL)
+		visual_mem_free (pluginfo->author);
+
+	if (pluginfo->version != NULL)
+		visual_mem_free (pluginfo->version);
+
+	if (pluginfo->about != NULL)
+		visual_mem_free (pluginfo->about);
+
+	if (pluginfo->help != NULL)
+		visual_mem_free (pluginfo->help);
+
+	pluginfo->plugname = NULL;
+	pluginfo->type = NULL;
+	pluginfo->name = NULL;
+	pluginfo->author = NULL;
+	pluginfo->version = NULL;
+	pluginfo->about = NULL;
+	pluginfo->help = NULL;
+
+	return VISUAL_OK;
+}
+
+static int plugin_ref_dtor (VisObject *object)
+{
+	VisPluginRef *ref = VISUAL_PLUGINREF (object);
+
+	if (ref->file != NULL)
+		visual_mem_free (ref->file);
+
+	if (ref->usecount > 0)
+		visual_log (VISUAL_LOG_CRITICAL, "A plugin reference with %d instances has been destroyed.", ref->usecount);
+
+	if (ref->info != NULL)
+		visual_object_unref (VISUAL_OBJECT (ref->info));
+	
+	ref->file = NULL;
+	ref->info = NULL;
+
+	return VISUAL_OK;
+}
+
+static int plugin_dtor (VisObject *object)
+{
+	VisPluginData *plugin = VISUAL_PLUGINDATA (object);
+
+	if (plugin->ref != NULL)	
+		visual_object_unref (VISUAL_OBJECT (plugin->ref));
+
+	plugin->ref = NULL;
+
+	return VISUAL_OK;
 }
 
 static const char *get_delim_node (char *str, char delim, int index)
@@ -84,43 +140,12 @@ VisPluginInfo *visual_plugin_info_new ()
 
 	pluginfo = visual_mem_new0 (VisPluginInfo, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (pluginfo)->allocated = TRUE;
+	VISUAL_OBJECT (pluginfo)->dtor = plugin_info_dtor;
+	visual_object_ref (VISUAL_OBJECT (pluginfo));
+
 	return pluginfo;
-}
-
-/**
- * Frees the VisPluginInfo. This frees the VisPluginInfo data structure.
- *
- * @param pluginfo Pointer to the VisPluginInfo that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_INFO_NULL or error values
- *	returned by visual_mem_free () on failure.
- */
-int visual_plugin_info_free (VisPluginInfo *pluginfo)
-{
-	visual_log_return_val_if_fail (pluginfo != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
-
-	if (pluginfo->plugname != NULL)
-		visual_mem_free (pluginfo->plugname);
-
-	if (pluginfo->type != NULL)
-		visual_mem_free (pluginfo->type);
-
-	if (pluginfo->name != NULL)
-		visual_mem_free (pluginfo->name);
-
-	if (pluginfo->author != NULL)
-		visual_mem_free (pluginfo->author);
-
-	if (pluginfo->version != NULL)
-		visual_mem_free (pluginfo->version);
-
-	if (pluginfo->about != NULL)
-		visual_mem_free (pluginfo->about);
-
-	if (pluginfo->help != NULL)
-		visual_mem_free (pluginfo->help);
-
-	return visual_mem_free (pluginfo);
 }
 
 /**
@@ -295,45 +320,16 @@ void *visual_plugin_get_specific (VisPluginData *plugin)
  */
 VisPluginRef *visual_plugin_ref_new ()
 {
-	return (visual_mem_new0 (VisPluginRef, 1));
-}
+	VisPluginRef *ref;
 
-/**
- * Frees the VisPluginRef. This frees the VisPluginRef data structure.
- *
- * @param ref Pointer to the VisPluginRef that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_REF_NULL or error values returned by
- *	visual_mem_free () on failure.
- */
-int visual_plugin_ref_free (VisPluginRef *ref)
-{
-	visual_log_return_val_if_fail (ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
+	ref = visual_mem_new0 (VisPluginRef, 1);
 
-	if (ref->file != NULL)
-		visual_mem_free (ref->file);
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (ref)->allocated = TRUE;
+	VISUAL_OBJECT (ref)->dtor = plugin_ref_dtor;
+	visual_object_ref (VISUAL_OBJECT (ref));
 
-	if (ref->usecount > 0)
-		visual_log (VISUAL_LOG_CRITICAL, "A plugin reference with %d instances has been destroyed.", ref->usecount);
-	
-	return visual_mem_free (ref);
-}
-
-/**
- * Destroys a VisList of plugin references. This frees all the
- * references in a list and the list itself. This is used internally
- * to destroy the plugin registry.
- *
- * @param list The list of VisPluginRefs that need to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or error values returned by
- *	visual_object_unref on failure.
- */
-int visual_plugin_ref_list_destroy (VisList *list)
-{
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-
-	return visual_object_unref (VISUAL_OBJECT (list));
+	return ref;
 }
 
 /**
@@ -343,22 +339,16 @@ int visual_plugin_ref_list_destroy (VisList *list)
  */
 VisPluginData *visual_plugin_new ()
 {
-	return (visual_mem_new0 (VisPluginData, 1));
-}
+	VisPluginData *plugin;
 
-/**
- * Frees the VisPluginData. This frees the VisPluginData data structure.
- *
- * @param plugin Pointer to the VisPluginData that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or error values returned by
- *	visual_mem_free () on failure.
- */
-int visual_plugin_free (VisPluginData *plugin)
-{
-	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	plugin = visual_mem_new0 (VisPluginData, 1);
+	
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (plugin)->allocated = TRUE;
+	VISUAL_OBJECT (plugin)->dtor = plugin_dtor;
+	visual_object_ref (VISUAL_OBJECT (plugin));
 
-	return visual_mem_free (plugin);
+	return plugin;
 }
 
 /**
@@ -391,7 +381,7 @@ VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *dom
 
 	visual_log_return_val_if_fail (pluglist != NULL, NULL);
 
-	list = visual_list_new (NULL);
+	list = visual_list_new (visual_object_list_destroyer);
 
 	if (list == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot create a new list");
@@ -401,8 +391,11 @@ VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *dom
 
 	while ((ref = visual_list_next (pluglist, &entry)) != NULL) {
 		
-		if (visual_plugin_type_member_of (ref->info->type, domain))
+		if (visual_plugin_type_member_of (ref->info->type, domain)) {
+			visual_object_ref (VISUAL_OBJECT (ref));
+			
 			visual_list_add (list, ref);
+		}
 	}
 
 	return list;
@@ -513,10 +506,10 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 		if (ref != NULL) {
 			for (j = 0; j < cnt; j++) 
 				visual_list_add (list, ref[j]);
-		}
-
-		if (ref != NULL)
+		
+			/* This is the pointer pointer pointer, not a ref itself */
 			visual_mem_free (ref);
+		}
 
 		visual_mem_free (namelist[i]);
 	}
@@ -545,7 +538,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 	/* Not loaded */
 	if (plugin->handle == NULL) {
-		visual_mem_free (plugin);
+		visual_object_unref (VISUAL_OBJECT (plugin));
 
 		visual_log (VISUAL_LOG_CRITICAL, "Tried unloading a plugin that never has been loaded.");
 
@@ -556,14 +549,15 @@ int visual_plugin_unload (VisPluginData *plugin)
 		plugin->info->cleanup (plugin);
 
 	dlclose (plugin->handle);
+	plugin->info = NULL;
 
-	visual_mem_free (plugin);
-	
-	visual_log_return_val_if_fail (ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
-	
-	if (ref->usecount > 0)
-		ref->usecount--;
+	if (ref != NULL) {
+		if (ref->usecount > 0)
+			ref->usecount--;
+	}
 
+	visual_object_unref (VISUAL_OBJECT (plugin));
+	
 	return VISUAL_OK;
 }
 
@@ -623,9 +617,11 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 		return NULL;
 	}
 
-	plugin = visual_mem_new0 (VisPluginData, 1);
+	plugin = visual_plugin_new ();
 	plugin->ref = ref;
 	plugin->info = &pluginfo[ref->index];
+
+	visual_object_ref (VISUAL_OBJECT (ref));
 
 	ref->usecount++;
 	plugin->realized = FALSE;
@@ -727,7 +723,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	ref = visual_mem_new0 (VisPluginRef *, cnt);
 	
 	for (i = 0; i < cnt; i++) {
-		ref[i] = visual_mem_new0 (VisPluginRef, 1);
+		ref[i] = visual_plugin_ref_new ();
 
 		dup_info = visual_plugin_info_new ();
 		visual_plugin_info_copy (dup_info, (VisPluginInfo *) &plug_info[i]);
@@ -756,7 +752,7 @@ VisList *visual_plugin_get_list (const char **paths)
 	VisList *list;
 	int i = 0;
 
-	list = visual_list_new (ref_list_destroy);
+	list = visual_list_new (visual_object_list_destroyer);
 	
 	while (paths[i] != NULL) {
 		if (plugin_add_dir_to_list (list, paths[i++]) < 0) {
