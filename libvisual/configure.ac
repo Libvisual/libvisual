@@ -206,6 +206,14 @@ if test x$examples = xyes ; then
   build_subdirs="$build_subdirs examples"
 else
   AC_MSG_RESULT([no])
+  VISUAL_CFLAGS=""
+  if test x$lv_have_opengl = xyes; then
+    VISUAL_LIBS="$LIBS -lGL -lvisual"
+  else
+    VISUAL_LIBS="$LIBS -lvisual"
+  fi
+  AC_SUBST(VISUAL_CFLAGS)		 
+  AC_SUBST(VISUAL_LIBS)
 fi
 AC_SUBST(BUILD_SUBDIRS, "$build_subdirs")
 

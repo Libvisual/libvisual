@@ -5,7 +5,10 @@
 	installed, and takes flags through pkg-config.
 	 - GL detection is done not just looking for headers,
 	but also we try to link against the library (thanks
-	salsaman).
+	salsaman). If all works well, the flag is added to 
+	libvisual.pc, so pkg-config will retrieve the neccessary
+	flags, plugins only needs to check if there is GL support
+	on the installed libvisual.
 	* libvisual/lv_libvisual.c (visual_get_version): return
 	version defined on config.h.
 

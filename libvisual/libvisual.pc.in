@@ -7,6 +7,6 @@ Name: libvisual
 Version: @VERSION@
 Description: an audio visualisation abstraction library.
 Requires:
-Libs: @VISUAL_LIBS@
-Cflags: @VISUAL_CFLAGS@
+Libs: -L${libdir} @VISUAL_LIBS@
+Cflags: -I${includedir}/libvisual @VISUAL_CFLAGS@
 
