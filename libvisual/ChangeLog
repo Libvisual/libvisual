@@ -1,3 +1,13 @@
+2005-02-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Adding visual_plugin_type_get_flags(),
+	visual_plugin_type_has_flag(). and adopt other functions to be able
+	to use plugin flags, for example:
+
+	"Libvisual:core:actor.[avs]" would have "avs" as a flag, flags are
+	delimited by '|'. In plugins you can simply use, in this scenario:
+	.type = VISUAL_PLUGIN_TYPE_ACTOR".[avs]"
+
 2005-02-10  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* configure.ac: Bumping up to 0.3.0

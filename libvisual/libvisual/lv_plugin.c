@@ -755,7 +755,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	}
 
 	/* FIXME we do leak the object when it fails the sanity check, tho
-	 * it is not always safe (with VERY stuff laying around) to unref it. */
+	 * it is not always safe (with VERY old stuff laying around) to unref it. */
 	
 	/* Check for API and struct size */
 	if (plug_info[0].struct_size != sizeof (VisPluginInfo) ||
@@ -906,9 +906,27 @@ const char *visual_plugin_type_get_package (const char *type)
  */
 const char *visual_plugin_type_get_type (const char *type)
 {
+	char *str;
+	char *flags;
+	char *typestr;
+
 	visual_log_return_val_if_fail (type != NULL, NULL);
 
-	return get_delim_node (type, ':', 2);
+	str = get_delim_node (type, ':', 2);
+
+	flags = strchr (str, '.');
+
+	if (flags != NULL) {
+		typestr = visual_mem_malloc0 (flags - str);
+
+		strncpy (typestr, str, flags - str);
+
+		visual_mem_free (str);
+
+		return typestr;
+	}
+	
+	return str;
 }
 
 /**
@@ -951,22 +969,39 @@ VisPluginTypeDepth visual_plugin_type_get_depth (const char *type)
  */
 int visual_plugin_type_member_of (const char *domain, const char *type)
 {
+	char *ndomain;
+	char *tmp;
 	char *comp1;
 	char *comp2;
 	int diff = 0;
 	int i = 0;
 
+	visual_log_return_val_if_fail (domain != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
 
-	while (i < visual_plugin_type_get_depth (domain)) {
-		comp1 = get_delim_node (domain, ':', i);
+	ndomain = visual_mem_malloc0 (strlen (domain) + 1);
+	tmp = strchr (domain, '.');
+
+	if (tmp != NULL)
+		strncpy (ndomain, domain, tmp - domain);
+	else
+		strcpy (ndomain, domain);
+	
+	while (i < visual_plugin_type_get_depth (ndomain)) {
+		comp1 = get_delim_node (ndomain, ':', i);
 		comp2 = get_delim_node (type, ':', i);
 
-		if (comp1 == NULL)
-			return FALSE;
+		if (comp1 == NULL || comp2 == NULL) {
+			if (comp1 != NULL)
+				visual_mem_free (comp1);
 
-		if (comp2 == NULL)
+			if (comp2 != NULL)
+				visual_mem_free (comp2);
+
+			visual_mem_free (ndomain);
+
 			return FALSE;
+		}
 
 		if (strcmp (comp1, comp2) != 0)
 			diff++;
@@ -977,10 +1012,89 @@ int visual_plugin_type_member_of (const char *domain, const char *type)
 		i++;
 	}
 
+	visual_mem_free (ndomain);
+
 	if (diff > 0)
 		return FALSE;
 
 	return TRUE;
+}
+
+/**
+ * Retrieves the flags section from the plugin type string.
+ *
+ * @param The type string, containing the plugin type and optional flags.
+ *
+ * return NULL if no flags are found, the flags between the '[' and ']' braces on succes.
+ *	for example when the plugin type string is "Libvisual:core:actor.[special|something]"
+ *	the returned flag string would be "special|something". Keep in mind that the string is
+ *	allocated and should be freed after it's not being used anylonger.
+ */
+const char *visual_plugin_type_get_flags (const char *type)
+{
+	char *flagsret;
+	char *flagstr;
+
+	visual_log_return_val_if_fail (type != NULL, NULL);
+
+	flagstr = strstr (type, ".[");
+
+	if (flagstr == NULL)
+		return NULL;
+
+	flagstr += 2; /* Skip the ".[" */
+	
+	flagsret = visual_mem_malloc0 (strlen (flagstr) - 1);
+
+	strncpy (flagsret, flagstr, strlen (flagstr) - 1);
+	flagsret[strlen (flagstr) - 1] = '\0';
+	
+	return flagsret;
+}
+
+/**
+ * Checks if a certain flag is found within a plugin type string.
+ *
+ * @param type The type string, containing the plugin type and optional flags.
+ * @param flag The flag string to check for within the type string.
+ *
+ * @return TRUE in found, FALSE if not found, -VISUAL_ERROR_NULL on failure.
+ */
+int visual_plugin_type_has_flag (const char *type, const char *flag)
+{
+	char *flags;
+	char *nflag, *s;
+	
+	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (flag != NULL, -VISUAL_ERROR_NULL);
+
+	nflag = flags = (char *) visual_plugin_type_get_flags (type);
+
+	if (flags == NULL)
+		return FALSE;
+
+	do {
+		s = strchr (nflag, '|');
+		
+		if (s != NULL) {
+			if (strncmp (nflag, flag, s - nflag - 1) == 0) {
+				visual_mem_free (flags);
+
+				return TRUE;
+			}
+		} else {
+			if (strcmp (nflag, flag) == 0) {
+				visual_mem_free (flags);
+
+				return TRUE;
+			}
+		}
+
+	} while (nflag = strchr (nflag, '|') + 1);
+
+	visual_mem_free (flags);
+	
+	return FALSE;
 }
 
 /**

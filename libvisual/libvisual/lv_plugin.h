@@ -495,6 +495,8 @@ const char *visual_plugin_type_get_package (const char *type);
 const char *visual_plugin_type_get_type (const char *type);
 VisPluginTypeDepth visual_plugin_type_get_depth (const char *type);
 int visual_plugin_type_member_of (const char *domain, const char *type);
+const char *visual_plugin_type_get_flags (const char *type);
+int visual_plugin_type_has_flag (const char *type, const char *flag);
 
 VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *environ);
 int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *penve);
