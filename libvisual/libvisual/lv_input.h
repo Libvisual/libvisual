@@ -10,7 +10,19 @@ extern "C" {
 
 typedef struct _VisInput VisInput;
 
-typedef int (*input_upload_callback_func_t)(VisInput *, VisAudio *, void *);
+/**
+ * Callback function that is set using visual_input_set_callback should use this signature.
+ *
+ * @see visual_input_set_callback
+ *
+ * @arg input Pointer to the VisInput structure.
+ *
+ * @arg audio Pointer to the VisAudio containing all the audio information, and in which
+ * data needs to be set within the callback.
+ *
+ * @arg priv Private field to be used by the client. The library will never touch this.
+ */
+typedef int (*input_upload_callback_func_t)(VisInput *input, VisAudio *audio, void *priv);
 
 /**
  * The VisInput structure encapsulates the input plugin and provides
