@@ -1,5 +1,9 @@
 2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/G-Force/docs/*: Fixing up
+
+2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/G-Force/*: Some Makefile.ins
 
 	* plugins/actor/G-Force/NotWorkingWaveShapes/*: Fixing up.

@@ -1,3 +1,3 @@
 
-EXTRA_DIST = 
+EXTRA_DIST = I_Declare
 

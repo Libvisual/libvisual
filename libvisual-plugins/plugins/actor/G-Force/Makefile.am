@@ -1,6 +1,6 @@
 SUBDIRS = Common GForceCommon unix GForceColorMaps \
 	  GForceDeltaFields GForceParticles GForceWaveShapes \
-	  NotWorkingWaveShapes
+	  NotWorkingWaveShapes docs
 
 lib_LTLIBRARIES = actor_gforce.la
 

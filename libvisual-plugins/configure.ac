@@ -569,6 +569,7 @@ AC_CONFIG_FILES([
 	plugins/actor/goom2/Makefile
 	plugins/actor/gdkpixbuf/Makefile
 	plugins/actor/G-Force/Makefile
+	plugins/actor/G-Force/docs/Makefile
 	plugins/actor/G-Force/Common/Makefile
 	plugins/actor/G-Force/Common/GeneralTools/Makefile
 	plugins/actor/G-Force/Common/GeneralTools/Headers/Makefile
