@@ -186,6 +186,9 @@ libvisual:
 
 		Move all our mallocs to visual_new0
 
+	Tools:
+		lv-inspect: to get detailed information about a plugin
+
 INTERNAL:
 	LOG: (post 0.1)
 		give an api that allows you to select the lowest debug niveau to be shown

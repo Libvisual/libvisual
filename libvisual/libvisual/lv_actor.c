@@ -41,6 +41,158 @@ VisList *visual_actor_get_list ()
 }
 
 /**
+ * Gives the next actor plugin based on the name of a plugin but skips non
+ * GL plugins.
+ *
+ * @see visual_actor_get_prev_by_name_gl
+ *
+ * @param name The name of the current plugin or NULL to get the first.
+ *
+ * @return The name of the next plugin within the list that is a GL plugin.
+ */
+char *visual_actor_get_next_by_name_gl (char *name)
+{
+	char *next = name;
+	LVPlugin *plugin;
+	VisPluginRef *ref;
+	int gl;
+
+	do {
+		next = visual_plugin_get_next_by_name (visual_actor_get_list (), next);
+
+		if (next == NULL)
+			return NULL;
+		
+		ref = _lv_plugin_find (__lv_plugins_actor, next);
+		plugin = _lv_plugin_load (ref);
+
+		if ((plugin->plugin.actorplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
+			gl = TRUE;
+		else
+			gl = FALSE;
+	
+		_lv_plugin_unload (plugin);
+
+	} while (gl == FALSE);
+
+	return next;
+}
+
+/**
+ * Gives the previous actor plugin based on the name of a plugin but skips non
+ * GL plugins.
+ *
+ * @see visual_actor_get_next_by_name_gl
+ *
+ * @param name The name of the current plugin or NULL to get the last.
+ *
+ * @return The name of the previous plugin within the list that is a GL plugin.
+ */
+char *visual_actor_get_prev_by_name_gl (char *name)
+{
+	char *prev = name;
+	LVPlugin *plugin;
+	VisPluginRef *ref;
+	int gl;
+
+	do {
+		prev = visual_plugin_get_prev_by_name (visual_actor_get_list (), prev);
+
+		if (prev == NULL)
+			return NULL;
+		
+		ref = _lv_plugin_find (__lv_plugins_actor, prev);
+		plugin = _lv_plugin_load (ref);
+
+		if ((plugin->plugin.actorplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
+			gl = TRUE;
+		else
+			gl = FALSE;
+	
+		_lv_plugin_unload (plugin);
+
+	} while (gl == FALSE);
+
+	return prev;
+}
+
+/**
+ * Gives the next actor plugin based on the name of a plugin but skips
+ * GL plugins.
+ *
+ * @see visual_actor_get_prev_by_name_nogl
+ *
+ * @param name The name of the current plugin or NULL to get the first.
+ *
+ * @return The name of the next plugin within the list that is not a GL plugin.
+ */
+char *visual_actor_get_next_by_name_nogl (char *name)
+{
+	char *next = name;
+	LVPlugin *plugin;
+	VisPluginRef *ref;
+	int gl;
+
+	do {
+		next = visual_plugin_get_next_by_name (visual_actor_get_list (), next);
+
+		if (next == NULL)
+			return NULL;
+		
+		ref = _lv_plugin_find (__lv_plugins_actor, next);
+		plugin = _lv_plugin_load (ref);
+
+		if ((plugin->plugin.actorplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
+			gl = TRUE;
+		else
+			gl = FALSE;
+	
+		_lv_plugin_unload (plugin);
+
+	} while (gl == TRUE);
+
+	return next;
+}
+
+/**
+ * Gives the previous actor plugin based on the name of a plugin but skips
+ * GL plugins.
+ *
+ * @see visual_actor_get_next_by_name_nogl
+ *
+ * @param name The name of the current plugin or NULL to get the last.
+ *
+ * @return The name of the previous plugin within the list that is not a GL plugin.
+ */
+char *visual_actor_get_prev_by_name_nogl (char *name)
+{
+	char *prev = name;
+	LVPlugin *plugin;
+	VisPluginRef *ref;
+	int gl;
+
+	do {
+		prev = visual_plugin_get_prev_by_name (visual_actor_get_list (), prev);
+
+		if (prev == NULL)
+			return NULL;
+		
+		ref = _lv_plugin_find (__lv_plugins_actor, prev);
+		plugin = _lv_plugin_load (ref);
+
+		if ((plugin->plugin.actorplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
+			gl = TRUE;
+		else
+			gl = FALSE;
+	
+		_lv_plugin_unload (plugin);
+
+	} while (gl == TRUE);
+
+	return prev;
+}
+
+/**
  * Gives the next actor plugin based on the name of a plugin.
  *
  * @see visual_actor_get_prev_by_name

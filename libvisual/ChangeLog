@@ -1,5 +1,14 @@
 2004-07-07  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_actor.c:
+	(visual_actor_get_next_by_name_gl,
+	visual_actor_get_prev_by_name_gl,
+	visual_actor_get_next_by_name_nogl,
+	visual_actor_get_prev_by_name_nogl):
+	New methods.
+
+2004-07-07  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_mem.c: Doc fixes.
 
 2004-07-06  Duilio Protti  <dprotti@users.sourceforge.net>
