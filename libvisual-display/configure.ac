@@ -134,6 +134,7 @@ AC_CONFIG_FILES([Makefile
 		libvisual-display.pc
                  drivers/Makefile
                  drivers/glx/Makefile
+                 drivers/x11/Makefile
                  drivers/null/Makefile
                  example/Makefile
                  lvdisplay/Makefile])
