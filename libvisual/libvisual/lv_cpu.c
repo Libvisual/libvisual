@@ -254,6 +254,7 @@ void visual_cpu_initialize ()
 
 	printf ("DEBUG CPU: Number of CPUs: %d\n", _lv_cpu_caps.nrcpu);
 	printf ("DEBUG CPU: type %d\n", _lv_cpu_caps.cpuType);
+	printf ("DEBUG CPU: cacheline %d\n", _lv_cpu_caps.cacheline);
 	printf ("DEBUG CPU: TSC %d\n", _lv_cpu_caps.hasTSC);
 	printf ("DEBUG CPU: MMX %d\n", _lv_cpu_caps.hasMMX);
 	printf ("DEBUG CPU: MMX2 %d\n", _lv_cpu_caps.hasMMX2);

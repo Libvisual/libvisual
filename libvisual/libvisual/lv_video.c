@@ -917,15 +917,16 @@ int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, 
 int visual_video_alpha_fill (VisVideo *video, uint8_t density)
 {
 	int i;
-	uint32_t *vidbuf;
+	uint8_t *vidbuf;
 
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 
-	vidbuf = video->pixels;
+	/* FIXME byte order sensitive */
+	vidbuf = video->pixels + 3;
 
-	for (i = 0; i < video->size / video->bpp; i++)
-		vidbuf[i] += (density << 24);
+	for (i = 0; i < video->size; i += 4)
+		*(vidbuf += 4) = density;
 
 	return VISUAL_OK;
 }
