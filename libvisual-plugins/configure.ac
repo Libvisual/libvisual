@@ -271,7 +271,7 @@ AC_ARG_ENABLE([flower],
                            [Do not build Pseudotoad Flower plugin @<:@default=enabled@:>@]),
 	    [flower=$enableval],
 	    [flower=yes])
-AC_MSG_CHECKING([whether to build Dancing Particles plugin])
+AC_MSG_CHECKING([whether to build Pseudotoad Flower plugin])
 if test x$flower = xyes; then
   AC_MSG_RESULT([yes])
   if test x$opengl = xyes; then
@@ -432,10 +432,10 @@ fi
 
 AC_ARG_ENABLE([gforce],
             AC_HELP_STRING([--disable-gforce],
-                           [Do not build gforce plugin @<:@default=enabled@:>@]),
+                           [Do not build the G-Force plugin @<:@default=enabled@:>@]),
 	    [gforce=$enableval],
 	    [gforce=yes])
-AC_MSG_CHECKING([whether to build bumpscope plugin])
+AC_MSG_CHECKING([whether to build the G-Force plugin])
 if test x$gforce = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor G-Force"

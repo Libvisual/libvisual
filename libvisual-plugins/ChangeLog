@@ -1,3 +1,9 @@
+2005-02-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Fixing two cosmetic pastos.
+
+	Found by: Thomas Klausner <thomasklausner@users.sourceforge.net>
+
 2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/jakdaw/actor_jakdaw.c (actor_jakdaw_cleanup):
