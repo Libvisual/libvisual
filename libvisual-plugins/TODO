@@ -108,7 +108,7 @@ actors:
 		When api is stable, start porting over some more xmms plugins.
 
 morph: (lots of these effects can be taken from the demo world, this should turn
-	visuals into scenes rather than standalone plugins, o boy! )
+	visuals into scenes rather than standalone plugins, o boy!)
 
 	alphablend:
 		mmx sse optimize.

@@ -3,6 +3,12 @@ of Libvisual plugins.
 
 These are only visible changes, for more details look at the ChangeLog.
 
+New in 0.1.7: 2004-..-..:
+* Updates to API changes.
+* All plugins use the VisRandom stuff for randomizing.
+* New slide morph plugin.
+* Bugfix in flash plugin, that caused it to not work on 8bits depth.
+
 New in 0.1.6: 2004-09-10:
 * New ALSA capture input plugin. (Vitaly)
 * New MPlayer export input plugin. (Gustavo)
