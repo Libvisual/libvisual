@@ -572,8 +572,10 @@ static int negotiate_video (VisActor *actor, int noevent)
 
 	/* Size fitting enviroment */
 	if (tmpwidth != actor->video->width || tmpheight != actor->video->height) {
-		actor->fitting = visual_video_new_with_buffer (actor->video->width,
-				actor->video->height, actor->video->depth);
+		if (actor->video->depth != VISUAL_VIDEO_DEPTH_GL) {
+			actor->fitting = visual_video_new_with_buffer (actor->video->width,
+					actor->video->height, actor->video->depth);
+		}
 
 		visual_video_set_dimension (actor->video, tmpwidth, tmpheight);
 	}
