@@ -4,6 +4,8 @@ of Libvisual.
 These are only visible changes, for more details look at the ChangeLog.
 
 New in 0.1.7: 2004-10-14:
+* Removed examples from dist, they are out dated, broken and caused problems.
+  (Dennis)
 * Plugin libraries now work for real. (Dennis)
 * Added visual_plugin_get_api_version function. (Dennis)
 * Added visual_is_initialized function. (Duilio)

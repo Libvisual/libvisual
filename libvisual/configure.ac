@@ -179,38 +179,10 @@ AC_MSG_RESULT(unsigned $visual_size_type)
 
 # Arguments to specify certain features.
 build_subdirs="libvisual"
-AC_ARG_ENABLE([examples],
-            AC_HELP_STRING([--enable-examples],
-                           [Build example programs @<:@default=disabled@:>@]),
-	    [examples=$enableval],
-	    [examples=no])
-AC_MSG_CHECKING([wheter to build example programs])
-if test x$examples = xyes ; then
-  AC_MSG_RESULT([yes])
-  # Find SDL to build the examples.
-  AC_PATH_PROG(SDL_CONFIG, [sdl-config], [no])
-  if test x$SDL_CONFIG = xno ; then
-	AC_MSG_ERROR([*** sdl-config not found.
-			If you have installed from binaries, probably you have not 
-			installed SDL development package.
-			See http://www.libsdl.org])
-  fi
-  # On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
-  AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
-  PKG_CHECK_MODULES(VISUAL, libvisual = 0.1.7, [],
-	AC_MSG_ERROR([*** Libvisual was not found or is too old.
-			You must first install the correct version
-			of Libvisual before to build the examples.]))
-  AC_SUBST(VISUAL_LIBS)
-  AC_SUBST(VISUAL_CFLAGS)		 
-  AC_SUBST([EXAMPLES], ['simplesdl morphsdl'])
-else
-  AC_MSG_RESULT([no])
-  VISUAL_CFLAGS=""
-  VISUAL_LIBS="$LIBS -lvisual"
-  AC_SUBST(VISUAL_CFLAGS)		 
-  AC_SUBST(VISUAL_LIBS)
-fi
+VISUAL_CFLAGS=""
+VISUAL_LIBS="$LIBS -lvisual"
+AC_SUBST(VISUAL_CFLAGS)		 
+AC_SUBST(VISUAL_LIBS)
 
 AC_ARG_ENABLE([profiling],
   AC_HELP_STRING([--enable-profiling],
@@ -243,7 +215,7 @@ AC_SUBST(DEBUG_CFLAGS)
 libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
-AC_SUBST(BUILD_SUBDIRS, "libvisual examples")
+AC_SUBST(BUILD_SUBDIRS, "libvisual")
 
 # Terrible hack, but otherwise the CFLAGS are passed as last arguments
 # to compiler, and this way these arguments (probably -g -O2) overrides
@@ -521,7 +493,6 @@ AC_CONFIG_FILES([
 Makefile
 libvisual.pc
 libvisual/Makefile
-examples/Makefile
 ])
 #
 # For now this are not included in the package
@@ -539,7 +510,5 @@ LIBVISUAL, AN AUDIO VISUALISATION ABSTRACTION LIBRARY, VERSION $VERSION
 install path                         : ${prefix}/lib
 compiler                             : ${CC}
 debug enabled                        : ${debug}
-build examples                       : ${examples}
-build morph example                  : ${opengl}
 "
 
