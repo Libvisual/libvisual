@@ -2,6 +2,7 @@
 
 	* configure.ac: debug made optional. Also CFLAGS
 	and LIBS user variables now not overrided.
+	* autogen.sh: check for libtool and run libtoolize --force
 
 2004-06-20  Dennis Smit  <ds@nerds-incorporated.org>
 

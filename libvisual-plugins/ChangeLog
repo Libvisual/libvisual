@@ -3,6 +3,7 @@
 	* configure.ac: reorganized, more verbose.
 	* Makefile.am's: user variables CFLAGS and LDFLAGS not
 	overrided, instead we use AM_CFLAGS and AM_LDFLAGS.
+	* autogen.sh: check for libtool and run libtoolize --force
 
 2004-06-20  Dennis Smit  <ds@nerds-incorporated.org>
 
