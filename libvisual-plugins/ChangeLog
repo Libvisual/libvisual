@@ -1,3 +1,9 @@
+2004-09-01  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added xpyre to build_actor (oops).
+	When ALSA check fails, configure is not aborted, just don't builds
+	ALSA input plugin.
+
 2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*: Plugins that build are ported to the new plugin system.

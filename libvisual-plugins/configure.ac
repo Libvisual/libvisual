@@ -21,6 +21,7 @@ AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
 if test x$PKG_CONFIG = xno ; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/])
 fi
+
 if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
   :
 else
@@ -109,15 +110,24 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt])
 
 # Arguments to specify certain features.
+LV_ALSA_MIN_VERSION=1.0.0
 AC_ARG_ENABLE([alsa],
             AC_HELP_STRING([--disable-alsa],
                            [Do not build Alsa input plugin @<:@default=enabled@:>@]),
 	    [alsa=$enableval],
 	    [alsa=yes])
-AC_MSG_CHECKING([wheter to build Alsa input plugin])
+AC_MSG_CHECKING([wheter to enable Alsa input plugin])
 if test x$alsa = xyes; then
   AC_MSG_RESULT([yes])
-  AM_PATH_ALSA(1.0.0,[ build_input="alsa $build_input" ],[])
+  build_alsa=yes
+  AM_PATH_ALSA($LV_ALSA_MIN_VERSION,[ build_alsa=yes ], [ build_alsa=no ])
+  if test x$build_alsa = xyes; then
+    build_input="$build_input alsa"
+  else
+    AC_MSG_WARN([*** Alsa input plugin cannot be built.
+		 May be you have an ALSA library older than $LV_ALSA_MIN_VERSION.
+		 Take a look at {prefix}/include/alsa/version.h file.])
+  fi
 else
   AC_MSG_RESULT([no])
 fi
@@ -205,10 +215,10 @@ AC_ARG_ENABLE([xpyre],
                            [Do not build Xpyre plugin @<:@default=enabled@:>@]),
 	    [xpyre=$enableval],
 	    [xpyre=yes])
-AC_MSG_CHECKING([wheter to build Jakdaw plugin])
+AC_MSG_CHECKING([wheter to build XPyre plugin])
 if test x$xpyre = xyes; then
   AC_MSG_RESULT([yes])
-  build_actor="$build_actor"
+  build_actor="$build_actor xpyre"
 else
   AC_MSG_RESULT([no])
 fi
@@ -301,9 +311,9 @@ AC_CONFIG_FILES([
 AC_OUTPUT
 
 echo "
-=====================================================================
+================================================
 LIBVISUAL-PLUGINS, PLUGINS FOR LIBVISUAL $VERSION
-=====================================================================
+================================================
 
 Packages found:
 libvisual:                            : ${libvis}
