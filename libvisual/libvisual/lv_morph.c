@@ -331,6 +331,8 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 
 	morphplugin->apply (morph->plugin, morph->rate, audio, morph->dest, src1, src2);
 
+	morph->dest->pal = visual_morph_get_palette (morph);
+	
 	return 0;
 }
 

@@ -1,3 +1,17 @@
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_morph.c (visual_morph_run):
+	Set the morph palette on the dest video.
+
+	* libvisual/lv_actor.c (visual_actor_run):
+	Set the actor palette on the dest video.
+
+	* libvisual/lv_video.c
+	(visual_video_blit_overlay):
+	Don't use the borked temp local VisPalette
+	but the one set on the VisVideo when
+	transforming from an 8BIT to blah depth.
+
 2004-09-08  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: added ARCH and OS checks.

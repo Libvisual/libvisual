@@ -687,7 +687,6 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha)
 {
 	VisVideo *transform = NULL, *srcp = NULL;
-	VisPalette temppal;
 	int height, wrange, hrange, amount;
 	int xa, ya;
 	int xmoff = 0, ymoff = 0;
@@ -721,8 +720,6 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 		visual_video_set_dimension (transform, src->width, src->height);
 
 		visual_video_allocate_buffer (transform);
-
-		visual_video_set_palette (src, &temppal);
 
 		visual_video_depth_transform (transform, src);
 	}

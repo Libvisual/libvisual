@@ -671,6 +671,10 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	
 	visual_plugin_events_pump (actor->plugin);
 
+	/* Set the palette to the target video */
+	video->pal = visual_actor_get_palette (actor);
+
+	
 	/* Yeah some transformation magic is going on here when needed */
 	if (transform != NULL && (transform->depth != video->depth)) {
 		actplugin->render (plugin, transform, audio);
