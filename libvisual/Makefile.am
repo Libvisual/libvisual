@@ -5,6 +5,8 @@ SUBDIRS = @BUILD_SUBDIRS@
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvisual.pc
 
+include_HEADERS = lvconfig.h
+
 install-exec-local: lvconfig.h 
 	        $(mkinstalldirs) $(prefix)/include/libvisual
 	        file=$(prefix)/include/libvisual/lvconfig.h; \

@@ -56,7 +56,8 @@ int visual_bitmap_load (VisVideo *video, char *filename)
 	uint8_t *data;
 	int pad;
 	int i;
-	char temp;	
+
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	fd = open (filename, O_RDONLY);
 
@@ -230,7 +231,7 @@ int visual_bitmap_load (VisVideo *video, char *filename)
 
 /**
  * Loads a bitmap into a VisVideo and return this, so it's not needed to 
- * allocate a VisVideo before hand.
+ * allocate a VisVideo before by hand.
  *
  * @see visual_bitmap_load
  *

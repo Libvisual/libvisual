@@ -150,7 +150,6 @@ libvisual:
 	
 	libvisual:
 		After the events stuff do a good code review + cleanups.
-		make macros for the 'return if null' stuff like glib has.
 
 	cleanups:
 		functions returning strings that cannot be changed, must be

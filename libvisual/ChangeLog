@@ -1,3 +1,8 @@
+2004-07-13  Duilio Protti <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_bmp.c: check for video parameter sanity.
+	* Makefile.am: now lvconfig.h gets installed right.
+	
 2004-07-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* libvisual/lv_endianess.h: Added.
