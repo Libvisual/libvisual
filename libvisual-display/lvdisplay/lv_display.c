@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.c,v 1.21 2005-02-14 19:23:31 synap Exp $
+ * $Id: lv_display.c,v 1.22 2005-02-14 22:05:15 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -305,6 +305,9 @@ Lvd* lvdisplay_initialize()
 		return NULL;
 	}
 
+//	v->fps = null_fps_control_init();
+	v->fps = sleep26_fps_control_init();
+
 	return v;
 }
 
@@ -467,9 +470,13 @@ int lvdisplay_dtor(VisObject *v_obj)
 	if (v->drv)
 		visual_object_unref(VISUAL_OBJECT(v->drv));
 
+	if (v->fps)
+		visual_object_unref(VISUAL_OBJECT(v->fps));
+
 	v->ctx = NULL;
 	v->bin = NULL;
 	v->drv = NULL;
+	v->fps = NULL;
 
 	return VISUAL_OK;
 }
@@ -485,12 +492,19 @@ int lvdisplay_run(Lvd *v)
 {
 	visual_log_return_val_if_fail (v != NULL, -1);
 
+	// XXX TODO rewrite for better fps ctl
+	// XXX TODO and swap buffers before new frame begins.
+
+	v->fps->fps_control_frame_start(v->fps);
+
 	set_active_context(v, v->ctx);
 
 	visual_bin_realize(v->bin);
 	visual_bin_run(v->bin);
 
 	v->be->draw(v->beplug);
+
+	v->fps->fps_control_frame_end(v->fps);
 
 	return 0;
 }

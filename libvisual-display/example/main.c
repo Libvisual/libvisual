@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: main.c,v 1.18 2005-02-12 18:17:28 vitalyvb Exp $
+ * $Id: main.c,v 1.19 2005-02-14 22:05:14 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -101,7 +101,6 @@ int main(int argc, char **argv)
 		lvdisplay_driver_set_opts(drv, params, pc);
 	}
 
-
 	drv_fs = lvdisplay_driver_create (backend, "x11_fullscreen");
 
 	if (drv_fs == NULL){
@@ -155,8 +154,6 @@ int main(int argc, char **argv)
 
 		lvdisplay_driver_set_opts(drv_fs, params, pc);
 	}
-
-
 
 	v = lvdisplay_initialize();
 	if (v == NULL){
@@ -294,8 +291,6 @@ int main(int argc, char **argv)
 				break;
 			}
 		}
-
-		usleep(5);
 
 		lvdisplay_run(v);
 	}

@@ -1,3 +1,11 @@
+2005-02-14  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* example/main.c: usleep() removed.
+	* lvdisplay/lv_display.c lvdisplay/lv_display.h: initial API for FPS
+	control.
+	* lvdisplay/lv_fpsctls.c: file added. "linux-2.6 sleep" and "null"
+	drivers.
+
 2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* lvdisplay/lv_display.c: API update.

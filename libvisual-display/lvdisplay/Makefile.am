@@ -14,5 +14,5 @@ INCLUDES = $(all_includes) -I$(top_srcdir)
 liblvdisplay_la_LDFLAGS =
 liblvdisplay_la_LIBADD = -lvisual
 
-liblvdisplay_la_SOURCES = lv_display.c
+liblvdisplay_la_SOURCES = lv_display.c lv_fpsctls.c
 

@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.h,v 1.14 2005-02-12 18:17:28 vitalyvb Exp $
+ * $Id: lv_display.h,v 1.15 2005-02-14 22:05:15 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -73,11 +73,29 @@ typedef struct _LvdDContext LvdDContext;
 typedef struct _LvdBackendDescription  LvdBackendDescription;
 typedef struct _LvdFrontendDescription LvdFrontendDescription;
 
+typedef struct _LvdFPSControl LvdFPSControl;
 typedef struct _LvdVideoMode LvdVideoMode;
 typedef struct _LvdDriver LvdDriver;
 typedef struct _Lvd Lvd;
 
 
+struct _LvdFPSControl {
+	// These are set by fps_control_init() in a new object;
+	void (*fps_control_frame_start)(LvdFPSControl *fpsdata);
+	void (*fps_control_frame_end)(LvdFPSControl *fpsdata);
+
+	void (*tmp1)();
+	void (*tmp2)();
+	void (*tmp3)();
+	void (*tmp4)();
+
+	float fps_max;
+	float fps_avg;
+	float fps_current;
+};
+
+LvdFPSControl *sleep26_fps_control_init();
+LvdFPSControl *null_fps_control_init();
 
 struct _LvdDriver {
 	VisObject	 object;	/**< The VisObject data. */
@@ -92,6 +110,7 @@ struct _LvdDriver {
 	void *compat_data;
 };
 
+
 struct _Lvd {
 	VisObject	 object;	/**< The VisObject data. */
 
@@ -101,6 +120,7 @@ struct _Lvd {
 	LvdFrontendDescription *fe;
 
 	LvdDContext *ctx;
+	LvdFPSControl *fps;
 
 	VisBin *bin;
 };
