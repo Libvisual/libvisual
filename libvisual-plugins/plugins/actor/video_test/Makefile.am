@@ -2,9 +2,9 @@ lib_LTLIBRARIES = video_test.la
 
 libdir = $(prefix)/lib/libvisual/actor
 
-LIBS = -L. -L$(prefix)/lib @LV_LIBS@
+LIBS = -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-CFLAGS =
+AM_CFLAGS = -Wall -rdynamic @DEBUG_CFLAGS@ @LIBVISUAL_CFLAGS@ -O3
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir) 

@@ -4,10 +4,11 @@ lib_LTLIBRARIES = actor_lv_dna.la
 
 libdir = $(prefix)/lib/libvisual/actor
 
-LIBS = -L. -L$(prefix)/lib -lGL -lGLU @LV_LIBS@
+LIBS = -L. -L$(prefix)/lib -lGL -lGLU @LIBVISUAL_LIBS@
 
-INCLUDES = $(all_includes) \
-	-I$(top_srcdir) 
+AM_CFLAGS = -Wall -rdynamic @LIBVISUAL_CFLAGS@ @DEBUG_CFLAGS@ -O3
+
+INCLUDES = $(all_includes) -I$(top_srcdir) 
 
 actor_lv_dna_la_LDFLAGS = -module -avoid-version 
 
