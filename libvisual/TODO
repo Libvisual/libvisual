@@ -1,10 +1,6 @@
 This file is not very ordered and kinda a scrapbook, but it contains all
 the future planning.
 
-cvsclean adden:
-	find . -type d -name CVS -exec rm -rf {} \;
-
-
 Soon:
 	bin:
 		***** REWRITE THE BIN MESS, I WROTE UTTERLY FUCKING SHIT *****
