@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = m4  m4  libvisual po
+SUBDIRS = m4  libvisual po
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvisual.pc
@@ -21,7 +21,7 @@ stamp-gc-h: config.status
 uninstall-local:
 		rmdir $(includedir)/libvisual
 
-EXTRA_DIST = config.rpath mkinstalldirs  config.rpath mkinstalldirs  Doxyfile
+EXTRA_DIST = config.rpath mkinstalldirs  config.rpath mkinstalldirs  config.rpath mkinstalldirs  Doxyfile
 
 DISTCLEANFILES = libvisual/lvconfig.h
 

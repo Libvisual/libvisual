@@ -1,3 +1,18 @@
+2005-03-29  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.14.1.
+
+2005-03-29  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.14.2.
+	* boldquot.sed: New file, from gettext-0.14.2.
+	* en@boldquot.header: New file, from gettext-0.14.2.
+	* en@quot.header: New file, from gettext-0.14.2.
+	* insert-header.sin: New file, from gettext-0.14.2.
+	* quot.sed: New file, from gettext-0.14.2.
+	* remove-potcdate.sin: New file, from gettext-0.14.2.
+	* Rules-quot: New file, from gettext-0.14.2.
+
 2005-03-23  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.in.in: New file, from gettext-0.14.1.
