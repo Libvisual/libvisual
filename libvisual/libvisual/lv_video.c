@@ -9,25 +9,25 @@
 #include "lv_log.h"
 
 typedef struct {
-	uint16_t b:5, g:6, r:5;
+	u_int16_t b:5, g:6, r:5;
 } _color16;
 
 /* Depth conversions */
-static int depth_transform_8_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_8_to_16_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_8_to_24_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_8_to_32_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
 
-static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_16_to_8_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_16_to_24_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_16_to_32_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
 
-static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_24_to_8_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_24_to_16_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_24_to_32_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
 
-static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_32_to_8_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_32_to_16_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_32_to_24_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal);
 
 /**
  * @defgroup VisVideo VisVideo
@@ -558,7 +558,7 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
  */
 int visual_video_fit_in_video (VisVideo *dest, VisVideo *src)
 {
-	uint8_t *destr, *srcr;
+	u_int8_t *destr, *srcr;
 	int space = 0;
 	int spare;
 	int pitchadd;
@@ -632,10 +632,10 @@ int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc)
  *
  * return 0 on succes -1 on error.
  */
-int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
+int visual_video_depth_transform_to_buffer (u_int8_t *dest, VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch)
 {
-	uint8_t *srcbuf = video->screenbuffer;
+	u_int8_t *srcbuf = video->screenbuffer;
 	int width = video->width;
 	int height = video->height;
 
@@ -717,7 +717,7 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
  * 32 - 16		x
  */
 
-static int depth_transform_8_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_8_to_16_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
@@ -739,7 +739,7 @@ static int depth_transform_8_to_16_c (uint8_t *dest, uint8_t *src, int width, in
 	return 0;
 }
 
-static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_8_to_24_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
@@ -759,12 +759,12 @@ static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, in
 	return 0;
 }
 
-static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_8_to_32_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
-	uint32_t *destr = (uint32_t *) dest;
-	uint32_t col;
+	u_int32_t *destr = (u_int32_t *) dest;
+	u_int32_t col;
 	int pitchdiff = (pitch - (width * 4)) >> 2;
 
 	for (y = 0; y < height; y++) {
@@ -784,13 +784,13 @@ static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, in
 	return 0;
 }
 
-static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_16_to_8_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
 	_color16 *srcr = (_color16 *) src;
-	uint8_t r, g, b;
-	uint8_t col;
+	u_int8_t r, g, b;
+	u_int8_t col;
 	int pitchdiff = pitch - width;
 
 	for (y = 0; y < height; y++) {
@@ -817,7 +817,7 @@ static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 	return 0;
 }
 
-static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_16_to_24_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
@@ -838,7 +838,7 @@ static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, i
 	return 0;
 }
 
-static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_16_to_32_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
@@ -860,12 +860,12 @@ static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, i
 	return 0;
 }
 
-static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_24_to_8_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
-	uint8_t r, g, b;
-	uint8_t col;
+	u_int8_t r, g, b;
+	u_int8_t col;
 	int pitchdiff = pitch - width;
 
 	for (y = 0; y < height; y++) {
@@ -891,7 +891,7 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 	return 0;
 }
 
-static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_24_to_16_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
@@ -912,7 +912,7 @@ static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 	return 0;
 }
 
-static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_24_to_32_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
@@ -932,12 +932,12 @@ static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, i
 	return 0;
 }
 
-static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_32_to_8_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
-	uint8_t r, g, b;
-	uint8_t col;
+	u_int8_t r, g, b;
+	u_int8_t col;
 	int pitchdiff = pitch - width;
 
 	for (y = 0; y < height; y++) {
@@ -964,7 +964,7 @@ static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 	return 0;
 }
 
-static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_32_to_16_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;
@@ -986,7 +986,7 @@ static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 	return 0;
 }
 
-static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_32_to_24_c (u_int8_t *dest, u_int8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
 	int i = 0, j = 0;

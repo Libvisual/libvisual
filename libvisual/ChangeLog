@@ -1,3 +1,12 @@
+2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Remove the check for stdint.h
+	and do check for sys/types.h.
+
+	* libvisual/*.c, libvisual/*.h:
+	Removed stdint and use sys/types.h for portability
+	reasons.
+
 2004-06-29  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: added check for endianess, and set

@@ -1,8 +1,7 @@
 #ifndef _LV_COMMON_H
 #define _LV_COMMON_H
 
-/* Include stdint for the exact integral types */
-#include <stdint.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {

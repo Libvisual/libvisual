@@ -5,7 +5,7 @@
 #ifndef _LV_FFT_H
 #define _LV_FFT_H
 
-#include <stdint.h>
+#include <sys/types.h>
 
 /**
  * Private FFT define that contains the log size.

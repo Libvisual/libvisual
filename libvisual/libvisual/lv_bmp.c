@@ -38,22 +38,22 @@ int visual_bitmap_load (VisVideo *video, char *filename)
 {
 	/* The win32 BMP header */
 	char magic[2];
-	uint32_t bf_size = 0;
-	uint32_t bf_bits = 0;
+	u_int32_t bf_size = 0;
+	u_int32_t bf_bits = 0;
 
 	/* The win32 BITMAPINFOHEADER */
 	int32_t bi_size = 0;
 	int32_t bi_width = 0;
 	int32_t bi_height = 0;
 	int16_t bi_bitcount = 0;	
-	uint32_t bi_compression;
-	uint32_t bi_clrused;
+	u_int32_t bi_compression;
+	u_int32_t bi_clrused;
 
 	/* File read vars */
 	int fd;
 
 	/* Worker vars */
-	uint8_t *data;
+	u_int8_t *data;
 	int pad;
 	int i;
 	char temp;	
@@ -171,7 +171,7 @@ int visual_bitmap_load (VisVideo *video, char *filename)
 	pad = ((video->pitch % 4) ? (4 - (video->pitch % 4)) : 0);
 
 	data = video->screenbuffer + (video->height * video->pitch);
-	while (data > (uint8_t *) video->screenbuffer) {
+	while (data > (u_int8_t *) video->screenbuffer) {
 		data -= video->pitch;
 
 		/* @todo fix endianess issues. */

@@ -82,7 +82,7 @@ int visual_video_bpp_from_depth (VisVideoDepth depth);
 int visual_video_fit_in_video (VisVideo *dest, VisVideo *src);
 
 int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
-int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
+int visual_video_depth_transform_to_buffer (u_int8_t *dest, VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch);
 
 #ifdef __cplusplus
