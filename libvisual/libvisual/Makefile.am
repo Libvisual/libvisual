@@ -27,6 +27,5 @@ libvisual_la_LDFLAGS = -export-dynamic
 libvisual_la_SOURCES = lv_actor.c lv_input.c lv_event.c lv_keysym.c \
 		       lv_bin.c lv_plugin.c lv_video.c \
 		       lv_audio.c lv_fft.c lv_list.c lv_log.c lv_palette.c \
-		       lv_libvisual.c lv_songinfo.c lv_morph.c lv_bmp.c\
-		       libtool
-
+		       lv_libvisual.c lv_songinfo.c lv_morph.c lv_bmp.c
+		       
