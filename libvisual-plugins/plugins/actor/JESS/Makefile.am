@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-pkglib_LTLIBRARIES = $(JESSLA)
+pkglib_LTLIBRARIES = $(JESS)
 
 EXTRA_LTLIBRARIES = actor_JESS.la
 
