@@ -692,7 +692,7 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
  * 
  * @param label Pointer to the VisUILabel that needs to be freed.
  *
- * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_LABEL_NULL, -VISUAL_ERROR_UI_NO_LABEL or
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_LABEL_NULL, -VISUAL_ERROR_UI_NO_LABEL or
  * 	error values returned by visual_mem_free () on failure.
  */
 int visual_ui_label_free (VisUILabel *label)
@@ -714,7 +714,7 @@ int visual_ui_label_free (VisUILabel *label)
  * @param label Pointer to the VisUILabel of which the bold flag is set, or unset.
  * @param bold Flag that indicates if a label should be drawn bold or not.
  *
- * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_LABEL_NULL on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_LABEL_NULL on failure.
  */
 int visual_ui_label_set_bold (VisUILabel *label, int bold)
 {
@@ -731,7 +731,7 @@ int visual_ui_label_set_bold (VisUILabel *label, int bold)
  * @param label Pointer to the VisUILabel to which text is being set.
  * @param text The text that is being set to the VisUILabel.
  *
- * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_LABEL_NULL on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_LABEL_NULL on failure.
  */
 int visual_ui_label_set_text (VisUILabel *label, const char *text)
 {
@@ -747,7 +747,7 @@ int visual_ui_label_set_text (VisUILabel *label, const char *text)
  *
  * @param label Pointer to the VisUILabel from which the text is being requested.
  * 
- * return The text contained in the label, or NULL on failure.
+ * return The text contained in the label, NULL on failure.
  */
 const char *visual_ui_label_get_text (VisUILabel *label)
 {
@@ -783,7 +783,7 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
  * 
  * @param image Pointer to the VisUIImage that needs to be freed.
  *
- * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_IMAGE_NULL, -VISUAL_ERROR_UI_NO_IMAGE or
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_IMAGE_NULL, -VISUAL_ERROR_UI_NO_IMAGE or
  * 	error values returned by visual_mem_free () on failure.
  */
 int visual_ui_image_free (VisUIImage *image)
@@ -805,7 +805,7 @@ int visual_ui_image_free (VisUIImage *image)
  * @param image Pointer to the VisUIImage to which the VisVideo is set.
  * @param video Pointer to the VisVideo that is set to the VisUIImage.
  *
- * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_IMAGE_NULL on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_IMAGE_NULL on failure.
  */
 int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video)
 {
@@ -857,7 +857,7 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
  * 
  * @param seperatpr Pointer to the VisUISeparator that needs to be freed.
  *
- * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_SEPARATOR_NULL, -VISUAL_ERROR_UI_NO_SEPARATOR or
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_SEPARATOR_NULL, -VISUAL_ERROR_UI_NO_SEPARATOR or
  * 	error values returned by visual_mem_free () on failure.
  */
 int visual_ui_separator_free (VisUISeparator *separator)
@@ -887,6 +887,15 @@ VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator)
 	return separator->orient;
 }
 
+/* FIXME: doxygen link to the VisUI types enums and documentate the cmoplete class hierachy there */
+/**
+ * Links a VisParamEntry to a VisUIMutator type.
+ *
+ * @param mutator Pointer to the VisUIMutator to which the VisParamEntry is linked.
+ * @param param Pointer to the VisParamEntry that is linked to the VisUIMutator.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_MUTATOR_NULL or -VISUAL_ERROR_PARAM_NULL on failure.
+ */
 int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (mutator != NULL, -VISUAL_ERROR_UI_MUTATOR_NULL);
