@@ -547,64 +547,6 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 	return -1;
 }
 
-/* FIXME: more screwing up, just fix this with a better function */
-
-/**
- * Helps fitting a smaller VisVideo surface into a bigger one, used
- * by the fitting environment within VisActor. It's not adviced to use
- * this function externally.
- *
- * @param dest Pointer to the destination VisVideo in which the source is fitted.
- * @param src Pointer to the source VisVideo which is fitted in the destination.
- *
- * @return 0 on succes -1 on error.
- */
-int visual_video_blit_fit (VisVideo *dest, VisVideo *src)
-{
-	uint8_t *destr, *srcr;
-	int space = 0;
-	int spare;
-	int pitchadd;
-	int i, j, dind = 0, sind = 0;
-
-	visual_log_return_val_if_fail (dest != NULL, -1);
-	visual_log_return_val_if_fail (src != NULL, -1);
-
-	spare = dest->width - src->width;
-
-	destr = dest->screenbuffer;
-	srcr = src->screenbuffer;
-
-	/* Calculate the spacer */
-	if (spare % 2 != 0) {
-		if (spare > 1)
-			space = spare;
-		else
-			space = 1;
-	} else {
-		space = spare / 1;
-	}
-
-	/* The iamge doesn't fit */
-	if (dest->width < src->width || dest->height < src->height)
-		return -1;
-
-	/* Place the image */
-	pitchadd = ((dest->pitch / src->bpp) - dest->width) * src->bpp;
-
-	/* FIXME use memcpy here */
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width * src->bpp; j++) {
-			destr[dind++] = srcr[sind++];
-		}
-
-		dind += space * src->bpp;
-		dind += pitchadd;
-	}
-
-	return 0;
-}
-
 /**
  * This function blits a VisVideo into another VisVideo. Placement can be done and there
  * is support for the alpha channel.
@@ -620,6 +562,7 @@ int visual_video_blit_fit (VisVideo *dest, VisVideo *src)
 int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha)
 {
 	VisVideo *transform = NULL, *srcp = NULL;
+	VisPalette temppal;
 	int height, wrange, hrange, amount;
 	int xa, ya;
 	int xbpp;
@@ -637,7 +580,6 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	
 	visual_log_return_val_if_fail (x < dest->width, -1);
 	visual_log_return_val_if_fail (y < dest->height, -1);
-	
 
 	/** @todo Add support for negative x, y values */
 	
@@ -649,6 +591,8 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 		visual_video_set_dimension (transform, src->width, src->height);
 
 		visual_video_allocate_buffer (transform);
+
+		visual_video_set_palette (src, &temppal);
 
 		visual_video_depth_transform (transform, src);
 	}
@@ -685,6 +629,7 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	} else {
 		/** @todo clean this up */
 		/** @todo bugs when not fitting!! */
+		/** @todo bugs in 8bits dest!! */
 		int aindex = 0;
 		
 		xbpp = x * dest->bpp;
@@ -719,13 +664,13 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 
 	if (transform != NULL)
 		visual_video_free_with_buffer (transform);
-
+	
 	return 0;
 }
 
 /**
  * Sets a certain color as the alpha channel and the density for the non alpha channel
- * colors. This function can only be used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
+ * colors. This function can be only used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
  *
  * @param video Pointer to the VisVideo in which the alpha channel is made.
  * @param r The red value for the alpha channel color.
@@ -749,12 +694,36 @@ int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, 
 	vidbuf = video->screenbuffer;
 
 	for (i = 0; i < video->size / video->bpp; i++) {
-		if ((vidbuf[i] & 0x00ffffff) == col) {
+		if ((vidbuf[i] & 0x00ffffff) == col)
 			vidbuf[i] = col;
-		} else {
+		else
 			vidbuf[i] += (density << 24);
-		}
 	}
+
+	return 0;
+}
+
+/**
+ * Sets a certain alpha value for the complete buffer in the VisVideo. This function
+ * can be only used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
+ *
+ * @param video Pointer to the VisVideo in which the alpha channel density is set.
+ * @param density The alpha density that is to be set.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_video_alpha_fill (VisVideo *video, uint8_t density)
+{
+	int i;
+	uint32_t *vidbuf;
+
+	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -1);
+
+	vidbuf = video->screenbuffer;
+
+	for (i = 0; i < video->size / video->bpp; i++)
+		vidbuf[i] += (density << 24);
 
 	return 0;
 }

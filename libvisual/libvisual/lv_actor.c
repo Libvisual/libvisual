@@ -552,7 +552,7 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	} else {
 		if (fitting != NULL && (fitting->width != video->width || fitting->height != video->height)) {
 			actplugin->render (actplugin, fitting, audio);
-			visual_video_blit_fit (video, fitting);
+			visual_video_blit_overlay (video, fitting, 0, 0, FALSE);
 		} else {
 			actplugin->render (actplugin, video, audio);
 		}

@@ -1,5 +1,13 @@
 2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_video.c (visual_video_blit_fit):
+	Deprecated for the overlay function.
+
+	(visual_video_alpha_fill): Added, sets an alpha
+	value for the complete context in a VisVideo.
+
+2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_video.c (visual_video_alpha_color):
 	Added function that sets a certain color as the
 	alpha channel.
