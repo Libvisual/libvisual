@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <libvisual/libvisual.h>
 
@@ -56,10 +59,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "plazma",
 		.name = "Plazma plugin",
-		.author = "Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.0.1",
-		.about = "The plazma visual plugin",
-		.help = "This is the libvisual port of the xmms Plazma plugin",
+		.about = N_("Libvisual Plazma visual plugin"),
+		.help = N_("This is the libvisual port of the xmms Plazma plugin"),
 
 		.init = act_plazma_init,
 		.cleanup = act_plazma_cleanup,
@@ -88,6 +91,10 @@ int act_plazma_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_ENTRY_FLOAT	("rotation speed",	0.4),
 		VISUAL_PARAM_LIST_END
 	};
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0 (PlazmaPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);

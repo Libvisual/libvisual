@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <time.h>
 #include <sys/time.h>
@@ -76,8 +79,8 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info[0].name = "libvisual G-Force plugin";
 	info[0].author = "Winamp version: Andy O'Meara, Unix port: Boris Gjenero, Libvisual port and cleanups: Dennis Smit <ds@nerds-incorporated.org";
 	info[0].version = "0.1.0";
-	info[0].about = "The Libvisual G-Force plugin";
-	info[0].help = "This plugin is a port of the well known G-Force winamp plugin, based on an old unix port.";
+	info[0].about = N_("Libvisual G-Force plugin");
+	info[0].help = N_("This plugin is a port of the well known G-Force winamp plugin, based on an old unix port");
 
 	info[0].init = lv_gforce_init;
 	info[0].cleanup = lv_gforce_cleanup;
@@ -94,6 +97,10 @@ extern "C" int lv_gforce_init (VisPluginData *plugin)
 {
 	GForcePrivate *priv;
 	Rect r;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = new GForcePrivate;
 	memset (priv, 0, sizeof (GForcePrivate));

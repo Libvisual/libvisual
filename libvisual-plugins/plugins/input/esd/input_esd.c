@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <esd.h>
 
@@ -63,8 +66,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.name = "esd",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "The ESOUND capture plugin",
-		.help = "Use this plugin to capture PCM data from the ESD daemon",
+		.about = N_("ESOUND capture plugin"),
+		.help = N_("Use this plugin to capture PCM data from the ESD daemon"),
 
 		.init = inp_esd_init,
 		.cleanup = inp_esd_cleanup,
@@ -82,7 +85,11 @@ int inp_esd_init (VisPluginData *plugin)
 	EsdPrivate *priv;
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
-	
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	priv = visual_mem_new0 (EsdPrivate, 1);
 	visual_log_return_val_if_fail (priv != NULL, -1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);	

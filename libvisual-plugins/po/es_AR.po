@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-16 09:51-0300\n"
+"POT-Creation-Date: 2005-03-19 20:29-0300\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -17,28 +17,583 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: plugins/actor/JESS/jess.c:97 plugins/actor/JESS/jess.c:151
-#: plugins/actor/JESS/jess.c:223 plugins/actor/JESS/jess.c:284
-msgid "The given plugin doesn't have private info"
-msgstr "El plugin no tiene información privada"
+#: plugins/actor/bumpscope/actor_bumpscope.c:62
+msgid ""
+"Original by: Zinx Verituse <zinx@xmms.org>, Port by: Dennis Smit <ds@nerds-"
+"incorporated.org>"
+msgstr ""
 
-#: plugins/actor/JESS/jess.c:304
+#: plugins/actor/bumpscope/actor_bumpscope.c:64
+msgid "Bumpscope visual plugin"
+msgstr ""
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:65
+msgid "This is the libvisual port of the xmms Bumpscope plugin"
+msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:125
+msgid "The color of the light"
+msgstr "Color de la luz"
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:131
+#: plugins/actor/bumpscope/actor_bumpscope.c:139
+msgid "The size of the light"
+msgstr "Tamaño de la luz"
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:147
+msgid "Cycling colors"
+msgstr "Colores cíclicos"
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:148
+msgid "Automatic cycling through colors"
+msgstr "Ciclar automáticamente a través de los colores"
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:151
+msgid "Moving light"
+msgstr "Luz en movimiento"
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:153
+msgid ""
+"Automatic movement of the light, when disabled it's possible to select "
+"itusing the mouse cursor"
+msgstr ""
+"Movimiento automático de la luz; cuando está desactivada, es posible "
+"seleccionarla utilizando el mouse"
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:157
+msgid "Diamond"
+msgstr "Diamante"
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:158
+msgid "Diamond shaped light"
+msgstr ""
+
+#: plugins/actor/corona/actor_corona.cpp:103
+msgid "Libvisual corona plugin"
+msgstr ""
+
+#: plugins/actor/corona/actor_corona.cpp:104
+msgid "This plugin adds support for the neat corona plugin"
+msgstr ""
+
+#: plugins/actor/dancingparticles/actor_dancingparticles.cpp:72
+msgid ""
+"Original by: Pierre Tardy <tardyp@free.fr>, Port by: Dennis Smit <ds@nerds-"
+"incorporated.org>"
+msgstr ""
+
+#: plugins/actor/dancingparticles/actor_dancingparticles.cpp:74
+msgid "Libvisual Dancing Particles plugin"
+msgstr ""
+
+#: plugins/actor/dancingparticles/actor_dancingparticles.cpp:75
+msgid "This plugin shows dancing particles"
+msgstr ""
+
+#: plugins/actor/dna/actor_lv_dna.c:51
+msgid ""
+"Written by: Dennis Smit <ds@nerds-incorporated.org>, after some begging by "
+"Ronald Bultje"
+msgstr ""
+
+#: plugins/actor/dna/actor_lv_dna.c:53
+msgid "Libvisual DNA helix animation plugin"
+msgstr ""
+
+#: plugins/actor/dna/actor_lv_dna.c:54
+msgid ""
+"This plugin shows an openGL DNA twisting unfolding and folding on the music"
+msgstr ""
+
+#: plugins/actor/gdkpixbuf/actor_gdkpixbuf.c:86
+msgid "GdkPixbuf image loader for libvisual"
+msgstr "Cargador de imágenes GdkPixbuf para Libvisual"
+
+#: plugins/actor/gdkpixbuf/actor_gdkpixbuf.c:87
+msgid "This plugin can be used to show images"
+msgstr "Éste plugin puede ser usado para mostrar imágenes"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:347
 #, fuzzy
-msgid "The given plugin doesn't have priv info"
-msgstr "El plugin no tiene información privada"
+msgid "WaveShape:  "
+msgstr "Nueva superficie:  "
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1138
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1203
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:349
+msgid "ColorMap:   "
+msgstr "Mapa de Colores:   "
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:351
+#, fuzzy
+msgid "DeltaField: "
+msgstr "Campo Delta: "
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:355
+#, fuzzy
+msgid "Particles:  "
+msgstr "Partículas:  "
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:369
+msgid " frames/sec"
+msgstr " cuadros/segundo"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:376
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:383
+msgid "Amplitude scale: "
+msgstr "Escala de amplitud: "
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:390
+#, fuzzy
+msgid "Particles ON"
+msgstr "Partículas Habilitadas"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:392
+#, fuzzy
+msgid "Particles OFF"
+msgstr "Partículas Deshabilitadas"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:406
+msgid "Number s steps: "
+msgstr ""
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:414
+msgid "Show names ON"
+msgstr "Mostrar nombres: Habilitado"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:416
+msgid "Show names OFF"
+msgstr "Mostrar nombres: Deshabilitado"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:422
+msgid "Normalize ON"
+msgstr "Normalización: Habilitada"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:424
+msgid "Normalize OFF"
+msgstr "Normalización: Deshabilitada"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:437
+#, fuzzy
+msgid "Loading DeltaField: "
+msgstr "Cargando campo Delta: "
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:448
+msgid "DeltaField slideshow ON"
+msgstr "Campo Delta deslizante encendido"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:451
+msgid "DeltaField slideshow OFF"
+msgstr "Campo Delta deslizante apagado"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:459
+msgid "All slideshows ON"
+msgstr "Todos los deslizantes encendidos"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:466
+msgid "All slideshows OFF"
+msgstr "Todos los deslizantes apagados"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:485
+msgid "ColorMap slideshow ON"
+msgstr "Mapa de Colores deslizante encendido"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:488
+msgid "ColorMap slideshow OFF"
+msgstr "Mapa de Colores deslizante apagado"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:506
+msgid "WaveShape slideshow ON"
+msgstr "Forma de Onda deslizante encendida"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:509
+msgid "WaveShape slideshow OFF"
+msgstr "Forma de Onda deslizante apagada"
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:554
+msgid "State stored."
+msgstr "Estado guardado."
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1139
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1204
 #, c-format
 msgid "New Delta field: %s"
 msgstr "Nuevo campo Delta: %s"
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1247
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1248
 #, c-format
 msgid "New wave shape: %s"
 msgstr "Nueva superficie de onda: %s"
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1301
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1302
 #, c-format
 msgid "New Particle: %s"
 msgstr "Nueva Partícula: %s"
+
+#: plugins/actor/G-Force/unix/libvisual/actor_gforce.cpp:82
+msgid "Libvisual G-Force plugin"
+msgstr ""
+
+#: plugins/actor/G-Force/unix/libvisual/actor_gforce.cpp:83
+msgid ""
+"This plugin is a port of the well known G-Force winamp plugin, based on an "
+"old unix port"
+msgstr ""
+"Éste plugin es un port del bien conocido plugin para Winamp G-Force, basado "
+"en un viejo port a unix"
+
+#. FIXME Remove debug
+#: plugins/actor/G-Force/Common/math/Expression.cpp:158
+#, c-format
+msgid "Looking up expression in dict: %s"
+msgstr "Buscando expresión en diccionario: %s"
+
+#: plugins/actor/goom2/actor_goom2.c:70
+msgid "Libvisual goom2 plugin"
+msgstr ""
+
+#: plugins/actor/goom2/actor_goom2.c:71
+msgid ""
+"This plugin adds support for the supercool goom2 plugin that is simply "
+"awesome"
+msgstr ""
+
+#: plugins/actor/infinite/lv_infinite.c:60
+msgid ""
+"Original by: Julien Carme <julien.carme@acm.org>, Port by: Dennis Smit "
+"<ds@nerds-incorporated.org>"
+msgstr ""
+
+#: plugins/actor/infinite/lv_infinite.c:62
+msgid "Infinite visual plugin"
+msgstr ""
+
+#: plugins/actor/infinite/lv_infinite.c:63
+#, fuzzy
+msgid "This is the libvisual plugin for the infinite visual"
+msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:62
+msgid ""
+"Original by: Christopher Wilson <Jakdaw@usa.net>, Port by: Dennis Smit "
+"<ds@nerds-incorporated.org>"
+msgstr ""
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:64
+msgid "jakdaw visual plugin"
+msgstr ""
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:65
+#, fuzzy
+msgid "This is the libvisual port of the xmms Jakdaw plugin"
+msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:150
+msgid "Blur mode:"
+msgstr "Modo difuminado:"
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:151
+msgid "Plotter color:"
+msgstr ""
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:152
+msgid "Plotter type:"
+msgstr ""
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:155
+msgid "The method of blurring"
+msgstr "El método de difuminado"
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:160
+#, fuzzy
+msgid "The color of the plotter"
+msgstr "Color de la luz"
+
+#: plugins/actor/jakdaw/actor_jakdaw.c:165
+msgid "The plotter it's shape"
+msgstr "La superficie del plotter"
+
+#: plugins/actor/JESS/jess.c:72
+msgid ""
+"Original by: Remi Arquier <arquier@crans.org>, Port by: Dennis Smit "
+"<ds@nerds-incorporated.org>"
+msgstr ""
+
+#: plugins/actor/JESS/jess.c:74
+msgid "Jess visual plugin"
+msgstr ""
+
+#: plugins/actor/JESS/jess.c:75
+msgid "This is the libvisual plugin for the jess visual"
+msgstr ""
+
+#: plugins/actor/JESS/jess.c:103 plugins/actor/JESS/jess.c:157
+#: plugins/actor/JESS/jess.c:229 plugins/actor/JESS/jess.c:290
+msgid "The given plugin doesn't have private info"
+msgstr "El plugin no tiene información privada"
+
+#: plugins/actor/JESS/jess.c:310
+#, fuzzy
+msgid "The given plugin doesn't have priv info"
+msgstr "El plugin no tiene información privada"
+
+#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:67
+msgid ""
+"Original by: Andy Lo A Foe <andy@alsaplayer.org>, Port by: Dennis Smit "
+"<ds@nerds-incorporated.org>"
+msgstr ""
+
+#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:69
+msgid "Libvisual analyzer plugin"
+msgstr ""
+
+#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:70
+msgid "This is a test plugin that'll display a simple analyzer"
+msgstr ""
+
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:86
+msgid ""
+"Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front "
+"Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"
+msgstr ""
+
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:88
+msgid "Libvisual GL analyzer plugin"
+msgstr "Plugin analizador GL para Libvisual"
+
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:89
+msgid "This plugin shows an openGL bar analyzer like the xmms one"
+msgstr "Éste plugin muestra un analizador de barras OpenGL como el de xmms"
+
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:127
+msgid "Transparant bars"
+msgstr "Barras transparentes"
+
+#: plugins/actor/lv_scope/actor_lv_scope.c:65
+#, fuzzy
+msgid "Libvisual scope plugin"
+msgstr "Libvisual jackit capture"
+
+#: plugins/actor/lv_scope/actor_lv_scope.c:66
+msgid "This is a test plugin that'll display a simple scope"
+msgstr ""
+
+#: plugins/actor/madspin/madspin.c:97
+msgid ""
+"Original by: Andrew Birck <birck@uiuc.edu>, Port by: Dennis Smit <ds@nerds-"
+"incorporated.org>"
+msgstr ""
+
+#: plugins/actor/madspin/madspin.c:99
+#, fuzzy
+msgid "Libvisual madspin plugin"
+msgstr "Libvisual jackit capture"
+
+#: plugins/actor/madspin/madspin.c:100
+msgid "This plugin shows a nifty visual effect using openGL"
+msgstr ""
+
+#: plugins/actor/madspin/madspin.c:156
+msgid "Number of stars:"
+msgstr "Número de estrellas:"
+
+#: plugins/actor/madspin/madspin.c:157
+msgid "Speed:"
+msgstr "Velocidad:"
+
+#: plugins/actor/nebulus/nebulus.c:98
+msgid ""
+"Original by: Pascal Brochart <pbrochart@tuxfamily.org> and many others, Port "
+"and maintaince by: Dennis Smit <ds@nerds-incorporated.org>"
+msgstr ""
+
+#: plugins/actor/nebulus/nebulus.c:100
+msgid "Libvisual nebulus plugin"
+msgstr ""
+
+#: plugins/actor/nebulus/nebulus.c:101
+msgid "This plugin shows multiple visual effect using openGL"
+msgstr "Éste plugin muestra múltiples efectos visuales utilizando OpenGL"
+
+#: plugins/actor/nebulus/nebulus.c:130
+msgid "Nebulus: max texture size is lower than 256"
+msgstr "Nebulus: el tamaño de textura máximo es menor que 256"
+
+#: plugins/actor/plazma/actor_plazma.c:62
+msgid ""
+"Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis "
+"Smit <ds@nerds-incorporated.org>"
+msgstr ""
+
+#: plugins/actor/plazma/actor_plazma.c:64
+msgid "Libvisual Plazma visual plugin"
+msgstr ""
+
+#: plugins/actor/plazma/actor_plazma.c:65
+#, fuzzy
+msgid "This is the libvisual port of the xmms Plazma plugin"
+msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
+
+#: plugins/actor/pseudotoad_flower/actor_flower.c:75
+msgid ""
+"Original by: Antti Silvast <asilvast@iki.fi>, Port by: Dennis Smit <ds@nerds-"
+"incorporated.org>"
+msgstr ""
+
+#: plugins/actor/pseudotoad_flower/actor_flower.c:77
+msgid "Libvisual yellow rose of texas port"
+msgstr ""
+
+#: plugins/actor/pseudotoad_flower/actor_flower.c:78
+msgid "This renders an awesome responsive flower"
+msgstr ""
+
+#: plugins/input/esd/input_esd.c:69
+msgid "ESOUND capture plugin"
+msgstr "Plugin de captura de audio ESOUND"
+
+#: plugins/input/esd/input_esd.c:70
+msgid "Use this plugin to capture PCM data from the ESD daemon"
+msgstr "Use este plugin para capturar datos PCM del demonio ESD"
+
+#: plugins/input/alsa/input_alsa.c:76
+msgid "ALSA capture plugin"
+msgstr "Plugin de captura de audio ALSA"
+
+#: plugins/input/alsa/input_alsa.c:77
+msgid "Use this plugin to capture PCM data from the ALSA record device"
+msgstr ""
+"Use este plugin para capturar datos PCM del dispositivo de grabación ALSA"
+
+#: plugins/input/alsa/input_alsa.c:114
+#, c-format
+msgid "Record open error: %s"
+msgstr "Error al iniciar grabación: %s"
+
+#: plugins/input/alsa/input_alsa.c:123
+#, fuzzy
+msgid "Cannot configure this PCM device"
+msgstr "No se puede configurar este dispositivo PCM"
+
+#: plugins/input/alsa/input_alsa.c:130
+msgid "Error setting access"
+msgstr "Error al configurar el acceso"
+
+#: plugins/input/alsa/input_alsa.c:142
+msgid "Error setting format"
+msgstr "Error al configurar el formato"
+
+#: plugins/input/alsa/input_alsa.c:151
+msgid "Error setting rate"
+msgstr "Error al configurar la tasa"
+
+#: plugins/input/alsa/input_alsa.c:157
+#, c-format
+msgid ""
+"The rate %d Hz is not supported by your hardware.\n"
+"==> Using %d Hz instead"
+msgstr ""
+"Una tasa de %d Hz no es soportada por su hardware.\n"
+"==> Se usarán %d Hz"
+
+#: plugins/input/alsa/input_alsa.c:165
+msgid "Error setting channels"
+msgstr "Error al configurar los canales"
+
+#: plugins/input/alsa/input_alsa.c:174
+msgid "Error setting period time"
+msgstr "Error al configurar el período de tiempo"
+
+#: plugins/input/alsa/input_alsa.c:181
+msgid "Error setting buffer time"
+msgstr "Error al configurar el tiempo de buffer"
+
+#: plugins/input/alsa/input_alsa.c:188
+msgid "Error setting HW params"
+msgstr "Error al configurar parámetros de hardware"
+
+#: plugins/input/alsa/input_alsa.c:194 plugins/input/alsa/input_alsa.c:244
+msgid "Failed to prepare interface"
+msgstr "Fallo al preparar la interfaz"
+
+#: plugins/input/alsa/input_alsa.c:240
+msgid "Buffer Overrun"
+msgstr "Buffer Overrun"
+
+#: plugins/input/jack/input_jack.c:70
+msgid "Jackit capture plugin"
+msgstr "Plugin de captura de audio Jackit"
+
+#: plugins/input/jack/input_jack.c:71
+msgid "Use this plugin to capture PCM data from the jackd daemon"
+msgstr "Use este plugin para capturar datos PCM del demonio jackd"
+
+#: plugins/input/jack/input_jack.c:99
+msgid "Libvisual jackit capture"
+msgstr "Libvisual jackit capture"
+
+#: plugins/input/jack/input_jack.c:100
+msgid "jack server probably not running"
+msgstr "probablemente el servidor jack no está ejecutando"
+
+#: plugins/input/jack/input_jack.c:110
+msgid "Cannot activate the jack client"
+msgstr "No se puede activar el cliente jack"
+
+#: plugins/input/jack/input_jack.c:116
+msgid "Cannot find any physical capture ports"
+msgstr "No se puede encontrar ningún puerto físico de captura"
+
+#: plugins/input/jack/input_jack.c:122
+msgid "Cannot connect input ports"
+msgstr "No se puede conectar los puertos de entrada"
+
+#: plugins/input/jack/input_jack.c:161
+msgid "The jack server seems to have shutdown"
+msgstr "El servidor jack parece haberse caído"
+
+#: plugins/input/mplayer/input_mplayer.c:94
+msgid "Use data exported from MPlayer"
+msgstr "Usa datos exportados desde MPlayer"
+
+#: plugins/input/mplayer/input_mplayer.c:95
+msgid "This plugin uses data exported from 'mplayer -af export'"
+msgstr "Este plugin usa datos exportados desde 'mplayer -af export'"
+
+#: plugins/input/mplayer/input_mplayer.c:150
+#, c-format
+msgid "Could not open file '%s': %s"
+msgstr "No se puede abrir el archivo '%s': %s"
+
+#: plugins/input/mplayer/input_mplayer.c:161
+msgid "No audio channel available"
+msgstr "No hay canal de audio disponible"
+
+#: plugins/input/mplayer/input_mplayer.c:169
+#, c-format
+msgid ""
+"Data in wrong format. It should be 2 channels with 512 16bit samples. There "
+"are %d channels %d 16bit samples in it (buffer is %d bytes)"
+msgstr ""
+"Datos en formato incorrecto. Deberían ser 2 canales con 512 muestras de 16 "
+"bits.Hay %d canales con %d muestras de 16 bits (el buffer es de %d bytes)"
+
+#: plugins/input/mplayer/input_mplayer.c:184
+#, c-format
+msgid "Could not mremap() area from file '%s'  (%p from %d to %d bytes): %s"
+msgstr ""
+"No se puede mremap()-ear área desde el archivo '%s' (%p desde %d a %d "
+"bytes): %s"
+
+#: plugins/input/mplayer/input_mplayer.c:223
+#, c-format
+msgid "Could not close file descriptor %d: %s"
+msgstr "No se puede cerrar el descriptor de archivo %d: %s"
+
+#: plugins/input/mplayer/input_mplayer.c:231
+#, c-format
+msgid "Wrong file descriptor %d"
+msgstr "%d es un descriptor de archivo erróneo"
+
+#: plugins/input/mplayer/input_mplayer.c:239
+#, c-format
+msgid "Could not munmap() area %p+%d. %s"
+msgstr "No se puede munmap()-ear área %p+%d: %s"

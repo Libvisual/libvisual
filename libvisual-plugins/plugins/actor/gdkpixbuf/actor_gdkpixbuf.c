@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <gdk/gdk.h>
 #include <libvisual/libvisual.h>
@@ -80,8 +83,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.name = "GdkPixbuf image loader",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.0.1",
-		.about = "The GdkPixbuf image loader for libvisual",
-		.help = "This plugin can be used to show images",
+		.about = N_("GdkPixbuf image loader for libvisual"),
+		.help = N_("This plugin can be used to show images"),
 
 		.init = act_gdkpixbuf_init,
 		.cleanup = act_gdkpixbuf_cleanup,
@@ -113,6 +116,10 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("interpolate",	0),
 		VISUAL_PARAM_LIST_END
 	};
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0 (PixbufPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);

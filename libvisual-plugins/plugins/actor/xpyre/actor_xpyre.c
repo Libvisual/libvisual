@@ -1,8 +1,11 @@
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <libvisual/libvisual.h>
 
@@ -56,7 +59,9 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int act_xpyre_init (VisActorPlugin *plugin)
 {
-	XpyrePrivate *priv = plugin->priv;
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	return 0;
 }

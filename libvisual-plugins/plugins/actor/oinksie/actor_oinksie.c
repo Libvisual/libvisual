@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "oinksie.h"
 
@@ -77,8 +80,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.name = "oinksie plugin",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "The oinksie visual plugin",
-		.help = "This is the libvisual plugin for the oinksie visual",
+		.about = N_("Libvisual Oinksie visual plugin"),
+		.help = N_("This is the libvisual plugin for the Oinksie visual"),
 
 		.init = act_oinksie_init,
 		.cleanup = act_oinksie_cleanup,
@@ -116,6 +119,10 @@ int act_oinksie_init (VisPluginData *plugin)
 	VisUIWidget *label;
 	VisUIWidget *popup;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	priv = visual_mem_new0 (OinksiePrivContainer, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
@@ -123,10 +130,10 @@ int act_oinksie_init (VisPluginData *plugin)
 
 	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 	
-	label = visual_ui_label_new ("Color mode:", FALSE);
+	label = visual_ui_label_new (_("Color mode:"), FALSE);
 
 	popup = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup, "The coloring method (only works when the plugin is in 32 bits mode)");
+	visual_ui_widget_set_tooltip (popup, _("The coloring method (only works when the plugin is in 32 bits mode)"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup), visual_param_container_get (paramcontainer, "color mode"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup), cmodeparamchoices);
 

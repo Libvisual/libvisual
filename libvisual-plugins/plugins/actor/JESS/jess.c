@@ -22,6 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -67,10 +69,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "jess",
 		.name = "jess plugin",
-		.author = "Original by: Remi Arquier <arquier@crans.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Remi Arquier <arquier@crans.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
-		.about = "The jess visual plugin",
-		.help = "This is the libvisual plugin for the jess visual.",
+		.about = N_("Jess visual plugin"),
+		.help = N_("This is the libvisual plugin for the jess visual"),
 
 		.init = act_jess_init,
 		.cleanup = act_jess_cleanup,
@@ -89,6 +91,10 @@ int act_jess_init (VisPluginData *plugin)
 	JessPrivate *priv;
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0 (JessPrivate, 1);
 

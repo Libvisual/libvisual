@@ -22,12 +22,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <math.h>
+#include <gettext.h>
 
 #include "nebulus.h"
 #include "config.h"
@@ -92,10 +95,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "nebulus",
 		.name = PACKAGE_NAME,
-		.author = "Original by: Pascal Brochart <pbrochart@tuxfamily.org> and many others, Port and maintaince by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Pascal Brochart <pbrochart@tuxfamily.org> and many others, Port and maintaince by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = VERSION,
-		.about = "The Libvisual nebulus plugin",
-		.help = "This plugin shows multiple visual effect using openGL",
+		.about = N_("Libvisual nebulus plugin"),
+		.help = N_("This plugin shows multiple visual effect using openGL"),
 
 		.init = lv_nebulus_init,
 		.cleanup = lv_nebulus_cleanup,
@@ -113,6 +116,10 @@ int lv_nebulus_init (VisPluginData *plugin)
 {
 	NebulusPrivate *priv;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_mem_new0 (NebulusPrivate, 1);
@@ -120,7 +127,7 @@ int lv_nebulus_init (VisPluginData *plugin)
 
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
 	if (maxtexsize < 256) {
-		visual_log (VISUAL_LOG_CRITICAL, "Nebulus: max texture size is lower than 256");
+		visual_log (VISUAL_LOG_CRITICAL, _("Nebulus: max texture size is lower than 256"));
 		return -1;
 	}
 

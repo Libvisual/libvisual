@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <libvisual/libvisual.h>
 
@@ -59,8 +62,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.name = "libvisual scope",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "The Libvisual scope plugin",
-		.help = "This is a test plugin that'll display a simple scope",
+		.about = N_("Libvisual scope plugin"),
+		.help = N_("This is a test plugin that'll display a simple scope"),
 
 		.init = lv_scope_init,
 		.cleanup = lv_scope_cleanup,
@@ -77,6 +80,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_scope_init (VisPluginData *plugin)
 {
 	ScopePrivate *priv;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0 (ScopePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);

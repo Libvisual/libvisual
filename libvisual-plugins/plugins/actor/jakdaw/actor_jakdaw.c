@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "feedback.h"
 #include "plotter.h"
@@ -56,10 +59,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "jakdaw",
 		.name = "Jakdaw plugin",
-		.author = "Original by: Christopher Wilson <Jakdaw@usa.net>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Christopher Wilson <Jakdaw@usa.net>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.0.1",
-		.about = "The jakdaw visual plugin",
-		.help = "This is the libvisual port of the xmms Jakdaw plugin",
+		.about = N_("jakdaw visual plugin"),
+		.help = N_("This is the libvisual port of the xmms Jakdaw plugin"),
 
 		.init = act_jakdaw_init,
 		.cleanup = act_jakdaw_cleanup,
@@ -120,6 +123,10 @@ int act_jakdaw_init (VisPluginData *plugin)
 	VisUIWidget *popup2;
 	VisUIWidget *popup3;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	priv = visual_mem_new0 (JakdawPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
@@ -140,22 +147,22 @@ int act_jakdaw_init (VisPluginData *plugin)
 
 	table = visual_ui_table_new (3, 2);
 	
-	label1 = visual_ui_label_new ("Blur mode:", FALSE);
-	label2 = visual_ui_label_new ("Plotter color:", FALSE);
-	label3 = visual_ui_label_new ("Plotter type:", FALSE);
+	label1 = visual_ui_label_new (_("Blur mode:"), FALSE);
+	label2 = visual_ui_label_new (_("Plotter color:"), FALSE);
+	label3 = visual_ui_label_new (_("Plotter type:"), FALSE);
 
 	popup1 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup1, "The method of blurring");
+	visual_ui_widget_set_tooltip (popup1, _("The method of blurring"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup1), visual_param_container_get (paramcontainer, "zoom mode"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup1), zoomparamchoices);
 
 	popup2 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup2, "The color of the plotter");
+	visual_ui_widget_set_tooltip (popup2, _("The color of the plotter"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup2), visual_param_container_get (paramcontainer, "plotter trigger"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup2), colorparamchoices);
 
 	popup3 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup3, "The plotter it's shape");
+	visual_ui_widget_set_tooltip (popup3, _("The plotter it's shape"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup3), visual_param_container_get (paramcontainer, "plotter type"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup3), scopeparamchoices);
 	

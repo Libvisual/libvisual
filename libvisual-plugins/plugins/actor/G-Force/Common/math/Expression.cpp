@@ -1,4 +1,8 @@
+#include <config.h>
+
 #include <stdio.h>
+#include <gettext.h>
+
 #include <libvisual/libvisual.h>
 
 #include "Expression.h"
@@ -151,7 +155,7 @@ doOp:				if ( pos > startPos && pos + 1 < inLen ) {
 						fcnCall = 0;
 						UtilStr temp( inStr, firstParen );
 						// FIXME Remove debug
-						visual_log (VISUAL_LOG_INFO, "Looking up expression in dict: %s", temp.getCStr ());
+						visual_log (VISUAL_LOG_INFO, _("Looking up expression in dict: %s"), temp.getCStr ());
 						fcnPtr = inDict.LookupFunc( temp );
 						inVM.UserFcnOp( expr[ 0 ], fcnPtr );
 					}

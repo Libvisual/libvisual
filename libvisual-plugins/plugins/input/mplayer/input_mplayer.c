@@ -22,11 +22,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -87,9 +90,9 @@ const VisPluginInfo *get_plugin_info( int *count )
 			.plugname = "mplayer",
 			.name = "mplayer",
 			.author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-			.version = "$Revision: 1.12 $",
-			.about = "Use data exported from MPlayer",
-			.help = "This plugin uses data exported from 'mplayer -af export'.",
+			.version = "$Revision: 1.13 $",
+			.about = N_("Use data exported from MPlayer"),
+			.help = N_("This plugin uses data exported from 'mplayer -af export'"),
 
 			.init = inp_mplayer_init,
 			.cleanup = inp_mplayer_cleanup,
@@ -112,6 +115,10 @@ const VisPluginInfo *get_plugin_info( int *count )
 int inp_mplayer_init( VisPluginData *plugin )
 {
 	mplayer_priv_t *priv = NULL;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0(mplayer_priv_t, 1);
 
@@ -140,7 +147,7 @@ int inp_mplayer_init( VisPluginData *plugin )
 		 * before to return the error value.
 		 */
 		visual_log( VISUAL_LOG_ERROR,
-				"Could not open file '%s': %s",
+				_("Could not open file '%s': %s"),
 				priv->sharedfile, strerror( errno ) );
 		return -3;
 	}
@@ -151,7 +158,7 @@ int inp_mplayer_init( VisPluginData *plugin )
 
 	if ( priv->mmap_area->nch == 0 )
 	{
-		visual_log( VISUAL_LOG_ERROR, "No audio channel available!" );
+		visual_log( VISUAL_LOG_ERROR, _("No audio channel available") );
 		return -5;
 	}
 
@@ -159,9 +166,9 @@ int inp_mplayer_init( VisPluginData *plugin )
 			( priv->mmap_area->bs  != 2048 ) )
 	{
 		visual_log( VISUAL_LOG_ERROR,
-				"Data in wrong format. It should be 2 channels" \
+				_("Data in wrong format. It should be 2 channels" \
 				" with 512 16bit samples. There are %d channels %d 16bit " \
-				"samples in it (buffer is %d bytes).",
+				"samples in it (buffer is %d bytes)"),
 				priv->mmap_area->nch,
 				priv->mmap_area->bs / 2 / priv->mmap_area->nch,
 				priv->mmap_area->bs );
@@ -174,8 +181,8 @@ int inp_mplayer_init( VisPluginData *plugin )
 	if ( (int)priv->mmap_area == -1 )
 	{
 		visual_log( VISUAL_LOG_CRITICAL, 
-				"Could not mremap() area from file '%s' " \
-				" (%p from %d to %d bytes): %s",
+				_("Could not mremap() area from file '%s' " \
+				" (%p from %d to %d bytes): %s"),
 				priv->sharedfile, 
 				priv->mmap_area, sizeof( mplayer_data_t ),
 				sizeof( mplayer_data_t ) + priv->mmap_area->bs,
@@ -213,7 +220,7 @@ int inp_mplayer_cleanup( VisPluginData *plugin )
 			if ( close( priv->fd ) != 0 )
 			{
 				visual_log( VISUAL_LOG_ERROR,
-						"Could not close file descriptor %d: %s\n", 
+						_("Could not close file descriptor %d: %s"),
 						priv->fd, strerror( errno ) );
 				unclean |= 1;
 			}
@@ -221,7 +228,7 @@ int inp_mplayer_cleanup( VisPluginData *plugin )
 		}
 		else
 		{
-			visual_log( VISUAL_LOG_ERROR, "Wrong file descriptor %d\n.", 
+			visual_log( VISUAL_LOG_ERROR, _("Wrong file descriptor %d"), 
 					priv->fd );
 			unclean |= 2;
 		}
@@ -229,7 +236,7 @@ int inp_mplayer_cleanup( VisPluginData *plugin )
 		if ( munmap( mmap_area, mmap_count ) != 0 )
 		{
 			visual_log( VISUAL_LOG_ERROR,
-					"Could not munmap() area %p+%d. %s\n",
+					_("Could not munmap() area %p+%d. %s"),
 					mmap_area, mmap_count,
 					strerror( errno ) );
 			unclean |= 4;

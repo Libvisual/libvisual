@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <libvisual/libvisual.h>
 
@@ -61,10 +64,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "lv_analyzer",
 		.name = "libvisual analyzer",
-		.author = "Original by: Andy Lo A Foe <andy@alsaplayer.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Andy Lo A Foe <andy@alsaplayer.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
-		.about = "The Libvisual analyzer plugin",
-		.help = "This is a test plugin that'll display a simple analyzer",
+		.about = N_("Libvisual analyzer plugin"),
+		.help = N_("This is a test plugin that'll display a simple analyzer"),
 
 		.init = lv_analyzer_init,
 		.cleanup = lv_analyzer_cleanup,
@@ -81,6 +84,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_analyzer_init (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0 (AnalyzerPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);

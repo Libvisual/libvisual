@@ -39,10 +39,11 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
 # Internationalization
-ALL_LINGUAS="es es_AR"
+ALL_LINGUAS="es_ES es_AR"
 GETTEXT_PACKAGE=libvisual-plugins
 AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [GETTEXT package name])
+AC_DEFINE_UNQUOTED(LOCALEDIR, "${prefix}/share/locale", [String catalog location])
 AM_GLIB_GNU_GETTEXT
 
 # Checks for libraries.

@@ -1,7 +1,9 @@
-#include <stdio.h>
-#include <libvisual/libvisual.h>
+#include <config.h>
 
+#include <stdio.h>
 #include <gettext.h>
+
+#include <libvisual/libvisual.h>
 
 #include "G-Force_Proj.h"
 #include "G-Force.h"
@@ -12,7 +14,6 @@
 #define __defaultTTFormat 	""
 #define __defaultFont 		""
 
-#include <stdio.h>
 #define __drawText( x, y, str )		fprintf(stderr,str->getCStr());
 
 
@@ -343,15 +344,15 @@ bool GForce::HandleKey( long inChar ) {
 			
 		case cGetConfigInfo:
 		  {
-			Print( "WaveShape:  " );
+			Print(_("WaveShape:  "));
 			Println( &mWaveShapeName );
-			Print( "ColorMap:   " );
+			Print(_("ColorMap:   "));
 			Println( &mColorMapName );
-			Print( "DeltaField: " );
+			Print(_("DeltaField: "));
 			Println( mField -> GetName() );
 			ParticleGroup* particle = (ParticleGroup*) mRunningParticlePool.GetHead();
 			if ( particle ) {
-				Print( "Particles:  " );
+				Print(_("Particles:  "));
 
 				while ( particle ) {
 					Print( &particle -> mTitle );
@@ -365,30 +366,30 @@ bool GForce::HandleKey( long inChar ) {
 		  }
 		case cFrameRate:
 			mTemp.SetFloatValue( ( (float) mCurFrameRate ) / 10.0 );
-			mTemp.Append( " frames/sec" );
+			mTemp.Append(_(" frames/sec"));
 			Println( &mTemp );
 			break;
 			
 		case cDecMagScale:
 			mMagScale /= 1.2;
 			mTemp.SetFloatValue( mMagScale );
-			Print( "Amplitude scale: " );
+			Print(_("Amplitude scale: "));
 			Println( &mTemp );
 			break;
 			
 		case cIncMagScale:
 			mMagScale *= 1.2;
 			mTemp.SetFloatValue( mMagScale );
-			Print( "Amplitude scale: " );
+			Print(_("Amplitude scale: "));
 			Println( &mTemp );
 			break;
 			
 		case cToggleParticles:
 			mParticlesOn = ! mParticlesOn;
 			if ( mParticlesOn )
-				Println( "Particles ON" );
+				Println(_("Particles ON"));
 			else
-				Println( "Particles OFF" );
+				Println(_("Particles OFF"));
 			break;
 			
 		case cSpawnNewParticle:
@@ -402,7 +403,7 @@ bool GForce::HandleKey( long inChar ) {
 			else
 				n = + 4;
 			SetNumSampleBins( mNum_S_Steps + n );
-			mTemp.Assign( "Number s steps: " );
+			mTemp.Assign(_("Number s steps: "));
 			mTemp.Append( mNum_S_Steps );
 			Println( &mTemp );
 			break;
@@ -410,17 +411,17 @@ bool GForce::HandleKey( long inChar ) {
 		case cToggleConfigName:
 			mNewConfigNotify = ! mNewConfigNotify;
 			if ( mNewConfigNotify )
-				Println( "Show names ON" );
+				Println(_("Show names ON"));
 			else
-				Println( "Show names OFF" );
+				Println(_("Show names OFF"));
 			break;
 			
 		case cToggleNormalize:
 			mNormalizeInput = ! mNormalizeInput;
 			if ( mNormalizeInput )
-				Println( "Normalize ON" );
+				Println(_("Normalize ON"));
 			else
-				Println( "Normalize OFF" );
+				Println(_("Normalize OFF"));
 			break;			
 
 		case cPrevDeltaField:
@@ -433,7 +434,7 @@ bool GForce::HandleKey( long inChar ) {
 				
 			// If the pref says so, display that we're loading a new config
 			if ( mNewConfigNotify ) {
-				Print( "Loading DeltaField: " );
+				Print(_("Loading DeltaField: "));
 				Println( mField -> GetName() );
 			}
 			
@@ -444,10 +445,10 @@ bool GForce::HandleKey( long inChar ) {
 			mFieldSlideShow = ! mFieldSlideShow;
 			mNextFieldChange = mT;
 			if ( mFieldSlideShow ) {
-				Println( "DeltaField slideshow ON" );
+				Println(_("DeltaField slideshow ON"));
 				mFieldPlayList.Randomize(); }
 			else
-				Println( "DeltaField slideshow OFF" );
+				Println(_("DeltaField slideshow OFF"));
 			break;
 
 			
@@ -455,14 +456,14 @@ bool GForce::HandleKey( long inChar ) {
 			mFieldSlideShow = true;		mNextFieldChange = mT;
 			mColorSlideShow = true;		mNextColorChange = mT;
 			mShapeSlideShow = true;		mNextShapeChange = mT;
-			Println( "All slideshows ON" );
+			Println(_("All slideshows ON"));
 			break;
 			
 		case cStopSlideshowAll:
 			mFieldSlideShow = false;
 			mColorSlideShow = false;
 			mShapeSlideShow = false;
-			Println( "All slideshows OFF" );
+			Println(_("All slideshows OFF"));
 			break;
 
 			
@@ -481,10 +482,10 @@ bool GForce::HandleKey( long inChar ) {
 			mColorSlideShow = ! mColorSlideShow;
 			mNextColorChange = mT;
 			if ( mColorSlideShow ) {
-				Println( "ColorMap slideshow ON" );
+				Println(_("ColorMap slideshow ON"));
 				mColorPlayList.Randomize(); }
 			else
-				Println( "ColorMap slideshow OFF" );
+				Println(_("ColorMap slideshow OFF"));
 			break;
 	
 		case cPrevWaveShape:
@@ -502,10 +503,10 @@ bool GForce::HandleKey( long inChar ) {
 			mShapeSlideShow = ! mShapeSlideShow;
 			mNextShapeChange = mT;
 			if ( mShapeSlideShow ) {
-				Println( "WaveShape slideshow ON" );
+				Println(_("WaveShape slideshow ON"));
 				mShapePlayList.Randomize(); }
 			else
-				Println( "WaveShape slideshow OFF" );
+				Println(_("WaveShape slideshow OFF"));
 			break;
 			
 		case cSetPreset0:	StoreConfigState( 'SET0' );	break;
@@ -550,7 +551,7 @@ void GForce::StoreConfigState( long inParamName ) {
 	str.Append( mField -> GetName() );	str.Append( ',' );
 
 	mPrefs.SetPref( inParamName, str );
-	Println( "State stored." );
+	Println(_("State stored."));
 }
 
 

@@ -22,12 +22,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <math.h>
+#include <gettext.h>
 
 #include <time.h>
 
@@ -91,10 +94,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "madspin",
 		.name = "libvisual madspin port",
-		.author = "Original by: Andrew Birck <birck@uiuc.edu>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Andrew Birck <birck@uiuc.edu>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
-		.about = "The Libvisual madspin plugin",
-		.help = "This plugin shows a nifty visual effect using openGL",
+		.about = N_("Libvisual madspin plugin"),
+		.help = N_("This plugin shows a nifty visual effect using openGL"),
 
 		.init = lv_madspin_init,
 		.cleanup = lv_madspin_cleanup,
@@ -128,6 +131,10 @@ int lv_madspin_init (VisPluginData *plugin)
 	VisUIWidget *numeric1;
 	VisUIWidget *numeric2;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	priv = visual_mem_new0 (MadspinPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
@@ -146,8 +153,8 @@ int lv_madspin_init (VisPluginData *plugin)
 	/* The VisUI description that serves as config dialog */
 	table = visual_ui_table_new (2, 3);
 
-	label1 = visual_ui_label_new ("Number of stars:", FALSE);
-	label2 = visual_ui_label_new ("Speed:", FALSE);
+	label1 = visual_ui_label_new (_("Number of stars:"), FALSE);
+	label2 = visual_ui_label_new (_("Speed:"), FALSE);
 
 	slider1 = visual_ui_slider_new (FALSE);
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider1), 200, -1);
@@ -265,7 +272,7 @@ int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 				param = ev.param.param;
 
 				/* FIXME remove this debug line */
-				printf ("WE'RE SCREAMIGN HARD!! A PARAM HAS BEEN CHANGED!!!\n");
+				visual_log (VISUAL_LOG_DEBUG, "WE'RE SCREAMIGN HARD!! A PARAM HAS BEEN CHANGED!!!\n");
 
 				if (visual_param_entry_is (param, "num stars"))
 					priv->num_stars = visual_param_entry_get_integer (param);

@@ -22,12 +22,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <math.h>
+#include <gettext.h>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -69,10 +72,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "lv_flower",
 		.name = "libvisual Pseudotoad flower, yellow rose of texas",
-		.author = "Original by: Antti Silvast <asilvast@iki.fi>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Antti Silvast <asilvast@iki.fi>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
-		.about = "The Libvisual yellow rose of texas port",
-		.help =  "This renders an awesome responsive flower.",
+		.about = N_("Libvisual yellow rose of texas port"),
+		.help =  N_("This renders an awesome responsive flower"),
 
 		.init = lv_flower_init,
 		.cleanup = lv_flower_cleanup,
@@ -89,6 +92,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_flower_init (VisPluginData *plugin)
 {
 	FlowerPrivate *priv;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0 (FlowerPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);

@@ -1,3 +1,13 @@
+2005-03-19  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/G-Force/unix/libmfl/mfl.c: added param
+	check to mfl_DestroyFont(), it shoul be NULL if G-Force
+	have not showed any font yet.
+
+	* plugins/actor/*: added i18n support.
+	* plugins/input/*: added i18n support.
+	* po/LINGUAS: added es_ES and es_AR translations.
+	
 2005-03-16  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* plugins/actor/G-Force/Common/GeneralTools/Headers/Makefile.am:

@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <time.h>
 #include <sys/time.h>
@@ -64,8 +67,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.name = "libvisual goom2 plugin",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>, Goom by: Jean-Christophe Hoelt <jeko@ios-software.com>",
 		.version = "0.1",
-		.about = "The Libvisual goom2 plugin",
-		.help = "This plugin adds support for the supercool goom2 plugin that is simply awesome",
+		.about = N_("Libvisual goom2 plugin"),
+		.help = N_("This plugin adds support for the supercool goom2 plugin that is simply awesome"),
 
 		.init = lv_goom_init,
 		.cleanup = lv_goom_cleanup,
@@ -82,6 +85,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_goom_init (VisPluginData *plugin)
 {
 	GoomPrivate *priv;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0 (GoomPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);

@@ -1,9 +1,12 @@
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <math.h>
+#include <gettext.h>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -45,10 +48,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "lv_dna",
 		.name = "libvisual DNA helix animation",
-		.author = "Written by: Dennis Smit <ds@nerds-incorporated.org>, after some begging by Ronald Bultje",
+		.author = N_("Written by: Dennis Smit <ds@nerds-incorporated.org>, after some begging by Ronald Bultje"),
 		.version = "0.1",
-		.about = "The Libvisual DNA helix animation plugin",
-		.help = "This plugin shows an openGL DNA twisting unfolding and folding on the music.",
+		.about = N_("Libvisual DNA helix animation plugin"),
+		.help = N_("This plugin shows an openGL DNA twisting unfolding and folding on the music"),
 
 		.init = lv_dna_init,
 		.cleanup = lv_dna_cleanup,
@@ -65,6 +68,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_dna_init (VisPluginData *plugin)
 {
 	DNAPrivate *priv;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = visual_mem_new0 (DNAPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);

@@ -23,11 +23,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <time.h>
 #include <sys/time.h>
@@ -97,8 +100,8 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info[0].name     = "libvisual corona plugin";
 	info[0].author   = "Jean-Christophe Hoelt <jeko@ios-software.com> and Richard Ashburn <richard.asbury@btinternet.com>";
 	info[0].version  = "0.1";
-	info[0].about    = "The Libvisual corona plugin";
-	info[0].help     = "This plugin adds support for the neat corona plugin";
+	info[0].about    = N_("Libvisual corona plugin");
+	info[0].help     = N_("This plugin adds support for the neat corona plugin");
 
 	info[0].init     = lv_corona_init;
 	info[0].cleanup  = lv_corona_cleanup;
@@ -114,6 +117,10 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 extern "C" int lv_corona_init (VisPluginData *plugin)
 {
 	CoronaPrivate *priv;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	priv = new CoronaPrivate;
 	memset (priv, 0, sizeof (CoronaPrivate));

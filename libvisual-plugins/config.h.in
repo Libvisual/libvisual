@@ -118,6 +118,9 @@
 /* XF86VidMode is available */
 #undef HAVE_XF86VMODE
 
+/* String catalog location */
+#undef LOCALEDIR
+
 /* Name of package */
 #undef PACKAGE
 

@@ -46,6 +46,7 @@
    On pre-ANSI systems without 'const', the config.h file is supposed to
    contain "#define const".  */
 # define gettext(Msgid) ((const char *) (Msgid))
+# define gettext_noop(Msgid) ((const char *) (Msgid))
 # define dgettext(Domainname, Msgid) ((const char *) (Msgid))
 # define dcgettext(Domainname, Msgid, Category) ((const char *) (Msgid))
 # define ngettext(Msgid1, Msgid2, N) \
@@ -69,6 +70,7 @@
    initializer for static 'char[]' or 'const char[]' variables.  */
 #define gettext_noop(String) String
 
-#define _(String) (gettext(String))
+#define N_(String) gettext_noop(String)
+#define _(String) (dgettext(GETTEXT_PACKAGE,String))
 
 #endif /* _LIBGETTEXT_H */

@@ -6,7 +6,7 @@ EXTRA_LTLIBRARIES = actor_JESS.la
 
 libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
-LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
+LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@ @LTLIBTINTL@
 
 AM_CFLAGS = @LIBVISUAL_CFLAGS@
 

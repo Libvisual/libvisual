@@ -23,12 +23,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <math.h>
+#include <gettext.h>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -80,10 +83,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "lv_gltest",
 		.name = "libvisual GL analyser",
-		.author = "Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
-		.about = "The Libvisual GL analyzer plugin",
-		.help =  "This plugin shows an openGL bar analyzer like the xmms one.",
+		.about = N_("Libvisual GL analyzer plugin"),
+		.help =  N_("This plugin shows an openGL bar analyzer like the xmms one"),
 
 		.init = lv_gltest_init,
 		.cleanup = lv_gltest_cleanup,
@@ -112,12 +115,16 @@ int lv_gltest_init (VisPluginData *plugin)
 	/* UI Vars */
 	VisUIWidget *checkbox;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	priv = visual_mem_new0 (GLtestPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_param_container_add_many (paramcontainer, params);
 
-	checkbox = visual_ui_checkbox_new ("Transparant bars", TRUE);
+	checkbox = visual_ui_checkbox_new (_("Transparant bars"), TRUE);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox), visual_param_container_get (paramcontainer, "transparant bars"));
 
 	visual_plugin_set_userinterface (plugin, checkbox);

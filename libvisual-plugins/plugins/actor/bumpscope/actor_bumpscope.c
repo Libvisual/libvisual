@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <libvisual/libvisual.h>
 
@@ -56,10 +59,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "bumpscope",
 		.name = "Bumpscope plugin",
-		.author = "Original by: Zinx Verituse <zinx@xmms.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Zinx Verituse <zinx@xmms.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.0.1",
-		.about = "The bumpscope visual plugin",
-		.help = "This is the libvisual port of the xmms Bumpscope plugin",
+		.about = N_("Bumpscope visual plugin"),
+		.help = N_("This is the libvisual port of the xmms Bumpscope plugin"),
 
 		.init = act_bumpscope_init,
 		.cleanup = act_bumpscope_cleanup,
@@ -99,6 +102,10 @@ int act_bumpscope_init (VisPluginData *plugin)
 	VisUIWidget *check2;
 	VisUIWidget *check3;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	priv = visual_mem_new0 (BumpscopePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 	priv->phongres = 256;
@@ -115,13 +122,13 @@ int act_bumpscope_init (VisPluginData *plugin)
 	label1 = visual_ui_label_new ("Light size:", FALSE);
 
 	color = visual_ui_color_new ();
-	visual_ui_widget_set_tooltip (color, "The color of the light");
+	visual_ui_widget_set_tooltip (color, _("The color of the light"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (color), visual_param_container_get (paramcontainer, "color"));
 
 	separator = visual_ui_separator_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 
 	numeric = visual_ui_numeric_new ();
-	visual_ui_widget_set_tooltip (numeric, "The size of the light");
+	visual_ui_widget_set_tooltip (numeric, _("The size of the light"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric), visual_param_container_get (paramcontainer, "light size"));
 	visual_ui_range_set_min (VISUAL_UI_RANGE (numeric), 8);
 	visual_ui_range_set_max (VISUAL_UI_RANGE (numeric), 512);
@@ -129,7 +136,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	visual_ui_range_set_precision (VISUAL_UI_RANGE (numeric), 0);
 
 	slider = visual_ui_slider_new (FALSE);
-	visual_ui_widget_set_tooltip (slider, "The size of the light");
+	visual_ui_widget_set_tooltip (slider, _("The size of the light"));
 	visual_ui_widget_set_size_request (slider, 200, -1);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider), visual_param_container_get (paramcontainer, "light size"));
 	visual_ui_range_set_min (VISUAL_UI_RANGE (slider), 8);
@@ -137,18 +144,18 @@ int act_bumpscope_init (VisPluginData *plugin)
 	visual_ui_range_set_step (VISUAL_UI_RANGE (slider), 8);
 	visual_ui_range_set_precision (VISUAL_UI_RANGE (slider), 0);
 
-	check1 = visual_ui_checkbox_new ("Cycling colors", TRUE);
-	visual_ui_widget_set_tooltip (check1, "Automatic cycling through colors");
+	check1 = visual_ui_checkbox_new (_("Cycling colors"), TRUE);
+	visual_ui_widget_set_tooltip (check1, _("Automatic cycling through colors"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check1), visual_param_container_get (paramcontainer, "color cycle"));
 	
-	check2 = visual_ui_checkbox_new ("Moving light", TRUE);
+	check2 = visual_ui_checkbox_new (_("Moving light"), TRUE);
 	visual_ui_widget_set_tooltip (check2,
-			"Automatic movement of the light, when disabled it's possible to select it" \
-			"using the mouse cursor");
+			_("Automatic movement of the light, when disabled it's possible to select it" \
+			"using the mouse cursor"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check2), visual_param_container_get (paramcontainer, "moving light"));
 
-	check3 = visual_ui_checkbox_new ("Diamond", TRUE);
-	visual_ui_widget_set_tooltip (check3, "Diamond shaped light");
+	check3 = visual_ui_checkbox_new (_("Diamond"), TRUE);
+	visual_ui_widget_set_tooltip (check3, _("Diamond shaped light"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check3), visual_param_container_get (paramcontainer, "diamond"));
 
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label1);

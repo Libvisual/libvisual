@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <gettext.h>
 
 #include "main.h"
 #include "renderer.h"
@@ -54,10 +57,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "infinite",
 		.name = "infinite plugin",
-		.author = "Original by: Julien Carme <julien.carme@acm.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.author = N_("Original by: Julien Carme <julien.carme@acm.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
-		.about = "The infinite visual plugin",
-		.help = "This is the libvisual plugin for the infinite visual",
+		.about = N_("Infinite visual plugin"),
+		.help = N_("This is the libvisual plugin for the infinite visual"),
 
 		.init = act_infinite_init,
 		.cleanup = act_infinite_cleanup,
@@ -74,6 +77,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 int act_infinite_init (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 

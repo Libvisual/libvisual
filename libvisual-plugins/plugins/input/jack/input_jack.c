@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <jack/jack.h>
 
@@ -64,8 +67,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.name = "jack",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "The Jackit capture plugin",
-		.help = "Use this plugin to capture PCM data from the jackd daemon.",
+		.about = N_("Jackit capture plugin"),
+		.help = N_("Use this plugin to capture PCM data from the jackd daemon"),
 
 		.init = inp_jack_init,
 		.cleanup = inp_jack_cleanup,
@@ -83,14 +86,18 @@ int inp_jack_init (VisPluginData *plugin)
 	JackPrivate *priv;
 	const char **ports;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 	
 	priv = visual_mem_new0 (JackPrivate, 1);
 	visual_log_return_val_if_fail (priv != NULL, -1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);	
 
-	if ((priv->client = jack_client_new ("Libvisual jackit capture")) == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "jack server probably not running");
+	if ((priv->client = jack_client_new (_("Libvisual jackit capture"))) == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, _("jack server probably not running"));
 		return -1;
 	}
 	
@@ -100,19 +107,19 @@ int inp_jack_init (VisPluginData *plugin)
 	priv->input_port = jack_port_register (priv->client, "input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 	if (jack_activate (priv->client) == 1) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot activate the jack client");
+		visual_log (VISUAL_LOG_CRITICAL, _("Cannot activate the jack client"));
 		
 		return -1;
 	}
 
 	if ((ports = jack_get_ports (priv->client, NULL, NULL, JackPortIsPhysical|JackPortIsOutput)) == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot find any physical capture ports.");
+		visual_log (VISUAL_LOG_CRITICAL, _("Cannot find any physical capture ports"));
 		
 		return -1;
 	}
 
 	if (jack_connect (priv->client, ports[0], jack_port_name (priv->input_port))) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot connect input ports.");
+		visual_log (VISUAL_LOG_CRITICAL, _("Cannot connect input ports"));
 
 		visual_mem_free (ports);
 		
@@ -151,7 +158,7 @@ int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
 	if (priv->shutdown == TRUE) {
-		visual_log (VISUAL_LOG_CRITICAL, "The jack server seems to have shutdown.");
+		visual_log (VISUAL_LOG_CRITICAL, _("The jack server seems to have shutdown"));
 
 		return -1;
 	}
