@@ -152,6 +152,9 @@ AC_CHECK_LIB([dl], [dlsym], [LIBS="-ldl $LIBS"],
 AC_CHECK_LIB([m], [sqrt], [LIBS="-lm $LIBS"],
 	     AC_MSG_ERROR([*** You need the Standard C Math Library to build Libvisual.]))
 
+# FIXME check for pthreads in the right way!!
+LIBS="-lpthread $LIBS"
+
 # check for type sizes
 AC_CHECK_SIZEOF(short)
 AC_CHECK_SIZEOF(int)
