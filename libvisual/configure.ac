@@ -172,11 +172,11 @@ AC_ARG_ENABLE([enable_threads],
 		[Turn on basic thread support @<:@default=enabled@:>@]),
 		[enable_threads=$enableval],
 		[enable_threads=yes])
-AC_MSG_CHECKING([wheter to enable thread support])
+AC_MSG_CHECKING([whether to enable thread support])
 if test x$enable_threads = xyes; then
   AC_MSG_RESULT([yes])
-  AC_MSG_CHECKING([for the native thread implementation available])
   have_threads=none
+  AC_MSG_CHECKING([for thread implementation available])
   case $host in
   	*-*-mingw*)
 		have_threads=win32
@@ -194,6 +194,15 @@ if test x$enable_threads = xyes; then
 		[pthread_mutex_t m; 
 		pthread_mutex_init (&m, pthread_mutexattr_default);],
 		have_threads=dce)
+  fi
+  if test "x$have_threads" = xnone; then
+    PKG_CHECK_MODULES(GTHREAD2, gthread-2.0 >= 2.2.0, [have_gthread2="yes"], [have_gthread2="no"])
+    if test x"$have_gthread2" = xyes; then
+      have_threads=gthread2
+      AC_SUBST(GTHREAD2_CFLAGS)
+      AC_SUBST(GTHREAD2_LIBS)
+      AC_DEFINE([LV_HAVE_GTHREAD2],[1],[glib-2.0 thread implementation available])
+    fi
   fi
   # In future we will check for more thread models...
 
@@ -262,8 +271,10 @@ fi
               ;;
             esac
             ;;
+	  gthread2)
+            LV_THREAD_LIBS="$GTHREAD2_LIBS"
+            ;;
           *)
-	    # This is not possible!
             ;;
   esac
 else
@@ -273,6 +284,23 @@ fi
 
 AC_MSG_CHECKING(thread related libraries)
 AC_MSG_RESULT($LV_THREAD_LIBS)
+AC_SUBST(LV_THREAD_LIBS)
+
+dnl --------------------------------------------------
+dnl Determination of compiler flags for thread support
+dnl --------------------------------------------------
+
+LV_THREAD_CFLAGS=""
+if test "x$enable_threads" = xyes && test "x$have_threads" != xnone; then
+  case $have_threads in
+	  gthread2)
+            LV_THREAD_CFLAGS="$GTHREAD2_CFLAGS"
+            ;;
+          *)
+	    ;;
+  esac
+fi
+AC_SUBST(LV_THREAD_CFLAGS)
 
 # check for type sizes
 AC_CHECK_SIZEOF(short)
@@ -301,7 +329,15 @@ AC_MSG_RESULT(unsigned $visual_size_type)
 
 build_subdirs="libvisual"
 
+VISUAL_PKG_CONFIG_DEP=""
+
 VISUAL_CFLAGS=""
+if test x"$LV_THREAD_CFLAGS" == xgthread2; then
+  VISUAL_PKG_CONFIG_DEP="$VISUAL_PKG_CONFIG_DEP gthread-2.0"
+elif test x"$LV_THREAD_CFLAGS" != x; then
+  VISUAL_CFLAGS=$LV_THREAD_CFLAGS
+fi
+AC_SUBST(VISUAL_PKG_CONFIG_DEP)
 
 VISUAL_LIBS="$LIBS -lvisual"
 if test x"$LV_THREAD_LIBS" != x; then
@@ -323,7 +359,7 @@ AC_ARG_ENABLE([profiling],
 		[Enable emision of profile data to be used by gprof @<:@default=disabled@:>@]),
 		[profiling=$enableval],
 		[profiling=no])
-AC_MSG_CHECKING([wheter to enable profiling])
+AC_MSG_CHECKING([whether to enable profiling])
 if test x$profiling = xyes; then
   AC_MSG_RESULT([yes])
   if test x"$GCC" = xyes; then
@@ -340,7 +376,7 @@ AC_ARG_ENABLE([debug],
                            [Enable debug @<:@default=disabled@:>@]),
 	    [debug=$enableval],
 	    [debug=no])
-AC_MSG_CHECKING([wheter to enable debug])
+AC_MSG_CHECKING([whether to enable debug])
 if test x$debug = xyes; then
   AC_MSG_RESULT([yes])
   if test x"$GCC" = xyes; then
@@ -349,7 +385,7 @@ if test x$debug = xyes; then
   # IMHO -Werror should be here also. --VVB
     lv_save_CFLAGS=$CFLAGS
     CFLAGS="$CFLAGS -Wno-unused-variable"
-    AC_MSG_CHECKING([wheter gcc version is greater than 2.95])
+    AC_MSG_CHECKING([whether gcc version is greater than 2.95])
     AC_TRY_COMPILE([#include <stdlib.h>],
 		   [exit(0);],
 		   [lv_gcc_gt_2_95=yes],
@@ -372,7 +408,7 @@ AC_ARG_ENABLE([extra-optimization],
                           [Enable extra optimizations @<:@default=disabled@:>@]),
            [extra_opt=$enableval],
            [extra_opt=no])
-AC_MSG_CHECKING([wheter to enable extra optimizations])
+AC_MSG_CHECKING([whether to enable extra optimizations])
 if test x$extra_opt = xyes; then
   AC_MSG_RESULT([yes])
   if test x"$GCC" = xyes; then
@@ -394,7 +430,7 @@ AC_ARG_ENABLE([fast-fp-rng],
                           [Enable faster random floating point generator (enabled by default if --enable-extra-optimization is passed) ]),
            [fastfprng=$enableval],
            [fastfprng=maybe])
-AC_MSG_CHECKING([wheter to enable fast FP RNG])
+AC_MSG_CHECKING([whether to enable fast FP RNG])
 
 if  test x$fastfprng = xyes; then
   AC_MSG_RESULT([yes])

@@ -7,7 +7,7 @@ pluginsbasedir=@LIBVISUAL_PLUGINS_BASE_DIR@
 Name: libvisual
 Version: @VERSION@
 Description: an audio visualisation abstraction library.
-Requires:
+Requires: @VISUAL_PKG_CONFIG_DEP@
 Libs: -L${libdir} @VISUAL_LIBS@
 Cflags: -I${includedir} @VISUAL_CFLAGS@
 

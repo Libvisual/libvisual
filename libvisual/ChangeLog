@@ -1,3 +1,14 @@
+2005-03-16  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Adding detection for gthread, fixing spelling
+	mistakes.
+
+	* libvisual.pc.in: Add package dep.
+
+	* libvisual/Makefile.am: Add thread libs/cflags.
+
+	Patch by Duilio, thanks!
+
 2005-03-15  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c (video_negotiate): Don't try to fitt blit GL

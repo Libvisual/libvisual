@@ -92,6 +92,9 @@
 /* Define to 1 if you have the `usleep' function. */
 #undef HAVE_USLEEP
 
+/* glib-2.0 thread implementation available */
+#undef LV_HAVE_GTHREAD2
+
 /* Name of package */
 #undef PACKAGE
 
