@@ -54,49 +54,84 @@ int act_bumpscope_init (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	VisParamEntry *param;
+
+	static const VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_COLOR	("color",		122, 204, 255),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("light size",		256),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color cycle",		TRUE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("moving light",	TRUE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("diamond",		FALSE),
+		VISUAL_PARAM_LIST_END
+	};
+
+	/* UI vars */
+	VisUIWidget *vbox;
+	VisUIWidget *hbox;
+	VisUIWidget *label1;
+	VisUIWidget *color;
+	VisUIWidget *separator;
+	VisUIWidget *slider;
+	VisUIWidget *numeric;
+	VisUIWidget *check1;
+	VisUIWidget *check2;
+	VisUIWidget *check3;
 
 	priv = visual_mem_new0 (BumpscopePrivate, 1);
-
 	plugin->priv = priv;
+	priv->phongres = 256;
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
-	priv->color.r =		122;
-	priv->color.g =		204;
-	priv->color.b =		255;
-	priv->phongres =	256;
-	priv->color_cycle =	TRUE;
-	priv->moving_light =	TRUE;
-	priv->diamond =		FALSE;
+	visual_param_container_add_many (paramcontainer, params);
 
-	/* Parameters */
-	/* Color */
-	param = visual_param_entry_new ("color");
-	visual_param_entry_set_color_by_color (param, &priv->color);
-	visual_param_container_add (paramcontainer, param);
+	vbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_VERTICAL);
+	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 
-	/* Light size */
-	param = visual_param_entry_new ("light size");
-	visual_param_entry_set_integer (param, priv->phongres);
-	visual_param_container_add (paramcontainer, param);
+	label1 = visual_ui_label_new ("Light size:", FALSE);
 
-	/* Color cycle */
-	param = visual_param_entry_new ("color cycle");
-	visual_param_entry_set_integer (param, priv->color_cycle);
-	visual_param_container_add (paramcontainer, param);
+	color = visual_ui_color_new ();
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (color), visual_param_container_get (paramcontainer, "color"));
 
-	/* Moving light */
-	param = visual_param_entry_new ("moving light");
-	visual_param_entry_set_integer (param, priv->moving_light);
-	visual_param_container_add (paramcontainer, param);
+	separator = visual_ui_separator_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 
-	/* Diamond or circle */
-	param = visual_param_entry_new ("diamond");
-	visual_param_entry_set_integer (param, priv->diamond);
-	visual_param_container_add (paramcontainer, param);
+	numeric = visual_ui_numeric_new ();	
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric), visual_param_container_get (paramcontainer, "light size"));
+	visual_ui_range_set_min (VISUAL_UI_RANGE (numeric), 8);
+	visual_ui_range_set_max (VISUAL_UI_RANGE (numeric), 512);
+	visual_ui_range_set_step (VISUAL_UI_RANGE (numeric), 2);
+	visual_ui_range_set_precision (VISUAL_UI_RANGE (numeric), 0);
+
+	slider = visual_ui_slider_new (FALSE);
+	visual_ui_widget_set_size_request (slider, 200, -1);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider), visual_param_container_get (paramcontainer, "light size"));
+	visual_ui_range_set_min (VISUAL_UI_RANGE (slider), 8);
+	visual_ui_range_set_max (VISUAL_UI_RANGE (slider), 512);
+	visual_ui_range_set_step (VISUAL_UI_RANGE (slider), 2);
+	visual_ui_range_set_precision (VISUAL_UI_RANGE (slider), 0);
+
+	check1 = visual_ui_checkbox_new ("Cycling colors", TRUE);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check1), visual_param_container_get (paramcontainer, "color cycle"));
+	
+	check2 = visual_ui_checkbox_new ("Moving light", TRUE);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check2), visual_param_container_get (paramcontainer, "moving light"));
+
+	check3 = visual_ui_checkbox_new ("Diamond", TRUE);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check3), visual_param_container_get (paramcontainer, "diamond"));
+
+	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label1);
+	visual_ui_box_pack (VISUAL_UI_BOX (hbox), slider);
+	visual_ui_box_pack (VISUAL_UI_BOX (hbox), numeric);
+
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), color);
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), separator);
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox);
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), check1);
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), check2);
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), check3);
+
+	visual_plugin_set_userinterface (plugin, vbox);
 
 	return 0;
 }
@@ -104,7 +139,11 @@ int act_bumpscope_init (VisPluginData *plugin)
 int act_bumpscope_cleanup (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv = plugin->priv;
-	
+        VisUIWidget *ui;
+
+	ui = visual_plugin_get_userinterface (plugin);
+	visual_ui_widget_destroy (ui);
+
 	__bumpscope_cleanup (priv);
 
 	visual_palette_free_colors (&priv->pal);
@@ -181,6 +220,8 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.param.param;
 
+				printf ("YAYA PARAM HIT: %s %d\n", param->name, param->numeric.integer);
+
 				if (visual_param_entry_is (param, "color")) {
 					tmp = visual_param_entry_get_color (param);
 					visual_color_copy (&priv->color, tmp);
@@ -189,7 +230,9 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 				} else if (visual_param_entry_is (param, "light size")) {
 					priv->phongres = visual_param_entry_get_integer (param);
 
-					__bumpscope_generate_phongdat (priv);	
+					__bumpscope_cleanup (priv);
+					__bumpscope_init (priv);
+					
 				} else if (visual_param_entry_is (param, "color cycle")) {
 					priv->color_cycle = visual_param_entry_get_integer (param);
 					
@@ -228,6 +271,19 @@ int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	__bumpscope_render_pcm (priv, audio->pcm);
 
 	memcpy (video->pixels, priv->rgb_buf2, video->size);
+
+	priv->colorupdate++;
+
+	/* Let's not overload the color selector */
+	if (priv->colorupdate > 150)
+		priv->colorupdate = 0;
+
+	if (priv->colorchanged == TRUE && priv->colorupdate == 0) {
+		/* I couldn't hold myself */
+		visual_param_entry_set_color_by_color (
+			visual_param_container_get (
+				visual_plugin_get_params (plugin), "color"), &priv->color);
+	}
 
 	return 0;
 }

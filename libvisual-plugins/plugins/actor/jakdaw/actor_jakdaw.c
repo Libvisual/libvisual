@@ -104,17 +104,14 @@ int act_jakdaw_init (VisPluginData *plugin)
 
 	priv->decay_rate = 1;
 	
-	priv->zoom_mode = FEEDBACK_ZOOMRIPPLE;
 	priv->zoom_ripplesize = 32;
 	priv->zoom_ripplefact = 0.1;
 	priv->zoom_zoomfact = 0.9;
 
 	priv->plotter_amplitude = 100;
-	priv->plotter_colortype = PLOTTER_COLOUR_MUSICTRIG;
 
 	/* FIXME make param of this one as well */
 	priv->plotter_scopecolor = 0xff00ff;
-	priv->plotter_scopetype = PLOTTER_SCOPE_LINES;
 
 	visual_param_container_add_many (paramcontainer, params);
 

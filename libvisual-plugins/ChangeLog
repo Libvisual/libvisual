@@ -1,3 +1,9 @@
+2004-10-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/jakdaw/*: More work on VisUI.
+
+	* plugins/actor/bumpscope/*: Added VisUI config dialog.
+
 2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/jakdaw/*: Added VisUI config dialog.

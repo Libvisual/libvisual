@@ -196,6 +196,13 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 		was_color = 0;
 	}
 
+	if (visual_color_compare (&priv->old_color, &priv->color) == FALSE)
+		priv->colorchanged = TRUE;
+	else
+		priv->colorchanged = FALSE;
+
+	visual_color_copy (&priv->old_color, &priv->color);
+
 	bumpscope_render_light (priv, lx, ly);
 }
 

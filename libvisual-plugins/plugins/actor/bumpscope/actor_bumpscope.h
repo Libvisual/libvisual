@@ -24,8 +24,12 @@ typedef struct {
 	float			 s;
 	float			 v;
 
+	int			 colorchanged;
+	int			 colorupdate;
+	
 	/* Configs */
 	VisColor		 color;
+	VisColor		 old_color;
 	int			 color_cycle;
 	int			 moving_light;
 	int			 diamond;
