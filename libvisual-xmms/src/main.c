@@ -540,7 +540,7 @@ static int sdl_event_handle ()
 
 						if (next_plugin == NULL) {
 							if (options->disable_opengl_plugins)
-								next_plugin = visual_actor_get_next_by_name_nogl (NULL);
+								next_plugin = visual_actor_get_prev_by_name_nogl (NULL);
 							else
 								next_plugin = visual_actor_get_prev_by_name (NULL);
 
