@@ -259,12 +259,10 @@ int main (int argc, char *argv[])
 
 //		visual_video_alpha_fill (sdlvid, 0);
 		
-		visual_video_alpha_fill (video32, alpha);
-//		visual_video_alpha_color (video32, 0, 0, 0, 255);
-	
-		visual_video_scale (scalevid, video32, interpol);
+//		visual_video_alpha_fill (video32, alpha);
+		visual_video_alpha_color (video32, 255, 0, 255, 255);
 
-		
+		visual_video_scale (scalevid, video32, interpol);
 		
 		visual_video_blit_overlay (sdlvid, actvid, 0, 0, FALSE);
 		visual_video_blit_overlay (sdlvid, scalevid, xoff, yoff, TRUE);
