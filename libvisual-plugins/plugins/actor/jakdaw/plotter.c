@@ -65,8 +65,11 @@ void _jakdaw_plotter_reset(JakdawPrivate *priv, int x, int y)
 
 void _jakdaw_plotter_close(JakdawPrivate *priv)
 {
-	visual_mem_free(priv->xlat_table);
-	visual_mem_free(priv->amplitude_table);
+	if (priv->xlat_table != NULL)
+		visual_mem_free(priv->xlat_table);
+
+	if (priv->amplitude_table != NULL)
+		visual_mem_free(priv->amplitude_table);
 }
 
 void _jakdaw_plotter_draw(JakdawPrivate *priv, int16_t pcm_data[3][512], int16_t freq_data[3][256], uint32_t *vscr)

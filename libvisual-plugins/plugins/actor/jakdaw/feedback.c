@@ -70,8 +70,11 @@ void _jakdaw_feedback_reset(JakdawPrivate *priv, int x, int y)
 
 void _jakdaw_feedback_close(JakdawPrivate *priv)
 {
-	visual_mem_free (priv->new_image);
-	visual_mem_free (priv->table);
+	if (priv->new_image != NULL)
+		visual_mem_free (priv->new_image);
+
+	if (priv->table != NULL)
+		visual_mem_free (priv->table);
 }
 
 void _jakdaw_feedback_render(JakdawPrivate *priv, uint32_t *vscr)

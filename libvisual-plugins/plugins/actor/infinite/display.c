@@ -198,8 +198,12 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect,short data[2]
 	const int shift=(current_effect->spectral_shift*priv->plugheight)>>8;
 
 	if (cosw.i != priv->plugwidth || sinw.i != priv->plugwidth) {
-		visual_mem_free(cosw.f);
-		visual_mem_free(sinw.f);
+		if (cosw.f != NULL)
+			visual_mem_free(cosw.f);
+
+		if (sinw.f != NULL)
+			visual_mem_free(sinw.f);
+
 		sinw.f = cosw.f = NULL;
 		sinw.i = cosw.i = 0;
 	}
