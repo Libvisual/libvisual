@@ -98,6 +98,7 @@ int visual_palette_free_colors (VisPalette *pal)
 		visual_mem_free (pal->colors);
 	
 	pal->colors = NULL;
+	pal->ncolors = 0;
 
 	return VISUAL_OK;
 }

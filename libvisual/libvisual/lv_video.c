@@ -24,7 +24,6 @@
 // Use in fixed point scaler, however it crashes right now! 
 #define FP_HALF(f)			((fixed32_t) (f) << (FP_FRACTIONAL_SIZE_LOG2-1))
 #define FP_ROUND_TO_INT(f)		FP_TO_INT((f)+FP_HALF(f))
-	
 
 typedef uint32_t fixed32_t;
 

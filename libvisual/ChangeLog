@@ -1,3 +1,8 @@
+2004-12-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_palette.c (visual_palette_free_colors):
+	After colors are freed set ncolors to 0.
+
 2004-12-02  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_songinfo.c (visual_songinfo_copy): Ooops
