@@ -267,7 +267,7 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
  * Sets a screenbuffer to a VisVideo. Links a sreenbuffer to the
  * VisVideo.
  *
- * @warning The given @ video must be one previously created with visual_video_new(),
+ * @warning The given @a video must be one previously created with visual_video_new(),
  * and not with visual_video_new_with_buffer().
  *
  * @param video Pointer to a VisVideo to which a screenbuffer needs to be linked.
@@ -281,7 +281,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 
 	if (HAVE_ALLOCATED_BUFFER(video)) {
 		visual_log (VISUAL_LOG_CRITICAL, "Trying to set a screen buffer on "
-				"a VisVideo structure which points to an external screen buffer");
+				"a VisVideo structure which points to an allocated screen buffer");
 		return -1;
 	}
 

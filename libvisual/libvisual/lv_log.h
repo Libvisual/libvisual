@@ -29,36 +29,15 @@ typedef enum {
 				 * After message showing, the program is aborted. */
 } VisLogSeverity;
 
-/*#ifdef __GNUC__*/
 /**
  * Used for log messages, this is brought under a define so
- * that the __FILE__ and __LINE__ macros work, and thus provide
- * better information.
+ * that the __FILE__ and __LINE__ macros (and probably __PRETTY_FUNC__) work,
+ * and thus provide better information.
  *
  * @see VisLogSeverity
  *
  * @param severity Determines the severity of the message using VisLogSeverity.
- * @param message The log message itself.
- */
-/*#define visual_log(severity, message)		\
-	_lv_log (severity,			\
-	"%s:%d, %s (): %s",			\
-	__FILE__,				\
-	__LINE__,				\
-	__PRETTY_FUNCTION__,			\
-	message)
-
-#else*/ /* not __GNUC__ */
-
-/**
- * Used for log messages, this is brought under a define so
- * that the __FILE__ and __LINE__ macros work, and thus provide
- * better information.
- *
- * @see VisLogSeverity
- *
- * @param severity Determines the severity of the message using VisLogSeverity.
- * @param message The log message itself.
+ * @param format The format string of the log message.
  */
 #ifdef __GNUC__
 
@@ -187,7 +166,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 #endif /* !__GNUC__ */
 
 /**
- * Return if \a expr is FALSE, showing a critical message with
+ * Return if @a expr is FALSE, showing a critical message with
  * useful information.
  */
 #define visual_log_return_if_fail(expr)				\
@@ -199,6 +178,10 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	return;							\
 	}
 
+/**
+ * Return if @a val if @a expr is FALSE, showing a critical message
+ * with useful information.
+ */
 #define visual_log_return_val_if_fail(expr, val)		\
 	if (expr) { } else					\
 	{							\
@@ -208,8 +191,14 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	return (val);						\
 	}
 
+#if defined __GNUC__
 void _lv_log (VisLogSeverity severity, const char *file,
-			int line, const char *funcname, const char *fmt, ...);
+		int line, const char *funcname, const char *fmt, ...)
+			__attribute__ ((__format__ (__printf__, 5, 6)));
+#else
+void _lv_log (VisLogSeverity severity, const char *file,
+		int line, const char *funcname, const char *fmt, ...);
+#endif
 
 #ifdef __cplusplus
 }
