@@ -1,0 +1,26 @@
+LEGAL:
+	check copyrights add copyright notices to all the files. 
+
+Plugin:
+	Rewrite complete plugin after the managed bin has been rewritten.
+
+
+	startup with opengl bugs (also with forced resos paktie niet de goede)
+	fix opengl support with the new morph stuff.
+	fix songinfo with the new morph stuff.
+
+	resolution/depth change, also check what sdl supports
+
+	When opengl is not found, disable opengl support and set this in the plugin (post 0.1)
+	Good fullscreen support	(post 0.1)
+	gtkclist with plugins to select out
+	Cap FPS (post 0.1)
+	extensive error checking.
+	disable plugin hooks (crashes, no idea why)
+	remember place of the plugin window
+	set elapsed time and such for the songinfo type
+
+	deactivate xscreensaver:
+		system ("xscreensaver-command -deactivate >&- 2>&- &");
+	deactivate dpms and xblank (look at mplayer)
+
