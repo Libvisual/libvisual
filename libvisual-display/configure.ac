@@ -119,37 +119,49 @@ AC_SUBST(LIBVISUAL_PLUGINS_BASE_DIR)
 
 # Checks for header files.
 AC_PATH_X
-LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
-CPPFLAGS="$CPPFLAGS -I$x_includes"
 
-AC_CHECK_HEADERS([\
-    X11/keysym.h	\
-    X11/X.h	\
-    X11/Xlib.h	\
-    X11/Xutil.h], ,[
-        AC_MSG_ERROR([*** some X11 headers are not found - please check X11 installation ***])
-])
+if test x$have_x = xyes ; then
 
+    LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
+    CPPFLAGS="$CPPFLAGS -I$x_includes"
 
-AC_CHECK_HEADERS([\
+    AC_CHECK_HEADERS([\
+	X11/keysym.h	\
+	X11/X.h	\
+	X11/Xlib.h	\
+	X11/Xutil.h], [], [
+	    AC_MSG_ERROR([Required X11 headers not found.])
+	])
+
+    AC_CHECK_HEADERS([\
 	GL/gl.h \
-	GL/glx.h], ,[
-        AC_MSG_ERROR([*** GL or GLX header not found - please install GL first ***])
-])
+	GL/glx.h], [have_gl_headers=yes], [have_gl_headers=no])
 
-XF86VM_LIB=
-AC_CHECK_HEADERS([\
-    X11/extensions/xf86vmode.h], [
-	AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], [
-	    AC_DEFINE(HAVE_XF86VMODE, [], [XF86VidMode is available])
-	    XF86VM_LIB=-lXxf86vm
-	    xf86vm=yes
-	], [xf86vm=no]) ], [],
-	[[#include <X11/Xlib.h>
-	]])
+    if test x$have_gl_headers = xyes ; then
+	AC_CHECK_LIB([GL], [glBegin], [have_lib_gl=yes], [have_lib_gl=no])
+    else
+	have_lib_gl=no
+    fi
 
-AC_SUBST(XF86VM_LIB)
-AM_CONDITIONAL(HAVE_XF86VMODE,  test x$xf86vm = xyes)
+    AM_CONDITIONAL(HAVE_LIB_GL,  test x$have_lib_gl = xyes)
+
+    XF86VM_LIB=
+    AC_CHECK_HEADERS([\
+	X11/extensions/xf86vmode.h], [
+	    AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], [
+		AC_DEFINE(HAVE_XF86VMODE, [], [XF86VidMode is available])
+		XF86VM_LIB=-lXxf86vm
+		xf86vm=yes
+	    ], [xf86vm=no]) ], [],
+	    [[#include <X11/Xlib.h>
+	    ]])
+
+    AC_SUBST(XF86VM_LIB)
+    AM_CONDITIONAL(HAVE_XF86VMODE,  test x$xf86vm = xyes)
+
+fi
+
+AM_CONDITIONAL(HAVE_X,  test x$have_x = xyes)
 
 AC_HEADER_DIRENT
 AC_HEADER_STDC

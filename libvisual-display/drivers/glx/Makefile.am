@@ -9,6 +9,6 @@ AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_srcdir)/lvdisplay
 
-glx_la_LDFLAGS = -module -avoid-version
+glx_la_LDFLAGS = -module -avoid-version -lGL
 
 glx_la_SOURCES = glx.c

@@ -13,9 +13,9 @@ AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
-x11_la_LDFLAGS = -module -avoid-version
-x11_new_la_LDFLAGS = -module -avoid-version
-x11_fullscreen_la_LDFLAGS = -module -avoid-version @XF86VM_LIB@
+x11_la_LDFLAGS = -module -avoid-version -lX11
+x11_new_la_LDFLAGS = -module -avoid-version -lX11
+x11_fullscreen_la_LDFLAGS = -module -avoid-version -lX11 @XF86VM_LIB@
 
 x11_la_SOURCES = x11.c
 x11_new_la_SOURCES = x11_new.c
