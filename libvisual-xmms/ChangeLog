@@ -1,3 +1,9 @@
+2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/main.c (lv_xmms_init):
+	Set the WM caption after checking for plugin
+	existance.
+
 2004-09-27  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/lv_xmms_config.c: morph plugin frame done.

@@ -133,7 +133,6 @@ static void lv_xmms_init ()
 		g_free (msg);
 		return;
 	}
-	SDL_WM_SetCaption (options->last_plugin, options->last_plugin);
 
 	if (strlen(options->icon_file) > 0) {
 		icon = SDL_LoadBMP (options->icon_file);
@@ -167,6 +166,8 @@ static void lv_xmms_init ()
 	if (visual_actor_valid_by_name (cur_lv_plugin) != TRUE)
 		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
 
+	SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
+	
 	if (cur_lv_plugin == NULL) {
 		visual_log (VISUAL_LOG_INFO, "could not get actor plugin");
 		g_free (options->last_plugin);
