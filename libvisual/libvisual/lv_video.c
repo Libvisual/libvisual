@@ -147,7 +147,8 @@ int visual_video_free (VisVideo *video)
 		return -VISUAL_ERROR_VIDEO_HAS_ALLOCATED;
 	}
 
-	visual_mem_free(video->pixel_rows);
+	if (video->pixel_rows != NULL)
+		visual_mem_free (video->pixel_rows);
 	
 	return visual_mem_free (video);
 }
@@ -261,7 +262,7 @@ static void precompute_row_table (VisVideo *video)
 	void **table, *row;
 	int y;
 
-	visual_log_return_if_fail(video->pixel_rows != NULL);
+	visual_log_return_if_fail (video->pixel_rows != NULL);
 	
 	table = video->pixel_rows;
 	
@@ -364,6 +365,9 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 	}
 
 	video->pixels = buffer;
+
+	if (video->pixel_rows != NULL)
+		visual_mem_free (video->pixel_rows);
 
 	video->pixel_rows = visual_mem_new0 (void *, video->height);
 	precompute_row_table (video);

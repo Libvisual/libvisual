@@ -67,7 +67,7 @@ struct _VisVideo {
 	int		 pitch;		/**< Surface it's pitch value. Value contains
 					  * the number of bytes per line. */
 	void		*pixels;	/**< Pointer to the pixels. */
-	void		**pixel_rows;	/**< Pixel row start pointer table */
+	void		**pixel_rows;	/**< Pixel row start pointer table. */
 	VisPalette	*pal;		/**< Optional pointer to the palette. */
 
 	VisVideoFlags	flags;		/**< Private field */

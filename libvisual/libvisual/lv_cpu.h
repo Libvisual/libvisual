@@ -2,6 +2,7 @@
 #define _LV_CPU_H
 
 #include <libvisual/lvconfig.h>
+#include <libvisual/lv_common.h>
 
 #ifdef __cplusplus
 extern "C" {

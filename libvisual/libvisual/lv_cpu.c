@@ -23,6 +23,8 @@ enum {
 	CPU_FLAGS_EXT_3DNOW	= 1 << 31
 };
 
+uint32_t cpuid (uint32_t type);
+
 uint32_t cpuid (uint32_t type)
 {
 	uint32_t flags;
@@ -51,13 +53,13 @@ void visual_cpu_initialize ()
 	cpu_flags = cpuid(1);
 
 	if (cpu_flags & CPU_FLAGS_MMX)
-		cpu_info.flags != VISUAL_CPU_FLAG_MMX;
+		cpu_info.flags |= VISUAL_CPU_FLAG_MMX;
 
 	if (cpu_flags & CPU_FLAGS_SSE)
-		cpu_info.flags != VISUAL_CPU_FLAG_SSE;
+		cpu_info.flags |= VISUAL_CPU_FLAG_SSE;
 
 	if (cpu_flags & CPU_FLAGS_SSE2)
-		cpu_info.flags != VISUAL_CPU_FLAG_SSE2;
+		cpu_info.flags |= VISUAL_CPU_FLAG_SSE2;
 
 	cpu_initialized = TRUE;
 }
@@ -76,10 +78,12 @@ VisCPU *visual_cpu_get_info ()
 int visual_cpu_feature_disable (int flag)
 {
 
+	return VISUAL_OK;
 }
 
 int visual_cpu_feature_enable (int flag)
 {
-
+	
+	return VISUAL_OK;
 }
 
