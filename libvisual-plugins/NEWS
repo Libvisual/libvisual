@@ -3,7 +3,7 @@ of Libvisual plugins.
 
 These are only visible changes, for more details look at the ChangeLog.
 
-New in 0.1.7: 2004-..-..:
+New in 0.1.7: 2004-10-14:
 * Updates to API changes.
 * All plugins use the VisRandom stuff for randomizing.
 * New slide morph plugin.
