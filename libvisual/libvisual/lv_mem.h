@@ -7,11 +7,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#if defined(__GNUC__) && !defined(VISUAL_OS_WIN32)
+#ifndef __attribute_malloc__
+#define __attribute_malloc__
+#endif
+	
 void *visual_mem_malloc0 (visual_size_t nbytes) __attribute_malloc__;
-#else
-void *visual_mem_malloc0 (visual_size_t nbytes);
-#endif /* __GNUC__ */
 
 int visual_mem_free (void *ptr);
 

@@ -1,5 +1,13 @@
 2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_types.h: Check if uint*_t's are already
+	defined.
+
+	* libvisual/lv_mem.h: Fix __attribute_malloc__ on different
+	systems.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_error.h, libvisual/lv_video.c: More docs,
 	and more VisError.
 
