@@ -284,7 +284,7 @@ static int madspin_load_textures (MadspinPrivate *priv)
 	glTexImage2D (GL_TEXTURE_2D, 0, 3, textureimage->width, textureimage->height, 0,
 			GL_RGB, GL_UNSIGNED_BYTE, textureimage->pixels);
 
-	visual_video_free_with_buffer (textureimage);
+	visual_object_unref (VISUAL_OBJECT (textureimage));
 
 	textureimage = visual_bitmap_load_new_video (STAR_DIR "star2.bmp");
 	glBindTexture (GL_TEXTURE_2D, priv->texture[1]);
@@ -293,7 +293,7 @@ static int madspin_load_textures (MadspinPrivate *priv)
 	glTexImage2D (GL_TEXTURE_2D, 0, 3, textureimage->width, textureimage->height, 0,
 			GL_RGB, GL_UNSIGNED_BYTE, textureimage->pixels);
 
-	visual_video_free_with_buffer (textureimage);
+	visual_object_unref (VISUAL_OBJECT (textureimage));
 
 	return 0;
 }
