@@ -1,3 +1,9 @@
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/lvavs_preset.c, src/lvavs_preset.h,
+	src/lvavs_pipeline.c, src?lvavs_preset.h: The 1k code spray, I haven't
+	yet compiled this :).
+
 2005-01-20  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* *: Adding a whole load of files here.

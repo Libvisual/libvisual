@@ -18,5 +18,9 @@ actor_AVS_la_SOURCES = actor_AVS.c \
 		       avs_parse.c \
 		       avs_parse.h \
 		       avs_serialize.c \
-		       avs_serialize.h
+		       avs_serialize.h \
+		       lvavs_preset.c \
+		       lvavs_preset.h \
+		       lvavs_pipeline.c \
+		       lvavs_pipeline.h
 

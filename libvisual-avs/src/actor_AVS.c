@@ -30,6 +30,11 @@
 #include "avs_parse.h"
 
 typedef struct {
+	AVSTree		*wtree;		/* The winamp AVS tree */
+	int		 wavs;		/* TRUE if winamp AVS, FALSE if native libvisual AVS */
+
+	LVAVSPreset	*lvtree;	/* The LV AVS tree */
+	LVAVSPipeline	*pipeline;	/* The LV AVS Render pipeline */
 } AVSPrivate;
 
 int act_avs_init (VisPluginData *plugin);
@@ -86,6 +91,15 @@ int act_avs_init (VisPluginData *plugin)
 int act_avs_cleanup (VisPluginData *plugin)
 {
 	AVSPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+
+	static const VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
+		VISUAL_PARAM_LIST_END
+	};
+
+	visual_param_container_add_many (paramcontainer, params);
 
 	visual_mem_free (priv);
 
@@ -123,6 +137,8 @@ int act_avs_dimension (VisPluginData *plugin, VisVideo *video, int width, int he
 	
 	visual_video_set_dimension (video, width, height);
 
+	lvavs_pipeline_negotiate (priv->avs_pipeline, video);
+
 	return 0;
 }
 
@@ -137,6 +153,62 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_RESIZE:
 				act_avs_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
+
+				break;
+
+			case VISUAL_EVENT_PARAM:
+				param = ev.param.param;
+
+				if (visual_param_entry_is (param, "filename")) {
+					char *filename = visual_param_entry_get_string (param);
+					
+					if (priv->wtree != NULL)
+						visual_object_unref (VISUAL_OBJECT (priv->wtree));
+
+					if (priv->lvtree != NULL)
+						visual_object_unref (VISUAL_OBJECT (priv->lvtree));
+
+					if (priv->avs_pipeline != NULL)
+						visual_object_unref (VISUAL_OBJECT (priv->avs_pipeline));
+
+					priv->wtree = NULL;
+					
+					if (filename != NULL) {
+						if (priv->wavs == TRUE) {
+							priv->wtree = avs_tree_new_from_preset (filename);
+							priv->lvtree = lvavs_preset_new_from_wavs (priv->wtree);
+						} else {
+							priv->lvtree = lvavs_preset_new_from_preset (filename);
+						}
+					} else {
+						LVAVSPreset *preset;
+						preset = lvavs_preset_new ();
+						preset->main = lvavs_preset_container_new ();
+
+						visual_list_add (preset->main->members,
+								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
+									"oinksie"));
+
+						priv->lvtree = preset;
+					}
+
+					/* Neat, now make the render pipeline */
+					priv->avs_pipeline = lvavs_pipeline_new_from_preset (priv->lvtree);
+
+					lvavs_pipeline_realize (priv->avs_pipeline);
+
+					/* Negotiate complete pipeline for current size */
+				}
+
+				break;
+
+			case VISUAL_EVENT_PARAM:
+				param = ev.param.param;
+
+				if (visual_param_entry_is (param, "winamp avs")) {
+					priv->wavs = visual_param_entry_get_integer (param);
+						
+				}
 
 				break;
 
@@ -156,7 +228,9 @@ VisPalette *act_avs_palette (VisPluginData *plugin)
 int act_avs_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	AVSPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	
+
+	lvavs_pipeline_run (priv->avs_pipeline, video, audio);
+
 	return 0;
 }
 

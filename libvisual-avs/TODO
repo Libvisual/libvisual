@@ -12,6 +12,10 @@ General TODO:
 	AVSActor, using the VisAVSTree. (basically a dynamic libvisual pipeline creater)
 	All the standard AVS elements. (Depends on: VisScript)
 
+Details TODO:
+	prefix winamp avs_blah preset loader with wavs_
+	Merge LVAVSPipeline partially into Libvisual, for purely it's pipeline pieces, see how we can do this best.
+
 
 __
 Listed here are all the standard AVS elements, these are the first to be implemented.
