@@ -44,8 +44,8 @@ VisList *visual_list_new (void);
 int visual_list_free (VisList *list);
 int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer);
 
-inline void *visual_list_next(VisList *list, VisListEntry **le);
-inline void *visual_list_prev(VisList *list, VisListEntry **le);
+void *visual_list_next (VisList *list, VisListEntry **le);
+void *visual_list_prev (VisList *list, VisListEntry **le);
 
 void *visual_list_get (VisList *list, int index);
 

@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.10 2004-08-25 11:23:11 synap Exp $
+ *	$Id: lv_list.c,v 1.11 2004-09-27 16:16:14 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
  *
  * @return The data element of the next entry, or NULL.
  */
-inline void *visual_list_next(VisList *list, VisListEntry **le)
+void *visual_list_next (VisList *list, VisListEntry **le)
 {
 	visual_log_return_val_if_fail (list != NULL, NULL);
 	visual_log_return_val_if_fail (le != NULL, NULL);
@@ -154,7 +154,7 @@ inline void *visual_list_next(VisList *list, VisListEntry **le)
  *
  * @return The data element of the previous entry, or NULL.
  */
-inline void *visual_list_prev(VisList *list, VisListEntry **le)
+void *visual_list_prev (VisList *list, VisListEntry **le)
 {
 	visual_log_return_val_if_fail (list != NULL, NULL);
 	visual_log_return_val_if_fail (le != NULL, NULL);
@@ -187,7 +187,7 @@ void *visual_list_get (VisList *list, int index)
 	int i, lc;
 
 	visual_log_return_val_if_fail (list != NULL, NULL);
-	visual_log_return_val_if_fail (index > 0, NULL);
+	visual_log_return_val_if_fail (index >= 0, NULL);
 
 	lc = visual_list_count (list);
 
