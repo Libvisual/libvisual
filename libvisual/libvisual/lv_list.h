@@ -36,7 +36,6 @@ struct _VisList {
 	int			count;	/**< Number of entries that are in the list. */
 };
 
-typedef int (*visual_list_sort_func_t)(void*); /* FIXME this is the prototype we want? */
 typedef void (*visual_list_destroy_func_t)(void*);
 
 /* prototypes */
