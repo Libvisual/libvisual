@@ -50,7 +50,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	static const VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
-		.type = VISUAL_PLUGIN_TYPE_DISPLAY_CLASS,
+		.type = VISUAL_PLUGIN_TYPE_DISPLAY_BACKEND,
 
 		.plugname = "null",
 		.name = "null",
@@ -68,7 +68,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}, {
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
-		.type = VISUAL_PLUGIN_TYPE_DISPLAY_TYPE,
+		.type = VISUAL_PLUGIN_TYPE_DISPLAY_FRONTEND,
 
 		.plugname = "null",
 		.name = "null",

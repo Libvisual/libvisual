@@ -40,6 +40,7 @@ static int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
 static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video);
 static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
+static void context_deactivate(VisPluginData *plugin, LvdDContext *ctx);
 static void draw(VisPluginData *plugin);
 
 
@@ -53,6 +54,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.context_create = context_create,
 		.context_delete = context_delete,
 		.context_activate = context_activate,
+		.context_deactivate = context_deactivate,
 
 		.draw = draw,
 	}};
@@ -60,7 +62,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	static const VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
-		.type = VISUAL_PLUGIN_TYPE_DISPLAY_CLASS,
+		.type = VISUAL_PLUGIN_TYPE_DISPLAY_BACKEND,
 
 		.plugname = "glx",
 		.name = "glx",
@@ -95,7 +97,6 @@ int plugin_init (VisPluginData *plugin)
 
 	plugin->priv = priv;
 
-
 	return 0;
 }
 
@@ -103,13 +104,15 @@ int plugin_cleanup (VisPluginData *plugin)
 {
 	privdata *priv = plugin->priv;
 
+	glXMakeContextCurrent(priv->dpy, None, None, NULL);
+
 	if (priv->glxw)
 		glXDestroyWindow(priv->dpy, priv->glxw);
 
 	if (priv->fbconfs)
 		XFree(priv->fbconfs);
 
-	free(priv);
+	visual_mem_free(priv);
 
 	return 0;
 }
@@ -233,7 +236,10 @@ int init_glx13(privdata *priv, int *params, int params_cnt)
 int hndevents(VisPluginData *plugin, VisEventQueue *eventqueue)
 {
 	privdata *priv = plugin->priv;
-	// XXX check if there is active context
+
+	if (priv->active_ctx == NULL){
+		return 0;
+	}
 
 	if (eventqueue->resizenew &&
 		(priv->active_ctx->video->depth != VISUAL_VIDEO_DEPTH_GL)){
@@ -251,10 +257,9 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
 	glx_context *c;
 	privdata *priv = plugin->priv;
 
-	c = malloc(sizeof(glx_context));
+	c = visual_mem_new0(glx_context, 1);
 	if (c == NULL)
 		return NULL;
-	memset(c, 0, sizeof(glx_context));
 
 	c->glxctx = glXCreateNewContext(XDPY, priv->fbconf,
 		GLX_RGBA_TYPE, NULL, True);
@@ -262,7 +267,7 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
 	c->video = video;
 
 	if (!c->glxctx){
-		free(c);
+		visual_mem_free(c);
 		return NULL;
 	}
 
@@ -275,10 +280,29 @@ void context_delete(VisPluginData *plugin, LvdDContext *ctx)
 	glx_context *c = (glx_context*)ctx;
 	assert(c);
 
-	glXDestroyContext(XDPY, c->glxctx);
+	if (c == priv->active_ctx){
+		priv->active_ctx = NULL;
+	}
 
-	free(c);
+	glXMakeContextCurrent(XDPY, None, None, NULL);
+
+	glXDestroyContext(XDPY, c->glxctx);
+	c->glxctx = NULL;
+
+	visual_mem_free(c);
 }
+
+void context_deactivate(VisPluginData *plugin, LvdDContext *ctx)
+{
+	privdata *priv = plugin->priv;
+	glx_context *c = (glx_context*)ctx;
+	assert(c);
+
+	priv->active_ctx = NULL;
+
+	glXMakeContextCurrent(XDPY, None, None, NULL);
+}
+
 
 void context_activate(VisPluginData *plugin, LvdDContext *ctx)
 {
@@ -286,15 +310,24 @@ void context_activate(VisPluginData *plugin, LvdDContext *ctx)
 	glx_context *c = (glx_context*)ctx;
 	assert(c);
 
-	priv->active_ctx = c;
+//	if (priv->active_ctx != c){
+		priv->active_ctx = c;
 
-	glXMakeContextCurrent(XDPY, XGLXW, XGLXW, c->glxctx);
+		glXMakeContextCurrent(XDPY, XGLXW, XGLXW, c->glxctx);
+//	}
+}
+
+LvdDContext *context_get_active(VisPluginData *plugin)
+{
+	privdata *priv = plugin->priv;
+
+	return (LvdDContext *)priv->active_ctx;
 }
 
 void draw(VisPluginData *plugin)
 {
 	privdata *priv = plugin->priv;
-	
+
 	if ((priv->active_ctx->video->depth != VISUAL_VIDEO_DEPTH_GL) &&
 		(priv->active_ctx->video->pixels)){
 
@@ -323,6 +356,6 @@ void draw(VisPluginData *plugin)
 		glDrawPixels(priv->active_ctx->video->width, priv->active_ctx->video->height,
 			format, type, priv->active_ctx->video->pixels);
 	}
-	
+
 	glXSwapBuffers(XDPY, XGLXW);
 }

@@ -1,3 +1,10 @@
+2004-11-21  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+	* lvdisplay/lvdisplay.c lvdisplay/lvdisplay.h: first rewrite :)
+	minor changes.
+	* example/main.c: dual-window support. (WARN: exploits some memory bugs)
+	* drivers/null/null.c: updated.
+	* drivers/glx/glx.c drivers/glx/glx_new.c: updated, resize/pitch fixes.
+
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* lvdisplay/lvdisplay.c: Adapt to API changes.

@@ -3,8 +3,8 @@
 
 #include <libvisual/libvisual.h>
 
-#define VISUAL_PLUGIN_TYPE_DISPLAY_CLASS 100000
-#define VISUAL_PLUGIN_TYPE_DISPLAY_TYPE 100001
+#define VISUAL_PLUGIN_TYPE_DISPLAY_BACKEND  (100000)
+#define VISUAL_PLUGIN_TYPE_DISPLAY_FRONTEND (100001)
 
 typedef enum {
 	LVD_NONE = 0,
@@ -49,7 +49,10 @@ struct _LvdDriver {
 	int params_cnt;
 	int *params;
 
-	VisPluginData *pclass, *ptype;
+	VisPluginData *beplug, *feplug;
+	LvdBackendDescription *be;
+	LvdFrontendDescription *fe;
+
 	VisVideo *video;
 	int prepared;
 
@@ -57,8 +60,12 @@ struct _LvdDriver {
 };
 
 struct _Lvd {
-	LvdDriver         *drv;
-	LvdDContext       *ctx;
+	LvdDriver *drv;
+	VisPluginData *beplug, *feplug; /* copies of drv's */
+	LvdBackendDescription *be;
+	LvdFrontendDescription *fe;
+
+	LvdDContext *ctx;
 
 	VisBin *bin;
 };
@@ -73,6 +80,8 @@ struct _LvdBackendDescription {
 	LvdDContext *(*context_create)(VisPluginData*, VisVideo*);
 	void (*context_delete)(VisPluginData*, LvdDContext*);
 	void (*context_activate)(VisPluginData*, LvdDContext*);
+	void (*context_deactivate)(VisPluginData*, LvdDContext*);
+	LvdDContext *(*context_get_active)(VisPluginData*);
 
 	void (*draw)(VisPluginData*);
 

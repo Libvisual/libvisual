@@ -10,11 +10,12 @@
 #define NULL_OUTPUT 0
 
 static char actorname[100] = "oinksie";
+static char actorname2[100] = "lv_gltest";
 
 int main(int argc, char **argv)
 {
-	LvdDriver *drv;
-	Lvd *v;
+	LvdDriver *drv, *drv2;
+	Lvd *v, *v2;
 	VisEvent event;
 	int quit_flag = 0;
 
@@ -47,30 +48,40 @@ int main(int argc, char **argv)
 	drv = lvdisplay_driver_create ("null", "null");
 #else
 	drv = lvdisplay_driver_create ("glx", "glx_new");
+	drv2 = lvdisplay_driver_create ("glx", "glx_new");
 #endif
 
-	if (drv == NULL){
+	if ((drv == NULL) || (drv2 == NULL)){
 		fprintf (stderr, "failed to load driver\n");
 		exit (1);
 	}
 
 	v = lvdisplay_initialize(drv);
-	if (v == NULL){
+	v2 = lvdisplay_initialize(drv2);
+	if ((v == NULL) || (v2 == NULL)){
 		fprintf (stderr, "failed to initialize vo\n");
 		exit (1);
 	}
 
-	if (argc > 1)
+	if (argc > 1){
 		strcpy(actorname, argv[1]);
+		strcpy(actorname2, argv[1]);
+	}
+	if (argc > 2){
+		strcpy(actorname2, argv[2]);
+	}
 
 	VisBin *bin = lvdisplay_visual_get_bin(v);
+	VisBin *bin2 = lvdisplay_visual_get_bin(v2);
 
 	VisInput *input = visual_input_new("alsa");
 	VisActor *actor = visual_actor_new(actorname);
+	VisActor *actor2 = visual_actor_new(actorname2);
 
 	visual_bin_connect(bin, actor, input);
+	visual_bin_connect(bin2, actor2, input);
 
-	if (lvdisplay_realize(v)){
+	if (lvdisplay_realize(v) || lvdisplay_realize(v2)){
 		fprintf (stderr, "failed to realize vo\n");
 		exit (1);
 	}
@@ -92,10 +103,10 @@ int main(int argc, char **argv)
 	/* main loop */
 	while (!quit_flag){
 		while (lvdisplay_poll_event(v, &event)){
-			fprintf(stderr, "got event! hehe... gonna handle it!\n");
+			/*fprintf(stderr, "got event! hehe... gonna handle it!\n");*/
 			switch (event.type){
 			case VISUAL_EVENT_QUIT:
-				fprintf(stderr, "Quit?!? Oh NOoooo!!!...\n");
+				/*fprintf(stderr, "Quit?!? Oh NOoooo!!!...\n");*/
 				quit_flag = 1;
 				break;
 
@@ -103,10 +114,10 @@ int main(int argc, char **argv)
 				char *p;
 				int areload = 0;
 
-				fprintf(stderr, "KEYDOWN: '%c'=%d, %x\n",
+				/*fprintf(stderr, "KEYDOWN: '%c'=%d, %x\n",
 						event.keyboard.keysym.sym,
 						event.keyboard.keysym.sym,
-						event.keyboard.keysym.mod);
+						event.keyboard.keysym.mod);*/
 
 				switch (event.keyboard.keysym.sym){
 					case VKEY_a:
@@ -136,25 +147,25 @@ int main(int argc, char **argv)
 				break;
 			}
 			case VISUAL_EVENT_KEYUP:
-				fprintf(stderr, "KEYUP: '%c'=%d, %x\n",
+				/*fprintf(stderr, "KEYUP: '%c'=%d, %x\n",
 						event.keyboard.keysym.sym,
 						event.keyboard.keysym.sym,
-						event.keyboard.keysym.mod);
+						event.keyboard.keysym.mod);*/
 				break;
 
 			case VISUAL_EVENT_MOUSEMOTION:
-				fprintf(stderr, "WOW! it's moving! %dx%d\n",
-					event.mousemotion.x, event.mousemotion.y);
+				/*fprintf(stderr, "WOW! it's moving! %dx%d\n",
+					event.mousemotion.x, event.mousemotion.y);*/
 				break;
 			case VISUAL_EVENT_MOUSEBUTTONDOWN:
-				fprintf(stderr, "MOUSEBUTTONDOWN %d %dx%d\n",
+				/*fprintf(stderr, "MOUSEBUTTONDOWN %d %dx%d\n",
 					event.mousebutton.button,
-					event.mousebutton.x, event.mousebutton.y);
+					event.mousebutton.x, event.mousebutton.y);*/
 				break;
 			case VISUAL_EVENT_MOUSEBUTTONUP:
-				fprintf(stderr, "MOUSEBUTTONUP %d %dx%d\n",
+				/*fprintf(stderr, "MOUSEBUTTONUP %d %dx%d\n",
 					event.mousebutton.button,
-					event.mousebutton.x, event.mousebutton.y);
+					event.mousebutton.x, event.mousebutton.y);*/
 				break;
 
 			case VISUAL_EVENT_VISIBILITY:
@@ -172,16 +183,71 @@ int main(int argc, char **argv)
 			}
 		}
 
+		while (lvdisplay_poll_event(v2, &event)){
+			switch (event.type){
+			case VISUAL_EVENT_KEYDOWN:{
+				char *p;
+				int areload = 0;
+
+				/*fprintf(stderr, "KEYDOWN: '%c'=%d, %x\n",
+						event.keyboard.keysym.sym,
+						event.keyboard.keysym.sym,
+						event.keyboard.keysym.mod);*/
+
+				switch (event.keyboard.keysym.sym){
+					case VKEY_a:
+						p = visual_actor_get_next_by_name(actorname2);
+						if (p){
+							strcpy(actorname2, p);
+							areload = 1;
+						}
+						break;
+					case VKEY_s:
+						p = visual_actor_get_prev_by_name(actorname2);
+						if (p){
+							strcpy(actorname2, p);
+							areload = 1;
+						}
+						break;
+					default:
+						break;
+				}
+				if (areload){
+					visual_actor_free(actor2);
+					actor2 = visual_actor_new(actorname2);
+					visual_bin_connect(bin2, actor2, input);
+					lvdisplay_realize(v2);
+				}
+
+				break;
+			}
+
+			case VISUAL_EVENT_RESIZE:
+				fprintf(stderr, "resized: %dx%d\n", event.resize.width, event.resize.height);
+				visual_bin_sync(bin2, FALSE);
+				visual_actor_video_negotiate (actor2, 0, FALSE, FALSE);
+				break;
+			}
+		}
+
 		usleep(5);
 
 		lvdisplay_run(v);
+		lvdisplay_run(v2);
 	}
 
 	/* cleanup...
 	 */
 
 	lvdisplay_finalize(v);
+	lvdisplay_finalize(v2);
+
+	// bin_free() frees actors.
+	//visual_actor_free(actor);
+	//visual_actor_free(actor2);
+
 	lvdisplay_driver_delete(drv);
+	lvdisplay_driver_delete(drv2);
 
 	visual_quit ();
 

@@ -46,7 +46,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	static const VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
-		.type = VISUAL_PLUGIN_TYPE_DISPLAY_TYPE,
+		.type = VISUAL_PLUGIN_TYPE_DISPLAY_FRONTEND,
 
 		.plugname = "glx_new",
 		.name = "glx_new",
@@ -177,24 +177,28 @@ int process_events(privdata *priv, LvdCompatDataX11 *data,
 			break;
 
 		case ConfigureNotify:{
-			int vbuf = visual_video_have_allocated_buffer(video);
 			int w = ev.xconfigure.width;
 			int h = ev.xconfigure.height;
 
-			if (vbuf)
-				visual_video_free_buffer(video);
+			if ((w != video->width) || (h != video->height)){
+				int vbuf = visual_video_have_allocated_buffer(video);
 
-			visual_video_set_dimension(video, w, h);
+				if (vbuf)
+					visual_video_free_buffer(video);
 
-			if (vbuf){
-				int pitch = w*video->bpp;
-				if (pitch&3)
-					pitch = (pitch|3) + 1;
-				visual_video_set_pitch(video, pitch);
-				visual_video_allocate_buffer(video);
+				visual_video_set_dimension(video, w, h);
+
+				if (vbuf){
+					int pitch = w*video->bpp;
+					if (pitch&3)
+						pitch = (pitch|3) + 1;
+					visual_video_set_pitch(video, pitch);
+					visual_video_allocate_buffer(video);
+				}
+
+				visual_event_queue_add_resize(eventqueue, video, w, h);
 			}
 
-			visual_event_queue_add_resize(eventqueue, video, w, h);
 			break;
 		}
 		/* message sent by a window manager. i think ;) */

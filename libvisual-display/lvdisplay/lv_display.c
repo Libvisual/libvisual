@@ -8,89 +8,118 @@
 
 #include "lv_display.h"
 
-static VisList *__lv_plugins_display_class;
-static VisList *__lv_plugins_display_type;
+// visual_log_return_val_if_fail (dest != NULL, -1);  
 
-LvdDriver *lvdisplay_driver_create(const char *nclass, const char* ntype)
+static VisList *__lv_plugins_display_be = NULL;
+static VisList *__lv_plugins_display_fe = NULL;
+
+static void reread_plugin_lists()
 {
 	const VisList *lv_plugins;
-	LvdDriver *drv;
-	VisPluginRef *rclass, *rtype;
-	VisPluginData *plclass, *pltype;
-	int r1, r2;
 
 	lv_plugins = visual_plugin_get_registry();
+	/*
+	 * XXX actually lists should be freed(?) and reloaded.
+	 */
+	if ((!__lv_plugins_display_be) || (!__lv_plugins_display_fe)){
+		__lv_plugins_display_be = visual_plugin_registry_filter (lv_plugins, VISUAL_PLUGIN_TYPE_DISPLAY_BACKEND);
+		__lv_plugins_display_fe = visual_plugin_registry_filter (lv_plugins, VISUAL_PLUGIN_TYPE_DISPLAY_FRONTEND);
+	}
+}
+
+LvdDriver *lvdisplay_driver_create(const char *bename, const char *fename)
+{
+	LvdDriver *drv;
+	VisPluginRef *beref, *feref;
+	VisPluginData *beplug, *feplug;
+	int r1, r2;
+
+	visual_log_return_val_if_fail (bename != NULL, NULL);
+	visual_log_return_val_if_fail (fename != NULL, NULL);
 
 	if (!visual_is_initialized()){
-		fprintf(stderr, "Oops! Libvisual is not initialized!\n");
+		visual_log(VISUAL_LOG_CRITICAL, "Libvisual is not initialized!\n");
+		// Hm... should Libvisual be initialized here?
 		return NULL;
 	}
 
-	__lv_plugins_display_class = visual_plugin_registry_filter (lv_plugins, VISUAL_PLUGIN_TYPE_DISPLAY_CLASS);
-	__lv_plugins_display_type = visual_plugin_registry_filter (lv_plugins, VISUAL_PLUGIN_TYPE_DISPLAY_TYPE);
+	reread_plugin_lists();
 
-	rclass = visual_plugin_find(__lv_plugins_display_class, (char*)nclass);
-	rtype = visual_plugin_find(__lv_plugins_display_type, (char*)ntype);
+	beref = visual_plugin_find(__lv_plugins_display_be, (char*)bename);
+	feref = visual_plugin_find(__lv_plugins_display_fe, (char*)fename);
 
-	if ((rclass == NULL) || (rtype == NULL)){
+	if ((beref == NULL) || (feref == NULL)){
+		visual_log(VISUAL_LOG_DEBUG, "Failed to get plugin references %p %p\n", beref, feref);
 		return NULL;
 	}
 
-	plclass = visual_plugin_load(rclass);
-	if (plclass == NULL){
+	beplug = visual_plugin_load(beref);
+	if (beplug == NULL){
+		visual_log(VISUAL_LOG_DEBUG, "Failed to load backend plugin\n");
 		return NULL;
 	}
 
-	pltype = visual_plugin_load(rtype);
-	if (pltype == NULL){
-		visual_plugin_unload(plclass);
+	feplug = visual_plugin_load(feref);
+	if (feplug == NULL){
+		visual_log(VISUAL_LOG_DEBUG, "Failed to load frontend plugin\n");
+		visual_plugin_unload(beplug);
 		return NULL;
 	}
 
-	drv = malloc(sizeof(LvdDriver));
+	drv = visual_mem_new0(LvdDriver, 1);
 	if (drv == NULL){
-		visual_plugin_unload(plclass);
-		visual_plugin_unload(pltype);
+		visual_plugin_unload(beplug);
+		visual_plugin_unload(feplug);
 		return NULL;
 	}
 
-	r1 = visual_plugin_realize(plclass);
-	r2 = visual_plugin_realize(pltype);
+	r1 = visual_plugin_realize(beplug);
+	r2 = visual_plugin_realize(feplug);
 
 	if (r1 || r2){
-		visual_plugin_unload(plclass);
-		visual_plugin_unload(pltype);
-		free(drv);
+		visual_log(VISUAL_LOG_DEBUG, "Failed to realize plugins %d %d\n", r1, r2);
+		visual_plugin_unload(beplug);
+		visual_plugin_unload(feplug);
+		visual_mem_free(drv);
+		return NULL;
 	}
 
-	memset(drv, 0, sizeof(LvdDriver));
-
-	drv->pclass = plclass;
-	drv->ptype = pltype;
+	drv->beplug = beplug;
+	drv->feplug = feplug;
 	drv->video = visual_video_new();
+
+	if (drv->video == NULL){
+		visual_plugin_unload(beplug);
+		visual_plugin_unload(feplug);
+		visual_mem_free(drv);
+		return NULL;
+	}
+
+	drv->be = beplug->info->plugin;
+	drv->fe = feplug->info->plugin;
 
 	return drv;
 }
 
 void lvdisplay_driver_delete(LvdDriver *drv)
 {
-	assert(drv);
+	visual_log_return_if_fail (drv != NULL);
 
-	if (drv->pclass)
-		visual_plugin_unload(drv->pclass);
+	if (drv->beplug)
+		visual_plugin_unload(drv->beplug);
 
-	if (drv->ptype)
-		visual_plugin_unload(drv->ptype);
+	if (drv->feplug)
+		visual_plugin_unload(drv->feplug);
 
 	if (drv->params)
-		free(drv->params);
+		visual_mem_free(drv->params);
 
 	if (visual_video_have_allocated_buffer(drv->video))
 		visual_video_free_with_buffer(drv->video);
 	else
 		visual_video_free(drv->video);
 
-	free(drv);
+	visual_mem_free(drv);
 }
 
 
@@ -98,35 +127,36 @@ int lvdisplay_driver_set_opts(LvdDriver *drv, int *params)
 {
 	int i, res;
 
-	assert(drv);
+	visual_log_return_val_if_fail (drv != NULL, -1);
+
 	/*
 	 * send params to type
 	 * and store result in vodriver->params.
-	 * also check class ant type compat.
+	 * also check class and type compat.
 	 *
-	 * return 0 if params are accepted -1 otherwise
+	 * return 0 if params are accepted !0 otherwise
 	 */
 
 	if (params){
 		for (i=0;params[i] != LVD_SET_DONE;i++);
 		drv->params_cnt = i;
 		i *= sizeof(int);
-		drv->params = malloc(i);
+		drv->params = visual_mem_malloc0(i);
 		memcpy(drv->params, params, i);
 	} else {
 		drv->params = NULL;
 		drv->params_cnt = 0;
 	}
 
-	res = ((LvdFrontendDescription*)drv->ptype->info->plugin)->
-			create(drv->ptype, &drv->params, &drv->params_cnt, drv->video);
+	res = drv->fe->create(drv->feplug, &drv->params, &drv->params_cnt,
+			drv->video);
 
 	if (res){
-		return -1;
+		visual_log(VISUAL_LOG_DEBUG, "Frontend's create() failed %d\n", res);
+		return res;
 	}
 
-	drv->compat_data = ((LvdFrontendDescription*)drv->ptype->info->plugin)->
-			get_compat_data(drv->ptype);
+	drv->compat_data = drv->fe->get_compat_data(drv->feplug);
 
 	drv->prepared = 1;
 	return 0;
@@ -136,6 +166,37 @@ int lvdisplay_driver_set_opts(LvdDriver *drv, int *params)
 
 
 /***********************************************************************/
+/// XXX make it per-thread
+
+static Lvd *actx_v = NULL;
+static LvdDContext *actx = NULL;
+
+static void set_active_context(Lvd *v, LvdDContext *ctx)
+{
+// XXX MUTEX IN
+	if ((actx_v == v) && (actx == ctx))
+		return;
+
+	if ((actx_v != NULL) && (actx != NULL))
+	actx_v->be->context_deactivate(actx_v->beplug, actx);
+	v->be->context_activate(v->beplug, ctx);
+
+	actx_v = v;
+	actx = ctx;
+// XXX MUTEX OUT
+}
+
+static void active_context_release()
+{
+	if ((actx_v == NULL) || (actx == NULL))
+		return;
+
+	actx_v->be->context_deactivate(actx_v->beplug, actx);
+
+	actx_v = NULL;
+	actx = NULL;
+}
+
 
 
 Lvd* lvdisplay_initialize(LvdDriver *drv)
@@ -143,13 +204,18 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 	int res;
 	Lvd *v;
 
-	v = malloc(sizeof(Lvd));
+	visual_log_return_val_if_fail (drv != NULL, NULL);
+
+	v = visual_mem_new0(Lvd, 1);
 	if (v == NULL){
 		return NULL;
 	}
-	memset(v, 0, sizeof(Lvd));
 
 	v->drv = drv;
+	v->be = drv->be;
+	v->fe = drv->fe;
+	v->beplug = drv->beplug;
+	v->feplug = drv->feplug;
 
 	if (!drv->prepared){
 		if ((res = lvdisplay_driver_set_opts(drv, NULL)) != 0)
@@ -157,20 +223,26 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 	}
 
 	/* init drv's class */
-	res = ((LvdBackendDescription*)drv->pclass->info->plugin)->
-		setup(drv->pclass, drv->compat_data,drv->params,
-		drv->params_cnt);
+	res = drv->be->setup(drv->beplug, drv->compat_data,
+			drv->params, drv->params_cnt);
 
-	if (res)
+	if (res) {
+		visual_log(VISUAL_LOG_DEBUG, "Backend's setup() failed %d\n", res);
 		return NULL;
+	}
 
 	v->bin = visual_bin_new();
+	if (v->bin == NULL) {
+		return NULL;
+	}
 
 	return v;
 }
 
 VisVideo *lvdisplay_visual_get_video(Lvd *v)
 {
+	visual_log_return_val_if_fail (v != NULL, NULL);
+
 	return v->drv->video;
 }
 
@@ -178,6 +250,8 @@ int lvdisplay_realize(Lvd *v)
 {
 	VisActor *actor;
 	VisVideoDepth adepth;
+
+	visual_log_return_val_if_fail (v != NULL, -1);
 
 	actor = visual_bin_get_actor(v->bin);
 	if (actor == NULL){
@@ -189,39 +263,47 @@ int lvdisplay_realize(Lvd *v)
 	// XXX setup video for actor
 	if (adepth & VISUAL_VIDEO_DEPTH_GL){
 		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_GL);
-	} else
-	if (adepth & VISUAL_VIDEO_DEPTH_32BIT) {
-		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_32BIT);
-		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
-		visual_video_allocate_buffer(v->drv->video);
-	} else
-	if (adepth & VISUAL_VIDEO_DEPTH_24BIT) {
-		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_24BIT);
-		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
-		visual_video_allocate_buffer(v->drv->video);
-	} else
-	if (adepth & VISUAL_VIDEO_DEPTH_16BIT) {
-		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_16BIT);
-		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
-		visual_video_allocate_buffer(v->drv->video);
-	} else
-	if (adepth & VISUAL_VIDEO_DEPTH_8BIT) {
-		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_24BIT);
-		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
-		visual_video_allocate_buffer(v->drv->video);
 	} else {
+		int pitch;
+
+		if (adepth & VISUAL_VIDEO_DEPTH_32BIT) {
+			visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_32BIT);
+		} else
+		if (adepth & VISUAL_VIDEO_DEPTH_24BIT) {
+			visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_24BIT);
+		} else
+		if (adepth & VISUAL_VIDEO_DEPTH_16BIT) {
+			visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_16BIT);
+		} else
+		if (adepth & VISUAL_VIDEO_DEPTH_8BIT) {
+			visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_24BIT);
+		} else {
+			visual_log(VISUAL_LOG_DEBUG, "Unknown actor plugin depth %d\n", adepth);
+			return 1;
+		}
+
+		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
+
+		pitch = v->drv->video->width * v->drv->video->bpp;
+		if (pitch&3)
+			pitch = (pitch|3) + 1;
+		visual_video_set_pitch(v->drv->video, pitch);
+
+		visual_video_allocate_buffer(v->drv->video);
+	}
+
+	active_context_release();
+
+	if (v->ctx)
+		v->be->context_delete(v->beplug, v->ctx);
+
+	v->ctx = v->be->context_create(v->beplug, v->drv->video);
+	if (v->ctx == NULL){
+		visual_log(VISUAL_LOG_DEBUG, "Failed to create context\n");
 		return 1;
 	}
 
-	if (v->ctx)
-		((LvdBackendDescription*)v->drv->pclass->info->plugin)->
-			context_delete(v->drv->pclass, v->ctx);
-
-	v->ctx = ((LvdBackendDescription*)v->drv->pclass->info->plugin)->
-		context_create(v->drv->pclass, v->drv->video);
-
-	((LvdBackendDescription*)v->drv->pclass->info->plugin)->
-		context_activate(v->drv->pclass, v->ctx);
+	set_active_context(v, v->ctx);
 
 	visual_bin_realize(v->bin);
 	visual_actor_set_video(actor, v->drv->video);
@@ -233,12 +315,12 @@ int lvdisplay_realize(Lvd *v)
 
 void lvdisplay_finalize(Lvd *v)
 {
-	LvdDriver *drv = v->drv;
-	assert(drv);
-	assert(drv->pclass);
+	visual_log_return_if_fail (v != NULL);
+
+	active_context_release();
 
 	if (v->ctx){
-		((LvdBackendDescription*)drv->pclass->info->plugin)->context_delete(drv->pclass, v->ctx);
+		v->be->context_delete(v->beplug, v->ctx);
 	}
 
 	visual_bin_destroy(v->bin);
@@ -246,40 +328,40 @@ void lvdisplay_finalize(Lvd *v)
 
 VisBin *lvdisplay_visual_get_bin(Lvd *v)
 {
+	visual_log_return_val_if_fail (v != NULL, NULL);
 	return v->bin;
 }
 
 int lvdisplay_run(Lvd *v)
 {
-	LvdDriver *drv = v->drv;
-	assert(drv);
-	assert(drv->pclass);
+	visual_log_return_val_if_fail (v != NULL, -1);
+
+	set_active_context(v, v->ctx);
 
 	visual_bin_realize(v->bin);
 	visual_bin_run(v->bin);
 
-	((LvdBackendDescription*)drv->pclass->info->plugin)->draw(drv->pclass);
+	v->be->draw(v->beplug);
 
 	return 0;
 }
 
 VisEventQueue *lvdisplay_get_eventqueue(Lvd *v)
 {
-	LvdDriver *drv = v->drv;
-	assert(drv);
-	assert(drv->ptype);
-
-	return &drv->ptype->eventqueue;
+	visual_log_return_val_if_fail (v != NULL, NULL);
+	return &v->feplug->eventqueue;
 }
 
 int lvdisplay_poll_event(Lvd *v, VisEvent *event)
 {
-	LvdDriver *drv = v->drv;
-	assert(drv);
-	assert(drv->ptype);
-	assert(drv->pclass);
+	visual_log_return_val_if_fail (v != NULL, 0);
 
-	drv->ptype->info->events(drv->ptype, &drv->ptype->eventqueue);
-	drv->pclass->info->events(drv->pclass, &drv->ptype->eventqueue);
+	set_active_context(v, v->ctx);
+
+	v->feplug->info->events(v->feplug, &v->feplug->eventqueue);
+	// pass events we got to backend.
+	// one can handle resize event, for example.
+	v->beplug->info->events(v->beplug, &v->feplug->eventqueue);
+
 	return visual_event_queue_poll(lvdisplay_get_eventqueue(v), event);
 }
