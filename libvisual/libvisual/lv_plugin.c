@@ -29,7 +29,7 @@
 #include "lvconfig.h"
 
 #if defined(VISUAL_OS_WIN32)
-
+#include <windows.h>
 #else
 #include <dlfcn.h>
 #endif
