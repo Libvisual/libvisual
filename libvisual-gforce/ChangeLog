@@ -2,6 +2,7 @@
 
 	* DATADIR problem fixed.
 	* headers cleanup to avoid some warnings.
+	* configure.ac: misc checks added.
 
 2004-09-02    Duilio Protti  <dprotti@users.sourceforge.net>
 

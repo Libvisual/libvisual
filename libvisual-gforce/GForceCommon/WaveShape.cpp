@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <libvisual/libvisual.h>
 
 #include "G-Force_Proj.h"
 
@@ -66,7 +67,7 @@ void WaveShape::Load( ArgList& inArgs, long inDefaultNumSteps ) {
 	// Calculate mNumSampleBins -- How many pieces we chop the 0-1 s interval into
 	inArgs.GetArg( 'Stps', str );
 	// FIXME debug
-	printf ("The number of bins requested: %s\n", str.getCStr());
+	visual_log (VISUAL_LOG_DEBUG, "The number of bins requested: %s", str.getCStr());
 	mNum_S_Steps.Compile( str, mDict );
 	CalcNumS_Steps( NULL, inDefaultNumSteps );
 	

@@ -1,11 +1,9 @@
+#include <stdio.h>
+#include <libvisual/libvisual.h>
 
 #include "G-Force_Proj.h"
-
 #include "G-Force.h"
-
 #include "XFloatList.h"
-
-#include <stdio.h>
 
 #if EG_MAC
 #include <Windows.h>
@@ -138,7 +136,7 @@ GForce::GForce( void* inRefCon ) :
 	mLastSongStart		= mT - 10000;
 	mLastKeyPollTime	= mT;
 	mLastActiveTime		= mT;
-	mDoingSetPortWin	= NULL;
+	mDoingSetPortWin	= false;
 	mNeedsPaneErased	= true;
 	mShapeSlideShow		=
 	mColorSlideShow		=
@@ -1375,7 +1373,7 @@ void GForce::loadColorMap( long inColorMapNum, bool inAllowMorph ) {
 		}
 	}
  
-	printf ("New Delta field: %s\n", mColorMapName.getCStr ());
+	visual_log (VISUAL_LOG_INFO, "New Delta field: %s", mColorMapName.getCStr ());
  
 	
 	if ( ! ok ) {
@@ -1484,7 +1482,7 @@ void GForce::loadWaveShape( long inShapeNum, bool inAllowMorph ) {
 		Println( &mWaveShapeName );
 	}
 
- 	printf ("New wave shape: %s\n", mWaveShapeName.getCStr ());
+ 	visual_log (VISUAL_LOG_INFO, "New wave shape: %s", mWaveShapeName.getCStr ());
  
 	
 	// If first time load, don't do any transition/morph, otherwise set up the morph
@@ -1538,7 +1536,7 @@ void GForce::loadParticle( long inParticleNum ) {
 		}
 	}
 
-	printf ("New Particle: %s\n", name.getCStr ());
+	visual_log (VISUAL_LOG_INFO, "New Particle: %s", name.getCStr ());
 	 
 
 	if ( ok ) {

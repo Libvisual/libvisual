@@ -27,8 +27,6 @@ Check if there are dict entries in the scripts that are not in the engine (like 
 
 Change the prefs backend so it will use the libvisual setting system (when it's done).
 
-remove all the printfs, stdio.h includes used for debugging.
-
 Use the libvisual param interface for the gforce params.
 
 

@@ -10,6 +10,7 @@ AC_PREFIX_DEFAULT(/usr)
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_LN_S
+AC_PROG_RANLIB
 
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
@@ -24,12 +25,29 @@ else
   AC_MSG_ERROR([*** pkg-config too old; version 0.14 or better required.])
 fi
 
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
+# FIXME: Replace `main' with a function in `-lm':
+AC_CHECK_LIB([m], [main])
+# FIXME: Replace `main' with a function in `-lvisual':
+AC_CHECK_LIB([visual], [main])
+
 # Checks for header files.
-AC_CHECK_HEADERS([unistd.h])
+AC_HEADER_DIRENT
+AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/time.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
 AC_C_CONST
 AC_C_INLINE # reserved for future
+AC_HEADER_TIME
+
+# Checks for library functions.
+AC_FUNC_CLOSEDIR_VOID
+AC_FUNC_MALLOC
+AC_FUNC_STAT
+AC_CHECK_FUNCS([floor gettimeofday memmove memset pow sqrt])
 
 PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.7, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
