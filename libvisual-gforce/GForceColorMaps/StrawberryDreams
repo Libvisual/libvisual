@@ -1,0 +1,9 @@
+name="StrawberryDreams",
+// Strawberry Dreams by Demonseed
+// Acid Gap ver 1.6
+
+H="(.99 - .4 * i )^.6", 
+S="(1-i)^.27",
+V="(.4 + .6 * i ) * ( .5 * cos( (1-i) *  15.7079632 ) + .5 )",
+
+Vers=100

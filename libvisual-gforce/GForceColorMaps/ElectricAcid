@@ -1,0 +1,12 @@
+name="ElectricAcid",
+// Electric Acid by Angelseed
+// based on: Steel
+// Enhanced by Deimos of the Sixth Order
+// Acid Gap ver 2.2
+
+
+H="wrap(1-i*(.8))",
+S="wrap(i*(-.4))",
+V="(.4 + .6 * i ) * ( .5 * cos( (1-i) *  15.707963267 ) + .5 )",
+
+Vers=100

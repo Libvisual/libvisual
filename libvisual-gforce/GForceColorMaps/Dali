@@ -1,0 +1,15 @@
+name="Dali",
+/*
+
+For Salvador Dali...   
+
+				-E. Kodotai        kodotai@mi.freei.net      */
+
+A1=".7 + rnd( .3 )",
+
+
+H="wrap( .6 + sin ( .07 * t ) + i^( -.5 * sin ( .08 * t ) ) )",
+S=".7 + ( .3 * sin( wrap ( .05 * t ) ) )",
+V="(.4 + .6 * i ) * ( .5 * cos( (1-i) *  15.70796326781 ) + .5 )",
+
+Vers=100

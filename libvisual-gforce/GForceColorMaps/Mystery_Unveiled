@@ -1,0 +1,8 @@
+name="Mystery Unveiled",
+A0="rnd( 1 )",
+
+H="a0",
+S="(1-i)^1.5",
+V="i^.4",
+
+Vers=100

@@ -1,0 +1,8 @@
+name="Firestorm",
+// Firestorm by Andy O'Meara
+
+H=".166 * i^1.9",
+S="1",
+V="i^.9",
+
+Vers=100
