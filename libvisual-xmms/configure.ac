@@ -4,6 +4,9 @@ AC_PREREQ(2.57)
 AC_INIT(Libvisual XMMS plugin, 0.1.6, synap@nerds-incorporated.org, libvisual-xmms)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
+AC_PREFIX_DEFAULT(/usr)
+AC_PREFIX_PROGRAM(xmms)
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
@@ -66,13 +69,16 @@ fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
 
-# Default prefix
-AC_PREFIX_DEFAULT(/usr)
-AC_PREFIX_PROGRAM(xmms)
-
 XMMS_PLUGIN_DIR="$prefix/lib/xmms"
 XMMS_VISUALIZATION_PLUGIN_DIR="$XMMS_PLUGIN_DIR/Visualization"
 AC_SUBST(XMMS_VISUALIZATION_PLUGIN_DIR)
+
+# Internationalization
+ALL_LINGUAS="es es_AR"
+GETTEXT_PACKAGE=libvisual-xmms
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
+AM_GLIB_GNU_GETTEXT
 
 # Arguments to specify certain features.
 AC_ARG_ENABLE([debug],
@@ -98,6 +104,7 @@ AC_SUBST(BUILD_INPUT, "$build_input")
 AC_SUBST(BUILD_ACTOR, "$build_actor")
 
 AC_CONFIG_FILES([
+	po/Makefile.in
 	Makefile
 	pixmaps/Makefile
 	src/Makefile

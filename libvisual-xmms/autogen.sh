@@ -33,5 +33,14 @@ if test "$DIE" -eq 1; then
   exit 1
 fi
 
+mv po/Makefile.in.in po/Makefile.in.in.orig
+mv Makefile.am Makefile.am.orig
+cp configure.ac configure.ac.orig
+gettextize
+cp configure.ac.orig configure.ac
+mv Makefile.am.orig Makefile.am
+mv po/Makefile.in.in.orig po/Makefile.in.in
+rm -rf m4
+
 libtoolize --force
 autoreconf --verbose --make --install --symlink --force

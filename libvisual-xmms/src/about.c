@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 
 #include "about.h"
+#include "gettext.h"
 
 
 /* About gui variables */
@@ -17,6 +18,10 @@ void lv_xmms_about_show ()
 	GtkWidget *close;
 	GtkWidget *label;
 
+	setlocale (LC_MESSAGES, "");
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	textdomain (GETTEXT_PACKAGE);
+    
 	if (about_window != NULL)
 		return;
 
@@ -29,10 +34,10 @@ void lv_xmms_about_show ()
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 8);
 	gtk_widget_show (vbox);
 
-	label = gtk_label_new("\n"
+	label = gtk_label_new(_("\n"
 "Libvisual xmms plugin\nCopyright (C) 2004, Duilio Protti <dprotti@fceia.unr.edu.ar>\n Dennis Smit <ds@nerds-incorporated.org>\n"
 "The libvisual xmms plugin, more information about libvisual can be found at\n"
-"http://libvisual.sf.net\n\n");
+"http://libvisual.sf.net\n\n"));
 
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 8);
 	gtk_widget_show (label);
@@ -41,7 +46,7 @@ void lv_xmms_about_show ()
 	gtk_box_pack_end (GTK_BOX (vbox), buttonbox, FALSE, FALSE,8);
 	gtk_widget_show (buttonbox);
 
-	close = gtk_button_new_with_label ("Close");
+	close = gtk_button_new_with_label (_("Close"));
 	GTK_WIDGET_SET_FLAGS (close, GTK_CAN_DEFAULT);
 	gtk_window_set_default (GTK_WINDOW (about_window), close);
 	gtk_hbutton_box_set_layout_default (GTK_BUTTONBOX_END);

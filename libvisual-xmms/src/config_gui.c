@@ -7,6 +7,7 @@
 #include <gtk/gtk.h>
 
 #include "config_gui.h"
+#include "gettext.h"
 
 static gchar *check_file_exists (const gchar *directory, const gchar *filename);
 static GtkWidget *create_pixmap (GtkWidget *widget, const gchar *filename);
@@ -45,7 +46,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
 
   window_main = gtk_window_new (GTK_WINDOW_DIALOG);
   gtk_object_set_data (GTK_OBJECT (window_main), "window_main", window_main);
-  gtk_window_set_title (GTK_WINDOW (window_main), "LibVisual XMMS Plugin");
+  gtk_window_set_title (GTK_WINDOW (window_main), _("LibVisual XMMS Plugin"));
   gtk_window_set_position (GTK_WINDOW (window_main), GTK_WIN_POS_CENTER);
   gtk_window_set_policy (GTK_WINDOW (window_main), FALSE, FALSE, FALSE);
 
@@ -57,16 +58,16 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_container_add (GTK_CONTAINER (window_main), vbox_icon);
   gtk_container_set_border_width (GTK_CONTAINER (vbox_icon), 6);
 
-  checkbutton_fullscreen = gtk_check_button_new_with_label ("Fullscreen");
+  checkbutton_fullscreen = gtk_check_button_new_with_label (_("Fullscreen"));
   gtk_widget_ref (checkbutton_fullscreen);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "checkbutton_fullscreen", checkbutton_fullscreen,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (checkbutton_fullscreen);
   gtk_box_pack_start (GTK_BOX (vbox_icon), checkbutton_fullscreen, FALSE, FALSE, 0);
   gtk_tooltips_set_tip (tooltips, checkbutton_fullscreen,
-		  "You can also toggle between normal and fullscreen mode by pressing key TAB or F11", NULL);
+		  _("You can also toggle between normal and fullscreen mode by pressing key TAB or F11"), NULL);
 
-  radiobutton_all_plugins = gtk_radio_button_new_with_label (buttongroup_plugins, "All plugins");
+  radiobutton_all_plugins = gtk_radio_button_new_with_label (buttongroup_plugins, _("All plugins"));
   buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_all_plugins));
   gtk_widget_ref (radiobutton_all_plugins);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_all_plugins", radiobutton_all_plugins,
@@ -74,7 +75,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_widget_show (radiobutton_all_plugins);
   gtk_box_pack_start (GTK_BOX (vbox_icon), radiobutton_all_plugins, FALSE, FALSE, 0);
 
-  radiobutton_opengl = gtk_radio_button_new_with_label (buttongroup_plugins, "Only GL plugins");
+  radiobutton_opengl = gtk_radio_button_new_with_label (buttongroup_plugins, _("Only GL plugins"));
   buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_opengl));
   gtk_widget_ref (radiobutton_opengl);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_opengl", radiobutton_opengl,
@@ -82,7 +83,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_widget_show (radiobutton_opengl);
   gtk_box_pack_start (GTK_BOX (vbox_icon), radiobutton_opengl, FALSE, FALSE, 0); 
   
-  radiobutton_non_opengl = gtk_radio_button_new_with_label (buttongroup_plugins, "Only non Gl plugins");
+  radiobutton_non_opengl = gtk_radio_button_new_with_label (buttongroup_plugins, _("Only non Gl plugins"));
   buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_non_opengl));
   gtk_widget_ref (radiobutton_non_opengl);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_non_opengl", radiobutton_non_opengl,
@@ -97,7 +98,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_widget_show (hbox_fps);
   gtk_box_pack_start (GTK_BOX (vbox_icon), hbox_fps, FALSE, FALSE, 0);
 
-  label_fps = gtk_label_new ("Maximum Frames Per Second:");
+  label_fps = gtk_label_new (_("Maximum Frames Per Second:"));
   gtk_widget_ref (label_fps);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "label_fps", label_fps,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -121,7 +122,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_box_pack_start (GTK_BOX (vbox_icon), hbox_icon, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (hbox_icon), 6);
 
-  label_icon = gtk_label_new ("Icon");
+  label_icon = gtk_label_new (_("Icon"));
   gtk_widget_ref (label_icon);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "label_icon", label_icon,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -158,7 +159,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_widget_show (hbox_buttons);
   gtk_box_pack_start (GTK_BOX (vbox_icon), hbox_buttons, TRUE, TRUE, 0);
 
-  button_ok = gtk_button_new_with_label ("Accept");
+  button_ok = gtk_button_new_with_label (_("Accept"));
   gtk_widget_ref (button_ok);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "button_ok", button_ok,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -166,7 +167,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_box_pack_start (GTK_BOX (hbox_buttons), button_ok, FALSE, TRUE, 6);
   GTK_WIDGET_SET_FLAGS (button_ok, GTK_CAN_DEFAULT);
 
-  button_apply = gtk_button_new_with_label ("Apply");
+  button_apply = gtk_button_new_with_label (_("Apply"));
   gtk_widget_ref (button_apply);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "button_apply", button_apply,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -174,7 +175,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_box_pack_start (GTK_BOX (hbox_buttons), button_apply, FALSE, TRUE, 6);
   GTK_WIDGET_SET_FLAGS (button_apply, GTK_CAN_DEFAULT);
 
-  button_cancel = gtk_button_new_with_label ("Cancel");
+  button_cancel = gtk_button_new_with_label (_("Cancel"));
   gtk_widget_ref (button_cancel);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "button_cancel", button_cancel,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -218,7 +219,7 @@ static GtkWidget *create_dummy_pixmap (GtkWidget *widget)
   gdkpixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, colormap, &mask,
                                                      NULL, dummy_pixmap_xpm);
   if (gdkpixmap == NULL)
-    g_error ("Couldn't create replacement pixmap.");
+    g_error (_("Couldn't create replacement pixmap."));
   pixmap = gtk_pixmap_new (gdkpixmap, mask);
   gdk_pixmap_unref (gdkpixmap);
   gdk_bitmap_unref (mask);
@@ -263,7 +264,7 @@ static GtkWidget *create_pixmap (GtkWidget *widget, const gchar *filename)
 
   if (!found_filename)
     {
-      g_warning ("Couldn't find pixmap file: %s", filename);
+      g_warning (_("Couldn't find pixmap file: %s"), filename);
       return create_dummy_pixmap (widget);
     }
 
@@ -272,7 +273,7 @@ static GtkWidget *create_pixmap (GtkWidget *widget, const gchar *filename)
                                                    NULL, found_filename);
   if (gdkpixmap == NULL)
     {
-      g_warning ("Error loading pixmap file: %s", found_filename);
+      g_warning (_("Error loading pixmap file: %s"), found_filename);
       g_free (found_filename);
       return create_dummy_pixmap (widget);
     }

@@ -1,3 +1,17 @@
+2004-07-11  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* po/POTFILES.in: added.
+	* po/LINGUAS: added.
+	* autogen.sh: modified to run gettextize in order to create
+	files neede for internationalization support.
+
+2004-07-11  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add m4 and po.
+	(ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add config.rpath mkinstalldirs.
+	* configure.ac (AC_CONFIG_FILES): Add po/Makefile.in,
+
 2004-07-10  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* src/main.c (sdl_event_handle): Adopted

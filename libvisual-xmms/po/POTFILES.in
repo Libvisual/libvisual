@@ -1,0 +1,7 @@
+# List of source files containing translatable strings.
+
+# Package source files
+src/main.c
+src/config.c
+src/config_gui.c
+src/about.c

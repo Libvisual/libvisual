@@ -11,6 +11,7 @@
 
 #include <libvisual/libvisual.h>
 
+#include "gettext.h"
 #include "config.h"
 #include "about.h"
 
@@ -97,9 +98,13 @@ static void lv_xmms_init ()
         int argc;
 	int ret;
 
+	setlocale (LC_MESSAGES, "");
+	bindtextdomain (PACKAGE, LOCALEDIR);
+	textdomain (PACKAGE);
+    
 	options = lv_xmms_config_open ();
 	if (options == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get options");
+		visual_log (VISUAL_LOG_CRITICAL, _("Cannot get options"));
 		return;
 	}
 

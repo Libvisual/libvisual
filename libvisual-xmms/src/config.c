@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "config_gui.h"
+#include "gettext.h"
 
 #define CONFIG_DEFAULT_ICON (PACKAGE_DATADIR "/libvisual-xmms-vis.bmp")
 
@@ -236,6 +237,10 @@ void lv_xmms_config_toggle_fullscreen (void)
 
 void lv_xmms_config_window ()
 {
+	setlocale (LC_MESSAGES, "");
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	textdomain (GETTEXT_PACKAGE);
+    
 	if (config_win != NULL) {
 		gtk_widget_show (config_win->window_main);
 		return;
