@@ -7,6 +7,8 @@ AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
+AC_PREFIX_DEFAULT(/usr)
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -27,7 +29,7 @@ fi
 
 # Checks for libraries.
 build_input=""
-build_actor="infinite JESS lv_analyzer lv_scope oinksie video_test"
+build_actor="lv_analyzer lv_scope oinksie video_test"
 build_morph="alphablend tentacle flash"
 
 # FIXME: Replace `main' with a function in `-lGL':
@@ -66,8 +68,8 @@ if test x$libgoom = xno; then
 fi
 AC_SUBST(LIBGOOM2_LIBS)
 AC_SUBST(LIBGOOM2_CFLAGS)
-if test x"$libgoom" = xyes; then
-	build_actor="goom2 $build_actor"
+if test x$libgoom = xyes; then
+  build_actor="goom2 $build_actor"
 fi
 
 # Checks for header files.
@@ -81,7 +83,7 @@ if test x"$opengl" = xno; then
 	])
 fi
 if test x"$opengl" = xyes; then
-	build_actor="lv_gltest dna madspin $build_actor"
+	build_actor="dna lv_gltest madspin $build_actor"
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -92,8 +94,84 @@ AC_C_INLINE
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt])
 
-# Default prefix
-AC_PREFIX_DEFAULT(/usr)
+# Arguments to specify certain features.
+AC_ARG_ENABLE([infinite],
+            AC_HELP_STRING([--disable-infinite],
+                           [Do not build Infinite plugin @<:@default=enabled@:>@]),
+	    [infinite=$enableval],
+	    [infinite=yes])
+AC_MSG_CHECKING([wheter to build Infinite plugin])
+if test x$infinite = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor infinite"
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([jess],
+            AC_HELP_STRING([--disable-jess],
+                           [Do not build JESS plugin @<:@default=enabled@:>@]),
+	    [jess=$enableval],
+	    [jess=yes])
+AC_MSG_CHECKING([wheter to build JESS plugin])
+if test x$jess = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor JESS"
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([analyzer],
+            AC_HELP_STRING([--disable-analyzer],
+                           [Do not build Analyzer plugin @<:@default=enabled@:>@]),
+	    [analyzer=$enableval],
+	    [analyzer=yes])
+AC_MSG_CHECKING([wheter to build Analyzer plugin])
+if test x$analyzer = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor lv_analyzer"
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([scope],
+            AC_HELP_STRING([--disable-scope],
+                           [Do not build Scope plugin @<:@default=enabled@:>@]),
+	    [scope=$enableval],
+	    [scope=yes])
+AC_MSG_CHECKING([wheter to build Scope plugin])
+if test x$scope = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor lv_scope"
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([oinksie],
+            AC_HELP_STRING([--disable-oinksie],
+                           [Do not build Oinksie plugin @<:@default=enabled@:>@]),
+	    [oinksie=$enableval],
+	    [oinksie=yes])
+AC_MSG_CHECKING([wheter to build Oinksie plugin])
+if test x$oinksie = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor oinksie"
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([videotest],
+            AC_HELP_STRING([--disable-videotest],
+                           [Do not build Video Test plugin @<:@default=enabled@:>@]),
+	    [videotest=$enableval],
+	    [videotest=yes])
+AC_MSG_CHECKING([wheter to build Video Test plugin])
+if test x$videotest = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor video_test"
+else
+  AC_MSG_RESULT([no])
+fi
 
 AC_ARG_ENABLE([debug],
             AC_HELP_STRING([--enable-debug],
@@ -109,10 +187,7 @@ else
   DEBUG_CFLAGS=""
 fi
 AC_SUBST(DEBUG_CFLAGS)
-#AC_SUBST(CFLAGS, "-I./ -O3 -Wall -rdynamic -ggdb $LIBVISUAL_CFLAGS")
 
-# check plugin data dir
-#datadir = pkg-config libvisual --variable=datadir
 
 # cflags, ld flags
 libs_dynamic_loader="-ldl"

@@ -1,6 +1,7 @@
 2004-06-21  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* configure.ac: reorganized, more verbose.
+	* configure.ac: reorganized, more verbose. Some actor
+	plugins made optionals.
 	* Makefile.am's: user variables CFLAGS and LDFLAGS not
 	overrided, instead we use AM_CFLAGS and AM_LDFLAGS.
 	* autogen.sh: check for libtool and run libtoolize --force
