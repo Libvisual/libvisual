@@ -220,7 +220,7 @@ static void lv_bmp_cleanup ()
 		SDL_FreeSurface (icon);
 
 	visual_log (VISUAL_LOG_DEBUG, "destroying VisBin...");
-	visual_bin_destroy (bin);
+	visual_object_unref (VISUAL_OBJECT (bin));
 
 	visual_log (VISUAL_LOG_DEBUG, "calling sdl_quit()");
 	sdl_quit ();

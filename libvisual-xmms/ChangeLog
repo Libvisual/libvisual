@@ -1,3 +1,7 @@
+2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/main.c: bin_destroy -> visual_object_unref.
+
 2004-11-22  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/lv_bmp_config.c (is_gl_actor): A small change to
