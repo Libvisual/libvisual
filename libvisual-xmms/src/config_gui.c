@@ -313,6 +313,8 @@ ConfigWin *lv_xmms_config_gui_new (void)
   config_gui->list_vis_plugins = list_vis_plugins;
   config_gui->button_vis_plugin_conf = button_vis_plugin_conf;
   config_gui->button_vis_plugin_about = button_vis_plugin_about;
+  config_gui->checkbutton_vis_plugin = checkbutton_vis_plugin;
+
   config_gui->checkbutton_fullscreen = checkbutton_fullscreen;
   config_gui->radiobutton_onlygl = radiobutton_onlygl;
   config_gui->radiobutton_onlynongl = radiobutton_onlynongl;

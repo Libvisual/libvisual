@@ -45,6 +45,10 @@ int lv_xmms_config_save_prefs (void);
 
 void lv_xmms_config_toggle_fullscreen (void);
 
+const char *lv_xmms_config_get_next_actor (void);
+const char *lv_xmms_config_get_prev_actor (void);
+void lv_xmms_config_set_current_actor (const char *name);
+
 const char *lv_xmms_config_morph_plugin (void);
 
 #endif /* __LV_XMMS_CONFIG__ */

@@ -7,6 +7,8 @@ typedef struct {
 	GtkWidget *list_vis_plugins;
 	GtkWidget *button_vis_plugin_conf;
 	GtkWidget *button_vis_plugin_about;
+
+	GtkWidget *checkbutton_vis_plugin;
 	GtkWidget *checkbutton_fullscreen;
 	GtkWidget *radiobutton_onlygl;
 	GtkWidget *radiobutton_onlynongl;

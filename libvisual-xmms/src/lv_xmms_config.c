@@ -28,8 +28,10 @@ static gboolean all_plugins_enabled;
 static gboolean random_morph;
 static int fps;
 
+static GHashTable *actor_plugin_table = NULL;
+static GHashTable *actor_plugin_enable_table = NULL;
+
 /* Lists of VisPluginRef's */
-static GSList *actor_plugins_list = NULL;
 static GSList *actor_plugins_gl = NULL;
 static GSList *actor_plugins_nongl = NULL;
 
@@ -48,6 +50,8 @@ static void config_win_morph_plugin_add (char *name);
 static int load_actor_plugin_list (void);
 static int load_morph_plugin_list (void);
 	
+static void load_actor_plugin_enable_table (void);
+
 static void config_win_set_defaults (void);
 static void config_win_connect_callbacks (void);
 static void config_visual_initialize (void);
@@ -71,6 +75,9 @@ Options *lv_xmms_config_open ()
 	config_visual_initialize ();
 
 	srand (trash);
+
+	load_actor_plugin_list ();
+	load_actor_plugin_enable_table ();
 
 	load_morph_plugin_list ();
 	
@@ -225,6 +232,65 @@ void lv_xmms_config_toggle_fullscreen (void)
 							fullscreen);
 }
 
+const char *lv_xmms_config_get_prev_actor (void)
+{
+	gchar *prev_plugin;
+	gboolean *plugin_enabled;
+	int round;
+
+	round = 0;
+	prev_plugin = options.last_plugin;
+	do {
+		prev_plugin = visual_actor_get_prev_by_name (prev_plugin);
+		if (!prev_plugin) {
+			round++;
+			continue;
+		}
+		visual_log (VISUAL_LOG_INFO, "looking for %s", prev_plugin);
+		plugin_enabled = g_hash_table_lookup (actor_plugin_enable_table, prev_plugin);
+		visual_log_return_val_if_fail (plugin_enabled != NULL, NULL);
+		if (*plugin_enabled) {
+			visual_log (VISUAL_LOG_INFO, "enabled %s", prev_plugin);
+			return prev_plugin;
+		}
+	} while (round < 2);
+	
+	return NULL;
+}
+
+const char *lv_xmms_config_get_next_actor (void)
+{
+	gchar *next_plugin;
+	gboolean *plugin_enabled;
+	int round;
+
+	round = 0;
+	next_plugin = options.last_plugin;
+	do {
+		next_plugin = visual_actor_get_next_by_name (next_plugin);
+		if (!next_plugin) {
+			round++;
+			continue;
+		}
+		visual_log (VISUAL_LOG_INFO, "looking for %s", next_plugin);
+		plugin_enabled = g_hash_table_lookup (actor_plugin_enable_table, next_plugin);
+		visual_log_return_val_if_fail (plugin_enabled != NULL, NULL);
+		if (*plugin_enabled) {
+			visual_log (VISUAL_LOG_INFO, "enabled %s", next_plugin);
+			return next_plugin;
+		}
+	} while (round < 2);
+	
+	return NULL;
+}
+
+void lv_xmms_config_set_current_actor (const char *name)
+{
+	visual_log_return_if_fail (name != NULL);
+
+	options.last_plugin = name;
+}
+
 const char *lv_xmms_config_morph_plugin (void)
 {
 	GSList *l;
@@ -286,7 +352,6 @@ void lv_xmms_config_window ()
 
 	gtk_widget_grab_default (config_win->button_cancel);
 
-	load_actor_plugin_list ();
 	config_win_load_actor_plugin_list ();
 	config_win_load_morph_plugin_list ();
 
@@ -378,11 +443,108 @@ static void sync_options ()
 	options.random_morph = random_morph;
 }
 
+static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gpointer user_data);
+
 static void on_actor_plugin_selected (GtkListItem *item, VisPluginRef *actor)
 {
+	gboolean *enabled;
+
 	visual_log_return_if_fail (actor != NULL);
+	visual_log_return_if_fail (actor->info != NULL);
 
 	current_actor = actor;
+	enabled = g_hash_table_lookup (actor_plugin_enable_table, actor->info->plugname);
+	visual_log_return_if_fail (enabled != NULL);
+
+	gtk_signal_disconnect_by_func (GTK_OBJECT (config_win->checkbutton_vis_plugin),
+					on_checkbutton_vis_plugin_toggled, NULL);
+
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_vis_plugin), *enabled);	
+
+	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_vis_plugin), "toggled",
+                      GTK_SIGNAL_FUNC (on_checkbutton_vis_plugin_toggled),
+                      NULL);
+}
+
+static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gpointer user_data)
+{
+	GtkWidget *item;
+	GList *items = NULL;
+	gint pos;
+	gchar *name;
+	gchar *plugname;
+	gboolean *enable;
+
+	if (!current_actor)
+		return;
+
+	plugname = current_actor->info->plugname;
+	if (gtk_toggle_button_get_active (togglebutton)) {
+		/* We are enabling the selected actor */
+		g_print ("Enabling %s\n", plugname);
+		item = g_hash_table_lookup (actor_plugin_table, plugname);
+		g_hash_table_remove (actor_plugin_table, plugname);
+
+		/* Drop the item from the list, after save his position */
+		pos = gtk_list_child_position (GTK_LIST(config_win->list_vis_plugins), item);
+		items = g_list_append (items, item);
+		gtk_list_remove_items (GTK_LIST(config_win->list_vis_plugins), items);
+		g_list_free (items);
+
+		/* Create a new item marked as enabled */
+		name = g_strconcat (current_actor->info->name, _(" (enabled)"), 0);
+		item = gtk_list_item_new_with_label (name);
+		g_free (name);
+		/*gtk_list_select_item (GTK_LIST(config_win->list_vis_plugins), pos);*/
+		gtk_widget_show (item);
+		gtk_signal_connect (GTK_OBJECT(item), "select",
+			GTK_SIGNAL_FUNC(on_actor_plugin_selected),
+			(gpointer) current_actor);
+
+		/* Insert the new item */
+		items = NULL;
+		items = g_list_append (items, item);
+		g_print ("Inserting the new item at position %d..\n", pos);
+		gtk_list_insert_items (GTK_LIST(config_win->list_vis_plugins), items, pos);
+		
+		g_hash_table_insert (actor_plugin_table, plugname, item);
+
+		/* Mark it as enabled */
+		enable = g_hash_table_lookup (actor_plugin_enable_table, plugname);
+		visual_log_return_if_fail (enable != NULL);
+		*enable = TRUE;
+	} else {
+		g_print ("Disabling %s\n", plugname);
+		item = g_hash_table_lookup (actor_plugin_table, plugname);
+		g_hash_table_remove (actor_plugin_table, plugname);
+
+		/* Drop the item from the list, after save his position */
+		pos = gtk_list_child_position (GTK_LIST(config_win->list_vis_plugins), item);
+		items = g_list_append (items, item);
+		gtk_list_remove_items (GTK_LIST(config_win->list_vis_plugins), items);
+		g_list_free (items);
+
+		/* Create a new item marked as enabled */
+		item = gtk_list_item_new_with_label (current_actor->info->name);
+		/*gtk_list_select_item (GTK_LIST(config_win->list_vis_plugins), pos);*/
+		gtk_widget_show (item);
+		gtk_signal_connect (GTK_OBJECT(item), "select",
+			GTK_SIGNAL_FUNC(on_actor_plugin_selected),
+			(gpointer) current_actor);
+
+		/* Insert the new item */
+		items = NULL;
+		items = g_list_append (items, item);
+		g_print ("Inserting the new item at position %d..\n", pos);
+		gtk_list_insert_items (GTK_LIST(config_win->list_vis_plugins), items, pos);
+		
+		g_hash_table_insert (actor_plugin_table, plugname, item);
+
+		/* Mark it as disabled */
+		enable = g_hash_table_lookup (actor_plugin_enable_table, plugname);
+		visual_log_return_if_fail (enable != NULL);
+		*enable = FALSE;
+	}
 }
 
 static void on_button_vis_plugin_about_clicked (GtkButton *button, gpointer data)
@@ -446,6 +608,10 @@ static int load_actor_plugin_list ()
 	VisPluginRef *actor;
 	GtkWidget *msg;
 
+	/* We want to load the lists just once */
+	visual_log_return_val_if_fail (actor_plugins_gl == NULL, -1);
+	visual_log_return_val_if_fail (actor_plugins_nongl == NULL, -1);
+
 	list = visual_actor_get_list ();
 	if (!list) {
 		visual_log (VISUAL_LOG_WARNING, _("The list of actor plugins is empty."));
@@ -471,39 +637,105 @@ static int load_actor_plugin_list ()
 	return 0;
 }
 
+static guint hash_function (gconstpointer key)
+{
+	const char *skey;
+	guint hash_value = 0;
+	int i;
+
+	if (!key)
+		return 0;
+	
+	skey = key;
+	for (i = 0; i < strlen (skey); i++)
+		hash_value = (hash_value << 4) + (hash_value ^ (guint) skey[i]);
+
+	return hash_value;
+}
+
+static gint hash_compare (gconstpointer s1, gconstpointer s2)
+{
+	return (!strcmp ((char*) s1, (char*) s2));
+}
+
+/* FIXME We must read config file, not just enabling all */
+static void load_actor_plugin_enable_table ()
+{
+	GHashTable *enable_table;
+	GSList *l;
+	VisPluginRef *actor;
+	gboolean *enable;
+
+	visual_log_return_if_fail (actor_plugin_enable_table == NULL);
+	visual_log_return_if_fail (actor_plugins_gl != NULL);
+	visual_log_return_if_fail (actor_plugins_nongl != NULL);
+
+	enable_table = g_hash_table_new (hash_function, hash_compare);
+	l = actor_plugins_gl;
+	while (l) {
+		actor = l->data;
+		enable = g_malloc (sizeof(gboolean));
+		*enable = TRUE;
+		g_hash_table_insert (enable_table, actor->info->plugname, enable);
+		l = g_slist_next (l);
+	}
+	l = actor_plugins_nongl;
+	while (l) {
+		actor = l->data;
+		enable = g_malloc (sizeof(gboolean));
+		*enable = TRUE;
+		g_hash_table_insert (enable_table, actor->info->plugname, enable);
+		l = g_slist_next (l);
+	}
+	actor_plugin_enable_table = enable_table;
+}
+
+/* FIXME We must look at actor_plugin_enable_table, not just enabling all */
 static void config_win_load_actor_plugin_list ()
 {
 	GtkWidget *item;
 	GList *items;
 	GSList *l;
 	VisPluginRef *actor;
+	GHashTable *table;
+	gchar *name;
 
+	table = g_hash_table_new (hash_function, hash_compare);
 	items = NULL;
 	if (all_plugins_enabled || gl_plugins_only) {
 		l = actor_plugins_gl;
-		while ((l = g_slist_next (l))) {
+		while (l) {
 			actor = l->data;
-			item = gtk_list_item_new_with_label (actor->info->plugname);
+			name = g_strconcat (actor->info->name, _(" (enabled)"), 0);
+			item = gtk_list_item_new_with_label (name);
+			g_free (name);
 			gtk_widget_show (item);
 			gtk_signal_connect (GTK_OBJECT(item), "select",
 				GTK_SIGNAL_FUNC(on_actor_plugin_selected),
 				(gpointer) actor);
 			items = g_list_append (items, item);
+			g_hash_table_insert (table, actor->info->plugname, item);
+			l = g_slist_next (l);
 		}
 	}
 	if (all_plugins_enabled || non_gl_plugins_only) {
 		l = actor_plugins_nongl;
-		while ((l = g_slist_next (l))) {
+		while (l) {
 			actor = l->data;
-			item = gtk_list_item_new_with_label (actor->info->plugname);
+			name = g_strconcat (actor->info->name, _(" (enabled)"), 0);
+			item = gtk_list_item_new_with_label (name);
+			g_free (name);
 			gtk_widget_show (item);
 			gtk_signal_connect (GTK_OBJECT(item), "select",
 				GTK_SIGNAL_FUNC(on_actor_plugin_selected),
 				(gpointer) actor);
 			items = g_list_append (items, item);
+			g_hash_table_insert (table, actor->info->plugname, item);
+			l = g_slist_next (l);
 		}
 	}
 	gtk_list_append_items (GTK_LIST(config_win->list_vis_plugins), items);
+	actor_plugin_table = table;
 }
 
 static int config_win_load_morph_plugin_list ()
@@ -670,6 +902,9 @@ static void config_win_set_defaults (void)
 
 static void config_win_connect_callbacks (void)
 {
+	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_vis_plugin), "toggled",
+                      GTK_SIGNAL_FUNC (on_checkbutton_vis_plugin_toggled),
+                      NULL);
 	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_fullscreen), "toggled",
                       GTK_SIGNAL_FUNC (on_checkbutton_fullscreen_toggled),
                       NULL);

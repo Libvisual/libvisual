@@ -520,7 +520,7 @@ static int sdl_event_handle ()
 {
 	SDL_Event event;
 	VisEventQueue *vevent;
-	char *next_plugin;
+	const char *next_plugin;
 
 	while (SDL_PollEvent (&event)) {
 		vevent = visual_plugin_get_eventqueue (visual_actor_get_plugin (visual_bin_get_actor (bin)));
@@ -587,30 +587,13 @@ static int sdl_event_handle ()
 						break;
 
 					case SDLK_a:
-						if (options->all_plugins_enabled)
-							next_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
-						else if (options->gl_plugins_only)
-							next_plugin = visual_actor_get_prev_by_name_gl (cur_lv_plugin);
-						else
-							next_plugin = visual_actor_get_prev_by_name_nogl (cur_lv_plugin);
-
-						if (next_plugin == NULL) {
-							if (options->all_plugins_enabled)
-								next_plugin = visual_actor_get_prev_by_name (NULL);
-							else if (options->gl_plugins_only)
-								next_plugin = visual_actor_get_prev_by_name_gl (NULL);
-							else
-								next_plugin = visual_actor_get_prev_by_name_nogl (NULL);
-
-							if (next_plugin == NULL) {
-								visual_log (VISUAL_LOG_CRITICAL, "Cannot get previous plugin");
-							}
-                                                }
-
+						next_plugin = lv_xmms_config_get_prev_actor ();
+						
 						if (SDL_MUSTLOCK (screen) == SDL_TRUE)
 							SDL_LockSurface (screen);
 
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
+						    lv_xmms_config_set_current_actor (next_plugin);
                                                     cur_lv_plugin = next_plugin;
                                                     visual_bin_set_morph_by_name (bin, lv_xmms_config_morph_plugin());
                                                     visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
@@ -624,30 +607,13 @@ static int sdl_event_handle ()
 						break;
 
 					case SDLK_s:
-						if (options->all_plugins_enabled)
-							next_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
-						else if (options->gl_plugins_only)
-							next_plugin = visual_actor_get_next_by_name_gl (cur_lv_plugin);
-						else
-							next_plugin = visual_actor_get_next_by_name_nogl (cur_lv_plugin);
-
-						if (next_plugin == NULL) {
-							if (options->all_plugins_enabled)
-								next_plugin = visual_actor_get_next_by_name (NULL);
-							else if (options->gl_plugins_only)
-								next_plugin = visual_actor_get_next_by_name_gl (NULL);
-							else
-								next_plugin = visual_actor_get_next_by_name_nogl (NULL);
-
-							if (next_plugin == NULL) {
-								visual_log (VISUAL_LOG_CRITICAL, "Cannot get next plugin");
-							}
-                                                }
+						next_plugin = lv_xmms_config_get_next_actor ();
 
                                                 if (SDL_MUSTLOCK (screen) == SDL_TRUE)
                                                     SDL_LockSurface (screen);
 
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
+						    lv_xmms_config_set_current_actor (next_plugin);
                                                     cur_lv_plugin = next_plugin;
                                                     visual_bin_set_morph_by_name (bin, lv_xmms_config_morph_plugin());
                                                     visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
