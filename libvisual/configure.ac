@@ -4,9 +4,9 @@ AC_PREREQ(2.57)
 AC_INIT(Libvisual Library, 0.1.5, synap@nerds-incorporated.org, libvisual)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADER(config.h)
 
-AM_DISABLE_STATIC
+AC_DISABLE_STATIC
 
 # Checks for programs.
 AM_PROG_LIBTOOL
@@ -45,13 +45,26 @@ else
   AC_MSG_WARN([*** pkg-config too old; version 0.14 or better recommended.])
 fi
 
+# Find SDL to build the examples.
+# On future, this must be made optional
+AC_PATH_PROG(SDL_CONFIG, [sdl-config], [no])
+if test x$SDL_CONFIG = xno ; then
+  AC_MSG_ERROR([
+*** sdl-config not found.
+*** If you have installed from binaries, probably you have not 
+*** installed SDL development package.
+*** See http://www.libsdl.org
+])
+fi
+# On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
+AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
+
 libs_dynamic_loader="-ldl"
 AC_SUBST(CFLAGS, "-I./ -O2 -Wall -rdynamic -ggdb")
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
 VISUAL_LIBS="-L${libdir} -lvisual -lm -ldl"
 VISUAL_CFLAGS="-I${includedir}"
-
 AC_SUBST(VISUAL_CFLAGS)
 AC_SUBST(VISUAL_LIBS)
 
@@ -59,6 +72,7 @@ AC_CONFIG_FILES([
 Makefile
 libvisual.pc
 libvisual/Makefile
+examples/Makefile
 ])
 #examples/Makefile	This are not included in the package
 #tests/Makefile		This are not included in the package
