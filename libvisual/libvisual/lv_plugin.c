@@ -149,6 +149,39 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
 }
 
 /**
+ * Sets a VisUIWidget as top user interface widget for the plugin. When a VisUI
+ * tree is requested by a client, to render a configuration userinterface, this
+ * VisUIWidget is used as top widget.
+ *
+ * @param plugin Pointer to the VisPluginData to which we set the VisUIWidget as top widget.
+ * @param widget Pointer to the VisUIWidget that we use as top widget for the user interface.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget)
+{
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
+	plugin->userinterface = widget;
+
+	return 0;
+}
+
+/**
+ * Retrieves the VisUI top widget for the plugin.
+ *
+ * @param plugin Pointer to the VisPluginData of which we request the VisUIWidget that serves as top widget.
+ *
+ * @return Pointer to the VisUIWidget that serves as top widget, possibly NULL.
+ */
+VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin)
+{
+	visual_log_return_val_if_fail (plugin != NULL, NULL);
+
+	return plugin->userinterface;
+}
+
+/**
  * Gives the VisPluginInfo related to a VisPluginData.
  *
  * @param plugin The VisPluginData of which the VisPluginInfo is requested.

@@ -8,6 +8,7 @@
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param.h>
+#include <libvisual/lv_ui.h>
 #include <libvisual/lv_random.h>
 
 #ifdef __cplusplus
@@ -247,6 +248,8 @@ struct _VisPluginData {
 
 	VisEventQueue		 eventqueue;	/**< The plugin it's VisEventQueue for queueing events. */
 	VisParamContainer	 params;	/**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
+	VisUIWidget		*userinterface;	/**< The plugin it's top level VisUIWidget, this acts as the container for the
+						  * rest of the user interface. */
 
 	int			 plugflags;	/**< Plugin flags, currently unused but will be used in the future. */
 	VisSongInfo		*songinfo;	/**< Pointer to VisSongInfo that contains information about the current playing song.
@@ -319,6 +322,8 @@ int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src);
 
 int visual_plugin_events_pump (VisPluginData *plugin);
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
+int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget);
+VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin);
 
 const VisPluginInfo *visual_plugin_get_info (const VisPluginData *plugin);
 
