@@ -15,11 +15,7 @@ typedef enum {
 } SlideType;
 
 typedef struct {
-	uint16_t b:5, g:6, r:5;
-} _color16;
-
-typedef struct {
-	int	slide_type;
+	SlideType	slide_type;
 } SlidePrivate; 
 
 int lv_morph_slide_init_left (VisPluginData *plugin);
@@ -180,8 +176,11 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 	int i;
 	int diff1;
 	int diff2;
+	int hadd;
 
-	if (priv->slide_type == SLIDE_RIGHT)
+	memset (destbuf, 0, dest->size);
+	
+	if (priv->slide_type == SLIDE_RIGHT || priv->slide_type == SLIDE_UPPER)
 		rate = 1.0 - rate;
 	
 	diff1 = dest->pitch * rate;
@@ -192,24 +191,35 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
 	diff2 = dest->pitch - diff1;
 
+	hadd = dest->height * rate;
+	
 	switch (priv->slide_type) {
 		case SLIDE_LEFT:
-		case SLIDE_RIGHT:
 			for (i = 0; i < dest->height; i++) {
 				memcpy (destbuf + (i * dest->pitch), srcbuf2 + (i * dest->pitch) + diff2, diff1);
 				memcpy (destbuf + (i * dest->pitch) + (diff1), srcbuf1 + (i * dest->pitch), diff2);
+			}
+
+			break;
+
+		case SLIDE_RIGHT:
+			for (i = 0; i < dest->height; i++) {
+				memcpy (destbuf + (i * dest->pitch), srcbuf1 + (i * dest->pitch) + diff2, diff1);
+				memcpy (destbuf + (i * dest->pitch) + (diff1), srcbuf2 + (i * dest->pitch), diff2);
 			}
 			
 			break;
 
 		case SLIDE_BOTTOM:
-
+			memcpy (destbuf, srcbuf1 + (hadd * dest->pitch), (dest->height - hadd) * dest->pitch);
+			memcpy (destbuf + ((dest->height - hadd) * dest->pitch), srcbuf2, hadd * dest->pitch);
 
 			break;
 
 		case SLIDE_UPPER:
+			memcpy (destbuf, srcbuf2 + (hadd * dest->pitch), (dest->height - hadd) * dest->pitch);
+			memcpy (destbuf + ((dest->height - hadd) * dest->pitch), srcbuf1, hadd * dest->pitch);
 
-			
 			break;
 
 		default:
