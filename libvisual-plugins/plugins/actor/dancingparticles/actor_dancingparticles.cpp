@@ -3,8 +3,6 @@
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
- *	    4Front Technologies
  *
  * $Id:
  *

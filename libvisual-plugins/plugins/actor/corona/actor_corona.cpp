@@ -135,15 +135,15 @@ extern "C" int lv_corona_requisition (VisPluginData *plugin, int *width, int *he
 	while (reqw % 4)
 		reqw--;
 
-	while (reqh % 4)
-		reqh--;
-
 	if (reqw < 32)
 		reqw = 32;
 
 	if (reqh < 32)
 		reqh = 32;
 
+	*width = reqw;
+	*height = reqh;
+	
 	return 0;
 }
 

@@ -1,5 +1,9 @@
 2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/corona/corona.cpp: Made an mmx version for the blurrer
+
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/dancingparticles/*: Adding the beginning, very rough
 	port still.
 
