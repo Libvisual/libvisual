@@ -1,3 +1,11 @@
+2004-12-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: FORGOT TO COMPILE BEFORE COMMIT.. I am dumb.
+
+	* libvisual/lv_thread.*: Fixes and added visual_thread_enable ()
+	and visual_thread_is_enabled () functions, to manually overwrite
+	thread support.
+
 2004-12-14  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_ui.h: Finished up documentation mostly. Also removed

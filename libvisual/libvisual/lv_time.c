@@ -6,6 +6,7 @@
 
 #include "config.h"
 #include "lv_common.h"
+#include "lv_thread.h"
 #include "lv_time.h"
 
 /**
@@ -130,13 +131,13 @@ int visual_time_usleep (unsigned long microseconds)
 	request.tv_nsec = 1000 * (microseconds % VISUAL_USEC_PER_SEC);
 	while (nanosleep (&request, &remaining) == EINTR)
 		request = remaining;
-#elif HAVE_USLEEP
-	return usleep (microseconds);
 #elif HAVE_SELECT
 	struct timeval tv;
 	tv.tv_sec = microseconds / VISUAL_USEC_PER_SEC;
 	tv.tv_usec = microseconds % VISUAL_USEC_PER_SEC;
 	select (0, NULL, NULL, NULL, &tv);
+#elif HAVE_USLEEP
+	return usleep (microseconds);
 #else
 #warning visual_time_usleep() will does not work!
 	return -VISUAL_ERROR_TIME_NO_USLEEP;

@@ -59,6 +59,9 @@ struct _VisMutex {
 #endif /* VISUAL_HAVE_THREADS */
 };
 
+void visual_thread_enable (int enabled);
+int visual_thread_is_enabled (void);
+
 int visual_thread_is_supported (void);
 VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable);
 int visual_thread_free (VisThread *thread);

@@ -1052,8 +1052,6 @@ VisUIWidget *visual_ui_popup_new ()
 	
 	VISUAL_UI_WIDGET (popup)->type = VISUAL_WIDGET_TYPE_POPUP;
 
-	VISUAL_UI_CHOICE (popup)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
-
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (popup), -1, -1);
 
 	return VISUAL_UI_WIDGET (popup);
@@ -1075,8 +1073,6 @@ VisUIWidget *visual_ui_list_new ()
 	visual_object_initialize (VISUAL_OBJECT (list), TRUE, choice_dtor);
 	
 	VISUAL_UI_WIDGET (list)->type = VISUAL_WIDGET_TYPE_LIST;
-
-	VISUAL_UI_CHOICE (list)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (list), -1, -1);
 
@@ -1101,8 +1097,6 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 	visual_object_initialize (VISUAL_OBJECT (radio), TRUE, choice_dtor);
 
 	VISUAL_UI_WIDGET (radio)->type = VISUAL_WIDGET_TYPE_RADIO;
-
-	VISUAL_UI_CHOICE (radio)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
 	radio->orient = orient;
 	
@@ -1134,8 +1128,6 @@ VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 	visual_object_initialize (VISUAL_OBJECT (checkbox), TRUE, choice_dtor);
 
 	VISUAL_UI_WIDGET (checkbox)->type = VISUAL_WIDGET_TYPE_CHECKBOX;
-
-	VISUAL_UI_CHOICE (checkbox)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
 	checkbox->name = name;
 

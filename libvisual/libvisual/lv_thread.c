@@ -6,6 +6,8 @@
 #include "lv_log.h"
 #include "lv_thread.h"
 
+static int __lv_thread_enabled = TRUE;
+
 /* FIXME add more threading backends here:
  * glib			(could proof to be a nice fallback when needed)
  * native windows	(says nuff)
@@ -17,6 +19,28 @@
  * @defgroup VisThread VisThread
  * @{
  */
+
+/**
+ * Enable or disable threading support. This can be used to disallow threads, which might be needed in some environments.
+ * 
+ * @see visual_thread_is_enabled
+ *
+ * @param enabled TRUE to enable threads, FALSE to disable threads.
+ */
+void visual_thread_enable (int enabled)
+{
+	__lv_thread_enabled = enabled > 0 ? TRUE : FALSE;
+}
+
+/**
+ * Request if threads are enabled or not. This function should not be confused with visual_thread_is_supported().
+ *
+ * @return TRUE if enabled, FALSE if disabled.
+ */
+int visual_thread_is_enabled (void)
+{
+	return __lv_thread_enabled;
+}
 
 /**
  * Is used to check if threading is supported. When threading is used this should always
@@ -54,6 +78,9 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 	VisThread *thread;
 	pthread_attr_t attr;
 	int res;
+
+	if (visual_thread_is_enabled () == FALSE)
+		return NULL;
 
 	thread = visual_mem_new0 (VisThread, 1);
 
@@ -175,13 +202,20 @@ void visual_thread_yield ()
 VisMutex *visual_mutex_new ()
 {
 #ifdef VISUAL_HAVE_THREADS
+#ifdef VISUAL_THREAD_MODEL_POSIX
 	VisMutex *mutex;
+
+	if (visual_thread_is_enabled () == FALSE)
+		return NULL;
 
 	mutex = visual_mem_new0 (VisMutex, 1);
 
 	pthread_mutex_init (&mutex->mutex, NULL);
 
 	return mutex;
+#else /* !VISUAL_THREAD_MODEL_POSIX */
+	return NULL;
+#endif
 #else
 	return NULL;
 #endif /* VISUAL_HAVE_THREADS */
@@ -198,9 +232,13 @@ VisMutex *visual_mutex_new ()
 int visual_mutex_free (VisMutex *mutex)
 {
 #ifdef VISUAL_HAVE_THREADS
+#ifdef VISUAL_THREAD_MODEL_POSIX
 	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
 	return visual_mem_free (mutex);
+#else /* !VISUAL_THREAD_MODEL_POSIX */
+	return -VISUAL_ERROR_THREAD_NO_THREADING;
+#endif
 #else
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
 #endif /* VISUAL_HAVE_THREADS */
