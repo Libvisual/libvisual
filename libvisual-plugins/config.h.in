@@ -1,29 +1,5 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* alsa input plugin dynamic library name */
-#undef ALSALA
-
-/* analyzer plugin dynamic library name */
-#undef ANALYZER
-
-/* bumpscope plugin dynamic library name */
-#undef BUMPSCOPE
-
-/* dna plugin dynamic library name */
-#undef DNA
-
-/* esd input plugin dynamic library name */
-#undef ESDLA
-
-/* gdkpixbuf plugin dynamic library name */
-#undef GDKPIXBUFLA
-
-/* gltest plugin dynamic library name */
-#undef GLTEST
-
-/* goom2 plugin dynamic library name */
-#undef GOOM2LA
-
 /* Alsa Library is from 0.9 series */
 #undef HAVE_0_9_X_ALSA
 
@@ -91,27 +67,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* infinite plugin dynamic library name */
-#undef INFINITE
-
-/* jack input plugin dynamic library name */
-#undef JACKLA
-
-/* jakdaw plugin dynamic library name */
-#undef JAKDAW
-
-/* JESS plugin dynamic library name */
-#undef JESSLA
-
-/* madspin plugin dynamic library name */
-#undef MADSPIN
-
-/* mplayer plugin dynamic library name */
-#undef MPLAYER
-
-/* oinksie plugin dynamic library name */
-#undef OINKSIE
-
 /* Name of package */
 #undef PACKAGE
 
@@ -129,12 +84,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
-
-/* plazma plugin dynamic library name */
-#undef PLAZMA
-
-/* scope plugin dynamic library name */
-#undef SCOPE
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS

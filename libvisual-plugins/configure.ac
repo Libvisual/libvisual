@@ -31,7 +31,7 @@ fi
 # Checks for libraries.
 build_input=""
 build_actor=""
-build_morph="alphablend tentacle flash"
+build_morph=""
 
 PKG_CHECK_MODULES(LIBESD, esound >= 0.2.28, [libesd="yes"], [libesd="no"])
 if test x$libesd = xno; then
@@ -42,8 +42,7 @@ AC_SUBST(LIBESD_LIBS)
 AC_SUBST(LIBESD_CFLAGS)
 if test x$libesd = xyes; then
   build_input="$build_input esd"
-  AC_DEFINE([ESDLA], [input_esd.la], [esd input plugin dynamic library name])
-  AC_SUBST(ESDLA)
+  AC_SUBST([ESD], ['input_esd.la'])
 fi
 
 PKG_CHECK_MODULES(LIBJACK, jack >= 0.98.0, [jack="yes"], [jack="no"])
@@ -55,8 +54,7 @@ AC_SUBST(LIBJACK_LIBS)
 AC_SUBST(LIBJACK_CFLAGS)
 if test x$jack = xyes; then
   build_input="$build_input jack"
-  AC_DEFINE([JACKLA], [input_jack.la], [jack input plugin dynamic library name])
-  AC_SUBST(JACKLA)
+  AC_SUBST([JACK], ['input_jack.la'])
 fi
 
 PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.7, [libvis="yes"], [libvis="no"])
@@ -78,8 +76,7 @@ AC_SUBST(LIBGOOM2_LIBS)
 AC_SUBST(LIBGOOM2_CFLAGS)
 if test x$libgoom = xyes; then
   build_actor="$build_actor goom2"
-  AC_DEFINE([GOOM2LA], [actor_goom2.la], [goom2 plugin dynamic library name])
-  AC_SUBST(GOOM2LA)
+  AC_SUBST([GOOM2], ['actor_goom2.la'])
 fi
 
 #FIXME We actually don't want to depend on gtk here..... 
@@ -94,8 +91,7 @@ AC_SUBST(GDKPIXBUF_LIBS)
 AC_SUBST(GDKPIXBUF_CFLAGS)
 if test x$gdkpixbuf = xyes; then
   build_actor="$build_actor gdkpixbuf"
-  AC_DEFINE([GDKPIXBUFLA], [actor_gdkpixbuf.la], [gdkpixbuf plugin dynamic library name])
-  AC_SUBST(GDKPIXBUFLA)
+  AC_SUBST([GDKPIXBUF], ['actor_gdkpixbuf.la'])
 fi
   
 AC_MSG_CHECKING([for OpenGL support on Libvisual])
@@ -139,8 +135,7 @@ if test x$alsa = xyes; then
   AM_PATH_ALSA($LV_ALSA_MIN_VERSION,[ build_alsa=yes ], [ build_alsa=no ])
   if test x$build_alsa = xyes; then
     build_input="$build_input alsa"
-    AC_DEFINE([ALSALA], [input_alsa.la], [alsa input plugin dynamic library name])
-    AC_SUBST(ALSALA)
+    AC_SUBST([ALSA], ['input_alsa.la'])
     AC_TRY_COMPILE([#include <stdlib.h>
 		    #include <alsa/asoundlib.h>],
 		   [#if(SND_LIB_MAJOR == 0)
@@ -148,10 +143,8 @@ if test x$alsa = xyes; then
 		    #else
 		     something that fails to compile
 		    #endif],
-		   [ AC_DEFINE([HAVE_0_9_X_ALSA], [1], [Alsa Library is from 0.9 series])
-		     AC_SUBST([HAVE_0_9_X_ALSA]) ],
-		   [ AC_DEFINE([HAVE_1_X_X_ALSA], [1], [Alsa Library is from 1 series])
-		     AC_SUBST([HAVE_1_X_X_ALSA]) ])
+		   [ AC_DEFINE([HAVE_0_9_X_ALSA], [1], [Alsa Library is from 0.9 series]) ],
+		   [ AC_DEFINE([HAVE_1_X_X_ALSA], [1], [Alsa Library is from 1 series]) ])
   else
     AC_MSG_WARN([*** Alsa input plugin cannot be built.
 		 May be you have an ALSA library older than $LV_ALSA_MIN_VERSION.
@@ -172,8 +165,7 @@ if test x$mplayer = xyes; then
   # FIXME we must check also for HAVE_MMAP here
   if test x$lv_have_munmap = xyes; then
     build_input="$build_input mplayer"
-    AC_DEFINE([MPLAYER], [actor_mplayer.la], [mplayer plugin dynamic library name])
-    AC_SUBST(MPLAYER)
+    AC_SUBST([MPLAYER], ['input_mplayer.la'])
   else
     AC_MSG_WARN([*** There is not a working munmap function available.
 		mplayer input plugin will not be built.])
@@ -192,8 +184,7 @@ if test x$dna = xyes; then
   AC_MSG_RESULT([yes])
   if test x$opengl = xyes; then
     build_actor="$build_actor dna"
-    AC_DEFINE([DNA], [actor_lv_dna.la], [dna plugin dynamic library name])
-    AC_SUBST(DNA)
+    AC_SUBST([DNA], ['actor_lv_dna.la'])
   else
     AC_MSG_WARN([*** Libvisual doesn't have OpenGL support.
 		dna plugin will not be built.])
@@ -212,8 +203,7 @@ if test x$lvgltest = xyes; then
   AC_MSG_RESULT([yes])
   if test x$opengl = xyes; then
     build_actor="$build_actor lv_gltest"
-    AC_DEFINE([GLTEST], [actor_lv_gltest.la], [gltest plugin dynamic library name])
-    AC_SUBST(GLTEST)
+    AC_SUBST([GLTEST], ['actor_lv_gltest.la'])
   else
     AC_MSG_WARN([*** Libvisual doesn't have OpenGL support.
 		lv_gltest plugin will not be built.])
@@ -232,8 +222,7 @@ if test x$madspin = xyes; then
   AC_MSG_RESULT([yes])
   if test x$opengl = xyes; then
     build_actor="$build_actor madspin"
-    AC_DEFINE([MADSPIN], [actor_madspin.la], [madspin plugin dynamic library name])
-    AC_SUBST(MADSPIN)
+    AC_SUBST([MADSPIN], ['actor_madspin.la'])
   else
     AC_MSG_WARN([*** Libvisual doesn't have GL support.
 		Madspin plugin will not be built.])
@@ -251,8 +240,7 @@ AC_MSG_CHECKING([whether to build Infinite plugin])
 if test x$infinite = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor infinite"
-  AC_DEFINE([INFINITE], [actor_infinite.la], [infinite plugin dynamic library name])
-  AC_SUBST(INFINITE)
+  AC_SUBST([INFINITE], ['actor_infinite.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -266,8 +254,7 @@ AC_MSG_CHECKING([whether to build JESS plugin])
 if test x$jess = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor JESS"
-  AC_DEFINE([JESSLA], [actor_JESS.la], [JESS plugin dynamic library name])
-  AC_SUBST(JESSLA)
+  AC_SUBST([JESS], ['actor_JESS.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -281,8 +268,7 @@ AC_MSG_CHECKING([whether to build Analyzer plugin])
 if test x$analyzer = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor lv_analyzer"
-  AC_DEFINE([ANALYZER], [actor_lv_analyzer.la], [analyzer plugin dynamic library name])
-  AC_SUBST(ANALYZER)
+  AC_SUBST([ANALYZER], ['actor_lv_analyzer.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -296,8 +282,7 @@ AC_MSG_CHECKING([whether to build Scope plugin])
 if test x$scope = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor lv_scope"
-  AC_DEFINE([SCOPE], [actor_lv_scope.la], [scope plugin dynamic library name])
-  AC_SUBST(SCOPE)
+  AC_SUBST([SCOPE], ['actor_lv_scope.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -311,8 +296,7 @@ AC_MSG_CHECKING([whether to build Oinksie plugin])
 if test x$oinksie = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor oinksie"
-  AC_DEFINE([OINKSIE], [actor_oinksie.la], [oinksie plugin dynamic library name])
-  AC_SUBST(OINKSIE)
+  AC_SUBST([OINKSIE], ['actor_oinksie.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -326,8 +310,7 @@ AC_MSG_CHECKING([whether to build Jakdaw plugin])
 if test x$jakdaw = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor jakdaw"
-  AC_DEFINE([JAKDAW], [actor_jakdaw.la], [jakdaw plugin dynamic library name])
-  AC_SUBST(JAKDAW)
+  AC_SUBST([JAKDAW], ['actor_jakdaw.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -341,8 +324,7 @@ AC_MSG_CHECKING([whether to build plazma plugin])
 if test x$plazma = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor plazma"
-  AC_DEFINE([PLAZMA], [actor_plazma.la], [plazma plugin dynamic library name])
-  AC_SUBST(PLAZMA)
+  AC_SUBST([PLAZMA], ['actor_plazma.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -356,8 +338,49 @@ AC_MSG_CHECKING([whether to build bumpscope plugin])
 if test x$bumpscope = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor bumpscope"
-  AC_DEFINE([BUMPSCOPE], [actor_bumpscope.la], [bumpscope plugin dynamic library name])
-  AC_SUBST(BUMPSCOPE)
+  AC_SUBST([BUMPSCOPE], ['actor_bumpscope.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([alphablend],
+            AC_HELP_STRING([--disable-alphablend],
+                           [Do not build alphablend morph plugin @<:@default=enabled@:>@]),
+	    [alphablend=$enableval],
+	    [alphablend=yes])
+AC_MSG_CHECKING([whether to build alphablend morph plugin])
+if test x$alphablend = xyes; then
+  AC_MSG_RESULT([yes])
+  build_morph="$build_morph alphablend"
+  AC_SUBST([ALPHABLEND], ['morph_alphablend.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([flash],
+            AC_HELP_STRING([--disable-flash],
+                           [Do not build flash morph plugin @<:@default=enabled@:>@]),
+	    [flash=$enableval],
+	    [flash=yes])
+AC_MSG_CHECKING([whether to build flash morph plugin])
+if test x$flash = xyes; then
+  AC_MSG_RESULT([yes])
+  build_morph="$build_morph flash"
+  AC_SUBST([FLASH], ['morph_flash.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([tentacle],
+            AC_HELP_STRING([--disable-tentacle],
+                           [Do not build tentacle morph plugin @<:@default=enabled@:>@]),
+	    [tentacle=$enableval],
+	    [tentacle=yes])
+AC_MSG_CHECKING([whether to build tentacle morph plugin])
+if test x$tentacle = xyes; then
+  AC_MSG_RESULT([yes])
+  build_morph="$build_morph tentacle"
+  AC_SUBST([TENTACLE], ['morph_tentacle.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -387,10 +410,6 @@ libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
 AC_SUBST(DATADIR, "$datadir")
-
-AC_SUBST(BUILD_INPUT, "mplayer esd jack alsa")
-AC_SUBST(BUILD_ACTOR, "dna goom2 gdkpixbuf lv_gltest madspin infinite JESS lv_analyzer lv_scope oinksie jakdaw plazma bumpscope")
-AC_SUBST(BUILD_MORPH, "$build_morph")
 
 AC_CONFIG_FILES([
 	Makefile
@@ -439,7 +458,7 @@ gdkpixbuf:                            : ${gdkpixbuf}
 Plugins being build:
 input:                                : ${build_input}
 actor:                                : ${build_actor}
-morph:                                : ${BUILD_MORPH}
+morph:                                : ${build_morph}
 
 Libvisual plugin data dir:            : ${prefix}/share
 

@@ -1,3 +1,3 @@
 
-SUBDIRS = @BUILD_INPUT@ 
+SUBDIRS = mplayer esd jack alsa 
 
