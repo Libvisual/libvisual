@@ -54,6 +54,12 @@
 	* plugins/actor/madspin/madspin.c: Free allocated
 	textures on cleanup.
 
+2004-07-13  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: Alsa plugin made optional.
+	* plugins/actor/infinite/main.h: TRUE and FALSE macros
+	removed, they are already defined on Libvisual.
+
 2004-07-12  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/morph/flash/morph_flash.c (flash_32):
