@@ -115,6 +115,58 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 }
 #endif
 
+#ifdef __GNUC__
+
+#define visual_log_return_if_fail(expr)				\
+	if (expr) { } else					\
+	{							\
+	visual_log (VISUAL_LOG_CRITICAL,			\
+		 "file %s: line %d (%s): assertion `%s' failed",\
+		 __FILE__,					\
+		 __LINE__,					\
+		 __PRETTY_FUNCTION__,				\
+		#expr);						\
+	return;							\
+	}
+
+#define visual_log_return_val_if_fail(expr, val)		\
+	if (expr) { } else					\
+	{							\
+	visual_log (VISUAL_LOG_CRITICAL,			\
+		 "file %s: line %d (%s): assertion `%s' failed",\
+		 __FILE__,					\
+		 __LINE__,					\
+		 __PRETTY_FUNCTION__,				\
+		#expr);						\
+	return (val);						\
+	}
+
+#else /* !__GNUC__ */
+
+#define visual_log_return_if_fail(expr)				\
+	if (expr) { } else					\
+	{							\
+	visual_log (VISUAL_LOG_CRITICAL,			\
+		 "file %s: line %d: assertion `%s' failed",	\
+		 __FILE__,					\
+		 __LINE__,					\
+		#expr);						\
+	return;							\
+	}
+
+#define visual_log_return_val_if_fail(expr, val)		\
+	if (expr) { } else					\
+	{							\
+	visual_log (VISUAL_LOG_CRITICAL,			\
+		 "file %s: line %d: assertion `%s' failed",	\
+		 __FILE__,					\
+		 __LINE__,					\
+		#expr);						\
+	return (val);						\
+	}
+
+#endif /* __GNUC__ */
+
 void _lv_log (VisLogSeverity severity, const char *file, int line, const char *fmt, ...);
 
 #ifdef __cplusplus

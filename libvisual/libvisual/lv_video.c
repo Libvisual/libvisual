@@ -5,6 +5,7 @@
 
 #include "lv_common.h"
 #include "lv_video.h"
+#include "lv_log.h"
 
 typedef struct {
 	uint16_t b:5, g:6, r:5;
@@ -79,9 +80,8 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
  */
 int visual_video_free (VisVideo *video)
 {
-	if (video == NULL)
-		return -1;
-
+	visual_log_return_val_if_fail (video != NULL, -1);
+	
 	free (video);
 
 	return 0;
@@ -97,8 +97,7 @@ int visual_video_free (VisVideo *video)
  */
 int visual_video_free_with_buffer (VisVideo *video)
 {
-	if (video == NULL)
-		return -1;
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	visual_video_free_buffer (video);
 
@@ -116,8 +115,7 @@ int visual_video_free_with_buffer (VisVideo *video)
  */
 int visual_video_free_buffer (VisVideo *video)
 {
-	if (video == NULL || video->screenbuffer == NULL)
-		return -1;
+	visual_log_return_val_if_fail (video != NULL && video->screenbuffer != NULL, -1);
 
 	free (video->screenbuffer);
 
@@ -134,8 +132,7 @@ int visual_video_free_buffer (VisVideo *video)
  */
 int visual_video_allocate_buffer (VisVideo *video)
 {
-	if (video == NULL)
-		return -1;
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	printf ("[video-allocate-buffer] Allocating buffer with size: %d, width height bpp pitch %d %d %d %d calc %d\n", video->size,
 			video->width, video->height, video->bpp, video->pitch, video->pitch * video->height);
@@ -160,8 +157,7 @@ int visual_video_allocate_buffer (VisVideo *video)
  */
 int visual_video_clone (VisVideo *dest, VisVideo *src)
 {
-	if (dest == NULL || src == NULL)
-		return -1;
+	visual_log_return_val_if_fail (dest != NULL && src != NULL, -1);
 
 	visual_video_set_depth (dest, src->depth);
 	visual_video_set_dimension (dest, src->width, src->height);
@@ -181,8 +177,7 @@ int visual_video_clone (VisVideo *dest, VisVideo *src)
  */
 int visual_video_set_palette (VisVideo *video, VisPalette *pal)
 {
-	if (video == NULL)
-		return -1;
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	video->pal = pal;
 
@@ -200,8 +195,7 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
  */
 int visual_video_set_buffer (VisVideo *video, void *buffer)
 {
-	if (video == NULL)
-		return -1;
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	video->screenbuffer = buffer;
 
@@ -220,8 +214,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
  */
 int visual_video_set_dimension (VisVideo *video, int width, int height)
 {
-	if (video == NULL)
-		return -1;
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	video->width = width;
 	video->height = height;
@@ -245,8 +238,7 @@ int visual_video_set_dimension (VisVideo *video, int width, int height)
  */
 int visual_video_set_pitch (VisVideo *video, int pitch)
 {
-	if (video == NULL)
-		return -1;
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	if (video->bpp <= 0)
 		return -1;
@@ -268,8 +260,7 @@ int visual_video_set_pitch (VisVideo *video, int pitch)
  */
 int visual_video_set_depth (VisVideo *video, VisVideoDepth depth)
 {
-	if (video == NULL)
-		return -1;
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	video->depth = depth;
 	video->bpp = visual_video_bpp_from_depth (video->depth);

@@ -7,6 +7,7 @@
 #include "lv_input.h"
 #include "lv_actor.h"
 #include "lv_bin.h"
+#include "lv_bin.h"
 
 /* WARNING: Utterly shit ahead, i've screwed up on this and i need to
  * rewrite it. And i can't say i feel like it at the moment so be
