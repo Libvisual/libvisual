@@ -5,8 +5,6 @@ ArgList.h \
 BST.h \
 Clipboard.h \
 CStrNode.h \
-DeleteThread.h \
-EgThread.h \
 FileSpecList.h \
 Hashable.h \
 Hashtable.h \
@@ -15,7 +13,6 @@ ListSocket.h \
 LowUnionFind.h \
 Messager.h \
 nodeClass.h \
-Printable.h \
 RectUtils.h \
 TempMem.h \
 UnionFind.h \

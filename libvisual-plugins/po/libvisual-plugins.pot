@@ -7,7 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2005-03-16 00:37-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-03-16 09:51-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,18 +25,18 @@ msgstr ""
 msgid "The given plugin doesn't have priv info"
 msgstr ""
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1378
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1443
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1138
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1203
 #, c-format
 msgid "New Delta field: %s"
 msgstr ""
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1487
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1247
 #, c-format
 msgid "New wave shape: %s"
 msgstr ""
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1541
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1301
 #, c-format
 msgid "New Particle: %s"
 msgstr ""

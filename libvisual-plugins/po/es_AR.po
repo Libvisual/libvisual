@@ -7,7 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
-"POT-Creation-Date: 2005-03-16 00:37-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-03-16 09:51-0300\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -26,18 +27,18 @@ msgstr "El plugin no tiene información privada"
 msgid "The given plugin doesn't have priv info"
 msgstr "El plugin no tiene información privada"
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1378
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1443
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1138
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1203
 #, c-format
 msgid "New Delta field: %s"
 msgstr "Nuevo campo Delta: %s"
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1487
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1247
 #, c-format
 msgid "New wave shape: %s"
 msgstr "Nueva superficie de onda: %s"
 
-#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1541
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1301
 #, c-format
 msgid "New Particle: %s"
 msgstr "Nueva Partícula: %s"

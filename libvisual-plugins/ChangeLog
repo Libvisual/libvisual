@@ -1,5 +1,11 @@
 2005-03-16  Duilio Protti  <dprotti@users.sourceforge.net>
 
+	* plugins/actor/G-Force/Common/GeneralTools/Headers/Makefile.am:
+	DeleteThread.h, EgThread.h and Printable.h removed
+	from SOURCES.
+
+2005-03-16  Duilio Protti  <dprotti@users.sourceforge.net>
+
 	* configure.ac: added i18n support.
 	* po/*: added.
 	* autogen.sh: added check for alsa.m4 macro file and

@@ -2,4 +2,4 @@
 
 SUBDIRS = plugins po
 
-EXTRA_DIST = libvisual-plugins.spec
+EXTRA_DIST = libvisual-plugins.spec gettext.h
