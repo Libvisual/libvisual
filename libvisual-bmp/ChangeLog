@@ -1,5 +1,13 @@
 2004-10-06  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* po/POTFILES.in: OOps. updated ;)
+
+2004-10-06  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* configure.ac (AC_CONFIG_FILES): Add po/Makefile.in.
+
+2004-10-06  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* *: Ported over to beep-media-player. This
 	module now forks from the libvisual-xmms module
 	and will go under the name libvisual-bmp.

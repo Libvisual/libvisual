@@ -2,6 +2,6 @@
 
 # Package source files
 src/main.c
-src/lv_xmms_config.c
+src/lv_bmp_config.c
 src/config_gui.c
 src/about.c
