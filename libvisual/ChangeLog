@@ -1,3 +1,8 @@
+2004-12-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Added a palette param and did some serious
+	bug fixes in the param system.
+
 2004-12-11  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_thread.*: Removed the set_priority function and

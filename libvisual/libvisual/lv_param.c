@@ -27,9 +27,15 @@ static int paramentry_dtor (VisObject *object)
 	if (param->string != NULL)
 		visual_mem_free (param->string);
 
+	if (param->name != NULL)
+		visual_mem_free (param->name);
+
+	visual_palette_free_colors (&param->pal);
+
 	visual_list_destroy_elements (&param->callbacks);
 
 	param->string = NULL;
+	param->name = NULL;
 
 	return VISUAL_OK;
 }
@@ -162,9 +168,8 @@ int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParam
 	visual_log_return_val_if_fail (params != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	while (params[i].type != VISUAL_PARAM_ENTRY_TYPE_END) {
-		pnew = visual_param_entry_new (params[i].name);
-
-		memcpy (pnew, &params[i], sizeof (VisParamEntry));
+		pnew = visual_param_entry_new (visual_param_entry_get_name (&params[i]));
+		visual_param_entry_set_from_param (pnew, &params[i]);
 
 		visual_param_container_add (paramcontainer, pnew);
 		
@@ -246,8 +251,8 @@ VisParamEntry *visual_param_entry_new (char *name)
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (param), TRUE, paramentry_dtor);
 
-	param->name = name;
-
+	visual_param_entry_set_name (param, name);
+	
 	visual_list_set_destroyer (&param->callbacks, visual_object_list_destroyer);
 
 	return param;
@@ -529,7 +534,13 @@ int visual_param_entry_set_name (VisParamEntry *param, char *name)
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	param->name = name;
+	if (param->name != NULL)
+		visual_mem_free (param->name);
+
+	param->name = NULL;
+	
+	if (name != NULL)
+		param->name = strdup (name);
 
 	return VISUAL_OK;
 }
@@ -552,16 +563,19 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
 		return VISUAL_OK;
 
 	if (string == NULL && param->string != NULL) {
-		param->string = string;
+		visual_mem_free (param->string);
+		param->string = NULL;
 
 		visual_param_entry_changed (param);
 
 	} else if (param->string == NULL && string != NULL) {
-		param->string = string;
+		param->string = strdup (string);
 
 		visual_param_entry_changed (param);
 
 	} else if (strcmp (string, param->string) != 0) {
+		visual_mem_free (param->string);
+		
 		param->string = strdup (string);
 
 		visual_param_entry_changed (param);
@@ -690,6 +704,32 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor 
 }
 
 /**
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_PALETTE and assigns a VisPalette to the VisParamEntry.
+ * This function does not check if there is a difference between the prior set palette and the new one, and always
+ * emits the changed event. so watch out with usage.
+ *
+ * @param param Pointer to the VisParamEntry to which a parameter is set.
+ * @param pal Pointer to the VisPalette from which the palette data is retrieved for the VisParamEntry.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ */
+int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
+{
+	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+
+	param->type = VISUAL_PARAM_ENTRY_TYPE_PALETTE;
+
+	visual_palette_free_colors (&param->pal);
+	
+	if (pal != NULL)
+		visual_palette_copy (&param->pal, pal);
+
+	visual_param_entry_changed (param);
+	
+	return VISUAL_OK;
+}
+
+/**
  * Get the name of the VisParamEntry.
  *
  * @param param Pointer to the VisParamEntry from which the name is requested.
@@ -786,12 +826,36 @@ double visual_param_entry_get_double (VisParamEntry *param)
  */
 VisColor *visual_param_entry_get_color (VisParamEntry *param)
 {
-	visual_log_return_val_if_fail (param != NULL, 0);
+	visual_log_return_val_if_fail (param != NULL, NULL);
 
-	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR)
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR) {
 		visual_log (VISUAL_LOG_WARNING, "Requesting color from a non color param\n");
 
+		return NULL;
+	}
+
 	return &param->color;
+}
+
+/**
+ * Get the palette parameter from a VisParamEntry.
+ *
+ * @param param Pointer to the VisParamEntry from which the palette parameter is requested.
+ *
+ * @return Pointer to the VisPalette parameter from the VisParamEntry. The returned VisPalette
+ *	should be exclusively used as read only.
+ */
+VisPalette *visual_param_entry_get_palette (VisParamEntry *param)
+{
+	visual_log_return_val_if_fail (param != NULL, NULL);
+
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_PALETTE) {
+		visual_log (VISUAL_LOG_WARNING, "Requested palette from a non palette param\n");
+
+		return NULL;
+	}
+
+	return &param->pal;
 }
 
 /**

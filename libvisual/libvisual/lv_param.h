@@ -3,6 +3,7 @@
 
 #include <libvisual/lv_common.h>
 #include <libvisual/lv_color.h>
+#include <libvisual/lv_palette.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_event.h>
 
@@ -33,6 +34,7 @@ typedef enum {
 	VISUAL_PARAM_ENTRY_TYPE_FLOAT,		/**< Floating point parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_DOUBLE,		/**< Double floating point parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_COLOR,		/**< VisColor parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_PALETTE,	/**< VisPalette parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_END		/**< List end, and used as terminator for VisParamEntry lists. */
 } VisParamEntryType;
 
@@ -93,6 +95,7 @@ struct _VisParamEntry {
 	} numeric;
 
 	VisColor		 color;		/**< VisColor data. */
+	VisPalette		 pal;		/**< VisPalette data. */
 	VisList			 callbacks;	/**< The change notify callbacks. */
 };
 
@@ -123,6 +126,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating);
 int visual_param_entry_set_double (VisParamEntry *param, double doubleflt);
 int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, uint8_t b);
 int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor *color);
+int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal);
 
 char *visual_param_entry_get_name (VisParamEntry *param);
 char *visual_param_entry_get_string (VisParamEntry *param);
@@ -130,6 +134,7 @@ int visual_param_entry_get_integer (VisParamEntry *param);
 float visual_param_entry_get_float (VisParamEntry *param);
 double visual_param_entry_get_double (VisParamEntry *param);
 VisColor *visual_param_entry_get_color (VisParamEntry *param);
+VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
 
 #ifdef __cplusplus
 }
