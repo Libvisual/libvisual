@@ -1,5 +1,6 @@
-2005-01-18  Max Howell   <max.howell@methylblue.com>
-        * .cvsignore libvisual/.cvsignore:
+2005-01-18  Max Howell  <max.howell@methylblue.com>
+
+	* .cvsignore libvisual/.cvsignore:
 	Ignore the generated files
 
 2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
