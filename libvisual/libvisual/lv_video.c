@@ -75,9 +75,6 @@ static int video_dtor (VisObject *object)
 		video->pixels = NULL;
 	}
 
-	if (video->pixel_rows != NULL)
-		visual_mem_free (video->pixel_rows);
-
 	video->pixel_rows = NULL;
 
 	return VISUAL_OK;
