@@ -82,8 +82,8 @@ int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	TentaclePrivate *priv = plugin->priv;
-	uint8_t *destbuf = dest->screenbuffer;
-	uint8_t *src1buf = src1->screenbuffer;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *src1buf = src1->pixels;
 
 	int height1;
 	int height2;
@@ -154,8 +154,8 @@ static void sane_coords (VisVideo *dest, int *x, int *y1, int *y2)
 
 static void vline_from_video_8 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint8_t *destbuf = dest->screenbuffer;
-	uint8_t *srcbuf = src->screenbuffer;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
@@ -166,8 +166,8 @@ static void vline_from_video_8 (VisVideo *dest, VisVideo *src, int x, int y1, in
 
 static void vline_from_video_16 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint16_t *destbuf = dest->screenbuffer;
-	uint16_t *srcbuf = src->screenbuffer;
+	uint16_t *destbuf = dest->pixels;
+	uint16_t *srcbuf = src->pixels;
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
@@ -178,8 +178,8 @@ static void vline_from_video_16 (VisVideo *dest, VisVideo *src, int x, int y1, i
 
 static void vline_from_video_24 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint8_t *destbuf = dest->screenbuffer;
-	uint8_t *srcbuf = src->screenbuffer;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
@@ -195,8 +195,8 @@ static void vline_from_video_24 (VisVideo *dest, VisVideo *src, int x, int y1, i
 
 static void vline_from_video_32 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint32_t *destbuf = dest->screenbuffer;
-	uint32_t *srcbuf = src->screenbuffer;
+	uint32_t *destbuf = dest->pixels;
+	uint32_t *srcbuf = src->pixels;
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);

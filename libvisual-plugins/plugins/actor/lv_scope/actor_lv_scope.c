@@ -149,7 +149,7 @@ int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	y = video->height >> 1;
 	
-	buf = (uint8_t *) video->screenbuffer;
+	buf = (uint8_t *) video->pixels;
 
 	memset (buf, 0, video->pitch * video->height);
 	

@@ -170,9 +170,9 @@ int lv_morph_slide_cleanup (VisPluginData *plugin)
 int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	SlidePrivate *priv = plugin->priv;
-        uint8_t *destbuf = dest->screenbuffer;
-	uint8_t *srcbuf1 = src1->screenbuffer;
-	uint8_t *srcbuf2 = src2->screenbuffer;
+        uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf1 = src1->pixels;
+	uint8_t *srcbuf2 = src2->pixels;
 	int i;
 	int diff1;
 	int diff2;

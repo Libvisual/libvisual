@@ -155,7 +155,7 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 
 				if (visual_param_entry_is (param, "zoom mode")) {
 					visual_log (VISUAL_LOG_DEBUG, "New value for the zoom mode param: %d\n",
-							param->data.integer);
+							param->numeric.integer);
 
 					priv->zoom_mode = visual_param_entry_get_integer (param);
 
@@ -163,7 +163,7 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 				}
 				else if (visual_param_entry_is (param, "plotter trigger")) {
 					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter trigger param: %d\n",
-							param->data.integer);
+							param->numeric.integer);
 
 					priv->plotter_colortype = visual_param_entry_get_integer (param);
 
@@ -171,7 +171,7 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 				}
 				else if (visual_param_entry_is (param, "plotter type")) {
 					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter type param: %d\n",
-							param->data.integer);
+							param->numeric.integer);
 
 					priv->plotter_scopetype = visual_param_entry_get_integer (param);
 
@@ -196,7 +196,7 @@ VisPalette *act_jakdaw_palette (VisPluginData *plugin)
 int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	JakdawPrivate *priv = plugin->priv;
-	uint32_t *vscr = video->screenbuffer;
+	uint32_t *vscr = video->pixels;
 
 	_jakdaw_feedback_render (priv, vscr);
 	_jakdaw_plotter_draw (priv, audio->pcm, audio->freq, vscr);

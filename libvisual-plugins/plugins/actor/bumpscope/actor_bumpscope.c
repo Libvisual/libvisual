@@ -227,7 +227,7 @@ int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 
 	__bumpscope_render_pcm (priv, audio->pcm);
 
-	memcpy (video->screenbuffer, priv->rgb_buf2, video->size);
+	memcpy (video->pixels, priv->rgb_buf2, video->size);
 
 	return 0;
 }

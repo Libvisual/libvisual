@@ -143,7 +143,7 @@ int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 	if (priv->scaled != NULL)
 		g_object_unref (priv->scaled);
 
-	if (&priv->target.screenbuffer != NULL)
+	if (&priv->target.pixels != NULL)
 		visual_video_free_buffer (&priv->target);
 
 	visual_mem_free (priv);
@@ -180,8 +180,8 @@ int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, 
 	if (priv->pixbuf != NULL)
 		update_scaled_pixbuf (priv);
 	else {
-		/* If there is no image reset the VisVideo screenbuffer, just to be sure */
-		if (priv->target.screenbuffer != NULL)
+		/* If there is no image reset the VisVideo pixels, just to be sure */
+		if (priv->target.pixels != NULL)
 			visual_video_free_buffer (&priv->target);
 		
 		visual_video_set_buffer (&priv->target, NULL);
@@ -207,7 +207,7 @@ int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 
 				if (visual_param_entry_is (param, "filename")) {
 					visual_log (VISUAL_LOG_DEBUG, "New file to be loaded: %s\n",
-							param->data.string);
+							visual_param_entry_get_string (param));
 
 					load_new_file (priv, visual_param_entry_get_string (param));
 
@@ -269,7 +269,7 @@ int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 {
 	PixbufPrivate *priv = plugin->priv;
 	
-	if (priv->target.screenbuffer != NULL) {
+	if (priv->target.pixels != NULL) {
 		if (priv->center == TRUE) {
 			int xoff, yoff;
 			
@@ -395,7 +395,7 @@ static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src)
 	visual_video_set_pitch (&bgr, gdk_pixbuf_get_rowstride (src));
 	visual_video_set_buffer (&bgr, gdk_pixbuf_get_pixels (src));
 
-	if (target->screenbuffer != NULL)
+	if (target->pixels != NULL)
 		visual_video_free_buffer (target);
 
 	visual_video_clone (target, &bgr);

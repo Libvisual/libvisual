@@ -236,7 +236,7 @@ static int madspin_load_textures (MadspinPrivate *priv)
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D (GL_TEXTURE_2D, 0, 3, textureimage->width, textureimage->height, 0,
-			GL_RGB, GL_UNSIGNED_BYTE, textureimage->screenbuffer);
+			GL_RGB, GL_UNSIGNED_BYTE, textureimage->pixels);
 
 	visual_video_free_with_buffer (textureimage);
 
@@ -245,7 +245,7 @@ static int madspin_load_textures (MadspinPrivate *priv)
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D (GL_TEXTURE_2D, 0, 3, textureimage->width, textureimage->height, 0,
-			GL_RGB, GL_UNSIGNED_BYTE, textureimage->screenbuffer);
+			GL_RGB, GL_UNSIGNED_BYTE, textureimage->pixels);
 
 	visual_video_free_with_buffer (textureimage);
 

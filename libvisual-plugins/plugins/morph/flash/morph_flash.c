@@ -145,23 +145,23 @@ static void replacetable_generate_24 (FlashPrivate *priv, float rate)
 static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	if (rate < 0.5)
-		memcpy (dest->screenbuffer, src1->screenbuffer, src1->size);
+		memcpy (dest->pixels, src1->pixels, src1->size);
 	else
-		memcpy (dest->screenbuffer, src2->screenbuffer, src2->size);
+		memcpy (dest->pixels, src2->pixels, src2->size);
 }
 
 static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	uint8_t *scrbuf;
-	uint8_t *destbuf = dest->screenbuffer;
+	uint8_t *destbuf = dest->pixels;
 	int size;
 	int i;
 
 	if (rate < 0.5) {
-		scrbuf = src1->screenbuffer;
+		scrbuf = src1->pixels;
 		size = src1->size;
 	} else {
-		scrbuf = src2->screenbuffer;
+		scrbuf = src2->pixels;
 		size = src2->size;
 	}
 	

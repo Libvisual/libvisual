@@ -153,7 +153,7 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	else
 		buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 
-	memcpy (video->screenbuffer, buf, video->width * video->height * video->bpp);
+	memcpy (video->pixels, buf, video->width * video->height * video->bpp);
 
 	return 0;
 }

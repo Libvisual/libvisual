@@ -189,7 +189,7 @@ int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 	}
 
 	_inf_renderer (priv);
-	_inf_display (priv, (uint8_t *) video->screenbuffer);
+	_inf_display (priv, (uint8_t *) video->pixels);
 
 	return 0;
 }

@@ -221,7 +221,7 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		oinksie_sample (&priv->priv1);
 
-		priv->priv1.drawbuf = video->screenbuffer;
+		priv->priv1.drawbuf = video->pixels;
 		oinksie_render (&priv->priv1);
 	} else {
 		oinksie_sample (&priv->priv1);
@@ -246,7 +246,7 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		visual_video_depth_transform_to_buffer (priv->tbuf2, &transvid,
 				oinksie_palette_get (&priv->priv2), priv->depth, video->pitch);
 
-		alpha_blend_32_c (video->screenbuffer, priv->tbuf1, priv->tbuf2, transvid.size * 4, 0.5);
+		alpha_blend_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size * 4, 0.5);
 	}
 	
 	return 0;

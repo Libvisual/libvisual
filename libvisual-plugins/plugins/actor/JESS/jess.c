@@ -298,7 +298,7 @@ int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	C_dEdt_moyen(priv);
 	C_dEdt(priv);
 
-	priv->pixel = ((uint8_t *) video->screenbuffer);
+	priv->pixel = ((uint8_t *) video->pixels);
 
 	renderer (priv);
 

@@ -252,7 +252,7 @@ int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	memcpy (priv->pcm_buffer, audio->pcm, sizeof (priv->pcm_buffer));
 
 	priv->video = video;
-	priv->pixel = video->screenbuffer;
+	priv->pixel = video->pixels;
 
 	_plazma_run (priv);
 	
