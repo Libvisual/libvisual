@@ -243,7 +243,7 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 			    	
 				continue;
 			}
-			
+
 			priv->rgb_buf2[prev_y] = priv->phongdat[(yq * priv->phongres) + xq];
 		}
 	}
@@ -274,9 +274,9 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 {
 	int y, x;
 	double i, i2;
-
-	for (y = 0; y < (priv->phongres); y++) {
-		for (x = 0; x < (priv->phongres); x++) {
+	
+	for (y = 0; y < priv->phongres; y++) {
+		for (x = 0; x < priv->phongres; x++) {
 
 			i = (double)x/((double)priv->phongres)-1;
 			i2 = (double)y/((double)priv->phongres)-1;
@@ -293,6 +293,7 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 					i = i*i*i * 255.0;
 
 				if (i > 255) i = 255;
+			
 				priv->phongdat[(y * priv->phongres) + x] = i;
 				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + x] = i;
 				priv->phongdat[(y * priv->phongres) + ((priv->phongres-1) - x)] = i;

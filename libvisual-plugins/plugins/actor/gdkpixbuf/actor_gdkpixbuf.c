@@ -8,8 +8,6 @@
 
 #include "actor_gdkpixbuf.h"
 
-static int gdk_been_initialized = FALSE;
-
 static int load_new_file (PixbufPrivate *priv, const char *filename);
 static int update_scaled_pixbuf (PixbufPrivate *priv);
 static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src);
@@ -64,12 +62,8 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (PixbufPrivate, 1);
 	plugin->priv = priv;
 
-	/* Initialize gdk, needed for GdkPixbuf */
-	if (gdk_been_initialized == FALSE) {
-		gdk_parse_args (NULL, NULL);
-	
-		gdk_been_initialized = TRUE;
-	}
+	/* Initialize g_type, needed for GdkPixbuf */
+	g_type_init ();
 	
 	/* Initialize our plugin parameters */
 	priv->set_scaled =	TRUE;

@@ -1,5 +1,18 @@
 2004-09-07  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/gdkpixbuf/actor_gdkpixbuf.c:
+	Now fixing the crasher for real, use g_type_init
+	instead of gdk_parse_args. All gdkpixbuf needed
+	was the g_type_init and calling gdk_parse_args
+	more than once in a process was quite fatal so
+	to say. Anyway it's fixed now !
+
+	* plugins/actor/bumpscope/actor_bumpscope.c:
+	Setting the params as they should be, I still haven't
+	fixed the light issue, I don't understand it at all...
+
+2004-09-07  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* configure.ac: Removed xpyre from the build :))
 
 2004-09-06  Duilio Protti  <dprotti@users.sourceforge.net>

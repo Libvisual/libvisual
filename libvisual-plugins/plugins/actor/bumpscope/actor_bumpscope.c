@@ -67,7 +67,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	priv->color.b =		255;
 	priv->phongres =	256;
 	priv->color_cycle =	TRUE;
-	priv->moving_light =	FALSE;
+	priv->moving_light =	TRUE;
 	priv->diamond =		FALSE;
 
 	/* Parameters */
