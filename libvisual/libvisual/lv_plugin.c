@@ -587,6 +587,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 	visual_param_container_set_eventqueue (plugin->params, NULL);
 
+	visual_object_unref (VISUAL_OBJECT (plugin->environ));
 	visual_object_unref (VISUAL_OBJECT (plugin));
 	
 	return VISUAL_OK;
@@ -661,6 +662,9 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	/* Now the plugin is set up and ready to be realized, also random seed it's random context */
 	visual_time_get (&time_);
 	visual_random_context_set_seed (&plugin->random, time_.tv_usec);
+
+	/* XXX FIXME need a nice destroyer :) */
+	plugin->environ = visual_list_new (NULL);
 
 	return plugin;
 }
@@ -966,6 +970,25 @@ int visual_plugin_type_member_of (const char *domain, const char *type)
 		return FALSE;
 
 	return TRUE;
+}
+
+/**
+ * Adds structure to the plugin's environ
+ *
+ * @param plugin
+ * @param enve
+ *
+ * @return TRUE if it falls within the domain, FALSE when not, -VISUAL_ERROR_NULL on failure
+ */
+int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnvironElement *enve)
+{
+	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_log_return_val_if_fail (enve != NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL);
+
+	// XXX FIXME check if there are already the same env type
+	// in the list. Replace quietly?
+
+	return visual_list_add (plugin->environ, enve);
 }
 
 /**

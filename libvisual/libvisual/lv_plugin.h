@@ -42,7 +42,8 @@ extern "C" {
 #define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginRef))
 #define VISUAL_PLUGININFO(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginInfo))
 #define VISUAL_PLUGINDATA(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginData))
-
+#define VISUAL_PLUGINENVIRONELEMENT(obj)		(VISUAL_CHECK_CAST ((obj), 0, VisPluginEnvironElement))
+	
 #define VISUAL_PLUGIN_ACTOR(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_ACTOR_ENUM, VisActorPlugin))
 #define VISUAL_PLUGIN_INPUT(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_INPUT_ENUM, VisInputPlugin))
 #define VISUAL_PLUGIN_MORPH(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_MORPH_ENUM, VisMorphPlugin))
@@ -117,6 +118,7 @@ typedef enum {
 typedef struct _VisPluginRef VisPluginRef;
 typedef struct _VisPluginInfo VisPluginInfo;
 typedef struct _VisPluginData VisPluginData;
+typedef struct _VisPluginEnvironElement VisPluginEnvironElement;
 
 typedef struct _VisActorPlugin VisActorPlugin;
 typedef struct _VisInputPlugin VisInputPlugin;
@@ -326,6 +328,17 @@ struct _VisPluginData {
 
 	int			 realized;	/**< Flag that indicates if the plugin is realized. */
 	void			*handle;	/**< The dlopen handle */
+	VisList			*environ;	/**< Misc environment specific data. */
+};
+
+/**
+ * The VisPluginEnvironElement is used to setup a pre realize/init environment for plugins.
+ * Some types of plugins might need this internally and thus this system provides this function.
+ */
+struct _VisPluginEnvironElement {
+	VisObject		 object;	/**< The VisObject data. */
+	const char		*type;		/**< Almost the same as _VisPluginInfo.type. */
+	VisObject		*environ;	/**< VisObject that contains environ specific data. */
 };
 
 /**
@@ -414,6 +427,9 @@ const char *visual_plugin_get_prev_by_name (VisList *list, const char *name);
 int visual_plugin_unload (VisPluginData *plugin);
 VisPluginData *visual_plugin_load (VisPluginRef *ref);
 int visual_plugin_realize (VisPluginData *plugin);
+
+int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnvironElement *enve);
+/* we also need functions for e.g. searching */
 
 VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
 VisList *visual_plugin_get_list (const char **paths);

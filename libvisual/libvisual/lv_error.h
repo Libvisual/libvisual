@@ -105,6 +105,7 @@ enum {
 	VISUAL_ERROR_PLUGIN_NULL,			/**< The VisPluginData is NULL. */
 	VISUAL_ERROR_PLUGIN_INFO_NULL,			/**< The VisPluginInfo is NULL. */
 	VISUAL_ERROR_PLUGIN_REF_NULL,			/**< The VisPluginRef is NULL. */
+	VISUAL_ERROR_PLUGIN_ENVIRON_NULL,		/**< The VisPluginEnvironElement is NULL. */
 	VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER,		/**< The plugin has no event handler registrated. */
 	VISUAL_ERROR_PLUGIN_HANDLE_NULL,		/**< The dlopen handle of the plugin is NULL. */
 	VISUAL_ERROR_PLUGIN_ALREADY_REALIZED,		/**< The plugin is already realized. */
