@@ -1,3 +1,8 @@
+2004-10-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* GForceCommon/G-Force.cpp: Replaced a printf
+	by visual_log.
+
 2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
 
 	Small codestyle cleanup.

@@ -1438,7 +1438,7 @@ void GForce::loadDeltaField( long inFieldNum ) {
 		name.Assign( "<Factory Default>" );
 	}
 
-	printf ("New Delta field: %s\n", name.getCStr ());
+	visual_log (VISUAL_LOG_INFO, "New Delta field: %s", name.getCStr ());
 
 	// Initiate recomputation of mField	
 	mField -> Assign( args, name );
