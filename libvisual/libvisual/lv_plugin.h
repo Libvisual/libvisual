@@ -212,6 +212,8 @@ VisList *visual_plugin_get_list (char **paths);
 
 VisPluginRef *visual_plugin_find (VisList *list, char *name);
 
+int visual_plugin_get_api_version ();
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

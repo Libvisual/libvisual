@@ -755,6 +755,15 @@ VisPluginRef *visual_plugin_find (VisList *list, char *name)
 }
 
 /**
+ *
+ *
+ */
+int visual_plugin_get_api_version ()
+{
+	return VISUAL_PLUGIN_API_VERSION;
+}
+
+/**
  * @}
  */
 

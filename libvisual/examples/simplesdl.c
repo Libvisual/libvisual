@@ -226,7 +226,7 @@ void sdl_set_pal ()
 /* Main stuff */
 int main (int argc, char *argv[])
 {
-	int width = 320, height = 200;
+	int width = 480, height = 360;
 	int depth = VISUAL_VIDEO_DEPTH_8BIT;
 	int i, j;
 	int freeze = 0;
