@@ -150,6 +150,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (button_cancel);
   gtk_box_pack_start (GTK_BOX (hbox_buttons), button_cancel, FALSE, TRUE, 6);
+  GTK_WIDGET_SET_FLAGS (button_cancel, GTK_CAN_DEFAULT);
 
   config_gui = g_new0 (ConfigWin, 1);
 

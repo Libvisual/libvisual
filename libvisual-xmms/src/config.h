@@ -21,10 +21,12 @@ typedef struct {
 void lv_xmms_config_window (void);
 
 Options *lv_xmms_config_open (void);
-int lv_xmms_config_close (Options *options);
+int lv_xmms_config_close (void);
 
-int lv_xmms_config_load_prefs (Options *options);
-int lv_xmms_config_save_prefs (const Options *options);
+int lv_xmms_config_load_prefs (void);
+int lv_xmms_config_save_prefs (void);
+
+void lv_xmms_config_toggle_fullscreen (void);
 
 
 #endif /* __LV_XMMS_CONFIG__ */

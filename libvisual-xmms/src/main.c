@@ -103,7 +103,7 @@ static void lv_xmms_init ()
 		return;
 	}
 
-	lv_xmms_config_load_prefs (options);
+	lv_xmms_config_load_prefs ();
 
 	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
 		visual_log (VISUAL_LOG_CRITICAL, "cannot initialize SDL: %s", SDL_GetError());
@@ -178,9 +178,9 @@ static void lv_xmms_cleanup ()
 	options->last_plugin = cur_lv_plugin;
 
 	visual_log (VISUAL_LOG_DEBUG, "calling lv_xmms_config_save_prefs()");
-	lv_xmms_config_save_prefs (options);
+	lv_xmms_config_save_prefs ();
 
-	lv_xmms_config_close (options);
+	lv_xmms_config_close ();
 
 	if (icon != NULL)
 		SDL_FreeSurface (icon);
@@ -256,7 +256,7 @@ static void sdl_set_pal ()
 
 static void sdl_draw (SDL_Surface *screen)
 {
-	g_assert (screen != NULL);
+	visual_log_return_if_fail (screen != NULL);
 	SDL_Flip (screen);
 }
 
@@ -512,7 +512,7 @@ static int sdl_event_handle ()
 					case SDLK_F11:
 					case SDLK_TAB:
 						SDL_WM_ToggleFullScreen (screen);
-                                                options->fullscreen = !options->fullscreen;
+                                                lv_xmms_config_toggle_fullscreen();
 
 						if ((screen->flags & SDL_FULLSCREEN) > 0)
 							SDL_ShowCursor (SDL_DISABLE);
