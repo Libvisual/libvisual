@@ -24,6 +24,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#if defined(VISUAL_ARCH_POWERPC)
+#if defined (VISUAL_OS_DARWIN)
+#include <sys/sysctl.h>
+#else
+#include <signal.h>
+#include <setjmp.h>
+#endif
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -38,6 +47,27 @@ static int _lv_cpu_initialized = FALSE;
 
 static int has_cpuid (void);
 static int cpuid (unsigned int ax, unsigned int *p);
+
+/* The sigill handlers */
+#if defined(VISUAL_ARCH_X86) //x86 (linux katmai handler check thing)
+
+#elif defined(VISUAL_ARCH_POWERPC) && !defined(VISUAL_OS_DARWIN)
+static sigjmp_buf _lv_powerpc_jmpbuf;
+static volatile sig_atomic_t _lv_powerpc_canjump = 0;
+
+static void sigill_handler (int sig);
+
+static void sigill_handler (int sig)
+{
+	if (!_lv_powerpc_canjump) {
+		signal (sig, SIG_DFL);
+		raise (sig);
+	}
+
+	_lv_powerpc_canjump = 0;
+	siglongjmp (_lv_powerpc_jmpbuf, 1);
+}
+#endif
 
 static int has_cpuid (void)
 {
@@ -117,10 +147,16 @@ void visual_cpu_initialize ()
 	_lv_cpu_caps.type = VISUAL_CPU_TYPE_OTHER;
 #endif
 
-	/* Not X86 */
-	if (_lv_cpu_caps.type != VISUAL_CPU_TYPE_X86)
-		return;
-
+	/* Count the number of CPUs in system */
+#if !defined(VISUAL_OS_WIN32) && !defined(VISUAL_OS_UNKNOWN)
+	_lv_cpu_caps.nrcpu = sysconf (_SC_NPROCESSORS_ONLN);
+	if (_lv_cpu_caps.nrcpu == -1)
+		_lv_cpu_caps.nrcpu = 1;
+#else
+	_lv_cpu_caps.nrcpu = 1;
+#endif
+	
+#if defined(VISUAL_ARCH_X86)
 	/* No cpuid, old 486 or lower */
 	if (has_cpuid () == 0)
 		return;
@@ -171,19 +207,52 @@ void visual_cpu_initialize ()
 
 #if 0	
 
-		/* FIXME: Does SSE2 need more OS support, too? */
+	/* FIXME: Does SSE2 need more OS support, too? */
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__CYGWIN__) || defined(__OpenBSD__)
-		if (_lv_cpu_caps.hasSSE)
-			check_os_katmai_support();
-		if (!_lv_cpu_caps.hasSSE)
-			_lv_cpu_caps.hasSSE2 = 0;
-#else
-		_lv_cpu_caps.hasSSE=0;
+	if (_lv_cpu_caps.hasSSE)
+		check_os_katmai_support();
+	if (!_lv_cpu_caps.hasSSE)
 		_lv_cpu_caps.hasSSE2 = 0;
+#else
+	_lv_cpu_caps.hasSSE=0;
+	_lv_cpu_caps.hasSSE2 = 0;
 #endif
 
 #endif
+#elif VISUAL_ARCH_POWERPC
+#if defined(VISUAL_OS_DARWIN)
+	int sels[2] = {CTL_HW, HW_VECTORUNIT};
+	int has_vu = 0;
+	size_t len = sizeof(has_vu);
+	int err;
 
+	err = sysctl (sels, 2, &has_vu, &len, NULL, 0);   
+
+	if (err == 0)
+		if (has_vu != 0)
+			_lv_cpu_caps.hasAltiVec = 1;
+#else /* !VISUAL_OS_DARWIN */
+	/* no Darwin, do it the brute-force way */
+	/* this is borrowed from the libmpeg2 library */
+	signal (SIGILL, sigill_handler);
+	if (sigsetjmp (_lv_powerpc_jmpbuf, 1)) {
+		signal (SIGILL, SIG_DFL);
+	} else {
+		_lv_powerpc_canjump = 1;
+
+		asm volatile
+			("mtspr 256, %0\n\t"
+			 "vand %%v0, %%v0, %%v0"
+			 :
+			 : "r" (-1));
+
+		signal (SIGILL, SIG_DFL);
+		_lv_cpu_caps.hasAltiVec = 1;
+	}
+#endif
+#endif /* VISUAL_ARCH_POWERPC */
+
+	printf ("DEBUG CPU: Number of CPUs: %d\n", _lv_cpu_caps.nrcpu);
 	printf ("DEBUG CPU: type %d\n", _lv_cpu_caps.cpuType);
 	printf ("DEBUG CPU: TSC %d\n", _lv_cpu_caps.hasTSC);
 	printf ("DEBUG CPU: MMX %d\n", _lv_cpu_caps.hasMMX);
@@ -192,8 +261,7 @@ void visual_cpu_initialize ()
 	printf ("DEBUG CPU: SSE2 %d\n", _lv_cpu_caps.hasSSE2);
 	printf ("DEBUG CPU: 3DNow %d\n", _lv_cpu_caps.has3DNow);
 	printf ("DEBUG CPU: 3DNowExt %d\n", _lv_cpu_caps.has3DNowExt);
-	
-	_lv_cpu_caps.nrcpu = 1;
+	printf ("DEBUG CPU: AltiVec %d\n", _lv_cpu_caps.hasAltiVec);
 
 	_lv_cpu_initialized = TRUE;
 }

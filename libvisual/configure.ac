@@ -122,7 +122,7 @@ AC_C_BIGENDIAN(bigendian=yes, bigendian=no, )
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
-AC_CHECK_FUNCS([gettimeofday usleep nanosleep select memset sqrt strdup strndup])
+AC_CHECK_FUNCS([gettimeofday usleep nanosleep select memset sqrt strdup strndup sysconf])
 
 AC_CHECK_LIB([dl], [dlsym], [LIBS="-ldl $LIBS"],
 	     AC_MSG_WARN([*** You need dlsym() to make use of Libvisual.]))

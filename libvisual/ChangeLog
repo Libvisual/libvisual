@@ -1,5 +1,11 @@
 2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* configure.ac: Added check for sysconf()
+	
+	* libvisual/lv_cpu.*: More work.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* configure.ac: Renamed VISUAL_ARCH_Ix86 to VISUAL_ARCH_X86.
 
 	* libvisual/lv_cpu.*: More work.

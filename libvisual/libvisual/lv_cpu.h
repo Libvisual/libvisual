@@ -63,6 +63,8 @@ struct _VisCPU {
 	int		hasSSE2;
 	int		has3DNow;
 	int		has3DNowExt;
+
+	int		hasAltiVec;
 };
 
 void visual_cpu_initialize (void);
