@@ -609,7 +609,8 @@ int visual_video_blit_fit (VisVideo *dest, VisVideo *src)
  * @param dest Pointer to the destination VisVideo in which the source is overlayed.
  * @param src Pointer to the source VisVideo which is overlayed in the destination.
  * @param x Horizontal placement offset.
- * @parma y Vertical placement offset.
+ * @param y Vertical placement offset.
+ * @param alpha Sets if we want to check the alpha channel. Use FALSE or TRUE here/
  *
  * @return 0 on succes -1 on error.
  */

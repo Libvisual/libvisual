@@ -51,6 +51,9 @@ static const char *log_severity_to_string (VisLogSeverity severity)
  * @see visual_log
  * 
  * @param severity Severity of the log message.
+ * @param file Char pointer to a string that contains the source filename.
+ * @param line Line number for which the log message is.
+ * @param funcname Function name in which the log message is called.
  * @param fmt Format string to display the log message.
  *
  * @return 0 on succes -1 on error.
