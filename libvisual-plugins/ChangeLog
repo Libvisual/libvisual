@@ -1,3 +1,10 @@
+2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/flash/morph_flash.c
+	(replacetable_generate_24): Added function
+	to generate color value replacement table
+	for 24, 32 bits mode.
+
 2004-07-05  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* TODO, NEWS: Updates.

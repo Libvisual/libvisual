@@ -12,10 +12,12 @@ typedef struct {
 
 typedef struct {
 	VisPalette whitepal;
+	uint8_t replacetable[256];
 } FlashPrivate;
 
-static void flash_8 (float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
-static void flash_32 (float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static void replacetable_generate_24 (FlashPrivate *priv, float rate);
+static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 int lv_morph_flash_init (VisMorphPlugin *plugin);
 int lv_morph_flash_cleanup (VisMorphPlugin *plugin);
@@ -89,9 +91,11 @@ int lv_morph_flash_palette (VisMorphPlugin *plugin, float rate, VisAudio *audio,
 
 int lv_morph_flash_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
+	FlashPrivate *priv = plugin->private;
+
 	switch (dest->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
-			flash_8 (rate, dest, src1, src2);	
+			flash_8 (priv, rate, dest, src1, src2);	
 			break;
 
 		case VISUAL_VIDEO_DEPTH_16BIT:
@@ -99,11 +103,13 @@ int lv_morph_flash_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, V
 			break;
 
 		case VISUAL_VIDEO_DEPTH_24BIT:
-			
+			replacetable_generate_24 (priv, rate);
+			flash_24 (priv, rate, dest, src1, src2);
 			break;
 
 		case VISUAL_VIDEO_DEPTH_32BIT:
-			
+			replacetable_generate_24 (priv, rate);
+			flash_24 (priv, rate, dest, src1, src2);
 			break;
 
 		default:
@@ -113,7 +119,20 @@ int lv_morph_flash_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, V
 	return 0;
 }
 
-static void flash_8 (float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void replacetable_generate_24 (FlashPrivate *priv, float rate)
+{
+	int i;
+
+	for (i = 0; i < 256; i++) {
+		if (rate < 0.5)
+			priv->replacetable[i] = i + (((255.00 - i) / 100.00) * ((rate * 2) * 100));
+		else
+			priv->replacetable[i] = i + (((255.00 - i) / 100.00) * ((1.0 - ((rate - 0.5) * 2)) * 100));
+	}
+
+}
+
+static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	if (rate < 0.5)
 		memcpy (dest->screenbuffer, src1->screenbuffer, src1->size);
@@ -121,8 +140,22 @@ static void flash_8 (float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 		memcpy (dest->screenbuffer, src2->screenbuffer, src2->size);
 }
 
-static void flash_32 (float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void flash_32 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
+	uint8_t *scrbuf;
+	uint8_t *destbuf = dest->screenbuffer;
+	int size;
+	int i;
 
+	if (rate < 0.5) {
+		scrbuf = src1->screenbuffer;
+		size = src1->size;
+	} else {
+		scrbuf = src2->screenbuffer;
+		size = src2->size;
+	}
+	
+	for (i = 0; i < size; i++)
+		destbuf[i] = priv->replacetable[scrbuf[i]];
 }
 

@@ -109,6 +109,9 @@ morph: (lots of these effects can be taken from the demo world, this should turn
 	blockwise flash in, like in the ODD demo:
 		make.
 
+	negative flash:
+		make.
+
 	something:
 		that uses the audio as example.
 
