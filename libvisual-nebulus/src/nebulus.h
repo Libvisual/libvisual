@@ -64,16 +64,17 @@ typedef struct
   GLfloat x, y, z;
 } glcoord;
 
+VisVideo child_image;
+VisVideo energy_image;
+VisVideo tentacle_image;
+VisVideo tunnel_image;
+VisVideo twist_image;
+VisVideo background_image;
+
 extern nebulus general;
 extern nebulus *point_general;
 extern effect my_effect[EFFECT_NUMBER];
 extern effect my_effect_old[EFFECT_NUMBER];
-extern image_s64 background_image;
-extern image_s128 tunnel_image;
-extern image_s64 tentacle_image;
-extern image_s128 twist_image;
-extern image_s128 child_image;
-extern image_s128 energy_image;
 extern GLfloat scale, heights[16][16];
 extern short pcm_data[512];
 extern float framerate;

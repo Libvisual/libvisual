@@ -1,3 +1,9 @@
+2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/*.bmp, *texture*.c:
+	Removed the *texture*.c files and replaced them by bitmaps.
+	Using visual_bitmap_load to load the textures!
+
 2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* NEWS: Updated.

@@ -122,6 +122,13 @@ int lv_nebulus_cleanup (VisActorPlugin *plugin)
 	delete_gl_texture(childbg);
 	delete_gl_texture(energy);
 
+	visual_video_free_buffer (&child_image);
+	visual_video_free_buffer (&energy_image);
+	visual_video_free_buffer (&tentacle_image);
+	visual_video_free_buffer (&tunnel_image);
+	visual_video_free_buffer (&twist_image);
+	visual_video_free_buffer (&background_image);
+
 	free (priv);
 
 	return 0;
