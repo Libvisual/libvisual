@@ -193,7 +193,7 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 	return VISUAL_UI_WIDGET (frame);
 }
 
-VisUIWidget *visual_ui_label_new (const char *text)
+VisUIWidget *visual_ui_label_new (const char *text, int bold)
 {
 	VisUILabel *label;
 
@@ -201,10 +201,20 @@ VisUIWidget *visual_ui_label_new (const char *text)
 	VISUAL_UI_WIDGET (label)->type = VISUAL_WIDGET_TYPE_LABEL;
 
 	label->text = text;
+	label->bold = bold;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (label), -1, -1);
 	
 	return VISUAL_UI_WIDGET (label);
+}
+
+int visual_ui_label_set_bold (VisUILabel *label, int bold)
+{
+	visual_log_return_val_if_fail (label != NULL, -1);
+
+	label->bold = bold;
+
+	return 0;
 }
 
 int visual_ui_label_set_text (VisUILabel *label, const char *text)

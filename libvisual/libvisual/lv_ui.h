@@ -128,6 +128,7 @@ struct _VisUILabel {
 	VisUIWidget		 widget;
 
 	const char		*text;
+	int			 bold;
 };
 
 struct _VisUIImage {
@@ -239,8 +240,9 @@ VisUIOrientType visual_ui_box_get_orient (VisUIBox *box);
 
 VisUIWidget *visual_ui_frame_new (const char *name);
 
-VisUIWidget *visual_ui_label_new (const char *text);
+VisUIWidget *visual_ui_label_new (const char *text, int bold);
 int visual_ui_label_set_text (VisUILabel *label, const char *text);
+int visual_ui_label_set_bold (VisUILabel *label, int bold);
 const char *visual_ui_label_get_text (VisUILabel *label);
 
 VisUIWidget *visual_ui_image_new (const VisVideo *video);
