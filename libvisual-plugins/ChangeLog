@@ -1,3 +1,9 @@
+2004-07-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/alsa/*: Added semi working ALSA
+	input plugin wrote by:
+	Vitaly V. Bursov  <vitalyvb@ukr.net>
+
 2004-06-30  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: removed some redundant tests.

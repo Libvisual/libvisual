@@ -49,6 +49,8 @@ if test x$libesd = xyes; then
 	build_input="esd $build_input"
 fi
 
+AM_PATH_ALSA(1.0.0,[ build_input="alsa $build_input" ],[])
+
 PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.6, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([
@@ -204,6 +206,7 @@ AC_CONFIG_FILES([
 	plugins/actor/goom2/Makefile
 	plugins/input/Makefile
 	plugins/input/esd/Makefile
+	plugins/input/alsa/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile
@@ -222,6 +225,7 @@ Packages found:
 libvisual:                            : ${libvis}
 libgoom2:                             : ${libgoom}
 libesd:                               : ${libesd}
+alsa:                                 : ${alsa_found}
 opengl:                               : ${opengl}
 
 Plugins being build:
