@@ -293,6 +293,7 @@ lvw_visui_init (LvwVisUI *vuic)
 	g_return_if_fail (vuic != NULL);
 
 	vuic->priv = LVW_VISUI_GET_PRIVATE (vuic);
+	vuic->tooltips = gtk_tooltips_new ();
 
 	GTK_WIDGET_SET_FLAGS (vuic, GTK_NO_WINDOW);
 }
@@ -322,6 +323,7 @@ lvw_visui_new (VisUIWidget *vuitree)
 
 	vuic = g_object_new (lvw_visui_get_type (), NULL);
 
+	/* FIXME should move into the object creation! */
 #if !HAVE_GTK_AT_LEAST_2_4_X
 	vuic->priv = g_new0 (LvwVisUIPrivate, 1);
 #endif
@@ -1198,6 +1200,10 @@ cb_idle_color (void *userdata)
 	VisUIWidget *widget = data->priv;
 	VisColor *color;
 	GdkColor gdkcol;
+	GdkColor testcol;
+
+	gtk_color_selection_get_current_color (GTK_COLOR_SELECTION (visual_object_get_private (VISUAL_OBJECT (widget))),
+			&testcol);
 
 	color = visual_param_entry_get_color (param);
 	
@@ -1205,9 +1211,14 @@ cb_idle_color (void *userdata)
 	gdkcol.blue = color->b * (65535 / 255);
 	gdkcol.green = color->g * (65535 / 255);
 
-	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (visual_object_get_private (VISUAL_OBJECT (widget))),
-			&gdkcol);
-
+	// FIXME there is still a misterious rounding error, it's difficult to trigger, but possible, look at it! */
+	
+	/* Only set the color if it's really different, else it can cause a saturation change and that is ugly */
+	if (!((testcol.red >> 8) == color->r && (testcol.blue >> 8) == color->b && (testcol.green >> 8) == color->g)) {
+		gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (visual_object_get_private (VISUAL_OBJECT (widget))),
+				&gdkcol);
+	}
+				
 	g_free (data);
 
 	return FALSE;

@@ -23,7 +23,9 @@ typedef struct _LvwVisUIPrivate	LvwVisUIPrivate;
 struct _LvwVisUI
 {
 	GtkBin parent;
-	
+
+	GtkTooltips *tooltips;
+
 	LvwVisUIPrivate *priv;
 };
 
