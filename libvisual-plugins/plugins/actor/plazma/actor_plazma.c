@@ -67,7 +67,7 @@ int act_plazma_init (VisPluginData *plugin)
 	};
 
 	priv = visual_mem_new0 (PlazmaPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_palette_allocate_colors (&priv->colors, 256);
 
@@ -83,7 +83,7 @@ int act_plazma_init (VisPluginData *plugin)
 
 int act_plazma_cleanup (VisPluginData *plugin)
 {
-	PlazmaPrivate *priv = plugin->priv;
+	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	_plazma_cleanup (priv);
 
@@ -121,7 +121,7 @@ int act_plazma_requisition (VisPluginData *plugin, int *width, int *height)
 
 int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	PlazmaPrivate *priv = plugin->priv;
+	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	
 	visual_video_set_dimension (video, width, height);
 
@@ -139,7 +139,7 @@ int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int
 
 int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	PlazmaPrivate *priv = plugin->priv;
+	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
 	VisParamEntry *param;
 
@@ -188,14 +188,14 @@ int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 
 VisPalette *act_plazma_palette (VisPluginData *plugin)
 {
-	PlazmaPrivate *priv = plugin->priv;
+	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	return &priv->colors;;
 }
 
 int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	PlazmaPrivate *priv = plugin->priv;
+	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	int i;
 	
 	/* Analyse spectrum data */

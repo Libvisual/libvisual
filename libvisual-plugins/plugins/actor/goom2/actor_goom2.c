@@ -61,7 +61,7 @@ int lv_goom_init (VisPluginData *plugin)
 	GoomPrivate *priv;
 
 	priv = visual_mem_new0 (GoomPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->goominfo = goom_init (128, 128);
 	
@@ -70,7 +70,7 @@ int lv_goom_init (VisPluginData *plugin)
 
 int lv_goom_cleanup (VisPluginData *plugin)
 {
-	GoomPrivate *priv = plugin->priv;
+	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	if (priv->goominfo != NULL)
 		goom_close (priv->goominfo);
@@ -89,7 +89,7 @@ int lv_goom_requisition (VisPluginData *plugin, int *width, int *height)
 
 int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	GoomPrivate *priv = plugin->priv;
+	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_video_set_dimension (video, width, height);
 
@@ -125,7 +125,7 @@ VisPalette *lv_goom_palette (VisPluginData *plugin)
 
 int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	GoomPrivate *priv = plugin->priv;
+	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisSongInfo *songinfo;
 	VisParamContainer *paramcontainer;
 	VisParamEntry *param;

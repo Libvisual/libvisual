@@ -67,7 +67,7 @@ int lv_dna_init (VisPluginData *plugin)
 	DNAPrivate *priv;
 
 	priv = visual_mem_new0 (DNAPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	glMatrixMode (GL_PROJECTION);
 
@@ -89,7 +89,7 @@ int lv_dna_init (VisPluginData *plugin)
 
 int lv_dna_cleanup (VisPluginData *plugin)
 {
-	DNAPrivate *priv = plugin->priv;
+	DNAPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_mem_free (priv);
 
@@ -160,7 +160,7 @@ VisPalette *lv_dna_palette (VisPluginData *plugin)
 
 int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	DNAPrivate *priv = plugin->priv;
+	DNAPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	float res;
 	float sinr = 0;
 	float height = -1.0;

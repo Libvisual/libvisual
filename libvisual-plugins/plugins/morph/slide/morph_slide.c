@@ -115,7 +115,7 @@ int lv_morph_slide_init_left (VisPluginData *plugin)
 	SlidePrivate *priv;
 
 	priv = visual_mem_new0 (SlidePrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->slide_type = SLIDE_LEFT;
 	
@@ -127,7 +127,7 @@ int lv_morph_slide_init_right (VisPluginData *plugin)
 	SlidePrivate *priv;
 
 	priv = visual_mem_new0 (SlidePrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->slide_type = SLIDE_RIGHT;
 	
@@ -139,7 +139,7 @@ int lv_morph_slide_init_bottom (VisPluginData *plugin)
 	SlidePrivate *priv;
 
 	priv = visual_mem_new0 (SlidePrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->slide_type = SLIDE_BOTTOM;
 	
@@ -151,7 +151,7 @@ int lv_morph_slide_init_upper (VisPluginData *plugin)
 	SlidePrivate *priv;
 
 	priv = visual_mem_new0 (SlidePrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->slide_type = SLIDE_UPPER;
 	
@@ -160,7 +160,7 @@ int lv_morph_slide_init_upper (VisPluginData *plugin)
 
 int lv_morph_slide_cleanup (VisPluginData *plugin)
 {
-	SlidePrivate *priv = plugin->priv;
+	SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_mem_free (priv);
 
@@ -169,7 +169,7 @@ int lv_morph_slide_cleanup (VisPluginData *plugin)
 
 int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	SlidePrivate *priv = plugin->priv;
+	SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
         uint8_t *destbuf = dest->pixels;
 	uint8_t *srcbuf1 = src1->pixels;
 	uint8_t *srcbuf2 = src2->pixels;

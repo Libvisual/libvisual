@@ -98,7 +98,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 	VisUIWidget *popup3;
 
 	priv = visual_mem_new0 (JakdawPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
@@ -149,7 +149,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 
 int act_jakdaw_cleanup (VisPluginData *plugin)
 {
-	JakdawPrivate *priv = plugin->priv;
+	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisUIWidget *ui;
 
 	ui = visual_plugin_get_userinterface (plugin);
@@ -181,7 +181,7 @@ int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height)
 
 int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	JakdawPrivate *priv = plugin->priv;
+	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	
 	visual_video_set_dimension (video, width, height);
 
@@ -196,7 +196,7 @@ int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int
 
 int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	JakdawPrivate *priv = plugin->priv;
+	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
 	VisParamEntry *param;
 
@@ -254,7 +254,7 @@ VisPalette *act_jakdaw_palette (VisPluginData *plugin)
 
 int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	JakdawPrivate *priv = plugin->priv;
+	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint32_t *vscr = video->pixels;
 
 	_jakdaw_feedback_render (priv, vscr);

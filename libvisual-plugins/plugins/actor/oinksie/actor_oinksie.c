@@ -68,7 +68,7 @@ int act_oinksie_init (VisPluginData *plugin)
 	VisRandomContext *rcontext;
 
 	priv = visual_mem_new0 (OinksiePrivContainer, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
 	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);
@@ -88,7 +88,7 @@ int act_oinksie_init (VisPluginData *plugin)
 
 int act_oinksie_cleanup (VisPluginData *plugin)
 {
-	OinksiePrivContainer *priv = plugin->priv;
+	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	oinksie_quit (&priv->priv1);
 	oinksie_quit (&priv->priv2);
@@ -145,7 +145,7 @@ int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height)
 
 int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	OinksiePrivContainer *priv = plugin->priv;
+	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	
 	visual_video_set_dimension (video, width, height);
 
@@ -195,7 +195,7 @@ int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 
 VisPalette *act_oinksie_palette (VisPluginData *plugin)
 {
-	OinksiePrivContainer *priv = plugin->priv;
+	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisPalette *pal;
 	
 	pal = oinksie_palette_get (&priv->priv1);
@@ -205,7 +205,7 @@ VisPalette *act_oinksie_palette (VisPluginData *plugin)
 
 int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	OinksiePrivContainer *priv = plugin->priv;
+	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisVideo transvid;
 	int pitch;
 

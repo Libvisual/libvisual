@@ -77,7 +77,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	VisUIWidget *check3;
 
 	priv = visual_mem_new0 (BumpscopePrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 	priv->phongres = 256;
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
@@ -138,7 +138,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 
 int act_bumpscope_cleanup (VisPluginData *plugin)
 {
-	BumpscopePrivate *priv = plugin->priv;
+	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
         VisUIWidget *ui;
 
 	ui = visual_plugin_get_userinterface (plugin);
@@ -180,7 +180,7 @@ int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height)
 
 int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	BumpscopePrivate *priv = plugin->priv;
+	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	
 	visual_video_set_dimension (video, width, height);
 
@@ -197,7 +197,7 @@ int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, 
 
 int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	BumpscopePrivate *priv = plugin->priv;
+	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
 	VisParamEntry *param;
 	VisColor *tmp;
@@ -255,14 +255,14 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 {
-	BumpscopePrivate *priv = plugin->priv;
+	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	return &priv->pal;
 }
 
 int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	BumpscopePrivate *priv = plugin->priv;
+	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	priv->video = video;
 

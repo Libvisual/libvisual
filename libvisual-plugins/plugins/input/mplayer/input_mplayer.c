@@ -5,7 +5,7 @@
  * @author Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  * License: GNU Lesser General Public License (GNU/LGPL)
  ******************************************************************************
- * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.6 2004-09-07 05:32:51 dprotti Exp $
+ * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.7 2004-11-25 16:23:48 synap Exp $
  */
 
 #include <stdio.h>
@@ -76,7 +76,7 @@ const VisPluginInfo *get_plugin_info( int *count )
     .plugname = "mplayer",
     .name = "mplayer",
     .author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-    .version = "$Revision: 1.6 $",
+    .version = "$Revision: 1.7 $",
     .about = "Use data exported from MPlayer",
     .help = "This plugin uses data exported from 'mplayer -af export'.",
 
@@ -112,7 +112,7 @@ int inp_mplayer_init( VisPluginData *plugin )
   strcat( priv->sharedfile, "/" );
   strcat( priv->sharedfile, SHARED_FILE );
 
-  plugin->priv = priv;
+  visual_object_set_private (VISUAL_OBJECT (plugin), priv);
   
   visual_log_return_val_if_fail( plugin != NULL, -1 );
 
@@ -189,7 +189,7 @@ int inp_mplayer_cleanup( VisPluginData *plugin )
   mplayer_priv_t *priv = NULL;
 
   visual_log_return_val_if_fail( plugin != NULL, -1 );
-  priv = plugin->priv;
+  priv = visual_object_get_private (VISUAL_OBJECT (plugin));
   visual_log_return_val_if_fail( priv != NULL, -1 );
 
   if ( priv->loaded == 1 )
@@ -227,7 +227,6 @@ int inp_mplayer_cleanup( VisPluginData *plugin )
 
   visual_mem_free( priv->sharedfile );
   visual_mem_free( priv );
-  plugin->priv = NULL;
   
   return - unclean;
 }
@@ -247,7 +246,7 @@ int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 
   visual_log_return_val_if_fail( audio != NULL, -1 );
   visual_log_return_val_if_fail( plugin != NULL, -1 );
-  priv = plugin->priv;
+  priv = visual_object_get_private (VISUAL_OBJECT (plugin));
   visual_log_return_val_if_fail( priv != NULL, -1 );
   visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
 

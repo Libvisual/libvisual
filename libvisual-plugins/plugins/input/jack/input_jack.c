@@ -64,7 +64,7 @@ int inp_jack_init (VisPluginData *plugin)
 	
 	priv = visual_mem_new0 (JackPrivate, 1);
 	visual_log_return_val_if_fail (priv != NULL, -1);
-	plugin->priv = priv;	
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);	
 
 	if ((priv->client = jack_client_new ("Libvisual jackit capture")) == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "jack server probably not running");
@@ -103,10 +103,10 @@ int inp_jack_init (VisPluginData *plugin)
 
 int inp_jack_cleanup (VisPluginData *plugin)
 {
-	JackPrivate *priv = plugin->priv;
+	JackPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_log_return_val_if_fail( plugin != NULL, -1 );
-	priv = plugin->priv;
+	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 
 	if (priv->client != NULL)
@@ -124,7 +124,7 @@ int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
 	visual_log_return_val_if_fail(plugin != NULL, -1);
-	priv = plugin->priv;
+	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
 	if (priv->shutdown == TRUE) {

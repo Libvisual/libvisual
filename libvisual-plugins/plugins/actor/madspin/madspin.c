@@ -105,7 +105,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	VisUIWidget *numeric2;
 
 	priv = visual_mem_new0 (MadspinPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 	
@@ -171,7 +171,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	glEnable (GL_TEXTURE_2D);
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	madspin_load_textures (plugin->priv);
+	madspin_load_textures (priv);
 
 	priv->initialized = 1;
 
@@ -180,7 +180,7 @@ int lv_madspin_init (VisPluginData *plugin)
 
 int lv_madspin_cleanup (VisPluginData *plugin)
 {
-	MadspinPrivate *priv = plugin->priv;
+	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisUIWidget *ui;
 
 	if (priv->initialized){
@@ -226,7 +226,7 @@ int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int
 
 int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	MadspinPrivate *priv = plugin->priv;
+	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
 	VisParamEntry *param;
 
@@ -263,8 +263,10 @@ VisPalette *lv_madspin_palette (VisPluginData *plugin)
 
 int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	madspin_sound (plugin->priv, audio);
-	madspin_draw (plugin->priv, video);
+	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	madspin_sound (priv, audio);
+	madspin_draw (priv, video);
 
 	return 0;
 }

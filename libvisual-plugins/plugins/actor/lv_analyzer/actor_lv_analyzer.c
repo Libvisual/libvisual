@@ -60,7 +60,7 @@ int lv_analyzer_init (VisPluginData *plugin)
 	AnalyzerPrivate *priv;
 
 	priv = visual_mem_new0 (AnalyzerPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
@@ -69,7 +69,7 @@ int lv_analyzer_init (VisPluginData *plugin)
 
 int lv_analyzer_cleanup (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = plugin->priv;
+	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_palette_free_colors (&priv->pal);
 
@@ -123,7 +123,7 @@ int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 
 VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = plugin->priv;
+	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	int i;
 
 	for (i = 0; i < 256; i++) {

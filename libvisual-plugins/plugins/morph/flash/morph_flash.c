@@ -65,7 +65,7 @@ int lv_morph_flash_init (VisPluginData *plugin)
 	FlashPrivate *priv;
 
 	priv = visual_mem_new0 (FlashPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_palette_allocate_colors (&priv->whitepal, 256);
 
@@ -80,7 +80,7 @@ int lv_morph_flash_init (VisPluginData *plugin)
 
 int lv_morph_flash_cleanup (VisPluginData *plugin)
 {
-	FlashPrivate *priv = plugin->priv;
+	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_mem_free (priv);
 
@@ -89,7 +89,7 @@ int lv_morph_flash_cleanup (VisPluginData *plugin)
 
 int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
 {
-	FlashPrivate *priv = plugin->priv;
+	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	if (rate < 0.5)
 		visual_palette_blend (pal, src1->pal, &priv->whitepal, rate * 2);
@@ -101,7 +101,7 @@ int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, 
 
 int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	FlashPrivate *priv = plugin->priv;
+	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	switch (dest->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:

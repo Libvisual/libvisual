@@ -62,7 +62,7 @@ int inp_esd_init (VisPluginData *plugin)
 	
 	priv = visual_mem_new0 (EsdPrivate, 1);
 	visual_log_return_val_if_fail (priv != NULL, -1);
-	plugin->priv = priv;	
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);	
 
 	priv->esdhandle = esd_monitor_stream (ESD_BITS16 | ESD_STEREO | ESD_STREAM | ESD_MONITOR, 44100, NULL, "lv_esd_plugin");
 
@@ -78,10 +78,10 @@ int inp_esd_init (VisPluginData *plugin)
 
 int inp_esd_cleanup (VisPluginData *plugin)
 {
-	EsdPrivate *priv = plugin->priv;
+	EsdPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_log_return_val_if_fail( plugin != NULL, -1 );
-	priv = plugin->priv;
+	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 	
 	if (priv->loaded == 1)
@@ -101,7 +101,7 @@ int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
 	visual_log_return_val_if_fail(plugin != NULL, -1);
-	priv = plugin->priv;
+	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
 	rcnt = read (priv->esdhandle, esddata,

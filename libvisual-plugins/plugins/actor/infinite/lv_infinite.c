@@ -55,7 +55,7 @@ int act_infinite_init (VisPluginData *plugin)
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_mem_new0 (InfinitePrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
@@ -83,7 +83,7 @@ int act_infinite_cleanup (VisPluginData *plugin)
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
-	priv = plugin->priv;
+	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	_inf_close_renderer (priv);
 
@@ -127,7 +127,7 @@ int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, i
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 	visual_log_return_val_if_fail (video != NULL, -1);
 
-	priv = plugin->priv;
+	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	priv->plugwidth = width;
 	priv->plugheight = height;
 
@@ -167,7 +167,7 @@ VisPalette *act_infinite_palette (VisPluginData *plugin)
 	
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 
-	priv = plugin->priv;
+	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	return &priv->pal;
 }
@@ -181,7 +181,7 @@ int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 	visual_log_return_val_if_fail (video != NULL, -1);
 	visual_log_return_val_if_fail (audio != NULL, -1);
 
-	priv = plugin->priv;
+	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	for (i = 0; i < 512; i++) {
 		priv->pcm_data[0][i] = audio->pcm[0][i];

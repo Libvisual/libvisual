@@ -88,7 +88,7 @@ int lv_gltest_init (VisPluginData *plugin)
 	VisUIWidget *checkbox;
 
 	priv = visual_mem_new0 (GLtestPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_param_container_add_many (paramcontainer, params);
 
@@ -134,7 +134,7 @@ int lv_gltest_init (VisPluginData *plugin)
 
 int lv_gltest_cleanup (VisPluginData *plugin)
 {
-	GLtestPrivate *priv = plugin->priv;
+	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisUIWidget *ui;
 
 	/* Destroy the VisUI tree */
@@ -187,7 +187,7 @@ int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int 
 
 int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	GLtestPrivate *priv = plugin->priv;
+	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
 	VisParamEntry *param;
 
@@ -225,7 +225,7 @@ VisPalette *lv_gltest_palette (VisPluginData *plugin)
 
 int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	GLtestPrivate *priv = plugin->priv;
+	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	int i,c;
 	int y;
 	GLfloat val;

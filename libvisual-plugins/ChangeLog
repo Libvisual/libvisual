@@ -1,3 +1,7 @@
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/*: Adapted everything to the new VisObject private stuff.
+
 2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/*: We don't have visual_ui_widget_destroy anylonger.

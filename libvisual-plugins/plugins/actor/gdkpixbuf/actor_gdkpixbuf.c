@@ -73,7 +73,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 	};
 
 	priv = visual_mem_new0 (PixbufPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	/* Initialize g_type, needed for GdkPixbuf */
 	g_type_init ();
@@ -85,7 +85,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 
 int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 {
-	PixbufPrivate *priv = plugin->priv;
+	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	if (priv->filename != NULL)
 		free (priv->filename);
@@ -123,7 +123,7 @@ int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
 
 int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	PixbufPrivate *priv = plugin->priv;
+	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	
 	visual_video_set_dimension (video, width, height);
 
@@ -144,7 +144,7 @@ int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, 
 
 int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	PixbufPrivate *priv = plugin->priv;
+	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisParamEntry *param;
 	VisEvent ev;
 
@@ -220,7 +220,7 @@ VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
 
 int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	PixbufPrivate *priv = plugin->priv;
+	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	
 	if (priv->target.pixels != NULL) {
 		if (priv->center == TRUE) {
