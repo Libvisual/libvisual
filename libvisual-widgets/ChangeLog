@@ -1,5 +1,9 @@
 2004-11-17  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* gtk2/lvw_gtk2_visui.*: more cleanups.
+
+2004-11-17  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* gtk2/lvw_gtk2_visui.*: Updated, cleanups, saner function names etc
 	etc. Still lots of work needed here.
 

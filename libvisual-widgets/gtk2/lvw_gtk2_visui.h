@@ -16,16 +16,15 @@ G_BEGIN_DECLS
 #define IS_LVW_VISUI_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LVW_VISUI_TYPE))
 
 
-typedef struct _LvwVisUI       LvwVisUI;
-typedef struct _LvwVisUIClass  LvwVisUIClass;
+typedef struct _LvwVisUI	LvwVisUI;
+typedef struct _LvwVisUIClass	LvwVisUIClass;
+typedef struct _LvwVisUIPrivate	LvwVisUIPrivate;
 
 struct _LvwVisUI
 {
 	GtkBin parent;
-
-	VisUIWidget *vuitree;
-	GSList *callbacksreg;
-	GdkWindow *event_window;
+	
+	LvwVisUIPrivate *priv;
 };
 
 struct _LvwVisUIClass

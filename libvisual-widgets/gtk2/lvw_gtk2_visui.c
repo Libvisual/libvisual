@@ -11,6 +11,15 @@
 /* FIXME unreg param callbacks on destroy */
 /* FIXME implement tooltips */
 
+#define LVW_VISUI_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), LVW_VISUI_TYPE, LvwVisUIPrivate))
+
+struct _LvwVisUIPrivate {
+	VisUIWidget	*vuitree;
+	GSList		*callbacksreg;
+	GdkWindow	*event_window;
+	gboolean	 destroyed;
+};
+
 typedef struct _PrivIdleData PrivIdleData;
 typedef struct _CallbackEntry CallbackEntry;
 
@@ -20,14 +29,14 @@ struct _PrivIdleData {
 };
 
 struct _CallbackEntry {
-	const VisParamEntry		*param;
-	param_changed_callback_func_t	 callback;
+	const VisParamEntry	*param;
+	int			 id;
 };
 
 static void lvw_visui_destroy (GtkObject *object);
 static void lvw_visui_class_init (LvwVisUIClass *klass);
 static void lvw_visui_init (LvwVisUI *vuic);
-static GtkWidget *lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt);
+static GtkWidget *lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont);
 
 /* Parameter change callbacks from within GTK */
 static void cb_visui_entry (GtkEditable *editable, gpointer user_data);
@@ -70,9 +79,28 @@ lvw_visui_destroy (GtkObject *object)
 	CallbackEntry *cbentry;
 	GtkObjectClass *klass;
 	GtkObjectClass *parent_class;
+	LvwVisUIPrivate *priv;
 
 	g_return_if_fail (IS_LVW_VISUI (object));
 
+	/* FIXME following scenario:
+	 * We are here, we haven't yet locked ourself.
+	 *
+	 * After this function the widget will be history.
+	 *
+	 * Well, but in the render thread
+	 * a param could change
+	 * queue an idle cb
+	 *
+	 * AND RUN THAT AFTER WE'RE DESTROYED.. aka major problem in the sync.
+	 */
+	
+	priv = LVW_VISUI_GET_PRIVATE (object);
+
+	if (priv->destroyed == FALSE) {
+		/* FIXME lock the damn thread on cb unreg */	
+
+	}
 #if 0
 	head = LVW_VISUI (object)->callbacksreg;
 	printf ("HMMMM\n");
@@ -100,12 +128,13 @@ lvw_visui_destroy (GtkObject *object)
 
 	LVW_VISUI (object)->callbacksreg = NULL;
 #endif 
+	priv->destroyed = TRUE;	
+
 	klass = LVW_VISUI_CLASS (g_type_class_peek (LVW_VISUI_TYPE));
 	parent_class = GTK_OBJECT_CLASS (g_type_class_peek_parent (klass));
 
 	if (GTK_OBJECT_CLASS (parent_class)->destroy)
 		(*GTK_OBJECT_CLASS (parent_class)->destroy) (object);
-
 }
 
 static void
@@ -118,7 +147,7 @@ lvw_visui_size_allocate (GtkWidget *widget,
 	widget->allocation = *allocation;
 
 	if (GTK_WIDGET_REALIZED (widget))
-		gdk_window_move_resize (lvwuic->event_window,
+		gdk_window_move_resize (lvwuic->priv->event_window,
 				widget->allocation.x,
 				widget->allocation.y,
 				widget->allocation.width,
@@ -187,9 +216,9 @@ lvw_visui_realize (GtkWidget *widget)
 	widget->window = gtk_widget_get_parent_window (widget);
 	g_object_ref (widget->window);
 
-	lvwuic->event_window = gdk_window_new (gtk_widget_get_parent_window (widget),
+	lvwuic->priv->event_window = gdk_window_new (gtk_widget_get_parent_window (widget),
 			&attributes, attributes_mask);
-	gdk_window_set_user_data (lvwuic->event_window, lvwuic);
+	gdk_window_set_user_data (lvwuic->priv->event_window, lvwuic);
 
 	widget->style = gtk_style_attach (widget->style, widget->window);
 }
@@ -197,18 +226,24 @@ lvw_visui_realize (GtkWidget *widget)
 static void
 lvw_visui_class_init (LvwVisUIClass *klass)
 {
+	GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 	GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->destroy = lvw_visui_destroy;
+	
 	widget_class->realize = lvw_visui_realize;
 	widget_class->size_allocate = lvw_visui_size_allocate;
 	widget_class->size_request = lvw_visui_size_request;
+
+	g_type_class_add_private (gobject_class, sizeof (LvwVisUIPrivate));
 }
 
 static void
 lvw_visui_init (LvwVisUI *vuic)
 {
+	vuic->priv = LVW_VISUI_GET_PRIVATE (vuic);
+
 	GTK_WIDGET_SET_FLAGS (vuic, GTK_NO_WINDOW);
 }
 
@@ -233,11 +268,11 @@ lvw_visui_new (VisUIWidget *vuitree)
 	LvwVisUI *vuic;
 
 	vuic = g_object_new (lvw_visui_get_type (), NULL);
-	vuic->callbacksreg = NULL;
+	vuic->priv->callbacksreg = NULL;
 
-	vuic->vuitree = vuitree;
+	vuic->priv->vuitree = vuitree;
 
-	widget = lvw_visui_create_gtk_widgets (vuic, vuitree, 0);
+	widget = lvw_visui_create_gtk_widgets (vuic, vuitree);
 
 	gtk_container_add (GTK_CONTAINER (vuic), widget);
 
@@ -257,16 +292,12 @@ lvw_visui_new (VisUIWidget *vuitree)
  * VisUI tree and translate it to a super hot Gtk2 Widget function :)
  */
 static GtkWidget *
-lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
+lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 {
 	GtkWidget *widget;
 	CallbackEntry *cbentry;
 
-	char spacing[1024];
 	VisUIWidgetType type = visual_ui_widget_get_type (cont);
-
-	memset (spacing, '\t', cnt);
-	spacing[cnt] = '\0';
 
 	if (type == VISUAL_WIDGET_TYPE_BOX) {
 
@@ -274,8 +305,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		VisListEntry *le = NULL;
 		VisUIWidget *wi = NULL;
 
-		printf ("%sBox entry: orientation %d\n", spacing, VISUAL_UI_BOX (cont)->orient);
-		
 		if (visual_ui_box_get_orient (VISUAL_UI_BOX (cont)) == VISUAL_ORIENT_TYPE_HORIZONTAL)
 			widget = gtk_hbox_new (FALSE, 10);
 		else if (visual_ui_box_get_orient (VISUAL_UI_BOX (cont)) == VISUAL_ORIENT_TYPE_VERTICAL)
@@ -292,21 +321,18 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		while ((wi = visual_list_next (childs, &le)) != NULL) {
 			GtkWidget *packer;
 			
-			packer = lvw_visui_create_gtk_widgets (vuic, wi, cnt + 1);
+			packer = lvw_visui_create_gtk_widgets (vuic, wi);
 
 			gtk_box_pack_start (GTK_BOX (widget), packer, FALSE, FALSE, 0);
 		}
 
-		printf ("%sEnd box entry\n", spacing);
-
 		return widget;
+
 	} else if (type == VISUAL_WIDGET_TYPE_TABLE) {
 
 		VisList *childs;
 		VisListEntry *le = NULL;
 		VisUITableEntry *tentry;
-
-		printf ("%sTable entry: %d %d\n", spacing, VISUAL_UI_TABLE (cont)->rows, VISUAL_UI_TABLE (cont)->cols);
 
 		widget = gtk_table_new (VISUAL_UI_TABLE (cont)->rows, VISUAL_UI_TABLE (cont)->cols, FALSE);
 
@@ -318,22 +344,18 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		while ((tentry = visual_list_next (childs, &le)) != NULL) {
 			GtkWidget *wi;
 
-			wi = lvw_visui_create_gtk_widgets (vuic, tentry->widget, cnt + 1);
+			wi = lvw_visui_create_gtk_widgets (vuic, tentry->widget);
 
 			gtk_table_attach_defaults (GTK_TABLE (widget), wi,
 					tentry->col, tentry->col + 1, tentry->row, tentry->row + 1);
 
 		}
 
-		printf ("%sEnd table entry\n", spacing);
-
 		return widget;
 	
 	} else if (type == VISUAL_WIDGET_TYPE_FRAME) {
 
 		GtkWidget *child;
-
-		printf ("%sFrame entry: name %s\n", spacing, VISUAL_UI_FRAME (cont)->name);
 
 		widget = gtk_frame_new (VISUAL_UI_FRAME (cont)->name);
 		
@@ -342,20 +364,16 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 				VISUAL_UI_WIDGET (cont)->height);
 
 		if (VISUAL_UI_CONTAINER (cont)->child != NULL) {
-			child = lvw_visui_create_gtk_widgets (vuic, VISUAL_UI_CONTAINER (cont)->child, cnt + 1);
+			child = lvw_visui_create_gtk_widgets (vuic, VISUAL_UI_CONTAINER (cont)->child);
 
 			gtk_container_add (GTK_CONTAINER (widget), child);
 		}
-	
-		printf ("%sEnd frame entry\n", spacing);
 
 		return widget;
 
 	} else if (type == VISUAL_WIDGET_TYPE_LABEL) {
 
 		GtkWidget *align;
-
-		printf ("%sLabel entry: %s\n", spacing, visual_ui_label_get_text (VISUAL_UI_LABEL (cont)));
 
 		if (VISUAL_UI_LABEL (cont)->bold == FALSE)
 			widget = gtk_label_new (visual_ui_label_get_text (VISUAL_UI_LABEL (cont)));
@@ -394,8 +412,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		unsigned char *buf;
 		int x, y;
 		int i = 0;
-
-		printf ("%sImage entry\n", spacing);
 
 		video = visual_ui_image_get_video (VISUAL_UI_IMAGE (cont));
 
@@ -447,8 +463,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 
 	} else if (type == VISUAL_WIDGET_TYPE_SEPARATOR) {
 
-		printf ("%sSeparator entry\n", spacing);
-
 		if (visual_ui_separator_get_orient (VISUAL_UI_SEPARATOR (cont)) == VISUAL_ORIENT_TYPE_NONE) {
 			visual_log (VISUAL_LOG_CRITICAL, "Separator orientation must be HORIZONTAL or VERTICAL");
 
@@ -470,19 +484,16 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 
 		VisParamEntry *param;
 
-		printf ("%sText entry\n", spacing);
-
 		widget = gtk_entry_new ();
 
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
 				VISUAL_UI_WIDGET (cont)->height);
 		
-		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
+		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
 		visual_ui_widget_set_private (cont, widget);
-		visual_param_entry_add_callback (param, cb_param_entry, cont);
-
+		
 		gtk_entry_set_text (GTK_ENTRY (widget), visual_param_entry_get_string (param));
 		gtk_entry_set_max_length (GTK_ENTRY (widget), VISUAL_UI_ENTRY (cont)->length);
 
@@ -491,8 +502,8 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 
 		cbentry = g_new0 (CallbackEntry, 1);
 		cbentry->param = param;
-		cbentry->callback = cb_param_entry;
-		vuic->callbacksreg = g_slist_append (vuic->callbacksreg, cbentry);
+		cbentry->id = visual_param_entry_add_callback (param, cb_param_entry, cont);
+		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
 		return widget;
 
@@ -501,9 +512,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		VisParamEntry *param;
 		double val;
 
-		printf ("%sSlider entry\n", spacing);
-
-		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
+		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
 		if (param->type == VISUAL_PARAM_TYPE_INTEGER)
 			val = visual_param_entry_get_integer (param);
@@ -522,7 +531,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 				VISUAL_UI_RANGE (cont)->step);
 
 		visual_ui_widget_set_private (cont, widget);
-		visual_param_entry_add_callback (param, cb_param_slider, cont);
 
 		if (VISUAL_UI_SLIDER (cont)->showvalue == FALSE)
 			gtk_scale_set_draw_value (GTK_SCALE (widget), FALSE);
@@ -540,14 +548,17 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		g_signal_connect (G_OBJECT (widget), "value-changed",
 				G_CALLBACK (cb_visui_slider), cont);
 		
+		cbentry = g_new0 (CallbackEntry, 1);
+		cbentry->param = param;
+		cbentry->id = visual_param_entry_add_callback (param, cb_param_slider, cont);
+		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
 		return widget;
 		
 	} else if (type == VISUAL_WIDGET_TYPE_NUMERIC) {
 
 		VisParamEntry *param;
 		double val;
-
-		printf ("%sNumeric entry\n", spacing);
 
 		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
@@ -568,8 +579,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 				VISUAL_UI_RANGE (cont)->step);
 
 		visual_ui_widget_set_private (cont, widget);
-		visual_param_entry_add_callback (param, cb_param_numeric, cont);
-		
+
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
 				VISUAL_UI_WIDGET (cont)->height);
@@ -584,8 +594,8 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 
 		cbentry = g_new0 (CallbackEntry, 1);
 		cbentry->param = param;
-		cbentry->callback = cb_param_numeric;
-		vuic->callbacksreg = g_slist_append (vuic->callbacksreg, cbentry);
+		cbentry->id = visual_param_entry_add_callback (param, cb_param_numeric, cont);
+		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
 		return widget;
 
@@ -594,8 +604,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		VisParamEntry *param;
 		VisColor *color;
 		GdkColor gdkcol;
-
-		printf ("%sColor entry\n", spacing);
 
 		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
@@ -614,7 +622,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		widget = gtk_color_selection_new ();
 
 		visual_ui_widget_set_private (cont, widget);
-		visual_param_entry_add_callback (param, cb_param_color, cont);
 
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
@@ -627,8 +634,8 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 
 		cbentry = g_new0 (CallbackEntry, 1);
 		cbentry->param = param;
-		cbentry->callback = cb_param_color;
-		vuic->callbacksreg = g_slist_append (vuic->callbacksreg, cbentry);
+		cbentry->id = visual_param_entry_add_callback (param, cb_param_color, cont);
+		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
 		return widget;
 
@@ -640,8 +647,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		VisListEntry *le = NULL;
 		VisList *choices;
 
-		printf ("%sPopup entry\n", spacing);
-		
 		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
 		options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (cont));
@@ -655,9 +660,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 
 		widget = gtk_combo_box_new_text ();
 
-
 		visual_ui_widget_set_private (cont, widget);
-		visual_param_entry_add_callback (param, cb_param_popup, cont);
 
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
@@ -673,14 +676,13 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 
 		cbentry = g_new0 (CallbackEntry, 1);
 		cbentry->param = param;
-		cbentry->callback = cb_param_popup;
-		vuic->callbacksreg = g_slist_append (vuic->callbacksreg, cbentry);
+		cbentry->id = visual_param_entry_add_callback (param, cb_param_popup, cont);
+		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
 		return widget;
 
 	} else if (type == VISUAL_WIDGET_TYPE_LIST) {
 
-		printf ("%sList entry\n", spacing);
 
 		/* FIXME implement this */
 
@@ -693,8 +695,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		VisListEntry *le = NULL;
 		VisList *choices;
 		
-		printf ("%sRadio entry\n", spacing);
-
 		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 		
 		options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (cont));
@@ -744,12 +744,11 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		}
 
 		visual_ui_widget_set_private (cont, widget);
-		visual_param_entry_add_callback (param, cb_param_radio, cont);
 
 		cbentry = g_new0 (CallbackEntry, 1);
 		cbentry->param = param;
-		cbentry->callback = cb_param_radio;
-		vuic->callbacksreg = g_slist_append (vuic->callbacksreg, cbentry);
+		cbentry->id = visual_param_entry_add_callback (param, cb_param_radio, cont);
+		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
 		return widget;
 
@@ -757,8 +756,6 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 
 		VisParamEntry *param;
 		VisUIChoiceList *options;
-
-		printf ("%sCheckbox entry\n", spacing);
 
 		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
@@ -784,20 +781,17 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), visual_ui_choice_get_active (VISUAL_UI_CHOICE (cont)));
 
 		visual_ui_widget_set_private (cont, widget);
-		visual_param_entry_add_callback (param, cb_param_checkbox, cont);
 
 		g_signal_connect (G_OBJECT (widget), "toggled",
 				G_CALLBACK (cb_visui_checkbox), cont);
 
 		cbentry = g_new0 (CallbackEntry, 1);
 		cbentry->param = param;
-		cbentry->callback = cb_param_checkbox;
-		vuic->callbacksreg = g_slist_append (vuic->callbacksreg, cbentry);
+		cbentry->id = visual_param_entry_add_callback (param, cb_param_checkbox, cont);
+		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
 		return widget;
 	}
-
-	printf ("%sUnhandled type: %d\n", spacing, type);
 
 	return NULL;
 }
@@ -1087,7 +1081,6 @@ cb_idle_color (void *userdata)
 
 	color = visual_param_entry_get_color (param);
 	
-	/* FIXME on 255, 254 is displayed.. why ? */
 	gdkcol.red = color->r * (65535 / 255);
 	gdkcol.blue = color->b * (65535 / 255);
 	gdkcol.green = color->g * (65535 / 255);
