@@ -42,7 +42,8 @@ int visual_songinfo_free (VisSongInfo *songinfo)
 
 	visual_songinfo_free_strings (songinfo);
 
-	visual_video_free_with_buffer (songinfo->cover);
+	if (visual_video_have_allocated_buffer (&songinfo->cover) == TRUE)
+		visual_video_free_buffer (&songinfo->cover);
 
 	visual_mem_free (songinfo);
 
@@ -230,8 +231,21 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 {
 	visual_log_return_val_if_fail (songinfo != NULL, -1);
 
-	songinfo->cover = cover;
+	if (visual_video_have_allocated_buffer (&songinfo->cover) == TRUE)
+		visual_video_free_buffer (&songinfo->cover);
 
+	visual_video_set_dimension (&songinfo->cover, cover->width, cover->height);
+
+	/* Yes we always stored in 32 bit, Iimages shouldn't be large so
+	 * transforming them to a different depth is not a hard job */
+	visual_video_set_depth (&songinfo->cover, VISUAL_VIDEO_DEPTH_32BIT);
+	visual_video_allocate_buffer (&songinfo->cover);
+	
+	visual_video_depth_transform (&songinfo->cover, cover);
+
+	/* FIXME: When scale and bilinear interpolation lands, rescale to a (settable) size and (settable) bilinear
+	 * interpolate. */
+	
 	return 0;
 }
 
@@ -267,7 +281,7 @@ long visual_songinfo_age (VisSongInfo *songinfo)
 
 	visual_time_get (&cur);
 
-	/* Clock has been changed */
+	/* Clock has been changed into the past */
 	if (cur.tv_sec < songinfo->timer.start.tv_sec)
 		visual_songinfo_mark (songinfo);
 
@@ -292,6 +306,7 @@ int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
 	dest->type = src->type;
 	dest->length = src->length;
 	dest->elapsed = src->elapsed;
+
 	memcpy (&dest->timer, &src->timer, sizeof (VisTimer));
 
 	if (src->songname != NULL)
@@ -306,7 +321,16 @@ int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
 	if (src->song != NULL)
 		dest->song = strdup (src->song);
 
-	/* FIXME copy the cover art video as well */
+	/* Copy the coverart image */
+	if (visual_video_have_allocated_buffer (&dest->cover) == TRUE)
+		visual_video_free_buffer (&dest->cover);
+	
+	visual_video_clone (&dest->cover, &src->cover);
+	visual_video_allocate_buffer (&dest->cover);
+
+	/* Check if we have the buffer */
+	if (visual_video_have_allocated_buffer (&dest->cover) == TRUE)
+		visual_video_blit_overlay (&dest->cover, &src->cover, 0, 0, FALSE);
 
 	return 0;
 }

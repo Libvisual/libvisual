@@ -1,3 +1,23 @@
+2005-08-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_have_allocated_buffer):
+	Added function to check if a VisVideo has a private allocated
+	buffer.
+
+	(visual_video_depth_transform): Use visual_video_blit_overlay
+	if the depths are the same, this is done because while the
+	dimension is the same, pitch can still be different.
+
+	* libvisual/lv_songinfo.c, libvisual/lv_songinfo.h: Made the cover
+	not a pointer but a real member of the VisSongInfo structure,
+	and adapted code for this and some coverart support work.
+
+	* libvisual/lv_video.c (visual_video_allocate_buffer): If a buffer
+	allocation for a 0 sized video is requested don't try to malloc,
+	instead set screenbuffer to NULL and set VISUAL_VIDEO_FLAGS_NONE.
+
+	* TODO: Updates.
+
 2005-08-26  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_color.c (visual_color_from_hsv,

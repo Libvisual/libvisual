@@ -70,6 +70,7 @@ int visual_video_free (VisVideo *video);
 int visual_video_free_with_buffer (VisVideo *video);
 int visual_video_free_buffer (VisVideo *video);
 int visual_video_allocate_buffer (VisVideo *video);
+int visual_video_have_allocated_buffer (VisVideo *video);
 int visual_video_clone (VisVideo *dest, VisVideo *src);
 int visual_video_compare (VisVideo *src1, VisVideo *src2);
 

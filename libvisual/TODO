@@ -80,8 +80,6 @@ libvisual:
 		investigate bpm detection (post 0.4)
 
 	video:
-		hsv-rgb etc conversions for VisColor
-
 		font system
 		
 		check for opengl when setting up transformation buffers
@@ -141,9 +139,6 @@ libvisual:
 		timed morph
 		a method to check if the morph needs audio
 
-	songinfo:
-		fix coverart support and stuff
-	
 	libvisual:
 		After the events stuff do a good code review + cleanups.
 
@@ -197,9 +192,6 @@ libvisual:
 	VisCPU:
 		A small sub system to obtain information about the processor, processors, cpu flags, simd set flags.
 
-	VisTimer:
-		Good timer module
-		port over the coverart timeout stuff to this module.
 		Use this for the timed morph as well.
 
 

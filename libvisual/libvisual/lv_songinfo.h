@@ -52,7 +52,7 @@ struct _VisSongInfo {
 	VisTimer	 timer;		/**< Used to internal timing to keep track on the
 					  * age of the record. */
 	/* Cover art */
-	VisVideo	*cover;		/**< Pointer to a VisVideo that contains the cover art. */
+	VisVideo	 cover;		/**< Pointer to a VisVideo that contains the cover art. */
 };
 
 VisSongInfo *visual_songinfo_new (VisSongInfoType type);

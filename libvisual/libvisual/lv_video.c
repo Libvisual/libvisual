@@ -205,11 +205,34 @@ int visual_video_allocate_buffer (VisVideo *video)
 		}
 	}
 
+	if (video->size == 0) {
+		video->screenbuffer = NULL;
+		video->flags = VISUAL_VIDEO_FLAG_NONE;
+		return 0;
+	}
+	
 	video->screenbuffer = visual_mem_malloc0 (video->size);
 
 	video->flags = VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER;
 
 	return 0;
+}
+
+/**
+ * Checks if the given VisVideo has a private allocated buffer.
+ *
+ * @param video Pointer to the VisVideo of which we want to know if it has a private allocated buffer.
+ *
+ * @return TRUE if the VisVideo has an allocated buffer, or FALSE if not.
+ */
+int visual_video_have_allocated_buffer (VisVideo *video)
+{
+	visual_log_return_val_if_fail (video != NULL, FALSE);
+
+	if (HAVE_ALLOCATED_BUFFER (video))
+		return TRUE;
+
+	return FALSE;
 }
 
 /**
@@ -657,7 +680,7 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
  * @param src Pointer to the source VisVideo which is overlayed in the destination.
  * @param x Horizontal placement offset.
  * @param y Vertical placement offset.
- * @param alpha Sets if we want to check the alpha channel. Use FALSE or TRUE here/
+ * @param alpha Sets if we want to check the alpha channel. Use FALSE or TRUE here.
  *
  * @return 0 on succes -1 on error.
  */
@@ -911,6 +934,10 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src)
  */
 int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc)
 {
+	/* We blit overlay it instead of just memcpy because the pitch van still be different */
+	if (viddest->depth == vidsrc->depth)
+		return visual_video_blit_overlay (viddest, vidsrc, 0, 0, FALSE);
+	
 	return visual_video_depth_transform_to_buffer (viddest->screenbuffer,
 			vidsrc, vidsrc->pal, viddest->depth, viddest->pitch);
 }

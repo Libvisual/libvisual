@@ -629,6 +629,9 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 				visual_event_queue_add_newsong (&actor->plugin->eventqueue, actor->songinfo);
 
 			actor->songcompare = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
+
+			visual_songinfo_free_strings (actor->songcompare);
+			visual_songinfo_copy (actor->songcompare, actor->songinfo);
 		}
 
 		if (visual_songinfo_compare (actor->songinfo, actor->songcompare) != 0) {
@@ -636,10 +639,10 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 
 			if (actplugin->events != NULL)
 				visual_event_queue_add_newsong (&actor->plugin->eventqueue, actor->songinfo);
+
+			visual_songinfo_free_strings (actor->songcompare);
+			visual_songinfo_copy (actor->songcompare, actor->songinfo);
 		}
-		/** @todo should be freeing and copying everytime, should done more effecient */
-		visual_songinfo_free_strings (actor->songcompare);
-		visual_songinfo_copy (actor->songcompare, actor->songinfo);
 	}
 	
 	actplugin->songinfo = actor->songinfo;
