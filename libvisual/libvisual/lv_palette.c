@@ -159,6 +159,45 @@ int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, 
 }
 
 /**
+ * Can be used to cycle through the colors of a VisPalette and blend between elements. The rate is from 0.0 to number of
+ * VisColors in the VisPalette. The VisColor is newly allocated so you have to unref it. The last VisColor in the VisPalette is
+ * morphed with the first.
+ *
+ * @param pal Pointer to the VisPalette in which the VisColors are cycled.
+ * @param rate Selection of the VisColor from the VisPalette, goes from 0.0 to number of VisColors in the VisPalette
+ * 	and morphs between colors if needed.
+ *
+ * @return A new VisColor, possibly a morph between two VisColors, NULL on failure.
+ */
+VisColor *visual_palette_color_cycle (VisPalette *pal, float rate)
+{
+	VisColor *color, *tmp1, *tmp2;
+	int irate = (int) rate;
+	unsigned char alpha;
+	float rdiff = rate - irate;
+
+	visual_log_return_val_if_fail (pal != NULL, NULL);
+	
+	irate = irate % pal->ncolors;
+	alpha = rdiff * 255;
+
+	color = visual_color_new ();
+
+	tmp1 = &pal->colors[irate];
+
+	if (irate == pal->ncolors - 1)
+		tmp2 = &pal->colors[0];
+	else
+		tmp2 = &pal->colors[irate + 1];
+
+	color->r = ((alpha * (tmp1->r - tmp2->r) >> 8) + tmp2->r);
+	color->g = ((alpha * (tmp1->g - tmp2->g) >> 8) + tmp2->g);
+	color->b = ((alpha * (tmp1->b - tmp2->b) >> 8) + tmp2->b);
+
+	return color;
+}
+
+/**
  * @}
  */
 

@@ -495,7 +495,8 @@ VisParamEntryType visual_param_entry_get_type (VisParamEntry *param)
 }
 
 /**
- * Compares two parameters with each other, When they are the same, 1 is returned, if not 0.
+ * Compares two parameters with each other, When they are the same, TRUE is returned, if not FALSE.
+ * Keep in mind that FALSE is always returned for VISUAL_PARAM_ENTRY_TYPE_PALETTE.
  *
  * @param src1 Pointer to the first VisParamEntry for comparison.
  * @param src2 Pointer to the second VisParamEntry for comparison.
@@ -544,6 +545,11 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
 		case VISUAL_PARAM_ENTRY_TYPE_COLOR:
 			return visual_color_compare (&src1->color, &src2->color);
 			
+			break;
+
+		case VISUAL_PARAM_ENTRY_TYPE_PALETTE:
+			return FALSE;
+
 			break;
 
 		default:
@@ -597,6 +603,11 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 
 		case VISUAL_PARAM_ENTRY_TYPE_COLOR:
 			visual_param_entry_set_color_by_color (param, visual_param_entry_get_color (src));
+
+			break;
+
+		case VISUAL_PARAM_ENTRY_TYPE_PALETTE:
+			visual_param_entry_set_palette (param, visual_param_entry_get_palette (src));
 
 			break;
 

@@ -1,4 +1,13 @@
 2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_palette.* (visual_palette_color_cycle): Adding a color
+	cycler.
+
+	* libvisual/lv_param.c (visual_param_entry_compare,
+	visual_param_entry_set_from_param): Support
+	VISUAL_PARAM_ENTRY_TYPE_PALETTE as well.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* libvisual/lv_param.c: It's nearly unbelievable how much shit one can
 	code (self inflicted yeah).

@@ -54,6 +54,7 @@ int visual_palette_copy (VisPalette *dest, VisPalette *src);
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors);
 int visual_palette_free_colors (VisPalette *pal);
 int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate);
+VisColor *visual_palette_color_cycle (VisPalette *pal, float rate);
 
 #ifdef __cplusplus
 }
