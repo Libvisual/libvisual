@@ -125,7 +125,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric), visual_param_container_get (paramcontainer, "light size"));
 	visual_ui_range_set_min (VISUAL_UI_RANGE (numeric), 8);
 	visual_ui_range_set_max (VISUAL_UI_RANGE (numeric), 512);
-	visual_ui_range_set_step (VISUAL_UI_RANGE (numeric), 2);
+	visual_ui_range_set_step (VISUAL_UI_RANGE (numeric), 8);
 	visual_ui_range_set_precision (VISUAL_UI_RANGE (numeric), 0);
 
 	slider = visual_ui_slider_new (FALSE);
@@ -134,7 +134,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider), visual_param_container_get (paramcontainer, "light size"));
 	visual_ui_range_set_min (VISUAL_UI_RANGE (slider), 8);
 	visual_ui_range_set_max (VISUAL_UI_RANGE (slider), 512);
-	visual_ui_range_set_step (VISUAL_UI_RANGE (slider), 2);
+	visual_ui_range_set_step (VISUAL_UI_RANGE (slider), 8);
 	visual_ui_range_set_precision (VISUAL_UI_RANGE (slider), 0);
 
 	check1 = visual_ui_checkbox_new ("Cycling colors", TRUE);
@@ -267,7 +267,7 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 					
 				} else if (visual_param_entry_is (param, "moving light")) {
 					priv->moving_light = visual_param_entry_get_integer (param);
-					
+				
 				} else if (visual_param_entry_is (param, "diamond")) {
 					priv->diamond = visual_param_entry_get_integer (param);
 					

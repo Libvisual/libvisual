@@ -304,7 +304,7 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 	int i, j, prev_y, dy, dx, xq, yq;
 
 	prev_y = priv->video->pitch + 1;
-	
+
 	for (dy = (-ly)+(priv->phongres/2), j = 0; j < priv->height; j++, dy++, prev_y+=priv->video->pitch-priv->width) {
 		for (dx = (-lx)+(priv->phongres/2), i = 0; i < priv->width; i++, dx++, prev_y++) {
 
@@ -319,7 +319,7 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 				continue;
 			}
 
-			priv->rgb_buf2[prev_y] = priv->phongdat[(yq * priv->phongres) + xq];
+			priv->rgb_buf2[prev_y] = priv->phongdat[(xq * priv->phongres) + yq];
 		}
 	}
 }
@@ -330,14 +330,9 @@ void __bumpscope_generate_palette (BumpscopePrivate *priv, VisColor *col)
 
 	for (i = 0; i < 256; i++) {
 		r = ((float)(100*col->r/255)*priv->intense1[i]+priv->intense2[i]);
-		if (r > 253) r = 253;
-
 		g = ((float)(100*col->g/255)*priv->intense1[i]+priv->intense2[i]);
-		if (g > 253) g = 253;
-
 		b = ((float)(100*col->b/255)*priv->intense1[i]+priv->intense2[i]);
-		if (b > 253) b = 253;
-
+		
 		priv->pal.colors[i].r = r;
 		priv->pal.colors[i].g = g;
 		priv->pal.colors[i].b = b;
@@ -348,10 +343,11 @@ void __bumpscope_generate_palette (BumpscopePrivate *priv, VisColor *col)
 void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 {
 	int y, x;
-	double i, i2;
-	
-	for (y = 0; y < priv->phongres; y++) {
-		for (x = 0; x < priv->phongres; x++) {
+	double i, i2, cont;
+	int phresd2 = priv->phongres / 2;
+
+	for (y = phresd2; y < priv->phongres; y++) {
+		for (x = phresd2; x < priv->phongres; x++) {
 
 			i = (double)x/((double)priv->phongres)-1;
 			i2 = (double)y/((double)priv->phongres)-1;
@@ -368,47 +364,24 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 					i = i*i*i * 255.0;
 
 				if (i > 255) i = 255;
-			
-				priv->phongdat[(y * priv->phongres) + x] = i;
-				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + x] = i;
-				priv->phongdat[(y * priv->phongres) + ((priv->phongres-1) - x)] = i;
-				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + ((priv->phongres-1)-x)] = i;
+
+				cont = i;
+
+				if (cont < 100)
+					cont = 0;
+
+				priv->phongdat[((y - phresd2) * priv->phongres) + x - phresd2] = cont;
+				priv->phongdat[(((priv->phongres-1)-y + phresd2) * priv->phongres) + x - phresd2] = cont;
+				priv->phongdat[(((y - phresd2) * priv->phongres) + ((priv->phongres-1) - x)) + phresd2] = cont;
+				priv->phongdat[(((priv->phongres-1)-y + phresd2) * priv->phongres) + ((priv->phongres-1)-x + phresd2)] = cont;
 			} else {
-//				priv->phongdat[(y * priv->phongres) + x] = 0;
-//				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + x] = 0;
-//				priv->phongdat[(y * priv->phongres) + ((priv->phongres-1)-x)] = 0;
-//				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + ((priv->phongres-1)-x)] = 0;
+				priv->phongdat[((y - phresd2) * priv->phongres) + x - phresd2] = cont;
+				priv->phongdat[(((priv->phongres-1)-y + phresd2) * priv->phongres) + x - phresd2] = cont;
+				priv->phongdat[(((y - phresd2) * priv->phongres) + ((priv->phongres-1) - x)) + phresd2] = cont;
+				priv->phongdat[(((priv->phongres-1)-y + phresd2) * priv->phongres) + ((priv->phongres-1)-x + phresd2)] = cont;
 			}
 		}
 	}
-#if 0
-	/* Screw this, I can't get it right, and I don't care we're doing it the dirty way (Synap, Dennis Smit) */
-	for (y = 0; y <= priv->phongres / 2; y++) {
-		for (x = 0; x <= priv->phongres / 2; x++) {
-			uint8_t tmp;
-
-			/* Save bottom right */
-			tmp = priv->phongdat[((y + priv->phongres / 2) * priv->phongres) + x + (priv->phongres / 2)];
-			
-			/* Set upper left in bottom right */
-			priv->phongdat[((y + priv->phongres / 2) * priv->phongres) + x + (priv->phongres / 2)] = 
-				priv->phongdat[(y * priv->phongres) + x];
-
-			/* Set old bottom right in upper left */
-			priv->phongdat[(y * priv->phongres) + x] = tmp;
-
-			/* Save bottom left */
-			tmp = priv->phongdat[((y + priv->phongres / 2) * priv->phongres) + x];
-
-			/* Set upper right in bottom left */
-			priv->phongdat[((y + priv->phongres / 2) * priv->phongres) + x] =
-				priv->phongdat[(y * priv->phongres) + x + (priv->phongres / 2)];
-			
-			/* Set old bottom left in upper right */
-			priv->phongdat[(y * priv->phongres) + x + (priv->phongres / 2)] = tmp;
-		}
-	}
-#endif	
 }
 
 void __bumpscope_render_pcm (BumpscopePrivate *priv, short data[3][512])

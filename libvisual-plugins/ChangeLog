@@ -1,5 +1,12 @@
 2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/bumpscope/bump_scope.c
+	(__bumpscope_generate_phongdat):
+
+	FIXED! :)
+
+2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/corona: Adding plugin, still shitload of lose ends in
 	this one, need to fixup a lot.
 
