@@ -81,6 +81,10 @@ extern "C" int lv_gforce_init (VisPluginData *plugin)
 	EgOSUtils::Initialize (0);
 	ScreenDevice::sMinDepth = 8;
 
+	/* Randomize the seed */
+	srand (EgOSUtils::CurTimeMS ());
+
+	
 	priv->gGF = new GForce;
 
 	SetRect (&r, 0, 0, 64, 64);

@@ -232,7 +232,7 @@ GForce::GForce( void* inRefCon ) :
 	
 	// Alloc/setup the data we'll have our virtual machines accessing...
 	SetNumSampleBins( mNum_S_Steps );
-	SetNumFFTBins ( mNum_FFT_Steps );
+	SetNumFFTBins( mNum_FFT_Steps );
 
 	// Setup waveshape members
 	mWave1.SetMagFcn( (ExprUserFcn**) &mSampleFcn );
