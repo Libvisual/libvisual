@@ -5,6 +5,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+/* WARNING when you add an new error to this list, make sure that you update lv_error.c it's
+ * human readable string list as well!!! */
 /**
  * Enumerate of all possible numeric error values. 
  */
@@ -140,9 +142,12 @@ enum {
 	VISUAL_ERROR_VIDEO_HAS_PIXELS,			/**< The VisVideo already points to a pixel buffer. */
 	VISUAL_ERROR_VIDEO_INVALID_BPP,			/**< The VisVideo it's bytes per pixel is invalid. */
 	VISUAL_ERROR_VIDEO_INVALID_DEPTH,		/**< The VisVideoDepth value is not valid. */
+	VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD,	/**< The VisVideoScaleMethod argument is not valid. */
 	VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS,		/**< The X or Y value are greater than the VisVideo it's dimension. */
 	VISUAL_ERROR_VIDEO_NOT_INDENTICAL,		/**< The two VisVideo their configuration are not indentical. */
-	VISUAL_ERROR_VIDEO_NOT_TRANSFORMED		/**< Could not depth transform a VisVideo. */
+	VISUAL_ERROR_VIDEO_NOT_TRANSFORMED,		/**< Could not depth transform a VisVideo. */
+
+	VISUAL_ERROR_LIST_END				/**< Last entry, to check against for the number of errors. */
 };
 
 /**

@@ -253,10 +253,8 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	visual_video_depth_transform (&dtransform, cover);
 
 	/* Now scale it */
-	/* FIXME make cover image size settable ???
-	 * Use bilinair filtering when it arives
-	 */
-	visual_video_scale (songinfo->cover, &dtransform, VISUAL_VIDEO_SCALE_NEAREST);
+	/* FIXME make cover image size settable ??? */
+	visual_video_scale (songinfo->cover, &dtransform, VISUAL_VIDEO_SCALE_BILINEAR);
 
 	/* Unref the depth transform video */
 	visual_object_unref (&dtransform);

@@ -1,3 +1,19 @@
+2004-12-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_filter_bilinear): Removed
+	and incorporated in the visual_video_scale. Also created the 32 bits
+	version of a bilinear scaler, based on numerous docs and an old
+	patch that was done by Duilio. It should be optimized a lot still.
+
+	Also some random pitch correction fixed to the nearest scalers have
+	been done.
+
+	* libvisual/lv_songinfo.c (visual_songinfo_set_cover): Use the
+	bilinear scaler.
+
+	* libvisual/lv_error.c: Added the human readable error string list,
+	strings still empty, also updated the visual_error_to_string function.
+
 2004-12-16  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c (visual_video_blit_overlay,
