@@ -1,17 +1,25 @@
-/*
- * Ported to the libvisual system by Dennis Smit  <ds@nerds-incorporated.org>
+/* Libvisual-plugins - Standard plugins for libvisual
+ * 
+ * Copyright (C) 2000, 2001 Remi Arquier <arquier@crans.org>
  *
- * Any questions about the port or code that comes from the libvisual source tree
- * should be written to Dennis Smit. Not Remi Arquier.
+ * Authors: Remi Arquier <arquier@crans.org>
+ *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * JESS v2.9.1
+ * $Id:
  *
- *        Copyright (c) 2000 by Remi Arquier
- * Freely redistributable under the Gnu GPL version 2 or later
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- *                    <arquier@crans.org>
- *                   http://arquier.free.fr
- *                         17 dec 2001
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 #include <stdio.h>
