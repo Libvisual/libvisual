@@ -9,8 +9,8 @@
 #include "lv_error.h"
 
 
-static visual_error_handler_func_t __lv_error_handler = NULL;
-static void *__lv_error_handler_priv = NULL;
+static visual_error_handler_func_t error_handler = NULL;
+static void *error_handler_priv = NULL;
 
 /**
  * @defgroup VisError VisError
@@ -28,12 +28,12 @@ static void *__lv_error_handler_priv = NULL;
  */
 int visual_error_raise ()
 {
-	if (__lv_error_handler == NULL) {
+	if (error_handler == NULL) {
 		raise (SIGTRAP);
 		exit (1);
 	}
 	
-	return __lv_error_handler (__lv_error_handler_priv);
+	return error_handler (error_handler_priv);
 }
 
 /**
@@ -51,8 +51,8 @@ int visual_error_set_handler (visual_error_handler_func_t handler, void *priv)
 {
 	visual_log_return_val_if_fail (handler != NULL, -1);
 
-	__lv_error_handler = handler;
-	__lv_error_handler_priv = priv;
+	error_handler = handler;
+	error_handler_priv = priv;
 
 	return 0;
 }
