@@ -9,18 +9,60 @@ AC_CONFIG_HEADER(config.h)
 AC_PREFIX_DEFAULT(/usr)
 
 AC_CANONICAL_HOST
-AC_MSG_CHECKING([for Win32])
-case "$host_os" in
-	cygwin*)
-		lv_win32=yes
-		;;
-  	mingw*)
-		lv_win32=yes
-		;;
-	*)
-		lv_win32=no
-		;;
+
+lv_mips=no
+lv_alpha=no
+lv_sparc=no
+lv_ix86=no
+lv_powerpc=no
+
+case "$host_cpu" in
+	mips)           lv_mips=yes;;
+	alpha)          lv_alpha=yes;;
+	sparc)          lv_sparc=yes;;
+	i*86)           lv_ix86=yes;;
+       	powerpc|ppc)    lv_powerpc=yes;;
+	*)		lv_arch_unknown=yes;;
 esac
+
+lv_hpux=no
+lv_aix=no
+lv_beos=no
+lv_osf=no
+lv_irix=no
+lv_sunos=no
+lv_solaris=no
+lv_linux=no
+lv_sco=no
+lv_bsd=no
+lv_darwin=no
+lv_cygwin=no
+lv_mingw=no
+lv_os_unknown=no
+
+case "$host_os" in
+	hpux9* | hpux10* | hpux11*)	lv_hpux=yes;;
+	aix*)		lv_aix=yes;;
+	beos*)		lv_beos=yes;;
+	*osf*)		lv_osf=yes;;
+	irix*)          lv_irix=yes;;
+	sunos*)         lv_sunos=yes;;
+	solaris*)       lv_solaris=yes;;
+	linux*)         lv_linux=yes;;
+	*sco*)          lv_sco=yes;;
+	*bsd*)		lv_bsd=yes;;
+	*darwin*)	lv_darwin=yes;;
+	cygwin*)	lv_cygwin=yes;;
+  	mingw*)		lv_mingw=yes;;
+	*)		lv_os_unknown=yes;;
+esac
+
+AC_MSG_CHECKING([for Win32])
+if test x$lv_cygwin = xyes || test x$lv_mingw = xyes ; then
+  lv_win32=yes
+else
+  lv_win32=no
+fi
 AC_MSG_RESULT([$lv_win32])
 
 # Checks for programs.
@@ -249,22 +291,159 @@ _______EOF
 
 typedef unsigned $visual_size_type visual_size_t;
 #define VISUAL_SIZE_T_FORMAT	$visual_size_format
-
 _______EOF
-
-        if test x$lv_win32 = xyes ; then
-                cat >>$outfile <<_______EOF
-
-#define VISUAL_OS_WIN32
-
-_______EOF
-        fi
 
         if test x$lv_have_opengl = xyes ; then
                 cat >>$outfile <<_______EOF
 
 #define VISUAL_HAVE_OPENGL
+_______EOF
+        fi
 
+        if test x$lv_mips = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_ARCH_MIPS
+_______EOF
+        fi
+
+        if test x$lv_alpha = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_ARCH_ALPHA
+_______EOF
+        fi
+
+        if test x$lv_sparc = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_ARCH_SPARC
+_______EOF
+        fi
+
+        if test x$lv_ix86 = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_ARCH_Ix86
+_______EOF
+        fi
+
+        if test x$lv_powerpc = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_ARCH_POWERPC
+_______EOF
+        fi
+
+        if test x$lv_arch_unknown = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_ARCH_UNKNOWN
+_______EOF
+        fi
+
+        if test x$lv_linux = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_LINUX
+_______EOF
+        fi
+
+        if test x$lv_win32 = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_WIN32
+_______EOF
+        fi
+
+        if test x$lv_hpux = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_HPUX
+_______EOF
+        fi
+
+        if test x$lv_aix = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_AIX
+_______EOF
+        fi
+
+        if test x$lv_beos = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_BEOS
+_______EOF
+        fi
+
+        if test x$lv_osf = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_OSF
+_______EOF
+        fi
+
+        if test x$lv_irix = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_IRIX
+_______EOF
+        fi
+
+        if test x$lv_sunos = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_SUNOS
+_______EOF
+        fi
+
+        if test x$lv_solaris = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_SOLARIS
+_______EOF
+        fi
+
+        if test x$lv_sco = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_SCO
+_______EOF
+        fi
+
+        if test x$lv_bsd = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_BSD
+_______EOF
+        fi
+
+        if test x$lv_darwin = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_DARWIN
+_______EOF
+        fi
+
+        if test x$lv_os_unknown = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_UNKNOWN
+_______EOF
+        fi
+
+        if test x$lv_cygwin = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_WITH_CYGWIN
+_______EOF
+        fi
+
+        if test x$lv_mingw = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_WITH_MINGW
 _______EOF
         fi
 
@@ -286,6 +465,28 @@ echo >>$outfile
    visual_size_type=$visual_size_type
    lv_win32=$lv_win32
    lv_have_opengl=$lv_have_opengl
+ 
+   lv_mips=$lv_mips
+   lv_alpha=$lv_alpha
+   lv_sparc=$lv_sparc
+   lv_ix86=$lv_ix86
+   lv_powerpc=$lv_powerpc
+   lv_arch_unknown=$lv_arch_unknown
+
+   lv_hpux=$lv_hpux
+   lv_aix=$lv_aix
+   lv_beos=$lv_beos
+   lv_osf=$lv_osf
+   lv_irix=$lv_irix
+   lv_sunos=$lv_sunos
+   lv_solaris=$lv_solaris
+   lv_linux=$lv_linux
+   lv_sco=$lv_sco
+   lv_bsd=$lv_bsd
+   lv_darwin=$lv_darwin
+   lv_cygwin=$lv_cygwin
+   lv_mingw=$lv_mingw
+   lv_os_unknown=$lv_os_unknown
 
 case $visual_size_type in
 short)
