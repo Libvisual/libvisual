@@ -775,7 +775,7 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 	
 	/* We're looking at exactly the same types of VisVideo objects */
 	if (visual_video_compare (dest, src) == TRUE && alpha == FALSE && x == 0 && y == 0)
-		memcpy (dest->pixels, src->pixels, dest->size);
+		visual_mem_copy (dest->pixels, src->pixels, dest->size);
 	else if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
 		blit_overlay_noalpha (dest, srcp, x, y);
 	else {
@@ -816,7 +816,7 @@ static int blit_overlay_noalpha (VisVideo *dest, const VisVideo *src, int x, int
 
 	xa = x > 0 ? x : 0;
 	for (ya = y > 0 ? y : 0; ya < lheight; ya++) {
-		memcpy (destbuf + ((ya * destp) + (xa * dest->bpp)),
+		visual_mem_copy (destbuf + ((ya * destp) + (xa * dest->bpp)),
 				srcbuf + (((ya - y) * srcp) + ((xa - x) * dest->bpp)),
 				(lwidth - (x > 0 ? x : 0)) * dest->bpp);
 	}
@@ -972,7 +972,7 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
  */
 int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc)
 {
-	/* We blit overlay it instead of just memcpy because the pitch can still be different */
+	/* We blit overlay it instead of just visual_mem_copy because the pitch can still be different */
 	if (viddest->depth == vidsrc->depth)
 		return visual_video_blit_overlay (viddest, vidsrc, 0, 0, FALSE);
 	
@@ -1010,7 +1010,7 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video
 
 	/* Destdepth is equal to sourcedepth case */
 	if (video->depth == destdepth) {
-		memcpy (dest, video->pixels, video->width * video->height * video->bpp);
+		visual_mem_copy (dest, video->pixels, video->width * video->height * video->bpp);
 
 		return VISUAL_OK;
 	}

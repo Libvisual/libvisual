@@ -158,8 +158,8 @@ int visual_audio_analyze (VisAudio *audio)
 	
 	/* BPM stuff, used for the audio energy only right now */
 	for (i = 1023; i > 0; i--) {
-		memcpy (&audio->bpmhistory[i], &audio->bpmhistory[i - 1], 6 * sizeof (short int));
-		memcpy (&audio->bpmdata[i], &audio->bpmdata[i - 1], 6 * sizeof (short int));
+		visual_mem_copy (&audio->bpmhistory[i], &audio->bpmhistory[i - 1], 6 * sizeof (short int));
+		visual_mem_copy (&audio->bpmdata[i], &audio->bpmdata[i - 1], 6 * sizeof (short int));
 	}
 
 	/* Calculate the audio energy */

@@ -1,5 +1,12 @@
 2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_mem.* (visual_mem_copy): Added function, will contain
+	optimized memcopies for mmx,sse etc.
+
+	* libvisual/*: Use visual_mem_copy.
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_plugin.*: Finish up the VisPluginEnviron stuff.
 
 	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx): Made a bit

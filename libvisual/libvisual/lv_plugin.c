@@ -202,7 +202,7 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 
-	memcpy (dest, src, sizeof (VisPluginInfo));
+	visual_mem_copy (dest, src, sizeof (VisPluginInfo));
 
 	dest->plugname = strdup (src->plugname);
 	dest->type = strdup (src->type);

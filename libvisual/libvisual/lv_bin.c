@@ -658,7 +658,7 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 				bin->actvideo->pixels);
 		
 		if (bin->actvideo->pixels != NULL && privvid->pixels != NULL)
-			memcpy (privvid->pixels, bin->actvideo->pixels, privvid->size);
+			visual_mem_copy (privvid->pixels, bin->actvideo->pixels, privvid->size);
 		else if (privvid->pixels != NULL)
 			memset (privvid->pixels, 0, privvid->size);
 

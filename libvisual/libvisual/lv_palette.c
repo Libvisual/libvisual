@@ -81,7 +81,7 @@ int visual_palette_copy (VisPalette *dest, VisPalette *src)
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PALETTE_NULL);
 	visual_log_return_val_if_fail (dest->ncolors == src->ncolors, -VISUAL_ERROR_PALETTE_SIZE);
 
-	memcpy (dest->colors, src->colors, sizeof (VisColor) * dest->ncolors);
+	visual_mem_copy (dest->colors, src->colors, sizeof (VisColor) * dest->ncolors);
 
 	return VISUAL_OK;
 }

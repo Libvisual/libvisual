@@ -344,7 +344,7 @@ int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
 	dest->length = src->length;
 	dest->elapsed = src->elapsed;
 
-	memcpy (&dest->timer, &src->timer, sizeof (VisTimer));
+	visual_mem_copy (&dest->timer, &src->timer, sizeof (VisTimer));
 
 	if (src->songname != NULL)
 		dest->songname = strdup (src->songname);

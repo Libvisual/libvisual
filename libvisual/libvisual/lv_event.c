@@ -119,7 +119,7 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 	if (eventqueue->resizenew == TRUE) {
 		eventqueue->resizenew = FALSE;
 
-		memcpy (event, &eventqueue->lastresize, sizeof (VisEvent));
+		visual_mem_copy (event, &eventqueue->lastresize, sizeof (VisEvent));
 
 		return TRUE;
 	}
@@ -128,7 +128,7 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 		return FALSE;
 	
 	lev = visual_list_next (&eventqueue->events, &listentry);
-	memcpy (event, lev, sizeof (VisEvent));
+	visual_mem_copy (event, lev, sizeof (VisEvent));
 
 	visual_object_unref (VISUAL_OBJECT (lev));
 
