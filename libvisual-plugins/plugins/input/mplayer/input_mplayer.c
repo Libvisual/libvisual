@@ -5,7 +5,7 @@
  * @author Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  * License: GNU Lesser General Public License (GNU/LGPL)
  ******************************************************************************
- * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.2 2004-07-13 00:16:01 gsbarbieri Exp $
+ * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.3 2004-07-13 01:06:39 gsbarbieri Exp $
  */
 
 #include <stdio.h>
@@ -84,7 +84,7 @@ LVPlugin *get_plugin_info( VisPluginRef *ref )
   mplayer_input->info = visual_plugin_info_new( "mplayer", 
 						"Gustavo Sverzut Barbieri " \
 						"<gsbarbieri@users.sourceforge.net>", 
-						"0.1",
+						"$Revision: 1.3 $",
 						"Use data exported from "   \
 						"MPlayer", "This plugin "   \
 						"uses data exported from "  \
@@ -202,25 +202,17 @@ int inp_mplayer_cleanup( VisInputPlugin *plugin )
 
   if ( priv->loaded == 1 )
     {
-      if ( ! munmap( priv->mmap_area, 
-		     priv->mmap_area->bs + sizeof( mplayer_data_t ) ) )
-	{
-	  visual_log( VISUAL_LOG_ERROR,
-		      "Could not munmap() area %p+%d. %s\n",
-		      priv->mmap_area, 
-		      priv->mmap_area->bs + sizeof( mplayer_data_t ), 
-		      strerror( errno ) );
-	  unclean |= 1;
-	}      
+      void *mmap_area  = (void*)priv->mmap_area;
+      int   mmap_count = priv->mmap_area->bs + sizeof( mplayer_data_t );
 
       if ( priv->fd > 0 )
 	{
-      if ( ! close( priv->fd ) )
-	{
-	  visual_log( VISUAL_LOG_ERROR,
-		      "Could not close file descriptor %d: %s\n", 
-		      priv->fd, strerror( errno ) );
-	      unclean |= 2;
+	  if ( close( priv->fd ) != 0 )
+	    {
+	      visual_log( VISUAL_LOG_ERROR,
+			  "Could not close file descriptor %d: %s\n", 
+			  priv->fd, strerror( errno ) );
+	      unclean |= 1;
 	    }
 	  priv->fd = -1;
 	}
@@ -228,14 +220,23 @@ int inp_mplayer_cleanup( VisInputPlugin *plugin )
 	{
 	  visual_log( VISUAL_LOG_ERROR, "Wrong file descriptor %d\n.", 
 		      priv->fd );
-	  unclean |= 4;
+	  unclean |= 2;
 	}
+
+      if ( munmap( mmap_area, mmap_count ) != 0 )
+	{
+	  visual_log( VISUAL_LOG_ERROR,
+		      "Could not munmap() area %p+%d. %s\n",
+		      mmap_area, mmap_count,
+		      strerror( errno ) );
+	  unclean |= 4;
+	}      
     }
 
   free( priv );
-  plugin->private = priv = NULL;
+  plugin->private = NULL;
   
-  return unclean;
+  return - unclean;
 }
 
 
