@@ -184,6 +184,8 @@ libvisual:
 			morph plugins.
 			and input plugins.
 
+		Move all our mallocs to visual_new0
+
 INTERNAL:
 	LOG: (post 0.1)
 		give an api that allows you to select the lowest debug niveau to be shown
