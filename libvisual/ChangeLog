@@ -1,3 +1,7 @@
+2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* examples/morphsdl.c: Runs again.
+
 2004-07-08  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* libvisual/lv_plugin.c: fixed double free() of list

@@ -504,13 +504,16 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 		 * the dest video context */
 		actor->transform = visual_video_new ();
 
+		visual_log (VISUAL_LOG_INFO, "run depth %d forced %d\n", rundepth, forced);
+		
 		if (forced == TRUE)
 			visual_video_set_depth (actor->transform, rundepth);
 		else
 			visual_video_set_depth (actor->transform,
 					visual_video_depth_get_highest_nogl (depthflag));
 
-		visual_log (VISUAL_LOG_INFO, "transpitch1 %d", actor->transform->pitch);
+		visual_log (VISUAL_LOG_INFO, "transpitch1 %d depth %d bpp %d", actor->transform->pitch, actor->transform->depth,
+				actor->transform->bpp);
 		/* If there is only GL (which gets returned by highest nogl if
 		 * nothing else is there, stop here */
 		if (actor->transform->depth == VISUAL_VIDEO_DEPTH_GL)

@@ -162,8 +162,8 @@ void sdl_create (int width, int height)
 {
 	int video_flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_RESIZABLE;
 
-	if (have_opengl)
-		video_flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER;
+//	if (have_opengl)
+//		video_flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER;
 	
 	screen = SDL_SetVideoMode (width, height, bppres * 8, video_flags);
 	if (screen == NULL) {	
@@ -195,7 +195,7 @@ int main (int argc, char *argv[])
 	VisPalette *palbin;
 
 	int width = 320, height = 200;
-	int depthuse = VISUAL_VIDEO_DEPTH_32BIT;
+	VisVideoDepth depthuse = VISUAL_VIDEO_DEPTH_32BIT;
 
 	int freeze = 0;
 
@@ -213,7 +213,7 @@ int main (int argc, char *argv[])
 
 	SDL_Event event;
 	
-	visual_init (NULL, NULL);
+	visual_init (&argc, &argv);
 	
 	/* Check libvisual version */
 	printf ("Libvisual version %s\n", visual_get_version ());
@@ -284,6 +284,8 @@ else
 		SDL_LockSurface (screen);
 
 	visual_video_set_buffer (video, screen->pixels);
+	
+	visual_bin_set_supported_depth (bin, VISUAL_VIDEO_DEPTH_ALL);
 	
 	visual_bin_set_video (bin, video);
 	visual_bin_connect_by_names (bin, argv[1], "esd");

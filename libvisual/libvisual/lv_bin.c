@@ -292,14 +292,14 @@ int visual_bin_sync (VisBin *bin, int noevent)
 			return -1;
 		}
 
-		visual_log (VISUAL_LOG_INFO, "setting new video from actvideo %d %d", video->depth, video->bpp);
+		visual_log (VISUAL_LOG_DEBUG, "setting new video from actvideo %d %d", video->depth, video->bpp);
 	}
 
 	/* Main actor */
 //	visual_actor_realize (bin->actor);
 	visual_actor_set_video (bin->actor, video);
 
-	visual_log (VISUAL_LOG_INFO, "one last video pitch check %d depth old %d forcedmain %d noevent %d",
+	visual_log (VISUAL_LOG_DEBUG, "one last video pitch check %d depth old %d forcedmain %d noevent %d",
 			video->pitch, bin->depthold,
 			bin->depthforcedmain, noevent);
 
@@ -315,7 +315,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 			visual_actor_video_negotiate (bin->actor, 0, noevent, FALSE);
 	}
 	
-	visual_log (VISUAL_LOG_INFO, "pitch after main actor negotiate %d", video->pitch);
+	visual_log (VISUAL_LOG_DEBUG, "pitch after main actor negotiate %d", video->pitch);
 
 	/* Morphing actor */
 	if (bin->actmorphmanaged == TRUE && bin->morphing == TRUE &&
@@ -439,7 +439,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 	visual_log_return_val_if_fail (bin != NULL, -1);
 	visual_log_return_val_if_fail (actname != NULL, -1);
 
-	visual_log (VISUAL_LOG_INFO, "switching to a new actor: %s, old actor: %s", actname, bin->actor->plugin->ref->name);
+	visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s", actname, bin->actor->plugin->ref->name);
 
 	/* Destroy if there already is a managed one */
 	if (bin->actmorphmanaged == TRUE) {
