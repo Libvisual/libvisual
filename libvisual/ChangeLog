@@ -38,7 +38,6 @@
 	Removed stdint and use sys/types.h for portability
 	reasons.
 
->>>>>>> 1.20
 2004-06-29  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: added check for endianess, and set
