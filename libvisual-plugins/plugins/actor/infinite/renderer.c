@@ -38,15 +38,10 @@ void _inf_init_renderer(InfinitePrivate *priv)
 
 void _inf_renderer(InfinitePrivate *priv)
 {
-        struct timeval tv;
-	
 	_inf_blur(priv, &priv->vector_field[priv->plugwidth*priv->plugheight*priv->current_effect.num_effect]);
 	_inf_spectral(priv, &priv->current_effect, priv->pcm_data);
 	_inf_curve(priv, &priv->current_effect);
 
-	gettimeofday (&tv, NULL);
-	srand (tv.tv_usec);
-			
 	if (priv->t_last_color<=32) {
 		_inf_change_color(priv, priv->old_color,
 				priv->color,

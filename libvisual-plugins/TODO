@@ -28,7 +28,7 @@ inputs:
 		Make an mplayer mmap thingy plugin (someone else)
 
 	jack:
-		Make an jack plugin (someone else)
+		finish it actually.
 
 	Any other input method:
 		Make plugins for these (someone else),
@@ -56,10 +56,7 @@ actors:
 		valgrind
 
 	lv_analyzer:
-x		steal from xmms
-
-	lv_gltest:
-		reset all the settings right.
+		add two param VisColors to use it as a gradient for the palette.
 
 	JESS:
 		build tables in strides instead of blocking (post 0.2)
@@ -72,8 +69,6 @@ x		steal from xmms
 
 	goom:
 		libgoom:
-			goom links to too much stuff
-			is goom linking to the right thingies?
 			leaking quite seriously
 			use extern "C" stuff in the headers
 			does not compile on alpha (because of mmx, sse, should use a C fallback)

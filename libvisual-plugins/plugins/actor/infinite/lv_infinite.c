@@ -51,6 +51,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 int act_infinite_init (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
+	struct timeval tv;
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
@@ -61,9 +62,13 @@ int act_infinite_init (VisPluginData *plugin)
 	priv->plugheight = 32;
 
 	visual_palette_allocate_colors (&priv->pal, 256);
+        
+	gettimeofday (&tv, NULL);
+	srand (tv.tv_usec);
 
 	_inf_init_renderer (priv);
-
+	_inf_load_random_effect(priv, &priv->current_effect);
+	
 	return 0;
 }
 
