@@ -228,6 +228,9 @@ int visual_init (int *argc, char ***argv)
                 if (__lv_progname == NULL)
                         visual_log (VISUAL_LOG_WARNING, "Could not set program name");
         }
+	
+	/* Initialize CPU caps */
+	visual_cpu_initialize ();
 
 	/* Add the standard plugin paths */
 	ret = visual_init_path_add (PLUGPATH"/actor");

@@ -58,15 +58,21 @@ typedef struct _VisCPU VisCPU;
 struct _VisCPU {
 	VisObject	object;	/**< The VisObject data. */
 	VisCPUType	type;	/**< Contains the CPU/arch type. */
-	uint32_t	flags;	/**< Contains feature flags for the CPU. */
 	int		nrcpu;	/**< Contains the number of CPUs in the system. */
+
+	/* Feature flags */
+	int		cpuType;
+	int		hasTSC;
+	int		hasMMX;
+	int		hasMMX2;
+	int		hasSSE;
+	int		hasSSE2;
+	int		has3DNow;
+	int		has3DNowExt;
 };
 
 void visual_cpu_initialize (void);
-VisCPU *visual_cpu_get_info (void);
-
-int visual_cpu_feature_disable (int flag);
-int visual_cpu_feature_enable (int flag);
+VisCPU *visual_cpu_get_caps (void);
 
 #ifdef __cplusplus
 }

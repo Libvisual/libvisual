@@ -32,6 +32,7 @@
 #include <lvconfig.h>
 #include "lv_common.h"
 #include "lv_video.h"
+#include "lv_cpu.h"
 #include "lv_log.h"
 #include "lv_mem.h"
 
@@ -1446,12 +1447,16 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
  */
 int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod scale_method)
 {
+	VisCPU *cpucaps;
+
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (dest->depth == src->depth, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 	visual_log_return_val_if_fail (scale_method == VISUAL_VIDEO_SCALE_NEAREST ||
 			scale_method == VISUAL_VIDEO_SCALE_BILINEAR, -VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD);
 
+	cpucaps = visual_cpu_get_caps ();
+	
 	switch (dest->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
 			if (scale_method == VISUAL_VIDEO_SCALE_NEAREST)
@@ -1480,9 +1485,12 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 		case VISUAL_VIDEO_DEPTH_32BIT:
 			if (scale_method == VISUAL_VIDEO_SCALE_NEAREST)
 				scale_nearest_32 (dest, src);
-			else if (scale_method == VISUAL_VIDEO_SCALE_BILINEAR)
-				scale_bilinear_32 (dest, src);
-
+			else if (scale_method == VISUAL_VIDEO_SCALE_BILINEAR) {
+				if (cpucaps->hasMMX != 0)
+					_lv_scale_bilinear_32_mmx (dest, src);
+				else	
+					scale_bilinear_32 (dest, src);
+			}
 			break;
 
 		default:

@@ -1,3 +1,16 @@
+2005-01-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.*: Loads of work, ideas and code from mplayer,
+	needs shitload more work.
+
+	* libvisual/lv_video_mmx.c: Added, contains mmx optimized versions of
+	functions within VisVideo. (Currently a 32 bits bilinear scaler
+	in mmx by Jeko.
+
+	* libvisual/lv_video.*: Updated for the mmx stuff.
+
+	PLEASE ALL TEST THIS WELL
+
 2005-01-05  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_plugin.*: VisPluginEnviron stuff added, thanks to
@@ -67,7 +80,7 @@
 2004-12-20  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c (scale_bilinear_32): New version
-	bij Jeko from Goom, fixed point and a lot faster. Thanks a lot!
+	by Jeko from Goom, fixed point and a lot faster. Thanks a lot!
 
 2004-12-19  Dennis Smit  <ds@nerds-incorporated.org>
 

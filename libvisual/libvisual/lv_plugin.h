@@ -428,9 +428,6 @@ int visual_plugin_unload (VisPluginData *plugin);
 VisPluginData *visual_plugin_load (VisPluginRef *ref);
 int visual_plugin_realize (VisPluginData *plugin);
 
-int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnvironElement *enve);
-/* we also need functions for e.g. searching */
-
 VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
 VisList *visual_plugin_get_list (const char **paths);
 
@@ -445,6 +442,10 @@ const char *visual_plugin_type_get_package (const char *type);
 const char *visual_plugin_type_get_type (const char *type);
 VisPluginTypeDepth visual_plugin_type_get_depth (const char *type);
 int visual_plugin_type_member_of (const char *domain, const char *type);
+
+VisPluginEnvironElement *visual_plugin_environ_new (const char *type, VisObject *environ);
+int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnvironElement *penve);
+
 
 #ifdef __cplusplus
 }

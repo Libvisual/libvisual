@@ -143,6 +143,10 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video
 
 int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod scale_method);
 
+/* Optimized versions of performance sensitive routines */
+/* mmx from lv_video_mmx.c */ /* FIXME can we do this nicer ? */
+int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
