@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_lv_scope.la
+lib_LTLIBRARIES = @SCOPE@
+
+EXTRA_LTLIBRARIES = actor_lv_scope.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

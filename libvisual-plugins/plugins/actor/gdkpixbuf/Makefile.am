@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_gdkpixbuf.la
+lib_LTLIBRARIES = @GDKPIXBUFLA@
+
+EXTRA_LTLIBRARIES = actor_gdkpixbuf.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

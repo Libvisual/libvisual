@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = input_jack.la
+lib_LTLIBRARIES = @JACKLA@
+
+EXTRA_LTLIBRARIES = input_jack.la
 
 libdir = $(prefix)/lib/libvisual/input
 

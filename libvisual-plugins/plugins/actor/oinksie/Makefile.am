@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_oinksie.la
+lib_LTLIBRARIES = @OINKSIE@
+
+EXTRA_LTLIBRARIES = actor_oinksie.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_lv_gltest.la
+lib_LTLIBRARIES = @GLTEST@
+
+EXTRA_LTLIBRARIES = actor_lv_gltest.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

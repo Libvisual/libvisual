@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = input_mplayer.la
+lib_LTLIBRARIES = @MPLAYER@
+
+EXTRA_LTLIBRARIES = input_mplayer.la
 
 libdir = $(prefix)/lib/libvisual/input
 

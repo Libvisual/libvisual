@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_bumpscope.la
+lib_LTLIBRARIES = @BUMPSCOPE@
+
+EXTRA_LTLIBRARIES = actor_bumpscope.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

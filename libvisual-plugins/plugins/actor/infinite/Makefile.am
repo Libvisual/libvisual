@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_infinite.la
+lib_LTLIBRARIES = @INFINITE@
+
+EXTRA_LTLIBRARIES = actor_infinite.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

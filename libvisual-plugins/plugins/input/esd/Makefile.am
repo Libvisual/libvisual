@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = input_esd.la
+lib_LTLIBRARIES = @ESDLA@
+
+EXTRA_LTLIBRARIES = input_esd.la
 
 libdir = $(prefix)/lib/libvisual/input
 

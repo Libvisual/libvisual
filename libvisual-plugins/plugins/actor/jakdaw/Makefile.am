@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_jakdaw.la
+lib_LTLIBRARIES = @JAKDAW@
+
+EXTRA_LTLIBRARIES = actor_jakdaw.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

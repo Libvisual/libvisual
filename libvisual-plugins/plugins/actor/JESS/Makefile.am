@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_JESS.la
+lib_LTLIBRARIES = @JESSLA@
+
+EXTRA_LTLIBRARIES = actor_JESS.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

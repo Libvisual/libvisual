@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_goom2.la
+lib_LTLIBRARIES = @GOOM2LA@
+
+EXTRA_LTLIBRARIES = actor_goom2.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

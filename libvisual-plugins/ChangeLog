@@ -1,3 +1,13 @@
+2004-09-22  Duilio Protti <dprotti@user.sourceforge.net>
+
+	* configure.ac:
+	- mplayer input plugin made optional, and don't
+	builded if we don't find a munmap().
+	- optional building system revamped: visit all 
+	directories always, but still possible to disable
+	building of any plugin, and dist target still
+	working.
+
 2004-09-21  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/lv_analyzer/actor_lv_analyzer.c

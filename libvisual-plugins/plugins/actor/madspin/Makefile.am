@@ -6,7 +6,9 @@ images_DATA = star1.bmp \
 
 EXTRA_DIST = $(images_DATA)
 
-lib_LTLIBRARIES = actor_madspin.la
+lib_LTLIBRARIES = @MADSPIN@
+
+EXTRA_LTLIBRARIES = actor_madspin.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

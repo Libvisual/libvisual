@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = input_alsa.la
+lib_LTLIBRARIES = @ALSALA@
+
+EXTRA_LTLIBRARIES = input_alsa.la
 
 libdir = $(prefix)/lib/libvisual/input
 

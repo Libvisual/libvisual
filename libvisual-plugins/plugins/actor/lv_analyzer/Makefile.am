@@ -1,4 +1,7 @@
-lib_LTLIBRARIES = actor_lv_analyzer.la
+
+lib_LTLIBRARIES = @ANALYZER@
+
+EXTRA_LTLIBRARIES = actor_lv_analyzer.la
 
 libdir = $(prefix)/lib/libvisual/actor
 

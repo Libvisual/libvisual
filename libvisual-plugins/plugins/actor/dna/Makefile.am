@@ -1,6 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = actor_lv_dna.la
+lib_LTLIBRARIES = @DNA@
+
+EXTRA_LTLIBRARIES = actor_lv_dna.la
 
 libdir = $(prefix)/lib/libvisual/actor
 
