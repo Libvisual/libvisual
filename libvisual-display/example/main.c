@@ -5,11 +5,8 @@
 
 #include "lvdisplay/lv_display.h"
 
-#include "GL/gl.h"
-
-#define NULL_OUTPUT 0
-
-static char actorname[100] = "oinksie";
+static char actorname[100] = "testactor";
+static char backend[100] = "x11";
 
 int main(int argc, char **argv)
 {
@@ -21,6 +18,7 @@ int main(int argc, char **argv)
 	int quit_flag = 0;
 	int is_fullscreen = 0;
 
+	visual_init_path_add ("plugins/.libs");
 	visual_init_path_add ("../drivers/null/.libs");
 	visual_init_path_add ("../drivers/glx/.libs");
 	visual_init_path_add ("../drivers/x11/.libs");
@@ -47,7 +45,7 @@ int main(int argc, char **argv)
 	 *	others?
 	 */
 
-	drv = lvdisplay_driver_create ("glx", "x11_new");
+	drv = lvdisplay_driver_create (backend, "x11_new");
 
 	if (drv == NULL){
 		fprintf (stderr, "failed to load driver\n");
@@ -69,10 +67,10 @@ int main(int argc, char **argv)
 //		params[pc++] = VISUAL_VIDEO_DEPTH_GL; // whatever.... lvdisplay_realize sets it again
 
 		params[pc++] = LVD_SET_WIDTH;
-		params[pc++] = 300;
+		params[pc++] = 1024;
 
 		params[pc++] = LVD_SET_HEIGHT;
-		params[pc++] = 200;
+		params[pc++] = 768;
 
 		params[pc++] = LVD_SET_VISIBLE;
 		params[pc++] = 1;
@@ -81,7 +79,7 @@ int main(int argc, char **argv)
 	}
 
 
-	drv_fs = lvdisplay_driver_create ("glx", "x11_fullscreen");
+	drv_fs = lvdisplay_driver_create (backend, "x11_fullscreen");
 
 	if (drv_fs == NULL){
 		fprintf (stderr, "failed to load fs driver\n");
