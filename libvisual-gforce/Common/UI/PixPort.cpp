@@ -899,9 +899,11 @@ void PixPort::Fade( const char* inSrce, char* inDest, long inBytesPerRow, long i
 	const char* srceMap;
 	const char* srce;
 
+	// FIXME FIXME MMX SYNAP: OWyeha this is THE hot spot for optimalization!!!!
+	
 	// Setup the source row base address and offset to allow for negative grad components
 	srce = inSrce - HALFCORD * inBytesPerRow - HALFCORD;
-		
+	
 	// Start writing to the image...
 	for ( y = 0; y < inY; y++ ) {
 

@@ -1,3 +1,9 @@
+2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	THIS MODULE IS OBSOLETE.
+
+	It's now part of libvisual-plugins.
+
 2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* unix/libvisua/actor_gforce.cpp: Doh not the LGPL header but
