@@ -3,6 +3,7 @@
 
 #include <libvisual/lvconfig.h>
 
+#include <libvisual/lv_param.h>
 #include <libvisual/lv_bin.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_keysym.h>
