@@ -279,7 +279,7 @@ int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer 
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
  */
-int visual_param_container_match_copy (VisParamContainer *destcont, VisParamContainer *srccont)
+int visual_param_container_copy_match (VisParamContainer *destcont, VisParamContainer *srccont)
 {
 	VisListEntry *le = NULL;
 	VisParamEntry *destparam;
