@@ -1,3 +1,12 @@
+2004-09-29  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/config_gui.c: configure window can be resized.
+	* src/lv_xmms_config.c:
+	Show actor plugins list.
+	Show configure window with my preferences, even if plugin
+	was not loaded yet.
+	Show actor's about dialogs.
+
 2004-09-28  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/gettext.h: we always include locale.h if we have it.

@@ -4,6 +4,7 @@
 typedef struct {
 	GtkWidget *window_main;
 
+	GtkWidget *list_vis_plugins;
 	GtkWidget *button_vis_plugin_conf;
 	GtkWidget *button_vis_plugin_about;
 	GtkWidget *checkbutton_fullscreen;

@@ -28,9 +28,11 @@ ConfigWin *lv_xmms_config_gui_new (void)
   GtkWidget *scrolledwindow_vis_plugins;
   GtkWidget *viewport1;
   GtkWidget *list_vis_plugins;
+  GtkWidget *hbox_vis_plugin_controls;
   GtkWidget *hbox_vis_plugin_buttons;
   GtkWidget *button_vis_plugin_conf;
   GtkWidget *button_vis_plugin_about;
+  GtkWidget *checkbutton_vis_plugin;
   GtkWidget *checkbutton_fullscreen;
   GSList *buttongroup_plugins_group = NULL;
   GtkWidget *radiobutton_all_plugins;
@@ -44,6 +46,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   GtkWidget *vbox_morph_plugin;
   GtkWidget *optionmenu_morph_plugin;
   GtkWidget *optionmenu_morph_plugin_menu;
+  GtkWidget *hbox_morph_plugin_controls;
   GtkWidget *hbox_morph_plugin_buttons;
   GtkWidget *button_morph_plugin_conf;
   GtkWidget *button_morph_plugin_about;
@@ -62,7 +65,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_object_set_data (GTK_OBJECT (window_main), "window_main", window_main);
   gtk_window_set_title (GTK_WINDOW (window_main), _("LibVisual XMMS Plugin"));
   gtk_window_set_position (GTK_WINDOW (window_main), GTK_WIN_POS_CENTER);
-  gtk_window_set_policy (GTK_WINDOW (window_main), FALSE, FALSE, FALSE);
+  gtk_window_set_default_size (GTK_WINDOW (window_main), -1, 450);
 
   vbox_main = gtk_vbox_new (FALSE, 0);
   gtk_widget_ref (vbox_main);
@@ -77,7 +80,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_object_set_data_full (GTK_OBJECT (window_main), "frame_vis_plugin", frame_vis_plugin,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (frame_vis_plugin);
-  gtk_box_pack_start (GTK_BOX (vbox_main), frame_vis_plugin, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox_main), frame_vis_plugin, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame_vis_plugin), 2);
 
   vbox3 = gtk_vbox_new (FALSE, 0);
@@ -92,7 +95,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_object_set_data_full (GTK_OBJECT (window_main), "scrolledwindow_vis_plugins", scrolledwindow_vis_plugins,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (scrolledwindow_vis_plugins);
-  gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow_vis_plugins, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow_vis_plugins, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow_vis_plugins), 2);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow_vis_plugins), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
 
@@ -109,15 +112,22 @@ ConfigWin *lv_xmms_config_gui_new (void)
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (list_vis_plugins);
   gtk_container_add (GTK_CONTAINER (viewport1), list_vis_plugins);
-  gtk_list_set_selection_mode (GTK_LIST (list_vis_plugins), GTK_SELECTION_MULTIPLE);
+  gtk_list_set_selection_mode (GTK_LIST (list_vis_plugins), GTK_SELECTION_SINGLE);
 
-  hbox_vis_plugin_buttons = gtk_hbox_new (FALSE, 0);
+  hbox_vis_plugin_controls = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox_vis_plugin_controls);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_vis_plugin_controls", hbox_vis_plugin_controls,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox_vis_plugin_controls);
+  gtk_box_pack_start (GTK_BOX (vbox3), hbox_vis_plugin_controls, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox_vis_plugin_controls), 2);
+
+  hbox_vis_plugin_buttons = gtk_hbox_new (TRUE, 0);
   gtk_widget_ref (hbox_vis_plugin_buttons);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_vis_plugin_buttons", hbox_vis_plugin_buttons,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hbox_vis_plugin_buttons);
-  gtk_box_pack_start (GTK_BOX (vbox3), hbox_vis_plugin_buttons, FALSE, FALSE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (hbox_vis_plugin_buttons), 6);
+  gtk_box_pack_start (GTK_BOX (hbox_vis_plugin_controls), hbox_vis_plugin_buttons, FALSE, TRUE, 0);
 
   button_vis_plugin_conf = gtk_button_new_with_label (_("Configure"));
   gtk_widget_ref (button_vis_plugin_conf);
@@ -134,6 +144,14 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_widget_show (button_vis_plugin_about);
   gtk_box_pack_start (GTK_BOX (hbox_vis_plugin_buttons), button_vis_plugin_about, FALSE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (button_vis_plugin_about), 2);
+
+  checkbutton_vis_plugin = gtk_check_button_new_with_label (_("Enable/Disable"));
+  gtk_widget_ref (checkbutton_vis_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "checkbutton_vis_plugin", checkbutton_vis_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (checkbutton_vis_plugin);
+  gtk_box_pack_end (GTK_BOX (hbox_vis_plugin_controls), checkbutton_vis_plugin, FALSE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (checkbutton_vis_plugin), 2);
 
   checkbutton_fullscreen = gtk_check_button_new_with_label (_("Fullscreen"));
   gtk_widget_ref (checkbutton_fullscreen);
@@ -172,7 +190,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_fps", hbox_fps,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hbox_fps);
-  gtk_box_pack_start (GTK_BOX (vbox3), hbox_fps, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox3), hbox_fps, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (hbox_fps), 2);
 
   label_fps = gtk_label_new (_("Maximum Frames Per Second:"));
@@ -196,7 +214,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_object_set_data_full (GTK_OBJECT (window_main), "frame_morph_plugin", frame_morph_plugin,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (frame_morph_plugin);
-  gtk_box_pack_start (GTK_BOX (vbox_main), frame_morph_plugin, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox_main), frame_morph_plugin, FALSE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame_morph_plugin), 2);
 
   vbox_morph_plugin = gtk_vbox_new (FALSE, 0);
@@ -216,13 +234,20 @@ ConfigWin *lv_xmms_config_gui_new (void)
   optionmenu_morph_plugin_menu = gtk_menu_new ();
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu_morph_plugin), optionmenu_morph_plugin_menu);
 
-  hbox_morph_plugin_buttons = gtk_hbox_new (FALSE, 0);
+  hbox_morph_plugin_controls = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox_morph_plugin_controls);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_morph_plugin_controls", hbox_morph_plugin_controls,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox_morph_plugin_controls);
+  gtk_box_pack_start (GTK_BOX (vbox_morph_plugin), hbox_morph_plugin_controls, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox_morph_plugin_controls), 2);
+
+  hbox_morph_plugin_buttons = gtk_hbox_new (TRUE, 0);
   gtk_widget_ref (hbox_morph_plugin_buttons);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_morph_plugin_buttons", hbox_morph_plugin_buttons,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hbox_morph_plugin_buttons);
-  gtk_box_pack_start (GTK_BOX (vbox_morph_plugin), hbox_morph_plugin_buttons, TRUE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (hbox_morph_plugin_buttons), 6);
+  gtk_box_pack_start (GTK_BOX (hbox_morph_plugin_controls), hbox_morph_plugin_buttons, FALSE, FALSE, 0);
 
   button_morph_plugin_conf = gtk_button_new_with_label (_("Configure"));
   gtk_widget_ref (button_morph_plugin_conf);
@@ -285,6 +310,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
 
   config_gui->window_main = window_main;
 
+  config_gui->list_vis_plugins = list_vis_plugins;
   config_gui->button_vis_plugin_conf = button_vis_plugin_conf;
   config_gui->button_vis_plugin_about = button_vis_plugin_about;
   config_gui->checkbutton_fullscreen = checkbutton_fullscreen;

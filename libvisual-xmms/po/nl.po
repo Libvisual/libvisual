@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
-"POT-Creation-Date: 2004-09-25 03:32-0300\n"
+"POT-Creation-Date: 2004-09-28 14:43-0300\n"
 "PO-Revision-Date: 2004-07-12 22:27+0200\n"
 "Last-Translator: Dennis Smit <ds@nerds-incorporated.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -16,221 +16,181 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/main.c:118
+#: src/main.c:121
 msgid "Cannot get options"
 msgstr ""
 
-#: src/main.c:125
+#: src/main.c:128
 msgid "Cannot initialize SDL!\n"
 msgstr ""
 
-#: src/main.c:128
+#: src/main.c:131
 msgid " will not be loaded."
 msgstr ""
 
-#: src/main.c:129 src/lv_xmms_config.c:139 src/lv_xmms_config.c:154
-#: src/lv_xmms_config.c:395 src/lv_xmms_config.c:469 src/lv_xmms_config.c:497
-#: src/lv_xmms_config.c:571 src/lv_xmms_config.c:666 src/config_gui.c:347
+#: src/main.c:132 src/lv_xmms_config.c:124 src/lv_xmms_config.c:379
+#: src/lv_xmms_config.c:446 src/lv_xmms_config.c:487 src/lv_xmms_config.c:585
+#: src/config_gui.c:257
 msgid "Accept"
 msgstr ""
 
-#: src/main.c:141
+#: src/main.c:142
 #, c-format
 msgid "Cannot not load icon: %s"
 msgstr ""
 
-#: src/main.c:149
+#: src/main.c:148
 msgid "XMMS plugin"
 msgstr ""
 
-#: src/lv_xmms_config.c:133
-msgid ""
-"The input plugin specified on the config\n"
-"file is not a valid input plugin.\n"
-"We will use "
-msgstr ""
-
-#: src/lv_xmms_config.c:136
-msgid ""
-" input plugin instead.\n"
-"If you want another one, please choose it\n"
-"on the configure dialog."
-msgstr ""
-
-#: src/lv_xmms_config.c:148
+#: src/lv_xmms_config.c:118
 msgid ""
 "The morph plugin specified on the config\n"
 "file is not a valid morph plugin.\n"
 "We will use "
 msgstr ""
 
-#: src/lv_xmms_config.c:151
+#: src/lv_xmms_config.c:121
 msgid ""
 " morph plugin instead.\n"
 "If you want another one, please choose it\n"
 "on the configure dialog."
 msgstr ""
 
-#: src/lv_xmms_config.c:167
+#: src/lv_xmms_config.c:138
 msgid "GL plugins only"
 msgstr ""
 
-#: src/lv_xmms_config.c:169
+#: src/lv_xmms_config.c:140
 msgid "non GL plugins only"
 msgstr ""
 
-#: src/lv_xmms_config.c:171
+#: src/lv_xmms_config.c:142
 msgid "All plugins enabled"
 msgstr ""
 
-#: src/lv_xmms_config.c:176
+#: src/lv_xmms_config.c:147
 msgid "LibVisual XMMS plugin: config file contain errors, fixing..."
 msgstr ""
 
-#: src/lv_xmms_config.c:179
+#: src/lv_xmms_config.c:150
 msgid "LibVisual XMMS plugin: config file is from old version, updating..."
 msgstr ""
 
-#: src/lv_xmms_config.c:182
+#: src/lv_xmms_config.c:153
 msgid "LibVisual XMMS plugin: adding entry to config file..."
 msgstr ""
 
-#: src/lv_xmms_config.c:384 src/lv_xmms_config.c:452 src/lv_xmms_config.c:554
-msgid "The list of input plugins is empty."
-msgstr ""
-
-#: src/lv_xmms_config.c:392
-msgid ""
-"There are no input plugins, so\n"
-"visualization plugins will work\n"
-"without rendering pcm data."
-msgstr ""
-
-#: src/lv_xmms_config.c:401 src/lv_xmms_config.c:459 src/lv_xmms_config.c:503
-#: src/lv_xmms_config.c:561
-msgid "There is no info for this plugin"
-msgstr ""
-
-#: src/lv_xmms_config.c:464 src/lv_xmms_config.c:566
-msgid "Version: "
-msgstr ""
-
-#: src/lv_xmms_config.c:466 src/lv_xmms_config.c:568
-msgid "Author: "
-msgstr ""
-
-#: src/lv_xmms_config.c:486
+#: src/lv_xmms_config.c:368 src/lv_xmms_config.c:435
 msgid "The list of morph plugins is empty."
 msgstr ""
 
-#: src/lv_xmms_config.c:494
+#: src/lv_xmms_config.c:376 src/lv_xmms_config.c:443
 msgid ""
 "There are no morph plugins, so switching\n"
 "between visualization plugins will be do it\n"
 "without any morphing."
 msgstr ""
 
-#: src/lv_xmms_config.c:664
+#: src/lv_xmms_config.c:385 src/lv_xmms_config.c:452 src/lv_xmms_config.c:477
+msgid "There is no info for this plugin"
+msgstr ""
+
+#: src/lv_xmms_config.c:470
+msgid "The list of input plugins is empty."
+msgstr ""
+
+#: src/lv_xmms_config.c:482
+msgid "Version: "
+msgstr ""
+
+#: src/lv_xmms_config.c:484
+msgid "Author: "
+msgstr ""
+
+#: src/lv_xmms_config.c:583
 msgid ""
 "We cannot initialize Libvisual library.\n"
 "Libvisual is necessary for this plugin to work."
 msgstr ""
 
-#: src/lv_xmms_config.c:740
+#: src/lv_xmms_config.c:660
 msgid "Invalid value for 'enabled_plugins' option"
 msgstr ""
 
-#: src/config_gui.c:74
+#: src/config_gui.c:63
 msgid "LibVisual XMMS Plugin"
 msgstr ""
 
-#: src/config_gui.c:86
+#: src/config_gui.c:75
 msgid "Visualization Plugins"
 msgstr ""
 
-#: src/config_gui.c:108
-msgid "Select the plugin that will draw the screen"
-msgstr ""
-
-#: src/config_gui.c:120 src/config_gui.c:229 src/config_gui.c:279
+#: src/config_gui.c:122 src/config_gui.c:227
 msgid "Configure"
 msgstr ""
 
-#: src/config_gui.c:128 src/config_gui.c:237 src/config_gui.c:287
+#: src/config_gui.c:130 src/config_gui.c:235
 msgid "About"
 msgstr ""
 
-#: src/config_gui.c:136
+#: src/config_gui.c:138
 msgid "Fullscreen"
 msgstr ""
 
-#: src/config_gui.c:142
+#: src/config_gui.c:144
 msgid ""
 "You can toggle between normal and fullscreen mode pressing key TAB or F11"
 msgstr ""
 
-#: src/config_gui.c:144
+#: src/config_gui.c:146
 msgid "All plugins"
 msgstr ""
 
-#: src/config_gui.c:152
+#: src/config_gui.c:154
 msgid "Only non GL plugins"
 msgstr ""
 
-#: src/config_gui.c:160
+#: src/config_gui.c:162
 msgid "Only GL plugins"
 msgstr ""
 
-#: src/config_gui.c:176
+#: src/config_gui.c:178
 msgid "Maximum Frames Per Second:"
 msgstr ""
 
-#: src/config_gui.c:192
-msgid "Input Plugin"
-msgstr ""
-
-#: src/config_gui.c:215
-msgid ""
-"Select the plugin that will capture sound data. Changes to this option will "
-"be applied the next time you start "
-msgstr ""
-
-#: src/config_gui.c:245
+#: src/config_gui.c:194
 msgid "Morph Plugin"
 msgstr ""
 
-#: src/config_gui.c:267
+#: src/config_gui.c:215
 msgid ""
 "Select the kind of morph that will be applied when switching from one "
 "visualization plugin to another "
 msgstr ""
 
-#: src/config_gui.c:295
+#: src/config_gui.c:243
 msgid "Select one morph plugin randomly"
 msgstr ""
 
-#: src/config_gui.c:310
-msgid "Icon"
-msgstr ""
-
-#: src/config_gui.c:355
+#: src/config_gui.c:265
 msgid "Apply"
 msgstr ""
 
-#: src/config_gui.c:363
+#: src/config_gui.c:273
 msgid "Cancel"
 msgstr ""
 
-#: src/config_gui.c:426
+#: src/config_gui.c:329
 msgid "Couldn't create replacement pixmap."
 msgstr ""
 
-#: src/config_gui.c:471
+#: src/config_gui.c:374
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr ""
 
-#: src/config_gui.c:480
+#: src/config_gui.c:383
 #, c-format
 msgid "Error loading pixmap file: %s"
 msgstr ""

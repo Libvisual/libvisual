@@ -28,15 +28,24 @@ static gboolean all_plugins_enabled;
 static gboolean random_morph;
 static int fps;
 
+/* Lists of VisPluginRef's */
+static GSList *actor_plugins_list = NULL;
+static GSList *actor_plugins_gl = NULL;
+static GSList *actor_plugins_nongl = NULL;
+
+static VisPluginRef *current_actor = NULL;
+
 static char *morph_plugin = NULL;
 static char *morph_plugin_buffer = NULL;
 static GSList *morph_plugins_list = NULL;
 
 static void sync_options (void);
 
+static void config_win_load_actor_plugin_list (void);
 static int config_win_load_morph_plugin_list (void);
 static void config_win_morph_plugin_add (char *name);
 
+static int load_actor_plugin_list (void);
 static int load_morph_plugin_list (void);
 	
 static void config_win_set_defaults (void);
@@ -249,6 +258,11 @@ void lv_xmms_config_window ()
 
 	config_visual_initialize ();
 
+	if (!options_loaded) {
+		lv_xmms_config_open ();
+		lv_xmms_config_load_prefs ();
+	}
+
 	config_win = lv_xmms_config_gui_new ();
 
 	if (options_loaded) {
@@ -272,6 +286,8 @@ void lv_xmms_config_window ()
 
 	gtk_widget_grab_default (config_win->button_cancel);
 
+	load_actor_plugin_list ();
+	config_win_load_actor_plugin_list ();
 	config_win_load_morph_plugin_list ();
 
 	gtk_widget_show (config_win->window_main);
@@ -285,16 +301,23 @@ static void on_checkbutton_fullscreen_toggled (GtkToggleButton *togglebutton, gp
 static void on_radiobutton_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 {
 	gl_plugins_only = !gl_plugins_only;
+	/* FIXME We must remember selected items */
+	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
+	config_win_load_actor_plugin_list ();
 }
 
 static void on_radiobutton_non_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 {
 	non_gl_plugins_only = !non_gl_plugins_only;
+	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
+	config_win_load_actor_plugin_list ();
 }
 
 static void on_radiobutton_all_plugins_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 {
 	all_plugins_enabled = !all_plugins_enabled;
+	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
+	config_win_load_actor_plugin_list ();
 }
 
 static void on_spinbutton_fps_changed (GtkEditable *editable, gpointer user_data)
@@ -353,6 +376,134 @@ static void sync_options ()
         options.non_gl_plugins_only = non_gl_plugins_only;
         options.all_plugins_enabled = all_plugins_enabled;
 	options.random_morph = random_morph;
+}
+
+static void on_actor_plugin_selected (GtkListItem *item, VisPluginRef *actor)
+{
+	visual_log_return_if_fail (actor != NULL);
+
+	current_actor = actor;
+}
+
+static void on_button_vis_plugin_about_clicked (GtkButton *button, gpointer data)
+{
+	GtkWidget *msgwin;
+	gchar *msg;
+
+	if (!current_actor)
+		return;
+
+	visual_log_return_if_fail (current_actor->info != NULL);
+
+	msg = g_strconcat (current_actor->info->name, "\n",
+				_("Version: "), current_actor->info->version, "\n",
+				current_actor->info->about, "\n",
+				_("Author: "), current_actor->info->author, "\n\n",
+				current_actor->info->help, 0);
+	msgwin = xmms_show_message (PACKAGE_NAME, msg, _("Accept"), TRUE, dummy, NULL);
+	gtk_widget_show (msgwin);
+	g_free (msg);
+}
+
+/* FIXME Libvisual API must have something for doing this! */
+static int is_gl_actor (VisPluginRef *actor)
+{
+	VisPluginData *plugin;
+	VisActorPlugin *actplugin;
+
+	visual_log_return_val_if_fail (actor != NULL, -1);
+	visual_log_return_val_if_fail (actor->info->type == VISUAL_PLUGIN_TYPE_ACTOR, -1);
+	visual_log_return_val_if_fail (actor->info->plugin != NULL, -1);
+
+	plugin = visual_plugin_load (actor);
+	actplugin = plugin->info->plugin;
+	if (actplugin->depth & VISUAL_VIDEO_DEPTH_GL) {
+		visual_plugin_unload (plugin);
+		return TRUE;
+	} else {
+		visual_plugin_unload (plugin);
+		return FALSE;
+	}
+}
+	
+static void actor_plugin_add (VisPluginRef *actor)
+{
+	visual_log_return_if_fail (actor != NULL);
+
+	if (is_gl_actor (actor))
+		actor_plugins_gl = g_slist_append (actor_plugins_gl, actor);
+	else
+		actor_plugins_nongl = g_slist_append (actor_plugins_nongl, actor);
+}
+
+/*
+ * This function initializes the actor_plugin_(gl/nongl)_items lists.
+ */
+static int load_actor_plugin_list ()
+{
+	VisList *list;
+	VisListEntry *item;
+	VisPluginRef *actor;
+	GtkWidget *msg;
+
+	list = visual_actor_get_list ();
+	if (!list) {
+		visual_log (VISUAL_LOG_WARNING, _("The list of actor plugins is empty."));
+		return -1;
+	}
+	
+	item = NULL;
+	/* FIXME update to visual_list_is_empty() when ready */
+	if (!(actor = (VisPluginRef*) visual_list_next (list, &item))) {
+		msg = xmms_show_message (_(PACKAGE_NAME " error"),
+					_("There are no actor plugins installed.\n"
+					PACKAGE_NAME " cannot be initialized.\n"
+					"Please visit http://libvisual.sf.net to\n"
+					"to get some nice plugins."),
+					_("Accept"), TRUE, dummy, NULL);
+		return -1;
+	}
+
+	item = NULL;
+	while ((actor = (VisPluginRef*) visual_list_next (list, &item)))
+		actor_plugin_add (actor);
+
+	return 0;
+}
+
+static void config_win_load_actor_plugin_list ()
+{
+	GtkWidget *item;
+	GList *items;
+	GSList *l;
+	VisPluginRef *actor;
+
+	items = NULL;
+	if (all_plugins_enabled || gl_plugins_only) {
+		l = actor_plugins_gl;
+		while ((l = g_slist_next (l))) {
+			actor = l->data;
+			item = gtk_list_item_new_with_label (actor->info->plugname);
+			gtk_widget_show (item);
+			gtk_signal_connect (GTK_OBJECT(item), "select",
+				GTK_SIGNAL_FUNC(on_actor_plugin_selected),
+				(gpointer) actor);
+			items = g_list_append (items, item);
+		}
+	}
+	if (all_plugins_enabled || non_gl_plugins_only) {
+		l = actor_plugins_nongl;
+		while ((l = g_slist_next (l))) {
+			actor = l->data;
+			item = gtk_list_item_new_with_label (actor->info->plugname);
+			gtk_widget_show (item);
+			gtk_signal_connect (GTK_OBJECT(item), "select",
+				GTK_SIGNAL_FUNC(on_actor_plugin_selected),
+				(gpointer) actor);
+			items = g_list_append (items, item);
+		}
+	}
+	gtk_list_append_items (GTK_LIST(config_win->list_vis_plugins), items);
 }
 
 static int config_win_load_morph_plugin_list ()
@@ -457,6 +608,7 @@ static int load_morph_plugin_list ()
 
 	return 0;
 }
+
 static void on_button_morph_plugin_about_clicked (GtkButton *button, gpointer data)
 {
 	VisList *list;
@@ -541,6 +693,9 @@ static void config_win_connect_callbacks (void)
                       NULL);
 	gtk_signal_connect (GTK_OBJECT (config_win->button_cancel), "clicked",
                       GTK_SIGNAL_FUNC (on_button_cancel_clicked),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->button_vis_plugin_about), "clicked",
+                      GTK_SIGNAL_FUNC (on_button_vis_plugin_about_clicked),
                       NULL);
 	gtk_signal_connect (GTK_OBJECT (config_win->button_morph_plugin_about), "clicked",
                       GTK_SIGNAL_FUNC (on_button_morph_plugin_about_clicked),
