@@ -1,7 +1,7 @@
 #ifndef __RectUtils__
 #define __RectUtils__
 
-#include "EgCommon.h"
+#include <EgCommon.h>
 
 extern short 		PtInRect( const Point& inPt, const Rect* inRect );
 extern void			SetRect( Rect* inR, long left, long top, long right, long bot );

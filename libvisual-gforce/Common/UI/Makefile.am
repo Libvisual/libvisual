@@ -1,4 +1,6 @@
 
+SUBDIRS = Headers
+
 INCLUDES = -I$(top_srcdir)/unix/Headers\
 	-I$(top_srcdir)/Common\
 	-I$(top_srcdir)/Common/GeneralTools/Headers\
@@ -11,9 +13,12 @@ INCLUDES = -I$(top_srcdir)/unix/Headers\
 
 AM_CXXFLAGS = -DDATADIR="\"$(pkgdatadir)\""
 
-ALLSOURCES = EgOSUtils.cpp PixPort.cpp ScreenDevice.cpp 
+# Are missing DrawXX.cpp and LineXX.cpp
+ALLSOURCES = EgOSUtils.cpp PixPort.cpp ScreenDevice.cpp
 
 noinst_LTLIBRARIES = libUI.la
 
 libUI_la_SOURCES = $(ALLSOURCES)
+
+EXTRA_DIST = DrawXX.cpp LineXX.cpp
 

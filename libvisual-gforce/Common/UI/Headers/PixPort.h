@@ -11,7 +11,7 @@
 #include <QuickDraw.h>
 #include <QDOffscreen.h>
 typedef ColorSpec PixPalEntry;
-#else ifdef(UNIX_X)
+#elif defined(UNIX_X)
 struct PixPalEntry {
   unsigned char red, green, blue, x;
 };

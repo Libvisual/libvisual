@@ -50,18 +50,25 @@ AC_CONFIG_FILES([
 	Makefile
 	Common/Makefile
 	Common/GeneralTools/Makefile
+	Common/GeneralTools/Headers/Makefile
 	Common/io/Makefile
+	Common/io/Headers/Makefile
 	Common/math/Makefile
+	Common/math/Headers/Makefile
 	Common/UI/Makefile
+	Common/UI/Headers/Makefile
 	GForceCommon/Makefile
+	GForceCommon/Headers/Makefile
 	unix/Makefile
+	unix/Headers/Makefile
 	unix/libmfl/Makefile
 	unix/libvisual/Makefile
 	GForceColorMaps/Makefile
 	GForceDeltaFields/Makefile
 	GForceParticles/Makefile
 	GForceWaveShapes/Makefile
-	])
+	NotWorkingWaveShapes/Makefile
+])
 
 AC_OUTPUT
 

@@ -1,5 +1,6 @@
 SUBDIRS = Common GForceCommon unix GForceColorMaps \
-	  GForceDeltaFields GForceParticles GForceWaveShapes
+	  GForceDeltaFields GForceParticles GForceWaveShapes \
+	  NotWorkingWaveShapes
 
 lib_LTLIBRARIES = actor_gforce.la
 
@@ -30,3 +31,6 @@ install-data-local:
 
 uninstall-local:
 	rm -rf "$(DESTDIR)$(pkgdatadir)"
+
+EXTRA_DIST = deffont
+

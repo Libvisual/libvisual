@@ -1,4 +1,6 @@
 
+SUBDIRS = Headers
+
 INCLUDES = -I$(top_srcdir)/Common\
 	-I$(top_srcdir)/Common/UI/Headers\
 	-I$(top_srcdir)/Common/GeneralTools/Headers\

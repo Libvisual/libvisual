@@ -1,3 +1,12 @@
+2004-09-02  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* GForceDeltaFields/Makefile.am: now data is installed
+	on $(prefix)/share/libvisual/actor/actor_gforce. Still
+	missing all files which name contains white spaces.
+	* GForceParticles/Makefile.am: idem.
+	* */Headers/Makefile.am: now headers are included on the 
+	dist target.
+	
 2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* unix/libvisual/actor_gforce.cpp: Updated to new

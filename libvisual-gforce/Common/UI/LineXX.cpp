@@ -1,3 +1,5 @@
+#include <math.h>
+#include <PixPort.h>
 
 
 #if CLR_INTERP
@@ -71,13 +73,15 @@
 	dy = ey - sy;
 
 		
-	#if CLR_INTERP
+	#if CLR_INTERP && P_SZ != 1
 	long len = sqrt( dx * dx + dy * dy ) + 1;
 	dR /= len;
-	#if P_SZ != 1
 	dG /= len;
 	dB /= len;
-	#endif
+	color = __Clr( R, G, B );
+	#elif CLR_INTERP && P_SZ == 1
+	long len = sqrt( dx * dx + dy * dy ) + 1;
+	dR /= len;
 	color = __Clr( R, G, B );
 	#endif
 		

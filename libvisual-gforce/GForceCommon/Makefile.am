@@ -1,4 +1,6 @@
 
+SUBDIRS = Headers
+
 INCLUDES = -I$(top_srcdir)/unix/Headers\
 	-I$(top_srcdir)/GForceCommon/Headers\
 	-I$(top_srcdir)/Common/math/Headers\

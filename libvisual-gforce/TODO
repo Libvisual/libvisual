@@ -11,10 +11,10 @@ has done a great job without doubt.
 
 
 ------------------------
+Cleanup all the headers, to avoid warnings.
 Fix font drawing (actually it's right but we can't overlay because we try to get rid of the double 8 bit copy...
 Remove font system in favor for the libvisual font system when it's done.
 Fix reentrancy (mostly done) (Make EgOSUtils reentrant, private in GF)
-Have the plugin data dir in %prefix/share/libvisual/actor/gforce/
 Get rid of needless copies in 8bpp.
 Remove other cruft
 Cleanup source tree majorly so it's release ready!
