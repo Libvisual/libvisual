@@ -35,7 +35,6 @@ VisParamContainer *visual_param_container_new ()
 	VisParamContainer *paramcontainer;
 
 	paramcontainer = visual_mem_new0 (VisParamContainer, 1);
-	paramcontainer->entries = visual_list_new ();
 	
 	return paramcontainer;
 }
@@ -51,7 +50,7 @@ int visual_param_container_destroy (VisParamContainer *paramcontainer)
 {
 	visual_log_return_val_if_fail (paramcontainer != NULL, -1);
 
-	visual_list_destroy (paramcontainer->entries, param_list_destroy);
+	visual_list_destroy_elements (&paramcontainer->entries, param_list_destroy);
 
 	visual_mem_free (paramcontainer);
 
@@ -103,7 +102,7 @@ int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry
 
 	param->parent = paramcontainer;
 	
-	visual_list_add (paramcontainer->entries, param);
+	visual_list_add (&paramcontainer->entries, param);
 
 	return 0;
 }
@@ -124,10 +123,10 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, char *name
 
 	visual_log_return_val_if_fail (paramcontainer != NULL && name != NULL, -1);
 	
-	while ((param = visual_list_next (paramcontainer->entries, &le)) != NULL) {
+	while ((param = visual_list_next (&paramcontainer->entries, &le)) != NULL) {
 
 		if (strcmp (param->name, name) == 0) {
-			visual_list_delete (paramcontainer->entries, &le);
+			visual_list_delete (&paramcontainer->entries, &le);
 
 			return 0;
 		}
@@ -151,7 +150,7 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, ch
 
 	visual_log_return_val_if_fail (paramcontainer != NULL && name != NULL, NULL);
 
-	while ((param = visual_list_next (paramcontainer->entries, &le)) != NULL) {
+	while ((param = visual_list_next (&paramcontainer->entries, &le)) != NULL) {
 		param = le->data;
 		
 		if (strcmp (param->name, name) == 0)

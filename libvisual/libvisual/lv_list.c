@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.11 2004-09-27 16:16:14 synap Exp $
+ *	$Id: lv_list.c,v 1.12 2004-09-28 15:14:00 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -73,19 +73,19 @@ int visual_list_free (VisList *list)
 }
 
 /**
- * Destroys a list and it's entries. This destroys a list and when the destroyer
- * argument isn't NULL this function is called with a pointer to the data element
- * of a list entry. You can use 'free' as an argument here when this is sufficient
- * as a destroyer function, or if you don't want to free the data entries at all pass
+ * Destroys the entries that are in a list, but not the list itself. If the destroyer
+ * argument isn't NULL this function is called with a pointer to the data element of
+ * a list entry. You can use 'free' as an argument here is it's sufficient as a
+ * destroyer function, or if you don't want to free the data entries at all pass
  * NULL.
  *
- * @param list Pointer to a VisList that needs to be destroyed.
+ * @param list Pointer to a VisList of which the elements need to be destroyed.
  * @param destroyer Pointer to a destroyer function that is used to destroy the data
  * 	in the elements
  *
  * @return 0 on succes -1 on error.
  */
-int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
+int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t destroyer)
 {
 	VisListEntry *le = NULL;
 	void *elem;
@@ -103,6 +103,28 @@ int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
 		}
 	}
 
+	return 0;
+}
+
+/**
+ * Destroys a list and it's entries. This destroys a list and when the destroyer
+ * argument isn't NULL this function is called with a pointer to the data element
+ * of a list entry. You can use 'free' as an argument here when this is sufficient
+ * as a destroyer function, or if you don't want to free the data entries at all pass
+ * NULL.
+ *
+ * @param list Pointer to a VisList that needs to be destroyed.
+ * @param destroyer Pointer to a destroyer function that is used to destroy the data
+ * 	in the elements
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
+{
+	visual_log_return_val_if_fail (list != NULL, -1);
+	
+	visual_list_destroy_elements (list, destroyer);	
+	
 	visual_list_free (list);
 
 	return 0;

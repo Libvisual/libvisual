@@ -71,7 +71,7 @@ int visual_event_queue_free (VisEventQueue *eventqueue)
 {
 	visual_log_return_val_if_fail (eventqueue != NULL, -1);
 
-	visual_list_destroy (&eventqueue->events, free);
+	visual_list_destroy_elements (&eventqueue->events, free);
 	
 	visual_mem_free (eventqueue);
 	

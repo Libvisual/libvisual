@@ -30,7 +30,7 @@ typedef struct _VisParamEntry VisParamEntry;
  * All members should never be accessed directly, instead methods should be used.
  */
 struct _VisParamContainer {
-	VisList		*entries;	/**< The list that contains all the parameters. */
+	VisList		 entries;	/**< The list that contains all the parameters. */
 	VisEventQueue	*eventqueue;	/**< Pointer to an optional eventqueue to which events can be emitted
 					  * on parameter changes. */
 };

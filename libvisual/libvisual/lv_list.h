@@ -42,6 +42,7 @@ typedef void (*visual_list_destroy_func_t)(void*);
 /* prototypes */
 VisList *visual_list_new (void);
 int visual_list_free (VisList *list);
+int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t destroyer);
 int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer);
 
 void *visual_list_next (VisList *list, VisListEntry **le);
