@@ -158,7 +158,7 @@ struct _VisInputPlugin {
  * VisActors.
  */
 struct _VisMorphPlugin {
-	plugin_morph_palette_func_t	 palette;	/**< The plugin it's palette function. This can be used
+	plugin_morph_palette_func_t	 palette;	/**< The plugin's palette function. This can be used
 							  * to obtain a palette for VISUAL_VIDEO_DEPTH_8BIT surfaces.
 							  * However the function may be set to NULL. In this case the
 							  * VisMorph system morphs between palettes itself. */

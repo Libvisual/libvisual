@@ -1,3 +1,8 @@
+2004-09-09  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/Makefile.am: fixed include problem
+	when installing for first time (thanks salsaman).
+	
 2004-09-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_bin.c (visual_bin_switch_actor):

@@ -23,7 +23,8 @@ PLUGPATH = $(prefix)/lib/libvisual
 AM_CFLAGS = -Wall -Wno-unused-variable -Wmissing-prototypes -Wstrict-prototypes\
 	    -DPLUGPATH="\"$(PLUGPATH)\"" @DEBUG_CFLAGS@ -O3
 
-INCLUDES = $(all_includes) -I$(top_srcdir)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libvisual \
+	   -I$(top_builddir) -I$(top_builddir)/libvisual
 
 libvisual_la_LDFLAGS = -export-dynamic -no-undefined
 
