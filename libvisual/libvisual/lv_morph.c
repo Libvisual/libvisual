@@ -36,7 +36,7 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
 	visual_log_return_val_if_fail (morph != NULL, NULL);
 	visual_log_return_val_if_fail (morph->plugin != NULL, NULL);
 
-	morphplugin = morph->plugin->info->plugin;
+	morphplugin = VISUAL_PLUGIN_MORPH (morph->plugin->info->plugin);
 
 	return morphplugin;
 }

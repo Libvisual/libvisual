@@ -558,6 +558,8 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 	visual_param_container_set_eventqueue (plugin->params, NULL);
 
+	visual_object_unref (VISUAL_OBJECT (plugin->info->plugin));
+	visual_object_unref (VISUAL_OBJECT (plugin->info));
 	visual_object_unref (VISUAL_OBJECT (plugin));
 	
 	return VISUAL_OK;
@@ -728,11 +730,14 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		ref[i] = visual_plugin_ref_new ();
 
 		dup_info = visual_plugin_info_new ();
-		visual_plugin_info_copy (dup_info, (VisPluginInfo *) &plug_info[i]);
+		visual_plugin_info_copy (dup_info, VISUAL_PLUGININFO (&plug_info[i]));
 		
 		ref[i]->index = i;
 		ref[i]->info = dup_info;
 		ref[i]->file = strdup (pluginpath);
+
+		visual_object_unref (VISUAL_OBJECT (&plug_info[i].plugin));
+		visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
 	}
 
 	dlclose (handle);

@@ -276,7 +276,7 @@ struct _VisPluginInfo {
 
 	int			 flags;		/**< Plugin flags from the VisPluginFlags enumerate. */
 
-	void			*plugin;	/**< Pointer to the plugin specific data structures. */
+	VisObject		*plugin;	/**< Pointer to the plugin specific data structures. */
 };
 
 /**
@@ -312,6 +312,7 @@ struct _VisPluginData {
  * The actor plugin is the visualisation plugin.
  */
 struct _VisActorPlugin {
+	VisObject			 object;	/**< The VisObject data. */
 	VisPluginActorRequisitionFunc	 requisition;	/**< The requisition function. This is used to
 							 * get the desired VisVideo surface size of the plugin. */
 	VisPluginActorPaletteFunc	 palette;	/**< Used to retrieve the desired palette from the plugin. */
@@ -332,6 +333,7 @@ struct _VisActorPlugin {
  * certain sources.
  */
 struct _VisInputPlugin {
+	VisObject			 object;	/**< The VisObject data. */
 	VisPluginInputUploadFunc	 upload;	/**< The sample upload function. This is the main function
 							  * of the plugin which uploads sample data into
 							  * libvisual. */
@@ -346,6 +348,7 @@ struct _VisInputPlugin {
  * VisActors.
  */
 struct _VisMorphPlugin {
+	VisObject			 object;	/**< The VisObject data. */
 	VisPluginMorphPaletteFunc	 palette;	/**< The plugin's palette function. This can be used
 							  * to obtain a palette for VISUAL_VIDEO_DEPTH_8BIT surfaces.
 							  * However the function may be set to NULL. In this case the

@@ -47,7 +47,7 @@ static VisActorPlugin *get_actor_plugin (VisActor *actor)
 	visual_log_return_val_if_fail (actor != NULL, NULL);
 	visual_log_return_val_if_fail (actor->plugin != NULL, NULL);
 
-	actplugin = actor->plugin->info->plugin;
+	actplugin = VISUAL_PLUGIN_ACTOR (actor->plugin->info->plugin);
 
 	return actplugin;
 }
@@ -108,7 +108,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
 		ref = visual_plugin_find (__lv_plugins_actor, next);
 		plugin = visual_plugin_load (ref);
 
-		actplugin = plugin->info->plugin;
+		actplugin = VISUAL_PLUGIN_ACTOR (plugin->info->plugin);
 
 		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
@@ -148,7 +148,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
 		
 		ref = visual_plugin_find (__lv_plugins_actor, prev);
 		plugin = visual_plugin_load (ref);
-		actplugin = plugin->info->plugin;
+		actplugin = VISUAL_PLUGIN_ACTOR (plugin->info->plugin);
 
 		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
@@ -188,7 +188,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
 		
 		ref = visual_plugin_find (__lv_plugins_actor, next);
 		plugin = visual_plugin_load (ref);
-		actplugin = plugin->info->plugin;
+		actplugin = VISUAL_PLUGIN_ACTOR (plugin->info->plugin);
 
 		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
@@ -228,7 +228,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
 		
 		ref = visual_plugin_find (__lv_plugins_actor, prev);
 		plugin = visual_plugin_load (ref);
-		actplugin = plugin->info->plugin;
+		actplugin = VISUAL_PLUGIN_ACTOR (plugin->info->plugin);
 
 		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
