@@ -1,3 +1,7 @@
+2004-06-30  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: removed some redundant tests.
+
 2004-06-28  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* plugins/actor/JESS/jess.c: added error checking.

@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual plugins, 0.1.5, synap@nerds-incorporated.org)
+AC_INIT(Libvisual plugins, 0.1.6, synap@nerds-incorporated.org)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
@@ -49,7 +49,7 @@ if test x$libesd = xyes; then
 	build_input="esd $build_input"
 fi
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.5, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.6, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([
 *** libvisual not found, libvisual is needed to build this package,
@@ -73,9 +73,8 @@ if test x$libgoom = xyes; then
 fi
 
 # Checks for header files.
-AC_HEADER_STDC
 AC_HEADER_TIME
-AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h unistd.h])
 AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
 if test x"$opengl" = xno; then
 	AC_MSG_WARN([
@@ -89,20 +88,6 @@ fi
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
-
-AC_MSG_CHECKING(for ISO C99 varargs macros in C)
-AC_TRY_COMPILE([],[
-		int a(int p1, int p2, int p3);
-		#define call_a(...) a(1,__VA_ARGS__)
-		call_a(2,3);
-		],lv_have_iso_c_varargs=yes,lv_have_iso_c_varargs=no)
-AC_MSG_RESULT($lv_have_iso_c_varargs)
-if test "x$lv_have_iso_c_varargs" = xyes; then
-  AC_DEFINE(LV_HAVE_ISO_VARARGS, 1, [Have ISOC99 varargs macros])
-else
-  AC_DEFINE(LV_HAVE_ISO_VARARGS, 0, [Have ISOC99 varargs macros])
-fi
-AC_SUBST(LV_HAVE_ISO_VARARGS)
 
 # Checks for library functions.
 AC_FUNC_MALLOC
