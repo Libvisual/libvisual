@@ -1512,12 +1512,9 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 			break;
 	}
 
-	/* FIXME if bilinear is selected filter here, through a function call */
-
 	return VISUAL_OK;
 }
 
-/* 8-bit nearest pixel scaler, floating point version */
 static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 {
 	int x, y;
