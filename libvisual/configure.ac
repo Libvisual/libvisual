@@ -152,8 +152,59 @@ AC_CHECK_LIB([dl], [dlsym], [LIBS="-ldl $LIBS"],
 AC_CHECK_LIB([m], [sqrt], [LIBS="-lm $LIBS"],
 	     AC_MSG_ERROR([*** You need the Standard C Math Library to build Libvisual.]))
 
-# FIXME check for pthreads in the right way!!
-LIBS="-lpthread $LIBS"
+dnl -------------------------------
+dnl Check for native thread support
+dnl -------------------------------
+
+AC_ARG_ENABLE([enable_threads],
+  AC_HELP_STRING([--enable-threads],
+		[Turn on basic thread support @<:@default=enabled@:>@]),
+		[enable_threads=$enableval],
+		[enable_threads=yes])
+AC_MSG_CHECKING([wheter to enable thread support])
+if test x$enable_threads = xyes; then
+  AC_MSG_RESULT([yes])
+  AC_MSG_CHECKING([for the native thread implementation available])
+  have_threads=none
+  case $host in
+  	*-*-mingw*)
+		have_threads=win32
+		;;
+	*)
+		;;
+	esac
+  if test "x$have_threads" = xnone; then
+    AC_TRY_COMPILE([#include <pthread.h>],
+		[pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;],
+		have_threads=posix)
+  fi
+  if test "x$have_threads" = xnone; then
+    AC_TRY_COMPILE([#include <pthread.h>],
+		[pthread_mutex_t m; 
+		pthread_mutex_init (&m, pthread_mutexattr_default);],
+		have_threads=dce)
+  fi
+  # In future we will check for more thread models...
+
+  if test "x$have_threads" = xnone; then
+    AC_MSG_RESULT(none available)
+    AC_MSG_WARN([You do not have any supported thread system available. Libvisual will be built without thread support.])
+  else
+    AC_MSG_RESULT($have_threads)
+  fi
+fi
+
+
+dnl ------------------------------------------------
+dnl Determination of linker flags for thread support
+dnl ------------------------------------------------
+
+# FIXME make detection
+if test "x$enable_threads" = xyes && test "x$have_threads" != xnone; then
+  VIS_THREAD_LIBS="-lpthread"
+else
+  VIS_THREAD_LIBS=""
+fi
 
 # check for type sizes
 AC_CHECK_SIZEOF(short)
@@ -437,6 +488,35 @@ _______EOF
 _______EOF
         fi
 
+        if test x$lv_enable_threads = xyes && test x$lv_have_threads != xnone ; then
+		cat >>$outfile <<_______EOF
+
+#define VISUAL_HAVE_THREADS
+_______EOF
+		case $lv_have_threads in
+			win32)
+		                cat >>$outfile <<_______EOF
+
+#define VISUAL_THREAD_MODEL_WIN32
+_______EOF
+				;;
+			posix)
+		                cat >>$outfile <<_______EOF
+
+#define VISUAL_THREAD_MODEL_POSIX
+_______EOF
+				;;
+			dce)
+		                cat >>$outfile <<_______EOF
+
+#define VISUAL_THREAD_MODEL_DCE
+_______EOF
+				;;
+			*)
+				;;
+		esac
+        fi
+
 echo >>$outfile
 echo >>$outfile
 echo "#endif /* LV_CONFIG_H */" >>$outfile
@@ -477,6 +557,9 @@ echo >>$outfile
    lv_cygwin=$lv_cygwin
    lv_mingw=$lv_mingw
    lv_os_unknown=$lv_os_unknown
+
+   lv_have_threads=$have_threads
+   lv_enable_threads=$enable_threads
 
 case $visual_size_type in
 short)

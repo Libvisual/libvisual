@@ -92,6 +92,7 @@ enum {
 
 	/* Error entries for the VisThread system */
 	VISUAL_ERROR_THREAD_NULL,			/**< The VisThread is NULL. */
+	VISUAL_ERROR_THREAD_NO_THREADING,		/**< Threading is not supported in this build. */
 	VISUAL_ERROR_MUTEX_NULL,			/**< The VisMutex is NULL. */
 	VISUAL_ERROR_MUTEX_LOCK_FAILURE,		/**< Failed locking the VisMutex. */
 	VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE,		/**< Failed trylocking the VisMutex. */
