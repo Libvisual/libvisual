@@ -70,7 +70,7 @@ The xmms libvisual plugin needs:
 * libSDL 1.2.5 or higher
 * glib 1.2.2 or higher (glib 1.2 is not compatible with 2.x)
 * gtk 1.2.2 or higher (gtk 1.2 is not compatible with 2.x)
-* libvisual 0.1
+* libvisual 0.1.7
 
 The reason the plugin uses gtk and glib 1.2.x is because
 of xmms is using them.
