@@ -189,6 +189,13 @@ libvisual:
 	Tools:
 		lv-inspect: to get detailed information about a plugin
 
+	Threading:
+		Have VisThread, VisMutex and threading api to wrap other
+			threading systems within, like pthreads or win32 native threading API.
+
+		Threadify some plugin opts, like the input plugin, two actor plugins at
+			morph
+
 INTERNAL:
 	LOG: (post 0.1)
 		give an api that allows you to select the lowest debug niveau to be shown
