@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>{$lang_theme_code_title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script language="javascript" src="../../tiny_mce_popup.js"></script>
+<script language="javascript">
+	function saveContent() {
+		if (window.opener) {
+			window.opener.tinyMCE.setContent(document.getElementById('htmlSource').value);
+			window.close();
+		}
+	}
+
+	// Fixes some charcode issues
+	function fixContent(html) {
+		var re = new RegExp('&nbsp;|&#160;', 'g');
+		html = html.replace(re, "&amp;nbsp;");
+
+		return html;
+	}
+
+	window.focus();
+</script>
+</head>
+<body scroll="auto">
+
+<div style="height: 90%">
+	<div class="title">{$lang_theme_code_title}</div>
+	<br>
+	<script language="JavaScript">
+		document.write('<textarea id="htmlSource" name="htmlSource" style="width: 100%; height: 90%">' + fixContent(tinyMCE.getContent(tinyMCE.getWindowArg('editor_id'))) + '</textarea>');
+	</script>
+	<input type="button" name="Button" value="{$lang_theme_code_save}" onclick="saveContent();">
+</div>
+
+<!--
+<table border="0" width="100%" height="100%" cellspacing="0" cellpadding="0">
+<tr><td height="1%">
+	<div class="title">{$lang_theme_code_title}</div>
+	<br>
+</td></tr><tr><td height="98%">
+<div style="height: 99%">
+	<script language="JavaScript">
+		document.write('<textarea id="htmlSource" name="htmlSource" style="width: 100%; height: 99%">' + fixContent(tinyMCE.getContent(tinyMCE.getWindowArg('editor_id'))) + '</textarea>');
+	</script>
+</div>
+</td></tr>
+<tr><td height="1%">
+<input type="button" name="Button" value="{$lang_theme_code_save}" onclick="saveContent();">
+</td></tr>
+</table>-->
+
+</body>
+</html>
