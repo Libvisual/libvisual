@@ -1,3 +1,10 @@
+2004-12-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lvdisplay/lvdisplay.c: Make use of visual_object_initialize
+	to set up the initial object, instead of boiler plating it yourself.
+
+	This is a bit more abstract.
+
 2004-11-28  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* libvisual-display.pc.in: added

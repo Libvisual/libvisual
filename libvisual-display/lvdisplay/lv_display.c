@@ -76,9 +76,7 @@ LvdDriver *lvdisplay_driver_create(const char *bename, const char *fename)
 		return NULL;
 	}
 
-	VISUAL_OBJECT(drv)->allocated = TRUE;
-	VISUAL_OBJECT(drv)->dtor = lvdisplay_driver_dtor;
-	visual_object_ref(VISUAL_OBJECT(drv));
+	visual_object_initialize(VISUAL_OBJECT(drv), TRUE, lvdisplay_driver_dtor);
 
 
 	r1 = visual_plugin_realize(beplug);
@@ -220,9 +218,7 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 	if (v == NULL)
 		return NULL;
 
-	VISUAL_OBJECT(v)->allocated = TRUE;
-	VISUAL_OBJECT(v)->dtor = lvdisplay_dtor;
-	visual_object_ref(VISUAL_OBJECT(v));
+	visual_object_initialize(VISUAL_OBJECT(v), TRUE, lvdisplay_dtor);
 
 	visual_object_ref(VISUAL_OBJECT(drv));
 
