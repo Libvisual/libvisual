@@ -78,10 +78,24 @@ XMMS_PLUGIN_DIR="$prefix/lib/xmms"
 XMMS_VISUALIZATION_PLUGIN_DIR="$XMMS_PLUGIN_DIR/Visualization"
 AC_SUBST(XMMS_VISUALIZATION_PLUGIN_DIR)
 
+# Arguments to specify certain features.
+AC_ARG_ENABLE([debug],
+            AC_HELP_STRING([--enable-debug],
+                           [Enable debug @<:@default=disabled@:>@]),
+	    [debug=$enableval],
+	    [debug=no])
+AC_MSG_CHECKING([wheter to enable debug])
+if test "$debug" = yes; then
+  AC_MSG_RESULT([yes])
+  DEBUG_CFLAGS="-ggdb3"
+else
+  AC_MSG_RESULT([no])
+  DEBUG_CFLAGS=""
+fi
+AC_SUBST(DEBUG_CFLAGS)
+
 # cflags, ld flags
 libs_dynamic_loader="-ldl"
-AC_SUBST(CFLAGS, "-I./ -O3 -rdynamic -ggdb $LIBVISUAL_CFLAGS $GTK_CFLAGS -I$prefix/include/xmms $SDL_CFLAGS")
-AC_SUBST(LIBS, "$GTK_LIBS -lxmms $SDL_LIBS $LIBVISUAL_LIBS")
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
 AC_SUBST(BUILD_INPUT, "$build_input")
