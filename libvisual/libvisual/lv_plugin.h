@@ -18,7 +18,7 @@ extern "C" {
 /**
  * Indicates at which version the plugin API is.
  */
-#define VISUAL_PLUGIN_API_VERSION	1
+#define VISUAL_PLUGIN_API_VERSION	2
 
 /**
  * Enumerate to define the plugin type. Especially used

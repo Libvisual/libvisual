@@ -23,7 +23,19 @@ typedef enum {
 } VisParamType;
 
 typedef struct _VisParamContainer VisParamContainer;
+typedef struct _VisParamEntryCallback VisParamEntryCallback;
 typedef struct _VisParamEntry VisParamEntry;
+
+/**
+ * The param changed callback is used to be able to notify of changes within parameters. This should
+ * not be used within the plugin itself, instead use the event queue there. This is so it's possible to
+ * notify of changes outside the plugin. For example, this is needed by VisUI.
+ * 
+ * @arg param Pointer to the param that has been changed, and to which the callback was set.
+ * @arg priv Private argument, that can be set when adding the callback to the callback list.
+ */
+typedef void (*param_changed_callback_func_t)(const VisParamEntry *param, void *priv);
+
 
 /**
  * Parameter container, is the container for a set of parameters.
@@ -34,6 +46,14 @@ struct _VisParamContainer {
 	VisList		 entries;	/**< The list that contains all the parameters. */
 	VisEventQueue	*eventqueue;	/**< Pointer to an optional eventqueue to which events can be emitted
 					  * on parameter changes. */
+};
+
+/**
+ * A parameter callback entry, used for change notification callbacks.
+ */
+struct _VisParamEntryCallback {
+	param_changed_callback_func_t	 callback;
+	void				*priv;
 };
 
 /**
@@ -54,6 +74,8 @@ struct _VisParamEntry {
 		float		 floating;		/**< Floating point data. */
 		double		 doubleflt;		/**< Double floating point data. */
 	} numeric;
+
+	VisList			 callbacks;		/**< The change notify callbacks */
 };
 
 /* prototypes */
@@ -68,6 +90,9 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
 
 VisParamEntry *visual_param_entry_new (char *name);
 int visual_param_entry_free (VisParamEntry *param);
+int visual_param_entry_add_callback (VisParamEntry *param, param_changed_callback_func_t callback, void *priv);
+int visual_param_entry_remove_callback (VisParamEntry *param, param_changed_callback_func_t callback);
+int visual_param_entry_notify_callbacks (VisParamEntry *param);
 int visual_param_entry_is (VisParamEntry *param, const char *name);
 int visual_param_entry_changed (VisParamEntry *param);
 

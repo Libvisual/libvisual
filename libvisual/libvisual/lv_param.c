@@ -192,7 +192,88 @@ int visual_param_entry_free (VisParamEntry *param)
 	if (param->string != NULL)
 		visual_mem_free (param->string);
 
+	visual_list_destroy_elements (&param->callbacks, free);
+
 	visual_mem_free (param);
+
+	return 0;
+}
+
+/**
+ * Adds a change notification callback, this shouldn't be used to get notificated within a plugin, but is for
+ * things like VisUI.
+ *
+ * @param param Pointer to the VisParamEntry to which a change notification callback is added.
+ * @param callback The notification callback, which is called on changes in the VisParamEntry.
+ * @param priv A private that can be used in the callback function.
+ *
+ * return 0 on succes -1 on error.
+ */
+int visual_param_entry_add_callback (VisParamEntry *param, param_changed_callback_func_t callback, void *priv)
+{
+	VisParamEntryCallback *pcall;
+
+	visual_log_return_val_if_fail (param != NULL, -1);
+	visual_log_return_val_if_fail (callback != NULL, -1);
+
+	pcall = visual_mem_new0 (VisParamEntryCallback, 1);
+
+	pcall->callback = callback;
+	pcall->priv = priv;
+
+	visual_list_add (&param->callbacks, pcall);
+
+	return 0;
+}
+
+/**
+ * Removes a change notification callback from the list of callbacks.
+ *
+ * @param param Pointer to the VisParamEntry from which a change notification callback is removed.
+ * @param callback The callback that needs to be removed from the list of callbacks that are called
+ * 	on param change.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_param_entry_remove_callback (VisParamEntry *param, param_changed_callback_func_t callback)
+{
+	VisListEntry *le = NULL;
+	VisParamEntryCallback *pcall;
+
+	visual_log_return_val_if_fail (param != NULL, -1);
+	visual_log_return_val_if_fail (callback != NULL, -1);
+
+	while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL) {
+		
+		if (callback == pcall->callback) {
+			visual_list_delete (&param->callbacks, &le);
+
+			visual_mem_free (pcall);
+
+			return 0;
+		}
+	}
+
+	return 0;
+}
+
+/**
+ * Notifies all the callbacks for the given VisParamEntry parameter.
+ *
+ * @param param Pointer to the VisParamEntry of which all the change notification
+ * 	callbacks need to be called.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_param_entry_notify_callbacks (VisParamEntry *param)
+{
+	VisListEntry *le = NULL;
+	VisParamEntryCallback *pcall;
+
+	visual_log_return_val_if_fail (param != NULL, -1);
+
+	while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL)
+		pcall->callback (param, pcall->priv);
 
 	return 0;
 }
@@ -236,6 +317,8 @@ int visual_param_entry_changed (VisParamEntry *param)
 
 	if (eventqueue != NULL)
 		visual_event_queue_add_param (eventqueue, param);
+
+	visual_param_entry_notify_callbacks (param);
 
 	return 0;
 }
@@ -323,9 +406,24 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
 
 	param->type = VISUAL_PARAM_TYPE_STRING;
 
-	param->string = strdup (string);
+	if (string == NULL && param->string == NULL)
+		return 0;
 
-	visual_param_entry_changed (param);
+	if (string == NULL && param->string != NULL) {
+		param->string = string;
+
+		visual_param_entry_changed (param);
+
+	} else if (param->string == NULL && string != NULL) {
+		param->string = string;
+
+		visual_param_entry_changed (param);
+
+	} else if (strcmp (string, param->string) != 0) {
+		param->string = strdup (string);
+
+		visual_param_entry_changed (param);
+	}
 
 	return 0;
 }
@@ -344,9 +442,11 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer)
 
 	param->type = VISUAL_PARAM_TYPE_INTEGER;
 
-	param->numeric.integer = integer;
+	if (param->numeric.integer != integer) {
+		param->numeric.integer = integer;
 
-	visual_param_entry_changed (param);
+		visual_param_entry_changed (param);
+	}
 
 	return 0;
 }
@@ -365,9 +465,11 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
 
 	param->type = VISUAL_PARAM_TYPE_FLOAT;
 
-	param->numeric.floating = floating;
+	if (param->numeric.floating != floating) {
+		param->numeric.floating = floating;
 
-	visual_param_entry_changed (param);
+		visual_param_entry_changed (param);
+	}
 	
 	return 0;
 }
@@ -386,10 +488,12 @@ int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
 
 	param->type = VISUAL_PARAM_TYPE_DOUBLE;
 
-	param->numeric.doubleflt = doubleflt;
+	if (param->numeric.doubleflt != doubleflt) {
+		param->numeric.doubleflt = doubleflt;
 
-	visual_param_entry_changed (param);
-	
+		visual_param_entry_changed (param);
+	}
+
 	return 0;
 }
 
@@ -409,11 +513,13 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
 
 	param->type = VISUAL_PARAM_TYPE_COLOR;
 
-	param->color.r = r;
-	param->color.g = g;
-	param->color.b = b;
+	if (param->color.r != r || param->color.g != g || param->color.b != b) {
+		param->color.r = r;
+		param->color.g = g;
+		param->color.b = b;
 
-	visual_param_entry_changed (param);
+		visual_param_entry_changed (param);
+	}
 
 	return 0;
 }
@@ -432,9 +538,11 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor 
 
 	param->type = VISUAL_PARAM_TYPE_COLOR;
 
-	visual_color_copy (&param->color, color);
+	if (visual_color_compare (&param->color, color) == 1) {
+		visual_color_copy (&param->color, color);
 
-	visual_param_entry_changed (param);
+		visual_param_entry_changed (param);
+	}
 
 	return 0;
 }

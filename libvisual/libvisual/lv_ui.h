@@ -16,6 +16,7 @@ extern "C" {
 #define VISUAL_UI_WIDGET(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_WIDGET, VisUIWidget))
 #define VISUAL_UI_CONTAINER(obj)			(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_CONTAINER, VisUIContainer))
 #define VISUAL_UI_BOX(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_BOX, VisUIBox))
+#define VISUAL_UI_TABLE(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_TABLE, VisUITable))
 #define VISUAL_UI_FRAME(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_FRAME, VisUIFrame))
 #define VISUAL_UI_LABEL(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_LABEL, VisUILabel))
 #define VISUAL_UI_IMAGE(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_IMAGE, VisUIImage))
@@ -39,6 +40,7 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_WIDGET,
 	VISUAL_WIDGET_TYPE_CONTAINER,
 	VISUAL_WIDGET_TYPE_BOX,
+	VISUAL_WIDGET_TYPE_TABLE,
 	VISUAL_WIDGET_TYPE_FRAME,
 	VISUAL_WIDGET_TYPE_LABEL,
 	VISUAL_WIDGET_TYPE_IMAGE,
@@ -71,6 +73,8 @@ typedef enum {
 typedef struct _VisUIWidget VisUIWidget;
 typedef struct _VisUIContainer VisUIContainer;
 typedef struct _VisUIBox VisUIBox;
+typedef struct _VisUITableEntry VisUITableEntry;
+typedef struct _VisUITable VisUITable;
 typedef struct _VisUIFrame VisUIFrame;
 typedef struct _VisUILabel VisUILabel;
 typedef struct _VisUIImage VisUIImage;
@@ -114,6 +118,23 @@ struct _VisUIBox {
 	VisUIContainer		 container;
 
 	VisUIOrientType		 orient;
+
+	VisList			 childs;
+};
+
+struct _VisUITableEntry {
+	int			row;
+	int			col;
+
+	VisUIWidget		*widget;
+
+};
+
+struct _VisUITable {
+	VisUIContainer		 container;
+
+	int			 rows;
+	int			 cols;
 
 	VisList			 childs;
 };
@@ -167,6 +188,8 @@ struct _VisUIEntry {
 
 struct _VisUISlider {
 	VisUIRange		 range;
+
+	int			 showvalue;
 };
 
 struct _VisUINumeric {
@@ -238,6 +261,10 @@ int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget);
 VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget);
 VisUIOrientType visual_ui_box_get_orient (VisUIBox *box);
 
+VisUIWidget *visual_ui_table_new (int rows, int cols);
+int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int col);
+VisList *visual_ui_table_get_childs (VisUITable *table);
+
 VisUIWidget *visual_ui_frame_new (const char *name);
 
 VisUIWidget *visual_ui_label_new (const char *text, int bold);
@@ -266,7 +293,7 @@ int visual_ui_range_set_precision (VisUIRange *range, int precision);
 VisUIWidget *visual_ui_entry_new (void);
 int visual_ui_entry_set_length (VisUIEntry *entry, int length);
 
-VisUIWidget *visual_ui_slider_new (void);
+VisUIWidget *visual_ui_slider_new (int showvalue);
 
 VisUIWidget *visual_ui_numeric_new (void);
 

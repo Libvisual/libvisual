@@ -42,6 +42,25 @@ int visual_color_free (VisColor *color)
 }
 
 /**
+ * Compares two VisColors with each other. If they are not the same, 1 is returned, if the same 0.
+ *
+ * @param src1 Pointer to the first VisColor for comparison.
+ * @param src2 Pointer to the second VisColor for comparison.
+ *
+ * @return 1 on different, 0 on same, -1 on error.
+ */
+int visual_color_compare (VisColor *src1, VisColor *src2)
+{
+	visual_log_return_val_if_fail (src1 != NULL, -1)
+	visual_log_return_val_if_fail (src2 != NULL, -1)
+
+	if (src1->r != src2->r || src1->g != src2->g || src1->b != src2->b)
+		return 1;
+
+	return 0;
+}
+
+/**
  * Fills the VisColor it's rgb values from hsv colorspace values.
  *
  * @param color Pointer to a VisColor which rgb values are filled.

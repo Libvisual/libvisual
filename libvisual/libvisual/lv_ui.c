@@ -179,6 +179,47 @@ VisUIOrientType visual_ui_box_get_orient (VisUIBox *box)
 	return box->orient;
 }
 
+VisUIWidget *visual_ui_table_new (int rows, int cols)
+{
+	VisUITable *table;
+
+	table = visual_mem_new0 (VisUITable, 1);
+	VISUAL_UI_WIDGET (table)->type = VISUAL_WIDGET_TYPE_TABLE;
+
+	table->rows = rows;
+	table->cols = cols;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (table), -1, -1);
+
+	return VISUAL_UI_WIDGET (table);
+}
+
+int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int col)
+{
+	VisUITableEntry *tentry;
+
+	visual_log_return_val_if_fail (table != NULL, -1);
+	visual_log_return_val_if_fail (widget != NULL, -1);
+
+	tentry = visual_mem_new0 (VisUITableEntry, 1);
+
+	tentry->row = row;
+	tentry->col = col;
+
+	tentry->widget = widget;
+
+	visual_list_add (&table->childs, tentry);
+
+	return 0;
+}
+
+VisList *visual_ui_table_get_childs (VisUITable *table)
+{
+	visual_log_return_val_if_fail (table != NULL, NULL);
+
+	return &table->childs;
+}
+
 VisUIWidget *visual_ui_frame_new (const char *name)
 {
 	VisUIFrame *frame;
@@ -396,12 +437,14 @@ int visual_ui_entry_set_length (VisUIEntry *entry, int length)
 	return 0;
 }
 
-VisUIWidget *visual_ui_slider_new ()
+VisUIWidget *visual_ui_slider_new (int showvalue)
 {
 	VisUISlider *slider;
 
 	slider = visual_mem_new0 (VisUISlider, 1);
 	VISUAL_UI_WIDGET (slider)->type = VISUAL_WIDGET_TYPE_SLIDER;
+
+	slider->showvalue = showvalue;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider), -1, -1);
 
