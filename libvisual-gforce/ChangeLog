@@ -1,3 +1,8 @@
+2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* unix/libvisual/actor_gforce.cpp: Updated to new
+	plugin API.
+
 2004-08-29  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* Makefile.am's: Multiple changes to let build from

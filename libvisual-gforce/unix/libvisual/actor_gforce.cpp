@@ -27,55 +27,54 @@ typedef struct {
 	GForce		*gGF;
 } GForcePrivate;
 
-extern "C" int lv_gforce_init (VisActorPlugin *plugin);
-extern "C" int lv_gforce_cleanup (VisActorPlugin *plugin);
-extern "C" int lv_gforce_requisition (VisActorPlugin *plugin, int *width, int *height);
-extern "C" int lv_gforce_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-extern "C" int lv_gforce_events (VisActorPlugin *plugin, VisEventQueue *events);
-extern "C" VisPalette *lv_gforce_palette (VisActorPlugin *plugin);
-extern "C" int lv_gforce_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+extern "C" int lv_gforce_init (VisPluginData *plugin);
+extern "C" int lv_gforce_cleanup (VisPluginData *plugin);
+extern "C" int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height);
+extern "C" int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events);
+extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin);
+extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-extern "C" LVPlugin *get_plugin_info (VisPluginRef *ref)
+extern "C" const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *gforce;
+	static VisActorPlugin actor[1];
+	static VisPluginInfo info[1];
+
+	actor[0].requisition = lv_gforce_requisition;
+	actor[0].palette = lv_gforce_palette;
+	actor[0].render = lv_gforce_render;
+	actor[0].depth = VISUAL_VIDEO_DEPTH_8BIT;
+
+	info[0].struct_size = sizeof (VisPluginInfo);
+	info[0].api_version = VISUAL_PLUGIN_API_VERSION;
+	info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
+
+	info[0].plugname = "G-Force";
+	info[0].name = "libvisual G-Force plugin";
+	info[0].author = "Winamp version: Andy O'Meara, Unix port: Boris Gjenero, Libvisual port and cleanups: Dennis Smit <ds@nerds-incorporated.org";
+	info[0].version = "0.1.0";
+	info[0].about = "The Libvisual G-Force plugin";
+	info[0].help = "This plugin is a port of the well known G-Force winamp plugin, based on an old unix port.";
+
+	info[0].init = lv_gforce_init;
+	info[0].cleanup = lv_gforce_cleanup;
+	info[0].events = lv_gforce_events;
+
+	info[0].plugin = (void *) &actor[0];
+
+	*count = sizeof (info) / sizeof (*info);
+
+	return (const VisPluginInfo *) info;
+}
+
+extern "C" int lv_gforce_init (VisPluginData *plugin)
+{
 	GForcePrivate *priv;
-
-	plugin = visual_plugin_new ();
-	gforce = visual_plugin_actor_new ();
-
-	gforce->name = "G-Force";
-	gforce->info = visual_plugin_info_new (
-			"libvisual G-Force plugin",
-			"Winamp version: Andy O'Meara, Unix port: Boris Gjenero, Libvisual port and cleanups: Dennis Smit <ds@nerds-incorporated.org>",
-			"0.1.0",
-			"The Libvisual G-Force plugin",
-			"This plugin is a port of the well known G-Force winamp plugin, based on an old unix port.");
-
-	gforce->init =		lv_gforce_init;
-	gforce->cleanup =	lv_gforce_cleanup;
-	gforce->requisition =	lv_gforce_requisition;
-	gforce->events =	lv_gforce_events;
-	gforce->palette =	lv_gforce_palette;
-	gforce->render =	lv_gforce_render;
-
-	gforce->depth = VISUAL_VIDEO_DEPTH_8BIT;
+	Rect r;
 
 	priv = new GForcePrivate;
 	memset (priv, 0, sizeof (GForcePrivate));
-
-	gforce->priv = priv;
-
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = gforce;
-
-	return plugin;
-}
-
-extern "C" int lv_gforce_init (VisActorPlugin *plugin)
-{
-	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
-	Rect r;
+	plugin->priv = priv;
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
@@ -92,7 +91,7 @@ extern "C" int lv_gforce_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-extern "C" int lv_gforce_cleanup (VisActorPlugin *plugin)
+extern "C" int lv_gforce_cleanup (VisPluginData *plugin)
 {
 	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
 
@@ -108,7 +107,7 @@ extern "C" int lv_gforce_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-extern "C" int lv_gforce_requisition (VisActorPlugin *plugin, int *width, int *height)
+extern "C" int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -133,7 +132,7 @@ extern "C" int lv_gforce_requisition (VisActorPlugin *plugin, int *width, int *h
 	return 0;
 }
 
-extern "C" int lv_gforce_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+extern "C" int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
 	Rect r;
@@ -146,7 +145,7 @@ extern "C" int lv_gforce_dimension (VisActorPlugin *plugin, VisVideo *video, int
 	return 0;
 }
 
-extern "C" int lv_gforce_events (VisActorPlugin *plugin, VisEventQueue *events)
+extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
 	VisEvent ev;
@@ -177,7 +176,7 @@ extern "C" int lv_gforce_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-extern "C" VisPalette *lv_gforce_palette (VisActorPlugin *plugin)
+extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin)
 {
 	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
 	PixPalEntry *GFpal;
@@ -194,7 +193,7 @@ extern "C" VisPalette *lv_gforce_palette (VisActorPlugin *plugin)
 	return &priv->pal;
 }
 
-extern "C" int lv_gforce_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
 	int i, j = 0, ns;
