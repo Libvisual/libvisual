@@ -16,9 +16,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_PLUGIN_ACTOR(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_ACTOR, VisActorPlugin))
-#define VISUAL_PLUGIN_INPUT(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_INPUT, VisInputPlugin))
-#define VISUAL_PLUGIN_MORPH(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_MORPH, VisMorphPlugin))
+#define VISUAL_PLUGIN_ACTOR(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_ACTOR_ENUM, VisActorPlugin))
+#define VISUAL_PLUGIN_INPUT(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_INPUT_ENUM, VisInputPlugin))
+#define VISUAL_PLUGIN_MORPH(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_MORPH_ENUM, VisMorphPlugin))
 
 /**
  * Indicates at which version the plugin API is.
@@ -26,10 +26,28 @@ extern "C" {
 #define VISUAL_PLUGIN_API_VERSION	2
 
 /**
+ * Type defination that should be used in plugins to set the plugin type for a NULL plugin.
+ */
+#define VISUAL_PLUGIN_TYPE_NULL		"Libvisual:core:null"
+/**
+ * Type defination that should be used in plugins to set the plugin type for an actor plugin.
+ */
+#define VISUAL_PLUGIN_TYPE_ACTOR	"Libvisual:core:actor"
+/**
+ * Type defination that should be used in plugins to set the plugin type for an input  plugin.
+ */
+#define VISUAL_PLUGIN_TYPE_INPUT	"Libvisual:core:input"
+/**
+ * Type defination that should be used in plugins to set the plugin type for a morph plugin.
+ */
+#define VISUAL_PLUGIN_TYPE_MORPH	"Libvisual:core:morph"
+
+/**
  * Enumerate to define the plugin type. Especially used
- * within the VisPlugin system and also used within the plugin
- * themselves so they can tell the plugin system what kind of
- * plugin they are.
+ * within the VisPlugin system and for type checking within the core library itself.
+ *
+ * For plugin type defination use the VISUAL_PLUGIN_TYPE_NULL, VISUAL_PLUGIN_TYPE_ACTOR
+ * VISUAL_PLUGIN_TYPE_INPUT or VISUAL_PLUGIN_TYPE_MORPH defines that contain the domain string.
  *
  * There are three different plugins being:
  * 	-# Actor plugins: These are the actual
@@ -40,10 +58,10 @@ extern "C" {
  * 	between different plugins.
  */
 typedef enum {
-	VISUAL_PLUGIN_TYPE_NULL,	/**< Used when there is no plugin. */
-	VISUAL_PLUGIN_TYPE_ACTOR,	/**< Used when the plugin is an actor plugin. */
-	VISUAL_PLUGIN_TYPE_INPUT,	/**< Used when the plugin is an input plugin. */
-	VISUAL_PLUGIN_TYPE_MORPH	/**< Used when the plugin is a morph plugin. */
+	VISUAL_PLUGIN_TYPE_NULL_ENUM,	/**< Used when there is no plugin. */
+	VISUAL_PLUGIN_TYPE_ACTOR_ENUM,	/**< Used when the plugin is an actor plugin. */
+	VISUAL_PLUGIN_TYPE_INPUT_ENUM,	/**< Used when the plugin is an input plugin. */
+	VISUAL_PLUGIN_TYPE_MORPH_ENUM	/**< Used when the plugin is a morph plugin. */
 } VisPluginType;
 
 /**
@@ -58,6 +76,16 @@ typedef enum {
 							  * special purpose, like the GdkPixbuf plugin, or a webcam
 							  * plugin. */
 } VisPluginFlags;
+
+/**
+ * Enumerate to check the depth of the type wildcard/defination used, used together with the visual_plugin_type functions.
+ */
+typedef enum {
+	VISUAL_PLUGIN_TYPE_DEPTH_NONE		= 0,	/**< No type found.*/
+	VISUAL_PLUGIN_TYPE_DEPTH_DOMAIN		= 1,	/**< Only domain in type. */
+	VISUAL_PLUGIN_TYPE_DEPTH_PACKAGE	= 2,	/**< Domain and package in type. */
+	VISUAL_PLUGIN_TYPE_DEPTH_TYPE		= 3,	/**< Domain, package and type found in type. */
+} VisPluginTypeDepth;
 
 typedef struct _VisPluginRef VisPluginRef;
 typedef struct _VisPluginInfo VisPluginInfo;
@@ -223,8 +251,9 @@ struct _VisPluginRef {
 struct _VisPluginInfo {
 	uint32_t		 struct_size;	/**< Struct size, should always be set for compatability checks. */
 	uint32_t		 api_version;	/**< API version, compile plugins always with .api_version = VISUAL_PLUGIN_API_VERSION. */
-	VisPluginType		 type;		/**< Plugin type. */
-
+	const char		*type;		/**< Plugin type, in the format of "domain:package:type", as example,
+						 * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
+						 * instead of filling in the string yourself. */
 	char			*plugname;	/**< The plugin name as it's saved in the registry. */
 
 	char			*name;		/**< Long name */
@@ -346,7 +375,7 @@ VisPluginData *visual_plugin_new (void);
 int visual_plugin_free (VisPluginData *plugin);
 
 const VisList *visual_plugin_get_registry (void);
-VisList *visual_plugin_registry_filter (const VisList *pluglist, VisPluginType type);
+VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *domain);
 
 const char *visual_plugin_get_next_by_name (const VisList *list, const char *name);
 const char *visual_plugin_get_prev_by_name (const VisList *list, const char *name);
@@ -363,6 +392,12 @@ VisPluginRef *visual_plugin_find (const VisList *list, const char *name);
 int visual_plugin_get_api_version (void);
 
 VisSongInfo *visual_plugin_actor_get_songinfo (VisActorPlugin *actplugin);
+
+const char *visual_plugin_type_get_domain (const char *type);
+const char *visual_plugin_type_get_package (const char *type);
+const char *visual_plugin_type_get_type (const char *type);
+VisPluginTypeDepth visual_plugin_type_get_depth (const char *type);
+int visual_plugin_type_member_of (const char *domain, const char *type);
 
 #ifdef __cplusplus
 }

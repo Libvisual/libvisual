@@ -16,6 +16,7 @@ extern VisList *__lv_plugins;
 static void ref_list_destroy (void *ref);
 
 static int plugin_add_dir_to_list (VisList *list, const char *dir);
+static const char *get_delim_node (char *str, char delim, int index);
 
 static void ref_list_destroy (void *data)
 {
@@ -28,6 +29,43 @@ static void ref_list_destroy (void *data)
 
 	visual_plugin_info_free (ref->info);
 	visual_plugin_ref_free (ref);
+}
+
+static const char *get_delim_node (char *str, char delim, int index)
+{
+	char *buf;
+	char *start;
+	char *end = str;
+	int i = 0;
+
+	do {
+		start = end;
+
+		end = strchr (start + 1, delim);
+
+		if (i == index) {
+			/* Last section doesn't contain a delim */
+			if (end == NULL)
+				end = str + strlen (str);
+			
+			/* Cut off the delim that is in front */
+			if (i > 0)
+				start++;
+			
+			break;
+		}
+
+		i++;
+
+	} while (end != NULL);
+
+	if (end == NULL)
+		return NULL;
+
+	buf = visual_mem_malloc0 ((end - start) + 1);
+	strncpy (buf, start, end - start);
+
+	return buf;
 }
 
 /**
@@ -64,6 +102,9 @@ int visual_plugin_info_free (VisPluginInfo *pluginfo)
 	if (pluginfo->plugname != NULL)
 		visual_mem_free (pluginfo->plugname);
 
+	if (pluginfo->type != NULL)
+		visual_mem_free (pluginfo->type);
+
 	if (pluginfo->name != NULL)
 		visual_mem_free (pluginfo->name);
 
@@ -99,6 +140,7 @@ int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src)
 	memcpy (dest, src, sizeof (VisPluginInfo));
 
 	dest->plugname = strdup (src->plugname);
+	dest->type = strdup (src->type);
 	dest->name = strdup (src->name);
 	dest->author = strdup (src->author);
 	dest->version = strdup (src->version);
@@ -337,11 +379,11 @@ const VisList *visual_plugin_get_registry ()
  * @see VisPluginRef
  *
  * @param pluglist Pointer to the VisList that contains the plugin registry.
- * @param type The plugin type that is filtered for.
+ * @param domain The plugin type that is filtered for.
  *
  * @return Newly allocated VisList that is a filtered version of the plugin registry.
  */
-VisList *visual_plugin_registry_filter (const VisList *pluglist, VisPluginType type)
+VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *domain)
 {
 	VisList *list;
 	VisListEntry *entry = NULL;
@@ -353,11 +395,13 @@ VisList *visual_plugin_registry_filter (const VisList *pluglist, VisPluginType t
 
 	if (list == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot create a new list");
+
 		return NULL;
 	}
 
 	while ((ref = visual_list_next (pluglist, &entry)) != NULL) {
-		if (ref->info->type == type)
+		
+		if (visual_plugin_type_member_of (ref->info->type, domain))
 			visual_list_add (list, ref);
 	}
 
@@ -771,6 +815,120 @@ VisSongInfo *visual_plugin_actor_get_songinfo (VisActorPlugin *actplugin)
 	visual_log_return_val_if_fail (actplugin != NULL, NULL);
 
 	return &actplugin->songinfo;
+}
+
+/**
+ * Get the domain part from a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A newly allocated string containing the domain part of this plugin type, or NULL on failure.
+ */
+const char *visual_plugin_type_get_domain (const char *type)
+{
+	visual_log_return_val_if_fail (type != NULL, NULL);
+
+	return get_delim_node (type, ':', 0);
+}
+
+/**
+ * Get the package part from a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A newly allocated string containing the package part of this plugin type, or NULL on failure.
+ */
+const char *visual_plugin_type_get_package (const char *type)
+{
+	visual_log_return_val_if_fail (type != NULL, NULL);
+
+	return get_delim_node (type, ':', 1);
+}
+
+/**
+ * Get the type part from a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A newly allocated string containing the type part of this plugin type, or NULL on failure.
+ */
+const char *visual_plugin_type_get_type (const char *type)
+{
+	visual_log_return_val_if_fail (type != NULL, NULL);
+
+	return get_delim_node (type, ':', 2);
+}
+
+/**
+ * Get the depth of a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A VisPluginTypeDepth enum value that describes out of how many parts this plugin
+ *	type string consists, -VISUAL_ERROR_NULL on failure.
+ */
+VisPluginTypeDepth visual_plugin_type_get_depth (const char *type)
+{
+	int i = 0;
+
+	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
+
+	while (i < VISUAL_PLUGIN_TYPE_DEPTH_TYPE) {
+		char *part;
+
+		part = get_delim_node (type, ':', i);
+
+		if (part == NULL)
+			break;
+
+		i++;
+
+		visual_mem_free (part);
+	}
+
+	return i;
+}
+
+/**
+ * Check if a certain plugin type string falls within the domain of the other.
+ *
+ * @param domain The domain in which the type string should fall.
+ * @param type The type string that is checked against the given domain.
+ *
+ * @return TRUE if it falls within the domain, FALSE when not, -VISUAL_ERROR_NULL on failure
+ */
+int visual_plugin_type_member_of (const char *domain, const char *type)
+{
+	char *comp1;
+	char *comp2;
+	int diff = 0;
+	int i = 0;
+
+	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
+
+	while (i < visual_plugin_type_get_depth (domain)) {
+		comp1 = get_delim_node (domain, ':', i);
+		comp2 = get_delim_node (type, ':', i);
+
+		if (comp1 == NULL)
+			return FALSE;
+
+		if (comp2 == NULL)
+			return FALSE;
+
+		if (strcmp (comp1, comp2) != 0)
+			diff++;
+
+		visual_mem_free (comp1);
+		visual_mem_free (comp2);
+
+		i++;
+	}
+
+	if (diff > 0)
+		return FALSE;
+
+	return TRUE;
 }
 
 /**
