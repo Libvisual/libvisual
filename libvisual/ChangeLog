@@ -1,5 +1,10 @@
 2005-03-20  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_plugin.*: With some luck, this is working windows dll
+	load support.
+
+2005-03-20  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_error.*, libvisual/lv_thread.*:
 	Ok revamped the VisThread system, now the only thing left is w32
 	native threads, might do that later today.

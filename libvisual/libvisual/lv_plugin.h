@@ -35,6 +35,12 @@
 #include <libvisual/lv_random.h>
 #include <libvisual/lv_types.h>
 
+#include "lvconfig.h"
+
+#if defined(VISUAL_OS_WIN32)
+#include <windows.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -195,7 +201,12 @@ struct _VisPluginData {
 						  * semi reproduce visuals. */
 
 	int			 realized;	/**< Flag that indicates if the plugin is realized. */
+#if defined(VISUAL_OS_WIN32)
+	HMODULE			 handle;	/**< The LoadLibrary handle for windows32 */
+#else /* !VISUAL_OS_WIN32 */
 	void			*handle;	/**< The dlopen handle */
+#endif
+
 	VisList			 environment;	/**< Misc environment specific data. */
 };
 

@@ -651,7 +651,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 		visual_object_unref (VISUAL_OBJECT (plugin->info));
 
 #if defined(VISUAL_OS_WIN32)
-
+	FreeLibrary (plugin->handle);	
 #else
 	dlclose (plugin->handle);
 #endif
@@ -684,7 +684,11 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	VisTime time_;
 	VisPluginInfo *pluginfo;
 	VisPluginGetInfoFunc get_plugin_info;
+#if defined(VISUAL_OS_WIN32)
+	HMODULE handle;
+#else /* !VISUAL_OS_WIN32 */
 	void *handle;
+#endif
 	int cnt;
 
 	visual_log_return_val_if_fail (ref != NULL, NULL);
@@ -699,14 +703,14 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	}
 
 #if defined(VISUAL_OS_WIN32)
-
+	handle = LoadLibrary (ref->file);
 #else
 	handle = dlopen (ref->file, RTLD_LAZY);
 #endif
 	
 	if (handle == NULL) {
 #if defined(VISUAL_OS_WIN32)
-
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: win32 error code: %d", GetLastError ());
 #else
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
 #endif
@@ -714,14 +718,16 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	}
 
 #if defined(VISUAL_OS_WIN32)
-
+	get_plugin_info = (VisPluginGetInfoFunc) GetProcAddress (handle, "get_plugin_info");
 #else
 	get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
 #endif
 
 	if (get_plugin_info == NULL) {
 #if defined(VISUAL_OS_WIN32)
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: win32 error code: %d", GetLastError ());
 
+		FreeLibrary (handle);
 #else
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
 	
@@ -737,7 +743,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info while loading.");
 
 #if defined(VISUAL_OS_WIN32)
-
+		FreeLibrary (handle);
 #else
 		dlclose (handle);
 #endif
@@ -803,20 +809,24 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	VisPluginInfo *dup_info;
 	const char *plug_name;
 	VisPluginGetInfoFunc get_plugin_info;
+#if defined(VISUAL_OS_WIN32)
+	HMODULE handle;
+#else /* !VISUAL_OS_WIN32 */
 	void *handle;
+#endif
 	int cnt = 1, i;
 
 	visual_log_return_val_if_fail (pluginpath != NULL, NULL);
 
 #if defined(VISUAL_OS_WIN32)
-
+	handle = LoadLibrary (pluginpath);	
 #else
 	handle = dlopen (pluginpath, RTLD_LAZY);
 #endif
 
 	if (handle == NULL) {
 #if defined(VISUAL_OS_WIN32)
-
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: win32 error code: %d", GetLastError());
 #else
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
 #endif
@@ -825,14 +835,16 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	}
 
 #if defined(VISUAL_OS_WIN32)
-
+	get_plugin_info = (VisPluginGetInfoFunc) GetProcAddress (handle, "get_plugin_info");
 #else
 	get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
 #endif
 
 	if (get_plugin_info == NULL) {
 #if defined(VISUAL_OS_WIN32)
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: win32 error code: %d", GetLastError ());
 
+		FreeLibrary (handle);
 #else
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
 
@@ -849,7 +861,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info");
 
 #if defined(VISUAL_OS_WIN32)
-
+		FreeLibrary (handle);
 #else
 		dlclose (handle);
 #endif
@@ -867,7 +879,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		visual_log (VISUAL_LOG_CRITICAL, "Plugin %s is not compatible with version %s of libvisual",
 				pluginpath, visual_get_version ());
 #if defined(VISUAL_OS_WIN32)
-
+		FreeLibrary (handle);
 #else
 		dlclose (handle);
 #endif
@@ -891,7 +903,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
 	}
 #if defined(VISUAL_OS_WIN32)
-
+	FreeLibrary (handle);
 #else
 	dlclose (handle);
 #endif
