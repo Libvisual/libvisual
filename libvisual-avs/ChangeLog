@@ -1,3 +1,7 @@
+2005-03-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* W_AVS_WISHLIST: Adding, let's learn from it.
+
 2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* common/*.h, src/*.h: Adopted new casting API.
