@@ -1,5 +1,9 @@
 2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* src/*: updates.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/ring/*: Nearly finished.
 
 	* common/*: Adding common routines here.

@@ -100,6 +100,8 @@ struct _LVAVSPipelineElement {
 
 	LVAVSPipeline			*pipeline;
 
+	VisParamContainer		*params;
+	
 	union {
 		VisActor			*actor;
 		VisMorph			*morph;

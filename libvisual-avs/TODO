@@ -5,6 +5,14 @@ I hope you have a wide terminal screen, because I do.
 
 
 __
+Very short term TODO:
+	Finish avs_ring element.
+	Setup VisTrans.
+	Update deserializer for the named APE stuff.
+	Make avs_blur.
+	Make avs_fadeout.
+	Look into render state stuff.
+
 General TODO:
 	Finish preset parser.
 	VisAVS tree (including it's own (de)serializer). (Depends on: VisParamSerialize)

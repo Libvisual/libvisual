@@ -66,6 +66,9 @@ static int lvavs_pipeline_element_dtor (VisObject *object)
 
 	if (element->pipeline != NULL)
 		visual_object_unref (VISUAL_OBJECT (element->pipeline));
+
+	if (element->params != NULL)
+		visual_object_unref (VISUAL_OBJECT (element->params));
 	
 	switch (element->type) {
 		case LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR:
@@ -85,6 +88,7 @@ static int lvavs_pipeline_element_dtor (VisObject *object)
 	}
 
 	element->pipeline = NULL;
+	element->params = NULL;
 	element->data.actor = NULL;
 	
 	return VISUAL_OK;
@@ -213,7 +217,6 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 					break;
 				}
 
-				/* FIXME: need to copy over the params */
 				if (strcmp (ref->info->type, VISUAL_PLUGIN_TYPE_ACTOR) == 0) {
 
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR);
@@ -230,6 +233,11 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 							ref->info->type);
 
 					break;
+				}
+
+				if (pelem->pcont != NULL) {
+					element->params = visual_param_container_new ();
+					visual_param_container_copy (element->params, pelem->pcont);
 				}
 
 				element->pipeline = LVAVS_PIPELINE_ELEMENT (container)->pipeline;
@@ -280,7 +288,9 @@ int pipeline_container_realize (LVAVSPipelineContainer *container)
 			case LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR:
 
 				visual_actor_realize (element->data.actor);
-
+				visual_param_container_copy_match (visual_plugin_get_params (
+							visual_actor_get_plugin (element->data.actor)),
+							element->params);
 				break;
 
 			case LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM:

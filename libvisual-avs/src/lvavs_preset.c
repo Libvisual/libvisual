@@ -38,6 +38,8 @@ static int lvavs_preset_element_dtor (VisObject *object);
 static int lvavs_preset_container_dtor (VisObject *object);
 
 static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContainer *cont);
+
+LVAVSPresetElement *wavs_convert_main_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem);
 
 
@@ -115,7 +117,7 @@ LVAVSPreset *lvavs_preset_new_from_wavs (AVSTree *wavs)
 
 	preset = lvavs_preset_new ();
 
-	preset->main = lvavs_preset_container_new ();
+	preset->main = LVAVS_PRESET_CONTAINER (wavs_convert_main_new (AVS_ELEMENT (wavs->main)));
 
 	preset_convert_from_wavs (preset->main, wavs->main);
 
@@ -162,6 +164,7 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 		switch (avselem->type) {
 			case AVS_ELEMENT_TYPE_MAIN:
+				visual_list_add (presetcont->members, wavs_convert_main_new (avselem));
 
 				break;
 
@@ -209,6 +212,31 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 	return VISUAL_OK;
 }
 
+LVAVSPresetElement *wavs_convert_main_new (AVSElement *avselem)
+{
+	LVAVSPresetContainer *container;
+	VisParamContainer *pcont;
+	VisParamContainer *pcontw;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("clear screen"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+	visual_param_container_add_many (pcont, params);
+
+	pcontw = avselem->pcont;
+
+	/* Copy all the matching */
+	visual_param_container_copy_match (pcont, pcontw);
+
+	container = lvavs_preset_container_new ();
+	LVAVS_PRESET_ELEMENT (container)->pcont = pcont;
+
+	return LVAVS_PRESET_ELEMENT (container);
+}
+
 LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 {
 	LVAVSPresetElement *element;
@@ -231,7 +259,7 @@ LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 	pcontw = avselem->pcont;
 
 	/* Copy all the matching */
-	visual_param_container_match_copy (pcont, pcontw);
+	visual_param_container_copy_match (pcont, pcontw);
 
 	sourceplace = visual_param_entry_get_integer (visual_param_container_get (pcontw, "source and place"));
 	

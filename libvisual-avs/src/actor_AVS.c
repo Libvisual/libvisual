@@ -89,7 +89,7 @@ int act_avs_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual/libvisual-avs/testpresets/ringRR.avs"),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual/libvisual-avs/testpresets/ring10.avs"),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
 		VISUAL_PARAM_LIST_END
 	};
@@ -236,7 +236,13 @@ int act_avs_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 		priv->needsnego = FALSE;
 	}
-	
+
+	/* Clear screen bit is on, clear screen every frame (This is from winamp AVS main section) */
+	if (visual_param_entry_get_integer (visual_param_container_get (LVAVS_PRESET_ELEMENT (priv->lvtree->main)->pcont,
+					"clear screen")) == 1) {
+		memset ((uint8_t *) video->pixels, 0, video->size);
+	}
+
 	lvavs_pipeline_run (priv->pipeline, video, audio);
 
 	return 0;
