@@ -487,7 +487,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		
 		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
-		visual_ui_widget_set_private (cont, widget);
+		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 		
 		gtk_entry_set_text (GTK_ENTRY (widget), visual_param_entry_get_string (param));
 		gtk_entry_set_max_length (GTK_ENTRY (widget), VISUAL_UI_ENTRY (cont)->length);
@@ -525,7 +525,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 				VISUAL_UI_RANGE (cont)->max,
 				VISUAL_UI_RANGE (cont)->step);
 
-		visual_ui_widget_set_private (cont, widget);
+		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 
 		if (VISUAL_UI_SLIDER (cont)->showvalue == FALSE)
 			gtk_scale_set_draw_value (GTK_SCALE (widget), FALSE);
@@ -573,7 +573,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 				VISUAL_UI_RANGE (cont)->max,
 				VISUAL_UI_RANGE (cont)->step);
 
-		visual_ui_widget_set_private (cont, widget);
+		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
@@ -616,7 +616,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 		widget = gtk_color_selection_new ();
 
-		visual_ui_widget_set_private (cont, widget);
+		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
@@ -655,7 +655,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 		widget = gtk_combo_box_new_text ();
 
-		visual_ui_widget_set_private (cont, widget);
+		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
@@ -738,7 +738,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 			gtk_box_pack_start (GTK_BOX (widget), radio, FALSE, FALSE, 0);
 		}
 
-		visual_ui_widget_set_private (cont, widget);
+		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 
 		cbentry = g_new0 (CallbackEntry, 1);
 		cbentry->param = param;
@@ -775,7 +775,7 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), visual_ui_choice_get_active (VISUAL_UI_CHOICE (cont)));
 
-		visual_ui_widget_set_private (cont, widget);
+		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 
 		g_signal_connect (G_OBJECT (widget), "toggled",
 				G_CALLBACK (cb_visui_checkbox), cont);

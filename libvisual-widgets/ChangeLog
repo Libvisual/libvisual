@@ -1,5 +1,10 @@
 2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* gtk2/lvw_gtk2_visui.c: Use visual_object_set_private instead of
+	the deprecated visual_ui_set_private...
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* gtk2/lvw_gtk2_visui.c: Ref and Unref the VisUIWidget for which we're
 	building an userinterface. Do this so it keeps around even when the
 	plugin unloads and unrefs it.
