@@ -1,4 +1,10 @@
 2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/actor/oinksie/gfx-blur.c (_oink_gfx_blur_middle,
+	_oink_gfx_blur_midstrange):
+	Added mmx versions, another performance kick :)
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/oinksie/gfx-blur.c (_oink_gfx_blur_fade):
 	MMXified the color fader.

@@ -87,45 +87,164 @@ void _oink_gfx_blur_simple (OinksiePrivate *priv, uint8_t *buf)
 
 void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 {
+	VisCPU *cpucaps = visual_cpu_get_caps ();
 	int i;
 	int scrsh = priv->screen_size / 2;
 
-	for (i = 0; i < scrsh; i++)
-	{
-		buf[i] = (buf[i]
-		         + buf[i + priv->screen_width]
-			 + buf[i + priv->screen_width + 1]
-			 + buf[i + priv->screen_width - 1]) >> 2;
-	}
+	if (cpucaps->hasMMX == 1) {
+#ifdef VISUAL_ARCH_X86
+		__asm __volatile
+			("\n\t pxor %%mm6, %%mm6"
+			 ::: "mm6");
+		
+		/* Prepare substraction register */
+		for (i = 0; i < scrsh; i += 4) {
+			__asm __volatile
+				("\n\t movd %[buf], %%mm0"
+				 "\n\t movd %[add1], %%mm1"
+				 "\n\t punpcklbw %%mm6, %%mm0"
+				 "\n\t movd %[add2], %%mm2"
+				 "\n\t punpcklbw %%mm6, %%mm1"
+				 "\n\t movd %[add3], %%mm3"
+				 "\n\t punpcklbw %%mm6, %%mm2"
+				 "\n\t paddw %%mm1, %%mm0"
+				 "\n\t punpcklbw %%mm6, %%mm3"
+				 "\n\t paddw %%mm2, %%mm0"
+				 "\n\t paddw %%mm3, %%mm0"
+				 "\n\t psrlw $2, %%mm0"
+				 "\n\t packuswb %%mm6, %%mm0"
+				 "\n\t movd %%mm0, %[buf]"
+				 :: [buf] "m" (*(buf + i))
+				 , [add1] "m" (*(buf + i + priv->screen_width))
+				 , [add2] "m" (*(buf + i + priv->screen_width + 1))
+				 , [add3] "m" (*(buf + i + priv->screen_width - 1))
+				 : "mm0", "mm1", "mm2", "mm3", "mm6");
+		}
 
-	for (i = priv->screen_size - 1; i > scrsh; i--)
-	{
-		buf[i] = (buf[i] 
-			 + buf[i - priv->screen_width]
-			 + buf[i - priv->screen_width + 1]
-			 + buf[i - priv->screen_width - 1]) >> 2;
+		for (i = priv->screen_size - 1; i > scrsh; i -= 4) {
+			__asm __volatile
+				("\n\t movd %[buf], %%mm0"
+				 "\n\t movd %[add1], %%mm1"
+				 "\n\t punpcklbw %%mm6, %%mm0"
+				 "\n\t movd %[add2], %%mm2"
+				 "\n\t punpcklbw %%mm6, %%mm1"
+				 "\n\t movd %[add3], %%mm3"
+				 "\n\t punpcklbw %%mm6, %%mm2"
+				 "\n\t paddw %%mm1, %%mm0"
+				 "\n\t punpcklbw %%mm6, %%mm3"
+				 "\n\t paddw %%mm2, %%mm0"
+				 "\n\t paddw %%mm3, %%mm0"
+				 "\n\t psrlw $2, %%mm0"
+				 "\n\t packuswb %%mm6, %%mm0"
+				 "\n\t movd %%mm0, %[buf]"
+				 :: [buf] "m" (*(buf + i))
+				 , [add1] "m" (*(buf + i - priv->screen_width))
+				 , [add2] "m" (*(buf + i - priv->screen_width + 1))
+				 , [add3] "m" (*(buf + i - priv->screen_width - 1))
+				 : "mm0", "mm1", "mm2", "mm3", "mm6");
+		}
+		
+		__asm __volatile
+			("\n\t emms");
+#endif
+	} else {
+		for (i = 0; i < scrsh; i++)
+		{
+			*(buf + i) = (*(buf + i)
+					+ *(buf + i + priv->screen_width)
+					+ *(buf + i + priv->screen_width + 1)
+					+ *(buf + i + priv->screen_width - 1)) >> 2;
+		}
+
+		for (i = priv->screen_size - 1; i > scrsh; i--)
+		{
+			*(buf + i) = (*(buf + i)
+					+ *(buf + i - priv->screen_width)
+					+ *(buf + i - priv->screen_width + 1)
+					+ *(buf + i - priv->screen_width - 1)) >> 2;
+		}
 	}
 }
 
 void _oink_gfx_blur_midstrange (OinksiePrivate *priv, uint8_t *buf)
 {
+	VisCPU *cpucaps = visual_cpu_get_caps ();
 	int i;
 	int scrsh = priv->screen_size / 2;
-	
-	for (i = scrsh; i > 0; i--)
-	{
-		buf[i] = (buf[i] 
-		   	  + buf[i + priv->screen_width]
-			  + buf[i + priv->screen_width + 1]
-			  + buf[i + priv->screen_width - 1]) >> 2;
-	}
-	
-	for (i = scrsh; i < priv->screen_size - 2; i++)
-	{
-		buf[i] = (buf[i]
-			  + buf[i - priv->screen_width]
-			  + buf[i - priv->screen_width + 1]
-			  + buf[i - priv->screen_width - 1]) >> 2;
+
+	if (cpucaps->hasMMX == 1) {
+#ifdef VISUAL_ARCH_X86
+		__asm __volatile
+			("\n\t pxor %%mm6, %%mm6"
+			 ::: "mm6");
+
+		/* Prepare substraction register */
+		for (i = scrsh; i > 0; i -= 4) {
+			__asm __volatile
+				("\n\t movd %[buf], %%mm0"
+				 "\n\t movd %[add1], %%mm1"
+				 "\n\t punpcklbw %%mm6, %%mm0"
+				 "\n\t movd %[add2], %%mm2"
+				 "\n\t punpcklbw %%mm6, %%mm1"
+				 "\n\t movd %[add3], %%mm3"
+				 "\n\t punpcklbw %%mm6, %%mm2"
+				 "\n\t paddw %%mm1, %%mm0"
+				 "\n\t punpcklbw %%mm6, %%mm3"
+				 "\n\t paddw %%mm2, %%mm0"
+				 "\n\t paddw %%mm3, %%mm0"
+				 "\n\t psrlw $2, %%mm0"
+				 "\n\t packuswb %%mm6, %%mm0"
+				 "\n\t movd %%mm0, %[buf]"
+				 :: [buf] "m" (*(buf + i))
+				 , [add1] "m" (*(buf + i + priv->screen_width))
+				 , [add2] "m" (*(buf + i + priv->screen_width + 1))
+				 , [add3] "m" (*(buf + i + priv->screen_width - 1))
+				 : "mm0", "mm1", "mm2", "mm3", "mm6");
+		}
+
+		for (i = scrsh; i < priv->screen_size - 2; i += 4) {
+			__asm __volatile
+				("\n\t movd %[buf], %%mm0"
+				 "\n\t movd %[add1], %%mm1"
+				 "\n\t punpcklbw %%mm6, %%mm0"
+				 "\n\t movd %[add2], %%mm2"
+				 "\n\t punpcklbw %%mm6, %%mm1"
+				 "\n\t movd %[add3], %%mm3"
+				 "\n\t punpcklbw %%mm6, %%mm2"
+				 "\n\t paddw %%mm1, %%mm0"
+				 "\n\t punpcklbw %%mm6, %%mm3"
+				 "\n\t paddw %%mm2, %%mm0"
+				 "\n\t paddw %%mm3, %%mm0"
+				 "\n\t psrlw $2, %%mm0"
+				 "\n\t packuswb %%mm6, %%mm0"
+				 "\n\t movd %%mm0, %[buf]"
+				 :: [buf] "m" (*(buf + i))
+				 , [add1] "m" (*(buf + i - priv->screen_width))
+				 , [add2] "m" (*(buf + i - priv->screen_width + 1))
+				 , [add3] "m" (*(buf + i - priv->screen_width - 1))
+				 : "mm0", "mm1", "mm2", "mm3", "mm6");
+		}
+
+		__asm __volatile
+			("\n\t emms");
+#endif
+	} else {
+
+		for (i = scrsh; i > 0; i--)
+		{
+			buf[i] = (buf[i] 
+					+ buf[i + priv->screen_width]
+					+ buf[i + priv->screen_width + 1]
+					+ buf[i + priv->screen_width - 1]) >> 2;
+		}
+
+		for (i = scrsh; i < priv->screen_size - 2; i++)
+		{
+			buf[i] = (buf[i]
+					+ buf[i - priv->screen_width]
+					+ buf[i - priv->screen_width + 1]
+					+ buf[i - priv->screen_width - 1]) >> 2;
+		}
 	}
 }
 
