@@ -120,7 +120,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 
 	table = visual_ui_table_new (3, 2);
 	
-	label1 = visual_ui_label_new ("Zoom mode:", FALSE);
+	label1 = visual_ui_label_new ("Blur mode:", FALSE);
 	label2 = visual_ui_label_new ("Plotter color:", FALSE);
 	label3 = visual_ui_label_new ("Plotter type:", FALSE);
 
