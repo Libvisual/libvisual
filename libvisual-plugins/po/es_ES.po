@@ -206,7 +206,7 @@ msgstr "Forma de Onda deslizante encendida"
 
 #: plugins/actor/G-Force/GForceCommon/G-Force.cpp:509
 msgid "WaveShape slideshow OFF"
-msgstr "Fnorma de Onda deslizante apagada"
+msgstr "Forma de Onda deslizante apagada"
 
 #: plugins/actor/G-Force/GForceCommon/G-Force.cpp:554
 msgid "State stored."
