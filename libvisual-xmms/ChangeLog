@@ -1,6 +1,10 @@
 2004-06-26  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* NEWS: updated.
+	* src/lv_xmms.c: in visual_initialize(), depth obtained
+	through visual_video_depth_enum_from_value().
+	render() signature changed from void* (*) (void) to the
+	correct type int (*) (void*).
 	
 2004-06-25  Duilio Protti  <dprotti@users.sourceforge.net>
 

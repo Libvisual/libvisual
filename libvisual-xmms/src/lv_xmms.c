@@ -39,10 +39,9 @@ static int lv_height = 200;
 static int lv_fps = 40;
 
 /* Color depth */
-static int lv_depth = 24;
+static VisVideoDepth lv_depth = 24;
 
 static int gl_plug = 0;
-static int depth;
 
 static short xmmspcm[2][512];
 
@@ -81,7 +80,7 @@ static int sdl_event_handle (void);
 static int visual_upload_callback (VisInput *input, VisAudio *audio, void *private);
 static int visual_resize (int width, int height);
 static int visual_initialize (int width, int height);
-static void *visual_render (void);
+static int visual_render (void*);
 
 VisPlugin *get_vplugin_info (void);
 	
@@ -199,7 +198,7 @@ static void lv_xmms_init ()
 
 static void lv_xmms_cleanup ()
 {
-	visual_log (VISUAL_LOG_DEBUG, "entering...");
+	visual_log (VISUAL_LOG_DEBUG, "entering cleanup...");
 	visual_running = 0;
         SDL_WaitThread (render_thread, NULL);
 	SDL_KillThread (render_thread);
@@ -370,15 +369,12 @@ static int sdl_create (int width, int height)
 {
 	const SDL_VideoInfo *videoinfo;
 	int videoflags;
-        gchar *msg;
 
 	if (screen != NULL)
 		SDL_FreeSurface (screen);
 
-	msg = g_strdup_printf ("SDL_CREATE video->bpp %d\n", video->bpp);
-        visual_log (VISUAL_LOG_DEBUG, msg);
-        g_free (msg);
-        visual_log (VISUAL_LOG_DEBUG, gl_plug ? "GL PLUG at create: 1\n" : "GL PLUG at create: 0\n");
+        visual_log (VISUAL_LOG_DEBUG, "sdl_create video->bpp %d", video->bpp);
+        visual_log (VISUAL_LOG_DEBUG, gl_plug ? "GL PLUG at create: 1" : "GL PLUG at create: 0");
 
 	if (gl_plug == 1) {
 		videoinfo = SDL_GetVideoInfo ();
@@ -405,14 +401,10 @@ static int sdl_create (int width, int height)
 		screen = SDL_SetVideoMode (width, height, video->bpp * 8, SDL_RESIZABLE);
 
 	visual_video_set_buffer (video, screen->pixels);
-	msg = g_strdup_printf ("Pointer to the pixels: %p\n", screen->pixels);
-        visual_log (VISUAL_LOG_DEBUG, msg);
-        g_free (msg);
+        visual_log (VISUAL_LOG_DEBUG, "Pointer to the pixels: %p", screen->pixels);
 
 	visual_video_set_pitch (video, screen->pitch);
-	msg = g_strdup_printf ("pitch: %d\n", video->pitch);
-        visual_log (VISUAL_LOG_DEBUG, msg);
-        g_free (msg);
+        visual_log (VISUAL_LOG_DEBUG, "pitch: %d", video->pitch);
 
 	return 0;
 }
@@ -562,29 +554,17 @@ static int visual_resize (int width, int height)
 static int visual_initialize (int width, int height)
 {
 	VisInput *input;
+	VisVideoDepth depth;
         int ret;
 
 	bin = visual_bin_new ();
 	visual_bin_set_supported_depth (bin, VISUAL_VIDEO_DEPTH_ALL);
 //	visual_bin_set_preferred_depth (bin, VISUAL_BIN_DEPTH_LOWEST);
 
-        /*
-         * This should be configurable.
-         */
-        switch (lv_depth) {
-        case 8:
-            depth = VISUAL_VIDEO_DEPTH_8BIT;
-        case 16:
-            depth = VISUAL_VIDEO_DEPTH_16BIT;
-        case 24:
-            depth = VISUAL_VIDEO_DEPTH_24BIT;
-        case 32:
-            depth = VISUAL_VIDEO_DEPTH_32BIT;
-            break;
-        default:
-            depth = lv_depth = VISUAL_VIDEO_DEPTH_24BIT;
-            break;
-        }
+	depth = visual_video_depth_enum_from_value (lv_depth);
+	if (depth == VISUAL_VIDEO_DEPTH_ERROR)
+		depth = VISUAL_VIDEO_DEPTH_24BIT;
+	lv_depth = depth;
 
 	video = visual_video_new ();
         if (video == NULL) {
@@ -638,7 +618,7 @@ static int visual_initialize (int width, int height)
 	return 0;
 }
 
-static void *visual_render ()
+static int visual_render (void *arg)
 {
 	visual_running = 1;
 	visual_stopped = 0;
@@ -708,6 +688,6 @@ static void *visual_render ()
 	}
 
 	visual_stopped = 1;
-	return NULL;
+	return 0;
 }
 
