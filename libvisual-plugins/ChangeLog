@@ -1,3 +1,10 @@
+2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/jakdaw/actor_jakdaw.c (actor_jakdaw_cleanup):
+	Fixing a HUGE per instance memory leak.
+
+	I am completely ashamed for this one :)
+
 2005-02-10  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Bumping up to 0.3.0

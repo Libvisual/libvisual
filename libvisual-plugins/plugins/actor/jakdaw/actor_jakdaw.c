@@ -181,6 +181,8 @@ int act_jakdaw_cleanup (VisPluginData *plugin)
 	ui = visual_plugin_get_userinterface (plugin);
 	visual_object_unref (VISUAL_OBJECT (ui));
 
+	_jakdaw_feedback_close (priv);
+	
 	visual_mem_free (priv);
 
 	return 0;
