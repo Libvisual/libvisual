@@ -59,6 +59,9 @@ enum {
 	
 	/* Error entries for the VisColor system */
 	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
+
+	/* Error entries for arch related errors and VisCPU system */
+	VISUAL_ERROR_CPU_INVALID_CODE,
 	
 	/* Error entries for the VisError system */
 	VISUAL_ERROR_ERROR_HANDLER_NULL,		/**< Error handler is NULL. */

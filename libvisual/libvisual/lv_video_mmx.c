@@ -34,6 +34,7 @@
 /* FIXME defines around assembly code */
 int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, int y)
 {
+#ifdef VISUAL_ARCH_X86
 	uint8_t *destbuf;
 	uint8_t *srcbuf;
 	int lwidth = (x + src->width);
@@ -112,10 +113,14 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 		("\n\t emms");
 
 	return VISUAL_OK;
+#else /* !VISUAL_ARCH_X86 */
+	return VISUAL_ERROR_CPU_INVALID_CODE;
+#endif
 }
 
 int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 {
+#ifdef VISUAL_ARCH_X86
 	uint32_t y;
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint32_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
@@ -253,5 +258,8 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 	__asm__ __volatile__ ("\n\temms");
 
 	return VISUAL_OK;
+#else /* !VISUAL_ARCH_X86 */
+	return VISUAL_ERROR_CPU_INVALID_CODE;
+#endif
 }
 

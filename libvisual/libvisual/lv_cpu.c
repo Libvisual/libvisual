@@ -5,6 +5,8 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *
+ * Extra Credits: MPlayer cpudetect hackers.
+ *
  * $Id:
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,8 +41,9 @@ static int cpuid (unsigned int ax, unsigned int *p);
 
 static int has_cpuid (void)
 {
+#ifdef VISUAL_ARCH_X86
 	int a, c;
-#ifdef VISUAL_ARCH_Ix86
+
 	__asm __volatile
 		("pushf\n"
 		 "popl %0\n"
@@ -62,9 +65,9 @@ static int has_cpuid (void)
 
 static int cpuid (unsigned int ax, unsigned int *p)
 {
+#ifdef VISUAL_ARCH_X86
 	uint32_t flags;
 
-#ifdef VISUAL_ARCH_Ix86
 	__asm __volatile
 		("movl %%ebx, %%esi\n\t"
 		 "cpuid\n\t"
@@ -75,7 +78,7 @@ static int cpuid (unsigned int ax, unsigned int *p)
 
 	return VISUAL_OK;
 #else
-	return VISUAL_ERROR_GENERAL; // make a non general error
+	return VISUAL_ERROR_CPU_INVALID_CODE;
 #endif
 }
 
@@ -84,7 +87,6 @@ static int cpuid (unsigned int ax, unsigned int *p)
  * @{
  */
 
-/* FIXME: Should be called from visual_init, when it's safe to do this... */
 void visual_cpu_initialize ()
 {
 	uint32_t cpu_flags;
@@ -93,35 +95,60 @@ void visual_cpu_initialize ()
 
 	memset (&_lv_cpu_caps, 0, sizeof (VisCPU));
 
-	// FIXME only run this on X86!!, set CPU type right.
 	// FIXME clean this code up a great deal.
 	// FIXME check for os katmai support.
 	// FIXME try to find the author of the original mplayer code and ask
 	// 	him if we can use this code. (check with eric and Michael)
 	// FIXME add support for altivec check/ mac os X (darwin)
 	
-	/* No cpuid, old x86, or non x86 processor */
-	if (has_cpuid () == 0)
-	    return;
 
-	cpuid (0x00000000, regs); // get _max_ cpuid level and vendor name
+	/* Check for arch type */
+#if defined(VISUAL_ARCH_MIPS)
+	_lv_cpu_caps.type = VISUAL_CPU_TYPE_MIPS;
+#elif defined(VISUAL_ARCH_ALPHA)
+	_lv_cpu_caps.type = VISUAL_CPU_TYPE_ALPHA;
+#elif defined(VISUAL_ARCH_SPARC)
+	_lv_cpu_caps.type = VISUAL_CPU_TYPE_SPARC;
+#elif defined(VISUAL_ARCH_X86)
+	_lv_cpu_caps.type = VISUAL_CPU_TYPE_X86;
+#elif defined(VISUAL_ARCH_POWERPC)
+	_lv_cpu_caps.type = VISUAL_CPU_TYPE_POWERPC;
+#else
+	_lv_cpu_caps.type = VISUAL_CPU_TYPE_OTHER;
+#endif
+
+	/* Not X86 */
+	if (_lv_cpu_caps.type != VISUAL_CPU_TYPE_X86)
+		return;
+
+	/* No cpuid, old 486 or lower */
+	if (has_cpuid () == 0)
+		return;
+
+	_lv_cpu_caps.cacheline = 32;
 	
-	// FIXME remove
-	printf ("CPU vendor name: %.4s%.4s%.4s  max cpuid level: %d\n",	(char*) (regs+1),(char*) (regs+3),(char*) (regs+2), regs[0]);
+	/* Get max cpuid level */
+	cpuid (0x00000000, regs);
 	
 	if (regs[0] >= 0x00000001) {
-		cpuid(0x00000001, regs2);
+		unsigned int cacheline;
+
+		cpuid (0x00000001, regs2);
 
 		_lv_cpu_caps.cpuType = (regs2[0] >> 8) & 0xf;
 		if (_lv_cpu_caps.cpuType == 0xf)
-		    _lv_cpu_caps.cpuType = 8 + ((regs2[0] >> 20) & 255); // use extended family (P4, IA64)
+		    _lv_cpu_caps.cpuType = 8 + ((regs2[0] >> 20) & 255); /* use extended family (P4, IA64) */
 		
-		// general feature flags:
-		_lv_cpu_caps.hasTSC  = (regs2[3] & (1 << 8  )) >>  8; // 0x0000010
-		_lv_cpu_caps.hasMMX  = (regs2[3] & (1 << 23 )) >> 23; // 0x0800000
-		_lv_cpu_caps.hasSSE  = (regs2[3] & (1 << 25 )) >> 25; // 0x2000000
-		_lv_cpu_caps.hasSSE2 = (regs2[3] & (1 << 26 )) >> 26; // 0x4000000
-		_lv_cpu_caps.hasMMX2 = _lv_cpu_caps.hasSSE; // SSE cpus supports mmxext too
+		/* general feature flags */
+		_lv_cpu_caps.hasTSC  = (regs2[3] & (1 << 8  )) >>  8; /* 0x0000010 */
+		_lv_cpu_caps.hasMMX  = (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
+		_lv_cpu_caps.hasSSE  = (regs2[3] & (1 << 25 )) >> 25; /* 0x2000000 */
+		_lv_cpu_caps.hasSSE2 = (regs2[3] & (1 << 26 )) >> 26; /* 0x4000000 */
+		_lv_cpu_caps.hasMMX2 = _lv_cpu_caps.hasSSE; /* SSE cpus supports mmxext too */
+
+		cacheline = ((regs2[1] >> 8) & 0xFF) * 8;
+		if (cacheline > 0)
+			_lv_cpu_caps.cacheline = cacheline;
 	}
 	
 	cpuid (0x80000000, regs);
@@ -131,11 +158,17 @@ void visual_cpu_initialize ()
 
 		cpuid (0x80000001, regs2);
 		
-		_lv_cpu_caps.hasMMX  |= (regs2[3] & (1 << 23 )) >> 23; // 0x0800000
-		_lv_cpu_caps.hasMMX2 |= (regs2[3] & (1 << 22 )) >> 22; // 0x400000
-		_lv_cpu_caps.has3DNow    = (regs2[3] & (1 << 31 )) >> 31; //0x80000000
+		_lv_cpu_caps.hasMMX  |= (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
+		_lv_cpu_caps.hasMMX2 |= (regs2[3] & (1 << 22 )) >> 22; /* 0x400000 */
+		_lv_cpu_caps.has3DNow    = (regs2[3] & (1 << 31 )) >> 31; /* 0x80000000 */
 		_lv_cpu_caps.has3DNowExt = (regs2[3] & (1 << 30 )) >> 30;
 	}
+
+	if (regs[0] >= 0x80000006) {
+		cpuid (0x80000006, regs2);
+		_lv_cpu_caps.cacheline = regs2[2] & 0xFF;
+	}
+
 #if 0	
 
 		/* FIXME: Does SSE2 need more OS support, too? */
@@ -149,30 +182,6 @@ void visual_cpu_initialize ()
 		_lv_cpu_caps.hasSSE2 = 0;
 #endif
 
-#ifndef HAVE_MMX
-	if(_lv_cpu_caps.hasMMX) mp_msg(MSGT_CPUDETECT,MSGL_WARN,"MMX supported but disabled\n");
-	_lv_cpu_caps.hasMMX=0;
-#endif
-#ifndef HAVE_MMX2
-	if(_lv_cpu_caps.hasMMX2) mp_msg(MSGT_CPUDETECT,MSGL_WARN,"MMX2 supported but disabled\n");
-	_lv_cpu_caps.hasMMX2=0;
-#endif
-#ifndef HAVE_SSE
-	if(_lv_cpu_caps.hasSSE) mp_msg(MSGT_CPUDETECT,MSGL_WARN,"SSE supported but disabled\n");
-	_lv_cpu_caps.hasSSE=0;
-#endif
-#ifndef HAVE_SSE2
-	if(_lv_cpu_caps.hasSSE2) mp_msg(MSGT_CPUDETECT,MSGL_WARN,"SSE2 supported but disabled\n");
-	_lv_cpu_caps.hasSSE2=0;
-#endif
-#ifndef HAVE_3DNOW
-	if(_lv_cpu_caps.has3DNow) mp_msg(MSGT_CPUDETECT,MSGL_WARN,"3DNow supported but disabled\n");
-	_lv_cpu_caps.has3DNow=0;
-#endif
-#ifndef HAVE_3DNOWEX
-	if(_lv_cpu_caps.has3DNowExt) mp_msg(MSGT_CPUDETECT,MSGL_WARN,"3DNowExt supported but disabled\n");
-	_lv_cpu_caps.has3DNowExt=0;
-#endif
 #endif
 
 	printf ("DEBUG CPU: type %d\n", _lv_cpu_caps.cpuType);

@@ -509,7 +509,7 @@ _______EOF
         if test x$lv_ix86 = xyes ; then
                 cat >>$outfile <<_______EOF
 
-#define VISUAL_ARCH_Ix86
+#define VISUAL_ARCH_X86
 _______EOF
         fi
 
