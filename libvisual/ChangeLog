@@ -4,7 +4,9 @@
 	* libvisual/lv_video.c: use visual_mem functions.
 	* libvisual/lv_list.c: use visual_mem functions.
 	* configure.ac: added macro AC_TYPE_SIZE_T required for
-	lv_mem.h.
+	lv_mem.h, and also check for size_t type size.
+	* lvconfig.h: addet visual_size_t typedef and 
+	VISUAL_SIZE_T_FORMAT macro.
 
 2004-07-05  Dennis Smit  <ds@nerds-incorporated.org>
 

@@ -78,6 +78,31 @@ AC_CHECK_LIB([GL], [main])
 # FIXME: Replace `main' with a function in `-lGLU':
 AC_CHECK_LIB([GLU], [main])
 
+# check for type sizes
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(size_t)
+                                                                                                               
+dnl Try to figure out whether visual_size should be long or int
+AC_MSG_CHECKING([for the appropriate definition for size_t])
+                                                                                                               
+case $ac_cv_sizeof_size_t in
+$ac_cv_sizeof_short)
+  visual_size_type=short
+  ;;
+$ac_cv_sizeof_int)
+  visual_size_type=int
+  ;;
+$ac_cv_sizeof_long)
+  visual_size_type=long
+  ;;
+*)  AC_MSG_ERROR([No type matching size_t in size])
+	;;
+esac
+
+AC_MSG_RESULT(unsigned $visual_size_type)
+
 # Arguments to specify certain features.
 build_subdirs="libvisual"
 AC_ARG_ENABLE([examples],
@@ -186,6 +211,13 @@ _______EOF
 _______EOF
         fi
 
+  		cat >>$outfile <<_______EOF
+
+typedef unsigned $visual_size_type visual_size_t;
+#define VISUAL_SIZE_T_FORMAT	$visual_size_format
+
+_______EOF
+
 echo >>$outfile
 echo "#endif /* LV_CONFIG_H */" >>$outfile
 echo >>$outfile
@@ -200,6 +232,20 @@ echo >>$outfile
 ],[
    lv_have_iso_c_varargs=$lv_have_iso_c_varargs
    lv_have_gnuc_varargs=$lv_have_gnuc_varargs
+   visual_size_type=$visual_size_type
+
+case $visual_size_type in
+short)
+  visual_size_format='"hu"'
+  ;;
+int)
+  visual_size_format='"u"'
+  ;;
+long)
+  visual_size_format='"lu"'
+  ;;
+esac
+
 ])
 				    
 AC_CONFIG_FILES([
