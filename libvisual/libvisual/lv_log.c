@@ -118,31 +118,45 @@ void _lv_log (VisLogSeverity severity, const char *file,
 		case VISUAL_LOG_INFO:
 			if (!message_handlers.info_handler)
 				visual_log_set_info_handler (default_info_handler);
+
 			message_handlers.info_handler (str, funcname);
+		
 			break;
+
 		case VISUAL_LOG_DEBUG:
 			if (verboseness == VISUAL_LOG_VERBOSENESS_HIGH)
 				fprintf (stderr, "libvisual DEBUG: %s: %s() [(%s,%d)]: %s\n",
 						__lv_progname, funcname, file, line, str);
+		
 			break;
+
 		case VISUAL_LOG_WARNING:
 			if (verboseness >= VISUAL_LOG_VERBOSENESS_MEDIUM)
 				if (!message_handlers.warning_handler)
 					visual_log_set_warning_handler (default_warning_handler);
-				message_handlers.warning_handler (str, funcname);
+			
+			message_handlers.warning_handler (str, funcname);
+		
 			break;
+
 		case VISUAL_LOG_CRITICAL:
 			if (verboseness >= VISUAL_LOG_VERBOSENESS_LOW)
 				if (!message_handlers.critical_handler)
 					visual_log_set_critical_handler (default_critical_handler);
-				message_handlers.critical_handler (str, funcname);
+			
+			message_handlers.critical_handler (str, funcname);
+		
 			break;
+
 		case VISUAL_LOG_ERROR:
 			if (!message_handlers.error_handler)
 				visual_log_set_error_handler (default_error_handler);
+			
 			message_handlers.error_handler (str, funcname);
+			
 			raise (SIGTRAP);
 			exit (1);
+
 			break;
 	}
 }
