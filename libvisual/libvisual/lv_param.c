@@ -233,6 +233,33 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, const char
 }
 
 /**
+ * Copies matching VisParamEntry elements from srccont into destcont, matching on the name.
+ *
+ * @param destcont A pointer to the VisParamContainer in which the VisParamEntry values are copied.
+ * @param srccont A pointer to the VisParamContainer from which the VisParamEntry values are copied.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
+ */
+int visual_param_container_match_copy (VisParamContainer *destcont, VisParamContainer *srccont)
+{
+	VisListEntry *le = NULL;
+	VisParamEntry *destparam;
+	VisParamEntry *srcparam;
+
+	visual_log_return_val_if_fail (destcont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
+	visual_log_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
+
+	while ((destparam = visual_list_next (&destcont->entries, &le)) != NULL) {
+		srcparam = visual_param_container_get (destcont, visual_param_entry_get_name (destparam));
+
+		if (srcparam != NULL)
+			visual_param_entry_set_from_param (destparam, srcparam);
+	}
+
+	return VISUAL_OK;
+}
+
+/**
  * Retrieve a VisParamEntry from a VisParamContainer by giving the name of the VisParamEntry that is requested.
  *
  * @param paramcontainer A pointer to the VisParamContainer from which a VisParamEntry is requested.

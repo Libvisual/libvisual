@@ -131,6 +131,7 @@ VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramco
 int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param);
 int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params);
 int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name);
+int visual_param_container_match_copy (VisParamContainer *destcont, VisParamContainer *srccont);
 VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name);
 
 VisParamEntry *visual_param_entry_new (char *name);

@@ -1087,40 +1087,41 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video
 static int depth_transform_8_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
+	int i;
 	_color16 *destr = (_color16 *) dest;
 	int pitchdiff = (pitch - (width * 2)) >> 1;
+	_color16 colors[256];
+
+	for (i = 0; i < 256; i++) {
+		colors[i].r = pal->colors[i].r >> 3;	
+		colors[i].g = pal->colors[i].g >> 2;
+		colors[i].b = pal->colors[i].b >> 3;	
+	}
 
 	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			destr[i].r = pal->colors[src[j]].r >> 3;
-			destr[i].g = pal->colors[src[j]].g >> 2;
-			destr[i].b = pal->colors[src[j]].b >> 3;
-			i++;
-			j++;
-		}
+		for (x = 0; x < width; x++)
+			*destr++ = colors[*src++];
 
-		i += pitchdiff;
+		destr += pitchdiff;
 	}
-	
+
 	return VISUAL_OK;
 }
 
 static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	int pitchdiff = pitch - (width * 3);
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			dest[i++] = pal->colors[src[j]].r;
-			dest[i++] = pal->colors[src[j]].g;
-			dest[i++] = pal->colors[src[j]].b;
-			j++;
+			*(dest++) = pal->colors[*(src)].r;
+			*(dest++) = pal->colors[*(src)].g;
+			*(dest++) = pal->colors[*(src)].b;
+			src++;
 		}
 
-		i += pitchdiff;
+		dest += pitchdiff;
 	}
 
 	return VISUAL_OK;
