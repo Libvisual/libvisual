@@ -385,6 +385,20 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([slide],
+            AC_HELP_STRING([--disable-slide],
+                           [Do not build slide morph plugin @<:@default=enabled@:>@]),
+	    [slide=$enableval],
+	    [slide=yes])
+AC_MSG_CHECKING([whether to build slide morph plugin])
+if test x$slide = xyes; then
+  AC_MSG_RESULT([yes])
+  build_morph="$build_morph slide"
+  AC_SUBST([SLIDE], ['morph_slide.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([debug],
             AC_HELP_STRING([--enable-debug],
                            [Enable debug @<:@default=disabled@:>@]),
@@ -437,6 +451,7 @@ AC_CONFIG_FILES([
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile
 	plugins/morph/flash/Makefile
+	plugins/morph/slide/Makefile
 ])
 
 

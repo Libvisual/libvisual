@@ -1,3 +1,10 @@
+2004-09-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/slide/*: Added slide plugin, this
+	is a plugin library, containing 4 plugins (atm).
+
+	Take a look at how it works.
+
 2004-09-22  Duilio Protti <dprotti@user.sourceforge.net>
 
 	* configure.ac:
