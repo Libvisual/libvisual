@@ -6,22 +6,10 @@
 
 #include "lvw_gtk2_visui.h"
 
-/* FIXME some things suck in this widget, fix this first... */
-/* FIXME move box, into a GTK_BIN */
+/* FIXME Look how we can make sure there are no idle callbacks pending when destroying the widget */
+/* FIXME HIGFY everything!!! */
 /* FIXME unreg param callbacks on destroy */
-/* FIXME fix widget destroy */
 /* FIXME implement tooltips */
-
-/*
-01:46AM <tim> synap: don't do that in the first place ;)  use g_idle_add (do_something_with_widget_from_main_thread, data);  
-01:46AM <tim> synap: otherwise, see FAQ
-01:47AM <tim> (and buy some headache tablets)
-*/
-
-enum {
-	LVWUICONTAINER_SIGNAL,
-	LAST_SIGNAL
-};
 
 typedef struct _PrivIdleData PrivIdleData;
 typedef struct _CallbackEntry CallbackEntry;
@@ -36,9 +24,10 @@ struct _CallbackEntry {
 	param_changed_callback_func_t	 callback;
 };
 
-static void lvwidget_uicontainer_class_init		(LvwUIContainerClass *klass);
-static void lvwidget_uicontainer_init			(LvwUIContainer      *vuic);
-static GtkWidget *livwidget_uicontainer_create_widgets		(LvwUIContainer      *vuic, VisUIWidget *cont, int cnt);
+static void lvw_visui_destroy (GtkObject *object);
+static void lvw_visui_class_init (LvwVisUIClass *klass);
+static void lvw_visui_init (LvwVisUI *vuic);
+static GtkWidget *lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt);
 
 /* Parameter change callbacks from within GTK */
 static void cb_visui_entry (GtkEditable *editable, gpointer user_data);
@@ -71,25 +60,21 @@ static gboolean cb_idle_radio (void *userdata);
 static void cb_param_checkbox (const VisParamEntry *param, void *priv);
 static gboolean cb_idle_checkbox (void *userdata);
 	
-static guint lvwuicontainer_signals[LAST_SIGNAL] = { 0 };
+G_DEFINE_TYPE (LvwVisUI, lvw_visui, GTK_TYPE_BIN)
 
-G_DEFINE_TYPE (LvwUIContainer, lvwidget_uicontainer, GTK_TYPE_BIN)
-
-void 
-klote_destroy (GtkObject *object)
+static void 
+lvw_visui_destroy (GtkObject *object)
 {
 	GSList *head;
 	GSList *next;
 	CallbackEntry *cbentry;
-    GtkObjectClass *klass;
-    GtkObjectClass *parent_class;
+	GtkObjectClass *klass;
+	GtkObjectClass *parent_class;
 
-    g_return_if_fail ( IS_LVW_UICONTAINER(object));
-    
-	printf ("DESTROYED HAHA WE ARE FUCKING DESTROYED\n");
+	g_return_if_fail (IS_LVW_VISUI (object));
 
 #if 0
-	head = LVW_UICONTAINER (object)->callbacksreg;
+	head = LVW_VISUI (object)->callbacksreg;
 	printf ("HMMMM\n");
 	next = head;
 
@@ -98,153 +83,181 @@ klote_destroy (GtkObject *object)
 
 	/* FIXME is this thread safe ??, check this out, and if not, lock here */
 
-    /* You have to lock, this isn't thread safe, the signal handler could still
-     * be called here -- deadchip */
+	/* You have to lock, this isn't thread safe, the signal handler could still
+	 * be called here -- deadchip */
 
 	do {
 		cbentry = next->data;
 
-//		if (cbentry != NULL) {
-//			printf ("%p %s\n", cbentry, cbentry->param->name);
-//		}
-//		visual_param_entry_remove_callback (cbentry->param, cbentry->callback);
-//		g_free (cbentry);
+		//		if (cbentry != NULL) {
+		//			printf ("%p %s\n", cbentry, cbentry->param->name);
+		//		}
+		//		visual_param_entry_remove_callback (cbentry->param, cbentry->callback);
+		//		g_free (cbentry);
 
 		next = g_slist_delete_link (head, next);
 	} while ((next = g_slist_next (next)) != NULL);
 
-	LVW_UICONTAINER (object)->callbacksreg = NULL;
+	LVW_VISUI (object)->callbacksreg = NULL;
 #endif 
-    klass = LVW_UICONTAINER_CLASS (g_type_class_peek (LVW_UICONTAINER_TYPE));
-    parent_class = GTK_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	klass = LVW_VISUI_CLASS (g_type_class_peek (LVW_VISUI_TYPE));
+	parent_class = GTK_OBJECT_CLASS (g_type_class_peek_parent (klass));
 
-    if (GTK_OBJECT_CLASS(parent_class)->destroy)
-        ( * GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+	if (GTK_OBJECT_CLASS (parent_class)->destroy)
+		(*GTK_OBJECT_CLASS (parent_class)->destroy) (object);
 
 }
-
 
 static void
-lvwidget_uicontainer_size_allocate (GtkWidget     *widget,
-                          GtkAllocation *allocation)
+lvw_visui_size_allocate (GtkWidget *widget,
+		GtkAllocation *allocation)
 {
-  LvwUIContainer *lvwuic = LVW_UICONTAINER (widget);
-  GtkAllocation child_allocation;
+	LvwVisUI *lvwuic = LVW_VISUI (widget);
+	GtkAllocation child_allocation;
 
-  widget->allocation = *allocation;
+	widget->allocation = *allocation;
 
-  if (GTK_WIDGET_REALIZED (widget))
-    gdk_window_move_resize (lvwuic->event_window,
-                            widget->allocation.x,
-                            widget->allocation.y,
-                            widget->allocation.width,
-                            widget->allocation.height);
+	if (GTK_WIDGET_REALIZED (widget))
+		gdk_window_move_resize (lvwuic->event_window,
+				widget->allocation.x,
+				widget->allocation.y,
+				widget->allocation.width,
+				widget->allocation.height);
 
-  if (GTK_BIN (lvwuic)->child && GTK_WIDGET_VISIBLE (GTK_BIN (lvwuic)->child))
-    {
-      child_allocation.x = widget->allocation.x;
-      child_allocation.y = widget->allocation.y;
+	if (GTK_BIN (lvwuic)->child && GTK_WIDGET_VISIBLE (GTK_BIN (lvwuic)->child)) {
+		child_allocation.x = widget->allocation.x;
+		child_allocation.y = widget->allocation.y;
 
-      child_allocation.width = MAX (1, widget->allocation.width);
-      child_allocation.height = MAX (1, widget->allocation.height);
+		child_allocation.width = MAX (1, widget->allocation.width);
+		child_allocation.height = MAX (1, widget->allocation.height);
 
-      gtk_widget_size_allocate (GTK_BIN (lvwuic)->child, &child_allocation);
-    }
+		gtk_widget_size_allocate (GTK_BIN (lvwuic)->child, &child_allocation);
+	}
 }
 
-	static void
-lvwidget_uicontainer_size_request (GtkWidget      *widget,
-                         GtkRequisition *requisition)
+static void
+lvw_visui_size_request (GtkWidget *widget,
+		GtkRequisition *requisition)
 { 
-  LvwUIContainer *lvwuic = LVW_UICONTAINER (widget);
-  GtkBorder default_border;
-  gint focus_width; 
-  gint focus_pad; 
-  
-  requisition->width = (GTK_CONTAINER (widget)->border_width);
-  requisition->height = (GTK_CONTAINER (widget)->border_width);
+	LvwVisUI *lvwuic = LVW_VISUI (widget);
+	GtkBorder default_border;
+	gint focus_width; 
+	gint focus_pad; 
 
-  if (GTK_BIN (lvwuic)->child && GTK_WIDGET_VISIBLE (GTK_BIN (lvwuic)->child))
-    {
-      GtkRequisition child_requisition;
-    
-      gtk_widget_size_request (GTK_BIN (lvwuic)->child, &child_requisition);
+	requisition->width = (GTK_CONTAINER (widget)->border_width);
+	requisition->height = (GTK_CONTAINER (widget)->border_width);
 
-      requisition->width += child_requisition.width;
-      requisition->height += child_requisition.height;
-    }
+	if (GTK_BIN (lvwuic)->child && GTK_WIDGET_VISIBLE (GTK_BIN (lvwuic)->child)) {
+		GtkRequisition child_requisition;
+
+		gtk_widget_size_request (GTK_BIN (lvwuic)->child, &child_requisition);
+
+		requisition->width += child_requisition.width;
+		requisition->height += child_requisition.height;
+	}
 }
 
-
 static void
-lvwidget_uicontainer_realize (GtkWidget *widget)
+lvw_visui_realize (GtkWidget *widget)
 {
-  LvwUIContainer *lvwuic;
-  GdkWindowAttr attributes;
-  gint attributes_mask;
-  gint border_width;
+	LvwVisUI *lvwuic;
+	GdkWindowAttr attributes;
+	gint attributes_mask;
+	gint border_width;
 
-  lvwuic = LVW_UICONTAINER (widget);
-  GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+	lvwuic = LVW_VISUI (widget);
+	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 
-  border_width = GTK_CONTAINER (widget)->border_width;
+	border_width = GTK_CONTAINER (widget)->border_width;
 
-  attributes.window_type = GDK_WINDOW_CHILD;
-  attributes.x = widget->allocation.x + border_width;
-  attributes.y = widget->allocation.y + border_width; 
-  attributes.width = widget->allocation.width - border_width * 2;
-  attributes.height = widget->allocation.height - border_width * 2;
-  attributes.wclass = GDK_INPUT_ONLY;
-  attributes.event_mask = gtk_widget_get_events (widget);
-  attributes.event_mask |= (GDK_BUTTON_PRESS_MASK |
-                            GDK_BUTTON_RELEASE_MASK |
-                            GDK_ENTER_NOTIFY_MASK |
-                            GDK_LEAVE_NOTIFY_MASK);
+	attributes.window_type = GDK_WINDOW_CHILD;
+	attributes.x = widget->allocation.x + border_width;
+	attributes.y = widget->allocation.y + border_width; 
+	attributes.width = widget->allocation.width - border_width * 2;
+	attributes.height = widget->allocation.height - border_width * 2;
+	attributes.wclass = GDK_INPUT_ONLY;
+	attributes.event_mask = gtk_widget_get_events (widget);
+	attributes.event_mask |= (GDK_BUTTON_PRESS_MASK |
+			GDK_BUTTON_RELEASE_MASK |
+			GDK_ENTER_NOTIFY_MASK |
+			GDK_LEAVE_NOTIFY_MASK);
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y;
+	attributes_mask = GDK_WA_X | GDK_WA_Y;
 
-  widget->window = gtk_widget_get_parent_window (widget);
-  g_object_ref (widget->window);
+	widget->window = gtk_widget_get_parent_window (widget);
+	g_object_ref (widget->window);
 
-  lvwuic->event_window = gdk_window_new (gtk_widget_get_parent_window (widget),
-                                         &attributes, attributes_mask);
-  gdk_window_set_user_data (lvwuic->event_window, lvwuic);
+	lvwuic->event_window = gdk_window_new (gtk_widget_get_parent_window (widget),
+			&attributes, attributes_mask);
+	gdk_window_set_user_data (lvwuic->event_window, lvwuic);
 
-  widget->style = gtk_style_attach (widget->style, widget->window);
+	widget->style = gtk_style_attach (widget->style, widget->window);
 }
 
-
 static void
-lvwidget_uicontainer_class_init (LvwUIContainerClass *klass)
+lvw_visui_class_init (LvwVisUIClass *klass)
 {
 	GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
-    GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-	
-	lvwuicontainer_signals[LVWUICONTAINER_SIGNAL] = 
-        g_signal_new ("blah",
-		    G_OBJECT_CLASS_TYPE (object_class),	
-			G_SIGNAL_RUN_FIRST | G_SIGNAL_DETAILED,
-			G_STRUCT_OFFSET (LvwUIContainerClass, lvwuicontainer),
-			NULL, 
-			NULL,                
-			g_cclosure_marshal_VOID__VOID,
-			G_TYPE_NONE, 0);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-  object_class->destroy = klote_destroy;
-  widget_class->realize = lvwidget_uicontainer_realize;
-  widget_class->size_allocate = lvwidget_uicontainer_size_allocate;
-  widget_class->size_request = lvwidget_uicontainer_size_request;
-    
+	object_class->destroy = lvw_visui_destroy;
+	widget_class->realize = lvw_visui_realize;
+	widget_class->size_allocate = lvw_visui_size_allocate;
+	widget_class->size_request = lvw_visui_size_request;
 }
 
 static void
-lvwidget_uicontainer_init (LvwUIContainer *vuic)
+lvw_visui_init (LvwVisUI *vuic)
 {
-  GTK_WIDGET_SET_FLAGS (vuic, GTK_NO_WINDOW);
+	GTK_WIDGET_SET_FLAGS (vuic, GTK_NO_WINDOW);
 }
 
+/**
+ * @defgroup LvwVisUI LvwVisUI
+ * @{
+ */
+
+/**
+ * Creates a GtkWidget from a VisUIWidget. This is essentially the GTK2 drive for VisUIWidget, that means
+ * that you can generate native config dialogs using this function.
+ *
+ * @param vuitree Pointer to the VisUIWidget that contains the user interface that needs to be converted to a
+ * 	native GTK2 version.
+ *
+ * @return A GtkWidget containing the in the VisUIWidget described user interface.
+ */
+GtkWidget*
+lvw_visui_new (VisUIWidget *vuitree)
+{
+	GtkWidget *widget;
+	LvwVisUI *vuic;
+
+	vuic = g_object_new (lvw_visui_get_type (), NULL);
+	vuic->callbacksreg = NULL;
+
+	vuic->vuitree = vuitree;
+
+	widget = lvw_visui_create_gtk_widgets (vuic, vuitree, 0);
+
+	gtk_container_add (GTK_CONTAINER (vuic), widget);
+
+	gtk_widget_show_all (GTK_WIDGET (vuic));
+
+	return GTK_WIDGET (vuic);
+}
+
+/**
+ * @}
+ */
+
+/*
+ * Yes this function is big, a tad ugly, and it's farts just smell, very, very, badly.
+ *
+ * And it'll stay like this, this is one big monolithic, hey let's traverse that goddamn
+ * VisUI tree and translate it to a super hot Gtk2 Widget function :)
+ */
 static GtkWidget *
-livwidget_uicontainer_create_widgets (LvwUIContainer *vuic, VisUIWidget *cont, int cnt)
+lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont, int cnt)
 {
 	GtkWidget *widget;
 	CallbackEntry *cbentry;
@@ -279,7 +292,7 @@ livwidget_uicontainer_create_widgets (LvwUIContainer *vuic, VisUIWidget *cont, i
 		while ((wi = visual_list_next (childs, &le)) != NULL) {
 			GtkWidget *packer;
 			
-			packer = livwidget_uicontainer_create_widgets (vuic, wi, cnt + 1);
+			packer = lvw_visui_create_gtk_widgets (vuic, wi, cnt + 1);
 
 			gtk_box_pack_start (GTK_BOX (widget), packer, FALSE, FALSE, 0);
 		}
@@ -305,7 +318,7 @@ livwidget_uicontainer_create_widgets (LvwUIContainer *vuic, VisUIWidget *cont, i
 		while ((tentry = visual_list_next (childs, &le)) != NULL) {
 			GtkWidget *wi;
 
-			wi = livwidget_uicontainer_create_widgets (vuic, tentry->widget, cnt + 1);
+			wi = lvw_visui_create_gtk_widgets (vuic, tentry->widget, cnt + 1);
 
 			gtk_table_attach_defaults (GTK_TABLE (widget), wi,
 					tentry->col, tentry->col + 1, tentry->row, tentry->row + 1);
@@ -329,7 +342,7 @@ livwidget_uicontainer_create_widgets (LvwUIContainer *vuic, VisUIWidget *cont, i
 				VISUAL_UI_WIDGET (cont)->height);
 
 		if (VISUAL_UI_CONTAINER (cont)->child != NULL) {
-			child = livwidget_uicontainer_create_widgets (vuic, VISUAL_UI_CONTAINER (cont)->child, cnt + 1);
+			child = lvw_visui_create_gtk_widgets (vuic, VISUAL_UI_CONTAINER (cont)->child, cnt + 1);
 
 			gtk_container_add (GTK_CONTAINER (widget), child);
 		}
@@ -412,9 +425,9 @@ livwidget_uicontainer_create_widgets (LvwUIContainer *vuic, VisUIWidget *cont, i
 			for (x = 0; x < video->width; x++) {
 				GdkColor color;
 
-				color.red = buf[i++] << 8;
-				color.green = buf[i++] << 8;
-				color.blue = buf[i++] << 8;
+				color.red = buf[i++] * (65535 / 255);
+				color.green = buf[i++] * (65535 / 255);
+				color.blue = buf[i++] * (65535 / 255);
 
 				gdk_gc_set_rgb_fg_color (gc, &color);
 				gdk_draw_point (drawable, gc, x, y);
@@ -431,6 +444,7 @@ livwidget_uicontainer_create_widgets (LvwUIContainer *vuic, VisUIWidget *cont, i
 				VISUAL_UI_WIDGET (cont)->height);
 
 		return widget;
+
 	} else if (type == VISUAL_WIDGET_TYPE_SEPARATOR) {
 
 		printf ("%sSeparator entry\n", spacing);
@@ -592,10 +606,10 @@ livwidget_uicontainer_create_widgets (LvwUIContainer *vuic, VisUIWidget *cont, i
 		}
 
 		color = visual_param_entry_get_color (param);
-		/* FIXME on 255, 254 is displayed.. why ? */
-		gdkcol.red = color->r << 8;
-		gdkcol.blue = color->b << 8;
-		gdkcol.green = color->g << 8;
+		
+		gdkcol.red = color->r * (65535 / 255);
+		gdkcol.blue = color->b * (65535 / 255);
+		gdkcol.green = color->g * (65535 / 255);
 
 		widget = gtk_color_selection_new ();
 
@@ -786,29 +800,6 @@ livwidget_uicontainer_create_widgets (LvwUIContainer *vuic, VisUIWidget *cont, i
 	printf ("%sUnhandled type: %d\n", spacing, type);
 
 	return NULL;
-}
-
-
-GtkWidget*
-lvwidget_uicontainer_new (VisUIWidget *vuitree)
-{
-	int i, j;
-	GtkWidget *root;
-	LvwUIContainer *vuic;
-
-	vuic = g_object_new (lvwidget_uicontainer_get_type (), NULL);
-	vuic->callbacksreg = NULL;
-
-	vuic->vuitree = vuitree;
-
-	root = livwidget_uicontainer_create_widgets (vuic, vuitree, 0);
-
-	gtk_container_add (GTK_CONTAINER(vuic), root);
-
-	gtk_widget_show_all (GTK_WIDGET (root));
-	gtk_widget_show_all (GTK_WIDGET (vuic));
-
-	return GTK_WIDGET (vuic);
 }
 
 /* Parameter change callbacks from within GTK */
@@ -1097,9 +1088,9 @@ cb_idle_color (void *userdata)
 	color = visual_param_entry_get_color (param);
 	
 	/* FIXME on 255, 254 is displayed.. why ? */
-	gdkcol.red = color->r << 8;
-	gdkcol.blue = color->b << 8;
-	gdkcol.green = color->g << 8;
+	gdkcol.red = color->r * (65535 / 255);
+	gdkcol.blue = color->b * (65535 / 255);
+	gdkcol.green = color->g * (65535 / 255);
 
 	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (visual_ui_widget_get_private (widget)),
 			&gdkcol);

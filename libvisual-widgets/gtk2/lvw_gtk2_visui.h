@@ -9,17 +9,17 @@
 
 G_BEGIN_DECLS
 
-#define LVW_UICONTAINER_TYPE            (lvwidget_uicontainer_get_type ())
-#define LVW_UICONTAINER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), LVW_UICONTAINER_TYPE, LvwUIContainer))
-#define LVW_UICONTAINER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), LVW_UICONTAINER_TYPE, LvwUIContainerClass))
-#define IS_LVW_UICONTAINER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), LVW_UICONTAINER_TYPE))
-#define IS_LVW_UICONTAINER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LVW_UICONTAINER_TYPE))
+#define LVW_VISUI_TYPE            (lvw_visui_get_type ())
+#define LVW_VISUI(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), LVW_VISUI_TYPE, LvwVisUI))
+#define LVW_VISUI_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), LVW_VISUI_TYPE, LvwVisUIClass))
+#define IS_LVW_VISUI(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), LVW_VISUI_TYPE))
+#define IS_LVW_VISUI_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LVW_VISUI_TYPE))
 
 
-typedef struct _LvwUIContainer       LvwUIContainer;
-typedef struct _LvwUIContainerClass  LvwUIContainerClass;
+typedef struct _LvwVisUI       LvwVisUI;
+typedef struct _LvwVisUIClass  LvwVisUIClass;
 
-struct _LvwUIContainer
+struct _LvwVisUI
 {
 	GtkBin parent;
 
@@ -28,15 +28,15 @@ struct _LvwUIContainer
 	GdkWindow *event_window;
 };
 
-struct _LvwUIContainerClass
+struct _LvwVisUIClass
 {
 	GtkBinClass parent_class;
 
-	void (* lvwuicontainer) (LvwUIContainer *vuic);
+	void (* lvwuicontainer) (LvwVisUI *vuic);
 };
 
-GType          lvwidget_uicontainer_get_type        (void);
-GtkWidget*     lvwidget_uicontainer_new             (VisUIWidget *vuitree);
+GType          lvw_visui_get_type        (void);
+GtkWidget*     lvw_visui_new             (VisUIWidget *vuitree);
 
 G_END_DECLS
 

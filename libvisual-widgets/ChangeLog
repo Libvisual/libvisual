@@ -1,3 +1,10 @@
+2004-11-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* gtk2/lvw_gtk2_visui.*: Updated, cleanups, saner function names etc
+	etc. Still lots of work needed here.
+
+	* gtk2/Doxyfile: Added doxygen file, for the documentation.
+
 2004-11-15  Dennis Smit  <ds@nerds-incorporated.org>
 
 	Adding load of files, and fixups!
