@@ -9,6 +9,15 @@
 2004-06-30  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* libvisual/lv_plugin.c: added extensive error checking.
+	* libvisual/lv_bin.c: added more error checking to
+	visual_bin_sync().
+	* libvisual/lv_video.c: Removed temporarily the free()
+	call from visual_video_free_buffer(), because we don't
+	known if this is memory malloc'ed from us (in XMMS plugin
+	this point to the pixels field of the SDL_ScreenSurface
+	created by SDL, which can be even a hardware surface).
+	* configure.ac: endianness macros renamed to 
+	VISUAL_BIG_ENDIAN and VISUAL_LITTLE_ENDIAN.
 
 2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
 

@@ -267,6 +267,10 @@ int visual_bin_sync (VisBin *bin, int noevent)
 		visual_morph_set_video (bin->morph, bin->actvideo);
 	
 		video = bin->privvid;
+		if (video == NULL) {
+			visual_log (VISUAL_LOG_DEBUG, "Private video data NULL");
+			return -1;
+		}
 
 		visual_video_free_buffer (video);
 		visual_video_clone (video, bin->actvideo);
@@ -283,6 +287,11 @@ int visual_bin_sync (VisBin *bin, int noevent)
 		visual_log (VISUAL_LOG_DEBUG, "phase2");
 	} else {
 		video = bin->actvideo;
+		if (video == NULL) {
+			visual_log (VISUAL_LOG_DEBUG, "Actor video is NULL");
+			return -1;
+		}
+
 		visual_log (VISUAL_LOG_INFO, "setting new video from actvideo %d %d", video->depth, video->bpp);
 	}
 
@@ -313,6 +322,10 @@ int visual_bin_sync (VisBin *bin, int noevent)
 			bin->morphstyle == VISUAL_SWITCH_STYLE_MORPH) {
 
 		actvideo = bin->actmorphvideo;
+		if (actvideo == NULL) {
+			visual_log (VISUAL_LOG_DEBUG, "Morph video is NULL");
+			return -1;
+		}
 
 		visual_video_free_buffer (actvideo);
 
@@ -331,6 +344,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 	}
 
 	visual_log (VISUAL_LOG_DEBUG, "end sync function");
+
 	return 0;
 }
 
@@ -643,9 +657,11 @@ int visual_bin_switch_finalize (VisBin *bin)
 		visual_video_free_with_buffer (bin->actmorphvideo);
 		bin->actmorphvideo = NULL;
 	}
-	
-	visual_video_free_with_buffer (bin->privvid);
-	bin->privvid = NULL;
+
+	if (bin->privvid != NULL) {
+		visual_video_free_with_buffer (bin->privvid);
+		bin->privvid = NULL;
+	}
 
 	bin->actor = bin->actmorph;
 	bin->actmorph = NULL;

@@ -151,7 +151,7 @@ _______EOF
         if test x$lv_have_iso_c_varargs = xyes ; then
                 cat >>$outfile <<_______EOF
 #ifndef __cplusplus
-# define LV_HAVE_ISO_VARARGS 1
+# define LV_HAVE_ISO_VARARGS	(1)
 #endif
 _______EOF
         fi
@@ -167,21 +167,21 @@ _______EOF
 #  undef LV_HAVE_ISO_VARARGS
 #endif
 
-#define LV_HAVE_GNUC_VARARGS 1
+#define LV_HAVE_GNUC_VARARGS	(1)
 _______EOF
        fi
 
         if test x$bigendian = xyes ; then
                 cat >>$outfile <<_______EOF
 
-#define LV_BIG_ENDIAN		(1)
-#define LV_LITTLE_ENDIAN 	(0)
+#define VISUAL_BIG_ENDIAN	(1)
+#define VISUAL_LITTLE_ENDIAN 	(0)
 _______EOF
 	else
                 cat >>$outfile <<_______EOF
 
-#define LV_BIG_ENDIAN		(0)
-#define LV_LITTLE_ENDIAN 	(1)
+#define VISUAL_BIG_ENDIAN	(0)
+#define VISUAL_LITTLE_ENDIAN	(1)
 _______EOF
         fi
 

@@ -119,7 +119,10 @@ int visual_video_free_buffer (VisVideo *video)
 	visual_log_return_val_if_fail (video != NULL, -1);
 	visual_log_return_val_if_fail (video->screenbuffer != NULL, -1);
 
-	free (video->screenbuffer);
+	/*
+	 * We doesn't know if we must freed!
+	 *
+	free (video->screenbuffer);*/
 
 	return 0;
 }
