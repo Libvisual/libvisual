@@ -8,14 +8,12 @@ Horizontal_Corridor \
 Mother_and_Daughters \
 Rotating_Arcs \
 The_Dot_Line \
-A_New_Hope \
 DT_-_Circle_III \
 Darren_Scanner \
 Horzonal_Sweep \
 Moving \
 Rotating_Bars \
 The_Eye \
-Arena \
 DT_-_Sine \
 Darren_Stairway \
 Hourglass \
