@@ -40,6 +40,16 @@ int visual_ui_widget_destroy (VisUIWidget *widget)
 	return 0;
 }
 
+int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int height)
+{
+	visual_log_return_val_if_fail (widget != NULL, -1);
+
+	widget->width = width;
+	widget->height = height;
+
+	return 0;
+}
+
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget)
 {
 	VisUIWidget *above;
@@ -260,38 +270,38 @@ const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
 	return mutator->param;
 }
 
-int visual_ui_mutator_set_max (VisUIMutator *mutator, double max)
+int visual_ui_range_set_max (VisUIRange *range, double max)
 {
-	visual_log_return_val_if_fail (mutator != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -1);
 
-	mutator->max = max;
+	range->max = max;
 
 	return 0;
 }
 
-int visual_ui_mutator_set_min (VisUIMutator *mutator, double min)
+int visual_ui_range_set_min (VisUIRange *range, double min)
 {
-	visual_log_return_val_if_fail (mutator != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -1);
 
-	mutator->min = min;
+	range->min = min;
 
 	return 0;
 }
 
-int visual_ui_mutator_set_step (VisUIMutator *mutator, double step)
+int visual_ui_range_set_step (VisUIRange *range, double step)
 {
-	visual_log_return_val_if_fail (mutator != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -1);
 
-	mutator->step = step;
+	range->step = step;
 
 	return 0;
 }
 
-int visual_ui_mutator_set_precision (VisUIMutator *mutator, int precision)
+int visual_ui_range_set_precision (VisUIRange *range, int precision)
 {
-	visual_log_return_val_if_fail (mutator != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -1);
 
-	mutator->precision = precision;
+	range->precision = precision;
 
 	return 0;
 }
@@ -355,7 +365,32 @@ VisUIWidget *visual_ui_choice_new ()
 	return VISUAL_UI_WIDGET (choice);
 }
 
-/* FIXME helper functions, like list, entry create */
+int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value)
+{
+	VisUIChoiceEntry *centry;
+
+	visual_log_return_val_if_fail (choice != NULL, -1);
+	visual_log_return_val_if_fail (name != NULL, -1);
+	visual_log_return_val_if_fail (value != NULL, -1);
+
+	centry = visual_mem_new0 (VisUIChoiceEntry, 1);
+
+	centry->name = name;
+	centry->value = value;
+
+	choice->choices.count++;
+	/* FIXME be aware on object destroy, that this needs to be destroyed as well, watch out!! */
+	visual_list_add (&choice->choices.choices, centry);
+
+	return 0;
+}
+
+VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice)
+{
+	visual_log_return_val_if_fail (choice != NULL, NULL);
+
+	return &choice->choices;
+}
 
 VisUIWidget *visual_ui_popup_new ()
 {
@@ -393,7 +428,7 @@ VisUIWidget *visual_ui_radio_new ()
 	return VISUAL_UI_WIDGET (radio);
 }
 
-VisUIWidget *visual_ui_checkbox_new ()
+VisUIWidget *visual_ui_checkbox_new (const char *name)
 {
 	VisUICheckbox *checkbox;
 
@@ -401,6 +436,8 @@ VisUIWidget *visual_ui_checkbox_new ()
 	VISUAL_UI_WIDGET (checkbox)->type = VISUAL_WIDGET_TYPE_CHECKBOX;
 
 	VISUAL_UI_CHOICE (checkbox)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
+
+	checkbox->name = name;
 
 	return VISUAL_UI_WIDGET (checkbox);
 }

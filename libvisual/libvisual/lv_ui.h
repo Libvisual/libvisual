@@ -20,6 +20,7 @@ extern "C" {
 #define VISUAL_UI_LABEL(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_LABEL, VisUILabel))
 #define VISUAL_UI_IMAGE(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_IMAGE, VisUIImage))
 #define VISUAL_UI_MUTATOR(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_MUTATOR, VisUIMutator))
+#define VISUAL_UI_RANGE(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_RANGE, VisUIRange))
 #define VISUAL_UI_ENTRY(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_ENTRY, VisUIEntry))
 #define VISUAL_UI_SLIDER(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_SLIDER, VisUISlider))
 #define VISUAL_UI_NUMERIC(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_NUMERIC, VisUINumeric))
@@ -41,6 +42,7 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_LABEL,
 	VISUAL_WIDGET_TYPE_IMAGE,
 	VISUAL_WIDGET_TYPE_MUTATOR,
+	VISUAL_WIDGET_TYPE_RANGE,
 	VISUAL_WIDGET_TYPE_ENTRY,
 	VISUAL_WIDGET_TYPE_SLIDER,
 	VISUAL_WIDGET_TYPE_NUMERIC,
@@ -71,6 +73,7 @@ typedef struct _VisUIFrame VisUIFrame;
 typedef struct _VisUILabel VisUILabel;
 typedef struct _VisUIImage VisUIImage;
 typedef struct _VisUIMutator VisUIMutator;
+typedef struct _VisUIRange VisUIRange;
 typedef struct _VisUIEntry VisUIEntry;
 typedef struct _VisUISlider VisUISlider;
 typedef struct _VisUINumeric VisUINumeric;
@@ -93,6 +96,9 @@ struct _VisUIWidget {
 
 	int			 visible : 1;
 	int			 sensitive : 1;
+
+	int			 width;
+	int			 height;
 };
 
 struct _VisUIContainer {
@@ -131,8 +137,11 @@ struct _VisUIMutator {
 	VisUIWidget		 widget;
 
 	const VisParamEntry	*param;
+};
 
-	/* Numeric mutator settings */
+struct _VisUIRange {
+	VisUIMutator		 mutator;
+
 	double			 min;
 	double			 max;
 	double			 step;
@@ -147,11 +156,11 @@ struct _VisUIEntry {
 };
 
 struct _VisUISlider {
-	VisUIMutator		 mutator;
+	VisUIRange		 range;
 };
 
 struct _VisUINumeric {
-	VisUIMutator		 mutator;
+	VisUIRange		 range;
 };
 
 struct _VisUIColor {
@@ -161,16 +170,20 @@ struct _VisUIColor {
 struct _VisUIChoiceList {
 	VisUIChoiceType		 type;
 
+	int			 count;
 	VisList			 choices;
 };
 
-struct _VIsUIChoiceEntry {
-	VisParamEntry		*param;
-	VisParamEntry		*value;
+struct _VisUIChoiceEntry {
+	const char		*name;
+	
+	const VisParamEntry	*value;
 };
 
 struct _VisUIChoice {
-	VisUIWidget		 widget;
+	VisUIMutator		 mutator;
+
+	const VisParamEntry	*param;
 
 	VisUIChoiceList		 choices;
 };
@@ -189,12 +202,15 @@ struct _VisUIRadio {
 
 struct _VisUICheckbox {
 	VisUIChoice		 choice;
+
+	const char		*name;
 };
 
 /* prototypes */
 VisUIWidget *visual_ui_widget_new (void);
 int visual_ui_widget_free (VisUIWidget *widget);
 int visual_ui_widget_destroy (VisUIWidget *widget);
+int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int height);
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget);
 VisUIWidget *visual_ui_widget_get_parent (VisUIWidget *widget);
 VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget);
@@ -223,10 +239,11 @@ const VisVideo *visual_ui_image_get_video (VisUIImage *image);
 VisUIWidget *visual_ui_mutator_new (void);
 int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *param);
 const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator);
-int visual_ui_mutator_set_max (VisUIMutator *mutator, double max);
-int visual_ui_mutator_set_min (VisUIMutator *mutator, double min);
-int visual_ui_mutator_set_step (VisUIMutator *mutator, double step);
-int visual_ui_mutator_set_precision (VisUIMutator *mutator, int precision);
+
+int visual_ui_range_set_max (VisUIRange *range, double max);
+int visual_ui_range_set_min (VisUIRange *range, double min);
+int visual_ui_range_set_step (VisUIRange *range, double step);
+int visual_ui_range_set_precision (VisUIRange *range, int precision);
 
 VisUIWidget *visual_ui_entry_new (void);
 int visual_ui_entry_set_length (VisUIEntry *entry, int length);
@@ -238,7 +255,10 @@ VisUIWidget *visual_ui_numeric_new (void);
 VisUIWidget *visual_ui_color_new (void);
 
 VisUIWidget *visual_ui_choice_new (void);
-/* FIXME helper functions, like list, entry create */
+int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value);
+VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice);
+
+/* FIXME look at lists with multiple selections... */
 
 VisUIWidget *visual_ui_popup_new (void);
 
@@ -246,7 +266,7 @@ VisUIWidget *visual_ui_list_new (void);
 
 VisUIWidget *visual_ui_radio_new (void);
 
-VisUIWidget *visual_ui_checkbox_new (void);
+VisUIWidget *visual_ui_checkbox_new (const char *name);
 
 #ifdef __cplusplus
 }
