@@ -300,7 +300,14 @@ esac
 AC_MSG_RESULT(unsigned $visual_size_type)
 
 build_subdirs="libvisual"
+
+dnl Check if we need -mwindows
+if test x$lv_mingw = xyes ; then
+VISUAL_CFLAGS="-mwindows"
+else
 VISUAL_CFLAGS=""
+fi
+
 VISUAL_LIBS="$LIBS -lvisual"
 if test x"$LV_THREAD_LIBS" != x; then
   VISUAL_LIBS="$LV_THREAD_LIBS $VISUAL_LIBS"
