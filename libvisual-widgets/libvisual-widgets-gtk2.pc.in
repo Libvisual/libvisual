@@ -4,9 +4,9 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libvisual-widgets-gtk2
-Version: @LVW_GTK2_VERSION@
+Version: @VERSION@
 Description: a gtk2 widget library to be used together with libvisual.
-Requires:
-Libs: -L${libdir} @LVW_GTK2_LIBS@
-Cflags: -I${includedir} @LVW_GTK2_CFLAGS@
+Requires: libvisual gtk+-2.0
+Libs: -L${libdir} -llvw_gtk2
+Cflags: -I${includedir}
 

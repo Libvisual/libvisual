@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libvisual-widgets-qt
-Version: @LVW_QT_VERSION@
+Version: @VERSION@
 Description: a QT widget library to be used together with libvisual.
 Requires:
 Libs: -L${libdir} @LVW_QT_LIBS@

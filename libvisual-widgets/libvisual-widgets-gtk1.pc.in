@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libvisual-widgets-gtk1
-Version: @LVW_GTK1_VERSION@
+Version: @VERSION@
 Description: a gtk1 widget library to be used together with libvisual.
 Requires:
 Libs: -L${libdir} @LVW_GTK1_LIBS@
