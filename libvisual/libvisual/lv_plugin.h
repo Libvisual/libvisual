@@ -62,24 +62,143 @@ typedef struct _VisInputPlugin VisInputPlugin;
 typedef struct _VisMorphPlugin VisMorphPlugin;
 
 /* Actor plugin methods */
-typedef int (*plugin_actor_requisition_func_t)(VisPluginData *, int *, int *);
-typedef VisPalette *(*plugin_actor_palette_func_t)(VisPluginData *);
-typedef int (*plugin_actor_render_func_t)(VisPluginData *, VisVideo *, VisAudio *);
+
+/**
+ * An actor plugin needs this signature for the requisition function. The requisition function
+ * is used to determine the size required by the plugin for a given width/height value.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg width Pointer to an int containing the width requested, will be altered to the nearest
+ * 	supported width.
+ * @arg height Pointer to an int containing the height requested, will be altered to the nearest
+ * 	supported height.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*plugin_actor_requisition_func_t)(VisPluginData *plugin, int *width, int *height);
+
+/**
+ * An actor plugin needs this signature for the palette function. The palette function
+ * is used to retrieve the desired palette from the plugin.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ *
+ * @return Pointer to the VisPalette used by the plugin, this should be a VisPalette with 256
+ *	VisColor entries, NULL is also allowed to be returned.
+ */
+typedef VisPalette *(*plugin_actor_palette_func_t)(VisPluginData *plugin);
+
+/**
+ * An actor plugin needs this signature for the render function. The render function
+ * is used to render the frame for the visualisation.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg video Pointer to the VisVideo containing all information about the display surface.
+ *	Params like height and width won't suddenly change, this is always notified as an event
+ *	so the plugin can adjust to the new dimension.
+ * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*plugin_actor_render_func_t)(VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 /* Input plugin methods */
-typedef int (*plugin_input_upload_func_t)(VisPluginData *, VisAudio *);
+
+/**
+ * An input plugin needs this signature for the sample upload function. The sample upload function
+ * is used to retrieve sample information when a input is being used to retrieve the
+ * audio sample.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg audio Pointer to the VisAudio in which the new sample data is set.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*plugin_input_upload_func_t)(VisPluginData *plugin, VisAudio *audio);
 
 /* Morph plugin methods */
-typedef int (*plugin_morph_palette_func_t)(VisPluginData *, float, VisAudio *, VisPalette *, VisVideo *, VisVideo *);
-typedef int (*plugin_morph_apply_func_t)(VisPluginData *, float, VisAudio *, VisVideo *, VisVideo *, VisVideo *);
+
+/**
+ * A morph plugin needs this signature for the palette function. The palette function
+ * is used to give a palette for the morph. The palette function isn't mandatory and the
+ * VisMorph system will interpolate between the two palettes in VISUAL_VIDEO_DEPTH_8BIT when
+ * a palette function isn't set.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg rate A float between 0.0 and 1.0 that tells how far the morph has proceeded.
+ * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
+ * @arg pal A pointer to the target VisPalette in which the morph between the two palettes is saved. Should have
+ * 	256 VisColor entries.
+ * @arg src1 A pointer to the first VisVideo source.
+ * @arg src2 A pointer to the second VisVideo source.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*plugin_morph_palette_func_t)(VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal,
+		VisVideo *src1, VisVideo *src2);
+
+/**
+ * A morph plugin needs this signature for the apply function. The apply function
+ * is used to execute a morph between two VisVideo sources. It's the 'render' function of
+ * the morph plugin and here is the morphing done.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg rate A float between 0.0 and 1.0 that tells how far the morph has proceeded.
+ * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
+ * @arg src1 A pointer to the first VisVideo source.
+ * @arg src2 A pointer to the second VisVideo source.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*plugin_morph_apply_func_t)(VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest,
+		VisVideo *src1, VisVideo *src2);
 
 /* Plugin standard get_plugin_info method */
-typedef const VisPluginInfo *(*plugin_get_info_func_t)(int *);
+
+/**
+ * This is the signature for the 'get_plugin_info' function every libvisual plugin needs to have. The 
+ * 'get_plugin_info' function provides libvisual plugin data and all the detailed information regarding
+ * the plugin. This function is compulsory without it libvisual won't load the plugin.
+ *
+ * @arg count An int pointer in which the number of VisPluginData entries within the plugin. Plugins can have
+ * 	multiple 'features' and thus the count is needed.
+ *
+ * @return Pointer to the VisPluginInfo array which contains information about the plugin.
+ */
+typedef const VisPluginInfo *(*plugin_get_info_func_t)(int *count);
 
 /* Standard plugin methods */
-typedef int (*plugin_init_func_t)(VisPluginData *);
-typedef int (*plugin_cleanup_func_t)(VisPluginData *);
-typedef int (*plugin_events_func_t)(VisPluginData *, VisEventQueue *);
+
+/**
+ * Every libvisual plugin that is loaded by the libvisual plugin loader needs this signature for it's
+ * intialize function.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*plugin_init_func_t)(VisPluginData *plugin);
+
+/**
+ * Every libvisual plugin that is loaded by the libvisual plugin loader needs this signature for it's
+ * cleanup function.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*plugin_cleanup_func_t)(VisPluginData *plugin);
+
+/**
+ * This is the signature for the event handler within libvisual plugins. An event handler is not mandatory because
+ * it has no use in some plugin classes but some plugin types require it nonetheless.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg events Pointer to the VisEventQueue that might contain events that need to be handled.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*plugin_events_func_t)(VisPluginData *plugin, VisEventQueue *events);
 
 /**
  * The VisPluginRef data structure contains information about the plugins
