@@ -1,5 +1,18 @@
 2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_libvisual.c (visual_quit):
+	Moved the resetting of progname to the bottom
+	so error messages in visual_quit still had a progname.
+
+	Also set progname to null after the free.
+
+	* libvisual/lv_param.c (visual_param_container_destroy):
+	Have to investigate this, weird affairs, valgrind
+	reports here in the visual_list_destroy.. out commented
+	for now. but needs fixage obviously.
+
+2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_list.c, libvisual/lv_list.h:
 	Small fixes in the list implementation and a
 	bugfix in visual_list_get that didn't allow

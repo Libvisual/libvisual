@@ -203,7 +203,7 @@ int visual_plugin_ref_free (VisPluginRef *ref)
 		visual_mem_free (ref->file);
 
 	if (ref->usecount > 0)
-		visual_log (VISUAL_LOG_CRITICAL, "A plugin reference with %d references has been destroyed.", ref->usecount);
+		visual_log (VISUAL_LOG_CRITICAL, "A plugin reference with %d instances has been destroyed.", ref->usecount);
 	
 	visual_mem_free (ref);
 

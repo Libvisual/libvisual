@@ -50,7 +50,8 @@ int visual_param_container_destroy (VisParamContainer *paramcontainer)
 {
 	visual_log_return_val_if_fail (paramcontainer != NULL, -1);
 
-	visual_list_destroy (&paramcontainer->entries, param_list_destroy);
+	/* FIXME, enabling this gives valgrind memory errors, need to investigate */
+//	visual_list_destroy (&paramcontainer->entries, param_list_destroy);
 
 	visual_mem_free (paramcontainer);
 

@@ -201,9 +201,6 @@ int visual_quit ()
 		return -1;
 	}
 
-        if (__lv_progname != NULL)
-                visual_mem_free (__lv_progname);
-
 	ret = visual_plugin_ref_list_destroy (__lv_plugins);
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Plugins references list: destroy failed");
@@ -223,6 +220,12 @@ int visual_quit ()
 	ret = visual_param_container_destroy (__lv_paramcontainer);
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Global param container: destroy failed");
+
+        if (__lv_progname != NULL) {
+                visual_mem_free (__lv_progname);
+	
+		__lv_progname = NULL;
+	}
 
 	__lv_initialized = FALSE;
 	return 0;
