@@ -83,6 +83,21 @@ else
   AC_MSG_RESULT([no])
 fi
 
+# The AVS elements.
+AC_ARG_ENABLE([avs_multiplier],
+	      AC_HELP_STRING([--disable-multiplier],
+			     [Do not build the AVS trans multiplier plugin @<:@default=enabled@:>@]),
+	      [avs_multiplier=$enableval],
+	      [avs_multiplier=yes])
+AC_MSG_CHECKING([whether to build AVS trans multiplier plugin])
+if test x$avs_multiplier = xyes; then
+  AC_MSG_RESULT([yes])
+  build_trans="$build_trans multiplier"
+  AC_SUBST([AVS_MULTIPLIER], ['transform_avs_multiplier.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 #
 # Build paramaters
 #
@@ -177,6 +192,7 @@ AC_CONFIG_FILES([
 	plugins/actor/Makefile
 	plugins/actor/ring/Makefile
 	plugins/transform/Makefile
+	plugins/transform/multiplier/Makefile
 ])
 
 
@@ -192,6 +208,7 @@ libvisual:                            : ${libvis}
 
 Plugins being build:
 actor:                                : ${build_actor}
+transform:                            : ${build_trans}
 
 Libvisual plugin data dir:            : ${prefix}/share
 

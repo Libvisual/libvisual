@@ -25,7 +25,6 @@
 
 /*
  * FIXME: Find more patterns between different elements.
- * FIXME: In ander bestand overzicht bijhouden van wat geimplementeerd is in de AVS reader en wat niet.
  * FIXME: Hex values replacen met defines.
  * FIXME: Next section on a global layer, not per element
  */
@@ -217,6 +216,8 @@ int avs_check_version (AVSTree *avstree)
 int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 {
 	AVSElement *element = NULL;
+	char namedelem[30];
+	int isnamed;
 	char *next_section = NULL;
 	int marker;
 
@@ -225,8 +226,20 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 	
 	while (avstree->cur < (avstree->data + avstree->datasize)) {
 		
-		marker = AVS_SERIALIZE_GET_BYTE (AVS_TREE_GET_CURRENT_POINTER (avstree));
+		marker = AVS_SERIALIZE_GET_INT (AVS_TREE_GET_CURRENT_POINTER (avstree));
 		AVS_SERIALIZE_SKIP_INT (AVS_TREE_GET_CURRENT_POINTER (avstree));
+
+		/* Named preset section */
+		isnamed = FALSE;
+		if (marker > 0xff) {
+			printf ("Marker > 0xff, named APE %x\n", marker);
+
+			strncpy (namedelem, AVS_TREE_GET_CURRENT_POINTER (avstree), 30);
+
+			AVS_SERIALIZE_SKIP_LENGTH (avstree->cur, 32);
+			isnamed = TRUE;
+			marker = 0xffff;
+		}
 		
 		next_section = AVS_SERIALIZE_GET_NEXT_SECTION (AVS_TREE_GET_CURRENT_POINTER (avstree));
 		AVS_SERIALIZE_SKIP_INT (AVS_TREE_GET_CURRENT_POINTER (avstree));
@@ -288,7 +301,22 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 				visual_list_add (curcontainer->members, element);
 
 				break;
+			
+			case 0xffff:
 
+				printf ("APE NAME: %s\n", namedelem);
+				
+				element = NULL;
+				if (strcmp (namedelem, "Multiplier") == 0)
+					element = AVS_ELEMENT (avs_parse_trans_multiplier (avstree));
+				else
+					printf ("Unhandled named entry: %s position: %x\n", namedelem, avstree->cur - avstree->data);
+
+				if (element != NULL)
+					visual_list_add (curcontainer->members, element);
+
+				break;
+			
 			default:
 				printf ("Unhandled type: %x position: %x\n", *avstree->cur, avstree->cur - avstree->data);
 
@@ -664,6 +692,40 @@ AVSElement *avs_parse_trans_blur (AVSTree *avstree)
 	avs_element_deserialize (AVS_ELEMENT (blur), avstree);
 
 	return blur;
+}
+
+AVSElement *avs_parse_trans_multiplier (AVSTree *avstree)
+{
+	AVSElement *multiplier;
+	AVSSerializeContainer *scont;
+
+	VisParamContainer *pcont;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("multiply"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+
+	visual_param_container_add_many (pcont, params);
+
+	multiplier = visual_mem_new0 (AVSElement, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (multiplier), TRUE, avs_element_dtor);
+
+	AVS_ELEMENT (multiplier)->pcont = pcont;
+	AVS_ELEMENT (multiplier)->type = AVS_ELEMENT_TYPE_TRANS_MULTIPLIER;
+
+	scont = avs_serialize_container_new ();
+	avs_serialize_container_add_byte_int_skip_with_boundry (scont, visual_param_container_get (pcont, "multiply"), 0x07);
+
+	avs_element_connect_serialize_container (AVS_ELEMENT (multiplier), scont);
+
+	avs_element_deserialize (AVS_ELEMENT (multiplier), avstree);
+
+	return multiplier;
 }
 
 int avs_parse_data (AVSTree *avstree, char *filename)

@@ -41,6 +41,7 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 LVAVSPresetElement *wavs_convert_main_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem);
+LVAVSPresetElement *wavs_convert_multiplier_new (AVSElement *avselem);
 
 
 /* Object destructors */
@@ -201,6 +202,11 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 				break;
 
+			case AVS_ELEMENT_TYPE_TRANS_MULTIPLIER:
+				visual_list_add (presetcont->members, wavs_convert_multiplier_new (avselem));
+
+				break;
+
 			default:
 				visual_log (VISUAL_LOG_CRITICAL, "Unhandled winamp AVS type %d\n", avselem->type);
 
@@ -267,6 +273,31 @@ LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 	visual_param_entry_set_integer (visual_param_container_get (pcont, "source"), (sourceplace & 0x0f) / 4);
 
 	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_ring");
+	element->pcont = pcont;
+
+	return element;
+}
+
+LVAVSPresetElement *wavs_convert_multiplier_new (AVSElement *avselem)
+{
+	LVAVSPresetElement *element;
+	VisParamContainer *pcont;
+	VisParamContainer *pcontw;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("multiply"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+	visual_param_container_add_many (pcont, params);
+
+	pcontw = avselem->pcont;
+
+	/* Copy all the matching */
+	visual_param_container_copy_match (pcont, pcontw);
+
+	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_multiplier");
 	element->pcont = pcont;
 
 	return element;

@@ -105,7 +105,7 @@ struct _LVAVSPipelineElement {
 	union {
 		VisActor			*actor;
 		VisMorph			*morph;
-//		VisTransform			*trans;
+		VisTransform			*transform;
 		LVAVSPipelineRenderState	*renderstate;
 		LVAVSPipelineContainer		*container;
 	} data;

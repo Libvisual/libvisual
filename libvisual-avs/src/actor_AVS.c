@@ -89,7 +89,7 @@ int act_avs_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual/libvisual-avs/testpresets/ring10.avs"),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual/libvisual-avs/testpresets/ringringmult.avs"),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
 		VISUAL_PARAM_LIST_END
 	};

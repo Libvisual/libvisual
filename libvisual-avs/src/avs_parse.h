@@ -60,6 +60,7 @@ typedef enum {
 	AVS_ELEMENT_TYPE_TRANS_BLUR,
 	AVS_ELEMENT_TYPE_TRANS_FASTBRIGHTNESS,
 	AVS_ELEMENT_TYPE_TRANS_INVERT,
+	AVS_ELEMENT_TYPE_TRANS_MULTIPLIER
 } AVSElementType;
 
 typedef enum {
@@ -160,6 +161,7 @@ AVSElement *avs_parse_render_bassspin (AVSTree *avstree);
 AVSElement *avs_parse_trans_fastbrightness (AVSTree *avstree);
 AVSElement *avs_parse_trans_invert (AVSTree *avstree);
 AVSElement *avs_parse_trans_blur (AVSTree *avstree);
+AVSElement *avs_parse_trans_multiplier (AVSTree *avstree);
 
 int avs_parse_data (AVSTree *avstree, char *filename);
 

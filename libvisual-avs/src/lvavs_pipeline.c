@@ -227,12 +227,10 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_MORPH);
 					element->data.morph = visual_morph_new (pelem->element_name);
 	
-				} else {
+				} else if (strcmp (ref->info->type, VISUAL_PLUGIN_TYPE_TRANSFORM) == 0) {
 
-					visual_Log (VISUAL_LOG_CRITICAL, "Unsupported plugin type for LVAVSPipelineElement %s",
-							ref->info->type);
-
-					break;
+					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM);
+					element->data.transform = visual_transform_new (pelem->element_name);
 				}
 
 				if (pelem->pcont != NULL) {
@@ -289,12 +287,16 @@ int pipeline_container_realize (LVAVSPipelineContainer *container)
 
 				visual_actor_realize (element->data.actor);
 				visual_param_container_copy_match (visual_plugin_get_params (
-							visual_actor_get_plugin (element->data.actor)),
-							element->params);
+							visual_actor_get_plugin (element->data.actor)), element->params);
+				
 				break;
 
 			case LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM:
-			
+	
+				visual_transform_realize (element->data.transform);
+				visual_param_container_copy_match (visual_plugin_get_params (
+							visual_transform_get_plugin (element->data.transform)), element->params);
+				
 				break;
 			
 			case LVAVS_PIPELINE_ELEMENT_TYPE_MORPH:
@@ -335,6 +337,13 @@ int pipeline_container_negotiate (LVAVSPipelineContainer *container, VisVideo *v
 
 				break;
 
+			case LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM:
+				visual_transform_set_video (element->data.transform, video);
+				visual_transform_video_negotiate (element->data.transform);
+
+				break;
+
+
 			case LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER:
 				
 				pipeline_container_negotiate (LVAVS_PIPELINE_CONTAINER (element), video);
@@ -362,6 +371,13 @@ int pipeline_container_run (LVAVSPipelineContainer *container, VisVideo *video, 
 
 				visual_actor_set_video (element->data.actor, video);
 				visual_actor_run (element->data.actor, audio);
+
+				break;
+
+			case LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM:
+
+				visual_transform_set_video (element->data.transform, video);
+				visual_transform_run (element->data.transform, audio);
 
 				break;
 

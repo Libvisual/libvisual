@@ -34,6 +34,7 @@ extern "C" {
 
 /* Byte array retrieving / traversing helper macros */
 #define AVS_SERIALIZE_GET_BYTE(f)		(*(f))
+#define AVS_SERIALIZE_GET_INT(f)		(*((int *) f))
 #define AVS_SERIALIZE_SKIP_INT(f)		((f) += 4)
 #define AVS_SERIALIZE_SKIP_BYTE(f)		((f)++)
 #define AVS_SERIALIZE_SKIP_LENGTH(f,i)		((f) += (i))
