@@ -251,9 +251,9 @@ static void sdl_set_pal ()
 
 	if (pal != NULL) {
 		for (i = 0; i < 256; i ++) {
-			sdlpal[i].r = pal->r[i];
-			sdlpal[i].g = pal->g[i];
-			sdlpal[i].b = pal->b[i];
+			sdlpal[i].r = pal->colors[i].r;
+			sdlpal[i].g = pal->colors[i].g;
+			sdlpal[i].b = pal->colors[i].b;
 		}
 		SDL_SetColors (screen, sdlpal, 0, 256);
 	}
