@@ -1,5 +1,13 @@
 2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_input.c (visual_input_set_callback):
+	Fixed documentation.
+
+	* libvisual/lv_mem.h: Added the visual_mem_new0 macro
+	to group VisMem in documentation.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_mem.c: Added visual_mem_free
 	wrapper function.
 

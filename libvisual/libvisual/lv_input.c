@@ -190,7 +190,7 @@ int visual_input_free (VisInput *input)
  *
  * @param input Pointer to a VisInput that to which a callback needs to be set.
  * @param callback The in app callback function that should be used instead of a plugin.
- * @param private A private that can be read within the callback function.
+ * @param priv A private that can be read within the callback function.
  *
  * @return 0 on succes -1 on error.
  */

@@ -16,6 +16,8 @@ void *visual_mem_malloc0 (visual_size_t nbytes);
 int visual_mem_free (void *ptr);
 
 /**
+ * @ingroup VisMem
+ * 
  * Convenient macro to request @a n_structs structures of type @a struct_type
  * initialized to 0.
  */
