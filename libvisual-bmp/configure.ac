@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual beep media player plugin, 0.2.0, synap@nerds-incorporated.org, libvisual-bmp)
+AC_INIT(Libvisual beep media player plugin, 0.3.0, synap@nerds-incorporated.org, libvisual-bmp)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
@@ -48,7 +48,7 @@ if test x$SDL_CONFIG = xno ; then
 fi
 AM_PATH_SDL(1.2.5, , AC_MSG_ERROR([*** SDL >= 1.2.5 not installed - please install first ***]))
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.2.0, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.3.0, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
 	AC_MSG_ERROR([libvisual not found, libvisual is needed to build this package,
 you can download libvisual at http://libvisual.sf.net/])
