@@ -1,3 +1,13 @@
+2004-06-30  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: removed some redundant tests. Added
+	output file pixmaps/Makefile.
+	* pixmaps/oinksie-xmms-vis.bmp: added dir and icon.
+	* pixmaps/Makefile.am: added file. We install data
+	on pkgdatadir, usually /usr/share/libvisual-xmms.
+	* src/main.c: we try to set icon on init.
+	* src/config.c: to much error checking added.
+
 2004-06-29  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/Makefile.am: added flags -Wall and -O3.

@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = src
+SUBDIRS = src pixmaps
 
-EXTRA_DIST = autogen.sh
+EXTRA_DIST =
 

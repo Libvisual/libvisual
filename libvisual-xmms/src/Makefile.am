@@ -12,7 +12,7 @@ AM_CFLAGS = -Wall -Wmissing-prototypes\
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/src
 
-DEFS = -DVERSION=\"$(VERSION)\" @DEFS@
+DEFS = -DVERSION=\"$(VERSION)\" -DPACKAGE_DATADIR=\"$(pkgdatadir)\" @DEFS@
 
 libvisual_xmms_la_LDFLAGS = -module -avoid-version
 

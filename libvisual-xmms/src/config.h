@@ -5,15 +5,18 @@
 #include <libvisual/libvisual.h>
 
 #define OPTIONS_MAX_NAME_LEN 256
+#define OPTIONS_MAX_ICON_PATH_LEN 256
 
 typedef struct {
 	gchar *last_plugin;	/**< Name of the last plugin runned,
-				  with length < OPTIONS_MAX_NAME_LEN */
-	int width;		/**< Width in pixels */
-	int height;		/**< Height in pixels */
-	int fps;		/**< Maximum frames per second */
-	VisVideoDepth depth;	/**< Color depth */
-	gboolean fullscreen;	/**< Say if we are in fullscreen or not */
+				  with length < OPTIONS_MAX_NAME_LEN. */
+	gchar *icon_file;	/**< Absolute path of the icon file,
+				  with length < OPTIONS_MAX_ICON_PATH_LEN. */
+	int width;		/**< Width in pixels. */
+	int height;		/**< Height in pixels. */
+	int fps;		/**< Maximum frames per second. */
+	VisVideoDepth depth;	/**< Color depth. */
+	gboolean fullscreen;	/**< Say if we are in fullscreen or not. */
 } Options;
 
 

@@ -20,6 +20,7 @@ static SDL_Surface *screen = NULL;
 static SDL_Color sdlpal[256];
 static SDL_Thread *render_thread;
 static SDL_mutex *pcm_mutex;
+static SDL_Surface *icon;
 
 /* Libvisual and visualisation variables */
 static VisVideo *video;
@@ -49,7 +50,6 @@ static void lv_xmms_playback_start (void);
 static void lv_xmms_playback_stop (void);
 static void lv_xmms_render_pcm (gint16 data[2][512]);
 
-static int sdl_init (void);
 static int sdl_quit (void);
 static void sdl_set_pal (void);
 static void sdl_draw (SDL_Surface *screen);
@@ -99,42 +99,53 @@ static void lv_xmms_init ()
         int argc;
 	int ret;
 
-	if (sdl_init () < 0)
-                return;
-        
-        options.fullscreen = FALSE;
+	lv_xmms_config_load_prefs (&options);
+
+	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
+		visual_log (VISUAL_LOG_CRITICAL, "cannot initialize SDL: %s", SDL_GetError());
+		return;
+	}
+	SDL_WM_SetCaption (options.last_plugin, options.last_plugin);
+
+	if (strlen(options.icon_file) > 0) {
+		icon = SDL_LoadBMP (options.icon_file);
+		if (icon != NULL) {
+			SDL_WM_SetIcon (icon, NULL);
+		} else {
+			visual_log (VISUAL_LOG_WARNING, "cannot not load icon: %s", SDL_GetError());
+		}
+	}
 
 	pcm_mutex = SDL_CreateMutex ();
 
         argv = g_malloc (sizeof(char*));
-        argv[0] = g_strdup ("LibVisual XMMS Plugin");
+        argv[0] = g_strdup ("XMMS plugin");
         argc = 1;
+
 	visual_init (&argc, &argv);
+
         g_free (argv[0]);
         g_free (argv);
 
-	lv_xmms_config_load_prefs (&options);
 	if (strlen (options.last_plugin) <= 0 ) {
-		visual_log (VISUAL_LOG_INFO, "There are no LibVisual plugins to load");
-		return;
+		visual_log (VISUAL_LOG_INFO, "last plugin: (none)");
+	} else {
+		visual_log (VISUAL_LOG_INFO, "last plugin: %s", options.last_plugin);
 	}
-	visual_log (VISUAL_LOG_INFO, "Last plugin: %s", options.last_plugin);
 
 	cur_lv_plugin = options.last_plugin;
 	if (visual_actor_valid_by_name (cur_lv_plugin) != TRUE)
 		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
 
 	if (cur_lv_plugin == NULL) {
-		visual_log (VISUAL_LOG_INFO, "Could not get actor plugin");
+		visual_log (VISUAL_LOG_INFO, "could not get actor plugin");
 		g_free (options.last_plugin);
 		return;
 	}
- 
-	SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
 
 	ret = visual_initialize (options.width, options.height);
         if (ret < 0) {
-                visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin's visual stuff");
+                visual_log (VISUAL_LOG_CRITICAL, "cannot initialize plugin's visual stuff");
 		return;
 	}
 
@@ -164,15 +175,17 @@ static void lv_xmms_cleanup ()
 	options.last_plugin = cur_lv_plugin;
 	lv_xmms_config_save_prefs (&options);
 
+	if (icon != NULL)
+		SDL_FreeSurface (icon);
+
 	visual_log (VISUAL_LOG_DEBUG, "destroying VisBin...");
 	visual_bin_destroy (bin);
-	bin = NULL;
-
-	visual_log (VISUAL_LOG_DEBUG, "calling visual_quit()");
-	visual_quit ();
 
 	visual_log (VISUAL_LOG_DEBUG, "calling sdl_quit()");
 	sdl_quit ();
+
+	visual_log (VISUAL_LOG_DEBUG, "calling visual_quit()");
+	visual_quit ();
 
 	visual_log (VISUAL_LOG_DEBUG, "leaving...");
 }
@@ -204,16 +217,6 @@ static void lv_xmms_render_pcm (gint16 data[2][512])
                 memcpy (xmmspcm, data, sizeof(gint16)*2*512);
 		SDL_mutexV (pcm_mutex);
 	}
-}
-
-static int sdl_init ()
-{
-	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
-		visual_log (VISUAL_LOG_CRITICAL, "Could not initialize SDL: %s", SDL_GetError());
-		return -1;
-	}
-
-	return 0;
 }
 
 static int sdl_quit ()
