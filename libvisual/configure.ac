@@ -342,7 +342,11 @@ AC_ARG_ENABLE([profiling],
 AC_MSG_CHECKING([wheter to enable profiling])
 if test x$profiling = xyes; then
   AC_MSG_RESULT([yes])
+  if test x"$GCC" = xyes; then
   DEBUG_CFLAGS="$DEBUG_CFLAGS -pg"
+else
+    AC_MSG_WARN([Profiling only works when using a gcc compiler.])
+  fi
 else
   AC_MSG_RESULT([no])
 fi
@@ -355,10 +359,25 @@ AC_ARG_ENABLE([debug],
 AC_MSG_CHECKING([wheter to enable debug])
 if test x$debug = xyes; then
   AC_MSG_RESULT([yes])
-  DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3"
-  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wall -Wmissing-braces -Wimplicit -Wunused"
-  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wmissing-prototypes -Wno-unused-variable"
+  if test x"$GCC" = xyes; then
+    DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3 -Wall"
+    DEBUG_CFLAGS="$DEBUG_CFLAGS -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes"
   # IMHO -Werror should be here also. --VVB
+    lv_save_CFLAGS=$CFLAGS
+    CFLAGS="$CFLAGS -Wno-unused-variable"
+    AC_MSG_CHECKING([wheter gcc version is greater than 2.95])
+    AC_TRY_COMPILE([#include <stdlib.h>],
+		   [exit(0);],
+		   [lv_gcc_gt_2_95=yes],
+		   [lv_gcc_gt_2_95=no])
+    CFLAGS=$lv_save_CFLAGS
+    if test x$lv_gcc_gt_2_95 = xyes ; then
+      AC_MSG_RESULT([yes])
+      DEBUG_CFLAGS="$DEBUG_CFLAGS -Wno-unused-variable"
+    else
+      AC_MSG_RESULT([no])
+    fi
+  fi
 else
   AC_MSG_RESULT([no])
 fi
@@ -372,10 +391,14 @@ AC_ARG_ENABLE([extra-optimization],
 AC_MSG_CHECKING([wheter to enable extra optimizations])
 if test x$extra_opt = xyes; then
   AC_MSG_RESULT([yes])
+  if test x"$GCC" = xyes; then
   OPT_CFLAGS="-O3 -fexpensive-optimizations"
 else
+    AC_MSG_WARN([Extra optimizations only works with a gcc compiler.])
+  fi
+else
   AC_MSG_RESULT([no])
-  if test x$debug = xyes; then
+  if test x$debug = xyes && test x"$GCC" = xyes; then
     OPT_CFLAGS="-O0"
   else
     OPT_CFLAGS=""
