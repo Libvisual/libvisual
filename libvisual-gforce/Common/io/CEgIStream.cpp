@@ -370,3 +370,4 @@ void CEgIStream::Tie( const char* inSrce, long inNumBytes ) {
 	if ( ! mNextPtr )
 		mPos = 0;
 }
+

@@ -1,4 +1,9 @@
-2004-09-02  Duilio Protti  <dprotti@users.sourceforge.net>
+2004-09-03    Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* DATADIR problem fixed.
+	* headers cleanup to avoid some warnings.
+
+2004-09-02    Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* GForceDeltaFields/Makefile.am: now data is installed
 	on $(prefix)/share/libvisual/actor/actor_gforce. Still

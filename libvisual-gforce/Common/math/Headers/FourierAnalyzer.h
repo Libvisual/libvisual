@@ -32,3 +32,4 @@ class FourierAnalyzer {
 
 
 #endif
+

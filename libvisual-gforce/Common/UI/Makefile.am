@@ -11,6 +11,7 @@ INCLUDES = -I$(top_srcdir)/unix/Headers\
 	-I$(top_srcdir)/unix/libmfl\
 	-I$(top_srcdir)/unix/libvisual
 
+DATADIR = $(datadir)/libvisual/actor/actor_gforce
 AM_CXXFLAGS = -DDATADIR="\"$(pkgdatadir)\""
 
 # Are missing DrawXX.cpp and LineXX.cpp

@@ -141,3 +141,4 @@ void V3::fromPlane( const V3& inNormal ) {
 		mZ = x; 
 	}
 }
+

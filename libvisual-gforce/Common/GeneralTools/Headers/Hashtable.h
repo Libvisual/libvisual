@@ -4,11 +4,6 @@
 #include "Hashable.h"
 #include "XPtrList.h"
 
-
-
-
-
-
 struct KEntry {
 	public:
 		unsigned long		mKey;
@@ -17,11 +12,6 @@ struct KEntry {
 		KEntry*				mNext;			
 };
 
-
-
-
-	
-	
 class Hashtable {
 
 
@@ -118,7 +108,5 @@ class Hashtable {
 };
 
 
-
-
-
 #endif
+

@@ -42,3 +42,4 @@ bool ConfigFile::Load( const CEgFileSpec* inSpec, ArgList& outArgs ) {
 		return false;
 	}	
 }
+
