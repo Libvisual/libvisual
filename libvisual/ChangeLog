@@ -1,3 +1,9 @@
+2004-11-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/lv_error.h, src/lv_error.c
+	(visual_error_to_string): Added function that translates
+	an error value into a string.
+
 2004-10-24  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/lv_video.c (visual_video_blit_overlay): Splitted up into

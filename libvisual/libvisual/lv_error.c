@@ -58,6 +58,18 @@ int visual_error_set_handler (visual_error_handler_func_t handler, void *priv)
 }
 
 /**
+ * Translates an error into a human readable string.
+ *
+ * @param err Numeric error value.
+ * 
+ * @return Human readable string, or NULL on failure.
+ */
+const char *visual_error_to_string (int err)
+{
+
+}
+
+/**
  * @}
  */
 
