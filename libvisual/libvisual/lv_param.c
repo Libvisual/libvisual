@@ -252,13 +252,13 @@ int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer 
 	visual_log_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
 
 	while ((srcparam = visual_list_next (&srccont->entries, &le)) != NULL) {
-		tempparam = visual_param_container_get (destcont, visual_param_entry_get_name (destparam));
+		tempparam = visual_param_container_get (destcont, visual_param_entry_get_name (srcparam));
 
 		/* Already exists, overwrite */
 		if (tempparam != NULL) {
 			visual_param_entry_set_from_param (tempparam, srcparam);
 			
-			break;
+			continue;
 		}
 		
 		/* Does not yet exist, create a new entry */
@@ -847,7 +847,7 @@ char *visual_param_entry_get_string (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_STRING) {
-		visual_log (VISUAL_LOG_WARNING, "Requesting string from a non string param\n");
+		visual_log (VISUAL_LOG_WARNING, "Requesting string from a non string param");
 
 		return NULL;
 	}
@@ -867,7 +867,7 @@ int visual_param_entry_get_integer (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, 0);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_INTEGER)
-		visual_log (VISUAL_LOG_WARNING, "Requesting integer from a non integer param\n");
+		visual_log (VISUAL_LOG_WARNING, "Requesting integer from a non integer param");
 
 	return param->numeric.integer;
 }
@@ -884,7 +884,7 @@ float visual_param_entry_get_float (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, 0);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_FLOAT)
-		visual_log (VISUAL_LOG_WARNING, "Requesting float from a non float param\n");
+		visual_log (VISUAL_LOG_WARNING, "Requesting float from a non float param");
 
 	return param->numeric.floating;
 }
@@ -901,7 +901,7 @@ double visual_param_entry_get_double (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, 0);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
-		visual_log (VISUAL_LOG_WARNING, "Requesting double from a non double param\n");
+		visual_log (VISUAL_LOG_WARNING, "Requesting double from a non double param");
 
 	return param->numeric.doubleflt;
 }
@@ -921,7 +921,7 @@ VisColor *visual_param_entry_get_color (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR) {
-		visual_log (VISUAL_LOG_WARNING, "Requesting color from a non color param\n");
+		visual_log (VISUAL_LOG_WARNING, "Requesting color from a non color param");
 
 		return NULL;
 	}
