@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.17 2004-11-23 22:56:30 synap Exp $
+ *	$Id: lv_list.c,v 1.18 2004-11-23 23:26:28 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -88,15 +88,10 @@ int visual_list_free (VisList *list)
 }
 
 /**
- * Destroys the entries that are in a list, but not the list itself. If the destroyer
- * argument isn't NULL this function is called with a pointer to the data element of
- * a list entry. You can use 'free' as an argument here is it's sufficient as a
- * destroyer function, or if you don't want to free the data entries at all pass
- * NULL.
+ * Destroys the entries that are in a list, but not the list itself. It uses the element
+ * destroyer set at visual_list_new or visual_list_set_destroyer.
  *
  * @param list Pointer to a VisList of which the elements need to be destroyed.
- * @param destroyer Pointer to a destroyer function that is used to destroy the data
- * 	in the elements
  *
  * @return VISUAL_OK on succes, or -VISUAL_ERROR_LIST_NULL on failure.
  */

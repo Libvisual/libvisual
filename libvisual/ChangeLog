@@ -1,5 +1,9 @@
 2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_list.c, libvisual/lv_ui.c: Doxygen fixes.
+
+2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/*: This change is BIG, most Vis systems are now moved
 	over to the VisObject system, losing their old destroy/free functions
 	in favor of the object_unref/destroy functions. Ref counting is

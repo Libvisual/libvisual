@@ -859,7 +859,7 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 /**
  * Frees a VisUISeperator.
  * 
- * @param seperatpr Pointer to the VisUISeparator that needs to be freed.
+ * @param separator Pointer to the VisUISeparator that needs to be freed.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_SEPARATOR_NULL, -VISUAL_ERROR_UI_NO_SEPARATOR or
  * 	error values returned by visual_mem_free () on failure.
