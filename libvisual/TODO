@@ -42,7 +42,6 @@ Af te werken:
 
 Automakeify todo:
 x	fix lib version
-	when uninstalling, {prefix}/include/libvisual dir is not removed
 
 LEGAL:
 x	Add copyright notice to all the files

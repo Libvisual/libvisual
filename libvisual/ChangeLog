@@ -1,3 +1,10 @@
+2004-09-14  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* Makefile.am: $(includedir)/libvisual directory is
+	removed on uninstall. Added support for DESTDIR variable
+	on install-exec-local target (which installs lvconfig.h),
+	needed for packagers (thanks to Burkhard Plaum).
+	
 2004-09-13  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac:

@@ -6,8 +6,8 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvisual.pc
 
 install-exec-local: libvisual/lvconfig.h 
-	        $(mkinstalldirs) $(prefix)/include/libvisual
-	        file=$(prefix)/include/libvisual/lvconfig.h; \
+	        $(mkinstalldirs) $(DESTDIR)$(includedir)/libvisual
+	        file=$(DESTDIR)$(includedir)/libvisual/lvconfig.h; \
 	        if test -r $$file && cmp -s libvisual/lvconfig.h $$file; then :; \
 	        else $(INSTALL_DATA) libvisual/lvconfig.h $$file; fi
 
@@ -17,6 +17,9 @@ lvconfig.h: stamp-gc-h
 stamp-gc-h: config.status
 	cd $(top_builddir) && $(SHELL) ./config.status libvisual/lvconfig.h
 	echo timestamp > stamp-gc-h
+
+uninstall-local:
+		rmdir $(includedir)/libvisual
 
 EXTRA_DIST = Doxyfile
 
