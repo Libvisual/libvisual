@@ -1,5 +1,9 @@
 2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/JESS/jess.c: Fixed some NULL frees.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/*: Added more copyright headers, not yet done.
 
 2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>

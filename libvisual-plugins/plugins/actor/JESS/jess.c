@@ -152,11 +152,20 @@ int act_jess_cleanup (VisPluginData *plugin)
 			visual_mem_free (priv->big_ball_scale[i]);
 	}
 
-	visual_mem_free (priv->table1);
-	visual_mem_free (priv->table2);
-	visual_mem_free (priv->table3);
-	visual_mem_free (priv->table4);
-	visual_mem_free (priv->buffer);
+	if (priv->table1 != NULL)
+		visual_mem_free (priv->table1);
+
+	if (priv->table2 != NULL)
+		visual_mem_free (priv->table2);
+
+	if (priv->table3 != NULL)
+		visual_mem_free (priv->table3);
+
+	if (priv->table4 != NULL)
+		visual_mem_free (priv->table4);
+
+	if (priv->buffer != NULL)
+		visual_mem_free (priv->buffer);
 
 	visual_palette_free_colors (&priv->jess_pal);
 
@@ -211,11 +220,20 @@ int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width, int h
 
 	visual_video_set_dimension (video, width, height);
 	
-	visual_mem_free (priv->table1);
-	visual_mem_free (priv->table2);
-	visual_mem_free (priv->table3);
-	visual_mem_free (priv->table4);
-	visual_mem_free (priv->buffer);
+	if (priv->table1 != NULL)
+		visual_mem_free (priv->table1);
+
+	if (priv->table2 != NULL)
+		visual_mem_free (priv->table2);
+
+	if (priv->table3 != NULL)
+		visual_mem_free (priv->table3);
+
+	if (priv->table4 != NULL)
+		visual_mem_free (priv->table4);
+
+	if (priv->buffer != NULL)
+		visual_mem_free (priv->buffer);
 
 	priv->pitch = video->pitch;
 	priv->video = visual_video_depth_value_from_enum (video->depth);
