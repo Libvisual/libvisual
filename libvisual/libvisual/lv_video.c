@@ -695,6 +695,8 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	uint8_t *srcpbuf;
 	uint32_t *srcbuf;
 
+	/* @todo, split this function up in a few smaller ones, and fix the when not fit issues */
+
 	/* We can't overlay GL surfaces so don't even try */
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
 			src->depth != VISUAL_VIDEO_DEPTH_GL, -1);
@@ -1186,7 +1188,6 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 {
 	int x, y;
 	int i = 0, j = 0;
-	int total;
 	uint8_t r, g, b;
 	uint8_t col;
 	int pitchdiff = pitch - width;

@@ -1,3 +1,7 @@
+2004-09-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: Removed some unused vars.
+
 2004-09-14  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* Makefile.am: $(includedir)/libvisual directory is
