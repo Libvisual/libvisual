@@ -7,6 +7,9 @@ New in 0.1.7: 2004-..-..:
 * Plugin libraries now work for real. (Dennis)
 * Added visual_plugin_get_api_version function. (Dennis)
 * Added visual_is_initialized function. (Duilio)
+* visual_log verboseness control. (Duilio)
+* visual_log custom callbacks. (Duilio)
+* VisRandom subsystem and plugin specific VisRandomContexts. (Dennis)
 * Bugfixes (everyone)
 
 New in 0.1.6: 2004-09-10:
