@@ -1,3 +1,10 @@
+2005-02-19  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_types.h: Don't check for MINGW
+	instead check for OS_WIN32 regarding stdint.h
+
+	should help with cygwin.
+
 2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/Makefile.am: Adding lv_config.*
