@@ -83,7 +83,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_container_add (GTK_CONTAINER (window_main), vbox_main);
   gtk_container_set_border_width (GTK_CONTAINER (vbox_main), 6);
 
-  frame_vis_plugin = gtk_frame_new (_("Visualization Plugin"));
+  frame_vis_plugin = gtk_frame_new (_("Visualization Plugins"));
   gtk_widget_ref (frame_vis_plugin);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "frame_vis_plugin", frame_vis_plugin,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -210,7 +210,11 @@ ConfigWin *lv_xmms_config_gui_new (void)
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (optionmenu_input_plugin);
   gtk_box_pack_start (GTK_BOX (vbox_input_plugin), optionmenu_input_plugin, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, optionmenu_input_plugin, _("Select the plugin that will capture sound data"), NULL);
+  gtk_container_set_border_width (GTK_CONTAINER (optionmenu_input_plugin), 2);
+  gtk_tooltips_set_tip (tooltips, optionmenu_input_plugin,
+		  	_("Select the plugin that will capture sound data. "
+			"Changes to this option will be applied the next time "
+			"you start "PACKAGE_NAME), NULL);
   optionmenu_input_plugin_menu = gtk_menu_new ();
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu_input_plugin), optionmenu_input_plugin_menu);
 
@@ -259,6 +263,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (optionmenu_morph_plugin);
   gtk_box_pack_start (GTK_BOX (vbox_morph_plugin), optionmenu_morph_plugin, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (optionmenu_morph_plugin), 2);
   gtk_tooltips_set_tip (tooltips, optionmenu_morph_plugin, _("Select the kind of morph that will be applied when switching from one visualization plugin to another "), NULL);
   optionmenu_morph_plugin_menu = gtk_menu_new ();
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu_morph_plugin), optionmenu_morph_plugin_menu);

@@ -288,7 +288,7 @@
 	<widget>
 	  <class>GtkOptionMenu</class>
 	  <name>optionmenu_input_plugin</name>
-	  <tooltip>Select the plugin that will capture sound data</tooltip>
+	  <tooltip>Select the plugin that will capture sound data. Changes to this option will be applied the next time you start </tooltip>
 	  <can_focus>True</can_focus>
 	  <signal>
 	    <name>clicked</name>

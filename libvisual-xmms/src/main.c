@@ -5,9 +5,12 @@
 
 #include <xmms/plugin.h>
 #include <xmms/xmmsctrl.h>
+#include <xmms/util.h>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_thread.h>
+
+#include <gtk/gtk.h>
 
 #include <libvisual/libvisual.h>
 
@@ -62,6 +65,8 @@ static int visual_resize (int width, int height);
 static int visual_initialize (int width, int height);
 static int visual_render (void*);
 
+static void dummy (GtkWidget *widget, gpointer data);
+
 VisPlugin *get_vplugin_info (void);
 	
 VisPlugin lv_xmms_vp =
@@ -99,6 +104,8 @@ static void lv_xmms_init ()
         char **argv;
         int argc;
 	int ret;
+	gchar *msg;
+	GtkWidget *msgwin;
 
 #if ENABLE_NLS
 	setlocale (LC_MESSAGES, "");
@@ -115,7 +122,13 @@ static void lv_xmms_init ()
 	lv_xmms_config_load_prefs ();
 
 	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
-		visual_log (VISUAL_LOG_CRITICAL, "cannot initialize SDL: %s", SDL_GetError());
+		msg = g_strconcat (_("Cannot initialize SDL!\n"),
+					SDL_GetError(),
+					"\n\n", PACKAGE_NAME,
+					_(" will not be loaded."), 0);
+		msgwin = xmms_show_message (PACKAGE_NAME, msg, _("Accept"), TRUE, dummy, NULL);
+		gtk_widget_show (msgwin);
+		g_free (msg);
 		return;
 	}
 	SDL_WM_SetCaption (options->last_plugin, options->last_plugin);
@@ -125,7 +138,7 @@ static void lv_xmms_init ()
 		if (icon != NULL) {
 			SDL_WM_SetIcon (icon, NULL);
 		} else {
-			visual_log (VISUAL_LOG_WARNING, "cannot not load icon: %s", SDL_GetError());
+			visual_log (VISUAL_LOG_WARNING, _("Cannot not load icon: %s"), SDL_GetError());
 		}
 	}
 
@@ -133,7 +146,7 @@ static void lv_xmms_init ()
 
 	if (!visual_is_initialized ()) {
 	        argv = g_malloc (sizeof(char*));
-	        argv[0] = g_strdup ("XMMS plugin");
+	        argv[0] = g_strdup (_("XMMS plugin"));
         	argc = 1;
 
 		visual_init (&argc, &argv);
@@ -588,7 +601,7 @@ static int sdl_event_handle ()
 
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
                                                     cur_lv_plugin = next_plugin;
-                                                    visual_bin_set_morph_by_name (bin, "alphablend");
+                                                    visual_bin_set_morph_by_name (bin, options->morph_plugin);
                                                     visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
                                                 }
 
@@ -625,7 +638,7 @@ static int sdl_event_handle ()
 
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
                                                     cur_lv_plugin = next_plugin;
-                                                    visual_bin_set_morph_by_name (bin, "alphablend");
+                                                    visual_bin_set_morph_by_name (bin, options->morph_plugin);
                                                     visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
                                                 }
 
@@ -669,3 +682,8 @@ static int sdl_event_handle ()
 
 	return 0;
 }
+
+static void dummy (GtkWidget *widget, gpointer data)
+{
+}
+

@@ -18,6 +18,7 @@ typedef struct {
 				  with length < OPTIONS_MAX_NAME_LEN. */
 
 	gchar *input_plugin; /**< */
+	gchar *morph_plugin; /**< */
 	
 	gchar *icon_file;	/**< Absolute path of the icon file,
 				  with length < OPTIONS_MAX_ICON_PATH_LEN. */
