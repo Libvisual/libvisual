@@ -79,7 +79,8 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
 
 int visual_video_bpp_from_depth (VisVideoDepth depth);
 
-int visual_video_fit_in_video (VisVideo *dest, VisVideo *src);
+int visual_video_blit_fit (VisVideo *dest, VisVideo *src);
+int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
 
 int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
 int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,

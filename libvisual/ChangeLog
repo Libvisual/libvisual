@@ -1,5 +1,18 @@
 2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_video.c:
+	Renamed visual_video_fit_in_video to
+	visual_video_blit_fit.
+
+	Added visual_video_blit_overlay, no alpha
+	support yet tho.
+
+	* libvisual/lv_video.h:
+	Changed the prototypes appropiately to the
+	changes in lv_video.c.
+
+2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* configure.ac: Remove the check for stdint.h
 	and do check for sys/types.h.
 

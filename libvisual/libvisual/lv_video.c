@@ -136,9 +136,9 @@ int visual_video_allocate_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
 
-	printf ("[video-allocate-buffer] Allocating buffer with size: %d, width height bpp pitch %d %d %d %d calc %d\n", video->size,
+/*	printf ("[video-allocate-buffer] Allocating buffer with size: %d, width height bpp pitch %d %d %d %d calc %d\n", video->size,
 			video->width, video->height, video->bpp, video->pitch, video->pitch * video->height);
-
+*/
 	video->screenbuffer = malloc (video->size);
 	memset (video->screenbuffer, 0, video->size);
 
@@ -556,7 +556,7 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_video_fit_in_video (VisVideo *dest, VisVideo *src)
+int visual_video_blit_fit (VisVideo *dest, VisVideo *src)
 {
 	uint8_t *destr, *srcr;
 	int space = 0;
@@ -603,6 +603,84 @@ int visual_video_fit_in_video (VisVideo *dest, VisVideo *src)
 }
 
 /**
+ * This function blits a VisVideo into another VisVideo. Placement can be done and there
+ * is support for the alpha channel.
+ *
+ * @param dest Pointer to the destination VisVideo in which the source is overlayed.
+ * @param src Pointer to the source VisVideo which is overlayed in the destination.
+ * @param x Horizontal placement offset.
+ * @parma y Vertical placement offset.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha)
+{
+	VisVideo *transform = NULL;
+	int height, wrange, hrange, amount;
+	uint8_t *destbuf;
+	uint8_t *srcbuf;
+
+	/* We can't overlay GL surfaces so don't even try */
+	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
+			src->depth != VISUAL_VIDEO_DEPTH_GL, -1);
+	
+	/* Get the smallest size from both the VisVideos */
+	wrange = dest->width > src->width ? src->width : dest->width;
+	hrange = dest->height > src->height ? src->height : dest->height;
+	
+	visual_log_return_val_if_fail (x < dest->width, -1);
+	visual_log_return_val_if_fail (y < dest->height, -1);
+	
+	destbuf = dest->screenbuffer;
+
+	/* TODO: Add support for negative x, y values */
+	
+	/* No alpha, fast method */
+	if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT) {
+		/* We're not  the same depth, converting */
+		if (dest->depth != src->depth) {
+			transform = visual_video_new ();
+
+			visual_video_set_depth (transform, dest->depth);
+			visual_video_set_dimension (transform, src->width, src->height);
+
+			visual_video_allocate_buffer (transform);
+
+			visual_video_depth_transform (transform, src);
+
+			src = transform;
+		}
+
+		srcbuf = src->screenbuffer;
+
+		/* Blit it to the dest video */
+		for (height = y; height < hrange + y; height++) {
+
+			if ((x * dest->bpp) + src->pitch > dest->pitch)
+				amount = dest->pitch - (x * dest->bpp);
+			else
+				amount = wrange * dest->bpp;
+
+			/* We've reached the end */
+			if (height > dest->height - 1)
+				break;
+
+			memcpy (destbuf + (height * dest->pitch) + (x * dest->bpp),
+					srcbuf + ((height - y) * src->pitch),
+					amount);
+		}
+	} else {
+		/* TODO: Add support for the alpha value */
+
+	}
+
+	if (transform != NULL)
+		visual_video_free_with_buffer (transform);
+
+	return 0;
+}
+
+/**
  * Video depth transforms one VisVideo into another using the depth information
  * stored within the VisVideos. The dimension should be equal however the pitch
  * value of the destination may be set.
@@ -640,7 +718,10 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 	int height = video->height;
 
 	visual_log_return_val_if_fail (video != NULL, -1);
-	visual_log_return_val_if_fail (pal != NULL, -1);
+	
+	if (destdepth == VISUAL_VIDEO_DEPTH_8BIT || video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+		visual_log_return_val_if_fail (pal != NULL, -1);
+	}
 
 	/* Destdepth is equal to sourcedepth case */
 	if (video->depth == destdepth) {
