@@ -9,56 +9,55 @@
 
 #include <libvisual/libvisual.h>
 
-int act_jakdaw_init (VisActorPlugin *plugin);
-int act_jakdaw_cleanup (VisActorPlugin *plugin);
-int act_jakdaw_requisition (VisActorPlugin *plugin, int *width, int *height);
-int act_jakdaw_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int act_jakdaw_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *act_jakdaw_palette (VisActorPlugin *plugin);
-int act_jakdaw_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int act_jakdaw_init (VisPluginData *plugin);
+int act_jakdaw_cleanup (VisPluginData *plugin);
+int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height);
+int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *act_jakdaw_palette (VisPluginData *plugin);
+int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *jakdaw;
-	JakdawPrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = act_jakdaw_requisition,
+		.palette = act_jakdaw_palette,
+		.render = act_jakdaw_render,
+		.depth = VISUAL_VIDEO_DEPTH_32BIT
+	}};
 
-	plugin = visual_plugin_new ();
-	jakdaw = visual_plugin_actor_new ();
-	
-	jakdaw->name = "jakdaw";
-	jakdaw->info = visual_plugin_info_new (
-			"Jakdaw plugin",
-			"Original by: Christopher Wilson <Jakdaw@usa.net>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
-			"0.0.1",
-			"The jakdaw visual plugin",
-			"This is the libvisual port of the xmms Jakdaw plugin");
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	jakdaw->init =		act_jakdaw_init;
-	jakdaw->cleanup =	act_jakdaw_cleanup;
-	jakdaw->requisition =	act_jakdaw_requisition;
-	jakdaw->events =	act_jakdaw_events;
-	jakdaw->palette =	act_jakdaw_palette;
-	jakdaw->render =	act_jakdaw_render;
+		.plugname = "jakdaw",
+		.name = "Jakdaw plugin",
+		.author = "Original by: Christopher Wilson <Jakdaw@usa.net>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.0.1",
+		.about = "The jakdaw visual plugin",
+		.help = "This is the libvisual port of the xmms Jakdaw plugin",
 
-	jakdaw->depth = VISUAL_VIDEO_DEPTH_32BIT;
+		.init = act_jakdaw_init,
+		.cleanup = act_jakdaw_cleanup,
+		.events = act_jakdaw_events,
 
-	priv = malloc (sizeof (JakdawPrivate));
-	memset (priv, 0, sizeof (JakdawPrivate));
+		.plugin = (void *) &actor[0]
+	}};
 
-	jakdaw->priv = priv;
+	*count = sizeof (info) / sizeof (*info);
 
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = jakdaw;
-	
-	return plugin;
+	return info;
 }
 
-int act_jakdaw_init (VisActorPlugin *plugin)
+int act_jakdaw_init (VisPluginData *plugin)
 {
-	JakdawPrivate *priv = plugin->priv;
+	JakdawPrivate *priv;
 	VisParamContainer *paramcontainer = &plugin->params;
 	VisParamEntry *param;
+
+	priv = visual_mem_new0 (JakdawPrivate, 1);
+	plugin->priv = priv;
 
 	priv->decay_rate = 1;
 	
@@ -91,7 +90,7 @@ int act_jakdaw_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_jakdaw_cleanup (VisActorPlugin *plugin)
+int act_jakdaw_cleanup (VisPluginData *plugin)
 {
 	JakdawPrivate *priv = plugin->priv;
 	
@@ -100,7 +99,7 @@ int act_jakdaw_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_jakdaw_requisition (VisActorPlugin *plugin, int *width, int *height)
+int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -119,7 +118,7 @@ int act_jakdaw_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_jakdaw_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	JakdawPrivate *priv = plugin->priv;
 	
@@ -134,7 +133,7 @@ int act_jakdaw_dimension (VisActorPlugin *plugin, VisVideo *video, int width, in
 	return 0;
 }
 
-int act_jakdaw_events (VisActorPlugin *plugin, VisEventQueue *events)
+int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	JakdawPrivate *priv = plugin->priv;
 	VisEvent ev;
@@ -187,12 +186,12 @@ int act_jakdaw_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_jakdaw_palette (VisActorPlugin *plugin)
+VisPalette *act_jakdaw_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int act_jakdaw_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	JakdawPrivate *priv = plugin->priv;
 	uint32_t *vscr = video->screenbuffer;

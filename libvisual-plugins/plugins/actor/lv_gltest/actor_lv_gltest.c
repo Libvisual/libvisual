@@ -23,13 +23,13 @@ typedef struct {
 	GLfloat scale;
 } GLtestPrivate;
 
-int lv_gltest_init (VisActorPlugin *plugin);
-int lv_gltest_cleanup (VisActorPlugin *plugin);
-int lv_gltest_requisition (VisActorPlugin *plugin, int *width, int *height);
-int lv_gltest_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int lv_gltest_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *lv_gltest_palette (VisActorPlugin *plugin);
-int lv_gltest_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int lv_gltest_init (VisPluginData *plugin);
+int lv_gltest_cleanup (VisPluginData *plugin);
+int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height);
+int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *lv_gltest_palette (VisPluginData *plugin);
+int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static void draw_bars (GLtestPrivate *priv);
 static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2);
@@ -37,46 +37,46 @@ static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, G
 static void draw_bars (GLtestPrivate *priv);
 
 /* Main plugin stuff */
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *lv_gltest;
-	GLtestPrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = lv_gltest_requisition,
+		.palette = lv_gltest_palette,
+		.render = lv_gltest_render,
+		.depth = VISUAL_VIDEO_DEPTH_GL
+	}};
 
-	plugin = visual_plugin_new ();
-	lv_gltest = visual_plugin_actor_new ();
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	lv_gltest->name	= "lv_gltest";
-	lv_gltest->info = visual_plugin_info_new ("libvisual GL analyzer",
-			"Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>",
-			"0.1",
-			"The Libvisual GL analyzer plugin",
-			"This plugin shows an openGL bar analyzer like the xmms one.");
+		.plugname = "lv_gltest",
+		.name = "libvisual GL analyser",
+		.author = "Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "The Libvisual GL analyzer plugin",
+		.help =  "This plugin shows an openGL bar analyzer like the xmms one.",
 
-	lv_gltest->init =		lv_gltest_init;
-	lv_gltest->cleanup =		lv_gltest_cleanup;
-	lv_gltest->requisition =	lv_gltest_requisition;
-	lv_gltest->events =		lv_gltest_events;
-	lv_gltest->palette =		lv_gltest_palette;
-	lv_gltest->render =		lv_gltest_render;
+		.init = lv_gltest_init,
+		.cleanup = lv_gltest_cleanup,
+		.events = lv_gltest_events,
+
+		.plugin = (void *) &actor[0]
+	}};
 	
-	lv_gltest->depth = VISUAL_VIDEO_DEPTH_GL;
+	*count = sizeof (info) / sizeof (*info);
 
-	priv = malloc (sizeof (GLtestPrivate));
-	memset (priv, 0, sizeof (GLtestPrivate));
-
-	lv_gltest->priv = priv;
-
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = lv_gltest;
-
-	return plugin;
+	return info;
 }
 
-int lv_gltest_init (VisActorPlugin *plugin)
+int lv_gltest_init (VisPluginData *plugin)
 {
-	GLtestPrivate *priv = plugin->priv;
+	GLtestPrivate *priv;
 	int x, y;
+
+	priv = visual_mem_new0 (GLtestPrivate, 1);
+	plugin->priv = priv;
 
 	glMatrixMode (GL_PROJECTION);
 
@@ -108,7 +108,7 @@ int lv_gltest_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_gltest_cleanup (VisActorPlugin *plugin)
+int lv_gltest_cleanup (VisPluginData *plugin)
 {
 	GLtestPrivate *priv = plugin->priv;
 
@@ -117,7 +117,7 @@ int lv_gltest_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_gltest_requisition (VisActorPlugin *plugin, int *width, int *height)
+int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -136,7 +136,7 @@ int lv_gltest_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_gltest_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	GLfloat ratio;
 	
@@ -156,7 +156,7 @@ int lv_gltest_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int
 	return 0;
 }
 
-int lv_gltest_events (VisActorPlugin *plugin, VisEventQueue *events)
+int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -174,12 +174,12 @@ int lv_gltest_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_gltest_palette (VisActorPlugin *plugin)
+VisPalette *lv_gltest_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_gltest_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GLtestPrivate *priv = plugin->priv;
 	int i,c;

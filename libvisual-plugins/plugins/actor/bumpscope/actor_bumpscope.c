@@ -9,56 +9,56 @@
 #include "actor_bumpscope.h"
 #include "bump_scope.h"
 
-int act_bumpscope_init (VisActorPlugin *plugin);
-int act_bumpscope_cleanup (VisActorPlugin *plugin);
-int act_bumpscope_requisition (VisActorPlugin *plugin, int *width, int *height);
-int act_bumpscope_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int act_bumpscope_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *act_bumpscope_palette (VisActorPlugin *plugin);
-int act_bumpscope_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int act_bumpscope_init (VisPluginData *plugin);
+int act_bumpscope_cleanup (VisPluginData *plugin);
+int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height);
+int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *act_bumpscope_palette (VisPluginData *plugin);
+int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *bumpscope;
-	BumpscopePrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = act_bumpscope_requisition,
+		.palette = act_bumpscope_palette,
+		.render = act_bumpscope_render,
+		.depth = VISUAL_VIDEO_DEPTH_8BIT
+	}};
 
-	plugin = visual_plugin_new ();
-	bumpscope = visual_plugin_actor_new ();
-	
-	bumpscope->name = "bumpscope";
-	bumpscope->info = visual_plugin_info_new (
-			"Bumpscope plugin",
-			"Original by: Zinx Verituse <zinx@xmms.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
-			"0.0.1",
-			"The bumpscope visual plugin",
-			"This is the libvisual port of the xmms Bumpscope plugin");
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	bumpscope->init =		act_bumpscope_init;
-	bumpscope->cleanup =		act_bumpscope_cleanup;
-	bumpscope->requisition =	act_bumpscope_requisition;
-	bumpscope->events =		act_bumpscope_events;
-	bumpscope->palette =		act_bumpscope_palette;
-	bumpscope->render =		act_bumpscope_render;
+		.plugname = "bumpscope",
+		.name = "Bumpscope plugin",
+		.author = "Original by: Zinx Verituse <zinx@xmms.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.0.1",
+		.about = "The bumpscope visual plugin",
+		.help = "This is the libvisual port of the xmms Bumpscope plugin",
 
-	bumpscope->depth = VISUAL_VIDEO_DEPTH_8BIT;
+		.init = act_bumpscope_init,
+		.cleanup = act_bumpscope_cleanup,
+		.events = act_bumpscope_events,
 
-	priv = malloc (sizeof (BumpscopePrivate));
-	memset (priv, 0, sizeof (BumpscopePrivate));
+		.plugin = (void *) &actor[0]
+	}};
 
-	bumpscope->priv = priv;
+	*count = sizeof (info) / sizeof (*info);
 
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = bumpscope;
-	
-	return plugin;
+	return info;
 }
 
-int act_bumpscope_init (VisActorPlugin *plugin)
+int act_bumpscope_init (VisPluginData *plugin)
 {
-	BumpscopePrivate *priv = plugin->priv;
+	BumpscopePrivate *priv;
 	VisParamContainer *paramcontainer = &plugin->params;
 	VisParamEntry *param;
+
+	priv = visual_mem_new0 (BumpscopePrivate, 1);
+
+	plugin->priv = priv;
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
@@ -67,7 +67,7 @@ int act_bumpscope_init (VisActorPlugin *plugin)
 	priv->color.b =		255;
 	priv->phongres =	256;
 	priv->color_cycle =	TRUE;
-	priv->moving_light =	TRUE;
+	priv->moving_light =	FALSE;
 	priv->diamond =		FALSE;
 
 	/* Parameters */
@@ -99,7 +99,7 @@ int act_bumpscope_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_bumpscope_cleanup (VisActorPlugin *plugin)
+int act_bumpscope_cleanup (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv = plugin->priv;
 	
@@ -112,7 +112,7 @@ int act_bumpscope_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_bumpscope_requisition (VisActorPlugin *plugin, int *width, int *height)
+int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -137,7 +137,7 @@ int act_bumpscope_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_bumpscope_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	BumpscopePrivate *priv = plugin->priv;
 	
@@ -154,7 +154,7 @@ int act_bumpscope_dimension (VisActorPlugin *plugin, VisVideo *video, int width,
 	return 0;
 }
 
-int act_bumpscope_events (VisActorPlugin *plugin, VisEventQueue *events)
+int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	BumpscopePrivate *priv = plugin->priv;
 	VisEvent ev;
@@ -210,14 +210,14 @@ int act_bumpscope_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_bumpscope_palette (VisActorPlugin *plugin)
+VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv = plugin->priv;
 
 	return &priv->pal;
 }
 
-int act_bumpscope_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	BumpscopePrivate *priv = plugin->priv;
 

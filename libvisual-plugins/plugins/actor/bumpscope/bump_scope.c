@@ -142,7 +142,6 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 		if (!was_color) {
 			visual_color_to_hsv (&priv->color, &h, &s, &v);
 
-			printf ("FirstPriv color: %d %d %d %f %f %f\n", priv->color.r, priv->color.g, priv->color.b, h, s, v);
 			was_color = 1;
 
 			if (random()&1) {
@@ -155,7 +154,6 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 		}
 
 		visual_color_from_hsv (&priv->color, h, s, v);
-		printf ("Priv color: %d %d %d %f %f %f\n", priv->color.r, priv->color.g, priv->color.b, h, s, v);
 		__bumpscope_generate_palette (priv, &priv->color);
 
 		if (hd) {
@@ -234,13 +232,18 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 	
 	for (dy = (-ly)+(priv->phongres/2), j = 0; j < priv->height; j++, dy++, prev_y+=priv->video->pitch-priv->width) {
 		for (dx = (-lx)+(priv->phongres/2), i = 0; i < priv->width; i++, dx++, prev_y++) {
+
 			xq = (priv->rgb_buf[prev_y-1]-priv->rgb_buf[prev_y+1])+dx;
 			yq = (priv->rgb_buf[prev_y-priv->video->pitch]-priv->rgb_buf[prev_y+priv->video->pitch])+dy;
+			
 			if (yq<0 || yq>=priv->phongres ||
 			    xq<0 || xq>=priv->phongres) {
+			
 				priv->rgb_buf2[prev_y] = 0;
-			    	continue;
+			    	
+				continue;
 			}
+			
 			priv->rgb_buf2[prev_y] = priv->phongdat[(yq * priv->phongres) + xq];
 		}
 	}
@@ -274,8 +277,10 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 
 	for (y = 0; y < (priv->phongres); y++) {
 		for (x = 0; x < (priv->phongres); x++) {
+
 			i = (double)x/((double)priv->phongres)-1;
 			i2 = (double)y/((double)priv->phongres)-1;
+
 			if (priv->diamond)
 				i = 1 - pow(i*i2,.75) - i*i - i2*i2;
 			else
@@ -293,13 +298,41 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 				priv->phongdat[(y * priv->phongres) + ((priv->phongres-1) - x)] = i;
 				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + ((priv->phongres-1)-x)] = i;
 			} else {
-				priv->phongdat[(y * priv->phongres) + x] = 0;
-				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + x] = 0;
-				priv->phongdat[(y * priv->phongres) + ((priv->phongres-1)-x)] = 0;
-				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + ((priv->phongres-1)-x)] = 0;
+//				priv->phongdat[(y * priv->phongres) + x] = 0;
+//				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + x] = 0;
+//				priv->phongdat[(y * priv->phongres) + ((priv->phongres-1)-x)] = 0;
+//				priv->phongdat[(((priv->phongres-1)-y) * priv->phongres) + ((priv->phongres-1)-x)] = 0;
 			}
 		}
 	}
+#if 0
+	/* Screw this, I can't get it right, and I don't care we're doing it the dirty way (Synap, Dennis Smit) */
+	for (y = 0; y <= priv->phongres / 2; y++) {
+		for (x = 0; x <= priv->phongres / 2; x++) {
+			uint8_t tmp;
+
+			/* Save bottom right */
+			tmp = priv->phongdat[((y + priv->phongres / 2) * priv->phongres) + x + (priv->phongres / 2)];
+			
+			/* Set upper left in bottom right */
+			priv->phongdat[((y + priv->phongres / 2) * priv->phongres) + x + (priv->phongres / 2)] = 
+				priv->phongdat[(y * priv->phongres) + x];
+
+			/* Set old bottom right in upper left */
+			priv->phongdat[(y * priv->phongres) + x] = tmp;
+
+			/* Save bottom left */
+			tmp = priv->phongdat[((y + priv->phongres / 2) * priv->phongres) + x];
+
+			/* Set upper right in bottom left */
+			priv->phongdat[((y + priv->phongres / 2) * priv->phongres) + x] =
+				priv->phongdat[(y * priv->phongres) + x + (priv->phongres / 2)];
+			
+			/* Set old bottom left in upper right */
+			priv->phongdat[(y * priv->phongres) + x + (priv->phongres / 2)] = tmp;
+		}
+	}
+#endif	
 }
 
 void __bumpscope_render_pcm (BumpscopePrivate *priv, short data[3][512])

@@ -19,51 +19,51 @@ typedef struct {
 	int loaded;
 } EsdPrivate;
 
-int inp_esd_init (VisInputPlugin *plugin);
-int inp_esd_cleanup (VisInputPlugin *plugin);
-int inp_esd_upload (VisInputPlugin *plugin, VisAudio *audio);
+int inp_esd_init (VisPluginData *plugin);
+int inp_esd_cleanup (VisPluginData *plugin);
+int inp_esd_upload (VisPluginData *plugin, VisAudio *audio);
 
 static const int inp_esd_var_btmul = sizeof (short);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisInputPlugin *esd_input;
-	EsdPrivate *priv;
-	
-	plugin = visual_plugin_new ();
-	visual_log_return_val_if_fail(plugin != NULL, NULL);
-	esd_input = visual_plugin_input_new ();
-	visual_log_return_val_if_fail(esd_input != NULL, NULL);
-	
-	esd_input->name = "esd";
-	esd_input->info = visual_plugin_info_new ("esd", "Dennis Smit <ds@nerds-incorporated.org>", "0.1",
-			"The ESOUND capture plugin", "Use this plugin to capture PCM data from the ESD daemon");
+	static const VisInputPlugin input[] = {{
+		.upload = inp_esd_upload
+	}};
 
-	esd_input->init =	inp_esd_init;
-	esd_input->cleanup =	inp_esd_cleanup;
-	esd_input->upload =	inp_esd_upload;
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
-	priv = malloc (sizeof (EsdPrivate));
-	visual_log_return_val_if_fail(priv != NULL, NULL);
-	memset (priv, 0, sizeof (EsdPrivate));
-	
-	esd_input->priv = priv;
+		.plugname = "esd",
+		.name = "esd",
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "The ESOUND capture plugin",
+		.help = "Use this plugin to capture PCM data from the ESD daemon",
 
-	plugin->type = VISUAL_PLUGIN_TYPE_INPUT;
-	plugin->plugin.inputplugin = esd_input;
+		.init = inp_esd_init,
+		.cleanup = inp_esd_cleanup,
 
-	return plugin;
+		.plugin = (void *) &input[0]
+	}};
+
+	*count = sizeof (info) / sizeof (*info);
+
+	return info;
 }
 
-int inp_esd_init (VisInputPlugin *plugin)
+int inp_esd_init (VisPluginData *plugin)
 {
-	EsdPrivate *priv = NULL;
+	EsdPrivate *priv;
 
-	visual_log_return_val_if_fail( plugin != NULL, -1 );
-	priv = plugin->priv;
-	visual_log_return_val_if_fail( priv != NULL, -1 );
+	visual_log_return_val_if_fail (plugin != NULL, -1);
 	
+	priv = visual_mem_new0 (EsdPrivate, 1);
+	visual_log_return_val_if_fail (priv != NULL, -1);
+	plugin->priv = priv;	
+
 	priv->esdhandle = esd_monitor_stream (ESD_BITS16 | ESD_STEREO | ESD_STREAM | ESD_MONITOR, 44100, NULL, "lv_esd_plugin");
 
 	if (priv->esdhandle <= 0)
@@ -76,7 +76,7 @@ int inp_esd_init (VisInputPlugin *plugin)
 	return 0;
 }
 
-int inp_esd_cleanup (VisInputPlugin *plugin)
+int inp_esd_cleanup (VisPluginData *plugin)
 {
 	EsdPrivate *priv = plugin->priv;
 
@@ -92,7 +92,7 @@ int inp_esd_cleanup (VisInputPlugin *plugin)
 	return 0;
 }
 
-int inp_esd_upload (VisInputPlugin *plugin, VisAudio *audio)
+int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	EsdPrivate *priv = NULL;
 	short esddata[PCM_BUF_SIZE];

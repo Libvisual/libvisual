@@ -16,57 +16,59 @@ typedef struct {
 	float rot;
 } DNAPrivate;
 
-int lv_dna_init (VisActorPlugin *plugin);
-int lv_dna_cleanup (VisActorPlugin *plugin);
-int lv_dna_requisition (VisActorPlugin *plugin, int *width, int *height);
-int lv_dna_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int lv_dna_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *lv_dna_palette (VisActorPlugin *plugin);
-int lv_dna_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int lv_dna_init (VisPluginData *plugin);
+int lv_dna_cleanup (VisPluginData *plugin);
+int lv_dna_requisition (VisPluginData *plugin, int *width, int *height);
+int lv_dna_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int lv_dna_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *lv_dna_palette (VisPluginData *plugin);
+int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 /*static void draw_bars (DNAPrivate *priv);
 static void draw_rectangle (DNAPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2);
 static void draw_bar (DNAPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue);*/
 
 /* Main plugin stuff */
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *lv_dna;
-	DNAPrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = lv_dna_requisition,
+		.palette = lv_dna_palette,
+		.render = lv_dna_render,
+		.depth = VISUAL_VIDEO_DEPTH_GL
+	}};
 
-	plugin = visual_plugin_new ();
-	lv_dna = visual_plugin_actor_new ();
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	lv_dna->name	= "lv_dna";
-	lv_dna->info = visual_plugin_info_new ("libvisual DNA helix animation",
-			"Written by: Dennis Smit <ds@nerds-incorporated.org>, after some begging by Ronald Bultje",
-			"0.1",
-			"The Libvisual DNA helix animation plugin",
-			"This plugin shows an openGL DNA twisting unfolding and folding on the music.");
+		.plugname = "lv_dna",
+		.name = "libvisual DNA helix animation",
+		.author = "Written by: Dennis Smit <ds@nerds-incorporated.org>, after some begging by Ronald Bultje",
+		.version = "0.1",
+		.about = "The Libvisual DNA helix animation plugin",
+		.help = "This plugin shows an openGL DNA twisting unfolding and folding on the music.",
 
-	lv_dna->init =			lv_dna_init;
-	lv_dna->cleanup =		lv_dna_cleanup;
-	lv_dna->requisition =		lv_dna_requisition;
-	lv_dna->events =		lv_dna_events;
-	lv_dna->palette =		lv_dna_palette;
-	lv_dna->render =		lv_dna_render;
+		.init = lv_dna_init,
+		.cleanup = lv_dna_cleanup,
+		.events = lv_dna_events,
+
+		.plugin = (void *) &actor[0]
+	}};
+
+	*count = sizeof (info) / sizeof (*info);
 	
-	lv_dna->depth = VISUAL_VIDEO_DEPTH_GL;
-
-	priv = malloc (sizeof (DNAPrivate));
-	memset (priv, 0, sizeof (DNAPrivate));
-
-	lv_dna->priv = priv;
-
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = lv_dna;
-
-	return plugin;
+	return info;
 }
 
-int lv_dna_init (VisActorPlugin *plugin)
+int lv_dna_init (VisPluginData *plugin)
 {
+	DNAPrivate *priv;
+
+	priv = visual_mem_new0 (DNAPrivate, 1);
+	plugin->priv = priv;
+
 	glMatrixMode (GL_PROJECTION);
 
 	glLoadIdentity ();
@@ -85,7 +87,7 @@ int lv_dna_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_dna_cleanup (VisActorPlugin *plugin)
+int lv_dna_cleanup (VisPluginData *plugin)
 {
 	DNAPrivate *priv = plugin->priv;
 
@@ -94,7 +96,7 @@ int lv_dna_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_dna_requisition (VisActorPlugin *plugin, int *width, int *height)
+int lv_dna_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -113,7 +115,7 @@ int lv_dna_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_dna_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int lv_dna_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	GLfloat ratio;
 	
@@ -133,7 +135,7 @@ int lv_dna_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int he
 	return 0;
 }
 
-int lv_dna_events (VisActorPlugin *plugin, VisEventQueue *events)
+int lv_dna_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -151,12 +153,12 @@ int lv_dna_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_dna_palette (VisActorPlugin *plugin)
+VisPalette *lv_dna_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_dna_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	DNAPrivate *priv = plugin->priv;
 	float res;

@@ -22,50 +22,55 @@ static void vline_from_video_16 (VisVideo *dest, VisVideo *src, int x, int y1, i
 static void vline_from_video_24 (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
 static void vline_from_video_32 (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
 
-int lv_morph_tentacle_init (VisMorphPlugin *plugin);
-int lv_morph_tentacle_cleanup (VisMorphPlugin *plugin);
-int lv_morph_tentacle_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+int lv_morph_tentacle_init (VisPluginData *plugin);
+int lv_morph_tentacle_cleanup (VisPluginData *plugin);
+int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisMorphPlugin *morph;
-	TentaclePrivate *priv;
+	static const VisMorphPlugin morph[] = {{
+		.apply = lv_morph_tentacle_apply,
+		.depth =
+			VISUAL_VIDEO_DEPTH_8BIT |
+			VISUAL_VIDEO_DEPTH_16BIT |
+			VISUAL_VIDEO_DEPTH_24BIT |
+			VISUAL_VIDEO_DEPTH_32BIT
+	}};
+
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_MORPH,
+
+		.plugname = "tentacle",
+		.name = "tentacle morph",
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "An sine wave morph plugin",
+		.help = "This morph plugin morphs between two video sources using some sort of wave that grows in size",
+
+		.init = lv_morph_tentacle_init,
+		.cleanup = lv_morph_tentacle_cleanup,
+
+		.plugin = (void *) &morph[0]
+	}};
+
+	*count = sizeof (info) / sizeof (*info);
 	
-	plugin = visual_plugin_new ();
-	morph = visual_plugin_morph_new ();
-
-	morph->name = "tentacle";
-	morph->info = visual_plugin_info_new ("tentacle morph", "Dennis Smit <ds@nerds-incorporated.org>", "0.1",
-			"An sine wave morph plugin", "This morph plugin morphs between two video sources using some sort of wave that grows in size");
-
-	morph->init =		lv_morph_tentacle_init;
-	morph->cleanup =	lv_morph_tentacle_cleanup;
-	morph->apply =		lv_morph_tentacle_apply;
-
-	morph->depth =
-		VISUAL_VIDEO_DEPTH_8BIT |
-		VISUAL_VIDEO_DEPTH_16BIT |
-		VISUAL_VIDEO_DEPTH_24BIT |
-		VISUAL_VIDEO_DEPTH_32BIT;
-
-	priv = malloc (sizeof (TentaclePrivate));
-	memset (priv, 0, sizeof (TentaclePrivate));
-
-	morph->priv = priv;
-
-	plugin->type = VISUAL_PLUGIN_TYPE_MORPH;
-	plugin->plugin.morphplugin = morph;
-
-	return plugin;
+	return info;
 }
 
-int lv_morph_tentacle_init (VisMorphPlugin *plugin)
+int lv_morph_tentacle_init (VisPluginData *plugin)
 {
+	TentaclePrivate *priv;
+
+	priv = visual_mem_new0 (TentaclePrivate, 1);
+	plugin->priv = priv;
+
 	return 0;
 }
 
-int lv_morph_tentacle_cleanup (VisMorphPlugin *plugin)
+int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 {
 	TentaclePrivate *priv = plugin->priv;
 
@@ -74,7 +79,7 @@ int lv_morph_tentacle_cleanup (VisMorphPlugin *plugin)
 	return 0;
 }
 
-int lv_morph_tentacle_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	TentaclePrivate *priv = plugin->priv;
 	uint8_t *destbuf = dest->screenbuffer;

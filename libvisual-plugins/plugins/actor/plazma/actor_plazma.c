@@ -9,56 +9,55 @@
 #include "plazma.h"
 #include "actor_plazma.h"
 
-int act_plazma_init (VisActorPlugin *plugin);
-int act_plazma_cleanup (VisActorPlugin *plugin);
-int act_plazma_requisition (VisActorPlugin *plugin, int *width, int *height);
-int act_plazma_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int act_plazma_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *act_plazma_palette (VisActorPlugin *plugin);
-int act_plazma_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int act_plazma_init (VisPluginData *plugin);
+int act_plazma_cleanup (VisPluginData *plugin);
+int act_plazma_requisition (VisPluginData *plugin, int *width, int *height);
+int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int act_plazma_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *act_plazma_palette (VisPluginData *plugin);
+int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *plazma;
-	PlazmaPrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = act_plazma_requisition,
+		.palette = act_plazma_palette,
+		.render = act_plazma_render,
+		.depth = VISUAL_VIDEO_DEPTH_8BIT
+	}};
 
-	plugin = visual_plugin_new ();
-	plazma = visual_plugin_actor_new ();
-	
-	plazma->name = "plazma";
-	plazma->info = visual_plugin_info_new (
-			"Plazma plugin",
-			"Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
-			"0.0.1",
-			"The plazma visual plugin",
-			"This is the libvisual port of the xmms Plazma plugin");
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	plazma->init =		act_plazma_init;
-	plazma->cleanup =	act_plazma_cleanup;
-	plazma->requisition =	act_plazma_requisition;
-	plazma->events =	act_plazma_events;
-	plazma->palette =	act_plazma_palette;
-	plazma->render =	act_plazma_render;
+		.plugname = "plazma",
+		.name = "Plazma plugin",
+		.author = "Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.0.1",
+		.about = "The plazma visual plugin",
+		.help = "This is the libvisual port of the xmms Plazma plugin",
 
-	plazma->depth = VISUAL_VIDEO_DEPTH_8BIT;
+		.init = act_plazma_init,
+		.cleanup = act_plazma_cleanup,
+		.events = act_plazma_events,
 
-	priv = malloc (sizeof (PlazmaPrivate));
-	memset (priv, 0, sizeof (PlazmaPrivate));
+		.plugin = (void *) &actor[0]
+	}};
 
-	plazma->priv = priv;
+	*count = sizeof (info) / sizeof (*info);
 
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = plazma;
-	
-	return plugin;
+	return info;
 }
 
-int act_plazma_init (VisActorPlugin *plugin)
+int act_plazma_init (VisPluginData *plugin)
 {
-	PlazmaPrivate *priv = plugin->priv;
+	PlazmaPrivate *priv;
 	VisParamContainer *paramcontainer = &plugin->params;
 	VisParamEntry *param;
+
+	priv = visual_mem_new0 (PlazmaPrivate, 1);
+	plugin->priv = priv;
 
 	visual_palette_allocate_colors (&priv->colors, 256);
 	
@@ -116,7 +115,7 @@ int act_plazma_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_plazma_cleanup (VisActorPlugin *plugin)
+int act_plazma_cleanup (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv = plugin->priv;
 
@@ -129,7 +128,7 @@ int act_plazma_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_plazma_requisition (VisActorPlugin *plugin, int *width, int *height)
+int act_plazma_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -154,7 +153,7 @@ int act_plazma_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_plazma_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	PlazmaPrivate *priv = plugin->priv;
 	
@@ -172,7 +171,7 @@ int act_plazma_dimension (VisActorPlugin *plugin, VisVideo *video, int width, in
 	return 0;
 }
 
-int act_plazma_events (VisActorPlugin *plugin, VisEventQueue *events)
+int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	PlazmaPrivate *priv = plugin->priv;
 	VisEvent ev;
@@ -222,14 +221,14 @@ int act_plazma_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_plazma_palette (VisActorPlugin *plugin)
+VisPalette *act_plazma_palette (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv = plugin->priv;
 
 	return &priv->colors;;
 }
 
-int act_plazma_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PlazmaPrivate *priv = plugin->priv;
 	int i;

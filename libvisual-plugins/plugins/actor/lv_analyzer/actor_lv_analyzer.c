@@ -16,61 +16,60 @@ typedef struct {
 static int calc_bands (VisAudio *audio, int band);
 static void hline (uint8_t *buf, VisVideo *video, int x1, int x2, int y, int col);
 
-int lv_analyzer_init (VisActorPlugin *plugin);
-int lv_analyzer_cleanup (VisActorPlugin *plugin);
-int lv_analyzer_requisition (VisActorPlugin *plugin, int *width, int *height);
-int lv_analyzer_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int lv_analyzer_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *lv_analyzer_palette (VisActorPlugin *plugin);
-int lv_analyzer_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int lv_analyzer_init (VisPluginData *plugin);
+int lv_analyzer_cleanup (VisPluginData *plugin);
+int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height);
+int lv_analyzer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *lv_analyzer_palette (VisPluginData *plugin);
+int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *lv_analyzer;
-	AnalyzerPrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = lv_analyzer_requisition,
+		.palette = lv_analyzer_palette,
+		.render = lv_analyzer_render,
+		.depth = VISUAL_VIDEO_DEPTH_8BIT
+	}};
 
-	plugin = visual_plugin_new ();
-	lv_analyzer = visual_plugin_actor_new ();
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	lv_analyzer->name = "lv_analyzer";
-	lv_analyzer->info = visual_plugin_info_new (
-			"libvisual analyzer",
-			"Dennis Smit <ds@nerds-incorporated.org>",
-			"0.1",
-			"The Libvisual analzer plugin",
-			"This is a test plugin that'll display a simple analyzer");
+		.plugname = "lv_analyzer",
+		.name = "libvisual analyzer",
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "The Libvisual analzer plugin",
+		.help = "This is a test plugin that'll display a simple analyzer",
 
-	lv_analyzer->init =		lv_analyzer_init;
-	lv_analyzer->cleanup =		lv_analyzer_cleanup;
-	lv_analyzer->requisition =	lv_analyzer_requisition;
-	lv_analyzer->events =		lv_analyzer_events;
-	lv_analyzer->palette =		lv_analyzer_palette;
-	lv_analyzer->render =		lv_analyzer_render;
+		.init = lv_analyzer_init,
+		.cleanup = lv_analyzer_cleanup,
+		.events = lv_analyzer_events,
 
-	lv_analyzer->depth = VISUAL_VIDEO_DEPTH_8BIT;
+		.plugin = (void *) &actor[0]
+	}};
 
-	priv = malloc (sizeof (AnalyzerPrivate));
-	memset (priv, 0, sizeof (AnalyzerPrivate));
+	*count = sizeof (info) / sizeof (*info);
 
-	lv_analyzer->priv = priv;
-
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = lv_analyzer;
-
-	return plugin;
+	return info;
 }
 
-int lv_analyzer_init (VisActorPlugin *plugin)
+int lv_analyzer_init (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = plugin->priv;
+	AnalyzerPrivate *priv;
+
+	priv = visual_mem_new0 (AnalyzerPrivate, 1);
+	plugin->priv = priv;
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
 	return 0;
 }
 
-int lv_analyzer_cleanup (VisActorPlugin *plugin)
+int lv_analyzer_cleanup (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = plugin->priv;
 
@@ -81,7 +80,7 @@ int lv_analyzer_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_analyzer_requisition (VisActorPlugin *plugin, int *width, int *height)
+int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw;
 
@@ -99,14 +98,14 @@ int lv_analyzer_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_analyzer_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int lv_analyzer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	visual_video_set_dimension (video, width, height);
 
 	return 0;
 }
 
-int lv_analyzer_events (VisActorPlugin *plugin, VisEventQueue *events)
+int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -124,7 +123,7 @@ int lv_analyzer_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_analyzer_palette (VisActorPlugin *plugin)
+VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = plugin->priv;
 	int i;
@@ -138,7 +137,7 @@ VisPalette *lv_analyzer_palette (VisActorPlugin *plugin)
 	return &priv->pal;
 }
 
-int lv_analyzer_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	AnalyzerPrivate *priv = plugin->priv;
 	int size;

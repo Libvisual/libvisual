@@ -18,60 +18,55 @@ static inline int alpha_blend_16_c (uint8_t *dest, uint8_t *src1, uint8_t *src2,
 static inline int alpha_blend_24_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
 static inline int alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
 
-int lv_morph_alpha_init (VisMorphPlugin *plugin);
-int lv_morph_alpha_cleanup (VisMorphPlugin *plugin);
-int lv_morph_alpha_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+int lv_morph_alpha_init (VisPluginData *plugin);
+int lv_morph_alpha_cleanup (VisPluginData *plugin);
+int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisMorphPlugin *morph;
+	static const VisMorphPlugin morph[] = {{
+		.apply = lv_morph_alpha_apply,
+		.depth =
+			VISUAL_VIDEO_DEPTH_8BIT  |
+			VISUAL_VIDEO_DEPTH_16BIT |
+			VISUAL_VIDEO_DEPTH_24BIT |
+			VISUAL_VIDEO_DEPTH_32BIT
+	}};
 
-	plugin = visual_plugin_new ();
-	if (plugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"Could not create a new plugin");
-		return NULL;
-	}
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
-	morph = visual_plugin_morph_new ();
-	if (morph == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"Could not create a new morph plugin");
-		return NULL;
-	}
+		.plugname = "alphablend",
+		.name = "alphablend morph",
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "An alphablend morph plugin",
+		.help = "This morph plugin morphs between two video sources using the alphablend method",
 
-	morph->name = "alphablend";
-	morph->info = visual_plugin_info_new ("alphablend morph", "Dennis Smit <ds@nerds-incorporated.org>", "0.1",
-			"An alphablend morph plugin", "This morph plugin morphs between two video sources using the alphablend method");
+		.init = lv_morph_alpha_init,
+		.cleanup = lv_morph_alpha_cleanup,
 
-	morph->init =		lv_morph_alpha_init;
-	morph->cleanup =	lv_morph_alpha_cleanup;
-	morph->apply =		lv_morph_alpha_apply;
+		.plugin = (void *) &morph[0]
+	}};
 
-	morph->depth =
-		VISUAL_VIDEO_DEPTH_8BIT  |
-		VISUAL_VIDEO_DEPTH_16BIT |
-		VISUAL_VIDEO_DEPTH_24BIT |
-		VISUAL_VIDEO_DEPTH_32BIT;
+	*count = sizeof (info) / sizeof (*info);
 
-	plugin->type = VISUAL_PLUGIN_TYPE_MORPH;
-	plugin->plugin.morphplugin = morph;
-
-	return plugin;
+	return info;
 }
 
-int lv_morph_alpha_init (VisMorphPlugin *plugin)
+int lv_morph_alpha_init (VisPluginData *plugin)
 {
 	return 0;
 }
 
-int lv_morph_alpha_cleanup (VisMorphPlugin *plugin)
+int lv_morph_alpha_cleanup (VisPluginData *plugin)
 {
 	return 0;
 }
 
-int lv_morph_alpha_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	visual_log_return_val_if_fail (dest != NULL, -1);
 	visual_log_return_val_if_fail (src1 != NULL, -1);

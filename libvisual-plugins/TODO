@@ -38,6 +38,9 @@ inputs:
 			so everyone can make use of it.
 
 actors:
+	bumpscope:
+		Fix the light.
+
 	GLPLUGINS:
 		make sure the states are being resetted very well.
 

@@ -19,56 +19,55 @@ typedef struct {
 
 static int alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
 
-int act_oinksie_init (VisActorPlugin *plugin);
-int act_oinksie_cleanup (VisActorPlugin *plugin);
-int act_oinksie_requisition (VisActorPlugin *plugin, int *width, int *height);
-int act_oinksie_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int act_oinksie_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *act_oinksie_palette (VisActorPlugin *plugin);
-int act_oinksie_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int act_oinksie_init (VisPluginData *plugin);
+int act_oinksie_cleanup (VisPluginData *plugin);
+int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height);
+int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *act_oinksie_palette (VisPluginData *plugin);
+int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *oinksie;
-	OinksiePrivContainer *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = act_oinksie_requisition,
+		.palette = act_oinksie_palette,
+		.render = act_oinksie_render,
+		.depth =
+			VISUAL_VIDEO_DEPTH_8BIT |
+			VISUAL_VIDEO_DEPTH_32BIT,
+	}};
 
-	plugin = visual_plugin_new ();
-	oinksie = visual_plugin_actor_new ();
-	
-	oinksie->name = "oinksie";
-	oinksie->info = visual_plugin_info_new (
-			"oinksie plugin",
-			"Dennis Smit <ds@nerds-incorporated.org>",
-			"0.1",
-			"The oinksie visual plugin",
-			"This is the libvisual plugin for the oinksie visual");
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	oinksie->init =		act_oinksie_init;
-	oinksie->cleanup =	act_oinksie_cleanup;
-	oinksie->requisition =	act_oinksie_requisition;
-	oinksie->events =	act_oinksie_events;
-	oinksie->palette =	act_oinksie_palette;
-	oinksie->render =	act_oinksie_render;
+		.plugname = "oinksie",
+		.name = "oinksie plugin",
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "The oinksie visual plugin",
+		.help = "This is the libvisual plugin for the oinksie visual",
 
-	oinksie->depth =
-		VISUAL_VIDEO_DEPTH_8BIT |
-		VISUAL_VIDEO_DEPTH_32BIT;
+		.init = act_oinksie_init,
+		.cleanup = act_oinksie_cleanup,
+		.events = act_oinksie_events,
 
-	priv = malloc (sizeof (OinksiePrivContainer));
-	memset (priv, 0, sizeof (OinksiePrivContainer));
+		.plugin = (void *) &actor[0]
+	}};
 
-	oinksie->priv = priv;
+	*count = sizeof (info) / sizeof (*info);
 
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = oinksie;
-	
-	return plugin;
+	return info;
 }
 
-int act_oinksie_init (VisActorPlugin *plugin)
+int act_oinksie_init (VisPluginData *plugin)
 {
-	OinksiePrivContainer *priv = plugin->priv;
+	OinksiePrivContainer *priv;
+
+	priv = visual_mem_new0 (OinksiePrivContainer, 1);
+	plugin->priv = priv;
 
 	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
 	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);
@@ -82,7 +81,7 @@ int act_oinksie_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_oinksie_cleanup (VisActorPlugin *plugin)
+int act_oinksie_cleanup (VisPluginData *plugin)
 {
 	OinksiePrivContainer *priv = plugin->priv;
 
@@ -108,7 +107,7 @@ int act_oinksie_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_oinksie_requisition (VisActorPlugin *plugin, int *width, int *height)
+int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -135,7 +134,7 @@ int act_oinksie_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_oinksie_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	OinksiePrivContainer *priv = plugin->priv;
 	
@@ -176,7 +175,7 @@ int act_oinksie_dimension (VisActorPlugin *plugin, VisVideo *video, int width, i
 	return 0;
 }
 
-int act_oinksie_events (VisActorPlugin *plugin, VisEventQueue *events)
+int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -196,7 +195,7 @@ int act_oinksie_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_oinksie_palette (VisActorPlugin *plugin)
+VisPalette *act_oinksie_palette (VisPluginData *plugin)
 {
 	OinksiePrivContainer *priv = plugin->priv;
 	VisPalette *pal;
@@ -206,7 +205,7 @@ VisPalette *act_oinksie_palette (VisActorPlugin *plugin)
 	return pal;
 }
 
-int act_oinksie_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	OinksiePrivContainer *priv = plugin->priv;
 	VisVideo transvid;

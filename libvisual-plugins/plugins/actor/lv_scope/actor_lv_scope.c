@@ -10,61 +10,60 @@ typedef struct {
 	VisPalette pal;
 } ScopePrivate;
 
-int lv_scope_init (VisActorPlugin *plugin);
-int lv_scope_cleanup (VisActorPlugin *plugin);
-int lv_scope_requisition (VisActorPlugin *plugin, int *width, int *height);
-int lv_scope_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int lv_scope_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *lv_scope_palette (VisActorPlugin *plugin);
-int lv_scope_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int lv_scope_init (VisPluginData *plugin);
+int lv_scope_cleanup (VisPluginData *plugin);
+int lv_scope_requisition (VisPluginData *plugin, int *width, int *height);
+int lv_scope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int lv_scope_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *lv_scope_palette (VisPluginData *plugin);
+int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *lv_scope;
-	ScopePrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = lv_scope_requisition,
+		.palette = lv_scope_palette,
+		.render = lv_scope_render,
+		.depth = VISUAL_VIDEO_DEPTH_8BIT
+	}};
 
-	plugin = visual_plugin_new ();
-	lv_scope = visual_plugin_actor_new ();
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	lv_scope->name = "lv_scope";
-	lv_scope->info = visual_plugin_info_new (
-			"libvisual scope",
-			"Dennis Smit <ds@nerds-incorporated.org>",
-			"0.1",
-			"The Libvisual scope plugin",
-			"This is a test plugin that'll display a simple scope");
+		.plugname = "lv_scope",
+		.name = "libvisual scope",
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "The Libvisual scope plugin",
+		.help = "This is a test plugin that'll display a simple scope",
 
-	lv_scope->init =	lv_scope_init;
-	lv_scope->cleanup =	lv_scope_cleanup;
-	lv_scope->requisition =	lv_scope_requisition;
-	lv_scope->events =	lv_scope_events;
-	lv_scope->palette =	lv_scope_palette;
-	lv_scope->render =	lv_scope_render;
+		.init = lv_scope_init,
+		.cleanup = lv_scope_cleanup,
+		.events = lv_scope_events,
 
-	lv_scope->depth = VISUAL_VIDEO_DEPTH_8BIT;
+		.plugin = (void *) &actor[0]
+	}};
 
-	priv = malloc (sizeof (ScopePrivate));
-	memset (priv, 0, sizeof (ScopePrivate));
+	*count = sizeof (info) / sizeof (*info);
 
-	lv_scope->priv = priv;
-
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = lv_scope;
-
-	return plugin;
+	return info;
 }
 
-int lv_scope_init (VisActorPlugin *plugin)
+int lv_scope_init (VisPluginData *plugin)
 {
-	ScopePrivate *priv = plugin->priv;
+	ScopePrivate *priv;
+
+	priv = visual_mem_new0 (ScopePrivate, 1);
+	plugin->priv = priv;
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
 	return 0;
 }
 
-int lv_scope_cleanup (VisActorPlugin *plugin)
+int lv_scope_cleanup (VisPluginData *plugin)
 {
 	ScopePrivate *priv = plugin->priv;
 
@@ -75,7 +74,7 @@ int lv_scope_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_scope_requisition (VisActorPlugin *plugin, int *width, int *height)
+int lv_scope_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -100,14 +99,14 @@ int lv_scope_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_scope_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int lv_scope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	visual_video_set_dimension (video, width, height);
 
 	return 0;
 }
 
-int lv_scope_events (VisActorPlugin *plugin, VisEventQueue *events)
+int lv_scope_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -125,7 +124,7 @@ int lv_scope_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_scope_palette (VisActorPlugin *plugin)
+VisPalette *lv_scope_palette (VisPluginData *plugin)
 {
 	ScopePrivate *priv = plugin->priv;
 	int i;
@@ -139,7 +138,7 @@ VisPalette *lv_scope_palette (VisActorPlugin *plugin)
 	return &priv->pal;
 }
 
-int lv_scope_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	int adder = video->width > 512 ? (video->width - 512) / 2 : 0;
 	int i, y;

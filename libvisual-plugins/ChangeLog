@@ -1,3 +1,10 @@
+2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Plugins that build are ported to the new plugin system.
+
+	* plugins/madspin/madspin.c (lv_madspin_init): Use params for number
+	of stars and speed.
+
 2004-08-27  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/gdkpixbuf/actor_gdkpixbuf.c: Fixed a crasher due

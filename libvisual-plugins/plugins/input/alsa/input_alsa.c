@@ -18,57 +18,48 @@ typedef struct {
 	int clearcount;
 } alsaPrivate;
 
-static int inp_alsa_init (VisInputPlugin *plugin);
-static int inp_alsa_cleanup (VisInputPlugin *plugin);
-static int inp_alsa_upload (VisInputPlugin *plugin, VisAudio *audio);
+static int inp_alsa_init (VisPluginData *plugin);
+static int inp_alsa_cleanup (VisPluginData *plugin);
+static int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio);
 
 static const int  inp_alsa_var_btmul      = sizeof (short);
 static const char *inp_alsa_var_cdevice   = "hw:0,0";
 static const int  inp_alsa_var_samplerate = 44100;
 static const int  inp_alsa_var_channels   = 2;
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisInputPlugin *alsa_input;
-	alsaPrivate *priv;
+	static const VisInputPlugin input[] = {{
+		.upload = inp_alsa_upload
+	}};
 	
-	plugin = visual_plugin_new ();
-	visual_log_return_val_if_fail(plugin != NULL, NULL);
-	alsa_input = visual_plugin_input_new ();
-	visual_log_return_val_if_fail(alsa_input != NULL, NULL);
-	
-	alsa_input->name = "alsa";
-	alsa_input->info = visual_plugin_info_new (
-		"alsa",
-		"Vitaly V. Bursov <vitalyb@mail333.com>",
-		"0.1",
-		"The ALSA capture plugin.\n"
-		"Based on ESD capture plugin by Dennis Smit.",
-		"Use this plugin to capture PCM data from the ALSA " \
-		"record device");
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
-	alsa_input->init =	inp_alsa_init;
-	alsa_input->cleanup =	inp_alsa_cleanup;
-	alsa_input->upload =	inp_alsa_upload;
+		.plugname = "alsa",
+		.name = "alsa",
+		.author = "Vitaly V. Bursov <vitalyb@mail333.com>",
+		.version = "0.1",
+		.about = "The ALSA capture plugin.",
+		.help = "Use this plugin to capture PCM data from the ALSA record device",
 
-	priv = malloc (sizeof (alsaPrivate));
-	visual_log_return_val_if_fail(priv != NULL, NULL);
+		.init = inp_alsa_init,
+		.cleanup = inp_alsa_cleanup,
+		
+		.plugin = (void *) &input[0]
+	}};
 
-	memset (priv, 0, sizeof (alsaPrivate));
+	*count = sizeof (info) / sizeof (*info);
 
-	alsa_input->priv = priv;
-
-	plugin->type = VISUAL_PLUGIN_TYPE_INPUT;
-	plugin->plugin.inputplugin = alsa_input;
-
-	return plugin;
+	return info;
 }
 
-int inp_alsa_init (VisInputPlugin *plugin)
+int inp_alsa_init (VisPluginData *plugin)
 {
 	snd_pcm_hw_params_t *hwparams = NULL;
-	alsaPrivate *priv = NULL;
+	alsaPrivate *priv;
 	int rate = inp_alsa_var_samplerate;
 	int exact_rate;
 	int dir;
@@ -76,9 +67,11 @@ int inp_alsa_init (VisInputPlugin *plugin)
 	int tmp;
 
 	visual_log_return_val_if_fail(plugin != NULL, -1);
-	priv = plugin->priv;
+	
+	priv = visual_mem_new0 (alsaPrivate, 1);
 	visual_log_return_val_if_fail(priv != NULL, -1);
 	
+	plugin->priv = priv;
 
 	if ((err = snd_pcm_open(&priv->chandle, strdup(inp_alsa_var_cdevice),
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
@@ -159,7 +152,7 @@ int inp_alsa_init (VisInputPlugin *plugin)
 	return 0;
 }
 
-int inp_alsa_cleanup (VisInputPlugin *plugin)
+int inp_alsa_cleanup (VisPluginData *plugin)
 {
 	alsaPrivate *priv = NULL;
 
@@ -170,12 +163,12 @@ int inp_alsa_cleanup (VisInputPlugin *plugin)
 	if (priv->loaded == 1)
 		snd_pcm_close(priv->chandle);
 
-	free (priv);
+	visual_mem_free (priv);
 	plugin->priv = NULL;
 	return 0;
 }
 
-int inp_alsa_upload (VisInputPlugin *plugin, VisAudio *audio)
+int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	short data[PCM_BUF_SIZE];
 	alsaPrivate *priv = NULL;

@@ -19,65 +19,68 @@ static void replacetable_generate_24 (FlashPrivate *priv, float rate);
 static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-int lv_morph_flash_init (VisMorphPlugin *plugin);
-int lv_morph_flash_cleanup (VisMorphPlugin *plugin);
-int lv_morph_flash_palette (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
-int lv_morph_flash_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+int lv_morph_flash_init (VisPluginData *plugin);
+int lv_morph_flash_cleanup (VisPluginData *plugin);
+int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
+int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisMorphPlugin *morph;
-	FlashPrivate *priv;
-	
-	plugin = visual_plugin_new ();
-	morph = visual_plugin_morph_new ();
+	static const VisMorphPlugin morph[] = {{
+		.palette = lv_morph_flash_palette,
+		.apply = lv_morph_flash_apply,
+		.depth =
+			VISUAL_VIDEO_DEPTH_8BIT  |
+			VISUAL_VIDEO_DEPTH_16BIT |
+			VISUAL_VIDEO_DEPTH_24BIT |
+			VISUAL_VIDEO_DEPTH_32BIT
+	}};
 
-	morph->name = "flash";
-	morph->info = visual_plugin_info_new ("flash morph", "Dennis Smit <ds@nerds-incorporated.org>", "0.1",
-			"An flash in and out morph plugin", "This morph plugin morphs between two video sources using a bright flash");
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
-	morph->init =		lv_morph_flash_init;
-	morph->cleanup =	lv_morph_flash_cleanup;
-	morph->palette =	lv_morph_flash_palette;
-	morph->apply =		lv_morph_flash_apply;
+		.plugname = "flash",
+		.name = "flash morph",
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "An flash in and out morph plugin",
+		.help = "This morph plugin morphs between two video sources using a bright flash",
 
-	morph->depth =
-		VISUAL_VIDEO_DEPTH_8BIT  |
-		VISUAL_VIDEO_DEPTH_16BIT |
-		VISUAL_VIDEO_DEPTH_24BIT |
-		VISUAL_VIDEO_DEPTH_32BIT;
+		.init = lv_morph_flash_init,
+		.cleanup = lv_morph_flash_cleanup,
+		
+		.plugin = (void *) &morph[0]
+	}};
 
-	priv = malloc (sizeof (FlashPrivate));
-	memset (priv, 0, sizeof (FlashPrivate));
+	*count = sizeof (info) / sizeof (*info);
 
-	morph->priv = priv;
-
-	plugin->type = VISUAL_PLUGIN_TYPE_MORPH;
-	plugin->plugin.morphplugin = morph;
-
-	return plugin;
+	return info;
 }
 
-int lv_morph_flash_init (VisMorphPlugin *plugin)
+int lv_morph_flash_init (VisPluginData *plugin)
 {
-	FlashPrivate *priv = plugin->priv;
+	FlashPrivate *priv;
 
+	priv = visual_mem_new0 (FlashPrivate, 1);
+	plugin->priv = priv;
+	
 	memset (&priv->whitepal, 0xff, sizeof (VisPalette));
 	
 	return 0;
 }
 
-int lv_morph_flash_cleanup (VisMorphPlugin *plugin)
+int lv_morph_flash_cleanup (VisPluginData *plugin)
 {
 	FlashPrivate *priv = plugin->priv;
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }
 
-int lv_morph_flash_palette (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
+int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
 {
 	FlashPrivate *priv = plugin->priv;
 
@@ -89,7 +92,7 @@ int lv_morph_flash_palette (VisMorphPlugin *plugin, float rate, VisAudio *audio,
 	return 0;
 }
 
-int lv_morph_flash_apply (VisMorphPlugin *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	FlashPrivate *priv = plugin->priv;
 

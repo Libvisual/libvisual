@@ -12,10 +12,6 @@
 
 #include <libvisual/libvisual.h>
 
-/* FIXME Make params for these when the core supports this */
-#define NUM_STARS	512
-#define SPEED		715
-
 typedef struct {
 	int initialized;
 
@@ -34,61 +30,66 @@ typedef struct {
 	float gdata[256];
 
 	struct timeval tv_past;
+
+	/* Config */
+	int num_stars;
+	int speed;
 } MadspinPrivate;
 
-int lv_madspin_init (VisActorPlugin *plugin);
-int lv_madspin_cleanup (VisActorPlugin *plugin);
-int lv_madspin_requisition (VisActorPlugin *plugin, int *width, int *height);
-int lv_madspin_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int lv_madspin_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *lv_madspin_palette (VisActorPlugin *plugin);
-int lv_madspin_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int lv_madspin_init (VisPluginData *plugin);
+int lv_madspin_cleanup (VisPluginData *plugin);
+int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height);
+int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *lv_madspin_palette (VisPluginData *plugin);
+int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static int madspin_load_textures (MadspinPrivate *priv);
 static int madspin_sound (MadspinPrivate *priv, VisAudio *audio);
 static int madspin_draw (MadspinPrivate *priv, VisVideo *video);
 
 /* Main plugin stuff */
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *lv_madspin;
-	MadspinPrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = lv_madspin_requisition,
+		.palette = lv_madspin_palette,
+		.render = lv_madspin_render,
+		.depth = VISUAL_VIDEO_DEPTH_GL
+	}};
 
-	plugin = visual_plugin_new ();
-	lv_madspin = visual_plugin_actor_new ();
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	lv_madspin->name	= "madspin";
-	lv_madspin->info = visual_plugin_info_new (
-			"libvisual madspin port",
-			"Original by: Andrew Birck <birck@uiuc.edu>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
-			"0.1",
-			"The Libvisual madspin plugin",
-			"This plugin shows a nifty visual effect using openGL");
+		.plugname = "madspin",
+		.name = "libvisual madspin port",
+		.author = "Original by: Andrew Birck <birck@uiuc.edu>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "The Libvisual madspin plugin",
+		.help = "This plugin shows a nifty visual effect using openGL",
 
-	lv_madspin->init =		lv_madspin_init;
-	lv_madspin->cleanup =		lv_madspin_cleanup;
-	lv_madspin->requisition =	lv_madspin_requisition;
-	lv_madspin->events =		lv_madspin_events;
-	lv_madspin->palette =		lv_madspin_palette;
-	lv_madspin->render =		lv_madspin_render;
-	
-	lv_madspin->depth = VISUAL_VIDEO_DEPTH_GL;
+		.init = lv_madspin_init,
+		.cleanup = lv_madspin_cleanup,
+		.events = lv_madspin_events,
 
-	priv = malloc (sizeof (MadspinPrivate));
-	memset (priv, 0, sizeof (MadspinPrivate));
+		.plugin = (void *) &actor[0]
+	}};
 
-	lv_madspin->priv = priv;
+	*count = sizeof (info) / sizeof (*info);
 
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = lv_madspin;
-
-	return plugin;
+	return info;
 }
 
-int lv_madspin_init (VisActorPlugin *plugin)
+int lv_madspin_init (VisPluginData *plugin)
 {
-	MadspinPrivate *priv = plugin->priv;
+	MadspinPrivate *priv;
+	VisParamContainer *paramcontainer = &plugin->params;
+	VisParamEntry *param;
+
+	priv = visual_mem_new0 (MadspinPrivate, 1);
+	plugin->priv = priv;
 
 	priv->maxlines = 1;
 	priv->texsize = 0.25f;
@@ -98,6 +99,20 @@ int lv_madspin_init (VisActorPlugin *plugin)
 	priv->total = 0;
 	priv->frame = 0;
 
+	priv->num_stars = 512;
+	priv->speed = 715;
+	
+	/* Parameters */
+	param = visual_param_entry_new ("num stars");
+	visual_param_entry_set_integer (param, priv->num_stars);
+	visual_param_container_add (paramcontainer, param);
+
+	/* Plotter color trigger */
+	param = visual_param_entry_new ("speed");
+	visual_param_entry_set_integer (param, priv->speed);
+	visual_param_container_add (paramcontainer, param);
+
+	/* GL and the such */
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
 	glOrtho (-4.0, 4.0, -4.0, 4.0, -18.0, 18.0);
@@ -121,7 +136,7 @@ int lv_madspin_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_madspin_cleanup (VisActorPlugin *plugin)
+int lv_madspin_cleanup (VisPluginData *plugin)
 {
 	MadspinPrivate *priv = plugin->priv;
 
@@ -134,7 +149,7 @@ int lv_madspin_cleanup (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_madspin_requisition (VisActorPlugin *plugin, int *width, int *height)
+int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -153,7 +168,7 @@ int lv_madspin_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_madspin_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	visual_video_set_dimension (video, width, height);
 
@@ -162,7 +177,7 @@ int lv_madspin_dimension (VisActorPlugin *plugin, VisVideo *video, int width, in
 	return 0;
 }
 
-int lv_madspin_events (VisActorPlugin *plugin, VisEventQueue *events)
+int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -180,12 +195,12 @@ int lv_madspin_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_madspin_palette (VisActorPlugin *plugin)
+VisPalette *lv_madspin_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_madspin_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	madspin_sound (plugin->priv, audio);
 	madspin_draw (plugin->priv, video);
@@ -271,7 +286,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 	glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 
 	for (line = priv->maxlines; line > 0; line--) {
-		for (point = 0; point <= NUM_STARS; point++) {
+		for (point = 0; point <= priv->num_stars; point++) {
 			b = 1.5f + point / 33.33333f;
 			aa = trail - line * 1.0f;
 			a = (aa + priv->frame) / 33.33333f;
@@ -298,22 +313,22 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 			glTranslatef ((float) x, (float) y, (float) z);
 			glBindTexture (GL_TEXTURE_2D, priv->texture[0]);
 
-			s1r = ((point * 1.0f) / NUM_STARS);
-			s1g = (NUM_STARS - point) / (NUM_STARS * 1.0f);
-			s1b = ((point * 1.0f) / NUM_STARS) * 0.5f;
-			s1a = ((priv->gdata[(int) (point / NUM_STARS * 220)] + (priv->total / 200.0f)) / 4.0f);
+			s1r = ((point * 1.0f) / priv->num_stars);
+			s1g = (priv->num_stars - point) / (priv->num_stars * 1.0f);
+			s1b = ((point * 1.0f) / priv->num_stars) * 0.5f;
+			s1a = ((priv->gdata[(int) (point / priv->num_stars * 220)] + (priv->total / 200.0f)) / 4.0f);
 
 			s2r = sin (priv->frame / 400.0f);
 			s2g = cos (priv->frame / 200.0f);
 			s2b = cos (priv->frame / 300.0f);
-			s2a = (priv->gdata[(int) (point / NUM_STARS * 220)] / 2.0f );
+			s2a = (priv->gdata[(int) (point / priv->num_stars * 220)] / 2.0f );
 
 			if (s1a > 0.008f) {
 				glBegin (GL_TRIANGLE_STRIP);
 				glColor4f ((float) s1r, (float) s1g, (float) s1b, (float) s1a);
-				priv->texsize = (((priv->gdata[(int) (point / NUM_STARS * 220)]))
+				priv->texsize = (((priv->gdata[(int) (point / priv->num_stars * 220)]))
 						/ (2048.01f - (point * 4.0f))) *
-						(((point - NUM_STARS) / (-NUM_STARS)) * 18.0f) + 0.15f;
+						(((point - priv->num_stars) / (-priv->num_stars)) * 18.0f) + 0.15f;
 
 				/* Top Right */
 				glTexCoord2d (1, 1);
@@ -337,9 +352,9 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 			if (s2a > 0.005f) {
 				glBegin (GL_TRIANGLE_STRIP);
 				glColor4f ((float) s2r, (float) s2g, (float) s2b, (float) s2a);
-				priv->texsize = (((priv->gdata[(int) (point / NUM_STARS * 220)]))
+				priv->texsize = (((priv->gdata[(int) (point / priv->num_stars * 220)]))
 						/ (2048.01f - (point * 4.0f))) *
-						(((point - NUM_STARS) / (-NUM_STARS)) * 18.0f) + 0.35f;
+						(((point - priv->num_stars) / (-priv->num_stars)) * 18.0f) + 0.35f;
 
 				priv->texsize *= ((rand() % 100) / 100.0f) * 2.0f;
 
@@ -372,7 +387,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 	if (elapsed_time < 0)
 		elapsed_time = 0;
 
-	priv->frame += elapsed_time * SPEED;
+	priv->frame += elapsed_time * priv->speed;
 
 	return 0;
 }

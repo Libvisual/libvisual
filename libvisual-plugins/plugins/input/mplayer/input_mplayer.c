@@ -5,7 +5,7 @@
  * @author Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  * License: GNU Lesser General Public License (GNU/LGPL)
  ******************************************************************************
- * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.4 2004-07-23 13:29:34 synap Exp $
+ * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.5 2004-09-01 20:20:51 synap Exp $
  */
 
 #include <stdio.h>
@@ -51,9 +51,9 @@ typedef struct
 
 
 /* Functions *****************************************************************/
-int inp_mplayer_init( VisInputPlugin *plugin );
-int inp_mplayer_cleanup( VisInputPlugin *plugin );
-int inp_mplayer_upload( VisInputPlugin *plugin, VisAudio *audio );
+int inp_mplayer_init( VisPluginData *plugin );
+int inp_mplayer_cleanup( VisPluginData *plugin );
+int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio );
 
 /**
  * set up plugin
@@ -62,58 +62,34 @@ int inp_mplayer_upload( VisInputPlugin *plugin, VisAudio *audio );
  *
  * @return plugin ready for use
  */
-LVPlugin *get_plugin_info( VisPluginRef *ref )
+const VisPluginInfo *get_plugin_info( int *count )
 {
-  LVPlugin          *plugin        = NULL;
-  VisInputPlugin    *mplayer_input = NULL;
-  mplayer_priv_t *priv          = NULL;
-	
-  /* Get plugin structure */
-  plugin        = visual_plugin_new();
-  mplayer_input = visual_plugin_input_new();
+  static const VisInputPlugin input[] = {{
+    .upload = inp_mplayer_upload
+  }};
 
-  visual_log_return_val_if_fail( plugin != NULL, NULL );
-  visual_log_return_val_if_fail( mplayer_input != NULL, NULL );
+  static const VisPluginInfo info[] = {{
+    .struct_size = sizeof( VisPluginInfo ),
+    .api_version = VISUAL_PLUGIN_API_VERSION,
+    .type = VISUAL_PLUGIN_TYPE_INPUT,
 
-  /* Fill plugin structure */
-  mplayer_input->name    = "mplayer";
-  mplayer_input->init    = inp_mplayer_init;
-  mplayer_input->cleanup = inp_mplayer_cleanup;
-  mplayer_input->upload  = inp_mplayer_upload;
+    .plugname = "mplayer",
+    .name = "mplayer",
+    .author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
+    .version = "$Revision: 1.5 $",
+    .about = "Use data exported from MPlayer",
+    .help = "This plugin uses data exported from 'mplayer -af export'.",
 
-  mplayer_input->info = visual_plugin_info_new( "mplayer", 
-						"Gustavo Sverzut Barbieri " \
-						"<gsbarbieri@users.sourceforge.net>", 
-						"$Revision: 1.4 $",
-						"Use data exported from "   \
-						"MPlayer", "This plugin "   \
-						"uses data exported from "  \
-						"'mplayer -af export'." );
+    .init = inp_mplayer_init,
+    .cleanup = inp_mplayer_cleanup,
+
+    .plugin = (void *) &input[0]
+  }};
   
+  *count = sizeof( info ) / sizeof( *info );
 
-  priv = malloc( sizeof( mplayer_priv_t ) );
-
-  visual_log_return_val_if_fail( priv != NULL, NULL );
-  memset( priv, 0, sizeof( mplayer_priv_t ) );
-
-  priv->sharedfile = malloc( sizeof( char ) * 
-			     ( strlen( SHARED_FILE ) + 
-			       strlen( getenv( "HOME" ) ) + 2 ) );
-  visual_log_return_val_if_fail( priv->sharedfile != NULL, NULL );
-  strcpy( priv->sharedfile, getenv( "HOME" ) );
-  strcat( priv->sharedfile, "/" );
-  strcat( priv->sharedfile, SHARED_FILE );
-
-  mplayer_input->priv = priv;
-
-  plugin->type = VISUAL_PLUGIN_TYPE_INPUT;
-  /* Link */
-  plugin->plugin.inputplugin = mplayer_input;
-
-  return plugin;
+  return info;
 }
-
-
 
 /**
  * Initialize plugin
@@ -122,12 +98,25 @@ LVPlugin *get_plugin_info( VisPluginRef *ref )
  *
  * @return 0 on success.
  */
-int inp_mplayer_init( VisInputPlugin *plugin )
+int inp_mplayer_init( VisPluginData *plugin )
 {
   mplayer_priv_t *priv = NULL;
 
+  priv = malloc( sizeof( mplayer_priv_t ) );
+
+  visual_log_return_val_if_fail( priv != NULL, -1 );
+
+  priv->sharedfile = malloc( sizeof( char ) * 
+			     ( strlen( SHARED_FILE ) + 
+			       strlen( getenv( "HOME" ) ) + 2 ) );
+  visual_log_return_val_if_fail( priv->sharedfile != NULL, -1 );
+  strcpy( priv->sharedfile, getenv( "HOME" ) );
+  strcat( priv->sharedfile, "/" );
+  strcat( priv->sharedfile, SHARED_FILE );
+
+  plugin->priv = priv;
+  
   visual_log_return_val_if_fail( plugin != NULL, -1 );
-  priv = plugin->priv;
 
   visual_log_return_val_if_fail( priv != NULL, -1 );
   visual_log_return_val_if_fail( priv->sharedfile != NULL, -1 );
@@ -191,7 +180,7 @@ int inp_mplayer_init( VisInputPlugin *plugin )
  *
  * @return 0 on success.
  */
-int inp_mplayer_cleanup( VisInputPlugin *plugin )
+int inp_mplayer_cleanup( VisPluginData *plugin )
 {
   int unclean = 0;
   mplayer_priv_t *priv = NULL;
@@ -248,7 +237,7 @@ int inp_mplayer_cleanup( VisInputPlugin *plugin )
  * 
  * @return 0 on success.
  */
-int inp_mplayer_upload( VisInputPlugin *plugin, VisAudio *audio )
+int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 {
   mplayer_priv_t *priv = NULL;
 

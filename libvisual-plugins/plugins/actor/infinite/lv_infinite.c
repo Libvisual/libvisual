@@ -7,57 +7,56 @@
 #include "renderer.h"
 #include "display.h"
 
-int act_infinite_init (VisActorPlugin *plugin);
-int act_infinite_cleanup (VisActorPlugin *plugin);
-int act_infinite_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int act_infinite_requisition (VisActorPlugin *plugin, int *width, int *height);
-int act_infinite_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *act_infinite_palette (VisActorPlugin *plugin);
-int act_infinite_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int act_infinite_init (VisPluginData *plugin);
+int act_infinite_cleanup (VisPluginData *plugin);
+int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int act_infinite_requisition (VisPluginData *plugin, int *width, int *height);
+int act_infinite_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *act_infinite_palette (VisPluginData *plugin);
+int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *infinite;
-	InfinitePrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = act_infinite_requisition,
+		.palette = act_infinite_palette,
+		.render = act_infinite_render,
+		.depth = VISUAL_VIDEO_DEPTH_8BIT
+	}};
 
-	plugin = visual_plugin_new ();
-	infinite = visual_plugin_actor_new ();
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	infinite->name = "infinite";
-	infinite->info = visual_plugin_info_new (
-			"infinite plugin", 
-			"Original by: Julien Carme <julien.carme@acm.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
-			"0.1",
-			"The infinite visual plugin",
-			"This is the libvisual plugin for the infinite visual");
+		.plugname = "infinite",
+		.name = "infinite plugin",
+		.author = "Original by: Julien Carme <julien.carme@acm.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "The infinite visual plugin",
+		.help = "This is the libvisual plugin for the infinite visual",
 
-	infinite->init =	act_infinite_init;
-	infinite->cleanup =	act_infinite_cleanup;
-	infinite->requisition = act_infinite_requisition;
-	infinite->events =	act_infinite_events;
-	infinite->palette =	act_infinite_palette;
-	infinite->render =	act_infinite_render;
+		.init = act_infinite_init,
+		.cleanup = act_infinite_cleanup,
+		.events = act_infinite_events,
 
-	infinite->depth = VISUAL_VIDEO_DEPTH_8BIT;
+		.plugin = (void *) &actor[0]
+	}};
 
-	priv = malloc (sizeof (InfinitePrivate));
-	memset (priv, 0, sizeof (InfinitePrivate));
-
-	infinite->priv = priv;	 
-
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = infinite;
+	*count = sizeof (info) / sizeof (*info);
 	
-	return plugin;
+	return info;
 }
 
-int act_infinite_init (VisActorPlugin *plugin)
+int act_infinite_init (VisPluginData *plugin)
 {
+	InfinitePrivate *priv;
+
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
-	InfinitePrivate *priv = plugin->priv;
-
+	priv = visual_mem_new0 (InfinitePrivate, 1);
+	plugin->priv = priv;
+	
 	priv->plugwidth = 32;
 	priv->plugheight = 32;
 
@@ -68,7 +67,7 @@ int act_infinite_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_infinite_cleanup (VisActorPlugin *plugin)
+int act_infinite_cleanup (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
 
@@ -79,13 +78,12 @@ int act_infinite_cleanup (VisActorPlugin *plugin)
 	_inf_close_renderer (priv);
 
 	visual_palette_free_colors (&priv->pal);
-
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }
 
-int act_infinite_requisition (VisActorPlugin *plugin, int *width, int *height)
+int act_infinite_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -112,7 +110,7 @@ int act_infinite_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_infinite_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	InfinitePrivate *priv;
 
@@ -135,7 +133,7 @@ int act_infinite_dimension (VisActorPlugin *plugin, VisVideo *video, int width, 
 	return 0;
 }
 
-int act_infinite_events (VisActorPlugin *plugin, VisEventQueue *events)
+int act_infinite_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -153,7 +151,7 @@ int act_infinite_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_infinite_palette (VisActorPlugin *plugin)
+VisPalette *act_infinite_palette (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
 	
@@ -164,7 +162,7 @@ VisPalette *act_infinite_palette (VisActorPlugin *plugin)
 	return &priv->pal;
 }
 
-int act_infinite_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	InfinitePrivate *priv;
 	int i;

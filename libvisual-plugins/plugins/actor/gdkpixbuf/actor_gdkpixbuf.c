@@ -14,56 +14,55 @@ static int load_new_file (PixbufPrivate *priv, const char *filename);
 static int update_scaled_pixbuf (PixbufPrivate *priv);
 static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src);
 
-int act_gdkpixbuf_init (VisActorPlugin *plugin);
-int act_gdkpixbuf_cleanup (VisActorPlugin *plugin);
-int act_gdkpixbuf_requisition (VisActorPlugin *plugin, int *width, int *height);
-int act_gdkpixbuf_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int act_gdkpixbuf_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *act_gdkpixbuf_palette (VisActorPlugin *plugin);
-int act_gdkpixbuf_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int act_gdkpixbuf_init (VisPluginData *plugin);
+int act_gdkpixbuf_cleanup (VisPluginData *plugin);
+int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height);
+int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin);
+int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *gdkpixbuf;
-	PixbufPrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = act_gdkpixbuf_requisition,
+		.palette = act_gdkpixbuf_palette,
+		.render = act_gdkpixbuf_render,
+		.depth = VISUAL_VIDEO_DEPTH_24BIT
+	}};
 
-	plugin = visual_plugin_new ();
-	gdkpixbuf = visual_plugin_actor_new ();
-	
-	gdkpixbuf->name = "gdkpixbuf";
-	gdkpixbuf->info = visual_plugin_info_new (
-			"GdkPixbuf image loader",
-			"Dennis Smit <ds@nerds-incorporated.org>",
-			"0.0.1",
-			"The GdkPixbuf image loader for libvisual",
-			"This plugin can be used to show images");
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	gdkpixbuf->init =		act_gdkpixbuf_init;
-	gdkpixbuf->cleanup =		act_gdkpixbuf_cleanup;
-	gdkpixbuf->requisition =	act_gdkpixbuf_requisition;
-	gdkpixbuf->events =		act_gdkpixbuf_events;
-	gdkpixbuf->palette =		act_gdkpixbuf_palette;
-	gdkpixbuf->render =		act_gdkpixbuf_render;
+		.plugname = "gdkpixbuf",
+		.name = "GdkPixbuf image loader",
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.0.1",
+		.about = "The GdkPixbuf image loader for libvisual",
+		.help = "This plugin can be used to show images",
 
-	gdkpixbuf->depth = VISUAL_VIDEO_DEPTH_24BIT;
+		.init = act_gdkpixbuf_init,
+		.cleanup = act_gdkpixbuf_cleanup,
+		.events = act_gdkpixbuf_events,
 
-	priv = malloc (sizeof (PixbufPrivate));
-	memset (priv, 0, sizeof (PixbufPrivate));
+		.plugin = (void *) &actor[0]
+	}};
 
-	gdkpixbuf->priv = priv;
+	*count = sizeof (info) / sizeof (*info);
 
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = gdkpixbuf;
-	
-	return plugin;
+	return info;
 }
 
-int act_gdkpixbuf_init (VisActorPlugin *plugin)
+int act_gdkpixbuf_init (VisPluginData *plugin)
 {
-	PixbufPrivate *priv = plugin->priv;
+	PixbufPrivate *priv;
 	VisParamContainer *paramcontainer = &plugin->params;
 	VisParamEntry *param;
+
+	priv = visual_mem_new0 (PixbufPrivate, 1);
+	plugin->priv = priv;
 
 	/* Initialize gdk, needed for GdkPixbuf */
 	if (gdk_been_initialized == FALSE) {
@@ -137,7 +136,7 @@ int act_gdkpixbuf_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int act_gdkpixbuf_cleanup (VisActorPlugin *plugin)
+int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 {
 	PixbufPrivate *priv = plugin->priv;
 
@@ -153,12 +152,12 @@ int act_gdkpixbuf_cleanup (VisActorPlugin *plugin)
 	if (&priv->target.screenbuffer != NULL)
 		visual_video_free_buffer (&priv->target);
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }
 
-int act_gdkpixbuf_requisition (VisActorPlugin *plugin, int *width, int *height)
+int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw = *width;
 	int reqh = *height;
@@ -175,7 +174,7 @@ int act_gdkpixbuf_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_gdkpixbuf_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	PixbufPrivate *priv = plugin->priv;
 	
@@ -196,7 +195,7 @@ int act_gdkpixbuf_dimension (VisActorPlugin *plugin, VisVideo *video, int width,
 	return 0;
 }
 
-int act_gdkpixbuf_events (VisActorPlugin *plugin, VisEventQueue *events)
+int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	PixbufPrivate *priv = plugin->priv;
 	VisParamEntry *param;
@@ -267,12 +266,12 @@ int act_gdkpixbuf_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_gdkpixbuf_palette (VisActorPlugin *plugin)
+VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int act_gdkpixbuf_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PixbufPrivate *priv = plugin->priv;
 	
