@@ -1,3 +1,14 @@
+2004-07-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* pixmaps/oinksie-xmms-vis.*: Renamed to
+	libvisual-xmms-vis.*.
+	
+	* src/config.c, src/config_gui.c: Changes to adapt the filename
+	change of the icon.
+
+	* src/about.c (lv_xmms_about_show): Added Duilio's name to the
+	about box.
+
 2004-07-02  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/config_gui.c: added.

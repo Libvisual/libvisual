@@ -115,7 +115,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_box_pack_start (GTK_BOX (hbox_icon), frame_icon, FALSE, FALSE, 0);
   gtk_frame_set_shadow_type (GTK_FRAME (frame_icon), GTK_SHADOW_ETCHED_OUT);
 
-  pixmap_icon = create_pixmap (window_main, "oinksie-xmms-vis.xpm");
+  pixmap_icon = create_pixmap (window_main, "libvisual-xmms-vis.xpm");
   gtk_widget_ref (pixmap_icon);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "pixmap_icon", pixmap_icon,
                             (GtkDestroyNotify) gtk_widget_unref);

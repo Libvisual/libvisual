@@ -5,7 +5,7 @@
 #include "config.h"
 #include "config_gui.h"
 
-#define CONFIG_DEFAULT_ICON (PACKAGE_DATADIR "/oinksie-xmms-vis.bmp")
+#define CONFIG_DEFAULT_ICON (PACKAGE_DATADIR "/libvisual-xmms-vis.bmp")
 
 static const Options default_options = { NULL, NULL, 320, 200, 30, 24, FALSE };
 static Options options = { NULL, NULL, -1, -1, -1, -1, FALSE};

@@ -29,10 +29,10 @@ void lv_xmms_about_show ()
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 8);
 	gtk_widget_show (vbox);
 
-	label = gtk_label_new("\n\
-Libvisual xmms plugin\nCopyright (C) 2004, Dennis Smit <ds@nerds-incorporated.org>\n\
-The libvisual xmms plugin, more information about libvisual can be found at\n\
-http://libvisual.sf.net\n\n");
+	label = gtk_label_new("\n"
+"Libvisual xmms plugin\nCopyright (C) 2004, Duilio Protti <dprotti@fceia.unr.edu.ar>\n Dennis Smit <ds@nerds-incorporated.org>\n"
+"The libvisual xmms plugin, more information about libvisual can be found at\n"
+"http://libvisual.sf.net\n\n");
 
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 8);
 	gtk_widget_show (label);
