@@ -1,3 +1,13 @@
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/ring/*: Nearly finished.
+
+	* common/*: Adding common routines here.
+
+	* src/*: More fixing.
+
+	Yeah very specific ChangeLog entry, I know.
+
 2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/ring/*: Adding begin frame of ring element. Needs some

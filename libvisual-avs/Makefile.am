@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = src plugins
+SUBDIRS = common src plugins
 
 EXTRA_DIST =
 

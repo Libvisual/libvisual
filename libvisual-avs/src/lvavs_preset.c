@@ -229,7 +229,8 @@ LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 	visual_param_container_add_many (pcont, params);
 
 	pcontw = avselem->pcont;
-	
+
+	/* Copy all the matching */
 	visual_param_container_match_copy (pcont, pcontw);
 
 	sourceplace = visual_param_entry_get_integer (visual_param_container_get (pcontw, "source and place"));

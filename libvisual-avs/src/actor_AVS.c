@@ -89,7 +89,7 @@ int act_avs_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual/libvisual-avs/testpresets/ringRR.avs"),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
 		VISUAL_PARAM_LIST_END
 	};
@@ -178,7 +178,8 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 						visual_object_unref (VISUAL_OBJECT (priv->pipeline));
 
 					priv->wtree = NULL;
-					
+				
+					priv->wavs = TRUE;
 					if (filename != NULL) {
 						if (priv->wavs == TRUE) {
 							priv->wtree = avs_tree_new_from_preset (filename);
