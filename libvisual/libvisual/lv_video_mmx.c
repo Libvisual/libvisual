@@ -31,6 +31,7 @@
 #include "lv_common.h"
 #include "lv_video.h"
 
+/* FIXME defines around assembly code */
 int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, int y)
 {
 	uint8_t *destbuf;
@@ -60,10 +61,7 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 		("\n\t emms"
 		 "\n\t pxor %%mm6, %%mm6"
 		 "\n\t pxor %%mm7, %%mm7"
-		 "\n\t emms"
-		 :
-		 :
-		 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+		 ::: "mm6", "mm7");
 	
 	destbuf += ((y > 0 ? y : 0) * dest->pitch) + (x > 0 ? x * 4 : 0);
 	srcbuf += ((y < 0 ? abs(y) : 0) * src->pitch) + (x < 0 ? abs(x) * 4 : 0);
@@ -71,8 +69,7 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 		for (xa = x > 0 ? x * 4 : 0; xa < lwidth4; xa += 4) {
 			/* pixel = ((alpha * ((src - dest)) / 255) + dest) */
 			__asm __volatile
-				("\n\t emms"
-				 "\n\t movd %[spix], %%mm0"
+				("\n\t movd %[spix], %%mm0"
 				 "\n\t movd %[dpix], %%mm1"
 				 "\n\t movq %%mm0, %%mm2"
 				 "\n\t movq %%mm0, %%mm3"
@@ -97,7 +94,6 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 				 "\n\t packuswb %%mm0, %%mm0"
 				 "\n\t pxor %%mm1, %%mm1"
 				 "\n\t movd %%mm0, %[dest]"
-				 "\n\t emms"
 				 : [dest] "=m" (*destbuf)
 				 : [dpix] "m" (*destbuf)
 				 , [spix] "m" (*srcbuf)
@@ -111,6 +107,9 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 		srcbuf += x < 0 ? abs(x) * 4 : 0;
 		srcbuf += x + src->width > dest->width ? ((x + (src->pitch / 4)) - dest->width) * 4 : 0;
 	}
+
+	__asm __volatile
+		("\n\t emms");
 
 	return VISUAL_OK;
 }
