@@ -53,7 +53,35 @@ AC_CHECK_FUNCS([floor gettimeofday memmove memset pow sqrt])
 AC_CHECK_FUNC([munmap], lv_have_munmap=yes, lv_have_munmap=no)
 AC_FUNC_MMAP
 
-AC_SUBST([AVS], ['actor_AVS.la'])
+# The main plugin.
+AC_ARG_ENABLE([avs],
+	      AC_HELP_STRING([--disable-avs],
+			     [Do not build AVS plugin @<:@default=enabled@:>@]),
+	      [avs=$enableval],
+	      [avs=yes])
+AC_MSG_CHECKING([whether to build AVS plugin])
+if test x$avs = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor avs"
+  AC_SUBST([AVS], ['actor_AVS.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
+# The AVS elements.
+AC_ARG_ENABLE([avs_ring],
+	      AC_HELP_STRING([--disable-ring],
+			     [Do not build the AVS render ring plugin @<:@default=enabled@:>@]),
+	      [avs_ring=$enableval],
+	      [avs_ring=yes])
+AC_MSG_CHECKING([whether to build AVS render ring plugin])
+if test x$avs_ring = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor ring"
+  AC_SUBST([AVS_RING], ['actor_avs_ring.la'])
+else
+  AC_MSG_RESULT([no])
+fi
 
 #
 # Build paramaters
@@ -146,6 +174,7 @@ AC_CONFIG_FILES([
 	src/Makefile
 	plugins/Makefile
 	plugins/actor/Makefile
+	plugins/actor/ring/Makefile
 	plugins/transform/Makefile
 ])
 

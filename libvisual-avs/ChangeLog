@@ -1,5 +1,11 @@
 2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/ring/*: Adding begin frame of ring element. Needs some
+	investigation in the render pipeline and such, so it's going to proof
+	to be a good testbed for the whole AVS stuff.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* src/lvavs_preset.c, src/lvavs_preset.h,
 	src/lvavs_pipeline.c, src?lvavs_preset.h: Fixed the compile errors,
 	and super small bugs.

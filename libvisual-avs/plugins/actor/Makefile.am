@@ -1,3 +1,3 @@
 
-SUBDIRS = 
+SUBDIRS = ring 
 
