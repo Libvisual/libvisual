@@ -1,11 +1,11 @@
 /* Libvisual-display testactor - The display library for libvisual.
  * 
- * Copyright (C) 2004, 2005 Vitaly V. Bursov <vitalyvb@ukr.net> 
+ * Copyright (C) 2005 Vitaly V. Bursov <vitalyvb@ukr.net> 
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *          Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: testactor.c,v 1.8 2005-02-13 17:36:15 vitalyvb Exp $
+ * $Id: testactor2.c,v 1.1 2005-02-13 17:36:15 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,6 +43,7 @@ typedef struct {
 	LvdDContext *myctx1;
 	int tex;
 	int w, h;
+	int first;
 } DNAPrivate;
 
 int lv_dna_init (VisPluginData *plugin);
@@ -53,9 +54,6 @@ int lv_dna_events (VisPluginData *plugin, VisEventQueue *events);
 VisPalette *lv_dna_palette (VisPluginData *plugin);
 int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-/*static void draw_bars (DNAPrivate *priv);
-static void draw_rectangle (DNAPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2);
-static void draw_bar (DNAPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue);*/
 
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (int *count)
@@ -72,12 +70,12 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-		.plugname = "testactor",
-		.name = "libvisual two DNA helix animations",
-		.author = "Vitaly V. Bursov. Based on the work of Dennis Smit <ds@nerds-incorporated.org>, after some begging by Ronald Bultje",
+		.plugname = "testactor2",
+		.name = "Blurred GL oscilloscope.",
+		.author = "Author: Vitaly V. Bursov. Based on the work of Dennis Smit <ds@nerds-incorporated.org>, after some begging by Ronald Bultje",
 		.version = "0.1",
-		.about = "The Libvisual DNA helix animation plugin",
-		.help = "This plugin shows an two openGL DNAs twisting unfolding and folding on the music.",
+		.about = "Blurred GL oscilloscope.",
+		.help = "This plugin shows an GL blurred oscilloscope",
 
 		.init = lv_dna_init,
 		.cleanup = lv_dna_cleanup,
@@ -93,6 +91,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 int lv_dna_init (VisPluginData *plugin)
 {
+	float alight[4] = { 1.0f, 1.0f, 1.0f, 1.0f};
 	int params[20];
 	int i;
 	DNAPrivate *priv;
@@ -109,61 +108,75 @@ int lv_dna_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (DNAPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	glMatrixMode (GL_PROJECTION);
 
-	glLoadIdentity ();
+		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+		glViewport( 0, 0, 256, 256 );
 
-	glFrustum (-1, 1, -1, 1, 1.5, 10);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();
-	glEnable (GL_DEPTH_TEST);
-	glDepthFunc (GL_LESS);   
+		glOrtho(0.0f, 1.0f, 0.0f, 1.0f, -1.0, 1.0);
 
-	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	
-	glClearColor (0.0, 0.0, 0.0, 0.0);
-	glClearDepth (1.0);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
 
 	glGenTextures(1, &priv->tex);
 
+
+	/****************/
 	v = ((LvdPluginEnvironData*) envobj)->lvd;
-	fprintf(stderr,"got lvd: %p\n",v);
+	//fprintf(stderr,"got lvd: %p\n",v);
 	priv->v=v;
 
 	i=0;
-	params[i++] = LVD_SET_WIDTH;  params[i++] = 64;
-	params[i++] = LVD_SET_HEIGHT; params[i++] = 64;
+	params[i++] = LVD_SET_WIDTH;  params[i++] = 256;
+	params[i++] = LVD_SET_HEIGHT; params[i++] = 256;
 	params[i++] = LVD_SET_RENDERTARGET; params[i++] = LVD_SET_OFFSCREEN;
 	params[i++] = LVD_SET_DONE;
 
 	priv->myctx1 = lvdisplay_context_create_special(priv->v, params);
-	fprintf(stderr,"creatd context: %p\n",priv->myctx1);
+	//fprintf(stderr,"creatd context: %p\n",priv->myctx1);
 
-	priv->w = 64;
-	priv->h = 64;
-
-	fprintf(stderr,"new ctx setup...\n");
+	priv->w = 256;
+	priv->h = 256;
 
 	lvdisplay_context_push_activate(v, priv->myctx1);
 
-	glMatrixMode (GL_PROJECTION);
 
-	glLoadIdentity ();
+		glEnable(GL_LINE_SMOOTH);
+		glEnable(GL_POINT_SMOOTH);
 
-	glFrustum (1, -1, -1, 1, 1.5, 10);
+		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+		glViewport( 0, 0, priv->w, priv->h );
 
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 
-	glDepthFunc (GL_LEQUAL);
-	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	
-	glClearColor (0.5, 0.0, 0.5, 0.0);
-	glClearDepth (1.0);
+		glOrtho(0.0f, 1.0f, 0.0f, 1.0f, -1.0, 1.0);
 
+		glEnable(GL_LIGHTING);
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, alight);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 	lvdisplay_context_pop(v);
+
+	priv->first = 1;
+
 	return 0;
 }
 
@@ -205,16 +218,7 @@ int lv_dna_dimension (VisPluginData *plugin, VisVideo *video, int width, int hei
 	
 	visual_video_set_dimension (video, width, height);
 
-	ratio = (GLfloat) width / (GLfloat) height;
-
 	glViewport (0, 0, (GLsizei) width, (GLsizei) height);
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity ();
-
-	gluPerspective (45.0, ratio, 0.1, 100.0);
-
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();
 
 	return 0;
 }
@@ -242,58 +246,73 @@ VisPalette *lv_dna_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static void do_render(DNAPrivate *priv, int f)
+static void do_render(DNAPrivate *priv, VisAudio *audio)
 {
-	float res;
-	float sinr = 0;
-	float height = -1.0;
+	float matosc[] = {0.1, 0.7, 0.8, 1.0};
 	int i;
+	float p = 0.0f;
 
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity ();
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, matosc);
+	glBegin(GL_LINE_STRIP);
 
-	glTranslatef (0.0, 0.0, -3.0);
-	if (f)
-		glRotatef (priv->rot, 0.0, 1.0, 0.0);
-	else
-		glRotatef (priv->rot, 1.0, 0.0, 0.0);
-
-	priv->rot += 0.1;
-
-	if (priv->rot > 360)
-		priv->rot = 0;
-
-	glColor3f (1.0, 1.0, 1.0);
-	
-	for (i = 0; i < 10; i++) {
-
-		res = sin (sinr);
-		sinr += 0.4;
-
-		glBegin (GL_QUADS);
-		glVertex3f (-0.5, height, +res);
-		glVertex3f (0.5, height, -res);
-		glVertex3f (0.5, height + 0.1, -res);
-		glVertex3f (-0.5, height + 0.1, +res);
-		glEnd ();
-
-		height += 0.2;
+	glColor3f(0.9,0.8,0.0);
+	for (i=0; i<512; i+=1, p += 1.0/512.0){
+		glVertex2f( p, 0.5+audio->pcm[2][i]/32768.0);
 	}
+
+	glEnd();
 }
 
 int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	float decaycolor[] = {0.0, 0.0, 0.0, 252.0/256.0};
 	DNAPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	Lvd *v = priv->v;
 	LvdDContext *ctxorig;
 
 	v=priv->v;
-
-	do_render(priv, 0);
-
 	lvdisplay_context_push_activate(v, priv->myctx1);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		do_render(priv, 1);
+		/* draw previous frame */
+		if (!priv->first){
+			const float t = 0.005;
+			glBindTexture(GL_TEXTURE_2D, priv->tex);
+			glEnable(GL_TEXTURE_2D);
+			glBegin(GL_TRIANGLE_STRIP);
+			glTexCoord2f(0.0f+t,  0.0f+t);	glVertex2f(  0.0f,  0.0f);
+			glTexCoord2f(1.0f-t,  0.0f+t);	glVertex2f(  1.0f,  0.0f);
+			glTexCoord2f(0.0f+t,  1.0f-t);	glVertex2f(  0.0f,  1.0f);
+			glTexCoord2f(1.0f-t,  1.0f-t);	glVertex2f(  1.0f,  1.0f);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+
+
+			/* decay */
+			glEnable(GL_BLEND);
+
+			glBlendEquation(GL_FUNC_ADD);
+			glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, decaycolor);
+			glBegin(GL_TRIANGLE_STRIP);
+			glVertex2f(  0.0f,  0.0f);
+			glVertex2f(  1.0f,  0.0f);
+			glVertex2f(  0.0f,  1.0f);
+			glVertex2f(  1.0f,  1.0f);
+			glEnd();
+
+			glDisable(GL_BLEND);
+		} else
+			priv->first = 0;
+
+
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+		glBlendEquation(GL_FUNC_ADD);
+		do_render(priv, audio);
+		glDisable(GL_BLEND);
 
 		// copy screen to texture
 		glBindTexture(GL_TEXTURE_2D, priv->tex);
@@ -309,18 +328,15 @@ int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	lvdisplay_context_pop(v);
 
+
 	glBindTexture(GL_TEXTURE_2D, priv->tex);
 
 	glEnable(GL_TEXTURE_2D);
 	glBegin(GL_TRIANGLE_STRIP);
-	glTexCoord2f(0.0f,  0.0f);
-	glVertex2f(  0.0f,  0.0f);
-	glTexCoord2f(1.0f,  0.0f);
-	glVertex2f(  1.0f,  0.0f);
-	glTexCoord2f(0.0f,  1.0f);
-	glVertex2f(  0.0f,  1.0f);
-	glTexCoord2f(1.0f,  1.0f);
-	glVertex2f(  1.0f,  1.0f);
+	glTexCoord2f(0.0f,  0.0f);	glVertex2f(  0.0f,  0.0f);
+	glTexCoord2f(1.0f,  0.0f);	glVertex2f(  1.0f,  0.0f);
+	glTexCoord2f(0.0f,  1.0f);	glVertex2f(  0.0f,  1.0f);
+	glTexCoord2f(1.0f,  1.0f);	glVertex2f(  1.0f,  1.0f);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 

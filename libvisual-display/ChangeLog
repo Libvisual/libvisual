@@ -1,3 +1,9 @@
+2005-02-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* example/plugins/Makefile.am: testactor2 plugin added.
+	* example/plugins/testactor.c: plugin info updated.
+	* example/plugins/testactor2.c: new plugin. offscreen rendering demo.
+
 2005-02-12  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* lvdisplay/lv_display.c lvdisplay/lv_display.h: API for video mode
