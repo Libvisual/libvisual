@@ -1,0 +1,16 @@
+name="Claustrophobia",
+// Created by Thomas Geier
+//ziggystar@gmx.de
+//Claustrophobia
+//I know, this (or something similar) already exists
+//I made a rotating version
+
+Aspc=1,
+A0="rnd( PI )",		  
+// Angle
+A1="rnd( 0.25 )",		
+// speed
+
+srcR="r-sqr(cos(theta+A0)*r)*A1-.002",
+srcT="theta + rnd( .008 ) - .004",
+Vers=100
