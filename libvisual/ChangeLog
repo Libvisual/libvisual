@@ -1,3 +1,11 @@
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx):
+	Fixed some mmx.
+
+	* libvisual/lv_video.c (depth_transform_8_to_32_c): Optimized
+	a bit.
+
 2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configurea.ac: Splitting out VISUAL_OS_BSD into VISUAL_OS_FREEBSD,

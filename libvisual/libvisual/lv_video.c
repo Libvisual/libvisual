@@ -1127,24 +1127,25 @@ static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, in
 
 static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
-	int x, y;
-	int i = 0, j = 0;
+	int x, y, i;
 	uint32_t *destr = (uint32_t *) dest;
 	uint32_t col;
 	int pitchdiff = (pitch - (width * 4)) >> 2;
+	
+	uint32_t colors[256];
+
+	for (i = 0; i < 256; i++) {
+		colors[i] =
+			pal->colors[i].r << 16 |
+			pal->colors[i].g << 8 |
+			pal->colors[i].b;
+	}
 
 	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			col = 0;
-			col += pal->colors[src[j]].r << 16;
-			col += pal->colors[src[j]].g << 8;
-			col += pal->colors[src[j]].b;
-			j++;
+		for (x = 0; x < width; x++)
+			*destr++ = colors[*src++];
 
-			destr[i++] = col;
-		}
-
-		i += pitchdiff;
+		destr += pitchdiff;
 	}
 
 	return VISUAL_OK;
