@@ -38,6 +38,7 @@ extern VisList *__lv_plugins;
 
 static int plugin_info_dtor (VisObject *object);
 static int plugin_ref_dtor (VisObject *object);
+static int plugin_environ_dtor (VisObject *object);
 static int plugin_dtor (VisObject *object);
 
 static int plugin_add_dir_to_list (VisList *list, const char *dir);
@@ -98,6 +99,18 @@ static int plugin_ref_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
+static int plugin_environ_dtor (VisObject *object)
+{
+	VisPluginEnviron *enve = VISUAL_PLUGINENVIRON (object);
+
+	if (enve->environ != NULL)
+		visual_object_unref (enve->environ);
+
+	enve->environ = NULL;
+
+	return VISUAL_OK;
+}
+
 static int plugin_dtor (VisObject *object)
 {
 	VisPluginData *plugin = VISUAL_PLUGINDATA (object);
@@ -108,6 +121,8 @@ static int plugin_dtor (VisObject *object)
 	if (plugin->params != NULL)
 		visual_object_unref (VISUAL_OBJECT (plugin->params));
 
+	visual_list_destroy_elements (&plugin->environ);	
+	
 	plugin->ref = NULL;
 	plugin->params = NULL;
 
@@ -587,7 +602,6 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 	visual_param_container_set_eventqueue (plugin->params, NULL);
 
-	visual_object_unref (VISUAL_OBJECT (plugin->environ));
 	visual_object_unref (VISUAL_OBJECT (plugin));
 	
 	return VISUAL_OK;
@@ -662,9 +676,6 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	/* Now the plugin is set up and ready to be realized, also random seed it's random context */
 	visual_time_get (&time_);
 	visual_random_context_set_seed (&plugin->random, time_.tv_usec);
-
-	/* XXX FIXME need a nice destroyer :) */
-	plugin->environ = visual_list_new (NULL);
 
 	return plugin;
 }
@@ -973,22 +984,102 @@ int visual_plugin_type_member_of (const char *domain, const char *type)
 }
 
 /**
- * Adds structure to the plugin's environ
+ * Creates a VisPluginEnviron structure.
  *
- * @param plugin
- * @param enve
+ * @param type The Environ type that is requested.
+ * @param envobj The VisObject connected to this Environ type.
  *
- * @return TRUE if it falls within the domain, FALSE when not, -VISUAL_ERROR_NULL on failure
+ * @return A newly allocated VisPluginEnviron, or NULL on failure.
  */
-int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnvironElement *enve)
+VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj)
+{
+	VisPluginEnviron *enve;
+
+	enve = visual_mem_new0 (VisPluginEnviron, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (enve), TRUE, plugin_environ_dtor);
+
+	enve->type = type;
+	enve->environ = envobj;
+	
+	return enve;
+}
+
+/**
+ * Adds a VisPluginEnviron to the plugin it's environment list.
+ *
+ * @param plugin Pointer to the VisPluginData to which the VisPluginEnviron is added.
+ * @param enve Pointer to the VisPluginEnviron that is added to the VisPluginData.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL,
+ *	-VISUAL_ERROR_NULL or error values returned by visual_list_add() on failure.
+ */
+int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve)
 {
 	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 	visual_log_return_val_if_fail (enve != NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL);
+	visual_log_return_val_if_fail (enve->type != NULL, -VISUAL_ERROR_NULL);
 
-	// XXX FIXME check if there are already the same env type
-	// in the list. Replace quietly?
+	visual_plugin_environ_remove (plugin, enve->type);
+		
+	return visual_list_add (&plugin->environ, enve);
+}
 
-	return visual_list_add (plugin->environ, enve);
+/**
+ * Removes a VisPluginEnviron from the plugin it's environment list.
+ *
+ * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is removed.
+ * @param type The Environ type that is removed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
+{
+	VisPluginEnviron *enve;
+	VisListEntry *le = NULL;
+
+	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
+
+	while ((enve = visual_list_next (&plugin->environ, &le)) != NULL) {
+		
+		/* Remove from list */
+		if (strcmp (enve->type, type) == 0) {
+			visual_list_delete (&plugin->environ, &le);
+
+			visual_object_unref (VISUAL_OBJECT (enve));
+
+			return VISUAL_OK;
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+/**
+ * Retrieves a VisPluginEnviron from the plugin it's environment list.
+ *
+ * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is requested.
+ * @param type The Environ type that is requested.
+ *
+ * @return The requested VisPluginEnviron, or NULL on failure
+ */
+VisPluginEnviron *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
+{
+	VisPluginEnviron *enve;
+	VisListEntry *le = NULL;
+	
+	visual_log_return_val_if_fail (plugin != NULL, NULL);
+	visual_log_return_val_if_fail (type != NULL, NULL);
+
+	while ((enve = visual_list_next (&plugin->environ, &le)) != NULL) {
+		
+		if (strcmp (enve->type, type) == 0)
+			return enve;
+	}
+
+	return NULL;
 }
 
 /**

@@ -42,7 +42,7 @@ extern "C" {
 #define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginRef))
 #define VISUAL_PLUGININFO(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginInfo))
 #define VISUAL_PLUGINDATA(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPluginData))
-#define VISUAL_PLUGINENVIRONELEMENT(obj)		(VISUAL_CHECK_CAST ((obj), 0, VisPluginEnvironElement))
+#define VISUAL_PLUGINENVIRON(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisPluginEnviron))
 	
 #define VISUAL_PLUGIN_ACTOR(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_ACTOR_ENUM, VisActorPlugin))
 #define VISUAL_PLUGIN_INPUT(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_PLUGIN_TYPE_INPUT_ENUM, VisInputPlugin))
@@ -118,7 +118,7 @@ typedef enum {
 typedef struct _VisPluginRef VisPluginRef;
 typedef struct _VisPluginInfo VisPluginInfo;
 typedef struct _VisPluginData VisPluginData;
-typedef struct _VisPluginEnvironElement VisPluginEnvironElement;
+typedef struct _VisPluginEnviron VisPluginEnviron;
 
 typedef struct _VisActorPlugin VisActorPlugin;
 typedef struct _VisInputPlugin VisInputPlugin;
@@ -328,14 +328,14 @@ struct _VisPluginData {
 
 	int			 realized;	/**< Flag that indicates if the plugin is realized. */
 	void			*handle;	/**< The dlopen handle */
-	VisList			*environ;	/**< Misc environment specific data. */
+	VisList			 environ;	/**< Misc environment specific data. */
 };
 
 /**
- * The VisPluginEnvironElement is used to setup a pre realize/init environment for plugins.
+ * The VisPluginEnviron is used to setup a pre realize/init environment for plugins.
  * Some types of plugins might need this internally and thus this system provides this function.
  */
-struct _VisPluginEnvironElement {
+struct _VisPluginEnviron {
 	VisObject		 object;	/**< The VisObject data. */
 	const char		*type;		/**< Almost the same as _VisPluginInfo.type. */
 	VisObject		*environ;	/**< VisObject that contains environ specific data. */
@@ -443,9 +443,11 @@ const char *visual_plugin_type_get_type (const char *type);
 VisPluginTypeDepth visual_plugin_type_get_depth (const char *type);
 int visual_plugin_type_member_of (const char *domain, const char *type);
 
-VisPluginEnvironElement *visual_plugin_environ_new (const char *type, VisObject *environ);
-int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnvironElement *penve);
-
+VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *environ);
+int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *penve);
+int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
+VisPluginEnviron *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
+	
 
 #ifdef __cplusplus
 }

@@ -58,8 +58,7 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 	
 	/* Reset some regs */
 	__asm __volatile
-		("\n\t emms"
-		 "\n\t pxor %%mm6, %%mm6"
+		("\n\t pxor %%mm6, %%mm6"
 		 ::: "mm6");
 	
 	destbuf += ((y > 0 ? y : 0) * dest->pitch) + (x > 0 ? x * 4 : 0);
@@ -83,14 +82,10 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 				 "\n\t por %%mm3, %%mm2"
 				 "\n\t punpcklbw %%mm6, %%mm1"	/* interleaving source */
 				 "\n\t psubsw %%mm1, %%mm0"	/* (src - dest) part */
-				 "\n\t pxor %%mm3, %%mm3"
 				 "\n\t pmullw %%mm2, %%mm0"	/* alpha * (src - dest) */
-				 "\n\t pxor %%mm4, %%mm4"
 				 "\n\t psrlw $8, %%mm0"		/* / 256 */
-				 "\n\t pxor %%mm2, %%mm2"
 				 "\n\t paddb %%mm1, %%mm0"	/* + dest */
 				 "\n\t packuswb %%mm0, %%mm0"
-				 "\n\t pxor %%mm1, %%mm1"
 				 "\n\t movd %%mm0, %[dest]"
 				 : [dest] "=m" (*destbuf)
 				 : [dpix] "m" (*destbuf)

@@ -1,5 +1,13 @@
 2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_plugin.*: Finish up the VisPluginEnviron stuff.
+
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx): Made a bit
+	smaller, we don't need to pxor items when we're already moving data
+	inside them anyway.
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx):
 	Fixed some mmx.
 
