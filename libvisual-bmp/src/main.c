@@ -438,13 +438,14 @@ static int visual_resize (int width, int height)
 
 static int visual_render (void *arg)
 {
-	visual_running = 1;
-	visual_stopped = 0;
         long render_time, now;
         long frame_length;
         long idle_time;
 	long frames;
 	int ret;
+
+	visual_running = 1;
+	visual_stopped = 0;
 
 	ret = visual_initialize (options->width, options->height);
         if (ret < 0) {
