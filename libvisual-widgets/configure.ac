@@ -26,7 +26,7 @@ fi
 ## calls.
 PKG_CHECK_MODULES(BASE_DEPENDENCIES,
   [ libvisual = libvisual_required_version dnl
-    gtk >= gtk1_required_version dnl
+    gtk+ >= gtk1_required_version dnl
     gtk+-2.0])
 
 AC_PREFIX_DEFAULT(/usr)
