@@ -157,8 +157,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 			if (v >= VISUAL_LOG_VERBOSENESS_LOW)
 				printf ("libvisual %s: %s: %s\n",
 					sever_msg, __lv_progname, str);
-			raise (SIGTRAP);
-			exit (1);
+			visual_error_raise ();
 			break;
 	}
 }
@@ -241,8 +240,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 			if (v >= VISUAL_LOG_VERBOSENESS_LOW)
 				printf ("libvisual %s: %s: %s\n",
 					sever_msg, __lv_progname, str);
-			raise (SIGTRAP);
-			exit (1);
+			visual_error_raise ();
 			break;
 	}
 }

@@ -548,6 +548,12 @@ int visual_plugin_unload (VisPluginData *plugin)
 	if (plugin->realized == TRUE)
 		plugin->info->cleanup (plugin);
 
+	if (plugin->info->plugin != NULL)
+		visual_object_unref (VISUAL_OBJECT (plugin->info->plugin));
+
+	if (plugin->info != NULL)
+		visual_object_unref (VISUAL_OBJECT (plugin->info));
+
 	dlclose (plugin->handle);
 	plugin->info = NULL;
 
@@ -558,8 +564,6 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 	visual_param_container_set_eventqueue (plugin->params, NULL);
 
-	visual_object_unref (VISUAL_OBJECT (plugin->info->plugin));
-	visual_object_unref (VISUAL_OBJECT (plugin->info));
 	visual_object_unref (VISUAL_OBJECT (plugin));
 	
 	return VISUAL_OK;
@@ -711,6 +715,8 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		
 		return NULL;
 	}
+
+	// FIXME niec but don't leak when allocated
 	
 	/* Check for API and struct size */
 	if (plug_info[0].struct_size != sizeof (VisPluginInfo) ||
@@ -730,13 +736,13 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		ref[i] = visual_plugin_ref_new ();
 
 		dup_info = visual_plugin_info_new ();
-		visual_plugin_info_copy (dup_info, VISUAL_PLUGININFO (&plug_info[i]));
+		visual_plugin_info_copy (dup_info, &plug_info[i]);
 		
 		ref[i]->index = i;
 		ref[i]->info = dup_info;
 		ref[i]->file = strdup (pluginpath);
 
-		visual_object_unref (VISUAL_OBJECT (&plug_info[i].plugin));
+		visual_object_unref (plug_info[i].plugin);
 		visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
 	}
 

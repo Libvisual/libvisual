@@ -234,6 +234,8 @@ static void default_critical_handler (const char *msg, const char *funcname, voi
 				__lv_progname, funcname, msg);
 	else
 		fprintf (stderr, "libvisual CRITICAL: %s: %s\n", __lv_progname, msg);
+
+	visual_error_raise ();
 }
 
 static void default_error_handler (const char *msg, const char *funcname, void *privdata)

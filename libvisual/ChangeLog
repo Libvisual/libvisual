@@ -1,5 +1,12 @@
 2004-12-28  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_plugin.*: Fixed some stupid mistakes.
+
+	* libvisual/lv_log.h: Use visual_error_raise instead of
+	raise(SIGTRAP).
+
+2004-12-28  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_plugin.*: Moved the plugin specific structs to be
 	objects, and unref the stuff from the get_plugin_info function.
 

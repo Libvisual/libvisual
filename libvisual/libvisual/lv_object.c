@@ -135,7 +135,7 @@ int visual_object_ref (VisObject *object)
 int visual_object_unref (VisObject *object)
 {
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-
+	
 	object->refcount--;
 
 	/* No reference left, start dtoring of this VisObject */
