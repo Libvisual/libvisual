@@ -536,7 +536,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	VisPluginData *plugin;
 	VisTime time_;
 	const VisPluginInfo *pluginfo;
-	plugin_get_info_func_t get_plugin_info;
+	VisPluginGetInfoFunc get_plugin_info;
 	void *handle;
 	int cnt;
 
@@ -559,7 +559,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 		return NULL;
 	}
 	
-	get_plugin_info = (plugin_get_info_func_t) dlsym (handle, "get_plugin_info");
+	get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
 	
 	if (get_plugin_info == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
@@ -634,7 +634,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	const VisPluginInfo *plug_info;
 	VisPluginInfo *dup_info;
 	const char *plug_name;
-	plugin_get_info_func_t get_plugin_info;
+	VisPluginGetInfoFunc get_plugin_info;
 	void *handle;
 	int cnt = 1, i;
 
@@ -648,7 +648,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		return NULL;
 	}
 
-	get_plugin_info = (plugin_get_info_func_t) dlsym (handle, "get_plugin_info");
+	get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
 
 	if (get_plugin_info == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());

@@ -279,7 +279,7 @@ int visual_param_entry_free (VisParamEntry *param)
  * 	-VISUAL_ERROR_PARAM_NULL, -VISUAL_ERROR_PARAM_CALLBACK_NULL or
  * 	-VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY on failure.
  */
-int visual_param_entry_add_callback (VisParamEntry *param, param_changed_callback_func_t callback, void *priv)
+int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallbackFunc callback, void *priv)
 {
 	VisParamEntryCallback *pcall;
 	int id;

@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.15 2004-11-09 22:55:00 synap Exp $
+ *	$Id: lv_list.c,v 1.16 2004-11-17 22:14:21 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ int visual_list_free (VisList *list)
  *
  * @return VISUAL_OK on succes, or -VISUAL_ERROR_LIST_NULL on failure.
  */
-int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t destroyer)
+int visual_list_destroy_elements (VisList *list, VisListDestroyerFunc destroyer)
 {
 	VisListEntry *le = NULL;
 	void *elem;
@@ -117,7 +117,7 @@ int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t dest
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or error values returned by
  * 	visual_list_free () on failure.
  */
-int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
+int visual_list_destroy (VisList *list, VisListDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 	

@@ -44,7 +44,7 @@ typedef struct _VisParamEntry VisParamEntry;
  * @arg param Pointer to the param that has been changed, and to which the callback was set.
  * @arg priv Private argument, that can be set when adding the callback to the callback list.
  */
-typedef void (*param_changed_callback_func_t)(const VisParamEntry *param, void *priv);
+typedef void (*VisParamChangedCallbackFunc)(const VisParamEntry *param, void *priv);
 
 
 /**
@@ -63,7 +63,7 @@ struct _VisParamContainer {
  */
 struct _VisParamEntryCallback {
 	int				 id;
-	param_changed_callback_func_t	 callback;
+	VisParamChangedCallbackFunc	 callback;
 	void				*priv;
 };
 
@@ -103,7 +103,7 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
 
 VisParamEntry *visual_param_entry_new (char *name);
 int visual_param_entry_free (VisParamEntry *param);
-int visual_param_entry_add_callback (VisParamEntry *param, param_changed_callback_func_t callback, void *priv);
+int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallbackFunc callback, void *priv);
 int visual_param_entry_remove_callback (VisParamEntry *param, int id);
 int visual_param_entry_notify_callbacks (VisParamEntry *param);
 int visual_param_entry_is (VisParamEntry *param, const char *name);

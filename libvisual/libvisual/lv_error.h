@@ -162,10 +162,10 @@ enum {
  *
  * @arg priv Private field to be used by the client. The library will never touch this.
  */
-typedef int (*visual_error_handler_func_t) (void *priv);
+typedef int (*VisErrorHandlerFunc) (void *priv);
 
 int visual_error_raise (void);
-int visual_error_set_handler (visual_error_handler_func_t handler, void *priv);
+int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
 
 const char *visual_error_to_string (int err);
 

@@ -9,7 +9,7 @@
 #include "lv_error.h"
 
 
-static visual_error_handler_func_t error_handler = NULL;
+static VisErrorHandlerFunc error_handler = NULL;
 static void *error_handler_priv = NULL;
 
 /**
@@ -47,7 +47,7 @@ int visual_error_raise ()
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
  */
-int visual_error_set_handler (visual_error_handler_func_t handler, void *priv)
+int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv)
 {
 	visual_log_return_val_if_fail (handler != NULL, -VISUAL_ERROR_ERROR_HANDLER_NULL);
 

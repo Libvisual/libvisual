@@ -22,7 +22,7 @@ typedef enum {
 typedef struct _VisThread VisThread;
 typedef struct _VisMutex VisMutex;
 
-typedef void *(*VisThreadFunc)(void *);
+typedef void *(*VisThreadFunc)(void *data);
 
 struct _VisThread {
 	pthread_t thread;

@@ -36,13 +36,13 @@ struct _VisList {
 	int			count;	/**< Number of entries that are in the list. */
 };
 
-typedef void (*visual_list_destroy_func_t)(void*);
+typedef void (*VisListDestroyerFunc)(void*);
 
 /* prototypes */
 VisList *visual_list_new (void);
 int visual_list_free (VisList *list);
-int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t destroyer);
-int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer);
+int visual_list_destroy_elements (VisList *list, VisListDestroyerFunc destroyer);
+int visual_list_destroy (VisList *list, VisListDestroyerFunc destroyer);
 
 void *visual_list_next (const VisList *list, VisListEntry **le);
 void *visual_list_prev (const VisList *list, VisListEntry **le);

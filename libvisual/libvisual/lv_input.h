@@ -22,7 +22,7 @@ typedef struct _VisInput VisInput;
  *
  * @arg priv Private field to be used by the client. The library will never touch this.
  */
-typedef int (*input_upload_callback_func_t)(VisInput *input, VisAudio *audio, void *priv);
+typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio, void *priv);
 
 /**
  * The VisInput structure encapsulates the input plugin and provides
@@ -41,7 +41,7 @@ struct _VisInput {
 							  * that contains the audio analyse
 							  * results.
 							  * @see visual_audio_analyse */
-	input_upload_callback_func_t	 callback;	/**< Callback function when a callback
+	VisInputUploadCallbackFunc	 callback;	/**< Callback function when a callback
 							  * is used instead of a plugin. */
 	void				*priv;		/**< Private which can pass on data
 							  * to the callback function. */
@@ -61,7 +61,7 @@ int visual_input_realize (VisInput *input);
 int visual_input_destroy (VisInput *input);
 int visual_input_free (VisInput *input);
 
-int visual_input_set_callback (VisInput *input, input_upload_callback_func_t callback, void *priv);
+int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv);
 
 int visual_input_run (VisInput *input);
 

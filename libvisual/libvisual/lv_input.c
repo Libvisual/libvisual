@@ -196,7 +196,7 @@ int visual_input_free (VisInput *input)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL on failure.
  */
-int visual_input_set_callback (VisInput *input, input_upload_callback_func_t callback, void *priv)
+int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv)
 {
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 

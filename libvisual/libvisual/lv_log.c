@@ -19,10 +19,10 @@ static void default_critical_handler (const char *msg, const char *funcname, voi
 static void default_error_handler (const char *msg, const char *funcname, void *privdata);
 
 static struct _message_handlers {
-	visual_log_message_handler_func_t	 info_handler;
-	visual_log_message_handler_func_t	 warning_handler;
-	visual_log_message_handler_func_t	 critical_handler;
-	visual_log_message_handler_func_t	 error_handler;
+	VisLogMessageHandlerFunc	 info_handler;
+	VisLogMessageHandlerFunc	 warning_handler;
+	VisLogMessageHandlerFunc	 critical_handler;
+	VisLogMessageHandlerFunc	 error_handler;
 
 	void					*info_priv;
 	void					*warning_priv;
@@ -62,7 +62,7 @@ VisLogVerboseness visual_log_get_verboseness ()
  * @param handler The custom message handler callback.
  * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_info_handler (visual_log_message_handler_func_t handler, void *priv)
+void visual_log_set_info_handler (VisLogMessageHandlerFunc handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
@@ -77,7 +77,7 @@ void visual_log_set_info_handler (visual_log_message_handler_func_t handler, voi
  * @param handler The custom message handler callback.
  * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_warning_handler (visual_log_message_handler_func_t handler, void *priv)
+void visual_log_set_warning_handler (VisLogMessageHandlerFunc handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
@@ -92,7 +92,7 @@ void visual_log_set_warning_handler (visual_log_message_handler_func_t handler, 
  * @param handler The custom message handler callback.
  * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_critical_handler (visual_log_message_handler_func_t handler, void *priv)
+void visual_log_set_critical_handler (VisLogMessageHandlerFunc handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
@@ -109,7 +109,7 @@ void visual_log_set_critical_handler (visual_log_message_handler_func_t handler,
  * @param handler The custom message handler callback.
  * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_error_handler (visual_log_message_handler_func_t handler, void *priv)
+void visual_log_set_error_handler (VisLogMessageHandlerFunc handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
@@ -124,7 +124,7 @@ void visual_log_set_error_handler (visual_log_message_handler_func_t handler, vo
  * @param handler The custom message handler callback.
  * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_all_messages_handler (visual_log_message_handler_func_t handler, void *priv)
+void visual_log_set_all_messages_handler (VisLogMessageHandlerFunc handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
