@@ -38,6 +38,9 @@ static int lv_height = 200;
 /* Maximum frames per second */
 static int lv_fps = 40;
 
+/* Color depth */
+static int lv_depth = 24;
+
 static int gl_plug = 0;
 static int depth;
 
@@ -133,6 +136,7 @@ static int lv_xmms_prefs_load ()
 	xmms_cfg_read_int (f, "libvisual_xmms", "width", &lv_width);
 	xmms_cfg_read_int (f, "libvisual_xmms", "height", &lv_height);
 	xmms_cfg_read_int (f, "libvisual_xmms", "fps", &lv_fps);
+	xmms_cfg_read_int (f, "libvisual_xmms", "color_depth", &lv_depth);
 	
 	xmms_cfg_free (f);
 
@@ -151,6 +155,7 @@ static int lv_xmms_prefs_save ()
 	xmms_cfg_write_int (f, "libvisual_xmms", "width", lv_width);
 	xmms_cfg_write_int (f, "libvisual_xmms", "height", lv_height);
 	xmms_cfg_write_int (f, "libvisual_xmms", "fps", lv_fps);
+	xmms_cfg_write_int (f, "libvisual_xmms", "color_depth", lv_depth);
 
 	xmms_cfg_write_default_file (f);
 	xmms_cfg_free (f);
@@ -174,13 +179,8 @@ static void lv_xmms_init ()
         argv[0] = g_strdup ("LibVisual XMMS Plugin");
         argc = 1;
 	visual_init (&argc, &argv);
-        /*
-         * If I do this, I loss the pointer to the string.
-         * But the string cannot be freed with the current
-         * LibVisual library implementation, because is not
-         * copied away. 
-         *
-         g_free (argv);*/
+        g_free (argv[0]);
+        g_free (argv);
 
 	lv_xmms_prefs_load ();
 	if (cur_lv_plugin == NULL)
@@ -199,17 +199,9 @@ static void lv_xmms_init ()
 
 static void lv_xmms_cleanup ()
 {
-	int i = 0;
-
 	visual_log (VISUAL_LOG_DEBUG, "entering...");
 	visual_running = 0;
-	usleep (100000);
-	while (visual_stopped != 1) {
-		usleep (100000);
-		i++;
-		if (i > 10)
-			break;
-	}
+        SDL_WaitThread (render_thread, NULL);
 	SDL_KillThread (render_thread);
 	render_thread = NULL;
 	visual_stopped = 1;
@@ -418,7 +410,7 @@ static int sdl_create (int width, int height)
         g_free (msg);
 
 	visual_video_set_pitch (video, screen->pitch);
-	msg = g_strdup_printf ("********* ********** pitch: %d\n", video->pitch);
+	msg = g_strdup_printf ("pitch: %d\n", video->pitch);
         visual_log (VISUAL_LOG_DEBUG, msg);
         g_free (msg);
 
@@ -579,7 +571,20 @@ static int visual_initialize (int width, int height)
         /*
          * This should be configurable.
          */
-	depth = VISUAL_VIDEO_DEPTH_32BIT;
+        switch (lv_depth) {
+        case 8:
+            depth = VISUAL_VIDEO_DEPTH_8BIT;
+        case 16:
+            depth = VISUAL_VIDEO_DEPTH_16BIT;
+        case 24:
+            depth = VISUAL_VIDEO_DEPTH_24BIT;
+        case 32:
+            depth = VISUAL_VIDEO_DEPTH_32BIT;
+            break;
+        default:
+            depth = lv_depth = VISUAL_VIDEO_DEPTH_24BIT;
+            break;
+        }
 
 	video = visual_video_new ();
         if (video == NULL) {

@@ -1,3 +1,9 @@
+2004-06-25  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/lv_xmms.c: wait thread exit using SDL_WaitThread()
+	instead of usleep(). Color depth made optional, but for
+	now every plugin can request your own.
+
 2004-06-24  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/lv_xmms.c:
