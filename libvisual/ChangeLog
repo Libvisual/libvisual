@@ -1,3 +1,8 @@
+2004-12-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.h: Finished up documentation mostly. Also removed
+	all traces of VisChoiceType, it was bullocks.
+
 2004-12-13  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_thread.* (visual_mutex_init): Added new functions

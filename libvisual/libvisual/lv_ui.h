@@ -32,41 +32,41 @@ extern "C" {
 #define VISUAL_UI_RADIO(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_RADIO, VisUIRadio))
 #define VISUAL_UI_CHECKBOX(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_CHECKBOX, VisUICheckbox))
 
-
+/**
+ * Enumerate to define the different types of VisUIWidgets.
+ */
 typedef enum {
-	VISUAL_WIDGET_TYPE_NULL,
-	VISUAL_WIDGET_TYPE_WIDGET,
-	VISUAL_WIDGET_TYPE_CONTAINER,
-	VISUAL_WIDGET_TYPE_BOX,
-	VISUAL_WIDGET_TYPE_TABLE,
-	VISUAL_WIDGET_TYPE_FRAME,
-	VISUAL_WIDGET_TYPE_LABEL,
-	VISUAL_WIDGET_TYPE_IMAGE,
-	VISUAL_WIDGET_TYPE_SEPARATOR,
-	VISUAL_WIDGET_TYPE_MUTATOR,
-	VISUAL_WIDGET_TYPE_RANGE,
-	VISUAL_WIDGET_TYPE_ENTRY,
-	VISUAL_WIDGET_TYPE_SLIDER,
-	VISUAL_WIDGET_TYPE_NUMERIC,
-	VISUAL_WIDGET_TYPE_COLOR,
-	VISUAL_WIDGET_TYPE_CHOICE,
-	VISUAL_WIDGET_TYPE_POPUP,
-	VISUAL_WIDGET_TYPE_LIST,
-	VISUAL_WIDGET_TYPE_RADIO,
-	VISUAL_WIDGET_TYPE_CHECKBOX
+	VISUAL_WIDGET_TYPE_NULL,	/**< NULL widget */
+	VISUAL_WIDGET_TYPE_WIDGET,	/**< Base widget: \a VisUIWidget. */
+	VISUAL_WIDGET_TYPE_CONTAINER,	/**< Container widget: \a VisUIContainer. */
+	VISUAL_WIDGET_TYPE_BOX,		/**< Box widget: \a VisUIBox. */
+	VISUAL_WIDGET_TYPE_TABLE,	/**< Table widget: \a VisUITable. */
+	VISUAL_WIDGET_TYPE_FRAME,	/**< Frame widget: \a VisUIFrame. */
+	VISUAL_WIDGET_TYPE_LABEL,	/**< Label widget: \a VisUILabel. */
+	VISUAL_WIDGET_TYPE_IMAGE,	/**< Image widget: \a VisUIImage. */
+	VISUAL_WIDGET_TYPE_SEPARATOR,	/**< Separator widget: \a VisUISeparator. */
+	VISUAL_WIDGET_TYPE_MUTATOR,	/**< Mutator base widget: \a VisUIMutator. */
+	VISUAL_WIDGET_TYPE_RANGE,	/**< Range base widget: \a VisUIRange. */
+	VISUAL_WIDGET_TYPE_ENTRY,	/**< Entry box widget: \a VisUIEntry. */
+	VISUAL_WIDGET_TYPE_SLIDER,	/**< Slider widget: \a VisUISlider. */
+	VISUAL_WIDGET_TYPE_NUMERIC,	/**< Numeric widget: \a VisUINumeric. */
+	VISUAL_WIDGET_TYPE_COLOR,	/**< Color widget: \a VisUIColor. */
+	VISUAL_WIDGET_TYPE_CHOICE,	/**< Choice base widget: \a VisUIChoice. */
+	VISUAL_WIDGET_TYPE_POPUP,	/**< Popup widget: \a VisUIPopup. */
+	VISUAL_WIDGET_TYPE_LIST,	/**< List widget: \a VisUIList. */
+	VISUAL_WIDGET_TYPE_RADIO,	/**< Radio widget: \a VisUIRadio. */
+	VISUAL_WIDGET_TYPE_CHECKBOX	/**< Checkbox widget: \a VisUICheckbox. */
 } VisUIWidgetType;
 
+/**
+ * Enumerate to define the different types of widget orientation. This is used
+ * by a few widgets that can be aligned both vertical and horizontal.
+ */
 typedef enum {
-	VISUAL_ORIENT_TYPE_NONE,
-	VISUAL_ORIENT_TYPE_HORIZONTAL,
-	VISUAL_ORIENT_TYPE_VERTICAL
+	VISUAL_ORIENT_TYPE_NONE,	/**< No orientation, use the default. */
+	VISUAL_ORIENT_TYPE_HORIZONTAL,	/**< Horizontal orientation. */
+	VISUAL_ORIENT_TYPE_VERTICAL	/**< Vertical orientation. */
 } VisUIOrientType;
-
-typedef enum {
-	VISUAL_CHOICE_TYPE_NONE,
-	VISUAL_CHOICE_TYPE_SINGLE,
-	VISUAL_CHOICE_TYPE_MULTIPLE
-} VisUIChoiceType;
 
 typedef struct _VisUIWidget VisUIWidget;
 typedef struct _VisUIContainer VisUIContainer;
@@ -91,157 +91,282 @@ typedef struct _VisUIList VisUIList;
 typedef struct _VisUIRadio VisUIRadio;
 typedef struct _VisUICheckbox VisUICheckbox;
 
-
+/* FIXME, fix the links, they are screwed up because of the typedefs, there is some way around it
+ * but hey. */
+/**
+ * 
+ * The super class for al VisUIWidgets. All the typical VisUIWidgets
+ * derive from this. VisUIWidget is used as an intermediate user interface
+ * description. Mainly to set up configuration dialogs for plugins that
+ * are not widget set dependant.
+ *
+ * The VisUIWidget class hierarchy looks like following:
+ * - \a _VisUIWidget
+ *	- \a VisUILabel
+ *	- \a VisUIImage
+ *	- \a VisUIContainer
+ *		- \a VisUIBox
+ *		- \a VisUITable
+ *		- \a VisUIFrame
+ *	- \a VisUIMutator
+ *		- \a VisUIText
+ *		- \a VisUIColor
+ *		- \a VisUIRange
+ *			- \a VisUISlider
+ *			- \a VisUINumeric
+ *		- \a VisUIChoice
+ *			- \a VisUIPopup
+ *			- \a VisUIList
+ *			- \a VisUIRadio
+ *			- \a VisUICheckbox
+ */
 struct _VisUIWidget {
-	VisObject		 object;
+	VisObject		 object;	/**< The VisObject data. */
 
-	VisUIWidget		*parent;
+	VisUIWidget		*parent;	/**< Parent in which this VisUIWidget is packed.
+						 * This is possibly NULL. */
 	
-	VisUIWidgetType		 type;
+	VisUIWidgetType		 type;		/**< Type of VisUIWidget. */
 
-	const char		*tooltip;
+	const char		*tooltip;	/**< Optional tooltip text, this can be used to
+						 * give the user some extra explanation about the
+						 * user interface. */
 
-	int			 width;
-	int			 height;
+	int			 width;		/**< When size requisition is used, the width value will
+						 * be stored in this. */
+	int			 height;	/**< When size requisition is used. the height value will
+						 * be stored in this. When size requisition is not being
+						 * done both width and height will contain of -1. */
 };
 
+/**
+ * The VisUIContainer is a VisUIWidget that is used to pack other widgets in.
+ * A basic container can contain just one VisUIWidget, however when VisUIBox or
+ * VisUITable is used, it's possible to add more elements.
+ */
 struct _VisUIContainer {
-	VisUIWidget		 widget;
+	VisUIWidget		 widget;	/**< The VisUIWidget data. */
 
-	VisUIWidget		*child;
+	VisUIWidget		*child;		/**< Pointer to the child VisUIWidget that is packed in this VisUIContainer. */
 };
 
+/**
+ * The VisUIBox inherents from VisUIContainer, but is capable to contain more childeren.
+ * The VisUIBox is used as a box of VisUIWidgets, packed vertical or horizontal.
+ */
 struct _VisUIBox {
-	VisUIContainer		 container;
+	VisUIContainer		 container;	/**< The VisUIContainer data. */
 
-	VisUIOrientType		 orient;
+	VisUIOrientType		 orient;	/**< Orientation, whatever the box packs the item in a vertical
+						 * order or in a horizontal order. */
 
-	VisList			 childs;
+	VisList			 childs;	/**< A list of all child VisUIWidgets. */
 };
 
+/**
+ * VisUITableEntry is an entry in a VisUITable. the VisUITableEntry is not a VisUIWidget on
+ * itself. Instead it rembers the cell in which a VisUIWidget is placed in VisUITable and
+ * also has a reference to the VisUIWidget.
+ */
 struct _VisUITableEntry {
-	VisObject		object;
+	VisObject		object;		/**< The VisObject data. */
 
-	int			row;
-	int			col;
+	int			row;		/**< Row to which the VisUITableEntry is associated. */
+	int			col;		/**< Column to which the VisUITableEntry is associated. */
 
-	VisUIWidget		*widget;
-
+	VisUIWidget		*widget;	/**< The VisUIWidget that is connected to this entry in the VisUITable. */
 };
 
+/**
+ * The VisUITable inherents from VisUIContainer, but is capable of placing VisUIWidgets in an aligned grid.
+ */
 struct _VisUITable {
-	VisUIContainer		 container;
+	VisUIContainer		 container;	/**< The VisUIContainer data. */
 
-	int			 rows;
-	int			 cols;
+	int			 rows;		/**< The number of rows in this VisUITable. */
+	int			 cols;		/**< The number of columns in this VisUITable. */
 
-	VisList			 childs;
+	VisList			 childs;	/**< A list of all VisUITableEntry items that are related to
+						 * this table. */
 };
 
+/**
+ * The VisUIFrame inherents from VisUIContainer, it's used to put a frame with a label around a VisUIWidget.
+ */
 struct _VisUIFrame {
-	VisUIContainer		 container;
+	VisUIContainer		 container;	/**< The VisUIContainer data. */
 
-	const char		*name;
+	const char		*name;		/**< The frame label text. */
 };
 
+/**
+ * The VisUILabel inherents from a VisUIWidget, it's used to as a label item in the user interface.
+ */
 struct _VisUILabel {
-	VisUIWidget		 widget;
+	VisUIWidget		 widget;	/**< The VisUIWidget data. */
 
-	const char		*text;
-	int			 bold;
+	const char		*text;		/**< The label text. */
+	int			 bold;		/**< Whatever the label is being printed in bold or not. */
 };
 
+/**
+ * The VisUIImage inherents from a VisUIWidget, it's used to display a VisVideo within the user interface. For
+ * example it can be used to show a picture.
+ */
 struct _VisUIImage {
-	VisUIWidget		 widget;
+	VisUIWidget		 widget;	/**< The VisUIWidget data. */
 
-	const VisVideo		*image;
+	const VisVideo		*image;		/**< The VisUIImage containing the image data. */
 };
 
+/**
+ * The VisUISeparator inherents from a VisUIWidget, it's used to display a separator between different user interface
+ * elements.
+ */
 struct _VisUISeparator {
-	VisUIWidget		 widget;
+	VisUIWidget		 widget;	/**< The VisUIWidget data. */
 
-	VisUIOrientType		 orient;
+	VisUIOrientType		 orient;	/**< The orientation, whatever the separator is drawn in vertical
+						 * or horizontal style. */
 };
 
+/**
+ * The VisUIMutator inherents from a VisUIWidget, it's used as a super class for different type of mutator VisUIWidgets.
+ * Mutator VisUIWidgets are used to change a value in a VisParamEntry.
+ */
 struct _VisUIMutator {
-	VisUIWidget		 widget;
+	VisUIWidget		 widget;	/**< The VisUIWidget data. */
 
-	const VisParamEntry	*param;
+	const VisParamEntry	*param;		/**< The VisParamEntry parameter that is associated with this
+						 * VisUIMutator. */
 };
 
+/**
+ * The VisUIRange inherents from a VisUIMutator, it's a type of mutator widget that focus on numeric input and
+ * numeric adjustment within a range.
+ */
 struct _VisUIRange {
-	VisUIMutator		 mutator;
+	VisUIMutator		 mutator;	/**< The VisUIMutator data. */
 
-	double			 min;
-	double			 max;
-	double			 step;
+	double			 min;		/**< The minimal value. */
+	double			 max;		/**< The maximal value. */
+	double			 step;		/**< Increase / decrease steps. */
 
-	int			 precision;
+	int			 precision;	/**< Precision, in the fashion of how many numbers behind
+						 * the point. */
 };
 
+/**
+ * The VisUIEntry inherents from a VisUIMutator, it's used as a way to input text.
+ */
 struct _VisUIEntry {
-	VisUIMutator		 mutator;
+	VisUIMutator		 mutator;	/**< The VisUIMutator data. */
 
-	int			 length;
+	int			 length;	/**< Maximal length for the text. */
 };
 
+/**
+ * The VisUISlider inherents from a VisUIRange, it's used to display a slider which can be used
+ * to adjust a numeric value.
+ */
 struct _VisUISlider {
-	VisUIRange		 range;
+	VisUIRange		 range;		/**< The VisUIRange data. */
 
-	int			 showvalue;
+	int			 showvalue;	/**< Don't show just the slider, but also the  value it
+						 * represents at it's current position. */
 };
 
+/**
+ * The VisUINumeric inherents from a VisUIRange, it's used to display a numeric spin button that
+ * can be used to adjust a numeric value. A numeric spin button contains out of a small text field
+ * displaying the actual value, followed by two buttons which are used to increase or decrease the value.
+ *
+ * In most VisUI native implementations it's also possible to adjust the text field directly using
+ * the keyboard.
+ */
 struct _VisUINumeric {
-	VisUIRange		 range;
+	VisUIRange		 range;		/**< The VisUIRange data. */
 };
 
+/**
+ * The VisUIColor inherents from a VisUIMutator, it's used to adjust the color that is encapsulated by
+ * a VisParamEntry.
+ */
 struct _VisUIColor {
-	VisUIMutator		 mutator;
+	VisUIMutator		 mutator;	/**< The VisUIMutator data. */
 };
 
+/**
+ * The VisUIChoiceList is not a VisUIWidget, but it's used by the different types of VisUIChoice widgets to
+ * store information about choices.
+ */
 struct _VisUIChoiceList {
-	VisObject		 object;
+	VisObject		 object;	/**< The VisObject data. */
 
-	VisUIChoiceType		 type;
-
-	int			 count;
-	VisList			 choices;
+	int			 count;		/**< The amount of choices that are present. */
+	VisList			 choices;	/**< A list of VisUIChoiceEntry elements. */ 
 };
 
+/**
+ * The VisUIChoiceEntry is not a VisUIWidget, but it's used by the different types of VisUIChoice widgets to
+ * store information regarding a choice within a VisUIChoiceList.
+ */
 struct _VisUIChoiceEntry {
-	VisObject		 object;
+	VisObject		 object;	/**< The VisObject data. */
 
-	const char		*name;
+	const char		*name;		/**< Name of this VisChoiceEntry. */
 	
-	const VisParamEntry	*value;
+	const VisParamEntry	*value;		/**< Link to the VisParamEntry that contains the value
+						 * for this VisChoiceEntry. */
 };
 
+/**
+ * The VisUIChoice inherents from a VisUIMutator, it's used as a super class for the different types of
+ * VisUIChoice VisUIWidgets.
+ */
 struct _VisUIChoice {
-	VisUIMutator		 mutator;
+	VisUIMutator		 mutator;	/**< The VisUIMutator data. */
 
-	const VisParamEntry	*param;
+	const VisParamEntry	*param;		/**< Pointer to the VisParamEntry that is the target to
+						 * contain the actual value. */
 
-	VisUIChoiceList		 choices;
+	VisUIChoiceList		 choices;	/**< The different choices present. */
 };
 
+/**
+ * The VisUIPopup inherents from a VisUIChoice, it's used to represent choices in a popup fashion, where you
+ * can select an item.
+ */
 struct _VisUIPopup {
-	VisUIChoice		 choice;
+	VisUIChoice		 choice;	/**< The VisUIChoice data. */
 };
 
+/**
+ * The VisUIList inherents from a VisUIChoice, it's used to represent choices in a list fashion.
+ */
 struct _VisUIList {
-	VisUIChoice		 choice;
+	VisUIChoice		 choice;	/**< The VisUIChoice data. */
 };
 
+/**
+ * The VisUIRadio inherents from a VisUIChoice, it's used to represent choices in the fashion of radio buttons. These
+ * are a grouped type of checkboxes where only one item can be active at once.
+ */
 struct _VisUIRadio {
-	VisUIChoice		 choice;
+	VisUIChoice		 choice;	/**< The VisUIChoice data. */
 
-	VisUIOrientType		 orient;
+	VisUIOrientType		 orient;	/**< Orientation of how the different radio buttons in the VisUIRadio button
+						 * group is ordered. */
 };
 
+/**
+ * The VisUICheckbox inherents from a VisUIChoice, it's used to represent one single checkbox widget. For this reason it
+ * can only represent two choices. One for the toggled state and one for the untoggled state.
+ */
 struct _VisUICheckbox {
-	VisUIChoice		 choice;
+	VisUIChoice		 choice;	/**< The VisUIChoice data. */
 
-	const char		*name;
+	const char		*name;		/**< Optional text behind the textbox. */
 };
 
 /* prototypes */
