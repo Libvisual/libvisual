@@ -11,6 +11,8 @@
 
 #define NB_PALETTES 23
 
+#include <libvisual/libvisual.h>
+
 #include "corona_types.h"
 
 // PALETTE
@@ -58,6 +60,7 @@ class PaletteCycler
   public:
     PaletteCycler(const int palettes[][NB_PALETTES], int nbPalettes);
     void update(TimedLevel *pLevels);
+    void updateVisPalette(VisPalette *pal);
     const Palette &getPalette() const { return m_curpal; }
 };
 

@@ -32,6 +32,8 @@ Corona::Corona()
   m_oldval        = 0;
   m_pos           = 0;
 
+  m_nPreset	  = PRESET_CORONA;
+  
   m_image         = 0;
   m_real_image    = 0;
   m_deltafield    = 0;
@@ -84,7 +86,7 @@ bool Corona::setUpSurface(int width, int height) {
   m_real_image = (unsigned char *)calloc(1,width*height);
   if (m_real_image == 0) return false;
   m_image      = m_real_image + m_width * (m_real_height - m_height);
-  m_reflArray  = (int*)calloc(1,m_real_height - m_height + 1);
+  m_reflArray  = (int*)malloc((m_real_height - m_height) + m_width);
 
   // Allocate the delta-field memory, and initialise it
   m_deltafield = (unsigned char**)malloc(m_width * m_height * sizeof(unsigned char*));
@@ -273,9 +275,9 @@ void Corona::genReflectedWaves(double loop)
   double fwidth = (m_real_height - m_height) * REFL_INC_WIDTH + REFL_MIN_WIDTH;
   double REFL_MAX_WIDTH = fwidth;
 
-  int *reflArray;
-  reflArray = new int[m_real_height - m_height + 1];
-  
+//  int *reflArray;
+//  reflArray = new int[(m_real_height - m_height) + m_width];
+ 
   for (int i = 0; i < m_real_height - m_height; ++i)
   {
     double fincr = (3.1415 / 2.0) * (1.0 - (fwidth - REFL_MIN_WIDTH) / REFL_MAX_WIDTH);
@@ -310,9 +312,8 @@ void Corona::drawReflected()
 
 void Corona::blurImage()
 {
-  for (int y = 1; y < m_real_height - 1; ++y) {
-    m_image[y * m_width] = 0;
-    for (int x = 1; x < m_width - 1; ++x) {
+  for (int y = 1; y < m_real_height - 1; y++) {
+    for (int x = 0; x < m_width - 1; x++) {
       int n = x + y * m_width;
       int val = m_real_image[n + 1];
       val += m_real_image[n - 1];

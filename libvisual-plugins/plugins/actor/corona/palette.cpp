@@ -34,6 +34,10 @@ class CompressedPalette
 PaletteCycler::PaletteCycler(const int palettes[][NB_PALETTES], int nbPalettes)
   : m_palettes(palettes, nbPalettes)
 {
+  memset (m_srcpal, 0, sizeof (Palette));
+  memset (m_destpal, 0, sizeof (Palette));
+  memset (m_curpal, 0, sizeof (Palette));
+
   startPaletteTransition();
   affectPaletteTransition(1);
   m_transferring  = false;
@@ -83,6 +87,15 @@ void PaletteCycler::update(TimedLevel *pLevels)
     else x = 2 * m_progress * (m_progress - 1) + 1;
     affectPaletteTransition(x);
   }
+}
+
+void PaletteCycler::updateVisPalette (VisPalette *pal)
+{
+	for (int i = 0; i < 256; i++) {
+		pal->colors[i].r = m_curpal[i].rgbRed;
+		pal->colors[i].g = m_curpal[i].rgbGreen;
+		pal->colors[i].b = m_curpal[i].rgbBlue;
+	}
 }
 
 void PaletteCycler::affectPaletteTransition(double p)

@@ -141,9 +141,6 @@ extern "C" int lv_corona_requisition (VisPluginData *plugin, int *width, int *he
 	if (reqh < 32)
 		reqh = 32;
 
-	*width = 400;
-	*height = 300;
-	
 	return 0;
 }
 
@@ -190,19 +187,8 @@ extern "C" int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
 extern "C" VisPalette *lv_corona_palette (VisPluginData *plugin)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-//	const Palette pals = priv->pcyl->getPalette();
-/*
-	for (int i = 0; i < 256; i++) {
-		priv->pal.colors[i].r = pals[i]->rgbRed;
-		priv->pal.colors[i].g = pals[i]->rgbGreen;
-		priv->pal.colors[i].b = pals[i]->rgbBlue;
-	}
-*/
-	for (int i = 0; i < 256; i++) {
-		priv->pal.colors[i].r = i;
-		priv->pal.colors[i].g = i;
-		priv->pal.colors[i].b = i;
-	}
+
+	priv->pcyl->updateVisPalette (&priv->pal);
 
 	return &priv->pal;
 }
@@ -231,12 +217,15 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 		priv->tl.frequency[0][i] = freqdata[0][i];
 		priv->tl.frequency[1][i] = freqdata[1][i];
 	}
+	
 	priv->corona->update(&priv->tl); // Update Corona
 	priv->pcyl->update(&priv->tl);    // Update Palette Cycler
 
-//	corona32_displayRGBA (priv->corona, (int *) video->pixels);
-
-	memcpy ((uint8_t *) video->pixels, priv->corona->getSurface(), video->size);
+	for (i = 0; i < video->height; i++) {
+		memcpy ((uint8_t *)(video->pixels) + i * video->pitch,
+				priv->corona->getSurface() + (video->height - 1 - i) * video->width,
+				video->width);
+	}
 	
 	return 0;
 }

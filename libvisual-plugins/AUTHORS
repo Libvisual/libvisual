@@ -42,7 +42,9 @@ beat detection written by Steve Kirkendall <kirkenda@cs.pdx.edu>
 
 Delphi/C | C++/C conversion by Pascal Brochart <pbrochart@tuxfamily.org>
 
-
+Corona:
+Richard Asbury <richard.asbury@lincoln.oxon.net>
+Linux port by: Jean-Christophe Hoelt <jeko@ios-software.com>
 
 Many thanks for quality suggestions and input:
 Jean-Christophe Hoelt <jeko@ios-software.com> (Goom2 main author)

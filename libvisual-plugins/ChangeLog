@@ -1,5 +1,14 @@
 2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/corona/*: Non crashy, working, still rough edges, but
+	hey, let's just welcome this new plugin :)
+
+	Thanks a lot to Jeko for the original linux port, and to Richard
+	Asbury for writing it originally on windows, I think for the sonique
+	player, not sure tho :)
+
+2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/G-Force/docs/*: Fixing up
 
 2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
