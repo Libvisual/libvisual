@@ -24,8 +24,6 @@ struct _LvwVisUI
 {
 	GtkBin parent;
 
-	GtkTooltips *tooltips;
-
 	LvwVisUIPrivate *priv;
 };
 

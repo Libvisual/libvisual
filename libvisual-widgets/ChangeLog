@@ -1,5 +1,9 @@
 2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* gtk2/lvw_gtk2_visui.c: Implement tooltips a bit.
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* gtk2/lvw_gtk2_visui.c (cb_idle_color): Less jumpy, it's
 	still there but difficult to trigger, need to have another look
 	at it to get it completely nailed.

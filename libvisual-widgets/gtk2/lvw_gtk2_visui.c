@@ -20,6 +20,7 @@
 
 struct _LvwVisUIPrivate {
 	VisUIWidget	*vuitree;
+	GtkTooltips	*tooltips;
 	GSList		*callbacksreg;
 	GdkWindow	*event_window;
 	gboolean	 destroyed;
@@ -174,6 +175,11 @@ lvw_visui_destroy (GtkObject *object)
 
 	priv->vuitree = NULL;
 
+	if (priv->tooltips != NULL)
+		g_object_unref (G_OBJECT (priv->tooltips));
+
+	priv->tooltips = NULL;
+
 	priv->destroyed = TRUE;	
 
 	klass = LVW_VISUI_CLASS (g_type_class_peek (LVW_VISUI_TYPE));
@@ -267,6 +273,8 @@ lvw_visui_realize (GtkWidget *widget)
 	gdk_window_set_user_data (lvwuic->priv->event_window, lvwuic);
 
 	widget->style = gtk_style_attach (widget->style, widget->window);
+		
+	lvwuic->priv->tooltips = gtk_tooltips_new ();
 }
 
 static void
@@ -293,7 +301,6 @@ lvw_visui_init (LvwVisUI *vuic)
 	g_return_if_fail (vuic != NULL);
 
 	vuic->priv = LVW_VISUI_GET_PRIVATE (vuic);
-	vuic->tooltips = gtk_tooltips_new ();
 
 	GTK_WIDGET_SET_FLAGS (vuic, GTK_NO_WINDOW);
 }
@@ -354,6 +361,7 @@ lvw_visui_new (VisUIWidget *vuitree)
 static GtkWidget *
 lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 {
+	const char *tooltip = NULL;
 	GtkWidget *widget;
 	CallbackEntry *cbentry;
 
@@ -385,6 +393,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 			gtk_box_pack_start (GTK_BOX (widget), packer, FALSE, FALSE, 0);
 		}
+		
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
 
 		return widget;
 
@@ -411,6 +423,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 		}
 
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
+
 		return widget;
 	
 	} else if (type == VISUAL_WIDGET_TYPE_FRAME) {
@@ -428,6 +444,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 			gtk_container_add (GTK_CONTAINER (widget), child);
 		}
+
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
 
 		return widget;
 
@@ -458,7 +478,11 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		
 		align = gtk_alignment_new (0, 0, 0, 0);
 		gtk_container_add (GTK_CONTAINER (align), widget);
-		
+	
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
+
 		return align;
 
 	} else if (type == VISUAL_WIDGET_TYPE_IMAGE) {
@@ -519,6 +543,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 				VISUAL_UI_WIDGET (cont)->width,
 				VISUAL_UI_WIDGET (cont)->height);
 
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
+
 		return widget;
 
 	} else if (type == VISUAL_WIDGET_TYPE_SEPARATOR) {
@@ -537,6 +565,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
 				VISUAL_UI_WIDGET (cont)->height);
+
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
 
 		return widget;
 
@@ -564,6 +596,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		cbentry->param = param;
 		cbentry->id = visual_param_entry_add_callback (param, cb_param_entry, cont);
 		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
 
 		return widget;
 
@@ -613,6 +649,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		cbentry->id = visual_param_entry_add_callback (param, cb_param_slider, cont);
 		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
+
 		return widget;
 		
 	} else if (type == VISUAL_WIDGET_TYPE_NUMERIC) {
@@ -657,6 +697,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		cbentry->id = visual_param_entry_add_callback (param, cb_param_numeric, cont);
 		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
+
 		return widget;
 
 	} else if (type == VISUAL_WIDGET_TYPE_COLOR) {
@@ -696,6 +740,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		cbentry->param = param;
 		cbentry->id = visual_param_entry_add_callback (param, cb_param_color, cont);
 		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
 
 		return widget;
 
@@ -762,6 +810,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		cbentry->param = param;
 		cbentry->id = visual_param_entry_add_callback (param, cb_param_popup, cont);
 		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
 
 		return widget;
 
@@ -834,6 +886,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		cbentry->id = visual_param_entry_add_callback (param, cb_param_radio, cont);
 		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
 
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
+
 		return widget;
 
 	} else if (type == VISUAL_WIDGET_TYPE_CHECKBOX) {
@@ -873,6 +929,10 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		cbentry->param = param;
 		cbentry->id = visual_param_entry_add_callback (param, cb_param_checkbox, cont);
 		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+		tooltip = visual_ui_widget_get_tooltip (cont);
+		if (tooltip != NULL)
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
 
 		return widget;
 	}
