@@ -63,7 +63,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.name = "libvisual analyzer",
 		.author = "Original by: Andy Lo A Foe <andy@alsaplayer.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "The Libvisual analzer plugin",
+		.about = "The Libvisual analyzer plugin",
 		.help = "This is a test plugin that'll display a simple analyzer",
 
 		.init = lv_analyzer_init,
@@ -107,9 +107,8 @@ int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
 
 	reqw = *width;
 
-	while (reqw % 2 || (reqw / 2) % 2) {
+	while (reqw % 2 || reqw % 4)
 		reqw--;
-	}
 
 	if (reqw < 32)
 		reqw = 32;
