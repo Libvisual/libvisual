@@ -156,6 +156,36 @@ dnl -------------------------------
 dnl Check for native thread support
 dnl -------------------------------
 
+dnl
+dnl Test program for basic POSIX threads functionality (taken from Glib)
+dnl
+m4_define([lv_thread_test],[
+#include <pthread.h> 
+int check_me = 0;
+void* func(void* data) {check_me = 42; return &check_me;}
+int main()
+ { pthread_t t; 
+   void *ret;
+   pthread_create (&t, $1, func, 0);
+   pthread_join (t, &ret);
+   exit (check_me != 42 || ret != &check_me);
+}])
+
+LIBS_NOT_FOUND_1="I can't find the libraries for the thread implementation
+		"
+
+LIBS_NOT_FOUND_2=". Please choose another thread implementation or
+		provide information on your thread implementation.
+		You can also run 'configure --disable-threads' 
+		to compile without thread support."
+
+AIX_COMPILE_INFO="AIX's C compiler needs to be called by a different name, when
+		linking threaded applications. As Libvisual cannot do that 
+		automatically, you will get an linkg error everytime you are 
+		not using the right compiler. In that case you have to relink 
+		with the right compiler. Ususally just '_r' is appended 
+		to the compiler name."
+
 AC_ARG_ENABLE([enable_threads],
   AC_HELP_STRING([--enable-threads],
 		[Turn on basic thread support @<:@default=enabled@:>@]),
@@ -199,12 +229,69 @@ dnl ------------------------------------------------
 dnl Determination of linker flags for thread support
 dnl ------------------------------------------------
 
-# FIXME make detection
+LV_THREAD_LIBS=""
 if test "x$enable_threads" = xyes && test "x$have_threads" != xnone; then
-  VIS_THREAD_LIBS="-lpthread"
+  case $have_threads in
+        posix|dce)
+          case $host in
+            *-aix*)
+              # We are not using gcc (would have set LV_THREAD_LIBS) and thus 
+              # probably using the aix compiler.
+		AC_MSG_WARN($AIX_COMPILE_INFO)
+                ;;
+            *)
+              LV_THREAD_LIBS=error
+	      lv_save_LIBS="$LIBS"
+	      for thread_lib in "" pthread pthread32 pthreads thread dce; do
+		if test x"$thread_lib" = x; then
+			add_thread_lib=""
+			IN=""
 else
-  VIS_THREAD_LIBS=""
+			add_thread_lib="-l$thread_lib"
+			IN=" in -l$thread_lib"
+		fi
+		if test x"$have_threads" = xposix; then
+			defattr=0
+		else
+			defattr=pthread_attr_default
+		fi
+		
+		LIBS="$add_thread_lib $lv_save_LIBS"
+		
+		AC_MSG_CHECKING(for pthread_create/pthread_join$IN)
+		AC_TRY_RUN(lv_thread_test($defattr),
+                                  lv_result=yes,
+                                  lv_result=no,
+                                  [AC_LINK_IFELSE(lv_thread_test($defattr),
+                                                  lv_result=yes,
+                                                  lv_result=no)])
+                AC_MSG_RESULT($lv_result)
+			
+              	if test "$lv_result" = "yes" ; then
+			LV_THREAD_LIBS="$add_thread_lib"
+                	break
+              	fi
+	      done
+
+	      if test "x$LV_THREAD_LIBS" = xerror; then
+		AC_MSG_ERROR($LIBS_NOT_FOUND_1$have_threads$LIBS_NOT_FOUND_2)
 fi
+
+	      LIBS="$lv_save_LIBS"
+              ;;
+            esac
+            ;;
+          *)
+	    # This is not possible!
+            ;;
+  esac
+else
+  # Thread support disabled
+  :
+fi
+
+AC_MSG_CHECKING(thread related libraries)
+AC_MSG_RESULT($LV_THREAD_LIBS)
 
 # check for type sizes
 AC_CHECK_SIZEOF(short)
@@ -231,13 +318,23 @@ esac
 
 AC_MSG_RESULT(unsigned $visual_size_type)
 
-# Arguments to specify certain features.
 build_subdirs="libvisual"
 VISUAL_CFLAGS=""
 VISUAL_LIBS="$LIBS -lvisual"
+if test x"$LV_THREAD_LIBS" != x; then
+  VISUAL_LIBS="$LV_THREAD_LIBS $VISUAL_LIBS"
+fi
 AC_SUBST(VISUAL_CFLAGS)		 
 AC_SUBST(VISUAL_LIBS)
 
+dnl ******************************
+dnl Arguments to specify certain features.
+dnl ******************************
+
+dnl ******************************
+dnl Debugging stuff 
+dnl ******************************
+DEBUG_CFLAGS=""
 AC_ARG_ENABLE([profiling],
   AC_HELP_STRING([--enable-profiling],
 		[Enable emision of profile data to be used by gprof @<:@default=disabled@:>@]),
@@ -259,10 +356,9 @@ AC_ARG_ENABLE([debug],
 AC_MSG_CHECKING([wheter to enable debug])
 if test x$debug = xyes; then
   AC_MSG_RESULT([yes])
-  DEBUG_CFLAGS="-ggdb3"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3"
 else
   AC_MSG_RESULT([no])
-  DEBUG_CFLAGS=""
 fi
 AC_SUBST(DEBUG_CFLAGS)
 
@@ -270,11 +366,6 @@ libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
 AC_SUBST(BUILD_SUBDIRS, "libvisual")
-
-# Terrible hack, but otherwise the CFLAGS are passed as last arguments
-# to compiler, and this way these arguments (probably -g -O2) overrides
-# our -O3 flag on libvisual/Makefile.am
-AC_SUBST(CFLAGS, "")
 
 dnl Output the LibVisual config file
 AC_CONFIG_COMMANDS([libvisual/lvconfig.h],
