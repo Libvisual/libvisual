@@ -1,3 +1,6 @@
+2004-07-13  Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>
+	* plugins/input/mplayer: New input plugin
+
 2004-07-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* plugins/input/alsa/input_alsa.c: Check if
