@@ -1,3 +1,7 @@
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Added some tooltips here and there to the VisUI
+
 2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/*: VisVideo is an object as well use the right unref

@@ -122,14 +122,17 @@ int act_jakdaw_init (VisPluginData *plugin)
 	label3 = visual_ui_label_new ("Plotter type:", FALSE);
 
 	popup1 = visual_ui_popup_new ();
+	visual_ui_widget_set_tooltip (popup1, "The method of blurring");
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup1), visual_param_container_get (paramcontainer, "zoom mode"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup1), zoomparamchoices);
 
 	popup2 = visual_ui_popup_new ();
+	visual_ui_widget_set_tooltip (popup2, "The color of the plotter");
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup2), visual_param_container_get (paramcontainer, "plotter trigger"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup2), colorparamchoices);
 
 	popup3 = visual_ui_popup_new ();
+	visual_ui_widget_set_tooltip (popup3, "The plotter it's shape");
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup3), visual_param_container_get (paramcontainer, "plotter type"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup3), scopeparamchoices);
 	

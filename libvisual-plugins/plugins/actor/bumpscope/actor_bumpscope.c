@@ -92,11 +92,13 @@ int act_bumpscope_init (VisPluginData *plugin)
 	label1 = visual_ui_label_new ("Light size:", FALSE);
 
 	color = visual_ui_color_new ();
+	visual_ui_widget_set_tooltip (color, "The color of the light");
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (color), visual_param_container_get (paramcontainer, "color"));
 
 	separator = visual_ui_separator_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 
-	numeric = visual_ui_numeric_new ();	
+	numeric = visual_ui_numeric_new ();
+	visual_ui_widget_set_tooltip (numeric, "The size of the light");
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric), visual_param_container_get (paramcontainer, "light size"));
 	visual_ui_range_set_min (VISUAL_UI_RANGE (numeric), 8);
 	visual_ui_range_set_max (VISUAL_UI_RANGE (numeric), 512);
@@ -104,6 +106,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	visual_ui_range_set_precision (VISUAL_UI_RANGE (numeric), 0);
 
 	slider = visual_ui_slider_new (FALSE);
+	visual_ui_widget_set_tooltip (slider, "The size of the light");
 	visual_ui_widget_set_size_request (slider, 200, -1);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider), visual_param_container_get (paramcontainer, "light size"));
 	visual_ui_range_set_min (VISUAL_UI_RANGE (slider), 8);
@@ -112,12 +115,17 @@ int act_bumpscope_init (VisPluginData *plugin)
 	visual_ui_range_set_precision (VISUAL_UI_RANGE (slider), 0);
 
 	check1 = visual_ui_checkbox_new ("Cycling colors", TRUE);
+	visual_ui_widget_set_tooltip (check1, "Automatic cycling through colors");
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check1), visual_param_container_get (paramcontainer, "color cycle"));
 	
 	check2 = visual_ui_checkbox_new ("Moving light", TRUE);
+	visual_ui_widget_set_tooltip (check2,
+			"Automatic movement of the light, when disabled it's possible to select it" \
+			"using the mouse cursor");
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check2), visual_param_container_get (paramcontainer, "moving light"));
 
 	check3 = visual_ui_checkbox_new ("Diamond", TRUE);
+	visual_ui_widget_set_tooltip (check3, "Diamond shaped light");
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check3), visual_param_container_get (paramcontainer, "diamond"));
 
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label1);
