@@ -626,20 +626,20 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 		/* Initial privvid initialize */
 	
 		visual_log (VISUAL_LOG_DEBUG, "actmorph->video->depth %d %p", bin->actmorph->video->depth,
-				bin->actvideo->screenbuffer);
+				bin->actvideo->pixels);
 		
-		if (bin->actvideo->screenbuffer != NULL && privvid->screenbuffer != NULL)
-			memcpy (privvid->screenbuffer, bin->actvideo->screenbuffer, privvid->size);
-		else if (privvid->screenbuffer != NULL)
-			memset (privvid->screenbuffer, 0, privvid->size);
+		if (bin->actvideo->pixels != NULL && privvid->pixels != NULL)
+			memcpy (privvid->pixels, bin->actvideo->pixels, privvid->size);
+		else if (privvid->pixels != NULL)
+			memset (privvid->pixels, 0, privvid->size);
 
 		visual_actor_set_video (bin->actor, privvid);
 		bin->privvid = privvid;
 	} else {
-		visual_log (VISUAL_LOG_DEBUG, "Pointer actvideo->screenbuffer %p", bin->actvideo->screenbuffer);
+		visual_log (VISUAL_LOG_DEBUG, "Pointer actvideo->pixels %p", bin->actvideo->pixels);
 		if (bin->actor->video->depth != VISUAL_VIDEO_DEPTH_GL &&
-				bin->actvideo->screenbuffer != NULL) {
-			memset (bin->actvideo->screenbuffer, 0, bin->actvideo->size);
+				bin->actvideo->pixels != NULL) {
+			memset (bin->actvideo->pixels, 0, bin->actvideo->size);
 		}
 	}
 

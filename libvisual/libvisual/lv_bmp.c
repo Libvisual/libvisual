@@ -184,8 +184,8 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 	pad = ((video->pitch % 4) ? (4 - (video->pitch % 4)) : 0);
 
-	data = video->screenbuffer + (video->height * video->pitch);
-	while (data > (uint8_t *) video->screenbuffer) {
+	data = video->pixels + (video->height * video->pitch);
+	while (data > (uint8_t *) video->pixels) {
 		data -= video->pitch;
 
 		if (read (fd, data, video->pitch) != video->pitch) {

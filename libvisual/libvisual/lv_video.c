@@ -55,7 +55,7 @@ VisVideo *visual_video_new ()
 
 	video = visual_mem_new0 (VisVideo, 1);
 	
-	video->screenbuffer = NULL;
+	video->pixels = NULL;
 
 	/*
 	 * By default, we suppose an external buffer will be used.
@@ -66,7 +66,7 @@ VisVideo *visual_video_new ()
 }
 
 /**
- * Creates a new VisVideo and also allocates a screenbuffer.
+ * Creates a new VisVideo and also allocates a buffer.
  *
  * @param width The width for the new buffer.
  * @param height The height for the new buffer.
@@ -84,7 +84,7 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 	visual_video_set_depth (video, depth);
 	visual_video_set_dimension (video, width, height);
 
-	video->screenbuffer = NULL;
+	video->pixels = NULL;
 	ret = visual_video_allocate_buffer (video);
 
 	if (ret < 0) {
@@ -131,13 +131,13 @@ int visual_video_free (VisVideo *video)
 }
 
 /**
- * Frees the VisVideo and it's buffer. This frees the VisVideo and it's screenbuffer.
+ * Frees the VisVideo and it's buffer. This frees the VisVideo and it's buffer.
  * 
  * @warning The given @a video must be a previously created one with
  * visual_video_new_with_buffer(), not visual_video_new().
  *
  * @param video Pointer to a VisVideo that needs to be freed together with
- * 	it's screenbuffer.
+ * 	it's buffer.
  *
  * @return 0 on succes -1 on error.
  */
@@ -160,23 +160,23 @@ int visual_video_free_with_buffer (VisVideo *video)
 }
 
 /**
- * Frees the screenbuffer that relates to the VisVideo.
+ * Frees the buffer that relates to the VisVideo.
  *
- * @param video Pointer to a VisVideo of which the screenbuffer needs to be freed.
+ * @param video Pointer to a VisVideo of which the buffer needs to be freed.
  *
  * @return 0 on succes -1 on error.
  */
 int visual_video_free_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
-	visual_log_return_val_if_fail (video->screenbuffer != NULL, -1);
+	visual_log_return_val_if_fail (video->pixels != NULL, -1);
 
 	if (HAVE_ALLOCATED_BUFFER (video))
-		visual_mem_free (video->screenbuffer);
+		visual_mem_free (video->pixels);
 	else
 		return -1;
 
-	video->screenbuffer = NULL;
+	video->pixels = NULL;
 
 	video->flags = VISUAL_VIDEO_FLAG_NONE;
 
@@ -184,10 +184,10 @@ int visual_video_free_buffer (VisVideo *video)
 }
 
 /**
- * Allocates a screenbuffer for the VisVideo. Allocates based on the
+ * Allocates a buffer for the VisVideo. Allocates based on the
  * VisVideo it's information about the screen dimension and depth.
  *
- * @param video Pointer to a VisVideo that needs an allocated screenbuffer.
+ * @param video Pointer to a VisVideo that needs an allocated buffer.
  *
  * @return 0 on succes -1 on error.
  */
@@ -195,7 +195,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
 
-	if (video->screenbuffer != NULL) {
+	if (video->pixels != NULL) {
 		if (HAVE_ALLOCATED_BUFFER (video)) {
 			visual_video_free_buffer (video);
 		} else {
@@ -206,12 +206,12 @@ int visual_video_allocate_buffer (VisVideo *video)
 	}
 
 	if (video->size == 0) {
-		video->screenbuffer = NULL;
+		video->pixels = NULL;
 		video->flags = VISUAL_VIDEO_FLAG_NONE;
 		return 0;
 	}
 	
-	video->screenbuffer = visual_mem_malloc0 (video->size);
+	video->pixels = visual_mem_malloc0 (video->size);
 
 	video->flags = VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER;
 
@@ -238,7 +238,7 @@ int visual_video_have_allocated_buffer (const VisVideo *video)
 /**
  * Clones the information from a VisVideo to another.
  * This will clone the depth, dimension and screen pitch into another VisVideo.
- * It doesn't clone the palette or screenbuffer.
+ * It doesn't clone the palette or buffer.
  *
  * @param dest Pointer to a destination VisVideo in which the information needs to
  * 	be placed.
@@ -307,14 +307,14 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
 }
 
 /**
- * Sets a screenbuffer to a VisVideo. Links a sreenbuffer to the
+ * Sets a buffer to a VisVideo. Links a sreenbuffer to the
  * VisVideo.
  *
  * @warning The given @a video must be one previously created with visual_video_new(),
  * and not with visual_video_new_with_buffer().
  *
- * @param video Pointer to a VisVideo to which a screenbuffer needs to be linked.
- * @param buffer Pointer to a screenbuffer that needs to be linked with the VisVideo.
+ * @param video Pointer to a VisVideo to which a buffer needs to be linked.
+ * @param buffer Pointer to a buffer that needs to be linked with the VisVideo.
  *
  * @return 0 on succes -1 on error.
  */
@@ -328,7 +328,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 		return -1;
 	}
 
-	video->screenbuffer = buffer;
+	video->pixels = buffer;
 
 	return 0;
 }
@@ -733,9 +733,9 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 	else
 		srcp = src;
 	
-	destbuf = dest->screenbuffer;
-	srcbuf = src->screenbuffer;
-	srcpbuf = srcp->screenbuffer;
+	destbuf = dest->pixels;
+	srcbuf = src->pixels;
+	srcpbuf = srcp->pixels;
 
 	/* Negative X offset value */
 	if (x < 0) {
@@ -755,7 +755,7 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 
 	/* We're looking at exactly the same types of VisVideo objects */
 	if (visual_video_compare (dest, src) == TRUE && alpha == FALSE && x == 0 && y == 0) {
-		memcpy (dest->screenbuffer, src->screenbuffer, dest->size);
+		memcpy (dest->pixels, src->pixels, dest->size);
 
 	/* No alpha, fast method */
 	} else if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT) {
@@ -857,7 +857,7 @@ int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, 
 
 	col = (r << 16 | g << 8 | b);
 
-	vidbuf = video->screenbuffer;
+	vidbuf = video->pixels;
 
 	for (i = 0; i < video->size / video->bpp; i++) {
 		if ((vidbuf[i] & 0x00ffffff) == col)
@@ -886,7 +886,7 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
 	visual_log_return_val_if_fail (video != NULL, -1);
 	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -1);
 
-	vidbuf = video->screenbuffer;
+	vidbuf = video->pixels;
 
 	for (i = 0; i < video->size / video->bpp; i++)
 		vidbuf[i] += (density << 24);
@@ -906,8 +906,8 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
 int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
 {
 	visual_log_return_val_if_fail (visual_video_compare (dest, src) == TRUE, -1);
-	visual_log_return_val_if_fail (dest->screenbuffer != NULL, -1);
-	visual_log_return_val_if_fail (src->screenbuffer != NULL, -1);
+	visual_log_return_val_if_fail (dest->pixels != NULL, -1);
+	visual_log_return_val_if_fail (src->pixels != NULL, -1);
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_8BIT, -1);
 	
 	if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT)
@@ -937,7 +937,7 @@ int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc)
 	if (viddest->depth == vidsrc->depth)
 		return visual_video_blit_overlay (viddest, vidsrc, 0, 0, FALSE);
 	
-	return visual_video_depth_transform_to_buffer (viddest->screenbuffer,
+	return visual_video_depth_transform_to_buffer (viddest->pixels,
 			vidsrc, vidsrc->pal, viddest->depth, viddest->pitch);
 }
 
@@ -946,7 +946,7 @@ int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc)
  *
  * @see visual_video_depth_transform
  *
- * @param dest Destination screenbuffer.
+ * @param dest Destination buffer.
  * @param video Source VisVideo.
  * @param pal Pointer to a VisPalette that can be set by full color to indexed color transforms.
  * @param destdepth The destination depth.
@@ -957,7 +957,7 @@ int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc)
 int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch)
 {
-	uint8_t *srcbuf = video->screenbuffer;
+	uint8_t *srcbuf = video->pixels;
 	int width = video->width;
 	int height = video->height;
 
@@ -970,7 +970,7 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video
 
 	/* Destdepth is equal to sourcedepth case */
 	if (video->depth == destdepth) {
-		memcpy (dest, video->screenbuffer, video->width * video->height * video->bpp);
+		memcpy (dest, video->pixels, video->width * video->height * video->bpp);
 
 		return 0;
 	}
@@ -1336,8 +1336,8 @@ static int bgr_to_rgb16 (VisVideo *dest, const VisVideo *src)
 	int i = 0;
 	int pitchdiff = (dest->pitch - (dest->width * 2)) >> 1;
 	
-	destbuf = (_color16 *) dest->screenbuffer;
-	srcbuf = (_color16 *) src->screenbuffer;
+	destbuf = (_color16 *) dest->pixels;
+	srcbuf = (_color16 *) src->pixels;
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
@@ -1360,8 +1360,8 @@ static int bgr_to_rgb24 (VisVideo *dest, const VisVideo *src)
 	int i = 0;
 	int pitchdiff = dest->pitch - (dest->width * 3);
 
-	destbuf = dest->screenbuffer;
-	srcbuf = src->screenbuffer;
+	destbuf = dest->pixels;
+	srcbuf = src->pixels;
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
@@ -1385,8 +1385,8 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
 	int i = 0;
 	int pitchdiff = dest->pitch - (dest->width * 4);
 
-	destbuf = dest->screenbuffer;
-	srcbuf = src->screenbuffer;
+	destbuf = dest->pixels;
+	srcbuf = src->pixels;
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {

@@ -43,9 +43,9 @@ typedef struct _VisVideo VisVideo;
 /**
  * Data structure that contains all the information about a screen surface.
  * Contains all the information regarding a screen surface like the current depth it's in,
- * width, height, bpp, the size in bytes it's screenbuffer is and the screen pitch.
+ * width, height, bpp, the size in bytes it's pixel buffer is and the screen pitch.
  *
- * It also contains a pointer to the screenbuffer and an optional pointer to the palette.
+ * It also contains a pointer to the pixels and an optional pointer to the palette.
  *
  * Elements within the structure should be set using the VisVideo system it's methods.
  */
@@ -57,7 +57,7 @@ struct _VisVideo {
 	int		 size;		/**< Surface it's screen buffer size in bytes. */
 	int		 pitch;		/**< Surface it's pitch value. Value contains
 					  * the number of bytes per line. */
-	void		*screenbuffer;	/**< Pointer to the screen buffer. */
+	void		*pixels;	/**< Pointer to the pixels. */
 	VisPalette	*pal;		/**< Optional pointer to the palette. */
 
 	VisVideoFlags	flags;		/**< Private field */
