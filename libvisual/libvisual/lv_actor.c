@@ -63,15 +63,15 @@ char *visual_actor_get_next_by_name_gl (char *name)
 		if (next == NULL)
 			return NULL;
 		
-		ref = _lv_plugin_find (__lv_plugins_actor, next);
-		plugin = _lv_plugin_load (ref);
+		ref = visual_plugin_find (__lv_plugins_actor, next);
+		plugin = visual_plugin_load (ref);
 
 		if ((plugin->plugin.actorplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
 		else
 			gl = FALSE;
 	
-		_lv_plugin_unload (plugin);
+		visual_plugin_unload (plugin);
 
 	} while (gl == FALSE);
 
@@ -101,15 +101,15 @@ char *visual_actor_get_prev_by_name_gl (char *name)
 		if (prev == NULL)
 			return NULL;
 		
-		ref = _lv_plugin_find (__lv_plugins_actor, prev);
-		plugin = _lv_plugin_load (ref);
+		ref = visual_plugin_find (__lv_plugins_actor, prev);
+		plugin = visual_plugin_load (ref);
 
 		if ((plugin->plugin.actorplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
 		else
 			gl = FALSE;
 	
-		_lv_plugin_unload (plugin);
+		visual_plugin_unload (plugin);
 
 	} while (gl == FALSE);
 
@@ -139,15 +139,15 @@ char *visual_actor_get_next_by_name_nogl (char *name)
 		if (next == NULL)
 			return NULL;
 		
-		ref = _lv_plugin_find (__lv_plugins_actor, next);
-		plugin = _lv_plugin_load (ref);
+		ref = visual_plugin_find (__lv_plugins_actor, next);
+		plugin = visual_plugin_load (ref);
 
 		if ((plugin->plugin.actorplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
 		else
 			gl = FALSE;
 	
-		_lv_plugin_unload (plugin);
+		visual_plugin_unload (plugin);
 
 	} while (gl == TRUE);
 
@@ -177,15 +177,15 @@ char *visual_actor_get_prev_by_name_nogl (char *name)
 		if (prev == NULL)
 			return NULL;
 		
-		ref = _lv_plugin_find (__lv_plugins_actor, prev);
-		plugin = _lv_plugin_load (ref);
+		ref = visual_plugin_find (__lv_plugins_actor, prev);
+		plugin = visual_plugin_load (ref);
 
 		if ((plugin->plugin.actorplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
 		else
 			gl = FALSE;
 	
-		_lv_plugin_unload (plugin);
+		visual_plugin_unload (plugin);
 
 	} while (gl == TRUE);
 
@@ -229,7 +229,7 @@ char *visual_actor_get_prev_by_name (char *name)
  */
 int visual_actor_valid_by_name (char *name)
 {
-	if (_lv_plugin_find (visual_actor_get_list (), name) == NULL)
+	if (visual_plugin_find (visual_actor_get_list (), name) == NULL)
 		return FALSE;
 	else
 		return TRUE;
@@ -259,9 +259,9 @@ VisActor *visual_actor_new (char *actorname)
 	if (actorname == NULL)
 		return actor;
 
-	ref = _lv_plugin_find (__lv_plugins_actor, actorname);
+	ref = visual_plugin_find (__lv_plugins_actor, actorname);
 
-	actor->plugin = _lv_plugin_load (ref);
+	actor->plugin = visual_plugin_load (ref);
 
 	return actor;
 }
@@ -278,7 +278,7 @@ int visual_actor_realize (VisActor *actor)
 	visual_log_return_val_if_fail (actor != NULL, -1);
 	visual_log_return_val_if_fail (actor->plugin != NULL, -1);
 
-	_lv_plugin_realize (actor->plugin);
+	visual_plugin_realize (actor->plugin);
 
 	return 0;
 }
@@ -296,7 +296,7 @@ int visual_actor_destroy (VisActor *actor)
 	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	if (actor->plugin != NULL)
-		_lv_plugin_unload (actor->plugin);
+		visual_plugin_unload (actor->plugin);
 
 	return visual_actor_free (actor);
 }

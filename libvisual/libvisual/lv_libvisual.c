@@ -103,7 +103,7 @@ int visual_init (int *argc, char ***argv)
 	visual_init_path_add (PLUGPATH"/morph");
 	visual_init_path_add (NULL);
 
-	__lv_plugins = _lv_plugin_get_list (__lv_plugpaths);
+	__lv_plugins = visual_plugin_get_list (__lv_plugpaths);
 	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
 	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
 	__lv_plugins_morph = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_MORPH);

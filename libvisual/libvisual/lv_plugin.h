@@ -232,12 +232,12 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type);
 char *visual_plugin_get_next_by_name (VisList *list, char *name);
 char *visual_plugin_get_prev_by_name (VisList *list, char *name);
 
-int _lv_plugin_unload (LVPlugin *plugin);
-LVPlugin *_lv_plugin_load (VisPluginRef *ref);
-int _lv_plugin_realize (LVPlugin *plugin);
-VisPluginRef *_lv_plugin_get_reference (VisPluginRef *refn, char *pluginpath);
-VisList *_lv_plugin_get_list (char **paths);
-VisPluginRef *_lv_plugin_find (VisList *list, char *name);
+int visual_plugin_unload (LVPlugin *plugin);
+LVPlugin *visual_plugin_load (VisPluginRef *ref);
+int visual_plugin_realize (LVPlugin *plugin);
+VisPluginRef *visual_plugin_get_reference (VisPluginRef *refn, char *pluginpath);
+VisList *visual_plugin_get_list (char **paths);
+VisPluginRef *visual_plugin_find (VisList *list, char *name);
 
 #ifdef __cplusplus
 }

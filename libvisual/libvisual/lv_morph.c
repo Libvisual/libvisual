@@ -77,7 +77,7 @@ char *visual_morph_get_prev_by_name (char *name)
  */
 int visual_morph_valid_by_name (char *name)
 {
-	if (_lv_plugin_find (visual_morph_get_list (), name) == NULL)
+	if (visual_plugin_find (visual_morph_get_list (), name) == NULL)
 		return FALSE;
 	else
 		return TRUE;
@@ -107,9 +107,9 @@ VisMorph *visual_morph_new (char *morphname)
 	if (morphname == NULL)
 		return morph;
 
-	ref = _lv_plugin_find (__lv_plugins_morph, morphname);
+	ref = visual_plugin_find (__lv_plugins_morph, morphname);
 
-	morph->plugin = _lv_plugin_load (ref);
+	morph->plugin = visual_plugin_load (ref);
 
 	return morph;
 }
@@ -126,7 +126,7 @@ int visual_morph_realize (VisMorph *morph)
 	visual_log_return_val_if_fail (morph != NULL, -1);
 	visual_log_return_val_if_fail (morph->plugin != NULL, -1);
 
-	_lv_plugin_realize (morph->plugin);
+	visual_plugin_realize (morph->plugin);
 
 	return 0;
 }
@@ -144,7 +144,7 @@ int visual_morph_destroy (VisMorph *morph)
 	visual_log_return_val_if_fail (morph != NULL, -1);
 
 	if (morph->plugin != NULL)
-		_lv_plugin_unload (morph->plugin);
+		visual_plugin_unload (morph->plugin);
 
 	return visual_morph_free (morph);
 }

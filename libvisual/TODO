@@ -171,6 +171,7 @@ libvisual:
 		fix alphabetic list, why is this borked for functions ?
 		rename actor, input to VisActor, etc at some places.
 		use # at places where this is useful.
+		fix docs for plugin function.
 
 	list:
 		Add a sort method.

@@ -434,7 +434,7 @@ static int plugin_add_dir_to_list (VisList *list, char *dir)
 
 		len = strlen (temp);
 		if (len > 3 && (strncmp (&temp[len - 3], ".so", 3)) == 0)
-			ref = _lv_plugin_get_reference (NULL, temp);
+			ref = visual_plugin_get_reference (NULL, temp);
 
 		if (ref != NULL)
 			visual_list_add (list, ref);
@@ -591,7 +591,7 @@ static int plugin_destroy (LVPlugin *plugin)
  *
  * @return 0 on succes -1 on error.
  */
-int _lv_plugin_unload (LVPlugin *plugin)
+int visual_plugin_unload (LVPlugin *plugin)
 {
 	VisPluginRef *ref;
 
@@ -629,7 +629,7 @@ int _lv_plugin_unload (LVPlugin *plugin)
  *
  * @return A newly created and loaded LVPlugin.
  */
-LVPlugin *_lv_plugin_load (VisPluginRef *ref)
+LVPlugin *visual_plugin_load (VisPluginRef *ref)
 {
 	LVPlugin *plugin;
 	plugin_load_func_t init;
@@ -678,7 +678,7 @@ LVPlugin *_lv_plugin_load (VisPluginRef *ref)
  * 
  * @return 0 on succes -1 on error.
  */
-int _lv_plugin_realize (LVPlugin *plugin)
+int visual_plugin_realize (LVPlugin *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
@@ -701,7 +701,7 @@ int _lv_plugin_realize (LVPlugin *plugin)
  *
  * @return The optionally newly allocated VisPluginRef for the plugin.
  */
-VisPluginRef *_lv_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
+VisPluginRef *visual_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 {
 	LVPlugin *plugin;
 	VisPluginRef *ref;
@@ -779,7 +779,7 @@ VisPluginRef *_lv_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
  *
  * @return A newly allocated VisList containing the plugin registry for the set of paths.
  */
-VisList *_lv_plugin_get_list (char **paths)
+VisList *visual_plugin_get_list (char **paths)
 {
 	VisList *list = visual_list_new();
 	int i = 0;
@@ -799,7 +799,7 @@ VisList *_lv_plugin_get_list (char **paths)
  *
  * @return The VisPluginRef for the plugin if found, or NULL when not found.
  */
-VisPluginRef *_lv_plugin_find (VisList *list, char *name)
+VisPluginRef *visual_plugin_find (VisList *list, char *name)
 {
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;

@@ -72,7 +72,7 @@ char *visual_input_get_prev_by_name (char *name)
  */
 int visual_input_valid_by_name (char *name)
 {
-	if (_lv_plugin_find (visual_input_get_list (), name) == NULL)
+	if (visual_plugin_find (visual_input_get_list (), name) == NULL)
 		return FALSE;
 	else
 		return TRUE;
@@ -103,9 +103,9 @@ VisInput *visual_input_new (char *inputname)
 	if (inputname == NULL)
 		return input;
 	
-	ref = _lv_plugin_find (__lv_plugins_input, inputname);
+	ref = visual_plugin_find (__lv_plugins_input, inputname);
 	
-	input->plugin = _lv_plugin_load (ref);
+	input->plugin = visual_plugin_load (ref);
 
 	return input;
 }
@@ -123,7 +123,7 @@ int visual_input_realize (VisInput *input)
 		return -1;
 
 	if (input->plugin != NULL && input->callback == NULL)
-		_lv_plugin_realize (input->plugin);
+		visual_plugin_realize (input->plugin);
 
 	return 0;
 }
@@ -142,7 +142,7 @@ int visual_input_destroy (VisInput *input)
 		return -1;
 
 	if (input->plugin != NULL)
-		_lv_plugin_unload (input->plugin);
+		visual_plugin_unload (input->plugin);
 
 	return visual_input_free (input);
 		
