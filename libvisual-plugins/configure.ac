@@ -478,7 +478,7 @@ morph:                                : ${build_morph}
 Libvisual plugin data dir:            : ${prefix}/share
 
 Build options:
-install path                          : ${prefix}/libvisual
+install path                          : ${prefix}/lib/libvisual
 source code location:                 : ${srcdir}
 compiler:                             : ${CC}
 "
