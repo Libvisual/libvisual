@@ -94,11 +94,17 @@ int act_oinksie_cleanup (VisPluginData *plugin)
 	oinksie_quit (&priv->priv2);
 
 	if (priv->depth != VISUAL_VIDEO_DEPTH_8BIT) {
-		visual_mem_free (priv->buf1);
-		visual_mem_free (priv->buf2);
+		if (priv->buf1)
+			visual_mem_free (priv->buf1);
 
-		visual_mem_free (priv->tbuf1);
-		visual_mem_free (priv->tbuf2);
+		if (priv->buf2)
+			visual_mem_free (priv->buf2);
+
+		if (priv->tbuf1)
+			visual_mem_free (priv->tbuf1);
+
+		if (priv->tbuf2)
+			visual_mem_free (priv->tbuf2);
 	}
 
 	visual_palette_free_colors (&priv->priv1.pal_cur);
