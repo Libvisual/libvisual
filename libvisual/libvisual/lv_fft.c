@@ -130,7 +130,7 @@ void _lv_fft_perform (const int16_t *input, float *output, VisFFTState *state)
 void _lv_fft_close (VisFFTState *state)
 {
 	if (state != NULL)
-		free (state);
+		visual_mem_free (state);
 }
 
 /* ########################### */

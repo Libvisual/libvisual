@@ -39,7 +39,7 @@ int visual_event_free (VisEvent *event)
 {
 	visual_log_return_val_if_fail (event != NULL, -1);
 
-	free (event);
+	visual_mem_free (event);
 
 	return 0;
 }

@@ -118,7 +118,7 @@ int visual_video_free (VisVideo *video)
 		return -1;
 	}
 	
-	free (video);
+	visual_mem_free (video);
 
 	video = NULL;
 
@@ -147,7 +147,7 @@ int visual_video_free_with_buffer (VisVideo *video)
 				"screen buffer, visual_video_free() must be used");
 	}
 
-	free (video);
+	visual_mem_free (video);
 
 	video = NULL;
 
@@ -167,7 +167,7 @@ int visual_video_free_buffer (VisVideo *video)
 	visual_log_return_val_if_fail (video->screenbuffer != NULL, -1);
 
 	if (HAVE_ALLOCATED_BUFFER (video))
-		free (video->screenbuffer);
+		visual_mem_free (video->screenbuffer);
 	else
 		return -1;
 

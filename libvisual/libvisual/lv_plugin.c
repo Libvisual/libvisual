@@ -159,21 +159,21 @@ int visual_plugin_info_free (VisPluginInfo *pluginfo)
 	visual_log_return_val_if_fail (pluginfo != NULL, -1);
 
 	if (pluginfo->name != NULL)
-		free (pluginfo->name);
+		visual_mem_free (pluginfo->name);
 
 	if (pluginfo->author != NULL)
-		free (pluginfo->author);
+		visual_mem_free (pluginfo->author);
 
 	if (pluginfo->version != NULL)
-		free (pluginfo->version);
+		visual_mem_free (pluginfo->version);
 
 	if (pluginfo->about != NULL)
-		free (pluginfo->about);
+		visual_mem_free (pluginfo->about);
 
 	if (pluginfo->help != NULL)
-		free (pluginfo->help);
+		visual_mem_free (pluginfo->help);
 
-	free (pluginfo);
+	visual_mem_free (pluginfo);
 
 	return 0;
 }
@@ -202,12 +202,12 @@ int visual_plugin_ref_free (VisPluginRef *ref)
 	visual_log_return_val_if_fail (ref != NULL, -1);
 
 	if (ref->file != NULL)
-		free (ref->file);
+		visual_mem_free (ref->file);
 
 	if (ref->name != NULL)
-		free (ref->name);
+		visual_mem_free (ref->name);
 
-	free (ref);
+	visual_mem_free (ref);
 
 	return 0;
 }
@@ -255,7 +255,7 @@ int visual_plugin_actor_free (VisActorPlugin *actorplugin)
 {
 	visual_log_return_val_if_fail (actorplugin != NULL, -1);
 
-	free (actorplugin);
+	visual_mem_free (actorplugin);
 
 	actorplugin = NULL;
 
@@ -283,7 +283,7 @@ int visual_plugin_input_free (VisInputPlugin *inputplugin)
 {
 	visual_log_return_val_if_fail (inputplugin != NULL, -1);
 
-	free (inputplugin);
+	visual_mem_free (inputplugin);
 
 	inputplugin = NULL;
 	
@@ -311,7 +311,7 @@ int visual_plugin_morph_free (VisMorphPlugin *morphplugin)
 {
 	visual_log_return_val_if_fail (morphplugin != NULL, -1);
 
-	free (morphplugin);
+	visual_mem_free (morphplugin);
 
 	morphplugin = NULL;
 
@@ -339,7 +339,7 @@ int visual_plugin_free (LVPlugin *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
-	free (plugin);
+	visual_mem_free (plugin);
 
 	plugin = NULL;
 
@@ -480,8 +480,8 @@ static int plugin_add_dir_to_list (VisList *list, char *dir)
 		return -1;
 
 	/* Free the . and .. entries */
-	free (namelist[0]);
-	free (namelist[1]);
+	visual_mem_free (namelist[0]);
+	visual_mem_free (namelist[1]);
 
 	for (i = 2; i < n; i++) {
 		ref = NULL;
@@ -495,9 +495,9 @@ static int plugin_add_dir_to_list (VisList *list, char *dir)
 		if (ref != NULL)
 			visual_list_add (list, ref);
 		
-		free (namelist[i]);
+		visual_mem_free (namelist[i]);
 	}
-	free (namelist);
+	visual_mem_free (namelist);
 
 	return 0;
 }
@@ -798,7 +798,7 @@ VisPluginRef *visual_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 
 	if (plugin == NULL) {
 		if (refn == NULL && ref != NULL)
-			free (ref);
+			visual_mem_free (ref);
 
 		dlclose (handle);
 		return NULL;

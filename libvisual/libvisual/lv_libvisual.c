@@ -128,7 +128,7 @@ int visual_quit ()
 	}
 
         if (__lv_progname != NULL)
-                free (__lv_progname);
+                visual_mem_free (__lv_progname);
 
 	ret = visual_plugin_ref_list_destroy (__lv_plugins);
 	if (ret < 0)

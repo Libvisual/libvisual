@@ -37,7 +37,7 @@ int visual_palette_free (VisPalette *pal)
 	if (pal == NULL)
 		return -1;
 
-	free (pal);
+	visual_mem_free (pal);
 
 	return 0;
 }

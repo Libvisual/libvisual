@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.8 2004-07-24 15:41:22 synap Exp $
+ *	$Id: lv_list.c,v 1.9 2004-07-24 18:22:27 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ int visual_list_free (VisList *list)
 {
 	visual_log_return_val_if_fail (list != NULL, -1);
 
-	free (list);
+	visual_mem_free (list);
 
 	list = NULL;
 
@@ -387,7 +387,7 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 
 	/* Free 'old' pointer */
 	list->count--;
-	free (current);
+	visual_mem_free (current);
 
 	return 0;
 }
@@ -459,7 +459,7 @@ int visual_list_sort(VisList *list, visual_list_sort_func_t compare)
 	list->tail = al[count-1];
 
 	/* Done */
-	free (al);
+	visual_mem_free (al);
 	return 0;
 }
 #endif

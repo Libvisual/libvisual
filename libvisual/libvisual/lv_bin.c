@@ -107,7 +107,7 @@ int visual_bin_free (VisBin *bin)
 {
 	visual_log_return_val_if_fail (bin != NULL, -1);
 
-	free (bin);
+	visual_mem_free (bin);
 
 	return 0;
 }

@@ -1,5 +1,9 @@
 2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/*.c: More VisMemizing.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/*.c: Partily VisMemized. Replaced
 	mallocs by visual_mem_new0 mostly and such.
 

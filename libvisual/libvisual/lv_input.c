@@ -176,7 +176,7 @@ int visual_input_free (VisInput *input)
 	if (input->audio != NULL)
 		visual_audio_free (input->audio);
 	
-	free (input);
+	visual_mem_free (input);
 	
 	return 0;
 }

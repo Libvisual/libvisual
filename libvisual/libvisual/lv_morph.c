@@ -175,7 +175,7 @@ int visual_morph_free (VisMorph *morph)
 {
 	visual_log_return_val_if_fail (morph != NULL, -1);
 	
-	free (morph);
+	visual_mem_free (morph);
 
 	return 0;
 }
