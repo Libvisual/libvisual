@@ -1,3 +1,16 @@
+2004-12-27  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* drivers/x11/Makefile.am: file added.
+	* drivers/x11/x11_fullscreen.c: fullscreen fe for x11.
+	* drivers/x11/x11_new.c: new window target for x11 (was glx_new.c)
+	* drivers/glx/glx_new.c: file removed.
+	* drivers/glx/glx.c: updates, new api adaptation.
+	* lvdisplay/lv_display.c lvdisplay/lv_display.h: API changed.
+	It's possible to switch render target on the fly.
+	* example/main.c: removed second window, added fullscreen
+	support. 'f' button.
+	* configure.ac: added drivers/x11/Makefile
+
 2004-12-08  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* lvdisplay/lvdisplay.c: Make use of visual_object_initialize
