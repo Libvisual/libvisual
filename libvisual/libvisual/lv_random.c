@@ -9,71 +9,13 @@
 #define val_a 1664525L		/* as suggested by Knuth */
 #define val_c 1013904223L	/* as suggested by H.W. Lewis and is a prime close to 2^32 * (sqrt(5) - 2)) */
 
-static uint32_t _lv_randseed;
+VisRandomContext __lv_internal_random_context;
 
 /**
  * @defgroup VisRandom VisRandom
  * @{
  */
 
-/**
- * Function to set the seed for the global randomizer.
- *
- * @param seed The seed to be used in the randomizer.
- */
-void visual_random_set_seed (uint32_t seed)
-{
-	_lv_randseed = seed;
-}
-
-/**
- * Get the current seed of the global randomizer. This
- * is a state snapshot, and can be different from a
- * previous set seed.
- *
- * @return The current seed of the randomizer.
- */
-uint32_t visual_random_get_seed ()
-{
-	return _lv_randseed;
-}
-
-/**
- * Gives a random intenger using libvisual it's randomizer.
- *
- * @return A pseudo random integer.
- */
-uint32_t visual_random_int ()
-{
-	return (_lv_randseed = val_a * _lv_randseed + val_c);
-}
-
-/**
- * Gives a random integer ranging between min and max.
- *
- * @param min The minimum for the output.
- * @param max The maximum for the output.
- *
- * @return A pseudo random integer confirm to the minimum and maximum.
- */
-uint32_t visual_random_int_range (int min, int max)
-{
-	return (visual_random_int () / (VISUAL_RANDOM_MAX / (max - min + 1))) + min;
-}
-
-/**
- * Function which returns 1 with a propability of p (0.0 <= p <= 1.0).
- *
- * @param a The float to be used in the decide.
- *
- * @return 0 or 1.
- */
-int visual_random_decide (float a)
-{
-	float x = (float) visual_random_int () / VISUAL_RANDOM_MAX;
-
-	return x <= a;
-}
 
 /**
  * Creates a new VisRandomContext data structure.
@@ -176,6 +118,8 @@ uint32_t visual_random_context_int (VisRandomContext *rcontext)
 /**
  * Gives a random integer ranging between min and max using the VisRandomContext as context
  * for the randomizer.
+ * This function may use floating point instructions. Remeber, this will break
+ * things if used inside of MMX code.
  *
  * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
  * @param min The minimum for the output.
@@ -185,9 +129,91 @@ uint32_t visual_random_context_int (VisRandomContext *rcontext)
  */
 uint32_t visual_random_context_int_range (VisRandomContext *rcontext, int min, int max)
 {
+#if VISUAL_RANDOM_FAST_FP_RND
+	/* Uses fast floating number generator and two divisions elimitated.
+	 * More than 2 times faster than original.
+	 */
+	float fm = min; /* +10% speedup... */
+
+	visual_log_return_val_if_fail (rcontext != NULL, 0);
+
+	return visual_random_context_float (rcontext) * (max - min + 1) + fm;
+#else
 	visual_log_return_val_if_fail (rcontext != NULL, 0);
 
 	return (visual_random_context_int (rcontext) / (VISUAL_RANDOM_MAX / (max - min + 1))) + min;
+#endif
+}
+
+/**
+ * Gives a random double precision floating point value
+ * using the VisRandomContext as context for the randomizer.
+ *
+ * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
+ *
+ * @return A pseudo random integer.
+ */
+double visual_random_context_double (VisRandomContext *rcontext)
+{
+#if VISUAL_RANDOM_FAST_FP_RND
+	union {
+		unsigned int i[2];
+		double d;
+	} value;
+#endif
+	uint32_t irnd;
+
+	visual_log_return_val_if_fail (rcontext != NULL, -1);
+
+	irnd = (rcontext->seed_state = val_a * rcontext->seed_state + val_c);
+#if VISUAL_RANDOM_FAST_FP_RND
+	/* This saves floating point division (20 clocks on AXP, 
+	 * 38 on P4) and introduces store-to-load data size mismatch penalty
+	 * and substraction op.
+	 * Faster on AXP anyway :)
+	 */
+
+	value.i[0] = (irnd << 20);
+	value.i[1] = 0x3ff00000 | (irnd >> 12);
+
+	return value.d - 1.0;
+#else
+	return (double) irnd / VISUAL_RANDOM_MAX;
+#endif
+}
+
+/**
+ * Gives a random single precision floating point value
+ * using the VisRandomContext as context for the randomizer.
+ *
+ * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
+ *
+ * @return A pseudo random integer.
+ */
+float visual_random_context_float (VisRandomContext *rcontext)
+{
+#if VISUAL_RANDOM_FAST_FP_RND
+	union {
+		unsigned int i;
+		float f;
+	} value;
+#endif
+	uint32_t irnd;
+
+	visual_log_return_val_if_fail (rcontext != NULL, -1);
+
+	irnd = (rcontext->seed_state = val_a * rcontext->seed_state + val_c);
+#if VISUAL_RANDOM_FAST_FP_RND
+	/* Saves floating point division. Introduces substraction.
+	 * Yet faster! :)
+	 */
+
+	value.i = 0x3f800000 | (t >> 9);
+
+	return value.f - 1.0f;
+#else
+	return (float) irnd / VISUAL_RANDOM_MAX;
+#endif
 }
 
 /**
@@ -203,9 +229,7 @@ int visual_random_context_decide (VisRandomContext *rcontext, float a)
 {
 	visual_log_return_val_if_fail (rcontext != NULL, -1);
 
-	float x = (float) visual_random_context_int (rcontext) / VISUAL_RANDOM_MAX;
-
-	return x <= a;
+	return visual_random_context_float (rcontext) <= a;
 }
 
 /**
