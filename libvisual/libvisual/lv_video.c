@@ -9,6 +9,7 @@
 #include "lv_log.h"
 #include "lv_mem.h"
 
+/*#define FIXED_POINT_SCALER 1*/
 
 #define HAVE_ALLOCATED_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER)
 #define HAVE_EXTERNAL_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER)
@@ -20,7 +21,10 @@
 #define FP_TO_INT(f)			((fixed32_t) (f) >> FP_FRACTIONAL_SIZE_LOG2)
 #define FP_FLOAT(f)			((float) (f) * FP_FRACTIONAL_SIZE)
 #define FP_TO_FLOAT(f)			((float) (f) / FP_FRACTIONAL_SIZE)
-
+// Use in fixed point scaler, however it crashes right now! 
+#define FP_HALF(f)			((fixed32_t) (f) << (FP_FRACTIONAL_SIZE_LOG2-1))
+#define FP_ROUND_TO_INT(f)		FP_TO_INT((f)+FP_HALF(f))
+	
 
 typedef uint32_t fixed32_t;
 
@@ -1508,13 +1512,13 @@ static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 	float u, v, du, dv;
 	uint8_t *dest_pixel, *src_pixel_row;
 
-	u = 0; du = src->width	/ dest->width;
-	v = 0; dv = src->height / dest->height;
+	u = 0; du = (float) src->width	/ dest->width;
+	v = 0; dv = (float) src->height / dest->height;
 
 	dest_pixel = dest->pixels;
 
 	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
-		src_pixel_row = (uint8_t *) dest->pixel_rows[(int) v];
+		src_pixel_row = (uint8_t *) src->pixel_rows[(int) v];
 
 		for (x = 0, u = 0; x < dest->width; x++, u += du) {
 			*dest_pixel++ = src_pixel_row[(int) u];
@@ -1539,7 +1543,7 @@ static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 	dest_pixel = dest->pixels;
 
 	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
-		src_pixel_row = (uint8_t *) dest->pixel_rows[FP_TO_INT(v)];
+		src_pixel_row = (uint8_t *) src->pixel_rows[FP_TO_INT(v)];
 
 		for (x = 0, u = 0; x < dest->width; x++, u += du) {
 			*dest_pixel++ = src_pixel_row[FP_TO_INT(u)];

@@ -12,8 +12,10 @@ static int songinfo_dtor (VisObject *object)
 
 	visual_songinfo_free_strings (songinfo);
 
-	if (visual_video_have_allocated_buffer (&songinfo->cover) == TRUE)
-		visual_video_free_buffer (&songinfo->cover);
+	if (songinfo->cover != NULL)
+		visual_object_unref (songinfo->cover);
+
+	songinfo->cover = NULL;
 
 	return VISUAL_OK;
 }
@@ -230,24 +232,37 @@ int visual_songinfo_set_song (VisSongInfo *songinfo, char *song)
  */
 int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 {
+	VisVideo dtransform;
+
 	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
-	if (visual_video_have_allocated_buffer (&songinfo->cover) == TRUE)
-		visual_video_free_buffer (&songinfo->cover);
+	if (songinfo->cover != NULL)
+		visual_object_unref (songinfo->cover);
 
-	visual_video_set_dimension (&songinfo->cover, cover->width, cover->height);
-
-	/* Yes we always stored in 32 bit, images shouldn't be large so
-	 * transforming them to a different depth is not a hard job,
-	 * besides we need it to support an alpha channel anyway! */
-	visual_video_set_depth (&songinfo->cover, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_allocate_buffer (&songinfo->cover);
+	/* The coverart image */
+	songinfo->cover = visual_video_new ();
+	visual_video_set_depth (songinfo->cover, VISUAL_VIDEO_DEPTH_32BIT);
+	visual_video_set_dimension (songinfo->cover, 64, 64);
+	visual_video_allocate_buffer (songinfo->cover);
 	
-	visual_video_depth_transform (&songinfo->cover, cover);
+	/* The temp depth transform video */
+	memset (&dtransform, 0, sizeof (VisVideo));
 
-	/* FIXME: When scale and bilinear interpolation lands, rescale to a (settable) size and (settable) bilinear
-	 * interpolate. */
-	
+	visual_video_set_depth (&dtransform, VISUAL_VIDEO_DEPTH_32BIT);
+	visual_video_set_dimension (&dtransform, cover->width, cover->height);
+	visual_video_allocate_buffer (&dtransform);
+
+	visual_video_depth_transform (&dtransform, cover);
+
+	/* Now scale it */
+	/* FIXME make cover image size settable ???
+	 * Use bilinair filtering when it arives
+	 */
+	visual_video_scale (songinfo->cover, &dtransform, VISUAL_VIDEO_SCALE_NEAREST);
+
+	/* Unref the depth transform video */
+	visual_object_unref (&dtransform);
+
 	return VISUAL_OK;
 }
 

@@ -1,5 +1,13 @@
 2004-12-01  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_songinfo.c (visual_songinfo_set_cover):
+	Fixed up to work with the scaler, won't work yet because
+	we don't support the depth yet, but the API is right this way.
+
+	* libvisual/lv_video.c (visual_video_scale): Bug fixed.
+
+2004-12-01  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_bin.c (bin_dtor): Fixed a few things.
 
 2004-12-01  Dennis Smit  <ds@nerds-incorporated.org>
