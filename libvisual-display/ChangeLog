@@ -10,6 +10,10 @@
 	* drivers/glx/glx_new.c lvdisplay/lv_display.c drivers/glx/glx.c:
 	draw framebuffer not upside down, support paletted 8bit mode via
 	Libvisual's converter 8bit to 24bits, video buffer pitch fix.
+	* lvdisplay/lv_display.c: pass events to backend.
+	* drivers/null/null.c drivers/glx/glx.c:
+	added event handlers functions and resize event handler
+	for non-gl plugins.
 
 2004-10-05  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 	* drivers/glx/glx.c: VisVideo support, framebuffer

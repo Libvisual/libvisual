@@ -20,6 +20,7 @@ static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video);
 static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
 static void draw(VisPluginData *plugin);
+static int handle_events(VisPluginData *plugin, VisEventQueue *eventqueue);
 
 static int create(VisPluginData*, int **params, int *params_count, VisVideo *video);
 static void *get_compat_data(VisPluginData *plugin);
@@ -60,6 +61,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.init = plugin_init,
 		.cleanup = plugin_cleanup,
+		.events = handle_events,
 
 		.plugin = (void*)&classdes[0],
 
@@ -133,6 +135,11 @@ void *get_compat_data(VisPluginData *plugin)
 }
 
 static VisVideo *video;
+
+int handle_events(VisPluginData *plugin, VisEventQueue *eventqueue)
+{
+	return 0;
+}
 
 int get_events(VisPluginData *plugin, VisEventQueue *eventqueue)
 {

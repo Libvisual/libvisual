@@ -273,7 +273,9 @@ int lvdisplay_poll_event(Lvd *v, VisEvent *event)
 	LvdDriver *drv = v->drv;
 	assert(drv);
 	assert(drv->ptype);
+	assert(drv->pclass);
 
 	drv->ptype->info->events(drv->ptype, &drv->ptype->eventqueue);
+	drv->pclass->info->events(drv->pclass, &drv->ptype->eventqueue);
 	return visual_event_queue_poll(lvdisplay_get_eventqueue(v), event);
 }

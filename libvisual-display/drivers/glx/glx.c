@@ -28,6 +28,7 @@ typedef struct {
 
 static int plugin_init (VisPluginData *plugin);
 static int plugin_cleanup (VisPluginData *plugin);
+static int hndevents(VisPluginData *plugin, VisEventQueue *eventqueue);
 
 
 static int init (privdata *priv, int *params, int params_cnt);
@@ -70,6 +71,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.init = plugin_init,
 		.cleanup = plugin_cleanup,
+		.events = hndevents,
 
 		.plugin = (void*)&classdes[0],
 
@@ -227,6 +229,22 @@ int init_glx13(privdata *priv, int *params, int params_cnt)
 
 	return 0;
 }
+
+int hndevents(VisPluginData *plugin, VisEventQueue *eventqueue)
+{
+	privdata *priv = plugin->priv;
+	// XXX check if there is active context
+
+	if (eventqueue->resizenew &&
+		(priv->active_ctx->video->depth != VISUAL_VIDEO_DEPTH_GL)){
+		glViewport(0, 0,
+			eventqueue->lastresize.resize.width,
+			eventqueue->lastresize.resize.height);
+	}
+
+	return 0;
+}
+
 
 LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
 {
