@@ -18,7 +18,7 @@ static VisList *__lv_plugins_display_fe = NULL;
 
 static void reread_plugin_lists()
 {
-	const VisList *lv_plugins;
+	VisList *lv_plugins;
 
 	lv_plugins = visual_plugin_get_registry();
 	/*
@@ -115,27 +115,60 @@ int lvdisplay_driver_dtor(VisObject *drv_obj)
 	if (drv->feplug)
 		visual_plugin_unload(drv->feplug);
 
-	if (drv->params)
-		visual_mem_free(drv->params);
-
 	visual_object_unref (VISUAL_OBJECT (drv->video));
 
 	drv->beplug = NULL;
 	drv->feplug = NULL;
 	drv->be = NULL;
 	drv->fe = NULL;
-	drv->params = NULL;
 	drv->video = NULL;
 
 	return VISUAL_OK;
 }
 
 
-int lvdisplay_driver_set_opts(LvdDriver *drv, int *params)
+int lvdisplay_driver_realize(LvdDriver *drv)
+{
+	int res;
+
+	visual_log_return_val_if_fail (drv != NULL, -1);
+
+	if (drv->realized)
+		return 0;
+
+	res = drv->fe->create(drv->feplug, drv->video);
+
+	if (res){
+		visual_log(VISUAL_LOG_DEBUG, "Frontend's create() failed %d\n", res);
+		return res;
+	}
+
+	drv->compat_data = drv->fe->get_compat_data(drv->feplug);
+
+	/* init drv's class */
+	res = drv->be->setup(drv->beplug, drv->compat_data);
+
+	if (res) {
+		visual_log(VISUAL_LOG_DEBUG, "Backend's setup() failed %d\n", res);
+		return res;
+	}
+
+	drv->realized = 1;
+
+	return 0;
+}
+
+
+int lvdisplay_driver_set_opts(LvdDriver *drv, int *params, int count)
 {
 	int i, res;
 
 	visual_log_return_val_if_fail (drv != NULL, -1);
+
+	if (!drv->realized){
+		visual_log(VISUAL_LOG_DEBUG, "Driver is not realized\n");
+		return -1;
+	}
 
 	/*
 	 * send params to type
@@ -146,30 +179,34 @@ int lvdisplay_driver_set_opts(LvdDriver *drv, int *params)
 	 */
 
 	if (params){
-		for (i=0;params[i] != LVD_SET_DONE;i++);
-		drv->params_cnt = i;
-		i *= sizeof(int);
-		drv->params = visual_mem_malloc0(i);
-		memcpy(drv->params, params, i);
-	} else {
-		drv->params = NULL;
-		drv->params_cnt = 0;
+		// XXX avoid pointer arith
+		while ((*params != LVD_SET_DONE) && (count > 0)){
+			if (*params >= LVD_PARAM_LAST){ /* invalid parameter */
+				visual_log(VISUAL_LOG_ERROR, "invalid parameter\n");
+				break;
+			}
+
+			res = drv->fe->set_param(drv->feplug,
+				*params, params+1, count-1);
+
+			if (res <= 0) { /* unhandled parameter */
+				visual_log(VISUAL_LOG_WARNING, "unhandled parameter. aborted\n");
+				break;
+			}
+
+			params+=res+1;
+			count-=res+1;
+		}
 	}
 
-	res = drv->fe->create(drv->feplug, &drv->params, &drv->params_cnt,
-			drv->video);
-
-	if (res){
-		visual_log(VISUAL_LOG_DEBUG, "Frontend's create() failed %d\n", res);
-		return res;
-	}
-
-	drv->compat_data = drv->fe->get_compat_data(drv->feplug);
-
-	drv->prepared = 1;
 	return 0;
 }
 
+int lvdisplay_driver_set_visible(LvdDriver *drv, int is_visible)
+{
+	int param[2] = {LVD_SET_VISIBLE, is_visible};
+	return lvdisplay_driver_set_opts(drv, param, 2);
+}
 
 
 
@@ -207,44 +244,16 @@ static void active_context_release()
 
 
 
-Lvd* lvdisplay_initialize(LvdDriver *drv)
+Lvd* lvdisplay_initialize()
 {
 	int res;
 	Lvd *v;
-
-	visual_log_return_val_if_fail (drv != NULL, NULL);
 
 	v = visual_mem_new0(Lvd, 1);
 	if (v == NULL)
 		return NULL;
 
 	visual_object_initialize(VISUAL_OBJECT(v), TRUE, lvdisplay_dtor);
-
-	visual_object_ref(VISUAL_OBJECT(drv));
-
-	v->drv = drv;
-	/* shortcuts */
-	v->be = drv->be;
-	v->fe = drv->fe;
-	v->beplug = drv->beplug;
-	v->feplug = drv->feplug;
-
-	if (!drv->prepared){
-		if ((res = lvdisplay_driver_set_opts(drv, NULL)) != 0){
-			visual_object_unref(VISUAL_OBJECT(v));
-			return NULL;
-		}
-	}
-
-	/* init drv's class */
-	res = drv->be->setup(drv->beplug, drv->compat_data,
-			drv->params, drv->params_cnt);
-
-	if (res) {
-		visual_log(VISUAL_LOG_DEBUG, "Backend's setup() failed %d\n", res);
-		visual_object_unref(VISUAL_OBJECT(v));
-		return NULL;
-	}
 
 	v->bin = visual_bin_new();
 	if (v->bin == NULL) {
@@ -255,6 +264,43 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 	return v;
 }
 
+
+int lvdisplay_set_driver(Lvd *v, LvdDriver *drv)
+{
+	int res;
+
+	visual_log_return_val_if_fail (v != NULL, -1);
+	visual_log_return_val_if_fail (drv != NULL, -1);
+
+	if (v->drv){
+		visual_object_unref(VISUAL_OBJECT(v->drv));
+	}
+
+	visual_object_ref(VISUAL_OBJECT(drv));
+
+	v->drv = drv;
+	/* shortcuts */
+	v->be = drv->be;
+	v->fe = drv->fe;
+	v->beplug = drv->beplug;
+	v->feplug = drv->feplug;
+
+	if (!drv->realized){
+		if ((res = lvdisplay_driver_realize(drv)) != 0){
+			visual_object_unref(VISUAL_OBJECT(drv));
+			v->drv = NULL;
+			v->be = NULL;
+			v->fe = NULL;
+			v->beplug = NULL;
+			v->feplug = NULL;
+			return res;
+		}
+	}
+
+	return 0;
+}
+
+
 VisVideo *lvdisplay_visual_get_video(Lvd *v)
 {
 	visual_log_return_val_if_fail (v != NULL, NULL);
@@ -264,46 +310,60 @@ VisVideo *lvdisplay_visual_get_video(Lvd *v)
 
 int lvdisplay_realize(Lvd *v)
 {
+	int res;
 	VisActor *actor;
-	VisVideoDepth adepth;
+	VisVideoDepth adepth, vdepth;
 
 	visual_log_return_val_if_fail (v != NULL, -1);
 
 	actor = visual_bin_get_actor(v->bin);
 	if (actor == NULL){
+		visual_log(VISUAL_LOG_ERROR, "Bin contains no actor\n");
 		return 1;
 	}
 
 	adepth = visual_actor_get_supported_depth(actor);
+	vdepth = v->drv->be->get_supported_depths(v->drv->beplug);
 
 	// XXX setup video for actor
-	if (adepth & VISUAL_VIDEO_DEPTH_GL){
-		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_GL);
+	if (vdepth & adepth & VISUAL_VIDEO_DEPTH_GL){
+		int depth = VISUAL_VIDEO_DEPTH_GL;
+		res = v->drv->fe->set_param(v->drv->feplug, LVD_SET_DEPTH, &depth, 1);
 	} else {
-		int pitch;
+		int depth = vdepth & adepth;
 
-		if (adepth & VISUAL_VIDEO_DEPTH_32BIT) {
-			visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_32BIT);
+		if (depth & VISUAL_VIDEO_DEPTH_32BIT) {
+			depth = VISUAL_VIDEO_DEPTH_32BIT;
 		} else
-		if (adepth & VISUAL_VIDEO_DEPTH_24BIT) {
-			visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_24BIT);
+		if (depth & VISUAL_VIDEO_DEPTH_24BIT) {
+			depth = VISUAL_VIDEO_DEPTH_24BIT;
 		} else
-		if (adepth & VISUAL_VIDEO_DEPTH_16BIT) {
-			visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_16BIT);
+		if (depth & VISUAL_VIDEO_DEPTH_16BIT) {
+			depth = VISUAL_VIDEO_DEPTH_16BIT;
 		} else
-		if (adepth & VISUAL_VIDEO_DEPTH_8BIT) {
-			visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_24BIT);
+		if (depth & VISUAL_VIDEO_DEPTH_8BIT) {
+			depth = VISUAL_VIDEO_DEPTH_8BIT;
 		} else {
-			visual_log(VISUAL_LOG_DEBUG, "Unknown actor plugin depth %d\n", adepth);
-			return 1;
+			// XXX choose best transformation
+
+			if (vdepth & VISUAL_VIDEO_DEPTH_32BIT) {
+				depth = VISUAL_VIDEO_DEPTH_32BIT;
+			} else
+			if (vdepth & VISUAL_VIDEO_DEPTH_24BIT) {
+				depth = VISUAL_VIDEO_DEPTH_24BIT;
+			} else
+			if (vdepth & VISUAL_VIDEO_DEPTH_16BIT) {
+				depth = VISUAL_VIDEO_DEPTH_16BIT;
+			} else
+			if (vdepth & VISUAL_VIDEO_DEPTH_8BIT) {
+				depth = VISUAL_VIDEO_DEPTH_8BIT;
+			} else {
+				visual_log(VISUAL_LOG_WARNING, "Hm-m..... Can't display this actor with this video backend\n");
+				return 1;
+			}
 		}
 
-		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
-
-		pitch = v->drv->video->width * v->drv->video->bpp;
-		if (pitch&3)
-			pitch = (pitch|3) + 1;
-		visual_video_set_pitch(v->drv->video, pitch);
+		res = v->drv->fe->set_param(v->drv->feplug, LVD_SET_DEPTH, &depth, 1);
 
 		visual_video_allocate_buffer(v->drv->video);
 	}
@@ -315,8 +375,8 @@ int lvdisplay_realize(Lvd *v)
 
 	v->ctx = v->be->context_create(v->beplug, v->drv->video);
 	if (v->ctx == NULL){
-		visual_log(VISUAL_LOG_DEBUG, "Failed to create context\n");
-		return 1;
+		visual_log(VISUAL_LOG_ERROR, "Failed to create context\n");
+		return 2;
 	}
 
 	set_active_context(v, v->ctx);

@@ -33,6 +33,9 @@ typedef enum {
 	LVD_SET_HEIGHT,
 	LVD_SET_RENDERTARGET,
 	LVD_SET_DEPTH,
+	LVD_SET_VISIBLE,
+	
+	LVD_PARAM_LAST,
 } LvdSettings;
 
 typedef struct _LvdDContext LvdDContext;
@@ -48,15 +51,12 @@ typedef struct _Lvd Lvd;
 struct _LvdDriver {
 	VisObject	 object;	/**< The VisObject data. */
 
-	int params_cnt;
-	int *params;
-
 	VisPluginData *beplug, *feplug;
 	LvdBackendDescription *be;
 	LvdFrontendDescription *fe;
 
 	VisVideo *video;
-	int prepared;
+	int realized;
 
 	void *compat_data;
 };
@@ -78,8 +78,9 @@ struct _Lvd {
 struct _LvdBackendDescription {
 	LvdCompatType     compat_type;
 
-	int (*setup)(VisPluginData*,
-		void *data, int *params, int params_count);
+	int (*setup)(VisPluginData*, void *data);
+
+	int (*get_supported_depths)(VisPluginData *plugin);
 
 	LvdDContext *(*context_create)(VisPluginData*, VisVideo*);
 	void (*context_delete)(VisPluginData*, LvdDContext*);
@@ -95,16 +96,20 @@ struct _LvdFrontendDescription {
 	int             compat_count;
 	LvdCompatType	compat_type;
 
-	int (*create)(VisPluginData*, int **params, int *params_count, VisVideo*);
+	int (*create)(VisPluginData*, VisVideo*);
 	void *(*get_compat_data)(VisPluginData *plugin);
+	int (*set_param)(VisPluginData *plugin, int param, int *value, int count);
 };
 
 
 LvdDriver *lvdisplay_driver_create(const char*, const char*);
-int lvdisplay_driver_set_opts(LvdDriver*, int *);
+int lvdisplay_driver_set_opts(LvdDriver *drv, int *params, int count);
+int lvdisplay_driver_realize(LvdDriver *);
+int lvdisplay_driver_set_visible(LvdDriver *, int);
 
 /* basic functions */
-Lvd* lvdisplay_initialize(LvdDriver*);
+Lvd* lvdisplay_initialize();
+int lvdisplay_set_driver(Lvd*, LvdDriver*);
 int lvdisplay_realize(Lvd*);
 int lvdisplay_run(Lvd*);
 int lvdisplay_render_data(Lvd*, void *samples, int count);
