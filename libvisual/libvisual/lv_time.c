@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "config.h"
+#include "lvconfig.h"
 #include "lv_common.h"
 #include "lv_thread.h"
 #include "lv_time.h"
@@ -63,6 +64,9 @@ VisTime *visual_time_new ()
  */
 int visual_time_get (VisTime *time_)
 {
+#if defined(VISUAL_OS_WIN32)
+
+#else
 	struct timeval tv;
 	
 	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -70,7 +74,7 @@ int visual_time_get (VisTime *time_)
 	gettimeofday (&tv, NULL);
 
 	visual_time_set (time_, tv.tv_sec, tv.tv_usec);
-
+#endif
 	return VISUAL_OK;
 }
 

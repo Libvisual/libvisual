@@ -530,7 +530,11 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 	int i, j, n, len;
 	int cnt = 0;
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 	n = scandir (dir, &namelist, NULL, NULL);
+#endif
 
 	if (n < 0)
 		return -1;
@@ -654,8 +658,11 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 #endif
 	
 	if (handle == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
+#if defined(VISUAL_OS_WIN32)
 
+#else
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
+#endif
 		return NULL;
 	}
 
@@ -666,11 +673,11 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 #endif
 
 	if (get_plugin_info == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
-
 #if defined(VISUAL_OS_WIN32)
 
 #else
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
+	
 		dlclose (handle);
 #endif
 
@@ -761,7 +768,11 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 #endif
 
 	if (handle == NULL) {
+#if defined(VISUAL_OS_WIN32)
+
+#else
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
+#endif
 
 		return NULL;
 	}
@@ -773,11 +784,11 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 #endif
 
 	if (get_plugin_info == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
-
 #if defined(VISUAL_OS_WIN32)
 
 #else
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
+
 		dlclose (handle);
 #endif
 
