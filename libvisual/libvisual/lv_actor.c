@@ -314,7 +314,6 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
 int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced)
 {
 	VisActorPlugin *actplugin = get_actor_plugin (actor);
-	VisVideo tempv;
 	int tmpwidth, tmpheight, tmppitch;
 	int depthflag;
 
