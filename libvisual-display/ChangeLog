@@ -1,3 +1,9 @@
+2005-01-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lvdisplay/lv_display.*: Added copyright header.
+
+	* COPYING: LGPL.
+
 2004-12-30  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* configure.ac: added generation of example/plugins/Makefile
