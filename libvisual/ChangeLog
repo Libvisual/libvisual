@@ -1,3 +1,14 @@
+2004-09-13  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac:
+	 - now examples refuses to build if libvisual is not
+	installed, and takes flags through pkg-config.
+	 - GL detection is done not just looking for headers,
+	but also we try to link against the library (thanks
+	salsaman).
+	* libvisual/lv_libvisual.c (visual_get_version): return
+	version defined on config.h.
+
 2004-09-10  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* NEWS: Updated.

@@ -16,7 +16,7 @@ lib_LTLIBRARIES = libvisual.la
 
 DEFS = @DEFS@
 
-LIBS = -L. -L$(prefix)/lib
+LIBS += -L. -L$(prefix)/lib
 
 PLUGPATH = $(prefix)/lib/libvisual
 

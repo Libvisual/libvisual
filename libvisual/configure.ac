@@ -98,9 +98,8 @@ AC_CHECK_HEADERS([fcntl.h sys/types.h stdlib.h string.h sys/time.h unistd.h])
 lv_have_opengl=no
 AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
 if test x"$opengl" = xno; then
-	AC_MSG_WARN([
-*** OpenGL and Glu headers not found, the library will be built without OpenGL support.
-	])
+	AC_MSG_WARN([*** OpenGL and Glu headers not found.
+			The library will be built without OpenGL support.])
 else
 	lv_have_opengl=yes
 fi
@@ -136,21 +135,22 @@ AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([gettimeofday usleep nanosleep select memset sqrt strdup strndup])
 
 if test x"$lv_have_opengl" = xyes; then
-  # FIXME: Replace `main' with a function in `-lGL':
-  AC_CHECK_LIB([GL], [main])
-  # FIXME: Replace `main' with a function in `-lGLU':
-  AC_CHECK_LIB([GLU], [main])
+  AC_CHECK_LIB([GL], [glBegin], [],
+	       [AC_MSG_WARN([*** OpenGL headers has been found, but we cannot link against GL Library.
+			Libvisual will be built without OpenGL support.
+			If you have already installed GL Library, probably you need to edit
+			your /etc/ld.so.conf and run ldconfig before to try to configure Libvisual.
+			Other option could be to set and export the LDFLAGS environment variable
+			to the correct flags (see ./configure --help).])
+	       lv_have_opengl=no])
 else
   :
 fi
-# FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main])
-# FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main])
-# FIXME: Replace `main' with a function in `-lpthread':
-AC_CHECK_LIB([pthread], [main])
-# FIXME: Replace `main' with a function in `-lvisual':
-AC_CHECK_LIB([visual], [main])
+
+AC_CHECK_LIB([dl], [dlsym], [LIBS="-ldl $LIBS"],
+	     AC_MSG_WARN([*** You need dlsym() to make use of Libvisual.]))
+AC_CHECK_LIB([m], [sqrt], [LIBS="-lm $LIBS"],
+	     AC_MSG_ERROR([*** You need the Standard C Math Library to build Libvisual.]))
 
 # check for type sizes
 AC_CHECK_SIZEOF(short)
@@ -185,23 +185,25 @@ AC_ARG_ENABLE([examples],
 	    [examples=$enableval],
 	    [examples=no])
 AC_MSG_CHECKING([wheter to build example programs])
-if test "$examples" = yes; then
+if test x$examples = xyes ; then
   AC_MSG_RESULT([yes])
   # Find SDL to build the examples.
   AC_PATH_PROG(SDL_CONFIG, [sdl-config], [no])
   if test x$SDL_CONFIG = xno ; then
-    AC_MSG_ERROR([
-*** sdl-config not found.
-*** If you have installed from binaries, probably you have not 
-*** installed SDL development package.
-*** See http://www.libsdl.org
-    ])
+	AC_MSG_ERROR([*** sdl-config not found.
+			If you have installed from binaries, probably you have not 
+			installed SDL development package.
+			See http://www.libsdl.org])
   fi
   # On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
   AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
+  PKG_CHECK_MODULES(VISUAL, libvisual = 0.1.7, [],
+	AC_MSG_ERROR([*** Libvisual was not found or is too old.
+			You must first install the correct version
+			of Libvisual before to build the examples.]))
+  AC_SUBST(VISUAL_LIBS)
+  AC_SUBST(VISUAL_CFLAGS)		 
   build_subdirs="$build_subdirs examples"
-  # FIXME: Replace `main' with a function in `-lSDL':
-  AC_CHECK_LIB([SDL], [main])
 else
   AC_MSG_RESULT([no])
 fi
@@ -224,11 +226,6 @@ AC_SUBST(DEBUG_CFLAGS)
 
 libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
-
-VISUAL_CFLAGS="-I${includedir}"
-VISUAL_LIBS="-L${libdir} -lvisual -lm -ldl"
-AC_SUBST(VISUAL_CFLAGS)
-AC_SUBST(VISUAL_LIBS)
 
 # Terrible hack, but otherwise the CFLAGS are passed as last arguments
 # to compiler, and this way these arguments (probably -g -O2) overrides

@@ -8,8 +8,8 @@
 #include "lv_libvisual.h"
 #include "lv_log.h"
 #include "lv_param.h"
+#include "config.h"
 
-#define VERSION "0.1.6"
 
 /** Set when libvisual is initialized. */
 int __lv_initialized = FALSE;
