@@ -1,3 +1,8 @@
+2005-03-13  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* autogen.sh: fix building fail due to undefined
+	REQUIRED_GLIB_GETTEXT_VERSION variable.
+
 2005-02-20  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/main.c: Compile fixes.
