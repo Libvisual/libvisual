@@ -27,7 +27,7 @@ fi
 
 # Checks for libraries.
 build_input=""
-build_actor="infinite JESS lv_scope oinksie"
+build_actor="infinite JESS lv_analyzer lv_scope oinksie video_test"
 build_morph="alphablend tentacle flash"
 
 # FIXME: Replace `main' with a function in `-lGL':
@@ -94,15 +94,28 @@ AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt])
 
 # Default prefix
 AC_PREFIX_DEFAULT(/usr)
-prefix=$prefix
+
+AC_ARG_ENABLE([debug],
+            AC_HELP_STRING([--enable-debug],
+                           [Enable debug @<:@default=disabled@:>@]),
+	    [debug=$enableval],
+	    [debug=no])
+AC_MSG_CHECKING([wheter to enable debug])
+if test "$debug" = yes; then
+  AC_MSG_RESULT([yes])
+  DEBUG_CFLAGS="-ggdb3"
+else
+  AC_MSG_RESULT([no])
+  DEBUG_CFLAGS=""
+fi
+AC_SUBST(DEBUG_CFLAGS)
+#AC_SUBST(CFLAGS, "-I./ -O3 -Wall -rdynamic -ggdb $LIBVISUAL_CFLAGS")
 
 # check plugin data dir
 #datadir = pkg-config libvisual --variable=datadir
 
 # cflags, ld flags
 libs_dynamic_loader="-ldl"
-AC_SUBST(CFLAGS, "-I./ -O3 -Wall -rdynamic -ggdb $LIBVISUAL_CFLAGS")
-AC_SUBST(LV_LIBS, "$LIBVISUAL_LIBS")
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
 AC_SUBST(DATADIR, "$datadir")
@@ -114,9 +127,8 @@ AC_SUBST(BUILD_MORPH, "$build_morph")
 AC_CONFIG_FILES([
 	Makefile
 	plugins/Makefile
-	plugins/input/Makefile
-	plugins/input/esd/Makefile
 	plugins/actor/Makefile
+	plugins/actor/lv_analyzer/Makefile
 	plugins/actor/lv_scope/Makefile
 	plugins/actor/lv_gltest/Makefile
 	plugins/actor/madspin/Makefile
@@ -125,14 +137,15 @@ AC_CONFIG_FILES([
 	plugins/actor/infinite/Makefile
 	plugins/actor/JESS/Makefile
 	plugins/actor/goom2/Makefile
+	plugins/actor/video_test/Makefile
+	plugins/input/Makefile
+	plugins/input/esd/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile
 	plugins/morph/flash/Makefile
 ])
 
-#plugins/actor/lv_analyzer/Makefile
-#plugins/actor/video_test/Makefile
 
 AC_OUTPUT
 
