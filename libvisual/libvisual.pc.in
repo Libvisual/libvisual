@@ -8,5 +8,5 @@ Version: @VERSION@
 Description: an audio visualisation abstraction library.
 Requires:
 Libs: -L${libdir} @VISUAL_LIBS@
-Cflags: -I${includedir}/libvisual @VISUAL_CFLAGS@
+Cflags: -I${includedir} @VISUAL_CFLAGS@
 
