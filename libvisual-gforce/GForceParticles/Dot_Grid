@@ -1,0 +1,33 @@
+name="Dot Grid",
+
+
+Aspc=0,
+
+Stps="324",
+
+// Only ever make one instance
+NUM="1",
+
+A0="trnc( sqrt( NUM_S_STEPS ) )",
+
+// Choose a random 2D vector (we'll make this the grid velocity)
+A1="rnd( 2 * PI )",
+A2="( .4 + rnd( .9 ) ) * cos( a1 )",
+A3="( .4 + rnd( .9 ) ) * sin( a1 )",
+
+Pen="1 - .9 * (sin( .6 * t ))^15",
+
+B0="wrap(a2 * t)",
+B1="wrap(a3 * t)",
+
+C0=" 2 * (       (s * NUM_S_STEPS) % a0   + b0 ) / a0 - 1",
+C1=" 2 * ( trnc( (s * NUM_S_STEPS) / a0 ) + b1 ) / a0 - 1",
+
+
+X0=" c0",
+Y0=" c1",
+
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,43 @@
+name="Pair",
+/*                                                     */
+/* Pair   v1.0                                         */
+/*   Satellite Lovers                                  */
+/*                                                     */
+/* By Jay Mc Bride                                     */
+/*  E-mail: jasonmcbride@mac.com  J;-)Â~               */
+
+
+Aspc= 1 ,
+
+NUM=" 1 ",
+
+ A0=" cos( .3 + rnd( .6 ) ) ",  // orbit radius
+ A1=" sin( .5 + rnd( .4 ) ) ",  // orbit radius
+ A2=" cos( .1 + rnd( .8 ) ) ",  // orbit radius
+ A3=" sin( .2 + rnd( .7 ) ) ",  // orbit radius
+ A4=" cos( .6 + rnd( .3 ) ) ",  // orbit radius
+
+ B0=" -1.2 * t + 1 ",           // theta from (0,0)
+ B1=" .3 * t ",                  // theta from center of rod
+
+ B2=" -.55 * t ",               // theta from (0,0)
+
+
+ C0=" .7 * ( s - .1 ) * cos( b1 ) + a0 ",  //  x'
+ C1=" .7 * ( s - .1 ) * sin( b1 ) + a0 ",  // y'
+
+ C2="C0 * mag( .7 * s ) * .7",
+
+X0=" C0 * cos( B0 ) - C1 * sin( B0 ) ",
+Y0=" C1 * sin( B0 ) + C2 * cos( B0 ) ",
+
+X1=" -( C0 * sin( B2 ) - C1 * cos( B2 ) ) ",
+Y1=" -( C1 * cos( B2 ) + C2 * sin( B2 ) ) ",
+
+
+Stps="100",
+
+ConB=1,
+
+
+Vers=100

@@ -1,0 +1,43 @@
+name="Snakes",
+/*
+
+Snakes
+By Thomas Geier
+
+ziggystar@gmx.de
+
+Snakes come out of the center
+*/
+
+NUM="5+rnd(10)",
+
+Stps=50,
+
+
+Aspc=1,
+
+A0="t",			//should be clear
+A1="END_TIME-t",	//the same
+
+C0="seed(A0*ID)",
+C1="rnd(2)-1",		//x Position
+C2="rnd(.3)+.2",		//length
+C3="rnd(1)",		//Offset until appearance
+C4="rnd(3.141)",		//movement offset
+
+C5="2*(t-A0)/A1-C3-s*C2",
+
+C6="( C1+0.14*sin(18*C5/C2+t*8+C4)*C2 ) * 3.141",	//theta
+C7="pos(C5)*2",				//r
+
+X0="cos(C6)*C7",
+Y0="sin(C6)*C7",
+
+Pen=".6",
+
+
+LWdt="(10*C2*(1-s)+1)*(C7+0.3)",
+
+ConB=1,
+
+Vers=100

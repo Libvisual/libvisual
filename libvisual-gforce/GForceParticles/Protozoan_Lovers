@@ -1,0 +1,37 @@
+name="Protozoan Lovers",
+/* Protozoan Lovers, by Jeff Osborn (jo009j@mail.rochester.edu) 
+This is another example of just hacking around.  I had an idea (which I still have to impliment... :-P), and on my way to creating it I made something else which looked cool.  I started refining that, and came up with this :-)  It reminds me of one celled organisms dancing around under a microscpe, so I called it "Protozoan Lovers". */
+
+/* Two line sections are drawn, using ID to offset each one.  Each one of the two sections belongs to a different protozoa.  The protozoa move along sin(t), and then along another sin(t)...so, a sin() curve along a sin() curve.  Thats how it moves "randomly".
+*/
+
+NUM="rnd(2.5) + 1",
+
+Stps="rnd(3) + 9", // The number of sections...always between 9 and 12
+
+Aspc=0,
+
+A0="t",
+
+
+B0="seed( a0 * ( ID / NUM + 5.5 ) )",
+
+//These decide the path for the protozoa
+B1="rnd(0.8) + 0.2",
+B2="rnd(0.8) + 0.2",
+
+C0=".8 * t - s / 2",
+
+
+X0="(sin(C0 * B1)) * 0.90 + sin(C0 * 5) * 0.075",
+Y0="(cos(C0 * B2)) * 0.90 + cos(C0 * 6) * 0.075",
+
+
+ConB=0,
+
+//This gives the first section (the "head) a bigger dot than the rest, and on down the line.
+LWdt="9 - ( s * 4)", 
+
+Pen="1.2 - s", //The tail is darker.  Looks cooooool!
+
+Vers=100

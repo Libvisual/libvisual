@@ -1,0 +1,72 @@
+name="Spinning Plane",
+
+
+Aspc=1,
+
+Stps="121",
+
+/*
+
+A simple coordinate system:  
+Offset the XY plane by D and then rotate it alone its x'-axis by some a:
+[x]              x'
+[y]  =  y' cos a + z' sin a 
+[z]     z' cos a - y' sin a + D 
+
+Perspective transformation:
+scrn_x = k1 * x / ( k2 + z )
+sxrn_y = k1 * y / ( k2 + z )
+
+*/
+
+// Only ever make one instance
+NUM="1",
+
+
+//Pen="1 - .9 * (sin( .4 * t ))^15",
+Pen="1",
+
+
+A0="trnc( sqrt( NUM_S_STEPS ) )",
+
+// Let A1 be our "a", the angle difference from the camera view plane to the spinning plane.
+A1="sin( - 3.14 * .35 )",
+A2="cos( - 3.14 * .35 )",
+
+
+A5=".3 + rnd( .6 )",  // Choose a random grid rotation speed
+
+
+
+// Rotation angle for the grid
+B0="sin( t * a5 )",
+B1="cos( t * a5 )",
+
+A6="NUM_S_STEPS-1", // How many bins from 0 to 1
+
+// Let (C0, C1, 0) be (x', y', z')  (as s goes from 0 to 1, a grid is stepped out)
+C0=" 2 * (       (s * A6 + .005) % a0   ) / a0 - 1",   // x', x
+C1=" 2 * ( trnc( (s * A6) / a0 ) ) / a0 - 1",   // y'
+// z' is 0
+
+C2="c0 * b1 - c1 * b0",
+C3="c0 * b0 + c1 * b1",
+
+
+A3="2 + rnd( 2 )",            // This mixes up the perspective distortion
+A4="a3 * ( .4 + rnd( .5 ) )",   // This mixes up the total size
+
+C4="c3 * a2",       // y
+C5="a3 - c3 * a1",  // z
+
+// Now transform them to the camera's cord system
+X0=" a4 * c2 / c5",
+Y0=" a4 * c4 / c5",
+
+// Choose a random dot size
+A7="2 + rnd( 2.5 )",
+LWdt="a7",
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,57 @@
+name="Pollock Dots",
+/* Particles for G-Force                      */
+/* ------------------------------------------ */
+/* Pollock Dots    by Christian Lupp, Germany */
+/*                                            */   
+/*                 c.lupp@chilli-lab.com      */   
+/* ------------------------------------------ */
+
+Aspc=0,                        // When Aspc is 0, G-Force will "stretch" a 
+                                // coordinates to fit a rectangular frame.
+
+Stps=9,                      // The number of dots within one line (-> steps).
+
+
+NUM="2",																	   		// The number of dotlines.
+
+
+// ****************** A-Variables are proceeded by the start of the effect.
+
+A0="t",   																				// Record start time.
+
+A1="1.6",                    // The greater this is, the larger the speed (x-axis)
+A2="0.3",                    // The greater this is, the larger the speed (y-axis)
+A3="5 + rnd( 4 )",          // Choose a random dot size        
+
+// ****************** B-Variables are proceeded by the start of the frame.
+
+B0="1.5 - a1 * (t - a0)",  // b0 is used for the speed of the animation.
+
+B1="sin(b0) / 4",         // Function for the behavior within the x-axis.
+
+B2="cos( 1.3 * sin(a2 * (t - a0)) + .3 )",
+                              // Function for the behavior within the y-axis.
+
+
+// ****************** Variables are proceeded for every step and every ID.
+
+Pen="1", 																	// The color of the dots.
+
+
+X0="(2 * s - 1) + (b1 * ((-1) ^ ID))",
+                              // ((-1) ^ ID)) is used to switch the sign of b1 for
+                              // the second dotline: 
+                              //            ID = 0 -> X0=(2*s-1)+b1
+                              //            ID = 1 -> X0=(2*s-1)-b1
+
+Y0="b2 * ((-1) ^ ID) + (0.04 * ((-1) ^ ID))",
+                              // Here the term is also used to switch the sign.
+
+LWdt="a3",
+
+ConB=0,																						// We want to have dots, so no line should be drawn
+																														// between the steps.
+
+Vers=100                     // This should always equal the version of G-Force the 
+                              // colormap is written for (times one hundred).
+

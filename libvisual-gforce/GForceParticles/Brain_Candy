@@ -1,0 +1,28 @@
+name="Brain Candy",
+/* Brain Candy, by Jeff Osborn (jo009j@mail.rochester.edu)
+Nothing special..I was just fucking around and this came up :-P  You may see some similarities between it and Miri's Ball...thats because this lead to that */
+
+NUM="rnd(2) + 4",
+Stps=20,
+
+Aspc=1,
+
+A0=".1 + rnd(0.4)",
+
+B0="ID / NUM",
+B1="(END_TIME - t) * A0", // Rotation Speed in Y
+
+C0="0.3 * sin(t + (PI * B0 * 2))",  //Radius (and rotation in X)
+
+
+X0="C0 * cos( s * PI + PI * 1.5 )",
+Y0="0.3 * sin( s * PI +  PI * 1.5 * B1 )",
+
+
+
+ConB=1,
+
+LWdt="mag(s) * 12",
+Pen="rnd(0.6) + 0.5",
+
+Vers=100

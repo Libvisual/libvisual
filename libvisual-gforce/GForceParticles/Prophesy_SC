@@ -1,0 +1,40 @@
+name="Prophesy_SC",
+NUM="4 + rnd( 10 )",
+
+Stps=15,
+
+Aspc=1,
+
+A0=".7 + rnd( .4 )",  // max orbit radius
+A1=".2 + rnd( .5 )",  // speed
+A2="( .07 + rnd(.1) )/ a0",
+
+
+B0="a1 * t + 2 * PI * (ID / NUM)",
+
+C0="b0 + a2 * s",
+C0="a0 * sin( b0 + a2 * s )",
+C1="a0 * cos( b0 + a2 * s )",
+
+
+X0="c1",
+Y0="c0",
+
+X1="c0 * .8",
+Y1="c1 * .8",
+
+X2="c1 * .6",
+Y2="c0 * .6",
+
+X3="c0 * .4",
+Y3="c1 * .4",
+
+X4="c1 * .2",
+Y4="c0 * .2",
+
+
+Pen="1",
+
+ConB=1,
+
+Vers=100

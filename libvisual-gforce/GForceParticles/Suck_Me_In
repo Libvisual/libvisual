@@ -1,0 +1,39 @@
+name="Suck Me In",
+/* Suck Me In, by Jeff Osborn (jo009j@mail.rochester.edu)
+This config began with me messing around with circles, and the "NUM" parameter.  Eventually I got something which looked pretty cool, and an idea began to take shape in my mind.  I scrapped what I had, and began from scratch.  Soon I had what I was looking for; the trouble was it looked like shit :-P  So I messed around with the "LWdt" and "Pen" parameters until it looked better.  When I looked at it then, it looked like it wanted to suck me into it.  So, I named it "Suck Me In".  Interesting, eh?"
+*/
+
+/* As always, I am commenting my code.  PErhaps someone can improve upon my idea, or maybe ppl just want to see how I did this.  Ehh, whatever.  I'm compulsive :-P */
+
+
+Stps="( 10 + rnd( 30 ) ) * 30", // This is enough steps to make the circles look good
+
+Aspc=1, /* A 1:1 aspect ratio.  Has I set this to 0 G-Force would have stretched what it was drawing so that the top right corner was (1,1) and the bottom left was (-1,-1).  Had it done this, the circles would have been squished into ellipses.  OH THE HORROR!!  */
+
+A0="rnd(0.4) + 0.1", /* The radius of the last circle.  The radii of the circles go from 0 to this value as they get farther away from the center */
+A1="rnd(4) + 3", //This controls the speed of the pulse.  
+A2="rnd(3) + 4", //This controls the intensity of the pulse.
+A3="rnd(1.1) + 0.2", //This is the range of movement in the X direction.
+A4="rnd(0.5) + 0.2", /*This is the range of movement in the Y direction.  I constricted its values because it looks more like its trying to suck you in if its Y movement is smaller.  */
+
+
+A5="NUM_S_STEPS / 30",  // How many circles we'll have
+
+A6="A5 * 2 * PI",
+
+A7=".3 + rnd( .9 )",    // How fast the whole enchalada revolves
+
+
+B0="cos( A7 * t ) * A3",
+B1="sin( A7 * t ) * A4",
+
+
+
+X0="A0 * s * cos( s * A6 )   + b0 * s",
+Y0="A0 * s * sin( s * A6 )   + b1 * s",
+
+ConB=1,
+LWdt="sin(ID / A1 + (t * A1)) * A2", //This creates the pulsing
+Pen="cos(s)", 
+
+Vers=100

@@ -1,0 +1,51 @@
+name="Robox",
+/*
+
+Robox
+By Thomas Geier
+
+ziggystar@gmx.de
+
+*/
+
+NUM="2+rnd(6)",
+
+Stps="30",
+
+
+Aspc=1,
+
+A0="t",			//should be clear
+A1="END_TIME-t",	//the same
+A2=".2",
+A4=".03 + rnd(.6)",		//rotation speed
+
+A3="2 * PI/NUM",
+
+B0="cos(t*A4+A3*ID)*.8",
+B1="sin(t*A4+A3*ID)*.8",		
+
+C0="A2 * ( .5+0.3*mag(s) )",
+C1="(s-.5)*A2",
+
+X0="B0+c1",
+Y0="B1+c0",
+
+X1="B0+c1",
+Y1="B1-c0",
+
+X2="B0-c0",
+Y2="B1+c1",
+
+X3="B0+c0",
+Y3="B1+c1",
+
+
+Pen="1-mag(s)",
+
+
+LWdt="1",
+
+ConB=0,
+
+Vers=100

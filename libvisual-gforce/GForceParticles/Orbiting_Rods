@@ -1,0 +1,35 @@
+name="Orbiting Rods",
+
+
+
+Stps=2,
+
+
+
+
+Aspc=1,
+
+A0=".3 + rnd( .5 )",   // orbit radius
+A1="- .1 - rnd( .4 )", // orbit rotation rate
+A2=".08 * ( 1 + rnd( 3 ) )",   // segment length
+A3=".5 + rnd( 2.9 )",  // rod rotation rate
+
+// 2 to 6 rods
+NUM="2 + rnd( 4.1 )",
+
+B0="a1 * t + 2 * PI * ( ID / NUM )",  // theta from (0,0)
+B1="a3 * t",   // theta from center of rod
+C0="a2 * ( s - .5 ) * cos( b1 ) + a0",  //  x'
+C1="a2 * ( s - .5 ) * sin( b1 )",  // y'
+
+
+
+X0="C0 * cos( B0 ) - C1 * sin( B0 )",
+Y0="C1 * cos( B0 ) + C0 * sin( B0 )",
+
+
+
+
+ConB=1,
+
+Vers=100
