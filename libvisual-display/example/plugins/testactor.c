@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: testactor.c,v 1.5 2005-01-28 18:35:55 vitalyvb Exp $
+ * $Id: testactor.c,v 1.6 2005-01-29 23:02:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -117,7 +117,7 @@ int lv_dna_init (VisPluginData *plugin)
 	glGenTextures(1, &priv->tex);
 
 	/* (STILL) :) a hack :) */
-	v = ((LvdPluginEnvironData*) visual_plugin_environ_get (plugin, VISUAL_PLUGIN_ENVIRON_TYPE_LVD)->environ)->lvd;
+	v = ((LvdPluginEnvironData*) visual_plugin_environ_get (plugin, VISUAL_PLUGIN_ENVIRON_TYPE_LVD))->lvd;
 	fprintf(stderr,"got lvd: %p\n",v);
 	priv->v=v;
 
