@@ -1,3 +1,7 @@
+2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* AUTHORS: Update.
+
 2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/input/mplayer/input_mplayer.c: Reindented, with testing CIA
