@@ -54,10 +54,18 @@ VisPluginInfo *visual_plugin_info_new (char *name, char *author, char *version, 
 {
 	VisPluginInfo *pluginfo;
 
+	visual_log_return_val_if_fail (name != NULL, NULL);
+	visual_log_return_val_if_fail (author != NULL, NULL);
+	visual_log_return_val_if_fail (version != NULL, NULL);
+	visual_log_return_val_if_fail (about != NULL, NULL);
+	visual_log_return_val_if_fail (help != NULL, NULL);
+	
 	pluginfo = malloc (sizeof (VisPluginInfo));
 
-	if (pluginfo == NULL)
+	if (pluginfo == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new VisPluginInfo structure");
 		return NULL;
+	}
 
 	pluginfo->name = strdup (name);
 	pluginfo->author = strdup (author);
@@ -79,6 +87,8 @@ VisPluginInfo *visual_plugin_info_duplicate (VisPluginInfo *pluginfo)
 {
 	VisPluginInfo *plugnew;
 
+	visual_log_return_val_if_fail (pluginfo != NULL, NULL);
+
 	plugnew = visual_plugin_info_new (pluginfo->name, pluginfo->author,
 			pluginfo->version, pluginfo->about, pluginfo->help);
 
@@ -94,8 +104,7 @@ VisPluginInfo *visual_plugin_info_duplicate (VisPluginInfo *pluginfo)
  */
 int visual_plugin_info_free (VisPluginInfo *pluginfo)
 {
-	if (pluginfo == NULL)
-		return -1;
+	visual_log_return_val_if_fail (pluginfo != NULL, -1);
 
 	if (pluginfo->name != NULL)
 		free (pluginfo->name);
@@ -129,6 +138,11 @@ VisPluginRef *visual_plugin_ref_new ()
 	VisPluginRef *ref;
 
 	ref = malloc (sizeof (VisPluginRef));
+	if (ref == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new VisPluginRef structure");
+		return NULL;
+	}
+
 	memset (ref, 0, sizeof (VisPluginRef));
 
 	return ref;
@@ -143,8 +157,7 @@ VisPluginRef *visual_plugin_ref_new ()
  */
 int visual_plugin_ref_free (VisPluginRef *ref)
 {
-	if (ref == NULL)
-		return -1;
+	visual_log_return_val_if_fail (ref != NULL, -1);
 
 	if (ref->file != NULL)
 		free (ref->file);
@@ -176,6 +189,8 @@ int visual_plugin_ref_list_destroy (VisList *list)
 
 	ret2 = visual_list_free (list);
 
+	list = NULL;
+
 	return ((ret1 == 0 && ret2 == 0) ? 0 : -1);
 }
 
@@ -189,6 +204,11 @@ VisActorPlugin *visual_plugin_actor_new ()
 	VisActorPlugin *actorplugin;
 	
 	actorplugin = malloc (sizeof (VisActorPlugin));
+	if (actorplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new actor plugin");
+		return NULL;
+	}
+
 	memset (actorplugin, 0, sizeof (VisActorPlugin));
 
 	return actorplugin;
@@ -203,10 +223,11 @@ VisActorPlugin *visual_plugin_actor_new ()
  */
 int visual_plugin_actor_free (VisActorPlugin *actorplugin)
 {
-	if (actorplugin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (actorplugin != NULL, -1);
 
 	free (actorplugin);
+
+	actorplugin = NULL;
 
 	return 0;
 }
@@ -221,6 +242,11 @@ VisInputPlugin *visual_plugin_input_new ()
 	VisInputPlugin *inputplugin;
 
 	inputplugin = malloc (sizeof (VisInputPlugin));
+	if (inputplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new input plugin");
+		return NULL;
+	}
+
 	memset (inputplugin, 0, sizeof (VisInputPlugin));
 
 	return inputplugin;
@@ -235,11 +261,12 @@ VisInputPlugin *visual_plugin_input_new ()
  */
 int visual_plugin_input_free (VisInputPlugin *inputplugin)
 {
-	if (inputplugin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (inputplugin != NULL, -1);
 
 	free (inputplugin);
 
+	inputplugin = NULL;
+	
 	return 0;
 }
 
@@ -253,6 +280,11 @@ VisMorphPlugin *visual_plugin_morph_new ()
 	VisMorphPlugin *morphplugin;
 
 	morphplugin = malloc (sizeof (VisMorphPlugin));
+	if (morphplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new morph plugin");
+		return NULL;
+	}
+
 	memset (morphplugin, 0, sizeof (VisMorphPlugin));
 
 	return morphplugin;
@@ -267,10 +299,11 @@ VisMorphPlugin *visual_plugin_morph_new ()
  */
 int visual_plugin_morph_free (VisMorphPlugin *morphplugin)
 {
-	if (morphplugin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (morphplugin != NULL, -1);
 
 	free (morphplugin);
+
+	morphplugin = NULL;
 
 	return 0;
 }
@@ -285,6 +318,11 @@ LVPlugin *visual_plugin_new ()
 	LVPlugin *plugin;
 
 	plugin = malloc (sizeof (LVPlugin));
+	if (plugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new plugin");
+		return NULL;
+	}
+
 	memset (plugin, 0, sizeof (LVPlugin));
 
 	return plugin;
@@ -299,10 +337,11 @@ LVPlugin *visual_plugin_new ()
  */
 int visual_plugin_free (LVPlugin *plugin)
 {
-	if (plugin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (plugin != NULL, -1);
 
 	free (plugin);
+
+	plugin = NULL;
 
 	return 0;
 }
@@ -335,7 +374,14 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type)
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;
 
+	visual_log_return_val_if_fail (pluglist != NULL, NULL);
+
 	list = visual_list_new ();
+
+	if (list == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot create a new list");
+		return NULL;
+	}
 
 	while ((ref = visual_list_next (pluglist, &entry)) != NULL) {
 		if (ref->type == type)
@@ -362,6 +408,8 @@ char *visual_plugin_get_next_by_name (VisList *list, char *name)
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;
 	int tagged = FALSE;
+
+	visual_log_return_val_if_fail (list != NULL, NULL);
 
 	while ((ref = visual_list_next (list, &entry)) != NULL) {
 		if (name == NULL)
@@ -394,6 +442,8 @@ char *visual_plugin_get_prev_by_name (VisList *list, char *name)
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref, *pref = NULL;
 	
+	visual_log_return_val_if_fail (list != NULL, NULL);
+
 	if (name == NULL) {
 		ref = visual_list_get (list, visual_list_count (list) - 1);
 		
@@ -601,11 +651,16 @@ int _lv_plugin_unload (LVPlugin *plugin)
 {
 	VisPluginRef *ref;
 
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
 	/* Not loaded */
-	if (plugin->handle == NULL)
+	if (plugin->handle == NULL) {
+		visual_log (VISUAL_LOG_DEBUG, "The plugin was never loaded");
 		return -1;
+	}
 
 	ref = plugin->ref;
+	visual_log_return_val_if_fail (ref != NULL, -1);
 	
 	if (plugin->realized == TRUE)
 		plugin_cleanup (plugin);
@@ -634,13 +689,12 @@ LVPlugin *_lv_plugin_load (VisPluginRef *ref)
 	plugin_load_func_t init;
 	void *handle;
 
-	if (ref == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (ref != NULL, NULL);
 
 	handle = dlopen (ref->file, RTLD_LAZY);
 
 	if (handle == NULL) {
-		fprintf (stderr, "libvisual fatal: %s\n", dlerror ());
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
 
 		return NULL;
 	}
@@ -648,7 +702,7 @@ LVPlugin *_lv_plugin_load (VisPluginRef *ref)
 	init = (plugin_load_func_t) dlsym (handle, "get_plugin_info");
 
 	if (init == NULL) {
-		fprintf (stderr, "can't initialize plugin: %s\n", dlerror ());
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
 
 		dlclose (handle);
 
@@ -657,14 +711,18 @@ LVPlugin *_lv_plugin_load (VisPluginRef *ref)
 
 	plugin = init (ref);
 
-	plugin->ref = ref;
-	plugin->handle = handle;
+	if (init != NULL) {
+		plugin->ref = ref;
+		plugin->handle = handle;
 
-	ref->usecount++;
+		ref->usecount++;
 
-	plugin->realized = FALSE;
+		plugin->realized = FALSE;
 
-	return plugin;
+		return plugin;
+	} else {
+		return NULL;
+	}
 }
 
 /**
@@ -676,6 +734,8 @@ LVPlugin *_lv_plugin_load (VisPluginRef *ref)
  */
 int _lv_plugin_realize (LVPlugin *plugin)
 {
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
 	if (plugin->realized == TRUE)
 		return -1;
 
@@ -699,12 +759,16 @@ VisPluginRef *_lv_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 {
 	LVPlugin *plugin;
 	VisPluginRef *ref;
+	VisPluginInfo *plug_info;
+	char *plug_name;
 	plugin_load_func_t init;
 	void *handle;
 
+	visual_log_return_val_if_fail (pluginpath != NULL, NULL);
+
 	handle = dlopen (pluginpath, RTLD_LAZY);
 	if (handle == NULL) {
-		fprintf (stderr, "libvisual fatal: %s\n", dlerror ());
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
 
 		return NULL;
 	}
@@ -712,7 +776,8 @@ VisPluginRef *_lv_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 	init = (plugin_load_func_t) dlsym (handle, "get_plugin_info");
 
 	if (init == NULL) {
-		fprintf (stderr, "libvisual fatal: %s\n", dlerror ());
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
+
 		dlclose (handle);
 
 		return NULL;
@@ -721,6 +786,10 @@ VisPluginRef *_lv_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 	if (refn == NULL) {
 		ref = malloc (sizeof (VisPluginRef));
 		memset (ref, 0, sizeof (VisPluginRef));
+		if (ref == NULL) {
+			visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new VisPluginRef structure");
+			return NULL;
+		}
 	} else {
 		ref = refn;
 	}
@@ -728,16 +797,30 @@ VisPluginRef *_lv_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 	plugin = init (ref);
 
 	if (plugin == NULL) {
-		if (refn == NULL)
+		if (refn == NULL && ref != NULL)
 			free (ref);
 
 		dlclose (handle);
 		return NULL;
 	}
 
+	plug_name = plugin_get_name (plugin);
+	if (plug_name == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin name");
+		dlclose (handle);
+		return NULL;
+	}
+
+	plug_info = plugin_get_info (plugin);
+	if (plug_info == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info");
+		dlclose (handle);
+		return NULL;
+	}
+
+	ref->name = strdup (plug_name);
+	ref->info = visual_plugin_info_duplicate (plug_info);
 	ref->file = strdup (pluginpath);
-	ref->name = strdup (plugin_get_name (plugin));
-	ref->info = visual_plugin_info_duplicate (plugin_get_info (plugin));
 	ref->type = plugin->type;
 
 	plugin_cleanup (plugin);

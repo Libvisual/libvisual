@@ -6,6 +6,10 @@
 	This function will deprecate the blit_fit when it's
 	finished.
 
+2004-06-30  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_plugin.c: added extensive error checking.
+
 2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c,
@@ -34,6 +38,7 @@
 	Removed stdint and use sys/types.h for portability
 	reasons.
 
+>>>>>>> 1.20
 2004-06-29  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: added check for endianess, and set
@@ -53,7 +58,7 @@
 	and visual_log_return_val_if_fail() macros to show
 	useful messages.
 	* libvisual/*.c: make use of visual_log_return_val_if_fail()
-	macro.
+	macro to some modules.
 	
 2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
 

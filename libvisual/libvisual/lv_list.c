@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.4 2004-06-29 23:56:44 dprotti Exp $
+ *	$Id: lv_list.c,v 1.5 2004-07-01 00:08:09 dprotti Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -50,8 +50,7 @@ VisList *visual_list_new ()
 
 	list = malloc (sizeof (VisList));
 	if (list == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"Could not get memory for a new VisList structure");
+		visual_log (VISUAL_LOG_CRITICAL, "Could not get memory for a new VisList structure");
 		return NULL;
 	}
 
@@ -72,6 +71,8 @@ int visual_list_free (VisList *list)
 	visual_log_return_val_if_fail (list != NULL, -1);
 
 	free (list);
+
+	list = NULL;
 
 	return 0;
 }
@@ -227,8 +228,7 @@ int visual_list_add_at_begin (VisList *list, void *data)
 	/* Allocate memory for new list entry */
 	current = malloc (sizeof (VisListEntry));
 	if (current == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"Could not get memory for a new VisListEntry structure");
+		visual_log (VISUAL_LOG_CRITICAL, "Could not get memory for a new VisListEntry structure");
 		return -1;
 	}
 
@@ -272,8 +272,7 @@ int visual_list_add (VisList *list, void *data)
 	/* Allocate memory for new list entry */
 	current = malloc (sizeof (VisListEntry));
 	if (current == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"Could not get memory for a new VisListEntry structure");
+		visual_log (VISUAL_LOG_CRITICAL, "Could not get memory for a new VisListEntry structure");
 		return -1;
 	}
 
@@ -326,8 +325,7 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 	
 	current = malloc (sizeof (VisListEntry));
 	if (current == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"Could not get memory for a new VisListEntry structure");
+		visual_log (VISUAL_LOG_CRITICAL, "Could not get memory for a new VisListEntry structure");
 		return -1;
 	}
 
@@ -392,8 +390,7 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 
 	/* Valid list entry ? */
 	if (*le == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"There is no list entry to delete");
+		visual_log (VISUAL_LOG_CRITICAL, "There is no list entry to delete");
 		return -1; /* Nope */
 	}
 
