@@ -484,7 +484,7 @@ static int sdl_event_handle ()
 	char *next_plugin;
 
 	while (SDL_PollEvent (&event)) {
-		vevent = visual_actor_get_eventqueue (visual_bin_get_actor (bin));
+		vevent = visual_plugin_get_eventqueue (visual_actor_get_plugin (visual_bin_get_actor (bin)));
 		
 		switch (event.type) {
 			case SDL_KEYUP:
