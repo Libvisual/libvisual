@@ -920,9 +920,13 @@ VisList *visual_plugin_get_list (char **paths)
 	VisList *list = visual_list_new();
 	int i = 0;
 
-	while (paths[i] != NULL)
-		plugin_add_dir_to_list (list, paths[i++]);
-
+	while (paths[i] != NULL) {
+		if (plugin_add_dir_to_list (list, paths[i++]) < 0) {
+			visual_list_destroy (list, NULL);
+			return NULL;
+		}
+	}
+	
 	return list;
 }
 
