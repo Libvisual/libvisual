@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.6 2004-07-06 19:45:42 dprotti Exp $
+ *	$Id: lv_list.c,v 1.7 2004-07-07 21:10:29 vitalyvb Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
 	visual_log_return_val_if_fail (list != NULL, -1);
 		
 	/* Walk through the given list, possibly calling the destroyer for it */
-	if (destroyer != NULL) {
+	if (destroyer == NULL) {
 		while ((elem = visual_list_next (list, &le)) != NULL)
 			visual_list_delete (list, &le);
 	} else {
