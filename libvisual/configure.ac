@@ -203,7 +203,8 @@ if test x$examples = xyes ; then
 			of Libvisual before to build the examples.]))
   AC_SUBST(VISUAL_LIBS)
   AC_SUBST(VISUAL_CFLAGS)		 
-  build_subdirs="$build_subdirs examples"
+  AC_DEFINE([EXAMPLES], [simplesdl morphsdl], [Example programs to be built])
+  AC_SUBST(EXAMPLES)
 else
   AC_MSG_RESULT([no])
   VISUAL_CFLAGS=""
@@ -211,7 +212,19 @@ else
   AC_SUBST(VISUAL_CFLAGS)		 
   AC_SUBST(VISUAL_LIBS)
 fi
-AC_SUBST(BUILD_SUBDIRS, "$build_subdirs")
+
+AC_ARG_ENABLE([profiling],
+  AC_HELP_STRING([--enable-profiling],
+		[Enable emision of profile data to be used by gprof @<:@default=disabled@:>@]),
+		[profiling=$enableval],
+		[profiling=no])
+AC_MSG_CHECKING([wheter to enable profiling])
+if test x$profiling = xyes; then
+  AC_MSG_RESULT([yes])
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -pg"
+else
+  AC_MSG_RESULT([no])
+fi
 
 AC_ARG_ENABLE([debug],
             AC_HELP_STRING([--enable-debug],
@@ -219,7 +232,7 @@ AC_ARG_ENABLE([debug],
 	    [debug=$enableval],
 	    [debug=no])
 AC_MSG_CHECKING([wheter to enable debug])
-if test "$debug" = yes; then
+if test x$debug = xyes; then
   AC_MSG_RESULT([yes])
   DEBUG_CFLAGS="-ggdb3"
 else
@@ -230,6 +243,8 @@ AC_SUBST(DEBUG_CFLAGS)
 
 libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
+
+AC_SUBST(BUILD_SUBDIRS, "libvisual examples")
 
 # Terrible hack, but otherwise the CFLAGS are passed as last arguments
 # to compiler, and this way these arguments (probably -g -O2) overrides

@@ -1,3 +1,9 @@
+2004-09-23  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added --enable profiling option. Now
+	example programs are included on the dist target even
+	if they are disabled.
+
 2004-09-21  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* libvisual/lv_log.c: now only VISUAL_LOG_DEBUG shows the
