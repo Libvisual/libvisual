@@ -131,7 +131,7 @@ int lv_gltest_cleanup (VisPluginData *plugin)
 {
 	GLtestPrivate *priv = plugin->priv;
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }

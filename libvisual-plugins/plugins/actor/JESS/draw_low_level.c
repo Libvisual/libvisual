@@ -233,20 +233,18 @@ void ball_init(JessPrivate *priv)
 	int ssize;
 
 	if (priv->big_ball != NULL)
-		free (priv->big_ball);
+		visual_mem_free (priv->big_ball);
 	
 	ssize = BIG_BALL_SIZE * BIG_BALL_SIZE;
-	priv->big_ball = (uint8_t *) malloc(ssize);
-	memset (priv->big_ball, 0, ssize);
+	priv->big_ball = (uint8_t *) visual_mem_malloc0(ssize);
 
 	for (i=0 ; i < BIG_BALL_SIZE ;i++)
 	{
 		if (priv->big_ball_scale[i] != NULL)
-			free (priv->big_ball_scale[i]);
+			visual_mem_free (priv->big_ball_scale[i]);
 
 		ssize = (i + 1) * sizeof (int);
-		priv->big_ball_scale[i] = (uint32_t *) malloc(ssize);
-		memset (priv->big_ball_scale[i], 0, ssize);
+		priv->big_ball_scale[i] = (uint32_t *) visual_mem_malloc0(ssize);
 	}
 	
 	for (i=0 ; i < BIG_BALL_SIZE ;i++)

@@ -123,7 +123,7 @@ int act_plazma_cleanup (VisPluginData *plugin)
 
 	visual_palette_free_colors (&priv->colors);
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }

@@ -87,7 +87,7 @@ int inp_esd_cleanup (VisPluginData *plugin)
 	if (priv->loaded == 1)
 		esd_close (priv->esdhandle);
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }

@@ -89,11 +89,11 @@ int act_oinksie_cleanup (VisPluginData *plugin)
 	oinksie_quit (&priv->priv2);
 
 	if (priv->depth != VISUAL_VIDEO_DEPTH_8BIT) {
-		free (priv->buf1);
-		free (priv->buf2);
+		visual_mem_free (priv->buf1);
+		visual_mem_free (priv->buf2);
 
-		free (priv->tbuf1);
-		free (priv->tbuf2);
+		visual_mem_free (priv->tbuf1);
+		visual_mem_free (priv->tbuf2);
 	}
 
 	visual_palette_free_colors (&priv->priv1.pal_cur);
@@ -102,7 +102,7 @@ int act_oinksie_cleanup (VisPluginData *plugin)
 	visual_palette_free_colors (&priv->priv2.pal_cur);
 	visual_palette_free_colors (&priv->priv2.pal_old);
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }
@@ -148,28 +148,21 @@ int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, in
 	priv->depth = video->depth;
 	if (priv->depth != VISUAL_VIDEO_DEPTH_8BIT) {
 		if (priv->buf1)
-			free (priv->buf1);
+			visual_mem_free (priv->buf1);
 
 		if (priv->buf2)
-			free (priv->buf2);
+			visual_mem_free (priv->buf2);
 
 		if (priv->tbuf1);
-			free (priv->tbuf1);
+			visual_mem_free (priv->tbuf1);
 
 		if (priv->tbuf2);
-			free (priv->tbuf2);
+			visual_mem_free (priv->tbuf2);
 
-		priv->buf1 = malloc (video->size);
-		memset (priv->buf1, 0, video->size);
-
-		priv->buf2 = malloc (video->size);
-		memset (priv->buf2, 0, video->size);
-
-		priv->tbuf1 = malloc (video->size);
-		memset (priv->tbuf1, 0, video->size);
-		
-		priv->tbuf2 = malloc (video->size);
-		memset (priv->tbuf2, 0, video->size);
+		priv->buf1 = visual_mem_malloc0 (video->size);
+		priv->buf2 = visual_mem_malloc0 (video->size);
+		priv->tbuf1 = visual_mem_malloc0 (video->size);
+		priv->tbuf2 = visual_mem_malloc0 (video->size);
 	}
 
 	return 0;

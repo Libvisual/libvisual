@@ -1,5 +1,11 @@
 2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/*:
+	free -> visual_mem_free and the same for malloc
+	cleanups.
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/madspin/madspin.c (lv_madspin_events):
 	Actually listen to parameter changes.
 

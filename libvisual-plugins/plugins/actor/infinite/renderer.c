@@ -29,7 +29,7 @@ void _inf_init_renderer(InfinitePrivate *priv)
 	_inf_load_effects(priv);
 	_inf_load_random_effect(priv, &priv->current_effect);
 
-	priv->vector_field = (t_interpol*) malloc(allocsize);
+	priv->vector_field = (t_interpol*) visual_mem_malloc0(allocsize);
 	memset (priv->vector_field, 0, allocsize);
 
 	_inf_generate_vector_field(priv, priv->vector_field);
@@ -67,8 +67,8 @@ void _inf_renderer(InfinitePrivate *priv)
 
 void _inf_close_renderer(InfinitePrivate *priv)
 {
-	free(priv->surface1);
-	free(priv->surface2);
-	free(priv->vector_field);
+	visual_mem_free(priv->surface1);
+	visual_mem_free(priv->surface2);
+	visual_mem_free(priv->vector_field);
 }
 

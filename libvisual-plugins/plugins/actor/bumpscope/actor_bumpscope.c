@@ -107,7 +107,7 @@ int act_bumpscope_cleanup (VisPluginData *plugin)
 
 	visual_palette_free_colors (&priv->pal);
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }

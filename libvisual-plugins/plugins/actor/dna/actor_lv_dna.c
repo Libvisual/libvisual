@@ -91,7 +91,7 @@ int lv_dna_cleanup (VisPluginData *plugin)
 {
 	DNAPrivate *priv = plugin->priv;
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }

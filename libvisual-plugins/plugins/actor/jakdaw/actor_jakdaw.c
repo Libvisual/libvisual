@@ -94,7 +94,7 @@ int act_jakdaw_cleanup (VisPluginData *plugin)
 {
 	JakdawPrivate *priv = plugin->priv;
 	
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }

@@ -142,23 +142,23 @@ int act_jess_cleanup (VisPluginData *plugin)
 	}
 
 	if (priv->big_ball != NULL)
-		free (priv->big_ball);
+		visual_mem_free (priv->big_ball);
 
 	for (i = 0; i < BIG_BALL_SIZE; i++)
 	{
 		if (priv->big_ball_scale[i] != NULL)
-			free (priv->big_ball_scale[i]);
+			visual_mem_free (priv->big_ball_scale[i]);
 	}
 
-	free (priv->table1);
-	free (priv->table2);
-	free (priv->table3);
-	free (priv->table4);
-	free (priv->buffer);
+	visual_mem_free (priv->table1);
+	visual_mem_free (priv->table2);
+	visual_mem_free (priv->table3);
+	visual_mem_free (priv->table4);
+	visual_mem_free (priv->buffer);
 
 	visual_palette_free_colors (&priv->jess_pal);
 
-	free (priv);
+	visual_mem_free (priv);
 	
 	return 0;
 }
@@ -209,11 +209,11 @@ int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width, int h
 
 	visual_video_set_dimension (video, width, height);
 	
-	free (priv->table1);
-	free (priv->table2);
-	free (priv->table3);
-	free (priv->table4);
-	free (priv->buffer);
+	visual_mem_free (priv->table1);
+	visual_mem_free (priv->table2);
+	visual_mem_free (priv->table3);
+	visual_mem_free (priv->table4);
+	visual_mem_free (priv->buffer);
 
 	priv->pitch = video->pitch;
 	priv->video = visual_video_depth_value_from_enum (video->depth);
@@ -313,21 +313,15 @@ void jess_init (JessPrivate *priv)
 	priv->conteur.fullscreen = 0;
 	priv->conteur.blur_mode = 1;
 
-	priv->table1 = (uint32_t *) malloc (priv->resx * priv->resy * sizeof (int));
-	priv->table2 = (uint32_t *) malloc (priv->resx * priv->resy * sizeof (int));
-	priv->table3 = (uint32_t *) malloc (priv->resx * priv->resy * sizeof (int));
-	priv->table4 = (uint32_t *) malloc (priv->resx * priv->resy * sizeof (int));
+	priv->table1 = (uint32_t *) visual_mem_malloc0 (priv->resx * priv->resy * sizeof (int));
+	priv->table2 = (uint32_t *) visual_mem_malloc0 (priv->resx * priv->resy * sizeof (int));
+	priv->table3 = (uint32_t *) visual_mem_malloc0 (priv->resx * priv->resy * sizeof (int));
+	priv->table4 = (uint32_t *) visual_mem_malloc0 (priv->resx * priv->resy * sizeof (int));
 
 	if (priv->video == 8)
-	{
-		priv->buffer = (uint8_t *) malloc (priv->resx * priv->resy); 
-		memset (priv->buffer, 0, priv->resx * priv->resy);
-	}
+		priv->buffer = (uint8_t *) visual_mem_malloc0 (priv->resx * priv->resy); 
 	else
-	{
-		priv->buffer = (uint8_t *) malloc (priv->resx * priv->resy * 4);
-		memset (priv->buffer, 0, priv->resx * priv->resy * 4);
-	}
+		priv->buffer = (uint8_t *) visual_mem_malloc0 (priv->resx * priv->resy * 4);
 
 	create_tables(priv);
 }

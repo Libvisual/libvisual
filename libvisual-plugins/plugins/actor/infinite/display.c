@@ -198,8 +198,8 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect,short data[2]
 	const int shift=(current_effect->spectral_shift*priv->plugheight)>>8;
 
 	if (cosw.i != priv->plugwidth || sinw.i != priv->plugwidth) {
-		free(cosw.f);
-		free(sinw.f);
+		visual_mem_free(cosw.f);
+		visual_mem_free(sinw.f);
 		sinw.f = cosw.f = NULL;
 		sinw.i = cosw.i = 0;
 	}
@@ -207,7 +207,7 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect,short data[2]
 	if (cosw.i == 0 || cosw.f == NULL) {
 	 	float halfPI  = (float)PI/2;
 		cosw.i = priv->plugwidth;
-		cosw.f = malloc(sizeof(float)*priv->plugwidth);
+		cosw.f = visual_mem_malloc0(sizeof(float)*priv->plugwidth);
 		for (i=0; i<priv->plugwidth;i+=step) 
 			cosw.f[i] = cos((float)i/priv->plugwidth*PI+halfPI);
 	}
@@ -215,7 +215,7 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect,short data[2]
 	if (sinw.i == 0 || sinw.f == NULL) {
 	 	float halfPI = (float)PI/2;
 		sinw.i = priv->plugwidth;
-		sinw.f = malloc(sizeof(float)*priv->plugwidth);
+		sinw.f = visual_mem_malloc0(sizeof(float)*priv->plugwidth);
 		for (i=0; i<priv->plugwidth;i+=step) 
 			sinw.f[i] = sin((float)i/priv->plugwidth*PI+halfPI);
 	}
@@ -326,10 +326,7 @@ void _inf_init_display(InfinitePrivate *priv)
 	 * am to lazy to debug */
 	allocsize = (priv->plugwidth * priv->plugheight) + (priv->plugwidth * 2);
 
-	priv->surface1 = (uint8_t *) malloc(allocsize);
-	priv->surface2 = (uint8_t *) malloc(allocsize);
-
-	memset(priv->surface1, 0, allocsize);
-	memset(priv->surface1, 0, allocsize);
+	priv->surface1 = (uint8_t *) visual_mem_malloc0(allocsize);
+	priv->surface2 = (uint8_t *) visual_mem_malloc0(allocsize);
 }
 

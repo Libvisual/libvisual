@@ -146,7 +146,7 @@ int lv_madspin_cleanup (VisPluginData *plugin)
 		glDeleteTextures (2, priv->texture);
 	}
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }

@@ -74,7 +74,7 @@ int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 {
 	TentaclePrivate *priv = plugin->priv;
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }
