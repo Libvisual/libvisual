@@ -1,0 +1,13 @@
+name="6 Feet Under",
+// 6 Ft. Under  by Demonseed
+// Waves fall away then stall in the center
+
+Aspc=1,
+
+A0="1/.7",
+
+
+srcX=" tan( .7 * x ) * A0",
+srcY=" tan( .7 * y ) * A0",
+
+Vers=100

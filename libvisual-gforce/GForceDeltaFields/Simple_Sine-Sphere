@@ -1,0 +1,10 @@
+name="Simple Sine-Sphere",
+
+
+Aspc=0,
+
+
+srcR="r + .02 * sin(  6.2831853 * r )",
+srcT="theta + .015",
+
+Vers=100

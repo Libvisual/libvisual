@@ -1,0 +1,15 @@
+name="Twister",
+// "Twister" by Kasuha
+
+
+A0="rnd(.4)-.2",
+A1="rnd(3)+3",
+
+Aspc=1,
+
+srcR="r/(1+( r*r - 1 )/( rnd(300)+5 ) ) + rnd(.025)",
+srcT="theta+a0*(2/(a1*r+1)-.5)",
+
+
+Vers=100
+

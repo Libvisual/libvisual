@@ -1,0 +1,11 @@
+name="Tripping Hard",
+//Tripping Hard
+//made by Justin Swidler
+// http://homepage.mac.com/whitecap for more configs. 
+
+Aspc=1,
+
+srcR="r * .66",
+srcT="theta - .201",
+
+Vers=100

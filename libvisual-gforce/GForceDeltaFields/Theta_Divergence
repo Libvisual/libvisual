@@ -1,0 +1,15 @@
+name="Theta Divergence",
+
+
+A0="2 + rnd( 16 )",
+A1=".01 + rnd( .03 )",
+A2=".002 + rnd( .006 )",
+
+
+Aspc=1,
+
+
+srcR="pos( r - a2 )",
+srcT="theta + a1 * sin( a0 * r )",
+
+Vers=100

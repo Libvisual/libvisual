@@ -1,0 +1,15 @@
+name="HS101 Mess",
+/*
+ MESS 
+	created by Gwyn Perry
+	ANIMATION STUDENT AT UWCN
+	HEADSPIN101@YAHOO.CO.UK
+*/
+	
+Aspc=0,
+
+srcX=".997 * x - .005 + rnd( .01 )",
+srcY="1.0025 * y - .005 + rnd( .01 )",
+
+
+Vers=100

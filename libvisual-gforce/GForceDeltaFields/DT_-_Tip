@@ -1,0 +1,15 @@
+name="DT - Tip",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+   //A0=X-out, A1=X-out(y), A2=Y-out, A3=Y-out(y)
+ A0="1-rnd(0.2)",
+ A1="rnd(0.3)",
+ A2="1-rnd(0.2)",
+ A3="rnd(0.3)",
+ 
+ srcX="x*(A0+y*A1)",
+ srcY="y*(A2+y*A3)",
+ 
+ Vers=100
+ 

@@ -1,0 +1,22 @@
+name="Psychosis - Relapse",
+// Psychosis - Relapse by Demonseed
+// Based on:
+// Swirl Your Mind
+
+Aspc=1,
+
+
+
+A0=".5", //rnd(.2)",	// Random swirl x pos
+A1=".5",   //rnd(.4)",  	// Random swirl y pos
+A2="(-1)*.5",   //rnd(.6)",
+A3="(-1)*.5", //rnd(.8)",
+
+
+D0=".021* ( ( sqrt( sqr( y - a1 ) + sqr( x - a0 ) ) +.17 ) ^ a2 )",
+
+
+srcR="r     - ( y - a1 ) * x*d0 - ( y - a3 ) * y*d0",
+srcT="theta + ( x - a0 ) * x*d0 + ( x - a2 ) * y*d0",
+
+Vers=100

@@ -1,0 +1,15 @@
+name="Flee",
+// Created by Thomas Geier
+//ziggystar@gmx.de
+//Flee
+
+
+Aspc=1,
+
+A0="rnd(0.02) + .001",	//Speed
+A1="2 * A0",
+
+srcX="seed(y) * 0 + rnd( A1 ) + x - A0",
+srcY="y",
+
+Vers=100

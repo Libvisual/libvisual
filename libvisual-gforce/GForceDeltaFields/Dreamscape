@@ -1,0 +1,15 @@
+name="Dreamscape",
+// Dreamscape by Demonseed
+// Based on Sunburst - Many
+// Welcome to My World... a world of Magic, of Mystery........Of Dreams
+
+
+Aspc=0,
+
+A0="trnc( 10 + rnd( 35 ) ) * PI",
+A1=".5 * .06",
+
+srcR="( ( 1 + sin( a0 * theta ) ) * A1 + .95 ) * r",
+srcT="theta - .0095 ",
+
+Vers=100

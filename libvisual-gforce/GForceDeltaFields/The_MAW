@@ -1,0 +1,17 @@
+name="The MAW",
+/*                                                     */
+/* The MAW   v1.0                                      */
+/*  BlackHole express                                  */
+/*                                                     */
+/* By Steve Steve Wheeler                              */
+/*  E-mail: stevewheeler@mac.com                       */
+
+
+Aspc= 1,
+
+
+srcR="  r  + 0.0119 ",
+srcT=" theta - ( .055 * ( r - .324 ) ) * ( r + 0.279 ) ",
+
+
+Vers=100

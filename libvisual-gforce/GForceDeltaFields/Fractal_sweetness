@@ -1,0 +1,14 @@
+name="Fractal sweetness",
+
+// Created by Caleb Mulford
+// Original code and inspiration by Brad Anderson (javalizard@mac.com) for G-Force
+// e-mail: cyno@netcom.com
+
+
+
+Aspc=1,
+
+srcX="tan(x+y)",
+srcY="sin(y-x)",
+
+Vers=100

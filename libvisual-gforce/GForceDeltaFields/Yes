@@ -1,0 +1,12 @@
+name="Yes",
+// Created by Thomas Geier
+//ziggystar@gmx.de
+//Yes
+
+Aspc=1,
+
+
+srcR="r+0.02*x",
+srcT="theta",
+
+Vers=100

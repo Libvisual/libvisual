@@ -1,0 +1,14 @@
+name="DT - Boxes",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ Aspc=1,
+ 
+  //A0=number, A1=power
+ A0="8+rnd(10)",
+ A1="0.01+rnd(0.05)",
+ 
+ srcX="x*(0.995-A1+A1*sin(x*A0))",
+ srcY="y*(0.995-A1+A1*sin(y*A0))",
+ 
+ Vers=100
+ 

@@ -1,0 +1,11 @@
+name="DT - Chaos",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+ A0="1+rnd(10)",
+ 
+ srcX="x*(0.995-0.06*trwv(y*A0))+0.01*sin(13*y)",
+ srcY="y*(0.995-0.06*trwv(x*A0))+0.01",
+ 
+ Vers=100
+ 

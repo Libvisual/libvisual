@@ -1,0 +1,9 @@
+name="TimeWarp",
+// Created by Justin and Jesse Swidler
+
+Aspc=1,
+
+srcR="r ",
+srcT="theta + .08",  //pump up the speed.
+
+Vers=100

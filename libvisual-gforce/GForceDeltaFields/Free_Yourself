@@ -1,0 +1,27 @@
+name="Free Yourself",
+/*  How often I rebel against the One who shows me love that I do not deserve.  He's always there; I just fail to seek Him.
+
+In his novel Mere_Christianity, C.S. Lewis writes:
+   "A man who was merely a man and said the sort of things Jesus said would not be a great moral teacher. He would either be a lunatic - on the level with a man who says he is a poached egg - or he would be the devil of hell. You must take your choice. Either this was, and is, the Son of God, or else a madman or something worse. You can shut Him up for a fool or you can fall at His feet and call Him Lord and God. But let us not come with any patronizing nonsense about His being a great human teacher. He has not left that open to us."
+
+   Indeed.  You're not doing yourself any favors if you to leave these questions unresolved for yourself by keeping your mind always busy with other things.  Think, ponder, make a decision and commit to stand by it.  I offer that one of the choices will take you far while the other will lead you back to where you began.
+
+   There's many good sites, but http://www.ccci.org/whoisjesus/interactive-journey/ is a good site that can introduce you to what being a Christian is really all about.  
+
+Andy
+
+*/
+
+
+Aspc=1,
+
+// There's a 1 in 20 chance a0 will evaluate to be .015, otherwise, it's 0
+A0=".015 * ( 1 - clip( flor( rnd( 20 ) ) ) )",
+
+D0="clip( sqwv(x * 10) * sqwv(y * 1.5) + sqwv(x * 2) * sqwv(( y - .25 ) * 10) ) * a0 + .985",
+
+
+srcX="x * d0",
+srcY="y * d0",
+
+Vers=100
