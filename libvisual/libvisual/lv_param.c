@@ -7,6 +7,7 @@
 #include "lv_param.h"
 
 static void param_list_destroy (void *data);
+static int get_next_pcall_id (VisList *callbacks);
 
 static void param_list_destroy (void *data)
 {
@@ -19,6 +20,38 @@ static void param_list_destroy (void *data)
 
 	visual_param_entry_free (param);
 }
+
+static int get_next_pcall_id (VisList *callbacks)
+{
+	VisListEntry *le = NULL;
+	VisParamEntryCallback *pcall;
+	int found = FALSE;
+	int i;
+
+	/* Walk through all possible ids */
+	for (i = 0; i < VISUAL_PARAM_CALLBACK_ID_MAX; i++) {
+
+		found = FALSE;
+		/* Check all the callbacks if the id is used */
+		while ((pcall = visual_list_next (callbacks, &le)) != NULL) {
+		
+			/* Found the ID, break and get ready for the next iterate */
+			if (pcall->id == i) {
+				found = TRUE;
+
+				break;
+			}
+		}
+
+		/* The id has NOT been found, thus is an original, and we return this as the next id */
+		if (found == FALSE)
+			return i;
+	}
+
+	/* This is virtually impossible, or something very wrong is going ok, but no id seems to be left */
+	return -1;
+}
+
 
 /**
  * @defgroup VisParam VisParam
@@ -242,45 +275,51 @@ int visual_param_entry_free (VisParamEntry *param)
  * @param callback The notification callback, which is called on changes in the VisParamEntry.
  * @param priv A private that can be used in the callback function.
  *
- * return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL or -VISUAL_ERROR_PARAM_CALLBACK_NULL on failure.
+ * return callback id in the form of a positive value on succes,
+ * 	-VISUAL_ERROR_PARAM_NULL, -VISUAL_ERROR_PARAM_CALLBACK_NULL or
+ * 	-VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY on failure.
  */
 int visual_param_entry_add_callback (VisParamEntry *param, param_changed_callback_func_t callback, void *priv)
 {
 	VisParamEntryCallback *pcall;
+	int id;
 
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 	visual_log_return_val_if_fail (callback != NULL, -VISUAL_ERROR_PARAM_CALLBACK_NULL);
 
+	id = get_next_pcall_id (&param->callbacks);
+
+	visual_log_return_val_if_fail (id >= 0, -VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY);
+
 	pcall = visual_mem_new0 (VisParamEntryCallback, 1);
 
+	pcall->id = id;
 	pcall->callback = callback;
 	pcall->priv = priv;
-
-	visual_list_add (&param->callbacks, pcall);
 	
-	return VISUAL_OK;
+	visual_list_add (&param->callbacks, pcall);
+
+	return id;
 }
 
 /**
  * Removes a change notification callback from the list of callbacks.
  *
  * @param param Pointer to the VisParamEntry from which a change notification callback is removed.
- * @param callback The callback that needs to be removed from the list of callbacks that are called
- * 	on param change.
+ * @param id The callback ID that was given by the visual_param_entry_add_callback method.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL or -VISUAL_ERROR_PARAM_CALLBACK_NULL on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_remove_callback (VisParamEntry *param, param_changed_callback_func_t callback)
+int visual_param_entry_remove_callback (VisParamEntry *param, int id)
 {
 	VisListEntry *le = NULL;
 	VisParamEntryCallback *pcall;
 
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-	visual_log_return_val_if_fail (callback != NULL, -VISUAL_ERROR_PARAM_CALLBACK_NULL);
 
 	while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL) {
 		
-		if (callback == pcall->callback) {
+		if (id == pcall->id) {
 			visual_list_delete (&param->callbacks, &le);
 
 			visual_mem_free (pcall);

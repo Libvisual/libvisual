@@ -17,6 +17,8 @@ extern "C" {
 #define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ NULL, name, VISUAL_PARAM_TYPE_COLOR, NULL, {0, 0, 0}, {r, g, b, 0}}
 #define VISUAL_PARAM_LIST_END				{ NULL, NULL, VISUAL_PARAM_TYPE_END }
 
+#define VISUAL_PARAM_CALLBACK_ID_MAX	2147483647
+
 /**
  * Different types of parameters that can be used.
  */
@@ -60,6 +62,7 @@ struct _VisParamContainer {
  * A parameter callback entry, used for change notification callbacks.
  */
 struct _VisParamEntryCallback {
+	int				 id;
 	param_changed_callback_func_t	 callback;
 	void				*priv;
 };
@@ -101,7 +104,7 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
 VisParamEntry *visual_param_entry_new (char *name);
 int visual_param_entry_free (VisParamEntry *param);
 int visual_param_entry_add_callback (VisParamEntry *param, param_changed_callback_func_t callback, void *priv);
-int visual_param_entry_remove_callback (VisParamEntry *param, param_changed_callback_func_t callback);
+int visual_param_entry_remove_callback (VisParamEntry *param, int id);
 int visual_param_entry_notify_callbacks (VisParamEntry *param);
 int visual_param_entry_is (VisParamEntry *param, const char *name);
 int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2);
