@@ -1,2 +1,8 @@
-Check ChangeLog.
+NEWS - list of user-visible changes between releases
+of Libvisual plugins.
+
+New in 0.1.5: 2004-06-27:
+* Removed the videotest plugin, it was used for early debugging.
+* Esound dependency lowered from 0.2.29 to 0.2.28.
+* Major cleanups and a new build tree.
 

@@ -1,3 +1,7 @@
+2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* NEWS: Updated.
+
 2004-06-26  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* plugins/actor/*/*.c: cleanup to avoid warnings.
