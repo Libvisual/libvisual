@@ -1,3 +1,8 @@
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lvdisplay/lv_display.c: Use visual_object_unref to destroy
+	VisVideo!
+
 2004-11-25  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* drivers/glx/glx.c drivers/glx/glx_new.c: VisObject support.

@@ -120,10 +120,7 @@ int lvdisplay_driver_dtor(VisObject *drv_obj)
 	if (drv->params)
 		visual_mem_free(drv->params);
 
-	if (visual_video_have_allocated_buffer(drv->video))
-		visual_video_free_with_buffer(drv->video);
-	else
-		visual_video_free(drv->video);
+	visual_object_unref (VISUAL_OBJECT (drv->video));
 
 	drv->beplug = NULL;
 	drv->feplug = NULL;
