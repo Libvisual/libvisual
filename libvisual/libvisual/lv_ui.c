@@ -285,21 +285,21 @@ int visual_ui_mutator_set_step (VisUIMutator *mutator, double step)
 	return 0;
 }
 
-VisUIWidget *visual_ui_text_new ()
+VisUIWidget *visual_ui_entry_new ()
 {
-	VisUIText *text;
+	VisUIEntry *entry;
 
-	text = visual_mem_new0 (VisUIText, 1);
-	VISUAL_UI_WIDGET (text)->type = VISUAL_WIDGET_TYPE_TEXT;
+	entry = visual_mem_new0 (VisUIEntry, 1);
+	VISUAL_UI_WIDGET (entry)->type = VISUAL_WIDGET_TYPE_ENTRY;
 
-	return VISUAL_UI_WIDGET (text);
+	return VISUAL_UI_WIDGET (entry);
 }
 
-int visual_ui_text_set_length (VisUIText *text, int length)
+int visual_ui_entry_set_length (VisUIEntry *entry, int length)
 {
-	visual_log_return_val_if_fail (text != NULL, -1);
+	visual_log_return_val_if_fail (entry != NULL, -1);
 
-	text->length = length;
+	entry->length = length;
 
 	return 0;
 }

@@ -20,7 +20,7 @@ extern "C" {
 #define VISUAL_UI_LABEL(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_LABEL, VisUILabel))
 #define VISUAL_UI_IMAGE(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_IMAGE, VisUIImage))
 #define VISUAL_UI_MUTATOR(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_MUTATOR, VisUIMutator))
-#define VISUAL_UI_TEXT(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_TEXT, VisUIText))
+#define VISUAL_UI_ENTRY(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_ENTRY, VisUIEntry))
 #define VISUAL_UI_SLIDER(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_SLIDER, VisUISlider))
 #define VISUAL_UI_NUMERIC(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_NUMERIC, VisUINumeric))
 #define VISUAL_UI_COLOR(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_COLOR, VisUIColor))
@@ -41,7 +41,7 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_LABEL,
 	VISUAL_WIDGET_TYPE_IMAGE,
 	VISUAL_WIDGET_TYPE_MUTATOR,
-	VISUAL_WIDGET_TYPE_TEXT,
+	VISUAL_WIDGET_TYPE_ENTRY,
 	VISUAL_WIDGET_TYPE_SLIDER,
 	VISUAL_WIDGET_TYPE_NUMERIC,
 	VISUAL_WIDGET_TYPE_COLOR,
@@ -71,7 +71,7 @@ typedef struct _VisUIFrame VisUIFrame;
 typedef struct _VisUILabel VisUILabel;
 typedef struct _VisUIImage VisUIImage;
 typedef struct _VisUIMutator VisUIMutator;
-typedef struct _VisUIText VisUIText;
+typedef struct _VisUIEntry VisUIEntry;
 typedef struct _VisUISlider VisUISlider;
 typedef struct _VisUINumeric VisUINumeric;
 typedef struct _VisUIColor VisUIColor;
@@ -138,7 +138,7 @@ struct _VisUIMutator {
 	double			 step;
 };
 
-struct _VisUIText {
+struct _VisUIEntry {
 	VisUIMutator		 mutator;
 
 	int			 length;
@@ -226,8 +226,8 @@ int visual_ui_mutator_set_max (VisUIMutator *mutator, double max);
 int visual_ui_mutator_set_min (VisUIMutator *mutator, double min);
 int visual_ui_mutator_set_step (VisUIMutator *mutator, double step);
 
-VisUIWidget *visual_ui_text_new (void);
-int visual_ui_text_set_length (VisUIText *text, int length);
+VisUIWidget *visual_ui_entry_new (void);
+int visual_ui_entry_set_length (VisUIEntry *entry, int length);
 
 VisUIWidget *visual_ui_slider_new (void);
 
