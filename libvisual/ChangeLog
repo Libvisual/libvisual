@@ -1,5 +1,9 @@
 2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_time.c: Small string change.
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_time.c: We need to use the win32 specific gettimeofday
 	under windows.
 

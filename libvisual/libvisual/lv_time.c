@@ -166,7 +166,7 @@ int visual_time_usleep (unsigned long microseconds)
 #elif HAVE_USLEEP
 	return usleep (microseconds);
 #else
-#warning visual_time_usleep() will does not work!
+#warning visual_time_usleep() will not work!
 	return -VISUAL_ERROR_TIME_NO_USLEEP;
 #endif
 	return VISUAL_OK;
