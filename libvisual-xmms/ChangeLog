@@ -4,6 +4,8 @@
 	- lv_xmms_render_pcm() now uses a fast memcpy() instead
 	of a for loop.
 	- added fullscreen support.
+	- added option to limit the frame rate, configurable 
+	through config file.
 
 2004-06-23  Duilio Protti  <dprotti@users.sourceforge.net>
 

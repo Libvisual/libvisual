@@ -25,5 +25,7 @@ Plugin:
 	add a configure dialog that let configure every available plugin (we need
 	support on Libvisual Library to do this reusable).
 
-	give a way to limit the FPS (Libvisual would admit this probably).
-	
+	let the user choose the color depth.
+
+	add a configure dialog with color depth and maximum FPS options.
+

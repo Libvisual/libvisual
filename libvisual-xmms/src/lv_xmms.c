@@ -17,40 +17,44 @@
 #include <lv_xmms.h>
 
 /* SDL variables */
-SDL_Surface *screen = NULL;
-SDL_Color sdlpal[256];
-SDL_Thread *render_thread;
-SDL_mutex *pcm_mutex;
+static SDL_Surface *screen = NULL;
+static SDL_Color sdlpal[256];
+static SDL_Thread *render_thread;
+static SDL_mutex *pcm_mutex;
 
 /* Libvisual and visualisation variables */
-VisVideo *video;
-VisPalette *pal;
+static VisVideo *video;
+static VisPalette *pal;
 
-char *cur_lv_plugin = NULL;
+static char *cur_lv_plugin = NULL;
 
-VisBin *bin = NULL;
+static VisBin *bin = NULL;
 
-VisSongInfo *songinfo;
+static VisSongInfo *songinfo;
 
-int lv_width = 320;
-int lv_height = 200;
+static int lv_width = 320;
+static int lv_height = 200;
 
-int gl_plug = 0;
-int depth;
+/* Maximum frames per second */
+static int lv_fps = 40;
 
-int plug_index = 0;
+static int gl_plug = 0;
+static int depth;
 
-short xmmspcm[2][512];
+static short xmmspcm[2][512];
 
 /* Thread state variables */
-int visual_running = 0;
-int visual_stopped = 1;
+static int visual_running = 0;
+static int visual_stopped = 1;
 
 /* About gui variables */
-GtkWidget *about_window = NULL;
+static GtkWidget *about_window = NULL;
 
 /* Say if we are on fullscreen mode or not */
 static gboolean fullscreen;
+
+static int lv_xmms_prefs_load (void);
+static int lv_xmms_prefs_save (void);
 
 static void lv_xmms_init (void);
 static void lv_xmms_cleanup (void);
@@ -110,29 +114,27 @@ static char *lv_xmms_get_songname ()
 
 static int lv_xmms_prefs_load ()
 {
-	char *name;
 	char *vstr;
 	ConfigFile *f;
 	
-	name = g_strdup_printf ("%s%s", g_get_home_dir (), "/.xmms/config");
-	if ((f = xmms_cfg_open_file (name)) == NULL)
+	if ((f = xmms_cfg_open_default_file ()) == NULL)
 		return -1;
 
 	if (xmms_cfg_read_string (f, "libvisual_xmms", "version", &vstr)) {
 		if (strcmp (vstr, VERSION) != 0) {
-			xmms_cfg_free (f);
-
-			return -1;
-		}
+                        /*
+                         * Update to new version
+                         */
+                        lv_xmms_prefs_save ();
+                }
 	}
 
 	xmms_cfg_read_string (f, "libvisual_xmms", "last_plugin", &cur_lv_plugin);
 	xmms_cfg_read_int (f, "libvisual_xmms", "width", &lv_width);
 	xmms_cfg_read_int (f, "libvisual_xmms", "height", &lv_height);
+	xmms_cfg_read_int (f, "libvisual_xmms", "fps", &lv_fps);
 	
 	xmms_cfg_free (f);
-
-	g_free (name);
 
 	return 0;
 }
@@ -148,6 +150,7 @@ static int lv_xmms_prefs_save ()
 	xmms_cfg_write_string (f, "libvisual_xmms", "last_plugin", cur_lv_plugin);
 	xmms_cfg_write_int (f, "libvisual_xmms", "width", lv_width);
 	xmms_cfg_write_int (f, "libvisual_xmms", "height", lv_height);
+	xmms_cfg_write_int (f, "libvisual_xmms", "fps", lv_fps);
 
 	xmms_cfg_write_default_file (f);
 	xmms_cfg_free (f);
@@ -155,20 +158,29 @@ static int lv_xmms_prefs_save ()
 
 static void lv_xmms_init ()
 {
-        /*char *argv[1];*/
+        char **argv;
         int argc;
+        int ret;
 
-	sdl_init ();
+	ret = sdl_init ();
+        if (ret < 0)
+                return;
         
         fullscreen = FALSE;
 
 	pcm_mutex = SDL_CreateMutex ();
 
-        /*argv[0] = g_strdup ("LibVisual XMMS Plugin");
-        g_message ("******** %s *********\n", argv[0]);
+        argv = g_malloc (sizeof(char*));
+        argv[0] = g_strdup ("LibVisual XMMS Plugin");
         argc = 1;
-	visual_init (&argc, &argv);*/
-	visual_init (NULL, NULL);
+	visual_init (&argc, &argv);
+        /*
+         * If I do this, I loss the pointer to the string.
+         * But the string cannot be freed with the current
+         * LibVisual library implementation, because is not
+         * copied away. 
+         *
+         g_free (argv);*/
 
 	lv_xmms_prefs_load ();
 	if (cur_lv_plugin == NULL)
@@ -177,7 +189,9 @@ static void lv_xmms_init ()
 	if (visual_actor_valid_by_name (cur_lv_plugin) != TRUE)
 		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
  
-	visual_initialize (lv_width, lv_height);
+	ret = visual_initialize (lv_width, lv_height);
+        if (ret < 0)
+                visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin's visual stuff");
 
 	visual_log (VISUAL_LOG_DEBUG, "calling SDL_CreateThread()");
 	render_thread = SDL_CreateThread ((void *) visual_render, NULL);
@@ -310,32 +324,31 @@ static int sdl_init ()
 	gchar *error_msg;
 	
 	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
-		error_msg = g_strdup_printf ("%s: could not initialize SDL: %s",
-						PACKAGE_NAME, SDL_GetError());
+		error_msg = g_strdup_printf ("Could not initialize SDL: %s",
+                                             SDL_GetError());
 		visual_log (VISUAL_LOG_CRITICAL, error_msg);
 		g_free (error_msg);
 		return -1;
 	}
-	atexit (SDL_Quit);
 
 	return 0;
 }
 
 static int sdl_quit ()
 {
-	visual_log (VISUAL_LOG_DEBUG, "calling SDL_FreeSurface()");
+	visual_log (VISUAL_LOG_DEBUG, "Calling SDL_FreeSurface()");
 	if (screen != NULL)
 		SDL_FreeSurface (screen);
 
 	screen = NULL;
 
+	visual_log (VISUAL_LOG_DEBUG, "sdl_quit: calling SDL_Quit()");
 	/*
 	 * FIXME this doesn't work!
 	 */
-	visual_log (VISUAL_LOG_DEBUG, "sdl_quit: calling SDL_Quit()");
 	SDL_Quit ();
 	
-	visual_log (VISUAL_LOG_DEBUG, "leaving...");
+	visual_log (VISUAL_LOG_DEBUG, "Leaving...");
 	return 0;
 }
 
@@ -365,17 +378,21 @@ static int sdl_create (int width, int height)
 {
 	const SDL_VideoInfo *videoinfo;
 	int videoflags;
+        gchar *msg;
 
 	if (screen != NULL)
 		SDL_FreeSurface (screen);
 
-	printf ("OI OI SDL_CREATE video->bpp %d\n", video->bpp);
-	printf ("GL PLUG at create :%d\n", gl_plug);
+	msg = g_strdup_printf ("SDL_CREATE video->bpp %d\n", video->bpp);
+        visual_log (VISUAL_LOG_DEBUG, msg);
+        g_free (msg);
+        visual_log (VISUAL_LOG_DEBUG, gl_plug ? "GL PLUG at create: 1\n" : "GL PLUG at create: 0\n");
+
 	if (gl_plug == 1) {
 		videoinfo = SDL_GetVideoInfo ();
 
 		if (videoinfo == 0) {
-			visual_log (VISUAL_LOG_CRITICAL, "could not get video info");
+			visual_log (VISUAL_LOG_CRITICAL, "Could not get video info");
 			return -1;
 		}
 
@@ -396,9 +413,14 @@ static int sdl_create (int width, int height)
 		screen = SDL_SetVideoMode (width, height, video->bpp * 8, SDL_RESIZABLE);
 
 	visual_video_set_buffer (video, screen->pixels);
-	printf ("Pointer to the pixels: %p\n", screen->pixels);
+	msg = g_strdup_printf ("Pointer to the pixels: %p\n", screen->pixels);
+        visual_log (VISUAL_LOG_DEBUG, msg);
+        g_free (msg);
+
 	visual_video_set_pitch (video, screen->pitch);
-	printf ("*********** **************** pitch: %d\n", video->pitch);
+	msg = g_strdup_printf ("********* ********** pitch: %d\n", video->pitch);
+        visual_log (VISUAL_LOG_DEBUG, msg);
+        g_free (msg);
 
 	return 0;
 }
@@ -548,18 +570,34 @@ static int visual_resize (int width, int height)
 static int visual_initialize (int width, int height)
 {
 	VisInput *input;
+        int ret;
 
 	bin = visual_bin_new ();
 	visual_bin_set_supported_depth (bin, VISUAL_VIDEO_DEPTH_ALL);
 //	visual_bin_set_preferred_depth (bin, VISUAL_BIN_DEPTH_LOWEST);
 
+        /*
+         * This should be configurable.
+         */
 	depth = VISUAL_VIDEO_DEPTH_32BIT;
 
 	video = visual_video_new ();
-	visual_video_set_depth (video, depth);
+        if (video == NULL) {
+                visual_log (VISUAL_LOG_ERROR, "Cannot create a video surface");
+                return -1;
+        }
+	ret = visual_video_set_depth (video, depth);
+        if (ret < 0) {
+                visual_log (VISUAL_LOG_ERROR, "Cannot set video depth");
+                return -1;
+        }
 	visual_video_set_dimension (video, width, height);
 
-	visual_bin_set_video (bin, video);
+        ret = visual_bin_set_video (bin, video);
+	if (ret < 0) {
+                visual_log (VISUAL_LOG_ERROR, "Cannot set video");
+                return -1;
+        }
 	visual_bin_connect_by_names (bin, cur_lv_plugin, NULL);
 
 	if (visual_bin_get_depth (bin) == VISUAL_VIDEO_DEPTH_GL) {
@@ -568,14 +606,22 @@ static int visual_initialize (int width, int height)
 	} else
 		gl_plug = 0;
 
-	printf ("GL PLUG: %d\n", gl_plug);
-	sdl_create (width, height);
+	visual_log (VISUAL_LOG_DEBUG, gl_plug ? "GL PLUG: 1\n" : "GL PLUG: 0\n");
+	ret = sdl_create (width, height);
+	if (ret < 0) {
+                visual_log (VISUAL_LOG_ERROR, "Cannot initialize SDL");
+                return -1;
+        }
 	
 	/* Called so the flag is set to FALSE, seen we create the initial environment here */
 	visual_bin_depth_changed (bin);
 	
 	input = visual_bin_get_input (bin);
-	visual_input_set_callback (input, visual_upload_callback, NULL);
+	ret = visual_input_set_callback (input, visual_upload_callback, NULL);
+	if (ret < 0) {
+                visual_log (VISUAL_LOG_ERROR, "Cannot set input plugin callback");
+                return -1;
+        }        
 	
 	visual_bin_switch_set_style (bin, VISUAL_SWITCH_STYLE_MORPH);
 	visual_bin_switch_set_automatic (bin, TRUE);
@@ -589,10 +635,13 @@ static int visual_initialize (int width, int height)
 
 static void *visual_render ()
 {
-        SDL_VideoInfo video_info;
 	visual_running = 1;
 	visual_stopped = 0;
-	
+        long render_time, now;
+        long frame_length;
+        long idle_time;
+      
+        frame_length = (1.0 / lv_fps) * 1000;
 	while (visual_running == 1) {
 		/* Update songinfo */
 		songinfo = visual_actor_get_songinfo (visual_bin_get_actor (bin));
@@ -624,6 +673,7 @@ static void *visual_render ()
 					SDL_UnlockSurface (screen);
 			}
 
+                        render_time = SDL_GetTicks ();
 			if (gl_plug == 1) {
 				visual_bin_run (bin);
 
@@ -643,6 +693,9 @@ static void *visual_render ()
 
 				sdl_draw (screen);
 			}
+                        now = SDL_GetTicks ();
+                        if ((idle_time = (now - render_time)) < frame_length)
+                                usleep (idle_time*900);
 		}
 		sdl_event_handle ();
                 if (fullscreen && !(screen->flags & SDL_FULLSCREEN))
