@@ -1,3 +1,9 @@
+#ifdef HAVE_CONFIG_H 
+#	include <config.h> 
+#endif 
+
+#ifdef HAVE_XF86VMODE
+
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -7,13 +13,8 @@
 #include <X11/X.h>
 #include <X11/Xutil.h>
 
-#define HAVE_XF86VMODE 1
+#include <X11/extensions/xf86vmode.h>
 
-#ifdef HAVE_XF86VMODE
-#	include <X11/extensions/xf86vmode.h>
-#else
-#	error
-#endif
 
 #include "lvdisplay/lv_display.h"
 
@@ -373,7 +374,6 @@ int init_x(privdata *priv)
 		return 1;
 	}
 
-#ifdef HAVE_XF86VMODE
 	if (XQueryExtension(XDPY, "XFree86-VidModeExtension",
 			&dummy1, &dummy2, &dummy3) &&
 		XF86VidModeQueryExtension(XDPY, &dummy1, &dummy2) &&
@@ -385,7 +385,6 @@ int init_x(privdata *priv)
 		XDPY = None;
 		return 2;
 	}
-#endif
 
 	screen = DefaultScreen (XDPY);
 
@@ -654,3 +653,5 @@ int fullscreen_stop(privdata *priv)
 
 	return 0;
 }
+
+#endif /* HAVE_XF86VMODE */

@@ -119,6 +119,38 @@ AC_SUBST(LIBVISUAL_PLUGINS_BASE_DIR)
 
 # Checks for header files.
 AC_PATH_X
+LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
+CPPFLAGS="$CPPFLAGS -I$x_includes"
+
+AC_CHECK_HEADERS([\
+    X11/keysym.h	\
+    X11/X.h	\
+    X11/Xlib.h	\
+    X11/Xutil.h], ,[
+        AC_MSG_ERROR([*** some X11 headers are not found - please check X11 installation ***])
+])
+
+
+AC_CHECK_HEADERS([\
+	GL/gl.h \
+	GL/glx.h], ,[
+        AC_MSG_ERROR([*** GL or GLX header not found - please install GL first ***])
+])
+
+XF86VM_LIB=
+AC_CHECK_HEADERS([\
+    X11/extensions/xf86vmode.h], [
+	AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], [
+	    AC_DEFINE(HAVE_XF86VMODE, [], [XF86VidMode is available])
+	    XF86VM_LIB=-lXxf86vm
+	    xf86vm=yes
+	], [xf86vm=no]) ], [],
+	[[#include <X11/Xlib.h>
+	]])
+
+AC_SUBST(XF86VM_LIB)
+AM_CONDITIONAL(HAVE_XF86VMODE,  test x$xf86vm = xyes)
+
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])

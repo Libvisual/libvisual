@@ -10,5 +10,5 @@ AM_CFLAGS = @LIBVISUAL_CFLAGS@
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
 testactor_la_LDFLAGS = -module -avoid-version -lGLU
-testactorl_la_SOURCES = testactor.c
+testactor_la_SOURCES = testactor.c
 

@@ -1,7 +1,8 @@
 ## Process this file with automake to generate a Makefile.in
 libdir=@LIBVISUAL_PLUGINS_BASE_DIR@/display
 
-lib_LTLIBRARIES = null.la
+lib_LTLIBRARIES = 
+EXTRA_LTLIBRARIES = null.la
 
 LIBS = -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 

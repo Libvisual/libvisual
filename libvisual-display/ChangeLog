@@ -8,6 +8,8 @@
 	* lvdisplay/lv_display.c lvdisplay/lv_display.h: minor updates
 	* example/plugins/*: added. there will be an actor plugin that
 	requires lvdisplay. some day...
+	* drivers/x11/x11_fullscreen.c configure.ac */Makefile.am :
+	build fixes.
 
 2004-12-28  Dennis Smit  <ds@nerds-incorporated.org>
 
