@@ -12,7 +12,10 @@ INCLUDES = -I$(top_srcdir)/unix/Headers\
 	-I$(top_srcdir)/unix/libxpce
 
 DATADIR = $(datadir)/libvisual/actor/actor_gforce
-AM_CXXFLAGS = -DDATADIR="\"$(DATADIR)\""
+
+LIBS += @LIBVISUAL_LIBS@
+AM_CXXFLAGS = -DDATADIR=\"$(DATADIR)\" @LIBVISUAL_CFLAGS@
+
 
 noinst_LTLIBRARIES = libgforce.la
 #lib_LTLIBRARIES = libgforce.la

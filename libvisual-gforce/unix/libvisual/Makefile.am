@@ -10,6 +10,9 @@ INCLUDES = -I$(top_srcdir)/GForceCommon/Headers \
 
 ALLSOURCES = actor_gforce.cpp
 
+LIBS += @LIBVISUAL_LIBS@
+AM_CXXFLAGS = @LIBVISUAL_CFLAGS@
+
 noinst_LTLIBRARIES = libactor_gforce.la
 
 libactor_gforce_la_SOURCES = $(ALLSOURCES)

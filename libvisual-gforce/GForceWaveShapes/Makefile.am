@@ -55,7 +55,7 @@ Spectagon \
 Zoomed_Square \
 DT_-_BorderThunder \
 Darren_Doublehelix \
-Heart_of_the_Beast \ 
+Heart_of_the_Beast \
 Melt_O_Rama \
 Random_Corridor \
 SpinIt
