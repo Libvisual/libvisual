@@ -177,6 +177,16 @@ int visual_init (int *argc, char ***argv)
 	return 0;
 }
 
+/*
+ * Tells whether Libvisual is (correctly) initialized.
+ *
+ * @return TRUE if is it is initialized, FALSE otherwise.
+ */
+int visual_is_initialized (void)
+{
+	return __lv_initialized;
+}
+
 /**
  * Quits libvisual, destroys all the plugin registries.
  *

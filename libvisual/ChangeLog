@@ -3,6 +3,10 @@
 	* configure.ac: added --enable profiling option. Now
 	example programs are included on the dist target even
 	if they are disabled.
+	* libvisual/lv_input.c (visual_input_get_list): small doc
+	update.
+	* libvisual/lv_libvisual.*: added public API function
+	visual_is_initialized().
 
 2004-09-21  Duilio Protti  <dprotti@users.sourceforge.net>
 
