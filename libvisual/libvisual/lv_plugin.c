@@ -26,6 +26,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "lvconfig.h"
+
 #if defined(VISUAL_OS_WIN32)
 
 #else
@@ -34,7 +36,6 @@
 
 #include <dirent.h>
 
-#include "lvconfig.h"
 #include "lv_libvisual.h"
 #include "lv_plugin.h"
 #include "lv_log.h"
