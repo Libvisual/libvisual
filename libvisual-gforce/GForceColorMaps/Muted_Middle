@@ -1,0 +1,47 @@
+name="Muted Middle",
+/*
+ * Muted Middle
+ * Written my Stephen Ostermiller (gforce@ostermiller.com)
+ * (Check out the mp3 software I have written at
+ * www.ostermiller.com)
+ *
+ * This is my first attempt at writing a color map.
+ * The aim with this is to make gforce more colorful.
+ */
+
+/*
+ * ******    HUE     ******
+ *
+ * Assign each intensity to a different color.
+ * Colors change with time.
+ *
+ * Dividing i by 2 ensures that the background
+ * and the foreground colors will be 180 degrees
+ * apart on the color wheel.
+ *
+ * The .016 is the time scaling factor.  Changing
+ * this value effects how fast the colors change
+ * in time. (Bigger Value = Change Faster)
+ * (If this value is increased, you will need to
+ * increase the scaling factor)
+ * Right now I have it changing rather slowly.
+ * This way, everytime it loads this color map,
+ * it will probably look like a new color map because
+ * the time is enough different from the last time.
+ */
+H="wrap( .5 * i + .016 * t )",
+
+/*
+ * ****** SATURATION ******
+ * ******   VALUE    ******
+ *
+ * Saturation and value have the same formula.
+ * The idea is to make the background and
+ * foreground colors be the brightest.
+ * I don't want stuff in between to be the focus
+ * of my attention, so it is muted.
+ */
+S="abs(i-.5) + .5",
+V="abs(i-.5) + .5",
+
+Vers=100
