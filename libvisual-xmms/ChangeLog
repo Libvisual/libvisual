@@ -1,3 +1,8 @@
+2004-10-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/main.c: Adopted to new button press event
+	API.
+
 2004-10-02  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/lv_xmms_config.c: configure dialog almost finished.

@@ -651,11 +651,13 @@ static int sdl_event_handle ()
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-				visual_event_queue_add_mousebutton (vevent, event.button.button, VISUAL_MOUSE_DOWN);
+				visual_event_queue_add_mousebutton (vevent, event.button.button, VISUAL_MOUSE_DOWN,
+						event.button.x, event.button.y);
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				visual_event_queue_add_mousebutton (vevent, event.button.button, VISUAL_MOUSE_UP);
+				visual_event_queue_add_mousebutton (vevent, event.button.button, VISUAL_MOUSE_UP,
+						event.button.x, event.button.y);
 				break;
 
 			case SDL_QUIT:
