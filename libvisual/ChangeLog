@@ -1,3 +1,10 @@
+2004-06-20  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac added check for SDL, needed to
+	compile the examples.
+	* examples/Makefile.am added, replacing the old
+	hand made Makefile.in.
+	
 2004-06-18  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.in moved to configure.ac
