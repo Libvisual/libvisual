@@ -8,7 +8,7 @@ LIBS = -L. -L$(prefix)/lib @ALSA_LIBS@ @LIBVISUAL_LIBS@
 
 AM_CFLAGS = -Wall -rdynamic @ALSA_CFLAGS@ @LIBVISUAL_CFLAGS@ -O3
 
-INCLUDES = $(all_includes) -I$(top_srcdir) 
+INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_builddir)
 
 input_alsa_la_LDFLAGS = -module -avoid-version 
 

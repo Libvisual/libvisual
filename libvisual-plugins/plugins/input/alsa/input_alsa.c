@@ -4,6 +4,12 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include "config.h"
+
+#ifdef HAVE_0_9_X_ALSA
+#define ALSA_PCM_NEW_HW_PARAMS_API
+#define ALSA_PCM_NEW_SW_PARAMS_API
+#endif
 #include <alsa/asoundlib.h>
 
 #include <libvisual/libvisual.h>
@@ -76,7 +82,7 @@ int inp_alsa_init (VisPluginData *plugin)
 	if ((err = snd_pcm_open(&priv->chandle, strdup(inp_alsa_var_cdevice),
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
   	        visual_log(VISUAL_LOG_CRITICAL, 
-			    "Record open error: %s\n", snd_strerror(err));
+			    "Record open error: %s", snd_strerror(err));
 		return -1;
 	}
 
@@ -85,14 +91,14 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_any(priv->chandle, hwparams) < 0) {
  	        visual_log(VISUAL_LOG_CRITICAL, 
-			   "Can not configure this PCM device.\n");
+			   "Can not configure this PCM device.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	if (snd_pcm_hw_params_set_access(priv->chandle, hwparams, 
 					 SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting access.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting access.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -104,7 +110,7 @@ int inp_alsa_init (VisPluginData *plugin)
 	if (snd_pcm_hw_params_set_format(priv->chandle, hwparams,
 					 SND_PCM_FORMAT_S16_BE) < 0) {
 #endif
- 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting format.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting format.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -113,21 +119,21 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_set_rate_near(priv->chandle, hwparams,
 					    &exact_rate, &dir) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting rate.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting rate.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 	if (exact_rate != rate) {
- 	        visual_log(VISUAL_LOG_WARNING, 
+ 	        visual_log(VISUAL_LOG_INFO, 
 			   "The rate %d Hz is not supported by your " \
 			   "hardware.\n" \
-			   "==> Using %d Hz instead.\n", rate, exact_rate);
+			   "==> Using %d Hz instead.", rate, exact_rate);
 	}
 	rate = exact_rate;
 
 	if (snd_pcm_hw_params_set_channels(priv->chandle, hwparams,
 					   inp_alsa_var_channels) < 0) {
-	        visual_log(VISUAL_LOG_CRITICAL, "Error setting channels.\n");
+	        visual_log(VISUAL_LOG_CRITICAL, "Error setting channels.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -136,27 +142,27 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	tmp = 1000000;
 	if (snd_pcm_hw_params_set_period_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
-		visual_log(VISUAL_LOG_CRITICAL, "Error setting period time.\n");
+		visual_log(VISUAL_LOG_CRITICAL, "Error setting period time.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	tmp = 1000000*4;
 	if (snd_pcm_hw_params_set_buffer_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
-		visual_log(VISUAL_LOG_CRITICAL, "Error setting buffer time.\n");
+		visual_log(VISUAL_LOG_CRITICAL, "Error setting buffer time.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 
 	if (snd_pcm_hw_params(priv->chandle, hwparams) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting HW params.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting HW params.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	if (snd_pcm_prepare(priv->chandle) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, "Failed to prepare interface.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Failed to prepare interface.");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -205,8 +211,8 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 		  visual_log(VISUAL_LOG_ERROR, "=========BUFFER OVERRUN\n");
 #endif
 			if (snd_pcm_prepare(priv->chandle) < 0) {
-			        visual_log(VISUAL_LOG_ERROR, 
-					   "Failed to prepare interface.\n");
+			        visual_log(VISUAL_LOG_CRITICAL, 
+					   "Failed to prepare interface.");
 				return(-1);
 			}
 		}

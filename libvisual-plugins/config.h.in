@@ -1,5 +1,11 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Alsa Library is from 0.9 series */
+#undef HAVE_0_9_X_ALSA
+
+/* Alsa Library is from 1 series */
+#undef HAVE_1_X_X_ALSA
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

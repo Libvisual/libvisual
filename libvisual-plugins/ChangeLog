@@ -1,3 +1,9 @@
+2004-09-20 Duilio Protti <dprotti@user.sourceforge.net>
+
+	* configure.ac: alsa dependency lowered to 0.9.0.
+	* plugins/input/alsa/input_alsa.c: we request the new alsa
+	API if we have 0.9.x series installed.
+
 2004-09-13 Duilio Protti <dprotti@user.sourceforge.net>
 
 	* plugins/actor/madspin/madspin.c: removed include

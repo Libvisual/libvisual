@@ -116,7 +116,7 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt])
 
 # Arguments to specify certain features.
-LV_ALSA_MIN_VERSION=1.0.0
+LV_ALSA_MIN_VERSION=0.9.0
 AC_ARG_ENABLE([alsa],
             AC_HELP_STRING([--disable-alsa],
                            [Do not build Alsa input plugin @<:@default=enabled@:>@]),
@@ -129,6 +129,17 @@ if test x$alsa = xyes; then
   AM_PATH_ALSA($LV_ALSA_MIN_VERSION,[ build_alsa=yes ], [ build_alsa=no ])
   if test x$build_alsa = xyes; then
     build_input="$build_input alsa"
+    AC_TRY_COMPILE([#include <stdlib.h>
+		    #include <alsa/asoundlib.h>],
+		   [#if(SND_LIB_MAJOR == 0)
+		     exit(0);
+		    #else
+		     something that fails to compile
+		    #endif],
+		   [ AC_DEFINE([HAVE_0_9_X_ALSA], [1], [Alsa Library is from 0.9 series])
+		     AC_SUBST([HAVE_0_9_X_ALSA]) ],
+		   [ AC_DEFINE([HAVE_1_X_X_ALSA], [1], [Alsa Library is from 1 series])
+		     AC_SUBST([HAVE_1_X_X_ALSA]) ])
   else
     AC_MSG_WARN([*** Alsa input plugin cannot be built.
 		 May be you have an ALSA library older than $LV_ALSA_MIN_VERSION.
