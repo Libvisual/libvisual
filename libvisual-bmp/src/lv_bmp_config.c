@@ -641,7 +641,6 @@ static int is_gl_actor (VisPluginRef *actor)
 	VisActorPlugin *actplugin;
 
 	visual_log_return_val_if_fail (actor != NULL, -1);
-	visual_log_return_val_if_fail (actor->info->type == VISUAL_PLUGIN_TYPE_ACTOR, -1);
 	visual_log_return_val_if_fail (actor->info->plugin != NULL, -1);
 
 	plugin = visual_plugin_load (actor);
