@@ -1,3 +1,12 @@
+2004-12-30  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* configure.ac: added generation of example/plugins/Makefile
+	* drivers/x11/x11.c: added plain X11 driver. No SHP support.
+	Beta and slow.
+	* example/main.c: updated for x11 backend
+	* drivers/x11/Makefile.am: added x11 driver
+	* lvdisplay/lv_display.c lvdisplay/lv_display.h: minor updates
+
 2004-12-28  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* lvdisplay/lv_display.h: Added VisObject to both fe/be descriptions.
