@@ -1,9 +1,13 @@
 ## Process this file with automake to generate a Makefile.in
 
+lib_LTLIBRARIES = $(LVW_GTK2)
+
+EXTRA_LTLIBRARIES = liblvwidget_gtk2.la
+
+libdir = $(prefix)/lib
+
 library_includedir = $(includedir)/lvwidget/gtk2
 library_include_HEADERS = lv_widget_gtk2_visui.h
-
-lib_LTLIBRARIES = liblvwidget_gtk2.la
 
 DEFS = @DEFS@
 

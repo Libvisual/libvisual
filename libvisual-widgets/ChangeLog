@@ -1,3 +1,15 @@
+2005-03-12  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual-widgets-gtk2.pc.in: changed -lvw_gtk2 to
+	-lvwidget_gtk2.
+	* gtk1/lv_widget_gtk1_visui.[ch]: added.
+	* configure.ac: builds lvwidget-gtk1, and made this
+	and lvwidget-gtk2 optionals. gtk+-2.4.0 detection made
+	more portable. qt backend temporarily removed until full
+	implemented, to avoid problems on distro packages.
+	* Makefile.am: temporarily removed qt backend.
+	* gtk1/Makefile.am: now builds lvwidget-gtk1.
+	
 2005-03-07  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Bump to 0.3.0, hopefully fixed

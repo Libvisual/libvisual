@@ -4,9 +4,34 @@ AC_PREREQ(2.57)
 AC_INIT(Libvisual-widgets Library, 0.3.0, ds@nerds-incorporated.org, libvisual-widgets)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
+m4_define([gtk1_required_version], [1.2.0])
+
 AC_CONFIG_HEADER(config.h)
 
 AC_PREFIX_DEFAULT(/usr)
+
+LVWMSG_GTK1_NOT_FOUND="
+	gtk+ library not found, gtk1 widgets will not be built.
+	If you have installed from binary packages, you need to
+	install also the development packages of gtk+ library.
+	You can download gtk+ at http://www.gtk.org/
+"
+LVWMSG_GTK1_TOO_OLD="
+	gtk+ library is too old, gtk1 widgets will not be built.
+	you can download a newer gtk+ at http://www.gtk.org/
+"
+
+LVWMSG_GTK2_NOT_FOUND="
+	gtk+-2.0 library not found, gtk1 widgets will not be built.
+	If you have installed from binary packages, you need to
+	install also the development packages of gtk+-2.0 library.
+	You can download gtk+-2.0 at http://www.gtk.org/
+"
+
+LVWMSG_GTK2_TOO_OLD="
+	gtk+-2.0 library is too old, gtk1 widgets will not be built.
+	you can download a newer gtk+-2.0 at http://www.gtk.org/
+"
 
 AC_CANONICAL_HOST
 
@@ -17,7 +42,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
@@ -65,33 +89,64 @@ fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
 
-PKG_CHECK_MODULES(LIBGTK2, gtk+-2.0, [libgtk2="yes"], [libgtk2="no"])
-if test x"$libgtk2" = xno; then
-	AC_MSG_ERROR([gtk2 not found, gtk2 is needed to build this package,
-you can download gtk2 at http://www.gtk.org/])
+AC_ARG_ENABLE([gtk1widgets],
+            AC_HELP_STRING([--disable-gtk1widgets],
+                           [Do not build gtk+ widgets @<:@default=enabled@:>@]),
+	    [gtk1widgets=$enableval],
+	    [gtk1widgets=yes])
+AC_MSG_CHECKING([whether to build gtk1 widgets])
+if test x"$gtk1widgets" = xyes; then
+	AC_MSG_RESULT([yes])
+	if $PKG_CONFIG --exists gtk+ ; then
+		PKG_CHECK_MODULES(LIBGTK1, gtk+ >= gtk1_required_version, [libgtk1="yes"], [libgtk1="no"])
+		if test x"$libgtk1" = xyes; then
+			AC_SUBST(LIBGTK1_LIBS)
+			AC_SUBST(LIBGTK1_CFLAGS)
+			AC_SUBST([LVW_GTK1], ['liblvwidget_gtk1.la'])
+		else
+			AC_MSG_WARN($LVWMSG_GTK1_TOO_OLD)
+		fi
+	else	
+		AC_MSG_WARN($LVWMSG_GTK1_NOT_FOUND)
+	fi
 else
-    lv_save_CFLAGS=$CFLAGS
-    CFLAGS="$CFLAGS $LIBGTK2_CFLAGS"
-    AC_TRY_COMPILE([#include <stdlib.h>
-		    #include <gtk/gtk.h>],
-		   [#if(GTK_MINOR_VERSION < 4)
-		     something that fails to compile
-		    #endif],
-		   [ AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [0], [gtk2 version < 2.4.x]) ],
-		   [ AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [1], [gtk2 version >= 2.4.x]) ])
-    CFLAGS=$lv_save_CFLAGS
+	AC_MSG_RESULT([no])
 fi
-AC_SUBST(LIBGTK2_LIBS)
-AC_SUBST(LIBGTK2_CFLAGS)
+
+AC_ARG_ENABLE([gtk2widgets],
+            AC_HELP_STRING([--disable-gtk2widgets],
+                           [Do not build gtk+-2.0 widgets @<:@default=enabled@:>@]),
+	    [gtk2widgets=$enableval],
+	    [gtk2widgets=yes])
+AC_MSG_CHECKING([whether to build gtk2 widgets])
+if test x"$gtk2widgets" = xyes; then
+   AC_MSG_RESULT([yes])
+   PKG_CHECK_MODULES(LIBGTK2, gtk+-2.0, [libgtk2="yes"], [libgtk2="no"])
+   if test x"$libgtk2" = xyes; then
+	   AC_MSG_CHECKING([whether gtk+-2.0 is at least 2.4.0])
+	   if $PKG_CONFIG --exists 'gtk+-2.0 >= 2.4.0'; then
+	      AC_MSG_RESULT([yes])
+	      AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [1], [gtk2 version >= 2.4.x])
+	   else
+	      AC_MSG_RESULT([no])
+	      AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [0], [gtk2 version < 2.4.x])
+	   fi
+	   AC_SUBST(LIBGTK2_LIBS)
+	   AC_SUBST(LIBGTK2_CFLAGS)
+	   AC_SUBST([LVW_GTK2], ['liblvwidget_gtk2.la'])
+   else
+	   AC_MSG_WARN($LVWMSG_GTK2_NOT_FOUND)
+   fi
+else
+   AC_MSG_RESULT([no])
+fi
 
 AC_CONFIG_FILES([
 	Makefile
 	libvisual-widgets-gtk1.pc
 	libvisual-widgets-gtk2.pc
-	libvisual-widgets-qt.pc
 	gtk1/Makefile
-	gtk2/Makefile
-	qt/Makefile])
+	gtk2/Makefile])
 
 AC_OUTPUT
 
