@@ -28,6 +28,9 @@ VisList *__lv_plugins_morph = NULL;
 /** The global params container */
 VisParamContainer *__lv_paramcontainer = NULL;
 
+/** The userinterface for the global params */
+VisUIWidget *__lv_userinterface = NULL;
+
 /** Contains the number of plugin registry paths. */
 int __lv_plugpath_cnt = 0;
 /** Char ** list of all the plugin paths. */
@@ -35,6 +38,7 @@ char **__lv_plugpaths = NULL;
 
 
 static int init_params (VisParamContainer *paramcontainer);
+static VisUIWidget *make_userinterface (void);
 
 static int init_params (VisParamContainer *paramcontainer)
 {
@@ -66,6 +70,46 @@ static int init_params (VisParamContainer *paramcontainer)
 	return 0;
 }
 
+static VisUIWidget *make_userinterface ()
+{
+	VisUIWidget *vbox;
+	VisUIWidget *hbox;
+	VisUIWidget *label1;
+	VisUIWidget *label2;
+	VisUIWidget *checkbox1;
+	VisUIWidget *checkbox2;
+	VisUIWidget *numeric;
+
+	vbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_VERTICAL);
+	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
+	
+	label1 = visual_ui_label_new ("Show info for", FALSE);
+	label2 = visual_ui_label_new ("seconds", FALSE);
+
+	checkbox1 = visual_ui_checkbox_new ("Show song information", TRUE);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox1),
+			visual_param_container_get (__lv_paramcontainer, "songinfo show"));
+
+	checkbox2 = visual_ui_checkbox_new ("Show song information in plugins", TRUE);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox2),
+			visual_param_container_get (__lv_paramcontainer, "songinfo in plugin"));
+
+	numeric = visual_ui_numeric_new ();
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric),
+			visual_param_container_get (__lv_paramcontainer, "songinfo timeout"));
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric), 1, 60, 1, 0);
+
+	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label1);
+	visual_ui_box_pack (VISUAL_UI_BOX (hbox), numeric);
+	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label2);
+
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), checkbox1);
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), checkbox2);
+	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox);
+
+	return vbox;
+}
+
 /**
  * @defgroup Libvisual Libvisual
  * @{
@@ -89,6 +133,16 @@ const char *visual_get_version ()
 VisParamContainer *visual_get_params ()
 {
 	return __lv_paramcontainer;
+}
+
+/**
+ * Returns a pointer to the top container of libvisual it's configuration userinterface.
+ *
+ * @return A pointer to the libvisual configuration VisUIWidget.
+ */
+VisUIWidget *visual_get_userinterface ()
+{
+	return __lv_userinterface;
 }
 
 /**
@@ -174,6 +228,7 @@ int visual_init (int *argc, char ***argv)
 
 	__lv_paramcontainer = visual_param_container_new ();
 	init_params (__lv_paramcontainer);
+	__lv_userinterface = make_userinterface ();
 
 	__lv_initialized = TRUE;
 
@@ -205,6 +260,7 @@ int visual_quit ()
 		return -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED;
 	}
 
+	/* FIXME: Use VisError here, for human readable error strings */
 	ret = visual_plugin_ref_list_destroy (__lv_plugins);
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Plugins references list: destroy failed");
@@ -224,6 +280,10 @@ int visual_quit ()
 	ret = visual_param_container_destroy (__lv_paramcontainer);
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Global param container: destroy failed");
+
+	ret = visual_ui_widget_destroy (__lv_userinterface);
+	if (ret < 0)
+		visual_log (VISUAL_LOG_WARNING, "Error during UI destroy:");
 
         if (__lv_progname != NULL) {
                 visual_mem_free (__lv_progname);
