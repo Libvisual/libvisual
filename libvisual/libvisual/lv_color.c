@@ -155,6 +155,29 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 }
 
 /**
+ * Copies the RGB data of one VisColor into another.
+ *
+ * @param dest Pointer to the destination VisColor in which the RGB data is copied.
+ * @param src Pointer to the source VisColor from which the RGB data is copied.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_color_copy (VisColor *dest, VisColor *src)
+{
+	visual_log_return_val_if_fail (dest != NULL, -1);
+	visual_log_return_val_if_fail (src != NULL, -1);
+	
+	dest->r = src->r;
+	dest->g = src->g;
+	dest->b = src->b;
+	
+	/* You never know ;) */
+	dest->unused = src->unused;
+
+	return 0;
+}
+
+/**
  * @}
  */
 

@@ -194,6 +194,9 @@ libvisual:
 
 		Use this for the timed morph as well.
 
+		explicitly disable 'mmx' through an API. mmx can be a disaster in multithreading environments
+		because of it's sharing registers with the fpu registers thingy.
+
 
 INTERNAL:
 	LOG: (post 0.1)
