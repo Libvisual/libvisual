@@ -1,3 +1,8 @@
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* examples/morph.c: Use alsa as the standard
+	input plugin.
+
 2004-09-06  Dennis Smit  <ds@nerds-incorporated.org>
 
 	I will first compile before commit.

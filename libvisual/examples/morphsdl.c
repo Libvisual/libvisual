@@ -288,7 +288,7 @@ else
 	visual_bin_set_supported_depth (bin, VISUAL_VIDEO_DEPTH_ALL);
 	
 	visual_bin_set_video (bin, video);
-	visual_bin_connect_by_names (bin, argv[1], "esd");
+	visual_bin_connect_by_names (bin, argv[1], "alsa");
 	visual_bin_realize (bin);
 	visual_bin_sync (bin, FALSE);
 
