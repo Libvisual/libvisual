@@ -5,7 +5,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id:
+ * $Id: x11_fullscreen.c,v 1.5 2005-02-12 18:17:28 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -54,6 +54,9 @@ typedef struct {
 	int storedmode_ok;
 	Cursor blank_cursor;
 	XF86VidModeModeInfo storedmode;
+
+	int	videomode_set;
+	LvdVideoMode videomode;
 } privdata;
 
 static int plugin_init (VisPluginData *plugin);
@@ -63,6 +66,8 @@ static int create(VisPluginData*, VisVideo *video);
 static void *get_compat_data(VisPluginData *plugin);
 static int set_param(VisPluginData *plugin, int param, int *value, int count);
 static int get_events(VisPluginData *plugin, VisEventQueue *eventqueue);
+static int get_videomodes(VisPluginData *plugin, LvdVideoMode **vm, int *count);
+static int set_videomode(VisPluginData *plugin, LvdVideoMode *vm);
 
 
 static void finit_x(privdata *priv);
@@ -81,6 +86,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.create = create,
 		.get_compat_data = get_compat_data,
 		.set_param = set_param,
+		.get_videomodes = get_videomodes,
+		.set_videomode = set_videomode,
 	}};
 
 	static const VisPluginInfo info[] = {{
@@ -457,12 +464,108 @@ void finit_x(privdata *priv)
 }
 
 
-static int switch_video_mode(privdata *priv)
+int get_videomodes(VisPluginData *plugin, LvdVideoMode **vm, int *count)
+{
+	double vfreq;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
+	LvdCompatDataX11 *data = &priv->x11data;
+	int cnt, i;
+	XF86VidModeModeInfo **modes;
+
+
+	if (XF86VidModeGetAllModeLines(XDPY, DefaultScreen(XDPY),
+		&cnt, &modes) && (cnt > 0)){
+
+		*vm = visual_mem_new0 (LvdVideoMode, cnt);
+
+		if (*vm == NULL){
+			XFree(modes);
+			return -1;
+		}
+
+		*count = cnt;
+
+		for (i=0;i<cnt;i++){
+			(*vm)[i].width = modes[i]->hdisplay;
+			(*vm)[i].height = modes[i]->vdisplay;
+			if (modes[i]->flags & 0x10){
+				vfreq = 2000.0;
+				(*vm)[i].flags |= LVD_VIDEOMODE_INTERLACED;
+			} else
+			if (modes[i]->flags & 0x20){
+				vfreq = 500.0;
+				(*vm)[i].flags |= LVD_VIDEOMODE_DOUBLESCAN;
+			} else
+				vfreq = 1000.0;
+
+			vfreq *= (modes[i]->dotclock);
+			vfreq /= (modes[i]->htotal*modes[i]->vtotal);
+
+			(*vm)[i].vfreq = vfreq;
+		}
+
+		XFree(modes);
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int set_videomode(VisPluginData *plugin, LvdVideoMode *vm)
+{
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
+
+	priv->videomode_set = 1;
+	memcpy(&priv->videomode, vm, sizeof(LvdVideoMode));
+
+	set_param(plugin, LVD_SET_WIDTH, &vm->width, 1);
+	set_param(plugin, LVD_SET_HEIGHT, &vm->height, 1);
+
+	return 0;
+}
+
+
+
+static int switch_video_mode_specified(privdata *priv,
+	XF86VidModeModeInfo **modes, int cnt)
+{
+	double vfreqmul, vfreq;
+	LvdCompatDataX11 *data = &priv->x11data;
+	int findflags; 
+	int i;
+
+	findflags = 0;
+	vfreqmul = 1000.0;
+	if (priv->videomode.flags & LVD_VIDEOMODE_INTERLACED){
+		findflags |= 0x10;
+		vfreqmul = 2000.0;
+	}
+	if (priv->videomode.flags & LVD_VIDEOMODE_DOUBLESCAN){
+		findflags |= 0x20;
+		vfreqmul = 500.0;
+	}
+		/* find modes that fit the best */
+	for (i=0;i<cnt;i++){
+		if ((modes[i]->hdisplay == priv->videomode.width) &&
+			(modes[i]->vdisplay == priv->videomode.height) &&
+			((modes[i]->flags & findflags) == findflags)){
+
+			vfreq = vfreqmul * (modes[i]->dotclock);
+			vfreq /= (modes[i]->htotal*modes[i]->vtotal);
+
+			if ((vfreq - priv->videomode.vfreq) < 1.0)
+				return i;
+		}
+	}
+
+	return -1;
+}
+
+static int switch_video_mode_find_best(privdata *priv,
+	XF86VidModeModeInfo **modes, int cnt)
 {
 	LvdCompatDataX11 *data = &priv->x11data;
-	int res;
-	int evbase, errbase;
-	int vmaj, vmin;
 
 	int prefer_interlaced = 0;
 	int prefer_dblscan = 1; // XXX make configurable. Assumes lowres mode.
@@ -470,108 +573,129 @@ static int switch_video_mode(privdata *priv)
 							// since hfreq demand doubles!
 							// Makes no sense for hires modes.
 
-	int cnt, i;
-	XF86VidModeModeInfo **modes;
+	int i;
 
-	priv->storedmode_ok = XF86VidModeGetModeLine(XDPY,
-		DefaultScreen(XDPY),
-		&priv->storedmode.dotclock,
-			(XF86VidModeModeLine*)(((char*)&priv->storedmode) +
-			sizeof(priv->storedmode.dotclock)));
+	int mw, mh;
+	const int ok_modes_max = 32;
+	int ok_modes[32];
+	int ok_modes_cnt = 0;
+	int bestmode;
+	double bestvfreq;
 
-	if (!priv->storedmode_ok)
-		return 1;
-
-
-	if (XF86VidModeGetAllModeLines(XDPY, DefaultScreen(XDPY),
-		&cnt, &modes) && (cnt > 0)){
-		int mw, mh;
-		const int ok_modes_max = 32;
-		int ok_modes[32];
-		int ok_modes_cnt = 0;
-		int bestmode;
-		double bestvfreq;
-
-		mw = modes[0]->hdisplay;
-		mh = modes[0]->vdisplay;
-		ok_modes[0] = 0;
-		ok_modes_cnt = 1;
+	mw = modes[0]->hdisplay;
+	mh = modes[0]->vdisplay;
+	ok_modes[0] = 0;
+	ok_modes_cnt = 1;
 
 		/* find modes that fit the best */
-		for (i=1;i<cnt;i++){
-			if ((modes[i]->hdisplay >= priv->video->width) &&
-				(modes[i]->vdisplay >= priv->video->height) &&
-				(modes[i]->hdisplay <= mw) &&
-				(modes[i]->vdisplay <= mh)){
+	for (i=1;i<cnt;i++){
+		if ((modes[i]->hdisplay >= priv->video->width) &&
+			(modes[i]->vdisplay >= priv->video->height) &&
+			(modes[i]->hdisplay <= mw) &&
+			(modes[i]->vdisplay <= mh)){
 
-				if ((modes[i]->hdisplay < mw) ||
-					(modes[i]->vdisplay < mh)){
+			if ((modes[i]->hdisplay < mw) ||
+				(modes[i]->vdisplay < mh)){
 
-					ok_modes_cnt = 0;
-					mw = modes[i]->hdisplay;
-					mh = modes[i]->vdisplay;
-				}
+				ok_modes_cnt = 0;
+				mw = modes[i]->hdisplay;
+				mh = modes[i]->vdisplay;
+			}
 
-				if (ok_modes_cnt < ok_modes_max){
-					ok_modes[ok_modes_cnt++] = i;
-				}
+			if (ok_modes_cnt < ok_modes_max){
+				ok_modes[ok_modes_cnt++] = i;
 			}
 		}
+	}
 
-		/* choose preferred mode with highest vfreq */
+	/* choose preferred mode with highest vfreq */
 
-		if (mw > 640){
-			prefer_dblscan = 0; // XXX make configurable.
-		}
+	if (mw > 640){
+		prefer_dblscan = 0; // XXX make configurable.
+	}
 
 repeat_modesel:
 
-		bestvfreq = 0.0;
-		bestmode = -1;
-		for (i=0;i<ok_modes_cnt;i++){
-			int dblscan = (modes[ok_modes[i]]->flags & 0x20);
-			int interlace = (modes[ok_modes[i]]->flags & 0x10);
-			double vfreq;
+	bestvfreq = 0.0;
+	bestmode = -1;
+	for (i=0;i<ok_modes_cnt;i++){
+		int dblscan = (modes[ok_modes[i]]->flags & 0x20);
+		int interlace = (modes[ok_modes[i]]->flags & 0x10);
+		double vfreq;
 
-			if (prefer_dblscan) {
-				if (!dblscan)
-					continue;
-			} else
-			if (prefer_interlaced && !interlace)
+		if (prefer_dblscan) {
+			if (!dblscan)
 				continue;
+		} else
+		if (prefer_interlaced && !interlace)
+			continue;
 
-			if (dblscan)
-				vfreq = 500.0;  /* Doublescan */
-			else
-			if (interlace)
-				vfreq = 2000.0; /* Interlaced */
-			else    
-				vfreq = 1000.0;
+		if (dblscan)
+			vfreq = 500.0;  /* Doublescan */
+		else
+		if (interlace)
+			vfreq = 2000.0; /* Interlaced */
+		else    
+			vfreq = 1000.0;
 
-			vfreq *= (modes[ok_modes[i]]->dotclock);
-			vfreq /= (modes[ok_modes[i]]->htotal*modes[ok_modes[i]]->vtotal);
+		vfreq *= (modes[ok_modes[i]]->dotclock);
+		vfreq /= (modes[ok_modes[i]]->htotal*modes[ok_modes[i]]->vtotal);
 
-			if ((bestmode < 0) || (bestvfreq < vfreq)){
-				bestvfreq = vfreq;
-				bestmode = i;
-			}
-
+		if ((bestmode < 0) || (bestvfreq < vfreq)){
+			bestvfreq = vfreq;
+			bestmode = i;
 		}
 
-		if (prefer_dblscan && (bestmode == -1)){
-			prefer_dblscan = 0;
-			goto repeat_modesel;
-		}
+	}
 
-		if (prefer_interlaced && (bestmode == -1)){
-			prefer_interlaced = 0;
-			goto repeat_modesel;
-		}
+	if (prefer_dblscan && (bestmode == -1)){
+		prefer_dblscan = 0;
+		goto repeat_modesel;
+	}
 
-		visual_log(VISUAL_LOG_DEBUG, "X: %d %d %.1f\n",modes[ok_modes[bestmode]]->hdisplay,
-			modes[ok_modes[bestmode]]->vdisplay, bestvfreq);
+	if (prefer_interlaced && (bestmode == -1)){
+		prefer_interlaced = 0;
+		goto repeat_modesel;
+	}
 
-		res = XF86VidModeSwitchToMode(XDPY, DefaultScreen(XDPY), modes[ok_modes[bestmode]]);
+	return ok_modes[bestmode];
+}
+
+
+static int switch_video_mode(privdata *priv)
+{
+	LvdCompatDataX11 *data = &priv->x11data;
+	int res;
+	int evbase, errbase;
+	int vmaj, vmin;
+
+	int cnt;
+	XF86VidModeModeInfo **modes;
+
+	if (!priv->storedmode_ok){
+		priv->storedmode_ok = XF86VidModeGetModeLine(XDPY,
+			DefaultScreen(XDPY),
+			&priv->storedmode.dotclock,
+				(XF86VidModeModeLine*)(((char*)&priv->storedmode) +
+				sizeof(priv->storedmode.dotclock)));
+
+		if (!priv->storedmode_ok)
+			return 1;
+	}
+
+	if (XF86VidModeGetAllModeLines(XDPY, DefaultScreen(XDPY),
+		&cnt, &modes) && (cnt > 0)){
+		int bestmode;
+
+		if (priv->videomode_set)
+			bestmode = switch_video_mode_specified(priv, modes, cnt);
+		else
+			bestmode = switch_video_mode_find_best(priv, modes, cnt);
+
+		visual_log(VISUAL_LOG_DEBUG, "X: %d %d\n",modes[bestmode]->hdisplay,
+			modes[bestmode]->vdisplay);
+
+		res = XF86VidModeSwitchToMode(XDPY, DefaultScreen(XDPY), modes[bestmode]);
 
 		XFree(modes);
 

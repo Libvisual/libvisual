@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.c,v 1.19 2005-02-11 21:18:39 vitalyvb Exp $
+ * $Id: lv_display.c,v 1.20 2005-02-12 18:17:28 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -233,7 +233,21 @@ int lvdisplay_driver_set_visible(LvdDriver *drv, int is_visible)
 	return lvdisplay_driver_set_opts(drv, param, 2);
 }
 
+int lvdisplay_get_videomodes(LvdDriver *drv, LvdVideoMode **vm, int *count)
+{
+	if (drv->fe->get_videomodes == NULL)
+		return -1;
 
+	return drv->fe->get_videomodes(drv->feplug, vm, count);
+}
+
+int lvdisplay_set_videomode(LvdDriver *drv, LvdVideoMode *vm)
+{
+	if (drv->fe->set_videomode == NULL)
+		return -1;
+
+	return drv->fe->set_videomode(drv->feplug, vm);
+}
 
 /***********************************************************************/
 /// XXX make it per-thread

@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.h,v 1.13 2005-02-11 21:18:41 vitalyvb Exp $
+ * $Id: lv_display.h,v 1.14 2005-02-12 18:17:28 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -73,6 +73,7 @@ typedef struct _LvdDContext LvdDContext;
 typedef struct _LvdBackendDescription  LvdBackendDescription;
 typedef struct _LvdFrontendDescription LvdFrontendDescription;
 
+typedef struct _LvdVideoMode LvdVideoMode;
 typedef struct _LvdDriver LvdDriver;
 typedef struct _Lvd Lvd;
 
@@ -131,6 +132,8 @@ struct _LvdFrontendDescription {
 	int (*create)(VisPluginData*, VisVideo*);
 	void *(*get_compat_data)(VisPluginData *plugin);
 	int (*set_param)(VisPluginData *plugin, int param, int *value, int count);
+	int (*get_videomodes)(VisPluginData *plugin, LvdVideoMode **vm, int *count);
+	int (*set_videomode)(VisPluginData *plugin, LvdVideoMode *vm);
 };
 
 
@@ -153,6 +156,19 @@ VisBin *lvdisplay_visual_get_bin(Lvd *v);
 VisVideo *lvdisplay_visual_get_video(Lvd *v);
 
 
+/* video mode interface */
+
+#define LVD_VIDEOMODE_INTERLACED 1
+#define LVD_VIDEOMODE_DOUBLESCAN 2
+
+struct _LvdVideoMode {
+	int width, height;
+	int vfreq;
+	int flags;
+};
+
+int lvdisplay_get_videomodes(LvdDriver *drv, LvdVideoMode **vm, int *count);
+int lvdisplay_set_videomode(LvdDriver *drv, LvdVideoMode *vm);
 
 /* plugin interface */
 

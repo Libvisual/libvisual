@@ -1,3 +1,10 @@
+2005-02-12  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* lvdisplay/lv_display.c lvdisplay/lv_display.h: API for video mode
+	selection/change.
+	* drivers/x11/x11_fullscreen.c: video modes list/change support.
+	* example/main.c: update.
+
 2005-02-11  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* lvdisplay/lv_display.c: cleanup() actor when new driver is set.

@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id:
+ * $Id: main.c,v 1.18 2005-02-12 18:17:28 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -115,6 +115,26 @@ int main(int argc, char **argv)
 		exit (1);
 	}
 
+	{
+		LvdVideoMode *vms;
+		int cnt, i;
+		
+		if (lvdisplay_get_videomodes(drv_fs, &vms, &cnt) == 0){
+			fprintf (stderr, "Available video modes:\n");
+			for (i=0;i<cnt;i++){
+				const char *ds[] = {"", " Doublescan"};
+				const char *il[] = {"", " Interlaced"};
+				fprintf (stderr, "\t%3d:  %dx%d @ %d Hz%s%s\n", i, vms[i].width, vms[i].height,
+					vms[i].vfreq,
+					ds[(vms[i].flags & LVD_VIDEOMODE_DOUBLESCAN) ? 1:0],
+					il[(vms[i].flags & LVD_VIDEOMODE_INTERLACED) ? 1:0]);
+			}
+			fprintf (stderr, "warning: if it crashes try to change here\n");
+			lvdisplay_set_videomode(drv_fs, &vms[5]); // XXX FIXME or not :)
+			visual_mem_free(vms);
+		}
+	
+	}
 
 	{
 		int params[100];
@@ -123,11 +143,11 @@ int main(int argc, char **argv)
 		params[pc++] = LVD_SET_DEPTH;
 		params[pc++] = VISUAL_VIDEO_DEPTH_32BIT;
 
-		params[pc++] = LVD_SET_WIDTH;
-		params[pc++] = 320;
-
-		params[pc++] = LVD_SET_HEIGHT;
-		params[pc++] = 240;
+		/* lvdisplay_set_videomode or these ones */
+/*
+		params[pc++] = LVD_SET_WIDTH; params[pc++] = 320;
+		params[pc++] = LVD_SET_HEIGHT; params[pc++] = 240;
+*/
 
 		/* DO NOT set it visible! */
 		/*params[pc++] = LVD_SET_VISIBLE;
