@@ -13,7 +13,9 @@
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
 #include <pthread.h>
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_POSIX */
+#include <glib/gthread.h>
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 
 #endif
 #endif /* VISUAL_HAVE_THREADS */
@@ -48,6 +50,8 @@ struct _VisThread {
 #elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
 	HANDLE thread;
 	DWORD threadId;
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD) /* !VISUAL_THREAD_MODEL_WIN32 */
+
 #endif
 #endif /* VISUAL_HAVE_THREADS */
 };
@@ -62,6 +66,7 @@ struct _VisMutex {
 	pthread_mutex_t mutex;		/**< Private used for the pthreads implementation. */
 #elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
 
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD) /* !VISUAL_THREAD_MODEL_WIN32 */
 
 #endif
 #endif /* VISUAL_HAVE_THREADS */

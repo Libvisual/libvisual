@@ -1,3 +1,7 @@
+2005-03-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Set VISUAL_THREAD_MODEL_GTHREAD2 when appropiate.
+
 2005-03-16  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Adding detection for gthread, fixing spelling

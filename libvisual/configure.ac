@@ -715,6 +715,11 @@ _______EOF
 #define VISUAL_THREAD_MODEL_DCE
 _______EOF
 				;;
+			gthread2)
+				cat >>$outfile <<_______EOF
+#define VISUAL_THREAD_MODEL_GTHREAD2
+_______EOF
+				;;
 			*)
 				;;
 		esac
