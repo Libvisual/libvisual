@@ -1,7 +1,5 @@
 ## Process this file with automake to generate a Makefile.in
 
-libdir = $(prefix)/lib
-
 library_includedir = $(includedir)/libvisual
 library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_audio.h lv_bin.h lv_common.h lv_fft.h \
@@ -16,9 +14,9 @@ lib_LTLIBRARIES = libvisual.la
 
 DEFS = @DEFS@
 
-LIBS += -L. -L$(prefix)/lib
+LIBS += -L. -L$(libdir)
 
-PLUGPATH = $(prefix)/lib/libvisual
+PLUGPATH = $(libdir)/libvisual
 
 AM_CFLAGS = -Wall -Wno-unused-variable -Wmissing-prototypes -Wstrict-prototypes\
 	    -DPLUGPATH="\"$(PLUGPATH)\"" @DEBUG_CFLAGS@ -O3
