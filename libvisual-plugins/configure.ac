@@ -28,7 +28,7 @@ else
 fi
 
 # Checks for libraries.
-build_input=""
+build_input="mplayer"
 build_actor=""
 build_morph="alphablend tentacle flash"
 
@@ -207,6 +207,7 @@ AC_CONFIG_FILES([
 	plugins/input/Makefile
 	plugins/input/esd/Makefile
 	plugins/input/alsa/Makefile
+	plugins/input/mplayer/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile
