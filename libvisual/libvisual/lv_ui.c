@@ -373,7 +373,7 @@ VisUIWidget *visual_ui_container_get_child (VisUIContainer *container)
  * @param orient Indicates the orientation style of the box, being either
  * 	VISUAL_ORIENT_TYPE_HORIZONTAL or VISUAL_ORIENT_TYPE_VERTICAL.
  *
- * @return The newly created VisUIBox in the form a VisUIWidget.
+ * @return The newly created VisUIBox in the form of a VisUIWidget.
  */
 VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 {
@@ -419,7 +419,7 @@ int visual_ui_box_free (VisUIBox *box)
  * @param box Pointer to the VisUIBox that needs to be destroyed.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_BOX_NULL, -VISUAL_ERROR_UI_NO_BOX or
- * 	error values returned by visual_mem_free () on failure.
+ * 	error values returned by visual_ui_box_free () on failure.
  */
 int visual_ui_box_destroy (VisUIBox *box)
 {
@@ -454,29 +454,30 @@ int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget)
 	return visual_list_add (&box->childs, widget);
 }
 
-VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget)
+/**
+ * Retrieve a VisList of VisUIWidget elements, being the childs of the VisUIBox.
+ * 
+ * @param box Pointer to the VisUIBox from which the childs are requested.
+ * 
+ * @return VisList containing the childs of the VisUIBox or NULL on error.
+ */
+VisList *visual_ui_box_get_childs (VisUIBox *box)
 {
 	VisUIWidget *next;
 	VisListEntry *le = NULL;
 
 	visual_log_return_val_if_fail (box != NULL, NULL);
 
-	while ((next = visual_list_next (&box->childs, &le)) != NULL) {
-
-		if (widget == NULL)
-			return next;
-
-		/* Found current widget, let's return the next one */
-		if (next == widget) {
-			next = visual_list_next (&box->childs, &le);
-
-			return next;
-		}
-	}
-	
-	return NULL;
+	return &box->childs;
 }
 
+/**
+ * Get the VisUIOrientType value from a VisUIBox.
+ *
+ * @param box VisUIBox from which the VisUIOrientType is requested.
+ *
+ * @return VisUIOrientType containing the orientation style for this VisUIBox.
+ */
 VisUIOrientType visual_ui_box_get_orient (VisUIBox *box)
 {
 	visual_log_return_val_if_fail (box != NULL, VISUAL_ORIENT_TYPE_NONE);
@@ -484,6 +485,14 @@ VisUIOrientType visual_ui_box_get_orient (VisUIBox *box)
 	return box->orient;
 }
 
+/**
+ * Creates a new VisUITable, that can be used to attach VisUIWidgets to cells in the table.
+ *
+ * @param rows The number of rows in the table.
+ * @param cols The number of columns in the table.
+ *
+ * @return The newly created VisUITable in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_table_new (int rows, int cols)
 {
 	VisUITable *table;
@@ -499,6 +508,14 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 	return VISUAL_UI_WIDGET (table);
 }
 
+/**
+ * Frees a VisUITable, this does not destroy it's childeren.
+ *
+ * @param table Pointer to the VisUITable that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_TABLE_NULL, -VISUAL_ERROR_UI_NO_TABLE or 
+ * 	error values returned by visual_mem_free () on failure.
+ */
 int visual_ui_table_free (VisUITable *table)
 {
 	visual_log_return_val_if_fail (table != NULL, -VISUAL_ERROR_UI_TABLE_NULL);
@@ -515,6 +532,14 @@ int visual_ui_table_free (VisUITable *table)
 	return visual_mem_free (table);
 }
 
+/**
+ * Destroys a VisUITable, this does destroy the VisUITable and all it's childeren.
+ * 
+ * @param table Pointer to the VisUITable that needs to be destroyed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_TABLE_NULL, -VISUAL_ERROR_UI_NO_TABLE or
+ *	error values returned by visual_ui_table_free () on failure. 
+ */
 int visual_ui_table_destroy (VisUITable *table)
 {
 	visual_log_return_val_if_fail (table != NULL, -VISUAL_ERROR_UI_TABLE_NULL);
@@ -531,6 +556,17 @@ int visual_ui_table_destroy (VisUITable *table)
 	return visual_ui_table_free (table);
 }
 
+/**
+ * Attaches a VisUIWidget to a cell within a VisUITable.
+ * 
+ * @param table Pointer to the VisUITable to which a VisUiWidget is attached.
+ * @param widget Pointer to the VisUIWidget that is being attached to the VisUITable.
+ * @param row The row number starting at 0.
+ * @param col The column number starting at 0.
+ * 
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_TABLE_NULL, -VISUAL_ERROR_UI_WIDGET_NULL or
+ * 	error values returned by visual_list_add () on failure.
+ */
 int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int col)
 {
 	VisUITableEntry *tentry;
@@ -548,6 +584,14 @@ int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int
 	return visual_list_add (&table->childs, tentry);
 }
 
+/**
+ * Retrieve a VisList containing VisUITableEntry elements, in which the child VisUIWidget and it's place
+ * 	in the VisUITable is stored.
+ *
+ * @param table Pointer to the VisUITable from which the childs are requested.
+ *
+ * @return VisList containing the childs of the VisUITable, or NULL on error.
+ */
 VisList *visual_ui_table_get_childs (VisUITable *table)
 {
 	visual_log_return_val_if_fail (table != NULL, NULL);
@@ -555,6 +599,13 @@ VisList *visual_ui_table_get_childs (VisUITable *table)
 	return &table->childs;
 }
 
+/**
+ * Creates a new VisUIFrame, which can be used to put a frame around a VisUIWidget.
+ * 
+ * @param name The name of this frame.
+ *
+ * @return The newly created VisUIFrame in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_frame_new (const char *name)
 {
 	VisUIFrame *frame;
@@ -569,6 +620,14 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 	return VISUAL_UI_WIDGET (frame);
 }
 
+/**
+ * Frees a VisUIFrame, this does not destroy it's childeren.
+ * 
+ * @param frame Pointer to the VisUIFrame that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_FRAME_NULL, -VISUAL_ERROR_UI_NO_FRAME or
+ *	error values returned by visual_mem_free () on failure.
+ */
 int visual_ui_frame_free (VisUIFrame *frame)
 {
 	visual_log_return_val_if_fail (frame != NULL, -VISUAL_ERROR_UI_FRAME_NULL);
@@ -582,6 +641,14 @@ int visual_ui_frame_free (VisUIFrame *frame)
 	return visual_mem_free (frame);
 }
 
+/**
+ * Destroy a VisUIFrame, this does destroy the VisUIFrame and all it's childeren.
+ *
+ * @param frame Pointer to the VisUIFrame that needs to be destroyed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_FRAME_NULL, -VISUAL_ERROR_UI_NO_FRAME or
+ * 	error values returned by visual_ui_frame_free () on failure.
+ */
 int visual_ui_frame_destroy (VisUIFrame *frame)
 {
 	visual_log_return_val_if_fail (frame != NULL, -VISUAL_ERROR_UI_FRAME_NULL);
@@ -597,6 +664,14 @@ int visual_ui_frame_destroy (VisUIFrame *frame)
 	return visual_ui_frame_free (frame);
 }
 
+/**
+ * Creates a new VisUILabel, which can be used as a one line piece of text in an user interface.
+ *
+ * @param text Text of which the label consists.
+ * @param bold Flag that indicates if a label should be drawn bold or not.
+ *
+ * @return The newly created VisUILabel in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_label_new (const char *text, int bold)
 {
 	VisUILabel *label;
@@ -612,6 +687,14 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
 	return VISUAL_UI_WIDGET (label);
 }
 
+/**
+ * Frees a VisUILabel.
+ * 
+ * @param label Pointer to the VisUILabel that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_LABEL_NULL, -VISUAL_ERROR_UI_NO_LABEL or
+ * 	error values returned by visual_mem_free () on failure.
+ */
 int visual_ui_label_free (VisUILabel *label)
 {
 	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);
@@ -625,6 +708,14 @@ int visual_ui_label_free (VisUILabel *label)
 	return visual_mem_free (label);
 }
 
+/**
+ * Sets the bold flag for a VisUILabel.
+ * 
+ * @param label Pointer to the VisUILabel of which the bold flag is set, or unset.
+ * @param bold Flag that indicates if a label should be drawn bold or not.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_LABEL_NULL on failure.
+ */
 int visual_ui_label_set_bold (VisUILabel *label, int bold)
 {
 	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);

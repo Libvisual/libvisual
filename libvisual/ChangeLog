@@ -1,3 +1,11 @@
+2004-11-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.* (visual_ui_box_get_next): Removed in favor for
+	visual_ui_box_get_childs, which is more consistent with the rest of
+	the API, and way more sane implementation wise.
+
+	And added loads of documentation!
+
 2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_types.h: Check if uint*_t's are already

@@ -255,7 +255,7 @@ VisUIWidget *visual_ui_box_new (VisUIOrientType orient);
 int visual_ui_box_free (VisUIBox *box);
 int visual_ui_box_destroy (VisUIBox *box);
 int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget);
-VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget);
+VisList *visual_ui_box_get_childs (VisUIBox *box);
 VisUIOrientType visual_ui_box_get_orient (VisUIBox *box);
 
 VisUIWidget *visual_ui_table_new (int rows, int cols);
