@@ -1,0 +1,106 @@
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.57)
+AC_INIT(Libvisual Nebulus plugin, 0.1.2, [synap@nerds-incorporated.org], [libvisual-nebulus])
+AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
+
+AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_HEADER([config.h])
+
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+AC_DISABLE_STATIC
+AC_PROG_LIBTOOL
+
+AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
+if test x$PKG_CONFIG = xno ; then
+  AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/])
+fi
+if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
+  :
+else
+  AC_MSG_ERROR([*** pkg-config too old; version 0.14 or better required.])
+fi
+
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-lGL':
+AC_CHECK_LIB([GL], [main])
+# FIXME: Replace `main' with a function in `-lGLU':
+AC_CHECK_LIB([GLU], [main])
+
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.5, [libvis="yes"], [libvis="no"])
+if test x"$libvis" = xno; then
+	AC_MSG_ERROR([
+*** libvisual not found or version mismatch.
+*** libvisual is needed to build this package,
+*** you can download libvisual at http://libvisual.sf.net/
+	])
+fi
+AC_SUBST(LIBVISUAL_LIBS)
+AC_SUBST(LIBVISUAL_CFLAGS)
+	
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
+if test x"$opengl" = xno; then
+	AC_MSG_ERROR([*** OpenGl and Glu headers not found.])
+fi
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_TIME
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([memset sqrt])
+
+# Arguments to specify certain features.
+AC_ARG_ENABLE([debug],
+            AC_HELP_STRING([--enable-debug],
+                           [Enable debug @<:@default=disabled@:>@]),
+	    [debug=$enableval],
+	    [debug=no])
+AC_MSG_CHECKING([wheter to enable debug])
+if test "$debug" = yes; then
+  AC_MSG_RESULT([yes])
+  DEBUG_CFLAGS="-ggdb3"
+else
+  AC_MSG_RESULT([no])
+  DEBUG_CFLAGS=""
+fi
+AC_SUBST(DEBUG_CFLAGS)
+
+
+AC_PREFIX_DEFAULT(/usr)
+
+# cflags, ld flags
+libs_dynamic_loader="-ldl"
+AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
+
+AC_CONFIG_FILES([
+	Makefile
+	src/Makefile
+])
+
+AC_OUTPUT
+
+echo "
+=====================================================================
+LIBVISUAL-NEBULA, THE NEBULA PLUGIN FOR LIBVISUAL $VERSION
+=====================================================================
+
+Packages found:
+opengl:                               : ${opengl}
+
+Build options:
+prefix:                               : ${prefix}
+source code location:                 : ${srcdir}
+compiler:                             : ${CC}
+cflags:                               : ${CFLAGS}
+"
+

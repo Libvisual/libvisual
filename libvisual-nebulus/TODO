@@ -1,0 +1,24 @@
+This plugin is a rough port from the xmms nebulus and it needs A LOT of
+maintaince.
+
+TODO:
+	* Throw everything in privates.
+	* Make a more  general framework for effects and look into fading
+	  between effects.
+	* Make the current effects react better on sound.
+	* Add bitmap texture using the libvisual bmp to VisVideo loader.
+	* Make a system to load libvisual actors in a texture.
+	* CLEANUPS CLEANUPS CLEANUPS MAINTAINCE *eh*.
+	* Port over some nice http://rss-glx.sourceforge.net/ screensavers
+	  into cool audio visualisation effects.
+	* openGL detection never fails, eh !? buildtree issue.
+	* When the super the duper kickass libvisual audio core lands
+	  use it's bpm detection instead of the included one.
+
+I really can use some help here. I can't maintain all the plugins i port to
+libvisual, it's simply a shitload and besides i want to put my time into
+libvisual.
+
+The reason i port these babies is to provide a start, and to make sure
+the platform .1 is tested .2 has something to show off.
+

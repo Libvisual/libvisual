@@ -1,0 +1,16 @@
+2004-06-21  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.in: moved to configure.ac
+	* configure.ac: updated to autoconf 2.57 requirements
+
+2004-06-17  Dennis Smit  <ds@nerds-incorporated.org>
+        Version 0.1.1
+
+	* Adapted to API changes.
+
+2004-05-27  Dennis Smit  <ds@nerds-incorporated.org>
+        Version 0.1.0
+	
+	* ported to libvisual
+	* cleanups
+
