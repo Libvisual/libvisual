@@ -285,6 +285,15 @@ int visual_ui_mutator_set_step (VisUIMutator *mutator, double step)
 	return 0;
 }
 
+int visual_ui_mutator_set_precision (VisUIMutator *mutator, int precision)
+{
+	visual_log_return_val_if_fail (mutator != NULL, -1);
+
+	mutator->precision = precision;
+
+	return 0;
+}
+
 VisUIWidget *visual_ui_entry_new ()
 {
 	VisUIEntry *entry;

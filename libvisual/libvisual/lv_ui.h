@@ -136,6 +136,8 @@ struct _VisUIMutator {
 	double			 min;
 	double			 max;
 	double			 step;
+
+	int			 precision;
 };
 
 struct _VisUIEntry {
@@ -225,6 +227,7 @@ const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator);
 int visual_ui_mutator_set_max (VisUIMutator *mutator, double max);
 int visual_ui_mutator_set_min (VisUIMutator *mutator, double min);
 int visual_ui_mutator_set_step (VisUIMutator *mutator, double step);
+int visual_ui_mutator_set_precision (VisUIMutator *mutator, int precision);
 
 VisUIWidget *visual_ui_entry_new (void);
 int visual_ui_entry_set_length (VisUIEntry *entry, int length);
