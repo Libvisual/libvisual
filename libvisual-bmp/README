@@ -1,8 +1,8 @@
--- What is libvisual xmms --
-Libvisual is an xmms plugin for the libvisual audio visualisation
+-- What is libvisual BMP --
+Libvisual is an BMP plugin for the libvisual audio visualisation
 framework.
 
-You can use the following keys in the xmms plugin:
+You can use the following keys in the BMP plugin:
 z: previous song
 x: play
 c: pauze
@@ -52,7 +52,7 @@ mainly your plugin will be accessible to all the applications.
 
 
 -- License --
-The libvisual xmms plugin is released under the GPL,
+The libvisual BMP plugin is released under the GPL,
 more information about this license can be found in
 the COPYING file.
 
@@ -65,15 +65,10 @@ useful information regarding to policies and such.
 
 
 -- Requirement --
-The xmms libvisual plugin needs:
-* xmms 1.2.x
+The BMP libvisual plugin needs:
+* BMP 0.9.7
 * libSDL 1.2.5 or higher
-* glib 1.2.2 or higher (glib 1.2 is not compatible with 2.x)
-* gtk 1.2.2 or higher (gtk 1.2 is not compatible with 2.x)
-* libvisual 0.1
-
-The reason the plugin uses gtk and glib 1.2.x is because
-of xmms is using them.
+* libvisual 0.1.7
 
 
 -- Compiling and installing --
@@ -82,9 +77,9 @@ Configuration:
 
 Building:
 	make
-		Will compile the xmms plugin
+		Will compile the BMP plugin
 		
 Installing:
 	make install
-		Installs the xmms plugin
+		Installs the BMP plugin
 
