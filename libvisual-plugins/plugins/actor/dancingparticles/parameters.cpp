@@ -6,8 +6,6 @@
 // or why use lex when..
 
 
-void about_error(char *format, ...);
-
 int nump=0;
 parameters *ps=0;
 
@@ -86,7 +84,6 @@ void init_parameters()
   if(!load_parameters(configfilename))
     if(!load_parameters("/usr/local/share/dancingparticles/dancingparticles.conf"))
       {
-		about_error("no conf file loaded!!");
       }
 }
 int load_parameters(char * filename)
@@ -226,7 +223,6 @@ int load_parameters(char * filename)
   return 1;
  error:
   setlocale (LC_NUMERIC, oldlocal);
-  about_error("Error\n%s\nparse error line %d: %s\n %s \n",filename, line, err,buf); 
   fclose(f);
   return 0;
 }

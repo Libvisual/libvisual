@@ -8,6 +8,8 @@ INCLUDES = -I../../unix/Headers\
 	-I../../GForceCommon/Headers\
 	-I../../unix/libmfl
 
+AM_CXXFLAGS = @LIBVISUAL_CFLAGS@
+
 ALLSOURCES = Arg.cpp ArgList.cpp FileSpecList.cpp Hashtable.cpp RectUtils.cpp TempMem.cpp UtilStr.cpp XFloatList.cpp XLongList.cpp XPtrList.cpp XPtrMatrix.cpp XStrList.cpp nodeClass.cpp 
 
 #CXXFLAGS = "$CXXFLAGS -DUNIX_X -D_REENTRANT"

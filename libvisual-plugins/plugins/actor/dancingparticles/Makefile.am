@@ -8,7 +8,7 @@ libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
 LIBS += -L. -L$(prefix)/lib -lGL -lGLU @LIBVISUAL_LIBS@
 
-AM_CFLAGS = @LIBVISUAL_CFLAGS@
+AM_CXXFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
