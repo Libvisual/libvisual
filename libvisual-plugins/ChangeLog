@@ -1,4 +1,14 @@
-2004-09-12  Dennis Smit  <ds@nerds-incoporated.org>
+2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/actor/lv_analyzer/actor_lv_analyzer.c
+	(lv_analyzer_palette): Build nice palette.
+
+	(lv_analyzer_render): Draw analyzer bars (mostly
+	stolen from alsaplayer). Yeah I'm a lazy guy.
+
+	Also removed unused cruft.
+
+2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/input/jack/*: Added jack input plugin.
 	Doesn't work yet tho :)

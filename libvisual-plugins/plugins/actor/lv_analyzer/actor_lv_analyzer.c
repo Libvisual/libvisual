@@ -6,15 +6,13 @@
 
 #include <libvisual/libvisual.h>
 
-#define NR_BANDS 16
+#define BARS 16
 
 typedef struct {
 	VisPalette pal;
-	int bands[NR_BANDS];
 } AnalyzerPrivate;
 
-static int calc_bands (VisAudio *audio, int band);
-static void hline (uint8_t *buf, VisVideo *video, int x1, int x2, int y, int col);
+static int xranges[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
 
 int lv_analyzer_init (VisPluginData *plugin);
 int lv_analyzer_cleanup (VisPluginData *plugin);
@@ -40,7 +38,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "lv_analyzer",
 		.name = "libvisual analyzer",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>",
+		.author = "Original by: Andy Lo A Foe <andy@alsaplayer.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
 		.about = "The Libvisual analzer plugin",
 		.help = "This is a test plugin that'll display a simple analyzer",
@@ -92,7 +90,7 @@ int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
 
 	if (reqw < 32)
 		reqw = 32;
-
+	
 	*width = reqw;
 
 	return 0;
@@ -127,11 +125,21 @@ VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = plugin->priv;
 	int i;
-	
+
 	for (i = 0; i < 256; i++) {
-		priv->pal.colors[i].r = i;
-		priv->pal.colors[i].g = i;
-		priv->pal.colors[i].b = i;
+		priv->pal.colors[i].r = 0;
+		priv->pal.colors[i].g = 0;
+		priv->pal.colors[i].r = 0;
+	}
+
+	for (i = 1; i < 64; i++) {
+		priv->pal.colors[i].r = i * 4;
+		priv->pal.colors[i].g = 255;
+		priv->pal.colors[i].b = 0;
+
+		priv->pal.colors[i + 63].r = 255;
+		priv->pal.colors[i + 63].g = (63 - i) * 4;
+		priv->pal.colors[i + 63].b = 0;
 	}
 
 	return &priv->pal;
@@ -139,57 +147,61 @@ VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 
 int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	AnalyzerPrivate *priv = plugin->priv;
-	int size;
-	int i, j;
-	float height;
-	uint8_t *buf;
+	int maxbar[BARS];
+	unsigned char *bits = video->screenbuffer;
+	unsigned int val;
+	int j;
+	int k = 0;
+	int i, h;
+	uint8_t *loc;
+	float scale;
+	float colscale;
 
-	for (i = 0; i < NR_BANDS; i++)
-		priv->bands[i] = calc_bands (audio, i);
+	memset (bits, 0, video->size);
+	memset (maxbar, 0, sizeof (maxbar));
+	
+	if (video->height > 127)
+		scale = video->height / 127;
+	else
+		scale = 127 / video->height;
+	
+	colscale = 1 / scale;
+	
+	for (i=0; i < BARS; i++) {
+		val = 0;
+		for (j = xranges[i]; j < xranges[i + 1]; j++) {
+			k = (audio->freq[2][j]) / 128;
+			val += k;
+		}
 
-	buf = (uint8_t *) video->screenbuffer;
+		if(val > 127)
+			val = 127;
 
-	memset (buf, 0, video->width * video->height);
-
-	size = video->width / NR_BANDS;
-	size -= 2;
-
-	for (i = 0; i < NR_BANDS; i++) {
-
-		height = (float) priv->bands[i] / 100.00;
-//		printf ("height: %f\n", height);
+		val *= scale;
 		
-		for (j = video->height - 1; j > video->height / 2; j--) {
-			hline (buf, video, size * i, size * (i + 1), j, 100);
+		if (val >= video->height)
+			val = video->height - 1;
+
+
+		if (val > (unsigned int)maxbar[ i ])
+			maxbar[ i ] = val;
+		
+		else {
+			k = maxbar[ i ] - (4 + (8 / (128 - maxbar[ i ])));
+			val = k > 0 ? k : 0;
+			maxbar[ i ] = val;
+		}
+	
+		
+		loc = bits + video->pitch * (video->height - 1);
+		for (h = val; h > 0; h--) {
+			for (j = (video->pitch / BARS) * i + 0; j < (video->pitch / BARS) * i + ((video->pitch / BARS) - 1); j++) {
+				*(loc + j) = (float) (val-h) * colscale;
+			}
+			loc -= video->pitch;
 		}
 	}
-	
-	for (i = 0; i < NR_BANDS; i++) {
-//		printf ("BAND: %d = %d\n", i, priv->bands[i]);
-	}
-	
+
 	return 0;
-}
-
-static int calc_bands (VisAudio *audio, int band)
-{
-	int i;
-	int bandsize = (256 / NR_BANDS);
-	int mean = 0;
-	
-	for (i = bandsize * band; i < bandsize * (band + 1); i++)
-		mean += audio->freq[2][i];
-
-	return mean / bandsize;
-}
-
-static void hline (uint8_t *buf, VisVideo *video, int x1, int x2, int y, int col)
-{
-	int i;
-
-	/* FIXME, memcpy me */
-	for (i = x1; i < x2; i++)
-		buf[(y * video->width) + i] = col;
 }
 
