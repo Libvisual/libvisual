@@ -32,7 +32,11 @@ static int table_dtor (VisObject *object)
 
 static int frame_dtor (VisObject *object)
 {
-	visual_object_unref (VISUAL_OBJECT (VISUAL_UI_CONTAINER (object)->child));
+	VisUIContainer *container = VISUAL_UI_CONTAINER (object);
+
+	visual_object_unref (VISUAL_OBJECT (container->child));
+
+	container->child = NULL;
 
 	return VISUAL_OK;
 }
@@ -50,6 +54,8 @@ static int table_entry_dtor (VisObject *object)
 	VisUITableEntry *tentry = VISUAL_UI_TABLE_ENTRY (object);
 
 	visual_object_unref (VISUAL_OBJECT (tentry->widget));
+
+	tentry->widget = NULL;
 
 	return VISUAL_OK;
 }
