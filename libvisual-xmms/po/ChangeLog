@@ -1,3 +1,8 @@
+2004-07-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* LINGUAS: Added ru.
+	* ru.po: Added.
+
 2004-07-12  Duilio Protti <dprotti@users.sourceforge.net>
 	
 	* es.po: updated (about window).
