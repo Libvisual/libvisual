@@ -137,5 +137,6 @@ AC_CONFIG_FILES([Makefile
                  drivers/x11/Makefile
                  drivers/null/Makefile
                  example/Makefile
+                 example/plugins/Makefile
                  lvdisplay/Makefile])
 AC_OUTPUT
