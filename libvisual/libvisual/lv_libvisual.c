@@ -79,7 +79,7 @@ int visual_init (int *argc, char ***argv)
 			printf ("OI, your argc,argv is borked\n");
 		/*  FIXME, print a warning here, one
 		 *  is NULL and one isn't */
-		__lv_progname = (char*) malloc (strlen ("no progname"));
+		__lv_progname = visual_mem_malloc0 (strlen ("no progname"));
                 if (__lv_progname == NULL)
                         visual_log (VISUAL_LOG_WARNING, "Could not set program name");
                 else

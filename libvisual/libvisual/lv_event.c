@@ -23,15 +23,8 @@ VisEvent *visual_event_new ()
 {
 	VisEvent *event;
 
-	event = malloc (sizeof (VisEvent));
-	if (event == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-				"Cannot get memory for a new VisEvent structure");
-		return NULL;
-	}
-
-	memset (event, 0, sizeof (VisEvent));
-
+	event = visual_mem_new0 (VisEvent, 1);
+	
 	return event;
 }
 
@@ -60,14 +53,7 @@ VisEventQueue *visual_event_queue_new ()
 {
 	VisEventQueue *eventqueue;
 
-	eventqueue = malloc (sizeof (VisEventQueue));
-	if (eventqueue == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-				"Cannot get memory for a new VisEventQueue structure");
-		return NULL;
-	}
-
-	memset (eventqueue, 0, sizeof (VisEventQueue));
+	eventqueue = visual_mem_new0 (VisEventQueue, 1);
 
 	eventqueue->mousestate = VISUAL_MOUSE_UP;
 
@@ -87,7 +73,7 @@ int visual_event_queue_free (VisEventQueue *eventqueue)
 
 	visual_list_destroy (&eventqueue->events, free);
 	
-	free (eventqueue);
+	visual_mem_free (eventqueue);
 	
 	return 0;
 }

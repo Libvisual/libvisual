@@ -23,8 +23,7 @@ VisSongInfo *visual_songinfo_new (VisSongInfoType type)
 {
 	VisSongInfo *songinfo;
 
-	songinfo = malloc (sizeof (VisSongInfo));
-	memset (songinfo, 0, sizeof (VisSongInfo));
+	songinfo = visual_mem_new0 (VisSongInfo, 1);
 
 	songinfo->type = type;
 

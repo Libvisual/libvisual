@@ -67,7 +67,7 @@ VisFFTState *_lv_fft_init () {
 	VisFFTState *state;
 	unsigned int i;
 
-	state = malloc (sizeof (VisFFTState));
+	state = visual_mem_new0 (VisFFTState, 1);
 
 	if (state == NULL)
 		return NULL;

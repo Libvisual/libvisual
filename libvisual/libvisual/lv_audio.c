@@ -51,9 +51,7 @@ VisAudio *visual_audio_new ()
 {
 	VisAudio *audio;
 
-	audio = malloc (sizeof (VisAudio));
-
-	memset (audio, 0, sizeof (VisAudio));
+	audio = visual_mem_new0 (VisAudio, 1);
 
 	return audio;
 }
@@ -67,12 +65,11 @@ VisAudio *visual_audio_new ()
  */
 int visual_audio_free (VisAudio *audio)
 {
-	if (audio == NULL)
-		return -1;
+	visual_log_return_val_if_fail (audio != NULL, -1);
 
 	_lv_fft_close (audio->fft_state);
 	
-	free (audio);
+	visual_mem_free (audio);
 
 	return 0;
 }

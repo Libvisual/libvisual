@@ -52,8 +52,7 @@ VisBin *visual_bin_new ()
 {
 	VisBin *bin;
 
-	bin = malloc (sizeof (VisBin));
-	memset (bin, 0, sizeof (VisBin));
+	bin = visual_mem_new0 (VisBin, 1);
 
 	bin->morphautomatic = TRUE;
 

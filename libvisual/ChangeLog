@@ -1,5 +1,12 @@
 2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/*.c: Partily VisMemized. Replaced
+	mallocs by visual_mem_new0 mostly and such.
+
+	* tools/lv-inspect.c: Changes the output text.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_input.c (visual_input_set_callback):
 	Fixed documentation.
 

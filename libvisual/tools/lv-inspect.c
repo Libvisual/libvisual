@@ -74,17 +74,17 @@ void show_plugin_details (LVPlugin *plugin)
 void show_plugin_info (VisPluginInfo *info)
 {
 	printf ("Plugin information:\n");
-	printf ("Plugin name: %s\n", info->name);
-	printf ("Plugin author: %s\n", info->author);
-	printf ("Plugin version: %s\n", info->version);
-	printf ("Plugin about: %s\n", info->about);
-	printf ("Plugin help: %s\n", info->help);
+	printf ("  Plugin name: %s\n", info->name);
+	printf ("  Plugin author: %s\n", info->author);
+	printf ("  Plugin version: %s\n", info->version);
+	printf ("  Plugin about: %s\n", info->about);
+	printf ("  Plugin help: %s\n", info->help);
 }
 
 void show_plugin_ref (VisPluginRef *ref)
 {
 	printf ("Plugin shared object information:\n");
-	printf ("plugin file: %s\n", ref->file);
+	printf ("  plugin file: %s\n", ref->file);
 }
 
 void show_plugin_info_actor (LVPlugin *plugin)

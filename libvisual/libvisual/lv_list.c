@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.7 2004-07-07 21:10:29 vitalyvb Exp $
+ *	$Id: lv_list.c,v 1.8 2004-07-24 15:41:22 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -429,6 +429,7 @@ int visual_list_sort(VisList *list, visual_list_sort_func_t compare)
 		return -1;
 	
 	al = malloc (count * sizeof (VisListEntry *));
+
 	if (al == NULL)
 		return -1;
 

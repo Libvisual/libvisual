@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "lv_common.h"
 #include "lv_palette.h"
 
 /**
@@ -19,8 +20,7 @@ VisPalette *visual_palette_new ()
 {
 	VisPalette *pal;
 
-	pal = malloc (sizeof (VisPalette));
-	memset (pal, 0, sizeof (VisPalette));
+	pal = visual_mem_new0 (VisPalette, 1);
 
 	return pal;
 }

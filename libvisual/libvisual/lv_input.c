@@ -104,12 +104,10 @@ VisInput *visual_input_new (char *inputname)
 	VisInput *input;
 	VisPluginRef *ref;
 
-	if (__lv_plugins_input == NULL && inputname != NULL)
-		return NULL;
+	visual_log_return_val_if_fail (__lv_plugins_input != NULL && inputname == NULL, NULL);
 
-	input = malloc (sizeof (VisInput));
-	memset (input, 0, sizeof (VisInput));
-
+	input = visual_mem_new0 (VisInput, 1);
+	
 	input->audio = visual_audio_new ();
 	
 	if (inputname == NULL)
