@@ -92,6 +92,7 @@ AC_ARG_ENABLE([debug],
 AC_MSG_CHECKING([wheter to enable debug])
 if test "$debug" = yes; then
   AC_MSG_RESULT([yes])
+  AC_DEFINE([LV_XMMS_ENABLE_DEBUG], [1], [Enable debug whithin libvisual xmms plugin])
   DEBUG_CFLAGS="-ggdb3"
 else
   AC_MSG_RESULT([no])

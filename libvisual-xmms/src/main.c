@@ -154,7 +154,11 @@ static void lv_xmms_init ()
         	g_free (argv[0]);
 	        g_free (argv);
 	}
-	
+
+#if LV_XMMS_ENABLE_DEBUG
+	visual_log_set_verboseness (VISUAL_LOG_VERBOSENESS_HIGH);
+#endif
+
 	if (strlen (options->last_plugin) <= 0 ) {
 		visual_log (VISUAL_LOG_INFO, "last plugin: (none)");
 	} else {
