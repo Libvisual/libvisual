@@ -127,7 +127,8 @@ int main(int argc, char **argv)
 						break;
 				}
 				if (areload){
-					VisActor *actor = visual_actor_new(actorname);
+					visual_actor_free(actor);
+					actor = visual_actor_new(actorname);
 					visual_bin_connect(bin, actor, input);
 					lvdisplay_realize(v);
 				}

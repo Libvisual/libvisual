@@ -1,3 +1,8 @@
+2004-10-14  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+	* example/main.c: plugin changer fix. resizes better now.
+	Some problems with pitch/aligment still exists but
+	it's lvdisplay_realize()'s fault.
+
 2004-10-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 	* configure.ac, drivers/Makefile.am, drivers/null/*:
 	Added a null plugin. Note that it generates resize and
