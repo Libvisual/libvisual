@@ -23,7 +23,7 @@ int inp_esd_init (VisInputPlugin *plugin);
 int inp_esd_cleanup (VisInputPlugin *plugin);
 int inp_esd_upload (VisInputPlugin *plugin, VisAudio *audio);
 
-static const int btmul = sizeof (short);
+static const int inp_esd_var_btmul = sizeof (short);
 
 LVPlugin *get_plugin_info (VisPluginRef *ref)
 {
@@ -32,7 +32,9 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	EsdPrivate *priv;
 	
 	plugin = visual_plugin_new ();
+	visual_log_return_val_if_fail(plugin != NULL, NULL);
 	esd_input = visual_plugin_input_new ();
+	visual_log_return_val_if_fail(esd_input != NULL, NULL);
 	
 	esd_input->name = "esd";
 	esd_input->info = visual_plugin_info_new ("esd", "Dennis Smit <ds@nerds-incorporated.org>", "0.1",
@@ -43,6 +45,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	esd_input->upload =	inp_esd_upload;
 
 	priv = malloc (sizeof (EsdPrivate));
+	visual_log_return_val_if_fail(priv != NULL, NULL);
 	memset (priv, 0, sizeof (EsdPrivate));
 	
 	esd_input->private = priv;
@@ -55,7 +58,11 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int inp_esd_init (VisInputPlugin *plugin)
 {
-	EsdPrivate *priv = plugin->private;
+	EsdPrivate *priv = NULL;
+
+	visual_log_return_val_if_fail( plugin != NULL, -1 );
+	priv = plugin->private;
+	visual_log_return_val_if_fail( priv != NULL, -1 );
 	
 	priv->esdhandle = esd_monitor_stream (ESD_BITS16 | ESD_STEREO | ESD_STREAM | ESD_MONITOR, 44100, NULL, "lv_esd_plugin");
 
@@ -72,6 +79,10 @@ int inp_esd_init (VisInputPlugin *plugin)
 int inp_esd_cleanup (VisInputPlugin *plugin)
 {
 	EsdPrivate *priv = plugin->private;
+
+	visual_log_return_val_if_fail( plugin != NULL, -1 );
+	priv = plugin->private;
+	visual_log_return_val_if_fail( priv != NULL, -1 );
 	
 	if (priv->loaded == 1)
 		esd_close (priv->esdhandle);
@@ -83,21 +94,29 @@ int inp_esd_cleanup (VisInputPlugin *plugin)
 
 int inp_esd_upload (VisInputPlugin *plugin, VisAudio *audio)
 {
-	EsdPrivate *priv = plugin->private;
+	EsdPrivate *priv = NULL;
 	short esddata[PCM_BUF_SIZE];
 	int rcnt;	
 	int i;
 
-	rcnt = read (priv->esdhandle, esddata, PCM_BUF_SIZE * btmul);
+	visual_log_return_val_if_fail(audio != NULL, -1);
+	visual_log_return_val_if_fail(plugin != NULL, -1);
+	priv = plugin->private;
+	visual_log_return_val_if_fail(priv != NULL, -1);
+
+	rcnt = read (priv->esdhandle, esddata,
+		     PCM_BUF_SIZE * inp_esd_var_btmul);
 	
 	if (rcnt < 0) {
 		if (priv->fakebufloaded == 1) {
 			priv->clearcount++;
 
 			if (priv->clearcount > 100)
-				memset (priv->fakebuf, 0, PCM_BUF_SIZE * btmul);
+				memset (priv->fakebuf, 0, 
+					PCM_BUF_SIZE * inp_esd_var_btmul);
 			
-			memcpy (esddata, priv->fakebuf, PCM_BUF_SIZE * btmul);
+			memcpy (esddata, priv->fakebuf, 
+				PCM_BUF_SIZE * inp_esd_var_btmul);
 		} else {
 			memset (esddata, 0, sizeof (esddata));
 		}	
@@ -107,7 +126,7 @@ int inp_esd_upload (VisInputPlugin *plugin, VisAudio *audio)
 	
 	priv->fakebufloaded = 1;
 
-	memcpy (priv->fakebuf, esddata, PCM_BUF_SIZE * btmul);
+	memcpy (priv->fakebuf, esddata, PCM_BUF_SIZE * inp_esd_var_btmul);
 
 	for (i = 0; i < PCM_BUF_SIZE && i < 1024; i += 2) {
 		audio->plugpcm[0][i >> 1] = priv->fakebuf[i];
