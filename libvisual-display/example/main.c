@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: main.c,v 1.19 2005-02-14 22:05:14 vitalyvb Exp $
+ * $Id: main.c,v 1.20 2005-02-15 15:43:47 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,8 +28,13 @@
 
 #include "lvdisplay/lv_display.h"
 
+#if 1
 static char actorname[100] = "testactor";
 static char backend[100] = "glx";
+#else
+static char actorname[100] = "oinksie";
+static char backend[100] = "x11";
+#endif
 
 int main(int argc, char **argv)
 {
@@ -161,6 +166,10 @@ int main(int argc, char **argv)
 		exit (1);
 	}
 
+	{
+	LvdFPSControl *f = sleep26_fps_control_init();
+	lvdisplay_visual_set_fpsctl(v, f);
+	}
 	r = lvdisplay_set_driver(v, drv);
 	if (r){
 		fprintf (stderr, "failed to set driver\n");
@@ -285,7 +294,7 @@ int main(int argc, char **argv)
 			case VISUAL_EVENT_RESIZE:
 				fprintf(stderr, "resized: %dx%d\n", event.resize.width, event.resize.height);
 				visual_bin_sync(bin, FALSE);
-				visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
+//				visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
 				break;
 			default:
 				break;
@@ -293,6 +302,7 @@ int main(int argc, char **argv)
 		}
 
 		lvdisplay_run(v);
+		printf("fps: %f\n", v->fps->fps_current);
 	}
 
 	/* cleanup...

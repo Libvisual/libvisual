@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.c,v 1.22 2005-02-14 22:05:15 vitalyvb Exp $
+ * $Id: lv_display.c,v 1.23 2005-02-15 15:43:47 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -250,40 +250,14 @@ int lvdisplay_set_videomode(LvdDriver *drv, LvdVideoMode *vm)
 }
 
 /***********************************************************************/
-/// XXX make it per-thread
+/// XXX make it per-thread/per-lvd
 
 static LvdDContext *context_stack[1024]; // XXX FIXME
 static int context_stack_ptr = 0;
 
-
-static Lvd *actx_v = NULL;
-static LvdDContext *actx = NULL;
-
 static void set_active_context(Lvd *v, LvdDContext *ctx)
 {
-// XXX MUTEX IN
-	if ((actx_v == v) && (actx == ctx))
-		return;
-
-	if ((actx_v != NULL) && (actx != NULL))
-		actx_v->be->context_deactivate(actx_v->beplug, actx);
 	v->be->context_activate(v->beplug, ctx);
-
-	actx_v = v;
-	actx = ctx;
-// XXX MUTEX OUT
-}
-
-
-static void active_context_release()
-{
-	if ((actx_v == NULL) || (actx == NULL))
-		return;
-
-	actx_v->be->context_deactivate(actx_v->beplug, actx);
-
-	actx_v = NULL;
-	actx = NULL;
 }
 
 /***********************************************************************/
@@ -305,12 +279,27 @@ Lvd* lvdisplay_initialize()
 		return NULL;
 	}
 
-//	v->fps = null_fps_control_init();
-	v->fps = sleep26_fps_control_init();
+	v->fps = null_fps_control_init();
+//	v->fps = sleep26_fps_control_init();
+//	v->fps = tod_fps_control_init();
 
 	return v;
 }
 
+int lvdisplay_visual_set_fpsctl(Lvd *v, LvdFPSControl *fpsctl)
+{
+	visual_log_return_val_if_fail (v != NULL, -1);
+	visual_log_return_val_if_fail (fpsctl != NULL, -1);
+
+	if (v->fps != NULL) {
+		visual_object_unref(VISUAL_OBJECT(v->fps));
+	}
+
+	v->fps = fpsctl;
+	visual_object_ref(VISUAL_OBJECT(fpsctl));
+
+	return 0;
+}
 
 int lvdisplay_set_driver(Lvd *v, LvdDriver *drv)
 {
@@ -325,10 +314,18 @@ int lvdisplay_set_driver(Lvd *v, LvdDriver *drv)
 		actor->plugin->info->cleanup(actor->plugin);
 		actor->plugin->realized = FALSE;
 	}
+	visual_actor_set_video(actor, NULL);
+
+	if (v->ctx){
+		v->be->context_delete(v->beplug, v->ctx);
+		v->ctx = NULL;
+	}
 
 	if (v->drv){
 		visual_object_unref(VISUAL_OBJECT(v->drv));
+		v->drv = NULL;
 	}
+
 
 	visual_object_ref(VISUAL_OBJECT(drv));
 
@@ -366,8 +363,8 @@ int lvdisplay_realize(Lvd *v)
 {
 	int res;
 	VisActor *actor;
-	VisVideoDepth adepth, vdepth;
 	VisPluginEnviron *enve;
+	VisVideoDepth adepth, vdepth;
 	LvdPluginEnvironData *envdata;
 
 	visual_log_return_val_if_fail (v != NULL, -1);
@@ -394,6 +391,7 @@ int lvdisplay_realize(Lvd *v)
 	enve->environment = (VisObject*)envdata;
 
 	visual_plugin_environ_add(actor->plugin, enve);
+
 
 	adepth = visual_actor_get_supported_depth(actor);
 	vdepth = v->drv->be->get_supported_depths(v->drv->beplug);
@@ -431,10 +429,9 @@ int lvdisplay_realize(Lvd *v)
 
 		res = v->drv->fe->set_param(v->drv->feplug, LVD_SET_DEPTH, &depth, 1);
 
-		visual_video_allocate_buffer(v->drv->video);
 	}
 
-	active_context_release();
+//	active_context_release();
 
 	if (v->ctx)
 		v->be->context_delete(v->beplug, v->ctx);
@@ -448,8 +445,6 @@ int lvdisplay_realize(Lvd *v)
 	set_active_context(v, v->ctx);
 
 	visual_bin_realize(v->bin);
-	visual_actor_set_video(actor, v->drv->video);
-	visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
 
 	return 0;
 }
@@ -458,8 +453,6 @@ int lvdisplay_realize(Lvd *v)
 int lvdisplay_dtor(VisObject *v_obj)
 {
 	Lvd *v = (Lvd*)v_obj;
-
-	active_context_release();
 
 	if (v->ctx)
 		v->be->context_delete(v->beplug, v->ctx);
@@ -490,6 +483,7 @@ VisBin *lvdisplay_visual_get_bin(Lvd *v)
 
 int lvdisplay_run(Lvd *v)
 {
+	VisVideo *ctxv;
 	visual_log_return_val_if_fail (v != NULL, -1);
 
 	// XXX TODO rewrite for better fps ctl
@@ -499,13 +493,19 @@ int lvdisplay_run(Lvd *v)
 
 	set_active_context(v, v->ctx);
 
+	if (v->be->get_active_ctx_video){
+		ctxv = v->be->get_active_ctx_video(v->beplug);
+		if (ctxv && (v->bin->actor->video != ctxv)){
+			visual_actor_set_video(v->bin->actor, ctxv);
+			visual_actor_video_negotiate(v->bin->actor, 0, FALSE, FALSE);
+		}
+	}
+
 	visual_bin_realize(v->bin);
 	visual_bin_run(v->bin);
 
 	v->be->draw(v->beplug);
-
 	v->fps->fps_control_frame_end(v->fps);
-
 	return 0;
 }
 

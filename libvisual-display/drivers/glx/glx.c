@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: glx.c,v 1.14 2005-02-12 18:17:27 vitalyvb Exp $
+ * $Id: glx.c,v 1.15 2005-02-15 15:43:46 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -75,6 +75,7 @@ static void context_activate(VisPluginData *plugin, LvdDContext*);
 static void context_deactivate(VisPluginData *plugin, LvdDContext *ctx);
 static LvdDContext *context_get_active(VisPluginData *plugin);
 static void draw(VisPluginData *plugin);
+static VisVideo *get_active_ctx_video(VisPluginData *plugin);
 
 
 const VisPluginInfo *get_plugin_info (int *count)
@@ -90,6 +91,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.context_activate = context_activate,
 		.context_deactivate = context_deactivate,
 		.context_get_active = context_get_active,
+		.get_active_ctx_video = get_active_ctx_video,
 
 		.draw = draw,
 	}};
@@ -364,13 +366,14 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 	if (c == NULL)
 		return NULL;
 
+	c->video = visual_video_new();
+	visual_video_clone(c->video, video);
+
 	if (onscrn) {
 		c->type = CONTEXT_TYPE_WIN;
 		c->drawable = XGLXW;
 		c->glxctx = glXCreateNewContext(XDPY, priv->fbconf,
 			GLX_RGBA_TYPE, NULL, True);
-
-		c->video = video;
 
 		if (!c->glxctx){
 			visual_mem_free(c);
@@ -400,12 +403,14 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 		c->glxctx = glXCreateNewContext(XDPY, priv->fbconf_pb,
 			GLX_RGBA_TYPE, parentc, True);
 
-		c->video = video;
-
 		glXQueryDrawable(XDPY, drw, GLX_WIDTH, &w);
 		glXQueryDrawable(XDPY, drw, GLX_HEIGHT, &h);
 		printf("created GLX pbuffer %d x %d\n", w, h);
 	}
+
+	if (video->depth != VISUAL_VIDEO_DEPTH_GL)
+		visual_video_allocate_buffer(c->video);
+
 
 	return (LvdDContext*)c;
 }
@@ -429,7 +434,25 @@ void context_delete(VisPluginData *plugin, LvdDContext *ctx)
 		glXDestroyPbuffer(XDPY, c->drawable);
 	c->drawable = 0;
 
+	if (c->video){
+		if (c->video->pixels)
+			visual_video_free_buffer(c->video);
+
+		visual_object_unref(VISUAL_OBJECT(c->video));
+		c->video = NULL;
+	}
+
 	visual_mem_free(c);
+}
+
+VisVideo *get_active_ctx_video(VisPluginData *plugin)
+{
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
+
+	if (priv->active_ctx){
+		return priv->active_ctx->video;
+	}
+	return NULL;
 }
 
 void context_deactivate(VisPluginData *plugin, LvdDContext *ctx)

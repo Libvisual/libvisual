@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fpsctls.c,v 1.1 2005-02-14 22:05:15 vitalyvb Exp $
+ * $Id: lv_fpsctls.c,v 1.2 2005-02-15 15:43:47 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,6 +40,8 @@
 //#endif
 
 #include "lv_display.h"
+
+#define DEFAULT_MAX_FPS 30.0f
 
 /*
  * Precise time control functions
@@ -83,6 +85,15 @@ int get_time_delta(TimeStruct *ts1, TimeStruct *ts2)
 }
 
 /*
+ * Sleep function
+ */
+
+static void micro_delay(int usec)
+{
+	usleep(usec);
+}
+
+/*
  * Linux 2.6 Sleep FPS Limiter
  */
  
@@ -94,7 +105,6 @@ typedef struct {
 } sleep26_fpsctl;
 
 
-
 static void sleep26_fps_control_frame_start(LvdFPSControl *fpsdata)
 {
 	sleep26_fpsctl *fps = (sleep26_fpsctl*)fpsdata;
@@ -102,6 +112,7 @@ static void sleep26_fps_control_frame_start(LvdFPSControl *fpsdata)
 	get_time(&fps->framestart);
 }
 
+// XXX FIXME avoid floating point arith
 static void sleep26_fps_control_frame_end(LvdFPSControl *fpsdata)
 {
 	sleep26_fpsctl *fps = (sleep26_fpsctl*)fpsdata;
@@ -119,7 +130,7 @@ static void sleep26_fps_control_frame_end(LvdFPSControl *fpsdata)
 
 	tosleep -= fps->oversleep;
 	if (tosleep > 0)
-		usleep(tosleep);
+		micro_delay(tosleep);
 
 	get_time(&ts2);
 	d = get_time_delta(&ts2, &fps->framestart) - frametime;
@@ -135,25 +146,16 @@ static void sleep26_fps_control_frame_end(LvdFPSControl *fpsdata)
 		fps->ctl.fps_avg = fps->ctl.fps_current;
 	else
 		fps->ctl.fps_avg = fps->ctl.fps_avg*(31.0/32) + (1000000.0/d)/32;
-
-	printf("FPS: %.4f\n", fps->ctl.fps_avg);
-}
-
-static int sleep26_fps_control_finit(VisObject *fpsdata)
-{
-	sleep26_fpsctl *fps = (sleep26_fpsctl*)fpsdata;
-	visual_mem_free(fps);
-	return 0;
 }
 
 LvdFPSControl *sleep26_fps_control_init()
 {
 	sleep26_fpsctl *fps = visual_mem_new0(sleep26_fpsctl, 1);
-	visual_object_initialize(VISUAL_OBJECT(fps), TRUE, sleep26_fps_control_finit);
+	visual_object_initialize(VISUAL_OBJECT(fps), TRUE, NULL);
 
 	fps->ctl.fps_control_frame_start = sleep26_fps_control_frame_start;
 	fps->ctl.fps_control_frame_end = sleep26_fps_control_frame_end;
-	fps->ctl.fps_max = 85.0f;
+	fps->ctl.fps_max = DEFAULT_MAX_FPS;
 	fps->ctl.fps_avg = 0.0f;
 
 	return (LvdFPSControl*)fps;
@@ -192,23 +194,66 @@ static void null_fps_control_frame_end(LvdFPSControl *fpsdata)
 		fps->ctl.fps_avg = fps->ctl.fps_current;
 	else
 		fps->ctl.fps_avg = fps->ctl.fps_avg*(31.0/32) + (1000000.0/d)/32;
-
-	printf("FPS: %.4f\n", fps->ctl.fps_avg);
-}
-
-static int null_fps_control_finit(VisObject *fpsdata)
-{
-	visual_mem_free(fpsdata);
-	return 0;
 }
 
 LvdFPSControl *null_fps_control_init()
 {
 	null_fpsctl *fps = visual_mem_new0(null_fpsctl, 1);
-	visual_object_initialize(VISUAL_OBJECT(fps), TRUE, null_fps_control_finit);
+	visual_object_initialize(VISUAL_OBJECT(fps), TRUE, NULL);
 
 	fps->ctl.fps_control_frame_start = null_fps_control_frame_start;
 	fps->ctl.fps_control_frame_end = null_fps_control_frame_end;
+	fps->ctl.fps_avg = 0.0f;
+
+	return (LvdFPSControl*)fps;
+}
+
+/*
+ * GetTimeOfDay FPS Limiter
+ */
+
+typedef struct {
+	LvdFPSControl ctl;
+	TimeStruct framestart;
+} tod_fpsctl;
+
+static void tod_fps_control_frame_start(LvdFPSControl *fpsdata)
+{
+	tod_fpsctl *fps = (tod_fpsctl*)fpsdata;
+	get_time(&fps->framestart);
+}
+
+static void tod_fps_control_frame_end(LvdFPSControl *fpsdata)
+{
+	tod_fpsctl *fps = (tod_fpsctl*)fpsdata;
+	TimeStruct ts;
+	int d;
+	int frametime;
+
+	frametime = 1000000/fps->ctl.fps_max;
+
+	do {
+		get_time(&ts);
+		d = get_time_delta(&ts, &fps->framestart);
+	} while (d<frametime);
+
+	fps->ctl.fps_current = 1000000.0/d;
+
+	if (fps->ctl.fps_avg == 0.0f)
+		fps->ctl.fps_avg = fps->ctl.fps_current;
+	else
+		fps->ctl.fps_avg = fps->ctl.fps_avg*(31.0/32) + (1000000.0/d)/32;
+}
+
+LvdFPSControl *tod_fps_control_init()
+{
+	tod_fpsctl *fps = visual_mem_new0(tod_fpsctl, 1);
+	visual_object_initialize(VISUAL_OBJECT(fps), TRUE, NULL);
+
+	fps->ctl.fps_control_frame_start = tod_fps_control_frame_start;
+	fps->ctl.fps_control_frame_end = tod_fps_control_frame_end;
+	fps->ctl.fps_max = DEFAULT_MAX_FPS;
+	fps->ctl.fps_avg = 0.0f;
 
 	return (LvdFPSControl*)fps;
 }

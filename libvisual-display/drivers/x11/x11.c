@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: x11.c,v 1.4 2005-02-12 18:17:28 vitalyvb Exp $
+ * $Id: x11.c,v 1.5 2005-02-15 15:43:47 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,11 +31,22 @@
 
 #include <X11/Xutil.h>
 
+#define USE_XSHM 1
+
+#ifdef USE_XSHM
+#	include <sys/shm.h>
+#	include <X11/extensions/XShm.h>
+#endif
+
 typedef struct {
 	VisVideo *video;
 	int img_width, img_height, img_depth;
-	char *img_data;
 	XImage *img;
+
+#ifdef USE_XSHM
+	int is_shm;
+	XShmSegmentInfo shminfo;
+#endif
 } x11_context;
 
 typedef struct {
@@ -45,6 +56,10 @@ typedef struct {
 	XWindowAttributes win_att;
 
 	x11_context *active_ctx;
+
+#ifdef USE_XSHM
+	int use_xshm;
+#endif
 } privdata;
 
 static int plugin_init (VisPluginData *plugin);
@@ -62,6 +77,7 @@ static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
 static void context_deactivate(VisPluginData *plugin, LvdDContext *ctx);
 static void draw(VisPluginData *plugin);
+static VisVideo *get_active_ctx_video(VisPluginData *plugin);
 
 
 const VisPluginInfo *get_plugin_info (int *count)
@@ -76,6 +92,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.context_delete = context_delete,
 		.context_activate = context_activate,
 		.context_deactivate = context_deactivate,
+		.get_active_ctx_video = get_active_ctx_video,
 
 		.draw = draw,
 	}};
@@ -154,6 +171,13 @@ int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
 	XDPY = data->dpy;
 	XWIN = data->win;
 
+#ifdef USE_XSHM
+	priv->use_xshm = XShmQueryExtension(XDPY);
+	priv->use_xshm = 0;
+#else
+	priv->use_xshm = 0;
+#endif
+
 	XGetWindowAttributes(XDPY, XWIN, &priv->win_att);
 
 	gc_vals.foreground = ~0;
@@ -224,7 +248,39 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 	if (c == NULL)
 		return NULL;
 
-	c->video = video;
+	c->video = visual_video_new();
+	visual_video_clone(c->video, video);
+
+	if (!priv->use_xshm){
+		visual_video_allocate_buffer(c->video);
+		c->is_shm = 0;
+
+		// XXX check if c->img_depth and priv->win_att.depth match
+		c->img = XCreateImage(XDPY, priv->win_att.visual, priv->win_att.depth,
+			ZPixmap, 0, c->video->pixels, c->video->width, c->video->height, 32, 0);
+
+		// XXX handle X errors
+
+	} else {
+		c->is_shm = 1;
+
+		c->shminfo.shmid = shmget(IPC_PRIVATE, c->video->height*c->video->pitch,
+				IPC_CREAT | 0777);
+		if (c->shminfo.shmid < 0){
+			visual_log(VISUAL_LOG_ERROR, "shmget fail. fixme\n");
+			return NULL;
+		}
+
+		/// XXX handle X errors
+		c->shminfo.shmaddr = (char *)shmat(c->shminfo.shmid, 0, 0);
+		XShmAttach(XDPY, &c->shminfo);
+		shmctl(c->shminfo.shmid, IPC_RMID, NULL);
+		c->video->pixels = c->shminfo.shmaddr;
+
+		c->img = XShmCreateImage(XDPY, priv->win_att.visual, priv->win_att.depth,
+			ZPixmap, c->video->pixels, &c->shminfo, c->video->width, c->video->height);
+
+	}
 
 	return (LvdDContext*)c;
 }
@@ -241,15 +297,39 @@ void context_delete(VisPluginData *plugin, LvdDContext *ctx)
 	}
 
 	if (c->img){
-		// NOTE: this will also destroy c->img_data
+		// NOTE: this will also destroy c->video->pixels
 		XDestroyImage(c->img);
 		c->img = NULL;
-		c->img_data = NULL;
+		c->video->pixels = NULL;
+	}
+
+	if (c->is_shm){
+		if (c->video->pixels){
+			XShmDetach(XDPY, &c->shminfo);
+			XSync(XDPY, False);
+			shmdt(c->shminfo.shmaddr);
+			c->video->pixels = NULL;
+		}
+		c->is_shm = 0;
+	}
+
+	if (c->video){
+		visual_object_unref(VISUAL_OBJECT(c->video));
+		c->video = NULL;
 	}
 
 	visual_mem_free(c);
 }
 
+VisVideo *get_active_ctx_video(VisPluginData *plugin)
+{
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
+
+	if (priv->active_ctx){
+		return priv->active_ctx->video;
+	}
+	return NULL;
+}
 
 void context_deactivate(VisPluginData *plugin, LvdDContext *ctx)
 {
@@ -278,61 +358,18 @@ LvdDContext *context_get_active(VisPluginData *plugin)
 	return (LvdDContext *)priv->active_ctx;
 }
 
-
-static int check_image_dims(privdata *priv, x11_context *c)
-{
-	if ((c->img_depth != c->video->depth) ||
-		(c->img_width != c->video->width) ||
-		(c->img_height != c->video->height) ||
-		(c->img_data == NULL)){
-
-		c->img_depth = c->video->depth;
-		c->img_width = c->video->width;
-		c->img_height = c->video->height;
-
-		c->img_data = malloc(c->video->height * c->video->pitch);
-		if (c->img_data == NULL){
-			visual_log(VISUAL_LOG_ERROR, "can not alloc fb2\n");
-			return -1;
-		}
-
-		// XXX check if c->img_depth and priv->win_att.depth match
-		c->img = XCreateImage(XDPY, priv->win_att.visual, priv->win_att.depth,
-			ZPixmap, 0, c->img_data, c->video->width, c->video->height, 32,
-			/*c->video->pitch*/ 0);
-
-
-		if (c->img == NULL){ /* not necessary... if error occurs, X will raise error */
-			free(c->img_data);
-			c->img_data = NULL;
-			visual_log(VISUAL_LOG_ERROR, "can not create image\n");
-			return -1;
-		}
-
-	}
-
-	return 0;
-}
-
-
-static void copy_vbuff(x11_context *c)
-{
-	memcpy(c->img_data, c->video->pixels, c->video->height*c->video->pitch);
-}
-
-
 void draw(VisPluginData *plugin)
 {
 	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	x11_context *c = priv->active_ctx;
 
-	if (check_image_dims(priv, c))
-		return;
-
-	copy_vbuff(c);
-
-	XPutImage(XDPY, XWIN, priv->wgc, c->img, 0, 0, 0, 0,
-		c->video->width, c->video->height);
+	if (!priv->use_xshm){
+		XPutImage(XDPY, XWIN, priv->wgc, c->img, 0, 0, 0, 0,
+			c->video->width, c->video->height);
+	} else {
+		XShmPutImage(XDPY, XWIN, priv->wgc, c->img, 0, 0, 0, 0,
+			c->video->width, c->video->height, False);
+	}
 
 	XFlush(XDPY);
 }

@@ -1,3 +1,14 @@
+2005-02-15  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* lvdisplay/lv_fpsctls.c: TimeOfDay limiter, destructor fixes.
+	* lvdisplay/lv_display.h: Add VisObject to _LvdFPSControl. It
+	supposed to be there all the time! :), API change.
+	* lvdisplay/lv_display.c: rewrited. VisVideo struct
+	passed to plugin was created by a backend.
+	* example/main.c: added fps counter/limiter.
+	* drivers/glx/glx.c: manage VisVideo.
+	* drivers/x11/x11.c: updates, XShm support.
+
 2005-02-14  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* example/main.c: usleep() removed.
