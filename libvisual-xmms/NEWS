@@ -3,6 +3,10 @@ of Libvisual XMMS Plugin
 
 These are only visible changes, for more details look at the ChangeLog.
 
+New in 0.1.7: 2004-xx-xx:
+* Fixed crashes on disable/quit. (Dennis)
+* Fixed the WM Quit event. (Dennis, Vitaly)
+
 New in 0.1.6: 2004-09-10:
 * Use timed morph, so morphs now always take four seconds.
   This will be adjustable in the future.

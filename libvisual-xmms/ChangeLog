@@ -1,5 +1,16 @@
 2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* src/main.c (sdl_event_handle):
+	Fixed the Quit handler.
+
+	* src/main.c (disable_func):
+	disable function to disable the plugin through
+	WM quit event.
+
+	Thanks Vitaly for the suggestion.
+
+2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* src/main.c (lv_xmms_init): Remove a few
 	unused bits regarding the app icon.
 

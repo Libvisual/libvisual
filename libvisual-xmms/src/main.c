@@ -67,6 +67,7 @@ static int visual_resize (int width, int height);
 static int visual_initialize (int width, int height);
 static int visual_render (void*);
 
+static gint disable_func (gpointer data);
 static void dummy (GtkWidget *widget, gpointer data);
 
 VisPlugin *get_vplugin_info (void);
@@ -679,8 +680,9 @@ static int sdl_event_handle ()
 				break;
 
 			case SDL_QUIT:
-				/* FIXME refuses to work ! */
-//				lv_xmms_vp.disable_plugin (&lv_xmms_vp);
+				GDK_THREADS_ENTER ();
+				gtk_idle_add (disable_func, NULL);
+				GDK_THREADS_LEAVE ();
 				break;
 						
 			default: /* to avoid warnings */
@@ -690,6 +692,14 @@ static int sdl_event_handle ()
 
 	return 0;
 }
+
+static gint disable_func (gpointer data)
+{
+	lv_xmms_vp.disable_plugin (&lv_xmms_vp);
+
+	return FALSE;
+}
+
 
 static void dummy (GtkWidget *widget, gpointer data)
 {
