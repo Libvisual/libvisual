@@ -66,12 +66,17 @@ void _lv_log (VisLogSeverity severity, const char *file, int line, const char *f
 	vsnprintf (str, 1023, fmt, va);
 	va_end (va);
 
-	/*fprintf (stderr, "(%s:%d): libvisual-%s **: %s\n",
-			__lv_progname, getpid (), log_severity_to_string (severity),
-			str);*/
-	fprintf (stderr, "libvisual %s: %s[(%s,%d)]: %s\n",
-			log_severity_to_string (severity), __lv_progname,
-			file, line, str);
+	if (severity != VISUAL_LOG_INFO) {
+		fprintf (stderr, "libvisual %s: %s[(%s,%d)]: %s\n",
+				log_severity_to_string (severity), __lv_progname,
+				file, line, str);
+	} else {
+		fprintf (stderr, "libvisual %s: %s: %s\n",
+				log_severity_to_string (severity), __lv_progname, str);
+	}
+
+	if (severity == VISUAL_LOG_ERROR)
+		exit (1);
 }
 
 /**

@@ -25,7 +25,8 @@ typedef enum {
 	VISUAL_LOG_WARNING,	/**< Warning message, use to warn the user. */
 	VISUAL_LOG_CRITICAL,	/**< Critical message, when a critical situation happens.
 				 * Like a NULL pointer passed to a method. */
-	VISUAL_LOG_ERROR	/**< Error message, use to notify the user of fatals. */
+	VISUAL_LOG_ERROR	/**< Error message, use to notify the user of fatals. 
+				 * After message showing, the program is aborted. */
 } VisLogSeverity;
 
 /*#ifdef __GNUC__*/
@@ -108,16 +109,11 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	 */
 	fprintf (stderr, "libvisual %s: %s: %s\n",
 			sever_msg, __lv_progname, str);
+
+	if (severity == VISUAL_LOG_ERROR)
+		exit(1);
 }
 #endif
-
-/*#define visual_log(severity, message)		\
-	_lv_log (severity,			\
-	"%s:%d: %s",				\
-	__FILE__,				\
-	__LINE__,				\
-	message)
-#endif*/
 
 void _lv_log (VisLogSeverity severity, const char *file, int line, const char *fmt, ...);
 

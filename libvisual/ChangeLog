@@ -3,6 +3,8 @@
 	* configure.ac: output file lvconfig.h with macro
 	definitions for the installed LibVisual.
 	* libvisual/libvisual.h: added #include <lvconfig.h>.
+	* libvisual/lv_log.*: now VISUAL_LOG_ERROR causes to
+	program abort.
 	
 2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
 
