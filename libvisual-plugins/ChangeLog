@@ -1,3 +1,8 @@
+2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugin/*:
+	Micro API update.
+
 2004-11-28  Dennis Smit  <ds@nerds-incorporated.org>
 
 	Automake and Autoconf fixes by Vitaly V. Bursov thanks a lot!!!

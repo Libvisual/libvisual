@@ -51,7 +51,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = lv_morph_slide_init_left,
 		.cleanup = lv_morph_slide_cleanup,
 
-		.plugin = (void *) &morph[0]
+		.plugin = VISUAL_OBJECT (&morph[0])
 	},
 	{
 		.struct_size = sizeof (VisPluginInfo),
@@ -68,7 +68,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = lv_morph_slide_init_right,
 		.cleanup = lv_morph_slide_cleanup,
 
-		.plugin = (void *) &morph[0]
+		.plugin = VISUAL_OBJECT (&morph[0])
 	},
 	{
 		.struct_size = sizeof (VisPluginInfo),
@@ -85,7 +85,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = lv_morph_slide_init_bottom,
 		.cleanup = lv_morph_slide_cleanup,
 
-		.plugin = (void *) &morph[0]
+		.plugin = VISUAL_OBJECT (&morph[0])
 	},
 	{
 		.struct_size = sizeof (VisPluginInfo),
@@ -102,7 +102,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = lv_morph_slide_init_upper,
 		.cleanup = lv_morph_slide_cleanup,
 
-		.plugin = (void *) &morph[0]
+		.plugin = VISUAL_OBJECT (&morph[0])
 	}};
 
 	*count = sizeof (info) / sizeof (*info);

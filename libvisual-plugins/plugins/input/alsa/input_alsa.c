@@ -54,7 +54,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = inp_alsa_init,
 		.cleanup = inp_alsa_cleanup,
 		
-		.plugin = (void *) &input[0]
+		.plugin = VISUAL_OBJECT (&input[0])
 	}};
 
 	*count = sizeof (info) / sizeof (*info);

@@ -46,7 +46,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = inp_esd_init,
 		.cleanup = inp_esd_cleanup,
 
-		.plugin = (void *) &input[0]
+		.plugin = VISUAL_OBJECT (&input[0])
 	}};
 
 	*count = sizeof (info) / sizeof (*info);

@@ -5,7 +5,7 @@
  * @author Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  * License: GNU Lesser General Public License (GNU/LGPL)
  ******************************************************************************
- * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.7 2004-11-25 16:23:48 synap Exp $
+ * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.8 2004-12-30 20:38:12 synap Exp $
  */
 
 #include <stdio.h>
@@ -76,14 +76,14 @@ const VisPluginInfo *get_plugin_info( int *count )
     .plugname = "mplayer",
     .name = "mplayer",
     .author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-    .version = "$Revision: 1.7 $",
+    .version = "$Revision: 1.8 $",
     .about = "Use data exported from MPlayer",
     .help = "This plugin uses data exported from 'mplayer -af export'.",
 
     .init = inp_mplayer_init,
     .cleanup = inp_mplayer_cleanup,
 
-    .plugin = (void *) &input[0]
+    .plugin = VISUAL_OBJECT (&input[0])
   }};
   
   *count = sizeof( info ) / sizeof( *info );

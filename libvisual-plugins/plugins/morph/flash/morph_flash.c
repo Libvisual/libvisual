@@ -51,7 +51,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = lv_morph_flash_init,
 		.cleanup = lv_morph_flash_cleanup,
 		
-		.plugin = (void *) &morph[0]
+		.plugin = VISUAL_OBJECT (&morph[0])
 	}};
 
 	*count = sizeof (info) / sizeof (*info);

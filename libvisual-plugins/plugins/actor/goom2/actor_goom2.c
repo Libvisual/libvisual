@@ -48,7 +48,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_goom_cleanup,
 		.events = lv_goom_events,
 
-		.plugin = (void *) &actor[0]
+		.plugin = VISUAL_OBJECT (&actor[0])
 	}};
 
 	*count = sizeof (info) / sizeof (*info);
