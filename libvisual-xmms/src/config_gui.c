@@ -25,9 +25,9 @@ ConfigWin *lv_xmms_config_gui_new (void)
   GtkWidget *vbox_main;
   GtkWidget *frame_vis_plugin;
   GtkWidget *vbox3;
-  GtkWidget *scrolledwindow_vis_plugins;
-  GtkWidget *viewport1;
-  GtkWidget *list_vis_plugins;
+  GtkWidget *scrolledwindow_actor_plugins;
+  GtkWidget *clist_actor_plugins;
+  GtkWidget *label_actor_plugins;
   GtkWidget *hbox_vis_plugin_controls;
   GtkWidget *hbox_vis_plugin_buttons;
   GtkWidget *button_vis_plugin_conf;
@@ -90,29 +90,31 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_widget_show (vbox3);
   gtk_container_add (GTK_CONTAINER (frame_vis_plugin), vbox3);
 
-  scrolledwindow_vis_plugins = gtk_scrolled_window_new (NULL, NULL);
-  gtk_widget_ref (scrolledwindow_vis_plugins);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "scrolledwindow_vis_plugins", scrolledwindow_vis_plugins,
+  scrolledwindow_actor_plugins = gtk_scrolled_window_new (NULL, NULL);
+  gtk_widget_ref (scrolledwindow_actor_plugins);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "scrolledwindow_actor_plugins", scrolledwindow_actor_plugins,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (scrolledwindow_vis_plugins);
-  gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow_vis_plugins, TRUE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow_vis_plugins), 2);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow_vis_plugins), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+  gtk_widget_show (scrolledwindow_actor_plugins);
+  gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow_actor_plugins, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow_actor_plugins), 2);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow_actor_plugins), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
 
-  viewport1 = gtk_viewport_new (NULL, NULL);
-  gtk_widget_ref (viewport1);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "viewport1", viewport1,
+  clist_actor_plugins = gtk_clist_new (1);
+  gtk_widget_ref (clist_actor_plugins);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "clist_actor_plugins", clist_actor_plugins,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (viewport1);
-  gtk_container_add (GTK_CONTAINER (scrolledwindow_vis_plugins), viewport1);
+  gtk_widget_show (clist_actor_plugins);
+  gtk_container_add (GTK_CONTAINER (scrolledwindow_actor_plugins), clist_actor_plugins);
+  gtk_widget_set_events (clist_actor_plugins, GDK_BUTTON_PRESS_MASK);
+  gtk_clist_set_column_width (GTK_CLIST (clist_actor_plugins), 0, 80);
+  gtk_clist_column_titles_hide (GTK_CLIST (clist_actor_plugins));
 
-  list_vis_plugins = gtk_list_new ();
-  gtk_widget_ref (list_vis_plugins);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "list_vis_plugins", list_vis_plugins,
+  label_actor_plugins = gtk_label_new (_("Actors"));
+  gtk_widget_ref (label_actor_plugins);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "label_actor_plugins", label_actor_plugins,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (list_vis_plugins);
-  gtk_container_add (GTK_CONTAINER (viewport1), list_vis_plugins);
-  gtk_list_set_selection_mode (GTK_LIST (list_vis_plugins), GTK_SELECTION_SINGLE);
+  gtk_widget_show (label_actor_plugins);
+  gtk_clist_set_column_widget (GTK_CLIST (clist_actor_plugins), 0, label_actor_plugins);
 
   hbox_vis_plugin_controls = gtk_hbox_new (FALSE, 0);
   gtk_widget_ref (hbox_vis_plugin_controls);
@@ -309,7 +311,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
 
   config_gui->window_main = window_main;
 
-  config_gui->list_vis_plugins = list_vis_plugins;
+  config_gui->clist_actor_plugins = clist_actor_plugins;
   config_gui->button_vis_plugin_conf = button_vis_plugin_conf;
   config_gui->button_vis_plugin_about = button_vis_plugin_about;
   config_gui->checkbutton_vis_plugin = checkbutton_vis_plugin;
