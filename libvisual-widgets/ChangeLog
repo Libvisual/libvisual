@@ -1,5 +1,10 @@
 2005-03-15  Duilio Protti  <dprotti@users.sourceforge.net>
 
+	* libvisual-widgets-gtk[12].pc.in: making substitutions
+	starting from prefix.
+
+2005-03-15  Duilio Protti  <dprotti@users.sourceforge.net>
+
 	* configure.ac: fixed undefined libvisual_required_version
 	macro.
 

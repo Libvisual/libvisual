@@ -1,7 +1,7 @@
 prefix=@prefix@
-exec_prefix=@exec_prefix@
-libdir=@libdir@
-includedir=@includedir@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${exec_prefix}/include
 
 Name: libvisual-widgets-gtk2
 Version: @VERSION@
