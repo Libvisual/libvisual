@@ -22,6 +22,8 @@ void *visual_mem_malloc0 (visual_size_t nbytes)
 {
 	void *buf = malloc (nbytes);
 
+	visual_log_return_val_if_fail (nbytes > 0, NULL);
+
 	if (buf == NULL) {
 		visual_log (VISUAL_LOG_ERROR, "Cannot get %" VISUAL_SIZE_T_FORMAT " bytes of memory", nbytes);
 		return NULL;

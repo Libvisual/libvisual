@@ -8,11 +8,28 @@ AC_CONFIG_HEADER(config.h)
 
 AC_PREFIX_DEFAULT(/usr)
 
+AC_CANONICAL_HOST
+AC_MSG_CHECKING([for Win32])
+case "$host_os" in
+	cygwin*)
+		lv_win32=yes
+		;;
+  	mingw*)
+		lv_win32=yes
+		;;
+	*)
+		lv_win32=no
+		;;
+esac
+AC_MSG_RESULT([$lv_win32])
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
 
 AC_DISABLE_STATIC
+AC_LIBTOOL_WIN32_DLL
+AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 
 AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
@@ -31,20 +48,15 @@ AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h sys/types.h stdlib.h string.h sys/time.h unistd.h])
 
-#
-# In future, we will set here a flags indicating we have or not OpenGl.
-# First, CONFIG_HEADER must be removed.
-#
-#usable_opengl=0
-#AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
-#if test x"$opengl" = xno; then
-#	AC_MSG_WARN([
-#*** OpenGl and Glu headers not found, the opengl examples won't be build
-#	])
-#else
-#	usable_opengl=1
-#fi
-#AC_DEFINE([USABLE_OPENGL], [$usable_opengl])
+lv_have_opengl=no
+AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
+if test x"$opengl" = xno; then
+	AC_MSG_WARN([
+*** OpenGL and Glu headers not found, the library will be built without OpenGL support.
+	])
+else
+	lv_have_opengl=yes
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -218,6 +230,23 @@ typedef unsigned $visual_size_type visual_size_t;
 
 _______EOF
 
+        if test x$lv_win32 = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define LV_OS_WIN32
+
+_______EOF
+        fi
+
+        if test x$lv_have_opengl = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define LV_HAVE_OPENGL
+
+_______EOF
+        fi
+
+echo >>$outfile
 echo >>$outfile
 echo "#endif /* LV_CONFIG_H */" >>$outfile
 echo >>$outfile
@@ -233,6 +262,8 @@ echo >>$outfile
    lv_have_iso_c_varargs=$lv_have_iso_c_varargs
    lv_have_gnuc_varargs=$lv_have_gnuc_varargs
    visual_size_type=$visual_size_type
+   lv_win32=$lv_win32
+   lv_have_opengl=$lv_have_opengl
 
 case $visual_size_type in
 short)
@@ -253,9 +284,12 @@ Makefile
 libvisual.pc
 libvisual/Makefile
 examples/Makefile
-tools/Makefile
 ])
-#tests/Makefile		This are not included in the package
+#
+# For now this are not included in the package
+#
+#tests/Makefile
+#tools/Makefile
 
 AC_OUTPUT
 

@@ -1,3 +1,14 @@
+2004-09-04  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac:
+	 - Added checks for Win32 portability and
+	OpenGL support.
+	 - tools removed from build tree (temporary).
+	* lvconfig.h:
+	 - LV_WIN32 macro is defined if we are on one
+	of these systems.
+	 - LV_HAVE_OPENGL macro is defined accordingly.
+	
 2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/*: New plugin loader. Is capable of loading
