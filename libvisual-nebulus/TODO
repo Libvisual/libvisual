@@ -2,6 +2,7 @@ This plugin is a rough port from the xmms nebulus and it needs A LOT of
 maintaince.
 
 TODO:
+	* Use VisRandomContext.
 	* implement nebulus_calc_fps(). (Now always returns 40) 
 	* Throw everything in privates.
 	* Make a more  general framework for effects and look into fading
