@@ -315,6 +315,30 @@ const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
 	return mutator->param;
 }
 
+VisUIWidget *visual_ui_range_new (void)
+{
+	VisUIRange *range;
+
+	range = visual_mem_new0 (VisUIRange, 1);
+	VISUAL_UI_WIDGET (range)->type = VISUAL_WIDGET_TYPE_RANGE;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (range), -1, -1);
+
+	return VISUAL_UI_WIDGET (range);
+}
+
+int visual_ui_range_set_properties (VisUIRange *range, double max, double min, double step, int precision)
+{
+	visual_log_return_val_if_fail (range != NULL, -1);
+
+	range->max = max;
+	range->min = min;
+	range->step = step;
+	range->precision = precision;
+
+	return 0;
+}
+
 int visual_ui_range_set_max (VisUIRange *range, double max)
 {
 	visual_log_return_val_if_fail (range != NULL, -1);
