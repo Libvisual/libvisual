@@ -45,7 +45,7 @@ static int audio_band_energy (VisAudio *audio, int band, int length)
 /**
  * Creates a new VisAudio structure.
  *
- * @return A newly allocated VisAudio.
+ * @return A newly allocated VisAudia, or NULL on error.
  */
 VisAudio *visual_audio_new ()
 {
