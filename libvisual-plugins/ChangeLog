@@ -1,5 +1,11 @@
 2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* configure.ac, plugins/actor/Makefile.am, 
+	plugins/actor/nebulus/*: Added nebulus to this package and the
+	libvisual-nebulus package is because ofe this discontinued.
+
+2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugin/*:
 	Micro API update.
 

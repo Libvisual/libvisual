@@ -89,8 +89,19 @@ actors:
 	oinksie:
 		use the libvisual palette blender
 		use the libvisual timer module
-		fix the 24 bit mode again.
-	
+
+	nebulus:
+		Use VisRandomContext.
+		implement nebulus_calc_fps(). (Now always returns 40)
+		Throw everything in privates.
+		Make the current effects react better on sound.
+		Make a system to load libvisual actors in a texture.
+		CLEANUPS CLEANUPS CLEANUPS MAINTAINCE *eh*.
+		Port over some nice http://rss-glx.sourceforge.net/ screensavers
+			into cool audio visualisation effects.
+		When the super the duper kickass libvisual audio core lands
+		use it's bpm detection instead of the included one.
+
 	a gdkpixbuf image loader:
 		implement depth requester, (needs bits in libvisual as well).
 		implement support for alpha transparency.
@@ -106,9 +117,6 @@ actors:
 
 	More: (post 0.2)
 		When api is stable, start porting over some more xmms plugins.
-
-	je_regrette:
-		Port this awesome demo in a plugin!
 
 morph: (lots of these effects can be taken from the demo world, this should turn
 	visuals into scenes rather than standalone plugins, o boy!)

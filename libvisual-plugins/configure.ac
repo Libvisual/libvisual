@@ -229,6 +229,25 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([nebulus],
+            AC_HELP_STRING([--disable-nebulus],
+                           [Do not build Nebulus plugin @<:@default=enabled@:>@]),
+	    [nebulus=$enableval],
+	    [nebulus=yes])
+AC_MSG_CHECKING([whether to build Nebulus plugin])
+if test x$nebulus = xyes; then
+  AC_MSG_RESULT([yes])
+  if test x$opengl = xyes; then
+    build_actor="$build_actor nebulus"
+    AC_SUBST([NEBULUS], ['actor_nebulus.la'])
+  else
+    AC_MSG_WARN([*** Libvisual doesn't have GL support.
+		Nebulus plugin will not be built.])
+  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([infinite],
             AC_HELP_STRING([--disable-infinite],
                            [Do not build Infinite plugin @<:@default=enabled@:>@]),
@@ -491,6 +510,7 @@ AC_CONFIG_FILES([
 	plugins/actor/lv_scope/Makefile
 	plugins/actor/lv_gltest/Makefile
 	plugins/actor/madspin/Makefile
+	plugins/actor/nebulus/Makefile
 	plugins/actor/dna/Makefile
 	plugins/actor/oinksie/Makefile
 	plugins/actor/jakdaw/Makefile
