@@ -22,11 +22,9 @@ REQUIRED_AUTOMAKE_VERSION=1.7
 # I'm not shure if 1.4.3 works, I have only tested with libtool 1.5.6
 REQUIRED_LIBTOOL_VERSION=1.4.3
 REQUIRED_PKG_CONFIG_VERSION=0.14.0
-# Probably it works also with older versions
-REQUIRED_GETTEXT_VERSION=0.14.1
 
 # A list of required m4 macros. Add your own here.
-REQUIRED_M4MACROS=""
+REQUIRED_M4MACROS="alsa.m4"
 
 printerr() {
     echo "$@" >&2
@@ -222,14 +220,14 @@ if $want_libtool; then
 fi
 
 if $want_gettext; then
-    version_check gettext GETTEXTIZE gettextize $REQUIRED_GETTEXT_VERSION \
-        "http://ftp.gnu.org/pub/gnu/gettext/gettext-$REQUIRED_GETTEXT_VERSION.tar.gz" || DIE=1
+    #version_check gettext GETTEXTIZE gettextize $REQUIRED_GETTEXT_VERSION \
+    #   "http://ftp.gnu.org/pub/gnu/gettext/gettext-$REQUIRED_GETTEXT_VERSION.tar.gz" || DIE=1
     require_m4macro gettext.m4
 fi
 
 if $want_glib_gettext; then
-    version_check glib-gettext GLIB_GETTEXTIZE glib-gettextize $REQUIRED_GLIB_GETTEXT_VERSION \
-        "ftp://ftp.gtk.org/pub/gtk/v2.2/glib-$REQUIRED_GLIB_GETTEXT_VERSION.tar.gz" || DIE=1
+    #version_check glib-gettext GLIB_GETTEXTIZE glib-gettextize $REQUIRED_GLIB_GETTEXT_VERSION \
+    #    "ftp://ftp.gtk.org/pub/gtk/v2.2/glib-$REQUIRED_GLIB_GETTEXT_VERSION.tar.gz" || DIE=1
     require_m4macro glib-gettext.m4
 fi
 
@@ -281,18 +279,18 @@ for configure_ac in $configure_files; do
 	    $LIBTOOLIZE --force --copy || exit 1
 	fi
 
-	if grep "^AM_GLIB_GNU_GETTEXT" $basename >/dev/null; then
-	    echo "Running $GLIB_GETTEXTIZE... Ignore non-fatal messages."
-	    echo "no" | $GLIB_GETTEXTIZE --force --copy || exit 1
-	elif grep "^AM_GNU_GETTEXT" $basename >/dev/null; then
-	   if grep "^AM_GNU_GETTEXT_VERSION" $basename > /dev/null; then
-	   	echo "Running autopoint..."
-		autopoint --force || exit 1
-	   else
-	    	echo "Running $GETTEXTIZE... Ignore non-fatal messages."
-	    	echo "no" | $GETTEXTIZE --force --copy || exit 1
-	   fi
-	fi
+	#if grep "^AM_GLIB_GNU_GETTEXT" $basename >/dev/null; then
+	#    echo "Running $GLIB_GETTEXTIZE... Ignore non-fatal messages."
+	#    echo "no" | $GLIB_GETTEXTIZE --force --copy || exit 1
+	#elif grep "^AM_GNU_GETTEXT" $basename >/dev/null; then
+	#   if grep "^AM_GNU_GETTEXT_VERSION" $basename > /dev/null; then
+	#   	echo "Running autopoint..."
+	#	autopoint --force || exit 1
+	#   else
+	#    	echo "Running $GETTEXTIZE... Ignore non-fatal messages."
+	#    	echo "no" | $GETTEXTIZE --force --copy || exit 1
+	#   fi
+	#fi
 
 	if grep "^\(AC\|IT\)_PROG_INTLTOOL" $basename >/dev/null; then
 	    echo "Running $INTLTOOLIZE..."
