@@ -260,6 +260,8 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 	separator = visual_mem_new0 (VisUISeparator, 1);
 	VISUAL_UI_WIDGET (separator)->type = VISUAL_WIDGET_TYPE_SEPARATOR;
 
+	separator->orient = orient;
+
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (separator), -1, -1);
 
 	return VISUAL_UI_WIDGET (separator);
