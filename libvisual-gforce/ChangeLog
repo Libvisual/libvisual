@@ -1,3 +1,8 @@
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* unix/libvisual/actor_gforce.cpp: Adapted to VisObject private
+	system.
+
 2004-10-31  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* Common/math/Makefile.am, GForceCommon/Makefile.am,

@@ -74,7 +74,8 @@ extern "C" int lv_gforce_init (VisPluginData *plugin)
 
 	priv = new GForcePrivate;
 	memset (priv, 0, sizeof (GForcePrivate));
-	plugin->priv = priv;
+
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
@@ -97,7 +98,7 @@ extern "C" int lv_gforce_init (VisPluginData *plugin)
 
 extern "C" int lv_gforce_cleanup (VisPluginData *plugin)
 {
-	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
+	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	if (priv->gGF)
 		delete priv->gGF;
@@ -138,7 +139,7 @@ extern "C" int lv_gforce_requisition (VisPluginData *plugin, int *width, int *he
 
 extern "C" int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
+	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	Rect r;
 	
 	visual_video_set_dimension (video, width, height);
@@ -151,7 +152,7 @@ extern "C" int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int 
 
 extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
+	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
 
 	while (visual_event_queue_poll (events, &ev)) {
@@ -182,7 +183,7 @@ extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 
 extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin)
 {
-	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
+	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	PixPalEntry *GFpal;
 	int i;
 
@@ -199,7 +200,7 @@ extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin)
 
 extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	GForcePrivate *priv = (GForcePrivate *) plugin->priv;
+	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	int i, j = 0, ns;
 	short int sbuf[NUMSAMPLES];
 	long time;
