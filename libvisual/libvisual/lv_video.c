@@ -1502,19 +1502,24 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 {
 	int x, y;
-	float u, v, du, dv;
+	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint8_t *dest_pixel, *src_pixel_row;
 
-	u = 0; du = (float) src->width	/ dest->width;
-	v = 0; dv = (float) src->height / dest->height;
+	du = (src->width << 16) / dest->width;
+	dv = (src->height << 16) / dest->height;
+	v = 0;
 
 	dest_pixel = dest->pixels;
 
-	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
-		src_pixel_row = (uint8_t *) src->pixel_rows[(int) v];
+	for (y = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (uint8_t *) src->pixel_rows[v >> 16];
 
-		for (x = 0, u = 0; x < dest->width; x++, u += du)
-			*dest_pixel++ = src_pixel_row[(int) u];
+                if (v >> 16 >= src->height)
+			v -= 0x10000;
+	
+		u = 0;
+		for (x = 0; x < dest->width; x++, u += du)
+			*dest_pixel++ = src_pixel_row[u >> 16];
 
 		dest_pixel += dest->pitch - dest->width;
 	}
@@ -1525,19 +1530,24 @@ static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 static int scale_nearest_16 (VisVideo *dest, const VisVideo *src)
 {
 	int x, y;
-	float u, v, du, dv;
+	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint16_t *dest_pixel, *src_pixel_row;
 
-	u = 0; du = (float) src->width	/ dest->width;
-	v = 0; dv = (float) src->height / dest->height;
+	du = (src->width << 16) / dest->width;
+	dv = (src->height << 16) / dest->height;
+	v = 0;
 
 	dest_pixel = dest->pixels;
 
-	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
-		src_pixel_row = (uint16_t *) src->pixel_rows[(int) v];
+	for (y = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (uint16_t *) src->pixel_rows[v >> 16];
 
-		for (x = 0, u = 0; x < dest->width; x++, u += du)
-			*dest_pixel++ = src_pixel_row[(int) u];
+		if (v >> 16 >= src->height)
+			v -= 0x10000;
+		
+		u = 0;
+		for (x = 0; x < dest->width; x++, u += du)
+			*dest_pixel++ = src_pixel_row[u >> 16];
 
 		dest_pixel += (dest->pitch / 2) - dest->width;
 	}
@@ -1550,33 +1560,26 @@ static int scale_nearest_16 (VisVideo *dest, const VisVideo *src)
 static int scale_nearest_24 (VisVideo *dest, const VisVideo *src)
 {
 	int x, y;
-	float u, v, du, dv;
-	uint8_t *dest_pixel, *src_pixel_row;
-	int diff;
-	uint8_t *src_pixel;
+	uint32_t u, v, du, dv; /* fixed point 16.16 */
+	_color24 *dest_pixel, *src_pixel_row;
 
-	u = 0; du = (float) src->width	/ dest->width * 3;
-	v = 0; dv = (float) src->height / dest->height;
+	du = (src->width << 16) / dest->width;
+	dv = (src->height << 16) / dest->height;
+	v = 0;
 
 	dest_pixel = dest->pixels;
 
-	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
-		src_pixel_row = (uint8_t *) src->pixel_rows[(int) v];
+	for (y = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (_color24 *) src->pixel_rows[v >> 16];
 
-		for (x = 0, u = 0; x < dest->width; x++, u += du) {
-			src_pixel = &src_pixel_row[(int) u];
+		if (v >> 16 >= src->height)
+			v -= 0x10000;
+		
+		u = 0;
+		for (x = 0; x < dest->width; x++, u += du)
+			*dest_pixel++ = src_pixel_row[u >> 16];
 
-			diff = &src_pixel_row[(int) u] - (uint8_t *) src->pixels;
-
-			if (diff % 3)
-				src_pixel -= diff % 3;
-			
-			*dest_pixel++ = *src_pixel++;
-			*dest_pixel++ = *src_pixel++;
-			*dest_pixel++ = *src_pixel++;
-		}
-
-		dest_pixel += dest->pitch - (dest->width * 3);
+		dest_pixel += (dest->pitch / 3) - dest->width;
 	}
 
 	return VISUAL_OK;
@@ -1585,19 +1588,24 @@ static int scale_nearest_24 (VisVideo *dest, const VisVideo *src)
 static int scale_nearest_32 (VisVideo *dest, const VisVideo *src)
 {
 	int x, y;
-	float u, v, du, dv;
+	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint32_t *dest_pixel, *src_pixel_row;
 
-	u = 0; du = (float) src->width	/ dest->width;
-	v = 0; dv = (float) src->height / dest->height;
+	du = (src->width << 16) / dest->width;
+	dv = (src->height << 16) / dest->height;
+	v = 0;
 
 	dest_pixel = dest->pixels;
 
-	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
-		src_pixel_row = (uint32_t *) src->pixel_rows[(int) v];
+	for (y = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (uint32_t *) src->pixel_rows[v >> 16];
 
-		for (x = 0, u = 0; x < dest->width; x++, u += du)
-			*dest_pixel++ = src_pixel_row[(int) u];
+		if (v >> 16 >= src->height)
+			v -= 0x10000;
+		
+		u = 0;
+		for (x = 0; x < dest->width; x++, u += du)
+			*dest_pixel++ = src_pixel_row[u >> 16];
 
 		dest_pixel += (dest->pitch / 4) - dest->width;
 	}
@@ -1613,15 +1621,15 @@ static int scale_bilinear_8 (VisVideo *dest, const VisVideo *src)
 
 	dest_pixel = dest->pixels;
 
-	du = ((src->width-1)  << 16) / dest->width;
-	dv = ((src->height-1) << 16) / dest->height;
+	du = ((src->width - 1)  << 16) / dest->width;
+	dv = ((src->height - 1) << 16) / dest->height;
 	v = 0;
 
 	for (y = dest->height; y--; v += dv) {
 		uint32_t x;
 		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
 
-		if (v >> 16 >= src->height-1)
+		if (v >> 16 >= src->height - 1)
 			v -= 0x10000;
 
 		src_pixel_rowu = (uint8_t *) src->pixel_rows[v >> 16];
@@ -1675,15 +1683,15 @@ static int scale_bilinear_16 (VisVideo *dest, const VisVideo *src)
 	_color16 *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
 	dest_pixel = dest->pixels;
 
-	du = ((src->width-1)  << 16) / dest->width;
-	dv = ((src->height-1) << 16) / dest->height;
+	du = ((src->width - 1)  << 16) / dest->width;
+	dv = ((src->height - 1) << 16) / dest->height;
 	v = 0;
 
 	for (y = dest->height; y--; v += dv) {
 		uint32_t x;
 		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
 
-		if (v >> 16 >= src->height-1)
+		if (v >> 16 >= src->height - 1)
 			v -= 0x10000;
 
 		src_pixel_rowu = (_color16 *) src->pixel_rows[v >> 16];
@@ -1751,15 +1759,15 @@ static int scale_bilinear_24 (VisVideo *dest, const VisVideo *src)
 	_color24 *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
 	dest_pixel = dest->pixels;
 
-	du = ((src->width-1)  << 16) / dest->width;
-	dv = ((src->height-1) << 16) / dest->height;
+	du = ((src->width - 1)  << 16) / dest->width;
+	dv = ((src->height - 1) << 16) / dest->height;
 	v = 0;
 
 	for (y = dest->height; y--; v += dv) {
 		uint32_t x;
 		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
 
-		if (v >> 16 >= src->height-1)
+		if (v >> 16 >= src->height - 1)
 			v -= 0x10000;
 
 		src_pixel_rowu = (_color24 *) src->pixel_rows[v >> 16];
@@ -1828,15 +1836,15 @@ static int scale_bilinear_32 (VisVideo *dest, const VisVideo *src)
 
 	dest_pixel = dest->pixels;
 
-	du = ((src->width-1)  << 16) / dest->width;
-	dv = ((src->height-1) << 16) / dest->height;
+	du = ((src->width - 1)  << 16) / dest->width;
+	dv = ((src->height - 1) << 16) / dest->height;
 	v = 0;
 
 	for (y = dest->height; y--; v += dv) {
 		uint32_t x;
 		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
 
-		if (v >> 16 >= src->height-1)
+		if (v >> 16 >= src->height - 1)
 			v -= 0x10000;
 
 		src_pixel_rowu = (uint32_t *) src->pixel_rows[v >> 16];
