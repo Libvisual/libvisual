@@ -1,3 +1,11 @@
+2004-12-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: All methods documentated now!
+
+	Yeah I've been slacking a bit lately, been very busy...
+	On the other hand I also started to reverse engineer
+	the winamp advanced visual studio preset format!
+
 2004-12-04  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_palette.c (visual_palette_free_colors):

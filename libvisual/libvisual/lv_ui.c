@@ -870,6 +870,15 @@ VisUIWidget *visual_ui_color_new ()
 	return VISUAL_UI_WIDGET (color);
 }
 
+/**
+ * Creates a new VisUIChoiceEntry, this is an entry in an entry in VisUIChoiceList, that is used
+ * by the different VisUIChoice inherentence.
+ *
+ * @param name The name ofe the choice.
+ * @param value The VisParamEntry associated with this choice.
+ *
+ * @return The newly created VisUIChoiceEntry.
+ */
 VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, const VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
@@ -890,6 +899,16 @@ VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, const VisParamEn
 	return centry;
 }
 
+/**
+ * Add a VisParamEntry as a choice for a VisUIWidget that inherents from VisUIChoice.
+ *
+ * @param choice Pointer to the VisUIChoice widget to which the choice is added.
+ * @param name The name of this choice.
+ * @param value Pointer to the VisParamEntry that is associated with this choice.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL, -VISUAL_ERROR_NULL
+ *	or -VISUAL_ERROR_PARAM_NULL on failure.
+ */
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
@@ -907,6 +926,17 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamE
 	return VISUAL_OK;
 }
 
+/**
+ * Add many choices using a VisParamEntry array.
+ *
+ * @see visual_ui_choice_add
+ *
+ * @param choice Pointer to the VisUIChoice widget to which the choices are added.
+ * @param paramchoices Pointer to the array of VisParamEntries that are added to the internal
+ *	VisUIChoiceList of the VisUIChoice widget.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL or -VISUAL_ERROR_PARAM_NULL on failure.
+ */
 int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramchoices)
 {
 	VisUIChoiceEntry *centry;
@@ -924,6 +954,14 @@ int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramch
 	return VISUAL_OK;
 }
 
+/**
+ * Frees all the memory used by the VisUIChoiceList and it's entries for the given VisUIChoice.
+ *
+ * @param choice Pointer to the VisUIChoice for which the VisUIChoiceList and it's entries
+ *	are being freed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL on failure.
+ */
 int visual_ui_choice_free_choices (VisUIChoice *choice)
 {
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
@@ -934,6 +972,15 @@ int visual_ui_choice_free_choices (VisUIChoice *choice)
 	return VISUAL_OK;
 }
 
+/**
+ * Sets the active choice for a VisUIChoice widget.
+ *
+ * @param choice Pointer to the VisUIChoice widget for which an entry is being activated.
+ * @param index Index containing which choice needs to be activated, counting starts at 0.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL, -VISUAL_ERROR_UI_CHOICE_ENTRY_NULL or
+ *	error values returned by visual_ui_mutator_get_param () on failure.
+ */
 int visual_ui_choice_set_active (VisUIChoice *choice, int index)
 {
 	VisUIChoiceEntry *centry;
@@ -952,6 +999,13 @@ int visual_ui_choice_set_active (VisUIChoice *choice, int index)
 	return visual_param_entry_set_from_param (param, newparam);
 }
 
+/**
+ * Retrieves the index of the current active choice.
+ *
+ * @param choice Pointer to the VisUIChoice widget from which the active choice is requested.
+ *
+ * @return Index of the active choice entry.
+ */
 int visual_ui_choice_get_active (VisUIChoice *choice)
 {
 	VisListEntry *le = NULL;
@@ -977,6 +1031,14 @@ int visual_ui_choice_get_active (VisUIChoice *choice)
 	return -VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE;
 }
 
+/**
+ * Retrieves a VisUIChoiceEntry from a VisUIChoice based on the index.
+ *
+ * @param choice Pointer to the VisUIChoice widget from which a VisUIChoiceEntry is requested.
+ * @param index Index of the requested VisUIChoiceEntry.
+ *
+ * @return The VisUIChoiceEntry that is located on the given index, or NULL on failure.
+ */
 VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index)
 {
 	visual_log_return_val_if_fail (choice != NULL, NULL);
@@ -984,6 +1046,13 @@ VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index)
 	return visual_list_get (&choice->choices.choices, index);
 }
 
+/**
+ * Retrvies the VisUIChoiceList from a VisUIChoice widget.
+ *
+ * @param choice Pointer to the VisUIChoice widget from which the VisUIChoiceList is requested.
+ * 
+ * @return The VisUIChoiceList that is associated to the VisUIChoice.
+ */
 VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice)
 {
 	visual_log_return_val_if_fail (choice != NULL, NULL);
@@ -991,6 +1060,12 @@ VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice)
 	return &choice->choices;
 }
 
+/**
+ * Creates a new VisUIPopup. This can be used to show a popup list containing items from which
+ * can be choosen.
+ *
+ * @return The newly created VisUIPopup in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_popup_new ()
 {
 	VisUIPopup *popup;
@@ -1011,6 +1086,12 @@ VisUIWidget *visual_ui_popup_new ()
 	return VISUAL_UI_WIDGET (popup);
 }
 
+/**
+ * Creates a new VisUIList. This can be used to show a list containing items from which
+ * can be choosen.
+ *
+ * @return The newly created VisUIList in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_list_new ()
 {
 	VisUIList *list;
@@ -1031,6 +1112,14 @@ VisUIWidget *visual_ui_list_new ()
 	return VISUAL_UI_WIDGET (list);
 }
 
+/**
+ * Creates a new VisUIRadio. This can be used to show a list of radio buttons containing items from which
+ * can be choosen.
+ *
+ * @param orient The orientation of the radio button layout.
+ * 
+ * @return The newly created VisUIRadio in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 {
 	VisUIRadio *radio;
@@ -1053,6 +1142,14 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 	return VISUAL_UI_WIDGET (radio);
 }
 
+/**
+ * Creates a new VisUICheckbox. This can be used to show a checkbox that can be toggled and untoggled.
+ *
+ * @param name The text behind the checkbox.
+ * @param boolcheck Automaticly set a boolean, TRUE and FALSE VisUIChoiceList on the VisUICheckbox.
+ *
+ * @return The newly created VisUICheckbox in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 {
 	VisUICheckbox *checkbox;
