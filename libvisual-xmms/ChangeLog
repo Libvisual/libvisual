@@ -1,6 +1,8 @@
 2004-07-05  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* src/config.c: more work on configure window.
+	* src/config.c: more work on configure window. OpenGl
+	plugins can be disabled.
+	* src/main.c: OpenGl plugins can be disabled now.
 
 2004-07-03  Dennis Smit  <ds@nerds-incorporated.org>
 

@@ -533,19 +533,49 @@ static int sdl_event_handle ()
 						break;
 
 					case SDLK_a:
-						cur_lv_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
+						next_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
 
-						SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
-	
-						if (cur_lv_plugin == NULL)
-							cur_lv_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
+						if (next_plugin == NULL) {
+							next_plugin = visual_actor_get_prev_by_name (NULL);
+							if (next_plugin == NULL) {
+								visual_log (VISUAL_LOG_CRITICAL, "Cannot get previous plugin");
+							}
+                                                }
+
 
 						if (SDL_MUSTLOCK (screen) == SDL_TRUE)
 							SDL_LockSurface (screen);
+                                                /*
+                                                 * We need a better mechanism for checking for OpenGl plugins,
+                                                 * without using the VisBin structure or all these strcmp().
+                                                 */
+						if (options->disable_opengl_plugins) {
+							while ( (strcmp (next_plugin, "infinite") != 0) &&
+                                                                (strcmp (next_plugin, "jess") != 0) &&
+                                                                (strcmp (next_plugin, "oinksie") != 0) &&
+                                                                (strcmp (next_plugin, "lv_scope") != 0) ) {
+								next_plugin = visual_actor_get_prev_by_name (next_plugin);
+                                                                /*
+                                                                 * Would be really nice a circular chain of plugin names :-)
+                                                                 */
+								if (next_plugin == NULL) {
+                                                                        next_plugin = visual_actor_get_prev_by_name (NULL);
+                                                                        if (next_plugin == NULL) {
+                                                                                visual_log (VISUAL_LOG_CRITICAL, "Cannot get previous plugin");
+                                                                                /* we keep the old plugin */
+                                                                        } 
+                                                                }
+							}
+						}
 
-						visual_bin_set_morph_by_name (bin, "alphablend");
-						visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
+                                                if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
+                                                    cur_lv_plugin = next_plugin;
+                                                    visual_bin_set_morph_by_name (bin, "alphablend");
+                                                    visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
+                                                }
 
+						SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
+	
 						if (SDL_MUSTLOCK (screen) == SDL_TRUE)
 							SDL_UnlockSurface (screen);
 
@@ -558,24 +588,45 @@ static int sdl_event_handle ()
 							next_plugin = visual_actor_get_next_by_name (NULL);
 							if (next_plugin == NULL) {
 								visual_log (VISUAL_LOG_CRITICAL, "Cannot get next plugin");
-								/* we keep the old plugin */
-							} else {
-								cur_lv_plugin = next_plugin;
 							}
-						} else {
-							cur_lv_plugin = next_plugin;
+                                                }
+
+                                                if (SDL_MUSTLOCK (screen) == SDL_TRUE)
+                                                    SDL_LockSurface (screen);
+
+                                                /*
+                                                 * We need a better mechanism for checking for OpenGl plugins,
+                                                 * without using the VisBin structure or all these strcmp().
+                                                 */
+						if (options->disable_opengl_plugins) {
+							while ( (strcmp (next_plugin, "infinite") != 0) &&
+                                                                (strcmp (next_plugin, "jess") != 0) &&
+                                                                (strcmp (next_plugin, "oinksie") != 0) &&
+                                                                (strcmp (next_plugin, "lv_scope") != 0) ) {
+								next_plugin = visual_actor_get_next_by_name (next_plugin);
+                                                                /*
+                                                                 * Would be really nice a circular chain of plugin names :-)
+                                                                 */
+								if (next_plugin == NULL) {
+                                                                        next_plugin = visual_actor_get_next_by_name (NULL);
+                                                                        if (next_plugin == NULL) {
+                                                                                visual_log (VISUAL_LOG_CRITICAL, "Cannot get next plugin");
+                                                                                /* we keep the old plugin */
+                                                                        } 
+                                                                }
+							}
 						}
 
-						SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
+                                                if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
+                                                    cur_lv_plugin = next_plugin;
+                                                    visual_bin_set_morph_by_name (bin, "alphablend");
+                                                    visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
+                                                }
 
-						if (SDL_MUSTLOCK (screen) == SDL_TRUE)
-							SDL_LockSurface (screen);
-
-						visual_bin_set_morph_by_name (bin, "alphablend");
-						visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
-
-						if (SDL_MUSTLOCK (screen) == SDL_TRUE)
-							SDL_UnlockSurface (screen);
+                                                SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
+                                                        
+                                                if (SDL_MUSTLOCK (screen) == SDL_TRUE)
+                                                    SDL_UnlockSurface (screen);
 
 						break;
 						

@@ -61,13 +61,13 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_tooltips_set_tip (tooltips, checkbutton_fullscreen,
 		  "You can also toggle between normal and fullscreen mode by pressing key TAB or F11", NULL);
 
-  checkbutton_opengl = gtk_check_button_new_with_label ("Enable OpenGl plugins");
+  checkbutton_opengl = gtk_check_button_new_with_label ("Disable OpenGl plugins");
   gtk_widget_ref (checkbutton_opengl);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "checkbutton_opengl", checkbutton_opengl,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (checkbutton_opengl);
   gtk_box_pack_start (GTK_BOX (vbox_icon), checkbutton_opengl, FALSE, FALSE, 0);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbutton_opengl), TRUE);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbutton_opengl), FALSE);
 
   hbox_fps = gtk_hbox_new (FALSE, 0);
   gtk_widget_ref (hbox_fps);

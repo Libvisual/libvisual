@@ -8,12 +8,13 @@
 
 #define CONFIG_DEFAULT_ICON (PACKAGE_DATADIR "/libvisual-xmms-vis.bmp")
 
-static const Options default_options = { NULL, NULL, 320, 200, 30, 24, FALSE };
-static Options options = { NULL, NULL, -1, -1, -1, -1, FALSE};
+static const Options default_options = { NULL, NULL, 320, 200, 30, 24, FALSE, FALSE };
+static Options options = { NULL, NULL, -1, -1, -1, -1, FALSE, FALSE};
 static ConfigWin *config_win = NULL;
 
 static gboolean options_loaded = FALSE;
 static gboolean fullscreen;
+static gboolean disable_opengl_plugins;
 static int fps;
 
 static void sync_options (void);
@@ -95,6 +96,10 @@ int lv_xmms_config_load_prefs ()
 				options.fullscreen = default_options.fullscreen;
 				errors = TRUE;
 			}
+			if (!xmms_cfg_read_boolean (f, "libvisual_xmms", "disable_opengl_plugins", &options.disable_opengl_plugins)) {
+				options.disable_opengl_plugins = default_options.disable_opengl_plugins;
+				errors = TRUE;
+			}
 		} else {
 			must_update = TRUE;
 		}
@@ -119,6 +124,7 @@ int lv_xmms_config_load_prefs ()
 	 */
 	fullscreen = options.fullscreen;
 	fps = options.fps;
+        disable_opengl_plugins = options.disable_opengl_plugins;
 
 	if (errors) {
 		g_message ("LibVisual XMMS plugin: config file contain errors, fixing...");
@@ -163,6 +169,7 @@ int lv_xmms_config_save_prefs ()
 	xmms_cfg_write_int (f, "libvisual_xmms", "color_depth", options.depth);
 	xmms_cfg_write_int (f, "libvisual_xmms", "fps", options.fps);
 	xmms_cfg_write_boolean (f, "libvisual_xmms", "fullscreen", options.fullscreen);
+	xmms_cfg_write_boolean (f, "libvisual_xmms", "disable_opengl_plugins", options.disable_opengl_plugins);
 
 	xmms_cfg_write_default_file (f);
 	xmms_cfg_free (f);
@@ -187,10 +194,15 @@ void lv_xmms_config_window ()
 
 	config_win = lv_xmms_config_gui_new ();
 
-	if (options_loaded)
+	if (options_loaded) {
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);
-	else
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen), options.fullscreen);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_opengl), options.disable_opengl_plugins);
+        } else {
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), default_options.fps);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen), default_options.fullscreen);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_opengl), default_options.disable_opengl_plugins);
+        }
 
 	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_fullscreen), "toggled",
                       GTK_SIGNAL_FUNC (on_checkbutton_fullscreen_toggled),
@@ -233,7 +245,7 @@ static void on_checkbutton_fullscreen_toggled (GtkToggleButton *togglebutton, gp
 
 static void on_checkbutton_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 {
-
+        disable_opengl_plugins = !disable_opengl_plugins;
 }
 
 
@@ -276,11 +288,13 @@ static void on_button_cancel_clicked (GtkButton *button, gpointer user_data)
 	if (options_loaded) {
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
 						options.fullscreen);
-		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);	
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_opengl), options.disable_opengl_plugins);
 	} else {
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
 						default_options.fullscreen);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), default_options.fps);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_opengl), default_options.disable_opengl_plugins);
 	}
 
 	gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET(button)));
@@ -290,5 +304,6 @@ static void sync_options ()
 {
 	options.fullscreen = fullscreen;
 	options.fps = fps;
+        options.disable_opengl_plugins = disable_opengl_plugins;
 }
 

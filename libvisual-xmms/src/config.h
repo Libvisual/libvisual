@@ -6,6 +6,9 @@
 #define OPTIONS_MAX_NAME_LEN 256
 #define OPTIONS_MAX_ICON_PATH_LEN 256
 
+/**
+ * @todo Comment.
+ */
 typedef struct {
 	gchar *last_plugin;	/**< Name of the last plugin runned,
 				  with length < OPTIONS_MAX_NAME_LEN. */
@@ -16,7 +19,7 @@ typedef struct {
 	int fps;		/**< Maximum frames per second. */
 	int depth;		/**< Color depth. */
 	gboolean fullscreen;	/**< Say if we are in fullscreen or not. */
-	gboolean enable_opengl_plugins; /**< Enable OpenGl plugins */
+	gboolean disable_opengl_plugins; /**< Disable OpenGl plugins */
 } Options;
 
 void lv_xmms_config_window (void);
