@@ -578,7 +578,7 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 #else
 	struct dirent **namelist;
 
-	n = scandir (dir, &namelist, NULL, NULL);
+	n = scandir (dir, &namelist, NULL, alphasort);
 
 	if (n < 0)
 		return -1;
