@@ -41,7 +41,7 @@ AC_CHECK_LIB([GLU], [main])
 PKG_CHECK_MODULES(LIBESD, esound >= 0.2.28, [libesd="yes"], [libesd="no"])
 if test x$libesd = xno; then
 	AC_MSG_WARN([*** esound not found or too old.
-			The esound plugin won't be build])
+			The esound input plugin won't be build])
 fi
 AC_SUBST(LIBESD_LIBS)
 AC_SUBST(LIBESD_CFLAGS)
@@ -49,11 +49,22 @@ if test x$libesd = xyes; then
 	build_input="esd $build_input"
 fi
 
+PKG_CHECK_MODULES(LIBJACK, jack >= 0.98.0, [jack="yes"], [jack="no"])
+if test x$jack = xno; then
+	AC_MSG_WARN([*** libjack is too old. You can download a newer version at
+		     	http://jackit.sf.net/. The jackit input plugin won't be build])
+fi
+AC_SUBST(LIBJACK_LIBS)
+AC_SUBST(LIBJACK_CFLAGS)
+if test x$jack = xyes; then
+	build_input="jack $build_input"
+fi
+
 PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.7, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([*** libvisual not found.
 			libvisual is needed to build this package.
-			you can download libvisual at http://libvisual.sf.net/])
+			You can download libvisual at http://libvisual.sf.net/])
 fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
@@ -341,6 +352,7 @@ AC_CONFIG_FILES([
 	plugins/input/esd/Makefile
 	plugins/input/alsa/Makefile
 	plugins/input/mplayer/Makefile
+	plugins/input/jack/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile
