@@ -15,7 +15,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 /**
- * Indicates at which version the plugin API is. */
+ * Indicates at which version the plugin API is.
+ */
 #define VISUAL_PLUGIN_API_VERSION	1
 
 /**
@@ -38,6 +39,19 @@ typedef enum {
 	VISUAL_PLUGIN_TYPE_INPUT,	/**< Used when the plugin is an input plugin. */
 	VISUAL_PLUGIN_TYPE_MORPH	/**< Used when the plugin is a morph plugin. */
 } VisPluginType;
+
+/**
+ * Enumerate to define the plugin flags. Plugin flags can be used to
+ * define some of the plugin it's behavior.
+ */
+typedef enum {
+	VISUAL_PLUGIN_FLAG_NONE			= 0,	/**< Used to set no flags. */
+	VISUAL_PLUGIN_FLAG_NOT_REENTRANT	= 1,	/**< Used to tell the plugin loader that this plugin
+							  * is not reentrant, and can be loaded only once. */
+	VISUAL_PLUGIN_FLAG_SPECIAL		= 2	/**< Used to tell the plugin loader that this plugin has
+							  * special purpose, like the GdkPixbuf plugin, or a webcam
+							  * plugin. */
+} VisPluginFlags;
 
 typedef struct _VisPluginRef VisPluginRef;
 typedef struct _VisPluginInfo VisPluginInfo;
@@ -98,6 +112,8 @@ struct _VisPluginInfo {
 	plugin_init_func_t	 init;		/**< The standard init function, every plugin has to implement this. */
 	plugin_cleanup_func_t	 cleanup;	/**< The standard cleanup function, every plugin has to implement this. */
 	plugin_events_func_t	 events;	/**< The standard event function, implementation is optional. */
+
+	int			 flags;		/**< Plugin flags from the VisPluginFlags enumerate. */
 
 	void			*plugin;	/**< Pointer to the plugin specific data structures. */
 };

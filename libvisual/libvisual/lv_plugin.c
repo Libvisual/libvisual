@@ -494,6 +494,15 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	int cnt;
 
 	visual_log_return_val_if_fail (ref != NULL, NULL);
+	visual_log_return_val_if_fail (ref->info != NULL, NULL);
+
+	/* Check if this plugin is reentrant */
+	if (ref->usecount > 0 && (ref->info->flags & VISUAL_PLUGIN_FLAG_NOT_REENTRANT)) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin %s, the plugin is already loaded and is not reentrant.",
+				ref->info->plugname);
+
+		return NULL;
+	}
 
 	handle = dlopen (ref->file, RTLD_LAZY);
 
