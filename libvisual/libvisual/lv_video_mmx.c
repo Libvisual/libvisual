@@ -31,6 +31,89 @@
 #include "lv_common.h"
 #include "lv_video.h"
 
+int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, int y)
+{
+	uint8_t *destbuf;
+	uint8_t *srcbuf;
+	int lwidth = (x + src->width);
+	int lwidth4;
+	int lheight = (y + src->height);
+	int ya, xa;
+	uint8_t alpha;
+
+	if (lwidth > dest->width)
+		lwidth += dest->width - lwidth;
+
+	if (lheight > dest->height)
+		lheight += dest->height - lheight;
+
+	destbuf = dest->pixels;
+	srcbuf = src->pixels;
+
+	if (lwidth < 0)
+		return VISUAL_OK;
+
+	lwidth4 = lwidth * 4;
+	
+	/* Reset some regs */
+	__asm __volatile
+		("\n\t emms"
+		 "\n\t pxor %%mm6, %%mm6"
+		 "\n\t pxor %%mm7, %%mm7"
+		 "\n\t emms"
+		 :
+		 :
+		 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+	
+	destbuf += ((y > 0 ? y : 0) * dest->pitch) + (x > 0 ? x * 4 : 0);
+	srcbuf += ((y < 0 ? abs(y) : 0) * src->pitch) + (x < 0 ? abs(x) * 4 : 0);
+	for (ya = y > 0 ? y : 0; ya < lheight; ya++) {
+		for (xa = x > 0 ? x * 4 : 0; xa < lwidth4; xa += 4) {
+			/* pixel = ((alpha * ((src - dest)) / 255) + dest) */
+			__asm __volatile
+				("\n\t emms"
+				 "\n\t movd %[spix], %%mm0"
+				 "\n\t movd %[dpix], %%mm1"
+				 "\n\t movq %%mm0, %%mm2"
+				 "\n\t movq %%mm0, %%mm3"
+				 "\n\t psrlq $24, %%mm2"	/* The alpha */
+				 "\n\t movq %%mm0, %%mm4"
+				 "\n\t psrld $24, %%mm3"
+				 "\n\t psrld $24, %%mm4"
+				 "\n\t psllq $32, %%mm2"
+				 "\n\t psllq $16, %%mm3"
+				 "\n\t por %%mm4, %%mm2"
+				 "\n\t punpcklbw %%mm6, %%mm0"	/* interleaving dest */
+				 "\n\t por %%mm3, %%mm2"
+				 "\n\t punpcklbw %%mm6, %%mm1"	/* interleaving source */
+				 "\n\t paddsw %%mm7, %%mm2"
+				 "\n\t psubsw %%mm1, %%mm0"	/* (src - dest) part */
+				 "\n\t pxor %%mm3, %%mm3"
+				 "\n\t pmullw %%mm2, %%mm0"	/* alpha * (src - dest) */
+				 "\n\t pxor %%mm4, %%mm4"
+				 "\n\t psrlw $8, %%mm0"		/* / 256 */
+				 "\n\t pxor %%mm2, %%mm2"
+				 "\n\t paddb %%mm1, %%mm0"	/* + dest */
+				 "\n\t packuswb %%mm0, %%mm0"
+				 "\n\t pxor %%mm1, %%mm1"
+				 "\n\t movd %%mm0, %[dest]"
+				 "\n\t emms"
+				 : [dest] "=m" (*destbuf)
+				 : [dpix] "m" (*destbuf)
+				 , [spix] "m" (*srcbuf)
+				 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += (dest->pitch - ((lwidth - x) * 4)) - (x < 0 ? x * 4 : 0);
+		srcbuf += x < 0 ? abs(x) * 4 : 0;
+		srcbuf += x + src->width > dest->width ? ((x + (src->pitch / 4)) - dest->width) * 4 : 0;
+	}
+
+	return VISUAL_OK;
+}
 
 int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 {

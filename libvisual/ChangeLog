@@ -1,5 +1,16 @@
 2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx):
+	Added a MMX version of the 32 bits alpha overlay blitter.
+
+	* libvisual/lv_video.c (blit_overlay_alpha32): Removed the buffer
+	indexes, and change the pointers directly.
+
+	* libvisual/lv_video.* (visual_video_blit_overlay):
+	Use the MMX blitter, when appropiate.
+
+2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_random.c: Removed unused global internal random
 	context.
 

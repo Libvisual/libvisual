@@ -739,11 +739,14 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y, int alpha)
 {
 	VisVideo *transform = NULL;
+	VisCPU *cpucaps;
 	const VisVideo *srcp = NULL;
 
 	/* We can't overlay GL surfaces so don't even try */
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
 			src->depth != VISUAL_VIDEO_DEPTH_GL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
+	
+	cpucaps = visual_cpu_get_caps ();
 	
 	/* Placement is outside dest buffer, no use to continue */
 	if (x > dest->width)
@@ -775,9 +778,14 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 		memcpy (dest->pixels, src->pixels, dest->size);
 	else if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
 		blit_overlay_noalpha (dest, srcp, x, y);
-	else
-		blit_overlay_alpha32 (dest, srcp, x, y);
+	else {
+		if (cpucaps->hasMMX != 0)
+			_lv_blit_overlay_alpha32_mmx (dest, srcp, x, y);
+		else
+			blit_overlay_alpha32 (dest, srcp, x, y);
+	}
 
+	
 	if (transform != NULL)
 		visual_object_unref (VISUAL_OBJECT (transform));
 	
@@ -824,7 +832,6 @@ static int blit_overlay_alpha32 (VisVideo *dest, const VisVideo *src, int x, int
 	int lwidth4;
 	int lheight = (y + src->height);
 	int ya, xa;
-	int di, si;
 	uint8_t alpha;
 
 	if (lwidth > dest->width)
@@ -841,22 +848,23 @@ static int blit_overlay_alpha32 (VisVideo *dest, const VisVideo *src, int x, int
 
 	lwidth4 = lwidth * 4;
 	
-	di = ((y > 0 ? y : 0) * dest->pitch) + (x > 0 ? x * 4 : 0);
-	si = ((y < 0 ? abs(y) : 0) * src->pitch) + (x < 0 ? abs(x) * 4 : 0);
+	destbuf += ((y > 0 ? y : 0) * dest->pitch) + (x > 0 ? x * 4 : 0);
+	srcbuf += ((y < 0 ? abs(y) : 0) * src->pitch) + (x < 0 ? abs(x) * 4 : 0);
 	for (ya = y > 0 ? y : 0; ya < lheight; ya++) {
 		for (xa = x > 0 ? x * 4 : 0; xa < lwidth4; xa += 4) {
-			alpha = srcbuf[si + 3];
-			destbuf[di] = (alpha * (srcbuf[si] - destbuf[di]) / 255 + destbuf[di]);
-			destbuf[di + 1] = (alpha * (srcbuf[si + 1] - destbuf[di + 1]) / 255 + destbuf[di + 1]);
-			destbuf[di + 2] = (alpha * (srcbuf[si + 2] - destbuf[di + 2]) / 255 + destbuf[di + 2]);
+			alpha = *(srcbuf + 3);
+			
+			*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
+			*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
+			*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
                          
-			di += 4;
-			si += 4;
+			destbuf += 4;
+			srcbuf += 4;
 		}
 
-		di += (dest->pitch - ((lwidth - x) * 4)) - (x < 0 ? x * 4 : 0);
-		si += x < 0 ? abs(x) * 4 : 0;
-		si += x + src->width > dest->width ? ((x + (src->pitch / 4)) - dest->width) * 4 : 0;
+		destbuf += (dest->pitch - ((lwidth - x) * 4)) - (x < 0 ? x * 4 : 0);
+		srcbuf += x < 0 ? abs(x) * 4 : 0;
+		srcbuf += x + src->width > dest->width ? ((x + (src->pitch / 4)) - dest->width) * 4 : 0;
 	}
 
 	return VISUAL_OK;

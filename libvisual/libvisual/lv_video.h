@@ -145,6 +145,7 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 
 /* Optimized versions of performance sensitive routines */
 /* mmx from lv_video_mmx.c */ /* FIXME can we do this nicer ? */
+int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, int y);
 int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src);
 
 #ifdef __cplusplus
