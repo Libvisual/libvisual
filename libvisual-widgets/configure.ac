@@ -67,8 +67,19 @@ AC_SUBST(LIBVISUAL_CFLAGS)
 
 PKG_CHECK_MODULES(LIBGTK2, gtk+-2.0, [libgtk2="yes"], [libgtk2="no"])
 if test x"$libgtk2" = xno; then
-	AC_MSG_ERROR([gtk2 not found, libvisual is needed to build this package,
-you can download libvisual at http://www.gtk.org/])
+	AC_MSG_ERROR([gtk2 not found, gtk2 is needed to build this package,
+you can download gtk2 at http://www.gtk.org/])
+else
+    lv_save_CFLAGS=$CFLAGS
+    CFLAGS="$CFLAGS $LIBGTK2_CFLAGS"
+    AC_TRY_COMPILE([#include <stdlib.h>
+		    #include <gtk/gtk.h>],
+		   [#if(GTK_MINOR_VERSION < 4)
+		     something that fails to compile
+		    #endif],
+		   [ AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [1], [gtk2 version < 2.4.x]) ],
+		   [ AC_DEFINE([HAVE_GTK_AT_LEAST_2_4_X], [0], [gtk2 version >= 2.4.x]) ])
+    CFLAGS=$lv_save_CFLAGS
 fi
 AC_SUBST(LIBGTK2_LIBS)
 AC_SUBST(LIBGTK2_CFLAGS)

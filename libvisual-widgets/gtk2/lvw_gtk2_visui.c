@@ -12,7 +12,11 @@
 /* FIXME unreg param callbacks on destroy */
 /* FIXME implement tooltips */
 
+#if HAVE_GTK_AT_LEAST_2_4_X
 #define LVW_VISUI_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), LVW_VISUI_TYPE, LvwVisUIPrivate))
+#else
+#define LVW_VISUI_GET_PRIVATE(object) ( (LvwVisUIPrivate*) (((struct _LvwVisUI*)(object))->priv) )
+#endif
 
 struct _LvwVisUIPrivate {
 	VisUIWidget	*vuitree;
@@ -44,7 +48,11 @@ static void cb_visui_entry (GtkEditable *editable, gpointer user_data);
 static void cb_visui_slider (GtkRange *range, gpointer user_data);
 static void cb_visui_numeric (GtkEditable *editable, gpointer user_data);
 static void cb_visui_color (GtkColorSelection *colorselection, gpointer user_data);
+#if HAVE_GTK_AT_LEAST_2_4_X
 static void cb_visui_popup (GtkComboBox *combobox, gpointer user_data);
+#else
+static void cb_visui_popup (GtkRadioMenuItem *optionmenu, gpointer user_data);
+#endif
 static void cb_visui_radio (GtkToggleButton *radiobutton, gpointer user_data);
 static void cb_visui_checkbox (GtkToggleButton *togglebutton, gpointer user_data);
 
@@ -70,6 +78,47 @@ static gboolean cb_idle_radio (void *userdata);
 static void cb_param_checkbox (const VisParamEntry *param, void *priv);
 static gboolean cb_idle_checkbox (void *userdata);
 	
+#if (!HAVE_GTK_AT_LEAST_2_4_X)
+
+/* Yes, we need to define this ourself... */
+
+#define G_DEFINE_TYPE(TN, t_n, T_P)                         G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, {})
+
+#define G_DEFINE_TYPE_EXTENDED(TypeName, type_name, TYPE_PARENT, flags, CODE) \
+\
+static void     type_name##_init              (TypeName        *self); \
+static void     type_name##_class_init        (TypeName##Class *klass); \
+static gpointer type_name##_parent_class = NULL; \
+static void     type_name##_class_intern_init (gpointer klass) \
+{ \
+  type_name##_parent_class = g_type_class_peek_parent (klass); \
+  type_name##_class_init ((TypeName##Class*) klass); \
+} \
+\
+GType \
+type_name##_get_type (void) \
+{ \
+  static GType g_define_type_id = 0; \
+  if (G_UNLIKELY (g_define_type_id == 0)) \
+    { \
+      static const GTypeInfo g_define_type_info = { \
+        sizeof (TypeName##Class), \
+        (GBaseInitFunc) NULL, \
+        (GBaseFinalizeFunc) NULL, \
+        (GClassInitFunc) type_name##_class_intern_init, \
+        (GClassFinalizeFunc) NULL, \
+        NULL,   /* class_data */ \
+        sizeof (TypeName), \
+        0,      /* n_preallocs */ \
+        (GInstanceInitFunc) type_name##_init, \
+      }; \
+      g_define_type_id = g_type_register_static (TYPE_PARENT, #TypeName, &g_define_type_info, (GTypeFlags) flags); \
+      { CODE ; } \
+    } \
+  return g_define_type_id; \
+}
+#endif
+
 G_DEFINE_TYPE (LvwVisUI, lvw_visui, GTK_TYPE_BIN)
 
 static void 
@@ -96,6 +145,9 @@ lvw_visui_destroy (GtkObject *object)
 	 */
 	
 	priv = LVW_VISUI_GET_PRIVATE (object);
+
+	g_assert (priv != NULL);
+
 	head = priv->callbacksreg;
 
 	if (priv->destroyed == FALSE && head != NULL) {
@@ -228,12 +280,16 @@ lvw_visui_class_init (LvwVisUIClass *klass)
 	widget_class->size_allocate = lvw_visui_size_allocate;
 	widget_class->size_request = lvw_visui_size_request;
 
+#if HAVE_GTK_AT_LEAST_2_4_X
 	g_type_class_add_private (gobject_class, sizeof (LvwVisUIPrivate));
+#endif
 }
 
 static void
 lvw_visui_init (LvwVisUI *vuic)
 {
+	g_return_if_fail (vuic != NULL);
+
 	vuic->priv = LVW_VISUI_GET_PRIVATE (vuic);
 
 	GTK_WIDGET_SET_FLAGS (vuic, GTK_NO_WINDOW);
@@ -263,6 +319,11 @@ lvw_visui_new (VisUIWidget *vuitree)
 	visual_object_ref (VISUAL_OBJECT (vuitree));
 
 	vuic = g_object_new (lvw_visui_get_type (), NULL);
+
+#if !HAVE_GTK_AT_LEAST_2_4_X
+	vuic->priv = g_new0 (LvwVisUIPrivate, 1);
+#endif
+
 	vuic->priv->callbacksreg = NULL;
 
 	vuic->priv->vuitree = vuitree;
@@ -641,6 +702,8 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 		VisUIChoiceEntry *centry;
 		VisListEntry *le = NULL;
 		VisList *choices;
+		GtkWidget *menu, *menuitem;
+		GSList *group;
 
 		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
 
@@ -653,9 +716,8 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 			return NULL;
 		}
 
+#if HAVE_GTK_AT_LEAST_2_4_X
 		widget = gtk_combo_box_new_text ();
-
-		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 
 		gtk_widget_set_size_request (GTK_WIDGET (widget),
 				VISUAL_UI_WIDGET (cont)->width,
@@ -668,6 +730,33 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 
 		g_signal_connect (G_OBJECT (widget), "changed",
 				G_CALLBACK (cb_visui_popup), cont);
+#else
+		widget = gtk_option_menu_new ();
+
+		gtk_widget_set_size_request (GTK_WIDGET (widget),
+				VISUAL_UI_WIDGET (cont)->width,
+				VISUAL_UI_WIDGET (cont)->height);
+
+		menu = gtk_menu_new ();
+		group = NULL;
+
+		while ((centry = visual_list_next (choices, &le)) != NULL) {
+			menuitem = gtk_radio_menu_item_new_with_label (group, centry->name);
+			group = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM(menuitem));
+			gtk_menu_append (menu, menuitem);
+			gtk_widget_show (menuitem);
+			/*
+			 * The problem with the 'activate' signal is that when a menuitem
+			 * on a menu is selected, both new and prior selected items receives
+			 * this signal.
+			 */
+			g_signal_connect (G_OBJECT (menuitem), "activate",
+					G_CALLBACK (cb_visui_popup), cont);
+		}
+
+		gtk_option_menu_set_menu (GTK_OPTION_MENU(widget), menu);
+#endif
+		visual_object_set_private (VISUAL_OBJECT (cont), widget);
 
 		cbentry = g_new0 (CallbackEntry, 1);
 		cbentry->param = param;
@@ -796,7 +885,7 @@ static void
 cb_visui_entry (GtkEditable *editable, gpointer user_data)
 {
 	VisParamEntry *param;
-	const char *text;
+	char *text;
 
 	param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (user_data));
 
@@ -866,6 +955,7 @@ cb_visui_color (GtkColorSelection *colorselection, gpointer user_data)
 	visual_param_entry_set_color (param, color.red >> 8, color.green >> 8, color.blue >> 8);
 }
 
+#if HAVE_GTK_AT_LEAST_2_4_X
 static void
 cb_visui_popup (GtkComboBox *combobox, gpointer user_data)
 {
@@ -881,6 +971,29 @@ cb_visui_popup (GtkComboBox *combobox, gpointer user_data)
 	
 	printf ("Popup changed, active: %d\n", active);
 }
+#else
+static void
+cb_visui_popup (GtkRadioMenuItem *radiomenuitem, gpointer user_data)
+{
+	int active;
+	GSList *group, *l;
+
+	group = gtk_radio_menu_item_get_group (radiomenuitem);
+
+	active = g_slist_length (group);
+	l = group;
+	while (l) {
+		if (GTK_RADIO_MENU_ITEM(l->data) == radiomenuitem)
+			break;
+		active--;
+		l = g_slist_next (l);
+	}
+
+	visual_ui_choice_set_active (VISUAL_UI_CHOICE (user_data), active);
+
+	printf ("Popup changed, active: %d\n", active);
+}
+#endif
 
 static void
 cb_visui_radio (GtkToggleButton *togglebutton, gpointer user_data)
@@ -1110,8 +1223,10 @@ cb_idle_popup (void *userdata)
 	const VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 
+#if HAVE_GTK_AT_LEAST_2_4_X
 	gtk_combo_box_set_active (GTK_COMBO_BOX (visual_object_get_private (VISUAL_OBJECT (widget))),
 			visual_ui_choice_get_active (widget));
+#endif
 
 	g_free (data);
 
