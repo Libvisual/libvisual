@@ -210,11 +210,7 @@ static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2
 		("\n\t pxor %%mm6, %%mm6"
 		 ::: "mm6");
 
-	/* FIXME check for 4 byte alignment! */
 	for (i = size; i > 4; i -= 4) {
-		
-//		dest[i] = ((ialpha * (src2[i] - src1[i])) >> 8) + src1[i];
-
 		__asm __volatile
 			("\n\t movd %[alpha], %%mm3"
 			 "\n\t movd %[src2], %%mm0"
