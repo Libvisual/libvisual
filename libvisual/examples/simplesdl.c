@@ -236,23 +236,22 @@ int main (int argc, char *argv[])
 	time_t begin = time (NULL), end;
 	int frames = 0;
 	char *input_name = NULL;
-	
-	visual_init (&argc, &argv);
+
+	printf ("hola pepe\n");
+	/*visual_init (&argc, &argv);*/
+	if (visual_init (NULL, NULL) < 0)
+		visual_log (VISUAL_LOG_ERROR, "Could not initialize Libvisual");
+	printf ("hola pipo\n");
 	
 	/* Check libvisual version */
-	printf ("Libvisual version %s\n", visual_get_version ());
+	visual_log (VISUAL_LOG_INFO, "Libvisual version %s", visual_get_version ());
 
 	/* Make a new actor from actlist, with pluginname */
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
 	else
-		actor = visual_actor_new ("oinksie");
+		actor = visual_actor_new ("infinite");
 
-	if (actor->plugin == NULL) {
-		printf ("Couldn't create actor plugin\n");
-		return -1;
-	}
-	
 	depthflag = visual_actor_get_supported_depth (actor);
 	
 	if (argc > 2) {
@@ -261,14 +260,14 @@ int main (int argc, char *argv[])
 				
 		/* Check if the depth is supported */
 		if (visual_video_depth_is_supported (depthflag, depth) < 1) {
-			printf ("Plugin doesn't support this depth, but we'll set up an transformation enviroment.\n");
-			printf ("However showing you a nice list of supported depths anyway\n");
+			visual_log (VISUAL_LOG_INFO, "Plugin doesn't support this depth, but we'll set up an transformation enviroment.");
+			visual_log (VISUAL_LOG_INFO, "However showing you a nice list of supported depths anyway");
 
 			/* Show a list of supported depths */
 			i = VISUAL_VIDEO_DEPTH_NONE;
 
 			if (visual_video_depth_is_supported (depthflag, i) == 1)
-				printf ("Support visual video context NONE\n");
+				visual_log (VISUAL_LOG_INFO, "Support visual video context NONE");
 
 			do {
 				j = i;
@@ -277,7 +276,7 @@ int main (int argc, char *argv[])
 				if (i == j)
 					break;
 				
-				printf ("Support visual depth %d\n",
+				visual_log (VISUAL_LOG_INFO, "Support visual depth %d",
 						visual_video_depth_value_from_enum (i));
 
 			} while (i < VISUAL_VIDEO_DEPTH_GL);

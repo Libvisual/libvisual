@@ -27,9 +27,6 @@ x		* property to force morphs in high bpp
 
 	auto sched:
 		
-	random:
-		* easily filter out gl plugins
-
 	examples:
 		* find a way to compile examples AFTER installing the current library.
 		* port simplesdl to the new bin system.
@@ -177,10 +174,6 @@ libvisual:
 
 	list:
 		Add a sort method.
-
-	portability:
-		have byteswap helper functions and use them where endianess issues
-		arise (lv_bmp.c)
 
 	Other:
 		Make Gstreamer elements from the actors.

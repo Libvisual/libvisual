@@ -54,6 +54,8 @@ int visual_init_path_add (char *pathadd)
 {
 	__lv_plugpath_cnt++;
 	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);
+	if (__lv_plugpaths == NULL)
+		return -1;
 	__lv_plugpaths[__lv_plugpath_cnt - 1] = pathadd;
 
 	return 0;
@@ -69,21 +71,21 @@ int visual_init_path_add (char *pathadd)
  */
 int visual_init (int *argc, char ***argv)
 {
+	int ret;
+
 	if (__lv_initialized == TRUE) {
 		visual_log (VISUAL_LOG_ERROR, "Over initialized");
                 return -1;
         }
 	
 	if (argc == NULL || argv == NULL) {
-		if (argc != NULL || argv != NULL)
-			printf ("OI, your argc,argv is borked\n");
-		/*  FIXME, print a warning here, one
-		 *  is NULL and one isn't */
-		__lv_progname = visual_mem_malloc0 (strlen ("no progname"));
-                if (__lv_progname == NULL)
-                        visual_log (VISUAL_LOG_WARNING, "Could not set program name");
-                else
-                        strcpy (__lv_progname, "no progname");
+		if (argc == NULL && argv == NULL) {
+			__lv_progname = strdup ("no progname");
+        	        if (__lv_progname == NULL)
+                	        visual_log (VISUAL_LOG_WARNING, "Could not set program name");
+		} else {
+			visual_log (VISUAL_LOG_ERROR, "Initialization failed, bad arguments");
+		}
 	} else {
                 /*
                  * We must copy the argument, to let the client
@@ -98,12 +100,24 @@ int visual_init (int *argc, char ***argv)
                         visual_log (VISUAL_LOG_WARNING, "Could not set program name");
         }
 
-	visual_init_path_add (PLUGPATH"/actor");
-	visual_init_path_add (PLUGPATH"/input");
-	visual_init_path_add (PLUGPATH"/morph");
-	visual_init_path_add (NULL);
+	ret = visual_init_path_add (PLUGPATH"/actor");
+	if (ret < 0)
+		return -1;
+	ret = visual_init_path_add (PLUGPATH"/input");
+	if (ret < 0)
+		return -1;
+	ret = visual_init_path_add (PLUGPATH"/morph");
+	if (ret < 0)
+		return -1;
+	ret = visual_init_path_add (NULL);
+	if (ret < 0)
+		return -1;
 
+	printf ("Phase 1\n");
 	__lv_plugins = visual_plugin_get_list (__lv_plugpaths);
+	if (__lv_plugins == NULL)
+		return -1;
+	printf ("Phase 2\n");
 	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
 	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
 	__lv_plugins_morph = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_MORPH);

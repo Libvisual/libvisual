@@ -414,11 +414,6 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type)
 
 	list = visual_list_new ();
 
-	if (list == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot create a new list");
-		return NULL;
-	}
-
 	while ((ref = visual_list_next (pluglist, &entry)) != NULL) {
 		if (ref->type == type)
 			visual_list_add (list, ref);
@@ -877,10 +872,17 @@ VisPluginRef *visual_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 VisList *visual_plugin_get_list (char **paths)
 {
 	VisList *list = visual_list_new();
-	int i = 0;
+	int i = 0, ret;
 
-	while (paths[i] != NULL)
-		plugin_add_dir_to_list (list, paths[i++]);
+	visual_log_return_val_if_fail (paths != NULL, NULL);
+
+	while (paths[i] != NULL) {
+		ret = plugin_add_dir_to_list (list, paths[i++]);
+		if (ret < 0) {
+			visual_list_destroy (list, NULL);
+			return NULL;
+		}
+	}
 
 	return list;
 }
