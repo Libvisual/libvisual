@@ -35,8 +35,8 @@ extern "C" {
 	
 #define VISUAL_USEC_PER_SEC	1000000
 
-#define VISUAL_TIME(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisTime))
-#define VISUAL_TIMER(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisTimer))
+#define VISUAL_TIME(obj)				(VISUAL_CHECK_CAST ((obj), VisTime))
+#define VISUAL_TIMER(obj)				(VISUAL_CHECK_CAST ((obj), VisTimer))
 
 typedef struct _VisTime VisTime;
 typedef struct _VisTimer VisTimer;

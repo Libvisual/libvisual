@@ -58,7 +58,7 @@ static VisInputPlugin *get_input_plugin (VisInput *input)
 	visual_log_return_val_if_fail (input != NULL, NULL);
 	visual_log_return_val_if_fail (input->plugin != NULL, NULL);
 
-	inplugin = VISUAL_PLUGIN_INPUT (input->plugin->info->plugin);
+	inplugin = VISUAL_INPUT_PLUGIN (input->plugin->info->plugin);
 
 	return inplugin;
 }

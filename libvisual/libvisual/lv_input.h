@@ -32,9 +32,16 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_INPUT(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisInput))
+#define VISUAL_INPUT(obj)				(VISUAL_CHECK_CAST ((obj), VisInput))
+#define VISUAL_INPUT_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisInputPlugin))
+
+/**
+ * Type defination that should be used in plugins to set the plugin type for an input  plugin.
+ */
+#define VISUAL_PLUGIN_TYPE_INPUT	"Libvisual:core:input"
 
 typedef struct _VisInput VisInput;
+typedef struct _VisInputPlugin VisInputPlugin;
 
 /**
  * Callback function that is set using visual_input_set_callback should use this signature.
@@ -49,6 +56,20 @@ typedef struct _VisInput VisInput;
  * @arg priv Private field to be used by the client. The library will never touch this.
  */
 typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio, void *priv);
+
+/* Input plugin methods */
+
+/**
+ * An input plugin needs this signature for the sample upload function. The sample upload function
+ * is used to retrieve sample information when a input is being used to retrieve the
+ * audio sample.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg audio Pointer to the VisAudio in which the new sample data is set.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*VisPluginInputUploadFunc)(VisPluginData *plugin, VisAudio *audio);
 
 /**
  * The VisInput structure encapsulates the input plugin and provides
@@ -71,6 +92,20 @@ struct _VisInput {
 							  * @see visual_audio_analyse */
 	VisInputUploadCallbackFunc	 callback;	/**< Callback function when a callback
 							  * is used instead of a plugin. */
+};
+
+/**
+ * The VisInputPlugin structure is the main data structure
+ * for the input plugin.
+ *
+ * The input plugin is used to retrieve PCM samples from
+ * certain sources.
+ */
+struct _VisInputPlugin {
+	VisObject			 object;	/**< The VisObject data. */
+	VisPluginInputUploadFunc	 upload;	/**< The sample upload function. This is the main function
+							  * of the plugin which uploads sample data into
+							  * libvisual. */
 };
 
 /* prototypes */

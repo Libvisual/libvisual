@@ -28,6 +28,10 @@
 
 #include "lvconfig.h"
 #include "lv_plugin.h"
+#include "lv_actor.h"
+#include "lv_input.h"
+#include "lv_morph.h"
+#include "lv_transform.h"
 #include "lv_libvisual.h"
 #include "lv_log.h"
 #include "lv_param.h"

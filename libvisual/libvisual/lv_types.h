@@ -34,7 +34,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_CHECK_CAST(uiobj, cast_type, cast)    ((cast*) (uiobj))
+#define VISUAL_CHECK_CAST(uiobj, cast)    ((cast*) (uiobj))
 
 #if !defined(VISUAL_OS_WIN32)
 #ifndef uint8_t

@@ -31,7 +31,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_SONGINFO(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisSongInfo))
+#define VISUAL_SONGINFO(obj)				(VISUAL_CHECK_CAST ((obj), VisSongInfo))
 	
 /**
  * Used to define the type of song info being used.

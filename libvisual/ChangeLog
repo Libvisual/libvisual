@@ -1,8 +1,29 @@
-2005-03-08  dennis smit  <ds@nerds-incorporated.org>
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.*, libvisual/lv_input.*, libvisual/lv_morph.*,
+	libvisual/lv_transform.*, libvisual/lv_plugin.*,
+	libvisual/lv_libvisual.c:
+
+	Have the plugin specific structure data and stuff within the specific
+	subsystem, not in lv_plugin. Renamed a few defines.
+
+	* libvisual/lv_actor.*: Added VisActorPluginEnviron for desired fps,
+	and later more environmental requests.
+
+	* libvisual/lv_types.h: Removed the cast type check since we don't
+	have a full blown type systems, and will never have (Just don't code
+	like a naieve, mkay).
+
+	* libvisual/*.h: Adopted everything to the new VISUAL_CHECK_CAST
+	define.
+
+	Cheers.
+
+2005-03-08  Dennis smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_config.*: Some more work. Just small bits.
 
-2005-03-08  dennis smit  <ds@nerds-incorporated.org>
+2005-03-08  Dennis smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c (depth_transform_8_to_24_c,
 	depth_transform_8_to_32_c, depth_transform_16_to_8_c,

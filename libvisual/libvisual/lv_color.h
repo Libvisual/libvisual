@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_COLOR(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisColor))
+#define VISUAL_COLOR(obj)				(VISUAL_CHECK_CAST ((obj), VisColor))
 
 typedef struct _VisColor VisColor;
 

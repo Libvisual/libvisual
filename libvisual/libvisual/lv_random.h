@@ -31,7 +31,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_RANDOMCONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisRandomContext))
+#define VISUAL_RANDOMCONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), VisRandomContext))
 	
 /**
  * The highest random nummer.

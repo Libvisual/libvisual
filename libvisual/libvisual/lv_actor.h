@@ -35,9 +35,64 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisActor))
+#define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
+#define VISUAL_ACTOR_PLUGINENVIRON(obj)			(VISUAL_CHECK_CAST ((obj), VisActorPluginEnviron))
+#define VISUAL_ACTOR_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
+
+/**
+ * Type defination that should be used in plugins to set the plugin type for an actor plugin.
+ */
+#define VISUAL_PLUGIN_TYPE_ACTOR	"Libvisual:core:actor"
+
+/**
+ * Name defination of the standard VisActorPluginEnviron element for an actor plugin.
+ */
+#define VISUAL_ACTOR_PLUGIN_ENVIRON	"Libvisual:core:actor:environ"
 
 typedef struct _VisActor VisActor;
+typedef struct _VisActorPluginEnviron VisActorPluginEnviron;
+typedef struct _VisActorPlugin VisActorPlugin;
+
+/* Actor plugin methods */
+
+/**
+ * An actor plugin needs this signature for the requisition function. The requisition function
+ * is used to determine the size required by the plugin for a given width/height value.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg width Pointer to an int containing the width requested, will be altered to the nearest
+ * 	supported width.
+ * @arg height Pointer to an int containing the height requested, will be altered to the nearest
+ * 	supported height.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*VisPluginActorRequisitionFunc)(VisPluginData *plugin, int *width, int *height);
+
+/**
+ * An actor plugin needs this signature for the palette function. The palette function
+ * is used to retrieve the desired palette from the plugin.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ *
+ * @return Pointer to the VisPalette used by the plugin, this should be a VisPalette with 256
+ *	VisColor entries, NULL is also allowed to be returned.
+ */
+typedef VisPalette *(*VisPluginActorPaletteFunc)(VisPluginData *plugin);
+
+/**
+ * An actor plugin needs this signature for the render function. The render function
+ * is used to render the frame for the visualisation.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg video Pointer to the VisVideo containing all information about the display surface.
+ *	Params like height and width won't suddenly change, this is always notified as an event
+ *	so the plugin can adjust to the new dimension.
+ * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 /**
  * The VisActor structure encapsulates the actor plugin and provides
@@ -67,6 +122,39 @@ struct _VisActor {
 	/* Songinfo management */
 	VisSongInfo	 songcompare;		/**< Private member which is used to compare with new songinfo
 						  * to check if a new song event should be emitted. */
+};
+
+/**
+ * The VisActorPluginEnviron structure is the main environmental element for a VisActorPlugin. The environmental name
+ * is stored in the VISUAL_ACTOR_PLUGIN_ENVIRON define. The structure is used to set environmental data like, 
+ * desired frames per second. The VisActorPluginEnviron element should be polled by either libvisual-display 
+ * or a custom target to check for changes.
+ */
+struct _VisActorPluginEnviron {
+	VisObject			object;		/**< The VisObject data. */
+
+	int				fps;		/**< The desired fps, set by the plugin, optionally read by
+							 * the display target. */
+};
+
+/**
+ * The VisActorPlugin structure is the main data structure
+ * for the actor (visualisation) plugin.
+ *
+ * The actor plugin is the visualisation plugin.
+ */
+struct _VisActorPlugin {
+	VisObject			 object;	/**< The VisObject data. */
+	VisPluginActorRequisitionFunc	 requisition;	/**< The requisition function. This is used to
+							 * get the desired VisVideo surface size of the plugin. */
+	VisPluginActorPaletteFunc	 palette;	/**< Used to retrieve the desired palette from the plugin. */
+	VisPluginActorRenderFunc	 render;	/**< The main render loop. This is called to draw a frame. */
+
+	VisSongInfo			 songinfo;	/**< Pointer to VisSongInfo that contains information about
+							 *the current playing song. This can be NULL. */
+
+	int				 depth;		/**< The depth flag for the VisActorPlugin. This contains an ORred
+							  * value of depths that are supported by the plugin. */
 };
 
 /* prototypes */

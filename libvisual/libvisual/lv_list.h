@@ -42,7 +42,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_LIST(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisList))
+#define VISUAL_LIST(obj)				(VISUAL_CHECK_CAST ((obj), VisList))
 
 typedef struct _VisListEntry VisListEntry;
 typedef struct _VisList VisList;

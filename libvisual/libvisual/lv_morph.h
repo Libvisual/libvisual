@@ -34,7 +34,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_MORPH(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisMorph))
+#define VISUAL_MORPH(obj)				(VISUAL_CHECK_CAST ((obj), VisMorph))
+#define VISUAL_MORPH_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisMorphPlugin))
+
+/**
+ * Type defination that should be used in plugins to set the plugin type for a morph plugin.
+ */
+#define VISUAL_PLUGIN_TYPE_MORPH	"Libvisual:core:morph"
 
 /**
  * Morph morphing methods.
@@ -49,6 +55,44 @@ typedef enum {
 } VisMorphMode;
 
 typedef struct _VisMorph VisMorph;
+typedef struct _VisMorphPlugin VisMorphPlugin;
+
+/* Morph plugin methods */
+
+/**
+ * A morph plugin needs this signature for the palette function. The palette function
+ * is used to give a palette for the morph. The palette function isn't mandatory and the
+ * VisMorph system will interpolate between the two palettes in VISUAL_VIDEO_DEPTH_8BIT when
+ * a palette function isn't set.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg rate A float between 0.0 and 1.0 that tells how far the morph has proceeded.
+ * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
+ * @arg pal A pointer to the target VisPalette in which the morph between the two palettes is saved. Should have
+ * 	256 VisColor entries.
+ * @arg src1 A pointer to the first VisVideo source.
+ * @arg src2 A pointer to the second VisVideo source.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*VisPluginMorphPaletteFunc)(VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal,
+		VisVideo *src1, VisVideo *src2);
+
+/**
+ * A morph plugin needs this signature for the apply function. The apply function
+ * is used to execute a morph between two VisVideo sources. It's the 'render' function of
+ * the morph plugin and here is the morphing done.
+ *
+ * @arg plugin Pointer to the VisPluginData instance structure.
+ * @arg rate A float between 0.0 and 1.0 that tells how far the morph has proceeded.
+ * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
+ * @arg src1 A pointer to the first VisVideo source.
+ * @arg src2 A pointer to the second VisVideo source.
+ *
+ * @return 0 on succes -1 on error.
+ */
+typedef int (*VisPluginMorphApplyFunc)(VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest,
+		VisVideo *src1, VisVideo *src2);
 
 /**
  * The VisMorph structure encapsulates the morph plugin and provides 
@@ -71,7 +115,7 @@ struct _VisMorph {
 	VisPalette	 morphpal;	/**< Morph plugins can also set a palette for indexed
 					 * color depths. */
 	VisTime		 morphtime;	/**< Amount of time which the morphing should take. */
-	VisTimer	 timer;		/**< Private entry that holds the time elapsed from 
+	VisTimer		 timer;		/**< Private entry that holds the time elapsed from 
 					 * the beginning of the switch. */
 	int		 steps;		/**< Private entry that contains the number of steps
 					 * a morph suppose to take. */
@@ -80,6 +124,30 @@ struct _VisMorph {
 	VisMorphMode	 mode;		/**< Private entry that holds the mode of morphing. */
 };
 
+/**
+ * The VisMorphPlugin structure is the main data structure
+ * for the morph plugin.
+ *
+ * The morph plugin is capable of morphing between two VisVideo
+ * sources, and thus is capable of morphing between two
+ * VisActors.
+ */
+struct _VisMorphPlugin {
+	VisObject			 object;	/**< The VisObject data. */
+	VisPluginMorphPaletteFunc	 palette;	/**< The plugin's palette function. This can be used
+							  * to obtain a palette for VISUAL_VIDEO_DEPTH_8BIT surfaces.
+							  * However the function may be set to NULL. In this case the
+							  * VisMorph system morphs between palettes itself. */
+	VisPluginMorphApplyFunc		 apply;		/**< The plugin it's main function. This is used to morph
+							  * between two VisVideo sources. */
+	int				 depth;		/**< The depth flag for the VisMorphPlugin. This contains an ORred
+							  * value of depths that are supported by the plugin. */
+	int				 requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
+							  * requires an VisAudio context in order to render properly. */
+};
+
+
+/* prototypes */
 VisPluginData *visual_morph_get_plugin (VisMorph *morph);
 
 VisList *visual_morph_get_list (void);

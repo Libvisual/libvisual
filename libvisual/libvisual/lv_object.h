@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_OBJECT(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisObject))
+#define VISUAL_OBJECT(obj)				(VISUAL_CHECK_CAST ((obj), VisObject))
 
 typedef struct _VisObject VisObject;
 

@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_AUDIO(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisAudio))
+#define VISUAL_AUDIO(obj)				(VISUAL_CHECK_CAST ((obj), VisAudio))
 
 typedef struct _VisAudio VisAudio;
 

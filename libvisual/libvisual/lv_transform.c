@@ -58,7 +58,7 @@ static VisTransformPlugin *get_transform_plugin (VisTransform *transform)
 	visual_log_return_val_if_fail (transform != NULL, NULL);
 	visual_log_return_val_if_fail (transform->plugin != NULL, NULL);
 
-	transplugin = VISUAL_PLUGIN_TRANSFORM (transform->plugin->info->plugin);
+	transplugin = VISUAL_TRANSFORM_PLUGIN (transform->plugin->info->plugin);
 
 	return transplugin;
 }

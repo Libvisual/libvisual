@@ -34,9 +34,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_PARAMCONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisParamContainer))
-#define VISUAL_PARAMENTRY_CALLBACK(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisParamEntryCallback))
-#define VISUAL_PARAMENTRY(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisParamEntry))
+#define VISUAL_PARAMCONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), VisParamContainer))
+#define VISUAL_PARAMENTRY_CALLBACK(obj)			(VISUAL_CHECK_CAST ((obj), VisParamEntryCallback))
+#define VISUAL_PARAMENTRY(obj)				(VISUAL_CHECK_CAST ((obj), VisParamEntry))
 
 #define VISUAL_PARAM_LIST_ENTRY(name)			{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_NULL }
 #define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_STRING, string, {0, 0, 0}}

@@ -70,7 +70,7 @@ static VisActorPlugin *get_actor_plugin (VisActor *actor)
 	visual_log_return_val_if_fail (actor != NULL, NULL);
 	visual_log_return_val_if_fail (actor->plugin != NULL, NULL);
 
-	actplugin = VISUAL_PLUGIN_ACTOR (actor->plugin->info->plugin);
+	actplugin = VISUAL_ACTOR_PLUGIN (actor->plugin->info->plugin);
 
 	return actplugin;
 }
@@ -131,7 +131,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
 		ref = visual_plugin_find (__lv_plugins_actor, next);
 		plugin = visual_plugin_load (ref);
 
-		actplugin = VISUAL_PLUGIN_ACTOR (plugin->info->plugin);
+		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
 		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
@@ -171,7 +171,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
 		
 		ref = visual_plugin_find (__lv_plugins_actor, prev);
 		plugin = visual_plugin_load (ref);
-		actplugin = VISUAL_PLUGIN_ACTOR (plugin->info->plugin);
+		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
 		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
@@ -211,7 +211,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
 		
 		ref = visual_plugin_find (__lv_plugins_actor, next);
 		plugin = visual_plugin_load (ref);
-		actplugin = VISUAL_PLUGIN_ACTOR (plugin->info->plugin);
+		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
 		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
@@ -251,7 +251,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
 		
 		ref = visual_plugin_find (__lv_plugins_actor, prev);
 		plugin = visual_plugin_load (ref);
-		actplugin = VISUAL_PLUGIN_ACTOR (plugin->info->plugin);
+		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
 		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
@@ -321,6 +321,8 @@ VisActor *visual_actor_new (const char *actorname)
 {
 	VisActor *actor;
 	VisPluginRef *ref;
+	VisPluginEnviron *enve;
+	VisActorPluginEnviron *actenviron;
 
 	if (__lv_plugins_actor == NULL && actorname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "the plugin list is NULL");
@@ -338,6 +340,14 @@ VisActor *visual_actor_new (const char *actorname)
 	ref = visual_plugin_find (__lv_plugins_actor, actorname);
 
 	actor->plugin = visual_plugin_load (ref);
+
+	/* Adding the VisActorPluginEnviron */
+	actenviron = visual_mem_new0 (VisActorPluginEnviron, 1);
+
+	visual_object_initialize (VISUAL_OBJECT (actenviron), TRUE, NULL);	
+	
+	enve = visual_plugin_environ_new (VISUAL_ACTOR_PLUGIN_ENVIRON, VISUAL_OBJECT (actenviron));
+	visual_plugin_environ_add (actor->plugin, enve);
 
 	return actor;
 }

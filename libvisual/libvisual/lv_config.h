@@ -31,8 +31,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_CONFIG_REGISTRY(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisConfigRegistry))
-#define VISUAL_CONFIG_REGISTRYSECTION(obj)		(VISUAL_CHECK_CAST ((obj), 0, VisConfigRegistrySection))
+#define VISUAL_CONFIG_REGISTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisConfigRegistry))
+#define VISUAL_CONFIG_REGISTRYSECTION(obj)		(VISUAL_CHECK_CAST ((obj), VisConfigRegistrySection))
 
 
 typedef struct _VisConfigRegistry VisConfigRegistry;

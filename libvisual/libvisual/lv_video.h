@@ -34,7 +34,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_VIDEO(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisVideo))
+#define VISUAL_VIDEO(obj)				(VISUAL_CHECK_CAST ((obj), VisVideo))
 
 /* NOTE: The depth find helper code in lv_actor depends on an arrangment from low to high */
 

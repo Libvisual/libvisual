@@ -35,7 +35,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_FFTSTATE(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisFFTState))
+#define VISUAL_FFTSTATE(obj)				(VISUAL_CHECK_CAST ((obj), VisFFTState))
 
 /**
  * Private FFT define that contains the log size.

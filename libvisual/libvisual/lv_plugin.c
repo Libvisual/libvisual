@@ -338,10 +338,6 @@ VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
 /**
  * Retrieves the plugin specific part of a plugin.
  *
- * @see VISUAL_PLUGIN_ACTOR
- * @see VISUAL_PLUGIN_INPUT
- * @see VISUAL_PLUGIN_MORPH
- * 
  * @param plugin The pointer to the VisPluginData from which we want the plugin specific part.
  *
  * @return Void * pointing to the plugin specific part which can be cast.
@@ -961,20 +957,6 @@ VisPluginRef *visual_plugin_find (VisList *list, const char *name)
 int visual_plugin_get_api_version ()
 {
 	return VISUAL_PLUGIN_API_VERSION;
-}
-
-/**
- * Retrieves the VisSongInfo from a VisActorPlugin.
- *
- * @param actplugin Pointer to the VisActorPlugin from which the VisSongInfo is requested.
- *
- * @return The requested VisSongInfo or NULL on failure.
- */
-VisSongInfo *visual_plugin_actor_get_songinfo (VisActorPlugin *actplugin)
-{
-	visual_log_return_val_if_fail (actplugin != NULL, NULL);
-
-	return &actplugin->songinfo;
 }
 
 /**

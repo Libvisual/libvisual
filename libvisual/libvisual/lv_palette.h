@@ -31,7 +31,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_PALETTE(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPalette))
+#define VISUAL_PALETTE(obj)				(VISUAL_CHECK_CAST ((obj), VisPalette))
 	
 typedef struct _VisPalette VisPalette;
 
