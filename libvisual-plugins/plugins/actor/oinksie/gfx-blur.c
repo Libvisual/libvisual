@@ -39,8 +39,8 @@ void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 		
 		/* Prepare substraction register */
 		__asm __volatile
-			("\n\t movq %[fade], %%mm3"
-			 "\n\t movq %[fade], %%mm4"
+			("\n\t movd %[fade], %%mm3"
+			 "\n\t movd %[fade], %%mm4"
 			 "\n\t psllq $32, %%mm3"
 			 "\n\t por %%mm4, %%mm3"
 			 :: [fade] "m" (fadeflag)

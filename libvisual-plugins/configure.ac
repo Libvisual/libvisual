@@ -293,6 +293,20 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([corona],
+            AC_HELP_STRING([--disable-corona],
+                           [Do not build corona plugin @<:@default=enabled@:>@]),
+	    [corona=$enableval],
+	    [corona=yes])
+AC_MSG_CHECKING([whether to build corona plugin])
+if test x$corona = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor corona"
+  AC_SUBST([corona], ['actor_corona.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([analyzer],
             AC_HELP_STRING([--disable-analyzer],
                            [Do not build Analyzer plugin @<:@default=enabled@:>@]),
@@ -534,6 +548,7 @@ AC_CONFIG_FILES([
 	plugins/actor/bumpscope/Makefile
 	plugins/actor/infinite/Makefile
 	plugins/actor/JESS/Makefile
+	plugins/actor/corona/Makefile
 	plugins/actor/goom2/Makefile
 	plugins/actor/gdkpixbuf/Makefile
 	plugins/input/Makefile

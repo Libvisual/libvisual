@@ -43,17 +43,59 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly);
 	
 static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 {
+	VisCPU *cpucaps = visual_cpu_get_caps ();
 	register unsigned int i,sum = 0;
 	register uint8_t *iptr;
 
 	iptr = ptr + bpl + 1;
 	i = bpl * h;
-	while(i--)
-	{
-		sum = (iptr[-bpl] + iptr[-1] + iptr[1] + iptr[bpl]) >> 2;
-		if(sum > 2)
-			sum -= 2;
-		*(iptr++) = sum;
+	
+	/* MMX blurrer by Dennis Smit, got bored for a sec, thus :) */
+	if (cpucaps->hasMMX == 1) {
+#ifdef VISUAL_ARCH_X86
+
+		__asm __volatile
+			("pxor %%mm6, %%mm6"
+			 ::: "mm6");
+		
+		while(i -= 4)
+		{
+			__asm __volatile
+				("\n\t movd %[dest], %%mm0"
+				 "\n\t movd %[pix2], %%mm1"
+				 "\n\t punpcklbw %%mm6, %%mm0"
+				 "\n\t movd %[pix3], %%mm2"
+				 "\n\t punpcklbw %%mm6, %%mm1"
+				 "\n\t movd %[pix4], %%mm3"
+				 "\n\t punpcklbw %%mm6, %%mm2"
+				 "\n\t movd %[pix5], %%mm4"
+				 "\n\t punpcklbw %%mm6, %%mm3"
+				 "\n\t paddw %%mm1, %%mm2"
+				 "\n\t punpcklbw %%mm6, %%mm4"
+				 "\n\t paddw %%mm3, %%mm2"
+				 "\n\t paddw %%mm2, %%mm4"
+				 "\n\t psrlw $2, %%mm4"
+				 "\n\t packuswb %%mm6, %%mm4"
+				 "\n\t movd %%mm4, %[dest]" 
+				 :: [dest] "m" (*(iptr))
+				 , [pix2] "m" (*(iptr - bpl))
+				 , [pix3] "m" (*(iptr - 1))
+				 , [pix4] "m" (*(iptr + 1))
+				 , [pix5] "m" (*(iptr + bpl))
+				 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+			
+			iptr += 4;
+		}
+
+		__asm __volatile
+			("\n\t emms");
+#endif
+	} else {
+		while(i--)
+		{
+			sum = (iptr[-bpl] + iptr[-1] + iptr[1] + iptr[bpl]) >> 2;
+			*(iptr++) = sum;
+		}
 	}
 }
 
@@ -288,13 +330,13 @@ void __bumpscope_generate_palette (BumpscopePrivate *priv, VisColor *col)
 
 	for (i = 0; i < 256; i++) {
 		r = ((float)(100*col->r/255)*priv->intense1[i]+priv->intense2[i]);
-		if (r > 255) r = 255;
+		if (r > 253) r = 253;
 
 		g = ((float)(100*col->g/255)*priv->intense1[i]+priv->intense2[i]);
-		if (g > 255) g = 255;
+		if (g > 253) g = 253;
 
 		b = ((float)(100*col->b/255)*priv->intense1[i]+priv->intense2[i]);
-		if (b > 255) b = 255;
+		if (b > 253) b = 253;
 
 		priv->pal.colors[i].r = r;
 		priv->pal.colors[i].g = g;
