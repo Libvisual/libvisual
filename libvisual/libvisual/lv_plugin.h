@@ -14,7 +14,7 @@ extern "C" {
 #include <libvisual/lv_param.h>
 
 
-#define VISUAL_PLUGIN_API_VERSION	0
+#define VISUAL_PLUGIN_API_VERSION	1
 
 /**
  * Enumerate to define the plugin type. Especially used
@@ -212,7 +212,7 @@ VisList *visual_plugin_get_list (char **paths);
 
 VisPluginRef *visual_plugin_find (VisList *list, char *name);
 
-int visual_plugin_get_api_version ();
+int visual_plugin_get_api_version (void);
 
 #ifdef __cplusplus
 }

@@ -341,6 +341,77 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
 }
 
 /**
+ * Adds a new quit event to the event queue.
+ *
+ * @param pass_zero_please Might be used in the future, but for now just pass .
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please)
+{
+	VisEvent *event;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+
+	event = visual_event_new ();
+	event->type = VISUAL_EVENT_QUIT;
+
+	event->quit.type = event->type;
+
+	return visual_event_queue_add (eventqueue, event);
+}
+
+/**
+ * Adds a new visibility event to the event queue.
+ *
+ * @param is_visible TRUE when visible, FALSE when not visible.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible)
+{
+	VisEvent *event;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+
+	event = visual_event_new ();
+	event->type = VISUAL_EVENT_VISIBILITY;
+
+	event->visibility.type = event->type;
+	event->visibility.is_visible = is_visible;
+
+	return visual_event_queue_add (eventqueue, event);
+}
+
+/**
+ * Adds a new generic event to the event queue.
+ *
+ * @param eid ID of the custom event..
+ * @param param_int Integer value for the custom event.
+ * @param param_ptr Pointer to data for the custom event..
+ *
+ * @return 0 on succes -1 on error.
+ */
+
+int visual_event_queue_add_generic (VisEventQueue *eventqueue, int eid, int param_int, void *param_ptr)
+{
+	VisEvent *event;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+
+	event = visual_event_new ();
+	event->type = VISUAL_EVENT_GENERIC;
+
+	event->generic.type = event->type;
+	event->generic.event_id = eid;
+	event->generic.data_int = param_int;
+	event->generic.data_ptr = param_ptr;
+
+	return visual_event_queue_add (eventqueue, event);
+}
+
+
+/**
  * @}
  */
 

@@ -28,6 +28,11 @@ typedef enum {
 	VISUAL_EVENT_NEWSONG,		/**< Song change event. */
 	VISUAL_EVENT_RESIZE,		/**< Window dimension change event. */
 	VISUAL_EVENT_PARAM,		/**< Param set event, gets emitted when a parameter has been changed. */
+	VISUAL_EVENT_QUIT,		/**< Quit event, Should get emitted when a program is about to quit. */
+	VISUAL_EVENT_GENERIC,		/**< A Generic event. Libvisual has nothing to do with it, this can be used for custom events. */
+	VISUAL_EVENT_VISIBILITY,	/**< A visibility event. Will be emited by lvdisplay (?) or app itself when window becomes (in)visible */
+
+	VISUAL_EVENT_LAST = 0xffffff,	/**< last event number. Libvisual & friends will never use ids greater than this */
 } VisEventType;
 
 /**
@@ -51,8 +56,11 @@ typedef struct _VisEventMouseMotion VisEventMouseMotion;
 typedef struct _VisEventMouseButton VisEventMouseButton;
 typedef struct _VisEventResize VisEventResize;
 typedef struct _VisEventNewSong VisEventNewSong;
+typedef struct _VisEventQuit VisEventQuit;
+typedef struct _VisEventVisibility VisEventVisibility;
+typedef struct _VisEventGeneric VisEventGeneric;
 typedef struct _VisEventParam VisEventParam;
-typedef struct _VisEvent VisEvent;
+typedef union _VisEvent VisEvent;
 typedef struct _VisEventQueue VisEventQueue;
 /**
  * Keyboard event data structure.
@@ -126,6 +134,46 @@ struct _VisEventNewSong {
 };
 
 /**
+ * Quit event data structure.
+ *
+ * Contains quit request.
+ *
+ * @see visual_event_queue_add_quit
+ */
+struct _VisEventQuit {
+	VisEventType	 type;		/**< Event type of the event being emitted. */
+	int		 dummy;		/**< some day may contain a request urgency: quit NOW or schedule quit. */
+};
+
+/**
+ * Visibility event data structure.
+ *
+ * Contains window's new visibility value.
+ *
+ * @see visual_event_queue_add_visibiity
+ */
+struct _VisEventVisibility {
+	VisEventType	 type;		/**< Event type of the event being emitted. */
+	int		 dummy;		/**< Some day will contain window ID. very OS-specific. maybe use indices ? */
+	int		 is_visible;	/**< Set TRUE or FALSE to indicate visibility. */
+};
+
+/**
+ * Generic event data structure.
+ *
+ * Contains pointer to some struct.
+ *
+ * @see visual_event_queue_add_generic
+ */
+struct _VisEventGeneric {
+	VisEventType	 type;		/**< Event type of the event being emitted. */
+	int		 event_id;	/**< some event id. */
+	int		 data_int;	/**< Data in the form of an integer. */
+	void		*data_ptr;	/**< More advanced generic events can use a pointer. */
+};
+
+
+/**
  * Param change event data structure.
  *
  * Contains information about parameter changes.
@@ -145,13 +193,16 @@ struct _VisEventParam {
  *
  * @see visual_event_new
  */
-struct _VisEvent {
+union _VisEvent {
 	VisEventType		type;		/**< Event type of the event being emitted. */
 	VisEventKeyboard	keyboard;	/**< Keyboard event. */
 	VisEventMouseMotion	mousemotion;	/**< Mouse movement event. */
 	VisEventMouseButton	mousebutton;	/**< Mouse button event. */
 	VisEventResize		resize;		/**< Dimension change event. */
 	VisEventNewSong		newsong;	/**< Song change event. */
+	VisEventQuit		quit;
+	VisEventVisibility	visibility;
+	VisEventGeneric		generic;
 	VisEventParam		param;		/**< Param change event. */
 };
 
@@ -187,6 +238,9 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
 int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, int width, int height);
 int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *songinfo);
 int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param);
+int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please);
+int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible);
+int visual_event_queue_add_generic (VisEventQueue *eventqueue, int eid, int param_int, void *param_ptr);
 
 #ifdef __cplusplus
 }

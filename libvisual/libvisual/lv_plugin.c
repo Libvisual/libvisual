@@ -667,8 +667,6 @@ VisPluginRef *visual_plugin_get_references (char *pluginpath, int *count)
 
 	plug_info = get_plugin_info (&cnt);
 
-	/* XXX, check api version and struct size */
-
 	if (plug_info == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info");
 
@@ -676,6 +674,9 @@ VisPluginRef *visual_plugin_get_references (char *pluginpath, int *count)
 		
 		return NULL;
 	}
+	
+	visual_log (VISUAL_LOG_DEBUG, "verdomme %d %d %d %d\n",
+			plug_info[0].struct_size, sizeof (VisPluginInfo), plug_info[0].api_version, VISUAL_PLUGIN_API_VERSION);
 
 	/* Check for API and struct size */
 	if (plug_info[0].struct_size != sizeof (VisPluginInfo) ||
