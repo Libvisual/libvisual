@@ -31,25 +31,26 @@
 #include "lv_common.h"
 #include "lv_video.h"
 
+
 int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 {
 	uint32_t y;
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
-	uint32_t *dest_pixel;
-	uint32_t *src_pixel_rowu, *src_pixel_rowl;
+	uint32_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
 
 	dest_pixel = dest->pixels;
 
-	du = ((src->width-1)  << 16) / dest->width;
-	dv = ((src->height-1) << 16) / dest->height;
+	du = ((src->width - 1)  << 16) / dest->width;
+	dv = ((src->height - 1) << 16) / dest->height;
 	v = 0;
 
-	for (y = dest->height - 1; y--; v += dv) {
+	__asm__ __volatile__ ("\n\temms");
+	
+	for (y = dest->height; y--; v += dv) {
 		uint32_t x;
-		uint32_t fracU;
-		uint32_t fracV;     /* fixed point 28.4 [0,1[    */
+		uint32_t fracU, fracV;     /* fixed point 28.4 [0,1[    */
 
-		if (v >> 16 >= src->height-1)
+		if (v >> 16 >= src->height - 1)
 			v -= 0x10000;
 
 		src_pixel_rowu = (src->pixel_rows[v >> 16]);
@@ -66,7 +67,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 			/* fracU = frac(u) = u & 0xffff */
 			/* fixed point format convertion: fracU >>= 8) */
 			fracU  = ((u & 0xffff) >> 12) | 0x100000;
-#ifdef VISUAL_ARCH_Ix86
+			
 			__asm__ __volatile__
 				("\n\t pxor %%mm7, %%mm7"
 				 /* Prefetching does not show improvement on my Duron (maybe due to its small cache?) */
@@ -158,7 +159,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 				, [fracu]   "g"(fracU)
 				, [fracv]   "g"(fracV)
 				: "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
-#endif /* VISUAL_ARCH_Ix86 */
+			
 			++dest_pixel;
 		}
 

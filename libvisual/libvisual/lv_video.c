@@ -1491,6 +1491,7 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 				else	
 					scale_bilinear_32 (dest, src);
 			}
+
 			break;
 
 		default:
@@ -1646,7 +1647,7 @@ static int scale_bilinear_8 (VisVideo *dest, const VisVideo *src)
 		/* fracV = frac(v) = v & 0xffff */
 		/* fixed point format convertion: fracV >>= 8) */
 		fracV = (v & 0xffff) >> 8;
-		u = 0.0;
+		u = 0;
 
 		for (x = dest->width - 1; x--; u += du) {
 			uint8_t cul, cll, cur, clr, b;
@@ -1784,7 +1785,7 @@ static int scale_bilinear_24 (VisVideo *dest, const VisVideo *src)
 		/* fracV = frac(v) = v & 0xffff */
 		/* fixed point format convertion: fracV >>= 8) */
 		fracV = (v & 0xffff) >> 8;
-		u = 0.0;
+		u = 0;
 
 		for (x = dest->width - 1; x--; u += du) {
 			_color24 cul, cll, cur, clr, b;
@@ -1861,7 +1862,7 @@ static int scale_bilinear_32 (VisVideo *dest, const VisVideo *src)
 		/* fracV = frac(v) = v & 0xffff */
 		/* fixed point format convertion: fracV >>= 8) */
 		fracV = (v & 0xffff) >> 8;
-		u = 0.0;
+		u = 0;
 
 		for (x = dest->width - 1; x--; u += du) {
 			union {
