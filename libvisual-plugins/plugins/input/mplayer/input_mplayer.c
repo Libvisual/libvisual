@@ -5,7 +5,7 @@
  * @author Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  * License: GNU Lesser General Public License (GNU/LGPL)
  ******************************************************************************
- * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.5 2004-09-01 20:20:51 synap Exp $
+ * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.6 2004-09-07 05:32:51 dprotti Exp $
  */
 
 #include <stdio.h>
@@ -76,7 +76,7 @@ const VisPluginInfo *get_plugin_info( int *count )
     .plugname = "mplayer",
     .name = "mplayer",
     .author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-    .version = "$Revision: 1.5 $",
+    .version = "$Revision: 1.6 $",
     .about = "Use data exported from MPlayer",
     .help = "This plugin uses data exported from 'mplayer -af export'.",
 
@@ -102,14 +102,12 @@ int inp_mplayer_init( VisPluginData *plugin )
 {
   mplayer_priv_t *priv = NULL;
 
-  priv = malloc( sizeof( mplayer_priv_t ) );
+  priv = visual_mem_new0(mplayer_priv_t, 1);
 
-  visual_log_return_val_if_fail( priv != NULL, -1 );
-
-  priv->sharedfile = malloc( sizeof( char ) * 
-			     ( strlen( SHARED_FILE ) + 
-			       strlen( getenv( "HOME" ) ) + 2 ) );
-  visual_log_return_val_if_fail( priv->sharedfile != NULL, -1 );
+  priv->sharedfile = visual_mem_malloc0( sizeof( char ) * 
+				     ( strlen( SHARED_FILE ) + 
+				       strlen( getenv( "HOME" ) ) + 2 ) );
+  
   strcpy( priv->sharedfile, getenv( "HOME" ) );
   strcat( priv->sharedfile, "/" );
   strcat( priv->sharedfile, SHARED_FILE );
@@ -125,19 +123,24 @@ int inp_mplayer_init( VisPluginData *plugin )
 
   if ( priv->fd < 0 )
     {
+      /* 
+       * FIXME this will cause the application to abort,
+       * may be we must print a warning and clean all
+       * before to return the error value.
+       */
       visual_log( VISUAL_LOG_ERROR,
-		  "Could not open file '%s': %s\n",
+		  "Could not open file '%s': %s",
 		  priv->sharedfile, strerror( errno ) );
       return -3;
     }
 
   priv->mmap_area = mmap( 0, sizeof( mplayer_data_t ),
 			  PROT_READ, MAP_SHARED, priv->fd, 0 );
-  visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
+  visual_log_return_val_if_fail( (int)priv->mmap_area != -1, -1 );
 
   if ( priv->mmap_area->nch == 0 )
     {
-      visual_log( VISUAL_LOG_ERROR, "No audio channel available!\n" );
+      visual_log( VISUAL_LOG_ERROR, "No audio channel available!" );
       return -5;
     }
 
@@ -147,7 +150,7 @@ int inp_mplayer_init( VisPluginData *plugin )
       visual_log( VISUAL_LOG_ERROR,
 		  "Data in wrong format. It should be 2 channels" \
 		  " with 512 16bit samples. There are %d channels %d 16bit " \
-		  "samples in it (buffer is %d bytes).\n",
+		  "samples in it (buffer is %d bytes).",
 		  priv->mmap_area->nch,
 		  priv->mmap_area->bs / 2 / priv->mmap_area->nch,
 		  priv->mmap_area->bs );
@@ -157,11 +160,11 @@ int inp_mplayer_init( VisPluginData *plugin )
   priv->mmap_area = mremap( priv->mmap_area, sizeof( mplayer_data_t ),
 			    sizeof( mplayer_data_t ) + priv->mmap_area->bs,
 			    0 );
-  if ( ! priv->mmap_area )
+  if ( (int)priv->mmap_area == -1 )
     {
       visual_log( VISUAL_LOG_CRITICAL, 
 		  "Could not mremap() area from file '%s' " \
-		  " (%p from %d to %d bytes): %s\n",
+		  " (%p from %d to %d bytes): %s",
 		  priv->sharedfile, 
 		  priv->mmap_area, sizeof( mplayer_data_t ),
 		  sizeof( mplayer_data_t ) + priv->mmap_area->bs,
@@ -222,7 +225,8 @@ int inp_mplayer_cleanup( VisPluginData *plugin )
 	}      
     }
 
-  free( priv );
+  visual_mem_free( priv->sharedfile );
+  visual_mem_free( priv );
   plugin->priv = NULL;
   
   return - unclean;

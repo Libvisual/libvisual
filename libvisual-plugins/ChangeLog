@@ -1,3 +1,9 @@
+2004-09-06  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/input/mplayer/input_mplayer.c:
+	 - manage memory through libvisual.
+	 - fix: mmap return -1 on error, not NULL.
+
 2004-09-01  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: added xpyre to build_actor (oops).

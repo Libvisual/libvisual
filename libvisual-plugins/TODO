@@ -84,6 +84,7 @@ x		steal from xmms
 
 	oinksie:
 		use the libvisual palette blender
+		use the libvisual timer module
 		fix the 24 bit mode again.
 	
 	a gdkpixbuf image loader:
