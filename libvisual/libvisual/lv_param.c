@@ -290,7 +290,7 @@ int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallba
 
 	pcall->id = id;
 	pcall->callback = callback;
-	pcall->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (pcall), priv);
 	
 	visual_list_add (&param->callbacks, pcall);
 
@@ -342,7 +342,7 @@ int visual_param_entry_notify_callbacks (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL)
-		pcall->callback (param, pcall->priv);
+		pcall->callback (param, visual_object_get_private (VISUAL_OBJECT (pcall)));
 
 	return VISUAL_OK;
 }

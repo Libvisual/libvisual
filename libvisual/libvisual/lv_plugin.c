@@ -82,7 +82,11 @@ static int plugin_dtor (VisObject *object)
 	if (plugin->ref != NULL)	
 		visual_object_unref (VISUAL_OBJECT (plugin->ref));
 
+	if (plugin->params != NULL)
+		visual_object_unref (VISUAL_OBJECT (plugin->params));
+
 	plugin->ref = NULL;
+	plugin->params = NULL;
 
 	return VISUAL_OK;
 }
@@ -271,7 +275,7 @@ VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 
-	return &plugin->params;
+	return plugin->params;
 }
 
 /**
@@ -347,6 +351,8 @@ VisPluginData *visual_plugin_new ()
 	VISUAL_OBJECT (plugin)->allocated = TRUE;
 	VISUAL_OBJECT (plugin)->dtor = plugin_dtor;
 	visual_object_ref (VISUAL_OBJECT (plugin));
+
+	plugin->params = visual_param_container_new ();
 
 	return plugin;
 }
@@ -555,6 +561,8 @@ int visual_plugin_unload (VisPluginData *plugin)
 		if (ref->usecount > 0)
 			ref->usecount--;
 	}
+
+	visual_param_container_set_eventqueue (plugin->params, NULL);
 
 	visual_object_unref (VISUAL_OBJECT (plugin));
 	

@@ -48,8 +48,6 @@ struct _VisInput {
 							  * @see visual_audio_analyse */
 	VisInputUploadCallbackFunc	 callback;	/**< Callback function when a callback
 							  * is used instead of a plugin. */
-	void				*priv;		/**< Private which can pass on data
-							  * to the callback function. */
 };
 
 /* prototypes */

@@ -41,7 +41,6 @@ struct _VisActor {
 					 * @see visual_actor_get_palette */
 	VisSongInfo	 songcompare;	/**< Private member which is used to compare with new songinfo
 					  * to check if a new song event should be emitted. */
-	void		*priv;		/**< Private member for internal usage, currently unused. */
 };
 
 /* prototypes */

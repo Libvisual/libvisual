@@ -185,7 +185,7 @@ int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callb
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	input->callback = callback;
-	input->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (input), priv);
 
 	return VISUAL_OK;
 }
@@ -216,7 +216,7 @@ int visual_input_run (VisInput *input)
 		
 		inplugin->upload (input->plugin, input->audio);
 	} else
-		input->callback (input, input->audio, input->priv);
+		input->callback (input, input->audio, visual_object_get_private (VISUAL_OBJECT (input)));
 
 	visual_audio_analyze (input->audio);
 

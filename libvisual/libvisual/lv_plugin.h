@@ -291,7 +291,7 @@ struct _VisPluginData {
 	const VisPluginInfo	*info;		/**< Pointer to the VisPluginInfo that is obtained from the plugin. */
 
 	VisEventQueue		 eventqueue;	/**< The plugin it's VisEventQueue for queueing events. */
-	VisParamContainer	 params;	/**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
+	VisParamContainer	*params;	/**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
 	VisUIWidget		*userinterface;	/**< The plugin it's top level VisUIWidget, this acts as the container for the
 						  * rest of the user interface. */
 
@@ -303,8 +303,6 @@ struct _VisPluginData {
 
 	int			 realized;	/**< Flag that indicates if the plugin is realized. */
 	void			*handle;	/**< The dlopen handle */
-	
-	void			*priv;		/**< Pointer to the plugin it's private. */
 };
 
 /**

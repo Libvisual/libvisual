@@ -70,7 +70,6 @@ struct _VisParamEntryCallback {
 	VisObject		 	 object;	/**< The VisObject data. */
 	int				 id;		/**< Callback ID. */
 	VisParamChangedCallbackFunc	 callback;	/**< The param change callback function. */
-	void				*priv;		/**< Private data that is passed to the callback function. */
 };
 
 /**

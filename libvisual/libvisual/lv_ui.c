@@ -177,39 +177,6 @@ VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget)
 }
 
 /**
- * Gets the private data from a VisUIWidget, this may be used by native UI drivers, and should never
- * be touched from within apps or plugins, unless you REALLY know what you're doing.
- *
- * @param widget Pointer to the VisUIWidget of which we want to retrieve it's private data.
- *
- * @return Pointer to the private data.
- */
-void *visual_ui_widget_get_private (VisUIWidget *widget)
-{
-	visual_log_return_val_if_fail (widget != NULL, NULL);
-
-	return widget->priv;
-}
-
-/**
- * Sets the private data for a VisUIWidget, this may be used by native UI drivers, and should never
- * be touched from within apps or plugins, unless you REALLY know what you're doing.
- *
- * @param widget Pointer to the VisUIWidget to which private data is set.
- * @param priv Pointer to the private data that is set.
- *
- * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_WIDGET_NULL on failure.
- */
-int visual_ui_widget_set_private (VisUIWidget *widget, void *priv)
-{
-	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
-
-	widget->priv = priv;
-
-	return VISUAL_OK;
-}
-
-/**
  * Adds a VisUIWidget to a VisUIContainer.
  *
  * @see visual_ui_box_pack
