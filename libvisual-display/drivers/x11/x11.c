@@ -57,7 +57,7 @@ static int init (privdata *priv, int *params, int params_cnt);
 static int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
 	int *params, int params_count);
 static int get_supported_depths(VisPluginData *plugin);
-static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video);
+static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int*);
 static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
 static void context_deactivate(VisPluginData *plugin, LvdDContext *ctx);
@@ -215,7 +215,7 @@ int hndevents(VisPluginData *plugin, VisEventQueue *eventqueue)
 }
 
 
-LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
+LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 {
 	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	x11_context *c;

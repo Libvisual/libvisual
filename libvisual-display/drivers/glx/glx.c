@@ -32,7 +32,14 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 
+enum {
+	CONTEXT_TYPE_WIN = 0,
+	CONTEXT_TYPE_PBUFFER,
+};
+
 typedef struct {
+	int type;
+	GLXDrawable drawable;
 	GLXContext glxctx;
 	VisVideo *video;
 } glx_context;
@@ -44,6 +51,8 @@ typedef struct {
 	int glx13;
 	void *fbconf;
 	void **fbconfs;
+	void *fbconf_pb;
+	void **fbconfs_pb;
 	GLXDrawable glxw;
 
 	glx_context *active_ctx;
@@ -60,7 +69,7 @@ static int init_glx13 (privdata *priv, int *params, int params_cnt);
 static int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
 	int *params, int params_count);
 static int get_supported_depths(VisPluginData *plugin);
-static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video);
+static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params);
 static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
 static void context_deactivate(VisPluginData *plugin, LvdDContext *ctx);
@@ -137,6 +146,9 @@ int plugin_cleanup (VisPluginData *plugin)
 
 	if (priv->fbconfs)
 		XFree(priv->fbconfs);
+
+	if (priv->fbconfs_pb)
+		XFree(priv->fbconfs_pb);
 
 	visual_mem_free(priv);
 
@@ -231,18 +243,14 @@ int init_glx13(privdata *priv, int *params, int params_cnt)
 
 
 	i=0;
+	// XXX TODO get these defaults from frontend and/or environ
 	attr[i++] = GLX_RED_SIZE;	attr[i++] = 5;
 	attr[i++] = GLX_GREEN_SIZE;	attr[i++] = 5;
 	attr[i++] = GLX_BLUE_SIZE;	attr[i++] = 5;
 	attr[i++] = GLX_DOUBLEBUFFER; attr[i++] = True;
-
-	attr[i++] = GLX_DRAWABLE_TYPE;
-	attr[i++] = GLX_WINDOW_BIT;
-
+	attr[i++] = GLX_DRAWABLE_TYPE; attr[i++] = GLX_WINDOW_BIT;
 //if supported... FIXME
-//	attr[i++] = GLX_X_VISUAL_TYPE;
-//	attr[i++] = GLX_DIRECT_COLOR;
-
+//	attr[i++] = GLX_X_VISUAL_TYPE; attr[i++] = GLX_DIRECT_COLOR;
 	attr[i++] = None;
 
 
@@ -251,6 +259,7 @@ int init_glx13(privdata *priv, int *params, int params_cnt)
 	if ((fbconfsc <= 0) || !priv->fbconfs){
 		printf("Can not get FB configs\n"
 				"Please check your OpenGL driver installation\n");
+		priv->fbconfs = NULL;
 		return 1;
 	}
 
@@ -263,6 +272,26 @@ int init_glx13(privdata *priv, int *params, int params_cnt)
 		return 1;
 	}
 
+	// prefetch configs for pbuffer
+
+	i=0;
+	// XXX TODO get these defaults from frontend and/or environ
+	attr[i++] = GLX_RED_SIZE;	attr[i++] = 8;
+	attr[i++] = GLX_GREEN_SIZE;	attr[i++] = 8;
+	attr[i++] = GLX_BLUE_SIZE;	attr[i++] = 8;
+	attr[i++] = GLX_DOUBLEBUFFER; attr[i++] = False;
+	attr[i++] = GLX_DRAWABLE_TYPE;	attr[i++] = GLX_PBUFFER_BIT;
+	attr[i++] = None;
+
+	priv->fbconfs_pb = (void*)glXChooseFBConfig(XDPY, 0, attr, &fbconfsc);
+
+	if ((fbconfsc <= 0) || !priv->fbconfs_pb){
+		printf("Can not get FB configs for pbuffer\n");
+		if (priv->fbconfs_pb)
+			XFree(priv->fbconfs_pb);
+		priv->fbconfs_pb = NULL;
+	} else
+		priv->fbconf_pb = priv->fbconfs_pb[0];
 
 	return 0;
 }
@@ -286,7 +315,9 @@ int hndevents(VisPluginData *plugin, VisEventQueue *eventqueue)
 }
 
 
-LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
+static GLXContext parentc = None;
+
+LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 {
 	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	glx_context *c;
@@ -295,14 +326,49 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
 	if (c == NULL)
 		return NULL;
 
-	c->glxctx = glXCreateNewContext(XDPY, priv->fbconf,
-		GLX_RGBA_TYPE, NULL, True);
+	if (params == NULL) {
+		c->type = CONTEXT_TYPE_WIN;
+		c->drawable = XGLXW;
+		c->glxctx = glXCreateNewContext(XDPY, priv->fbconf,
+			GLX_RGBA_TYPE, NULL, True);
 
-	c->video = video;
+		c->video = video;
 
-	if (!c->glxctx){
-		visual_mem_free(c);
-		return NULL;
+		if (!c->glxctx){
+			visual_mem_free(c);
+			return NULL;
+		}
+		parentc = c->glxctx;
+	} else {
+		// XXX offscreen it
+		int attr[100];
+		int i;
+		int w,h;
+		GLXDrawable drw;
+
+		c->type = CONTEXT_TYPE_PBUFFER;
+		
+		i=0;
+		attr[i++] = GLX_PBUFFER_WIDTH; attr[i++] = 256; // XXX
+		attr[i++] = GLX_PBUFFER_HEIGHT; attr[i++] = 256;// XXX
+		attr[i++] = GLX_PRESERVED_CONTENTS; attr[i++] = True;
+		attr[i++] = None;
+
+		drw = glXCreatePbuffer(XDPY, priv->fbconf_pb, attr);
+		if (!drw){
+			printf("Can not create GLX pbuffer\n");
+			return NULL;
+		}
+
+		c->drawable = drw;
+		c->glxctx = glXCreateNewContext(XDPY, priv->fbconf_pb,
+			GLX_RGBA_TYPE, parentc, True);
+
+		c->video = video;
+
+		glXQueryDrawable(XDPY, drw, GLX_WIDTH, &w);
+		glXQueryDrawable(XDPY, drw, GLX_HEIGHT, &h);
+		printf("created GLX pbuffer %d x %d\n", w, h);
 	}
 
 	return (LvdDContext*)c;
@@ -347,7 +413,7 @@ void context_activate(VisPluginData *plugin, LvdDContext *ctx)
 //	if (priv->active_ctx != c){
 		priv->active_ctx = c;
 
-		glXMakeContextCurrent(XDPY, XGLXW, XGLXW, c->glxctx);
+		glXMakeContextCurrent(XDPY, c->drawable, c->drawable, c->glxctx);
 //	}
 }
 

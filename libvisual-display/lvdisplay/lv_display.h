@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: lv_display.h,v 1.12 2005-01-28 18:35:55 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -107,7 +107,7 @@ struct _LvdBackendDescription {
 
 	int (*get_supported_depths)(VisPluginData *plugin);
 
-	LvdDContext *(*context_create)(VisPluginData*, VisVideo*);
+	LvdDContext *(*context_create)(VisPluginData*, VisVideo*, int*);
 	void (*context_delete)(VisPluginData*, LvdDContext*);
 	void (*context_activate)(VisPluginData*, LvdDContext*);
 	void (*context_deactivate)(VisPluginData*, LvdDContext*);
@@ -158,5 +158,15 @@ struct _LvdPluginEnvironData {
 	VisObject	object;	/**< The VisObject data. */
 	Lvd *lvd;
 };
+
+LvdDContext *lvdisplay_context_create(Lvd*);
+LvdDContext *lvdisplay_context_create_special(Lvd*, int*);
+int lvdisplay_context_delete(Lvd*, LvdDContext*);
+
+int lvdisplay_context_push_activate(Lvd*, LvdDContext*);
+int lvdisplay_context_pop(Lvd*);
+
+
+
 
 #endif /* _LV_DISPLAY_H */

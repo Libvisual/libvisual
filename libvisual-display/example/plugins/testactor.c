@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id:
+ * $Id: testactor.c,v 1.5 2005-01-28 18:35:55 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,6 +40,7 @@ typedef struct {
 	float rot;
 	Lvd *v;
 	LvdDContext *myctx1;
+	int tex;
 } DNAPrivate;
 
 int lv_dna_init (VisPluginData *plugin);
@@ -105,33 +106,28 @@ int lv_dna_init (VisPluginData *plugin)
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
+	glEnable (GL_DEPTH_TEST);
+	glDepthFunc (GL_LESS);   
 
-	glDepthFunc (GL_LEQUAL);
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 	glClearDepth (1.0);
 
-
+	glGenTextures(1, &priv->tex);
 
 	/* (STILL) :) a hack :) */
-	v = ((LvdPluginEnvironData*) visual_plugin_environ_get (plugin, VISUAL_PLUGIN_ENVIRON_TYPE_LVD))->lvd;
-//	v = ((LvdPluginEnvironData*)(((VisPluginEnviron*)visual_list_get(plugin->environ,0))->environ))->lvd;
+	v = ((LvdPluginEnvironData*) visual_plugin_environ_get (plugin, VISUAL_PLUGIN_ENVIRON_TYPE_LVD)->environ)->lvd;
 	fprintf(stderr,"got lvd: %p\n",v);
 	priv->v=v;
 
-	/* one more... 8] */
 
-	priv->myctx1 = v->be->context_create(v->beplug, v->drv->video);
+	priv->myctx1 = lvdisplay_context_create_special(priv->v, (void*)1);
 	fprintf(stderr,"creatd context: %p\n",priv->myctx1);
-
-	fprintf(stderr,"%p %p\n",v->be,v->be->context_get_active);
-	ctxorig = v->be->context_get_active(v->beplug);
-	fprintf(stderr,"old context: %p\n",ctxorig);
 
 	fprintf(stderr,"new ctx setup...\n");
 
-	v->be->context_activate(v->beplug, priv->myctx1);
+	lvdisplay_context_push_activate(v, priv->myctx1);
 
 	glMatrixMode (GL_PROJECTION);
 
@@ -149,7 +145,7 @@ int lv_dna_init (VisPluginData *plugin)
 	glClearDepth (1.0);
 
 
-	v->be->context_activate(v->beplug, ctxorig);
+	lvdisplay_context_pop(v);
 	return 0;
 }
 
@@ -157,7 +153,9 @@ int lv_dna_cleanup (VisPluginData *plugin)
 {
 	DNAPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	priv->v->be->context_delete(priv->v->beplug, priv->myctx1);
+	glDeleteTextures(1, &priv->tex);
+
+	lvdisplay_context_delete(priv->v, priv->myctx1);
 
 	visual_mem_free (priv);
 
@@ -226,35 +224,21 @@ VisPalette *lv_dna_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void do_render(DNAPrivate *priv, int f)
 {
-	static int frame = 0;
-	DNAPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	Lvd *v = priv->v;
-	LvdDContext *ctxorig;
 	float res;
 	float sinr = 0;
 	float height = -1.0;
 	int i;
-	int cc2;
-
-	fprintf(stderr,"frame %d\n",frame);
-
-	v=priv->v;
-
-	frame++;
-	cc2 = (frame&0xff)<50;
-
-	if (cc2){
-		ctxorig = v->be->context_get_active(v->beplug);
-		v->be->context_activate(v->beplug, priv->myctx1);
-	}
 
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity ();
 
 	glTranslatef (0.0, 0.0, -3.0);
-	glRotatef (priv->rot, 1.0, 0.0, 0.0);
+	if (f)
+		glRotatef (priv->rot, 0.0, 1.0, 0.0);
+	else
+		glRotatef (priv->rot, 1.0, 0.0, 0.0);
 
 	priv->rot += 0.1;
 
@@ -277,11 +261,52 @@ int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 		height += 0.2;
 	}
+}
 
+int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+{
+	DNAPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	Lvd *v = priv->v;
+	LvdDContext *ctxorig;
 
-	if (cc2){
-		v->be->context_activate(v->beplug, ctxorig);
-	}
+	v=priv->v;
+
+	do_render(priv, 0);
+
+	lvdisplay_context_push_activate(v, priv->myctx1);
+
+		do_render(priv, 1);
+
+		// copy screen to texture
+		glBindTexture(GL_TEXTURE_2D, priv->tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+				0, 0, 256, 256, 0); // XXX
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+	lvdisplay_context_pop(v);
+
+//	glLoadIdentity ();
+
+	glBindTexture(GL_TEXTURE_2D, priv->tex);
+
+	glEnable(GL_TEXTURE_2D);
+	glBegin(GL_TRIANGLE_STRIP);
+	glTexCoord2f(0.0f,  0.0f);
+	glVertex2f(  0.0f,  0.0f);
+	glTexCoord2f(1.0f,  0.0f);
+	glVertex2f(  1.0f,  0.0f);
+	glTexCoord2f(0.0f,  1.0f);
+	glVertex2f(  0.0f,  1.0f);
+	glTexCoord2f(1.0f,  1.0f);
+	glVertex2f(  1.0f,  1.0f);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 
 	return 0;
 }

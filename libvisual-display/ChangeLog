@@ -1,3 +1,15 @@
+2005-01-28  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+	* lvdisplay/lv_display.h lvdisplay/lv_display.c: updated so
+	actor can manage contexts. context stack implemented.
+
+	* example/plugins/testactor.c: make it use above changes and
+	support offscreen rendering.
+
+	* drivers/x11/x11.c: api update.
+
+	* drivers/glx/glx.c: support for offscreen rendering - pbuffers.
+	alpha code.
+
 2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* lvdisplay/lv_display.c: Updated to API (VisPluginEnviron).

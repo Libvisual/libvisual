@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: lv_display.c,v 1.18 2005-01-28 18:35:55 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -238,6 +238,10 @@ int lvdisplay_driver_set_visible(LvdDriver *drv, int is_visible)
 /***********************************************************************/
 /// XXX make it per-thread
 
+static LvdDContext *context_stack[1024]; // XXX FIXME
+static int context_stack_ptr = 0;
+
+
 static Lvd *actx_v = NULL;
 static LvdDContext *actx = NULL;
 
@@ -248,7 +252,7 @@ static void set_active_context(Lvd *v, LvdDContext *ctx)
 		return;
 
 	if ((actx_v != NULL) && (actx != NULL))
-	actx_v->be->context_deactivate(actx_v->beplug, actx);
+		actx_v->be->context_deactivate(actx_v->beplug, actx);
 	v->be->context_activate(v->beplug, ctx);
 
 	actx_v = v;
@@ -411,7 +415,7 @@ int lvdisplay_realize(Lvd *v)
 	if (v->ctx)
 		v->be->context_delete(v->beplug, v->ctx);
 
-	v->ctx = v->be->context_create(v->beplug, v->drv->video);
+	v->ctx = v->be->context_create(v->beplug, v->drv->video, NULL);
 	if (v->ctx == NULL){
 		visual_log(VISUAL_LOG_ERROR, "Failed to create context\n");
 		return 2;
@@ -490,3 +494,70 @@ int lvdisplay_poll_event(Lvd *v, VisEvent *event)
 
 	return visual_event_queue_poll(lvdisplay_get_eventqueue(v), event);
 }
+
+
+LvdDContext *lvdisplay_context_create(Lvd *v)
+{
+	visual_log_return_val_if_fail (v != NULL, 0);
+
+	return v->be->context_create(v->beplug, v->drv->video, NULL);
+}
+
+LvdDContext *lvdisplay_context_create_special(Lvd *v, int *params)
+{
+	visual_log_return_val_if_fail (v != NULL, 0);
+
+	return v->be->context_create(v->beplug, v->drv->video, params);
+}
+
+int lvdisplay_context_delete(Lvd *v, LvdDContext *ctx)
+{
+	visual_log_return_val_if_fail (v != NULL, 0);
+	visual_log_return_val_if_fail (ctx != NULL, 0);
+
+	v->be->context_delete(v->beplug, ctx);
+
+	return 0;
+}
+
+int lvdisplay_context_activate(Lvd *v, LvdDContext *ctx)
+{
+	visual_log_return_val_if_fail (v != NULL, 0);
+	visual_log_return_val_if_fail (ctx != NULL, 0);
+
+	v->be->context_activate(v->beplug, ctx);
+
+	return 0;
+}
+
+int lvdisplay_context_push_activate(Lvd *v, LvdDContext *ctx)
+{
+	LvdDContext *c;
+	c = v->be->context_get_active(v->beplug);
+	if (c){
+		context_stack[context_stack_ptr++] = c;
+		v->be->context_deactivate(v->beplug, c);
+	}
+	v->be->context_activate(v->beplug, ctx);
+	return 0;
+}
+
+int lvdisplay_context_pop(Lvd *v)
+{
+	LvdDContext *c;
+
+	if (context_stack_ptr<1){
+		visual_log(VISUAL_LOG_ERROR, "lvdisplay context stack underflow!\n");
+		return -1;
+	}
+
+	c = v->be->context_get_active(v->beplug);
+	v->be->context_deactivate(v->beplug, c);
+	
+	context_stack_ptr--;
+
+	v->be->context_activate(v->beplug, context_stack[context_stack_ptr]);
+
+	return 0;
+}
+
