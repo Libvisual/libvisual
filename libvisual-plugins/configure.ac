@@ -92,19 +92,55 @@ if test x$gdkpixbuf = xyes; then
   AC_SUBST([GDKPIXBUF], ['actor_gdkpixbuf.la'])
 fi
   
-AC_MSG_CHECKING([for OpenGL support on Libvisual])
-AC_TRY_COMPILE([#include <libvisual/libvisual.h>],
-	       [#ifdef VISUAL_HAVE_OPENGL
-		;
-		#else
-		something that will fail to compile.
-		#endif],
-		[opengl=yes], [opengl=no])
-if test x$opengl = xyes; then
-  AC_MSG_RESULT([yes])
+AC_PATH_X
+
+opengl=no
+if test x$have_x = xyes ; then
+
+    LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
+    CPPFLAGS="$CPPFLAGS -I$x_includes"
+
+    AC_CHECK_HEADERS([\
+	X11/keysym.h	\
+	X11/X.h	\
+	X11/Xlib.h	\
+	X11/Xutil.h], [], [
+	    AC_MSG_ERROR([Required X11 headers not found.])
+	])
+
+    AC_CHECK_HEADERS([\
+	GL/gl.h \
+	GL/glx.h], [have_gl_headers=yes], [have_gl_headers=no])
+
+    if test x$have_gl_headers = xyes ; then
+	AC_CHECK_LIB([GL], [glBegin], [have_lib_gl=yes], [have_lib_gl=no])
+    else
+	have_lib_gl=no
+    fi
+
+    opengl=$have_lib_gl
+
+    AM_CONDITIONAL(HAVE_LIB_GL,  test x$have_lib_gl = xyes)
+
+    XF86VM_LIB=
+    AC_CHECK_HEADERS([\
+	X11/extensions/xf86vmode.h], [
+	    AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], [
+		AC_DEFINE(HAVE_XF86VMODE, [], [XF86VidMode is available])
+		XF86VM_LIB=-lXxf86vm
+		xf86vm=yes
+	    ], [xf86vm=no]) ], [],
+	    [[#include <X11/Xlib.h>
+	    ]])
+
+    AC_SUBST(XF86VM_LIB)
+    AM_CONDITIONAL(HAVE_XF86VMODE,  test x$xf86vm = xyes)
 else
-  AC_MSG_RESULT([no])
+    opengl=no
 fi
+
+AM_CONDITIONAL(HAVE_X,  test x$have_x = xyes)
+
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -184,7 +220,7 @@ if test x$lvgltest = xyes; then
     build_actor="$build_actor lv_gltest"
     AC_SUBST([GLTEST], ['actor_lv_gltest.la'])
   else
-    AC_MSG_WARN([*** Libvisual doesn't have OpenGL support.
+    AC_MSG_WARN([*** No OpenGL found.
 		lv_gltest plugin will not be built.])
   fi
 else
@@ -203,7 +239,7 @@ if test x$madspin = xyes; then
     build_actor="$build_actor madspin"
     AC_SUBST([MADSPIN], ['actor_madspin.la'])
   else
-    AC_MSG_WARN([*** Libvisual doesn't have GL support.
+    AC_MSG_WARN([*** No OpenGL found.
 		Madspin plugin will not be built.])
   fi
 else
@@ -222,7 +258,7 @@ if test x$nebulus = xyes; then
     build_actor="$build_actor nebulus"
     AC_SUBST([NEBULUS], ['actor_nebulus.la'])
   else
-    AC_MSG_WARN([*** Libvisual doesn't have GL support.
+    AC_MSG_WARN([*** No OpenGL found.
 		Nebulus plugin will not be built.])
   fi
 else

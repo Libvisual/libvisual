@@ -1,3 +1,7 @@
+2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Fixes by Vitaly V. Bursov regarding openGL detection.
+
 2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/jakdaw, plugins/actor/infinite: Some NULL free fixes,
