@@ -47,6 +47,16 @@ Long term, and help needed with this:
 
 	Look if the deltafield execution can be mmx, ssenized.
 
+	Add 4d functions ala: http://www.geocities.com/projectgreenshift/4dgraphs.html. support
+		(greenswitch has this as well).
+
+	Add support for combining two deltafields into one, (like GForce GOLD)
+
 	Look into adding native 32 bits support in G-Force, this could be especially nice
 		with deltafield disabled and then drawing into goom using the libvisual
 		goom visualFX (to be made).
+
+
+Presets:
+	We'd love a whole bunch of extra presets!!!
+

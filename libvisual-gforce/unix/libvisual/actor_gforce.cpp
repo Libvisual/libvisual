@@ -227,7 +227,22 @@ extern "C" int lv_gforce_render (VisActorPlugin *plugin, VisVideo *video, VisAud
 
 	time = EgOSUtils::CurTimeMS ();
 	priv->gGF->RecordSample (time, gSoundBuf, .000043, NUMSAMPLES, gFFTBuf, 1, FFT_BUF_SIZE);
-	
+
+	/* Overlap with a color tab */
+
+	/* Some color debug to study palettes */
+/*
+	for (i = 0; i < 256; i++) {
+		uint8_t *buf = (uint8_t *) video->screenbuffer;
+		for (j = 0; j < 20; j++) {
+			buf[(video->pitch * j) + i] = i;
+		}
+
+		buf[(video->pitch * ((priv->pal.colors[i].r / 4) + 20)) + i] = 255;
+		buf[(video->pitch * ((priv->pal.colors[i].g / 4) + 20 + 64)) + i] = 255;
+		buf[(video->pitch * ((priv->pal.colors[i].b / 4) + 20 + 128)) + i] = 255;
+	}
+*/
 	return 0;
 }
 

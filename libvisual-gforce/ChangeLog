@@ -1,3 +1,11 @@
+2004-08-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* TODO: Updated:
+
+	* unix/libvisual/actor_gforce.cpp: 
+	Some (out commented) palette debug information stuff
+	to study cool palettes.
+
 2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* First libvisual port checkin!!!
