@@ -616,9 +616,12 @@ int visual_video_blit_fit (VisVideo *dest, VisVideo *src)
  */
 int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha)
 {
-	VisVideo *transform = NULL;
+	VisVideo *transform = NULL, *srcp = NULL;
 	int height, wrange, hrange, amount;
+	int xa, ya;
+	int xbpp;
 	uint8_t *destbuf;
+	uint8_t *srcpbuf;
 	uint8_t *srcbuf;
 
 	/* We can't overlay GL surfaces so don't even try */
@@ -632,47 +635,69 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	visual_log_return_val_if_fail (x < dest->width, -1);
 	visual_log_return_val_if_fail (y < dest->height, -1);
 	
-	destbuf = dest->screenbuffer;
 
-	/* TODO: Add support for negative x, y values */
+	/** @todo Add support for negative x, y values */
 	
+	/* We're not the same depth, converting */
+	if (dest->depth != src->depth) {
+		transform = visual_video_new ();
+
+		visual_video_set_depth (transform, dest->depth);
+		visual_video_set_dimension (transform, src->width, src->height);
+
+		visual_video_allocate_buffer (transform);
+
+		visual_video_depth_transform (transform, src);
+	}
+	
+	if (transform != NULL)
+		srcp = transform;
+	else
+		srcp = src;
+
+	destbuf = dest->screenbuffer;
+	srcbuf = src->screenbuffer;
+	srcpbuf = srcp->screenbuffer;
+
 	/* No alpha, fast method */
 	if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT) {
-		/* We're not  the same depth, converting */
-		if (dest->depth != src->depth) {
-			transform = visual_video_new ();
-
-			visual_video_set_depth (transform, dest->depth);
-			visual_video_set_dimension (transform, src->width, src->height);
-
-			visual_video_allocate_buffer (transform);
-
-			visual_video_depth_transform (transform, src);
-
-			src = transform;
-		}
-
-		srcbuf = src->screenbuffer;
-
 		/* Blit it to the dest video */
 		for (height = y; height < hrange + y; height++) {
-
-			if ((x * dest->bpp) + src->pitch > dest->pitch)
-				amount = dest->pitch - (x * dest->bpp);
-			else
-				amount = wrange * dest->bpp;
 
 			/* We've reached the end */
 			if (height > dest->height - 1)
 				break;
 
+			if ((x * dest->bpp) + srcp->pitch > dest->pitch)
+				amount = dest->pitch - (x * dest->bpp);
+			else
+				amount = wrange * dest->bpp;
+
 			memcpy (destbuf + (height * dest->pitch) + (x * dest->bpp),
-					srcbuf + ((height - y) * src->pitch),
+					srcpbuf + ((height - y) * srcp->pitch),
 					amount);
 		}
 	} else {
-		/* TODO: Add support for the alpha value */
+		xbpp = x * dest->bpp;
 
+		/* Blit it to the dest video */
+		for (ya = 0; ya < hrange; ya++) {
+	
+			if (ya + y > dest->height - 1)
+				break;
+			
+			if ((x * dest->bpp) + srcp->pitch > dest->pitch)
+				amount = (dest->pitch / dest->bpp) - x;
+			else
+				amount = wrange;
+
+			for (xa = 0; xa < amount * dest->bpp; xa++) {
+				destbuf[((ya + y) * dest->pitch) + xa + xbpp] =
+					(128 * (srcpbuf[(ya * srcp->pitch) + xa] -
+						destbuf[((ya + y) * dest->pitch) + xa + xbpp]))
+					/ 255 + destbuf[((ya + y) * dest->pitch) + xa + xbpp];
+			}
+		}
 	}
 
 	if (transform != NULL)

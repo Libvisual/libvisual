@@ -1,3 +1,11 @@
+2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_blit_overlay):
+	Fixed up, almost completely working alpha support.
+
+	This function will deprecate the blit_fit when it's
+	finished.
+
 2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c,
