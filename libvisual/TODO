@@ -198,12 +198,8 @@ libvisual:
 
 
 INTERNAL:
-	LOG: (post 0.1)
-		give an api that allows you to select the lowest debug niveau to be shown
-		have an optional enviroment var that sets the lowest debug niveau to be shown
-		logfy all the code, logfy input likewise actor, same for the plugin files
-		change the defines so that a format string can be used.
-
+	LOG:
+		Make public the maximum length of the string that can be showed.
 
 tests:
 	port the tests over to the application API (post 0.1).

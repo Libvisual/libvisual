@@ -1,3 +1,7 @@
+2004-10-02  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_log.*: Added visual_log_set_all_messages_handler().
+
 2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_random.*: Added some functions to
