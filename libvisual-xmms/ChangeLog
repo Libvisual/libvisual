@@ -6,7 +6,7 @@
 	* pixmaps/Makefile.am: added file. We install data
 	on pkgdatadir, usually /usr/share/libvisual-xmms.
 	* src/main.c: we try to set icon on init.
-	* src/config.c: to much error checking added.
+	* src/config.c: too much error checking added.
 
 2004-06-29  Duilio Protti  <dprotti@users.sourceforge.net>
 
