@@ -136,7 +136,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	slider1 = visual_ui_slider_new (FALSE);
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider1), 200, -1);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider1), starsparam);
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider1), 50, 1500, 10, 0);
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider1), 50, 2500, 10, 0);
 	
 	slider2 = visual_ui_slider_new (FALSE);
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider2), 200, -1);
@@ -145,7 +145,7 @@ int lv_madspin_init (VisPluginData *plugin)
 
 	numeric1 = visual_ui_numeric_new ();
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1), starsparam);
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 50, 1500, 10, 0);
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 50, 2500, 10, 0);
 
 	numeric2 = visual_ui_numeric_new ();
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2), speedparam);

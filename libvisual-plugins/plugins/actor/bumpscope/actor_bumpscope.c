@@ -220,8 +220,6 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.param.param;
 
-				printf ("YAYA PARAM HIT: %s %d\n", param->name, param->numeric.integer);
-
 				if (visual_param_entry_is (param, "color")) {
 					tmp = visual_param_entry_get_color (param);
 					visual_color_copy (&priv->color, tmp);
@@ -275,7 +273,7 @@ int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	priv->colorupdate++;
 
 	/* Let's not overload the color selector */
-	if (priv->colorupdate > 150)
+	if (priv->colorupdate > 1)
 		priv->colorupdate = 0;
 
 	if (priv->colorchanged == TRUE && priv->colorupdate == 0) {

@@ -28,10 +28,14 @@ inputs:
 		Make an artsd plugin (someone else, i'm not running kde)
 
 	mplayer mmap output:
+	visual_video_set_depth (video, V
 		Make an mplayer mmap thingy plugin (someone else)
 
 	jack:
 		finish it actually.
+
+	polypaudio:
+		http://0pointer.de/lennart/projects/polypaudio/
 
 	Any other input method:
 		Make plugins for these (someone else),
