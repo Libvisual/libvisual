@@ -327,12 +327,12 @@ VisUIWidget *visual_ui_range_new (void)
 	return VISUAL_UI_WIDGET (range);
 }
 
-int visual_ui_range_set_properties (VisUIRange *range, double max, double min, double step, int precision)
+int visual_ui_range_set_properties (VisUIRange *range, double min, double max, double step, int precision)
 {
 	visual_log_return_val_if_fail (range != NULL, -1);
 
-	range->max = max;
 	range->min = min;
+	range->max = max;
 	range->step = step;
 	range->precision = precision;
 

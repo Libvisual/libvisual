@@ -257,7 +257,7 @@ int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *par
 const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator);
 
 VisUIWidget *visual_ui_range_new (void);
-int visual_ui_range_set_properties (VisUIRange *range, double max, double min, double step, int precision);
+int visual_ui_range_set_properties (VisUIRange *range, double min, double max, double step, int precision);
 int visual_ui_range_set_max (VisUIRange *range, double max);
 int visual_ui_range_set_min (VisUIRange *range, double min);
 int visual_ui_range_set_step (VisUIRange *range, double step);
