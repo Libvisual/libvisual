@@ -60,7 +60,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info[0].cleanup = lv_gforce_cleanup;
 	info[0].events = lv_gforce_events;
 
-	info[0].plugin = (void *) &actor[0];
+	info[0].plugin = VISUAL_OBJECT (&actor[0]);
 
 	*count = sizeof (info) / sizeof (*info);
 
