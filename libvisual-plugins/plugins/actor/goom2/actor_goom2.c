@@ -159,8 +159,7 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	memcpy (pcmdata, audio->pcm, sizeof (short) * 512 * 2);
 
 	/* Retrieve the songinfo */
-	songinfo = visual_plugin_actor_get_songinfo (
-			VISUAL_PLUGIN_ACTOR (visual_plugin_get_specific (plugin)));
+	songinfo = &VISUAL_PLUGIN_ACTOR (visual_plugin_get_specific (plugin))->songinfo;
 
 	/* Check the global parameter for showing songinfo in plugins */
 	paramcontainer = visual_get_params ();

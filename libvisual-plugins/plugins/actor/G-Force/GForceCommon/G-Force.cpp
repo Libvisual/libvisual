@@ -208,8 +208,6 @@ GForce::GForce( void* inRefCon ) :
 GForce::~GForce() {
 
 
-	SetFullscreen( false );
-			
 	// Rewrite the prefs to disk...
 	mPrefs.SetPref( 'SSvr', mScrnSaverDelay / 60.0 );
 	mPrefs.SetPref( 'TrHi', mTransitionHi );
@@ -329,9 +327,7 @@ bool GForce::HandleKey( long inChar ) {
 	if ( inChar >= 'a' && inChar <= 'z' )
 		inChar = 'A' + ( inChar - 'a' );
 		
-	if ( inChar == 27 ) // ESC key
-		SetFullscreen( false );
-	else if ( inChar == '/' || inChar == '?' )
+	if ( inChar == '/' || inChar == '?' )
 		ShowHelp();
 	else if ( inChar >= ' ' && inChar < 129 ) {
 
@@ -396,13 +392,6 @@ bool GForce::HandleKey( long inChar ) {
 		case cSpawnNewParticle:
 			SpawnNewParticle();
 			break;
-			
-		case cToggleFullsceen:
-#ifdef UNIX_X
-#else
-			SetFullscreen( ! mAtFullScreen );
-#endif
-			break;		
 			
 		case cDecNumSSteps:
 		case cIncNumSSteps:
@@ -834,13 +823,10 @@ void GForce::IdleMonitor() {
 		if ( pt.h != mLastMousePt.h || pt.v != mLastMousePt.v || kybdPress ) {
 			mLastMousePt		= pt;
 			mLastActiveTime		= mT;
-			if ( mAtFullScreen && mMouseWillAwaken )
-				SetFullscreen( false ); 
 		}
 
 		// If we're elligible to enter fullscreen then do it
 		if ( ! mAtFullScreen && mT - mLastActiveTime > mScrnSaverDelay ) {
-			SetFullscreen( true );
 			mMouseWillAwaken = true;
 		}
 	}	
