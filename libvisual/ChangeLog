@@ -11,6 +11,9 @@
 	compile the examples.
 	* examples/Makefile.am added, replacing the old
 	hand made Makefile.in.
+	* libvisual/Makefile.am included DEFS variable,
+	so things like inline will be defined as preprocessor
+	define's
 	
 2004-06-18  Duilio Protti  <dprotti@users.sourceforge.net>
 

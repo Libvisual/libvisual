@@ -6,12 +6,13 @@ AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_HEADER(config.h)
 
-AC_DISABLE_STATIC
 
 # Checks for programs.
-AC_PROG_LIBTOOL
 AC_PROG_CC
 AC_PROG_LN_S
+
+AC_DISABLE_STATIC
+AC_PROG_LIBTOOL
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -45,19 +46,32 @@ else
   AC_MSG_WARN([*** pkg-config too old; version 0.14 or better recommended.])
 fi
 
-# Find SDL to build the examples.
-# On future, this must be made optional
-AC_PATH_PROG(SDL_CONFIG, [sdl-config], [no])
-if test x$SDL_CONFIG = xno ; then
-  AC_MSG_ERROR([
+
+# Arguments to specify certain features.
+AC_ARG_ENABLE([examples],
+            AC_HELP_STRING([--enable-examples],
+                           [Build example programs @<:@default=disabled@:>@]),
+	    [examples=$enableval],
+	    [examples=no])
+AC_MSG_CHECKING([wheter to build example programs])
+if test "$examples" = yes; then
+  AC_MSG_RESULT([yes])
+  # Find SDL to build the examples.
+  AC_PATH_PROG(SDL_CONFIG, [sdl-config], [no])
+  if test x$SDL_CONFIG = xno ; then
+    AC_MSG_ERROR([
 *** sdl-config not found.
 *** If you have installed from binaries, probably you have not 
 *** installed SDL development package.
 *** See http://www.libsdl.org
-])
+    ])
+  fi
+  # On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
+  AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
+else
+  AC_MSG_RESULT([no])
 fi
-# On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
-AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
+AM_CONDITIONAL(BUILD_EXAMPLES, test x$examples = xyes)
 
 libs_dynamic_loader="-ldl"
 AC_SUBST(CFLAGS, "-I./ -O2 -Wall -rdynamic -ggdb")
