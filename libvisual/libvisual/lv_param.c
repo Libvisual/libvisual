@@ -53,12 +53,16 @@ static int paramentry_dtor (VisObject *object)
 	if (param->name != NULL)
 		visual_mem_free (param->name);
 
+	if (param->objdata != NULL)
+		visual_object_unref (param->objdata);
+	
 	visual_palette_free_colors (&param->pal);
 
 	visual_list_destroy_elements (&param->callbacks);
 
 	param->string = NULL;
 	param->name = NULL;
+	param->objdata = NULL;
 
 	return VISUAL_OK;
 }
@@ -496,7 +500,7 @@ VisParamEntryType visual_param_entry_get_type (VisParamEntry *param)
 
 /**
  * Compares two parameters with each other, When they are the same, TRUE is returned, if not FALSE.
- * Keep in mind that FALSE is always returned for VISUAL_PARAM_ENTRY_TYPE_PALETTE.
+ * Keep in mind that FALSE is always returned for VISUAL_PARAM_ENTRY_TYPE_PALETTE and VISUAL_PARAM_ENTRY_TYPE_OBJECT.
  *
  * @param src1 Pointer to the first VisParamEntry for comparison.
  * @param src2 Pointer to the second VisParamEntry for comparison.
@@ -548,6 +552,11 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
 			break;
 
 		case VISUAL_PARAM_ENTRY_TYPE_PALETTE:
+			return FALSE;
+
+			break;
+
+		case VISUAL_PARAM_ENTRY_TYPE_OBJECT:
 			return FALSE;
 
 			break;
@@ -611,6 +620,11 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 
 			break;
 
+		case VISUAL_PARAM_ENTRY_TYPE_OBJECT:
+			visual_param_entry_set_object (param, visual_param_entry_get_object (src));
+
+			break;
+		
 		default:
 			visual_log (VISUAL_LOG_CRITICAL, "param type is not valid");
 
@@ -833,6 +847,34 @@ int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
 }
 
 /**
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_OBJECT and assigns a VisObject to the VisParamEntry.
+ * With a VisObject VisParamEntry, the VisObject is referenced, not cloned.
+ *
+ * @param param Pointer to the VisParamEntry to which a parameter is set.
+ * @param object Pointer to the VisObject that is linked to the VisParamEntry.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ */
+int visual_param_entry_set_object (VisParamEntry *param, VisObject *object)
+{
+	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+
+	param->type = VISUAL_PARAM_ENTRY_TYPE_OBJECT;
+
+	if (param->objdata != NULL)
+		visual_object_unref (param->objdata);
+
+	param->objdata = object;
+
+	if (param->objdata != NULL)
+		visual_object_ref (param->objdata);
+
+	visual_param_entry_changed (param);
+	
+	return VISUAL_OK;
+}
+
+/**
  * Get the name of the VisParamEntry.
  *
  * @param param Pointer to the VisParamEntry from which the name is requested.
@@ -959,6 +1001,26 @@ VisPalette *visual_param_entry_get_palette (VisParamEntry *param)
 	}
 
 	return &param->pal;
+}
+
+/**
+ * Get the object parameter from a VisParamEntry.
+ *
+ * @param param Pointer to the VisParamEntry from which the object parameter is requested.
+ *
+ * @return Pointer to the VisObject parameter from the VisParamEntry.
+ */
+VisObject *visual_param_entry_get_object (VisParamEntry *param)
+{
+	visual_log_return_val_if_fail (param != NULL, NULL);
+
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_OBJECT) {
+		visual_log (VISUAL_LOG_WARNING, "Requested object from a non object param\n");
+
+		return NULL;
+	}
+
+	return &param->objdata;
 }
 
 /**

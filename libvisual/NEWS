@@ -3,6 +3,32 @@ of Libvisual.
 
 These are only visible changes, for more details look at the ChangeLog.
 
+New in 0.2.0pre1: 2005-02-01:
+
+* VisTransform subsystem. (Dennis)
+* visual_palette_color_cycle() function. (Dennis)
+* visual_param_container_copy_match() function. (Dennis)
+* visual_param_container_copy() function. (Dennis)
+* visual_timer_elapsed_msecs() function. (Dennis)
+* VisCPU subsystem. (Dennis)
+* visual_mem_copy(), will contain mmx, sse versions later on. (Dennis)
+* MMX version of the 32bits bilinear filter. (Jean-Christophe)
+* Fixed the visual_video_blit_overlay(). (Dennis)
+* MMX versions of the 32bits alpha overlay. (Dennis)
+* VisPluginEnviron system added. (Vitaly, Dennis)
+* Nearest scalers. (Chong Kai Xiong, Dennis)
+* Bilinear scalers. (Jean-Christophe, Dennis)
+* VisError error values, and human readable errors. (Dennis)
+* Objectification of all libvisual structures. (Dennis)
+* Complete VisObject system. (Dennis)
+* VisSongInfo, use the bilinear filterer, scaler for coverart. (Dennis)
+* VisPalette VisParamEntry type. (Dennis)
+* VisObject VisParamEntry type. (Dennis)
+* VisThread threading wrapper system. (Dennis)
+* VisUI Complete userinterface abstraction layer. (Dennis)
+* Have a string only plugin type, plugins are now members of domains. (Dennis, Vitaly)
+* Many many fixes, improvements and such. (Everyone)
+
 New in 0.1.7: 2004-10-14:
 * Removed examples from dist, they are out dated, broken and caused problems.
   (Dennis)
