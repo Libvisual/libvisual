@@ -1,5 +1,9 @@
 2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* examples/simplesdl.c: Returning Duilios changes (with some fixes).
+
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* TODO: Updates.
 
 	* examples/simplesdl.c, examples/morphsdl.c:

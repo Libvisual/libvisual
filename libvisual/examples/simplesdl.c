@@ -237,10 +237,12 @@ int main (int argc, char *argv[])
 	int frames = 0;
 	char *input_name = NULL;
 	
-	visual_init (&argc, &argv);
+	
+	if (visual_init (&argc, &argv) < 0)
+		visual_log (VISUAL_LOG_ERROR, "Could not initialize Libvisual");
 	
 	/* Check libvisual version */
-	printf ("Libvisual version %s\n", visual_get_version ());
+	visual_log (VISUAL_LOG_INFO, "Libvisual version %s", visual_get_version ());
 
 	/* Make a new actor from actlist, with pluginname */
 	if (argc > 1)
@@ -249,7 +251,7 @@ int main (int argc, char *argv[])
 		actor = visual_actor_new ("oinksie");
 
 	if (actor->plugin == NULL) {
-		printf ("Couldn't create actor plugin\n");
+		visual_log (VISUAL_LOG_ERROR, "Couldn't create actor plugin");
 		return -1;
 	}
 	
@@ -261,14 +263,14 @@ int main (int argc, char *argv[])
 				
 		/* Check if the depth is supported */
 		if (visual_video_depth_is_supported (depthflag, depth) < 1) {
-			printf ("Plugin doesn't support this depth, but we'll set up an transformation enviroment.\n");
-			printf ("However showing you a nice list of supported depths anyway\n");
+			visual_log (VISUAL_LOG_INFO, "Plugin doesn't support this depth, but we'll set up an transformation enviroment.");
+			visual_log (VISUAL_LOG_INFO, "However showing you a nice list of supported depths anyway");
 
 			/* Show a list of supported depths */
 			i = VISUAL_VIDEO_DEPTH_NONE;
 
 			if (visual_video_depth_is_supported (depthflag, i) == 1)
-				printf ("Support visual video context NONE\n");
+				visual_log (VISUAL_LOG_INFO, "Support visual video context NONE");
 
 			do {
 				j = i;
@@ -277,7 +279,7 @@ int main (int argc, char *argv[])
 				if (i == j)
 					break;
 				
-				printf ("Support visual depth %d\n",
+				visual_log (VISUAL_LOG_INFO, "Support visual depth %d",
 						visual_video_depth_value_from_enum (i));
 
 			} while (i < VISUAL_VIDEO_DEPTH_GL);
@@ -313,10 +315,8 @@ int main (int argc, char *argv[])
 	
 	/* Negotiate with video, if needed, the actor will set up and enviroment
 	 * for depth transformation and it does all the size negotation stuff */
-	if (visual_actor_video_negotiate (actor, 0, FALSE, FALSE) == -1) {
-		printf ("Couldn't negotiate the actor with the video\n");
-		exit (-1);
-	}
+	if (visual_actor_video_negotiate (actor, 0, FALSE, FALSE) == -1)
+		visual_log (VISUAL_LOG_ERROR, "Couldn't negotiate the actor with the video");
 
 	if (gl_plug == 0) {
 		/* Retrieve the bpp from the depth so we can use that for buffer
@@ -432,7 +432,7 @@ out:
 
 	end = time (NULL);
 
-	printf ("Drawn %d frames in %d seconds, average fps %d\n",
+	visual_log (VISUAL_LOG_INFO, "Drawn %d frames in %d seconds, average fps %d",
 			(int)frames, (int)(end - begin),
 			(end - begin) == 0 ? (int)frames : (int)(frames / (end - begin)));
 
