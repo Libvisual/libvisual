@@ -234,7 +234,7 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
 int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event);
 int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, int keymod, VisKeyState state);
 int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y);
-int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state);
+int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state, int x, int y);
 int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, int width, int height);
 int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *songinfo);
 int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param);

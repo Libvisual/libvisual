@@ -225,10 +225,12 @@ int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y)
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param button Index that indicates to which mouse button the state relates.
  * @param state Contains information about whatever the button is down or up
+ * @param x Absolute X value for the mouse location.
+ * @param y Absolute Y value for the mouse location.
  *
  * @return 0 on succes -1 on error.
  */
-int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state)
+int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state, int x, int y)
 {
 	VisEvent *event;
 
@@ -246,8 +248,8 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
 	event->mousebutton.button = button;
 	event->mousebutton.state = state;
 	
-	event->mousebutton.x = eventqueue->mousex;
-	event->mousebutton.y = eventqueue->mousey;
+	event->mousebutton.x = x;
+	event->mousebutton.y = y;
 
 	eventqueue->mousestate = state;
 
