@@ -1,5 +1,9 @@
 2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_error.h, libvisual/lv_ui.c: More documentation.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_fft.*: Cleanups a bit.
 
 2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>

@@ -247,6 +247,14 @@ int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
 	return VISUAL_OK;
 }
 
+/**
+ * Gets the top VisUIWidget from a VisUIWidget, this means that it will retrieve
+ * the widget that is the parent of all underlaying widgets.
+ *
+ * @param widget Pointer to the VisUIWidget of which we want to have the top VisUIWidget.
+ *
+ * @return Pointer to the top VisUIWidget, or NULL on failure.
+ */
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget)
 {
 	VisUIWidget *above;
@@ -261,6 +269,14 @@ VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget)
 	return prev;
 }
 
+/**
+ * Gets the parent VisUIWidget from a VisUIWidget, this retrieves the parent of the given
+ * widget.
+ *
+ * @param widget Pointer to the VisUIWidget of which the parent is requested.
+ *
+ * @return Pointer to the parent VisUIWidget, or NULL on failure.
+ */
 VisUIWidget *visual_ui_widget_get_parent (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, NULL);
@@ -268,6 +284,14 @@ VisUIWidget *visual_ui_widget_get_parent (VisUIWidget *widget)
 	return widget->parent;
 }
 
+/**
+ * Gets the VisUIWidgetType type from a VisUIWidget, this contains what kind of widget the given
+ * VisUIWidget is.
+ *
+ * @param widget Pointer to the VisUIWidget of which the type is requested.
+ *
+ * @return The VisUIWidgetType of the given VisUIWidget.
+ */
 VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, VISUAL_WIDGET_TYPE_NULL);
@@ -275,6 +299,14 @@ VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget)
 	return widget->type;
 }
 
+/**
+ * Gets the private data from a VisUIWidget, this may be used by native UI drivers, and should never
+ * be touched from within apps or plugins, unless you REALLY know what you're doing.
+ *
+ * @param widget Pointer to the VisUIWidget of which we want to retrieve it's private data.
+ *
+ * @return Pointer to the private data.
+ */
 void *visual_ui_widget_get_private (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, NULL);
@@ -282,6 +314,15 @@ void *visual_ui_widget_get_private (VisUIWidget *widget)
 	return widget->priv;
 }
 
+/**
+ * Sets the private data for a VisUIWidget, this may be used by native UI drivers, and should never
+ * be touched from within apps or plugins, unless you REALLY know what you're doing.
+ *
+ * @param widget Pointer to the VisUIWidget to which private data is set.
+ * @param priv Pointer to the private data that is set.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_WIDGET_NULL on failure.
+ */
 int visual_ui_widget_set_private (VisUIWidget *widget, void *priv)
 {
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
@@ -291,6 +332,17 @@ int visual_ui_widget_set_private (VisUIWidget *widget, void *priv)
 	return VISUAL_OK;
 }
 
+/**
+ * Adds a VisUIWidget to a VisUIContainer.
+ *
+ * @see visual_ui_box_pack
+ * @see visual_ui_table_attach
+ * 
+ * @param container Pointer to the VisUIContainer in which a VisUIWidget is put.
+ * @param widget Pointer to the VisUIWidget that is been put in the VisUIContainer.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_CONTAINER_NULL, -VISUAL_ERROR_UI_WIDGET_NULL on failure.
+ */
 int visual_ui_container_add (VisUIContainer *container, VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (container != NULL, -VISUAL_ERROR_UI_CONTAINER_NULL);
@@ -301,6 +353,13 @@ int visual_ui_container_add (VisUIContainer *container, VisUIWidget *widget)
 	return VISUAL_OK;
 }
 
+/**
+ * Gets the child VisUIWidget from a VisUIContainer.
+ *
+ * @param container Pointer to the VisUIContainer of which we want the child VisUIWidget.
+ *
+ * @return The child VisUIWidget, or NULL on failure.
+ */
 VisUIWidget *visual_ui_container_get_child (VisUIContainer *container)
 {
 	visual_log_return_val_if_fail (container != NULL, NULL);
@@ -308,6 +367,14 @@ VisUIWidget *visual_ui_container_get_child (VisUIContainer *container)
 	return container->child;
 }
 
+/**
+ * Creates a new VisUIBox, that can be used to pack VisUIWidgets in.
+ *
+ * @param orient Indicates the orientation style of the box, being either
+ * 	VISUAL_ORIENT_TYPE_HORIZONTAL or VISUAL_ORIENT_TYPE_VERTICAL.
+ *
+ * @return The newly created VisUIBox in the form a VisUIWidget.
+ */
 VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 {
 	VisUIBox *box;
@@ -322,6 +389,14 @@ VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 	return VISUAL_UI_WIDGET (box);
 }
 
+/**
+ * Frees a VisUIBox, this does not destroy it's childeren.
+ *
+ * @param box Pointer to the VisUIBox that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_BOX_NULL, -VISUAL_ERROR_UI_NO_BOX or
+ * 	error values returned by visual_mem_free () on failure.
+ */
 int visual_ui_box_free (VisUIBox *box)
 {
 	visual_log_return_val_if_fail (box != NULL, -VISUAL_ERROR_UI_BOX_NULL);
@@ -338,6 +413,14 @@ int visual_ui_box_free (VisUIBox *box)
 	return visual_mem_free (box);
 }
 
+/**
+ * Destroys a VisUIBox, this does destroy the VisUIBox and all it's childeren.
+ *
+ * @param box Pointer to the VisUIBox that needs to be destroyed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_BOX_NULL, -VISUAL_ERROR_UI_NO_BOX or
+ * 	error values returned by visual_mem_free () on failure.
+ */
 int visual_ui_box_destroy (VisUIBox *box)
 {
 	visual_log_return_val_if_fail (box != NULL, -VISUAL_ERROR_UI_BOX_NULL);
@@ -353,6 +436,16 @@ int visual_ui_box_destroy (VisUIBox *box)
 	return visual_ui_box_free (box);
 }
 
+/**
+ * Packs VisUIWidgets into a VisUIBox, this can be used to pack widgets either vertically or horizontally,
+ * depending on the type of box.
+ *
+ * @param box Pointer to the VisUIBox in which the widget is packed.
+ * @param widget Pointer to the VisUIWidget which is packed in the box.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_BOX_NULL, -VISUAL_ERROR_UI_WIDGET_NULL or
+ * 	error values returned by visual_list_add () on failure.
+ */
 int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (box != NULL, -VISUAL_ERROR_UI_BOX_NULL);
