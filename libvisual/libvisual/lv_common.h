@@ -3,6 +3,10 @@
 
 #include <sys/types.h>
 
+#define uint8_t		u_int8_t
+#define uint16_t	u_int16_t
+#define uint32_t	u_int32_t
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

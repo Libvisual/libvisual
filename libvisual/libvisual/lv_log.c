@@ -4,8 +4,8 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
-#include <sys/types.h>
 
+#include "lv_common.h"
 #include "lv_log.h"
 
 static const char *log_severity_to_string (VisLogSeverity severity);
