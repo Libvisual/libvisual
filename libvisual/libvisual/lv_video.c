@@ -565,6 +565,7 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	VisPalette temppal;
 	int height, wrange, hrange, amount;
 	int xa, ya;
+	int xmoff = 0, ymoff = 0;
 	int xbpp;
 	uint8_t *destbuf;
 	uint8_t *srcpbuf;
@@ -597,31 +598,49 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 		visual_video_depth_transform (transform, src);
 	}
 	
+	/* Setting all the pointers right */
 	if (transform != NULL)
 		srcp = transform;
 	else
 		srcp = src;
-
+	
 	destbuf = dest->screenbuffer;
 	srcbuf = src->screenbuffer;
 	srcpbuf = srcp->screenbuffer;
 
+	/* Negative X offset value */
+	if (x < 0) {
+		xmoff = abs (x);
+	
+		x = 0;
+	}
+
+	/* Negative Y offset value */
+	if (y < 0) {
+		ymoff = abs (y);
+
+		y = 0;
+	}
+	
+	/** @todo fix negative, broken as it is right now... */
+	
 	/* No alpha, fast method */
 	if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT) {
+		int xps = (x * dest->bpp) + srcp->pitch;
 		/* Blit it to the dest video */
-		for (height = y; height < hrange + y; height++) {
+		for (height = y; height < (hrange + y) - ymoff; height++) {
 
 			/* We've reached the end */
-			if (height > dest->height - 1)
+			if (height > (dest->height - 1))
 				break;
 
-			if ((x * dest->bpp) + srcp->pitch > dest->pitch)
-				amount = dest->pitch - (x * dest->bpp);
+			if (xps > dest->pitch)
+				amount = (dest->pitch - (x * dest->bpp));
 			else
-				amount = wrange * dest->bpp;
-
+				amount = (wrange - xmoff) * dest->bpp;
+			
 			memcpy (destbuf + (height * dest->pitch) + (x * dest->bpp),
-					srcpbuf + ((height - y) * srcp->pitch),
+					srcpbuf + (((height - y) + ymoff) * srcp->pitch) + (xmoff * dest->bpp),
 					amount);
 		}
 	} else {
