@@ -327,13 +327,13 @@ int visual_plugin_ref_free (VisPluginRef *ref)
  * @param list The list of VisPluginRefs that need to be destroyed.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or error values returned by
- *	visual_list_destroy on failure.
+ *	visual_object_unref on failure.
  */
 int visual_plugin_ref_list_destroy (VisList *list)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
-	return visual_list_destroy (list, ref_list_destroy);
+	return visual_object_unref (VISUAL_OBJECT (list));
 }
 
 /**
@@ -391,7 +391,7 @@ VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *dom
 
 	visual_log_return_val_if_fail (pluglist != NULL, NULL);
 
-	list = visual_list_new ();
+	list = visual_list_new (NULL);
 
 	if (list == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot create a new list");
@@ -753,12 +753,16 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
  */
 VisList *visual_plugin_get_list (const char **paths)
 {
-	VisList *list = visual_list_new();
+	VisList *list;
 	int i = 0;
 
+	list = visual_list_new (ref_list_destroy);
+	
 	while (paths[i] != NULL) {
 		if (plugin_add_dir_to_list (list, paths[i++]) < 0) {
-			visual_list_destroy (list, NULL);
+			
+			visual_object_unref (list);
+
 			return NULL;
 		}
 	}

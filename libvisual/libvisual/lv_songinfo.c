@@ -6,6 +6,18 @@
 #include "lv_common.h"
 #include "lv_songinfo.h"
 
+static int songinfo_dtor (VisObject *object)
+{
+	VisSongInfo *songinfo = VISUAL_SONGINFO (object);
+
+	visual_songinfo_free_strings (songinfo);
+
+	if (visual_video_have_allocated_buffer (&songinfo->cover) == TRUE)
+		visual_video_free_buffer (&songinfo->cover);
+
+	return VISUAL_OK;
+}
+
 /**
  * @defgroup VisSongInfo VisSongInfo
  * @{
@@ -23,31 +35,15 @@ VisSongInfo *visual_songinfo_new (VisSongInfoType type)
 	VisSongInfo *songinfo;
 
 	songinfo = visual_mem_new0 (VisSongInfo, 1);
+	
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (songinfo)->allocated = TRUE;
+	VISUAL_OBJECT (songinfo)->dtor = songinfo_dtor;
+	visual_object_ref (VISUAL_OBJECT (songinfo));
 
 	songinfo->type = type;
 
 	return songinfo;
-}
-
-/**
- * Frees the VisSongInfo. This frees the VisSongInfo data structure.
- *
- * @param songinfo Pointer to a VisSongInfo that needs to be freed.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_free (VisSongInfo *songinfo)
-{
-	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
-
-	visual_songinfo_free_strings (songinfo);
-
-	if (visual_video_have_allocated_buffer (&songinfo->cover) == TRUE)
-		visual_video_free_buffer (&songinfo->cover);
-
-	visual_mem_free (songinfo);
-
-	return VISUAL_OK;
 }
 
 /**
@@ -74,6 +70,11 @@ int visual_songinfo_free_strings (VisSongInfo *songinfo)
 
 	if (songinfo->song != NULL)
 		visual_mem_free (songinfo->song);
+
+	songinfo->songname = NULL;
+	songinfo->artist = NULL;
+	songinfo->album = NULL;
+	songinfo->song = NULL;
 
 	return VISUAL_OK;
 }

@@ -12,6 +12,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisActor))
+
 typedef struct _VisActor VisActor;
 
 /**
@@ -26,6 +28,8 @@ typedef struct _VisActor VisActor;
  * @see visual_actor_new
  */
 struct _VisActor {
+	VisObject	 object;	/**< The VisObject data. */
+
 	VisPluginData	*plugin;	/**< Pointer to the plugin itself. */
 
 	VisVideo	*video;		/**< Pointer to the target display video. 
@@ -55,8 +59,6 @@ int visual_actor_valid_by_name (const char *name);
 VisActor *visual_actor_new (const char *actorname);
 
 int visual_actor_realize (VisActor *actor);
-int visual_actor_destroy (VisActor *actor);
-int visual_actor_free (VisActor *actor);
 
 VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
 VisPalette *visual_actor_get_palette (VisActor *actor);

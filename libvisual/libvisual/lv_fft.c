@@ -70,6 +70,11 @@ VisFFTState *visual_fft_init ()
 
 	state = visual_mem_new0 (VisFFTState, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (state)->allocated = TRUE;
+	VISUAL_OBJECT (state)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (state));
+
 	if (state == NULL)
 		return NULL;
 
@@ -121,17 +126,6 @@ void visual_fft_perform (const int16_t *input, float *output, VisFFTState *state
 
 	/* Convert the FFT output into intensities */
 	_lv_fft_output (state->real, state->imag, output);
-}
-
-/**
- * Private function to free and destroy a VisFFTState.
- *
- * @param state Pointer to the VisFFTState that needs to be freed.
- */
-void visual_fft_close (VisFFTState *state)
-{
-	if (state != NULL)
-		visual_mem_free (state);
 }
 
 /* ########################### */

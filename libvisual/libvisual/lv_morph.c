@@ -11,7 +11,23 @@
 
 extern VisList *__lv_plugins_morph;
 
+static int morph_dtor (VisObject *object);
+
 static VisMorphPlugin *get_morph_plugin (const VisMorph *morph);
+
+static int morph_dtor (VisObject *object)
+{
+	VisMorph *morph = VISUAL_MORPH (object);
+
+	if (morph->plugin != NULL)
+		visual_plugin_unload (morph->plugin);
+
+	visual_palette_free_colors (&morph->morphpal);
+
+	morph->plugin = NULL;
+
+	return VISUAL_OK;
+}
 
 static VisMorphPlugin *get_morph_plugin (const VisMorph *morph)
 {
@@ -116,6 +132,11 @@ VisMorph *visual_morph_new (const char *morphname)
 
 	morph = visual_mem_new0 (VisMorph, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (morph)->allocated = TRUE;
+	VISUAL_OBJECT (morph)->dtor = morph_dtor;
+	visual_object_ref (VISUAL_OBJECT (morph));
+
 	visual_palette_allocate_colors (&morph->morphpal, 256);
 
 	visual_morph_set_mode (morph, VISUAL_MORPH_MODE_SET);
@@ -144,44 +165,6 @@ int visual_morph_realize (VisMorph *morph)
 	visual_log_return_val_if_fail (morph->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	return visual_plugin_realize (morph->plugin);
-}
-
-/**
- * Destroy the VisMorph. This unloads the plugin when it's loaded, and also frees the morph itself including
- * all it's members.
- * 
- * @param morph Pointer to a VisMorph that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL or error values returned by visual_morph_free ()
- *	on failure.
- */
-int visual_morph_destroy (VisMorph *morph)
-{
-	visual_log_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
-
-	if (morph->plugin != NULL)
-		visual_plugin_unload (morph->plugin);
-
-	return visual_morph_free (morph);
-}
-
-/**
- * Free the VisMorph. This frees the VisMorph data structure, but does not destroy the plugin within. If this is desired
- * use visual_morph_destroy.
- *
- * @see visual_morph_destroy
- *
- * @param morph Pointer to a VisMorph that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL or error values returned by visual_mem_free () on failure.
- */
-int visual_morph_free (VisMorph *morph)
-{
-	visual_log_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
-
-	visual_palette_free_colors (&morph->morphpal);
-
-	return visual_mem_free (morph);
 }
 
 /**

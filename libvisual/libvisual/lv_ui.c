@@ -386,6 +386,8 @@ VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (box), -1, -1);
 
+	visual_list_set_destroyer (&box->childs, list_widget_destroy);
+
 	return VISUAL_UI_WIDGET (box);
 }
 
@@ -408,7 +410,7 @@ int visual_ui_box_free (VisUIBox *box)
 	}
 
 	/* Delete the list entries, don't destroy the content */
-	visual_list_destroy_elements (&box->childs, NULL);
+	visual_list_destroy_elements (&box->childs);
 
 	return visual_mem_free (box);
 }
@@ -431,7 +433,7 @@ int visual_ui_box_destroy (VisUIBox *box)
 		return -VISUAL_ERROR_UI_NO_BOX;
 	}
 
-	visual_list_destroy_elements (&box->childs, list_widget_destroy);
+	visual_list_destroy_elements (&box->childs);
 
 	return visual_ui_box_free (box);
 }
@@ -505,6 +507,8 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (table), -1, -1);
 
+	visual_list_set_destroyer (&table->childs, table_entry_destroyer);
+
 	return VISUAL_UI_WIDGET (table);
 }
 
@@ -527,7 +531,7 @@ int visual_ui_table_free (VisUITable *table)
 	}
 
 	/* Delete the list entries, don't destroy the widgets */
-	visual_list_destroy_elements (&table->childs, free);
+	visual_list_destroy_elements (&table->childs);
 
 	return visual_mem_free (table);
 }
@@ -551,7 +555,7 @@ int visual_ui_table_destroy (VisUITable *table)
 	}
 
 	/* Destroy the widgets here, and the list in the table_free */
-	visual_list_destroy_elements (&table->childs, table_entry_destroyer);
+	visual_list_destroy_elements (&table->childs);
 
 	return visual_ui_table_free (table);
 }
@@ -1115,7 +1119,7 @@ int visual_ui_choice_free_choices (VisUIChoice *choice)
 {
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 
-	return visual_list_destroy_elements (&choice->choices.choices, free); 
+//	return visual_list_destroy_elements (&choice->choices.choices, free); 
 }
 
 int visual_ui_choice_set_active (VisUIChoice *choice, int index)

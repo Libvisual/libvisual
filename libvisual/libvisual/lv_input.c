@@ -8,8 +8,26 @@
 
 extern VisList *__lv_plugins_input;
 
+static int input_dtor (VisObject *object);
+
 static VisInputPlugin *get_input_plugin (VisInput *input);
-                                                                                                                                               
+
+static int input_dtor (VisObject *object)
+{
+	VisInput *input = VISUAL_INPUT (object);
+
+	if (input->plugin != NULL)
+		visual_plugin_unload (input->plugin);
+
+	if (input->audio != NULL)
+		visual_object_unref (VISUAL_OBJECT (input->audio));
+
+	input->plugin = NULL;
+	input->audio = NULL;
+
+	return VISUAL_OK;
+}
+
 static VisInputPlugin *get_input_plugin (VisInput *input)
 {
 	VisInputPlugin *inplugin;
@@ -117,7 +135,12 @@ VisInput *visual_input_new (const char *inputname)
 	input = visual_mem_new0 (VisInput, 1);
 	
 	input->audio = visual_audio_new ();
-	
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (input)->allocated = TRUE;
+	VISUAL_OBJECT (input)->dtor = input_dtor;
+	visual_object_ref (VISUAL_OBJECT (input));
+
 	if (inputname == NULL)
 		return input;
 	
@@ -144,45 +167,6 @@ int visual_input_realize (VisInput *input)
 		return visual_plugin_realize (input->plugin);
 
 	return VISUAL_OK;
-}
-
-/**
- * Destroy the VisInput. This unloads the plugin when it's loaded, and also frees the input itself including
- * all it's members.
- *
- * @param input Pointer to a VisInput that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or error values returned by visual_input_free ()
- *	on failure.
- */
-int visual_input_destroy (VisInput *input)
-{
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
-
-	if (input->plugin != NULL)
-		visual_plugin_unload (input->plugin);
-
-	return visual_input_free (input);
-}
-
-/**
- * Free the VisInput. This frees the VisInput data structure, but does not destroy the plugin within. If this is desired
- * use visual_input_destroy.
- *
- * @see visual_input_destroy
- *
- * @param input Pointer to a VisInput that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or error values returned by visual_mem_free () on failure.
- */
-int visual_input_free (VisInput *input)
-{
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
-
-	if (input->audio != NULL)
-		visual_audio_free (input->audio);
-	
-	return visual_mem_free (input);
 }
 
 /**

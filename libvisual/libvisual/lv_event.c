@@ -7,6 +7,30 @@
 #include "lv_event.h"
 #include "lv_log.h"
 
+static int eventqueue_dtor (VisObject *object);
+
+static void event_list_destroy (void *data);
+
+static int eventqueue_dtor (VisObject *object)
+{
+	VisEventQueue *eventqueue = VISUAL_EVENTQUEUE (object);
+
+	visual_list_destroy_elements (&eventqueue->events);
+
+	return VISUAL_OK;
+}
+
+static void event_list_destroy (void *data)
+{
+	VisEvent *event = VISUAL_EVENT (data);
+
+	if (event == NULL)
+		return;
+
+	visual_object_unref (VISUAL_OBJECT (event));
+}
+
+
 /**
  * @defgroup VisEvent VisEvent
  * @{
@@ -24,23 +48,13 @@ VisEvent *visual_event_new ()
 	VisEvent *event;
 
 	event = visual_mem_new0 (VisEvent, 1);
-	
+
+	/* Do the VisObject initialization*/
+	VISUAL_OBJECT (event)->allocated = TRUE;
+	VISUAL_OBJECT (event)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (event));
+
 	return event;
-}
-
-/**
- * Frees the VisEvent. This frees the VisEvent data structure.
- *
- * @param event Pointer to a VisEvent that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_NULL or error values returned
- *	by visual_mem_free () on failure.
- */
-int visual_event_free (VisEvent *event)
-{
-	visual_log_return_val_if_fail (event != NULL, -VISUAL_ERROR_EVENT_NULL);
-
-	return visual_mem_free (event);
 }
 
 /**
@@ -54,26 +68,16 @@ VisEventQueue *visual_event_queue_new ()
 
 	eventqueue = visual_mem_new0 (VisEventQueue, 1);
 
+	/* Do the VisObject initialization*/
+	VISUAL_OBJECT (eventqueue)->allocated = TRUE;
+	VISUAL_OBJECT (eventqueue)->dtor = eventqueue_dtor;
+	visual_object_ref (VISUAL_OBJECT (eventqueue));
+
 	eventqueue->mousestate = VISUAL_MOUSE_UP;
 
+	visual_list_set_destroyer (&eventqueue->events, event_list_destroy);
+
 	return eventqueue;
-}
-
-/**
- * Frees the VisEventQueue. This frees the VisEventQueue data structure.
- *
- * @param eventqueue Pointer to a VisEventQueue that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL or error values
- *	returned by visual_mem_free () on failure.
- */
-int visual_event_queue_free (VisEventQueue *eventqueue)
-{
-	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
-
-	visual_list_destroy_elements (&eventqueue->events, free);
-	
-	return visual_mem_free (eventqueue);
 }
 
 /**
@@ -107,7 +111,7 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 	lev = visual_list_next (&eventqueue->events, &listentry);
 	memcpy (event, lev, sizeof (VisEvent));
 
-	visual_event_free (lev);
+	visual_object_unref (VISUAL_OBJECT (lev));
 
 	visual_list_delete (&eventqueue->events, &listentry);
 	
@@ -134,7 +138,8 @@ int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event)
 	 * resize event got data in the event queue structure that makes sure it gets
 	 * looked at */
 	if (eventqueue->eventcount > VISUAL_EVENT_MAXEVENTS) {
-		visual_event_free (event);
+		visual_object_unref (VISUAL_OBJECT (event));
+
 		return -1;
 	}
 

@@ -8,6 +8,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_PALETTE(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisPalette))
+	
 typedef struct _VisPalette VisPalette;
 
 /**
@@ -19,12 +21,12 @@ typedef struct _VisPalette VisPalette;
  * @see visual_palette_new
  */
 struct _VisPalette {
+	VisObject	 object;	/**< The VisObject data. */
 	int		 ncolors;	/**< Number of color entries in palette. */
 	VisColor	*colors;	/**< Pointer to the colors. */
 };
 
 VisPalette *visual_palette_new (int ncolors);
-int visual_palette_free (VisPalette *pal);
 int visual_palette_copy (VisPalette *dest, const VisPalette *src);
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors);
 int visual_palette_free_colors (VisPalette *pal);

@@ -24,22 +24,12 @@ VisTime *visual_time_new ()
 
 	time_ = visual_mem_new0 (VisTime, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (time_)->allocated = TRUE;
+	VISUAL_OBJECT (time_)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (time_));
+
 	return time_;
-}
-
-/**
- * Frees the VisTime. This frees the VisTime data structure.
- *
- * @param time_ Pointer to the VisTime that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL or error values returned by
- *	visual_mem_free () on failure.
- */
-int visual_time_free (VisTime *time_)
-{
-	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
-
-	return visual_mem_free (time_);
 }
 
 /**
@@ -167,23 +157,12 @@ VisTimer *visual_timer_new ()
 
 	timer = visual_mem_new0 (VisTimer, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (timer)->allocated = TRUE;
+	VISUAL_OBJECT (timer)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (timer));
+
 	return timer;
-}
-
-/**
- * Frees the VisTimer. This frees the VisTimer data structure.
- *
- * @param timer Pointer to the VisTimer that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
- */
-int visual_timer_free (VisTimer *timer)
-{
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
-
-	visual_mem_free (timer);
-
-	return VISUAL_OK;
 }
 
 /**

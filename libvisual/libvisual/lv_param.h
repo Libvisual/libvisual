@@ -10,12 +10,16 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ NULL, name, VISUAL_PARAM_TYPE_STRING, string, {0, 0, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ NULL, name, VISUAL_PARAM_TYPE_INTEGER, NULL, {val, 0, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ NULL, name, VISUAL_PARAM_TYPE_FLOAT, NULL, {0, val, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ NULL, name, VISUAL_PARAM_TYPE_DOUBLE, NULL, {0, 0, val}}
-#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ NULL, name, VISUAL_PARAM_TYPE_COLOR, NULL, {0, 0, 0}, {r, g, b, 0}}
-#define VISUAL_PARAM_LIST_END				{ NULL, NULL, VISUAL_PARAM_TYPE_END }
+#define VISUAL_PARAMCONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisParamContainer))
+#define VISUAL_PARAMENTRY_CALLBACK(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisParamEntryCallback))
+#define VISUAL_PARAMENTRY(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisParamEntry))
+
+#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ {}, NULL, name, VISUAL_PARAM_TYPE_STRING, string, {0, 0, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_INTEGER, NULL, {val, 0, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_FLOAT, NULL, {0, val, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_DOUBLE, NULL, {0, 0, val}}
+#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ {}, NULL, name, VISUAL_PARAM_TYPE_COLOR, NULL, {0, 0, 0}, {r, g, b, 0}}
+#define VISUAL_PARAM_LIST_END				{ {}, NULL, NULL, VISUAL_PARAM_TYPE_END }
 
 #define VISUAL_PARAM_CALLBACK_ID_MAX	2147483647
 
@@ -53,6 +57,7 @@ typedef void (*VisParamChangedCallbackFunc)(const VisParamEntry *param, void *pr
  * All members should never be accessed directly, instead methods should be used.
  */
 struct _VisParamContainer {
+	VisObject	 object;	/**< The VisObject data. */
 	VisList		 entries;	/**< The list that contains all the parameters. */
 	VisEventQueue	*eventqueue;	/**< Pointer to an optional eventqueue to which events can be emitted
 					  * on parameter changes. */
@@ -62,9 +67,10 @@ struct _VisParamContainer {
  * A parameter callback entry, used for change notification callbacks.
  */
 struct _VisParamEntryCallback {
-	int				 id;
-	VisParamChangedCallbackFunc	 callback;
-	void				*priv;
+	VisObject		 	 object;	/**< The VisObject data. */
+	int				 id;		/**< Callback ID. */
+	VisParamChangedCallbackFunc	 callback;	/**< The param change callback function. */
+	void				*priv;		/**< Private data that is passed to the callback function. */
 };
 
 /**
@@ -73,6 +79,7 @@ struct _VisParamEntryCallback {
  * All members should never be accessed directly, instead methods should be used.
  */
 struct _VisParamEntry {
+	VisObject		 object;	/**< The VisObject data. */
 	VisParamContainer	*parent;	/**< Parameter container in which the param entry is encapsulated. */
 	char			*name;		/**< Parameter name. */
 	VisParamType		 type;		/**< Parameter type. */
@@ -92,7 +99,6 @@ struct _VisParamEntry {
 
 /* prototypes */
 VisParamContainer *visual_param_container_new (void);
-int visual_param_container_destroy (VisParamContainer *paramcontainer);
 int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue);
 VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer);
 
@@ -102,7 +108,6 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, const char
 VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name);
 
 VisParamEntry *visual_param_entry_new (char *name);
-int visual_param_entry_free (VisParamEntry *param);
 int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallbackFunc callback, void *priv);
 int visual_param_entry_remove_callback (VisParamEntry *param, int id);
 int visual_param_entry_notify_callbacks (VisParamEntry *param);

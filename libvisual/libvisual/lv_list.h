@@ -11,8 +11,17 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_LIST(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisList))
+
 typedef struct _VisListEntry VisListEntry;
 typedef struct _VisList VisList;
+
+/**
+ * An VisList destroyer function needs this signature.
+ *
+ * @arg data The data that was stored in a VisListEntry and thus can be destroyed.
+ */
+typedef void (*VisListDestroyerFunc)(void *data);
 
 /**
  * The VisListEntry data structure is an entry within the linked list.
@@ -31,18 +40,20 @@ struct _VisListEntry {
  * an entry counter.
  */
 struct _VisList {
-	VisListEntry		*head;	/**< Pointer to the beginning of the list. */
-	VisListEntry		*tail;	/**< Pointer to the end of the list. */
-	int			count;	/**< Number of entries that are in the list. */
+	VisObject		 object;	/**< The VisObject data. */
+	VisListDestroyerFunc	 destroyer;	/**< The List destroyer function. */
+	VisListEntry		*head;		/**< Pointer to the beginning of the list. */
+	VisListEntry		*tail;		/**< Pointer to the end of the list. */
+	int			 count;		/**< Number of entries that are in the list. */
 };
 
-typedef void (*VisListDestroyerFunc)(void*);
 
 /* prototypes */
-VisList *visual_list_new (void);
+VisList *visual_list_new (VisListDestroyerFunc destroyer);
 int visual_list_free (VisList *list);
-int visual_list_destroy_elements (VisList *list, VisListDestroyerFunc destroyer);
-int visual_list_destroy (VisList *list, VisListDestroyerFunc destroyer);
+int visual_list_destroy_elements (VisList *list);
+
+int visual_list_set_destroyer (VisList *list, VisListDestroyerFunc destroyer);
 
 void *visual_list_next (const VisList *list, VisListEntry **le);
 void *visual_list_prev (const VisList *list, VisListEntry **le);

@@ -6,6 +6,20 @@
 #include "lv_common.h"
 #include "lv_palette.h"
 
+static int palette_dtor (VisObject *object);
+
+static int palette_dtor (VisObject *object)
+{
+	VisPalette *pal = VISUAL_PALETTE (object);
+
+	if (pal->colors != NULL)
+		visual_palette_free_colors (pal);
+
+	pal->colors = NULL;
+
+	return VISUAL_OK;
+}
+
 /**
  * @defgroup VisPalette VisPalette
  * @{
@@ -22,27 +36,14 @@ VisPalette *visual_palette_new (int ncolors)
 
 	pal = visual_mem_new0 (VisPalette, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (pal)->allocated = TRUE;
+	VISUAL_OBJECT (pal)->dtor = palette_dtor;
+	visual_object_ref (VISUAL_OBJECT (pal));
+
 	visual_palette_allocate_colors (pal, ncolors);
 
 	return pal;
-}
-
-/**
- * Frees the VisPalette, This frees the VisPalette data structure.
- *
- * @param pal Pointer to the VisPalette that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL or error values returned by
- *	visual_mem_free () on failure.
- */
-int visual_palette_free (VisPalette *pal)
-{
-	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
-
-	if (pal->colors != NULL)
-		visual_palette_free_colors (pal);
-	
-	return visual_mem_free (pal);
 }
 
 /**
@@ -95,6 +96,8 @@ int visual_palette_free_colors (VisPalette *pal)
 
 	if (pal->colors != NULL)
 		visual_mem_free (pal->colors);
+	
+	pal->colors = NULL;
 
 	return VISUAL_OK;
 }

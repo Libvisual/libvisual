@@ -4,7 +4,7 @@
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_param.h>
 #include <libvisual/lv_video.h>
-#include <libvisual/lv_types.h>
+#include <libvisual/lv_common.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -91,6 +91,8 @@ typedef struct _VisUICheckbox VisUICheckbox;
 
 
 struct _VisUIWidget {
+	VisObject		 object;
+
 	VisUIWidget		*parent;
 	
 	VisUIWidgetType		 type;
@@ -118,6 +120,8 @@ struct _VisUIBox {
 };
 
 struct _VisUITableEntry {
+	VisObject		object;
+
 	int			row;
 	int			col;
 
@@ -196,6 +200,8 @@ struct _VisUIColor {
 };
 
 struct _VisUIChoiceList {
+	VisObject		 object;
+
 	VisUIChoiceType		 type;
 
 	int			 count;
@@ -203,6 +209,8 @@ struct _VisUIChoiceList {
 };
 
 struct _VisUIChoiceEntry {
+	VisObject		 object;
+
 	const char		*name;
 	
 	const VisParamEntry	*value;

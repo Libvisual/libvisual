@@ -10,6 +10,18 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_EVENT_KEYBOARD(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisEventKeyboard))
+#define VISUAL_EVENT_MOUSEMOTION(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisEventMouseMotion))
+#define VISUAL_EVENT_MOUSEBUTTON(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisEventMouseButton))
+#define VISUAL_EVENT_RESIZE(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisEventResize))
+#define VISUAL_EVENT_NEWSONG(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisEventNewSong))
+#define VISUAL_EVENT_QUIT(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisEventQuit))
+#define VISUAL_EVENT_VISIBILITY(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisEventVisibility))
+#define VISUAL_EVENT_GENERIC(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisEventGeneric))
+#define VISUAL_EVENT_PARAM(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisEventParam))
+#define VISUAL_EVENT(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisEvent))
+#define VISUAL_EVENTQUEUE(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisEventQueue))
+
 /**
  * Number of events allowed in the queue
  */
@@ -51,6 +63,7 @@ typedef enum {
 	VISUAL_MOUSE_UP			/**< Mouse button is released. */
 } VisMouseState;
 
+
 typedef struct _VisEventKeyboard VisEventKeyboard;
 typedef struct _VisEventMouseMotion VisEventMouseMotion;
 typedef struct _VisEventMouseButton VisEventMouseButton;
@@ -62,6 +75,7 @@ typedef struct _VisEventGeneric VisEventGeneric;
 typedef struct _VisEventParam VisEventParam;
 typedef union _VisEvent VisEvent;
 typedef struct _VisEventQueue VisEventQueue;
+
 /**
  * Keyboard event data structure.
  *
@@ -70,6 +84,7 @@ typedef struct _VisEventQueue VisEventQueue;
  * @see visual_event_queue_add_keyboard
  */
 struct _VisEventKeyboard {
+	VisObject	object;		/**< The VisObject data. */
 	VisEventType	type;		/**< Event type of the event being emitted */
 	VisKeySym	keysym;		/**< A keysym entry that contains which key had an
 					  * event and information about modifier keys. */
@@ -83,6 +98,7 @@ struct _VisEventKeyboard {
  * @see visual_event_queue_add_mousemotion
  */
 struct _VisEventMouseMotion {
+	VisObject	object;		/**< The VisObject data. */
 	VisEventType	type;		/**< Event type of the event being emitted. */
 	VisMouseState	state;		/**< Mouse button state. */
 	int		x;		/**< The absolute mouse X value, where 0 is left of screen. */
@@ -99,6 +115,7 @@ struct _VisEventMouseMotion {
  * @see visual_event_queue_add_mousebutton
  */
 struct _VisEventMouseButton {
+	VisObject	object;		/**< The VisObject data. */
 	VisEventType	type;		/**< Event type of the event being emitted. */
 	VisMouseState	state;		/**< Mouse button state. */
 	int		button;		/**< The button the state relates to. */
@@ -114,6 +131,7 @@ struct _VisEventMouseButton {
  * @see visual_event_queue_add_resize
  */
 struct _VisEventResize {
+	VisObject	 object;	/**< The VisObject data. */
 	VisEventType	 type;		/**< Event type of the event being emitted. */
 	VisVideo	*video;		/**< Pointer to the VisVideo structure containing all the screen information. */
 	int		 width;		/**< Width of the surface. */
@@ -128,6 +146,7 @@ struct _VisEventResize {
  * @see visual_event_queue_add_newsong
  */
 struct _VisEventNewSong {
+	VisObject	 object;	/**< The VisObject data. */
 	VisEventType	 type;		/**< Event type of the event being emitted. */
 	VisSongInfo	*songinfo;	/**< Pointer to the VisSongInfo structure containing all the information about
 					 * the new song. */
@@ -141,6 +160,7 @@ struct _VisEventNewSong {
  * @see visual_event_queue_add_quit
  */
 struct _VisEventQuit {
+	VisObject	 object;	/**< The VisObject data. */
 	VisEventType	 type;		/**< Event type of the event being emitted. */
 	int		 dummy;		/**< some day may contain a request urgency: quit NOW or schedule quit. */
 };
@@ -153,6 +173,7 @@ struct _VisEventQuit {
  * @see visual_event_queue_add_visibiity
  */
 struct _VisEventVisibility {
+	VisObject	 object;	/**< The VisObject data. */
 	VisEventType	 type;		/**< Event type of the event being emitted. */
 	int		 dummy;		/**< Some day will contain window ID. very OS-specific. maybe use indices ? */
 	int		 is_visible;	/**< Set TRUE or FALSE to indicate visibility. */
@@ -166,6 +187,7 @@ struct _VisEventVisibility {
  * @see visual_event_queue_add_generic
  */
 struct _VisEventGeneric {
+	VisObject	 object;	/**< The VisObject data. */
 	VisEventType	 type;		/**< Event type of the event being emitted. */
 	int		 event_id;	/**< some event id. */
 	int		 data_int;	/**< Data in the form of an integer. */
@@ -180,6 +202,7 @@ struct _VisEventGeneric {
  * @see visual_event_queue_add_param
  */
 struct _VisEventParam {
+	VisObject	 object;	/**< The VisObject data. */
 	VisEventType	 type;		/**< Event type of the event being emitted. */
 	/* FiXME: Having VisEventParam here creates a circulair depency in lv_event.h and lv_param.h */
 	void		*param;		/**< The parameter entry which has been changed. */
@@ -193,6 +216,7 @@ struct _VisEventParam {
  * @see visual_event_new
  */
 union _VisEvent {
+	VisObject		object;		/**< The VisObject data. */
 	VisEventType		type;		/**< Event type of the event being emitted. */
 	VisEventKeyboard	keyboard;	/**< Keyboard event. */
 	VisEventMouseMotion	mousemotion;	/**< Mouse movement event. */
@@ -214,6 +238,7 @@ union _VisEvent {
  * @see visual_event_queue_new
  */
 struct _VisEventQueue {
+	VisObject	 object;	/**< The VisObject data. */
 	VisList		 events;	/**< List of VisEvents in the queue. */
 	VisEvent 	 lastresize;	/**< Last resize event to provide quick access
 					  * to this high piority event. */
@@ -226,9 +251,7 @@ struct _VisEventQueue {
 };
 
 VisEvent *visual_event_new (void);
-int visual_event_free (VisEvent *event);
 VisEventQueue *visual_event_queue_new (void);
-int visual_event_queue_free (VisEventQueue *eventqueue);
 int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
 int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event);
 int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, int keymod, VisKeyState state);

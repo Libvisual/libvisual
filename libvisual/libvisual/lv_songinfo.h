@@ -8,6 +8,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_SONGINFO(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisSongInfo))
+	
 /**
  * Used to define the type of song info being used.
  * There are two interfaces to notify libvisual of song
@@ -30,6 +32,7 @@ typedef struct _VisSongInfo VisSongInfo;
  * methods of the VisSongInfo system.
  */
 struct _VisSongInfo {
+	VisObject	 object;	/**< The VisObject data. */
 	VisSongInfoType	 type;		/**< Sets the interface type. */
 
 	/* In seconds */
@@ -56,7 +59,6 @@ struct _VisSongInfo {
 };
 
 VisSongInfo *visual_songinfo_new (VisSongInfoType type);
-int visual_songinfo_free (VisSongInfo *songinfo);
 int visual_songinfo_free_strings (VisSongInfo *songinfo);
 int visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type);
 int visual_songinfo_set_length (VisSongInfo *songinfo, int length);

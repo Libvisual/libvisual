@@ -22,22 +22,12 @@ VisColor *visual_color_new ()
 
 	color = visual_mem_new0 (VisColor, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (color)->allocated = TRUE;
+	VISUAL_OBJECT (color)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (color));
+
 	return color;
-}
-
-/**
- * Frees the VisColor. This frees the VisColor data structure.
- *
- * @param color Pointer to a VisColor that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL or error values returned by
- * 	visual_mem_free () on failure.
- */
-int visual_color_free (VisColor *color)
-{
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
-
-	return visual_mem_free (color);
 }
 
 /**

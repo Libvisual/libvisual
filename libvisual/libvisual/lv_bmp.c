@@ -157,7 +157,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 			bi_clrused = 256;
 
 		if (video->pal == NULL)
-			visual_palette_free (video->pal);
+			visual_object_unref (VISUAL_OBJECT (video->pal));
 		
 		video->pal = visual_palette_new (bi_clrused);
 

@@ -6,19 +6,32 @@
 #include "lv_log.h"
 #include "lv_param.h"
 
-static void param_list_destroy (void *data);
+static int paramcontainer_dtor (VisObject *object);
+static int paramentry_dtor (VisObject *object);
+
 static int get_next_pcall_id (VisList *callbacks);
 
-static void param_list_destroy (void *data)
+static int paramcontainer_dtor (VisObject *object)
 {
-	VisParamEntry *param;
+	VisParamContainer *paramcontainer = VISUAL_PARAMCONTAINER (object);
 
-	if (data == NULL)
-		return;
+	visual_list_destroy_elements (&paramcontainer->entries);
 
-	param = (VisParamEntry *) data;
+	return VISUAL_OK;
+}
 
-	visual_param_entry_free (param);
+static int paramentry_dtor (VisObject *object)
+{
+	VisParamEntry *param = VISUAL_PARAMENTRY (object);
+
+	if (param->string != NULL)
+		visual_mem_free (param->string);
+
+	visual_list_destroy_elements (&param->callbacks);
+
+	param->string = NULL;
+
+	return VISUAL_OK;
 }
 
 static int get_next_pcall_id (VisList *callbacks)
@@ -68,25 +81,15 @@ VisParamContainer *visual_param_container_new ()
 	VisParamContainer *paramcontainer;
 
 	paramcontainer = visual_mem_new0 (VisParamContainer, 1);
-	
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (paramcontainer)->allocated = TRUE;
+	VISUAL_OBJECT (paramcontainer)->dtor = paramcontainer_dtor;
+	visual_object_ref (VISUAL_OBJECT (paramcontainer));
+
+	visual_list_set_destroyer (&paramcontainer->entries, visual_object_list_destroyer);
+
 	return paramcontainer;
-}
-
-/**
- * Destroys a VisParamContainer and all it's VisParamEntry members.
- *
- * @param paramcontainer The VisParamContainer that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL or error values returned by
- *	visual_mem_free () on failure.
- */
-int visual_param_container_destroy (VisParamContainer *paramcontainer)
-{
-	visual_log_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-
-	visual_list_destroy_elements (&paramcontainer->entries, param_list_destroy);
-
-	return visual_mem_free (paramcontainer);
 }
 
 /**
@@ -242,29 +245,16 @@ VisParamEntry *visual_param_entry_new (char *name)
 
 	param = visual_mem_new0 (VisParamEntry, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (param)->allocated = TRUE;
+	VISUAL_OBJECT (param)->dtor = paramentry_dtor;
+	visual_object_ref (VISUAL_OBJECT (param));
+
 	param->name = name;
 
+	visual_list_set_destroyer (&param->callbacks, visual_object_list_destroyer);
+
 	return param;
-}
-
-/**
- * Frees the VisParamEntry. This frees the VisParamEntry data structure.
- *
- * @param param Pointer to the VisParamEntry that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL or error values
- *	returned by visual_mem_free () on failure.
- */
-int visual_param_entry_free (VisParamEntry *param)
-{
-	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-	if (param->string != NULL)
-		visual_mem_free (param->string);
-
-	visual_list_destroy_elements (&param->callbacks, free);
-
-	return visual_mem_free (param);
 }
 
 /**
@@ -292,6 +282,11 @@ int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallba
 	visual_log_return_val_if_fail (id >= 0, -VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY);
 
 	pcall = visual_mem_new0 (VisParamEntryCallback, 1);
+
+	/* Do the VisObject initialization for the VisParamEntryCallback */
+	VISUAL_OBJECT (pcall)->allocated = TRUE;
+	VISUAL_OBJECT (pcall)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (pcall));
 
 	pcall->id = id;
 	pcall->callback = callback;
@@ -322,7 +317,7 @@ int visual_param_entry_remove_callback (VisParamEntry *param, int id)
 		if (id == pcall->id) {
 			visual_list_delete (&param->callbacks, &le);
 
-			visual_mem_free (pcall);
+			visual_object_unref (VISUAL_OBJECT (pcall));
 
 			return VISUAL_OK;
 		}

@@ -12,11 +12,11 @@
 
 VisRandomContext __lv_internal_random_context;
 
+
 /**
  * @defgroup VisRandom VisRandom
  * @{
  */
-
 
 /**
  * Creates a new VisRandomContext data structure.
@@ -30,25 +30,15 @@ VisRandomContext *visual_random_context_new (uint32_t seed)
 	VisRandomContext *rcontext;
 
 	rcontext = visual_mem_new0 (VisRandomContext, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (rcontext)->allocated = TRUE;
+	VISUAL_OBJECT (rcontext)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (rcontext));
+
 	visual_random_context_set_seed (rcontext, seed);
 
 	return rcontext;
-}
-
-/**
- * Frees the VisRandomContext. This frees the VisRandomContext data structure.
- *
- * @param rcontext Pointer to a VisRandomContext that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
- */
-int visual_random_context_free (VisRandomContext *rcontext)
-{
-	visual_log_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
-
-	visual_mem_free (rcontext);
-
-	return VISUAL_OK;
 }
 
 /**

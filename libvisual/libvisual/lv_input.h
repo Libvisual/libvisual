@@ -3,10 +3,13 @@
 
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_plugin.h>
+#include <libvisual/lv_common.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+#define VISUAL_INPUT(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisInput))
 
 typedef struct _VisInput VisInput;
 
@@ -36,6 +39,8 @@ typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio, void
  * @see visual_input_new
  */ 
 struct _VisInput {
+	VisObject			 object;	/**< The VisObject data. */
+
 	VisPluginData			*plugin;	/**< Pointer to the plugin itself. */
 	VisAudio			*audio;		/**< Pointer to the VisAudio structure
 							  * that contains the audio analyse
@@ -58,8 +63,6 @@ int visual_input_valid_by_name (const char *name);
 VisInput *visual_input_new (const char *inputname);
 
 int visual_input_realize (VisInput *input);
-int visual_input_destroy (VisInput *input);
-int visual_input_free (VisInput *input);
 
 int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv);
 

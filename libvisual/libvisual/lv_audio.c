@@ -6,8 +6,19 @@
 #include "lv_common.h"
 #include "lv_audio.h"
 
+static int audio_dtor (VisObject *object);
+
 static int audio_band_total (VisAudio *audio, int begin, int end);
 static int audio_band_energy (VisAudio *audio, int band, int length);
+
+static int audio_dtor (VisObject *object)
+{
+	VisAudio *audio = VISUAL_AUDIO (object);
+
+	visual_object_unref (VISUAL_OBJECT (audio->fft_state));
+
+	return VISUAL_OK;
+}
 
 static int audio_band_total (VisAudio *audio, int begin, int end)
 {
@@ -53,24 +64,12 @@ VisAudio *visual_audio_new ()
 
 	audio = visual_mem_new0 (VisAudio, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (audio)->allocated = TRUE;
+	VISUAL_OBJECT (audio)->dtor = audio_dtor;
+	visual_object_ref (VISUAL_OBJECT (audio));
+
 	return audio;
-}
-
-/**
- * Frees the VisAudio. This frees the VisAudio data structure.
- *
- * @param audio Pointer to a VisAudio that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL or error values returned
- *	by visual_mem_free () on failure.
- */
-int visual_audio_free (VisAudio *audio)
-{
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-
-	visual_fft_close (audio->fft_state);
-	
-	return visual_mem_free (audio);
 }
 
 /**

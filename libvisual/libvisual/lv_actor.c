@@ -11,7 +11,29 @@
 
 extern VisList *__lv_plugins_actor;
 
+static int actor_dtor (VisObject *object);
+
 static VisActorPlugin *get_actor_plugin (VisActor *actor);
+
+static int actor_dtor (VisObject *object)
+{
+	VisActor *actor = VISUAL_ACTOR (object);
+
+	if (actor->plugin != NULL)
+		visual_plugin_unload (actor->plugin);
+
+	if (actor->transform != NULL)
+		visual_video_free_with_buffer (actor->transform);
+
+	if (actor->fitting != NULL)
+		visual_video_free_with_buffer (actor->fitting);
+
+	actor->plugin = NULL;
+	actor->transform = NULL;
+	actor->fitting = NULL;
+
+	return VISUAL_OK;
+}
 
 static VisActorPlugin *get_actor_plugin (VisActor *actor)
 {
@@ -279,6 +301,11 @@ VisActor *visual_actor_new (const char *actorname)
 	
 	actor = visual_mem_new0 (VisActor, 1);
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (actor)->allocated = TRUE;
+	VISUAL_OBJECT (actor)->dtor = actor_dtor;
+	visual_object_ref (VISUAL_OBJECT (actor));
+
 	if (actorname == NULL)
 		return actor;
 
@@ -304,47 +331,6 @@ int visual_actor_realize (VisActor *actor)
 	visual_log_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	return visual_plugin_realize (actor->plugin);
-}
-
-/**
- * Destroy the VisActor. This unloads the plugin when it's loaded, and also frees the actor itself including
- * all it's members.
- *
- * @param actor Pointer to a VisActor that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL or values returned by visual_actor_free () on failure.
- */ 
-int visual_actor_destroy (VisActor *actor)
-{
-	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-
-	if (actor->plugin != NULL)
-		visual_plugin_unload (actor->plugin);
-
-	return visual_actor_free (actor);
-}
-
-/**
- * Free the VisActor. This frees the VisActor data structure, but does not destroy the plugin within. If this is desired
- * use visual_actor_destroy.
- *
- * @see visual_actor_destroy
- * 
- * @param actor Pointer to a VisActor that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL or values returned by visual_mem_free () on failure.
- */
-int visual_actor_free (VisActor *actor)
-{
-	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-
-	if (actor->transform != NULL)
-		visual_video_free_with_buffer (actor->transform);
-
-	if (actor->fitting != NULL)
-		visual_video_free_with_buffer (actor->fitting);
-		
-	return visual_mem_free (actor);
 }
 
 /**
@@ -459,7 +445,7 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 	}
 
 	if (actor->ditherpal != NULL) {
-		visual_palette_free (actor->ditherpal);
+		visual_object_unref (VISUAL_OBJECT (actor->ditherpal));
 		actor->ditherpal = NULL;
 	}
 

@@ -31,6 +31,7 @@ typedef struct _VisCPU VisCPU;
  * @see visual_cpu_get_info
  */
 struct _VisCPU {
+	VisObject	object;	/**< The VisObject data. */
 	VisCPUType	type;	/**< Contains the CPU/arch type. */
 	uint32_t	flags;	/**< Contains feature flags for the CPU. */
 	int		nrcpu;	/**< Contains the number of CPUs in the system. */

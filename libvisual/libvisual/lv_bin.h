@@ -11,6 +11,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_BIN(obj)					(VISUAL_CHECK_CAST ((obj), 0, VisBin))
+
 typedef enum {
 	VISUAL_SWITCH_STYLE_DIRECT,
 	VISUAL_SWITCH_STYLE_MORPH
@@ -24,6 +26,8 @@ typedef enum {
 typedef struct _VisBin VisBin;
 
 struct _VisBin {
+	VisObject	 object;
+
 	int		 managed;
 	VisActor	*actor;
 	VisVideo	*actvideo;
@@ -61,8 +65,6 @@ struct _VisBin {
 VisBin *visual_bin_new (void);
 
 int visual_bin_realize (VisBin *bin);
-int visual_bin_destroy (VisBin *bin);
-int visual_bin_free (VisBin *bin);
 
 int visual_bin_set_actor (VisBin *bin, VisActor *actor);
 VisActor *visual_bin_get_actor (VisBin *bin);

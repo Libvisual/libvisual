@@ -11,6 +11,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_FFTSTATE(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisFFTState))
+
 /**
  * Private FFT define that contains the log size.
  */
@@ -27,14 +29,14 @@ typedef struct _VisFFTState VisFFTState;
  * Private structure to contain Fast Fourier Transform states in.
  */
 struct _VisFFTState {
+	VisObject	object;				/**< The VisObject data. */
 	/* Temporary data stores to perform FFT in. */
-	float real[VISUAL_FFT_BUFFER_SIZE];	/**< Private data that is used by the FFT engine. */
-	float imag[VISUAL_FFT_BUFFER_SIZE];	/**< Private data that is used by the FFT engine. */
+	float		real[VISUAL_FFT_BUFFER_SIZE];	/**< Private data that is used by the FFT engine. */
+	float		imag[VISUAL_FFT_BUFFER_SIZE];	/**< Private data that is used by the FFT engine. */
 };
 
 VisFFTState *visual_fft_init (void);
 void visual_fft_perform (const int16_t *input, float *output, VisFFTState *state);
-void visual_fft_close (VisFFTState *state);
 
 #ifdef __cplusplus
 }

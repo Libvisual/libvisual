@@ -19,9 +19,36 @@
  * rewrite it. And i can't say i feel like it at the moment so be
  * patient :) */
 
+static int bin_dtor (VisObject *object);
 
 static void fix_depth_with_bin (VisBin *bin, VisVideo *video, int depth);
 static int bin_get_depth_using_preferred (VisBin *bin, int depthflag);
+
+static int bin_dtor (VisObject *object)
+{
+	VisBin *bin = VISUAL_BIN (object);
+
+	visual_log_return_val_if_fail (bin != NULL, -1);
+
+	if (bin->actor != NULL)
+		visual_object_unref (VISUAL_OBJECT (bin->actor));
+
+	if (bin->input != NULL)
+		visual_object_unref (VISUAL_OBJECT (bin->input));
+
+	if (bin->morph != NULL)
+		visual_object_unref (VISUAL_OBJECT (bin->morph));
+
+	if (bin->actmorphmanaged == TRUE) {
+		visual_object_unref (VISUAL_OBJECT (bin->actmorph));
+		visual_video_free_with_buffer (bin->actmorphvideo);
+	}
+
+	if (bin->privvid != NULL)
+		visual_video_free_with_buffer (bin->privvid);
+
+	return VISUAL_OK;
+}
 
 static void fix_depth_with_bin (VisBin *bin, VisVideo *video, int depth)
 {
@@ -54,6 +81,11 @@ VisBin *visual_bin_new ()
 
 	bin = visual_mem_new0 (VisBin, 1);
 
+	/* VisObject stuff.. */
+	VISUAL_OBJECT (bin)->allocated = TRUE;
+	VISUAL_OBJECT (bin)->dtor = bin_dtor;
+	visual_object_ref (VISUAL_OBJECT (bin));
+
 	bin->morphautomatic = TRUE;
 
 	bin->morphmode = VISUAL_MORPH_MODE_TIME;
@@ -76,41 +108,6 @@ int visual_bin_realize (VisBin *bin)
 
 	if (bin->morph != NULL)
 		visual_morph_realize (bin->morph);
-
-	return 0;
-}
-
-int visual_bin_destroy (VisBin *bin)
-{
-	visual_log_return_val_if_fail (bin != NULL, -1);
-
-	if (bin->actor != NULL)
-		visual_actor_destroy (bin->actor);
-
-	if (bin->input != NULL)
-		visual_input_destroy (bin->input);
-
-	if (bin->morph != NULL)
-		visual_morph_destroy (bin->morph);
-
-	if (bin->actmorphmanaged == TRUE) {
-		visual_actor_destroy (bin->actmorph);
-		visual_video_free_with_buffer (bin->actmorphvideo);
-	}
-
-	if (bin->privvid != NULL)
-		visual_video_free_with_buffer (bin->privvid);
-	
-	visual_bin_free (bin);
-
-	return 0;
-}
-
-int visual_bin_free (VisBin *bin)
-{
-	visual_log_return_val_if_fail (bin != NULL, -1);
-
-	visual_mem_free (bin);
 
 	return 0;
 }
@@ -170,7 +167,7 @@ int visual_bin_set_morph_by_name (VisBin *bin, char *morphname)
 	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	if (bin->morph != NULL)
-		visual_morph_destroy (bin->morph);
+		visual_object_unref (VISUAL_OBJECT (bin->morph));
 
 	morph = visual_morph_new (morphname);
 
@@ -182,7 +179,7 @@ int visual_bin_set_morph_by_name (VisBin *bin, char *morphname)
 	depthflag = visual_morph_get_supported_depth (morph);
 
 	if (visual_video_depth_is_supported (depthflag, bin->actvideo->depth) <= 0) {
-		visual_morph_destroy (morph);
+		visual_object_unref (VISUAL_OBJECT (morph));
 		bin->morph = NULL;
 
 		return -2;
@@ -449,7 +446,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 	/* Destroy if there already is a managed one */
 	if (bin->actmorphmanaged == TRUE) {
 		if (bin->actmorph != NULL) {
-			visual_actor_destroy (bin->actmorph);
+			visual_object_unref (VISUAL_OBJECT (bin->actmorph));
 
 			if (bin->actmorphvideo != NULL)
 				visual_video_free_with_buffer (bin->actmorphvideo);
@@ -659,7 +656,7 @@ int visual_bin_switch_finalize (VisBin *bin)
 
 	visual_log (VISUAL_LOG_DEBUG, "Entering...");
 	if (bin->managed == TRUE)
-		visual_actor_destroy (bin->actor);
+		visual_object_unref (VISUAL_OBJECT (bin->actor));
 
 	/* Copy over the depth to be sure, and for GL plugins */
 //	bin->actvideo->depth = bin->actmorphvideo->depth;
@@ -683,7 +680,7 @@ int visual_bin_switch_finalize (VisBin *bin)
 	bin->morphing = FALSE;
 
 	if (bin->morphmanaged == TRUE) {
-		visual_morph_destroy (bin->morph);
+		visual_object_unref (VISUAL_OBJECT (bin->morph));
 		bin->morph = NULL;
 	}
 

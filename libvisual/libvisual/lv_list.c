@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.16 2004-11-17 22:14:21 synap Exp $
+ *	$Id: lv_list.c,v 1.17 2004-11-23 22:56:30 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,6 +34,17 @@
 #include "lv_log.h"
 #include "lv_mem.h"
 
+static int list_dtor (VisObject *object);
+
+static int list_dtor (VisObject *object)
+{
+	VisList *list = VISUAL_LIST (object);
+
+	visual_list_destroy_elements (list);	
+
+	return VISUAL_OK;
+}
+
 /**
  * @defgroup VisList VisList
  * @{
@@ -45,11 +56,18 @@
  *
  * @return A newly allocated VisList.
  */
-VisList *visual_list_new ()
+VisList *visual_list_new (VisListDestroyerFunc destroyer)
 {
 	VisList *list;
 
 	list = visual_mem_new0 (VisList, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (list)->allocated = TRUE;
+	VISUAL_OBJECT (list)->dtor = list_dtor;
+	visual_object_ref (VISUAL_OBJECT (list));
+
+	list->destroyer = destroyer;
 
 	return list;
 }
@@ -82,7 +100,7 @@ int visual_list_free (VisList *list)
  *
  * @return VISUAL_OK on succes, or -VISUAL_ERROR_LIST_NULL on failure.
  */
-int visual_list_destroy_elements (VisList *list, VisListDestroyerFunc destroyer)
+int visual_list_destroy_elements (VisList *list)
 {
 	VisListEntry *le = NULL;
 	void *elem;
@@ -90,12 +108,12 @@ int visual_list_destroy_elements (VisList *list, VisListDestroyerFunc destroyer)
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 		
 	/* Walk through the given list, possibly calling the destroyer for it */
-	if (destroyer == NULL) {
+	if (list->destroyer == NULL) {
 		while ((elem = visual_list_next (list, &le)) != NULL)
 			visual_list_delete (list, &le);
 	} else {
 		while ((elem = visual_list_next (list, &le)) != NULL) {
-			destroyer (elem);
+			list->destroyer (elem);
 			visual_list_delete (list, &le);
 		}
 	}
@@ -104,26 +122,20 @@ int visual_list_destroy_elements (VisList *list, VisListDestroyerFunc destroyer)
 }
 
 /**
- * Destroys a list and it's entries. This destroys a list and when the destroyer
- * argument isn't NULL this function is called with a pointer to the data element
- * of a list entry. You can use 'free' as an argument here when this is sufficient
- * as a destroyer function, or if you don't want to free the data entries at all pass
- * NULL.
+ * Sets a VisListEntry destroyer function a VisList.
  *
- * @param list Pointer to a VisList that needs to be destroyed.
- * @param destroyer Pointer to a destroyer function that is used to destroy the data
- * 	in the elements
+ * @param list Pointer to a VisList to which the VisListDestroyerFunc is set.
+ * @param destroyer The VisListEntry destroyer function.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or error values returned by
- * 	visual_list_free () on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
  */
-int visual_list_destroy (VisList *list, VisListDestroyerFunc destroyer)
+int visual_list_set_destroyer (VisList *list, VisListDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-	
-	visual_list_destroy_elements (list, destroyer);	
-	
-	return visual_list_free (list);
+
+	list->destroyer = destroyer;
+
+	return VISUAL_OK;
 }
 
 /**

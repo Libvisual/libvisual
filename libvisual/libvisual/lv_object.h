@@ -39,6 +39,8 @@ struct _VisObject {
 						 * depending on the sub class object. */
 };
 
+void visual_object_list_destroyer (void *data);
+
 VisObject *visual_object_new (void);
 int visual_object_free (VisObject *object);
 int visual_object_destroy (VisObject *object);

@@ -5,6 +5,7 @@
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_error.h>
 #include <libvisual/lv_types.h>
+#include <libvisual/lv_object.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -13,6 +13,19 @@
  */
 
 /**
+ * This function is a global VisListDestroyerFunc handler that unrefs VisObjects.
+ *
+ * @param data Pointer to the VisObject that needs to be unrefed
+ */
+void visual_object_list_destroyer (void *data)
+{
+	if (data == NULL)
+		return;
+
+	visual_object_unref (VISUAL_OBJECT (data));
+}
+
+/**
  * Creates a new VisObject structure.
  *
  * @return A newly allocated VisObject, or NULL on failure.
@@ -41,7 +54,7 @@ VisObject *visual_object_new ()
 int visual_object_free (VisObject *object)
 {
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-	visual_log_return_val_if_fail (object->allocated != TRUE, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED);
+	visual_log_return_val_if_fail (object->allocated == TRUE, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED);
 
 	return visual_mem_free (object);
 }
@@ -93,7 +106,8 @@ int visual_object_ref (VisObject *object)
  *
  * @param object Pointer to a VisObject in which the reference count is decreased.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL or error values returned by
+ *	visual_object_destroy on failure.
  */
 int visual_object_unref (VisObject *object)
 {
@@ -102,9 +116,11 @@ int visual_object_unref (VisObject *object)
 	object->refcount--;
 
 	/* No reference left, start dtoring of this VisObject */
-	if (object->refcount <= 0)
-		visual_object_destroy (object);
+	if (object->refcount <= 0) {
+		object->refcount = 0;
 
+		return visual_object_destroy (object);
+	}
 	return VISUAL_OK;
 }
 

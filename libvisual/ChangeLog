@@ -1,5 +1,16 @@
 2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/*: This change is BIG, most Vis systems are now moved
+	over to the VisObject system, losing their old destroy/free functions
+	in favor of the object_unref/destroy functions. Ref counting is
+	implemented all over the place and VisObjects (nearly everything)
+	can register dtors. an object can even be destroyed when it's not
+	allocated. In such case it will only cleanup internals.
+
+	YES THIS BREAKS EVERYTHING! :)
+
+2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_object.*: Added files, containing the VisObject
 	system. This still needs to be implemented all over the libvisual
 	system, included with ref counting, this will probably happen over the

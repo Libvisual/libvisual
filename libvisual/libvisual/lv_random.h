@@ -7,6 +7,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_RANDOMCONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisRandomContext))
+	
 /**
  * The highest random nummer.
  */
@@ -20,6 +22,7 @@ typedef struct _VisRandomContext VisRandomContext;
  * to use the visual_random_context_* functions.
  */
 struct _VisRandomContext {
+	VisObject	object;		/**< The VisObject data. */
 	uint32_t	seed;		/**< The initial random seed. */
 	uint32_t	seed_state;	/**< The current state seed. */
 };
@@ -36,7 +39,6 @@ extern VisRandomContext __lv_internal_random_context;
 
 /* Context management */
 VisRandomContext *visual_random_context_new (uint32_t seed);
-int visual_random_context_free (VisRandomContext *rcontext);
 int visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed);
 uint32_t visual_random_context_get_seed (const VisRandomContext *rcontext);
 uint32_t visual_random_context_get_seed_state (const VisRandomContext *rcontext);

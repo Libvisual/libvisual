@@ -11,6 +11,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_MORPH(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisMorph))
+
 /**
  * Morph morphing methods.
  */
@@ -36,6 +38,7 @@ typedef struct _VisMorph VisMorph;
  * @see visual_morph_new
  */
 struct _VisMorph {
+	VisObject	 object;	/**< The VisObject data. */
 	VisPluginData	*plugin;	/**< Pointer to the plugin itself. */
 	VisVideo	*dest;		/**< Destination video, this is where
 					 * the result of the morph gets drawn. */
@@ -64,8 +67,6 @@ int visual_morph_valid_by_name (const char *name);
 VisMorph *visual_morph_new (const char *morphname);
 
 int visual_morph_realize (VisMorph *morph);
-int visual_morph_destroy (VisMorph *morph);
-int visual_morph_free (VisMorph *morph);
 
 int visual_morph_get_supported_depth (const VisMorph *morph);
 

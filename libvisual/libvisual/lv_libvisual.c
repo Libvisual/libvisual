@@ -266,19 +266,19 @@ int visual_quit ()
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Plugins references list: destroy failed");
 
-	ret = visual_list_destroy (__lv_plugins_actor, NULL);
+	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_actor));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Actor plugins list: destroy failed");
 
-	ret = visual_list_destroy (__lv_plugins_input, NULL);
+	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_input));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Input plugins list: destroy failed");
 
-	ret = visual_list_destroy (__lv_plugins_morph, NULL);
+	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_morph));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Morph plugins list: destroy failed");
 
-	ret = visual_param_container_destroy (__lv_paramcontainer);
+	ret = visual_object_unref (VISUAL_OBJECT (__lv_paramcontainer));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Global param container: destroy failed");
 
