@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-09 20:47+0100\n"
+"POT-Creation-Date: 2005-03-13 18:25-0300\n"
 "PO-Revision-Date: 2004-07-12 23:03+0100\n"
 "Last-Translator: Jean-Christophe Hoelt <jeko@ios-software.com>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -80,7 +80,7 @@ msgstr "Impossible de trouver les options"
 msgid "Cannot set input plugin callback"
 msgstr ""
 
-#: src/main.c:451
+#: src/main.c:452
 msgid "Cannot initialize plugin's visual stuff"
 msgstr ""
 

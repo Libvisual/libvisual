@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-09 20:47+0100\n"
+"POT-Creation-Date: 2005-03-13 18:25-0300\n"
 "PO-Revision-Date: 2004-07-12 16:05-0300\n"
 "Last-Translator: Gustavo Sverzut Barbieri <barbieri@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <linux_pt_BR@yahoo.com.br>\n"
@@ -82,7 +82,7 @@ msgstr "Não consegui obter as opções"
 msgid "Cannot set input plugin callback"
 msgstr ""
 
-#: src/main.c:451
+#: src/main.c:452
 msgid "Cannot initialize plugin's visual stuff"
 msgstr ""
 

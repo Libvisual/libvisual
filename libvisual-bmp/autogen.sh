@@ -22,9 +22,11 @@ REQUIRED_AUTOMAKE_VERSION=1.7
 # I'm not shure if 1.4.3 works, I have only tested with libtool 1.5.6
 REQUIRED_LIBTOOL_VERSION=1.4.3
 REQUIRED_PKG_CONFIG_VERSION=0.14.0
+# Probably it works with older version of glib-gettextize
+REQUIRED_GLIB_GETTEXT_VERSION=2.4.0
 
 # A list of required m4 macros. Add your own here.
-REQUIRED_M4MACROS=""
+REQUIRED_M4MACROS="sdl.m4"
 
 printerr() {
     echo "$@" >&2

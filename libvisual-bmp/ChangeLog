@@ -1,3 +1,9 @@
+2005-03-13  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* autogen.sh: now we require sdl.m4 macro.
+	* po/es.po po/es_AR.po: Updated.
+	* config.rpath: added.
+
 2005-02-20  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/main.c: Compile fixes.
