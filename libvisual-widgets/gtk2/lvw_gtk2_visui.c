@@ -116,6 +116,10 @@ lvw_visui_destroy (GtkObject *object)
 		} while (lentry != NULL) ;
 	}
 
+	/* We don't need it anylonger, unref the VisUIWidget */
+	visual_object_unref (VISUAL_OBJECT (priv->vuitree));
+	priv->vuitree = NULL;
+
 	priv->destroyed = TRUE;	
 
 	klass = LVW_VISUI_CLASS (g_type_class_peek (LVW_VISUI_TYPE));
@@ -254,6 +258,9 @@ lvw_visui_new (VisUIWidget *vuitree)
 {
 	GtkWidget *widget;
 	LvwVisUI *vuic;
+
+	/* Ref it so it won't disappear under our feets */
+	visual_object_ref (VISUAL_OBJECT (vuitree));
 
 	vuic = g_object_new (lvw_visui_get_type (), NULL);
 	vuic->priv->callbacksreg = NULL;
