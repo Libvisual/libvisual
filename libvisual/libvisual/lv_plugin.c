@@ -25,7 +25,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+
+#if defined(VISUAL_OS_WIN32)
+
+#else
 #include <dlfcn.h>
+#endif
+
 #include <dirent.h>
 
 #include "lvconfig.h"
@@ -523,7 +529,7 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 	int i, j, n, len;
 	int cnt = 0;
 
-	n = scandir (dir, &namelist, 0, alphasort);
+	n = scandir (dir, &namelist, NULL, NULL);
 
 	if (n < 0)
 		return -1;
@@ -592,7 +598,12 @@ int visual_plugin_unload (VisPluginData *plugin)
 	if (plugin->info != NULL)
 		visual_object_unref (VISUAL_OBJECT (plugin->info));
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 	dlclose (plugin->handle);
+#endif
+
 	plugin->info = NULL;
 
 	if (ref != NULL) {
@@ -635,20 +646,32 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 		return NULL;
 	}
 
-	handle = dlopen (ref->file, RTLD_LAZY);
+#if defined(VISUAL_OS_WIN32)
 
+#else
+	handle = dlopen (ref->file, RTLD_LAZY);
+#endif
+	
 	if (handle == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
 
 		return NULL;
 	}
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 	get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
-	
+#endif
+
 	if (get_plugin_info == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 		dlclose (handle);
+#endif
 
 		return NULL;
 	}
@@ -658,8 +681,12 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	if (pluginfo == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info while loading.");
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 		dlclose (handle);
-		
+#endif
+
 		return NULL;
 	}
 
@@ -726,22 +753,35 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 
 	visual_log_return_val_if_fail (pluginpath != NULL, NULL);
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 	handle = dlopen (pluginpath, RTLD_LAZY);
-	
+#endif
+
 	if (handle == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: %s", dlerror ());
 
 		return NULL;
 	}
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 	get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
+#endif
 
 	if (get_plugin_info == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: %s", dlerror ());
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 		dlclose (handle);
+#endif
 
 		return NULL;
+		
 	}
 
 	plug_info = VISUAL_PLUGININFO (get_plugin_info (&cnt));
@@ -749,8 +789,12 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	if (plug_info == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info");
 
+#if defined(VISUAL_OS_WIN32)
+
+#else
 		dlclose (handle);
-		
+#endif
+
 		return NULL;
 	}
 
@@ -763,8 +807,11 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 
 		visual_log (VISUAL_LOG_CRITICAL, "Plugin %s is not compatible with version %s of libvisual",
 				pluginpath, visual_get_version ());
+#if defined(VISUAL_OS_WIN32)
 
+#else
 		dlclose (handle);
+#endif
 
 		return NULL;
 	}
@@ -784,9 +831,12 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		visual_object_unref (plug_info[i].plugin);
 		visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
 	}
+#if defined(VISUAL_OS_WIN32)
 
+#else
 	dlclose (handle);
-	
+#endif
+
 	*count = cnt;	
 
 	return ref;

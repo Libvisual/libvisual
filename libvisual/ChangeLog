@@ -1,5 +1,13 @@
 2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_plugin.c (plugin_add_dir_to_list): Do not use alphasort
+	in the readdir, instead pass NULL as argument.
+
+	* libvisual/lv_plugin.c: Place ifdefs around all the dlopen functions
+	for windows32.
+
+2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_plugin.*: Renamed 'environ' to 'environment' for some
 	reason mingw does not like a struct member to be called 'environ'. 
 
