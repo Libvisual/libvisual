@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.14 2004-11-04 20:48:28 synap Exp $
+ *	$Id: lv_list.c,v 1.15 2004-11-09 22:55:00 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@ VisList *visual_list_new ()
  *
  * @param list Pointer to a VisList that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or error values returned by
+ * 	visual_mem_free () on failure.
  */
 int visual_list_free (VisList *list)
 {
@@ -79,7 +80,7 @@ int visual_list_free (VisList *list)
  * @param destroyer Pointer to a destroyer function that is used to destroy the data
  * 	in the elements
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_LIST_NULL on failure.
  */
 int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t destroyer)
 {
@@ -113,7 +114,8 @@ int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t dest
  * @param destroyer Pointer to a destroyer function that is used to destroy the data
  * 	in the elements
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or error values returned by
+ * 	visual_list_free () on failure.
  */
 int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
 {
@@ -227,7 +229,7 @@ void *visual_list_get (const VisList *list, int index)
  * 	at it's head.
  * @param data A pointer to the data that needs to be added to the list.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
  */
 int visual_list_add_at_begin (VisList *list, void *data)
 {
@@ -264,7 +266,7 @@ int visual_list_add_at_begin (VisList *list, void *data)
  * 	at it's tail.
  * @param data A pointer to the data that needs to be added to the list.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
  */	
 int visual_list_add (VisList *list, void *data)
 {
@@ -308,7 +310,8 @@ int visual_list_add (VisList *list, void *data)
  * @param le Pointer to a VisListEntry after which the entry needs to be inserted.
  * @param data Pointer to the data the new entry represents.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL, -VISUAL_ERROR_LIST_ENTRY_NULL or
+ * 	-VISUAL_ERROR_NULL on failure.
  */
 int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 {
@@ -366,7 +369,7 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
  * @param list A pointer to the VisList in which an entry needs to be deleted.
  * @param le A pointer to the entry that needs to be deleted.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
 int visual_list_delete (VisList *list, VisListEntry **le)
 {
@@ -415,7 +418,7 @@ int visual_list_delete (VisList *list, VisListEntry **le)
  *
  * @param list A pointer to the list from which an entry count is needed.
  * 
- * @return The number of elements or -1 on error.
+ * @return The number of elements or -VISUAL_ERROR_LIST_NULL on failure.
  */
 int visual_list_count (VisList *list)
 {

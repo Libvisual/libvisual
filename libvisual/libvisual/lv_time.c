@@ -147,7 +147,7 @@ int visual_time_usleep (unsigned long microseconds)
 	struct timeval tv;
 	tv.tv_sec = microseconds / VISUAL_USEC_PER_SEC;
 	tv.tv_usec = microseconds % VISUAL_USEC_PER_SEC;
-	select(0, NULL, NULL, NULL, &tv);
+	select (0, NULL, NULL, NULL, &tv);
 #else
 #warning visual_time_usleep() will does not work!
 #endif

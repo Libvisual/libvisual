@@ -40,7 +40,7 @@ void *visual_mem_malloc0 (visual_size_t nbytes)
  *
  * @param ptr Frees memory to which ptr points to.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MEM_NULL on failure.
  */
 int visual_mem_free (void *ptr)
 {

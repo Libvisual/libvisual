@@ -150,8 +150,6 @@ void visual_log_set_all_messages_handler (visual_log_message_handler_func_t hand
  * @param line Line number for which the log message is.
  * @param funcname Function name in which the log message is called.
  * @param fmt Format string to display the log message.
- *
- * @return 0 on succes -1 on error.
  */
 void _lv_log (VisLogSeverity severity, const char *file,
 			int line, const char *funcname, const char *fmt, ...)

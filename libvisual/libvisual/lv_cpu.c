@@ -39,6 +39,10 @@ uint32_t cpuid (uint32_t type)
 
 	return flags;
 }
+/**
+ * @defgroup VisCPU VisCPU
+ * @{
+ */
 
 /* FIXME: Should be called from visual_init, when it's safe to do this... */
 void visual_cpu_initialize ()
@@ -86,4 +90,8 @@ int visual_cpu_feature_enable (int flag)
 	
 	return VISUAL_OK;
 }
+
+/**
+ * @}
+ */
 

@@ -150,7 +150,7 @@ VisUIWidget *visual_get_userinterface ()
  *
  * @param pathadd A string containing a path where plugins are located.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NO_PATHS on failure.
  */
 int visual_init_path_add (char *pathadd)
 {
@@ -170,7 +170,8 @@ int visual_init_path_add (char *pathadd)
  * @param argc Pointer to an int containing the number of arguments within argv or NULL.
  * @param argv Pointer to a list of strings that make up the argument vector or NULL.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED,
+ *	-VISUAL_ERROR_LIBVISUAL_NO_REGISTRY or error values returned by visual_init_path_add () on failure.
  */
 int visual_init (int *argc, char ***argv)
 {
@@ -207,17 +208,17 @@ int visual_init (int *argc, char ***argv)
 
 	/* Add the standard plugin paths */
 	ret = visual_init_path_add (PLUGPATH"/actor");
-	visual_log_return_val_if_fail (ret >= 0, ret);
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
 	ret = visual_init_path_add (PLUGPATH"/input");
-	visual_log_return_val_if_fail (ret >= 0, ret);
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
 	ret = visual_init_path_add (PLUGPATH"/morph");
-	visual_log_return_val_if_fail (ret >= 0, ret);
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
 	/* And null terminate the list */
 	ret = visual_init_path_add (NULL);
-	visual_log_return_val_if_fail (ret >= 0, ret);
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
 	__lv_plugins = visual_plugin_get_list ((const char**)__lv_plugpaths);
 	visual_log_return_val_if_fail (__lv_plugins != NULL, -VISUAL_ERROR_LIBVISUAL_NO_REGISTRY);
@@ -248,7 +249,7 @@ int visual_is_initialized ()
 /**
  * Quits libvisual, destroys all the plugin registries.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED on failure.
  */
 int visual_quit ()
 {

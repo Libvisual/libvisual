@@ -725,6 +725,14 @@ int visual_ui_label_set_bold (VisUILabel *label, int bold)
 	return VISUAL_OK;
 }
 
+/**
+ * Sets the text for a VisUILabel.
+ *
+ * @param label Pointer to the VisUILabel to which text is being set.
+ * @param text The text that is being set to the VisUILabel.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_LABEL_NULL on failure.
+ */
 int visual_ui_label_set_text (VisUILabel *label, const char *text)
 {
 	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);
@@ -734,6 +742,13 @@ int visual_ui_label_set_text (VisUILabel *label, const char *text)
 	return VISUAL_OK;
 }
 
+/**
+ * Retrieve the text from a VisUILabel.
+ *
+ * @param label Pointer to the VisUILabel from which the text is being requested.
+ * 
+ * return The text contained in the label, or NULL on failure.
+ */
 const char *visual_ui_label_get_text (VisUILabel *label)
 {
 	visual_log_return_val_if_fail (label != NULL, NULL);
@@ -741,6 +756,13 @@ const char *visual_ui_label_get_text (VisUILabel *label)
 	return label->text;
 }
 
+/**
+ * Creates a new VisUIImage, which can contain an image, loaded from a VisVideo.
+ *
+ * @param video The VisVideo containing the image to be displayed.
+ *
+ * @return The newly created VisUIImage in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_image_new (const VisVideo *video)
 {
 	VisUIImage *image;
@@ -755,6 +777,15 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
 	return VISUAL_UI_WIDGET (image);
 }
 
+/**
+ * Frees a VisUIImage. Keep in mind that this won't free the VisVideo that is connected to
+ * the VisUIImage.
+ * 
+ * @param image Pointer to the VisUIImage that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_IMAGE_NULL, -VISUAL_ERROR_UI_NO_IMAGE or
+ * 	error values returned by visual_mem_free () on failure.
+ */
 int visual_ui_image_free (VisUIImage *image)
 {
 	visual_log_return_val_if_fail (image != NULL, -VISUAL_ERROR_UI_IMAGE_NULL);
@@ -768,6 +799,14 @@ int visual_ui_image_free (VisUIImage *image)
 	return visual_mem_free (image);
 }
 
+/**
+ * Sets a VisVideo to a VisUIImage. The VisVideo contains the content of the image.
+ *
+ * @param image Pointer to the VisUIImage to which the VisVideo is set.
+ * @param video Pointer to the VisVideo that is set to the VisUIImage.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_IMAGE_NULL on failure.
+ */
 int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video)
 {
 	visual_log_return_val_if_fail (image != NULL, -VISUAL_ERROR_UI_IMAGE_NULL);
@@ -777,6 +816,13 @@ int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video)
 	return VISUAL_OK;
 }
 
+/**
+ * Retrieves the VisVideo from a VisUIImage.
+ *
+ * @param image Pointer to the VisUIImage from which the VisVideo is requested.
+ * 
+ * return The VisVideo that is connected to the VisUIImage.
+ */
 const VisVideo *visual_ui_image_get_video (VisUIImage *image)
 {
 	visual_log_return_val_if_fail (image != NULL, NULL);
