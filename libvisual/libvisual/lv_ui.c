@@ -125,14 +125,14 @@ VisUIWidget *visual_ui_container_get_child (VisUIContainer *container)
 	return container->child;
 }
 
-VisUIWidget *visual_ui_box_new (VisUIBoxType boxtype)
+VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 {
 	VisUIBox *box;
 
 	box = visual_mem_new0 (VisUIBox, 1);
 	VISUAL_UI_WIDGET (box)->type = VISUAL_WIDGET_TYPE_BOX;
 
-	box->boxtype = boxtype;
+	box->orient = orient;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (box), -1, -1);
 
@@ -172,11 +172,11 @@ VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget)
 	return NULL;
 }
 
-VisUIBoxType visual_ui_box_get_type (VisUIBox *box)
+VisUIOrientType visual_ui_box_get_orient (VisUIBox *box)
 {
-	visual_log_return_val_if_fail (box != NULL, VISUAL_BOX_TYPE_NONE);
+	visual_log_return_val_if_fail (box != NULL, VISUAL_ORIENT_TYPE_NONE);
 
-	return box->boxtype;
+	return box->orient;
 }
 
 VisUIWidget *visual_ui_frame_new (const char *name)
@@ -251,6 +251,25 @@ const VisVideo *visual_ui_image_get_video (VisUIImage *image)
 	visual_log_return_val_if_fail (image != NULL, NULL);
 
 	return image->image;
+}
+
+VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
+{
+	VisUISeparator *separator;
+
+	separator = visual_mem_new0 (VisUISeparator, 1);
+	VISUAL_UI_WIDGET (separator)->type = VISUAL_WIDGET_TYPE_SEPARATOR;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (separator), -1, -1);
+
+	return VISUAL_UI_WIDGET (separator);
+}
+
+VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator)
+{
+	visual_log_return_val_if_fail (separator != NULL, VISUAL_ORIENT_TYPE_NONE);
+
+	return separator->orient;
 }
 
 VisUIWidget *visual_ui_mutator_new ()
@@ -444,7 +463,7 @@ VisUIWidget *visual_ui_list_new ()
 	return VISUAL_UI_WIDGET (list);
 }
 
-VisUIWidget *visual_ui_radio_new (VisUIRadioType type)
+VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 {
 	VisUIRadio *radio;
 
@@ -453,7 +472,7 @@ VisUIWidget *visual_ui_radio_new (VisUIRadioType type)
 
 	VISUAL_UI_CHOICE (radio)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
-	radio->type = type;
+	radio->orient = orient;
 	
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (radio), -1, -1);
 

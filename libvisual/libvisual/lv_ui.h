@@ -19,6 +19,7 @@ extern "C" {
 #define VISUAL_UI_FRAME(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_FRAME, VisUIFrame))
 #define VISUAL_UI_LABEL(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_LABEL, VisUILabel))
 #define VISUAL_UI_IMAGE(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_IMAGE, VisUIImage))
+#define VISUAL_UI_SEPARATOR(obj)			(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_SEPARATOR, VisUISeparator))
 #define VISUAL_UI_MUTATOR(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_MUTATOR, VisUIMutator))
 #define VISUAL_UI_RANGE(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_RANGE, VisUIRange))
 #define VISUAL_UI_ENTRY(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_ENTRY, VisUIEntry))
@@ -41,6 +42,7 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_FRAME,
 	VISUAL_WIDGET_TYPE_LABEL,
 	VISUAL_WIDGET_TYPE_IMAGE,
+	VISUAL_WIDGET_TYPE_SEPARATOR,
 	VISUAL_WIDGET_TYPE_MUTATOR,
 	VISUAL_WIDGET_TYPE_RANGE,
 	VISUAL_WIDGET_TYPE_ENTRY,
@@ -55,20 +57,16 @@ typedef enum {
 } VisUIWidgetType;
 
 typedef enum {
-	VISUAL_BOX_TYPE_NONE,
-	VISUAL_BOX_TYPE_HORIZONTAL,
-	VISUAL_BOX_TYPE_VERTICAL
-} VisUIBoxType;
+	VISUAL_ORIENT_TYPE_NONE,
+	VISUAL_ORIENT_TYPE_HORIZONTAL,
+	VISUAL_ORIENT_TYPE_VERTICAL
+} VisUIOrientType;
 
 typedef enum {
+	VISUAL_CHOICE_TYPE_NONE,
 	VISUAL_CHOICE_TYPE_SINGLE,
 	VISUAL_CHOICE_TYPE_MULTIPLE
 } VisUIChoiceType;
-
-typedef enum {
-	VISUAL_RADIO_TYPE_HORIZONTAL,
-	VISUAL_RADIO_TYPE_VERTICAL
-} VisUIRadioType;
 
 typedef struct _VisUIWidget VisUIWidget;
 typedef struct _VisUIContainer VisUIContainer;
@@ -76,6 +74,7 @@ typedef struct _VisUIBox VisUIBox;
 typedef struct _VisUIFrame VisUIFrame;
 typedef struct _VisUILabel VisUILabel;
 typedef struct _VisUIImage VisUIImage;
+typedef struct _VisUISeparator VisUISeparator;
 typedef struct _VisUIMutator VisUIMutator;
 typedef struct _VisUIRange VisUIRange;
 typedef struct _VisUIEntry VisUIEntry;
@@ -114,7 +113,7 @@ struct _VisUIContainer {
 struct _VisUIBox {
 	VisUIContainer		 container;
 
-	VisUIBoxType		 boxtype;
+	VisUIOrientType		 orient;
 
 	VisList			 childs;
 };
@@ -135,6 +134,12 @@ struct _VisUIImage {
 	VisUIWidget		 widget;
 
 	const VisVideo		*image;
+};
+
+struct _VisUISeparator {
+	VisUIWidget		 widget;
+
+	VisUIOrientType		 orient;
 };
 
 struct _VisUIMutator {
@@ -203,7 +208,7 @@ struct _VisUIList {
 struct _VisUIRadio {
 	VisUIChoice		 choice;
 
-	VisUIRadioType		 type;
+	VisUIOrientType		 orient;
 };
 
 struct _VisUICheckbox {
@@ -227,10 +232,10 @@ VisUIWidget *visual_ui_container_new (void);
 int visual_ui_container_add (VisUIContainer *container, VisUIWidget *widget);
 VisUIWidget *visual_ui_container_get_child (VisUIContainer *container);
 
-VisUIWidget *visual_ui_box_new (VisUIBoxType boxtype);
+VisUIWidget *visual_ui_box_new (VisUIOrientType orient);
 int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget);
 VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget);
-VisUIBoxType visual_ui_box_get_type (VisUIBox *box);
+VisUIOrientType visual_ui_box_get_orient (VisUIBox *box);
 
 VisUIWidget *visual_ui_frame_new (const char *name);
 
@@ -241,6 +246,9 @@ const char *visual_ui_label_get_text (VisUILabel *label);
 VisUIWidget *visual_ui_image_new (const VisVideo *video);
 int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video);
 const VisVideo *visual_ui_image_get_video (VisUIImage *image);
+
+VisUIWidget *visual_ui_separator_new (VisUIOrientType orient);
+VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator);
 
 VisUIWidget *visual_ui_mutator_new (void);
 int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *param);
@@ -270,7 +278,7 @@ VisUIWidget *visual_ui_popup_new (void);
 
 VisUIWidget *visual_ui_list_new (void);
 
-VisUIWidget *visual_ui_radio_new (VisUIRadioType type);
+VisUIWidget *visual_ui_radio_new (VisUIOrientType orient);
 
 VisUIWidget *visual_ui_checkbox_new (const char *name);
 
