@@ -62,3 +62,6 @@ Presets:
 
 BUGS:
 	Sometimes stepping in presets gets screwed up and it will look unsmooth.
+
+	Arena and a new hope preset hangs, especially when the plugin has been outputting
+		frames slowly, due to waits in apps. Might also relate to the bug above
