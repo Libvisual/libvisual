@@ -64,6 +64,20 @@ else
 fi
 AC_SUBST(LV_HAVE_ISO_VARARGS)
 
+AC_MSG_CHECKING(for GNUC varargs macros)
+AC_TRY_COMPILE([],[
+		int a(int p1, int p2, int p3);
+		#define call_a(params...) a(1,params)
+		call_a(2,3);
+		],lv_have_gnuc_varargs=yes,lv_have_gnuc_varargs=no)
+AC_MSG_RESULT($lv_have_gnuc_varargs)
+if test "x$lv_have_gnuc_varargs" = xyes; then
+  AC_DEFINE(LV_HAVE_GNUC_VARARGS, 1, [Have GNUC varargs macros])
+else
+  AC_DEFINE(LV_HAVE_GNUC_VARARGS, 0, [Have GNUC varargs macros])
+fi
+AC_SUBST(LV_HAVE_GNUC_VARARGS)
+
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC

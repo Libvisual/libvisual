@@ -74,6 +74,12 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Have GNUC varargs macros */
+#undef LV_HAVE_GNUC_VARARGS
+
+/* Have ISOC99 varargs macros */
+#undef LV_HAVE_ISO_VARARGS
+
 /* Name of package */
 #undef PACKAGE
 

@@ -3,11 +3,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdarg.h>
+#include <assert.h>
 #include <sys/types.h>
 
 #include "lv_log.h"
-
-extern char *__lv_progname;
 
 static const char *log_severity_to_string (VisLogSeverity severity);
 
@@ -30,10 +29,13 @@ static const char *log_severity_to_string (VisLogSeverity severity)
 			return "ERROR";
 
 		default:
+			/*
+			 * FIXME This cannot happen! We must abort
+			 */
 			return "INVALID LOG LOG";
 	}
 
-	return "ERROR WITHIN LOG SYSTEM";
+	assert (0);
 }
 
 /**
@@ -53,23 +55,23 @@ static const char *log_severity_to_string (VisLogSeverity severity)
  *
  * @return 0 on succes -1 on error.
  */
-int _lv_log (VisLogSeverity severity, const char *fmt, ...)
+void _lv_log (VisLogSeverity severity, const char *file, int line, const char *fmt, ...)
 {
 	char str[1024];
 	va_list va;
 	
-	if (fmt == NULL)
-		return -1;
+	assert (fmt != NULL);
 
 	va_start (va, fmt);
 	vsnprintf (str, 1023, fmt, va);
 	va_end (va);
 
-	fprintf (stderr, "(%s:%d): libvisual-%s **: %s\n",
+	/*fprintf (stderr, "(%s:%d): libvisual-%s **: %s\n",
 			__lv_progname, getpid (), log_severity_to_string (severity),
-			str);
-
-	return 0;
+			str);*/
+	fprintf (stderr, "libvisual %s: %s[(%s,%d)]: %s\n",
+			log_severity_to_string (severity), __lv_progname,
+			file, line, str);
 }
 
 /**

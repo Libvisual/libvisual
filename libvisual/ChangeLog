@@ -1,3 +1,10 @@
+2004-06-26  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added check for ISOC99 and GNUC varargs
+	macros, to be used by visual_log().
+	* libvisual/lv_log.* : now visual_log() accepts a format
+	string and variable arguments.
+
 2004-06-25  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/lv_libvisual.h: visual_init() signature changed to
