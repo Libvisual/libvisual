@@ -8,7 +8,6 @@
 
 #include <xmms/plugin.h>
 #include <xmms/xmmsctrl.h>
-#include <xmms/configfile.h>
 
 #include <libvisual/libvisual.h>
 
@@ -32,7 +31,7 @@ static VisBin *bin = NULL;
 
 static VisSongInfo *songinfo;
 
-static Options options;
+static Options *options;
 
 static int gl_plug = 0;
 
@@ -44,7 +43,6 @@ static int visual_stopped = 1;
 
 static void lv_xmms_init (void);
 static void lv_xmms_cleanup (void);
-static void lv_xmms_configure (void);
 static void lv_xmms_disable (VisPlugin *);
 static void lv_xmms_playback_start (void);
 static void lv_xmms_playback_stop (void);
@@ -65,21 +63,21 @@ VisPlugin *get_vplugin_info (void);
 	
 VisPlugin lv_xmms_vp =
 {
-	NULL,
-	NULL,
-	0,
-	"Libvisual xmms plugin " VERSION, /* description */
-	2,
-	0,
-	lv_xmms_init,				/* init */
-	lv_xmms_cleanup,			/* cleanup */
-	lv_xmms_about_show,			/* about */
-	lv_xmms_configure,			/* configure */
-	lv_xmms_disable,			/* disable plugin */
-	lv_xmms_playback_start,			/* playback start */
-	lv_xmms_playback_stop,			/* playback stop */
-	lv_xmms_render_pcm,			/* render pcm */
-	NULL,					/* render freq */
+	NULL,				/* (void*) handle, filled in by xmms */
+	NULL,				/* (char*) Filename, filled in by xmms */
+	0,			 	/* The session ID for attaching to the control socket */
+	PACKAGE_STRING,			/* description */
+	2,				/* Numbers of PCM channels wanted in the call to render_pcm */
+	0,				/* Numbers of freq channels wanted in the call to render_freq */
+	lv_xmms_init,			/* init */
+	lv_xmms_cleanup,		/* cleanup */
+	lv_xmms_about_show,		/* about */
+	lv_xmms_config_window,		/* configure */
+	lv_xmms_disable,		/* disable plugin */
+	lv_xmms_playback_start,		/* playback start */
+	lv_xmms_playback_stop,		/* playback stop */
+	lv_xmms_render_pcm,		/* render pcm */
+	NULL,				/* render freq */
 };
 
 VisPlugin *get_vplugin_info ()
@@ -99,16 +97,22 @@ static void lv_xmms_init ()
         int argc;
 	int ret;
 
-	lv_xmms_config_load_prefs (&options);
+	options = lv_xmms_config_open ();
+	if (options == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get options");
+		return;
+	}
+
+	lv_xmms_config_load_prefs (options);
 
 	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
 		visual_log (VISUAL_LOG_CRITICAL, "cannot initialize SDL: %s", SDL_GetError());
 		return;
 	}
-	SDL_WM_SetCaption (options.last_plugin, options.last_plugin);
+	SDL_WM_SetCaption (options->last_plugin, options->last_plugin);
 
-	if (strlen(options.icon_file) > 0) {
-		icon = SDL_LoadBMP (options.icon_file);
+	if (strlen(options->icon_file) > 0) {
+		icon = SDL_LoadBMP (options->icon_file);
 		if (icon != NULL) {
 			SDL_WM_SetIcon (icon, NULL);
 		} else {
@@ -127,23 +131,23 @@ static void lv_xmms_init ()
         g_free (argv[0]);
         g_free (argv);
 
-	if (strlen (options.last_plugin) <= 0 ) {
+	if (strlen (options->last_plugin) <= 0 ) {
 		visual_log (VISUAL_LOG_INFO, "last plugin: (none)");
 	} else {
-		visual_log (VISUAL_LOG_INFO, "last plugin: %s", options.last_plugin);
+		visual_log (VISUAL_LOG_INFO, "last plugin: %s", options->last_plugin);
 	}
 
-	cur_lv_plugin = options.last_plugin;
+	cur_lv_plugin = options->last_plugin;
 	if (visual_actor_valid_by_name (cur_lv_plugin) != TRUE)
 		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
 
 	if (cur_lv_plugin == NULL) {
 		visual_log (VISUAL_LOG_INFO, "could not get actor plugin");
-		g_free (options.last_plugin);
+		g_free (options->last_plugin);
 		return;
 	}
 
-	ret = visual_initialize (options.width, options.height);
+	ret = visual_initialize (options->width, options->height);
         if (ret < 0) {
                 visual_log (VISUAL_LOG_CRITICAL, "cannot initialize plugin's visual stuff");
 		return;
@@ -169,18 +173,14 @@ static void lv_xmms_cleanup ()
 	/*
 	 * WARNING This must be synchronized with config module.
 	 */
-	if (options.last_plugin != NULL)
-		g_free (options.last_plugin);
-	options.last_plugin = cur_lv_plugin;
+	if (options->last_plugin != NULL)
+		g_free (options->last_plugin);
+	options->last_plugin = cur_lv_plugin;
 
 	visual_log (VISUAL_LOG_DEBUG, "calling lv_xmms_config_save_prefs()");
-	lv_xmms_config_save_prefs (&options);
+	lv_xmms_config_save_prefs (options);
 
-	/*
-	 * WARNING This must be synchronized with config module.
-	 */
-	if (options.icon_file != NULL)
-		g_free (options.icon_file);
+	lv_xmms_config_close (options);
 
 	if (icon != NULL)
 		SDL_FreeSurface (icon);
@@ -195,12 +195,6 @@ static void lv_xmms_cleanup ()
 	visual_quit ();
 
 	visual_log (VISUAL_LOG_DEBUG, "leaving...");
-}
-
-
-static void lv_xmms_configure ()
-{
-
 }
 
 static void lv_xmms_disable (VisPlugin* plugin)
@@ -248,16 +242,16 @@ static void sdl_set_pal ()
 {
 	int i;
 
-	visual_log_return_if_fail (pal != NULL);
 	visual_log_return_if_fail (screen != NULL);
 
-	for (i = 0; i < 256; i ++) {
-		sdlpal[i].r = pal->r[i];
-		sdlpal[i].g = pal->g[i];
-		sdlpal[i].b = pal->b[i];
+	if (pal != NULL) {
+		for (i = 0; i < 256; i ++) {
+			sdlpal[i].r = pal->r[i];
+			sdlpal[i].g = pal->g[i];
+			sdlpal[i].b = pal->b[i];
+		}
+		SDL_SetColors (screen, sdlpal, 0, 256);
 	}
-
-	SDL_SetColors (screen, sdlpal, 0, 256);
 }
 
 static void sdl_draw (SDL_Surface *screen)
@@ -320,26 +314,26 @@ static int visual_initialize (int width, int height)
 	visual_bin_set_supported_depth (bin, VISUAL_VIDEO_DEPTH_ALL);
 //	visual_bin_set_preferred_depth (bin, VISUAL_BIN_DEPTH_LOWEST);
 
-	depth = visual_video_depth_enum_from_value (options.depth);
+	depth = visual_video_depth_enum_from_value (options->depth);
 	if (depth == VISUAL_VIDEO_DEPTH_ERROR)
 		depth = VISUAL_VIDEO_DEPTH_24BIT;
-	options.depth = depth;
+	options->depth = depth;
 
 	video = visual_video_new ();
         if (video == NULL) {
-                visual_log (VISUAL_LOG_ERROR, "Cannot create a video surface");
+                visual_log (VISUAL_LOG_CRITICAL, "Cannot create a video surface");
                 return -1;
         }
 	ret = visual_video_set_depth (video, depth);
         if (ret < 0) {
-                visual_log (VISUAL_LOG_ERROR, "Cannot set video depth");
+                visual_log (VISUAL_LOG_CRITICAL, "Cannot set video depth");
                 return -1;
         }
 	visual_video_set_dimension (video, width, height);
 
         ret = visual_bin_set_video (bin, video);
 	if (ret < 0) {
-                visual_log (VISUAL_LOG_ERROR, "Cannot set video");
+                visual_log (VISUAL_LOG_CRITICAL, "Cannot set video");
                 return -1;
         }
 	visual_bin_connect_by_names (bin, cur_lv_plugin, NULL);
@@ -397,8 +391,8 @@ static int visual_resize (int width, int height)
 
 	sdl_create (width, height);
 	
-	options.width = width;
-	options.height = height;
+	options->width = width;
+	options->height = height;
 
 	visual_bin_sync (bin, FALSE);
 
@@ -413,7 +407,7 @@ static int visual_render (void *arg)
         long frame_length;
         long idle_time;
       
-        frame_length = (1.0 / options.fps) * 1000;
+        frame_length = (1.0 / options->fps) * 1000;
 	while (visual_running == 1) {
 		/* Update songinfo */
 		songinfo = visual_actor_get_songinfo (visual_bin_get_actor (bin));
@@ -435,7 +429,7 @@ static int visual_render (void *arg)
 				else
 					gl_plug = 0;
 			
-				sdl_create (options.width, options.height);
+				sdl_create (options->width, options->height);
 				visual_bin_sync (bin, TRUE);
 
 				if (SDL_MUSTLOCK (screen) == SDL_TRUE)
@@ -467,7 +461,7 @@ static int visual_render (void *arg)
                                 usleep (idle_time*900);
 		}
 		sdl_event_handle ();
-                if (options.fullscreen && !(screen->flags & SDL_FULLSCREEN))
+                if (options->fullscreen && !(screen->flags & SDL_FULLSCREEN))
                         SDL_WM_ToggleFullScreen (screen);
 	}
 
@@ -479,6 +473,7 @@ static int sdl_event_handle ()
 {
 	SDL_Event event;
 	VisEventQueue *vevent;
+	char *next_plugin;
 
 	while (SDL_PollEvent (&event)) {
 		vevent = visual_actor_get_eventqueue (visual_bin_get_actor (bin));
@@ -517,7 +512,7 @@ static int sdl_event_handle ()
 					case SDLK_F11:
 					case SDLK_TAB:
 						SDL_WM_ToggleFullScreen (screen);
-                                                options.fullscreen = !options.fullscreen;
+                                                options->fullscreen = !options->fullscreen;
 
 						if ((screen->flags & SDL_FULLSCREEN) > 0)
 							SDL_ShowCursor (SDL_DISABLE);
@@ -546,12 +541,21 @@ static int sdl_event_handle ()
 						break;
 
 					case SDLK_s:
-						cur_lv_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
+						next_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
+
+						if (next_plugin == NULL) {
+							next_plugin = visual_actor_get_next_by_name (NULL);
+							if (next_plugin == NULL) {
+								visual_log (VISUAL_LOG_CRITICAL, "Cannot get next plugin");
+								/* we keep the old plugin */
+							} else {
+								cur_lv_plugin = next_plugin;
+							}
+						} else {
+							cur_lv_plugin = next_plugin;
+						}
 
 						SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
-
-						if (cur_lv_plugin == NULL)
-							cur_lv_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
 
 						if (SDL_MUSTLOCK (screen) == SDL_TRUE)
 							SDL_LockSurface (screen);

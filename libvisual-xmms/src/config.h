@@ -2,7 +2,6 @@
 #define __LV_XMMS_CONFIG__
 
 #include <glib.h>
-#include <libvisual/libvisual.h>
 
 #define OPTIONS_MAX_NAME_LEN 256
 #define OPTIONS_MAX_ICON_PATH_LEN 256
@@ -15,13 +14,16 @@ typedef struct {
 	int width;		/**< Width in pixels. */
 	int height;		/**< Height in pixels. */
 	int fps;		/**< Maximum frames per second. */
-	VisVideoDepth depth;	/**< Color depth. */
+	int depth;		/**< Color depth. */
 	gboolean fullscreen;	/**< Say if we are in fullscreen or not. */
 } Options;
 
+void lv_xmms_config_window (void);
+
+Options *lv_xmms_config_open (void);
+int lv_xmms_config_close (Options *options);
 
 int lv_xmms_config_load_prefs (Options *options);
-
 int lv_xmms_config_save_prefs (const Options *options);
 
 

@@ -1,3 +1,9 @@
+2004-07-02  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/config_gui.c: added.
+	* src/config.c: now we export lv_xmms_config_window()
+	function for XMMS VisPlugin hook.
+
 2004-06-30  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: removed some redundant tests. Added

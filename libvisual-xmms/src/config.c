@@ -1,26 +1,51 @@
-#include <xmms/configfile.h>
+#include <string.h>
 #include <gtk/gtk.h>
+#include <xmms/configfile.h>
 
 #include "config.h"
-
+#include "config_gui.h"
 
 #define CONFIG_DEFAULT_ICON (PACKAGE_DATADIR "/oinksie-xmms-vis.bmp")
 
-
 static const Options default_options = { NULL, NULL, 320, 200, 30, 24, FALSE };
+static ConfigWin *config_win = NULL;
 
+/* Callbacks */
+static void on_button_ok_clicked (GtkButton *button, gpointer user_data);
+static void on_button_cancel_clicked (GtkButton *button, gpointer user_data);
+static void on_checkbutton_fullscreen_toggled (GtkToggleButton *togglebutton, gpointer user_data);
+static void on_checkbutton_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data);
+static void on_spinbutton_fps_changed (GtkEditable *editable, gpointer user_data);
+static void on_checkbutton_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data);
+static gboolean on_pixmap_icon_button_press_event (GtkWidget *widget,
+						GdkEventButton *event,
+						gpointer user_data);
 
-/*
-int lv_xmms_config_open ()
+Options *lv_xmms_config_open ()
 {
+	Options *opt;
+	
+	opt = g_new0 (Options, 1);
+	opt->last_plugin = g_malloc (OPTIONS_MAX_NAME_LEN);
+	opt->icon_file = g_malloc (OPTIONS_MAX_ICON_PATH_LEN);
+
+	return opt;
 }
 
-int lv_xmms_config_close ()
+int lv_xmms_config_close (Options *options)
 {
+	g_return_val_if_fail (options != NULL, -1);
+
 	if (options->last_plugin != NULL)
-		g_free (options);
-	options->icon_file = g_malloc (OPTIONS_MAX_ICON_PATH_LEN);	
-}*/
+		g_free (options->last_plugin);
+	if (options->icon_file != NULL)
+		g_free (options->icon_file);
+	g_free (options);
+
+	options = NULL;
+
+	return 0;
+}
 
 int lv_xmms_config_load_prefs (Options *options)
 {
@@ -30,13 +55,10 @@ int lv_xmms_config_load_prefs (Options *options)
 	gboolean must_create_entry;
 	gboolean must_update;
 
-	visual_log_return_val_if_fail (options != NULL, -1);
+	g_return_val_if_fail (options != NULL, -1);
 
 	if ((f = xmms_cfg_open_default_file ()) == NULL)
 		return -1;
-
-	options->last_plugin = g_malloc (OPTIONS_MAX_NAME_LEN);
-	options->icon_file = g_malloc (OPTIONS_MAX_ICON_PATH_LEN);	
 
 	errors = FALSE;
 	must_create_entry = FALSE;
@@ -76,20 +98,18 @@ int lv_xmms_config_load_prefs (Options *options)
 			}
 		} else {
 			must_update = TRUE;
-			strcpy (options->last_plugin, "infinite");
-			strcpy (options->icon_file, CONFIG_DEFAULT_ICON);
-			options->width = default_options.width;
-			options->height = default_options.height;
-			options->depth = default_options.depth;
-			options->fullscreen = default_options.fullscreen;
 		}
 	} else {
 		must_create_entry = TRUE;
+	}
+	
+	if (must_update || must_create_entry) {
 		strcpy (options->last_plugin, "infinite");
 		strcpy (options->icon_file, CONFIG_DEFAULT_ICON);
 		options->width = default_options.width;
 		options->height = default_options.height;
 		options->depth = default_options.depth;
+		options->fps = default_options.fps;
 		options->fullscreen = default_options.fullscreen;
 	}
 
@@ -114,7 +134,7 @@ int lv_xmms_config_save_prefs (const Options *options)
 {
 	ConfigFile *f;
 
-	visual_log_return_val_if_fail (options != NULL, -1);
+	g_return_val_if_fail (options != NULL, -1);
 
 	if((f = xmms_cfg_open_default_file ()) == NULL)
 		f = xmms_cfg_new ();
@@ -144,4 +164,82 @@ int lv_xmms_config_save_prefs (const Options *options)
 
 	return 0;
 }
+
+void lv_xmms_config_window ()
+{
+	if (config_win != NULL) {
+		gtk_widget_show (config_win->window_main);
+		return;
+	}
+
+	config_win = lv_xmms_config_gui_new ();
+
+	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_fullscreen), "toggled",
+                      GTK_SIGNAL_FUNC (on_checkbutton_fullscreen_toggled),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_opengl), "toggled",
+                      GTK_SIGNAL_FUNC (on_checkbutton_opengl_toggled),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->spinbutton_fps), "changed",
+                      GTK_SIGNAL_FUNC (on_spinbutton_fps_changed),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->pixmap_icon), "button_press_event",
+                      GTK_SIGNAL_FUNC (on_pixmap_icon_button_press_event),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->button_ok), "clicked",
+                      GTK_SIGNAL_FUNC (on_button_ok_clicked),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->button_cancel), "clicked",
+                      GTK_SIGNAL_FUNC (on_button_cancel_clicked),
+                      NULL);
+
+	gtk_widget_grab_default (config_win->button_cancel);
+
+	gtk_widget_show (config_win->window_main);
+}
+
+/*static void on_window_main_destroy (GtkObject *object, gpointer user_data)
+{
+
+}*/
+
+
+static void on_checkbutton_fullscreen_toggled (GtkToggleButton *togglebutton, gpointer user_data)
+{
+
+}
+
+
+static void on_checkbutton_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data)
+{
+
+}
+
+
+static void on_spinbutton_fps_changed (GtkEditable *editable, gpointer user_data)
+{
+
+}
+
+
+static gboolean on_pixmap_icon_button_press_event (GtkWidget *widget,
+						GdkEventButton *event,
+						gpointer user_data)
+{
+
+  return FALSE;
+}
+
+
+static void on_button_ok_clicked (GtkButton *button, gpointer user_data)
+{
+	gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET(button)));
+}
+
+
+static void on_button_cancel_clicked (GtkButton *button, gpointer user_data)
+{
+	gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET(button)));
+}
+
 
