@@ -1,4 +1,8 @@
 2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* playground/libvis.vnc.c: WOOT, hacky, neats libvncviewer 7.1
+
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* benchmarks/blit_bench.c: Added.
 

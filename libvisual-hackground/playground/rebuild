@@ -6,5 +6,6 @@ gcc -o libvis-blit libvis-blit.c `sdl-config --libs --cflags` -ggdb -lvisual
 gcc -o libvis-depth libvis-depth.c `sdl-config --libs --cflags` -ggdb -lvisual
 gcc -o libvis-blit2 libvis-blit2.c `sdl-config --libs --cflags` -ggdb -lvisual
 gcc -o libvis-scale-bench libvis-scale-bench.c `sdl-config --libs --cflags` -ggdb -lvisual
+gcc -o libvis-vnc libvis-vnc.c `libvncserver-config --libs --cflags` -ggdb -lvisual
 gcc -o windowtje windowtje.c `sdl-config --libs --cflags` -ggdb
 
