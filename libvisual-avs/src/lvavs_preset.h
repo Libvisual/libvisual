@@ -33,12 +33,12 @@ extern "C" {
 #endif /* __cplusplus */
 
 #define LVAVS_PRESET(obj)				(VISUAL_CHECK_CAST ((obj), 0, LVAVSPreset))
-#define LVAVS_PRESET_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSPResetElement))
+#define LVAVS_PRESET_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSPresetElement))
 #define LVAVS_PRESET_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSPresetContainer))
 
 typedef struct _LVAVSPreset LVAVSPreset;
-typedef struct _LVAVSElement LVAVSElement;
-typedef struct _LVAVSContainer LVAVSContainer;
+typedef struct _LVAVSPresetElement LVAVSPresetElement;
+typedef struct _LVAVSPresetContainer LVAVSPresetContainer;
 
 typedef enum {
 	LVAVS_PRESET_ELEMENT_TYPE_NULL,

@@ -28,6 +28,8 @@
 #include <string.h>
 
 #include "avs_parse.h"
+#include "lvavs_preset.h"
+#include "lvavs_pipeline.h"
 
 typedef struct {
 	AVSTree		*wtree;		/* The winamp AVS tree */
@@ -35,6 +37,8 @@ typedef struct {
 
 	LVAVSPreset	*lvtree;	/* The LV AVS tree */
 	LVAVSPipeline	*pipeline;	/* The LV AVS Render pipeline */
+
+	int		 needsnego;	/* Pipeline out of sync, needs reneg ? */
 } AVSPrivate;
 
 int act_avs_init (VisPluginData *plugin);
@@ -82,6 +86,16 @@ int act_avs_init (VisPluginData *plugin)
 {
 	AVSPrivate *priv;
 
+	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
+		VISUAL_PARAM_LIST_END
+	};
+
+	visual_param_container_add_many (paramcontainer, params);
+
 	priv = visual_mem_new0 (AVSPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 	
@@ -91,15 +105,6 @@ int act_avs_init (VisPluginData *plugin)
 int act_avs_cleanup (VisPluginData *plugin)
 {
 	AVSPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static const VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
-		VISUAL_PARAM_LIST_END
-	};
-
-	visual_param_container_add_many (paramcontainer, params);
 
 	visual_mem_free (priv);
 
@@ -137,7 +142,8 @@ int act_avs_dimension (VisPluginData *plugin, VisVideo *video, int width, int he
 	
 	visual_video_set_dimension (video, width, height);
 
-	lvavs_pipeline_negotiate (priv->avs_pipeline, video);
+	if (priv->pipeline != NULL)
+		lvavs_pipeline_negotiate (priv->pipeline, video);
 
 	return 0;
 }
@@ -168,8 +174,8 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 					if (priv->lvtree != NULL)
 						visual_object_unref (VISUAL_OBJECT (priv->lvtree));
 
-					if (priv->avs_pipeline != NULL)
-						visual_object_unref (VISUAL_OBJECT (priv->avs_pipeline));
+					if (priv->pipeline != NULL)
+						visual_object_unref (VISUAL_OBJECT (priv->pipeline));
 
 					priv->wtree = NULL;
 					
@@ -193,17 +199,12 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 					}
 
 					/* Neat, now make the render pipeline */
-					priv->avs_pipeline = lvavs_pipeline_new_from_preset (priv->lvtree);
+					priv->pipeline = lvavs_pipeline_new_from_preset (priv->lvtree);
 
-					lvavs_pipeline_realize (priv->avs_pipeline);
+					lvavs_pipeline_realize (priv->pipeline);
 
-					/* Negotiate complete pipeline for current size */
+					priv->needsnego = TRUE;
 				}
-
-				break;
-
-			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
 
 				if (visual_param_entry_is (param, "winamp avs")) {
 					priv->wavs = visual_param_entry_get_integer (param);
@@ -229,7 +230,13 @@ int act_avs_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	AVSPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	lvavs_pipeline_run (priv->avs_pipeline, video, audio);
+	if (priv->needsnego == TRUE) {
+		lvavs_pipeline_negotiate (priv->pipeline, video);
+
+		priv->needsnego = FALSE;
+	}
+	
+	lvavs_pipeline_run (priv->pipeline, video, audio);
 
 	return 0;
 }

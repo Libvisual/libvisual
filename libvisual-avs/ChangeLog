@@ -1,6 +1,14 @@
 2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/lvavs_preset.c, src/lvavs_preset.h,
+	src/lvavs_pipeline.c, src?lvavs_preset.h: Fixed the compile errors,
+	and super small bugs.
+
+	* src/actor_AVS.c: nego is before events, catch this.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/lvavs_preset.c, src/lvavs_preset.h,
 	src/lvavs_pipeline.c, src?lvavs_preset.h: The 1k code spray, I haven't
 	yet compiled this :).
 

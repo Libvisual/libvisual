@@ -78,7 +78,7 @@ struct _LVAVSPipeline {
 
 //	VisVideo			*buffers[16];
 
-	LVAVSPipelineElement		*container;
+	LVAVSPipelineContainer		*container;
 };
 
 struct _LVAVSPipelineRenderState {
@@ -118,8 +118,8 @@ struct _LVAVSPipelineContainer {
 
 /* Prototypes */
 LVAVSPipeline *lvavs_pipeline_new ();
-LVAVSPipelineElement *lvavs_pipline_element_new (LVAVSPipelineElementType type);
-LVAVSPipelineContainer *lvavs_preset_container_new ();
+LVAVSPipelineElement *lvavs_pipeline_element_new (LVAVSPipelineElementType type);
+LVAVSPipelineContainer *lvavs_pipeline_container_new ();
 
 LVAVSPipeline *lvavs_pipeline_new_from_preset (LVAVSPreset *preset);
 int lvavs_pipeline_realize (LVAVSPipeline *pipeline);

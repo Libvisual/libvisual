@@ -37,7 +37,7 @@ static int lvavs_preset_dtor (VisObject *object);
 static int lvavs_preset_element_dtor (VisObject *object);
 static int lvavs_preset_container_dtor (VisObject *object);
 
-static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContainer *cont)
+static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContainer *cont);
 LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem);
 
 
@@ -86,7 +86,7 @@ static int lvavs_preset_container_dtor (VisObject *object)
 
 
 /* LVAVS Preset */
-LVAVSPreset *lvavs_preset_new ();
+LVAVSPreset *lvavs_preset_new ()
 {
 	LVAVSPreset *preset;
 
@@ -237,7 +237,7 @@ LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 	visual_param_entry_set_integer (visual_param_container_get (pcont, "place"), sourceplace >> 4);
 	visual_param_entry_set_integer (visual_param_container_get (pcont, "source"), (sourceplace & 0x0f) / 4);
 
-	element = lvavs_preset_element_new (LVAVS_ELEMENT_TYPE_PLUGIN, "avs_ring");
+	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_ring");
 	element->pcont = pcont;
 
 	return element;
