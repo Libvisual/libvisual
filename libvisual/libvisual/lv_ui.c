@@ -945,7 +945,7 @@ int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramch
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 	visual_log_return_val_if_fail (paramchoices != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	while (paramchoices[i].type != VISUAL_PARAM_TYPE_END) {
+	while (paramchoices[i].type != VISUAL_PARAM_ENTRY_TYPE_END) {
 		visual_ui_choice_add (choice, paramchoices[i].name, &paramchoices[i]);
 
 		i++;

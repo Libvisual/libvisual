@@ -148,7 +148,7 @@ int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry
 }
 
 /**
- * Adds a list of VisParamEntry elements, the list is terminated by an entry of type VISUAL_PARAM_TYPE_END.
+ * Adds a list of VisParamEntry elements, the list is terminated by an entry of type VISUAL_PARAM_ENTRY_TYPE_END.
  * All the elements are reallocated, so this function can be used for static param lists.
  *
  * @param paramcontainer A pointer to the VisParamContainer in which the VisParamEntry elements are added.
@@ -164,7 +164,7 @@ int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParam
 	visual_log_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
 	visual_log_return_val_if_fail (params != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	while (params[i].type != VISUAL_PARAM_TYPE_END) {
+	while (params[i].type != VISUAL_PARAM_ENTRY_TYPE_END) {
 		pnew = visual_param_entry_new (params[i].name);
 
 		memcpy (pnew, &params[i], sizeof (VisParamEntry));
@@ -406,6 +406,20 @@ int visual_param_entry_changed (VisParamEntry *param)
 }
 
 /**
+ * Retrieves the VisParamEntryType from a VisParamEntry.
+ *
+ * @param param Pointer to the VisParamEntry from which the VisParamEntryType is requested.
+ *
+ * @return The VisParamEntryType on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ */
+VisParamEntryType visual_param_entry_get_type (VisParamEntry *param)
+{
+	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+
+	return param->type;
+}
+
+/**
  * Compares two parameters with each other, When they are the same, 1 is returned, if not 0.
  *
  * @param src1 Pointer to the first VisParamEntry for comparison.
@@ -423,36 +437,36 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
 		return FALSE;
 
 	switch (src1->type) {
-		case VISUAL_PARAM_TYPE_NULL:
+		case VISUAL_PARAM_ENTRY_TYPE_NULL:
 			return TRUE;
 			
 			break;
 
-		case VISUAL_PARAM_TYPE_STRING:
+		case VISUAL_PARAM_ENTRY_TYPE_STRING:
 			if (!strcmp (src1->string, src2->string))
 				return TRUE;
 
 			break;
 
-		case VISUAL_PARAM_TYPE_INTEGER:
+		case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
 			if (src1->numeric.integer == src2->numeric.integer)
 				return TRUE;
 			
 			break;
 
-		case VISUAL_PARAM_TYPE_FLOAT:
+		case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
 			if (src1->numeric.floating == src2->numeric.floating)
 				return TRUE;
 
 			break;
 
-		case VISUAL_PARAM_TYPE_DOUBLE:
+		case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
 			if (src1->numeric.doubleflt == src2->numeric.doubleflt)
 				return TRUE;
 
 			break;
 
-		case VISUAL_PARAM_TYPE_COLOR:
+		case VISUAL_PARAM_ENTRY_TYPE_COLOR:
 			return visual_color_compare (&src1->color, &src2->color);
 			
 			break;
@@ -483,30 +497,30 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	switch (src->type) {
-		case VISUAL_PARAM_TYPE_NULL:
+		case VISUAL_PARAM_ENTRY_TYPE_NULL:
 
 			break;
 
-		case VISUAL_PARAM_TYPE_STRING:
+		case VISUAL_PARAM_ENTRY_TYPE_STRING:
 			visual_param_entry_set_string (param, visual_param_entry_get_string (src));
 			break;
 
-		case VISUAL_PARAM_TYPE_INTEGER:
+		case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
 			visual_param_entry_set_integer (param, visual_param_entry_get_integer (src));
 			
 			break;
 
-		case VISUAL_PARAM_TYPE_FLOAT:
+		case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
 			visual_param_entry_set_float (param, visual_param_entry_get_float (src));
 
 			break;
 
-		case VISUAL_PARAM_TYPE_DOUBLE:
+		case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
 			visual_param_entry_set_double (param, visual_param_entry_get_double (src));
 
 			break;
 
-		case VISUAL_PARAM_TYPE_COLOR:
+		case VISUAL_PARAM_ENTRY_TYPE_COLOR:
 			visual_param_entry_set_color_by_color (param, visual_param_entry_get_color (src));
 
 			break;
@@ -540,7 +554,7 @@ int visual_param_entry_set_name (VisParamEntry *param, char *name)
 }
 
 /**
- * Sets the VisParamEntry to VISUAL_PARAM_TYPE_STRING and assigns the string given as argument to it.
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_STRING and assigns the string given as argument to it.
  *
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param string The string for this parameter.
@@ -551,7 +565,7 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	param->type = VISUAL_PARAM_TYPE_STRING;
+	param->type = VISUAL_PARAM_ENTRY_TYPE_STRING;
 
 	if (string == NULL && param->string == NULL)
 		return VISUAL_OK;
@@ -576,7 +590,7 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
 }
 
 /**
- * Sets the VisParamEntry to VISUAL_PARAM_TYPE_INTEGER and assigns the integer given as argument to it.
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_INTEGER and assigns the integer given as argument to it.
  *
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param integer The integer value for this parameter.
@@ -587,7 +601,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer)
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	param->type = VISUAL_PARAM_TYPE_INTEGER;
+	param->type = VISUAL_PARAM_ENTRY_TYPE_INTEGER;
 
 	if (param->numeric.integer != integer) {
 		param->numeric.integer = integer;
@@ -599,7 +613,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer)
 }
 
 /**
- * Sets the VisParamEntry to VISUAL_PARAM_TYPE_FLOAT and assigns the float given as argument to it.
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_FLOAT and assigns the float given as argument to it.
  *
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param floating The float value for this parameter.
@@ -610,7 +624,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	param->type = VISUAL_PARAM_TYPE_FLOAT;
+	param->type = VISUAL_PARAM_ENTRY_TYPE_FLOAT;
 
 	if (param->numeric.floating != floating) {
 		param->numeric.floating = floating;
@@ -622,7 +636,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
 }
 
 /**
- * Sets the VisParamEntry to VISUAL_PARAM_TYPE_DOUBLE and assigns the double given as argument to it.
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_DOUBLE and assigns the double given as argument to it.
  *
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param doubleflt The double value for this parameter.
@@ -633,7 +647,7 @@ int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	param->type = VISUAL_PARAM_TYPE_DOUBLE;
+	param->type = VISUAL_PARAM_ENTRY_TYPE_DOUBLE;
 
 	if (param->numeric.doubleflt != doubleflt) {
 		param->numeric.doubleflt = doubleflt;
@@ -645,7 +659,7 @@ int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
 }
 
 /**
- * Sets the VisParamEntry to VISUAL_PARAM_TYPE_COLOR and assigns the rgb values given as arguments to it.
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_COLOR and assigns the rgb values given as arguments to it.
  *
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param r The red value for this color parameter.
@@ -658,7 +672,7 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	param->type = VISUAL_PARAM_TYPE_COLOR;
+	param->type = VISUAL_PARAM_ENTRY_TYPE_COLOR;
 
 	if (param->color.r != r || param->color.g != g || param->color.b != b) {
 		param->color.r = r;
@@ -672,7 +686,7 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
 }
 
 /**
- * Sets the VisParamEntry to VISUAL_PARAM_TYPE_COLOR and assigns the rgb values from the given VisColor as argument to it.
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_COLOR and assigns the rgb values from the given VisColor as argument to it.
  *
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param color Pointer to the VisColor from which the rgb values are copied into the parameter.
@@ -683,7 +697,7 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor 
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	param->type = VISUAL_PARAM_TYPE_COLOR;
+	param->type = VISUAL_PARAM_ENTRY_TYPE_COLOR;
 
 	if (visual_color_compare (&param->color, color) == FALSE) {
 		visual_color_copy (&param->color, color);
@@ -719,7 +733,7 @@ char *visual_param_entry_get_string (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, NULL);
 
-	if (param->type != VISUAL_PARAM_TYPE_STRING) {
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_STRING) {
 		visual_log (VISUAL_LOG_WARNING, "Requesting string from a non string param\n");
 
 		return NULL;
@@ -739,7 +753,7 @@ int visual_param_entry_get_integer (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, 0);
 
-	if (param->type != VISUAL_PARAM_TYPE_INTEGER)
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_INTEGER)
 		visual_log (VISUAL_LOG_WARNING, "Requesting integer from a non integer param\n");
 
 	return param->numeric.integer;
@@ -756,7 +770,7 @@ float visual_param_entry_get_float (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, 0);
 
-	if (param->type != VISUAL_PARAM_TYPE_FLOAT)
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_FLOAT)
 		visual_log (VISUAL_LOG_WARNING, "Requesting float from a non float param\n");
 
 	return param->numeric.floating;
@@ -773,7 +787,7 @@ double visual_param_entry_get_double (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, 0);
 
-	if (param->type != VISUAL_PARAM_TYPE_DOUBLE)
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
 		visual_log (VISUAL_LOG_WARNING, "Requesting double from a non double param\n");
 
 	return param->numeric.doubleflt;
@@ -793,7 +807,7 @@ VisColor *visual_param_entry_get_color (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, 0);
 
-	if (param->type != VISUAL_PARAM_TYPE_COLOR)
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR)
 		visual_log (VISUAL_LOG_WARNING, "Requesting color from a non color param\n");
 
 	return &param->color;

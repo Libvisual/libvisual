@@ -14,12 +14,12 @@ extern "C" {
 #define VISUAL_PARAMENTRY_CALLBACK(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisParamEntryCallback))
 #define VISUAL_PARAMENTRY(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisParamEntry))
 
-#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ {}, NULL, name, VISUAL_PARAM_TYPE_STRING, string, {0, 0, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_INTEGER, NULL, {val, 0, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_FLOAT, NULL, {0, val, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_DOUBLE, NULL, {0, 0, val}}
-#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ {}, NULL, name, VISUAL_PARAM_TYPE_COLOR, NULL, {0, 0, 0}, {{}, r, g, b, 0}}
-#define VISUAL_PARAM_LIST_END				{ {}, NULL, NULL, VISUAL_PARAM_TYPE_END }
+#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_STRING, string, {0, 0, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_INTEGER, NULL, {val, 0, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_FLOAT, NULL, {0, val, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_DOUBLE, NULL, {0, 0, val}}
+#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_COLOR, NULL, {0, 0, 0}, {{}, r, g, b, 0}}
+#define VISUAL_PARAM_LIST_END				{ {}, NULL, NULL, VISUAL_PARAM_ENTRY_TYPE_END }
 
 #define VISUAL_PARAM_CALLBACK_ID_MAX	2147483647
 
@@ -27,14 +27,14 @@ extern "C" {
  * Different types of parameters that can be used.
  */
 typedef enum {
-	VISUAL_PARAM_TYPE_NULL,		/**< No parameter. */
-	VISUAL_PARAM_TYPE_STRING,	/**< String parameter. */
-	VISUAL_PARAM_TYPE_INTEGER,	/**< Integer parameter. */
-	VISUAL_PARAM_TYPE_FLOAT,	/**< Floating point parameter. */
-	VISUAL_PARAM_TYPE_DOUBLE,	/**< Double floating point parameter. */
-	VISUAL_PARAM_TYPE_COLOR,	/**< VisColor parameter. */
-	VISUAL_PARAM_TYPE_END		/**< List end, and used as terminator for VisParamEntry lists. */
-} VisParamType;
+	VISUAL_PARAM_ENTRY_TYPE_NULL,		/**< No parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_STRING,		/**< String parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_INTEGER,	/**< Integer parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_FLOAT,		/**< Floating point parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_DOUBLE,		/**< Double floating point parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_COLOR,		/**< VisColor parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_END		/**< List end, and used as terminator for VisParamEntry lists. */
+} VisParamEntryType;
 
 typedef struct _VisParamContainer VisParamContainer;
 typedef struct _VisParamEntryCallback VisParamEntryCallback;
@@ -81,7 +81,7 @@ struct _VisParamEntry {
 	VisObject		 object;	/**< The VisObject data. */
 	VisParamContainer	*parent;	/**< Parameter container in which the param entry is encapsulated. */
 	char			*name;		/**< Parameter name. */
-	VisParamType		 type;		/**< Parameter type. */
+	VisParamEntryType	 type;		/**< Parameter type. */
 
 	char			*string;	/**< String data. */
 
@@ -113,6 +113,7 @@ int visual_param_entry_notify_callbacks (VisParamEntry *param);
 int visual_param_entry_is (VisParamEntry *param, const char *name);
 int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2);
 int visual_param_entry_changed (VisParamEntry *param);
+VisParamEntryType visual_param_entry_get_type (VisParamEntry *param);
 
 int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src);
 int visual_param_entry_set_name (VisParamEntry *param, char *name);
