@@ -14,7 +14,7 @@
 
 #include <libvisual/libvisual.h>
 
-#include "lv_xmms.h"
+#include <lv_xmms.h>
 
 /* SDL variables */
 SDL_Surface *screen = NULL;
@@ -81,7 +81,7 @@ VisPlugin lv_xmms_vp =
 	NULL,
 	NULL,
 	0,
-	"Libvisual xmms plugin " VERSION,	/* description */
+	"Libvisual xmms plugin " VERSION, /* description */
 	2,
 	0,
 	lv_xmms_init,				/* init */
@@ -137,12 +137,9 @@ static int lv_xmms_prefs_load ()
 
 static int lv_xmms_prefs_save ()
 {
-	char *name;
 	ConfigFile *f;
 
-	name = g_strdup_printf ("%s%s", g_get_home_dir (), "/.xmms/config");
-
-	if((f = xmms_cfg_open_file (name)) == NULL)
+	if((f = xmms_cfg_open_default_file ()) == NULL)
 		f = xmms_cfg_new ();
 
 	xmms_cfg_write_string (f, "libvisual_xmms", "version", VERSION);
@@ -150,18 +147,18 @@ static int lv_xmms_prefs_save ()
 	xmms_cfg_write_int (f, "libvisual_xmms", "width", lv_width);
 	xmms_cfg_write_int (f, "libvisual_xmms", "height", lv_height);
 
-	xmms_cfg_write_file (f, name);
+	xmms_cfg_write_default_file (f);
 	xmms_cfg_free (f);
-
-	g_free (name);
 }
 
 static void lv_xmms_init ()
 {
-	pcm_mutex = SDL_CreateMutex ();
 	char **blah;
-	
+
+	printf ("sdl_init()\n");
 	sdl_init ();
+	printf ("SDL_CreateMutex()\n");
+	pcm_mutex = SDL_CreateMutex ();
 	visual_init (NULL, NULL);
 
 	lv_xmms_prefs_load ();
@@ -171,36 +168,47 @@ static void lv_xmms_init ()
 	if (visual_actor_valid_by_name (cur_lv_plugin) != TRUE)
 		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
  
-	visual_running = 1;
-
 	visual_initialize (lv_width, lv_height);
 
+	printf ("SDL_CreateThread()\n");
 	render_thread = SDL_CreateThread ((void *) visual_render, NULL);
 }
 
 static void lv_xmms_cleanup ()
 {
 	int i = 0;
+
+	printf ("Entering cleanup()...\n");
 	visual_running = 0;
-	
-	SDL_DestroyMutex (pcm_mutex);
-	
+	usleep (100000);
 	while (visual_stopped != 1) {
 		usleep (100000);
 		i++;
-
-		if (i > 10) {
-			SDL_KillThread (render_thread);
-			visual_stopped = 1;
-		}
+		if (i > 10)
+			break;
 	}
+	SDL_KillThread (render_thread);
+	render_thread = NULL;
+	visual_stopped = 1;
 	
+	printf ("Destroying mutex...\n");
+	SDL_DestroyMutex (pcm_mutex);
+	pcm_mutex = NULL;
+
+	printf ("Saving prefs...\n");
 	lv_xmms_prefs_save ();
-	
+
+	printf ("Destroying VisBin...\n");
 	visual_bin_destroy (bin);
+	bin = NULL;
+
+	printf ("Quiting LibVisual...\n");
 	visual_quit ();
 
+	printf ("Quiting SDL...\n");
 	sdl_quit ();
+
+	printf ("Returning from lv_xmms_cleanup()\n");
 }
 
 static void lv_xmms_about ()
@@ -252,7 +260,7 @@ static void lv_xmms_configure ()
 
 }
 
-static void lv_xmms_disable ()
+static void lv_xmms_disable (struct VisPlugin* plugin)
 {
 
 }
@@ -270,14 +278,17 @@ static void lv_xmms_render_pcm (gint16 data[2][512])
 {
 	int i;
 
-	SDL_mutexP (pcm_mutex);
-	
-	for (i = 0; i < 512; i++) {
-		xmmspcm[0][i] = data[0][i];
-		xmmspcm[1][i] = data[1][i];
-	}
+	if (visual_running == 1) {
+		SDL_mutexP (pcm_mutex);
 
-	SDL_mutexV (pcm_mutex);
+		/* FIXME This can be copied on one operation */
+		for (i = 0; i < 512; i++) {
+			xmmspcm[0][i] = data[0][i];
+			xmmspcm[1][i] = data[1][i];
+		}
+
+		SDL_mutexV (pcm_mutex);
+	}
 }
 
 static void gui_about_closed (GtkWidget *w, GdkEvent *e, gpointer data)
@@ -293,21 +304,31 @@ static void gui_about_destroy (GtkWidget *w, gpointer data)
 
 static int sdl_init ()
 {
-	if (SDL_Init (SDL_INIT_VIDEO) < 0)
+	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
+		fprintf (stderr, "%s: Couldn't initialize SDL: %s\n",
+			PACKAGE_NAME, SDL_GetError());
 		return -1;
+	}
+	/*atexit (SDL_Quit);*/
 
 	return 0;
 }
 
 static int sdl_quit ()
 {
+	printf ("SDL_FreeSurface()\n");
 	if (screen != NULL)
 		SDL_FreeSurface (screen);
 
 	screen = NULL;
 
-	SDL_Quit ();
-
+	/*
+	 * FIXME this doesn't work!
+	 * 
+	printf ("SDL_Quit()\n");
+	SDL_Quit ();*/
+	
+	printf ("Returning from sdl_quit()\n");
 	return 0;
 }
 
@@ -329,7 +350,7 @@ static void sdl_set_pal ()
 
 static void sdl_draw ()
 {
-	SDL_UpdateRect (screen, 0, 0, screen->w, screen->h);
+	SDL_Flip (screen);
 }
 
 static int sdl_create (int width, int height)
@@ -556,6 +577,7 @@ static int visual_initialize (int width, int height)
 
 static void *visual_render ()
 {
+	visual_running = 1;
 	visual_stopped = 0;
 	
 	while (visual_running == 1) {

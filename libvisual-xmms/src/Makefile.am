@@ -6,13 +6,13 @@ lib_LTLIBRARIES = libvisual_xmms.la
 
 LIBS = -L$(top_srcdir)/src -L$(prefix)/lib @XMMS_LIBS@ @SDL_LIBS@ @GTK_LIBS@ @LIBVISUAL_LIBS@
 
-AM_CFLAGS = @XMMS_CFLAGS@ @SDL_CFLAGS@ @GTK_CFLAGS@ @LIBVISUAL_CFLAGS@ @DEBUG_CFLAGS@\
-	    -rdynamic -O2
+AM_CFLAGS = -Wunused -Wmissing-prototypes\
+	    @XMMS_CFLAGS@ @SDL_CFLAGS@ @GTK_CFLAGS@ @LIBVISUAL_CFLAGS@ @DEBUG_CFLAGS@
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/src
 
-DEFS = @DEFS@ -DVERSION=\"$(VERSION)\"
+DEFS = -DVERSION=\"$(VERSION)\" @DEFS@
 
 libvisual_xmms_la_LDFLAGS = -module -avoid-version
 

@@ -4,9 +4,6 @@ AC_PREREQ(2.57)
 AC_INIT(Libvisual XMMS plugin, 0.1.5, synap@nerds-incorporated.org, libvisual-xmms)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
-AC_CONFIG_SRCDIR([config.h.in])
-AC_CONFIG_HEADER([config.h])
-
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S

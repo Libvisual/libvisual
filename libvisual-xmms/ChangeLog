@@ -1,3 +1,26 @@
+2004-06-22  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/lv_xmms.c:
+	- use xmms_cfg_open_default_file() instead of 
+	xmms_cfg_open_file().
+	- on sdl_draw(), use SDL_Flip instead of SDL_UpdateRect(),
+	because if we have hardware double buffer support, it
+	is fast, otherwise, is equivalent to
+	SDL_UpdateRect(screen, 0, 0, screen->width, screen->height);
+	- on lv_xmms_cleanup(), SDL_MutexDestroy() is called 
+	AFTER the render thread is not running anymore, otherwise
+	we can crash the application if mutex is destroyed while
+	the render thread is holding it.
+	- change void lv_xmms_disable (void) to the correct type
+	void lv_xmms_disable (struct VisPlugin *), otherwise XMMS
+	crash when plugin is disabled from the config window.
+	- now render thread is killed always, not only after 
+	go sleep ten times.
+	- lv_xmms_render_pcm() don't copy data is render thread
+	is not running.
+	- if SDL could not be initialized, show an error message.
+	- after sucessfull SDL init, set atexit(SDL_Quit).
+
 2004-06-20  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: debug made optional. Also CFLAGS

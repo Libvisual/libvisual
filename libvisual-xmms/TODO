@@ -4,7 +4,6 @@ LEGAL:
 Plugin:
 	Rewrite complete plugin after the managed bin has been rewritten.
 
-
 	startup with opengl bugs (also with forced resos paktie niet de goede)
 	fix opengl support with the new morph stuff.
 	fix songinfo with the new morph stuff.
