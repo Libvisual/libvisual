@@ -9,7 +9,6 @@ extern "C" {
 
 typedef struct _VisAudio VisAudio;
 
-
 /**
  * The VisAudio structure contains the sample and extra information
  * about the sample like a 256 bands analyzer, sound energy and

@@ -1,12 +1,12 @@
 #ifndef _LV_TIME_H
 #define _LV_TIME_H
 
+#include <sys/time.h>
+#include <time.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-#include <sys/time.h>
-#include <time.h>
 	
 #define VISUAL_USEC_PER_SEC	1000000
 

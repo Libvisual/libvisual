@@ -1,6 +1,11 @@
 #ifndef _LV_EVENT_H
 #define _LV_EVENT_H
 
+#include <libvisual/lv_songinfo.h>
+#include <libvisual/lv_video.h>
+#include <libvisual/lv_list.h>
+#include <libvisual/lv_keysym.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -9,11 +14,6 @@ extern "C" {
  * Number of events allowed in the queue
  */
 #define VISUAL_EVENT_MAXEVENTS	256
-
-#include <libvisual/lv_songinfo.h>
-#include <libvisual/lv_video.h>
-#include <libvisual/lv_list.h>
-#include <libvisual/lv_keysym.h>
 
 /**
  * Used to define what kind of event is emitted by the VisEvent system.

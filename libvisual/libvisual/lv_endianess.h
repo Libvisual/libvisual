@@ -11,7 +11,6 @@ extern "C" {
  * Macros to convert LE <-> BE
  * 'I' stands for integer here.
  */
-
 #define VISUAL_ENDIAN_LE_BE_I16(w) (\
 	(((w) & 0xff00) >> 8) |\
 	(((w) & 0x00ff) << 8) )

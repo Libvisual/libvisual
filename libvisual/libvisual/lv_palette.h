@@ -1,13 +1,13 @@
 #ifndef _LV_PALETTE_H
 #define _LV_PALETTE_H
 
+#include <libvisual/lv_common.h>
+#include <libvisual/lv_color.h>
+	
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-#include <libvisual/lv_common.h>
-#include <libvisual/lv_color.h>
-	
 typedef struct _VisPalette VisPalette;
 
 /**

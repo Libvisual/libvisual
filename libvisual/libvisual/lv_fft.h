@@ -5,20 +5,21 @@
 #ifndef _LV_FFT_H
 #define _LV_FFT_H
 
-#include "lv_common.h"
+#include <libvisual/lv_common.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /**
  * Private FFT define that contains the log size.
  */
 #define VISUAL_FFT_BUFFER_SIZE_LOG 9
+
 /**
  * Private FFT define that contains the buffer size.
  */
 #define VISUAL_FFT_BUFFER_SIZE (1 << VISUAL_FFT_BUFFER_SIZE_LOG)
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
 
 typedef struct _VisFFTState VisFFTState;
 

@@ -1,11 +1,11 @@
 #ifndef _LV_LIBVISUAL_H
 #define _LV_LIBVISUAL_H
 
+#include <libvisual/lv_param.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-#include <libvisual/lv_param.h>
 
 const char *visual_get_version (void);
 VisParamContainer *visual_get_params (void);

@@ -1,12 +1,12 @@
 #ifndef _LV_SONGINFO_H
 #define _LV_SONGINFO_H
 
+#include <libvisual/lv_time.h>
+#include <libvisual/lv_video.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-#include <libvisual/lv_time.h>
-#include <libvisual/lv_video.h>
 
 /**
  * Used to define the type of song info being used.

@@ -1,10 +1,6 @@
 #ifndef _LV_PLUGIN_H
 #define _LV_PLUGIN_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 #include <libvisual/lv_video.h>
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_palette.h>
@@ -13,7 +9,12 @@ extern "C" {
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
+/**
+ * Indicates at which version the plugin API is. */
 #define VISUAL_PLUGIN_API_VERSION	1
 
 /**

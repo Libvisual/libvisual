@@ -1,11 +1,11 @@
 #ifndef _LV_COLOR_H
 #define _LV_COLOR_H
 
+#include <libvisual/lv_common.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-#include <libvisual/lv_common.h>
 
 typedef struct _VisColor VisColor;
 

@@ -3,6 +3,10 @@
 
 #include <libvisual/lvconfig.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #define VISUAL_CPU_FLAG_ALTIVEC	0x1
 #define VISUAL_CPU_FLAG_64BITS	0x2
 #define VISUAL_CPU_FLAG_MMX	0x4
@@ -23,5 +27,9 @@ struct _VisCPU {
 	unsigned int	flags;
 	int		nrcpu;
 };
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* _LV_CPU_H */
