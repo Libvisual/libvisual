@@ -39,6 +39,10 @@ inputs:
 			so everyone can make use of it.
 
 actors:
+	frameproxy:
+		A plugin which can be used to easily import frames into libvisual
+		through mmap, shared mem, function callback. SPECIALIZED PLUGIN
+
 	bumpscope:
 		Fix the light.
 
