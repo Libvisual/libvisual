@@ -8,7 +8,7 @@
 
 #include <libvisual/libvisual.h>
 
-#define PCM_BUF_SIZE 16384
+#define PCM_BUF_SIZE 1024
 
 typedef struct {
 	short fakebuf[PCM_BUF_SIZE];
