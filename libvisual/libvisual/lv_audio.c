@@ -61,7 +61,8 @@ VisAudio *visual_audio_new ()
  *
  * @param audio Pointer to a VisAudio that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL or error values returned
+ *	by visual_mem_free () on failure.
  */
 int visual_audio_free (VisAudio *audio)
 {
@@ -82,7 +83,7 @@ int visual_audio_free (VisAudio *audio)
  *
  * @param audio Pointer to a VisAudio that needs to be analyzed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL on failure.
  */
 int visual_audio_analyze (VisAudio *audio)
 {

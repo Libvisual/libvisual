@@ -30,7 +30,8 @@ VisColor *visual_color_new ()
  *
  * @param color Pointer to a VisColor that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL or error values returned by
+ * 	visual_mem_free () on failure.
  */
 int visual_color_free (VisColor *color)
 {
@@ -45,7 +46,7 @@ int visual_color_free (VisColor *color)
  * @param src1 Pointer to the first VisColor for comparison.
  * @param src2 Pointer to the second VisColor for comparison.
  *
- * @return FALSE on different, TRUE on same, -1 on error.
+ * @return FALSE on different, TRUE on same, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_compare (VisColor *src1, VisColor *src2)
 {
@@ -66,7 +67,7 @@ int visual_color_compare (VisColor *src1, VisColor *src2)
  * @param s Saturation value for the hsv colorspace, ranging from 0 to 1.
  * @param v Value value for the hsv colorspace, ranging from 0 to 1.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_from_hsv (VisColor *color, float h, float s, float v)
 {
@@ -115,7 +116,7 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v)
  * @param s Float pointer to a saturation value for the hsv colorspace, ranging from 0 to 1.
  * @param v Float pointer to a value value for the hsv colorspace, ranging from 0 to 1.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 {
@@ -177,7 +178,7 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
  * @param dest Pointer to the destination VisColor in which the RGB data is copied.
  * @param src Pointer to the source VisColor from which the RGB data is copied.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_copy (VisColor *dest, const VisColor *src)
 {

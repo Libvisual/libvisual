@@ -45,7 +45,7 @@ int visual_error_raise ()
  * @param priv Optional private data which could be needed in the
  *      error handler that has been set.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
  */
 int visual_error_set_handler (visual_error_handler_func_t handler, void *priv)
 {

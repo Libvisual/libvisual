@@ -32,7 +32,9 @@
  * @param video Destination video where the bitmap should be loaded in.
  * @param filename The filename of the bitmap to be loaded.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_BMP_NOT_FOUND,
+ * 	-VISUAL_ERROR_BMP_NO_BMP, -VISUAL_ERROR_BMP_NOT_SUPPORTED or -VISUAL_ERROR_BMP_CORRUPTED
+ * 	on failure.
  */
 int visual_bitmap_load (VisVideo *video, const char *filename)
 {

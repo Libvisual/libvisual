@@ -133,7 +133,8 @@ VisInput *visual_input_new (const char *inputname)
  * 
  * @param input Pointer to a VisInput that needs to be realized.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or error values returned by
+ *	visual_plugin_realize () on failure.
  */
 int visual_input_realize (VisInput *input)
 {
@@ -146,12 +147,13 @@ int visual_input_realize (VisInput *input)
 }
 
 /**
- *  Destroy the VisInput. This unloads the plugin when it's loaded, and also frees the input itself including
- *  all it's members.
+ * Destroy the VisInput. This unloads the plugin when it's loaded, and also frees the input itself including
+ * all it's members.
  *
- *  @param input Pointer to a VisInput that needs to be destroyed.
+ * @param input Pointer to a VisInput that needs to be destroyed.
  *
- *  @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or error values returned by visual_input_free ()
+ *	on failure.
  */
 int visual_input_destroy (VisInput *input)
 {
@@ -171,7 +173,7 @@ int visual_input_destroy (VisInput *input)
  *
  * @param input Pointer to a VisInput that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or error values returned by visual_mem_free () on failure.
  */
 int visual_input_free (VisInput *input)
 {
@@ -192,7 +194,7 @@ int visual_input_free (VisInput *input)
  * @param callback The in app callback function that should be used instead of a plugin.
  * @param priv A private that can be read within the callback function.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL on failure.
  */
 int visual_input_set_callback (VisInput *input, input_upload_callback_func_t callback, void *priv)
 {
@@ -211,7 +213,7 @@ int visual_input_set_callback (VisInput *input, input_upload_callback_func_t cal
  *
  * @param input A pointer to a VisInput that needs to be runned.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_INPUT_PLUGIN_NULL on failure.
  */
 int visual_input_run (VisInput *input)
 {
