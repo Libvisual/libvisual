@@ -61,12 +61,19 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 int lv_morph_flash_init (VisPluginData *plugin)
 {
+	int i;
 	FlashPrivate *priv;
 
 	priv = visual_mem_new0 (FlashPrivate, 1);
 	plugin->priv = priv;
-	
-	memset (&priv->whitepal, 0xff, sizeof (VisPalette));
+
+	visual_palette_allocate_colors (&priv->whitepal, 256);
+
+	for (i = 0; i < 256; i++) {
+		priv->whitepal.colors[i].r = 0xff;
+		priv->whitepal.colors[i].g = 0xff;
+		priv->whitepal.colors[i].b = 0xff;
+	}
 	
 	return 0;
 }
@@ -88,7 +95,7 @@ int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, 
 		visual_palette_blend (pal, src1->pal, &priv->whitepal, rate * 2);
 	else
 		visual_palette_blend (pal, &priv->whitepal, src2->pal, (rate - 0.5) * 2);
-
+	
 	return 0;
 }
 
