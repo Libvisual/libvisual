@@ -182,7 +182,7 @@ int visual_init (int *argc, char ***argv)
  *
  * @return TRUE if is it is initialized, FALSE otherwise.
  */
-int visual_is_initialized (void)
+int visual_is_initialized ()
 {
 	return __lv_initialized;
 }
