@@ -7,6 +7,7 @@
 #include "lv_common.h"
 #include "lv_video.h"
 #include "lv_log.h"
+#include "lv_mem.h"
 
 
 #define HAVE_ALLOCATED_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER)
@@ -47,13 +48,8 @@ VisVideo *visual_video_new ()
 {
 	VisVideo *video;
 
-	video = malloc (sizeof (VisVideo));
-	if (video == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new VisVideo structure");
-		return NULL;
-	}
-	memset (video, 0, sizeof (VisVideo));
-
+	video = visual_mem_new0 (VisVideo, 1);
+	
 	video->screenbuffer = NULL;
 
 	/*
@@ -79,11 +75,6 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 	int ret;
 	
 	video = visual_video_new ();
-	if (video == NULL)
-		/*
-		 * Message was showed on visual_video_new(), must we show another one?
-		 */
-		return NULL;
 
 	visual_video_set_depth (video, depth);
 	visual_video_set_dimension (video, width, height);
@@ -149,7 +140,7 @@ int visual_video_free_with_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
 
-	if (HAVE_ALLOCATED_BUFFER(video)) {
+	if (HAVE_ALLOCATED_BUFFER (video)) {
 		visual_video_free_buffer (video);
 	} else {
 		visual_log (VISUAL_LOG_WARNING, "VisVideo structure doesn't have an allocated "
@@ -175,7 +166,7 @@ int visual_video_free_buffer (VisVideo *video)
 	visual_log_return_val_if_fail (video != NULL, -1);
 	visual_log_return_val_if_fail (video->screenbuffer != NULL, -1);
 
-	if (HAVE_ALLOCATED_BUFFER(video))
+	if (HAVE_ALLOCATED_BUFFER (video))
 		free (video->screenbuffer);
 	else
 		return -1;
@@ -200,7 +191,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 	visual_log_return_val_if_fail (video != NULL, -1);
 
 	if (video->screenbuffer != NULL) {
-		if (HAVE_ALLOCATED_BUFFER(video)) {
+		if (HAVE_ALLOCATED_BUFFER (video)) {
 			visual_video_free_buffer (video);
 		} else {
 			visual_log (VISUAL_LOG_CRITICAL, "Trying to allocate an screen buffer on "
@@ -209,12 +200,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 		}
 	}
 
-	video->screenbuffer = malloc (video->size);
-	if (malloc == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new screenbuffer");
-		return -1;
-	}
-	memset (video->screenbuffer, 0, video->size);
+	video->screenbuffer = visual_mem_malloc0 (video->size);
 
 	video->flags = VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER;
 
@@ -241,6 +227,8 @@ int visual_video_clone (VisVideo *dest, VisVideo *src)
 	visual_video_set_depth (dest, src->depth);
 	visual_video_set_dimension (dest, src->width, src->height);
 	visual_video_set_pitch (dest, src->pitch);
+
+	dest->flags = src->flags;
 
 	return 0;
 }
@@ -279,7 +267,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
 
-	if (HAVE_ALLOCATED_BUFFER(video)) {
+	if (HAVE_ALLOCATED_BUFFER (video)) {
 		visual_log (VISUAL_LOG_CRITICAL, "Trying to set a screen buffer on "
 				"a VisVideo structure which points to an allocated screen buffer");
 		return -1;

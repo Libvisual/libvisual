@@ -15,21 +15,21 @@ extern "C" {
 /**
  * NULL define.
  */
-#define NULL	0
-#endif
-
-#ifndef TRUE
-/**
- * TRUE define.
- */
-#define TRUE	1
+#define NULL	(0)
 #endif
 
 #ifndef FALSE
 /**
  * FALSE define.
  */
-#define FALSE	0
+#define FALSE	(0)
+#endif
+
+#ifndef TRUE
+/**
+ * TRUE define.
+ */
+#define TRUE	(!FALSE)
 #endif
 
 #ifdef __cplusplus

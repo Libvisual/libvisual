@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.5 2004-07-01 00:08:09 dprotti Exp $
+ *	$Id: lv_list.c,v 1.6 2004-07-06 19:45:42 dprotti Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <lvconfig.h>
 #include "lv_list.h"
 #include "lv_log.h"
+#include "lv_mem.h"
 
 /**
  * @defgroup VisList VisList
@@ -48,13 +49,7 @@ VisList *visual_list_new ()
 {
 	VisList *list;
 
-	list = malloc (sizeof (VisList));
-	if (list == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Could not get memory for a new VisList structure");
-		return NULL;
-	}
-
-	memset (list, 0, sizeof (VisList));
+	list = visual_mem_new0 (VisList, 1);
 
 	return list;
 }
@@ -96,7 +91,6 @@ int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
 	void *elem;
 
 	visual_log_return_val_if_fail (list != NULL, -1);
-	/*visual_log_return_val_if_fail (destroyer != NULL, -1);*/
 		
 	/* Walk through the given list, possibly calling the destroyer for it */
 	if (destroyer != NULL) {
@@ -226,14 +220,7 @@ int visual_list_add_at_begin (VisList *list, void *data)
 	visual_log_return_val_if_fail (list != NULL, -1);
 
 	/* Allocate memory for new list entry */
-	current = malloc (sizeof (VisListEntry));
-	if (current == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Could not get memory for a new VisListEntry structure");
-		return -1;
-	}
-
-	/* Clear out memory */
-	memset (current, 0, sizeof (VisListEntry));
+	current = visual_mem_new0 (VisListEntry, 1);
 
 	/* Assign data element */
 	current->data = data;
@@ -269,15 +256,7 @@ int visual_list_add (VisList *list, void *data)
 	
 	visual_log_return_val_if_fail (list != NULL, -1);
 
-	/* Allocate memory for new list entry */
-	current = malloc (sizeof (VisListEntry));
-	if (current == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Could not get memory for a new VisListEntry structure");
-		return -1;
-	}
-
-	/* Clear out memory */
-	memset (current, 0, sizeof (VisListEntry));
+	current = visual_mem_new0 (VisListEntry, 1);
 
 	/* Assign data element */
 	current->data = data;
@@ -323,14 +302,7 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 	visual_log_return_val_if_fail (le != NULL, -1);
 	visual_log_return_val_if_fail (data != NULL, -1);
 	
-	current = malloc (sizeof (VisListEntry));
-	if (current == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Could not get memory for a new VisListEntry structure");
-		return -1;
-	}
-
-	/* Clear out memory */
-	memset (current, 0, sizeof (VisListEntry));
+	current = visual_mem_new0 (VisListEntry, 1);
 
 	/* Assign data element */
 	current->data = data;

@@ -556,7 +556,6 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 	visual_log (VISUAL_LOG_INFO, "switching... ******************************************");
 	visual_bin_switch_actor (bin, actor);
 
-
 	visual_log (VISUAL_LOG_INFO, "end switch actor by name function ******************");
 	return 0;
 }
