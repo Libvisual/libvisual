@@ -1,3 +1,7 @@
+2004-09-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Removed xpyre from the build :))
+
 2004-09-06  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* plugins/input/mplayer/input_mplayer.c:

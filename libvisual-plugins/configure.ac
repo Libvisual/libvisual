@@ -272,7 +272,7 @@ AC_ARG_ENABLE([xpyre],
 AC_MSG_CHECKING([wheter to build XPyre plugin])
 if test x$xpyre = xyes; then
   AC_MSG_RESULT([yes])
-  build_actor="$build_actor xpyre"
+  build_actor="$build_actor"
 else
   AC_MSG_RESULT([no])
 fi
