@@ -13,6 +13,7 @@ extern "C" {
 #define VISUAL_UI_WIDGET(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_WIDGET, VisUIWidget))
 #define VISUAL_UI_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_CONTAINER, VisUIContainer))
 #define VISUAL_UI_BOX(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_BOX, VisUIBox))
+#define VISUAL_UI_TABLE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_TABLE, VisUITableEntry))
 #define VISUAL_UI_TABLE(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_TABLE, VisUITable))
 #define VISUAL_UI_FRAME(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_FRAME, VisUIFrame))
 #define VISUAL_UI_LABEL(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_LABEL, VisUILabel))
@@ -24,6 +25,7 @@ extern "C" {
 #define VISUAL_UI_SLIDER(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_SLIDER, VisUISlider))
 #define VISUAL_UI_NUMERIC(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_NUMERIC, VisUINumeric))
 #define VISUAL_UI_COLOR(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_COLOR, VisUIColor))
+#define VISUAL_UI_CHOICE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_CHOICE, VisUIChoiceEntry))
 #define VISUAL_UI_CHOICE(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_CHOICE, VisUIChoice))
 #define VISUAL_UI_POPUP(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_POPUP, VisUIPopup))
 #define VISUAL_UI_LIST(obj)				(VISUAL_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_LIST, VisUIList))
@@ -246,8 +248,6 @@ struct _VisUICheckbox {
 
 /* prototypes */
 VisUIWidget *visual_ui_widget_new (void);
-int visual_ui_widget_free (VisUIWidget *widget);
-int visual_ui_widget_destroy (VisUIWidget *widget);
 int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int height);
 int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip);
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget);
@@ -260,35 +260,27 @@ int visual_ui_container_add (VisUIContainer *container, VisUIWidget *widget);
 VisUIWidget *visual_ui_container_get_child (VisUIContainer *container);
 
 VisUIWidget *visual_ui_box_new (VisUIOrientType orient);
-int visual_ui_box_free (VisUIBox *box);
-int visual_ui_box_destroy (VisUIBox *box);
 int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget);
 VisList *visual_ui_box_get_childs (VisUIBox *box);
 VisUIOrientType visual_ui_box_get_orient (VisUIBox *box);
 
 VisUIWidget *visual_ui_table_new (int rows, int cols);
-int visual_ui_table_free (VisUITable *table);
-int visual_ui_table_destroy (VisUITable *table);
+VisUITableEntry *visual_ui_table_entry_new (VisUIWidget *widget, int row, int col);
 int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int col);
 VisList *visual_ui_table_get_childs (VisUITable *table);
 
 VisUIWidget *visual_ui_frame_new (const char *name);
-int visual_ui_frame_free (VisUIFrame *frame);
-int visual_ui_frame_destroy (VisUIFrame *frame);
 
 VisUIWidget *visual_ui_label_new (const char *text, int bold);
-int visual_ui_label_free (VisUILabel *label);
 int visual_ui_label_set_text (VisUILabel *label, const char *text);
 int visual_ui_label_set_bold (VisUILabel *label, int bold);
 const char *visual_ui_label_get_text (VisUILabel *label);
 
 VisUIWidget *visual_ui_image_new (const VisVideo *video);
-int visual_ui_image_free (VisUIImage *label);
 int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video);
 const VisVideo *visual_ui_image_get_video (VisUIImage *image);
 
 VisUIWidget *visual_ui_separator_new (VisUIOrientType orient);
-int visual_ui_separator_free (VisUISeparator *separator);
 VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator);
 
 int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *param);
@@ -301,18 +293,15 @@ int visual_ui_range_set_step (VisUIRange *range, double step);
 int visual_ui_range_set_precision (VisUIRange *range, int precision);
 
 VisUIWidget *visual_ui_entry_new (void);
-int visual_ui_entry_free (VisUIEntry *entry);
 int visual_ui_entry_set_length (VisUIEntry *entry, int length);
 
 VisUIWidget *visual_ui_slider_new (int showvalue);
-int visual_ui_slider_free (VisUISlider *slider);
 
 VisUIWidget *visual_ui_numeric_new (void);
-int visual_ui_numeric_free (VisUINumeric *numeric);
 
 VisUIWidget *visual_ui_color_new (void);
-int visual_ui_color_free (VisUIColor *color);
 
+VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, const VisParamEntry *value);
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value);
 int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramchoices);
 int visual_ui_choice_free_choices (VisUIChoice *choice);
@@ -324,16 +313,12 @@ VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice);
 /* FIXME look at lists with multiple selections... */
 
 VisUIWidget *visual_ui_popup_new (void);
-int visual_ui_popup_free (VisUIPopup *popup);
 
 VisUIWidget *visual_ui_list_new (void);
-int visual_ui_list_free (VisUIList *list);
 
 VisUIWidget *visual_ui_radio_new (VisUIOrientType orient);
-int visual_ui_radio_free (VisUIRadio *radio);
 
 VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck);
-int visual_ui_checkbox_free (VisUICheckbox *checkbox);
 
 #ifdef __cplusplus
 }

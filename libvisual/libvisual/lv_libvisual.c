@@ -282,7 +282,7 @@ int visual_quit ()
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Global param container: destroy failed");
 
-	ret = visual_ui_widget_destroy (__lv_userinterface);
+	ret = visual_object_unref (VISUAL_OBJECT (__lv_userinterface));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, "Error during UI destroy:");
 

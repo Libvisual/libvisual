@@ -131,20 +131,6 @@ enum {
 	VISUAL_ERROR_UI_CHOICE_ENTRY_NULL,		/**< The VisUIChoiceEntry is NULL. */
 	VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE,		/**< there is no VisUIChoiceEntry active. */
 	VISUAL_ERROR_UI_INVALID_TYPE,			/**< The VisUIWidget is of invalid type. */
-	VISUAL_ERROR_UI_NO_BOX,				/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_BOX. */
-	VISUAL_ERROR_UI_NO_TABLE,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_TABLE. */
-	VISUAL_ERROR_UI_NO_FRAME,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_FRAME. */
-	VISUAL_ERROR_UI_NO_LABEL,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_LABEL. */
-	VISUAL_ERROR_UI_NO_IMAGE,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_IMAGE. */
-	VISUAL_ERROR_UI_NO_SEPARATOR,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_SEPARATOR. */
-	VISUAL_ERROR_UI_NO_ENTRY,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_ENTRY. */
-	VISUAL_ERROR_UI_NO_SLIDER,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_SLIDER. */
-	VISUAL_ERROR_UI_NO_NUMERIC,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_NUMERIC. */
-	VISUAL_ERROR_UI_NO_COLOR,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_COLOR. */
-	VISUAL_ERROR_UI_NO_POPUP,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_POPUP. */
-	VISUAL_ERROR_UI_NO_LIST,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_LIST. */
-	VISUAL_ERROR_UI_NO_RADIO,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_RADIO. */
-	VISUAL_ERROR_UI_NO_CHECKBOX,			/**< The VisUIWidget is not of type VISUAL_WIDGET_TYPE_CHECKBOX. */
 
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_NULL,			/**< The VisVideo is NULL. */

@@ -7,157 +7,53 @@
 #include "lv_log.h"
 #include "lv_ui.h"
 
+static int box_dtor (VisObject *object);
+static int table_dtor (VisObject *object);
+static int frame_dtor (VisObject *object);
+static int choice_dtor (VisObject *object);
 
-static int widget_free (void *ptr);
-static void list_widget_destroy (void *ptr);
-static int widget_destroy (void *ptr);
-
-static void table_entry_destroyer (void *ptr);
-
-
-static void table_entry_destroyer (void *ptr)
+static int box_dtor (VisObject *object)
 {
-	VisUITableEntry *tentry = ptr;
+	VisUIBox *box = VISUAL_UI_BOX (object);
 
-	visual_log_return_if_fail (tentry != NULL);
+	visual_list_destroy_elements (&box->childs);
+
+	return VISUAL_OK;
+}
+
+static int table_dtor (VisObject *object)
+{
+	VisUITable *table = VISUAL_UI_TABLE (object);
+
+	visual_list_destroy_elements (&table->childs);
 	
-	widget_destroy (tentry->widget);
+	return VISUAL_OK;
 }
 
-static int widget_free (void *ptr)
+static int frame_dtor (VisObject *object)
 {
-	VisUIWidget *widget = ptr;
+	visual_object_unref (VISUAL_OBJECT (VISUAL_UI_CONTAINER (object)->child));
 
-	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
-
-	switch (widget->type) {
-		case VISUAL_WIDGET_TYPE_NULL:
-			return visual_mem_free (widget);
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_WIDGET:
-			return visual_mem_free (widget);
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_BOX:
-			return visual_ui_box_free (VISUAL_UI_BOX (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_TABLE:
-			return visual_ui_table_free (VISUAL_UI_TABLE (widget));
-
-			break;
-		
-		case VISUAL_WIDGET_TYPE_FRAME:
-			return visual_ui_frame_free (VISUAL_UI_FRAME (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_LABEL:
-			return visual_ui_label_free (VISUAL_UI_LABEL (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_IMAGE:
-			return visual_ui_image_free (VISUAL_UI_IMAGE (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_SEPARATOR:
-			return visual_ui_separator_free (VISUAL_UI_SEPARATOR (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_ENTRY:
-			return visual_ui_entry_free (VISUAL_UI_ENTRY (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_SLIDER:
-			return visual_ui_slider_free (VISUAL_UI_SLIDER (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_NUMERIC:
-			return visual_ui_numeric_free (VISUAL_UI_NUMERIC (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_COLOR:
-			return visual_ui_color_free (VISUAL_UI_COLOR (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_POPUP:
-			return visual_ui_popup_free (VISUAL_UI_POPUP (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_LIST:
-			return visual_ui_list_free (VISUAL_UI_LIST (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_RADIO:
-			return visual_ui_radio_free (VISUAL_UI_RADIO (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_CHECKBOX:
-			return visual_ui_checkbox_free (VISUAL_UI_CHECKBOX (widget));
-
-			break;
-
-		default:
-			visual_log (VISUAL_LOG_CRITICAL, "Trying to free an unknown VisUI widget type");
-			
-			return -VISUAL_ERROR_UI_INVALID_TYPE;
-
-			break;
-	}
-
-	return -VISUAL_ERROR_IMPOSSIBLE;
+	return VISUAL_OK;
 }
 
-static void list_widget_destroy (void *ptr)
+
+static int choice_dtor (VisObject *object)
 {
-	widget_destroy (ptr);
+	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (object));
+
+	return VISUAL_OK;
 }
 
-static int widget_destroy (void *ptr)
+static int table_entry_dtor (VisObject *object)
 {
-	VisUIWidget *widget = ptr;
+	VisUITableEntry *tentry = VISUAL_UI_TABLE_ENTRY (object);
 
-	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
+	visual_object_unref (VISUAL_OBJECT (tentry->widget));
 
-	switch (widget->type) {
-		case VISUAL_WIDGET_TYPE_BOX:
-			return visual_ui_box_destroy (VISUAL_UI_BOX (widget));
-
-			break;
-
-		case VISUAL_WIDGET_TYPE_TABLE:
-			return visual_ui_table_destroy (VISUAL_UI_TABLE (widget));
-
-			break;
-		
-		case VISUAL_WIDGET_TYPE_FRAME:
-			return visual_ui_frame_destroy (VISUAL_UI_FRAME (widget));
-
-			break;
-
-		default:
-			/* The others are the same destroy/free wise. */
-			return widget_free (widget);
-		
-			break;
-	}
-
-	return -VISUAL_ERROR_IMPOSSIBLE;
+	return VISUAL_OK;
 }
+
 
 /**
  * @defgroup VisUI VisUI
@@ -176,39 +72,14 @@ VisUIWidget *visual_ui_widget_new ()
 	widget = visual_mem_new0 (VisUIWidget, 1);
 	widget->type = VISUAL_WIDGET_TYPE_NULL;
 
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (widget)->allocated = TRUE;
+	VISUAL_OBJECT (widget)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (widget));
+
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (widget), -1, -1);
 
 	return widget;
-}
-
-/**
- * Frees the VisUIWidget. This frees a VisUIWidget, when freeing a widget always
- * use this function, it will automaticly call the right internal function.
- *
- * @param widget Pointer to the VisUIWidget that needs to be freed.
- * 
- * @return VISUAL_OK on succes, or errors that can be thrown by any of the free functions.
- */
-int visual_ui_widget_free (VisUIWidget *widget)
-{
-	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
-
-	return widget_free (widget);
-}
-
-/**
- * Destroys the VisUIWidget. This destroys a VisUIWidget and all it's childeren.
- * This function should be used to destroy a complete widget 'tree'
- *
- * @param widget Pointer to the VisUIWidget that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, or errors that can be thrown by any of the destroyer functions.
- */
-int visual_ui_widget_destroy (VisUIWidget *widget)
-{
-	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
-
-	return widget_destroy (widget);
 }
 
 /**
@@ -380,62 +251,21 @@ VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 	VisUIBox *box;
 
 	box = visual_mem_new0 (VisUIBox, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (box)->allocated = TRUE;
+	VISUAL_OBJECT (box)->dtor = box_dtor;
+	visual_object_ref (VISUAL_OBJECT (box));
+
 	VISUAL_UI_WIDGET (box)->type = VISUAL_WIDGET_TYPE_BOX;
 
 	box->orient = orient;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (box), -1, -1);
 
-	visual_list_set_destroyer (&box->childs, list_widget_destroy);
+	visual_list_set_destroyer (&box->childs, visual_object_list_destroyer);
 
 	return VISUAL_UI_WIDGET (box);
-}
-
-/**
- * Frees a VisUIBox, this does not destroy it's childeren.
- *
- * @param box Pointer to the VisUIBox that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_BOX_NULL, -VISUAL_ERROR_UI_NO_BOX or
- * 	error values returned by visual_mem_free () on failure.
- */
-int visual_ui_box_free (VisUIBox *box)
-{
-	visual_log_return_val_if_fail (box != NULL, -VISUAL_ERROR_UI_BOX_NULL);
-
-	if (VISUAL_UI_WIDGET (box)->type != VISUAL_WIDGET_TYPE_BOX) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_BOX;
-	}
-
-	/* Delete the list entries, don't destroy the content */
-	visual_list_destroy_elements (&box->childs);
-
-	return visual_mem_free (box);
-}
-
-/**
- * Destroys a VisUIBox, this does destroy the VisUIBox and all it's childeren.
- *
- * @param box Pointer to the VisUIBox that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_BOX_NULL, -VISUAL_ERROR_UI_NO_BOX or
- * 	error values returned by visual_ui_box_free () on failure.
- */
-int visual_ui_box_destroy (VisUIBox *box)
-{
-	visual_log_return_val_if_fail (box != NULL, -VISUAL_ERROR_UI_BOX_NULL);
-
-	if (VISUAL_UI_WIDGET (box)->type != VISUAL_WIDGET_TYPE_BOX) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_BOX;
-	}
-
-	visual_list_destroy_elements (&box->childs);
-
-	return visual_ui_box_free (box);
 }
 
 /**
@@ -500,6 +330,12 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 	VisUITable *table;
 
 	table = visual_mem_new0 (VisUITable, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (table)->allocated = TRUE;
+	VISUAL_OBJECT (table)->dtor = table_dtor;
+	visual_object_ref (VISUAL_OBJECT (table));
+
 	VISUAL_UI_WIDGET (table)->type = VISUAL_WIDGET_TYPE_TABLE;
 
 	table->rows = rows;
@@ -507,57 +343,39 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (table), -1, -1);
 
-	visual_list_set_destroyer (&table->childs, table_entry_destroyer);
+	visual_list_set_destroyer (&table->childs, visual_object_list_destroyer);
 
 	return VISUAL_UI_WIDGET (table);
 }
 
 /**
- * Frees a VisUITable, this does not destroy it's childeren.
+ * Creates a new VisUITableEntry. You probably never need this function, but it's used internally.
  *
- * @param table Pointer to the VisUITable that needs to be freed.
+ * @param widget Pointer to the VisUIWidget of which a VisUITableEntry is created.
+ * @param row The row this entry will be placed.
+ * @param col The column this entry will be placed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_TABLE_NULL, -VISUAL_ERROR_UI_NO_TABLE or 
- * 	error values returned by visual_mem_free () on failure.
+ * @return A newly allocated VisUITableEntry, NULL on failure.
  */
-int visual_ui_table_free (VisUITable *table)
+VisUITableEntry *visual_ui_table_entry_new (VisUIWidget *widget, int row, int col)
 {
-	visual_log_return_val_if_fail (table != NULL, -VISUAL_ERROR_UI_TABLE_NULL);
+	VisUITableEntry *tentry;
+	
+	visual_log_return_val_if_fail (widget != NULL, NULL);
 
-	if (VISUAL_UI_WIDGET (table)->type != VISUAL_WIDGET_TYPE_TABLE) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+	tentry = visual_mem_new0 (VisUITableEntry, 1);
 
-		return -VISUAL_ERROR_UI_NO_TABLE;
-	}
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (tentry)->allocated = TRUE;
+	VISUAL_OBJECT (tentry)->dtor = table_entry_dtor;
+	visual_object_ref (VISUAL_OBJECT (tentry));
 
-	/* Delete the list entries, don't destroy the widgets */
-	visual_list_destroy_elements (&table->childs);
+	tentry->row = row;
+	tentry->col = col;
 
-	return visual_mem_free (table);
-}
+	tentry->widget = widget;
 
-/**
- * Destroys a VisUITable, this does destroy the VisUITable and all it's childeren.
- * 
- * @param table Pointer to the VisUITable that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_TABLE_NULL, -VISUAL_ERROR_UI_NO_TABLE or
- *	error values returned by visual_ui_table_free () on failure. 
- */
-int visual_ui_table_destroy (VisUITable *table)
-{
-	visual_log_return_val_if_fail (table != NULL, -VISUAL_ERROR_UI_TABLE_NULL);
-
-	if (VISUAL_UI_WIDGET (table)->type != VISUAL_WIDGET_TYPE_TABLE) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_TABLE;
-	}
-
-	/* Destroy the widgets here, and the list in the table_free */
-	visual_list_destroy_elements (&table->childs);
-
-	return visual_ui_table_free (table);
+	return tentry;
 }
 
 /**
@@ -578,12 +396,7 @@ int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int
 	visual_log_return_val_if_fail (table != NULL, -VISUAL_ERROR_UI_TABLE_NULL);
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
-	tentry = visual_mem_new0 (VisUITableEntry, 1);
-
-	tentry->row = row;
-	tentry->col = col;
-
-	tentry->widget = widget;
+	tentry = visual_ui_table_entry_new (widget, row, col);
 
 	return visual_list_add (&table->childs, tentry);
 }
@@ -615,6 +428,12 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 	VisUIFrame *frame;
 
 	frame = visual_mem_new0 (VisUIFrame, 1);
+	
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (frame)->allocated = TRUE;
+	VISUAL_OBJECT (frame)->dtor = frame_dtor;
+	visual_object_ref (VISUAL_OBJECT (frame));
+
 	VISUAL_UI_WIDGET (frame)->type = VISUAL_WIDGET_TYPE_FRAME;
 
 	frame->name = name;
@@ -622,50 +441,6 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (frame), -1, -1);
 	
 	return VISUAL_UI_WIDGET (frame);
-}
-
-/**
- * Frees a VisUIFrame, this does not destroy it's childeren.
- * 
- * @param frame Pointer to the VisUIFrame that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_FRAME_NULL, -VISUAL_ERROR_UI_NO_FRAME or
- *	error values returned by visual_mem_free () on failure.
- */
-int visual_ui_frame_free (VisUIFrame *frame)
-{
-	visual_log_return_val_if_fail (frame != NULL, -VISUAL_ERROR_UI_FRAME_NULL);
-
-	if (VISUAL_UI_WIDGET (frame)->type != VISUAL_WIDGET_TYPE_FRAME) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_FRAME;
-	}
-
-	return visual_mem_free (frame);
-}
-
-/**
- * Destroy a VisUIFrame, this does destroy the VisUIFrame and all it's childeren.
- *
- * @param frame Pointer to the VisUIFrame that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_FRAME_NULL, -VISUAL_ERROR_UI_NO_FRAME or
- * 	error values returned by visual_ui_frame_free () on failure.
- */
-int visual_ui_frame_destroy (VisUIFrame *frame)
-{
-	visual_log_return_val_if_fail (frame != NULL, -VISUAL_ERROR_UI_FRAME_NULL);
-
-	if (VISUAL_UI_WIDGET (frame)->type != VISUAL_WIDGET_TYPE_FRAME) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_FRAME;
-	}
-	
-	widget_destroy (VISUAL_UI_CONTAINER (frame)->child);
-
-	return visual_ui_frame_free (frame);
 }
 
 /**
@@ -681,6 +456,12 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
 	VisUILabel *label;
 
 	label = visual_mem_new0 (VisUILabel, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (label)->allocated = TRUE;
+	VISUAL_OBJECT (label)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (label));
+
 	VISUAL_UI_WIDGET (label)->type = VISUAL_WIDGET_TYPE_LABEL;
 
 	label->text = text;
@@ -689,27 +470,6 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (label), -1, -1);
 	
 	return VISUAL_UI_WIDGET (label);
-}
-
-/**
- * Frees a VisUILabel.
- * 
- * @param label Pointer to the VisUILabel that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_LABEL_NULL, -VISUAL_ERROR_UI_NO_LABEL or
- * 	error values returned by visual_mem_free () on failure.
- */
-int visual_ui_label_free (VisUILabel *label)
-{
-	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);
-
-	if (VISUAL_UI_WIDGET (label)->type != VISUAL_WIDGET_TYPE_LABEL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_LABEL;
-	}
-
-	return visual_mem_free (label);
 }
 
 /**
@@ -772,6 +532,12 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
 	VisUIImage *image;
 
 	image = visual_mem_new0 (VisUIImage, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (image)->allocated = TRUE;
+	VISUAL_OBJECT (image)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (image));
+
 	VISUAL_UI_WIDGET (image)->type = VISUAL_WIDGET_TYPE_IMAGE;
 
 	image->image = video;
@@ -779,28 +545,6 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (image), -1, -1);
 
 	return VISUAL_UI_WIDGET (image);
-}
-
-/**
- * Frees a VisUIImage. Keep in mind that this won't free the VisVideo that is connected to
- * the VisUIImage.
- * 
- * @param image Pointer to the VisUIImage that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_IMAGE_NULL, -VISUAL_ERROR_UI_NO_IMAGE or
- * 	error values returned by visual_mem_free () on failure.
- */
-int visual_ui_image_free (VisUIImage *image)
-{
-	visual_log_return_val_if_fail (image != NULL, -VISUAL_ERROR_UI_IMAGE_NULL);
-
-	if (VISUAL_UI_WIDGET (image)->type != VISUAL_WIDGET_TYPE_IMAGE) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_IMAGE;
-	}
-
-	return visual_mem_free (image);
 }
 
 /**
@@ -847,6 +591,12 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 	VisUISeparator *separator;
 
 	separator = visual_mem_new0 (VisUISeparator, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (separator)->allocated = TRUE;
+	VISUAL_OBJECT (separator)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (separator));
+
 	VISUAL_UI_WIDGET (separator)->type = VISUAL_WIDGET_TYPE_SEPARATOR;
 
 	separator->orient = orient;
@@ -854,27 +604,6 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (separator), -1, -1);
 
 	return VISUAL_UI_WIDGET (separator);
-}
-
-/**
- * Frees a VisUISeperator.
- * 
- * @param separator Pointer to the VisUISeparator that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_SEPARATOR_NULL, -VISUAL_ERROR_UI_NO_SEPARATOR or
- * 	error values returned by visual_mem_free () on failure.
- */
-int visual_ui_separator_free (VisUISeparator *separator)
-{
-	visual_log_return_val_if_fail (separator != NULL, -VISUAL_ERROR_UI_SEPARATOR_NULL);
-
-	if (VISUAL_UI_WIDGET (separator)->type != VISUAL_WIDGET_TYPE_SEPARATOR) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_SEPARATOR;
-	}
-
-	return visual_mem_free (separator);
 }
 
 /**
@@ -891,7 +620,6 @@ VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator)
 	return separator->orient;
 }
 
-/* FIXME: doxygen link to the VisUI types enums and documentate the cmoplete class hierachy there */
 /**
  * Links a VisParamEntry to a VisUIMutator type.
  *
@@ -972,24 +700,17 @@ VisUIWidget *visual_ui_entry_new ()
 	VisUIEntry *entry;
 
 	entry = visual_mem_new0 (VisUIEntry, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (entry)->allocated = TRUE;
+	VISUAL_OBJECT (entry)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (entry));
+
 	VISUAL_UI_WIDGET (entry)->type = VISUAL_WIDGET_TYPE_ENTRY;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (entry), -1, -1);
 
 	return VISUAL_UI_WIDGET (entry);
-}
-
-int visual_ui_entry_free (VisUIEntry *entry)
-{
-	visual_log_return_val_if_fail (entry != NULL, -VISUAL_ERROR_UI_ENTRY_NULL);
-
-	if (VISUAL_UI_WIDGET (entry)->type != VISUAL_WIDGET_TYPE_ENTRY) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_ENTRY;
-	}
-
-	return visual_mem_free (entry);
 }
 
 int visual_ui_entry_set_length (VisUIEntry *entry, int length)
@@ -1006,6 +727,12 @@ VisUIWidget *visual_ui_slider_new (int showvalue)
 	VisUISlider *slider;
 
 	slider = visual_mem_new0 (VisUISlider, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (slider)->allocated = TRUE;
+	VISUAL_OBJECT (slider)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (slider));
+
 	VISUAL_UI_WIDGET (slider)->type = VISUAL_WIDGET_TYPE_SLIDER;
 
 	slider->showvalue = showvalue;
@@ -1015,24 +742,17 @@ VisUIWidget *visual_ui_slider_new (int showvalue)
 	return VISUAL_UI_WIDGET (slider);
 }
 
-int visual_ui_slider_free (VisUISlider *slider)
-{
-	visual_log_return_val_if_fail (slider != NULL, -VISUAL_ERROR_UI_SLIDER_NULL);
-
-	if (VISUAL_UI_WIDGET (slider)->type != VISUAL_WIDGET_TYPE_SLIDER) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_SLIDER;
-	}
-
-	return visual_mem_free (slider);
-}
-
 VisUIWidget *visual_ui_numeric_new ()
 {
 	VisUINumeric *numeric;
 
 	numeric = visual_mem_new0 (VisUINumeric, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (numeric)->allocated = TRUE;
+	VISUAL_OBJECT (numeric)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (numeric));
+
 	VISUAL_UI_WIDGET (numeric)->type = VISUAL_WIDGET_TYPE_NUMERIC;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (numeric), -1, -1);
@@ -1040,24 +760,17 @@ VisUIWidget *visual_ui_numeric_new ()
 	return VISUAL_UI_WIDGET (numeric);
 }
 
-int visual_ui_numeric_free (VisUINumeric *numeric)
-{
-	visual_log_return_val_if_fail (numeric != NULL, -VISUAL_ERROR_UI_NUMERIC_NULL);
-
-	if (VISUAL_UI_WIDGET (numeric)->type != VISUAL_WIDGET_TYPE_NUMERIC) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_NUMERIC;
-	}
-
-	return visual_mem_free (numeric);
-}
-
 VisUIWidget *visual_ui_color_new ()
 {
 	VisUIColor *color;
 
 	color = visual_mem_new0 (VisUIColor, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (color)->allocated = TRUE;
+	VISUAL_OBJECT (color)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (color));
+	
 	VISUAL_UI_WIDGET (color)->type = VISUAL_WIDGET_TYPE_COLOR;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (color), -1, -1);
@@ -1065,17 +778,24 @@ VisUIWidget *visual_ui_color_new ()
 	return VISUAL_UI_WIDGET (color);
 }
 
-int visual_ui_color_free (VisUIColor *color)
+VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, const VisParamEntry *value)
 {
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_UI_COLOR_NULL);
+	VisUIChoiceEntry *centry;
 
-	if (VISUAL_UI_WIDGET (color)->type != VISUAL_WIDGET_TYPE_COLOR) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+	visual_log_return_val_if_fail (name != NULL, NULL);
+	visual_log_return_val_if_fail (value != NULL, NULL);
 
-		return -VISUAL_ERROR_UI_NO_COLOR;
-	}
+	centry = visual_mem_new0 (VisUIChoiceEntry, 1);
 
-	return visual_mem_free (color);
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (centry)->allocated = TRUE;
+	VISUAL_OBJECT (centry)->dtor = NULL;
+	visual_object_ref (VISUAL_OBJECT (centry));
+	
+	centry->name = name;
+	centry->value = value;
+
+	return centry;
 }
 
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value)
@@ -1086,13 +806,10 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamE
 	visual_log_return_val_if_fail (name != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (value != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	centry = visual_mem_new0 (VisUIChoiceEntry, 1);
-
-	centry->name = name;
-	centry->value = value;
+	centry = visual_ui_choice_entry_new (name, value);
 
 	choice->choices.count++;
-	/* FIXME be aware on object destroy, that this needs to be destroyed as well, watch out!! */
+
 	visual_list_add (&choice->choices.choices, centry);
 
 	return VISUAL_OK;
@@ -1119,7 +836,10 @@ int visual_ui_choice_free_choices (VisUIChoice *choice)
 {
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 
-//	return visual_list_destroy_elements (&choice->choices.choices, free); 
+	visual_list_set_destroyer (&choice->choices.choices, visual_object_list_destroyer);
+	visual_list_destroy_elements (&choice->choices.choices); 
+
+	return VISUAL_OK;
 }
 
 int visual_ui_choice_set_active (VisUIChoice *choice, int index)
@@ -1184,6 +904,12 @@ VisUIWidget *visual_ui_popup_new ()
 	VisUIPopup *popup;
 
 	popup = visual_mem_new0 (VisUIPopup, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (popup)->allocated = TRUE;
+	VISUAL_OBJECT (popup)->dtor = choice_dtor;
+	visual_object_ref (VISUAL_OBJECT (popup));
+	
 	VISUAL_UI_WIDGET (popup)->type = VISUAL_WIDGET_TYPE_POPUP;
 
 	VISUAL_UI_CHOICE (popup)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
@@ -1193,26 +919,17 @@ VisUIWidget *visual_ui_popup_new ()
 	return VISUAL_UI_WIDGET (popup);
 }
 
-int visual_ui_popup_free (VisUIPopup *popup)
-{
-	visual_log_return_val_if_fail (popup != NULL, -VISUAL_ERROR_UI_POPUP_NULL);
-
-	if (VISUAL_UI_WIDGET (popup)->type != VISUAL_WIDGET_TYPE_POPUP) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_POPUP;
-	}
-
-	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (popup));
-
-	return visual_mem_free (popup);
-}
-
 VisUIWidget *visual_ui_list_new ()
 {
 	VisUIList *list;
 
 	list = visual_mem_new0 (VisUIList, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (list)->allocated = TRUE;
+	VISUAL_OBJECT (list)->dtor = choice_dtor;
+	visual_object_ref (VISUAL_OBJECT (list));
+	
 	VISUAL_UI_WIDGET (list)->type = VISUAL_WIDGET_TYPE_LIST;
 
 	VISUAL_UI_CHOICE (list)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
@@ -1222,26 +939,17 @@ VisUIWidget *visual_ui_list_new ()
 	return VISUAL_UI_WIDGET (list);
 }
 
-int visual_ui_list_free (VisUIList *list)
-{
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_UI_LIST_NULL);
-
-	if (VISUAL_UI_WIDGET (list)->type != VISUAL_WIDGET_TYPE_LIST) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_LIST;
-	}
-
-	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (list));
-
-	return visual_mem_free (list);
-}
-
 VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 {
 	VisUIRadio *radio;
 
 	radio = visual_mem_new0 (VisUIRadio, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (radio)->allocated = TRUE;
+	VISUAL_OBJECT (radio)->dtor = choice_dtor;
+	visual_object_ref (VISUAL_OBJECT (radio));
+
 	VISUAL_UI_WIDGET (radio)->type = VISUAL_WIDGET_TYPE_RADIO;
 
 	VISUAL_UI_CHOICE (radio)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
@@ -1251,21 +959,6 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (radio), -1, -1);
 
 	return VISUAL_UI_WIDGET (radio);
-}
-
-int visual_ui_radio_free (VisUIRadio *radio)
-{
-	visual_log_return_val_if_fail (radio != NULL, -VISUAL_ERROR_UI_RADIO_NULL);
-
-	if (VISUAL_UI_WIDGET (radio)->type != VISUAL_WIDGET_TYPE_RADIO) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_RADIO;
-	}
-
-	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (radio));
-
-	return visual_mem_free (radio);
 }
 
 VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
@@ -1278,6 +971,12 @@ VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 	};
 
 	checkbox = visual_mem_new0 (VisUICheckbox, 1);
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (checkbox)->allocated = TRUE;
+	VISUAL_OBJECT (checkbox)->dtor = choice_dtor;
+	visual_object_ref (VISUAL_OBJECT (checkbox));
+
 	VISUAL_UI_WIDGET (checkbox)->type = VISUAL_WIDGET_TYPE_CHECKBOX;
 
 	VISUAL_UI_CHOICE (checkbox)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
@@ -1291,21 +990,6 @@ VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (checkbox), -1, -1);
 
 	return VISUAL_UI_WIDGET (checkbox);
-}
-
-int visual_ui_checkbox_free (VisUICheckbox *checkbox)
-{
-	visual_log_return_val_if_fail (checkbox != NULL, -VISUAL_ERROR_UI_CHECKBOX_NULL);
-
-	if (VISUAL_UI_WIDGET (checkbox)->type != VISUAL_WIDGET_TYPE_CHECKBOX) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -VISUAL_ERROR_UI_NO_CHECKBOX;
-	}
-
-	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (checkbox));
-
-	return visual_mem_free (checkbox);
 }
 
 /**
