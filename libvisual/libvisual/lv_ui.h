@@ -248,6 +248,7 @@ struct _VisUICheckbox {
 VisUIWidget *visual_ui_widget_new (void);
 int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int height);
 int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip);
+const char *visual_ui_widget_get_tooltip (VisUIWidget *widget);
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget);
 VisUIWidget *visual_ui_widget_get_parent (VisUIWidget *widget);
 VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget);

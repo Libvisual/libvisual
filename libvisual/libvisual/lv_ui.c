@@ -125,6 +125,20 @@ int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
 }
 
 /**
+ * Retrieves the tooltip that is set to a VisUIWidget.
+ *
+ * @param widget Pointer to the VisUIWidget from which the tooltip is requested.
+ *
+ * @return The tooltip, possibly NULL, NULL on failure.
+ */
+const char *visual_ui_widget_get_tooltip (VisUIWidget *widget)
+{
+	visual_log_return_val_if_fail (widget != NULL, NULL);
+
+	return widget->tooltip;
+}
+
+/**
  * Gets the top VisUIWidget from a VisUIWidget, this means that it will retrieve
  * the widget that is the parent of all underlaying widgets.
  *
