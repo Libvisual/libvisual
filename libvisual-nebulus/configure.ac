@@ -34,7 +34,7 @@ AC_CHECK_LIB([GL], [main])
 # FIXME: Replace `main' with a function in `-lGLU':
 AC_CHECK_LIB([GLU], [main])
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.5, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.6, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
 	AC_MSG_ERROR([
 *** libvisual not found or version mismatch.

@@ -78,7 +78,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	priv = malloc (sizeof (NebulusPrivate));
 	memset (priv, 0, sizeof (NebulusPrivate));
 
-	lv_nebulus->private = priv;
+	lv_nebulus->priv = priv;
 
 	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
 	plugin->plugin.actorplugin = lv_nebulus;
@@ -104,7 +104,7 @@ int lv_nebulus_init (VisActorPlugin *plugin)
 
 int lv_nebulus_cleanup (VisActorPlugin *plugin)
 {
-	NebulusPrivate *priv = plugin->private;
+	NebulusPrivate *priv = plugin->priv;
 
 	if (!face_first)
 		glDeleteLists(facedl, 1);
@@ -190,8 +190,8 @@ VisPalette *lv_nebulus_palette (VisActorPlugin *plugin)
 
 int lv_nebulus_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	nebulus_sound (plugin->private, audio);
-	nebulus_draw (plugin->private, video);
+	nebulus_sound (plugin->priv, audio);
+	nebulus_draw (plugin->priv, video);
 
 	return 0;
 }

@@ -1,3 +1,9 @@
+2004-07-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Bump libvisual requirement to 0.1.6.
+
+	* src/nebulus.c: renamed private to priv to adopt to API changes.
+
 2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/*.bmp, *texture*.c:
