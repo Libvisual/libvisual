@@ -18,7 +18,7 @@ extern "C" {
 #define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_INTEGER, NULL, {val, 0, 0}}
 #define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_FLOAT, NULL, {0, val, 0}}
 #define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ {}, NULL, name, VISUAL_PARAM_TYPE_DOUBLE, NULL, {0, 0, val}}
-#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ {}, NULL, name, VISUAL_PARAM_TYPE_COLOR, NULL, {0, 0, 0}, {r, g, b, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ {}, NULL, name, VISUAL_PARAM_TYPE_COLOR, NULL, {0, 0, 0}, {{}, r, g, b, 0}}
 #define VISUAL_PARAM_LIST_END				{ {}, NULL, NULL, VISUAL_PARAM_TYPE_END }
 
 #define VISUAL_PARAM_CALLBACK_ID_MAX	2147483647
