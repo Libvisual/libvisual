@@ -32,7 +32,7 @@ fi
 
 # Checks for libraries.
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.7, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.2.0, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([*** libvisual not found.
 			libvisual is needed to build this package.
