@@ -1,4 +1,10 @@
+2004-07-12  Duilio Protti <dprotti@users.sourceforge.net>
+	
+	* es.po: updated (about window).
+
 2004-07-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* LINGUAS: Added nl.
 	* LINGUS: Added fr.
 	* fr.po: Added complete France translation by Jean-Christophe.
 
@@ -7,6 +13,7 @@
 	* nl.po: Added file to CVS, not yet translated tho.
 
 2004-07-12  Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>
+
 	* LINGUAS: added pt_BR
 
 2004-07-11  Duilio Protti <dprotti@users.sourceforge.net>

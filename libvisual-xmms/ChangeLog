@@ -1,5 +1,11 @@
+2004-07-12  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* Makefile.am: po is scanned after src directory.
+	* src/about.c: about window redesigned.
+
 2004-07-12  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* configure.ac: Adding nl to ALL_LINGUAS.
 	* configure.ac: Adding fr, pt_BR to ALL_LINGUAS.
 
 2004-07-12  Dennis Smit  <ds@nerds-incorporated.org>
@@ -10,6 +16,7 @@
 
 	* po/POTFILES.in: added.
 	* po/LINGUAS: added.
+	* src/gettext.h: added.
 	* autogen.sh: modified to run gettextize in order to create
 	files neede for internationalization support.
 

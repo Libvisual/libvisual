@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
-"POT-Creation-Date: 2004-07-11 22:54-0300\n"
+"POT-Creation-Date: 2004-07-12 23:29-0300\n"
 "PO-Revision-Date: 2004-07-11 16:48-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 
 #: src/main.c:107
 msgid "Cannot get options"
-msgstr ""
+msgstr "No se puede leer las opciones"
 
 #: src/config_gui.c:49
 msgid "LibVisual XMMS Plugin"
-msgstr ""
+msgstr "LibVisual XMMS Plugin"
 
 #: src/config_gui.c:61
 msgid "Fullscreen"
@@ -33,6 +33,8 @@ msgid ""
 "You can also toggle between normal and fullscreen mode by pressing key TAB "
 "or F11"
 msgstr ""
+"También puede cambiar entre modo normal y modo de pantalla completa "
+"presionando las teclas TAB o F11"
 
 #: src/config_gui.c:70
 msgid "All plugins"
@@ -40,11 +42,11 @@ msgstr "Todos los plugins"
 
 #: src/config_gui.c:78
 msgid "Only GL plugins"
-msgstr "Plugins GL solamente"
+msgstr "Solamente plugins que utilizan GL"
 
 #: src/config_gui.c:86
 msgid "Only non Gl plugins"
-msgstr "Plugins no GL solamente"
+msgstr "Solamente plugins que no utilizan GL"
 
 #: src/config_gui.c:101
 msgid "Maximum Frames Per Second:"
@@ -68,29 +70,59 @@ msgstr "Cancelar"
 
 #: src/config_gui.c:222
 msgid "Couldn't create replacement pixmap."
-msgstr ""
+msgstr "No se puede crear mapa de píxeles de reemplazo."
 
 #: src/config_gui.c:267
 #, c-format
 msgid "Couldn't find pixmap file: %s"
-msgstr ""
+msgstr "No se encuentra archivo de mapa de píxeles: %s"
 
 #: src/config_gui.c:276
 #, c-format
 msgid "Error loading pixmap file: %s"
-msgstr ""
+msgstr "Error al cargar archivo de mapa de píxeles: %s"
 
-#: src/about.c:37
+#: src/about.c:57
+#, fuzzy
+msgid "About Libvisual XMMS Plugin"
+msgstr "LibVisual XMMS Plugin"
+
+#: src/about.c:90
+#, fuzzy
 msgid ""
+"Libvisual XMMS Plugin\n"
 "\n"
-"Libvisual xmms plugin\n"
+"Copyright (C) 2004, Duilio Protti <dprotti@users.sourceforge.net>\n"
+"Dennis Smit <ds@nerds-incorporated.org>\n"
+"\n"
+"The Libvisual XMMS Plugin, more information about Libvisual can be found at\n"
+"http://libvisual.sf.net\n"
+msgstr ""
+"\n"
+"Libvisual XMMS plugin\n"
 "Copyright (C) 2004, Duilio Protti <dprotti@fceia.unr.edu.ar>\n"
-" Dennis Smit <ds@nerds-incorporated.org>\n"
-"The libvisual xmms plugin, more information about libvisual can be found at\n"
+"Dennis Smit <ds@nerds-incorporated.org>\n"
+"Plugin Libvisual para XMMS, puede encontrarse más información sobre "
+"Libvisual en\n"
 "http://libvisual.sf.net\n"
 "\n"
+
+#: src/about.c:92
+msgid "Credits"
 msgstr ""
 
-#: src/about.c:49
+#: src/about.c:114
+msgid ""
+"Brazilian Portuguese: Gustavo Sverzut Barbieri\n"
+"Dutch: Dennis Smit\n"
+"French: Jean-Christophe Hoelt\n"
+"Spanish: Duilio Protti\n"
+msgstr ""
+
+#: src/about.c:116
+msgid "Translators"
+msgstr ""
+
+#: src/about.c:137
 msgid "Close"
 msgstr "Cerrar"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
-"POT-Creation-Date: 2004-07-11 22:54-0300\n"
+"POT-Creation-Date: 2004-07-12 23:29-0300\n"
 "PO-Revision-Date: 2004-07-12 22:27+0200\n"
 "Last-Translator: Dennis Smit <ds@nerds-incorporated.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -79,17 +79,37 @@ msgstr ""
 msgid "Error loading pixmap file: %s"
 msgstr ""
 
-#: src/about.c:37
-msgid ""
-"\n"
-"Libvisual xmms plugin\n"
-"Copyright (C) 2004, Duilio Protti <dprotti@fceia.unr.edu.ar>\n"
-" Dennis Smit <ds@nerds-incorporated.org>\n"
-"The libvisual xmms plugin, more information about libvisual can be found at\n"
-"http://libvisual.sf.net\n"
-"\n"
+#: src/about.c:57
+msgid "About Libvisual XMMS Plugin"
 msgstr ""
 
-#: src/about.c:49
+#: src/about.c:90
+msgid ""
+"Libvisual XMMS Plugin\n"
+"\n"
+"Copyright (C) 2004, Duilio Protti <dprotti@users.sourceforge.net>\n"
+"Dennis Smit <ds@nerds-incorporated.org>\n"
+"\n"
+"The Libvisual XMMS Plugin, more information about Libvisual can be found at\n"
+"http://libvisual.sf.net\n"
+msgstr ""
+
+#: src/about.c:92
+msgid "Credits"
+msgstr ""
+
+#: src/about.c:114
+msgid ""
+"Brazilian Portuguese: Gustavo Sverzut Barbieri\n"
+"Dutch: Dennis Smit\n"
+"French: Jean-Christophe Hoelt\n"
+"Spanish: Duilio Protti\n"
+msgstr ""
+
+#: src/about.c:116
+msgid "Translators"
+msgstr ""
+
+#: src/about.c:137
 msgid "Close"
 msgstr ""

@@ -26,8 +26,6 @@ Plugin:
 
 	let the user choose the color depth.
 
-	add a configure dialog with color depth and maximum FPS options.
-	
 Config:
 	Remove keys from an old config format
 
