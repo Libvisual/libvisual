@@ -140,7 +140,7 @@ static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *s
 		memcpy (dest->screenbuffer, src2->screenbuffer, src2->size);
 }
 
-static void flash_32 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	uint8_t *scrbuf;
 	uint8_t *destbuf = dest->screenbuffer;

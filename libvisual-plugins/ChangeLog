@@ -1,3 +1,10 @@
+2004-07-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/flash/morph_flash.c (flash_32):
+	Renamed to flash_24, seen it was prototyped
+	and used in the source like this, aka the plugin
+	was broken.
+
 2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/madspin/madspin.c
