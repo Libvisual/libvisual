@@ -1,0 +1,2 @@
+SUBDIRS = actor input morph
+

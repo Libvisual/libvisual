@@ -1,0 +1,62 @@
+#include <stdlib.h>
+#include <math.h>
+
+#include "def.h"
+#include "struct.h"
+#include "analyser_struct.h"
+#include "jess.h"
+
+const float __magic = 2.0 * PI / 256;
+
+uint8_t courbes_palette(JessPrivate *priv, uint8_t i, int no_courbe)
+{
+	/* Optimisation par Karl Soulabaille */
+	switch(no_courbe)
+	{
+		case 0:
+			return (i * i * i) >> 16; 
+			break;
+		case 1:
+			return (i * i) >> 8;
+			break;
+		case 2:
+			return (uint8_t) i ;
+			break;
+		case 3:
+			return (uint8_t) (128 * fabs(sin(__magic * i)));
+			break;
+		case 4:
+			return 0;
+			break;
+	}
+	return 0;
+}
+
+void random_palette(JessPrivate *priv)
+{
+	int i,j,k,l;
+
+again_mister:
+	;  
+
+	if (priv->conteur.psy == 1)
+		i = 5;
+	else 
+		i = 3;
+
+	j=rand()%i;
+	k=rand()%i;
+	l=rand()%i;
+
+	priv->conteur.triplet = j+10*k+100*l;
+
+	if ((j==k) || (j==l) || (l==k))
+		goto again_mister;
+
+	for (i = 0; i < 256; i++){
+		priv->jess_pal.r[i] = courbes_palette(priv, i, j);
+		priv->jess_pal.g[i] = courbes_palette(priv, i, k);
+		priv->jess_pal.b[i] = courbes_palette(priv, i, l);
+	}
+}
+

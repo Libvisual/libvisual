@@ -1,0 +1,21 @@
+imagesdir = $(datadir)/libvisual/actor/actor_madspin
+images_DATA = star1.bmp \
+	      star2.bmp
+
+EXTRA_DIST = $(images_DATA)
+
+lib_LTLIBRARIES = actor_madspin.la
+
+libdir = $(prefix)/lib/libvisual/actor
+
+LIBS = -L. -L$(prefix)/lib -lGL -lGLU @LV_LIBS@
+
+CFLAGS = -DSTAR_DIR=\""$(imagesdir)/"\"
+
+INCLUDES = $(all_includes) \
+	-I$(top_srcdir) 
+
+actor_madspin_la_LDFLAGS = -module -avoid-version 
+
+actor_madspin_la_SOURCES = madspin.c
+

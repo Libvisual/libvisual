@@ -1,0 +1,119 @@
+build:
+	gl detection is flacky, also fix for the nebula plugin
+
+README:
+	update doc on goom version required
+
+LEGAL:
+	check copyrights add copyright notices to all the files. 
+
+input/esd: (post 0.1)
+	Esd plugin isn't timing.
+	I HATE THE WAY ESD BLOCKS ON EVERYTHING. (actually i just hate esd generally)
+
+(keep in minds that stuff will change within audio after 0.1)
+inputs:
+	esd:
+		Esd plugin isn't timing, should be fixed when buffer queues land before 0.2 (post 0.1)
+		ESD BLOCKS ON LIKE EVERYTHING (post 0.1) (if it is fixable at all)
+	alsa:
+		I would be VERY VERY VERY VERY (VERY) happy if someone could make a good working
+			alsa capture plugin, i tried and failed. (someone else)
+
+	usound:
+		Make an usound server plugin (someone else)
+	
+	artsd:
+		Make an artsd plugin (someone else, i'm not running kde)
+
+	mplayer mmap output:
+		Make an mplayer mmap thingy plugin (someone else)
+
+	jack:
+		Make an jack plugin (someone else)
+
+	Any other input method:
+		Make plugins for these (someone else),
+			remember rather add a plugin than use the callback method
+			so everyone can make use of it.
+
+actors:
+	GLPLUGINS:
+		make sure the states are being resetted very well.
+
+	infinity:
+		build tables in strides instead of blocking (post 0.2)
+		valgrind
+
+	lv_analyzer:
+x		steal from xmms
+
+	lv_gltest:
+		reset all the settings right.
+
+	JESS:
+		build tables in strides instead of blocking (post 0.2)
+		could someone from france PLEASE translate
+			the plugin to english? (post 0.1)
+		valgrind
+
+	cthugha: (suggestion for someone with too much time)
+		http://www.afn.org/~cthugha/
+
+	goom:
+		libgoom:
+			goom links to too much stuff
+			is goom linking to the right thingies?
+			leaking quite seriously
+			use extern "C" stuff in the headers
+			does not compile on alpha (because of mmx, sse, should use a C fallback)
+			make an libvisual gfx effect that enables libvisual
+				plugins to draw within goom
+
+	synaethesia:
+		port the port that is done by the mythtv people (post 0.1).
+
+	oinksie:
+		use the libvisual palette blender
+		fix the 24 bit mode again.
+	
+	gforce: (post 0.3)
+		port that gforce that i've got laying around to a very nice plugin
+			(if someone wants to do this, mail me so i can send
+			you my hacky, not any more working source tree, it's working again,
+			as an xmms plugin using SDL! now we need to port it to libvisual :))
+
+	a gdkpixbuf image loader:
+		make
+
+	auto sched plugin:
+		have a auto schedded bin running in an actor so that
+			gstreamer, xine and such can easily use
+			the auto scheduler.
+
+	More: (post 0.2)
+		When api is stable, start porting over some more xmms plugins.
+
+morph: (lots of these effects can be taken from the demo world, this should turn
+	visuals into scenes rather than standalone plugins, o boy! )
+
+	alphablend:
+		mmx sse optimize.
+
+	tentacle:
+		optimize
+
+	flash:
+		make 16, 24, 32 bits support.
+
+	blockwise flash in, like in the ODD demo:
+		make.
+
+	something:
+		that uses the audio as example.
+
+	burn in:
+		JC says he knew what he was talking about
+			so JC make this !! :)
+
+	

@@ -1,0 +1,20 @@
+Main author, project leader:
+Dennis Smit <synap@nerds-incorporated.org>
+	* Wrote the input/esd plugin.
+	* Wrote the actor/oinksie, lv_scope, lv_analyzer, video_test and goom2
+	  plugins
+	* Ported the JESS, infinite and lv_gltest plugins.
+
+The original JESS work:
+Remi Arquier <arquier@crans.org>
+
+The original Infinity work:
+Julien Carme <julien.carme@acm.org>
+
+The original lv_gltest work, which is the gl analyzer from xmms:
+Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies
+
+Many thanks for quality suggestions and input:
+Jean-Christophe Hoelt <jeko@ios-software.com> (Goom2 main author)
+Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br> (From freevo)
+
