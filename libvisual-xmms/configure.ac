@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual XMMS plugin, 0.1.6, synap@nerds-incorporated.org, libvisual-xmms)
+AC_INIT(Libvisual XMMS plugin, 0.1.7, synap@nerds-incorporated.org, libvisual-xmms)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_PREFIX_DEFAULT(/usr)
@@ -61,7 +61,7 @@ if test x$XMMS_CONFIG = xno ; then
 fi
 AM_PATH_XMMS(1.2.0,,AC_MSG_ERROR([*** XMMS >= 1.0.0 not installed - please install first]))
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.6, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.7, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
 	AC_MSG_ERROR([libvisual not found, libvisual is needed to build this package,
 you can download libvisual at http://libvisual.sf.net/])

@@ -31,7 +31,7 @@ AC_CHECK_HEADERS([unistd.h])
 AC_C_CONST
 AC_C_INLINE # reserved for future
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.6, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.7, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
 	AC_MSG_ERROR([libvisual not found, libvisual is needed to build this package,
 you can download libvisual at http://libvisual.sf.net/])
