@@ -5,7 +5,7 @@
  * @author Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  * License: GNU Lesser General Public License (GNU/LGPL)
  ******************************************************************************
- * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.9 2004-12-31 19:11:30 synap Exp $
+ * $Header: /home/starlon/Downloads/libvisual-cvs/backup/libvisual-plugins/plugins/input/mplayer/input_mplayer.c,v 1.10 2005-01-01 12:22:30 synap Exp $
  */
 
 #include <stdio.h>
@@ -30,16 +30,14 @@
 
 /* Data structures ***********************************************************/
 
-typedef struct
-{
+typedef struct {
 	int nch;                  /**< number of channels */
 	int bs;                   /**< buffer size */
 	unsigned long long count; /**< sample counter */
 } mplayer_data_t;
 
 
-typedef struct 
-{
+typedef struct {
 	int fd;                    /**< file descriptor to mmaped area */
 	char *sharedfile;          /**< shared file name */
 	mplayer_data_t *mmap_area; /**< mmap()'ed area */
@@ -76,7 +74,7 @@ const VisPluginInfo *get_plugin_info( int *count )
 			.plugname = "mplayer",
 			.name = "mplayer",
 			.author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-			.version = "$Revision: 1.9 $",
+			.version = "$Revision: 1.10 $",
 			.about = "Use data exported from MPlayer",
 			.help = "This plugin uses data exported from 'mplayer -af export'.",
 
