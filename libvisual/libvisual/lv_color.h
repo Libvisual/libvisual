@@ -27,7 +27,7 @@ VisColor *visual_color_new (void);
 int visual_color_compare (VisColor *src1, VisColor *src2);
 int visual_color_from_hsv (VisColor *color, float h, float s, float v);
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
-int visual_color_copy (VisColor *dest, const VisColor *src);
+int visual_color_copy (VisColor *dest, VisColor *src);
 
 #ifdef __cplusplus
 }

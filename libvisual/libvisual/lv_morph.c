@@ -13,7 +13,7 @@ extern VisList *__lv_plugins_morph;
 
 static int morph_dtor (VisObject *object);
 
-static VisMorphPlugin *get_morph_plugin (const VisMorph *morph);
+static VisMorphPlugin *get_morph_plugin (VisMorph *morph);
 
 static int morph_dtor (VisObject *object)
 {
@@ -29,7 +29,7 @@ static int morph_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
-static VisMorphPlugin *get_morph_plugin (const VisMorph *morph)
+static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
 {
 	VisMorphPlugin *morphplugin;
 
@@ -53,7 +53,7 @@ static VisMorphPlugin *get_morph_plugin (const VisMorph *morph)
  *
  * @return VisPluginData that is encapsulated in the VisMorph, possibly NULL.
  */
-VisPluginData *visual_morph_get_plugin (const VisMorph *morph)
+VisPluginData *visual_morph_get_plugin (VisMorph *morph)
 {
 	        return morph->plugin;
 }
@@ -63,7 +63,7 @@ VisPluginData *visual_morph_get_plugin (const VisMorph *morph)
  *
  * @return a VisList containing the morph plugins in the plugin registry.
  */
-const VisList *visual_morph_get_list ()
+VisList *visual_morph_get_list ()
 {
 	return __lv_plugins_morph;
 }
@@ -173,7 +173,7 @@ int visual_morph_realize (VisMorph *morph)
  *
  * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on succes, -1 on failure
  */
-int visual_morph_get_supported_depth (const VisMorph *morph)
+int visual_morph_get_supported_depth (VisMorph *morph)
 {
 	VisPluginData *plugin;
 	VisMorphPlugin *morphplugin;
@@ -335,7 +335,7 @@ int visual_morph_is_done (VisMorph *morph)
  *
  * @return TRUE or FALSE, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_MORPH_PLUGIN_NULL on failure. 
  */
-int visual_morph_requests_audio (const VisMorph *morph)
+int visual_morph_requests_audio (VisMorph *morph)
 {
 	VisMorphPlugin *morphplugin;
 

@@ -9,23 +9,8 @@
 #include "lv_log.h"
 #include "lv_mem.h"
 
-/*#define FIXED_POINT_SCALER 1*/
-
 #define HAVE_ALLOCATED_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER)
 #define HAVE_EXTERNAL_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER)
-
-/* 32-bit fixed point settings */
-#define FP_FRACTIONAL_SIZE_LOG2		(fixed32_t) 8
-#define FP_FRACTIONAL_SIZE		((fixed32_t) 1 << FP_FRACTIONAL_SIZE_LOG2)
-#define FP_INT(i)			((fixed32_t) (i) << FP_FRACTIONAL_SIZE_LOG2)
-#define FP_TO_INT(f)			((fixed32_t) (f) >> FP_FRACTIONAL_SIZE_LOG2)
-#define FP_FLOAT(f)			((float) (f) * FP_FRACTIONAL_SIZE)
-#define FP_TO_FLOAT(f)			((float) (f) / FP_FRACTIONAL_SIZE)
-// FIXME Use in fixed point scaler, however it crashes right now! 
-#define FP_HALF(f)			((fixed32_t) (f) << (FP_FRACTIONAL_SIZE_LOG2-1))
-#define FP_ROUND_TO_INT(f)		FP_TO_INT((f)+FP_HALF(f))
-
-typedef uint32_t fixed32_t;
 
 
 typedef struct {
@@ -1487,10 +1472,6 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 	return VISUAL_OK;
 }
 
-#ifndef FIXED_POINT_SCALER
-
-/* FIXME redo this using bresenham!! */
-
 /* 8-bit nearest pixel scaler, floating point version */
 static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 {
@@ -1597,35 +1578,6 @@ static int scale_nearest_32 (VisVideo *dest, const VisVideo *src)
 
 	return VISUAL_OK;
 }
-
-#else
-
-/* FIXME add all the fixed point versions, and don't forget to compensate for the pitch difference at the
- * end of the very inner loop
- */
-/* 8-bit nearest pixel scaler, fixed point version */
-static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
-{	 
-	int x, y;
-	fixed32_t u, v, du, dv;
-	uint8_t *dest_pixel, *src_pixel_row;
-
-	u = 0; du = FP_INT(src->width)	/ dest->width;
-	v = 0; dv = FP_INT(src->height) / dest->height;
-
-	dest_pixel = dest->pixels;
-
-	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
-		src_pixel_row = (uint8_t *) src->pixel_rows[FP_TO_INT(v)];
-
-		for (x = 0, u = 0; x < dest->width; x++, u += du)
-			*dest_pixel++ = src_pixel_row[FP_TO_INT(u)];
-	}
-
-	return VISUAL_OK;
-}
-
-#endif
 
 static int scale_bilinear_8 (VisVideo *dest, const VisVideo *src)
 {

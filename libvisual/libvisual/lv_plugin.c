@@ -18,7 +18,7 @@ static int plugin_ref_dtor (VisObject *object);
 static int plugin_dtor (VisObject *object);
 
 static int plugin_add_dir_to_list (VisList *list, const char *dir);
-static const char *get_delim_node (char *str, char delim, int index);
+static char *get_delim_node (const char *str, char delim, int index);
 
 static int plugin_info_dtor (VisObject *object)
 {
@@ -91,11 +91,11 @@ static int plugin_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
-static const char *get_delim_node (char *str, char delim, int index)
+static char *get_delim_node (const char *str, char delim, int index)
 {
 	char *buf;
-	char *start;
-	char *end = str;
+	const char *start;
+	const char *end = str;
 	int i = 0;
 
 	do {
@@ -159,7 +159,7 @@ VisPluginInfo *visual_plugin_info_new ()
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
  */
-int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src)
+int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
@@ -255,7 +255,7 @@ VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin)
  *
  * @return The VisPluginInfo within the VisPluginData, or NULL on failure.
  */
-const VisPluginInfo *visual_plugin_get_info (const VisPluginData *plugin)
+VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 
@@ -303,7 +303,7 @@ VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
  */
 void *visual_plugin_get_specific (VisPluginData *plugin)
 {
-	const VisPluginInfo *pluginfo;
+	VisPluginInfo *pluginfo;
 
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 
@@ -358,7 +358,7 @@ VisPluginData *visual_plugin_new ()
  * 
  * @return VisList of references to all the libvisual plugins.
  */
-const VisList *visual_plugin_get_registry ()
+VisList *visual_plugin_get_registry ()
 {
 	return __lv_plugins;
 }
@@ -373,7 +373,7 @@ const VisList *visual_plugin_get_registry ()
  *
  * @return Newly allocated VisList that is a filtered version of the plugin registry.
  */
-VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *domain)
+VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 {
 	VisList *list;
 	VisListEntry *entry = NULL;
@@ -413,7 +413,7 @@ VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *dom
  *
  * @return The name of the next plugin or NULL on failure.
  */
-const char *visual_plugin_get_next_by_name (const VisList *list, const char *name)
+const char *visual_plugin_get_next_by_name (VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;
@@ -447,7 +447,7 @@ const char *visual_plugin_get_next_by_name (const VisList *list, const char *nam
  *
  * @return The name of the next plugin or NULL on failure.
  */
-const char *visual_plugin_get_prev_by_name (const VisList *list, const char *name)
+const char *visual_plugin_get_prev_by_name (VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref, *pref = NULL;
@@ -575,7 +575,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 {
 	VisPluginData *plugin;
 	VisTime time_;
-	const VisPluginInfo *pluginfo;
+	VisPluginInfo *pluginfo;
 	VisPluginGetInfoFunc get_plugin_info;
 	void *handle;
 	int cnt;
@@ -609,7 +609,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 		return NULL;
 	}
 
-	pluginfo = get_plugin_info (&cnt);
+	pluginfo = VISUAL_PLUGININFO (get_plugin_info (&cnt));
 
 	if (pluginfo == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info while loading.");
@@ -673,7 +673,7 @@ int visual_plugin_realize (VisPluginData *plugin)
 VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 {
 	VisPluginRef **ref;
-	const VisPluginInfo *plug_info;
+	VisPluginInfo *plug_info;
 	VisPluginInfo *dup_info;
 	const char *plug_name;
 	VisPluginGetInfoFunc get_plugin_info;
@@ -700,7 +700,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		return NULL;
 	}
 
-	plug_info = get_plugin_info (&cnt);
+	plug_info = VISUAL_PLUGININFO (get_plugin_info (&cnt));
 
 	if (plug_info == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info");
@@ -777,7 +777,7 @@ VisList *visual_plugin_get_list (const char **paths)
  *
  * @return The VisPluginRef for the plugin if found, or NULL when not found.
  */
-VisPluginRef *visual_plugin_find (const VisList *list, const char *name)
+VisPluginRef *visual_plugin_find (VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;

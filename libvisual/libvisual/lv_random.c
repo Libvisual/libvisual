@@ -67,7 +67,7 @@ int visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed)
  *
  * @return The initial random seed.
  */
-uint32_t visual_random_context_get_seed (const VisRandomContext *rcontext)
+uint32_t visual_random_context_get_seed (VisRandomContext *rcontext)
 {
 	visual_log_return_val_if_fail (rcontext != NULL, 0);
 
@@ -83,7 +83,7 @@ uint32_t visual_random_context_get_seed (const VisRandomContext *rcontext)
  *
  * @return The current state seed for the randomizer.
  */
-uint32_t visual_random_context_get_seed_state (const VisRandomContext *rcontext)
+uint32_t visual_random_context_get_seed_state (VisRandomContext *rcontext)
 {
 	visual_log_return_val_if_fail (rcontext != NULL, 0);
 

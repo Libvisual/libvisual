@@ -52,7 +52,7 @@ VisPalette *visual_palette_new (int ncolors)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL or -VISUAL_ERROR_PALETTE_SIZE on failure.
  */
-int visual_palette_copy (VisPalette *dest, const VisPalette *src)
+int visual_palette_copy (VisPalette *dest, VisPalette *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PALETTE_NULL);
@@ -112,7 +112,7 @@ int visual_palette_free_colors (VisPalette *pal)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL or -VISUAL_ERROR_PALETTE_SIZE on failure.
  */
-int visual_palette_blend (VisPalette *dest, const VisPalette *src1, const VisPalette *src2, float rate)
+int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate)
 {
 	int i;
 

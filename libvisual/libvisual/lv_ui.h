@@ -216,7 +216,7 @@ struct _VisUILabel {
 struct _VisUIImage {
 	VisUIWidget		 widget;	/**< The VisUIWidget data. */
 
-	const VisVideo		*image;		/**< The VisUIImage containing the image data. */
+	VisVideo		*image;		/**< The VisUIImage containing the image data. */
 };
 
 /**
@@ -237,7 +237,7 @@ struct _VisUISeparator {
 struct _VisUIMutator {
 	VisUIWidget		 widget;	/**< The VisUIWidget data. */
 
-	const VisParamEntry	*param;		/**< The VisParamEntry parameter that is associated with this
+	VisParamEntry		*param;		/**< The VisParamEntry parameter that is associated with this
 						 * VisUIMutator. */
 };
 
@@ -316,7 +316,7 @@ struct _VisUIChoiceEntry {
 
 	const char		*name;		/**< Name of this VisChoiceEntry. */
 	
-	const VisParamEntry	*value;		/**< Link to the VisParamEntry that contains the value
+	VisParamEntry		*value;		/**< Link to the VisParamEntry that contains the value
 						 * for this VisChoiceEntry. */
 };
 
@@ -327,7 +327,7 @@ struct _VisUIChoiceEntry {
 struct _VisUIChoice {
 	VisUIMutator		 mutator;	/**< The VisUIMutator data. */
 
-	const VisParamEntry	*param;		/**< Pointer to the VisParamEntry that is the target to
+	VisParamEntry		*param;		/**< Pointer to the VisParamEntry that is the target to
 						 * contain the actual value. */
 
 	VisUIChoiceList		 choices;	/**< The different choices present. */
@@ -398,15 +398,15 @@ int visual_ui_label_set_text (VisUILabel *label, const char *text);
 int visual_ui_label_set_bold (VisUILabel *label, int bold);
 const char *visual_ui_label_get_text (VisUILabel *label);
 
-VisUIWidget *visual_ui_image_new (const VisVideo *video);
-int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video);
-const VisVideo *visual_ui_image_get_video (VisUIImage *image);
+VisUIWidget *visual_ui_image_new (VisVideo *video);
+int visual_ui_image_set_video (VisUIImage *image, VisVideo *video);
+VisVideo *visual_ui_image_get_video (VisUIImage *image);
 
 VisUIWidget *visual_ui_separator_new (VisUIOrientType orient);
 VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator);
 
-int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *param);
-const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator);
+int visual_ui_mutator_set_param (VisUIMutator *mutator, VisParamEntry *param);
+VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator);
 
 int visual_ui_range_set_properties (VisUIRange *range, double min, double max, double step, int precision);
 int visual_ui_range_set_max (VisUIRange *range, double max);
@@ -423,9 +423,9 @@ VisUIWidget *visual_ui_numeric_new (void);
 
 VisUIWidget *visual_ui_color_new (void);
 
-VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, const VisParamEntry *value);
-int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value);
-int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramchoices);
+VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, VisParamEntry *value);
+int visual_ui_choice_add (VisUIChoice *choice, const char *name, VisParamEntry *value);
+int visual_ui_choice_add_many (VisUIChoice *choice, VisParamEntry *paramchoices);
 int visual_ui_choice_free_choices (VisUIChoice *choice);
 int visual_ui_choice_set_active (VisUIChoice *choice, int index);
 int visual_ui_choice_get_active (VisUIChoice *choice);

@@ -53,7 +53,7 @@ struct _VisInput {
 /* prototypes */
 VisPluginData *visual_input_get_plugin (VisInput *input);
 
-const VisList *visual_input_get_list (void);
+VisList *visual_input_get_list (void);
 const char *visual_input_get_next_by_name (const char *name);
 const char *visual_input_get_prev_by_name (const char *name);
 int visual_input_valid_by_name (const char *name);

@@ -51,7 +51,7 @@ typedef struct _VisParamEntry VisParamEntry;
  * @arg param Pointer to the param that has been changed, and to which the callback was set.
  * @arg priv Private argument, that can be set when adding the callback to the callback list.
  */
-typedef void (*VisParamChangedCallbackFunc)(const VisParamEntry *param, void *priv);
+typedef void (*VisParamChangedCallbackFunc)(VisParamEntry *param, void *priv);
 
 
 /**
@@ -126,7 +126,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer);
 int visual_param_entry_set_float (VisParamEntry *param, float floating);
 int visual_param_entry_set_double (VisParamEntry *param, double doubleflt);
 int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, uint8_t b);
-int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor *color);
+int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color);
 int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal);
 
 char *visual_param_entry_get_name (VisParamEntry *param);

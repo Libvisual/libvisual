@@ -70,8 +70,8 @@ int visual_songinfo_set_song (VisSongInfo *songinfo, char *song);
 int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover);
 int visual_songinfo_mark (VisSongInfo *songinfo);
 long visual_songinfo_age (VisSongInfo *songinfo);
-int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src);
-int visual_songinfo_compare (const VisSongInfo *s1, const VisSongInfo *s2);
+int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src);
+int visual_songinfo_compare (VisSongInfo *s1, VisSongInfo *s2);
 
 #ifdef __cplusplus
 }

@@ -27,10 +27,10 @@ struct _VisPalette {
 };
 
 VisPalette *visual_palette_new (int ncolors);
-int visual_palette_copy (VisPalette *dest, const VisPalette *src);
+int visual_palette_copy (VisPalette *dest, VisPalette *src);
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors);
 int visual_palette_free_colors (VisPalette *pal);
-int visual_palette_blend (VisPalette *dest, const VisPalette *src1, const VisPalette *src2, float rate);
+int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate);
 
 #ifdef __cplusplus
 }

@@ -36,7 +36,7 @@ struct _VisFFTState {
 };
 
 VisFFTState *visual_fft_init (void);
-void visual_fft_perform (const int16_t *input, float *output, VisFFTState *state);
+void visual_fft_perform (int16_t *input, float *output, VisFFTState *state);
 
 #ifdef __cplusplus
 }

@@ -40,8 +40,8 @@ extern VisRandomContext __lv_internal_random_context;
 /* Context management */
 VisRandomContext *visual_random_context_new (uint32_t seed);
 int visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed);
-uint32_t visual_random_context_get_seed (const VisRandomContext *rcontext);
-uint32_t visual_random_context_get_seed_state (const VisRandomContext *rcontext);
+uint32_t visual_random_context_get_seed (VisRandomContext *rcontext);
+uint32_t visual_random_context_get_seed_state (VisRandomContext *rcontext);
 
 /* Context random functions */
 uint32_t visual_random_context_int (VisRandomContext *rcontext);

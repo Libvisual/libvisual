@@ -57,9 +57,9 @@ struct _VisMorph {
 	VisMorphMode	 mode;		/**< Private entry that holds the mode of morphing. */
 };
 
-VisPluginData *visual_morph_get_plugin (const VisMorph *morph);
+VisPluginData *visual_morph_get_plugin (VisMorph *morph);
 
-const VisList *visual_morph_get_list (void);
+VisList *visual_morph_get_list (void);
 const char *visual_morph_get_next_by_name (const char *name);
 const char *visual_morph_get_prev_by_name (const char *name);
 int visual_morph_valid_by_name (const char *name);
@@ -68,7 +68,7 @@ VisMorph *visual_morph_new (const char *morphname);
 
 int visual_morph_realize (VisMorph *morph);
 
-int visual_morph_get_supported_depth (const VisMorph *morph);
+int visual_morph_get_supported_depth (VisMorph *morph);
 
 int visual_morph_set_video (VisMorph *morph, VisVideo *video);
 int visual_morph_set_time (VisMorph *morph, VisTime *time);
@@ -80,7 +80,7 @@ VisPalette *visual_morph_get_palette (VisMorph *morph);
 
 int visual_morph_is_done (VisMorph *morph);
 
-int visual_morph_requests_audio (const VisMorph *morph);
+int visual_morph_requests_audio (VisMorph *morph);
 
 int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
 

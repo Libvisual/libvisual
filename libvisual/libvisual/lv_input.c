@@ -62,7 +62,7 @@ VisPluginData *visual_input_get_plugin (VisInput *input)
  *
  * @return An VisList of VisPluginRef's containing the input plugins in the plugin registry.
  */
-const VisList *visual_input_get_list ()
+VisList *visual_input_get_list ()
 {
 	return __lv_plugins_input;
 }

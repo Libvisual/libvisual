@@ -55,10 +55,10 @@ int visual_list_destroy_elements (VisList *list);
 
 int visual_list_set_destroyer (VisList *list, VisListDestroyerFunc destroyer);
 
-void *visual_list_next (const VisList *list, VisListEntry **le);
-void *visual_list_prev (const VisList *list, VisListEntry **le);
+void *visual_list_next (VisList *list, VisListEntry **le);
+void *visual_list_prev (VisList *list, VisListEntry **le);
 
-void *visual_list_get (const VisList *list, int index);
+void *visual_list_get (VisList *list, int index);
 
 int visual_list_add_at_begin (VisList *list, void *data);
 int visual_list_add (VisList *list, void *data);

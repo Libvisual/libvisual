@@ -688,7 +688,7 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor *color)
+int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color)
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 

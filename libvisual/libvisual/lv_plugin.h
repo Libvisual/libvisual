@@ -259,7 +259,7 @@ struct _VisPluginInfo {
 
 	uint32_t		 struct_size;	/**< Struct size, should always be set for compatability checks. */
 	uint32_t		 api_version;	/**< API version, compile plugins always with .api_version = VISUAL_PLUGIN_API_VERSION. */
-	const char		*type;		/**< Plugin type, in the format of "domain:package:type", as example,
+	char			*type;		/**< Plugin type, in the format of "domain:package:type", as example,
 						 * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
 						 * instead of filling in the string yourself. */
 	char			*plugname;	/**< The plugin name as it's saved in the registry. */
@@ -288,7 +288,7 @@ struct _VisPluginData {
 
 	VisPluginRef		*ref;		/**< Pointer to the plugin references corresponding to this VisPluginData. */
 
-	const VisPluginInfo	*info;		/**< Pointer to the VisPluginInfo that is obtained from the plugin. */
+	VisPluginInfo		*info;		/**< Pointer to the VisPluginInfo that is obtained from the plugin. */
 
 	VisEventQueue		 eventqueue;	/**< The plugin it's VisEventQueue for queueing events. */
 	VisParamContainer	*params;	/**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
@@ -360,14 +360,14 @@ struct _VisMorphPlugin {
 
 /* prototypes */
 VisPluginInfo *visual_plugin_info_new (void);
-int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src);
+int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src);
 
 int visual_plugin_events_pump (VisPluginData *plugin);
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
 int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget);
 VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin);
 
-const VisPluginInfo *visual_plugin_get_info (const VisPluginData *plugin);
+VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
 
 VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
 
@@ -379,11 +379,11 @@ VisPluginRef *visual_plugin_ref_new (void);
 
 VisPluginData *visual_plugin_new (void);
 
-const VisList *visual_plugin_get_registry (void);
-VisList *visual_plugin_registry_filter (const VisList *pluglist, const char *domain);
+VisList *visual_plugin_get_registry (void);
+VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain);
 
-const char *visual_plugin_get_next_by_name (const VisList *list, const char *name);
-const char *visual_plugin_get_prev_by_name (const VisList *list, const char *name);
+const char *visual_plugin_get_next_by_name (VisList *list, const char *name);
+const char *visual_plugin_get_prev_by_name (VisList *list, const char *name);
 
 int visual_plugin_unload (VisPluginData *plugin);
 VisPluginData *visual_plugin_load (VisPluginRef *ref);
@@ -392,7 +392,7 @@ int visual_plugin_realize (VisPluginData *plugin);
 VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
 VisList *visual_plugin_get_list (const char **paths);
 
-VisPluginRef *visual_plugin_find (const VisList *list, const char *name);
+VisPluginRef *visual_plugin_find (VisList *list, const char *name);
 
 int visual_plugin_get_api_version (void);
 

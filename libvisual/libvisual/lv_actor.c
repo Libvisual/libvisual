@@ -64,7 +64,7 @@ static VisActorPlugin *get_actor_plugin (VisActor *actor)
  *
  * @return VisPluginData that is encapsulated in the VisActor, possibly NULL.
  */
-VisPluginData *visual_actor_get_plugin (const VisActor *actor)
+VisPluginData *visual_actor_get_plugin (VisActor *actor)
 {
 	return actor->plugin;
 }
@@ -560,7 +560,7 @@ static int negotiate_video (VisActor *actor, int noevent)
  * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on succes,
  * 	-VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-int visual_actor_get_supported_depth (const VisActor *actor)
+int visual_actor_get_supported_depth (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 

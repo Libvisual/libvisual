@@ -114,7 +114,7 @@ VisFFTState *visual_fft_init ()
  * @param output FFT analyse output.
  * @param state Contains the FFT context needed to run the FFT calculation.
  */
-void visual_fft_perform (const int16_t *input, float *output, VisFFTState *state)
+void visual_fft_perform (int16_t *input, float *output, VisFFTState *state)
 {
 	/* Convert data from sound format to be ready for FFT */
 	_lv_fft_prepare (input, state->real, state->imag);

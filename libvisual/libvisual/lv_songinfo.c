@@ -13,7 +13,7 @@ static int songinfo_dtor (VisObject *object)
 	visual_songinfo_free_strings (songinfo);
 
 	if (songinfo->cover != NULL)
-		visual_object_unref (songinfo->cover);
+		visual_object_unref (VISUAL_OBJECT (songinfo->cover));
 
 	songinfo->cover = NULL;
 
@@ -235,7 +235,7 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	if (songinfo->cover != NULL)
-		visual_object_unref (songinfo->cover);
+		visual_object_unref (VISUAL_OBJECT (songinfo->cover));
 
 	/* The coverart image */
 	songinfo->cover = visual_video_new ();
@@ -257,7 +257,7 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	visual_video_scale (songinfo->cover, &dtransform, VISUAL_VIDEO_SCALE_BILINEAR);
 
 	/* Unref the depth transform video */
-	visual_object_unref (&dtransform);
+	visual_object_unref (VISUAL_OBJECT (&dtransform));
 
 	return VISUAL_OK;
 }
@@ -312,7 +312,7 @@ long visual_songinfo_age (VisSongInfo *songinfo)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_SONGINFO_NULL on failure.
  */
-int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
+int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_SONGINFO_NULL);
@@ -354,7 +354,7 @@ int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
  *
  * @return FALSE on different, TRUE on same, -VISUAL_ERROR_SONGINFO_NULL on failure.
  */
-int visual_songinfo_compare (const VisSongInfo *s1, const VisSongInfo *s2)
+int visual_songinfo_compare (VisSongInfo *s1, VisSongInfo *s2)
 {
 	int diff = 0;
 

@@ -40,18 +40,18 @@ struct _VisTimer {
 VisTime *visual_time_new (void);
 int visual_time_get (VisTime *time_);
 int visual_time_set (VisTime *time_, long sec, long usec);
-int visual_time_difference (VisTime *dest, const VisTime *time1, const VisTime *time2);
-int visual_time_copy (VisTime *dest, const VisTime *src);
+int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2);
+int visual_time_copy (VisTime *dest, VisTime *src);
 int visual_time_usleep (unsigned long microseconds);
 
 VisTimer *visual_timer_new (void);
-int visual_timer_is_active (const VisTimer *timer);
+int visual_timer_is_active (VisTimer *timer);
 int visual_timer_start (VisTimer *timer);
 int visual_timer_stop (VisTimer *timer);
 int visual_timer_continue (VisTimer *timer);
-int visual_timer_elapsed (const VisTimer *timer, VisTime *time_);
-int visual_timer_has_past (const VisTimer *timer, VisTime *time_);
-int visual_timer_has_past_by_values (const VisTimer *timer, long sec, long usec);
+int visual_timer_elapsed (VisTimer *timer, VisTime *time_);
+int visual_timer_has_past (VisTimer *timer, VisTime *time_);
+int visual_timer_has_past_by_values (VisTimer *timer, long sec, long usec);
 
 #ifdef __cplusplus
 }

@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.19 2004-12-08 22:54:25 synap Exp $
+ *	$Id: lv_list.c,v 1.20 2004-12-22 17:05:10 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -146,7 +146,7 @@ int visual_list_set_destroyer (VisList *list, VisListDestroyerFunc destroyer)
  *
  * @return The data element of the next entry, or NULL.
  */
-void *visual_list_next (const VisList *list, VisListEntry **le)
+void *visual_list_next (VisList *list, VisListEntry **le)
 {
 	visual_log_return_val_if_fail (list != NULL, NULL);
 	visual_log_return_val_if_fail (le != NULL, NULL);
@@ -177,7 +177,7 @@ void *visual_list_next (const VisList *list, VisListEntry **le)
  *
  * @return The data element of the previous entry, or NULL.
  */
-void *visual_list_prev (const VisList *list, VisListEntry **le)
+void *visual_list_prev (VisList *list, VisListEntry **le)
 {
 	visual_log_return_val_if_fail (list != NULL, NULL);
 	visual_log_return_val_if_fail (le != NULL, NULL);
@@ -203,7 +203,7 @@ void *visual_list_prev (const VisList *list, VisListEntry **le)
  *
  * @return The data element of the requested entry, or NULL.
  */
-void *visual_list_get (const VisList *list, int index)
+void *visual_list_get (VisList *list, int index)
 {
 	VisListEntry *le = NULL;
 	void *data = NULL;

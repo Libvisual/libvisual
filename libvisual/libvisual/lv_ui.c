@@ -77,7 +77,7 @@ static int widget_dtor (VisObject *object)
 	VisUIWidget *widget = VISUAL_UI_WIDGET (object);
 
 	if (widget->tooltip != NULL)
-		visual_mem_free (widget->tooltip);
+		visual_mem_free ((char *) widget->tooltip);
 
 	widget->tooltip = NULL;
 
@@ -141,7 +141,7 @@ int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	if (widget->tooltip != NULL)
-		visual_mem_free (widget->tooltip);
+		visual_mem_free ((char *) widget->tooltip);
 	
 	widget->tooltip = strdup (tooltip);
 
@@ -528,7 +528,7 @@ const char *visual_ui_label_get_text (VisUILabel *label)
  *
  * @return The newly created VisUIImage in the form of a VisUIWidget.
  */
-VisUIWidget *visual_ui_image_new (const VisVideo *video)
+VisUIWidget *visual_ui_image_new (VisVideo *video)
 {
 	VisUIImage *image;
 
@@ -554,7 +554,7 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_IMAGE_NULL on failure.
  */
-int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video)
+int visual_ui_image_set_video (VisUIImage *image, VisVideo *video)
 {
 	visual_log_return_val_if_fail (image != NULL, -VISUAL_ERROR_UI_IMAGE_NULL);
 
@@ -570,7 +570,7 @@ int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video)
  * 
  * return The VisVideo that is connected to the VisUIImage.
  */
-const VisVideo *visual_ui_image_get_video (VisUIImage *image)
+VisVideo *visual_ui_image_get_video (VisUIImage *image)
 {
 	visual_log_return_val_if_fail (image != NULL, NULL);
 
@@ -625,7 +625,7 @@ VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_MUTATOR_NULL or -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *param)
+int visual_ui_mutator_set_param (VisUIMutator *mutator, VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (mutator != NULL, -VISUAL_ERROR_UI_MUTATOR_NULL);
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
@@ -644,7 +644,7 @@ int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *par
  *
  * return The VisParamEntry that links to the VisUIMutator, or NULL on failure.
  */
-const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
+VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
 {
 	visual_log_return_val_if_fail (mutator != NULL, NULL);
 
@@ -856,7 +856,7 @@ VisUIWidget *visual_ui_color_new ()
  *
  * @return The newly created VisUIChoiceEntry.
  */
-VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, const VisParamEntry *value)
+VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
 
@@ -884,7 +884,7 @@ VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, const VisParamEn
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL, -VISUAL_ERROR_NULL
  *	or -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value)
+int visual_ui_choice_add (VisUIChoice *choice, const char *name, VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
 
@@ -912,7 +912,7 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamE
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL or -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramchoices)
+int visual_ui_choice_add_many (VisUIChoice *choice, VisParamEntry *paramchoices)
 {
 	VisUIChoiceEntry *centry;
 	int i = 0;
@@ -959,7 +959,7 @@ int visual_ui_choice_free_choices (VisUIChoice *choice)
 int visual_ui_choice_set_active (VisUIChoice *choice, int index)
 {
 	VisUIChoiceEntry *centry;
-	const VisParamEntry *param;
+	VisParamEntry *param;
 	VisParamEntry *newparam;
 
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
@@ -993,7 +993,7 @@ int visual_ui_choice_get_active (VisUIChoice *choice)
 	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (choice));
 
 	while ((centry = visual_list_next (&choice->choices.choices, &le)) != NULL) {
-		const VisParamEntry *cparam;
+		VisParamEntry *cparam;
 		
 		cparam = centry->value;
 
@@ -1116,7 +1116,7 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 {
 	VisUICheckbox *checkbox;
-	static const VisParamEntry truefalse[] = {
+	static VisParamEntry truefalse[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("false",	FALSE),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("true",	TRUE),
 		VISUAL_PARAM_LIST_END

@@ -78,7 +78,7 @@ int visual_time_set (VisTime *time_, long sec, long usec)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
  */
-int visual_time_copy (VisTime *dest, const VisTime *src)
+int visual_time_copy (VisTime *dest, VisTime *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -98,7 +98,7 @@ int visual_time_copy (VisTime *dest, const VisTime *src)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
  */
-int visual_time_difference (VisTime *dest, const VisTime *time1, const VisTime *time2)
+int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
 	visual_log_return_val_if_fail (time1 != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -169,7 +169,7 @@ VisTimer *visual_timer_new ()
  *
  * @return TRUE or FALSE, -VISUAL_ERROR_TIMER_NULL on failure.
  */
-int visual_timer_is_active (const VisTimer *timer)
+int visual_timer_is_active (VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
@@ -251,7 +251,7 @@ int visual_timer_continue (VisTimer *timer)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
  */
-int visual_timer_elapsed (const VisTimer *timer, VisTime *time_)
+int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
 {
 	VisTime cur;
 
@@ -277,7 +277,7 @@ int visual_timer_elapsed (const VisTimer *timer, VisTime *time_)
  *
  * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
  */
-int visual_timer_has_past (const VisTimer *timer, VisTime *time_)
+int visual_timer_has_past (VisTimer *timer, VisTime *time_)
 {
 	VisTime elapsed;
 
@@ -303,7 +303,7 @@ int visual_timer_has_past (const VisTimer *timer, VisTime *time_)
  *
  * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL on failure.
  */
-int visual_timer_has_past_by_values (const VisTimer *timer, long sec, long usec)
+int visual_timer_has_past_by_values (VisTimer *timer, long sec, long usec)
 {
 	VisTime past;
 
