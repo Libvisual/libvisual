@@ -24,7 +24,6 @@ Attack \
 Cycling_Dots \
 Darren_Bird \
 Prophesy_SC \
-Spinning Cube \
 Suck_Me_In \
 Brain_Candy \
 DT_-_Birds \

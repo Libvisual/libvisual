@@ -1,10 +1,16 @@
-2004-09-03    Duilio Protti  <dprotti@users.sourceforge.net>
+2004-09-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Fixed all the remaining auto* problems regarding the scripts
+	and added a name="Origname", to the headers of the scripts so we
+	can later on read this in GForce.
+
+2004-09-03  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* DATADIR problem fixed.
 	* headers cleanup to avoid some warnings.
 	* configure.ac: misc checks added.
 
-2004-09-02    Duilio Protti  <dprotti@users.sourceforge.net>
+2004-09-02  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* GForceDeltaFields/Makefile.am: now data is installed
 	on $(prefix)/share/libvisual/actor/actor_gforce. Still
