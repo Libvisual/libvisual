@@ -551,26 +551,25 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 		ref = NULL;
 
 		if (!(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-			printf("%*s%s\n", indent, "", FileData.cFileName);
-		}
 
-		snprintf (temp, 1023, "%s\\%s", dir, FileData.cFileName);
+			snprintf (temp, 1023, "%s\\%s", dir, FileData.cFileName);
 
-		len = strlen (temp);
-		if (len > 5 && (strncmp (&temp[len - 5], ".dll", 5) == 0))
-			ref = visual_plugin_get_references (temp, &cnt);
-		
-		if (ref != NULL) {
-			for (j = 0; j < cnt; j++) 
-				visual_list_add (list, ref[j]);
+			len = strlen (temp);
+			if (len > 5 && (strncmp (&temp[len - 5], ".dll", 5) == 0))
+				ref = visual_plugin_get_references (temp, &cnt);
 
-			/* This is the pointer pointer pointer, not a ref itself */
-			visual_mem_free (ref);
-		}
+			if (ref != NULL) {
+				for (j = 0; j < cnt; j++) 
+					visual_list_add (list, ref[j]);
 
-		if (!FindNextFile (hList, &FileData)) {
-			if (GetLastError () == ERROR_NO_MORE_FILES) {
-				fFinished = TRUE;
+				/* This is the pointer pointer pointer, not a ref itself */
+				visual_mem_free (ref);
+			}
+
+			if (!FindNextFile (hList, &FileData)) {
+				if (GetLastError () == ERROR_NO_MORE_FILES) {
+					fFinished = TRUE;
+				}
 			}
 		}
 	}
