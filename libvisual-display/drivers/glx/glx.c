@@ -283,10 +283,6 @@ void draw(VisPluginData *plugin)
 		int format, type;
 
 		switch (priv->active_ctx->video->depth){
-			case VISUAL_VIDEO_DEPTH_8BIT:
-				format = GL_RGB;
-				type = GL_UNSIGNED_BYTE_3_3_2;
-				break;
 			case VISUAL_VIDEO_DEPTH_16BIT:
 				format = GL_RGB;
 				type = GL_UNSIGNED_SHORT_5_6_5;
@@ -303,6 +299,9 @@ void draw(VisPluginData *plugin)
 				return;
 		}
 
+		glMatrixMode(GL_PROJECTION);
+		glPixelZoom(1.0f, -1.0f);
+		glRasterPos2f(-1.0f, 1.0f);
 		glDrawPixels(priv->active_ctx->video->width, priv->active_ctx->video->height,
 			format, type, priv->active_ctx->video->screenbuffer);
 	}

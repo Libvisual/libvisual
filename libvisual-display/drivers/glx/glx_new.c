@@ -178,16 +178,23 @@ int process_events(privdata *priv, LvdCompatDataX11 *data,
 
 		case ConfigureNotify:{
 			int vbuf = visual_video_have_allocated_buffer(video);
+			int w = ev.xconfigure.width;
+			int h = ev.xconfigure.height;
 
 			if (vbuf)
 				visual_video_free_buffer(video);
 
-			visual_video_set_dimension(video, ev.xconfigure.width, ev.xconfigure.height);
+			visual_video_set_dimension(video, w, h);
 
-			if (vbuf)
+			if (vbuf){
+				int pitch = w*video->bpp;
+				if (pitch&3)
+					pitch = (pitch|3) + 1;
+				visual_video_set_pitch(video, pitch);
 				visual_video_allocate_buffer(video);
+			}
 
-			visual_event_queue_add_resize(eventqueue, video , ev.xconfigure.width, ev.xconfigure.height);
+			visual_event_queue_add_resize(eventqueue, video, w, h);
 			break;
 		}
 		/* message sent by a window manager. i think ;) */

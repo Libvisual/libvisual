@@ -206,7 +206,7 @@ int lvdisplay_realize(Lvd *v)
 		visual_video_allocate_buffer(v->drv->video);
 	} else
 	if (adepth & VISUAL_VIDEO_DEPTH_8BIT) {
-		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_24BIT);
 		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
 		visual_video_allocate_buffer(v->drv->video);
 	} else {
