@@ -1,5 +1,16 @@
 2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/input/jack/input_jack.c
+	(process_callback): Push the frames.
+
+	* plugins/input/jack/input_jack.c
+	(inp_jack_cleanup): Don't try to close a client
+	if one was not opened.
+
+	Heya This plugin now rocks[tm]
+
+2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/infinte/lv_infinite.c
 	(act_infinite_init):
 	Begin with a random effect.

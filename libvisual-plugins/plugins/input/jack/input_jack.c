@@ -109,7 +109,8 @@ int inp_jack_cleanup (VisPluginData *plugin)
 	priv = plugin->priv;
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 
-	jack_client_close (priv->client);
+	if (priv->client != NULL)
+		jack_client_close (priv->client);
 
 	visual_mem_free (priv);
 
@@ -142,14 +143,15 @@ int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 
 static int process_callback (jack_nframes_t nframes, void *arg)
 {
-	const size_t sample_size = sizeof (jack_default_audio_sample_t);
 	JackPrivate *priv = arg;
 	jack_default_audio_sample_t *in;
 	int i;
 
 	in = (jack_default_audio_sample_t *) jack_port_get_buffer (priv->input_port, nframes);
 
-	/* And now ?! */
+	memset (&priv->fakebuf, 0, sizeof (priv->fakebuf));
+	for (i = 0; i < nframes && i < 1024; i++)
+		priv->fakebuf[i] = in[i] * 32767;
 	
 	return 0;
 }
