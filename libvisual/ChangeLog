@@ -1,5 +1,10 @@
 2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_libvisual.c (visual_init): Improved
+	error checking, by Duilio
+
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_plugin.c (visual_plugin_registry_filter):
 	Improved error checking, possible memleak plugged. Originally
 	by Duilio.

@@ -102,6 +102,10 @@ int visual_init_path_add (char *pathadd)
 {
 	__lv_plugpath_cnt++;
 	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);
+
+	if (__lv_plugpaths == NULL)
+		return -1;
+	
 	__lv_plugpaths[__lv_plugpath_cnt - 1] = pathadd;
 
 	return 0;
@@ -121,16 +125,17 @@ int visual_init (int *argc, char ***argv)
 		visual_log (VISUAL_LOG_ERROR, "Over initialized");
                 return -1;
         }
-	
+		
 	if (argc == NULL || argv == NULL) {
-		if (argc != NULL || argv != NULL)
-			visual_log (VISUAL_LOG_WARNING, "Something wrong with the argc, argv pointers, one is NULL and one is not\n");
-		
-		__lv_progname = strdup ("no progname");
-		
-		if (__lv_progname == NULL)
-                        visual_log (VISUAL_LOG_WARNING, "Could not set program name");
+		if (argc == NULL && argv == NULL) {
+			__lv_progname = strdup ("no progname");
+	
 
+			if (__lv_progname == NULL)
+				visual_log (VISUAL_LOG_WARNING, "Could not set program name");
+		} else
+			visual_log (VISUAL_LOG_ERROR, "Initialization failed, bad argv, argc");
+		
 	} else {
                 /*
                  * We must copy the argument, to let the client
@@ -145,13 +150,21 @@ int visual_init (int *argc, char ***argv)
                         visual_log (VISUAL_LOG_WARNING, "Could not set program name");
         }
 
-	visual_init_path_add (PLUGPATH"/actor");
-	visual_init_path_add (PLUGPATH"/input");
-	visual_init_path_add (PLUGPATH"/morph");
+	if (visual_init_path_add (PLUGPATH"/actor") < 0)
+		return -1;
+	if (visual_init_path_add (PLUGPATH"/input") < 0)
+		return -1;
+	if (visual_init_path_add (PLUGPATH"/morph") < 0)
+		return -1;
+	
 	/* NULL terminated */
-	visual_init_path_add (NULL);
+	if (visual_init_path_add (NULL) < 0)
+		return -1;
 
 	__lv_plugins = visual_plugin_get_list (__lv_plugpaths);
+	if (__lv_plugins == NULL)
+		return -1;
+
 	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
 	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
 	__lv_plugins_morph = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_MORPH);
