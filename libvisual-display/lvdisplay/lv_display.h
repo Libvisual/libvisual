@@ -76,6 +76,7 @@ struct _Lvd {
 
 
 struct _LvdBackendDescription {
+	VisObject object;
 	LvdCompatType     compat_type;
 
 	int (*setup)(VisPluginData*, void *data);
@@ -93,6 +94,7 @@ struct _LvdBackendDescription {
 };
 
 struct _LvdFrontendDescription {
+	VisObject object;
 	int             compat_count;
 	LvdCompatType	compat_type;
 
