@@ -44,7 +44,7 @@ VisPluginData *visual_input_get_plugin (VisInput *input)
  *
  * @return An VisList of VisPluginRef's containing the input plugins in the plugin registry.
  */
-VisList *visual_input_get_list ()
+const VisList *visual_input_get_list ()
 {
 	return __lv_plugins_input;
 }
@@ -58,7 +58,7 @@ VisList *visual_input_get_list ()
  *
  * @return The name of the next plugin within the list.
  */
-char *visual_input_get_next_by_name (char *name)
+const char *visual_input_get_next_by_name (const char *name)
 {
 	return visual_plugin_get_next_by_name (visual_input_get_list (), name);
 }
@@ -72,7 +72,7 @@ char *visual_input_get_next_by_name (char *name)
  *
  * @return The name of the previous plugin within the list.
  */
-char *visual_input_get_prev_by_name (char *name)
+const char *visual_input_get_prev_by_name (const char *name)
 {
 	return visual_plugin_get_prev_by_name (visual_input_get_list (), name);
 }
@@ -85,7 +85,7 @@ char *visual_input_get_prev_by_name (char *name)
  *
  * @return TRUE if found, else FALSE.
  */
-int visual_input_valid_by_name (char *name)
+int visual_input_valid_by_name (const char *name)
 {
 	if (visual_plugin_find (visual_input_get_list (), name) == NULL)
 		return FALSE;
@@ -102,7 +102,7 @@ int visual_input_valid_by_name (char *name)
  *
  * @return A newly allocated VisInput, optionally containing a loaded plugin. Or NULL on error.
  */
-VisInput *visual_input_new (char *inputname)
+VisInput *visual_input_new (const char *inputname)
 {
 	VisInput *input;
 	VisPluginRef *ref;

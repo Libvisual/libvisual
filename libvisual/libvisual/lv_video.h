@@ -70,9 +70,9 @@ int visual_video_free (VisVideo *video);
 int visual_video_free_with_buffer (VisVideo *video);
 int visual_video_free_buffer (VisVideo *video);
 int visual_video_allocate_buffer (VisVideo *video);
-int visual_video_have_allocated_buffer (VisVideo *video);
-int visual_video_clone (VisVideo *dest, VisVideo *src);
-int visual_video_compare (VisVideo *src1, VisVideo *src2);
+int visual_video_have_allocated_buffer (const VisVideo *video);
+int visual_video_clone (VisVideo *dest, const VisVideo *src);
+int visual_video_compare (const VisVideo *src1, const VisVideo *src2);
 
 int visual_video_set_palette (VisVideo *video, VisPalette *pal);
 int visual_video_set_buffer (VisVideo *video, void *buffer);
@@ -92,15 +92,15 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
 
 int visual_video_bpp_from_depth (VisVideoDepth depth);
 
-int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
+int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y, int alpha);
 
 int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, uint8_t density);
 int visual_video_alpha_fill (VisVideo *video, uint8_t density);
 
-int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src);
+int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src);
 
-int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
-int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
+int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc);
+int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch);
 
 #ifdef __cplusplus

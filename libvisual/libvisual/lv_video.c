@@ -35,9 +35,9 @@ static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
 
 /* BGR to RGB conversions */
-static int bgr_to_rgb16 (VisVideo *dest, VisVideo *src);
-static int bgr_to_rgb24 (VisVideo *dest, VisVideo *src);
-static int bgr_to_rgb32 (VisVideo *dest, VisVideo *src);
+static int bgr_to_rgb16 (VisVideo *dest, const VisVideo *src);
+static int bgr_to_rgb24 (VisVideo *dest, const VisVideo *src);
+static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src);
 
 /**
  * @defgroup VisVideo VisVideo
@@ -225,7 +225,7 @@ int visual_video_allocate_buffer (VisVideo *video)
  *
  * @return TRUE if the VisVideo has an allocated buffer, or FALSE if not.
  */
-int visual_video_have_allocated_buffer (VisVideo *video)
+int visual_video_have_allocated_buffer (const VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, FALSE);
 
@@ -247,7 +247,7 @@ int visual_video_have_allocated_buffer (VisVideo *video)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_video_clone (VisVideo *dest, VisVideo *src)
+int visual_video_clone (VisVideo *dest, const VisVideo *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -1);
 	visual_log_return_val_if_fail (src != NULL, -1);
@@ -269,7 +269,7 @@ int visual_video_clone (VisVideo *dest, VisVideo *src)
  *
  * @return TRUE when they are the same and FALSE when not.
  */
-int visual_video_compare (VisVideo *src1, VisVideo *src2)
+int visual_video_compare (const VisVideo *src1, const VisVideo *src2)
 {
 	if (src1->depth != src2->depth)
 		return FALSE;
@@ -684,9 +684,10 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha)
+int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y, int alpha)
 {
-	VisVideo *transform = NULL, *srcp = NULL;
+	VisVideo *transform = NULL;
+	const VisVideo *srcp = NULL;
 	int height, wrange, hrange, amount;
 	int xa, ya;
 	int xmoff = 0, ymoff = 0;
@@ -902,7 +903,7 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src)
+int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
 {
 	visual_log_return_val_if_fail (visual_video_compare (dest, src) == TRUE, -1);
 	visual_log_return_val_if_fail (dest->screenbuffer != NULL, -1);
@@ -930,7 +931,7 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc)
+int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc)
 {
 	/* We blit overlay it instead of just memcpy because the pitch van still be different */
 	if (viddest->depth == vidsrc->depth)
@@ -953,7 +954,7 @@ int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc)
  *
  * return 0 on succes -1 on error.
  */
-int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
+int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch)
 {
 	uint8_t *srcbuf = video->screenbuffer;
@@ -1328,7 +1329,7 @@ static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, i
 	return 0;
 }
 
-static int bgr_to_rgb16 (VisVideo *dest, VisVideo *src)
+static int bgr_to_rgb16 (VisVideo *dest, const VisVideo *src)
 {
 	_color16 *destbuf, *srcbuf;
 	int x, y;
@@ -1352,7 +1353,7 @@ static int bgr_to_rgb16 (VisVideo *dest, VisVideo *src)
 	return 0;
 }
 
-static int bgr_to_rgb24 (VisVideo *dest, VisVideo *src)
+static int bgr_to_rgb24 (VisVideo *dest, const VisVideo *src)
 {
 	uint8_t *destbuf, *srcbuf;
 	int x, y;
@@ -1377,7 +1378,7 @@ static int bgr_to_rgb24 (VisVideo *dest, VisVideo *src)
 	return 0;
 }
 
-static int bgr_to_rgb32 (VisVideo *dest, VisVideo *src)
+static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
 {
 	uint8_t *destbuf, *srcbuf;
 	int x, y;

@@ -162,7 +162,7 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_color_copy (VisColor *dest, VisColor *src)
+int visual_color_copy (VisColor *dest, const VisColor *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -1);
 	visual_log_return_val_if_fail (src != NULL, -1);

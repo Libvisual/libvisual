@@ -116,7 +116,7 @@ int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry
  *
  * @return 0 on succes -1 on error.
  */
-int visual_param_container_remove (VisParamContainer *paramcontainer, char *name)
+int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name)
 {
 	VisListEntry *le = NULL;
 	VisParamEntry *param;
@@ -143,7 +143,7 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, char *name
  *
  * @return Pointer to the VisParamEntry, or NULL.
  */
-VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, char *name)
+VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name)
 {
 	VisListEntry *le = NULL;
 	VisParamEntry *param;
@@ -371,7 +371,7 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
  *
  * @return 0 on succes -1 on error.
  */
-int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color)
+int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor *color)
 {
 	visual_log_return_val_if_fail (param != NULL, -1);
 

@@ -62,8 +62,8 @@ int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, Vi
 VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer);
 
 int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param);
-int visual_param_container_remove (VisParamContainer *paramcontainer, char *name);
-VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, char *name);
+int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name);
+VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name);
 
 VisParamEntry *visual_param_entry_new (char *name);
 int visual_param_entry_free (VisParamEntry *param);
@@ -76,7 +76,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer);
 int visual_param_entry_set_float (VisParamEntry *param, float floating);
 int visual_param_entry_set_double (VisParamEntry *param, double doubleflt);
 int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, uint8_t b);
-int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color);
+int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor *color);
 
 char *visual_param_entry_get_name (VisParamEntry *param);
 char *visual_param_entry_get_string (VisParamEntry *param);

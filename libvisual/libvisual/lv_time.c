@@ -90,7 +90,7 @@ int visual_time_set (VisTime *time_, long sec, long usec)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_time_copy (VisTime *dest, VisTime *src)
+int visual_time_copy (VisTime *dest, const VisTime *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -1);
 	visual_log_return_val_if_fail (src != NULL, -1);
@@ -110,7 +110,7 @@ int visual_time_copy (VisTime *dest, VisTime *src)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
+int visual_time_difference (VisTime *dest, const VisTime *time1, const VisTime *time2)
 {
 	visual_log_return_val_if_fail (dest != NULL, -1);
 	visual_log_return_val_if_fail (time1 != NULL, -1);
@@ -193,7 +193,7 @@ int visual_timer_free (VisTimer *timer)
  *
  * @return TRUE or FALSE, -1 on error.
  */
-int visual_timer_is_active (VisTimer *timer)
+int visual_timer_is_active (const VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -1);
 
@@ -275,7 +275,7 @@ int visual_timer_continue (VisTimer *timer)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
+int visual_timer_elapsed (const VisTimer *timer, VisTime *time_)
 {
 	VisTime cur;
 
@@ -301,7 +301,7 @@ int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
  *
  * @return TRUE on passed, FALSE if not passed, -1 on error.
  */
-int visual_timer_has_past (VisTimer *timer, VisTime *time_)
+int visual_timer_has_past (const VisTimer *timer, VisTime *time_)
 {
 	VisTime elapsed;
 
@@ -327,7 +327,7 @@ int visual_timer_has_past (VisTimer *timer, VisTime *time_)
  *
  * @return TRUE on passed, FALSE if not passed, -1 on error.
  */
-int visual_timer_has_past_by_values (VisTimer *timer, long sec, long usec)
+int visual_timer_has_past_by_values (const VisTimer *timer, long sec, long usec)
 {
 	VisTime past;
 

@@ -34,7 +34,7 @@
  *
  * @return 0 on succes -1 on error.
  */
-int visual_bitmap_load (VisVideo *video, char *filename)
+int visual_bitmap_load (VisVideo *video, const char *filename)
 {
 	/* The win32 BMP header */
 	char magic[2];
@@ -241,7 +241,7 @@ int visual_bitmap_load (VisVideo *video, char *filename)
  *
  * @return The VisVideo containing the bitmap or NULL on error.
  */
-VisVideo *visual_bitmap_load_new_video (char *filename)
+VisVideo *visual_bitmap_load_new_video (const char *filename)
 {
 	VisVideo *video;
 

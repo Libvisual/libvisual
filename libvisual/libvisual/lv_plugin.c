@@ -15,7 +15,7 @@ extern VisList *__lv_plugins;
 
 static void ref_list_destroy (void *ref);
 
-static int plugin_add_dir_to_list (VisList *list, char *dir);
+static int plugin_add_dir_to_list (VisList *list, const char *dir);
 
 static void ref_list_destroy (void *data)
 {
@@ -92,7 +92,7 @@ int visual_plugin_info_free (VisPluginInfo *pluginfo)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
+int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -1);
 	visual_log_return_val_if_fail (src != NULL, -1);
@@ -155,7 +155,7 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
  *
  * @return The VisPluginInfo within the VisPluginData, or NULL on error.
  */
-const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
+const VisPluginInfo *visual_plugin_get_info (const VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 
@@ -281,7 +281,7 @@ int visual_plugin_free (VisPluginData *plugin)
  * 
  * @return VisList of references to all the libvisual plugins.
  */
-VisList *visual_plugin_get_registry ()
+const VisList *visual_plugin_get_registry ()
 {
 	return __lv_plugins;
 }
@@ -296,7 +296,7 @@ VisList *visual_plugin_get_registry ()
  *
  * @return Newly allocated VisList that is a filtered version of the plugin registry.
  */
-VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type)
+VisList *visual_plugin_registry_filter (const VisList *pluglist, VisPluginType type)
 {
 	VisList *list;
 	VisListEntry *entry = NULL;
@@ -331,7 +331,7 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type)
  *
  * @return The name of the next plugin or NULL on error.
  */
-char *visual_plugin_get_next_by_name (VisList *list, char *name)
+const char *visual_plugin_get_next_by_name (const VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;
@@ -365,7 +365,7 @@ char *visual_plugin_get_next_by_name (VisList *list, char *name)
  *
  * @return The name of the next plugin or NULL on error.
  */
-char *visual_plugin_get_prev_by_name (VisList *list, char *name)
+const char *visual_plugin_get_prev_by_name (const VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref, *pref = NULL;
@@ -395,7 +395,7 @@ char *visual_plugin_get_prev_by_name (VisList *list, char *name)
 	return NULL;
 }
 
-static int plugin_add_dir_to_list (VisList *list, char *dir)
+static int plugin_add_dir_to_list (VisList *list, const char *dir)
 {
 	VisPluginRef **ref;
 	char temp[1024];
@@ -581,7 +581,7 @@ int visual_plugin_realize (VisPluginData *plugin)
  *
  * @return The optionally newly allocated VisPluginRefs for the plugin.
  */
-VisPluginRef **visual_plugin_get_references (char *pluginpath, int *count)
+VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 {
 	VisPluginRef **ref;
 	const VisPluginInfo *plug_info;
@@ -660,7 +660,7 @@ VisPluginRef **visual_plugin_get_references (char *pluginpath, int *count)
  *
  * @return A newly allocated VisList containing the plugin registry for the set of paths.
  */
-VisList *visual_plugin_get_list (char **paths)
+VisList *visual_plugin_get_list (const char **paths)
 {
 	VisList *list = visual_list_new();
 	int i = 0;
@@ -684,7 +684,7 @@ VisList *visual_plugin_get_list (char **paths)
  *
  * @return The VisPluginRef for the plugin if found, or NULL when not found.
  */
-VisPluginRef *visual_plugin_find (VisList *list, char *name)
+VisPluginRef *visual_plugin_find (const VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;

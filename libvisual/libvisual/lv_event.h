@@ -172,7 +172,6 @@ struct _VisEventGeneric {
 	void		*data_ptr;	/**< More advanced generic events can use a pointer. */
 };
 
-
 /**
  * Param change event data structure.
  *

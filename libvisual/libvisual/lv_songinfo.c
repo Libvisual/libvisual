@@ -300,7 +300,7 @@ long visual_songinfo_age (VisSongInfo *songinfo)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
+int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
 {
 	visual_log_return_val_if_fail (dest != NULL && src != NULL, -1);
 
@@ -346,7 +346,7 @@ int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_songinfo_compare (VisSongInfo *s1, VisSongInfo *s2)
+int visual_songinfo_compare (const VisSongInfo *s1, const VisSongInfo *s2)
 {
 	int diff = 0;
 

@@ -1,3 +1,7 @@
+2004-10-20  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/*: added const pointers on API functions anywhere.
+
 2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/lv_param.c (visual_param_entry_get_double):

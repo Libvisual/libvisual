@@ -161,7 +161,7 @@ int visual_init (int *argc, char ***argv)
 	if (visual_init_path_add (NULL) < 0)
 		return -1;
 
-	__lv_plugins = visual_plugin_get_list (__lv_plugpaths);
+	__lv_plugins = visual_plugin_get_list ((const char**)__lv_plugpaths);
 	if (__lv_plugins == NULL)
 		return -1;
 

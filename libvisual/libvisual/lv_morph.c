@@ -11,9 +11,9 @@
 
 extern VisList *__lv_plugins_morph;
 
-static VisMorphPlugin *get_morph_plugin (VisMorph *morph);
+static VisMorphPlugin *get_morph_plugin (const VisMorph *morph);
 
-static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
+static VisMorphPlugin *get_morph_plugin (const VisMorph *morph)
 {
 	VisMorphPlugin *morphplugin;
 
@@ -37,7 +37,7 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
  *
  * @return VisPluginData that is encapsulated in the VisMorph, possibly NULL.
  */
-VisPluginData *visual_morph_get_plugin (VisMorph *morph)
+VisPluginData *visual_morph_get_plugin (const VisMorph *morph)
 {
 	        return morph->plugin;
 }
@@ -47,7 +47,7 @@ VisPluginData *visual_morph_get_plugin (VisMorph *morph)
  *
  * @return a VisList containing the morph plugins in the plugin registry.
  */
-VisList *visual_morph_get_list ()
+const VisList *visual_morph_get_list ()
 {
 	return __lv_plugins_morph;
 }
@@ -61,7 +61,7 @@ VisList *visual_morph_get_list ()
  *
  * @return The name of the next plugin within the list.
  */
-char *visual_morph_get_next_by_name (char *name)
+const char *visual_morph_get_next_by_name (const char *name)
 {
 	return visual_plugin_get_next_by_name (visual_morph_get_list (), name);
 }
@@ -75,7 +75,7 @@ char *visual_morph_get_next_by_name (char *name)
  *
  * @return The name of the previous plugin within the list.
  */
-char *visual_morph_get_prev_by_name (char *name)
+const char *visual_morph_get_prev_by_name (const char *name)
 {
 	return visual_plugin_get_prev_by_name (visual_morph_get_list (), name);
 }
@@ -87,7 +87,7 @@ char *visual_morph_get_prev_by_name (char *name)
  *
  * @return TRUE if found, else FALSE.
  */
-int visual_morph_valid_by_name (char *name)
+int visual_morph_valid_by_name (const char *name)
 {
 	if (visual_plugin_find (visual_morph_get_list (), name) == NULL)
 		return FALSE;
@@ -104,7 +104,7 @@ int visual_morph_valid_by_name (char *name)
  * 
  * @return A newly allocated VisMorph, optionally containing a loaded plugin. Or NULL on error.
  */  
-VisMorph *visual_morph_new (char *morphname)
+VisMorph *visual_morph_new (const char *morphname)
 {
 	VisMorph *morph;
 	VisPluginRef *ref;
@@ -194,7 +194,7 @@ int visual_morph_free (VisMorph *morph)
  *
  * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on succes, -1 on error
  */
-int visual_morph_get_supported_depth (VisMorph *morph)
+int visual_morph_get_supported_depth (const VisMorph *morph)
 {
 	VisPluginData *plugin;
 	VisMorphPlugin *morphplugin;
@@ -357,7 +357,7 @@ int visual_morph_is_done (VisMorph *morph)
  *
  * @return TRUE or FALSE, -1 on error. 
  */
-int visual_morph_requests_audio (VisMorph *morph)
+int visual_morph_requests_audio (const VisMorph *morph)
 {
 	VisMorphPlugin *morphplugin;
 

@@ -44,18 +44,18 @@ struct _VisActor {
 };
 
 /* prototypes */
-VisPluginData *visual_actor_get_plugin (VisActor *actor);
+VisPluginData *visual_actor_get_plugin (const VisActor *actor);
 
 VisList *visual_actor_get_list (void);
-char *visual_actor_get_next_by_name_gl (char *name);
-char *visual_actor_get_prev_by_name_gl (char *name);
-char *visual_actor_get_next_by_name_nogl (char *name);
-char *visual_actor_get_prev_by_name_nogl (char *name);
-char *visual_actor_get_next_by_name (char *name);
-char *visual_actor_get_prev_by_name (char *name);
-int visual_actor_valid_by_name (char *name);
+const char *visual_actor_get_next_by_name_gl (const char *name);
+const char *visual_actor_get_prev_by_name_gl (const char *name);
+const char *visual_actor_get_next_by_name_nogl (const char *name);
+const char *visual_actor_get_prev_by_name_nogl (const char *name);
+const char *visual_actor_get_next_by_name (const char *name);
+const char *visual_actor_get_prev_by_name (const char *name);
+int visual_actor_valid_by_name (const char *name);
 
-VisActor *visual_actor_new (char *actorname);
+VisActor *visual_actor_new (const char *actorname);
 
 int visual_actor_realize (VisActor *actor);
 int visual_actor_destroy (VisActor *actor);
@@ -65,7 +65,7 @@ VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
 VisPalette *visual_actor_get_palette (VisActor *actor);
 
 int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced);
-int visual_actor_get_supported_depth (VisActor *actor);
+int visual_actor_get_supported_depth (const VisActor *actor);
 
 int visual_actor_set_video (VisActor *actor, VisVideo *video);
 

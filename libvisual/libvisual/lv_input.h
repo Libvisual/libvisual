@@ -50,12 +50,12 @@ struct _VisInput {
 /* prototypes */
 VisPluginData *visual_input_get_plugin (VisInput *input);
 
-VisList *visual_input_get_list (void);
-char *visual_input_get_next_by_name (char *name);
-char *visual_input_get_prev_by_name (char *name);
-int visual_input_valid_by_name (char *name);
+const VisList *visual_input_get_list (void);
+const char *visual_input_get_next_by_name (const char *name);
+const char *visual_input_get_prev_by_name (const char *name);
+int visual_input_valid_by_name (const char *name);
 
-VisInput *visual_input_new (char *inputname);
+VisInput *visual_input_new (const char *inputname);
 
 int visual_input_realize (VisInput *input);
 int visual_input_destroy (VisInput *input);

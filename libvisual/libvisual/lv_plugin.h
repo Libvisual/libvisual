@@ -315,12 +315,12 @@ struct _VisMorphPlugin {
 /* prototypes */
 VisPluginInfo *visual_plugin_info_new (void);
 int visual_plugin_info_free (VisPluginInfo *pluginfo);
-int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src);
+int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src);
 
 int visual_plugin_events_pump (VisPluginData *plugin);
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
 
-const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
+const VisPluginInfo *visual_plugin_get_info (const VisPluginData *plugin);
 
 VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
 
@@ -333,20 +333,20 @@ int visual_plugin_ref_list_destroy (VisList *list);
 VisPluginData *visual_plugin_new (void);
 int visual_plugin_free (VisPluginData *plugin);
 
-VisList *visual_plugin_get_registry (void);
-VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type);
+const VisList *visual_plugin_get_registry (void);
+VisList *visual_plugin_registry_filter (const VisList *pluglist, VisPluginType type);
 
-char *visual_plugin_get_next_by_name (VisList *list, char *name);
-char *visual_plugin_get_prev_by_name (VisList *list, char *name);
+const char *visual_plugin_get_next_by_name (const VisList *list, const char *name);
+const char *visual_plugin_get_prev_by_name (const VisList *list, const char *name);
 
 int visual_plugin_unload (VisPluginData *plugin);
 VisPluginData *visual_plugin_load (VisPluginRef *ref);
 int visual_plugin_realize (VisPluginData *plugin);
 
-VisPluginRef **visual_plugin_get_references (char *pluginpath, int *count);
-VisList *visual_plugin_get_list (char **paths);
+VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
+VisList *visual_plugin_get_list (const char **paths);
 
-VisPluginRef *visual_plugin_find (VisList *list, char *name);
+VisPluginRef *visual_plugin_find (const VisList *list, const char *name);
 
 int visual_plugin_get_api_version (void);
 
