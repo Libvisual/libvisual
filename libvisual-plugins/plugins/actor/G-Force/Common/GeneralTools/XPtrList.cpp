@@ -259,11 +259,11 @@ bool XPtrList::Fetch( long inIndex, void** ioPtrDest ) const {
 
 
 
-
+#include <stdio.h>
 void XPtrList::Randomize() {
 	void*	temp, **ptrArray = (void**) getCStr();
 	long	i, randIdx, n = Count();
-	
+
 	for ( i = 0; i < n; i++ ) {
 		randIdx = nodeClass::Rnd( 1, n );
 		temp = ptrArray[ i ];

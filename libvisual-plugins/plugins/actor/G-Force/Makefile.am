@@ -2,17 +2,19 @@ SUBDIRS = Common GForceCommon unix GForceColorMaps \
 	  GForceDeltaFields GForceParticles GForceWaveShapes \
 	  NotWorkingWaveShapes docs
 
-lib_LTLIBRARIES = actor_gforce.la
+lib_LTLIBRARIES = $(GFORCE)
 
-libdir = $(prefix)/lib/libvisual/actor
+EXTRA_LTLIBRARIES = actor_gforce.la
+
+libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
 LIBS = -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wall -rdynamic @LIBVISUAL_CFLAGS@ -DJAHETWORDTGEDAANHOOOOOR -O3
+AM_CFLAGS = @LIBVISUAL_CFLAGS@ -DUNIX_X -D_REENTRANT
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
-actor_gforce_la_LDFLAGS = -module -avoid-version
+actor_gforce_la_LDFLAGS = -rpath $(libdir) -module -avoid-version
 
 actor_gforce_la_SOURCES = null.cpp
 

@@ -1,3 +1,15 @@
+2005-01-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: G-Force fixes.
+
+	* plugins/actor/G-Force/Makefile.am: Install path, defines fixes.
+
+	* plugins/actor/G-Force/Common/GeneralTools/nodeClass.cpp:
+	Actually randomize, and seed it (kinda hacky, woop)
+
+	Result: A randomized G-Force! I hope Salsaman enjoys it! (Lives
+	author)
+
 2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/corona/corona.cpp: Made an mmx version for the blurrer

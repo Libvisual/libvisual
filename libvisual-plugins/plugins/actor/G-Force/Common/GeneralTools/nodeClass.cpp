@@ -1,3 +1,4 @@
+#include <libvisual/libvisual.h>
 
 #include "nodeClass.h"
 
@@ -908,11 +909,17 @@ void nodeClass::RandomizeSubs() {
 
 
 
-
+/* FIXME use VisRandomContext */
 long nodeClass::Rnd( long min, long max ) {
 	long maxRnd 	= RAND_MAX;
-	long retNum 	= rand() * ( max - min + 1 ) / maxRnd + min;
+	long retNum;
+	VisTime curTime;
+
+	visual_time_get (&curTime);
 	
+	srand (curTime.tv_usec + curTime.tv_sec);
+	retNum = rand() / (maxRnd / (max - min + 1)) + min;
+
 	if ( retNum >= max )
 		return max;
 	else
