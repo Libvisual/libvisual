@@ -191,11 +191,6 @@ static void lv_xmms_init ()
 		lv_xmms_config_set_current_actor (cur_lv_plugin);
 	}
 
-	ret = visual_initialize (options->width, options->height);
-        if (ret < 0) {
-                visual_log (VISUAL_LOG_CRITICAL, _("Cannot initialize plugin's visual stuff"));
-		return;
-	}
 
 
 	visual_log (VISUAL_LOG_DEBUG, "calling SDL_CreateThread()");
@@ -462,6 +457,15 @@ static int visual_render (void *arg)
         long frame_length;
         long idle_time;
 	long frames;
+	int ret;
+
+	/* Alright set up the display stuff, we have to do this in this thread because
+	 * GL don't like cross threadness */
+	ret = visual_initialize (options->width, options->height);
+        if (ret < 0) {
+                visual_log (VISUAL_LOG_CRITICAL, _("Cannot initialize plugin's visual stuff"));
+		return -1;
+	}
 
         frame_length = (1.0 / options->fps) * 1000;
 	frames = 0;

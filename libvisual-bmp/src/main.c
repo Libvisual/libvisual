@@ -184,13 +184,6 @@ static void lv_bmp_init ()
 		lv_bmp_config_set_current_actor (cur_lv_plugin);
 	}
 
-	ret = visual_initialize (options->width, options->height);
-        if (ret < 0) {
-                visual_log (VISUAL_LOG_CRITICAL, _("Cannot initialize plugin's visual stuff"));
-		return;
-	}
-
-
 	visual_log (VISUAL_LOG_DEBUG, "calling SDL_CreateThread()");
 
 	render_thread = SDL_CreateThread ((void *) visual_render, NULL);
@@ -451,6 +444,13 @@ static int visual_render (void *arg)
         long frame_length;
         long idle_time;
 	long frames;
+	int ret;
+
+	ret = visual_initialize (options->width, options->height);
+        if (ret < 0) {
+                visual_log (VISUAL_LOG_CRITICAL, _("Cannot initialize plugin's visual stuff"));
+		return -1;
+	}
 
         frame_length = (1.0 / options->fps) * 1000;
 	frames = 0;

@@ -1,3 +1,12 @@
+2004-10-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Fixed OpenGL plugins at startup, thanks to hints
+	from Vitaly.
+
+	* src/main.c (lv_xmms_init): Removed display set up from here
+
+	(visual_render): And put it here, (threadness issues).
+
 2004-10-06  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* po/POTFILES.in: OOps. updated ;)
