@@ -727,7 +727,6 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
 			src->depth != VISUAL_VIDEO_DEPTH_GL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 	
-
 	/* Placement is outside dest buffer, no use to continue */
 	if (x > dest->width)
 		return -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
@@ -753,17 +752,11 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 	else
 		srcp = src;
 	
-	
-	/** @todo fix negative, broken as it is right now... */
-
 	/* We're looking at exactly the same types of VisVideo objects */
 	if (visual_video_compare (dest, src) == TRUE && alpha == FALSE && x == 0 && y == 0)
 		memcpy (dest->pixels, src->pixels, dest->size);
 	else if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
 		blit_overlay_noalpha (dest, srcp, x, y);
-	/* Add a noalpha 32 version, that is optimized and fast for 32 bit */
-//	else if (alpha == FALSE && src->depth == VISUAL_VIDEO_DEPTH_32BIT)
-//		blit_overlay_noalpha32 ();
 	else
 		blit_overlay_alpha32 (dest, srcp, x, y);
 
@@ -775,135 +768,77 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 
 static int blit_overlay_noalpha (VisVideo *dest, const VisVideo *src, int x, int y)
 {
-	int height, wrange, hrange, amount;
-	int xmoff = 0, ymoff = 0;
-	int xbpp;
 	uint8_t *destbuf;
 	uint8_t *srcbuf;
+	int destp = dest->pitch;
+	int srcp = src->pitch;
+	int lwidth = (x + src->width);
+	int lheight = (y + src->height);
+	int ya, xa;
+
+	if (lwidth > dest->width)
+		lwidth += dest->width - lwidth;
+
+	if (lheight > dest->height)
+		lheight += dest->height - lheight;
 
 	destbuf = dest->pixels;
 	srcbuf = src->pixels;
 
-	/* Get the smallest size from both the VisVideos */
-	wrange = dest->width > src->width ? src->width : dest->width;
-	hrange = dest->height > src->height ? src->height : dest->height;
+	if (lwidth < 0)
+		return VISUAL_OK;
 
-	/* Negative X offset value */
-	if (x < 0) {
-		xmoff = abs (x);
-	
-		x = 0;
-	}
-
-	/* Negative Y offset value */
-	if (y < 0) {
-		ymoff = abs (y);
-
-		y = 0;
-	}
-
-	int xps = (x * dest->bpp) + src->pitch;
-	/* Blit it to the dest video */
-	for (height = y; height < (hrange + y) - ymoff; height++) {
-
-		/* We've reached the end */
-		if (height > (dest->height - 1))
-			break;
-
-		if (xps > dest->pitch + (xmoff * dest->bpp)) {
-			amount = (dest->pitch - (x * dest->bpp));
-		} else {
-			if (xmoff > 0 && dest->width == wrange)
-				amount = (dest->width - (dest->width - (src->width - xmoff))) * dest->bpp;
-			else
-				amount = (wrange - xmoff) * dest->bpp;
-		}
-
-		memcpy (destbuf + (height * dest->pitch) + (x * dest->bpp),
-				srcbuf + (((height - y) + ymoff) * src->pitch) + (xmoff * dest->bpp),
-				amount);
+	xa = x > 0 ? x : 0;
+	for (ya = y > 0 ? y : 0; ya < lheight; ya++) {
+		memcpy (destbuf + ((ya * destp) + (xa * dest->bpp)),
+				srcbuf + (((ya - y) * srcp) + ((xa - x) * dest->bpp)),
+				(lwidth - (x > 0 ? x : 0)) * dest->bpp);
 	}
 
 	return VISUAL_OK;
 }
 
-/* FIXME Loads of optimze to be done */
 static int blit_overlay_alpha32 (VisVideo *dest, const VisVideo *src, int x, int y)
 {
-	int height, wrange, hrange, amount;
-	int xa, ya;
-	int xmoff = 0, ymoff = 0;
-	int xbpp;
 	uint8_t *destbuf;
-	uint8_t *srcpbuf;
-	uint32_t *srcbuf;
+	uint8_t *srcbuf;
+	int lwidth = (x + src->width);
+	int lwidth4;
+	int lheight = (y + src->height);
+	int ya, xa;
+	int di, si;
+	uint8_t alpha;
 
-	int yaddage = 0;
-	int aindex = (ymoff * (src->pitch / src->bpp)) + xmoff;
-	int si = (ymoff * src->pitch) + (xmoff * src->bpp);
-	int di = (y * dest->pitch) + (x * dest->bpp);
+	if (lwidth > dest->width)
+		lwidth += dest->width - lwidth;
+
+	if (lheight > dest->height)
+		lheight += dest->height - lheight;
 
 	destbuf = dest->pixels;
 	srcbuf = src->pixels;
-	srcpbuf = src->pixels;
 
-	/* Get the smallest size from both the VisVideos */
-	wrange = dest->width > src->width ? src->width : dest->width;
-	hrange = dest->height > src->height ? src->height : dest->height;
+	if (lwidth < 0)
+		return VISUAL_OK;
 
-	/* Negative X offset value */
-	if (x < 0) {
-		xmoff = abs (x);
+	lwidth4 = lwidth * 4;
 	
-		x = 0;
-	}
-
-	/* Negative Y offset value */
-	if (y < 0) {
-		ymoff = abs (y);
-
-		y = 0;
-	}
-
-	xbpp = x * dest->bpp;
-
-	if (dest->height - src->height	< 0)
-		yaddage = abs (dest->height - (src->height));
-
-	/* Blit it to the dest video */
-	for (ya = y; ya < (hrange + yaddage) - ymoff; ya++) {
-
-		if (ya + y > dest->height - 1)
-			break;
-
-		if ((x * dest->bpp) + src->pitch > dest->pitch) {
-			amount = (dest->pitch / dest->bpp) - (dest->width - (src->width - xmoff));
-		} else {
-			amount = wrange - xmoff;
+	di = ((y > 0 ? y : 0) * dest->pitch) + (x > 0 ? x * 4 : 0);
+	si = ((y < 0 ? abs(y) : 0) * src->pitch) + (x < 0 ? abs(x) * 4 : 0);
+	for (ya = y > 0 ? y : 0; ya < lheight; ya++) {
+		for (xa = x > 0 ? x * 4 : 0; xa < lwidth4; xa += 4) {
+			alpha = srcbuf[si + 3];
+			destbuf[di] = (alpha * (srcbuf[si] - destbuf[di]) / 255 + destbuf[di]);
+			destbuf[di + 1] = (alpha * (srcbuf[si + 1] - destbuf[di + 1]) / 255 + destbuf[di + 1]);
+			destbuf[di + 2] = (alpha * (srcbuf[si + 2] - destbuf[di + 2]) / 255 + destbuf[di + 2]);
+                         
+			di += 4;
+			si += 4;
 		}
 
-		for (xa = 0; xa < amount; xa++) {
-			uint8_t alpha;
-			int bppl;
-
-			alpha = srcbuf[aindex++] >> 24;
-
-			for (bppl = 0; bppl < dest->bpp; bppl++) {
-				destbuf[di] =
-					(alpha * (srcpbuf[si] -	 destbuf[di]) / 255 + destbuf[di]);
-
-				si++;
-				di++;
-			}
-		}
-
-		if (amount > (dest->pitch / dest->bpp) - x) {
-			/* FIXME do something here to fix screwage */
-		}
-
-		aindex += (src->pitch / src->bpp) - amount;
-		si += src->pitch - (amount * src->bpp);
-		di += dest->pitch - (amount * dest->bpp);
+		di += (dest->pitch - ((lwidth - x) * 4)) - (x < 0 ? x * 4 : 0);
+		si += x < 0 ? abs(x) * 4 : 0;
+		si += x + src->width > dest->width ? ((x + (src->pitch / 4)) - dest->width) * 4 : 0;
 	}
 
 	return VISUAL_OK;
@@ -1496,6 +1431,7 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (dest->depth == src->depth, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 
 	switch (dest->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
