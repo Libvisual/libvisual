@@ -397,8 +397,10 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 
 	if (morphplugin->palette != NULL)
 		morphplugin->palette (morph->plugin, morph->rate, audio, &morph->morphpal, src1, src2);
-	else
-		visual_palette_blend (&morph->morphpal, src1->pal, src2->pal, morph->rate);
+	else {
+		if (src1->pal != NULL && src2->pal != NULL)
+			visual_palette_blend (&morph->morphpal, src1->pal, src2->pal, morph->rate);
+	}
 
 	morphplugin->apply (morph->plugin, morph->rate, audio, morph->dest, src1, src2);
 
