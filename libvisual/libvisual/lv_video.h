@@ -10,6 +10,15 @@ extern "C" {
 
 /* NOTE: The depth find helper code in lv_actor depends on an arrangment from low to high */
 
+/*
+ * Video flags, for internal use only.
+ */
+typedef enum {
+	VISUAL_VIDEO_FLAG_NONE			= 0,
+	VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER	= 1,
+	VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER	= 2
+} VisVideoFlags;
+
 /**
  * Enumerate that defines video depths for use within plugins, libvisual functions, etc.
  */
@@ -50,6 +59,8 @@ struct _VisVideo {
 					  * the number of bytes per line. */
 	void		*screenbuffer;	/**< Pointer to the screen buffer. */
 	VisPalette	*pal;		/**< Optional pointer to the palette. */
+
+	VisVideoFlags	flags;		/**< Private field */
 };
 
 /* prototypes */

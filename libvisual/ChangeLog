@@ -1,3 +1,10 @@
+2004-07-02  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_video.c: added flags field to VisVideo
+	structure. Now function checks where the screenbuffer
+	was allocated by us or was set pointing to an externally
+	allocated memory.
+
 2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c (visual_video_blit_overlay):

@@ -8,6 +8,10 @@
 #include "lv_video.h"
 #include "lv_log.h"
 
+
+#define HAVE_ALLOCATED_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER)
+#define HAVE_EXTERNAL_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER)
+
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
@@ -35,7 +39,7 @@ static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, i
  */
 
 /**
- * Creates a new VisVideo structure.
+ * Creates a new VisVideo structure, without an associated screen buffer.
  *
  * @return A newly allocated VisVideo.
  */
@@ -44,7 +48,18 @@ VisVideo *visual_video_new ()
 	VisVideo *video;
 
 	video = malloc (sizeof (VisVideo));
+	if (video == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new VisVideo structure");
+		return NULL;
+	}
 	memset (video, 0, sizeof (VisVideo));
+
+	video->screenbuffer = NULL;
+
+	/*
+	 * By default, we suppose an external buffer will be used.
+	 */
+	video->flags = VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER;
 
 	return video;
 }
@@ -61,19 +76,42 @@ VisVideo *visual_video_new ()
 VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth)
 {
 	VisVideo *video;
+	int ret;
 	
 	video = visual_video_new ();
+	if (video == NULL)
+		/*
+		 * Message was showed on visual_video_new(), must we show another one?
+		 */
+		return NULL;
 
 	visual_video_set_depth (video, depth);
 	visual_video_set_dimension (video, width, height);
 
-	visual_video_allocate_buffer (video);
+	video->screenbuffer = NULL;
+	ret = visual_video_allocate_buffer (video);
+
+	if (ret < 0) {
+		/*
+		 * Restore the flag set by visual_video_new().
+		 */
+		video->flags = VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER;
+		visual_video_free (video);
+		return NULL;
+	}
 
 	return video;
 }
 
 /**
- * Frees the VisVideo. This frees the VisVideo data structure.
+ * Frees the VisVideo.
+ *
+ * This frees the VisVideo data structure which was previously 
+ * created with visual_video_new().
+ *
+ * @warning This doesn't frees a VisVideo structure created with
+ * visual_video_new_with_buffer(), use visual_video_free_with_buffer()
+ * for that.
  *
  * @param video Pointer to a VisVideo that needs to be freed.
  *
@@ -82,14 +120,25 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 int visual_video_free (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
+
+	if (HAVE_ALLOCATED_BUFFER(video)) {
+		visual_log (VISUAL_LOG_CRITICAL, "VisVideo structure have an allocated screen buffer, "
+				"visual_video_free_with_buffer() must be used");
+		return -1;
+	}
 	
 	free (video);
+
+	video = NULL;
 
 	return 0;
 }
 
 /**
  * Frees the VisVideo and it's buffer. This frees the VisVideo and it's screenbuffer.
+ * 
+ * @warning The given @a video must be a previously created one with
+ * visual_video_new_with_buffer(), not visual_video_new().
  *
  * @param video Pointer to a VisVideo that needs to be freed together with
  * 	it's screenbuffer.
@@ -100,9 +149,16 @@ int visual_video_free_with_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
 
-	visual_video_free_buffer (video);
+	if (HAVE_ALLOCATED_BUFFER(video)) {
+		visual_video_free_buffer (video);
+	} else {
+		visual_log (VISUAL_LOG_WARNING, "VisVideo structure doesn't have an allocated "
+				"screen buffer, visual_video_free() must be used");
+	}
 
 	free (video);
+
+	video = NULL;
 
 	return 0;
 }
@@ -119,10 +175,14 @@ int visual_video_free_buffer (VisVideo *video)
 	visual_log_return_val_if_fail (video != NULL, -1);
 	visual_log_return_val_if_fail (video->screenbuffer != NULL, -1);
 
-	/*
-	 * We doesn't know if we must freed!
-	 *
-	free (video->screenbuffer);*/
+	if (HAVE_ALLOCATED_BUFFER(video))
+		free (video->screenbuffer);
+	else
+		return -1;
+
+	video->screenbuffer = NULL;
+
+	video->flags = VISUAL_VIDEO_FLAG_NONE;
 
 	return 0;
 }
@@ -139,11 +199,24 @@ int visual_video_allocate_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
 
-/*	printf ("[video-allocate-buffer] Allocating buffer with size: %d, width height bpp pitch %d %d %d %d calc %d\n", video->size,
-			video->width, video->height, video->bpp, video->pitch, video->pitch * video->height);
-*/
+	if (video->screenbuffer != NULL) {
+		if (HAVE_ALLOCATED_BUFFER(video)) {
+			visual_video_free_buffer (video);
+		} else {
+			visual_log (VISUAL_LOG_CRITICAL, "Trying to allocate an screen buffer on "
+					"a VisVideo structure which points to an external screen buffer");
+			return -1;
+		}
+	}
+
 	video->screenbuffer = malloc (video->size);
+	if (malloc == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new screenbuffer");
+		return -1;
+	}
 	memset (video->screenbuffer, 0, video->size);
+
+	video->flags = VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER;
 
 	return 0;
 }
@@ -194,6 +267,9 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
  * Sets a screenbuffer to a VisVideo. Links a sreenbuffer to the
  * VisVideo.
  *
+ * @warning The given @ video must be one previously created with visual_video_new(),
+ * and not with visual_video_new_with_buffer().
+ *
  * @param video Pointer to a VisVideo to which a screenbuffer needs to be linked.
  * @param buffer Pointer to a screenbuffer that needs to be linked with the VisVideo.
  *
@@ -202,6 +278,12 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
 int visual_video_set_buffer (VisVideo *video, void *buffer)
 {
 	visual_log_return_val_if_fail (video != NULL, -1);
+
+	if (HAVE_ALLOCATED_BUFFER(video)) {
+		visual_log (VISUAL_LOG_CRITICAL, "Trying to set a screen buffer on "
+				"a VisVideo structure which points to an external screen buffer");
+		return -1;
+	}
 
 	video->screenbuffer = buffer;
 
@@ -545,6 +627,67 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 	}
 
 	return -1;
+}
+
+/* FIXME: more screwing up, just fix this with a better function */
+
+/**
+ * Helps fitting a smaller VisVideo surface into a bigger one, used
+ * by the fitting environment within VisActor. It's not adviced to use
+ * this function externally.
+ *
+ * @param dest Pointer to the destination VisVideo in which the source is fitted.
+ * @param src Pointer to the source VisVideo which is fitted in the destination.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_video_blit_fit (VisVideo *dest, VisVideo *src)
+{
+	uint8_t *destr, *srcr;
+	int space = 0;
+	int spare;
+	int pitchadd;
+	int i, j, dind = 0, sind = 0;
+
+	visual_log_return_val_if_fail (dest != NULL, -1);
+	visual_log_return_val_if_fail (src != NULL, -1);
+
+	spare = dest->width - src->width;
+
+	destr = dest->screenbuffer;
+	srcr = src->screenbuffer;
+
+	/* Calculate the spacer */
+	if (spare % 2 != 0) {
+		if (spare > 1)
+			space = spare;
+		else
+			space = 1;
+	} else {
+		space = spare / 1;
+	}
+
+	/* The iamge doesn't fit */
+	if (dest->width < src->width || dest->height < src->height)
+		return -1;
+
+	/* Place the image */
+	pitchadd = ((dest->pitch / src->bpp) - dest->width) * src->bpp;
+
+	visual_log_return_val_if_fail (destr != NULL, -1);
+	visual_log_return_val_if_fail (srcr != NULL, -1);
+
+	/* FIXME use memcpy here */
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width * src->bpp; j++) {
+			destr[dind++] = srcr[sind++];
+		}
+
+		dind += space * src->bpp;
+		dind += pitchadd;
+	}
+
+	return 0;
 }
 
 /**
