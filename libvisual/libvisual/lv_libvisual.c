@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "lvconfig.h"
 #include "lv_plugin.h"
@@ -113,14 +116,14 @@ static VisUIWidget *make_userinterface ()
 	vbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_VERTICAL);
 	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 	
-	label1 = visual_ui_label_new ("Show info for", FALSE);
-	label2 = visual_ui_label_new ("seconds", FALSE);
+	label1 = visual_ui_label_new (_("Show info for"), FALSE);
+	label2 = visual_ui_label_new (_("seconds"), FALSE);
 
-	checkbox1 = visual_ui_checkbox_new ("Show song information", TRUE);
+	checkbox1 = visual_ui_checkbox_new (_("Show song information"), TRUE);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox1),
 			visual_param_container_get (__lv_paramcontainer, "songinfo show"));
 
-	checkbox2 = visual_ui_checkbox_new ("Show song information in plugins", TRUE);
+	checkbox2 = visual_ui_checkbox_new (_("Show song information in plugins"), TRUE);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox2),
 			visual_param_container_get (__lv_paramcontainer, "songinfo in plugin"));
 
@@ -207,20 +210,24 @@ int visual_init (int *argc, char ***argv)
 {
 	int ret = 0;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+#endif
+
 	if (__lv_initialized == TRUE) {
-		visual_log (VISUAL_LOG_ERROR, "Over initialized");
+		visual_log (VISUAL_LOG_ERROR, _("Over initialized"));
                 return -VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED;
         }
 		
 	if (argc == NULL || argv == NULL) {
 		if (argc == NULL && argv == NULL) {
-			__lv_progname = strdup ("no progname");
+			__lv_progname = strdup (_("no progname"));
 	
 
 			if (__lv_progname == NULL)
-				visual_log (VISUAL_LOG_WARNING, "Could not set program name");
+				visual_log (VISUAL_LOG_WARNING, _("Could not set program name"));
 		} else
-			visual_log (VISUAL_LOG_ERROR, "Initialization failed, bad argv, argc");
+			visual_log (VISUAL_LOG_ERROR, _("Initialization failed, bad argv, argc"));
 		
 	} else {
                 /*
@@ -233,7 +240,7 @@ int visual_init (int *argc, char ***argv)
                 __lv_progname = strdup (*argv[0]);
 #endif
                 if (__lv_progname == NULL)
-                        visual_log (VISUAL_LOG_WARNING, "Could not set program name");
+                        visual_log (VISUAL_LOG_WARNING, _("Could not set program name"));
         }
 	
 	/* Initialize CPU caps */
@@ -296,7 +303,7 @@ int visual_quit ()
 	int ret;
 
 	if (__lv_initialized == FALSE) {
-                visual_log (VISUAL_LOG_WARNING, "Never initialized");
+                visual_log (VISUAL_LOG_WARNING, _("Never initialized"));
 
 		return -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED;
 	}
@@ -304,31 +311,31 @@ int visual_quit ()
 	/* FIXME: Use VisError here, for human readable error strings */
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, "Plugins references list: destroy failed");
+		visual_log (VISUAL_LOG_WARNING, _("Plugins references list: destroy failed"));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_actor));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, "Actor plugins list: destroy failed");
+		visual_log (VISUAL_LOG_WARNING, _("Actor plugins list: destroy failed"));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_input));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, "Input plugins list: destroy failed");
+		visual_log (VISUAL_LOG_WARNING, _("Input plugins list: destroy failed"));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_morph));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, "Morph plugins list: destroy failed");
+		visual_log (VISUAL_LOG_WARNING, _("Morph plugins list: destroy failed"));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_transform));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, "Transform plugins list: destroy failed");
+		visual_log (VISUAL_LOG_WARNING, _("Transform plugins list: destroy failed"));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_paramcontainer));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, "Global param container: destroy failed");
+		visual_log (VISUAL_LOG_WARNING, _("Global param container: destroy failed"));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_userinterface));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, "Error during UI destroy:");
+		visual_log (VISUAL_LOG_WARNING, _("Error during UI destroy:"));
 
         if (__lv_progname != NULL) {
                 visual_mem_free (__lv_progname);

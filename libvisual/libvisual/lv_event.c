@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "lvconfig.h"
 #include "lv_event.h"
@@ -190,7 +193,7 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 	event = visual_event_new ();
 	if (event == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-				"Cannot create a new VisEvent structure");
+				_("Cannot create a new VisEvent structure"));
 
 		return -VISUAL_ERROR_EVENT_NULL;
 	}

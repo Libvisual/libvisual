@@ -133,6 +133,14 @@ AC_CHECK_LIB([dl], [dlsym], [LIBS="-ldl $LIBS"],
 AC_CHECK_LIB([m], [sqrt], [LIBS="-lm $LIBS"],
 	     AC_MSG_ERROR([*** You need the Standard C Math Library to build Libvisual.]))
 
+# Internationalization
+ALL_LINGUAS="es_ES es_AR"
+GETTEXT_PACKAGE=libvisual
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [GETTEXT package name])
+AC_DEFINE_UNQUOTED(LOCALEDIR, "${prefix}/share/locale", [String catalog location])
+AM_GNU_GETTEXT([external])
+
 dnl -------------------------------
 dnl Check for native thread support
 dnl -------------------------------
@@ -783,7 +791,7 @@ esac
 
 ])
 				    
-AC_CONFIG_FILES([
+AC_CONFIG_FILES([ po/Makefile.in m4/Makefile 
 Makefile
 libvisual.pc
 libvisual/Makefile

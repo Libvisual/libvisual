@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "lv_log.h"
 #include "lv_param.h"
@@ -562,7 +565,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
 			break;
 
 		default:
-			visual_log (VISUAL_LOG_CRITICAL, "param type is not valid");
+			visual_log (VISUAL_LOG_CRITICAL, _("param type is not valid"));
 
 			return -VISUAL_ERROR_PARAM_INVALID_TYPE;
 
@@ -626,7 +629,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 			break;
 		
 		default:
-			visual_log (VISUAL_LOG_CRITICAL, "param type is not valid");
+			visual_log (VISUAL_LOG_CRITICAL, _("param type is not valid"));
 
 			return -VISUAL_ERROR_PARAM_INVALID_TYPE;
 
@@ -900,7 +903,7 @@ char *visual_param_entry_get_string (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_STRING) {
-		visual_log (VISUAL_LOG_WARNING, "Requesting string from a non string param");
+		visual_log (VISUAL_LOG_WARNING, _("Requesting string from a non string param"));
 
 		return NULL;
 	}
@@ -920,7 +923,7 @@ int visual_param_entry_get_integer (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, 0);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_INTEGER)
-		visual_log (VISUAL_LOG_WARNING, "Requesting integer from a non integer param");
+		visual_log (VISUAL_LOG_WARNING, _("Requesting integer from a non integer param"));
 
 	return param->numeric.integer;
 }
@@ -937,7 +940,7 @@ float visual_param_entry_get_float (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, 0);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_FLOAT)
-		visual_log (VISUAL_LOG_WARNING, "Requesting float from a non float param");
+		visual_log (VISUAL_LOG_WARNING, _("Requesting float from a non float param"));
 
 	return param->numeric.floating;
 }
@@ -954,7 +957,7 @@ double visual_param_entry_get_double (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, 0);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
-		visual_log (VISUAL_LOG_WARNING, "Requesting double from a non double param");
+		visual_log (VISUAL_LOG_WARNING, _("Requesting double from a non double param"));
 
 	return param->numeric.doubleflt;
 }
@@ -974,7 +977,7 @@ VisColor *visual_param_entry_get_color (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR) {
-		visual_log (VISUAL_LOG_WARNING, "Requesting color from a non color param");
+		visual_log (VISUAL_LOG_WARNING, _("Requesting color from a non color param"));
 
 		return NULL;
 	}
@@ -995,7 +998,7 @@ VisPalette *visual_param_entry_get_palette (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_PALETTE) {
-		visual_log (VISUAL_LOG_WARNING, "Requested palette from a non palette param\n");
+		visual_log (VISUAL_LOG_WARNING, _("Requested palette from a non palette param\n"));
 
 		return NULL;
 	}
@@ -1015,7 +1018,7 @@ VisObject *visual_param_entry_get_object (VisParamEntry *param)
 	visual_log_return_val_if_fail (param != NULL, NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_OBJECT) {
-		visual_log (VISUAL_LOG_WARNING, "Requested object from a non object param\n");
+		visual_log (VISUAL_LOG_WARNING, _("Requested object from a non object param\n"));
 
 		return NULL;
 	}

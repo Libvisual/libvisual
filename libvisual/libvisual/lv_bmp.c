@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <gettext.h>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -87,7 +90,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	fd = open (filename, O_RDONLY);
 
 	if (fd < 0) {
-		visual_log (VISUAL_LOG_WARNING, "Bitmap file not found: %s", filename);
+		visual_log (VISUAL_LOG_WARNING, _("Bitmap file not found: %s"), filename);
 
 		return -VISUAL_ERROR_BMP_NOT_FOUND;
 	}
@@ -96,7 +99,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	read (fd, magic, 2);
 
 	if (strncmp (magic, "BM", 2) != 0) {
-		visual_log (VISUAL_LOG_WARNING, "Not a bitmap file"); 
+		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file")); 
 	
 		return -VISUAL_ERROR_BMP_NO_BMP;
 	}
@@ -162,14 +165,14 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 	/* Check if we can handle it */
 	if (bi_bitcount != 8 && bi_bitcount != 24) {
-		visual_log (VISUAL_LOG_CRITICAL, "Only bitmaps with 8 bits or 24 bits per pixel are supported");
+		visual_log (VISUAL_LOG_CRITICAL, _("Only bitmaps with 8 bits or 24 bits per pixel are supported"));
 		
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}
 
 	/* We only handle uncompressed bitmaps */
 	if (bi_compression != BI_RGB) {
-		visual_log (VISUAL_LOG_CRITICAL, "Only uncompressed bitmaps are supported");
+		visual_log (VISUAL_LOG_CRITICAL, _("Only uncompressed bitmaps are supported"));
 
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}
@@ -215,7 +218,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 		data -= video->pitch;
 
 		if (read (fd, data, video->pitch) != video->pitch) {
-			visual_log (VISUAL_LOG_CRITICAL, "Bitmap data is not complete");
+			visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
 			
 			visual_video_free_buffer (video);
 
@@ -244,7 +247,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 				break;
 			}
 			default:
-				visual_log (VISUAL_LOG_CRITICAL, "Internal error.");
+				visual_log (VISUAL_LOG_CRITICAL, _("Internal error."));
 		}
 #endif
 

@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "lvconfig.h"
 #include "lv_log.h"
@@ -325,7 +328,7 @@ VisActor *visual_actor_new (const char *actorname)
 	VisActorPluginEnviron *actenviron;
 
 	if (__lv_plugins_actor == NULL && actorname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "the plugin list is NULL");
+		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 		return NULL;
 	}
 	
@@ -413,7 +416,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
 	
 	if (actplugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-			"The given actor does not reference any actor plugin");
+			_("The given actor does not reference any actor plugin"));
 		return NULL;
 	}
 
@@ -509,7 +512,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth
 	 * the dest video context */
 	actor->transform = visual_video_new ();
 
-	visual_log (VISUAL_LOG_INFO, "run depth %d forced %d\n", rundepth, forced);
+	visual_log (VISUAL_LOG_INFO, _("run depth %d forced %d\n"), rundepth, forced);
 
 	if (forced == TRUE)
 		visual_video_set_depth (actor->transform, rundepth);
@@ -517,7 +520,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth
 		visual_video_set_depth (actor->transform,
 				visual_video_depth_get_highest_nogl (depthflag));
 
-	visual_log (VISUAL_LOG_INFO, "transpitch1 %d depth %d bpp %d", actor->transform->pitch, actor->transform->depth,
+	visual_log (VISUAL_LOG_INFO, _("transpitch1 %d depth %d bpp %d"), actor->transform->pitch, actor->transform->depth,
 			actor->transform->bpp);
 	/* If there is only GL (which gets returned by highest nogl if
 	 * nothing else is there, stop here */
@@ -525,10 +528,10 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth
 		return -VISUAL_ERROR_ACTOR_GL_NEGOTIATE;
 
 	visual_video_set_dimension (actor->transform, actor->video->width, actor->video->height);
-	visual_log (VISUAL_LOG_INFO, "transpitch2 %d %d", actor->transform->width, actor->transform->pitch);
+	visual_log (VISUAL_LOG_INFO, _("transpitch2 %d %d"), actor->transform->width, actor->transform->pitch);
 
 	actplugin->requisition (visual_actor_get_plugin (actor), &actor->transform->width, &actor->transform->height);
-	visual_log (VISUAL_LOG_INFO, "transpitch3 %d", actor->transform->pitch);
+	visual_log (VISUAL_LOG_INFO, _("transpitch3 %d"), actor->transform->pitch);
 
 	if (noevent == FALSE) {
 		visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->transform,
@@ -542,7 +545,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth
 				actor->transform->width, actor->transform->height);
 	}
 
-	visual_log (VISUAL_LOG_INFO, "rundepth: %d transpitch %d\n", rundepth, actor->transform->pitch);
+	visual_log (VISUAL_LOG_INFO, _("rundepth: %d transpitch %d\n"), rundepth, actor->transform->pitch);
 	visual_video_allocate_buffer (actor->transform);
 
 	if (actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT)
@@ -669,7 +672,7 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 
 	if (actplugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-			"The given actor does not reference any actor plugin");
+			_("The given actor does not reference any actor plugin"));
 
 		return -VISUAL_ERROR_ACTOR_PLUGIN_NULL;
 	}

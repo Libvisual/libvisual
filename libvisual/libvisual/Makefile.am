@@ -33,5 +33,5 @@ libvisual_la_SOURCES = lv_actor.c lv_input.c lv_event.c \
 		       lv_audio.c lv_fft.c lv_list.c lv_log.c lv_palette.c \
 		       lv_libvisual.c lv_songinfo.c lv_morph.c lv_bmp.c lv_param.c \
 		       lv_cpu.c lv_color.c lv_time.c lv_random.c lv_error.c lv_ui.c \
-		       lv_thread.c lv_object.c lv_transform.c lv_config.c
+		       lv_thread.c lv_object.c lv_transform.c lv_config.c gettext.h
 

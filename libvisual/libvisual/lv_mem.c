@@ -21,8 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <string.h>
 #include <stdlib.h>
+#include <gettext.h>
 
 #include "lv_mem.h"
 #include "lv_common.h"
@@ -50,7 +53,7 @@ void *visual_mem_malloc0 (visual_size_t nbytes)
 	visual_log_return_val_if_fail (nbytes > 0, NULL);
 
 	if (buf == NULL) {
-		visual_log (VISUAL_LOG_ERROR, "Cannot get %" VISUAL_SIZE_T_FORMAT " bytes of memory", nbytes);
+		visual_log (VISUAL_LOG_ERROR, _("Cannot get %" VISUAL_SIZE_T_FORMAT " bytes of memory"), nbytes);
 
 		return NULL;
 	}

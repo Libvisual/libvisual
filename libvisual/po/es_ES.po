@@ -1,0 +1,784 @@
+# Spanish translations for Libvisual Library package.
+# Copyright (C) 2005 THE Libvisual Library'S Dennis Smit.
+# This file is distributed under the same license as the Libvisual Library package.
+#  <dprotti@users.sourceforge.net>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Libvisual Library 0.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-03-22 09:11-0300\n"
+"PO-Revision-Date: 2005-03-20 17:09-0300\n"
+"Last-Translator:  <dprotti@users.sourceforge.net>\n"
+"Language-Team: Spanish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: libvisual/lv_libvisual.c:119
+msgid "Show info for"
+msgstr "Mostrar información para"
+
+#: libvisual/lv_libvisual.c:120
+msgid "seconds"
+msgstr "segundos"
+
+#: libvisual/lv_libvisual.c:122
+msgid "Show song information"
+msgstr "Mostrar información de canción"
+
+#: libvisual/lv_libvisual.c:126
+msgid "Show song information in plugins"
+msgstr "Mostrar información de canción en los plugins"
+
+#: libvisual/lv_libvisual.c:218
+msgid "Over initialized"
+msgstr "Sobreinicializado"
+
+#: libvisual/lv_libvisual.c:224
+msgid "no progname"
+msgstr "programa sin nombre"
+
+#: libvisual/lv_libvisual.c:228 libvisual/lv_libvisual.c:243
+msgid "Could not set program name"
+msgstr "No se puede establecer nombre de programa"
+
+#: libvisual/lv_libvisual.c:230
+msgid "Initialization failed, bad argv, argc"
+msgstr "Inicialización fallida, argv o argc incorrectos"
+
+#: libvisual/lv_libvisual.c:306
+msgid "Never initialized"
+msgstr "Nunca fue inicializada"
+
+#: libvisual/lv_libvisual.c:314
+msgid "Plugins references list: destroy failed"
+msgstr "Lista de referencias de plugins: destrucción fallida"
+
+#: libvisual/lv_libvisual.c:318
+msgid "Actor plugins list: destroy failed"
+msgstr "Lista de plugins actores: destrucción fallida"
+
+#: libvisual/lv_libvisual.c:322
+msgid "Input plugins list: destroy failed"
+msgstr "Lista de plugins de captura: destrucción fallida"
+
+#: libvisual/lv_libvisual.c:326
+msgid "Morph plugins list: destroy failed"
+msgstr "Lista de plugins de morphing: destrucción fallida"
+
+#: libvisual/lv_libvisual.c:330
+msgid "Transform plugins list: destroy failed"
+msgstr "Lista de plugins de transformación: destrucción fallida"
+
+#: libvisual/lv_libvisual.c:334
+msgid "Global param container: destroy failed"
+msgstr "Contenedor de parámetros global: destrucción fallida"
+
+#: libvisual/lv_libvisual.c:338
+msgid "Error during UI destroy:"
+msgstr "Error al destruir Interfaz de Usuario:"
+
+#: libvisual/lv_actor.c:331 libvisual/lv_input.c:157 libvisual/lv_morph.c:155
+#: libvisual/lv_transform.c:154
+msgid "the plugin list is NULL"
+msgstr "La lista de plugins es NULL"
+
+#: libvisual/lv_actor.c:419 libvisual/lv_actor.c:675
+msgid "The given actor does not reference any actor plugin"
+msgstr "El actor dado no referencia ningún plugin actor"
+
+#: libvisual/lv_actor.c:515
+#, c-format
+msgid "run depth %d forced %d\n"
+msgstr ""
+
+#: libvisual/lv_actor.c:523
+#, c-format
+msgid "transpitch1 %d depth %d bpp %d"
+msgstr ""
+
+#: libvisual/lv_actor.c:531
+#, c-format
+msgid "transpitch2 %d %d"
+msgstr ""
+
+#: libvisual/lv_actor.c:534
+#, c-format
+msgid "transpitch3 %d"
+msgstr ""
+
+#: libvisual/lv_actor.c:548
+#, c-format
+msgid "rundepth: %d transpitch %d\n"
+msgstr ""
+
+#: libvisual/lv_bin.c:500
+msgid "Switching to Gl mode"
+msgstr "Cambiando a modo GL"
+
+#: libvisual/lv_bin.c:511
+msgid "Switching away from Gl mode -- or non Gl switch"
+msgstr "Cambiando desde modo GL -- o haciendo un cambio no GL"
+
+#: libvisual/lv_bin.c:524
+#, c-format
+msgid "video depth (from fixate): %d"
+msgstr ""
+
+#: libvisual/lv_bin.c:540
+#, c-format
+msgid "old depth is higher, video depth %d, depth %d, bin depth %d"
+msgstr ""
+
+#: libvisual/lv_bin.c:552
+#, c-format
+msgid "new depth is higher, or equal: video depth %d, depth %d bin depth %d"
+msgstr ""
+
+#: libvisual/lv_bin.c:571
+#, c-format
+msgid "Switching from Gl TO framebuffer for real, framebuffer depth: %d"
+msgstr ""
+
+#: libvisual/lv_bin.c:574
+#, c-format
+msgid "Target depth selected: %d"
+msgstr ""
+
+#: libvisual/lv_bin.c:577
+#, c-format
+msgid "Switch to new pitch: %d"
+msgstr ""
+
+#: libvisual/lv_bin.c:586
+#, c-format
+msgid "video pitch of that what connects to the new actor %d"
+msgstr ""
+
+#: libvisual/lv_bin.c:592
+msgid "switching... ******************************************"
+msgstr "cambiando... ******************************************"
+
+#: libvisual/lv_bin.c:595
+msgid "end switch actor by name function ******************"
+msgstr "fin de cambio de actor por nombre ******************"
+
+#: libvisual/lv_bin.c:618
+#, c-format
+msgid "depth of the main actor: %d"
+msgstr "profundidad para el actor principal: %d"
+
+#: libvisual/lv_bin.c:738
+msgid "negotiate without event"
+msgstr "negociando sin evento"
+
+#: libvisual/lv_bin.c:740
+msgid "end negotiate without event"
+msgstr "fin de negociación sin evento"
+
+#: libvisual/lv_bmp.c:93
+#, c-format
+msgid "Bitmap file not found: %s"
+msgstr "Archivo de mapa de bits no encontrado: %s"
+
+#: libvisual/lv_bmp.c:102
+msgid "Not a bitmap file"
+msgstr "No es un archivo de mapa de bits"
+
+#: libvisual/lv_bmp.c:168
+msgid "Only bitmaps with 8 bits or 24 bits per pixel are supported"
+msgstr ""
+"Sólo se soportan mapas de bits con 8 o 24 bits por pixel de profundidad de "
+"color"
+
+#: libvisual/lv_bmp.c:175
+msgid "Only uncompressed bitmaps are supported"
+msgstr "Sólo se soportan mapas de bits sin comprimir"
+
+#: libvisual/lv_bmp.c:221
+msgid "Bitmap data is not complete"
+msgstr "Los datos del mapa de bits están incompletos"
+
+#: libvisual/lv_bmp.c:250
+msgid "Internal error."
+msgstr "Error interano."
+
+#: libvisual/lv_config.c:137
+msgid ""
+"The config registry file format is of an obsolete file format, won't load it"
+msgstr ""
+
+#: libvisual/lv_config.c:173
+msgid "Broken config registry, won't load"
+msgstr ""
+
+#: libvisual/lv_error.c:39
+msgid "There was no error"
+msgstr "Hubo un error"
+
+#: libvisual/lv_error.c:41
+msgid "General error occurred"
+msgstr "Error general"
+
+#: libvisual/lv_error.c:42
+msgid "General NULL pointer error"
+msgstr ""
+
+#: libvisual/lv_error.c:43
+msgid "An impossible event occurred"
+msgstr ""
+
+#: libvisual/lv_error.c:45
+msgid "VisActor is NULL"
+msgstr "VisActor es NULL"
+
+#: libvisual/lv_error.c:46
+msgid "VisActor it's video is NULL"
+msgstr "El video del VisActor es NULL"
+
+#: libvisual/lv_error.c:47
+msgid "VisActor it's plugin is NULL"
+msgstr "El plugin del VisActor es NULL"
+
+#: libvisual/lv_error.c:48
+msgid "VisActor failed while trying to forcefully negotiate a GL surface"
+msgstr "VisActor falló al tratar de negociar forzadamente una superficie GL"
+
+#: libvisual/lv_error.c:50
+msgid "VisAudio is NULL"
+msgstr "VisAudio es NULL"
+
+#: libvisual/lv_error.c:52
+msgid "Bitmap is not a bitmap file"
+msgstr ""
+
+#: libvisual/lv_error.c:53
+msgid "Bitmap can not be found"
+msgstr ""
+
+#: libvisual/lv_error.c:54
+msgid "Bitmap is not supported"
+msgstr ""
+
+#: libvisual/lv_error.c:55
+msgid "Bitmap is corrupted"
+msgstr ""
+
+#: libvisual/lv_error.c:57
+msgid "VisColor is NULL"
+msgstr "VisColor es NULL"
+
+#: libvisual/lv_error.c:59
+msgid "VisConfigRegistry is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:60
+msgid "VisConfigRegistrySection is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:62
+msgid "The code can not run on this architecture"
+msgstr ""
+
+#: libvisual/lv_error.c:64
+msgid "Global error handler is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:66
+msgid "VisEvent is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:67
+msgid "VisEventQueue is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:69
+msgid "VisInput is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:70
+msgid "VisInput it's plugin is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:72
+msgid "No paths were given to seek for plugins"
+msgstr ""
+
+#: libvisual/lv_error.c:73
+msgid "Libvisual is already initialized"
+msgstr ""
+
+#: libvisual/lv_error.c:74
+msgid "Libvisual is not initialized"
+msgstr ""
+
+#: libvisual/lv_error.c:75
+msgid "Libvisual has not build a plugin registry"
+msgstr ""
+
+#: libvisual/lv_error.c:77
+msgid "VisList is NULL"
+msgstr "VisList es NULL"
+
+#: libvisual/lv_error.c:78
+msgid "VisListEntry is NULL"
+msgstr "VisListEntry es NULL"
+
+#: libvisual/lv_error.c:79
+msgid "VisListEntry is invalid"
+msgstr "VisListEntry es inválida"
+
+#: libvisual/lv_error.c:81
+msgid "Given memory pointer is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:83
+msgid "VisMorph is NULL"
+msgstr "VisMorph es NULL"
+
+#: libvisual/lv_error.c:84
+msgid "VisMorph it's plugin is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:86
+msgid "VisPalette is NULL"
+msgstr "VisPalette es NULL"
+
+#: libvisual/lv_error.c:87
+msgid "VisPalette it's size conflicts"
+msgstr ""
+
+# VisParamEntry es NULL
+#: libvisual/lv_error.c:89
+msgid "VisParamEntry is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:90
+msgid "VisParamContainer is NULL"
+msgstr "VisParamContainer es NULL"
+
+#: libvisual/lv_error.c:91
+msgid "VisParamEntry not found in VisParamContainer"
+msgstr ""
+
+#: libvisual/lv_error.c:92
+msgid "VisParamEntry it's change notify callback is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:93
+msgid "VisParamEntry contains too many change notify callbacks"
+msgstr ""
+
+#: libvisual/lv_error.c:94
+msgid "VisParamEntry is of invalid type"
+msgstr ""
+
+#: libvisual/lv_error.c:96
+msgid "VisPluginData is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:97
+msgid "VisPluginInfo is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:98
+msgid "VisPluginRef is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:99
+msgid "VisPluginEnvironElement is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:100
+msgid "Plugin does not have an event handler"
+msgstr ""
+
+#: libvisual/lv_error.c:101
+msgid "Plugin handle is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:102
+msgid "Plugin is already realized"
+msgstr ""
+
+#: libvisual/lv_error.c:104
+msgid "VisRandomContext is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:106
+msgid "VisSongInfo is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:108
+msgid "VisThread is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:109
+msgid "The VisThread subsystem is not initialized"
+msgstr ""
+
+#: libvisual/lv_error.c:110
+msgid "The VisThread subsystem couldn't find any threading model to use"
+msgstr ""
+
+#: libvisual/lv_error.c:111
+msgid "The VisThread subsystem is not enabled"
+msgstr ""
+
+#: libvisual/lv_error.c:113
+msgid "VisMutex is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:114
+msgid "VisMutex lock failed"
+msgstr ""
+
+#: libvisual/lv_error.c:115
+msgid "VisMutex trylock failed"
+msgstr ""
+
+#: libvisual/lv_error.c:116
+msgid "VisMutex unlock failed"
+msgstr ""
+
+#: libvisual/lv_error.c:118
+msgid "VisTransform is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:119
+msgid "The VisTransform negotiate with the target VisVideo failed"
+msgstr "Falló la negociación de VisTransform con el VisVideo objetivo"
+
+#: libvisual/lv_error.c:120
+msgid "The VisTransform it's plugin is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:121
+msgid "The VisTransform it's video is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:122
+msgid "The VisTransform it's palette is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:124
+msgid "VisObject destruction failed"
+msgstr "Destrucción de VisObject fallida"
+
+#: libvisual/lv_error.c:125
+msgid "VisObject is NULL"
+msgstr "VisObject es NULL"
+
+#: libvisual/lv_error.c:126
+#, fuzzy
+msgid "VisObject is not allocated"
+msgstr "Destrucción de VisObject fallida"
+
+#: libvisual/lv_error.c:128
+#, fuzzy
+msgid "VisTime is NULL"
+msgstr "VisList es NULL"
+
+#: libvisual/lv_error.c:129
+msgid "visual_time_usleep() is not supported"
+msgstr ""
+
+#: libvisual/lv_error.c:130
+#, fuzzy
+msgid "VisTimer is NULL"
+msgstr "VisList es NULL"
+
+#: libvisual/lv_error.c:132
+#, fuzzy
+msgid "VisUIWidget is NULL"
+msgstr "VisList es NULL"
+
+#: libvisual/lv_error.c:133
+#, fuzzy
+msgid "VisUIContainer is NULL"
+msgstr "VisParamContainer es NULL"
+
+#: libvisual/lv_error.c:134
+#, fuzzy
+msgid "VisUIBox is NULL"
+msgstr "VisActor es NULL"
+
+#: libvisual/lv_error.c:135
+#, fuzzy
+msgid "VisUITable is NULL"
+msgstr "VisPalette es NULL"
+
+#: libvisual/lv_error.c:136
+#, fuzzy
+msgid "VisUIFrame is NULL"
+msgstr "VisPalette es NULL"
+
+#: libvisual/lv_error.c:137
+#, fuzzy
+msgid "VisUILabel is NULL"
+msgstr "VisObject es NULL"
+
+#: libvisual/lv_error.c:138
+#, fuzzy
+msgid "VisUIImage is NULL"
+msgstr "VisPalette es NULL"
+
+#: libvisual/lv_error.c:139
+#, fuzzy
+msgid "VisUISeparator is NULL"
+msgstr "VisActor es NULL"
+
+#: libvisual/lv_error.c:140
+#, fuzzy
+msgid "VisUIMutator is NULL"
+msgstr "VisActor es NULL"
+
+#: libvisual/lv_error.c:141
+#, fuzzy
+msgid "VisUIRange is NULL"
+msgstr "VisPalette es NULL"
+
+#: libvisual/lv_error.c:142
+#, fuzzy
+msgid "VisUIEntry is NULL"
+msgstr "VisListEntry es NULL"
+
+#: libvisual/lv_error.c:143
+#, fuzzy
+msgid "VisUISlider is NULL"
+msgstr "VisColor es NULL"
+
+#: libvisual/lv_error.c:144
+#, fuzzy
+msgid "VisUINumeric is NULL"
+msgstr "VisAudio es NULL"
+
+#: libvisual/lv_error.c:145
+#, fuzzy
+msgid "VisUIColor is NULL"
+msgstr "VisColor es NULL"
+
+#: libvisual/lv_error.c:146
+#, fuzzy
+msgid "VisUIChoice is NULL"
+msgstr "VisColor es NULL"
+
+#: libvisual/lv_error.c:147
+#, fuzzy
+msgid "VisUIPopup is NULL"
+msgstr "VisMorph es NULL"
+
+#: libvisual/lv_error.c:148
+#, fuzzy
+msgid "VisUIList is NULL"
+msgstr "VisList es NULL"
+
+#: libvisual/lv_error.c:149
+#, fuzzy
+msgid "VisUIRadio is NULL"
+msgstr "VisAudio es NULL"
+
+#: libvisual/lv_error.c:150
+#, fuzzy
+msgid "VisUICheckbox is NULL"
+msgstr "VisActor es NULL"
+
+#: libvisual/lv_error.c:151
+#, fuzzy
+msgid "VisUIChoiceEntry is NULL"
+msgstr "VisListEntry es NULL"
+
+#: libvisual/lv_error.c:152
+msgid "No choice in VisUIChoice is activated"
+msgstr ""
+
+#: libvisual/lv_error.c:154
+#, fuzzy
+msgid "VisVideo is NULL"
+msgstr "VisAudio es NULL"
+
+#: libvisual/lv_error.c:155
+msgid "VisVideo has allocated pixel buffer"
+msgstr ""
+
+#: libvisual/lv_error.c:156
+#, fuzzy
+msgid "VisVideo it's pixel buffer is NULL"
+msgstr "El plugin del VisActor es NULL"
+
+#: libvisual/lv_error.c:157
+msgid "VisVideo it's pixel buffer is not allocated"
+msgstr ""
+
+#: libvisual/lv_error.c:158
+msgid "VisVideo has pixel buffer"
+msgstr ""
+
+#: libvisual/lv_error.c:159
+msgid "VisVideo is of invalid bytes per pixel"
+msgstr ""
+
+#: libvisual/lv_error.c:160
+msgid "VisVideo is of invalid depth"
+msgstr "Profundidad inválida para un VisVideo"
+
+#: libvisual/lv_error.c:161
+msgid "Invalid scale method given"
+msgstr "Método de escalado inválido"
+
+#: libvisual/lv_error.c:162
+msgid "Given coordinates are out of bounds"
+msgstr "Las coordenadas dadas están fuera de los límites"
+
+#: libvisual/lv_error.c:163
+msgid "Given VisVideos are not indentical"
+msgstr "Los VisVideos dados no son idénticos"
+
+#: libvisual/lv_error.c:164
+msgid "VisVideo is not depth transformed as requested"
+msgstr ""
+
+#: libvisual/lv_error.c:227
+msgid "The error value given to visual_error_to_string() is invalid"
+msgstr "El valor de error dado a visual_error_to_string() es inválido"
+
+#: libvisual/lv_event.c:196
+msgid "Cannot create a new VisEvent structure"
+msgstr "No se puede crear una nueva estructura VisEvent"
+
+#: libvisual/lv_mem.c:56
+msgid "Cannot get %"
+msgstr "No se pueden obtener %"
+
+#: libvisual/lv_mem.c:56
+msgid " bytes of memory"
+msgstr " bytes de memoria"
+
+#: libvisual/lv_morph.c:374 libvisual/lv_morph.c:413
+msgid "The given morph does not reference any plugin"
+msgstr "El morph dado no referencia ningún plugin"
+
+#: libvisual/lv_param.c:568 libvisual/lv_param.c:632
+msgid "param type is not valid"
+msgstr "tipo de parámetro inválido"
+
+#: libvisual/lv_param.c:906
+msgid "Requesting string from a non string param"
+msgstr "Pidiendo una string desde un parámetro que no es de tipo string"
+
+#: libvisual/lv_param.c:926
+msgid "Requesting integer from a non integer param"
+msgstr "Pidiendo un entero desde un parámetro que no es de tipo entero"
+
+#: libvisual/lv_param.c:943
+msgid "Requesting float from a non float param"
+msgstr ""
+
+#: libvisual/lv_param.c:960
+msgid "Requesting double from a non double param"
+msgstr ""
+
+#: libvisual/lv_param.c:980
+msgid "Requesting color from a non color param"
+msgstr ""
+
+#: libvisual/lv_param.c:1001
+msgid "Requested palette from a non palette param\n"
+msgstr ""
+
+#: libvisual/lv_param.c:1021
+msgid "Requested object from a non object param\n"
+msgstr "Pidiendo un objeto desde un parámetro que no es de tipo objeto\n"
+
+#: libvisual/lv_plugin.c:101
+#, fuzzy, c-format
+msgid "A plugin reference with %d instances has been destroyed."
+msgstr "Lista de referencias de plugins: destrucción fallida"
+
+#: libvisual/lv_plugin.c:432
+msgid "Cannot create a new list"
+msgstr "No se puede crear una nueva lista"
+
+#: libvisual/lv_plugin.c:645
+msgid "Tried unloading a plugin that never has been loaded."
+msgstr "Tratando de dar de baja un plugin que nunca fue cargado."
+
+#: libvisual/lv_plugin.c:705
+#, c-format
+msgid ""
+"Cannot load plugin %s, the plugin is already loaded and is not reentrant."
+msgstr ""
+"No se puede cargar el plugin %s, el plugin ya fue cargado y no es reentrante."
+
+#: libvisual/lv_plugin.c:721 libvisual/lv_plugin.c:837
+#, c-format
+msgid "Cannot load plugin: %s"
+msgstr "No se puede cargar plugin: %s"
+
+#: libvisual/lv_plugin.c:738 libvisual/lv_plugin.c:855
+#, c-format
+msgid "Cannot initialize plugin: %s"
+msgstr "No se puede inicilalizar plugin: %s"
+
+#: libvisual/lv_plugin.c:749
+msgid "Cannot get plugin info while loading."
+msgstr ""
+
+#: libvisual/lv_plugin.c:867
+msgid "Cannot get plugin info"
+msgstr "No se puede obtener información del plugin"
+
+#: libvisual/lv_plugin.c:885
+#, c-format
+msgid "Plugin %s is not compatible with version %s of libvisual"
+msgstr "El plugin %s no es compatible con la versión %s de libvisual"
+
+#: libvisual/lv_plugin.c:940
+#, c-format
+msgid "Failed to add the %s directory to the plugin registry"
+msgstr "Fallo al añadir el directorio %s al registro de plugins"
+
+#: libvisual/lv_thread.c:277
+msgid ""
+"Tried freeing thread memory while threading is not supported, simply freeing "
+"mem"
+msgstr ""
+
+#: libvisual/lv_thread.c:358
+msgid ""
+"Tried freeing mutex memory while threading is not supported, simply freeing "
+"mem"
+msgstr ""
+
+#: libvisual/lv_thread.c:478 libvisual/lv_thread.c:707
+msgid "Error while creating thread"
+msgstr "Error al crear thread"
+
+#: libvisual/lv_thread.c:500
+msgid "Error while joining thread"
+msgstr "Error al hacer 'join' a un thread"
+
+#: libvisual/lv_transform.c:350 libvisual/lv_transform.c:386
+msgid "The given transform does not reference any transform plugin"
+msgstr ""
+
+#: libvisual/lv_video.c:228
+msgid ""
+"Trying to allocate an screen buffer on a VisVideo structure which points to "
+"an external screen buffer"
+msgstr ""
+
+#: libvisual/lv_video.c:373
+msgid ""
+"Trying to set a screen buffer on a VisVideo structure which points to an "
+"allocated screen buffer"
+msgstr ""
+
+#: libvisual/lv_video.c:1503
+msgid "Invalid depth passed to the scaler"
+msgstr "Profundidad pasada al escalador inválida"
+
+#~ msgid "Hi pepe!"
+#~ msgstr "Hola pepe!"

@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "lvconfig.h"
 
@@ -271,7 +274,7 @@ int visual_thread_free (VisThread *thread)
 	visual_log_return_val_if_fail (thread != NULL, -VISUAL_ERROR_THREAD_NULL);
 
 	if (visual_thread_is_supported () == FALSE) {
-		visual_log (VISUAL_LOG_WARNING, "Tried freeing thread memory while threading is not supported, simply freeing mem");
+		visual_log (VISUAL_LOG_WARNING, _("Tried freeing thread memory while threading is not supported, simply freeing mem"));
 
 		return visual_mem_free (thread);
 	}
@@ -352,7 +355,7 @@ int visual_mutex_free (VisMutex *mutex)
 	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
 	if (visual_thread_is_supported () == FALSE) {
-		visual_log (VISUAL_LOG_WARNING, "Tried freeing mutex memory while threading is not supported, simply freeing mem");
+		visual_log (VISUAL_LOG_WARNING, _("Tried freeing mutex memory while threading is not supported, simply freeing mem"));
 
 		return visual_mem_free (mutex);
 	}
@@ -472,7 +475,7 @@ static VisThread *thread_create_posix (VisThreadFunc func, void *data, int joina
 	pthread_attr_destroy (&attr);
 
 	if (res != 0) {
-		visual_log (VISUAL_LOG_CRITICAL, "Error while creating thread");
+		visual_log (VISUAL_LOG_CRITICAL, _("Error while creating thread"));
 
 		visual_mem_free (thread);
 
@@ -494,7 +497,7 @@ static void *thread_join_posix (VisThread *thread)
 #ifdef VISUAL_THREAD_MODEL_POSIX
 
 	if (pthread_join (thread->thread, &result) < 0) {
-		visual_log (VISUAL_LOG_CRITICAL, "Error while joining thread");
+		visual_log (VISUAL_LOG_CRITICAL, _("Error while joining thread"));
 
 		return NULL;
 	}
@@ -701,7 +704,7 @@ static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joi
 	thread->thread = g_thread_create (func, data, joinable, NULL);
 
 	if (thread->thread == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Error while creating thread");
+		visual_log (VISUAL_LOG_CRITICAL, _("Error while creating thread"));
 
 		visual_mem_free (thread);
 

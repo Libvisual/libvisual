@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "lv_list.h"
 #include "lv_input.h"
@@ -151,7 +154,7 @@ VisInput *visual_input_new (const char *inputname)
 //	visual_log_return_val_if_fail (__lv_plugins_input != NULL && inputname == NULL, NULL);
 
 	if (__lv_plugins_input == NULL && inputname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "the plugin list is NULL");
+		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 		return NULL;
 	}
 	

@@ -182,6 +182,9 @@ int visual_object_set_private (VisObject *object, void *priv)
 {
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
+	/* mhm, this can lead to a memory leak. We must check here
+	   for priv == NULL and return some -VISUAl_ERROR_NON_NULL
+	   when it's not, or print some debug message at least. */
 	object->priv = priv;
 
 	return VISUAL_OK;

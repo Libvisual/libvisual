@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "lvconfig.h"
 #include "lv_log.h"
@@ -148,7 +151,7 @@ VisTransform *visual_transform_new (const char *transformname)
 	VisPluginRef *ref;
 
 	if (__lv_plugins_transform == NULL && transformname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "the plugin list is NULL");
+		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 		return NULL;
 	}
 	
@@ -344,7 +347,7 @@ int visual_transform_run_video (VisTransform *transform, VisAudio *audio)
 
 	if (transplugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-			"The given transform does not reference any transform plugin");
+			_("The given transform does not reference any transform plugin"));
 
 		return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
 	}
@@ -380,7 +383,7 @@ int visual_transform_run_palette (VisTransform *transform, VisAudio *audio)
 
 	if (transplugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-			"The given transform does not reference any transform plugin");
+			_("The given transform does not reference any transform plugin"));
 
 		return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
 	}

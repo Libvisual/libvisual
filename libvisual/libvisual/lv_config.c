@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <gettext.h>
 
 #include "lvconfig.h"
 
@@ -131,7 +134,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 
 	/* Different config registry version, won't load */
 	if (strncmp (namebuf, VISUAL_CONFIG_VERSION, 19) != 0) {
-		visual_log (VISUAL_LOG_WARNING, "The config registry file format is of an obsolete file format, won't load it");
+		visual_log (VISUAL_LOG_WARNING, _("The config registry file format is of an obsolete file format, won't load it"));
 
 		goto out;
 	}
@@ -167,7 +170,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 	}
 	
 broken:
-	visual_log (VISUAL_LOG_CRITICAL, "Broken config registry, won't load");
+	visual_log (VISUAL_LOG_CRITICAL, _("Broken config registry, won't load"));
 
 	/* Unload all sections, some might have been partially parsed, which can be dangerious, we don't
 	 * want that. */

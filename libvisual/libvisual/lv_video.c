@@ -24,10 +24,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <lvconfig.h>
 #include "lv_common.h"
@@ -222,8 +225,8 @@ int visual_video_allocate_buffer (VisVideo *video)
 		if (HAVE_ALLOCATED_BUFFER (video)) {
 			visual_video_free_buffer (video);
 		} else {
-			visual_log (VISUAL_LOG_CRITICAL, "Trying to allocate an screen buffer on "
-					"a VisVideo structure which points to an external screen buffer");
+			visual_log (VISUAL_LOG_CRITICAL, _("Trying to allocate an screen buffer on "
+					"a VisVideo structure which points to an external screen buffer"));
 
 			return -VISUAL_ERROR_VIDEO_HAS_PIXELS;
 		}
@@ -367,8 +370,8 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	if (HAVE_ALLOCATED_BUFFER (video)) {
-		visual_log (VISUAL_LOG_CRITICAL, "Trying to set a screen buffer on "
-				"a VisVideo structure which points to an allocated screen buffer");
+		visual_log (VISUAL_LOG_CRITICAL, _("Trying to set a screen buffer on "
+				"a VisVideo structure which points to an allocated screen buffer"));
 
 		return -VISUAL_ERROR_VIDEO_HAS_ALLOCATED;
 	}
@@ -1497,7 +1500,7 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 			break;
 
 		default:
-			visual_log (VISUAL_LOG_CRITICAL, "Invalid depth passed to the scaler");
+			visual_log (VISUAL_LOG_CRITICAL, _("Invalid depth passed to the scaler"));
 
 			return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 

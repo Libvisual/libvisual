@@ -21,10 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <gettext.h>
 
 #include <lvconfig.h>
 #include "lv_log.h"
@@ -149,7 +152,7 @@ VisMorph *visual_morph_new (const char *morphname)
 	VisPluginRef *ref;
 
 	if (__lv_plugins_morph == NULL && morphname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "the plugin list is NULL");
+		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 		return NULL;
 	}
 
@@ -368,7 +371,7 @@ int visual_morph_requests_audio (VisMorph *morph)
 	
 	if (morphplugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-			"The given morph does not reference any plugin");
+			_("The given morph does not reference any plugin"));
 
 		return -VISUAL_ERROR_MORPH_PLUGIN_NULL;
 	}
@@ -407,7 +410,7 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 
 	if (morphplugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-			"The given morph does not reference any plugin");
+			_("The given morph does not reference any plugin"));
 
 		return -VISUAL_ERROR_MORPH_PLUGIN_NULL;
 	}

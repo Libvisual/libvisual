@@ -34,8 +34,12 @@
  * More optimisations.
  */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <math.h>
+#include <gettext.h>
+
 #ifndef PI
  #ifdef M_PI
   #define PI M_PI
@@ -205,7 +209,7 @@ static void _lv_fft_output (const float * re, const float * im, float *output)
 	*endptr /= 4;
 
 #ifdef DEBUG
-	printf ("Recalculated input:\n");
+	visual_log (VISUAL_LOG_DEBUG, "Recalculated input:");
 	for(i = 0; i < VISUAL_FFT_BUFFER_SIZE; i++) {
 		float val_real = 0;
 		float val_imag = 0;
