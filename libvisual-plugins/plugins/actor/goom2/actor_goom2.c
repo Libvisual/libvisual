@@ -126,7 +126,7 @@ VisPalette *lv_goom_palette (VisPluginData *plugin)
 int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GoomPrivate *priv = plugin->priv;
-	VisSongInfo *songinfo = plugin->songinfo;
+	VisSongInfo *songinfo;
 	VisParamContainer *paramcontainer;
 	VisParamEntry *param;
 	short pcmdata[2][512];
@@ -134,6 +134,10 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	int showinfo = TRUE;
 
 	memcpy (pcmdata, audio->pcm, sizeof (short) * 512 * 2);
+
+	/* Retrieve the songinfo */
+	songinfo = visual_plugin_actor_get_songinfo (
+			VISUAL_PLUGIN_ACTOR (visual_plugin_get_specific (plugin)));
 
 	/* Check the global parameter for showing songinfo in plugins */
 	paramcontainer = visual_get_params ();

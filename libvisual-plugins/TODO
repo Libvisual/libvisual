@@ -34,9 +34,6 @@ inputs:
 	jack:
 		finish it actually.
 
-	polypaudio:
-		http://0pointer.de/lennart/projects/polypaudio/
-
 	Any other input method:
 		Make plugins for these (someone else),
 			remember rather add a plugin than use the callback method
@@ -109,6 +106,9 @@ actors:
 
 	More: (post 0.2)
 		When api is stable, start porting over some more xmms plugins.
+
+	je_regrette:
+		Port this awesome demo in a plugin!
 
 morph: (lots of these effects can be taken from the demo world, this should turn
 	visuals into scenes rather than standalone plugins, o boy!)

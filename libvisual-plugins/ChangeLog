@@ -1,3 +1,8 @@
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/goom2/*: Adapt to API changes
+	regarding songinfo
+
 2004-10-23  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/jakdaw/*: More work on VisUI.
