@@ -1,9 +1,16 @@
-2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/dancingparticles/*: Adding the beginning, very rough
+	port still.
+
+	* configure.ac: Adapted for dancingparticles.
+
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/bumpscope/bumpscope.c (__bumpscope_generate_phongdat):
 	Nicer light edge.
 
-2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/corona/*: Fixed the kickbeat detection.
 

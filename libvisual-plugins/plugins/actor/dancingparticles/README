@@ -1,0 +1,62 @@
+LIBVISUAL NOTE, ORIGINAL README:
+
+Dancing Particules v 0.6
+
+Copyright (C) 2002-2004  Pierre Tardy
+
+some code based on:
+
+ * Bezier Plugin
+ * Copyright (C) 1999 Rick Haines
+
+ *  Blursk - visualization plugin for XMMS
+ *  Copyright (C) 1999  Steve Kirkendall
+
+
+This plugin makes particles dance..
+
+Each particles is linked to the center with a rubber band:
+ f = - k * (l-l0) 
+
+and has an interaction force with each other particles:
+ f = ag *  (part[i]-part[j])
+         ---------------------
+          (part[i]-part[j])^3
+
+Whearas this plugin is highly configurable, there is no
+configuration dialog.
+The configuration is a set of parameter you can edit
+in parameters.cc
+
+the plugin can load .epic file made by xfig:
+(export "Latex Picture +epic macro")
+
+
+TODO:
+Still many hard coded parameters..
+Still lot of dirty code..
+
+
+HISTORY:
+v0.6
+You can now affect an effect to a key. see the 'Key' option in config file.
+Corrected a silly bug with i18n.
+
+v0.5
+Better beat recognition (more reactive to the music)
+added some missing headers (they are default on mdk)
+font support (display the title on song changes)
+you can change font.pfb (the one in the tarball is NinbusMonL-Regu)
+
+
+v0.4
+Added configuration files, plus some parameters
+Can animate lots of particles
+Fixed some bugs..
+
+v0.3 Started the glut port (for the test bin)
+     All the code has \n for endl
+     cleaner code
+
+v0.2 Added texture and alpha blending 
+v0.1 initial Version

@@ -247,6 +247,25 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([dancingparticles],
+            AC_HELP_STRING([--disable-dancingparticles],
+                           [Do not build Dancing Particles plugin @<:@default=enabled@:>@]),
+	    [dancingparticles=$enableval],
+	    [dancingparticles=yes])
+AC_MSG_CHECKING([whether to build Dancing Particles plugin])
+if test x$dancingparticles = xyes; then
+  AC_MSG_RESULT([yes])
+  if test x$opengl = xyes; then
+    build_actor="$build_actor dancingparticles"
+    AC_SUBST([DANCINGPARTICLES], ['actor_dancingparticles.la'])
+  else
+    AC_MSG_WARN([*** No OpenGL found.
+		Dancing Particles plugin will not be built.])
+  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([nebulus],
             AC_HELP_STRING([--disable-nebulus],
                            [Do not build Nebulus plugin @<:@default=enabled@:>@]),
@@ -557,6 +576,7 @@ AC_CONFIG_FILES([
 	plugins/actor/lv_scope/Makefile
 	plugins/actor/lv_gltest/Makefile
 	plugins/actor/madspin/Makefile
+	plugins/actor/dancingparticles/Makefile
 	plugins/actor/nebulus/Makefile
 	plugins/actor/oinksie/Makefile
 	plugins/actor/jakdaw/Makefile
