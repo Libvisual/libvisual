@@ -150,7 +150,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 
 		rsection = visual_config_registry_section_new ();
 
-		rsection->name = strdrup (sectionname);
+		rsection->name = strdup (sectionname);
 
 		lseek (fd, (datalength > 128 ? -128 : -datalength) + strlen (sectionname), SEEK_CUR);
 
