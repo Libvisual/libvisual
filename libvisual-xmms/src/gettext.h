@@ -25,10 +25,6 @@
 /* Get declarations of GNU message catalog functions.  */
 # include <libintl.h>
 
-#define _(String) (gettext(String))
-
-#else
-
 /* Solaris /usr/include/locale.h includes /usr/include/libintl.h, which
    chokes if dcgettext is defined as a macro.  So include it now, to make
    later inclusions of <locale.h> a NOP.  We don't include <libintl.h>
@@ -41,6 +37,8 @@
 #if HAVE_LOCALE_H
 #include <locale.h>
 #endif
+
+#else
 
 /* Disabled NLS.
    The casts to 'const char *' serve the purpose of producing warnings
@@ -70,5 +68,7 @@
    The macro's expansion is not parenthesized, so that it is suitable as
    initializer for static 'char[]' or 'const char[]' variables.  */
 #define gettext_noop(String) String
+
+#define _(String) (gettext(String))
 
 #endif /* _LIBGETTEXT_H */
