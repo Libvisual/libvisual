@@ -1,3 +1,13 @@
+2004-07-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* libvisual/lv_endianess.h: Added.
+
+	* libvisual/lv_bmp.c: Fixed endianess issues. Needs testing.
+
+	* libvisual/libvisual.h: Include lv_endianess.h
+
+	* libvisual/Makefile.am: Add lv_endianess.h to headers list.
+
 2004-07-10  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_actor.c: Moved out the actor
