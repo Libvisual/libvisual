@@ -32,6 +32,12 @@ typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
 
+typedef struct {
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+} _color24;
+
 /* The VisVideo dtor function */
 static int video_dtor (VisObject *object);
 
@@ -1533,6 +1539,7 @@ static int scale_nearest_16 (VisVideo *dest, const VisVideo *src)
 }
 
 /* FIXME this version is of course butt ugly */
+/* IF color24 is allowed use it here as well */
 static int scale_nearest_24 (VisVideo *dest, const VisVideo *src)
 {
 	int x, y;
@@ -1622,19 +1629,215 @@ static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 
 static int scale_bilinear_8 (VisVideo *dest, const VisVideo *src)
 {
+	uint32_t y;
+	uint32_t u, v, du, dv; /* fixed point 16.16 */
+	uint8_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
 
+	dest_pixel = dest->pixels;
+
+	du = ((src->width-1)  << 16) / dest->width;
+	dv = ((src->height-1) << 16) / dest->height;
+	v = 0;
+
+	for (y = dest->height; y--; v += dv) {
+		uint32_t x;
+		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
+
+		if (v >> 16 >= src->height-1)
+			v -= 0x10000;
+
+		src_pixel_rowu = (uint8_t *) src->pixel_rows[v >> 16];
+		src_pixel_rowl = (uint8_t *) src->pixel_rows[(v >> 16) + 1];
+
+		/* fracV = frac(v) = v & 0xffff */
+		/* fixed point format convertion: fracV >>= 8) */
+		fracV = (v & 0xffff) >> 8;
+		u = 0.0;
+
+		for (x = dest->width - 1; x--; u += du) {
+			uint8_t cul, cll, cur, clr, b;
+			uint32_t ul, ll, ur, lr; /* fixed point 16.16 [0,1[   */
+			uint32_t b0; /* fixed point 16.16 [0,255[ */
+
+			/* fracU = frac(u) = u & 0xffff */
+			/* fixed point format convertion: fracU >>= 8) */
+			fracU  = (u & 0xffff) >> 8;
+
+			/* notice 0x100 = 1.0 (fixed point 24.8) */
+			ul = (0x100 - fracU) * (0x100 - fracV);
+			ll = (0x100 - fracU) * fracV;
+			ur = fracU * (0x100 - fracV);
+			lr = fracU * fracV;
+
+			cul = src_pixel_rowu[u >> 16];
+			cll = src_pixel_rowl[u >> 16];
+			cur = src_pixel_rowu[(u >> 16) + 1];
+			clr = src_pixel_rowl[(u >> 16) + 1];
+
+			b0 = ul * cul;
+			b0 += ll * cll;
+			b0 += ur * cur;
+			b0 += lr * clr;
+
+			*dest_pixel++ = b0 >> 16;
+		}
+
+		memset (dest_pixel, 0, dest->pitch - (dest->width - 1));
+		dest_pixel += dest->pitch - (dest->width - 1);
+
+	}
 
 	return VISUAL_OK;
 }
 
 static int scale_bilinear_16 (VisVideo *dest, const VisVideo *src)
 {
+	uint32_t y;
+	uint32_t u, v, du, dv; /* fixed point 16.16 */
+	_color16 *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
+	dest_pixel = dest->pixels;
+
+	du = ((src->width-1)  << 16) / dest->width;
+	dv = ((src->height-1) << 16) / dest->height;
+	v = 0;
+
+	for (y = dest->height; y--; v += dv) {
+		uint32_t x;
+		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
+
+		if (v >> 16 >= src->height-1)
+			v -= 0x10000;
+
+		src_pixel_rowu = (_color16 *) src->pixel_rows[v >> 16];
+		src_pixel_rowl = (_color16 *) src->pixel_rows[(v >> 16) + 1];
+
+		/* fracV = frac(v) = v & 0xffff */
+		/* fixed point format convertion: fracV >>= 8) */
+		fracV = (v & 0xffff) >> 8;
+		u = 0.0;
+
+		for (x = dest->width - 1; x--; u += du) {
+			_color16 cul, cll, cur, clr, b;
+			uint32_t ul, ll, ur, lr; /* fixed point 16.16 [0,1[   */
+			uint32_t b3, b2, b1, b0; /* fixed point 16.16 [0,255[ */
+
+			/* fracU = frac(u) = u & 0xffff */
+			/* fixed point format convertion: fracU >>= 8) */
+			fracU  = (u & 0xffff) >> 8;
+
+			/* notice 0x100 = 1.0 (fixed point 24.8) */
+			ul = (0x100 - fracU) * (0x100 - fracV);
+			ll = (0x100 - fracU) * fracV;
+			ur = fracU * (0x100 - fracV);
+			lr = fracU * fracV;
+
+			cul = src_pixel_rowu[u >> 16];
+			cll = src_pixel_rowl[u >> 16];
+			cur = src_pixel_rowu[(u >> 16) + 1];
+			clr = src_pixel_rowl[(u >> 16) + 1];
+
+			b0 = ul * cul.r;
+			b1 = ul * cul.g;
+			b2 = ul * cul.b;
+
+			b0 += ll * cll.r;
+			b1 += ll * cll.g;
+			b2 += ll * cll.b;
+
+			b0 += ur * cur.r;
+			b1 += ur * cur.g;
+			b2 += ur * cur.b;
+
+			b0 += lr * clr.r;
+			b1 += lr * clr.g;
+			b2 += lr * clr.b;
+
+			b.r = b0 >> 16;
+			b.g = b1 >> 16;
+			b.b = b2 >> 16;
+
+			*dest_pixel++ = b;
+		}
+
+		memset (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 2)));
+		dest_pixel += (dest->pitch / 2) - ((dest->width - 1));
+	}
 
 	return VISUAL_OK;
 }
 
 static int scale_bilinear_24 (VisVideo *dest, const VisVideo *src)
 {
+	uint32_t y;
+	uint32_t u, v, du, dv; /* fixed point 16.16 */
+	_color24 *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
+	dest_pixel = dest->pixels;
+
+	du = ((src->width-1)  << 16) / dest->width;
+	dv = ((src->height-1) << 16) / dest->height;
+	v = 0;
+
+	for (y = dest->height; y--; v += dv) {
+		uint32_t x;
+		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
+
+		if (v >> 16 >= src->height-1)
+			v -= 0x10000;
+
+		src_pixel_rowu = (_color24 *) src->pixel_rows[v >> 16];
+		src_pixel_rowl = (_color24 *) src->pixel_rows[(v >> 16) + 1];
+
+		/* fracV = frac(v) = v & 0xffff */
+		/* fixed point format convertion: fracV >>= 8) */
+		fracV = (v & 0xffff) >> 8;
+		u = 0.0;
+
+		for (x = dest->width - 1; x--; u += du) {
+			_color24 cul, cll, cur, clr, b;
+			uint32_t ul, ll, ur, lr; /* fixed point 16.16 [0,1[   */
+			uint32_t b3, b2, b1, b0; /* fixed point 16.16 [0,255[ */
+
+			/* fracU = frac(u) = u & 0xffff */
+			/* fixed point format convertion: fracU >>= 8) */
+			fracU  = (u & 0xffff) >> 8;
+
+			/* notice 0x100 = 1.0 (fixed point 24.8) */
+			ul = (0x100 - fracU) * (0x100 - fracV);
+			ll = (0x100 - fracU) * fracV;
+			ur = fracU * (0x100 - fracV);
+			lr = fracU * fracV;
+
+			cul = src_pixel_rowu[u >> 16];
+			cll = src_pixel_rowl[u >> 16];
+			cur = src_pixel_rowu[(u >> 16) + 1];
+			clr = src_pixel_rowl[(u >> 16) + 1];
+
+			b0 = ul * cul.r;
+			b1 = ul * cul.g;
+			b2 = ul * cul.b;
+
+			b0 += ll * cll.r;
+			b1 += ll * cll.g;
+			b2 += ll * cll.b;
+
+			b0 += ur * cur.r;
+			b1 += ur * cur.g;
+			b2 += ur * cur.b;
+
+			b0 += lr * clr.r;
+			b1 += lr * clr.g;
+			b2 += lr * clr.b;
+
+			b.r = b0 >> 16;
+			b.g = b1 >> 16;
+			b.b = b2 >> 16;
+
+			*dest_pixel++ = b;
+		}
+
+		memset (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 3)));
+		dest_pixel += (dest->pitch / 3) - ((dest->width - 1));
+	}
 
 	return VISUAL_OK;
 }
@@ -1651,7 +1854,7 @@ static int scale_bilinear_32 (VisVideo *dest, const VisVideo *src)
 	dv = ((src->height-1) << 16) / dest->height;
 	v = 0;
 
-	for (y = dest->height - 1; y--; v += dv) {
+	for (y = dest->height; y--; v += dv) {
 		uint32_t x;
 		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
 

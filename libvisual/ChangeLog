@@ -1,5 +1,12 @@
 2004-12-20  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_video.c (scale_bilinear_32): Small fix.
+
+	(scale_bilinear_24, scale_bilinear_16, scale_bilinear_8):
+	Implemented.
+
+2004-12-20  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_video.c (scale_bilinear_32): New version
 	bij Jeko from Goom, fixed point and a lot faster. Thanks a lot!
 
