@@ -135,6 +135,11 @@ int lv_gltest_init (VisPluginData *plugin)
 int lv_gltest_cleanup (VisPluginData *plugin)
 {
 	GLtestPrivate *priv = plugin->priv;
+	VisUIWidget *ui;
+
+	/* Destroy the VisUI tree */
+	ui = visual_plugin_get_userinterface (plugin);
+	visual_ui_widget_destroy (ui);
 
 	visual_mem_free (priv);
 
