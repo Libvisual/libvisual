@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-09 20:47+0100\n"
+"POT-Creation-Date: 2005-03-13 18:25-0300\n"
 "PO-Revision-Date: 2004-07-11 16:48-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -58,15 +58,15 @@ msgstr "Todos los plugins"
 #: src/main.c:173
 #, c-format
 msgid "%s is not a valid actor plugin"
-msgstr ""
+msgstr "%s no es un plugin actor válido"
 
 #: src/main.c:180
 msgid "Could not get actor plugin"
-msgstr ""
+msgstr "No se pudo obtener un plugin actor"
 
 #: src/main.c:311
 msgid "Could not get video info"
-msgstr ""
+msgstr "No se pudo obtener información de video"
 
 #: src/main.c:364
 #, fuzzy
@@ -80,11 +80,11 @@ msgstr "No se puede leer las opciones"
 
 #: src/main.c:396
 msgid "Cannot set input plugin callback"
-msgstr ""
+msgstr "No se puede establecer retrollamada para plugin de entrada"
 
-#: src/main.c:451
+#: src/main.c:452
 msgid "Cannot initialize plugin's visual stuff"
-msgstr ""
+msgstr "No se puede inicializar la información visual del plugin"
 
 #: src/lv_bmp_config.c:172
 msgid ""
@@ -92,6 +92,9 @@ msgid ""
 "file is not a valid morph plugin.\n"
 "We will use "
 msgstr ""
+"El plugin de morphing especificado en el\n"
+"archivo de configuración no es un plugin\n"
+"de morphing válido.Se utilizará el plugin "
 
 #: src/lv_bmp_config.c:175
 msgid ""
@@ -99,6 +102,9 @@ msgid ""
 "If you want another one, please choose it\n"
 "on the configure dialog."
 msgstr ""
+" en su lugar.\n"
+"Si desea utilizar otro, por favor elíjalo\n"
+"en el cuadro de diálogo de configuración."
 
 #: src/lv_bmp_config.c:193
 #, fuzzy
@@ -155,7 +161,7 @@ msgstr "La lista de plugins de morphing está vacía."
 
 #: src/lv_bmp_config.c:690
 msgid " error"
-msgstr ""
+msgstr " error"
 
 #: src/lv_bmp_config.c:691
 #, fuzzy
@@ -220,7 +226,7 @@ msgstr "Acerca de"
 
 #: src/config_gui.c:149
 msgid "Enable/Disable"
-msgstr ""
+msgstr "Habilitar/Deshabilitar"
 
 #: src/config_gui.c:157
 msgid "Fullscreen"
@@ -260,6 +266,8 @@ msgid ""
 "Select the kind of morph that will be applied when switching from one "
 "visualization plugin to another "
 msgstr ""
+"Seleccione el tipo de plugin de morphing que se utilizará cuando cambie de "
+"un plugin de visualización a otro "
 
 #: src/config_gui.c:269
 msgid "Select one morph plugin randomly"
