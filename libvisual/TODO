@@ -146,6 +146,8 @@ libvisual:
 		have a way to version tag plugins (post 0.1)
 		have a 'plugin type namespace' policy and fix this within the plugins (discuss)
 		
+		Emit events on param changes.
+		
 		global params:
 			a global prop to do settings for songinfo (to show, how long shown)
 			a param that disables blurs and field displacement in a plugin
@@ -192,6 +194,11 @@ libvisual:
 	portability:
 		have byteswap helper functions and use them where endianess issues
 		arise (lv_bmp.c)
+
+	Other:
+		Make Gstreamer elements from the actors.
+			morph plugins.
+			and input plugins.
 
 INTERNAL:
 	LOG: (post 0.1)

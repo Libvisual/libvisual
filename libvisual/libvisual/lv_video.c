@@ -629,67 +629,6 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 	return -1;
 }
 
-/* FIXME: more screwing up, just fix this with a better function */
-
-/**
- * Helps fitting a smaller VisVideo surface into a bigger one, used
- * by the fitting environment within VisActor. It's not adviced to use
- * this function externally.
- *
- * @param dest Pointer to the destination VisVideo in which the source is fitted.
- * @param src Pointer to the source VisVideo which is fitted in the destination.
- *
- * @return 0 on succes -1 on error.
- */
-int visual_video_blit_fit (VisVideo *dest, VisVideo *src)
-{
-	uint8_t *destr, *srcr;
-	int space = 0;
-	int spare;
-	int pitchadd;
-	int i, j, dind = 0, sind = 0;
-
-	visual_log_return_val_if_fail (dest != NULL, -1);
-	visual_log_return_val_if_fail (src != NULL, -1);
-
-	spare = dest->width - src->width;
-
-	destr = dest->screenbuffer;
-	srcr = src->screenbuffer;
-
-	/* Calculate the spacer */
-	if (spare % 2 != 0) {
-		if (spare > 1)
-			space = spare;
-		else
-			space = 1;
-	} else {
-		space = spare / 1;
-	}
-
-	/* The iamge doesn't fit */
-	if (dest->width < src->width || dest->height < src->height)
-		return -1;
-
-	/* Place the image */
-	pitchadd = ((dest->pitch / src->bpp) - dest->width) * src->bpp;
-
-	visual_log_return_val_if_fail (destr != NULL, -1);
-	visual_log_return_val_if_fail (srcr != NULL, -1);
-
-	/* FIXME use memcpy here */
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width * src->bpp; j++) {
-			destr[dind++] = srcr[sind++];
-		}
-
-		dind += space * src->bpp;
-		dind += pitchadd;
-	}
-
-	return 0;
-}
-
 /**
  * This function blits a VisVideo into another VisVideo. Placement can be done and there
  * is support for the alpha channel.
@@ -722,11 +661,15 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	wrange = dest->width > src->width ? src->width : dest->width;
 	hrange = dest->height > src->height ? src->height : dest->height;
 	
+	if (x > dest->width)
+		return -1;
+
+	if (y > dest->height)
+		return -1;
+
 	visual_log_return_val_if_fail (x < dest->width, -1);
 	visual_log_return_val_if_fail (y < dest->height, -1);
 
-	/** @todo Add support for negative x, y values */
-	
 	/* We're not the same depth, converting */
 	if (dest->depth != src->depth) {
 		transform = visual_video_new ();
@@ -777,32 +720,42 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 			if (height > (dest->height - 1))
 				break;
 
-			if (xps > dest->pitch)
+			if (xps > dest->pitch + (xmoff * dest->bpp)) {
 				amount = (dest->pitch - (x * dest->bpp));
-			else
-				amount = (wrange - xmoff) * dest->bpp;
-			
+			} else {
+				if (xmoff > 0 && dest->width == wrange)
+					amount = (dest->width - (dest->width - (src->width - xmoff))) * dest->bpp;
+				else
+					amount = (wrange - xmoff) * dest->bpp;
+			}
+
 			memcpy (destbuf + (height * dest->pitch) + (x * dest->bpp),
 					srcpbuf + (((height - y) + ymoff) * srcp->pitch) + (xmoff * dest->bpp),
 					amount);
 		}
 	} else {
-		int aindex = 0;
-		int si = 0;
+		int yaddage = 0;
+		int aindex = (ymoff * (src->pitch / src->bpp)) + xmoff;
+		int si = (ymoff * srcp->pitch) + (xmoff * src->bpp);
 		int di = (y * dest->pitch) + (x * dest->bpp);
-		
+	
 		xbpp = x * dest->bpp;
 
+		if (dest->height - src->height  < 0)
+			yaddage = abs (dest->height - (src->height));
+
 		/* Blit it to the dest video */
-		for (ya = 0; ya < hrange; ya++) {
+		for (ya = y; ya < (hrange + yaddage) - ymoff; ya++) {
 	
 			if (ya + y > dest->height - 1)
 				break;
 			
-			if ((x * dest->bpp) + srcp->pitch > dest->pitch)
-				amount = (dest->pitch / dest->bpp) - x;
-			else
-				amount = wrange;
+			if ((x * dest->bpp) + srcp->pitch > dest->pitch) {
+				amount = (dest->pitch / dest->bpp) - (dest->width - (src->width - xmoff));
+			} else {
+				printf ("BBB\n");
+				amount = wrange - xmoff;
+			}
 
 			for (xa = 0; xa < amount; xa++) {
 				uint8_t alpha;
@@ -819,6 +772,10 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 				}
 			}
 
+			if (amount > (dest->pitch / dest->bpp) - x) {
+				/* FIXME do something here to fix screwage */
+			}
+			
 			aindex += (src->pitch / src->bpp) - amount;
 			si += srcp->pitch - (amount * srcp->bpp);
 			di += dest->pitch - (amount * dest->bpp);
