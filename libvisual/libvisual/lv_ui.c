@@ -19,6 +19,8 @@ VisUIWidget *visual_ui_widget_new ()
 	widget = visual_mem_new0 (VisUIWidget, 1);
 	widget->type = VISUAL_WIDGET_TYPE_NULL;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (widget), -1, -1);
+
 	return widget;
 }
 
@@ -101,6 +103,8 @@ VisUIWidget *visual_ui_container_new ()
 	container = visual_mem_new0 (VisUIContainer, 1);
 	VISUAL_UI_WIDGET (container)->type = VISUAL_WIDGET_TYPE_CONTAINER;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (container), -1, -1);
+
 	return VISUAL_UI_WIDGET (container);
 }
 
@@ -129,6 +133,8 @@ VisUIWidget *visual_ui_box_new (VisUIBoxType boxtype)
 	VISUAL_UI_WIDGET (box)->type = VISUAL_WIDGET_TYPE_BOX;
 
 	box->boxtype = boxtype;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (box), -1, -1);
 
 	return VISUAL_UI_WIDGET (box);
 }
@@ -182,6 +188,8 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 
 	frame->name = name;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (frame), -1, -1);
+	
 	return VISUAL_UI_WIDGET (frame);
 }
 
@@ -194,6 +202,8 @@ VisUIWidget *visual_ui_label_new (const char *text)
 
 	label->text = text;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (label), -1, -1);
+	
 	return VISUAL_UI_WIDGET (label);
 }
 
@@ -222,6 +232,8 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
 
 	image->image = video;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (image), -1, -1);
+
 	return VISUAL_UI_WIDGET (image);
 }
 
@@ -247,6 +259,8 @@ VisUIWidget *visual_ui_mutator_new ()
 
 	mutator = visual_mem_new0 (VisUIMutator, 1);
 	VISUAL_UI_WIDGET (mutator)->type = VISUAL_WIDGET_TYPE_MUTATOR;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (mutator), -1, -1);
 
 	return VISUAL_UI_WIDGET (mutator);
 }
@@ -313,6 +327,8 @@ VisUIWidget *visual_ui_entry_new ()
 	entry = visual_mem_new0 (VisUIEntry, 1);
 	VISUAL_UI_WIDGET (entry)->type = VISUAL_WIDGET_TYPE_ENTRY;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (entry), -1, -1);
+
 	return VISUAL_UI_WIDGET (entry);
 }
 
@@ -332,6 +348,8 @@ VisUIWidget *visual_ui_slider_new ()
 	slider = visual_mem_new0 (VisUISlider, 1);
 	VISUAL_UI_WIDGET (slider)->type = VISUAL_WIDGET_TYPE_SLIDER;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider), -1, -1);
+
 	return VISUAL_UI_WIDGET (slider);
 }
 
@@ -341,6 +359,8 @@ VisUIWidget *visual_ui_numeric_new ()
 
 	numeric = visual_mem_new0 (VisUINumeric, 1);
 	VISUAL_UI_WIDGET (numeric)->type = VISUAL_WIDGET_TYPE_NUMERIC;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (numeric), -1, -1);
 
 	return VISUAL_UI_WIDGET (numeric);
 }
@@ -352,6 +372,8 @@ VisUIWidget *visual_ui_color_new ()
 	color = visual_mem_new0 (VisUIColor, 1);
 	VISUAL_UI_WIDGET (color)->type = VISUAL_WIDGET_TYPE_COLOR;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (color), -1, -1);
+
 	return VISUAL_UI_WIDGET (color);
 }
 
@@ -361,6 +383,8 @@ VisUIWidget *visual_ui_choice_new ()
 
 	choice = visual_mem_new0 (VisUIChoice, 1);
 	VISUAL_UI_WIDGET (choice)->type = VISUAL_WIDGET_TYPE_CHOICE;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (choice), -1, -1);
 
 	return VISUAL_UI_WIDGET (choice);
 }
@@ -401,6 +425,8 @@ VisUIWidget *visual_ui_popup_new ()
 
 	VISUAL_UI_CHOICE (popup)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (popup), -1, -1);
+
 	return VISUAL_UI_WIDGET (popup);
 }
 
@@ -413,10 +439,12 @@ VisUIWidget *visual_ui_list_new ()
 
 	VISUAL_UI_CHOICE (list)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (list), -1, -1);
+
 	return VISUAL_UI_WIDGET (list);
 }
 
-VisUIWidget *visual_ui_radio_new ()
+VisUIWidget *visual_ui_radio_new (VisUIRadioType type)
 {
 	VisUIRadio *radio;
 
@@ -424,7 +452,11 @@ VisUIWidget *visual_ui_radio_new ()
 	VISUAL_UI_WIDGET (radio)->type = VISUAL_WIDGET_TYPE_RADIO;
 
 	VISUAL_UI_CHOICE (radio)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
+
+	radio->type = type;
 	
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (radio), -1, -1);
+
 	return VISUAL_UI_WIDGET (radio);
 }
 
@@ -438,6 +470,8 @@ VisUIWidget *visual_ui_checkbox_new (const char *name)
 	VISUAL_UI_CHOICE (checkbox)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
 	checkbox->name = name;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (checkbox), -1, -1);
 
 	return VISUAL_UI_WIDGET (checkbox);
 }

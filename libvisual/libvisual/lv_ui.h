@@ -65,6 +65,10 @@ typedef enum {
 	VISUAL_CHOICE_TYPE_MULTIPLE
 } VisUIChoiceType;
 
+typedef enum {
+	VISUAL_RADIO_TYPE_HORIZONTAL,
+	VISUAL_RADIO_TYPE_VERTICAL
+} VisUIRadioType;
 
 typedef struct _VisUIWidget VisUIWidget;
 typedef struct _VisUIContainer VisUIContainer;
@@ -198,6 +202,8 @@ struct _VisUIList {
 
 struct _VisUIRadio {
 	VisUIChoice		 choice;
+
+	VisUIRadioType		 type;
 };
 
 struct _VisUICheckbox {
@@ -264,7 +270,7 @@ VisUIWidget *visual_ui_popup_new (void);
 
 VisUIWidget *visual_ui_list_new (void);
 
-VisUIWidget *visual_ui_radio_new (void);
+VisUIWidget *visual_ui_radio_new (VisUIRadioType type);
 
 VisUIWidget *visual_ui_checkbox_new (const char *name);
 
