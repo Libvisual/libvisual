@@ -1,5 +1,14 @@
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* src/lv_param.*: Added: visual_param_entry_set_from_param.
+	And overhauled string param handling, color param handling.
+
+	And some more changes/fixes.
+
+	* src/lv_ui.*: Work on the choice group, get, set API.
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* src/lv_param.c (visual_param_entry_set_string):
 	strdup string, so we always have the exact entry.
 

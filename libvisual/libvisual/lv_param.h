@@ -46,13 +46,14 @@ struct _VisParamEntry {
 	char			*name;		/**< Parameter name. */
 	VisParamType		 type;		/**< Parameter type. */
 
+	char			*string;	/**< String data. */
+	VisColor		 color;		/**< VisColor data. */
+	
 	union {
-		char		*string;		/**< String data. */
 		int		 integer;		/**< Integer data. */
 		float		 floating;		/**< Floating point data. */
 		double		 doubleflt;		/**< Double floating point data. */
-		VisColor	 color;			/**< VisColor data. */
-	} data;
+	} numeric;
 };
 
 /* prototypes */
@@ -70,6 +71,7 @@ int visual_param_entry_free (VisParamEntry *param);
 int visual_param_entry_is (VisParamEntry *param, const char *name);
 int visual_param_entry_changed (VisParamEntry *param);
 
+int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src);
 int visual_param_entry_set_name (VisParamEntry *param, char *name);
 int visual_param_entry_set_string (VisParamEntry *param, char *string);
 int visual_param_entry_set_integer (VisParamEntry *param, int integer);

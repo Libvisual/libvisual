@@ -270,6 +270,8 @@ VisUIWidget *visual_ui_color_new (void);
 
 VisUIWidget *visual_ui_choice_new (void);
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value);
+int visual_ui_choice_set_active (VisUIChoice *choice, int index);
+VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index);
 VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice);
 
 /* FIXME look at lists with multiple selections... */

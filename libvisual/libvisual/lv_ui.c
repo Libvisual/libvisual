@@ -430,6 +430,37 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamE
 	return 0;
 }
 
+int visual_ui_choice_set_active (VisUIChoice *choice, int index)
+{
+	VisUIChoiceEntry *centry;
+	const VisParamEntry *param;
+	VisParamEntry *newparam;
+
+	visual_log_return_val_if_fail (choice != NULL, -1);
+
+	centry = visual_ui_choice_get_choice (choice, index);
+	visual_log_return_val_if_fail (centry != NULL, -1);
+
+	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (choice));
+
+	newparam = (VisParamEntry *) centry->value;
+
+	if (visual_param_entry_set_from_param (param, newparam)) {
+		visual_log (VISUAL_LOG_CRITICAL, "Current param isn't of same type as param that was requested to become active");
+
+		return -1;
+	}
+	
+	return 0;
+}
+
+VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index)
+{
+	visual_log_return_val_if_fail (choice != NULL, NULL);
+
+	return visual_list_get (&choice->choices.choices, index);
+}
+
 VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice)
 {
 	visual_log_return_val_if_fail (choice != NULL, NULL);

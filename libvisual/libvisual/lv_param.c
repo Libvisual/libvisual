@@ -189,8 +189,8 @@ int visual_param_entry_free (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, -1);
 
-	if (param->data.string != NULL)
-		visual_mem_free (param->data.string);
+	if (param->string != NULL)
+		visual_mem_free (param->string);
 
 	visual_mem_free (param);
 
@@ -241,6 +241,58 @@ int visual_param_entry_changed (VisParamEntry *param)
 }
 
 /**
+ * Copies the value of the src param into the param. Also sets the param to the type of which the
+ * source param is.
+ *
+ * @param param Pointer to the VisParamEntry to which a parameter is set.
+ * @param src Pointer to the VisParamEntry from which the value is retrieved.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
+{
+	visual_log_return_val_if_fail (param != NULL, -1);
+	visual_log_return_val_if_fail (src != NULL, -1);
+
+	switch (src->type) {
+		case VISUAL_PARAM_TYPE_NULL:
+
+			break;
+
+		case VISUAL_PARAM_TYPE_STRING:
+			visual_param_entry_set_string (param, visual_param_entry_get_string (src));
+			break;
+
+		case VISUAL_PARAM_TYPE_INTEGER:
+			visual_param_entry_set_integer (param, visual_param_entry_get_integer (src));
+			
+			break;
+
+		case VISUAL_PARAM_TYPE_FLOAT:
+			visual_param_entry_set_float (param, visual_param_entry_get_float (src));
+
+			break;
+
+		case VISUAL_PARAM_TYPE_DOUBLE:
+			visual_param_entry_set_double (param, visual_param_entry_get_double (src));
+
+			break;
+
+		case VISUAL_PARAM_TYPE_COLOR:
+			visual_param_entry_set_color_by_color (param, visual_param_entry_get_color (src));
+			break;
+
+
+		default:
+			visual_log (VISUAL_LOG_CRITICAL, "param type is not valid");
+
+			break;
+	}
+	
+	return 0;
+}
+
+/**
  * Set the name for a VisParamEntry.
  *
  * @param param Pointer to the VisParamEntry to which the name is set.
@@ -271,10 +323,7 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
 
 	param->type = VISUAL_PARAM_TYPE_STRING;
 
-	if (param->data.string != NULL)
-		visual_mem_free (param->data.string);
-
-	param->data.string = strdup (string);
+	param->string = strdup (string);
 
 	visual_param_entry_changed (param);
 
@@ -295,7 +344,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer)
 
 	param->type = VISUAL_PARAM_TYPE_INTEGER;
 
-	param->data.integer = integer;
+	param->numeric.integer = integer;
 
 	visual_param_entry_changed (param);
 
@@ -316,7 +365,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
 
 	param->type = VISUAL_PARAM_TYPE_FLOAT;
 
-	param->data.floating = floating;
+	param->numeric.floating = floating;
 
 	visual_param_entry_changed (param);
 	
@@ -337,7 +386,7 @@ int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
 
 	param->type = VISUAL_PARAM_TYPE_DOUBLE;
 
-	param->data.doubleflt = doubleflt;
+	param->numeric.doubleflt = doubleflt;
 
 	visual_param_entry_changed (param);
 	
@@ -360,9 +409,9 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
 
 	param->type = VISUAL_PARAM_TYPE_COLOR;
 
-	param->data.color.r = r;
-	param->data.color.g = g;
-	param->data.color.b = b;
+	param->color.r = r;
+	param->color.g = g;
+	param->color.b = b;
 
 	visual_param_entry_changed (param);
 
@@ -383,9 +432,7 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor 
 
 	param->type = VISUAL_PARAM_TYPE_COLOR;
 
-	param->data.color.r = color->r;
-	param->data.color.g = color->g;
-	param->data.color.b = color->b;
+	visual_color_copy (&param->color, color);
 
 	visual_param_entry_changed (param);
 
@@ -417,10 +464,13 @@ char *visual_param_entry_get_string (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, NULL);
 
-	if (param->type != VISUAL_PARAM_TYPE_STRING)
+	if (param->type != VISUAL_PARAM_TYPE_STRING) {
 		visual_log (VISUAL_LOG_WARNING, "Requesting string from a non string param\n");
 
-	return param->data.string;
+		return NULL;
+	}
+
+	return param->string;
 }
 
 /**
@@ -437,7 +487,7 @@ int visual_param_entry_get_integer (VisParamEntry *param)
 	if (param->type != VISUAL_PARAM_TYPE_INTEGER)
 		visual_log (VISUAL_LOG_WARNING, "Requesting integer from a non integer param\n");
 
-	return param->data.integer;
+	return param->numeric.integer;
 }
 
 /**
@@ -454,7 +504,7 @@ float visual_param_entry_get_float (VisParamEntry *param)
 	if (param->type != VISUAL_PARAM_TYPE_FLOAT)
 		visual_log (VISUAL_LOG_WARNING, "Requesting float from a non float param\n");
 
-	return param->data.floating;
+	return param->numeric.floating;
 }
 
 /**
@@ -471,7 +521,7 @@ double visual_param_entry_get_double (VisParamEntry *param)
 	if (param->type != VISUAL_PARAM_TYPE_DOUBLE)
 		visual_log (VISUAL_LOG_WARNING, "Requesting double from a non double param\n");
 
-	return param->data.doubleflt;
+	return param->numeric.doubleflt;
 }
 
 /**
@@ -491,7 +541,7 @@ VisColor *visual_param_entry_get_color (VisParamEntry *param)
 	if (param->type != VISUAL_PARAM_TYPE_COLOR)
 		visual_log (VISUAL_LOG_WARNING, "Requesting color from a non color param\n");
 
-	return &param->data.color;
+	return &param->color;
 }
 
 /**
