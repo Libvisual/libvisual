@@ -13,6 +13,8 @@ void *visual_mem_malloc0 (visual_size_t nbytes) __attribute_malloc__;
 void *visual_mem_malloc0 (visual_size_t nbytes);
 #endif /* __GNUC__ */
 
+int visual_mem_free (void *ptr);
+
 /**
  * Convenient macro to request @a n_structs structures of type @a struct_type
  * initialized to 0.

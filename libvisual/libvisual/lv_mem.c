@@ -32,6 +32,23 @@ void *visual_mem_malloc0 (visual_size_t nbytes)
 }
 
 /**
+ * Frees allocated memory.
+ *
+ * @param ptr Frees memory to which ptr points to.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_mem_free (void *ptr)
+{
+	visual_log_return_val_if_fail (ptr != NULL, -1);
+
+	free (ptr);
+
+	return 0;
+}
+	
+
+/**
  * @}
  */
 
