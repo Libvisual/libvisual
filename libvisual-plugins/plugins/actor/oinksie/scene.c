@@ -14,7 +14,7 @@
 
 void _oink_scene_scope_special (OinksiePrivate *priv, uint8_t *buf)
 {
-	if (_oink_random_int (0, 500) == 42)
+	if (visual_random_context_int_range (priv->rcontext, 0, 500) == 42)
 	{
 		priv->scene.scopestereo_adder = priv->screen_halfheight / 100;
 		priv->scene.scopestereo_start = 1 - priv->scene.scopestereo_start;
@@ -45,11 +45,11 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 {
 	if (priv->audio.beat == TRUE)
 	{
-		if (_oink_random_int (0, 140) == 42 && priv->scene.ball_enabled == FALSE)
+		if (visual_random_context_int_range (priv->rcontext, 0, 140) == 42 && priv->scene.ball_enabled == FALSE)
 		{
 			priv->scene.ball_enabled = TRUE;
 			
-			priv->scene.ball_xstart = _oink_random_int (0, priv->screen_width - 1);
+			priv->scene.ball_xstart = visual_random_context_int_range (priv->rcontext, 0, priv->screen_width - 1);
 			priv->scene.ball_ystart = priv->screen_height;
 		
 			priv->scene.ball_distance = _oink_line_length (priv->screen_halfheight, priv->scene.ball_ystart,
@@ -59,7 +59,7 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 			priv->scene.ball_adder = (priv->scene.ball_distance / (25 + 1)) + 1;
 		}
 
-		if (_oink_random_int (0, 380) == 42 && priv->scene.whirl_enabled == FALSE)
+		if (visual_random_context_int_range (priv->rcontext, 0, 380) == 42 && priv->scene.whirl_enabled == FALSE)
 		{
 			priv->scene.whirl_enabled = TRUE;
 
@@ -77,7 +77,7 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 			priv->scene.whirl_rot = 0;
 		}					
 
-		if (_oink_random_int (0, 5) == 4)
+		if (visual_random_context_int_range (priv->rcontext, 0, 5) == 4)
 			priv->scene.circles_direction = 1 - priv->scene.circles_direction;
 	}
 
@@ -88,33 +88,33 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 	
 	if (priv->scene.circles_enabled == FALSE && priv->scene.flashball_enabled == FALSE)
 	{
-		if (_oink_random_int (0, 100) == 42)
+		if (visual_random_context_int_range (priv->rcontext, 0, 100) == 42)
 		{
 			priv->scene.circles_enabled = TRUE;
 
 			priv->scene.circles_turn = 0;
-			priv->scene.circles_nr = _oink_random_int (4, 10);
+			priv->scene.circles_nr = visual_random_context_int_range (priv->rcontext, 4, 10);
 		}
 	}
 	else
 	{
-		if (_oink_random_int (0, 100) == 42)
+		if (visual_random_context_int_range (priv->rcontext, 0, 100) == 42)
 		{
 			priv->scene.circles_enabled = FALSE;
 			priv->scene.circles_turn = 0;
 		}
 	}
 
-	if (priv->scene.circles_enabled == FALSE && _oink_random_int (0, 100) == 42)
+	if (priv->scene.circles_enabled == FALSE && visual_random_context_int_range (priv->rcontext, 0, 100) == 42)
 		priv->scene.flashball_enabled = 1 - priv->scene.flashball_enabled;
 	
-	if (_oink_random_int (0, 450) == 42)
+	if (visual_random_context_int_range (priv->rcontext, 0, 450) == 42)
 	{	
 		priv->scene.ballsine_enabled = 1 - priv->scene.ballsine_enabled;
 		priv->scene.ballsine_infade = 0;
 	}
 
-	if (_oink_random_int (0, 160) == 42)
+	if (visual_random_context_int_range (priv->rcontext, 0, 160) == 42)
 		priv->scene.ballsine_direction = 1 - priv->scene.ballsine_direction;
 
 	if (priv->scene.ball_enabled == TRUE)
@@ -183,14 +183,14 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 	if (priv->scene.flashball_enabled == TRUE && priv->audio.bass >= 7 && priv->config.backgroundmode != 2)
 	{
 		_oink_gfx_background_circles_filled (priv, buf, 250, priv->screen_xysmallest / 10,
-					       _oink_random_int (3, 7), (priv->audio.tripple * (priv->screen_xysmallest / 50)) + 
+					       visual_random_context_int_range (priv->rcontext, 3, 7), (priv->audio.tripple * (priv->screen_xysmallest / 50)) + 
 					       (priv->screen_xysmallest / 10) + 10, 
 					       priv->audio.highest * 60, priv->screen_halfwidth, priv->screen_halfheight);  
 	}
 
 	if (priv->scene.ballsine_enabled == TRUE)
 	{
-		if (priv->audio.beat == 1 && _oink_random_int (0, 42) == 0)
+		if (priv->audio.beat == 1 && visual_random_context_int_range (priv->rcontext, 0, 42) == 0)
 			priv->scene.ballsine_infade = 0;
 		
 		if (priv->scene.ballsine_infade < 240)
@@ -214,7 +214,7 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 
 void _oink_scene_background_select (OinksiePrivate *priv, uint8_t *buf)
 {
-	if (_oink_random_int (0, 5) == 4 && priv->audio.beat == TRUE)
+	if (visual_random_context_int_range (priv->rcontext, 0, 5) == 4 && priv->audio.beat == TRUE)
 		priv->scene.floaters_direction = 1 - priv->scene.floaters_direction;
 
 	if (priv->scene.floaters_direction == 0)
@@ -345,13 +345,13 @@ void _oink_scene_render (OinksiePrivate *priv)
 
 	if (priv->audio.beat == TRUE)
 	{
-		if (_oink_random_int (0, 50) == 0)
+		if (visual_random_context_int_range (priv->rcontext, 0, 50) == 0)
 			_oink_config_random_scopemode (priv);
 			
-		if (_oink_random_int (0, 40) == 0)
+		if (visual_random_context_int_range (priv->rcontext, 0, 40) == 0)
 			_oink_config_random_blurmode (priv);
 			
-		if (_oink_random_int (0, 20) == 0)
+		if (visual_random_context_int_range (priv->rcontext, 0, 20) == 0)
 			_oink_gfx_palette_build (priv, FALSE);
 	}
 
@@ -359,7 +359,7 @@ void _oink_scene_render (OinksiePrivate *priv)
 
 	_oink_scene_background_select (priv, priv->drawbuf);
 
-	if (_oink_random_int (0, 500) == 42) 
+	if (visual_random_context_int_range (priv->rcontext, 0, 500) == 42) 
 		_oink_scene_randomize (priv);
 
 	if (priv->config.beatdots == TRUE)
@@ -367,12 +367,12 @@ void _oink_scene_render (OinksiePrivate *priv)
 
 	if (priv->audio.beat == TRUE)
 	{
-		switch (_oink_random_int (0, 2))
+		switch (visual_random_context_int_range (priv->rcontext, 0, 2))
 		{
 		case 0:
 			if (priv->timing > priv->timing_prev)
 			{
-				if (_oink_random_int (0, 10))
+				if (visual_random_context_int_range (priv->rcontext, 0, 10))
 					_oink_gfx_background_fill (priv, priv->drawbuf, 240);
 
 			}
@@ -381,12 +381,12 @@ void _oink_scene_render (OinksiePrivate *priv)
 			break;
 	
 		case 1:
-			if (_oink_random_int (0, 5))
+			if (visual_random_context_int_range (priv->rcontext, 0, 5))
 				priv->config.beatdots = TRUE;
 			break;
 		
 		case 2:
-			if (_oink_random_int (0, 5))
+			if (visual_random_context_int_range (priv->rcontext, 0, 5))
 				_oink_gfx_background_dots (priv, priv->drawbuf, 210, 10);
 			break; 
 				

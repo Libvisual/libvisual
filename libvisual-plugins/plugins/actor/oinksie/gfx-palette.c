@@ -82,21 +82,21 @@ void _oink_gfx_palette_build (OinksiePrivate *priv, uint8_t funky)
 
 	/* FIXME, changing fadesteps can fuck this up */
 	if (priv->pal_data.fade_poststop == 1 && priv->pal_startup == 0) {
-		switch (_oink_random_int (0, 5)) {
+		switch (visual_random_context_int_range (priv->rcontext, 0, 5)) {
 		case 0:
 		case 1:
-			priv->pal_data.fade_poststeps = _oink_random_int (60, priv->pal_data.fade_steps);
+			priv->pal_data.fade_poststeps = visual_random_context_int_range (priv->rcontext, 60, priv->pal_data.fade_steps);
 			break;
 
 		case 2:
-			priv->pal_data.fade_poststeps = _oink_random_int (40, priv->pal_data.fade_steps / 2);
+			priv->pal_data.fade_poststeps = visual_random_context_int_range (priv->rcontext, 40, priv->pal_data.fade_steps / 2);
 			break;
 
 		case 3:
-			priv->pal_data.fade_poststeps = _oink_random_int (20, priv->pal_data.fade_steps / 3);
+			priv->pal_data.fade_poststeps = visual_random_context_int_range (priv->rcontext, 20, priv->pal_data.fade_steps / 3);
 			break;
 		case 4:
-			priv->pal_data.fade_poststeps = _oink_random_int (80, priv->pal_data.fade_steps);
+			priv->pal_data.fade_poststeps = visual_random_context_int_range (priv->rcontext, 80, priv->pal_data.fade_steps);
 			break;
 
 		default:
@@ -163,9 +163,9 @@ void _oink_gfx_palette_build_gradient (OinksiePrivate *priv, uint8_t funky)
 	
 	do
 	{
-		j = _oink_random_int (0, i - 1);
-		k = _oink_random_int (0, i - 1);
-		l = _oink_random_int (0, i - 1);		
+		j = visual_random_context_int_range (priv->rcontext, 0, i - 1);
+		k = visual_random_context_int_range (priv->rcontext, 0, i - 1);
+		l = visual_random_context_int_range (priv->rcontext, 0, i - 1);		
 		
 	} while (j == k || j == l || l == k);
 	

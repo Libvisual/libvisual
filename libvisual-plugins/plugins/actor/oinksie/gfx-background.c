@@ -137,8 +137,8 @@ void _oink_gfx_background_dots (OinksiePrivate *priv,
 	
 	for (i = 0; i < number; i++)
 	{
-		x = _oink_random_int (15, priv->screen_width - 15);
-		y = _oink_random_int (15, priv->screen_height - 15);
+		x = visual_random_context_int_range (priv->rcontext, 15, priv->screen_width - 15);
+		y = visual_random_context_int_range (priv->rcontext, 15, priv->screen_height - 15);
 
 		_oink_gfx_circle_filled (priv, buf, color, 5,  x, y);
 	}

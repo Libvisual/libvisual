@@ -1,3 +1,6 @@
+Update 'rand' usage everywhere, to use randomness from libvisual, through the plugin random context.
+
+
 README:
 	update doc on goom version required
 

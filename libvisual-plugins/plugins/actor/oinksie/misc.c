@@ -129,19 +129,3 @@ void _oink_pixel_rotate (int *x, int *y, int rot)
 	*y = (tx * _oink_table_sin[rot % OINK_TABLE_NORMAL_SIZE]) - (*y * _oink_table_cos[rot % OINK_TABLE_NORMAL_SIZE]);
 }
 
-int _oink_random_int (int min, int max)
-{
-	/* FIXME seed somewhere else only once */
-	struct timeval tv;
-
-	gettimeofday (&tv, NULL);
-	srand (tv.tv_usec);
-                     
-	return (rand () % (max - min + 1)) + min; 
-}
-
-int _oink_random_boolean ()
-{
-	return _oink_random_int (0, 1);
-}
-

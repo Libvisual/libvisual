@@ -8,7 +8,4 @@ int _oink_line_xory_next_xy (int xory, int length, int x0, int y0, int x1, int y
 
 void _oink_pixel_rotate (int *x, int *y, int rot);
 
-int _oink_random_int (int min, int max);
-int _oink_random_boolean ();
-
 #endif /* _OINK_MISC_H */

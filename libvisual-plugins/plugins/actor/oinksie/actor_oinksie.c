@@ -65,6 +65,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 int act_oinksie_init (VisPluginData *plugin)
 {
 	OinksiePrivContainer *priv;
+	VisRandomContext *rcontext;
 
 	priv = visual_mem_new0 (OinksiePrivContainer, 1);
 	plugin->priv = priv;
@@ -74,6 +75,10 @@ int act_oinksie_init (VisPluginData *plugin)
 
 	visual_palette_allocate_colors (&priv->priv2.pal_cur, 256);
 	visual_palette_allocate_colors (&priv->priv2.pal_old, 256);
+
+	rcontext = visual_plugin_get_random_context (plugin);
+	priv->priv1.rcontext = rcontext;
+	priv->priv2.rcontext = rcontext;
 
 	oinksie_init (&priv->priv1, 64, 64);
 	oinksie_init (&priv->priv2, 64, 64);

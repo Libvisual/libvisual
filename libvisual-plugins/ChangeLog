@@ -1,3 +1,9 @@
+2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*: Removed custom
+	random functions, use libvisual it's
+	VisRandomContext from VisPluginData.
+
 2004-10-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*:

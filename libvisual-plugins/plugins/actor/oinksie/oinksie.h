@@ -137,6 +137,9 @@ typedef struct {
 	OinksieConfig		 config;
 	OinksieAudio		 audio;
 	OinksieScene		 scene;
+
+	/* Random context */
+	VisRandomContext	*rcontext;
 } OinksiePrivate;
 
 void oinksie_init (OinksiePrivate *priv, int width, int height);
