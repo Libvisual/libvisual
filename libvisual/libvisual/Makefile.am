@@ -20,12 +20,12 @@ LIBS = -L. -L$(prefix)/lib
 
 PLUGPATH = $(prefix)/lib/libvisual
 
-AM_CFLAGS = -Wall -Wmissing-prototypes -Wstrict-prototypes\
+AM_CFLAGS = -Wall -Wno-unused-variable -Wmissing-prototypes -Wstrict-prototypes\
 	    -DPLUGPATH="\"$(PLUGPATH)\"" @DEBUG_CFLAGS@ -O3
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
-libvisual_la_LDFLAGS = -export-dynamic
+libvisual_la_LDFLAGS = -export-dynamic --no-undefined
 
 libvisual_la_SOURCES = lv_actor.c lv_input.c lv_event.c lv_keysym.c \
 		       lv_bin.c lv_plugin.c lv_video.c lv_mem.c\

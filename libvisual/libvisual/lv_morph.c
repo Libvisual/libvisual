@@ -20,7 +20,7 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
 	visual_log_return_val_if_fail (morph != NULL, NULL);
 	visual_log_return_val_if_fail (morph->plugin != NULL, NULL);
 
-	morphplugin = morph->plugin->plugin.morphplugin;
+	morphplugin = morph->plugin->info->plugin;
 
 	return morphplugin;
 }
@@ -37,7 +37,7 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
  *
  * @return LVPlugin that is encapsulated in the VisMorph, possibly NULL.
  */
-LVPlugin *visual_morph_get_plugin (VisMorph *morph)
+VisPluginData *visual_morph_get_plugin (VisMorph *morph)
 {
 	        return morph->plugin;
 }
@@ -194,17 +194,20 @@ int visual_morph_free (VisMorph *morph)
  */
 int visual_morph_get_supported_depth (VisMorph *morph)
 {
+	VisPluginData *plugin;
 	VisMorphPlugin *morphplugin;
 
 	visual_log_return_val_if_fail (morph != NULL, -1);
 
-	morphplugin = get_morph_plugin (morph);
+	plugin = visual_morph_get_plugin (morph);
 
-	if (morphplugin == NULL) {
+	if (plugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 			"The given morph does not reference any plugin");
 		return -1;
 	}
+
+	morphplugin = plugin->info->plugin;
 
 	return morphplugin->depth;
 }
@@ -297,11 +300,11 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 	}
 
 	if (morphplugin->palette != NULL)
-		morphplugin->palette (morphplugin, morph->rate, audio, &morph->morphpal, src1, src2);
+		morphplugin->palette (morph->plugin, morph->rate, audio, &morph->morphpal, src1, src2);
 	else
 		visual_palette_blend (&morph->morphpal, src1->pal, src2->pal, morph->rate);
 
-	morphplugin->apply (morphplugin, morph->rate, audio, morph->dest, src1, src2);
+	morphplugin->apply (morph->plugin, morph->rate, audio, morph->dest, src1, src2);
 
 	return 0;
 }

@@ -23,7 +23,7 @@ typedef struct _VisMorph VisMorph;
  * @see visual_morph_new
  */
 struct _VisMorph {
-	LVPlugin	*plugin;	/**< Pointer to the plugin itself. */
+	VisPluginData	*plugin;	/**< Pointer to the plugin itself. */
 	VisVideo	*dest;		/**< Destination video, this is where
 					 * the result of the morph gets drawn. */
 	float		 rate;		/**< The rate of morph, 0 draws the first video source
@@ -33,7 +33,7 @@ struct _VisMorph {
 					 * color depths. */
 };
 
-LVPlugin *visual_morph_get_plugin (VisMorph *morph);
+VisPluginData *visual_morph_get_plugin (VisMorph *morph);
 
 VisList *visual_morph_get_list (void);
 char *visual_morph_get_next_by_name (char *name);

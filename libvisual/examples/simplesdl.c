@@ -338,15 +338,12 @@ int main (int argc, char *argv[])
 
 	input = visual_input_new (input_name);
 	visual_log_return_val_if_fail(input != NULL, -1 );
-	if (input->plugin)
-	  visual_log(VISUAL_LOG_INFO, "Input plugin: \"%s\" by %s.\n", 
-		 input->plugin->plugin.inputplugin->name, 
-		 input->plugin->plugin.inputplugin->info->author);
-	else {
-	  visual_log(VISUAL_LOG_ERROR, 
-		     "Plugin \"%s\" doesn't exist or could not be loaded.\n",
-		     input_name);
-	  return -1;
+	
+	if (input == NULL) {
+		visual_log(VISUAL_LOG_ERROR, 
+				"Plugin \"%s\" doesn't exist or could not be loaded.\n",
+				input_name);
+		return -1;
 	}
 
 	/* Create a new bin, a bin is a container for easy

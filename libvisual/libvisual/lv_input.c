@@ -14,7 +14,10 @@ static VisInputPlugin *get_input_plugin (VisInput *input)
 {
 	VisInputPlugin *inplugin;
 
-	inplugin = input->plugin->plugin.inputplugin;
+	visual_log_return_val_if_fail (input != NULL, NULL);
+	visual_log_return_val_if_fail (input->plugin != NULL, NULL);
+
+	inplugin = input->plugin->info->plugin;
 
 	return inplugin;
 }
@@ -31,7 +34,7 @@ static VisInputPlugin *get_input_plugin (VisInput *input)
  *
  * @return LVPlugin that is encapsulated in the VisInput, possibly NULL.
  */
-LVPlugin *visual_input_get_plugin (VisInput *input)
+VisPluginData *visual_input_get_plugin (VisInput *input)
 {
 	        return input->plugin;
 }
@@ -225,9 +228,15 @@ int visual_input_run (VisInput *input)
 		return -1;
 
 	if (input->callback == NULL) {
-		inplugin = get_input_plugin (input);	
+		inplugin = get_input_plugin (input);
 
-		inplugin->upload (inplugin, input->audio);
+		if (inplugin == NULL) {
+			visual_log (VISUAL_LOG_CRITICAL, "The input plugin is not loaded correctly.");
+		
+			return -1;
+		}
+		
+		inplugin->upload (input->plugin, input->audio);
 	} else
 		input->callback (input, input->audio, input->priv);
 

@@ -26,7 +26,7 @@ typedef struct _VisActor VisActor;
  * @see visual_actor_new
  */
 struct _VisActor {
-	LVPlugin	*plugin;	/**< Pointer to the plugin itself. */
+	VisPluginData	*plugin;	/**< Pointer to the plugin itself. */
 
 	VisVideo	*video;		/**< Pointer to the target display video. 
 					 * @see visual_actor_set_video */
@@ -44,7 +44,7 @@ struct _VisActor {
 };
 
 /* prototypes */
-LVPlugin *visual_actor_get_plugin (VisActor *actor);
+VisPluginData *visual_actor_get_plugin (VisActor *actor);
 
 VisList *visual_actor_get_list (void);
 char *visual_actor_get_next_by_name_gl (char *name);

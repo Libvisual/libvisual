@@ -156,6 +156,7 @@ libvisual:
 		I've always been declaring vars at the top of the function, however
 			Ive started to think it's cleaner to declare them in their target
 			scope.
+		VISUAL_ACTOR ( ), VISUAL_INPUT ( ) cast like macros (???) ?
 
 	doxygen:
 		fix alphabetic list, why is this borked for functions ?

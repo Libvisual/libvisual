@@ -5,6 +5,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <libvisual/lv_param.h>
+
 const char *visual_get_version (void);
 VisParamContainer *visual_get_params (void);
 int visual_init_path_add (char *pathadd);

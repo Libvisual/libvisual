@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <signal.h>
 
 #include "lv_common.h"
 #include "lv_log.h"
@@ -92,8 +93,10 @@ void _lv_log (VisLogSeverity severity, const char *file,
 		}
 	}
 
-	if (severity == VISUAL_LOG_ERROR)
+	if (severity == VISUAL_LOG_ERROR) {
+		raise (SIGTRAP);
 		exit (1);
+	}
 }
 
 /**

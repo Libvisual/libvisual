@@ -800,7 +800,6 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 			if ((x * dest->bpp) + srcp->pitch > dest->pitch) {
 				amount = (dest->pitch / dest->bpp) - (dest->width - (src->width - xmoff));
 			} else {
-				printf ("BBB\n");
 				amount = wrange - xmoff;
 			}
 

@@ -12,7 +12,10 @@ extern "C" {
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param.h>
-	
+
+
+#define VISUAL_PLUGIN_API_VERSION	0
+
 /**
  * Enumerate to define the plugin type. Especially used
  * within the VisPlugin system and also used within the plugin
@@ -34,58 +37,87 @@ typedef enum {
 	VISUAL_PLUGIN_TYPE_MORPH	/**< Used when the plugin is a morph plugin. */
 } VisPluginType;
 
-typedef struct _VisPluginInfo VisPluginInfo;
 typedef struct _VisPluginRef VisPluginRef;
+typedef struct _VisPluginInfo VisPluginInfo;
+typedef struct _VisPluginData VisPluginData;
 
 typedef struct _VisActorPlugin VisActorPlugin;
 typedef struct _VisInputPlugin VisInputPlugin;
 typedef struct _VisMorphPlugin VisMorphPlugin;
 
-typedef struct _LVPlugin LVPlugin;
-
 /* Actor plugin methods */
-typedef int (*plugin_actor_init_func_t)(VisActorPlugin *);
-typedef int (*plugin_actor_cleanup_func_t)(VisActorPlugin *);
-typedef int (*plugin_actor_requisition_func_t)(VisActorPlugin *, int *, int *);
-typedef int (*plugin_actor_events_func_t)(VisActorPlugin *, VisEventQueue *);
-typedef VisPalette *(*plugin_actor_palette_func_t)(VisActorPlugin *);
-typedef int (*plugin_actor_render_func_t)(VisActorPlugin *, VisVideo *, VisAudio *);
+typedef int (*plugin_actor_requisition_func_t)(VisPluginData *, int *, int *);
+typedef VisPalette *(*plugin_actor_palette_func_t)(VisPluginData *);
+typedef int (*plugin_actor_render_func_t)(VisPluginData *, VisVideo *, VisAudio *);
 
 /* Input plugin methods */
-typedef int (*plugin_input_init_func_t)(VisInputPlugin *);
-typedef int (*plugin_input_cleanup_func_t)(VisInputPlugin *);
-typedef int (*plugin_input_upload_func_t)(VisInputPlugin *, VisAudio *);
+typedef int (*plugin_input_upload_func_t)(VisPluginData *, VisAudio *);
 
 /* Morph plugin methods */
-typedef int (*plugin_morph_init_func_t)(VisMorphPlugin *);
-typedef int (*plugin_morph_cleanup_func_t)(VisMorphPlugin *);
-typedef int (*plugin_morph_palette_func_t)(VisMorphPlugin *, float, VisAudio *, VisPalette *, VisVideo *, VisVideo *);
-typedef int (*plugin_morph_apply_func_t)(VisMorphPlugin *, float, VisAudio *, VisVideo *, VisVideo *, VisVideo *);
+typedef int (*plugin_morph_palette_func_t)(VisPluginData *, float, VisAudio *, VisPalette *, VisVideo *, VisVideo *);
+typedef int (*plugin_morph_apply_func_t)(VisPluginData *, float, VisAudio *, VisVideo *, VisVideo *, VisVideo *);
 
-/* Plugin methods */
-typedef LVPlugin *(*plugin_load_func_t)(VisPluginRef *);
+/* Plugin standard get_plugin_info method */
+typedef const VisPluginInfo *(*plugin_get_info_func_t)(int *);
+
+/* Standard plugin methods */
+typedef int (*plugin_init_func_t)(VisPluginData *);
+typedef int (*plugin_cleanup_func_t)(VisPluginData *);
+typedef int (*plugin_events_func_t)(VisPluginData *, VisEventQueue *);
+
+/**
+ * The VisPluginRef data structure contains information about the plugins
+ * and does refcounting. It is also used as entries in the plugin registry.
+ */
+struct _VisPluginRef {
+	char			*file;		/**< The file location of the plugin. */
+	int			usecount;	/**< The use count, this indicates how many instances are loaded. */
+	VisPluginInfo		*info;		/**< A copy of the VisPluginInfo structure. */
+};
 
 /**
  * The VisPluginInfo data structure contains information about a plugin
  * and is filled within the plugin itself.
  */
 struct _VisPluginInfo {
-	char		*name;		/**< Contains the name of the plugin. */
-	char		*author;	/**< Contains information about the authors. */
-	char		*version;	/**< Contains information about the plugin it's version. */
-	char		*about;		/**< Contains some about description. */
-	char		*help;		/**< Contains an explanation for the plugin. */
+	uint32_t		 struct_size;	/**< Struct size, should always be set for compatability checks. */
+	uint32_t		 api_version;	/**< API version, compile plugins always with .api_version = VISUAL_PLUGIN_API_VERSION. */
+	VisPluginType		 type;		/**< Plugin type. */
+
+	char			*plugname;	/**< The plugin name as it's saved in the registry. */
+
+	char			*name;		/**< Long name */
+	char			*author;	/**< Author */
+	char			*version;	/**< Version */
+	char			*about;		/**< About */
+	char			*help;		/**< Help */
+
+	plugin_init_func_t	 init;		/**< The standard init function, every plugin has to implement this. */
+	plugin_cleanup_func_t	 cleanup;	/**< The standard cleanup function, every plugin has to implement this. */
+	plugin_events_func_t	 events;	/**< The standard event function, implementation is optional. */
+
+	void			*plugin;	/**< Pointer to the plugin specific data structures. */
 };
 
 /**
- * The VisPluginRef data structure contains information for the plugin loader.
+ * The VisPluginData structure is the main plugin structure, every plugin
+ * is encapsulated in this.
  */
-struct _VisPluginRef {
-	char		*file;		/**< Location of the plugin. */
-	char		*name;		/**< Name of the plugin. */
-	int		 usecount;	/**< Use count that holds the number of instances loaded. */
-	VisPluginType	 type;		/**< Holds the plugin type. */
-	VisPluginInfo	*info;		/**< Pointer to the VisPluginInfo data structure. */
+struct _VisPluginData {
+	VisPluginRef		*ref;		/**< Pointer to the plugin references corresponding to this VisPluginData. */
+	const VisPluginInfo	*info;		/**< Pointer to the VisPluginInfo that is obtained from the plugin. */
+
+	VisEventQueue		 eventqueue;	/**< The plugin it's VisEventQueue for queueing events. */
+	VisParamContainer	 params;	/**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
+
+	int			 plugflags;	/**< Plugin flags, currently unused but will be used in the future. */
+	VisSongInfo		*songinfo;	/**< Pointer to VisSongInfo that contains information about the current playing song.
+						  * This can be NULL. */
+
+	int			 realized;	/**< Flag that indicates if the plugin is realized. */
+	void			*handle;	/**< The dlopen handle */
+	
+	void			*priv;		/**< Pointer to the plugin it's private. */
 };
 
 /**
@@ -95,35 +127,12 @@ struct _VisPluginRef {
  * The actor plugin is the visualisation plugin.
  */
 struct _VisActorPlugin {
-	char				*file;		/**< Location of the plugin. */
-	char				*name;		/**< Name of the plugin. */
-	VisPluginRef			*ref;		/**< Pointer to the plugin reference. */
-	VisPluginInfo			*info;		/**< Pointer to the VisPluginInfo data structure
-							 * containing information about the plugin. */
-	VisParamContainer		 params;	/**< The VisParamContainer that contains the
-							  * parameters for this plugin. */
-	plugin_actor_init_func_t	 init;		/**< The plugin it's initialize function. */
-	plugin_actor_cleanup_func_t	 cleanup;	/**< The plugin it's cleanup function. */
 	plugin_actor_requisition_func_t	 requisition;	/**< The requisition function. This is used to
 							 * get the desired VisVideo surface size of the plugin. */
-	plugin_actor_events_func_t	 events;	/**< The plugin it's event handler.
-							 * Resize events also come through the event handler first. */
 	plugin_actor_palette_func_t	 palette;	/**< Used to retrieve the desired palette from the plugin. */
 	plugin_actor_render_func_t	 render;	/**< The main render loop. This is called to draw a frame. */
-	void				*handle;	/**< Contains the handle that is given by dlopen. */
-	int				 depth;		/**< A flag that contains the supported depths.
-							 * This is made up by ORred values of the VisVideoDepth type.
-							 * @see VisVideoDepth */
-	int				 schedflags;	/**< Scheduler flags are hint flags for the auto plugin scheduler
-							 * which is not yet supported. */
-	int				 plugflags;	/**< Plugin flags are hint flags for the plugin loader,
-							 * which is not yet supported. */
-	VisSongInfo			*songinfo;	/**< Pointer to the VisSongInfo structure containing
-							 * information about the current song being played. */
-	void				*priv;		/**< Private to interchange data
-							 * between the plugin it's methods and functions.
-							 * It's highly adviced that all data is encapsulated in a 
-							 * private so the plugin is reentrant. */
+
+	int				 depth;
 };
 
 /**
@@ -134,25 +143,9 @@ struct _VisActorPlugin {
  * certain sources.
  */
 struct _VisInputPlugin {
-	char				*file;		/**< Location of the plugin. */
-	char				*name;		/**< Name of the plugin. */
-	VisPluginRef			*ref;		/**< Pointer to the plugin reference. */
-	VisPluginInfo			*info;		/**< Pointer to the VisPluginInfo data structure
-							  * containing information about the plugin. */
-	VisParamContainer		 params;	/**< The VisParamContainer that contains the
-							  * parameters for this plugin. */
-	plugin_input_init_func_t	 init;		/**< The plugin it's initialize function. */
-	plugin_input_cleanup_func_t	 cleanup;	/**< The plugin it's cleanup function. */
 	plugin_input_upload_func_t	 upload;	/**< The sample upload function. This is the main function
 							  * of the plugin which uploads sample data into
 							  * libvisual. */
-	void				*handle;	/**< Contains the handle that is given by dlopen. */
-	int				 plugflags;	/**< Plugin flags are hint flags for the plugin loader,
-							  * which is not yet supported. */
-	void				*priv;		/**< Private to interchange data
-							  * between the plugin it's methods and functions.
-							  * It's highly adviced that all data is encapsulated in a
-							  * private so the plugin is reentrant. */
 };
 
 /**
@@ -164,65 +157,26 @@ struct _VisInputPlugin {
  * VisActors.
  */
 struct _VisMorphPlugin {
-	char				*file;		/**< Location of the plugin. */
-	char				*name;		/**< Name of the plugin. */
-	VisPluginRef			*ref;		/**< Pointer to the plugin reference. */
-	VisPluginInfo			*info;		/**< Pointer to the VisPluginInfo data structure
-							  * containing information about the plugin. */
-	VisParamContainer		 params;	/**< The VisParamContainer that contains the
-							  * parameters for this plugin. */
-	plugin_morph_init_func_t	 init;		/**< The plugin it's initialize function. */
-	plugin_morph_cleanup_func_t	 cleanup;	/**< The plugin it's cleanup function. */
 	plugin_morph_palette_func_t	 palette;	/**< The plugin it's palette function. This can be used
 							  * to obtain a palette for VISUAL_VIDEO_DEPTH_8BIT surfaces.
 							  * However the function may be set to NULL. In this case the
 							  * VisMorph system morphs between palettes itself. */
 	plugin_morph_apply_func_t	 apply;		/**< The plugin it's main function. This is used to morph
 							  * between two VisVideo sources. */
-	void				*handle;	/**< Contains the handle that is given by dlopen. */
-	int				 depth;		/**< A flag that contains the supported depths.
-							  * This is made up by ORred values of the VisVideoDepth type.
-							  * @see VisVideoDepth */
-	int				 plugflags;	/**< Plugin flags are hint flags for the plugin loader,
-							  * Which is not yet supproted. */
-	void				*priv;		/**< Private to interchange data
-							  * between the plugin it's methods and functions.
-							  * It's highly adviced that all data is encapsulated in a
-							  * private so the plugin is reentrant. */
-};
 
-/**
- * This LVPlugin data structure is the main data structure for
- * every plugin.
- *
- * It's not called VisPlugin because XMMS has this in it's header files
- * and we're open for suggestion for a better naming using the Vis prefix.
- */
-struct _LVPlugin {
-	VisPluginRef	*ref;			/**< Pointer to the plugin reference. */
-	void		*handle;		/**< Handle from dlopen. */
-	VisPluginType	 type;			/**< Contains the plugin type. */
-	int		 realized;		/**< Is set when the plugin is realized. this
-						  * means that when the plugin it's init function
-						  * has been called. */
-	VisEventQueue	 eventqueue;		/**< The plugin it's private event queue. */
-	
-	union {
-		VisActorPlugin *actorplugin;	/**< Union entry used when the plugin is an actor plugin. */
-		VisInputPlugin *inputplugin;	/**< Union entry used when the plugin is an input plugin. */
-		VisMorphPlugin *morphplugin;	/**< Union entry used when the plugin is an morph plugin. */
-	} plugin;				/**< Union that holds the three different plugin types. */
+	int				 depth;
 };
 
 /* prototypes */
-int visual_plugin_events_pump (LVPlugin *plugin);
-VisEventQueue *visual_plugin_get_eventqueue (LVPlugin *plugin);
-
-VisPluginInfo *visual_plugin_info_new (char *name, char *author, char *version, char *about, char *help);
-VisPluginInfo *visual_plugin_info_duplicate (VisPluginInfo *pluginfo);
+VisPluginInfo *visual_plugin_info_new (void);
 int visual_plugin_info_free (VisPluginInfo *pluginfo);
-VisPluginInfo *visual_plugin_get_info (LVPlugin *plugin);
-VisParamContainer *visual_plugin_get_params (LVPlugin *plugin);
+int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src);
+
+int visual_plugin_events_pump (VisPluginData *plugin);
+VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
+
+const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
+VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
 
 VisPluginRef *visual_plugin_ref_new (void);
 int visual_plugin_ref_free (VisPluginRef *ref);
@@ -237,8 +191,8 @@ int visual_plugin_input_free (VisInputPlugin *inputplugin);
 VisMorphPlugin *visual_plugin_morph_new (void);
 int visual_plugin_morph_free (VisMorphPlugin *morphplugin);
 
-LVPlugin *visual_plugin_new (void);
-int visual_plugin_free (LVPlugin *plugin);
+VisPluginData *visual_plugin_new (void);
+int visual_plugin_free (VisPluginData *plugin);
 
 VisList *visual_plugin_get_registry (void);
 VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type);
@@ -246,11 +200,13 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type);
 char *visual_plugin_get_next_by_name (VisList *list, char *name);
 char *visual_plugin_get_prev_by_name (VisList *list, char *name);
 
-int visual_plugin_unload (LVPlugin *plugin);
-LVPlugin *visual_plugin_load (VisPluginRef *ref);
-int visual_plugin_realize (LVPlugin *plugin);
-VisPluginRef *visual_plugin_get_reference (VisPluginRef *refn, char *pluginpath);
+int visual_plugin_unload (VisPluginData *plugin);
+VisPluginData *visual_plugin_load (VisPluginRef *ref);
+int visual_plugin_realize (VisPluginData *plugin);
+
+VisPluginRef *visual_plugin_get_references (char *pluginpath, int *count);
 VisList *visual_plugin_get_list (char **paths);
+
 VisPluginRef *visual_plugin_find (VisList *list, char *name);
 
 #ifdef __cplusplus

@@ -24,7 +24,7 @@ typedef int (*input_upload_callback_func_t)(VisInput *, VisAudio *, void *);
  * @see visual_input_new
  */ 
 struct _VisInput {
-	LVPlugin			*plugin;	/**< Pointer to the plugin itself. */
+	VisPluginData			*plugin;	/**< Pointer to the plugin itself. */
 	VisAudio			*audio;		/**< Pointer to the VisAudio structure
 							  * that contains the audio analyse
 							  * results.
@@ -36,7 +36,7 @@ struct _VisInput {
 };
 
 /* prototypes */
-LVPlugin *visual_input_get_plugin (VisInput *input);
+VisPluginData *visual_input_get_plugin (VisInput *input);
 
 VisList *visual_input_get_list (void);
 char *visual_input_get_next_by_name (char *name);
