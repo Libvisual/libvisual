@@ -34,8 +34,6 @@ static VisSongInfo *songinfo;
 
 static Options *options;
 
-static VisTime *morph_time;
-
 static int gl_plug = 0;
 
 static gint16 xmmspcm[2][512];
@@ -192,8 +190,6 @@ static void lv_xmms_cleanup ()
 	if (icon != NULL)
 		SDL_FreeSurface (icon);
 
-	visual_time_free (morph_time);
-      
 	visual_log (VISUAL_LOG_DEBUG, "destroying VisBin...");
 	visual_bin_destroy (bin);
 
@@ -367,10 +363,6 @@ static int visual_initialize (int width, int height)
                 return -1;
         }        
 	
-	morph_time = visual_time_new ();
-	morph_time->tv_sec = 5;
-	morph_time->tv_usec = 0;
-      
 	visual_bin_switch_set_style (bin, VISUAL_SWITCH_STYLE_MORPH);
 	visual_bin_switch_set_automatic (bin, TRUE);
 	visual_bin_switch_set_mode (bin, VISUAL_MORPH_MODE_TIME);
@@ -570,7 +562,6 @@ static int sdl_event_handle ()
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
                                                     cur_lv_plugin = next_plugin;
                                                     visual_bin_set_morph_by_name (bin, "alphablend");
-						    visual_morph_set_time (bin->morph, morph_time);
                                                     visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
                                                 }
 
@@ -608,7 +599,6 @@ static int sdl_event_handle ()
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
                                                     cur_lv_plugin = next_plugin;
                                                     visual_bin_set_morph_by_name (bin, "alphablend");
-						    visual_morph_set_time (bin->morph, morph_time);
                                                     visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
                                                 }
 
