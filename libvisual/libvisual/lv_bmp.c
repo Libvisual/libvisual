@@ -252,7 +252,7 @@ VisVideo *visual_bitmap_load_new_video (const char *filename)
 	video = visual_video_new ();
 	
 	if (visual_bitmap_load (video, filename) < 0) {
-		visual_video_free_with_buffer (video);
+		visual_object_unref (VISUAL_OBJECT (video));
 
 		return NULL;
 	}

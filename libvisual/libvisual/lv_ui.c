@@ -613,6 +613,13 @@ int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *par
 	return VISUAL_OK;
 }
 
+/**
+ * Request the VisParamEntry that is linked to a VisUIMutator.
+ *
+ * @param mutator Pointer to the VisUIMutator from which the VisParamEntry is requested.
+ *
+ * return The VisParamEntry that links to the VisUIMutator, or NULL on failure.
+ */
 const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
 {
 	visual_log_return_val_if_fail (mutator != NULL, NULL);
@@ -620,6 +627,17 @@ const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
 	return mutator->param;
 }
 
+/**
+ * Set the properties for a VisUIRange.
+ *
+ * @param range Pointer to the VisUIRange to which the properties are set.
+ * @param min The minimal value.
+ * @param max The maximal value.
+ * @param step The increase/decrease step value.
+ * @param precision The precision in numbers behind the comma.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_RANGE_NULL on failure.
+ */
 int visual_ui_range_set_properties (VisUIRange *range, double min, double max, double step, int precision)
 {
 	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
@@ -632,6 +650,14 @@ int visual_ui_range_set_properties (VisUIRange *range, double min, double max, d
 	return VISUAL_OK;
 }
 
+/**
+ * Sets the maximal value for a VisUIRange.
+ *
+ * @param range Pointer to the VisUIRange to which the maximum value is set.
+ * @param max The maximal value.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_RANGE_NULL on failure.
+ */
 int visual_ui_range_set_max (VisUIRange *range, double max)
 {
 	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
@@ -641,6 +667,14 @@ int visual_ui_range_set_max (VisUIRange *range, double max)
 	return VISUAL_OK;
 }
 
+/**
+ * Sets the minimal value for a VisUIRange.
+ *
+ * @param range Pointer to the VisUIRange to which the minimal value is set.
+ * @param min The minimal value.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_RANGE_NULL on failure.
+ */
 int visual_ui_range_set_min (VisUIRange *range, double min)
 {
 	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
@@ -650,6 +684,14 @@ int visual_ui_range_set_min (VisUIRange *range, double min)
 	return VISUAL_OK;
 }
 
+/**
+ * Sets the increase/decrease step size for a VisUIRange.
+ *
+ * @param range Pointer to the VisUIRange to which the step size value is set.
+ * @param step The increase/decrase step value.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_RANGE_NULL on failure.
+ */
 int visual_ui_range_set_step (VisUIRange *range, double step)
 {
 	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
@@ -659,6 +701,14 @@ int visual_ui_range_set_step (VisUIRange *range, double step)
 	return VISUAL_OK;
 }
 
+/**
+ * Sets the precision for a VisUIRange.
+ *
+ * @param range Pointer to the VisUIRange to which the step size value is set.
+ * @param precision The precision in numbers behind the comma.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_RANGE_NULL on failure.
+ */
 int visual_ui_range_set_precision (VisUIRange *range, int precision)
 {
 	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);

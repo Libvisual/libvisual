@@ -23,10 +23,10 @@ static int actor_dtor (VisObject *object)
 		visual_plugin_unload (actor->plugin);
 
 	if (actor->transform != NULL)
-		visual_video_free_with_buffer (actor->transform);
+		visual_object_unref (VISUAL_OBJECT (actor->transform));
 
 	if (actor->fitting != NULL)
-		visual_video_free_with_buffer (actor->fitting);
+		visual_object_unref (VISUAL_OBJECT (actor->fitting));
 
 	visual_object_unref (VISUAL_OBJECT (&actor->songcompare));
 
@@ -437,17 +437,20 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 	visual_log_return_val_if_fail (actor->video != NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
 
 	if (actor->transform != NULL) {
-		visual_video_free_with_buffer (actor->transform);
+		visual_object_unref (VISUAL_OBJECT (actor->transform));
+
 		actor->transform = NULL;
 	}
 	
 	if (actor->fitting != NULL) {
-		visual_video_free_with_buffer (actor->fitting);
+		visual_object_unref (VISUAL_OBJECT (actor->fitting));
+		
 		actor->fitting = NULL;
 	}
 
 	if (actor->ditherpal != NULL) {
 		visual_object_unref (VISUAL_OBJECT (actor->ditherpal));
+		
 		actor->ditherpal = NULL;
 	}
 

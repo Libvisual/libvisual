@@ -8,6 +8,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_VIDEO(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisVideo))
+
 /* NOTE: The depth find helper code in lv_actor depends on an arrangment from low to high */
 
 /**
@@ -58,7 +60,9 @@ typedef struct _VisVideo VisVideo;
  *
  * Elements within the structure should be set using the VisVideo system it's methods.
  */
-struct _VisVideo { 
+struct _VisVideo {
+	VisObject	 object;	/**< The VisObject data. */
+
 	VisVideoDepth	 depth;		/**< Surface it's depth. */
 	int		 width;		/**< Surface it's width. */
 	int		 height;	/**< Surface it's height. */
@@ -76,8 +80,6 @@ struct _VisVideo {
 /* prototypes */
 VisVideo *visual_video_new (void);
 VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
-int visual_video_free (VisVideo *video);
-int visual_video_free_with_buffer (VisVideo *video);
 int visual_video_free_buffer (VisVideo *video);
 int visual_video_allocate_buffer (VisVideo *video);
 int visual_video_have_allocated_buffer (const VisVideo *video);

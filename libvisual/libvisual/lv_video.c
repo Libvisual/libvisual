@@ -29,6 +29,9 @@ typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
 
+/* The VisVideo dtor function */
+static int video_dtor (VisObject *object);
+
 /* Precomputation functions */
 static void precompute_row_table (VisVideo *video);
 
@@ -62,6 +65,25 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src);
 static int scale_nearest_8 (VisVideo *dest, const VisVideo *src);
 
 
+static int video_dtor (VisObject *object)
+{
+	VisVideo *video = VISUAL_VIDEO (object);
+
+	if (HAVE_ALLOCATED_BUFFER (video)) {
+		visual_video_free_buffer (video);
+
+		video->pixels = NULL;
+	}
+
+	if (video->pixel_rows != NULL)
+		visual_mem_free (video->pixel_rows);
+
+	video->pixel_rows = NULL;
+
+	return VISUAL_OK;
+}
+
+
 /**
  * @defgroup VisVideo VisVideo
  * @{
@@ -77,7 +99,12 @@ VisVideo *visual_video_new ()
 	VisVideo *video;
 
 	video = visual_mem_new0 (VisVideo, 1);
-	
+
+	/* Do the VisObject initialization */
+	VISUAL_OBJECT (video)->allocated = TRUE;
+	VISUAL_OBJECT (video)->dtor = video_dtor;
+	visual_object_ref (VISUAL_OBJECT (video));
+
 	video->pixels = NULL;
 
 	/*
@@ -115,63 +142,12 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 		 * Restore the flag set by visual_video_new().
 		 */
 		video->flags = VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER;
-		visual_video_free (video);
+		visual_object_unref (VISUAL_OBJECT (video));
+		
 		return NULL;
 	}
 
 	return video;
-}
-
-/**
- * Frees the VisVideo.
- *
- * This frees the VisVideo data structure which was previously 
- * created with visual_video_new().
- *
- * @warning This doesn't frees a VisVideo structure created with
- * visual_video_new_with_buffer(), use visual_video_free_with_buffer()
- * for that.
- *
- * @param video Pointer to a VisVideo that needs to be freed.
- *
- * @return 0 on succes -1 on error.
- */
-int visual_video_free (VisVideo *video)
-{
-	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
-
-	if (HAVE_ALLOCATED_BUFFER(video)) {
-		visual_log (VISUAL_LOG_CRITICAL, "VisVideo structure has an allocated screen buffer, "
-				"visual_video_free_with_buffer() must be used");
-
-		return -VISUAL_ERROR_VIDEO_HAS_ALLOCATED;
-	}
-
-	if (video->pixel_rows != NULL)
-		visual_mem_free (video->pixel_rows);
-	
-	return visual_mem_free (video);
-}
-
-/**
- * Frees the VisVideo and it's buffer. This frees the VisVideo and it's buffer.
- * 
- * @warning The given @a video must be a previously created one with
- * visual_video_new_with_buffer(), not visual_video_new().
- *
- * @param video Pointer to a VisVideo that needs to be freed together with
- *	it's buffer.
- *
- * @return 0 on succes -1 on error.
- */
-int visual_video_free_with_buffer (VisVideo *video)
-{
-	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
-
-	if (HAVE_ALLOCATED_BUFFER (video))
-		visual_video_free_buffer (video);
-
-	return visual_mem_free (video);
 }
 
 /**
@@ -780,7 +756,7 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 		blit_overlay_alpha32 (dest, srcp, x, y);
 
 	if (transform != NULL)
-		visual_video_free_with_buffer (transform);
+		visual_object_unref (VISUAL_OBJECT (transform));
 	
 	return VISUAL_OK;
 }
