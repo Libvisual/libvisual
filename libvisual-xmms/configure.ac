@@ -78,13 +78,15 @@ fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual-widgets >= 0.3.0, [lvwidgets="yes"], [lvwidgets="no"])
-if test x"$lvwidget" = xyes; then
-   AC_DEFINE([HAVE_LVWIDGETS],[1], [libvisual-widgets library is present])
+PKG_CHECK_MODULES(LIBVISUAL_WIDGETS, libvisual-widgets-gtk1 >= 0.3.0, [lvwidgets="yes"], [lvwidgets="no"])
+if test x"$lvwidgets" = xyes; then
+   AC_DEFINE([HAVE_LVWIDGETS],[1], [libvisual-widgets-gtk1 library is present])
 else
-   AC_DEFINE([HAVE_LVWIDGETS],[0], [libvisual-widgets library is not present])
+   AC_DEFINE([HAVE_LVWIDGETS],[0], [libvisual-widgets-gtk1 library is not present])
    AC_MSG_WARN($LVXMMS_MSG_LVWIDGETS_NOT_FOUND)
-fi
+fi 
+AC_SUBST(LIBVISUAL_WIDGETS_LIBS)
+AC_SUBST(LIBVISUAL_WIDGETS_CFLAGS)
 
 XMMS_PLUGIN_DIR="$prefix/lib/xmms"
 XMMS_VISUALIZATION_PLUGIN_DIR="$XMMS_PLUGIN_DIR/Visualization"

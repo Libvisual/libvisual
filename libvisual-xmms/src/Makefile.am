@@ -4,9 +4,12 @@ lib_LTLIBRARIES = libvisual_xmms.la
 
 libdir = @XMMS_VISUALIZATION_PLUGIN_DIR@
 
-LIBS = -L$(top_srcdir)/src -L$(prefix)/lib @XMMS_LIBS@ @SDL_LIBS@ @GTK_LIBS@ @LIBVISUAL_LIBS@ @LTLIBTINTL@
+LIBS = -L$(top_srcdir)/src -L$(prefix)/lib @XMMS_LIBS@ \
+	@SDL_LIBS@ @GTK_LIBS@ @LTLIBTINTL@ \
+	@LIBVISUAL_LIBS@ @LIBVISUAL_WIDGETS_LIBS@
 
-AM_CFLAGS = @LIBVISUAL_CFLAGS@ @XMMS_CFLAGS@ @SDL_CFLAGS@ @GTK_CFLAGS@
+AM_CFLAGS = @XMMS_CFLAGS@ @SDL_CFLAGS@ @GTK_CFLAGS@ \
+	@LIBVISUAL_CFLAGS@ @LIBVISUAL_WIDGETS_CFLAGS@
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/src -I$(top_builddir)

@@ -6,6 +6,10 @@
 #include <SDL/SDL.h>
 #include <libvisual/libvisual.h>
 
+#if HAVE_LVWIDGETS
+#include <lvwidget/gtk1/lv_widget_gtk1_visui.h>
+#endif
+
 #include "config.h"
 
 #include "lv_xmms_config.h"
@@ -538,6 +542,7 @@ static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gp
 	if (!current_actor)
 		return;
 
+	visual_log_return_if_fail (current_actor->info != NULL);
 	plugname = current_actor->info->plugname;
 
 	clist = GTK_CLIST(config_win->clist_actor_plugins);
@@ -571,18 +576,25 @@ static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gp
 static void on_button_vis_plugin_conf_clicked (GtkButton *button, gpointer data)
 {
 	VisUIWidget *lvwidget;
+	VisActor *actor;
 	GtkWidget *window, *widget;
 	GtkWidget *msgwin;
+	const gchar *plugname;
 
 	if (!current_actor)
 		return;
 
-	visual_log_return_if_fail (current_actor != NULL);
+	visual_log_return_if_fail (current_actor->info != NULL);
+
+	plugname = current_actor->info->plugname;
 
 #if HAVE_LVWIDGETS
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
-	lvwidget = visual_plugin_get_userinterface (visual_actor_get_plugin (current_actor));
+	actor = visual_actor_new (plugname);
+	visual_actor_realize (actor);
+
+	lvwidget = visual_plugin_get_userinterface (visual_actor_get_plugin (actor));
 	widget = lvw_visui_new (lvwidget);
 
 	gtk_container_add (GTK_CONTAINER(window), widget);

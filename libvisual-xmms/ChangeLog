@@ -1,5 +1,11 @@
 2005-03-13  Duilio Protti  <dprotti@users.sourceforge.net>
 
+	* configure.ac: check for libvisual-widgets
+	* src/lv_xmms_config.c: added callback for configure
+	button.
+
+2005-03-13  Duilio Protti  <dprotti@users.sourceforge.net>
+
 	* autogen.sh: fix building fail due to undefined
 	REQUIRED_GLIB_GETTEXT_VERSION variable. Now are 
 	required glib.m4 gtk.m4 sdl.m4 and xmms.m4 macros.
