@@ -224,13 +224,13 @@ void copy_and_fade(JessPrivate *priv, float factor)
 	uint32_t j;
 	uint8_t *pix, *buf;
 
-
 	buf = priv->buffer;
 	pix = priv->pixel;
 
 	if(priv->video == 8)    
 	{
 		fade(factor, priv->dim);
+		
 		for (j = 0; j <  priv->resy * priv->resx; j++)
 		{	    
 			*(buf++) = priv->dim[*(pix++)];
@@ -242,6 +242,8 @@ void copy_and_fade(JessPrivate *priv, float factor)
 		fade(cos(0.25*factor)*factor*2, priv->dimG);
 		fade(cos(0.5*factor)*factor*2, priv->dimB);
 
+		/* FIXME MMX TARGET */
+		
 		for (j = 0; j <  priv->resy * priv->resx; j++)
 		{	    
 			*(buf++) = priv->dimR[*(pix++)];
@@ -269,7 +271,6 @@ void fade(float variable, uint8_t * dim)
 
 	for (j= 0; j < 256; j++)
 	{
-
 		aux2 = (uint8_t) ((float) j * 0.245 * aux);
 
 		if (aux2>255)
@@ -354,13 +355,11 @@ void render_deformation(JessPrivate *priv, int defmode)
 		for (i = 0; i < priv->resy * priv->resx; i++)
 		{
 			aux  =  (uint8_t *) ((*(tab1) << 2 ) + (uint32_t) priv->buffer);
-			*pix = *(aux) ;
-			pix++;
-			*pix = *(aux + 1);  
-			pix++;
-			*pix = *(aux + 2);  
+			*(pix++) = *(aux++) ;
+			*(pix++) = *(aux++);  
+			*(pix++) = *(aux);  
 			
-			pix += 2;
+			pix++;
 
 			tab1++;
 		}
@@ -375,6 +374,7 @@ void render_blur(JessPrivate *priv, int blur)
 	/* (d'ou le segfault) */
 	/* j'ai mis pixel par defaut... */
 
+	VisCPU *cpucaps = visual_cpu_get_caps ();
 	uint8_t *pix = priv->pixel;
 	uint32_t bmax,pitch_4;
 
@@ -382,28 +382,93 @@ void render_blur(JessPrivate *priv, int blur)
 	if (priv->pixel == NULL)
 		return;
 
+
+	/* FIXME MMX 8 BIT VERSION */
+	
 	/* Annotation par Karl Soulabaille: */
 	/* Il y avait des overflows sur les boucles (indice supérieur trop élevé de 1) */
 	if (priv->video == 8)
 	{
-		bmax = priv->resx * (priv->resy-1) + (uint32_t) priv->pixel;
-		for (pix = priv->pixel; pix < (uint8_t *) bmax-1; pix++)
-		{
-			*pix += *(pix+1) + *(pix+ priv->resx) + *(pix+ priv->resx+1); 
+		if (cpucaps->hasMMX == 1) {
+			bmax = priv->resx * (priv->resy-1) + (uint32_t) priv->pixel;
+#ifdef VISUAL_ARCH_X86
+			__asm __volatile
+				("\n\t pxor %%mm6, %%mm6"
+				 ::: "mm6");
+
+			for (pix = priv->pixel; pix < (uint8_t *) bmax-1; pix += 8)
+			{
+				__asm __volatile
+					("\n\t movq %[pix1], %%mm0"
+					 "\n\t movq %[pix2], %%mm1"
+					 "\n\t movq %[pix3], %%mm2"
+					 "\n\t paddb %%mm0, %%mm1"
+					 "\n\t movq %[pix4], %%mm3"
+					 "\n\t paddb %%mm2, %%mm1"
+					 "\n\t paddb %%mm3, %%mm1"
+					 "\n\t movq %%mm1, %[pix1]"
+					 :: [pix1] "m" (*pix)
+					 , [pix2] "m" (*(pix + 1))
+					 , [pix3] "m" (*(pix + priv->resx))
+					 , [pix4] "m" (*(pix + priv->resx + 1))
+					 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+
+			}
+
+			__asm __volatile
+				("\n\t emms");
+
+#endif
+		} else {
+			for (pix = priv->pixel; pix < (uint8_t *) bmax-1; pix++)
+				*pix += *(pix+1) + *(pix+ priv->resx) + *(pix+ priv->resx+1); 
 		}
 	}
 	else
 	{
 		pitch_4 = priv->pitch+4;
 		bmax = priv->pitch*(priv->resy-1) + (uint32_t) priv->pixel;
-		for (pix = priv->pixel; pix < (uint8_t *) bmax-4; )
-		{
-			*pix += *(pix + 4) + *(pix + priv->pitch) + *(pix + pitch_4); 
-			pix++;
-			*pix += *(pix + 4) + *(pix + priv->pitch) + *(pix + pitch_4);   
-			pix++;
-			*pix += *(pix + 4) + *(pix + priv->pitch) + *(pix + pitch_4);  
-			pix += 2;
+
+		if (cpucaps->hasMMX == 1) {
+#ifdef VISUAL_ARCH_X86
+			__asm __volatile
+				("\n\t pxor %%mm6, %%mm6"
+				 ::: "mm6");
+		
+			for (pix = priv->pixel; pix < (uint8_t *) bmax-4; )
+			{
+				__asm __volatile
+					("\n\t movq %[pix1], %%mm0"
+					 "\n\t movq %[pix2], %%mm1"
+					 "\n\t movq %[pix3], %%mm2"
+					 "\n\t paddb %%mm0, %%mm1"
+					 "\n\t movq %[pix4], %%mm3"
+					 "\n\t paddb %%mm2, %%mm1"
+					 "\n\t paddb %%mm3, %%mm1"
+					 "\n\t movq %%mm1, %[pix1]"
+					 :: [pix1] "m" (*pix)
+					 , [pix2] "m" (*(pix + 4))
+					 , [pix3] "m" (*(pix + priv->pitch))
+					 , [pix4] "m" (*(pix + pitch_4))
+					 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+				
+				pix += 8;
+			}
+
+			__asm __volatile
+				("\n\t emms");
+
+#endif
+		} else {
+			for (pix = priv->pixel; pix < (uint8_t *) bmax-4; )
+			{
+				*pix += *(pix + 4) + *(pix + priv->pitch) + *(pix + pitch_4); 
+				pix++;
+				*pix += *(pix + 4) + *(pix + priv->pitch) + *(pix + pitch_4);   
+				pix++;
+				*pix += *(pix + 4) + *(pix + priv->pitch) + *(pix + pitch_4);  
+				pix += 2;
+			}
 		}
 	}
 }
