@@ -12,11 +12,11 @@ AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
-actor_oinksie_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
+actor_AVS_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
-actor_oinksie_la_SOURCES = actor_AVS.c \
-			   avs_parse.c \
-			   avs_parse.h \
-			   avs_serialize.c \
-			   avs_serialize.h
+actor_AVS_la_SOURCES = actor_AVS.c \
+		       avs_parse.c \
+		       avs_parse.h \
+		       avs_serialize.c \
+		       avs_serialize.h
 

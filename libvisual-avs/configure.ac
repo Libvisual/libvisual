@@ -53,6 +53,8 @@ AC_CHECK_FUNCS([floor gettimeofday memmove memset pow sqrt])
 AC_CHECK_FUNC([munmap], lv_have_munmap=yes, lv_have_munmap=no)
 AC_FUNC_MMAP
 
+AC_SUBST([AVS], ['actor_AVS.la'])
+
 #
 # Build paramaters
 #
@@ -152,7 +154,7 @@ AC_OUTPUT
 
 echo "
 ================================================
-LIBVISUAL-AVS, AVS FOR LIBVISUAL $VERSION
+LIBVISUAL-AVS, ADVANCED VISUAL STUDIO FOR LIBVISUAL $VERSION
 ================================================
 
 Packages found:
