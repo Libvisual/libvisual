@@ -1,5 +1,10 @@
 2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/lv_gltest/actor_lv_gltest.c:
+	And make the VisUI option actually work.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/*: VisParamEntry listfy everything.
 
 	* plugins/actor/lv_gltest/actor_lv_gltest.c:

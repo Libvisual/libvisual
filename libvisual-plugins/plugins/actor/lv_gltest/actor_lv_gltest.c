@@ -112,10 +112,7 @@ int lv_gltest_init (VisPluginData *plugin)
 	glEnable (GL_DEPTH_TEST);
 	glDepthFunc (GL_LESS);
 
-	if (priv->transparant == TRUE) {
-		glBlendFunc (GL_SRC_ALPHA,GL_ONE);
-		glEnable (GL_BLEND);
-	}
+	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
 
 	for (x = 0; x < 16; x++) {
 		for (y = 0; y < 16; y++) {
