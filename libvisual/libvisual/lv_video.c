@@ -1584,8 +1584,10 @@ static int scale_nearest_24 (VisVideo *dest, const VisVideo *src)
 	int x, y;
 	float u, v, du, dv;
 	uint8_t *dest_pixel, *src_pixel_row;
+	int diff;
+	uint8_t *src_pixel;
 
-	u = 0; du = (float) src->width	/ dest->width;
+	u = 0; du = (float) src->width	/ dest->width * 3;
 	v = 0; dv = (float) src->height / dest->height;
 
 	dest_pixel = dest->pixels;
@@ -1593,8 +1595,17 @@ static int scale_nearest_24 (VisVideo *dest, const VisVideo *src)
 	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
 		src_pixel_row = (uint8_t *) src->pixel_rows[(int) v];
 
-		for (x = 0, u = 0; x < dest->width * 3; x++, u += du) {
-			*dest_pixel++ = src_pixel_row[(int) u];
+		for (x = 0, u = 0; x < dest->width; x++, u += du) {
+			src_pixel = &src_pixel_row[(int) u];
+
+			diff = &src_pixel_row[(int) u] - (uint8_t *) src->pixels;
+
+			if (diff % 3)
+				src_pixel -= diff % 3;
+			
+			*dest_pixel++ = *src_pixel++;
+			*dest_pixel++ = *src_pixel++;
+			*dest_pixel++ = *src_pixel++;
 		}
 	}
 
