@@ -7,6 +7,8 @@
 
 #include "GL/gl.h"
 
+#define NULL_OUTPUT 1
+
 int main(int argc, char **argv)
 {
 	LvdDriver *drv;
@@ -14,7 +16,11 @@ int main(int argc, char **argv)
 	VisEvent event;
 	int quit_flag = 0;
 
+#if NULL_OUTPUT
+	visual_init_path_add ("../drivers/null/.libs");
+#else
 	visual_init_path_add ("../drivers/glx/.libs");
+#endif
 	visual_init (&argc, &argv);
 	/* variants are:
 	 *	glx, new
@@ -35,7 +41,12 @@ int main(int argc, char **argv)
 	 *	others?
 	 */
 
+#if NULL_OUTPUT
+	drv = lvdisplay_driver_create ("null", "null");
+#else
 	drv = lvdisplay_driver_create ("glx", "glx_new");
+#endif
+
 	if (drv == NULL){
 		fprintf (stderr, "failed to load driver\n");
 		exit (1);
@@ -58,6 +69,7 @@ int main(int argc, char **argv)
 		fprintf (stderr, "failed to realize vo\n");
 		exit (1);
 	}
+
 
 	/*  start visualization. plugin will run in a
 	 *  separate thread. Alternative call can be
@@ -119,6 +131,7 @@ int main(int argc, char **argv)
 				break;
 			case VISUAL_EVENT_RESIZE:
 				fprintf(stderr, "resized: %dx%d\n", event.resize.width, event.resize.height);
+				visual_bin_sync(bin, FALSE);
 				visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
 				break;
 			}

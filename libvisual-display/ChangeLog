@@ -2,6 +2,8 @@
 	* configure.ac, drivers/Makefile.am, drivers/null/*:
 	Added a null plugin. Note that it generates resize and
 	quit events. Check the source.
+	* example/main.c: added #if NULL_PLUG, added
+	visual_bin_sync() to resize event handler.
 
 2004-10-05  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 	* drivers/glx/glx.c: VisVideo support, framebuffer
