@@ -49,6 +49,9 @@ int visual_stopped = 1;
 /* About gui variables */
 GtkWidget *about_window = NULL;
 
+/* Say if we are on fullscreen mode or not */
+static gboolean fullscreen;
+
 static void lv_xmms_init (void);
 static void lv_xmms_cleanup (void);
 static void lv_xmms_about (void);
@@ -152,10 +155,19 @@ static int lv_xmms_prefs_save ()
 
 static void lv_xmms_init ()
 {
-	visual_log (VISUAL_LOG_DEBUG, "calling sdl_init()");
+        /*char *argv[1];*/
+        int argc;
+
 	sdl_init ();
-	visual_log (VISUAL_LOG_DEBUG, "calling SDL_CreateMutex()");
+        
+        fullscreen = FALSE;
+
 	pcm_mutex = SDL_CreateMutex ();
+
+        /*argv[0] = g_strdup ("LibVisual XMMS Plugin");
+        g_message ("******** %s *********\n", argv[0]);
+        argc = 1;
+	visual_init (&argc, &argv);*/
 	visual_init (NULL, NULL);
 
 	lv_xmms_prefs_load ();
@@ -227,7 +239,7 @@ static void lv_xmms_about ()
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 8);
 	gtk_widget_show (vbox);
 
-	label=gtk_label_new("\n\
+	label = gtk_label_new("\n\
 Libvisual xmms plugin\nCopyright (C) 2004, Dennis Smit <ds@nerds-incorporated.org>\n\
 The libvisual xmms plugin, more information about libvisual can be found at\n\
 http://libvisual.sf.net\n\n");
@@ -273,16 +285,10 @@ static void lv_xmms_playback_stop ()
 
 static void lv_xmms_render_pcm (gint16 data[2][512])
 {
-	int i;
-
 	if (visual_running == 1) {
 		SDL_mutexP (pcm_mutex);
 
-		/* FIXME This can be copied on one operation */
-		for (i = 0; i < 512; i++) {
-			xmmspcm[0][i] = data[0][i];
-			xmmspcm[1][i] = data[1][i];
-		}
+                memcpy (xmmspcm, data, sizeof(gint16)*2*512);
 
 		SDL_mutexV (pcm_mutex);
 	}
@@ -325,9 +331,9 @@ static int sdl_quit ()
 
 	/*
 	 * FIXME this doesn't work!
-	 * 
+	 */
 	visual_log (VISUAL_LOG_DEBUG, "sdl_quit: calling SDL_Quit()");
-	SDL_Quit ();*/
+	SDL_Quit ();
 	
 	visual_log (VISUAL_LOG_DEBUG, "leaving...");
 	return 0;
@@ -479,6 +485,10 @@ static int sdl_event_handle ()
 							SDL_UnlockSurface (screen);
 
 						break;
+					case SDLK_TAB:
+                                                SDL_WM_ToggleFullScreen (screen);
+                                                fullscreen = !fullscreen;
+                                                break;
 				}
 				break;
 
@@ -511,7 +521,7 @@ static int sdl_event_handle ()
 	return 0;
 }
 
-static int visual_upload_callback (VisInput *input, VisAudio *audio, void *private)
+static int visual_upload_callback (VisInput *input, VisAudio *audio, void *private_data)
 {
 	int i;
 
@@ -579,6 +589,7 @@ static int visual_initialize (int width, int height)
 
 static void *visual_render ()
 {
+        SDL_VideoInfo video_info;
 	visual_running = 1;
 	visual_stopped = 0;
 	
@@ -634,6 +645,8 @@ static void *visual_render ()
 			}
 		}
 		sdl_event_handle ();
+                if (fullscreen && !(screen->flags & SDL_FULLSCREEN))
+                        SDL_WM_ToggleFullScreen (screen);
 	}
 
 	visual_stopped = 1;

@@ -1,3 +1,5 @@
+
+* It doesn't quit cleanly.
 * It needs a rewrite.
 * starting with GL is borked, this will get fixed with the rewrite!
 

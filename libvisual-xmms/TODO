@@ -11,7 +11,6 @@ Plugin:
 	resolution/depth change, also check what sdl supports
 
 	When opengl is not found, disable opengl support and set this in the plugin (post 0.1)
-	Good fullscreen support	(post 0.1)
 	gtkclist with plugins to select out
 	Cap FPS (post 0.1)
 	extensive error checking.
@@ -23,3 +22,8 @@ Plugin:
 		system ("xscreensaver-command -deactivate >&- 2>&- &");
 	deactivate dpms and xblank (look at mplayer)
 
+	add a configure dialog that let configure every available plugin (we need
+	support on Libvisual Library to do this reusable).
+
+	give a way to limit the FPS (Libvisual would admit this probably).
+	

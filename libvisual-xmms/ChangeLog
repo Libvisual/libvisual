@@ -1,3 +1,10 @@
+2004-06-24  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/lv_xmms.c:
+	- lv_xmms_render_pcm() now uses a fast memcpy() instead
+	of a for loop.
+	- added fullscreen support.
+
 2004-06-23  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/lv_xmms.c: now print messages trough visual_log().
