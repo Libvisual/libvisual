@@ -1,3 +1,8 @@
+2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* unix/libvisua/actor_gforce.cpp: Doh not the LGPL header but
+	the GPL header instead!
+
 2005-01-07  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* unix/libvisua/actor_gforce.cpp: Adding copyright header.
