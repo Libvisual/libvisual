@@ -962,6 +962,7 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 	
 	if (destdepth == VISUAL_VIDEO_DEPTH_8BIT || video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		visual_log_return_val_if_fail (pal != NULL, -1);
+		visual_log_return_val_if_fail (pal->ncolors == 256, -1);
 	}
 
 	/* Destdepth is equal to sourcedepth case */
@@ -970,8 +971,6 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 
 		return 0;
 	}
-
-	visual_log_return_val_if_fail (pal != NULL && pal->ncolors == 256, -1);
 	
 	if (video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 

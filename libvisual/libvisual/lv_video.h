@@ -16,7 +16,7 @@ extern "C" {
 typedef enum {
 	VISUAL_VIDEO_FLAG_NONE			= 0,	/**< No flags. */
 	VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER	= 1,	/**< Libvisual allocated this buffer. */
-	VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER	= 2	/**< External allocated buffer. */
+	VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER	= 2,	/**< External allocated buffer. */
 } VisVideoFlags;
 
 /**

@@ -1,5 +1,11 @@
 2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_video.c
+	(visual_video_depth_transform_to_buffer):
+	Only check in 8BIT for pal.
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_morph.c (visual_morph_run):
 	Set the morph palette on the dest video.
 
