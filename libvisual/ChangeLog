@@ -1,3 +1,11 @@
+2004-09-10  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_video.c: Changed the way
+	*->8 bits conversions are done. We don't
+	try to make an 3-2-3 colorspace anylonger.
+	Instead we make a grayscale from the rgb
+	image and place a palette over that.
+
 2004-09-09  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* libvisual/Makefile.am: fixed include problem

@@ -136,10 +136,6 @@ libvisual:
 				so that you can use other plugins to render
 				inside another
 
-	morph:
-		timed morph
-		a method to check if the morph needs audio
-
 	libvisual:
 		After the events stuff do a good code review + cleanups.
 
@@ -166,7 +162,7 @@ libvisual:
 
 	portability:
 		have byteswap helper functions and use them where endianess issues
-		arise (lv_bmp.c)
+			arise (lv_bmp.c)
 
 	Other:
 		Make Gstreamer elements from the actors.

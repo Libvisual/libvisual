@@ -1123,9 +1123,8 @@ static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			b = srcr[j].b << 3;
 			j++;
 
-			col  = (r >> 5);
-			col |= (g >> 6) << 3;
-			col |= (b >> 5) << 5;
+			/* FIXME optimize */
+			col = (r + g + b) / 3;
 
 			pal->colors[col].r = r;
 			pal->colors[col].g = g;
@@ -1187,6 +1186,7 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 {
 	int x, y;
 	int i = 0, j = 0;
+	int total;
 	uint8_t r, g, b;
 	uint8_t col;
 	int pitchdiff = pitch - width;
@@ -1197,10 +1197,9 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			g = src[j++];
 			r = src[j++];
 
-			col  = (r >> 5);
-			col |= (g >> 6) << 3;
-			col |= (b >> 5) << 5;
-
+			/* FIXME optimize */
+			col = (b + g + r) / 3;
+			
 			pal->colors[col].r = r;
 			pal->colors[col].g = g;
 			pal->colors[col].b = b;
@@ -1270,9 +1269,8 @@ static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			b = src[j++];
 			j++;
 
-			col  = (r >> 5);
-			col |= (g >> 6) << 3;
-			col |= (b >> 5) << 5;
+			/* FIXME optimize */
+			col = (r + g + b) / 3;
 
 			pal->colors[col].r = r;
 			pal->colors[col].g = g;
