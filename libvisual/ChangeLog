@@ -1,4 +1,17 @@
-2004-07-23  Dennis Smitt <ds@nerds-incorporated.org>
+2004-07-24  Dennis Smit <ds@nerds-incorporated.org>
+
+	* configure.ac: Add 'tools' to build_subdirs. 
+
+	* tools/Makefile.am: Added.
+
+	* tools/lv-inspect.c: Added, a tool to inspect
+	a certain plugin.
+
+	* libvisual/lv_plugin.c (plugin_init), (visual_plugin_load):
+	Fixed small bugs while setting the reference on the plugin type
+	encapsulation.
+
+2004-07-23  Dennis Smit <ds@nerds-incorporated.org>
 
 	* libvisual/*.c, *.h: Renamed 'private' to 'priv' everywhere
 	so the header files are usable by C++ programs, plugins.

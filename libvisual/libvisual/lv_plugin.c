@@ -510,14 +510,17 @@ static int plugin_init (LVPlugin *plugin)
 			break;
 
 		case VISUAL_PLUGIN_TYPE_ACTOR:
+			plugin->plugin.actorplugin->ref = plugin->ref;
 			plugin->plugin.actorplugin->init (plugin->plugin.actorplugin);
 			break;
 
 		case VISUAL_PLUGIN_TYPE_INPUT:
+			plugin->plugin.inputplugin->ref = plugin->ref;
 			plugin->plugin.inputplugin->init (plugin->plugin.inputplugin);
 			break;
 
 		case VISUAL_PLUGIN_TYPE_MORPH:
+			plugin->plugin.morphplugin->ref = plugin->ref;
 			plugin->plugin.morphplugin->init (plugin->plugin.morphplugin);
 			break;
 			
@@ -713,7 +716,7 @@ LVPlugin *visual_plugin_load (VisPluginRef *ref)
 
 	plugin = init (ref);
 
-	if (init != NULL) {
+	if (plugin != NULL) {
 		plugin->ref = ref;
 		plugin->handle = handle;
 

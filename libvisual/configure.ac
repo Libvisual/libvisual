@@ -104,7 +104,7 @@ esac
 AC_MSG_RESULT(unsigned $visual_size_type)
 
 # Arguments to specify certain features.
-build_subdirs="libvisual"
+build_subdirs="libvisual tools"
 AC_ARG_ENABLE([examples],
             AC_HELP_STRING([--enable-examples],
                            [Build example programs @<:@default=disabled@:>@]),
@@ -253,6 +253,7 @@ Makefile
 libvisual.pc
 libvisual/Makefile
 examples/Makefile
+tools/Makefile
 ])
 #tests/Makefile		This are not included in the package
 
