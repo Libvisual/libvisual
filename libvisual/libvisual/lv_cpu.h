@@ -54,7 +54,7 @@ struct _VisCPU {
 	int		nrcpu;	/**< Contains the number of CPUs in the system. */
 
 	/* Feature flags */
-	int		cpuType;
+	int		x86cpuType;
 	int		cacheline;
 	int		hasTSC;
 	int		hasMMX;
