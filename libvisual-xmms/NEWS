@@ -1,2 +1,10 @@
-Check ChangeLog.
+NEWS - list of user-visible changes between releases
+of LibVisual XMMS Plugin
+
+New in 0.1.5: 2004-06-27:
+* Debug made optional
+* Messages print through visual_log().
+* Fullscreen support.
+* Frame rate limited and configurable through config file.
+* Color depth configurable through config file.
 
