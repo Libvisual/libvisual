@@ -147,7 +147,7 @@ static void lv_bmp_init ()
 		msg = g_strconcat (_("Cannot initialize SDL!\n"),
 					SDL_GetError(),
 					"\n\n", PACKAGE_NAME,
-					_(" will not be loaded."), 0);
+					_(" will not be loaded."), NULL);
 		msgwin = xmms_show_message (PACKAGE_NAME, msg, _("Accept"), TRUE, dummy, NULL);
 		gtk_widget_show (msgwin);
 		g_free (msg);

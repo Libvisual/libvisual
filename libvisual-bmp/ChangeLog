@@ -1,3 +1,9 @@
+2005-03-14  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/lv_bmp_config.c src/main.c: patch #1112147
+	by Marcus Meissner. g_strconcat() must end with NULL,
+	not with 0, to work properly on 64 bit machines.
+
 2005-03-13  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* autogen.sh: now we require sdl.m4 macro.
