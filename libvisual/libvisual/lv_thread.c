@@ -133,7 +133,11 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 	}
 
 	return thread;
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 	return NULL;
 #endif 
 #else
@@ -184,9 +188,13 @@ void *visual_thread_join (VisThread *thread)
 	}
 
 	return result;
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 	return NULL;
-#endif
+#endif 
 #else
 	return NULL;
 #endif /* VISUAL_HAVE_THREADS */
@@ -202,9 +210,13 @@ void visual_thread_exit (void *retval)
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
 	pthread_exit (retval);
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
 
-#endif
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
+
+#endif 
 #endif /* VISUAL_HAVE_THREADS */
 }
 
@@ -216,9 +228,13 @@ void visual_thread_yield ()
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
 	sched_yield ();
-#else /* !VISUAL_THREAD_MODEL_POSIX */
-	
-#endif
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
+
+#endif 
 #endif /* VISUAL_HAVE_THREADS */
 }
 
@@ -242,9 +258,13 @@ VisMutex *visual_mutex_new ()
 	pthread_mutex_init (&mutex->mutex, NULL);
 
 	return mutex;
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 	return NULL;
-#endif
+#endif 
 #else
 	return NULL;
 #endif /* VISUAL_HAVE_THREADS */
@@ -265,9 +285,13 @@ int visual_mutex_free (VisMutex *mutex)
 	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
 	return visual_mem_free (mutex);
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
-#endif
+#endif 
 #else
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
 #endif /* VISUAL_HAVE_THREADS */
@@ -320,9 +344,13 @@ int visual_mutex_lock (VisMutex *mutex)
 		return -VISUAL_ERROR_MUTEX_LOCK_FAILURE;
 
 	return VISUAL_OK;
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
-#endif
+#endif 
 #else
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
 #endif /* VISUAL_HAVE_THREADS */
@@ -347,9 +375,13 @@ int visual_mutex_trylock (VisMutex *mutex)
 		return -VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE;
 
 	return VISUAL_OK;
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
-#endif
+#endif 
 #else
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
 #endif /* VISUAL_HAVE_THREADS */
@@ -373,9 +405,13 @@ int visual_mutex_unlock (VisMutex *mutex)
 		return -VISUAL_ERROR_MUTEX_UNLOCK_FAILURE;
 
 	return VISUAL_OK;
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
-#endif
+#endif 
 #else
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
 #endif /* VISUAL_HAVE_THREADS */
