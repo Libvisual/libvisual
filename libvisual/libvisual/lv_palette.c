@@ -47,16 +47,33 @@ int visual_palette_free (VisPalette *pal)
 	return 0;
 }
 
+/**
+ * Copies the colors from one VisPalette to another.
+ *
+ * @param dest Pointer to the destination VisPalette.
+ * @param src Pointer to the source VisPalette from which colors are copied into the destination VisPalette.
+ *
+ * @return 0 on succes -1 on error.
+ */
 int visual_palette_copy (VisPalette *dest, VisPalette *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -1);
 	visual_log_return_val_if_fail (src != NULL, -1);
+	visual_log_return_val_if_fail (dest->ncolors == src->ncolors, -1);
 
 	memcpy (dest->colors, src->colors, sizeof (VisColor) * dest->ncolors);
 
 	return 0;
 }
 
+/**
+ * Allocate an amount of colors for a VisPalette.
+ *
+ * @param pal Pointer to the VisPalette for which colors are allocated.
+ * @param ncolors The number of colors allocated for the VisPalette.
+ *
+ * @return 0 on succes -1 on error.
+ */
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
 {
 	visual_log_return_val_if_fail (pal != NULL, -1);
@@ -67,6 +84,13 @@ int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
 	return 0;
 }
 
+/**
+ * Frees allocated colors from a VisPalette.
+ * 
+ * @param pal Pointer to the VisPalette from which colors need to be freed.
+ *
+ * @return 0 on succes -1 on error.
+ */
 int visual_palette_free_colors (VisPalette *pal)
 {
 	visual_log_return_val_if_fail (pal != NULL, -1);

@@ -116,6 +116,8 @@ VisMorph *visual_morph_new (char *morphname)
 
 	morph = visual_mem_new0 (VisMorph, 1);
 
+	visual_palette_allocate_colors (&morph->morphpal, 256);
+
 	if (morphname == NULL)
 		return morph;
 
@@ -174,7 +176,9 @@ int visual_morph_destroy (VisMorph *morph)
 int visual_morph_free (VisMorph *morph)
 {
 	visual_log_return_val_if_fail (morph != NULL, -1);
-	
+
+	visual_palette_free_colors (&morph->morphpal);
+
 	visual_mem_free (morph);
 
 	return 0;

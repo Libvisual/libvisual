@@ -1,8 +1,10 @@
 Main author, project leader:
 Dennis Smit <synap@nerds-incorporated.org>
-	* Wrote the library
-	* Wrote the tests
-	* Wrote the examples
+
+Developers:
+Duilio J. Protti <dprotti@users.sourceforge.net>
+Vitaly V. Bursov <vitalyb@mail333.com>
+Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
 
 The FFT implementation used by libvisual:
 Richard Boulton <richard@tartarus.org>
@@ -13,7 +15,4 @@ Tom Wimmenhove <nohup@nerds-incorporated.org>
 
 Many thanks for quality suggestions and input:
 Jean-Christophe Hoelt <jeko@ios-software.com> (goom2 main author)
-Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br> (from freevo)
-Vitaly V. Bursov <vitalyb@mail333.com> (from xmms sci-vi visual)
-Duilio J. Protti <dprotti@users.sourceforge.net>
 

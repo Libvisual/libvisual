@@ -1,5 +1,16 @@
 2005-08-26  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_color.c (visual_color_from_hsv,
+	visual_color_to_hsv): Added functions to do rgb<->hsv
+	conversions.
+
+	* libvisual/lv_morph.c (visual_morph_new, visual_morph_free):
+	Allocate, free colors for the morphpalette. Fixed crasher.
+
+	* libvisual/lv_palette.c: Finished some documentation.
+
+2005-08-26  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* Makefile.am, libvisual/Makefile.am, configure.ac:
 	Fixed some build issues regarding lvconfig.h
 
