@@ -210,23 +210,23 @@ VisPluginInfo *visual_plugin_info_new (char *name, char *author, char *version, 
 VisPluginInfo *visual_plugin_info_duplicate (VisPluginInfo *pluginfo);
 int visual_plugin_info_free (VisPluginInfo *pluginfo);
 
-VisPluginRef *visual_plugin_ref_new ();
+VisPluginRef *visual_plugin_ref_new (void);
 int visual_plugin_ref_free (VisPluginRef *ref);
 int visual_plugin_ref_list_destroy (VisList *list);
 
-VisActorPlugin *visual_plugin_actor_new ();
+VisActorPlugin *visual_plugin_actor_new (void);
 int visual_plugin_actor_free (VisActorPlugin *actorplugin);
 
-VisInputPlugin *visual_plugin_input_new ();
+VisInputPlugin *visual_plugin_input_new (void);
 int visual_plugin_input_free (VisInputPlugin *inputplugin);
 
-VisMorphPlugin *visual_plugin_morph_new ();
+VisMorphPlugin *visual_plugin_morph_new (void);
 int visual_plugin_morph_free (VisMorphPlugin *morphplugin);
 
-LVPlugin *visual_plugin_new ();
+LVPlugin *visual_plugin_new (void);
 int visual_plugin_free (LVPlugin *plugin);
 
-VisList *visual_plugin_get_registry ();
+VisList *visual_plugin_get_registry (void);
 VisList *visual_plugin_registry_filter (VisList *pluglist, VisPluginType type);
 
 char *visual_plugin_get_next_by_name (VisList *list, char *name);

@@ -46,7 +46,7 @@ struct _VisActor {
 };
 
 /* prototypes */
-VisList *visual_actor_get_list ();
+VisList *visual_actor_get_list (void);
 char *visual_actor_get_next_by_name (char *name);
 char *visual_actor_get_prev_by_name (char *name);
 int visual_actor_valid_by_name (char *name);

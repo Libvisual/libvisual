@@ -160,9 +160,9 @@ struct _VisEventQueue {
 	VisMouseState	 mousestate;	/**< Current mouse button state. */
 };
 
-VisEvent *visual_event_new ();
+VisEvent *visual_event_new (void);
 int visual_event_free (VisEvent *event);
-VisEventQueue *visual_event_queue_new ();
+VisEventQueue *visual_event_queue_new (void);
 int visual_event_queue_free (VisEventQueue *eventqueue);
 int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
 int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event);

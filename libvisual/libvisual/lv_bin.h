@@ -55,7 +55,7 @@ struct _VisBin {
 };
 
 /* prototypes */
-VisBin *visual_bin_new ();
+VisBin *visual_bin_new (void);
 
 int visual_bin_realize (VisBin *bin);
 int visual_bin_destroy (VisBin *bin);
@@ -68,6 +68,7 @@ int visual_bin_set_input (VisBin *bin, VisInput *input);
 VisInput *visual_bin_get_input (VisBin *bin);
 
 int visual_bin_set_morph (VisBin *bin, VisMorph *morph);
+int visual_bin_set_morph_by_name (VisBin *bin, char *morphname);
 VisMorph *visual_bin_get_morph (VisBin *bin);
 
 int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input);
@@ -89,6 +90,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname);
 int visual_bin_switch_actor (VisBin *bin, VisActor *actor);
 int visual_bin_switch_finalize (VisBin *bin);
 int visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style);
+int visual_bin_switch_set_steps (VisBin *bin, int steps);
 int visual_bin_switch_set_automatic (VisBin *bin, int automatic);
 int visual_bin_switch_set_rate (VisBin *bin, float rate);
 

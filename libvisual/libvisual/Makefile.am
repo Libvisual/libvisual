@@ -18,7 +18,8 @@ LIBS = -L. -L$(prefix)/lib
 
 PLUGPATH = $(prefix)/lib/libvisual
 
-AM_CFLAGS = -O2 -rdynamic -DPLUGPATH="\"$(PLUGPATH)\"" -Wall -Wmissing-prototypes @DEBUG_CFLAGS@
+AM_CFLAGS = -Wall -Wmissing-prototypes -Wstrict-prototypes\
+	    -DPLUGPATH="\"$(PLUGPATH)\"" @DEBUG_CFLAGS@ -O3
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 

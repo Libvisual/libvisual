@@ -2,6 +2,23 @@
 
 	* src/lv_libvisual.h: visual_init() signature changed to
 	int (*) (int*, char***). Added messages using visual_log().
+	* configure.ac: user variable CFLAGS overrided.
+	* examples/simplesdl.c: some cleanup to avoid warnings.
+	* examples/morphsdl.c: cleanup to avoid warnings, moved
+	visual_init() call to use new signature, #include now is
+	made relative to the current dir, to use the new libvisual
+	instead of the installed one.
+	* libvisual/lv_bin.h: added visual_bin_set_morph_by_name()
+	and visual_bin_set_steps() (incredibly, they wasn't on the
+	header file!).
+	* libvisual/*.h: changed all function f() declarations to
+	funcion f(void), because f() are not valid ISOC99 prototypes.
+	* libvisual/lv_plugin.c: with the previous prototypes correction,
+	I have found a major bug on visual_plugin_ref_list_destroy()
+	when passing a function pointer of incorrect type to 
+	visual_list_destroy().
+	* libvisual/Makefile.am: to avoid above type errors, added
+	compiler flag -Wstrict-prototypes.
 	
 2004-06-21  Duilio Protti  <dprotti@users.sourceforge.net>
 

@@ -9,7 +9,7 @@
 
 extern VisList *__lv_plugins;
 
-static void ref_list_destroy (VisPluginRef *ref);
+static void ref_list_destroy (void *ref);
 
 static int plugin_add_dir_to_list (VisList *list, char *dir);
 static int plugin_init (LVPlugin *plugin);
@@ -18,11 +18,14 @@ static char *plugin_get_name (LVPlugin *plugin);
 static VisPluginInfo *plugin_get_info (LVPlugin *plugin);
 static int plugin_destroy (LVPlugin *plugin);
 
-static void ref_list_destroy (VisPluginRef *ref)
+static void ref_list_destroy (void *data)
 {
-	if (ref == NULL)
+	VisPluginRef *ref;
+
+	if (data == NULL)
 		return;
 
+	ref = (VisPluginRef*) data;
 	if (ref->info != NULL)
 		visual_plugin_info_free (ref->info);
 

@@ -1,9 +1,10 @@
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <SDL/SDL.h>
 
-#include <libvisual/libvisual.h>
+#include "../libvisual/libvisual.h"
 
 /* The code in this example is written a bit hacky, but the libvisual code is as it should
  * be used so you could take that and use that as an example */
@@ -28,14 +29,14 @@ VisBin *bin;
 int bpp = 1;
 int gl_plug = 0;
 
-void sdl_fullscreen_toggle ();
+void sdl_fullscreen_toggle (void);
 void sdl_fullscreen_xy (int *x, int *y);
 int sdl_fullscreen_set (int mode);
 void sdl_size_request (int width, int height);
 void sdl_init (int width, int height);
 void sdl_create (int width, int height);
-void sdl_draw_buf ();
-void sdl_set_pal ();
+void sdl_draw_buf (void);
+void sdl_set_pal (void);
 	
 /* Fullscreen stuff */
 void sdl_fullscreen_toggle ()
@@ -131,6 +132,8 @@ int sdl_fullscreen_set (int mode)
 		default:
 			break;
 	}
+
+	return 0;
 }
 
 /* Sdl stuff */
@@ -201,7 +204,6 @@ void sdl_create (int width, int height)
 void sdl_draw_buf ()
 {
 	unsigned char *str = (unsigned char *) screen->pixels;
-	int i;
 	
 	memcpy (str, scrbuf, video->size);
 
@@ -382,6 +384,8 @@ int main (int argc, char *argv[])
 						case SDLK_ESCAPE:
 							goto out;
 							break;
+						default: /* to avoid warnings */
+							break;
 					}
 					break;
 
@@ -392,6 +396,8 @@ int main (int argc, char *argv[])
 				case SDL_QUIT:
 					goto out;
 					break;
+				default: /* to avoid warnings */
+					break;
 			}
 		}
 	}
@@ -401,7 +407,8 @@ out:
 	end = time (NULL);
 
 	printf ("Drawn %d frames in %d seconds, average fps %d\n",
-			frames, end - begin, (end - begin) == 0 ? frames : frames / (end - begin));
+			(int)frames, (int)(end - begin),
+			(end - begin) == 0 ? (int)frames : (int)(frames / (end - begin)));
 
 	/* Destroy the bin, this will also destroy everything within the bin, if you
 	 * only want to free the bin, use visual_bin_free */
@@ -409,5 +416,7 @@ out:
 	visual_video_free (video);
 
 	visual_quit ();
+
+	return 0;
 }
 

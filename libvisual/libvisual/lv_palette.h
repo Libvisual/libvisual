@@ -22,7 +22,7 @@ struct _VisPalette {
 	unsigned char b[256];	/**< Blue, 256 entries */
 };
 
-VisPalette *visual_palette_new ();
+VisPalette *visual_palette_new (void);
 int visual_palette_free (VisPalette *pal);
 int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate);
 

@@ -24,6 +24,7 @@ x		* property to force morphs in high bpp
 		* easily filter out gl plugins
 
 	examples:
+		* find a way to compile examples AFTER installing the current library.
 		* port simplesdl to the new bin system.
 		* make an example using a NON managed bin, and also a test if this is still working :)
 

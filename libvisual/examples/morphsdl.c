@@ -3,24 +3,27 @@
 
 #include <SDL/SDL.h>
 
-#include <libvisual/libvisual.h>
+#include "../libvisual/libvisual.h"
+
 
 /* The code in this example is written a bit hacky, but the libvisual code is as it should
  * be used so you could take that and use that as an example */
 
-SDL_Surface *screen;
-SDL_Color colors[256];
+static SDL_Surface *screen;
+static SDL_Color colors[256];
 
 /* The bin in which the visual pipe runs */
-VisBin *bin;
+static VisBin *bin;
 
 /* The video that the bin returns so sdl can draw it */
-VisVideo *video;
+static VisVideo *video;
 
-int bppres = 1;
+static int bppres = 1;
+
+static int have_opengl;
 
 /* Function prototypes */
-void sdl_fullscreen_toggle ();
+void sdl_fullscreen_toggle (void);
 void sdl_fullscreen_xy (int *x, int *y);
 int sdl_fullscreen_set (int mode);
 
@@ -125,6 +128,8 @@ int sdl_fullscreen_set (int mode)
 		default:
 			break;
 	}
+
+	return 0;
 }
 
 /* Sdl stuff */
@@ -147,7 +152,7 @@ void sdl_init (int width, int height)
 	if (SDL_Init (SDL_INIT_VIDEO) < 0)
 	{
 		fprintf (stderr, "Unable to init SDL VIDEO: %s\n", SDL_GetError ());
-		exit (0);
+		exit (1);
 	}
 
 	sdl_create (width, height);
@@ -155,7 +160,16 @@ void sdl_init (int width, int height)
 
 void sdl_create (int width, int height)
 {
-	screen = SDL_SetVideoMode (width, height, bppres * 8, SDL_RESIZABLE);
+	int video_flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_RESIZABLE;
+
+	if (have_opengl)
+		video_flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER;
+	
+	screen = SDL_SetVideoMode (width, height, bppres * 8, video_flags);
+	if (screen == NULL) {	
+		fprintf (stderr, "Unable to get an SDL video screen: %s\n", SDL_GetError ());
+		exit (1);
+	}
 }
 
 void sdl_palette (VisPalette *pal)
@@ -199,11 +213,21 @@ int main (int argc, char *argv[])
 
 	SDL_Event event;
 	
-	visual_init (&argc, &argv);
+	visual_init (NULL, NULL);
 	
 	/* Check libvisual version */
 	printf ("Libvisual version %s\n", visual_get_version ());
 
+	/*
+	 * In future we will conditionally set this
+	 * 
+#ifdef HAVE_OPENGL
+	have_opengl = 1;
+else
+	have_opengl = 0;
+#endif	
+	*/
+	have_opengl = 1;
 	/* Show a list of plugins */
 	if (argc < 4) {
 		printf ("usage: %s plug1 plug2 morph (targetdepth)\n", argv[0]);
@@ -292,7 +316,7 @@ int main (int argc, char *argv[])
 			if (SDL_MUSTLOCK (screen) == SDL_TRUE)
 				SDL_UnlockSurface (screen);
 
-			SDL_UpdateRect (screen, 0, 0, screen->w, screen->h);
+			SDL_Flip (screen);
 
 			if (morphing == 1) {
 				if (morph_to < alpha_var)
@@ -361,6 +385,8 @@ int main (int argc, char *argv[])
 						case SDLK_ESCAPE:
 							goto out;
 							break;
+						default: /* to avoid warnings */
+							break;
 					}
 					break;
 
@@ -371,6 +397,8 @@ int main (int argc, char *argv[])
 				case SDL_QUIT:
 					goto out;
 					break;
+				default: /* to avoid warnings */
+					break;
 			}
 		}
 	}
@@ -380,7 +408,8 @@ out:
 	end = time (NULL);
 
 	printf ("Drawn %d frames in %d seconds, average fps %d\n",
-			frames, end - begin, (end - begin) == 0 ? frames : frames / (end - begin));
+			(int)frames, (int)(end - begin),
+			(end - begin) == 0 ? (int)frames : (int)(frames / (end - begin)));
 
 	/* Destroy the bin, this will also destroy everything within the bin, if you
 	 * only want to free the bin, use visual_bin_free */
@@ -388,5 +417,7 @@ out:
 	visual_video_free (video);
 
 	visual_quit ();
+
+	return 0;
 }
 

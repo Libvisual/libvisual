@@ -36,10 +36,10 @@ struct _VisInput {
 };
 
 /* prototypes */
-VisList *visual_input_get_list ();
+VisList *visual_input_get_list (void);
 char *visual_input_get_next_by_name (char *name);
 char *visual_input_get_prev_by_name (char *name);
-int visual_morph_valid_by_name (char *name);
+int visual_input_valid_by_name (char *name);
 
 VisInput *visual_input_new (char *inputname);
 

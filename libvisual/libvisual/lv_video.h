@@ -53,7 +53,7 @@ struct _VisVideo {
 };
 
 /* prototypes */
-VisVideo *visual_video_new ();
+VisVideo *visual_video_new (void);
 VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
 int visual_video_free (VisVideo *video);
 int visual_video_free_with_buffer (VisVideo *video);

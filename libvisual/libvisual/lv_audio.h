@@ -33,7 +33,7 @@ struct _VisAudio {
 	int energy;			/**< Audio energy level. */
 };
 
-VisAudio *visual_audio_new ();
+VisAudio *visual_audio_new (void);
 int visual_audio_free (VisAudio *audio);
 int visual_audio_analyze (VisAudio *audio);
 

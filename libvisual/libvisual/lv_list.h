@@ -36,11 +36,11 @@ struct _VisList {
 	int			count;	/**< Number of entries that are in the list. */
 };
 
-typedef int (*visual_list_sort_func_t)();
-typedef void (*visual_list_destroy_func_t)();
+typedef int (*visual_list_sort_func_t)(void*); /* FIXME this is the prototype we want? */
+typedef void (*visual_list_destroy_func_t)(void*);
 
 /* prototypes */
-VisList *visual_list_new ();
+VisList *visual_list_new (void);
 int visual_list_free (VisList *list);
 int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer);
 

@@ -20,3 +20,6 @@ Prone for error:
 	needs to be done afterwards a depth transformation we can do this
 	using the pitch instead of copying all it's data again.
 
+Examples:
+	morphsdl examples is broken.
+
