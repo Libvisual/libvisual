@@ -467,7 +467,7 @@ char *visual_plugin_get_prev_by_name (VisList *list, char *name)
 
 static int plugin_add_dir_to_list (VisList *list, char *dir)
 {
-	VisPluginRef *ref;
+	VisPluginRef **ref;
 	char temp[1024];
 	struct dirent **namelist;
 	int i, j, n, len;
@@ -493,8 +493,11 @@ static int plugin_add_dir_to_list (VisList *list, char *dir)
 
 		if (ref != NULL) {
 			for (j = 0; j < cnt; j++) 
-				visual_list_add (list, &ref[j]);
+				visual_list_add (list, ref[j]);
 		}
+
+		if (ref != NULL)
+			visual_mem_free (ref);
 
 		visual_mem_free (namelist[i]);
 	}
@@ -581,7 +584,6 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
 	pluginfo = get_plugin_info (&cnt);
 
-	/* XXX support array */
 	if (pluginfo == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot get plugin info while loading.");
 
@@ -592,7 +594,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
 	plugin = visual_mem_new0 (VisPluginData, 1);
 	plugin->ref = ref;
-	plugin->info = pluginfo;
+	plugin->info = &pluginfo[ref->index];
 
 	ref->usecount++;
 	plugin->realized = FALSE;
@@ -635,9 +637,9 @@ int visual_plugin_realize (VisPluginData *plugin)
  *
  * @return The optionally newly allocated VisPluginRefs for the plugin.
  */
-VisPluginRef *visual_plugin_get_references (char *pluginpath, int *count)
+VisPluginRef **visual_plugin_get_references (char *pluginpath, int *count)
 {
-	VisPluginRef *ref;
+	VisPluginRef **ref;
 	const VisPluginInfo *plug_info;
 	VisPluginInfo *dup_info;
 	const char *plug_name;
@@ -687,14 +689,17 @@ VisPluginRef *visual_plugin_get_references (char *pluginpath, int *count)
 		return NULL;
 	}
 
-	ref = visual_mem_new0 (VisPluginRef, cnt);
+	ref = visual_mem_new0 (VisPluginRef *, cnt);
 	
 	for (i = 0; i < cnt; i++) {
+		ref[i] = visual_mem_new0 (VisPluginRef, 1);
+
 		dup_info = visual_plugin_info_new ();
 		visual_plugin_info_copy (dup_info, (VisPluginInfo *) &plug_info[i]);
 		
-		ref[i].info = dup_info;
-		ref[i].file = strdup (pluginpath);
+		ref[i]->index = i;
+		ref[i]->info = dup_info;
+		ref[i]->file = strdup (pluginpath);
 	}
 
 	dlclose (handle);

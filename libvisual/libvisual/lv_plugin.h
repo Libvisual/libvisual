@@ -71,7 +71,8 @@ typedef int (*plugin_events_func_t)(VisPluginData *, VisEventQueue *);
  */
 struct _VisPluginRef {
 	char			*file;		/**< The file location of the plugin. */
-	int			usecount;	/**< The use count, this indicates how many instances are loaded. */
+	int			 index;		/**< Contains the index number for the entry in the VisPluginInfo table. */
+	int			 usecount;	/**< The use count, this indicates how many instances are loaded. */
 	VisPluginInfo		*info;		/**< A copy of the VisPluginInfo structure. */
 };
 
@@ -207,7 +208,7 @@ int visual_plugin_unload (VisPluginData *plugin);
 VisPluginData *visual_plugin_load (VisPluginRef *ref);
 int visual_plugin_realize (VisPluginData *plugin);
 
-VisPluginRef *visual_plugin_get_references (char *pluginpath, int *count);
+VisPluginRef **visual_plugin_get_references (char *pluginpath, int *count);
 VisList *visual_plugin_get_list (char **paths);
 
 VisPluginRef *visual_plugin_find (VisList *list, char *name);
