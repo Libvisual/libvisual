@@ -365,7 +365,8 @@ static int visual_initialize (int width, int height)
 	
 	visual_bin_switch_set_style (bin, VISUAL_SWITCH_STYLE_MORPH);
 	visual_bin_switch_set_automatic (bin, TRUE);
-	visual_bin_switch_set_steps (bin, 100);
+	visual_bin_switch_set_mode (bin, VISUAL_MORPH_MODE_TIME);
+	visual_bin_switch_set_time (bin, 4, 0);
 
 	visual_bin_realize (bin);
 	visual_bin_sync (bin, FALSE);

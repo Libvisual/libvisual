@@ -1,3 +1,10 @@
+2004-09-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Congrats to Duilio for his birthday!
+
+	* src/main.c (visual_initialize):
+	Use the new morph api and use timed morphing.
+
 2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/main.c (sdl_event_handle):
