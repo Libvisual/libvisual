@@ -27,5 +27,6 @@ Plugin:
 	let the user choose the color depth.
 
 Config:
-	Remove keys from an old config format
+	remove keys from an old config format
+	remove enabled_plugins key
 

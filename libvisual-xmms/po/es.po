@@ -23,11 +23,11 @@ msgstr "No se puede leer las opciones"
 
 #: src/main.c:128
 msgid "Cannot initialize SDL!\n"
-msgstr ""
+msgstr "No se puede inicializar SDL!\n"
 
 #: src/main.c:131
 msgid " will not be loaded."
-msgstr ""
+msgstr " no será cargado."
 
 #: src/main.c:132 src/lv_xmms_config.c:124 src/lv_xmms_config.c:379
 #: src/lv_xmms_config.c:446 src/lv_xmms_config.c:487 src/lv_xmms_config.c:585
@@ -76,19 +76,19 @@ msgstr "Todos los plugins"
 
 #: src/lv_xmms_config.c:147
 msgid "LibVisual XMMS plugin: config file contain errors, fixing..."
-msgstr ""
+msgstr "LibVisual XMMS plugin: el archivo de configuración contiene errores, arreglando..."
 
 #: src/lv_xmms_config.c:150
 msgid "LibVisual XMMS plugin: config file is from old version, updating..."
-msgstr ""
+msgstr "LibVisual XMMS plugins: el archivo de configuración proviene de una versión anterior, actualizando..."
 
 #: src/lv_xmms_config.c:153
 msgid "LibVisual XMMS plugin: adding entry to config file..."
-msgstr ""
+msgstr "LibVisual XMMS plugin: añadiendo entrada al archivo de configuración..."
 
 #: src/lv_xmms_config.c:368 src/lv_xmms_config.c:435
 msgid "The list of morph plugins is empty."
-msgstr ""
+msgstr "La lista de plugins de morphing está vacía."
 
 #: src/lv_xmms_config.c:376 src/lv_xmms_config.c:443
 msgid ""
@@ -96,22 +96,25 @@ msgid ""
 "between visualization plugins will be do it\n"
 "without any morphing."
 msgstr ""
+"No hay plugins de morphing, por lo cual\n"
+"el cambio entre plugins de visualización se\n"
+"hará sin morphing."
 
 #: src/lv_xmms_config.c:385 src/lv_xmms_config.c:452 src/lv_xmms_config.c:477
 msgid "There is no info for this plugin"
-msgstr ""
+msgstr "No hay información para éste plugin"
 
 #: src/lv_xmms_config.c:470
 msgid "The list of input plugins is empty."
-msgstr ""
+msgstr "La lista de plugins de entrada es vacía."
 
 #: src/lv_xmms_config.c:482
 msgid "Version: "
-msgstr ""
+msgstr "Versión: "
 
 #: src/lv_xmms_config.c:484
 msgid "Author: "
-msgstr ""
+msgstr "Autor: "
 
 #: src/lv_xmms_config.c:583
 msgid ""
@@ -121,7 +124,7 @@ msgstr ""
 
 #: src/lv_xmms_config.c:660
 msgid "Invalid value for 'enabled_plugins' option"
-msgstr ""
+msgstr "Valor inválido para la opción 'enabled_plugins'"
 
 #: src/config_gui.c:63
 msgid "LibVisual XMMS Plugin"
@@ -134,11 +137,11 @@ msgstr "LibVisual XMMS Plugin"
 
 #: src/config_gui.c:122 src/config_gui.c:227
 msgid "Configure"
-msgstr ""
+msgstr "Configurar"
 
 #: src/config_gui.c:130 src/config_gui.c:235
 msgid "About"
-msgstr ""
+msgstr "Acerca de"
 
 #: src/config_gui.c:138
 msgid "Fullscreen"
@@ -171,7 +174,7 @@ msgstr "Máximo número de cuadros por segundo"
 
 #: src/config_gui.c:194
 msgid "Morph Plugin"
-msgstr ""
+msgstr "Plugin de Morphing"
 
 #: src/config_gui.c:215
 msgid ""
@@ -181,7 +184,7 @@ msgstr ""
 
 #: src/config_gui.c:243
 msgid "Select one morph plugin randomly"
-msgstr ""
+msgstr "Elegir un plugin de morphing al azar"
 
 #: src/config_gui.c:265
 msgid "Apply"
@@ -232,7 +235,7 @@ msgstr ""
 
 #: src/about.c:97
 msgid "Credits"
-msgstr ""
+msgstr "Créditos"
 
 #: src/about.c:119
 msgid ""
@@ -241,10 +244,14 @@ msgid ""
 "French: Jean-Christophe Hoelt\n"
 "Spanish: Duilio Protti\n"
 msgstr ""
+"Portugués (Brasil): Gustavo Sverzut Barbieri\n"
+"Holandés: Dennis Smit\n"
+"Francés: Jean-Christophe Hoelt\n"
+"Español: Duilio Protti\n"
 
 #: src/about.c:121
 msgid "Translators"
-msgstr ""
+msgstr "Traductores"
 
 #: src/about.c:142
 msgid "Close"

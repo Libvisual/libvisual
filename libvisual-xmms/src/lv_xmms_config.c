@@ -29,7 +29,11 @@ static gboolean random_morph;
 static int fps;
 
 static gchar *actor_plugin_buffer = NULL;
+
+/* List of GtkListItem's */
 static GHashTable *actor_plugin_table = NULL;
+
+/* List of gboolean's */
 static GHashTable *actor_plugin_enable_table = NULL;
 
 /* Lists of VisPluginRef's */
@@ -51,7 +55,13 @@ static void config_win_morph_plugin_add (char *name);
 static int load_actor_plugin_list (void);
 static int load_morph_plugin_list (void);
 	
-static void load_actor_plugin_enable_table (void);
+static void load_actor_plugin_gl_enable_table (void);
+static void load_actor_plugin_nongl_enable_table (void);
+
+static void enable_actor_plugin_gl (void);
+static void disable_actor_plugin_gl (void);
+static void enable_actor_plugin_nongl (void);
+static void disable_actor_plugin_nongl (void);
 
 static void remove_boolean (gpointer key, gpointer value, gpointer data);
 
@@ -81,7 +91,6 @@ Options *lv_xmms_config_open ()
 	srand (trash);
 
 	load_actor_plugin_list ();
-	load_actor_plugin_enable_table ();
 
 	load_morph_plugin_list ();
 	
@@ -97,19 +106,28 @@ int lv_xmms_config_close ()
 	if (options.icon_file != NULL)
 		g_free (options.icon_file);
 
-	g_hash_table_foreach (actor_plugin_table, remove_boolean, NULL);
-	g_hash_table_destroy (actor_plugin_table);
-	actor_plugin_table = NULL;
-	g_hash_table_foreach (actor_plugin_enable_table, remove_boolean, NULL);
-	g_hash_table_destroy (actor_plugin_enable_table);
-	actor_plugin_enable_table = NULL;
+	if (actor_plugin_table) {
+		g_hash_table_destroy (actor_plugin_table);
+		actor_plugin_table = NULL;
+	}
+	if (actor_plugin_enable_table) {
+		g_hash_table_foreach (actor_plugin_enable_table, remove_boolean, NULL);
+		g_hash_table_destroy (actor_plugin_enable_table);
+		actor_plugin_enable_table = NULL;
+	}
 
-	g_slist_free (actor_plugins_gl);
-	actor_plugins_gl = NULL;
-	g_slist_free (actor_plugins_nongl);
-	actor_plugins_nongl = NULL;
-	g_slist_free (morph_plugins_list);
-	morph_plugins_list = NULL;
+	if (actor_plugins_gl) {
+		g_slist_free (actor_plugins_gl);
+		actor_plugins_gl = NULL;
+	}
+	if (actor_plugins_nongl) {
+		g_slist_free (actor_plugins_nongl);
+		actor_plugins_nongl = NULL;
+	}
+	if (morph_plugins_list) {
+		g_slist_free (morph_plugins_list);
+		morph_plugins_list = NULL;
+	}
 
 	return 0;
 }
@@ -168,13 +186,23 @@ int lv_xmms_config_load_prefs ()
         gl_plugins_only = options.gl_plugins_only;
         non_gl_plugins_only = options.non_gl_plugins_only;
         all_plugins_enabled = options.all_plugins_enabled;
-	if (gl_plugins_only)
+
+	load_actor_plugin_gl_enable_table ();
+	load_actor_plugin_nongl_enable_table ();
+
+	if (gl_plugins_only) {
+		enable_actor_plugin_gl ();
+		disable_actor_plugin_nongl ();
 		g_message (_("GL plugins only"));
-	else if (non_gl_plugins_only)
+	} else if (non_gl_plugins_only) {
+		enable_actor_plugin_nongl ();
+		disable_actor_plugin_gl ();
 		g_message (_("non GL plugins only"));
-	else if (all_plugins_enabled)
+	} else if (all_plugins_enabled) {
+		enable_actor_plugin_gl ();
+		enable_actor_plugin_nongl ();
 		g_message (_("All plugins enabled"));
-	else
+	} else
 		g_critical ("Cannot determine which kind of plugin to run");
 
 	if (errors) {
@@ -193,6 +221,26 @@ int lv_xmms_config_load_prefs ()
 	return 0;
 }
 
+static void save_actor_enable_state (gpointer data, gpointer user_data)
+{
+	VisPluginRef *actor;
+	ConfigFile *f;
+	gboolean *enable;
+
+	actor = data;
+	f = user_data;
+
+	visual_log_return_if_fail (actor != NULL);
+	visual_log_return_if_fail (actor->info != NULL);
+	visual_log_return_if_fail (f != NULL);
+
+	enable = g_hash_table_lookup (actor_plugin_enable_table, actor->info->plugname);
+	if (!enable) {
+		visual_log (VISUAL_LOG_DEBUG, "enable == NULL for %s", actor->info->plugname);
+		return;
+	}
+	xmms_cfg_write_boolean (f, "libvisual_xmms", actor->info->plugname, *enable);
+}
 
 int lv_xmms_config_save_prefs ()
 {
@@ -235,6 +283,11 @@ int lv_xmms_config_save_prefs ()
 	else
 		g_warning ("Inconsistency on config module");
 
+	visual_log_return_val_if_fail (actor_plugins_gl != NULL, -1);
+
+	g_slist_foreach (actor_plugins_gl, save_actor_enable_state, f);
+	g_slist_foreach (actor_plugins_nongl, save_actor_enable_state, f);
+
 	xmms_cfg_write_default_file (f);
 	xmms_cfg_free (f);
 
@@ -252,7 +305,7 @@ void lv_xmms_config_toggle_fullscreen (void)
 
 const char *lv_xmms_config_get_prev_actor (void)
 {
-	gchar *prev_plugin;
+	const gchar *prev_plugin;
 	gboolean *plugin_enabled;
 	int round;
 
@@ -264,13 +317,11 @@ const char *lv_xmms_config_get_prev_actor (void)
 			round++;
 			continue;
 		}
-		visual_log (VISUAL_LOG_INFO, "looking for %s", prev_plugin);
 		plugin_enabled = g_hash_table_lookup (actor_plugin_enable_table, prev_plugin);
-		visual_log_return_val_if_fail (plugin_enabled != NULL, NULL);
-		if (*plugin_enabled) {
-			visual_log (VISUAL_LOG_INFO, "enabled %s", prev_plugin);
+		if (!plugin_enabled)
+			continue;
+		if (*plugin_enabled)
 			return prev_plugin;
-		}
 	} while (round < 2);
 	
 	return NULL;
@@ -278,7 +329,7 @@ const char *lv_xmms_config_get_prev_actor (void)
 
 const char *lv_xmms_config_get_next_actor (void)
 {
-	gchar *next_plugin;
+	const gchar *next_plugin;
 	gboolean *plugin_enabled;
 	int round;
 
@@ -290,13 +341,11 @@ const char *lv_xmms_config_get_next_actor (void)
 			round++;
 			continue;
 		}
-		visual_log (VISUAL_LOG_INFO, "looking for %s", next_plugin);
 		plugin_enabled = g_hash_table_lookup (actor_plugin_enable_table, next_plugin);
-		visual_log_return_val_if_fail (plugin_enabled != NULL, NULL);
-		if (*plugin_enabled) {
-			visual_log (VISUAL_LOG_INFO, "enabled %s", next_plugin);
+		if (!plugin_enabled)
+			continue;
+		if (*plugin_enabled)
 			return next_plugin;
-		}
 	} while (round < 2);
 	
 	return NULL;
@@ -381,9 +430,68 @@ static void on_checkbutton_fullscreen_toggled (GtkToggleButton *togglebutton, gp
 	fullscreen = !fullscreen;
 }
 
+static void enable_actor_plugin (gpointer data, gpointer user_data)
+{
+	VisPluginRef *actor;
+	gboolean *enable;
+
+	actor = data;
+	visual_log_return_if_fail (actor != NULL);
+	visual_log_return_if_fail (actor->info != NULL);
+
+	enable = g_hash_table_lookup (actor_plugin_enable_table, actor->info->plugname);
+	if (!enable) {
+		visual_log (VISUAL_LOG_DEBUG, "enable == NULL for %s", actor->info->plugname);
+		return;
+	}
+	*enable = TRUE;
+}
+
+static void disable_actor_plugin (gpointer data, gpointer user_data)
+{
+	VisPluginRef *actor;
+	gboolean *enable;
+
+	actor = data;
+	visual_log_return_if_fail (actor != NULL);
+	visual_log_return_if_fail (actor->info != NULL);
+
+	enable = g_hash_table_lookup (actor_plugin_enable_table, actor->info->plugname);
+	if (!enable) {
+		visual_log (VISUAL_LOG_DEBUG, "enable == NULL for %s", actor->info->plugname);
+		return;
+	}
+	*enable = FALSE;
+}
+
+static void enable_actor_plugin_gl ()
+{
+	g_slist_foreach (actor_plugins_gl, enable_actor_plugin, NULL);
+}
+
+static void disable_actor_plugin_gl ()
+{
+	g_slist_foreach (actor_plugins_gl, disable_actor_plugin, NULL);
+}
+
+static void enable_actor_plugin_nongl ()
+{
+	g_slist_foreach (actor_plugins_nongl, enable_actor_plugin, NULL);
+}
+
+static void disable_actor_plugin_nongl ()
+{
+	g_slist_foreach (actor_plugins_nongl, disable_actor_plugin, NULL);
+}
+
 static void on_radiobutton_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 {
+	visual_log (VISUAL_LOG_DEBUG, "gl toggled");
 	gl_plugins_only = !gl_plugins_only;
+
+	disable_actor_plugin_nongl ();
+	enable_actor_plugin_gl ();
+
 	/* FIXME We must remember selected items */
 	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
 	config_win_load_actor_plugin_list ();
@@ -391,14 +499,24 @@ static void on_radiobutton_opengl_toggled (GtkToggleButton *togglebutton, gpoint
 
 static void on_radiobutton_non_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 {
+	visual_log (VISUAL_LOG_DEBUG, "non gl toggled");
 	non_gl_plugins_only = !non_gl_plugins_only;
+
+	disable_actor_plugin_gl ();
+	enable_actor_plugin_nongl ();
+
 	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
 	config_win_load_actor_plugin_list ();
 }
 
 static void on_radiobutton_all_plugins_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 {
+	visual_log (VISUAL_LOG_DEBUG, "all plugins toggled");
 	all_plugins_enabled = !all_plugins_enabled;
+
+	enable_actor_plugin_gl ();
+	enable_actor_plugin_nongl ();
+
 	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
 	config_win_load_actor_plugin_list ();
 }
@@ -458,6 +576,7 @@ static void sync_options ()
         options.gl_plugins_only = gl_plugins_only;
         options.non_gl_plugins_only = non_gl_plugins_only;
         options.all_plugins_enabled = all_plugins_enabled;
+	options.morph_plugin = morph_plugin;
 	options.random_morph = random_morph;
 }
 
@@ -499,7 +618,6 @@ static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gp
 	plugname = current_actor->info->plugname;
 	if (gtk_toggle_button_get_active (togglebutton)) {
 		/* We are enabling the selected actor */
-		g_print ("Enabling %s\n", plugname);
 		item = g_hash_table_lookup (actor_plugin_table, plugname);
 		g_hash_table_remove (actor_plugin_table, plugname);
 
@@ -522,7 +640,6 @@ static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gp
 		/* Insert the new item */
 		items = NULL;
 		items = g_list_append (items, item);
-		g_print ("Inserting the new item at position %d..\n", pos);
 		gtk_list_insert_items (GTK_LIST(config_win->list_vis_plugins), items, pos);
 		
 		g_hash_table_insert (actor_plugin_table, plugname, item);
@@ -532,7 +649,6 @@ static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gp
 		visual_log_return_if_fail (enable != NULL);
 		*enable = TRUE;
 	} else {
-		g_print ("Disabling %s\n", plugname);
 		item = g_hash_table_lookup (actor_plugin_table, plugname);
 		g_hash_table_remove (actor_plugin_table, plugname);
 
@@ -553,7 +669,6 @@ static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gp
 		/* Insert the new item */
 		items = NULL;
 		items = g_list_append (items, item);
-		g_print ("Inserting the new item at position %d..\n", pos);
 		gtk_list_insert_items (GTK_LIST(config_win->list_vis_plugins), items, pos);
 		
 		g_hash_table_insert (actor_plugin_table, plugname, item);
@@ -677,35 +792,46 @@ static gint hash_compare (gconstpointer s1, gconstpointer s2)
 }
 
 /* FIXME We must read config file, not just enabling all */
-static void load_actor_plugin_enable_table ()
+static void load_actor_plugin_gl_enable_table ()
 {
-	GHashTable *enable_table;
 	GSList *l;
 	VisPluginRef *actor;
 	gboolean *enable;
 
-	visual_log_return_if_fail (actor_plugin_enable_table == NULL);
 	visual_log_return_if_fail (actor_plugins_gl != NULL);
-	visual_log_return_if_fail (actor_plugins_nongl != NULL);
 
-	enable_table = g_hash_table_new (hash_function, hash_compare);
+	if (!actor_plugin_enable_table)
+		actor_plugin_enable_table = g_hash_table_new (hash_function, hash_compare);
+
 	l = actor_plugins_gl;
 	while (l) {
 		actor = l->data;
 		enable = g_malloc (sizeof(gboolean));
 		*enable = TRUE;
-		g_hash_table_insert (enable_table, actor->info->plugname, enable);
+		g_hash_table_insert (actor_plugin_enable_table, actor->info->plugname, enable);
 		l = g_slist_next (l);
 	}
+}
+
+static void load_actor_plugin_nongl_enable_table ()
+{
+	GSList *l;
+	VisPluginRef *actor;
+	gboolean *enable;
+
+	visual_log_return_if_fail (actor_plugins_nongl != NULL);
+
+	if (!actor_plugin_enable_table)
+		actor_plugin_enable_table = g_hash_table_new (hash_function, hash_compare);
+
 	l = actor_plugins_nongl;
 	while (l) {
 		actor = l->data;
 		enable = g_malloc (sizeof(gboolean));
 		*enable = TRUE;
-		g_hash_table_insert (enable_table, actor->info->plugname, enable);
+		g_hash_table_insert (actor_plugin_enable_table, actor->info->plugname, enable);
 		l = g_slist_next (l);
 	}
-	actor_plugin_enable_table = enable_table;
 }
 
 static void remove_boolean (gpointer key, gpointer value, gpointer data)
@@ -801,7 +927,7 @@ static void on_morph_plugin_activate (GtkMenuItem *menuitem, char *name)
 {
 	visual_log_return_if_fail (name != NULL);
 
-	options.morph_plugin = name;
+	morph_plugin = name;
 }
 
 static void config_win_morph_plugin_add (char *name)
@@ -965,7 +1091,8 @@ static void config_win_connect_callbacks (void)
 
 static void set_defaults (void)
 {
-	strcpy (options.last_plugin, CONFIG_DEFAULT_ACTOR_PLUGIN);
+	strcpy (actor_plugin_buffer, CONFIG_DEFAULT_ACTOR_PLUGIN);
+	options.last_plugin = actor_plugin_buffer;
 	strcpy (morph_plugin_buffer, CONFIG_DEFAULT_MORPH_PLUGIN);
 	options.morph_plugin = morph_plugin_buffer;
 
@@ -1015,9 +1142,9 @@ static gboolean read_config_file (ConfigFile *f)
 	gchar *enabled_plugins;
 	gboolean errors = FALSE;
 
-	if (!xmms_cfg_read_string (f, "libvisual_xmms", "last_plugin", &options.last_plugin)
+	if (!xmms_cfg_read_string (f, "libvisual_xmms", "last_plugin", &actor_plugin_buffer)
  		|| (strlen (options.last_plugin) <= 0)) {
-		strcpy (options.last_plugin, CONFIG_DEFAULT_ACTOR_PLUGIN);
+		strcpy (actor_plugin_buffer, CONFIG_DEFAULT_ACTOR_PLUGIN);
 		errors = TRUE;
 	}
 	if (!xmms_cfg_read_string (f, "libvisual_xmms", "morph_plugin", &morph_plugin_buffer)					|| (strlen (morph_plugin_buffer) <= 0)) {

@@ -34,7 +34,7 @@ static VisVideo *video;
 static VisPalette *pal;
 
 static char song_name[1024];
-static char *cur_lv_plugin = NULL;
+static const char *cur_lv_plugin = NULL;
 
 static VisBin *bin = NULL;
 
@@ -169,7 +169,7 @@ static void lv_xmms_init ()
 
 	if (cur_lv_plugin == NULL) {
 		visual_log (VISUAL_LOG_INFO, "could not get actor plugin");
-		g_free (options->last_plugin);
+		lv_xmms_config_close ();
 		return;
 	}
 

@@ -14,7 +14,7 @@
  */
 typedef struct {
 
-	gchar *last_plugin;	/**< Name of the last plugin runned,
+	const gchar *last_plugin;	/**< Name of the last plugin runned,
 				  with length < OPTIONS_MAX_NAME_LEN. */
 
 	gchar *morph_plugin; /**< */
