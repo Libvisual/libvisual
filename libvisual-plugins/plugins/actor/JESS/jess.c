@@ -26,7 +26,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
-#include <string.h>  
+#include <string.h>
+#include <gettext.h>
 
 #include "def.h"
 #include "struct.h"
@@ -93,7 +94,7 @@ int act_jess_init (VisPluginData *plugin)
 
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-				"The given plugin doesn't have private info");
+				_("The given plugin doesn't have private info"));
 		return -1;
 	}
 
@@ -147,7 +148,7 @@ int act_jess_cleanup (VisPluginData *plugin)
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-				"The given plugin doesn't have private info");
+				_("The given plugin doesn't have private info"));
 		return -1;
 	}
 
@@ -219,7 +220,7 @@ int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width, int h
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-				"The given plugin doesn't have private info");
+				_("The given plugin doesn't have private info"));
 		return -1;
 	}
 
@@ -280,7 +281,7 @@ VisPalette *act_jess_palette (VisPluginData *plugin)
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-				"The given plugin doesn't have private info");
+				_("The given plugin doesn't have private info"));
 		return NULL;
 	}
 
@@ -300,7 +301,7 @@ int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
-				"The given plugin doesn't have priv info");
+				_("The given plugin doesn't have priv info"));
 		return -1;
 	}
 

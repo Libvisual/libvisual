@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <libvisual/libvisual.h>
 
+#include <gettext.h>
+
 #include "G-Force_Proj.h"
 #include "G-Force.h"
 #include "XFloatList.h"
@@ -1133,7 +1135,7 @@ void GForce::loadColorMap( long inColorMapNum, bool inAllowMorph ) {
 		}
 	}
  
-	visual_log (VISUAL_LOG_INFO, "New Delta field: %s", mColorMapName.getCStr ());
+	visual_log (VISUAL_LOG_INFO, _("New Delta field: %s"), mColorMapName.getCStr ());
  
 	
 	if ( ! ok ) {
@@ -1198,7 +1200,7 @@ void GForce::loadDeltaField( long inFieldNum ) {
 		name.Assign( "<Factory Default>" );
 	}
 
-	visual_log (VISUAL_LOG_INFO, "New Delta field: %s", name.getCStr ());
+	visual_log (VISUAL_LOG_INFO, _("New Delta field: %s"), name.getCStr ());
 
 	// Initiate recomputation of mField	
 	mField -> Assign( args, name );
@@ -1242,7 +1244,7 @@ void GForce::loadWaveShape( long inShapeNum, bool inAllowMorph ) {
 		Println( &mWaveShapeName );
 	}
 
- 	visual_log (VISUAL_LOG_INFO, "New wave shape: %s", mWaveShapeName.getCStr ());
+ 	visual_log (VISUAL_LOG_INFO, _("New wave shape: %s"), mWaveShapeName.getCStr ());
  
 	
 	// If first time load, don't do any transition/morph, otherwise set up the morph
@@ -1296,7 +1298,7 @@ void GForce::loadParticle( long inParticleNum ) {
 		}
 	}
 
-	visual_log (VISUAL_LOG_INFO, "New Particle: %s", name.getCStr ());
+	visual_log (VISUAL_LOG_INFO, _("New Particle: %s"), name.getCStr ());
 	 
 
 	if ( ok ) {

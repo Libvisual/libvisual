@@ -7,15 +7,12 @@ AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
+m4_define([libvisual_required_version], [0.3.0])
+m4_define([esound_required_version], [0.2.28])
+m4_define([jack_required_version], [0.98.0])
+m4_define([gdk_pixbuf_required_version], [2.0])
+
 # Checks for programs.
-AC_PROG_CC
-AC_PROG_CXX
-AC_PROG_INSTALL
-AC_PROG_LN_S
-
-AC_DISABLE_STATIC
-AC_PROG_LIBTOOL
-
 AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
 if test x$PKG_CONFIG = xno ; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/])
@@ -27,12 +24,33 @@ else
   AC_MSG_ERROR([*** pkg-config too old; version 0.14 or better required.])
 fi
 
+## Initial sanity check, done here so that users get told they 
+## have the wrong dependencies as early in the process as possible.
+## Later on we actually use the cflags/libs from separate pkg-config
+## calls.
+PKG_CHECK_MODULES(BASE_DEPENDENCIES, [libvisual = libvisual_required_version])
+
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+AC_DISABLE_STATIC
+AC_PROG_LIBTOOL
+
+# Internationalization
+ALL_LINGUAS="es es_AR"
+GETTEXT_PACKAGE=libvisual-plugins
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
+AM_GLIB_GNU_GETTEXT
+
 # Checks for libraries.
 build_input=""
 build_actor=""
 build_morph=""
 
-PKG_CHECK_MODULES(LIBESD, esound >= 0.2.28, [libesd="yes"], [libesd="no"])
+PKG_CHECK_MODULES(LIBESD, esound >= esound_required_version, [libesd="yes"], [libesd="no"])
 if test x$libesd = xno; then
 	AC_MSG_WARN([*** esound not found or too old.
 			The esound input plugin won't be build])
@@ -44,7 +62,7 @@ if test x$libesd = xyes; then
   AC_SUBST([ESD], ['input_esd.la'])
 fi
 
-PKG_CHECK_MODULES(LIBJACK, jack >= 0.98.0, [jack="yes"], [jack="no"])
+PKG_CHECK_MODULES(LIBJACK, jack >= jack_required_version, [jack="yes"], [jack="no"])
 if test x$jack = xno; then
 	AC_MSG_WARN([*** libjack is too old. You can download a newer version at
 		     	http://jackit.sf.net/. The jackit input plugin won't be build])
@@ -56,7 +74,7 @@ if test x$jack = xyes; then
   AC_SUBST([JACK], ['input_jack.la'])
 fi
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.3.0, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = libvisual_required_version, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([*** libvisual not found.
 			libvisual is needed to build this package.
@@ -78,10 +96,9 @@ if test x$libgoom = xyes; then
   AC_SUBST([GOOM2], ['actor_goom2.la'])
 fi
 
-#FIXME We actually don't want to depend on gtk here..... 
-PKG_CHECK_MODULES(GDKPIXBUF, gdk-2.0 >= 2.0, [gdkpixbuf="yes"], [gdkpixbuf="no"])
+PKG_CHECK_MODULES(GDKPIXBUF, gdk-2.0 >= gdk_pixbuf_required_version, [gdkpixbuf="yes"], [gdkpixbuf="no"])
 if test x$gdkpixbuf = xno; then
-  AC_MSG_WARN([*** GdkPixbuf >= 2.0 is not found.
+  AC_MSG_WARN([*** GdkPixbuf >= ${gdk_pixbuf_required_version} is not found.
 		The libvisual gdkpixbuf image loader plugin won't be build.
 		GdkPixbuf is included within gtk-2.0 and newer, which can be
 		downloaded at http://www.gtk.org/])
@@ -593,6 +610,7 @@ AC_SUBST(DATADIR, "$datadir")
 
 AC_CONFIG_FILES([
 	Makefile
+	po/Makefile.in
 	plugins/Makefile
 	plugins/actor/Makefile
 	plugins/actor/lv_analyzer/Makefile

@@ -9,7 +9,8 @@ INCLUDES = -I../unix/Headers\
 	-I../Common/io/Headers\
 	-I../Common\
 	-I../unix/libmfl\
-	-I../unix/libxpce
+	-I../unix/libxpce \
+	-I$(top_srcdir)
 
 DATADIR = $(datadir)/libvisual/actor/actor_gforce
 

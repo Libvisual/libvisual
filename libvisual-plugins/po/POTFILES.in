@@ -1,0 +1,5 @@
+# List of source files containing translatable strings.
+ 
+# Package source files
+plugins/actor/JESS/jess.c
+plugins/actor/G-Force/GForceCommon/G-Force.cpp

@@ -1,6 +1,5 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = plugins
+SUBDIRS = plugins po
 
 EXTRA_DIST = libvisual-plugins.spec
-

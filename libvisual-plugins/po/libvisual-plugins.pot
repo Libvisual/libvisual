@@ -1,0 +1,41 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2005-03-16 00:37-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: plugins/actor/JESS/jess.c:97 plugins/actor/JESS/jess.c:151
+#: plugins/actor/JESS/jess.c:223 plugins/actor/JESS/jess.c:284
+msgid "The given plugin doesn't have private info"
+msgstr ""
+
+#: plugins/actor/JESS/jess.c:304
+msgid "The given plugin doesn't have priv info"
+msgstr ""
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1378
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1443
+#, c-format
+msgid "New Delta field: %s"
+msgstr ""
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1487
+#, c-format
+msgid "New wave shape: %s"
+msgstr ""
+
+#: plugins/actor/G-Force/GForceCommon/G-Force.cpp:1541
+#, c-format
+msgid "New Particle: %s"
+msgstr ""
