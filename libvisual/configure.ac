@@ -72,7 +72,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 AC_DISABLE_STATIC
 AC_LIBTOOL_WIN32_DLL
@@ -357,15 +356,42 @@ AC_MSG_CHECKING([wheter to enable debug])
 if test x$debug = xyes; then
   AC_MSG_RESULT([yes])
   DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wall -Wmissing-braces -Wimplicit -Wunused"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wmissing-prototypes -Wno-unused-variable"
+  # IMHO -Werror should be here also. --VVB
 else
   AC_MSG_RESULT([no])
 fi
 AC_SUBST(DEBUG_CFLAGS)
 
+AC_ARG_ENABLE([extra-optimization],
+           AC_HELP_STRING([--enable-extra-optimization],
+                          [Enable extra optimizations @<:@default=disabled@:>@]),
+           [extra_opt=$enableval],
+           [extra_opt=no])
+AC_MSG_CHECKING([wheter to enable extra optimizations])
+if test x$extra_opt = xyes; then
+  AC_MSG_RESULT([yes])
+  OPT_CFLAGS="-O3 -fexpensive-optimizations"
+else
+  AC_MSG_RESULT([no])
+  if test x$debug = xyes; then
+    OPT_CFLAGS="-O0"
+  else
+    OPT_CFLAGS=""
+  fi
+fi
+AC_SUBST(OPT_CFLAGS)
+
+AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
+
 libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
 AC_SUBST(BUILD_SUBDIRS, "libvisual")
+
+LIBVISUAL_PLUGINS_BASE_DIR="${libdir}/libvisual"
+AC_SUBST(LIBVISUAL_PLUGINS_BASE_DIR)
 
 dnl Output the LibVisual config file
 AC_CONFIG_COMMANDS([libvisual/lvconfig.h],
@@ -679,12 +705,15 @@ libvisual/Makefile
 
 AC_OUTPUT
 
+plugins_base_dir=`eval echo \`eval echo $LIBVISUAL_PLUGINS_BASE_DIR\``
+
 echo "
 =====================================================================
 LIBVISUAL, AN AUDIO VISUALISATION ABSTRACTION LIBRARY, VERSION $VERSION
 =====================================================================
 
 install path                         : ${prefix}/lib
+plugins base dir                     : $plugins_base_dir
 compiler                             : ${CC}
 debug enabled                        : ${debug}
 "

@@ -19,8 +19,7 @@ LIBS += -L. -L$(libdir)
 
 PLUGPATH = $(libdir)/libvisual
 
-AM_CFLAGS = -Wall -Wno-unused-variable -Wmissing-prototypes -Wstrict-prototypes\
-	    -DPLUGPATH="\"$(PLUGPATH)\"" @DEBUG_CFLAGS@ -O3
+AM_CFLAGS = -DPLUGPATH="\"@LIBVISUAL_PLUGINS_BASE_DIR@\""
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libvisual \
 	   -I$(top_builddir) -I$(top_builddir)/libvisual

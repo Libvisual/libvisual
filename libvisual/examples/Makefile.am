@@ -4,10 +4,8 @@ DEFS = @DEFS@
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/examples -I$(top_builddir)
 
-# for now CFLAGS is common for all targets
-AM_CFLAGS = @CFLAGS@ @SDL_CFLAGS@ @VISUAL_CFLAGS@ @DEBUG_CFLAGS@\
-		-Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes
-		
+AM_CFLAGS = @SDL_CFLAGS@ @VISUAL_CFLAGS@
+
 bin_PROGRAMS = $(EXAMPLES)
 
 EXTRA_PROGRAMS = simplesdl morphsdl

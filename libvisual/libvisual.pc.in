@@ -2,6 +2,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
+pluginsbasedir=@LIBVISUAL_PLUGINS_BASE_DIR@
 
 Name: libvisual
 Version: @VERSION@

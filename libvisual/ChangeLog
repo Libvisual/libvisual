@@ -1,5 +1,14 @@
 2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* configure.ac, libvisual.pc.in, tools/Makefile.am,
+	examples/Makefile.am, libvisual/Makefile.am:
+
+	Cleanups, added LIBVISUAL_PLUGINS_BASE_DIR. 
+
+	Patch by: Vitaly V. Bursov
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* configure.ac: Updates from Duilio
 
 2004-11-26  Dennis Smit  <ds@nerds-incorporated.org>
