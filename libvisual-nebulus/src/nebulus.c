@@ -35,13 +35,13 @@ typedef struct {
 	struct timeval tv_past;
 } NebulusPrivate;
 
-int lv_nebulus_init (VisActorPlugin *plugin);
-int lv_nebulus_cleanup (VisActorPlugin *plugin);
-int lv_nebulus_requisition (VisActorPlugin *plugin, int *width, int *height);
-int lv_nebulus_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height);
-int lv_nebulus_events (VisActorPlugin *plugin, VisEventQueue *events);
-VisPalette *lv_nebulus_palette (VisActorPlugin *plugin);
-int lv_nebulus_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio);
+int lv_nebulus_init (VisPluginData *plugin);
+int lv_nebulus_cleanup (VisPluginData *plugin);
+int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height);
+int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *lv_nebulus_palette (VisPluginData *plugin);
+int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static int nebulus_random_effect ();
 static int nebulus_detect_beat (int loudness);
@@ -49,45 +49,46 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio);
 static int nebulus_draw (NebulusPrivate *priv, VisVideo *video);
 
 /* Main plugin stuff */
-LVPlugin *get_plugin_info (VisPluginRef *ref)
+const VisPluginInfo *get_plugin_info (int *count)
 {
-	LVPlugin *plugin;
-	VisActorPlugin *lv_nebulus;
-	NebulusPrivate *priv;
+	static const VisActorPlugin actor[] = {{
+		.requisition = lv_nebulus_requisition,
+		.palette = lv_nebulus_palette,
+		.render = lv_nebulus_render,
+		.depth = VISUAL_VIDEO_DEPTH_GL
+	}};
 
-	plugin = visual_plugin_new ();
-	lv_nebulus = visual_plugin_actor_new ();
+	static const VisPluginInfo info[] = {{
+		.struct_size = sizeof (VisPluginInfo),
+		.api_version = VISUAL_PLUGIN_API_VERSION,
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-	lv_nebulus->name	= "nebulus";
-	lv_nebulus->info = visual_plugin_info_new (
-			"libvisual nebulus port",
-			"Original by: Pascal Brochart <pbrochart@tuxfamily.org> and many others, Port and maintaince by: Dennis Smit <ds@nerds-incorporated.org>",
-			"0.1",
-			"The Libvisual nebulus plugin",
-			"This plugin shows multiple visual effect using openGL");
+		.plugname = "nebulus",
+		.name = "libvisual nebulus port",
+		.author = "Original by: Pascal Brochart <pbrochart@tuxfamily.org> and many others, Port and maintaince by: Dennis Smit <ds@nerds-incorporated.org>",
+		.version = "0.1",
+		.about = "The Libvisual nebulus plugin",
+		.help = "This plugin shows multiple visual effect using openGL",
 
-	lv_nebulus->init =		lv_nebulus_init;
-	lv_nebulus->cleanup =		lv_nebulus_cleanup;
-	lv_nebulus->requisition =	lv_nebulus_requisition;
-	lv_nebulus->events =		lv_nebulus_events;
-	lv_nebulus->palette =		lv_nebulus_palette;
-	lv_nebulus->render =		lv_nebulus_render;
-	
-	lv_nebulus->depth = VISUAL_VIDEO_DEPTH_GL;
+		.init = lv_nebulus_init,
+		.cleanup = lv_nebulus_cleanup,
+		.events = lv_nebulus_events,
 
-	priv = malloc (sizeof (NebulusPrivate));
-	memset (priv, 0, sizeof (NebulusPrivate));
+		.plugin = (void *) &actor[0]
+	}};
 
-	lv_nebulus->priv = priv;
+	*count = sizeof (info) / sizeof (*info);
 
-	plugin->type = VISUAL_PLUGIN_TYPE_ACTOR;
-	plugin->plugin.actorplugin = lv_nebulus;
-
-	return plugin;
+	return info;
 }
 
-int lv_nebulus_init (VisActorPlugin *plugin)
+int lv_nebulus_init (VisPluginData *plugin)
 {
+	NebulusPrivate *priv;
+
+	priv = visual_mem_new0 (NebulusPrivate, 1);
+	plugin->priv = priv;
+
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
 	if (maxtexsize < 256) {
 		visual_log (VISUAL_LOG_CRITICAL, "Nebulus: max texture size is lower than 256\n");
@@ -102,7 +103,7 @@ int lv_nebulus_init (VisActorPlugin *plugin)
 	return 0;
 }
 
-int lv_nebulus_cleanup (VisActorPlugin *plugin)
+int lv_nebulus_cleanup (VisPluginData *plugin)
 {
 	NebulusPrivate *priv = plugin->priv;
 
@@ -129,12 +130,12 @@ int lv_nebulus_cleanup (VisActorPlugin *plugin)
 	visual_video_free_buffer (&twist_image);
 	visual_video_free_buffer (&background_image);
 
-	free (priv);
+	visual_mem_free (priv);
 
 	return 0;
 }
 
-int lv_nebulus_requisition (VisActorPlugin *plugin, int *width, int *height)
+int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -153,7 +154,7 @@ int lv_nebulus_requisition (VisActorPlugin *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_nebulus_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
+int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	visual_video_set_dimension (video, width, height);
 
@@ -165,7 +166,7 @@ int lv_nebulus_dimension (VisActorPlugin *plugin, VisVideo *video, int width, in
 	return 0;
 }
 
-int lv_nebulus_events (VisActorPlugin *plugin, VisEventQueue *events)
+int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -183,12 +184,12 @@ int lv_nebulus_events (VisActorPlugin *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_nebulus_palette (VisActorPlugin *plugin)
+VisPalette *lv_nebulus_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_nebulus_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
+int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	nebulus_sound (plugin->priv, audio);
 	nebulus_draw (plugin->priv, video);
