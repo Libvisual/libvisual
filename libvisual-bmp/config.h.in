@@ -60,9 +60,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Enable debug whithin libvisual beep-media-player plugin */
-#undef LV_BMP_ENABLE_DEBUG
-
 /* Name of package */
 #undef PACKAGE
 

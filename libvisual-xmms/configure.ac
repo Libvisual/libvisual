@@ -83,22 +83,61 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 AM_GLIB_GNU_GETTEXT
 
-# Arguments to specify certain features.
-AC_ARG_ENABLE([debug],
-  AC_HELP_STRING([--enable-debug],
-		[Enable debug @<:@default=disabled@:>@]),
-		[debug=$enableval],
-		[debug=no])
-AC_MSG_CHECKING([wheter to enable debug])
-if test "$debug" = yes; then
+#
+# Build paramaters
+#
+
+DEBUG_CFLAGS=""
+
+AC_ARG_ENABLE([profiling],
+  AC_HELP_STRING([--enable-profiling],
+		[Enable emision of profile data to be used by gprof @<:@default=disabled@:>@]),
+		[profiling=$enableval],
+		[profiling=no])
+AC_MSG_CHECKING([wheter to enable profiling])
+if test x$profiling = xyes; then
   AC_MSG_RESULT([yes])
-  AC_DEFINE([LV_XMMS_ENABLE_DEBUG], [1], [Enable debug whithin libvisual xmms plugin])
-  DEBUG_CFLAGS="-ggdb3"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -pg"
 else
   AC_MSG_RESULT([no])
-  DEBUG_CFLAGS=""
+fi
+
+AC_ARG_ENABLE([debug],
+            AC_HELP_STRING([--enable-debug],
+                           [Enable debug @<:@default=disabled@:>@]),
+	    [debug=$enableval],
+	    [debug=no])
+AC_MSG_CHECKING([whether to enable debug])
+if test "$debug" = yes; then
+  AC_MSG_RESULT([yes])
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wall -Wmissing-braces -Wimplicit -Wunused"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wmissing-prototypes -Wno-unused-variable"
+else
+  AC_MSG_RESULT([no])
 fi
 AC_SUBST(DEBUG_CFLAGS)
+
+AC_ARG_ENABLE([extra-optimization],
+              AC_HELP_STRING([--enable-extra-optimization],
+                             [Enable extra optimizations @<:@default=disabled@:>@]),
+              [extra_opt=$enableval],
+              [extra_opt=no])
+AC_MSG_CHECKING([wheter to enable extra optimizations])
+if test x$extra_opt = xyes; then
+  AC_MSG_RESULT([yes])
+  OPT_CFLAGS="-O3 -fexpensive-optimizations"
+else
+  AC_MSG_RESULT([no])
+  if test x$debug = xyes; then
+	OPT_CFLAGS="-O0"
+  else
+	OPT_CFLAGS=""
+  fi
+fi
+AC_SUBST(OPT_CFLAGS)
+
+AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
 
 # cflags, ld flags
 libs_dynamic_loader="-ldl"

@@ -12,11 +12,11 @@ EXTRA_DIST = $(images_DATA)
 
 lib_LTLIBRARIES = actor_nebulus.la
 
-libdir = $(prefix)/lib/libvisual/actor
+libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
 LIBS = -L. -L$(prefix)/lib -lGL -lGLU @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wall @DEBUG_CFLAGS@ @LIBVISUAL_CFLAGS@ -O3 -DBITMAP_DIR=\"$(imagesdir)/\"
+AM_CFLAGS = @LIBVISUAL_CFLAGS@ -DBITMAP_DIR=\"$(imagesdir)/\"
 
 INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)
 

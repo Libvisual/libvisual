@@ -1,18 +1,18 @@
 ## Process this file with automake to generate a Makefile.in
 
-pkglib_LTLIBRARIES = $(JAKDAW)
+lib_LTLIBRARIES = $(JAKDAW)
 
 EXTRA_LTLIBRARIES = actor_jakdaw.la
 
-pkglibdir = $(prefix)/lib/libvisual/actor
+libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
 LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wall -rdynamic @DEBUG_CFLAGS@ @LIBVISUAL_CFLAGS@ -O3
+AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
-actor_jakdaw_la_LDFLAGS = -rpath '$(pkglibdir)' -module -avoid-version 
+actor_jakdaw_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
 actor_jakdaw_la_SOURCES = actor_jakdaw.c \
 			  actor_jakdaw.h \

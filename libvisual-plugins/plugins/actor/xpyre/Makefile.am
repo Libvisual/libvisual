@@ -2,15 +2,15 @@
 
 lib_LTLIBRARIES = actor_xpyre.la
 
-libdir = $(prefix)/lib/libvisual/actor
+libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
 LIBS = -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wall -rdynamic @DEBUG_CFLAGS@ @LIBVISUAL_CFLAGS@ -O3
+AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
-actor_xpyre_la_LDFLAGS = -module -avoid-version 
+actor_xpyre_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
 actor_xpyre_la_SOURCES = actor_xpyre.c \
 			 actor_xpyre.h \

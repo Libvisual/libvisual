@@ -7,8 +7,6 @@ AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
-AC_PREFIX_DEFAULT(/usr)
-
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -399,6 +397,25 @@ else
   AC_MSG_RESULT([no])
 fi
 
+#
+# Build paramaters
+#
+
+DEBUG_CFLAGS=""
+
+AC_ARG_ENABLE([profiling],
+  AC_HELP_STRING([--enable-profiling],
+		[Enable emision of profile data to be used by gprof @<:@default=disabled@:>@]),
+		[profiling=$enableval],
+		[profiling=no])
+AC_MSG_CHECKING([wheter to enable profiling])
+if test x$profiling = xyes; then
+  AC_MSG_RESULT([yes])
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -pg"
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([debug],
             AC_HELP_STRING([--enable-debug],
                            [Enable debug @<:@default=disabled@:>@]),
@@ -407,18 +424,59 @@ AC_ARG_ENABLE([debug],
 AC_MSG_CHECKING([whether to enable debug])
 if test "$debug" = yes; then
   AC_MSG_RESULT([yes])
-  DEBUG_CFLAGS="-ggdb3"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wall -Wmissing-braces -Wimplicit -Wunused"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wmissing-prototypes -Wno-unused-variable"
 else
   AC_MSG_RESULT([no])
-  DEBUG_CFLAGS=""
 fi
 AC_SUBST(DEBUG_CFLAGS)
 
+AC_ARG_ENABLE([extra-optimization],
+              AC_HELP_STRING([--enable-extra-optimization],
+                             [Enable extra optimizations @<:@default=disabled@:>@]),
+              [extra_opt=$enableval],
+              [extra_opt=no])
+AC_MSG_CHECKING([wheter to enable extra optimizations])
+if test x$extra_opt = xyes; then
+  AC_MSG_RESULT([yes])
+  OPT_CFLAGS="-O3 -fexpensive-optimizations"
+else
+  AC_MSG_RESULT([no])
+  if test x$debug = xyes; then
+	OPT_CFLAGS="-O0"
+  else
+	OPT_CFLAGS=""
+  fi
+fi
+AC_SUBST(OPT_CFLAGS)
 
-# Terrible hack, but otherwise the CFLAGS are passed as last arguments
-# to compiler, and this way these arguments (probably -g -O2) overrides
-# our -O3 flag on src/Makefile.am
-AC_SUBST(CFLAGS, "")
+AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
+
+AC_ARG_WITH([plugins_base_dir],
+            AC_HELP_STRING([--with-plugins_base_dir="dir"],
+                           [Install plugins to this base directory. Defaults to Libvisual's base dir ]),
+dnl ' # fix string coloring ;)
+	    [plugins_base_dir=$withval],
+	    [plugins_base_dir=])
+
+AC_MSG_CHECKING([where to install plugins])
+
+if test -z "$plugins_base_dir"; then
+    plugins_base_dir=`$PKG_CONFIG --variable=pluginsbasedir libvisual`
+    AC_MSG_RESULT([$plugins_base_dir])
+else
+    if test -d "$plugins_base_dir"; then
+        AC_MSG_RESULT([$plugins_base_dir])
+    else
+        AC_MSG_RESULT([not found])
+        AC_MSG_ERROR([Specified plugins base directory "$plugins_base_dir" is not accesible!])
+        exit 1
+    fi
+fi
+
+LIBVISUAL_PLUGINS_BASE_DIR="$plugins_base_dir"
+AC_SUBST(LIBVISUAL_PLUGINS_BASE_DIR)
 
 libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
@@ -478,7 +536,7 @@ morph:                                : ${build_morph}
 Libvisual plugin data dir:            : ${prefix}/share
 
 Build options:
-install path                          : ${prefix}/lib/libvisual
+install path                          : $plugins_base_dir
 source code location:                 : ${srcdir}
 compiler:                             : ${CC}
 "

@@ -1,18 +1,18 @@
 ## Process this file with automake to generate a Makefile.in
 
-pkglib_LTLIBRARIES = $(JESS)
+lib_LTLIBRARIES = $(JESS)
 
 EXTRA_LTLIBRARIES = actor_JESS.la
 
-pkglibdir = $(prefix)/lib/libvisual/actor
+libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
 LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wall -rdynamic @DEBUG_CFLAGS@ @LIBVISUAL_CFLAGS@ -O3
+AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
-actor_JESS_la_LDFLAGS = -rpath '$(pkglibdir)' -module -avoid-version 
+actor_JESS_la_LDFLAGS = -rpath $(libdir) -module -avoid-version
 
 actor_JESS_la_SOURCES = analyser.c analyser.h analyser_struct.h\
 			distorsion.c distorsion.h\

@@ -6,8 +6,7 @@ libdir = @BMP_VISUALIZATION_PLUGIN_DIR@
 
 LIBS = -L$(top_srcdir)/src -L$(prefix)/lib @BMP_LIBS@ @SDL_LIBS@ @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wall -Wmissing-prototypes\
-	    @BMP_CFLAGS@ @SDL_CFLAGS@ @LIBVISUAL_CFLAGS@ @DEBUG_CFLAGS@
+AM_CFLAGS = @BMP_CFLAGS@ @SDL_CFLAGS@ @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/src -I$(top_builddir)

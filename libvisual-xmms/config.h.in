@@ -60,9 +60,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Enable debug whithin libvisual xmms plugin */
-#undef LV_XMMS_ENABLE_DEBUG
-
 /* Name of package */
 #undef PACKAGE
 
