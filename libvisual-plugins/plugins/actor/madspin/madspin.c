@@ -8,7 +8,7 @@
 #include <time.h>
 
 #include <GL/gl.h>
-#include <GL/glu.h>
+/*#include <GL/glu.h>*/
 
 #include <libvisual/libvisual.h>
 

@@ -33,11 +33,6 @@ build_input="mplayer"
 build_actor=""
 build_morph="alphablend tentacle flash"
 
-# FIXME: Replace `main' with a function in `-lGL':
-AC_CHECK_LIB([GL], [main])
-# FIXME: Replace `main' with a function in `-lGLU':
-AC_CHECK_LIB([GLU], [main])
-
 PKG_CHECK_MODULES(LIBESD, esound >= 0.2.28, [libesd="yes"], [libesd="no"])
 if test x$libesd = xno; then
 	AC_MSG_WARN([*** esound not found or too old.
@@ -127,7 +122,7 @@ AC_ARG_ENABLE([alsa],
                            [Do not build Alsa input plugin @<:@default=enabled@:>@]),
 	    [alsa=$enableval],
 	    [alsa=yes])
-AC_MSG_CHECKING([wheter to enable Alsa input plugin])
+AC_MSG_CHECKING([whether to enable Alsa input plugin])
 if test x$alsa = xyes; then
   AC_MSG_RESULT([yes])
   build_alsa=yes
@@ -148,7 +143,7 @@ AC_ARG_ENABLE([dna],
                            [Do not build dna plugin @<:@default=enabled@:>@]),
 	    [dna=$enableval],
 	    [dna=yes])
-AC_MSG_CHECKING([wheter to build dna plugin])
+AC_MSG_CHECKING([whether to build dna plugin])
 if test x$dna = xyes; then
   AC_MSG_RESULT([yes])
   if test x$opengl = xyes; then
@@ -166,7 +161,7 @@ AC_ARG_ENABLE([gltest],
                            [Do not build lv_gltest plugin @<:@default=enabled@:>@]),
 	    [lvgltest=$enableval],
 	    [lvgltest=yes])
-AC_MSG_CHECKING([wheter to build lv_gltest plugin])
+AC_MSG_CHECKING([whether to build lv_gltest plugin])
 if test x$lvgltest = xyes; then
   AC_MSG_RESULT([yes])
   if test x$opengl = xyes; then
@@ -181,17 +176,17 @@ fi
 
 AC_ARG_ENABLE([madspin],
             AC_HELP_STRING([--disable-madspin],
-                           [Do not build madspin plugin @<:@default=enabled@:>@]),
+                           [Do not build Madspin plugin @<:@default=enabled@:>@]),
 	    [madspin=$enableval],
 	    [madspin=yes])
-AC_MSG_CHECKING([wheter to build madspin plugin])
+AC_MSG_CHECKING([whether to build Madspin plugin])
 if test x$madspin = xyes; then
   AC_MSG_RESULT([yes])
   if test x$opengl = xyes; then
     build_actor="$build_actor madspin"
   else
-    AC_MSG_WARN([*** Libvisual doesn't have OpenGL support.
-		madspin plugin will not be built.])
+    AC_MSG_WARN([*** Libvisual doesn't have GL support.
+		Madspin plugin will not be built.])
   fi
 else
   AC_MSG_RESULT([no])
@@ -202,7 +197,7 @@ AC_ARG_ENABLE([infinite],
                            [Do not build Infinite plugin @<:@default=enabled@:>@]),
 	    [infinite=$enableval],
 	    [infinite=yes])
-AC_MSG_CHECKING([wheter to build Infinite plugin])
+AC_MSG_CHECKING([whether to build Infinite plugin])
 if test x$infinite = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor infinite"
@@ -215,7 +210,7 @@ AC_ARG_ENABLE([jess],
                            [Do not build JESS plugin @<:@default=enabled@:>@]),
 	    [jess=$enableval],
 	    [jess=yes])
-AC_MSG_CHECKING([wheter to build JESS plugin])
+AC_MSG_CHECKING([whether to build JESS plugin])
 if test x$jess = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor JESS"
@@ -228,7 +223,7 @@ AC_ARG_ENABLE([analyzer],
                            [Do not build Analyzer plugin @<:@default=enabled@:>@]),
 	    [analyzer=$enableval],
 	    [analyzer=yes])
-AC_MSG_CHECKING([wheter to build Analyzer plugin])
+AC_MSG_CHECKING([whether to build Analyzer plugin])
 if test x$analyzer = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor lv_analyzer"
@@ -241,7 +236,7 @@ AC_ARG_ENABLE([scope],
                            [Do not build Scope plugin @<:@default=enabled@:>@]),
 	    [scope=$enableval],
 	    [scope=yes])
-AC_MSG_CHECKING([wheter to build Scope plugin])
+AC_MSG_CHECKING([whether to build Scope plugin])
 if test x$scope = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor lv_scope"
@@ -254,7 +249,7 @@ AC_ARG_ENABLE([oinksie],
                            [Do not build Oinksie plugin @<:@default=enabled@:>@]),
 	    [oinksie=$enableval],
 	    [oinksie=yes])
-AC_MSG_CHECKING([wheter to build Oinksie plugin])
+AC_MSG_CHECKING([whether to build Oinksie plugin])
 if test x$oinksie = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor oinksie"
@@ -267,7 +262,7 @@ AC_ARG_ENABLE([jakdaw],
                            [Do not build Jakdaw plugin @<:@default=enabled@:>@]),
 	    [jakdaw=$enableval],
 	    [jakdaw=yes])
-AC_MSG_CHECKING([wheter to build Jakdaw plugin])
+AC_MSG_CHECKING([whether to build Jakdaw plugin])
 if test x$jakdaw = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor jakdaw"
@@ -280,7 +275,7 @@ AC_ARG_ENABLE([plazma],
                            [Do not build plazma plugin @<:@default=enabled@:>@]),
 	    [plazma=$enableval],
 	    [plazma=yes])
-AC_MSG_CHECKING([wheter to build plazma plugin])
+AC_MSG_CHECKING([whether to build plazma plugin])
 if test x$plazma = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor plazma"
@@ -293,7 +288,7 @@ AC_ARG_ENABLE([bumpscope],
                            [Do not build bumpscope plugin @<:@default=enabled@:>@]),
 	    [bumpscope=$enableval],
 	    [bumpscope=yes])
-AC_MSG_CHECKING([wheter to build bumpscope plugin])
+AC_MSG_CHECKING([whether to build bumpscope plugin])
 if test x$bumpscope = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor bumpscope"
@@ -306,7 +301,7 @@ AC_ARG_ENABLE([debug],
                            [Enable debug @<:@default=disabled@:>@]),
 	    [debug=$enableval],
 	    [debug=no])
-AC_MSG_CHECKING([wheter to enable debug])
+AC_MSG_CHECKING([whether to enable debug])
 if test "$debug" = yes; then
   AC_MSG_RESULT([yes])
   DEBUG_CFLAGS="-ggdb3"
