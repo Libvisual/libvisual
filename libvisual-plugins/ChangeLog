@@ -1,5 +1,10 @@
 2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/input/mplayer/input_mplayer.c: Reindented, with testing CIA
+	CVS logger as excuse.
+
+2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* configure.ac: Fixes by Vitaly V. Bursov regarding openGL detection.
 
 2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
