@@ -14,7 +14,10 @@ typedef struct _VisObject VisObject;
 /**
  * The function defination for an object destructor. This can be assigned to any VisObject
  * and is mostly used for internal usage or by support libraries. Keep in mind that this should not free
- * the VisObject itself. This is done in the visual_object_unref function itself.
+ * the VisObject itself. This is done in the visual_object_destroy function itself.
+ *
+ * The destructor function should be safe to enter more than once, the object always contains the object
+ * however make sure that freed members are set to NULL and that it's checked.
  *
  * @arg object The VisObject that is passed to the destructor.
  * 

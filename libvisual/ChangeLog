@@ -1,6 +1,10 @@
 2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
 
-	* libvisual/lvv_morph.c (visual_morph_run): Don't try to blend NULL
+	* libvisual/lv_object.h: Small doc addition
+
+2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_morph.c (visual_morph_run): Don't try to blend NULL
 	palettes. This fixed the error spitting at blending between 8 bits and
 	non 8 bits plugins.
 
