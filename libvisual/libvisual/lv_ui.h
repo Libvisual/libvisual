@@ -31,6 +31,7 @@ extern "C" {
 #define VISUAL_UI_CHECKBOX(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_CHECKBOX, VisUICheckbox))
 
 typedef enum {
+	VISUAL_WIDGET_TYPE_NULL,
 	VISUAL_WIDGET_TYPE_WIDGET,
 	VISUAL_WIDGET_TYPE_CONTAINER,
 	VISUAL_WIDGET_TYPE_BOX,
@@ -91,6 +92,8 @@ struct _VisUIWidget {
 
 struct _VisUIContainer {
 	VisUIWidget		 widget;
+
+	VisUIWidget		*child;
 };
 
 struct _VisUIBox {
@@ -103,8 +106,6 @@ struct _VisUIBox {
 
 struct _VisUIGroup {
 	VisUIContainer		 container;
-
-	VisList			 childs;
 };
 
 struct _VisUILabel {
@@ -116,17 +117,18 @@ struct _VisUILabel {
 struct _VisUIImage {
 	VisUIWidget		 widget;
 
-	VisVideo		*image;
+	const VisVideo		*image;
 };
 
 struct _VisUIMutator {
 	VisUIWidget		 widget;
-	
+
+	const VisParamEntry	*param;
+
 	/* Numeric mutator settings */
 	double			 min;
 	double			 max;
 	double			 step;
-	
 };
 
 struct _VisUIText {
@@ -173,11 +175,11 @@ struct _VisUIList {
 	VisUIChoice		 choice;
 };
 
-struct VisUIRadio {
+struct _VisUIRadio {
 	VisUIChoice		 choice;
 };
 
-struct VisUICheckbox {
+struct _VisUICheckbox {
 	VisUIChoice		 choice;
 };
 
@@ -185,9 +187,8 @@ struct VisUICheckbox {
 VisUIWidget *visual_ui_widget_new (void);
 int visual_ui_widget_free (VisUIWidget *widget);
 int visual_ui_widget_destroy (VisUIWidget *widget);
-VisUIWidget *visual_ui_widget_get_top (void);
-VisUIWidget *visual_ui_widget_get_above (void);
-VisUIWidget *visual_ui_widget_get_bellow (void);
+VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget);
+VisUIWidget *visual_ui_widget_get_parent (VisUIWidget *widget);
 VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget);
 
 VisUIWidget *visual_ui_container_new (void);
@@ -204,7 +205,7 @@ VisUIWidget *visual_ui_label_new (const char *text);
 int visual_ui_label_set_text (VisUILabel *label, const char *text);
 const char *visual_ui_label_get_text (VisUILabel *label);
 
-VisUIWidget *visual_ui_image_new (VisVideo *video);
+VisUIWidget *visual_ui_image_new (const VisVideo *video);
 int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video);
 const VisVideo *visual_ui_image_get_video (VisUIImage *image);
 
