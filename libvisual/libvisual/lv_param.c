@@ -101,7 +101,11 @@ int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry
 	visual_log_return_val_if_fail (paramcontainer != NULL && param != NULL, -1);
 
 	param->parent = paramcontainer;
-	
+
+	/* On container add, we always set changed once, so vars can be synchronised in the plugin
+	 * it's event loop */
+	visual_param_entry_changed (param);
+
 	visual_list_add (&paramcontainer->entries, param);
 
 	return 0;
@@ -125,8 +129,6 @@ int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParam
 
 	while (params[i].type != VISUAL_PARAM_TYPE_END) {
 		pnew = visual_param_entry_new (params[i].name);
-
-		printf ("NEW PARAM: %s\n", params[i].name);
 
 		memcpy (pnew, &params[i], sizeof (VisParamEntry));
 
@@ -346,12 +348,73 @@ int visual_param_entry_changed (VisParamEntry *param)
 
 	eventqueue = param->parent->eventqueue;
 
+	printf ("envetqueueue: %p\n", eventqueue);
 	if (eventqueue != NULL)
 		visual_event_queue_add_param (eventqueue, param);
 
 	visual_param_entry_notify_callbacks (param);
 
 	return 0;
+}
+
+/**
+ * Compares two parameters with each other, When they are the same, 1 is returned, if not 0.
+ *
+ * @param src1 Pointer to the first VisParamEntry for comparison.
+ * @param src2 Pointer to the second VisParamEntry for comparison.
+ *
+ * @return 1 if the same, 0 if not the same, -1 on error.
+ */
+int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
+{
+	visual_log_return_val_if_fail (src1 != NULL, -1);
+	visual_log_return_val_if_fail (src2 != NULL, -1);
+
+	if (src1->type != src2->type)
+		return 0;
+
+	switch (src1->type) {
+		case VISUAL_PARAM_TYPE_NULL:
+			return 1;
+			
+			break;
+
+		case VISUAL_PARAM_TYPE_STRING:
+			if (!strcmp (src1->string, src2->string))
+				return 1;
+
+			break;
+
+		case VISUAL_PARAM_TYPE_INTEGER:
+			if (src1->numeric.integer == src2->numeric.integer)
+				return 1;
+			
+			break;
+
+		case VISUAL_PARAM_TYPE_FLOAT:
+			if (src1->numeric.floating == src2->numeric.floating)
+				return 1;
+
+			break;
+
+		case VISUAL_PARAM_TYPE_DOUBLE:
+			if (src1->numeric.doubleflt == src2->numeric.doubleflt)
+				return 1;
+
+			break;
+
+		case VISUAL_PARAM_TYPE_COLOR:
+			return visual_color_compare (&src1->color, &src2->color);
+			
+			break;
+
+		default:
+			visual_log (VISUAL_LOG_CRITICAL, "param type is not valid");
+
+			break;
+	}
+
+	return -1;
 }
 
 /**
@@ -396,7 +459,6 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 		case VISUAL_PARAM_TYPE_COLOR:
 			visual_param_entry_set_color_by_color (param, visual_param_entry_get_color (src));
 			break;
-
 
 		default:
 			visual_log (VISUAL_LOG_CRITICAL, "param type is not valid");
@@ -570,7 +632,7 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, const VisColor 
 
 	param->type = VISUAL_PARAM_TYPE_COLOR;
 
-	if (visual_color_compare (&param->color, color) == 1) {
+	if (visual_color_compare (&param->color, color) == 0) {
 		visual_color_copy (&param->color, color);
 
 		visual_param_entry_changed (param);

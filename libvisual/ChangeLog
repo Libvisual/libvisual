@@ -1,3 +1,27 @@
+2004-10-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/lv_actor.c (visual_actor_run):
+	Moved the event handler, to be really really first of everything.
+
+	* src/lv_color.c (visual_color_compare): Changed a bit.
+
+	* src/lv_param.c (visual_param_container_add): Emit a change event
+	when a param gets added. Now you can sync internal vars with the param
+	completely through the event loop in a plugin. So no double inits
+	in a plugin it's init function.
+
+	* src/lv_param.c (visual_param_entry_compare): Added to compare an
+	entry.
+
+	* src/lv_plugin.c (visual_plugin_realize): Set eventqueue before init.
+
+	* src/lv_ui.c (visual_ui_choice_get_active): Added function, to
+	retrieve the index of the active choice.
+
+	* src/lv_ui.c (visual_ui_checkbox_new): Added extra flag indicating if
+	the checkbox is a boolean param. If so, you don't have to provide the
+	TRUE, FALSE choices yourself.
+
 2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/lv_param.*, src/lv_ui.c: Added support for paramlists, through

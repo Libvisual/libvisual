@@ -816,7 +816,6 @@ int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramch
 	visual_log_return_val_if_fail (paramchoices != NULL, -1);
 
 	while (paramchoices[i].type != VISUAL_PARAM_TYPE_END) {
-		printf ("ADDING CHOICE FROM MANY %s\n", paramchoices[i].name);
 		visual_ui_choice_add (choice, paramchoices[i].name, &paramchoices[i]);
 
 		i++;
@@ -856,6 +855,31 @@ int visual_ui_choice_set_active (VisUIChoice *choice, int index)
 	}
 	
 	return 0;
+}
+
+int visual_ui_choice_get_active (VisUIChoice *choice)
+{
+	VisListEntry *le = NULL;
+	VisUIChoiceEntry *centry;
+	VisParamEntry *param;
+	int i = 0;
+
+	visual_log_return_val_if_fail (choice != NULL, -1);
+
+	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (choice));
+
+	while ((centry = visual_list_next (&choice->choices.choices, &le)) != NULL) {
+		const VisParamEntry *cparam;
+		
+		cparam = centry->value;
+
+		if (visual_param_entry_compare (param, cparam) == TRUE)
+			return i;
+
+		i++;
+	}
+
+	return -1;
 }
 
 VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index)
@@ -967,9 +991,14 @@ int visual_ui_radio_free (VisUIRadio *radio)
 	return 0;
 }
 
-VisUIWidget *visual_ui_checkbox_new (const char *name)
+VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 {
 	VisUICheckbox *checkbox;
+	static const VisParamEntry truefalse[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("false",	FALSE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("true",	TRUE),
+		VISUAL_PARAM_LIST_END
+	};
 
 	checkbox = visual_mem_new0 (VisUICheckbox, 1);
 	VISUAL_UI_WIDGET (checkbox)->type = VISUAL_WIDGET_TYPE_CHECKBOX;
@@ -977,6 +1006,10 @@ VisUIWidget *visual_ui_checkbox_new (const char *name)
 	VISUAL_UI_CHOICE (checkbox)->choices.type = VISUAL_CHOICE_TYPE_SINGLE;
 
 	checkbox->name = name;
+
+	/* Boolean checkbox, generate a FALSE, TRUE choicelist ourself */
+	if (boolcheck == TRUE)
+		visual_ui_choice_add_many (VISUAL_UI_CHOICE (checkbox), truefalse);
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (checkbox), -1, -1);
 

@@ -104,6 +104,7 @@ int visual_param_entry_add_callback (VisParamEntry *param, param_changed_callbac
 int visual_param_entry_remove_callback (VisParamEntry *param, param_changed_callback_func_t callback);
 int visual_param_entry_notify_callbacks (VisParamEntry *param);
 int visual_param_entry_is (VisParamEntry *param, const char *name);
+int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2);
 int visual_param_entry_changed (VisParamEntry *param);
 
 int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src);

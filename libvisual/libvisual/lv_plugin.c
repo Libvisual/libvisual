@@ -596,11 +596,11 @@ int visual_plugin_realize (VisPluginData *plugin)
 	if (plugin->realized == TRUE)
 		return -1;
 
-	plugin->info->init (plugin);
-	plugin->realized = TRUE;
-
 	paramcontainer = visual_plugin_get_params (plugin);
 	visual_param_container_set_eventqueue (paramcontainer, &plugin->eventqueue);
+
+	plugin->info->init (plugin);
+	plugin->realized = TRUE;
 
 	return 0;
 }

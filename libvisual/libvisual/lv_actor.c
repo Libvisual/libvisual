@@ -667,10 +667,15 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	transform = actor->transform;
 	fitting = actor->fitting;
 
+	/*
+	 * This needs to happen before palette, render stuff, always, period.
+	 * Also internal vars can be initialized when params have been set in init on the param
+	 * events in the event loop.
+	 */
+	visual_plugin_events_pump (actor->plugin);
+	
 	visual_video_set_palette (video, visual_actor_get_palette (actor));
 	
-	visual_plugin_events_pump (actor->plugin);
-
 	/* Set the palette to the target video */
 	video->pal = visual_actor_get_palette (actor);
 

@@ -313,6 +313,7 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamE
 int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramchoices);
 int visual_ui_choice_free_choices (VisUIChoice *choice);
 int visual_ui_choice_set_active (VisUIChoice *choice, int index);
+int visual_ui_choice_get_active (VisUIChoice *choice);
 VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index);
 VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice);
 
@@ -327,7 +328,7 @@ int visual_ui_list_free (VisUIList *list);
 VisUIWidget *visual_ui_radio_new (VisUIOrientType orient);
 int visual_ui_radio_free (VisUIRadio *radio);
 
-VisUIWidget *visual_ui_checkbox_new (const char *name);
+VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck);
 int visual_ui_checkbox_free (VisUICheckbox *checkbox);
 
 #ifdef __cplusplus
