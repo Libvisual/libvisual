@@ -1,3 +1,7 @@
+2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lvdisplay/lv_display.c: API update.
+
 2005-02-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* example/plugins/Makefile.am: testactor2 plugin added.

@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.c,v 1.20 2005-02-12 18:17:28 vitalyvb Exp $
+ * $Id: lv_display.c,v 1.21 2005-02-14 19:23:31 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -388,7 +388,7 @@ int lvdisplay_realize(Lvd *v)
 
 	visual_object_initialize(VISUAL_OBJECT(enve), TRUE, NULL);
 	enve->type = VISUAL_PLUGIN_ENVIRON_TYPE_LVD;
-	enve->environ = (VisObject*)envdata;
+	enve->environment = (VisObject*)envdata;
 
 	visual_plugin_environ_add(actor->plugin, enve);
 
