@@ -533,40 +533,24 @@ static int sdl_event_handle ()
 						break;
 
 					case SDLK_a:
-						next_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
+						if (options->disable_opengl_plugins)
+							next_plugin = visual_actor_get_prev_by_name_nogl (cur_lv_plugin);
+						else
+							next_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
 
 						if (next_plugin == NULL) {
-							next_plugin = visual_actor_get_prev_by_name (NULL);
+							if (options->disable_opengl_plugins)
+								next_plugin = visual_actor_get_next_by_name_nogl (NULL);
+							else
+								next_plugin = visual_actor_get_prev_by_name (NULL);
+
 							if (next_plugin == NULL) {
 								visual_log (VISUAL_LOG_CRITICAL, "Cannot get previous plugin");
 							}
                                                 }
 
-
 						if (SDL_MUSTLOCK (screen) == SDL_TRUE)
 							SDL_LockSurface (screen);
-                                                /*
-                                                 * We need a better mechanism for checking for OpenGl plugins,
-                                                 * without using the VisBin structure or all these strcmp().
-                                                 */
-						if (options->disable_opengl_plugins) {
-							while ( (strcmp (next_plugin, "infinite") != 0) &&
-                                                                (strcmp (next_plugin, "jess") != 0) &&
-                                                                (strcmp (next_plugin, "oinksie") != 0) &&
-                                                                (strcmp (next_plugin, "lv_scope") != 0) ) {
-								next_plugin = visual_actor_get_prev_by_name (next_plugin);
-                                                                /*
-                                                                 * Would be really nice a circular chain of plugin names :-)
-                                                                 */
-								if (next_plugin == NULL) {
-                                                                        next_plugin = visual_actor_get_prev_by_name (NULL);
-                                                                        if (next_plugin == NULL) {
-                                                                                visual_log (VISUAL_LOG_CRITICAL, "Cannot get previous plugin");
-                                                                                /* we keep the old plugin */
-                                                                        } 
-                                                                }
-							}
-						}
 
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
                                                     cur_lv_plugin = next_plugin;
@@ -582,10 +566,17 @@ static int sdl_event_handle ()
 						break;
 
 					case SDLK_s:
-						next_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
+						if (options->disable_opengl_plugins)
+							next_plugin = visual_actor_get_next_by_name_nogl (cur_lv_plugin);
+						else
+							next_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
 
 						if (next_plugin == NULL) {
-							next_plugin = visual_actor_get_next_by_name (NULL);
+							if (options->disable_opengl_plugins)
+								next_plugin = visual_actor_get_next_by_name_nogl (NULL);
+							else
+								next_plugin = visual_actor_get_next_by_name (NULL);
+							
 							if (next_plugin == NULL) {
 								visual_log (VISUAL_LOG_CRITICAL, "Cannot get next plugin");
 							}
@@ -593,29 +584,6 @@ static int sdl_event_handle ()
 
                                                 if (SDL_MUSTLOCK (screen) == SDL_TRUE)
                                                     SDL_LockSurface (screen);
-
-                                                /*
-                                                 * We need a better mechanism for checking for OpenGl plugins,
-                                                 * without using the VisBin structure or all these strcmp().
-                                                 */
-						if (options->disable_opengl_plugins) {
-							while ( (strcmp (next_plugin, "infinite") != 0) &&
-                                                                (strcmp (next_plugin, "jess") != 0) &&
-                                                                (strcmp (next_plugin, "oinksie") != 0) &&
-                                                                (strcmp (next_plugin, "lv_scope") != 0) ) {
-								next_plugin = visual_actor_get_next_by_name (next_plugin);
-                                                                /*
-                                                                 * Would be really nice a circular chain of plugin names :-)
-                                                                 */
-								if (next_plugin == NULL) {
-                                                                        next_plugin = visual_actor_get_next_by_name (NULL);
-                                                                        if (next_plugin == NULL) {
-                                                                                visual_log (VISUAL_LOG_CRITICAL, "Cannot get next plugin");
-                                                                                /* we keep the old plugin */
-                                                                        } 
-                                                                }
-							}
-						}
 
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
                                                     cur_lv_plugin = next_plugin;

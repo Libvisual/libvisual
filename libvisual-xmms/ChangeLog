@@ -1,3 +1,9 @@
+2004-07-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/main.c (sdl_event_handle): Remove the
+	non GL hack and use the new libvisual methods to
+	filter out types of plugins.
+
 2004-07-05  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/config.c: more work on configure window. OpenGl
