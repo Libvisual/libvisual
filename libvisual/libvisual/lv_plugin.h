@@ -362,7 +362,7 @@ struct _VisPluginData {
 
 	int			 realized;	/**< Flag that indicates if the plugin is realized. */
 	void			*handle;	/**< The dlopen handle */
-	VisList			 environ;	/**< Misc environment specific data. */
+	VisList			 environment;	/**< Misc environment specific data. */
 };
 
 /**
@@ -372,7 +372,7 @@ struct _VisPluginData {
 struct _VisPluginEnviron {
 	VisObject		 object;	/**< The VisObject data. */
 	const char		*type;		/**< Almost the same as _VisPluginInfo.type. */
-	VisObject		*environ;	/**< VisObject that contains environ specific data. */
+	VisObject		*environment;	/**< VisObject that contains environ specific data. */
 };
 
 /**

@@ -103,10 +103,10 @@ static int plugin_environ_dtor (VisObject *object)
 {
 	VisPluginEnviron *enve = VISUAL_PLUGINENVIRON (object);
 
-	if (enve->environ != NULL)
-		visual_object_unref (enve->environ);
+	if (enve->environment != NULL)
+		visual_object_unref (enve->environment);
 
-	enve->environ = NULL;
+	enve->environment = NULL;
 
 	return VISUAL_OK;
 }
@@ -121,7 +121,7 @@ static int plugin_dtor (VisObject *object)
 	if (plugin->params != NULL)
 		visual_object_unref (VISUAL_OBJECT (plugin->params));
 
-	visual_list_destroy_elements (&plugin->environ);	
+	visual_list_destroy_elements (&plugin->environment);
 	
 	plugin->ref = NULL;
 	plugin->params = NULL;
@@ -1115,7 +1115,7 @@ VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj
 	visual_object_initialize (VISUAL_OBJECT (enve), TRUE, plugin_environ_dtor);
 
 	enve->type = type;
-	enve->environ = envobj;
+	enve->environment = envobj;
 	
 	return enve;
 }
@@ -1137,7 +1137,7 @@ int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve)
 
 	visual_plugin_environ_remove (plugin, enve->type);
 		
-	return visual_list_add (&plugin->environ, enve);
+	return visual_list_add (&plugin->environment, enve);
 }
 
 /**
@@ -1156,11 +1156,11 @@ int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
 	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
 
-	while ((enve = visual_list_next (&plugin->environ, &le)) != NULL) {
+	while ((enve = visual_list_next (&plugin->environment, &le)) != NULL) {
 		
 		/* Remove from list */
 		if (strcmp (enve->type, type) == 0) {
-			visual_list_delete (&plugin->environ, &le);
+			visual_list_delete (&plugin->environment, &le);
 
 			visual_object_unref (VISUAL_OBJECT (enve));
 
@@ -1187,10 +1187,10 @@ VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 	visual_log_return_val_if_fail (type != NULL, NULL);
 
-	while ((enve = visual_list_next (&plugin->environ, &le)) != NULL) {
+	while ((enve = visual_list_next (&plugin->environment, &le)) != NULL) {
 		
 		if (strcmp (enve->type, type) == 0)
-			return enve->environ;
+			return enve->environment;
 	}
 
 	return NULL;
