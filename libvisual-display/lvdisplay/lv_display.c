@@ -213,6 +213,10 @@ int lvdisplay_realize(Lvd *v)
 		return 1;
 	}
 
+	if (v->ctx)
+		((LvdBackendDescription*)v->drv->pclass->info->plugin)->
+			context_delete(v->drv->pclass, v->ctx);
+
 	v->ctx = ((LvdBackendDescription*)v->drv->pclass->info->plugin)->
 		context_create(v->drv->pclass, v->drv->video);
 

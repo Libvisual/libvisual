@@ -14,6 +14,9 @@
 	* drivers/null/null.c drivers/glx/glx.c:
 	added event handlers functions and resize event handler
 	for non-gl plugins.
+	* lvdisplay/lv_display.c: free previous context if
+	there's one in lvdisplay_realize().
+	* example/main.c: added ability to switch plugins on the fly.
 
 2004-10-05  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 	* drivers/glx/glx.c: VisVideo support, framebuffer

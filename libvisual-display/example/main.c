@@ -9,6 +9,8 @@
 
 #define NULL_OUTPUT 0
 
+static char actorname[100] = "oinksie";
+
 int main(int argc, char **argv)
 {
 	LvdDriver *drv;
@@ -58,10 +60,13 @@ int main(int argc, char **argv)
 		exit (1);
 	}
 
+	if (argc > 1)
+		strcpy(actorname, argv[1]);
+
 	VisBin *bin = lvdisplay_visual_get_bin(v);
 
 	VisInput *input = visual_input_new("alsa");
-	VisActor *actor = visual_actor_new(argc>1 ? argv[1] : "oinksie");
+	VisActor *actor = visual_actor_new(actorname);
 
 	visual_bin_connect(bin, actor, input);
 
@@ -94,12 +99,41 @@ int main(int argc, char **argv)
 				quit_flag = 1;
 				break;
 
-			case VISUAL_EVENT_KEYDOWN:
+			case VISUAL_EVENT_KEYDOWN:{
+				char *p;
+				int areload = 0;
+
 				fprintf(stderr, "KEYDOWN: '%c'=%d, %x\n",
 						event.keyboard.keysym.sym,
 						event.keyboard.keysym.sym,
 						event.keyboard.keysym.mod);
+
+				switch (event.keyboard.keysym.sym){
+					case VKEY_a:
+						p = visual_actor_get_next_by_name(actorname);
+						if (p){
+							strcpy(actorname, p);
+							areload = 1;
+						}
+						break;
+					case VKEY_s:
+						p = visual_actor_get_prev_by_name(actorname);
+						if (p){
+							strcpy(actorname, p);
+							areload = 1;
+						}
+						break;
+					default:
+						break;
+				}
+				if (areload){
+					VisActor *actor = visual_actor_new(actorname);
+					visual_bin_connect(bin, actor, input);
+					lvdisplay_realize(v);
+				}
+
 				break;
+			}
 			case VISUAL_EVENT_KEYUP:
 				fprintf(stderr, "KEYUP: '%c'=%d, %x\n",
 						event.keyboard.keysym.sym,
