@@ -79,14 +79,14 @@ int plugin_init (VisPluginData *plugin)
 		return -1;
 	}
 
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	return 0;
 }
 
 int plugin_cleanup (VisPluginData *plugin)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	LvdCompatDataX11 *x11 = &priv->x11data;
 
 	finit_x(x11);
@@ -98,7 +98,8 @@ int plugin_cleanup (VisPluginData *plugin)
 
 void *get_compat_data(VisPluginData *plugin)
 {
-    return &((privdata*)plugin->priv)->x11data;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
+	return &(priv->x11data);
 }
 
 int process_events(privdata *priv, LvdCompatDataX11 *data,
@@ -106,14 +107,14 @@ int process_events(privdata *priv, LvdCompatDataX11 *data,
 
 int get_events(VisPluginData *plugin, VisEventQueue *eventqueue)
 {
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	LvdCompatDataX11 *data;
 
 	// XXX are checks necessary? this func called once per frame...
-	data = &((privdata*)plugin->priv)->x11data;
+	data = &priv->x11data;
 
 	while (XEventsQueued(XDPY, QueuedAfterReading)){
-		process_events(plugin->priv, data, eventqueue,
-			((privdata*)plugin->priv)->video);
+		process_events(priv, data, eventqueue, priv->video);
 	}
 
 	return 0;
@@ -219,7 +220,7 @@ int process_events(privdata *priv, LvdCompatDataX11 *data,
 int create(VisPluginData *plugin,
 		int **params, int *params_count, VisVideo *video)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	int w = 320;
 	int h = 240;
 

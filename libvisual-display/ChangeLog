@@ -1,3 +1,8 @@
+2004-11-25  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* drivers/glx/glx.c drivers/glx/glx_new.c: VisObject support.
+	* example/main.c: avoid complile warning inside of 'case'.
+
 2004-11-24  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* example/main.c lvdisplay/lv_display.c lvdisplay/lv_display.h:

@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	int quit_flag = 0;
 
 #if NULL_OUTPUT
-	visual_init_path_add ("../drivers/null/.libs");
+//	visual_init_path_add ("../drivers/null/.libs");
 #else
 	visual_init_path_add ("../drivers/glx/.libs");
 #endif
@@ -182,6 +182,8 @@ int main(int argc, char **argv)
 				visual_bin_sync(bin, FALSE);
 				visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
 				break;
+			default:
+				break;
 			}
 		}
 
@@ -228,6 +230,8 @@ int main(int argc, char **argv)
 				fprintf(stderr, "resized: %dx%d\n", event.resize.width, event.resize.height);
 				visual_bin_sync(bin2, FALSE);
 				visual_actor_video_negotiate (actor2, 0, FALSE, FALSE);
+				break;
+			default:
 				break;
 			}
 		}

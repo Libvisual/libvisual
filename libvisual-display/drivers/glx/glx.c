@@ -95,14 +95,14 @@ int plugin_init (VisPluginData *plugin)
 		return -1;
 	}
 
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	return 0;
 }
 
 int plugin_cleanup (VisPluginData *plugin)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
 	glXMakeContextCurrent(priv->dpy, None, None, NULL);
 
@@ -126,7 +126,7 @@ int plugin_cleanup (VisPluginData *plugin)
 int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
 		int *params, int params_count)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
 	if ((data->dpy == None) || (data->win == None))
 		return -1;
@@ -235,7 +235,7 @@ int init_glx13(privdata *priv, int *params, int params_cnt)
 
 int hndevents(VisPluginData *plugin, VisEventQueue *eventqueue)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
 	if (priv->active_ctx == NULL){
 		return 0;
@@ -254,8 +254,8 @@ int hndevents(VisPluginData *plugin, VisEventQueue *eventqueue)
 
 LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
 {
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	glx_context *c;
-	privdata *priv = plugin->priv;
 
 	c = visual_mem_new0(glx_context, 1);
 	if (c == NULL)
@@ -276,7 +276,7 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
 
 void context_delete(VisPluginData *plugin, LvdDContext *ctx)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	glx_context *c = (glx_context*)ctx;
 	assert(c);
 
@@ -294,7 +294,7 @@ void context_delete(VisPluginData *plugin, LvdDContext *ctx)
 
 void context_deactivate(VisPluginData *plugin, LvdDContext *ctx)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	glx_context *c = (glx_context*)ctx;
 	assert(c);
 
@@ -306,7 +306,7 @@ void context_deactivate(VisPluginData *plugin, LvdDContext *ctx)
 
 void context_activate(VisPluginData *plugin, LvdDContext *ctx)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	glx_context *c = (glx_context*)ctx;
 	assert(c);
 
@@ -319,14 +319,14 @@ void context_activate(VisPluginData *plugin, LvdDContext *ctx)
 
 LvdDContext *context_get_active(VisPluginData *plugin)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
 	return (LvdDContext *)priv->active_ctx;
 }
 
 void draw(VisPluginData *plugin)
 {
-	privdata *priv = plugin->priv;
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
 	if ((priv->active_ctx->video->depth != VISUAL_VIDEO_DEPTH_GL) &&
 		(priv->active_ctx->video->pixels)){
