@@ -4,6 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Chong Kai Xiong <descender@phreaker.net>
+ *	    Eric Anholt <anholt@FreeBSD.org>
  *
  * Extra Credits: MPlayer cpudetect hackers.
  *

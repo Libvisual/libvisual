@@ -15,6 +15,10 @@ Chong Kai Xiong <descender@phreaker.net>
 Bilinear scaler:
 Jean-Christophe Hoelt <jeko@ios-software.com> (goom2 main author)
 
+CPU Detect code based on the work by:
+Eric Anholt <anholt@FreeBSD.org>
+and MPlayer cpudetect hackers.
+
 List implementation from RCL:
 Sepp Wijnands <mrrazz@nerds-incorporated.org>
 Tom Wimmenhove <nohup@nerds-incorporated.org>
