@@ -66,6 +66,9 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src);
 
 /* Scaling functions */
 static int scale_nearest_8 (VisVideo *dest, const VisVideo *src);
+static int scale_nearest_16 (VisVideo *dest, const VisVideo *src);
+static int scale_nearest_24 (VisVideo *dest, const VisVideo *src);
+static int scale_nearest_32 (VisVideo *dest, const VisVideo *src);
 
 
 static int video_dtor (VisObject *object)
@@ -1242,9 +1245,9 @@ static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, i
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			dest[j++] = srcr[i].r << 3;
-			dest[j++] = srcr[i].g << 2;
 			dest[j++] = srcr[i].b << 3;
+			dest[j++] = srcr[i].g << 2;
+			dest[j++] = srcr[i].r << 3;
 			dest[j++] = 0;
 			i++;
 		}
@@ -1489,15 +1492,38 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-		if (scale_method == VISUAL_VIDEO_SCALE_NEAREST)
-			return scale_nearest_8 (dest, src);
+	switch (dest->depth) {
+		case VISUAL_VIDEO_DEPTH_8BIT:
+			scale_nearest_8 (dest, src);
 
-                /* default to nearest if scale method is invalid */
-                return scale_nearest_8 (dest, src);
+			break;
+
+		case VISUAL_VIDEO_DEPTH_16BIT:
+			scale_nearest_16 (dest, src);
+
+			break;
+		
+		case VISUAL_VIDEO_DEPTH_24BIT:
+			scale_nearest_24 (dest, src);
+
+			break;
+
+		case VISUAL_VIDEO_DEPTH_32BIT:
+			scale_nearest_32 (dest, src);
+
+			break;
+
+		default:
+			visual_log (VISUAL_LOG_CRITICAL, "Invalid depth passed to the scaler");
+
+			return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+
+			break;
 	}
 
-	return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+	/* FIXME if bilinear is selected filter here, through a function call */
+
+	return VISUAL_OK;
 }
 
 #ifndef FIXED_POINT_SCALER
@@ -1516,6 +1542,73 @@ static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 
 	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
 		src_pixel_row = (uint8_t *) src->pixel_rows[(int) v];
+
+		for (x = 0, u = 0; x < dest->width; x++, u += du) {
+			*dest_pixel++ = src_pixel_row[(int) u];
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+static int scale_nearest_16 (VisVideo *dest, const VisVideo *src)
+{
+	int x, y;
+	float u, v, du, dv;
+	uint16_t *dest_pixel, *src_pixel_row;
+
+	u = 0; du = (float) src->width	/ dest->width;
+	v = 0; dv = (float) src->height / dest->height;
+
+	dest_pixel = dest->pixels;
+
+	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (uint16_t *) src->pixel_rows[(int) v];
+
+		for (x = 0, u = 0; x < dest->width; x++, u += du) {
+			*dest_pixel++ = src_pixel_row[(int) u];
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+/* FIXME this version is of course but ugly and not working :) */
+static int scale_nearest_24 (VisVideo *dest, const VisVideo *src)
+{
+	int x, y;
+	float u, v, du, dv;
+	uint8_t *dest_pixel, *src_pixel_row;
+
+	u = 0; du = (float) src->width	/ dest->width;
+	v = 0; dv = (float) src->height / dest->height;
+
+	dest_pixel = dest->pixels;
+
+	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (uint8_t *) src->pixel_rows[(int) v];
+
+		for (x = 0, u = 0; x < dest->width * 3; x++, u += du) {
+			*dest_pixel++ = src_pixel_row[(int) u];
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+static int scale_nearest_32 (VisVideo *dest, const VisVideo *src)
+{
+	int x, y;
+	float u, v, du, dv;
+	uint32_t *dest_pixel, *src_pixel_row;
+
+	u = 0; du = (float) src->width	/ dest->width;
+	v = 0; dv = (float) src->height / dest->height;
+
+	dest_pixel = dest->pixels;
+
+	for (y = 0, v = 0; y < dest->height; y++, v += dv) {
+		src_pixel_row = (uint32_t *) src->pixel_rows[(int) v];
 
 		for (x = 0, u = 0; x < dest->width; x++, u += du) {
 			*dest_pixel++ = src_pixel_row[(int) u];

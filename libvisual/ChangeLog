@@ -1,3 +1,19 @@
+2004-12-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (depth_transform_16_to_32_c): Somehow I find it
+	extremely non trivial to get color ordering right.
+
+	I really have to make a test it all color transform tester to get rid
+	of these kinds of bugs.
+
+	* libvisual/lv_video.c (scale_nearest_16, scale_nearest_24,
+	scale_nearest_32): Added, 24 bit version is still lame tho.
+
+2004-12-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: Use visual_object_initialize instead of
+	doing boilerplating in the objects themselves.
+
 2004-12-08  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_object.*: Introduced visual_object_initialize, to
