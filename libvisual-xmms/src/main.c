@@ -33,6 +33,7 @@ static SDL_Surface *icon;
 static VisVideo *video;
 static VisPalette *pal;
 
+static char song_name[1024];
 static char *cur_lv_plugin = NULL;
 
 static VisBin *bin = NULL;
@@ -142,7 +143,7 @@ static void lv_xmms_init ()
 		visual_log (VISUAL_LOG_WARNING, _("Cannot not load icon: %s"), SDL_GetError());
 	
 	pcm_mutex = SDL_CreateMutex ();
-
+	
 	if (!visual_is_initialized ()) {
 	        argv = g_malloc (sizeof(char*));
 	        argv[0] = g_strdup (_("XMMS plugin"));
@@ -196,6 +197,7 @@ static void lv_xmms_cleanup ()
 
 	visual_log (VISUAL_LOG_DEBUG, "calling SDL_DestroyMutex()");
 	SDL_DestroyMutex (pcm_mutex);
+	
 	pcm_mutex = NULL;
 
 	/*
@@ -242,6 +244,7 @@ static void lv_xmms_render_pcm (gint16 data[2][512])
 	if (visual_running == 1) {
 		SDL_mutexP (pcm_mutex);
                 memcpy (xmmspcm, data, sizeof(gint16)*2*512);
+		strncpy (song_name, lv_xmms_get_songname (), 1023);
 		SDL_mutexV (pcm_mutex);
 	}
 }
@@ -442,11 +445,7 @@ static int visual_render (void *arg)
 		songinfo = visual_actor_get_songinfo (visual_bin_get_actor (bin));
 		visual_songinfo_set_type (songinfo, VISUAL_SONGINFO_TYPE_SIMPLE);
 
-		/* FIXME temp */
-		visual_songinfo_set_simple_name (songinfo, "Super COW powers.");
-
-		/* FIXME don't retrieve the songname from xmms in this thread, totally borks up */		
-//		visual_songinfo_set_simple_name (songinfo, lv_xmms_get_songname ());
+		visual_songinfo_set_simple_name (songinfo, song_name);
 
 		if ((SDL_GetAppState () & SDL_APPACTIVE) == FALSE) {
 			usleep (100000);
