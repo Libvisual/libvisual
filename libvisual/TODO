@@ -1,3 +1,6 @@
+Fix that lv-inspect builds, after the lib has been installed.
+
+
 replace stdint.h with sys/types.h and have defines so we don't have to change all
 the code (besides u_int16_t sounds less nice than uint16_t :))
 
