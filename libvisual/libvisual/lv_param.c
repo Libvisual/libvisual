@@ -1020,7 +1020,7 @@ VisObject *visual_param_entry_get_object (VisParamEntry *param)
 		return NULL;
 	}
 
-	return &param->objdata;
+	return param->objdata;
 }
 
 /**
