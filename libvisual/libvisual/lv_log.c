@@ -72,24 +72,40 @@ void _lv_log (VisLogSeverity severity, const char *file,
 	va_end (va);
 
 	if (funcname == NULL) { /* The system is not GNUC */
-		if (severity == VISUAL_LOG_INFO) {
+		switch (severity) {
+		case VISUAL_LOG_INFO:
+		case VISUAL_LOG_WARNING:
+		case VISUAL_LOG_CRITICAL:
+		case VISUAL_LOG_ERROR:
 			printf ("libvisual %s: %s: %s\n",
 					log_severity_to_string (severity),
 					__lv_progname, str);
-		} else {
+			break;
+		case VISUAL_LOG_DEBUG:
 			fprintf (stderr, "libvisual %s: %s [(%s,%d)]: %s\n",
 					log_severity_to_string (severity), __lv_progname,
 					file, line, str);
+			break;
 		}
 	} else {
-		if (severity == VISUAL_LOG_INFO) {
+		switch (severity) {
+		case VISUAL_LOG_INFO:
 			printf ("libvisual %s: %s: %s\n",
 					log_severity_to_string (severity),
 					__lv_progname, str);
-		} else {
-			fprintf (stderr, "libvisual %s: %s: %s [(%s,%d)]: %s\n",
+			break;
+		case VISUAL_LOG_WARNING:
+		case VISUAL_LOG_CRITICAL:
+		case VISUAL_LOG_ERROR:
+			fprintf (stderr, "libvisual %s: %s: %s(): %s\n",
+					log_severity_to_string (severity), __lv_progname,
+					funcname, str);
+			break;
+		case VISUAL_LOG_DEBUG:
+			fprintf (stderr, "libvisual %s: %s: %s() [(%s,%d)]: %s\n",
 					log_severity_to_string (severity), __lv_progname,
 					funcname, file, line, str);
+			break;
 		}
 	}
 

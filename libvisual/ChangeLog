@@ -1,3 +1,9 @@
+2004-09-21  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_log.c: now only VISUAL_LOG_DEBUG shows the
+	file where the message is showed from (otherwise there is
+	too much output).
+
 2004-09-21  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/*.c: Renamed all the remaining LVPlugin
