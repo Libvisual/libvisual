@@ -34,7 +34,6 @@
  * could be one big idle handle multiplexer that reads a flag */
 /* FIXME HIGFY everything!!! */
 /* FIXME unreg param callbacks on destroy */
-/* FIXME implement tooltips */
 /* FIXME set radio buttons / popup right on init */
 
 #if HAVE_GTK_AT_LEAST_2_4_X
@@ -313,8 +312,6 @@ lvwidget_visui_realize (GtkWidget *widget)
 	gdk_window_set_user_data (lvwuic->priv->event_window, lvwuic);
 
 	widget->style = gtk_style_attach (widget->style, widget->window);
-		
-	lvwuic->priv->tooltips = gtk_tooltips_new ();
 }
 
 static void
@@ -378,6 +375,8 @@ lvwidget_visui_new (VisUIWidget *vuitree)
 	vuic->priv->callbacksreg = NULL;
 
 	vuic->priv->vuitree = vuitree;
+
+	vuic->priv->tooltips = gtk_tooltips_new ();
 
 	widget = visui_widget_new (vuic, vuitree);
 
