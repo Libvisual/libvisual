@@ -9,7 +9,7 @@ DEFS = @DEFS@
 
 LIBS += -L. -L$(libdir) @LIBVISUAL_LIBS@ @LIBGTK2_LIBS@
 
-AM_CFLAGS = -Wall -Wno-unused-variable -Wmissing-prototypes -Wstrict-prototypes \
+AM_CFLAGS = -Wall -Wno-unused-variable -Wmissing-prototypes \
 	    @DEBUG_CFLAGS@ @LIBVISUAL_CFLAGS@ @LIBGTK2_CFLAGS@ -O3
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/gtk2 \
