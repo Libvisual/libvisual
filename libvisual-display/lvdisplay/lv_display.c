@@ -339,7 +339,7 @@ int lvdisplay_realize(Lvd *v)
 	int res;
 	VisActor *actor;
 	VisVideoDepth adepth, vdepth;
-	VisPluginEnvironElement *enve;
+	VisPluginEnviron *enve;
 	LvdPluginEnvironData *envdata;
 
 	visual_log_return_val_if_fail (v != NULL, -1);
@@ -357,7 +357,7 @@ int lvdisplay_realize(Lvd *v)
 
 	envdata->lvd = v;
 
-	enve = visual_mem_new0 (VisPluginEnvironElement, 1);
+	enve = visual_mem_new0 (VisPluginEnviron, 1);
 	if (enve == NULL)
 		return 1;
 

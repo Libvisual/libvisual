@@ -114,8 +114,9 @@ int lv_dna_init (VisPluginData *plugin)
 
 
 
-	/* a hack :) */
-	v = ((LvdPluginEnvironData*)(((VisPluginEnvironElement*)visual_list_get(plugin->environ,0))->environ))->lvd;
+	/* (STILL) :) a hack :) */
+	v = ((LvdPluginEnvironData*) visual_plugin_environ_get (plugin, VISUAL_PLUGIN_ENVIRON_TYPE_LVD))->lvd;
+//	v = ((LvdPluginEnvironData*)(((VisPluginEnviron*)visual_list_get(plugin->environ,0))->environ))->lvd;
 	fprintf(stderr,"got lvd: %p\n",v);
 	priv->v=v;
 

@@ -1,3 +1,7 @@
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lvdisplay/lv_display.c: Updated to API (VisPluginEnviron).
+
 2005-01-07  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* *: Add more copyright headers.
