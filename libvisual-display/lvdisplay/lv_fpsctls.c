@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fpsctls.c,v 1.2 2005-02-15 15:43:47 vitalyvb Exp $
+ * $Id: lv_fpsctls.c,v 1.3 2005-02-22 13:33:03 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,55 +43,14 @@
 
 #define DEFAULT_MAX_FPS 30.0f
 
-/*
- * Precise time control functions
- */
-
-typedef struct {
-	unsigned int sec;
-	unsigned int usec;
-} TimeStruct;
-
-void get_time(TimeStruct *ts)
+int get_time_delta(VisTime *ts1, VisTime *ts2)
 {
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	ts->sec = tv.tv_sec;
-	ts->usec = tv.tv_usec;
+	VisTime res;
+	visual_object_initialize(VISUAL_OBJECT(&res), FALSE, NULL);
+	visual_time_difference(&res, ts2, ts1);
+	return res.tv_sec*1000000 + res.tv_usec;
 }
 
-int get_time_delta(TimeStruct *ts1, TimeStruct *ts2)
-{
-	int delta;
-
-	if (ts1->usec < ts2->usec) {
-		int nsec = (ts2->usec - ts1->usec) / 1000000 + 1;
-		ts2->usec -= 1000000 * nsec;
-		ts2->sec += nsec;
-	}
-
-	if (ts1->usec - ts2->usec > 1000000) {
-		int nsec = (ts1->usec - ts2->usec) / 1000000;
-		ts2->usec += 1000000 * nsec;
-		ts2->sec -= nsec;
-	}
-
-	/* Compute the time remaining to wait.
-	   `tv_usec' is certainly positive. */
-	delta = (ts1->sec - ts2->sec)*1000000 + (ts1->usec - ts2->usec);
-
-	/* Return 1 if result is negative. */
-	return delta;
-}
-
-/*
- * Sleep function
- */
-
-static void micro_delay(int usec)
-{
-	usleep(usec);
-}
 
 /*
  * Linux 2.6 Sleep FPS Limiter
@@ -100,7 +59,7 @@ static void micro_delay(int usec)
 typedef struct {
 	LvdFPSControl ctl;
 
-	TimeStruct framestart;
+	VisTime framestart;
 	int oversleep;
 } sleep26_fpsctl;
 
@@ -109,36 +68,36 @@ static void sleep26_fps_control_frame_start(LvdFPSControl *fpsdata)
 {
 	sleep26_fpsctl *fps = (sleep26_fpsctl*)fpsdata;
 
-	get_time(&fps->framestart);
+	visual_time_get(&fps->framestart);
 }
 
 // XXX FIXME avoid floating point arith
 static void sleep26_fps_control_frame_end(LvdFPSControl *fpsdata)
 {
 	sleep26_fpsctl *fps = (sleep26_fpsctl*)fpsdata;
-	TimeStruct ts, ts2;
+	VisTime ts, ts2;
 	int d;
 	int frametime;
 	int tosleep;
 
 	frametime = 1000000/fps->ctl.fps_max;
 
-	get_time(&ts);
+	visual_time_get(&ts);
 	d = get_time_delta(&ts, &fps->framestart);
 
 	tosleep = frametime - d;
 
 	tosleep -= fps->oversleep;
 	if (tosleep > 0)
-		micro_delay(tosleep);
+		visual_time_usleep(tosleep);
 
-	get_time(&ts2);
+	visual_time_get(&ts2);
 	d = get_time_delta(&ts2, &fps->framestart) - frametime;
 	fps->oversleep += d;
 
 	fps->oversleep = fps->oversleep % frametime;
 
-	get_time(&ts);
+	visual_time_get(&ts);
 	d = get_time_delta(&ts, &fps->framestart);
 	fps->ctl.fps_current = 1000000.0/d;
 
@@ -152,6 +111,7 @@ LvdFPSControl *sleep26_fps_control_init()
 {
 	sleep26_fpsctl *fps = visual_mem_new0(sleep26_fpsctl, 1);
 	visual_object_initialize(VISUAL_OBJECT(fps), TRUE, NULL);
+	visual_object_initialize(VISUAL_OBJECT(&fps->framestart), FALSE, NULL);
 
 	fps->ctl.fps_control_frame_start = sleep26_fps_control_frame_start;
 	fps->ctl.fps_control_frame_end = sleep26_fps_control_frame_end;
@@ -170,22 +130,22 @@ LvdFPSControl *sleep26_fps_control_init()
 
 typedef struct {
 	LvdFPSControl ctl;
-	TimeStruct framestart;
+	VisTime framestart;
 } null_fpsctl;
 
 static void null_fps_control_frame_start(LvdFPSControl *fpsdata)
 {
 	null_fpsctl *fps = (null_fpsctl*)fpsdata;
-	get_time(&fps->framestart);
+	visual_time_get(&fps->framestart);
 }
 
 static void null_fps_control_frame_end(LvdFPSControl *fpsdata)
 {
 	null_fpsctl *fps = (null_fpsctl*)fpsdata;
-	TimeStruct ts;
+	VisTime ts;
 	int d;
 
-	get_time(&ts);
+	visual_time_get(&ts);
 	d = get_time_delta(&ts, &fps->framestart);
 
 	fps->ctl.fps_current = 1000000.0/d;
@@ -200,6 +160,7 @@ LvdFPSControl *null_fps_control_init()
 {
 	null_fpsctl *fps = visual_mem_new0(null_fpsctl, 1);
 	visual_object_initialize(VISUAL_OBJECT(fps), TRUE, NULL);
+	visual_object_initialize(VISUAL_OBJECT(&fps->framestart), FALSE, NULL);
 
 	fps->ctl.fps_control_frame_start = null_fps_control_frame_start;
 	fps->ctl.fps_control_frame_end = null_fps_control_frame_end;
@@ -214,26 +175,26 @@ LvdFPSControl *null_fps_control_init()
 
 typedef struct {
 	LvdFPSControl ctl;
-	TimeStruct framestart;
+	VisTime framestart;
 } tod_fpsctl;
 
 static void tod_fps_control_frame_start(LvdFPSControl *fpsdata)
 {
 	tod_fpsctl *fps = (tod_fpsctl*)fpsdata;
-	get_time(&fps->framestart);
+	visual_time_get(&fps->framestart);
 }
 
 static void tod_fps_control_frame_end(LvdFPSControl *fpsdata)
 {
 	tod_fpsctl *fps = (tod_fpsctl*)fpsdata;
-	TimeStruct ts;
+	VisTime ts;
 	int d;
 	int frametime;
 
 	frametime = 1000000/fps->ctl.fps_max;
 
 	do {
-		get_time(&ts);
+		visual_time_get(&ts);
 		d = get_time_delta(&ts, &fps->framestart);
 	} while (d<frametime);
 
@@ -249,6 +210,7 @@ LvdFPSControl *tod_fps_control_init()
 {
 	tod_fpsctl *fps = visual_mem_new0(tod_fpsctl, 1);
 	visual_object_initialize(VISUAL_OBJECT(fps), TRUE, NULL);
+	visual_object_initialize(VISUAL_OBJECT(&fps->framestart), FALSE, NULL);
 
 	fps->ctl.fps_control_frame_start = tod_fps_control_frame_start;
 	fps->ctl.fps_control_frame_end = tod_fps_control_frame_end;

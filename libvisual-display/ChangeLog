@@ -1,3 +1,7 @@
+2005-02-22  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* lvdisplay/lv_fpsctls.c: Use Libvisual's time and sleep functions.
+
 2005-02-15  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* lvdisplay/lv_fpsctls.c: TimeOfDay limiter, destructor fixes.
