@@ -1,4 +1,12 @@
 2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* *: Fixed copyright headers, updated for 2005, fixed emails, and
+	credits. I am sure that I forgot many names in all the copyright
+	headers of the source files, make sure you add yourself at the
+	appropiate places. (Add yourself to the Authors: list when you've
+	worked on that file).
+
+2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* COPYING: Fixed to be LGPL.
 

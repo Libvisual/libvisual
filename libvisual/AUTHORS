@@ -1,19 +1,24 @@
 Main author, project leader:
-Dennis Smit <synap@nerds-incorporated.org>
+Dennis Smit <ds@nerds-incorporated.org>
 
 Developers:
 Duilio J. Protti <dprotti@users.sourceforge.net>
-Vitaly V. Bursov <vitalyb@mail333.com>
+Vitaly V. Bursov <vitalyvb@ukr.net>
 Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
 
 The FFT implementation used by libvisual:
 Richard Boulton <richard@tartarus.org>
+
+Nearest scalers, initial VisCPU stuff:
+Chong Kai Xiong <descender@phreaker.net>
+
+Bilinear scaler:
+Jean-Christophe Hoelt <jeko@ios-software.com> (goom2 main author)
 
 List implementation from RCL:
 Sepp Wijnands <mrrazz@nerds-incorporated.org>
 Tom Wimmenhove <nohup@nerds-incorporated.org>
 
 Many thanks for quality suggestions and input:
-Jean-Christophe Hoelt <jeko@ios-software.com> (goom2 main author)
 Burkhard Plaum <plaum@ipf.uni-stuttgart.de> (lemuria author)
 
