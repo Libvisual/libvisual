@@ -1,3 +1,11 @@
+2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/*: Added copyright headers.
+
+	* plugins/input/*: Added copyright headers.
+
+	* plugins/actor/oinksie/*: Added copyright headers.
+
 2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* AUTHORS: Update.
