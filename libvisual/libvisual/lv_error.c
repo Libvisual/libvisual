@@ -67,6 +67,7 @@ int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv)
 const char *visual_error_to_string (int err)
 {
 
+	return NULL;
 }
 
 /**

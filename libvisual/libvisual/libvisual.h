@@ -28,6 +28,7 @@
 #include <libvisual/lv_ui.h>
 #include <libvisual/lv_error.h>
 #include <libvisual/lv_thread.h>
+#include <libvisual/lv_object.h>
 #include <libvisual/lv_types.h>
 #include <libvisual/lv_common.h>
 

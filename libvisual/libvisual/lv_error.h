@@ -98,6 +98,11 @@ enum {
 	VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE,		/**< Failed trylocking the VisMutex. */
 	VISUAL_ERROR_MUTEX_UNLOCK_FAILURE,		/**< Failed unlocking the VisMutex. */
 	
+	/* Error entries for the VisObject system */
+	VISUAL_ERROR_OBJECT_DTOR_FAILED,		/**< The destructor assigned to a VisObject failed destroying the VisObject. */
+	VISUAL_ERROR_OBJECT_NULL,			/**< The VisObject is NULL. */
+	VISUAL_ERROR_OBJECT_NOT_ALLOCATED,		/**< The VisObject is not allocated. */
+	
 	/* Error entries for the VisTime system */
 	VISUAL_ERROR_TIME_NULL,				/**< The VisTime is NULL. */
 	VISUAL_ERROR_TIME_NO_USLEEP,			/**< visual_time_usleep is not working on this system. */

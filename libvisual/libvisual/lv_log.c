@@ -24,10 +24,10 @@ static struct _message_handlers {
 	VisLogMessageHandlerFunc	 critical_handler;
 	VisLogMessageHandlerFunc	 error_handler;
 
-	void					*info_priv;
-	void					*warning_priv;
-	void					*critical_priv;
-	void					*error_priv;
+	void				*info_priv;
+	void				*warning_priv;
+	void				*critical_priv;
+	void				*error_priv;
 } message_handlers;
 
 
