@@ -132,7 +132,6 @@ enum {
 	VISUAL_ERROR_UI_CHECKBOX_NULL,			/**< The VisUICheckbox is NULL. */
 	VISUAL_ERROR_UI_CHOICE_ENTRY_NULL,		/**< The VisUIChoiceEntry is NULL. */
 	VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE,		/**< there is no VisUIChoiceEntry active. */
-	VISUAL_ERROR_UI_INVALID_TYPE,			/**< The VisUIWidget is of invalid type. */
 
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_NULL,			/**< The VisVideo is NULL. */

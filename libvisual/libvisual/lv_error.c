@@ -9,118 +9,117 @@
 #include "lv_error.h"
 
 static const char *__lv_error_human_readable[] = {
-	"", /* VISUAL_OK */
+	"There was no error",							/* VISUAL_OK */
 
-	"", /* VISUAL_ERROR_GENERAL */
-	"", /* VISUAL_ERROR_NULL */
-	"", /* VISUAL_ERROR_IMPOSSIBLE */
+	"General error occurred",						/* VISUAL_ERROR_GENERAL */
+	"General NULL pointer error",						/* VISUAL_ERROR_NULL */
+	"An impossible event occurred",						/* VISUAL_ERROR_IMPOSSIBLE */
 
-	"", /* VISUAL_ERROR_ACTOR_NULL */
-	"", /* VISUAL_ERROR_ACTOR_VIDEO_NULL */
-	"", /* VISUAL_ERROR_ACTOR_PLUGIN_NULL */
-	"", /* VISUAL_ERROR_ACTOR_GL_NEGOTIATE */
+	"VisActor is NULL",							/* VISUAL_ERROR_ACTOR_NULL */
+	"VisActor it's video is NULL",						/* VISUAL_ERROR_ACTOR_VIDEO_NULL */
+	"VisActor it's plugin is NULL",						/* VISUAL_ERROR_ACTOR_PLUGIN_NULL */
+	"VisActor failed while trying to forcefully negotiate a GL surface",	/* VISUAL_ERROR_ACTOR_GL_NEGOTIATE */
 
-	"", /* VISUAL_ERROR_AUDIO_NULL */
+	"VisAudio is NULL",							/* VISUAL_ERROR_AUDIO_NULL */
 	
-	"", /* VISUAL_ERROR_BMP_NO_BMP */
-	"", /* VISUAL_ERROR_BMP_NOT_FOUND */
-	"", /* VISUAL_ERROR_BMP_NOT_SUPPORTED */
-	"", /* VISUAL_ERROR_BMP_CORRUPTED */
-	
-	"", /* VISUAL_ERROR_COLOR_NULL */
-	
-	"", /* VISUAL_ERROR_ERROR_HANDLER_NULL */
-	
-	"", /* VISUAL_ERROR_EVENT_NULL */
-	"", /* VISUAL_ERROR_EVENT_QUEUE_NULL */
-	
-	"", /* VISUAL_ERROR_INPUT_NULL */
-	"", /* VISUAL_ERROR_INPUT_PLUGIN_NULL */
-	
-	"", /* VISUAL_ERROR_LIBVISUAL_NO_PATHS */
-	"", /* VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED */
-	"", /* VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED */
-	"", /* VISUAL_ERROR_LIBVISUAL_NO_REGISTRY */
-	
-	"", /* VISUAL_ERROR_LIST_NULL */
-	"", /* VISUAL_ERROR_LIST_ENTRY_NULL */
-	"", /* VISUAL_ERROR_LIST_ENTRY_INVALID */
-	
-	"", /* VISUAL_ERROR_MEM_NULL */
-	
-	"", /* VISUAL_ERROR_MORPH_NULL */
-	"", /* VISUAL_ERROR_MORPH_PLUGIN_NULL */
-	
-	"", /* VISUAL_ERROR_PALETTE_NULL */
-	"", /* VISUAL_ERROR_PALETTE_SIZE */
-	
-	"", /* VISUAL_ERROR_PARAM_NULL */
-	"", /* VISUAL_ERROR_PARAM_CONTAINER_NULL */
-	"", /* VISUAL_ERROR_PARAM_NOT_FOUND */
-	"", /* VISUAL_ERROR_PARAM_CALLBACK_NULL */
-	"", /* VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY */
-	"", /* VISUAL_ERROR_PARAM_INVALID_TYPE */
-	
-	"", /* VISUAL_ERROR_PLUGIN_NULL */
-	"", /* VISUAL_ERROR_PLUGIN_INFO_NULL */
-	"", /* VISUAL_ERROR_PLUGIN_REF_NULL */
-	"", /* VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER */
-	"", /* VISUAL_ERROR_PLUGIN_HANDLE_NULL */
-	"", /* VISUAL_ERROR_PLUGIN_ALREADY_REALIZED */
-	
-	"", /* VISUAL_ERROR_RANDOM_CONTEXT_NULL */
-	
-	"", /* VISUAL_ERROR_SONGINFO_NULL */
+	"Bitmap is not a bitmap file",						/* VISUAL_ERROR_BMP_NO_BMP */
+	"Bitmap can not be found",						/* VISUAL_ERROR_BMP_NOT_FOUND */
+	"Bitmap is not supported",						/* VISUAL_ERROR_BMP_NOT_SUPPORTED */
+	"Bitmap is corrupted",							/* VISUAL_ERROR_BMP_CORRUPTED */
 
-	"", /* VISUAL_ERROR_THREAD_NULL */
-	"", /* VISUAL_ERROR_THREAD_NO_THREADING */
-	"", /* VISUAL_ERROR_MUTEX_NULL */
-	"", /* VISUAL_ERROR_MUTEX_LOCK_FAILURE */
-	"", /* VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE */
-	"", /* VISUAL_ERROR_MUTEX_UNLOCK_FAILURE */
+	"VisColor is NULL",							/* VISUAL_ERROR_COLOR_NULL */
 	
-	"", /* VISUAL_ERROR_OBJECT_DTOR_FAILED */
-	"", /* VISUAL_ERROR_OBJECT_NULL */
-	"", /* VISUAL_ERROR_OBJECT_NOT_ALLOCATED */
+	"Global error handler is NULL",						/* VISUAL_ERROR_ERROR_HANDLER_NULL */
 	
-	"", /* VISUAL_ERROR_TIME_NULL */
-	"", /* VISUAL_ERROR_TIME_NO_USLEEP */
-	"", /* VISUAL_ERROR_TIMER_NULL */
+	"VisEvent is NULL",							/* VISUAL_ERROR_EVENT_NULL */
+	"VisEventQueue is NULL",						/* VISUAL_ERROR_EVENT_QUEUE_NULL */
 	
-	"", /* VISUAL_ERROR_UI_WIDGET_NULL */
-	"", /* VISUAL_ERROR_UI_CONTAINER_NULL */
-	"", /* VISUAL_ERROR_UI_BOX_NULL */
-	"", /* VISUAL_ERROR_UI_TABLE_NULL */
-	"", /* VISUAL_ERROR_UI_FRAME_NULL */
-	"", /* VISUAL_ERROR_UI_LABEL_NULL */
-	"", /* VISUAL_ERROR_UI_IMAGE_NULL */
-	"", /* VISUAL_ERROR_UI_SEPARATOR_NULL */
-	"", /* VISUAL_ERROR_UI_MUTATOR_NULL */
-	"", /* VISUAL_ERROR_UI_RANGE_NULL */
-	"", /* VISUAL_ERROR_UI_ENTRY_NULL */
-	"", /* VISUAL_ERROR_UI_SLIDER_NULL */
-	"", /* VISUAL_ERROR_UI_NUMERIC_NULL */
-	"", /* VISUAL_ERROR_UI_COLOR_NULL */
-	"", /* VISUAL_ERROR_UI_CHOICE_NULL */
-	"", /* VISUAL_ERROR_UI_POPUP_NULL */
-	"", /* VISUAL_ERROR_UI_LIST_NULL */
-	"", /* VISUAL_ERROR_UI_RADIO_NULL */
-	"", /* VISUAL_ERROR_UI_CHECKBOX_NULL */
-	"", /* VISUAL_ERROR_UI_CHOICE_ENTRY_NULL */
-	"", /* VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE */
-	"", /* VISUAL_ERROR_UI_INVALID_TYPE */
+	"VisInput is NULL",							/* VISUAL_ERROR_INPUT_NULL */
+	"VisInput it's plugin is NULL",						/* VISUAL_ERROR_INPUT_PLUGIN_NULL */
+	
+	"No paths were given to seek for plugins",				/* VISUAL_ERROR_LIBVISUAL_NO_PATHS */
+	"Libvisual is already initialized",					/* VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED */
+	"Libvisual is not initialized",						/* VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED */
+	"Libvisual has not build a plugin registry",				/* VISUAL_ERROR_LIBVISUAL_NO_REGISTRY */
+	
+	"VisList is NULL",							/* VISUAL_ERROR_LIST_NULL */
+	"VisListEntry is NULL",							/* VISUAL_ERROR_LIST_ENTRY_NULL */
+	"VisListEntry is invalid",						/* VISUAL_ERROR_LIST_ENTRY_INVALID */
+	
+	"Given memory pointer is NULL",						/* VISUAL_ERROR_MEM_NULL */
+	
+	"VisMorph is NULL",							/* VISUAL_ERROR_MORPH_NULL */
+	"VisMorph it's plugin is NULL",						/* VISUAL_ERROR_MORPH_PLUGIN_NULL */
+	
+	"VisPalette is NULL",							/* VISUAL_ERROR_PALETTE_NULL */
+	"VisPalette it's size conflicts",					/* VISUAL_ERROR_PALETTE_SIZE */
+	
+	"VisParamEntry is NULL",						/* VISUAL_ERROR_PARAM_NULL */
+	"VisParamContainer is NULL",						/* VISUAL_ERROR_PARAM_CONTAINER_NULL */
+	"VisParamEntry not found in VisParamContainer",				/* VISUAL_ERROR_PARAM_NOT_FOUND */
+	"VisParamEntry it's change notify callback is NULL",			/* VISUAL_ERROR_PARAM_CALLBACK_NULL */
+	"VisParamEntry contains too many change notify callbacks",		/* VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY */
+	"VisParamEntry is of invalid type",					/* VISUAL_ERROR_PARAM_INVALID_TYPE */
+	
+	"VisPluginData is NULL",						/* VISUAL_ERROR_PLUGIN_NULL */
+	"VisPluginInfo is NULL",						/* VISUAL_ERROR_PLUGIN_INFO_NULL */
+	"VisPluginRef is NULL",							/* VISUAL_ERROR_PLUGIN_REF_NULL */
+	"Plugin does not have an event handler",				/* VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER */
+	"Plugin handle is NULL",						/* VISUAL_ERROR_PLUGIN_HANDLE_NULL */
+	"Plugin is already realized",						/* VISUAL_ERROR_PLUGIN_ALREADY_REALIZED */
+	
+	"VisRandomContext is NULL",						/* VISUAL_ERROR_RANDOM_CONTEXT_NULL */
+	
+	"VisSongInfo is NULL",							/* VISUAL_ERROR_SONGINFO_NULL */
 
-	"", /* VISUAL_ERROR_VIDEO_NULL */
-	"", /* VISUAL_ERROR_VIDEO_HAS_ALLOCATED */
-	"", /* VISUAL_ERROR_VIDEO_PIXELS_NULL */
-	"", /* VISUAL_ERROR_VIDEO_NO_ALLOCATED */
-	"", /* VISUAL_ERROR_VIDEO_HAS_PIXELS */
-	"", /* VISUAL_ERROR_VIDEO_INVALID_BPP */
-	"", /* VISUAL_ERROR_VIDEO_INVALID_DEPTH */
-	"", /* VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD */
-	"", /* VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS */
-	"", /* VISUAL_ERROR_VIDEO_NOT_INDENTICAL */
-	"" /* VISUAL_ERROR_VIDEO_NOT_TRANSFORMED */
+	"VisThread is NULL",							/* VISUAL_ERROR_THREAD_NULL */
+	"Threading is disabled or not supported",				/* VISUAL_ERROR_THREAD_NO_THREADING */
+	"VisMutex is NULL",							/* VISUAL_ERROR_MUTEX_NULL */
+	"VisMutex lock failed",							/* VISUAL_ERROR_MUTEX_LOCK_FAILURE */
+	"VisMutex trylock failed",						/* VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE */
+	"VisMutex unlock failed",						/* VISUAL_ERROR_MUTEX_UNLOCK_FAILURE */
+	
+	"VisObject destruction failed",						/* VISUAL_ERROR_OBJECT_DTOR_FAILED */
+	"VisObject is NULL",							/* VISUAL_ERROR_OBJECT_NULL */
+	"VisObject is not allocated",						/* VISUAL_ERROR_OBJECT_NOT_ALLOCATED */
+	
+	"VisTime is NULL",							/* VISUAL_ERROR_TIME_NULL */
+	"visual_time_usleep() is not supported",				/* VISUAL_ERROR_TIME_NO_USLEEP */
+	"VisTimer is NULL",							/* VISUAL_ERROR_TIMER_NULL */
+	
+	"VisUIWidget is NULL",							/* VISUAL_ERROR_UI_WIDGET_NULL */
+	"VisUIContainer is NULL",						/* VISUAL_ERROR_UI_CONTAINER_NULL */
+	"VisUIBox is NULL",							/* VISUAL_ERROR_UI_BOX_NULL */
+	"VisUITable is NULL",							/* VISUAL_ERROR_UI_TABLE_NULL */
+	"VisUIFrame is NULL",							/* VISUAL_ERROR_UI_FRAME_NULL */
+	"VisUILabel is NULL",							/* VISUAL_ERROR_UI_LABEL_NULL */
+	"VisUIImage is NULL",							/* VISUAL_ERROR_UI_IMAGE_NULL */
+	"VisUISeparator is NULL",						/* VISUAL_ERROR_UI_SEPARATOR_NULL */
+	"VisUIMutator is NULL",							/* VISUAL_ERROR_UI_MUTATOR_NULL */
+	"VisUIRange is NULL",							/* VISUAL_ERROR_UI_RANGE_NULL */
+	"VisUIEntry is NULL",							/* VISUAL_ERROR_UI_ENTRY_NULL */
+	"VisUISlider is NULL",							/* VISUAL_ERROR_UI_SLIDER_NULL */
+	"VisUINumeric is NULL",							/* VISUAL_ERROR_UI_NUMERIC_NULL */
+	"VisUIColor is NULL",							/* VISUAL_ERROR_UI_COLOR_NULL */
+	"VisUIChoice is NULL",							/* VISUAL_ERROR_UI_CHOICE_NULL */
+	"VisUIPopup is NULL",							/* VISUAL_ERROR_UI_POPUP_NULL */
+	"VisUIList is NULL",							/* VISUAL_ERROR_UI_LIST_NULL */
+	"VisUIRadio is NULL",							/* VISUAL_ERROR_UI_RADIO_NULL */
+	"VisUICheckbox is NULL",						/* VISUAL_ERROR_UI_CHECKBOX_NULL */
+	"VisUIChoiceEntry is NULL",						/* VISUAL_ERROR_UI_CHOICE_ENTRY_NULL */
+	"No choice in VisUIChoice is activated",				/* VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE */
+
+	"VisVideo is NULL",							/* VISUAL_ERROR_VIDEO_NULL */
+	"VisVideo has allocated pixel buffer",					/* VISUAL_ERROR_VIDEO_HAS_ALLOCATED */
+	"VisVideo it's pixel buffer is NULL",					/* VISUAL_ERROR_VIDEO_PIXELS_NULL */
+	"VisVideo it's pixel buffer is not allocated",				/* VISUAL_ERROR_VIDEO_NO_ALLOCATED */
+	"VisVideo has pixel buffer",						/* VISUAL_ERROR_VIDEO_HAS_PIXELS */
+	"VisVideo is of invalid bytes per pixel",				/* VISUAL_ERROR_VIDEO_INVALID_BPP */
+	"VisVideo is of invalid depth",						/* VISUAL_ERROR_VIDEO_INVALID_DEPTH */
+	"Invalid scale method given",						/* VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD */
+	"Given coordinates are out of bounds",					/* VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS */
+	"Given VisVideos are not indentical",					/* VISUAL_ERROR_VIDEO_NOT_INDENTICAL */
+	"VisVideo is not depth transformed as requested"			/* VISUAL_ERROR_VIDEO_NOT_TRANSFORMED */
 };
 
 static VisErrorHandlerFunc error_handler = NULL;
@@ -180,7 +179,7 @@ int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv)
  */
 const char *visual_error_to_string (int err)
 {
-	if (abs (err) > VISUAL_ERROR_LIST_END)
+	if (abs (err) >= VISUAL_ERROR_LIST_END)
 		return "The error value given to visual_error_to_string() is invalid";
 
 	return __lv_error_human_readable[abs (err)];
