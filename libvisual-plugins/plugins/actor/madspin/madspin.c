@@ -103,11 +103,12 @@ int lv_madspin_init (VisPluginData *plugin)
 	priv->speed = 715;
 	
 	/* Parameters */
+	/* Number of stars */
 	param = visual_param_entry_new ("num stars");
 	visual_param_entry_set_integer (param, priv->num_stars);
 	visual_param_container_add (paramcontainer, param);
 
-	/* Plotter color trigger */
+	/* Rotation speed */
 	param = visual_param_entry_new ("speed");
 	visual_param_entry_set_integer (param, priv->speed);
 	visual_param_container_add (paramcontainer, param);
@@ -124,6 +125,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glShadeModel (GL_SMOOTH);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth (1.0);
 	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
 	glEnable (GL_BLEND);
 	glEnable (GL_TEXTURE_2D);
@@ -139,7 +141,7 @@ int lv_madspin_init (VisPluginData *plugin)
 int lv_madspin_cleanup (VisPluginData *plugin)
 {
 	MadspinPrivate *priv = plugin->priv;
-
+	
 	if (priv->initialized){
 		glDeleteTextures (2, priv->texture);
 	}
@@ -179,7 +181,9 @@ int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int
 
 int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 {
+	MadspinPrivate *priv = plugin->priv;
 	VisEvent ev;
+	VisParamEntry *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -187,6 +191,15 @@ int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 				lv_madspin_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
 				break;
+
+			case VISUAL_EVENT_PARAM:
+				param = ev.param.param;
+
+				if (visual_param_entry_is (param, "num stars"))
+					priv->num_stars = visual_param_entry_get_integer (param);
+				else if (visual_param_entry_is (param, "speed"))
+					priv->speed = visual_param_entry_get_integer (param);
+	
 			default: /* to avoid warnings */
 				break;
 		}

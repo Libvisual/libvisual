@@ -21,6 +21,8 @@ typedef struct {
 	GLfloat z_speed;
 	GLfloat heights[16][16];
 	GLfloat scale;
+
+	int transparant;
 } GLtestPrivate;
 
 int lv_gltest_init (VisPluginData *plugin);
@@ -73,11 +75,23 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_gltest_init (VisPluginData *plugin)
 {
 	GLtestPrivate *priv;
+	VisParamContainer *paramcontainer = &plugin->params;
+	VisParamEntry *param;
 	int x, y;
 
 	priv = visual_mem_new0 (GLtestPrivate, 1);
 	plugin->priv = priv;
 
+	priv->transparant = TRUE;
+
+	/* Parameters */
+	param = visual_param_entry_new ("transparant bars");
+	visual_param_entry_set_integer (param, priv->transparant);
+	visual_param_container_add (paramcontainer, param);
+
+	/* GL setting up the rest! */	
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	glMatrixMode (GL_PROJECTION);
 
 	glLoadIdentity ();
@@ -89,6 +103,11 @@ int lv_gltest_init (VisPluginData *plugin)
 
 	glEnable (GL_DEPTH_TEST);
 	glDepthFunc (GL_LESS);
+
+	if (priv->transparant == TRUE) {
+		glBlendFunc (GL_SRC_ALPHA,GL_ONE);
+		glEnable (GL_BLEND);
+	}
 
 	for (x = 0; x < 16; x++) {
 		for (y = 0; y < 16; y++) {
@@ -158,7 +177,9 @@ int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int 
 
 int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 {
+	GLtestPrivate *priv = plugin->priv;
 	VisEvent ev;
+	VisParamEntry *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -166,6 +187,19 @@ int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 				lv_gltest_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
 				break;
+
+			case VISUAL_EVENT_PARAM:
+				param = ev.param.param;
+
+				if (visual_param_entry_is (param, "transparant bars")) {
+					priv->transparant = visual_param_entry_get_integer (param);
+
+					if (priv->transparant == FALSE)
+						glDisable (GL_BLEND);
+					else
+						glEnable (GL_BLEND);
+				}
+
 			default: /* to avoid warnings */
 				break;
 		}

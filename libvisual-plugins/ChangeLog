@@ -1,5 +1,16 @@
 2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/madspin/madspin.c (lv_madspin_events):
+	Actually listen to parameter changes.
+
+	* plugins/actor/lv_gltest/actor_lv_gltest.c
+	(lv_gltest_init): Add a parameter for enabling
+	transparant bars, and enable this by default.
+
+	(lv_gltest_events): Listen to the new parameter.
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/input/alsa/input_alsa.c: Changed the buffer request
 	size to 1024 so the wave form is actually responding.
 
