@@ -26,6 +26,12 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "lvconfig.h"
+
+#if defined(VISUAL_OS_WIN32)
+#include <windows.h>
+#endif
+
 #include "lv_log.h"
 #include "lv_thread.h"
 

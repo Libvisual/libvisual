@@ -4,6 +4,12 @@
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_common.h>
 
+#include "lvconfig.h"
+
+#if defined(VISUAL_OS_WIN32)
+#include <windows.h>
+#endif
+
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
 #include <pthread.h>
@@ -39,8 +45,9 @@ struct _VisThread {
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
 	pthread_t thread;		/**< Private used for the pthread implementation. */
-#else /* !VISUAL_THREAD_MODEL_POSIX */
-
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+	HANDLE thread;
+	DWORD threadId;
 #endif
 #endif /* VISUAL_HAVE_THREADS */
 };
@@ -53,7 +60,8 @@ struct _VisMutex {
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
 	pthread_mutex_t mutex;		/**< Private used for the pthreads implementation. */
-#else /* !VISUAL_THREAD_MODEL_POSIX */
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+
 
 #endif
 #endif /* VISUAL_HAVE_THREADS */

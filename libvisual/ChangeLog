@@ -1,3 +1,8 @@
+2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* autogen.sh: New version by Duilio, derived
+	from the gnome-common autogen.sh
+
 2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_plugin.c (plugin_add_dir_to_list): Adding
