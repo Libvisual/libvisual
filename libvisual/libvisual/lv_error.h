@@ -13,7 +13,7 @@ enum {
 	VISUAL_OK,					/**< No error. */
 
 	/* Standard error entries */
-	VISUAL_ERROR_GENERIC,				/**< Generic error. */
+	VISUAL_ERROR_GENERAL,				/**< General error. */
 	VISUAL_ERROR_NULL,				/**< Something is NULL that shouldn't be. */
 	VISUAL_ERROR_IMPOSSIBLE,			/**< The impossible happened, this should never happen. */
 
@@ -133,6 +133,15 @@ enum {
 
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_NULL,			/**< The VisVideo is NULL. */
+	VISUAL_ERROR_VIDEO_HAS_ALLOCATED,		/**< The VisVideo has an allocated buffer. */
+	VISUAL_ERROR_VIDEO_PIXELS_NULL,			/**< The VisVideo doesn't point to a pixel buffer. */
+	VISUAL_ERROR_VIDEO_NO_ALLOCATED,		/**< The VisVideo doesn't have an allocated pixel buffer. */
+	VISUAL_ERROR_VIDEO_HAS_PIXELS,			/**< The VisVideo already points to a pixel buffer. */
+	VISUAL_ERROR_VIDEO_INVALID_BPP,			/**< The VisVideo it's bytes per pixel is invalid. */
+	VISUAL_ERROR_VIDEO_INVALID_DEPTH,		/**< The VisVideoDepth value is not valid. */
+	VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS,		/**< The X or Y value are greater than the VisVideo it's dimension. */
+	VISUAL_ERROR_VIDEO_NOT_INDENTICAL,		/**< The two VisVideo their configuration are not indentical. */
+	VISUAL_ERROR_VIDEO_NOT_TRANSFORMED		/**< Could not depth transform a VisVideo. */
 };
 
 /**

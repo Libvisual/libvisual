@@ -119,19 +119,16 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
  */
 int visual_video_free (VisVideo *video)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	if (HAVE_ALLOCATED_BUFFER(video)) {
 		visual_log (VISUAL_LOG_CRITICAL, "VisVideo structure has an allocated screen buffer, "
 				"visual_video_free_with_buffer() must be used");
-		return -1;
+
+		return -VISUAL_ERROR_VIDEO_HAS_ALLOCATED;
 	}
 	
-	visual_mem_free (video);
-
-	video = NULL;
-
-	return 0;
+	return visual_mem_free (video);
 }
 
 /**
@@ -147,20 +144,12 @@ int visual_video_free (VisVideo *video)
  */
 int visual_video_free_with_buffer (VisVideo *video)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	if (HAVE_ALLOCATED_BUFFER (video)) {
+	if (HAVE_ALLOCATED_BUFFER (video))
 		visual_video_free_buffer (video);
-	} else {
-		visual_log (VISUAL_LOG_WARNING, "VisVideo structure doesn't have an allocated "
-				"screen buffer, visual_video_free() must be used");
-	}
 
-	visual_mem_free (video);
-
-	video = NULL;
-
-	return 0;
+	return visual_mem_free (video);
 }
 
 /**
@@ -172,19 +161,19 @@ int visual_video_free_with_buffer (VisVideo *video)
  */
 int visual_video_free_buffer (VisVideo *video)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
-	visual_log_return_val_if_fail (video->pixels != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (video->pixels != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 
 	if (HAVE_ALLOCATED_BUFFER (video))
 		visual_mem_free (video->pixels);
 	else
-		return -1;
+		return -VISUAL_ERROR_VIDEO_NO_ALLOCATED;
 
 	video->pixels = NULL;
 
 	video->flags = VISUAL_VIDEO_FLAG_NONE;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -197,7 +186,7 @@ int visual_video_free_buffer (VisVideo *video)
  */
 int visual_video_allocate_buffer (VisVideo *video)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	if (video->pixels != NULL) {
 		if (HAVE_ALLOCATED_BUFFER (video)) {
@@ -205,21 +194,23 @@ int visual_video_allocate_buffer (VisVideo *video)
 		} else {
 			visual_log (VISUAL_LOG_CRITICAL, "Trying to allocate an screen buffer on "
 					"a VisVideo structure which points to an external screen buffer");
-			return -1;
+
+			return -VISUAL_ERROR_VIDEO_HAS_PIXELS;
 		}
 	}
 
 	if (video->size == 0) {
 		video->pixels = NULL;
 		video->flags = VISUAL_VIDEO_FLAG_NONE;
-		return 0;
+
+		return VISUAL_OK;
 	}
 	
 	video->pixels = visual_mem_malloc0 (video->size);
 
 	video->flags = VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -253,8 +244,8 @@ int visual_video_have_allocated_buffer (const VisVideo *video)
  */
 int visual_video_clone (VisVideo *dest, const VisVideo *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -1);
-	visual_log_return_val_if_fail (src != NULL, -1);
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	visual_video_set_depth (dest, src->depth);
 	visual_video_set_dimension (dest, src->width, src->height);
@@ -262,7 +253,7 @@ int visual_video_clone (VisVideo *dest, const VisVideo *src)
 
 	dest->flags = src->flags;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -303,11 +294,11 @@ int visual_video_compare (const VisVideo *src1, const VisVideo *src2)
  */
 int visual_video_set_palette (VisVideo *video, VisPalette *pal)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	video->pal = pal;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -324,17 +315,18 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
  */
 int visual_video_set_buffer (VisVideo *video, void *buffer)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	if (HAVE_ALLOCATED_BUFFER (video)) {
 		visual_log (VISUAL_LOG_CRITICAL, "Trying to set a screen buffer on "
 				"a VisVideo structure which points to an allocated screen buffer");
-		return -1;
+
+		return -VISUAL_ERROR_VIDEO_HAS_ALLOCATED;
 	}
 
 	video->pixels = buffer;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -349,7 +341,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
  */
 int visual_video_set_dimension (VisVideo *video, int width, int height)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	video->width = width;
 	video->height = height;
@@ -357,7 +349,7 @@ int visual_video_set_dimension (VisVideo *video, int width, int height)
 	video->pitch = video->width * video->bpp;
 	video->size = video->pitch * video->height;
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -373,15 +365,15 @@ int visual_video_set_dimension (VisVideo *video, int width, int height)
  */
 int visual_video_set_pitch (VisVideo *video, int pitch)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	if (video->bpp <= 0)
-		return -1;
+		return -VISUAL_ERROR_VIDEO_INVALID_BPP;
 
 	video->pitch = pitch;
 	video->size = video->pitch * video->height;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -395,12 +387,12 @@ int visual_video_set_pitch (VisVideo *video, int pitch)
  */
 int visual_video_set_depth (VisVideo *video, VisVideoDepth depth)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	video->depth = depth;
 	video->bpp = visual_video_bpp_from_depth (video->depth);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -409,12 +401,12 @@ int visual_video_set_depth (VisVideo *video, VisVideoDepth depth)
  * @param depthflag The ORred depthflag that we check against.
  * @param depth The depth that we want to test.
  *
- * @return 1 when supported, 0 when unsupported and -1 on error.
+ * @return TRUE when supported, FALSE when unsupported and -1 on error.
  */
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 {
 	if (visual_video_depth_is_sane (depth) == 0)
-		return -1;
+		return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 
 	if ((depth & depthflag) > 0)
 		return 1;
@@ -546,10 +538,11 @@ VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag)
 		if (depth == VISUAL_VIDEO_DEPTH_GL)
 			return VISUAL_VIDEO_DEPTH_ERROR;
 
-	} else
+	} else {
 		return depth;
+	}
 
-	return VISUAL_VIDEO_DEPTH_ERROR;
+	return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
 /**
@@ -557,7 +550,7 @@ VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag)
  *
  * @param depth Depth to be checked if it's sane.
  *
- * @return 1 if the depth is sane, 0 if the depth is not sane.
+ * @return TRUE if the depth is sane, FALSE if the depth is not sane.
  */
 int visual_video_depth_is_sane (VisVideoDepth depth)
 {
@@ -565,22 +558,22 @@ int visual_video_depth_is_sane (VisVideoDepth depth)
 	int i = 1;
 
 	if (depth == VISUAL_VIDEO_DEPTH_NONE)
-		return 1;
+		return TRUE;
 
 	if (depth >= VISUAL_VIDEO_DEPTH_ENDLIST)
-		return 0;
+		return FALSE;
 	
 	while (i < VISUAL_VIDEO_DEPTH_ENDLIST) {
 		if ((i & depth) > 0)
 			count++;
 
 		if (count > 1)
-			return 0;
+			return FALSE;
 
 		i <<= 1;
 	}
 
-	return 1;
+	return TRUE;
 }
 
 /**
@@ -589,7 +582,7 @@ int visual_video_depth_is_sane (VisVideoDepth depth)
  * @param depth The VisVideodepth enumerate value from which the bits per pixel
  * 	needs to be returned.
  *
- * @return The bits per pixel or -1 on error.
+ * @return The bits per pixel or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on error.
  */
 int visual_video_depth_value_from_enum (VisVideoDepth depth)
 {
@@ -607,10 +600,10 @@ int visual_video_depth_value_from_enum (VisVideoDepth depth)
 			return 32;
 
 		default:
-			return -1;
+			return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 	}
 
-	return -1;
+	return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 }
 
 /**
@@ -640,7 +633,7 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
 
 	}
 
-	return -1;
+	return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
 /**
@@ -670,10 +663,10 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 			return 0;
 
 		default:
-			return -1;
+			return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 	}
 
-	return -1;
+	return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
 /**
@@ -700,10 +693,10 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 
 	/* Placement is outside dest buffer, no use to continue */
 	if (x > dest->width)
-		return -1;
+		return -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
 
 	if (y > dest->height)
-		return -1;
+		return -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
 
 	/* We're not the same depth, converting */
 	if (dest->depth != src->depth) {
@@ -740,7 +733,7 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 	if (transform != NULL)
 		visual_video_free_with_buffer (transform);
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 static int blit_overlay_noalpha (VisVideo *dest, const VisVideo *src, int x, int y)
@@ -794,7 +787,7 @@ static int blit_overlay_noalpha (VisVideo *dest, const VisVideo *src, int x, int
 				amount);
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /* FIXME Loads of optimze to be done */
@@ -876,7 +869,7 @@ static int blit_overlay_alpha32 (VisVideo *dest, const VisVideo *src, int x, int
 		di += dest->pitch - (amount * dest->bpp);
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -897,8 +890,8 @@ int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, 
 	int i;
 	uint32_t *vidbuf;
 
-	visual_log_return_val_if_fail (video != NULL, -1);
-	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 
 	col = (r << 16 | g << 8 | b);
 
@@ -911,7 +904,7 @@ int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, 
 			vidbuf[i] += (density << 24);
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -928,15 +921,15 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
 	int i;
 	uint32_t *vidbuf;
 
-	visual_log_return_val_if_fail (video != NULL, -1);
-	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 
 	vidbuf = video->pixels;
 
 	for (i = 0; i < video->size / video->bpp; i++)
 		vidbuf[i] += (density << 24);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -950,10 +943,10 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
  */
 int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
 {
-	visual_log_return_val_if_fail (visual_video_compare (dest, src) == TRUE, -1);
-	visual_log_return_val_if_fail (dest->pixels != NULL, -1);
-	visual_log_return_val_if_fail (src->pixels != NULL, -1);
-	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_8BIT, -1);
+	visual_log_return_val_if_fail (visual_video_compare (dest, src) == TRUE, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL);
+	visual_log_return_val_if_fail (dest->pixels != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
+	visual_log_return_val_if_fail (src->pixels != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
+	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_8BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 	
 	if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT)
 		bgr_to_rgb16 (dest, src);
@@ -962,7 +955,7 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
 	else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT)
 		bgr_to_rgb32 (dest, src);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -978,7 +971,7 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
  */
 int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc)
 {
-	/* We blit overlay it instead of just memcpy because the pitch van still be different */
+	/* We blit overlay it instead of just memcpy because the pitch can still be different */
 	if (viddest->depth == vidsrc->depth)
 		return visual_video_blit_overlay (viddest, vidsrc, 0, 0, FALSE);
 	
@@ -1006,18 +999,18 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video
 	int width = video->width;
 	int height = video->height;
 
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	
 	if (destdepth == VISUAL_VIDEO_DEPTH_8BIT || video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-		visual_log_return_val_if_fail (pal != NULL, -1);
-		visual_log_return_val_if_fail (pal->ncolors == 256, -1);
+		visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
+		visual_log_return_val_if_fail (pal->ncolors == 256, -VISUAL_ERROR_PALETTE_SIZE);
 	}
 
 	/* Destdepth is equal to sourcedepth case */
 	if (video->depth == destdepth) {
 		memcpy (dest, video->pixels, video->width * video->height * video->bpp);
 
-		return 0;
+		return VISUAL_OK;
 	}
 	
 	if (video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
@@ -1065,7 +1058,7 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video
 			return depth_transform_32_to_24_c (dest, srcbuf, width, height, pitch, NULL);
 	}
 
-	return -1;
+	return -VISUAL_ERROR_VIDEO_NOT_TRANSFORMED;
 }
 
 /**
@@ -1107,7 +1100,7 @@ static int depth_transform_8_to_16_c (uint8_t *dest, uint8_t *src, int width, in
 		i += pitchdiff;
 	}
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1127,7 +1120,7 @@ static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, in
 		i += pitchdiff;
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1152,7 +1145,7 @@ static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, in
 		i += pitchdiff;
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1184,7 +1177,7 @@ static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 		i += pitchdiff;	
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1205,7 +1198,7 @@ static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, i
 		j += pitchdiff;
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1227,7 +1220,7 @@ static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, i
 		j += pitchdiff;
 	}
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1257,7 +1250,7 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 		i += pitchdiff;	
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1278,7 +1271,7 @@ static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 		i += pitchdiff;
 	}
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1298,7 +1291,7 @@ static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, i
 		j += pitchdiff;
 	}
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1329,7 +1322,7 @@ static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 		i += pitchdiff;	
 	}
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1351,7 +1344,7 @@ static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 		i += pitchdiff;
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
@@ -1371,7 +1364,7 @@ static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, i
 		i += pitchdiff;
 	}
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 static int bgr_to_rgb16 (VisVideo *dest, const VisVideo *src)
@@ -1395,7 +1388,7 @@ static int bgr_to_rgb16 (VisVideo *dest, const VisVideo *src)
 		i += pitchdiff;
 	}
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 static int bgr_to_rgb24 (VisVideo *dest, const VisVideo *src)
@@ -1420,7 +1413,7 @@ static int bgr_to_rgb24 (VisVideo *dest, const VisVideo *src)
 		i += pitchdiff;
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
@@ -1447,6 +1440,6 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
 		i += pitchdiff;
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
