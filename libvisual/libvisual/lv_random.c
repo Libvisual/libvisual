@@ -33,7 +33,7 @@ uint32_t visual_random_int ()
 
 uint32_t visual_random_int_range (int min, int max)
 {
-	return (visual_random_int () % (max - min + 1)) + min;
+	return (visual_random_int () / (VISUAL_RANDOM_MAX / (max - min + 1))) + min;
 }
 
 int visual_random_decide (float a)
@@ -96,7 +96,7 @@ uint32_t visual_random_context_int_range (VisRandomContext *rcontext, int min, i
 {
 	visual_log_return_val_if_fail (rcontext != NULL, -1);
 
-	return (visual_random_context_int (rcontext) % (max - min + 1)) + min;
+	return (visual_random_context_int (rcontext) / (VISUAL_RANDOM_MAX / (max - min + 1))) + min;
 }
 
 int visual_random_context_decide (VisRandomContext *rcontext, float a)

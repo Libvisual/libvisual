@@ -1,4 +1,15 @@
 2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_random.c (visual_random_int_range,
+	visual_random_context_int_range):
+
+	Don't use modulo operator to limit max. Instead
+	do a division. Modulo tends to quickly generate
+	the same pattern over and over.
+
+	Thanks to Vitaly V. Bursov for pointing this out.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* libvisual/lv_bin.c (visual_bin_set_morph_by_name):
 	Destroy the morph plugin if it's already there
