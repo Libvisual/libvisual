@@ -7,7 +7,7 @@
 
 #include "GL/gl.h"
 
-#define NULL_OUTPUT 1
+#define NULL_OUTPUT 0
 
 int main(int argc, char **argv)
 {

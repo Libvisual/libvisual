@@ -250,9 +250,6 @@ int lvdisplay_run(Lvd *v)
 	LvdDriver *drv = v->drv;
 	assert(drv);
 	assert(drv->pclass);
-	assert(drv->ptype);
-
-	drv->ptype->info->events(drv->ptype, &drv->ptype->eventqueue);
 
 	visual_bin_realize(v->bin);
 	visual_bin_run(v->bin);
@@ -273,5 +270,10 @@ VisEventQueue *lvdisplay_get_eventqueue(Lvd *v)
 
 int lvdisplay_poll_event(Lvd *v, VisEvent *event)
 {
+	LvdDriver *drv = v->drv;
+	assert(drv);
+	assert(drv->ptype);
+
+	drv->ptype->info->events(drv->ptype, &drv->ptype->eventqueue);
 	return visual_event_queue_poll(lvdisplay_get_eventqueue(v), event);
 }

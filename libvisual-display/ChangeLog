@@ -4,6 +4,9 @@
 	quit events. Check the source.
 	* example/main.c: added #if NULL_PLUG, added
 	visual_bin_sync() to resize event handler.
+	* lvdisplay/lvdisplay.c: poll events in
+	lvdisplay_poll_event() not in lvdisplay_run().
+	*  example/main.c: do not use null plugin by default.
 
 2004-10-05  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 	* drivers/glx/glx.c: VisVideo support, framebuffer
