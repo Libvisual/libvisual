@@ -1,4 +1,9 @@
 2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/dancingparticles/*: Now less ugly, more sexy,
+	responsive to music, just like the girl next door, but better.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* plugins/actor/lv_analyzer/actor_lv_analyzer.c
 	(lv_analyzer_requisition): Make less braindead.

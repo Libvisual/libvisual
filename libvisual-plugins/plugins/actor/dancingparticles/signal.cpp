@@ -40,7 +40,7 @@ beatdetector::beatdetector()
   for(int i = 0;i<10;i++)
     lastbeats[i]=0;
 }
-void beatdetector::learnbeat(uint16_t data[2][256])
+void beatdetector::learnbeat(short int data[3][256])
 {
   filterpower=0;
   for(int i = 0; i < NUM_BANDS; i++)
@@ -59,7 +59,7 @@ void beatdetector::learnbeat(uint16_t data[2][256])
       filterpower+=filter[i];
     }
 }
-void beatdetector::calc_loudness(uint16_t data[2][256])
+void beatdetector::calc_loudness(short int data[3][256])
 {
   int    i;
   int    y0, y1;
@@ -86,7 +86,7 @@ int avgloudness ;
 int gloudnesses[200];
 int curloudness = 0;
 int gloudness=0;
-void dp_render_freq(uint16_t spectrum[2][256])
+void dp_render_freq(short int spectrum[3][256])
 {
   int i;
   

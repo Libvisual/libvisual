@@ -105,6 +105,8 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 
 	visual_plugin_set_userinterface (plugin, checkbox);
 
+	build_sqrt_table ();
+	
 	init_gl ();
 	
 	return 0;
@@ -146,7 +148,6 @@ extern "C" int lv_dancingparticles_requisition (VisPluginData *plugin, int *widt
 extern "C" int lv_dancingparticles_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	glViewport(0, 0, width, height);
-
 
 	build_sqrt_table ();
 	
@@ -196,7 +197,7 @@ extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *vide
 	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	/* FIXME on title change, do something */
-	
+	dp_render_freq (audio->freq);
 //	update_playlist_info ();
 	etoileLoop ();
 	draw_gl ();

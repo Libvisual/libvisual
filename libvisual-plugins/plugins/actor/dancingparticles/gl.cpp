@@ -1,6 +1,4 @@
 
-#include <GL/glu.h>
-
 #include <pthread.h>
 #include <sched.h>
 
@@ -53,20 +51,20 @@ void LoadTexture()
 }
 void init_gl(void)
 {
-  glViewport(0, 0, 640, 480);
+ // glViewport(0, 0, 640, 480);
   LoadTexture();
-  glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
-  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	// Clear The Background Color To Blue 
-  glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
-  glDepthFunc(GL_LESS);			// The Type Of Depth Test To Do
-  glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
-  glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
+//  glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
+//  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	// Clear The Background Color To Blue 
+//  glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
+//  glDepthFunc(GL_LESS);			// The Type Of Depth Test To Do
+//  glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
+//  glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
     
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();				// Reset The Projection Matrix
+//  glMatrixMode(GL_PROJECTION);
+//  glLoadIdentity();				// Reset The Projection Matrix
     
     
-  gluPerspective(45.0f,(GLfloat)640/(GLfloat)480,0.1f,100.0f);	// Calculate The Aspect Ratio Of The Window
+//  gluPerspective(45.0f,(GLfloat)640/(GLfloat)480,0.1f,100.0f);	// Calculate The Aspect Ratio Of The Window
     
   glMatrixMode(GL_MODELVIEW);
  etoileinit();

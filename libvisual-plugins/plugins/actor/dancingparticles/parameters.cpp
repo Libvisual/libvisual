@@ -337,9 +337,10 @@ void changep()
 
 void etoileinit(void)
 {
-  init_parameters();
+//  init_parameters();
+	allocParts();
   frames=0;
-  changep();
+//  changep();
   return ;	
 }
 

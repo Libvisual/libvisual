@@ -12,6 +12,8 @@ typedef FloatPoint FloatPoint;
 
 #include "matrix.h"
 
+void dp_render_freq(short int spectrum[3][256]);
+
 /* Globals */
 
 struct parameters
@@ -116,9 +118,9 @@ public:
   int	beatquiet;	/* force "quiet" situation? */
   
   beatdetector();
-  void calc_loudness(uint16_t data[2][256]);
+  void calc_loudness(short int data[3][256]);
   void detect_beat();
-  void learnbeat(uint16_t data[2][256]);
+  void learnbeat(short int data[3][256]);
 
 };
 extern beatdetector detector;
