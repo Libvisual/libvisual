@@ -61,8 +61,8 @@ struct _VisConfigRegistrySection {
 					  *  For example "Libvisual:core:actor:oinksie:color mode" could
 					  *  contain the "color mode" parameter off the oinksie actor plugin. */
 
-	int		 datalength;	/**< Length of the data stored for this registry element. */
 	char		*data;		/**< The data that is associated with this registry element. */
+	int		 datalength;	/**< Length of the data stored for this registry element. */
 };
 
 /* prototypes */
@@ -71,7 +71,8 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile);
 
 VisConfigRegistrySection *visual_config_registry_section_new (void);
 VisConfigRegistrySection *visual_config_registry_section_find (VisConfigRegistry *registry, const char *name);
-int visual_config_registry_section_delete (VisConfigRegistry *registry, const char *name);
+int visual_config_registry_section_remove (VisConfigRegistry *registry, const char *name);
+int visual_config_registry_section_add (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
 VisConfigRegistrySection *visual_config_registry_section_open (const char *name, const char *configfile);
 
 int visual_config_registry_write_by_data (VisConfigRegistry *registry, const char *name, const char *data, int datalength);

@@ -36,7 +36,6 @@
 #include "config.h"
 #include "lv_common.h"
 #include "lv_mem.h"
-#include "lv_param.h"
 #include "lv_config.h"
 
 static int config_registry_dtor (VisObject *object);
@@ -120,16 +119,45 @@ VisConfigRegistrySection *visual_config_registry_section_new ()
 VisConfigRegistrySection *visual_config_registry_section_find (VisConfigRegistry *registry, const char *name)
 {
 	VisConfigRegistrySection *rsection;
+	VisListEntry *le = NULL;
 
 	visual_log_return_val_if_fail (registry != NULL, NULL);
 
-	return rsection;
+	while ((rsection = visual_list_next (&registry->sections, &le)) != NULL) {
+		if (strcmp (rsection->name, name) == 0)
+			return rsection;
+	}
+
+	return NULL;
 }
 
-int visual_config_registry_section_delete (VisConfigRegistry *registry, const char *name)
+int visual_config_registry_section_remove (VisConfigRegistry *registry, const char *name)
 {
+	VisConfigRegistrySection *rsection;
+	VisListEntry *le = NULL;
+	
 	visual_log_return_val_if_fail (registry != NULL, -VISUAL_ERROR_CONFIG_REGISTRY_NULL);
 
+	while ((rsection = visual_list_next (&registry->sections, &le)) != NULL) {
+		if (strcmp (rsection->name, name) == 0) {
+			visual_list_delete (&registry->sections, &le);
+
+			visual_object_unref (VISUAL_OBJECT (rsection));
+
+			return VISUAL_OK;
+		}
+	}	
+
+	return VISUAL_OK;
+}
+
+int visual_config_registry_section_add (VisConfigRegistry *registry, VisConfigRegistrySection *rsection)
+{
+	visual_log_return_val_if_fail (registry != NULL, -VISUAL_ERROR_CONFIG_REGISTRY_NULL);
+	visual_log_return_val_if_fail (rsection != NULL, -VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL);
+
+	visual_list_add (&registry->sections, rsection);
+	
 	return VISUAL_OK;
 }
 
@@ -160,6 +188,8 @@ int visual_config_registry_write (VisConfigRegistry *registry, VisConfigRegistry
 {
 	visual_log_return_val_if_fail (registry != NULL, -VISUAL_ERROR_CONFIG_REGISTRY_NULL);
 	visual_log_return_val_if_fail (rsection != NULL, -VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL);
+
+	visual_config_registry_write_by_data (registry, rsection->name, rsection->data, rsection->datalength);
 
 	return VISUAL_OK;
 }

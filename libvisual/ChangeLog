@@ -1,5 +1,9 @@
 2005-03-08  dennis smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_config.*: Some more work. Just small bits.
+
+2005-03-08  dennis smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_video.c (depth_transform_8_to_24_c,
 	depth_transform_8_to_32_c, depth_transform_16_to_8_c,
 	depth_transform_16_to_24_c, depth_transform_24_to_8_c,
