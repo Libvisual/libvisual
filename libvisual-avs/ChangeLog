@@ -1,3 +1,11 @@
+2005-01-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Adding channelshift.
+
+	* plugins/transform/channelshift/*: Adding plugin.
+
+	* src/*: Fixed, adding support for channelshift, named APE avs entries.
+
 2005-01-26  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Adding multiplier.

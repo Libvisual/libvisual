@@ -98,6 +98,21 @@ else
   AC_MSG_RESULT([no])
 fi
 
+# The AVS elements.
+AC_ARG_ENABLE([avs_channelshift],
+	      AC_HELP_STRING([--disable-channelshift],
+			     [Do not build the AVS trans channelshift plugin @<:@default=enabled@:>@]),
+	      [avs_channelshift=$enableval],
+	      [avs_channelshift=yes])
+AC_MSG_CHECKING([whether to build AVS trans channelshift plugin])
+if test x$avs_channelshift = xyes; then
+  AC_MSG_RESULT([yes])
+  build_trans="$build_trans channelshift"
+  AC_SUBST([AVS_CHANNELSHIFT], ['transform_avs_channelshift.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 #
 # Build paramaters
 #
@@ -193,6 +208,7 @@ AC_CONFIG_FILES([
 	plugins/actor/ring/Makefile
 	plugins/transform/Makefile
 	plugins/transform/multiplier/Makefile
+	plugins/transform/channelshift/Makefile
 ])
 
 

@@ -42,7 +42,7 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 LVAVSPresetElement *wavs_convert_main_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_multiplier_new (AVSElement *avselem);
-
+LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem);
 
 /* Object destructors */
 static int lvavs_preset_dtor (VisObject *object)
@@ -207,6 +207,11 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 				break;
 
+			case AVS_ELEMENT_TYPE_TRANS_CHANNELSHIFT:
+				visual_list_add (presetcont->members, wavs_convert_channelshift_new (avselem));
+
+				break;
+
 			default:
 				visual_log (VISUAL_LOG_CRITICAL, "Unhandled winamp AVS type %d\n", avselem->type);
 
@@ -303,3 +308,68 @@ LVAVSPresetElement *wavs_convert_multiplier_new (AVSElement *avselem)
 	return element;
 }
 
+LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem)
+{
+	LVAVSPresetElement *element;
+	VisParamContainer *pcont;
+	VisParamContainer *pcontw;
+	int shift;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("shift"),
+		VISUAL_PARAM_LIST_ENTRY ("onbeat"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+	visual_param_container_add_many (pcont, params);
+
+	pcontw = avselem->pcont;
+
+	/* Copy all the matching */
+	visual_param_container_copy_match (pcont, pcontw);
+
+	shift = visual_param_entry_get_integer (visual_param_container_get (pcontw, "shift"));
+
+	/* Yes, the RGB and BRG entries have the same value here, I think it's a bug in winamp AVS */
+	switch (shift & 0xff) {
+		case 0xfb: /* BRG */
+			shift = 2;
+			
+			break;
+
+		case 0xfc: /* RBG */
+			shift = 1;
+			
+			break;
+
+		case 0xfd: /* BGR */
+			shift = 3;
+			
+			break;
+		
+		case 0xfa: /* GBR */
+			shift = 4;
+			
+			break;
+		
+		case 0xfe: /* GRB */
+			shift = 5;
+			
+			break;
+
+		default: /* Default to RGB */
+			shift = 0;
+			
+			break;
+			
+
+	}
+
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "shift"), shift);
+
+	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_channelshift");
+	element->pcont = pcont;
+
+	return element;
+}

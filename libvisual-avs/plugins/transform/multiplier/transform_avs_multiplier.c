@@ -24,6 +24,7 @@
 /* FIXME TODO:
  *
  * config UI.
+ * fix for other depths than 32bits
  */
 
 #include <stdio.h>
@@ -149,7 +150,6 @@ int lv_multiplier_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 {
 	MultiplierPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	priv->multiply = 0;
 	switch (priv->multiply) {
 		case 0:
 			multiply_video_root (plugin, video);
@@ -200,6 +200,7 @@ int lv_multiplier_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 
 static void multiply_video_root (VisPluginData *plugin, VisVideo *video)
 {
+	uint32_t *ibuf = video->pixels;
 	uint8_t *buf = video->pixels;
 	uint8_t bytetable[256];
 	int i;
@@ -209,13 +210,10 @@ static void multiply_video_root (VisPluginData *plugin, VisVideo *video)
 	for (i = 1; i < 256; i++)
 		bytetable[i] = 0xff;
 	
-	/* FIXME endianess.. */
 	if (video->depth == VISUAL_VIDEO_DEPTH_32BIT) {
-		for (i = 0; i < video->size / 4; i++) {
-			*(buf) = bytetable[*(buf++)];
-			*(buf) = bytetable[*(buf++)];
-			*(buf) = bytetable[*(buf++)];
-			buf++;
+		for (i = 0; i < video->size / 4; i++, ++ibuf) {
+			if ((*(ibuf) & 0x00ffffff) > 0)
+				*(ibuf) |= 0x00ffffff;
 		}
 	} else if (video->depth == VISUAL_VIDEO_DEPTH_16BIT) {
 		for (i = 0; i < video->size; i++)
@@ -227,7 +225,6 @@ static void multiply_video_root (VisPluginData *plugin, VisVideo *video)
 
 }
 
-/* FIXME not like winamp thingy */
 static void multiply_video_shift (VisPluginData *plugin, VisVideo *video, int shift)
 {
 	uint8_t *buf = video->pixels;

@@ -309,6 +309,8 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 				element = NULL;
 				if (strcmp (namedelem, "Multiplier") == 0)
 					element = AVS_ELEMENT (avs_parse_trans_multiplier (avstree));
+				else if (strcmp (namedelem, "Channel Shift") == 0)
+					element = AVS_ELEMENT (avs_parse_trans_channelshift (avstree));
 				else
 					printf ("Unhandled named entry: %s position: %x\n", namedelem, avstree->cur - avstree->data);
 
@@ -726,6 +728,42 @@ AVSElement *avs_parse_trans_multiplier (AVSTree *avstree)
 	avs_element_deserialize (AVS_ELEMENT (multiplier), avstree);
 
 	return multiplier;
+}
+
+AVSElement *avs_parse_trans_channelshift (AVSTree *avstree)
+{
+	AVSElement *shift;
+	AVSSerializeContainer *scont;
+
+	VisParamContainer *pcont;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("shift"),
+		VISUAL_PARAM_LIST_ENTRY ("onbeat"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+
+	visual_param_container_add_many (pcont, params);
+
+	shift = visual_mem_new0 (AVSElement, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (shift), TRUE, avs_element_dtor);
+
+	AVS_ELEMENT (shift)->pcont = pcont;
+	AVS_ELEMENT (shift)->type = AVS_ELEMENT_TYPE_TRANS_CHANNELSHIFT;
+
+	scont = avs_serialize_container_new ();
+	avs_serialize_container_add_byte_int_skip (scont, visual_param_container_get (pcont, "shift"));
+	avs_serialize_container_add_byte_int_skip_with_boundry (scont, visual_param_container_get (pcont, "onbeat"), 0x01);
+
+	avs_element_connect_serialize_container (AVS_ELEMENT (shift), scont);
+
+	avs_element_deserialize (AVS_ELEMENT (shift), avstree);
+
+	return shift;
 }
 
 int avs_parse_data (AVSTree *avstree, char *filename)
