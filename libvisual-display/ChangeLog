@@ -1,3 +1,13 @@
+2004-11-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lvdisplay/lv_display.h: Adapted VISUAL_PLUGIN_TYPE_DISPLAY_BACKEND
+	and VISUAL_PLUGIN_TYPE_DISPLAY_FRONTEND to the new libvisual plugin
+	API. And instead of having a numeric value here, we have:
+
+	"Libvisual:display:backend" "Libvisual:display:frontend". This needs
+	a recompile of everything. I haven't tested it tho, but it should
+	work.
+
 2004-11-21  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 	* lvdisplay/lvdisplay.c lvdisplay/lvdisplay.h: first rewrite :)
 	minor changes.

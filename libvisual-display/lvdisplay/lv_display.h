@@ -3,8 +3,8 @@
 
 #include <libvisual/libvisual.h>
 
-#define VISUAL_PLUGIN_TYPE_DISPLAY_BACKEND  (100000)
-#define VISUAL_PLUGIN_TYPE_DISPLAY_FRONTEND (100001)
+#define VISUAL_PLUGIN_TYPE_DISPLAY_BACKEND	"Libvisual:display:backend"
+#define VISUAL_PLUGIN_TYPE_DISPLAY_FRONTEND	"Libvisual:display:frontend"
 
 typedef enum {
 	LVD_NONE = 0,
