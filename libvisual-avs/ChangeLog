@@ -1,5 +1,15 @@
 2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* src/*: Small updates.
+
+	* plugins/actor/ring/*: Using the avs_gfx_color_cycler.
+
+	* common/avs_gfx.*: Adding the color_cycler.
+
+	* common/avs_config.*: Adding standard config stuff.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* src/*: updates.
 
 2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>

@@ -36,11 +36,97 @@
 
 #define SGN(a) (a == 0 ? 0 : a < 0 ? -1 : 1)
 
+static int avs_gfx_colorcycler_dtor (VisObject *object);
+
+/* Dtors */
+static int avs_gfx_colorcycler_dtor (VisObject *object)
+{
+	AVSGfxColorCycler *cycler = AVS_GFX_COLOR_CYCLER (object);
+
+	if (cycler->pal != NULL)
+		visual_object_unref (VISUAL_OBJECT (cycler->pal));
+
+	cycler->pal = NULL;
+
+	return VISUAL_OK;
+}
+
+
+/* Color cycler functions */
+AVSGfxColorCycler *avs_gfx_color_cycler_new (VisPalette *pal)
+{
+	AVSGfxColorCycler *cycler;
+
+	cycler = visual_mem_new0 (AVSGfxColorCycler, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (cycler), TRUE, avs_gfx_colorcycler_dtor);
+
+	avs_gfx_color_cycler_set_mode (cycler, AVS_GFX_COLOR_CYCLER_TYPE_SET);
+	
+	visual_object_ref (VISUAL_OBJECT (pal));
+	cycler->pal = pal;
+
+	return cycler;
+}
+
+int avs_gfx_color_cycler_set_rate (AVSGfxColorCycler *cycler, float rate)
+{
+	cycler->rate = rate;
+
+	return 0;
+}
+
+int avs_gfx_color_cycler_set_time (AVSGfxColorCycler *cycler, VisTime *time)
+{
+	return visual_time_copy (&cycler->morphtime, time);
+}
+
+int avs_gfx_color_cycler_set_mode (AVSGfxColorCycler *cycler, AVSGfxColorCyclerType type)
+{
+	cycler->type = type;
+
+	return 0;
+}
+
+VisColor *avs_gfx_color_cycler_run (AVSGfxColorCycler *cycler)
+{
+	double usec_elapsed, usec_morph;
+	VisTime elapsed;
+
+	if (cycler->type == AVS_GFX_COLOR_CYCLER_TYPE_TIME) {
+		if (visual_timer_is_active (&cycler->timer) == FALSE)
+			visual_timer_start (&cycler->timer);
+		
+		visual_timer_elapsed (&cycler->timer, &elapsed);
+
+		usec_elapsed = ((double) elapsed.tv_sec) * VISUAL_USEC_PER_SEC + elapsed.tv_usec;
+		usec_morph = ((double) cycler->morphtime.tv_sec) * VISUAL_USEC_PER_SEC + cycler->morphtime.tv_usec;
+
+		cycler->timedrate = usec_elapsed / usec_morph;
+
+		/* Next color! */
+		if (cycler->timedrate > 1.0) {
+			cycler->timedrate = 0;
+
+			cycler->curcolor++;
+
+			cycler->curcolor = cycler->curcolor % cycler->pal->ncolors;
+
+			visual_timer_start (&cycler->timer);
+		}
+
+		cycler->rate = cycler->timedrate + cycler->curcolor;
+	}
+
+	return visual_palette_color_cycle (cycler->pal, cycler->rate);
+}
+
+/* Line functions */
 int avs_gfx_line_non_naieve_floats (VisVideo *video, float x0, float y0, float x1, float y1, VisColor *col)
 {
 	return avs_gfx_line_non_naieve_ints (video, video->width * x0, video->height * y0, video->width * x1, video->height * y1, col);
 }
-
 
 int avs_gfx_line_non_naieve_ints (VisVideo *video, int x0, int y0, int x1, int y1, VisColor *col)
 {

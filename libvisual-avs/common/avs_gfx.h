@@ -30,6 +30,37 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define AVS_GFX_COLOR_CYCLER(obj)			(VISUAL_CHECK_CAST ((obj), 0, AVSGfxColorCycler))
+
+
+typedef struct _AVSGfxColorCycler AVSGfxColorCycler;
+
+typedef enum {
+	AVS_GFX_COLOR_CYCLER_TYPE_SET,
+	AVS_GFX_COLOR_CYCLER_TYPE_TIME
+} AVSGfxColorCyclerType;
+
+struct _AVSGfxColorCycler {
+	VisPalette		*pal;
+
+	float			 rate;
+	float			 timedrate;
+	
+	int			 curcolor;
+
+	VisTime			 morphtime;
+	VisTimer		 timer;
+
+	AVSGfxColorCyclerType	 type;
+};
+
+AVSGfxColorCycler *avs_gfx_color_cycler_new (VisPalette *pal);
+int avs_gfx_color_cycler_set_rate (AVSGfxColorCycler *cycler, float rate);
+int avs_gfx_color_cycler_set_time (AVSGfxColorCycler *cycler, VisTime *time);
+int avs_gfx_color_cycler_set_mode (AVSGfxColorCycler *cycler, AVSGfxColorCyclerType type);
+VisColor *avs_gfx_color_cycler_run (AVSGfxColorCycler *cycler);
+
+
 int avs_gfx_line_non_naieve_floats (VisVideo *video, float x1, float y1, float x2, float y2, VisColor *col);
 int avs_gfx_line_non_naieve_ints (VisVideo *video, int x1, int y1, int x2, int y2, VisColor *col);
 int avs_gfx_line_floats (VisVideo *video, float x1, float y1, float x2, float y2, VisColor *col);

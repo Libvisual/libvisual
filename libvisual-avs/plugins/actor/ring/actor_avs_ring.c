@@ -23,7 +23,6 @@
 
 /* FIXME TODO:
  *
- * Color morpher.
  * config UI.
  */
 
@@ -38,11 +37,13 @@
 #include "avs.h"
 
 typedef struct {
-	int source;
-	int place;
-	VisPalette pal;
-	int size;
-	int type;
+	int			 source;
+	int			 place;
+	VisPalette		 pal;
+	int			 size;
+	int			 type;
+
+	AVSGfxColorCycler	*cycler;
 } RingPrivate;
 
 int lv_ring_init (VisPluginData *plugin);
@@ -160,8 +161,6 @@ int lv_ring_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.param.param;
 
-				printf ("proping param %s %d\n", visual_param_entry_get_name (param), visual_param_entry_get_integer (param));
-				
 				if (visual_param_entry_is (param, "source"))
 					priv->source = visual_param_entry_get_integer (param);					
 				else if (visual_param_entry_is (param, "place"))
@@ -178,6 +177,14 @@ int lv_ring_events (VisPluginData *plugin, VisEventQueue *events)
 					visual_palette_free_colors (&priv->pal);
 					visual_palette_allocate_colors (&priv->pal, pal->ncolors);
 					visual_palette_copy (&priv->pal, pal);
+
+					if (priv->cycler != NULL)
+						visual_object_unref (VISUAL_OBJECT (priv->cycler));
+
+					priv->cycler = avs_gfx_color_cycler_new (&priv->pal);
+					avs_gfx_color_cycler_set_mode (priv->cycler, AVS_GFX_COLOR_CYCLER_TYPE_TIME);
+					avs_gfx_color_cycler_set_time (priv->cycler, avs_config_standard_color_cycler_time ());
+					
 				}
 
 				break;
@@ -208,17 +215,13 @@ int lv_ring_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	float add = (2 * 3.1415) / 100;
 	float size_mult;
 	uint32_t *buf = video->pixels;
-	VisColor col;
+	VisColor *col;
 
 	if (priv->place == 1)
 		hx += video->width / 4;
 	else if (priv->place == 0)
 		hx -= video->width / 4;
 	
-	col.r = 0xff;
-	col.g = 0xff;
-	col.b = 0xff;
-
 	if (video->width > video->height)
 		size_mult = (float) video->height * ((float) priv->size / 64.00);
 	else	
@@ -237,8 +240,12 @@ int lv_ring_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		
 		a += add;
 
-		avs_gfx_line_non_naieve_ints (video, ox + hx, hy - oy, x + hx, hy - y, &col);
-		avs_gfx_line_non_naieve_ints (video, ox + hx, oy + hy, x + hx, y + hy, &col);
+		col = avs_gfx_color_cycler_run (priv->cycler);
+		
+		avs_gfx_line_non_naieve_ints (video, ox + hx, hy - oy, x + hx, hy - y, col);
+		avs_gfx_line_non_naieve_ints (video, ox + hx, oy + hy, x + hx, y + hy, col);
+
+		visual_object_unref (VISUAL_OBJECT (col));
 
 		ox = x;
 		oy = y;
