@@ -99,8 +99,8 @@ LvdDriver *lvdisplay_driver_create(const char *bename, const char *fename)
 		return NULL;
 	}
 
-	drv->be = beplug->info->plugin;
-	drv->fe = feplug->info->plugin;
+	drv->be = (void*)beplug->info->plugin;
+	drv->fe = (void*)feplug->info->plugin;
 
 	return drv;
 }
@@ -231,6 +231,7 @@ static void set_active_context(Lvd *v, LvdDContext *ctx)
 // XXX MUTEX OUT
 }
 
+
 static void active_context_release()
 {
 	if ((actx_v == NULL) || (actx == NULL))
@@ -242,7 +243,7 @@ static void active_context_release()
 	actx = NULL;
 }
 
-
+/***********************************************************************/
 
 Lvd* lvdisplay_initialize()
 {
@@ -346,21 +347,14 @@ int lvdisplay_realize(Lvd *v)
 		} else {
 			// XXX choose best transformation
 
-			if (vdepth & VISUAL_VIDEO_DEPTH_32BIT) {
-				depth = VISUAL_VIDEO_DEPTH_32BIT;
-			} else
-			if (vdepth & VISUAL_VIDEO_DEPTH_24BIT) {
-				depth = VISUAL_VIDEO_DEPTH_24BIT;
-			} else
-			if (vdepth & VISUAL_VIDEO_DEPTH_16BIT) {
-				depth = VISUAL_VIDEO_DEPTH_16BIT;
-			} else
-			if (vdepth & VISUAL_VIDEO_DEPTH_8BIT) {
-				depth = VISUAL_VIDEO_DEPTH_8BIT;
-			} else {
-				visual_log(VISUAL_LOG_WARNING, "Hm-m..... Can't display this actor with this video backend\n");
+			if (adepth & vdepth){
+				visual_log(VISUAL_LOG_ERROR, "WTF?\n");
 				return 1;
 			}
+
+//			visual_log(VISUAL_LOG_WARNING, "Hm-m..... Can't display this actor with this video backend\n");
+//			return 1;
+			depth = VISUAL_VIDEO_DEPTH_32BIT;
 		}
 
 		res = v->drv->fe->set_param(v->drv->feplug, LVD_SET_DEPTH, &depth, 1);

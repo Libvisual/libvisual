@@ -122,4 +122,15 @@ VisEventQueue *lvdisplay_get_eventqueue(Lvd*);
 VisBin *lvdisplay_visual_get_bin(Lvd *v);
 VisVideo *lvdisplay_visual_get_video(Lvd *v);
 
+
+
+/* plugin interface */
+
+typedef struct _LvdPlugin LvdPlugin;
+
+struct _LvdPlugin {
+	Lvd *lvd;
+	VisPluginData *plugin;
+};
+
 #endif /* _LV_DISPLAY_H */
