@@ -30,6 +30,8 @@ extern "C" {
 #define VISUAL_UI_RADIO(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_RADIO, VisUIRadio))
 #define VISUAL_UI_CHECKBOX(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_CHECKBOX, VisUICheckbox))
 
+/* FIXME add _IS_ defines */
+	
 typedef enum {
 	VISUAL_WIDGET_TYPE_NULL,
 	VISUAL_WIDGET_TYPE_WIDGET,
@@ -106,6 +108,8 @@ struct _VisUIBox {
 
 struct _VisUIGroup {
 	VisUIContainer		 container;
+
+	const char		*name;
 };
 
 struct _VisUILabel {
@@ -199,7 +203,7 @@ VisUIWidget *visual_ui_box_new (VisUIBoxType boxtype);
 int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget);
 VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget);
 
-VisUIWidget *visual_ui_group_new (void);
+VisUIWidget *visual_ui_group_new (const char *name);
 
 VisUIWidget *visual_ui_label_new (const char *text);
 int visual_ui_label_set_text (VisUILabel *label, const char *text);

@@ -140,12 +140,14 @@ VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget)
 	return NULL;
 }
 
-VisUIWidget *visual_ui_group_new ()
+VisUIWidget *visual_ui_group_new (const char *name)
 {
 	VisUIGroup *group;
 
 	group = visual_mem_new0 (VisUIGroup, 1);
 	VISUAL_UI_WIDGET (group)->type = VISUAL_WIDGET_TYPE_GROUP;
+
+	group->name = name;
 
 	return VISUAL_UI_WIDGET (group);
 }
