@@ -69,7 +69,7 @@ static int table_entry_dtor (VisObject *object)
 /**
  * Creates a new VisUIWidget structure.
  *
- * @return A newly allocated VisUIWidget, or NULL on error.
+ * @return A newly allocated VisUIWidget, or NULL on failure.
  */
 VisUIWidget *visual_ui_widget_new ()
 {
@@ -264,7 +264,7 @@ int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget)
  * 
  * @param box Pointer to the VisUIBox from which the childs are requested.
  * 
- * @return VisList containing the childs of the VisUIBox or NULL on error.
+ * @return VisList containing the childs of the VisUIBox or NULL on failure.
  */
 VisList *visual_ui_box_get_childs (VisUIBox *box)
 {
@@ -380,7 +380,7 @@ int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int
  *
  * @param table Pointer to the VisUITable from which the childs are requested.
  *
- * @return VisList containing the childs of the VisUITable, or NULL on error.
+ * @return VisList containing the childs of the VisUITable, or NULL on failure.
  */
 VisList *visual_ui_table_get_childs (VisUITable *table)
 {
@@ -718,6 +718,11 @@ int visual_ui_range_set_precision (VisUIRange *range, int precision)
 	return VISUAL_OK;
 }
 
+/**
+ * Creates a new VisUIEntry, which can be used to enter text.
+ *
+ * @return The newly created VisUIEntry in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_entry_new ()
 {
 	VisUIEntry *entry;
@@ -736,6 +741,14 @@ VisUIWidget *visual_ui_entry_new ()
 	return VISUAL_UI_WIDGET (entry);
 }
 
+/**
+ * Sets the maximum length for the text in a VisUIEntry.
+ *
+ * @param entry Pointer to the VisUIEntry to which the maximum text length is set.
+ * @param length The maximum text length for the VisUIEntry.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_ENTRY_NULL on failure.
+ */
 int visual_ui_entry_set_length (VisUIEntry *entry, int length)
 {
 	visual_log_return_val_if_fail (entry != NULL, -VISUAL_ERROR_UI_ENTRY_NULL);
@@ -745,6 +758,13 @@ int visual_ui_entry_set_length (VisUIEntry *entry, int length)
 	return VISUAL_OK;
 }
 
+/**
+ * Creates a new VisUISlider, which can be used as a VisUIRange type, in the form of a slider.
+ *
+ * @param showvalue Show the value of the slider place.
+ * 
+ * @return The newly created VisUISlider in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_slider_new (int showvalue)
 {
 	VisUISlider *slider;
@@ -765,6 +785,11 @@ VisUIWidget *visual_ui_slider_new (int showvalue)
 	return VISUAL_UI_WIDGET (slider);
 }
 
+/**
+ * Creates a new VisUINumerici, which can be used as a VisUIRange type, in the form of a numeric spinbutton.
+ *
+ * @return The newly created VisUINumeric in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_numeric_new ()
 {
 	VisUINumeric *numeric;
@@ -783,6 +808,11 @@ VisUIWidget *visual_ui_numeric_new ()
 	return VISUAL_UI_WIDGET (numeric);
 }
 
+/**
+ * Creates a new VisUIColor, which can be used to select a color.
+ *
+ * @return The newly created VisUIColor in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_color_new ()
 {
 	VisUIColor *color;

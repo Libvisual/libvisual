@@ -223,9 +223,9 @@ union _VisEvent {
 	VisEventMouseButton	mousebutton;	/**< Mouse button event. */
 	VisEventResize		resize;		/**< Dimension change event. */
 	VisEventNewSong		newsong;	/**< Song change event. */
-	VisEventQuit		quit;
-	VisEventVisibility	visibility;
-	VisEventGeneric		generic;
+	VisEventQuit		quit;		/**< Quit event. */
+	VisEventVisibility	visibility;	/**< Plugin visible event. */
+	VisEventGeneric		generic;	/**< Generic event. */
 	VisEventParam		param;		/**< Param change event. */
 };
 

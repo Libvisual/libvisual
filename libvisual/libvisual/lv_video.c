@@ -153,7 +153,8 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
  *
  * @param video Pointer to a VisVideo of which the buffer needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or -VISUAL_ERROR_VIDEO_NO_ALLOCATED
+ *	on failure.
  */
 int visual_video_free_buffer (VisVideo *video)
 {
@@ -184,7 +185,7 @@ int visual_video_free_buffer (VisVideo *video)
  *
  * @param video Pointer to a VisVideo that needs an allocated buffer.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_PIXELS  on failure.
  */
 int visual_video_allocate_buffer (VisVideo *video)
 {
@@ -258,7 +259,7 @@ static void precompute_row_table (VisVideo *video)
  * @param src Pointer to a source VisVideo from which the information needs to
  *	be obtained.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_clone (VisVideo *dest, const VisVideo *src)
 {
@@ -311,7 +312,7 @@ int visual_video_compare (const VisVideo *src1, const VisVideo *src2)
  * @param video Pointer to a VisVideo to which a VisPalette needs to be linked.
  * @param pal Pointer to a Vispalette that needs to be linked with the VisVideo.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_set_palette (VisVideo *video, VisPalette *pal)
 {
@@ -332,7 +333,7 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
  * @param video Pointer to a VisVideo to which a buffer needs to be linked.
  * @param buffer Pointer to a buffer that needs to be linked with the VisVideo.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_ALLOCATED on failure.
  */
 int visual_video_set_buffer (VisVideo *video, void *buffer)
 {
@@ -364,7 +365,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
  * @param width The width of the surface.
  * @param height The height of the surface.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_set_dimension (VisVideo *video, int width, int height)
 {
@@ -388,7 +389,7 @@ int visual_video_set_dimension (VisVideo *video, int width, int height)
  * @param video Pointer to a VisVideo to which the pitch is set.
  * @param pitch The screen pitch in bytes per line.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_BPP on failure.
  */
 int visual_video_set_pitch (VisVideo *video, int pitch)
 {
@@ -410,7 +411,7 @@ int visual_video_set_pitch (VisVideo *video, int pitch)
  * @param video Pointer to a VisVideo to which the depth is set.
  * @param depth The depth choosen from the VisVideoDepth enumerate.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_set_depth (VisVideo *video, VisVideoDepth depth)
 {
@@ -428,7 +429,7 @@ int visual_video_set_depth (VisVideo *video, VisVideoDepth depth)
  * @param depthflag The ORred depthflag that we check against.
  * @param depth The depth that we want to test.
  *
- * @return TRUE when supported, FALSE when unsupported and -1 on error.
+ * @return TRUE when supported, FALSE when unsupported and -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 {
@@ -436,9 +437,9 @@ int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 		return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 
 	if ((depth & depthflag) > 0)
-		return 1;
+		return TRUE;
 
-	return 0;
+	return FALSE;
 }
 
 /**
@@ -450,14 +451,14 @@ int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
  * @param depthflag The ORred depthflag that we check against.
  * @param depth The depth of which we want the next supported depth.
  *
- * @return The next supported depth or VISUAL_VIDEO_DEPTH_ERROR on error.
+ * @return The next supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
 VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
 {
 	int i = depth;
 	
 	if (visual_video_depth_is_sane (depth) == 0)
-				return VISUAL_VIDEO_DEPTH_ERROR;
+		return VISUAL_VIDEO_DEPTH_ERROR;
 
 	if (i == VISUAL_VIDEO_DEPTH_NONE) {
 		i = VISUAL_VIDEO_DEPTH_8BIT;
@@ -485,14 +486,14 @@ VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
  * @param depthflag The ORred depthflag that we check against.
  * @param depth The depth of which we want the previous supported depth.
  *
- * @return The previous supported depth or VISUAL_VIDEO_DEPTH_ERROR on error.
+ * @return The previous supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
 VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth)
 {
 	int i = depth;
 
 	if (visual_video_depth_is_sane (depth) == 0)
-		return -1;
+		return VISUAL_VIDEO_DEPTH_ERROR;
 
 	if (i == VISUAL_VIDEO_DEPTH_NONE)
 		return VISUAL_VIDEO_DEPTH_NONE;
@@ -512,7 +513,7 @@ VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth)
  *
  * @param depthflag The ORred depthflag that we check against.
  * 
- * @return The lowest supported depth or VISUAL_VIDEO_DEPTH_ERROR on error.
+ * @return The lowest supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
 VisVideoDepth visual_video_depth_get_lowest (int depthflag)
 {
@@ -524,7 +525,7 @@ VisVideoDepth visual_video_depth_get_lowest (int depthflag)
  *
  * @param depthflag The ORred depthflag that we check against.
  *
- * @return The highest supported depth or VISUAL_VIDEO_DEPTH_ERROR on error.
+ * @return The highest supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
 VisVideoDepth visual_video_depth_get_highest (int depthflag)
 {
@@ -549,7 +550,7 @@ VisVideoDepth visual_video_depth_get_highest (int depthflag)
  * @param depthflag The ORred depthflag that we check against.
  *
  * @return The highest supported depth that is not openGL or
- * VISUAL_VIDEO_DEPTH_ERROR on error.
+ *	VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
 VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag)
 {
@@ -609,7 +610,7 @@ int visual_video_depth_is_sane (VisVideoDepth depth)
  * @param depth The VisVideodepth enumerate value from which the bits per pixel
  *	needs to be returned.
  *
- * @return The bits per pixel or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on error.
+ * @return The bits per pixel or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_depth_value_from_enum (VisVideoDepth depth)
 {
@@ -638,7 +639,7 @@ int visual_video_depth_value_from_enum (VisVideoDepth depth)
  *
  * @param depthvalue Integer containing the number of bits per pixel.
  *
- * @return The corespondending enumerate value or VISUAL_VIDEO_DEPTH_ERROR.
+ * @return The corespondending enumerate value or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
 VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
 {
@@ -669,7 +670,7 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
  * @param depth The VisVideodepth enumerate value from which the bytes per pixel
  *	needs to be returned.
  *
- * @return The number of bytes per pixel or -1 on error.
+ * @return The number of bytes per pixel, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_bpp_from_depth (VisVideoDepth depth)
 {
@@ -706,7 +707,7 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
  * @param y Vertical placement offset.
  * @param alpha Sets if we want to check the alpha channel. Use FALSE or TRUE here.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_INVALID_DEPTH or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
  */
 int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y, int alpha)
 {
@@ -715,7 +716,7 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 
 	/* We can't overlay GL surfaces so don't even try */
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
-			src->depth != VISUAL_VIDEO_DEPTH_GL, -1);
+			src->depth != VISUAL_VIDEO_DEPTH_GL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 	
 
 	/* Placement is outside dest buffer, no use to continue */
@@ -909,7 +910,7 @@ static int blit_overlay_alpha32 (VisVideo *dest, const VisVideo *src, int x, int
  * @param b The blue value for the alpha channel color.
  * @param density The alpha density for the other colors.
  * 
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, uint8_t density)
 {
@@ -941,7 +942,7 @@ int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, 
  * @param video Pointer to the VisVideo in which the alpha channel density is set.
  * @param density The alpha density that is to be set.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_alpha_fill (VisVideo *video, uint8_t density)
 {
@@ -966,7 +967,8 @@ int visual_video_alpha_fill (VisVideo *video, uint8_t density)
  *	depth, pitch, dimension wise.
  * @param src Pointer to the source VisVideo from which the bgr data is read.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
+ *	-VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
 {
@@ -994,7 +996,8 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src)
  *	VisVideo is transformed.
  * @param vidsrc Pointer to the source VisVideo.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, error values returned by visual_video_blit_overlay or
+ *	visual_video_depth_transform_to_buffer on failure.
  */
 int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc)
 {
@@ -1017,7 +1020,8 @@ int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc)
  * @param destdepth The destination depth.
  * @param pitch The destination number of bytes per line.
  *
- * return 0 on succes -1 on error.
+ * return VISUAL_OK on succes -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_PALETTE_NULL, -VISUAL_ERROR_PALETTE_SIZE
+ *	or -VISUAL_ERROR_VIDEO_NOT_TRANSFORMED on failure.
  */
 int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch)

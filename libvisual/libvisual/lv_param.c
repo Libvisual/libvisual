@@ -114,7 +114,7 @@ int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, Vi
  *
  * @param paramcontainer A pointer to the VisParamContainer from which the VisEventQueue is requested.
  * 
- * @return Pointer to the VisEventQueue possibly NULL, NULL on error.
+ * @return Pointer to the VisEventQueue possibly NULL, NULL on failure.
  */
 VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer)
 {
