@@ -18,7 +18,6 @@ void create_tables(JessPrivate *priv)
 
 	for (k=1; k<5; k++)
 	{
-		printf ("Computing table number %i\n", k);
 		for (i = 0; i < priv->resy; i++)
 		{
 			for (j = 0; j < priv->resx; j++)

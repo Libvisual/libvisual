@@ -104,41 +104,12 @@ int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
-			case VISUAL_EVENT_NEWSONG:
-				printf ("NEW SONG: %s\n",
-						ev.newsong.songinfo->songname);
-				break;
-
 			case VISUAL_EVENT_RESIZE:
 				lv_goom_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
 
-				printf ("NEW RESIZE: %d %d %p\n",
-						ev.resize.width,
-						ev.resize.height,
-						ev.resize.video);
 				break;
 
-			case VISUAL_EVENT_MOUSEMOTION:
-				printf ("NEW MOUSE MOTION: %d %d\n",
-						ev.mousemotion.x,
-						ev.mousemotion.y);
-				break;
-
-			case VISUAL_EVENT_MOUSEBUTTONDOWN:
-			case VISUAL_EVENT_MOUSEBUTTONUP:
-				printf ("NEW MOUSE BUTTON: %d %d | %d %d\n",
-						ev.mousebutton.state,
-						ev.mousebutton.button,
-						ev.mousebutton.x,
-						ev.mousebutton.y);
-				break;
-		
-			case VISUAL_EVENT_KEYDOWN:
-				printf ("NEW KEYBOARD: %d %d\n",
-						ev.keyboard.keysym.sym,
-						ev.keyboard.keysym.mod);
-				break;
 			default: /* to avoid warnings */
 				break;
 		}

@@ -134,7 +134,5 @@ inline void ips(JessPrivate *priv)
 {
 	priv->conteur.dt = time_last(priv, FOUR, NON);
 	priv->conteur.fps = (int) 1 / time_last(priv, FOUR, REINIT);
-
-/*	printf("FPS :%i\n", priv->conteur.fps); */
 }
 

@@ -295,7 +295,8 @@ void render_deformation(JessPrivate *priv, int defmode)
 					*pix = *(priv->buffer + *(tab4++)) ;
 				break;   
 			default:
-				printf("Problem with blur_mode\n");
+		
+				break;
 		}
 	}
 	else
@@ -323,7 +324,8 @@ void render_deformation(JessPrivate *priv, int defmode)
 				break;
 
 			default:
-				printf("Problem with blur_mode\n");
+		
+				break;
 		}
 		for (i = 0; i < priv->resy * priv->resx; i++)
 		{

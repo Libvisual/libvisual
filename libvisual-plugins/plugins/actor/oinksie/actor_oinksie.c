@@ -129,8 +129,6 @@ int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height)
 	*width = reqw;
 	*height = reqh;
 
-	printf ("[OINKSIE] we've got a requisition hit YEAH BABY YEAH\n");
-	
 	return 0;
 }
 
@@ -143,8 +141,6 @@ int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, in
 	oinksie_size_set (&priv->priv1, video->width, video->height);
 	oinksie_size_set (&priv->priv2, video->width, video->height);
 
-	printf ("[OINKSIE] we've got a dimension hit YEAH BABY YEAH\n");
-	
 	priv->depth = video->depth;
 	if (priv->depth != VISUAL_VIDEO_DEPTH_8BIT) {
 		if (priv->buf1)
@@ -173,8 +169,6 @@ int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 	VisEvent ev;
 
 	while (visual_event_queue_poll (events, &ev)) {
-
-		printf ("[OINKSIE] event handler is being called\n");
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
 				act_oinksie_dimension (plugin, ev.resize.video,
