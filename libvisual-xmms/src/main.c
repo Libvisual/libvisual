@@ -11,8 +11,10 @@
 
 #include <libvisual/libvisual.h>
 
-#include "gettext.h"
 #include "config.h"
+
+#include "gettext.h"
+#include "lv_xmms_config.h"
 #include "about.h"
 
 /* SDL variables */
@@ -98,9 +100,11 @@ static void lv_xmms_init ()
         int argc;
 	int ret;
 
+#if ENABLE_NLS
 	setlocale (LC_MESSAGES, "");
 	bindtextdomain (PACKAGE, LOCALEDIR);
 	textdomain (PACKAGE);
+#endif
     
 	options = lv_xmms_config_open ();
 	if (options == NULL) {
@@ -299,6 +303,8 @@ static int sdl_create (int width, int height)
 		screen = SDL_SetVideoMode (width, height, 16, videoflags);
 	} else
 		screen = SDL_SetVideoMode (width, height, video->bpp * 8, SDL_RESIZABLE);
+
+	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
 	visual_video_set_buffer (video, screen->pixels);
         visual_log (VISUAL_LOG_DEBUG, "pointer to the pixels: %p", screen->pixels);
@@ -502,6 +508,24 @@ static int sdl_event_handle ()
 				
 				switch (event.key.keysym.sym) {
 					/* XMMS CONTROLS */
+					case SDLK_UP:
+                				xmms_remote_set_main_volume (lv_xmms_vp.xmms_session,
+                                             					xmms_remote_get_main_volume (lv_xmms_vp.xmms_session) + 1);
+				                break;
+					case SDLK_DOWN:
+                				xmms_remote_set_main_volume (lv_xmms_vp.xmms_session,
+                                             					xmms_remote_get_main_volume (lv_xmms_vp.xmms_session) - 1);
+				                break;
+            				case SDLK_LEFT:
+				                if (xmms_remote_is_playing (lv_xmms_vp.xmms_session))
+							xmms_remote_jump_to_time (lv_xmms_vp.xmms_session,
+											xmms_remote_get_output_time (lv_xmms_vp.xmms_session) - 5000);
+						break;
+            				case SDLK_RIGHT:
+				                if (xmms_remote_is_playing (lv_xmms_vp.xmms_session))
+							xmms_remote_jump_to_time (lv_xmms_vp.xmms_session,
+											xmms_remote_get_output_time (lv_xmms_vp.xmms_session) + 5000);
+						break;
 					case SDLK_z:
 						xmms_remote_playlist_prev (lv_xmms_vp.xmms_session);
 						break;

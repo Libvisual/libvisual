@@ -12,14 +12,14 @@ AM_CFLAGS = -Wall -Wmissing-prototypes\
 	    @XMMS_CFLAGS@ @SDL_CFLAGS@ @GTK_CFLAGS@ @LIBVISUAL_CFLAGS@ @DEBUG_CFLAGS@
 
 INCLUDES = $(all_includes) \
-	-I$(top_srcdir)/src
+	-I$(top_srcdir)/src -I$(top_builddir)
 
-DEFS = -DLOCALEDIR=\"$(localedir)\" -DVERSION=\"$(VERSION)\" -DPACKAGE_DATADIR=\"$(pkgdatadir)\" @DEFS@
+DEFS = -DLOCALEDIR=\"$(localedir)\" -DPACKAGE_DATADIR=\"$(pkgdatadir)\" @DEFS@
 
 libvisual_xmms_la_LDFLAGS = -module -avoid-version
 
 libvisual_xmms_la_SOURCES = main.c\
-			    config.c config.h\
+			    lv_xmms_config.c lv_xmms_config.h\
 			    config_gui.c config_gui.h\
 			    about.c about.h\
 			    gettext.h

@@ -6,6 +6,8 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
+#include "config.h"
+
 #include "config_gui.h"
 #include "gettext.h"
 

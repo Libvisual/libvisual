@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 
+#include "config.h"
+
 #include "about.h"
 #include "gettext.h"
 
@@ -12,9 +14,11 @@ static GtkWidget* create_window_about (void);
 
 void lv_xmms_about_show ()
 {
+#if ENABLE_NLS
 	setlocale (LC_MESSAGES, "");
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	textdomain (GETTEXT_PACKAGE);
+#endif
     
 	if (about_window != NULL) {
 		gtk_widget_show (about_window);

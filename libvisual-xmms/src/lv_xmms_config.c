@@ -4,6 +4,8 @@
 #include <xmms/configfile.h>
 
 #include "config.h"
+
+#include "lv_xmms_config.h"
 #include "config_gui.h"
 #include "gettext.h"
 
@@ -237,9 +239,11 @@ void lv_xmms_config_toggle_fullscreen (void)
 
 void lv_xmms_config_window ()
 {
+#if ENABLE_NLS
 	setlocale (LC_MESSAGES, "");
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	textdomain (GETTEXT_PACKAGE);
+#endif
     
 	if (config_win != NULL) {
 		gtk_widget_show (config_win->window_main);

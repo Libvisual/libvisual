@@ -1,3 +1,13 @@
+2004-09-22  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added macro AC_CONFIG_HEADER([config.h]),
+	so now building would be less verbose.
+	* src/config.*: moved to lv_xmms_config.*
+	* src/gettext.h: we always include locale.h if we have it.
+	* src/*.c: enable gettext usage only when ENABLE_NLS.
+	* src/main.c: now UP/DOWN keys control the xmms's main volume,
+	LEFT/RIGHT keys moves through the song.
+	
 2004-09-10  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* NEWS: Updated.
