@@ -32,16 +32,10 @@ x		* property to force morphs in high bpp
 		* port simplesdl to the new bin system.
 		* make an example using a NON managed bin, and also a test if this is still working :)
 
-	video:
-		* cleanup the fitter
-
 Af te werken:
 	* when the whole bin stuff is working, test excluding opengl stuff within the xmms plugin
-	* introduce major.minor.nano versioning scheme.
-	* the fitter should still draw even if the buffer is too small
 
 Automakeify todo:
-x	include tests from src root.
 x	fix lib version
 
 LEGAL:
@@ -65,19 +59,13 @@ DOCS:
 	gcc inline assembler:
 		http://www.osdever.net/tutorials/gccasmtut.php?the_id=68
 
-buildtree:
-	make examples en tests compile again
-
 plugins:
 	!(option flags, include a 'reentrant' flag that indicates that the plugin is allowed to load twice) (make a notreentrant flag rather)
 
 docs:
 	plugin tutorial
-	plugin api ref
 	application tutorial
-x	application api ref
 	plugin writers guide
-	doxygen ofzo api ref maken!? (post 0.2)
 
 libvisual:
 	audio:
@@ -87,13 +75,11 @@ libvisual:
 		investigate bpm detection (post 0.4)
 
 	video:
-		Make the screenbuffer an union alla the Pixel struct in goom. (major change...)
+		palette change to use VisColor and good helper functions.		
 
 		font system
 		
 		check for opengl when setting up transformation buffers
-
-		handy fps timer, limiter stuff (post 0.1)
 
 		add a superfast double pixeler (post 0.2)
 
@@ -168,15 +154,13 @@ libvisual:
 
 	cleanups:
 		functions returning strings that cannot be changed, must be
-		typed with static returns.
+			typed with static returns.
 		cleanup the fixmes
 		make use of the lv_log system and do better error checking
 		void * -> byte/word types on other archs !?
-		gobject like privates (!? this needs thought)
 		comment code
 		go through all the structs and cleanup naming here and there
 		find a replacement name for LVPlugin ;)
-		frequention < look that word up.
 		move the headers to include/ ?? (really ??)
 		test against: http://www.linuxbase.org/
 		I've always been declaring vars at the top of the function, however
