@@ -498,8 +498,8 @@ int visual_plugin_type_member_of (const char *domain, const char *type);
 const char *visual_plugin_type_get_flags (const char *type);
 int visual_plugin_type_has_flag (const char *type, const char *flag);
 
-VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *environ);
-int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *penve);
+VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj);
+int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
 int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
 VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
 	
