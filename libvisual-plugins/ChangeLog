@@ -1,3 +1,11 @@
+2005-01-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Adding pseudotoad_flower
+
+	* plugins/actor/pseudotoad_flower/*: Adding the pseudotoad flower
+	plugin, effect was also used in the 4k demo 'Yellow Rose of Texas'
+	by Antti Silvast <asilvast@iki.fi>.
+
 2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* configure.ac: Bah broken build with g-force, someone with more clue

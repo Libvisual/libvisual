@@ -266,6 +266,25 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([flower],
+            AC_HELP_STRING([--disable-flower],
+                           [Do not build Pseudotoad Flower plugin @<:@default=enabled@:>@]),
+	    [flower=$enableval],
+	    [flower=yes])
+AC_MSG_CHECKING([whether to build Dancing Particles plugin])
+if test x$flower = xyes; then
+  AC_MSG_RESULT([yes])
+  if test x$opengl = xyes; then
+    build_actor="$build_actor flower"
+    AC_SUBST([FLOWER], ['actor_flower.la'])
+  else
+    AC_MSG_WARN([*** No OpenGL found.
+		Pseudotoad Flower plugin will not be built.])
+  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([nebulus],
             AC_HELP_STRING([--disable-nebulus],
                            [Do not build Nebulus plugin @<:@default=enabled@:>@]),
@@ -581,6 +600,7 @@ AC_CONFIG_FILES([
 	plugins/actor/lv_gltest/Makefile
 	plugins/actor/madspin/Makefile
 	plugins/actor/dancingparticles/Makefile
+	plugins/actor/pseudotoad_flower/Makefile
 	plugins/actor/nebulus/Makefile
 	plugins/actor/oinksie/Makefile
 	plugins/actor/jakdaw/Makefile
