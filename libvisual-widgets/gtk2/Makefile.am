@@ -19,7 +19,7 @@ AM_CFLAGS = -Wall -Wno-unused-variable -Wmissing-prototypes \
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/gtk2 \
 	   -I$(top_builddir) -I$(top_builddir)/gtk2
 
-liblvwidget_gtk2_la_LDFLAGS = -export-dynamic -no-undefined
+liblvwidget_gtk2_la_LDFLAGS = -rpath '$(libdir)' -export-dynamic -no-undefined
 
 liblvwidget_gtk2_la_SOURCES = lv_widget_gtk2_visui.c
 

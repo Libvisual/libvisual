@@ -1,3 +1,8 @@
+2005-03-15  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: fixed undefined libvisual_required_version
+	macro.
+
 2005-03-12  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* libvisual-widgets-gtk2.pc.in: changed -lvw_gtk2 to
