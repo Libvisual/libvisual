@@ -355,7 +355,7 @@ void visual_cpu_initialize ()
 #endif
 
 	/* Count the number of CPUs in system */
-#if !defined(VISUAL_OS_WIN32) && !defined(VISUAL_OS_UNKNOWN)
+#if !defined(VISUAL_OS_WIN32) && !defined(VISUAL_OS_UNKNOWN) && defined(_SC_NPROCESSORS_ONLN)
 	_lv_cpu_caps.nrcpu = sysconf (_SC_NPROCESSORS_ONLN);
 	if (_lv_cpu_caps.nrcpu == -1)
 		_lv_cpu_caps.nrcpu = 1;

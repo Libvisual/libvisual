@@ -1,3 +1,10 @@
+2005-02-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.c: Check for _SC_NPROCESSORS_ONLN when
+	counting the number of CPUs online.
+
+	Patch by: Thomas Klausner <thomasklausner@users.sourceforge.net>
+
 2005-02-19  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* libvisual/lv_types.h: Don't check for MINGW
