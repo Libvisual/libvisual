@@ -1,4 +1,17 @@
 2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/alphablend/morph_alphablend.c:
+	Implemented 8,32 bits mmx versions.
+
+	With my athlon, the speed improvement is drastic (a factor 3) (yes
+	seriously).
+
+	Boy, am I happy to have dived into mmx, can advice it to everyone!
+
+	* plugins/morph/flash/morph_flash.c: Do not try to mix pals if there
+	is no pal attached to the VisVideo.
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* plugins/actor/oinksie/gfx-blur.c (_oink_gfx_blur_middle,
 	_oink_gfx_blur_midstrange):
