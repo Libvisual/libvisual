@@ -358,24 +358,36 @@ int visual_songinfo_compare (const VisSongInfo *s1, const VisSongInfo *s2)
 	if (s1->songname != NULL && s2->songname != NULL) {
 		if (strcmp (s1->songname, s2->songname) != 0)
 			diff++;
+	} else if ((s1->songname == NULL || s2->songname == NULL) &&
+			!(s1->songname == NULL && s2->songname == NULL)) {
+		diff++;
 	}
 
 	if (s1->artist != NULL && s2->artist != NULL) {
 		if (strcmp (s1->artist, s2->artist) != 0)
 			diff++;
+	} else if ((s1->artist == NULL || s2->artist == NULL) &&
+			!(s1->artist == NULL && s2->artist == NULL)) {
+		diff++;
 	}
 
 	if (s1->album != NULL && s2->album != NULL) {
 		if (strcmp (s1->album, s2->album) != 0)
 			diff++;
+	} else if ((s1->album == NULL || s2->album == NULL) &&
+			!(s1->album == NULL && s2->album == NULL)) {
+		diff++;
 	}
 
 	if (s1->song != NULL && s2->song != NULL) {
 		if (strcmp (s1->song, s2->song) != 0)
 			diff++;
+	} else if ((s1->song == NULL || s2->song == NULL) &&
+			!(s1->song == NULL && s2->song == NULL)) {
+		diff++;
 	}
-	
-	return (diff > 0 ? TRUE : FALSE);
+
+	return (diff > 0 ? FALSE : TRUE);
 }
 
 /**

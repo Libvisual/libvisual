@@ -28,6 +28,8 @@ static int actor_dtor (VisObject *object)
 	if (actor->fitting != NULL)
 		visual_video_free_with_buffer (actor->fitting);
 
+	visual_object_unref (VISUAL_OBJECT (&actor->songcompare));
+
 	actor->plugin = NULL;
 	actor->transform = NULL;
 	actor->fitting = NULL;
