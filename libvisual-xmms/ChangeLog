@@ -1,3 +1,10 @@
+2004-06-29  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/Makefile.am: added flags -Wall and -O3.
+	* src/lv_xmms.c: now we set the window tittle with the
+	current plugin name. Cleanup to avoid warnings with
+	the new flags.
+
 2004-06-26  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* NEWS: updated.

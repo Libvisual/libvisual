@@ -14,7 +14,7 @@
 
 #include <libvisual/libvisual.h>
 
-#include <lv_xmms.h>
+#include "lv_xmms.h"
 
 /* SDL variables */
 static SDL_Surface *screen = NULL;
@@ -36,7 +36,7 @@ static int lv_width = 320;
 static int lv_height = 200;
 
 /* Maximum frames per second */
-static int lv_fps = 40;
+static int lv_fps = 30;
 
 /* Color depth */
 static VisVideoDepth lv_depth = 24;
@@ -158,6 +158,8 @@ static int lv_xmms_prefs_save ()
 
 	xmms_cfg_write_default_file (f);
 	xmms_cfg_free (f);
+
+	return 0;
 }
 
 static void lv_xmms_init ()
@@ -184,6 +186,7 @@ static void lv_xmms_init ()
 	lv_xmms_prefs_load ();
 	if (cur_lv_plugin == NULL)
 		cur_lv_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
+	SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
 
 	if (visual_actor_valid_by_name (cur_lv_plugin) != TRUE)
 		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
@@ -204,7 +207,7 @@ static void lv_xmms_cleanup ()
 	SDL_KillThread (render_thread);
 	render_thread = NULL;
 	visual_stopped = 1;
-	
+
 	visual_log (VISUAL_LOG_DEBUG, "calling SDL_DestroyMutex()");
 	SDL_DestroyMutex (pcm_mutex);
 	pcm_mutex = NULL;
@@ -292,9 +295,7 @@ static void lv_xmms_render_pcm (gint16 data[2][512])
 {
 	if (visual_running == 1) {
 		SDL_mutexP (pcm_mutex);
-
                 memcpy (xmmspcm, data, sizeof(gint16)*2*512);
-
 		SDL_mutexV (pcm_mutex);
 	}
 }
@@ -312,13 +313,8 @@ static void gui_about_destroy (GtkWidget *w, gpointer data)
 
 static int sdl_init ()
 {
-	gchar *error_msg;
-	
 	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
-		error_msg = g_strdup_printf ("Could not initialize SDL: %s",
-                                             SDL_GetError());
-		visual_log (VISUAL_LOG_CRITICAL, error_msg);
-		g_free (error_msg);
+		visual_log (VISUAL_LOG_CRITICAL, "Could not initialize SDL: %s", SDL_GetError());
 		return -1;
 	}
 
@@ -449,7 +445,9 @@ static int sdl_event_handle ()
 
 					/* PLUGIN CONTROLS */
 					case SDLK_F11:
+					case SDLK_TAB:
 						SDL_WM_ToggleFullScreen (screen);
+                                                fullscreen = !fullscreen;
 
 						if ((screen->flags & SDL_FULLSCREEN) > 0)
 							SDL_ShowCursor (SDL_DISABLE);
@@ -461,6 +459,8 @@ static int sdl_event_handle ()
 					case SDLK_a:
 						cur_lv_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
 
+						SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
+	
 						if (cur_lv_plugin == NULL)
 							cur_lv_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
 
@@ -478,6 +478,8 @@ static int sdl_event_handle ()
 					case SDLK_s:
 						cur_lv_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
 
+						SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
+
 						if (cur_lv_plugin == NULL)
 							cur_lv_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
 
@@ -491,10 +493,9 @@ static int sdl_event_handle ()
 							SDL_UnlockSurface (screen);
 
 						break;
-					case SDLK_TAB:
-                                                SDL_WM_ToggleFullScreen (screen);
-                                                fullscreen = !fullscreen;
-                                                break;
+						
+					default: /* to avoid warnings */
+						break;
 				}
 				break;
 
@@ -518,8 +519,8 @@ static int sdl_event_handle ()
 				/* FIXME refuses to work ! */
 //				lv_xmms_vp.disable_plugin (&lv_xmms_vp);
 				break;
-
-			default:
+						
+			default: /* to avoid warnings */
 				break;
 		}
 	}
@@ -549,6 +550,8 @@ static int visual_resize (int width, int height)
 	lv_height = height;
 
 	visual_bin_sync (bin, FALSE);
+
+	return 0;
 }
 
 static int visual_initialize (int width, int height)

@@ -6,8 +6,8 @@ lib_LTLIBRARIES = libvisual_xmms.la
 
 LIBS = -L$(top_srcdir)/src -L$(prefix)/lib @XMMS_LIBS@ @SDL_LIBS@ @GTK_LIBS@ @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wunused -Wmissing-prototypes\
-	    @XMMS_CFLAGS@ @SDL_CFLAGS@ @GTK_CFLAGS@ @LIBVISUAL_CFLAGS@ @DEBUG_CFLAGS@
+AM_CFLAGS = -Wall -Wmissing-prototypes\
+	    @XMMS_CFLAGS@ @SDL_CFLAGS@ @GTK_CFLAGS@ @LIBVISUAL_CFLAGS@ @DEBUG_CFLAGS@ -O3
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/src

@@ -12,7 +12,6 @@ Plugin:
 
 	When opengl is not found, disable opengl support and set this in the plugin (post 0.1)
 	gtkclist with plugins to select out
-	Cap FPS (post 0.1)
 	extensive error checking.
 	disable plugin hooks (crashes, no idea why)
 	remember place of the plugin window
