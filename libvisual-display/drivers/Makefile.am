@@ -1,4 +1,4 @@
 
-SUBDIRS = glx null
-
+SUBDIRS = x11 glx
+# null
 
