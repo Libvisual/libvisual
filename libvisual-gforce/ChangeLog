@@ -1,0 +1,35 @@
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* First libvisual port checkin!!!
+
+Fri Dec  8 16:59:58 2000  Boris Gjenero <bgjenero@sympatico.ca>
+
+        * Version 1.1.6xp1
+
+        * This is the initial release.  The main things work.
+
+Sat Dec  9
+
+        * Fixed serious bug in x_InitXBase() in _Unix-X/libxpce/x.c
+          This reenables MIT-SHM support.
+
+        * Fixed compile problems due to &(void *)name in a few places and
+          string tests with == in configure.in.  Thanks to Haavard Kvaalen.
+
+        * You can now run multiple copies even if using MIT-SHM.
+
+        * Version 1.1.6xp2
+
+Sat Dec 23 (and earlier)
+
+	* No more #pragma once
+
+	* Optimization now enabled for C++ code
+
+	* The trunc function is no longer required.
+
+	* Documentation updated
+
+	* Version 1.1.6xp3
+	
+	
