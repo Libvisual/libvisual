@@ -75,29 +75,37 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if ((err = snd_pcm_open(&priv->chandle, strdup(inp_alsa_var_cdevice),
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
-  	        visual_log(VISUAL_LOG_ERROR, 
+  	        visual_log(VISUAL_LOG_CRITICAL, 
 			    "Record open error: %s\n", snd_strerror(err));
 		return -1;
 	}
 
-	snd_pcm_hw_params_alloca(&hwparams);
+	snd_pcm_hw_params_malloc(&hwparams);
 	visual_log_return_val_if_fail(hwparams != NULL, -1);
 
 	if (snd_pcm_hw_params_any(priv->chandle, hwparams) < 0) {
- 	        visual_log(VISUAL_LOG_ERROR, 
+ 	        visual_log(VISUAL_LOG_CRITICAL, 
 			   "Can not configure this PCM device.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	if (snd_pcm_hw_params_set_access(priv->chandle, hwparams, 
 					 SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
- 	        visual_log(VISUAL_LOG_ERROR, "Error setting access.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting access.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
+#ifdef VISUAL_LITTLE_ENDIAN
 	if (snd_pcm_hw_params_set_format(priv->chandle, hwparams,
 					 SND_PCM_FORMAT_S16_LE) < 0) {
- 	        visual_log(VISUAL_LOG_ERROR, "Error setting format.\n");
+#else
+	if (snd_pcm_hw_params_set_format(priv->chandle, hwparams,
+					 SND_PCM_FORMAT_S16_BE) < 0) {
+#endif
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting format.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
@@ -105,7 +113,8 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_set_rate_near(priv->chandle, hwparams,
 					    &exact_rate, &dir) < 0) {
- 	        visual_log(VISUAL_LOG_ERROR, "Error setting rate.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting rate.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 	if (exact_rate != rate) {
@@ -118,7 +127,8 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_set_channels(priv->chandle, hwparams,
 					   inp_alsa_var_channels) < 0) {
-	        visual_log(VISUAL_LOG_ERROR, "Error setting channels.\n");
+	        visual_log(VISUAL_LOG_CRITICAL, "Error setting channels.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
@@ -126,26 +136,32 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	tmp = 1000000;
 	if (snd_pcm_hw_params_set_period_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
-		visual_log(VISUAL_LOG_ERROR, "Error setting period time.\n");
+		visual_log(VISUAL_LOG_CRITICAL, "Error setting period time.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	tmp = 1000000*4;
 	if (snd_pcm_hw_params_set_buffer_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
-		visual_log(VISUAL_LOG_ERROR, "Error setting buffer time.\n");
+		visual_log(VISUAL_LOG_CRITICAL, "Error setting buffer time.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 
 	if (snd_pcm_hw_params(priv->chandle, hwparams) < 0) {
- 	        visual_log(VISUAL_LOG_ERROR, "Error setting HW params.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Error setting HW params.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	if (snd_pcm_prepare(priv->chandle) < 0) {
- 	        visual_log(VISUAL_LOG_ERROR, "Failed to prepare interface.\n");
+ 	        visual_log(VISUAL_LOG_CRITICAL, "Failed to prepare interface.\n");
+		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
+
+	snd_pcm_hw_params_free(hwparams);
 
 	priv->loaded = 1;
 

@@ -1,3 +1,14 @@
+2004-09-07  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/input/alsa/input_alsa.c (inp_alsa_init):
+	- changed use of snd_pcm_hw_params_alloca() to
+	snd_pcm_hw_params_malloc(), otherwise the return value's
+	check for NULL doesn't make sense. alloca() is translated
+	into a single instruction adjusting the stack pointer, and
+	does not check for stack overflow, so there is no NULL error
+	return. alloca() is a not portable function.
+	- calling snd_pcm_hw_params_set_format() with the correct endianness.
+	- changed all VISUAL_LOG_ERROR to VISUAL_LOG_CRITICAL.
 2004-09-07  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/gdkpixbuf/actor_gdkpixbuf.c:

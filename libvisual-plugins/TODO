@@ -15,7 +15,8 @@ inputs:
 		ESD BLOCKS ON LIKE EVERYTHING (post 0.1) (if it is fixable at all)
 	alsa:
 		Fix the small issues within the plugin
-
+		(alsa_init) Take parameters from the 'params'
+		field of the given plugin.
 
 	usound:
 		Make an usound server plugin (someone else)
