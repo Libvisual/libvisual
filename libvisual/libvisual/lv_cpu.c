@@ -337,6 +337,9 @@ void visual_cpu_initialize ()
 	unsigned int regs[4];
 	unsigned int regs2[4];
 
+	int mib[2], ncpu;
+	size_t len;
+
 	memset (&_lv_cpu_caps, 0, sizeof (VisCPU));
 
 	/* Check for arch type */
@@ -359,6 +362,16 @@ void visual_cpu_initialize ()
 	_lv_cpu_caps.nrcpu = sysconf (_SC_NPROCESSORS_ONLN);
 	if (_lv_cpu_caps.nrcpu == -1)
 		_lv_cpu_caps.nrcpu = 1;
+
+#elif defined(VISUAL_OS_NETBSD)
+
+	mib[0] = CTL_HW;
+	mib[1] = HW_NCPU; 
+
+	len = sizeof (ncpu);
+	sysctl (mib, 2, &ncpu, &len, NULL, 0);
+	_lv_cpu_caps.nrcpu = ncpu;
+
 #else
 	_lv_cpu_caps.nrcpu = 1;
 #endif
