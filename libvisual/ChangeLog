@@ -1,5 +1,17 @@
 2004-09-06  Dennis Smit  <ds@nerds-incorporated.org>
 
+	I will first compile before commit.
+	I will first compile before commit.
+	I will first compile before commit.
+	I will first compi.....
+
+	* libvisual/lv_morph.c: Fixed compile errors.
+
+	* libvisual/lv_plugin.c: Removed some debug
+	printfs.
+
+2004-09-06  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_plugin.h: Added a requests_audio field
 	to the VisMorphPlugin structure.
 

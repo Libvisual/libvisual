@@ -35,8 +35,6 @@ static void ref_list_destroy (void *data)
  * @{
  */
 
-/* XXX document the info methods */
-
 /**
  * Creates a new VisPluginInfo structure.
  *
@@ -694,8 +692,6 @@ VisPluginRef *visual_plugin_get_references (char *pluginpath, int *count)
 		
 		ref[i].info = dup_info;
 		ref[i].file = strdup (pluginpath);
-
-		printf ("Creating refs, this is a debug: %s %s\n", ref[i].info->plugname, pluginpath);
 	}
 
 	dlclose (handle);

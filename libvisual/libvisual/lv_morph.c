@@ -279,11 +279,11 @@ int visual_morph_requests_audio (VisMorph *morph)
 {
 	VisMorphPlugin *morphplugin;
 
-	visual_log_return_val_if_fail (morph != NULl, -1);
+	visual_log_return_val_if_fail (morph != NULL, -1);
 
 	morphplugin = get_morph_plugin (morph);
 	
-	if (plugin == NULL) {
+	if (morphplugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 			"The given morph does not reference any plugin");
 		return -1;
