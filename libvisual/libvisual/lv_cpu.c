@@ -363,7 +363,7 @@ void visual_cpu_initialize ()
 	if (_lv_cpu_caps.nrcpu == -1)
 		_lv_cpu_caps.nrcpu = 1;
 
-#elif defined(VISUAL_OS_NETBSD)
+#elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
 
 	mib[0] = CTL_HW;
 	mib[1] = HW_NCPU; 
