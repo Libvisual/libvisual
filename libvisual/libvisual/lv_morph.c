@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <lvconfig.h>
 #include "lv_log.h"
 #include "lv_morph.h"
 #include "lv_log.h"

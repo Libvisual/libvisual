@@ -165,6 +165,8 @@ libvisual:
 		make macros for the 'return if null' stuff like glib has.
 
 	cleanups:
+		functions returning strings that cannot be changed, must be
+		typed with static returns.
 		cleanup the fixmes
 		make use of the lv_log system and do better error checking
 		void * -> byte/word types on other archs !?

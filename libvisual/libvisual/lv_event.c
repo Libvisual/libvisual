@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <lvconfig.h>
 #include "lv_event.h"
 #include "lv_log.h"
 
@@ -23,6 +24,12 @@ VisEvent *visual_event_new ()
 	VisEvent *event;
 
 	event = malloc (sizeof (VisEvent));
+	if (event == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+				"Cannot get memory for a new VisEvent structure");
+		return NULL;
+	}
+
 	memset (event, 0, sizeof (VisEvent));
 
 	return event;
@@ -54,6 +61,12 @@ VisEventQueue *visual_event_queue_new ()
 	VisEventQueue *eventqueue;
 
 	eventqueue = malloc (sizeof (VisEventQueue));
+	if (eventqueue == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+				"Cannot get memory for a new VisEventQueue structure");
+		return NULL;
+	}
+
 	memset (eventqueue, 0, sizeof (VisEventQueue));
 
 	eventqueue->mousestate = VISUAL_MOUSE_UP;
@@ -165,6 +178,11 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 	visual_log_return_val_if_fail (eventqueue != NULL, -1);
 
 	event = visual_event_new ();
+	if (event == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+				"Cannot create a new VisEvent structure");
+		return -1;
+	}
 	
 	/* FIXME name to VISUAL_KEYB_DOWN and KEYB_UP */
 	if (state == VISUAL_KEY_DOWN)

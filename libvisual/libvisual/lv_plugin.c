@@ -5,6 +5,7 @@
 #include <dlfcn.h>
 #include <dirent.h>
 
+#include <lvconfig.h>
 #include "lv_plugin.h"
 #include "lv_log.h"
 

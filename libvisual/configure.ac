@@ -66,6 +66,8 @@ AC_TRY_COMPILE([],[
 		],lv_have_gnuc_varargs=yes,lv_have_gnuc_varargs=no)
 AC_MSG_RESULT($lv_have_gnuc_varargs)
 
+AC_C_BIGENDIAN(bigendian=yes, bigendian=no, )
+
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
@@ -168,6 +170,20 @@ _______EOF
 #define LV_HAVE_GNUC_VARARGS 1
 _______EOF
        fi
+
+        if test x$bigendian = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define LV_BIG_ENDIAN		(1)
+#define LV_LITTLE_ENDIAN 	(0)
+_______EOF
+	else
+                cat >>$outfile <<_______EOF
+
+#define LV_BIG_ENDIAN		(0)
+#define LV_LITTLE_ENDIAN 	(1)
+_______EOF
+        fi
 
 echo >>$outfile
 echo "#endif /* LV_CONFIG_H */" >>$outfile

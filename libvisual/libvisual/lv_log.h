@@ -124,33 +124,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 }
 #endif /* !(ISO_VARARGS || GNUC_VARARGS) */
 
-#define visual_log_return_if_fail(expr)				\
-	if (expr) { } else					\
-	{							\
-	visual_log (VISUAL_LOG_CRITICAL,			\
-		 "file %s: line %d (%s): assertion `%s' failed",\
-		 __FILE__,					\
-		 __LINE__,					\
-		 __PRETTY_FUNCTION__,				\
-		#expr);						\
-	return;							\
-	}
-
-#define visual_log_return_val_if_fail(expr, val)		\
-	if (expr) { } else					\
-	{							\
-	visual_log (VISUAL_LOG_CRITICAL,			\
-		 "file %s: line %d (%s): assertion `%s' failed",\
-		 __FILE__,					\
-		 __LINE__,					\
-		 __PRETTY_FUNCTION__,				\
-		#expr);						\
-	return (val);						\
-	}
-
-#endif /* !__GNUC__ */
-
-
+#endif /* __GNUC__ */
 
 
 #ifndef __GNUC__
@@ -210,13 +184,17 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 }
 #endif /* ISO_VARARGS */
 
+#endif /* !__GNUC__ */
+
+/**
+ * Return if \a expr is FALSE, showing a critical message with
+ * useful information.
+ */
 #define visual_log_return_if_fail(expr)				\
 	if (expr) { } else					\
 	{							\
 	visual_log (VISUAL_LOG_CRITICAL,			\
-		 "file %s: line %d: assertion `%s' failed",	\
-		 __FILE__,					\
-		 __LINE__,					\
+		 "assertion `%s' failed",			\
 		#expr);						\
 	return;							\
 	}
@@ -225,14 +203,10 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	if (expr) { } else					\
 	{							\
 	visual_log (VISUAL_LOG_CRITICAL,			\
-		 "file %s: line %d: assertion `%s' failed",	\
-		 __FILE__,					\
-		 __LINE__,					\
+		 "assertion `%s' failed",			\
 		#expr);						\
 	return (val);						\
 	}
-
-#endif /* !__GNUC__ */
 
 void _lv_log (VisLogSeverity severity, const char *file,
 			int line, const char *funcname, const char *fmt, ...);

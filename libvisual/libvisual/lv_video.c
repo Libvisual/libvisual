@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <lvconfig.h>
 #include "lv_common.h"
 #include "lv_video.h"
 #include "lv_log.h"

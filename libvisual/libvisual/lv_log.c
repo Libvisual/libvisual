@@ -79,9 +79,9 @@ void _lv_log (VisLogSeverity severity, const char *file,
 		}
 	} else {
 		if (severity == VISUAL_LOG_INFO) {
-			printf ("libvisual %s: %s: %s: %s\n",
+			printf ("libvisual %s: %s: %s\n",
 					log_severity_to_string (severity),
-					__lv_progname, funcname, str);
+					__lv_progname, str);
 		} else {
 			fprintf (stderr, "libvisual %s: %s: %s [(%s,%d)]: %s\n",
 					log_severity_to_string (severity), __lv_progname,

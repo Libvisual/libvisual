@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.3 2004-06-29 01:08:50 dprotti Exp $
+ *	$Id: lv_list.c,v 1.4 2004-06-29 23:56:44 dprotti Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <string.h>
 #include <fcntl.h>
 
+#include <lvconfig.h>
 #include "lv_list.h"
 #include "lv_log.h"
 
