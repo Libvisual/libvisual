@@ -1,5 +1,10 @@
 2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* configure.ac, plugins/actor/Makefile.am: Don't build dna,
+	don't include it in the dist.
+
+2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* configure.ac, plugins/actor/Makefile.am, 
 	plugins/actor/nebulus/*: Added nebulus to this package and the
 	libvisual-nebulus package is because ofe this discontinued.

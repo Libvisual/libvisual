@@ -172,25 +172,6 @@ else
   AC_MSG_RESULT([no])
 fi
 
-AC_ARG_ENABLE([dna],
-            AC_HELP_STRING([--disable-dna],
-                           [Do not build dna plugin @<:@default=enabled@:>@]),
-	    [dna=$enableval],
-	    [dna=yes])
-AC_MSG_CHECKING([whether to build dna plugin])
-if test x$dna = xyes; then
-  AC_MSG_RESULT([yes])
-  if test x$opengl = xyes; then
-    build_actor="$build_actor dna"
-    AC_SUBST([DNA], ['actor_lv_dna.la'])
-  else
-    AC_MSG_WARN([*** Libvisual doesn't have OpenGL support.
-		dna plugin will not be built.])
-  fi
-else
-  AC_MSG_RESULT([no])
-fi
-
 AC_ARG_ENABLE([gltest],
             AC_HELP_STRING([--disable-gltest],
                            [Do not build lv_gltest plugin @<:@default=enabled@:>@]),
@@ -511,7 +492,6 @@ AC_CONFIG_FILES([
 	plugins/actor/lv_gltest/Makefile
 	plugins/actor/madspin/Makefile
 	plugins/actor/nebulus/Makefile
-	plugins/actor/dna/Makefile
 	plugins/actor/oinksie/Makefile
 	plugins/actor/jakdaw/Makefile
 	plugins/actor/plazma/Makefile
