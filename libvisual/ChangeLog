@@ -1,3 +1,9 @@
+2004-09-05  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_mem.c: visual_mem_malloc0() fails if
+	we request 0 bytes of memory (malloc(0) leads to a memory
+	leak).
+
 2004-09-04  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac:
@@ -5,9 +11,9 @@
 	OpenGL support.
 	 - tools removed from build tree (temporary).
 	* lvconfig.h:
-	 - LV_WIN32 macro is defined if we are on one
+	 - VISUAL_WIN32 macro is defined if we are on one
 	of these systems.
-	 - LV_HAVE_OPENGL macro is defined accordingly.
+	 - VISUAL_HAVE_OPENGL macro is defined accordingly.
 	 * libvisual/lv_time.c: visual_time_usleep()
 	 implemented.
 	
