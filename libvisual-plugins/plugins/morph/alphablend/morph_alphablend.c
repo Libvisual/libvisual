@@ -201,10 +201,12 @@ static inline int alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2,
 
 static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
 {
-	uint32_t ialpha = (alpha * 255);
+	uint32_t aalpha = (alpha * 255);
+	uint32_t ialpha = aalpha;
 	int i;
 
 	ialpha |= ialpha << 16;
+
 #ifdef VISUAL_ARCH_X86	
 	__asm __volatile
 		("\n\t pxor %%mm6, %%mm6"
@@ -234,7 +236,7 @@ static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2
 	}
 
 	while (i--)
-		dest[i] = (ialpha * (src2[i] - src1[i])) / 255 + src1[i];
+		dest[i] = (aalpha * (src2[i] - src1[i])) / 255 + src1[i];
 	
 	__asm __volatile
 		("\n\t emms");
