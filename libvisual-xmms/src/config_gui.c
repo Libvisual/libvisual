@@ -303,7 +303,6 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_box_pack_start (GTK_BOX (hbox_main_buttons), button_cancel, FALSE, TRUE, 6);
   GTK_WIDGET_SET_FLAGS (button_cancel, GTK_CAN_DEFAULT);
 
-  gtk_widget_grab_default (button_cancel);
   gtk_object_set_data (GTK_OBJECT (window_main), "tooltips", tooltips);
 
   config_gui = g_new0 (ConfigWin, 1);

@@ -1,3 +1,7 @@
+2004-10-02  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/lv_xmms_config.c: configure dialog almost finished.
+
 2004-10-01  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/main.c: set verbose level to HIGH only if we

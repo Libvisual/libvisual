@@ -117,8 +117,26 @@ static void lv_xmms_init ()
 	textdomain (PACKAGE);
 #endif
 
+	if (!visual_is_initialized ()) {
+	        argv = g_malloc (sizeof(char*));
+	        argv[0] = g_strdup (_("XMMS plugin"));
+        	argc = 1;
+
+		visual_init (&argc, &argv);
+
+        	g_free (argv[0]);
+	        g_free (argv);
+	}
+
+#if LV_XMMS_ENABLE_DEBUG
+	visual_log_set_verboseness (VISUAL_LOG_VERBOSENESS_HIGH);
+#endif
+	/*g_print ("Trying to set verboseness\n");
+	visual_log_set_verboseness (VISUAL_LOG_VERBOSENESS_LOW);
+	g_print ("Verboseness done\n");*/
+
 	options = lv_xmms_config_open ();
-	if (options == NULL) {
+	if (!options) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Cannot get options"));
 		return;
 	}
@@ -137,49 +155,38 @@ static void lv_xmms_init ()
 	}
 
 	icon = SDL_LoadBMP (options->icon_file);
-	if (icon != NULL)
+	if (icon)
 		SDL_WM_SetIcon (icon, NULL);
 	else
 		visual_log (VISUAL_LOG_WARNING, _("Cannot not load icon: %s"), SDL_GetError());
 	
 	pcm_mutex = SDL_CreateMutex ();
 	
-	if (!visual_is_initialized ()) {
-	        argv = g_malloc (sizeof(char*));
-	        argv[0] = g_strdup (_("XMMS plugin"));
-        	argc = 1;
-
-		visual_init (&argc, &argv);
-
-        	g_free (argv[0]);
-	        g_free (argv);
-	}
-
-#if LV_XMMS_ENABLE_DEBUG
-	visual_log_set_verboseness (VISUAL_LOG_VERBOSENESS_HIGH);
-#endif
-
 	if (strlen (options->last_plugin) <= 0 ) {
-		visual_log (VISUAL_LOG_INFO, "last plugin: (none)");
+		visual_log (VISUAL_LOG_INFO, _("Last plugin: (none)"));
 	} else {
-		visual_log (VISUAL_LOG_INFO, "last plugin: %s", options->last_plugin);
+		visual_log (VISUAL_LOG_INFO, _("Last plugin: %s"), options->last_plugin);
 	}
 
 	cur_lv_plugin = options->last_plugin;
-	if (visual_actor_valid_by_name (cur_lv_plugin) != TRUE)
-		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
+	if (!(visual_actor_valid_by_name (cur_lv_plugin))) {
+		visual_log (VISUAL_LOG_INFO, _("%s is not a valid actor plugin"), cur_lv_plugin);
+		cur_lv_plugin = lv_xmms_config_get_next_actor ();
+	}
 
 	SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
 
-	if (cur_lv_plugin == NULL) {
-		visual_log (VISUAL_LOG_INFO, "could not get actor plugin");
+	if (!cur_lv_plugin) {
+		visual_log (VISUAL_LOG_CRITICAL, _("Could not get actor plugin"));
 		lv_xmms_config_close ();
 		return;
+	} else {
+		lv_xmms_config_set_current_actor (cur_lv_plugin);
 	}
 
 	ret = visual_initialize (options->width, options->height);
         if (ret < 0) {
-                visual_log (VISUAL_LOG_CRITICAL, "cannot initialize plugin's visual stuff");
+                visual_log (VISUAL_LOG_CRITICAL, _("Cannot initialize plugin's visual stuff"));
 		return;
 	}
 
@@ -308,7 +315,7 @@ static int sdl_create (int width, int height)
 		videoinfo = SDL_GetVideoInfo ();
 
 		if (videoinfo == 0) {
-			visual_log (VISUAL_LOG_CRITICAL, "Could not get video info");
+			visual_log (VISUAL_LOG_CRITICAL, _("Could not get video info"));
 			return -1;
 		}
 
@@ -361,14 +368,14 @@ static int visual_initialize (int width, int height)
 
 	ret = visual_video_set_depth (video, depth);
         if (ret < 0) {
-                visual_log (VISUAL_LOG_CRITICAL, "Cannot set video depth");
+                visual_log (VISUAL_LOG_CRITICAL, _("Cannot set video depth"));
                 return -1;
         }
 	visual_video_set_dimension (video, width, height);
 
         ret = visual_bin_set_video (bin, video);
 	if (ret < 0) {
-                visual_log (VISUAL_LOG_CRITICAL, "Cannot set video");
+                visual_log (VISUAL_LOG_CRITICAL, _("Cannot set video"));
                 return -1;
         }
 	/*visual_bin_connect_by_names (bin, cur_lv_plugin, NULL);*/
@@ -393,7 +400,7 @@ static int visual_initialize (int width, int height)
 	input = visual_bin_get_input (bin);
 	ret = visual_input_set_callback (input, visual_upload_callback, NULL);
 	if (ret < 0) {
-                visual_log (VISUAL_LOG_CRITICAL, "Cannot set input plugin callback");
+                visual_log (VISUAL_LOG_CRITICAL, _("Cannot set input plugin callback"));
                 return -1;
         }        
 	
