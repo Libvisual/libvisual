@@ -7,6 +7,7 @@
 #include "lv_log.h"
 #include "lv_morph.h"
 #include "lv_log.h"
+#include "lv_mem.h"
 
 extern VisList *__lv_plugins_morph;
 
@@ -101,14 +102,8 @@ VisMorph *visual_morph_new (char *morphname)
 		return NULL;
 	}
 
-	morph = malloc (sizeof (VisMorph));
-	memset (morph, 0, sizeof (VisMorph));
+	morph = visual_mem_new0 (VisMorph, 1);
 
-	if (morph == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"Could not get memory to allocate a new VisMorph struct");
-		return NULL;
-	}
 	if (morphname == NULL)
 		return morph;
 

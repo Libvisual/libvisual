@@ -8,6 +8,7 @@
 #include <lvconfig.h>
 #include "lv_plugin.h"
 #include "lv_log.h"
+#include "lv_mem.h"
 
 extern VisList *__lv_plugins;
 
@@ -60,12 +61,7 @@ VisPluginInfo *visual_plugin_info_new (char *name, char *author, char *version, 
 	visual_log_return_val_if_fail (about != NULL, NULL);
 	visual_log_return_val_if_fail (help != NULL, NULL);
 	
-	pluginfo = malloc (sizeof (VisPluginInfo));
-
-	if (pluginfo == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new VisPluginInfo structure");
-		return NULL;
-	}
+	pluginfo = visual_mem_new0 (VisPluginInfo, 1);
 
 	pluginfo->name = strdup (name);
 	pluginfo->author = strdup (author);
@@ -135,17 +131,7 @@ int visual_plugin_info_free (VisPluginInfo *pluginfo)
  */
 VisPluginRef *visual_plugin_ref_new ()
 {
-	VisPluginRef *ref;
-
-	ref = malloc (sizeof (VisPluginRef));
-	if (ref == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new VisPluginRef structure");
-		return NULL;
-	}
-
-	memset (ref, 0, sizeof (VisPluginRef));
-
-	return ref;
+	return (visual_mem_new0 (VisPluginRef, 1));
 }
 
 /**
@@ -201,17 +187,7 @@ int visual_plugin_ref_list_destroy (VisList *list)
  */
 VisActorPlugin *visual_plugin_actor_new ()
 {
-	VisActorPlugin *actorplugin;
-	
-	actorplugin = malloc (sizeof (VisActorPlugin));
-	if (actorplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new actor plugin");
-		return NULL;
-	}
-
-	memset (actorplugin, 0, sizeof (VisActorPlugin));
-
-	return actorplugin;
+	return (visual_mem_new0 (VisActorPlugin, 1));
 }
 
 /**
@@ -239,17 +215,7 @@ int visual_plugin_actor_free (VisActorPlugin *actorplugin)
  */
 VisInputPlugin *visual_plugin_input_new ()
 {
-	VisInputPlugin *inputplugin;
-
-	inputplugin = malloc (sizeof (VisInputPlugin));
-	if (inputplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new input plugin");
-		return NULL;
-	}
-
-	memset (inputplugin, 0, sizeof (VisInputPlugin));
-
-	return inputplugin;
+	return (visual_mem_new0 (VisInputPlugin, 1));
 }
 
 /**
@@ -277,17 +243,7 @@ int visual_plugin_input_free (VisInputPlugin *inputplugin)
  */
 VisMorphPlugin *visual_plugin_morph_new ()
 {
-	VisMorphPlugin *morphplugin;
-
-	morphplugin = malloc (sizeof (VisMorphPlugin));
-	if (morphplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new morph plugin");
-		return NULL;
-	}
-
-	memset (morphplugin, 0, sizeof (VisMorphPlugin));
-
-	return morphplugin;
+	return (visual_mem_new0 (VisMorphPlugin, 1));
 }
 
 /**
@@ -315,17 +271,7 @@ int visual_plugin_morph_free (VisMorphPlugin *morphplugin)
  */
 LVPlugin *visual_plugin_new ()
 {
-	LVPlugin *plugin;
-
-	plugin = malloc (sizeof (LVPlugin));
-	if (plugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new plugin");
-		return NULL;
-	}
-
-	memset (plugin, 0, sizeof (LVPlugin));
-
-	return plugin;
+	return (visual_mem_new0 (LVPlugin, 1));
 }
 
 /**
@@ -784,12 +730,7 @@ VisPluginRef *_lv_plugin_get_reference (VisPluginRef *refn, char *pluginpath)
 	}
 
 	if (refn == NULL) {
-		ref = malloc (sizeof (VisPluginRef));
-		memset (ref, 0, sizeof (VisPluginRef));
-		if (ref == NULL) {
-			visual_log (VISUAL_LOG_CRITICAL, "Cannot get memory for a new VisPluginRef structure");
-			return NULL;
-		}
+		ref = visual_plugin_ref_new ();
 	} else {
 		ref = refn;
 	}

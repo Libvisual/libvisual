@@ -7,6 +7,7 @@
 #include "lv_log.h"
 #include "lv_list.h"
 #include "lv_actor.h"
+#include "lv_mem.h"
 
 extern VisList *__lv_plugins_actor;
 
@@ -101,14 +102,7 @@ VisActor *visual_actor_new (char *actorname)
 		return NULL;
 	}
 	
-	actor = malloc (sizeof (VisActor));
-	memset (actor, 0, sizeof (VisActor));
-
-	if (actor == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
-			"Could not get memory for a new VisActor struct");
-		return NULL;
-	}
+	actor = visual_mem_new0 (VisActor, 1);
 
 	if (actorname == NULL)
 		return actor;
