@@ -967,7 +967,7 @@ cb_idle_entry (void *userdata)
 	const VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 
-	gtk_entry_set_text (GTK_ENTRY (visual_ui_widget_get_private (widget)),
+	gtk_entry_set_text (GTK_ENTRY (visual_object_get_private (VISUAL_OBJECT (widget))),
 				visual_param_entry_get_string (param));
 
 	g_free (data);
@@ -1005,7 +1005,7 @@ cb_idle_slider (void *userdata)
 	else if (param->type == VISUAL_PARAM_TYPE_DOUBLE)
 		val = visual_param_entry_get_double (param);
 
-	gtk_range_set_value (GTK_RANGE (visual_ui_widget_get_private (widget)),
+	gtk_range_set_value (GTK_RANGE (visual_object_get_private (VISUAL_OBJECT (widget))),
 			val); 
 
 	g_free (data);
@@ -1044,7 +1044,7 @@ cb_idle_numeric (void *userdata)
 	else if (param->type == VISUAL_PARAM_TYPE_DOUBLE)
 		val = visual_param_entry_get_double (param);
 
-	adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (visual_ui_widget_get_private (widget)));
+	adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (visual_object_get_private (VISUAL_OBJECT (widget))));
 	gtk_adjustment_set_value (adj, val);
 
 	g_free (data);
@@ -1080,7 +1080,7 @@ cb_idle_color (void *userdata)
 	gdkcol.blue = color->b * (65535 / 255);
 	gdkcol.green = color->g * (65535 / 255);
 
-	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (visual_ui_widget_get_private (widget)),
+	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (visual_object_get_private (VISUAL_OBJECT (widget))),
 			&gdkcol);
 
 	g_free (data);
@@ -1110,7 +1110,7 @@ cb_idle_popup (void *userdata)
 	const VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 
-	gtk_combo_box_set_active (GTK_COMBO_BOX (visual_ui_widget_get_private (widget)),
+	gtk_combo_box_set_active (GTK_COMBO_BOX (visual_object_get_private (VISUAL_OBJECT (widget))),
 			visual_ui_choice_get_active (widget));
 
 	g_free (data);
@@ -1158,7 +1158,7 @@ cb_idle_checkbox (void *userdata)
 	const VisParamEntry *param = data->param;
 	VisUIWidget *widget = data->priv;
 
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (visual_ui_widget_get_private (widget)),
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (visual_object_get_private (VISUAL_OBJECT (widget))),
 			visual_ui_choice_get_active (widget));
 
 	g_free (data);

@@ -1,5 +1,9 @@
 2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* gtk2/lvw_gtk2_visui.c: Doh and use the get_private.
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* gtk2/lvw_gtk2_visui.c: Use visual_object_set_private instead of
 	the deprecated visual_ui_set_private...
 
