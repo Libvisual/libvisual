@@ -8,7 +8,9 @@
 #include "lv_ui.h"
 
 
-static void widget_destroyer (void *ptr);
+static void widget_free (void *ptr);
+static void widget_destroy (void *ptr);
+
 static void table_entry_destroyer (void *ptr);
 
 
@@ -18,10 +20,10 @@ static void table_entry_destroyer (void *ptr)
 
 	visual_log_return_if_fail (tentry != NULL);
 	
-	widget_destroyer (tentry->widget);
+	widget_destroy (tentry->widget);
 }
 
-static void widget_destroyer (void *ptr)
+static void widget_free (void *ptr)
 {
 	VisUIWidget *widget = ptr;
 
@@ -29,30 +31,30 @@ static void widget_destroyer (void *ptr)
 
 	switch (widget->type) {
 		case VISUAL_WIDGET_TYPE_NULL:
-			visual_ui_widget_free (widget);
+			visual_mem_free (widget);
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_WIDGET:
-			visual_ui_widget_free (widget);
+			visual_mem_free (widget);
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_BOX:
-			visual_ui_box_destroy (VISUAL_UI_BOX (widget));
+			visual_ui_box_free (VISUAL_UI_BOX (widget));
 
 			break;
 
 		case VISUAL_WIDGET_TYPE_TABLE:
-			visual_ui_table_destroy (VISUAL_UI_TABLE (widget));
+			visual_ui_table_free (VISUAL_UI_TABLE (widget));
 
 			break;
 		
 		case VISUAL_WIDGET_TYPE_FRAME:
-			visual_ui_frame_destroy (VISUAL_UI_FRAME (widget));
+			visual_ui_frame_free (VISUAL_UI_FRAME (widget));
 
 			break;
-		
+
 		case VISUAL_WIDGET_TYPE_LABEL:
 			visual_ui_label_free (VISUAL_UI_LABEL (widget));
 
@@ -109,10 +111,39 @@ static void widget_destroyer (void *ptr)
 			break;
 
 		default:
-			visual_log (VISUAL_LOG_CRITICAL, "Trying to destroy an unknown VisUI widget type");
+			visual_log (VISUAL_LOG_CRITICAL, "Trying to free an unknown VisUI widget type");
+
+			break;
+	}
+}
+
+static void widget_destroy (void *ptr)
+{
+	VisUIWidget *widget = ptr;
+
+	visual_log_return_if_fail (widget != NULL);
+
+	switch (widget->type) {
+		case VISUAL_WIDGET_TYPE_BOX:
+			visual_ui_box_destroy (VISUAL_UI_BOX (widget));
 
 			break;
 
+		case VISUAL_WIDGET_TYPE_TABLE:
+			visual_ui_table_destroy (VISUAL_UI_TABLE (widget));
+
+			break;
+		
+		case VISUAL_WIDGET_TYPE_FRAME:
+			visual_ui_frame_destroy (VISUAL_UI_FRAME (widget));
+
+			break;
+
+		default:
+			/* The others are the same destroy/free wise. */
+			widget_free (widget);
+		
+			break;
 	}
 }
 
@@ -137,14 +168,7 @@ int visual_ui_widget_free (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, -1);
 
-	/* FIXME use free selector like destroy selector */
-	if (widget->type != VISUAL_WIDGET_TYPE_NULL || widget->type != VISUAL_WIDGET_TYPE_WIDGET) {
-		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
-
-		return -1;
-	}
-
-	visual_mem_free (widget);
+	widget_free (widget);
 
 	return 0;
 }
@@ -153,7 +177,7 @@ int visual_ui_widget_destroy (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, -1);
 
-	widget_destroyer (widget);
+	widget_destroy (widget);
 
 	return 0;
 }
@@ -271,7 +295,7 @@ int visual_ui_box_destroy (VisUIBox *box)
 		return -1;
 	}
 
-	visual_list_destroy_elements (&box->childs, widget_destroyer);
+	visual_list_destroy_elements (&box->childs, widget_destroy);
 
 	visual_ui_box_free (box);
 	
@@ -434,7 +458,7 @@ int visual_ui_frame_destroy (VisUIFrame *frame)
 		return -1;
 	}
 	
-	widget_destroyer (VISUAL_UI_CONTAINER (frame)->child);
+	widget_destroy (VISUAL_UI_CONTAINER (frame)->child);
 
 	visual_ui_frame_free (frame);
 
