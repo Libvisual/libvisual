@@ -49,33 +49,32 @@ int visual_stopped = 1;
 /* About gui variables */
 GtkWidget *about_window = NULL;
 
-static char *lv_xmms_get_songname ();
-static int lv_xmms_prefs_load ();
-static int lv_xmms_prefs_save ();
-static void lv_xmms_init ();
-static void lv_xmms_cleanup ();
-static void lv_xmms_about ();
-static void lv_xmms_configure ();
-static void lv_xmms_disable ();
-static void lv_xmms_playback_start ();
-static void lv_xmms_playback_stop ();
+static void lv_xmms_init (void);
+static void lv_xmms_cleanup (void);
+static void lv_xmms_about (void);
+static void lv_xmms_configure (void);
+static void lv_xmms_disable (VisPlugin *);
+static void lv_xmms_playback_start (void);
+static void lv_xmms_playback_stop (void);
 static void lv_xmms_render_pcm (gint16 data[2][512]);
 
 static void gui_about_closed (GtkWidget *w, GdkEvent *e, gpointer data);
 static void gui_about_destroy (GtkWidget *w, gpointer data);
 
-static int sdl_init ();
-static int sdl_quit ();
-static void sdl_set_pal ();
-static void sdl_draw ();
+static int sdl_init (void);
+static int sdl_quit (void);
+static void sdl_set_pal (void);
+static void sdl_draw (SDL_Surface *screen);
 static int sdl_create (int width, int height);
-static int sdl_event_handle ();
+static int sdl_event_handle (void);
 
 static int visual_upload_callback (VisInput *input, VisAudio *audio, void *private);
 static int visual_resize (int width, int height);
 static int visual_initialize (int width, int height);
-static void *visual_render ();
+static void *visual_render (void);
 
+VisPlugin *get_vplugin_info (void);
+	
 VisPlugin lv_xmms_vp =
 {
 	NULL,
@@ -153,11 +152,9 @@ static int lv_xmms_prefs_save ()
 
 static void lv_xmms_init ()
 {
-	char **blah;
-
-	printf ("sdl_init()\n");
+	visual_log (VISUAL_LOG_DEBUG, "calling sdl_init()");
 	sdl_init ();
-	printf ("SDL_CreateMutex()\n");
+	visual_log (VISUAL_LOG_DEBUG, "calling SDL_CreateMutex()");
 	pcm_mutex = SDL_CreateMutex ();
 	visual_init (NULL, NULL);
 
@@ -170,7 +167,7 @@ static void lv_xmms_init ()
  
 	visual_initialize (lv_width, lv_height);
 
-	printf ("SDL_CreateThread()\n");
+	visual_log (VISUAL_LOG_DEBUG, "calling SDL_CreateThread()");
 	render_thread = SDL_CreateThread ((void *) visual_render, NULL);
 }
 
@@ -178,7 +175,7 @@ static void lv_xmms_cleanup ()
 {
 	int i = 0;
 
-	printf ("Entering cleanup()...\n");
+	visual_log (VISUAL_LOG_DEBUG, "entering...");
 	visual_running = 0;
 	usleep (100000);
 	while (visual_stopped != 1) {
@@ -191,24 +188,24 @@ static void lv_xmms_cleanup ()
 	render_thread = NULL;
 	visual_stopped = 1;
 	
-	printf ("Destroying mutex...\n");
+	visual_log (VISUAL_LOG_DEBUG, "calling SDL_DestroyMutex()");
 	SDL_DestroyMutex (pcm_mutex);
 	pcm_mutex = NULL;
 
-	printf ("Saving prefs...\n");
+	visual_log (VISUAL_LOG_DEBUG, "calling lv_xmms_prefs_save()");
 	lv_xmms_prefs_save ();
 
-	printf ("Destroying VisBin...\n");
+	visual_log (VISUAL_LOG_DEBUG, "destroying VisBin...");
 	visual_bin_destroy (bin);
 	bin = NULL;
 
-	printf ("Quiting LibVisual...\n");
+	visual_log (VISUAL_LOG_DEBUG, "calling visual_quit()");
 	visual_quit ();
 
-	printf ("Quiting SDL...\n");
+	visual_log (VISUAL_LOG_DEBUG, "calling sdl_quit()");
 	sdl_quit ();
 
-	printf ("Returning from lv_xmms_cleanup()\n");
+	visual_log (VISUAL_LOG_DEBUG, "leaving...");
 }
 
 static void lv_xmms_about ()
@@ -260,7 +257,7 @@ static void lv_xmms_configure ()
 
 }
 
-static void lv_xmms_disable (struct VisPlugin* plugin)
+static void lv_xmms_disable (VisPlugin* plugin)
 {
 
 }
@@ -304,19 +301,23 @@ static void gui_about_destroy (GtkWidget *w, gpointer data)
 
 static int sdl_init ()
 {
+	gchar *error_msg;
+	
 	if (SDL_Init (SDL_INIT_VIDEO) < 0) {
-		fprintf (stderr, "%s: Couldn't initialize SDL: %s\n",
-			PACKAGE_NAME, SDL_GetError());
+		error_msg = g_strdup_printf ("%s: could not initialize SDL: %s",
+						PACKAGE_NAME, SDL_GetError());
+		visual_log (VISUAL_LOG_CRITICAL, error_msg);
+		g_free (error_msg);
 		return -1;
 	}
-	/*atexit (SDL_Quit);*/
+	atexit (SDL_Quit);
 
 	return 0;
 }
 
 static int sdl_quit ()
 {
-	printf ("SDL_FreeSurface()\n");
+	visual_log (VISUAL_LOG_DEBUG, "calling SDL_FreeSurface()");
 	if (screen != NULL)
 		SDL_FreeSurface (screen);
 
@@ -325,10 +326,10 @@ static int sdl_quit ()
 	/*
 	 * FIXME this doesn't work!
 	 * 
-	printf ("SDL_Quit()\n");
+	visual_log (VISUAL_LOG_DEBUG, "sdl_quit: calling SDL_Quit()");
 	SDL_Quit ();*/
 	
-	printf ("Returning from sdl_quit()\n");
+	visual_log (VISUAL_LOG_DEBUG, "leaving...");
 	return 0;
 }
 
@@ -348,8 +349,9 @@ static void sdl_set_pal ()
 	SDL_SetColors (screen, sdlpal, 0, 256);
 }
 
-static void sdl_draw ()
+static void sdl_draw (SDL_Surface *screen)
 {
+	g_assert (screen != NULL);
 	SDL_Flip (screen);
 }
 
@@ -367,7 +369,7 @@ static int sdl_create (int width, int height)
 		videoinfo = SDL_GetVideoInfo ();
 
 		if (videoinfo == 0) {
-			printf ("Couldn't get video info\n");
+			visual_log (VISUAL_LOG_CRITICAL, "could not get video info");
 			return -1;
 		}
 
@@ -628,7 +630,7 @@ static void *visual_render ()
 				pal = visual_bin_get_palette (bin);
 				sdl_set_pal ();
 
-				sdl_draw (video);
+				sdl_draw (screen);
 			}
 		}
 		sdl_event_handle ();

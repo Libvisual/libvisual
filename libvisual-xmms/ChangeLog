@@ -1,3 +1,7 @@
+2004-06-23  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/lv_xmms.c: now print messages trough visual_log().
+
 2004-06-22  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/lv_xmms.c:
@@ -12,7 +16,7 @@
 	we can crash the application if mutex is destroyed while
 	the render thread is holding it.
 	- change void lv_xmms_disable (void) to the correct type
-	void lv_xmms_disable (struct VisPlugin *), otherwise XMMS
+	void lv_xmms_disable (VisPlugin *), otherwise XMMS
 	crash when plugin is disabled from the config window.
 	- now render thread is killed always, not only after 
 	go sleep ten times.
