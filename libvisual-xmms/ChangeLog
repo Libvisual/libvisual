@@ -1,3 +1,10 @@
+2004-07-05  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual-xmms.glade: added.
+	* src/config_gui.c: added three radio buttons to allow
+	plugin filter.
+	* src/config.c: manage options related to plugin filter.
+
 2004-07-07  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/main.c (sdl_event_handle): Remove the

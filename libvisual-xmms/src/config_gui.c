@@ -20,7 +20,10 @@ ConfigWin *lv_xmms_config_gui_new (void)
   GtkWidget *window_main;
   GtkWidget *vbox_icon;
   GtkWidget *checkbutton_fullscreen;
-  GtkWidget *checkbutton_opengl;
+  GSList *buttongroup_plugins = NULL;
+  GtkWidget *radiobutton_opengl;
+  GtkWidget *radiobutton_non_opengl;
+  GtkWidget *radiobutton_all_plugins;
   GtkWidget *hbox_fps;
   GtkWidget *label_fps;
   GtkObject *spinbutton_fps_adj;
@@ -35,6 +38,8 @@ ConfigWin *lv_xmms_config_gui_new (void)
   GtkWidget *button_apply;
   GtkWidget *button_cancel;
   GtkTooltips *tooltips;
+
+  add_pixmap_directory (PACKAGE_DATADIR);
 
   tooltips = gtk_tooltips_new ();
 
@@ -61,13 +66,29 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_tooltips_set_tip (tooltips, checkbutton_fullscreen,
 		  "You can also toggle between normal and fullscreen mode by pressing key TAB or F11", NULL);
 
-  checkbutton_opengl = gtk_check_button_new_with_label ("Disable OpenGl plugins");
-  gtk_widget_ref (checkbutton_opengl);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "checkbutton_opengl", checkbutton_opengl,
+  radiobutton_all_plugins = gtk_radio_button_new_with_label (buttongroup_plugins, "All plugins");
+  buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_all_plugins));
+  gtk_widget_ref (radiobutton_all_plugins);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_all_plugins", radiobutton_all_plugins,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (checkbutton_opengl);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), checkbutton_opengl, FALSE, FALSE, 0);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbutton_opengl), FALSE);
+  gtk_widget_show (radiobutton_all_plugins);
+  gtk_box_pack_start (GTK_BOX (vbox_icon), radiobutton_all_plugins, FALSE, FALSE, 0);
+
+  radiobutton_opengl = gtk_radio_button_new_with_label (buttongroup_plugins, "Only GL plugins");
+  buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_opengl));
+  gtk_widget_ref (radiobutton_opengl);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_opengl", radiobutton_opengl,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (radiobutton_opengl);
+  gtk_box_pack_start (GTK_BOX (vbox_icon), radiobutton_opengl, FALSE, FALSE, 0); 
+  
+  radiobutton_non_opengl = gtk_radio_button_new_with_label (buttongroup_plugins, "Only non Gl plugins");
+  buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_non_opengl));
+  gtk_widget_ref (radiobutton_non_opengl);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_non_opengl", radiobutton_non_opengl,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (radiobutton_non_opengl);
+  gtk_box_pack_start (GTK_BOX (vbox_icon), radiobutton_non_opengl, FALSE, FALSE, 0);
 
   hbox_fps = gtk_hbox_new (FALSE, 0);
   gtk_widget_ref (hbox_fps);
@@ -165,15 +186,15 @@ ConfigWin *lv_xmms_config_gui_new (void)
 
   config_gui->window_main = window_main;
   config_gui->checkbutton_fullscreen = checkbutton_fullscreen;
-  config_gui->checkbutton_opengl = checkbutton_opengl;
+  config_gui->radiobutton_opengl = radiobutton_opengl;
+  config_gui->radiobutton_non_opengl = radiobutton_non_opengl;
+  config_gui->radiobutton_all_plugins = radiobutton_all_plugins;
   config_gui->spinbutton_fps = spinbutton_fps;
   config_gui->pixmap_icon = pixmap_icon;
   config_gui->button_ok = button_ok;
   config_gui->button_apply = button_apply;
   config_gui->button_cancel = button_cancel;
 
-  add_pixmap_directory (PACKAGE_DATADIR);
-  
   return config_gui;
 }
 

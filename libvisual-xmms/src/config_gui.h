@@ -4,7 +4,9 @@
 typedef struct {
 	GtkWidget *window_main;
 	GtkWidget *checkbutton_fullscreen;
-	GtkWidget *checkbutton_opengl;
+	GtkWidget *radiobutton_opengl;
+	GtkWidget *radiobutton_non_opengl;
+	GtkWidget *radiobutton_all_plugins;
 	GtkWidget *spinbutton_fps;
 	GtkWidget *pixmap_icon;
 	GtkWidget *button_ok;

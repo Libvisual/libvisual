@@ -320,10 +320,7 @@ static int visual_initialize (int width, int height)
 	options->depth = depth;
 
 	video = visual_video_new ();
-        if (video == NULL) {
-                visual_log (VISUAL_LOG_CRITICAL, "Cannot create a video surface");
-                return -1;
-        }
+
 	ret = visual_video_set_depth (video, depth);
         if (ret < 0) {
                 visual_log (VISUAL_LOG_CRITICAL, "Cannot set video depth");
@@ -533,16 +530,19 @@ static int sdl_event_handle ()
 						break;
 
 					case SDLK_a:
-						if (options->disable_opengl_plugins)
-							next_plugin = visual_actor_get_prev_by_name_nogl (cur_lv_plugin);
-						else
+						if (options->all_plugins_enabled)
 							next_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
+						else
+							/*
+							 * Now we need a visual_actor_get_prev_by_name_gl() :-)
+							 */
+							next_plugin = visual_actor_get_prev_by_name_nogl (cur_lv_plugin);
 
 						if (next_plugin == NULL) {
-							if (options->disable_opengl_plugins)
-								next_plugin = visual_actor_get_prev_by_name_nogl (NULL);
-							else
+							if (options->all_plugins_enabled)
 								next_plugin = visual_actor_get_prev_by_name (NULL);
+							else
+								next_plugin = visual_actor_get_prev_by_name_nogl (NULL);
 
 							if (next_plugin == NULL) {
 								visual_log (VISUAL_LOG_CRITICAL, "Cannot get previous plugin");
@@ -566,16 +566,16 @@ static int sdl_event_handle ()
 						break;
 
 					case SDLK_s:
-						if (options->disable_opengl_plugins)
-							next_plugin = visual_actor_get_next_by_name_nogl (cur_lv_plugin);
-						else
+						if (options->all_plugins_enabled)
 							next_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
+						else
+							next_plugin = visual_actor_get_next_by_name_nogl (cur_lv_plugin);
 
 						if (next_plugin == NULL) {
-							if (options->disable_opengl_plugins)
-								next_plugin = visual_actor_get_next_by_name_nogl (NULL);
-							else
+							if (options->all_plugins_enabled)
 								next_plugin = visual_actor_get_next_by_name (NULL);
+							else
+								next_plugin = visual_actor_get_next_by_name_nogl (NULL);
 							
 							if (next_plugin == NULL) {
 								visual_log (VISUAL_LOG_CRITICAL, "Cannot get next plugin");
