@@ -36,132 +36,132 @@
 #include "lv_error.h"
 
 static const char *__lv_error_human_readable[] = {
-	N_("There was no error"),							/* VISUAL_OK */
+	[VISUAL_OK] =					N_("There was no error"),
 
-	N_("General error occurred"),						/* VISUAL_ERROR_GENERAL */
-	N_("General NULL pointer error"),						/* VISUAL_ERROR_NULL */
-	N_("An impossible event occurred"),						/* VISUAL_ERROR_IMPOSSIBLE */
+	[VISUAL_ERROR_GENERAL] =			N_("General error occurred"),
+	[VISUAL_ERROR_NULL] =				N_("General NULL pointer error"),
+	[VISUAL_ERROR_IMPOSSIBLE] =			N_("An impossible event occurred"),
 
-	N_ ("VisActor is NULL"),							/* VISUAL_ERROR_ACTOR_NULL */
-	N_("VisActor it's video is NULL"),						/* VISUAL_ERROR_ACTOR_VIDEO_NULL */
-	N_("VisActor it's plugin is NULL"),						/* VISUAL_ERROR_ACTOR_PLUGIN_NULL */
-	N_("VisActor failed while trying to forcefully negotiate a GL surface"),	/* VISUAL_ERROR_ACTOR_GL_NEGOTIATE */
+	[VISUAL_ERROR_ACTOR_NULL] =			N_ ("VisActor is NULL"),
+	[VISUAL_ERROR_ACTOR_VIDEO_NULL] =		N_("VisActor it's video is NULL"),
+	[VISUAL_ERROR_ACTOR_PLUGIN_NULL] =		N_("VisActor it's plugin is NULL"),
+	[VISUAL_ERROR_ACTOR_GL_NEGOTIATE] =		N_("VisActor failed while trying to forcefully negotiate a GL surface"),
 
-	N_("VisAudio is NULL"),							/* VISUAL_ERROR_AUDIO_NULL */
+	[VISUAL_ERROR_AUDIO_NULL] =			N_("VisAudio is NULL"),
 	
-	N_("Bitmap is not a bitmap file"),						/* VISUAL_ERROR_BMP_NO_BMP */
-	N_("Bitmap can not be found"),						/* VISUAL_ERROR_BMP_NOT_FOUND */
-	N_("Bitmap is not supported"),						/* VISUAL_ERROR_BMP_NOT_SUPPORTED */
-	N_("Bitmap is corrupted"),							/* VISUAL_ERROR_BMP_CORRUPTED */
+	[VISUAL_ERROR_BMP_NO_BMP] =			N_("Bitmap is not a bitmap file"),
+	[VISUAL_ERROR_BMP_NOT_FOUND] =			N_("Bitmap can not be found"),
+	[VISUAL_ERROR_BMP_NOT_SUPPORTED] =		N_("Bitmap is not supported"),
+	[VISUAL_ERROR_BMP_CORRUPTED] =			N_("Bitmap is corrupted"),
 
-	N_("VisColor is NULL"),							/* VISUAL_ERROR_COLOR_NULL */
+	[VISUAL_ERROR_COLOR_NULL] =			N_("VisColor is NULL"),
 	
-	N_("VisConfigRegistry is NULL"),						/* VISUAL_ERROR_CONFIG_REGISTRY_NULL */
-	N_("VisConfigRegistrySection is NULL"),					/* VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL */
+	[VISUAL_ERROR_CONFIG_REGISTRY_NULL] =		N_("VisConfigRegistry is NULL"),
+	[VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL] =	N_("VisConfigRegistrySection is NULL"),
 
-	N_("The code can not run on this architecture"),				/* VISUAL_ERROR_CPU_INVALID_CODE */
+	[VISUAL_ERROR_CPU_INVALID_CODE] =		N_("The code can not run on this architecture"),
 	
-	N_("Global error handler is NULL"),						/* VISUAL_ERROR_ERROR_HANDLER_NULL */
+	[VISUAL_ERROR_ERROR_HANDLER_NULL] =		N_("Global error handler is NULL"),
 	
-	N_("VisEvent is NULL"),							/* VISUAL_ERROR_EVENT_NULL */
-	N_("VisEventQueue is NULL"),						/* VISUAL_ERROR_EVENT_QUEUE_NULL */
+	[VISUAL_ERROR_EVENT_NULL] =			N_("VisEvent is NULL"),
+	[VISUAL_ERROR_EVENT_QUEUE_NULL] =		N_("VisEventQueue is NULL"),
 	
-	N_("VisInput is NULL"),							/* VISUAL_ERROR_INPUT_NULL */
-	N_("VisInput it's plugin is NULL"),						/* VISUAL_ERROR_INPUT_PLUGIN_NULL */
+	[VISUAL_ERROR_INPUT_NULL] =			N_("VisInput is NULL"),
+	[VISUAL_ERROR_INPUT_PLUGIN_NULL] =		N_("VisInput it's plugin is NULL"),
 	
-	N_("No paths were given to seek for plugins"),				/* VISUAL_ERROR_LIBVISUAL_NO_PATHS */
-	N_("Libvisual is already initialized"),					/* VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED */
-	N_("Libvisual is not initialized"),						/* VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED */
-	N_("Libvisual has not build a plugin registry"),				/* VISUAL_ERROR_LIBVISUAL_NO_REGISTRY */
+	[VISUAL_ERROR_LIBVISUAL_NO_PATHS] =		N_("No paths were given to seek for plugins"),
+	[VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED] =	N_("Libvisual is already initialized"),
+	[VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED] =	N_("Libvisual is not initialized"),
+	[VISUAL_ERROR_LIBVISUAL_NO_REGISTRY] =		N_("Libvisual has not build a plugin registry"),
 	
-	N_("VisList is NULL"),							/* VISUAL_ERROR_LIST_NULL */
-	N_("VisListEntry is NULL"),							/* VISUAL_ERROR_LIST_ENTRY_NULL */
-	N_("VisListEntry is invalid"),						/* VISUAL_ERROR_LIST_ENTRY_INVALID */
+	[VISUAL_ERROR_LIST_NULL] =			N_("VisList is NULL"),
+	[VISUAL_ERROR_LIST_ENTRY_NULL] =		N_("VisListEntry is NULL"),
+	[VISUAL_ERROR_LIST_ENTRY_INVALID] =		N_("VisListEntry is invalid"),
 	
-	N_("Given memory pointer is NULL"),						/* VISUAL_ERROR_MEM_NULL */
+	[VISUAL_ERROR_MEM_NULL] =			N_("Given memory pointer is NULL"),
 	
-	N_("VisMorph is NULL"),							/* VISUAL_ERROR_MORPH_NULL */
-	N_("VisMorph it's plugin is NULL"),						/* VISUAL_ERROR_MORPH_PLUGIN_NULL */
+	[VISUAL_ERROR_MORPH_NULL] =			N_("VisMorph is NULL"),
+	[VISUAL_ERROR_MORPH_PLUGIN_NULL] =		N_("VisMorph it's plugin is NULL"),
 	
-	N_("VisPalette is NULL"),							/* VISUAL_ERROR_PALETTE_NULL */
-	N_("VisPalette it's size conflicts"),					/* VISUAL_ERROR_PALETTE_SIZE */
+	[VISUAL_ERROR_PALETTE_NULL] =			N_("VisPalette is NULL"),
+	[VISUAL_ERROR_PALETTE_SIZE] =			N_("VisPalette it's size conflicts"),
 	
-	N_("VisParamEntry is NULL"),						/* VISUAL_ERROR_PARAM_NULL */
-	N_("VisParamContainer is NULL"),						/* VISUAL_ERROR_PARAM_CONTAINER_NULL */
-	N_("VisParamEntry not found in VisParamContainer"),				/* VISUAL_ERROR_PARAM_NOT_FOUND */
-	N_("VisParamEntry it's change notify callback is NULL"),			/* VISUAL_ERROR_PARAM_CALLBACK_NULL */
-	N_("VisParamEntry contains too many change notify callbacks"),		/* VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY */
-	N_("VisParamEntry is of invalid type"),					/* VISUAL_ERROR_PARAM_INVALID_TYPE */
+	[VISUAL_ERROR_PARAM_NULL] =			N_("VisParamEntry is NULL"),
+	[VISUAL_ERROR_PARAM_CONTAINER_NULL] =		N_("VisParamContainer is NULL"),
+	[VISUAL_ERROR_PARAM_NOT_FOUND] =		N_("VisParamEntry not found in VisParamContainer"),
+	[VISUAL_ERROR_PARAM_CALLBACK_NULL] =		N_("VisParamEntry it's change notify callback is NULL"),
+	[VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY] =	N_("VisParamEntry contains too many change notify callbacks"),
+	[VISUAL_ERROR_PARAM_INVALID_TYPE] =		N_("VisParamEntry is of invalid type"),
 	
-	N_("VisPluginData is NULL"),						/* VISUAL_ERROR_PLUGIN_NULL */
-	N_("VisPluginInfo is NULL"),						/* VISUAL_ERROR_PLUGIN_INFO_NULL */
-	N_("VisPluginRef is NULL"),							/* VISUAL_ERROR_PLUGIN_REF_NULL */
-	N_("VisPluginEnvironElement is NULL"),					/* VISUAL_ERROR_PLUGIN_ENVIRON_NULL */
-	N_("Plugin does not have an event handler"),				/* VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER */
-	N_("Plugin handle is NULL"),						/* VISUAL_ERROR_PLUGIN_HANDLE_NULL */
-	N_("Plugin is already realized"),						/* VISUAL_ERROR_PLUGIN_ALREADY_REALIZED */
+	[VISUAL_ERROR_PLUGIN_NULL] =			N_("VisPluginData is NULL"),
+	[VISUAL_ERROR_PLUGIN_INFO_NULL] =		N_("VisPluginInfo is NULL"),
+	[VISUAL_ERROR_PLUGIN_REF_NULL] =		N_("VisPluginRef is NULL"),
+	[VISUAL_ERROR_PLUGIN_ENVIRON_NULL] =		N_("VisPluginEnvironElement is NULL"),
+	[VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER] =	N_("Plugin does not have an event handler"),
+	[VISUAL_ERROR_PLUGIN_HANDLE_NULL] =		N_("Plugin handle is NULL"),
+	[VISUAL_ERROR_PLUGIN_ALREADY_REALIZED] =	N_("Plugin is already realized"),
 	
-	N_("VisRandomContext is NULL"),						/* VISUAL_ERROR_RANDOM_CONTEXT_NULL */
-	
-	N_("VisSongInfo is NULL"),							/* VISUAL_ERROR_SONGINFO_NULL */
+	[VISUAL_ERROR_RANDOM_CONTEXT_NULL] =		N_("VisRandomContext is NULL"),
 
-	N_("VisThread is NULL"),							/* VISUAL_ERROR_THREAD_NULL */
-	N_("The VisThread subsystem is not initialized"),				/* VISUAL_ERROR_THREAD_NOT_INITIALIZED */
-	N_("The VisThread subsystem couldn't find any threading model to use"),	/* VISUAL_ERROR_THREAD_NOT_SUPPORTED */
-	N_("The VisThread subsystem is not enabled"),				/* VISUAL_ERROR_THREAD_NOT_ENABLED */ 
+	[VISUAL_ERROR_SONGINFO_NULL] =			N_("VisSongInfo is NULL"),
 
-	N_("VisMutex is NULL"),							/* VISUAL_ERROR_MUTEX_NULL */
-	N_("VisMutex lock failed"),							/* VISUAL_ERROR_MUTEX_LOCK_FAILURE */
-	N_("VisMutex trylock failed"),						/* VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE */
-	N_("VisMutex unlock failed"),						/* VISUAL_ERROR_MUTEX_UNLOCK_FAILURE */
+	[VISUAL_ERROR_THREAD_NULL] =			N_("VisThread is NULL"),
+	[VISUAL_ERROR_THREAD_NOT_INITIALIZED] =		N_("The VisThread subsystem is not initialized"),
+	[VISUAL_ERROR_THREAD_NOT_SUPPORTED] =		N_("The VisThread subsystem couldn't find any threading model to use"),
+	[VISUAL_ERROR_THREAD_NOT_ENABLED] =		N_("The VisThread subsystem is not enabled"), 
 
-	N_("VisTransform is NULL"),							/* VISUAL_ERROR_TRANSFORM_NULL */
-	N_("The VisTransform negotiate with the target VisVideo failed"),		/* VISUAL_ERROR_TRANSFORM_NEGOTIATE */
-	N_("The VisTransform it's plugin is NULL"),					/* VISUAL_ERROR_TRANSFORM_PLUGIN_NULL */
-	N_("The VisTransform it's video is NULL"),					/* VISUAL_ERROR_TRANSFORM_VIDEO_NULL */
-	N_("The VisTransform it's palette is NULL"),				/* VISUAL_ERROR_TRANSFORM_PALETTE_NULL */
+	[VISUAL_ERROR_MUTEX_NULL] =			N_("VisMutex is NULL"),
+	[VISUAL_ERROR_MUTEX_LOCK_FAILURE] =		N_("VisMutex lock failed"),
+	[VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE] =		N_("VisMutex trylock failed"),
+	[VISUAL_ERROR_MUTEX_UNLOCK_FAILURE] =		N_("VisMutex unlock failed"),
 
-	N_("VisObject destruction failed"),						/* VISUAL_ERROR_OBJECT_DTOR_FAILED */
-	N_("VisObject is NULL"),							/* VISUAL_ERROR_OBJECT_NULL */
-	N_("VisObject is not allocated"),						/* VISUAL_ERROR_OBJECT_NOT_ALLOCATED */
+	[VISUAL_ERROR_TRANSFORM_NULL] =			N_("VisTransform is NULL"),
+	[VISUAL_ERROR_TRANSFORM_NEGOTIATE] =		N_("The VisTransform negotiate with the target VisVideo failed"),
+	[VISUAL_ERROR_TRANSFORM_PLUGIN_NULL] =		N_("The VisTransform it's plugin is NULL"),
+	[VISUAL_ERROR_TRANSFORM_VIDEO_NULL] =		N_("The VisTransform it's video is NULL"),
+	[VISUAL_ERROR_TRANSFORM_PALETTE_NULL] =		N_("The VisTransform it's palette is NULL"),
+
+	[VISUAL_ERROR_OBJECT_DTOR_FAILED] =		N_("VisObject destruction failed"),
+	[VISUAL_ERROR_OBJECT_NULL] =			N_("VisObject is NULL"),
+	[VISUAL_ERROR_OBJECT_NOT_ALLOCATED] =		N_("VisObject is not allocated"),
 	
-	N_("VisTime is NULL"),							/* VISUAL_ERROR_TIME_NULL */
-	N_("visual_time_usleep() is not supported"),				/* VISUAL_ERROR_TIME_NO_USLEEP */
-	N_("VisTimer is NULL"),							/* VISUAL_ERROR_TIMER_NULL */
+	[VISUAL_ERROR_TIME_NULL] =			N_("VisTime is NULL"),
+	[VISUAL_ERROR_TIME_NO_USLEEP] =			N_("visual_time_usleep() is not supported"),
+	[VISUAL_ERROR_TIMER_NULL] =			N_("VisTimer is NULL"),
 	
-	N_("VisUIWidget is NULL"),							/* VISUAL_ERROR_UI_WIDGET_NULL */
-	N_("VisUIContainer is NULL"),						/* VISUAL_ERROR_UI_CONTAINER_NULL */
-	N_("VisUIBox is NULL"),							/* VISUAL_ERROR_UI_BOX_NULL */
-	N_("VisUITable is NULL"),							/* VISUAL_ERROR_UI_TABLE_NULL */
-	N_("VisUIFrame is NULL"),							/* VISUAL_ERROR_UI_FRAME_NULL */
-	N_("VisUILabel is NULL"),							/* VISUAL_ERROR_UI_LABEL_NULL */
-	N_("VisUIImage is NULL"),							/* VISUAL_ERROR_UI_IMAGE_NULL */
-	N_("VisUISeparator is NULL"),						/* VISUAL_ERROR_UI_SEPARATOR_NULL */
-	N_("VisUIMutator is NULL"),							/* VISUAL_ERROR_UI_MUTATOR_NULL */
-	N_("VisUIRange is NULL"),							/* VISUAL_ERROR_UI_RANGE_NULL */
-	N_("VisUIEntry is NULL"),							/* VISUAL_ERROR_UI_ENTRY_NULL */
-	N_("VisUISlider is NULL"),							/* VISUAL_ERROR_UI_SLIDER_NULL */
-	N_("VisUINumeric is NULL"),							/* VISUAL_ERROR_UI_NUMERIC_NULL */
-	N_("VisUIColor is NULL"),							/* VISUAL_ERROR_UI_COLOR_NULL */
-	N_("VisUIChoice is NULL"),							/* VISUAL_ERROR_UI_CHOICE_NULL */
-	N_("VisUIPopup is NULL"),							/* VISUAL_ERROR_UI_POPUP_NULL */
-	N_("VisUIList is NULL"),							/* VISUAL_ERROR_UI_LIST_NULL */
-	N_("VisUIRadio is NULL"),							/* VISUAL_ERROR_UI_RADIO_NULL */
-	N_("VisUICheckbox is NULL"),						/* VISUAL_ERROR_UI_CHECKBOX_NULL */
-	N_("VisUIChoiceEntry is NULL"),						/* VISUAL_ERROR_UI_CHOICE_ENTRY_NULL */
-	N_("No choice in VisUIChoice is activated"),				/* VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE */
+	[VISUAL_ERROR_UI_WIDGET_NULL] =			N_("VisUIWidget is NULL"),
+	[VISUAL_ERROR_UI_CONTAINER_NULL] =		N_("VisUIContainer is NULL"),
+	[VISUAL_ERROR_UI_BOX_NULL] =			N_("VisUIBox is NULL"),
+	[VISUAL_ERROR_UI_TABLE_NULL] =			N_("VisUITable is NULL"),
+	[VISUAL_ERROR_UI_FRAME_NULL] =			N_("VisUIFrame is NULL"),
+	[VISUAL_ERROR_UI_LABEL_NULL] =			N_("VisUILabel is NULL"),
+	[VISUAL_ERROR_UI_IMAGE_NULL] =			N_("VisUIImage is NULL"),
+	[VISUAL_ERROR_UI_SEPARATOR_NULL] =		N_("VisUISeparator is NULL"),
+	[VISUAL_ERROR_UI_MUTATOR_NULL] =		N_("VisUIMutator is NULL"),
+	[VISUAL_ERROR_UI_RANGE_NULL] =			N_("VisUIRange is NULL"),
+	[VISUAL_ERROR_UI_ENTRY_NULL] =			N_("VisUIEntry is NULL"),
+	[VISUAL_ERROR_UI_SLIDER_NULL] =			N_("VisUISlider is NULL"),
+	[VISUAL_ERROR_UI_NUMERIC_NULL] =		N_("VisUINumeric is NULL"),
+	[VISUAL_ERROR_UI_COLOR_NULL] =			N_("VisUIColor is NULL"),
+	[VISUAL_ERROR_UI_CHOICE_NULL] =			N_("VisUIChoice is NULL"),
+	[VISUAL_ERROR_UI_POPUP_NULL] =			N_("VisUIPopup is NULL"),
+	[VISUAL_ERROR_UI_LIST_NULL] =			N_("VisUIList is NULL"),
+	[VISUAL_ERROR_UI_RADIO_NULL] =			N_("VisUIRadio is NULL"),
+	[VISUAL_ERROR_UI_CHECKBOX_NULL] =		N_("VisUICheckbox is NULL"),
+	[VISUAL_ERROR_UI_CHOICE_ENTRY_NULL] =		N_("VisUIChoiceEntry is NULL"),
+	[VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE] =		N_("No choice in VisUIChoice is activated"),
 
-	N_("VisVideo is NULL"),							/* VISUAL_ERROR_VIDEO_NULL */
-	N_("VisVideo has allocated pixel buffer"),					/* VISUAL_ERROR_VIDEO_HAS_ALLOCATED */
-	N_("VisVideo it's pixel buffer is NULL"),					/* VISUAL_ERROR_VIDEO_PIXELS_NULL */
-	N_("VisVideo it's pixel buffer is not allocated"),				/* VISUAL_ERROR_VIDEO_NO_ALLOCATED */
-	N_("VisVideo has pixel buffer"),						/* VISUAL_ERROR_VIDEO_HAS_PIXELS */
-	N_("VisVideo is of invalid bytes per pixel"),				/* VISUAL_ERROR_VIDEO_INVALID_BPP */
-	N_("VisVideo is of invalid depth"),						/* VISUAL_ERROR_VIDEO_INVALID_DEPTH */
-	N_("Invalid scale method given"),						/* VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD */
-	N_("Given coordinates are out of bounds"),					/* VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS */
-	N_("Given VisVideos are not indentical"),					/* VISUAL_ERROR_VIDEO_NOT_INDENTICAL */
-	N_("VisVideo is not depth transformed as requested")			/* VISUAL_ERROR_VIDEO_NOT_TRANSFORMED */
+	[VISUAL_ERROR_VIDEO_NULL] =			N_("VisVideo is NULL"),
+	[VISUAL_ERROR_VIDEO_HAS_ALLOCATED] =		N_("VisVideo has allocated pixel buffer"),
+	[VISUAL_ERROR_VIDEO_PIXELS_NULL] =		N_("VisVideo it's pixel buffer is NULL"),
+	[VISUAL_ERROR_VIDEO_NO_ALLOCATED] =		N_("VisVideo it's pixel buffer is not allocated"),
+	[VISUAL_ERROR_VIDEO_HAS_PIXELS] =		N_("VisVideo has pixel buffer"),
+	[VISUAL_ERROR_VIDEO_INVALID_BPP] =		N_("VisVideo is of invalid bytes per pixel"),
+	[VISUAL_ERROR_VIDEO_INVALID_DEPTH] =		N_("VisVideo is of invalid depth"),
+	[VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD] =	N_("Invalid scale method given"),
+	[VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS] =		N_("Given coordinates are out of bounds"),
+	[VISUAL_ERROR_VIDEO_NOT_INDENTICAL] =		N_("Given VisVideos are not indentical"),
+	[VISUAL_ERROR_VIDEO_NOT_TRANSFORMED] =		N_("VisVideo is not depth transformed as requested")
 };
 
 static VisErrorHandlerFunc error_handler = NULL;
