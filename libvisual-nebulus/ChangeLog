@@ -1,3 +1,7 @@
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* src/*: Adapted everything to the new VisObject private stuff.
+
 2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/*: API changes.

@@ -92,7 +92,7 @@ int lv_nebulus_init (VisPluginData *plugin)
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_mem_new0 (NebulusPrivate, 1);
-	plugin->priv = priv;
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
 	if (maxtexsize < 256) {
@@ -110,6 +110,8 @@ int lv_nebulus_init (VisPluginData *plugin)
 
 int lv_nebulus_cleanup (VisPluginData *plugin)
 {
+	NebulusPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 
 	if (!face_first)
@@ -135,7 +137,7 @@ int lv_nebulus_cleanup (VisPluginData *plugin)
 	visual_video_free_buffer (&twist_image);
 	visual_video_free_buffer (&background_image);
 
-	visual_mem_free (plugin->priv);
+	visual_mem_free (priv);
 
 	return 0;
 }
@@ -196,12 +198,14 @@ int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
 
 int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	NebulusPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 	visual_log_return_val_if_fail (video != NULL, -1);
 	visual_log_return_val_if_fail (audio != NULL, -1);
 
-	nebulus_sound (plugin->priv, audio);
-	nebulus_draw (plugin->priv, video);
+	nebulus_sound (priv, audio);
+	nebulus_draw (priv, video);
 
 	return 0;
 }
