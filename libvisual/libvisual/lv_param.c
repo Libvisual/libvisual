@@ -348,7 +348,6 @@ int visual_param_entry_changed (VisParamEntry *param)
 
 	eventqueue = param->parent->eventqueue;
 
-	printf ("envetqueueue: %p\n", eventqueue);
 	if (eventqueue != NULL)
 		visual_event_queue_add_param (eventqueue, param);
 
@@ -431,7 +430,6 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 	visual_log_return_val_if_fail (param != NULL, -1);
 	visual_log_return_val_if_fail (src != NULL, -1);
 
-	printf ("TYPE %d numeric: %d\n", src->type, src->numeric.integer);
 	switch (src->type) {
 		case VISUAL_PARAM_TYPE_NULL:
 
