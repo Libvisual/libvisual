@@ -26,7 +26,7 @@ REQUIRED_PKG_CONFIG_VERSION=0.14.0
 REQUIRED_GLIB_GETTEXT_VERSION=2.4.0
 
 # A list of required m4 macros. Add your own here.
-REQUIRED_M4MACROS=""
+REQUIRED_M4MACROS="glib.m4 gtk.m4 sdl.m4 xmms.m4"
 
 printerr() {
     echo "$@" >&2

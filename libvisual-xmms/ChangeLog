@@ -1,7 +1,8 @@
 2005-03-13  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* autogen.sh: fix building fail due to undefined
-	REQUIRED_GLIB_GETTEXT_VERSION variable.
+	REQUIRED_GLIB_GETTEXT_VERSION variable. Now are 
+	required glib.m4 gtk.m4 sdl.m4 and xmms.m4 macros.
 
 2005-02-20  Dennis Smit  <ds@nerds-incorporated.org>
 
