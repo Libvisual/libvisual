@@ -6,12 +6,25 @@
 #include "lv_log.h"
 #include "lv_thread.h"
 
+/* FIXME add more threading backends here:
+ * glib			(could proof to be a nice fallback when needed)
+ * native windows	(says nuff)
+ * what is used on Mac os X ?
+ */
+
 
 /**
  * @defgroup VisThread VisThread
  * @{
  */
 
+/**
+ * Is used to check if threading is supported. When threading is used this should always
+ * be checked, it's possible to disable threads from within the code, so no #ifdefs should
+ * be used.
+ *
+ * @return TRUE if threading is supported or FALSE if not.
+ */
 int visual_thread_is_supported ()
 {
 #ifdef VISUAL_HAVE_THREADS
@@ -25,6 +38,15 @@ int visual_thread_is_supported ()
 #endif /* VISUAL_HAVE_THREADS */
 }
 
+/**
+ * Creates a new VisThread that is used in threading.
+ *
+ * @param func The threading function.
+ * @param data The private data that is send to the threading function.
+ * @param joinable Flag that contains whatever the thread can be joined or not.
+ *
+ * @return A newly allocated VisThread, or NULL on failure.
+ */
 VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 {
 #ifdef VISUAL_HAVE_THREADS
@@ -63,6 +85,14 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
+/**
+ * After a VisThread is not needed anylonger it needs to be freed using this function.
+ *
+ * @param thread The VisThread that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_THREAD_NULL, -VISUAL_ERROR_THREAD_NO_THREADING or
+ *	error values returned by visual_mem_free on failure.
+ */
 int visual_thread_free (VisThread *thread)
 {
 #ifdef VISUAL_HAVE_THREADS
@@ -74,6 +104,14 @@ int visual_thread_free (VisThread *thread)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
+/**
+ * Joins a VisThread with another.
+ *
+ * @param thread The VisThread that is about to be joined.
+ *
+ * @return Possible result that was passed to visual_thread_exit as retval or
+ *	NULL.
+ */
 void *visual_thread_join (VisThread *thread)
 {
 #ifdef VISUAL_HAVE_THREADS
@@ -98,6 +136,11 @@ void *visual_thread_join (VisThread *thread)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
+/**
+ * Exits a VisThread, this will terminate the thread.
+ *
+ * @param retval The return value that is catched by the visual_thread_join function.
+ */
 void visual_thread_exit (void *retval)
 {
 #ifdef VISUAL_HAVE_THREADS
@@ -109,7 +152,10 @@ void visual_thread_exit (void *retval)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
-void visual_thread_yield (void)
+/**
+ * Yield the current VisThread so another gets time.
+ */
+void visual_thread_yield ()
 {
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
@@ -120,19 +166,13 @@ void visual_thread_yield (void)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
-/* FIXME implement some kind of sched priority someway */
-void visual_thread_set_priority (VisThread *thread, VisThreadPriority priority)
-{
-#ifdef VISUAL_HAVE_THREADS
-#ifdef VISUAL_THREAD_MODEL_POSIX
-
-#else /* !VISUAL_THREAD_MODEL_POSIX */
-
-#endif
-#endif /* VISUAL_HAVE_THREADS */
-}
-
-VisMutex *visual_mutex_new (void)
+/**
+ * Creates a new VisMutex that is used to do thread locking so data can be synchronized.
+ *
+ * @return A newly allocated VisMutex that can be used with the visual_mutex_lock and
+ *	visual_mutex_unlock functions or NULL on failure.
+ */
+VisMutex *visual_mutex_new ()
 {
 #ifdef VISUAL_HAVE_THREADS
 	VisMutex *mutex;
@@ -145,6 +185,15 @@ VisMutex *visual_mutex_new (void)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
+/**
+ * Locks a VisMutex, with the VisMutex locks checked right, only one thread can access the area at once.
+ *	This will block if the thread is already locked.
+ *
+ * @param mutex Pointer to the VisMutex to register the lock.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_LOCK_FAILURE or
+ *	-VISUAL_ERROR_THREAD_NO_THREADING on failure.
+ */
 int visual_mutex_lock (VisMutex *mutex)
 {
 #ifdef VISUAL_HAVE_THREADS
@@ -163,6 +212,15 @@ int visual_mutex_lock (VisMutex *mutex)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
+/**
+ * Tries to lock a VisMutex, however instead of visual_mutex_lock it does not block on failure. but returns
+ * instead with -VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE as error value.
+ *
+ * @param mutex Pointer to the VisMutex that needs to be locked.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE or
+ *	-VISUAL_ERROR_THREAD_NO_THREADING on failure.
+ */
 int visual_mutex_trylock (VisMutex *mutex)
 {
 #ifdef VISUAL_HAVE_THREADS
@@ -181,6 +239,14 @@ int visual_mutex_trylock (VisMutex *mutex)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
+/**
+ * Unlocks a VisMutex so other threads that use the same lock can now enter the critical area.
+ *
+ * @param mutex Pointer to the VisMutex that is unlocked.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_UNLOCK_FAILURE or
+ *	-VISUAL_ERROR_THREAD_NO_THREADING on failure.
+ */
 int visual_mutex_unlock (VisMutex *mutex)
 {
 #ifdef VISUAL_HAVE_THREADS
@@ -199,6 +265,15 @@ int visual_mutex_unlock (VisMutex *mutex)
 #endif /* VISUAL_HAVE_THREADS */
 }
 
+/* FIXME this needs to go, somehow, we can't start mallocing freeing for every lock/unlock we do. */
+/**
+ * A VisMutex is allocated to have more flexibility with the actual thread backend. Thus they need
+ * to be freed as well.
+ *
+ * @param mutex Pointer to the VisMutex that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL or -VISUAL_ERROR_THREAD_NO_THREADING on failure.
+ */
 int visual_mutex_free (VisMutex *mutex)
 {
 #ifdef VISUAL_HAVE_THREADS

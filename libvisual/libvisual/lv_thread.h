@@ -16,20 +16,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* FIXME check if pthread is supported, if not, #ifdef around pthread stuff */
-
-/**
- * Enumerate that defines the VisThread priority.
- * 
- * @see visual_thread_set_priority
- */
-typedef enum {
-	VISUAL_THREAD_PRIORITY_LOW,	/**< Lowest VisThread priority. */
-	VISUAL_THREAD_PRIORITY_NORMAL,	/**< Normal VisThread priority. */
-	VISUAL_THREAD_PRIORITY_HIGH,	/**< High VisThread priority. */
-	VISUAL_THREAD_PRIORITY_URGENT	/**< Urgent VisThread priority. */
-} VisThreadPriority;
-
 typedef struct _VisThread VisThread;
 typedef struct _VisMutex VisMutex;
 
@@ -45,20 +31,28 @@ typedef struct _VisMutex VisMutex;
  */
 typedef void *(*VisThreadFunc)(void *data);
 
+/**
+ * The VisThread data structure and the VisThread subsystem is a wrapper system for native
+ * threading implementations.
+ */
 struct _VisThread {
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
-	pthread_t thread;
+	pthread_t thread;		/**< Private used for the pthread implementation. */
 #else /* !VISUAL_THREAD_MODEL_POSIX */
 
 #endif
 #endif /* VISUAL_HAVE_THREADS */
 };
 
+/**
+ * The VisMutex data structure and the VisMutex subsystem is a wrapper system for native
+ * thread locking implementations.
+ */
 struct _VisMutex {
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
-	pthread_mutex_t mutex;
+	pthread_mutex_t mutex;		/**< Private used for the pthreads implementation. */
 #else /* !VISUAL_THREAD_MODEL_POSIX */
 
 #endif
@@ -72,7 +66,6 @@ void *visual_thread_join (VisThread *thread);
 void visual_thread_exit (void *retval);
 void visual_thread_yield (void);
 VisThread *visual_thread_self (void);
-void visual_thread_set_priority (VisThread *thread, VisThreadPriority priority);
 
 VisMutex *visual_mutex_new (void);
 int visual_mutex_lock (VisMutex *mutex);

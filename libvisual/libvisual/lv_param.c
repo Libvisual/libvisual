@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "lv_thread.h"
 #include "lv_log.h"
 #include "lv_param.h"
 
@@ -333,23 +332,11 @@ int visual_param_entry_notify_callbacks (VisParamEntry *param)
 {
 	VisListEntry *le = NULL;
 	VisParamEntryCallback *pcall;
-	VisMutex *mutex = visual_mutex_new ();
 	
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-#ifdef VISUAL_HAVE_THREADS
-	visual_mutex_lock (mutex);
-#endif /* VISUAL_HAVE_THREADS */
-
 	while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL)
 		pcall->callback (param, visual_object_get_private (VISUAL_OBJECT (pcall)));
-
-#ifdef VISUAL_HAVE_THREADS
-	visual_mutex_unlock (mutex);
-
-	/* Yes in the ifdef because mutex won't be allocated if threading is not supported! */
-	visual_mutex_free (mutex);
-#endif /* VISUAL_HAVE_THREADS */
 
 	return VISUAL_OK;
 }
