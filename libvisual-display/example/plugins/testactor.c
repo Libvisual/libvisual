@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: testactor.c,v 1.6 2005-01-29 23:02:26 synap Exp $
+ * $Id: testactor.c,v 1.7 2005-02-11 21:18:24 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -41,6 +41,7 @@ typedef struct {
 	Lvd *v;
 	LvdDContext *myctx1;
 	int tex;
+	int w, h;
 } DNAPrivate;
 
 int lv_dna_init (VisPluginData *plugin);
@@ -91,9 +92,18 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 int lv_dna_init (VisPluginData *plugin)
 {
+	int params[20];
+	int i;
 	DNAPrivate *priv;
 	Lvd *v;
 	LvdDContext *ctxorig;
+	void *envobj;
+
+	envobj = visual_plugin_environ_get (plugin, VISUAL_PLUGIN_ENVIRON_TYPE_LVD);
+
+	if (envobj == NULL){
+		return -1;
+	}
 
 	priv = visual_mem_new0 (DNAPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
@@ -116,14 +126,21 @@ int lv_dna_init (VisPluginData *plugin)
 
 	glGenTextures(1, &priv->tex);
 
-	/* (STILL) :) a hack :) */
-	v = ((LvdPluginEnvironData*) visual_plugin_environ_get (plugin, VISUAL_PLUGIN_ENVIRON_TYPE_LVD))->lvd;
+	v = ((LvdPluginEnvironData*) envobj)->lvd;
 	fprintf(stderr,"got lvd: %p\n",v);
 	priv->v=v;
 
+	i=0;
+	params[i++] = LVD_SET_WIDTH;  params[i++] = 64;
+	params[i++] = LVD_SET_HEIGHT; params[i++] = 64;
+	params[i++] = LVD_SET_RENDERTARGET; params[i++] = LVD_SET_OFFSCREEN;
+	params[i++] = LVD_SET_DONE;
 
-	priv->myctx1 = lvdisplay_context_create_special(priv->v, (void*)1);
+	priv->myctx1 = lvdisplay_context_create_special(priv->v, params);
 	fprintf(stderr,"creatd context: %p\n",priv->myctx1);
+
+	priv->w = 64;
+	priv->h = 64;
 
 	fprintf(stderr,"new ctx setup...\n");
 
@@ -285,13 +302,11 @@ int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-				0, 0, 256, 256, 0); // XXX
+				0, 0, priv->w, priv->h, 0);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 	lvdisplay_context_pop(v);
-
-//	glLoadIdentity ();
 
 	glBindTexture(GL_TEXTURE_2D, priv->tex);
 

@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.c,v 1.18 2005-01-28 18:35:55 vitalyvb Exp $
+ * $Id: lv_display.c,v 1.19 2005-02-11 21:18:39 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -297,10 +297,17 @@ Lvd* lvdisplay_initialize()
 
 int lvdisplay_set_driver(Lvd *v, LvdDriver *drv)
 {
+	VisActor *actor;
 	int res;
 
 	visual_log_return_val_if_fail (v != NULL, -1);
 	visual_log_return_val_if_fail (drv != NULL, -1);
+
+	actor = visual_bin_get_actor(v->bin);
+	if (actor && actor->plugin->realized){
+		actor->plugin->info->cleanup(actor->plugin);
+		actor->plugin->realized = FALSE;
+	}
 
 	if (v->drv){
 		visual_object_unref(VISUAL_OBJECT(v->drv));

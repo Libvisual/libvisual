@@ -321,12 +321,50 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 {
 	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 	glx_context *c;
+	int p;
+
+	int w = 128, h = 128;
+	int onscrn = 1;
+	int done = 0;
+
+	if (params != NULL){
+		p=0;
+		while (!done){
+			switch (params[p++]){
+			case LVD_SET_DONE:
+				done = 1;
+				break;
+			case LVD_SET_WIDTH:
+				w = params[p++];
+				break;
+			case LVD_SET_HEIGHT:
+				h = params[p++];
+				break;
+			case LVD_SET_RENDERTARGET:
+				onscrn = (params[p++] == LVD_SET_ONSCREEN);
+				break;
+			default:
+				// XXX FIXME warn
+				done = 1;
+				break;
+			}
+		}
+	}
+
+	// XXX check max texture sizes
+
+	/* check if width and height are powers of 2 */
+	if (!onscrn & ((w&(w-1)) || (h&(h-1)))){
+		
+		return NULL;
+	}
+
 
 	c = visual_mem_new0(glx_context, 1);
 	if (c == NULL)
 		return NULL;
 
-	if (params == NULL) {
+	if (onscrn) {
 		c->type = CONTEXT_TYPE_WIN;
 		c->drawable = XGLXW;
 		c->glxctx = glXCreateNewContext(XDPY, priv->fbconf,
@@ -340,17 +378,15 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 		}
 		parentc = c->glxctx;
 	} else {
-		// XXX offscreen it
 		int attr[100];
 		int i;
-		int w,h;
 		GLXDrawable drw;
 
 		c->type = CONTEXT_TYPE_PBUFFER;
-		
+
 		i=0;
-		attr[i++] = GLX_PBUFFER_WIDTH; attr[i++] = 256; // XXX
-		attr[i++] = GLX_PBUFFER_HEIGHT; attr[i++] = 256;// XXX
+		attr[i++] = GLX_PBUFFER_WIDTH; attr[i++] = w;
+		attr[i++] = GLX_PBUFFER_HEIGHT; attr[i++] = h;
 		attr[i++] = GLX_PRESERVED_CONTENTS; attr[i++] = True;
 		attr[i++] = None;
 
@@ -389,6 +425,10 @@ void context_delete(VisPluginData *plugin, LvdDContext *ctx)
 	glXDestroyContext(XDPY, c->glxctx);
 	c->glxctx = NULL;
 
+	if (c->type == CONTEXT_TYPE_PBUFFER)
+		glXDestroyPbuffer(XDPY, c->drawable);
+	c->drawable = 0;
+
 	visual_mem_free(c);
 }
 
@@ -410,11 +450,8 @@ void context_activate(VisPluginData *plugin, LvdDContext *ctx)
 	glx_context *c = (glx_context*)ctx;
 	assert(c);
 
-//	if (priv->active_ctx != c){
-		priv->active_ctx = c;
-
-		glXMakeContextCurrent(XDPY, c->drawable, c->drawable, c->glxctx);
-//	}
+	priv->active_ctx = c;
+	glXMakeContextCurrent(XDPY, c->drawable, c->drawable, c->glxctx);
 }
 
 LvdDContext *context_get_active(VisPluginData *plugin)

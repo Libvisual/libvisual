@@ -117,7 +117,7 @@ int plugin_cleanup (VisPluginData *plugin)
 
 	finit_x(x11);
 
-	free(priv);
+	visual_mem_free(priv);
 
 	return 0;
 }

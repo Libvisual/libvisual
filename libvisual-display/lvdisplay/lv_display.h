@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.h,v 1.12 2005-01-28 18:35:55 vitalyvb Exp $
+ * $Id: lv_display.h,v 1.13 2005-02-11 21:18:41 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -53,12 +53,18 @@ typedef struct {
 
 typedef enum {
 	LVD_SET_DONE = 0,
+
+	/* options below must have exactly one "int" parameter */
 	LVD_SET_WIDTH,
 	LVD_SET_HEIGHT,
 	LVD_SET_RENDERTARGET,
 	LVD_SET_DEPTH,
 	LVD_SET_VISIBLE,
-	
+
+	/* some parameter values */
+	LVD_SET_ONSCREEN,
+	LVD_SET_OFFSCREEN,
+
 	LVD_PARAM_LAST,
 } LvdSettings;
 

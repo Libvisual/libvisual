@@ -127,14 +127,13 @@ int plugin_init (VisPluginData *plugin)
 int plugin_cleanup (VisPluginData *plugin)
 {
 	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
-	LvdCompatDataX11 *x11 = &priv->x11data;
 
 	if (priv->is_fullscreen)
 		fullscreen_stop(priv);
 
 	finit_x(priv);
 
-	free(priv);
+	visual_mem_free(priv);
 
 	return 0;
 }
@@ -349,8 +348,8 @@ static int init_cursor(privdata *priv)
 	XGCValues gc_vals;
 	char *cdata;
 
-	cdata = malloc(1);
-	cdata[0] = 0;
+	cdata = malloc(8);
+	memset(cdata, 0, 8);
 
 	piximage = XCreateImage(XDPY, None, 1, XYBitmap, 0, cdata, 1, 1, 8, 8);
 	if (piximage == NULL){
@@ -427,6 +426,7 @@ int init_x(privdata *priv)
 		return 4;
 	}
 
+
 	if (init_cursor(priv)){
 		visual_log(VISUAL_LOG_WARNING, "Can not create blank cursor\n");
 		return 5;
@@ -443,15 +443,15 @@ void finit_x(privdata *priv)
 	LvdCompatDataX11 *data = &priv->x11data;
 
 	if (XDPY){
+		if (XWIN)
+			XDestroyWindow(XDPY, XWIN);
 		if (priv->blank_cursor){
 			XFreeCursor(XDPY, priv->blank_cursor);
 		}
-		if (XWIN)
-			XDestroyWindow(XDPY, XWIN);
 		XCloseDisplay(XDPY);
 
-		XDPY = 0;
-		XWIN = 0;
+		XDPY = None;
+		XWIN = None;
 		priv->blank_cursor = None;
 	}
 }

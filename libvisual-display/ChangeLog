@@ -1,3 +1,15 @@
+2005-02-11  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* lvdisplay/lv_display.c: cleanup() actor when new driver is set.
+	* lvdisplay/lv_display.h: new parameters to specify off-/onscreen
+	render target.
+	* drivers/glx/glx.c: use passed parameters on ctx create.
+	* example/plugins/testactor.c: pass parameters to
+	lvdisplay_context_create_special();
+	* drivers/x11/x11_fullscreen.c: malloc of too small buffer fixed,
+	free -> visual_mem_free on cleanup.
+	* drivers/x11/x11_new.c: free -> visual_mem_free on cleanup.
+
 2005-02-10  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Set version to 0.3.0, require libvisual 0.3.0.

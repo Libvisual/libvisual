@@ -90,10 +90,10 @@ int main(int argc, char **argv)
 //		params[pc++] = VISUAL_VIDEO_DEPTH_GL; // whatever.... lvdisplay_realize sets it again
 
 		params[pc++] = LVD_SET_WIDTH;
-		params[pc++] = 1024;
+		params[pc++] = 400;
 
 		params[pc++] = LVD_SET_HEIGHT;
-		params[pc++] = 768;
+		params[pc++] = 300;
 
 		params[pc++] = LVD_SET_VISIBLE;
 		params[pc++] = 1;
