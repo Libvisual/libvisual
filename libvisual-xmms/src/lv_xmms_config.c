@@ -28,6 +28,7 @@ static gboolean all_plugins_enabled;
 static gboolean random_morph;
 static int fps;
 
+static gchar *actor_plugin_buffer = NULL;
 static GHashTable *actor_plugin_table = NULL;
 static GHashTable *actor_plugin_enable_table = NULL;
 
@@ -52,6 +53,8 @@ static int load_morph_plugin_list (void);
 	
 static void load_actor_plugin_enable_table (void);
 
+static void remove_boolean (gpointer key, gpointer value, gpointer data);
+
 static void config_win_set_defaults (void);
 static void config_win_connect_callbacks (void);
 static void config_visual_initialize (void);
@@ -68,7 +71,8 @@ Options *lv_xmms_config_open ()
 #warning ***** Yes, I WANT 'trash' uninitialized *****
 	unsigned int trash;
 
-	options.last_plugin = g_malloc0 (OPTIONS_MAX_NAME_LEN);
+	actor_plugin_buffer = g_malloc0 (OPTIONS_MAX_NAME_LEN);
+	options.last_plugin = actor_plugin_buffer;
 	morph_plugin_buffer = g_malloc0 (OPTIONS_MAX_NAME_LEN);
 	options.icon_file = g_malloc0 (OPTIONS_MAX_ICON_PATH_LEN);
 
@@ -86,12 +90,26 @@ Options *lv_xmms_config_open ()
 
 int lv_xmms_config_close ()
 {
-	if (options.last_plugin != NULL)
-		g_free (options.last_plugin);
+	if (actor_plugin_buffer != NULL)
+		g_free (actor_plugin_buffer);
 	if (morph_plugin_buffer != NULL)
 		g_free (morph_plugin_buffer);
 	if (options.icon_file != NULL)
 		g_free (options.icon_file);
+
+	g_hash_table_foreach (actor_plugin_table, remove_boolean, NULL);
+	g_hash_table_destroy (actor_plugin_table);
+	actor_plugin_table = NULL;
+	g_hash_table_foreach (actor_plugin_enable_table, remove_boolean, NULL);
+	g_hash_table_destroy (actor_plugin_enable_table);
+	actor_plugin_enable_table = NULL;
+
+	g_slist_free (actor_plugins_gl);
+	actor_plugins_gl = NULL;
+	g_slist_free (actor_plugins_nongl);
+	actor_plugins_nongl = NULL;
+	g_slist_free (morph_plugins_list);
+	morph_plugins_list = NULL;
 
 	return 0;
 }
@@ -688,6 +706,11 @@ static void load_actor_plugin_enable_table ()
 		l = g_slist_next (l);
 	}
 	actor_plugin_enable_table = enable_table;
+}
+
+static void remove_boolean (gpointer key, gpointer value, gpointer data)
+{
+	g_free (value);
 }
 
 /* FIXME We must look at actor_plugin_enable_table, not just enabling all */

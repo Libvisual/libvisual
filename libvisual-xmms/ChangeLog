@@ -1,3 +1,9 @@
+2004-09-30  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/lv_xmms_config.c:
+	Actors can be enabled disabled (work in progress).
+	Correct cleanup on exit.
+
 2004-09-29  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/config_gui.c: configure window can be resized.
@@ -8,7 +14,6 @@
 	Show actor's about dialogs.
 	We require positive values on fps, width, height and bpp
 	options.
-	Actors can be enabled disabled (work in progress).
 
 2004-09-28  Duilio Protti  <dprotti@users.sourceforge.net>
 
