@@ -76,8 +76,8 @@ int visual_time_get (VisTime *time_)
 
 	GetLocalTime (&systime);
 
-	visual_time_set (time_, (systime.wHour * 60 * 60) + (systime.wMinute * 60) + systime.mSeconds,
-			systime.mMilliseconds * 1000);
+	visual_time_set (time_, (systime.wHour * 60 * 60) + (systime.wMinute * 60) + systime.wSeconds,
+			systime.wMilliseconds * 1000);
 
 #else
 	struct timeval tv;
