@@ -97,10 +97,13 @@ void *visual_mem_copy (void *dest, const void *src, size_t n)
 	 * with checking for optimal scan lines */
 
 	/* FIXME #else for the VISUAL_ARCH_X86 */
+
+	/* FIXME fix this stuff ! */
+	return memcpy (dest, src, n);
 	
 	if (cpucaps->hasMMX == 1) {
 #ifdef VISUAL_ARCH_X86
-		while (n >= 64) {
+		while (n > 64) {
 			__asm __volatile
 				(//"\n\t prefetch 256(%0)" /* < only use when 3dnow is present */
 				 //"\n\t prefetch 320(%0)"
