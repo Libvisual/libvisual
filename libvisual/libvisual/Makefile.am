@@ -9,6 +9,8 @@ library_include_HEADERS = libvisual.h lv_actor.h \
 			  lv_video.h lv_libvisual.h lv_songinfo.h \
 			  lv_morph.h lv_bmp.h
 
+DEFS = @DEFS@
+
 LIBS = -L. -L$(prefix)/lib
 
 PLUGPATH = $(prefix)/lib/libvisual

@@ -66,10 +66,9 @@ DOCS:
 
 buildtree:
 	make examples en tests compile again
-	check for inline through config.h
 
 plugins:
-	!(option flags, include a 'reentrant' flag that indicates that the plugin is allowed to load twice) (make a notreetrant flag rather)
+	!(option flags, include a 'reentrant' flag that indicates that the plugin is allowed to load twice) (make a notreentrant flag rather)
 
 docs:
 	plugin tutorial
@@ -192,11 +191,6 @@ tests:
 		seems to be somewhat related to esd running as an user and
 		launching the tests as root (?!), or better sdl not using
 		x as it's backend but something else.
-
-all:
-	use AC_C_INLINE and config.h for this:
-		check for inline to use
-
 
 FUTURE:
 	* an highend API and library that also helps with displaying (do display support plugin wise ??)
