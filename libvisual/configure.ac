@@ -301,12 +301,7 @@ AC_MSG_RESULT(unsigned $visual_size_type)
 
 build_subdirs="libvisual"
 
-dnl Check if we need -mwindows
-if test x$lv_mingw = xyes ; then
-VISUAL_CFLAGS="-mwindows"
-else
 VISUAL_CFLAGS=""
-fi
 
 VISUAL_LIBS="$LIBS -lvisual"
 if test x"$LV_THREAD_LIBS" != x; then
@@ -419,6 +414,9 @@ fi
 
 #define VISUAL_RANDOM_FAST_FP_RND 1
 
+if test x$lv_mingw = xyes ; then
+OPT_CFLAGS="-mwindows"
+fi
 AC_SUBST(OPT_CFLAGS)
 
 AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
