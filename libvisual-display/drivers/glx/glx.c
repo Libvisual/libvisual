@@ -11,6 +11,7 @@
 
 typedef struct {
 	GLXContext glxctx;
+	VisVideo *video;
 } glx_context;
 
 typedef struct {
@@ -34,8 +35,8 @@ static int init_glx13 (privdata *priv, int *params, int params_cnt);
 
 
 static int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
-	int *params, int params_count, VisVideo *video);
-static LvdDContext *context_create(VisPluginData *plugin);
+	int *params, int params_count);
+static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video);
 static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
 static void draw(VisPluginData *plugin);
@@ -118,7 +119,7 @@ int plugin_cleanup (VisPluginData *plugin)
 #define XWIN (priv->win)
 
 int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
-		int *params, int params_count, VisVideo *video)
+		int *params, int params_count)
 {
 	privdata *priv = plugin->priv;
 
@@ -127,8 +128,6 @@ int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
 
 	XDPY = data->dpy;
 	XWIN = data->win;
-
-	visual_video_set_depth(video, VISUAL_VIDEO_DEPTH_GL);
 
 	return init (priv, params, params_count);
 }
@@ -229,7 +228,7 @@ int init_glx13(privdata *priv, int *params, int params_cnt)
 	return 0;
 }
 
-LvdDContext *context_create(VisPluginData *plugin)
+LvdDContext *context_create(VisPluginData *plugin, VisVideo *video)
 {
 	glx_context *c;
 	privdata *priv = plugin->priv;
@@ -241,6 +240,8 @@ LvdDContext *context_create(VisPluginData *plugin)
 
 	c->glxctx = glXCreateNewContext(XDPY, priv->fbconf,
 		GLX_RGBA_TYPE, NULL, True);
+
+	c->video = video;
 
 	if (!c->glxctx){
 		free(c);
@@ -275,5 +276,36 @@ void context_activate(VisPluginData *plugin, LvdDContext *ctx)
 void draw(VisPluginData *plugin)
 {
 	privdata *priv = plugin->priv;
+	
+	if ((priv->active_ctx->video->depth != VISUAL_VIDEO_DEPTH_GL) &&
+		(priv->active_ctx->video->screenbuffer)){
+
+		int format, type;
+
+		switch (priv->active_ctx->video->depth){
+			case VISUAL_VIDEO_DEPTH_8BIT:
+				format = GL_RGB;
+				type = GL_UNSIGNED_BYTE_3_3_2;
+				break;
+			case VISUAL_VIDEO_DEPTH_16BIT:
+				format = GL_RGB;
+				type = GL_UNSIGNED_SHORT_5_6_5;
+				break;
+			case VISUAL_VIDEO_DEPTH_24BIT:
+				format = GL_RGB;
+				type = GL_UNSIGNED_BYTE;
+				break;
+			case VISUAL_VIDEO_DEPTH_32BIT:
+				format = GL_RGBA;
+				type = GL_UNSIGNED_BYTE;
+				break;
+			default:
+				return;
+		}
+
+		glDrawPixels(priv->active_ctx->video->width, priv->active_ctx->video->height,
+			format, type, priv->active_ctx->video->screenbuffer);
+	}
+	
 	glXSwapBuffers(XDPY, XGLXW);
 }

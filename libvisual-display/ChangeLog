@@ -1,3 +1,15 @@
+2004-10-05  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+	* drivers/glx/glx.c: VisVideo support, framebuffer
+	rendering.
+	* drivers/glx/glx_new.c: process all pending events,
+	not only the first one. Button click position update.
+	Visibility event send now when visibility changes.
+	Framebuffer support.
+	* example/main.c: process all pending events.
+	Mouse button event updates.
+	* lvdisplay/lv_display.c, lvdisplay/lv_display.h:
+	Framebuffer support.
+
 2004-10-04  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* drivers/glx/glx_new.c: Compile with new button

@@ -85,7 +85,10 @@ void lvdisplay_driver_delete(LvdDriver *drv)
 	if (drv->params)
 		free(drv->params);
 
-	visual_video_free(drv->video);
+	if (visual_video_have_allocated_buffer(drv->video))
+		visual_video_free_with_buffer(drv->video);
+	else
+		visual_video_free(drv->video);
 
 	free(drv);
 }
@@ -156,13 +159,10 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 	/* init drv's class */
 	res = ((LvdBackendDescription*)drv->pclass->info->plugin)->
 		setup(drv->pclass, drv->compat_data,drv->params,
-		drv->params_cnt, drv->video);
+		drv->params_cnt);
 
 	if (res)
 		return NULL;
-
-	v->ctx = ((LvdBackendDescription*)drv->pclass->info->plugin)->context_create(drv->pclass);
-	((LvdBackendDescription*)drv->pclass->info->plugin)->context_activate(drv->pclass, v->ctx);
 
 	v->bin = visual_bin_new();
 
@@ -174,6 +174,57 @@ VisVideo *lvdisplay_visual_get_video(Lvd *v)
 	return v->drv->video;
 }
 
+int lvdisplay_realize(Lvd *v)
+{
+	VisActor *actor;
+	VisVideoDepth adepth;
+
+	actor = visual_bin_get_actor(v->bin);
+	if (actor == NULL){
+		return 1;
+	}
+
+	adepth = visual_actor_get_supported_depth(actor);
+
+	// XXX setup video for actor
+	if (adepth & VISUAL_VIDEO_DEPTH_GL){
+		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_GL);
+	} else
+	if (adepth & VISUAL_VIDEO_DEPTH_32BIT) {
+		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_32BIT);
+		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
+		visual_video_allocate_buffer(v->drv->video);
+	} else
+	if (adepth & VISUAL_VIDEO_DEPTH_24BIT) {
+		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_24BIT);
+		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
+		visual_video_allocate_buffer(v->drv->video);
+	} else
+	if (adepth & VISUAL_VIDEO_DEPTH_16BIT) {
+		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_16BIT);
+		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
+		visual_video_allocate_buffer(v->drv->video);
+	} else
+	if (adepth & VISUAL_VIDEO_DEPTH_8BIT) {
+		visual_video_set_depth(v->drv->video, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_dimension(v->drv->video, v->drv->video->width, v->drv->video->height);
+		visual_video_allocate_buffer(v->drv->video);
+	} else {
+		return 1;
+	}
+
+	v->ctx = ((LvdBackendDescription*)v->drv->pclass->info->plugin)->
+		context_create(v->drv->pclass, v->drv->video);
+
+	((LvdBackendDescription*)v->drv->pclass->info->plugin)->
+		context_activate(v->drv->pclass, v->ctx);
+
+	visual_bin_realize(v->bin);
+	visual_actor_set_video(actor, v->drv->video);
+	visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
+
+	return 0;
+}
 
 
 void lvdisplay_finalize(Lvd *v)
@@ -203,6 +254,7 @@ int lvdisplay_run(Lvd *v)
 
 	drv->ptype->info->events(drv->ptype, &drv->ptype->eventqueue);
 
+	visual_bin_realize(v->bin);
 	visual_bin_run(v->bin);
 
 	((LvdBackendDescription*)drv->pclass->info->plugin)->draw(drv->pclass);

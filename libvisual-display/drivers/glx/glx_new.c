@@ -13,8 +13,9 @@
 #define XWIN (data->win)
 
 typedef struct {
-        LvdCompatDataX11 x11data;
+	LvdCompatDataX11 x11data;
 	VisVideo *video;
+	int is_visible;
 } privdata;
 
 static int plugin_init (VisPluginData *plugin);
@@ -100,7 +101,8 @@ void *get_compat_data(VisPluginData *plugin)
     return &((privdata*)plugin->priv)->x11data;
 }
 
-int process_events(LvdCompatDataX11 *data, VisEventQueue *eventqueue, VisVideo *video);
+int process_events(privdata *priv, LvdCompatDataX11 *data,
+	VisEventQueue *eventqueue, VisVideo *video);
 
 int get_events(VisPluginData *plugin, VisEventQueue *eventqueue)
 {
@@ -109,8 +111,8 @@ int get_events(VisPluginData *plugin, VisEventQueue *eventqueue)
 	// XXX are checks necessary? this func called once per frame...
 	data = &((privdata*)plugin->priv)->x11data;
 
-	if (XEventsQueued(XDPY, QueuedAfterReading)){
-		process_events(data, eventqueue,
+	while (XEventsQueued(XDPY, QueuedAfterReading)){
+		process_events(plugin->priv, data, eventqueue,
 			((privdata*)plugin->priv)->video);
 	}
 
@@ -118,7 +120,7 @@ int get_events(VisPluginData *plugin, VisEventQueue *eventqueue)
 }
 
 
-int process_events(LvdCompatDataX11 *data,
+int process_events(privdata *priv, LvdCompatDataX11 *data,
 	VisEventQueue *eventqueue, VisVideo *video)
 {
 	XEvent ev;
@@ -145,9 +147,9 @@ int process_events(LvdCompatDataX11 *data,
 
 		case ButtonRelease:
 		case ButtonPress:
-			/* XXX Hm, how do i specify another parameters like x,y? */
 			visual_event_queue_add_mousebutton (eventqueue, ev.xbutton.button,
-				(ev.type == ButtonPress) ? VISUAL_MOUSE_DOWN:VISUAL_MOUSE_UP, 0, 0);
+				(ev.type == ButtonPress) ? VISUAL_MOUSE_DOWN:VISUAL_MOUSE_UP,
+				ev.xbutton.x, ev.xbutton.y);
 			break;
 
 
@@ -156,20 +158,38 @@ int process_events(LvdCompatDataX11 *data,
 			break;
 
 		case MapNotify:
-			visual_event_queue_add_visibility(eventqueue, 1);
+			if (priv->is_visible != 1){
+				priv->is_visible = 1;
+				visual_event_queue_add_visibility(eventqueue, 1);
+			}
 			break;
 		case UnmapNotify:
-			visual_event_queue_add_visibility(eventqueue, 0);
+			if (priv->is_visible != 0){
+				priv->is_visible = 0;
+				visual_event_queue_add_visibility(eventqueue, 0);
+			}
 			break;
 		case VisibilityNotify:
-			visual_event_queue_add_visibility(eventqueue, ev.xvisibility.state!=2);
+			if (priv->is_visible != (ev.xvisibility.state!=2)){
+				priv->is_visible = ev.xvisibility.state!=2;
+				visual_event_queue_add_visibility(eventqueue, priv->is_visible );
+			}
 			break;
 
-		case ConfigureNotify:
+		case ConfigureNotify:{
+			int vbuf = visual_video_have_allocated_buffer(video);
+
+			if (vbuf)
+				visual_video_free_buffer(video);
+
 			visual_video_set_dimension(video, ev.xconfigure.width, ev.xconfigure.height);
+
+			if (vbuf)
+				visual_video_allocate_buffer(video);
+
 			visual_event_queue_add_resize(eventqueue, video , ev.xconfigure.width, ev.xconfigure.height);
 			break;
-
+		}
 		/* message sent by a window manager. i think ;) */
 		case ClientMessage:
 			if ((ev.xclient.format == 32) &&

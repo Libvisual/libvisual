@@ -68,9 +68,9 @@ struct _LvdBackendDescription {
 	LvdCompatType     compat_type;
 
 	int (*setup)(VisPluginData*,
-		void *data, int *params, int params_count, VisVideo*);
+		void *data, int *params, int params_count);
 
-	LvdDContext *(*context_create)(VisPluginData*);
+	LvdDContext *(*context_create)(VisPluginData*, VisVideo*);
 	void (*context_delete)(VisPluginData*, LvdDContext*);
 	void (*context_activate)(VisPluginData*, LvdDContext*);
 
@@ -93,6 +93,7 @@ int lvdisplay_driver_set_opts(LvdDriver*, int *);
 
 /* basic functions */
 Lvd* lvdisplay_initialize(LvdDriver*);
+int lvdisplay_realize(Lvd*);
 void lvdisplay_finalize(Lvd*);
 int lvdisplay_run(Lvd*);
 int lvdisplay_render_data(Lvd*, void *samples, int count);

@@ -16,7 +16,6 @@ int main(int argc, char **argv)
 
 	visual_init_path_add ("../drivers/glx/.libs");
 	visual_init (&argc, &argv);
-
 	/* variants are:
 	 *	glx, new
 	 *	glx, xwindow
@@ -51,14 +50,14 @@ int main(int argc, char **argv)
 	VisBin *bin = lvdisplay_visual_get_bin(v);
 
 	VisInput *input = visual_input_new("alsa");
-	VisActor *actor = visual_actor_new("madspin"); //"lv_gltest"
-
-	visual_actor_realize(actor);
-	visual_actor_set_video(actor, lvdisplay_visual_get_video(v));
+	VisActor *actor = visual_actor_new(argc>1 ? argv[1] : "oinksie");
 
 	visual_bin_connect(bin, actor, input);
-	visual_bin_realize(bin);
 
+	if (lvdisplay_realize(v)){
+		fprintf (stderr, "failed to realize vo\n");
+		exit (1);
+	}
 
 	/*  start visualization. plugin will run in a
 	 *  separate thread. Alternative call can be
@@ -75,7 +74,7 @@ int main(int argc, char **argv)
 
 	/* main loop */
 	while (!quit_flag){
-		if (lvdisplay_poll_event(v, &event)){
+		while (lvdisplay_poll_event(v, &event)){
 			fprintf(stderr, "got event! hehe... gonna handle it!\n");
 			switch (event.type){
 			case VISUAL_EVENT_QUIT:
@@ -101,12 +100,14 @@ int main(int argc, char **argv)
 					event.mousemotion.x, event.mousemotion.y);
 				break;
 			case VISUAL_EVENT_MOUSEBUTTONDOWN:
-				/* XXX */
-				fprintf(stderr, "MOUSEBUTTONDOWN\n");
+				fprintf(stderr, "MOUSEBUTTONDOWN %d %dx%d\n",
+					event.mousebutton.button,
+					event.mousebutton.x, event.mousebutton.y);
 				break;
 			case VISUAL_EVENT_MOUSEBUTTONUP:
-				/* XXX */
-				fprintf(stderr, "MOUSEBUTTONUP\n");
+				fprintf(stderr, "MOUSEBUTTONUP %d %dx%d\n",
+					event.mousebutton.button,
+					event.mousebutton.x, event.mousebutton.y);
 				break;
 
 			case VISUAL_EVENT_VISIBILITY:
