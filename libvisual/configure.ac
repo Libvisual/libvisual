@@ -96,10 +96,10 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h sys/types.h stdlib.h string.h sys/time.h unistd.h])
 
 lv_have_opengl=no
-AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
+AC_CHECK_HEADERS([GL/gl.h GL/glx.h],opengl="yes",opengl="no")
 if test x"$opengl" = xno; then
-	AC_MSG_WARN([*** OpenGL and Glu headers not found.
-			The library will be built without OpenGL support.])
+	AC_MSG_WARN([*** GL headers not found.
+			The library will be built without GL support.])
 else
 	lv_have_opengl=yes
 fi
@@ -136,7 +136,7 @@ AC_CHECK_FUNCS([gettimeofday usleep nanosleep select memset sqrt strdup strndup]
 
 if test x"$lv_have_opengl" = xyes; then
   AC_CHECK_LIB([GL], [glBegin], [],
-	       [AC_MSG_WARN([*** OpenGL headers has been found, but we cannot link against GL Library.
+	       [AC_MSG_WARN([*** GL headers has been found, but we cannot link against GL Library.
 			Libvisual will be built without OpenGL support.
 			If you have already installed GL Library, probably you need to edit
 			your /etc/ld.so.conf and run ldconfig before to try to configure Libvisual.
@@ -207,11 +207,7 @@ if test x$examples = xyes ; then
 else
   AC_MSG_RESULT([no])
   VISUAL_CFLAGS=""
-  if test x$lv_have_opengl = xyes; then
-    VISUAL_LIBS="$LIBS -lGL -lvisual"
-  else
-    VISUAL_LIBS="$LIBS -lvisual"
-  fi
+  VISUAL_LIBS="$LIBS -lvisual"
   AC_SUBST(VISUAL_CFLAGS)		 
   AC_SUBST(VISUAL_LIBS)
 fi

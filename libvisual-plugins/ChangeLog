@@ -2,8 +2,6 @@
 
 	* plugins/actor/madspin/madspin.c: removed include
 	of GLU headers.
-	* plugins/actor/madspin/Makefile.am: removed GL flags,
-	instead we get them from libvisual through pkg-config.
 
 2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
 

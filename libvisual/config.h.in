@@ -13,9 +13,6 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
-/* Define to 1 if you have the <GL/glu.h> header file. */
-#undef HAVE_GL_GLU_H
-
 /* Define to 1 if you have the <GL/glx.h> header file. */
 #undef HAVE_GL_GLX_H
 
