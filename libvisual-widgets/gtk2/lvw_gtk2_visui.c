@@ -51,7 +51,7 @@ static void cb_visui_color (GtkColorSelection *colorselection, gpointer user_dat
 #if HAVE_GTK_AT_LEAST_2_4_X
 static void cb_visui_popup (GtkComboBox *combobox, gpointer user_data);
 #else
-static void cb_visui_popup (GtkRadioMenuItem *optionmenu, gpointer user_data);
+static void cb_visui_popup (GtkCheckMenuItem *checkmenuitem, gpointer user_data);
 #endif
 static void cb_visui_radio (GtkToggleButton *radiobutton, gpointer user_data);
 static void cb_visui_checkbox (GtkToggleButton *togglebutton, gpointer user_data);
@@ -745,12 +745,8 @@ lvw_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
 			group = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM(menuitem));
 			gtk_menu_append (menu, menuitem);
 			gtk_widget_show (menuitem);
-			/*
-			 * The problem with the 'activate' signal is that when a menuitem
-			 * on a menu is selected, both new and prior selected items receives
-			 * this signal.
-			 */
-			g_signal_connect (G_OBJECT (menuitem), "activate",
+
+			g_signal_connect (G_OBJECT (menuitem), "toggled",
 					G_CALLBACK (cb_visui_popup), cont);
 		}
 
@@ -969,29 +965,43 @@ cb_visui_popup (GtkComboBox *combobox, gpointer user_data)
 
 	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (user_data));
 	
-	printf ("Popup changed, active: %d\n", active);
+	printf ("Popup changed gtk2.4, active: %d\n", active);
 }
 #else
 static void
-cb_visui_popup (GtkRadioMenuItem *radiomenuitem, gpointer user_data)
+cb_visui_popup (GtkCheckMenuItem *checkmenuitem, gpointer user_data)
 {
+	GtkRadioMenuItem *radiomenuitem = GTK_RADIO_MENU_ITEM (checkmenuitem);
 	int active;
 	GSList *group, *l;
+
+	/* Catch off the unactivate toggle */
+	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (checkmenuitem)) == FALSE)
+		return;
 
 	group = gtk_radio_menu_item_get_group (radiomenuitem);
 
 	active = g_slist_length (group);
+	
 	l = group;
+	
 	while (l) {
-		if (GTK_RADIO_MENU_ITEM(l->data) == radiomenuitem)
+		if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (l->data)))
 			break;
+
 		active--;
 		l = g_slist_next (l);
 	}
 
+	/* The choice group indexing starts at 0, not 1 */
+	active--;
+
+	if (active < 0)
+		active = 0;
+	
 	visual_ui_choice_set_active (VISUAL_UI_CHOICE (user_data), active);
 
-	printf ("Popup changed, active: %d\n", active);
+	printf ("Popup changed gtk2.x, active: %d\n", active);
 }
 #endif
 

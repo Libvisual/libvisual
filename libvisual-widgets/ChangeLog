@@ -1,5 +1,10 @@
 2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* gtk2/lvw_gtk2_visui.c: The gtk2.4 < popup box did set the
+	active index one too high. Also fixed some other thingies a bit.
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* gtk2/lvw_gtk2_visui.c: Added gtk2.4 < support.
 
 	Patch by Duilio Javier Protti <dprotti@fceia.unr.edu.ar>
