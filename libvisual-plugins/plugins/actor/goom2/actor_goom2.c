@@ -132,7 +132,7 @@ int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
 						ev.resize.width, ev.resize.height);
 
 				break;
-
+			
 			default: /* to avoid warnings */
 				break;
 		}

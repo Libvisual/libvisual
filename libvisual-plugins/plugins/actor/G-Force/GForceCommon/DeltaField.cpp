@@ -113,11 +113,6 @@ void DeltaField::SetSize( long inWidth, long inHeight, long inRowSize, bool inFo
 		
 		// Reset all computation of this delta field
 		mCurrentY = 0;
-		
-		// The current implementation of PixPort for Win32 flips all the Y Cords
-		#if EG_WIN
-		mYScale *= -1;
-		#endif
 	}
 }
 

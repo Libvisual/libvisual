@@ -7,15 +7,8 @@
 
 #include <math.h>
 
-#ifdef EG_WIN
-#ifndef HBITMAP
-#include <windows.h>
-#endif
-#elif EG_MAC
-#include <OSUtils.h>
-#elif defined(UNIX_X)
 #include <string.h>
-#endif
+
 
 UtilStr::UtilStr() {
 
@@ -423,14 +416,7 @@ void UtilStr::Move( void* inDest, const void* inSrce, unsigned long inNumBytes )
 				inNumBytes--;
 			} } }
 	else
-		#ifdef EG_WIN
-		::MoveMemory( inDest, inSrce, inNumBytes );
-		#elif EG_MAC
-		::BlockMove( inSrce, inDest, inNumBytes );
-		#else
-	        /* This was:  You must have EG_MAC or EG_WIN and EG_WIN32 defined as 1 to compile Common! */
 	        memmove(inDest, inSrce, inNumBytes);
-		#endif
 }
 
 

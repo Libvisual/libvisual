@@ -39,7 +39,6 @@ void GF_Palette::Assign( const ArgList& inArgs ) {
 }
 
 
-#include <stdio.h>
 void GF_Palette::Evaluate( PixPalEntry outPalette[ 256 ] ) {
 	int i;
 	float H, S, V, inc = 1.0 / 255.0;
@@ -59,21 +58,12 @@ void GF_Palette::Evaluate( PixPalEntry outPalette[ 256 ] ) {
 		if ( mV_I_Dep )		V = mV.Evaluate();
 		
 		
-		#if EG_MAC
-		outPalette[ i ].value = i;
-		EgOSUtils::HSV2RGB( H, S, V, outPalette[ i ].rgb );
-		#elif EG_WIN
-		RGBColor rgb;
-		EgOSUtils::HSV2RGB( H, S, V, rgb );
-		*( (long*) &outPalette[ i ] ) = (( rgb.red & 0xFF00) << 8 ) | (rgb.green & 0xFF00 ) | ( rgb.blue >> 8 );
-                #else
 		RGBColor rgb;
 		EgOSUtils::HSV2RGB( H, S, V, rgb );
 		outPalette[i].red = rgb.red >> 8;
 		outPalette[i].green = rgb.green >> 8;
 		outPalette[i].blue = rgb.blue >> 8;
 		outPalette[i].x = i;
-		#endif
 	}
 }
 

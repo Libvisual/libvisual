@@ -5,64 +5,6 @@
 #include "G-Force.h"
 #include "XFloatList.h"
 
-#if EG_MAC
-#include <Windows.h>
-#include <Palettes.h>
-
-#define __defaultTTFormat 	"#ARTIST#\\r#TITLE#\\r#ALBUM#"
-#define __defaultFont		"Palatino"
-
-#define __setupPort		GDHandle		saveDev;								\
- 						GrafPtr			savePort;								\
-						::GetGWorld( (GWorldPtr*)(&savePort), &saveDev );		\
-						::SetPort( mOutPort );
-						/*
-						if ( mScreen.IsFullscreen() ) {							\
-							mScreen.BeginFrame();								\
-							port = (GrafPtr) mScreen.GetPort();	}				\
-						else													\
-							port = mOSPort;										\
-						::SetPort( (GrafPtr) port );				
-*/
-
-#define __restorePort 	::SetGWorld( (GWorldPtr)(savePort), saveDev );			
-
-
-#define __drawText( x, y, str )		::MoveTo( x, y );							\
-									::DrawString( str -> getPasStr() );
-
-#endif
-
-#if MACAST
-#include "MacAMP_Visual.h"
-extern VPInfoBlock gPlugInfo;
-#endif
-
-#if EG_WIN
-
-#define __defaultTTFormat 	"#ARTIST#\\r#TITLE#"
-#define __defaultFont 		"Times"
-
-#define __drawText( x, y, str )		::TextOut( mOutPort, x, y, str -> getCStr(), str -> length() );
-
-
-
-
-
-#include "RectUtils.h"
-#define __setupPort					if ( ! IsFullscreen() )						\
-										mOutPort = ::GetDC( mWind );
-
-
-#define __restorePort 				if ( ! IsFullscreen() )						\
-										::ReleaseDC( mWind, mOutPort );
-
-
-#include "vis.h"
-extern winampVisModule gGFModule;
-
-#endif
-
 #ifdef UNIX_X
 
 #define __defaultTTFormat 	""
@@ -89,21 +31,8 @@ extern winampVisModule gGFModule;
 #include "Hashtable.h"
 #include "ParticleGroup.h"
 
-
-#if SOUNDJAM
-#include "VisFramework.h"
-#endif
-
 GForce::GForce( void* inRefCon ) :
-#if EG_WIN
-	mPrefs( "G-Force Prefs.txt", true ),
-#elif STANDALONE
-	mPrefs( "G-Force Prefs (Standalone)", true ),
-#elif SOUNDJAM
-	mPrefs( "G-Force Prefs (SoundJam)", true ),
-#elif MACAST
-	mPrefs( "G-Force Prefs (Macast)", true ),
-#elif defined(UNIX_X)
+#if defined(UNIX_X)
 	mPrefs( ".G-Force", true ),
 #endif
 	mWave1( &mT ),
@@ -161,9 +90,6 @@ GForce::GForce( void* inRefCon ) :
 		mFullscreenSize.v	= 480;
 		mFullscreenDepth	= 8;
 		mFullscreenDevice	= 0;
-		#if SOUNDJAM	
-		mFullscreenDepth	= 16;
-		#endif
 		mMaxSize.h			= 30000;
 		mMaxSize.v			= 360;	
 		mTrackTextPosMode	= 5;
@@ -316,24 +242,6 @@ GForce::~GForce() {
 	mPrefs.SetPref( 'CDur', mConsoleDelay );
 	mPrefs.SetPref( 'CLin', mConsoleLineDur );
 
-
-	#ifndef SOUNDJAM
-	Rect r;
-	#if WINAMP
-	// Very annoying:  in Win32, the call to GetWindowRect() is returning garbage in ~WhiteCap(), so just 
-	// forget about saving the window position for now in windows :_(
-	
-	//GetWinRect( r );
-	r = mWinRectHolder;  // Just use a recent rect for now
-	#elif MACAST || STANDALONE
-	GetWinRect( r );
-	#endif
-	mPrefs.SetPref( 'wTop', r.top );
-	mPrefs.SetPref( 'wLft', r.left );
-	mPrefs.SetPref( 'wBot', r.bottom );
-	mPrefs.SetPref( 'wRgt', r.right );
-	#endif
-	
 	// Init the track text info
 	NewSong();
 	
@@ -378,120 +286,6 @@ void GForce::SetNumFFTBins( long inNumBins ) {
 }
 
 
-
-
-void GForce::SetFullscreen( bool inFullScreen ) {
-		
-	#if SOUNDJAM
-	VisHandlerData*	handlerData = (VisHandlerData*) mRefCon;
-	if ( handlerData ) {
-		if ( mAtFullScreen != inFullScreen ) {
-			if ( PlayerSetFullScreen(handlerData->appCookie, handlerData->playerProc, inFullScreen) == noErr)
-				mAtFullScreen = inFullScreen;
-		}
-	}
-	#else
-
-
-	bool			ok;	
-	int				dispID;
-	Point			size;
-	Rect			r;
-
-	#if EG_MAC
-	GrafPtr	savePort;
-	::GetPort( &savePort );
-	#endif
-	
-	if ( inFullScreen && ! mAtFullScreen ) {
-
-		#if EG_WIN
-		// If the window is maximized, get it back to normal size
-		if ( IsZoomed( mWind ) )
-			ShowWindow( mWind, SW_RESTORE ); 
-		#endif	
-		
-		// Store the positon of our win...
-		GetWinRect( mWinRectHolder );
-		
-		// See what device the user user wants fullscreen...
-		dispID = ScreenDevice::GetDisplayID( mFullscreenDevice );
-		
-		#if MACAST
-		gPlugInfo.ma -> EnterFullScreen( 'XXXX' /*cPluginAuthor*/, cGForceID );
-		#endif	
-
-		#if WINAMP
-		::ShowWindow( gGFModule.hwndParent, SW_HIDE | SW_MINIMIZE );
-		#elif EG_MAC
-		::HideWindow( mWind );
-		#endif
-
-						
-		size = mFullscreenSize;
-		ok = mScreen.EnterFullscreen( dispID, size, mFullscreenDepth, mWind );
-
-		if ( ok ) {
-
-			SetRect( &r, 0, 0, size.h, size.v );
-			SetPort( mScreen.BeginFrame(), r, true );
-			mScreen.EndFrame();
-			
-			// Changing the port (and the resolution) may change the mouse cords
-			EgOSUtils::GetMouse( mLastMousePt );
-
-			// Default: mouse movement will not exit fullscreen mode
-			mMouseWillAwaken = false;
-			}	
-		else {
-			#if MACAST
-			gPlugInfo.ma -> ExitFullScreen();
-			#endif
-					
-			#if EG_WIN
-			::ShowWindow( gGFModule.hwndParent, SW_SHOWNORMAL );
-			#elif !defined(UNIX_X)
-			::ShowWindow( mWind );
-			#endif
-
-		} }
-
-	// If exiting from fullscreen
-	else if ( ! inFullScreen && mAtFullScreen ) {
-
-		#if MACAST
-		gPlugInfo.ma -> ExitFullScreen();
-		#endif
-				
-		// Restore the window
-		mScreen.ExitFullscreen();
-		
-
-		SetWinPort( mWind, &mWinRectHolder );
-		
-		mAtFullScreen = false;
-		
-		#if WINAMP
-		::ShowWindow( gGFModule.hwndParent, SW_SHOWNORMAL );
-		#endif
-	}
-	
-
-	#if EG_MAC
-	::SetPort( savePort );
-	#endif
-	
-	
-	#endif
-	
-	#if EG_MAC
-	::FlushEvents( 0xFFFF, 0 );
-	#endif
-	
-	// Prevent sleep
-	if ( ! mAtFullScreen )
-		mLastActiveTime = mT;
-}
 
 #define __setChar( n, ID )		s.setChar( n, mKeyMap.getChar( ID ) )
 
@@ -1035,19 +829,6 @@ void GForce::IdleMonitor() {
 	
 		mLastKeyPollTime = mT;
 
-		#if EG_MAC	
-		::GetKeys( mCurKeys );
-		
-		// If the keys are pressed then that counts as activity
-		if ( ( mCurKeys[0] != mPastKeys[0] ) || ( mCurKeys[1] != mPastKeys[1] ) || ( mCurKeys[2] != mPastKeys[2] ) || ( mCurKeys[3] != mPastKeys[3] ) ) {
-			kybdPress = true;
-			mPastKeys[0] = mCurKeys[0];
-			mPastKeys[1] = mCurKeys[1];
-			mPastKeys[2] = mCurKeys[2];
-			mPastKeys[3] = mCurKeys[3];
-		}
-		#endif
-		
 		// Check the mouse pos and record it as active if its been moved.  	
 		EgOSUtils::GetMouse( pt );
 		if ( pt.h != mLastMousePt.h || pt.v != mLastMousePt.v || kybdPress ) {
@@ -1240,13 +1021,6 @@ void GForce::RecordSample( long inCurTime ) {
 		if ( IsFullscreen() )
 			EgOSUtils::HideCursor();
 	}
-	
-	#if EG_MAC
-	if ( mT_MS - mLastGetKeys > 1100 ) {
-		mLastGetKeys = mT_MS;
-		::GetKeys( mCurKeys );
-	}
-	#endif
 }
 
 
@@ -1697,38 +1471,7 @@ void GForce::DrawConsole() {
 
 
 void GForce::ErasePane() {
-	
 
-	#if EG_MAC
-	RGBColor prev;
-	GrafPtr	savePort;
-	::GetPort( &savePort );
-	::SetPort( mOutPort );
-	::GetBackColor( &prev );
-/*	if ( IsFullscreen() && mFullscreenDepth == 8 )
-		::BackColor( 30 );
-	else */
-		::BackColor( 33 );
-	::EraseRect( &mPaneRect );
-	::RGBBackColor( &prev ); 
-	::SetPort( savePort );
-	#endif
-	
-	
-	#if EG_WIN
-	RECT r;
-	HRGN winRgn;
-	if ( IsFullscreen() )
-		::GetWindowRect( mWind, &r );
-	else
-		::GetClientRect( mWind, &r );
-		
-	r.right  += 20;
-	r.bottom += 20;
-	winRgn = CreateRectRgnIndirect( &r );
-	::FillRgn( mOutPort, winRgn, (HBRUSH) ::GetStockObject( BLACK_BRUSH ) );
-	::DeleteObject( winRgn );
-	#endif
 }
 
 
@@ -1745,59 +1488,10 @@ void GForce::SetWinPort( WindowPtr inWin, const Rect* inRect ) {
 	if ( inRect )
 		r = *inRect;
 
-#if 0
-	/* FIXME:  libxpce must require a resize for this */
-	// If an invalid win rect, fix it, you monkey!
-	if ( r.right - r.left < 20  || r.bottom - r.top < 20 || ! inRect ) {
-	
-		r.top				= mPrefs.GetPref( 'wTop' );
-		r.left				= mPrefs.GetPref( 'wLft' );
-		r.right				= mPrefs.GetPref( 'wRgt' );
-		r.bottom			= mPrefs.GetPref( 'wBot' );
-		
-		#if EG_MAC
-		// Invalidate the window if it's offscreen...
-		RgnHandle deskRgn = ::GetGrayRgn();
-		::SectRect( &(*deskRgn) -> rgnBBox, &r, &r );
-		#endif
-	}
-
-	// If no prefs avail (or an older version, use factory rect) or a bad win, hard code a size
-	if ( mPrefs.GetPref( 'Vers' ) != GFORCE_COMPAT_VERSION || r.right - r.left < 20  || r.bottom - r.top < 20 ) {
-		r.top = 52;
-		r.left = 16;
-		r.right = 520;
-		r.bottom = 400; 
-	}
-
-#else 
-	
-#endif
-
 	long x = r.right - r.left;
 	long y = r.bottom - r.top;
 
-	#if EG_MAC
-	x -= x % 4;
-	::MoveWindow( inWin, r.left, r.top, true );
-	::SizeWindow( inWin, x, y, true ); 
-	::ShowWindow( inWin );
-	::SetRect( &r, 0, 0, x, y );
-	SetPort( mWind, r, false );
-	#else
-        #if EG_WIN
-	RECT cr;
-	// Resize the window and find the rgn we have to work with
-	::MoveWindow( inWin, r.left, r.top, x, y, true );
-	::GetClientRect( inWin, &cr );
-	if ( cr.right % 4 > 0 )
-		::MoveWindow( inWin, r.left, r.top, x - cr.right % 4, y, true );
-	::GetClientRect( inWin, &cr );
-	::SetRect( &r, 0, 0, cr.right, cr.bottom );
-        #endif
 	SetPort( NULL, r, false );
-	#endif
-	
 
 	// Signal that this thread is done with SetPortWin()
 	mDoingSetPortWin = false;
@@ -1820,16 +1514,6 @@ void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
 	// mDispRect is the rect within inPort G-Force is drawing in (ex, the letterbox)
 	// Change the disp rect if the desired size exceeds the pixel ceiling
 	mDispRect = inRect;
-#if 0
-	if ( y > mMaxSize.v ) {
-		InsetRect( &mDispRect, 0, ( y - mMaxSize.v ) / 2 );
-		y = mDispRect.bottom - mDispRect.top;	
-	}
-	if ( x > mMaxSize.h ) {
-		InsetRect( &mDispRect, ( x - mMaxSize.h ) / 2, 0 );
-		x = mDispRect.right - mDispRect.left;
-	}
-#endif
 
 	// Setup the offscreen port
 	mPortA.Init( x, y, 8 );
@@ -1863,91 +1547,4 @@ void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
 	EgOSUtils::GetMouse( mLastMousePt );
 
 }
-
- 
-  
-
-
-void GForce::GetWinRect( Rect& outRect ) {
-	
-	if ( mWind ) {
-	
-		#if EG_MAC
-		outRect = (**(((CGrafPtr) mWind)->portPixMap)).bounds;
-		outRect.left *= -1;
-		outRect.top  *= -1;
-		outRect.right = outRect.left + mWind -> portRect.right;
-		outRect.bottom = outRect.top + mWind -> portRect.bottom;
-		#elif EG_WIN
-		RECT wr;
-		::GetWindowRect( mWind, &wr );
-
-		outRect.left	= wr.left; 
-		outRect.top		= wr.top;
-		outRect.right	= wr.right; 
-		outRect.bottom	= wr.bottom;
-		#endif 
-		}
-	else 
-		SetRect( &outRect, 0, 0, 0, 0 );
-}
-
-
-
-#if ( EG_MAC && STANDALONE ) || MACAST
-
-
-void GForce::HandleEvt( WindowPtr inWin, EventRecord& evt ) {
-	static long sLastWhen = 0;
-	long 	curTime = ::TickCount();
-	Point inPt = evt.where;
-	Rect r, growBox, lim;
-		
-	switch ( evt.what ) {
-					
-		case updateEvt:	
-			::BeginUpdate( inWin );
-			mNeedsPaneErased = true;
-			::EndUpdate( inWin );
-			break;
-			
-		
-		case mouseDown:	
-			if ( IsFullscreen() )
-				SetFullscreen( false );
-			else if ( curTime - sLastWhen < ::GetDblTime() ) 
-				SetFullscreen( true );
-			else if ( ! IsFullscreen() ) {
-				GetWinRect( r );
-				growBox = r;
-				growBox.left = r.right - 35;
-				growBox.top = r.bottom - 35;
-				if ( ::PtInRect( inPt, &growBox ) ) {
-					lim.top = lim.left = 30;
-					lim.bottom = lim.right = 9000;
-					unsigned long newSize = ::GrowWindow( inWin, inPt, &lim );
-					::SizeWindow( inWin, newSize & 0xFFFF, newSize >> 16, false );
-					GetWinRect( r );
-					SetWinPort( inWin, &r );	}	// SizeWindow changes the size of the win, but gWC doesn't know that
-				else if ( BorderlessWindow() && ::Button() ) {
-					lim.top = lim.left = 0;
-					lim.bottom = lim.right = 9000;
-					::DragWindow( inWin, inPt, &lim );
-				}
-				sLastWhen = curTime;
-			}
-			break;
-			
-	}
-}
-
-
-
-
-
-#endif
-
-
-
-
 

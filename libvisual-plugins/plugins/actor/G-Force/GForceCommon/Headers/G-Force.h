@@ -13,17 +13,12 @@
 
 #include "Prefs.h"
 
-#if EG_MAC
-#include <Files.h>
-#include <QDOffscreen.h>
-#endif
-
 
 enum {
 	
 	cDispTrackTitle		= 1,
 	cGetConfigInfo		= 2,
-	cFrameRate			= 3,
+	cFrameRate		= 3,
 	cSpawnNewParticle	= 4,
 	cToggleFullsceen	= 5,
 	cToggleConfigName	= 6,
@@ -44,26 +39,26 @@ enum {
 	cDecNumSSteps		= 21,
 	cIncNumSSteps		= 22,
 	cToggleParticles	= 23,
-	cSetPreset0			= 30,
-	cSetPreset1			= 31,
-	cSetPreset2			= 32,
-	cSetPreset3			= 33,
-	cSetPreset4			= 34,
-	cSetPreset5			= 35,
-	cSetPreset6			= 36,
-	cSetPreset7			= 37,
-	cSetPreset8			= 38,
-	cSetPreset9			= 39,
-	cPreset0			= 40,
-	cPreset1			= 41,
-	cPreset2			= 42,
-	cPreset3			= 43,
-	cPreset4			= 44,
-	cPreset5			= 45,
-	cPreset6			= 46,
-	cPreset7			= 47,
-	cPreset8			= 48,
-	cPreset9			= 49
+	cSetPreset0		= 30,
+	cSetPreset1		= 31,
+	cSetPreset2		= 32,
+	cSetPreset3		= 33,
+	cSetPreset4		= 34,
+	cSetPreset5		= 35,
+	cSetPreset6		= 36,
+	cSetPreset7		= 37,
+	cSetPreset8		= 38,
+	cSetPreset9		= 39,
+	cPreset0		= 40,
+	cPreset1		= 41,
+	cPreset2		= 42,
+	cPreset3		= 43,
+	cPreset4		= 44,
+	cPreset5		= 45,
+	cPreset6		= 46,
+	cPreset7		= 47,
+	cPreset8		= 48,
+	cPreset9		= 49
 };
 
 
@@ -118,10 +113,6 @@ class GForce {
 		Point					GetFullscreenSize() 					{ return mFullscreenSize;	}
 		long					GetFullscreenDepth()					{ return mFullscreenDepth;	}
 		
-		#if ( EG_MAC && STANDALONE ) || MACAST
-		void					HandleEvt( WindowPtr inWin, EventRecord& evt );
-		#endif
-
 		/* NewSong() tells GForce a new track has started and that the following four strings may contain info. */
 		UtilStr					mArtist;
 		UtilStr					mAlbum;
