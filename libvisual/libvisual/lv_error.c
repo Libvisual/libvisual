@@ -174,7 +174,9 @@ static void *error_handler_priv = NULL;
 int visual_error_raise ()
 {
 	if (error_handler == NULL) {
-#if !defined(VISUAL_OS_WIN32)
+#if defined(VISUAL_OS_WIN32)
+
+#else
 		raise (SIGTRAP);
 #endif
 		exit (1);
