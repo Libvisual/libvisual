@@ -716,7 +716,8 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		return NULL;
 	}
 
-	// FIXME niec but don't leak when allocated
+	/* FIXME we do leak the object when it fails the sanity check, tho
+	 * it is not always safe (with VERY stuff laying around) to unref it. */
 	
 	/* Check for API and struct size */
 	if (plug_info[0].struct_size != sizeof (VisPluginInfo) ||
