@@ -3,6 +3,7 @@
 #include <gtk/gtk.h>
 #include <xmms/configfile.h>
 #include <xmms/util.h>
+#include <SDL/SDL.h>
 #include <libvisual/libvisual.h>
 
 #include "config.h"
@@ -41,6 +42,12 @@ static GSList *actor_plugins_gl = NULL;
 static GSList *actor_plugins_nongl = NULL;
 
 static VisPluginRef *current_actor = NULL;
+
+/* 
+ * Used when morphing to a new actor on GtkList double click event.
+ * 
+ * FIXME we will use a better method on future */
+static VisBin *bin = NULL;
 
 static char *morph_plugin = NULL;
 static char *morph_plugin_buffer = NULL;
@@ -369,6 +376,11 @@ const char *lv_xmms_config_morph_plugin (void)
 	}
 }
 
+void lv_xmms_config_set_bin (VisBin *b)
+{
+	bin = b;
+}
+
 void lv_xmms_config_window ()
 {
 #if ENABLE_NLS
@@ -432,7 +444,7 @@ static void on_radiobutton_opengl_toggled (GtkToggleButton *togglebutton, gpoint
 {
 	gl_plugins_only = !gl_plugins_only;
 
-	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
+	gtk_clist_clear (GTK_CLIST(config_win->clist_actor_plugins));
 	config_win_load_actor_plugin_gl_list ();
 }
 
@@ -440,7 +452,7 @@ static void on_radiobutton_non_opengl_toggled (GtkToggleButton *togglebutton, gp
 {
 	non_gl_plugins_only = !non_gl_plugins_only;
 
-	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
+	gtk_clist_clear (GTK_CLIST(config_win->clist_actor_plugins));
 	config_win_load_actor_plugin_nongl_list ();
 }
 
@@ -448,7 +460,7 @@ static void on_radiobutton_all_plugins_toggled (GtkToggleButton *togglebutton, g
 {
 	all_plugins_enabled = !all_plugins_enabled;
 
-	gtk_list_clear_items (GTK_LIST(config_win->list_vis_plugins), 0, -1);
+	gtk_clist_clear (GTK_CLIST(config_win->clist_actor_plugins));
 	config_win_load_actor_plugin_gl_list ();
 	config_win_load_actor_plugin_nongl_list ();
 }
@@ -514,96 +526,39 @@ static void sync_options ()
 
 static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gpointer user_data);
 
-static void on_actor_plugin_selected (GtkListItem *item, VisPluginRef *actor)
-{
-	gboolean *enabled;
-
-	visual_log_return_if_fail (actor != NULL);
-	visual_log_return_if_fail (actor->info != NULL);
-
-	current_actor = actor;
-	enabled = g_hash_table_lookup (actor_plugin_enable_table, actor->info->plugname);
-	visual_log_return_if_fail (enabled != NULL);
-
-	gtk_signal_disconnect_by_func (GTK_OBJECT (config_win->checkbutton_vis_plugin),
-					on_checkbutton_vis_plugin_toggled, NULL);
-
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_vis_plugin), *enabled);	
-
-	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_vis_plugin), "toggled",
-                      GTK_SIGNAL_FUNC (on_checkbutton_vis_plugin_toggled),
-                      NULL);
-}
-
 static void on_checkbutton_vis_plugin_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 {
-	GtkWidget *item;
-	GList *items = NULL;
+	GtkCList *clist;
+	const gchar *plugname;
+	gboolean *enable;
 	gint pos;
 	gchar *name;
-	gchar *plugname;
-	gboolean *enable;
 
 	if (!current_actor)
 		return;
 
 	plugname = current_actor->info->plugname;
+
+	clist = GTK_CLIST(config_win->clist_actor_plugins);
+
 	if (gtk_toggle_button_get_active (togglebutton)) {
 		/* We are enabling the selected actor */
-		item = g_hash_table_lookup (actor_plugin_table, plugname);
-		g_hash_table_remove (actor_plugin_table, plugname);
 
-		/* Drop the item from the list, after save his position */
-		pos = gtk_list_child_position (GTK_LIST(config_win->list_vis_plugins), item);
-		items = g_list_append (items, item);
-		gtk_list_remove_items (GTK_LIST(config_win->list_vis_plugins), items);
-		g_list_free (items);
+		pos = gtk_clist_find_row_from_data (clist, current_actor);
 
-		/* Create a new item marked as enabled */
 		name = g_strconcat (current_actor->info->name, _(" (enabled)"), 0);
-		item = gtk_list_item_new_with_label (name);
+		gtk_clist_set_text (clist, pos, 0, name);
 		g_free (name);
-		/*gtk_list_select_item (GTK_LIST(config_win->list_vis_plugins), pos);*/
-		gtk_widget_show (item);
-		gtk_signal_connect (GTK_OBJECT(item), "select",
-			GTK_SIGNAL_FUNC(on_actor_plugin_selected),
-			(gpointer) current_actor);
-
-		/* Insert the new item */
-		items = NULL;
-		items = g_list_append (items, item);
-		gtk_list_insert_items (GTK_LIST(config_win->list_vis_plugins), items, pos);
-		
-		g_hash_table_insert (actor_plugin_table, plugname, item);
 
 		/* Mark it as enabled */
 		enable = g_hash_table_lookup (actor_plugin_enable_table, plugname);
 		visual_log_return_if_fail (enable != NULL);
 		*enable = TRUE;
 	} else {
-		item = g_hash_table_lookup (actor_plugin_table, plugname);
-		g_hash_table_remove (actor_plugin_table, plugname);
+		/* We are disabling the selected actor */
 
-		/* Drop the item from the list, after save his position */
-		pos = gtk_list_child_position (GTK_LIST(config_win->list_vis_plugins), item);
-		items = g_list_append (items, item);
-		gtk_list_remove_items (GTK_LIST(config_win->list_vis_plugins), items);
-		g_list_free (items);
-
-		/* Create a new item marked as enabled */
-		item = gtk_list_item_new_with_label (current_actor->info->name);
-		/*gtk_list_select_item (GTK_LIST(config_win->list_vis_plugins), pos);*/
-		gtk_widget_show (item);
-		gtk_signal_connect (GTK_OBJECT(item), "select",
-			GTK_SIGNAL_FUNC(on_actor_plugin_selected),
-			(gpointer) current_actor);
-
-		/* Insert the new item */
-		items = NULL;
-		items = g_list_append (items, item);
-		gtk_list_insert_items (GTK_LIST(config_win->list_vis_plugins), items, pos);
-		
-		g_hash_table_insert (actor_plugin_table, plugname, item);
+		pos = gtk_clist_find_row_from_data (clist, current_actor);
+		gtk_clist_set_text (clist, pos, 0, current_actor->info->name);
 
 		/* Mark it as disabled */
 		enable = g_hash_table_lookup (actor_plugin_enable_table, plugname);
@@ -761,17 +716,65 @@ static void remove_boolean (gpointer key, gpointer value, gpointer data)
 	g_free (value);
 }
 
-static void new_actor_item (gpointer data, gpointer user_data)
+static void on_clist_actor_plugins_select_row (GtkCList        *clist,
+						gint             row,
+						gint             column,
+						GdkEvent        *event,
+						gpointer         user_data)
 {
-	GList *items;
-	GtkWidget *item/*, *olditem*/;
+	VisPluginRef *actor;
+	const char *plugname;
+	gboolean *enabled;
+	GtkToggleButton *togglebutton;
+
+	actor = gtk_clist_get_row_data (clist, row);
+
+	visual_log_return_if_fail (actor != NULL);
+	visual_log_return_if_fail (actor->info != NULL);
+	visual_log_return_if_fail (event != NULL);
+
+	plugname = actor->info->plugname;
+
+	enabled = g_hash_table_lookup (actor_plugin_enable_table, plugname);
+	visual_log_return_if_fail (enabled != NULL);
+	togglebutton = GTK_TOGGLE_BUTTON(config_win->checkbutton_vis_plugin);
+
+	/* We must set the toggle button */
+	gtk_signal_disconnect_by_func (GTK_OBJECT(togglebutton), on_checkbutton_vis_plugin_toggled, NULL);
+
+	gtk_toggle_button_set_active (togglebutton, *enabled);
+
+	gtk_signal_connect (GTK_OBJECT(togglebutton), "toggled",
+				GTK_SIGNAL_FUNC (on_checkbutton_vis_plugin_toggled),
+				NULL);
+
+	current_actor = actor;
+
+	switch (event->type) {
+		case GDK_2BUTTON_PRESS:
+			/* Double click */
+			if (bin) {
+				lv_xmms_config_set_current_actor (plugname);
+				visual_bin_set_morph_by_name (bin, lv_xmms_config_morph_plugin ());
+				visual_bin_switch_actor_by_name (bin, plugname);
+				SDL_WM_SetCaption (plugname, plugname);
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+static void add_actor_row (gpointer data, gpointer user_data)
+{
 	VisPluginRef *actor;
 	gchar *name;
 	const gchar *plugname;
 	gboolean *enabled;
+	gchar *row[2]; 
+	gint pos;
 
 	actor = data;
-	items = *(GList**)user_data;
 
 	visual_log_return_if_fail (actor != NULL);
 	visual_log_return_if_fail (actor->info != NULL);
@@ -781,52 +784,35 @@ static void new_actor_item (gpointer data, gpointer user_data)
 	visual_log_return_if_fail (enabled != NULL);
 
 	/* Create the new item */
-	if (*enabled) {
+	if (*enabled)
 		name = g_strconcat (actor->info->name, _(" (enabled)"), 0);
-		item = gtk_list_item_new_with_label (name);
+	else
+		name = actor->info->name;
+
+	row[0] = name;
+	row[1] = NULL;
+	pos = gtk_clist_append (GTK_CLIST(config_win->clist_actor_plugins), row);
+
+	gtk_clist_set_row_data (GTK_CLIST(config_win->clist_actor_plugins), pos, actor);
+
+	if (*enabled)
 		g_free (name);
-	} else {
-		item = gtk_list_item_new_with_label (actor->info->name);
-	}
-
-	gtk_widget_show (item);
-	gtk_signal_connect (GTK_OBJECT(item), "select",
-		GTK_SIGNAL_FUNC(on_actor_plugin_selected),
-		(gpointer) actor);
-	items = g_list_append (items, item);
-
-	/*olditem = g_hash_table_lookup (actor_plugin_table, plugname);
-	if (olditem)
-		gtk_widget_destroy (olditem);*/
-
-	g_hash_table_remove (actor_plugin_table, plugname);
-	g_hash_table_insert (actor_plugin_table, plugname, item);
-
-	*(GList**)user_data = items;
 }
 
 static void config_win_load_actor_plugin_gl_list ()
 {
-	GList *items;
-
 	if (!actor_plugin_table)
 		actor_plugin_table = g_hash_table_new (hash_function, hash_compare);
 
-	items = NULL;
-	g_slist_foreach (actor_plugins_gl, new_actor_item, &items);
-	gtk_list_append_items (GTK_LIST(config_win->list_vis_plugins), items);
+	g_slist_foreach (actor_plugins_gl, add_actor_row, NULL);
 }
 
 static void config_win_load_actor_plugin_nongl_list ()
 {
-	GList *items;
-
 	if (!actor_plugin_table)
 		actor_plugin_table = g_hash_table_new (hash_function, hash_compare);
 
-	items = NULL;
-	g_slist_foreach (actor_plugins_nongl, new_actor_item, &items);
-	gtk_list_append_items (GTK_LIST(config_win->list_vis_plugins), items);
+	g_slist_foreach (actor_plugins_nongl, add_actor_row, NULL);
 }
 
 static void on_morph_plugin_activate (GtkMenuItem *menuitem, char *name)
@@ -1027,6 +1013,9 @@ static void config_win_connect_callbacks (void)
 	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_morph_random), "toggled",
                       GTK_SIGNAL_FUNC (on_checkbutton_morph_random_toggled),
                       NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->clist_actor_plugins), "select_row",
+			GTK_SIGNAL_FUNC (on_clist_actor_plugins_select_row),
+			NULL);
 }
 
 static void set_defaults (void)

@@ -54,7 +54,7 @@
 
 	<widget>
 	  <class>GtkScrolledWindow</class>
-	  <name>scrolledwindow_vis_plugins</name>
+	  <name>scrolledwindow_actor_plugins</name>
 	  <border_width>2</border_width>
 	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
 	  <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
@@ -67,24 +67,37 @@
 	  </child>
 
 	  <widget>
-	    <class>GtkViewport</class>
-	    <name>viewport1</name>
+	    <class>GtkCList</class>
+	    <name>clist_actor_plugins</name>
+	    <can_focus>True</can_focus>
+	    <events>GDK_BUTTON_PRESS_MASK</events>
+	    <signal>
+	      <name>select_row</name>
+	      <handler>on_clist_actor_plugins_select_row</handler>
+	      <last_modification_time>Fri, 08 Oct 2004 01:14:14 GMT</last_modification_time>
+	    </signal>
+	    <signal>
+	      <name>click_column</name>
+	      <handler>on_clist_actor_plugins_click_column</handler>
+	      <last_modification_time>Fri, 08 Oct 2004 01:15:13 GMT</last_modification_time>
+	    </signal>
+	    <columns>1</columns>
+	    <column_widths>80</column_widths>
+	    <selection_mode>GTK_SELECTION_SINGLE</selection_mode>
+	    <show_titles>False</show_titles>
 	    <shadow_type>GTK_SHADOW_IN</shadow_type>
 
 	    <widget>
-	      <class>GtkList</class>
-	      <name>list_vis_plugins</name>
-	      <signal>
-		<name>select_child</name>
-		<handler>on_list_vis_plugins_select_child</handler>
-		<last_modification_time>Mon, 27 Sep 2004 02:28:52 GMT</last_modification_time>
-	      </signal>
-	      <signal>
-		<name>unselect_child</name>
-		<handler>on_list_vis_plugins_unselect_child</handler>
-		<last_modification_time>Mon, 27 Sep 2004 02:28:56 GMT</last_modification_time>
-	      </signal>
-	      <selection_mode>GTK_SELECTION_SINGLE</selection_mode>
+	      <class>GtkLabel</class>
+	      <child_name>CList:title</child_name>
+	      <name>label_actor_plugins</name>
+	      <label>Actors</label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
 	    </widget>
 	  </widget>
 	</widget>

@@ -51,5 +51,8 @@ void lv_xmms_config_set_current_actor (const char *name);
 
 const char *lv_xmms_config_morph_plugin (void);
 
+/* FIXME we will use other method on future */
+void lv_xmms_config_set_bin (VisBin *bin);
+
 #endif /* __LV_XMMS_CONFIG__ */
 

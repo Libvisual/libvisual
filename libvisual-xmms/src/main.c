@@ -211,12 +211,6 @@ static void lv_xmms_cleanup ()
 	
 	pcm_mutex = NULL;
 
-	/*
-	 * WARNING This must be synchronized with config module.
-	 */
-
-	options->last_plugin = cur_lv_plugin;
-
 	visual_log (VISUAL_LOG_DEBUG, "calling lv_xmms_config_save_prefs()");
 	lv_xmms_config_save_prefs ();
 
@@ -238,7 +232,8 @@ static void lv_xmms_cleanup ()
 
 static void lv_xmms_disable (VisPlugin* plugin)
 {
-
+	lv_xmms_config_save_prefs ();
+	lv_xmms_config_close ();
 }
 
 static void lv_xmms_playback_start ()
@@ -304,6 +299,7 @@ static int sdl_create (int width, int height)
 {
 	const SDL_VideoInfo *videoinfo;
 	int videoflags;
+	int bpp;
 
 	if (screen != NULL)
 		SDL_FreeSurface (screen);
@@ -314,7 +310,7 @@ static int sdl_create (int width, int height)
 	if (gl_plug == 1) {
 		videoinfo = SDL_GetVideoInfo ();
 
-		if (videoinfo == 0) {
+		if (!videoinfo) {
 			visual_log (VISUAL_LOG_CRITICAL, _("Could not get video info"));
 			return -1;
 		}
@@ -329,10 +325,15 @@ static int sdl_create (int width, int height)
 		if (videoinfo->blit_hw)
 			videoflags |= SDL_HWACCEL;
 
+		SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 		SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 
-		visual_log (VISUAL_LOG_DEBUG, "Setting video mode %dx%d", width, height);
-		screen = SDL_SetVideoMode (width, height, 16, videoflags);
+		bpp = videoinfo->vfmt->BitsPerPixel;
+		visual_log (VISUAL_LOG_INFO, "Setting video mode %dx%d, %d bpp", width, height, bpp);
+		screen = SDL_SetVideoMode (width, height, bpp, videoflags);
 	} else {
 		visual_log (VISUAL_LOG_DEBUG, "Setting video mode %dx%d", width, height);
 		screen = SDL_SetVideoMode (width, height, video->bpp * 8, SDL_RESIZABLE);
@@ -388,7 +389,6 @@ static int visual_initialize (int width, int height)
 		gl_plug = 0;
 	}
 
-	visual_log (VISUAL_LOG_DEBUG, gl_plug ? "OpenGl plugin: yes" : "OpenGl plugin: no");
 	ret = sdl_create (width, height);
 	if (ret < 0) {
                 return -1;
@@ -408,6 +408,8 @@ static int visual_initialize (int width, int height)
 	visual_bin_switch_set_automatic (bin, TRUE);
 	visual_bin_switch_set_mode (bin, VISUAL_MORPH_MODE_TIME);
 	visual_bin_switch_set_time (bin, 4, 0);
+
+	lv_xmms_config_set_bin (bin);
 
 	visual_bin_realize (bin);
 	visual_bin_sync (bin, FALSE);
@@ -484,7 +486,12 @@ static int visual_render (void *arg)
                         
 			render_time = SDL_GetTicks ();
 			if (gl_plug == 1) {
+				/*
+				 * Here is the problem when we initialize with a GL plugin
+				 * 
+				 * visual_log (VISUAL_LOG_INFO, "Calling visual_bin_run()");*/
 				visual_bin_run (bin);
+				/*visual_log (VISUAL_LOG_INFO, "visual_bin_run() done");*/
 
 				SDL_GL_SwapBuffers ();
 			} else {

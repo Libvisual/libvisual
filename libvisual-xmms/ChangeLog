@@ -1,3 +1,9 @@
+2004-10-08  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/config_gui.c: actor's GtkList changed for a GtkCList.
+	* src/lv_xmms_config.c: when double click on an actor, we
+	morph to that actor inmediatly.
+
 2004-10-04  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/main.c: Adopted to new button press event
