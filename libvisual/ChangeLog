@@ -1,3 +1,9 @@
+2004-10-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/Makefile.am: Added lv_ui.*
+
+	* src/lv_ui.c, src/lv_ui.h: Added files.
+
 2004-10-14  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Bumped version to 0.2.0
