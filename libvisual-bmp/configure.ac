@@ -57,7 +57,7 @@ fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
 
-PKG_CHECK_MODULES(BMP, bmp >= 0.9.6, [bmp="yes"], [bmp="no"])
+PKG_CHECK_MODULES(BMP, bmp >= 0.9.7, [bmp="yes"], [bmp="no"])
 if test x"$bmp" = xno; then
 	AC_MSG_ERROR([beep-media-player not found, beep-media-player is needed to build this package,
 you can download beep-media-player at http://beepmp.sf.net/])
