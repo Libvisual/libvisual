@@ -36,7 +36,7 @@
       <class>GtkFrame</class>
       <name>frame_vis_plugin</name>
       <border_width>2</border_width>
-      <label>Visualization Plugin</label>
+      <label>Visualization Plugins</label>
       <label_xalign>0</label_xalign>
       <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
       <child>
@@ -52,23 +52,40 @@
 	<spacing>0</spacing>
 
 	<widget>
-	  <class>GtkOptionMenu</class>
-	  <name>optionmenu_vis_plugin</name>
+	  <class>GtkScrolledWindow</class>
+	  <name>scrolledwindow_vis_plugins</name>
 	  <border_width>2</border_width>
-	  <tooltip>Select the plugin that will draw the screen</tooltip>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_optionmenu_vis_plugin_clicked</handler>
-	    <last_modification_time>Fri, 24 Sep 2004 03:45:22 GMT</last_modification_time>
-	  </signal>
-	  <items></items>
-	  <initial_choice>0</initial_choice>
+	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+	  <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
+	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
 	  <child>
 	    <padding>0</padding>
 	    <expand>False</expand>
 	    <fill>False</fill>
 	  </child>
+
+	  <widget>
+	    <class>GtkViewport</class>
+	    <name>viewport1</name>
+	    <shadow_type>GTK_SHADOW_IN</shadow_type>
+
+	    <widget>
+	      <class>GtkList</class>
+	      <name>list_vis_plugins</name>
+	      <signal>
+		<name>select_child</name>
+		<handler>on_list_vis_plugins_select_child</handler>
+		<last_modification_time>Mon, 27 Sep 2004 02:28:52 GMT</last_modification_time>
+	      </signal>
+	      <signal>
+		<name>unselect_child</name>
+		<handler>on_list_vis_plugins_unselect_child</handler>
+		<last_modification_time>Mon, 27 Sep 2004 02:28:56 GMT</last_modification_time>
+	      </signal>
+	      <selection_mode>GTK_SELECTION_MULTIPLE</selection_mode>
+	    </widget>
+	  </widget>
 	</widget>
 
 	<widget>
@@ -98,7 +115,7 @@
 	    <child>
 	      <padding>0</padding>
 	      <expand>False</expand>
-	      <fill>False</fill>
+	      <fill>True</fill>
 	    </child>
 	  </widget>
 
@@ -117,7 +134,7 @@
 	    <child>
 	      <padding>0</padding>
 	      <expand>False</expand>
-	      <fill>False</fill>
+	      <fill>True</fill>
 	    </child>
 	  </widget>
 
@@ -268,96 +285,6 @@
 
     <widget>
       <class>GtkFrame</class>
-      <name>frame_input_plugin</name>
-      <border_width>2</border_width>
-      <label>Input Plugin</label>
-      <label_xalign>0</label_xalign>
-      <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
-
-      <widget>
-	<class>GtkVBox</class>
-	<name>vbox_input_plugin</name>
-	<homogeneous>False</homogeneous>
-	<spacing>0</spacing>
-
-	<widget>
-	  <class>GtkOptionMenu</class>
-	  <name>optionmenu_input_plugin</name>
-	  <tooltip>Select the plugin that will capture sound data. Changes to this option will be applied the next time you start </tooltip>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_optionmenu_input_plugin_clicked</handler>
-	    <last_modification_time>Fri, 24 Sep 2004 03:45:27 GMT</last_modification_time>
-	  </signal>
-	  <items></items>
-	  <initial_choice>0</initial_choice>
-	  <child>
-	    <padding>0</padding>
-	    <expand>False</expand>
-	    <fill>False</fill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkHBox</class>
-	  <name>hbox_input_plugin_buttons</name>
-	  <border_width>6</border_width>
-	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-
-	  <widget>
-	    <class>GtkButton</class>
-	    <name>button_input_plugin_conf</name>
-	    <border_width>2</border_width>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>clicked</name>
-	      <handler>on_button_input_plugin_conf_clicked</handler>
-	      <last_modification_time>Fri, 24 Sep 2004 03:25:38 GMT</last_modification_time>
-	    </signal>
-	    <label>Configure</label>
-	    <relief>GTK_RELIEF_NORMAL</relief>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkButton</class>
-	    <name>button_input_plugin_about</name>
-	    <border_width>2</border_width>
-	    <can_focus>True</can_focus>
-	    <label>About</label>
-	    <relief>GTK_RELIEF_NORMAL</relief>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>Placeholder</class>
-	  </widget>
-	</widget>
-      </widget>
-    </widget>
-
-    <widget>
-      <class>GtkFrame</class>
       <name>frame_morph_plugin</name>
       <border_width>2</border_width>
       <label>Morph Plugin</label>
@@ -365,8 +292,8 @@
       <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
       <child>
 	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
+	<expand>True</expand>
+	<fill>True</fill>
       </child>
 
       <widget>
@@ -421,7 +348,7 @@
 	    <child>
 	      <padding>0</padding>
 	      <expand>False</expand>
-	      <fill>False</fill>
+	      <fill>True</fill>
 	    </child>
 	  </widget>
 
@@ -440,7 +367,7 @@
 	    <child>
 	      <padding>0</padding>
 	      <expand>False</expand>
-	      <fill>False</fill>
+	      <fill>True</fill>
 	    </child>
 	  </widget>
 
@@ -472,85 +399,13 @@
 
     <widget>
       <class>GtkHBox</class>
-      <name>hbox_icon</name>
-      <border_width>6</border_width>
-      <homogeneous>True</homogeneous>
-      <spacing>0</spacing>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
-
-      <widget>
-	<class>GtkLabel</class>
-	<name>label_icon</name>
-	<label>Icon</label>
-	<justify>GTK_JUSTIFY_LEFT</justify>
-	<wrap>False</wrap>
-	<xalign>0.5</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<child>
-	  <padding>0</padding>
-	  <expand>False</expand>
-	  <fill>False</fill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GtkFrame</class>
-	<name>frame7</name>
-	<label_xalign>0</label_xalign>
-	<shadow_type>GTK_SHADOW_ETCHED_OUT</shadow_type>
-	<child>
-	  <padding>0</padding>
-	  <expand>False</expand>
-	  <fill>False</fill>
-	</child>
-
-	<widget>
-	  <class>GtkPixmap</class>
-	  <name>pixmap_icon</name>
-	  <signal>
-	    <name>button_press_event</name>
-	    <handler>on_pixmap_icon_button_press_event</handler>
-	    <last_modification_time>Fri, 02 Jul 2004 22:47:27 GMT</last_modification_time>
-	  </signal>
-	  <filename>libvisual-xmms-vis.xpm</filename>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <build_insensitive>True</build_insensitive>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>Placeholder</class>
-      </widget>
-    </widget>
-
-    <widget>
-      <class>GtkHSeparator</class>
-      <name>hseparator3</name>
-      <child>
-	<padding>6</padding>
-	<expand>True</expand>
-	<fill>True</fill>
-      </child>
-    </widget>
-
-    <widget>
-      <class>GtkHBox</class>
       <name>hbox_main_buttons</name>
       <homogeneous>True</homogeneous>
       <spacing>0</spacing>
       <child>
-	<padding>0</padding>
-	<expand>True</expand>
-	<fill>True</fill>
+	<padding>6</padding>
+	<expand>False</expand>
+	<fill>False</fill>
       </child>
 
       <widget>
@@ -563,12 +418,12 @@
 	  <handler>on_button_ok_clicked</handler>
 	  <last_modification_time>Fri, 02 Jul 2004 22:47:56 GMT</last_modification_time>
 	</signal>
-	<stock_button>GNOME_STOCK_BUTTON_OK</stock_button>
+	<label>Accept</label>
 	<relief>GTK_RELIEF_NORMAL</relief>
 	<child>
 	  <padding>0</padding>
 	  <expand>False</expand>
-	  <fill>False</fill>
+	  <fill>True</fill>
 	</child>
       </widget>
 
@@ -582,12 +437,12 @@
 	  <handler>on_button_apply_clicked</handler>
 	  <last_modification_time>Mon, 05 Jul 2004 16:49:51 GMT</last_modification_time>
 	</signal>
-	<stock_button>GNOME_STOCK_BUTTON_APPLY</stock_button>
+	<label>Apply</label>
 	<relief>GTK_RELIEF_NORMAL</relief>
 	<child>
 	  <padding>6</padding>
 	  <expand>False</expand>
-	  <fill>False</fill>
+	  <fill>True</fill>
 	</child>
       </widget>
 
@@ -595,19 +450,18 @@
 	<class>GtkButton</class>
 	<name>button_cancel</name>
 	<can_default>True</can_default>
-	<has_default>True</has_default>
 	<can_focus>True</can_focus>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_button_cancel_clicked</handler>
-	  <last_modification_time>Fri, 02 Jul 2004 22:48:08 GMT</last_modification_time>
+	  <last_modification_time>Mon, 27 Sep 2004 02:53:52 GMT</last_modification_time>
 	</signal>
-	<stock_button>GNOME_STOCK_BUTTON_CANCEL</stock_button>
+	<label>Cancel</label>
 	<relief>GTK_RELIEF_NORMAL</relief>
 	<child>
-	  <padding>6</padding>
+	  <padding>0</padding>
 	  <expand>False</expand>
-	  <fill>False</fill>
+	  <fill>True</fill>
 	</child>
       </widget>
     </widget>

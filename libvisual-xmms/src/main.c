@@ -20,6 +20,8 @@
 #include "lv_xmms_config.h"
 #include "about.h"
 
+#define LV_XMMS_DEFAULT_INPUT_PLUGIN "esd"
+
 /* SDL variables */
 static SDL_Surface *screen = NULL;
 static SDL_Color sdlpal[256];
@@ -319,7 +321,7 @@ static int sdl_create (int width, int height)
 	} else
 		screen = SDL_SetVideoMode (width, height, video->bpp * 8, SDL_RESIZABLE);
 
-	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY / 4, SDL_DEFAULT_REPEAT_INTERVAL / 4);
 
 	visual_video_set_buffer (video, screen->pixels);
         visual_log (VISUAL_LOG_DEBUG, "pointer to the pixels: %p", screen->pixels);
@@ -360,7 +362,7 @@ static int visual_initialize (int width, int height)
                 return -1;
         }
 	/*visual_bin_connect_by_names (bin, cur_lv_plugin, NULL);*/
-	visual_bin_connect_by_names (bin, cur_lv_plugin, options->input_plugin);
+	visual_bin_connect_by_names (bin, cur_lv_plugin, LV_XMMS_DEFAULT_INPUT_PLUGIN);
 
 	if (visual_bin_get_depth (bin) == VISUAL_VIDEO_DEPTH_GL) {
 		visual_video_set_depth (video, VISUAL_VIDEO_DEPTH_GL);
@@ -601,7 +603,7 @@ static int sdl_event_handle ()
 
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
                                                     cur_lv_plugin = next_plugin;
-                                                    visual_bin_set_morph_by_name (bin, options->morph_plugin);
+                                                    visual_bin_set_morph_by_name (bin, lv_xmms_config_morph_plugin());
                                                     visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
                                                 }
 
@@ -638,7 +640,7 @@ static int sdl_event_handle ()
 
                                                 if (next_plugin != NULL && (strcmp (next_plugin, cur_lv_plugin) != 0)) {
                                                     cur_lv_plugin = next_plugin;
-                                                    visual_bin_set_morph_by_name (bin, options->morph_plugin);
+                                                    visual_bin_set_morph_by_name (bin, lv_xmms_config_morph_plugin());
                                                     visual_bin_switch_actor_by_name (bin, cur_lv_plugin);
                                                 }
 

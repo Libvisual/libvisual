@@ -16,8 +16,8 @@
 #define CONFIG_DEFAULT_INPUT_PLUGIN "esd"
 #define CONFIG_DEFAULT_MORPH_PLUGIN "alphablend"
 
-static const Options default_options = { NULL, NULL, NULL, NULL, 320, 200, 30, 24, FALSE, FALSE, FALSE, TRUE };
-static Options options = { NULL, NULL, NULL, NULL, -1, -1, -1, -1, FALSE, FALSE, FALSE, TRUE };
+static const Options default_options = { NULL, NULL, NULL, 320, 200, 30, 24, FALSE, FALSE, FALSE, TRUE, FALSE };
+static Options options = { NULL, NULL, NULL, -1, -1, -1, -1, FALSE, FALSE, FALSE, TRUE, FALSE };
 static ConfigWin *config_win = NULL;
 
 static gboolean options_loaded = FALSE;
@@ -25,35 +25,19 @@ static gboolean fullscreen;
 static gboolean gl_plugins_only;
 static gboolean non_gl_plugins_only;
 static gboolean all_plugins_enabled;
+static gboolean random_morph;
 static int fps;
 
-static char *input_plugin = NULL;
-static char *input_plugin_buffer = NULL;
 static char *morph_plugin = NULL;
 static char *morph_plugin_buffer = NULL;
+static GSList *morph_plugins_list = NULL;
 
 static void sync_options (void);
 
-/* Callbacks */
-static void on_button_ok_clicked (GtkButton *button, gpointer user_data);
-static void on_button_apply_clicked (GtkButton *button, gpointer user_data);
-static void on_button_cancel_clicked (GtkButton *button, gpointer user_data);
-
-static void on_checkbutton_fullscreen_toggled (GtkToggleButton *togglebutton, gpointer user_data);
-
-static void on_radiobutton_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data);
-static void on_radiobutton_non_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data);
-static void on_radiobutton_all_plugins_toggled (GtkToggleButton *togglebutton, gpointer user_data);
-
-static void on_spinbutton_fps_changed (GtkEditable *editable, gpointer user_data);
-
-static int config_win_load_input_plugin_list (void);
-static void config_win_input_plugin_add (char *name);
-static void on_input_plugin_activate (GtkMenuItem *menuitem, char *inputname);
-
 static int config_win_load_morph_plugin_list (void);
 static void config_win_morph_plugin_add (char *name);
-static void on_morph_plugin_activate (GtkMenuItem *menuitem, char *morphname);
+
+static int load_morph_plugin_list (void);
 	
 static void config_win_set_defaults (void);
 static void config_win_connect_callbacks (void);
@@ -65,19 +49,22 @@ static void dummy (GtkWidget *widget, gpointer data);
 
 static void set_defaults (void);
 
-static gboolean on_pixmap_icon_button_press_event (GtkWidget *widget,
-						GdkEventButton *event,
-						gpointer user_data);
 
 Options *lv_xmms_config_open ()
 {
+#warning ***** Yes, I WANT 'trash' uninitialized *****
+	unsigned int trash;
+
 	options.last_plugin = g_malloc0 (OPTIONS_MAX_NAME_LEN);
-	input_plugin_buffer = g_malloc0 (OPTIONS_MAX_NAME_LEN);
 	morph_plugin_buffer = g_malloc0 (OPTIONS_MAX_NAME_LEN);
 	options.icon_file = g_malloc0 (OPTIONS_MAX_ICON_PATH_LEN);
 
 	config_visual_initialize ();
 
+	srand (trash);
+
+	load_morph_plugin_list ();
+	
 	return &options;
 }
 
@@ -85,8 +72,6 @@ int lv_xmms_config_close ()
 {
 	if (options.last_plugin != NULL)
 		g_free (options.last_plugin);
-	if (input_plugin_buffer != NULL)
-		g_free (input_plugin_buffer);
 	if (morph_plugin_buffer != NULL)
 		g_free (morph_plugin_buffer);
 	if (options.icon_file != NULL)
@@ -128,21 +113,6 @@ int lv_xmms_config_load_prefs ()
 	/*
 	 * Set our local copies
 	 */
-	if (!visual_input_valid_by_name (input_plugin_buffer)) {
-		msg = xmms_show_message (PACKAGE_NAME,
-					_("The input plugin specified on the config\n"
-					"file is not a valid input plugin.\n"
-					"We will use "CONFIG_DEFAULT_INPUT_PLUGIN
-					" input plugin instead.\n"
-					"If you want another one, please choose it\n"
-					"on the configure dialog."),
-					_("Accept"), TRUE, dummy, NULL);
-		gtk_widget_show (msg);
-		strcpy (input_plugin_buffer, CONFIG_DEFAULT_INPUT_PLUGIN);
-	}
-	options.input_plugin = input_plugin_buffer;
-	input_plugin = input_plugin_buffer;
-
 	if (!visual_morph_valid_by_name (morph_plugin_buffer)) {
 		msg = xmms_show_message (PACKAGE_NAME,
 					_("The morph plugin specified on the config\n"
@@ -157,6 +127,7 @@ int lv_xmms_config_load_prefs ()
 	}
 	options.morph_plugin = morph_plugin_buffer;
 	morph_plugin = morph_plugin_buffer;
+	random_morph = options.random_morph;
 
 	fullscreen = options.fullscreen;
 	fps = options.fps;
@@ -205,15 +176,11 @@ int lv_xmms_config_save_prefs ()
 	else
 		xmms_cfg_write_string (f, "libvisual_xmms", "last_plugin", CONFIG_DEFAULT_ACTOR_PLUGIN);
 
-	if (options.input_plugin != NULL && (strlen(options.input_plugin) > 0))
-		xmms_cfg_write_string (f, "libvisual_xmms", "input_plugin", options.input_plugin);
-	else
-		xmms_cfg_write_string (f, "libvisual_xmms", "input_plugin", CONFIG_DEFAULT_INPUT_PLUGIN);
-		
 	if (options.morph_plugin != NULL && (strlen(options.morph_plugin) > 0))
 		xmms_cfg_write_string (f, "libvisual_xmms", "morph_plugin", options.morph_plugin);
 	else
 		xmms_cfg_write_string (f, "libvisual_xmms", "morph_plugin", CONFIG_DEFAULT_MORPH_PLUGIN);
+	xmms_cfg_write_boolean (f, "libvisual_xmms", "random_morph", options.random_morph);
 		
 	if (options.icon_file != NULL && (strlen(options.icon_file) > 0))
 		xmms_cfg_write_string (f, "libvisual_xmms", "icon", options.icon_file);
@@ -249,6 +216,24 @@ void lv_xmms_config_toggle_fullscreen (void)
 							fullscreen);
 }
 
+const char *lv_xmms_config_morph_plugin (void)
+{
+	GSList *l;
+	int i, pos;
+	
+	visual_log_return_val_if_fail (g_slist_length (morph_plugins_list) > 0, NULL);
+
+	if (random_morph) {
+		pos = (rand () % (g_slist_length (morph_plugins_list)));
+		l = morph_plugins_list;
+		for (i = 0; i < pos; i++)
+			l = g_slist_next(l);
+		return ((char*)l->data);
+	} else {
+		return options.morph_plugin;
+	}
+}
+
 void lv_xmms_config_window ()
 {
 #if ENABLE_NLS
@@ -269,13 +254,16 @@ void lv_xmms_config_window ()
 	if (options_loaded) {
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
-							options.fullscreen);
+						options.fullscreen);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlygl),
-							options.gl_plugins_only);
+						options.gl_plugins_only);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlynongl),
-							options.non_gl_plugins_only);
+						options.non_gl_plugins_only);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins),
-							options.all_plugins_enabled);
+						options.all_plugins_enabled);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_morph_random),
+						options.random_morph);
+	
         } else {
 		config_win_set_defaults ();
         }
@@ -284,9 +272,8 @@ void lv_xmms_config_window ()
 
 	gtk_widget_grab_default (config_win->button_cancel);
 
-	config_win_load_input_plugin_list ();
 	config_win_load_morph_plugin_list ();
-	
+
 	gtk_widget_show (config_win->window_main);
 }
 
@@ -319,16 +306,6 @@ static void on_spinbutton_fps_changed (GtkEditable *editable, gpointer user_data
 	g_free (buffer);
 }
 
-
-static gboolean on_pixmap_icon_button_press_event (GtkWidget *widget,
-						GdkEventButton *event,
-						gpointer user_data)
-{
-
-  return FALSE;
-}
-
-
 static void on_button_ok_clicked (GtkButton *button, gpointer user_data)
 {
 	sync_options ();
@@ -352,9 +329,15 @@ static void on_button_cancel_clicked (GtkButton *button, gpointer user_data)
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
 						options.fullscreen);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlygl), options.gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlynongl), options.non_gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins), options.all_plugins_enabled);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlygl),
+						options.gl_plugins_only);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlynongl),
+						options.non_gl_plugins_only);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins),
+						options.all_plugins_enabled);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_morph_random),
+						options.random_morph);
+	
 	} else {
 		config_win_set_defaults ();
 	}
@@ -369,109 +352,7 @@ static void sync_options ()
         options.gl_plugins_only = gl_plugins_only;
         options.non_gl_plugins_only = non_gl_plugins_only;
         options.all_plugins_enabled = all_plugins_enabled;
-	options.input_plugin = input_plugin;
-}
-
-static int config_win_load_input_plugin_list (void)
-{
-	VisList *list;
-	VisListEntry *item;
-	VisPluginRef *input;
-	GtkWidget *msg;
-
-	list = visual_input_get_list ();
-	if (!list) {
-		visual_log (VISUAL_LOG_WARNING, _("The list of input plugins is empty."));
-		return -1;
-	}
-	
-	item = NULL;
-	/* FIXME update to visual_list_is_empty() when ready */
-	if (!(input = (VisPluginRef*) visual_list_next (list, &item))) {
-		msg = xmms_show_message (PACKAGE_NAME,
-					_("There are no input plugins, so\n"
-					"visualization plugins will work\n"
-					"without rendering pcm data."),
-					_("Accept"), TRUE, dummy, NULL);
-		return -1;
-	}
-	item = NULL;
-	while ((input = (VisPluginRef*) visual_list_next (list, &item))) {
-		if (!(input->info)) {
-			visual_log (VISUAL_LOG_WARNING, _("There is no info for this plugin"));
-			continue;
-		}
-		config_win_input_plugin_add (input->info->plugname);
-	}
-
-	return 0;
-}
-
-static void config_win_input_plugin_add (char *name)
-{
-	GtkWidget *menu;
-	GtkWidget *menuitem;
-	GSList *group;
-	
-	group = config_win->optionmenu_input_plugin_group;
-	menu = gtk_option_menu_get_menu (GTK_OPTION_MENU(config_win->optionmenu_input_plugin));
-	menuitem = gtk_radio_menu_item_new_with_label (group, name);
-	group = gtk_radio_menu_item_group (GTK_RADIO_MENU_ITEM(menuitem));
-	gtk_menu_append (GTK_MENU(menu), menuitem);
-	config_win->optionmenu_input_plugin_group = group;
-
-	gtk_signal_connect (GTK_OBJECT(menuitem), "activate",
-				GTK_SIGNAL_FUNC(on_input_plugin_activate),
-				(gpointer) name);
-
-	gtk_widget_show (menuitem);
-
-	if (!strcmp (name, CONFIG_DEFAULT_INPUT_PLUGIN)) {
-		gtk_menu_item_activate (GTK_MENU_ITEM(menuitem));
-		gtk_option_menu_set_history (GTK_OPTION_MENU(config_win->optionmenu_input_plugin), 1);
-	}
-}
-
-static void on_input_plugin_activate (GtkMenuItem *menuitem, char *name)
-{
-	visual_log_return_if_fail (name != NULL);
-
-	options.input_plugin = name;
-}
-
-static void on_button_input_plugin_about_clicked (GtkButton *button, gpointer data)
-{
-	VisList *list;
-	VisListEntry *item;
-	VisPluginRef *input;
-	gchar *msg;
-	GtkWidget *msgwin;
-		
-	list = visual_input_get_list ();
-	if (!list) {
-		visual_log (VISUAL_LOG_WARNING, _("The list of input plugins is empty."));
-		return;
-	}
-
-	item = NULL;
-	while ((input = (VisPluginRef*) visual_list_next (list, &item))) {
-		if (!(input->info)) {
-			visual_log (VISUAL_LOG_WARNING, _("There is no info for this plugin"));
-			continue;
-		}
-		if (strcmp (input->info->plugname, options.input_plugin) == 0) {
-			msg = g_strconcat (input->info->name, "\n",
-					_("Version: "), input->info->version, "\n",
-					input->info->about, "\n",
-					_("Author: "), input->info->author, "\n\n",
-					input->info->help, 0);
-			msgwin = xmms_show_message (PACKAGE_NAME, msg,
-					_("Accept"), TRUE, dummy, NULL);
-			gtk_widget_show (msgwin);
-			g_free (msg);
-			break;
-		}
-	}
+	options.random_morph = random_morph;
 }
 
 static int config_win_load_morph_plugin_list ()
@@ -481,6 +362,7 @@ static int config_win_load_morph_plugin_list ()
 	VisPluginRef *morph;
 	GtkWidget *msg;
 
+	/* FIXME use load_morph_plugin_list() */
 	list = visual_morph_get_list ();
 	if (!list) {
 		visual_log (VISUAL_LOG_WARNING, _("The list of morph plugins is empty."));
@@ -509,6 +391,13 @@ static int config_win_load_morph_plugin_list ()
 	return 0;
 }
 
+static void on_morph_plugin_activate (GtkMenuItem *menuitem, char *name)
+{
+	visual_log_return_if_fail (name != NULL);
+
+	options.morph_plugin = name;
+}
+
 static void config_win_morph_plugin_add (char *name)
 {
 	GtkWidget *menu;
@@ -534,13 +423,40 @@ static void config_win_morph_plugin_add (char *name)
 	}
 }
 
-static void on_morph_plugin_activate (GtkMenuItem *menuitem, char *name)
+static int load_morph_plugin_list ()
 {
-	visual_log_return_if_fail (name != NULL);
+	VisList *list;
+	VisListEntry *item;
+	VisPluginRef *morph;
+	GtkWidget *msg;
 
-	options.morph_plugin = name;
+	list = visual_morph_get_list ();
+	if (!list) {
+		visual_log (VISUAL_LOG_WARNING, _("The list of morph plugins is empty."));
+		return -1;
+	}
+	
+	item = NULL;
+	/* FIXME update to visual_list_is_empty() when ready */
+	if (!(morph = (VisPluginRef*) visual_list_next (list, &item))) {
+		msg = xmms_show_message (PACKAGE_NAME,
+					_("There are no morph plugins, so switching\n"
+					"between visualization plugins will be do it\n"
+					"without any morphing."),
+					_("Accept"), TRUE, dummy, NULL);
+		return -1;
+	}
+	item = NULL;
+	while ((morph = (VisPluginRef*) visual_list_next (list, &item))) {
+		if (!(morph->info)) {
+			visual_log (VISUAL_LOG_WARNING, _("There is no info for this plugin"));
+			continue;
+		}
+		morph_plugins_list = g_slist_append (morph_plugins_list, morph->info->plugname);
+	}
+
+	return 0;
 }
-
 static void on_button_morph_plugin_about_clicked (GtkButton *button, gpointer data)
 {
 	VisList *list;
@@ -576,9 +492,14 @@ static void on_button_morph_plugin_about_clicked (GtkButton *button, gpointer da
 	}
 }
 
+static void on_checkbutton_morph_random_toggled (GtkToggleButton *togglebutton, gpointer user_data)
+{
+	random_morph = !random_morph;
+}
+
 /*
- * This function set the default values for all options, except the selected
- * vis, input and morph plugins.
+ * This function set the default values on configure dialog for all options,
+ * except the selected vis and morph plugins.
  */
 static void config_win_set_defaults (void)
 {
@@ -591,6 +512,8 @@ static void config_win_set_defaults (void)
 					default_options.non_gl_plugins_only);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins),
 					default_options.all_plugins_enabled);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_morph_random),
+					default_options.random_morph);
 }
 
 static void config_win_connect_callbacks (void)
@@ -610,9 +533,6 @@ static void config_win_connect_callbacks (void)
 	gtk_signal_connect (GTK_OBJECT (config_win->spinbutton_fps), "changed",
                       GTK_SIGNAL_FUNC (on_spinbutton_fps_changed),
                       NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->pixmap_icon), "button_press_event",
-                      GTK_SIGNAL_FUNC (on_pixmap_icon_button_press_event),
-                      NULL);
 	gtk_signal_connect (GTK_OBJECT (config_win->button_ok), "clicked",
                       GTK_SIGNAL_FUNC (on_button_ok_clicked),
                       NULL);
@@ -622,19 +542,17 @@ static void config_win_connect_callbacks (void)
 	gtk_signal_connect (GTK_OBJECT (config_win->button_cancel), "clicked",
                       GTK_SIGNAL_FUNC (on_button_cancel_clicked),
                       NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->button_input_plugin_about), "clicked",
-                      GTK_SIGNAL_FUNC (on_button_input_plugin_about_clicked),
-                      NULL);
 	gtk_signal_connect (GTK_OBJECT (config_win->button_morph_plugin_about), "clicked",
                       GTK_SIGNAL_FUNC (on_button_morph_plugin_about_clicked),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_morph_random), "toggled",
+                      GTK_SIGNAL_FUNC (on_checkbutton_morph_random_toggled),
                       NULL);
 }
 
 static void set_defaults (void)
 {
 	strcpy (options.last_plugin, CONFIG_DEFAULT_ACTOR_PLUGIN);
-	strcpy (input_plugin_buffer, CONFIG_DEFAULT_INPUT_PLUGIN);
-	options.input_plugin = input_plugin_buffer;
 	strcpy (morph_plugin_buffer, CONFIG_DEFAULT_MORPH_PLUGIN);
 	options.morph_plugin = morph_plugin_buffer;
 
@@ -647,6 +565,7 @@ static void set_defaults (void)
 	options.gl_plugins_only = default_options.gl_plugins_only;
 	options.non_gl_plugins_only = default_options.non_gl_plugins_only;
 	options.all_plugins_enabled = default_options.all_plugins_enabled;
+	options.random_morph = default_options.random_morph;
 }
 
 static void config_visual_initialize ()
@@ -688,12 +607,12 @@ static gboolean read_config_file (ConfigFile *f)
 		strcpy (options.last_plugin, CONFIG_DEFAULT_ACTOR_PLUGIN);
 		errors = TRUE;
 	}
-	if (!xmms_cfg_read_string (f, "libvisual_xmms", "input_plugin", &input_plugin_buffer)					|| (strlen (input_plugin_buffer) <= 0)) {
-		strcpy (input_plugin_buffer, CONFIG_DEFAULT_INPUT_PLUGIN);
-		errors = TRUE;
-	}
 	if (!xmms_cfg_read_string (f, "libvisual_xmms", "morph_plugin", &morph_plugin_buffer)					|| (strlen (morph_plugin_buffer) <= 0)) {
 		strcpy (morph_plugin_buffer, CONFIG_DEFAULT_MORPH_PLUGIN);
+		errors = TRUE;
+	}
+	if (!xmms_cfg_read_boolean (f, "libvisual_xmms", "random_morph", &options.random_morph)) {
+		options.random_morph = default_options.random_morph;
 		errors = TRUE;
 	}
 	if (!xmms_cfg_read_string (f, "libvisual_xmms", "icon", &options.icon_file)
@@ -721,7 +640,8 @@ static gboolean read_config_file (ConfigFile *f)
 		options.fullscreen = default_options.fullscreen;
 		errors = TRUE;
 	}
-	if (!xmms_cfg_read_string (f, "libvisual_xmms", "enabled_plugins", &enabled_plugins)) {
+	if (!xmms_cfg_read_string (f, "libvisual_xmms", "enabled_plugins", &enabled_plugins)
+		|| (strlen (enabled_plugins) <= 0)) {
 		options.gl_plugins_only = default_options.gl_plugins_only;
 		options.non_gl_plugins_only = default_options.non_gl_plugins_only;
 		options.all_plugins_enabled = default_options.all_plugins_enabled;

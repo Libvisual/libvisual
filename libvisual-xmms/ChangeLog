@@ -1,6 +1,6 @@
-2004-09-25  Duilio Protti  <dprotti@users.sourceforge.net>
+2004-09-27  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* src/lv_xmms_config.c: Input plugins frame done.
+	* src/lv_xmms_config.c: morph plugin frame done.
 
 2004-09-24  Duilio Protti  <dprotti@users.sourceforge.net>
 

@@ -17,7 +17,6 @@ typedef struct {
 	gchar *last_plugin;	/**< Name of the last plugin runned,
 				  with length < OPTIONS_MAX_NAME_LEN. */
 
-	gchar *input_plugin; /**< */
 	gchar *morph_plugin; /**< */
 	
 	gchar *icon_file;	/**< Absolute path of the icon file,
@@ -31,6 +30,8 @@ typedef struct {
 	gboolean gl_plugins_only;	/**< Only Gl plugins must be showed */
 	gboolean non_gl_plugins_only;	/**< Only non GL plugins must be showed */
 	gboolean all_plugins_enabled;	/**< All plugins must be showed */
+	gboolean random_morph;		/**< Morph plugin will be selected randomly on
+					  every switch. */
 
 } Options;
 
@@ -43,6 +44,8 @@ int lv_xmms_config_load_prefs (void);
 int lv_xmms_config_save_prefs (void);
 
 void lv_xmms_config_toggle_fullscreen (void);
+
+const char *lv_xmms_config_morph_plugin (void);
 
 #endif /* __LV_XMMS_CONFIG__ */
 
