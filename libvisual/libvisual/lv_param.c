@@ -462,7 +462,7 @@ double visual_param_entry_get_double (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, 0);
 
-	if (param->type != VISUAL_PARAM_TYPE_FLOAT)
+	if (param->type != VISUAL_PARAM_TYPE_DOUBLE)
 		visual_log (VISUAL_LOG_WARNING, "Requesting double from a non double param\n");
 
 	return param->data.doubleflt;
