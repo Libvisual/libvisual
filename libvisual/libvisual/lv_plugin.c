@@ -526,15 +526,60 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 {
 	VisPluginRef **ref;
 	char temp[1024];
-	struct dirent **namelist;
 	int i, j, n, len;
 	int cnt = 0;
 
 #if defined(VISUAL_OS_WIN32)
+	BOOL fFinished;
+	HANDLE hList;
+	TCHAR szDir[MAX_PATH+1];
+	TCHAR szSubDir[MAX_PATH+1];
+	WIN32_FIND_DATA FileData;
 
+	snprintf (szDir, MAX_PATH, "%s\\*", dir);
+
+	hList = FindFirstFile (szDir, &FileData);
+	if (hList == INVALID_HANDLE_VALUE) { 
+		FindClose (hList);
+		
+		return 0;
+	}
+	
+	fFinished = FALSE;
+
+	while (!fFinished) {
+		ref = NULL;
+
+		if (!(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+			printf("%*s%s\n", indent, "", FileData.cFileName);
+		}
+
+		snprintf (temp, 1023, "%s\\%s", dir, FileData.cFileName);
+
+		len = strlen (temp);
+		if (len > 5 && (strncmp (&temp[len - 5], ".dll", 5) == 0))
+			ref = visual_plugin_get_references (temp, &cnt);
+		
+		if (ref != NULL) {
+			for (j = 0; j < cnt; j++) 
+				visual_list_add (list, ref[j]);
+
+			/* This is the pointer pointer pointer, not a ref itself */
+			visual_mem_free (ref);
+		}
+
+		if (!FindNextFile (hList, &FileData)) {
+			if (GetLastError () == ERROR_NO_MORE_FILES) {
+				fFinished = TRUE;
+			}
+		}
+	}
+
+	FindClose (hList);
 #else
+	struct dirent **namelist;
+
 	n = scandir (dir, &namelist, NULL, NULL);
-#endif
 
 	if (n < 0)
 		return -1;
@@ -549,7 +594,7 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 		snprintf (temp, 1023, "%s/%s", dir, namelist[i]->d_name);
 
 		len = strlen (temp);
-		if (len > 3 && (strncmp (&temp[len - 3], ".so", 3)) == 0)
+		if (len > 3 && (strncmp (&temp[len - 3], ".so", 3) == 0))
 			ref = visual_plugin_get_references (temp, &cnt);
 
 		if (ref != NULL) {
@@ -564,6 +609,7 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 	}
 
 	visual_mem_free (namelist);
+#endif
 
 	return 0;
 }
