@@ -2,6 +2,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <xmms/configfile.h>
+#include <libvisual/libvisual.h>
 
 #include "config.h"
 
@@ -10,9 +11,11 @@
 #include "gettext.h"
 
 #define CONFIG_DEFAULT_ICON (PACKAGE_DATADIR "/libvisual-xmms-vis.bmp")
+#define CONFIG_DEFAULT_ACTOR_PLUGIN "infinite"
+#define CONFIG_DEFAULT_INPUT_PLUGIN "esd"
 
-static const Options default_options = { NULL, NULL, 320, 200, 30, 24, FALSE, FALSE, FALSE, TRUE };
-static Options options = { NULL, NULL, -1, -1, -1, -1, FALSE, FALSE, FALSE, TRUE };
+static const Options default_options = { NULL, NULL, NULL, 320, 200, 30, 24, FALSE, FALSE, FALSE, TRUE };
+static Options options = { NULL, NULL, NULL, -1, -1, -1, -1, FALSE, FALSE, FALSE, TRUE };
 static ConfigWin *config_win = NULL;
 
 static gboolean options_loaded = FALSE;
@@ -21,6 +24,8 @@ static gboolean gl_plugins_only;
 static gboolean non_gl_plugins_only;
 static gboolean all_plugins_enabled;
 static int fps;
+static char *input_plugin = NULL;
+static char *input_plugin_buffer = NULL;
 
 static void sync_options (void);
 
@@ -37,14 +42,23 @@ static void on_radiobutton_all_plugins_toggled (GtkToggleButton *togglebutton, g
 
 static void on_spinbutton_fps_changed (GtkEditable *editable, gpointer user_data);
 
+static int config_win_load_input_plugin_list (void);
+static void config_win_input_plugin_add (char *name);
+static void on_input_plugin_activate (GtkMenuItem *menuitem, char *inputname);
+static void config_win_set_defaults (void);
+static void config_win_connect_callbacks (void);
+
+static void set_defaults (void);
+
 static gboolean on_pixmap_icon_button_press_event (GtkWidget *widget,
 						GdkEventButton *event,
 						gpointer user_data);
 
 Options *lv_xmms_config_open ()
 {
-	options.last_plugin = g_malloc (OPTIONS_MAX_NAME_LEN);
-	options.icon_file = g_malloc (OPTIONS_MAX_ICON_PATH_LEN);
+	options.last_plugin = g_malloc0 (OPTIONS_MAX_NAME_LEN);
+	input_plugin_buffer = g_malloc0 (OPTIONS_MAX_NAME_LEN);
+	options.icon_file = g_malloc0 (OPTIONS_MAX_ICON_PATH_LEN);
 
 	return &options;
 }
@@ -53,6 +67,8 @@ int lv_xmms_config_close ()
 {
 	if (options.last_plugin != NULL)
 		g_free (options.last_plugin);
+	if (input_plugin_buffer != NULL)
+		g_free (input_plugin_buffer);
 	if (options.icon_file != NULL)
 		g_free (options.icon_file);
 
@@ -79,9 +95,14 @@ int lv_xmms_config_load_prefs ()
 			errors = FALSE;
 			if (!xmms_cfg_read_string (f, "libvisual_xmms", "last_plugin", &options.last_plugin)
 				|| (strlen (options.last_plugin) <= 0)) {
-				strcpy (options.last_plugin, "infinite");
+				strcpy (options.last_plugin, CONFIG_DEFAULT_ACTOR_PLUGIN);
 				errors = TRUE;
 			}
+			if (!xmms_cfg_read_string (f, "libvisual_xmms", "input_plugin", &input_plugin_buffer)					|| (strlen (input_plugin_buffer) <= 0)) {
+				strcpy (input_plugin_buffer, CONFIG_DEFAULT_INPUT_PLUGIN);
+				errors = TRUE;
+			}
+			options.input_plugin = input_plugin_buffer;
 			if (!xmms_cfg_read_string (f, "libvisual_xmms", "icon", &options.icon_file)
 				|| (strlen (options.icon_file) <= 0)) {
 				strcpy (options.icon_file, CONFIG_DEFAULT_ICON);
@@ -139,24 +160,15 @@ int lv_xmms_config_load_prefs ()
 		must_create_entry = TRUE;
 	}
 	
-	if (must_update || must_create_entry) {
-		strcpy (options.last_plugin, "infinite");
-		strcpy (options.icon_file, CONFIG_DEFAULT_ICON);
-		options.width = default_options.width;
-		options.height = default_options.height;
-		options.depth = default_options.depth;
-		options.fps = default_options.fps;
-		options.fullscreen = default_options.fullscreen;
-		options.gl_plugins_only = default_options.gl_plugins_only;
-		options.non_gl_plugins_only = default_options.non_gl_plugins_only;
-		options.all_plugins_enabled = default_options.all_plugins_enabled;
-	}
+	if (must_update || must_create_entry)
+		set_defaults ();
 
 	xmms_cfg_free (f);
 
 	/*
 	 * Set our local copies
 	 */
+	input_plugin = options.input_plugin;
 	fullscreen = options.fullscreen;
 	fps = options.fps;
         gl_plugins_only = options.gl_plugins_only;
@@ -204,6 +216,11 @@ int lv_xmms_config_save_prefs ()
 	else
 		xmms_cfg_write_string (f, "libvisual_xmms", "last_plugin", "infinite");
 
+	if (options.input_plugin != NULL && (strlen(options.input_plugin) > 0))
+		xmms_cfg_write_string (f, "libvisual_xmms", "input_plugin", options.input_plugin);
+	else
+		xmms_cfg_write_string (f, "libvisual_xmms", "input_plugin", CONFIG_DEFAULT_INPUT_PLUGIN);
+		
 	if (options.icon_file != NULL && (strlen(options.icon_file) > 0))
 		xmms_cfg_write_string (f, "libvisual_xmms", "icon", options.icon_file);
 	else
@@ -221,7 +238,7 @@ int lv_xmms_config_save_prefs ()
 	else if (options.all_plugins_enabled)
 		xmms_cfg_write_string (f, "libvisual_xmms", "enabled_plugins", "all");
 	else
-		g_critical ("Inconsistency on config module");
+		g_warning ("Inconsistency on config module");
 
 	xmms_cfg_write_default_file (f);
 	xmms_cfg_free (f);
@@ -234,11 +251,15 @@ void lv_xmms_config_toggle_fullscreen (void)
 	fullscreen = !fullscreen;
 	options.fullscreen = !options.fullscreen;
 	if (config_win != NULL)
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen), fullscreen);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
+							fullscreen);
 }
 
 void lv_xmms_config_window ()
 {
+	int argc;
+	char **argv;
+
 #if ENABLE_NLS
 	setlocale (LC_MESSAGES, "");
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
@@ -250,52 +271,44 @@ void lv_xmms_config_window ()
 		return;
 	}
 
+	if (!visual_is_initialized ()) {
+	        argv = g_malloc (sizeof(char*));
+	        argv[0] = g_strdup ("XMMS plugin");
+        	argc = 1;
+		if (visual_init (&argc, &argv) < 0) {
+			/* FIXME show a dialog box */
+			g_warning (_("We cannot initialize Libvisual library. "
+					"Libvisual is necessary for this plugin to work."));
+        		g_free (argv[0]);
+		        g_free (argv);
+			return;
+		}
+        	g_free (argv[0]);
+	        g_free (argv);
+	}
+
 	config_win = lv_xmms_config_gui_new ();
 
 	if (options_loaded) {
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen), options.fullscreen);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_opengl), options.gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_non_opengl), options.non_gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins), options.all_plugins_enabled);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
+							options.fullscreen);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlygl),
+							options.gl_plugins_only);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlynongl),
+							options.non_gl_plugins_only);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins),
+							options.all_plugins_enabled);
         } else {
-		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), default_options.fps);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen), default_options.fullscreen);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_opengl), default_options.gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_non_opengl), default_options.non_gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins), default_options.all_plugins_enabled);
+		config_win_set_defaults ();
         }
 
-	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_fullscreen), "toggled",
-                      GTK_SIGNAL_FUNC (on_checkbutton_fullscreen_toggled),
-                      NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->radiobutton_opengl), "toggled",
-                      GTK_SIGNAL_FUNC (on_radiobutton_opengl_toggled),
-                      NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->radiobutton_non_opengl), "toggled",
-                      GTK_SIGNAL_FUNC (on_radiobutton_non_opengl_toggled),
-                      NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->radiobutton_all_plugins), "toggled",
-                      GTK_SIGNAL_FUNC (on_radiobutton_all_plugins_toggled),
-                      NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->spinbutton_fps), "changed",
-                      GTK_SIGNAL_FUNC (on_spinbutton_fps_changed),
-                      NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->pixmap_icon), "button_press_event",
-                      GTK_SIGNAL_FUNC (on_pixmap_icon_button_press_event),
-                      NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->button_ok), "clicked",
-                      GTK_SIGNAL_FUNC (on_button_ok_clicked),
-                      NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->button_apply), "clicked",
-                      GTK_SIGNAL_FUNC (on_button_apply_clicked),
-                      NULL);
-	gtk_signal_connect (GTK_OBJECT (config_win->button_cancel), "clicked",
-                      GTK_SIGNAL_FUNC (on_button_cancel_clicked),
-                      NULL);
+	config_win_connect_callbacks ();
 
 	gtk_widget_grab_default (config_win->button_cancel);
 
+	config_win_load_input_plugin_list ();
+	
 	gtk_widget_show (config_win->window_main);
 }
 
@@ -359,16 +372,11 @@ static void on_button_cancel_clicked (GtkButton *button, gpointer user_data)
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
 						options.fullscreen);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_opengl), options.gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_non_opengl), options.non_gl_plugins_only);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlygl), options.gl_plugins_only);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlynongl), options.non_gl_plugins_only);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins), options.all_plugins_enabled);
 	} else {
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
-						default_options.fullscreen);
-		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), default_options.fps);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_opengl), default_options.gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_non_opengl), default_options.non_gl_plugins_only);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins), default_options.all_plugins_enabled);
+		config_win_set_defaults ();
 	}
 
 	gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET(button)));
@@ -381,5 +389,133 @@ static void sync_options ()
         options.gl_plugins_only = gl_plugins_only;
         options.non_gl_plugins_only = non_gl_plugins_only;
         options.all_plugins_enabled = all_plugins_enabled;
+	options.input_plugin = input_plugin;
 }
 
+static int config_win_load_input_plugin_list (void)
+{
+	VisList *list;
+	VisListEntry *item;
+	VisPluginRef *input;
+
+	list = visual_input_get_list ();
+	if (!list) {
+		visual_log (VISUAL_LOG_WARNING, _("The list of input plugins is empty."));
+		return -1;
+	}
+	
+	item = NULL;
+	/* FIXME update to visual_list_is_empty() when ready */
+	if (!(input = (VisPluginRef*) visual_list_next (list, &item))) {
+		visual_log (VISUAL_LOG_WARNING, _("There are no input plugins, "
+					"so visualization plugins will work without "
+					"rendering pcm data."));
+		return -1;
+	}
+	item = NULL;
+	while ((input = (VisPluginRef*) visual_list_next (list, &item))) {
+		if (!(input->info)) {
+			visual_log (VISUAL_LOG_WARNING, "There is no info for this plugin");
+			continue;
+		}
+		config_win_input_plugin_add (input->info->name);
+		g_print ("Adding input plugin %s\n", input->info->name);
+	}
+
+	return 0;
+}
+
+static void config_win_input_plugin_add (char *name)
+{
+	GtkWidget *menu;
+	GtkWidget *menuitem;
+	GSList *group;
+	
+	group = config_win->optionmenu_input_plugin_group;
+	menu = gtk_option_menu_get_menu (GTK_OPTION_MENU(config_win->optionmenu_input_plugin));
+	menuitem = gtk_radio_menu_item_new_with_label (group, name);
+	group = gtk_radio_menu_item_group (GTK_RADIO_MENU_ITEM(menuitem));
+	gtk_menu_append (GTK_MENU(menu), menuitem);
+	if (!strcmp (name, CONFIG_DEFAULT_INPUT_PLUGIN)) {
+		gtk_menu_item_activate (GTK_MENU_ITEM(menuitem));
+		gtk_option_menu_set_history (GTK_OPTION_MENU(config_win->optionmenu_input_plugin), 1);
+	}
+	config_win->optionmenu_input_plugin_group = group;
+
+	gtk_signal_connect (GTK_OBJECT(menuitem), "activate",
+				GTK_SIGNAL_FUNC(on_input_plugin_activate),
+				(gpointer) name);
+
+	gtk_widget_show (menuitem);
+}
+
+static void on_input_plugin_activate (GtkMenuItem *menuitem, char *name)
+{
+	visual_log_return_if_fail (name != NULL);
+
+	input_plugin = name;
+}
+
+/*
+ * This function set the default values for all options, except the selected
+ * vis, input and morph plugins.
+ */
+static void config_win_set_defaults (void)
+{
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
+					default_options.fullscreen);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), default_options.fps);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlygl),
+					default_options.gl_plugins_only);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_onlynongl),
+					default_options.non_gl_plugins_only);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->radiobutton_all_plugins),
+					default_options.all_plugins_enabled);
+}
+
+static void config_win_connect_callbacks (void)
+{
+	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_fullscreen), "toggled",
+                      GTK_SIGNAL_FUNC (on_checkbutton_fullscreen_toggled),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->radiobutton_onlygl), "toggled",
+                      GTK_SIGNAL_FUNC (on_radiobutton_opengl_toggled),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->radiobutton_onlynongl), "toggled",
+                      GTK_SIGNAL_FUNC (on_radiobutton_non_opengl_toggled),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->radiobutton_all_plugins), "toggled",
+                      GTK_SIGNAL_FUNC (on_radiobutton_all_plugins_toggled),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->spinbutton_fps), "changed",
+                      GTK_SIGNAL_FUNC (on_spinbutton_fps_changed),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->pixmap_icon), "button_press_event",
+                      GTK_SIGNAL_FUNC (on_pixmap_icon_button_press_event),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->button_ok), "clicked",
+                      GTK_SIGNAL_FUNC (on_button_ok_clicked),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->button_apply), "clicked",
+                      GTK_SIGNAL_FUNC (on_button_apply_clicked),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->button_cancel), "clicked",
+                      GTK_SIGNAL_FUNC (on_button_cancel_clicked),
+                      NULL);
+}
+
+static void set_defaults (void)
+{
+	strcpy (options.last_plugin, CONFIG_DEFAULT_ACTOR_PLUGIN);
+	strcpy (input_plugin_buffer, CONFIG_DEFAULT_INPUT_PLUGIN);
+	options.input_plugin = input_plugin_buffer;
+	strcpy (options.icon_file, CONFIG_DEFAULT_ICON);
+	options.width = default_options.width;
+	options.height = default_options.height;
+	options.depth = default_options.depth;
+	options.fps = default_options.fps;
+	options.fullscreen = default_options.fullscreen;
+	options.gl_plugins_only = default_options.gl_plugins_only;
+	options.non_gl_plugins_only = default_options.non_gl_plugins_only;
+	options.all_plugins_enabled = default_options.all_plugins_enabled;
+}

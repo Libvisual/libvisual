@@ -4,8 +4,6 @@ lib_LTLIBRARIES = libvisual_xmms.la
 
 libdir = @XMMS_VISUALIZATION_PLUGIN_DIR@
 
-localedir = $(datadir)/locale
-
 LIBS = -L$(top_srcdir)/src -L$(prefix)/lib @XMMS_LIBS@ @SDL_LIBS@ @GTK_LIBS@ @LIBVISUAL_LIBS@ @LTLIBTINTL@
 
 AM_CFLAGS = -Wall -Wmissing-prototypes\
@@ -14,7 +12,7 @@ AM_CFLAGS = -Wall -Wmissing-prototypes\
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/src -I$(top_builddir)
 
-DEFS = -DLOCALEDIR=\"$(localedir)\" -DPACKAGE_DATADIR=\"$(pkgdatadir)\" @DEFS@
+DEFS = -DLOCALEDIR=\"$(datadir)/locale\" @DEFS@
 
 libvisual_xmms_la_LDFLAGS = -module -avoid-version
 

@@ -85,10 +85,10 @@ AM_GLIB_GNU_GETTEXT
 
 # Arguments to specify certain features.
 AC_ARG_ENABLE([debug],
-            AC_HELP_STRING([--enable-debug],
-                           [Enable debug @<:@default=disabled@:>@]),
-	    [debug=$enableval],
-	    [debug=no])
+  AC_HELP_STRING([--enable-debug],
+		[Enable debug @<:@default=disabled@:>@]),
+		[debug=$enableval],
+		[debug=no])
 AC_MSG_CHECKING([wheter to enable debug])
 if test "$debug" = yes; then
   AC_MSG_RESULT([yes])
@@ -105,6 +105,10 @@ AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
 AC_SUBST(BUILD_INPUT, "$build_input")
 AC_SUBST(BUILD_ACTOR, "$build_actor")
+
+lv_xmms_datadir="$prefix/share/libvisual-xmms"
+AC_DEFINE_UNQUOTED(PACKAGE_DATADIR, "$lv_xmms_datadir", [Libvisual XMMS plugin data directory])
+AC_SUBST(PACKAGE_DATADIR)
 
 AC_CONFIG_FILES([
 	po/Makefile.in

@@ -131,14 +131,16 @@ static void lv_xmms_init ()
 
 	pcm_mutex = SDL_CreateMutex ();
 
-        argv = g_malloc (sizeof(char*));
-        argv[0] = g_strdup ("XMMS plugin");
-        argc = 1;
+	if (!visual_is_initialized ()) {
+	        argv = g_malloc (sizeof(char*));
+	        argv[0] = g_strdup ("XMMS plugin");
+        	argc = 1;
 
-	visual_init (&argc, &argv);
+		visual_init (&argc, &argv);
 
-        g_free (argv[0]);
-        g_free (argv);
+        	g_free (argv[0]);
+	        g_free (argv);
+	}
 
 	if (strlen (options->last_plugin) <= 0 ) {
 		visual_log (VISUAL_LOG_INFO, "last plugin: (none)");
@@ -344,7 +346,8 @@ static int visual_initialize (int width, int height)
                 visual_log (VISUAL_LOG_CRITICAL, "Cannot set video");
                 return -1;
         }
-	visual_bin_connect_by_names (bin, cur_lv_plugin, NULL);
+	/*visual_bin_connect_by_names (bin, cur_lv_plugin, NULL);*/
+	visual_bin_connect_by_names (bin, cur_lv_plugin, options->input_plugin);
 
 	if (visual_bin_get_depth (bin) == VISUAL_VIDEO_DEPTH_GL) {
 		visual_video_set_depth (video, VISUAL_VIDEO_DEPTH_GL);

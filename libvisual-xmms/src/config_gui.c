@@ -20,31 +20,54 @@ static void add_pixmap_directory (const gchar *directory);
 ConfigWin *lv_xmms_config_gui_new (void)
 {
   ConfigWin *config_gui;
+
   GtkWidget *window_main;
-  GtkWidget *vbox_icon;
+  GtkWidget *vbox_main;
+  GtkWidget *frame_vis_plugin;
+  GtkWidget *vbox3;
+  GtkWidget *optionmenu_vis_plugin;
+  GtkWidget *optionmenu_vis_plugin_menu;
+  GtkWidget *hbox_vis_plugin_buttons;
+  GtkWidget *button_vis_plugin_conf;
+  GtkWidget *button_vis_plugin_about;
   GtkWidget *checkbutton_fullscreen;
-  GSList *buttongroup_plugins = NULL;
-  GtkWidget *radiobutton_opengl;
-  GtkWidget *radiobutton_non_opengl;
+  GSList *buttongroup_plugins_group = NULL;
   GtkWidget *radiobutton_all_plugins;
+  GtkWidget *radiobutton_onlynongl;
+  GtkWidget *radiobutton_onlygl;
   GtkWidget *hbox_fps;
   GtkWidget *label_fps;
   GtkObject *spinbutton_fps_adj;
   GtkWidget *spinbutton_fps;
+  GtkWidget *frame_input_plugin;
+  GtkWidget *vbox_input_plugin;
+  GtkWidget *optionmenu_input_plugin;
+  GtkWidget *optionmenu_input_plugin_menu;
+  GtkWidget *hbox_input_plugin_buttons;
+  GtkWidget *button_input_plugin_conf;
+  GtkWidget *button_input_plugin_about;
+  GtkWidget *frame_morph_plugin;
+  GtkWidget *vbox_morph_plugin;
+  GtkWidget *optionmenu_morph_plugin;
+  GtkWidget *optionmenu_morph_plugin_menu;
+  GtkWidget *hbox_morph_plugin_buttons;
+  GtkWidget *button_morph_plugin_conf;
+  GtkWidget *button_morph_plugin_about;
+  GtkWidget *checkbutton_morph_random;
   GtkWidget *hbox_icon;
   GtkWidget *label_icon;
-  GtkWidget *frame_icon;
+  GtkWidget *frame7;
   GtkWidget *pixmap_icon;
-  GtkWidget *hseparator_bottom;
-  GtkWidget *hbox_buttons;
+  GtkWidget *hseparator3;
+  GtkWidget *hbox_main_buttons;
   GtkWidget *button_ok;
   GtkWidget *button_apply;
   GtkWidget *button_cancel;
   GtkTooltips *tooltips;
 
-  add_pixmap_directory (PACKAGE_DATADIR);
-
   tooltips = gtk_tooltips_new ();
+
+  add_pixmap_directory (PACKAGE_DATADIR);
 
   window_main = gtk_window_new (GTK_WINDOW_DIALOG);
   gtk_object_set_data (GTK_OBJECT (window_main), "window_main", window_main);
@@ -52,53 +75,103 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_window_set_position (GTK_WINDOW (window_main), GTK_WIN_POS_CENTER);
   gtk_window_set_policy (GTK_WINDOW (window_main), FALSE, FALSE, FALSE);
 
-  vbox_icon = gtk_vbox_new (FALSE, 0);
-  gtk_widget_ref (vbox_icon);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "vbox_icon", vbox_icon,
+  vbox_main = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox_main);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "vbox_main", vbox_main,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (vbox_icon);
-  gtk_container_add (GTK_CONTAINER (window_main), vbox_icon);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox_icon), 6);
+  gtk_widget_show (vbox_main);
+  gtk_container_add (GTK_CONTAINER (window_main), vbox_main);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox_main), 6);
+
+  frame_vis_plugin = gtk_frame_new (_("Visualization Plugin"));
+  gtk_widget_ref (frame_vis_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "frame_vis_plugin", frame_vis_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (frame_vis_plugin);
+  gtk_box_pack_start (GTK_BOX (vbox_main), frame_vis_plugin, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (frame_vis_plugin), 2);
+
+  vbox3 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox3);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "vbox3", vbox3,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox3);
+  gtk_container_add (GTK_CONTAINER (frame_vis_plugin), vbox3);
+
+  optionmenu_vis_plugin = gtk_option_menu_new ();
+  gtk_widget_ref (optionmenu_vis_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "optionmenu_vis_plugin", optionmenu_vis_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (optionmenu_vis_plugin);
+  gtk_box_pack_start (GTK_BOX (vbox3), optionmenu_vis_plugin, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (optionmenu_vis_plugin), 2);
+  gtk_tooltips_set_tip (tooltips, optionmenu_vis_plugin, _("Select the plugin that will draw the screen"), NULL);
+  optionmenu_vis_plugin_menu = gtk_menu_new ();
+  gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu_vis_plugin), optionmenu_vis_plugin_menu);
+
+  hbox_vis_plugin_buttons = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox_vis_plugin_buttons);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_vis_plugin_buttons", hbox_vis_plugin_buttons,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox_vis_plugin_buttons);
+  gtk_box_pack_start (GTK_BOX (vbox3), hbox_vis_plugin_buttons, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox_vis_plugin_buttons), 6);
+
+  button_vis_plugin_conf = gtk_button_new_with_label (_("Configure"));
+  gtk_widget_ref (button_vis_plugin_conf);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_vis_plugin_conf", button_vis_plugin_conf,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_vis_plugin_conf);
+  gtk_box_pack_start (GTK_BOX (hbox_vis_plugin_buttons), button_vis_plugin_conf, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (button_vis_plugin_conf), 2);
+
+  button_vis_plugin_about = gtk_button_new_with_label (_("About"));
+  gtk_widget_ref (button_vis_plugin_about);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_vis_plugin_about", button_vis_plugin_about,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_vis_plugin_about);
+  gtk_box_pack_start (GTK_BOX (hbox_vis_plugin_buttons), button_vis_plugin_about, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (button_vis_plugin_about), 2);
 
   checkbutton_fullscreen = gtk_check_button_new_with_label (_("Fullscreen"));
   gtk_widget_ref (checkbutton_fullscreen);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "checkbutton_fullscreen", checkbutton_fullscreen,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (checkbutton_fullscreen);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), checkbutton_fullscreen, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, checkbutton_fullscreen,
-		  _("You can also toggle between normal and fullscreen mode by pressing key TAB or F11"), NULL);
+  gtk_box_pack_start (GTK_BOX (vbox3), checkbutton_fullscreen, FALSE, FALSE, 0);
+  gtk_tooltips_set_tip (tooltips, checkbutton_fullscreen, _("You can toggle between normal and fullscreen mode pressing key TAB or F11"), NULL);
 
-  radiobutton_all_plugins = gtk_radio_button_new_with_label (buttongroup_plugins, _("All plugins"));
-  buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_all_plugins));
+  radiobutton_all_plugins = gtk_radio_button_new_with_label (buttongroup_plugins_group, _("All plugins"));
+  buttongroup_plugins_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_all_plugins));
   gtk_widget_ref (radiobutton_all_plugins);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_all_plugins", radiobutton_all_plugins,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (radiobutton_all_plugins);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), radiobutton_all_plugins, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox3), radiobutton_all_plugins, FALSE, FALSE, 0);
 
-  radiobutton_opengl = gtk_radio_button_new_with_label (buttongroup_plugins, _("Only GL plugins"));
-  buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_opengl));
-  gtk_widget_ref (radiobutton_opengl);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_opengl", radiobutton_opengl,
+  radiobutton_onlynongl = gtk_radio_button_new_with_label (buttongroup_plugins_group, _("Only non GL plugins"));
+  buttongroup_plugins_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_onlynongl));
+  gtk_widget_ref (radiobutton_onlynongl);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_onlynongl", radiobutton_onlynongl,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (radiobutton_opengl);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), radiobutton_opengl, FALSE, FALSE, 0); 
-  
-  radiobutton_non_opengl = gtk_radio_button_new_with_label (buttongroup_plugins, _("Only non Gl plugins"));
-  buttongroup_plugins = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_non_opengl));
-  gtk_widget_ref (radiobutton_non_opengl);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_non_opengl", radiobutton_non_opengl,
+  gtk_widget_show (radiobutton_onlynongl);
+  gtk_box_pack_start (GTK_BOX (vbox3), radiobutton_onlynongl, FALSE, FALSE, 0);
+
+  radiobutton_onlygl = gtk_radio_button_new_with_label (buttongroup_plugins_group, _("Only GL plugins"));
+  buttongroup_plugins_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton_onlygl));
+  gtk_widget_ref (radiobutton_onlygl);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "radiobutton_onlygl", radiobutton_onlygl,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (radiobutton_non_opengl);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), radiobutton_non_opengl, FALSE, FALSE, 0);
+  gtk_widget_show (radiobutton_onlygl);
+  gtk_box_pack_start (GTK_BOX (vbox3), radiobutton_onlygl, FALSE, FALSE, 0);
 
   hbox_fps = gtk_hbox_new (FALSE, 0);
   gtk_widget_ref (hbox_fps);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_fps", hbox_fps,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hbox_fps);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), hbox_fps, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox3), hbox_fps, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox_fps), 2);
 
   label_fps = gtk_label_new (_("Maximum Frames Per Second:"));
   gtk_widget_ref (label_fps);
@@ -116,12 +189,117 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_widget_show (spinbutton_fps);
   gtk_box_pack_start (GTK_BOX (hbox_fps), spinbutton_fps, FALSE, FALSE, 0);
 
+  frame_input_plugin = gtk_frame_new (_("Input Plugin"));
+  gtk_widget_ref (frame_input_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "frame_input_plugin", frame_input_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (frame_input_plugin);
+  gtk_box_pack_start (GTK_BOX (vbox_main), frame_input_plugin, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (frame_input_plugin), 2);
+
+  vbox_input_plugin = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox_input_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "vbox_input_plugin", vbox_input_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox_input_plugin);
+  gtk_container_add (GTK_CONTAINER (frame_input_plugin), vbox_input_plugin);
+
+  optionmenu_input_plugin = gtk_option_menu_new ();
+  gtk_widget_ref (optionmenu_input_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "optionmenu_input_plugin", optionmenu_input_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (optionmenu_input_plugin);
+  gtk_box_pack_start (GTK_BOX (vbox_input_plugin), optionmenu_input_plugin, FALSE, FALSE, 0);
+  gtk_tooltips_set_tip (tooltips, optionmenu_input_plugin, _("Select the plugin that will capture sound data"), NULL);
+  optionmenu_input_plugin_menu = gtk_menu_new ();
+  gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu_input_plugin), optionmenu_input_plugin_menu);
+
+  hbox_input_plugin_buttons = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox_input_plugin_buttons);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_input_plugin_buttons", hbox_input_plugin_buttons,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox_input_plugin_buttons);
+  gtk_box_pack_start (GTK_BOX (vbox_input_plugin), hbox_input_plugin_buttons, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox_input_plugin_buttons), 6);
+
+  button_input_plugin_conf = gtk_button_new_with_label (_("Configure"));
+  gtk_widget_ref (button_input_plugin_conf);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_input_plugin_conf", button_input_plugin_conf,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_input_plugin_conf);
+  gtk_box_pack_start (GTK_BOX (hbox_input_plugin_buttons), button_input_plugin_conf, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (button_input_plugin_conf), 2);
+
+  button_input_plugin_about = gtk_button_new_with_label (_("About"));
+  gtk_widget_ref (button_input_plugin_about);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_input_plugin_about", button_input_plugin_about,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_input_plugin_about);
+  gtk_box_pack_start (GTK_BOX (hbox_input_plugin_buttons), button_input_plugin_about, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (button_input_plugin_about), 2);
+
+  frame_morph_plugin = gtk_frame_new (_("Morph Plugin"));
+  gtk_widget_ref (frame_morph_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "frame_morph_plugin", frame_morph_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (frame_morph_plugin);
+  gtk_box_pack_start (GTK_BOX (vbox_main), frame_morph_plugin, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (frame_morph_plugin), 2);
+
+  vbox_morph_plugin = gtk_vbox_new (FALSE, 0);
+  gtk_widget_ref (vbox_morph_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "vbox_morph_plugin", vbox_morph_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox_morph_plugin);
+  gtk_container_add (GTK_CONTAINER (frame_morph_plugin), vbox_morph_plugin);
+
+  optionmenu_morph_plugin = gtk_option_menu_new ();
+  gtk_widget_ref (optionmenu_morph_plugin);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "optionmenu_morph_plugin", optionmenu_morph_plugin,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (optionmenu_morph_plugin);
+  gtk_box_pack_start (GTK_BOX (vbox_morph_plugin), optionmenu_morph_plugin, FALSE, FALSE, 0);
+  gtk_tooltips_set_tip (tooltips, optionmenu_morph_plugin, _("Select the kind of morph that will be applied when switching from one visualization plugin to another "), NULL);
+  optionmenu_morph_plugin_menu = gtk_menu_new ();
+  gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu_morph_plugin), optionmenu_morph_plugin_menu);
+
+  hbox_morph_plugin_buttons = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox_morph_plugin_buttons);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_morph_plugin_buttons", hbox_morph_plugin_buttons,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox_morph_plugin_buttons);
+  gtk_box_pack_start (GTK_BOX (vbox_morph_plugin), hbox_morph_plugin_buttons, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox_morph_plugin_buttons), 6);
+
+  button_morph_plugin_conf = gtk_button_new_with_label (_("Configure"));
+  gtk_widget_ref (button_morph_plugin_conf);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_morph_plugin_conf", button_morph_plugin_conf,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_morph_plugin_conf);
+  gtk_box_pack_start (GTK_BOX (hbox_morph_plugin_buttons), button_morph_plugin_conf, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (button_morph_plugin_conf), 2);
+
+  button_morph_plugin_about = gtk_button_new_with_label (_("About"));
+  gtk_widget_ref (button_morph_plugin_about);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_morph_plugin_about", button_morph_plugin_about,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_morph_plugin_about);
+  gtk_box_pack_start (GTK_BOX (hbox_morph_plugin_buttons), button_morph_plugin_about, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (button_morph_plugin_about), 2);
+
+  checkbutton_morph_random = gtk_check_button_new_with_label (_("Select one morph plugin randomly"));
+  gtk_widget_ref (checkbutton_morph_random);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "checkbutton_morph_random", checkbutton_morph_random,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (checkbutton_morph_random);
+  gtk_box_pack_start (GTK_BOX (vbox_morph_plugin), checkbutton_morph_random, FALSE, FALSE, 0);
+
   hbox_icon = gtk_hbox_new (TRUE, 0);
   gtk_widget_ref (hbox_icon);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_icon", hbox_icon,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hbox_icon);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), hbox_icon, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox_main), hbox_icon, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (hbox_icon), 6);
 
   label_icon = gtk_label_new (_("Icon"));
@@ -132,41 +310,41 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_box_pack_start (GTK_BOX (hbox_icon), label_icon, FALSE, FALSE, 0);
   gtk_label_set_justify (GTK_LABEL (label_icon), GTK_JUSTIFY_LEFT);
 
-  frame_icon = gtk_frame_new (NULL);
-  gtk_widget_ref (frame_icon);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "frame_icon", frame_icon,
+  frame7 = gtk_frame_new (NULL);
+  gtk_widget_ref (frame7);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "frame7", frame7,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (frame_icon);
-  gtk_box_pack_start (GTK_BOX (hbox_icon), frame_icon, FALSE, FALSE, 0);
-  gtk_frame_set_shadow_type (GTK_FRAME (frame_icon), GTK_SHADOW_ETCHED_OUT);
+  gtk_widget_show (frame7);
+  gtk_box_pack_start (GTK_BOX (hbox_icon), frame7, FALSE, FALSE, 0);
+  gtk_frame_set_shadow_type (GTK_FRAME (frame7), GTK_SHADOW_ETCHED_OUT);
 
   pixmap_icon = create_pixmap (window_main, "libvisual-xmms-vis.xpm");
   gtk_widget_ref (pixmap_icon);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "pixmap_icon", pixmap_icon,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (pixmap_icon);
-  gtk_container_add (GTK_CONTAINER (frame_icon), pixmap_icon);
+  gtk_container_add (GTK_CONTAINER (frame7), pixmap_icon);
 
-  hseparator_bottom = gtk_hseparator_new ();
-  gtk_widget_ref (hseparator_bottom);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "hseparator_bottom", hseparator_bottom,
+  hseparator3 = gtk_hseparator_new ();
+  gtk_widget_ref (hseparator3);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "hseparator3", hseparator3,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hseparator_bottom);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), hseparator_bottom, TRUE, TRUE, 6);
+  gtk_widget_show (hseparator3);
+  gtk_box_pack_start (GTK_BOX (vbox_main), hseparator3, TRUE, TRUE, 6);
 
-  hbox_buttons = gtk_hbox_new (TRUE, 0);
-  gtk_widget_ref (hbox_buttons);
-  gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_buttons", hbox_buttons,
+  hbox_main_buttons = gtk_hbox_new (TRUE, 0);
+  gtk_widget_ref (hbox_main_buttons);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "hbox_main_buttons", hbox_main_buttons,
                             (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hbox_buttons);
-  gtk_box_pack_start (GTK_BOX (vbox_icon), hbox_buttons, TRUE, TRUE, 0);
+  gtk_widget_show (hbox_main_buttons);
+  gtk_box_pack_start (GTK_BOX (vbox_main), hbox_main_buttons, TRUE, TRUE, 0);
 
   button_ok = gtk_button_new_with_label (_("Accept"));
   gtk_widget_ref (button_ok);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "button_ok", button_ok,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (button_ok);
-  gtk_box_pack_start (GTK_BOX (hbox_buttons), button_ok, FALSE, TRUE, 6);
+  gtk_box_pack_start (GTK_BOX (hbox_main_buttons), button_ok, FALSE, TRUE, 6);
   GTK_WIDGET_SET_FLAGS (button_ok, GTK_CAN_DEFAULT);
 
   button_apply = gtk_button_new_with_label (_("Apply"));
@@ -174,7 +352,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_object_set_data_full (GTK_OBJECT (window_main), "button_apply", button_apply,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (button_apply);
-  gtk_box_pack_start (GTK_BOX (hbox_buttons), button_apply, FALSE, TRUE, 6);
+  gtk_box_pack_start (GTK_BOX (hbox_main_buttons), button_apply, FALSE, TRUE, 6);
   GTK_WIDGET_SET_FLAGS (button_apply, GTK_CAN_DEFAULT);
 
   button_cancel = gtk_button_new_with_label (_("Cancel"));
@@ -182,17 +360,36 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_object_set_data_full (GTK_OBJECT (window_main), "button_cancel", button_cancel,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (button_cancel);
-  gtk_box_pack_start (GTK_BOX (hbox_buttons), button_cancel, FALSE, TRUE, 6);
+  gtk_box_pack_start (GTK_BOX (hbox_main_buttons), button_cancel, FALSE, TRUE, 6);
   GTK_WIDGET_SET_FLAGS (button_cancel, GTK_CAN_DEFAULT);
+
+  gtk_widget_grab_default (button_cancel);
+  gtk_object_set_data (GTK_OBJECT (window_main), "tooltips", tooltips);
 
   config_gui = g_new0 (ConfigWin, 1);
 
   config_gui->window_main = window_main;
+
+  config_gui->optionmenu_vis_plugin = optionmenu_vis_plugin;
+  config_gui->optionmenu_vis_plugin_group = NULL;
+  config_gui->button_vis_plugin_conf = button_vis_plugin_conf;
+  config_gui->button_vis_plugin_about = button_vis_plugin_about;
   config_gui->checkbutton_fullscreen = checkbutton_fullscreen;
-  config_gui->radiobutton_opengl = radiobutton_opengl;
-  config_gui->radiobutton_non_opengl = radiobutton_non_opengl;
+  config_gui->radiobutton_onlygl = radiobutton_onlygl;
+  config_gui->radiobutton_onlynongl = radiobutton_onlynongl;
   config_gui->radiobutton_all_plugins = radiobutton_all_plugins;
   config_gui->spinbutton_fps = spinbutton_fps;
+
+  config_gui->optionmenu_input_plugin = optionmenu_input_plugin;
+  config_gui->optionmenu_input_plugin_group = NULL;
+  config_gui->button_input_plugin_conf = button_input_plugin_conf;
+  config_gui->button_input_plugin_about = button_input_plugin_about;
+
+  config_gui->optionmenu_morph_plugin = optionmenu_morph_plugin;
+  config_gui->optionmenu_morph_plugin_group = NULL;
+  config_gui->button_morph_plugin_conf = button_morph_plugin_conf;
+  config_gui->button_morph_plugin_about = button_morph_plugin_about;
+
   config_gui->pixmap_icon = pixmap_icon;
   config_gui->button_ok = button_ok;
   config_gui->button_apply = button_apply;

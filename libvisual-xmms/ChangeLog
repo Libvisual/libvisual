@@ -1,3 +1,8 @@
+2004-09-24  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/config_gui.c: new configure dialog.
+	* src/lv_xmms_config.c: new options (work in progress).
+
 2004-09-22  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: added macro AC_CONFIG_HEADER([config.h]),

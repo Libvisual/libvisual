@@ -16,6 +16,9 @@ typedef struct {
 
 	gchar *last_plugin;	/**< Name of the last plugin runned,
 				  with length < OPTIONS_MAX_NAME_LEN. */
+
+	gchar *input_plugin; /**< */
+	
 	gchar *icon_file;	/**< Absolute path of the icon file,
 				  with length < OPTIONS_MAX_ICON_PATH_LEN. */
 	int width;		/**< Width in pixels. */
