@@ -115,7 +115,8 @@ int visual_video_free_with_buffer (VisVideo *video)
  */
 int visual_video_free_buffer (VisVideo *video)
 {
-	visual_log_return_val_if_fail (video != NULL && video->screenbuffer != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video->screenbuffer != NULL, -1);
 
 	free (video->screenbuffer);
 
@@ -157,7 +158,8 @@ int visual_video_allocate_buffer (VisVideo *video)
  */
 int visual_video_clone (VisVideo *dest, VisVideo *src)
 {
-	visual_log_return_val_if_fail (dest != NULL && src != NULL, -1);
+	visual_log_return_val_if_fail (dest != NULL, -1);
+	visual_log_return_val_if_fail (src != NULL, -1);
 
 	visual_video_set_depth (dest, src->depth);
 	visual_video_set_dimension (dest, src->width, src->height);
@@ -561,6 +563,9 @@ int visual_video_fit_in_video (VisVideo *dest, VisVideo *src)
 	int pitchadd;
 	int i, j, dind = 0, sind = 0;
 
+	visual_log_return_val_if_fail (dest != NULL, -1);
+	visual_log_return_val_if_fail (src != NULL, -1);
+
 	spare = dest->width - src->width;
 
 	destr = dest->screenbuffer;
@@ -632,6 +637,9 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 	uint8_t *srcbuf = video->screenbuffer;
 	int width = video->width;
 	int height = video->height;
+
+	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (pal != NULL, -1);
 
 	/* Destdepth is equal to sourcedepth case */
 	if (video->depth == destdepth) {

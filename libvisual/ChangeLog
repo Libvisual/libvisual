@@ -9,6 +9,8 @@
 	useful messages.
 	* libvisual/lv_video.c: make use of
 	visual_log_return_val_if_fail() macro.
+	* libvisual/lv_bin.c: make use of
+	visual_log_return_val_if_fail() macro.
 	
 2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
 

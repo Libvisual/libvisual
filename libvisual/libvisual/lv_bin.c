@@ -8,6 +8,7 @@
 #include "lv_actor.h"
 #include "lv_bin.h"
 #include "lv_bin.h"
+#include "lv_log.h"
 
 /* WARNING: Utterly shit ahead, i've screwed up on this and i need to
  * rewrite it. And i can't say i feel like it at the moment so be
@@ -58,8 +59,7 @@ VisBin *visual_bin_new ()
 
 int visual_bin_realize (VisBin *bin)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	if (bin->actor != NULL)
 		visual_actor_realize (bin->actor);
@@ -75,8 +75,7 @@ int visual_bin_realize (VisBin *bin)
 
 int visual_bin_destroy (VisBin *bin)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	if (bin->actor != NULL)
 		visual_actor_destroy (bin->actor);
@@ -102,8 +101,7 @@ int visual_bin_destroy (VisBin *bin)
 
 int visual_bin_free (VisBin *bin)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	free (bin);
 
@@ -112,8 +110,7 @@ int visual_bin_free (VisBin *bin)
 
 int visual_bin_set_actor (VisBin *bin, VisActor *actor)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->actor = actor;
 
@@ -124,16 +121,14 @@ int visual_bin_set_actor (VisBin *bin, VisActor *actor)
 
 VisActor *visual_bin_get_actor (VisBin *bin)
 {
-	if (bin == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (bin != NULL, NULL);
 
 	return bin->actor;
 }
 
 int visual_bin_set_input (VisBin *bin, VisInput *input)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->input = input;
 
@@ -144,16 +139,14 @@ int visual_bin_set_input (VisBin *bin, VisInput *input)
 
 VisInput *visual_bin_get_input (VisBin *bin)
 {
-	if (bin == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (bin != NULL, NULL);
 
 	return bin->input;
 }
 
 int visual_bin_set_morph (VisBin *bin, VisMorph *morph)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->morph = morph;
 
@@ -167,16 +160,14 @@ int visual_bin_set_morph_by_name (VisBin *bin, char *morphname)
 	VisMorph *morph;
 	int depthflag;
 
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	morph = visual_morph_new (morphname);
 
 	bin->morph = morph;
 	bin->morphmanaged = TRUE;
 	
-	if (morph->plugin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (morph->plugin != NULL, -1);
 
 	depthflag = visual_morph_get_supported_depth (morph);
 
@@ -192,16 +183,14 @@ int visual_bin_set_morph_by_name (VisBin *bin, char *morphname)
 
 VisMorph *visual_bin_get_morph (VisBin *bin)
 {
-	if (bin == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (bin != NULL, NULL);
 
 	return bin->morph;
 }
 
 int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	visual_bin_set_actor (bin, actor);
 	visual_bin_set_input (bin, input);
@@ -216,13 +205,11 @@ int visual_bin_connect_by_names (VisBin *bin, char *actname, char *inname)
 	int depthflag;
 	int depth;
 
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	/* Create the actor */
 	actor = visual_actor_new (actname);
-	if (actor == NULL)
-		return -1;
+	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	/* Check and set required depth */
 	depthflag = visual_actor_get_supported_depth (actor);
@@ -248,8 +235,7 @@ int visual_bin_connect_by_names (VisBin *bin, char *actname, char *inname)
 
 	/* Create the input */
 	input = visual_input_new (inname);
-	if (input == NULL)
-		return -1;
+	visual_log_return_val_if_fail (input != NULL, -1);
 
 	/* Connect */
 	visual_bin_connect (bin, actor, input);
@@ -265,8 +251,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 	VisVideo *video;
 	VisVideo *actvideo;
 
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	printf ("[sync] starting sync\n");
 
@@ -345,8 +330,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 
 int visual_bin_set_video (VisBin *bin, VisVideo *video)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 	
 	bin->actvideo = video;
 
@@ -355,8 +339,7 @@ int visual_bin_set_video (VisBin *bin, VisVideo *video)
 
 int visual_bin_set_supported_depth (VisBin *bin, int depthflag)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->depthflag = depthflag;
 
@@ -365,8 +348,7 @@ int visual_bin_set_supported_depth (VisBin *bin, int depthflag)
 
 int visual_bin_set_preferred_depth (VisBin *bin, VisBinDepth depthpreferred)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->depthpreferred = depthpreferred;
 
@@ -375,8 +357,7 @@ int visual_bin_set_preferred_depth (VisBin *bin, VisBinDepth depthpreferred)
 
 int visual_bin_set_depth (VisBin *bin, int depth)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->depthold = bin->depth;
 
@@ -401,16 +382,14 @@ int visual_bin_set_depth (VisBin *bin, int depth)
 
 int visual_bin_get_depth (VisBin *bin)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	return bin->depth;
 }
 
 int visual_bin_depth_changed (VisBin *bin)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 	
 	if (bin->depthchanged == FALSE)
 		return FALSE;
@@ -422,8 +401,7 @@ int visual_bin_depth_changed (VisBin *bin)
 
 VisPalette *visual_bin_get_palette (VisBin *bin)
 {
-	if (bin == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (bin != NULL, NULL);
 
 	if (bin->morphing == TRUE)
 		return visual_morph_get_palette (bin->morph);
@@ -438,8 +416,8 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 	int depthflag;
 	int depth;
 
-	if (bin == NULL || actname == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
+	visual_log_return_val_if_fail (actname != NULL, -1);
 
 	printf ("[switch-by-name] switching to a new actor: %s, old actor: %s\n", actname, bin->actor->plugin->ref->name);
 
@@ -455,8 +433,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 
 	/* Create a new managed actor */
 	actor = visual_actor_new (actname);
-	if (actor == NULL)
-		return -1;
+	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	video = visual_video_new ();
 
@@ -568,8 +545,8 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 {
 	VisVideo *privvid;
 
-	if (bin == NULL || actor == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
+	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	/* Set the new actor */
 	bin->actmorph = actor;
@@ -646,8 +623,7 @@ int visual_bin_switch_finalize (VisBin *bin)
 {
 	int depthflag;
 
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	printf ("FINALIZING\n");
 	if (bin->managed == TRUE)
@@ -704,8 +680,7 @@ int visual_bin_switch_finalize (VisBin *bin)
 
 int visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->morphstyle = style;
 
@@ -714,8 +689,7 @@ int visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style)
 
 int visual_bin_switch_set_steps (VisBin *bin, int steps)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->morphsteps = steps;
 
@@ -724,8 +698,7 @@ int visual_bin_switch_set_steps (VisBin *bin, int steps)
 
 int visual_bin_switch_set_automatic (VisBin *bin, int automatic)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->morphautomatic = automatic;
 
@@ -734,8 +707,7 @@ int visual_bin_switch_set_automatic (VisBin *bin, int automatic)
 
 int visual_bin_switch_set_rate (VisBin *bin, float rate)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	bin->morphrate = rate;
 
@@ -744,8 +716,7 @@ int visual_bin_switch_set_rate (VisBin *bin, float rate)
 
 int visual_bin_run (VisBin *bin)
 {
-	if (bin == NULL)
-		return -1;
+	visual_log_return_val_if_fail (bin != NULL, -1);
 
 	visual_input_run (bin->input);
 
