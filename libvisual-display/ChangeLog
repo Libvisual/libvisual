@@ -1,3 +1,9 @@
+2004-10-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* drivers/glx/glx_new.c: Compile with new button
+	press event API. Needs to be updated with
+	real mouse x, y value tho.
+
 2004-10-04  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 	* drivers/glx/glx.c, drivers/glx/glx_new.c: Support of
 	VisVideo structure added, resize event generated

@@ -147,7 +147,7 @@ int process_events(LvdCompatDataX11 *data,
 		case ButtonPress:
 			/* XXX Hm, how do i specify another parameters like x,y? */
 			visual_event_queue_add_mousebutton (eventqueue, ev.xbutton.button,
-				(ev.type == ButtonPress) ? VISUAL_MOUSE_DOWN:VISUAL_MOUSE_UP);
+				(ev.type == ButtonPress) ? VISUAL_MOUSE_DOWN:VISUAL_MOUSE_UP, 0, 0);
 			break;
 
 
