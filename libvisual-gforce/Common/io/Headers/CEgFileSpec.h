@@ -47,12 +47,6 @@ class CEgFileSpec {
 		//	Post:	Sets this spec's filename, keeping the path information the same.
 		void					Rename( const UtilStr& inNewName );
 		
-		//	Post:	<inType> will be appended onto the end of <ioStr>.
-		//	Ex:		TypeToExt( "blah", '.AB' ) returns "blah.AB" in ioStr.
-		static void				TypeToExt( UtilStr& ioStr, long inType );
-		
-		
-		
 		void					AssignFolder( const char* inFolderName );
 		
 };			

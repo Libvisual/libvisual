@@ -162,20 +162,6 @@ long CEgFileSpec::GetType() const {
 
 
 
-void CEgFileSpec::TypeToExt( UtilStr& ioStr, long inType ) {
-	long c, i, pos = ioStr.length();
-	
-	for ( i = 0; i < 4; i++ ) {
-		c = (inType >> i * 8) & 0xFF;
-		if ( c > 32 )
-			ioStr.Insert( pos, c, 1 );
-	}
-	if ( ioStr.length() > pos ) {
-		if ( ioStr.getChar( pos + 1 ) != '.' )
-			ioStr.Insert( pos, '.', 1 );
-	}
-}
-
 
 
 void CEgFileSpec::SetType( long inType ) {
