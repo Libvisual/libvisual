@@ -1,5 +1,5 @@
 
-SUBDIRS = 
+SUBDIRS = plugins
 
 noinst_PROGRAMS = test
 
