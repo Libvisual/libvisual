@@ -8,6 +8,7 @@
 
 #include "lv_common.h"
 #include "lv_log.h"
+#include "lv_endianess.h"
 #include "lv_bmp.h"
 
 #define BI_RGB	0
@@ -75,47 +76,58 @@ int visual_bitmap_load (VisVideo *video, char *filename)
 
 	/* Read the file size */
 	read (fd, &bf_size, 4);
+	bf_size = VISUAL_ENDIAN_LEI32 (bf_size);
 
 	/* Skip past the reserved bits */
 	lseek (fd, 4, SEEK_CUR);
 
 	/* Read the offset bits */
 	read (fd, &bf_bits, 4);
+	bf_bits = VISUAL_ENDIAN_LEI32 (bf_bits);
 
 	/* Read the info structure size */
 	read (fd, &bi_size, 4);
+	bi_size = VISUAL_ENDIAN_LEI32 (bi_size);
 
 	if (bi_size == 12) {
 		/* And read the width, height */
 		read (fd, &bi_width, 2);
 		read (fd, &bi_height, 2);
+		bi_width = VISUAL_ENDIAN_LEI16 (bi_width);
+		bi_height = VISUAL_ENDIAN_LEI16 (bi_height);
 
 		/* Skip over the planet */
 		lseek (fd, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
 		read (fd, &bi_bitcount, 2);
+		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 
 		bi_compression = BI_RGB;
 	} else {
 		/* And read the width, height */
 		read (fd, &bi_width, 4);
 		read (fd, &bi_height, 4);
+		bi_width = VISUAL_ENDIAN_LEI16 (bi_width);
+		bi_height = VISUAL_ENDIAN_LEI16 (bi_height);
 
 		/* Skip over the planet */
 		lseek (fd, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
 		read (fd, &bi_bitcount, 2);
+		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 
 		/* Read the compression flag */
 		read (fd, &bi_compression, 4);
+		bi_compression = VISUAL_ENDIAN_LEI32 (bi_compression);
 
 		/* Skip over the nonsense we don't want to know */
 		lseek (fd, 12, SEEK_CUR);
 
 		/* Number of colors in palette */
 		read (fd, &bi_clrused, 4);
+		bi_clrused = VISUAL_ENDIAN_LEI32 (bi_clrused);
 
 		/* Skip over the other nonsense */
 		lseek (fd, 4, SEEK_CUR);
@@ -173,7 +185,6 @@ int visual_bitmap_load (VisVideo *video, char *filename)
 	while (data > (uint8_t *) video->screenbuffer) {
 		data -= video->pitch;
 
-		/* @todo fix endianess issues. */
 		if (read (fd, data, video->pitch) != video->pitch) {
 			visual_log (VISUAL_LOG_CRITICAL, "Bitmap data is not complete");
 			
@@ -181,10 +192,34 @@ int visual_bitmap_load (VisVideo *video, char *filename)
 			return -1;
 		}
 
-		if (pad != 0) {
-			for (i = 0; i < pad; i++) {
-				read (fd, &temp, 1);
+#if !VISUAL_LITTLE_ENDIAN
+		switch (bi_bitcount) {
+			case 24: {
+				int i, p;
+				for (p=0, i=0; i<bi_width; i++){
+#	if VISUAL_BIG_ENDIAN
+					uint8_t c[2];
+
+					c[0] = data[p];
+					c[1] = data[p+2];
+
+					data[p] = c[1];
+					data[p+2] = c[0];
+
+					p+=3;
+#	else
+#		error todo
+#	endif
+				}
+				break;
 			}
+			default:
+				visual_log (VISUAL_LOG_CRITICAL, "Internal error.");
+		}
+#endif
+
+		if (pad != 0) {
+			lseek (fd, 4, pad);
 		}
 	}
 
