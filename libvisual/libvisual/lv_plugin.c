@@ -419,6 +419,7 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 	VisList *list;
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;
+	int ret;
 
 	visual_log_return_val_if_fail (pluglist != NULL, NULL);
 
@@ -432,10 +433,14 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 
 	while ((ref = visual_list_next (pluglist, &entry)) != NULL) {
 		
-		if (visual_plugin_type_member_of (ref->info->type, domain)) {
-			visual_object_ref (VISUAL_OBJECT (ref));
-			
-			visual_list_add (list, ref);
+		if ((ret = visual_plugin_type_member_of (ref->info->type, domain))) {
+			if (ret == TRUE) {
+				visual_object_ref (VISUAL_OBJECT (ref));
+				
+				visual_list_add (list, ref);
+			} else if (ret != FALSE) {
+				visual_log (VISUAL_LOG_WARNING, visual_error_to_string (ret));
+			}
 		}
 	}
 
@@ -522,7 +527,8 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 {
 	VisPluginRef **ref;
 	char temp[1024];
-	int i, j, n, len;
+	int i, j, n;
+	size_t len;
 	int cnt = 0;
 
 #if defined(VISUAL_OS_WIN32)
@@ -1180,10 +1186,10 @@ int visual_plugin_type_has_flag (const char *type, const char *flag)
 			}
 		}
 
-	} while (nflag = strchr (nflag, '|') + 1);
+	} while ((nflag = strchr (nflag, '|') + 1));
 
 	visual_mem_free (flags);
-	
+
 	return FALSE;
 }
 
