@@ -54,63 +54,29 @@ int act_plazma_init (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	VisParamEntry *param;
+	
+	static const VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("bass sensitivity",	0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("plazma effect",	TRUE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect option",	FALSE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("lines",		TRUE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("spectrum",		TRUE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect",		TRUE),
+		VISUAL_PARAM_LIST_ENTRY_FLOAT	("rotation speed",	0.4),
+		VISUAL_PARAM_LIST_END
+	};
 
 	priv = visual_mem_new0 (PlazmaPrivate, 1);
 	plugin->priv = priv;
 
 	visual_palette_allocate_colors (&priv->colors, 256);
+
+	visual_param_container_add_many (paramcontainer, params);
 	
 	priv->val_maxi =		127;
 	priv->chcol0 =			36;
 	priv->state =			1368;
 	priv->old_state =		1368;
-	
-	/* Configs */
-	priv->bass_sensibility =	0;
-	priv->effect =			TRUE;
-	priv->options =			FALSE;
-	priv->lines =			TRUE;
-	priv->spectrum =		TRUE;
-	priv->use_3d =			TRUE;
-	priv->rot_tourni =		0.4;
-
-	/* Parameters */
-	/* Bass sensitivity */
-	param = visual_param_entry_new ("bass sensitivity");
-	visual_param_entry_set_integer (param, priv->bass_sensibility);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Plasma effect */
-	param = visual_param_entry_new ("plasma effect");
-	visual_param_entry_set_integer (param, priv->effect);
-	visual_param_container_add (paramcontainer, param);
-
-	/* 3D effect options */
-	param = visual_param_entry_new ("3d effect option");
-	visual_param_entry_set_integer (param, priv->options);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Lines */
-	param = visual_param_entry_new ("lines");
-	visual_param_entry_set_integer (param, priv->lines);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Spectrum */
-	param = visual_param_entry_new ("spectrum");
-	visual_param_entry_set_integer (param, priv->spectrum);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Use 3D */
-	param = visual_param_entry_new ("3d effect");
-	visual_param_entry_set_integer (param, priv->use_3d);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Rotation speed */
-	param = visual_param_entry_new ("rotation speed");
-	visual_param_entry_set_float (param, priv->rot_tourni);
-	visual_param_container_add (paramcontainer, param);
-
 	
 	return 0;
 }
@@ -208,7 +174,6 @@ int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 				
 				} else if (visual_param_entry_is (param, "rotation speed")) {
 					priv->rot_tourni = visual_param_entry_get_float (param);
-				
 				}
 
 				break;

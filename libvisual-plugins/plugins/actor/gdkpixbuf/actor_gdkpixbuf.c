@@ -57,7 +57,20 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 {
 	PixbufPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);;
-	VisParamEntry *param;
+	
+	static const VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_STRING	("filename",	""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("scaled",	TRUE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("aspect",	FALSE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("center",	TRUE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("set size",	FALSE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("width",	0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("height",	0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("x",		0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("y",		0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("interpolate",	0),
+		VISUAL_PARAM_LIST_END
+	};
 
 	priv = visual_mem_new0 (PixbufPrivate, 1);
 	plugin->priv = priv;
@@ -65,67 +78,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 	/* Initialize g_type, needed for GdkPixbuf */
 	g_type_init ();
 	
-	/* Initialize our plugin parameters */
-	priv->set_scaled =	TRUE;
-	priv->aspect =		FALSE;
-	priv->center =		TRUE;
-	priv->set_size =	FALSE;
-	priv->set_width =	0;
-	priv->set_height =	0;
-	priv->x_offset =	0;
-	priv->y_offset =	0;
-	priv->interpolate =	0;
-
-	/* Parameters */
-	/* File to load, when changed the new file will be shown */
-	param = visual_param_entry_new ("filename");
-	visual_param_entry_set_string (param, "");
-	visual_param_container_add (paramcontainer, param);
-
-	/* Scale the image */
-	param = visual_param_entry_new ("scaled");
-	visual_param_entry_set_integer (param, priv->set_scaled);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Keep aspect while scaling */
-	param = visual_param_entry_new ("aspect");
-	visual_param_entry_set_integer (param, priv->aspect);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Center in target video */
-	param = visual_param_entry_new ("center");
-	visual_param_entry_set_integer (param, priv->center);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Set size, when TRUE, read width and height param for image size */
-	param = visual_param_entry_new ("set size");
-	visual_param_entry_set_integer (param, priv->set_size);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Width param, related to the set size param */
-	param = visual_param_entry_new ("width");
-	visual_param_entry_set_integer (param, priv->set_width);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Height param, related to the set size param */
-	param = visual_param_entry_new ("height");
-	visual_param_entry_set_integer (param, priv->set_height);
-	visual_param_container_add (paramcontainer, param);
-
-	/* When the center param is false, read this for the x offset */
-	param = visual_param_entry_new ("x");
-	visual_param_entry_set_integer (param, priv->x_offset);
-	visual_param_container_add (paramcontainer, param);
-
-	/* When the center param is false, read this for the y offset */
-	param = visual_param_entry_new ("y");
-	visual_param_entry_set_integer (param, priv->y_offset);
-	visual_param_container_add (paramcontainer, param);
-
-	/* Interpolate mode, from 0 to 3, nearest, tiles, bilinear, hyper */
-	param = visual_param_entry_new ("interpolate");
-	visual_param_entry_set_integer (param, priv->interpolate);
-	visual_param_container_add (paramcontainer, param);
+	visual_param_container_add_many (paramcontainer, params);
 	
 	return 0;
 }

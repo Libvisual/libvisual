@@ -88,9 +88,13 @@ int lv_madspin_init (VisPluginData *plugin)
 {
 	MadspinPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	VisParamEntry *starsparam;
-	VisParamEntry *speedparam;
-	
+
+	static const VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715),
+		VISUAL_PARAM_LIST_END
+	};
+
 	/* UI vars */
 	VisUIWidget *table;
 	VisUIWidget *label1;
@@ -113,19 +117,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	priv->total = 0;
 	priv->frame = 0;
 
-	priv->num_stars = 512;
-	priv->speed = 715;
-	
-	/* Parameters */
-	/* Number of stars */
-	starsparam = visual_param_entry_new ("num stars");
-	visual_param_entry_set_integer (starsparam, priv->num_stars);
-	visual_param_container_add (paramcontainer, starsparam);
-
-	/* Rotation speed */
-	speedparam = visual_param_entry_new ("speed");
-	visual_param_entry_set_integer (speedparam, priv->speed);
-	visual_param_container_add (paramcontainer, speedparam);
+	visual_param_container_add_many (paramcontainer, params);
 
 	/* The VisUI description that serves as config dialog */
 	table = visual_ui_table_new (2, 3);
@@ -135,20 +127,20 @@ int lv_madspin_init (VisPluginData *plugin)
 
 	slider1 = visual_ui_slider_new (FALSE);
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider1), 200, -1);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider1), starsparam);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider1), visual_param_container_get (paramcontainer, "num stars"));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider1), 50, 2500, 10, 0);
 	
 	slider2 = visual_ui_slider_new (FALSE);
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider2), 200, -1);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider2), speedparam);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider2), visual_param_container_get (paramcontainer, "speed"));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider2), 200, 2000, 10, 0);
 
 	numeric1 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1), starsparam);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1), visual_param_container_get (paramcontainer, "num stars"));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 50, 2500, 10, 0);
 
 	numeric2 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2), speedparam);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2), visual_param_container_get (paramcontainer, "speed"));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric2), 200, 2000, 10, 0);
 
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), label1, 0, 0);

@@ -1,5 +1,12 @@
 2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/*: VisParamEntry listfy everything.
+
+	* plugins/actor/lv_gltest/actor_lv_gltest.c:
+	Added a VisUI.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/goom2/*: Adapt to API changes
 	regarding songinfo
 

@@ -76,18 +76,26 @@ int lv_gltest_init (VisPluginData *plugin)
 {
 	GLtestPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	VisParamEntry *param;
+	
+	static const VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE),
+		VISUAL_PARAM_LIST_END
+	};
+	
 	int x, y;
+
+	/* UI Vars */
+	VisUIWidget *checkbox;
 
 	priv = visual_mem_new0 (GLtestPrivate, 1);
 	plugin->priv = priv;
 
-	priv->transparant = TRUE;
+	visual_param_container_add_many (paramcontainer, params);
 
-	/* Parameters */
-	param = visual_param_entry_new ("transparant bars");
-	visual_param_entry_set_integer (param, priv->transparant);
-	visual_param_container_add (paramcontainer, param);
+	checkbox = visual_ui_checkbox_new ("Transparant bars", TRUE);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox), visual_param_container_get (paramcontainer, "transparant bars"));
+
+	visual_plugin_set_userinterface (plugin, checkbox);
 
 	/* GL setting up the rest! */	
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
