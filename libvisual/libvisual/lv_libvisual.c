@@ -251,7 +251,7 @@ int visual_init (int *argc, char ***argv)
 	ret = visual_init_path_add (NULL);
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	__lv_plugins = visual_plugin_get_list ((const char**)__lv_plugpaths);
+	__lv_plugins = visual_plugin_get_list ((const char**)__lv_plugpaths, TRUE);
 	visual_log_return_val_if_fail (__lv_plugins != NULL, -VISUAL_ERROR_LIBVISUAL_NO_REGISTRY);
 
 	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);

@@ -482,7 +482,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref);
 int visual_plugin_realize (VisPluginData *plugin);
 
 VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
-VisList *visual_plugin_get_list (const char **paths);
+VisList *visual_plugin_get_list (const char **paths, int ignore_non_existing);
 
 VisPluginRef *visual_plugin_find (VisList *list, const char *name);
 

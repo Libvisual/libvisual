@@ -1,5 +1,12 @@
 2005-02-28  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_plugin.* (visual_plugin_get_list): Added flag to
+	disable or enable verbose directory existance checking.
+
+	TRUE = ignore, FALSE = not ignore.
+
+2005-02-28  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_cpu.c: Use the same nrcpu detection for FreeBSD and
 	OpenBSD as with NetBSD.
 

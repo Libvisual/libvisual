@@ -903,10 +903,11 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
  * Private function to create the complete plugin registry from a set of paths.
  *
  * @param paths A pointer list to a set of paths.
+ * @param ignore_non_existing A flag that can be set with TRUE or FALSE to ignore non existing dirs.
  *
  * @return A newly allocated VisList containing the plugin registry for the set of paths.
  */
-VisList *visual_plugin_get_list (const char **paths)
+VisList *visual_plugin_get_list (const char **paths, int ignore_non_existing)
 {
 	VisList *list;
 	int i = 0;
@@ -915,8 +916,8 @@ VisList *visual_plugin_get_list (const char **paths)
 	
 	while (paths[i] != NULL) {
 		if (plugin_add_dir_to_list (list, paths[i]) < 0) {
-			visual_log (VISUAL_LOG_WARNING, "Failed to add the %s directory to the plugin registry",
-					paths[i]);
+			if (ignore_non_existing == FALSE)
+				visual_log (VISUAL_LOG_WARNING, "Failed to add the %s directory to the plugin registry", paths[i]);
 		}
 
 		i++;
