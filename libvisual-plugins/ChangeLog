@@ -2,7 +2,8 @@
 
 	* configure.ac: added xpyre to build_actor (oops).
 	When ALSA check fails, configure is not aborted, just don't builds
-	ALSA input plugin.
+	ALSA input plugin. GL detection is leave to installed Libvisual.
+	All GL plugin made optionals.
 
 2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
 

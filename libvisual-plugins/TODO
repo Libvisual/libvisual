@@ -1,6 +1,3 @@
-build:
-	gl detection is flacky, also fix for the nebula plugin
-
 README:
 	update doc on goom version required
 

@@ -40,9 +40,8 @@ AC_CHECK_LIB([GLU], [main])
 
 PKG_CHECK_MODULES(LIBESD, esound >= 0.2.28, [libesd="yes"], [libesd="no"])
 if test x$libesd = xno; then
-	AC_MSG_WARN([
-*** esound not found or too old, the esound plugin won't be build
-	])
+	AC_MSG_WARN([*** esound not found or too old.
+			The esound plugin won't be build])
 fi
 AC_SUBST(LIBESD_LIBS)
 AC_SUBST(LIBESD_CFLAGS)
@@ -52,35 +51,32 @@ fi
 
 PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.6, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
-	AC_MSG_ERROR([
-*** libvisual not found, libvisual is needed to build this package,
-*** you can download libvisual at http://libvisual.sf.net/
-	])
+	AC_MSG_ERROR([*** libvisual not found.
+			libvisual is needed to build this package.
+			you can download libvisual at http://libvisual.sf.net/])
 fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
 	
 PKG_CHECK_MODULES(LIBGOOM2, libgoom2 = 2k4, [libgoom="yes"], [libgoom="no"])
 if test x$libgoom = xno; then
-	AC_MSG_WARN([
-*** libgoom 2k4 not found, the goom plugin won't be build
-*** you can download goom at http://www.ios-software.com/
-	])
+	AC_MSG_WARN([*** libgoom 2k4 not found.
+			The goom plugin won't be build.
+			you can download goom at http://www.ios-software.com/])
 fi
 AC_SUBST(LIBGOOM2_LIBS)
 AC_SUBST(LIBGOOM2_CFLAGS)
 if test x$libgoom = xyes; then
-  build_actor="goom2 $build_actor"
+  build_actor="$build_actor goom2"
 fi
 
 #FIXME We actually don't want to depend on gtk here..... 
 PKG_CHECK_MODULES(GDKPIXBUF, gdk-2.0 >= 2.0, [gdkpixbuf="yes"], [gdkpixbuf="no"])
 if test x$gdkpixbuf = xno; then
-	AC_MSG_WARN([
-*** GdkPixbuf >= 2.0 is not found, the libvisual gdkpixbuf image loader plugin
-*** won't be build. GdkPixbuf is included within gtk-2.0 and newer, which can be
-*** downloaded at http://www.gtk.org/
-	])
+  AC_MSG_WARN([*** GdkPixbuf >= 2.0 is not found.
+		The libvisual gdkpixbuf image loader plugin won't be build.
+		GdkPixbuf is included within gtk-2.0 and newer, which can be
+		downloaded at http://www.gtk.org/])
 fi
 AC_SUBST(GDKPIXBUF_LIBS)
 AC_SUBST(GDKPIXBUF_CFLAGS)
@@ -88,21 +84,25 @@ if test x$gdkpixbuf = xyes; then
   build_actor="$build_actor gdkpixbuf"
 fi
   
-# Checks for header files.
-AC_HEADER_TIME
-AC_CHECK_HEADERS([fcntl.h unistd.h])
-AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
-if test x"$opengl" = xno; then
-	AC_MSG_WARN([
-*** OpenGl and Glu headers not found, the opengl plugins won't be build
-	])
-fi
+AC_MSG_CHECKING([for OpenGL support on Libvisual])
+AC_TRY_COMPILE([#include <libvisual/libvisual.h>],
+	       [#ifdef VISUAL_HAVE_OPENGL
+		;
+		#else
+		something that will fail to compile.
+		#endif],
+		[opengl=yes], [opengl=no])
 if test x"$opengl" = xyes; then
-	build_actor="dna lv_gltest madspin $build_actor"
+  AC_MSG_RESULT([yes])
+else
+  AC_MSG_RESULT([no])
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
+# Checks for header files.
+AC_HEADER_TIME
+AC_CHECK_HEADERS([fcntl.h unistd.h])
 AC_C_INLINE
 
 # Checks for library functions.
@@ -127,6 +127,60 @@ if test x$alsa = xyes; then
     AC_MSG_WARN([*** Alsa input plugin cannot be built.
 		 May be you have an ALSA library older than $LV_ALSA_MIN_VERSION.
 		 Take a look at {prefix}/include/alsa/version.h file.])
+  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([dna],
+            AC_HELP_STRING([--disable-dna],
+                           [Do not build dna plugin @<:@default=enabled@:>@]),
+	    [dna=$enableval],
+	    [dna=yes])
+AC_MSG_CHECKING([wheter to build dna plugin])
+if test x$dna = xyes; then
+  AC_MSG_RESULT([yes])
+  if test x$opengl = xyes; then
+    build_actor="$build_actor dna"
+  else
+    AC_MSG_WARN([*** Libvisual doesn't have OpenGL support.
+		dna plugin will not be built.])
+  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([gltest],
+            AC_HELP_STRING([--disable-gltest],
+                           [Do not build lv_gltest plugin @<:@default=enabled@:>@]),
+	    [lvgltest=$enableval],
+	    [lvgltest=yes])
+AC_MSG_CHECKING([wheter to build lv_gltest plugin])
+if test x$lvgltest = xyes; then
+  AC_MSG_RESULT([yes])
+  if test x$opengl = xyes; then
+    build_actor="$build_actor lv_gltest"
+  else
+    AC_MSG_WARN([*** Libvisual doesn't have OpenGL support.
+		lv_gltest plugin will not be built.])
+  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
+AC_ARG_ENABLE([madspin],
+            AC_HELP_STRING([--disable-madspin],
+                           [Do not build madspin plugin @<:@default=enabled@:>@]),
+	    [madspin=$enableval],
+	    [madspin=yes])
+AC_MSG_CHECKING([wheter to build madspin plugin])
+if test x$madspin = xyes; then
+  AC_MSG_RESULT([yes])
+  if test x$opengl = xyes; then
+    build_actor="$build_actor madspin"
+  else
+    AC_MSG_WARN([*** Libvisual doesn't have OpenGL support.
+		madspin plugin will not be built.])
   fi
 else
   AC_MSG_RESULT([no])
