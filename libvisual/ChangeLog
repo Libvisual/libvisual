@@ -1,5 +1,15 @@
 2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_event.c: Fixing docs.
+
+	* libvisual/lv_log.c: Finish private for callbacks support.
+	Also finished docs.
+
+	* libvisual/lv_plugin.c (visual_plugin_load): Seed the
+	private randomizer.
+
+2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_plugin.* (visual_plugin_get_random_context):
 	Added function to obtain the VisRandomContext for this plugin.
 

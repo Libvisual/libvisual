@@ -45,26 +45,26 @@ typedef enum {
 /**
  * Functions that want to handle messages must match this signature.
  *
- * @arg message The message that will be showed, exactly the same that was passed
+ * @arg message The message that will be shown, exactly the same as that was passed
  * to visual_log(), but after formatting.
  *
  * @arg funcname The name of the function that invokes visual_log(). On non-GNU systems
- * this probably will be NULL.
+ * this will probably be NULL.
  *
- * @arg privdata Private field to be used by the client. The library will never touch this.
+ * @arg priv Private field to be used by the client. The library will never touch this.
  */
 typedef void (*visual_log_message_handler_func_t) (const char *message,
-							const char *funcname, void *privdata);
+							const char *funcname, void *priv);
 
 void visual_log_set_verboseness (VisLogVerboseness verboseness);
 VisLogVerboseness visual_log_get_verboseness (void);
 
-void visual_log_set_info_handler (visual_log_message_handler_func_t handler);
-void visual_log_set_warning_handler (visual_log_message_handler_func_t handler);
-void visual_log_set_critical_handler (visual_log_message_handler_func_t handler);
-void visual_log_set_error_handler (visual_log_message_handler_func_t handler);
+void visual_log_set_info_handler (visual_log_message_handler_func_t handler, void *priv);
+void visual_log_set_warning_handler (visual_log_message_handler_func_t handler, void *priv);
+void visual_log_set_critical_handler (visual_log_message_handler_func_t handler, void *priv);
+void visual_log_set_error_handler (visual_log_message_handler_func_t handler, void *priv);
 
-void visual_log_set_all_messages_handler (visual_log_message_handler_func_t handler);
+void visual_log_set_all_messages_handler (visual_log_message_handler_func_t handler, void *priv);
 
 /**
  * Used for log messages, this is brought under a define so

@@ -487,6 +487,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 VisPluginData *visual_plugin_load (VisPluginRef *ref)
 {
 	VisPluginData *plugin;
+	VisTime time_;
 	const VisPluginInfo *pluginfo;
 	plugin_get_info_func_t get_plugin_info;
 	void *handle;
@@ -529,6 +530,10 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	ref->usecount++;
 	plugin->realized = FALSE;
 	plugin->handle = handle;
+
+	/* Now the plugin is set up and ready to be realized, also random seed it's random context */
+	visual_time_get (&time_);
+	visual_random_context_set_seed (&plugin->random, time_.tv_usec);
 
 	return plugin;
 }

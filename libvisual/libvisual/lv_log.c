@@ -18,10 +18,15 @@ static void default_critical_handler (const char *msg, const char *funcname, voi
 static void default_error_handler (const char *msg, const char *funcname, void *privdata);
 
 static struct _message_handlers {
-	visual_log_message_handler_func_t info_handler;
-	visual_log_message_handler_func_t warning_handler;
-	visual_log_message_handler_func_t critical_handler;
-	visual_log_message_handler_func_t error_handler;
+	visual_log_message_handler_func_t	 info_handler;
+	visual_log_message_handler_func_t	 warning_handler;
+	visual_log_message_handler_func_t	 critical_handler;
+	visual_log_message_handler_func_t	 error_handler;
+
+	void					*info_priv;
+	void					*warning_priv;
+	void					*critical_priv;
+	void					*error_priv;
 } message_handlers;
 
 
@@ -31,7 +36,9 @@ static struct _message_handlers {
  */
 
 /**
- * Set the library verbosity level.
+ * Set the library it's verbosity level.
+ *
+ * @param v The verbose level as a VisLogVerboseness enumerate value.
  */
 void visual_log_set_verboseness (VisLogVerboseness v)
 {
@@ -39,7 +46,9 @@ void visual_log_set_verboseness (VisLogVerboseness v)
 }
 
 /**
- * Get the current library verbosity level.
+ * Get the current library it's verbosity level.
+ *
+ * @return The verboseness level as a VisLogVerboseness enumerate value.
  */
 VisLogVerboseness visual_log_get_verboseness ()
 {
@@ -47,51 +56,74 @@ VisLogVerboseness visual_log_get_verboseness ()
 }
 
 /**
- * Set the function that handles info messages.
+ * Set the callback function that handles info messages.
+ *
+ * @param handler The custom message handler callback.
+ * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_info_handler (visual_log_message_handler_func_t handler)
+void visual_log_set_info_handler (visual_log_message_handler_func_t handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
 	message_handlers.info_handler = handler;
+
+	message_handlers.info_priv = priv;
 }
 
 /**
- * Set the function that handles warning messages.
+ * Set the callback function that handles warning messages.
+ *
+ * @param handler The custom message handler callback.
+ * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_warning_handler (visual_log_message_handler_func_t handler)
+void visual_log_set_warning_handler (visual_log_message_handler_func_t handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
 	message_handlers.warning_handler = handler;
+
+	message_handlers.warning_priv = priv;
 }
 
 /**
- * Set the function that handles critical messages.
+ * Set the callback function that handles critical messages.
+ *
+ * @param handler The custom message handler callback.
+ * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_critical_handler (visual_log_message_handler_func_t handler)
+void visual_log_set_critical_handler (visual_log_message_handler_func_t handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
 	message_handlers.critical_handler = handler;
+
+	message_handlers.critical_priv = priv;
 }
 
 /**
- * Set the function that handles error messages. After handling the message with
+ * Set the callback function that handles error messages. After handling the message with
  * this function, libvisual will abort the program. This behavior cannot be
  * changed.
+ *
+ * @param handler The custom message handler callback.
+ * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_error_handler (visual_log_message_handler_func_t handler)
+void visual_log_set_error_handler (visual_log_message_handler_func_t handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
 	message_handlers.error_handler = handler;
+
+	message_handlers.error_priv = priv;
 }
 
 /**
- * Set the function that handles all the messages.
+ * Set callback the function that handles all the messages.
+ *
+ * @param handler The custom message handler callback.
+ * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_all_messages_handler (visual_log_message_handler_func_t handler)
+void visual_log_set_all_messages_handler (visual_log_message_handler_func_t handler, void *priv)
 {
 	visual_log_return_if_fail (handler != NULL);
 
@@ -99,6 +131,11 @@ void visual_log_set_all_messages_handler (visual_log_message_handler_func_t hand
 	message_handlers.warning_handler = handler;
 	message_handlers.critical_handler = handler;
 	message_handlers.error_handler = handler;
+
+	message_handlers.info_priv = priv;
+	message_handlers.warning_priv = priv;
+	message_handlers.critical_priv = priv;
+	message_handlers.error_priv = priv;
 }
 	
 /**
@@ -136,36 +173,36 @@ void _lv_log (VisLogSeverity severity, const char *file,
 			break;
 		case VISUAL_LOG_INFO:
 			if (!message_handlers.info_handler)
-				visual_log_set_info_handler (default_info_handler);
+				visual_log_set_info_handler (default_info_handler, NULL);
 
 			if (verboseness >= VISUAL_LOG_VERBOSENESS_MEDIUM)
-				message_handlers.info_handler (str, funcname, NULL);
+				message_handlers.info_handler (str, funcname, message_handlers.info_priv);
 
 			break;
 		case VISUAL_LOG_WARNING:
 			if (!message_handlers.warning_handler)
-				visual_log_set_warning_handler (default_warning_handler);
+				visual_log_set_warning_handler (default_warning_handler, NULL);
 
 			if (verboseness >= VISUAL_LOG_VERBOSENESS_MEDIUM)
-				message_handlers.warning_handler (str, funcname, NULL);
+				message_handlers.warning_handler (str, funcname, message_handlers.warning_priv);
 			
 			break;
 
 		case VISUAL_LOG_CRITICAL:
 			if (!message_handlers.critical_handler)
-				visual_log_set_critical_handler (default_critical_handler);
+				visual_log_set_critical_handler (default_critical_handler, NULL);
 
 			if (verboseness >= VISUAL_LOG_VERBOSENESS_LOW)
-				message_handlers.critical_handler (str, funcname, NULL);
+				message_handlers.critical_handler (str, funcname, message_handlers.critical_priv);
 		
 			break;
 
 		case VISUAL_LOG_ERROR:
 			if (!message_handlers.error_handler)
-				visual_log_set_error_handler (default_error_handler);
+				visual_log_set_error_handler (default_error_handler, NULL);
 
 			if (verboseness >= VISUAL_LOG_VERBOSENESS_LOW)
-				message_handlers.error_handler (str, funcname, NULL);
+				message_handlers.error_handler (str, funcname, message_handlers.error_priv);
 			
 			raise (SIGTRAP);
 			exit (1);

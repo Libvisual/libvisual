@@ -343,6 +343,7 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
 /**
  * Adds a new quit event to the event queue.
  *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param pass_zero_please Might be used in the future, but for now just pass .
  *
  * @return 0 on succes -1 on error.
@@ -364,6 +365,7 @@ int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please
 /**
  * Adds a new visibility event to the event queue.
  *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param is_visible TRUE when visible, FALSE when not visible.
  *
  * @return 0 on succes -1 on error.
@@ -386,6 +388,7 @@ int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible
 /**
  * Adds a new generic event to the event queue.
  *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param eid ID of the custom event..
  * @param param_int Integer value for the custom event.
  * @param param_ptr Pointer to data for the custom event..
