@@ -13,6 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "corona.h"
+#include <stdio.h>
 #include <cstdlib>
 #include <cmath>
 using namespace std;
@@ -211,7 +212,7 @@ int Corona::getBeatVal(TimedLevel *tl)
   m_avg = 0.9 * m_avg + 0.1 * total;
   if (m_avg < 1000) m_avg = 1000;
 
-  if (total > m_avg * 1.2 && tl->timeStamp - tl->lastbeat > 750000) {
+  if (total > m_avg * 1.2 && tl->timeStamp - tl->lastbeat > 750) {
     m_avg = total;
     tl->lastbeat = tl->timeStamp;
     if (total > 2500) return 2500;
@@ -366,7 +367,7 @@ void Corona::update(TimedLevel *pLevels)
       m_swirltime = 1;
     }
 
-    pLevels->lastbeat = pLevels->currentTimeMs;
+    pLevels->lastbeat = pLevels->timeStamp;
   }
 
   // Deal with the particles

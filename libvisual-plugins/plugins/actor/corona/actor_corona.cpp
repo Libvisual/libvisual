@@ -39,6 +39,7 @@ static const int PALETTEDATA[][NB_PALETTES] = {
 };
 
 typedef struct {
+	VisTime		 oldtime;
 	VisPalette	 pal;
 	Corona		*corona; /* The corona internal private struct */
 	PaletteCycler	*pcyl;
@@ -100,6 +101,8 @@ extern "C" int lv_corona_init (VisPluginData *plugin)
 	priv->tl.lastbeat  = 0;
 	priv->tl.state     = normal_state;
 
+	visual_time_get (&priv->oldtime);
+	
 	visual_palette_allocate_colors (&priv->pal, 256);
 	
 	return 0;
@@ -197,22 +200,28 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisTime curtime;
+	VisTime difftime;
 	short freqdata[2][512];
-	int timemilli = 0;
+	unsigned long timemilli = 0;
 	int i;
 	
 	for (i = 0; i < 256; ++i) {
-		freqdata[0][i*2]   = audio->freq[0][i];
-		freqdata[1][i*2]   = audio->freq[1][i];
-		freqdata[0][i*2+1] = audio->freq[0][i];
-		freqdata[1][i*2+1] = audio->freq[1][i];
+		freqdata[0][i*2]   = audio->freqnorm[0][i];
+		freqdata[1][i*2]   = audio->freqnorm[1][i];
+		freqdata[0][i*2+1] = audio->freqnorm[0][i];
+		freqdata[1][i*2+1] = audio->freqnorm[1][i];
 	}
 
 	visual_time_get (&curtime);
 	
-	timemilli = curtime.tv_sec * 1000 + curtime.tv_usec / 1000;
+	visual_time_difference (&difftime, &priv->oldtime, &curtime);
 
-	priv->tl.timeStamp++;
+	timemilli = difftime.tv_sec * 1000 + difftime.tv_usec / 1000;
+
+	priv->tl.timeStamp += timemilli;
+
+	visual_time_copy (&priv->oldtime, &curtime);
+	
 	for (i = 0; i < 512; ++i) {
 		priv->tl.frequency[0][i] = freqdata[0][i];
 		priv->tl.frequency[1][i] = freqdata[1][i];

@@ -18,8 +18,7 @@ struct TimedLevel
 {
   unsigned char frequency[2][512];
   int state;
-  int timeStamp;
-  int currentTimeMs;
+  unsigned int timeStamp;
 
   int lastbeat; // filled by corona
 };

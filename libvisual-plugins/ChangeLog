@@ -1,5 +1,9 @@
 2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/corona/*: Fixed the kickbeat detection.
+
+2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/corona/*: Non crashy, working, still rough edges, but
 	hey, let's just welcome this new plugin :)
 
