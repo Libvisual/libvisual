@@ -1063,9 +1063,9 @@ int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
  * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is requested.
  * @param type The Environ type that is requested.
  *
- * @return The requested VisPluginEnviron, or NULL on failure
+ * @return The requested VisPluginEnviron it's environ specific VisObject, or NULL on failure
  */
-VisPluginEnviron *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
+VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
 {
 	VisPluginEnviron *enve;
 	VisListEntry *le = NULL;
@@ -1076,7 +1076,7 @@ VisPluginEnviron *visual_plugin_environ_get (VisPluginData *plugin, const char *
 	while ((enve = visual_list_next (&plugin->environ, &le)) != NULL) {
 		
 		if (strcmp (enve->type, type) == 0)
-			return enve;
+			return enve->environ;
 	}
 
 	return NULL;
