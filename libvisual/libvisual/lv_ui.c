@@ -8,7 +8,7 @@
 #include "lv_ui.h"
 
 /**
- * @defgroup VisUI VisUI
+ * @defframe VisUI VisUI
  * @{
  */
 
@@ -163,16 +163,16 @@ VisUIBoxType visual_ui_box_get_type (VisUIBox *box)
 	return box->boxtype;
 }
 
-VisUIWidget *visual_ui_group_new (const char *name)
+VisUIWidget *visual_ui_frame_new (const char *name)
 {
-	VisUIGroup *group;
+	VisUIFrame *frame;
 
-	group = visual_mem_new0 (VisUIGroup, 1);
-	VISUAL_UI_WIDGET (group)->type = VISUAL_WIDGET_TYPE_GROUP;
+	frame = visual_mem_new0 (VisUIFrame, 1);
+	VISUAL_UI_WIDGET (frame)->type = VISUAL_WIDGET_TYPE_FRAME;
 
-	group->name = name;
+	frame->name = name;
 
-	return VISUAL_UI_WIDGET (group);
+	return VISUAL_UI_WIDGET (frame);
 }
 
 VisUIWidget *visual_ui_label_new (const char *text)

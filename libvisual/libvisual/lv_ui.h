@@ -16,7 +16,7 @@ extern "C" {
 #define VISUAL_UI_WIDGET(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_WIDGET, VisUIWidget))
 #define VISUAL_UI_CONTAINER(obj)			(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_CONTAINER, VisUIContainer))
 #define VISUAL_UI_BOX(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_BOX, VisUIBox))
-#define VISUAL_UI_GROUP(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_GROUP, VisUIGroup))
+#define VISUAL_UI_FRAME(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_FRAME, VisUIFrame))
 #define VISUAL_UI_LABEL(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_LABEL, VisUILabel))
 #define VISUAL_UI_IMAGE(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_IMAGE, VisUIImage))
 #define VISUAL_UI_MUTATOR(obj)				(VISUAL_UI_CHECK_CAST ((obj), VISUAL_WIDGET_TYPE_MUTATOR, VisUIMutator))
@@ -37,7 +37,7 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_WIDGET,
 	VISUAL_WIDGET_TYPE_CONTAINER,
 	VISUAL_WIDGET_TYPE_BOX,
-	VISUAL_WIDGET_TYPE_GROUP,
+	VISUAL_WIDGET_TYPE_FRAME,
 	VISUAL_WIDGET_TYPE_LABEL,
 	VISUAL_WIDGET_TYPE_IMAGE,
 	VISUAL_WIDGET_TYPE_MUTATOR,
@@ -67,7 +67,7 @@ typedef enum {
 typedef struct _VisUIWidget VisUIWidget;
 typedef struct _VisUIContainer VisUIContainer;
 typedef struct _VisUIBox VisUIBox;
-typedef struct _VisUIGroup VisUIGroup;
+typedef struct _VisUIFrame VisUIFrame;
 typedef struct _VisUILabel VisUILabel;
 typedef struct _VisUIImage VisUIImage;
 typedef struct _VisUIMutator VisUIMutator;
@@ -109,7 +109,7 @@ struct _VisUIBox {
 	VisList			 childs;
 };
 
-struct _VisUIGroup {
+struct _VisUIFrame {
 	VisUIContainer		 container;
 
 	const char		*name;
@@ -209,7 +209,7 @@ int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget);
 VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget);
 VisUIBoxType visual_ui_box_get_type (VisUIBox *box);
 
-VisUIWidget *visual_ui_group_new (const char *name);
+VisUIWidget *visual_ui_frame_new (const char *name);
 
 VisUIWidget *visual_ui_label_new (const char *text);
 int visual_ui_label_set_text (VisUILabel *label, const char *text);
