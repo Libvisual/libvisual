@@ -4,7 +4,11 @@
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_common.h>
 
-#include <pthread.h>
+#ifdef VISUAL_HAVE_THREADS
+	#ifdef VISUAL_THREAD_MODEL_POSIX
+	#include <pthread.h>
+	#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,24 +16,47 @@ extern "C" {
 
 /* FIXME check if pthread is supported, if not, #ifdef around pthread stuff */
 
+/**
+ * Enumerate that defines the VisThread priority.
+ * 
+ * @see visual_thread_set_priority
+ */
 typedef enum {
-	VISUAL_THREAD_PRIORITY_LOW,
-	VISUAL_THREAD_PRIORITY_NORMAL,
-	VISUAL_THREAD_PRIORITY_HIGH,
-	VISUAL_THREAD_PRIORITY_URGENT
+	VISUAL_THREAD_PRIORITY_LOW,	/**< Lowest VisThread priority. */
+	VISUAL_THREAD_PRIORITY_NORMAL,	/**< Normal VisThread priority. */
+	VISUAL_THREAD_PRIORITY_HIGH,	/**< High VisThread priority. */
+	VISUAL_THREAD_PRIORITY_URGENT	/**< Urgent VisThread priority. */
 } VisThreadPriority;
 
 typedef struct _VisThread VisThread;
 typedef struct _VisMutex VisMutex;
 
+/**
+ * The function defination for a function that forms the base of a new VisThread when
+ * visual_thread_create is used.
+ *
+ * @see visual_thread_create
+ *
+ * @arg data Pointer that can contains the private data from the visual_thread_create function.
+ *
+ * @return Pointer to the data when a thread is joined.
+ */
 typedef void *(*VisThreadFunc)(void *data);
 
 struct _VisThread {
+#ifdef VISUAL_HAVE_THREADS
+	#ifdef VISUAL_THREAD_MODEL_POSIX
 	pthread_t thread;
+	#endif
+#endif
 };
 
 struct _VisMutex {
+#ifdef VISUAL_HAVE_THREADS
+	#ifdef VISUAL_THREAD_MODEL_POSIX
 	pthread_mutex_t mutex;
+	#endif
+#endif
 };
 
 int visual_thread_is_supported (void);

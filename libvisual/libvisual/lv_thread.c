@@ -15,11 +15,11 @@
 int visual_thread_is_supported ()
 {
 #ifdef VISUAL_HAVE_THREADS
-#ifdef VISUAL_THREAD_MODEL_POSIX
+	#ifdef VISUAL_THREAD_MODEL_POSIX
 	return TRUE;
-#else
+	#else
 	return FALSE;
-#endif
+	#endif
 #else
 	return FALSE
 #endif
@@ -29,7 +29,7 @@ int visual_thread_is_supported ()
 VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 {
 #ifdef VISUAL_HAVE_THREADS
-#ifdef VISUAL_THREAD_MODEL_POSIX
+	#ifdef VISUAL_THREAD_MODEL_POSIX
 	VisThread *thread;
 	int res;
 
@@ -47,9 +47,9 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 	}
 
 	return thread;
-#else
+	#else
 	return NULL
-#endif
+	#endif
 #else
 	return NULL
 #endif
