@@ -13,7 +13,7 @@ static VisList *__lv_plugins_display_type;
 
 LvdDriver *lvdisplay_driver_create(const char *nclass, const char* ntype)
 {
-	VisList *lv_plugins;
+	const VisList *lv_plugins;
 	LvdDriver *drv;
 	VisPluginRef *rclass, *rtype;
 	VisPluginData *plclass, *pltype;

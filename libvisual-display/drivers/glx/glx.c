@@ -296,7 +296,7 @@ void draw(VisPluginData *plugin)
 	privdata *priv = plugin->priv;
 	
 	if ((priv->active_ctx->video->depth != VISUAL_VIDEO_DEPTH_GL) &&
-		(priv->active_ctx->video->screenbuffer)){
+		(priv->active_ctx->video->pixels)){
 
 		int format, type;
 
@@ -321,7 +321,7 @@ void draw(VisPluginData *plugin)
 		glPixelZoom(1.0f, -1.0f);
 		glRasterPos2f(-1.0f, 1.0f);
 		glDrawPixels(priv->active_ctx->video->width, priv->active_ctx->video->height,
-			format, type, priv->active_ctx->video->screenbuffer);
+			format, type, priv->active_ctx->video->pixels);
 	}
 	
 	glXSwapBuffers(XDPY, XGLXW);
