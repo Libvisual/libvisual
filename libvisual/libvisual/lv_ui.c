@@ -11,12 +11,15 @@ static int box_dtor (VisObject *object);
 static int table_dtor (VisObject *object);
 static int frame_dtor (VisObject *object);
 static int choice_dtor (VisObject *object);
+static int widget_dtor (VisObject *object);
 
 static int box_dtor (VisObject *object)
 {
 	VisUIBox *box = VISUAL_UI_BOX (object);
 
 	visual_list_destroy_elements (&box->childs);
+
+	widget_dtor (object);
 
 	return VISUAL_OK;
 }
@@ -27,6 +30,8 @@ static int table_dtor (VisObject *object)
 
 	visual_list_destroy_elements (&table->childs);
 	
+	widget_dtor (object);
+
 	return VISUAL_OK;
 }
 
@@ -34,9 +39,12 @@ static int frame_dtor (VisObject *object)
 {
 	VisUIContainer *container = VISUAL_UI_CONTAINER (object);
 
-	visual_object_unref (VISUAL_OBJECT (container->child));
+	if (container->child != NULL)
+		visual_object_unref (VISUAL_OBJECT (container->child));
 
 	container->child = NULL;
+
+	widget_dtor (object);
 
 	return VISUAL_OK;
 }
@@ -46,6 +54,8 @@ static int choice_dtor (VisObject *object)
 {
 	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (object));
 
+	widget_dtor (object);
+	
 	return VISUAL_OK;
 }
 
@@ -53,13 +63,25 @@ static int table_entry_dtor (VisObject *object)
 {
 	VisUITableEntry *tentry = VISUAL_UI_TABLE_ENTRY (object);
 
-	visual_object_unref (VISUAL_OBJECT (tentry->widget));
+	if (tentry->widget != NULL)
+		visual_object_unref (VISUAL_OBJECT (tentry->widget));
 
 	tentry->widget = NULL;
 
 	return VISUAL_OK;
 }
 
+static int widget_dtor (VisObject *object)
+{
+	VisUIWidget *widget = VISUAL_UI_WIDGET (object);
+
+	if (widget->tooltip != NULL)
+		visual_mem_free (widget->tooltip);
+
+	widget->tooltip = NULL;
+
+	return VISUAL_OK;
+}
 
 /**
  * @defgroup VisUI VisUI
@@ -80,7 +102,7 @@ VisUIWidget *visual_ui_widget_new ()
 
 	/* Do the VisObject initialization */
 	VISUAL_OBJECT (widget)->allocated = TRUE;
-	VISUAL_OBJECT (widget)->dtor = NULL;
+	VISUAL_OBJECT (widget)->dtor = widget_dtor;
 	visual_object_ref (VISUAL_OBJECT (widget));
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (widget), -1, -1);
@@ -119,7 +141,10 @@ int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
 {
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
-	widget->tooltip = tooltip;
+	if (widget->tooltip != NULL)
+		visual_mem_free (widget->tooltip);
+	
+	widget->tooltip = strdup (tooltip);
 
 	return VISUAL_OK;
 }
@@ -446,7 +471,7 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
 
 	/* Do the VisObject initialization */
 	VISUAL_OBJECT (label)->allocated = TRUE;
-	VISUAL_OBJECT (label)->dtor = NULL;
+	VISUAL_OBJECT (label)->dtor = widget_dtor;
 	visual_object_ref (VISUAL_OBJECT (label));
 
 	VISUAL_UI_WIDGET (label)->type = VISUAL_WIDGET_TYPE_LABEL;
@@ -522,7 +547,7 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
 
 	/* Do the VisObject initialization */
 	VISUAL_OBJECT (image)->allocated = TRUE;
-	VISUAL_OBJECT (image)->dtor = NULL;
+	VISUAL_OBJECT (image)->dtor = widget_dtor;
 	visual_object_ref (VISUAL_OBJECT (image));
 
 	VISUAL_UI_WIDGET (image)->type = VISUAL_WIDGET_TYPE_IMAGE;
@@ -581,7 +606,7 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 
 	/* Do the VisObject initialization */
 	VISUAL_OBJECT (separator)->allocated = TRUE;
-	VISUAL_OBJECT (separator)->dtor = NULL;
+	VISUAL_OBJECT (separator)->dtor = widget_dtor;
 	visual_object_ref (VISUAL_OBJECT (separator));
 
 	VISUAL_UI_WIDGET (separator)->type = VISUAL_WIDGET_TYPE_SEPARATOR;
@@ -745,7 +770,7 @@ VisUIWidget *visual_ui_entry_new ()
 
 	/* Do the VisObject initialization */
 	VISUAL_OBJECT (entry)->allocated = TRUE;
-	VISUAL_OBJECT (entry)->dtor = NULL;
+	VISUAL_OBJECT (entry)->dtor = widget_dtor;
 	visual_object_ref (VISUAL_OBJECT (entry));
 
 	VISUAL_UI_WIDGET (entry)->type = VISUAL_WIDGET_TYPE_ENTRY;
@@ -787,7 +812,7 @@ VisUIWidget *visual_ui_slider_new (int showvalue)
 
 	/* Do the VisObject initialization */
 	VISUAL_OBJECT (slider)->allocated = TRUE;
-	VISUAL_OBJECT (slider)->dtor = NULL;
+	VISUAL_OBJECT (slider)->dtor = widget_dtor;
 	visual_object_ref (VISUAL_OBJECT (slider));
 
 	VISUAL_UI_WIDGET (slider)->type = VISUAL_WIDGET_TYPE_SLIDER;
@@ -812,7 +837,7 @@ VisUIWidget *visual_ui_numeric_new ()
 
 	/* Do the VisObject initialization */
 	VISUAL_OBJECT (numeric)->allocated = TRUE;
-	VISUAL_OBJECT (numeric)->dtor = NULL;
+	VISUAL_OBJECT (numeric)->dtor = widget_dtor;
 	visual_object_ref (VISUAL_OBJECT (numeric));
 
 	VISUAL_UI_WIDGET (numeric)->type = VISUAL_WIDGET_TYPE_NUMERIC;
@@ -835,7 +860,7 @@ VisUIWidget *visual_ui_color_new ()
 
 	/* Do the VisObject initialization */
 	VISUAL_OBJECT (color)->allocated = TRUE;
-	VISUAL_OBJECT (color)->dtor = NULL;
+	VISUAL_OBJECT (color)->dtor = widget_dtor;
 	visual_object_ref (VISUAL_OBJECT (color));
 	
 	VISUAL_UI_WIDGET (color)->type = VISUAL_WIDGET_TYPE_COLOR;
