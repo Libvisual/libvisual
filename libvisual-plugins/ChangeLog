@@ -1,5 +1,11 @@
 2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/madspin/madspin.c
+	(madspin_load_textures): Nicer texture
+	filename parsing.
+
+2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/morph/flash/morph_flash.c
 	(replacetable_generate_24): Added function
 	to generate color value replacement table

@@ -187,13 +187,11 @@ int lv_madspin_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 
 static int madspin_load_textures (MadspinPrivate *priv)
 {
-	char file1[512] = STAR_DIR;
-	char file2[512] = STAR_DIR;
 	VisVideo *textureimage;
 
 	glGenTextures (2, &priv->texture[0]);
 
-	textureimage = visual_bitmap_load_new_video (strcat (file1, "star1.bmp"));
+	textureimage = visual_bitmap_load_new_video (STAR_DIR "star1.bmp");
 	glBindTexture (GL_TEXTURE_2D, priv->texture[0]);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -202,7 +200,7 @@ static int madspin_load_textures (MadspinPrivate *priv)
 
 	visual_video_free_with_buffer (textureimage);
 
-	textureimage = visual_bitmap_load_new_video (strcat (file2, "star2.bmp"));
+	textureimage = visual_bitmap_load_new_video (STAR_DIR "star2.bmp");
 	glBindTexture (GL_TEXTURE_2D, priv->texture[1]);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
