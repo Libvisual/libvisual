@@ -19,11 +19,11 @@ int main(int argc, char **argv)
 	VisEvent event;
 	int quit_flag = 0;
 
-#if NULL_OUTPUT
-//	visual_init_path_add ("../drivers/null/.libs");
-#else
+	visual_init_path_add ("../drivers/null/.libs");
 	visual_init_path_add ("../drivers/glx/.libs");
-#endif
+/* visual_init will fail if this dir doesn't exist.
+	visual_init_path_add (PLUGINSDIR "/display"); */
+
 	visual_init (&argc, &argv);
 	/* variants are:
 	 *	glx, new

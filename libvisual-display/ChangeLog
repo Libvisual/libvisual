@@ -1,3 +1,12 @@
+2004-11-28  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* libvisual-display.pc.in: added
+	* configure.ac: new parameters: --enable-profiling, --enable-debug,
+	--enable-extra-optimization, --with-plugins_base_dir.
+	* lvdisplay/Makefile.am example/Makefile.am: Cleanups.
+	* drivers/glx/Makefile.am drivers/null/Makefile.am: Cleanups.
+	* example/main.c: plugin search patch changed.
+
 2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* lvdisplay/lv_display.c: Use visual_object_unref to destroy

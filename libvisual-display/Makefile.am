@@ -2,5 +2,8 @@
 
 SUBDIRS = lvdisplay drivers example
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libvisual-display.pc
+
 EXTRA_DIST =
 

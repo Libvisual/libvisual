@@ -1,10 +1,11 @@
 ## Process this file with automake to generate a Makefile.in
+libdir=@LIBVISUAL_PLUGINS_BASE_DIR@/display
 
 lib_LTLIBRARIES = null.la
 
 LIBS = -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wall -rdynamic -Wall -Werror -Wno-unused-variable  @LIBVISUAL_CFLAGS@ -O0 -g
+AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_srcdir)/lvdisplay
 
