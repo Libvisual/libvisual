@@ -88,8 +88,6 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int lv_nebulus_init (VisActorPlugin *plugin)
 {
-	NebulusPrivate *priv = plugin->private;
-
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
 	if (maxtexsize < 256) {
 		visual_log (VISUAL_LOG_CRITICAL, "Nebulus: max texture size is lower than 256\n");
@@ -150,8 +148,6 @@ int lv_nebulus_requisition (VisActorPlugin *plugin, int *width, int *height)
 
 int lv_nebulus_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
 {
-	GLfloat ratio;
-	
 	visual_video_set_dimension (video, width, height);
 
 	glViewport (0, 0, width, height);
@@ -171,6 +167,8 @@ int lv_nebulus_events (VisActorPlugin *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_RESIZE:
 				lv_nebulus_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
+				break;
+			default:
 				break;
 		}
 	}
@@ -195,7 +193,7 @@ static int nebulus_calc_fps (NebulusPrivate *priv)
 {
 	// FIXME make
 	framerate = 25;
-
+	return 40;
 }
 
 static int nebulus_random_effect ()
