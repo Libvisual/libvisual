@@ -13,6 +13,8 @@
 #include <libvisual/libvisual.h>
 
 char *get_plugin_typename_from_type (VisPluginType type);
+char *get_plugin_name (LVPlugin *plugin);
+char *get_depth_string (VisVideoDepth depth);
 
 void show_plugin_details (LVPlugin *plugin);
 
@@ -22,6 +24,7 @@ void show_plugin_info_morph (LVPlugin *plugin);
 
 void show_plugin_info (VisPluginInfo *info);
 void show_plugin_ref (VisPluginRef *ref);
+void show_depths (int depthflag);
 
 char *get_plugin_typename_from_type (VisPluginType type)
 {
@@ -48,6 +51,65 @@ char *get_plugin_typename_from_type (VisPluginType type)
 	}
 
 	return "Invalid";
+}
+
+char *get_plugin_name (LVPlugin *plugin)
+{
+	switch (plugin->type) {
+		case VISUAL_PLUGIN_TYPE_ACTOR:
+			return plugin->plugin.actorplugin->name;
+			break;
+		
+		case VISUAL_PLUGIN_TYPE_INPUT:
+			return plugin->plugin.inputplugin->name;
+			break;
+		
+		case VISUAL_PLUGIN_TYPE_MORPH:
+			return plugin->plugin.morphplugin->name;
+			break;
+
+		default:
+			return "Invalid";
+			break;
+	}
+
+	return "Invalid";
+}
+
+char *get_depth_string (VisVideoDepth depth)
+{
+	switch (depth) {
+		case VISUAL_VIDEO_DEPTH_NONE:
+			return "Depth none";
+			break;
+		
+		case VISUAL_VIDEO_DEPTH_8BIT:
+			return "Depth 8bit";
+			break;
+		
+
+		case VISUAL_VIDEO_DEPTH_16BIT:
+			return "Depth 16bit";
+			break;
+
+		case VISUAL_VIDEO_DEPTH_24BIT:
+			return "Depth 24bit";
+			break;
+
+		case VISUAL_VIDEO_DEPTH_32BIT:
+			return "Depth 32bit";
+			break;
+
+		case VISUAL_VIDEO_DEPTH_GL:
+			return "Depth openGL";
+			break;
+			
+		default:
+			return "Invalid depth";
+			break;
+	}
+
+	return "Invalid depth";
 }
 
 void show_plugin_details (LVPlugin *plugin)
@@ -87,21 +149,48 @@ void show_plugin_ref (VisPluginRef *ref)
 	printf ("  plugin file: %s\n", ref->file);
 }
 
+void show_depths (int depthflag)
+{
+	VisVideoDepth a = VISUAL_VIDEO_DEPTH_NONE, b;
+
+	printf ("  Supported video depths:\n");
+	if (visual_video_depth_is_supported (VISUAL_VIDEO_DEPTH_NONE, depthflag) == TRUE)
+		printf ("    Depth: %s\n", get_depth_string (a));
+	
+	do {
+		b = a;
+
+		a = visual_video_depth_get_next (depthflag, a);
+
+		if (a == b)
+			return;
+		
+		printf ("    Depth: %s\n", get_depth_string (a));
+
+	} while (a != b);
+}
+
 void show_plugin_info_actor (LVPlugin *plugin)
 {
 	show_plugin_info (plugin->plugin.actorplugin->info);
 	printf ("\n");
+
 	show_plugin_ref (plugin->ref);
 	printf ("\n");
+	
 	printf ("Actor plugin specific information:\n");
+	
+	show_depths (plugin->plugin.actorplugin->depth);
 }
 
 void show_plugin_info_input (LVPlugin *plugin)
 {
 	show_plugin_info (plugin->plugin.inputplugin->info);
 	printf ("\n");
+
 	show_plugin_ref (plugin->ref);
 	printf ("\n");
+	
 	printf ("Input plugin specific information:\n");
 }
 
@@ -109,9 +198,13 @@ void show_plugin_info_morph (LVPlugin *plugin)
 {
 	show_plugin_info (plugin->plugin.morphplugin->info);
 	printf ("\n");
+	
 	show_plugin_ref (plugin->ref);
 	printf ("\n");
+	
 	printf ("Morph plugin specific information:\n");
+
+	show_depths (plugin->plugin.morphplugin->depth);
 }
 
 int main (int argc, char **argv)
@@ -136,7 +229,9 @@ int main (int argc, char **argv)
 	plugin = visual_plugin_load (ref);
 	visual_plugin_realize (plugin);	
 	
-	printf ("Plugin type: %s\n\n", get_plugin_typename_from_type (plugin->type));
+	printf ("Plugin registry entry:\n");
+	printf ("  Plugin type: %s\n", get_plugin_typename_from_type (plugin->type));
+	printf ("  Plugin registry name: %s\n\n", get_plugin_name (plugin));
 
 	show_plugin_details (plugin);
 

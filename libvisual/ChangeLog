@@ -1,5 +1,9 @@
 2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* tools/lv-inspect.c: More work on lv-inspect.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/*.c: More VisMemizing.
 
 2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
