@@ -7,6 +7,115 @@
 #include "lv_log.h"
 #include "lv_ui.h"
 
+
+static void widget_destroyer (void *ptr);
+static void table_entry_destroyer (void *ptr);
+
+
+static void table_entry_destroyer (void *ptr)
+{
+	VisUITableEntry *tentry = ptr;
+
+	visual_log_return_if_fail (tentry != NULL);
+	
+	widget_destroyer (tentry->widget);
+}
+
+static void widget_destroyer (void *ptr)
+{
+	VisUIWidget *widget = ptr;
+
+	visual_log_return_if_fail (widget != NULL);
+
+	switch (widget->type) {
+		case VISUAL_WIDGET_TYPE_NULL:
+			visual_ui_widget_free (widget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_WIDGET:
+			visual_ui_widget_free (widget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_BOX:
+			visual_ui_box_destroy (VISUAL_UI_BOX (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_TABLE:
+			visual_ui_table_destroy (VISUAL_UI_TABLE (widget));
+
+			break;
+		
+		case VISUAL_WIDGET_TYPE_FRAME:
+			visual_ui_frame_destroy (VISUAL_UI_FRAME (widget));
+
+			break;
+		
+		case VISUAL_WIDGET_TYPE_LABEL:
+			visual_ui_label_free (VISUAL_UI_LABEL (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_IMAGE:
+			visual_ui_image_free (VISUAL_UI_IMAGE (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_SEPARATOR:
+			visual_ui_separator_free (VISUAL_UI_SEPARATOR (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_ENTRY:
+			visual_ui_entry_free (VISUAL_UI_ENTRY (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_SLIDER:
+			visual_ui_slider_free (VISUAL_UI_SLIDER (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_NUMERIC:
+			visual_ui_numeric_free (VISUAL_UI_NUMERIC (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_COLOR:
+			visual_ui_color_free (VISUAL_UI_COLOR (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_POPUP:
+			visual_ui_popup_free (VISUAL_UI_POPUP (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_LIST:
+			visual_ui_list_free (VISUAL_UI_LIST (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_RADIO:
+			visual_ui_radio_free (VISUAL_UI_RADIO (widget));
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_CHECKBOX:
+			visual_ui_checkbox_free (VISUAL_UI_CHECKBOX (widget));
+
+			break;
+
+		default:
+			visual_log (VISUAL_LOG_CRITICAL, "Trying to destroy an unknown VisUI widget type");
+
+			break;
+
+	}
+}
+
 /**
  * @defframe VisUI VisUI
  * @{
@@ -28,6 +137,13 @@ int visual_ui_widget_free (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, -1);
 
+	/* FIXME use free selector like destroy selector */
+	if (widget->type != VISUAL_WIDGET_TYPE_NULL || widget->type != VISUAL_WIDGET_TYPE_WIDGET) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
 	visual_mem_free (widget);
 
 	return 0;
@@ -37,7 +153,7 @@ int visual_ui_widget_destroy (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, -1);
 
-	/* FIXME create impl */
+	widget_destroyer (widget);
 
 	return 0;
 }
@@ -96,18 +212,6 @@ int visual_ui_widget_set_private (VisUIWidget *widget, void *priv)
 	return 0;
 }
 
-VisUIWidget *visual_ui_container_new ()
-{
-	VisUIContainer *container;
-
-	container = visual_mem_new0 (VisUIContainer, 1);
-	VISUAL_UI_WIDGET (container)->type = VISUAL_WIDGET_TYPE_CONTAINER;
-
-	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (container), -1, -1);
-
-	return VISUAL_UI_WIDGET (container);
-}
-
 int visual_ui_container_add (VisUIContainer *container, VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (container != NULL, -1);
@@ -137,6 +241,41 @@ VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (box), -1, -1);
 
 	return VISUAL_UI_WIDGET (box);
+}
+
+int visual_ui_box_free (VisUIBox *box)
+{
+	visual_log_return_val_if_fail (box != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (box)->type != VISUAL_WIDGET_TYPE_BOX) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	/* Delete the list entries, don't destroy the content */
+	visual_list_destroy_elements (&box->childs, NULL);
+
+	visual_mem_free (box);
+
+	return 0;
+}
+
+int visual_ui_box_destroy (VisUIBox *box)
+{
+	visual_log_return_val_if_fail (box != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (box)->type != VISUAL_WIDGET_TYPE_BOX) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
+
+		return -1;
+	}
+
+	visual_list_destroy_elements (&box->childs, widget_destroyer);
+
+	visual_ui_box_free (box);
+	
+	return 0;
 }
 
 int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget)
@@ -194,6 +333,42 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 	return VISUAL_UI_WIDGET (table);
 }
 
+int visual_ui_table_free (VisUITable *table)
+{
+	visual_log_return_val_if_fail (table != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (table)->type != VISUAL_WIDGET_TYPE_TABLE) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	/* Delete the list entries, don't destroy the widgets */
+	visual_list_destroy_elements (&table->childs, free);
+
+	visual_mem_free (table);
+
+	return 0;
+}
+
+int visual_ui_table_destroy (VisUITable *table)
+{
+	visual_log_return_val_if_fail (table != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (table)->type != VISUAL_WIDGET_TYPE_TABLE) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
+
+		return -1;
+	}
+
+	/* Destroy the widgets here, and the list in the table_free */
+	visual_list_destroy_elements (&table->childs, table_entry_destroyer);
+
+	visual_ui_table_free (table);
+	
+	return 0;
+}
+
 int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int col)
 {
 	VisUITableEntry *tentry;
@@ -234,6 +409,38 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 	return VISUAL_UI_WIDGET (frame);
 }
 
+int visual_ui_frame_free (VisUIFrame *frame)
+{
+	visual_log_return_val_if_fail (frame != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (frame)->type != VISUAL_WIDGET_TYPE_FRAME) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_mem_free (frame);
+
+	return 0;
+}
+
+int visual_ui_frame_destroy (VisUIFrame *frame)
+{
+	visual_log_return_val_if_fail (frame != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (frame)->type != VISUAL_WIDGET_TYPE_FRAME) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
+
+		return -1;
+	}
+	
+	widget_destroyer (VISUAL_UI_CONTAINER (frame)->child);
+
+	visual_ui_frame_free (frame);
+
+	return 0;
+}
+
 VisUIWidget *visual_ui_label_new (const char *text, int bold)
 {
 	VisUILabel *label;
@@ -247,6 +454,21 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (label), -1, -1);
 	
 	return VISUAL_UI_WIDGET (label);
+}
+
+int visual_ui_label_free (VisUILabel *label)
+{
+	visual_log_return_val_if_fail (label != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (label)->type != VISUAL_WIDGET_TYPE_LABEL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_mem_free (label);
+
+	return 0;
 }
 
 int visual_ui_label_set_bold (VisUILabel *label, int bold)
@@ -288,6 +510,21 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
 	return VISUAL_UI_WIDGET (image);
 }
 
+int visual_ui_image_free (VisUIImage *image)
+{
+	visual_log_return_val_if_fail (image != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (image)->type != VISUAL_WIDGET_TYPE_IMAGE) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_mem_free (image);
+
+	return 0;
+}
+
 int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video)
 {
 	visual_log_return_val_if_fail (image != NULL, -1);
@@ -318,23 +555,26 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 	return VISUAL_UI_WIDGET (separator);
 }
 
+int visual_ui_separator_free (VisUISeparator *separator)
+{
+	visual_log_return_val_if_fail (separator != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (separator)->type != VISUAL_WIDGET_TYPE_SEPARATOR) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_mem_free (separator);
+
+	return 0;
+}
+
 VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator)
 {
 	visual_log_return_val_if_fail (separator != NULL, VISUAL_ORIENT_TYPE_NONE);
 
 	return separator->orient;
-}
-
-VisUIWidget *visual_ui_mutator_new ()
-{
-	VisUIMutator *mutator;
-
-	mutator = visual_mem_new0 (VisUIMutator, 1);
-	VISUAL_UI_WIDGET (mutator)->type = VISUAL_WIDGET_TYPE_MUTATOR;
-
-	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (mutator), -1, -1);
-
-	return VISUAL_UI_WIDGET (mutator);
 }
 
 int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *param)
@@ -354,18 +594,6 @@ const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
 	visual_log_return_val_if_fail (mutator != NULL, NULL);
 
 	return mutator->param;
-}
-
-VisUIWidget *visual_ui_range_new (void)
-{
-	VisUIRange *range;
-
-	range = visual_mem_new0 (VisUIRange, 1);
-	VISUAL_UI_WIDGET (range)->type = VISUAL_WIDGET_TYPE_RANGE;
-
-	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (range), -1, -1);
-
-	return VISUAL_UI_WIDGET (range);
 }
 
 int visual_ui_range_set_properties (VisUIRange *range, double min, double max, double step, int precision)
@@ -428,6 +656,21 @@ VisUIWidget *visual_ui_entry_new ()
 	return VISUAL_UI_WIDGET (entry);
 }
 
+int visual_ui_entry_free (VisUIEntry *entry)
+{
+	visual_log_return_val_if_fail (entry != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (entry)->type != VISUAL_WIDGET_TYPE_ENTRY) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_mem_free (entry);
+
+	return 0;
+}
+
 int visual_ui_entry_set_length (VisUIEntry *entry, int length)
 {
 	visual_log_return_val_if_fail (entry != NULL, -1);
@@ -451,6 +694,21 @@ VisUIWidget *visual_ui_slider_new (int showvalue)
 	return VISUAL_UI_WIDGET (slider);
 }
 
+int visual_ui_slider_free (VisUISlider *slider)
+{
+	visual_log_return_val_if_fail (slider != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (slider)->type != VISUAL_WIDGET_TYPE_SLIDER) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_mem_free (slider);
+
+	return 0;
+}
+
 VisUIWidget *visual_ui_numeric_new ()
 {
 	VisUINumeric *numeric;
@@ -461,6 +719,21 @@ VisUIWidget *visual_ui_numeric_new ()
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (numeric), -1, -1);
 
 	return VISUAL_UI_WIDGET (numeric);
+}
+
+int visual_ui_numeric_free (VisUINumeric *numeric)
+{
+	visual_log_return_val_if_fail (numeric != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (numeric)->type != VISUAL_WIDGET_TYPE_NUMERIC) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_mem_free (numeric);
+
+	return 0;
 }
 
 VisUIWidget *visual_ui_color_new ()
@@ -475,16 +748,19 @@ VisUIWidget *visual_ui_color_new ()
 	return VISUAL_UI_WIDGET (color);
 }
 
-VisUIWidget *visual_ui_choice_new ()
+int visual_ui_color_free (VisUIColor *color)
 {
-	VisUIChoice *choice;
+	visual_log_return_val_if_fail (color != NULL, -1);
 
-	choice = visual_mem_new0 (VisUIChoice, 1);
-	VISUAL_UI_WIDGET (choice)->type = VISUAL_WIDGET_TYPE_CHOICE;
+	if (VISUAL_UI_WIDGET (color)->type != VISUAL_WIDGET_TYPE_COLOR) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (choice), -1, -1);
+		return -1;
+	}
 
-	return VISUAL_UI_WIDGET (choice);
+	visual_mem_free (color);
+
+	return 0;
 }
 
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value)
@@ -503,6 +779,15 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamE
 	choice->choices.count++;
 	/* FIXME be aware on object destroy, that this needs to be destroyed as well, watch out!! */
 	visual_list_add (&choice->choices.choices, centry);
+
+	return 0;
+}
+
+int visual_ui_choice_free_choices (VisUIChoice *choice)
+{
+	visual_log_return_val_if_fail (choice != NULL, -1);
+
+	visual_list_destroy_elements (&choice->choices.choices, free); 
 
 	return 0;
 }
@@ -559,6 +844,23 @@ VisUIWidget *visual_ui_popup_new ()
 	return VISUAL_UI_WIDGET (popup);
 }
 
+int visual_ui_popup_free (VisUIPopup *popup)
+{
+	visual_log_return_val_if_fail (popup != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (popup)->type != VISUAL_WIDGET_TYPE_POPUP) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (popup));
+
+	visual_mem_free (popup);
+
+	return 0;
+}
+
 VisUIWidget *visual_ui_list_new ()
 {
 	VisUIList *list;
@@ -571,6 +873,23 @@ VisUIWidget *visual_ui_list_new ()
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (list), -1, -1);
 
 	return VISUAL_UI_WIDGET (list);
+}
+
+int visual_ui_list_free (VisUIList *list)
+{
+	visual_log_return_val_if_fail (list != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (list)->type != VISUAL_WIDGET_TYPE_LIST) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (list));
+
+	visual_mem_free (list);
+
+	return 0;
 }
 
 VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
@@ -589,6 +908,23 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 	return VISUAL_UI_WIDGET (radio);
 }
 
+int visual_ui_radio_free (VisUIRadio *radio)
+{
+	visual_log_return_val_if_fail (radio != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (radio)->type != VISUAL_WIDGET_TYPE_RADIO) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (radio));
+
+	visual_mem_free (radio);
+
+	return 0;
+}
+
 VisUIWidget *visual_ui_checkbox_new (const char *name)
 {
 	VisUICheckbox *checkbox;
@@ -603,6 +939,23 @@ VisUIWidget *visual_ui_checkbox_new (const char *name)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (checkbox), -1, -1);
 
 	return VISUAL_UI_WIDGET (checkbox);
+}
+
+int visual_ui_checkbox_free (VisUICheckbox *checkbox)
+{
+	visual_log_return_val_if_fail (checkbox != NULL, -1);
+
+	if (VISUAL_UI_WIDGET (checkbox)->type != VISUAL_WIDGET_TYPE_CHECKBOX) {
+		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
+
+		return -1;
+	}
+
+	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (checkbox));
+
+	visual_mem_free (checkbox);
+
+	return 0;
 }
 
 /**
