@@ -1,0 +1,124 @@
+# Russian translation for Libvisual XMMS plugin.
+# Copyright (C) 2004 Libvisual XMMS plugin's COPYRIGHT HOLDER
+# This file is distributed under the same license as the Libvisual XMMS plugin.
+# Vitaly V. Bursov <vitalyvb@users.sourceforge.net>, 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
+"POT-Creation-Date: 2004-07-12 23:29-0300\n"
+"PO-Revision-Date: 2004-07-13 16:56+0300\n"
+"Last-Translator: Vitaly V. Bursov <vitalyvb@users.sourceforge.net>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main.c:107
+msgid "Cannot get options"
+msgstr "Невозможно загрузить опции"
+
+#: src/config_gui.c:49
+msgid "LibVisual XMMS Plugin"
+msgstr "Libvisual дополнение к XMMS"
+
+#: src/config_gui.c:61
+msgid "Fullscreen"
+msgstr "На весь экран"
+
+#: src/config_gui.c:68
+msgid ""
+"You can also toggle between normal and fullscreen mode by pressing key TAB "
+"or F11"
+msgstr ""
+"Вы также можете включать полноэкранный режим и возвращаться в обычный "
+"нажатием клавиш TAB или F11"
+
+#: src/config_gui.c:70
+msgid "All plugins"
+msgstr "Все дополнения"
+
+#: src/config_gui.c:78
+msgid "Only GL plugins"
+msgstr "Только GL дополнения"
+
+#: src/config_gui.c:86
+msgid "Only non Gl plugins"
+msgstr "Только не GL дополнения"
+
+#: src/config_gui.c:101
+msgid "Maximum Frames Per Second:"
+msgstr "Максимальное количество кадров в секунду:"
+
+#: src/config_gui.c:125
+msgid "Icon"
+msgstr "Значек"
+
+#: src/config_gui.c:162
+msgid "Accept"
+msgstr "OK"
+
+#: src/config_gui.c:170
+msgid "Apply"
+msgstr "Применить"
+
+#: src/config_gui.c:178
+msgid "Cancel"
+msgstr "Отмена"
+
+#: src/config_gui.c:222
+msgid "Couldn't create replacement pixmap."
+msgstr "Невозможно создасть замещающий рисунок."
+
+#: src/config_gui.c:267
+#, c-format
+msgid "Couldn't find pixmap file: %s"
+msgstr "Файл с рисунком не найден: %s"
+
+#: src/config_gui.c:276
+#, c-format
+msgid "Error loading pixmap file: %s"
+msgstr "Ошибка загрузки файла с рисунком: %s"
+
+#: src/about.c:57
+msgid "About Libvisual XMMS Plugin"
+msgstr "О Libvisual дополнении к XMMS"
+
+#: src/about.c:90
+msgid ""
+"Libvisual XMMS Plugin\n"
+"\n"
+"Copyright (C) 2004, Duilio Protti <dprotti@users.sourceforge.net>\n"
+"Dennis Smit <ds@nerds-incorporated.org>\n"
+"\n"
+"The Libvisual XMMS Plugin, more information about Libvisual can be found at\n"
+"http://libvisual.sf.net\n"
+msgstr ""
+"Libvisual XMMS plugin\n"
+"\n"
+"Copyright (C) 2004, Duilio Protti <dprotti@users.sourceforge.net>\n"
+"Dennis Smit <ds@nerds-incorporated.org>\n"
+"\n"
+"Libvisual дополнение к XMMS, информацию о Libvisual Вы можете найти на "
+"сайте\n"
+"http://libvisual.sf.net\n"
+
+#: src/about.c:92
+msgid "Credits"
+msgstr "Список участников"
+
+#: src/about.c:114
+msgid ""
+"Brazilian Portuguese: Gustavo Sverzut Barbieri\n"
+"Dutch: Dennis Smit\n"
+"French: Jean-Christophe Hoelt\n"
+"Spanish: Duilio Protti\n"
+msgstr ""
+
+#: src/about.c:116
+msgid "Translators"
+msgstr "Переводчики"
+
+#: src/about.c:137
+msgid "Close"
+msgstr "Закрыть"
