@@ -233,6 +233,33 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, const char
 }
 
 /**
+ * Clones the source VisParamContainer into the destination VisParamContainer.
+ *
+ * @param destcont A pointer to the VisParamContainer in which the VisParamEntry values are copied.
+ * @param srccont A pointer to the VisParamContainer from which the VisParamEntry values are copied.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
+ */
+int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer *srccont)
+{
+	VisListEntry *le = NULL;
+	VisParamEntry *destparam;
+	VisParamEntry *srcparam;
+
+	visual_log_return_val_if_fail (destcont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
+	visual_log_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
+
+	while ((srcparam = visual_list_next (&srccont->entries, &le)) != NULL) {
+		destparam = visual_param_entry_new (visual_param_entry_get_name (srcparam));
+		visual_param_entry_set_from_param (destparam, srcparam);
+
+		visual_param_container_add (destcont, destparam);
+	}
+
+	return VISUAL_OK;
+}
+
+/**
  * Copies matching VisParamEntry elements from srccont into destcont, matching on the name.
  *
  * @param destcont A pointer to the VisParamContainer in which the VisParamEntry values are copied.
