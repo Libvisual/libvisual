@@ -57,6 +57,10 @@ AC_CONFIG_FILES([
 	unix/Makefile
 	unix/libmfl/Makefile
 	unix/libvisual/Makefile
+	GForceColorMaps/Makefile
+	GForceDeltaFields/Makefile
+	GForceParticles/Makefile
+	GForceWaveShapes/Makefile
 	])
 
 AC_OUTPUT

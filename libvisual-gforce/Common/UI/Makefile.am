@@ -1,4 +1,13 @@
-INCLUDES=-I../../unix/Headers -I../GeneralTools/Headers -IHeaders -I.. -I../math/Headers -I../io/Headers -I../../unix/libxpce -I../../unix/libmfl -I../../unix/libvisual
+
+INCLUDES = -I$(top_srcdir)/unix/Headers\
+	-I$(top_srcdir)/Common\
+	-I$(top_srcdir)/Common/GeneralTools/Headers\
+	-I$(top_srcdir)/Common/UI/Headers\
+	-I$(top_srcdir)/Common/math/Headers\
+	-I$(top_srcdir)/Common/io/Headers\
+	-I$(top_srcdir)/unix/libxpce\
+	-I$(top_srcdir)/unix/libmfl\
+	-I$(top_srcdir)/unix/libvisual
 
 AM_CXXFLAGS = -DDATADIR="\"$(pkgdatadir)\""
 

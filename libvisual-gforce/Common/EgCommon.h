@@ -1,7 +1,7 @@
 #ifndef EG_COMMON_H
 #define EG_COMMON_H
 
-#include "libmfl.h"
+#include <libmfl.h>
 
 	#ifndef true
 	#define true -1

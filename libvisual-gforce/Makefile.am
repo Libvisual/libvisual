@@ -1,4 +1,5 @@
-SUBDIRS = Common GForceCommon unix
+SUBDIRS = Common GForceCommon unix GForceColorMaps \
+	  GForceDeltaFields GForceParticles GForceWaveShapes
 
 lib_LTLIBRARIES = actor_gforce.la
 
@@ -25,7 +26,7 @@ actor_gforce_la_LIBADD = \
 
 install-data-local:
 	test -d "$(DESTDIR)$(pkgdatadir)" || mkdirhier "$(DESTDIR)$(pkgdatadir)"
-	cp -r deffont "GForceColorMaps" "GForceDeltaFields" "GForceParticles" "GForceWaveShapes" "$(DESTDIR)$(pkgdatadir)"
+	cp -r $(top_srcdir)/deffont "GForceColorMaps" "GForceDeltaFields" "GForceParticles" "GForceWaveShapes" "$(DESTDIR)$(pkgdatadir)"
 
 uninstall-local:
 	rm -rf "$(DESTDIR)$(pkgdatadir)"
