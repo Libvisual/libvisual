@@ -34,9 +34,9 @@ static int hndevents(VisPluginData *plugin, VisEventQueue *eventqueue);
 static int init (privdata *priv, int *params, int params_cnt);
 static int init_glx13 (privdata *priv, int *params, int params_cnt);
 
-
 static int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
 	int *params, int params_count);
+static int get_supported_depths(VisPluginData *plugin);
 static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video);
 static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
@@ -50,6 +50,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.compat_type = LVD_X11,
 
 		.setup = (void*)setup,
+		.get_supported_depths = get_supported_depths,
 
 		.context_create = context_create,
 		.context_delete = context_delete,
@@ -181,12 +182,20 @@ int init(privdata *priv, int *params, int params_cnt)
 		return res;
 	}
 
-	XMapWindow(XDPY, XWIN);
-	XFlush(XDPY);
-
 	return 0;
 }
 
+
+int get_supported_depths(VisPluginData *plugin)
+{
+	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
+
+	return
+		VISUAL_VIDEO_DEPTH_16BIT |
+		VISUAL_VIDEO_DEPTH_24BIT |
+		VISUAL_VIDEO_DEPTH_32BIT |
+		VISUAL_VIDEO_DEPTH_GL;
+}
 
 int init_glx13(privdata *priv, int *params, int params_cnt)
 {
