@@ -59,6 +59,8 @@ int act_jakdaw_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (JakdawPrivate, 1);
 	plugin->priv = priv;
 
+	priv->rcontext = visual_plugin_get_random_context (plugin);
+
 	priv->decay_rate = 1;
 	
 	priv->zoom_mode = FEEDBACK_ZOOMRIPPLE;

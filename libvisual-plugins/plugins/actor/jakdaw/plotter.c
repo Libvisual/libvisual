@@ -78,7 +78,7 @@ void _jakdaw_plotter_draw(JakdawPrivate *priv, int16_t pcm_data[3][512], int16_t
 	switch (priv->plotter_colortype)
 	{
 		case PLOTTER_COLOUR_SOLID: col=priv->plotter_scopecolor; break;
-		case PLOTTER_COLOUR_RANDOM: col=random(); break;
+		case PLOTTER_COLOUR_RANDOM: col=visual_random_context_int (priv->rcontext); break;
 		case PLOTTER_COLOUR_MUSICTRIG: 
 		default:
 			{

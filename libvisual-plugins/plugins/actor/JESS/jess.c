@@ -90,6 +90,8 @@ int act_jess_init (VisPluginData *plugin)
 	}
 
 	plugin->priv = priv;
+
+	priv->rcontext = visual_plugin_get_random_context (plugin);
 	
 	priv->conteur.burn_mode = 4;
 	priv->conteur.draw_mode = 4;

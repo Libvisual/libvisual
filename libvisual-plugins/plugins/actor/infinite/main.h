@@ -41,6 +41,9 @@ typedef struct {
 	int plugheight;
 	VisPalette pal;
 
+	/* Random context for this plugin */
+	VisRandomContext *rcontext;
+	
 	uint8_t *surface1;
 	uint8_t *surface2;
 

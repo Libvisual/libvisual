@@ -51,6 +51,9 @@ typedef struct {
 	uint32_t		*table;
 	uint32_t		*new_image;
 	int			 tableptr;
+
+	/* Plugin it's random context */
+	VisRandomContext	*rcontext;
 } JakdawPrivate;
 
 #endif /* _ACTOR_JAKDAW_H */

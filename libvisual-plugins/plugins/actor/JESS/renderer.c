@@ -147,7 +147,7 @@ void on_beat(JessPrivate *priv, int beat)
 		priv->conteur.k1 += 4;
 
 		/* vitesse a l angle 2 */
-		priv->conteur.v_angle2 += (rand () % 2 - 0.5) * 16 * 32; 
+		priv->conteur.v_angle2 += (visual_random_context_int (priv->rcontext) % 2 - 0.5) * 16 * 32; 
 
 		if (priv->conteur.draw_mode == 3)
 			priv->conteur.k3 = 0;
@@ -174,11 +174,11 @@ void on_reprise(JessPrivate *priv)
 				*(pix++) = 250;  
 
 			if (priv->conteur.freeze_mode == NON) {      
-				priv->conteur.burn_mode = rand() % 4;      
+				priv->conteur.burn_mode = visual_random_context_int(priv->rcontext) % 4;      
 
-				priv->conteur.draw_mode = rand () % 7;    
+				priv->conteur.draw_mode = visual_random_context_int(priv->rcontext) % 7;    
 
-				priv->conteur.blur_mode = rand () % 5 ; 
+				priv->conteur.blur_mode = visual_random_context_int(priv->rcontext) % 5 ; 
 				if (priv->conteur.draw_mode==2)
 					priv->conteur.blur_mode=0;
 
@@ -189,7 +189,7 @@ void on_reprise(JessPrivate *priv)
 			/* il y a eu un flash y a pas longtemps, donc on fait juste des etoiles */
 			/* on change de mode blur */
 			if ((priv->conteur.freeze_mode == 0) && (priv->conteur.mix_reprise >5) && (priv->conteur.draw_mode!=2)) {
-				priv->conteur.blur_mode = rand () % 5 ; 
+				priv->conteur.blur_mode = visual_random_context_int(priv->rcontext) % 5 ; 
 			}
 		}
 	}

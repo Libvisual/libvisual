@@ -43,7 +43,7 @@ void create_tables(JessPrivate *priv)
 						homothetie_hyperbolic(&n_fx, &n_fy, 0.0005,0,0) ; 
 						break;
 					case 4:
-						noize(&n_fx, &n_fy, 0*5.0);
+						noize(priv, &n_fx, &n_fy, 0*5.0);
 						/*	  rot_hyperbolic_radial (&n_fx, &n_fy, PI / 30, 0.00010, 0, 0) ;  */
 						/*	  homothetie_hyperbolic(&n_fx, &n_fy, -0.0002,0,0) ;  */
 						/* 	  homothetie_cos_radial(&n_fx, &n_fy, 0.01,-10,10) ;  */
@@ -129,9 +129,9 @@ void homothetie_cos_radial(float *n_fx,float *n_fy, float rad_factor, float cx, 
 	*n_fy = cy + dy*cosrad;  
 }
 
-void noize(float *n_fx,float *n_fy, float intensity)
+void noize(JessPrivate *priv, float *n_fx,float *n_fy, float intensity)
 {
-	*n_fx +=2*((float)rand()/RAND_MAX-0.5)*intensity;
-	*n_fy +=2*((float)rand()/RAND_MAX-0.5)*intensity-5; 
+	*n_fx +=2*((float)visual_random_context_int(priv->rcontext)/VISUAL_RANDOM_MAX-0.5)*intensity;
+	*n_fy +=2*((float)visual_random_context_int(priv->rcontext)/VISUAL_RANDOM_MAX-0.5)*intensity-5; 
 }
 

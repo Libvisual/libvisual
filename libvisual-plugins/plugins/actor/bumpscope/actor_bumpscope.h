@@ -4,33 +4,36 @@
 #include <libvisual/libvisual.h>
 
 typedef struct {
-	int		 height;
-	int		 width;
+	int			 height;
+	int			 width;
 
-	VisPalette	 pal;
+	VisPalette		 pal;
 
-	float		 intense1[256];
-	float		 intense2[256];
+	float			 intense1[256];
+	float			 intense2[256];
 
-	int		 phongres;
-	uint8_t		*phongdat;
+	int			 phongres;
+	uint8_t			*phongdat;
 
-	uint8_t		*rgb_buf;
-	uint8_t		*rgb_buf2;
+	uint8_t			*rgb_buf;
+	uint8_t			*rgb_buf2;
 
-	VisVideo	*video;
+	VisVideo		*video;
 
-	float		 h;
-	float		 s;
-	float		 v;
+	float			 h;
+	float			 s;
+	float			 v;
 
 	/* Configs */
-	VisColor	 color;
-	int		 color_cycle;
-	int		 moving_light;
-	int		 diamond;
-	int		 light_x;
-	int		 light_y;
+	VisColor		 color;
+	int			 color_cycle;
+	int			 moving_light;
+	int			 diamond;
+	int			 light_x;
+	int			 light_y;
+
+	/* Random context for the plugin */
+	VisRandomContext	*rcontext;
 
 } BumpscopePrivate;
 

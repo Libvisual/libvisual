@@ -13,27 +13,29 @@
 #include <libvisual/libvisual.h>
 
 typedef struct {
-	int initialized;
+	int			 initialized;
 
-	int draw_mode;
+	int			 draw_mode;
 
-	int texture[2];
+	int			 texture[2];
 
-	int maxlines;
-	float texsize;
-	float xrot;
-	float yrot;
-	float zrot;
-	float total;
-	float frame;
+	int			 maxlines;
+	float			 texsize;
+	float			 xrot;
+	float			 yrot;
+	float			 zrot;
+	float			 total;
+	float			 frame;
 
-	float gdata[256];
+	float			 gdata[256];
 
-	struct timeval tv_past;
+	struct timeval		 tv_past;
 
 	/* Config */
-	int num_stars;
-	int speed;
+	int			 num_stars;
+	int			 speed;
+
+	VisRandomContext	*rcontext;
 } MadspinPrivate;
 
 int lv_madspin_init (VisPluginData *plugin);
@@ -91,6 +93,8 @@ int lv_madspin_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (MadspinPrivate, 1);
 	plugin->priv = priv;
 
+	priv->rcontext = visual_plugin_get_random_context (plugin);
+	
 	priv->maxlines = 1;
 	priv->texsize = 0.25f;
 	priv->xrot = 0.0f;
@@ -369,7 +373,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 						/ (2048.01f - (point * 4.0f))) *
 						(((point - priv->num_stars) / (-priv->num_stars)) * 18.0f) + 0.35f;
 
-				priv->texsize *= ((rand() % 100) / 100.0f) * 2.0f;
+				priv->texsize *= ((visual_random_context_int(priv->rcontext) % 100) / 100.0f) * 2.0f;
 
 				/* Top Right */
 				glTexCoord2d (1, 1);

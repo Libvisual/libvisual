@@ -102,7 +102,7 @@ void _inf_load_effects(InfinitePrivate *priv)
 void _inf_load_random_effect(InfinitePrivate *priv, t_effect *effect)
 {
 	if (_inf_nb_effects > 0) {
-		int num_effect=rand()%_inf_nb_effects;
+		int num_effect=visual_random_context_int(priv->rcontext)%_inf_nb_effects;
 		int i;
 		
 		for (i = 0 ; i < sizeof (t_effect); i++) {

@@ -48,8 +48,8 @@ void fusee(JessPrivate *priv, uint8_t * buffer, int new)
 			if (i == FUSEE_MAX+1)
 				return;
 		}
-		priv->xi[i] = rand() % priv->resx - priv->xres2;
-		priv->yi[i] = -rand() % priv->yres2;
+		priv->xi[i] = visual_random_context_int(priv->rcontext) % priv->resx - priv->xres2;
+		priv->yi[i] = -visual_random_context_int(priv->rcontext) % priv->yres2;
 		priv->life[i] = FUSEE_VIE; /* on donne la vie max*/
 	}
 	else  /* on gere les autres */
@@ -98,7 +98,8 @@ void super_spectral_balls(JessPrivate *priv, uint8_t * buffer)
 
 			/* initialisation de la ligne */
 			priv->lifev[i][j] = LINE_VIE;
-			priv->vx[i][j] = RESFACTXF( 0.025*((float) i - 128.0) * 32 +0*(1-(float)rand()/RAND_MAX) );
+			priv->vx[i][j] = RESFACTXF( 0.025*((float) i - 128.0) * 32 +0*
+					(1-(float)visual_random_context_int(priv->rcontext)/RAND_MAX) );
 			priv->vy[i][j] = RESFACTYF( (10+i)*i*priv->lys.Ed_moyen[i]*5000*(   (float)j+1)/4);
 			priv->x[i][j] = RESFACTXF( 2*(i - 128) ) +((float)j*(i-128))/2;
 			priv->y[i][j] = 0*RESFACTXF( yres2/2-(float)((i-128)*(i-128))/256) -20*j ;
@@ -163,8 +164,9 @@ void super_spectral(JessPrivate *priv, uint8_t * buffer)
 			}
 			/* initialisation de la ligne */
 			priv->lifet[i][j] = LINE_VIE;
-			priv->ssvx[i][j] = 0*RESFACTXF( 0.025*((float) i - 128.0) * 32 +(float)rand()/RAND_MAX*60 );
-			priv->ssvy[i][j] = 0*RESFACTYF( 64 +(float)rand()/RAND_MAX*64);
+			priv->ssvx[i][j] = 0*RESFACTXF( 0.025*((float) i - 128.0) * 32 +
+					(float)visual_random_context_int(priv->rcontext)/RAND_MAX*60 );
+			priv->ssvy[i][j] = 0*RESFACTYF( 64 +(float)visual_random_context_int(priv->rcontext)/RAND_MAX*64);
 			priv->ssx[i][j] = RESFACTXF( 2*(i - 128) ) +((float)j*(i-128))/2;
 			priv->ssy[i][j] = 0*RESFACTXF( yres2/2-(float)((i-128)*(i-128))/256) -20*j+60 ;
 			priv->sstheta[i][j] = 0;
@@ -491,7 +493,7 @@ void stars_create_state(JessPrivate *priv, float pos[3][STARS_MAX], int mode)
 			{
 				for(j=0; j<3 ; j++)
 				{
-					pos[j][i] = ((float)rand()/RAND_MAX-0.5);
+					pos[j][i] = ((float)visual_random_context_int(priv->rcontext)/RAND_MAX-0.5);
 
 				}
 			}
@@ -539,7 +541,7 @@ void stars_manage(JessPrivate *priv, uint8_t *buffer, int new,  float alpha, flo
 	else if(new == NEW) /* on creer une nouvelle forme */
 	{ 
 		mult = 1;
-		if ((rand()%3)==0)
+		if ((visual_random_context_int(priv->rcontext)%3)==0)
 			mult = 4;
 
 		for(i = 0 ; i< STARS_MAX; i++)
@@ -549,7 +551,7 @@ void stars_manage(JessPrivate *priv, uint8_t *buffer, int new,  float alpha, flo
 			priv->smpos[priv->smselect][2][i]= mult*z[i]; 
 		}
 		priv->smselect = 1 - priv->smselect;
-		stars_create_state(priv, priv->smpos[priv->smselect], rand()%2+1);
+		stars_create_state(priv, priv->smpos[priv->smselect], visual_random_context_int(priv->rcontext)%2+1);
 	}
 	else  /* on gere */
 	{

@@ -112,7 +112,7 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 		xo += xd;
 		if ((int)xo > ((int)priv->width/(int)2) || (int)xo < -((int)priv->width/(int)2)) {
 			xo = (xo>0)?(priv->width/2):-(priv->width/2);
-			if (random()&1) {
+			if (visual_random_context_int(priv->rcontext)&1) {
 				xd = (xd>0)?-1:1;
 				yd = 0;
 			} else {
@@ -124,7 +124,7 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 		yo += yd;
 		if ((int)yo > ((int)priv->height/(int)2) || (int)yo < -((int)priv->height/(int)2)) {
 			yo = (yo>0)?(priv->height/2):-(priv->height/2);
-			if (random()&1) {
+			if (visual_random_context_int(priv->rcontext)&1) {
 				xd = (xd>0)?-1:1;
 				yd = 0;
 			} else {
@@ -144,11 +144,11 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 
 			was_color = 1;
 
-			if (random()&1) {
-				hd = (random()&1)*2-1;
+			if (visual_random_context_int(priv->rcontext)&1) {
+				hd = (visual_random_context_int(priv->rcontext)&1)*2-1;
 				sd = 0;
 			} else {
-				sd = 0.01 * ((random()&1)*2-1);
+				sd = 0.01 * ((visual_random_context_int(priv->rcontext)&1)*2-1);
 				hd = 0;
 			}
 		}
@@ -160,12 +160,12 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 			h += hd;
 			if (h >= 360) h = 0;
 			if (h < 0) h = 359;
-			if ((random()%150) == 0) {
-				if (random()&1) {
-					hd = (random()&1)*2-1;
+			if ((visual_random_context_int(priv->rcontext)%150) == 0) {
+				if (visual_random_context_int(priv->rcontext)&1) {
+					hd = (visual_random_context_int(priv->rcontext)&1)*2-1;
 					sd = 0;
 				} else {
-					sd = 0.01 * ((random()&1)*2-1);
+					sd = 0.01 * ((visual_random_context_int(priv->rcontext)&1)*2-1);
 					hd = 0;
 				}
 			}
@@ -178,14 +178,14 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 				if (s > 0.52) {
 					sd = -0.01;
 				} else if (s == 0) {
-					h = random()%360;
+					h = visual_random_context_int(priv->rcontext)%360;
 					sd = 0.01;
 				} else {
-					if (random()&1) {
-						hd = (random()&1)*2-1;
+					if (visual_random_context_int(priv->rcontext)&1) {
+						hd = (visual_random_context_int(priv->rcontext)&1)*2-1;
 						sd = 0;
 					} else {
-						sd = 0.01 * ((random()&1)*2-1);
+						sd = 0.01 * ((visual_random_context_int(priv->rcontext)&1)*2-1);
 						hd = 0;
 					}
 				}

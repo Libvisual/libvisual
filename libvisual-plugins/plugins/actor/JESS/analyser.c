@@ -97,7 +97,6 @@ float energy(JessPrivate *priv, short data_freq_tmp[2][256], int type_E)
 int start_ticks(JessPrivate *priv)
 {
 	gettimeofday(&priv->start, NULL);
-	srand (priv->start.tv_sec);
 
 	return 0;
 }

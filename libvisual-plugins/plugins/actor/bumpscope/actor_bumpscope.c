@@ -60,6 +60,8 @@ int act_bumpscope_init (VisPluginData *plugin)
 
 	plugin->priv = priv;
 
+	priv->rcontext = visual_plugin_get_random_context (plugin);
+
 	visual_palette_allocate_colors (&priv->pal, 256);
 
 	priv->color.r =		122;

@@ -44,9 +44,9 @@ again_mister:
 	else 
 		i = 3;
 
-	j=rand()%i;
-	k=rand()%i;
-	l=rand()%i;
+	j=visual_random_context_int(priv->rcontext) % i;
+	k=visual_random_context_int(priv->rcontext) % i;
+	l=visual_random_context_int(priv->rcontext) % i;
 
 	priv->conteur.triplet = j+10*k+100*l;
 

@@ -110,7 +110,7 @@ void cercle_32 (JessPrivate *priv, uint8_t * buffer, int h, int k, int y, uint8_
 
 void boule_random (JessPrivate *priv, uint8_t * buffer, int x, int y, int r, uint8_t color)
 {
-	int i, j, ecart = (int) rand()%5+1;
+	int i, j, ecart = (int) visual_random_context_int(priv->rcontext)%5+1;
 	j = color;
 	if (priv->video == 8)
 	{

@@ -1,5 +1,10 @@
 2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/*: Replaced the random system
+	of every plugin with that of libvisual.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/morph/flash/morph_flash.c: Fixed the
 	white palette. Forgot to port over
 	from the old palette system. The 8bit to 8bit

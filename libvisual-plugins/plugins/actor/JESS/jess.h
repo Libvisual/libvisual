@@ -19,6 +19,8 @@ typedef struct {
 
 	struct timeval start;
 
+	/* Randomize context from libvisual */
+	VisRandomContext *rcontext;
 	VisPalette jess_pal;
 
 	short pcm_data[2][512];
