@@ -755,8 +755,10 @@ VisPluginRef *visual_plugin_find (VisList *list, char *name)
 }
 
 /**
+ * Gives the VISUAL_PLUGIN_API_VERSION value for which the library is compiled.
+ * This can be used to check against for API/ABI compatibility check.
  *
- *
+ * @return The VISUAL_PLUGIN_API_VERSION define value.
  */
 int visual_plugin_get_api_version ()
 {
