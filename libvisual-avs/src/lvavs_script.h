@@ -123,7 +123,8 @@ struct _LVAVSScriptTreeElement {
 
 /* Prototypes */
 LVAVSScriptEnviron *lvavs_script_environ_new (void);
-int lvavs_script_environ_add_function (LVAVSScriptEnviron *senviron, LVAVSScriptEnvironFunctionFunc func, char *symbol, int nargs);
+int lvavs_script_environ_add_function (LVAVSScriptEnviron *senviron, LVAVSScriptEnvironFunctionFunc func,
+		                char *symbol, int nargs, LVAVSScriptEnvironFunctionType type);
 
 LVAVSScriptVMContext *lvavs_script_vmcontext_new (void);
 int lvavs_script_vmcontext_set_environ (LVAVSScriptVMContext *vmctx, LVAVSScriptEnviron *senviron);
