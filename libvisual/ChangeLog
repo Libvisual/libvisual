@@ -1,3 +1,8 @@
+2004-12-10  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_video.c (visual_video_filter_bilinear): Added function
+	frame, and basics, not yet the bili impl.
+
 2004-12-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c (depth_transform_16_to_32_c): Somehow I find it

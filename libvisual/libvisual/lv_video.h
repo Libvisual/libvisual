@@ -117,6 +117,8 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video
 
 int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod scale_method);
 
+int visual_video_filter_bilinear (VisVideo *video);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

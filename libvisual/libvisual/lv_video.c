@@ -70,6 +70,11 @@ static int scale_nearest_16 (VisVideo *dest, const VisVideo *src);
 static int scale_nearest_24 (VisVideo *dest, const VisVideo *src);
 static int scale_nearest_32 (VisVideo *dest, const VisVideo *src);
 
+/* Bilinear filter functions */
+static int filter_bilinear_8 (VisVideo *video);
+static int filter_bilinear_16 (VisVideo *video);
+static int filter_bilinear_24 (VisVideo *video);
+static int filter_bilinear_32 (VisVideo *video);
 
 static int video_dtor (VisObject *object)
 {
@@ -1644,3 +1649,65 @@ static int scale_nearest_8 (VisVideo *dest, const VisVideo *src)
 }
 
 #endif
+
+int visual_video_filter_bilinear (VisVideo *video)
+{
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+
+	switch (video->depth) {
+		case VISUAL_VIDEO_DEPTH_8BIT:
+			filter_bilinear_8 (video);
+
+			break;
+
+		case VISUAL_VIDEO_DEPTH_16BIT:
+			filter_bilinear_16 (video);
+
+			break;
+		
+		case VISUAL_VIDEO_DEPTH_24BIT:
+			filter_bilinear_24 (video);
+
+			break;
+
+		case VISUAL_VIDEO_DEPTH_32BIT:
+			filter_bilinear_32 (video);
+
+			break;
+
+		default:
+			visual_log (VISUAL_LOG_CRITICAL, "Invalid depth passed to the bilinear filter");
+
+			return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+
+			break;
+	}
+
+	return VISUAL_OK;
+}
+
+static int filter_bilinear_8 (VisVideo *video)
+{
+	
+
+	return VISUAL_OK;
+}
+
+static int filter_bilinear_16 (VisVideo *video)
+{
+
+	return VISUAL_OK;
+}
+
+static int filter_bilinear_24 (VisVideo *video)
+{
+
+	return VISUAL_OK;
+}
+
+static int filter_bilinear_32 (VisVideo *video)
+{
+
+	return VISUAL_OK;
+}
+
