@@ -4,9 +4,30 @@ AC_PREREQ(2.57)
 AC_INIT(Libvisual-widgets Library, 0.3.0, ds@nerds-incorporated.org, libvisual-widgets)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
+m4_define([libvisual_required_version], [0.3.0])
 m4_define([gtk1_required_version], [1.2.0])
 
 AC_CONFIG_HEADER(config.h)
+
+AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
+if test x$PKG_CONFIG = xno ; then
+  AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/.
+	       *** You will need pkg-config to compile against Libvisual Library])
+fi
+if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
+  :
+else
+  AC_MSG_WARN([*** pkg-config too old; version 0.14 or better recommended.])
+fi
+
+## Initial sanity check, done here so that users get told they 
+## have the wrong dependencies as early in the process as possible.
+## Later on we actually use the cflags/libs from separate pkg-config
+## calls.
+PKG_CHECK_MODULES(BASE_DEPENDENCIES,
+  [ libvisual = libvisual_required_version dnl
+    gtk >= gtk1_required_version dnl
+    gtk+-2.0])
 
 AC_PREFIX_DEFAULT(/usr)
 
@@ -46,17 +67,6 @@ AC_PROG_MAKE_SET
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
-AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
-if test x$PKG_CONFIG = xno ; then
-  AC_MSG_WARN([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/.
-	       *** You will need pkg-config to compile against Libvisual Library])
-fi
-if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
-  :
-else
-  AC_MSG_WARN([*** pkg-config too old; version 0.14 or better recommended.])
-fi
-
 # Checks for header files.
 AC_HEADER_STDC
 
@@ -81,7 +91,7 @@ else
 fi
 AC_SUBST(DEBUG_CFLAGS)
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.3.0, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = libvisual_required_version, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
 	AC_MSG_ERROR([libvisual not found, libvisual is needed to build this package,
 you can download libvisual at http://libvisual.sf.net/])
