@@ -1,2 +1,6 @@
-Check ChangeLog.
+NEWS - list of user-visible changes between releases
+of Libvisual Nebulus.
+
+New in 0.1.2: 2004-06-27:
+* Build tree fixes.
 
