@@ -1,3 +1,10 @@
+2004-07-08  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* libvisual/lv_plugin.c: fixed double free() of list
+	in visual_plugin_ref_list_destroy()
+	* libvisual/lv_list.c: fixed typo in if condition
+	in visual_list_destroy()
+
 2004-07-07  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_actor.c:
