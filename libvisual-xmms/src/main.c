@@ -18,6 +18,7 @@
 
 #include "gettext.h"
 #include "lv_xmms_config.h"
+#include "main.h"
 #include "about.h"
 
 #define LV_XMMS_DEFAULT_INPUT_PLUGIN "esd"
@@ -27,11 +28,16 @@ static SDL_Surface *screen = NULL;
 static SDL_Color sdlpal[256];
 static SDL_Thread *render_thread;
 static SDL_mutex *pcm_mutex;
+static SDL_mutex *change_mutex;
 static SDL_Surface *icon;
 
 /* Libvisual and visualisation variables */
 static VisVideo *video;
 static VisPalette *pal;
+
+/* Vars for change notifies from the config dialog */
+static int change_plugin = FALSE;
+static char new_plugname[1024];
 
 static char song_name[1024];
 static const char *cur_lv_plugin = NULL;
@@ -161,6 +167,7 @@ static void lv_xmms_init ()
 		visual_log (VISUAL_LOG_WARNING, _("Cannot not load icon: %s"), SDL_GetError());
 	
 	pcm_mutex = SDL_CreateMutex ();
+	change_mutex = SDL_CreateMutex ();
 	
 	if (strlen (options->last_plugin) <= 0 ) {
 		visual_log (VISUAL_LOG_INFO, _("Last plugin: (none)"));
@@ -208,8 +215,10 @@ static void lv_xmms_cleanup ()
 
 	visual_log (VISUAL_LOG_DEBUG, "calling SDL_DestroyMutex()");
 	SDL_DestroyMutex (pcm_mutex);
+	SDL_DestroyMutex (change_mutex);
 	
 	pcm_mutex = NULL;
+	change_mutex = NULL;
 
 	visual_log (VISUAL_LOG_DEBUG, "calling lv_xmms_config_save_prefs()");
 	lv_xmms_config_save_prefs ();
@@ -515,6 +524,17 @@ static int visual_render (void *arg)
                                 usleep (idle_time*900);
 		}
 
+		/* Notify from the config dialog, keeping it synchronised this way */
+
+		SDL_mutexP (change_mutex);
+		if (change_plugin == TRUE) {
+			visual_bin_set_morph_by_name (bin, lv_xmms_config_morph_plugin ());
+			visual_bin_switch_actor_by_name (bin, new_plugname);
+			SDL_WM_SetCaption (new_plugname, new_plugname);
+		}
+		change_plugin = FALSE;
+		SDL_mutexV (change_mutex);
+
 		sdl_event_handle ();
 
 		if (options->fullscreen && !(screen->flags & SDL_FULLSCREEN))
@@ -693,3 +713,10 @@ static void dummy (GtkWidget *widget, gpointer data)
 {
 }
 
+void lv_change_plugin (char *name)
+{
+	SDL_mutexP (change_mutex);
+	strncpy (new_plugname, name, 1024);
+	change_plugin = TRUE;
+	SDL_mutexV (change_mutex);
+}

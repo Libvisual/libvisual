@@ -10,6 +10,7 @@
 
 #include "lv_xmms_config.h"
 #include "config_gui.h"
+#include "main.h"
 #include "gettext.h"
 
 #define CONFIG_DEFAULT_ICON (PACKAGE_DATADIR "/libvisual-xmms-vis.bmp")
@@ -755,9 +756,7 @@ static void on_clist_actor_plugins_select_row (GtkCList        *clist,
 			/* Double click */
 			if (bin) {
 				lv_xmms_config_set_current_actor (plugname);
-				visual_bin_set_morph_by_name (bin, lv_xmms_config_morph_plugin ());
-				visual_bin_switch_actor_by_name (bin, plugname);
-				SDL_WM_SetCaption (plugname, plugname);
+				lv_change_plugin (plugname);
 			}
 			break;
 		default:

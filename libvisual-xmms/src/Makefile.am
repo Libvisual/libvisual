@@ -16,9 +16,9 @@ DEFS = -DLOCALEDIR=\"$(datadir)/locale\" @DEFS@
 
 libvisual_xmms_la_LDFLAGS = -module -avoid-version
 
-libvisual_xmms_la_SOURCES = main.c\
-			    lv_xmms_config.c lv_xmms_config.h\
-			    config_gui.c config_gui.h\
-			    about.c about.h\
+libvisual_xmms_la_SOURCES = main.c main.h \
+			    lv_xmms_config.c lv_xmms_config.h \
+			    config_gui.c config_gui.h \
+			    about.c about.h \
 			    gettext.h
 
