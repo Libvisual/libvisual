@@ -1,3 +1,7 @@
+2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* COPYING: Fixed to be LGPL.
+
 2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Fixes by Vitaly V. Bursov regarding openGL detection,
