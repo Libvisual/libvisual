@@ -53,17 +53,41 @@ enum {
 	CPU_FLAGS_EXT_3DNOW	= 1 << 31
 };
 
-uint32_t cpuid (uint32_t type);
+static int has_cpuid (void);
+static uint32_t cpuid (uint32_t type);
 
-uint32_t cpuid (uint32_t type)
+static int has_cpuid (void)
+{
+	int a, c;
+#ifdef VISUAL_ARCH_Ix86
+	__asm__ __volatile__ (
+			"pushf\n"
+			"popl %0\n"
+			"movl %0, %1\n"
+			"xorl $0x200000, %0\n"
+			"push %0\n"
+			"popf\n"
+			"pushf\n"
+			"popl %0\n"
+			: "=a" (a), "=c" (c)
+			:
+			: "cc"
+			);
+
+	return a != c;
+#else
+	return 0;
+#endif
+}
+
+static uint32_t cpuid (uint32_t type)
 {
 	uint32_t flags;
 
-/* 
- * FIXME See what to do if we are on a 386 or 486 machine,
- * which doesn't have the 'cpuid' instruction.
- */
 #ifdef VISUAL_ARCH_Ix86
+	if (has_cpuid () == FALSE)
+		return 0;
+	
 	__asm__ ("movl %1, %%eax \n"
 			"cpuid          \n"
 			"movl %%edx, %0 \n"
@@ -77,6 +101,7 @@ uint32_t cpuid (uint32_t type)
 
 	return flags;
 }
+
 /**
  * @defgroup VisCPU VisCPU
  * @{
@@ -92,7 +117,7 @@ void visual_cpu_initialize ()
 	cpu_info.type = VISUAL_CPU_TYPE_X86;
 	cpu_info.nrcpu = 1;
 
-	cpu_flags = cpuid(1);
+	cpu_flags = cpuid (1);
 
 	if (cpu_flags & CPU_FLAGS_MMX)
 		cpu_info.flags |= VISUAL_CPU_FLAG_MMX;
