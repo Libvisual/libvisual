@@ -524,8 +524,8 @@ static int visual_render (void *arg)
 			}
 
 			now = SDL_GetTicks ();
-                        if ((idle_time = (now - render_time)) < frame_length)
-                                usleep (idle_time*900);
+//                        if ((idle_time = (now - render_time)) < frame_length)
+  //                              usleep (idle_time*900);
 		}
 
 		/* Notify from the config dialog, keeping it synchronised this way */

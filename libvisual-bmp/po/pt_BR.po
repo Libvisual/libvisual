@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-14 15:47+0200\n"
+"POT-Creation-Date: 2005-02-09 20:47+0100\n"
 "PO-Revision-Date: 2004-07-12 16:05-0300\n"
 "Last-Translator: Gustavo Sverzut Barbieri <barbieri@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <linux_pt_BR@yahoo.com.br>\n"
@@ -35,8 +35,8 @@ msgid " will not be loaded."
 msgstr ""
 
 #: src/main.c:151 src/lv_bmp_config.c:178 src/lv_bmp_config.c:632
-#: src/lv_bmp_config.c:696 src/lv_bmp_config.c:866 src/lv_bmp_config.c:920
-#: src/lv_bmp_config.c:962 src/lv_bmp_config.c:1067 src/config_gui.c:283
+#: src/lv_bmp_config.c:695 src/lv_bmp_config.c:865 src/lv_bmp_config.c:919
+#: src/lv_bmp_config.c:961 src/lv_bmp_config.c:1066 src/config_gui.c:283
 msgid "Accept"
 msgstr "Aceitar"
 
@@ -128,63 +128,63 @@ msgid "LibVisual BMP plugin: adding entry to config file..."
 msgstr ""
 
 #. Create a new item marked as enabled
-#: src/lv_bmp_config.c:565 src/lv_bmp_config.c:787
+#: src/lv_bmp_config.c:565 src/lv_bmp_config.c:786
 msgid " (enabled)"
 msgstr ""
 
-#: src/lv_bmp_config.c:628 src/lv_bmp_config.c:957
+#: src/lv_bmp_config.c:628 src/lv_bmp_config.c:956
 msgid "Version: "
 msgstr ""
 
-#: src/lv_bmp_config.c:630 src/lv_bmp_config.c:959
+#: src/lv_bmp_config.c:630 src/lv_bmp_config.c:958
 msgid "Author: "
 msgstr ""
 
-#: src/lv_bmp_config.c:684
+#: src/lv_bmp_config.c:683
 msgid "The list of actor plugins is empty."
 msgstr ""
 
-#: src/lv_bmp_config.c:691
+#: src/lv_bmp_config.c:690
 msgid " error"
 msgstr ""
 
-#: src/lv_bmp_config.c:692
+#: src/lv_bmp_config.c:691
 msgid "There are no actor plugins installed.\n"
 msgstr ""
 
-#: src/lv_bmp_config.c:693
+#: src/lv_bmp_config.c:692
 msgid ""
 " cannot be initialized.\n"
 "Please visit http://libvisual.sf.net to\n"
 "to get some nice plugins."
 msgstr ""
 
-#: src/lv_bmp_config.c:855 src/lv_bmp_config.c:909
+#: src/lv_bmp_config.c:854 src/lv_bmp_config.c:908
 msgid "The list of morph plugins is empty."
 msgstr ""
 
-#: src/lv_bmp_config.c:863 src/lv_bmp_config.c:917
+#: src/lv_bmp_config.c:862 src/lv_bmp_config.c:916
 msgid ""
 "There are no morph plugins, so switching\n"
 "between visualization plugins will be do it\n"
 "without any morphing."
 msgstr ""
 
-#: src/lv_bmp_config.c:873 src/lv_bmp_config.c:926 src/lv_bmp_config.c:952
+#: src/lv_bmp_config.c:872 src/lv_bmp_config.c:925 src/lv_bmp_config.c:951
 msgid "There is no info for this plugin"
 msgstr ""
 
-#: src/lv_bmp_config.c:945
+#: src/lv_bmp_config.c:944
 msgid "The list of input plugins is empty."
 msgstr ""
 
-#: src/lv_bmp_config.c:1065
+#: src/lv_bmp_config.c:1064
 msgid ""
 "We cannot initialize Libvisual library.\n"
 "Libvisual is necessary for this plugin to work."
 msgstr ""
 
-#: src/lv_bmp_config.c:1157
+#: src/lv_bmp_config.c:1156
 msgid "Invalid value for 'enabled_plugins' option"
 msgstr ""
 

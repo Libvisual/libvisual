@@ -3,7 +3,7 @@ of Libvisual plugins.
 
 These are only visible changes, for more details look at the ChangeLog.
 
-New in 0.2.0pre1: 2005-02-01:
+New in 0.2.0: 2005-02-09:
 * Adding pseudotoad flower actor plugin, ported. (Dennis)
 * Adding dancing particles plugin, ported. (Dennis)
 * Including G-Force in package. (Dennis)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-14 15:51+0200\n"
+"POT-Creation-Date: 2005-02-09 20:44+0100\n"
 "PO-Revision-Date: 2004-07-11 16:48-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -35,8 +35,8 @@ msgid " will not be loaded."
 msgstr " no será cargado."
 
 #: src/main.c:157 src/lv_xmms_config.c:186 src/lv_xmms_config.c:586
-#: src/lv_xmms_config.c:650 src/lv_xmms_config.c:849 src/lv_xmms_config.c:903
-#: src/lv_xmms_config.c:945 src/lv_xmms_config.c:1053
+#: src/lv_xmms_config.c:649 src/lv_xmms_config.c:848 src/lv_xmms_config.c:902
+#: src/lv_xmms_config.c:944 src/lv_xmms_config.c:1052
 msgid "Accept"
 msgstr "Aceptar"
 
@@ -132,44 +132,44 @@ msgid "LibVisual XMMS plugin: adding entry to config file..."
 msgstr ""
 "LibVisual XMMS plugin: añadiendo entrada al archivo de configuración..."
 
-#: src/lv_xmms_config.c:550 src/lv_xmms_config.c:787
+#: src/lv_xmms_config.c:550 src/lv_xmms_config.c:786
 msgid " (enabled)"
 msgstr ""
 
-#: src/lv_xmms_config.c:582 src/lv_xmms_config.c:940
+#: src/lv_xmms_config.c:582 src/lv_xmms_config.c:939
 msgid "Version: "
 msgstr "Versión: "
 
-#: src/lv_xmms_config.c:584 src/lv_xmms_config.c:942
+#: src/lv_xmms_config.c:584 src/lv_xmms_config.c:941
 msgid "Author: "
 msgstr "Autor: "
 
-#: src/lv_xmms_config.c:638
+#: src/lv_xmms_config.c:637
 #, fuzzy
 msgid "The list of actor plugins is empty."
 msgstr "La lista de plugins de morphing está vacía."
 
-#: src/lv_xmms_config.c:645
+#: src/lv_xmms_config.c:644
 msgid " error"
 msgstr ""
 
-#: src/lv_xmms_config.c:646
+#: src/lv_xmms_config.c:645
 #, fuzzy
 msgid "There are no actor plugins installed.\n"
 msgstr "La lista de plugins de morphing está vacía."
 
-#: src/lv_xmms_config.c:647
+#: src/lv_xmms_config.c:646
 msgid ""
 " cannot be initialized.\n"
 "Please visit http://libvisual.sf.net to\n"
 "to get some nice plugins."
 msgstr ""
 
-#: src/lv_xmms_config.c:838 src/lv_xmms_config.c:892
+#: src/lv_xmms_config.c:837 src/lv_xmms_config.c:891
 msgid "The list of morph plugins is empty."
 msgstr "La lista de plugins de morphing está vacía."
 
-#: src/lv_xmms_config.c:846 src/lv_xmms_config.c:900
+#: src/lv_xmms_config.c:845 src/lv_xmms_config.c:899
 msgid ""
 "There are no morph plugins, so switching\n"
 "between visualization plugins will be do it\n"
@@ -179,21 +179,21 @@ msgstr ""
 "el cambio entre plugins de visualización se\n"
 "hará sin morphing."
 
-#: src/lv_xmms_config.c:856 src/lv_xmms_config.c:909 src/lv_xmms_config.c:935
+#: src/lv_xmms_config.c:855 src/lv_xmms_config.c:908 src/lv_xmms_config.c:934
 msgid "There is no info for this plugin"
 msgstr "No hay información para éste plugin"
 
-#: src/lv_xmms_config.c:928
+#: src/lv_xmms_config.c:927
 msgid "The list of input plugins is empty."
 msgstr "La lista de plugins de entrada es vacía."
 
-#: src/lv_xmms_config.c:1051
+#: src/lv_xmms_config.c:1050
 msgid ""
 "We cannot initialize Libvisual library.\n"
 "Libvisual is necessary for this plugin to work."
 msgstr ""
 
-#: src/lv_xmms_config.c:1143
+#: src/lv_xmms_config.c:1142
 msgid "Invalid value for 'enabled_plugins' option"
 msgstr "Valor inválido para la opción 'enabled_plugins'"
 
