@@ -114,6 +114,7 @@ morph: (lots of these effects can be taken from the demo world, this should turn
 		mmx sse optimize.
 
 	tentacle:
+		Add a soft edges variant.
 		optimize
 
 	flash:
