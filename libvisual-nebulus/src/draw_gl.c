@@ -207,7 +207,7 @@ use_twist_texture(void)
 {
   if (gen_gl_texture(twist))
     glTexImage2D(GL_TEXTURE_2D, 0, 3, twist_image.width, twist_image.height,
-		  0, GL_RGB, GL_UNSIGNED_BYTE, twist_image.screenbuffer);
+		  0, GL_RGB, GL_UNSIGNED_BYTE, twist_image.pixels);
   use_gl_texture(twist);
 }
 
@@ -217,7 +217,7 @@ use_child_texture(void)
 {
   if (gen_gl_texture(texchild))
     glTexImage2D(GL_TEXTURE_2D, 0, 3, child_image.width, child_image.height,
-		  0, GL_RGB, GL_UNSIGNED_BYTE, child_image.screenbuffer);
+		  0, GL_RGB, GL_UNSIGNED_BYTE, child_image.pixels);
   use_gl_texture(texchild);
 }
 
@@ -227,7 +227,7 @@ use_energy_texture(void)
 {
   if (gen_gl_texture(childbg))
     glTexImage2D(GL_TEXTURE_2D, 0, 3, energy_image.width, energy_image.height,
-		  0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.screenbuffer);
+		  0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.pixels);
   use_gl_texture(childbg);
 }
 
@@ -237,7 +237,7 @@ use_background_texture(void)
 {
   if (gen_gl_texture(twistbg))
     glTexImage2D(GL_TEXTURE_2D, 0, 3, background_image.width, background_image.height,
-		  0, GL_RGB, GL_UNSIGNED_BYTE, background_image.screenbuffer);
+		  0, GL_RGB, GL_UNSIGNED_BYTE, background_image.pixels);
   use_gl_texture(twistbg);
 }
 
@@ -283,43 +283,43 @@ init_effect(void)
   if (!point_general->effect) {
     if (gen_gl_texture(knotbg))
       glTexImage2D(GL_TEXTURE_2D, 0, 3, background_image.width, background_image.height,
-		    0, GL_RGB, GL_UNSIGNED_BYTE, background_image.screenbuffer);
+		    0, GL_RGB, GL_UNSIGNED_BYTE, background_image.pixels);
     use_gl_texture(knotbg);
   }
   if (point_general->effect == 4) {
     if (gen_gl_texture(tunnel))
       glTexImage2D(GL_TEXTURE_2D, 0, 3, tunnel_image.width, tunnel_image.height,
-		    0, GL_RGB, GL_UNSIGNED_BYTE, tunnel_image.screenbuffer);
+		    0, GL_RGB, GL_UNSIGNED_BYTE, tunnel_image.pixels);
     use_gl_texture(tunnel);
   }
   if (point_general->effect == 5) {
     if (gen_gl_texture(tentacle))
       glTexImage2D(GL_TEXTURE_2D, 0, 3, tentacle_image.width, tentacle_image.height,
-		    0, GL_RGB, GL_UNSIGNED_BYTE, tentacle_image.screenbuffer);
+		    0, GL_RGB, GL_UNSIGNED_BYTE, tentacle_image.pixels);
     use_gl_texture(tentacle);
   }
   if (point_general->effect == 6) {
     if (gen_gl_texture(twist))
       glTexImage2D(GL_TEXTURE_2D, 0, 3, twist_image.width, twist_image.height,
-		    0, GL_RGB, GL_UNSIGNED_BYTE, twist_image.screenbuffer);
+		    0, GL_RGB, GL_UNSIGNED_BYTE, twist_image.pixels);
     if (gen_gl_texture(twistbg))
       glTexImage2D(GL_TEXTURE_2D, 0, 3, background_image.width, background_image.height,
-		    0, GL_RGB, GL_UNSIGNED_BYTE, background_image.screenbuffer);
+		    0, GL_RGB, GL_UNSIGNED_BYTE, background_image.pixels);
     use_gl_texture(twist);
   }
   if (point_general->effect == 7) {
     if (gen_gl_texture(texchild))
       glTexImage2D(GL_TEXTURE_2D, 0, 3, child_image.width, child_image.height,
-		    0, GL_RGB, GL_UNSIGNED_BYTE, child_image.screenbuffer);
+		    0, GL_RGB, GL_UNSIGNED_BYTE, child_image.pixels);
     if (gen_gl_texture(childbg))
       glTexImage2D(GL_TEXTURE_2D, 0, 3, energy_image.width, energy_image.height,
-		    0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.screenbuffer);
+		    0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.pixels);
     use_gl_texture(texchild);
   }
   if (point_general->effect == 8) {
     if (gen_gl_texture(energy))
       glTexImage2D(GL_TEXTURE_2D, 0, 3, energy_image.width, energy_image.height,
-		    0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.screenbuffer);
+		    0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.pixels);
     use_gl_texture(energy);
   }
   point_general->init = TRUE;
@@ -359,43 +359,43 @@ draw_scene(void)
       point_general->effect = 0;
       if (gen_gl_texture(knotbg))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, background_image.width, background_image.height,
-		      0, GL_RGB, GL_UNSIGNED_BYTE, background_image.screenbuffer);
+		      0, GL_RGB, GL_UNSIGNED_BYTE, background_image.pixels);
       use_gl_texture(knotbg);
     }
     if (point_general->effect == 4) {
       if (gen_gl_texture(tunnel))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, tunnel_image.width, tunnel_image.height,
-		      0, GL_RGB, GL_UNSIGNED_BYTE, tunnel_image.screenbuffer);
+		      0, GL_RGB, GL_UNSIGNED_BYTE, tunnel_image.pixels);
       use_gl_texture(tunnel);
     }
     if (point_general->effect == 5) {
       if (gen_gl_texture(tentacle))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, tentacle_image.width, tentacle_image.height,
-		      0, GL_RGB, GL_UNSIGNED_BYTE, tentacle_image.screenbuffer);
+		      0, GL_RGB, GL_UNSIGNED_BYTE, tentacle_image.pixels);
       use_gl_texture(tentacle);
     }
     if (point_general->effect == 6) {
       if (gen_gl_texture(twist))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, twist_image.width, twist_image.height,
-		      0, GL_RGB, GL_UNSIGNED_BYTE, twist_image.screenbuffer);
+		      0, GL_RGB, GL_UNSIGNED_BYTE, twist_image.pixels);
       if (gen_gl_texture(twistbg))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, background_image.width, background_image.height,
-		      0, GL_RGB, GL_UNSIGNED_BYTE, background_image.screenbuffer);
+		      0, GL_RGB, GL_UNSIGNED_BYTE, background_image.pixels);
       use_gl_texture(twist);
     }
     if (point_general->effect == 7) {
       if (gen_gl_texture(texchild))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, child_image.width, child_image.height,
-		      0, GL_RGB, GL_UNSIGNED_BYTE, child_image.screenbuffer);
+		      0, GL_RGB, GL_UNSIGNED_BYTE, child_image.pixels);
       if (gen_gl_texture(childbg))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, energy_image.width, energy_image.height,
-		      0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.screenbuffer);
+		      0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.pixels);
     use_gl_texture(texchild);
     }
     if (point_general->effect == 8) {
       if (gen_gl_texture(energy))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, energy_image.width, energy_image.height,
-		      0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.screenbuffer);
+		      0, GL_RGB, GL_UNSIGNED_BYTE, energy_image.pixels);
     use_gl_texture(energy);
     }
     point_general->changement = FALSE;
