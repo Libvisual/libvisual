@@ -1,5 +1,10 @@
 2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_types.h: Adding defines for a mingw
+	environment.
+
+2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_cpu.c: Merging patch found at:
 	http://cvs.mandrakesoft.com/cgi-bin/cvsweb.cgi/SPECS/libvisual/libvisual-0.2.0-ppc-build-fix.patch?rev=1.1&content-type=text/x-cvsweb-markup
 	Thanks to Christiaan Welvaart <cjw@daneel.dyndns.org> for pointing out

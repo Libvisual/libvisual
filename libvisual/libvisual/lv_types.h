@@ -24,7 +24,11 @@
 #ifndef _LV_TYPES_H
 #define _LV_TYPES_H
 
+#if defined(VISUAL_WITH_MINGW)
+#include <stdint.h>
+#else
 #include <sys/types.h>
+#endif /* !VISUAL_WITH_MINGW */
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,6 +36,7 @@ extern "C" {
 
 #define VISUAL_CHECK_CAST(uiobj, cast_type, cast)    ((cast*) (uiobj))
 
+#if !defined(VISUAL_WITH_MINGW)
 #ifndef uint8_t
 #define uint8_t		u_int8_t
 #endif
@@ -43,6 +48,7 @@ extern "C" {
 #ifndef uint32_t
 #define uint32_t	u_int32_t
 #endif
+#endif /* !VISUAL_WITH_MINGW */
 
 #ifdef __cplusplus
 }
