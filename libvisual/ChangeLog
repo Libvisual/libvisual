@@ -1,3 +1,54 @@
+2004-09-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_bin.c (visual_bin_switch_actor):
+	Changed to use the new morph API stuff.
+
+	(visual_bin_switch_set_mode): Added function
+	that upstreams the preferred morph mode to
+	the VisMorph.
+
+	(visual_bin_switch_set_time): Added function
+	that upstreams the preferred morph time when
+	VISUAL_MORPH_MODE_TIME is used.
+
+	(visual_bin_run): Use the new VisMorph API
+	stuff.
+
+	* libvisual/lv_bin.h: Updated for lv_bin.c.
+
+	* libvisual/lv_morph.c (visual_morph_set_time):
+	Added API for timed morph.
+
+	(visual_morph_set_steps): Added API to set
+	the number of steps when in VISUAL_MORPH_MODE_STEPS.
+
+	(visual_morph_set_mode): Added API to set
+	the morph to a certain mode. The new morph
+	stuff also enables the morph to automaticly
+	set the morph rate and such.
+
+	(visual_morph_is_done): Returns TRUE if the morph
+	is done after an automatic morph.
+
+	(visual_morph_run): Added support for the automatic
+	morph options.
+
+	* libvisual/lv_morph.h: Updated for lv_morph.c.
+
+	* libvisual/lv_time.c (visual_time_new): Use
+	visual_time_set.
+
+	(visual_time_set): New API call to set VisTime
+	to a certain value.
+
+	(visual_time_copy): New API to copy a VisTime
+	in another.
+
+	(visual_timer_is_active): New API that returns
+	TRUE if the timer is currently active.
+	
+	(visual_timer_has_past_by_values): Use visual_time_set.
+
 2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c

@@ -5,10 +5,23 @@
 #include <libvisual/lv_plugin.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_video.h>
+#include <libvisual/lv_time.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+/**
+ * Morph morphing methods.
+ */
+typedef enum {
+	VISUAL_MORPH_MODE_SET,		/**< Morphing is done by a rate set,
+					  * nothing is automated here. */
+	VISUAL_MORPH_MODE_STEPS,	/**< Morphing is done by setting a number of steps,
+					  * the morph will be automated. */
+	VISUAL_MORPH_MODE_TIME		/**< Morphing is done by setting a target time when the morph should be done,
+					  * This is as well automated. */
+} VisMorphMode;
 
 typedef struct _VisMorph VisMorph;
 
@@ -31,6 +44,14 @@ struct _VisMorph {
 					 * content depends on the plugin being used. */
 	VisPalette	 morphpal;	/**< Morph plugins can also set a palette for indexed
 					 * color depths. */
+	VisTime		 morphtime;	/**< Amount of time which the morphing should take. */
+	VisTimer	 timer;		/**< Private entry that holds the time elapsed from 
+					 * the beginning of the switch. */
+	int		 steps;		/**< Private entry that contains the number of steps
+					 * a morph suppose to take. */
+	int		 stepsdone;	/**< Private entry that contains the number of steps done. */
+
+	VisMorphMode	 mode;		/**< Private entry that holds the mode of morphing. */
 };
 
 VisPluginData *visual_morph_get_plugin (VisMorph *morph);
@@ -49,9 +70,14 @@ int visual_morph_free (VisMorph *morph);
 int visual_morph_get_supported_depth (VisMorph *morph);
 
 int visual_morph_set_video (VisMorph *morph, VisVideo *video);
+int visual_morph_set_time (VisMorph *morph, VisTime *time);
 int visual_morph_set_rate (VisMorph *morph, float rate);
+int visual_morph_set_steps (VisMorph *morph, int steps);
+int visual_morph_set_mode (VisMorph *morph, VisMorphMode mode);
 
 VisPalette *visual_morph_get_palette (VisMorph *morph);
+
+int visual_morph_is_done (VisMorph *morph);
 
 int visual_morph_requests_audio (VisMorph *morph);
 

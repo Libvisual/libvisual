@@ -58,8 +58,45 @@ int visual_time_get (VisTime *time_)
 
 	gettimeofday (&tv, NULL);
 
-	time_->tv_sec = tv.tv_sec;
-	time_->tv_usec = tv.tv_usec;
+	visual_time_set (time_, tv.tv_sec, tv.tv_usec);
+
+	return 0;
+}
+
+/**
+ * Sets the time by sec, usec in a VisTime structure.
+ *
+ * @param time_ Pointer to the VisTime in which the time is set.
+ * @param sec The seconds.
+ * @param usec The microseconds.
+ *
+ * @return 0 on succes, -1 on error.
+ */
+int visual_time_set (VisTime *time_, long sec, long usec)
+{
+	visual_log_return_val_if_fail (time_ != NULL, -1);
+	
+	time_->tv_sec = sec;
+	time_->tv_usec = usec;
+
+	return 0;
+}
+
+/**
+ * Copies ine VisTime into another.
+ *
+ * @param dest Pointer to the destination VisTime in which the source VisTime is copied.
+ * @param src Pointer to the source VisTime that is copied to the destination VisTime.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_time_copy (VisTime *dest, VisTime *src)
+{
+	visual_log_return_val_if_fail (dest != NULL, -1);
+	visual_log_return_val_if_fail (src != NULL, -1);
+
+	dest->tv_sec = src->tv_sec;
+	dest->tv_usec = src->tv_usec;
 
 	return 0;
 }
@@ -147,6 +184,20 @@ int visual_timer_free (VisTimer *timer)
 	visual_mem_free (timer);
 
 	return 0;
+}
+
+/**
+ * Checks if the timer is active.
+ *
+ * @param timer Pointer to the VisTimer of which we want to know if it's active.
+ *
+ * @return TRUE or FALSE, -1 on error.
+ */
+int visual_timer_is_active (VisTimer *timer)
+{
+	visual_log_return_val_if_fail (timer != NULL, -1);
+
+	return timer->active;
 }
 
 /**
@@ -280,8 +331,7 @@ int visual_timer_has_past_by_values (VisTimer *timer, long sec, long usec)
 {
 	VisTime past;
 
-	past.tv_sec = sec;
-	past.tv_usec = usec;
+	visual_time_set (&past, sec, usec);
 
 	return visual_timer_has_past (timer, &past);
 }

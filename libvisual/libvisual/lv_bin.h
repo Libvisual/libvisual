@@ -5,6 +5,7 @@
 #include <libvisual/lv_input.h>
 #include <libvisual/lv_morph.h>
 #include <libvisual/lv_video.h>
+#include <libvisual/lv_time.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,6 +44,8 @@ struct _VisBin {
 	int		 morphsteps;
 	int		 morphstepsdone;
 	float		 morphrate;
+	VisMorphMode	 morphmode;
+	VisTime		 morphtime;
 
 	int		 depthpreferred;	/* Prefered depth, highest or lowest */
 	int		 depthflag;		/* Supported depths */
@@ -93,7 +96,9 @@ int visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style);
 int visual_bin_switch_set_steps (VisBin *bin, int steps);
 int visual_bin_switch_set_automatic (VisBin *bin, int automatic);
 int visual_bin_switch_set_rate (VisBin *bin, float rate);
-
+int visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode);
+int visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
+	
 int visual_bin_run (VisBin *bin);
 
 #ifdef __cplusplus

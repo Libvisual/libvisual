@@ -56,6 +56,9 @@ VisBin *visual_bin_new ()
 
 	bin->morphautomatic = TRUE;
 
+	bin->morphmode = VISUAL_MORPH_MODE_TIME;
+	visual_time_set (&bin->morphtime, 4, 0);
+	
 	bin->depthpreferred = VISUAL_BIN_DEPTH_HIGHEST;
 
 	return bin;
@@ -589,6 +592,14 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 			visual_morph_set_rate (bin->morph, 0);
 		
 			visual_morph_set_video (bin->morph, bin->actvideo);
+
+			if (bin->morphautomatic == TRUE)
+				visual_morph_set_mode (bin->morph, bin->morphmode);
+			else
+				visual_morph_set_mode (bin->morph, VISUAL_MORPH_MODE_SET);
+			
+			visual_morph_set_time (bin->morph, &bin->morphtime);
+			visual_morph_set_steps (bin->morph, bin->morphsteps);
 		}
 
 		bin->morphrate = 0;
@@ -734,6 +745,25 @@ int visual_bin_switch_set_rate (VisBin *bin, float rate)
 	return 0;
 }
 
+int visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode)
+{
+	visual_log_return_val_if_fail (bin != NULL, -1);
+
+	bin->morphmode = mode;
+
+	return 0;
+}
+
+int visual_bin_switch_set_time (VisBin *bin, long sec, long usec)
+{
+	visual_log_return_val_if_fail (bin != NULL, -1);
+
+	visual_time_set (&bin->morphtime, sec, usec);
+
+	return 0;
+}
+
+
 int visual_bin_run (VisBin *bin)
 {
 	visual_log_return_val_if_fail (bin != NULL, -1);
@@ -741,9 +771,6 @@ int visual_bin_run (VisBin *bin)
 	visual_log_return_val_if_fail (bin->input != NULL, -1);
 
 	visual_input_run (bin->input);
-
-//	printf ("[bin_run] wooohoo running morphing %d %d\n", bin->morphing,
-//			bin->actor->plugin->realized);
 
 	/* If we have a direct switch, do this BEFORE we run the actor,
 	 * else we can get into trouble especially with GL, also when
@@ -759,10 +786,6 @@ int visual_bin_run (VisBin *bin)
 		visual_log_return_val_if_fail (bin->actmorph != NULL, -1);
 		visual_log_return_val_if_fail (bin->actmorph->plugin != NULL, -1);
  		if (bin->actmorph->plugin->realized == FALSE) {
-/*			printf ("OI, we're realizing and negotiating the actor: %s %d %d\n",
-					bin->actmorph->plugin->ref->name,
-					bin->actmorph->video->depth, bin->depthforced);
-*/			
 			visual_actor_realize (bin->actmorph);
 			
 			if (bin->actmorphmanaged == TRUE)
@@ -775,8 +798,6 @@ int visual_bin_run (VisBin *bin)
 		 * to realize the main actor as well */
 		visual_log_return_val_if_fail (bin->actor->plugin != NULL, -1);
 		if (bin->actor->plugin->realized == FALSE) {
-/*			printf ("IO, we're realizing and negotiatig the fscking main actorn\n");
-*/			
 			visual_actor_realize (bin->actor);
 			
 			if (bin->managed == TRUE)
@@ -803,12 +824,7 @@ int visual_bin_run (VisBin *bin)
 	 * requested after the connect, thus we can realize there yet */
 	visual_actor_realize (bin->actor);
 
-//	printf (" X before run main\n");
-//	printf (" depth: %d %p realized %d\n", bin->actor->video->depth, bin->actor->video->screenbuffer,
-//			bin->actor->plugin->realized);
-//	printf ("size: %d %d\n", bin->actvideo->width, bin->actvideo->height);
 	visual_actor_run (bin->actor, bin->input->audio);
-//	printf (" Y after run main\n");
 
 	if (bin->morphing == TRUE) {
 		visual_log_return_val_if_fail (bin->actmorph != NULL, -1);
@@ -823,24 +839,17 @@ int visual_bin_run (VisBin *bin)
 
 			if (bin->morph == NULL || bin->morph->plugin == NULL) {
 				visual_bin_switch_finalize (bin);
+		
 				return 0;
 			}
-
-			visual_morph_set_rate (bin->morph, bin->morphrate);
 
 			/* Same goes for the morph, we realize it here for depth changes
 			 * (especially the openGL case */
 			visual_morph_realize (bin->morph);
 			visual_morph_run (bin->morph, bin->input->audio, bin->actor->video, bin->actmorph->video);
 
-			if (bin->morphautomatic == TRUE) {
-				bin->morphrate += (1.000 / bin->morphsteps);
-				bin->morphstepsdone++;
-
-				/* Morph is done (only do this when automaticly morphing) */
-				if (bin->morphstepsdone >= bin->morphsteps)
-					visual_bin_switch_finalize (bin);
-			}
+			if (visual_morph_is_done (bin->morph) == TRUE)
+				visual_bin_switch_finalize (bin);
 		} else {
 //			visual_bin_switch_finalize (bin);
 		}

@@ -36,11 +36,14 @@ struct _VisTimer {
 VisTime *visual_time_new (void);
 int visual_time_free (VisTime *time_);
 int visual_time_get (VisTime *time_);
+int visual_time_set (VisTime *time_, long sec, long usec);
 int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2);
+int visual_time_copy (VisTime *dest, VisTime *src);
 int visual_time_usleep (unsigned long microseconds);
 
 VisTimer *visual_timer_new (void);
 int visual_timer_free (VisTimer *timer);
+int visual_timer_is_active (VisTimer *timer);
 int visual_timer_start (VisTimer *timer);
 int visual_timer_stop (VisTimer *timer);
 int visual_timer_continue (VisTimer *timer);
