@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual Nebulus plugin, 0.1.4, [synap@nerds-incorporated.org], [libvisual-nebulus])
+AC_INIT(Libvisual Nebulus plugin, 0.2.0, [synap@nerds-incorporated.org], [libvisual-nebulus])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
@@ -32,7 +32,7 @@ else
 fi
 
 # Checks for libraries.
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.7, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.2.0, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
   AC_MSG_ERROR([*** libvisual not found or version mismatch.
 		libvisual is needed to build this package,

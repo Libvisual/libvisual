@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual plugins, 0.1.7, synap@nerds-incorporated.org)
+AC_INIT(Libvisual plugins, 0.2.0, synap@nerds-incorporated.org)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
@@ -57,7 +57,7 @@ if test x$jack = xyes; then
   AC_SUBST([JACK], ['input_jack.la'])
 fi
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.7, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.2.0, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([*** libvisual not found.
 			libvisual is needed to build this package.

@@ -1,3 +1,7 @@
+2004-10-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Bumped version to 0.2.0
+
 2004-10-11  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 
 	* plugins/actor/oinksie/actor_oinksie.c: removed

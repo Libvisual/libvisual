@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual Library, 0.1.7, synap@nerds-incorporated.org, libvisual)
+AC_INIT(Libvisual Library, 0.2.0, synap@nerds-incorporated.org, libvisual)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_HEADER(config.h)
