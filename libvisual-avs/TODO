@@ -12,6 +12,7 @@ Very short term TODO:
 	Make avs_blur.
 	Make avs_fadeout.
 	Look into render state stuff.
+	Add an AVS environment, use this for overlay states, line width and such.
 
 General TODO:
 	Finish preset parser.

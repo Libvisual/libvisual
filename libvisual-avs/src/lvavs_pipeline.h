@@ -32,10 +32,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define LVAVS_PIPELINE(obj)				(VISUAL_CHECK_CAST ((obj), 0, LVAVSPipeline))
-#define LVAVS_PIPELINE_RENDERSTATE(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSPipelineRenderState))
-#define LVAVS_PIPELINE_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSPipelineElement))
-#define LVAVS_PIPELINE_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSPipelineContainer))
+#define LVAVS_PIPELINE(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSPipeline))
+#define LVAVS_PIPELINE_RENDERSTATE(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPipelineRenderState))
+#define LVAVS_PIPELINE_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPipelineElement))
+#define LVAVS_PIPELINE_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPipelineContainer))
 
 
 typedef struct _LVAVSPipeline LVAVSPipeline;

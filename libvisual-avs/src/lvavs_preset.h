@@ -32,9 +32,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define LVAVS_PRESET(obj)				(VISUAL_CHECK_CAST ((obj), 0, LVAVSPreset))
-#define LVAVS_PRESET_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSPresetElement))
-#define LVAVS_PRESET_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSPresetContainer))
+#define LVAVS_PRESET(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSPreset))
+#define LVAVS_PRESET_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPresetElement))
+#define LVAVS_PRESET_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPresetContainer))
 
 typedef struct _LVAVSPreset LVAVSPreset;
 typedef struct _LVAVSPresetElement LVAVSPresetElement;

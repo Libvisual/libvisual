@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define AVS_SERIALIZE_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), 0, AVSSerializeContainer))
+#define AVS_SERIALIZE_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), AVSSerializeContainer))
 
 /* Byte array retrieving / traversing helper macros */
 #define AVS_SERIALIZE_GET_BYTE(f)		(*(f))

@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define AVS_GFX_COLOR_CYCLER(obj)			(VISUAL_CHECK_CAST ((obj), 0, AVSGfxColorCycler))
+#define AVS_GFX_COLOR_CYCLER(obj)			(VISUAL_CHECK_CAST ((obj), AVSGfxColorCycler))
 
 
 typedef struct _AVSGfxColorCycler AVSGfxColorCycler;

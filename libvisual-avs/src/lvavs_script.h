@@ -30,17 +30,17 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define LVAVS_SCRIPT_ENVIRON(obj)				(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptEnviron))
-#define LVAVS_SCRIPT_ENVIRON_FUNCTIONTABLEELEMENT(obj)		(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptEnvironFunctionTableElement))
-#define LVAVS_SCRIPT_ENVIRON_FUNCTIONTABLE(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptEnvironFunctionTable))
-#define LVAVS_SCRIPT_ENVIRON_VARTABLE(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptEnvironVarTable))
+#define LVAVS_SCRIPT_ENVIRON(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSScriptEnviron))
+#define LVAVS_SCRIPT_ENVIRON_FUNCTIONTABLEELEMENT(obj)		(VISUAL_CHECK_CAST ((obj), LVAVSScriptEnvironFunctionTableElement))
+#define LVAVS_SCRIPT_ENVIRON_FUNCTIONTABLE(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSScriptEnvironFunctionTable))
+#define LVAVS_SCRIPT_ENVIRON_VARTABLE(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSScriptEnvironVarTable))
 
-#define LVAVS_SCRIPT_VMCONTEXT(obj)				(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptVMContext))
-#define LVAVS_SCRIPT_VMFUNCTIONTABLE(obj)			(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptVMFunctionTable))
-#define LVAVS_SCRIPT_VMVARTABLE(obj)				(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptVMVarTable))
+#define LVAVS_SCRIPT_VMCONTEXT(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSScriptVMContext))
+#define LVAVS_SCRIPT_VMFUNCTIONTABLE(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSScriptVMFunctionTable))
+#define LVAVS_SCRIPT_VMVARTABLE(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSScriptVMVarTable))
 
-#define LVAVS_SCRIPT_TREE(obj)					(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptTree))
-#define LVAVS_SCRIPT_TREE_ELEMENT(obj)				(VISUAL_CHECK_CAST ((obj), 0, LVAVSScriptTreeElement))
+#define LVAVS_SCRIPT_TREE(obj)					(VISUAL_CHECK_CAST ((obj), LVAVSScriptTree))
+#define LVAVS_SCRIPT_TREE_ELEMENT(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSScriptTreeElement))
 
 typedef struct _LVAVSScriptEnviron LVAVSScriptEnviron;
 typedef struct _LVAVSScriptEnvironFunctionTableElement LVAVSScriptEnvironFunctionTableElement;

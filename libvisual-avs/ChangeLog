@@ -1,3 +1,7 @@
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* common/*.h, src/*.h: Adopted new casting API.
+
 2005-02-11  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*/*: Added the "avs" flag to the plugins.

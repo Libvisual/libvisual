@@ -32,10 +32,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define AVS_TREE(obj)					(VISUAL_CHECK_CAST ((obj), 0, AVSTree))
+#define AVS_TREE(obj)					(VISUAL_CHECK_CAST ((obj), AVSTree))
 
-#define AVS_ELEMENT(obj)				(VISUAL_CHECK_CAST ((obj), 0, AVSElement))
-#define AVS_CONTAINER(obj)				(VISUAL_CHECK_CAST ((obj), 0, AVSContainer))
+#define AVS_ELEMENT(obj)				(VISUAL_CHECK_CAST ((obj), AVSElement))
+#define AVS_CONTAINER(obj)				(VISUAL_CHECK_CAST ((obj), AVSContainer))
 
 #define AVS_TREE_GET_CURRENT_POINTER(f)	((f)->cur)
 	
