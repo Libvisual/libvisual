@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <xmms/configfile.h>
@@ -11,10 +12,15 @@ static const Options default_options = { NULL, NULL, 320, 200, 30, 24, FALSE };
 static Options options = { NULL, NULL, -1, -1, -1, -1, FALSE};
 static ConfigWin *config_win = NULL;
 
+static gboolean options_loaded = FALSE;
 static gboolean fullscreen;
+static int fps;
+
+static void sync_options (void);
 
 /* Callbacks */
 static void on_button_ok_clicked (GtkButton *button, gpointer user_data);
+static void on_button_apply_clicked (GtkButton *button, gpointer user_data);
 static void on_button_cancel_clicked (GtkButton *button, gpointer user_data);
 static void on_checkbutton_fullscreen_toggled (GtkToggleButton *togglebutton, gpointer user_data);
 static void on_checkbutton_opengl_toggled (GtkToggleButton *togglebutton, gpointer user_data);
@@ -109,9 +115,10 @@ int lv_xmms_config_load_prefs ()
 	xmms_cfg_free (f);
 
 	/*
-	 * Set our local copy
+	 * Set our local copies
 	 */
 	fullscreen = options.fullscreen;
+	fps = options.fps;
 
 	if (errors) {
 		g_message ("LibVisual XMMS plugin: config file contain errors, fixing...");
@@ -123,6 +130,8 @@ int lv_xmms_config_load_prefs ()
 		g_message ("LibVisual XMMS plugin: adding entry to config file...");
 		lv_xmms_config_save_prefs ();
 	}
+
+	options_loaded = TRUE;
 
 	return 0;
 }
@@ -165,7 +174,8 @@ void lv_xmms_config_toggle_fullscreen (void)
 {
 	fullscreen = !fullscreen;
 	options.fullscreen = !options.fullscreen;
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen), fullscreen);
+	if (config_win != NULL)
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen), fullscreen);
 }
 
 void lv_xmms_config_window ()
@@ -176,6 +186,11 @@ void lv_xmms_config_window ()
 	}
 
 	config_win = lv_xmms_config_gui_new ();
+
+	if (options_loaded)
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);
+	else
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), default_options.fps);
 
 	gtk_signal_connect (GTK_OBJECT (config_win->checkbutton_fullscreen), "toggled",
                       GTK_SIGNAL_FUNC (on_checkbutton_fullscreen_toggled),
@@ -191,6 +206,9 @@ void lv_xmms_config_window ()
                       NULL);
 	gtk_signal_connect (GTK_OBJECT (config_win->button_ok), "clicked",
                       GTK_SIGNAL_FUNC (on_button_ok_clicked),
+                      NULL);
+	gtk_signal_connect (GTK_OBJECT (config_win->button_apply), "clicked",
+                      GTK_SIGNAL_FUNC (on_button_apply_clicked),
                       NULL);
 	gtk_signal_connect (GTK_OBJECT (config_win->button_cancel), "clicked",
                       GTK_SIGNAL_FUNC (on_button_cancel_clicked),
@@ -221,7 +239,11 @@ static void on_checkbutton_opengl_toggled (GtkToggleButton *togglebutton, gpoint
 
 static void on_spinbutton_fps_changed (GtkEditable *editable, gpointer user_data)
 {
+	gchar *buffer;
 
+	buffer = gtk_editable_get_chars (editable, (gint) 0, (gint) -1);
+	fps = atoi (buffer);
+	g_free (buffer);
 }
 
 
@@ -236,15 +258,37 @@ static gboolean on_pixmap_icon_button_press_event (GtkWidget *widget,
 
 static void on_button_ok_clicked (GtkButton *button, gpointer user_data)
 {
-	options.fullscreen = fullscreen;
-
+	sync_options ();
 	gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET(button)));
+}
+
+static void on_button_apply_clicked (GtkButton *button, gpointer user_data)
+{
+	sync_options ();
 }
 
 
 static void on_button_cancel_clicked (GtkButton *button, gpointer user_data)
 {
+	/*
+	 * Restore original values
+	 */
+	if (options_loaded) {
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
+						options.fullscreen);
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), options.fps);	
+	} else {
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (config_win->checkbutton_fullscreen),
+						default_options.fullscreen);
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON(config_win->spinbutton_fps), default_options.fps);
+	}
+
 	gtk_widget_hide (gtk_widget_get_toplevel (GTK_WIDGET(button)));
 }
 
+static void sync_options ()
+{
+	options.fullscreen = fullscreen;
+	options.fps = fps;
+}
 

@@ -8,6 +8,7 @@ typedef struct {
 	GtkWidget *spinbutton_fps;
 	GtkWidget *pixmap_icon;
 	GtkWidget *button_ok;
+	GtkWidget *button_apply;
 	GtkWidget *button_cancel;
 } ConfigWin;
 

@@ -16,6 +16,7 @@ typedef struct {
 	int fps;		/**< Maximum frames per second. */
 	int depth;		/**< Color depth. */
 	gboolean fullscreen;	/**< Say if we are in fullscreen or not. */
+	gboolean enable_opengl_plugins; /**< Enable OpenGl plugins */
 } Options;
 
 void lv_xmms_config_window (void);

@@ -406,8 +406,10 @@ static int visual_render (void *arg)
         long render_time, now;
         long frame_length;
         long idle_time;
+	long frames;
       
         frame_length = (1.0 / options->fps) * 1000;
+	frames = 0;
 	while (visual_running == 1) {
 		/* Update songinfo */
 		songinfo = visual_actor_get_songinfo (visual_bin_get_actor (bin));
@@ -463,6 +465,15 @@ static int visual_render (void *arg)
 		sdl_event_handle ();
                 if (options->fullscreen && !(screen->flags & SDL_FULLSCREEN))
                         SDL_WM_ToggleFullScreen (screen);
+		frames++;
+		/*
+		 * Sometime we actualize the frame_length, because we let user
+		 * choose maximum FPS dinamically.
+		 */
+		if (frames > options->fps) {
+			frames = 0;
+	        	frame_length = (1.0 / options->fps) * 1000;
+		}
 	}
 
 	visual_stopped = 1;

@@ -32,6 +32,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   GtkWidget *hseparator_bottom;
   GtkWidget *hbox_buttons;
   GtkWidget *button_ok;
+  GtkWidget *button_apply;
   GtkWidget *button_cancel;
   GtkTooltips *tooltips;
 
@@ -144,6 +145,14 @@ ConfigWin *lv_xmms_config_gui_new (void)
   gtk_box_pack_start (GTK_BOX (hbox_buttons), button_ok, FALSE, TRUE, 6);
   GTK_WIDGET_SET_FLAGS (button_ok, GTK_CAN_DEFAULT);
 
+  button_apply = gtk_button_new_with_label ("Apply");
+  gtk_widget_ref (button_apply);
+  gtk_object_set_data_full (GTK_OBJECT (window_main), "button_apply", button_apply,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (button_apply);
+  gtk_box_pack_start (GTK_BOX (hbox_buttons), button_apply, FALSE, TRUE, 6);
+  GTK_WIDGET_SET_FLAGS (button_apply, GTK_CAN_DEFAULT);
+
   button_cancel = gtk_button_new_with_label ("Cancel");
   gtk_widget_ref (button_cancel);
   gtk_object_set_data_full (GTK_OBJECT (window_main), "button_cancel", button_cancel,
@@ -160,6 +169,7 @@ ConfigWin *lv_xmms_config_gui_new (void)
   config_gui->spinbutton_fps = spinbutton_fps;
   config_gui->pixmap_icon = pixmap_icon;
   config_gui->button_ok = button_ok;
+  config_gui->button_apply = button_apply;
   config_gui->button_cancel = button_cancel;
 
   add_pixmap_directory (PACKAGE_DATADIR);
