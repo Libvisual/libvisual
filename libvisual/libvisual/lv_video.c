@@ -21,7 +21,7 @@
 #define FP_TO_INT(f)			((fixed32_t) (f) >> FP_FRACTIONAL_SIZE_LOG2)
 #define FP_FLOAT(f)			((float) (f) * FP_FRACTIONAL_SIZE)
 #define FP_TO_FLOAT(f)			((float) (f) / FP_FRACTIONAL_SIZE)
-// Use in fixed point scaler, however it crashes right now! 
+// FIXME Use in fixed point scaler, however it crashes right now! 
 #define FP_HALF(f)			((fixed32_t) (f) << (FP_FRACTIONAL_SIZE_LOG2-1))
 #define FP_ROUND_TO_INT(f)		FP_TO_INT((f)+FP_HALF(f))
 

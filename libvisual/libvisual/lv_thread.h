@@ -5,10 +5,12 @@
 #include <libvisual/lv_common.h>
 
 #ifdef VISUAL_HAVE_THREADS
-	#ifdef VISUAL_THREAD_MODEL_POSIX
-	#include <pthread.h>
-	#endif
+#ifdef VISUAL_THREAD_MODEL_POSIX
+#include <pthread.h>
+#else /* !VISUAL_THREAD_MODEL_POSIX */
+
 #endif
+#endif /* VISUAL_HAVE_THREADS */
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,18 +47,22 @@ typedef void *(*VisThreadFunc)(void *data);
 
 struct _VisThread {
 #ifdef VISUAL_HAVE_THREADS
-	#ifdef VISUAL_THREAD_MODEL_POSIX
+#ifdef VISUAL_THREAD_MODEL_POSIX
 	pthread_t thread;
-	#endif
+#else /* !VISUAL_THREAD_MODEL_POSIX */
+
 #endif
+#endif /* VISUAL_HAVE_THREADS */
 };
 
 struct _VisMutex {
 #ifdef VISUAL_HAVE_THREADS
-	#ifdef VISUAL_THREAD_MODEL_POSIX
+#ifdef VISUAL_THREAD_MODEL_POSIX
 	pthread_mutex_t mutex;
-	#endif
+#else /* !VISUAL_THREAD_MODEL_POSIX */
+
 #endif
+#endif /* VISUAL_HAVE_THREADS */
 };
 
 int visual_thread_is_supported (void);
