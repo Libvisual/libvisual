@@ -1,3 +1,7 @@
+2004-09-05  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: GL detection is done through Libvisual.
+
 2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* src/nebulus.c: Updated to new plugin api.
@@ -22,10 +26,16 @@
 
 	* NEWS: Updated.
 
+2004-06-24  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: CFLAGS redefined, to use our own flags
+	on src/Makefile.am.
+	* src/nebulus.c: some code cleanup.
+
 2004-06-21  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* configure.in: moved to configure.ac
-	* configure.ac: updated to autoconf 2.57 requirements
+	* configure.in: moved to configure.ac.
+	* configure.ac: updated to autoconf 2.57 requirements.
 
 2004-06-17  Dennis Smit  <ds@nerds-incorporated.org>
         Version 0.1.1

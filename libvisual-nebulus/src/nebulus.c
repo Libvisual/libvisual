@@ -5,9 +5,16 @@
 #include <string.h>
 #include <math.h>
 
-#include <time.h>
-
 #include "nebulus.h"
+#include "config.h"
+
+
+typedef struct {
+
+	VisTime rendertime;
+
+} NebulusPrivate;
+
 
 float framerate = 50;
 GLfloat scale, heights[16][16];
@@ -31,18 +38,14 @@ effect my_effect_old[EFFECT_NUMBER];
 
 GLint maxtexsize;
 
-typedef struct {
-	struct timeval tv_past;
-} NebulusPrivate;
-
 int lv_nebulus_init (VisPluginData *plugin);
 int lv_nebulus_cleanup (VisPluginData *plugin);
 int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height);
-int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
 int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events);
 VisPalette *lv_nebulus_palette (VisPluginData *plugin);
 int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
+static int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
 static int nebulus_random_effect ();
 static int nebulus_detect_beat (int loudness);
 static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio);
@@ -64,9 +67,9 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "nebulus",
-		.name = "libvisual nebulus port",
+		.name = PACKAGE_NAME,
 		.author = "Original by: Pascal Brochart <pbrochart@tuxfamily.org> and many others, Port and maintaince by: Dennis Smit <ds@nerds-incorporated.org>",
-		.version = "0.1",
+		.version = VERSION,
 		.about = "The Libvisual nebulus plugin",
 		.help = "This plugin shows multiple visual effect using openGL",
 
@@ -86,12 +89,14 @@ int lv_nebulus_init (VisPluginData *plugin)
 {
 	NebulusPrivate *priv;
 
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
 	priv = visual_mem_new0 (NebulusPrivate, 1);
 	plugin->priv = priv;
 
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
 	if (maxtexsize < 256) {
-		visual_log (VISUAL_LOG_CRITICAL, "Nebulus: max texture size is lower than 256\n");
+		visual_log (VISUAL_LOG_CRITICAL, "Nebulus: max texture size is lower than 256");
 		return -1;
 	}
 
@@ -105,7 +110,7 @@ int lv_nebulus_init (VisPluginData *plugin)
 
 int lv_nebulus_cleanup (VisPluginData *plugin)
 {
-	NebulusPrivate *priv = plugin->priv;
+	visual_log_return_val_if_fail (plugin != NULL, -1);
 
 	if (!face_first)
 		glDeleteLists(facedl, 1);
@@ -130,15 +135,14 @@ int lv_nebulus_cleanup (VisPluginData *plugin)
 	visual_video_free_buffer (&twist_image);
 	visual_video_free_buffer (&background_image);
 
-	visual_mem_free (priv);
+	visual_mem_free (plugin->priv);
 
 	return 0;
 }
 
 int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height)
 {
-	int reqw, reqh;
-
+	int reqw, reqh;                                                                                                                   
 	reqw = *width;
 	reqh = *height;
 
@@ -149,13 +153,19 @@ int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height)
 		reqh = 32;
 
 	*width = reqw;
-	*height = reqh;
-
+	*height = reqh;						                                                                                                                   
 	return 0;
 }
 
-int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+VisPalette *lv_nebulus_palette (VisPluginData *plugin)
 {
+	return NULL;
+}
+
+static int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+{
+	visual_log_return_val_if_fail (video != NULL, -1);
+
 	visual_video_set_dimension (video, width, height);
 
 	glViewport (0, 0, width, height);
@@ -184,13 +194,12 @@ int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_nebulus_palette (VisPluginData *plugin)
-{
-	return NULL;
-}
-
 int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (audio != NULL, -1);
+
 	nebulus_sound (plugin->priv, audio);
 	nebulus_draw (plugin->priv, video);
 
@@ -288,7 +297,7 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 	int xscale[] = { 0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255 };
 
 	/* Copy over the pcmdata into the internal pcmdata */
-	memcpy(pcm_data, audio->pcm, sizeof(pcm_data));
+	memcpy (pcm_data, audio->pcm, sizeof(pcm_data));
 
 	for(y = 15; y > 0; y--) {
 		for(i = 0; i < 16; i++)

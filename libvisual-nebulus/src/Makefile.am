@@ -1,4 +1,5 @@
 ## Process this file with automake to generate a Makefile.in
+
 imagesdir = $(datadir)/libvisual/actor/actor_nebulus
 images_DATA = background_texture.bmp \
 	      child_texture.bmp \
@@ -15,9 +16,9 @@ libdir = $(prefix)/lib/libvisual/actor
 
 LIBS = -L. -L$(prefix)/lib -lGL -lGLU @LIBVISUAL_LIBS@
 
-AM_CFLAGS = -Wall @DEBUG_CFLAGS@ @LIBVISUAL_CFLAGS@ -O3 -DBITMAP_DIR=\""$(imagesdir)/"\"
+AM_CFLAGS = -Wall @DEBUG_CFLAGS@ @LIBVISUAL_CFLAGS@ -O3 -DBITMAP_DIR=\"$(imagesdir)/\"
 
-INCLUDES = $(all_includes) -I$(top_srcdir) 
+INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)
 
 actor_nebulus_la_LDFLAGS = -module -avoid-version 
 

@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual Nebulus plugin, 0.1.2, [synap@nerds-incorporated.org], [libvisual-nebulus])
+AC_INIT(Libvisual Nebulus plugin, 0.1.3, [synap@nerds-incorporated.org], [libvisual-nebulus])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
@@ -10,10 +10,13 @@ AC_CONFIG_HEADER([config.h])
 AC_PREFIX_DEFAULT(/usr)
 
 # Checks for programs.
+AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
 
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
@@ -50,6 +53,7 @@ if test x"$opengl" = xyes; then
   AC_MSG_RESULT([yes])
 else
   AC_MSG_RESULT([no])
+  AC_MSG_ERROR([*** you need OpenGL support in order to run Nebulus plugin])
 fi
 
 if test x"$opengl" = xyes; then
@@ -66,10 +70,9 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_TIME
+AC_C_CONST
 
 # Checks for library functions.
-AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memset sqrt])
 
 # Arguments to specify certain features.
