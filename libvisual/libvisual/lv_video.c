@@ -1641,70 +1641,87 @@ static int scale_bilinear_24 (VisVideo *dest, const VisVideo *src)
 
 static int scale_bilinear_32 (VisVideo *dest, const VisVideo *src)
 {
-	int x, y;
-	float u, v, du, dv;
-	float fracU, fracV;
-	int texelU, texelV;
-	unsigned int pixel;
+	uint32_t y;
+	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint32_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
-	uint8_t cul[4], cll[4], cur[4], clr[4];
-	float ul, ll, ur, lr;
-	uint8_t b[4];
-
-	u = 0; du = (float) src->width	/ dest->width;
-	v = 0; dv = (float) src->height / dest->height;
 
 	dest_pixel = dest->pixels;
 
-	for (y = 0, v = 0; y < dest->height - 1; y++, v += dv) {
-		src_pixel_rowu = (uint32_t *) src->pixel_rows[(int) v];
-		src_pixel_rowl = (uint32_t *) src->pixel_rows[(int) (v + dv)];
+	du = ((src->width-1)  << 16) / dest->width;
+	dv = ((src->height-1) << 16) / dest->height;
+	v = 0;
 
-		texelV = (int) v;
-		fracV = v - texelV;
+	for (y = dest->height - 1; y--; v += dv) {
+		uint32_t x;
+		uint32_t fracU, fracV;     /* fixed point 24.8 [0,1[    */
 
-		for (x = 0, u = 0; x < dest->width - 1; x++, u += du) {
-			texelU = (int) u;
-			fracU = u - texelU;
+		if (v >> 16 >= src->height-1)
+			v -= 0x10000;
 
-			ul = (1.0f - fracU) * (1.0f - fracV);
-			ll = (1.0f - fracU) * fracV;
-			ur = fracU * (1.0f - fracV);
+		src_pixel_rowu = (uint32_t *) src->pixel_rows[v >> 16];
+		src_pixel_rowl = (uint32_t *) src->pixel_rows[(v >> 16) + 1];
+
+		/* fracV = frac(v) = v & 0xffff */
+		/* fixed point format convertion: fracV >>= 8) */
+		fracV = (v & 0xffff) >> 8;
+		u = 0.0;
+
+		for (x = dest->width - 1; x--; u += du) {
+			union {
+				uint8_t  c8[4];
+				uint32_t c32;
+			} cul, cll, cur, clr, b;
+			uint32_t ul, ll, ur, lr; /* fixed point 16.16 [0,1[   */
+			uint32_t b3, b2, b1, b0; /* fixed point 16.16 [0,255[ */
+
+			/* fracU = frac(u) = u & 0xffff */
+			/* fixed point format convertion: fracU >>= 8) */
+			fracU  = (u & 0xffff) >> 8;
+
+			/* notice 0x100 = 1.0 (fixed point 24.8) */
+			ul = (0x100 - fracU) * (0x100 - fracV);
+			ll = (0x100 - fracU) * fracV;
+			ur = fracU * (0x100 - fracV);
 			lr = fracU * fracV;
 
-			*(uint32_t *) cul = src_pixel_rowu[(int) u];
-			*(uint32_t *) cll = src_pixel_rowl[(int) u];
-			*(uint32_t *) cur = src_pixel_rowu[(int) (u + du)];
-			*(uint32_t *) clr = src_pixel_rowl[(int) (u + du)];
+			cul.c32 = src_pixel_rowu[u >> 16];
+			cll.c32 = src_pixel_rowl[u >> 16];
+			cur.c32 = src_pixel_rowu[(u >> 16) + 1];
+			clr.c32 = src_pixel_rowl[(u >> 16) + 1];
 
-			b[3] = ((ul * (cul[3])) +
-				(ll * (cll[3])) +
-				(ur * (cur[3])) +
-				(lr * (clr[3])));
+			b0 = ul * cul.c8[0];
+			b1 = ul * cul.c8[1];
+			b2 = ul * cul.c8[2];
+			b3 = ul * cul.c8[3];
 
-			b[2] = ((ul * (cul[2])) +
-				(ll * (cll[2])) +
-				(ur * (cur[2])) +
-				(lr * (clr[2])));
+			b0 += ll * cll.c8[0];
+			b1 += ll * cll.c8[1];
+			b2 += ll * cll.c8[2];
+			b3 += ll * cll.c8[3];
 
-			b[1] = ((ul * (cul[1])) +
-				(ll * (cll[1])) +
-				(ur * (cur[1])) +
-				(lr * (clr[1])));
+			b0 += ur * cur.c8[0];
+			b1 += ur * cur.c8[1];
+			b2 += ur * cur.c8[2];
+			b3 += ur * cur.c8[3];
 
-			b[0] = ((ul * (cul[0])) +
-				(ll * (cll[0])) +
-				(ur * (cur[0])) +
-				(lr * (clr[0])));
+			b0 += lr * clr.c8[0];
+			b1 += lr * clr.c8[1];
+			b2 += lr * clr.c8[2];
+			b3 += lr * clr.c8[3];
 
-			*dest_pixel++ = *(int *) b;
+			b.c8[0] = b0 >> 16;
+			b.c8[1] = b1 >> 16;
+			b.c8[2] = b2 >> 16;
+			b.c8[3] = b3 >> 16;
+
+			*dest_pixel++ = b.c32;
 		}
 
 		memset (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 4)));
 		dest_pixel += (dest->pitch / 4) - ((dest->width - 1));
+
 	}
 
 	return VISUAL_OK;
 }
-
 
