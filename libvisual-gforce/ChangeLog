@@ -1,3 +1,7 @@
+2004-10-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Bumping up version.
+
 2004-10-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* GForceCommon/G-Force.cpp: Replaced a printf

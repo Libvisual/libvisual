@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(GForce Libvisual plugin, 0.1.0, ds@nerds-incorporated.org, libvisual-gforce)
+AC_INIT(GForce Libvisual plugin, 0.1.1, ds@nerds-incorporated.org, libvisual-gforce)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_PREFIX_DEFAULT(/usr)
