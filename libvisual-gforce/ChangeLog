@@ -1,3 +1,7 @@
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* unix/libvisual/actor_gforce.cpp: API changes.
+
 2004-10-14  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Bumped version to 0.2.0

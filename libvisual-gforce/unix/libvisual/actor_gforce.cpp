@@ -226,7 +226,7 @@ extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	}
 	
 	// Set the video buffer
-	priv->gGF->SetOutVideoBuffer ((unsigned char *) video->screenbuffer);
+	priv->gGF->SetOutVideoBuffer ((unsigned char *) video->pixels);
 
 	time = EgOSUtils::CurTimeMS ();
 	priv->gGF->RecordSample (time, gSoundBuf, .000043, NUMSAMPLES, gFFTBuf, 1, FFT_BUF_SIZE);
@@ -236,7 +236,7 @@ extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	/* Some color debug to study palettes */
 /*
 	for (i = 0; i < 256; i++) {
-		uint8_t *buf = (uint8_t *) video->screenbuffer;
+		uint8_t *buf = (uint8_t *) video->pixels;
 		for (j = 0; j < 20; j++) {
 			buf[(video->pitch * j) + i] = i;
 		}
