@@ -7,7 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
-"POT-Creation-Date: 2004-07-12 23:29-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-09-06 18:27+0200\n"
 "PO-Revision-Date: 2004-07-11 16:48-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -87,7 +88,7 @@ msgstr "Error al cargar archivo de mapa de píxeles: %s"
 msgid "About Libvisual XMMS Plugin"
 msgstr "LibVisual XMMS Plugin"
 
-#: src/about.c:90
+#: src/about.c:91
 #, fuzzy
 msgid ""
 "Libvisual XMMS Plugin\n"
@@ -107,11 +108,11 @@ msgstr ""
 "http://libvisual.sf.net\n"
 "\n"
 
-#: src/about.c:92
+#: src/about.c:93
 msgid "Credits"
 msgstr "Créditos"
 
-#: src/about.c:114
+#: src/about.c:115
 msgid ""
 "Brazilian Portuguese: Gustavo Sverzut Barbieri\n"
 "Dutch: Dennis Smit\n"
@@ -123,10 +124,10 @@ msgstr ""
 "Holandés: Dennis Smit\n"
 "Portugués (Brasil): Gustavo Sverzut Barbieri\n"
 
-#: src/about.c:116
+#: src/about.c:117
 msgid "Translators"
 msgstr "Traductores"
 
-#: src/about.c:137
+#: src/about.c:138
 msgid "Close"
 msgstr "Cerrar"

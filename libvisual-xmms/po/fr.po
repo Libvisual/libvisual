@@ -6,7 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual XMMS plugin 0.1.6\n"
-"POT-Creation-Date: 2004-07-12 23:29-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-09-06 18:27+0200\n"
 "PO-Revision-Date: 2004-07-12 23:03+0100\n"
 "Last-Translator: Jean-Christophe Hoelt <jeko@ios-software.com>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -85,7 +86,7 @@ msgstr ""
 msgid "About Libvisual XMMS Plugin"
 msgstr "Plugin XMMS de LibVisual"
 
-#: src/about.c:90
+#: src/about.c:91
 msgid ""
 "Libvisual XMMS Plugin\n"
 "\n"
@@ -96,11 +97,11 @@ msgid ""
 "http://libvisual.sf.net\n"
 msgstr ""
 
-#: src/about.c:92
+#: src/about.c:93
 msgid "Credits"
 msgstr ""
 
-#: src/about.c:114
+#: src/about.c:115
 msgid ""
 "Brazilian Portuguese: Gustavo Sverzut Barbieri\n"
 "Dutch: Dennis Smit\n"
@@ -108,10 +109,10 @@ msgid ""
 "Spanish: Duilio Protti\n"
 msgstr ""
 
-#: src/about.c:116
+#: src/about.c:117
 msgid "Translators"
 msgstr ""
 
-#: src/about.c:137
+#: src/about.c:138
 msgid "Close"
 msgstr ""

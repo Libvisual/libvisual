@@ -7,7 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2004-07-12 23:29-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-09-06 18:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,7 +84,7 @@ msgstr ""
 msgid "About Libvisual XMMS Plugin"
 msgstr ""
 
-#: src/about.c:90
+#: src/about.c:91
 msgid ""
 "Libvisual XMMS Plugin\n"
 "\n"
@@ -94,11 +95,11 @@ msgid ""
 "http://libvisual.sf.net\n"
 msgstr ""
 
-#: src/about.c:92
+#: src/about.c:93
 msgid "Credits"
 msgstr ""
 
-#: src/about.c:114
+#: src/about.c:115
 msgid ""
 "Brazilian Portuguese: Gustavo Sverzut Barbieri\n"
 "Dutch: Dennis Smit\n"
@@ -106,10 +107,10 @@ msgid ""
 "Spanish: Duilio Protti\n"
 msgstr ""
 
-#: src/about.c:116
+#: src/about.c:117
 msgid "Translators"
 msgstr ""
 
-#: src/about.c:137
+#: src/about.c:138
 msgid "Close"
 msgstr ""

@@ -537,15 +537,16 @@ static int sdl_event_handle ()
 					case SDLK_a:
 						if (options->all_plugins_enabled)
 							next_plugin = visual_actor_get_prev_by_name (cur_lv_plugin);
+						else if (options->gl_plugins_only)
+							next_plugin = visual_actor_get_prev_by_name_gl (cur_lv_plugin);
 						else
-							/*
-							 * Now we need a visual_actor_get_prev_by_name_gl() :-)
-							 */
 							next_plugin = visual_actor_get_prev_by_name_nogl (cur_lv_plugin);
 
 						if (next_plugin == NULL) {
 							if (options->all_plugins_enabled)
 								next_plugin = visual_actor_get_prev_by_name (NULL);
+							else if (options->gl_plugins_only)
+								next_plugin = visual_actor_get_prev_by_name_gl (NULL);
 							else
 								next_plugin = visual_actor_get_prev_by_name_nogl (NULL);
 
@@ -573,15 +574,19 @@ static int sdl_event_handle ()
 					case SDLK_s:
 						if (options->all_plugins_enabled)
 							next_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
+						else if (options->gl_plugins_only)
+							next_plugin = visual_actor_get_next_by_name_gl (cur_lv_plugin);
 						else
 							next_plugin = visual_actor_get_next_by_name_nogl (cur_lv_plugin);
 
 						if (next_plugin == NULL) {
 							if (options->all_plugins_enabled)
 								next_plugin = visual_actor_get_next_by_name (NULL);
+							else if (options->gl_plugins_only)
+								next_plugin = visual_actor_get_next_by_name_gl (NULL);
 							else
 								next_plugin = visual_actor_get_next_by_name_nogl (NULL);
-							
+
 							if (next_plugin == NULL) {
 								visual_log (VISUAL_LOG_CRITICAL, "Cannot get next plugin");
 							}
