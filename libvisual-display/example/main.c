@@ -7,7 +7,7 @@
 
 #include "GL/gl.h"
 
-#define NULL_OUTPUT 0
+#define NULL_OUTPUT 1
 
 static char actorname[100] = "oinksie";
 static char actorname2[100] = "lv_gltest";
@@ -75,6 +75,8 @@ int main(int argc, char **argv)
 	VisBin *bin2 = lvdisplay_visual_get_bin(v2);
 
 	VisInput *input = visual_input_new("alsa");
+	visual_object_ref (VISUAL_OBJECT (input)); /* Might be nicer to increase ref when an object is added to a VisBin... */
+
 	VisActor *actor = visual_actor_new(actorname);
 	VisActor *actor2 = visual_actor_new(actorname2);
 
