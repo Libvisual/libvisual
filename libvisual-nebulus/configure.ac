@@ -29,29 +29,41 @@ else
 fi
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lGL':
-AC_CHECK_LIB([GL], [main])
-# FIXME: Replace `main' with a function in `-lGLU':
-AC_CHECK_LIB([GLU], [main])
-
 PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.1.6, [libvis="yes"], [libvis="no"])
 if test x"$libvis" = xno; then
-	AC_MSG_ERROR([
-*** libvisual not found or version mismatch.
-*** libvisual is needed to build this package,
-*** you can download libvisual at http://libvisual.sf.net/
-	])
+  AC_MSG_ERROR([*** libvisual not found or version mismatch.
+		libvisual is needed to build this package,
+		you can download libvisual at http://libvisual.sf.net/])
 fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
-	
+
+AC_MSG_CHECKING([for OpenGL support on Libvisual])
+AC_TRY_COMPILE([#include <libvisual/libvisual.h>],
+	       [#ifdef VISUAL_HAVE_OPENGL
+		;
+		#else
+		something that will fail to compile.
+		#endif],
+		[opengl=yes], [opengl=no])
+if test x"$opengl" = xyes; then
+  AC_MSG_RESULT([yes])
+else
+  AC_MSG_RESULT([no])
+fi
+
+if test x"$opengl" = xyes; then
+  # FIXME: Replace `main' with a function in `-lGL':
+  AC_CHECK_LIB([GL], [main])
+  # FIXME: Replace `main' with a function in `-lGLU':
+  AC_CHECK_LIB([GLU], [main])
+else
+  :
+fi
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
-AC_CHECK_HEADERS([GL/gl.h GL/glx.h GL/glu.h],opengl="yes",opengl="no")
-if test x"$opengl" = xno; then
-	AC_MSG_ERROR([*** OpenGl and Glu headers not found.])
-fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_TIME
