@@ -15,6 +15,7 @@ extern "C" {
 #define VISUAL_PARAMENTRY_CALLBACK(obj)			(VISUAL_CHECK_CAST ((obj), 0, VisParamEntryCallback))
 #define VISUAL_PARAMENTRY(obj)				(VISUAL_CHECK_CAST ((obj), 0, VisParamEntry))
 
+#define VISUAL_PARAM_LIST_ENTRY(name)			{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_NULL }
 #define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_STRING, string, {0, 0, 0}}
 #define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_INTEGER, NULL, {val, 0, 0}}
 #define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_FLOAT, NULL, {0, val, 0}}
