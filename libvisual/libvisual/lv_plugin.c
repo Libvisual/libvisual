@@ -167,17 +167,15 @@ int visual_plugin_ref_free (VisPluginRef *ref)
  */
 int visual_plugin_ref_list_destroy (VisList *list)
 {
-	int ret1, ret2;
+	int ret1;
 
 	visual_log_return_val_if_fail (list != NULL, -1);
 	
 	ret1 = visual_list_destroy (list, ref_list_destroy);
 
-	ret2 = visual_list_free (list);
-
 	list = NULL;
 
-	return ((ret1 == 0 && ret2 == 0) ? 0 : -1);
+	return ((ret1 == 0) ? 0 : -1);
 }
 
 /**
