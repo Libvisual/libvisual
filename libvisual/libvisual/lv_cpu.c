@@ -63,6 +63,7 @@
 #include <string.h>
 
 #include "lv_log.h"
+#include "lv_error.h"
 #include "lv_cpu.h"
 
 static VisCPU _lv_cpu_caps;

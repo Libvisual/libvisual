@@ -1,5 +1,10 @@
 2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_error.c (visual_error_raise): No error raise under
+	windows!
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_plugin.*: Fixing up the environ_ prototypes.
 
 2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
