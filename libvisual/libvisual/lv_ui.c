@@ -68,6 +68,22 @@ VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget)
 	return widget->type;
 }
 
+void *visual_ui_widget_get_private (VisUIWidget *widget)
+{
+	visual_log_return_val_if_fail (widget != NULL, NULL);
+
+	return widget->priv;
+}
+
+int visual_ui_widget_set_private (VisUIWidget *widget, void *priv)
+{
+	visual_log_return_val_if_fail (widget != NULL, -1);
+
+	widget->priv = priv;
+
+	return 0;
+}
+
 VisUIWidget *visual_ui_container_new ()
 {
 	VisUIContainer *container;

@@ -85,11 +85,13 @@ typedef struct _VisUICheckbox VisUICheckbox;
 
 struct _VisUIWidget {
 	VisUIWidget		*parent;
-
+	
 	VisUIWidgetType		 type;
 
-	int			 visible;
-	int			 sensitive;
+	void			*priv;
+
+	int			 visible : 1;
+	int			 sensitive : 1;
 };
 
 struct _VisUIContainer {
@@ -194,6 +196,8 @@ int visual_ui_widget_destroy (VisUIWidget *widget);
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget);
 VisUIWidget *visual_ui_widget_get_parent (VisUIWidget *widget);
 VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget);
+void *visual_ui_widget_get_private (VisUIWidget *widget);
+int visual_ui_widget_set_private (VisUIWidget *widget, void *priv);
 
 VisUIWidget *visual_ui_container_new (void);
 int visual_ui_container_add (VisUIContainer *container, VisUIWidget *widget);
