@@ -68,7 +68,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	static const VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
-		.type = VISUAL_PLUGIN_TYPE_TRANSFORM,
+		.type = VISUAL_PLUGIN_TYPE_TRANSFORM".[avs]",
 
 		.plugname = "avs_multiplier",
 		.name = "Libvisual AVS Transform: multiplier element",

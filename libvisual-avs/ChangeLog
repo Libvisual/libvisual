@@ -1,3 +1,7 @@
+2005-02-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*/*: Added the "avs" flag to the plugins.
+
 2005-01-29  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/lvavs_script*.*: Adding beginning of avs script support.
