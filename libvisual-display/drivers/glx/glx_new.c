@@ -14,13 +14,13 @@
 
 typedef struct {
         LvdCompatDataX11 x11data;
-
+	VisVideo *video;
 } privdata;
 
 static int plugin_init (VisPluginData *plugin);
 static int plugin_cleanup (VisPluginData *plugin);
 
-static int create(VisPluginData*, int **params, int *params_count);
+static int create(VisPluginData*, int **params, int *params_count, VisVideo *video);
 static void *get_compat_data(VisPluginData *plugin);
 static int get_events(VisPluginData *plugin, VisEventQueue *eventqueue);
 
@@ -100,7 +100,7 @@ void *get_compat_data(VisPluginData *plugin)
     return &((privdata*)plugin->priv)->x11data;
 }
 
-int process_events(LvdCompatDataX11 *data, VisEventQueue *eventqueue);
+int process_events(LvdCompatDataX11 *data, VisEventQueue *eventqueue, VisVideo *video);
 
 int get_events(VisPluginData *plugin, VisEventQueue *eventqueue)
 {
@@ -110,14 +110,16 @@ int get_events(VisPluginData *plugin, VisEventQueue *eventqueue)
 	data = &((privdata*)plugin->priv)->x11data;
 
 	if (XEventsQueued(XDPY, QueuedAfterReading)){
-		process_events(data, eventqueue);
+		process_events(data, eventqueue,
+			((privdata*)plugin->priv)->video);
 	}
 
 	return 0;
 }
 
 
-int process_events(LvdCompatDataX11 *data, VisEventQueue *eventqueue)
+int process_events(LvdCompatDataX11 *data,
+	VisEventQueue *eventqueue, VisVideo *video)
 {
 	XEvent ev;
 
@@ -164,9 +166,8 @@ int process_events(LvdCompatDataX11 *data, VisEventQueue *eventqueue)
 			break;
 
 		case ConfigureNotify:
-			// XXX ..."video"?
-			//visual_event_queue_add_resize(eventqueue, video , ev.xconfigure.width, ev.xconfigure.height);
-			fprintf(stderr, "lvdisplay: glx_new.c: resized: %dx%d\n", ev.xconfigure.width, ev.xconfigure.height);
+			visual_video_set_dimension(video, ev.xconfigure.width, ev.xconfigure.height);
+			visual_event_queue_add_resize(eventqueue, video , ev.xconfigure.width, ev.xconfigure.height);
 			break;
 
 		/* message sent by a window manager. i think ;) */
@@ -185,9 +186,9 @@ int process_events(LvdCompatDataX11 *data, VisEventQueue *eventqueue)
 
 
 int create(VisPluginData *plugin,
-		int **params, int *params_count)
+		int **params, int *params_count, VisVideo *video)
 {
-	privdata *fe = plugin->priv;
+	privdata *priv = plugin->priv;
 	int w = 320;
 	int h = 240;
 
@@ -210,7 +211,10 @@ int create(VisPluginData *plugin,
 	
 	}
 
-	init_x(&fe->x11data, w, h);
+	priv->video = video;
+	visual_video_set_dimension(video, w, h);
+
+	init_x(&priv->x11data, w, h);
 
 	return 0;
 }

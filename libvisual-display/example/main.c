@@ -48,6 +48,18 @@ int main(int argc, char **argv)
 		exit (1);
 	}
 
+	VisBin *bin = lvdisplay_visual_get_bin(v);
+
+	VisInput *input = visual_input_new("alsa");
+	VisActor *actor = visual_actor_new("madspin"); //"lv_gltest"
+
+	visual_actor_realize(actor);
+	visual_actor_set_video(actor, lvdisplay_visual_get_video(v));
+
+	visual_bin_connect(bin, actor, input);
+	visual_bin_realize(bin);
+
+
 	/*  start visualization. plugin will run in a
 	 *  separate thread. Alternative call can be
 	 *  vo_run(v) - just process everything and
@@ -60,12 +72,6 @@ int main(int argc, char **argv)
 	sleep(5);
 	vo_stop(v);
 #endif
-
-	/* GL setup... */
-	glViewport(0,0,320,240);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0, 1.0);
 
 	/* main loop */
 	while (!quit_flag){
@@ -110,15 +116,12 @@ int main(int argc, char **argv)
 					fprintf(stderr, "Cool!.. I'm hidden!\n");
 				}
 				break;
+			case VISUAL_EVENT_RESIZE:
+				fprintf(stderr, "resized: %dx%d\n", event.resize.width, event.resize.height);
+				visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
+				break;
 			}
 		}
-
-		glBegin(GL_TRIANGLE_STRIP);
-		glVertex2f( -0.2f, -0.2f);
-		glVertex2f(  0.2f, -0.2f);
-		glVertex2f( -0.5f,  0.5f);
-		glVertex2f(  0.2f,  0.2f);
-		glEnd();
 
 		usleep(5);
 

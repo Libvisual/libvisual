@@ -67,6 +67,7 @@ LvdDriver *lvdisplay_driver_create(const char *nclass, const char* ntype)
 
 	drv->pclass = plclass;
 	drv->ptype = pltype;
+	drv->video = visual_video_new();
 
 	return drv;
 }
@@ -83,6 +84,8 @@ void lvdisplay_driver_delete(LvdDriver *drv)
 
 	if (drv->params)
 		free(drv->params);
+
+	visual_video_free(drv->video);
 
 	free(drv);
 }
@@ -113,7 +116,7 @@ int lvdisplay_driver_set_opts(LvdDriver *drv, int *params)
 	}
 
 	res = ((LvdFrontendDescription*)drv->ptype->info->plugin)->
-			create(drv->ptype, &drv->params, &drv->params_cnt);
+			create(drv->ptype, &drv->params, &drv->params_cnt, drv->video);
 
 	if (res){
 		return -1;
@@ -152,7 +155,8 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 
 	/* init drv's class */
 	res = ((LvdBackendDescription*)drv->pclass->info->plugin)->
-		setup(drv->pclass, drv->compat_data,drv->params, drv->params_cnt);
+		setup(drv->pclass, drv->compat_data,drv->params,
+		drv->params_cnt, drv->video);
 
 	if (res)
 		return NULL;
@@ -160,7 +164,14 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 	v->ctx = ((LvdBackendDescription*)drv->pclass->info->plugin)->context_create(drv->pclass);
 	((LvdBackendDescription*)drv->pclass->info->plugin)->context_activate(drv->pclass, v->ctx);
 
+	v->bin = visual_bin_new();
+
 	return v;
+}
+
+VisVideo *lvdisplay_visual_get_video(Lvd *v)
+{
+	return v->drv->video;
 }
 
 
@@ -175,18 +186,12 @@ void lvdisplay_finalize(Lvd *v)
 		((LvdBackendDescription*)drv->pclass->info->plugin)->context_delete(drv->pclass, v->ctx);
 	}
 
+	visual_bin_destroy(v->bin);
 }
 
-
-
-int lvdisplay_start(Lvd *v)
+VisBin *lvdisplay_visual_get_bin(Lvd *v)
 {
-	return 0;
-}
-
-int lvdisplay_stop(Lvd *v)
-{
-	return 0;
+	return v->bin;
 }
 
 int lvdisplay_run(Lvd *v)
@@ -197,6 +202,8 @@ int lvdisplay_run(Lvd *v)
 	assert(drv->ptype);
 
 	drv->ptype->info->events(drv->ptype, &drv->ptype->eventqueue);
+
+	visual_bin_run(v->bin);
 
 	((LvdBackendDescription*)drv->pclass->info->plugin)->draw(drv->pclass);
 

@@ -50,6 +50,7 @@ struct _LvdDriver {
 	int *params;
 
 	VisPluginData *pclass, *ptype;
+	VisVideo *video;
 	int prepared;
 
 	void *compat_data;
@@ -58,6 +59,8 @@ struct _LvdDriver {
 struct _Lvd {
 	LvdDriver         *drv;
 	LvdDContext       *ctx;
+
+	VisBin *bin;
 };
 
 
@@ -65,7 +68,7 @@ struct _LvdBackendDescription {
 	LvdCompatType     compat_type;
 
 	int (*setup)(VisPluginData*,
-		void *data, int *params, int params_count);
+		void *data, int *params, int params_count, VisVideo*);
 
 	LvdDContext *(*context_create)(VisPluginData*);
 	void (*context_delete)(VisPluginData*, LvdDContext*);
@@ -79,7 +82,7 @@ struct _LvdFrontendDescription {
 	int             compat_count;
 	LvdCompatType	compat_type;
 
-	int (*create)(VisPluginData*, int **params, int *params_count);
+	int (*create)(VisPluginData*, int **params, int *params_count, VisVideo*);
 	void *(*get_compat_data)(VisPluginData *plugin);
 };
 
@@ -91,11 +94,12 @@ int lvdisplay_driver_set_opts(LvdDriver*, int *);
 /* basic functions */
 Lvd* lvdisplay_initialize(LvdDriver*);
 void lvdisplay_finalize(Lvd*);
-int lvdisplay_start(Lvd*);
-int lvdisplay_stop(Lvd*);
 int lvdisplay_run(Lvd*);
 int lvdisplay_render_data(Lvd*, void *samples, int count);
 VisEventQueue *lvdisplay_get_eventqueue(Lvd*);
 int lvdisplay_poll_event(Lvd*, VisEvent*);
+
+VisBin *lvdisplay_visual_get_bin(Lvd *v);
+VisVideo *lvdisplay_visual_get_video(Lvd *v);
 
 #endif /* _LV_DISPLAY_H */

@@ -33,7 +33,8 @@ static int init (privdata *priv, int *params, int params_cnt);
 static int init_glx13 (privdata *priv, int *params, int params_cnt);
 
 
-static int setup(VisPluginData *plugin, LvdCompatDataX11 *data, int *params, int params_count);
+static int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
+	int *params, int params_count, VisVideo *video);
 static LvdDContext *context_create(VisPluginData *plugin);
 static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
@@ -117,7 +118,7 @@ int plugin_cleanup (VisPluginData *plugin)
 #define XWIN (priv->win)
 
 int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
-		int *params, int params_count)
+		int *params, int params_count, VisVideo *video)
 {
 	privdata *priv = plugin->priv;
 
@@ -126,6 +127,8 @@ int setup(VisPluginData *plugin, LvdCompatDataX11 *data,
 
 	XDPY = data->dpy;
 	XWIN = data->win;
+
+	visual_video_set_depth(video, VISUAL_VIDEO_DEPTH_GL);
 
 	return init (priv, params, params_count);
 }

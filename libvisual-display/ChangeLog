@@ -1,2 +1,9 @@
+2004-10-04  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+	* drivers/glx/glx.c, drivers/glx/glx_new.c: Support of
+	VisVideo structure added, resize event generated
+	* example/main.c: Load Input&Actor plugins and use them.
+	* lvdisplay/lv_display.c, lvdisplay/lv_display.h:
+	VisVideo and VisBin support code.
+
 2004-09-27  Vitaly V. Bursov <vitalyvb@users.sourceforge.net>
 	* Initial import
