@@ -12,7 +12,8 @@ extern "C" {
 typedef struct _VisColor VisColor;
 
 /**
- * Data type to describe a palette entry, or a color.
+ * Data type to describe a palette entry, or a color. The HSV isn't kept in sync with RGB automaticly
+ * but it's there especially for VisUI.
  */
 struct _VisColor {
 	VisObject	object;	/**< The VisObject data. */
@@ -20,6 +21,10 @@ struct _VisColor {
 	uint8_t		g;	/**< The green channel of this VisColor. */
 	uint8_t		b;	/**< The blue channel of this VisColor. */
 	uint8_t		unused;	/**< Unused. */
+
+	float		h;	/**< The hue value in the HSV format. */
+	float		s;	/**< The saturation value in the HSV format. */
+	float		v;	/**< the value value in the HSV format. */
 };
 
 VisColor *visual_color_new (void);
