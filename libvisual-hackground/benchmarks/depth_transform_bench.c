@@ -18,12 +18,12 @@ int main (int argc, char **argv)
 		d1 = argv[1];
 		d2 = argv[2];
 	} else {
-		d1 = strdup("32");
-		d2 = strdup("16");
+		d1 = strdup ("32");
+		d2 = strdup ("16");
 	}
 
-	depth1 = visual_video_depth_enum_from_value(atoi(d1));
-	depth2 = visual_video_depth_enum_from_value(atoi(d2));
+	depth1 = visual_video_depth_enum_from_value (atoi (d1));
+	depth2 = visual_video_depth_enum_from_value (atoi (d2));
 
 	dest = visual_video_new ();
 	visual_video_set_depth (dest, depth1);

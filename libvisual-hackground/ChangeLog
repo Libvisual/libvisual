@@ -1,5 +1,9 @@
 2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* benchmarks/blit_bench.c: Added.
+
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* playground/libvis-blit2.c: Changed a bit.
 
 2005-03-08  Dennis Smit  <ds@nerds-incorporated.org>
