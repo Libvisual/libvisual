@@ -67,7 +67,7 @@ int visual_audio_free (VisAudio *audio)
 {
 	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
-	_lv_fft_close (audio->fft_state);
+	visual_fft_close (audio->fft_state);
 	
 	return visual_mem_free (audio);
 }
@@ -101,15 +101,15 @@ int visual_audio_analyze (VisAudio *audio)
 
 	/* Initialize fft if not yet initialized */
 	if (audio->fft_state == NULL)
-		audio->fft_state = _lv_fft_init ();
+		audio->fft_state = visual_fft_init ();
 
 	/* FFT analyze the pcm data */
-	_lv_fft_perform (audio->plugpcm[0], tmp_out, audio->fft_state);
+	visual_fft_perform (audio->plugpcm[0], tmp_out, audio->fft_state);
 		
 	for (i = 0; i < 256; i++)
 		audio->freq[0][i] = ((int) sqrt (tmp_out[i + 1])) >> 8;
 
-	_lv_fft_perform (audio->plugpcm[1], tmp_out, audio->fft_state);
+	visual_fft_perform (audio->plugpcm[1], tmp_out, audio->fft_state);
 
 	for (i = 0; i < 256; i++)
 		audio->freq[1][i] = ((int) sqrt (tmp_out[i + 1])) >> 8;

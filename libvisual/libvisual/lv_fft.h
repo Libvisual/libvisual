@@ -32,9 +32,9 @@ struct _VisFFTState {
 	float imag[VISUAL_FFT_BUFFER_SIZE];	/**< Private data that is used by the FFT engine. */
 };
 
-VisFFTState *_lv_fft_init (void);
-void _lv_fft_perform (const int16_t *input, float *output, VisFFTState *state);
-void _lv_fft_close (VisFFTState *state);
+VisFFTState *visual_fft_init (void);
+void visual_fft_perform (const int16_t *input, float *output, VisFFTState *state);
+void visual_fft_close (VisFFTState *state);
 
 #ifdef __cplusplus
 }
