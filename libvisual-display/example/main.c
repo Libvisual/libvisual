@@ -7,7 +7,7 @@
 
 #include "GL/gl.h"
 
-#define NULL_OUTPUT 1
+#define NULL_OUTPUT 0
 
 static char actorname[100] = "oinksie";
 static char actorname2[100] = "lv_gltest";
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 				break;
 
 			case VISUAL_EVENT_KEYDOWN:{
-				char *p;
+				const char *p;
 				int areload = 0;
 
 				/*fprintf(stderr, "KEYDOWN: '%c'=%d, %x\n",
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 						break;
 				}
 				if (areload){
-					visual_actor_free(actor);
+					visual_object_unref(VISUAL_OBJECT(actor));
 					actor = visual_actor_new(actorname);
 					visual_bin_connect(bin, actor, input);
 					lvdisplay_realize(v);
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
 		while (lvdisplay_poll_event(v2, &event)){
 			switch (event.type){
 			case VISUAL_EVENT_KEYDOWN:{
-				char *p;
+				const char *p;
 				int areload = 0;
 
 				/*fprintf(stderr, "KEYDOWN: '%c'=%d, %x\n",
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
 						break;
 				}
 				if (areload){
-					visual_actor_free(actor2);
+					visual_object_unref(VISUAL_OBJECT(actor));
 					actor2 = visual_actor_new(actorname2);
 					visual_bin_connect(bin2, actor2, input);
 					lvdisplay_realize(v2);
@@ -241,15 +241,14 @@ int main(int argc, char **argv)
 	/* cleanup...
 	 */
 
-	lvdisplay_finalize(v);
-	lvdisplay_finalize(v2);
+	visual_object_unref(VISUAL_OBJECT(bin));
+	visual_object_unref(VISUAL_OBJECT(bin2));
 
-	// bin_free() frees actors.
-	//visual_actor_free(actor);
-	//visual_actor_free(actor2);
+	visual_object_unref(VISUAL_OBJECT(v));
+	visual_object_unref(VISUAL_OBJECT(v2));
 
-	lvdisplay_driver_delete(drv);
-	lvdisplay_driver_delete(drv2);
+	visual_object_unref(VISUAL_OBJECT(drv));
+	visual_object_unref(VISUAL_OBJECT(drv2));
 
 	visual_quit ();
 

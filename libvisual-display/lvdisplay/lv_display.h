@@ -46,6 +46,8 @@ typedef struct _Lvd Lvd;
 
 
 struct _LvdDriver {
+	VisObject	 object;	/**< The VisObject data. */
+
 	int params_cnt;
 	int *params;
 
@@ -60,6 +62,8 @@ struct _LvdDriver {
 };
 
 struct _Lvd {
+	VisObject	 object;	/**< The VisObject data. */
+
 	LvdDriver *drv;
 	VisPluginData *beplug, *feplug; /* copies of drv's */
 	LvdBackendDescription *be;
@@ -97,18 +101,17 @@ struct _LvdFrontendDescription {
 
 
 LvdDriver *lvdisplay_driver_create(const char*, const char*);
-void lvdisplay_driver_delete(LvdDriver*);
 int lvdisplay_driver_set_opts(LvdDriver*, int *);
 
 /* basic functions */
 Lvd* lvdisplay_initialize(LvdDriver*);
 int lvdisplay_realize(Lvd*);
-void lvdisplay_finalize(Lvd*);
 int lvdisplay_run(Lvd*);
 int lvdisplay_render_data(Lvd*, void *samples, int count);
-VisEventQueue *lvdisplay_get_eventqueue(Lvd*);
 int lvdisplay_poll_event(Lvd*, VisEvent*);
 
+/* obects returnet by these functions must be unref'ed when done */
+VisEventQueue *lvdisplay_get_eventqueue(Lvd*);
 VisBin *lvdisplay_visual_get_bin(Lvd *v);
 VisVideo *lvdisplay_visual_get_video(Lvd *v);
 

@@ -8,6 +8,9 @@
 
 #include "lv_display.h"
 
+static int lvdisplay_driver_dtor(VisObject *drv_obj);
+static int lvdisplay_dtor(VisObject *v_obj);
+
 // visual_log_return_val_if_fail (dest != NULL, -1);  
 
 static VisList *__lv_plugins_display_be = NULL;
@@ -45,8 +48,8 @@ LvdDriver *lvdisplay_driver_create(const char *bename, const char *fename)
 
 	reread_plugin_lists();
 
-	beref = visual_plugin_find(__lv_plugins_display_be, (char*)bename);
-	feref = visual_plugin_find(__lv_plugins_display_fe, (char*)fename);
+	beref = visual_plugin_find(__lv_plugins_display_be, bename);
+	feref = visual_plugin_find(__lv_plugins_display_fe, fename);
 
 	if ((beref == NULL) || (feref == NULL)){
 		visual_log(VISUAL_LOG_DEBUG, "Failed to get plugin references %p %p\n", beref, feref);
@@ -73,6 +76,11 @@ LvdDriver *lvdisplay_driver_create(const char *bename, const char *fename)
 		return NULL;
 	}
 
+	VISUAL_OBJECT(drv)->allocated = TRUE;
+	VISUAL_OBJECT(drv)->dtor = lvdisplay_driver_dtor;
+	visual_object_ref(VISUAL_OBJECT(drv));
+
+
 	r1 = visual_plugin_realize(beplug);
 	r2 = visual_plugin_realize(feplug);
 
@@ -80,18 +88,16 @@ LvdDriver *lvdisplay_driver_create(const char *bename, const char *fename)
 		visual_log(VISUAL_LOG_DEBUG, "Failed to realize plugins %d %d\n", r1, r2);
 		visual_plugin_unload(beplug);
 		visual_plugin_unload(feplug);
-		visual_mem_free(drv);
+		visual_object_unref(VISUAL_OBJECT(drv));
 		return NULL;
 	}
 
 	drv->beplug = beplug;
 	drv->feplug = feplug;
-	drv->video = visual_video_new();
 
+	drv->video = visual_video_new();
 	if (drv->video == NULL){
-		visual_plugin_unload(beplug);
-		visual_plugin_unload(feplug);
-		visual_mem_free(drv);
+		visual_object_unref(VISUAL_OBJECT(drv));
 		return NULL;
 	}
 
@@ -101,9 +107,9 @@ LvdDriver *lvdisplay_driver_create(const char *bename, const char *fename)
 	return drv;
 }
 
-void lvdisplay_driver_delete(LvdDriver *drv)
+int lvdisplay_driver_dtor(VisObject *drv_obj)
 {
-	visual_log_return_if_fail (drv != NULL);
+	LvdDriver *drv = (LvdDriver*)drv_obj;
 
 	if (drv->beplug)
 		visual_plugin_unload(drv->beplug);
@@ -119,7 +125,14 @@ void lvdisplay_driver_delete(LvdDriver *drv)
 	else
 		visual_video_free(drv->video);
 
-	visual_mem_free(drv);
+	drv->beplug = NULL;
+	drv->feplug = NULL;
+	drv->be = NULL;
+	drv->fe = NULL;
+	drv->params = NULL;
+	drv->video = NULL;
+
+	return VISUAL_OK;
 }
 
 
@@ -207,19 +220,27 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 	visual_log_return_val_if_fail (drv != NULL, NULL);
 
 	v = visual_mem_new0(Lvd, 1);
-	if (v == NULL){
+	if (v == NULL)
 		return NULL;
-	}
+
+	VISUAL_OBJECT(v)->allocated = TRUE;
+	VISUAL_OBJECT(v)->dtor = lvdisplay_dtor;
+	visual_object_ref(VISUAL_OBJECT(v));
+
+	visual_object_ref(VISUAL_OBJECT(drv));
 
 	v->drv = drv;
+	/* shortcuts */
 	v->be = drv->be;
 	v->fe = drv->fe;
 	v->beplug = drv->beplug;
 	v->feplug = drv->feplug;
 
 	if (!drv->prepared){
-		if ((res = lvdisplay_driver_set_opts(drv, NULL)) != 0)
+		if ((res = lvdisplay_driver_set_opts(drv, NULL)) != 0){
+			visual_object_unref(VISUAL_OBJECT(v));
 			return NULL;
+		}
 	}
 
 	/* init drv's class */
@@ -228,11 +249,13 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 
 	if (res) {
 		visual_log(VISUAL_LOG_DEBUG, "Backend's setup() failed %d\n", res);
+		visual_object_unref(VISUAL_OBJECT(v));
 		return NULL;
 	}
 
 	v->bin = visual_bin_new();
 	if (v->bin == NULL) {
+		visual_object_unref(VISUAL_OBJECT(v));
 		return NULL;
 	}
 
@@ -242,7 +265,7 @@ Lvd* lvdisplay_initialize(LvdDriver *drv)
 VisVideo *lvdisplay_visual_get_video(Lvd *v)
 {
 	visual_log_return_val_if_fail (v != NULL, NULL);
-
+	visual_object_ref(VISUAL_OBJECT(v->drv->video));
 	return v->drv->video;
 }
 
@@ -313,22 +336,32 @@ int lvdisplay_realize(Lvd *v)
 }
 
 
-void lvdisplay_finalize(Lvd *v)
+int lvdisplay_dtor(VisObject *v_obj)
 {
-	visual_log_return_if_fail (v != NULL);
+	Lvd *v = (Lvd*)v_obj;
 
 	active_context_release();
 
-	if (v->ctx){
+	if (v->ctx)
 		v->be->context_delete(v->beplug, v->ctx);
-	}
 
-	visual_bin_destroy(v->bin);
+	if (v->bin)
+		visual_object_unref(VISUAL_OBJECT(v->bin));
+
+	if (v->drv)
+		visual_object_unref(VISUAL_OBJECT(v->drv));
+
+	v->ctx = NULL;
+	v->bin = NULL;
+	v->drv = NULL;
+
+	return VISUAL_OK;
 }
 
 VisBin *lvdisplay_visual_get_bin(Lvd *v)
 {
 	visual_log_return_val_if_fail (v != NULL, NULL);
+	visual_object_ref(VISUAL_OBJECT(v->bin));
 	return v->bin;
 }
 
@@ -349,6 +382,7 @@ int lvdisplay_run(Lvd *v)
 VisEventQueue *lvdisplay_get_eventqueue(Lvd *v)
 {
 	visual_log_return_val_if_fail (v != NULL, NULL);
+	visual_object_ref(VISUAL_OBJECT(&v->feplug->eventqueue));
 	return &v->feplug->eventqueue;
 }
 
