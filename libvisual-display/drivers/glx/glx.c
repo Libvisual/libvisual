@@ -41,6 +41,7 @@ static LvdDContext *context_create(VisPluginData *plugin, VisVideo *video);
 static void context_delete(VisPluginData *plugin, LvdDContext*);
 static void context_activate(VisPluginData *plugin, LvdDContext*);
 static void context_deactivate(VisPluginData *plugin, LvdDContext *ctx);
+static LvdDContext *context_get_active(VisPluginData *plugin);
 static void draw(VisPluginData *plugin);
 
 
@@ -56,6 +57,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.context_delete = context_delete,
 		.context_activate = context_activate,
 		.context_deactivate = context_deactivate,
+		.context_get_active = context_get_active,
 
 		.draw = draw,
 	}};
@@ -329,7 +331,6 @@ void context_activate(VisPluginData *plugin, LvdDContext *ctx)
 LvdDContext *context_get_active(VisPluginData *plugin)
 {
 	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
-
 	return (LvdDContext *)priv->active_ctx;
 }
 

@@ -9,11 +9,14 @@
 #include <GL/glu.h>
 
 #include <libvisual/libvisual.h>
+#include "lvdisplay/lv_display.h"
 
 #define NUM_BANDS	16
 
 typedef struct {
 	float rot;
+	Lvd *v;
+	LvdDContext *myctx1;
 } DNAPrivate;
 
 int lv_dna_init (VisPluginData *plugin);
@@ -65,6 +68,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_dna_init (VisPluginData *plugin)
 {
 	DNAPrivate *priv;
+	Lvd *v;
+	LvdDContext *ctxorig;
 
 	priv = visual_mem_new0 (DNAPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
@@ -84,12 +89,51 @@ int lv_dna_init (VisPluginData *plugin)
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 	glClearDepth (1.0);
 
+
+
+	/* a hack :) */
+	v = ((LvdPluginEnvironData*)(((VisPluginEnvironElement*)visual_list_get(plugin->environ,0))->environ))->lvd;
+	fprintf(stderr,"got lvd: %p\n",v);
+	priv->v=v;
+
+	/* one more... 8] */
+
+	priv->myctx1 = v->be->context_create(v->beplug, v->drv->video);
+	fprintf(stderr,"creatd context: %p\n",priv->myctx1);
+
+	fprintf(stderr,"%p %p\n",v->be,v->be->context_get_active);
+	ctxorig = v->be->context_get_active(v->beplug);
+	fprintf(stderr,"old context: %p\n",ctxorig);
+
+	fprintf(stderr,"new ctx setup...\n");
+
+	v->be->context_activate(v->beplug, priv->myctx1);
+
+	glMatrixMode (GL_PROJECTION);
+
+	glLoadIdentity ();
+
+	glFrustum (1, -1, -1, 1, 1.5, 10);
+
+	glMatrixMode (GL_MODELVIEW);
+	glLoadIdentity ();
+
+	glDepthFunc (GL_LEQUAL);
+	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	
+	glClearColor (0.5, 0.0, 0.5, 0.0);
+	glClearDepth (1.0);
+
+
+	v->be->context_activate(v->beplug, ctxorig);
 	return 0;
 }
 
 int lv_dna_cleanup (VisPluginData *plugin)
 {
 	DNAPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	priv->v->be->context_delete(priv->v->beplug, priv->myctx1);
 
 	visual_mem_free (priv);
 
@@ -160,12 +204,28 @@ VisPalette *lv_dna_palette (VisPluginData *plugin)
 
 int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	static int frame = 0;
 	DNAPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	Lvd *v = priv->v;
+	LvdDContext *ctxorig;
 	float res;
 	float sinr = 0;
 	float height = -1.0;
 	int i;
-	
+	int cc2;
+
+	fprintf(stderr,"frame %d\n",frame);
+
+	v=priv->v;
+
+	frame++;
+	cc2 = (frame&0xff)<50;
+
+	if (cc2){
+		ctxorig = v->be->context_get_active(v->beplug);
+		v->be->context_activate(v->beplug, priv->myctx1);
+	}
+
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity ();
 
@@ -192,6 +252,11 @@ int lv_dna_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		glEnd ();
 
 		height += 0.2;
+	}
+
+
+	if (cc2){
+		v->be->context_activate(v->beplug, ctxorig);
 	}
 
 	return 0;

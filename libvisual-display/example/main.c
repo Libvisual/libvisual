@@ -6,7 +6,7 @@
 #include "lvdisplay/lv_display.h"
 
 static char actorname[100] = "testactor";
-static char backend[100] = "x11";
+static char backend[100] = "glx";
 
 int main(int argc, char **argv)
 {

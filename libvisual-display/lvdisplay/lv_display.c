@@ -40,6 +40,7 @@ static int lvdisplay_dtor(VisObject *v_obj);
 static VisList *__lv_plugins_display_be = NULL;
 static VisList *__lv_plugins_display_fe = NULL;
 
+
 static void reread_plugin_lists()
 {
 	VisList *lv_plugins;
@@ -338,6 +339,8 @@ int lvdisplay_realize(Lvd *v)
 	int res;
 	VisActor *actor;
 	VisVideoDepth adepth, vdepth;
+	VisPluginEnvironElement *enve;
+	LvdPluginEnvironData *envdata;
 
 	visual_log_return_val_if_fail (v != NULL, -1);
 
@@ -346,6 +349,23 @@ int lvdisplay_realize(Lvd *v)
 		visual_log(VISUAL_LOG_ERROR, "Bin contains no actor\n");
 		return 1;
 	}
+
+	envdata =  visual_mem_new0(LvdPluginEnvironData, 1);
+	if (envdata == NULL)
+		return 1;
+	visual_object_initialize(VISUAL_OBJECT(envdata), TRUE, NULL);
+
+	envdata->lvd = v;
+
+	enve = visual_mem_new0 (VisPluginEnvironElement, 1);
+	if (enve == NULL)
+		return 1;
+
+	visual_object_initialize(VISUAL_OBJECT(enve), TRUE, NULL);
+	enve->type = VISUAL_PLUGIN_ENVIRON_TYPE_LVD;
+	enve->environ = (VisObject*)envdata;
+
+	visual_plugin_environ_add(actor->plugin, enve);
 
 	adepth = visual_actor_get_supported_depth(actor);
 	vdepth = v->drv->be->get_supported_depths(v->drv->beplug);

@@ -1,3 +1,10 @@
+2005-01-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* A load of files: (Yeah I am lazy). Merged patch
+	by Vitaly (I changed VisEnviron.. to VisPluginEnviron..)
+
+	Thanks a lot!
+
 2005-01-02  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* lvdisplay/lv_display.*: Added copyright header.

@@ -150,11 +150,13 @@ VisVideo *lvdisplay_visual_get_video(Lvd *v);
 
 /* plugin interface */
 
-typedef struct _LvdPlugin LvdPlugin;
+#define VISUAL_PLUGIN_ENVIRON_TYPE_LVD	"Libvisual:display:environ"
 
-struct _LvdPlugin {
+typedef struct _LvdPluginEnvironData LvdPluginEnvironData;
+
+struct _LvdPluginEnvironData {
+	VisObject	object;	/**< The VisObject data. */
 	Lvd *lvd;
-	VisPluginData *plugin;
 };
 
 #endif /* _LV_DISPLAY_H */
