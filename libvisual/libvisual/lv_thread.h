@@ -68,10 +68,11 @@ void visual_thread_yield (void);
 VisThread *visual_thread_self (void);
 
 VisMutex *visual_mutex_new (void);
+int visual_mutex_free (VisMutex *mutex);
+int visual_mutex_init (VisMutex *mutex);
 int visual_mutex_lock (VisMutex *mutex);
 int visual_mutex_trylock (VisMutex *mutex);
 int visual_mutex_unlock (VisMutex *mutex);
-int visual_mutex_free (VisMutex *mutex);
 
 #ifdef __cplusplus
 }

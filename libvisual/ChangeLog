@@ -1,5 +1,10 @@
 2004-12-13  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_thread.* (visual_mutex_init): Added new functions
+	to initialize non allocated mutexes.
+
+2004-12-13  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_video.c (scale_nearest_24): 24 now works, tho I am not
 	very happy with the implementation.
 

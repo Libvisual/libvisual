@@ -179,10 +179,59 @@ VisMutex *visual_mutex_new ()
 
 	mutex = visual_mem_new0 (VisMutex, 1);
 
+	pthread_mutex_init (&mutex->mutex, NULL);
+
 	return mutex;
 #else
 	return NULL;
 #endif /* VISUAL_HAVE_THREADS */
+}
+
+/**
+ * A VisMutex is allocated to have more flexibility with the actual thread backend. Thus they need
+ * to be freed as well.
+ *
+ * @param mutex Pointer to the VisMutex that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL or -VISUAL_ERROR_THREAD_NO_THREADING on failure.
+ */
+int visual_mutex_free (VisMutex *mutex)
+{
+#ifdef VISUAL_HAVE_THREADS
+	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
+
+	return visual_mem_free (mutex);
+#else
+	return -VISUAL_ERROR_THREAD_NO_THREADING;
+#endif /* VISUAL_HAVE_THREADS */
+}
+
+/**
+ * A VisMutex that has not been allocated using visual_mutex_new () can be initialized using this function. You can
+ * use non allocated VisMutex variables in this context by giving a reference to them.
+ *
+ * @param mutex Pointer to the VisMutex which needs to be initialized.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL or -VISUAL_ERROR_THREAD_NO_THREADING on failure.
+ */
+int visual_mutex_init (VisMutex *mutex)
+{
+#ifdef VISUAL_HAVE_THREADS
+#ifdef VISUAL_THREAD_MODEL_POSIX
+	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
+
+	memset (mutex, 0, sizeof (VisMutex));
+
+	pthread_mutex_init (&mutex->mutex, NULL);
+
+	return VISUAL_OK;
+#else /* !VISUAL_THREAD_MODEL_POSIX */
+	return -VISUAL_ERROR_THREAD_NO_THREADING;
+#endif
+#else	
+	return -VISUAL_ERROR_THREAD_NO_THREADING;
+#endif /* VISUAL_HAVE_THREADS */
+
 }
 
 /**
@@ -260,26 +309,6 @@ int visual_mutex_unlock (VisMutex *mutex)
 #else /* !VISUAL_THREAD_MODEL_POSIX */
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
 #endif
-#else
-	return -VISUAL_ERROR_THREAD_NO_THREADING;
-#endif /* VISUAL_HAVE_THREADS */
-}
-
-/* FIXME this needs to go, somehow, we can't start mallocing freeing for every lock/unlock we do. */
-/**
- * A VisMutex is allocated to have more flexibility with the actual thread backend. Thus they need
- * to be freed as well.
- *
- * @param mutex Pointer to the VisMutex that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL or -VISUAL_ERROR_THREAD_NO_THREADING on failure.
- */
-int visual_mutex_free (VisMutex *mutex)
-{
-#ifdef VISUAL_HAVE_THREADS
-	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
-
-	return visual_mem_free (mutex);
 #else
 	return -VISUAL_ERROR_THREAD_NO_THREADING;
 #endif /* VISUAL_HAVE_THREADS */
