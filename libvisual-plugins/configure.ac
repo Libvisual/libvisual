@@ -90,6 +90,20 @@ fi
 AC_C_CONST
 AC_C_INLINE
 
+AC_MSG_CHECKING(for ISO C99 varargs macros in C)
+AC_TRY_COMPILE([],[
+		int a(int p1, int p2, int p3);
+		#define call_a(...) a(1,__VA_ARGS__)
+		call_a(2,3);
+		],lv_have_iso_c_varargs=yes,lv_have_iso_c_varargs=no)
+AC_MSG_RESULT($lv_have_iso_c_varargs)
+if test "x$lv_have_iso_c_varargs" = xyes; then
+  AC_DEFINE(LV_HAVE_ISO_VARARGS, 1, [Have ISOC99 varargs macros])
+else
+  AC_DEFINE(LV_HAVE_ISO_VARARGS, 0, [Have ISOC99 varargs macros])
+fi
+AC_SUBST(LV_HAVE_ISO_VARARGS)
+
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([floor gettimeofday memset pow sqrt])

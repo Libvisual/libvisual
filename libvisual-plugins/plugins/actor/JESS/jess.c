@@ -47,7 +47,18 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	JessPrivate *priv;
 
 	plugin = visual_plugin_new ();
+	if (plugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"Could not create a new plugin");
+		return NULL;
+	}
+
 	jess = visual_plugin_actor_new ();
+	if (jess == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"Could not create a new actor plugin");
+		return NULL;
+	}
 
 	jess->name = "jess";
 	jess->info = visual_plugin_info_new (
@@ -81,7 +92,16 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int act_jess_init (VisActorPlugin *plugin)
 {
-	JessPrivate *priv = plugin->private;
+	JessPrivate *priv;
+
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
+	priv = plugin->private;
+	if (priv == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+				"The given plugin doesn't have private info");
+		return -1;
+	}
 
 	priv->conteur.burn_mode = 4;
 	priv->conteur.draw_mode = 4;
@@ -119,8 +139,17 @@ int act_jess_init (VisActorPlugin *plugin)
 
 int act_jess_cleanup (VisActorPlugin *plugin)
 {
-	JessPrivate *priv = plugin->private;
+	JessPrivate *priv;
 	int i;
+
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
+	priv = plugin->private;
+	if (priv == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+				"The given plugin doesn't have private info");
+		return -1;
+	}
 
 	if (priv->big_ball != NULL)
 		free (priv->big_ball);
@@ -146,6 +175,9 @@ int act_jess_requisition (VisActorPlugin *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
+	visual_log_return_val_if_fail (width != NULL, -1);
+	visual_log_return_val_if_fail (height != NULL, -1);
+
 	reqw = *width;
 	reqh = *height;
 
@@ -169,7 +201,16 @@ int act_jess_requisition (VisActorPlugin *plugin, int *width, int *height)
 
 int act_jess_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
 {
-	JessPrivate *priv = plugin->private;
+	JessPrivate *priv;
+
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
+	priv = plugin->private;
+	if (priv == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+				"The given plugin doesn't have private info");
+		return -1;
+	}
 
 	priv->resx = width;
 	priv->resy = height;
@@ -212,16 +253,36 @@ int act_jess_events (VisActorPlugin *plugin, VisEventQueue *events)
 
 VisPalette *act_jess_palette (VisActorPlugin *plugin)
 {
-	JessPrivate *priv = plugin->private;
+	JessPrivate *priv;
+
+	visual_log_return_val_if_fail (plugin != NULL, NULL);
+
+	priv = plugin->private;
+	if (priv == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+				"The given plugin doesn't have private info");
+		return NULL;
+	}
 
 	return &priv->jess_pal;
 }
 
 int act_jess_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	JessPrivate *priv = plugin->private;
+	JessPrivate *priv;
 	short freqdata[2][256];
 	int i;
+
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (audio != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -1);
+
+	priv = plugin->private;
+	if (priv == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+				"The given plugin doesn't have private info");
+		return -1;
+	}
 
 	for (i = 0; i < 512; i++) {
 		priv->pcm_data[0][i] = audio->pcm[0][i];
@@ -252,6 +313,8 @@ int act_jess_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 
 void jess_init (JessPrivate *priv)
 {
+	visual_log_return_if_fail (priv != NULL);
+
 	priv->xres2 = priv->resx / 2;
 	priv->yres2 = priv->resy / 2;
 

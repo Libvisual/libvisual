@@ -54,6 +54,8 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 
 int act_infinite_init (VisActorPlugin *plugin)
 {
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
 	InfinitePrivate *priv = plugin->private;
 
 	priv->plugwidth = 32;
@@ -66,7 +68,11 @@ int act_infinite_init (VisActorPlugin *plugin)
 
 int act_infinite_cleanup (VisActorPlugin *plugin)
 {
-	InfinitePrivate *priv = plugin->private;
+	InfinitePrivate *priv;
+
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+
+	priv = plugin->private;
 
 	_inf_close_renderer (priv);
 
@@ -78,6 +84,8 @@ int act_infinite_cleanup (VisActorPlugin *plugin)
 int act_infinite_requisition (VisActorPlugin *plugin, int *width, int *height)
 {
 	int reqw, reqh;
+
+	visual_log_return_val_if_fail (plugin != NULL, -1);
 
 	reqw = *width;
 	reqh = *height;
@@ -102,8 +110,12 @@ int act_infinite_requisition (VisActorPlugin *plugin, int *width, int *height)
 
 int act_infinite_dimension (VisActorPlugin *plugin, VisVideo *video, int width, int height)
 {
-	InfinitePrivate *priv = plugin->private;
+	InfinitePrivate *priv;
 
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -1);
+
+	priv = plugin->private;
 	priv->plugwidth = width;
 	priv->plugheight = height;
 
@@ -139,15 +151,25 @@ int act_infinite_events (VisActorPlugin *plugin, VisEventQueue *events)
 
 VisPalette *act_infinite_palette (VisActorPlugin *plugin)
 {
-	InfinitePrivate *priv = plugin->private;
+	InfinitePrivate *priv;
 	
+	visual_log_return_val_if_fail (plugin != NULL, NULL);
+
+	priv = plugin->private;
+
 	return &priv->pal;
 }
 
 int act_infinite_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 {
-	InfinitePrivate *priv = plugin->private;
+	InfinitePrivate *priv;
 	int i;
+
+	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (audio != NULL, -1);
+
+	priv = plugin->private;
 
 	for (i = 0; i < 512; i++) {
 		priv->pcm_data[0][i] = audio->pcm[0][i];

@@ -199,7 +199,6 @@ int act_oinksie_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio
 	OinksiePrivContainer *priv = plugin->private;
 	VisVideo transvid;
 	int pitch;
-	int i;
 
 	memcpy (&priv->priv1.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
 	memcpy (&priv->priv2.audio.freq, &audio->freq, sizeof (short) * 3 * 256);

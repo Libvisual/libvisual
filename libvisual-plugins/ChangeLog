@@ -1,3 +1,14 @@
+2004-06-28  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/JESS/jess.c: added error checking.
+	* plugins/morph/alphablend/alphablend.c: added
+	error checking, some funcs made inline.
+
+2004-06-27  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/infinite: all header now includes
+	config.h header. Added error checking.
+	
 2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* NEWS: Updated.
@@ -41,10 +52,10 @@
 
 2004-06-19  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* configure.in moved to configure.ac
-	* configure.ac updated to meet autoconf 2.57 requirements.
+	* configure.in: moved to configure.ac
+	* configure.ac: updated to meet autoconf 2.57 requirements.
 	Many checks added.
-	* autogen.sh added.
+	* autogen.sh: added.
 
 2004-06-17  Dennis Smit  <ds@nerds-incorporated.org>
 	Version 0.1.4 has been released.
