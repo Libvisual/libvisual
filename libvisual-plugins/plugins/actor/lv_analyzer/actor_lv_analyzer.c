@@ -160,11 +160,8 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	memset (bits, 0, video->size);
 	memset (maxbar, 0, sizeof (maxbar));
 	
-	if (video->height > 127)
-		scale = video->height / 127;
-	else
-		scale = 127 / video->height;
-	
+	scale = (float) video->height / 127;
+
 	colscale = 1 / scale;
 	
 	for (i=0; i < BARS; i++) {

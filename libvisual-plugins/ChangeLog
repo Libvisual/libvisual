@@ -1,10 +1,18 @@
-2004-09-20 Duilio Protti <dprotti@user.sourceforge.net>
+2004-09-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/lv_analyzer/actor_lv_analyzer.c
+	(lv_analyzer_render): Fixed bug with the scale
+	factor, now scaling and heights lower than 127
+	works, and scaling is more precise (didn't
+	float cast an integer calculation).
+
+2004-09-20  Duilio Protti <dprotti@user.sourceforge.net>
 
 	* configure.ac: alsa dependency lowered to 0.9.0.
 	* plugins/input/alsa/input_alsa.c: we request the new alsa
 	API if we have 0.9.x series installed.
 
-2004-09-13 Duilio Protti <dprotti@user.sourceforge.net>
+2004-09-13  Duilio Protti <dprotti@user.sourceforge.net>
 
 	* plugins/actor/madspin/madspin.c: removed include
 	of GLU headers.
