@@ -1,3 +1,7 @@
+2004-07-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* configure.ac: Adding ru to ALL_LINGUAS.
+
 2004-07-12  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* Makefile.am: po is scanned after src directory.
