@@ -34,7 +34,9 @@ lv_sunos=no
 lv_solaris=no
 lv_linux=no
 lv_sco=no
-lv_bsd=no
+lv_freebsd=no
+lv_netbsd=no
+lv_openbsd=no
 lv_darwin=no
 lv_cygwin=no
 lv_mingw=no
@@ -50,7 +52,9 @@ case "$host_os" in
 	solaris*)       lv_solaris=yes;;
 	linux*)         lv_linux=yes;;
 	*sco*)          lv_sco=yes;;
-	*bsd*)		lv_bsd=yes;;
+	freebsd*)	lv_freebsd=yes;;
+	netbsd*)	lv_netbsd=yes;;
+	openbsd*)	lv_openbsd=yes;;
 	*darwin*)	lv_darwin=yes;;
 	cygwin*)	lv_cygwin=yes;;
   	mingw*)		lv_mingw=yes;;
@@ -597,10 +601,24 @@ _______EOF
 _______EOF
         fi
 
-        if test x$lv_bsd = xyes ; then
+        if test x$lv_freebsd = xyes ; then
                 cat >>$outfile <<_______EOF
 
-#define VISUAL_OS_BSD
+#define VISUAL_OS_FREEBSD
+_______EOF
+        fi
+
+        if test x$lv_netbsd = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_NETBSD
+_______EOF
+        fi
+
+	if test x$lv_openbsd = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_OS_OPENBSD
 _______EOF
         fi
 

@@ -1,5 +1,10 @@
 2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* configurea.ac: Splitting out VISUAL_OS_BSD into VISUAL_OS_FREEBSD,
+	VISUAL_OS_NETBSD, VISUAL_OS_OPENBSD.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* AUTHORS, libvisual/lv_cpu.c:
 	Updating some credits
 
