@@ -367,7 +367,7 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 
 				cont = i;
 
-				if (cont < 100)
+				if (cont < 110)
 					cont = 0;
 
 				priv->phongdat[((y - phresd2) * priv->phongres) + x - phresd2] = cont;
