@@ -423,7 +423,7 @@ void visual_cpu_initialize ()
 #endif
 #endif /* VISUAL_ARCH_X86 */
 
-#if VISUAL_ARCH_POWERPC
+#if defined(VISUAL_ARCH_POWERPC)
 	check_os_altivec_support ();
 #endif /* VISUAL_ARCH_POWERPC */
 
