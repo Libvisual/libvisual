@@ -1,3 +1,9 @@
+2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* gtk2/lv_widget_gtk2_visui.c: Splitted the huge
+	visui -> gtk2 widget translator function up in nice job specific
+	functions!
+
 2004-12-22  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* gtk2/lvw_gtk2_visui.c: Some warnings fixed.

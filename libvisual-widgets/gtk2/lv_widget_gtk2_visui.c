@@ -11,6 +11,7 @@
 /* FIXME HIGFY everything!!! */
 /* FIXME unreg param callbacks on destroy */
 /* FIXME implement tooltips */
+/* FIXME set radio buttons / popup right on init */
 
 #if HAVE_GTK_AT_LEAST_2_4_X
 #define LVW_VISUI_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), LVW_VISUI_TYPE, LvwVisUIPrivate))
@@ -42,7 +43,22 @@ struct _CallbackEntry {
 static void lvwidget_visui_destroy (GtkObject *object);
 static void lvwidget_visui_class_init (LvwVisUIClass *klass);
 static void lvwidget_visui_init (LvwVisUI *vuic);
-static GtkWidget *lvwidget_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont);
+
+/* VisUI -> Gtk2 translation functions */
+static GtkWidget *visui_widget_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_box_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_table_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_frame_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_label_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_image_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_separator_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_entry_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_slider_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_numeric_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_color_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_popup_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_radio_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_checkbox_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 
 /* Parameter change callbacks from within GTK */
 static void cb_visui_entry (GtkEditable *editable, gpointer user_data);
@@ -339,7 +355,7 @@ lvwidget_visui_new (VisUIWidget *vuitree)
 
 	vuic->priv->vuitree = vuitree;
 
-	widget = lvwidget_visui_create_gtk_widgets (vuic, vuitree);
+	widget = visui_widget_new (vuic, vuitree);
 
 	gtk_container_add (GTK_CONTAINER (vuic), widget);
 
@@ -352,574 +368,604 @@ lvwidget_visui_new (VisUIWidget *vuitree)
  * @}
  */
 
-/*
- * Yes this function is big, a tad ugly, and it's farts just smell, very, very, badly.
- *
- * And it'll stay like this, this is one big monolithic, hey let's traverse that goddamn
- * VisUI tree and translate it to a super hot Gtk2 Widget function :)
- */
-static GtkWidget *
-lvwidget_visui_create_gtk_widgets (LvwVisUI *vuic, VisUIWidget *cont)
+static GtkWidget*
+visui_widget_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
 {
 	const char *tooltip = NULL;
 	GtkWidget *widget;
-	CallbackEntry *cbentry;
 
-	VisUIWidgetType type = visual_ui_widget_get_type (cont);
+	switch (visual_ui_widget_get_type (visuiwidget)) {
+		case VISUAL_WIDGET_TYPE_BOX:
+			widget = visui_widget_box_new (vuic, visuiwidget);
 
-	if (type == VISUAL_WIDGET_TYPE_BOX) {
+			break;
 
-		VisList *childs;
-		VisListEntry *le = NULL;
-		VisUIWidget *wi = NULL;
+		case VISUAL_WIDGET_TYPE_TABLE:
+			widget = visui_widget_table_new (vuic, visuiwidget);
 
-		if (visual_ui_box_get_orient (VISUAL_UI_BOX (cont)) == VISUAL_ORIENT_TYPE_HORIZONTAL)
-			widget = gtk_hbox_new (FALSE, 10);
-		else if (visual_ui_box_get_orient (VISUAL_UI_BOX (cont)) == VISUAL_ORIENT_TYPE_VERTICAL)
-			widget = gtk_vbox_new (FALSE, 10);
-		else
-			return NULL;
+			break;
 
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
+		case VISUAL_WIDGET_TYPE_FRAME:
+			widget = visui_widget_frame_new (vuic, visuiwidget);
 
-		childs = visual_ui_box_get_childs (VISUAL_UI_BOX (cont));
+			break;
 
-		while ((wi = visual_list_next (childs, &le)) != NULL) {
-			GtkWidget *packer;
-			
-			packer = lvwidget_visui_create_gtk_widgets (vuic, wi);
+		case VISUAL_WIDGET_TYPE_LABEL:
+			widget = visui_widget_label_new (vuic, visuiwidget);
 
-			gtk_box_pack_start (GTK_BOX (widget), packer, FALSE, FALSE, 0);
-		}
+			break;
+
+		case VISUAL_WIDGET_TYPE_IMAGE:
+			widget = visui_widget_image_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_SEPARATOR:
+			widget = visui_widget_separator_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_ENTRY:
+			widget = visui_widget_entry_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_SLIDER:
+			widget = visui_widget_slider_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_NUMERIC:
+			widget = visui_widget_numeric_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_COLOR:
+			widget = visui_widget_color_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_POPUP:
+			widget = visui_widget_popup_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_RADIO:
+			widget = visui_widget_radio_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_CHECKBOX:
+			widget = visui_widget_checkbox_new (vuic, visuiwidget);
+
+			break;
 		
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_TABLE) {
-
-		VisList *childs;
-		VisListEntry *le = NULL;
-		VisUITableEntry *tentry;
-
-		widget = gtk_table_new (VISUAL_UI_TABLE (cont)->rows, VISUAL_UI_TABLE (cont)->cols, FALSE);
-
-		gtk_table_set_row_spacings (GTK_TABLE(widget), 4);
-		gtk_table_set_col_spacings (GTK_TABLE(widget), 4);
-
-		childs = visual_ui_table_get_childs (VISUAL_UI_TABLE (cont));
-
-		while ((tentry = visual_list_next (childs, &le)) != NULL) {
-			GtkWidget *wi;
-
-			wi = lvwidget_visui_create_gtk_widgets (vuic, tentry->widget);
-
-			gtk_table_attach_defaults (GTK_TABLE (widget), wi,
-					tentry->col, tentry->col + 1, tentry->row, tentry->row + 1);
-
-		}
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
-
-		return widget;
-	
-	} else if (type == VISUAL_WIDGET_TYPE_FRAME) {
-
-		GtkWidget *child;
-
-		widget = gtk_frame_new (VISUAL_UI_FRAME (cont)->name);
-		
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-
-		if (VISUAL_UI_CONTAINER (cont)->child != NULL) {
-			child = lvwidget_visui_create_gtk_widgets (vuic, VISUAL_UI_CONTAINER (cont)->child);
-
-			gtk_container_add (GTK_CONTAINER (widget), child);
-		}
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_LABEL) {
-
-		GtkWidget *align;
-
-		if (VISUAL_UI_LABEL (cont)->bold == FALSE)
-			widget = gtk_label_new (visual_ui_label_get_text (VISUAL_UI_LABEL (cont)));
-		else {
-			char *temp;
-			int len;
-
-			widget = gtk_label_new (NULL);
-			
-			len = strlen (visual_ui_label_get_text (VISUAL_UI_LABEL (cont))) + 8;
-			temp = g_malloc (len);
-			snprintf (temp, len, "<b>%s</b>", visual_ui_label_get_text (VISUAL_UI_LABEL (cont)));
-			
-			gtk_label_set_markup (GTK_LABEL (widget), temp);
-
-			g_free (temp);
-		}
-					
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-		
-		align = gtk_alignment_new (0, 0, 0, 0);
-		gtk_container_add (GTK_CONTAINER (align), widget);
-	
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
-
-		return align;
-
-	} else if (type == VISUAL_WIDGET_TYPE_IMAGE) {
-
-		GdkPixbuf *pixbuf;
-		GdkPixmap *pixmap;
-		GdkDrawable *drawable;
-		GdkColormap *colormap;
-		GdkGC *gc;
-		const VisVideo *video;
-		unsigned char *buf;
-		int x, y;
-		int i = 0;
-
-		video = visual_ui_image_get_video (VISUAL_UI_IMAGE (cont));
-
-		if (video == NULL) {
-			visual_log (VISUAL_LOG_CRITICAL, "Image widget doesn't contain an image");
-
-			return NULL;
-		}
-
-		if (video->depth != VISUAL_VIDEO_DEPTH_24BIT) {
-			visual_log (VISUAL_LOG_CRITICAL, "Image in image widget must be VISUAL_VIDEO_DEPTH_24BIT");
-
-			return NULL;
-		}
-
-		pixmap = gdk_pixmap_new (NULL, video->width, video->height, 24);
-		drawable = pixmap;
-
-		colormap = gdk_colormap_get_system ();
-		gdk_drawable_set_colormap (drawable, colormap);
-
-		gc = gdk_gc_new (drawable);
-
-
-		buf = video->pixels;
-		for (y = 0; y < video->height; y++) {
-			for (x = 0; x < video->width; x++) {
-				GdkColor color;
-
-				color.red = buf[i++] * (65535 / 255);
-				color.green = buf[i++] * (65535 / 255);
-				color.blue = buf[i++] * (65535 / 255);
-
-				gdk_gc_set_rgb_fg_color (gc, &color);
-				gdk_draw_point (drawable, gc, x, y);
-			}
-		}
-	
-		/* FIXME Must we free this or not ? */
-		pixbuf = gdk_pixbuf_get_from_drawable (NULL, drawable, colormap, 0, 0, 0, 0, video->width, video->height);		
-
-		widget = gtk_image_new_from_pixbuf (pixbuf);
-
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_SEPARATOR) {
-
-		if (visual_ui_separator_get_orient (VISUAL_UI_SEPARATOR (cont)) == VISUAL_ORIENT_TYPE_NONE) {
-			visual_log (VISUAL_LOG_CRITICAL, "Separator orientation must be HORIZONTAL or VERTICAL");
-
-			return NULL;
-		}
-
-		if (visual_ui_separator_get_orient (VISUAL_UI_SEPARATOR (cont)) == VISUAL_ORIENT_TYPE_HORIZONTAL)
-			widget = gtk_hseparator_new ();
-		else
-			widget = gtk_vseparator_new ();
-
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_ENTRY) {
-
-		VisParamEntry *param;
-
-		widget = gtk_entry_new ();
-
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-		
-		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
-
-		visual_object_set_private (VISUAL_OBJECT (cont), widget);
-		
-		gtk_entry_set_text (GTK_ENTRY (widget), visual_param_entry_get_string (param));
-		gtk_entry_set_max_length (GTK_ENTRY (widget), VISUAL_UI_ENTRY (cont)->length);
-
-		g_signal_connect (G_OBJECT (widget), "changed",
-				G_CALLBACK (cb_visui_entry), cont);
-
-		cbentry = g_new0 (CallbackEntry, 1);
-		cbentry->param = param;
-		cbentry->id = visual_param_entry_add_callback (param, cb_param_entry, cont);
-		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_SLIDER) {
-
-		VisParamEntry *param;
-		double val;
-
-		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
-
-		if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
-			val = visual_param_entry_get_integer (param);
-		else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
-			val = visual_param_entry_get_float (param);
-		else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
-			val = visual_param_entry_get_double (param);
-		else {
-			visual_log (VISUAL_LOG_CRITICAL, "Param for numeric widget must be of numeric type");
-
-			return NULL;
-		}
-
-		widget = gtk_hscale_new_with_range (VISUAL_UI_RANGE (cont)->min,
-				VISUAL_UI_RANGE (cont)->max,
-				VISUAL_UI_RANGE (cont)->step);
-
-		visual_object_set_private (VISUAL_OBJECT (cont), widget);
-
-		if (VISUAL_UI_SLIDER (cont)->showvalue == FALSE)
-			gtk_scale_set_draw_value (GTK_SCALE (widget), FALSE);
-		else
-			gtk_scale_set_draw_value (GTK_SCALE (widget), TRUE);
-
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-
-		gtk_scale_set_digits (GTK_SCALE (widget), VISUAL_UI_RANGE (cont)->precision);
-		
-		gtk_range_set_value (GTK_RANGE (widget), val); 
-
-		g_signal_connect (G_OBJECT (widget), "value-changed",
-				G_CALLBACK (cb_visui_slider), cont);
-		
-		cbentry = g_new0 (CallbackEntry, 1);
-		cbentry->param = param;
-		cbentry->id = visual_param_entry_add_callback (param, cb_param_slider, cont);
-		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
-
-		return widget;
-		
-	} else if (type == VISUAL_WIDGET_TYPE_NUMERIC) {
-
-		VisParamEntry *param;
-		double val;
-
-		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
-
-		if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
-			val = visual_param_entry_get_integer (param);
-		else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
-			val = visual_param_entry_get_float (param);
-		else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
-			val = visual_param_entry_get_double (param);
-		else {
-			visual_log (VISUAL_LOG_CRITICAL, "Param for numeric widget must be of numeric type");
-
-			return NULL;
-		}
-
-		widget = gtk_spin_button_new_with_range (VISUAL_UI_RANGE (cont)->min,
-				VISUAL_UI_RANGE (cont)->max,
-				VISUAL_UI_RANGE (cont)->step);
-
-		visual_object_set_private (VISUAL_OBJECT (cont), widget);
-
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-	
-		gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (widget), TRUE);
-		gtk_spin_button_set_digits (GTK_SPIN_BUTTON (widget), VISUAL_UI_RANGE (cont)->precision);
-		
-		gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), val); 
-
-		g_signal_connect (G_OBJECT (widget), "changed",
-				G_CALLBACK (cb_visui_numeric), cont);
-
-		cbentry = g_new0 (CallbackEntry, 1);
-		cbentry->param = param;
-		cbentry->id = visual_param_entry_add_callback (param, cb_param_numeric, cont);
-		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_COLOR) {
-
-		VisParamEntry *param;
-		VisColor *color;
-		GdkColor gdkcol;
-
-		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
-
-		if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR) {
-			visual_log (VISUAL_LOG_CRITICAL, "Param for color widget must be of color type");
-
-			return NULL;
-		}
-
-		color = visual_param_entry_get_color (param);
-		
-		gdkcol.red = color->r * (65535 / 255);
-		gdkcol.blue = color->b * (65535 / 255);
-		gdkcol.green = color->g * (65535 / 255);
-
-		widget = gtk_color_selection_new ();
-
-		visual_object_set_private (VISUAL_OBJECT (cont), widget);
-
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-		
-		gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (widget), &gdkcol);
-
-		g_signal_connect (G_OBJECT (widget), "color-changed",
-				G_CALLBACK (cb_visui_color), cont);
-
-		cbentry = g_new0 (CallbackEntry, 1);
-		cbentry->param = param;
-		cbentry->id = visual_param_entry_add_callback (param, cb_param_color, cont);
-		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_POPUP) {
-
-		VisParamEntry *param;
-		VisUIChoiceList *options;
-		VisUIChoiceEntry *centry;
-		VisListEntry *le = NULL;
-		VisList *choices;
-		GtkWidget *menu, *menuitem;
-		GSList *group;
-
-		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
-
-		options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (cont));
-		choices = &options->choices;
-
-#if HAVE_GTK_AT_LEAST_2_4_X
-		widget = gtk_combo_box_new_text ();
-
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-
-		while ((centry = visual_list_next (choices, &le)) != NULL)
-			gtk_combo_box_append_text (GTK_COMBO_BOX (widget), centry->name);
-
-		gtk_combo_box_set_active (GTK_COMBO_BOX (widget), visual_ui_choice_get_active (VISUAL_UI_CHOICE (cont)));
-
-		g_signal_connect (G_OBJECT (widget), "changed",
-				G_CALLBACK (cb_visui_popup), cont);
-#else
-		widget = gtk_option_menu_new ();
-
-		gtk_widget_set_size_request (GTK_WIDGET (widget),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-
-		menu = gtk_menu_new ();
-		group = NULL;
-
-		while ((centry = visual_list_next (choices, &le)) != NULL) {
-			menuitem = gtk_radio_menu_item_new_with_label (group, centry->name);
-			group = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM(menuitem));
-			gtk_menu_append (menu, menuitem);
-			gtk_widget_show (menuitem);
-
-			g_signal_connect (G_OBJECT (menuitem), "toggled",
-					G_CALLBACK (cb_visui_popup), cont);
-		}
-
-		gtk_option_menu_set_menu (GTK_OPTION_MENU(widget), menu);
-#endif
-		visual_object_set_private (VISUAL_OBJECT (cont), widget);
-
-		cbentry = g_new0 (CallbackEntry, 1);
-		cbentry->param = param;
-		cbentry->id = visual_param_entry_add_callback (param, cb_param_popup, cont);
-		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip); 
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_LIST) {
-
-
-		/* FIXME implement this */
-
-	} else if (type == VISUAL_WIDGET_TYPE_RADIO) {
-		
-		GtkWidget *radio;
-		VisParamEntry *param;
-		VisUIChoiceList *options;
-		VisUIChoiceEntry *centry;
-		VisListEntry *le = NULL;
-		VisList *choices;
-		
-		param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
-		
-		options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (cont));
-		choices = &options->choices;
-
-		if (options->count < 2) {
-			visual_log (VISUAL_LOG_CRITICAL, "The number of choices for a radio button must be atleast 2");
-
-			return NULL;
-		}
-
-		if (VISUAL_UI_RADIO (cont)->orient == VISUAL_ORIENT_TYPE_HORIZONTAL)
-			widget = gtk_hbox_new (FALSE, 10);
-		else
-			widget = gtk_vbox_new (FALSE, 10);
-		
-		/* First entry */
-		centry = visual_list_next (choices, &le);
-		radio = gtk_radio_button_new_with_label (NULL, centry->name);
-		
-		gtk_widget_set_size_request (GTK_WIDGET (radio),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-		
-		g_signal_connect (G_OBJECT (radio), "toggled",
-				G_CALLBACK (cb_visui_radio), cont);
-
-		gtk_box_pack_start (GTK_BOX (widget), radio, FALSE, FALSE, 0);
-		
-		while ((centry = visual_list_next (choices, &le)) != NULL) {
-			radio = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio), centry->name);
-			
-			gtk_widget_set_size_request (GTK_WIDGET (radio),
-				VISUAL_UI_WIDGET (cont)->width,
-				VISUAL_UI_WIDGET (cont)->height);
-	
-			g_signal_connect (G_OBJECT (radio), "toggled",
-				G_CALLBACK (cb_visui_radio), cont);
-
-			gtk_box_pack_start (GTK_BOX (widget), radio, FALSE, FALSE, 0);
-		}
-
-		visual_object_set_private (VISUAL_OBJECT (cont), widget);
-
-		cbentry = g_new0 (CallbackEntry, 1);
-		cbentry->param = param;
-		cbentry->id = visual_param_entry_add_callback (param, cb_param_radio, cont);
-		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
-
-		return widget;
-
-	} else if (type == VISUAL_WIDGET_TYPE_CHECKBOX) {
-
-		VisParamEntry *param;
-		VisUIChoiceList *options;
-
-		param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (cont));
-
-		options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (cont));
-
-		if (options->count != 2) {
-			visual_log (VISUAL_LOG_CRITICAL, "The number of choices for a checkbox must be 2");
-
-			return NULL;
-		}
-
-		if (VISUAL_UI_CHECKBOX (cont)->name != NULL)
-			widget = gtk_check_button_new_with_label (VISUAL_UI_CHECKBOX (cont)->name);
-		else
-			widget = gtk_check_button_new ();
-
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), visual_ui_choice_get_active (VISUAL_UI_CHOICE (cont)));
-
-		visual_object_set_private (VISUAL_OBJECT (cont), widget);
-
-		g_signal_connect (G_OBJECT (widget), "toggled",
-				G_CALLBACK (cb_visui_checkbox), cont);
-
-		cbentry = g_new0 (CallbackEntry, 1);
-		cbentry->param = param;
-		cbentry->id = visual_param_entry_add_callback (param, cb_param_checkbox, cont);
-		vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
-
-		tooltip = visual_ui_widget_get_tooltip (cont);
-		if (tooltip != NULL)
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
-
-		return widget;
+		default:
+			// FIXME warning message, and an empty widget filler
+			visual_log (VISUAL_LOG_CRITICAL, "Wrong VisUIWidget type, while creating gtk2 widget from VisUIWidget tree");
+			widget = gtk_label_new ("");
+
+			break;
 	}
 
-	return NULL;
+	if (visual_ui_widget_get_type (visuiwidget) != VISUAL_WIDGET_TYPE_RADIO) {
+		gtk_widget_set_size_request (GTK_WIDGET (widget),
+				VISUAL_UI_WIDGET (visuiwidget)->width,
+				VISUAL_UI_WIDGET (visuiwidget)->height);
+	}
+
+	tooltip = visual_ui_widget_get_tooltip (visuiwidget);
+	if (tooltip != NULL) {
+		if (GTK_WIDGET_NO_WINDOW (widget)) {
+			GtkWidget *eventbox = gtk_event_box_new ();
+
+			gtk_container_add (GTK_CONTAINER (eventbox), widget);
+
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), eventbox, tooltip, tooltip);
+
+			return eventbox;			
+		} else 
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (vuic->priv->tooltips), widget, tooltip, tooltip);
+	}
+	
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_box_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	VisList *childs;
+	VisListEntry *le = NULL;
+	VisUIWidget *wi = NULL;
+
+	if (visual_ui_box_get_orient (VISUAL_UI_BOX (visuiwidget)) == VISUAL_ORIENT_TYPE_HORIZONTAL)
+		widget = gtk_hbox_new (FALSE, 10);
+	else if (visual_ui_box_get_orient (VISUAL_UI_BOX (visuiwidget)) == VISUAL_ORIENT_TYPE_VERTICAL)
+		widget = gtk_vbox_new (FALSE, 10);
+	else
+		return NULL;
+
+	childs = visual_ui_box_get_childs (VISUAL_UI_BOX (visuiwidget));
+
+	while ((wi = visual_list_next (childs, &le)) != NULL) {
+		GtkWidget *packer;
+
+		packer = visui_widget_new (vuic, wi);
+
+		gtk_box_pack_start (GTK_BOX (widget), packer, FALSE, FALSE, 0);
+	}
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_table_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	VisList *childs;
+	VisListEntry *le = NULL;
+	VisUITableEntry *tentry;
+
+	widget = gtk_table_new (VISUAL_UI_TABLE (visuiwidget)->rows, VISUAL_UI_TABLE (visuiwidget)->cols, FALSE);
+
+	gtk_table_set_row_spacings (GTK_TABLE(widget), 4);
+	gtk_table_set_col_spacings (GTK_TABLE(widget), 4);
+
+	childs = visual_ui_table_get_childs (VISUAL_UI_TABLE (visuiwidget));
+
+	while ((tentry = visual_list_next (childs, &le)) != NULL) {
+		GtkWidget *wi;
+
+		wi = visui_widget_new (vuic, tentry->widget);
+
+		gtk_table_attach_defaults (GTK_TABLE (widget), wi,
+				tentry->col, tentry->col + 1, tentry->row, tentry->row + 1);
+
+	}
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_frame_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	GtkWidget *child;
+
+	widget = gtk_frame_new (VISUAL_UI_FRAME (visuiwidget)->name);
+
+	if (VISUAL_UI_CONTAINER (visuiwidget)->child != NULL) {
+		child = visui_widget_new (vuic, VISUAL_UI_CONTAINER (visuiwidget)->child);
+
+		gtk_container_add (GTK_CONTAINER (widget), child);
+	}
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_label_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	GtkWidget *align;
+
+	if (VISUAL_UI_LABEL (visuiwidget)->bold == FALSE)
+		widget = gtk_label_new (visual_ui_label_get_text (VISUAL_UI_LABEL (visuiwidget)));
+	else {
+		char *temp;
+		int len;
+
+		widget = gtk_label_new (NULL);
+
+		len = strlen (visual_ui_label_get_text (VISUAL_UI_LABEL (visuiwidget))) + 8;
+		temp = g_malloc (len);
+		snprintf (temp, len, "<b>%s</b>", visual_ui_label_get_text (VISUAL_UI_LABEL (visuiwidget)));
+
+		gtk_label_set_markup (GTK_LABEL (widget), temp);
+
+		g_free (temp);
+	}
+
+	align = gtk_alignment_new (0, 0, 0, 0);
+	gtk_container_add (GTK_CONTAINER (align), widget);
+
+	return align;
+}
+
+static GtkWidget*
+visui_widget_image_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	GdkPixbuf *pixbuf;
+	GdkPixmap *pixmap;
+	GdkDrawable *drawable;
+	GdkColormap *colormap;
+	GdkGC *gc;
+	const VisVideo *video;
+	unsigned char *buf;
+	int x, y;
+	int i = 0;
+
+	video = visual_ui_image_get_video (VISUAL_UI_IMAGE (visuiwidget));
+
+	if (video == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, "Image widget doesn't contain an image");
+
+		return NULL;
+	}
+
+	if (video->depth != VISUAL_VIDEO_DEPTH_24BIT) {
+		visual_log (VISUAL_LOG_CRITICAL, "Image in image widget must be VISUAL_VIDEO_DEPTH_24BIT");
+
+		return NULL;
+	}
+
+	pixmap = gdk_pixmap_new (NULL, video->width, video->height, 24);
+	drawable = pixmap;
+
+	colormap = gdk_colormap_get_system ();
+	gdk_drawable_set_colormap (drawable, colormap);
+
+	gc = gdk_gc_new (drawable);
+
+
+	buf = video->pixels;
+	for (y = 0; y < video->height; y++) {
+		for (x = 0; x < video->width; x++) {
+			GdkColor color;
+
+			color.red = buf[i++] * (65535 / 255);
+			color.green = buf[i++] * (65535 / 255);
+			color.blue = buf[i++] * (65535 / 255);
+
+			gdk_gc_set_rgb_fg_color (gc, &color);
+			gdk_draw_point (drawable, gc, x, y);
+		}
+	}
+
+	/* FIXME Must we free this or not ? */
+	pixbuf = gdk_pixbuf_get_from_drawable (NULL, drawable, colormap, 0, 0, 0, 0, video->width, video->height);		
+
+	widget = gtk_image_new_from_pixbuf (pixbuf);
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_separator_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	
+	if (visual_ui_separator_get_orient (VISUAL_UI_SEPARATOR (visuiwidget)) == VISUAL_ORIENT_TYPE_NONE) {
+		visual_log (VISUAL_LOG_CRITICAL, "Separator orientation must be HORIZONTAL or VERTICAL");
+
+		return NULL;
+	}
+
+	if (visual_ui_separator_get_orient (VISUAL_UI_SEPARATOR (visuiwidget)) == VISUAL_ORIENT_TYPE_HORIZONTAL)
+		widget = gtk_hseparator_new ();
+	else
+		widget = gtk_vseparator_new ();
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_entry_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	CallbackEntry *cbentry;
+	VisParamEntry *param;
+
+	widget = gtk_entry_new ();
+
+	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (visuiwidget));
+
+	visual_object_set_private (VISUAL_OBJECT (visuiwidget), widget);
+
+	gtk_entry_set_text (GTK_ENTRY (widget), visual_param_entry_get_string (param));
+	gtk_entry_set_max_length (GTK_ENTRY (widget), VISUAL_UI_ENTRY (visuiwidget)->length);
+
+	g_signal_connect (G_OBJECT (widget), "changed",
+			G_CALLBACK (cb_visui_entry), visuiwidget);
+
+	cbentry = g_new0 (CallbackEntry, 1);
+	cbentry->param = param;
+	cbentry->id = visual_param_entry_add_callback (param, cb_param_entry, visuiwidget);
+	vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_slider_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	CallbackEntry *cbentry;
+	VisParamEntry *param;
+	double val;
+
+	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (visuiwidget));
+
+	if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
+		val = visual_param_entry_get_integer (param);
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
+		val = visual_param_entry_get_float (param);
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
+		val = visual_param_entry_get_double (param);
+	else {
+		visual_log (VISUAL_LOG_CRITICAL, "Param for numeric widget must be of numeric type");
+
+		return NULL;
+	}
+
+	widget = gtk_hscale_new_with_range (VISUAL_UI_RANGE (visuiwidget)->min,
+			VISUAL_UI_RANGE (visuiwidget)->max,
+			VISUAL_UI_RANGE (visuiwidget)->step);
+
+	visual_object_set_private (VISUAL_OBJECT (visuiwidget), widget);
+
+	if (VISUAL_UI_SLIDER (visuiwidget)->showvalue == FALSE)
+		gtk_scale_set_draw_value (GTK_SCALE (widget), FALSE);
+	else
+		gtk_scale_set_draw_value (GTK_SCALE (widget), TRUE);
+
+	gtk_scale_set_digits (GTK_SCALE (widget), VISUAL_UI_RANGE (visuiwidget)->precision);
+
+	gtk_range_set_value (GTK_RANGE (widget), val); 
+
+	g_signal_connect (G_OBJECT (widget), "value-changed",
+			G_CALLBACK (cb_visui_slider), visuiwidget);
+
+	cbentry = g_new0 (CallbackEntry, 1);
+	cbentry->param = param;
+	cbentry->id = visual_param_entry_add_callback (param, cb_param_slider, visuiwidget);
+	vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_numeric_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	CallbackEntry *cbentry;
+	VisParamEntry *param;
+	double val;
+
+	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (visuiwidget));
+
+	if (param->type == VISUAL_PARAM_ENTRY_TYPE_INTEGER)
+		val = visual_param_entry_get_integer (param);
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_FLOAT)
+		val = visual_param_entry_get_float (param);
+	else if (param->type == VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
+		val = visual_param_entry_get_double (param);
+	else {
+		visual_log (VISUAL_LOG_CRITICAL, "Param for numeric widget must be of numeric type");
+
+		return NULL;
+	}
+
+	widget = gtk_spin_button_new_with_range (VISUAL_UI_RANGE (visuiwidget)->min,
+			VISUAL_UI_RANGE (visuiwidget)->max,
+			VISUAL_UI_RANGE (visuiwidget)->step);
+
+	visual_object_set_private (VISUAL_OBJECT (visuiwidget), widget);
+
+	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (widget), TRUE);
+	gtk_spin_button_set_digits (GTK_SPIN_BUTTON (widget), VISUAL_UI_RANGE (visuiwidget)->precision);
+
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), val); 
+
+	g_signal_connect (G_OBJECT (widget), "changed",
+			G_CALLBACK (cb_visui_numeric), visuiwidget);
+
+	cbentry = g_new0 (CallbackEntry, 1);
+	cbentry->param = param;
+	cbentry->id = visual_param_entry_add_callback (param, cb_param_numeric, visuiwidget);
+	vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_color_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	CallbackEntry *cbentry;
+	VisParamEntry *param;
+	VisColor *color;
+	GdkColor gdkcol;
+
+	param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (visuiwidget));
+
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR) {
+		visual_log (VISUAL_LOG_CRITICAL, "Param for color widget must be of color type");
+
+		return NULL;
+	}
+
+	color = visual_param_entry_get_color (param);
+
+	gdkcol.red = color->r * (65535 / 255);
+	gdkcol.blue = color->b * (65535 / 255);
+	gdkcol.green = color->g * (65535 / 255);
+
+	widget = gtk_color_selection_new ();
+
+	visual_object_set_private (VISUAL_OBJECT (visuiwidget), widget);
+
+	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (widget), &gdkcol);
+
+	g_signal_connect (G_OBJECT (widget), "color-changed",
+			G_CALLBACK (cb_visui_color), visuiwidget);
+
+	cbentry = g_new0 (CallbackEntry, 1);
+	cbentry->param = param;
+	cbentry->id = visual_param_entry_add_callback (param, cb_param_color, visuiwidget);
+	vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_popup_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	CallbackEntry *cbentry;
+	VisParamEntry *param;
+	VisUIChoiceList *options;
+	VisUIChoiceEntry *centry;
+	VisListEntry *le = NULL;
+	VisList *choices;
+	GtkWidget *menu, *menuitem;
+	GSList *group;
+
+	param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (visuiwidget));
+
+	options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (visuiwidget));
+	choices = &options->choices;
+
+#if HAVE_GTK_AT_LEAST_2_4_X
+	widget = gtk_combo_box_new_text ();
+
+	while ((centry = visual_list_next (choices, &le)) != NULL)
+		gtk_combo_box_append_text (GTK_COMBO_BOX (widget), centry->name);
+
+	gtk_combo_box_set_active (GTK_COMBO_BOX (widget), visual_ui_choice_get_active (VISUAL_UI_CHOICE (visuiwidget)));
+
+	g_signal_connect (G_OBJECT (widget), "changed",
+			G_CALLBACK (cb_visui_popup), visuiwidget);
+#else
+	widget = gtk_option_menu_new ();
+
+	menu = gtk_menu_new ();
+	group = NULL;
+
+	while ((centry = visual_list_next (choices, &le)) != NULL) {
+		menuitem = gtk_radio_menu_item_new_with_label (group, centry->name);
+		group = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM(menuitem));
+		gtk_menu_append (menu, menuitem);
+		gtk_widget_show (menuitem);
+
+		g_signal_connect (G_OBJECT (menuitem), "toggled",
+				G_CALLBACK (cb_visui_popup), visuiwidget);
+	}
+
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (widget), menu);
+#endif
+	visual_object_set_private (VISUAL_OBJECT (visuiwidget), widget);
+
+	cbentry = g_new0 (CallbackEntry, 1);
+	cbentry->param = param;
+	cbentry->id = visual_param_entry_add_callback (param, cb_param_popup, visuiwidget);
+	vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_radio_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	GtkWidget *radio;
+	CallbackEntry *cbentry;
+	VisParamEntry *param;
+	VisUIChoiceList *options;
+	VisUIChoiceEntry *centry;
+	VisListEntry *le = NULL;
+	VisList *choices;
+
+	param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (visuiwidget));
+
+	options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (visuiwidget));
+	choices = &options->choices;
+
+	if (options->count < 2) {
+		visual_log (VISUAL_LOG_CRITICAL, "The number of choices for a radio button must be atleast 2");
+
+		return NULL;
+	}
+
+	if (VISUAL_UI_RADIO (visuiwidget)->orient == VISUAL_ORIENT_TYPE_HORIZONTAL)
+		widget = gtk_hbox_new (FALSE, 10);
+	else
+		widget = gtk_vbox_new (FALSE, 10);
+
+	/* First entry */
+	centry = visual_list_next (choices, &le);
+	radio = gtk_radio_button_new_with_label (NULL, centry->name);
+
+	gtk_widget_set_size_request (GTK_WIDGET (radio),
+			VISUAL_UI_WIDGET (visuiwidget)->width,
+			VISUAL_UI_WIDGET (visuiwidget)->height);
+
+	g_signal_connect (G_OBJECT (radio), "toggled",
+			G_CALLBACK (cb_visui_radio), visuiwidget);
+
+	gtk_box_pack_start (GTK_BOX (widget), radio, FALSE, FALSE, 0);
+
+	while ((centry = visual_list_next (choices, &le)) != NULL) {
+		radio = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio), centry->name);
+
+		gtk_widget_set_size_request (GTK_WIDGET (radio),
+				VISUAL_UI_WIDGET (visuiwidget)->width,
+				VISUAL_UI_WIDGET (visuiwidget)->height);
+
+		g_signal_connect (G_OBJECT (radio), "toggled",
+				G_CALLBACK (cb_visui_radio), visuiwidget);
+
+		gtk_box_pack_start (GTK_BOX (widget), radio, FALSE, FALSE, 0);
+	}
+
+	visual_object_set_private (VISUAL_OBJECT (visuiwidget), widget);
+
+	cbentry = g_new0 (CallbackEntry, 1);
+	cbentry->param = param;
+	cbentry->id = visual_param_entry_add_callback (param, cb_param_radio, visuiwidget);
+	vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_checkbox_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	CallbackEntry *cbentry;
+	VisParamEntry *param;
+	VisUIChoiceList *options;
+
+	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (visuiwidget));
+
+	options = visual_ui_choice_get_choices (VISUAL_UI_CHOICE (visuiwidget));
+
+	if (options->count != 2) {
+		visual_log (VISUAL_LOG_CRITICAL, "The number of choices for a checkbox must be 2");
+
+		return NULL;
+	}
+
+	if (VISUAL_UI_CHECKBOX (visuiwidget)->name != NULL)
+		widget = gtk_check_button_new_with_label (VISUAL_UI_CHECKBOX (visuiwidget)->name);
+	else
+		widget = gtk_check_button_new ();
+
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), visual_ui_choice_get_active (VISUAL_UI_CHOICE (visuiwidget)));
+
+	visual_object_set_private (VISUAL_OBJECT (visuiwidget), widget);
+
+	g_signal_connect (G_OBJECT (widget), "toggled",
+			G_CALLBACK (cb_visui_checkbox), visuiwidget);
+
+	cbentry = g_new0 (CallbackEntry, 1);
+	cbentry->param = param;
+	cbentry->id = visual_param_entry_add_callback (param, cb_param_checkbox, visuiwidget);
+	vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+	return widget;
 }
 
 /* Parameter change callbacks from within GTK */
