@@ -1,5 +1,10 @@
 2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* gtk2/lvw_gtk2_visui.c (lvw_visui_destroy): Check if we haven't
+	already unreffed the VisUIWidget.
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* gtk2/lvw_gtk2_visui.c: The gtk2.4 < popup box did set the
 	active index one too high. Also fixed some other thingies a bit.
 

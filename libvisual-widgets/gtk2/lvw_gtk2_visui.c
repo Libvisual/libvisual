@@ -169,7 +169,9 @@ lvw_visui_destroy (GtkObject *object)
 	}
 
 	/* We don't need it anylonger, unref the VisUIWidget */
-	visual_object_unref (VISUAL_OBJECT (priv->vuitree));
+	if (priv->vuitree != NULL)
+		visual_object_unref (VISUAL_OBJECT (priv->vuitree));
+
 	priv->vuitree = NULL;
 
 	priv->destroyed = TRUE;	
