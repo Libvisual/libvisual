@@ -31,7 +31,7 @@ struct _VisInput {
 							  * @see visual_audio_analyse */
 	input_upload_callback_func_t	 callback;	/**< Callback function when a callback
 							  * is used instead of a plugin. */
-	void				*private;	/**< Private which can pass on data
+	void				*priv;		/**< Private which can pass on data
 							  * to the callback function. */
 };
 
@@ -49,7 +49,7 @@ int visual_input_realize (VisInput *input);
 int visual_input_destroy (VisInput *input);
 int visual_input_free (VisInput *input);
 
-int visual_input_set_callback (VisInput *input, input_upload_callback_func_t callback, void *private);
+int visual_input_set_callback (VisInput *input, input_upload_callback_func_t callback, void *priv);
 
 int visual_input_run (VisInput *input);
 

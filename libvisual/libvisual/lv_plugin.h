@@ -117,7 +117,7 @@ struct _VisActorPlugin {
 							 * which is not yet supported. */
 	VisSongInfo			*songinfo;	/**< Pointer to the VisSongInfo structure containing
 							 * information about the current song being played. */
-	void				*private;	/**< Private to interchange data
+	void				*priv;		/**< Private to interchange data
 							 * between the plugin it's methods and functions.
 							 * It's highly adviced that all data is encapsulated in a 
 							 * private so the plugin is reentrant. */
@@ -144,7 +144,7 @@ struct _VisInputPlugin {
 	void				*handle;	/**< Contains the handle that is given by dlopen. */
 	int				 plugflags;	/**< Plugin flags are hint flags for the plugin loader,
 							  * which is not yet supported. */
-	void				*private;	/**< Private to interchange data
+	void				*priv;		/**< Private to interchange data
 							  * between the plugin it's methods and functions.
 							  * It's highly adviced that all data is encapsulated in a
 							  * private so the plugin is reentrant. */
@@ -178,7 +178,7 @@ struct _VisMorphPlugin {
 							  * @see VisVideoDepth */
 	int				 plugflags;	/**< Plugin flags are hint flags for the plugin loader,
 							  * Which is not yet supproted. */
-	void				*private;	/**< Private to interchange data
+	void				*priv;		/**< Private to interchange data
 							  * between the plugin it's methods and functions.
 							  * It's highly adviced that all data is encapsulated in a
 							  * private so the plugin is reentrant. */

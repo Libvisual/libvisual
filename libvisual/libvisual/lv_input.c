@@ -194,13 +194,13 @@ int visual_input_free (VisInput *input)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_input_set_callback (VisInput *input, input_upload_callback_func_t callback, void *private)
+int visual_input_set_callback (VisInput *input, input_upload_callback_func_t callback, void *priv)
 {
 	if (input == NULL)
 		return -1;
 
 	input->callback = callback;
-	input->private = private;
+	input->priv = priv;
 
 	return 0;
 }
@@ -226,7 +226,7 @@ int visual_input_run (VisInput *input)
 
 		inplugin->upload (inplugin, input->audio);
 	} else
-		input->callback (input, input->audio, input->private);
+		input->callback (input, input->audio, input->priv);
 
 	visual_audio_analyze (input->audio);
 
