@@ -1,3 +1,8 @@
+double check the bmp loader for possibly errors when
+	the header has been tampered
+
+
+
 FIX the VERSION define
 
 Fix that lv-inspect builds, after the lib has been installed.
