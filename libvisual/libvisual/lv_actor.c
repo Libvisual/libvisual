@@ -15,8 +15,8 @@ static VisActorPlugin *get_actor_plugin (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 
-	if (actor->plugin == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (actor != NULL, NULL);
+	visual_log_return_val_if_fail (actor->plugin != NULL, NULL);
 
 	actplugin = actor->plugin->plugin.actorplugin;
 
@@ -102,7 +102,13 @@ VisActor *visual_actor_new (char *actorname)
 	
 	actor = malloc (sizeof (VisActor));
 	memset (actor, 0, sizeof (VisActor));
-	
+
+	if (actor == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"Could not get memory for a new VisActor struct");
+		return NULL;
+	}
+
 	if (actorname == NULL)
 		return actor;
 
@@ -122,15 +128,8 @@ VisActor *visual_actor_new (char *actorname)
  */
 int visual_actor_realize (VisActor *actor)
 {
-	if (actor == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "the actor is NULL");
-		return -1;
-	}
-
-	if (actor->plugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "the actor->plugin element is NULL");
-		return -1;
-	}
+	visual_log_return_val_if_fail (actor != NULL, -1);
+	visual_log_return_val_if_fail (actor->plugin != NULL, -1);
 
 	_lv_plugin_realize (actor->plugin);
 
@@ -147,8 +146,7 @@ int visual_actor_realize (VisActor *actor)
  */ 
 int visual_actor_destroy (VisActor *actor)
 {
-	if (actor == NULL)
-		return -1;
+	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	if (actor->plugin != NULL)
 		_lv_plugin_unload (actor->plugin);
@@ -168,8 +166,7 @@ int visual_actor_destroy (VisActor *actor)
  */
 int visual_actor_free (VisActor *actor)
 {
-	if (actor == NULL)
-		return -1;
+	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	if (actor->transform != NULL)
 		visual_video_free_with_buffer (actor->transform);
@@ -190,7 +187,7 @@ int visual_actor_free (VisActor *actor)
 
 /**
  * Pumps events from the VisActor into the plugin event handler. When visual_actor_run
- * is used to run the actor, which is highly adviced. Events get pumped automaticly
+ * is used to run the actor, which is highly adviced. Events get pumped automatically
  * and there is no need to call this function manually.
  *
  * @param actor Pointer to a VisActor of which the events needs to be pumped.
@@ -201,10 +198,15 @@ int visual_actor_events_pump (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 
-	if (actor == NULL)
-		return -1;
+	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	actplugin = get_actor_plugin (actor);
+
+	if (actplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"The given actor does not reference any actor plugin");
+		return -1;
+	}
 
 	if (actplugin->events != NULL)
 		actplugin->events (actplugin, &actor->events);
@@ -225,8 +227,7 @@ int visual_actor_events_pump (VisActor *actor)
  */
 VisEventQueue *visual_actor_get_eventqueue (VisActor *actor)
 {
-	if (actor == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (actor != NULL, NULL);
 
 	return &actor->events;
 }
@@ -243,8 +244,7 @@ VisEventQueue *visual_actor_get_eventqueue (VisActor *actor)
  */
 VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
 {
-	if (actor == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (actor != NULL, NULL);
 
 	if (actor->songinfo == NULL)
 		actor->songinfo = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
@@ -268,11 +268,16 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 
-	if (actor == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (actor != NULL, NULL);
 
 	actplugin = get_actor_plugin (actor);
 	
+	if (actplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"The given actor does not reference any actor plugin");
+		return NULL;
+	}
+
 	if (actor->transform != NULL &&
 		actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		
@@ -317,6 +322,14 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 	int tmpwidth, tmpheight, tmppitch;
 	int depthflag;
 
+	/*
+	 * Uhau, we really check the structure sanity.
+	 */
+	visual_log_return_val_if_fail (actor != NULL, -1);
+	visual_log_return_val_if_fail (actor->plugin != NULL, -1);
+	visual_log_return_val_if_fail (actor->plugin->ref != NULL, -1);
+	visual_log_return_val_if_fail (actor->video != NULL, -1);
+
 	if (actor->transform != NULL) {
 		visual_video_free_with_buffer (actor->transform);
 		actor->transform = NULL;
@@ -334,7 +347,7 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 
 	depthflag = visual_actor_get_supported_depth (actor);
 
-	printf ("[actor-negotiate] negotiating plugin %s\n", actor->plugin->ref->name);
+	visual_log (VISUAL_LOG_INFO, "negotiating plugin %s", actor->plugin->ref->name);
 	/* Set up depth transformation enviroment */
 	if (visual_video_depth_is_supported (depthflag, actor->video->depth) != TRUE ||
 			(forced == TRUE && actor->video->depth != rundepth)) {
@@ -350,17 +363,17 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 			visual_video_set_depth (actor->transform,
 					visual_video_depth_get_highest_nogl (depthflag));
 
-		printf ("[actor-negotiate] transpitch1 %d\n", actor->transform->pitch);
+		visual_log (VISUAL_LOG_INFO, "transpitch1 %d", actor->transform->pitch);
 		/* If there is only GL (which gets returned by highest nogl if
 		 * nothing else is there, stop here */
 		if (actor->transform->depth == VISUAL_VIDEO_DEPTH_GL)
 			return -1;
 
 		visual_video_set_dimension (actor->transform, actor->video->width, actor->video->height);
-		printf ("[actor-negotiate] transpitch2 %d %d\n", actor->transform->width, actor->transform->pitch);
+		visual_log (VISUAL_LOG_INFO, "transpitch2 %d %d", actor->transform->width, actor->transform->pitch);
 		
 		actplugin->requisition (actplugin, &actor->transform->width, &actor->transform->height);
-		printf ("[actor-negotiate] transpitch3 %d\n", actor->transform->pitch);
+		visual_log (VISUAL_LOG_INFO, "transpitch3 %d", actor->transform->pitch);
 		
 		if (noevent == FALSE) {
 			visual_event_queue_add_resize (&actor->events, actor->transform,
@@ -374,7 +387,7 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 					actor->transform->width, actor->transform->height);
 		}
 		
-		printf ("[actor-negotiate] rundepth: %d transpitch %d\n", rundepth, actor->transform->pitch);
+		visual_log (VISUAL_LOG_INFO, "rundepth: %d transpitch %d\n", rundepth, actor->transform->pitch);
 		visual_video_allocate_buffer (actor->transform);
 
 		if (actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT)
@@ -421,13 +434,15 @@ int visual_actor_get_supported_depth (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 
-	if (actor == NULL)
-		return -1;
+	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	actplugin = get_actor_plugin (actor);
 
-	if (actplugin == NULL)
+	if (actplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"The given actor does not reference any actor plugin");
 		return -1;
+	}
 
 	return actplugin->depth;
 }
@@ -451,8 +466,7 @@ int visual_actor_get_supported_depth (VisActor *actor)
  */
 int visual_actor_set_video (VisActor *actor, VisVideo *video)
 {
-	if (actor == NULL)
-		return -1;
+	visual_log_return_val_if_fail (actor != NULL, -1);
 
 	actor->video = video;
 
@@ -476,10 +490,20 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	VisVideo *fitting;
 
 	/* We don't check for video, because we don't always need a video */
-	if (actor == NULL || audio == NULL)
-		return -1;
+	/*
+	 * Really? take a look at visual_video_set_palette bellow
+	 */
+	visual_log_return_val_if_fail (actor != NULL, -1);
+	visual_log_return_val_if_fail (actor->video != NULL, -1);
+	visual_log_return_val_if_fail (audio != NULL, -1);
 
 	actplugin = get_actor_plugin (actor);
+
+	if (actplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"The given actor does not reference any actor plugin");
+		return -1;
+	}
 
 	/* Songinfo handling */
 	if (actor->songinfo != NULL) {

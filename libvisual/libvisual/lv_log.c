@@ -55,7 +55,8 @@ static const char *log_severity_to_string (VisLogSeverity severity)
  *
  * @return 0 on succes -1 on error.
  */
-void _lv_log (VisLogSeverity severity, const char *file, int line, const char *fmt, ...)
+void _lv_log (VisLogSeverity severity, const char *file,
+			int line, const char *funcname, const char *fmt, ...)
 {
 	char str[1024];
 	va_list va;
@@ -66,13 +67,26 @@ void _lv_log (VisLogSeverity severity, const char *file, int line, const char *f
 	vsnprintf (str, 1023, fmt, va);
 	va_end (va);
 
-	if (severity != VISUAL_LOG_INFO) {
-		fprintf (stderr, "libvisual %s: %s[(%s,%d)]: %s\n",
-				log_severity_to_string (severity), __lv_progname,
-				file, line, str);
+	if (funcname == NULL) { /* The system is not GNUC */
+		if (severity == VISUAL_LOG_INFO) {
+			printf ("libvisual %s: %s: %s\n",
+					log_severity_to_string (severity),
+					__lv_progname, str);
+		} else {
+			fprintf (stderr, "libvisual %s: %s [(%s,%d)]: %s\n",
+					log_severity_to_string (severity), __lv_progname,
+					file, line, str);
+		}
 	} else {
-		fprintf (stderr, "libvisual %s: %s: %s\n",
-				log_severity_to_string (severity), __lv_progname, str);
+		if (severity == VISUAL_LOG_INFO) {
+			printf ("libvisual %s: %s: %s: %s\n",
+					log_severity_to_string (severity),
+					__lv_progname, funcname, str);
+		} else {
+			fprintf (stderr, "libvisual %s: %s: %s [(%s,%d)]: %s\n",
+					log_severity_to_string (severity), __lv_progname,
+					funcname, file, line, str);
+		}
 	}
 
 	if (severity == VISUAL_LOG_ERROR)

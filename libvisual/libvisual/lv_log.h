@@ -60,17 +60,21 @@ typedef enum {
  * @param severity Determines the severity of the message using VisLogSeverity.
  * @param message The log message itself.
  */
+#ifdef __GNUC__
+
 #ifdef LV_HAVE_ISO_VARARGS
 #define visual_log(severity,...)		\
 		_lv_log (severity,		\
 			__FILE__,		\
 			__LINE__,		\
+			__PRETTY_FUNCTION__,	\
 			__VA_ARGS__)
 #elif defined(LV_HAVE_GNUC_VARARGS)
 #define visual_log(severity,format...)		\
 		_lv_log (severity,		\
 			__FILE__,		\
 			__LINE__,		\
+			__PRETTY_FUNCTION__,	\
 			format)
 #else
 static void visual_log (VisLogSeverity severity, const char *fmt, ...)
@@ -107,15 +111,18 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	/*
 	 * Sorry, we doesn't have (file,line) information
 	 */
-	fprintf (stderr, "libvisual %s: %s: %s\n",
-			sever_msg, __lv_progname, str);
+	if (severity == VISUAL_LOG_INFO) {
+		printf ("libvisual %s: %s: %s\n",
+				sever_msg, __lv_progname, str);
+	} else {
+		fprintf (stderr, "libvisual %s: %s: %s\n",
+				sever_msg, __lv_progname, str);
+	}
 
 	if (severity == VISUAL_LOG_ERROR)
 		exit(1);
 }
-#endif
-
-#ifdef __GNUC__
+#endif /* !(ISO_VARARGS || GNUC_VARARGS) */
 
 #define visual_log_return_if_fail(expr)				\
 	if (expr) { } else					\
@@ -141,7 +148,67 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	return (val);						\
 	}
 
-#else /* !__GNUC__ */
+#endif /* !__GNUC__ */
+
+
+
+
+#ifndef __GNUC__
+
+#ifdef LV_HAVE_ISO_VARARGS
+#define visual_log(severity,...)		\
+		_lv_log (severity,		\
+			__FILE__,		\
+			__LINE__,		\
+			(NULL),			\
+			__VA_ARGS__)
+#else
+static void visual_log (VisLogSeverity severity, const char *fmt, ...)
+{
+	char str[1024];
+	va_list va;
+	char sever_msg[10];
+	
+	assert (fmt != NULL);
+
+	va_start (va, fmt);
+	vsnprintf (str, 1023, fmt, va);
+	va_end (va);
+
+	switch (severity) {
+		case VISUAL_LOG_DEBUG:
+			strncpy (sever_msg, "DEBUG", 9);
+			break;
+		case VISUAL_LOG_INFO:
+			strncpy (sever_msg, "INFO", 9);
+			break;
+		case VISUAL_LOG_WARNING:
+			strncpy (sever_msg, "WARNING", 9);
+			break;
+		case VISUAL_LOG_CRITICAL:
+			strncpy (sever_msg, "CRITICAL", 9);
+			break;
+		case VISUAL_LOG_ERROR:
+			strncpy (sever_msg, "ERROR", 9);
+			break;
+		default:
+			assert (0);
+	}
+	/*
+	 * Sorry, we doesn't have (file,line) information
+	 */
+	if (severity == VISUAL_LOG_INFO) {
+		printf ("libvisual %s: %s: %s\n",
+				sever_msg, __lv_progname, str);
+	} else {
+		fprintf (stderr, "libvisual %s: %s: %s\n",
+				sever_msg, __lv_progname, str);
+	}
+
+	if (severity == VISUAL_LOG_ERROR)
+		exit(1);
+}
+#endif /* ISO_VARARGS */
 
 #define visual_log_return_if_fail(expr)				\
 	if (expr) { } else					\
@@ -165,9 +232,10 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	return (val);						\
 	}
 
-#endif /* __GNUC__ */
+#endif /* !__GNUC__ */
 
-void _lv_log (VisLogSeverity severity, const char *file, int line, const char *fmt, ...);
+void _lv_log (VisLogSeverity severity, const char *file,
+			int line, const char *funcname, const char *fmt, ...);
 
 #ifdef __cplusplus
 }

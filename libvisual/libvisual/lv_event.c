@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "lv_event.h"
+#include "lv_log.h"
 
 /**
  * @defgroup VisEvent VisEvent
@@ -36,8 +37,7 @@ VisEvent *visual_event_new ()
  */
 int visual_event_free (VisEvent *event)
 {
-	if (event == NULL)
-		return -1;
+	visual_log_return_val_if_fail (event != NULL, -1);
 
 	free (event);
 
@@ -70,8 +70,7 @@ VisEventQueue *visual_event_queue_new ()
  */
 int visual_event_queue_free (VisEventQueue *eventqueue)
 {
-	if (eventqueue == NULL)
-		return -1;
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
 
 	visual_list_destroy (&eventqueue->events, free);
 	
@@ -93,6 +92,9 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 {
 	VisEvent *lev;
 	VisListEntry *listentry = NULL;;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, FALSE);
+	visual_log_return_val_if_fail (event != NULL, FALSE);
 
 	if (eventqueue->resizenew == TRUE) {
 		eventqueue->resizenew = FALSE;
@@ -127,6 +129,9 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
  */
 int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event)
 {
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (event != NULL, -1);
+
 	/* We've got way too much on the queue, not adding events, the important
 	 * resize event got data in the event queue structure that makes sure it gets
 	 * looked at */
@@ -157,6 +162,8 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 {
 	VisEvent *event;
 
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+
 	event = visual_event_new ();
 	
 	/* FIXME name to VISUAL_KEYB_DOWN and KEYB_UP */
@@ -185,6 +192,8 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y)
 {
 	VisEvent *event;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
 
 	event = visual_event_new ();
 
@@ -218,6 +227,8 @@ int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y)
 int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state)
 {
 	VisEvent *event;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
 
 	event = visual_event_new ();
 
@@ -257,6 +268,8 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 {
 	VisEvent *event;
 
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+
 	event = &eventqueue->lastresize;
 	
 	event->type = VISUAL_EVENT_RESIZE;
@@ -284,6 +297,9 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *songinfo)
 {
 	VisEvent *event;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -1);
 
 	event = visual_event_new ();
 

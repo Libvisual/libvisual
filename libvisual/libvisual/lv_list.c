@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.1.1.1 2004-06-20 19:48:26 synap Exp $
+ *	$Id: lv_list.c,v 1.2 2004-06-28 02:35:31 dprotti Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include <fcntl.h>
 
 #include "lv_list.h"
+#include "lv_log.h"
 
 /**
  * @defgroup VisList VisList
@@ -47,8 +48,11 @@ VisList *visual_list_new ()
 	VisList *list;
 
 	list = malloc (sizeof (VisList));
-	if (list == NULL)
+	if (list == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"Could not get memory for a new VisList structure");
 		return NULL;
+	}
 
 	memset (list, 0, sizeof (VisList));
 
@@ -64,8 +68,7 @@ VisList *visual_list_new ()
  */
 int visual_list_free (VisList *list)
 {
-	if (list == NULL)
-		return -1;
+	visual_log_return_val_if_fail (list != NULL, -1);
 
 	free (list);
 
@@ -90,14 +93,12 @@ int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
 	VisListEntry *le = NULL;
 	void *elem;
 
-	if (list == NULL)
-		return -1;
+	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (destroyer != NULL, -1);
 		
 	/* Walk through the given list and call the destroyer for it */
 	while ((elem = visual_list_next (list, &le)) != NULL) {
-		if (destroyer != NULL)
-			destroyer (elem);
-
+		destroyer (elem);
 		visual_list_delete (list, &le);
 	}
 
@@ -123,6 +124,9 @@ int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
  */
 inline void *visual_list_next(VisList *list, VisListEntry **le)
 {
+	visual_log_return_val_if_fail (list != NULL, NULL);
+	visual_log_return_val_if_fail (le != NULL, NULL);
+
 	if (*le == NULL)
 		*le = list->head;
 	else
@@ -151,6 +155,9 @@ inline void *visual_list_next(VisList *list, VisListEntry **le)
  */
 inline void *visual_list_prev(VisList *list, VisListEntry **le)
 {
+	visual_log_return_val_if_fail (list != NULL, NULL);
+	visual_log_return_val_if_fail (le != NULL, NULL);
+
 	if (!*le)
 		*le = list->tail;
 	else
@@ -178,10 +185,11 @@ void *visual_list_get (VisList *list, int index)
 	void *data = NULL;
 	int i, lc;
 
+	visual_log_return_val_if_fail (list != NULL, NULL);
+	visual_log_return_val_if_fail (index > 0, NULL);
+
 	lc = visual_list_count (list);
 
-	if (lc <= 0)
-		return NULL;
 	if (lc - 1 < index)
 		return NULL;
 	
@@ -208,13 +216,15 @@ int visual_list_add_at_begin (VisList *list, void *data)
 {
 	VisListEntry *current, *next;
 
-	if (list == NULL)
-		return -1;
+	visual_log_return_val_if_fail (list != NULL, -1);
 
 	/* Allocate memory for new list entry */
 	current = malloc (sizeof (VisListEntry));
-	if (current == NULL)
+	if (current == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"Could not get memory for a new VisListEntry structure");
 		return -1;
+	}
 
 	/* Clear out memory */
 	memset (current, 0, sizeof (VisListEntry));
@@ -251,13 +261,15 @@ int visual_list_add (VisList *list, void *data)
 {
 	VisListEntry *current, *prev;
 	
-	if (list == NULL)
-		return -1;
+	visual_log_return_val_if_fail (list != NULL, -1);
 
 	/* Allocate memory for new list entry */
 	current = malloc (sizeof (VisListEntry));
-	if (current == NULL)
+	if (current == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"Could not get memory for a new VisListEntry structure");
 		return -1;
+	}
 
 	/* Clear out memory */
 	memset (current, 0, sizeof (VisListEntry));
@@ -302,12 +314,16 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 {
 	VisListEntry *prev, *next, *current;
 	
-	if (list == NULL || le == NULL || data == NULL)
-		return -1;
+	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (le != NULL, -1);
+	visual_log_return_val_if_fail (data != NULL, -1);
 	
 	current = malloc (sizeof (VisListEntry));
-	if (current == NULL)
+	if (current == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"Could not get memory for a new VisListEntry structure");
 		return -1;
+	}
 
 	/* Clear out memory */
 	memset (current, 0, sizeof (VisListEntry));
@@ -363,14 +379,17 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 {
 	VisListEntry *prev, *current, *next;
 	
-	if (list == NULL)
-		return -1;
+	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (le != NULL, -1);
 	
 	prev = current = next = NULL;
 
 	/* Valid list entry ? */
-	if (*le == NULL)
+	if (*le == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"There is no list entry to delete");
 		return -1; /* Nope */
+	}
 
 	/* Point new to le's previous entry */
 	current = *le;
@@ -410,8 +429,7 @@ int visual_list_count (VisList *list)
 	VisListEntry *le = NULL;
 	int count = 0;
 	
-	if (list == NULL)
-		return -1;
+	visual_log_return_val_if_fail (list != NULL, -1);
 	
 	/* Walk through list */
 	while (visual_list_next (list, &le) != NULL) 

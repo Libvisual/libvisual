@@ -5,6 +5,7 @@
 
 #include "lv_log.h"
 #include "lv_morph.h"
+#include "lv_log.h"
 
 extern VisList *__lv_plugins_morph;
 
@@ -14,8 +15,8 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
 {
 	VisMorphPlugin *morphplugin;
 
-	if (morph->plugin == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (morph != NULL, NULL);
+	visual_log_return_val_if_fail (morph->plugin != NULL, NULL);
 
 	morphplugin = morph->plugin->plugin.morphplugin;
 
@@ -102,6 +103,11 @@ VisMorph *visual_morph_new (char *morphname)
 	morph = malloc (sizeof (VisMorph));
 	memset (morph, 0, sizeof (VisMorph));
 
+	if (morph == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"Could not get memory to allocate a new VisMorph struct");
+		return NULL;
+	}
 	if (morphname == NULL)
 		return morph;
 
@@ -121,15 +127,8 @@ VisMorph *visual_morph_new (char *morphname)
  */
 int visual_morph_realize (VisMorph *morph)
 {
-	if (morph == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "the morph is NULL");
-		return -1;
-	}
-
-	if (morph->plugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "the morph->plugin element is NULL");
-		return -1;
-	}
+	visual_log_return_val_if_fail (morph != NULL, -1);
+	visual_log_return_val_if_fail (morph->plugin != NULL, -1);
 
 	_lv_plugin_realize (morph->plugin);
 
@@ -146,8 +145,7 @@ int visual_morph_realize (VisMorph *morph)
  */
 int visual_morph_destroy (VisMorph *morph)
 {
-	if (morph == NULL)
-		return -1;
+	visual_log_return_val_if_fail (morph != NULL, -1);
 
 	if (morph->plugin != NULL)
 		_lv_plugin_unload (morph->plugin);
@@ -167,8 +165,7 @@ int visual_morph_destroy (VisMorph *morph)
  */
 int visual_morph_free (VisMorph *morph)
 {
-	if (morph == NULL)
-		return -1;
+	visual_log_return_val_if_fail (morph != NULL, -1);
 	
 	free (morph);
 
@@ -187,13 +184,15 @@ int visual_morph_get_supported_depth (VisMorph *morph)
 {
 	VisMorphPlugin *morphplugin;
 
-	if (morph == NULL)
-		return -1;
+	visual_log_return_val_if_fail (morph != NULL, -1);
 
 	morphplugin = get_morph_plugin (morph);
 
-	if (morphplugin == NULL)
+	if (morphplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"The given morph does not reference any plugin");
 		return -1;
+	}
 
 	return morphplugin->depth;
 }
@@ -211,8 +210,8 @@ int visual_morph_get_supported_depth (VisMorph *morph)
  */
 int visual_morph_set_video (VisMorph *morph, VisVideo *video)
 {
-	if (morph == NULL)
-		return -1;
+	visual_log_return_val_if_fail (morph != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -1);
 
 	morph->dest = video;
 
@@ -232,8 +231,7 @@ int visual_morph_set_video (VisMorph *morph, VisVideo *video)
  */
 int visual_morph_set_rate (VisMorph *morph, float rate)
 {
-	if (morph == NULL)
-		return -1;
+	visual_log_return_val_if_fail (morph != NULL, -1);
 
 	morph->rate = rate;
 
@@ -249,8 +247,7 @@ int visual_morph_set_rate (VisMorph *morph, float rate)
  */
 VisPalette *visual_morph_get_palette (VisMorph *morph)
 {
-	if (morph == NULL)
-		return NULL;
+	visual_log_return_val_if_fail (morph != NULL, NULL);
 
 	return &morph->morphpal;
 }
@@ -274,10 +271,18 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 {
 	VisMorphPlugin *morphplugin;
 
-	if (morph == NULL)
-		return -1;
+	visual_log_return_val_if_fail (morph != NULL, -1);
+	visual_log_return_val_if_fail (audio != NULL, -1);
+	visual_log_return_val_if_fail (src1 != NULL, -1);
+	visual_log_return_val_if_fail (src2 != NULL, -1);
 
 	morphplugin = get_morph_plugin (morph);
+
+	if (morphplugin == NULL) {
+		visual_log (VISUAL_LOG_CRITICAL,
+			"The given morph does not reference any plugin");
+		return -1;
+	}
 
 	if (morphplugin->palette != NULL)
 		morphplugin->palette (morphplugin, morph->rate, audio, &morph->morphpal, src1, src2);
