@@ -1,3 +1,7 @@
+replace stdint.h with sys/types.h and have defines so we don't have to change all
+the code (besides u_int16_t sounds less nice than uint16_t :))
+
+
 This file is not very ordered and kinda a scrapbook, but it contains all
 the future planning.
 
