@@ -189,6 +189,9 @@ int visual_param_entry_free (VisParamEntry *param)
 {
 	visual_log_return_val_if_fail (param != NULL, -1);
 
+	if (param->data.string != NULL)
+		visual_mem_free (param->data.string);
+
 	visual_mem_free (param);
 
 	return 0;
@@ -268,7 +271,10 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
 
 	param->type = VISUAL_PARAM_TYPE_STRING;
 
-	param->data.string = string;
+	if (param->data.string != NULL)
+		visual_mem_free (param->data.string);
+
+	param->data.string = strdup (string);
 
 	visual_param_entry_changed (param);
 
