@@ -180,6 +180,10 @@ libvisual:
 	list:
 		Add a sort method.
 
+	portability:
+		have byteswap helper functions and use them where endianess issues
+		arise (lv_bmp.c)
+
 INTERNAL:
 	LOG: (post 0.1)
 		give an api that allows you to select the lowest debug niveau to be shown

@@ -1,3 +1,7 @@
+2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* NEWS: Updating the NEWS file.
+
 2004-06-26  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* configure.ac: added check for ISOC99 and GNUC varargs

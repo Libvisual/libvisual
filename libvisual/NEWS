@@ -1,2 +1,7 @@
-Check ChangeLog.
+NEWS - list of user-visible changes between releases
+of Libvisual.
+
+New in 0.1.5: 2004-06-27:
+* visual_log does now accept format strings and variable arguments.
+* Major cleanups and build tree fixes.
 
