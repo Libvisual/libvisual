@@ -5,25 +5,20 @@ SUBDIRS = @BUILD_SUBDIRS@
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvisual.pc
 
-include_HEADERS = lvconfig.h
-
-install-exec-local: lvconfig.h 
+install-exec-local: libvisual/lvconfig.h 
 	        $(mkinstalldirs) $(prefix)/include/libvisual
 	        file=$(prefix)/include/libvisual/lvconfig.h; \
-	        if test -r $$file && cmp -s lvconfig.h $$file; then :; \
-	        else $(INSTALL_DATA) lvconfig.h $$file; fi
+	        if test -r $$file && cmp -s libvisual/lvconfig.h $$file; then :; \
+	        else $(INSTALL_DATA) libvisual/lvconfig.h $$file; fi
 
 lvconfig.h: stamp-gc-h
-	@if test -f lvconfig.h; then :; \
+	@if test -f libvisual/lvconfig.h; then :; \
 	else rm -f stamp-gc-h; $(MAKE) stamp-gc-h; fi
 stamp-gc-h: config.status
-	cd $(top_builddir) && $(SHELL) ./config.status lvconfig.h
+	cd $(top_builddir) && $(SHELL) ./config.status libvisual/lvconfig.h
 	echo timestamp > stamp-gc-h
-
-uninstall-local:
-	rm -f $(prefix)/include/libvisual/lvconfig.h
 
 EXTRA_DIST = Doxyfile
 
-DISTCLEANFILES = lvconfig.h
+DISTCLEANFILES = libvisual/lvconfig.h
 

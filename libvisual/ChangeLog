@@ -1,3 +1,8 @@
+2005-08-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* Makefile.am, libvisual/Makefile.am, configure.ac:
+	Fixed some build issues regarding lvconfig.h
+
 2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_libvisual.c (visual_init): Improved

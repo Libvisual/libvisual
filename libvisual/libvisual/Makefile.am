@@ -3,7 +3,7 @@
 libdir = $(prefix)/lib
 
 library_includedir = $(includedir)/libvisual
-library_include_HEADERS = libvisual.h lv_actor.h \
+library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_audio.h lv_bin.h lv_common.h lv_fft.h \
 			  lv_input.h lv_event.h lv_keysym.h \
 			  lv_list.h lv_log.h lv_palette.h lv_plugin.h \

@@ -104,7 +104,7 @@ esac
 AC_MSG_RESULT(unsigned $visual_size_type)
 
 # Arguments to specify certain features.
-build_subdirs="libvisual tools"
+build_subdirs="libvisual"
 AC_ARG_ENABLE([examples],
             AC_HELP_STRING([--enable-examples],
                            [Build example programs @<:@default=disabled@:>@]),
@@ -160,9 +160,9 @@ AC_SUBST(VISUAL_LIBS)
 AC_SUBST(CFLAGS, "")
 
 dnl Output the LibVisual config file
-AC_CONFIG_COMMANDS([lvconfig.h],
+AC_CONFIG_COMMANDS([libvisual/lvconfig.h],
 [
-	outfile=lvconfig.h-tmp
+	outfile=libvisual/lvconfig.h-tmp
 	cat > $outfile <<\_______EOF
 /* lvconfig.h
  *
@@ -222,11 +222,11 @@ echo >>$outfile
 echo "#endif /* LV_CONFIG_H */" >>$outfile
 echo >>$outfile
 
-        if cmp -s $outfile lvconfig.h; then
+        if cmp -s $outfile libvisual/lvconfig.h; then
 		AC_MSG_NOTICE([lvconfig.h is unchanged])
 		rm -f $outfile
         else
-		mv $outfile lvconfig.h
+		mv $outfile libvisual/lvconfig.h
         fi
 
 ],[
