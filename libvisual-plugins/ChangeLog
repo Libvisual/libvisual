@@ -1,3 +1,12 @@
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/bumpscope/bump_scope.c (__bumpscope_cleanup):
+	Check for NULL.
+
+	* plugins/actor/oinksie/actor_oinksie.c: Adding different blending
+	methods for nice and shiny colors. Also created a VisUI option for
+	this.
+
 2005-01-10  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/JESS/*: Copyright headers.

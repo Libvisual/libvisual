@@ -33,6 +33,8 @@ typedef struct {
 	OinksiePrivate priv1;
 	OinksiePrivate priv2;
 
+	int color_mode;
+	
 	int depth;
 	uint8_t *tbuf1;
 	uint8_t *tbuf2;
@@ -40,7 +42,12 @@ typedef struct {
 	uint8_t *buf2;
 } OinksiePrivContainer;
 
-static int alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
+static int alpha_blend1_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
+static int alpha_blend2_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
+static int alpha_blend3_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
+static int alpha_blend4_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
+static int alpha_blend5_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
+
 
 int act_oinksie_init (VisPluginData *plugin);
 int act_oinksie_cleanup (VisPluginData *plugin);
@@ -89,10 +96,45 @@ int act_oinksie_init (VisPluginData *plugin)
 {
 	OinksiePrivContainer *priv;
 	VisRandomContext *rcontext;
+        VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1),
+		VISUAL_PARAM_LIST_END
+	};
+
+	static VisParamEntry cmodeparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Fair blended", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Turbelent temperature", 1),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Acid summer", 2),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Perfect match", 3),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Sanity edge", 4),
+		VISUAL_PARAM_LIST_END
+	};
+	
+	VisUIWidget *hbox;
+	VisUIWidget *label;
+	VisUIWidget *popup;
 
 	priv = visual_mem_new0 (OinksiePrivContainer, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
+        visual_param_container_add_many (paramcontainer, params);
+
+	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
+	
+	label = visual_ui_label_new ("Color mode:", FALSE);
+
+	popup = visual_ui_popup_new ();
+	visual_ui_widget_set_tooltip (popup, "The coloring method (only works when the plugin is in 32 bits mode)");
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup), visual_param_container_get (paramcontainer, "color mode"));
+	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup), cmodeparamchoices);
+
+	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label);
+	visual_ui_box_pack (VISUAL_UI_BOX (hbox), popup);
+
+        visual_plugin_set_userinterface (plugin, hbox);
+	
 	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
 	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);
 
@@ -200,14 +242,26 @@ int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, in
 
 int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 {
+	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
+	VisParamEntry *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
 				act_oinksie_dimension (plugin, ev.resize.video,
 						ev.resize.width, ev.resize.height);
+
 				break;
+
+			case VISUAL_EVENT_PARAM:
+				param = ev.param.param;
+
+				if (visual_param_entry_is (param, "color mode"))
+					priv->color_mode = visual_param_entry_get_integer (param);
+
+				break;
+								
 			default: /* to avoid warnings */
 				break;
 		}
@@ -271,21 +325,188 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		visual_video_depth_transform_to_buffer (priv->tbuf2, &transvid,
 				oinksie_palette_get (&priv->priv2), priv->depth, video->pitch);
 
-		alpha_blend_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size * 4, 0.5);
+		switch (priv->color_mode) {
+			case 0:
+				alpha_blend1_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
+			
+				break;
+				
+			case 1:
+				alpha_blend2_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
+			
+				break;
+
+			case 2:
+				alpha_blend3_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
+			
+				break;
+				
+			case 3:
+				alpha_blend4_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
+			
+				break;
+			case 4:
+				alpha_blend5_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
+			
+				break;
+
+			default:
+				alpha_blend2_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
+			
+				break;
+		}
+		
 	}
 	
 	return 0;
 }
 
-static int alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+static int alpha_blend1_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+{
+	uint8_t ialpha = (alpha * 255);
+	int i;
+	
+	for (i = 0; i < size; i++) {
+		*dest = ((ialpha * (*src1 - *src2) >> 8) + *src2);
+		*(dest + 1) = ((ialpha * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
+		*(dest + 2) = ((ialpha * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+
+		dest += 4;
+		src1 += 4;
+		src2 += 4;
+	}
+	
+	return 0;
+}
+
+static int alpha_blend2_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
 {
 	uint8_t ialpha = (alpha * 255);
 	int i;
 
 	for (i = 0; i < size; i++) {
-		dest[i] = (ialpha * (src2[i] - src1[i])) / 255 + src1[i];
+		*dest = ((*src1 * (*src1 - *src2) >> 8) + *src2);
+		*(dest + 1) = ((ialpha * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
+		*(dest + 2) = ((0 * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+
+		dest += 4;
+		src1 += 4;
+		src2 += 4;
 	}
 
 	return 0;
 }
 
+static int alpha_blend3_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+{
+	uint8_t ialpha = (alpha * 255);
+	int i;
+
+	for (i = 0; i < size; i++) {
+		*dest = ((0 * (*src1 - *src2) >> 8) + *src2);
+		*(dest + 1) = ((ialpha * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
+		*(dest + 2) = ((*src1 * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+
+		dest += 4;
+		src1 += 4;
+		src2 += 4;
+	}
+
+	return 0;
+}
+
+static int alpha_blend4_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+{
+	uint8_t ialpha = (alpha * 255);
+	int i;
+
+	for (i = 0; i < size; i++) {
+		*dest = ((*src1 * (*src1 - *src2) >> 8) + *src2);
+		*(dest + 1) = ((ialpha * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
+		*(dest + 2) = ((*src2 * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+
+		dest += 4;
+		src1 += 4;
+		src2 += 4;
+	}
+
+	return 0;
+}
+
+static int alpha_blend5_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+{
+	uint8_t ialpha = (alpha * 255);
+	int i;
+
+	for (i = 0; i < size; i++) {
+		*dest = ((*src1 * (*src1 - *src2) >> 8) + *src2);
+		*(dest + 1) = ((*src2 * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
+		*(dest + 2) = ((*src1 * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+
+		dest += 4;
+		src1 += 4;
+		src2 += 4;
+	}
+
+	return 0;
+}
+
+/* FIXME make a color mode out of this one as well (yeah I was fooling around with mmx) */
+#if 0
+static int alpha_blend3_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+{
+	uint32_t ialpha = (alpha * 255);
+	int i;
+
+	/* Reset some regs */
+	__asm __volatile
+		("\n\t emms"
+		 "\n\t pxor %%mm6, %%mm6"
+		 "\n\t pxor %%mm7, %%mm7"
+		 ::: "mm6", "mm7");
+
+	for (i = 0; i < size; i++) {
+		__asm __volatile
+			("\n\t movd %[spix1], %%mm0"
+			 "\n\t movd %[spix2], %%mm1"
+			 "\n\t movq %%mm0, %%mm3"       // [ 2 pixels ]
+			 "\n\t movd %[alpha], %%mm2"    // [ alpha ]
+			 "\n\t psllq $24, %%mm3"
+			 "\n\t movq %%mm0, %%mm4"
+			 "\n\t psrld $24, %%mm3"
+			 "\n\t psrld $24, %%mm4"
+			 "\n\t psllq $32, %%mm2"
+			 "\n\t psllq $16, %%mm3"
+			 "\n\t por %%mm4, %%mm2"
+			 "\n\t punpcklbw %%mm6, %%mm0"  /* interleaving source 1 */
+			 "\n\t por %%mm3, %%mm2"
+			 "\n\t punpcklbw %%mm6, %%mm1"  /* interleaving source 2 */
+			 "\n\t paddsw %%mm7, %%mm2"
+			 "\n\t psubsw %%mm1, %%mm0"     /* (src - dest) part */
+			 "\n\t pxor %%mm3, %%mm3"
+			 "\n\t pmullw %%mm2, %%mm0"     /* alpha * (src - dest) */
+			 "\n\t pxor %%mm4, %%mm4"
+			 "\n\t psrlw $8, %%mm0"         /* / 256 */
+			 "\n\t pxor %%mm2, %%mm2"
+			 "\n\t paddb %%mm1, %%mm0"      /* + dest */
+			 "\n\t packuswb %%mm0, %%mm0"
+			 "\n\t pxor %%mm1, %%mm1"
+			 "\n\t movd %%mm0, %[dest]"
+			 : [dest] "=m" (*dest)
+			 : [spix1] "m" (*src1)
+			 , [spix2] "m" (*src2)
+			 , [alpha] "m" (ialpha)
+			 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+
+		dest += 4;
+		src1 += 4;
+		src2 += 4;
+	}
+
+	__asm __volatile
+		("\n\t emms");
+
+	return 0;
+}
+
+#endif

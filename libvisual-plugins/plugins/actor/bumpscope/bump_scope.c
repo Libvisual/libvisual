@@ -409,8 +409,13 @@ void __bumpscope_init (BumpscopePrivate *priv)
 
 void __bumpscope_cleanup (BumpscopePrivate *priv)
 {
-	visual_mem_free (priv->phongdat);
-	visual_mem_free (priv->rgb_buf);
-	visual_mem_free (priv->rgb_buf2);
+	if (priv->phongdat != NULL)
+		visual_mem_free (priv->phongdat);
+
+	if (priv->rgb_buf != NULL)
+		visual_mem_free (priv->rgb_buf);
+
+	if (priv->rgb_buf2 != NULL)
+		visual_mem_free (priv->rgb_buf2);
 }
 
