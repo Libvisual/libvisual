@@ -1,3 +1,10 @@
+2004-07-25  Dennis smit  <ds@nerds-incorporated.org>
+
+	* tools/lv-inspect.c: Some more work!
+
+	* libvisual/lv_plugin.c (visual_plugin_get_info):
+	Added function.
+
 2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* tools/lv-inspect.c: More work on lv-inspect.

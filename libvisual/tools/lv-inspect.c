@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include <libvisual/libvisual.h>
 
@@ -16,6 +17,7 @@ char *get_plugin_typename_from_type (VisPluginType type);
 char *get_plugin_name (LVPlugin *plugin);
 char *get_depth_string (VisVideoDepth depth);
 
+void show_plugin_summary (LVPlugin *plugin);
 void show_plugin_details (LVPlugin *plugin);
 
 void show_plugin_info_actor (LVPlugin *plugin);
@@ -112,8 +114,21 @@ char *get_depth_string (VisVideoDepth depth)
 	return "Invalid depth";
 }
 
+void show_plugin_summary (LVPlugin *plugin)
+{
+	VisPluginInfo *info = visual_plugin_get_info (plugin);
+	
+	printf ("Plugin name: %s, type: %s\n  author: %s\n  about: %s\n\n", get_plugin_name (plugin),
+			get_plugin_typename_from_type (plugin->type), 
+			info->author, info->about);
+}
+
 void show_plugin_details (LVPlugin *plugin)
 {
+	printf ("Plugin registry entry:\n");
+	printf ("  Plugin type: %s\n", get_plugin_typename_from_type (plugin->type));
+	printf ("  Plugin registry name: %s\n\n", get_plugin_name (plugin));
+	
 	switch (plugin->type) {
 		case VISUAL_PLUGIN_TYPE_ACTOR:
 			show_plugin_info_actor (plugin);
@@ -172,7 +187,7 @@ void show_depths (int depthflag)
 
 void show_plugin_info_actor (LVPlugin *plugin)
 {
-	show_plugin_info (plugin->plugin.actorplugin->info);
+	show_plugin_info (visual_plugin_get_info (plugin));
 	printf ("\n");
 
 	show_plugin_ref (plugin->ref);
@@ -185,7 +200,7 @@ void show_plugin_info_actor (LVPlugin *plugin)
 
 void show_plugin_info_input (LVPlugin *plugin)
 {
-	show_plugin_info (plugin->plugin.inputplugin->info);
+	show_plugin_info (visual_plugin_get_info (plugin));
 	printf ("\n");
 
 	show_plugin_ref (plugin->ref);
@@ -196,7 +211,7 @@ void show_plugin_info_input (LVPlugin *plugin)
 
 void show_plugin_info_morph (LVPlugin *plugin)
 {
-	show_plugin_info (plugin->plugin.morphplugin->info);
+	show_plugin_info (visual_plugin_get_info (plugin));
 	printf ("\n");
 	
 	show_plugin_ref (plugin->ref);
@@ -211,31 +226,87 @@ int main (int argc, char **argv)
 {
 	VisPluginRef *ref;
 	LVPlugin *plugin;
+	
+	char *plugname;
+	
+	int c;
+	int option_index = 0;
 
-	visual_init (&argc, &argv);
+	int show_list = FALSE;
+	int show_detailedlist = FALSE;
+	
+	while (1) {
+		c = getopt_long (argc, argv, "ldh",
+				NULL, &option_index);
+		if (c == -1)
+			break;
+
+		switch (c)
+		{
+			case 'l':
+				show_list = TRUE;
+				break;
+				
+			case 'd':
+				show_detailedlist = TRUE;
+				show_list = TRUE;
+				break;
+
+			case 'h':
+				printf ("Help\n");
+				return 0;
+				break;
+
+			default:
+				break;
+		}
+	}
 
 	if (argc < 2) {
 		printf ("Usage: %s <pluginname>\n", argv[0]);
 		return -1;
 	}
+
+
+
+	visual_init (&argc, &argv);
+
+	if (show_list == TRUE)
+		plugname = visual_plugin_get_next_by_name (visual_plugin_get_registry (), NULL);
+	else 
+		plugname = argv[1];
+
+	do {
+		ref = visual_plugin_find (visual_plugin_get_registry (), plugname);
+
+		if (ref == NULL) {
+			fprintf (stderr, "Couldn't find plugin %s in the plugin registry\n", argv[1]);
+			visual_quit ();
+			return -1;
+		}
+
+		plugin = visual_plugin_load (ref);
+		visual_plugin_realize (plugin);	
+
+		if (show_list == TRUE && show_detailedlist == FALSE)
+			show_plugin_summary (plugin);
+		else 
+			show_plugin_details (plugin);
+
+		visual_plugin_unload (plugin);
+
+		if (show_list == TRUE) {
+			if (show_detailedlist == TRUE)
+				printf ("\n----------------------------------------------------------------------\n");
+			
+			plugname = visual_plugin_get_next_by_name (visual_plugin_get_registry (), plugname);
+		} else
+			plugname = NULL;
+		
+	} while (plugname != NULL);
+
 	
-	ref = visual_plugin_find (visual_plugin_get_registry (), argv[1]);
-
-	if (ref == NULL) {
-		printf ("Couldn't find plugin %s in the plugin registry\n", argv[1]);
-		return -1;
-	}
-
-	plugin = visual_plugin_load (ref);
-	visual_plugin_realize (plugin);	
-	
-	printf ("Plugin registry entry:\n");
-	printf ("  Plugin type: %s\n", get_plugin_typename_from_type (plugin->type));
-	printf ("  Plugin registry name: %s\n\n", get_plugin_name (plugin));
-
-	show_plugin_details (plugin);
-
-	visual_plugin_unload (plugin);
+	visual_quit ();
 
 	return 0;
 }

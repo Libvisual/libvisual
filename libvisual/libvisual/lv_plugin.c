@@ -179,6 +179,42 @@ int visual_plugin_info_free (VisPluginInfo *pluginfo)
 }
 
 /**
+ * Gives the VisPluginInfo related to a LVPlugin.
+ *
+ * @param plugin The LVPlugin of which the VisPluginInfo is requested.
+ *
+ * @return The VisPluginInfo within the LVPlugin, or NULL on error.
+ */
+VisPluginInfo *visual_plugin_get_info (LVPlugin *plugin)
+{
+	visual_log_return_val_if_fail (plugin != NULL, NULL);
+
+	switch (plugin->type) {
+		case VISUAL_PLUGIN_TYPE_NULL:
+			return NULL;
+			break;
+
+		case VISUAL_PLUGIN_TYPE_ACTOR:
+			return plugin->plugin.actorplugin->info;
+			break;
+
+		case VISUAL_PLUGIN_TYPE_INPUT:
+			return plugin->plugin.inputplugin->info;
+			break;
+
+		case VISUAL_PLUGIN_TYPE_MORPH:
+			return plugin->plugin.morphplugin->info;
+			break;
+
+		default:
+			return NULL;
+			break;
+	}
+
+	return NULL;
+}
+
+/**
  * Creates a new VisPluginRef structure.
  *
  * The VisPluginRef contains data for the plugin loader.

@@ -214,6 +214,7 @@ VisEventQueue *visual_plugin_get_eventqueue (LVPlugin *plugin);
 VisPluginInfo *visual_plugin_info_new (char *name, char *author, char *version, char *about, char *help);
 VisPluginInfo *visual_plugin_info_duplicate (VisPluginInfo *pluginfo);
 int visual_plugin_info_free (VisPluginInfo *pluginfo);
+VisPluginInfo *visual_plugin_get_info (LVPlugin *plugin);
 
 VisPluginRef *visual_plugin_ref_new (void);
 int visual_plugin_ref_free (VisPluginRef *ref);
