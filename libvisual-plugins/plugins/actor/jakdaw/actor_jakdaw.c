@@ -54,7 +54,48 @@ int act_jakdaw_init (VisPluginData *plugin)
 {
 	JakdawPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	VisParamEntry *param;
+
+	static const VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("zoom mode",		FEEDBACK_ZOOMRIPPLE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter trigger",	PLOTTER_COLOUR_MUSICTRIG),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter type",	PLOTTER_SCOPE_LINES),
+		VISUAL_PARAM_LIST_END
+	};
+
+	static const VisParamEntry zoomparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom ripple",		FEEDBACK_ZOOMRIPPLE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Blur only",		FEEDBACK_BLURONLY),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom rotate",		FEEDBACK_ZOOMROTATE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Scroll",		FEEDBACK_SCROLL),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Into screen",		FEEDBACK_INTOSCREEN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Ripple",		FEEDBACK_NEWRIPPLE),
+		VISUAL_PARAM_LIST_END
+	};
+
+	static const VisParamEntry colorparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Solid",		PLOTTER_COLOUR_SOLID),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Random",		PLOTTER_COLOUR_RANDOM),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("On music",		PLOTTER_COLOUR_MUSICTRIG),
+		VISUAL_PARAM_LIST_END
+	};
+	
+		
+	static const VisParamEntry scopeparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Lines",		PLOTTER_SCOPE_LINES),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Dots",		PLOTTER_SCOPE_DOTS),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Solid",		PLOTTER_SCOPE_SOLID),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Nothing",		PLOTTER_SCOPE_NOTHING),
+		VISUAL_PARAM_LIST_END
+	};
+
+	/* UI vars */
+	VisUIWidget *table;
+	VisUIWidget *label1;
+	VisUIWidget *label2;
+	VisUIWidget *label3;
+	VisUIWidget *popup1;
+	VisUIWidget *popup2;
+	VisUIWidget *popup3;
 
 	priv = visual_mem_new0 (JakdawPrivate, 1);
 	plugin->priv = priv;
@@ -70,24 +111,41 @@ int act_jakdaw_init (VisPluginData *plugin)
 
 	priv->plotter_amplitude = 100;
 	priv->plotter_colortype = PLOTTER_COLOUR_MUSICTRIG;
+
+	/* FIXME make param of this one as well */
 	priv->plotter_scopecolor = 0xff00ff;
 	priv->plotter_scopetype = PLOTTER_SCOPE_LINES;
 
-	/* Parameters */
-	/* Zoom mode */
-	param = visual_param_entry_new ("zoom mode");
-	visual_param_entry_set_integer (param, priv->zoom_mode);
-	visual_param_container_add (paramcontainer, param);
+	visual_param_container_add_many (paramcontainer, params);
 
-	/* Plotter color trigger */
-	param = visual_param_entry_new ("plotter trigger");
-	visual_param_entry_set_integer (param, priv->plotter_colortype);
-	visual_param_container_add (paramcontainer, param);
+	table = visual_ui_table_new (3, 2);
+	
+	label1 = visual_ui_label_new ("Zoom mode:", FALSE);
+	label2 = visual_ui_label_new ("Plotter color:", FALSE);
+	label3 = visual_ui_label_new ("Plotter type:", FALSE);
 
-	/* Zoom mode */
-	param = visual_param_entry_new ("plotter type");
-	visual_param_entry_set_integer (param, priv->plotter_scopetype);
-	visual_param_container_add (paramcontainer, param);
+	popup1 = visual_ui_popup_new ();
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup1), visual_param_container_get (paramcontainer, "zoom mode"));
+	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup1), zoomparamchoices);
+
+	popup2 = visual_ui_popup_new ();
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup2), visual_param_container_get (paramcontainer, "plotter trigger"));
+	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup2), colorparamchoices);
+
+	popup3 = visual_ui_popup_new ();
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup3), visual_param_container_get (paramcontainer, "plotter type"));
+	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup3), scopeparamchoices);
+	
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), label1, 0, 0);
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup1, 0, 1);
+	
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), label2, 1, 0);
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup2, 1, 1);
+
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), label3, 2, 0);
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup3, 2, 1);
+
+	visual_plugin_set_userinterface (plugin, table);
 
 	return 0;
 }
@@ -95,7 +153,11 @@ int act_jakdaw_init (VisPluginData *plugin)
 int act_jakdaw_cleanup (VisPluginData *plugin)
 {
 	JakdawPrivate *priv = plugin->priv;
-	
+	VisUIWidget *ui;
+
+	ui = visual_plugin_get_userinterface (plugin);
+	visual_ui_widget_destroy (ui);
+
 	visual_mem_free (priv);
 
 	return 0;

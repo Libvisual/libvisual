@@ -88,7 +88,17 @@ int lv_madspin_init (VisPluginData *plugin)
 {
 	MadspinPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	VisParamEntry *param;
+	VisParamEntry *starsparam;
+	VisParamEntry *speedparam;
+	
+	/* UI vars */
+	VisUIWidget *table;
+	VisUIWidget *label1;
+	VisUIWidget *label2;
+	VisUIWidget *slider1;
+	VisUIWidget *slider2;
+	VisUIWidget *numeric1;
+	VisUIWidget *numeric2;
 
 	priv = visual_mem_new0 (MadspinPrivate, 1);
 	plugin->priv = priv;
@@ -108,15 +118,49 @@ int lv_madspin_init (VisPluginData *plugin)
 	
 	/* Parameters */
 	/* Number of stars */
-	param = visual_param_entry_new ("num stars");
-	visual_param_entry_set_integer (param, priv->num_stars);
-	visual_param_container_add (paramcontainer, param);
+	starsparam = visual_param_entry_new ("num stars");
+	visual_param_entry_set_integer (starsparam, priv->num_stars);
+	visual_param_container_add (paramcontainer, starsparam);
 
 	/* Rotation speed */
-	param = visual_param_entry_new ("speed");
-	visual_param_entry_set_integer (param, priv->speed);
-	visual_param_container_add (paramcontainer, param);
+	speedparam = visual_param_entry_new ("speed");
+	visual_param_entry_set_integer (speedparam, priv->speed);
+	visual_param_container_add (paramcontainer, speedparam);
 
+	/* The VisUI description that serves as config dialog */
+	table = visual_ui_table_new (2, 3);
+
+	label1 = visual_ui_label_new ("Number of stars:", FALSE);
+	label2 = visual_ui_label_new ("Speed:", FALSE);
+
+	slider1 = visual_ui_slider_new (FALSE);
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider1), 200, -1);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider1), starsparam);
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider1), 50, 1500, 10, 0);
+	
+	slider2 = visual_ui_slider_new (FALSE);
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider2), 200, -1);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider2), speedparam);
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider2), 200, 2000, 10, 0);
+
+	numeric1 = visual_ui_numeric_new ();
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1), starsparam);
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 50, 1500, 10, 0);
+
+	numeric2 = visual_ui_numeric_new ();
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2), speedparam);
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric2), 200, 2000, 10, 0);
+
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), label1, 0, 0);
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), slider1, 0, 1);
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), numeric1, 0, 2);
+
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), label2, 1, 0);
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), slider2, 1, 1);
+	visual_ui_table_attach (VISUAL_UI_TABLE (table), numeric2, 1, 2);
+	
+	visual_plugin_set_userinterface (plugin, table);
+	
 	/* GL and the such */
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
@@ -145,10 +189,15 @@ int lv_madspin_init (VisPluginData *plugin)
 int lv_madspin_cleanup (VisPluginData *plugin)
 {
 	MadspinPrivate *priv = plugin->priv;
-	
+	VisUIWidget *ui;
+
 	if (priv->initialized){
 		glDeleteTextures (2, priv->texture);
 	}
+
+	/* Destroy the VisUI tree */
+	ui = visual_plugin_get_userinterface (plugin);
+	visual_ui_widget_destroy (ui);
 
 	visual_mem_free (priv);
 
@@ -198,6 +247,9 @@ int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 
 			case VISUAL_EVENT_PARAM:
 				param = ev.param.param;
+
+				/* FIXME remove this debug line */
+				printf ("WE'RE SCREAMIGN HARD!! A PARAM HAS BEEN CHANGED!!!\n");
 
 				if (visual_param_entry_is (param, "num stars"))
 					priv->num_stars = visual_param_entry_get_integer (param);
