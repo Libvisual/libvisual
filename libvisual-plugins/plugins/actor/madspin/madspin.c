@@ -17,8 +17,10 @@
 #define SPEED		715
 
 typedef struct {
+	int initialized;
+
 	int draw_mode;
-	
+
 	int texture[2];
 
 	int maxlines;
@@ -114,12 +116,18 @@ int lv_madspin_init (VisActorPlugin *plugin)
 
 	madspin_load_textures (plugin->private);
 
+	priv->initialized = 1;
+
 	return 0;
 }
 
 int lv_madspin_cleanup (VisActorPlugin *plugin)
 {
 	MadspinPrivate *priv = plugin->private;
+
+	if (priv->initialized){
+		glDeleteTextures (2, priv->texture);
+	}
 
 	free (priv);
 
