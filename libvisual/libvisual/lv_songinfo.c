@@ -38,7 +38,7 @@ VisSongInfo *visual_songinfo_new (VisSongInfoType type)
  */
 int visual_songinfo_free (VisSongInfo *songinfo)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	visual_songinfo_free_strings (songinfo);
 
@@ -47,7 +47,7 @@ int visual_songinfo_free (VisSongInfo *songinfo)
 
 	visual_mem_free (songinfo);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -61,7 +61,7 @@ int visual_songinfo_free (VisSongInfo *songinfo)
  */
 int visual_songinfo_free_strings (VisSongInfo *songinfo)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	if (songinfo->songname != NULL)
 		visual_mem_free (songinfo->songname);
@@ -75,7 +75,7 @@ int visual_songinfo_free_strings (VisSongInfo *songinfo)
 	if (songinfo->song != NULL)
 		visual_mem_free (songinfo->song);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -91,11 +91,11 @@ int visual_songinfo_free_strings (VisSongInfo *songinfo)
  */
 int visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 	
 	songinfo->type = type;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -109,11 +109,11 @@ int visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type)
  */
 int visual_songinfo_set_length (VisSongInfo *songinfo, int length)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 	
 	songinfo->length = length;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -127,11 +127,11 @@ int visual_songinfo_set_length (VisSongInfo *songinfo, int length)
  */
 int visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
-	
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
+
 	songinfo->elapsed = elapsed;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -145,14 +145,14 @@ int visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed)
  */
 int visual_songinfo_set_simple_name (VisSongInfo *songinfo, char *name)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 	
 	if (songinfo->songname != NULL)
 		visual_mem_free (songinfo->songname);
 
 	songinfo->songname = strdup (name);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -166,14 +166,14 @@ int visual_songinfo_set_simple_name (VisSongInfo *songinfo, char *name)
  */
 int visual_songinfo_set_artist (VisSongInfo *songinfo, char *artist)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	if (songinfo->artist != NULL)
 		visual_mem_free (songinfo->artist);
 
 	songinfo->artist = strdup (artist);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -187,14 +187,14 @@ int visual_songinfo_set_artist (VisSongInfo *songinfo, char *artist)
  */
 int visual_songinfo_set_album (VisSongInfo *songinfo, char *album)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	if (songinfo->album != NULL)
 		visual_mem_free (songinfo->album);
 
 	songinfo->album = strdup (album);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -208,14 +208,14 @@ int visual_songinfo_set_album (VisSongInfo *songinfo, char *album)
  */
 int visual_songinfo_set_song (VisSongInfo *songinfo, char *song)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	if (songinfo->song != NULL)
 		visual_mem_free (songinfo->song);
 
 	songinfo->song = strdup (song);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -229,7 +229,7 @@ int visual_songinfo_set_song (VisSongInfo *songinfo, char *song)
  */
 int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	if (visual_video_have_allocated_buffer (&songinfo->cover) == TRUE)
 		visual_video_free_buffer (&songinfo->cover);
@@ -247,7 +247,7 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	/* FIXME: When scale and bilinear interpolation lands, rescale to a (settable) size and (settable) bilinear
 	 * interpolate. */
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -260,11 +260,11 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
  */
 int visual_songinfo_mark (VisSongInfo *songinfo)
 {
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
-	
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
+
 	visual_timer_start (&songinfo->timer);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -302,7 +302,8 @@ long visual_songinfo_age (VisSongInfo *songinfo)
  */
 int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
 {
-	visual_log_return_val_if_fail (dest != NULL && src != NULL, -1);
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_SONGINFO_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	dest->type = src->type;
 	dest->length = src->length;
@@ -333,7 +334,7 @@ int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
 	if (visual_video_have_allocated_buffer (&dest->cover) == TRUE)
 		visual_video_blit_overlay (&dest->cover, &src->cover, 0, 0, FALSE);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -344,13 +345,14 @@ int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
  * @param s1 Pointer to the first VisSongInfo.
  * @param s2 Pointer to the second VisSongInfo.
  *
- * @return 0 on succes -1 on error.
+ * @return FALSE on different, TRUE on same.
  */
 int visual_songinfo_compare (const VisSongInfo *s1, const VisSongInfo *s2)
 {
 	int diff = 0;
 
-	visual_log_return_val_if_fail (s1 != NULL && s2 != NULL, -1);
+	visual_log_return_val_if_fail (s1 != NULL, -VISUAL_ERROR_SONGINFO_NULL);
+	visual_log_return_val_if_fail (s2 != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	if (s1->songname != NULL && s2->songname != NULL) {
 		if (strcmp (s1->songname, s2->songname) != 0)
@@ -372,7 +374,7 @@ int visual_songinfo_compare (const VisSongInfo *s1, const VisSongInfo *s2)
 			diff++;
 	}
 	
-	return diff;
+	return (diff > 0 ? TRUE : FALSE);
 }
 
 /**

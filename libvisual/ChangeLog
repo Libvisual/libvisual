@@ -1,3 +1,8 @@
+2004-11-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/*: Loads of work on better error reporting, and many cleanups
+	all around.
+
 2004-11-02  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/lv_error.h, src/lv_error.c

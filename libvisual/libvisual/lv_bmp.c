@@ -57,13 +57,14 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	int pad;
 	int i;
 
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	fd = open (filename, O_RDONLY);
 
 	if (fd < 0) {
-		/* FIXME fix visual log to support va args */
-		visual_log (VISUAL_LOG_WARNING, "File not found");
+		visual_log (VISUAL_LOG_WARNING, "Bitmap file not found: %s", filename);
+
+		return -VISUAL_ERROR_BMP_NOT_FOUND;
 	}
 
 	/* Read the magic string */
@@ -72,7 +73,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	if (strncmp (magic, "BM", 2) != 0) {
 		visual_log (VISUAL_LOG_WARNING, "Not a bitmap file"); 
 	
-		return -1;
+		return -VISUAL_ERROR_BMP_NO_BMP;
 	}
 
 	/* Read the file size */
@@ -138,14 +139,14 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	if (bi_bitcount != 8 && bi_bitcount != 24) {
 		visual_log (VISUAL_LOG_CRITICAL, "Only bitmaps with 8 bits or 24 bits per pixel are supported");
 		
-		return -1;
+		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}
 
 	/* We only handle uncompressed bitmaps */
 	if (bi_compression != BI_RGB) {
 		visual_log (VISUAL_LOG_CRITICAL, "Only uncompressed bitmaps are supported");
 
-		return -1;
+		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}
 
 	/* Load the palette */
@@ -192,7 +193,8 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 			visual_log (VISUAL_LOG_CRITICAL, "Bitmap data is not complete");
 			
 			visual_video_free_buffer (video);
-			return -1;
+
+			return -VISUAL_ERROR_BMP_CORRUPTED;
 		}
 
 #if !VISUAL_LITTLE_ENDIAN
@@ -228,7 +230,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 	close (fd);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -249,7 +251,8 @@ VisVideo *visual_bitmap_load_new_video (const char *filename)
 	
 	if (visual_bitmap_load (video, filename) < 0) {
 		visual_video_free_with_buffer (video);
-		video = NULL;
+
+		return NULL;
 	}
 
 	return video;

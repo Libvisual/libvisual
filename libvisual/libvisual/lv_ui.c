@@ -166,39 +166,39 @@ VisUIWidget *visual_ui_widget_new ()
 
 int visual_ui_widget_free (VisUIWidget *widget)
 {
-	visual_log_return_val_if_fail (widget != NULL, -1);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	widget_free (widget);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_widget_destroy (VisUIWidget *widget)
 {
-	visual_log_return_val_if_fail (widget != NULL, -1);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	widget_destroy (widget);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int height)
 {
-	visual_log_return_val_if_fail (widget != NULL, -1);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	widget->width = width;
 	widget->height = height;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
 {
-	visual_log_return_val_if_fail (widget != NULL, -1);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	widget->tooltip = tooltip;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget)
@@ -238,21 +238,21 @@ void *visual_ui_widget_get_private (VisUIWidget *widget)
 
 int visual_ui_widget_set_private (VisUIWidget *widget, void *priv)
 {
-	visual_log_return_val_if_fail (widget != NULL, -1);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	widget->priv = priv;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_container_add (VisUIContainer *container, VisUIWidget *widget)
 {
-	visual_log_return_val_if_fail (container != NULL, -1);
-	visual_log_return_val_if_fail (widget != NULL, -1);
+	visual_log_return_val_if_fail (container != NULL, -VISUAL_ERROR_UI_CONTAINER_NULL);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	container->child = widget;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 VisUIWidget *visual_ui_container_get_child (VisUIContainer *container)
@@ -278,47 +278,41 @@ VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 
 int visual_ui_box_free (VisUIBox *box)
 {
-	visual_log_return_val_if_fail (box != NULL, -1);
+	visual_log_return_val_if_fail (box != NULL, -VISUAL_ERROR_UI_BOX_NULL);
 
 	if (VISUAL_UI_WIDGET (box)->type != VISUAL_WIDGET_TYPE_BOX) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_BOX;
 	}
 
 	/* Delete the list entries, don't destroy the content */
 	visual_list_destroy_elements (&box->childs, NULL);
 
-	visual_mem_free (box);
-
-	return 0;
+	return visual_mem_free (box);
 }
 
 int visual_ui_box_destroy (VisUIBox *box)
 {
-	visual_log_return_val_if_fail (box != NULL, -1);
+	visual_log_return_val_if_fail (box != NULL, -VISUAL_ERROR_UI_BOX_NULL);
 
 	if (VISUAL_UI_WIDGET (box)->type != VISUAL_WIDGET_TYPE_BOX) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_BOX;
 	}
 
 	visual_list_destroy_elements (&box->childs, widget_destroy);
 
-	visual_ui_box_free (box);
-	
-	return 0;
+	return visual_ui_box_free (box);
 }
 
 int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget)
 {
-	visual_log_return_val_if_fail (box != NULL, -1);
-	visual_log_return_val_if_fail (widget != NULL, -1);
+	visual_log_return_val_if_fail (box != NULL, -VISUAL_ERROR_UI_BOX_NULL);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
-	visual_list_add (&box->childs, widget);
-
-	return 0;
+	return visual_list_add (&box->childs, widget);
 }
 
 VisUIWidget *visual_ui_box_get_next (VisUIBox *box, VisUIWidget *widget)
@@ -368,46 +362,42 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 
 int visual_ui_table_free (VisUITable *table)
 {
-	visual_log_return_val_if_fail (table != NULL, -1);
+	visual_log_return_val_if_fail (table != NULL, -VISUAL_ERROR_UI_TABLE_NULL);
 
 	if (VISUAL_UI_WIDGET (table)->type != VISUAL_WIDGET_TYPE_TABLE) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_TABLE;
 	}
 
 	/* Delete the list entries, don't destroy the widgets */
 	visual_list_destroy_elements (&table->childs, free);
 
-	visual_mem_free (table);
-
-	return 0;
+	return visual_mem_free (table);
 }
 
 int visual_ui_table_destroy (VisUITable *table)
 {
-	visual_log_return_val_if_fail (table != NULL, -1);
+	visual_log_return_val_if_fail (table != NULL, -VISUAL_ERROR_UI_TABLE_NULL);
 
 	if (VISUAL_UI_WIDGET (table)->type != VISUAL_WIDGET_TYPE_TABLE) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_TABLE;
 	}
 
 	/* Destroy the widgets here, and the list in the table_free */
 	visual_list_destroy_elements (&table->childs, table_entry_destroyer);
 
-	visual_ui_table_free (table);
-	
-	return 0;
+	return visual_ui_table_free (table);
 }
 
 int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int col)
 {
 	VisUITableEntry *tentry;
 
-	visual_log_return_val_if_fail (table != NULL, -1);
-	visual_log_return_val_if_fail (widget != NULL, -1);
+	visual_log_return_val_if_fail (table != NULL, -VISUAL_ERROR_UI_TABLE_NULL);
+	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
 	tentry = visual_mem_new0 (VisUITableEntry, 1);
 
@@ -416,9 +406,7 @@ int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int
 
 	tentry->widget = widget;
 
-	visual_list_add (&table->childs, tentry);
-
-	return 0;
+	return visual_list_add (&table->childs, tentry);
 }
 
 VisList *visual_ui_table_get_childs (VisUITable *table)
@@ -444,34 +432,30 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 
 int visual_ui_frame_free (VisUIFrame *frame)
 {
-	visual_log_return_val_if_fail (frame != NULL, -1);
+	visual_log_return_val_if_fail (frame != NULL, -VISUAL_ERROR_UI_FRAME_NULL);
 
 	if (VISUAL_UI_WIDGET (frame)->type != VISUAL_WIDGET_TYPE_FRAME) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_FRAME;
 	}
 
-	visual_mem_free (frame);
-
-	return 0;
+	return visual_mem_free (frame);
 }
 
 int visual_ui_frame_destroy (VisUIFrame *frame)
 {
-	visual_log_return_val_if_fail (frame != NULL, -1);
+	visual_log_return_val_if_fail (frame != NULL, -VISUAL_ERROR_UI_FRAME_NULL);
 
 	if (VISUAL_UI_WIDGET (frame)->type != VISUAL_WIDGET_TYPE_FRAME) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong destroyer for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_FRAME;
 	}
 	
 	widget_destroy (VISUAL_UI_CONTAINER (frame)->child);
 
-	visual_ui_frame_free (frame);
-
-	return 0;
+	return visual_ui_frame_free (frame);
 }
 
 VisUIWidget *visual_ui_label_new (const char *text, int bold)
@@ -491,35 +475,33 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
 
 int visual_ui_label_free (VisUILabel *label)
 {
-	visual_log_return_val_if_fail (label != NULL, -1);
+	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);
 
 	if (VISUAL_UI_WIDGET (label)->type != VISUAL_WIDGET_TYPE_LABEL) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_LABEL;
 	}
 
-	visual_mem_free (label);
-
-	return 0;
+	return visual_mem_free (label);
 }
 
 int visual_ui_label_set_bold (VisUILabel *label, int bold)
 {
-	visual_log_return_val_if_fail (label != NULL, -1);
+	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);
 
 	label->bold = bold;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_label_set_text (VisUILabel *label, const char *text)
 {
-	visual_log_return_val_if_fail (label != NULL, -1);
+	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);
 
 	label->text = text;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 const char *visual_ui_label_get_text (VisUILabel *label)
@@ -545,26 +527,24 @@ VisUIWidget *visual_ui_image_new (const VisVideo *video)
 
 int visual_ui_image_free (VisUIImage *image)
 {
-	visual_log_return_val_if_fail (image != NULL, -1);
+	visual_log_return_val_if_fail (image != NULL, -VISUAL_ERROR_UI_IMAGE_NULL);
 
 	if (VISUAL_UI_WIDGET (image)->type != VISUAL_WIDGET_TYPE_IMAGE) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_IMAGE;
 	}
 
-	visual_mem_free (image);
-
-	return 0;
+	return visual_mem_free (image);
 }
 
 int visual_ui_image_set_video (VisUIImage *image, const VisVideo *video)
 {
-	visual_log_return_val_if_fail (image != NULL, -1);
+	visual_log_return_val_if_fail (image != NULL, -VISUAL_ERROR_UI_IMAGE_NULL);
 
 	image->image = video;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 const VisVideo *visual_ui_image_get_video (VisUIImage *image)
@@ -590,17 +570,15 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 
 int visual_ui_separator_free (VisUISeparator *separator)
 {
-	visual_log_return_val_if_fail (separator != NULL, -1);
+	visual_log_return_val_if_fail (separator != NULL, -VISUAL_ERROR_UI_SEPARATOR_NULL);
 
 	if (VISUAL_UI_WIDGET (separator)->type != VISUAL_WIDGET_TYPE_SEPARATOR) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_SEPARATOR;
 	}
 
-	visual_mem_free (separator);
-
-	return 0;
+	return visual_mem_free (separator);
 }
 
 VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator)
@@ -612,14 +590,14 @@ VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator)
 
 int visual_ui_mutator_set_param (VisUIMutator *mutator, const VisParamEntry *param)
 {
-	visual_log_return_val_if_fail (mutator != NULL, -1);
-	visual_log_return_val_if_fail (param != NULL, -1);
+	visual_log_return_val_if_fail (mutator != NULL, -VISUAL_ERROR_UI_MUTATOR_NULL);
+	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	/* FIXME Check if param is valid with mutator type, if not, give a critical */
 
 	mutator->param = param;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
@@ -631,50 +609,50 @@ const VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
 
 int visual_ui_range_set_properties (VisUIRange *range, double min, double max, double step, int precision)
 {
-	visual_log_return_val_if_fail (range != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
 
 	range->min = min;
 	range->max = max;
 	range->step = step;
 	range->precision = precision;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_range_set_max (VisUIRange *range, double max)
 {
-	visual_log_return_val_if_fail (range != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
 
 	range->max = max;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_range_set_min (VisUIRange *range, double min)
 {
-	visual_log_return_val_if_fail (range != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
 
 	range->min = min;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_range_set_step (VisUIRange *range, double step)
 {
-	visual_log_return_val_if_fail (range != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
 
 	range->step = step;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_range_set_precision (VisUIRange *range, int precision)
 {
-	visual_log_return_val_if_fail (range != NULL, -1);
+	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
 
 	range->precision = precision;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 VisUIWidget *visual_ui_entry_new ()
@@ -691,26 +669,24 @@ VisUIWidget *visual_ui_entry_new ()
 
 int visual_ui_entry_free (VisUIEntry *entry)
 {
-	visual_log_return_val_if_fail (entry != NULL, -1);
+	visual_log_return_val_if_fail (entry != NULL, -VISUAL_ERROR_UI_ENTRY_NULL);
 
 	if (VISUAL_UI_WIDGET (entry)->type != VISUAL_WIDGET_TYPE_ENTRY) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_ENTRY;
 	}
 
-	visual_mem_free (entry);
-
-	return 0;
+	return visual_mem_free (entry);
 }
 
 int visual_ui_entry_set_length (VisUIEntry *entry, int length)
 {
-	visual_log_return_val_if_fail (entry != NULL, -1);
+	visual_log_return_val_if_fail (entry != NULL, -VISUAL_ERROR_UI_ENTRY_NULL);
 
 	entry->length = length;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 VisUIWidget *visual_ui_slider_new (int showvalue)
@@ -729,17 +705,15 @@ VisUIWidget *visual_ui_slider_new (int showvalue)
 
 int visual_ui_slider_free (VisUISlider *slider)
 {
-	visual_log_return_val_if_fail (slider != NULL, -1);
+	visual_log_return_val_if_fail (slider != NULL, -VISUAL_ERROR_UI_SLIDER_NULL);
 
 	if (VISUAL_UI_WIDGET (slider)->type != VISUAL_WIDGET_TYPE_SLIDER) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_SLIDER;
 	}
 
-	visual_mem_free (slider);
-
-	return 0;
+	return visual_mem_free (slider);
 }
 
 VisUIWidget *visual_ui_numeric_new ()
@@ -756,17 +730,15 @@ VisUIWidget *visual_ui_numeric_new ()
 
 int visual_ui_numeric_free (VisUINumeric *numeric)
 {
-	visual_log_return_val_if_fail (numeric != NULL, -1);
+	visual_log_return_val_if_fail (numeric != NULL, -VISUAL_ERROR_UI_NUMERIC_NULL);
 
 	if (VISUAL_UI_WIDGET (numeric)->type != VISUAL_WIDGET_TYPE_NUMERIC) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_NUMERIC;
 	}
 
-	visual_mem_free (numeric);
-
-	return 0;
+	return visual_mem_free (numeric);
 }
 
 VisUIWidget *visual_ui_color_new ()
@@ -783,26 +755,24 @@ VisUIWidget *visual_ui_color_new ()
 
 int visual_ui_color_free (VisUIColor *color)
 {
-	visual_log_return_val_if_fail (color != NULL, -1);
+	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_UI_COLOR_NULL);
 
 	if (VISUAL_UI_WIDGET (color)->type != VISUAL_WIDGET_TYPE_COLOR) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_COLOR;
 	}
 
-	visual_mem_free (color);
-
-	return 0;
+	return visual_mem_free (color);
 }
 
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
 
-	visual_log_return_val_if_fail (choice != NULL, -1);
-	visual_log_return_val_if_fail (name != NULL, -1);
-	visual_log_return_val_if_fail (value != NULL, -1);
+	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
+	visual_log_return_val_if_fail (name != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (value != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	centry = visual_mem_new0 (VisUIChoiceEntry, 1);
 
@@ -813,7 +783,7 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, const VisParamE
 	/* FIXME be aware on object destroy, that this needs to be destroyed as well, watch out!! */
 	visual_list_add (&choice->choices.choices, centry);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramchoices)
@@ -821,8 +791,8 @@ int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramch
 	VisUIChoiceEntry *centry;
 	int i = 0;
 
-	visual_log_return_val_if_fail (choice != NULL, -1);
-	visual_log_return_val_if_fail (paramchoices != NULL, -1);
+	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
+	visual_log_return_val_if_fail (paramchoices != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	while (paramchoices[i].type != VISUAL_PARAM_TYPE_END) {
 		visual_ui_choice_add (choice, paramchoices[i].name, &paramchoices[i]);
@@ -830,16 +800,14 @@ int visual_ui_choice_add_many (VisUIChoice *choice, const VisParamEntry *paramch
 		i++;
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 int visual_ui_choice_free_choices (VisUIChoice *choice)
 {
-	visual_log_return_val_if_fail (choice != NULL, -1);
+	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 
-	visual_list_destroy_elements (&choice->choices.choices, free); 
-
-	return 0;
+	return visual_list_destroy_elements (&choice->choices.choices, free); 
 }
 
 int visual_ui_choice_set_active (VisUIChoice *choice, int index)
@@ -848,22 +816,16 @@ int visual_ui_choice_set_active (VisUIChoice *choice, int index)
 	const VisParamEntry *param;
 	VisParamEntry *newparam;
 
-	visual_log_return_val_if_fail (choice != NULL, -1);
+	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 
 	centry = visual_ui_choice_get_choice (choice, index);
-	visual_log_return_val_if_fail (centry != NULL, -1);
+	visual_log_return_val_if_fail (centry != NULL, -VISUAL_ERROR_UI_CHOICE_ENTRY_NULL);
 
 	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (choice));
 
 	newparam = (VisParamEntry *) centry->value;
 
-	if (visual_param_entry_set_from_param (param, newparam)) {
-		visual_log (VISUAL_LOG_CRITICAL, "Current param isn't of same type as param that was requested to become active");
-
-		return -1;
-	}
-	
-	return 0;
+	return visual_param_entry_set_from_param (param, newparam);
 }
 
 int visual_ui_choice_get_active (VisUIChoice *choice)
@@ -873,7 +835,7 @@ int visual_ui_choice_get_active (VisUIChoice *choice)
 	VisParamEntry *param;
 	int i = 0;
 
-	visual_log_return_val_if_fail (choice != NULL, -1);
+	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 
 	param = visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (choice));
 
@@ -888,7 +850,7 @@ int visual_ui_choice_get_active (VisUIChoice *choice)
 		i++;
 	}
 
-	return -1;
+	return -VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE;
 }
 
 VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index)
@@ -921,19 +883,17 @@ VisUIWidget *visual_ui_popup_new ()
 
 int visual_ui_popup_free (VisUIPopup *popup)
 {
-	visual_log_return_val_if_fail (popup != NULL, -1);
+	visual_log_return_val_if_fail (popup != NULL, -VISUAL_ERROR_UI_POPUP_NULL);
 
 	if (VISUAL_UI_WIDGET (popup)->type != VISUAL_WIDGET_TYPE_POPUP) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_POPUP;
 	}
 
 	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (popup));
 
-	visual_mem_free (popup);
-
-	return 0;
+	return visual_mem_free (popup);
 }
 
 VisUIWidget *visual_ui_list_new ()
@@ -952,19 +912,17 @@ VisUIWidget *visual_ui_list_new ()
 
 int visual_ui_list_free (VisUIList *list)
 {
-	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_UI_LIST_NULL);
 
 	if (VISUAL_UI_WIDGET (list)->type != VISUAL_WIDGET_TYPE_LIST) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_LIST;
 	}
 
 	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (list));
 
-	visual_mem_free (list);
-
-	return 0;
+	return visual_mem_free (list);
 }
 
 VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
@@ -985,19 +943,17 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 
 int visual_ui_radio_free (VisUIRadio *radio)
 {
-	visual_log_return_val_if_fail (radio != NULL, -1);
+	visual_log_return_val_if_fail (radio != NULL, -VISUAL_ERROR_UI_RADIO_NULL);
 
 	if (VISUAL_UI_WIDGET (radio)->type != VISUAL_WIDGET_TYPE_RADIO) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_RADIO;
 	}
 
 	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (radio));
 
-	visual_mem_free (radio);
-
-	return 0;
+	return visual_mem_free (radio);
 }
 
 VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
@@ -1027,19 +983,17 @@ VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 
 int visual_ui_checkbox_free (VisUICheckbox *checkbox)
 {
-	visual_log_return_val_if_fail (checkbox != NULL, -1);
+	visual_log_return_val_if_fail (checkbox != NULL, -VISUAL_ERROR_UI_CHECKBOX_NULL);
 
 	if (VISUAL_UI_WIDGET (checkbox)->type != VISUAL_WIDGET_TYPE_CHECKBOX) {
 		visual_log (VISUAL_LOG_CRITICAL, "Wrong free for VisUI widget");
 
-		return -1;
+		return -VISUAL_ERROR_UI_NO_CHECKBOX;
 	}
 
 	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (checkbox));
 
-	visual_mem_free (checkbox);
-
-	return 0;
+	return visual_mem_free (checkbox);
 }
 
 /**

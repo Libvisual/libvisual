@@ -103,12 +103,11 @@ int visual_init_path_add (char *pathadd)
 	__lv_plugpath_cnt++;
 	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);
 
-	if (__lv_plugpaths == NULL)
-		return -1;
-	
+	visual_log_return_val_if_fail (__lv_plugpaths != NULL, -VISUAL_ERROR_LIBVISUAL_NO_PATHS);
+
 	__lv_plugpaths[__lv_plugpath_cnt - 1] = pathadd;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -121,9 +120,11 @@ int visual_init_path_add (char *pathadd)
  */
 int visual_init (int *argc, char ***argv)
 {
+	int ret = 0;
+
 	if (__lv_initialized == TRUE) {
 		visual_log (VISUAL_LOG_ERROR, "Over initialized");
-                return -1;
+                return -VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED;
         }
 		
 	if (argc == NULL || argv == NULL) {
@@ -150,20 +151,22 @@ int visual_init (int *argc, char ***argv)
                         visual_log (VISUAL_LOG_WARNING, "Could not set program name");
         }
 
-	if (visual_init_path_add (PLUGPATH"/actor") < 0)
-		return -1;
-	if (visual_init_path_add (PLUGPATH"/input") < 0)
-		return -1;
-	if (visual_init_path_add (PLUGPATH"/morph") < 0)
-		return -1;
-	
-	/* NULL terminated */
-	if (visual_init_path_add (NULL) < 0)
-		return -1;
+	/* Add the standard plugin paths */
+	ret = visual_init_path_add (PLUGPATH"/actor");
+	visual_log_return_val_if_fail (ret >= 0, ret);
+
+	ret = visual_init_path_add (PLUGPATH"/input");
+	visual_log_return_val_if_fail (ret >= 0, ret);
+
+	ret = visual_init_path_add (PLUGPATH"/morph");
+	visual_log_return_val_if_fail (ret >= 0, ret);
+
+	/* And null terminate the list */
+	ret = visual_init_path_add (NULL);
+	visual_log_return_val_if_fail (ret >= 0, ret);
 
 	__lv_plugins = visual_plugin_get_list ((const char**)__lv_plugpaths);
-	if (__lv_plugins == NULL)
-		return -1;
+	visual_log_return_val_if_fail (__lv_plugins != NULL, -VISUAL_ERROR_LIBVISUAL_NO_REGISTRY);
 
 	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
 	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
@@ -174,7 +177,7 @@ int visual_init (int *argc, char ***argv)
 
 	__lv_initialized = TRUE;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /*
@@ -198,7 +201,8 @@ int visual_quit ()
 
 	if (__lv_initialized == FALSE) {
                 visual_log (VISUAL_LOG_WARNING, "Never initialized");
-		return -1;
+
+		return -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED;
 	}
 
 	ret = visual_plugin_ref_list_destroy (__lv_plugins);
@@ -228,7 +232,7 @@ int visual_quit ()
 	}
 
 	__lv_initialized = FALSE;
-	return 0;
+	return VISUAL_OK;
 }
 
 /**

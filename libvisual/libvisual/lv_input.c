@@ -137,13 +137,12 @@ VisInput *visual_input_new (const char *inputname)
  */
 int visual_input_realize (VisInput *input)
 {
-	if (input == NULL)
-		return -1;
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	if (input->plugin != NULL && input->callback == NULL)
-		visual_plugin_realize (input->plugin);
+		return visual_plugin_realize (input->plugin);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -156,14 +155,12 @@ int visual_input_realize (VisInput *input)
  */
 int visual_input_destroy (VisInput *input)
 {
-	if (input == NULL)
-		return -1;
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	if (input->plugin != NULL)
 		visual_plugin_unload (input->plugin);
 
 	return visual_input_free (input);
-		
 }
 
 /**
@@ -178,15 +175,12 @@ int visual_input_destroy (VisInput *input)
  */
 int visual_input_free (VisInput *input)
 {
-	if (input == NULL)
-		return -1;
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	if (input->audio != NULL)
 		visual_audio_free (input->audio);
 	
-	visual_mem_free (input);
-	
-	return 0;
+	return visual_mem_free (input);
 }
 
 /**
@@ -202,13 +196,12 @@ int visual_input_free (VisInput *input)
  */
 int visual_input_set_callback (VisInput *input, input_upload_callback_func_t callback, void *priv)
 {
-	if (input == NULL)
-		return -1;
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	input->callback = callback;
 	input->priv = priv;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -223,9 +216,8 @@ int visual_input_set_callback (VisInput *input, input_upload_callback_func_t cal
 int visual_input_run (VisInput *input)
 {
 	VisInputPlugin *inplugin;
-	
-	if (input == NULL)
-		return -1;
+
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	if (input->callback == NULL) {
 		inplugin = get_input_plugin (input);
@@ -233,7 +225,7 @@ int visual_input_run (VisInput *input)
 		if (inplugin == NULL) {
 			visual_log (VISUAL_LOG_CRITICAL, "The input plugin is not loaded correctly.");
 		
-			return -1;
+			return -VISUAL_ERROR_INPUT_PLUGIN_NULL;
 		}
 		
 		inplugin->upload (input->plugin, input->audio);
@@ -242,7 +234,7 @@ int visual_input_run (VisInput *input)
 
 	visual_audio_analyze (input->audio);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**

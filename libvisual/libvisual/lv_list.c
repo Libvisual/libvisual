@@ -5,7 +5,7 @@
  *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- *	$Id: lv_list.c,v 1.13 2004-10-20 17:56:09 dprotti Exp $
+ *	$Id: lv_list.c,v 1.14 2004-11-04 20:48:28 synap Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -63,13 +63,9 @@ VisList *visual_list_new ()
  */
 int visual_list_free (VisList *list)
 {
-	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
-	visual_mem_free (list);
-
-	list = NULL;
-
-	return 0;
+	return visual_mem_free (list);
 }
 
 /**
@@ -90,7 +86,7 @@ int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t dest
 	VisListEntry *le = NULL;
 	void *elem;
 
-	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 		
 	/* Walk through the given list, possibly calling the destroyer for it */
 	if (destroyer == NULL) {
@@ -103,7 +99,7 @@ int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t dest
 		}
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -121,13 +117,11 @@ int visual_list_destroy_elements (VisList *list, visual_list_destroy_func_t dest
  */
 int visual_list_destroy (VisList *list, visual_list_destroy_func_t destroyer)
 {
-	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 	
 	visual_list_destroy_elements (list, destroyer);	
 	
-	visual_list_free (list);
-
-	return 0;
+	return visual_list_free (list);
 }
 
 /**
@@ -239,7 +233,7 @@ int visual_list_add_at_begin (VisList *list, void *data)
 {
 	VisListEntry *current, *next;
 
-	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	/* Allocate memory for new list entry */
 	current = visual_mem_new0 (VisListEntry, 1);
@@ -260,7 +254,7 @@ int visual_list_add_at_begin (VisList *list, void *data)
 	/* Done */
 	list->count++;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -276,7 +270,7 @@ int visual_list_add (VisList *list, void *data)
 {
 	VisListEntry *current, *prev;
 	
-	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	current = visual_mem_new0 (VisListEntry, 1);
 
@@ -303,7 +297,7 @@ int visual_list_add (VisList *list, void *data)
 	/* Done */
 	list->count++;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -320,9 +314,9 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 {
 	VisListEntry *prev, *next, *current;
 	
-	visual_log_return_val_if_fail (list != NULL, -1);
-	visual_log_return_val_if_fail (le != NULL, -1);
-	visual_log_return_val_if_fail (data != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
 	
 	current = visual_mem_new0 (VisListEntry, 1);
 
@@ -362,7 +356,8 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 	
 	/* Done */
 	list->count++;
-	return 0;
+
+	return VISUAL_OK;
 }
 
 /**
@@ -377,15 +372,16 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 {
 	VisListEntry *prev, *current, *next;
 	
-	visual_log_return_val_if_fail (list != NULL, -1);
-	visual_log_return_val_if_fail (le != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 	
 	prev = current = next = NULL;
 
 	/* Valid list entry ? */
 	if (*le == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, "There is no list entry to delete");
-		return -1; /* Nope */
+
+		return -VISUAL_ERROR_LIST_ENTRY_INVALID; /* Nope */
 	}
 
 	/* Point new to le's previous entry */
@@ -411,7 +407,7 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 	list->count--;
 	visual_mem_free (current);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -426,7 +422,7 @@ int visual_list_count (VisList *list)
 	VisListEntry *le = NULL;
 	int count = 0;
 	
-	visual_log_return_val_if_fail (list != NULL, -1);
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 	
 	/* Walk through list */
 	while (visual_list_next (list, &le) != NULL) 

@@ -65,13 +65,11 @@ VisAudio *visual_audio_new ()
  */
 int visual_audio_free (VisAudio *audio)
 {
-	visual_log_return_val_if_fail (audio != NULL, -1);
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
 	_lv_fft_close (audio->fft_state);
 	
-	visual_mem_free (audio);
-
-	return 0;
+	return visual_mem_free (audio);
 }
 
 /**
@@ -91,6 +89,8 @@ int visual_audio_analyze (VisAudio *audio)
         float tmp_out[256];
 	double scale;
 	int i, j, y;
+
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
 	/* Load the pcm data */
 	for (i = 0; i < 512; i++) {
@@ -158,7 +158,7 @@ int visual_audio_analyze (VisAudio *audio)
 	if (audio->energy > 100)
 		audio->energy = 100;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**

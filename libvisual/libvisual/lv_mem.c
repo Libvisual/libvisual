@@ -3,6 +3,7 @@
 
 #include "lv_mem.h"
 #include "lv_log.h"
+#include "lv_error.h"
 
 /**
  * @defgroup VisMem VisMem
@@ -43,11 +44,11 @@ void *visual_mem_malloc0 (visual_size_t nbytes)
  */
 int visual_mem_free (void *ptr)
 {
-	visual_log_return_val_if_fail (ptr != NULL, -1);
+	visual_log_return_val_if_fail (ptr != NULL, -VISUAL_ERROR_MEM_NULL);
 
 	free (ptr);
 
-	return 0;
+	return VISUAL_OK;
 }
 	
 

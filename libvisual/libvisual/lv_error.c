@@ -49,12 +49,12 @@ int visual_error_raise ()
  */
 int visual_error_set_handler (visual_error_handler_func_t handler, void *priv)
 {
-	visual_log_return_val_if_fail (handler != NULL, -1);
+	visual_log_return_val_if_fail (handler != NULL, -VISUAL_ERROR_ERROR_HANDLER_NULL);
 
 	error_handler = handler;
 	error_handler_priv = priv;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**

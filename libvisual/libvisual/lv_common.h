@@ -5,6 +5,7 @@
 
 #include <libvisual/lv_mem.h>
 #include <libvisual/lv_log.h>
+#include <libvisual/lv_error.h>
 
 #define uint8_t		u_int8_t
 #define uint16_t	u_int16_t

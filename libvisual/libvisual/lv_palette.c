@@ -36,15 +36,12 @@ VisPalette *visual_palette_new (int ncolors)
  */
 int visual_palette_free (VisPalette *pal)
 {
-	if (pal == NULL)
-		return -1;
+	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
 	if (pal->colors != NULL)
 		visual_palette_free_colors (pal);
 	
-	visual_mem_free (pal);
-
-	return 0;
+	return visual_mem_free (pal);
 }
 
 /**
@@ -57,13 +54,13 @@ int visual_palette_free (VisPalette *pal)
  */
 int visual_palette_copy (VisPalette *dest, const VisPalette *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -1);
-	visual_log_return_val_if_fail (src != NULL, -1);
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PALETTE_NULL);
 	visual_log_return_val_if_fail (dest->ncolors == src->ncolors, -1);
 
 	memcpy (dest->colors, src->colors, sizeof (VisColor) * dest->ncolors);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -76,12 +73,12 @@ int visual_palette_copy (VisPalette *dest, const VisPalette *src)
  */
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
 {
-	visual_log_return_val_if_fail (pal != NULL, -1);
+	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
 	pal->colors = visual_mem_new0 (VisColor, ncolors);
 	pal->ncolors = ncolors;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -93,12 +90,12 @@ int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
  */
 int visual_palette_free_colors (VisPalette *pal)
 {
-	visual_log_return_val_if_fail (pal != NULL, -1);
+	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
 	if (pal->colors != NULL)
 		visual_mem_free (pal->colors);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -116,22 +113,23 @@ int visual_palette_blend (VisPalette *dest, const VisPalette *src1, const VisPal
 {
 	int i;
 
-	if (dest == NULL || src1 == NULL || src2 == NULL)
-		return -1;
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_PALETTE_NULL);
 	
 	if (src1->ncolors != src2->ncolors)
-		return -1;
+		return -VISUAL_ERROR_PALETTE_SIZE;
 
 	if (dest->ncolors != src1->ncolors)
-		return -1;
-	
+		return -VISUAL_ERROR_PALETTE_SIZE;
+
 	for (i = 0; i < dest->ncolors; i++) {
 		dest->colors[i].r = src1->colors[i].r + ((src2->colors[i].r - src1->colors[i].r) * rate);
 		dest->colors[i].g = src1->colors[i].g + ((src2->colors[i].g - src1->colors[i].g) * rate);
 		dest->colors[i].b = src1->colors[i].b + ((src2->colors[i].b - src1->colors[i].b) * rate);
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**

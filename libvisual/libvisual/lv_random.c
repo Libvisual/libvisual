@@ -6,8 +6,9 @@
 #include "lv_random.h"
 
 /* Thanks Burkhard Plaum <plaum@ipf.uni-stuttgart.de> for these values and some other hints */
-#define val_a 1664525L		/* as suggested by Knuth */
-#define val_c 1013904223L	/* as suggested by H.W. Lewis and is a prime close to 2^32 * (sqrt(5) - 2)) */
+#define val_a 1664525L		/* As suggested by Knuth */
+#define val_c 1013904223L	/* As suggested by H.W. Lewis and is a prime close to 2^32 * (sqrt(5) - 2)) */
+
 
 VisRandomContext __lv_internal_random_context;
 
@@ -43,11 +44,11 @@ VisRandomContext *visual_random_context_new (uint32_t seed)
  */
 int visual_random_context_free (VisRandomContext *rcontext)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, -1);
+	visual_log_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
 
 	visual_mem_free (rcontext);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -60,12 +61,12 @@ int visual_random_context_free (VisRandomContext *rcontext)
  */
 int visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, -1);
+	visual_log_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
 
 	rcontext->seed = seed;
 	rcontext->seed_state = seed;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -227,7 +228,7 @@ float visual_random_context_float (VisRandomContext *rcontext)
  */
 int visual_random_context_decide (VisRandomContext *rcontext, float a)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, -1);
+	visual_log_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
 
 	return visual_random_context_float (rcontext) <= a;
 }

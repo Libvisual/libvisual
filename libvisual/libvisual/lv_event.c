@@ -37,11 +37,9 @@ VisEvent *visual_event_new ()
  */
 int visual_event_free (VisEvent *event)
 {
-	visual_log_return_val_if_fail (event != NULL, -1);
+	visual_log_return_val_if_fail (event != NULL, -VISUAL_ERROR_EVENT_NULL);
 
-	visual_mem_free (event);
-
-	return 0;
+	return visual_mem_free (event);
 }
 
 /**
@@ -69,13 +67,11 @@ VisEventQueue *visual_event_queue_new ()
  */
 int visual_event_queue_free (VisEventQueue *eventqueue)
 {
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	visual_list_destroy_elements (&eventqueue->events, free);
 	
-	visual_mem_free (eventqueue);
-	
-	return 0;
+	return visual_mem_free (eventqueue);
 }
 
 /**
@@ -128,8 +124,8 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
  */
 int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event)
 {
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
-	visual_log_return_val_if_fail (event != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
+	visual_log_return_val_if_fail (event != NULL, -VISUAL_ERROR_EVENT_NULL);
 
 	/* We've got way too much on the queue, not adding events, the important
 	 * resize event got data in the event queue structure that makes sure it gets
@@ -143,7 +139,7 @@ int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event)
 
 	eventqueue->eventcount++;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -161,13 +157,14 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	event = visual_event_new ();
 	if (event == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 				"Cannot create a new VisEvent structure");
-		return -1;
+
+		return -VISUAL_ERROR_EVENT_NULL;
 	}
 	
 	/* FIXME name to VISUAL_KEYB_DOWN and KEYB_UP */
@@ -197,7 +194,7 @@ int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y)
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	event = visual_event_new ();
 
@@ -234,7 +231,7 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	event = visual_event_new ();
 
@@ -274,7 +271,7 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	event = &eventqueue->lastresize;
 	
@@ -288,7 +285,7 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 
 	eventqueue->resizenew = TRUE;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -304,8 +301,8 @@ int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *song
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
-	visual_log_return_val_if_fail (songinfo != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	event = visual_event_new ();
 
@@ -330,8 +327,8 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
-	visual_log_return_val_if_fail (param != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
+	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_PARAM;
@@ -354,7 +351,7 @@ int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_QUIT;
@@ -376,7 +373,7 @@ int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_VISIBILITY;
@@ -402,7 +399,7 @@ int visual_event_queue_add_generic (VisEventQueue *eventqueue, int eid, int para
 {
 	VisEvent *event;
 
-	visual_log_return_val_if_fail (eventqueue != NULL, -1);
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_GENERIC;

@@ -34,11 +34,9 @@ VisColor *visual_color_new ()
  */
 int visual_color_free (VisColor *color)
 {
-	visual_log_return_val_if_fail (color != NULL, -1);
+	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
-	visual_mem_free (color);
-
-	return 0;
+	return visual_mem_free (color);
 }
 
 /**
@@ -47,17 +45,17 @@ int visual_color_free (VisColor *color)
  * @param src1 Pointer to the first VisColor for comparison.
  * @param src2 Pointer to the second VisColor for comparison.
  *
- * @return 0 on different, 1 on same, -1 on error.
+ * @return FALSE on different, TRUE on same, -1 on error.
  */
 int visual_color_compare (VisColor *src1, VisColor *src2)
 {
-	visual_log_return_val_if_fail (src1 != NULL, -1)
-	visual_log_return_val_if_fail (src2 != NULL, -1)
+	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_COLOR_NULL)
+	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_COLOR_NULL)
 
 	if (src1->r != src2->r || src1->g != src2->g || src1->b != src2->b)
-		return 0;
+		return FALSE;
 
-	return 1;
+	return TRUE;
 }
 
 /**
@@ -75,7 +73,7 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v)
 	int i;
 	float f, w, q, t, r = 0, g = 0, b = 0;
 
-	visual_log_return_val_if_fail (color != NULL, -1);
+	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	if (s == 0.0)
 		s = 0.000001;
@@ -106,7 +104,7 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v)
 	color->g = (float) g * 255;
 	color->b = (float) b * 255;
 	
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -124,7 +122,7 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 
         float max, min, delta, r, g, b;
 
-	visual_log_return_val_if_fail (color != NULL, -1);
+	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	r = (float) color->r / 255.0;
 	g = (float) color->g / 255.0;
@@ -170,7 +168,7 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 	}
 
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -183,8 +181,8 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
  */
 int visual_color_copy (VisColor *dest, const VisColor *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -1);
-	visual_log_return_val_if_fail (src != NULL, -1);
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_COLOR_NULL);
 	
 	dest->r = src->r;
 	dest->g = src->g;
@@ -193,7 +191,7 @@ int visual_color_copy (VisColor *dest, const VisColor *src)
 	/* You never know ;) */
 	dest->unused = src->unused;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**

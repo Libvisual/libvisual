@@ -58,7 +58,7 @@ VisPluginInfo *visual_plugin_info_new ()
  */
 int visual_plugin_info_free (VisPluginInfo *pluginfo)
 {
-	visual_log_return_val_if_fail (pluginfo != NULL, -1);
+	visual_log_return_val_if_fail (pluginfo != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 
 	if (pluginfo->plugname != NULL)
 		visual_mem_free (pluginfo->plugname);
@@ -78,9 +78,7 @@ int visual_plugin_info_free (VisPluginInfo *pluginfo)
 	if (pluginfo->help != NULL)
 		visual_mem_free (pluginfo->help);
 
-	visual_mem_free (pluginfo);
-
-	return 0;
+	return visual_mem_free (pluginfo);
 }
 
 /**
@@ -94,8 +92,8 @@ int visual_plugin_info_free (VisPluginInfo *pluginfo)
  */
 int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -1);
-	visual_log_return_val_if_fail (src != NULL, -1);
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 
 	memcpy (dest, src, sizeof (VisPluginInfo));
 
@@ -106,9 +104,8 @@ int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src)
 	dest->about = strdup (src->about);
 	dest->help = strdup (src->help);
 
-	return 0;
+	return VISUAL_OK;
 }
-
 
 /**
  * Pumps the queued events into the plugin it's event handler if it has one.
@@ -120,15 +117,15 @@ int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src)
  */
 int visual_plugin_events_pump (VisPluginData *plugin)
 {
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	if (plugin->info->events != NULL) {
 		plugin->info->events (plugin, &plugin->eventqueue);
 
-		return 0;
+		return VISUAL_OK;
 	}
 
-	return -1;
+	return -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER;
 }
 
 /**
@@ -160,11 +157,11 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
  */
 int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget)
 {
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	plugin->userinterface = widget;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -244,7 +241,7 @@ VisPluginRef *visual_plugin_ref_new ()
  */
 int visual_plugin_ref_free (VisPluginRef *ref)
 {
-	visual_log_return_val_if_fail (ref != NULL, -1);
+	visual_log_return_val_if_fail (ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
 
 	if (ref->file != NULL)
 		visual_mem_free (ref->file);
@@ -254,7 +251,7 @@ int visual_plugin_ref_free (VisPluginRef *ref)
 	
 	visual_mem_free (ref);
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -268,15 +265,9 @@ int visual_plugin_ref_free (VisPluginRef *ref)
  */
 int visual_plugin_ref_list_destroy (VisList *list)
 {
-	int ret1;
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
-	visual_log_return_val_if_fail (list != NULL, -1);
-	
-	ret1 = visual_list_destroy (list, ref_list_destroy);
-
-	list = NULL;
-
-	return ((ret1 == 0) ? 0 : -1);
+	return visual_list_destroy (list, ref_list_destroy);
 }
 
 /**
@@ -298,13 +289,9 @@ VisPluginData *visual_plugin_new ()
  */
 int visual_plugin_free (VisPluginData *plugin)
 {
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
-	visual_mem_free (plugin);
-
-	plugin = NULL;
-
-	return 0;
+	return visual_mem_free (plugin);
 }
 
 /**
@@ -482,7 +469,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 {
 	VisPluginRef *ref;
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	ref = plugin->ref;
 
@@ -491,7 +478,8 @@ int visual_plugin_unload (VisPluginData *plugin)
 		visual_mem_free (plugin);
 
 		visual_log (VISUAL_LOG_CRITICAL, "Tried unloading a plugin that never has been loaded.");
-		return -1;
+
+		return -VISUAL_ERROR_PLUGIN_HANDLE_NULL;
 	}
 	
 	if (plugin->realized == TRUE)
@@ -501,12 +489,12 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 	visual_mem_free (plugin);
 	
-	visual_log_return_val_if_fail (ref != NULL, -1);
+	visual_log_return_val_if_fail (ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
 	
 	if (ref->usecount > 0)
 		ref->usecount--;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -591,10 +579,10 @@ int visual_plugin_realize (VisPluginData *plugin)
 {
 	VisParamContainer *paramcontainer;
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	if (plugin->realized == TRUE)
-		return -1;
+		return -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED;
 
 	paramcontainer = visual_plugin_get_params (plugin);
 	visual_param_container_set_eventqueue (paramcontainer, &plugin->eventqueue);
@@ -602,7 +590,7 @@ int visual_plugin_realize (VisPluginData *plugin)
 	plugin->info->init (plugin);
 	plugin->realized = TRUE;
 
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
