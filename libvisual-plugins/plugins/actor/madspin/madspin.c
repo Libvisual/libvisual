@@ -189,7 +189,7 @@ int lv_madspin_cleanup (VisPluginData *plugin)
 
 	/* Destroy the VisUI tree */
 	ui = visual_plugin_get_userinterface (plugin);
-	visual_ui_widget_destroy (ui);
+	visual_object_unref (VISUAL_OBJECT (ui));
 
 	visual_mem_free (priv);
 

@@ -142,7 +142,7 @@ int act_bumpscope_cleanup (VisPluginData *plugin)
         VisUIWidget *ui;
 
 	ui = visual_plugin_get_userinterface (plugin);
-	visual_ui_widget_destroy (ui);
+	visual_object_unref (VISUAL_OBJECT (ui));
 
 	__bumpscope_cleanup (priv);
 

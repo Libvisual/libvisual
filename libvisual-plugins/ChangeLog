@@ -1,3 +1,8 @@
+2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: We don't have visual_ui_widget_destroy anylonger.
+	we now use visual_object_unref here.	
+
 2004-11-11  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/oinksie/actor_oinksie.c: Fixed crash,
