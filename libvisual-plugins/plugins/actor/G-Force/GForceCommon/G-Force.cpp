@@ -1548,3 +1548,7 @@ void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
 
 }
 
+void GForce::GetWinRect( Rect& outRect ) {
+	SetRect( &outRect, 0, 0, 0, 0 );
+}
+
