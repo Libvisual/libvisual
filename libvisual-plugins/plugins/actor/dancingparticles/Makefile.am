@@ -15,6 +15,7 @@ INCLUDES = $(all_includes) -I$(top_srcdir)
 actor_dancingparticles_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
 actor_dancingparticles_la_SOURCES = actor_dancingparticles.cpp \
+				    actor_dancingparticles.h \
 				    epic.cpp \
 				    etoile.cpp \
 				    gl.cpp \

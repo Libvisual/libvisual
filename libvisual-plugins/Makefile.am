@@ -2,5 +2,5 @@
 
 SUBDIRS = plugins
 
-EXTRA_DIST =
+EXTRA_DIST = libvisual-plugins.spec
 

@@ -3,6 +3,18 @@ of Libvisual plugins.
 
 These are only visible changes, for more details look at the ChangeLog.
 
+New in 0.2.0pre1: 2005-02-01:
+* Adding pseudotoad flower actor plugin, ported. (Dennis)
+* Adding dancing particles plugin, ported. (Dennis)
+* Including G-Force in package. (Dennis)
+* Including Nebulus in package. (Dennis)
+* Adding corona actor plugin, ported. (Dennis, Jean-Christophe)
+* Fixed bumpscope actor plugin. (Dennis)
+* MMX code added to JESS, alphablend, oinksie (Dennis)
+* Fixing many bugs in plugins. (Everyone)
+* Adding VisUI userinterfaces to plugins, not usable yet
+  because there is no client support yet. (Dennis)
+
 New in 0.1.7: 2004-10-14:
 * Updates to API changes.
 * All plugins use the VisRandom stuff for randomizing.

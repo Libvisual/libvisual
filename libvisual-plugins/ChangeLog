@@ -1,3 +1,10 @@
+2005-02-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* *: Made nearly 0.2.0 release ready.
+
+	* libvisual-plugins.spec: rpm spec file
+	by: Michael A. Peters <mpeters@mac.com>
+
 2005-01-24  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Adding pseudotoad_flower

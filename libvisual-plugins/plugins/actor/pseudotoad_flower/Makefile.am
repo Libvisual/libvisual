@@ -16,5 +16,7 @@ actor_flower_la_LDFLAGS = -rpath $(libdir) -module -avoid-version
 
 actor_flower_la_SOURCES = actor_flower.c \
 			  main.c \
-			  main.h
+			  main.h \
+			  notch.c \
+			  notch.h
 
