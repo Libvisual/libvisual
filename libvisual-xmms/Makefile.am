@@ -2,5 +2,5 @@
 
 SUBDIRS = src po pixmaps
 
-EXTRA_DIST = config.rpath mkinstalldirs 
+#EXTRA_DIST = config.rpath mkinstalldirs 
 

@@ -10,6 +10,12 @@ AC_CONFIG_HEADER([config.h])
 AC_PREFIX_DEFAULT(/usr)
 AC_PREFIX_PROGRAM(xmms)
 
+LVXMMS_MSG_LVWIDGETS_NOT_FOUND="
+	libvisual-widgets library was not found on your system.
+	libvisual plugins could not be configured from XMMS using
+	the user interface supplied from each plugin.
+"
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
@@ -71,6 +77,14 @@ you can download libvisual at http://libvisual.sf.net/])
 fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
+
+PKG_CHECK_MODULES(LIBVISUAL, libvisual-widgets >= 0.3.0, [lvwidgets="yes"], [lvwidgets="no"])
+if test x"$lvwidget" = xyes; then
+   AC_DEFINE([HAVE_LVWIDGETS],[1], [libvisual-widgets library is present])
+else
+   AC_DEFINE([HAVE_LVWIDGETS],[0], [libvisual-widgets library is not present])
+   AC_MSG_WARN($LVXMMS_MSG_LVWIDGETS_NOT_FOUND)
+fi
 
 XMMS_PLUGIN_DIR="$prefix/lib/xmms"
 XMMS_VISUALIZATION_PLUGIN_DIR="$XMMS_PLUGIN_DIR/Visualization"
