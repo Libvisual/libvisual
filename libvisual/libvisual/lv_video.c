@@ -1156,7 +1156,6 @@ static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, in
 static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	_color16 *srcr = (_color16 *) src;
 	uint8_t r, g, b;
 	uint8_t col;
@@ -1164,10 +1163,10 @@ static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			r = srcr[j].r << 3;
-			g = srcr[j].g << 2;
-			b = srcr[j].b << 3;
-			j++;
+			r = srcr->r << 3;
+			g = srcr->g << 2;
+			b = srcr->b << 3;
+			srcr++;
 
 			/* FIXME optimize */
 			col = (r + g + b) / 3;
@@ -1176,10 +1175,10 @@ static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			pal->colors[col].g = g;
 			pal->colors[col].b = b;
 
-			dest[i++] = col;
+			*dest = col;
 		}
 
-		i += pitchdiff;	
+		*dest += pitchdiff;
 	}
 
 	return VISUAL_OK;
@@ -1188,19 +1187,18 @@ static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	_color16 *srcr = (_color16 *) src;
 	int pitchdiff = pitch - (width * 3);
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			dest[j++] = srcr[i].r << 3;
-			dest[j++] = srcr[i].g << 2;
-			dest[j++] = srcr[i].b << 3;
-			i++;	
+			*(dest++) = srcr->r << 3;
+			*(dest++) = srcr->g << 2;
+			*(dest++) = srcr->b << 3;
+			srcr++;
 		}
 
-		j += pitchdiff;
+		dest += pitchdiff;
 	}
 
 	return VISUAL_OK;
@@ -1209,20 +1207,19 @@ static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, i
 static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	_color16 *srcr = (_color16 *) src;
 	int pitchdiff = pitch - (width * 4);
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			dest[j++] = srcr[i].b << 3;
-			dest[j++] = srcr[i].g << 2;
-			dest[j++] = srcr[i].r << 3;
-			dest[j++] = 0;
-			i++;
+			*(dest++) = srcr->b << 3;
+			*(dest++) = srcr->g << 2;
+			*(dest++) = srcr->r << 3;
+			*(dest++) = 0;
+			srcr++;
 		}
 	
-		j += pitchdiff;
+		dest += pitchdiff;
 	}
 	
 	return VISUAL_OK;
@@ -1231,16 +1228,15 @@ static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, i
 static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	uint8_t r, g, b;
 	uint8_t col;
 	int pitchdiff = pitch - width;
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			b = src[j++];
-			g = src[j++];
-			r = src[j++];
+			b = *(src++);
+			g = *(src++);
+			r = *(src++);
 
 			/* FIXME optimize */
 			col = (b + g + r) / 3;
@@ -1249,10 +1245,10 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			pal->colors[col].g = g;
 			pal->colors[col].b = b;
 
-			dest[i++] = col;
+			*(dest++) = col;
 		}
 
-		i += pitchdiff;	
+		dest += pitchdiff;	
 	}
 
 	return VISUAL_OK;
@@ -1261,19 +1257,18 @@ static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	_color16 *destr = (_color16 *) dest;
 	int pitchdiff = (pitch - (width * 2)) >> 1;
 	
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			destr[i].b = src[j++] >> 3;
-			destr[i].g = src[j++] >> 2;
-			destr[i].r = src[j++] >> 3;
-			i++;
+			destr->b = *(src++) >> 3;
+			destr->g = *(src++) >> 2;
+			destr->r = *(src++) >> 3;
+			destr++;
 		}
 
-		i += pitchdiff;
+		destr += pitchdiff;
 	}
 	
 	return VISUAL_OK;
@@ -1282,18 +1277,17 @@ static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	int pitchdiff = pitch - (width * 4);
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			dest[j++] = src[i++];
-			dest[j++] = src[i++];
-			dest[j++] = src[i++];
-			dest[j++] = 0;
+			*(dest++) = *(src++);
+			*(dest++) = *(src++);
+			*(dest++) = *(src++);
+			*(dest++) = 0;
 		}
 
-		j += pitchdiff;
+		dest += pitchdiff;
 	}
 	
 	return VISUAL_OK;
@@ -1302,17 +1296,16 @@ static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, i
 static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	uint8_t r, g, b;
 	uint8_t col;
 	int pitchdiff = pitch - width;
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			r = src[j++];
-			g = src[j++];
-			b = src[j++];
-			j++;
+			r = *(src++);
+			g = *(src++);
+			b = *(src++);
+			src++;
 
 			/* FIXME optimize */
 			col = (r + g + b) / 3;
@@ -1321,10 +1314,10 @@ static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, in
 			pal->colors[col].g = g;
 			pal->colors[col].b = b;
 
-			dest[i++] = col;
+			*(dest++) = col;
 		}
 
-		i += pitchdiff;	
+		dest += pitchdiff;	
 	}
 	
 	return VISUAL_OK;
@@ -1339,14 +1332,14 @@ static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 	
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			destr[i].r = src[j++] >> 3;
-			destr[i].g = src[j++] >> 2;
-			destr[i].b = src[j++] >> 3;
-			j++;
-			i++;
+			destr->r = *(src++) >> 3;
+			destr->g = *(src++) >> 2;
+			destr->b = *(src++) >> 3;
+			destr++;
+			src++;
 		}
 
-		i += pitchdiff;
+		destr += pitchdiff;
 	}
 
 	return VISUAL_OK;
@@ -1355,18 +1348,17 @@ static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, i
 static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
 {
 	int x, y;
-	int i = 0, j = 0;
 	int pitchdiff = pitch - (width * 3);
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			dest[i++] = src[j++];
-			dest[i++] = src[j++];
-			dest[i++] = src[j++];
-			j++;
+			*(dest++) = *(src++);
+			*(dest++) = *(src++);
+			*(dest++) = *(src++);
+			src++;
 		}
 		
-		i += pitchdiff;
+		dest += pitchdiff;
 	}
 	
 	return VISUAL_OK;
@@ -1376,7 +1368,6 @@ static int bgr_to_rgb16 (VisVideo *dest, const VisVideo *src)
 {
 	_color16 *destbuf, *srcbuf;
 	int x, y;
-	int i = 0;
 	int pitchdiff = (dest->pitch - (dest->width * 2)) >> 1;
 	
 	destbuf = (_color16 *) dest->pixels;
@@ -1384,13 +1375,14 @@ static int bgr_to_rgb16 (VisVideo *dest, const VisVideo *src)
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
-			destbuf[i].b = srcbuf[i].r;
-			destbuf[i].g = srcbuf[i].g;
-			destbuf[i].r = srcbuf[i].b;
-			i++;
+			destbuf->b = srcbuf->r;
+			destbuf->g = srcbuf->g;
+			destbuf->r = srcbuf->b;
+			destbuf++;
+			srcbuf++;
 		}
 
-		i += pitchdiff;
+		destbuf += pitchdiff;
 	}
 	
 	return VISUAL_OK;
@@ -1400,7 +1392,6 @@ static int bgr_to_rgb24 (VisVideo *dest, const VisVideo *src)
 {
 	uint8_t *destbuf, *srcbuf;
 	int x, y;
-	int i = 0;
 	int pitchdiff = dest->pitch - (dest->width * 3);
 
 	destbuf = dest->pixels;
@@ -1408,14 +1399,15 @@ static int bgr_to_rgb24 (VisVideo *dest, const VisVideo *src)
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
-			destbuf[i + 2] = srcbuf[i];
-			destbuf[i + 1] = srcbuf[i + 1];
-			destbuf[i] = srcbuf[i + 2];
+			*(destbuf + 2) = *(srcbuf);
+			*(destbuf + 1) = *(srcbuf + 1);
+			*(destbuf) = *(srcbuf + 2);
 		
-			i += 3;
+			destbuf += 3;
+			srcbuf += 3;
 		}
 
-		i += pitchdiff;
+		destbuf += pitchdiff;
 	}
 
 	return VISUAL_OK;
@@ -1433,16 +1425,17 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
-			destbuf[i + 2] = srcbuf[i];
-			destbuf[i + 1] = srcbuf[i + 1];
-			destbuf[i] = srcbuf[i + 2];
+			*(destbuf + 2) = *(srcbuf);
+			*(destbuf + 1) = *(srcbuf + 1);
+			*(destbuf) = *(srcbuf + 2);
 
-			destbuf[i + 3] = srcbuf[i + 3];
+			*(destbuf + 3) = *(srcbuf + 3);
 
-			i += 4;
+			destbuf += 4;
+			srcbuf += 4;
 		}
 
-		i += pitchdiff;
+		destbuf += pitchdiff;
 	}
 
 	return VISUAL_OK;
