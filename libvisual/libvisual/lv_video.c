@@ -70,7 +70,8 @@ static int video_dtor (VisObject *object)
 	VisVideo *video = VISUAL_VIDEO (object);
 
 	if (HAVE_ALLOCATED_BUFFER (video)) {
-		visual_video_free_buffer (video);
+		if (video->pixels != NULL)
+			visual_video_free_buffer (video);
 
 		video->pixels = NULL;
 	}
@@ -160,12 +161,16 @@ int visual_video_free_buffer (VisVideo *video)
 	visual_log_return_val_if_fail (video->pixels != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 
 	if (HAVE_ALLOCATED_BUFFER (video)) {
-		visual_mem_free (video->pixel_rows);
+		if (video->pixel_rows != NULL)
+			visual_mem_free (video->pixel_rows);
+
 		visual_mem_free (video->pixels);
+
 	} else {
 		return -VISUAL_ERROR_VIDEO_NO_ALLOCATED;
 	}
 
+	video->pixel_rows = NULL;
 	video->pixels = NULL;
 
 	video->flags = VISUAL_VIDEO_FLAG_NONE;
