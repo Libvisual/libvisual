@@ -169,6 +169,9 @@ int visual_bin_set_morph_by_name (VisBin *bin, char *morphname)
 
 	visual_log_return_val_if_fail (bin != NULL, -1);
 
+	if (bin->morph != NULL)
+		visual_morph_destroy (bin->morph);
+
 	morph = visual_morph_new (morphname);
 
 	bin->morph = morph;

@@ -1,4 +1,10 @@
 2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_bin.c (visual_bin_set_morph_by_name):
+	Destroy the morph plugin if it's already there
+	in the managed bin.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_plugin.*: Added the VisPluginFlags enumerate.
 	Added the 'flags' field to the VisPluginInfo structure.
