@@ -1,3 +1,11 @@
+2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* gtk2/*: Added copyright headers!
+
+	* AUTHORS: Updated.
+
+	* COPYING: Actually really adding it.
+
 2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* gtk2/lv_widget_gtk2_visui.c: Splitted the huge
