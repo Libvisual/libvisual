@@ -1,3 +1,8 @@
+2004-06-25  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* src/lv_libvisual.h: visual_init() signature changed to
+	int (*) (int*, char***). Added messages using visual_log().
+	
 2004-06-21  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* autogen.sh: check for libtool and run libtoolize --force

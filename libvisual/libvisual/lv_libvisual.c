@@ -7,6 +7,7 @@
 
 #include "lv_plugin.h"
 #include "lv_libvisual.h"
+#include "lv_log.h"
 
 /** Set when libvisual is initialized. */
 int __lv_initialized = FALSE;
@@ -66,20 +67,34 @@ int visual_init_path_add (char *pathadd)
  *
  * @return 0 on succes -1 on error.
  */
-int visual_init (int *argc, char **argv[])
+int visual_init (int *argc, char ***argv)
 {
-	if (__lv_initialized == TRUE)
-		/* FIXME use lv_log */
-		printf ("Over initialized\n");
+	if (__lv_initialized == TRUE) {
+		visual_log (VISUAL_LOG_ERROR, "Over initialized");
+                return -1;
+        }
 	
 	if (argc == NULL || argv == NULL) {
 		if (argc != NULL || argv != NULL)
 			printf ("OI, your argc,argv is borked\n");
 		/*  FIXME, print a warning here, one
 		 *  is NULL and one isn't */
-		__lv_progname = "no progname";
-	} else
-		__lv_progname = *argv[0];
+		__lv_progname = (char*) malloc (strlen ("no progname"));
+                if (__lv_progname == NULL)
+                        visual_log (VISUAL_LOG_WARNING, "Could not set program name");
+                else
+                        strcpy (__lv_progname, "no progname");
+	} else {
+                /*
+                 * We must copy the argument, to let the client
+                 * call this method from any context.
+                 */
+                __lv_progname = (char*) malloc (strlen(*argv[0]));
+                if (__lv_progname == NULL)
+                        visual_log (VISUAL_LOG_WARNING, "Could not set program name");
+                else
+                        strcpy (__lv_progname, *argv[0]);
+        }
 
 	visual_init_path_add (PLUGPATH"/actor");
 	visual_init_path_add (PLUGPATH"/input");
@@ -104,9 +119,12 @@ int visual_init (int *argc, char **argv[])
 int visual_quit ()
 {
 	if (__lv_initialized == FALSE) {
-		/* FIXME print a warning here */
+                visual_log (VISUAL_LOG_WARNING, "Never initialized");
 		return -1;
 	}
+
+        if (__lv_progname != NULL)
+                free (__lv_progname);
 
 	visual_plugin_ref_list_destroy (__lv_plugins);
 	visual_list_destroy (__lv_plugins_actor, NULL);

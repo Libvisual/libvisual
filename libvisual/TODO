@@ -120,6 +120,8 @@ libvisual:
 			use the syneathesia in buffer stuff as an example for this ! 
 
 	settings: (post 0.5) (do we need this ?)
+		a mechanism to enable/disable VISUAL_LOG_DEBUG messages.
+		
 		a system to store plugin settings.
 
 		next plugin, prev plugin keymaps how do we do ?
@@ -131,6 +133,10 @@ libvisual:
 		Honor plugin flags better (post 0.1)
 
 	plugins:
+		add a cache facility that let plugins save some expensive data (tables,
+		etc) to can be used after switch. The library could administer this data,
+		and when there is too much load, just drop some.
+		
 		have a way to set plugin parameters like "gst-pipe", "blah blah | blah".
 		have a way to version tag plugins (post 0.1)
 		have a 'plugin type namespace' policy and fix this within the plugins (discuss)
