@@ -1,3 +1,9 @@
+2004-06-27  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: output file lvconfig.h with macro
+	definitions for the installed LibVisual.
+	* libvisual/libvisual.h: added #include <lvconfig.h>.
+	
 2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* NEWS: Updating the NEWS file.

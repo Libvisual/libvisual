@@ -57,12 +57,6 @@ AC_TRY_COMPILE([],[
 		call_a(2,3);
 		],lv_have_iso_c_varargs=yes,lv_have_iso_c_varargs=no)
 AC_MSG_RESULT($lv_have_iso_c_varargs)
-if test "x$lv_have_iso_c_varargs" = xyes; then
-  AC_DEFINE(LV_HAVE_ISO_VARARGS, 1, [Have ISOC99 varargs macros])
-else
-  AC_DEFINE(LV_HAVE_ISO_VARARGS, 0, [Have ISOC99 varargs macros])
-fi
-AC_SUBST(LV_HAVE_ISO_VARARGS)
 
 AC_MSG_CHECKING(for GNUC varargs macros)
 AC_TRY_COMPILE([],[
@@ -71,12 +65,6 @@ AC_TRY_COMPILE([],[
 		call_a(2,3);
 		],lv_have_gnuc_varargs=yes,lv_have_gnuc_varargs=no)
 AC_MSG_RESULT($lv_have_gnuc_varargs)
-if test "x$lv_have_gnuc_varargs" = xyes; then
-  AC_DEFINE(LV_HAVE_GNUC_VARARGS, 1, [Have GNUC varargs macros])
-else
-  AC_DEFINE(LV_HAVE_GNUC_VARARGS, 0, [Have GNUC varargs macros])
-fi
-AC_SUBST(LV_HAVE_GNUC_VARARGS)
 
 # Checks for library functions.
 AC_FUNC_MALLOC
@@ -143,6 +131,60 @@ AC_SUBST(VISUAL_LIBS)
 # our -O3 flag on libvisual/Makefile.am
 AC_SUBST(CFLAGS, "")
 
+dnl Output the LibVisual config file
+AC_CONFIG_COMMANDS([lvconfig.h],
+[
+	outfile=lvconfig.h-tmp
+	cat > $outfile <<\_______EOF
+/* lvconfig.h
+ *
+ * This is a generated file.  Please modify 'configure.ac'
+ */
+
+#ifndef __LV_CONFIG_H__
+#define __LV_CONFIG_H__
+
+_______EOF
+
+        if test x$lv_have_iso_c_varargs = xyes ; then
+                cat >>$outfile <<_______EOF
+#ifndef __cplusplus
+# define LV_HAVE_ISO_VARARGS 1
+#endif
+_______EOF
+        fi
+
+        if test x$lv_have_gnuc_varargs = xyes ; then
+                cat >>$outfile <<_______EOF
+
+/* gcc-2.95.x supports both gnu style and ISO varargs, but if -ansi
+ * is passed ISO vararg support is turned off, and there is no work
+ * around to turn it on, so we unconditionally turn it off.
+ */
+#if __GNUC__ == 2 && __GNUC_MINOR__ == 95
+#  undef LV_HAVE_ISO_VARARGS
+#endif
+
+#define LV_HAVE_GNUC_VARARGS 1
+_______EOF
+       fi
+
+echo >>$outfile
+echo "#endif /* LV_CONFIG_H */" >>$outfile
+echo >>$outfile
+
+        if cmp -s $outfile lvconfig.h; then
+		AC_MSG_NOTICE([lvconfig.h is unchanged])
+		rm -f $outfile
+        else
+		mv $outfile lvconfig.h
+        fi
+
+],[
+   lv_have_iso_c_varargs=$lv_have_iso_c_varargs
+   lv_have_gnuc_varargs=$lv_have_gnuc_varargs
+])
+				    
 AC_CONFIG_FILES([
 Makefile
 libvisual.pc

@@ -1,6 +1,8 @@
 #ifndef LV_LIBVISUAL_H
 #define LV_LIBVISUAL_H
 
+#include <libvisual/lvconfig.h>
+
 #include <libvisual/lv_bin.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_keysym.h>
