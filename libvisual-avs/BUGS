@@ -1,0 +1,9 @@
+Installation
+------------
+
+If you have an older version of LibVisual Plugins 
+installed on your system, and you have disable 
+some plugin, the older one remains installed on
+/prefix/libvisual/*/, and you must removed
+manually.
+

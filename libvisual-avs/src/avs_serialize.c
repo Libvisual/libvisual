@@ -34,12 +34,10 @@ static char *retrieve_palette_from_preset_section (char *section, VisParamEntry 
 	VisPalette pal;
 
 	visual_palette_allocate_colors (&pal, AVS_SERIALIZE_GET_BYTE (section));
-	visual_param_entry_set_palette (param, &pal);
 	
 	AVS_SERIALIZE_SKIP_INT (section);
 
 	for (i = 0; i < pal.ncolors; i++) {
-
 		pal.colors[i].r = AVS_SERIALIZE_GET_BYTE (section);
 		AVS_SERIALIZE_SKIP_BYTE (section);
 		pal.colors[i].g = AVS_SERIALIZE_GET_BYTE (section);
@@ -49,6 +47,10 @@ static char *retrieve_palette_from_preset_section (char *section, VisParamEntry 
 
 		AVS_SERIALIZE_SKIP_BYTE (section);
 	}
+
+	visual_param_entry_set_palette (param, &pal);
+
+	visual_palette_free_colors (&pal);
 	
 	return section;
 }

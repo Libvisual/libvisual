@@ -217,6 +217,13 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 
 				break;
 
+			case 0x0e:	// ring
+				element = AVS_ELEMENT (avs_parse_render_ring (avstree));
+
+				visual_list_add (curcontainer->members, element);
+
+				break;
+
 			case 0x24:	// super scope
 				element = AVS_ELEMENT (avs_parse_render_superscope (avstree));
 
@@ -450,6 +457,46 @@ AVSElement *avs_parse_render_clearscreen (AVSTree *avstree)
 	avs_element_deserialize (AVS_ELEMENT (clearscreen), avstree);
 	
 	return clearscreen;
+}
+
+AVSElement *avs_parse_render_ring (AVSTree *avstree)
+{
+	AVSElement *ring;
+	AVSSerializeContainer *scont;
+
+	VisParamContainer *pcont;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("source and place"),
+		VISUAL_PARAM_LIST_ENTRY ("palette"),
+		VISUAL_PARAM_LIST_ENTRY ("size"),
+		VISUAL_PARAM_LIST_ENTRY ("type"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+
+	visual_param_container_add_many (pcont, params);
+
+	ring = visual_mem_new0 (AVSElement, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (ring), TRUE, avs_element_dtor);
+
+	AVS_ELEMENT (ring)->pcont = pcont;
+	AVS_ELEMENT (ring)->type = AVS_ELEMENT_TYPE_RENDER_RING;
+
+	scont = avs_serialize_container_new ();
+	avs_serialize_container_add_byte_int_skip (scont, visual_param_container_get (pcont, "source and place"));
+	avs_serialize_container_add_palette (scont, visual_param_container_get (pcont, "palette"));
+	avs_serialize_container_add_byte_with_boundry (scont, visual_param_container_get (pcont, "size"), 0x40);
+	avs_serialize_container_add_byte_with_boundry (scont, visual_param_container_get (pcont, "type"), 0x01);
+
+	avs_element_connect_serialize_container (AVS_ELEMENT (ring), scont);
+
+	avs_element_deserialize (AVS_ELEMENT (ring), avstree);
+
+	return ring;
 }
 
 AVSElement *avs_parse_render_bassspin (AVSTree *avstree)

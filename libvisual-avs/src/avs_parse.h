@@ -30,12 +30,13 @@ typedef enum {
 typedef enum {
 	AVS_ELEMENT_TYPE_MAIN,
 	AVS_ELEMENT_TYPE_MISC_COMMENT,
-	AVS_ELEMENT_TYPE_RENDER_SUPERSCOPE,
-	AVS_ELEMENT_TYPE_RENDER_CLEARSCREEN,
 	AVS_ELEMENT_TYPE_RENDER_BASSSPIN,
+	AVS_ELEMENT_TYPE_RENDER_CLEARSCREEN,
+	AVS_ELEMENT_TYPE_RENDER_RING,
+	AVS_ELEMENT_TYPE_RENDER_SUPERSCOPE,
+	AVS_ELEMENT_TYPE_TRANS_BLUR,
 	AVS_ELEMENT_TYPE_TRANS_FASTBRIGHTNESS,
 	AVS_ELEMENT_TYPE_TRANS_INVERT,
-	AVS_ELEMENT_TYPE_TRANS_BLUR
 } AVSElementType;
 
 typedef enum {
@@ -130,6 +131,7 @@ AVSElement *avs_parse_misc_comment (AVSTree *avstree);
 
 AVSElement *avs_parse_render_superscope (AVSTree *avstree);
 AVSElement *avs_parse_render_clearscreen (AVSTree *avstree);
+AVSElement *avs_parse_render_ring (AVSTree *avstree);
 AVSElement *avs_parse_render_bassspin (AVSTree *avstree);
 
 AVSElement *avs_parse_trans_fastbrightness (AVSTree *avstree);
