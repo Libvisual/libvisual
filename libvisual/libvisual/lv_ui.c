@@ -830,6 +830,14 @@ const VisVideo *visual_ui_image_get_video (VisUIImage *image)
 	return image->image;
 }
 
+/**
+ * Creates a new VisUISeparator, which can function as a separation item between other VisUIWidgets.
+ *
+ * @param orient Indicates the orientation style of the separator, being either
+ *	VISUAL_ORIENT_TYPE_HORIZONTAL or VISUAL_ORIENT_TYPE_VERTICAL.
+ *
+ * @return The newly created VisUISeparator in the form of a VisUIWidget.
+ */
 VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 {
 	VisUISeparator *separator;
@@ -844,6 +852,14 @@ VisUIWidget *visual_ui_separator_new (VisUIOrientType orient)
 	return VISUAL_UI_WIDGET (separator);
 }
 
+/**
+ * Frees a VisUISeperator.
+ * 
+ * @param seperatpr Pointer to the VisUISeparator that needs to be freed.
+ *
+ * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_SEPARATOR_NULL, -VISUAL_ERROR_UI_NO_SEPARATOR or
+ * 	error values returned by visual_mem_free () on failure.
+ */
 int visual_ui_separator_free (VisUISeparator *separator)
 {
 	visual_log_return_val_if_fail (separator != NULL, -VISUAL_ERROR_UI_SEPARATOR_NULL);
@@ -857,6 +873,13 @@ int visual_ui_separator_free (VisUISeparator *separator)
 	return visual_mem_free (separator);
 }
 
+/**
+ * Get the VisUIOrientType value from a VisUISeparator.
+ *
+ * @param separator VisUISeparator from which the VisUIOrientType is requested.
+ *
+ * @return VisUIOrientType containing the orientation style for this VisUISeparator.
+ */
 VisUIOrientType visual_ui_separator_get_orient (VisUISeparator *separator)
 {
 	visual_log_return_val_if_fail (separator != NULL, VISUAL_ORIENT_TYPE_NONE);

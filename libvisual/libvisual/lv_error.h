@@ -91,6 +91,7 @@ enum {
 	
 	/* Error entries for the VisTime system */
 	VISUAL_ERROR_TIME_NULL,				/**< The VisTime is NULL. */
+	VISUAL_ERROR_TIME_NO_USLEEP,			/**< visual_time_usleep is not working on this system. */
 	VISUAL_ERROR_TIMER_NULL,			/**< The VisTimer is NULL. */
 	
 	/* Error entries for the VisUI system */

@@ -23,7 +23,7 @@ VisRandomContext __lv_internal_random_context;
  *
  * @param seed The seed to be used to initialize the VisRandomContext with.
  *
- * @return A newly allocated VisRandomContext, or NULL on error.
+ * @return A newly allocated VisRandomContext, or NULL on failure.
  */
 VisRandomContext *visual_random_context_new (uint32_t seed)
 {
@@ -40,7 +40,7 @@ VisRandomContext *visual_random_context_new (uint32_t seed)
  *
  * @param rcontext Pointer to a VisRandomContext that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
  */
 int visual_random_context_free (VisRandomContext *rcontext)
 {
@@ -57,7 +57,7 @@ int visual_random_context_free (VisRandomContext *rcontext)
  * @param rcontext Pointer to the VisRandomContext for which the seed it set.
  * @param seed The seed which is set in the VisRandomContext.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
  */
 int visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed)
 {
@@ -224,7 +224,7 @@ float visual_random_context_float (VisRandomContext *rcontext)
  * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
  * @param a The float to be used in the decide.
  *
- * @returns 0 or 1, or -1 on error.
+ * @returns 0 or 1, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
  */
 int visual_random_context_decide (VisRandomContext *rcontext, float a)
 {

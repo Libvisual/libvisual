@@ -18,6 +18,7 @@ enum {
 	CPU_FLAGS_HT	= 1 << 28,
 };
 
+/* FIXME: Can't check this on intel, on intel 30 is ia64... */
 enum {
 	/* 
 	 * FIXME this is only true on AMD machines!

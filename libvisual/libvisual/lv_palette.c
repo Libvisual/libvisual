@@ -32,7 +32,8 @@ VisPalette *visual_palette_new (int ncolors)
  *
  * @param pal Pointer to the VisPalette that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL or error values returned by
+ *	visual_mem_free () on failure.
  */
 int visual_palette_free (VisPalette *pal)
 {
@@ -50,13 +51,13 @@ int visual_palette_free (VisPalette *pal)
  * @param dest Pointer to the destination VisPalette.
  * @param src Pointer to the source VisPalette from which colors are copied into the destination VisPalette.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL or -VISUAL_ERROR_PALETTE_SIZE on failure.
  */
 int visual_palette_copy (VisPalette *dest, const VisPalette *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PALETTE_NULL);
-	visual_log_return_val_if_fail (dest->ncolors == src->ncolors, -1);
+	visual_log_return_val_if_fail (dest->ncolors == src->ncolors, -VISUAL_ERROR_PALETTE_SIZE);
 
 	memcpy (dest->colors, src->colors, sizeof (VisColor) * dest->ncolors);
 
@@ -69,7 +70,7 @@ int visual_palette_copy (VisPalette *dest, const VisPalette *src)
  * @param pal Pointer to the VisPalette for which colors are allocated.
  * @param ncolors The number of colors allocated for the VisPalette.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL on failure.
  */
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
 {
@@ -86,7 +87,7 @@ int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
  * 
  * @param pal Pointer to the VisPalette from which colors need to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL on failure.
  */
 int visual_palette_free_colors (VisPalette *pal)
 {
@@ -107,7 +108,7 @@ int visual_palette_free_colors (VisPalette *pal)
  * @param src2 Pointer to a VisPalette that acts as the second source for the morph.
  * @param rate Value that sets the rate of the morph, which is valid between 0 and 1.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL or -VISUAL_ERROR_PALETTE_SIZE on failure.
  */
 int visual_palette_blend (VisPalette *dest, const VisPalette *src1, const VisPalette *src2, float rate)
 {

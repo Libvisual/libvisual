@@ -100,7 +100,7 @@ int visual_input_valid_by_name (const char *name)
  * 	The name of the plugin to load, or NULL to simply allocate a new
  * 	input.
  *
- * @return A newly allocated VisInput, optionally containing a loaded plugin. Or NULL on error.
+ * @return A newly allocated VisInput, optionally containing a loaded plugin. Or NULL on failure.
  */
 VisInput *visual_input_new (const char *inputname)
 {

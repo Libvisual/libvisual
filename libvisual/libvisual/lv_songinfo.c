@@ -16,7 +16,7 @@
  *
  * @param type Type of interface being used.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 VisSongInfo *visual_songinfo_new (VisSongInfoType type)
 {
@@ -34,7 +34,7 @@ VisSongInfo *visual_songinfo_new (VisSongInfoType type)
  *
  * @param songinfo Pointer to a VisSongInfo that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_free (VisSongInfo *songinfo)
 {
@@ -57,7 +57,7 @@ int visual_songinfo_free (VisSongInfo *songinfo)
  * @param songinfo Pointer to a VisSongInfo of which the strings need to
  * 	freed.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_free_strings (VisSongInfo *songinfo)
 {
@@ -87,7 +87,7 @@ int visual_songinfo_free_strings (VisSongInfo *songinfo)
  * @param songinfo Pointer to a VisSongInfo to which the interface type is set.
  * @param type Interface type that is set against the VisSongInfo.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type)
 {
@@ -105,7 +105,7 @@ int visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type)
  * @param songinfo Pointer to a VisSongInfo to which the song length is set.
  * @param length The length in seconds.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_set_length (VisSongInfo *songinfo, int length)
 {
@@ -123,7 +123,7 @@ int visual_songinfo_set_length (VisSongInfo *songinfo, int length)
  * @param songinfo Pointer to a VisSongInfo to which the elapsed time is set.
  * @param elapsed The elapsed time in seconds.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed)
 {
@@ -141,7 +141,7 @@ int visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed)
  * @param songinfo Pointer to a VisSongInfo to which the simple song name is set.
  * @param name The simple song name.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_set_simple_name (VisSongInfo *songinfo, char *name)
 {
@@ -162,7 +162,7 @@ int visual_songinfo_set_simple_name (VisSongInfo *songinfo, char *name)
  * @param songinfo Pointer to a VisSongInfo to which the artist name is set.
  * @param artist The artist name.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_set_artist (VisSongInfo *songinfo, char *artist)
 {
@@ -183,7 +183,7 @@ int visual_songinfo_set_artist (VisSongInfo *songinfo, char *artist)
  * @param songinfo Pointer to a VisSongInfo to which the album name is set.
  * @param album The album name.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_set_album (VisSongInfo *songinfo, char *album)
 {
@@ -204,7 +204,7 @@ int visual_songinfo_set_album (VisSongInfo *songinfo, char *album)
  * @param songinfo Pointer to a VisSongInfo to which the song name is set.
  * @param song The song name.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_set_song (VisSongInfo *songinfo, char *song)
 {
@@ -225,7 +225,7 @@ int visual_songinfo_set_song (VisSongInfo *songinfo, char *song)
  * @param songinfo Pointer to a VisSongInfo to which the cover art is set.
  * @param cover Pointer to a VisVideo containing the cover art.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 {
@@ -256,7 +256,7 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
  *
  * @param songinfo Pointer to a VisSongInfo that is timestamped.
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on succes -1 on failure.
  */
 int visual_songinfo_mark (VisSongInfo *songinfo)
 {
@@ -298,7 +298,7 @@ long visual_songinfo_age (VisSongInfo *songinfo)
  * @param dest Pointer to the destination VisSongInfo.
  * @param src Pointer to the source VisSongInfo.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_SONGINFO_NULL on failure.
  */
 int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
 {
@@ -345,7 +345,7 @@ int visual_songinfo_copy (VisSongInfo *dest, const VisSongInfo *src)
  * @param s1 Pointer to the first VisSongInfo.
  * @param s2 Pointer to the second VisSongInfo.
  *
- * @return FALSE on different, TRUE on same.
+ * @return FALSE on different, TRUE on same, -VISUAL_ERROR_SONGINFO_NULL on failure.
  */
 int visual_songinfo_compare (const VisSongInfo *s1, const VisSongInfo *s2)
 {

@@ -243,7 +243,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
  *
  * @param filename The filename of the bitmap to be loaded.
  *
- * @return The VisVideo containing the bitmap or NULL on error.
+ * @return The VisVideo containing the bitmap or NULL on failure.
  */
 VisVideo *visual_bitmap_load_new_video (const char *filename)
 {

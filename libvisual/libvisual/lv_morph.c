@@ -102,7 +102,7 @@ int visual_morph_valid_by_name (const char *name)
  * 	The name of the plugin to load, or NULL to simply allocate a new
  * 	morph.
  * 
- * @return A newly allocated VisMorph, optionally containing a loaded plugin. Or NULL on error.
+ * @return A newly allocated VisMorph, optionally containing a loaded plugin. Or NULL on failure.
  */  
 VisMorph *visual_morph_new (const char *morphname)
 {
@@ -190,7 +190,7 @@ int visual_morph_free (VisMorph *morph)
  * @param morph Pointer to a VisMorph of which the supported depth of it's
  * 	  encapsulated plugin is requested.
  *
- * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on succes, -1 on error
+ * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on succes, -1 on failure
  */
 int visual_morph_get_supported_depth (const VisMorph *morph)
 {
@@ -306,7 +306,7 @@ int visual_morph_set_mode (VisMorph *morph, VisMorphMode mode)
  *
  * @param morph Pointer to a VisMorph of which the palette needs to be retrieved.
  *
- * @return The pointer to the custom palette on succes or NULL on error.
+ * @return The pointer to the custom palette on succes or NULL on failure.
  */
 VisPalette *visual_morph_get_palette (VisMorph *morph)
 {

@@ -302,10 +302,13 @@ int visual_video_clone (VisVideo *dest, const VisVideo *src)
  * @param src1 Pointer to the first VisVideo that is used in the compare.
  * @param src2 Pointer to the second VisVideo that is used in the compare.
  *
- * @return TRUE when they are the same and FALSE when not.
+ * @return FALSE on different, TRUE on same, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_compare (const VisVideo *src1, const VisVideo *src2)
 {
+	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_VIDEO_NULL);
+
 	if (src1->depth != src2->depth)
 		return FALSE;
 
@@ -1492,11 +1495,11 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
 /**
  * Scale video.
  *
- * @params dest Pointer to VisVideo object for storing scaled image.
- * @params src Ppointer to VisVideo object whose image is to be scaled.
- * @params scale_method Scaling method to use.
+ * @param dest Pointer to VisVideo object for storing scaled image.
+ * @param src Ppointer to VisVideo object whose image is to be scaled.
+ * @param scale_method Scaling method to use.
  *
- * returns VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod scale_method)
 {

@@ -1,3 +1,7 @@
+2004-11-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: A lot more doc work, and some small cleanups!! :).
+
 2004-11-09  Duilio Protti <dprotti@users.sourceforge.net>
 
 	* libvisual/lv_cpu.c (cpuid): use cpuid instruction only

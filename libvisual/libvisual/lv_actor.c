@@ -265,7 +265,7 @@ int visual_actor_valid_by_name (const char *name)
  * 	The name of the plugin to load, or NULL to simply allocate a new
  * 	actor. 
  *
- * @return A newly allocated VisActor, optionally containing a loaded plugin. Or NULL on error.
+ * @return A newly allocated VisActor, optionally containing a loaded plugin. Or NULL on failure.
  */
 VisActor *visual_actor_new (const char *actorname)
 {
@@ -355,7 +355,7 @@ int visual_actor_free (VisActor *actor)
  *
  * @param actor Pointer to a VisActor of which the song info is needed.
  *
- * @return Pointer to the song info structure on succes or NULL on error.
+ * @return Pointer to the song info structure on succes or NULL on failure.
  */
 VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
 {
@@ -377,7 +377,7 @@ VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
  *
  * @param actor Pointer to a VisActor of which the palette is needed.
  *
- * @return Pointer to the palette structure on succes or NULL on error. Also it's possible that NULL
+ * @return Pointer to the palette structure on succes or NULL on failure. Also it's possible that NULL
  * is returned when the plugin is running in a full color mode or openGL. The returned palette is
  * read only.
  */

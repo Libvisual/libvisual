@@ -32,7 +32,8 @@ VisTime *visual_time_new ()
  *
  * @param time_ Pointer to the VisTime that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL or error values returned by
+ *	visual_mem_free () on failure.
  */
 int visual_time_free (VisTime *time_)
 {
@@ -46,7 +47,7 @@ int visual_time_free (VisTime *time_)
  *
  * @param time_ Pointer to the VisTime in which the current time needs to be set.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
  */
 int visual_time_get (VisTime *time_)
 {
@@ -68,7 +69,7 @@ int visual_time_get (VisTime *time_)
  * @param sec The seconds.
  * @param usec The microseconds.
  *
- * @return 0 on succes, -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
  */
 int visual_time_set (VisTime *time_, long sec, long usec)
 {
@@ -86,7 +87,7 @@ int visual_time_set (VisTime *time_, long sec, long usec)
  * @param dest Pointer to the destination VisTime in which the source VisTime is copied.
  * @param src Pointer to the source VisTime that is copied to the destination VisTime.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
  */
 int visual_time_copy (VisTime *dest, const VisTime *src)
 {
@@ -106,7 +107,7 @@ int visual_time_copy (VisTime *dest, const VisTime *src)
  * @param time1 Pointer to the first VisTime.
  * @param time2 Pointer to the second VisTime from which the first is substracted to generate a result.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
  */
 int visual_time_difference (VisTime *dest, const VisTime *time1, const VisTime *time2)
 {
@@ -131,7 +132,7 @@ int visual_time_difference (VisTime *dest, const VisTime *time1, const VisTime *
  * @param microseconds The amount of microseconds we're going to sleep. To sleep a certain amount of
  *	seconds you can call this function with visual_time_usleep (VISUAL_USEC_PER_SEC * seconds).
  * 
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NO_USLEEP or -1 on failure.
  */
 int visual_time_usleep (unsigned long microseconds)
 {
@@ -150,8 +151,9 @@ int visual_time_usleep (unsigned long microseconds)
 	select (0, NULL, NULL, NULL, &tv);
 #else
 #warning visual_time_usleep() will does not work!
+	return -VISUAL_ERROR_TIME_NO_USLEEP;
 #endif
-	return 0;
+	return VISUAL_OK;
 }
 
 /**
@@ -173,7 +175,7 @@ VisTimer *visual_timer_new ()
  *
  * @param timer Pointer to the VisTimer that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
  */
 int visual_timer_free (VisTimer *timer)
 {
@@ -189,7 +191,7 @@ int visual_timer_free (VisTimer *timer)
  *
  * @param timer Pointer to the VisTimer of which we want to know if it's active.
  *
- * @return TRUE or FALSE, -1 on error.
+ * @return TRUE or FALSE, -VISUAL_ERROR_TIMER_NULL on failure.
  */
 int visual_timer_is_active (const VisTimer *timer)
 {
@@ -203,7 +205,7 @@ int visual_timer_is_active (const VisTimer *timer)
  *
  * @param timer Pointer to the VisTimer in which we start the timer.
  *
- * return 0 on succes -1 on error.
+ * return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
  */ 
 int visual_timer_start (VisTimer *timer)
 {
@@ -221,7 +223,7 @@ int visual_timer_start (VisTimer *timer)
  *
  * @param timer Pointer to the VisTimer that is stopped.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
  */
 int visual_timer_stop (VisTimer *timer)
 {
@@ -239,7 +241,7 @@ int visual_timer_stop (VisTimer *timer)
  *
  * @param timer Pointer to the VisTimer that is continued.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
  */
 int visual_timer_continue (VisTimer *timer)
 {
@@ -271,7 +273,7 @@ int visual_timer_continue (VisTimer *timer)
  * @param timer Pointer to the VisTimer from which we want to know the amount of time past.
  * @param time_ Pointer to the VisTime in which we put the amount of time past.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
  */
 int visual_timer_elapsed (const VisTimer *timer, VisTime *time_)
 {
@@ -297,7 +299,7 @@ int visual_timer_elapsed (const VisTimer *timer, VisTime *time_)
  * @param timer Pointer to the VisTimer which we check for age.
  * @param time_ Pointer to the VisTime containing the age we check against.
  *
- * @return TRUE on passed, FALSE if not passed, -1 on error.
+ * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
  */
 int visual_timer_has_past (const VisTimer *timer, VisTime *time_)
 {
@@ -323,11 +325,13 @@ int visual_timer_has_past (const VisTimer *timer, VisTime *time_)
  * @param sec The number of seconds we check against.
  * @param usec The number of microseconds we check against.
  *
- * @return TRUE on passed, FALSE if not passed, -1 on error.
+ * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL on failure.
  */
 int visual_timer_has_past_by_values (const VisTimer *timer, long sec, long usec)
 {
 	VisTime past;
+
+	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
 	visual_time_set (&past, sec, usec);
 

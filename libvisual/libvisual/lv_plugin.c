@@ -54,7 +54,8 @@ VisPluginInfo *visual_plugin_info_new ()
  *
  * @param pluginfo Pointer to the VisPluginInfo that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_INFO_NULL or error values
+ *	returned by visual_mem_free () on failure.
  */
 int visual_plugin_info_free (VisPluginInfo *pluginfo)
 {
@@ -88,7 +89,7 @@ int visual_plugin_info_free (VisPluginInfo *pluginfo)
  * @param dest Pointer to the destination VisPluginInfo in which some data is copied.
  * @param src Pointer to the source VisPluginInfo from which some data is copied.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
  */
 int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src)
 {
@@ -113,7 +114,7 @@ int visual_plugin_info_copy (VisPluginInfo *dest, const VisPluginInfo *src)
  * @param plugin Pointer to a VisPluginData of which the events need to be pumped into
  *	the handler.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER on failure.
  */
 int visual_plugin_events_pump (VisPluginData *plugin)
 {
@@ -136,7 +137,7 @@ int visual_plugin_events_pump (VisPluginData *plugin)
  *
  * @param plugin Pointer to the VisPluginData from which we want the queue.
  *
- * @return A pointer to the requested VisEventQueue or NULL on error.
+ * @return A pointer to the requested VisEventQueue or NULL on failure.
  */
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
 {
@@ -153,7 +154,7 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
  * @param plugin Pointer to the VisPluginData to which we set the VisUIWidget as top widget.
  * @param widget Pointer to the VisUIWidget that we use as top widget for the user interface.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL on failure.
  */
 int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget)
 {
@@ -183,7 +184,7 @@ VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin)
  *
  * @param plugin The VisPluginData of which the VisPluginInfo is requested.
  *
- * @return The VisPluginInfo within the VisPluginData, or NULL on error.
+ * @return The VisPluginInfo within the VisPluginData, or NULL on failure.
  */
 const VisPluginInfo *visual_plugin_get_info (const VisPluginData *plugin)
 {
@@ -197,7 +198,7 @@ const VisPluginInfo *visual_plugin_get_info (const VisPluginData *plugin)
  *
  * @param plugin The VisPluginData of which the VisParamContainer is requested.
  *
- * @return The VisParamContainer within the VisPluginData, or NULL on error.
+ * @return The VisParamContainer within the VisPluginData, or NULL on failure.
  */
 VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
 {
@@ -211,7 +212,7 @@ VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
  *
  * @param plugin The VisPluginData of which the VisRandomContext is requested.
  *
- * @return The VisRandomContext within the VisPluginDAta, or NULL on error.
+ * @return The VisRandomContext within the VisPluginDAta, or NULL on failure.
  */
 VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
 {
@@ -260,7 +261,8 @@ VisPluginRef *visual_plugin_ref_new ()
  *
  * @param ref Pointer to the VisPluginRef that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_REF_NULL or error values returned by
+ *	visual_mem_free () on failure.
  */
 int visual_plugin_ref_free (VisPluginRef *ref)
 {
@@ -272,9 +274,7 @@ int visual_plugin_ref_free (VisPluginRef *ref)
 	if (ref->usecount > 0)
 		visual_log (VISUAL_LOG_CRITICAL, "A plugin reference with %d instances has been destroyed.", ref->usecount);
 	
-	visual_mem_free (ref);
-
-	return VISUAL_OK;
+	return visual_mem_free (ref);
 }
 
 /**
@@ -284,7 +284,8 @@ int visual_plugin_ref_free (VisPluginRef *ref)
  *
  * @param list The list of VisPluginRefs that need to be destroyed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or error values returned by
+ *	visual_list_destroy on failure.
  */
 int visual_plugin_ref_list_destroy (VisList *list)
 {
@@ -308,7 +309,8 @@ VisPluginData *visual_plugin_new ()
  *
  * @param plugin Pointer to the VisPluginData that needs to be freed.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or error values returned by
+ *	visual_mem_free () on failure.
  */
 int visual_plugin_free (VisPluginData *plugin)
 {
@@ -372,7 +374,7 @@ VisList *visual_plugin_registry_filter (const VisList *pluglist, VisPluginType t
  * @param name Name of a plugin entry of which we want the next entry or NULL to get
  * 	the first entry.
  *
- * @return The name of the next plugin or NULL on error.
+ * @return The name of the next plugin or NULL on failure.
  */
 const char *visual_plugin_get_next_by_name (const VisList *list, const char *name)
 {
@@ -406,7 +408,7 @@ const char *visual_plugin_get_next_by_name (const VisList *list, const char *nam
  * @param name Name of a plugin entry of which we want the previous entry or NULL to get
  * 	the last entry.
  *
- * @return The name of the next plugin or NULL on error.
+ * @return The name of the next plugin or NULL on failure.
  */
 const char *visual_plugin_get_prev_by_name (const VisList *list, const char *name)
 {
@@ -486,7 +488,8 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
  *
  * @param plugin Pointer to the VisPluginData that needs to be unloaded.
  *
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_HANDLE_NULL or
+ *	-VISUAL_ERROR_PLUGIN_REF_NULL on failure.
  */
 int visual_plugin_unload (VisPluginData *plugin)
 {
@@ -596,7 +599,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
  *
  * @param plugin Pointer to the VisPluginData that needs to be realized.
  * 
- * @return 0 on succes -1 on error.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
  */
 int visual_plugin_realize (VisPluginData *plugin)
 {
@@ -761,7 +764,7 @@ int visual_plugin_get_api_version ()
  *
  * @param actplugin Pointer to the VisActorPlugin from which the VisSongInfo is requested.
  *
- * @return The requested VisSongInfo or NULL on error.
+ * @return The requested VisSongInfo or NULL on failure.
  */
 VisSongInfo *visual_plugin_actor_get_songinfo (VisActorPlugin *actplugin)
 {
