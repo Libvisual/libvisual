@@ -21,10 +21,6 @@ struct _VisColor {
 	uint8_t		g;	/**< The green channel of this VisColor. */
 	uint8_t		b;	/**< The blue channel of this VisColor. */
 	uint8_t		unused;	/**< Unused. */
-
-	float		h;	/**< The hue value in the HSV format. */
-	float		s;	/**< The saturation value in the HSV format. */
-	float		v;	/**< the value value in the HSV format. */
 };
 
 VisColor *visual_color_new (void);

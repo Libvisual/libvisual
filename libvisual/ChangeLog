@@ -1,5 +1,10 @@
 2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_color.*: Backing out changes that I did to the VisColor
+	struct. I might have been smoking crack...
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* configure.ac, libvisual.pc.in, tools/Makefile.am,
 	examples/Makefile.am, libvisual/Makefile.am:
 

@@ -66,10 +66,6 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v)
 
 	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
-	color->h = h;
-	color->s = s;
-	color->v = v;
-
 	if (s == 0.0)
 		s = 0.000001;
 
