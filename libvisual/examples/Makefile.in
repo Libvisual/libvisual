@@ -1,0 +1,18 @@
+CC = @CC@
+CFLAGS = @CFLAGS@
+LIBS = @LIBS@ @LIBS_DYNAMIC_LOADER@
+
+all: simplesdl morphsdl
+
+simplesdl: 
+	$(CC) -I../src -o simplesdl simplesdl.c -lvisual `sdl-config --libs --cflags` -ggdb
+
+morphsdl:
+	$(CC) -I../src -o morphsdl morphsdl.c -lvisual `sdl-config --libs --cflags` -ggdb
+		
+
+%.o: %.c
+	$(CC) -o $@ -c $<
+
+clean::
+	rm -f *.o simplesdl morphsdl

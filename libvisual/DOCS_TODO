@@ -1,0 +1,19 @@
+system			status		checked
+lv_actor.h		done		no
+lv_audio.h		done		no
+lv_bin.h
+lv_bmp.h		done		no
+lv_common.h		done		no
+lv_event.h		done		no
+lv_fft.h		done		no
+lv_input.h		done		no
+lv_keysym.h		done		no
+lv_libvisual.h		done		no
+lv_list.h		done		no
+lv_log.h		done		no
+lv_morph.h		done		no
+lv_palette.h		done		no
+lv_plugin.h		(the plugin functions need to be documentated still)
+lv_songinfo.h		done		no
+lv_video.h		done		no
+

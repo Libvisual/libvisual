@@ -1,0 +1,62 @@
+2004-06-18  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.in moved to configure.ac
+	* configure.ac updated to autoconf 2.57 requirements,
+	and too much checks added.
+	* autogen.sh script added
+	
+2004-06-17  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.4 has been released.
+	
+	* Fixes for SGI regarding time.h
+	* Architecture fixes, using precise intergral types from stdint.h
+	* Made an builtin bitmap loader, for loading textures and such.
+	* Documentated the code using doxygen.
+	* Many many cleanups.
+	* Made all the enumerate non anonymous.
+
+2004-05-27  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.3 has been released.
+
+	* Install lv_log.h
+	* Lots and lots of work on the managed bin.
+	* Managed bin now seamlessly automaticly morphs from whatever
+	  to whatever. (Ok i lied here, the managed bin needs
+	  a rewrite, but it SEEMS to work)
+	* Better support for openGL.
+	* Have requisition method for the actor plugins.
+	* Pass audio to the morph plugins.
+	* Don't open the plugins with RTL_GLOBAL.
+
+2004-05-13  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.2 has been released.
+
+	* Morph plugins (transistion between actors).
+	* Event layer for both keyboard, mouse, song change, resolution
+	  change.
+	* Songinfo system which can be used to set and read songinfo
+	  so you can draw text with the song name in visuals (i already
+	  fixed this up for the goom plugin, worked out of the box!)
+	* The Bin is extended a lot, and i added support for managed
+	  bins, where a bin creates it's own actor and input so you
+	  don't have to manage those, also you can morph to a new
+	  actor using the bin as simple as
+	  'visual_bin_switch_actor (bin, actor)' or
+	  'visual_bin_switch_actor_by_name (bin, name_of_actor)'.
+	* Fixed the issues regarding resize.
+	* Have a visual_init and visual_quit, libvisual manages
+	  the plugin registry itself now.
+	* New plugin layer, instead of a loader for every type there
+	  is now an universal plugin loader that wraps the
+	  different types in a VisPlugin type.
+	* Some small stuff.
+
+2004-04-24  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1-pre4 has been released.
+	
+	* Changed the way plugins are registred, you can now use
+	  libvisual_init (&argc, &argv) (or NULL, NULL), also
+	  don't forget to do a libvisual_quit ().
+	* Made an universal plugin loader instead of separated ones.
+	* Random small stuff i forgot about.
+

@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libvisual
+Version: @VERSION@
+Description: an audio visualisation abstraction library.
+Requires:
+Libs: @VISUAL_LIBS@
+Cflags: @VISUAL_CFLAGS@
+

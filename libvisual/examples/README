@@ -1,0 +1,6 @@
+In this directory there are examples how to use the
+libvisual api.
+
+simplesdl:
+	a simple example that uses sdl for it's blitting.
+

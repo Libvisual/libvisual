@@ -1,0 +1,301 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+#include "lv_event.h"
+
+/**
+ * @defgroup VisEvent VisEvent
+ * @{
+ */
+
+/**
+ * Creates a new VisEvent structure.
+ *
+ * @see visual_actor_get_eventqueue
+ *
+ * @return A newly allocated VisEvent
+ */
+VisEvent *visual_event_new ()
+{
+	VisEvent *event;
+
+	event = malloc (sizeof (VisEvent));
+	memset (event, 0, sizeof (VisEvent));
+
+	return event;
+}
+
+/**
+ * Frees the VisEvent. This frees the VisEvent data structure.
+ *
+ * @param event Pointer to a VisEvent that needs to be freed.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_free (VisEvent *event)
+{
+	if (event == NULL)
+		return -1;
+
+	free (event);
+
+	return 0;
+}
+
+/**
+ * Creates a new VisEventQueue data structure.
+ *
+ * @return Newly allocated VisEventQueue.
+ */
+VisEventQueue *visual_event_queue_new ()
+{
+	VisEventQueue *eventqueue;
+
+	eventqueue = malloc (sizeof (VisEventQueue));
+	memset (eventqueue, 0, sizeof (VisEventQueue));
+
+	eventqueue->mousestate = VISUAL_MOUSE_UP;
+
+	return eventqueue;
+}
+
+/**
+ * Frees the VisEventQueue. This frees the VisEventQueue data structure.
+ *
+ * @param eventqueue Pointer to a VisEventQueue that needs to be freed.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_free (VisEventQueue *eventqueue)
+{
+	if (eventqueue == NULL)
+		return -1;
+
+	visual_list_destroy (&eventqueue->events, free);
+	
+	free (eventqueue);
+	
+	return 0;
+}
+
+/**
+ * Polls for new events. Looks at the event queue for new events and deletes
+ * them from the queue while loading them into the event argument.
+ *
+ * @param eventqueue Pointer to a VisEventQueue from which new events should be taken.
+ * @param event Pointer to a VisEvent in which the new events should be loaded.
+ *
+ * @return TRUE when events are handled and FALSE when the queue is out of events.
+ */
+int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
+{
+	VisEvent *lev;
+	VisListEntry *listentry = NULL;;
+
+	if (eventqueue->resizenew == TRUE) {
+		eventqueue->resizenew = FALSE;
+
+		memcpy (event, &eventqueue->lastresize, sizeof (VisEvent));
+
+		return TRUE;
+	}
+
+	if (eventqueue->eventcount <= 0)
+		return FALSE;
+	
+	lev = visual_list_next (&eventqueue->events, &listentry);
+	memcpy (event, lev, sizeof (VisEvent));
+
+	visual_event_free (lev);
+
+	visual_list_delete (&eventqueue->events, &listentry);
+	
+	eventqueue->eventcount--;
+
+	return TRUE;
+}
+
+/**
+ * Adds an event to the event queue. Add new VisEvents into the VisEventQueue.
+ *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
+ * @param event Pointer to a VisEvent that needs to be added to the queue.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event)
+{
+	/* We've got way too much on the queue, not adding events, the important
+	 * resize event got data in the event queue structure that makes sure it gets
+	 * looked at */
+	if (eventqueue->eventcount > VISUAL_EVENT_MAXEVENTS) {
+		visual_event_free (event);
+		return -1;
+	}
+
+	visual_list_add (&eventqueue->events, event);
+
+	eventqueue->eventcount++;
+
+	return 0;
+}
+
+/**
+ * Adds a new keyboard event to the event queue. By giving keyboard state information
+ * a new VisEvent will be created and added to the event queue.
+ *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
+ * @param keysym A keysym from the VisKey enumerate to set the key to which the event relates.
+ * @param keymod Key modifier information from the VisKeyMod enumerate.
+ * @param state Contains information about whatever the key is down or up.
+ *
+ * return 0 on succes -1 on error.
+ */
+int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, int keymod, VisKeyState state)
+{
+	VisEvent *event;
+
+	event = visual_event_new ();
+	
+	/* FIXME name to VISUAL_KEYB_DOWN and KEYB_UP */
+	if (state == VISUAL_KEY_DOWN)
+		event->type = VISUAL_EVENT_KEYDOWN;
+	else
+		event->type = VISUAL_EVENT_KEYUP;
+
+	event->keyboard.type = event->type;
+	event->keyboard.keysym.sym = keysym;
+	event->keyboard.keysym.mod = keymod;
+
+	return visual_event_queue_add (eventqueue, event);
+}
+
+/**
+ * Adds a new mouse movement event to the event queue. By giving absolute X and Y coordinates
+ * for the mouse a new VisEvent will be created and added to the event queue.
+ *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
+ * @param x Absolute X value for the mouse location.
+ * @param y Absolute Y value for the mouse location.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y)
+{
+	VisEvent *event;
+
+	event = visual_event_new ();
+
+	event->type = VISUAL_EVENT_MOUSEMOTION;
+
+	event->mousemotion.type = event->type;
+
+	event->mousemotion.state = eventqueue->mousestate;
+	event->mousemotion.x = x;
+	event->mousemotion.y = y;
+
+	event->mousemotion.xrel = x - eventqueue->mousex;
+	event->mousemotion.yrel = y - eventqueue->mousey;
+
+	eventqueue->mousex = x;
+	eventqueue->mousey = y;
+
+	return visual_event_queue_add (eventqueue, event);;
+}
+
+/**
+ * Adds a new mouse button event to the event queue. By giving a mouse button index number and
+ * a mouse button key state a new VisEvent will be created and added to the event queue.
+ *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
+ * @param button Index that indicates to which mouse button the state relates.
+ * @param state Contains information about whatever the button is down or up
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state)
+{
+	VisEvent *event;
+
+	event = visual_event_new ();
+
+	if (state == VISUAL_MOUSE_DOWN)
+		event->type = VISUAL_EVENT_MOUSEBUTTONDOWN;
+	else
+		event->type = VISUAL_EVENT_MOUSEBUTTONUP;
+
+	event->mousebutton.type = event->type;
+	
+	event->mousebutton.button = button;
+	event->mousebutton.state = state;
+	
+	event->mousebutton.x = eventqueue->mousex;
+	event->mousebutton.y = eventqueue->mousey;
+
+	eventqueue->mousestate = state;
+
+	return visual_event_queue_add (eventqueue, event);
+}
+
+/**
+ * Adds a new dimension change event to the event queue. By giving a pointer to
+ * the VisVideo containing all the surface information and new width and height
+ * a new VisEvent will be created and added to the event queue.
+ *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
+ * @param video Pointer to the VisVideo containing all the display information,
+ * 	also used for negotiation so values can change within the VisVideo
+ * 	structure.
+ * @param width The width for the new surface.
+ * @param height The height for the new surface.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, int width, int height)
+{
+	VisEvent *event;
+
+	event = &eventqueue->lastresize;
+	
+	event->type = VISUAL_EVENT_RESIZE;
+
+	event->resize.type = event->type;
+
+	event->resize.video = video;
+	event->resize.width = width;
+	event->resize.height = height;
+
+	eventqueue->resizenew = TRUE;
+
+	return 0;
+}
+
+/**
+ * Adds a new song change event to the event queue. By giving a pointer to the
+ * new VisSongInfo structure a new VisEvent will be created and added to the event queue.
+ *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
+ * @param songinfo Pointer to the VisSongInfo containing all the new song information.
+ *
+ * @return 0 on succes -1 on error.
+ */
+int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *songinfo)
+{
+	VisEvent *event;
+
+	event = visual_event_new ();
+
+	event->type = VISUAL_EVENT_NEWSONG;
+
+	event->newsong.type = event->type;
+	event->newsong.songinfo = songinfo;
+
+	return visual_event_queue_add (eventqueue, event);
+}
+
+/**
+ * @}
+ */
+
