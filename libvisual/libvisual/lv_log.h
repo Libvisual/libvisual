@@ -30,6 +30,38 @@ typedef enum {
 } VisLogSeverity;
 
 /**
+ * Used to determine how much verbose the log system should be.
+ *
+ * @see visual_log_set_verboseness
+ */
+typedef enum {
+	VISUAL_LOG_VERBOSENESS_NONE,	/**< Show only VISUAL_LOG_INFO and VISUAL_LOG_ERROR messages. */
+	VISUAL_LOG_VERBOSENESS_LOW,	/**< Show only VISUAL_LOG_INFO, VISUAL_LOG_ERROR and
+					  VISUAL_LOG_CRITICAL messages. */
+	VISUAL_LOG_VERBOSENESS_MEDIUM,	/**< Show all log messages except VISUAL_LOG_DEBUG ones. */
+	VISUAL_LOG_VERBOSENESS_HIGH	/**< Show all log messages. */
+} VisLogVerboseness;
+
+/**
+ * Functions that want to handle messages must match this signature.
+ *
+ * @arg message The message that will be showed, exactly the same that was passed
+ * to visual_log(), but after formatting.
+ *
+ * @arg funcname The name of the function that invokes visual_log(). On non-GNU systems
+ * this probably will be NULL.
+ */
+typedef void (*visual_log_message_handler_func_t) (const char *message, const char *funcname);
+
+void visual_log_set_verboseness (VisLogVerboseness verboseness);
+VisLogVerboseness visual_log_get_verboseness (void);
+
+void visual_log_set_info_handler (visual_log_message_handler_func_t handler);
+void visual_log_set_warning_handler (visual_log_message_handler_func_t handler);
+void visual_log_set_critical_handler (visual_log_message_handler_func_t handler);
+void visual_log_set_error_handler (visual_log_message_handler_func_t handler);
+
+/**
  * Used for log messages, this is brought under a define so
  * that the __FILE__ and __LINE__ macros (and probably __PRETTY_FUNC__) work,
  * and thus provide better information.
@@ -56,11 +88,15 @@ typedef enum {
 			__PRETTY_FUNCTION__,	\
 			format)
 #else
+
+#include <signal.h>
+
 static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 {
 	char str[1024];
 	va_list va;
 	char sever_msg[10];
+	VisLogVerboseness v;
 	
 	assert (fmt != NULL);
 
@@ -90,16 +126,34 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	/*
 	 * Sorry, we doesn't have (file,line) information
 	 */
-	if (severity == VISUAL_LOG_INFO) {
-		printf ("libvisual %s: %s: %s\n",
+	v = visual_log_get_verboseness ();
+	switch (severity) {
+		case VISUAL_LOG_INFO:
+			printf ("libvisual %s: %s: %s\n",
 				sever_msg, __lv_progname, str);
-	} else {
-		fprintf (stderr, "libvisual %s: %s: %s\n",
+			break;
+		case VISUAL_LOG_DEBUG:
+			if (v == VISUAL_LOG_VERBOSENESS_HIGH)
+				fprintf (stderr, "libvisual %s: %s: %s\n",
+					sever_msg, __lv_progname, str);
+			break;
+		case VISUAL_LOG_WARNING:
+			if (v >= VISUAL_LOG_VERBOSENESS_MEDIUM)
+				fprintf (stderr, "libvisual %s: %s: %s\n",
+					sever_msg, __lv_progname, str);
+			break;
+		case VISUAL_LOG_CRITICAL:
+			if (v >= VISUAL_LOG_VERBOSENESS_LOW)
+				fprintf (stderr, "libvisual %s: %s: %s\n",
+					sever_msg, __lv_progname, str);
+			break;
+		case VISUAL_LOG_ERROR:
+			printf ("libvisual %s: %s: %s\n",
 				sever_msg, __lv_progname, str);
+			raise (SIGTRAP);
+			exit (1);
+			break;
 	}
-
-	if (severity == VISUAL_LOG_ERROR)
-		exit(1);
 }
 #endif /* !(ISO_VARARGS || GNUC_VARARGS) */
 
@@ -116,11 +170,15 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 			(NULL),			\
 			__VA_ARGS__)
 #else
+
+#include <signal.h>
+
 static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 {
 	char str[1024];
 	va_list va;
 	char sever_msg[10];
+	VisLogVerboseness v;
 	
 	assert (fmt != NULL);
 
@@ -150,16 +208,34 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	/*
 	 * Sorry, we don't have (file,line) information
 	 */
-	if (severity == VISUAL_LOG_INFO) {
-		printf ("libvisual %s: %s: %s\n",
+	v = visual_log_get_verboseness ();
+	switch (severity) {
+		case VISUAL_LOG_INFO:
+			printf ("libvisual %s: %s: %s\n",
 				sever_msg, __lv_progname, str);
-	} else {
-		fprintf (stderr, "libvisual %s: %s: %s\n",
+			break;
+		case VISUAL_LOG_DEBUG:
+			if (v == VISUAL_LOG_VERBOSENESS_HIGH)
+				fprintf (stderr, "libvisual %s: %s: %s\n",
+					sever_msg, __lv_progname, str);
+			break;
+		case VISUAL_LOG_WARNING:
+			if (v >= VISUAL_LOG_VERBOSENESS_MEDIUM)
+				fprintf (stderr, "libvisual %s: %s: %s\n",
+					sever_msg, __lv_progname, str);
+			break;
+		case VISUAL_LOG_CRITICAL:
+			if (v >= VISUAL_LOG_VERBOSENESS_LOW)
+				fprintf (stderr, "libvisual %s: %s: %s\n",
+					sever_msg, __lv_progname, str);
+			break;
+		case VISUAL_LOG_ERROR:
+			printf ("libvisual %s: %s: %s\n",
 				sever_msg, __lv_progname, str);
+			raise (SIGTRAP);
+			exit (1);
+			break;
 	}
-
-	if (severity == VISUAL_LOG_ERROR)
-		exit(1);
 }
 #endif /* ISO_VARARGS */
 

@@ -1,3 +1,13 @@
+2004-10-01  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_log.*:
+	added VisLogVerboseness enum type.
+	added visual_log_{set/get}_verboseness().
+	added visual_log_set_{info/warning/critical/error}_handler().
+
+	For now handlers will not work on systems without varargs
+	macros.
+
 2004-10-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_random.h, libvisual/lv_random.c:
@@ -28,8 +38,8 @@
 
 2004-09-28  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* libvisual.pc.in: Cflags changed to ${includedir} instead
-	of ${includedir}/libvisual.
+	* libvisual.pc.in: Cflags changed to -I${includedir} instead
+	of -I${includedir}/libvisual.
 
 2004-09-28  Dennis Smit  <ds@nerds-incorporated.org>
 
@@ -88,7 +98,7 @@
 
 2004-09-23  Duilio Protti  <dprotti@users.sourceforge.net>
 
-	* configure.ac: added --enable profiling option. Now
+	* configure.ac: added --enable-profiling option. Now
 	example programs are included on the dist target even
 	if they are disabled.
 	* libvisual/lv_input.c (visual_input_get_list): small doc
