@@ -48,6 +48,7 @@ fi
 
 
 # Arguments to specify certain features.
+build_subdirs="libvisual"
 AC_ARG_ENABLE([examples],
             AC_HELP_STRING([--enable-examples],
                            [Build example programs @<:@default=disabled@:>@]),
@@ -68,10 +69,11 @@ if test "$examples" = yes; then
   fi
   # On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
   AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
+  build_subdirs="$build_subdirs examples"
 else
   AC_MSG_RESULT([no])
 fi
-AM_CONDITIONAL(BUILD_EXAMPLES, test x$examples = xyes)
+AC_SUBST(BUILD_SUBDIRS, "$build_subdirs")
 
 
 AC_ARG_ENABLE([debug],

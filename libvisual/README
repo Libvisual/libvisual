@@ -67,11 +67,12 @@ Configuration:
 
 Building:
 	make
-		This will compile the library, the examples
+		This will compile the library.
+		
+		If you want to compile the examples, reconfigure the package
+		with --enable-examples AFTER installing the library.
 
 Installing:
 	make install
 		This will install the library.
-
-
 

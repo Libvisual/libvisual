@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = libvisual examples
+SUBDIRS = @BUILD_SUBDIRS@
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvisual.pc

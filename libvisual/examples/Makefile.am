@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-if BUILD_EXAMPLES
-
 DEFS = @DEFS@
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/examples
@@ -18,10 +16,4 @@ bin_PROGRAMS = simplesdl morphsdl
 simplesdl_SOURCES = simplesdl.c
 
 morphsdl_SOURCES = morphsdl.c
-
-else
-
-EXTRA_DIST = simplesdl.c morphsdl.c README
-
-endif
 
