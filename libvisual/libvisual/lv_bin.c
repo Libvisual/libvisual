@@ -43,7 +43,8 @@ static int bin_dtor (VisObject *object)
 		if (bin->actmorph != NULL)
 			visual_object_unref (VISUAL_OBJECT (bin->actmorph));
 
-		visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
+		if (bin->actmorphvideo != NULL)
+			visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
 	}
 
 	if (bin->privvid != NULL)
@@ -53,6 +54,8 @@ static int bin_dtor (VisObject *object)
 	bin->input = NULL;
 	bin->morph = NULL;
 	bin->actmorph = NULL;
+	bin->actmorphvideo = NULL;
+	bin->privvid = NULL;
 
 	return VISUAL_OK;
 }

@@ -28,19 +28,22 @@ typedef struct _VisActor VisActor;
  * @see visual_actor_new
  */
 struct _VisActor {
-	VisObject	 object;	/**< The VisObject data. */
+	VisObject	 object;		/**< The VisObject data. */
 
-	VisPluginData	*plugin;	/**< Pointer to the plugin itself. */
+	VisPluginData	*plugin;		/**< Pointer to the plugin itself. */
 
-	VisVideo	*video;		/**< Pointer to the target display video. 
-					 * @see visual_actor_set_video */
-	VisVideo	*transform;	/**< Private member which is used for depth transformation. */
-	VisVideo	*fitting;	/**< Private member which is used to fit the plugin. */
-	VisPalette	*ditherpal;	/**< Private member in which a palette is set when transforming
-					 * depth from true color to indexed.
-					 * @see visual_actor_get_palette */
-	VisSongInfo	 songcompare;	/**< Private member which is used to compare with new songinfo
-					  * to check if a new song event should be emitted. */
+	/* Video management and fake environments when needed */
+	VisVideo	*video;			/**< Pointer to the target display video. 
+						 * @see visual_actor_set_video */
+	VisVideo	*transform;		/**< Private member which is used for depth transformation. */
+	VisVideo	*fitting;		/**< Private member which is used to fit the plugin. */
+	VisPalette	*ditherpal;		/**< Private member in which a palette is set when transforming
+						 * depth from true color to indexed.
+						 * @see visual_actor_get_palette */
+
+	/* Songinfo management */
+	VisSongInfo	 songcompare;		/**< Private member which is used to compare with new songinfo
+						  * to check if a new song event should be emitted. */
 };
 
 /* prototypes */
