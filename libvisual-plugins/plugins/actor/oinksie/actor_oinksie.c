@@ -154,10 +154,10 @@ int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, in
 		if (priv->buf2)
 			visual_mem_free (priv->buf2);
 
-		if (priv->tbuf1);
+		if (priv->tbuf1)
 			visual_mem_free (priv->tbuf1);
 
-		if (priv->tbuf2);
+		if (priv->tbuf2)
 			visual_mem_free (priv->tbuf2);
 
 		priv->buf1 = visual_mem_malloc0 (video->size);
