@@ -48,7 +48,7 @@ $project = 'libvisual';
 $from_email = 'ds@nerds-incorporated.org';
 
 # Mail all reports to this address.
-$dest_email = 'cia@cia.navi.cx, libvisual-commits@lists.sf.net';
+$dest_email = 'cia@cia.navi.cx';
 
 # If using XML-RPC, connect to this URI.
 $rpc_uri = 'http://cia.navi.cx/RPC2';
