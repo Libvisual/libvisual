@@ -1,3 +1,9 @@
+2004-11-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c (visual_plugin_get_list):
+	Don't completely bail out when there is a invalid path in the plugin
+	registry. Instead spit a warning and just use those that are valid.
+
 2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_ui.*: Added widget_dtor to destroy the tooltip string

@@ -763,12 +763,12 @@ VisList *visual_plugin_get_list (const char **paths)
 	list = visual_list_new (visual_object_list_destroyer);
 	
 	while (paths[i] != NULL) {
-		if (plugin_add_dir_to_list (list, paths[i++]) < 0) {
-			
-			visual_object_unref (list);
-
-			return NULL;
+		if (plugin_add_dir_to_list (list, paths[i]) < 0) {
+			visual_log (VISUAL_LOG_WARNING, "Failed to add the %s directory to the plugin registry",
+					paths[i]);
 		}
+
+		i++;
 	}
 	
 	return list;
