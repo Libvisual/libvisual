@@ -606,8 +606,6 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 	srcbuf = src->screenbuffer;
 	srcpbuf = srcp->screenbuffer;
 
-	/** @todo something goes wrong when 32 -> 8 dest. */
-	
 	/* No alpha, fast method */
 	if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT) {
 		/* Blit it to the dest video */
@@ -627,10 +625,9 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 					amount);
 		}
 	} else {
-		/** @todo clean this up */
-		/** @todo bugs when not fitting!! */
-		/** @todo bugs in 8bits dest!! */
 		int aindex = 0;
+		int si = 0;
+		int di = (y * dest->pitch) + (x * dest->bpp);
 		
 		xbpp = x * dest->bpp;
 
@@ -645,20 +642,24 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 			else
 				amount = wrange;
 
-			for (xa = 0; xa < amount * dest->bpp; xa++) {
+			for (xa = 0; xa < amount; xa++) {
 				uint8_t alpha;
+				int bppl;
 				
-				/** @todo make a lot faster */
-				if (aindex % 4 == 0 || aindex == 0)
-					alpha = srcbuf[aindex / 4] >> 24;
+				alpha = srcbuf[aindex++] >> 24;
 				
-				aindex++;
-				
-				destbuf[((ya + y) * dest->pitch) + xa + xbpp] =
-					(alpha * (srcpbuf[(ya * srcp->pitch) + xa] -
-						destbuf[((ya + y) * dest->pitch) + xa + xbpp]))
-					/ 255 + destbuf[((ya + y) * dest->pitch) + xa + xbpp];
+				for (bppl = 0; bppl < dest->bpp; bppl++) {
+					destbuf[di] =
+						(alpha * (srcpbuf[si] -  destbuf[di]) / 255 + destbuf[di]);
+
+					si++;
+					di++;
+				}
 			}
+
+			aindex += (src->pitch / src->bpp) - amount;
+			si += srcp->pitch - (amount * srcp->bpp);
+			di += dest->pitch - (amount * dest->bpp);
 		}
 	}
 

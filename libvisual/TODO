@@ -177,6 +177,9 @@ libvisual:
 		frequention < look that word up.
 		move the headers to include/ ?? (really ??)
 		test against: http://www.linuxbase.org/
+		I've always been declaring vars at the top of the function, however
+			I think it's cleaner to declare them in their target
+			scope.
 
 	doxygen:
 		fix alphabetic list, why is this borked for functions ?
