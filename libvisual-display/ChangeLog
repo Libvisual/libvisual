@@ -1,3 +1,8 @@
+2004-10-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+	* configure.ac, drivers/Makefile.am, drivers/null/*:
+	Added a null plugin. Note that it generates resize and
+	quit events. Check the source.
+
 2004-10-05  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
 	* drivers/glx/glx.c: VisVideo support, framebuffer
 	rendering.

@@ -57,6 +57,7 @@ AC_CHECK_FUNCS([memset])
 AC_CONFIG_FILES([Makefile
                  drivers/Makefile
                  drivers/glx/Makefile
+                 drivers/null/Makefile
                  example/Makefile
                  lvdisplay/Makefile])
 AC_OUTPUT
