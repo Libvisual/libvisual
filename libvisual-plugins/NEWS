@@ -1,8 +1,15 @@
 NEWS - list of user-visible changes between releases
-of Libvisual plugins.
+of Libvisual plugins. 
 
-...
-* New ALSA capture input plugin! Thanks to Vitaly V. Bursov!!
+These are only visible changes, for more details look at the ChangeLog.
+
+New in 0.1.6: 2004-09-10:
+* New ALSA capture input plugin. (Vitaly)
+* New MPlayer export input plugin. (Gustavo)
+* New Plazma actor plugin, ported from xmms. (Dennis)
+* New Jakdaw actor plugin, ported from xmms. (Dennis)
+* New Bumpscope actor plugin (has issues), ported from xmms. (Dennis)
+* New GdkPixbuf actor plugin to be used with images. (Dennis)
 
 New in 0.1.5: 2004-06-27:
 * Removed the videotest plugin, it was used for early debugging.

@@ -14,5 +14,6 @@ actor_bumpscope_la_LDFLAGS = -module -avoid-version
 
 actor_bumpscope_la_SOURCES = actor_bumpscope.c \
 			  actor_bumpscope.h \
-			  bump_scope.c
+			  bump_scope.c \
+			  bump_scope.h
 

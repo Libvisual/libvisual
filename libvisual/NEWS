@@ -1,6 +1,23 @@
 NEWS - list of user-visible changes between releases
 of Libvisual.
 
+These are only visible changes, for more details look at the ChangeLog.
+
+New in 0.1.6: 2004-09-10:
+* Created the VisParam system that is used for parameters in both
+  libvisual and the plugins. (Dennis)
+* Completely revamped plugin system that also supports API version
+  check and such. (Dennis, Vitaly)
+* VisTimer module for both time and timing. (Dennis, Duilio)
+* VisColor module for color units in a palette and hsv->rgb
+  conversions. (Dennis)
+* VisMem module for memory related things. (Duilio, Dennis)
+* Method to check if a morph needs an VisAudio context. (Dennis)
+* Byteswap macros. (Vitaly, Duilio)
+* Fix cover art support. (Dennis)
+* HSV <-> RGB helper functions in VisColor. (Dennis)
+* Timed morph (Dennis, Duilio)
+
 New in 0.1.5: 2004-06-27:
 * visual_log does now accept format strings and variable arguments.
 * Major cleanups and build tree fixes.

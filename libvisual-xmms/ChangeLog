@@ -1,5 +1,11 @@
 2004-09-10  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* NEWS: Updated.
+
+	Release 0.1.6
+
+2004-09-10  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* src/main.c: Reverting changes regarding VisTime *morphtime.
 	visual_bin_switch_set_time (bin, 4, 0); is used to set the
 	morph time.

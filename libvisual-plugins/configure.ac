@@ -264,19 +264,6 @@ else
   AC_MSG_RESULT([no])
 fi
 
-AC_ARG_ENABLE([xpyre],
-            AC_HELP_STRING([--disable-xpyre],
-                           [Do not build Xpyre plugin @<:@default=enabled@:>@]),
-	    [xpyre=$enableval],
-	    [xpyre=yes])
-AC_MSG_CHECKING([wheter to build XPyre plugin])
-if test x$xpyre = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor"
-else
-  AC_MSG_RESULT([no])
-fi
-
 AC_ARG_ENABLE([plazma],
             AC_HELP_STRING([--disable-plazma],
                            [Do not build plazma plugin @<:@default=enabled@:>@]),
@@ -344,7 +331,6 @@ AC_CONFIG_FILES([
 	plugins/actor/dna/Makefile
 	plugins/actor/oinksie/Makefile
 	plugins/actor/jakdaw/Makefile
-	plugins/actor/xpyre/Makefile
 	plugins/actor/plazma/Makefile
 	plugins/actor/bumpscope/Makefile
 	plugins/actor/infinite/Makefile

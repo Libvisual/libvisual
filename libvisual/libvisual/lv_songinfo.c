@@ -236,8 +236,9 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 
 	visual_video_set_dimension (&songinfo->cover, cover->width, cover->height);
 
-	/* Yes we always stored in 32 bit, Iimages shouldn't be large so
-	 * transforming them to a different depth is not a hard job */
+	/* Yes we always stored in 32 bit, images shouldn't be large so
+	 * transforming them to a different depth is not a hard job,
+	 * besides we need it to support an alpha channel anyway! */
 	visual_video_set_depth (&songinfo->cover, VISUAL_VIDEO_DEPTH_32BIT);
 	visual_video_allocate_buffer (&songinfo->cover);
 	
