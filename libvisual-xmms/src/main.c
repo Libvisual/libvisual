@@ -6,15 +6,14 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_thread.h>
 
-#include <gtk/gtk.h>
-
 #include <xmms/plugin.h>
 #include <xmms/xmmsctrl.h>
 #include <xmms/configfile.h>
 
 #include <libvisual/libvisual.h>
 
-#include "lv_xmms.h"
+#include "config.h"
+#include "about.h"
 
 /* SDL variables */
 static SDL_Surface *screen = NULL;
@@ -32,43 +31,23 @@ static VisBin *bin = NULL;
 
 static VisSongInfo *songinfo;
 
-static int lv_width = 320;
-static int lv_height = 200;
-
-/* Maximum frames per second */
-static int lv_fps = 30;
-
-/* Color depth */
-static VisVideoDepth lv_depth = 24;
+static Options options;
 
 static int gl_plug = 0;
 
-static short xmmspcm[2][512];
+static gint16 xmmspcm[2][512];
 
 /* Thread state variables */
 static int visual_running = 0;
 static int visual_stopped = 1;
 
-/* About gui variables */
-static GtkWidget *about_window = NULL;
-
-/* Say if we are on fullscreen mode or not */
-static gboolean fullscreen;
-
-static int lv_xmms_prefs_load (void);
-static int lv_xmms_prefs_save (void);
-
 static void lv_xmms_init (void);
 static void lv_xmms_cleanup (void);
-static void lv_xmms_about (void);
 static void lv_xmms_configure (void);
 static void lv_xmms_disable (VisPlugin *);
 static void lv_xmms_playback_start (void);
 static void lv_xmms_playback_stop (void);
 static void lv_xmms_render_pcm (gint16 data[2][512]);
-
-static void gui_about_closed (GtkWidget *w, GdkEvent *e, gpointer data);
-static void gui_about_destroy (GtkWidget *w, gpointer data);
 
 static int sdl_init (void);
 static int sdl_quit (void);
@@ -94,7 +73,7 @@ VisPlugin lv_xmms_vp =
 	0,
 	lv_xmms_init,				/* init */
 	lv_xmms_cleanup,			/* cleanup */
-	lv_xmms_about,				/* about */
+	lv_xmms_about_show,			/* about */
 	lv_xmms_configure,			/* configure */
 	lv_xmms_disable,			/* disable plugin */
 	lv_xmms_playback_start,			/* playback start */
@@ -114,65 +93,16 @@ static char *lv_xmms_get_songname ()
 			xmms_remote_get_playlist_pos (lv_xmms_vp.xmms_session));
 }
 
-static int lv_xmms_prefs_load ()
-{
-	char *vstr;
-	ConfigFile *f;
-	
-	if ((f = xmms_cfg_open_default_file ()) == NULL)
-		return -1;
-
-	if (xmms_cfg_read_string (f, "libvisual_xmms", "version", &vstr)) {
-		if (strcmp (vstr, VERSION) != 0) {
-                        /*
-                         * Update to new version
-                         */
-                        lv_xmms_prefs_save ();
-                }
-	}
-
-	xmms_cfg_read_string (f, "libvisual_xmms", "last_plugin", &cur_lv_plugin);
-	xmms_cfg_read_int (f, "libvisual_xmms", "width", &lv_width);
-	xmms_cfg_read_int (f, "libvisual_xmms", "height", &lv_height);
-	xmms_cfg_read_int (f, "libvisual_xmms", "fps", &lv_fps);
-	xmms_cfg_read_int (f, "libvisual_xmms", "color_depth", &lv_depth);
-	
-	xmms_cfg_free (f);
-
-	return 0;
-}
-
-static int lv_xmms_prefs_save ()
-{
-	ConfigFile *f;
-
-	if((f = xmms_cfg_open_default_file ()) == NULL)
-		f = xmms_cfg_new ();
-
-	xmms_cfg_write_string (f, "libvisual_xmms", "version", VERSION);
-	xmms_cfg_write_string (f, "libvisual_xmms", "last_plugin", cur_lv_plugin);
-	xmms_cfg_write_int (f, "libvisual_xmms", "width", lv_width);
-	xmms_cfg_write_int (f, "libvisual_xmms", "height", lv_height);
-	xmms_cfg_write_int (f, "libvisual_xmms", "fps", lv_fps);
-	xmms_cfg_write_int (f, "libvisual_xmms", "color_depth", lv_depth);
-
-	xmms_cfg_write_default_file (f);
-	xmms_cfg_free (f);
-
-	return 0;
-}
-
 static void lv_xmms_init ()
 {
         char **argv;
         int argc;
-        int ret;
+	int ret;
 
-	ret = sdl_init ();
-        if (ret < 0)
+	if (sdl_init () < 0)
                 return;
         
-        fullscreen = FALSE;
+        options.fullscreen = FALSE;
 
 	pcm_mutex = SDL_CreateMutex ();
 
@@ -183,17 +113,30 @@ static void lv_xmms_init ()
         g_free (argv[0]);
         g_free (argv);
 
-	lv_xmms_prefs_load ();
-	if (cur_lv_plugin == NULL)
-		cur_lv_plugin = visual_actor_get_next_by_name (cur_lv_plugin);
-	SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
+	lv_xmms_config_load_prefs (&options);
+	if (strlen (options.last_plugin) <= 0 ) {
+		visual_log (VISUAL_LOG_INFO, "There are no LibVisual plugins to load");
+		return;
+	}
+	visual_log (VISUAL_LOG_INFO, "Last plugin: %s", options.last_plugin);
 
+	cur_lv_plugin = options.last_plugin;
 	if (visual_actor_valid_by_name (cur_lv_plugin) != TRUE)
 		cur_lv_plugin = visual_actor_get_next_by_name (NULL);
+
+	if (cur_lv_plugin == NULL) {
+		visual_log (VISUAL_LOG_INFO, "Could not get actor plugin");
+		g_free (options.last_plugin);
+		return;
+	}
  
-	ret = visual_initialize (lv_width, lv_height);
-        if (ret < 0)
-                visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin's visual stuff");
+	SDL_WM_SetCaption (cur_lv_plugin, cur_lv_plugin);
+
+	ret = visual_initialize (options.width, options.height);
+        if (ret < 0) {
+                visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin's visual stuff");
+		return;
+	}
 
 	visual_log (VISUAL_LOG_DEBUG, "calling SDL_CreateThread()");
 	render_thread = SDL_CreateThread ((void *) visual_render, NULL);
@@ -212,8 +155,14 @@ static void lv_xmms_cleanup ()
 	SDL_DestroyMutex (pcm_mutex);
 	pcm_mutex = NULL;
 
-	visual_log (VISUAL_LOG_DEBUG, "calling lv_xmms_prefs_save()");
-	lv_xmms_prefs_save ();
+	visual_log (VISUAL_LOG_DEBUG, "calling lv_xmms_config_save_prefs()");
+	/*
+	 * WARNING This must be synchronized with config module.
+	 */
+	if (options.last_plugin != NULL)
+		g_free (options.last_plugin);
+	options.last_plugin = cur_lv_plugin;
+	lv_xmms_config_save_prefs (&options);
 
 	visual_log (VISUAL_LOG_DEBUG, "destroying VisBin...");
 	visual_bin_destroy (bin);
@@ -228,49 +177,6 @@ static void lv_xmms_cleanup ()
 	visual_log (VISUAL_LOG_DEBUG, "leaving...");
 }
 
-static void lv_xmms_about ()
-{
-	GtkWidget *vbox;
-	GtkWidget *buttonbox;
-	GtkWidget *close;
-	GtkWidget *label;
-
-	if (about_window != NULL)
-		return;
-
-	about_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (about_window), NULL);
-	gtk_window_set_policy (GTK_WINDOW (about_window), FALSE, FALSE, FALSE);
-	
-	vbox = gtk_vbox_new (FALSE, 4);
-	gtk_container_add (GTK_CONTAINER (about_window), vbox);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), 8);
-	gtk_widget_show (vbox);
-
-	label = gtk_label_new("\n\
-Libvisual xmms plugin\nCopyright (C) 2004, Dennis Smit <ds@nerds-incorporated.org>\n\
-The libvisual xmms plugin, more information about libvisual can be found at\n\
-http://libvisual.sf.net\n\n");
-
-	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 8);
-	gtk_widget_show (label);
-
-	buttonbox = gtk_hbutton_box_new ();
-	gtk_box_pack_end (GTK_BOX (vbox), buttonbox, FALSE, FALSE,8);
-	gtk_widget_show (buttonbox);
-
-	close = gtk_button_new_with_label ("Close");
-	GTK_WIDGET_SET_FLAGS (close, GTK_CAN_DEFAULT);
-	gtk_window_set_default (GTK_WINDOW (about_window), close);
-	gtk_hbutton_box_set_layout_default (GTK_BUTTONBOX_END);
-	gtk_box_pack_end (GTK_BOX (buttonbox), close, FALSE, FALSE,8);
-	gtk_widget_show (close);
-
-	gtk_signal_connect (GTK_OBJECT (close), "clicked", GTK_SIGNAL_FUNC (gui_about_closed), NULL);
-	gtk_signal_connect (GTK_OBJECT (about_window), "delete-event", GTK_SIGNAL_FUNC (gui_about_destroy), NULL);
-	      
-	gtk_widget_show (about_window);
-}
 
 static void lv_xmms_configure ()
 {
@@ -298,17 +204,6 @@ static void lv_xmms_render_pcm (gint16 data[2][512])
                 memcpy (xmmspcm, data, sizeof(gint16)*2*512);
 		SDL_mutexV (pcm_mutex);
 	}
-}
-
-static void gui_about_closed (GtkWidget *w, GdkEvent *e, gpointer data)
-{
-	gui_about_destroy (about_window, data);
-}
-                                                                                                                                               
-static void gui_about_destroy (GtkWidget *w, gpointer data)
-{
-	gtk_widget_destroy (w);
-	about_window = NULL;
 }
 
 static int sdl_init ()
@@ -447,7 +342,7 @@ static int sdl_event_handle ()
 					case SDLK_F11:
 					case SDLK_TAB:
 						SDL_WM_ToggleFullScreen (screen);
-                                                fullscreen = !fullscreen;
+                                                options.fullscreen = !options.fullscreen;
 
 						if ((screen->flags & SDL_FULLSCREEN) > 0)
 							SDL_ShowCursor (SDL_DISABLE);
@@ -546,8 +441,8 @@ static int visual_resize (int width, int height)
 
 	sdl_create (width, height);
 	
-	lv_width = width;
-	lv_height = height;
+	options.width = width;
+	options.height = height;
 
 	visual_bin_sync (bin, FALSE);
 
@@ -564,10 +459,10 @@ static int visual_initialize (int width, int height)
 	visual_bin_set_supported_depth (bin, VISUAL_VIDEO_DEPTH_ALL);
 //	visual_bin_set_preferred_depth (bin, VISUAL_BIN_DEPTH_LOWEST);
 
-	depth = visual_video_depth_enum_from_value (lv_depth);
+	depth = visual_video_depth_enum_from_value (options.depth);
 	if (depth == VISUAL_VIDEO_DEPTH_ERROR)
 		depth = VISUAL_VIDEO_DEPTH_24BIT;
-	lv_depth = depth;
+	options.depth = depth;
 
 	video = visual_video_new ();
         if (video == NULL) {
@@ -629,7 +524,7 @@ static int visual_render (void *arg)
         long frame_length;
         long idle_time;
       
-        frame_length = (1.0 / lv_fps) * 1000;
+        frame_length = (1.0 / options.fps) * 1000;
 	while (visual_running == 1) {
 		/* Update songinfo */
 		songinfo = visual_actor_get_songinfo (visual_bin_get_actor (bin));
@@ -653,7 +548,7 @@ static int visual_render (void *arg)
 					gl_plug = 0;
 			
 //				printf ("HALLO HALLO %d %d %d\n", gl_plug, video->depth, video->bpp);
-				sdl_create (lv_width, lv_height);
+				sdl_create (options.width, options.height);
 //				printf ("SDL_CREATE_PITCH %d\n", screen->pitch);
 				visual_bin_sync (bin, TRUE);
 
@@ -686,7 +581,7 @@ static int visual_render (void *arg)
                                 usleep (idle_time*900);
 		}
 		sdl_event_handle ();
-                if (fullscreen && !(screen->flags & SDL_FULLSCREEN))
+                if (options.fullscreen && !(screen->flags & SDL_FULLSCREEN))
                         SDL_WM_ToggleFullScreen (screen);
 	}
 

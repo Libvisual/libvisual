@@ -1,7 +1,12 @@
 2004-06-29  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/Makefile.am: added flags -Wall and -O3.
-	* src/lv_xmms.c: now we set the window tittle with the
+	* src/lv_xmms.c: removed, content splitted in main.c
+	config.c and about.c files.
+	* src/about.c: added.
+	* src/config.c: added. Now we save fullscreen state
+	to config dialog.
+	* src/main.c: now we set the window tittle with the
 	current plugin name. Cleanup to avoid warnings with
 	the new flags.
 

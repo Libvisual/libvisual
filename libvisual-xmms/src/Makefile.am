@@ -16,5 +16,7 @@ DEFS = -DVERSION=\"$(VERSION)\" @DEFS@
 
 libvisual_xmms_la_LDFLAGS = -module -avoid-version
 
-libvisual_xmms_la_SOURCES = lv_xmms.c lv_xmms.h
+libvisual_xmms_la_SOURCES = main.c\
+			    config.c config.h\
+			    about.c about.h
 
