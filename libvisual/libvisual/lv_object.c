@@ -83,6 +83,26 @@ int visual_object_destroy (VisObject *object)
 }
 
 /**
+ * Initializes a VisObject for usage.
+ *
+ * @param object Pointer to a VisObject that is initialized.
+ * @param allocated Flag to indicate if the VisObject itself is an allocated piece of memory.
+ * @param dtor The destructor function, that is used to destroy the VisObject when it loses all references or when it's
+ *	being destroyed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ */
+int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFunc dtor)
+{
+	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+
+	object->allocated = allocated;
+	object->dtor = dtor;
+
+	return VISUAL_OK;
+}
+
+/**
  * Increases the reference counter for a VisObject.
  *
  * @param object Pointer to a VisObject in which the reference count is increased.

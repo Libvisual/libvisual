@@ -48,6 +48,8 @@ VisObject *visual_object_new (void);
 int visual_object_free (VisObject *object);
 int visual_object_destroy (VisObject *object);
 
+int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFunc dtor);
+
 int visual_object_ref (VisObject *object);
 int visual_object_unref (VisObject *object);
 
