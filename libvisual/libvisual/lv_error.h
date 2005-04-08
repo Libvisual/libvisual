@@ -155,6 +155,7 @@ enum {
 	VISUAL_ERROR_UI_CONTAINER_NULL,			/**< The VisUIContainer is NULL. */
 	VISUAL_ERROR_UI_BOX_NULL,			/**< The VisUIBox is NULL. */
 	VISUAL_ERROR_UI_TABLE_NULL,			/**< The VisUITable is NULL. */
+	VISUAL_ERROR_UI_NOTEBOOK_NULL,			/**< The VisUINotebook is NULL. */
 	VISUAL_ERROR_UI_FRAME_NULL,			/**< The VisUIFrame is NULL. */
 	VISUAL_ERROR_UI_LABEL_NULL,			/**< The VisUILabel is NULL. */
 	VISUAL_ERROR_UI_IMAGE_NULL,			/**< The VisUIImage is NULL. */

@@ -133,6 +133,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_UI_CONTAINER_NULL] =		N_("VisUIContainer is NULL"),
 	[VISUAL_ERROR_UI_BOX_NULL] =			N_("VisUIBox is NULL"),
 	[VISUAL_ERROR_UI_TABLE_NULL] =			N_("VisUITable is NULL"),
+	[VISUAL_ERROR_UI_NOTEBOOK_NULL] =		N_("VisUINotebook is NULL"),
 	[VISUAL_ERROR_UI_FRAME_NULL] =			N_("VisUIFrame is NULL"),
 	[VISUAL_ERROR_UI_LABEL_NULL] =			N_("VisUILabel is NULL"),
 	[VISUAL_ERROR_UI_IMAGE_NULL] =			N_("VisUIImage is NULL"),

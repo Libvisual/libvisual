@@ -38,6 +38,7 @@ extern "C" {
 #define VISUAL_UI_BOX(obj)				(VISUAL_CHECK_CAST ((obj), VisUIBox))
 #define VISUAL_UI_TABLE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisUITableEntry))
 #define VISUAL_UI_TABLE(obj)				(VISUAL_CHECK_CAST ((obj), VisUITable))
+#define VISUAL_UI_NOTEBOOK(obj)				(VISUAL_CHECK_CAST ((obj), VisUINotebook))
 #define VISUAL_UI_FRAME(obj)				(VISUAL_CHECK_CAST ((obj), VisUIFrame))
 #define VISUAL_UI_LABEL(obj)				(VISUAL_CHECK_CAST ((obj), VisUILabel))
 #define VISUAL_UI_IMAGE(obj)				(VISUAL_CHECK_CAST ((obj), VisUIImage))
@@ -64,6 +65,7 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_CONTAINER,	/**< Container widget: \a VisUIContainer. */
 	VISUAL_WIDGET_TYPE_BOX,		/**< Box widget: \a VisUIBox. */
 	VISUAL_WIDGET_TYPE_TABLE,	/**< Table widget: \a VisUITable. */
+	VISUAL_WIDGET_TYPE_NOTEBOOK,	/**< Notebook widget: \a VisUINotebook. */
 	VISUAL_WIDGET_TYPE_FRAME,	/**< Frame widget: \a VisUIFrame. */
 	VISUAL_WIDGET_TYPE_LABEL,	/**< Label widget: \a VisUILabel. */
 	VISUAL_WIDGET_TYPE_IMAGE,	/**< Image widget: \a VisUIImage. */
@@ -96,6 +98,7 @@ typedef struct _VisUIContainer VisUIContainer;
 typedef struct _VisUIBox VisUIBox;
 typedef struct _VisUITableEntry VisUITableEntry;
 typedef struct _VisUITable VisUITable;
+typedef struct _VisUINotebook VisUINotebook;
 typedef struct _VisUIFrame VisUIFrame;
 typedef struct _VisUILabel VisUILabel;
 typedef struct _VisUIImage VisUIImage;
@@ -130,6 +133,7 @@ typedef struct _VisUICheckbox VisUICheckbox;
  *	- \a VisUIContainer
  *		- \a VisUIBox
  *		- \a VisUITable
+ *		- \a VisUINotebook
  *		- \a VisUIFrame
  *	- \a VisUIMutator
  *		- \a VisUIText
@@ -211,6 +215,16 @@ struct _VisUITable {
 
 	VisList			 childs;	/**< A list of all VisUITableEntry items that are related to
 						 * this table. */
+};
+
+/**
+ * The VisUINotebook inherents from VisUIContainer, but is capable of placing VisUIWidgets in notebooks.
+ */
+struct _VisUINotebook {
+	VisUIContainer		 container;	/**< The VisUIContainer data. */
+
+	VisList			 labels;	/**< The labels as VisUILabels. */
+	VisList			 childs;	/**< The child VisUIWidgets per notebook. */
 };
 
 /**
@@ -413,6 +427,11 @@ VisUIWidget *visual_ui_table_new (int rows, int cols);
 VisUITableEntry *visual_ui_table_entry_new (VisUIWidget *widget, int row, int col);
 int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int col);
 VisList *visual_ui_table_get_childs (VisUITable *table);
+
+VisUIWidget *visual_ui_notebook_new (void);
+int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, char *label);
+VisList *visual_ui_notebook_get_childs (VisUINotebook *notebook);
+VisList *visual_ui_notebook_get_childlabels (VisUINotebook *notebook);
 
 VisUIWidget *visual_ui_frame_new (const char *name);
 
