@@ -267,7 +267,7 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	visual_video_allocate_buffer (songinfo->cover);
 	
 	/* The temp depth transform video */
-	memset (&dtransform, 0, sizeof (VisVideo));
+	visual_mem_set (&dtransform, 0, sizeof (VisVideo));
 
 	visual_video_set_depth (&dtransform, VISUAL_VIDEO_DEPTH_32BIT);
 	visual_video_set_dimension (&dtransform, cover->width, cover->height);

@@ -1,3 +1,15 @@
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.* (visual_mem_initialize, visual_mem_set): Added
+	functions.
+
+	* libvisual/lv_mem.*: Redid the optimized mem ops.
+
+	* libvisual/lv_cpu.*: Use setters/getters for cpu features. The
+	setters check if an option is actually available.
+
+	* libvisual/*: memset() -> visual_mem_set().
+
 2005-04-08  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* COPYING: we had GPL copying instead of LGPL ? how the heck is this

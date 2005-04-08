@@ -246,6 +246,9 @@ int visual_init (int *argc, char ***argv)
 	/* Initialize CPU caps */
 	visual_cpu_initialize ();
 
+	/* Initialize Mem system */
+	visual_mem_initialize ();
+
 	/* Initialize Thread system */
 	visual_thread_initialize ();
 	

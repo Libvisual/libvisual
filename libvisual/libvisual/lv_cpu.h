@@ -56,6 +56,7 @@ struct _VisCPU {
 	/* Feature flags */
 	int		x86cpuType;
 	int		cacheline;
+
 	int		hasTSC;
 	int		hasMMX;
 	int		hasMMX2;
@@ -63,12 +64,38 @@ struct _VisCPU {
 	int		hasSSE2;
 	int		has3DNow;
 	int		has3DNowExt;
-
 	int		hasAltiVec;
+
+	int		enabledTSC;
+	int		enabledMMX;
+	int		enabledMMX2;
+	int		enabledSSE;
+	int		enabledSSE2;
+	int		enabled3DNow;
+	int		enabled3DNowExt;
+	int		enabledAltiVec;
 };
 
 void visual_cpu_initialize (void);
 VisCPU *visual_cpu_get_caps (void);
+
+int visual_cpu_get_tsc (void);
+int visual_cpu_get_mmx (void);
+int visual_cpu_get_mmx2 (void);
+int visual_cpu_get_sse (void);
+int visual_cpu_get_sse2 (void);
+int visual_cpu_get_3dnow (void);
+int visual_cpu_get_3dnow2 (void);
+int visual_cpu_get_altivec (void);
+
+int visual_cpu_set_tsc (int enabled);
+int visual_cpu_set_mmx (int enabled);
+int visual_cpu_set_mmx2 (int enabled);
+int visual_cpu_set_sse (int enabled);
+int visual_cpu_set_sse2 (int enabled);
+int visual_cpu_set_3dnow (int enabled);
+int visual_cpu_set_3dnow2 (int enabled);
+int visual_cpu_set_altivec (int enabled);
 
 #ifdef __cplusplus
 }

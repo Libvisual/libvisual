@@ -541,7 +541,7 @@ static int mutex_free_posix (VisMutex *mutex)
 
 static int mutex_init_posix (VisMutex *mutex)
 {
-	memset (mutex, 0, sizeof (VisMutex));
+	visual_mem_set (mutex, 0, sizeof (VisMutex));
 #ifdef VISUAL_THREAD_MODEL_POSIX
 
 	pthread_mutex_init (&mutex->mutex, NULL);

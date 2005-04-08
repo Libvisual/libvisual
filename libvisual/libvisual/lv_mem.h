@@ -33,12 +33,38 @@ extern "C" {
 #ifndef __attribute_malloc__
 #define __attribute_malloc__
 #endif
-	
+
+/**
+ * The visual_mem_copy function needs this signature.
+ *
+ * @arg dest Pointer to the dest buffer.
+ * @arg src Pointer to the source buffer.
+ * @arg n The number of bytes to be copied.
+ *
+ * @return Pointer to the dest buffer.
+ */
+typedef void *(*VisMemCopyFunc)(void *dest, const void *src, size_t n);
+
+/**
+ * The visual_mem_set function needs this signature.
+ *
+ * @arg dest Pointer to the dest buffer.
+ * @arg c Value that is used as the set value.
+ * @arg n The number of bytes to be set.
+ *
+ * @return Pointer to the dest buffer.
+ */
+typedef void *(*VisMemSetFunc)(void *dest, int c, size_t n);
+
+/* prototypes */
+int visual_mem_initialize (void);
 void *visual_mem_malloc0 (visual_size_t nbytes) __attribute_malloc__;
 void *visual_mem_realloc (void *ptr, visual_size_t nbytes) __attribute_malloc__;
 int visual_mem_free (void *ptr);
 
-void *visual_mem_copy (void *dest, const void *src, size_t n);
+/* Optimal performance functions set by visual_mem_initialize(). */
+extern VisMemCopyFunc visual_mem_copy;
+extern VisMemSetFunc visual_mem_set;
 
 /**
  * @ingroup VisMem

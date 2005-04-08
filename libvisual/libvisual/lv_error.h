@@ -65,7 +65,8 @@ enum {
 	VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL,	/**< The VisConfigRegistrySection is NULL. */
 
 	/* Error entries for arch related errors and VisCPU system */
-	VISUAL_ERROR_CPU_INVALID_CODE,
+	VISUAL_ERROR_CPU_INVALID_CODE,			/**< Can't run a section of code. */
+	VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED,		/**< CPU Feature is not supported. */
 	
 	/* Error entries for the VisError system */
 	VISUAL_ERROR_ERROR_HANDLER_NULL,		/**< Error handler is NULL. */

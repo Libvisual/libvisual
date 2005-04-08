@@ -742,14 +742,11 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y, int alpha)
 {
 	VisVideo *transform = NULL;
-	VisCPU *cpucaps;
 	const VisVideo *srcp = NULL;
 
 	/* We can't overlay GL surfaces so don't even try */
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
 			src->depth != VISUAL_VIDEO_DEPTH_GL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
-	
-	cpucaps = visual_cpu_get_caps ();
 	
 	/* Placement is outside dest buffer, no use to continue */
 	if (x > dest->width)
@@ -782,7 +779,7 @@ int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y
 	else if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
 		blit_overlay_noalpha (dest, srcp, x, y);
 	else {
-		if (cpucaps->hasMMX != 0)
+		if (visual_cpu_get_mmx () != 0)
 			_lv_blit_overlay_alpha32_mmx (dest, srcp, x, y);
 		else
 			blit_overlay_alpha32 (dest, srcp, x, y);
@@ -1452,16 +1449,12 @@ static int bgr_to_rgb32 (VisVideo *dest, const VisVideo *src)
  */
 int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod scale_method)
 {
-	VisCPU *cpucaps;
-
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (dest->depth == src->depth, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 	visual_log_return_val_if_fail (scale_method == VISUAL_VIDEO_SCALE_NEAREST ||
 			scale_method == VISUAL_VIDEO_SCALE_BILINEAR, -VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD);
 
-	cpucaps = visual_cpu_get_caps ();
-	
 	switch (dest->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
 			if (scale_method == VISUAL_VIDEO_SCALE_NEAREST)
@@ -1491,7 +1484,7 @@ int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod
 			if (scale_method == VISUAL_VIDEO_SCALE_NEAREST)
 				scale_nearest_32 (dest, src);
 			else if (scale_method == VISUAL_VIDEO_SCALE_BILINEAR) {
-				if (cpucaps->hasMMX != 0)
+				if (visual_cpu_get_mmx () != 0)
 					_lv_scale_bilinear_32_mmx (dest, src);
 				else	
 					scale_bilinear_32 (dest, src);
@@ -1679,7 +1672,7 @@ static int scale_bilinear_8 (VisVideo *dest, const VisVideo *src)
 			*dest_pixel++ = b0 >> 16;
 		}
 
-		memset (dest_pixel, 0, dest->pitch - (dest->width - 1));
+		visual_mem_set (dest_pixel, 0, dest->pitch - (dest->width - 1));
 		dest_pixel += dest->pitch - (dest->width - 1);
 
 	}
@@ -1756,7 +1749,7 @@ static int scale_bilinear_16 (VisVideo *dest, const VisVideo *src)
 			*dest_pixel++ = b;
 		}
 
-		memset (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 2)));
+		visual_mem_set (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 2)));
 		dest_pixel += (dest->pitch / 2) - ((dest->width - 1));
 	}
 
@@ -1832,7 +1825,7 @@ static int scale_bilinear_24 (VisVideo *dest, const VisVideo *src)
 			*dest_pixel++ = b;
 		}
 
-		memset (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 3)));
+		visual_mem_set (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 3)));
 		dest_pixel += (dest->pitch / 3) - ((dest->width - 1));
 	}
 
@@ -1917,7 +1910,7 @@ static int scale_bilinear_32 (VisVideo *dest, const VisVideo *src)
 			*dest_pixel++ = b.c32;
 		}
 
-		memset (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 4)));
+		visual_mem_set (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 4)));
 		dest_pixel += (dest->pitch / 4) - ((dest->width - 1));
 
 	}

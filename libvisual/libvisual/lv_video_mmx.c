@@ -242,7 +242,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 			++dest_pixel;
 		}
 
-		memset (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 4)));
+		visual_mem_set (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 4)));
 		dest_pixel += (dest->pitch / 4) - ((dest->width - 1));
 
 	}

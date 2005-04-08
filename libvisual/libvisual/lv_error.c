@@ -60,6 +60,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL] =	N_("VisConfigRegistrySection is NULL"),
 
 	[VISUAL_ERROR_CPU_INVALID_CODE] =		N_("The code can not run on this architecture"),
+	[VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED] =	N_("CPU feature is not supported"),
 	
 	[VISUAL_ERROR_ERROR_HANDLER_NULL] =		N_("Global error handler is NULL"),
 	
