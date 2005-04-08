@@ -73,6 +73,7 @@ static void lvwidget_visui_init (LvwVisUI *vuic);
 static GtkWidget *visui_widget_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_box_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_table_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_notebook_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_frame_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_label_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_image_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
@@ -409,6 +410,11 @@ visui_widget_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
 			widget = visui_widget_table_new (vuic, visuiwidget);
 
 			break;
+		
+		case VISUAL_WIDGET_TYPE_NOTEBOOK:
+			widget = visui_widget_notebook_new (vuic, visuiwidget);
+
+			break;
 
 		case VISUAL_WIDGET_TYPE_FRAME:
 			widget = visui_widget_frame_new (vuic, visuiwidget);
@@ -547,6 +553,34 @@ visui_widget_table_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
 		gtk_table_attach_defaults (GTK_TABLE (widget), wi,
 				tentry->col, tentry->col + 1, tentry->row, tentry->row + 1);
 
+	}
+
+	return widget;
+}
+
+static GtkWidget*
+visui_widget_notebook_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	VisList *childs;
+	VisList *childlabels;
+	VisListEntry *le = NULL;
+	VisListEntry *lelabel = NULL;
+	VisUIWidget *tabwidget;
+	VisUIWidget *labelwidget;
+
+	widget = gtk_notebook_new ();
+
+	childs = visual_ui_notebook_get_childs (VISUAL_UI_NOTEBOOK (visuiwidget));
+	childlabels = visual_ui_notebook_get_childlabels (VISUAL_UI_NOTEBOOK (visuiwidget));
+
+	while (((tabwidget = visual_list_next (childs, &le)) != NULL) &&
+			((labelwidget = visual_list_next (childlabels, &lelabel)) != NULL)) {
+
+		GtkWidget *tabwi = visui_widget_new (vuic, tabwidget);
+		GtkWidget *labelwi = visui_widget_new (vuic, labelwidget);
+
+		gtk_notebook_append_page (GTK_NOTEBOOK (widget), tabwi, labelwi);
 	}
 
 	return widget;

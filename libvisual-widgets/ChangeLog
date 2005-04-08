@@ -1,3 +1,11 @@
+2005-04-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* gtk2/*: Adding notebook.
+
+	* TODO: Updating.
+
+	* COPYING: Readding...
+
 2005-03-15  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* libvisual-widgets-gtk[12].pc.in: making substitutions

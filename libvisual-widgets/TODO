@@ -6,7 +6,8 @@ Libvisual-widgets:
 		Cleanup the widget a LOT!
 
 	GTK1:
-		Port GTK2 widget over to GTK1 for legacy.
+		Port GTK2 widget over to GTK1 for legacy. (order it like gtk2)
+		Add notebook support.
 
 	QT:
 		Write neat QT widget to handle VisUI.
