@@ -332,7 +332,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 	}
 
 	/* Main actor */
-//	visual_actor_realize (bin->actor);
+/*	visual_actor_realize (bin->actor); */
 	visual_actor_set_video (bin->actor, video);
 
 	visual_log (VISUAL_LOG_DEBUG, "one last video pitch check %d depth old %d forcedmain %d noevent %d",
@@ -694,8 +694,8 @@ int visual_bin_switch_finalize (VisBin *bin)
 		visual_object_unref (VISUAL_OBJECT (bin->actor));
 
 	/* Copy over the depth to be sure, and for GL plugins */
-//	bin->actvideo->depth = bin->actmorphvideo->depth;
-//	visual_video_set_depth (bin->actvideo, bin->actmorphvideo->depth);
+/*	bin->actvideo->depth = bin->actmorphvideo->depth;
+	visual_video_set_depth (bin->actvideo, bin->actmorphvideo->depth); */
 
 	if (bin->actmorphmanaged == TRUE) {
 		visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
@@ -724,7 +724,7 @@ int visual_bin_switch_finalize (VisBin *bin)
 	visual_log (VISUAL_LOG_DEBUG, " - in finalize - fscking depth from actvideo: %d %d", bin->actvideo->depth, bin->actvideo->bpp);
 
 	
-//	visual_bin_set_depth (bin, bin->actvideo->depth);
+/*	visual_bin_set_depth (bin, bin->actvideo->depth); */
 
 	depthflag = visual_actor_get_supported_depth (bin->actor);
 	fix_depth_with_bin (bin, bin->actvideo, bin_get_depth_using_preferred (bin, depthflag));
@@ -733,12 +733,12 @@ int visual_bin_switch_finalize (VisBin *bin)
 	bin->depthforcedmain = bin->actvideo->depth;
 	visual_log (VISUAL_LOG_DEBUG, "bin->depthforcedmain in finalize %d", bin->depthforcedmain);
 
-	// FIXME replace with a depth fixer
+	/* FIXME replace with a depth fixer */
 	if (bin->depthchanged == TRUE) {
 		visual_log (VISUAL_LOG_INFO, _("negotiate without event"));
 		visual_actor_video_negotiate (bin->actor, bin->depthforcedmain, TRUE, TRUE);
 		visual_log (VISUAL_LOG_INFO, _("end negotiate without event"));
-	//	visual_bin_sync (bin);
+	/*	visual_bin_sync (bin); */
 	}
 
 	visual_log (VISUAL_LOG_DEBUG, "Leaving...");
@@ -888,7 +888,7 @@ int visual_bin_run (VisBin *bin)
 			if (visual_morph_is_done (bin->morph) == TRUE)
 				visual_bin_switch_finalize (bin);
 		} else {
-//			visual_bin_switch_finalize (bin);
+/*			visual_bin_switch_finalize (bin); */
 		}
 	}
 

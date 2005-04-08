@@ -151,7 +151,7 @@ VisInput *visual_input_new (const char *inputname)
 	VisInput *input;
 	VisPluginRef *ref;
 
-//	visual_log_return_val_if_fail (__lv_plugins_input != NULL && inputname == NULL, NULL);
+/*	visual_log_return_val_if_fail (__lv_plugins_input != NULL && inputname == NULL, NULL); */
 
 	if (__lv_plugins_input == NULL && inputname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));

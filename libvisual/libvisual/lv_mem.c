@@ -121,8 +121,8 @@ void *visual_mem_copy (void *dest, const void *src, size_t n)
 #ifdef VISUAL_ARCH_X86
 		while (n > 64) {
 			__asm __volatile
-				(//"\n\t prefetch 256(%0)" /* < only use when 3dnow is present */
-				 //"\n\t prefetch 320(%0)"
+				(/*"\n\t prefetch 256(%0)" */ /* < only use when 3dnow is present */
+				 /*"\n\t prefetch 320(%0)" */
 				 "\n\t movq (%0), %%mm0"
 				 "\n\t movq 8(%0), %%mm1"
 				 "\n\t movq 16(%0), %%mm2"

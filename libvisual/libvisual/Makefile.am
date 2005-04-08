@@ -21,7 +21,7 @@ LIBS += -L. -L$(libdir) $(LV_THREAD_LIBS)
 PLUGPATH = $(libdir)/libvisual
 
 AM_CFLAGS = -DPLUGPATH="\"@LIBVISUAL_PLUGINS_BASE_DIR@\"" \
-	$(LV_THREAD_CFLAGS)
+	$(LV_THREAD_CFLAGS) 
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libvisual \
 	   -I$(top_builddir) -I$(top_builddir)/libvisual
