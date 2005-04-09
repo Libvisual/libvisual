@@ -49,6 +49,7 @@ extern "C" {
 #define VISUAL_UI_SLIDER(obj)				(VISUAL_CHECK_CAST ((obj), VisUISlider))
 #define VISUAL_UI_NUMERIC(obj)				(VISUAL_CHECK_CAST ((obj), VisUINumeric))
 #define VISUAL_UI_COLOR(obj)				(VISUAL_CHECK_CAST ((obj), VisUIColor))
+#define VISUAL_UI_COLORBUTTON(obj)			(VISUAL_CHECK_CAST ((obj), VisUIColorButton))
 #define VISUAL_UI_CHOICE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisUIChoiceEntry))
 #define VISUAL_UI_CHOICE(obj)				(VISUAL_CHECK_CAST ((obj), VisUIChoice))
 #define VISUAL_UI_POPUP(obj)				(VISUAL_CHECK_CAST ((obj), VisUIPopup))
@@ -76,6 +77,7 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_SLIDER,	/**< Slider widget: \a VisUISlider. */
 	VISUAL_WIDGET_TYPE_NUMERIC,	/**< Numeric widget: \a VisUINumeric. */
 	VISUAL_WIDGET_TYPE_COLOR,	/**< Color widget: \a VisUIColor. */
+	VISUAL_WIDGET_TYPE_COLORBUTTON,	/**< Color button widget: \a VisUIColorButton. */
 	VISUAL_WIDGET_TYPE_CHOICE,	/**< Choice base widget: \a VisUIChoice. */
 	VISUAL_WIDGET_TYPE_POPUP,	/**< Popup widget: \a VisUIPopup. */
 	VISUAL_WIDGET_TYPE_LIST,	/**< List widget: \a VisUIList. */
@@ -109,6 +111,7 @@ typedef struct _VisUIEntry VisUIEntry;
 typedef struct _VisUISlider VisUISlider;
 typedef struct _VisUINumeric VisUINumeric;
 typedef struct _VisUIColor VisUIColor;
+typedef struct _VisUIColorButton VisUIColorButton;
 typedef struct _VisUIChoiceList VisUIChoiceList;
 typedef struct _VisUIChoiceEntry VisUIChoiceEntry;
 typedef struct _VisUIChoice VisUIChoice;
@@ -138,6 +141,7 @@ typedef struct _VisUICheckbox VisUICheckbox;
  *	- \a VisUIMutator
  *		- \a VisUIText
  *		- \a VisUIColor
+ *		- \a VisColorButton
  *		- \a VisUIRange
  *			- \a VisUISlider
  *			- \a VisUINumeric
@@ -334,6 +338,14 @@ struct _VisUIColor {
 };
 
 /**
+ * The VisUIColorButton inherents from a VisUIMutator, it's used to adjust the color that is encapsulated by
+ * a VisParamEntry. Unlike VisUIColor, it only shows a button, but when pressed you can change the color.
+ */
+struct _VisUIColorButton {
+	VisUIMutator		 mutator;	/**< The VisUIMutator data. */
+};
+
+/**
  * The VisUIChoiceList is not a VisUIWidget, but it's used by the different types of VisUIChoice widgets to
  * store information about choices.
  */
@@ -464,6 +476,8 @@ VisUIWidget *visual_ui_slider_new (int showvalue);
 VisUIWidget *visual_ui_numeric_new (void);
 
 VisUIWidget *visual_ui_color_new (void);
+
+VisUIWidget *visual_ui_colorbutton_new (void);
 
 VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, VisParamEntry *value);
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, VisParamEntry *value);

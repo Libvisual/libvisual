@@ -957,6 +957,27 @@ VisUIWidget *visual_ui_color_new ()
 }
 
 /**
+ * Creates a new VisUIColorButton, which can be used to select a color button.
+ *
+ * @return The newly created VisUIColorButton in the form of a VisUIWidget.
+ */
+VisUIWidget *visual_ui_colorbutton_new ()
+{
+	VisUIColorButton *colorbutton;
+
+	colorbutton = visual_mem_new0 (VisUIColorButton, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (colorbutton), TRUE, widget_dtor);
+	
+	VISUAL_UI_WIDGET (colorbutton)->type = VISUAL_WIDGET_TYPE_COLORBUTTON;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (colorbutton), -1, -1);
+
+	return VISUAL_UI_WIDGET (colorbutton);
+}
+
+/**
  * Creates a new VisUIChoiceEntry, this is an entry in an entry in VisUIChoiceList, that is used
  * by the different VisUIChoice inherentence.
  *
