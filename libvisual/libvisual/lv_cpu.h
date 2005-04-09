@@ -32,13 +32,16 @@
 extern "C" {
 #endif /* __cplusplus */
 
+/**
+ * Enumerate containing the different architectual types.
+ */
 typedef enum {
-	VISUAL_CPU_TYPE_MIPS,
-	VISUAL_CPU_TYPE_ALPHA,
-	VISUAL_CPU_TYPE_SPARC,
-	VISUAL_CPU_TYPE_X86,
-	VISUAL_CPU_TYPE_POWERPC,
-	VISUAL_CPU_TYPE_OTHER
+	VISUAL_CPU_TYPE_MIPS,		/**< Running on the mips architecture. */
+	VISUAL_CPU_TYPE_ALPHA,		/**< Running on the alpha architecture. */
+	VISUAL_CPU_TYPE_SPARC,		/**< Running on the sparc architecture. */ 
+	VISUAL_CPU_TYPE_X86,		/**< Running on the X86 architecture. */
+	VISUAL_CPU_TYPE_POWERPC,	/**< Running on the PowerPC architecture. */
+	VISUAL_CPU_TYPE_OTHER		/**< Running on an architecture that is not specified. */
 } VisCPUType;
 
 typedef struct _VisCPU VisCPU;
@@ -49,31 +52,31 @@ typedef struct _VisCPU VisCPU;
  * @see visual_cpu_get_info
  */
 struct _VisCPU {
-	VisObject	object;	/**< The VisObject data. */
-	VisCPUType	type;	/**< Contains the CPU/arch type. */
-	int		nrcpu;	/**< Contains the number of CPUs in the system. */
+	VisObject	object;			/**< The VisObject data. */
+	VisCPUType	type;			/**< Contains the CPU/arch type. */
+	int		nrcpu;			/**< Contains the number of CPUs in the system. */
 
 	/* Feature flags */
-	int		x86cpuType;
-	int		cacheline;
+	int		x86cpuType;		/**< The x86 cpu family type. */
+	int		cacheline;		/**< The size of the cacheline. */
 
-	int		hasTSC;
-	int		hasMMX;
-	int		hasMMX2;
-	int		hasSSE;
-	int		hasSSE2;
-	int		has3DNow;
-	int		has3DNowExt;
-	int		hasAltiVec;
+	int		hasTSC;			/**< The CPU has the tsc feature. */
+	int		hasMMX;			/**< The CPU has the mmx feature. */
+	int		hasMMX2;		/**< The CPU has the mmx2 feature. */
+	int		hasSSE;			/**< The CPU has the sse feature. */
+	int		hasSSE2;		/**< The CPU has the sse2 feature. */
+	int		has3DNow;		/**< The CPU has the 3dnow feature. */
+	int		has3DNowExt;		/**< The CPU has the 3dnowext feature. */
+	int		hasAltiVec;		/**< The CPU has the altivec feature. */	
 
-	int		enabledTSC;
-	int		enabledMMX;
-	int		enabledMMX2;
-	int		enabledSSE;
-	int		enabledSSE2;
-	int		enabled3DNow;
-	int		enabled3DNowExt;
-	int		enabledAltiVec;
+	int		enabledTSC;		/**< The tsc feature is enabled. */
+	int		enabledMMX;		/**< The mmx feature is enabled. */ 
+	int		enabledMMX2;		/**< The tsc feature is enabled. */
+	int		enabledSSE;		/**< The sse feature is enabled. */
+	int		enabledSSE2;		/**< The sse2 feature is enabled. */
+	int		enabled3DNow;		/**< The 3dnow feature is enabled. */
+	int		enabled3DNowExt;	/**< The 3dnowext feature is enabled. */ 
+	int		enabledAltiVec;		/**< The altivec feature is enabled. */  
 };
 
 void visual_cpu_initialize (void);

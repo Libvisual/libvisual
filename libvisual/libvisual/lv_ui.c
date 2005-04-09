@@ -505,7 +505,7 @@ int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, char *
 /**
  * Retrieve a VisList containing VisUIWidget elements, that are the childs for every tab.
  *
- * @param table Pointer to the VisUINotebook from which the childs are requested.
+ * @param notebook Pointer to the VisUINotebook from which the childs are requested.
  *
  * @return VisList containing the childs of the VisUINotebook, or NULL on failure.
  */
@@ -519,7 +519,7 @@ VisList *visual_ui_notebook_get_childs (VisUINotebook *notebook)
 /**
  * Retrieve a VisList containing VisUILabel elements, that are the child labels for every tab.
  *
- * @param table Pointer to the VisUINotebook from which the child labels are requested.
+ * @param notebook Pointer to the VisUINotebook from which the child labels are requested.
  *
  * @return VisList containing the child labels of the VisUINotebook, or NULL on failure.
  */

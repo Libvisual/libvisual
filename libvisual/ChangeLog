@@ -1,4 +1,14 @@
 2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_ui.c: Doc fixes.
+
+2005-04-09  Tom Verbroekken  <tverbroekken@gmail.com>
+
+	* libvisual/lv_cpu.*: Added documentation blocks to the getter and
+	setter functions for the cpu features. Also documentated the VisCPU
+	structure and the enums containing the architecture.
+
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_mem.c: More work!
 
