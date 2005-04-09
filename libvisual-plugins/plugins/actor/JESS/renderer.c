@@ -374,10 +374,9 @@ void render_blur(JessPrivate *priv, int blur)
 	/* (d'ou le segfault) */
 	/* j'ai mis pixel par defaut... */
 
-	VisCPU *cpucaps = visual_cpu_get_caps ();
 	uint8_t *pix = priv->pixel;
 	uint32_t bmax,pitch_4;
-
+	
 	pix = priv->pixel;
 	if (priv->pixel == NULL)
 		return;
@@ -389,7 +388,7 @@ void render_blur(JessPrivate *priv, int blur)
 	/* Il y avait des overflows sur les boucles (indice supérieur trop élevé de 1) */
 	if (priv->video == 8)
 	{
-		if (cpucaps->hasMMX == 1) {
+		if (visual_cpu_get_mmx ()) {
 			bmax = priv->resx * (priv->resy-1) + (uint32_t) priv->pixel;
 #ifdef VISUAL_ARCH_X86
 			__asm __volatile
@@ -429,7 +428,7 @@ void render_blur(JessPrivate *priv, int blur)
 		pitch_4 = priv->pitch+4;
 		bmax = priv->pitch*(priv->resy-1) + (uint32_t) priv->pixel;
 
-		if (cpucaps->hasMMX == 1) {
+		if (visual_cpu_get_mmx ()) {
 #ifdef VISUAL_ARCH_X86
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"

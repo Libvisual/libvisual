@@ -55,7 +55,6 @@ void _inf_change_color(InfinitePrivate *priv, int t2,int t1,int w)
 
 void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field) 
 {
-	VisCPU *cpucaps = visual_cpu_get_caps ();
 	int i,j;
 	int add_dest=0,add_src;
 	t_interpol *interpol;
@@ -69,7 +68,10 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 	 * the interpolation coords etc, with this setup it's MUCH easier to vectorize it damn hard.
 	 */
 	
-	if (cpucaps->hasMMX == 100) {
+	/* FIXME ok this sucked, is een mislukte actie geweest zie ik, omdat ik mmx regs te kort kwam
+	 * zat ik met restore problemen, waardoor het uiteindelijk even snel werd, moet de hele blur routine
+	 * van deze plugin from scratch doen... */
+	if (0) {
 #ifdef VISUAL_ARCH_X86
 		int add_src2[2];
 		uint8_t *ptr_pix2[2];

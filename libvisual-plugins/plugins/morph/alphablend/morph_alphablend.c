@@ -107,9 +107,8 @@ int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
 static inline int alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha)
 {
-	VisCPU *cpucaps = visual_cpu_get_caps ();
 	
-	if (cpucaps->hasMMX == 1) {
+	if (visual_cpu_get_mmx ()) {
 		if (depth == VISUAL_VIDEO_DEPTH_8BIT)
 			return alpha_blend_8_mmx (dest, src1, src2, size, alpha);
 

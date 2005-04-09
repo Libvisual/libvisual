@@ -334,11 +334,10 @@ void Corona::drawReflected()
 
 void Corona::blurImage()
 {
-	VisCPU *cpucaps = visual_cpu_get_caps ();
 	uint8_t *ptr = m_real_image + m_width;
 	int n = (m_real_height - 2) * m_width;
 
-	if (cpucaps->hasMMX == 1) {
+	if (visual_cpu_get_mmx ()) {
 #ifdef VISUAL_ARCH_X86
 		__asm __volatile
 			("pxor %%mm6, %%mm6"

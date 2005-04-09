@@ -29,11 +29,10 @@
 
 void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 {
-	VisCPU *cpucaps = visual_cpu_get_caps ();
 	int i;
 	uint8_t valuetab[256];
 
-	if (cpucaps->hasMMX == 1) {
+	if (visual_cpu_get_mmx ()) {
 #ifdef VISUAL_ARCH_X86
 		int fadeflag = fade | fade << 8 | fade << 16 | fade << 24;
 		
@@ -87,11 +86,10 @@ void _oink_gfx_blur_simple (OinksiePrivate *priv, uint8_t *buf)
 
 void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 {
-	VisCPU *cpucaps = visual_cpu_get_caps ();
 	int i;
 	int scrsh = priv->screen_size / 2;
 
-	if (cpucaps->hasMMX == 1) {
+	if (visual_cpu_get_mmx ()) { 
 #ifdef VISUAL_ARCH_X86
 		__asm __volatile
 			("\n\t pxor %%mm6, %%mm6"
@@ -168,11 +166,10 @@ void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 
 void _oink_gfx_blur_midstrange (OinksiePrivate *priv, uint8_t *buf)
 {
-	VisCPU *cpucaps = visual_cpu_get_caps ();
 	int i;
 	int scrsh = priv->screen_size / 2;
 
-	if (cpucaps->hasMMX == 1) {
+	if (visual_cpu_get_mmx ()) {
 #ifdef VISUAL_ARCH_X86
 		__asm __volatile
 			("\n\t pxor %%mm6, %%mm6"

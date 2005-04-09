@@ -43,7 +43,6 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly);
 	
 static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 {
-	VisCPU *cpucaps = visual_cpu_get_caps ();
 	register unsigned int i,sum = 0;
 	register uint8_t *iptr;
 
@@ -51,7 +50,7 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 	i = bpl * h;
 	
 	/* MMX blurrer by Dennis Smit, got bored for a sec, thus :) */
-	if (cpucaps->hasMMX == 1) {
+	if (visual_cpu_get_mmx ()) {
 #ifdef VISUAL_ARCH_X86
 
 		__asm __volatile
