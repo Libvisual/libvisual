@@ -141,7 +141,7 @@ int visual_thread_initialize ()
 
 #ifdef VISUAL_THREAD_MODEL_POSIX
 	__lv_thread_supported = TRUE;
-//	
+	
 	__lv_thread_funcs.thread_create = thread_create_posix;
 	__lv_thread_funcs.thread_free = thread_free_posix;
 	__lv_thread_funcs.thread_join = thread_join_posix;
@@ -620,7 +620,7 @@ static void *thread_join_win32 (VisThread *thread)
 {
 	void *result = NULL;
 #ifdef VISUAL_THREAD_MODEL_WIN32
-	DWORD thread_result; /* FIXME is this actually sane ?, refering to an variable that dies because of the scope */
+	DWORD thread_result;
 
 	if (WaitForSingleObject(thread->thread, INFINITE) != WAIT_OBJECT_0) {
 		visual_log (VISUAL_LOG_CRITICAL, "Error while joining thread");
@@ -630,7 +630,7 @@ static void *thread_join_win32 (VisThread *thread)
 
 	GetExitCodeThread(thread->thread, &thread_result);
 
-	result = &thread_result;
+	result = (void *) thread_result;
 #endif
 
 	return result;
