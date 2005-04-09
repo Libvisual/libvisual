@@ -145,7 +145,7 @@ int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 				memset (priv->fakebuf, 0, 
 					PCM_BUF_SIZE * inp_esd_var_btmul);
 			
-			memcpy (esddata, priv->fakebuf, 
+			visual_mem_copy (esddata, priv->fakebuf, 
 				PCM_BUF_SIZE * inp_esd_var_btmul);
 		} else {
 			memset (esddata, 0, sizeof (esddata));
@@ -156,7 +156,7 @@ int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 	
 	priv->fakebufloaded = 1;
 
-	memcpy (priv->fakebuf, esddata, PCM_BUF_SIZE * inp_esd_var_btmul);
+	visual_mem_copy (priv->fakebuf, esddata, PCM_BUF_SIZE * inp_esd_var_btmul);
 
 	for (i = 0; i < PCM_BUF_SIZE && i < 1024; i += 2) {
 		audio->plugpcm[0][i >> 1] = priv->fakebuf[i];

@@ -494,7 +494,7 @@ void PixPort::CopyBits( unsigned char* inOutVideo, const Rect* inSrce, const Rec
 	if (	inSrce -> left <= inSrce -> right && inSrce -> top <= inSrce -> bottom &&
 			inDest -> left <= inDest -> right && inDest -> top <= inDest -> bottom ) {
 
-		// FIXME do this in a C++ memcpy way.
+		// FIXME do this in a C++ visual_mem_copy way.
 		int i;
 		unsigned char *imgBits = (unsigned char *) mBits;
 		

@@ -219,29 +219,29 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 	switch (priv->slide_type) {
 		case SLIDE_LEFT:
 			for (i = 0; i < dest->height; i++) {
-				memcpy (destbuf + (i * dest->pitch), srcbuf2 + (i * dest->pitch) + diff2, diff1);
-				memcpy (destbuf + (i * dest->pitch) + (diff1), srcbuf1 + (i * dest->pitch), diff2);
+				visual_mem_copy (destbuf + (i * dest->pitch), srcbuf2 + (i * dest->pitch) + diff2, diff1);
+				visual_mem_copy (destbuf + (i * dest->pitch) + (diff1), srcbuf1 + (i * dest->pitch), diff2);
 			}
 
 			break;
 
 		case SLIDE_RIGHT:
 			for (i = 0; i < dest->height; i++) {
-				memcpy (destbuf + (i * dest->pitch), srcbuf1 + (i * dest->pitch) + diff2, diff1);
-				memcpy (destbuf + (i * dest->pitch) + (diff1), srcbuf2 + (i * dest->pitch), diff2);
+				visual_mem_copy (destbuf + (i * dest->pitch), srcbuf1 + (i * dest->pitch) + diff2, diff1);
+				visual_mem_copy (destbuf + (i * dest->pitch) + (diff1), srcbuf2 + (i * dest->pitch), diff2);
 			}
 			
 			break;
 
 		case SLIDE_BOTTOM:
-			memcpy (destbuf, srcbuf1 + (hadd * dest->pitch), (dest->height - hadd) * dest->pitch);
-			memcpy (destbuf + ((dest->height - hadd) * dest->pitch), srcbuf2, hadd * dest->pitch);
+			visual_mem_copy (destbuf, srcbuf1 + (hadd * dest->pitch), (dest->height - hadd) * dest->pitch);
+			visual_mem_copy (destbuf + ((dest->height - hadd) * dest->pitch), srcbuf2, hadd * dest->pitch);
 
 			break;
 
 		case SLIDE_UPPER:
-			memcpy (destbuf, srcbuf2 + (hadd * dest->pitch), (dest->height - hadd) * dest->pitch);
-			memcpy (destbuf + ((dest->height - hadd) * dest->pitch), srcbuf1, hadd * dest->pitch);
+			visual_mem_copy (destbuf, srcbuf2 + (hadd * dest->pitch), (dest->height - hadd) * dest->pitch);
+			visual_mem_copy (destbuf + ((dest->height - hadd) * dest->pitch), srcbuf1, hadd * dest->pitch);
 
 			break;
 

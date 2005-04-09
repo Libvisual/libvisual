@@ -135,7 +135,7 @@ void _jakdaw_feedback_render(JakdawPrivate *priv, uint32_t *vscr)
 
 	}
 	
-	memcpy(vscr, priv->new_image, priv->xres*priv->yres*4);
+	visual_mem_copy(vscr, priv->new_image, priv->xres*priv->yres*4);
 }
 
 static void init_table(JakdawPrivate *priv)

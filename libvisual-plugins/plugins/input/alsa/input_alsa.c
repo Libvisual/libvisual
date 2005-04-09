@@ -253,7 +253,7 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 				memset (priv->fakebuf, 0, 
 					PCM_BUF_SIZE * inp_alsa_var_btmul);
 
-			memcpy (data, priv->fakebuf, 
+			visual_mem_copy (data, priv->fakebuf, 
 				PCM_BUF_SIZE * inp_alsa_var_btmul);
 		} else {
 			memset (data, 0, sizeof (data));
@@ -264,7 +264,7 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 	
 	priv->fakebufloaded = 1;
 
-	memcpy (priv->fakebuf, data, PCM_BUF_SIZE * inp_alsa_var_btmul);
+	visual_mem_copy (priv->fakebuf, data, PCM_BUF_SIZE * inp_alsa_var_btmul);
 
 	for (i = 0; i < PCM_BUF_SIZE && i < 1024; i += 2) {
 		audio->plugpcm[0][i >> 1] = priv->fakebuf[i];

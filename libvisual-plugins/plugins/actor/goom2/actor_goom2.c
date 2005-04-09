@@ -163,7 +163,7 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	uint32_t *buf;
 	int showinfo = TRUE;
 
-	memcpy (pcmdata, audio->pcm, sizeof (short) * 512 * 2);
+	visual_mem_copy (pcmdata, audio->pcm, sizeof (short) * 512 * 2);
 
 	/* Retrieve the songinfo */
 	songinfo = &VISUAL_ACTOR_PLUGIN (visual_plugin_get_specific (plugin))->songinfo;
@@ -174,7 +174,7 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	if (param != NULL)
 		showinfo = visual_param_entry_get_integer (param);
 	
-	/* FIXME goom should support setting a pointer, so we don't need that final memcpy */
+	/* FIXME goom should support setting a pointer, so we don't need that final visual_mem_copy */
 	if (songinfo != NULL && visual_songinfo_age (songinfo) <= 1 && showinfo == TRUE) {
 		if (songinfo->type == VISUAL_SONGINFO_TYPE_SIMPLE)
 			buf = goom_update (priv->goominfo, pcmdata, 0, 0, songinfo->songname, NULL);
@@ -186,7 +186,7 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	else
 		buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 
-	memcpy (video->pixels, buf, video->width * video->height * video->bpp);
+	visual_mem_copy (video->pixels, buf, video->width * video->height * video->bpp);
 
 	return 0;
 }

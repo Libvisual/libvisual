@@ -90,7 +90,7 @@ const VisPluginInfo *get_plugin_info( int *count )
 			.plugname = "mplayer",
 			.name = "mplayer",
 			.author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-			.version = "$Revision: 1.13 $",
+			.version = "$Revision: 1.14 $",
 			.about = N_("Use data exported from MPlayer"),
 			.help = N_("This plugin uses data exported from 'mplayer -af export'"),
 
@@ -268,7 +268,7 @@ int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 	visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
-	memcpy( audio->plugpcm, 
+	visual_mem_copy( audio->plugpcm, 
 			((void *)priv->mmap_area) + sizeof( mplayer_data_t ),
 			2048 );
 

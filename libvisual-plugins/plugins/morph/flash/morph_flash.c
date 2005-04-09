@@ -171,9 +171,9 @@ static void replacetable_generate_24 (FlashPrivate *priv, float rate)
 static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	if (rate < 0.5)
-		memcpy (dest->pixels, src1->pixels, src1->size);
+		visual_mem_copy (dest->pixels, src1->pixels, src1->size);
 	else
-		memcpy (dest->pixels, src2->pixels, src2->size);
+		visual_mem_copy (dest->pixels, src2->pixels, src2->size);
 }
 
 static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)

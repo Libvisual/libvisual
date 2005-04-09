@@ -119,7 +119,7 @@ int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio,
 	
 	int i;
 	
-	memcpy (destbuf, src1buf, src1->size);
+	visual_mem_copy (destbuf, src1buf, src1->size);
 
 	for (i = 0; i < dest->width; i++) {
 		add1 = (dest->height / 2) - ((dest->height / 2) * (rate * 1.5));

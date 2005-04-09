@@ -332,7 +332,7 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 	int xscale[] = { 0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255 };
 
 	/* Copy over the pcmdata into the internal pcmdata */
-	memcpy (pcm_data, audio->pcm, sizeof(pcm_data));
+	visual_mem_copy (pcm_data, audio->pcm, sizeof(pcm_data));
 
 	for(y = 15; y > 0; y--) {
 		for(i = 0; i < 16; i++)

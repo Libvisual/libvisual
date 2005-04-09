@@ -301,7 +301,7 @@ void render_deformation(JessPrivate *priv, int defmode)
 		switch(defmode)
 		{
 			case 0:
-				memcpy(priv->pixel, priv->buffer, priv->resx * priv->resy);
+				visual_mem_copy(priv->pixel, priv->buffer, priv->resx * priv->resy);
 				break;
 			case 1:
 				for (pix = priv->pixel; pix < (uint8_t *) bmax ; pix++)
@@ -332,7 +332,7 @@ void render_deformation(JessPrivate *priv, int defmode)
 		switch(defmode)
 		{
 			case 0:
-				memcpy(priv->pixel, priv->buffer, priv->pitch * priv->resy);
+				visual_mem_copy(priv->pixel, priv->buffer, priv->pitch * priv->resy);
 				return;
 				break;
 			case 1:

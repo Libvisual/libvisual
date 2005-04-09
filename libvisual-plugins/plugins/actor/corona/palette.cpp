@@ -66,7 +66,7 @@ void PaletteCycler::startPaletteTransition()
   if (m_palettes.size() > 0)
   {
     // Copy the current palette to the "source palette"
-    memcpy(m_srcpal, m_curpal, sizeof(m_srcpal));
+    visual_mem_copy(m_srcpal, m_curpal, sizeof(m_srcpal));
 
     // Create a new palette as the "destination palette"
     m_srcnum  = m_destnum;

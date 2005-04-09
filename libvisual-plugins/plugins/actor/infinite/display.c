@@ -191,7 +191,7 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 
 void _inf_display (InfinitePrivate *priv, uint8_t *surf)
 {
-	memcpy (surf, priv->surface1, priv->plugwidth * priv->plugheight);
+	visual_mem_copy (surf, priv->surface1, priv->plugwidth * priv->plugheight);
 }
 
 void _inf_blur(InfinitePrivate *priv, t_interpol* vector_field)

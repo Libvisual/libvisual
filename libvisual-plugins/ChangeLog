@@ -1,5 +1,10 @@
 2005-04-09  Tom Verbroekken  <tverbroekken@gmail.com>
 
+	* plugins/*: Replaced the memcpy function with the visual_mem_copy,
+	highly optimized, super the duper and such! :)
+
+2005-04-09  Tom Verbroekken  <tverbroekken@gmail.com>
+
 	* plugins/*: Files containing VisCAPS and ->hasMMX refactored to
 	visual_cpu_get_mmx (), First patch YAY!
 

@@ -243,8 +243,8 @@ int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 			priv->state = priv->old_state + 1;
 	}
 
-	memcpy (priv->render_buffer, audio->freq, sizeof (priv->render_buffer));
-	memcpy (priv->pcm_buffer, audio->pcm, sizeof (priv->pcm_buffer));
+	visual_mem_copy (priv->render_buffer, audio->freq, sizeof (priv->render_buffer));
+	visual_mem_copy (priv->pcm_buffer, audio->pcm, sizeof (priv->pcm_buffer));
 
 	priv->video = video;
 	priv->pixel = video->pixels;

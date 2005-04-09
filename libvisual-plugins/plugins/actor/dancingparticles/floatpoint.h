@@ -52,7 +52,7 @@ public :
     v[2]=20;
   };
   FloatPoint(const FloatPoint &P){
-    memcpy(v,P.v,3*sizeof(myfloat));
+    visual_mem_copy(v,P.v,3*sizeof(myfloat));
   };
 
   FloatPoint(){

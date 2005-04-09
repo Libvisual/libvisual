@@ -295,11 +295,11 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	memset (&transvid, 0, sizeof (VisVideo));
 
-	memcpy (&priv->priv1.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
-	memcpy (&priv->priv2.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
+	visual_mem_copy (&priv->priv1.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
+	visual_mem_copy (&priv->priv2.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
 
-	memcpy (&priv->priv1.audio.pcm, &audio->pcm, sizeof (short) * 3 * 512);
-	memcpy (&priv->priv2.audio.pcm, &audio->pcm, sizeof (short) * 3 * 512);
+	visual_mem_copy (&priv->priv1.audio.pcm, &audio->pcm, sizeof (short) * 3 * 512);
+	visual_mem_copy (&priv->priv2.audio.pcm, &audio->pcm, sizeof (short) * 3 * 512);
 
 	priv->priv1.audio.energy = audio->energy;
 	priv->priv2.audio.energy = audio->energy;
