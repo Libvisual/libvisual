@@ -504,7 +504,7 @@ static void *mem_set_sse (void *dest, int c, size_t n)
 		 "\n\t movss (%0), %%xmm1" // denk ik
 		 "\n\t psllq $32, %%mm1"
 		 "\n\t por %%mm1, %%mm0"
-		 "\n\t 
+		 "\n\t"
 
 		 
 		 "\n\t movq %%mm0, %%mm2"
