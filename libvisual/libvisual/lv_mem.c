@@ -33,7 +33,7 @@
 #include "lv_error.h"
 #include "lv_cpu.h"
 
-/* FIXME 3dnow, 3dnow2, sse, sse2, altivec versions, optionally with prefetching and such
+/* FIXME sse, sse2, altivec versions, optionally with prefetching and such
  * with checking for optimal scan lines */
 
 /* Optimize mem function prototypes */
@@ -42,8 +42,6 @@ static void *mem_copy_mmx (void *dest, const void *src, size_t n);
 static void *mem_copy_mmx2 (void *dest, const void *src, size_t n);
 static void *mem_copy_sse (void *dest, const void *src, size_t n);
 static void *mem_copy_sse2 (void *dest, const void *src, size_t n);
-static void *mem_copy_3dnow (void *dest, const void *src, size_t n);
-static void *mem_copy_3dnowext (void *dest, const void *src, size_t n);
 static void *mem_copy_altivec (void *dest, const void *src, size_t n);
 
 static void *mem_set_c (void *dest, int c, size_t n);
@@ -51,8 +49,6 @@ static void *mem_set_mmx (void *dest, int c, size_t n);
 static void *mem_set_mmx2 (void *dest, int c, size_t n);
 static void *mem_set_sse (void *dest, int c, size_t n);
 static void *mem_set_sse2 (void *dest, int c, size_t n);
-static void *mem_set_3dnow (void *dest, int c, size_t n);
-static void *mem_set_3dnowext (void *dest, int c, size_t n);
 static void *mem_set_altivec (void *dest, int c, size_t n);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
@@ -292,16 +288,6 @@ static void *mem_copy_sse2 (void *dest, const void *src, size_t n)
 
 }
 
-static void *mem_copy_3dnow (void *dest, const void *src, size_t n)
-{
-
-}
-
-static void *mem_copy_3dnowext (void *dest, const void *src, size_t n)
-{
-
-}
-
 static void *mem_copy_altivec (void *dest, const void *src, size_t n)
 {
 
@@ -458,16 +444,6 @@ static void *mem_set_sse (void *dest, int c, size_t n)
 }
 
 static void *mem_set_sse2 (void *dest, int c, size_t n)
-{
-
-}
-
-static void *mem_set_3dnow (void *dest, int c, size_t n)
-{
-
-}
-
-static void *mem_set_3dnowext (void *dest, int c, size_t n)
 {
 
 }

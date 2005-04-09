@@ -1,5 +1,9 @@
 2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_mem.c: More work!
+
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_mem.* (visual_mem_initialize, visual_mem_set): Added
 	functions.
 
