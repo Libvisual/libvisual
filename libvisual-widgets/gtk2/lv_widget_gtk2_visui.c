@@ -82,6 +82,7 @@ static GtkWidget *visui_widget_entry_new (LvwVisUI *vuic, VisUIWidget *visuiwidg
 static GtkWidget *visui_widget_slider_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_numeric_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_color_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
+static GtkWidget *visui_widget_colorbutton_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_popup_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_radio_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
 static GtkWidget *visui_widget_checkbox_new (LvwVisUI *vuic, VisUIWidget *visuiwidget);
@@ -91,6 +92,7 @@ static void cb_visui_entry (GtkEditable *editable, gpointer user_data);
 static void cb_visui_slider (GtkRange *range, gpointer user_data);
 static void cb_visui_numeric (GtkEditable *editable, gpointer user_data);
 static void cb_visui_color (GtkColorSelection *colorselection, gpointer user_data);
+static void cb_visui_colorbutton (GtkColorButton *colorselection, gpointer user_data);
 #if HAVE_GTK_AT_LEAST_2_4_X
 static void cb_visui_popup (GtkComboBox *combobox, gpointer user_data);
 #else
@@ -111,6 +113,9 @@ static gboolean cb_idle_numeric (void *userdata);
 
 static void cb_param_color (VisParamEntry *param, void *priv);
 static gboolean cb_idle_color (void *userdata);
+
+static void cb_param_colorbutton (VisParamEntry *param, void *priv);
+static gboolean cb_idle_colorbutton (void *userdata);
 
 static void cb_param_popup (VisParamEntry *param, void *priv);
 static gboolean cb_idle_popup (void *userdata);
@@ -453,6 +458,11 @@ visui_widget_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
 
 		case VISUAL_WIDGET_TYPE_COLOR:
 			widget = visui_widget_color_new (vuic, visuiwidget);
+
+			break;
+
+		case VISUAL_WIDGET_TYPE_COLORBUTTON:
+			widget = visui_widget_colorbutton_new (vuic, visuiwidget);
 
 			break;
 
@@ -870,6 +880,44 @@ visui_widget_color_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
 }
 
 static GtkWidget*
+visui_widget_colorbutton_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
+{
+	GtkWidget *widget;
+	CallbackEntry *cbentry;
+	VisParamEntry *param;
+	VisColor *color;
+	GdkColor gdkcol;
+
+	param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (visuiwidget));
+
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR) {
+		visual_log (VISUAL_LOG_CRITICAL, "Param for colorbutton widget must be of color type");
+
+		return NULL;
+	}
+
+	color = visual_param_entry_get_color (param);
+
+	gdkcol.red = color->r * (65535 / 255);
+	gdkcol.blue = color->b * (65535 / 255);
+	gdkcol.green = color->g * (65535 / 255);
+
+	widget = gtk_color_button_new_with_color (&gdkcol);
+
+	visual_object_set_private (VISUAL_OBJECT (visuiwidget), widget);
+
+	g_signal_connect (G_OBJECT (widget), "color-set",
+			G_CALLBACK (cb_visui_colorbutton), visuiwidget);
+
+	cbentry = g_new0 (CallbackEntry, 1);
+	cbentry->param = param;
+	cbentry->id = visual_param_entry_add_callback (param, cb_param_colorbutton, visuiwidget);
+	vuic->priv->callbacksreg = g_slist_append (vuic->priv->callbacksreg, cbentry);
+
+	return widget;
+}
+
+static GtkWidget*
 visui_widget_popup_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
 {
 	GtkWidget *widget;
@@ -1098,6 +1146,22 @@ cb_visui_color (GtkColorSelection *colorselection, gpointer user_data)
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR)
 		visual_log (VISUAL_LOG_CRITICAL, "The param connected to the color selector isn't a color param");
+
+	visual_param_entry_set_color (param, color.red >> 8, color.green >> 8, color.blue >> 8);
+}
+
+static void
+cb_visui_colorbutton (GtkColorButton *colorbutton, gpointer user_data)
+{
+	VisParamEntry *param;
+	GdkColor color;
+
+	gtk_color_button_get_color (colorbutton, &color);
+
+	param = (VisParamEntry*)visual_ui_mutator_get_param (VISUAL_UI_MUTATOR (user_data));
+
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR)
+		visual_log (VISUAL_LOG_CRITICAL, "The param connected to the colorbutton selector isn't a color param");
 
 	visual_param_entry_set_color (param, color.red >> 8, color.green >> 8, color.blue >> 8);
 }
@@ -1363,6 +1427,51 @@ cb_idle_color (void *userdata)
 	/* Only set the color if it's really different, else it can cause a saturation change and that is ugly */
 	if (!((testcol.red >> 8) == color->r && (testcol.blue >> 8) == color->b && (testcol.green >> 8) == color->g)) {
 		gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (visual_object_get_private (VISUAL_OBJECT (widget))),
+				&gdkcol);
+	}
+				
+	g_free (data);
+
+	return FALSE;
+}
+
+static void
+cb_param_colorbutton (VisParamEntry *param, void *priv)
+{
+	PrivIdleData *privdata;
+
+	privdata = g_new0 (PrivIdleData, 1);
+
+	privdata->param = param;
+	privdata->priv = priv;
+
+	g_idle_add (cb_idle_colorbutton, privdata);
+}
+
+static gboolean
+cb_idle_colorbutton (void *userdata)
+{
+	PrivIdleData *data = userdata;
+	VisParamEntry *param = data->param;
+	VisUIWidget *widget = data->priv;
+	VisColor *color;
+	GdkColor gdkcol;
+	GdkColor testcol;
+
+	gtk_color_button_get_color (GTK_COLOR_BUTTON (visual_object_get_private (VISUAL_OBJECT (widget))),
+			&testcol);
+
+	color = visual_param_entry_get_color (param);
+	
+	gdkcol.red = color->r * (65535 / 255);
+	gdkcol.blue = color->b * (65535 / 255);
+	gdkcol.green = color->g * (65535 / 255);
+
+	// FIXME there is still a misterious rounding error, it's difficult to trigger, but possible, look at it! */
+	
+	/* Only set the color if it's really different, else it can cause a saturation change and that is ugly */
+	if (!((testcol.red >> 8) == color->r && (testcol.blue >> 8) == color->b && (testcol.green >> 8) == color->g)) {
+		gtk_color_button_set_color (GTK_COLOR_BUTTON (visual_object_get_private (VISUAL_OBJECT (widget))),
 				&gdkcol);
 	}
 				
