@@ -123,7 +123,7 @@ extern "C" int lv_corona_init (VisPluginData *plugin)
 #endif
 
 	priv = new CoronaPrivate;
-	memset (priv, 0, sizeof (CoronaPrivate));
+	visual_mem_set (priv, 0, sizeof (CoronaPrivate));
 
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 

@@ -181,7 +181,7 @@ int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	
 	buf = (uint8_t *) video->pixels;
 
-	memset (buf, 0, video->pitch * video->height);
+	visual_mem_set (buf, 0, video->pitch * video->height);
 	
 	for (i = 0; i < video->width && i < 512; i++) {
 		y = (video->height / 2) + (audio->pcm[2][i >> 1] >> 9);

@@ -293,7 +293,7 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	VisVideo transvid;
 	int pitch;
 
-	memset (&transvid, 0, sizeof (VisVideo));
+	visual_mem_set (&transvid, 0, sizeof (VisVideo));
 
 	visual_mem_copy (&priv->priv1.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
 	visual_mem_copy (&priv->priv2.audio.freq, &audio->freq, sizeof (short) * 3 * 256);

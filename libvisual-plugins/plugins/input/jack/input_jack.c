@@ -179,7 +179,7 @@ static int process_callback (jack_nframes_t nframes, void *arg)
 
 	in = (jack_default_audio_sample_t *) jack_port_get_buffer (priv->input_port, nframes);
 
-	memset (&priv->fakebuf, 0, sizeof (priv->fakebuf));
+	visual_mem_set (&priv->fakebuf, 0, sizeof (priv->fakebuf));
 	for (i = 0; i < nframes && i < 1024; i++)
 		priv->fakebuf[i] = in[i] * 32767;
 	

@@ -250,13 +250,13 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 			priv->clearcount++;
 
 			if (priv->clearcount > 100)
-				memset (priv->fakebuf, 0, 
+				visual_mem_set (priv->fakebuf, 0, 
 					PCM_BUF_SIZE * inp_alsa_var_btmul);
 
 			visual_mem_copy (data, priv->fakebuf, 
 				PCM_BUF_SIZE * inp_alsa_var_btmul);
 		} else {
-			memset (data, 0, sizeof (data));
+			visual_mem_set (data, 0, sizeof (data));
 		}
 	} else {
 		priv->clearcount = 0;

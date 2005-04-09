@@ -30,7 +30,7 @@ void _inf_init_renderer(InfinitePrivate *priv)
 	_inf_load_random_effect(priv, &priv->current_effect);
 
 	priv->vector_field = (t_interpol*) visual_mem_malloc0(allocsize);
-	memset (priv->vector_field, 0, allocsize);
+	visual_mem_set (priv->vector_field, 0, allocsize);
 
 	_inf_generate_vector_field(priv, priv->vector_field);
 }

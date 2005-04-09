@@ -72,7 +72,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 		VISUAL_VIDEO_DEPTH_32BIT;
 
 	priv = malloc (sizeof (VideoTestPrivate));
-	memset (priv, 0, sizeof (VideoTestPrivate));
+	visual_mem_set (priv, 0, sizeof (VideoTestPrivate));
 
 	video_test->priv = priv;
 
@@ -173,7 +173,7 @@ int video_test_render (VisActorPlugin *plugin, VisVideo *video, VisAudio *audio)
 	sbuf = (uint16_t *) video->screenbuffer;
 	ibuf = (uint32_t *) video->screenbuffer;	
 
-	memset (buf, 0, video->width * video->height * video->bpp);
+	visual_mem_set (buf, 0, video->width * video->height * video->bpp);
 	
 	for (i = 0; i < video->width; i += (rand () % 10) + 10) {
 		if (i >= video->width - 1)

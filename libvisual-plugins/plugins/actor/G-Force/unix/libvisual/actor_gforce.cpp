@@ -103,7 +103,7 @@ extern "C" int lv_gforce_init (VisPluginData *plugin)
 #endif
 
 	priv = new GForcePrivate;
-	memset (priv, 0, sizeof (GForcePrivate));
+	visual_mem_set (priv, 0, sizeof (GForcePrivate));
 
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 

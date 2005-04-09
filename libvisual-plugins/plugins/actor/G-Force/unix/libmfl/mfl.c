@@ -215,7 +215,7 @@ main(int argc, char **argv) {
   char screen[SCREEN_BPL * SCREEN_Y + 1];
   
   for (i = 0; i < SCREEN_Y; i++) {
-    memset(&(screen[i * SCREEN_BPL]), '.', SCREEN_X);
+    visual_mem_set(&(screen[i * SCREEN_BPL]), '.', SCREEN_X);
     screen[i * SCREEN_BPL + SCREEN_X] = '\n';
   }
   screen[SCREEN_BPL * SCREEN_Y] = 0;

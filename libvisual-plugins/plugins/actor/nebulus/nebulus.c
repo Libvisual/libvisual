@@ -289,7 +289,7 @@ static int nebulus_detect_beat (int loudness)
 	if (aged < 2000 || elapsed > BEAT_MAX) {
 		elapsed = 0;
 		lowest = aged;
-		memset(beathistory, 0, sizeof beathistory);
+		visual_mem_set(beathistory, 0, sizeof beathistory);
 	}
 	else if (aged < lowest)
 		lowest = aged;

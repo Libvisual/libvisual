@@ -47,7 +47,7 @@ LVPlugin *get_plugin_info (VisPluginRef *ref)
 	xpyre->depth = VISUAL_VIDEO_DEPTH_32BIT;
 
 	priv = malloc (sizeof (XpyrePrivate));
-	memset (priv, 0, sizeof (XpyrePrivate));
+	visual_mem_set (priv, 0, sizeof (XpyrePrivate));
 
 	xpyre->priv = priv;
 

@@ -51,9 +51,9 @@ class CompressedPalette
 PaletteCycler::PaletteCycler(const int palettes[][NB_PALETTES], int nbPalettes)
   : m_palettes(palettes, nbPalettes)
 {
-  memset (m_srcpal, 0, sizeof (Palette));
-  memset (m_destpal, 0, sizeof (Palette));
-  memset (m_curpal, 0, sizeof (Palette));
+  visual_mem_set (m_srcpal, 0, sizeof (Palette));
+  visual_mem_set (m_destpal, 0, sizeof (Palette));
+  visual_mem_set (m_curpal, 0, sizeof (Palette));
 
   startPaletteTransition();
   affectPaletteTransition(1);

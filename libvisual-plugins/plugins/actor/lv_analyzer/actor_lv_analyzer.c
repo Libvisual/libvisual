@@ -186,8 +186,8 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	float scale;
 	float colscale;
 
-	memset (bits, 0, video->size);
-	memset (maxbar, 0, sizeof (maxbar));
+	visual_mem_set (bits, 0, video->size);
+	visual_mem_set (maxbar, 0, sizeof (maxbar));
 	
 	scale = (float) video->height / 127;
 

@@ -232,7 +232,7 @@ bool EgOSUtils::AskSaveAs( const char* inPrompt, const UtilStr& inDefaultName, C
 	}
 	winFilter.Append( (char) 0 );					// Windows exptects an extra NUL to end the filter
 
-	memset( &paramBlk, 0, sizeof(OPENFILENAME) );
+	visual_mem_set( &paramBlk, 0, sizeof(OPENFILENAME) );
 	paramBlk.lStructSize = sizeof(OPENFILENAME);
 	paramBlk.lpstrFilter		= winFilter.getCStr();
 	paramBlk.lpstrFile			= pathName;
@@ -305,7 +305,7 @@ bool EgOSUtils::AskOpen( const char* inPrompt, CEgFileSpec& outSpec, long inType
 	}
 	winFilter.Append( (char) 0 );					// Windows exptects an extra NUL to end the filter
 
-	memset( &paramBlk, 0, sizeof(OPENFILENAME) );
+	visual_mem_set( &paramBlk, 0, sizeof(OPENFILENAME) );
 	paramBlk.lStructSize = sizeof(OPENFILENAME);
 	paramBlk.lpstrFilter		= winFilter.getCStr();
 	paramBlk.lpstrFile			= pathName;

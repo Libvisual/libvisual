@@ -181,7 +181,7 @@ inline void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int 
 	}
 
 	begin = (y * priv->screen_width) + firstx;
-	memset (buf + begin, color, endx - firstx);
+	visual_mem_set (buf + begin, color, endx - firstx);
 }
 
 inline void _oink_gfx_vline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2)

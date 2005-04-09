@@ -170,7 +170,7 @@ void _oink_gfx_background_dots (OinksiePrivate *priv,
 void _oink_gfx_background_fill (OinksiePrivate *priv,
 		uint8_t *buf, int color)
 {
-	memset (buf, color, priv->screen_size);
+	visual_mem_set (buf, color, priv->screen_size);
 }
 
 void _oink_gfx_background_circles_star (OinksiePrivate *priv,
