@@ -53,7 +53,7 @@ void jess_init (JessPrivate *priv);
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = act_jess_requisition,
 		.palette = act_jess_palette,
 		.render = act_jess_render,
@@ -62,7 +62,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 			VISUAL_VIDEO_DEPTH_32BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,

@@ -80,14 +80,14 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video);
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = lv_madspin_requisition,
 		.palette = lv_madspin_palette,
 		.render = lv_madspin_render,
 		.depth = VISUAL_VIDEO_DEPTH_GL
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
@@ -116,7 +116,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	MadspinPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static const VisParamEntry params[] = {
+	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715),
 		VISUAL_PARAM_LIST_END

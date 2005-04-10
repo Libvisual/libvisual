@@ -45,14 +45,14 @@ int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = act_bumpscope_requisition,
 		.palette = act_bumpscope_palette,
 		.render = act_bumpscope_render,
 		.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
@@ -81,7 +81,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	BumpscopePrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static const VisParamEntry params[] = {
+	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_COLOR	("color",		122, 204, 255),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("light size",		256),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color cycle",		TRUE),

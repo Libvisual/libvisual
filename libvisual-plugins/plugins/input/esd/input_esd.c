@@ -53,11 +53,11 @@ static const int inp_esd_var_btmul = sizeof (short);
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisInputPlugin input[] = {{
+	static VisInputPlugin input[] = {{
 		.upload = inp_esd_upload
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_INPUT,

@@ -67,14 +67,14 @@ int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = act_gdkpixbuf_requisition,
 		.palette = act_gdkpixbuf_palette,
 		.render = act_gdkpixbuf_render,
 		.depth = VISUAL_VIDEO_DEPTH_24BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
@@ -103,7 +103,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 	PixbufPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);;
 	
-	static const VisParamEntry params[] = {
+	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING	("filename",	""),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("scaled",	TRUE),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("aspect",	FALSE),

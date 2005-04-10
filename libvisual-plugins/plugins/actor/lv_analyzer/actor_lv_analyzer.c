@@ -50,14 +50,14 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = lv_analyzer_requisition,
 		.palette = lv_analyzer_palette,
 		.render = lv_analyzer_render,
 		.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,

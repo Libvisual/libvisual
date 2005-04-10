@@ -69,14 +69,14 @@ static void draw_bars (GLtestPrivate *priv);
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = lv_gltest_requisition,
 		.palette = lv_gltest_palette,
 		.render = lv_gltest_render,
 		.depth = VISUAL_VIDEO_DEPTH_GL
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
@@ -105,7 +105,7 @@ int lv_gltest_init (VisPluginData *plugin)
 	GLtestPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 	
-	static const VisParamEntry params[] = {
+	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE),
 		VISUAL_PARAM_LIST_END
 	};

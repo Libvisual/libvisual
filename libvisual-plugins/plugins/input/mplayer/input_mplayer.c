@@ -78,11 +78,11 @@ int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio );
  */
 const VisPluginInfo *get_plugin_info( int *count )
 {
-	static const VisInputPlugin input[] = {{
+	static VisInputPlugin input[] = {{
 		.upload = inp_mplayer_upload
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof( VisPluginInfo ),
 			.api_version = VISUAL_PLUGIN_API_VERSION,
 			.type = VISUAL_PLUGIN_TYPE_INPUT,
@@ -90,7 +90,7 @@ const VisPluginInfo *get_plugin_info( int *count )
 			.plugname = "mplayer",
 			.name = "mplayer",
 			.author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-			.version = "$Revision: 1.14 $",
+			.version = "$Revision: 1.15 $",
 			.about = N_("Use data exported from MPlayer"),
 			.help = N_("This plugin uses data exported from 'mplayer -af export'"),
 

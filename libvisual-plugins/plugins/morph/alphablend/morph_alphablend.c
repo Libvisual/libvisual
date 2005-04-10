@@ -52,7 +52,7 @@ int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisMorphPlugin morph[] = {{
+	static VisMorphPlugin morph[] = {{
 		.apply = lv_morph_alpha_apply,
 		.depth =
 			VISUAL_VIDEO_DEPTH_8BIT  |
@@ -61,7 +61,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 			VISUAL_VIDEO_DEPTH_32BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_MORPH,

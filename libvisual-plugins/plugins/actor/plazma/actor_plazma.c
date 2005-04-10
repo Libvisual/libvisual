@@ -45,14 +45,14 @@ int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = act_plazma_requisition,
 		.palette = act_plazma_palette,
 		.render = act_plazma_render,
 		.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
@@ -81,7 +81,7 @@ int act_plazma_init (VisPluginData *plugin)
 	PlazmaPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 	
-	static const VisParamEntry params[] = {
+	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("bass sensitivity",	0),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("plazma effect",	TRUE),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect option",	FALSE),

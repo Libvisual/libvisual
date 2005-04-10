@@ -43,14 +43,14 @@ int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = act_infinite_requisition,
 		.palette = act_infinite_palette,
 		.render = act_infinite_render,
 		.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,

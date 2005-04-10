@@ -51,14 +51,14 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = lv_goom_requisition,
 		.palette = lv_goom_palette,
 		.render = lv_goom_render,
 		.depth = VISUAL_VIDEO_DEPTH_32BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,

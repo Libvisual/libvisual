@@ -45,14 +45,14 @@ int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = act_jakdaw_requisition,
 		.palette = act_jakdaw_palette,
 		.render = act_jakdaw_render,
 		.depth = VISUAL_VIDEO_DEPTH_32BIT
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
@@ -81,14 +81,14 @@ int act_jakdaw_init (VisPluginData *plugin)
 	JakdawPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static const VisParamEntry params[] = {
+	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("zoom mode",		FEEDBACK_ZOOMRIPPLE),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter trigger",	PLOTTER_COLOUR_MUSICTRIG),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter type",	PLOTTER_SCOPE_LINES),
 		VISUAL_PARAM_LIST_END
 	};
 
-	static const VisParamEntry zoomparamchoices[] = {
+	static VisParamEntry zoomparamchoices[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom ripple",		FEEDBACK_ZOOMRIPPLE),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Blur only",		FEEDBACK_BLURONLY),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom rotate",		FEEDBACK_ZOOMROTATE),
@@ -98,7 +98,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_END
 	};
 
-	static const VisParamEntry colorparamchoices[] = {
+	static VisParamEntry colorparamchoices[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Solid",		PLOTTER_COLOUR_SOLID),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Random",		PLOTTER_COLOUR_RANDOM),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("On music",		PLOTTER_COLOUR_MUSICTRIG),
@@ -106,7 +106,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 	};
 	
 		
-	static const VisParamEntry scopeparamchoices[] = {
+	static VisParamEntry scopeparamchoices[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Lines",		PLOTTER_SCOPE_LINES),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Dots",		PLOTTER_SCOPE_DOTS),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Solid",		PLOTTER_SCOPE_SOLID),
