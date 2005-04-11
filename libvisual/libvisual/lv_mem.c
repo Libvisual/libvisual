@@ -91,7 +91,7 @@ int visual_mem_initialize ()
 	}
 
 	if (visual_cpu_get_sse () > 0) {
-		visual_mem_copy = mem_copy_sse;
+//		visual_mem_copy = mem_copy_sse;
 
 	}
 

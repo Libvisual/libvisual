@@ -50,6 +50,7 @@ extern "C" {
 #define VISUAL_UI_NUMERIC(obj)				(VISUAL_CHECK_CAST ((obj), VisUINumeric))
 #define VISUAL_UI_COLOR(obj)				(VISUAL_CHECK_CAST ((obj), VisUIColor))
 #define VISUAL_UI_COLORBUTTON(obj)			(VISUAL_CHECK_CAST ((obj), VisUIColorButton))
+#define VISUAL_UI_COLORPALETTE(obj)			(VISUAL_CHECK_CAST ((obj), VisUIColorPalette))
 #define VISUAL_UI_CHOICE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisUIChoiceEntry))
 #define VISUAL_UI_CHOICE(obj)				(VISUAL_CHECK_CAST ((obj), VisUIChoice))
 #define VISUAL_UI_POPUP(obj)				(VISUAL_CHECK_CAST ((obj), VisUIPopup))
@@ -78,6 +79,7 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_NUMERIC,	/**< Numeric widget: \a VisUINumeric. */
 	VISUAL_WIDGET_TYPE_COLOR,	/**< Color widget: \a VisUIColor. */
 	VISUAL_WIDGET_TYPE_COLORBUTTON,	/**< Color button widget: \a VisUIColorButton. */
+	VISUAL_WIDGET_TYPE_COLORPALETTE,/**< Color palette widget: \a VisUIColorPalette. */
 	VISUAL_WIDGET_TYPE_CHOICE,	/**< Choice base widget: \a VisUIChoice. */
 	VISUAL_WIDGET_TYPE_POPUP,	/**< Popup widget: \a VisUIPopup. */
 	VISUAL_WIDGET_TYPE_LIST,	/**< List widget: \a VisUIList. */
@@ -112,6 +114,7 @@ typedef struct _VisUISlider VisUISlider;
 typedef struct _VisUINumeric VisUINumeric;
 typedef struct _VisUIColor VisUIColor;
 typedef struct _VisUIColorButton VisUIColorButton;
+typedef struct _VisUIColorPalette VisUIColorPalette;
 typedef struct _VisUIChoiceList VisUIChoiceList;
 typedef struct _VisUIChoiceEntry VisUIChoiceEntry;
 typedef struct _VisUIChoice VisUIChoice;
@@ -141,7 +144,8 @@ typedef struct _VisUICheckbox VisUICheckbox;
  *	- \a VisUIMutator
  *		- \a VisUIText
  *		- \a VisUIColor
- *		- \a VisColorButton
+ *		- \a VisUIColorButton
+ *		- \a VisUIColorPalette
  *		- \a VisUIRange
  *			- \a VisUISlider
  *			- \a VisUINumeric
@@ -346,6 +350,14 @@ struct _VisUIColorButton {
 };
 
 /**
+ * The VisUIColorPalette inherents from a VisUIMutator, it's used to adjust a small color palette that is encapsulated by
+ * a VisParamEntry. It's not allowed to change the size of the palette after it's been set.
+ */
+struct _VisUIColorPalette {
+	VisUITable		 table;		/**< The VisUITable data. */
+};
+
+/**
  * The VisUIChoiceList is not a VisUIWidget, but it's used by the different types of VisUIChoice widgets to
  * store information about choices.
  */
@@ -478,6 +490,8 @@ VisUIWidget *visual_ui_numeric_new (void);
 VisUIWidget *visual_ui_color_new (void);
 
 VisUIWidget *visual_ui_colorbutton_new (void);
+
+VisUIWidget *visual_ui_colorpalette_new (void);
 
 VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, VisParamEntry *value);
 int visual_ui_choice_add (VisUIChoice *choice, const char *name, VisParamEntry *value);

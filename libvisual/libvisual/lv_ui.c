@@ -977,6 +977,28 @@ VisUIWidget *visual_ui_colorbutton_new ()
 	return VISUAL_UI_WIDGET (colorbutton);
 }
 
+/* FIXME finish */
+/**
+ * Creates a new VisUIColorPalette, which can be used to describe small palettes.
+ *
+ * @return The newly created VisUIColorPalette in the form of a VisUIWidget.
+ */
+VisUIWidget *visual_ui_colorpalette_new ()
+{
+	VisUIColorButton *colorpalette;
+
+	colorpalette = visual_mem_new0 (VisUIColorPalette, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (colorpalette), TRUE, widget_dtor);
+	
+	VISUAL_UI_WIDGET (colorpalette)->type = VISUAL_WIDGET_TYPE_COLORPALETTE;
+
+	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (colorpalette), -1, -1);
+
+	return VISUAL_UI_WIDGET (colorpalette);
+}
+
 /**
  * Creates a new VisUIChoiceEntry, this is an entry in an entry in VisUIChoiceList, that is used
  * by the different VisUIChoice inherentence.
