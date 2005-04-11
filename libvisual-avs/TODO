@@ -13,6 +13,7 @@ Very short term TODO:
 	Make avs_fadeout.
 	Look into render state stuff.
 	Add an AVS environment, use this for overlay states, line width and such.
+	Implement all the blend methods. (look at APETriangle from tomylobo)
 
 General TODO:
 	Finish preset parser.
@@ -110,6 +111,11 @@ Non standard:
 		Buffer blend: http://www.deviantart.com/deviation/9561609/
 		Normalise APE: http://www.deviantart.com/deviation/10334263/
 
+	http://goebish.free.fr/vfx/
+
+	Syntax avs:
+		http://www.deviantart.com/deviation/12811411/
+		http://tomylobo.dyndns.org/share/AVSTrans_cpp/
 
 __
 People to watch:
