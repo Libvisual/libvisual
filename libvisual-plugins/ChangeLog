@@ -1,3 +1,9 @@
+2005-04-22  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac:
+	  - GdkPixbuf plugin made optional.
+	  - X headers check works on Gentoo.
+
 2005-04-10  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*: Don't use static const for the plugin structures, instead
@@ -27,7 +33,7 @@
 2005-03-19  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* plugins/actor/G-Force/unix/libmfl/mfl.c: added param
-	check to mfl_DestroyFont(), it shoul be NULL if G-Force
+	check to mfl_DestroyFont(), it could be NULL if G-Force
 	have not showed any font yet.
 
 	* plugins/actor/*: added i18n support.

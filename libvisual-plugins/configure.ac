@@ -97,18 +97,28 @@ if test x$libgoom = xyes; then
   AC_SUBST([GOOM2], ['actor_goom2.la'])
 fi
 
-PKG_CHECK_MODULES(GDKPIXBUF, gdk-2.0 >= gdk_pixbuf_required_version, [gdkpixbuf="yes"], [gdkpixbuf="no"])
-if test x$gdkpixbuf = xno; then
-  AC_MSG_WARN([*** GdkPixbuf >= ${gdk_pixbuf_required_version} is not found.
-		The libvisual gdkpixbuf image loader plugin won't be build.
+AC_ARG_ENABLE([gdkpixbuf-plugin],
+            AC_HELP_STRING([--disable-gdkpixbuf-plugin],
+                           [Do not build GdkPixbuf visualization plugin @<:@default=enabled@:>@]),
+	    [gdkpixbuf_plugin=$enableval],
+	    [gdkpixbuf_plugin=yes])
+AC_MSG_CHECKING([whether to enable GdkPixbuf visualization plugin])
+if test x$gdkpixbuf_plugin = xyes; then
+  AC_MSG_RESULT([yes])
+  PKG_CHECK_MODULES(GDKPIXBUF, gdk-2.0 >= gdk_pixbuf_required_version, [gdkpixbuf="yes"], [gdkpixbuf="no"])
+  if test x$gdkpixbuf = xyes; then
+    AC_SUBST(GDKPIXBUF_LIBS)
+    AC_SUBST(GDKPIXBUF_CFLAGS)
+    build_actor="$build_actor gdkpixbuf"
+    AC_SUBST([GDKPIXBUF], ['actor_gdkpixbuf.la'])
+  else
+    AC_MSG_WARN([*** GdkPixbuf >= ${gdk_pixbuf_required_version} is not found.
+	  	The libvisual gdkpixbuf image loader plugin won't be build.
 		GdkPixbuf is included within gtk-2.0 and newer, which can be
 		downloaded at http://www.gtk.org/])
-fi
-AC_SUBST(GDKPIXBUF_LIBS)
-AC_SUBST(GDKPIXBUF_CFLAGS)
-if test x$gdkpixbuf = xyes; then
-  build_actor="$build_actor gdkpixbuf"
-  AC_SUBST([GDKPIXBUF], ['actor_gdkpixbuf.la'])
+  fi
+else
+  AC_MSG_RESULT([no])
 fi
   
 AC_PATH_X
@@ -119,13 +129,29 @@ if test x$have_x = xyes ; then
     LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
     CPPFLAGS="$CPPFLAGS -I$x_includes"
 
+    std_place=no
     AC_CHECK_HEADERS([\
 	X11/keysym.h	\
 	X11/X.h	\
 	X11/Xlib.h	\
-	X11/Xutil.h], [], [
-	    AC_MSG_ERROR([Required X11 headers not found.])
-	])
+	X11/Xutil.h],
+	[std_place=yes],
+	[std_place=no])
+
+    AC_MSG_CHECKING([whether X headers are on a standard place])
+    if test x$std_place = xyes ; then
+        AC_MSG_RESULT([yes])
+    else
+        AC_MSG_RESULT([no])
+	# On some distros, like Gentoo, X headers are in /usr/X11R6/include/X11/
+        AC_CHECK_HEADERS([\
+		include/X11/keysym.h	\
+		include/X11/X.h	\
+		include/X11/Xlib.h	\
+		include/X11/Xutil.h],
+		[],
+		AC_MSG_ERROR([Required X11 headers not found.]))
+    fi
 
     AC_CHECK_HEADERS([\
 	GL/gl.h \
@@ -533,7 +559,7 @@ AC_ARG_ENABLE([profiling],
 		[Enable emision of profile data to be used by gprof @<:@default=disabled@:>@]),
 		[profiling=$enableval],
 		[profiling=no])
-AC_MSG_CHECKING([wheter to enable profiling])
+AC_MSG_CHECKING([whether to enable profiling])
 if test x$profiling = xyes; then
   AC_MSG_RESULT([yes])
   DEBUG_CFLAGS="$DEBUG_CFLAGS -pg"
@@ -579,8 +605,8 @@ AC_SUBST(OPT_CFLAGS)
 AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
 AC_SUBST(CXXFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
 
-AC_ARG_WITH([plugins_base_dir],
-            AC_HELP_STRING([--with-plugins_base_dir="dir"],
+AC_ARG_WITH([plugins-base-dir],
+            AC_HELP_STRING([--with-plugins-base-dir="dir"],
                            [Install plugins to this base directory. Defaults to Libvisual's base dir ]),
 dnl ' # fix string coloring ;)
 	    [plugins_base_dir=$withval],
@@ -597,7 +623,6 @@ else
     else
         AC_MSG_RESULT([not found])
         AC_MSG_ERROR([Specified plugins base directory "$plugins_base_dir" is not accesible!])
-        exit 1
     fi
 fi
 
