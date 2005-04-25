@@ -1,4 +1,9 @@
 2005-04-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_libvisual.c (visual_quit): Use visual_error_to_string
+	to be more verbose on exceptions.
+
+2005-04-25  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* libvisual/lv_plugin.c (visual_plugin_get_references): unref old
 	plugins., will crash on 0.1.x, seriously just don't have any 0.1.x

@@ -348,34 +348,33 @@ int visual_quit ()
 		return -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED;
 	}
 
-	/* FIXME: Use VisError here, for human readable error strings */
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Plugins references list: destroy failed"));
+		visual_log (VISUAL_LOG_WARNING, _("Plugins references list: destroy failed: %s"), visual_error_to_string (ret));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_actor));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Actor plugins list: destroy failed"));
+		visual_log (VISUAL_LOG_WARNING, _("Actor plugins list: destroy failed: %s"), visual_error_to_string (ret));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_input));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Input plugins list: destroy failed"));
+		visual_log (VISUAL_LOG_WARNING, _("Input plugins list: destroy failed: %s"), visual_error_to_string (ret));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_morph));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Morph plugins list: destroy failed"));
+		visual_log (VISUAL_LOG_WARNING, _("Morph plugins list: destroy failed: %s"), visual_error_to_string (ret));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_transform));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Transform plugins list: destroy failed"));
+		visual_log (VISUAL_LOG_WARNING, _("Transform plugins list: destroy failed: %s"), visual_error_to_string (ret));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_paramcontainer));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Global param container: destroy failed"));
+		visual_log (VISUAL_LOG_WARNING, _("Global param container: destroy failed: %s"), visual_error_to_string (ret));
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_userinterface));
 	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Error during UI destroy:"));
+		visual_log (VISUAL_LOG_WARNING, _("Error during UI destroy: %s"), visual_error_to_string (ret));
 
         if (__lv_progname != NULL) {
                 visual_mem_free (__lv_progname);
