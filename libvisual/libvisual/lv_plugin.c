@@ -875,15 +875,19 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		return NULL;
 	}
 
-	/* FIXME we do leak the object when it fails the sanity check, tho
-	 * it is not always safe (with VERY old stuff laying around) to unref it. */
-	
 	/* Check for API and struct size */
 	if (plug_info[0].struct_size != sizeof (VisPluginInfo) ||
 			plug_info[0].api_version != VISUAL_PLUGIN_API_VERSION) {
 
+		for (i = 0; i < cnt; i++) {
+			visual_object_unref (plug_info[i].plugin);
+			visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
+		}
+
 		visual_log (VISUAL_LOG_CRITICAL, _("Plugin %s is not compatible with version %s of libvisual"),
 				pluginpath, visual_get_version ());
+
+
 #if defined(VISUAL_OS_WIN32)
 		FreeLibrary (handle);
 #else
@@ -908,6 +912,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		visual_object_unref (plug_info[i].plugin);
 		visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
 	}
+	
 #if defined(VISUAL_OS_WIN32)
 	FreeLibrary (handle);
 #else

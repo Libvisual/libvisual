@@ -3,8 +3,12 @@ of Libvisual.
 
 These are only visible changes, for more details look at the ChangeLog.
 
-New in 0.2.0: 2005-02-09:
+New in 0.3.0: xxxx-xx-xx:
+* Will unref plugins that don't match the ABI version, BE SURE TO HAVE NO 0.1.x
+  plugins laying around, it's not compatible, and it will most likely crash.
+  (Dennis)
 
+New in 0.2.0: 2005-02-09:
 * VisTransform subsystem. (Dennis)
 * visual_palette_color_cycle() function. (Dennis)
 * visual_param_container_copy_match() function. (Dennis)

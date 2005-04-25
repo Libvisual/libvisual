@@ -1,4 +1,15 @@
 2005-04-25  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_plugin.c (visual_plugin_get_references): unref old
+	plugins., will crash on 0.1.x, seriously just don't have any 0.1.x
+	stuff laying around. 0.2.x also had a problem with const plugin
+	descriptions, which was placed in .rodata on some systems, that while
+	the reffing system wants to write in the structure, so DO NOT have
+	const plugin description functions.
+
+	* NEWS: Updated a bit.
+
+2005-04-25  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_libvisual.c, libvisual/lv_songinfo.c: Added support for
 	cover art size setting.
