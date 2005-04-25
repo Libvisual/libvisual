@@ -27,6 +27,8 @@
 #include <string.h>
 
 #include "lv_common.h"
+#include "lv_libvisual.h"
+#include "lv_param.h"
 #include "lv_songinfo.h"
 
 static int songinfo_dtor (VisObject *object)
@@ -254,16 +256,31 @@ int visual_songinfo_set_song (VisSongInfo *songinfo, char *song)
 int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 {
 	VisVideo dtransform;
+	VisParamContainer *params;
+	VisParamEntry *xparam;
+	VisParamEntry *yparam;
+	int cawidth = 64;
+	int caheight = 64;
 
 	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
 
 	if (songinfo->cover != NULL)
 		visual_object_unref (VISUAL_OBJECT (songinfo->cover));
 
+	/* Get the desired cover art size */
+	params = visual_get_params ();
+	xparam = visual_param_container_get (params, "songinfo cover size x");
+	yparam = visual_param_container_get (params, "songinfo cover size y");
+	
+	if (xparam != NULL && yparam != NULL) {
+		cawidth = visual_param_entry_get_integer (xparam);
+		caheight = visual_param_entry_get_integer (yparam);
+	}
+	
 	/* The coverart image */
 	songinfo->cover = visual_video_new ();
 	visual_video_set_depth (songinfo->cover, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (songinfo->cover, 64, 64);
+	visual_video_set_dimension (songinfo->cover, cawidth, caheight);
 	visual_video_allocate_buffer (songinfo->cover);
 	
 	/* The temp depth transform video */
@@ -276,7 +293,6 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	visual_video_depth_transform (&dtransform, cover);
 
 	/* Now scale it */
-	/* FIXME make cover image size settable ??? */
 	visual_video_scale (songinfo->cover, &dtransform, VISUAL_VIDEO_SCALE_BILINEAR);
 
 	/* Unref the depth transform video */
