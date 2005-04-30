@@ -39,7 +39,191 @@
 
 #define BI_RGB	0
 #define BI_RLE8	1
-#define BI_RLE	2
+#define BI_RLE4	2
+
+static int load_uncompressed(FILE *fp, VisVideo *video, int depth);
+static int load_rle(FILE *fp, VisVideo *video, int mode);
+
+static int load_uncompressed(FILE *fp, VisVideo *video, int depth)
+{
+	uint8_t *data;
+	int i;
+	int pad;
+	
+	pad = (4 - (video->pitch & 3)) & 3;
+	data = (uint8_t *) video->pixels + (video->height * video->pitch);
+	
+	switch (depth) {
+		case 24:
+		case 8:
+			while (data > (uint8_t *) video->pixels) {
+				data -= video->pitch;
+
+				if (fread(data, video->pitch, 1, fp) != 1)
+					goto err;
+
+				if (pad)
+					fseek(fp, pad, SEEK_CUR);
+			}
+			break;
+
+		case 4: 
+			while (data > (uint8_t *) video->pixels) {
+				/* Unpack 4 bpp pixels aka 2 pixels per byte */
+				uint8_t *col = data - video->pitch;
+				uint8_t *end = (uint8_t *) ((int)data & ~1);
+				data = col;
+
+				while (col < end) {
+					uint8_t p = fgetc(fp);
+					*col++ = p >> 4;
+					*col++ = p & 0xf;
+				}
+				
+				if (video->pitch & 1) 
+					*col++ = fgetc(fp) >> 4;
+				
+				if (pad)
+					fseek(fp, pad, SEEK_CUR);
+			}
+			break;
+
+		case 1:
+			while (data > (uint8_t *) video->pixels) {
+				/* Unpack 1 bpp pixels aka 8 pixels per byte */
+				uint8_t *col = data - video->pitch;
+				uint8_t *end = (uint8_t *) ((int)data & ~7);
+				data = col;
+
+				while (col < end) {
+					uint8_t p = fgetc(fp);
+					for (i=0; i < 8; i++) {
+						*col++ = p >> 7;
+						p <<= 1;
+					}
+				}
+				
+				if (video->pitch & 7) {
+					uint8_t p = fgetc(fp);
+					uint8_t count = video->pitch & 7;
+					for (i=0; i < count; i++) {
+						*col++ = p >> 7;
+						p <<= 1;
+					}
+				}
+			
+				if (pad)
+					fseek(fp, pad, SEEK_CUR);
+			}
+			break;
+	}
+
+	return VISUAL_OK;
+	
+err:
+	visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
+	return -VISUAL_ERROR_BMP_CORRUPTED;
+}
+
+static int load_rle(FILE *fp, VisVideo *video, int mode)
+{
+	uint8_t *col, *end;
+	uint8_t p;
+	int c, y, k, pad;
+	int processing = 1;
+	
+	end = (uint8_t *)video->pixels + (video->height * video->pitch);
+	col = end - video->pitch;
+	y = video->height - 1;
+
+	do {
+		if ((c=fgetc(fp)) == EOF)
+			goto err;
+		
+		if (c) {
+			/* Encoded mode */
+			p = fgetc(fp); /* Color */
+			if (mode == BI_RLE8) {
+				while (c-- && col < end)
+					*col++ = p;
+			} else {
+				k = c >> 1; /* Even count */
+				while (k-- && col < end - 1) {
+					*col++ = p >> 4;
+					*col++ = p & 0xf;
+				}
+
+				if (c & 1 && col < end)
+					*col++ = p >> 4;
+			}
+			continue;
+		}
+
+		/* Escape sequence */
+		c = fgetc(fp);
+		switch (c) {
+			case EOF:
+				goto err;
+				
+			case 0: /* End of line */
+				y--;
+				col = (uint8_t *) video->pixels + video->pitch * y;
+
+				if (y < 0)
+					goto err;
+				
+				break;
+
+			case 1: /* End of bitmap */
+				processing = 0;
+				break;
+
+			case 2: /* Delta */
+				/* X Delta */
+				col += (uint8_t)fgetc(fp);
+
+				/* Y Delta */
+				c = (uint8_t)fgetc(fp);
+				col -= c * video->pitch;
+				y -= c;
+
+				if (col < (uint8_t *)video->pixels)
+					goto err;
+				
+				break;
+
+			default: /* Absolute mode: 3 - 255 */
+				if (mode == BI_RLE8) {
+					pad = c & 1;
+					while (c-- && col < end)
+						*col++ = fgetc(fp);	
+				} else {
+					pad = ((c + 1) >> 1) & 1;
+					k = c >> 1; /* Even count */
+					while (k-- && col < end - 1) {
+						p = fgetc(fp);
+						*col++ = p >> 4;
+						*col++ = p & 0xf;
+					}
+
+					if (c & 1 && col < end)
+						*col++ = fgetc(fp) >> 4;
+				}
+
+				if (pad)
+					fgetc(fp);
+				break;
+				
+		}
+	} while (processing);
+
+	return VISUAL_OK;
+
+err:
+	visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
+	return -VISUAL_ERROR_BMP_CORRUPTED;
+}
+
 
 /**
  * @defgroup VisBitmap VisBitmap
@@ -49,9 +233,6 @@
 /**
  * Loads a BMP file into a VisVideo. The buffer will be located
  * for the VisVideo.
- *
- * The loader currently only supports uncompressed bitmaps in the form
- * of either 8 bits indexed or 24 bits RGB.
  *
  * Keep in mind that you need to free the palette by hand.
  * 
@@ -78,187 +259,164 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	uint32_t bi_clrused;
 
 	/* File read vars */
-	int fd;
-
+	FILE *fp;
+	
 	/* Worker vars */
-	uint8_t *data;
-	int pad;
+	uint8_t depth = 24;
+	int32_t error = 0;
 	int i;
 
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	fd = open (filename, O_RDONLY);
-
-	if (fd < 0) {
+	fp = fopen (filename, "rb");
+	if (fp == NULL) {
 		visual_log (VISUAL_LOG_WARNING, _("Bitmap file not found: %s"), filename);
-
 		return -VISUAL_ERROR_BMP_NOT_FOUND;
 	}
 
 	/* Read the magic string */
-	read (fd, magic, 2);
-
+	fread(magic, 2, 1, fp);
 	if (strncmp (magic, "BM", 2) != 0) {
 		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file")); 
-	
+		fclose(fp);
 		return -VISUAL_ERROR_BMP_NO_BMP;
 	}
 
 	/* Read the file size */
-	read (fd, &bf_size, 4);
+	fread(&bf_size, 4, 1, fp);
 	bf_size = VISUAL_ENDIAN_LEI32 (bf_size);
 
 	/* Skip past the reserved bits */
-	lseek (fd, 4, SEEK_CUR);
+	fseek(fp, 4, SEEK_CUR);
 
 	/* Read the offset bits */
-	read (fd, &bf_bits, 4);
+	fread(&bf_bits, 4, 1, fp);
 	bf_bits = VISUAL_ENDIAN_LEI32 (bf_bits);
 
 	/* Read the info structure size */
-	read (fd, &bi_size, 4);
+	fread(&bi_size, 4, 1, fp);
 	bi_size = VISUAL_ENDIAN_LEI32 (bi_size);
 
 	if (bi_size == 12) {
 		/* And read the width, height */
-		read (fd, &bi_width, 2);
-		read (fd, &bi_height, 2);
+		fread(&bi_width, 2, 1, fp);
+		fread(&bi_height, 2, 1, fp);
 		bi_width = VISUAL_ENDIAN_LEI16 (bi_width);
 		bi_height = VISUAL_ENDIAN_LEI16 (bi_height);
 
 		/* Skip over the planet */
-		lseek (fd, 2, SEEK_CUR);
+		fseek(fp, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
-		read (fd, &bi_bitcount, 2);
+		fread(&bi_bitcount, 2, 1, fp);
 		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
-
 		bi_compression = BI_RGB;
 	} else {
 		/* And read the width, height */
-		read (fd, &bi_width, 4);
-		read (fd, &bi_height, 4);
-		bi_width = VISUAL_ENDIAN_LEI16 (bi_width);
-		bi_height = VISUAL_ENDIAN_LEI16 (bi_height);
+		fread(&bi_width, 4, 1, fp);
+		fread(&bi_height, 4, 1, fp);
+		bi_width = VISUAL_ENDIAN_LEI32 (bi_width);
+		bi_height = VISUAL_ENDIAN_LEI32 (bi_height);
 
 		/* Skip over the planet */
-		lseek (fd, 2, SEEK_CUR);
+		fseek(fp, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
-		read (fd, &bi_bitcount, 2);
+		fread(&bi_bitcount, 2, 1, fp);
 		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 
 		/* Read the compression flag */
-		read (fd, &bi_compression, 4);
+		fread(&bi_compression, 4, 1, fp);
 		bi_compression = VISUAL_ENDIAN_LEI32 (bi_compression);
 
 		/* Skip over the nonsense we don't want to know */
-		lseek (fd, 12, SEEK_CUR);
+		fseek(fp, 12, SEEK_CUR);
 
 		/* Number of colors in palette */
-		read (fd, &bi_clrused, 4);
+		fread(&bi_clrused, 4, 1, fp);
 		bi_clrused = VISUAL_ENDIAN_LEI32 (bi_clrused);
 
 		/* Skip over the other nonsense */
-		lseek (fd, 4, SEEK_CUR);
+		fseek(fp, 4, SEEK_CUR);
 	}
 
 	/* Check if we can handle it */
-	if (bi_bitcount != 8 && bi_bitcount != 24) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Only bitmaps with 8 bits or 24 bits per pixel are supported"));
-		
+	if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
+		visual_log (VISUAL_LOG_CRITICAL, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
+		fclose(fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
-	}
-
-	/* We only handle uncompressed bitmaps */
-	if (bi_compression != BI_RGB) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Only uncompressed bitmaps are supported"));
-
+	}       
+	
+	if (bi_compression > 3) { 
+		visual_log (VISUAL_LOG_CRITICAL, _("Bitmap uses an invalid or unsupported compression scheme"));
+		fclose(fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
-	}
+	}       
 
 	/* Load the palette */
-	if (bi_bitcount == 8) {
-		if (bi_clrused == 0)
-			bi_clrused = 256;
+	if (bi_bitcount < 24) {
+		if (bi_clrused == 0) {
+			/* When the colors used variable is zero, use the
+			 * maximum number of palette colors allowed for the specified depth. */
+			bi_clrused = 1 << bi_bitcount;
+		}
 
 		if (video->pal != NULL)
 			visual_object_unref (VISUAL_OBJECT (video->pal));
 		
-		video->pal = visual_palette_new (bi_clrused);
+		/* Always allocate 256 palette entries.
+		 * Depth transformation depends on this */
+		video->pal = visual_palette_new (256);
 
 		if (bi_size == 12) {
 			for (i = 0; i < bi_clrused; i++) {
-				read (fd, &video->pal->colors[i].b, 1);
-				read (fd, &video->pal->colors[i].g, 1);
-				read (fd, &video->pal->colors[i].r, 1);
+				video->pal->colors[i].b = fgetc(fp);
+				video->pal->colors[i].g = fgetc(fp);
+				video->pal->colors[i].r = fgetc(fp);
 			}
 		} else {
 			for (i = 0; i < bi_clrused; i++) {
-				read (fd, &video->pal->colors[i].b, 1);
-				read (fd, &video->pal->colors[i].g, 1);
-				read (fd, &video->pal->colors[i].r, 1);
-				lseek (fd, 1, SEEK_CUR);
+				video->pal->colors[i].b = fgetc(fp);
+				video->pal->colors[i].g = fgetc(fp);
+				video->pal->colors[i].r = fgetc(fp);
+				fseek(fp, 1, SEEK_CUR);
 			}
 		}
 	}
+
+	/* Use 8 bpp for all bit depths under 24 bits */
+	if (bi_bitcount < 24)
+		depth = 8;
 
 	/* Make the target VisVideo ready for use */
-	visual_video_set_depth (video, visual_video_depth_enum_from_value (bi_bitcount));
+	visual_video_set_depth (video, visual_video_depth_enum_from_value (depth));
 	visual_video_set_dimension (video, bi_width, bi_height);
 	visual_video_allocate_buffer (video);
-
+	
 	/* Set to the beginning of image data, note that MickeySoft likes stuff upside down .. */
-	lseek (fd, bf_bits, SEEK_SET);
+	fseek(fp, bf_bits, SEEK_SET);
 
-	pad = ((video->pitch % 4) ? (4 - (video->pitch % 4)) : 0);
+	/* Load image data */
+	switch (bi_compression) {
+		case BI_RGB:
+			error = load_uncompressed(fp, video, bi_bitcount);
+			break;
 
-	data = video->pixels + (video->height * video->pitch);
-	while (data > (uint8_t *) video->pixels) {
-		data -= video->pitch;
+		case BI_RLE4:
+			error = load_rle(fp, video, BI_RLE4);
+			break;
 
-		if (read (fd, data, video->pitch) != video->pitch) {
-			visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
-			
-			visual_video_free_buffer (video);
-
-			return -VISUAL_ERROR_BMP_CORRUPTED;
-		}
-
-#if !VISUAL_LITTLE_ENDIAN
-		switch (bi_bitcount) {
-			case 24: {
-				int i, p;
-				for (p=0, i=0; i<bi_width; i++){
-#	if VISUAL_BIG_ENDIAN
-					uint8_t c[2];
-
-					c[0] = data[p];
-					c[1] = data[p+2];
-
-					data[p] = c[1];
-					data[p+2] = c[0];
-
-					p+=3;
-#	else
-#		error todo
-#	endif
-				}
-				break;
-			}
-			default:
-				visual_log (VISUAL_LOG_CRITICAL, _("Internal error."));
-		}
-#endif
-
-		if (pad != 0) {
-			lseek (fd, 4, pad);
-		}
+		case BI_RLE8:
+			error = load_rle(fp, video, BI_RLE8);
+			break;
 	}
 
-	close (fd);
-
-	return VISUAL_OK;
+	fclose(fp);
+	if (!error) 
+		return VISUAL_OK;
+	
+	visual_video_free_buffer (video);
+	return error;
 }
 
 /**
