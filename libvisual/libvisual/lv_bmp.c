@@ -41,10 +41,10 @@
 #define BI_RLE8	1
 #define BI_RLE4	2
 
-static int load_uncompressed(FILE *fp, VisVideo *video, int depth);
-static int load_rle(FILE *fp, VisVideo *video, int mode);
+static int load_uncompressed (FILE *fp, VisVideo *video, int depth);
+static int load_rle (FILE *fp, VisVideo *video, int mode);
 
-static int load_uncompressed(FILE *fp, VisVideo *video, int depth)
+static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 {
 	uint8_t *data;
 	int i;
@@ -59,11 +59,11 @@ static int load_uncompressed(FILE *fp, VisVideo *video, int depth)
 			while (data > (uint8_t *) video->pixels) {
 				data -= video->pitch;
 
-				if (fread(data, video->pitch, 1, fp) != 1)
+				if (fread (data, video->pitch, 1, fp) != 1)
 					goto err;
 
 				if (pad)
-					fseek(fp, pad, SEEK_CUR);
+					fseek (fp, pad, SEEK_CUR);
 			}
 			break;
 
@@ -75,16 +75,16 @@ static int load_uncompressed(FILE *fp, VisVideo *video, int depth)
 				data = col;
 
 				while (col < end) {
-					uint8_t p = fgetc(fp);
+					uint8_t p = fgetc (fp);
 					*col++ = p >> 4;
 					*col++ = p & 0xf;
 				}
 				
 				if (video->pitch & 1) 
-					*col++ = fgetc(fp) >> 4;
+					*col++ = fgetc (fp) >> 4;
 				
 				if (pad)
-					fseek(fp, pad, SEEK_CUR);
+					fseek (fp, pad, SEEK_CUR);
 			}
 			break;
 
@@ -96,7 +96,7 @@ static int load_uncompressed(FILE *fp, VisVideo *video, int depth)
 				data = col;
 
 				while (col < end) {
-					uint8_t p = fgetc(fp);
+					uint8_t p = fgetc (fp);
 					for (i=0; i < 8; i++) {
 						*col++ = p >> 7;
 						p <<= 1;
@@ -104,7 +104,7 @@ static int load_uncompressed(FILE *fp, VisVideo *video, int depth)
 				}
 				
 				if (video->pitch & 7) {
-					uint8_t p = fgetc(fp);
+					uint8_t p = fgetc (fp);
 					uint8_t count = video->pitch & 7;
 					for (i=0; i < count; i++) {
 						*col++ = p >> 7;
@@ -113,7 +113,7 @@ static int load_uncompressed(FILE *fp, VisVideo *video, int depth)
 				}
 			
 				if (pad)
-					fseek(fp, pad, SEEK_CUR);
+					fseek (fp, pad, SEEK_CUR);
 			}
 			break;
 	}
@@ -125,7 +125,7 @@ err:
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
 
-static int load_rle(FILE *fp, VisVideo *video, int mode)
+static int load_rle (FILE *fp, VisVideo *video, int mode)
 {
 	uint8_t *col, *end;
 	uint8_t p;
@@ -137,12 +137,12 @@ static int load_rle(FILE *fp, VisVideo *video, int mode)
 	y = video->height - 1;
 
 	do {
-		if ((c=fgetc(fp)) == EOF)
+		if ((c = fgetc (fp)) == EOF)
 			goto err;
 		
 		if (c) {
 			/* Encoded mode */
-			p = fgetc(fp); /* Color */
+			p = fgetc (fp); /* Color */
 			if (mode == BI_RLE8) {
 				while (c-- && col < end)
 					*col++ = p;
@@ -160,7 +160,7 @@ static int load_rle(FILE *fp, VisVideo *video, int mode)
 		}
 
 		/* Escape sequence */
-		c = fgetc(fp);
+		c = fgetc (fp);
 		switch (c) {
 			case EOF:
 				goto err;
@@ -180,10 +180,10 @@ static int load_rle(FILE *fp, VisVideo *video, int mode)
 
 			case 2: /* Delta */
 				/* X Delta */
-				col += (uint8_t)fgetc(fp);
+				col += (uint8_t) fgetc (fp);
 
 				/* Y Delta */
-				c = (uint8_t)fgetc(fp);
+				c = (uint8_t) fgetc (fp);
 				col -= c * video->pitch;
 				y -= c;
 
@@ -196,22 +196,22 @@ static int load_rle(FILE *fp, VisVideo *video, int mode)
 				if (mode == BI_RLE8) {
 					pad = c & 1;
 					while (c-- && col < end)
-						*col++ = fgetc(fp);	
+						*col++ = fgetc (fp);	
 				} else {
 					pad = ((c + 1) >> 1) & 1;
 					k = c >> 1; /* Even count */
 					while (k-- && col < end - 1) {
-						p = fgetc(fp);
+						p = fgetc (fp);
 						*col++ = p >> 4;
 						*col++ = p & 0xf;
 					}
 
 					if (c & 1 && col < end)
-						*col++ = fgetc(fp) >> 4;
+						*col++ = fgetc (fp) >> 4;
 				}
 
 				if (pad)
-					fgetc(fp);
+					fgetc (fp);
 				break;
 				
 		}
@@ -275,81 +275,81 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	}
 
 	/* Read the magic string */
-	fread(magic, 2, 1, fp);
+	fread (magic, 2, 1, fp);
 	if (strncmp (magic, "BM", 2) != 0) {
 		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file")); 
-		fclose(fp);
+		fclose (fp);
 		return -VISUAL_ERROR_BMP_NO_BMP;
 	}
 
 	/* Read the file size */
-	fread(&bf_size, 4, 1, fp);
+	fread (&bf_size, 4, 1, fp);
 	bf_size = VISUAL_ENDIAN_LEI32 (bf_size);
 
 	/* Skip past the reserved bits */
-	fseek(fp, 4, SEEK_CUR);
+	fseek (fp, 4, SEEK_CUR);
 
 	/* Read the offset bits */
-	fread(&bf_bits, 4, 1, fp);
+	fread (&bf_bits, 4, 1, fp);
 	bf_bits = VISUAL_ENDIAN_LEI32 (bf_bits);
 
 	/* Read the info structure size */
-	fread(&bi_size, 4, 1, fp);
+	fread (&bi_size, 4, 1, fp);
 	bi_size = VISUAL_ENDIAN_LEI32 (bi_size);
 
 	if (bi_size == 12) {
 		/* And read the width, height */
-		fread(&bi_width, 2, 1, fp);
-		fread(&bi_height, 2, 1, fp);
+		fread (&bi_width, 2, 1, fp);
+		fread (&bi_height, 2, 1, fp);
 		bi_width = VISUAL_ENDIAN_LEI16 (bi_width);
 		bi_height = VISUAL_ENDIAN_LEI16 (bi_height);
 
 		/* Skip over the planet */
-		fseek(fp, 2, SEEK_CUR);
+		fseek (fp, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
-		fread(&bi_bitcount, 2, 1, fp);
+		fread (&bi_bitcount, 2, 1, fp);
 		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 		bi_compression = BI_RGB;
 	} else {
 		/* And read the width, height */
-		fread(&bi_width, 4, 1, fp);
-		fread(&bi_height, 4, 1, fp);
+		fread (&bi_width, 4, 1, fp);
+		fread (&bi_height, 4, 1, fp);
 		bi_width = VISUAL_ENDIAN_LEI32 (bi_width);
 		bi_height = VISUAL_ENDIAN_LEI32 (bi_height);
 
 		/* Skip over the planet */
-		fseek(fp, 2, SEEK_CUR);
+		fseek (fp, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
-		fread(&bi_bitcount, 2, 1, fp);
+		fread (&bi_bitcount, 2, 1, fp);
 		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 
 		/* Read the compression flag */
-		fread(&bi_compression, 4, 1, fp);
+		fread (&bi_compression, 4, 1, fp);
 		bi_compression = VISUAL_ENDIAN_LEI32 (bi_compression);
 
 		/* Skip over the nonsense we don't want to know */
-		fseek(fp, 12, SEEK_CUR);
+		fseek (fp, 12, SEEK_CUR);
 
 		/* Number of colors in palette */
-		fread(&bi_clrused, 4, 1, fp);
+		fread (&bi_clrused, 4, 1, fp);
 		bi_clrused = VISUAL_ENDIAN_LEI32 (bi_clrused);
 
 		/* Skip over the other nonsense */
-		fseek(fp, 4, SEEK_CUR);
+		fseek (fp, 4, SEEK_CUR);
 	}
 
 	/* Check if we can handle it */
 	if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
-		fclose(fp);
+		fclose (fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}       
 	
 	if (bi_compression > 3) { 
 		visual_log (VISUAL_LOG_CRITICAL, _("Bitmap uses an invalid or unsupported compression scheme"));
-		fclose(fp);
+		fclose (fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}       
 
@@ -370,16 +370,16 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 		if (bi_size == 12) {
 			for (i = 0; i < bi_clrused; i++) {
-				video->pal->colors[i].b = fgetc(fp);
-				video->pal->colors[i].g = fgetc(fp);
-				video->pal->colors[i].r = fgetc(fp);
+				video->pal->colors[i].b = fgetc (fp);
+				video->pal->colors[i].g = fgetc (fp);
+				video->pal->colors[i].r = fgetc (fp);
 			}
 		} else {
 			for (i = 0; i < bi_clrused; i++) {
-				video->pal->colors[i].b = fgetc(fp);
-				video->pal->colors[i].g = fgetc(fp);
-				video->pal->colors[i].r = fgetc(fp);
-				fseek(fp, 1, SEEK_CUR);
+				video->pal->colors[i].b = fgetc (fp);
+				video->pal->colors[i].g = fgetc (fp);
+				video->pal->colors[i].r = fgetc (fp);
+				fseek (fp, 1, SEEK_CUR);
 			}
 		}
 	}
@@ -394,24 +394,24 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	visual_video_allocate_buffer (video);
 	
 	/* Set to the beginning of image data, note that MickeySoft likes stuff upside down .. */
-	fseek(fp, bf_bits, SEEK_SET);
+	fseek (fp, bf_bits, SEEK_SET);
 
 	/* Load image data */
 	switch (bi_compression) {
 		case BI_RGB:
-			error = load_uncompressed(fp, video, bi_bitcount);
+			error = load_uncompressed (fp, video, bi_bitcount);
 			break;
 
 		case BI_RLE4:
-			error = load_rle(fp, video, BI_RLE4);
+			error = load_rle (fp, video, BI_RLE4);
 			break;
 
 		case BI_RLE8:
-			error = load_rle(fp, video, BI_RLE8);
+			error = load_rle (fp, video, BI_RLE8);
 			break;
 	}
 
-	fclose(fp);
+	fclose (fp);
 	if (!error) 
 		return VISUAL_OK;
 	
