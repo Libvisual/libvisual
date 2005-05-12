@@ -1,3 +1,7 @@
+2005-05-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* docs/avs_format.txt: Added, by Zevensoft from #avs, freenode.
+
 2005-03-14  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* common/Makefile.am: added LIBVISUAL_CFLAGS to
