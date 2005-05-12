@@ -38,7 +38,7 @@ static int audio_dtor (VisObject *object)
 {
 	VisAudio *audio = VISUAL_AUDIO (object);
 
-	visual_object_unref (VISUAL_OBJECT (audio->fft_state));
+	visual_object_unref (VISUAL_OBJECT (audio->fft));
 
 	return VISUAL_OK;
 }
@@ -107,7 +107,8 @@ VisAudio *visual_audio_new ()
  */
 int visual_audio_analyze (VisAudio *audio)
 {
-        float tmp_out[256];
+        float temp_out[256];
+	float temp_audio[2][512];
 	double scale;
 	int i, j, y;
 
@@ -121,20 +122,28 @@ int visual_audio_analyze (VisAudio *audio)
 	}
 
 	/* Initialize fft if not yet initialized */
-	if (audio->fft_state == NULL)
-		audio->fft_state = visual_fft_init ();
+	if (audio->fft == NULL)
+		audio->fft = visual_fft_new (512, 256);
 
+	/* Convert int16_t audio to float audio, (won't be needed when the rest of the new audio
+	 * core lands). */
+	for (i = 0; i < 512; i++) {
+		temp_audio[0][i] = audio->pcm[0][i];
+		temp_audio[1][i] = audio->pcm[1][i];
+	}
+	
 	/* FFT analyze the pcm data */
-	visual_fft_perform (audio->plugpcm[0], tmp_out, audio->fft_state);
+	visual_fft_perform (audio->fft, temp_audio[0], temp_out);
 		
 	for (i = 0; i < 256; i++)
-		audio->freq[0][i] = ((int) sqrt (tmp_out[i + 1])) >> 8;
-
-	visual_fft_perform (audio->plugpcm[1], tmp_out, audio->fft_state);
+		audio->freq[0][i] = temp_out[i] * 50;
+	
+	visual_fft_perform (audio->fft, temp_audio[1], temp_out);
 
 	for (i = 0; i < 256; i++)
-		audio->freq[1][i] = ((int) sqrt (tmp_out[i + 1])) >> 8;
+		audio->freq[1][i] = temp_out[i] * 50;
 
+	/* Average channel */
 	for (i = 0; i < 256; i++)
 		audio->freq[2][i] = (audio->freq[0][i] + audio->freq[1][i]) >> 1;
 

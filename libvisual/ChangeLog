@@ -1,5 +1,14 @@
 2005-05-12  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_fft.*: Added new FFT engine based upon NULLSOFT
+	Milkdrop it's implementation.
+
+	* libvisual/lv_audio.*: Adopted to the new FFT engine.
+
+	Things left todo: Vectorize it with SSE.
+
+2005-05-12  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_video_mmx.c (_lv_scale_bilinear_32_mmx):
 	Fixed compile error in the assembly directives.
 

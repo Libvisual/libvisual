@@ -6,7 +6,10 @@ Duilio J. Protti <dprotti@users.sourceforge.net>
 Vitaly V. Bursov <vitalyvb@ukr.net>
 Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
 
-The FFT implementation used by libvisual:
+The new FFT implementation that is used by libvisual:
+based upon the FFT implementation found in NULLSOFT Milkdrop.
+
+The old FFT implementation that was used by libvisual:
 Richard Boulton <richard@tartarus.org>
 
 Nearest scalers, initial VisCPU stuff:

@@ -53,7 +53,7 @@ struct _VisAudio {
 							 * like with the pcm element. */
 	short		 freqnorm[3][256];		/**< Frequency data like the freq member, however this time the bands
 							 * are normalized. */
-	VisFFTState	*fft_state;			/**< Private member that contains context information for the FFT engine. */
+	VisFFT		*fft;				/**< Private member that contains context information for the FFT engine. */
 
 	short int	 bpmhistory[1024][6];		/**< Private member for BPM detection, not implemented right now. */
 	short int	 bpmdata[1024][6];		/**< Private member for BPM detection, not implemented right now. */

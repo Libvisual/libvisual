@@ -66,6 +66,8 @@ static const char *__lv_error_human_readable[] = {
 	
 	[VISUAL_ERROR_EVENT_NULL] =			N_("VisEvent is NULL"),
 	[VISUAL_ERROR_EVENT_QUEUE_NULL] =		N_("VisEventQueue is NULL"),
+
+	[VISUAL_ERROR_FFT_NULL] = 			N_("VisFFT is NULL"),
 	
 	[VISUAL_ERROR_INPUT_NULL] =			N_("VisInput is NULL"),
 	[VISUAL_ERROR_INPUT_PLUGIN_NULL] =		N_("VisInput it's plugin is NULL"),

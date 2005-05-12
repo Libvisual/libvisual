@@ -73,7 +73,10 @@ enum {
 	
 	/* Error entries for the VisEvent system */
 	VISUAL_ERROR_EVENT_NULL,			/**< The VisEvent is NULL. */
-	VISUAL_ERROR_EVENT_QUEUE_NULL,			/**< The VisEventQueue is nULL. */
+	VISUAL_ERROR_EVENT_QUEUE_NULL,			/**< The VisEventQueue is NULL. */
+
+	/* Error entries for VisFFT system */
+	VISUAL_ERROR_FFT_NULL,				/**< The VisFFT is NULL. */
 	
 	/* Error entries for the VisInput system */
 	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */
