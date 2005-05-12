@@ -235,8 +235,8 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 				: [output]  "=m"(*dest_pixel)
 				: [pixel_u] "m"(src_pixel_rowu[u>>16])
 				, [pixel_l] "m"(src_pixel_rowl[u>>16])
-				, [fracu]   "g"(fracU)
-				, [fracv]   "g"(fracV)
+				, [fracu]   "m"(fracU)
+				, [fracv]   "m"(fracV)
 				: "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
 			
 			++dest_pixel;

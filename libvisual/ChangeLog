@@ -1,3 +1,10 @@
+2005-05-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video_mmx.c (_lv_scale_bilinear_32_mmx):
+	Fixed compile error in the assembly directives.
+
+	Patch by: Nickolay Semyonov-Kolchin  <kolchin@users.sourceforge.net>
+
 2005-04-30  Sepp Wijnands  <sw@nerds-incorporated.org>
 	
 	* libvisual/lv_bmp.c: Fixed a couple of minor bugs. Added support for
