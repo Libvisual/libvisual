@@ -123,8 +123,6 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 	dv = ((src->height - 1) << 16) / dest->height;
 	v = 0;
 
-	__asm__ __volatile__ ("\n\temms");
-	
 	for (y = dest->height; y--; v += dv) {
 		uint32_t x;
 		uint32_t fracU, fracV;     /* fixed point 28.4 [0,1[    */
@@ -139,7 +137,6 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 		/* fixed point format convertion: fracV >>= 8) */
 		fracV = ((v & 0xffff) >> 12) | 0x100000;
 		u = 0;
-
 
 		for (x = dest->width - 1; x--; u += du) {
 
@@ -247,7 +244,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
 
 	}
 
-	__asm__ __volatile__ ("\n\temms");
+	__asm__ __volatile__ ("\n\t emms");
 
 	return VISUAL_OK;
 #else /* !VISUAL_ARCH_X86 */

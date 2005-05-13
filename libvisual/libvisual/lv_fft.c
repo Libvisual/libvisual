@@ -191,7 +191,8 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output)
 			wi = wi * wpr + wtemp * wpi;
 		}
 
-		dftsize <<= 1;
+		dftsize <<= 1; /* FIXME not right, make so that a start and end freq can be given and
+				  that a log scale will be calculated for this */
 		t++;
 	}
 
