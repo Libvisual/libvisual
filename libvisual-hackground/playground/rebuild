@@ -1,6 +1,7 @@
 #!/bin/bash
 
 gcc -o libvis-scale libvis-scale.c `sdl-config --libs --cflags` -ggdb -lvisual
+gcc -o libvis-sub libvis-sub.c `sdl-config --libs --cflags` -ggdb -lvisual
 gcc -o libvis-meng libvis-meng.c `sdl-config --libs --cflags` -ggdb -lvisual
 gcc -o libvis-blit libvis-blit.c `sdl-config --libs --cflags` -ggdb -lvisual
 gcc -o libvis-depth libvis-depth.c `sdl-config --libs --cflags` -ggdb -lvisual
