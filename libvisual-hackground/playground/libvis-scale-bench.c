@@ -234,6 +234,7 @@ int main (int argc, char *argv[])
 	visual_time_get (&start);
 	
 	while (1) {
+		VisColor color;
 		/* place on screen */
 //		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);
 	
@@ -253,8 +254,9 @@ int main (int argc, char *argv[])
 
 //		visual_video_alpha_fill (sdlvid, 0);
 		
-		visual_video_alpha_fill (video32, 255);
-		visual_video_alpha_color (video32, 255, 0, 255, 0);
+		visual_video_fill_alpha (video32, 255);
+		visual_color_set (&color, 255, 0, 255);
+		visual_video_fill_alpha_color (video32, &color, 0);
 	
 		visual_video_scale (scalevid, video32, interpol);
 	

@@ -11,14 +11,10 @@ SDL_Color colors[256];
 unsigned char *scrbuf;
 int bpp;
 
-VisActor *actor;
-VisVideo *actvid;
 VisVideo *video;
-VisVideo *video32;
 VisVideo *sdlvid;
 VisVideo *scalevid;
 VisPalette *pal;
-VisInput *input;
 
 void sdl_fullscreen_toggle ();
 void sdl_fullscreen_xy (int *x, int *y);
@@ -159,10 +155,9 @@ void sdl_draw_buf ()
 {
 	unsigned char *str = (unsigned char *) screen->pixels;
 	int i;
-
+	
 	memcpy (str, scrbuf, screen->pitch * screen->h);
 
-	memset (scrbuf, 0, screen->pitch * screen->h);
 	SDL_UpdateRect (screen, 0, 0, screen->w, screen->h);
 }
 
@@ -174,14 +169,12 @@ int main (int argc, char *argv[])
 	int freeze = 0;
 	int depthflag = 0;
 	int alpha = 128;
-	int xoff = 0, yoff = -90;
-	int sxsize = 1000;
-	int sysize = 700;
-	int interpol = VISUAL_VIDEO_SCALE_NEAREST;
-        int frames = 0;
-	VisTime start, end;
-	VisColor color;
-		
+	int xoff = 0, yoff = 0;
+	int sxsize = 50;
+	int sysize = 50;
+	int dismode = 0;
+	VisPalette *pal = visual_palette_new (256);
+	
 	bpp = 4;
 	sdl_init (width, height);
 
@@ -192,37 +185,14 @@ int main (int argc, char *argv[])
 
 	visual_init (&argc, &argv);
 	
-	if (argc > 1)
-		actor = visual_actor_new (argv[1]);
-	else
-		actor = visual_actor_new ("G-Force");
+	scalevid = visual_video_new_with_buffer (256, 256, VISUAL_VIDEO_DEPTH_24BIT);
+	visual_video_set_palette (scalevid, pal);
 
-	visual_actor_realize (actor);
-
-	video = visual_video_new ();
-
-	if (argc > 2)
-		video = visual_bitmap_load_new_video (argv[2]);
-	else
-		video = visual_bitmap_load_new_video ("alphachantest.bmp");
-
-	actvid = visual_video_new ();
-	visual_actor_set_video (actor, actvid);
-	visual_video_set_depth (actvid, visual_video_depth_get_highest (visual_actor_get_supported_depth (actor)));
-	visual_video_set_dimension (actvid, width, height);
-	visual_video_allocate_buffer (actvid);
-
-	visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
-
-	video32 = visual_video_new ();
-	visual_video_set_depth (video32, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (video32, video->width, video->height);
-	visual_video_allocate_buffer (video32);
-	
-	scalevid = visual_video_new ();
-	visual_video_set_depth (scalevid, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (scalevid, sxsize, sysize);
-	visual_video_allocate_buffer (scalevid);
+	for (i = 0; i < 256; i++) {
+		pal->colors[i].r = (unsigned int) i;
+		pal->colors[i].g = (unsigned int) i;
+		pal->colors[i].b = (unsigned int) i;
+	}
 
 	sdlvid = visual_video_new ();
 	visual_video_set_depth (sdlvid, VISUAL_VIDEO_DEPTH_32BIT);
@@ -230,56 +200,32 @@ int main (int argc, char *argv[])
 	visual_video_set_pitch (sdlvid, screen->pitch);
 	visual_video_set_buffer (sdlvid, scrbuf);
 	
-	input = visual_input_new ("alsa");
-	visual_input_realize (input);
-
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-        
-	visual_time_get (&start);
 	
 	while (1) {
-		visual_input_run (input);
-		visual_actor_run (actor, input->audio);
+		VisColor color;
+		VisRectangle rect;
+
+		visual_rectangle_set (&rect, 10, 10, 146, 146);
 	
+		visual_color_set (&color, 255, 255, 255);
+		
 		/* place on screen */
-//		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);
-	
-		if (sxsize < 0)
-			sxsize = 0;
-
-		if (sysize < 0)
-			sysize = 0;
+		visual_video_fill_color_rectangle (scalevid, &color, &rect);
 		
-		if (sxsize != scalevid->width || sysize != scalevid->height) {
-			visual_video_set_dimension (scalevid, sxsize, sysize);
-			visual_video_allocate_buffer (scalevid);
-		}
-
-		visual_video_depth_transform (video32, video);
-
-
-//		visual_video_alpha_fill (sdlvid, 0);
-		
-//		visual_video_alpha_fill (video32, alpha);
-		visual_color_set (&color, 255, 0, 255);
-		visual_video_fill_alpha_color (video32, &color, 255);
-
-		visual_video_scale (scalevid, video32, interpol);
-		
-		visual_video_blit_overlay (sdlvid, actvid, 0, 0, FALSE);
-		visual_video_blit_overlay (sdlvid, scalevid, xoff, yoff, TRUE);
+		visual_video_blit_overlay (sdlvid, scalevid, 0, 0, FALSE);
 
 		sdl_draw_buf ();
-		frames++;
+		
+		usleep (5000);
 		
 		while (SDL_PollEvent (&event)) {
 			switch (event.type) {
 				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym) {
 						case SDLK_F11:
-							SDL_WM_ToggleFullScreen (screen);
+							sdl_fullscreen_toggle ();
 							break;
-
 						case SDLK_UP:
 							yoff -= 10;
 
@@ -289,7 +235,7 @@ int main (int argc, char *argv[])
 							yoff += 10;
 
 							break;
-						
+
 						case SDLK_LEFT:
 							xoff -= 10;
 
@@ -299,7 +245,7 @@ int main (int argc, char *argv[])
 							xoff += 10;
 
 							break;
-						
+
 						case SDLK_q:
 							sysize -= 10;
 
@@ -309,7 +255,7 @@ int main (int argc, char *argv[])
 							sysize += 10;
 
 							break;
-						
+
 						case SDLK_z:
 							sxsize -= 10;
 
@@ -320,28 +266,11 @@ int main (int argc, char *argv[])
 
 							break;
 
-						case SDLK_i:
-							if (interpol == VISUAL_VIDEO_SCALE_NEAREST)
-								interpol = VISUAL_VIDEO_SCALE_BILINEAR;
-							else
-								interpol = VISUAL_VIDEO_SCALE_NEAREST;
-							
-							break;
-
-						case SDLK_o:
-							alpha -= 8;
-							if (alpha < 0)
-								alpha = 0;
+						case SDLK_m:
+							dismode = ~dismode;
 
 							break;
 
-						case SDLK_p:
-							alpha += 8;
-							if (alpha > 255)
-								alpha = 255;
-
-							break;
-							
 						case SDLK_ESCAPE:
 							goto out;
 							break;
@@ -359,16 +288,6 @@ int main (int argc, char *argv[])
 		}
 	}
 out:
-	visual_time_get (&end);
-	
-	VisTime diff;
-
-	visual_time_difference (&diff, &start, &end);
-
-
-	printf ("Ran: %d:%d, drawn %d frames\n",
-			diff.tv_sec, diff.tv_usec, frames);
-
 	SDL_Quit ();
 }
 

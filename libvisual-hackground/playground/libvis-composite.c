@@ -12,13 +12,22 @@ unsigned char *scrbuf;
 int bpp;
 
 VisActor *actor;
-VisVideo *actvid;
+VisActor *actor2;
+VisActor *actor3;
 VisVideo *video;
-VisVideo *video32;
+VisVideo *video2;
+VisVideo *video3;
 VisVideo *sdlvid;
 VisVideo *scalevid;
 VisPalette *pal;
 VisInput *input;
+
+static float bdd = 0;
+static float bdd2 = 0;
+static float add3 = 0;
+static float add6 = 0;
+static float add7 = 0;
+static float add8 = 0;
 
 void sdl_fullscreen_toggle ();
 void sdl_fullscreen_xy (int *x, int *y);
@@ -27,6 +36,8 @@ void sdl_size_request (int width, int height);
 void sdl_init (int width, int height);
 void sdl_create (int width, int height);
 void sdl_draw_buf ();
+
+static int compfunc (VisVideo *dest, VisVideo *src);
 
 /* Fullscreen stuff */
 void sdl_fullscreen_toggle ()
@@ -166,22 +177,146 @@ void sdl_draw_buf ()
 	SDL_UpdateRect (screen, 0, 0, screen->w, screen->h);
 }
 
+static int compfunc4 (VisVideo *dest, VisVideo *src)
+{
+	static float o = 0;
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+	uint8_t alpha = 128;
+
+	float sin = 0;
+	float add = 0;
+	float add2 = 0;
+	float add4 = 0;
+	float add5 = 0;
+
+	
+	add += bdd;
+	add2 += bdd2;
+
+	bdd2 += cos (add8) / 2;
+	add8 += 0.1;
+
+	for (i = 0; i < src->height; i++) {
+
+		add2 += (cos (add4) / ((cos (add7) * 12) + 15));
+		add = bdd2;
+
+
+		for (j = 0; j < src->width; j++) {
+
+			alpha = ((cos(add) * (cos(add2) * 62)) + ((cos(add5) * 20) + (cos(add6) * 40) + 128));
+			add += 0.06;
+			add5 += 0.02;
+
+
+			*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
+			*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
+			*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+
+			destbuf += 4;
+			srcbuf += 4;
+		}
+		add4 += 0.1;
+
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
+	}
+
+	add3 += 0.01;
+	add6 += 0.05;
+	add7 += 0.07;
+
+	return VISUAL_OK;
+}
+
+static int compfunc3 (VisVideo *dest, VisVideo *src)
+{
+	static float o = 0;
+	static float p = 0;
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+	uint8_t alpha = 128;
+
+	for (i = 0; i < src->height; i++) {
+		alpha = (1 + sin(o)) * 128;
+
+		o += 0.0003;
+
+		for (j = 0; j < src->width; j++) {
+
+			*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
+			*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
+			*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
+	}
+
+	return VISUAL_OK;
+}
+
+static int compfunc2 (VisVideo *dest, VisVideo *src)
+{
+	int i;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+
+	for (i = 0; i < src->height; i++) {
+		if (i % 2)
+			visual_mem_copy (destbuf, srcbuf, src->pitch);
+
+		destbuf += dest->pitch;
+		srcbuf += src->pitch;
+	}
+
+	return VISUAL_OK;
+}
+
+static int compfunc (VisVideo *dest, VisVideo *src)
+{
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+	uint8_t alpha = 128;
+
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			*destbuf = ((0 * (*destbuf - *srcbuf) >> 8) + *srcbuf);
+			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
+			*(destbuf + 2) = ((*destbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
+	}
+
+	return VISUAL_OK;
+}
+
 /* Main stuff */
 int main (int argc, char *argv[])
 {
-	int width = 1000, height = 600;
+	int width = 500, height = 300;
 	int i, j;
 	int freeze = 0;
 	int depthflag = 0;
 	int alpha = 128;
-	int xoff = 0, yoff = -90;
-	int sxsize = 1000;
-	int sysize = 700;
+	int xoff = 0, yoff = 0;
+	int sxsize = 300;
+	int sysize = 300;
 	int interpol = VISUAL_VIDEO_SCALE_NEAREST;
-        int frames = 0;
-	VisTime start, end;
-	VisColor color;
-		
+
 	bpp = 4;
 	sdl_init (width, height);
 
@@ -190,6 +325,7 @@ int main (int argc, char *argv[])
 
 	SDL_Event event;
 
+	visual_log_set_verboseness (VISUAL_LOG_VERBOSENESS_HIGH);
 	visual_init (&argc, &argv);
 	
 	if (argc > 1)
@@ -201,26 +337,56 @@ int main (int argc, char *argv[])
 
 	video = visual_video_new ();
 
-	if (argc > 2)
-		video = visual_bitmap_load_new_video (argv[2]);
-	else
-		video = visual_bitmap_load_new_video ("alphachantest.bmp");
-
-	actvid = visual_video_new ();
-	visual_actor_set_video (actor, actvid);
-	visual_video_set_depth (actvid, visual_video_depth_get_highest (visual_actor_get_supported_depth (actor)));
-	visual_video_set_dimension (actvid, width, height);
-	visual_video_allocate_buffer (actvid);
+	int blahblahdepth = VISUAL_VIDEO_DEPTH_32BIT;
+	visual_actor_set_video (actor, video);
+	visual_video_set_depth (video, blahblahdepth);
+	visual_video_set_dimension (video, width, height);
+	visual_video_allocate_buffer (video);
 
 	visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
 
-	video32 = visual_video_new ();
-	visual_video_set_depth (video32, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (video32, video->width, video->height);
-	visual_video_allocate_buffer (video32);
-	
+	/* Second actor */
+	if (argc > 2)
+		actor2 = visual_actor_new (argv[2]);
+	else
+		actor2 = visual_actor_new ("oinksie");
+
+	visual_actor_realize (actor2);
+
+	video2 = visual_video_new ();
+	visual_actor_set_video (actor2, video2);
+	visual_video_set_depth (video2, VISUAL_VIDEO_DEPTH_32BIT);
+	visual_video_set_dimension (video2, width, height);
+	visual_video_allocate_buffer (video2);
+
+	visual_video_composite_set_type (video2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
+	visual_video_composite_set_function (video2, compfunc3);
+
+	visual_actor_video_negotiate (actor2, 0, FALSE, FALSE);
+
+	/* Third actor */
+	if (argc > 3)
+		actor3 = visual_actor_new (argv[3]);
+	else
+		actor3 = visual_actor_new ("corona");
+
+	visual_actor_realize (actor3);
+
+	video3 = visual_video_new ();
+	visual_actor_set_video (actor3, video3);
+	visual_video_set_depth (video3, VISUAL_VIDEO_DEPTH_32BIT);
+	visual_video_set_dimension (video3, width, height);
+	visual_video_allocate_buffer (video3);
+
+	visual_video_composite_set_type (video3, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
+	visual_video_composite_set_function (video3, compfunc);
+
+	visual_actor_video_negotiate (actor3, 0, FALSE, FALSE);
+
+
+	/* done. */
 	scalevid = visual_video_new ();
-	visual_video_set_depth (scalevid, VISUAL_VIDEO_DEPTH_32BIT);
+	visual_video_set_depth (scalevid, blahblahdepth);
 	visual_video_set_dimension (scalevid, sxsize, sysize);
 	visual_video_allocate_buffer (scalevid);
 
@@ -234,50 +400,29 @@ int main (int argc, char *argv[])
 	visual_input_realize (input);
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-        
-	visual_time_get (&start);
 	
 	while (1) {
 		visual_input_run (input);
 		visual_actor_run (actor, input->audio);
+		visual_actor_run (actor2, input->audio);
+		visual_actor_run (actor3, input->audio);
 	
-		/* place on screen */
-//		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);
-	
-		if (sxsize < 0)
-			sxsize = 0;
+		visual_video_blit_overlay (sdlvid, video, 0, 0, TRUE);
 
-		if (sysize < 0)
-			sysize = 0;
+		visual_video_blit_overlay (sdlvid, video2, 0, 0, TRUE);
 		
-		if (sxsize != scalevid->width || sysize != scalevid->height) {
-			visual_video_set_dimension (scalevid, sxsize, sysize);
-			visual_video_allocate_buffer (scalevid);
-		}
-
-		visual_video_depth_transform (video32, video);
-
-
-//		visual_video_alpha_fill (sdlvid, 0);
-		
-//		visual_video_alpha_fill (video32, alpha);
-		visual_color_set (&color, 255, 0, 255);
-		visual_video_fill_alpha_color (video32, &color, 255);
-
-		visual_video_scale (scalevid, video32, interpol);
-		
-		visual_video_blit_overlay (sdlvid, actvid, 0, 0, FALSE);
-		visual_video_blit_overlay (sdlvid, scalevid, xoff, yoff, TRUE);
+		visual_video_blit_overlay (sdlvid, video3, 0, 0, TRUE);
 
 		sdl_draw_buf ();
-		frames++;
+		
+		usleep (5000);
 		
 		while (SDL_PollEvent (&event)) {
 			switch (event.type) {
 				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym) {
 						case SDLK_F11:
-							SDL_WM_ToggleFullScreen (screen);
+							sdl_fullscreen_toggle ();
 							break;
 
 						case SDLK_UP:
@@ -321,26 +466,14 @@ int main (int argc, char *argv[])
 							break;
 
 						case SDLK_i:
+
 							if (interpol == VISUAL_VIDEO_SCALE_NEAREST)
 								interpol = VISUAL_VIDEO_SCALE_BILINEAR;
 							else
 								interpol = VISUAL_VIDEO_SCALE_NEAREST;
-							
-							break;
-
-						case SDLK_o:
-							alpha -= 8;
-							if (alpha < 0)
-								alpha = 0;
 
 							break;
 
-						case SDLK_p:
-							alpha += 8;
-							if (alpha > 255)
-								alpha = 255;
-
-							break;
 							
 						case SDLK_ESCAPE:
 							goto out;
@@ -359,16 +492,6 @@ int main (int argc, char *argv[])
 		}
 	}
 out:
-	visual_time_get (&end);
-	
-	VisTime diff;
-
-	visual_time_difference (&diff, &start, &end);
-
-
-	printf ("Ran: %d:%d, drawn %d frames\n",
-			diff.tv_sec, diff.tv_usec, frames);
-
 	SDL_Quit ();
 }
 
