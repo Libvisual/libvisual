@@ -11,6 +11,7 @@ m4_define([libvisual_required_version], [0.3.0])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
 m4_define([gdk_pixbuf_required_version], [2.0])
+m4_define([g_streamer_required_version], [0.8])
 
 # Checks for programs.
 AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
@@ -120,7 +121,30 @@ if test x$gdkpixbuf_plugin = xyes; then
 else
   AC_MSG_RESULT([no])
 fi
-  
+
+AC_ARG_ENABLE([gstreamer-plugin],
+            AC_HELP_STRING([--disable-gstreamer-plugin],
+                           [Do not build Gstreamer visualization plugin @<:@default=enabled@:>@]),
+	    [gstreamer_plugin=$enableval],
+	    [gstreamer_plugin=yes])
+AC_MSG_CHECKING([whether to enable Gstreamer visualization plugin])
+if test x$gstreamer_plugin = xyes; then
+  AC_MSG_RESULT([yes])
+  PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.8 >= g_streamer_required_version, [gstreamer="yes"], [gstreamer="no"])
+  if test x$gstreamer = xyes; then
+    AC_SUBST(GSTREAMER_LIBS)
+    AC_SUBST(GSTREAMER_CFLAGS)
+    build_actor="$build actor_gstreamer"
+    AC_SUBST([GSTREAMER], ['actor_gstreamer.la'])
+  else
+    AC_MSG_WARN([*** Gstreamer >= ${g_streamer_required_version} is not found.
+	  	The libvisual gstreamer viewer plugin won't be build.
+		Gstreamer can be downloaded from http://www.gstreamer.org/])
+  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_PATH_X
 
 opengl=no
@@ -655,6 +679,7 @@ AC_CONFIG_FILES([
 	plugins/actor/corona/Makefile
 	plugins/actor/goom2/Makefile
 	plugins/actor/gdkpixbuf/Makefile
+	plugins/actor/gstreamer/Makefile
 	plugins/actor/G-Force/Makefile
 	plugins/actor/G-Force/docs/Makefile
 	plugins/actor/G-Force/Common/Makefile
