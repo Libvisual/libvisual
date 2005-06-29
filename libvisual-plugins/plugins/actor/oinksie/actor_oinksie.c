@@ -33,24 +33,25 @@
 #include "oinksie.h"
 
 typedef struct {
-	OinksiePrivate priv1;
-	OinksiePrivate priv2;
+	OinksiePrivate			 priv1;
+	OinksiePrivate			 priv2;
 
-	int color_mode;
-	
-	int depth;
-	uint8_t *tbuf1;
-	uint8_t *tbuf2;
-	uint8_t *buf1;
-	uint8_t *buf2;
+	int				 color_mode;
+
+	int				 depth;
+	uint8_t				*tbuf1;
+	uint8_t				*tbuf2;
+	uint8_t				*buf1;
+	uint8_t				*buf2;
+
+	VisVideoCustomCompositeFunc	 currentcomp;
 } OinksiePrivContainer;
 
-static int alpha_blend1_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static int alpha_blend2_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static int alpha_blend3_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static int alpha_blend4_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static int alpha_blend5_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-
+static int composite_blend1_32_c (VisVideo *dest, VisVideo *src);
+static int composite_blend2_32_c (VisVideo *dest, VisVideo *src);
+static int composite_blend3_32_c (VisVideo *dest, VisVideo *src);
+static int composite_blend4_32_c (VisVideo *dest, VisVideo *src);
+static int composite_blend5_32_c (VisVideo *dest, VisVideo *src);
 
 int act_oinksie_init (VisPluginData *plugin);
 int act_oinksie_cleanup (VisPluginData *plugin);
@@ -264,8 +265,22 @@ int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.param.param;
 
-				if (visual_param_entry_is (param, "color mode"))
+				if (visual_param_entry_is (param, "color mode")) {
 					priv->color_mode = visual_param_entry_get_integer (param);
+
+					if (priv->color_mode == 0)
+						priv->currentcomp = composite_blend1_32_c;
+					else if (priv->color_mode == 1)
+						priv->currentcomp = composite_blend2_32_c;
+					else if (priv->color_mode == 2)
+						priv->currentcomp = composite_blend3_32_c;
+					else if (priv->color_mode == 3)
+						priv->currentcomp = composite_blend4_32_c;
+					else if (priv->color_mode == 4)
+						priv->currentcomp = composite_blend5_32_c;
+					else
+						priv->currentcomp = composite_blend2_32_c;
+				}
 
 				break;
 								
@@ -290,10 +305,7 @@ VisPalette *act_oinksie_palette (VisPluginData *plugin)
 int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisVideo transvid;
 	int pitch;
-
-	visual_mem_set (&transvid, 0, sizeof (VisVideo));
 
 	visual_mem_copy (&priv->priv1.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
 	visual_mem_copy (&priv->priv2.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
@@ -310,152 +322,163 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		priv->priv1.drawbuf = video->pixels;
 		oinksie_render (&priv->priv1);
 	} else {
+		VisVideo vid1;
+		VisVideo vid2;
+
+		visual_video_init (&vid1);
+		visual_video_init (&vid2);
+
 		oinksie_sample (&priv->priv1);
 		oinksie_sample (&priv->priv2);
-	
+
 		priv->priv1.drawbuf = priv->buf1;
 		priv->priv2.drawbuf = priv->buf2;
 
 		oinksie_render (&priv->priv1);
 		oinksie_render (&priv->priv2);
 
-		visual_video_set_depth (&transvid, VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_dimension (&transvid, video->width, video->height);
-		
-		pitch = video->width * video->bpp;
+		visual_video_set_depth (&vid1, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_dimension (&vid1, video->width, video->height);
+		visual_video_set_buffer (&vid1, priv->buf1);
+		visual_video_set_palette (&vid1, oinksie_palette_get (&priv->priv1));
 
-		visual_video_set_buffer (&transvid, priv->buf1);
-		visual_video_depth_transform_to_buffer (priv->tbuf1, &transvid,
-				oinksie_palette_get (&priv->priv1), priv->depth, video->pitch);
+		visual_video_blit_overlay (video, &vid1, 0, 0, FALSE);
 
-		visual_video_set_buffer (&transvid, priv->buf2);
-		visual_video_depth_transform_to_buffer (priv->tbuf2, &transvid,
-				oinksie_palette_get (&priv->priv2), priv->depth, video->pitch);
+		visual_video_set_depth (&vid2, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_dimension (&vid2, video->width, video->height);
+		visual_video_set_buffer (&vid2, priv->buf2);
+		visual_video_set_palette (&vid2, oinksie_palette_get (&priv->priv2));
 
-		switch (priv->color_mode) {
-			case 0:
-				alpha_blend1_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
-			
-				break;
-				
-			case 1:
-				alpha_blend2_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
-			
-				break;
+		visual_video_composite_set_type (&vid2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
+		visual_video_composite_set_function (&vid2, priv->currentcomp);
 
-			case 2:
-				alpha_blend3_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
-			
-				break;
-				
-			case 3:
-				alpha_blend4_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
-			
-				break;
-			case 4:
-				alpha_blend5_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
-			
-				break;
+		visual_video_blit_overlay (video, &vid2, 0, 0, FALSE);
 
-			default:
-				alpha_blend2_32_c (video->pixels, priv->tbuf1, priv->tbuf2, transvid.size, 0.5);
-			
-				break;
+		visual_object_unref (VISUAL_OBJECT (&vid1));
+		visual_object_unref (VISUAL_OBJECT (&vid2));
+	}
+
+	return 0;
+}
+
+static int composite_blend1_32_c (VisVideo *dest, VisVideo *src)
+{
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+	uint8_t alpha = 128;
+
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			*destbuf = ((alpha * (*destbuf - *srcbuf) >> 8) + *srcbuf);
+			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
+			*(destbuf + 2) = ((alpha * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+
+			destbuf += 4;
+			srcbuf += 4;
 		}
-		
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
 	}
-	
-	return 0;
+
+	return VISUAL_OK;
 }
 
-static int alpha_blend1_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+static int composite_blend2_32_c (VisVideo *dest, VisVideo *src)
 {
-	uint8_t ialpha = (alpha * 255);
-	int i;
-	
-	for (i = 0; i < size; i++) {
-		*dest = ((ialpha * (*src1 - *src2) >> 8) + *src2);
-		*(dest + 1) = ((ialpha * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
-		*(dest + 2) = ((ialpha * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+	uint8_t alpha = 128;
 
-		dest += 4;
-		src1 += 4;
-		src2 += 4;
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
+			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
+			*(destbuf + 2) = ((0 * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
 	}
-	
-	return 0;
+
+	return VISUAL_OK;
 }
 
-static int alpha_blend2_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+static int composite_blend3_32_c (VisVideo *dest, VisVideo *src)
 {
-	uint8_t ialpha = (alpha * 255);
-	int i;
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+	uint8_t alpha = 128;
 
-	for (i = 0; i < size; i++) {
-		*dest = ((*src1 * (*src1 - *src2) >> 8) + *src2);
-		*(dest + 1) = ((ialpha * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
-		*(dest + 2) = ((0 * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			*destbuf = ((0 * (*destbuf - *srcbuf) >> 8) + *srcbuf);
+			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
+			*(destbuf + 2) = ((*destbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
 
-		dest += 4;
-		src1 += 4;
-		src2 += 4;
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
-static int alpha_blend3_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+static int composite_blend4_32_c (VisVideo *dest, VisVideo *src)
 {
-	uint8_t ialpha = (alpha * 255);
-	int i;
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+	uint8_t alpha = 128;
 
-	for (i = 0; i < size; i++) {
-		*dest = ((0 * (*src1 - *src2) >> 8) + *src2);
-		*(dest + 1) = ((ialpha * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
-		*(dest + 2) = ((*src1 * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
+			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
+			*(destbuf + 2) = ((*srcbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
 
-		dest += 4;
-		src1 += 4;
-		src2 += 4;
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
 	}
 
-	return 0;
+	return VISUAL_OK;
 }
 
-static int alpha_blend4_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
+static int composite_blend5_32_c (VisVideo *dest, VisVideo *src)
 {
-	uint8_t ialpha = (alpha * 255);
-	int i;
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
+	uint8_t alpha = 128;
 
-	for (i = 0; i < size; i++) {
-		*dest = ((*src1 * (*src1 - *src2) >> 8) + *src2);
-		*(dest + 1) = ((ialpha * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
-		*(dest + 2) = ((*src2 * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
+			*(destbuf + 1) = ((*srcbuf * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
+			*(destbuf + 2) = ((*destbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
 
-		dest += 4;
-		src1 += 4;
-		src2 += 4;
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
 	}
 
-	return 0;
-}
-
-static int alpha_blend5_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-	uint8_t ialpha = (alpha * 255);
-	int i;
-
-	for (i = 0; i < size; i++) {
-		*dest = ((*src1 * (*src1 - *src2) >> 8) + *src2);
-		*(dest + 1) = ((*src2 * (*(src1 + 1) - *(src2 + 1)) >> 8) + *(src2 + 1));
-		*(dest + 2) = ((*src1 * (*(src1 + 2) - *(src2 + 2)) >> 8) + *(src2 + 2));
-
-		dest += 4;
-		src1 += 4;
-		src2 += 4;
-	}
-
-	return 0;
+	return VISUAL_OK;
 }
 
 /* FIXME make a color mode out of this one as well (yeah I was fooling around with mmx) */

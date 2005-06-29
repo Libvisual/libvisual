@@ -201,27 +201,28 @@ void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int
 
 void _oink_gfx_scope_normal (OinksiePrivate *priv, uint8_t *buf, int color, int height)
 {
-	int adder = priv->screen_width > 512 ? (priv->screen_width - 512) / 2 : 0;
-	int x;
-	int y;
-	int y_old;
-	
-	y = ((priv->screen_halfheight) + (priv->audio.pcm[2][0 >> 1] >> 9)) * height;
-        y_old = y;
-                
-	for (x = 0; x < priv->screen_width && x < 512; x++)
-	{
-		y = ((priv->screen_halfheight) + (priv->audio.pcm[2][x >> 1] >> 9)) * height;
+	VisRectangle rect;
+	int i;
+	float fx[512];
+	float fy[512];
+	int x[512];
+	int y[512];
+	int yold = 0;
 
-		if (y < 0) 
-			y = 0;
-		else if (y > priv->screen_height)
-			y = priv->screen_height - 1;
+	visual_rectangle_set (&rect, 0, 0, priv->screen_width, priv->screen_height);
 
-		_oink_gfx_vline (priv, buf, color, x + adder, y, y_old);
-		
-		y_old = y;
-	}			
+	for (i = 0; i < 512; i++) {
+		fx[i] = (1.0 / 512.0) * i;
+		fy[i] = (1 + sin(i)) * 0.5;
+		fy[i] = 0.5 + (priv->audio.pcm[2][i] * (priv->screen_halfheight * 0.00000003));
+	}
+
+	visual_rectangle_denormalise_many_values (&rect, fx, fy, x, y, 512);
+
+	for (i = 0; i < 512; i++) {
+		_oink_gfx_vline (priv, buf, color, x[i], y[i], yold);
+		yold = y[i];
+	}
 }
 
 void _oink_gfx_scope_circle (OinksiePrivate *priv, uint8_t *buf, int color, int size, int x, int y)
