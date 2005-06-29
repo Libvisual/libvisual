@@ -407,7 +407,7 @@ int main (int argc, char *argv[])
 		visual_actor_run (actor2, input->audio);
 		visual_actor_run (actor3, input->audio);
 	
-		visual_video_blit_overlay (sdlvid, video, 0, 0, TRUE);
+		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);
 
 		visual_video_blit_overlay (sdlvid, video2, 0, 0, TRUE);
 		
