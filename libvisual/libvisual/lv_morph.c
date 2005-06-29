@@ -149,30 +149,69 @@ int visual_morph_valid_by_name (const char *name)
 VisMorph *visual_morph_new (const char *morphname)
 {
 	VisMorph *morph;
-	VisPluginRef *ref;
-
-	if (__lv_plugins_morph == NULL && morphname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
-		return NULL;
-	}
 
 	morph = visual_mem_new0 (VisMorph, 1);
 
+	visual_morph_init (morph, morphname);
+
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (morph), TRUE, morph_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (morph), TRUE);
+	visual_object_ref (VISUAL_OBJECT (morph));
+
+	return morph;
+}
+
+/**
+ * Initializes a VisMorph, this will set the allocated flag for the object to FALSE. Should not
+ * be used to reset a VisMorph, or on a VisMorph created by visual_morph_new().
+ *
+ * @see visual_morph_new
+ *
+ * @param morph Pointer to the VisMorph that is initialized.
+ * @param morphname
+ *	The name of the plugin to load, or NULL to simply initialize a new morph.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ */
+int visual_morph_init (VisMorph *morph, const char *morphname)
+{
+	VisPluginRef *ref;
+
+	visual_log_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
+
+	if (__lv_plugins_morph == NULL && morphname != NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
+
+		return -VISUAL_ERROR_PLUGIN_NO_LIST;
+	}
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (morph));
+	visual_object_set_dtor (VISUAL_OBJECT (morph), morph_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (morph), FALSE);
+	
+	/* Reset the VisMorph data */
+	morph->plugin = NULL;
+	morph->dest = NULL;
+	visual_palette_init (&morph->morphpal);
+	visual_time_init (&morph->morphtime);
+	visual_timer_init (&morph->timer);
+	visual_morph_set_rate (morph, 0);
+	visual_morph_set_steps (morph, 0);
+	morph->stepsdone = 0;
 
 	visual_palette_allocate_colors (&morph->morphpal, 256);
 
 	visual_morph_set_mode (morph, VISUAL_MORPH_MODE_SET);
 
 	if (morphname == NULL)
-		return morph;
+		return VISUAL_OK;
 
 	ref = visual_plugin_find (__lv_plugins_morph, morphname);
 
 	morph->plugin = visual_plugin_load (ref);
 
-	return morph;
+	return VISUAL_OK;
 }
 
 /**

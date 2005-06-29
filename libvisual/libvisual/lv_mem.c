@@ -44,16 +44,32 @@ static void *mem_copy_sse (void *dest, const void *src, size_t n);
 static void *mem_copy_sse2 (void *dest, const void *src, size_t n);
 static void *mem_copy_altivec (void *dest, const void *src, size_t n);
 
-static void *mem_set_c (void *dest, int c, size_t n);
-static void *mem_set_mmx (void *dest, int c, size_t n);
-static void *mem_set_mmx2 (void *dest, int c, size_t n);
-static void *mem_set_sse (void *dest, int c, size_t n);
-static void *mem_set_sse2 (void *dest, int c, size_t n);
-static void *mem_set_altivec (void *dest, int c, size_t n);
+static void *mem_set8_c (void *dest, int c, size_t n);
+static void *mem_set8_mmx (void *dest, int c, size_t n);
+static void *mem_set8_mmx2 (void *dest, int c, size_t n);
+static void *mem_set8_sse (void *dest, int c, size_t n);
+static void *mem_set8_sse2 (void *dest, int c, size_t n);
+static void *mem_set8_altivec (void *dest, int c, size_t n);
+
+static void *mem_set16_c (void *dest, int c, size_t n);
+static void *mem_set16_mmx (void *dest, int c, size_t n);
+static void *mem_set16_mmx2 (void *dest, int c, size_t n);
+static void *mem_set16_sse (void *dest, int c, size_t n);
+static void *mem_set16_sse2 (void *dest, int c, size_t n);
+static void *mem_set16_altivec (void *dest, int c, size_t n);
+
+static void *mem_set32_c (void *dest, int c, size_t n);
+static void *mem_set32_mmx (void *dest, int c, size_t n);
+static void *mem_set32_mmx2 (void *dest, int c, size_t n);
+static void *mem_set32_sse (void *dest, int c, size_t n);
+static void *mem_set32_sse2 (void *dest, int c, size_t n);
+static void *mem_set32_altivec (void *dest, int c, size_t n);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 VisMemCopyFunc visual_mem_copy = mem_copy_c;
-VisMemSetFunc visual_mem_set = mem_set_c;
+VisMemSet8Func visual_mem_set = mem_set8_c;
+VisMemSet16Func visual_mem_set16 = mem_set16_c;
+VisMemSet32Func visual_mem_set32 = mem_set32_c;
 
 
 /**
@@ -78,16 +94,22 @@ int visual_mem_initialize ()
 	 * every time */
 
 	visual_mem_copy = mem_copy_c;
-	visual_mem_set = mem_set_c;
+	visual_mem_set = mem_set8_c;
+	visual_mem_set16 = mem_set16_c;
+	visual_mem_set32 = mem_set32_c;
 	
 	if (visual_cpu_get_mmx () > 0) {
 		visual_mem_copy = mem_copy_mmx;
-		visual_mem_set = mem_set_mmx;
+		visual_mem_set = mem_set8_mmx;
+		visual_mem_set16 = mem_set16_mmx;
+		visual_mem_set32 = mem_set32_mmx;
 	}
 
 	if (visual_cpu_get_mmx2 () > 0) {
 		visual_mem_copy = mem_copy_mmx2;
-		visual_mem_set = mem_set_mmx2;
+		visual_mem_set = mem_set8_mmx2;
+		visual_mem_set16 = mem_set16_mmx2;
+		visual_mem_set32 = mem_set32_mmx2;
 	}
 
 	if (visual_cpu_get_sse () > 0) {
@@ -339,8 +361,8 @@ static void *mem_copy_altivec (void *dest, const void *src, size_t n)
 
 }
 
-
-static void *mem_set_c (void *dest, int c, size_t n)
+/* Memset functions, 1 byte memset */
+static void *mem_set8_c (void *dest, int c, size_t n)
 {
 	uint32_t *d = dest;
 	uint8_t *dc = dest;
@@ -364,7 +386,7 @@ static void *mem_set_c (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set_mmx (void *dest, int c, size_t n)
+static void *mem_set8_mmx (void *dest, int c, size_t n)
 {
 	uint32_t *d = dest;
 	uint8_t *dc = dest;
@@ -424,7 +446,7 @@ static void *mem_set_mmx (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set_mmx2 (void *dest, int c, size_t n)
+static void *mem_set8_mmx2 (void *dest, int c, size_t n)
 {
 	uint32_t *d = dest;
 	uint8_t *dc = dest;
@@ -484,7 +506,7 @@ static void *mem_set_mmx2 (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set_sse (void *dest, int c, size_t n)
+static void *mem_set8_sse (void *dest, int c, size_t n)
 {
 	uint32_t *d = dest;
 	uint8_t *dc = dest;
@@ -551,16 +573,399 @@ static void *mem_set_sse (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set_sse2 (void *dest, int c, size_t n)
+static void *mem_set8_sse2 (void *dest, int c, size_t n)
 {
 
 }
 
-static void *mem_set_altivec (void *dest, int c, size_t n)
+static void *mem_set8_altivec (void *dest, int c, size_t n)
 {
 
 }
 
+/* Memset functions, 2 byte memset */
+static void *mem_set16_c (void *dest, int c, size_t n)
+{
+	uint32_t *d = dest;
+	uint16_t *dc = dest;
+	uint32_t setflag32 =
+		(c & 0xffff) |
+		((c << 16) & 0xffff0000);
+	uint16_t setflag16 = c & 0xffff;
+
+	while (n >= 2) {
+		*d++ = setflag32;
+		n -= 2;
+	}
+
+	dc = (uint16_t *) d;
+
+	while (n--)
+		*dc++ = setflag16;
+
+	return dest;
+}
+
+static void *mem_set16_mmx (void *dest, int c, size_t n)
+{
+	uint32_t *d = dest;
+	uint16_t *dc = dest;
+	uint32_t setflag32 =
+		(c & 0xffff) |
+		((c << 16) & 0xffff0000);
+	uint16_t setflag16 = c & 0xffff;
+
+#ifdef VISUAL_ARCH_X86
+	__asm __volatile
+		("\n\t movd (%0), %%mm0"
+		 "\n\t movd (%0), %%mm1"
+		 "\n\t psllq $32, %%mm1"
+		 "\n\t por %%mm1, %%mm0"
+		 "\n\t movq %%mm0, %%mm2"
+		 "\n\t movq %%mm0, %%mm1"
+		 "\n\t movq %%mm2, %%mm3"
+		 "\n\t movq %%mm1, %%mm4"
+		 "\n\t movq %%mm0, %%mm5"
+		 "\n\t movq %%mm2, %%mm6"
+		 "\n\t movq %%mm1, %%mm7"
+		 :: "r" (&setflag32) : "memory");
+	
+	while (n >= 64) {
+		__asm __volatile
+			("\n\t movq %%mm0, (%0)"
+			 "\n\t movq %%mm1, 8(%0)"
+			 "\n\t movq %%mm2, 16(%0)"
+			 "\n\t movq %%mm3, 24(%0)"
+			 "\n\t movq %%mm4, 32(%0)"
+			 "\n\t movq %%mm5, 40(%0)"
+			 "\n\t movq %%mm6, 48(%0)"
+			 "\n\t movq %%mm7, 56(%0)"
+			 :: "r" (d) : "memory");
+
+		d += 16;
+
+		n -= 32;
+	}
+
+	__asm __volatile
+		("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	while (n >= 2) {
+		*d++ = setflag32;
+		n -= 2;
+	}
+
+	dc = (uint16_t *) d;
+
+	while (n--)
+		*dc++ = setflag16;
+
+	return dest;
+}
+
+static void *mem_set16_mmx2 (void *dest, int c, size_t n)
+{
+	uint32_t *d = dest;
+	uint16_t *dc = dest;
+	uint32_t setflag32 =
+		(c & 0xffff) |
+		((c << 16) & 0xffff0000);
+	uint16_t setflag16 = c & 0xffff;
+
+#ifdef VISUAL_ARCH_X86
+	__asm __volatile
+		("\n\t movd (%0), %%mm0"
+		 "\n\t movd (%0), %%mm1"
+		 "\n\t psllq $32, %%mm1"
+		 "\n\t por %%mm1, %%mm0"
+		 "\n\t movq %%mm0, %%mm2"
+		 "\n\t movq %%mm0, %%mm1"
+		 "\n\t movq %%mm2, %%mm3"
+		 "\n\t movq %%mm1, %%mm4"
+		 "\n\t movq %%mm0, %%mm5"
+		 "\n\t movq %%mm2, %%mm6"
+		 "\n\t movq %%mm1, %%mm7"
+		 :: "r" (&setflag32) : "memory");
+	
+	while (n >= 32) {
+		__asm __volatile
+			("\n\t movntq %%mm0, (%0)"
+			 "\n\t movntq %%mm1, 8(%0)"
+			 "\n\t movntq %%mm2, 16(%0)"
+			 "\n\t movntq %%mm3, 24(%0)"
+			 "\n\t movntq %%mm4, 32(%0)"
+			 "\n\t movntq %%mm5, 40(%0)"
+			 "\n\t movntq %%mm6, 48(%0)"
+			 "\n\t movntq %%mm7, 56(%0)"
+			 :: "r" (d) : "memory");
+
+		d += 16;
+
+		n -= 32;
+	}
+
+	__asm __volatile
+		("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	while (n >= 2) {
+		*d++ = setflag32;
+		n -= 2;
+	}
+
+	dc = (uint16_t *) d;
+
+	while (n--)
+		*dc++ = setflag16;
+
+	return dest;
+}
+
+static void *mem_set16_sse (void *dest, int c, size_t n)
+{
+	uint32_t *d = dest;
+	uint16_t *dc = dest;
+	uint32_t setflag32 =
+		(c & 0xffff) |
+		((c << 16) & 0xffff0000);
+	uint16_t setflag16 = c & 0xffff;
+
+	/* FIXME add support for aligned copies. */
+
+#ifdef VISUAL_ARCH_X86
+#if 0
+	__asm __volatile
+		("\n\t movss (%0), %%xmm0"
+		 "\n\t movss (%0), %%xmm1" // denk ik
+		 "\n\t psllq $32, %%mm1"
+		 "\n\t por %%mm1, %%mm0"
+		 "\n\t"
+
+		 
+		 "\n\t movq %%mm0, %%mm2"
+		 "\n\t movq %%mm0, %%mm1"
+		 "\n\t movq %%mm2, %%mm3"
+		 "\n\t movq %%mm1, %%mm4"
+		 "\n\t movq %%mm0, %%mm5"
+		 "\n\t movq %%mm2, %%mm6"
+		 "\n\t movq %%mm1, %%mm7"
+		 :: "r" (&setflag32) : "memory");
+	
+	while (n >= 64) {
+		__asm __volatile
+			("\n\t prefetchnta 256(%0)"
+			 "\n\t prefetchnta 320(%0)"
+			 "\n\t movups (%0), %%xmm0"
+			 "\n\t movups 16(%0), %%xmm1"
+			 "\n\t movups 32(%0), %%xmm2"
+			 "\n\t movups 48(%0), %%xmm3"
+			 "\n\t movntdq %%xmm0, (%1)"
+			 "\n\t movntdq %%xmm1, 16(%1)"
+			 "\n\t movntdq %%xmm2, 32(%1)"
+			 "\n\t movntdq %%xmm3, 48(%1)"
+			 ""
+			 :: "r" (s), "r" (d) : "memory");
+
+		d += 16;
+		s += 16;
+
+		n -= 64;
+	}
+#endif 
+#endif /* VISUAL_ARCH_X86 */
+	while (n >= 2) {
+		*d++ = setflag32;
+		n -= 2;
+	}
+
+	dc = (uint16_t *) d;
+
+	while (n--)
+		*dc++ = setflag16;
+
+	return dest;
+}
+
+static void *mem_set16_sse2 (void *dest, int c, size_t n)
+{
+
+}
+
+static void *mem_set16_altivec (void *dest, int c, size_t n)
+{
+
+}
+
+/* Memset functions, 4 byte memset */
+static void *mem_set32_c (void *dest, int c, size_t n)
+{
+	uint32_t *d = dest;
+	uint32_t setflag32 = c;
+
+	while (n--)
+		*d++ = setflag32;
+
+	return dest;
+}
+
+static void *mem_set32_mmx (void *dest, int c, size_t n)
+{
+	uint32_t *d = dest;
+	uint32_t setflag32 = c;
+
+#ifdef VISUAL_ARCH_X86
+	__asm __volatile
+		("\n\t movd (%0), %%mm0"
+		 "\n\t movd (%0), %%mm1"
+		 "\n\t psllq $32, %%mm1"
+		 "\n\t por %%mm1, %%mm0"
+		 "\n\t movq %%mm0, %%mm2"
+		 "\n\t movq %%mm0, %%mm1"
+		 "\n\t movq %%mm2, %%mm3"
+		 "\n\t movq %%mm1, %%mm4"
+		 "\n\t movq %%mm0, %%mm5"
+		 "\n\t movq %%mm2, %%mm6"
+		 "\n\t movq %%mm1, %%mm7"
+		 :: "r" (&setflag32) : "memory");
+	
+	while (n >= 64) {
+		__asm __volatile
+			("\n\t movq %%mm0, (%0)"
+			 "\n\t movq %%mm1, 8(%0)"
+			 "\n\t movq %%mm2, 16(%0)"
+			 "\n\t movq %%mm3, 24(%0)"
+			 "\n\t movq %%mm4, 32(%0)"
+			 "\n\t movq %%mm5, 40(%0)"
+			 "\n\t movq %%mm6, 48(%0)"
+			 "\n\t movq %%mm7, 56(%0)"
+			 :: "r" (d) : "memory");
+
+		d += 16;
+
+		n -= 16;
+	}
+
+	__asm __volatile
+		("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	while (n--) 
+		*d++ = setflag32;
+
+	return dest;
+}
+
+static void *mem_set32_mmx2 (void *dest, int c, size_t n)
+{
+	uint32_t *d = dest;
+	uint32_t setflag32 = c;
+	
+#ifdef VISUAL_ARCH_X86
+	__asm __volatile
+		("\n\t movd (%0), %%mm0"
+		 "\n\t movd (%0), %%mm1"
+		 "\n\t psllq $32, %%mm1"
+		 "\n\t por %%mm1, %%mm0"
+		 "\n\t movq %%mm0, %%mm2"
+		 "\n\t movq %%mm0, %%mm1"
+		 "\n\t movq %%mm2, %%mm3"
+		 "\n\t movq %%mm1, %%mm4"
+		 "\n\t movq %%mm0, %%mm5"
+		 "\n\t movq %%mm2, %%mm6"
+		 "\n\t movq %%mm1, %%mm7"
+		 :: "r" (&setflag32) : "memory");
+	
+	while (n >= 64) {
+		__asm __volatile
+			("\n\t movntq %%mm0, (%0)"
+			 "\n\t movntq %%mm1, 8(%0)"
+			 "\n\t movntq %%mm2, 16(%0)"
+			 "\n\t movntq %%mm3, 24(%0)"
+			 "\n\t movntq %%mm4, 32(%0)"
+			 "\n\t movntq %%mm5, 40(%0)"
+			 "\n\t movntq %%mm6, 48(%0)"
+			 "\n\t movntq %%mm7, 56(%0)"
+			 :: "r" (d) : "memory");
+
+		d += 16;
+
+		n -= 16;
+	}
+
+	__asm __volatile
+		("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	while (n--)
+		*d++ = setflag32;
+
+	return dest;
+}
+
+static void *mem_set32_sse (void *dest, int c, size_t n)
+{
+	uint32_t *d = dest;
+	uint32_t setflag32 = c;
+
+	/* FIXME add support for aligned copies. */
+
+#ifdef VISUAL_ARCH_X86
+#if 0
+	__asm __volatile
+		("\n\t movss (%0), %%xmm0"
+		 "\n\t movss (%0), %%xmm1" // denk ik
+		 "\n\t psllq $32, %%mm1"
+		 "\n\t por %%mm1, %%mm0"
+		 "\n\t"
+
+		 
+		 "\n\t movq %%mm0, %%mm2"
+		 "\n\t movq %%mm0, %%mm1"
+		 "\n\t movq %%mm2, %%mm3"
+		 "\n\t movq %%mm1, %%mm4"
+		 "\n\t movq %%mm0, %%mm5"
+		 "\n\t movq %%mm2, %%mm6"
+		 "\n\t movq %%mm1, %%mm7"
+		 :: "r" (&setflag32) : "memory");
+	
+	while (n >= 64) {
+		__asm __volatile
+			("\n\t prefetchnta 256(%0)"
+			 "\n\t prefetchnta 320(%0)"
+			 "\n\t movups (%0), %%xmm0"
+			 "\n\t movups 16(%0), %%xmm1"
+			 "\n\t movups 32(%0), %%xmm2"
+			 "\n\t movups 48(%0), %%xmm3"
+			 "\n\t movntdq %%xmm0, (%1)"
+			 "\n\t movntdq %%xmm1, 16(%1)"
+			 "\n\t movntdq %%xmm2, 32(%1)"
+			 "\n\t movntdq %%xmm3, 48(%1)"
+			 ""
+			 :: "r" (s), "r" (d) : "memory");
+
+		d += 16;
+		s += 16;
+
+		n -= 64;
+	}
+#endif 
+#endif /* VISUAL_ARCH_X86 */
+	while (n--)
+		*d++ = setflag32;
+
+	return dest;
+}
+
+static void *mem_set32_sse2 (void *dest, int c, size_t n)
+{
+
+}
+
+static void *mem_set32_altivec (void *dest, int c, size_t n)
+{
+
+}
 
 /**
  * @}

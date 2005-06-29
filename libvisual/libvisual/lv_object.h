@@ -72,6 +72,10 @@ int visual_object_free (VisObject *object);
 int visual_object_destroy (VisObject *object);
 
 int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFunc dtor);
+int visual_object_clear (VisObject *object);
+int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor);
+int visual_object_set_allocated (VisObject *object, int allocated);
+int visual_object_set_refcount (VisObject *object, int refcount);
 
 int visual_object_ref (VisObject *object);
 int visual_object_unref (VisObject *object);

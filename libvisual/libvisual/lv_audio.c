@@ -87,10 +87,41 @@ VisAudio *visual_audio_new ()
 
 	audio = visual_mem_new0 (VisAudio, 1);
 
+	visual_audio_init (audio);
+	
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (audio), TRUE, audio_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (audio), TRUE);
+	visual_object_ref (VISUAL_OBJECT (audio));
 
 	return audio;
+}
+
+/**
+ * Initializes a VisAudio, this should not be used to reset a VisAudio.
+ * The resulting initialized VisAudio is a valid VisObject even if it was not allocated.
+ * Keep in mind that VisAudio structures that were created by visual_audio_new() should not
+ * be passed to visual_audio_init().
+ *
+ * @see visual_audio_new
+ *
+ * @param audio Pointer to the VisAudio which needs to be initialized.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL on failure.
+ */
+int visual_audio_init (VisAudio *audio)
+{
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (audio));
+	visual_object_set_dtor (VISUAL_OBJECT (audio), audio_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (audio), FALSE);
+
+	/* Reset the VisAudio data */
+	audio->fft = NULL;	
+
+	return VISUAL_OK;
+	
 }
 
 /**

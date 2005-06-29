@@ -323,22 +323,60 @@ int visual_actor_valid_by_name (const char *name)
 VisActor *visual_actor_new (const char *actorname)
 {
 	VisActor *actor;
+	
+	actor = visual_mem_new0 (VisActor, 1);
+
+	visual_actor_init (actor, actorname);
+	
+	/* Do the VisObject initialization */
+	visual_object_set_allocated (VISUAL_OBJECT (actor), TRUE);
+	visual_object_ref (VISUAL_OBJECT (actor));
+	
+	return actor;
+}
+
+/**
+ * Initializes a VisActor, this will set the allocated flag for the object to FALSE. Should not
+ * be used to reset a VisActor, or on a VisActor created by visual_actor_new().
+ *
+ * @see visual_actor_new
+ *
+ * @param actor Pointer to the VisActor that is initialized.
+ * @param actorname
+ *	The name of the plugin to load, or NULL to simply initialize a new actor.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ */
+int visual_actor_init (VisActor *actor, const char *actorname)
+{
 	VisPluginRef *ref;
 	VisPluginEnviron *enve;
 	VisActorPluginEnviron *actenviron;
 
+	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
+	
 	if (__lv_plugins_actor == NULL && actorname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
-		return NULL;
+
+		return -VISUAL_ERROR_PLUGIN_NO_LIST;
 	}
-	
-	actor = visual_mem_new0 (VisActor, 1);
 
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (actor), TRUE, actor_dtor);
+	visual_object_clear (VISUAL_OBJECT (actor));
+	visual_object_set_dtor (VISUAL_OBJECT (actor), actor_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (actor), FALSE);
+
+	/* Reset the VisActor data */
+	actor->plugin = NULL;
+	actor->video = NULL;
+	actor->transform = NULL;
+	actor->fitting = NULL;
+	actor->ditherpal = NULL;
+
+	visual_mem_set (&actor->songcompare, 0, sizeof (VisSongInfo));
 
 	if (actorname == NULL)
-		return actor;
+		return VISUAL_OK;
 
 	ref = visual_plugin_find (__lv_plugins_actor, actorname);
 
@@ -352,7 +390,7 @@ VisActor *visual_actor_new (const char *actorname)
 	enve = visual_plugin_environ_new (VISUAL_ACTOR_PLUGIN_ENVIRON, VISUAL_OBJECT (actenviron));
 	visual_plugin_environ_add (actor->plugin, enve);
 
-	return actor;
+	return VISUAL_OK;
 }
 
 /**

@@ -787,9 +787,7 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
 	param->type = VISUAL_PARAM_ENTRY_TYPE_COLOR;
 
 	if (param->color.r != r || param->color.g != g || param->color.b != b) {
-		param->color.r = r;
-		param->color.g = g;
-		param->color.b = b;
+		visual_color_set (&param->color, r, g, b);
 
 		visual_param_entry_changed (param);
 	}

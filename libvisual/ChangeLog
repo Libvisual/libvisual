@@ -1,3 +1,129 @@
+2005-06-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_audio.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_color.c (visual_color_set): Added function.
+	
+	* libvisual/lv_cpu.c: Fixed borked #ifdef stuff.
+	
+	* libvisual/lv_error.*: Added new errors.
+	
+	* libvisual/lv_input.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_mem.c (visual_mem_set16, visual_mem_set32): Added
+	functions, and many simd optimized versions.
+	
+	* libvisual/lv_morph.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_object.c (visual_object_clear): Added function that
+	resets the object it's bookkeeping.
+
+	(visual_object_set_dtor): Set the dtor.
+
+	(visual_object_set_allocated): Set allocated flag.
+
+	(visual_object_set_refcount): Set refcount.
+
+	* libvisual/lv_palette.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_param.c (visual_param_entry_set_color): Use visual_color_set().
+	
+	* libvisual/lv_rectangle.*: Added both files to do rectangle
+	management, calculus for multiple reasons, heavily used in VisVideo
+	for bounding control and subregion.
+
+	* libvisual/lv_songinfo.c (visual_songinfo_set_cover): Use
+	visual_video_scale_depth_new(), single function replaces 15 lines of
+	code here.
+	
+	* libvisual/lv_time.c: for both VisTime and VisTimer split _new up
+	into _new and _init.
+
+	* libvisual/lv_transform.c: Split up _new into _new and _init.
+	
+	* libvisual/lv_ui.c (visual_ui_colorpalette_new): Actually use a
+	VisUIColorPalette, instead of VisUIColorButton. doh.
+
+	* libvisual/lv_video.c (visual_video_new): Split up _new into _new and
+	_init.
+
+	(visual_video_set_attributes):
+	Set all video attribute with one function.
+
+	(visual_video_get_boundry): Get bounds as a VisRectangle
+	
+	(visual_video_region_sub): Generate a sub region from a VisVideo, the
+	subregion will point to the same buffer, pitch aware functions are
+	very important for this reason.
+	
+	(visual_video_region_sub_by_values): Variant of the former.
+	
+	(visual_video_region_sub_all): Subregion of the complete screen.
+	
+	(visual_video_region_sub_with_boundry): Subregion with dest bounds.
+	
+	(visual_video_composite_set_type): Set composite type (many new
+	compositing methods have been added, including custom compositing,
+	check lv_video.h for more information.
+	
+	(visual_video_composite_set_colorkey): Set the colorkey value.
+	
+	(visual_video_composite_set_surface): Set the global surface density
+
+	(visual_video_composite_get_function): Get the composite function that
+	applies to a dest, src and alpha toggle.
+	
+	(visual_video_composite_set_function): Set custom composite function.
+
+	(visual_video_blit_overlay_rectangle): Overlay within a rectangle
+	area.
+
+	(visual_video_blit_overlay_rectangle_custom): Overlay with a rectangle
+	area + custom composite as argument
+	
+	(visual_video_blit_overlay_rectangle_scale): Overlay and scale source
+	to the rectangle.
+
+	(visual_video_blit_overlay_rectangle_scale_custom): Like the former
+	but with custom composite as argument.
+	
+	(visual_video_blit_overlay): Normal blit overlay, but changed to new
+	composite system.
+
+	(visual_video_blit_overlay_custom): As former, but with custom
+	composite.
+
+	(visual_video_fill_alpha): Fill VisVideo with one alpha value.
+
+	(visual_video_fill_alpha_rectangle): Fill a rectangle with one alpha
+	value.
+
+	(visual_video_fill_color): Fill with color.
+
+	(visual_video_fill_color_rectangle): Fill rectangle with color.
+
+	(visual_video_zoom_new): Zoom and create a new version.
+
+	(visual_video_zoom_double): Pixel doubler (not finished, but should
+	become highly optimized).
+
+	(visual_video_scale): Basic scaller, but has been adopted to new API.
+
+	(visual_video_scale_new): Create new VisVideo for the scale.
+
+	(visual_video_scale_depth): Scale and depth transform if needed.
+
+	(visual_video_scale_depth_new): New VisVideo, and depth transform, and
+	scale.
+
+	* libvisual/lv_video.h: Added more advanved composite (alpha stuff) to
+	VisVideo, added support for custom composite functions (neat).
+
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx): Adopted to
+	new way way neater, simpler composite system.
+
 2005-05-12  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_fft.*: Added new FFT engine based upon NULLSOFT

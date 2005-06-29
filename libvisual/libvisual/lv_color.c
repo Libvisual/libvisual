@@ -52,6 +52,27 @@ VisColor *visual_color_new ()
 }
 
 /**
+ * Sets the VisColor to a certain rgb value.
+ *
+ * @param color Pointer to the VisColor to which the rgb value is set.
+ * @param r The red value.
+ * @param g The green value.
+ * @param b The blue value.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
+ */
+int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b)
+{
+	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+
+	color->r = r;
+	color->g = g;
+	color->b = b;
+
+	return VISUAL_OK;
+}
+
+/**
  * Compares two VisColors with each other. If they are not the same, 0 is returned, if the same 1.
  *
  * @param src1 Pointer to the first VisColor for comparison.
@@ -112,9 +133,7 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v)
 			break;
 	}
 
-	color->r = (float) r * 255;
-	color->g = (float) g * 255;
-	color->b = (float) b * 255;
+	visual_color_set (color, (float) r * 255, (float) g * 255, (float) b * 255);
 	
 	return VISUAL_OK;
 }
@@ -195,10 +214,8 @@ int visual_color_copy (VisColor *dest, VisColor *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_COLOR_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_COLOR_NULL);
-	
-	dest->r = src->r;
-	dest->g = src->g;
-	dest->b = src->b;
+
+	visual_color_set (dest, src->r, src->g, src->b);
 	
 	/* You never know ;) */
 	dest->unused = src->unused;

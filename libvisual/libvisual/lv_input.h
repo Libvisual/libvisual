@@ -117,6 +117,7 @@ const char *visual_input_get_prev_by_name (const char *name);
 int visual_input_valid_by_name (const char *name);
 
 VisInput *visual_input_new (const char *inputname);
+int visual_input_init (VisInput *input, const char *inputname);
 
 int visual_input_realize (VisInput *input);
 

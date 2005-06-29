@@ -54,11 +54,42 @@ VisTime *visual_time_new ()
 
 	time_ = visual_mem_new0 (VisTime, 1);
 
+	visual_time_init (time_);
+	
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (time_), TRUE, NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (time_), TRUE);
+	visual_object_ref (VISUAL_OBJECT (time_));
 
 	return time_;
 }
+
+/**
+ * Initializes a VisTime, this should not be used to reset a VisTime.
+ * The resulting initialized VisTime is a valid VisObject even if it was not allocated.
+ * Keep in mind that VisTime structures that were created by visual_time_new() should not
+ * be passed to visual_time_init().
+ *
+ * @see visual_time_new
+ *
+ * @param time_ Pointer to the VisTime which needs to be initialized.
+ * 
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
+ */
+int visual_time_init (VisTime *time_)
+{
+	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (time_));
+	visual_object_set_dtor (VISUAL_OBJECT (time_), NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (time_), FALSE);
+				
+	/* Reset the VisTime data */
+	visual_time_set	(time_, 0, 0);
+
+	return VISUAL_OK;
+}
+
 
 /**
  * Loads the current time into the VisTime structure.
@@ -202,10 +233,62 @@ VisTimer *visual_timer_new ()
 
 	timer = visual_mem_new0 (VisTimer, 1);
 
+	visual_timer_init (timer);
+	
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (timer), TRUE, NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (timer), TRUE);
+	visual_object_ref (VISUAL_OBJECT (timer));
 
 	return timer;
+}
+
+/**
+ * Initializes a VisTimer, this should not be used to reset a VisTimer.
+ * The resulting initialized VisTimer is a valid VisObject even if it was not allocated.
+ * Keep in mind that VisTimer structures that were created by visual_timer_new() should not
+ * be passed to visual_timer_init().
+ *
+ * @see visual_timer_new
+ *
+ * @param timer Pointer to the VisTimer which needs to be initialized.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
+ */
+int visual_timer_init (VisTimer *timer)
+{
+	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (timer));
+	visual_object_set_dtor (VISUAL_OBJECT (timer), NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (timer), FALSE);
+				
+	/* Reset the VisTime data */
+	visual_time_init (&timer->start);
+	visual_time_init (&timer->stop);
+	
+	visual_timer_reset (timer);	
+
+	return VISUAL_OK;
+}
+
+/**
+ * Resets a VisTimer.
+ *
+ * @param timer Pointer to the VisTimer that is to be reset.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
+ */
+int visual_timer_reset (VisTimer *timer)
+{
+	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+
+	visual_time_set (&timer->start, 0, 0);
+	visual_time_set (&timer->stop, 0, 0);
+
+	timer->active = FALSE;	
+	
+	return VISUAL_OK;
 }
 
 /**

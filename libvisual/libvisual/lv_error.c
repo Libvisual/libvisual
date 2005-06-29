@@ -103,9 +103,13 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER] =	N_("Plugin does not have an event handler"),
 	[VISUAL_ERROR_PLUGIN_HANDLE_NULL] =		N_("Plugin handle is NULL"),
 	[VISUAL_ERROR_PLUGIN_ALREADY_REALIZED] =	N_("Plugin is already realized"),
-	
+	[VISUAL_ERROR_PLUGIN_NO_LIST] =			N_("Plugin list can not be found in memory"),
+
 	[VISUAL_ERROR_RANDOM_CONTEXT_NULL] =		N_("VisRandomContext is NULL"),
 
+	[VISUAL_ERROR_RECTANGLE_NULL] =			N_("VisRectangle is NULL"),
+	[VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS] =	N_("The VisRectangle operation is out of bounds"),
+	
 	[VISUAL_ERROR_SONGINFO_NULL] =			N_("VisSongInfo is NULL"),
 
 	[VISUAL_ERROR_THREAD_NULL] =			N_("VisThread is NULL"),

@@ -49,7 +49,9 @@ struct _VisPalette {
 	VisColor	*colors;	/**< Pointer to the colors. */
 };
 
+/* prototypes */
 VisPalette *visual_palette_new (int ncolors);
+int visual_palette_init (VisPalette *pal);
 int visual_palette_copy (VisPalette *dest, VisPalette *src);
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors);
 int visual_palette_free_colors (VisPalette *pal);

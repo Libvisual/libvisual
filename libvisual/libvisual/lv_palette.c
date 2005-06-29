@@ -59,12 +59,43 @@ VisPalette *visual_palette_new (int ncolors)
 
 	pal = visual_mem_new0 (VisPalette, 1);
 
+	visual_palette_init (pal);
+	
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (pal), TRUE, palette_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (pal), TRUE);
+	visual_object_ref (VISUAL_OBJECT (pal));
 
 	visual_palette_allocate_colors (pal, ncolors);
 
 	return pal;
+}
+
+/**
+ * Initializes a VisPalette, this should not be used to reset a VisPalette.
+ * The resulting initialized VisPalette is a valid VisObject even if it was not allocated.
+ * Keep in mind that VisPalette structures that were created by visual_palette_new() should not
+ * be passed to visual_palette_init().
+ *
+ * @see visual_palette_new
+ *
+ * @param pal Pointer to the VisPalette which needs to be initialized.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL on failure.
+ */
+int visual_palette_init (VisPalette *pal)
+{
+	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (pal));
+	visual_object_set_dtor (VISUAL_OBJECT (pal), palette_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (pal), FALSE);
+
+	/* Reset the VisPalette data */
+	pal->ncolors = 0;
+	pal->colors = NULL;
+
+	return VISUAL_OK;
 }
 
 /**

@@ -31,41 +31,16 @@
 #include "lv_common.h"
 #include "lv_video.h"
 
-int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, int y)
+int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, VisVideo *src)
 {
 #ifdef VISUAL_ARCH_X86
-	uint8_t *destbuf;
-	uint8_t *srcbuf;
-	int lwidth = (x + src->width);
-	int lwidth4;
-	int lheight = (y + src->height);
-	int ya, xa;
+	int i, j;
+	uint8_t *destbuf = dest->pixels;
+	uint8_t *srcbuf = src->pixels;
 	uint8_t alpha;
 
-	if (lwidth > dest->width)
-		lwidth += dest->width - lwidth;
-
-	if (lheight > dest->height)
-		lheight += dest->height - lheight;
-
-	destbuf = dest->pixels;
-	srcbuf = src->pixels;
-
-	if (lwidth < 0)
-		return VISUAL_OK;
-
-	lwidth4 = lwidth * 4;
-	
-	/* Reset some regs */
-	__asm __volatile
-		("\n\t pxor %%mm6, %%mm6"
-		 ::: "mm6");
-	
-	destbuf += ((y > 0 ? y : 0) * dest->pitch) + (x > 0 ? x * 4 : 0);
-	srcbuf += ((y < 0 ? abs(y) : 0) * src->pitch) + (x < 0 ? abs(x) * 4 : 0);
-	for (ya = y > 0 ? y : 0; ya < lheight; ya++) {
-		for (xa = x > 0 ? x * 4 : 0; xa < lwidth4; xa += 4) {
-			/* pixel = ((alpha * ((src - dest)) / 255) + dest) */
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
 			__asm __volatile
 				("\n\t movd %[spix], %%mm0"
 				 "\n\t movd %[dpix], %%mm1"
@@ -96,13 +71,9 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 			srcbuf += 4;
 		}
 
-		destbuf += (dest->pitch - ((lwidth - x) * 4)) - (x < 0 ? x * 4 : 0);
-		srcbuf += x < 0 ? abs(x) * 4 : 0;
-		srcbuf += x + src->width > dest->width ? ((x + (src->pitch / 4)) - dest->width) * 4 : 0;
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
 	}
-
-	__asm __volatile
-		("\n\t emms");
 
 	return VISUAL_OK;
 #else /* !VISUAL_ARCH_X86 */
@@ -110,7 +81,7 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, in
 #endif
 }
 
-int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src)
+int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 {
 #ifdef VISUAL_ARCH_X86
 	uint32_t y;

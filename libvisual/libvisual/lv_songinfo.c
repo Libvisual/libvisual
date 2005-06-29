@@ -255,7 +255,6 @@ int visual_songinfo_set_song (VisSongInfo *songinfo, char *song)
  */
 int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 {
-	VisVideo dtransform;
 	VisParamContainer *params;
 	VisParamEntry *xparam;
 	VisParamEntry *yparam;
@@ -278,25 +277,9 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	}
 	
 	/* The coverart image */
-	songinfo->cover = visual_video_new ();
-	visual_video_set_depth (songinfo->cover, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (songinfo->cover, cawidth, caheight);
-	visual_video_allocate_buffer (songinfo->cover);
-	
-	/* The temp depth transform video */
-	visual_mem_set (&dtransform, 0, sizeof (VisVideo));
-
-	visual_video_set_depth (&dtransform, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (&dtransform, cover->width, cover->height);
-	visual_video_allocate_buffer (&dtransform);
-
-	visual_video_depth_transform (&dtransform, cover);
-
-	/* Now scale it */
-	visual_video_scale (songinfo->cover, &dtransform, VISUAL_VIDEO_SCALE_BILINEAR);
-
-	/* Unref the depth transform video */
-	visual_object_unref (VISUAL_OBJECT (&dtransform));
+	songinfo->cover = visual_video_scale_depth_new (cover, cawidth, caheight,
+			VISUAL_VIDEO_DEPTH_32BIT,
+			VISUAL_VIDEO_SCALE_BILINEAR);
 
 	return VISUAL_OK;
 }

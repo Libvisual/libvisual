@@ -47,6 +47,7 @@ struct _VisColor {
 };
 
 VisColor *visual_color_new (void);
+int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
 int visual_color_compare (VisColor *src1, VisColor *src2);
 int visual_color_from_hsv (VisColor *color, float h, float s, float v);
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);

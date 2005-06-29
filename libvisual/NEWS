@@ -8,6 +8,12 @@ New in 0.3.0: xxxx-xx-xx:
   plugins laying around, it's not compatible, and it will most likely crash.
   (Dennis)
 * New FFT implementation, based upon that of NULLSOFT Milkdrop. (Dennis)
+* Added VisRectangle system. (Dennis)
+* New BMP loader that supports all depths and RLE encoding. (Sepp)
+* visual_mem_set(), visual_mem_set16(), visual_mem_set32()
+  Optimized memset functions. (Dennis)
+* VisVideo new composite system. (Dennis)
+* VisVideo sub regions. (Dennis)
 
 New in 0.2.0: 2005-02-09:
 * VisTransform subsystem. (Dennis)

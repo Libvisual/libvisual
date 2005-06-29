@@ -3,6 +3,7 @@
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * 	    Sepp Wijnands <sw@nerds-incorporated.org>
  *
  * $Id:
  *

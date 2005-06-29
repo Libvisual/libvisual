@@ -62,6 +62,7 @@ struct _VisAudio {
 };
 
 VisAudio *visual_audio_new (void);
+int visual_audio_init (VisAudio *audio);
 int visual_audio_analyze (VisAudio *audio);
 
 #ifdef __cplusplus

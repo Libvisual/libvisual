@@ -29,6 +29,7 @@
 
 #include <libvisual/lv_common.h>
 #include <libvisual/lv_palette.h>
+#include <libvisual/lv_rectangle.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -74,8 +75,63 @@ typedef enum {
 	VISUAL_VIDEO_SCALE_BILINEAR = 1	    /**< Bilinearly interpolated. */
 } VisVideoScaleMethod;
 
+/**
+ * Enumerate that defines the different blitting methods for a VisVideo.
+ */
+typedef enum {
+	VISUAL_VIDEO_COMPOSITE_TYPE_NONE = 0,		/**< No composite set, use default. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_SRC,		/**< Source alpha channel. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_SRCDEST,		/**< True alpha composite, both source and dest. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY,		/**< Colorkey alpha. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE,		/**< One alpha channel for the complete surface. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY,	/**< Use surface alpha on colorkey. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM		/**< Custom composite function (looks up on the source VisVideo. */
+} VisVideoCompositeType;
+
 
 typedef struct _VisVideo VisVideo;
+
+/* VisVideo custom composite method */
+
+/**
+ * A custom composite function needs this signature. Custom composite functions can be
+ * used to overload the normal libvisual overlay functions, these are used by the different
+ * blit methods. The following template should be used for custom composite functions:
+ *
+ * int custom_composite (VisVideo *dest, VisVideo *src)
+ * {
+ *         int i
+ *         uint8_t *destbuf = dest->pixels;
+ *         uint8_t *srcbuf = src->pixels;
+ * 
+ *         for (i = 0; i < src->height; i++) {
+ *                 for (j = 0; j < src->width; j++) {
+ *	                   
+ *	                   
+ *	                   destbuf += dest->bpp;
+ *	                   srcbuf += src->bpp;
+ *                 }
+ *
+ *                 destbuf += dest->pitch - (dest->width * dest->bpp);
+ *                 srcbuf += src->pitch - (src->width * src->bpp);
+ *         }
+ * }
+ *
+ * It's very important that the function is pitch (rowstride, bytes per line) aware, also
+ * for width and height, it's compulsory to look at the source, and not the dest. Also be aware
+ * that the custom composite function is correct for the depth you're using, if you want to add
+ * depth awareness to the function, you could do this by checking dest->depth.
+ *
+ * @see visual_video_blit_overlay_rectangle_custom
+ * @see visual_video_blit_overlay_rectangle_scale_custom
+ * @see visual_video_blit_overlay_custom
+ *
+ * @arg dest A pointer to the dest VisVideo source.
+ * @arg src A pointer to the source VisVideo source.
+ *
+ * @return VISUAL_OK on succes -VISUAL_ERROR_GENERAL on error.
+ */
+typedef int (*VisVideoCustomCompositeFunc)(VisVideo *dest, VisVideo *src);
 
 /**
  * Data structure that contains all the information about a screen surface.
@@ -87,36 +143,48 @@ typedef struct _VisVideo VisVideo;
  * Elements within the structure should be set using the VisVideo system it's methods.
  */
 struct _VisVideo {
-	VisObject	 object;	/**< The VisObject data. */
+	VisObject			 object;	/**< The VisObject data. */
 
-	VisVideoDepth	 depth;		/**< Surface it's depth. */
-	int		 width;		/**< Surface it's width. */
-	int		 height;	/**< Surface it's height. */
-	int		 bpp;		/**< Surface it's bytes per pixel. */
-	int		 size;		/**< Surface it's screen buffer size in bytes. */
-	int		 pitch;		/**< Surface it's pitch value. Value contains
-					  * the number of bytes per line. */
-	void		*pixels;	/**< Pointer to the pixels. */
-	void		**pixel_rows;	/**< Pixel row start pointer table. */
-	VisPalette	*pal;		/**< Optional pointer to the palette. */
+	VisVideoDepth			 depth;		/**< Surface it's depth. */
+	int				 width;		/**< Surface it's width. */
+	int				 height;	/**< Surface it's height. */
+	int				 bpp;		/**< Surface it's bytes per pixel. */
+	int				 size;		/**< Surface it's screen buffer size in bytes. */
+	int				 pitch;		/**< Surface it's pitch value. Value contains
+							 * the number of bytes per line. */
+	void				*pixels;	/**< Pointer to the pixels. */
+	void				**pixel_rows;	/**< Pixel row start pointer table. */
+	VisPalette			*pal;		/**< Optional pointer to the palette. */
 
-	VisVideoFlags	flags;		/**< Private field */
+	VisVideoFlags			 flags;		/**< Private field */
+
+	/* Sub region */
+	VisVideo			*parent;	/**< The surface it's parent, it it's a subregion. */
+	VisRectangle			 rect;		/**< The rectangle over the parent surface. */
+
+	/* Composite control */
+	VisVideoCompositeType		 compositetype;	/**< The surface it's composite type. */
+	VisVideoCustomCompositeFunc	 compfunc;	/**< The surface it's custom composite function. */
+	VisColor			 colorkey;	/**< The surface it's alpha colorkey. */
+	uint8_t				 density;	/**< The surface it's global alpha density. */
 };
 
 /* prototypes */
 VisVideo *visual_video_new (void);
+int visual_video_init (VisVideo *video);
 VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
 int visual_video_free_buffer (VisVideo *video);
 int visual_video_allocate_buffer (VisVideo *video);
-int visual_video_have_allocated_buffer (const VisVideo *video);
-int visual_video_clone (VisVideo *dest, const VisVideo *src);
-int visual_video_compare (const VisVideo *src1, const VisVideo *src2);
+int visual_video_have_allocated_buffer (VisVideo *video);
+int visual_video_clone (VisVideo *dest, VisVideo *src);
+int visual_video_compare (VisVideo *src1, VisVideo *src2);
 
 int visual_video_set_palette (VisVideo *video, VisPalette *pal);
 int visual_video_set_buffer (VisVideo *video, void *buffer);
 int visual_video_set_dimension (VisVideo *video, int width, int height);
 int visual_video_set_pitch (VisVideo *video, int pitch);
 int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
+int visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
 
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth);
 VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth);
@@ -130,23 +198,54 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
 
 int visual_video_bpp_from_depth (VisVideoDepth depth);
 
-int visual_video_blit_overlay (VisVideo *dest, const VisVideo *src, int x, int y, int alpha);
+int visual_video_get_boundry (VisVideo *video, VisRectangle *rect);
 
-int visual_video_alpha_color (VisVideo *video, uint8_t r, uint8_t g, uint8_t b, uint8_t density);
-int visual_video_alpha_fill (VisVideo *video, uint8_t density);
+int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect);
+int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
+int visual_video_region_sub_all (VisVideo *dest, VisVideo *src);
+int visual_video_region_sub_with_boundry (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
 
-int visual_video_color_bgr_to_rgb (VisVideo *dest, const VisVideo *src);
+int visual_video_composite_set_type (VisVideo *video, VisVideoCompositeType type);
+int visual_video_composite_set_colorkey (VisVideo *video, VisColor *color);
+int visual_video_composite_set_surface (VisVideo *video, uint8_t alpha);
+VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest, VisVideo *src, int alpha);
+int visual_video_composite_set_function (VisVideo *video, VisVideoCustomCompositeFunc compfunc);
 
-int visual_video_depth_transform (VisVideo *viddest, const VisVideo *vidsrc);
-int visual_video_depth_transform_to_buffer (uint8_t *dest, const VisVideo *video,
+int visual_video_blit_overlay_rectangle (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, int alpha);
+int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
+		VisVideoCustomCompositeFunc compfunc);
+int visual_video_blit_overlay_rectangle_scale (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
+		int alpha, VisVideoScaleMethod scale_method);
+int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
+		VisVideoScaleMethod scale_method, VisVideoCustomCompositeFunc compfunc);
+int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
+int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int y, VisVideoCustomCompositeFunc compfunc);
+
+int visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t density);
+int visual_video_fill_alpha (VisVideo *video, uint8_t density);
+int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t density, VisRectangle *rect);
+int visual_video_fill_color (VisVideo *video, VisColor *color);
+int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRectangle *rect);
+
+int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src);
+
+int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
+int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch);
 
-int visual_video_scale (VisVideo *dest, const VisVideo *src, VisVideoScaleMethod scale_method);
+VisVideo *visual_video_zoom_new (VisVideo *src, VisVideoScaleMethod scale_method, float zoom_factor);
+int visual_video_zoom_double (VisVideo *dest, VisVideo *src, int times_doubled);
+
+int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
+VisVideo *visual_video_scale_new (VisVideo *src, int width, int height, VisVideoScaleMethod scale_method);
+int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
+VisVideo *visual_video_scale_depth_new (VisVideo *src, int width, int height, VisVideoDepth depth,
+		VisVideoScaleMethod scale_method);
 
 /* Optimized versions of performance sensitive routines */
 /* mmx from lv_video_mmx.c */ /* FIXME can we do this nicer ? */
-int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, const VisVideo *src, int x, int y);
-int _lv_scale_bilinear_32_mmx (VisVideo *dest, const VisVideo *src);
+int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, VisVideo *src);
+int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src);
 
 #ifdef __cplusplus
 }

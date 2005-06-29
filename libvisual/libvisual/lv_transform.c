@@ -148,26 +148,59 @@ int visual_transform_valid_by_name (const char *name)
 VisTransform *visual_transform_new (const char *transformname)
 {
 	VisTransform *transform;
-	VisPluginRef *ref;
-
-	if (__lv_plugins_transform == NULL && transformname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
-		return NULL;
-	}
 	
 	transform = visual_mem_new0 (VisTransform, 1);
 
+	visual_transform_init (transform, transformname);
+	
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (transform), TRUE, transform_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (transform), TRUE);
+	visual_object_ref (VISUAL_OBJECT (transform));
+
+	return transform;
+}
+
+/**
+ * Initializes a VisTransform, this will set the allocated flag for the object to FALSE. Should not
+ * be used to reset a VisTransform, or on a VisTransform created by visual_transform_new().
+ *
+ * @see visual_transform_new
+ *
+ * @param transform Pointer to the VisTransform that is initialized.
+ * @param transformname
+ *	The name of the plugin to load, or NULL to simply initialize a new transform.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ */
+int visual_transform_init (VisTransform *transform, const char *transformname)
+{
+	VisPluginRef *ref;
+
+	visual_log_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
+	
+	if (__lv_plugins_transform == NULL && transformname != NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
+		return -VISUAL_ERROR_PLUGIN_NO_LIST;
+	}
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (transform));
+	visual_object_set_dtor (VISUAL_OBJECT (transform), transform_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (transform), FALSE);
+
+	/* Reset the VisTransform data */
+	transform->plugin = NULL;
+	transform->video = NULL;
+	transform->pal = NULL;
 
 	if (transformname == NULL)
-		return transform;
+		return VISUAL_OK;
 
 	ref = visual_plugin_find (__lv_plugins_transform, transformname);
 
 	transform->plugin = visual_plugin_load (ref);
 
-	return transform;
+	return VISUAL_OK;
 }
 
 /**

@@ -149,30 +149,60 @@ int visual_input_valid_by_name (const char *name)
 VisInput *visual_input_new (const char *inputname)
 {
 	VisInput *input;
-	VisPluginRef *ref;
-
-/*	visual_log_return_val_if_fail (__lv_plugins_input != NULL && inputname == NULL, NULL); */
-
-	if (__lv_plugins_input == NULL && inputname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
-		return NULL;
-	}
 	
 	input = visual_mem_new0 (VisInput, 1);
 	
-	input->audio = visual_audio_new ();
+	visual_input_init (input, inputname);
 
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (input), TRUE, input_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (input), TRUE);
+	visual_object_ref (VISUAL_OBJECT (input));
+
+	return input;
+}
+
+/**
+ * Initializes a VisInput, this will set the allocated flag for the object to FALSE. Should not
+ * be used to reset a VisInput, or on a VisInput created by visual_input_new().
+ *
+ * @see visual_input_new
+ *
+ * @param input Pointer to the VisInput that is initialized.
+ * @param inputname
+ *	The name of the plugin to load, or NULL to simply initialize a new input.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ */
+int visual_input_init (VisInput *input, const char *inputname)
+{
+	VisPluginRef *ref;
+
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
+	
+	if (__lv_plugins_input == NULL && inputname != NULL) {
+		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
+	
+		return -VISUAL_ERROR_PLUGIN_NO_LIST;
+	}
+	
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (input));
+	visual_object_set_dtor (VISUAL_OBJECT (input), input_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (input), FALSE);
+
+	/* Reset the VisInput data */
+	input->audio = visual_audio_new (); /* FIXME don't allocate in the future */
+	input->plugin = NULL;
+	input->callback = NULL;
 
 	if (inputname == NULL)
-		return input;
+		return VISUAL_OK;
 	
 	ref = visual_plugin_find (__lv_plugins_input, inputname);
 	
 	input->plugin = visual_plugin_load (ref);
 
-	return input;
+	return VISUAL_OK;
 }
 
 /**

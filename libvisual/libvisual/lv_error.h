@@ -120,10 +120,15 @@ enum {
 	VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER,		/**< The plugin has no event handler registrated. */
 	VISUAL_ERROR_PLUGIN_HANDLE_NULL,		/**< The dlopen handle of the plugin is NULL. */
 	VISUAL_ERROR_PLUGIN_ALREADY_REALIZED,		/**< The plugin is already realized. */
+	VISUAL_ERROR_PLUGIN_NO_LIST,			/**< The plugin list can't be found. */
 	
 	/* Error entries for the VisRandom system */
 	VISUAL_ERROR_RANDOM_CONTEXT_NULL,		/**< The VisRandomContext is NULL. */
 
+	/* Error entries for the VisRectangle system */
+	VISUAL_ERROR_RECTANGLE_NULL,			/**< The VisRectangle is NULL. */
+	VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS,		/**< The VisRectangle operation is out of bounds. */
+	
 	/* Error entries for the VisSonginfo system */
 	VISUAL_ERROR_SONGINFO_NULL,			/**< The VisSongInfo is NULL. */
 

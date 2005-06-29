@@ -985,7 +985,7 @@ VisUIWidget *visual_ui_colorbutton_new ()
  */
 VisUIWidget *visual_ui_colorpalette_new ()
 {
-	VisUIColorButton *colorpalette;
+	VisUIColorPalette *colorpalette;
 
 	colorpalette = visual_mem_new0 (VisUIColorPalette, 1);
 

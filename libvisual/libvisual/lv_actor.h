@@ -170,6 +170,7 @@ const char *visual_actor_get_prev_by_name (const char *name);
 int visual_actor_valid_by_name (const char *name);
 
 VisActor *visual_actor_new (const char *actorname);
+int visual_actor_init (VisActor *actor, const char *actorname);
 
 int visual_actor_realize (VisActor *actor);
 

@@ -54,7 +54,29 @@ typedef void *(*VisMemCopyFunc)(void *dest, const void *src, size_t n);
  *
  * @return Pointer to the dest buffer.
  */
-typedef void *(*VisMemSetFunc)(void *dest, int c, size_t n);
+typedef void *(*VisMemSet8Func)(void *dest, int c, size_t n);
+
+/**
+ * The visual_mem_set16 function needs this signature.
+ *
+ * @arg dest Pointer to the dest buffer.
+ * @arg c Value that is used as the set value.
+ * @arg n The number of words (16bits) to be set.
+ *
+ * @return Pointer to the dest buffer.
+ */
+typedef void *(*VisMemSet16Func)(void *dest, int c, size_t n);
+
+/**
+ * The visual_mem_set32 function needs this signature.
+ *
+ * @arg dest Pointer to the dest buffer.
+ * @arg c Value that is used as the set value.
+ * @arg n The number of integers (32bits) to be set.
+ *
+ * @return Pointer to the dest buffer.
+ */
+typedef void *(*VisMemSet32Func)(void *dest, int c, size_t n);
 
 /* prototypes */
 int visual_mem_initialize (void);
@@ -64,7 +86,9 @@ int visual_mem_free (void *ptr);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 extern VisMemCopyFunc visual_mem_copy;
-extern VisMemSetFunc visual_mem_set;
+extern VisMemSet8Func visual_mem_set;
+extern VisMemSet16Func visual_mem_set16;
+extern VisMemSet32Func visual_mem_set32;
 
 /**
  * @ingroup VisMem

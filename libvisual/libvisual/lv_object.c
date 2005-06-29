@@ -120,10 +120,83 @@ int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFun
 {
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
-	object->allocated = allocated;
+	visual_object_set_dtor (object, dtor);
+	visual_object_set_allocated (object, allocated);
+	
+	visual_object_clear (object);
+	
+	visual_object_ref (object);
+
+	return VISUAL_OK;
+}
+
+/**
+ * Clears a VisObject. This basically means setting it's private to NULL and it's refcount to 0. This won't unref, or destroy
+ * the object and this function is mostly used for object creation.
+ *
+ * @param object Pointer to a VisObject that is to be cleared.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ */
+int visual_object_clear (VisObject *object)
+{
+	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	
+	visual_object_set_private (object, NULL);
+	visual_object_set_refcount (object, 0);
+
+	return VISUAL_OK;
+}
+
+/**
+ * Sets the destructor function to a VisObject.
+ *
+ * @param object pointer to a VisObject to which the destructor function is set.
+ * @param dtor The Destructor function, that is used to destroy the VisObject when it loses all references or when it's
+ *	being destroyed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ */
+int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor)
+{
+	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+
 	object->dtor = dtor;
 
-	visual_object_ref (object);
+	return VISUAL_OK;
+}
+
+/**
+ * Sets whether a VisObject is allocated or not. This is used when a VisObject is unreffed. If it's
+ * allocated it will get freed, if not, only the dtor gets called to cleanup the inside of the VisObject.
+ * 
+ * @param object pointer to a VisObject to which the destructor function is set.
+ * @param allocated Boolean whether a VisObject is allocated or not.
+ * 
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ */
+int visual_object_set_allocated (VisObject *object, int allocated)
+{
+	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+
+	object->allocated = allocated;
+
+	return VISUAL_OK;
+}
+
+/**
+ * Sets the refcount to a certain number. Mostly used in VisObject initialization.
+ *
+ * @param object Pointer to a VisObject to which the refcount is set.
+ * @param refcount The value for the VisObject it's refcount.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ */
+int visual_object_set_refcount (VisObject *object, int refcount)
+{
+	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+
+	object->refcount = refcount;
 
 	return VISUAL_OK;
 }
