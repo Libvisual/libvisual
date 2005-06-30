@@ -59,7 +59,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = act_gstreamer_requisition,
 		.palette = act_gstreamer_palette,
 		.render = act_gstreamer_render,
-		.depth = VISUAL_VIDEO_DEPTH_32BIT
+		.depth = VISUAL_VIDEO_DEPTH_24BIT
 	}};
 
 	static VisPluginInfo info[] = {{
@@ -164,7 +164,7 @@ int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 
 */
 		snprintf(pipe, 1024, "filesrc location=%s ! decodebin ! ffmpegcolorspace ! "
-				"video/x-raw-rgb,bpp=32,depth=24 !"
+				"video/x-raw-rgb,bpp=24,depth=24 !"
 				"fakesink name=sink", "test.mpg");
 
 		priv->pipe = gst_parse_launch (pipe, NULL);

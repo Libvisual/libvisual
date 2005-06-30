@@ -352,7 +352,7 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		visual_video_composite_set_type (&vid2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
 		visual_video_composite_set_function (&vid2, priv->currentcomp);
 
-		visual_video_blit_overlay (video, &vid2, 0, 0, FALSE);
+		visual_video_blit_overlay (video, &vid2, 0, 0, TRUE);
 
 		visual_object_unref (VISUAL_OBJECT (&vid1));
 		visual_object_unref (VISUAL_OBJECT (&vid2));
