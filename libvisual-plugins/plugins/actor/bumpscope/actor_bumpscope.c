@@ -306,7 +306,7 @@ int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 
 	__bumpscope_render_pcm (priv, audio->pcm);
 
-	visual_mem_copy (visual_video_get_pixels (video), priv->rgb_buf2, video->size);
+	visual_mem_copy (visual_video_get_pixels (video), priv->rgb_buf2, visual_video_get_size (video));
 
 	priv->colorupdate++;
 

@@ -201,7 +201,7 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 	int diff2;
 	int hadd;
 
-	visual_mem_set (destbuf, 0, dest->size);
+	visual_mem_set (destbuf, 0, visual_video_get_size (dest));
 	
 	if (priv->slide_type == SLIDE_RIGHT || priv->slide_type == SLIDE_UPPER)
 		rate = 1.0 - rate;

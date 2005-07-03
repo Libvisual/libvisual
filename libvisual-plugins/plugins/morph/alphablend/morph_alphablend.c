@@ -103,7 +103,7 @@ int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 	alpha_blend_buffer (visual_video_get_pixels (dest),
 			visual_video_get_pixels (src1),
 			visual_video_get_pixels (src2),
-			dest->size, dest->depth, rate);
+			visual_video_get_size (dest), dest->depth, rate);
 
 	return 0;
 }

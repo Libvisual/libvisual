@@ -413,8 +413,8 @@ void __bumpscope_render_pcm (BumpscopePrivate *priv, short data[3][512])
 void __bumpscope_init (BumpscopePrivate *priv)
 {
 	priv->phongdat = visual_mem_malloc0 (priv->phongres * priv->phongres * 2);
-	priv->rgb_buf = visual_mem_malloc0 (priv->video->size + (priv->video->pitch * 2) + 1);
-	priv->rgb_buf2 = visual_mem_malloc0 (priv->video->size + (priv->video->pitch * 2) + 1);
+	priv->rgb_buf = visual_mem_malloc0 (visual_video_get_size (priv->video) + (priv->video->pitch * 2) + 1);
+	priv->rgb_buf2 = visual_mem_malloc0 (visual_video_get_size (priv->video) + (priv->video->pitch * 2) + 1);
 
 	__bumpscope_generate_phongdat (priv);
 	bumpscope_generate_intense (priv);

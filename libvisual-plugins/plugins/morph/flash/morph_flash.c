@@ -171,9 +171,9 @@ static void replacetable_generate_24 (FlashPrivate *priv, float rate)
 static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	if (rate < 0.5)
-		visual_mem_copy (visual_video_get_pixels (dest), visual_video_get_pixels (src1), src1->size);
+		visual_mem_copy (visual_video_get_pixels (dest), visual_video_get_pixels (src1), visual_video_get_size (src1));
 	else
-		visual_mem_copy (visual_video_get_pixels (dest), visual_video_get_pixels (src2), src2->size);
+		visual_mem_copy (visual_video_get_pixels (dest), visual_video_get_pixels (src2), visual_video_get_size (src2));
 }
 
 static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
@@ -185,10 +185,10 @@ static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *
 
 	if (rate < 0.5) {
 		scrbuf = visual_video_get_pixels (src1);
-		size = src1->size;
+		size = visual_video_get_size (src1);
 	} else {
 		scrbuf = visual_video_get_pixels (src2);
-		size = src2->size;
+		size = visual_video_get_size (src2);
 	}
 	
 	for (i = 0; i < size; i++)
