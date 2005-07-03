@@ -679,7 +679,7 @@ visui_widget_image_new (LvwVisUI *vuic, VisUIWidget *visuiwidget)
 	gc = gdk_gc_new (drawable);
 
 
-	buf = video->pixels;
+	buf = visual_video_get_pixels (video);
 	for (y = 0; y < video->height; y++) {
 		for (x = 0; x < video->width; x++) {
 			GdkColor color;

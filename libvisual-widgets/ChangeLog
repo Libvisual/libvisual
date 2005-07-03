@@ -1,3 +1,7 @@
+2005-06-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* gtk2/*.c: Adopted to API changes within VisVideo.
+
 2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* gtk2/*: Adding color button.
