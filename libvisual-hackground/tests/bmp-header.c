@@ -158,7 +158,7 @@ int main (int argc, char *argv[])
 		visual_input_run (input);
 		visual_actor_run (actor, input->audio);
 
-		visual_video_alpha_fill (video1, alpha);
+		visual_video_fill_alpha (video1, alpha);
 // Use to set full transparancy on black background, doesn't look nice for most plugins) (does for the analyzer tho)
 //		visual_video_alpha_color (video1, 0, 0, 0, 0);
 	

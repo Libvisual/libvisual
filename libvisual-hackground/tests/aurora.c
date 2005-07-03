@@ -170,7 +170,7 @@ void sdl_draw_buf ()
 void do_alpha (VisVideo *vid, uint8_t rate)
 {
 	int i;
-	uint32_t *ptr = vid->pixels;
+	uint32_t *ptr = visual_video_get_pixels (vid);
 	union {
 		uint32_t c32;
 		uint8_t c8[4];

@@ -171,7 +171,7 @@ void draw_rgb_bars (VisVideo *video)
 	int x, y;
 	
 	if (video->depth == VISUAL_VIDEO_DEPTH_32BIT) {
-		uint32_t *buf = video->pixels;
+		uint32_t *buf = visual_video_get_pixels (video);
 		uint32_t col;
 		
 		for (y = 0; y < 150; y++) {
@@ -189,7 +189,7 @@ void draw_rgb_bars (VisVideo *video)
 			}
 		}
 	} else if (video->depth == VISUAL_VIDEO_DEPTH_24BIT) {
-		uint8_t *buf = video->pixels;
+		uint8_t *buf = visual_video_get_pixels (video);
 		uint32_t col;
 		
 		for (y = 0; y < 150; y++) {
@@ -209,7 +209,7 @@ void draw_rgb_bars (VisVideo *video)
 			}
 		}
 	} else if (video->depth == VISUAL_VIDEO_DEPTH_16BIT) {
-		uint16_t *buf = video->pixels;
+		uint16_t *buf = visual_video_get_pixels (video);
 		uint32_t col;
 		
 		for (y = 0; y < 150; y++) {
@@ -228,7 +228,7 @@ void draw_rgb_bars (VisVideo *video)
 			}
 		}		
 	} else if (video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-		uint8_t *buf = video->pixels;
+		uint8_t *buf = visual_video_get_pixels (video);
 		uint32_t col;
 		
 		for (y = 0; y < 150; y++) {
@@ -267,7 +267,7 @@ void draw_pal_debug (VisVideo *video, VisPalette *pal)
 {
 	VisPalette *pal2;
 	int i, j;
-	uint8_t *buf = (uint8_t *) video->pixels;
+	uint8_t *buf = (uint8_t *) visual_video_get_pixels (video);
 
 	if (video->pal == NULL)
 		video->pal = visual_palette_new (256);

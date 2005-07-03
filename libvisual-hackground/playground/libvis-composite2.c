@@ -17,6 +17,9 @@ VisActor *actor3;
 VisVideo *video;
 VisVideo *video2;
 VisVideo *video3;
+VisVideo *bmpvideo;
+VisVideo *sbmpvideo;
+VisVideo *rbmpvideo;
 VisVideo *sdlvid;
 VisVideo *scalevid;
 VisPalette *pal;
@@ -334,6 +337,134 @@ static int compfunc (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
+/* for the argv shizzle, this is all hacky */
+int edge1 = 190;
+int edge2 = 260;
+int smoothing = 2;
+
+static int fakechroma (VisVideo *dest, VisVideo *src)
+{
+	VisVideo *video;
+	VisPalette *pal;
+	int i, j;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t alpha;
+
+//	int edge1 = 190;
+//	int edge2 = 260;
+	float threshold = 0.50;
+	float satthresh = 0.20;
+
+	int table[360];
+
+	float percentage = (edge2 - edge1) / 100.0;
+	int noise = 15;
+	int alphaadd = 255 / noise;
+
+	/* FIXME won't work for the wrap at 360, think about this */
+	/* Better edging */
+	for (i = 0; i < 360; i++) {
+		if (i > edge1 && i < edge2) {
+			if (i * percentage < noise + edge1)
+				table[i] = 128;
+			if (i * percentage > (edge2 - noise))
+				table[i] = 128;
+			else
+				table[i] = 0;
+		} else {
+			table[i] = 255;
+		}
+	}
+
+//	video = visual_video_new_with_buffer (src->width, src->height, VISUAL_VIDEO_DEPTH_8BIT);
+
+//	pal = visual_palette_new (256);
+//	visual_video_set_palette (src, pal);
+//	visual_video_set_palette (video, pal);
+
+//	visual_video_blit_overlay (video, src, 0, 0, FALSE);
+//	visual_video_blit_overlay (dest, video, 0, 0, FALSE);
+
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			float h, s, v;
+			VisColor col;
+			col.r = srcbuf[2];
+			col.g = srcbuf[1];
+			col.b = srcbuf[0];
+
+			visual_color_to_hsv (&col, &h, &s, &v);
+
+			if (v > threshold && s > satthresh)
+				alpha = table[(int) h];
+			else
+				alpha = 255;
+
+			*(destbuf + 3) = alpha;
+
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
+	}
+
+
+	int a;
+
+	/* Very sub optimal */
+	for (a = 0; a < smoothing; a++) {
+	destbuf = visual_video_get_pixels (dest);
+	destbuf += 3;
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			int alphasum;
+
+			alphasum =
+				(destbuf[dest->pitch] +
+				destbuf[-4] +
+				destbuf[4] +
+				destbuf[-dest->pitch]) / 4;
+
+			if (alphasum > 250)
+				alphasum = 0xff;
+//			alphasum = 0xff;
+
+			destbuf[0] = alphasum;
+
+			destbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+	}}
+
+
+
+	destbuf = visual_video_get_pixels (dest);
+	srcbuf = visual_video_get_pixels (src);
+	for (i = 0; i < src->height; i++) {
+		for (j = 0; j < src->width; j++) {
+			alpha = *(destbuf + 3);
+			*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
+			*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
+			*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+
+			destbuf += 4;
+			srcbuf += 4;
+		}
+
+		destbuf += dest->pitch - (dest->width * dest->bpp);
+		srcbuf += src->pitch - (src->width * src->bpp);
+	}
+
+//	visual_object_unref (VISUAL_OBJECT (video));
+//	visual_object_unref (VISUAL_OBJECT (pal));
+
+	return VISUAL_OK;
+}
+
 /* Main stuff */
 int main (int argc, char *argv[])
 {
@@ -375,45 +506,6 @@ int main (int argc, char *argv[])
 
 	visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
 
-	/* Second actor */
-	if (argc > 2)
-		actor2 = visual_actor_new (argv[2]);
-	else
-		actor2 = visual_actor_new ("oinksie");
-
-	visual_actor_realize (actor2);
-
-	video2 = visual_video_new ();
-	visual_actor_set_video (actor2, video2);
-	visual_video_set_depth (video2, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (video2, width, height);
-	visual_video_allocate_buffer (video2);
-
-	visual_video_composite_set_type (video2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
-	visual_video_composite_set_function (video2, compfunc3);
-
-	visual_actor_video_negotiate (actor2, 0, FALSE, FALSE);
-
-	/* Third actor */
-	if (argc > 3)
-		actor3 = visual_actor_new (argv[3]);
-	else
-		actor3 = visual_actor_new ("corona");
-
-	visual_actor_realize (actor3);
-
-	video3 = visual_video_new ();
-	visual_actor_set_video (actor3, video3);
-	visual_video_set_depth (video3, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (video3, width, height);
-	visual_video_allocate_buffer (video3);
-
-	visual_video_composite_set_type (video3, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
-	visual_video_composite_set_function (video3, compfunc);
-
-	visual_actor_video_negotiate (actor3, 0, FALSE, FALSE);
-
-
 	/* done. */
 	scalevid = visual_video_new ();
 	visual_video_set_depth (scalevid, blahblahdepth);
@@ -425,23 +517,42 @@ int main (int argc, char *argv[])
 	visual_video_set_dimension (sdlvid, screen->w, screen->h);
 	visual_video_set_pitch (sdlvid, screen->pitch);
 	visual_video_set_buffer (sdlvid, scrbuf);
-	
+
 	input = visual_input_new ("alsa");
 	visual_input_realize (input);
+
+	if (argc > 2)
+		bmpvideo = visual_bitmap_load_new_video (argv[2]);
+	else
+		bmpvideo = visual_bitmap_load_new_video ("boom.bmp");
+
+	sbmpvideo = visual_video_scale_new (bmpvideo, width, height, VISUAL_VIDEO_SCALE_BILINEAR);
+	visual_video_composite_set_type (sbmpvideo, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
+	visual_video_composite_set_function (sbmpvideo, fakechroma);
+
+	rbmpvideo = visual_video_new ();
+	visual_video_set_depth (rbmpvideo, VISUAL_VIDEO_DEPTH_32BIT);
+	visual_video_set_dimension (rbmpvideo, sbmpvideo->width, sbmpvideo->height);
+	visual_video_allocate_buffer (rbmpvideo);
+	visual_video_blit_overlay (rbmpvideo, sbmpvideo, 0, 0, TRUE);
+
+	if (argc > 3)
+		edge1 = atoi (argv[3]);
+
+	if (argc > 4)
+		edge2 = atoi (argv[4]);
+
+	if (argc > 5)
+		smoothing = atoi (argv[5]);
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	
 	while (1) {
 		visual_input_run (input);
 		visual_actor_run (actor, input->audio);
-		visual_actor_run (actor2, input->audio);
-		visual_actor_run (actor3, input->audio);
 	
 		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);
-
-		visual_video_blit_overlay (sdlvid, video2, 0, 0, TRUE);
-		
-		visual_video_blit_overlay (sdlvid, video3, 0, 0, TRUE);
+		visual_video_blit_overlay (sdlvid, sbmpvideo, 0, 0, TRUE);
 
 		sdl_draw_buf ();
 		
