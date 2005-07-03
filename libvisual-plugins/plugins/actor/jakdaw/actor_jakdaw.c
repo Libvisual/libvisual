@@ -290,7 +290,7 @@ VisPalette *act_jakdaw_palette (VisPluginData *plugin)
 int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	uint32_t *vscr = video->pixels;
+	uint32_t *vscr = visual_video_get_pixels (video);
 
 	_jakdaw_feedback_render (priv, vscr);
 	_jakdaw_plotter_draw (priv, audio->pcm, audio->freq, vscr);

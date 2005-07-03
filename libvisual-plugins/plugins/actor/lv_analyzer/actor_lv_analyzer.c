@@ -177,7 +177,7 @@ VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	int maxbar[BARS];
-	unsigned char *bits = video->pixels;
+	unsigned char *bits = visual_video_get_pixels (video);
 	unsigned int val;
 	int j;
 	int k = 0;

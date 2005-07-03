@@ -263,7 +263,7 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	priv->pcyl->update(&priv->tl);    // Update Palette Cycler
 
 	for (i = 0; i < video->height; i++) {
-		visual_mem_copy ((uint8_t *)(video->pixels) + i * video->pitch,
+		visual_mem_copy ((uint8_t *)(visual_video_get_pixels (video)) + i * video->pitch,
 				priv->corona->getSurface() + (video->height - 1 - i) * video->width,
 				video->width);
 	}

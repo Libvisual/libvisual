@@ -164,10 +164,17 @@ int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 
 */
 		snprintf(pipe, 1024, "filesrc location=%s ! decodebin ! ffmpegcolorspace ! "
-				"video/x-raw-rgb,bpp=24,depth=24 !"
-				"fakesink name=sink", "test.mpg");
+				"video/x-raw-rgb,bpp=24,depth=24 ! "
+				"fakesink name=sink signal-handoffs=true", "test.mpg");
 
-		priv->pipe = gst_parse_launch (pipe, NULL);
+		GError *err = NULL;
+
+		priv->pipe = gst_parse_launch (pipe, &err);
+
+		if (err)
+			g_print ("FUCK UUU %s\n", err->message);
+
+		printf ("ja hooradfh\n");
 
 		gst_element_set_state (GST_ELEMENT (priv->pipe), GST_STATE_PLAYING);
 
@@ -191,7 +198,7 @@ int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 static void have_data (GstElement *sink, GstBuffer *buffer, gpointer data)
 {
 	VisVideo *video = data;
-	uint32_t *dest = video->pixels;
+	uint32_t *dest = visual_video_get_pixels (video);
 	uint32_t *src = (uint32_t *) GST_BUFFER_DATA (buffer);
 
 	printf ("ja hoor\n");

@@ -145,7 +145,7 @@ int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 	if (priv->scaled != NULL)
 		g_object_unref (priv->scaled);
 
-	if (&priv->target.pixels != NULL)
+	if (visual_video_get_pixels (&priv->target) != NULL)
 		visual_video_free_buffer (&priv->target);
 
 	visual_mem_free (priv);
@@ -183,7 +183,7 @@ int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, 
 		update_scaled_pixbuf (priv);
 	else {
 		/* If there is no image reset the VisVideo pixels, just to be sure */
-		if (priv->target.pixels != NULL)
+		if (visual_video_get_pixels (&priv->target) != NULL)
 			visual_video_free_buffer (&priv->target);
 		
 		visual_video_set_buffer (&priv->target, NULL);
@@ -271,7 +271,7 @@ int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	
-	if (priv->target.pixels != NULL) {
+	if (visual_video_get_pixels (&priv->target) != NULL) {
 		if (priv->center == TRUE) {
 			int xoff, yoff;
 			
@@ -397,7 +397,7 @@ static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src)
 	visual_video_set_pitch (&bgr, gdk_pixbuf_get_rowstride (src));
 	visual_video_set_buffer (&bgr, gdk_pixbuf_get_pixels (src));
 
-	if (target->pixels != NULL)
+	if (visual_video_get_pixels (target) != NULL)
 		visual_video_free_buffer (target);
 
 	visual_video_clone (target, &bgr);

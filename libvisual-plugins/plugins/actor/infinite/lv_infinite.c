@@ -219,7 +219,7 @@ int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 	}
 
 	_inf_renderer (priv);
-	_inf_display (priv, (uint8_t *) video->pixels);
+	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video));
 
 	return 0;
 }

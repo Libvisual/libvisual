@@ -319,7 +319,7 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		oinksie_sample (&priv->priv1);
 
-		priv->priv1.drawbuf = video->pixels;
+		priv->priv1.drawbuf = visual_video_get_pixels (video);
 		oinksie_render (&priv->priv1);
 	} else {
 		VisVideo vid1;
@@ -364,8 +364,8 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 static int composite_blend1_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
@@ -388,8 +388,8 @@ static int composite_blend1_32_c (VisVideo *dest, VisVideo *src)
 static int composite_blend2_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
@@ -412,8 +412,8 @@ static int composite_blend2_32_c (VisVideo *dest, VisVideo *src)
 static int composite_blend3_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
@@ -436,8 +436,8 @@ static int composite_blend3_32_c (VisVideo *dest, VisVideo *src)
 static int composite_blend4_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
@@ -460,8 +460,8 @@ static int composite_blend4_32_c (VisVideo *dest, VisVideo *src)
 static int composite_blend5_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {

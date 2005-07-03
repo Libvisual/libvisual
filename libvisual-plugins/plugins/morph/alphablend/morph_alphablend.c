@@ -100,7 +100,10 @@ int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 	visual_log_return_val_if_fail (src1 != NULL, -1);
 	visual_log_return_val_if_fail (src2 != NULL, -1);
 
-	alpha_blend_buffer (dest->pixels, src1->pixels, src2->pixels, dest->size, dest->depth, rate);
+	alpha_blend_buffer (visual_video_get_pixels (dest),
+			visual_video_get_pixels (src1),
+			visual_video_get_pixels (src2),
+			dest->size, dest->depth, rate);
 
 	return 0;
 }

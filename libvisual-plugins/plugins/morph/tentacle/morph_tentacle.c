@@ -105,8 +105,8 @@ int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	TentaclePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *src1buf = src1->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *src1buf = visual_video_get_pixels (src1);
 
 	int height1;
 	int height2;
@@ -177,8 +177,8 @@ static void sane_coords (VisVideo *dest, int *x, int *y1, int *y2)
 
 static void vline_from_video_8 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
@@ -189,8 +189,8 @@ static void vline_from_video_8 (VisVideo *dest, VisVideo *src, int x, int y1, in
 
 static void vline_from_video_16 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint16_t *destbuf = dest->pixels;
-	uint16_t *srcbuf = src->pixels;
+	uint16_t *destbuf = visual_video_get_pixels (dest);
+	uint16_t *srcbuf = visual_video_get_pixels (src);
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
@@ -201,8 +201,8 @@ static void vline_from_video_16 (VisVideo *dest, VisVideo *src, int x, int y1, i
 
 static void vline_from_video_24 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
@@ -218,8 +218,8 @@ static void vline_from_video_24 (VisVideo *dest, VisVideo *src, int x, int y1, i
 
 static void vline_from_video_32 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint32_t *destbuf = dest->pixels;
-	uint32_t *srcbuf = src->pixels;
+	uint32_t *destbuf = visual_video_get_pixels (dest);
+	uint32_t *srcbuf = visual_video_get_pixels (src);
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
