@@ -50,13 +50,16 @@ enum {
 
 	/* Error entries for the VisAudio system */
 	VISUAL_ERROR_AUDIO_NULL,			/**< The VisAudio is NULL. */
-	
+
 	/* Error entries for the VisBMP system */
 	VISUAL_ERROR_BMP_NO_BMP,			/**< Not a bitmap file. */
 	VISUAL_ERROR_BMP_NOT_FOUND,			/**< File not found. */
 	VISUAL_ERROR_BMP_NOT_SUPPORTED,			/**< File format not supported. */
 	VISUAL_ERROR_BMP_CORRUPTED,			/**< Bitmap file is corrupted. */
-	
+
+	/* Error entries for the VisBuffer system */
+	VISUAL_ERROR_BUFFER_NULL,			/**< The VisBuffer is NULL. */
+
 	/* Error entries for the VisColor system */
 	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
 
@@ -67,43 +70,43 @@ enum {
 	/* Error entries for arch related errors and VisCPU system */
 	VISUAL_ERROR_CPU_INVALID_CODE,			/**< Can't run a section of code. */
 	VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED,		/**< CPU Feature is not supported. */
-	
+
 	/* Error entries for the VisError system */
 	VISUAL_ERROR_ERROR_HANDLER_NULL,		/**< Error handler is NULL. */
-	
+
 	/* Error entries for the VisEvent system */
 	VISUAL_ERROR_EVENT_NULL,			/**< The VisEvent is NULL. */
 	VISUAL_ERROR_EVENT_QUEUE_NULL,			/**< The VisEventQueue is NULL. */
 
 	/* Error entries for VisFFT system */
 	VISUAL_ERROR_FFT_NULL,				/**< The VisFFT is NULL. */
-	
+
 	/* Error entries for the VisInput system */
 	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */
 	VISUAL_ERROR_INPUT_PLUGIN_NULL,			/**< The VisInputPlugin is NULL. */
-	
+
 	/* Error entries for the VisLibvisual system */
 	VISUAL_ERROR_LIBVISUAL_NO_PATHS,		/**< Paths can be added to plugin dir list. */
 	VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED,	/**< Libvisual is already initialized. */
 	VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED,		/**< Libvisual is not initialized. */
 	VISUAL_ERROR_LIBVISUAL_NO_REGISTRY,		/**< No internal plugin registry is set up. */
-	
+
 	/* Error entries for the VisList system */
 	VISUAL_ERROR_LIST_NULL,				/**< The VisList is NULL. */
 	VISUAL_ERROR_LIST_ENTRY_NULL,			/**< The VisListEntry is NULL. */
 	VISUAL_ERROR_LIST_ENTRY_INVALID,		/**< The VisListEntry is invalid. */
-	
+
 	/* Error entries for the VisMem system */
 	VISUAL_ERROR_MEM_NULL,				/**< The memory pointer given is NULL. */
-	
+
 	/* Error entries for the VisMorph system */
 	VISUAL_ERROR_MORPH_NULL,			/**< The VisMorph is NULL. */
 	VISUAL_ERROR_MORPH_PLUGIN_NULL,			/**< The VisMorphPlugin is NULL. */
-	
+
 	/* Error entries for the VisPalette system */
 	VISUAL_ERROR_PALETTE_NULL,			/**< The VisPalette is NULL. */
 	VISUAL_ERROR_PALETTE_SIZE,			/**< Given VisPalette entries are not of the same size. */
-	
+
 	/* Error entries for the VisParam system */
 	VISUAL_ERROR_PARAM_NULL,			/**< The VisParamEntry is NULL. */
 	VISUAL_ERROR_PARAM_CONTAINER_NULL,		/**< The VisParamContainer is NULL. */
@@ -111,7 +114,7 @@ enum {
 	VISUAL_ERROR_PARAM_CALLBACK_NULL,		/**< The given param change callback is NULL. */
 	VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY,		/**< Too many param change callbacks are registered. */
 	VISUAL_ERROR_PARAM_INVALID_TYPE,		/**< The VisParamEntry is of invalid type. */
-	
+
 	/* Error entries for the VisPlugin system */
 	VISUAL_ERROR_PLUGIN_NULL,			/**< The VisPluginData is NULL. */
 	VISUAL_ERROR_PLUGIN_INFO_NULL,			/**< The VisPluginInfo is NULL. */
@@ -121,14 +124,14 @@ enum {
 	VISUAL_ERROR_PLUGIN_HANDLE_NULL,		/**< The dlopen handle of the plugin is NULL. */
 	VISUAL_ERROR_PLUGIN_ALREADY_REALIZED,		/**< The plugin is already realized. */
 	VISUAL_ERROR_PLUGIN_NO_LIST,			/**< The plugin list can't be found. */
-	
+
 	/* Error entries for the VisRandom system */
 	VISUAL_ERROR_RANDOM_CONTEXT_NULL,		/**< The VisRandomContext is NULL. */
 
 	/* Error entries for the VisRectangle system */
 	VISUAL_ERROR_RECTANGLE_NULL,			/**< The VisRectangle is NULL. */
 	VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS,		/**< The VisRectangle operation is out of bounds. */
-	
+
 	/* Error entries for the VisSonginfo system */
 	VISUAL_ERROR_SONGINFO_NULL,			/**< The VisSongInfo is NULL. */
 
@@ -153,12 +156,12 @@ enum {
 	VISUAL_ERROR_OBJECT_DTOR_FAILED,		/**< The destructor assigned to a VisObject failed destroying the VisObject. */
 	VISUAL_ERROR_OBJECT_NULL,			/**< The VisObject is NULL. */
 	VISUAL_ERROR_OBJECT_NOT_ALLOCATED,		/**< The VisObject is not allocated. */
-	
+
 	/* Error entries for the VisTime system */
 	VISUAL_ERROR_TIME_NULL,				/**< The VisTime is NULL. */
 	VISUAL_ERROR_TIME_NO_USLEEP,			/**< visual_time_usleep is not working on this system. */
 	VISUAL_ERROR_TIMER_NULL,			/**< The VisTimer is NULL. */
-	
+
 	/* Error entries for the VisUI system */
 	VISUAL_ERROR_UI_WIDGET_NULL,			/**< The VisUIWidget is NULL. */
 	VISUAL_ERROR_UI_CONTAINER_NULL,			/**< The VisUIContainer is NULL. */
@@ -186,6 +189,7 @@ enum {
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_NULL,			/**< The VisVideo is NULL. */
 	VISUAL_ERROR_VIDEO_HAS_ALLOCATED,		/**< The VisVideo has an allocated buffer. */
+	VISUAL_ERROR_VIDEO_BUFFER_NULL,			/**< The VisVideo has no VisBuffer object. */
 	VISUAL_ERROR_VIDEO_PIXELS_NULL,			/**< The VisVideo doesn't point to a pixel buffer. */
 	VISUAL_ERROR_VIDEO_NO_ALLOCATED,		/**< The VisVideo doesn't have an allocated pixel buffer. */
 	VISUAL_ERROR_VIDEO_HAS_PIXELS,			/**< The VisVideo already points to a pixel buffer. */

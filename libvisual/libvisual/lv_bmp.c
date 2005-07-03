@@ -52,12 +52,12 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	int pad;
 	
 	pad = (4 - (video->pitch & 3)) & 3;
-	data = (uint8_t *) video->pixels + (video->height * video->pitch);
+	data = (uint8_t *) visual_video_get_pixels (video) + (video->height * video->pitch);
 	
 	switch (depth) {
 		case 24:
 		case 8:
-			while (data > (uint8_t *) video->pixels) {
+			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				data -= video->pitch;
 
 				if (fread (data, video->pitch, 1, fp) != 1)
@@ -69,7 +69,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 			break;
 
 		case 4: 
-			while (data > (uint8_t *) video->pixels) {
+			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 4 bpp pixels aka 2 pixels per byte */
 				uint8_t *col = data - video->pitch;
 				uint8_t *end = (uint8_t *) ((int)data & ~1);
@@ -90,7 +90,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 			break;
 
 		case 1:
-			while (data > (uint8_t *) video->pixels) {
+			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 1 bpp pixels aka 8 pixels per byte */
 				uint8_t *col = data - video->pitch;
 				uint8_t *end = (uint8_t *) ((int)data & ~7);
@@ -133,7 +133,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	int c, y, k, pad;
 	int processing = 1;
 	
-	end = (uint8_t *)video->pixels + (video->height * video->pitch);
+	end = (uint8_t *)visual_video_get_pixels (video) + (video->height * video->pitch);
 	col = end - video->pitch;
 	y = video->height - 1;
 
@@ -168,7 +168,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 				
 			case 0: /* End of line */
 				y--;
-				col = (uint8_t *) video->pixels + video->pitch * y;
+				col = (uint8_t *) visual_video_get_pixels (video) + video->pitch * y;
 
 				if (y < 0)
 					goto err;
@@ -188,7 +188,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 				col -= c * video->pitch;
 				y -= c;
 
-				if (col < (uint8_t *)video->pixels)
+				if (col < (uint8_t *)visual_video_get_pixels (video))
 					goto err;
 				
 				break;
@@ -255,13 +255,13 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	int32_t bi_size = 0;
 	int32_t bi_width = 0;
 	int32_t bi_height = 0;
-	int16_t bi_bitcount = 0;	
+	int16_t bi_bitcount = 0;
 	uint32_t bi_compression;
 	uint32_t bi_clrused;
 
 	/* File read vars */
 	FILE *fp;
-	
+
 	/* Worker vars */
 	uint8_t depth = 24;
 	int32_t error = 0;
@@ -346,13 +346,13 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 		visual_log (VISUAL_LOG_CRITICAL, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
 		fclose (fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
-	}       
-	
-	if (bi_compression > 3) { 
+	}
+
+	if (bi_compression > 3) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Bitmap uses an invalid or unsupported compression scheme"));
 		fclose (fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
-	}       
+	}
 
 	/* Load the palette */
 	if (bi_bitcount < 24) {
@@ -364,7 +364,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 		if (video->pal != NULL)
 			visual_object_unref (VISUAL_OBJECT (video->pal));
-		
+
 		/* Always allocate 256 palette entries.
 		 * Depth transformation depends on this */
 		video->pal = visual_palette_new (256);
@@ -393,7 +393,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	visual_video_set_depth (video, visual_video_depth_enum_from_value (depth));
 	visual_video_set_dimension (video, bi_width, bi_height);
 	visual_video_allocate_buffer (video);
-	
+
 	/* Set to the beginning of image data, note that MickeySoft likes stuff upside down .. */
 	fseek (fp, bf_bits, SEEK_SET);
 
@@ -415,7 +415,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	fclose (fp);
 	if (!error) 
 		return VISUAL_OK;
-	
+
 	visual_video_free_buffer (video);
 	return error;
 }

@@ -10,7 +10,8 @@ library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_endianess.h lv_cpu.h lv_color.h \
 			  lv_time.h lv_random.h lv_error.h lv_ui.h \
 			  lv_types.h lv_thread.h lv_object.h \
-			  lv_transform.h lv_rectangle.h lv_config.h
+			  lv_transform.h lv_rectangle.h lv_ringbuffer.h \
+			  lv_buffer.h lv_config.h
 
 lib_LTLIBRARIES = libvisual.la
 
@@ -34,5 +35,5 @@ libvisual_la_SOURCES = lv_actor.c lv_input.c lv_event.c \
 		       lv_libvisual.c lv_songinfo.c lv_morph.c lv_bmp.c lv_param.c \
 		       lv_cpu.c lv_color.c lv_time.c lv_random.c lv_error.c lv_ui.c \
 		       lv_thread.c lv_object.c lv_transform.c lv_rectangle.c lv_config.c \
-		       gettext.h
+		       lv_ringbuffer.c lv_buffer.c gettext.h
 

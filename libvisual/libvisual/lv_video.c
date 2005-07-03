@@ -3,7 +3,7 @@
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- * 	    Duilio J. Protti <dprotti@users.sourceforge.net>
+ *	    Duilio J. Protti <dprotti@users.sourceforge.net>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
@@ -116,21 +116,22 @@ static int video_dtor (VisObject *object)
 {
 	VisVideo *video = VISUAL_VIDEO (object);
 
-	if (HAVE_ALLOCATED_BUFFER (video)) {
-		if (video->pixels != NULL)
-			visual_video_free_buffer (video);
-
-		video->pixels = NULL;
-	}
-
 	if (video->pixel_rows != NULL)
 		visual_mem_free (video->pixel_rows);
 
 	if (video->parent != NULL)
 		visual_object_unref (VISUAL_OBJECT (video->parent));
-	
+
+//        if (HAVE_ALLOCATED_BUFFER (video)) {
+//		visual_mem_free (video->buffer->data);
+//	}
+
+	if (video->buffer != NULL)
+		visual_object_unref (VISUAL_OBJECT (video->buffer));
+
 	video->pixel_rows = NULL;
 	video->parent = NULL;
+	video->buffer = NULL;
 
 	return VISUAL_OK;
 }
@@ -153,11 +154,11 @@ VisVideo *visual_video_new ()
 	video = visual_mem_new0 (VisVideo, 1);
 
 	visual_video_init (video);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (video), TRUE);
 	visual_object_ref (VISUAL_OBJECT (video));
-	
+
 	return video;
 }
 
@@ -178,20 +179,22 @@ VisVideo *visual_video_new ()
 int visual_video_init (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (video));
 	visual_object_set_dtor (VISUAL_OBJECT (video), video_dtor);
 	visual_object_set_allocated (VISUAL_OBJECT (video), FALSE);
 
 	/* By default, we suppose an external buffer will be used */
+	video->buffer = visual_buffer_new ();
+
 	video->flags = VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER;
 	video->pixel_rows = NULL;
 
 	visual_video_set_attributes (video, 0, 0, 0, VISUAL_VIDEO_DEPTH_NONE);
 	visual_video_set_buffer (video, NULL);
 	visual_video_set_palette (video, NULL);
-	
+
 	video->parent = NULL;
 	visual_rectangle_set (&video->rect, 0, 0, 0, 0);
 
@@ -214,13 +217,12 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 {
 	VisVideo *video;
 	int ret;
-	
+
 	video = visual_video_new ();
 
 	visual_video_set_depth (video, depth);
 	visual_video_set_dimension (video, width, height);
 
-	video->pixels = NULL;
 	ret = visual_video_allocate_buffer (video);
 
 	if (ret < 0) {
@@ -229,7 +231,7 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 		 */
 		video->flags = VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER;
 		visual_object_unref (VISUAL_OBJECT (video));
-		
+
 		return NULL;
 	}
 
@@ -247,20 +249,21 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 int visual_video_free_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
-	visual_log_return_val_if_fail (video->pixels != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
+	visual_log_return_val_if_fail (visual_video_get_pixels (video) != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
+
+	if (video->pixel_rows != NULL)
+		visual_mem_free (video->pixel_rows);
 
 	if (HAVE_ALLOCATED_BUFFER (video)) {
-		if (video->pixel_rows != NULL)
-			visual_mem_free (video->pixel_rows);
 
-		visual_mem_free (video->pixels);
+		visual_buffer_destroy_content (video->buffer);
 
 	} else {
 		return -VISUAL_ERROR_VIDEO_NO_ALLOCATED;
 	}
 
 	video->pixel_rows = NULL;
-	video->pixels = NULL;
+	visual_buffer_set_data_pair (video->buffer, NULL, 0);
 
 	video->flags = VISUAL_VIDEO_FLAG_NONE;
 
@@ -278,8 +281,9 @@ int visual_video_free_buffer (VisVideo *video)
 int visual_video_allocate_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (video->buffer != NULL, -VISUAL_ERROR_VIDEO_BUFFER_NULL);
 
-	if (video->pixels != NULL) {
+	if (visual_video_get_pixels (video) != NULL) {
 		if (HAVE_ALLOCATED_BUFFER (video)) {
 			visual_video_free_buffer (video);
 		} else {
@@ -290,14 +294,16 @@ int visual_video_allocate_buffer (VisVideo *video)
 		}
 	}
 
-	if (video->size == 0) {
-		video->pixels = NULL;
+	if (visual_video_get_size (video) == 0) {
+		visual_buffer_set_data (video->buffer, NULL);
+
 		video->flags = VISUAL_VIDEO_FLAG_NONE;
 
 		return VISUAL_OK;
 	}
-	
-	video->pixels = visual_mem_malloc0 (video->size);
+
+	visual_buffer_set_destroyer (video->buffer, visual_buffer_destroyer_free);
+	visual_buffer_allocate_data (video->buffer);
 
 	video->pixel_rows = visual_mem_new0 (void *, video->height);
 	precompute_row_table (video);
@@ -330,10 +336,11 @@ static void precompute_row_table (VisVideo *video)
 	int y;
 
 	visual_log_return_if_fail (video->pixel_rows != NULL);
-	
+
 	table = video->pixel_rows;
-	
-	for (y = 0, row = video->pixels; y < video->height; y++, row += video->pitch)
+	row = visual_video_get_pixels (video);
+
+	for (y = 0; y < video->height; y++, row += video->pitch)
 		*table++ = row;
 }
 
@@ -433,20 +440,21 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 		return -VISUAL_ERROR_VIDEO_HAS_ALLOCATED;
 	}
 
-	video->pixels = buffer;
+	visual_buffer_set_data (video->buffer, buffer);
+	visual_buffer_set_destroyer (video->buffer, NULL);
 
 	if (video->pixel_rows != NULL) {
 		visual_mem_free (video->pixel_rows);
-	
+
 		video->pixel_rows = NULL;
 	}
-	
-	if (video->pixels != NULL) {
+
+	if (visual_buffer_get_data (video->buffer) != NULL) {
 		video->pixel_rows = visual_mem_new0 (void *, video->height);
-		
+
 		precompute_row_table (video);
 	}
-	
+
 	return VISUAL_OK;
 }
 
@@ -468,8 +476,9 @@ int visual_video_set_dimension (VisVideo *video, int width, int height)
 	video->height = height;
 
 	video->pitch = video->width * video->bpp;
-	video->size = video->pitch * video->height;
-	
+
+	visual_buffer_set_size (video->buffer, video->pitch * video->height);
+
 	return VISUAL_OK;
 }
 
@@ -492,7 +501,7 @@ int visual_video_set_pitch (VisVideo *video, int pitch)
 		return -VISUAL_ERROR_VIDEO_INVALID_BPP;
 
 	video->pitch = pitch;
-	video->size = video->pitch * video->height;
+	visual_buffer_set_size (video->buffer, video->pitch * video->height);
 
 	return VISUAL_OK;
 }
@@ -536,6 +545,41 @@ int visual_video_set_attributes (VisVideo *video, int width, int height, int pit
 	visual_video_set_pitch (video, pitch);
 
 	return VISUAL_OK;
+}
+
+int visual_video_get_size (VisVideo *video)
+{
+	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+
+	return visual_buffer_get_size (video->buffer);
+}
+
+/**
+ * Retrieves the pixel buffer from a VisVideo.
+ *
+ * @param video Pointer to the VisVideo from which the pixel buffer is requested.
+ *
+ * @return The VisVideo it's pixel buffer, NULL on failure.
+ */
+void *visual_video_get_pixels (VisVideo *video)
+{
+	visual_log_return_val_if_fail (video != NULL, NULL);
+
+	return visual_buffer_get_data (video->buffer);
+}
+
+/**
+ * Retrieves the VisBuffer object from a VisVideo.
+ *
+ * @param video Pointer to the VisVideo from which the VisBuffer object is requested.
+ *
+ * @return The VisBuffer object, NULL on failure.
+ */
+VisBuffer *visual_video_get_buffer (VisVideo *video)
+{
+	visual_log_return_val_if_fail (video != NULL, NULL);
+
+	return video->buffer;
 }
 
 /**
@@ -868,7 +912,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 
 	visual_video_set_attributes (dest, rect->width, rect->height,
 			(rect->width * src->bpp) + (src->pitch - (rect->width * src->bpp)), src->depth);
-	visual_video_set_buffer (dest, (uint8_t *) (src->pixels) + ((rect->y * src->pitch) + (rect->x * src->bpp)));
+	visual_video_set_buffer (dest, (uint8_t *) (visual_video_get_pixels (src)) + ((rect->y * src->pitch) + (rect->x * src->bpp)));
 	
 	return VISUAL_OK;
 }
@@ -1233,8 +1277,8 @@ out:
 static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 {
 	int i;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 
 	for (i = 0; i < src->height; i++) {
 		visual_mem_copy (destbuf, srcbuf, src->width * src->bpp);
@@ -1249,8 +1293,8 @@ static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 static int blit_overlay_alpha32 (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha;
 
 	for (i = 0; i < src->height; i++) {
@@ -1275,8 +1319,8 @@ static int blit_overlay_alpha32 (VisVideo *dest, VisVideo *src)
 static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha;
 
 	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
@@ -1338,8 +1382,8 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha = src->density;
 
 	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
@@ -1437,7 +1481,7 @@ int visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t den
 
 	col = (color->r << 16 | color->g << 8 | color->b);
 
-	vidbuf = video->pixels;
+	vidbuf = visual_video_get_pixels (video);
 
 	/* FIXME byte order sensitive */
 	for (i = 0; i < video->height; i++) {
@@ -1473,7 +1517,7 @@ int visual_video_fill_alpha (VisVideo *video, uint8_t density)
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 
-	vidbuf = video->pixels + 3;
+	vidbuf = visual_video_get_pixels (video) + 3;
 
 	/* FIXME byte order sensitive */
 	for (i = 0; i < video->height; i++) {
@@ -1585,7 +1629,7 @@ out:
 static int fill_color8 (VisVideo *video, VisColor *color)
 {
 	int y;
-	uint8_t *buf = video->pixels;
+	uint8_t *buf = visual_video_get_pixels (video);
 	int8_t col = ((color->r + color->g + color->b) / 3);
 	
 	for (y = 0; y < video->height; y++) {
@@ -1600,7 +1644,7 @@ static int fill_color8 (VisVideo *video, VisColor *color)
 static int fill_color16 (VisVideo *video, VisColor *color)
 {
 	int y;
-	uint16_t *buf = video->pixels;
+	uint16_t *buf = visual_video_get_pixels (video);
 	int16_t col;
 	_color16 *col16 = (_color16 *) &col;
 	col16->r = color->r >> 3;
@@ -1620,7 +1664,7 @@ static int fill_color24 (VisVideo *video, VisColor *color)
 {
 	int y, x;
 	uint32_t *buf;
-	uint8_t *rbuf = video->pixels;
+	uint8_t *rbuf = visual_video_get_pixels (video);
 	uint8_t *buf8;
 	
 	int32_t cola =
@@ -1663,7 +1707,7 @@ static int fill_color24 (VisVideo *video, VisColor *color)
 static int fill_color32 (VisVideo *video, VisColor *color)
 {
 	int y;
-	uint32_t *buf = video->pixels;
+	uint32_t *buf = visual_video_get_pixels (video);
 	uint32_t col =
 		(color->r << 16) |
 		(color->g << 8) |
@@ -1691,8 +1735,8 @@ static int fill_color32 (VisVideo *video, VisColor *color)
 int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src)
 {
 	visual_log_return_val_if_fail (visual_video_compare (dest, src) == TRUE, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL);
-	visual_log_return_val_if_fail (dest->pixels != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
-	visual_log_return_val_if_fail (src->pixels != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
+	visual_log_return_val_if_fail (visual_video_get_pixels (dest) != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
+	visual_log_return_val_if_fail (visual_video_get_pixels (src) != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_8BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 	
 	if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT)
@@ -1723,7 +1767,7 @@ int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc)
 	if (viddest->depth == vidsrc->depth)
 		return visual_video_blit_overlay (viddest, vidsrc, 0, 0, FALSE);
 	
-	return visual_video_depth_transform_to_buffer (viddest->pixels,
+	return visual_video_depth_transform_to_buffer (visual_video_get_pixels (viddest),
 			vidsrc, vidsrc->pal, viddest->depth, viddest->pitch);
 }
 
@@ -1744,7 +1788,7 @@ int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc)
 int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 		VisPalette *pal, VisVideoDepth destdepth, int pitch)
 {
-	uint8_t *srcbuf = video->pixels;
+	uint8_t *srcbuf = visual_video_get_pixels (video);
 	int width = video->width;
 	int height = video->height;
 
@@ -1757,7 +1801,7 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
 
 	/* Destdepth is equal to sourcedepth case */
 	if (video->depth == destdepth) {
-		visual_mem_copy (dest, video->pixels, video->width * video->height * video->bpp);
+		visual_mem_copy (dest, visual_video_get_pixels (video), video->width * video->height * video->bpp);
 
 		return VISUAL_OK;
 	}
@@ -2113,8 +2157,8 @@ static int bgr_to_rgb16 (VisVideo *dest, VisVideo *src)
 	int x, y;
 	int pitchdiff = (dest->pitch - (dest->width * 2)) >> 1;
 	
-	destbuf = (_color16 *) dest->pixels;
-	srcbuf = (_color16 *) src->pixels;
+	destbuf = (_color16 *) visual_video_get_pixels (dest);
+	srcbuf = (_color16 *) visual_video_get_pixels (src);
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
@@ -2137,8 +2181,8 @@ static int bgr_to_rgb24 (VisVideo *dest, VisVideo *src)
 	int x, y;
 	int pitchdiff = dest->pitch - (dest->width * 3);
 
-	destbuf = dest->pixels;
-	srcbuf = src->pixels;
+	destbuf = visual_video_get_pixels (dest);
+	srcbuf = visual_video_get_pixels (src);
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
@@ -2163,8 +2207,8 @@ static int bgr_to_rgb32 (VisVideo *dest, VisVideo *src)
 	int i = 0;
 	int pitchdiff = dest->pitch - (dest->width * 4);
 
-	destbuf = dest->pixels;
-	srcbuf = src->pixels;
+	destbuf = visual_video_get_pixels (dest);
+	srcbuf = visual_video_get_pixels (src);
 	
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
@@ -2236,8 +2280,8 @@ int visual_video_zoom_double (VisVideo *dest, VisVideo *src, int times_doubled)
 
 static int zoom_8 (VisVideo *dest, VisVideo *src, int times_doubled)
 {
-	uint8_t *dbuf = dest->pixels;
-	uint8_t *sbuf = src->pixels;
+	uint8_t *dbuf = visual_video_get_pixels (dest);
+	uint8_t *sbuf = visual_video_get_pixels (src);
 	int i, j;
 	
 	for (i = 0; i < src->height; i++) {
@@ -2257,8 +2301,8 @@ static int zoom_8 (VisVideo *dest, VisVideo *src, int times_doubled)
 
 static int zoom_16 (VisVideo *dest, VisVideo *src, int times_doubled)
 {
-	uint16_t *dbuf = dest->pixels;
-	uint16_t *sbuf = src->pixels;
+	uint16_t *dbuf = visual_video_get_pixels (dest);
+	uint16_t *sbuf = visual_video_get_pixels (src);
 	int i, j;
 
 	for (i = 0; i < src->height; i++) {
@@ -2457,7 +2501,7 @@ static int scale_nearest_8 (VisVideo *dest, VisVideo *src)
 	dv = (src->height << 16) / dest->height;
 	v = 0;
 
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	for (y = 0; y < dest->height; y++, v += dv) {
 		src_pixel_row = (uint8_t *) src->pixel_rows[v >> 16];
@@ -2485,7 +2529,7 @@ static int scale_nearest_16 (VisVideo *dest, VisVideo *src)
 	dv = (src->height << 16) / dest->height;
 	v = 0;
 
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	for (y = 0; y < dest->height; y++, v += dv) {
 		src_pixel_row = (uint16_t *) src->pixel_rows[v >> 16];
@@ -2515,7 +2559,7 @@ static int scale_nearest_24 (VisVideo *dest, VisVideo *src)
 	dv = (src->height << 16) / dest->height;
 	v = 0;
 
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	for (y = 0; y < dest->height; y++, v += dv) {
 		src_pixel_row = (_color24 *) src->pixel_rows[v >> 16];
@@ -2543,7 +2587,7 @@ static int scale_nearest_32 (VisVideo *dest, VisVideo *src)
 	dv = (src->height << 16) / dest->height;
 	v = 0;
 
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	for (y = 0; y < dest->height; y++, v += dv) {
 		src_pixel_row = (uint32_t *) src->pixel_rows[v >> 16];
@@ -2567,7 +2611,7 @@ static int scale_bilinear_8 (VisVideo *dest, VisVideo *src)
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint8_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
 
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	du = ((src->width - 1)  << 16) / dest->width;
 	dv = ((src->height - 1) << 16) / dest->height;
@@ -2629,7 +2673,7 @@ static int scale_bilinear_16 (VisVideo *dest, VisVideo *src)
 	uint32_t y;
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	_color16 *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	du = ((src->width - 1)  << 16) / dest->width;
 	dv = ((src->height - 1) << 16) / dest->height;
@@ -2705,7 +2749,7 @@ static int scale_bilinear_24 (VisVideo *dest, VisVideo *src)
 	uint32_t y;
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	_color24 *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	du = ((src->width - 1)  << 16) / dest->width;
 	dv = ((src->height - 1) << 16) / dest->height;
@@ -2782,7 +2826,7 @@ static int scale_bilinear_32 (VisVideo *dest, VisVideo *src)
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint32_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
 
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	du = ((src->width - 1)  << 16) / dest->width;
 	dv = ((src->height - 1) << 16) / dest->height;

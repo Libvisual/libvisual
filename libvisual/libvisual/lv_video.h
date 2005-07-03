@@ -30,6 +30,7 @@
 #include <libvisual/lv_common.h>
 #include <libvisual/lv_palette.h>
 #include <libvisual/lv_rectangle.h>
+#include <libvisual/lv_buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -126,7 +127,7 @@ typedef struct _VisVideo VisVideo;
  * @see visual_video_blit_overlay_rectangle_scale_custom
  * @see visual_video_blit_overlay_custom
  *
- * @arg dest A pointer to the dest VisVideo source.
+ * @arg dest a pointer to the dest visvideo source.
  * @arg src A pointer to the source VisVideo source.
  *
  * @return VISUAL_OK on succes -VISUAL_ERROR_GENERAL on error.
@@ -149,10 +150,9 @@ struct _VisVideo {
 	int				 width;		/**< Surface it's width. */
 	int				 height;	/**< Surface it's height. */
 	int				 bpp;		/**< Surface it's bytes per pixel. */
-	int				 size;		/**< Surface it's screen buffer size in bytes. */
 	int				 pitch;		/**< Surface it's pitch value. Value contains
 							 * the number of bytes per line. */
-	void				*pixels;	/**< Pointer to the pixels. */
+	VisBuffer			*buffer;	/**< The video buffer. */
 	void				**pixel_rows;	/**< Pixel row start pointer table. */
 	VisPalette			*pal;		/**< Optional pointer to the palette. */
 
@@ -185,6 +185,11 @@ int visual_video_set_dimension (VisVideo *video, int width, int height);
 int visual_video_set_pitch (VisVideo *video, int pitch);
 int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
 int visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
+
+int visual_video_get_size (VisVideo *video);
+
+void *visual_video_get_pixels (VisVideo *video);
+VisBuffer *visual_video_get_buffer (VisVideo *video);
 
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth);
 VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth);

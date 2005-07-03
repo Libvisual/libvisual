@@ -33,6 +33,9 @@ extern "C" {
 #define VISUAL_AUDIO(obj)				(VISUAL_CHECK_CAST ((obj), VisAudio))
 
 typedef struct _VisAudio VisAudio;
+typedef struct _VisAudioSamplePool VisAudioSamplePool;
+typedef struct _VisAudioSamplePoolEntry VisAudioSamplePoolEntry;
+typedef struct _VisAudioSample VisAudioSample;
 
 /**
  * The VisAudio structure contains the sample and extra information
@@ -60,6 +63,37 @@ struct _VisAudio {
 	short int	 bpmenergy[6];			/**< Private member for BPM detection, not implemented right now. */
 	int		 energy;			/**< Audio energy level. */
 };
+#if 0
+struct _VisAudioSamplePool {
+	VisObject	 object;
+
+	VisRingBuffer	 samples;
+	VisTime		 samples_timeout;
+
+	VisList		 processed;
+};
+
+struct _VisAudioSamplePoolEntry {
+	VisObject	 object;
+
+	VisTime		 begin;
+	VisTime		 end;
+
+	float		*sampledata;
+	int		 samplesize;
+
+	int		 channel; /* FIXME make a typed enum or something, also for EntryMixed.. */
+};
+
+struct _VisAudioSample {
+	VisObject	 object;
+
+	VisTime		 timestamp;
+
+	uint8_t		*sampledata;
+	int		 samplesize;
+};
+#endif
 
 VisAudio *visual_audio_new (void);
 int visual_audio_init (VisAudio *audio);

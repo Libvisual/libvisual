@@ -35,8 +35,8 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, VisVideo *src)
 {
 #ifdef VISUAL_ARCH_X86
 	int i, j;
-	uint8_t *destbuf = dest->pixels;
-	uint8_t *srcbuf = src->pixels;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
 	uint8_t alpha;
 
 	for (i = 0; i < src->height; i++) {
@@ -88,7 +88,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint32_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;
 
-	dest_pixel = dest->pixels;
+	dest_pixel = visual_video_get_pixels (dest);
 
 	du = ((src->width - 1)  << 16) / dest->width;
 	dv = ((src->height - 1) << 16) / dest->height;
