@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: x11.c,v 1.5 2005-02-15 15:43:47 vitalyvb Exp $
+ * $Id: x11.c,v 1.6 2005-07-03 10:18:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -257,7 +257,7 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 
 		// XXX check if c->img_depth and priv->win_att.depth match
 		c->img = XCreateImage(XDPY, priv->win_att.visual, priv->win_att.depth,
-			ZPixmap, 0, c->video->pixels, c->video->width, c->video->height, 32, 0);
+			ZPixmap, 0, visual_video_get_pixels (c->video), c->video->width, c->video->height, 32, 0);
 
 		// XXX handle X errors
 
@@ -275,10 +275,10 @@ LvdDContext *context_create(VisPluginData *plugin, VisVideo *video, int *params)
 		c->shminfo.shmaddr = (char *)shmat(c->shminfo.shmid, 0, 0);
 		XShmAttach(XDPY, &c->shminfo);
 		shmctl(c->shminfo.shmid, IPC_RMID, NULL);
-		c->video->pixels = c->shminfo.shmaddr;
+		visual_video_get_pixels (c->video) = c->shminfo.shmaddr;
 
 		c->img = XShmCreateImage(XDPY, priv->win_att.visual, priv->win_att.depth,
-			ZPixmap, c->video->pixels, &c->shminfo, c->video->width, c->video->height);
+			ZPixmap, visual_video_get_pixels (c->video), &c->shminfo, c->video->width, c->video->height);
 
 	}
 
@@ -297,18 +297,18 @@ void context_delete(VisPluginData *plugin, LvdDContext *ctx)
 	}
 
 	if (c->img){
-		// NOTE: this will also destroy c->video->pixels
+		// NOTE: this will also destroy visual_video_get_pixels (c->video)
 		XDestroyImage(c->img);
 		c->img = NULL;
-		c->video->pixels = NULL;
+		visual_video_get_pixels (c->video) = NULL;
 	}
 
 	if (c->is_shm){
-		if (c->video->pixels){
+		if (visual_video_get_pixels (c->video)){
 			XShmDetach(XDPY, &c->shminfo);
 			XSync(XDPY, False);
 			shmdt(c->shminfo.shmaddr);
-			c->video->pixels = NULL;
+			visual_video_get_pixels (c->video) = NULL;
 		}
 		c->is_shm = 0;
 	}

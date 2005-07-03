@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: glx.c,v 1.15 2005-02-15 15:43:46 vitalyvb Exp $
+ * $Id: glx.c,v 1.16 2005-07-03 10:18:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -435,7 +435,7 @@ void context_delete(VisPluginData *plugin, LvdDContext *ctx)
 	c->drawable = 0;
 
 	if (c->video){
-		if (c->video->pixels)
+		if (visual_video_get_pixels (c->video))
 			visual_video_free_buffer(c->video);
 
 		visual_object_unref(VISUAL_OBJECT(c->video));
@@ -488,7 +488,7 @@ void draw(VisPluginData *plugin)
 	privdata *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
 	if ((priv->active_ctx->video->depth != VISUAL_VIDEO_DEPTH_GL) &&
-		(priv->active_ctx->video->pixels)){
+		(visual_video_get_pixels (priv->active_ctx->video))) {
 
 		int format, type;
 
@@ -513,7 +513,7 @@ void draw(VisPluginData *plugin)
 		glPixelZoom(1.0f, -1.0f);
 		glRasterPos2f(-1.0f, 1.0f);
 		glDrawPixels(priv->active_ctx->video->width, priv->active_ctx->video->height,
-			format, type, priv->active_ctx->video->pixels);
+			format, type, visual_video_get_pixels (priv->active_ctx->video));
 	}
 
 	glXSwapBuffers(XDPY, XGLXW);
