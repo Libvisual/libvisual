@@ -225,6 +225,43 @@ VisBuffer *visual_buffer_clone_new (VisBuffer *src)
 	return dest;
 }
 
+int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset)
+{
+	int amount;
+
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (byteoffset < visual_buffer_get_size (dest), -VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS);
+
+	if (byteoffset + src->datasize > dest->datasize)
+		amount = dest->datasize - byteoffset;
+
+	visual_mem_copy (dest->data + byteoffset, src->data, amount);
+
+	return VISUAL_OK;
+}
+
+int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	if (byteoffset + src->datasize > dest->datasize)
+		return -VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS;
+
+	return visual_buffer_put (dest, src, byteoffset);
+}
+
+int visual_buffer_append (VisBuffer *dest, VisBuffer *src)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	dest->data = visual_mem_realloc (dest->data, dest->datasize + src->datasize);
+
+	return visual_buffer_put (dest, src, dest->datasize);
+}
+
 void visual_buffer_destroyer_free (VisBuffer *buffer)
 {
 	if (buffer->data != NULL)

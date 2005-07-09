@@ -26,6 +26,7 @@
 
 #include <libvisual/lv_common.h>
 #include <libvisual/lv_list.h>
+#include <libvisual/lv_buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,15 +35,46 @@ extern "C" {
 #define VISUAL_RINGBUFFER(obj)				(VISUAL_CHECK_CAST ((obj), VisRingBuffer))
 #define VISUAL_RINGBUFFER_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisRingBufferEntry))
 
+/**
+ * Enum defining the VisRingBufferEntryTypes.
+ */
+typedef enum {
+	VISUAL_RINGBUFFER_ENTRY_TYPE_NONE	= 0,	/**< State less entry. */
+	VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER	= 1,	/**< Normal byte buffer. */
+	VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION	= 2	/**< Data retrieval using a callback. */
+} VisRingBufferEntryType;
+
 typedef struct _VisRingBufferEntry VisRingBufferEntry;
 typedef struct _VisRingBuffer VisRingBuffer;
+
+/**
+ * A VisRingBuffer data provider function needs this signature. It can be used to provide
+ * ringbuffer entry data on runtime through a callback.
+ *
+ * @arg ringbuffer The VisRingBuffer data structure.
+ * @arg entry The VisRingBufferEntry to which the callback entry is connected.
+ */
+typedef VisBuffer *(*VisRingBufferDataFunc)(VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
+
+typedef void (*VisRingBufferDestroyFunc)(VisRingBufferEntry *entry);
+
+typedef int (*VisRingBufferSizeFunc)(VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
+
 
 /**
  * The VisRingBufferEntry data structure is an entry within the ringbuffer.
  */
 struct _VisRingBufferEntry {
-//	type; -> naieve byte buffer, function based ringbuffer.
-//	getdatafunc hiero. met eigen context object, hang aan de context de sample.
+	VisObject			 object;
+
+	VisRingBufferEntryType		 type;
+	VisRingBufferDataFunc		 datafunc;
+	VisRingBufferDestroyFunc	 destroyfunc;
+	VisRingBufferSizeFunc		 sizefunc;
+
+	VisBuffer			*buffer;
+
+	void				*functiondata;
 };
 
 /**
@@ -51,19 +83,45 @@ struct _VisRingBufferEntry {
 struct _VisRingBuffer {
 	VisObject		 object;	/**< The VisObject data. */
 
-	VisList			 entries;	/**< The ring buffer entries list. */
+	VisList			*entries;	/**< The ring buffer entries list. */
 };
 
 /* prototypes */
 VisRingBuffer *visual_ringbuffer_new (void);
 int visual_ringbuffer_init (VisRingBuffer *ringbuffer);
 
-int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, void *data, int nbytes);
-int visual_ringbuffer_get_data_without_wrap (VisRingBuffer *ringbuffer, void *data, int nbytes);
+int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
+int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer);
+int visual_ringbuffer_add_buffer_by_data (VisRingBuffer *ringbuffer, void *data, int nbytes);
+int visual_ringbuffer_add_function (VisRingBuffer *ringbuffer,
+		VisRingBufferDataFunc datafunc,
+		VisRingBufferDestroyFunc destroyfunc,
+		VisRingBufferSizeFunc sizefunc,
+		void *functiondata);
 
-void *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int *nbytes);
-void *visual_ringbuffer_get_data_new_without_wrap (VisRingBuffer *ringbuffer, int *nbytes);
+int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer);
 
+VisList *visual_ringbuffer_get_list (VisRingBuffer *ringbuffer);
+
+int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
+int visual_ringbuffer_get_data_without_wrap (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
+
+VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int nbytes);
+VisBuffer *visual_ringbuffer_get_data_new_without_wrap (VisRingBuffer *ringbuffer, int nbytes);
+
+VisRingBufferEntry *visual_ringbuffer_entry_new (VisBuffer *buffer);
+int visual_ringbuffer_entry_init (VisRingBufferEntry *entry, VisBuffer *buffer);
+VisRingBufferEntry *visual_ringbuffer_entry_new_function (
+		VisRingBufferDataFunc datafunc,
+		VisRingBufferDestroyFunc destroyfunc,
+		VisRingBufferSizeFunc sizefunc,
+		void *functiondata);
+int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
+		VisRingBufferDataFunc datafunc,
+		VisRingBufferDestroyFunc destroyfunc,
+		VisRingBufferSizeFunc sizefunc,
+		void *functiondata);
+void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry);
 
 #ifdef __cplusplus
 }

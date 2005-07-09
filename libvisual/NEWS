@@ -14,6 +14,9 @@ New in 0.3.0: xxxx-xx-xx:
   Optimized memset functions. (Dennis)
 * VisVideo new composite system. (Dennis)
 * VisVideo sub regions. (Dennis)
+* visual_video_zoom_*(). (Jaak)
+* visual_video_mirror_*(). (Jaak)
+* Removed obsolete visual_video_depth_transform_to_buffer(). (Jaak)
 
 New in 0.2.0: 2005-02-09:
 * VisTransform subsystem. (Dennis)

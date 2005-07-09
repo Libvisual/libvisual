@@ -226,7 +226,7 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, const char
 
 	visual_log_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
 	visual_log_return_val_if_fail (name != NULL, -VISUAL_ERROR_NULL);
-	
+
 	while ((param = visual_list_next (&paramcontainer->entries, &le)) != NULL) {
 
 		if (strcmp (param->name, name) == 0) {

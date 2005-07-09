@@ -187,6 +187,28 @@ int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
 }
 
 /**
+ * Checks if a VisTime is later than another VisTime.
+ *
+ * @param time_ Pointer to the VisTime for which is checked whether it's later or not than the other.
+ * @param past Pointer to the VisTime that acts as the past time source data.
+ *
+ * @return TRUE if past, FALSE if not on succes, -VISUAL_ERROR_TIME_NULL on failure.
+ */
+int visual_time_past (VisTime *time_, VisTime *past)
+{
+	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_log_return_val_if_fail (past != NULL, -VISUAL_ERROR_TIME_NULL);
+
+	if (time_->tv_sec > past->tv_sec)
+		return TRUE;
+
+	if (time_->tv_sec == past->tv_sec && time_->tv_usec > past->tv_usec)
+		return TRUE;
+
+	return FALSE;
+}
+
+/**
  * Sleeps an certain amount of microseconds.
  *
  * @param microseconds The amount of microseconds we're going to sleep. To sleep a certain amount of

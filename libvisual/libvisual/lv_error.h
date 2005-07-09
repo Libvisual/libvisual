@@ -50,6 +50,9 @@ enum {
 
 	/* Error entries for the VisAudio system */
 	VISUAL_ERROR_AUDIO_NULL,			/**< The VisAudio is NULL. */
+	VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL,		/**< The VisAudioSamplePool is NULL. */
+	VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL,	/**< The VisAudioSamplePoolChannel is NULL. */
+	VISUAL_ERROR_AUDIO_SAMPLE_NULL,			/**< The VisAudioSample is NULL. */
 
 	/* Error entries for the VisBMP system */
 	VISUAL_ERROR_BMP_NO_BMP,			/**< Not a bitmap file. */
@@ -59,6 +62,7 @@ enum {
 
 	/* Error entries for the VisBuffer system */
 	VISUAL_ERROR_BUFFER_NULL,			/**< The VisBuffer is NULL. */
+	VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS,		/**< The requested operation would be out of bounds. */
 
 	/* Error entries for the VisColor system */
 	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
@@ -132,6 +136,11 @@ enum {
 	VISUAL_ERROR_RECTANGLE_NULL,			/**< The VisRectangle is NULL. */
 	VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS,		/**< The VisRectangle operation is out of bounds. */
 
+	/* Error entries for the VisRingBuffer system */
+	VISUAL_ERROR_RINGBUFFER_NULL,			/**< The VisRingBuffer is NULL. */
+	VISUAL_ERROR_RINGBUFFER_ENTRY_NULL,		/**< The VisRingBufferEntry is NULL. */
+	VISUAL_ERROR_RINGBUFFER_DATAFUNC_NULL,		/**< The VisRingBufferDataFunc is NULL. */
+
 	/* Error entries for the VisSonginfo system */
 	VISUAL_ERROR_SONGINFO_NULL,			/**< The VisSongInfo is NULL. */
 
@@ -196,6 +205,7 @@ enum {
 	VISUAL_ERROR_VIDEO_INVALID_BPP,			/**< The VisVideo it's bytes per pixel is invalid. */
 	VISUAL_ERROR_VIDEO_INVALID_DEPTH,		/**< The VisVideoDepth value is not valid. */
 	VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD,	/**< The VisVideoScaleMethod argument is not valid. */
+	VISUAL_ERROR_VIDEO_INVALID_ROTATE,		/**< The VisVideoRotateDegrees argument is not valid. */
 	VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS,		/**< The X or Y value are greater than the VisVideo it's dimension. */
 	VISUAL_ERROR_VIDEO_NOT_INDENTICAL,		/**< The two VisVideo their configuration are not indentical. */
 	VISUAL_ERROR_VIDEO_NOT_TRANSFORMED,		/**< Could not depth transform a VisVideo. */

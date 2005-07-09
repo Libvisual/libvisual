@@ -60,7 +60,7 @@ VisPalette *visual_palette_new (int ncolors)
 	pal = visual_mem_new0 (VisPalette, 1);
 
 	visual_palette_init (pal);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (pal), TRUE);
 	visual_object_ref (VISUAL_OBJECT (pal));

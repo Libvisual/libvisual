@@ -5,6 +5,7 @@ Developers:
 Duilio J. Protti <dprotti@users.sourceforge.net>
 Vitaly V. Bursov <vitalyvb@ukr.net>
 Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
+Jaak Randmets <jaak.ra@gmail.com>
 
 The new FFT implementation that is used by libvisual:
 based upon the FFT implementation found in NULLSOFT Milkdrop.

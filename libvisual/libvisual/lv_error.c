@@ -48,6 +48,9 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_ACTOR_GL_NEGOTIATE] =		N_("VisActor failed while trying to forcefully negotiate a GL surface"),
 
 	[VISUAL_ERROR_AUDIO_NULL] =			N_("VisAudio is NULL"),
+	[VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL] =		N_("The VisAudioSamplePool is NULL"),
+	[VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL] =	N_("The VisAudioSamplePoolChannel is NULL"),
+	[VISUAL_ERROR_AUDIO_SAMPLE_NULL] =		N_("The VisAudioSample is NULL"),
 
 	[VISUAL_ERROR_BMP_NO_BMP] =			N_("Bitmap is not a bitmap file"),
 	[VISUAL_ERROR_BMP_NOT_FOUND] =			N_("Bitmap can not be found"),
@@ -55,6 +58,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_BMP_CORRUPTED] =			N_("Bitmap is corrupted"),
 
 	[VISUAL_ERROR_BUFFER_NULL] =			N_("VisBuffer is NULL"),
+	[VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS] =		N_("The requested operation on the VisBuffer is out of bounds"),
 
 	[VISUAL_ERROR_COLOR_NULL] =			N_("VisColor is NULL"),
 
@@ -112,12 +116,16 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_RECTANGLE_NULL] =			N_("VisRectangle is NULL"),
 	[VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS] =	N_("The VisRectangle operation is out of bounds"),
 
+	[VISUAL_ERROR_RINGBUFFER_NULL] =		N_("The VisRingBuffer is NULL"),
+	[VISUAL_ERROR_RINGBUFFER_ENTRY_NULL] =		N_("The VisRingBufferEntry is NULL"),
+	[VISUAL_ERROR_RINGBUFFER_DATAFUNC_NULL] =	N_("The VisRingBufferDataFunc data provider function callback is NULL"),
+
 	[VISUAL_ERROR_SONGINFO_NULL] =			N_("VisSongInfo is NULL"),
 
 	[VISUAL_ERROR_THREAD_NULL] =			N_("VisThread is NULL"),
 	[VISUAL_ERROR_THREAD_NOT_INITIALIZED] =		N_("The VisThread subsystem is not initialized"),
 	[VISUAL_ERROR_THREAD_NOT_SUPPORTED] =		N_("The VisThread subsystem couldn't find any threading model to use"),
-	[VISUAL_ERROR_THREAD_NOT_ENABLED] =		N_("The VisThread subsystem is not enabled"), 
+	[VISUAL_ERROR_THREAD_NOT_ENABLED] =		N_("The VisThread subsystem is not enabled"),
 
 	[VISUAL_ERROR_MUTEX_NULL] =			N_("VisMutex is NULL"),
 	[VISUAL_ERROR_MUTEX_LOCK_FAILURE] =		N_("VisMutex lock failed"),
@@ -170,6 +178,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_VIDEO_INVALID_BPP] =		N_("VisVideo is of invalid bytes per pixel"),
 	[VISUAL_ERROR_VIDEO_INVALID_DEPTH] =		N_("VisVideo is of invalid depth"),
 	[VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD] =	N_("Invalid scale method given"),
+	[VISUAL_ERROR_VIDEO_INVALID_ROTATE] =		N_("Invalid rotate degrees given"),
 	[VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS] =		N_("Given coordinates are out of bounds"),
 	[VISUAL_ERROR_VIDEO_NOT_INDENTICAL] =		N_("Given VisVideos are not indentical"),
 	[VISUAL_ERROR_VIDEO_NOT_TRANSFORMED] =		N_("VisVideo is not depth transformed as requested")

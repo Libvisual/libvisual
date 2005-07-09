@@ -6,6 +6,7 @@
  *	    Duilio J. Protti <dprotti@users.sourceforge.net>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
+ *	    Jaak Randmets <jaak.ra@gmail.com>
  *
  * $Id:
  *
@@ -72,22 +73,31 @@ static int fill_color16 (VisVideo *video, VisColor *color);
 static int fill_color24 (VisVideo *video, VisColor *color);
 static int fill_color32 (VisVideo *video, VisColor *color);
 
+/* Rotate functions */
+static int rotate_90 (VisVideo *dest, VisVideo *src);
+static int rotate_180 (VisVideo *dest, VisVideo *src);
+static int rotate_270 (VisVideo *dest, VisVideo *src);
+
+/* Mirror functions */
+static int mirror_x (VisVideo *dest, VisVideo *src);
+static int mirror_y (VisVideo *dest, VisVideo *src);
+
 /* Depth conversions */
-static int depth_transform_8_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_8_to_16_c (VisVideo *dest, VisVideo *src);
+static int depth_transform_8_to_24_c (VisVideo *dest, VisVideo *src);
+static int depth_transform_8_to_32_c (VisVideo *dest, VisVideo *src);
 
-static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_16_to_8_c (VisVideo *dest, VisVideo *src);
+static int depth_transform_16_to_24_c (VisVideo *dest, VisVideo *src);
+static int depth_transform_16_to_32_c (VisVideo *dest, VisVideo *src);
 
-static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_24_to_8_c (VisVideo *dest, VisVideo *src);
+static int depth_transform_24_to_16_c (VisVideo *dest, VisVideo *src);
+static int depth_transform_24_to_32_c (VisVideo *dest, VisVideo *src);
 
-static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
-static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal);
+static int depth_transform_32_to_8_c (VisVideo *dest, VisVideo *src);
+static int depth_transform_32_to_16_c (VisVideo *dest, VisVideo *src);
+static int depth_transform_32_to_24_c (VisVideo *dest, VisVideo *src);
 
 /* BGR to RGB conversions */
 static int bgr_to_rgb16 (VisVideo *dest, VisVideo *src);
@@ -95,10 +105,10 @@ static int bgr_to_rgb24 (VisVideo *dest, VisVideo *src);
 static int bgr_to_rgb32 (VisVideo *dest, VisVideo *src);
 
 /* Fast double pixeler zoomer */
-static int zoom_8 (VisVideo *dest, VisVideo *src, int times_doubled);
-static int zoom_16 (VisVideo *dest, VisVideo *src, int times_doubled);
-static int zoom_24 (VisVideo *dest, VisVideo *src, int times_doubled);
-static int zoom_32 (VisVideo *dest, VisVideo *src, int times_doubled);
+static int zoom_8 (VisVideo *dest, VisVideo *src);
+static int zoom_16 (VisVideo *dest, VisVideo *src);
+static int zoom_24 (VisVideo *dest, VisVideo *src);
+static int zoom_32 (VisVideo *dest, VisVideo *src);
 
 /* Scaling functions */
 static int scale_nearest_8 (VisVideo *dest, VisVideo *src);
@@ -1750,105 +1760,283 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src)
 }
 
 /**
+ *
+ */
+int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees)
+{
+	int ret = VISUAL_OK;
+
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
+
+	switch (degrees) {
+		case VISUAL_VIDEO_ROTATE_NONE:
+			if (dest->width == src->width && dest->height == src->height)
+				ret = visual_video_blit_overlay (dest, src, 0, 0, FALSE);
+			else
+				ret = -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
+
+			break;
+
+		case VISUAL_VIDEO_ROTATE_90:
+			ret = rotate_90 (dest, src);
+
+			break;
+
+		case VISUAL_VIDEO_ROTATE_180:
+			ret = rotate_180 (dest, src);
+
+			break;
+
+		case VISUAL_VIDEO_ROTATE_270:
+			ret = rotate_270 (dest, src);
+
+			break;
+
+		default:
+			ret = -VISUAL_ERROR_VIDEO_INVALID_ROTATE;
+
+			break;
+	}
+
+	return ret;
+}
+
+/**
+ *
+ */
+VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees)
+{
+	VisVideo *dest;
+	int nwidth;
+	int nheight;
+
+	visual_log_return_val_if_fail (src != NULL, NULL);
+
+	switch (degrees) {
+		case VISUAL_VIDEO_ROTATE_NONE:
+		case VISUAL_VIDEO_ROTATE_180:
+			nwidth = src->width;
+			nheight = src->height;
+
+			break;
+
+		case VISUAL_VIDEO_ROTATE_90:
+		case VISUAL_VIDEO_ROTATE_270:
+			nwidth = src->height;
+			nheight = src->width;
+
+			break;
+
+		default:
+			return NULL;
+
+			break;
+	}
+
+	dest = visual_video_new_with_buffer (nwidth, nheight, src->depth);
+
+	visual_video_rotate (dest, src, degrees);
+
+	return dest;
+}
+
+/* FIXME only works for 32 bits, need to get fixed */
+/* Rotate functions */
+static int rotate_90 (VisVideo *dest, VisVideo *src)
+{
+	uint32_t *tsbuf = src->pixel_rows[src->height-1];
+	uint32_t *dbuf;
+	uint32_t *sbuf = tsbuf;
+	int i, j;
+
+	visual_log_return_val_if_fail (dest->width == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+	visual_log_return_val_if_fail (dest->height == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+
+	for (i = 0; i < dest->height; i++) {
+		dbuf = dest->pixel_rows[i];
+
+		for (j = 0; j < dest->width; ++j) {
+			*(dbuf++) = *sbuf;
+			sbuf -= src->width;
+		}
+
+		sbuf = tsbuf;
+		tsbuf++;
+	}
+
+	return VISUAL_OK;
+}
+
+static int rotate_180 (VisVideo *dest, VisVideo *src)
+{
+	uint32_t *dbuf;
+	uint32_t *sbuf;
+	int i, j;
+	const int h1 = src->height - 1;
+
+	visual_log_return_val_if_fail (dest->width == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+	visual_log_return_val_if_fail (dest->height == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+
+	for (i = 0; i < dest->height; i++) {
+		dbuf = dest->pixel_rows[i];
+		sbuf = src->pixel_rows[h1 - i] + src->pitch;
+
+		for (j = 0; j < dest->width; j++) {
+			*(dbuf++) = *(sbuf--);
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+static int rotate_270 (VisVideo *dest, VisVideo *src)
+{
+	uint32_t *tsbuf = visual_video_get_pixels (src) + src->pitch;
+	uint32_t *dbuf = visual_video_get_pixels (dest);
+	uint32_t *sbuf = tsbuf;
+	int i, j;
+
+	visual_log_return_val_if_fail (dest->width == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+	visual_log_return_val_if_fail (dest->height == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+
+	for (i = 0; i < dest->height; i++) {
+		dbuf = dest->pixel_rows[i];
+
+		for (j = 0; j < dest->width; j++) {
+			*(dbuf++) = *sbuf;
+			sbuf += src->width;
+		}
+
+		sbuf = tsbuf;
+		tsbuf--;
+	}
+
+	return VISUAL_OK;
+}
+
+/* FIXME make functions */
+int visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
+
+	return VISUAL_OK;
+}
+
+VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient)
+{
+	return NULL;
+}
+
+/* Mirror functions */
+/* FIXME untested and prolly not perfect */
+static int mirror_x (VisVideo *dest, VisVideo *src)
+{
+	int i, j, k;
+
+	uint8_t *dbuf = visual_video_get_pixels (dest);
+	uint8_t *sbuf = visual_video_get_pixels (src);
+
+	const int step2 = dest->bpp << 1;
+	const int w1b = (dest->width - 1)*dest->bpp;
+
+	for (i = 0; i < dest->height; i++) {
+		sbuf = src->pixel_rows[i] + w1b;
+		dbuf = dest->pixel_rows[i];
+		for (j = 0; j < dest->width; j++) {
+			for (k = 0; k < dest->bpp; k++) {
+				*(dbuf++) = *(sbuf++);
+			}
+
+			sbuf -= step2;
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+static int mirror_y (VisVideo *dest, VisVideo *src)
+{
+	int i;
+
+	for (i = 0; i < dest->height; i++) {
+		visual_mem_copy (dest->pixel_rows[i],
+				src->pixel_rows[dest->height - 1 - i],
+				dest->width * dest->bpp);
+	}
+
+	return VISUAL_OK;
+}
+
+/**
  * Video depth transforms one VisVideo into another using the depth information
  * stored within the VisVideos. The dimension should be equal however the pitch
  * value of the destination may be set.
  *
- * @param viddest Pointer to the destination VisVideo to which the source
- *	VisVideo is transformed.
- * @param vidsrc Pointer to the source VisVideo.
+ * @param dest Pointer to the destination VisVideo to which the source VisVideo is transformed.
+ * @param src Pointer to the source VisVideo.
  *
- * @return VISUAL_OK on succes, error values returned by visual_video_blit_overlay or
- *	visual_video_depth_transform_to_buffer on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_PALETTE_NULL, -VISUAL_ERROR_PALETTE_SIZE,
+ * 	-VISUAL_ERROR_VIDEO_NOT_TRANSFORMED or error values returned by visual_video_blit_overlay on failure.
  */
-int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc)
+int visual_video_depth_transform (VisVideo *dest, VisVideo *src)
 {
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
+
 	/* We blit overlay it instead of just visual_mem_copy because the pitch can still be different */
-	if (viddest->depth == vidsrc->depth)
-		return visual_video_blit_overlay (viddest, vidsrc, 0, 0, FALSE);
-	
-	return visual_video_depth_transform_to_buffer (visual_video_get_pixels (viddest),
-			vidsrc, vidsrc->pal, viddest->depth, viddest->pitch);
-}
+	if (dest->depth == src->depth)
+		return visual_video_blit_overlay (dest, src, 0, 0, FALSE);
 
-/**
- * Less abstract video depth transform used by visual_video_depth_transform.
- *
- * @see visual_video_depth_transform
- *
- * @param dest Destination buffer.
- * @param video Source VisVideo.
- * @param pal Pointer to a VisPalette that can be set by full color to indexed color transforms.
- * @param destdepth The destination depth.
- * @param pitch The destination number of bytes per line.
- *
- * return VISUAL_OK on succes -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_PALETTE_NULL, -VISUAL_ERROR_PALETTE_SIZE
- *	or -VISUAL_ERROR_VIDEO_NOT_TRANSFORMED on failure.
- */
-int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
-		VisPalette *pal, VisVideoDepth destdepth, int pitch)
-{
-	uint8_t *srcbuf = visual_video_get_pixels (video);
-	int width = video->width;
-	int height = video->height;
-
-	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
-	
-	if (destdepth == VISUAL_VIDEO_DEPTH_8BIT || video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-		visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
-		visual_log_return_val_if_fail (pal->ncolors == 256, -VISUAL_ERROR_PALETTE_SIZE);
+	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT || src->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+		visual_log_return_val_if_fail (src->pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
+		visual_log_return_val_if_fail (src->pal->ncolors == 256, -VISUAL_ERROR_PALETTE_SIZE);
 	}
 
-	/* Destdepth is equal to sourcedepth case */
-	if (video->depth == destdepth) {
-		visual_mem_copy (dest, visual_video_get_pixels (video), video->width * video->height * video->bpp);
+	if (src->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 
-		return VISUAL_OK;
-	}
-	
-	if (video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+		if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT)
+			return depth_transform_8_to_16_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_16BIT)
-			return depth_transform_8_to_16_c (dest, srcbuf, width, height, pitch, pal);
+		if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT)
+			return depth_transform_8_to_24_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_24BIT)
-			return depth_transform_8_to_24_c (dest, srcbuf, width, height, pitch, pal);
+		if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT)
+			return depth_transform_8_to_32_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_32BIT)
-			return depth_transform_8_to_32_c (dest, srcbuf, width, height, pitch, pal);
+	} else if (src->depth == VISUAL_VIDEO_DEPTH_16BIT) {
 
-	} else if (video->depth == VISUAL_VIDEO_DEPTH_16BIT) {
-		
-		if (destdepth == VISUAL_VIDEO_DEPTH_8BIT)
-			return depth_transform_16_to_8_c (dest, srcbuf, width, height, pitch, pal);
+		if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT)
+			return depth_transform_16_to_8_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_24BIT)
-			return depth_transform_16_to_24_c (dest, srcbuf, width, height, pitch, NULL);
+		if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT)
+			return depth_transform_16_to_24_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_32BIT)
-			return depth_transform_16_to_32_c (dest, srcbuf, width, height, pitch, NULL);
-	
-	} else if (video->depth == VISUAL_VIDEO_DEPTH_24BIT) {
+		if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT)
+			return depth_transform_16_to_32_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_8BIT)
-			return depth_transform_24_to_8_c (dest, srcbuf, width, height, pitch, pal);
+	} else if (src->depth == VISUAL_VIDEO_DEPTH_24BIT) {
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_16BIT)
-			return depth_transform_24_to_16_c (dest, srcbuf, width, height, pitch, NULL);
+		if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT)
+			return depth_transform_24_to_8_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_32BIT)
-			return depth_transform_24_to_32_c (dest, srcbuf, width, height, pitch, NULL);
+		if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT)
+			return depth_transform_24_to_16_c (dest, src);
 
-	} else if (video->depth == VISUAL_VIDEO_DEPTH_32BIT) {
+		if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT)
+			return depth_transform_24_to_32_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_8BIT)
-			return depth_transform_32_to_8_c (dest, srcbuf, width, height, pitch, pal);
+	} else if (src->depth == VISUAL_VIDEO_DEPTH_32BIT) {
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_16BIT)
-			return depth_transform_32_to_16_c (dest, srcbuf, width, height, pitch, NULL);
+		if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT)
+			return depth_transform_32_to_8_c (dest, src);
 
-		if (destdepth == VISUAL_VIDEO_DEPTH_24BIT)
-			return depth_transform_32_to_24_c (dest, srcbuf, width, height, pitch, NULL);
+		if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT)
+			return depth_transform_32_to_16_c (dest, src);
+
+		if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT)
+			return depth_transform_32_to_24_c (dest, src);
 	}
 
 	return -VISUAL_ERROR_VIDEO_NOT_TRANSFORMED;
@@ -1874,283 +2062,352 @@ int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
  * 32 - 16		x
  */
 
-static int depth_transform_8_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+/* Depth conversion functions */
+static int depth_transform_8_to_16_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	int i;
-	_color16 *destr = (_color16 *) dest;
-	int pitchdiff = (pitch - (width * 2)) >> 1;
-	_color16 colors[256];
+    int x, y, i;
 
-	for (i = 0; i < 256; i++) {
-		colors[i].r = pal->colors[i].r >> 3;	
-		colors[i].g = pal->colors[i].g >> 2;
-		colors[i].b = pal->colors[i].b >> 3;	
-	}
+    _color16* dbuf = visual_video_get_pixels (dest);
+    uint8_t* sbuf = visual_video_get_pixels (src);
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++)
-			*destr++ = colors[*src++];
+    const int ddiff = (dest->pitch / dest->bpp) - dest->width;
+    const int sdiff = src->pitch - (src->width * src->bpp);
 
-		destr += pitchdiff;
-	}
+    _color16 colors[256];
 
-	return VISUAL_OK;
+    for(i = 0; i < 256; i++) {
+        colors[i].r = src->pal->colors[i].r >> 3;
+        colors[i].g = src->pal->colors[i].g >> 2;
+        colors[i].b = src->pal->colors[i].b >> 3;
+    }
+
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            *(dbuf++) = colors[*(sbuf++)];
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_8_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_8_to_24_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	int pitchdiff = pitch - (width * 3);
+    int x, y;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			*(dest++) = pal->colors[*(src)].b;
-			*(dest++) = pal->colors[*(src)].g;
-			*(dest++) = pal->colors[*(src)].r;
-			src++;
-		}
+    uint8_t *dbuf = visual_video_get_pixels (dest);
+    uint8_t *sbuf = visual_video_get_pixels (src);
 
-		dest += pitchdiff;
-	}
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = src->pitch - (src->width *src->bpp);
 
-	return VISUAL_OK;
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            *(dbuf++) = src->pal->colors[*(sbuf)].b;
+            *(dbuf++) = src->pal->colors[*(sbuf)].g;
+            *(dbuf++) = src->pal->colors[*(sbuf)].r;
+            sbuf++;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_8_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_8_to_32_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y, i;
-	uint32_t *destr = (uint32_t *) dest;
-	uint32_t col;
-	int pitchdiff = (pitch - (width * 4)) >> 2;
+    int x, y, i;
 
-	uint32_t colors[256];
+    uint32_t *dbuf = visual_video_get_pixels (dest);
+    uint8_t *sbuf = visual_video_get_pixels (src);
 
-	for (i = 0; i < 256; i++) {
-		colors[i] =
-			pal->colors[i].r << 16 |
-			pal->colors[i].g << 8 |
-			pal->colors[i].b;
-	}
+    const int ddiff = (dest->pitch / dest->bpp) - dest->width;
+    const int sdiff = src->pitch - (src->width * src->bpp);
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++)
-			*(destr++) = colors[*src++];
+    uint32_t colors[256];
 
-		destr += pitchdiff;
-	}
+    for (i = 0; i < 256; ++i) {
+        colors[i] =
+            src->pal->colors[i].r << 16 |
+            src->pal->colors[i].g << 8 |
+            src->pal->colors[i].b;
+    }
 
-	return VISUAL_OK;
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            *(dbuf++) = colors[*(sbuf++)];
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_16_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_16_to_8_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	_color16 *srcr = (_color16 *) src;
-	uint8_t r, g, b;
-	uint8_t col;
-	int pitchdiff = pitch - width;
+    int x, y;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			r = srcr->r << 3;
-			g = srcr->g << 2;
-			b = srcr->b << 3;
-			srcr++;
+    uint8_t *dbuf = visual_video_get_pixels (dest);
+    _color16 *sbuf = visual_video_get_pixels (src);
 
-			col = (r + g + b) / 3;
-			
-			pal->colors[col].r = r;
-			pal->colors[col].g = g;
-			pal->colors[col].b = b;
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = (src->pitch / src->bpp) - src->width;
 
-			*(dest++) = col;
-		}
+    uint8_t r, g, b, col;
 
-		*dest += pitchdiff;
-	}
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            r = sbuf->r << 3;
+            g = sbuf->g << 2;
+            b = sbuf->b << 3;
+            sbuf++;
 
-	return VISUAL_OK;
+            col = (r + g + b) / 3;
+
+            dest->pal->colors[col].r = r;
+            dest->pal->colors[col].g = g;
+            dest->pal->colors[col].b = b;
+
+            *(dbuf++) = col;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_16_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_16_to_24_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	_color16 *srcr = (_color16 *) src;
-	int pitchdiff = pitch - (width * 3);
+    int x, y;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			*(dest++) = srcr->b << 3;
-			*(dest++) = srcr->g << 2;
-			*(dest++) = srcr->r << 3;
-			srcr++;
-		}
+    uint8_t *dbuf = visual_video_get_pixels (dest);
+    _color16 *sbuf = visual_video_get_pixels (src);
 
-		dest += pitchdiff;
-	}
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = (src->pitch / src->bpp) - src->width;
 
-	return VISUAL_OK;
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            *(dbuf++) = sbuf->b << 3;
+            *(dbuf++) = sbuf->g << 2;
+            *(dbuf++) = sbuf->r << 3;
+
+            sbuf++;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_16_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_16_to_32_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	_color16 *srcr = (_color16 *) src;
-	int pitchdiff = pitch - (width * 4);
+    int x, y;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			*(dest++) = srcr->b << 3;
-			*(dest++) = srcr->g << 2;
-			*(dest++) = srcr->r << 3;
-			*(dest++) = 0;
-			srcr++;
-		}
-	
-		dest += pitchdiff;
-	}
-	
-	return VISUAL_OK;
+    uint8_t *dbuf = visual_video_get_pixels (dest);
+    _color16 *sbuf = visual_video_get_pixels (src);
+
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = (src->pitch / src->bpp) - src->width;
+
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            *(dbuf++) = sbuf->b << 3;
+            *(dbuf++) = sbuf->g << 2;
+            *(dbuf++) = sbuf->r << 3;
+            *(dbuf++) = 0;
+
+            sbuf++;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_24_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_24_to_8_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	uint8_t r, g, b;
-	uint8_t col;
-	int pitchdiff = pitch - width;
+    int x, y;
+    uint8_t r, g, b, col;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			b = *(src++);
-			g = *(src++);
-			r = *(src++);
+    uint8_t *dbuf = visual_video_get_pixels (dest);
+    uint8_t *sbuf = visual_video_get_pixels (src);
 
-			col = (b + g + r) / 3;
-			
-			pal->colors[col].r = r;
-			pal->colors[col].g = g;
-			pal->colors[col].b = b;
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = src->pitch - (src->width * src->bpp);
 
-			*(dest++) = col;
-		}
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            b = *(sbuf++);
+            g = *(sbuf++);
+            r = *(sbuf++);
 
-		dest += pitchdiff;	
-	}
+            col = (b + g + r) / 3;
 
-	return VISUAL_OK;
+            dest->pal->colors[col].r = r;
+            dest->pal->colors[col].g = g;
+            dest->pal->colors[col].b = b;
+
+            *(dbuf++) = col;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_24_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_24_to_16_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	_color16 *destr = (_color16 *) dest;
-	int pitchdiff = (pitch - (width * 2)) >> 1;
-	
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			destr->b = *(src++) >> 3;
-			destr->g = *(src++) >> 2;
-			destr->r = *(src++) >> 3;
-			destr++;
-		}
+    int x, y;
 
-		destr += pitchdiff;
-	}
-	
-	return VISUAL_OK;
+    _color16 *dbuf = visual_video_get_pixels (dest);
+    uint8_t *sbuf = visual_video_get_pixels (src);
+
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = (src->pitch / src->bpp) - src->width;
+
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            dbuf->b = *(sbuf++) >> 3;
+            dbuf->g = *(sbuf++) >> 2;
+            dbuf->r = *(sbuf++) >> 3;
+
+            dbuf++;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_24_to_32_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_24_to_32_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	int pitchdiff = pitch - (width * 4);
+    int x, y;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			*(dest++) = *(src++);
-			*(dest++) = *(src++);
-			*(dest++) = *(src++);
-			*(dest++) = 0;
-		}
+    uint8_t *dbuf = visual_video_get_pixels (dest);
+    uint8_t *sbuf = visual_video_get_pixels (src);
 
-		dest += pitchdiff;
-	}
-	
-	return VISUAL_OK;
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = src->pitch - (src->width * src->bpp);
+
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            *(dbuf++) = *(sbuf++);
+            *(dbuf++) = *(sbuf++);
+            *(dbuf++) = *(sbuf++);
+            *(dbuf++) = 0;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_32_to_8_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_32_to_8_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	uint8_t r, g, b;
-	uint8_t col;
-	int pitchdiff = pitch - width;
+    int x, y;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			b = *(src++);
-			g = *(src++);
-			r = *(src++);
-			src++;
+    uint8_t r, g, b, col;
 
-			col = (r + g + b) / 3;
+    uint8_t *dbuf = visual_video_get_pixels (dest);
+    uint8_t *sbuf = visual_video_get_pixels (src);
 
-			pal->colors[col].r = r;
-			pal->colors[col].g = g;
-			pal->colors[col].b = b;
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = src->pitch - (src->width * src->bpp);
 
-			*(dest++) = col;
-		}
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            b = *(sbuf++);
+            g = *(sbuf++);
+            r = *(sbuf++);
+            sbuf++;
 
-		dest += pitchdiff;	
-	}
-	
-	return VISUAL_OK;
+            col = (r + g + b) / 3;
+
+            dest->pal->colors[col].r = r;
+            dest->pal->colors[col].g = g;
+            dest->pal->colors[col].b = b;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_32_to_16_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_32_to_16_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	int i = 0, j = 0;
-	_color16 *destr = (_color16 *) dest;
-	int pitchdiff = (pitch - (width * 2)) >> 1;
-	
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			destr->b = *(src++) >> 3;
-			destr->g = *(src++) >> 2;
-			destr->r = *(src++) >> 3;
-			destr++;
-			src++;
-		}
+    int x, y;
 
-		destr += pitchdiff;
-	}
+    _color16 *dbuf = visual_video_get_pixels (dest);
+    uint8_t *sbuf = visual_video_get_pixels (src);
 
-	return VISUAL_OK;
+    const int ddiff = (dest->pitch / dest->bpp) - dest->width;
+    const int sdiff = src->pitch - (src->width * src->bpp);
+
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            dbuf->b = *(sbuf++) >> 3;
+            dbuf->g = *(sbuf++) >> 2;
+            dbuf->r = *(sbuf++) >> 3;
+
+            dbuf++;
+            sbuf++;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
-static int depth_transform_32_to_24_c (uint8_t *dest, uint8_t *src, int width, int height, int pitch, VisPalette *pal)
+static int depth_transform_32_to_24_c (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
-	int pitchdiff = pitch - (width * 3);
+    int x, y;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			*(dest++) = *(src++);
-			*(dest++) = *(src++);
-			*(dest++) = *(src++);
-			src++;
-		}
-		
-		dest += pitchdiff;
-	}
-	
-	return VISUAL_OK;
+    uint8_t *dbuf = visual_video_get_pixels (dest);
+    uint8_t *sbuf = visual_video_get_pixels (src);
+
+    const int ddiff = dest->pitch - (dest->width * dest->bpp);
+    const int sdiff = src->pitch - (src->width * src->bpp);
+
+    for (y = 0; y < dest->height; y++) {
+        for (x = 0; x < dest->width; x++) {
+            *(dbuf++) = *(sbuf++);
+            *(dbuf++) = *(sbuf++);
+            *(dbuf++) = *(sbuf++);
+
+            sbuf++;
+        }
+
+        dbuf += ddiff;
+        sbuf += sdiff;
+    }
+
+    return VISUAL_OK;
 }
 
+/* BGR -> RGB functions */
 static int bgr_to_rgb16 (VisVideo *dest, VisVideo *src)
 {
 	_color16 *destbuf, *srcbuf;
@@ -2233,37 +2490,33 @@ static int bgr_to_rgb32 (VisVideo *dest, VisVideo *src)
  *
  * @param dest Pointer to destination VisVideo in which the pixel doubled VisVideo is stored.
  * @param src Pointer to source VisVideo that is pixel doubled.
- * @param times_doubled How many times the source image is pixel doubled. Can only double positively.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-int visual_video_zoom_double (VisVideo *dest, VisVideo *src, int times_doubled)
+int visual_video_zoom_double (VisVideo *dest, VisVideo *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (dest->depth == src->depth, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
-	
-	visual_log_return_val_if_fail (dest->width > (src->width * 2), -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-	visual_log_return_val_if_fail (dest->height > (src->height * 2), -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-	
+
 	switch (dest->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
-			zoom_8 (dest, src, times_doubled);
+			zoom_8 (dest, src);
 
 			break;
 
 		case VISUAL_VIDEO_DEPTH_16BIT:
-			zoom_16 (dest, src, times_doubled);
+			zoom_16 (dest, src);
 
 			break;
-		
+
 		case VISUAL_VIDEO_DEPTH_24BIT:
-			zoom_24 (dest, src, times_doubled);
+			zoom_24 (dest, src);
 
 			break;
 
 		case VISUAL_VIDEO_DEPTH_32BIT:
-			zoom_32 (dest, src, times_doubled);
+			zoom_32 (dest, src);
 
 			break;
 
@@ -2278,7 +2531,7 @@ int visual_video_zoom_double (VisVideo *dest, VisVideo *src, int times_doubled)
 	return VISUAL_OK;
 }
 
-static int zoom_8 (VisVideo *dest, VisVideo *src, int times_doubled)
+static int zoom_8 (VisVideo *dest, VisVideo *src)
 {
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
@@ -2299,7 +2552,7 @@ static int zoom_8 (VisVideo *dest, VisVideo *src, int times_doubled)
 	return VISUAL_OK;
 }
 
-static int zoom_16 (VisVideo *dest, VisVideo *src, int times_doubled)
+static int zoom_16 (VisVideo *dest, VisVideo *src)
 {
 	uint16_t *dbuf = visual_video_get_pixels (dest);
 	uint16_t *sbuf = visual_video_get_pixels (src);
@@ -2320,14 +2573,32 @@ static int zoom_16 (VisVideo *dest, VisVideo *src, int times_doubled)
 	return VISUAL_OK;
 }
 
-static int zoom_24 (VisVideo *dest, VisVideo *src, int times_doubled)
+static int zoom_24 (VisVideo *dest, VisVideo *src)
 {
 
 	return VISUAL_OK;
 }
 
-static int zoom_32 (VisVideo *dest, VisVideo *src, int times_doubled)
+static int zoom_32 (VisVideo *dest, VisVideo *src)
 {
+	uint32_t *sbuf = visual_video_get_pixels (src);
+	uint32_t *dbuf = visual_video_get_pixels (dest);
+	int i, j;
+
+	const int spdiff = src->pitch - src->width*4;
+	for (i = 0; i < src->height; i++) {
+		dbuf = dest->pixel_rows[i << 1];
+		for (j = 0; j < src->width; j++) {
+			*(dbuf + dest->width) = *sbuf;
+			*(dbuf++) = *sbuf;
+			*(dbuf + dest->width) = *sbuf;
+			*(dbuf++) = *sbuf;
+
+			sbuf++;
+		}
+
+		sbuf += spdiff;
+	}
 
 	return VISUAL_OK;
 }

@@ -4,13 +4,13 @@
  *
  * List implementation from RCL.
  * Copyright (C) 2002, 2003, 2004
- * 				Dennis Smit <ds@nerds-incorporated.org>,
- *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
+ *				Dennis Smit <ds@nerds-incorporated.org>,
+ *				Sepp Wijnands <mrrazz@nerds-incorporated.org>,
+ *				Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *  	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *   	    Tom Wimmenhove <nohup@nerds-incorporated.org>
+ *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
+ *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
  * $Id:
  *
@@ -425,6 +425,25 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 }
 
 /**
+ * Removes and entry from the list and uses the VisListDestroyerFunc when present to clean up the data.
+ *
+ * @param list A pointer to the VisList in which an entry needs to be destroyed.
+ * @param le A pointer to the entry that needs to be destroyed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
+ */
+int visual_list_destroy (VisList *list, VisListEntry **le)
+{
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+
+	if (list->destroyer != NULL)
+		list->destroyer ((*le)->data);
+
+	return visual_list_delete (list, le);
+}
+
+/**
  * Counts the number of entries within the list.
  *
  * @param list A pointer to the list from which an entry count is needed.
@@ -435,9 +454,9 @@ int visual_list_count (VisList *list)
 {
 	VisListEntry *le = NULL;
 	int count = 0;
-	
+
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-	
+
 	/* Walk through list */
 	while (visual_list_next (list, &le) != NULL) 
 		count++;

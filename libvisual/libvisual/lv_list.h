@@ -4,13 +4,13 @@
  *
  * List implementation from RCL.
  * Copyright (C) 2002, 2003, 2004
- * 				Dennis Smit <ds@nerds-incorporated.org>,
- *			  	Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *			   	Tom Wimmenhove <nohup@nerds-incorporated.org>
+ *				Dennis Smit <ds@nerds-incorporated.org>,
+ *				Sepp Wijnands <mrrazz@nerds-incorporated.org>,
+ *				Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *  	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *   	    Tom Wimmenhove <nohup@nerds-incorporated.org>
+ *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
+ *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
  * $Id:
  *
@@ -96,6 +96,8 @@ int visual_list_add (VisList *list, void *data);
 
 int visual_list_insert (VisList *list, VisListEntry **le, void *data);
 int visual_list_delete (VisList *list, VisListEntry **le);
+
+int visual_list_destroy (VisList *list, VisListEntry **le);
 
 int visual_list_count (VisList *list);
 

@@ -69,6 +69,7 @@ int visual_time_init (VisTime *time_);
 int visual_time_get (VisTime *time_);
 int visual_time_set (VisTime *time_, long sec, long usec);
 int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2);
+int visual_time_past (VisTime *time_, VisTime *past);
 int visual_time_copy (VisTime *dest, VisTime *src);
 int visual_time_usleep (unsigned long microseconds);
 

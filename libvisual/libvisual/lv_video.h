@@ -69,6 +69,25 @@ typedef enum {
 } VisVideoDepth;
 
 /**
+ * Enumerate that defines video rotate types, used with the visual_video_rotate_*() functions.
+ */
+typedef enum {
+	VISUAL_VIDEO_ROTATE_NONE	= 0,	/**< No rotating. */
+	VISUAL_VIDEO_ROTATE_90		= 1,	/**< 90 degrees rotate. */
+	VISUAL_VIDEO_ROTATE_180		= 2,	/**< 180 degrees rotate. */
+	VISUAL_VIDEO_ROTATE_270		= 3	/**< 270 degrees rotate. */
+} VisVideoRotateDegrees;
+
+/**
+ * Enumerate that defines the video mirror types, used with the visual_video_mirror_*() functions.
+ */
+typedef enum {
+	VISUAL_VIDEO_MIRROR_NONE	= 0,	/**< No mirroring. */
+	VISUAL_VIDEO_MIRROR_X		= 1,	/**< Mirror on the X ax. */
+	VISUAL_VIDEO_MIRROR_Y		= 2	/**< Mirror on the Y ax. */
+} VisVideoMirrorOrient;
+
+/**
  * Enumerate that defines the different methods of scaling within VisVideo.
  */
 typedef enum {
@@ -234,12 +253,16 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
 
 int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src);
 
+int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees);
+VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees);
+
+int visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient);
+VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient);
+
 int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
-int visual_video_depth_transform_to_buffer (uint8_t *dest, VisVideo *video,
-		VisPalette *pal, VisVideoDepth destdepth, int pitch);
 
 VisVideo *visual_video_zoom_new (VisVideo *src, VisVideoScaleMethod scale_method, float zoom_factor);
-int visual_video_zoom_double (VisVideo *dest, VisVideo *src, int times_doubled);
+int visual_video_zoom_double (VisVideo *dest, VisVideo *src);
 
 int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
 VisVideo *visual_video_scale_new (VisVideo *src, int width, int height, VisVideoScaleMethod scale_method);

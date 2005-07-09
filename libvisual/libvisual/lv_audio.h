@@ -25,16 +25,48 @@
 #define _LV_AUDIO_H
 
 #include <libvisual/lv_fft.h>
+#include <libvisual/lv_time.h>
+#include <libvisual/lv_ringbuffer.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 #define VISUAL_AUDIO(obj)				(VISUAL_CHECK_CAST ((obj), VisAudio))
+#define VISUAL_AUDIO_SAMPLEPOOL(obj)			(VISUAL_CHECK_CAST ((obj), VisAudioSamplePool))
+#define VISUAL_AUDIO_SAMPLEPOOL_CHANNEL(obj)		(VISUAL_CHECK_CAST ((obj), VisAudioSamplePoolChannel))
+#define VISUAL_AUDIO_SAMPLE(obj)			(VISUAL_CHECK_CAST ((obj), VisAudioSample))
+
+typedef enum {
+	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_8000,
+	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_11250,
+	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_22500,
+	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_32000,
+	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_44100,
+	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_48000,
+	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_96000
+} VisAudioSampleInputFreqType;
+
+typedef enum {
+	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_NONE,
+	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U8,
+	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S8,
+	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U16,
+	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S16,
+	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U32,
+	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S32,
+	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_FLOAT
+} VisAudioSampleInputFormatType;
+
+typedef enum {
+	VISUAL_AUDIO_SAMPLE_INPUT_CHANNEL_STEREO,
+	NEE
+} VisAudioSampleInputChannelType;
+
 
 typedef struct _VisAudio VisAudio;
 typedef struct _VisAudioSamplePool VisAudioSamplePool;
-typedef struct _VisAudioSamplePoolEntry VisAudioSamplePoolEntry;
+typedef struct _VisAudioSamplePoolChannel VisAudioSamplePoolChannel;
 typedef struct _VisAudioSample VisAudioSample;
 
 /**
@@ -47,6 +79,7 @@ typedef struct _VisAudioSample VisAudioSample;
 struct _VisAudio {
 	VisObject	 object;			/**< The VisObject data. */
 
+	VisAudioSamplePool	*samplepool;
 	short		 plugpcm[2][512];		/**< PCM data that comes from the input plugin
 							 * or a callback function. */
 	short		 pcm[3][512];			/**< PCM data that should be used within plugins
@@ -63,41 +96,60 @@ struct _VisAudio {
 	short int	 bpmenergy[6];			/**< Private member for BPM detection, not implemented right now. */
 	int		 energy;			/**< Audio energy level. */
 };
-#if 0
+
 struct _VisAudioSamplePool {
-	VisObject	 object;
+	VisObject	  object;
 
-	VisRingBuffer	 samples;
-	VisTime		 samples_timeout;
-
-	VisList		 processed;
+	VisList		 *channels;
 };
 
-struct _VisAudioSamplePoolEntry {
+struct _VisAudioSamplePoolChannel {
 	VisObject	 object;
 
-	VisTime		 begin;
-	VisTime		 end;
+	VisRingBuffer	*samples;
+	VisTime		 samples_timeout;
 
-	float		*sampledata;
-	int		 samplesize;
-
-	int		 channel; /* FIXME make a typed enum or something, also for EntryMixed.. */
+	char		*channelid;
 };
 
 struct _VisAudioSample {
-	VisObject	 object;
+	VisObject			 object;
 
-	VisTime		 timestamp;
+	VisTime				 timestamp;
 
-	uint8_t		*sampledata;
-	int		 samplesize;
+	VisAudioSampleInputFreqType	 freq;
+	VisAudioSampleInputFormatType	 format;
+
+	VisBuffer			*buffer;
+	VisBuffer			*processed;
 };
-#endif
 
 VisAudio *visual_audio_new (void);
 int visual_audio_init (VisAudio *audio);
 int visual_audio_analyze (VisAudio *audio);
+
+VisAudioSamplePool *visual_audio_samplepool_new ();
+int visual_audio_samplepool_init (VisAudioSamplePool *samplepool);
+int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample *sample, char *channelid);
+int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudioSamplePoolChannel *channel);
+VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, char *channelid);
+int visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool);
+int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *buffer,
+		VisAudioSampleInputFreqType freqtype,
+		VisAudioSampleInputFormatType formattype,
+		VisAudioSampleInputChannelType channeltype);
+
+VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (char *channelid);
+int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, char *channelid);
+int visual_audio_samplepool_channel_add (VisAudioSamplePoolChannel *channel, VisAudioSample *sample);
+int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channel);
+
+VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
+		VisAudioSampleInputFormatType formattype,
+		VisAudioSampleInputFreqType freqtype);
+int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime *timestamp,
+		VisAudioSampleInputFormatType formattype,
+		VisAudioSampleInputFreqType freqtype);
 
 #ifdef __cplusplus
 }
