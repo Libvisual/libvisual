@@ -223,7 +223,7 @@ int main (int argc, char *argv[])
 		visual_input_run (input);
 		visual_actor_run (actor, input->audio);
 
-		memset (visual_video_get_pixels (sdlvid), 0, video->size * video->bpp);
+		memset (visual_video_get_pixels (sdlvid), 0, visual_video_get_size (video) * video->bpp);
 		
 		/* place on screen */
 		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);

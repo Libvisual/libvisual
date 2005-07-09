@@ -8,6 +8,7 @@ gcc -o fft_bench fft_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o audio_bench audio_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o memcpy_bench memcpy_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o scale_bench scale_bench.c `pkg-config --libs --cflags libvisual`
+gcc -o zoom_bench zoom_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o actor_throughput_bench actor_throughput_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o morph_throughput_bench morph_throughput_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o depth_transform_bench depth_transform_bench.c `pkg-config --libs --cflags libvisual`

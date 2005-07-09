@@ -274,7 +274,7 @@ void draw_pal_debug (VisVideo *video, VisPalette *pal)
 	
 	pal2 = video->pal;
 
-	memset (buf, 0, video->size);
+	memset (buf, 0, visual_video_get_size (video));
 
 	visual_palette_copy (pal2, pal);
 
