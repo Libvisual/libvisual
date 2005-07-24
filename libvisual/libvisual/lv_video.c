@@ -1841,14 +1841,14 @@ VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees)
 	return dest;
 }
 
-/* FIXME only works for 32 bits, need to get fixed */
-/* Rotate functions */
+/* rotate functions, works with all depths now */
+/* FIXME: do more testing with those badasses */
 static int rotate_90 (VisVideo *dest, VisVideo *src)
 {
-	uint32_t *tsbuf = src->pixel_rows[src->height-1];
-	uint32_t *dbuf;
-	uint32_t *sbuf = tsbuf;
-	int i, j;
+	uint8_t *tsbuf = src->pixel_rows[src->height-1];
+	uint8_t *dbuf;
+	uint8_t *sbuf = tsbuf;
+	int i, j, k;
 
 	visual_log_return_val_if_fail (dest->width == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
 	visual_log_return_val_if_fail (dest->height == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
@@ -1856,13 +1856,16 @@ static int rotate_90 (VisVideo *dest, VisVideo *src)
 	for (i = 0; i < dest->height; i++) {
 		dbuf = dest->pixel_rows[i];
 
-		for (j = 0; j < dest->width; ++j) {
-			*(dbuf++) = *sbuf;
-			sbuf -= src->width;
+		for (j = 0; j < dest->width; j++) {
+			for (k = 0; k < dest->bpp; k++) {
+				*(dbuf++) = *(sbuf + k);
+			}
+
+			sbuf -= src->pitch;
 		}
 
+		tsbuf += src->bpp;
 		sbuf = tsbuf;
-		tsbuf++;
 	}
 
 	return VISUAL_OK;
@@ -1870,20 +1873,26 @@ static int rotate_90 (VisVideo *dest, VisVideo *src)
 
 static int rotate_180 (VisVideo *dest, VisVideo *src)
 {
-	uint32_t *dbuf;
-	uint32_t *sbuf;
-	int i, j;
+	uint8_t *dbuf;
+	uint8_t *sbuf;
+	int i, j, k;
+	
 	const int h1 = src->height - 1;
+	const int w1 = (src->width - 1) * src->bpp;
 
 	visual_log_return_val_if_fail (dest->width == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
 	visual_log_return_val_if_fail (dest->height == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
 
 	for (i = 0; i < dest->height; i++) {
 		dbuf = dest->pixel_rows[i];
-		sbuf = src->pixel_rows[h1 - i] + src->pitch;
+		sbuf = src->pixel_rows[h1 - i] + w1;
 
 		for (j = 0; j < dest->width; j++) {
-			*(dbuf++) = *(sbuf--);
+			for (k = 0; k < src->bpp; k++) {
+				*(dbuf++) = *(sbuf + k);
+			}
+
+			sbuf -= src->bpp;
 		}
 	}
 
@@ -1892,10 +1901,10 @@ static int rotate_180 (VisVideo *dest, VisVideo *src)
 
 static int rotate_270 (VisVideo *dest, VisVideo *src)
 {
-	uint32_t *tsbuf = visual_video_get_pixels (src) + src->pitch;
-	uint32_t *dbuf = visual_video_get_pixels (dest);
-	uint32_t *sbuf = tsbuf;
-	int i, j;
+	uint8_t *tsbuf = visual_video_get_pixels (src) + src->pitch - src->bpp;
+	uint8_t *dbuf = visual_video_get_pixels (dest);
+	uint8_t *sbuf = tsbuf;
+	int i, j, k;
 
 	visual_log_return_val_if_fail (dest->width == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
 	visual_log_return_val_if_fail (dest->height == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
@@ -1904,12 +1913,15 @@ static int rotate_270 (VisVideo *dest, VisVideo *src)
 		dbuf = dest->pixel_rows[i];
 
 		for (j = 0; j < dest->width; j++) {
-			*(dbuf++) = *sbuf;
-			sbuf += src->width;
+			for (k = 0; k < dest->bpp; k++) {
+				*(dbuf++) = *(sbuf + k);
+			}
+			
+			sbuf += src->pitch;
 		}
 
+		tsbuf -= src->bpp;
 		sbuf = tsbuf;
-		tsbuf--;
 	}
 
 	return VISUAL_OK;

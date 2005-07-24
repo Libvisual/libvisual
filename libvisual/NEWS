@@ -16,6 +16,7 @@ New in 0.3.0: xxxx-xx-xx:
 * VisVideo sub regions. (Dennis)
 * visual_video_zoom_*(). (Jaak)
 * visual_video_mirror_*(). (Jaak)
+* visual_video_rotate_*(). (Jaak)
 * Removed obsolete visual_video_depth_transform_to_buffer(). (Jaak)
 
 New in 0.2.0: 2005-02-09:
