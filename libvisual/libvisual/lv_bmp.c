@@ -140,8 +140,11 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	do {
 		if ((c = fgetc (fp)) == EOF)
 			goto err;
-		
+	
 		if (c) {
+			if (y < 0)
+				goto err;
+			
 			/* Encoded mode */
 			p = fgetc (fp); /* Color */
 			if (mode == BI_RLE8) {
@@ -170,9 +173,10 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 				y--;
 				col = (uint8_t *) visual_video_get_pixels (video) + video->pitch * y;
 
-				if (y < 0)
-					goto err;
-				
+				/* Normally we would error here if y < 0.
+				 * However, some encoders apparently emit an
+				 * End-Of-Line sequence at the very end of a bitmap.
+				 */
 				break;
 
 			case 1: /* End of bitmap */
