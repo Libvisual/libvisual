@@ -38,30 +38,33 @@ extern "C" {
 #define VISUAL_AUDIO_SAMPLE(obj)			(VISUAL_CHECK_CAST ((obj), VisAudioSample))
 
 typedef enum {
-	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_8000,
-	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_11250,
-	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_22500,
-	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_32000,
-	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_44100,
-	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_48000,
-	VISUAL_AUDIO_SAMPLE_INPUT_FREQ_96000
-} VisAudioSampleInputFreqType;
+	VISUAL_AUDIO_SAMPLE_RATE_NONE = 0,
+	VISUAL_AUDIO_SAMPLE_RATE_8000,
+	VISUAL_AUDIO_SAMPLE_RATE_11250,
+	VISUAL_AUDIO_SAMPLE_RATE_22500,
+	VISUAL_AUDIO_SAMPLE_RATE_32000,
+	VISUAL_AUDIO_SAMPLE_RATE_44100,
+	VISUAL_AUDIO_SAMPLE_RATE_48000,
+	VISUAL_AUDIO_SAMPLE_RATE_96000,
+	VISUAL_AUDIO_SAMPLE_RATE_LAST,
+} VisAudioSampleRateType;
 
 typedef enum {
-	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_NONE,
-	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U8,
-	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S8,
-	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U16,
-	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S16,
-	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U32,
-	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S32,
-	VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_FLOAT
-} VisAudioSampleInputFormatType;
+	VISUAL_AUDIO_SAMPLE_FORMAT_NONE = 0,
+	VISUAL_AUDIO_SAMPLE_FORMAT_U8,
+	VISUAL_AUDIO_SAMPLE_FORMAT_S8,
+	VISUAL_AUDIO_SAMPLE_FORMAT_U16,
+	VISUAL_AUDIO_SAMPLE_FORMAT_S16,
+	VISUAL_AUDIO_SAMPLE_FORMAT_U32,
+	VISUAL_AUDIO_SAMPLE_FORMAT_S32,
+	VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
+	VISUAL_AUDIO_SAMPLE_FORMAT_LAST,
+} VisAudioSampleFormatType;
 
 typedef enum {
-	VISUAL_AUDIO_SAMPLE_INPUT_CHANNEL_STEREO,
+	VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO,
 	NEE
-} VisAudioSampleInputChannelType;
+} VisAudioSampleChannelType;
 
 
 typedef struct _VisAudio VisAudio;
@@ -85,9 +88,9 @@ struct _VisAudio {
 	short		 pcm[3][512];			/**< PCM data that should be used within plugins
 							 * pcm[0][x] is the left channel, pcm[1][x] is the right
 							 * channel and pcm[2][x] is an average of both channels. */
-	short		 freq[3][256];			/**< Frequency data as a 256 bands analyzer, with the channels
+	short		 freq[3][256];			/**< Rateuency data as a 256 bands analyzer, with the channels
 							 * like with the pcm element. */
-	short		 freqnorm[3][256];		/**< Frequency data like the freq member, however this time the bands
+	short		 freqnorm[3][256];		/**< Rateuency data like the freq member, however this time the bands
 							 * are normalized. */
 	VisFFT		*fft;				/**< Private member that contains context information for the FFT engine. */
 
@@ -117,8 +120,8 @@ struct _VisAudioSample {
 
 	VisTime				 timestamp;
 
-	VisAudioSampleInputFreqType	 freq;
-	VisAudioSampleInputFormatType	 format;
+	VisAudioSampleRateType		 rate;
+	VisAudioSampleFormatType	 format;
 
 	VisBuffer			*buffer;
 	VisBuffer			*processed;
@@ -135,9 +138,9 @@ int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudi
 VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, char *channelid);
 int visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool);
 int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *buffer,
-		VisAudioSampleInputFreqType freqtype,
-		VisAudioSampleInputFormatType formattype,
-		VisAudioSampleInputChannelType channeltype);
+		VisAudioSampleRateType rate,
+		VisAudioSampleFormatType format,
+		VisAudioSampleChannelType channeltype);
 
 VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (char *channelid);
 int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, char *channelid);
@@ -145,11 +148,17 @@ int visual_audio_samplepool_channel_add (VisAudioSamplePoolChannel *channel, Vis
 int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channel);
 
 VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
-		VisAudioSampleInputFormatType formattype,
-		VisAudioSampleInputFreqType freqtype);
+		VisAudioSampleFormatType format,
+		VisAudioSampleRateType rate);
 int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime *timestamp,
-		VisAudioSampleInputFormatType formattype,
-		VisAudioSampleInputFreqType freqtype);
+		VisAudioSampleFormatType format,
+		VisAudioSampleRateType rate);
+int visual_audio_sample_has_internal (VisAudioSample *sample);
+int visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleFormatType format);
+int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleRateType rate);
+int visual_audio_sample_rate_get_length (VisAudioSampleRateType rate);
+int visual_audio_sample_format_get_size (VisAudioSampleFormatType format);
+int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format);
 
 #ifdef __cplusplus
 }

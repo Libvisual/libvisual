@@ -40,7 +40,7 @@ extern "C" {
 #ifndef uint8_t
 #define uint8_t		u_int8_t
 #endif
-	
+
 #ifndef uint16_t
 #define uint16_t	u_int16_t
 #endif

@@ -1,3 +1,9 @@
+2005-08-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	I need to create some temporal rift to increase my time for coding.
+
+	* libvisual/lv_audio.*: Lot's of rerwite stuff.
+
 2005-07-26  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_bmp.c: Patch by Sepp to fix loading bmps that are
@@ -9,6 +15,7 @@
 
 	Patch by Jaak.
 
+>>>>>>> 1.310
 2005-07-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_audio.*: Rewrite stuff

@@ -37,15 +37,20 @@ static int audio_sample_dtor (VisObject *object);
 static int audio_band_total (VisAudio *audio, int begin, int end);
 static int audio_band_energy (VisAudio *audio, int band, int length);
 
+/* Format transform functions */
+static int transform_format_buffer_from_float (VisBuffer *dest, VisBuffer *src, int size, int sign);
+static int transform_format_buffer_to_float (VisBuffer *dest, VisBuffer *src, int size, int sign);
+static int transform_format_buffer (VisBuffer *dest, VisBuffer *src, int dsize, int ssize, int dsigned, int ssigned);
+
 /* Ringbuffer data provider functions */
 static VisBuffer *sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
 static void sample_destroy_func (VisRingBufferEntry *entry);
 static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
 
-/* Input functions */
+/*  functions */
 static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *buffer,
-		VisAudioSampleInputFormatType formattype,
-		VisAudioSampleInputFreqType freqtype);
+		VisAudioSampleFormatType format,
+		VisAudioSampleRateType rate);
 
 
 static int audio_dtor (VisObject *object)
@@ -230,8 +235,8 @@ int visual_audio_analyze (VisAudio *audio)
 		visual_time_get (&timestamp);
 
 		sample = visual_audio_sample_new (buffer, &timestamp,
-				VISUAL_AUDIO_SAMPLE_INPUT_FREQ_44100,
-				VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S8);
+				VISUAL_AUDIO_SAMPLE_RATE_44100,
+				VISUAL_AUDIO_SAMPLE_FORMAT_S8);
 
 		visual_audio_samplepool_add (audio->samplepool, sample, "front");
 
@@ -239,7 +244,7 @@ int visual_audio_analyze (VisAudio *audio)
 
 		visual_audio_samplepool_flush_old (audio->samplepool);
 
-		printf ("--channel debug %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
+		printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
 	}
 	/* /-------------------------------- audio pool testing */
 
@@ -286,7 +291,7 @@ int visual_audio_analyze (VisAudio *audio)
 		}
 	}
 
-	
+
 	/* BPM stuff, used for the audio energy only right now */
 	for (i = 1023; i > 0; i--) {
 		visual_mem_copy (&audio->bpmhistory[i], &audio->bpmhistory[i - 1], 6 * sizeof (short int));
@@ -295,7 +300,7 @@ int visual_audio_analyze (VisAudio *audio)
 
 	/* Calculate the audio energy */
 	audio->energy = 0;
-	
+
 	for (i = 0; i < 6; i++)	{
 		audio->bpmhistory[0][i] = audio_band_total (audio, i * 2, (i * 2) + 3);
 		audio->bpmenergy[i] = audio_band_energy (audio, i, 10);
@@ -407,15 +412,15 @@ int visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool)
 }
 
 int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *buffer,
-		VisAudioSampleInputFreqType freqtype,
-		VisAudioSampleInputFormatType formattype,
-		VisAudioSampleInputChannelType channeltype)
+		VisAudioSampleRateType rate,
+		VisAudioSampleFormatType format,
+		VisAudioSampleChannelType channeltype)
 {
 	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 	visual_log_return_val_if_fail (buffer!= NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	if (channeltype == VISUAL_AUDIO_SAMPLE_INPUT_CHANNEL_STEREO)
-		input_interleaved_stereo (samplepool, buffer, formattype, freqtype);
+	if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO)
+		input_interleaved_stereo (samplepool, buffer, format, rate);
 
 	return VISUAL_OK;
 }
@@ -503,14 +508,14 @@ int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channe
 }
 
 VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
-		VisAudioSampleInputFormatType formattype,
-		VisAudioSampleInputFreqType freqtype)
+		VisAudioSampleFormatType format,
+		VisAudioSampleRateType rate)
 {
 	VisAudioSample *sample;
 
 	sample = visual_mem_new0 (VisAudioSample, 1);
 
-	visual_audio_sample_init (sample, buffer, timestamp, formattype, freqtype);
+	visual_audio_sample_init (sample, buffer, timestamp, format, rate);
 
 	/* Do the VisObject initialization */
         visual_object_set_allocated (VISUAL_OBJECT (sample), TRUE);
@@ -520,8 +525,8 @@ VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
 }
 
 int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime *timestamp,
-		VisAudioSampleInputFormatType formattype,
-		VisAudioSampleInputFreqType freqtype)
+		VisAudioSampleFormatType format,
+		VisAudioSampleRateType rate)
 {
 	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 
@@ -532,10 +537,319 @@ int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime
 
 	/* Reset the VisAudioSamplePool structure */
 	visual_time_copy (&sample->timestamp, timestamp);
-	sample->freq = freqtype;
-	sample->format = formattype;
+	sample->rate = rate;
+	sample->format = format;
 	sample->buffer = buffer;
 	sample->processed = NULL;
+
+	return VISUAL_OK;
+}
+
+int visual_audio_sample_has_internal (VisAudioSample *sample)
+{
+	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+
+	if (sample->processed != NULL)
+		return TRUE;
+
+	return FALSE;
+}
+
+int visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleFormatType format)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+
+	if (dest->buffer != NULL)
+		visual_object_unref (VISUAL_OBJECT (dest->buffer));
+
+	dest->buffer = visual_buffer_new_allocate (
+			visual_audio_sample_rate_get_length (dest->rate) *
+			visual_audio_sample_format_get_size (format),
+			visual_buffer_destroyer_free);
+
+	dest->format = format;
+
+	if (dest->format == VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT) {
+
+		transform_format_buffer_from_float (dest->buffer, src->buffer,
+				visual_audio_sample_format_get_size (src->format),
+				visual_audio_sample_format_is_signed (src->format));
+
+	} else if (src->format == VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT) {
+
+		transform_format_buffer_to_float (dest->buffer, src->buffer,
+				visual_audio_sample_format_get_size (dest->format),
+				visual_audio_sample_format_is_signed (dest->format));
+
+	} else if (dest->format == VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT && src->format ==
+			VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT) {
+
+				visual_buffer_put (dest->buffer, src->buffer, 0);
+	} else {
+
+		transform_format_buffer (dest->buffer, src->buffer,
+				visual_audio_sample_format_get_size (dest->format),
+				visual_audio_sample_format_get_size (src->format),
+				visual_audio_sample_format_is_signed (dest->format),
+				visual_audio_sample_format_is_signed (src->format));
+	}
+
+	return VISUAL_OK;
+}
+
+int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleRateType rate)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+
+	/* FIXME error on dest format != src format */
+
+	if (dest->buffer != NULL)
+		visual_object_unref (VISUAL_OBJECT (dest->buffer));
+
+	dest->buffer = visual_buffer_new_allocate (
+			visual_audio_sample_rate_get_length (rate) *
+			visual_audio_sample_format_get_size (src->format),
+			visual_buffer_destroyer_free);
+
+
+
+	return VISUAL_OK;
+}
+
+int visual_audio_sample_rate_get_length (VisAudioSampleRateType rate)
+{
+	static int ratelengthtable[] = {
+		[VISUAL_AUDIO_SAMPLE_RATE_NONE]		= 0,
+		[VISUAL_AUDIO_SAMPLE_RATE_8000]		= 8000,
+		[VISUAL_AUDIO_SAMPLE_RATE_11250]	= 11250,
+		[VISUAL_AUDIO_SAMPLE_RATE_22500]	= 22500,
+		[VISUAL_AUDIO_SAMPLE_RATE_32000]	= 32000,
+		[VISUAL_AUDIO_SAMPLE_RATE_44100]	= 44100,
+		[VISUAL_AUDIO_SAMPLE_RATE_48000]	= 48000,
+		[VISUAL_AUDIO_SAMPLE_RATE_96000]	= 96000
+	};
+
+	if (rate >= VISUAL_AUDIO_SAMPLE_RATE_LAST)
+		return -1; /* FIXME decent error, also for format_get_size */
+
+	return ratelengthtable[rate];
+}
+
+int visual_audio_sample_format_get_size (VisAudioSampleFormatType format)
+{
+	static int formatsizetable[] = {
+		[VISUAL_AUDIO_SAMPLE_FORMAT_NONE]	= 0,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_U8]		= 1,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_S8]		= 1,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_U16]	= 2,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_S16]	= 2,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_U32]	= 4,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_S32]	= 4,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT]	= 4
+	};
+
+	if (format >= VISUAL_AUDIO_SAMPLE_FORMAT_LAST)
+		return -1;
+
+	return formatsizetable[format];
+}
+
+int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format)
+{
+	static int formatsignedtable[] = {
+		[VISUAL_AUDIO_SAMPLE_FORMAT_NONE]	= FALSE,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_U8]		= FALSE,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_S8]		= TRUE,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_U16]	= FALSE,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_S16]	= TRUE,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_U32]	= FALSE,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_S32]	= TRUE,
+		[VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT]	= TRUE
+	};
+
+	if (format >= VISUAL_AUDIO_SAMPLE_FORMAT_LAST)
+		return -1;
+
+	return formatsignedtable[format];
+}
+
+static int byte_max_numeric (int bytes)
+{
+	int result = 256;
+	int i;
+
+	if (bytes == 0)
+		return 0;
+
+	for (i = 1; i < bytes; i++)
+		result *= 256;
+
+	return result;
+}
+
+#define FORMAT_BUFFER_FROM_FLOAT(a,b)										\
+	{													\
+		if (sign) {											\
+			a *dbuf = visual_buffer_get_data (src);							\
+			for (i = 0; i < entries; i++) {								\
+				dbuf[i] = sbuf[i] * signedcorr;							\
+			}											\
+		} else {											\
+			b *dbuf = visual_buffer_get_data (src);							\
+			for (i = 0; i < entries; i++) {								\
+				dbuf[i] = (sbuf[i] * signedcorr) + signedcorr;					\
+			}											\
+		}												\
+	}
+
+static int transform_format_buffer_from_float (VisBuffer *dest, VisBuffer *src, int size, int sign)
+{
+	float *sbuf = visual_buffer_get_data (src);
+	int entries = visual_buffer_get_size (dest) / size;
+	int signedcorr;
+	int i;
+
+	signedcorr += byte_max_numeric (size) / 2;
+
+	if (size == 1)
+		FORMAT_BUFFER_FROM_FLOAT(int8_t, uint8_t)
+	else if (size == 2)
+		FORMAT_BUFFER_FROM_FLOAT(int16_t, uint16_t)
+	else if (size == 4)
+		FORMAT_BUFFER_FROM_FLOAT(int32_t, uint32_t)
+
+	return VISUAL_OK;
+}
+
+#define FORMAT_BUFFER_TO_FLOAT(a,b)										\
+	{													\
+		float multiplier = 1.0 / signedcorr;								\
+		if (sign) {											\
+			a *sbuf = visual_buffer_get_data (src);							\
+			for (i = 0; i < entries; i++) {								\
+				dbuf[i] = sbuf[i] * multiplier;							\
+			}											\
+		} else {											\
+			b *sbuf = visual_buffer_get_data (src);							\
+			for (i = 0; i < entries; i++) {								\
+				dbuf[i] = (sbuf[i] - signedcorr) * multiplier;					\
+			}											\
+		}												\
+	}
+
+static int transform_format_buffer_to_float (VisBuffer *dest, VisBuffer *src, int size, int sign)
+{
+	float *dbuf = visual_buffer_get_data (dest);
+	int entries = visual_buffer_get_size (dest) /
+		visual_audio_sample_format_get_size (VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT);
+	int signedcorr;
+	int i;
+
+	signedcorr += byte_max_numeric (size) / 2;
+
+	if (size == 1)
+		FORMAT_BUFFER_TO_FLOAT(int8_t, uint8_t)
+	else if (size == 2)
+		FORMAT_BUFFER_TO_FLOAT(int16_t, uint16_t)
+	else if (size == 4)
+		FORMAT_BUFFER_TO_FLOAT(int32_t, uint32_t)
+
+	return VISUAL_OK;
+}
+
+#define FORMAT_BUFFER(a,b,c,d)											\
+		{												\
+			if (signedcorr == 0) {									\
+				visual_buffer_put (dest, src, 0);						\
+			} else {										\
+				if (signedcorr < 0) {								\
+					a *dbuf = visual_buffer_get_data (dest);				\
+					b *sbuf = visual_buffer_get_data (src);					\
+					for (i = 0; i < entries; i++) {						\
+						dbuf[i] = sbuf[i] + signedcorr;					\
+					}									\
+				} else {									\
+					c *dbuf = visual_buffer_get_data (dest);				\
+					d *sbuf = visual_buffer_get_data (src);					\
+					for (i = 0; i < entries; i++) {						\
+						dbuf[i] = sbuf[i] + signedcorr;					\
+					}									\
+				}										\
+			}											\
+		}
+
+#define FORMAT_BUFFER_INCREASE(a,b,c,d)										\
+		{												\
+			if (signedcorr < 0) {									\
+				a *dbuf = visual_buffer_get_data (dest);					\
+				b *sbuf = visual_buffer_get_data (src);						\
+				for (i = 0; i < entries; i++) {							\
+					dbuf[i] = (sbuf[i] << shifter) + signedcorr;				\
+				}										\
+			} else {										\
+				c *dbuf = visual_buffer_get_data (dest);					\
+				d *sbuf = visual_buffer_get_data (src);						\
+				for (i = 0; i < entries; i++) {							\
+					dbuf[i] = (sbuf[i] << shifter) + signedcorr;				\
+				}										\
+			}											\
+		}
+
+#define FORMAT_BUFFER_DECREASE(a,b,c,d)										\
+		{												\
+			if (signedcorr < 0) {									\
+				a *dbuf = visual_buffer_get_data (dest);					\
+				b *sbuf = visual_buffer_get_data (src);						\
+				for (i = 0; i < entries; i++) {							\
+					dbuf[i] = (sbuf[i] >> shifter) + signedcorr;				\
+				}										\
+			} else {										\
+				c *dbuf = visual_buffer_get_data (dest);					\
+				d *sbuf = visual_buffer_get_data (src);						\
+				for (i = 0; i < entries; i++) {							\
+					dbuf[i] = (sbuf[i] >> shifter) + signedcorr;				\
+				}										\
+			}											\
+		}
+
+static int transform_format_buffer (VisBuffer *dest, VisBuffer *src, int dsize, int ssize, int dsigned, int ssigned)
+{
+	int signedcorr = 0;
+	int entries = visual_buffer_get_size (dest) / dsize;
+	int shifter = 0;
+	int i;
+
+	if (dsigned == TRUE && ssigned == FALSE)
+		signedcorr -= byte_max_numeric (ssize) / 2;
+	else if (dsigned == FALSE && ssigned == TRUE)
+		signedcorr += byte_max_numeric (dsize) / 2;
+
+	if (dsize > ssize)
+		shifter = dsize - ssize;
+	else if (dsize < ssize)
+		shifter = ssize - dsize;
+
+	/* FIXME simd versions of every conversion */
+	if (dsize == 1 && ssize == 1)		/* 8 to 8 */
+		FORMAT_BUFFER(int8_t, uint8_t, uint8_t, int8_t)
+	else if (dsize == 2 && ssize == 1)	/* 8 to 16 */
+		FORMAT_BUFFER_INCREASE(int16_t, int8_t, uint16_t, uint8_t)
+	else if (dsize == 4 && ssize == 1)	/* 8 to 32 */
+		FORMAT_BUFFER_INCREASE(int32_t, int8_t, uint32_t, uint8_t)
+	else if (dsize == 2 && ssize == 2)	/* 16 to 16 */
+		FORMAT_BUFFER(int16_t, uint16_t, uint16_t, int16_t)
+	else if (dsize == 4 && ssize == 2)	/* 32 to 16 */
+		FORMAT_BUFFER_INCREASE(int32_t, int16_t, uint32_t, uint16_t)
+	else if (dsize == 4 && ssize == 4)	/* 32 to 32 */
+		FORMAT_BUFFER(int32_t, uint32_t, uint32_t, int32_t)
+	else if (dsize == 1 && ssize == 2)	/* 16 to 8 */
+		FORMAT_BUFFER_DECREASE(int8_t, int16_t, uint8_t, uint16_t)
+	else if (dsize == 2 && ssize == 4)	/* 32 to 16 */
+		FORMAT_BUFFER_DECREASE(int16_t, int32_t, uint16_t, uint32_t)
+	else if (dsize == 1 && ssize == 4)	/* 32 to 8 */
+		FORMAT_BUFFER_DECREASE(int8_t, int32_t, uint8_t, uint32_t)
 
 	return VISUAL_OK;
 }
@@ -545,6 +859,7 @@ static VisBuffer *sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntr
 	VisAudioSample *sample = entry->functiondata;
 
 	/* FIXME transform to end format here, and cache this */
+//	if (visual_
 
 	visual_object_ref (VISUAL_OBJECT (sample->buffer));
 
@@ -567,7 +882,7 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 	return visual_buffer_get_size (sample->buffer);
 }
 
-/* Input functions */
+/*  functions */
 #define STEREO_INTERLEAVED(x)											\
 		{												\
 			chan1 = visual_buffer_new_allocate (sizeof (x) * (visual_buffer_get_size (buffer) / 2),	\
@@ -584,8 +899,8 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 		}
 
 static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *buffer,
-		VisAudioSampleInputFormatType formattype,
-		VisAudioSampleInputFreqType freqtype)
+		VisAudioSampleFormatType format,
+		VisAudioSampleRateType rate)
 {
 	VisBuffer *chan1 = NULL;
 	VisBuffer *chan2 = NULL;
@@ -593,19 +908,19 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 	VisTime timestamp;
 	int i;
 
-	if (formattype == VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U8)
+	if (format == VISUAL_AUDIO_SAMPLE_FORMAT_U8)
 		STEREO_INTERLEAVED(uint8_t)
-	else if (formattype == VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S8)
+	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_S8)
 		STEREO_INTERLEAVED(int8_t)
-	else if (formattype == VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U16)
+	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_U16)
 		STEREO_INTERLEAVED(uint16_t)
-	else if (formattype == VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S16)
+	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_S16)
 		STEREO_INTERLEAVED(int16_t)
-	else if (formattype == VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_U32)
+	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_U32)
 		STEREO_INTERLEAVED(uint32_t)
-	else if (formattype == VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_S32)
+	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_S32)
 		STEREO_INTERLEAVED(int32_t)
-	else if (formattype == VISUAL_AUDIO_SAMPLE_INPUT_FORMAT_FLOAT)
+	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT)
 		STEREO_INTERLEAVED(float)
 	else
 		return -1;
@@ -615,10 +930,10 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 
 	visual_time_get (&timestamp);
 
-	sample = visual_audio_sample_new (chan1, &timestamp, formattype, freqtype);
+	sample = visual_audio_sample_new (chan1, &timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, "front left 1");
 
-	sample = visual_audio_sample_new (chan2, &timestamp, formattype, freqtype);
+	sample = visual_audio_sample_new (chan2, &timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, "front right 1");
 
 	return VISUAL_OK;
