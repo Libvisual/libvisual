@@ -91,16 +91,16 @@ int inp_jack_init (VisPluginData *plugin)
 #endif
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
-	
+
 	priv = visual_mem_new0 (JackPrivate, 1);
 	visual_log_return_val_if_fail (priv != NULL, -1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);	
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	if ((priv->client = jack_client_new (_("Libvisual jackit capture"))) == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("jack server probably not running"));
 		return -1;
 	}
-	
+
 	jack_set_process_callback (priv->client, process_callback, priv);
 	jack_on_shutdown (priv->client, shutdown_callback, priv);
 
@@ -108,13 +108,13 @@ int inp_jack_init (VisPluginData *plugin)
 
 	if (jack_activate (priv->client) == 1) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Cannot activate the jack client"));
-		
+
 		return -1;
 	}
 
 	if ((ports = jack_get_ports (priv->client, NULL, NULL, JackPortIsPhysical|JackPortIsOutput)) == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Cannot find any physical capture ports"));
-		
+
 		return -1;
 	}
 
@@ -122,12 +122,12 @@ int inp_jack_init (VisPluginData *plugin)
 		visual_log (VISUAL_LOG_CRITICAL, _("Cannot connect input ports"));
 
 		visual_mem_free (ports);
-		
+
 		return -1;
 	}
 
 	visual_mem_free (ports);
-	
+
 	return 0;
 }
 
@@ -154,7 +154,9 @@ int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
 	visual_log_return_val_if_fail(plugin != NULL, -1);
+
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
 	if (priv->shutdown == TRUE) {
@@ -180,9 +182,10 @@ static int process_callback (jack_nframes_t nframes, void *arg)
 	in = (jack_default_audio_sample_t *) jack_port_get_buffer (priv->input_port, nframes);
 
 	visual_mem_set (&priv->fakebuf, 0, sizeof (priv->fakebuf));
+
 	for (i = 0; i < nframes && i < 1024; i++)
 		priv->fakebuf[i] = in[i] * 32767;
-	
+
 	return 0;
 }
 

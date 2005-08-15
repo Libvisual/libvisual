@@ -39,14 +39,11 @@
 
 #include <libvisual/libvisual.h>
 
-#define PCM_BUF_SIZE 1024
+#define PCM_BUF_SIZE 512
 
 typedef struct {
-	short fakebuf[PCM_BUF_SIZE];
 	snd_pcm_t *chandle;
 	int loaded;
-	int fakebufloaded;
-	int clearcount;
 } alsaPrivate;
 
 static int inp_alsa_init (VisPluginData *plugin);
@@ -221,7 +218,7 @@ int inp_alsa_cleanup (VisPluginData *plugin)
 
 int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 {
-	short data[PCM_BUF_SIZE];
+	int16_t data[PCM_BUF_SIZE];
 	alsaPrivate *priv = NULL;
 	int rcnt;
 	int i;
@@ -231,45 +228,30 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
+	do {
+		rcnt = snd_pcm_readi(priv->chandle, data, PCM_BUF_SIZE / 2);
 
-	rcnt = snd_pcm_readi(priv->chandle, data, PCM_BUF_SIZE/2);
+		if (rcnt > 0) {
+			VisBuffer buffer;
 
-	if (rcnt < 0) {
-		if (rcnt == -EPIPE){
-#if 0
-		  visual_log(VISUAL_LOG_ERROR, _("Buffer Overrun"));
-#endif
-			if (snd_pcm_prepare(priv->chandle) < 0) {
-			        visual_log(VISUAL_LOG_CRITICAL, 
-					   _("Failed to prepare interface"));
-				return(-1);
+			visual_buffer_init (&buffer, data, rcnt, NULL);
+
+			visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+					VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+		}
+
+		if (rcnt < 0) {
+			if (rcnt == -EPIPE) {
+				visual_log(VISUAL_LOG_CRITICAL, _("ALSA: Buffer Overrun"));
+
+				if (snd_pcm_prepare(priv->chandle) < 0) {
+					visual_log(VISUAL_LOG_CRITICAL,
+							_("Failed to prepare interface"));
+					return(-1);
+				}
 			}
 		}
-
-		if (priv->fakebufloaded == 1) {
-			priv->clearcount++;
-
-			if (priv->clearcount > 100)
-				visual_mem_set (priv->fakebuf, 0, 
-					PCM_BUF_SIZE * inp_alsa_var_btmul);
-
-			visual_mem_copy (data, priv->fakebuf, 
-				PCM_BUF_SIZE * inp_alsa_var_btmul);
-		} else {
-			visual_mem_set (data, 0, sizeof (data));
-		}
-	} else {
-		priv->clearcount = 0;
-	}
-	
-	priv->fakebufloaded = 1;
-
-	visual_mem_copy (priv->fakebuf, data, PCM_BUF_SIZE * inp_alsa_var_btmul);
-
-	for (i = 0; i < PCM_BUF_SIZE && i < 1024; i += 2) {
-		audio->plugpcm[0][i >> 1] = priv->fakebuf[i];
-		audio->plugpcm[1][i >> 1] = priv->fakebuf[i + 1];
-	}
+	} while (rcnt > 0);
 
 	return 0;
 }
