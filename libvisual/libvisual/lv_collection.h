@@ -58,11 +58,11 @@ typedef VisCollectionIter *(*VisCollectionIterFunc)(VisCollection *collection);
 
 /**
  */
-typedef void *(*VisCollectionIterNextFunc)(VisCollectionIter *iter);
+typedef void *(*VisCollectionIterNextFunc)(VisCollectionIter *iter, VisCollection *collection, VisObject *context);
 
 /**
  */
-typedef int (*VisCollectionIterHasMoreFunc)(VisCollectionIter *iter);
+typedef int (*VisCollectionIterHasMoreFunc)(VisCollectionIter *iter, VisCollection *collection, VisObject *context);
 
 
 /**
@@ -86,7 +86,7 @@ struct _VisCollectionIter {
 
 	VisCollection			*collection;
 
-	VisObject			*itercontext;
+	VisObject			*context;
 };
 
 /* prototypes */
@@ -107,6 +107,11 @@ int visual_collection_destroy (VisCollection *collection);
 int visual_collection_size (VisCollection *collection);
 VisCollectionIter *visual_collection_get_iter (VisCollection *collection);
 
+
+VisCollectionIter *visual_collection_iter_new (VisCollectionIterNextFunc nextfunc,
+		VisCollectionIterHasMoreFunc hasmorefunc, VisCollection *collection, VisObject *context);
+int visual_collection_iter_init (VisCollectionIter *iter, VisCollectionIterNextFunc nextfunc,
+		VisCollectionIterHasMoreFunc hasmorefunc, VisCollection *collection, VisObject *context);
 
 void *visual_collection_iter_next (VisCollectionIter *iter);
 int visual_collection_iter_has_more (VisCollectionIter *iter);

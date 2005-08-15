@@ -41,7 +41,7 @@ static int box_dtor (VisObject *object)
 {
 	VisUIBox *box = VISUAL_UI_BOX (object);
 
-	visual_list_destroy_elements (&box->childs);
+	visual_collection_destroy (VISUAL_COLLECTION (&box->childs));
 
 	widget_dtor (object);
 
@@ -52,7 +52,7 @@ static int table_dtor (VisObject *object)
 {
 	VisUITable *table = VISUAL_UI_TABLE (object);
 
-	visual_list_destroy_elements (&table->childs);
+	visual_collection_destroy (VISUAL_COLLECTION (&table->childs));
 	
 	widget_dtor (object);
 
@@ -75,9 +75,9 @@ static int notebook_dtor (VisObject *object)
 {
 	VisUINotebook *notebook = VISUAL_UI_NOTEBOOK (object);
 
-	visual_list_destroy_elements (&notebook->labels);
-	visual_list_destroy_elements (&notebook->childs);
-	
+	visual_collection_destroy (VISUAL_COLLECTION (&notebook->labels));
+	visual_collection_destroy (VISUAL_COLLECTION (&notebook->childs));
+
 	widget_dtor (object);
 
 	return VISUAL_OK;
@@ -1094,7 +1094,7 @@ int visual_ui_choice_free_choices (VisUIChoice *choice)
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 
 	visual_collection_set_destroyer (VISUAL_COLLECTION (&choice->choices.choices), visual_object_list_destroyer);
-	visual_list_destroy_elements (&choice->choices.choices); 
+	visual_collection_destroy (VISUAL_COLLECTION (&choice->choices.choices));
 
 	return VISUAL_OK;
 }

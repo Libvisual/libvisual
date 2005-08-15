@@ -61,6 +61,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS] =		N_("The requested operation on the VisBuffer is out of bounds"),
 
 	[VISUAL_ERROR_COLLECTION_NULL] =		N_("VisCollection is NULL"),
+	[VISUAL_ERROR_COLLECTION_ITER_NULL] =		N_("VisCollectionIter is NULL"),
 
 	[VISUAL_ERROR_COLOR_NULL] =			N_("VisColor is NULL"),
 

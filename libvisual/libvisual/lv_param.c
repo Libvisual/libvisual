@@ -41,7 +41,7 @@ static int param_container_dtor (VisObject *object)
 {
 	VisParamContainer *paramcontainer = VISUAL_PARAMCONTAINER (object);
 
-	visual_list_destroy_elements (&paramcontainer->entries);
+	visual_collection_destroy (VISUAL_COLLECTION (&paramcontainer->entries));
 
 	return VISUAL_OK;
 }
@@ -58,10 +58,10 @@ static int param_entry_dtor (VisObject *object)
 
 	if (param->objdata != NULL)
 		visual_object_unref (param->objdata);
-	
+
 	visual_palette_free_colors (&param->pal);
 
-	visual_list_destroy_elements (&param->callbacks);
+	visual_collection_destroy (VISUAL_COLLECTION (&param->callbacks));
 
 	param->string = NULL;
 	param->name = NULL;
@@ -83,7 +83,7 @@ static int get_next_pcall_id (VisList *callbacks)
 		found = FALSE;
 		/* Check all the callbacks if the id is used */
 		while ((pcall = visual_list_next (callbacks, &le)) != NULL) {
-		
+
 			/* Found the ID, break and get ready for the next iterate */
 			if (pcall->id == i) {
 				found = TRUE;

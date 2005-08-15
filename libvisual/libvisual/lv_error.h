@@ -66,6 +66,7 @@ enum {
 
 	/* Error entries for the VisCollection system */
 	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
+	VISUAL_ERROR_COLLECTION_ITER_NULL,		/**< The VisCollectionIter is NULL. */
 
 	/* Error entries for the VisColor system */
 	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */

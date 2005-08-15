@@ -28,6 +28,25 @@
 #include "lv_common.h"
 #include "lv_collection.h"
 
+static int collection_iter_dtor (VisObject *object);
+
+static int collection_iter_dtor (VisObject *object)
+{
+	VisCollectionIter *iter = VISUAL_COLLECTIONITER (object);
+
+	if (iter->collection != NULL)
+		visual_object_unref (VISUAL_OBJECT (iter->collection));
+
+	if (iter->context != NULL)
+		visual_object_unref (VISUAL_OBJECT (iter->context));
+
+	iter->collection = NULL;
+	iter->context = NULL;
+
+	return VISUAL_OK;
+}
+
+
 /**
  * @defgroup VisCollection VisCollection
  * @{
@@ -129,14 +148,63 @@ VisCollectionIter *visual_collection_get_iter (VisCollection *collection)
 }
 
 
+VisCollectionIter *visual_collection_iter_new (VisCollectionIterNextFunc nextfunc,
+		                VisCollectionIterHasMoreFunc hasmorefunc, VisCollection *collection, VisObject *context)
+{
+	VisCollectionIter *iter;
+
+	iter = visual_mem_new0 (VisCollectionIter, 1);
+
+	visual_collection_iter_init (iter, nextfunc, hasmorefunc, collection, context);
+
+	/* do the visobject initialization */
+	visual_object_set_allocated (VISUAL_OBJECT (iter), TRUE);
+	visual_object_ref (VISUAL_OBJECT (iter));
+
+	return iter;
+}
+
+int visual_collection_iter_init (VisCollectionIter *iter, VisCollectionIterNextFunc nextfunc,
+		                VisCollectionIterHasMoreFunc hasmorefunc, VisCollection *collection, VisObject *context)
+{
+	visual_log_return_val_if_fail (iter != NULL, -VISUAL_ERROR_COLLECTION_ITER_NULL);
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (iter));
+	visual_object_set_dtor (VISUAL_OBJECT (iter), NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (iter), FALSE);
+
+	/* Set the VisCollectionIter data */
+	iter->nextfunc = nextfunc;
+	iter->hasmorefunc = hasmorefunc;
+	iter->collection = collection;
+	iter->context = context;
+
+	if (iter->collection != NULL)
+		visual_object_ref (VISUAL_OBJECT (iter->collection));
+
+	return VISUAL_OK;
+}
+
+
 void *visual_collection_iter_next (VisCollectionIter *iter)
 {
+	visual_log_return_val_if_fail (iter != NULL, NULL);
 
+	if (iter->nextfunc != NULL)
+		return iter->nextfunc (iter, iter->collection, iter->context);
+
+	return NULL;
 }
 
 int visual_collection_iter_has_more (VisCollectionIter *iter)
 {
+	visual_log_return_val_if_fail (iter != NULL, -VISUAL_ERROR_COLLECTION_ITER_NULL);
 
+	if (iter->hasmorefunc != NULL)
+		return iter->hasmorefunc (iter, iter->collection, iter->context);
+
+	return FALSE;
 }
 
 /**

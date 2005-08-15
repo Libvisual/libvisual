@@ -55,7 +55,7 @@ static int config_registry_dtor (VisObject *object)
 	if (registry->filename != NULL)
 		visual_mem_free (registry->filename);
 
-	visual_list_destroy_elements (&registry->sections);
+	visual_collection_destroy (VISUAL_COLLECTION (&registry->sections));
 
 	registry->filename = NULL;
 
@@ -119,7 +119,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 
 	if (fd < 0)
 		goto out;
-	
+
 	length = lseek (fd, 0, SEEK_END);
 
 	lseek (fd, 0, SEEK_SET);
@@ -127,7 +127,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 	/* Empty config registry */
 	if (length == 0)
 		goto out;
-	
+
 	/* Checking version */
 	if (read (fd, namebuf, 19) != 19)
 		goto broken;
@@ -142,7 +142,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 	/* Loading sections */
 	while (lseek (fd, 1, SEEK_CUR) > 0) {
 		lseek (fd, -1, SEEK_CUR);
-		
+
 		if (read (fd, &datalength, sizeof (uint32_t)) != 4)
 			goto broken;
 
@@ -168,14 +168,14 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 
 		visual_config_registry_add (registry, rsection);
 	}
-	
+
 broken:
 	visual_log (VISUAL_LOG_CRITICAL, _("Broken config registry, won't load"));
 
 	/* Unload all sections, some might have been partially parsed, which can be dangerious, we don't
 	 * want that. */
-	visual_list_destroy_elements (&registry->sections);
-	
+	visual_collection_destroy (VISUAL_COLLECTION (&registry->sections));
+
 out:
 	close (fd);
 
@@ -201,7 +201,7 @@ int visual_config_registry_remove (VisConfigRegistry *registry, const char *name
 {
 	VisConfigRegistrySection *rsection;
 	VisListEntry *le = NULL;
-	
+
 	visual_log_return_val_if_fail (registry != NULL, -VISUAL_ERROR_CONFIG_REGISTRY_NULL);
 
 	while ((rsection = visual_list_next (&registry->sections, &le)) != NULL) {
@@ -212,7 +212,7 @@ int visual_config_registry_remove (VisConfigRegistry *registry, const char *name
 
 			return VISUAL_OK;
 		}
-	}	
+	}
 
 	return VISUAL_OK;
 }
@@ -223,7 +223,7 @@ int visual_config_registry_add (VisConfigRegistry *registry, VisConfigRegistrySe
 	visual_log_return_val_if_fail (rsection != NULL, -VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL);
 
 	visual_list_add (&registry->sections, rsection);
-	
+
 	return VISUAL_OK;
 }
 
@@ -247,7 +247,7 @@ VisConfigRegistrySection *visual_config_registry_section_open (const char *name,
 	registry = visual_config_registry_open (configfile);
 
 	visual_log_return_val_if_fail (registry != NULL, NULL);
-	
+
 	rsection = visual_config_registry_find (registry, name);
 
 	return rsection;

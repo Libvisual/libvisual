@@ -41,7 +41,7 @@ static int eventqueue_dtor (VisObject *object)
 {
 	VisEventQueue *eventqueue = VISUAL_EVENTQUEUE (object);
 
-	visual_list_destroy_elements (&eventqueue->events);
+	visual_collection_destroy (VISUAL_COLLECTION (&eventqueue->events));
 
 	return VISUAL_OK;
 }
@@ -129,14 +129,14 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 
 	if (eventqueue->eventcount <= 0)
 		return FALSE;
-	
+
 	lev = visual_list_next (&eventqueue->events, &listentry);
 	visual_mem_copy (event, lev, sizeof (VisEvent));
 
 	visual_object_unref (VISUAL_OBJECT (lev));
 
 	visual_list_delete (&eventqueue->events, &listentry);
-	
+
 	eventqueue->eventcount--;
 
 	return TRUE;
@@ -197,7 +197,7 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 
 		return -VISUAL_ERROR_EVENT_NULL;
 	}
-	
+
 	/* FIXME name to VISUAL_KEYB_DOWN and KEYB_UP */
 	if (state == VISUAL_KEY_DOWN)
 		event->type = VISUAL_EVENT_KEYDOWN;
@@ -274,10 +274,10 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
 		event->type = VISUAL_EVENT_MOUSEBUTTONUP;
 
 	event->mousebutton.type = event->type;
-	
+
 	event->mousebutton.button = button;
 	event->mousebutton.state = state;
-	
+
 	event->mousebutton.x = x;
 	event->mousebutton.y = y;
 
@@ -307,7 +307,7 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 
 	event = &eventqueue->lastresize;
-	
+
 	event->type = VISUAL_EVENT_RESIZE;
 
 	event->resize.type = event->type;

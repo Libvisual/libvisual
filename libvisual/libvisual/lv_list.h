@@ -76,8 +76,7 @@ struct _VisList {
 
 /* prototypes */
 VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
-int visual_list_free (VisList *list);
-int visual_list_destroy_elements (VisList *list);
+int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer);
 
 void *visual_list_next (VisList *list, VisListEntry **le);
 void *visual_list_prev (VisList *list, VisListEntry **le);

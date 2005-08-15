@@ -40,16 +40,112 @@
 #include "lv_log.h"
 #include "lv_mem.h"
 
+#define LIST_ITERCONTEXT(obj)				(VISUAL_CHECK_CAST ((obj), ListIterContext))
+
+
+typedef struct _ListIterContext ListIterContext;
+
+struct _ListIterContext {
+	VisObject *object;
+
+	VisListEntry *cur;
+};
+
+
 static int list_dtor (VisObject *object);
+
+static int list_destroy (VisCollection *collection);
+static int list_size (VisCollection *collection);
+static VisCollectionIter *list_iter (VisCollection *collection);
+
+static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
+static void *list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
+
 
 static int list_dtor (VisObject *object)
 {
-	VisList *list = VISUAL_LIST (object);
+	VisCollection *collection = VISUAL_COLLECTION (object);
 
-	visual_list_destroy_elements (list);
+	collection->destroyfunc (collection);
 
 	return VISUAL_OK;
 }
+
+
+static int list_destroy (VisCollection *collection)
+{
+	VisCollectionDestroyerFunc destroyer;
+	VisList *list = VISUAL_LIST (collection);
+	VisListEntry *le = NULL;
+	void *elem;
+
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+
+	destroyer = visual_collection_get_destroyer (collection);
+
+	/* Walk through the given list, possibly calling the destroyer for it */
+	if (destroyer == NULL) {
+		while ((elem = visual_list_next (list, &le)) != NULL)
+			visual_list_delete (list, &le);
+	} else {
+		while ((elem = visual_list_next (list, &le)) != NULL) {
+			destroyer (elem);
+			visual_list_delete (list, &le);
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+static int list_size (VisCollection *collection)
+{
+	VisList *list = VISUAL_LIST (collection);
+
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+
+	return list->count;
+}
+
+static VisCollectionIter *list_iter (VisCollection *collection)
+{
+	VisCollectionIter *iter;
+	ListIterContext *context;
+	VisList *list = VISUAL_LIST (collection);
+
+	context = visual_mem_new0 (ListIterContext, 1);
+
+	/* Do the VisObject initialization for the ListIterContext */
+	visual_object_initialize (VISUAL_OBJECT (context), TRUE, NULL);
+	context->cur = list->head;
+
+	iter = visual_collection_iter_new (list_iter_next, list_iter_has_more, collection, VISUAL_OBJECT (context));
+
+	return iter;
+}
+
+static void *list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+{
+	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
+	VisListEntry *le = context->cur;
+
+	if (le == NULL)
+		return NULL;
+
+	context->cur = le->next;
+
+	return le->data;
+}
+
+static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+{
+	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
+
+	if (context->cur == NULL)
+		return FALSE;
+
+	return TRUE;
+}
+
 
 /**
  * @defgroup VisList VisList
@@ -68,57 +164,37 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 
 	list = visual_mem_new0 (VisList, 1);
 
-	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (list), TRUE, list_dtor);
+	visual_list_init (list, destroyer);
 
-	visual_collection_set_destroyer (VISUAL_COLLECTION (list), destroyer);
+	/* do the visobject initialization */
+	visual_object_set_allocated (VISUAL_OBJECT (list), TRUE);
+	visual_object_ref (VISUAL_OBJECT (list));
 
 	return list;
 }
 
 /**
- * Frees the VisList. This frees the VisList data structure.
  *
- * @param list Pointer to a VisList that needs to be freed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or error values returned by
- * 	visual_mem_free () on failure.
  */
-int visual_list_free (VisList *list)
+int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
-	return visual_mem_free (list);
-}
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (list));
+	visual_object_set_dtor (VISUAL_OBJECT (list), list_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (list), FALSE);
 
-/**
- * Destroys the entries that are in a list, but not the list itself. It uses the element
- * destroyer set at visual_list_new or visual_collection_set_destroyer.
- *
- * @param list Pointer to a VisList of which the elements need to be destroyed.
- *
- * @return VISUAL_OK on succes, or -VISUAL_ERROR_LIST_NULL on failure.
- */
-int visual_list_destroy_elements (VisList *list)
-{
-	VisCollectionDestroyerFunc destroyer;
-	VisListEntry *le = NULL;
-	void *elem;
+	/* Set the VisCollection data */
+	visual_collection_set_destroyer (VISUAL_COLLECTION (list), destroyer);
+	visual_collection_set_destroy_func (VISUAL_COLLECTION (list), list_destroy);
+	visual_collection_set_size_func (VISUAL_COLLECTION (list), list_size);
+	visual_collection_set_iter_func (VISUAL_COLLECTION (list), list_iter);
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-
-	destroyer = visual_collection_get_destroyer (VISUAL_COLLECTION (list));
-
-	/* Walk through the given list, possibly calling the destroyer for it */
-	if (destroyer == NULL) {
-		while ((elem = visual_list_next (list, &le)) != NULL)
-			visual_list_delete (list, &le);
-	} else {
-		while ((elem = visual_list_next (list, &le)) != NULL) {
-			destroyer (elem);
-			visual_list_delete (list, &le);
-		}
-	}
+	/* Set the VisList data */
+	list->head = NULL;
+	list->tail = NULL;
+	list->count = 0;
 
 	return VISUAL_OK;
 }
@@ -204,14 +280,14 @@ void *visual_list_get (VisList *list, int index)
 	visual_log_return_val_if_fail (list != NULL, NULL);
 	visual_log_return_val_if_fail (index >= 0, NULL);
 
-	lc = visual_list_count (list);
+	lc = visual_collection_size (VISUAL_COLLECTION (list));
 
 	if (lc - 1 < index)
 		return NULL;
-	
+
 	for (i = 0; i <= index; i++) {
 		data = visual_list_next (list, &le);
-		
+
 		if (data == NULL)
 			return NULL;
 	}
@@ -288,7 +364,7 @@ int visual_list_add (VisList *list, void *data)
 		/* Exchange pointers */
 		prev->next = current;
 		current->prev = prev;
-		
+
 		/* Point tail to new entry */
 		list->tail = current;
 	}
@@ -313,11 +389,11 @@ int visual_list_add (VisList *list, void *data)
 int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 {
 	VisListEntry *prev, *next, *current;
-	
+
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
-	
+
 	current = visual_mem_new0 (VisListEntry, 1);
 
 	/* Assign data element */
@@ -340,7 +416,7 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 		/* Insert entry at *le's position */
 		prev = *le;
 		next = prev->next;
-		
+
 		current->prev = prev;
 		current->next = next;
 
@@ -353,7 +429,7 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 
 	/* Hop to new entry */
 	*le = current;
-	
+
 	/* Done */
 	list->count++;
 
@@ -371,10 +447,10 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 int visual_list_delete (VisList *list, VisListEntry **le)
 {
 	VisListEntry *prev, *current, *next;
-	
+
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
-	
+
 	prev = current = next = NULL;
 
 	/* Valid list entry ? */
@@ -394,7 +470,7 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 		prev->next = next;
 	else
 		list->head = next;
-	
+
 	if (next != NULL) /* It does have a next entry ? */
 		next->prev = prev;
 	else
@@ -431,29 +507,6 @@ int visual_list_destroy (VisList *list, VisListEntry **le)
 		destroyer ((*le)->data);
 
 	return visual_list_delete (list, le);
-}
-
-/**
- * Counts the number of entries within the list.
- *
- * @param list A pointer to the list from which an entry count is needed.
- * 
- * @return The number of elements or -VISUAL_ERROR_LIST_NULL on failure.
- */
-int visual_list_count (VisList *list)
-{
-	VisListEntry *le = NULL;
-	int count = 0;
-
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-
-	/* Walk through list */
-	while (visual_list_next (list, &le) != NULL) 
-		count++;
-
-	list->count = count;
-
-	return count;
 }
 
 /**

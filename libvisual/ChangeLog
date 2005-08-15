@@ -1,5 +1,13 @@
 2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_collection.*: Did the iter stuff.
+
+	* libvisual/lv_list.*: Completely ported over to collection stuff.
+
+	* libvisual/*.c: Adapt to changes in VisList.
+
+2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_video.c: Cleanups.
 
 	* libvisual/lv_video_mmx.c: gcc-4.0 fixes.

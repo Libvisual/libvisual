@@ -125,14 +125,14 @@ static int plugin_dtor (VisObject *object)
 {
 	VisPluginData *plugin = VISUAL_PLUGINDATA (object);
 
-	if (plugin->ref != NULL)	
+	if (plugin->ref != NULL)
 		visual_object_unref (VISUAL_OBJECT (plugin->ref));
 
 	if (plugin->params != NULL)
 		visual_object_unref (VISUAL_OBJECT (plugin->params));
 
-	visual_list_destroy_elements (&plugin->environment);
-	
+	visual_collection_destroy (VISUAL_COLLECTION (&plugin->environment));
+
 	plugin->ref = NULL;
 	plugin->params = NULL;
 
@@ -503,15 +503,15 @@ const char *visual_plugin_get_prev_by_name (VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref, *pref = NULL;
-	
+
 	visual_log_return_val_if_fail (list != NULL, NULL);
 
 	if (name == NULL) {
-		ref = visual_list_get (list, visual_list_count (list) - 1);
-		
+		ref = visual_list_get (list, visual_collection_size (VISUAL_COLLECTION (list)) - 1);
+
 		if (ref == NULL)
 			return NULL;
-		
+
 		return ref->info->plugname;
 	}
 
