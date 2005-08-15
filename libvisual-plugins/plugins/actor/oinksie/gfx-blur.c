@@ -42,8 +42,7 @@ void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 			 "\n\t movd %[fade], %%mm4"
 			 "\n\t psllq $32, %%mm3"
 			 "\n\t por %%mm4, %%mm3"
-			 :: [fade] "m" (fadeflag)
-			 : "mm3", "mm4");
+			 :: [fade] "m" (fadeflag));
 
 		
 		for (i = 0; i < priv->screen_size; i += 8) {
@@ -51,8 +50,7 @@ void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 				("\n\t movq %[buf], %%mm0"
 				 "\n\t psubsb %%mm3, %%mm0"
 				 "\n\t movq %%mm0, %[buf]"
-				 :: [buf] "m" (*buf)
-				 : "mm0");
+				 :: [buf] "m" (*buf));
 		}
 
 		__asm __volatile
@@ -93,7 +91,7 @@ void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 #ifdef VISUAL_ARCH_X86
 		__asm __volatile
 			("\n\t pxor %%mm6, %%mm6"
-			 ::: "mm6");
+			 ::);
 		
 		/* Prepare substraction register */
 		for (i = 0; i < scrsh; i += 4) {
@@ -115,8 +113,7 @@ void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 				 :: [buf] "m" (*(buf + i))
 				 , [add1] "m" (*(buf + i + priv->screen_width))
 				 , [add2] "m" (*(buf + i + priv->screen_width + 1))
-				 , [add3] "m" (*(buf + i + priv->screen_width - 1))
-				 : "mm0", "mm1", "mm2", "mm3", "mm6");
+				 , [add3] "m" (*(buf + i + priv->screen_width - 1)));
 		}
 
 		for (i = priv->screen_size - 1; i > scrsh; i -= 4) {
@@ -138,8 +135,7 @@ void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 				 :: [buf] "m" (*(buf + i))
 				 , [add1] "m" (*(buf + i - priv->screen_width))
 				 , [add2] "m" (*(buf + i - priv->screen_width + 1))
-				 , [add3] "m" (*(buf + i - priv->screen_width - 1))
-				 : "mm0", "mm1", "mm2", "mm3", "mm6");
+				 , [add3] "m" (*(buf + i - priv->screen_width - 1)));
 		}
 		
 		__asm __volatile
@@ -173,7 +169,7 @@ void _oink_gfx_blur_midstrange (OinksiePrivate *priv, uint8_t *buf)
 #ifdef VISUAL_ARCH_X86
 		__asm __volatile
 			("\n\t pxor %%mm6, %%mm6"
-			 ::: "mm6");
+			 ::);
 
 		/* Prepare substraction register */
 		for (i = scrsh; i > 0; i -= 4) {
@@ -195,8 +191,7 @@ void _oink_gfx_blur_midstrange (OinksiePrivate *priv, uint8_t *buf)
 				 :: [buf] "m" (*(buf + i))
 				 , [add1] "m" (*(buf + i + priv->screen_width))
 				 , [add2] "m" (*(buf + i + priv->screen_width + 1))
-				 , [add3] "m" (*(buf + i + priv->screen_width - 1))
-				 : "mm0", "mm1", "mm2", "mm3", "mm6");
+				 , [add3] "m" (*(buf + i + priv->screen_width - 1)));
 		}
 
 		for (i = scrsh; i < priv->screen_size - 2; i += 4) {
@@ -218,8 +213,7 @@ void _oink_gfx_blur_midstrange (OinksiePrivate *priv, uint8_t *buf)
 				 :: [buf] "m" (*(buf + i))
 				 , [add1] "m" (*(buf + i - priv->screen_width))
 				 , [add2] "m" (*(buf + i - priv->screen_width + 1))
-				 , [add3] "m" (*(buf + i - priv->screen_width - 1))
-				 : "mm0", "mm1", "mm2", "mm3", "mm6");
+				 , [add3] "m" (*(buf + i - priv->screen_width - 1)));
 		}
 
 		__asm __volatile

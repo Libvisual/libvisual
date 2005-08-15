@@ -1,5 +1,13 @@
 2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* *: gcc-4.0 fixes
+
+	Patch by: Jaak
+
+	* plugins/actor/corona/*: Converted to unix linedelim.
+
+2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/input/alsa/input_alsa.c: Support new VisAudio stuff, alsa
 	input is now smooth and flawless, finally!
 

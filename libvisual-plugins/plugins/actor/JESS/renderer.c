@@ -393,7 +393,7 @@ void render_blur(JessPrivate *priv, int blur)
 #ifdef VISUAL_ARCH_X86
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"
-				 ::: "mm6");
+				 ::);
 
 			for (pix = priv->pixel; pix < (uint8_t *) bmax-1; pix += 8)
 			{
@@ -409,8 +409,7 @@ void render_blur(JessPrivate *priv, int blur)
 					 :: [pix1] "m" (*pix)
 					 , [pix2] "m" (*(pix + 1))
 					 , [pix3] "m" (*(pix + priv->resx))
-					 , [pix4] "m" (*(pix + priv->resx + 1))
-					 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+					 , [pix4] "m" (*(pix + priv->resx + 1)));
 
 			}
 
@@ -432,7 +431,7 @@ void render_blur(JessPrivate *priv, int blur)
 #ifdef VISUAL_ARCH_X86
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"
-				 ::: "mm6");
+				 ::);
 		
 			for (pix = priv->pixel; pix < (uint8_t *) bmax-4; )
 			{
@@ -448,8 +447,7 @@ void render_blur(JessPrivate *priv, int blur)
 					 :: [pix1] "m" (*pix)
 					 , [pix2] "m" (*(pix + 4))
 					 , [pix3] "m" (*(pix + priv->pitch))
-					 , [pix4] "m" (*(pix + pitch_4))
-					 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+					 , [pix4] "m" (*(pix + pitch_4)));
 				
 				pix += 8;
 			}

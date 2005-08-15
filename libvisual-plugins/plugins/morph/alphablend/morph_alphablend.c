@@ -212,7 +212,7 @@ static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2
 #ifdef VISUAL_ARCH_X86	
 	__asm __volatile
 		("\n\t pxor %%mm6, %%mm6"
-		 ::: "mm6");
+		 ::);
 
 	for (i = size; i > 4; i -= 4) {
 		__asm __volatile
@@ -233,8 +233,7 @@ static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2
 			 : [dest] "=m" (*(dest + i))
 			 : [src1] "m" (*(src1 + i))
 			 , [src2] "m" (*(src2 + i))
-			 , [alpha] "m" (ialpha)
-			 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+			 , [alpha] "m" (ialpha));
 	}
 
 	while (i--)
@@ -284,7 +283,7 @@ static inline int alpha_blend_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src
 #ifdef VISUAL_ARCH_X86	
 	__asm __volatile
 		("\n\t pxor %%mm6, %%mm6"
-		 ::: "mm6");
+		 ::);
 	
 	for (i = 0; i < size; i += 4) {
 		__asm __volatile
@@ -308,8 +307,7 @@ static inline int alpha_blend_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src
 			 : [dest] "=m" (*(dest + i))
 			 : [src1] "m" (*(src1 + i))
 			 , [src2] "m" (*(src2 + i))
-			 , [alpha] "m" (ialpha)
-			 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+			 , [alpha] "m" (ialpha));
 	}
         
 	__asm __volatile

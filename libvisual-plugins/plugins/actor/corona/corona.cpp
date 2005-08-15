@@ -341,8 +341,8 @@ void Corona::blurImage()
 #ifdef VISUAL_ARCH_X86
 		__asm __volatile
 			("pxor %%mm6, %%mm6"
-			 ::: "mm6");
-		
+			 ::);
+
 		while (n -= 4) {
 			__asm __volatile
 				("\n\t movd %[dest], %%mm0"
@@ -365,8 +365,7 @@ void Corona::blurImage()
 				 , [pix2] "m" (*(ptr - m_width))
 				 , [pix3] "m" (*(ptr - 1))
 				 , [pix4] "m" (*(ptr + 1))
-				 , [pix5] "m" (*(ptr + m_width))
-				 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+				 , [pix5] "m" (*(ptr + m_width)));
 			ptr += 4;
 		}
 
@@ -380,7 +379,7 @@ void Corona::blurImage()
 			val += *(ptr - m_width);
 			val += *(ptr + m_width);
 			val >>= 2;
-	
+
 			*(ptr++) = val;
 		}
 	}

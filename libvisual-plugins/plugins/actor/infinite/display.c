@@ -72,6 +72,7 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 	 * zat ik met restore problemen, waardoor het uiteindelijk even snel werd, moet de hele blur routine
 	 * van deze plugin from scratch doen... */
 	if (0) {
+#if 0
 #ifdef VISUAL_ARCH_X86
 		int add_src2[2];
 		uint8_t *ptr_pix2[2];
@@ -96,8 +97,7 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 			 "\n\t pxor %%mm6, %%mm6"
 			 "\n\t pxor %%mm4, %%mm4"
 			 :: [plugw] "m" (plugwidth)
-			 , [aflag] "m" (aflag)
-			 : "mm4", "mm5", "mm6", "mm7");
+			 , [aflag] "m" (aflag));
 
 		for (j = 0; j < priv->plugheight; j++) {
 			for (i = 0; i < priv->plugwidth; i += 2) {
@@ -133,8 +133,7 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 						:: [interpol] "m" (*(coords))
 						, [addsrc2] "m" (add_src2)
 						, [surf1] "m" (ptr_surf)
-						, [pix] "m" (*ptr_pix2)
-						: "mm0", "mm1", "mm2", "mm3", "mm4");
+						, [pix] "m" (*ptr_pix2));
 //				printf ("%x %x\n", ptr_pix2[0], ptr_pix2[1]);
 //				printf ("%p %p\n", ptr_pix2[0], ptr_pix2[1]);
 				int color1 = 0, color2 = 0;
@@ -157,7 +156,8 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 
 		__asm __volatile
 			("emms");
-#endif
+#endif /* #ifdef VISUAL_ARCH_X86 */
+#endif /* #if 0 */
 	} else {
 		for (j=0;j<priv->plugheight;j++) {
 			for (i=0;i<priv->plugwidth;i++) {

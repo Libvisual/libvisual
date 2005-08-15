@@ -55,7 +55,7 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 
 		__asm __volatile
 			("pxor %%mm6, %%mm6"
-			 ::: "mm6");
+			 ::);
 		
 		while(i -= 4)
 		{
@@ -80,8 +80,7 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 				 , [pix2] "m" (*(iptr - bpl))
 				 , [pix3] "m" (*(iptr - 1))
 				 , [pix4] "m" (*(iptr + 1))
-				 , [pix5] "m" (*(iptr + bpl))
-				 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+				 , [pix5] "m" (*(iptr + bpl)));
 			
 			iptr += 4;
 		}
