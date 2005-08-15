@@ -92,12 +92,12 @@ static void table_cossin_init (VisFFT *fft)
 	i = 0;
 	while (dftsize <= fft->spectrum_size) {
 		theta = (float) (-2.0f * FFT_PI / (float) dftsize);
-		
+
 		fft->sintable[i] = (float) cosf (theta);
 		fft->costable[i] = (float) sinf (theta);
-		
+
 		i++;
-		
+
 		dftsize <<= 1;
 	}
 }
@@ -122,7 +122,7 @@ VisFFT *visual_fft_new (int samples_in, int samples_out)
 	VisFFT *fft;
 
 	fft = visual_mem_new0 (VisFFT, 1);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (fft), TRUE, fft_dtor);
 
@@ -134,7 +134,7 @@ VisFFT *visual_fft_new (int samples_in, int samples_out)
 
 	fft->real = visual_mem_malloc0 (sizeof (float) * fft->spectrum_size);
 	fft->imag = visual_mem_malloc0 (sizeof (float) * fft->spectrum_size);
-	
+
 	return fft;
 }
 
@@ -155,7 +155,7 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output)
 	visual_log_return_val_if_fail (fft != NULL, -VISUAL_ERROR_FFT_NULL);
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
-	
+
 	for (i = 0; i < fft->spectrum_size; i++) {
 		int idx = fft->bitrevtable[i];
 
@@ -198,7 +198,7 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output)
 
 	for (i = 0; i < fft->spectrum_size / 2; i++)
 		output[i] = sqrtf (fft->real[i] * fft->real[i] + fft->imag[i] * fft->imag[i]);
-	
+
 	return VISUAL_OK;
 }
 

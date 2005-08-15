@@ -97,7 +97,7 @@ VisEventQueue *visual_event_queue_new ()
 
 	eventqueue->mousestate = VISUAL_MOUSE_UP;
 
-	visual_list_set_destroyer (&eventqueue->events, event_list_destroy);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&eventqueue->events), event_list_destroy);
 
 	return eventqueue;
 }

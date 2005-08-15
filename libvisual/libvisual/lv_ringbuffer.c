@@ -239,8 +239,8 @@ int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int 
 			if (curposition + visual_buffer_get_size (tempbuf) > nbytes) {
 				VisBuffer buf;
 
-				visual_buffer_init (&buf, NULL,
-						nbytes - (curposition + visual_buffer_get_size (tempbuf)), NULL);
+				visual_buffer_init (&buf, visual_buffer_get_data (tempbuf),
+						nbytes - curposition, NULL);
 
 				visual_buffer_put (data, &buf, curposition);
 
@@ -253,6 +253,10 @@ int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int 
 
 			if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
 				visual_object_unref (VISUAL_OBJECT (tempbuf));
+
+			/* Filled without room for partial buffer addition */
+			if (curposition == nbytes)
+				return VISUAL_OK;
 		}
 	}
 
@@ -383,7 +387,7 @@ int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
 
 void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry)
 {
-	visual_log_return_val_if_fail (entry != NULL, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL);
+	visual_log_return_val_if_fail (entry != NULL, NULL);
 
 	return entry->functiondata;
 }

@@ -45,11 +45,11 @@ struct _VisFFT {
 
 	int		 samples_in;			/**< The number of input samples. */
 	int		 spectrum_size;			/**< The size of the spectrum (power of two). */
-	
+
 	int		*bitrevtable;			/**< Private data that is used by the FFT engine. */
 	float		*sintable;			/**< Private data that is used by the FFT engine. */
 	float		*costable;			/**< Private data that is used by the FFT engine. */
-	
+
 	float		*real;				/**< Private data that is used by the FFT engine. */
 	float		*imag;				/**< Private data that is used by the FFT engine. */
 };

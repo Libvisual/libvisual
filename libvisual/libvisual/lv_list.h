@@ -33,6 +33,7 @@
 #define _LV_LIST_H
 
 #include <libvisual/lv_common.h>
+#include <libvisual/lv_collection.h>
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__)
 #include <sys/queue.h>
@@ -48,13 +49,6 @@ typedef struct _VisListEntry VisListEntry;
 typedef struct _VisList VisList;
 
 /**
- * An VisList destroyer function needs this signature.
- *
- * @arg data The data that was stored in a VisListEntry and thus can be destroyed.
- */
-typedef void (*VisListDestroyerFunc)(void *data);
-
-/**
  * The VisListEntry data structure is an entry within the linked list.
  * It does contain a pointer to both the previous and next entry in the list and
  * a void * to the data.
@@ -62,29 +56,28 @@ typedef void (*VisListDestroyerFunc)(void *data);
 struct _VisListEntry {
 	VisListEntry		*prev;	/**< Previous entry in the list. */
 	VisListEntry		*next;	/**< Next entry in the list. */
+
 	void			*data;	/**< Pointer to the data for this entry. */
 };
 
 /**
- * The VisList data structure holds the linked list.
- * It contains an entry pointer to both the head and tail of the list as well
- * an entry counter.
+ * The VisList data structure represents a linked list. It inherents from the
+ * VisCollection class.
  */
 struct _VisList {
-	VisObject		 object;	/**< The VisObject data. */
-	VisListDestroyerFunc	 destroyer;	/**< The List destroyer function. */
+	VisCollection		 collection;	/**< The VisCollection data. */
+
 	VisListEntry		*head;		/**< Pointer to the beginning of the list. */
 	VisListEntry		*tail;		/**< Pointer to the end of the list. */
+
 	int			 count;		/**< Number of entries that are in the list. */
 };
 
 
 /* prototypes */
-VisList *visual_list_new (VisListDestroyerFunc destroyer);
+VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
 int visual_list_free (VisList *list);
 int visual_list_destroy_elements (VisList *list);
-
-int visual_list_set_destroyer (VisList *list, VisListDestroyerFunc destroyer);
 
 void *visual_list_next (VisList *list, VisListEntry **le);
 void *visual_list_prev (VisList *list, VisListEntry **le);

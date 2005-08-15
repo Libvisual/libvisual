@@ -1,3 +1,31 @@
+2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* NEWS: Updated.
+
+	* libvisual/lv_audio.*: More work.
+
+	* libvisual/lv_buffer.c (visual_buffer_put): Fixed segv bug.
+
+	* libvisual/lv_collection.*: Added new system, both VisList and
+	VisHashmap inherent from VisCollection. VisCollection is an
+	abstraction to all kind of collections. It handles the generalized
+	parts.
+
+	* libvisual/lv_hashmap.*: Added hashmap, to be used by VisAudio and
+	VisFFT. The impl is not yet really done.
+
+	* libvisual/lv_list.*: Partially moved over to collection stuff.
+
+	* libvisual/lv_ringbuffer.c (visual_ringbuffer_get_data): Combine data
+	right.
+
+	* libvisual/*.c: Adapt to VisList (because of VisCollection) api
+	changes.
+
+	TODO:
+		Finish up VisCollection impl in VisList and use it everywhere.
+		Implement the VisHashmap.
+
 2005-08-14  Dennis Smit  <ds@nerds-incorporated.org>
 
 	I need to create some temporal rift to increase my time for coding.
@@ -15,7 +43,6 @@
 
 	Patch by Jaak.
 
->>>>>>> 1.310
 2005-07-09  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_audio.*: Rewrite stuff

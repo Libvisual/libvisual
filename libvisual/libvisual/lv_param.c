@@ -121,7 +121,7 @@ VisParamContainer *visual_param_container_new ()
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (paramcontainer), TRUE, param_container_dtor);
 
-	visual_list_set_destroyer (&paramcontainer->entries, visual_object_list_destroyer);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&paramcontainer->entries), visual_object_list_destroyer);
 
 	return paramcontainer;
 }
@@ -348,8 +348,8 @@ VisParamEntry *visual_param_entry_new (char *name)
 	visual_object_initialize (VISUAL_OBJECT (param), TRUE, param_entry_dtor);
 
 	visual_param_entry_set_name (param, name);
-	
-	visual_list_set_destroyer (&param->callbacks, visual_object_list_destroyer);
+
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&param->callbacks), visual_object_list_destroyer);
 
 	return param;
 }

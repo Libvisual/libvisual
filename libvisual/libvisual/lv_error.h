@@ -64,6 +64,9 @@ enum {
 	VISUAL_ERROR_BUFFER_NULL,			/**< The VisBuffer is NULL. */
 	VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS,		/**< The requested operation would be out of bounds. */
 
+	/* Error entries for the VisCollection system */
+	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
+
 	/* Error entries for the VisColor system */
 	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
 

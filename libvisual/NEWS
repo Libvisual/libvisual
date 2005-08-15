@@ -18,6 +18,9 @@ New in 0.3.0: xxxx-xx-xx:
 * visual_video_mirror_*(). (Jaak)
 * visual_video_rotate_*(). (Jaak)
 * Removed obsolete visual_video_depth_transform_to_buffer(). (Jaak)
+* Added VisCollection system. (Dennis)
+* Added VisHashmap. (Dennis)
+* VisAudio rewrite. (Dennis)
 
 New in 0.2.0: 2005-02-09:
 * VisTransform subsystem. (Dennis)

@@ -46,7 +46,7 @@ static int list_dtor (VisObject *object)
 {
 	VisList *list = VISUAL_LIST (object);
 
-	visual_list_destroy_elements (list);	
+	visual_list_destroy_elements (list);
 
 	return VISUAL_OK;
 }
@@ -62,7 +62,7 @@ static int list_dtor (VisObject *object)
  *
  * @return A newly allocated VisList.
  */
-VisList *visual_list_new (VisListDestroyerFunc destroyer)
+VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 {
 	VisList *list;
 
@@ -71,7 +71,7 @@ VisList *visual_list_new (VisListDestroyerFunc destroyer)
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (list), TRUE, list_dtor);
 
-	list->destroyer = destroyer;
+	visual_collection_set_destroyer (VISUAL_COLLECTION (list), destroyer);
 
 	return list;
 }
@@ -93,7 +93,7 @@ int visual_list_free (VisList *list)
 
 /**
  * Destroys the entries that are in a list, but not the list itself. It uses the element
- * destroyer set at visual_list_new or visual_list_set_destroyer.
+ * destroyer set at visual_list_new or visual_collection_set_destroyer.
  *
  * @param list Pointer to a VisList of which the elements need to be destroyed.
  *
@@ -101,38 +101,24 @@ int visual_list_free (VisList *list)
  */
 int visual_list_destroy_elements (VisList *list)
 {
+	VisCollectionDestroyerFunc destroyer;
 	VisListEntry *le = NULL;
 	void *elem;
 
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-		
+
+	destroyer = visual_collection_get_destroyer (VISUAL_COLLECTION (list));
+
 	/* Walk through the given list, possibly calling the destroyer for it */
-	if (list->destroyer == NULL) {
+	if (destroyer == NULL) {
 		while ((elem = visual_list_next (list, &le)) != NULL)
 			visual_list_delete (list, &le);
 	} else {
 		while ((elem = visual_list_next (list, &le)) != NULL) {
-			list->destroyer (elem);
+			destroyer (elem);
 			visual_list_delete (list, &le);
 		}
 	}
-
-	return VISUAL_OK;
-}
-
-/**
- * Sets a VisListEntry destroyer function a VisList.
- *
- * @param list Pointer to a VisList to which the VisListDestroyerFunc is set.
- * @param destroyer The VisListEntry destroyer function.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
- */
-int visual_list_set_destroyer (VisList *list, VisListDestroyerFunc destroyer)
-{
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-
-	list->destroyer = destroyer;
 
 	return VISUAL_OK;
 }
@@ -278,11 +264,11 @@ int visual_list_add_at_begin (VisList *list, void *data)
  * @param data A pointer to the data that needs to be added to the list.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
- */	
+ */
 int visual_list_add (VisList *list, void *data)
 {
 	VisListEntry *current, *prev;
-	
+
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	current = visual_mem_new0 (VisListEntry, 1);
@@ -434,11 +420,15 @@ int visual_list_delete (VisList *list, VisListEntry **le)
  */
 int visual_list_destroy (VisList *list, VisListEntry **le)
 {
+	VisCollectionDestroyerFunc destroyer;
+
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 
-	if (list->destroyer != NULL)
-		list->destroyer ((*le)->data);
+	destroyer = visual_collection_get_destroyer (VISUAL_COLLECTION (list));
+
+	if (destroyer != NULL)
+		destroyer ((*le)->data);
 
 	return visual_list_delete (list, le);
 }

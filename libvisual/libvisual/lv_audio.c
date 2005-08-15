@@ -217,18 +217,18 @@ int visual_audio_analyze (VisAudio *audio)
 	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
 	/* Load the pcm data */
+#if 0
 	for (i = 0; i < 512; i++) {
 		audio->pcm[0][i] = audio->plugpcm[0][i];
 		audio->pcm[1][i] = audio->plugpcm[1][i];
 		audio->pcm[2][i] = (audio->plugpcm[0][i] + audio->plugpcm[1][i]) >> 1;
 	}
-
+#endif
 	/* -------------------------------- audio pool testing */
 	{
-		VisBuffer *buffer = visual_buffer_new_allocate (sizeof (int16_t) * 512, visual_buffer_destroyer_free);
+/*		VisBuffer *buffer = visual_buffer_new_allocate (sizeof (int16_t) * 512, visual_buffer_destroyer_free);
 		VisTime timestamp;
 		VisAudioSample *sample;
-		VisAudioSamplePoolChannel *channel;
 
 		visual_mem_copy (visual_buffer_get_data (buffer), audio->plugpcm[2], sizeof (int16_t) * 512);
 
@@ -239,25 +239,55 @@ int visual_audio_analyze (VisAudio *audio)
 				VISUAL_AUDIO_SAMPLE_FORMAT_S8);
 
 		visual_audio_samplepool_add (audio->samplepool, sample, "front");
+*/
+		VisAudioSamplePoolChannel *channel;
+		VisBuffer buffer;
 
-		channel = visual_audio_samplepool_get_channel (audio->samplepool, "front");
+		channel = visual_audio_samplepool_get_channel (audio->samplepool, "front left 1");
 
-		visual_audio_samplepool_flush_old (audio->samplepool);
+		if (channel != 0) {
+			visual_buffer_init (&buffer, audio->pcm[0], 1024, NULL);
 
-		printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
+			visual_audio_samplepool_flush_old (audio->samplepool);
+
+			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
+
+			visual_ringbuffer_get_data (channel->samples, &buffer, 1024);
+
+			visual_object_unref (VISUAL_OBJECT (&buffer));
+		}
+
+		channel = visual_audio_samplepool_get_channel (audio->samplepool, "front right 1");
+
+		if (channel != 0) {
+			visual_buffer_init (&buffer, audio->pcm[1], 1024, NULL);
+
+			visual_audio_samplepool_flush_old (audio->samplepool);
+
+			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
+
+			visual_ringbuffer_get_data (channel->samples, &buffer, 1024);
+
+			visual_object_unref (VISUAL_OBJECT (&buffer));
+		}
+
 	}
 	/* /-------------------------------- audio pool testing */
 
-	/* Initialize fft if not yet initialized */
-	if (audio->fft == NULL)
-		audio->fft = visual_fft_new (512, 256);
+	for (i = 0; i < 512; i++) {
+		audio->pcm[2][i] = (audio->pcm[0][i] + audio->pcm[1][i]) >> 1;
+	}
 
 	/* Convert int16_t audio to float audio, (won't be needed when the rest of the new audio
 	 * core lands). */
+#if 0
 	for (i = 0; i < 512; i++) {
 		temp_audio[0][i] = audio->pcm[0][i];
 		temp_audio[1][i] = audio->pcm[1][i];
 	}
+	/* Initialize fft if not yet initialized */
+	if (audio->fft == NULL)
+		audio->fft = visual_fft_new (512, 256);
 
 	/* FFT analyze the pcm data */
 	visual_fft_perform (audio->fft, temp_audio[0], temp_out);
@@ -314,6 +344,7 @@ int visual_audio_analyze (VisAudio *audio)
 
 	if (audio->energy > 100)
 		audio->energy = 100;
+#endif
 
 	return VISUAL_OK;
 }
@@ -417,7 +448,7 @@ int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *bu
 		VisAudioSampleChannelType channeltype)
 {
 	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
-	visual_log_return_val_if_fail (buffer!= NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO)
 		input_interleaved_stereo (samplepool, buffer, format, rate);
@@ -908,6 +939,8 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 	VisTime timestamp;
 	int i;
 
+	visual_time_get (&timestamp);
+
 	if (format == VISUAL_AUDIO_SAMPLE_FORMAT_U8)
 		STEREO_INTERLEAVED(uint8_t)
 	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_S8)
@@ -927,8 +960,6 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 
 	visual_log_return_val_if_fail (chan1 != NULL, -1);
 	visual_log_return_val_if_fail (chan2 != NULL, -1);
-
-	visual_time_get (&timestamp);
 
 	sample = visual_audio_sample_new (chan1, &timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, "front left 1");

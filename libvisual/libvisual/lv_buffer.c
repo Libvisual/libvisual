@@ -233,6 +233,8 @@ int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset)
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_log_return_val_if_fail (byteoffset < visual_buffer_get_size (dest), -VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS);
 
+	amount = src->datasize;
+
 	if (byteoffset + src->datasize > dest->datasize)
 		amount = dest->datasize - byteoffset;
 
