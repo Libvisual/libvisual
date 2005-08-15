@@ -64,8 +64,7 @@ int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, VisVideo *src)
 				 "\n\t movd %%mm0, %[dest]"
 				 : [dest] "=m" (*destbuf)
 				 : [dpix] "m" (*destbuf)
-				 , [spix] "m" (*srcbuf)
-				 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+				 , [spix] "m" (*srcbuf));
 
 			destbuf += 4;
 			srcbuf += 4;
@@ -204,8 +203,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 				: [pixel_u] "m"(src_pixel_rowu[u>>16])
 				, [pixel_l] "m"(src_pixel_rowl[u>>16])
 				, [fracu]   "m"(fracU)
-				, [fracv]   "m"(fracV)
-				: "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
+				, [fracv]   "m"(fracV));
 			
 			++dest_pixel;
 		}
