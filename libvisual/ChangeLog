@@ -1,3 +1,13 @@
+2005-08-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_collection.*: Common collection_dtor.
+
+	* libvisual/lv_hashmap.*: Made most of the hashmap impl.
+
+	* libvisual/lv_list.*: More iter stuff.
+
+	* libvisual/lv_random.*: Split _new up into _new and _init.
+
 2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_collection.*: Did the iter stuff.

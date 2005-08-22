@@ -375,7 +375,7 @@ int visual_audio_samplepool_init (VisAudioSamplePool *samplepool)
 	visual_object_set_allocated (VISUAL_OBJECT (samplepool), FALSE);
 
 	/* Reset the VisAudioSamplePool structure */
-	samplepool->channels = visual_list_new (visual_object_list_destroyer);
+	samplepool->channels = visual_list_new (visual_object_collection_destroyer);
 
 	return VISUAL_OK;
 }

@@ -35,7 +35,7 @@
 
 static int eventqueue_dtor (VisObject *object);
 
-static void event_list_destroy (void *data);
+static int event_list_destroy (void *data);
 
 static int eventqueue_dtor (VisObject *object)
 {
@@ -46,7 +46,7 @@ static int eventqueue_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
-static void event_list_destroy (void *data)
+static int event_list_destroy (void *data)
 {
 	VisEvent *event = VISUAL_EVENT (data);
 

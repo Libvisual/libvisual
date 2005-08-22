@@ -93,7 +93,7 @@ VisConfigRegistry *visual_config_registry_new ()
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (registry), TRUE, config_registry_dtor);
 
-	visual_collection_set_destroyer (VISUAL_COLLECTION (&registry->sections), visual_object_list_destroyer);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&registry->sections), visual_object_collection_destroyer);
 
 	return registry;
 }

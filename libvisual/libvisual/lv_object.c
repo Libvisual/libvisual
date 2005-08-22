@@ -39,13 +39,15 @@
  * This function is a global VisListDestroyerFunc handler that unrefs VisObjects.
  *
  * @param data Pointer to the VisObject that needs to be unrefed
+ *
+ * @return VISUAL_OK on succes, or error failures by visual_object_unref() on failure.
  */
-void visual_object_list_destroyer (void *data)
+int visual_object_collection_destroyer (void *data)
 {
 	if (data == NULL)
-		return;
+		return VISUAL_OK;
 
-	visual_object_unref (VISUAL_OBJECT (data));
+	return visual_object_unref (VISUAL_OBJECT (data));
 }
 
 /**
@@ -122,9 +124,9 @@ int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFun
 
 	visual_object_set_dtor (object, dtor);
 	visual_object_set_allocated (object, allocated);
-	
+
 	visual_object_clear (object);
-	
+
 	visual_object_ref (object);
 
 	return VISUAL_OK;
@@ -141,7 +143,7 @@ int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFun
 int visual_object_clear (VisObject *object)
 {
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-	
+
 	visual_object_set_private (object, NULL);
 	visual_object_set_refcount (object, 0);
 
@@ -211,7 +213,7 @@ int visual_object_set_refcount (VisObject *object, int refcount)
 int visual_object_ref (VisObject *object)
 {
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-	
+
 	object->refcount++;
 
 	return VISUAL_OK;
@@ -231,7 +233,7 @@ int visual_object_ref (VisObject *object)
 int visual_object_unref (VisObject *object)
 {
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-	
+
 	object->refcount--;
 
 	/* No reference left, start dtoring of this VisObject */

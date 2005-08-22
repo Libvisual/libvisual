@@ -52,12 +52,27 @@ VisRandomContext *visual_random_context_new (uint32_t seed)
 
 	rcontext = visual_mem_new0 (VisRandomContext, 1);
 
+	visual_random_context_init (rcontext, seed);
+
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (rcontext), TRUE, NULL);
 
+	return rcontext;
+}
+
+int visual_random_context_init (VisRandomContext *rcontext, uint32_t seed)
+{
+	visual_log_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (rcontext));
+	visual_object_set_dtor (VISUAL_OBJECT (rcontext), NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (rcontext), FALSE);
+
+	/* Set the VisRandomContext data */
 	visual_random_context_set_seed (rcontext, seed);
 
-	return rcontext;
+	return VISUAL_OK;
 }
 
 /**

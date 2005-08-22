@@ -307,7 +307,7 @@ VisUIWidget *visual_ui_box_new (VisUIOrientType orient)
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (box), -1, -1);
 
-	visual_collection_set_destroyer (VISUAL_COLLECTION (&box->childs), visual_object_list_destroyer);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&box->childs), visual_object_collection_destroyer);
 
 	return VISUAL_UI_WIDGET (box);
 }
@@ -385,7 +385,7 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (table), -1, -1);
 
-	visual_collection_set_destroyer (VISUAL_COLLECTION (&table->childs), visual_object_list_destroyer);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&table->childs), visual_object_collection_destroyer);
 
 	return VISUAL_UI_WIDGET (table);
 }
@@ -474,8 +474,8 @@ VisUIWidget *visual_ui_notebook_new ()
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (notebook), -1, -1);
 
-	visual_collection_set_destroyer (VISUAL_COLLECTION (&notebook->labels), visual_object_list_destroyer);
-	visual_collection_set_destroyer (VISUAL_COLLECTION (&notebook->childs), visual_object_list_destroyer);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&notebook->labels), visual_object_collection_destroyer);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&notebook->childs), visual_object_collection_destroyer);
 
 	return VISUAL_UI_WIDGET (notebook);
 }
@@ -1093,7 +1093,7 @@ int visual_ui_choice_free_choices (VisUIChoice *choice)
 {
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 
-	visual_collection_set_destroyer (VISUAL_COLLECTION (&choice->choices.choices), visual_object_list_destroyer);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&choice->choices.choices), visual_object_collection_destroyer);
 	visual_collection_destroy (VISUAL_COLLECTION (&choice->choices.choices));
 
 	return VISUAL_OK;

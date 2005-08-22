@@ -116,6 +116,14 @@ VisCollectionIterFunc visual_collection_get_iter_func (VisCollection *collection
 	return collection->iterfunc;
 }
 
+int visual_collection_dtor (VisObject *object)
+{
+	VisCollection *collection = VISUAL_COLLECTION (object);
+
+	collection->destroyfunc (collection);
+
+	return VISUAL_OK;
+}
 
 int visual_collection_destroy (VisCollection *collection)
 {

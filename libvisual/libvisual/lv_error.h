@@ -89,6 +89,10 @@ enum {
 	/* Error entries for VisFFT system */
 	VISUAL_ERROR_FFT_NULL,				/**< The VisFFT is NULL. */
 
+	/* Error entries for the VisHashmap system */
+	VISUAL_ERROR_HASHMAP_NULL,			/**< The VisHashmap is NULL. */
+	VISUAL_ERROR_HASHMAP_NOT_IN_MAP,		/**< Key is not in hashmap. */
+
 	/* Error entries for the VisInput system */
 	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */
 	VISUAL_ERROR_INPUT_PLUGIN_NULL,			/**< The VisInputPlugin is NULL. */

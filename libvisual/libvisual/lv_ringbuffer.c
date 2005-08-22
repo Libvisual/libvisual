@@ -109,7 +109,7 @@ int visual_ringbuffer_init (VisRingBuffer *ringbuffer)
 	visual_object_set_allocated (VISUAL_OBJECT (ringbuffer), FALSE);
 
 	/* Reset the VisRingBuffer structure */
-	ringbuffer->entries = visual_list_new (visual_object_list_destroyer);
+	ringbuffer->entries = visual_list_new (visual_object_collection_destroyer);
 
 	return VISUAL_OK;
 }

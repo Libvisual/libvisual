@@ -46,13 +46,11 @@
 typedef struct _ListIterContext ListIterContext;
 
 struct _ListIterContext {
-	VisObject *object;
+	VisObject	*object;
 
-	VisListEntry *cur;
+	VisListEntry	*cur;
 };
 
-
-static int list_dtor (VisObject *object);
 
 static int list_destroy (VisCollection *collection);
 static int list_size (VisCollection *collection);
@@ -60,16 +58,6 @@ static VisCollectionIter *list_iter (VisCollection *collection);
 
 static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
 static void *list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
-
-
-static int list_dtor (VisObject *object)
-{
-	VisCollection *collection = VISUAL_COLLECTION (object);
-
-	collection->destroyfunc (collection);
-
-	return VISUAL_OK;
-}
 
 
 static int list_destroy (VisCollection *collection)
@@ -175,14 +163,14 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 
 /**
  *
- */
+*/
 int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (list));
-	visual_object_set_dtor (VISUAL_OBJECT (list), list_dtor);
+	visual_object_set_dtor (VISUAL_OBJECT (list), visual_collection_dtor);
 	visual_object_set_allocated (VISUAL_OBJECT (list), FALSE);
 
 	/* Set the VisCollection data */

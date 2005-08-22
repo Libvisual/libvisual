@@ -4,7 +4,7 @@
  *
  * The FFT implementation found in this file is based upon the NULLSOFT
  * Milkdrop FFT implementation.
- * 
+ *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
  * $Id:
@@ -40,6 +40,8 @@ static void table_cossin_init (VisFFT *fft);
 static int fft_dtor (VisObject *object)
 {
 	VisFFT *fft = VISUAL_FFT (object);
+
+	/* FIXME not all object elements are freed, destroyed, whatever */
 
 	return VISUAL_OK;
 }

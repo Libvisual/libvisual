@@ -25,54 +25,60 @@
 #define _LV_HASHMAP_H
 
 #include <libvisual/lv_common.h>
+#include <libvisual/lv_list.h>
 #include <libvisual/lv_collection.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
+#define VISUAL_HASHMAP_START_SIZE	512
+
 #define VISUAL_HASHMAP(obj)				(VISUAL_CHECK_CAST ((obj), VisHashmap))
 #define VISUAL_HASHMAPENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisHashmapEntry))
+#define VISUAL_HASHMAPCHAINENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisHashmapChainEntry))
 
 typedef struct _VisHashmap VisHashmap;
 typedef struct _VisHashmapEntry VisHashmapEntry;
+typedef struct _VisHashmapChainEntry VisHashmapChainEntry;
 
 /**
  * Using the VisHashmap structure you can store a collection of data within a hashmap.
  */
 struct _VisHashmap {
-	VisCollection	 collection;	/**< The VisCollection data. */
+	VisCollection			 collection;	/**< The VisCollection data. */
 
-	int		 blocksize;
-	int		 tablesize;
-	int		 size;
+	int				 tablesize;
+	int				 size;
 
-
-	VisHashmapEntry	*table;
+	VisHashmapEntry			*table;
 };
 
 /**
  */
 struct _VisHashmapEntry {
-	int32_t		 key;
-	int		 used;
+	VisList		 list;
+};
+
+/**
+ */
+struct _VisHashmapChainEntry {
+	uint32_t	 key;
 
 	void		*data;
 };
 
 /* prototypes */
-VisHashmap *visual_hashmap_new (int blocksize);
-int visual_hashmap_init (VisHashmap *hashmap, int blocksize);
-int visual_hashmap_destroy_elements (VisHashmap *hashmap);
+VisHashmap *visual_hashmap_new (VisCollectionDestroyerFunc destroyer);
+int visual_hashmap_init (VisHashmap *hashmap, VisCollectionDestroyerFunc destroyer);
 
 int visual_hashmap_put (VisHashmap *hashmap, int32_t key, void *data);
-int visual_hashmap_remove (VisHashmap *hashmap, int32_t key);
+int visual_hashmap_remove (VisHashmap *hashmap, int32_t key, int destroy);
 
 void *visual_hashmap_get (VisHashmap *hashmap, int32_t key);
 
-int visual_hashmap_get_size (VisHashmap *hashmap);
+int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize);
 int visual_hashmap_get_table_size (VisHashmap *hashmap);
-int visual_hashmap_get_block_size (VisHashmap *hashmap);
 
 #ifdef __cplusplus
 }

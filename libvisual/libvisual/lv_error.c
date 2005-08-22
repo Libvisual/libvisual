@@ -78,6 +78,9 @@ static const char *__lv_error_human_readable[] = {
 
 	[VISUAL_ERROR_FFT_NULL] =			N_("VisFFT is NULL"),
 
+	[VISUAL_ERROR_HASHMAP_NULL] =			N_("VisHashmap is NULL"),
+	[VISUAL_ERROR_HASHMAP_NOT_IN_MAP] =		N_("Key is not in hashmap"),
+
 	[VISUAL_ERROR_INPUT_NULL] =			N_("VisInput is NULL"),
 	[VISUAL_ERROR_INPUT_PLUGIN_NULL] =		N_("VisInput it's plugin is NULL"),
 

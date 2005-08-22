@@ -426,7 +426,7 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 
 	visual_log_return_val_if_fail (pluglist != NULL, NULL);
 
-	list = visual_list_new (visual_object_list_destroyer);
+	list = visual_list_new (visual_object_collection_destroyer);
 
 	if (list == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Cannot create a new list"));
@@ -937,8 +937,8 @@ VisList *visual_plugin_get_list (const char **paths, int ignore_non_existing)
 	VisList *list;
 	int i = 0;
 
-	list = visual_list_new (visual_object_list_destroyer);
-	
+	list = visual_list_new (visual_object_collection_destroyer);
+
 	while (paths[i] != NULL) {
 		if (plugin_add_dir_to_list (list, paths[i]) < 0) {
 			if (ignore_non_existing == FALSE)
@@ -947,7 +947,7 @@ VisList *visual_plugin_get_list (const char **paths, int ignore_non_existing)
 
 		i++;
 	}
-	
+
 	return list;
 }
 

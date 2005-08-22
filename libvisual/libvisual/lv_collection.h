@@ -41,8 +41,10 @@ typedef struct _VisCollectionIter VisCollectionIter;
  * to destroy data entries within collections.
  *
  * @arg data The data that was stored in a collection entry and thus can be destroyed.
+ *
+ * @return FIXME blah blah blah
  */
-typedef void (*VisCollectionDestroyerFunc)(void *data);
+typedef int (*VisCollectionDestroyerFunc)(void *data);
 
 /**
  */
@@ -102,6 +104,7 @@ VisCollectionSizeFunc visual_collection_get_size_func (VisCollection *collection
 int visual_collection_set_iter_func (VisCollection *collection, VisCollectionIterFunc iterfunc);
 VisCollectionIterFunc visual_collection_get_iter_func (VisCollection *collection);
 
+int visual_collection_dtor (VisObject *object);
 
 int visual_collection_destroy (VisCollection *collection);
 int visual_collection_size (VisCollection *collection);
