@@ -1,3 +1,7 @@
+2005-07-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* benchmarks/audio_bench.c: Forgot to add to cvs.
+
 2005-07-03  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* playground/libvis-composite2.c: Chroma keying!
