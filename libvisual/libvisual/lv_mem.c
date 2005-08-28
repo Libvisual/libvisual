@@ -37,33 +37,33 @@
  * with checking for optimal scan lines */
 
 /* Optimize mem function prototypes */
-static void *mem_copy_c (void *dest, const void *src, size_t n);
-static void *mem_copy_mmx (void *dest, const void *src, size_t n);
-static void *mem_copy_mmx2 (void *dest, const void *src, size_t n);
-static void *mem_copy_sse (void *dest, const void *src, size_t n);
-static void *mem_copy_sse2 (void *dest, const void *src, size_t n);
-static void *mem_copy_altivec (void *dest, const void *src, size_t n);
+static void *mem_copy_c (void *dest, const void *src, visual_size_t n);
+static void *mem_copy_mmx (void *dest, const void *src, visual_size_t n);
+static void *mem_copy_mmx2 (void *dest, const void *src, visual_size_t n);
+static void *mem_copy_sse (void *dest, const void *src, visual_size_t n);
+static void *mem_copy_sse2 (void *dest, const void *src, visual_size_t n);
+static void *mem_copy_altivec (void *dest, const void *src, visual_size_t n);
 
-static void *mem_set8_c (void *dest, int c, size_t n);
-static void *mem_set8_mmx (void *dest, int c, size_t n);
-static void *mem_set8_mmx2 (void *dest, int c, size_t n);
-static void *mem_set8_sse (void *dest, int c, size_t n);
-static void *mem_set8_sse2 (void *dest, int c, size_t n);
-static void *mem_set8_altivec (void *dest, int c, size_t n);
+static void *mem_set8_c (void *dest, int c, visual_size_t n);
+static void *mem_set8_mmx (void *dest, int c, visual_size_t n);
+static void *mem_set8_mmx2 (void *dest, int c, visual_size_t n);
+static void *mem_set8_sse (void *dest, int c, visual_size_t n);
+static void *mem_set8_sse2 (void *dest, int c, visual_size_t n);
+static void *mem_set8_altivec (void *dest, int c, visual_size_t n);
 
-static void *mem_set16_c (void *dest, int c, size_t n);
-static void *mem_set16_mmx (void *dest, int c, size_t n);
-static void *mem_set16_mmx2 (void *dest, int c, size_t n);
-static void *mem_set16_sse (void *dest, int c, size_t n);
-static void *mem_set16_sse2 (void *dest, int c, size_t n);
-static void *mem_set16_altivec (void *dest, int c, size_t n);
+static void *mem_set16_c (void *dest, int c, visual_size_t n);
+static void *mem_set16_mmx (void *dest, int c, visual_size_t n);
+static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n);
+static void *mem_set16_sse (void *dest, int c, visual_size_t n);
+static void *mem_set16_sse2 (void *dest, int c, visual_size_t n);
+static void *mem_set16_altivec (void *dest, int c, visual_size_t n);
 
-static void *mem_set32_c (void *dest, int c, size_t n);
-static void *mem_set32_mmx (void *dest, int c, size_t n);
-static void *mem_set32_mmx2 (void *dest, int c, size_t n);
-static void *mem_set32_sse (void *dest, int c, size_t n);
-static void *mem_set32_sse2 (void *dest, int c, size_t n);
-static void *mem_set32_altivec (void *dest, int c, size_t n);
+static void *mem_set32_c (void *dest, int c, visual_size_t n);
+static void *mem_set32_mmx (void *dest, int c, visual_size_t n);
+static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n);
+static void *mem_set32_sse (void *dest, int c, visual_size_t n);
+static void *mem_set32_sse2 (void *dest, int c, visual_size_t n);
+static void *mem_set32_altivec (void *dest, int c, visual_size_t n);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 VisMemCopyFunc visual_mem_copy = mem_copy_c;
@@ -178,7 +178,7 @@ int visual_mem_free (void *ptr)
 
 
 /* Optimize mem functions */
-static void *mem_copy_c (void *dest, const void *src, size_t n)
+static void *mem_copy_c (void *dest, const void *src, visual_size_t n)
 {
 	uint32_t *d = dest;
 	const uint32_t *s = src;
@@ -199,7 +199,7 @@ static void *mem_copy_c (void *dest, const void *src, size_t n)
 	return dest;
 }
 
-static void *mem_copy_mmx (void *dest, const void *src, size_t n)
+static void *mem_copy_mmx (void *dest, const void *src, visual_size_t n)
 {
 	uint32_t *d = dest;
 	const uint32_t *s = src;
@@ -251,7 +251,7 @@ static void *mem_copy_mmx (void *dest, const void *src, size_t n)
 	return dest;
 }
 
-static void *mem_copy_mmx2 (void *dest, const void *src, size_t n)
+static void *mem_copy_mmx2 (void *dest, const void *src, visual_size_t n)
 {
 	uint32_t *d = dest;
 	const uint32_t *s = src;
@@ -305,7 +305,7 @@ static void *mem_copy_mmx2 (void *dest, const void *src, size_t n)
 	return dest;
 }
 
-static void *mem_copy_sse (void *dest, const void *src, size_t n)
+static void *mem_copy_sse (void *dest, const void *src, visual_size_t n)
 {
 	uint32_t *d = dest;
 	const uint32_t *s = src;
@@ -351,18 +351,18 @@ static void *mem_copy_sse (void *dest, const void *src, size_t n)
 	return dest;
 }
 
-static void *mem_copy_sse2 (void *dest, const void *src, size_t n)
+static void *mem_copy_sse2 (void *dest, const void *src, visual_size_t n)
 {
 
 }
 
-static void *mem_copy_altivec (void *dest, const void *src, size_t n)
+static void *mem_copy_altivec (void *dest, const void *src, visual_size_t n)
 {
 
 }
 
 /* Memset functions, 1 byte memset */
-static void *mem_set8_c (void *dest, int c, size_t n)
+static void *mem_set8_c (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint8_t *dc = dest;
@@ -386,7 +386,7 @@ static void *mem_set8_c (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set8_mmx (void *dest, int c, size_t n)
+static void *mem_set8_mmx (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint8_t *dc = dest;
@@ -446,7 +446,7 @@ static void *mem_set8_mmx (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set8_mmx2 (void *dest, int c, size_t n)
+static void *mem_set8_mmx2 (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint8_t *dc = dest;
@@ -506,7 +506,7 @@ static void *mem_set8_mmx2 (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set8_sse (void *dest, int c, size_t n)
+static void *mem_set8_sse (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint8_t *dc = dest;
@@ -573,18 +573,18 @@ static void *mem_set8_sse (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set8_sse2 (void *dest, int c, size_t n)
+static void *mem_set8_sse2 (void *dest, int c, visual_size_t n)
 {
 
 }
 
-static void *mem_set8_altivec (void *dest, int c, size_t n)
+static void *mem_set8_altivec (void *dest, int c, visual_size_t n)
 {
 
 }
 
 /* Memset functions, 2 byte memset */
-static void *mem_set16_c (void *dest, int c, size_t n)
+static void *mem_set16_c (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint16_t *dc = dest;
@@ -606,7 +606,7 @@ static void *mem_set16_c (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set16_mmx (void *dest, int c, size_t n)
+static void *mem_set16_mmx (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint16_t *dc = dest;
@@ -664,7 +664,7 @@ static void *mem_set16_mmx (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set16_mmx2 (void *dest, int c, size_t n)
+static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint16_t *dc = dest;
@@ -722,7 +722,7 @@ static void *mem_set16_mmx2 (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set16_sse (void *dest, int c, size_t n)
+static void *mem_set16_sse (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint16_t *dc = dest;
@@ -787,18 +787,18 @@ static void *mem_set16_sse (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set16_sse2 (void *dest, int c, size_t n)
+static void *mem_set16_sse2 (void *dest, int c, visual_size_t n)
 {
 
 }
 
-static void *mem_set16_altivec (void *dest, int c, size_t n)
+static void *mem_set16_altivec (void *dest, int c, visual_size_t n)
 {
 
 }
 
 /* Memset functions, 4 byte memset */
-static void *mem_set32_c (void *dest, int c, size_t n)
+static void *mem_set32_c (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint32_t setflag32 = c;
@@ -809,7 +809,7 @@ static void *mem_set32_c (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set32_mmx (void *dest, int c, size_t n)
+static void *mem_set32_mmx (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint32_t setflag32 = c;
@@ -856,7 +856,7 @@ static void *mem_set32_mmx (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set32_mmx2 (void *dest, int c, size_t n)
+static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint32_t setflag32 = c;
@@ -903,7 +903,7 @@ static void *mem_set32_mmx2 (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set32_sse (void *dest, int c, size_t n)
+static void *mem_set32_sse (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint32_t setflag32 = c;
@@ -957,12 +957,12 @@ static void *mem_set32_sse (void *dest, int c, size_t n)
 	return dest;
 }
 
-static void *mem_set32_sse2 (void *dest, int c, size_t n)
+static void *mem_set32_sse2 (void *dest, int c, visual_size_t n)
 {
 
 }
 
-static void *mem_set32_altivec (void *dest, int c, size_t n)
+static void *mem_set32_altivec (void *dest, int c, visual_size_t n)
 {
 
 }

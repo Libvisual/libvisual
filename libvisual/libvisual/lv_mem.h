@@ -43,7 +43,7 @@ extern "C" {
  *
  * @return Pointer to the dest buffer.
  */
-typedef void *(*VisMemCopyFunc)(void *dest, const void *src, size_t n);
+typedef void *(*VisMemCopyFunc)(void *dest, const void *src, visual_size_t n);
 
 /**
  * The visual_mem_set function needs this signature.
@@ -54,7 +54,7 @@ typedef void *(*VisMemCopyFunc)(void *dest, const void *src, size_t n);
  *
  * @return Pointer to the dest buffer.
  */
-typedef void *(*VisMemSet8Func)(void *dest, int c, size_t n);
+typedef void *(*VisMemSet8Func)(void *dest, int c, visual_size_t n);
 
 /**
  * The visual_mem_set16 function needs this signature.
@@ -65,7 +65,7 @@ typedef void *(*VisMemSet8Func)(void *dest, int c, size_t n);
  *
  * @return Pointer to the dest buffer.
  */
-typedef void *(*VisMemSet16Func)(void *dest, int c, size_t n);
+typedef void *(*VisMemSet16Func)(void *dest, int c, visual_size_t n);
 
 /**
  * The visual_mem_set32 function needs this signature.
@@ -76,7 +76,7 @@ typedef void *(*VisMemSet16Func)(void *dest, int c, size_t n);
  *
  * @return Pointer to the dest buffer.
  */
-typedef void *(*VisMemSet32Func)(void *dest, int c, size_t n);
+typedef void *(*VisMemSet32Func)(void *dest, int c, visual_size_t n);
 
 /* prototypes */
 int visual_mem_initialize (void);

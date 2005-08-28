@@ -146,7 +146,7 @@ static void check_os_altivec_support( void )
 #if defined(VISUAL_OS_DARWIN)
 	int sels[2] = {CTL_HW, HW_VECTORUNIT};
 	int has_vu = 0;
-	size_t len = sizeof(has_vu);
+	visual_size_t len = sizeof(has_vu);
 	int err;
 
 	err = sysctl (sels, 2, &has_vu, &len, NULL, 0);   
@@ -188,7 +188,7 @@ static void check_os_katmai_support( void )
 #if defined(VISUAL_ARCH_X86)
 #if defined(VISUAL_OS_FREEBSD)
 	int has_sse=0, ret;
-	size_t len=sizeof(has_sse);
+	visual_size_t len=sizeof(has_sse);
 
 	ret = sysctlbyname("hw.instruction_sse", &has_sse, &len, NULL, 0);
 	if (ret || !has_sse)
@@ -196,7 +196,7 @@ static void check_os_katmai_support( void )
 
 #elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_OPENBSD)
 	int has_sse, has_sse2, ret, mib[2];
-	size_t varlen;
+	visual_size_t varlen;
 
 	mib[0] = CTL_MACHDEP;
 	mib[1] = CPU_SSE;
@@ -346,7 +346,7 @@ void visual_cpu_initialize ()
 	unsigned int regs2[4];
 
 	int mib[2], ncpu;
-	size_t len;
+	visual_size_t len;
 
 	visual_mem_set (&__lv_cpu_caps, 0, sizeof (VisCPU));
 
