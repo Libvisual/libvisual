@@ -1,0 +1,40 @@
+AC_INIT(libvisual-cpp, 0.0.1)
+AC_PREREQ(2.5)
+
+LVCPP_ABI_VERSION="1:0:0"
+AC_SUBST(LVCPP_ABI_VERSION)
+
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
+AM_INIT_AUTOMAKE
+
+AC_CONFIG_HEADERS([config.h])
+
+AC_LANG(C++)
+
+dnl Installation tools
+AC_PROG_INSTALL
+AC_LN_S
+AC_PROG_MAKE_SET
+
+dnl Library creation tools
+AC_ENABLE_SHARED
+AC_PROG_LIBTOOL
+
+dnl Check for libvisual
+LV_MAJOR_VERSION=0
+LV_MINOR_VERSION=2
+LV_MICRO_VERSION=0
+LV_VERSION="${LV_MAJOR_VERSION}.${LV_MINOR_VERSION}.${LV_MICRO_VERSION}"
+
+PKG_CHECK_MODULES(LV, [libvisual >= $LV_VERSION], [], 
+    [AC_MSG_ERROR([Cannot find libvisual $LV_VERSION development files])]
+)
+
+AC_CONFIG_FILES([
+    Makefile
+    src/Makefile
+])
+
+AC_OUTPUT
