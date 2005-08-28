@@ -15,6 +15,9 @@ namespace Lv
 	  visual_mutex_init (&m_mutex);
       }
 
+      ~Mutex () 
+      {}
+
       int try_lock ()
       {
 	  return visual_mutex_trylock (&m_mutex);
@@ -30,9 +33,6 @@ namespace Lv
 	  return visual_mutex_unlock (&m_mutex);
       }
 
-      ~Mutex ()
-      {}
-
   private:
 
       VisMutex m_mutex;
@@ -40,25 +40,50 @@ namespace Lv
       Mutex (const Mutex& mutex);
   };
 
-  class ScopeMutex
+  template <typename Lock>
+  class ScopedLock
   {
   public:
 
-      ScopeMutex ()
+      ScopedLock (Lock& lock) 
+	  : m_lock (lock)
       {
-	  m_mutex.lock();
+	  m_lock.lock();
       }
 
-      ~ScopeMutex ()
+      ~ScopedLock ()
       {
-	  m_mutex.unlock();
+	  m_lock.unlock();
       }
 
   private:
 
-      Mutex m_mutex;
+      Lock& m_lock;
 
-      ScopeMutex (const Mutex& mutex);
+      ScopedLock (const ScopedLock& lock);
+  };
+
+  template <typename Lock>
+  class ScopedTryLock
+  {
+  public:
+
+      ScopedTryLock (Lock& lock)
+	  : m_lock(lock)
+      {
+	  m_lock.try_lock ();
+      }
+      
+      ~ScopedTryLock ()
+      {
+	  m_lock.unlock ();
+      }
+
+  private:
+
+      Lock& m_lock;
+
+      ScopedTryLock (const ScopedTryLock& lock);
   };
 
 }
