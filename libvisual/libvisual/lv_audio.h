@@ -27,6 +27,7 @@
 #include <libvisual/lv_fft.h>
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_ringbuffer.h>
+#include <libvisual/lv_hashmap.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -101,9 +102,9 @@ struct _VisAudio {
 };
 
 struct _VisAudioSamplePool {
-	VisObject	  object;
+	VisObject	 object;
 
-	VisList		 *channels;
+	VisList		*channels;
 };
 
 struct _VisAudioSamplePoolChannel {

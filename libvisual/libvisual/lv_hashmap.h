@@ -42,40 +42,58 @@ typedef struct _VisHashmap VisHashmap;
 typedef struct _VisHashmapEntry VisHashmapEntry;
 typedef struct _VisHashmapChainEntry VisHashmapChainEntry;
 
+typedef enum {
+	VISUAL_HASHMAP_KEY_TYPE_NONE		= 0,
+	VISUAL_HASHMAP_KEY_TYPE_INTEGER		= 1,
+	VISUAL_HASHMAP_KEY_TYPE_STRING		= 2
+} VisHashmapKeyType;
+
 /**
  * Using the VisHashmap structure you can store a collection of data within a hashmap.
  */
 struct _VisHashmap {
-	VisCollection			 collection;	/**< The VisCollection data. */
+	VisCollection		 collection;	/**< The VisCollection data. */
 
-	int				 tablesize;
-	int				 size;
+	int			 tablesize;
+	int			 size;
 
-	VisHashmapEntry			*table;
+	VisHashmapEntry		*table;
 };
 
 /**
  */
 struct _VisHashmapEntry {
-	VisList		 list;
+	VisList			 list;
 };
 
 /**
  */
 struct _VisHashmapChainEntry {
-	uint32_t	 key;
+	VisHashmapKeyType	 keytype;
 
-	void		*data;
+	void			*data;
+
+	union {
+		uint32_t	 integer;
+		char		*string;
+	} key;
 };
 
 /* prototypes */
 VisHashmap *visual_hashmap_new (VisCollectionDestroyerFunc destroyer);
 int visual_hashmap_init (VisHashmap *hashmap, VisCollectionDestroyerFunc destroyer);
 
-int visual_hashmap_put (VisHashmap *hashmap, int32_t key, void *data);
-int visual_hashmap_remove (VisHashmap *hashmap, int32_t key, int destroy);
+int visual_hashmap_put (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype, void *data);
+int visual_hashmap_put_integer (VisHashmap *hashmap, uint32_t key, void *data);
+int visual_hashmap_put_string (VisHashmap *hashmap, char *key, void *data);
 
-void *visual_hashmap_get (VisHashmap *hashmap, int32_t key);
+int visual_hashmap_remove (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype, int destroy);
+int visual_hashmap_remove_integer (VisHashmap *hashmap, uint32_t key, int destroy);
+int visual_hashmap_remove_string (VisHashmap *hashmap, char *key, int destroy);
+
+void *visual_hashmap_get (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype);
+void *visual_hashmap_get_integer (VisHashmap *hashmap, uint32_t key);
+void *visual_hashmap_get_string (VisHashmap *hashmap, char *key);
 
 int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize);
 int visual_hashmap_get_table_size (VisHashmap *hashmap);

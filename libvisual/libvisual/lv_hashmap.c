@@ -43,6 +43,7 @@ struct _HashmapIterContext {
 
 
 static int hashmap_destroy (VisCollection *collection);
+static int hashmap_chain_destroy (VisHashmap *hashmap, VisList *list);
 static int hashmap_size (VisCollection *collection);
 static VisCollectionIter *hashmap_iter (VisCollection *collection);
 
@@ -62,8 +63,9 @@ static int hashmap_destroy (VisCollection *collection)
 	VisHashmapEntry *mentry;
 	int i;
 
+	/* FIXME borked, does not free the string keys */
 	for (i = 0; i < hashmap->size; i++)
-		visual_collection_destroy (VISUAL_COLLECTION (&hashmap->table[i].list));
+		hashmap_chain_destroy (hashmap, &hashmap->table[i].list);
 
 	if (hashmap->table != NULL)
 		visual_mem_free (hashmap->table);
@@ -71,6 +73,26 @@ static int hashmap_destroy (VisCollection *collection)
 	hashmap->table = NULL;
 
 	return VISUAL_OK;
+}
+
+/* We can't use collection dtor because we need to chain up (HashChainElem -> DataElem) */
+static int hashmap_chain_destroy (VisHashmap *hashmap, VisList *list)
+{
+	VisCollectionDestroyerFunc destroyer;
+	VisHashmapChainEntry *mentry;
+	VisListEntry *le = NULL;
+
+	destroyer = visual_collection_get_destroyer (VISUAL_COLLECTION (hashmap));
+
+	if (destroyer == NULL) {
+		while ((mentry = visual_list_next (list, &le)) != NULL)
+			visual_list_destroy (list, &le);
+	} else {
+		while ((mentry = visual_list_next (list, &le)) != NULL) {
+			destroy (mentry->data);
+			visual_list_destroy (list, &le);
+		}
+	}
 }
 
 static int hashmap_size (VisCollection *collection)
@@ -142,7 +164,7 @@ static int integer_hash (int key)
 	return key;
 }
 
-/* X31 HASH found in g_str_hash, not used at the moment, but we keep it for later */
+/* X31 HASH found in g_str_hash */
 static int string_hash (char *key)
 {
 	char *p;
@@ -161,8 +183,7 @@ static int create_table (VisHashmap *hashmap)
 	hashmap->table = visual_mem_new0 (VisHashmapEntry, hashmap->tablesize);
 
 	/* Initialize first entry */
-	visual_list_init (&hashmap->table[0].list,
-			visual_collection_get_destroyer (VISUAL_COLLECTION (hashmap)));
+	visual_list_init (&hashmap->table[0].list, visual_mem_free);
 
 	/* Copy the entries to increase speed */
 	for (i = 1; i < hashmap->tablesize; i *= 2) {
@@ -223,7 +244,7 @@ int visual_hashmap_init (VisHashmap *hashmap, VisCollectionDestroyerFunc destroy
 	return VISUAL_OK;
 }
 
-int visual_hashmap_put (VisHashmap *hashmap, int32_t key, void *data)
+int visual_hashmap_put (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype, void *data)
 {
 	VisHashmapChainEntry *mentry;
 	VisListEntry *le = NULL;
@@ -236,23 +257,44 @@ int visual_hashmap_put (VisHashmap *hashmap, int32_t key, void *data)
 	if (hashmap->table == NULL)
 		create_table (hashmap);
 
-	hash = integer_hash (key) % hashmap->tablesize;
+	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
+		hash = integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
+	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
+		hash = string_hash ((char *) key) % hashmap->tablesize;
+	else
+		return -VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE;
 
 	chain = &hashmap->table[hash].list;
 
 	/* Iterate list to check if the key is already in the chain */
-	while ((mentry = visual_list_next (chain, &le)) != NULL) {
-		if (mentry->key == key) {
-			mentry->data = data;
+	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER) {
+		while ((mentry = visual_list_next (chain, &le)) != NULL) {
+			if (mentry->keytype == keytype) {
 
-			return VISUAL_OK;
+				if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER &&
+						mentry->key.integer != *((uint32_t *) key))
+					continue;
+				else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING &&
+						strcmp (mentry->key.string, (char *) key) != 0)
+					continue;
+
+				mentry->data = data;
+
+				return VISUAL_OK;
+			}
 		}
 	}
 
 	/* Key not in chain, append at end */
 	mentry = visual_mem_new0 (VisHashmapChainEntry, 1);
 
-	mentry->key = key;
+	mentry->keytype = keytype;
+
+	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
+		mentry->key.integer = *((uint32_t *) key);
+	else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING)
+		mentry->key.string = strdup ((char *) key);
+
 	mentry->data = data;
 
 	visual_list_add (chain, mentry);
@@ -262,8 +304,19 @@ int visual_hashmap_put (VisHashmap *hashmap, int32_t key, void *data)
 	return VISUAL_OK;
 }
 
-int visual_hashmap_remove (VisHashmap *hashmap, int32_t key, int destroy)
+int visual_hashmap_put_integer (VisHashmap *hashmap, uint32_t key, void *data)
 {
+	return visual_hashmap_put (hashmap, &key, VISUAL_HASHMAP_KEY_TYPE_INTEGER, data);
+}
+
+int visual_hashmap_put_string (VisHashmap *hashmap, char *key, void *data)
+{
+	return visual_hashmap_put (hashmap, key, VISUAL_HASHMAP_KEY_TYPE_STRING, data);
+}
+
+int visual_hashmap_remove (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype, int destroy)
+{
+	VisCollectionDestroyerFunc destroyer;
 	VisHashmapChainEntry *mentry;
 	VisListEntry *le = NULL;
 	VisList *chain;
@@ -271,21 +324,37 @@ int visual_hashmap_remove (VisHashmap *hashmap, int32_t key, int destroy)
 
 	visual_log_return_val_if_fail (hashmap != NULL, -VISUAL_ERROR_HASHMAP_NULL);
 
-	/* Create initial hashtable */
 	if (hashmap->table == NULL)
 		return -VISUAL_ERROR_HASHMAP_NOT_IN_MAP;
 
-	hash = integer_hash (key) % hashmap->tablesize;
+	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
+		hash = integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
+	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
+		hash = string_hash ((char *) key) % hashmap->tablesize;
+	else
+		return -VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE;
 
 	chain = &hashmap->table[hash].list;
 
-	/* Iterate list to check if the key is already in the chain */
+	/* Iterate list to check if the key is in the chain */
 	while ((mentry = visual_list_next (chain, &le)) != NULL) {
-		if (mentry->key == key) {
-			if (destroy != FALSE)
+		if (mentry->keytype == keytype) {
+
+			if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER &&
+					mentry->key.integer != *((uint32_t *) key))
+				continue;
+			else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING &&
+					strcmp (mentry->key.string, (char *) key) != 0)
+				continue;
+
+			if (destroy != FALSE) {
+				destroyer = visual_collection_get_destroyer (VISUAL_COLLECTION (hashmap));
+
+				destroyer (mentry->data);
 				visual_list_destroy (chain, &le);
-			else
-				visual_list_delete (chain, &le);
+			} else {
+				visual_list_destroy (chain, &le);
+			}
 
 			hashmap->size--;
 
@@ -296,7 +365,17 @@ int visual_hashmap_remove (VisHashmap *hashmap, int32_t key, int destroy)
 	return -VISUAL_ERROR_HASHMAP_NOT_IN_MAP;
 }
 
-void *visual_hashmap_get (VisHashmap *hashmap, int32_t key)
+int visual_hashmap_remove_integer (VisHashmap *hashmap, uint32_t key, int destroy)
+{
+	return visual_hashmap_remove (hashmap, &key, VISUAL_HASHMAP_KEY_TYPE_INTEGER, destroy);
+}
+
+int visual_hashmap_remove_string (VisHashmap *hashmap, char *key, int destroy)
+{
+	return visual_hashmap_remove (hashmap, key, VISUAL_HASHMAP_KEY_TYPE_STRING, destroy);
+}
+
+void *visual_hashmap_get (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype)
 {
 	VisHashmapChainEntry *mentry;
 	VisListEntry *le = NULL;
@@ -309,17 +388,40 @@ void *visual_hashmap_get (VisHashmap *hashmap, int32_t key)
 	if (hashmap->table == NULL)
 		return NULL;
 
-	hash = integer_hash (key) % hashmap->tablesize;
+	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
+		hash = integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
+	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
+		hash = string_hash ((char *) key) % hashmap->tablesize;
+	else
+		return NULL;
 
 	chain = &hashmap->table[hash].list;
 
 	/* Iterate list to check if the key is already in the chain */
 	while ((mentry = visual_list_next (chain, &le)) != NULL) {
-		if (mentry->key == key)
-			return mentry;
+		if (mentry->keytype == keytype) {
+			if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER &&
+					mentry->key.integer != *((uint32_t *) key))
+				continue;
+			else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING &&
+					strcmp (mentry->key.string, (char *) key) != 0)
+				continue;
+
+			return mentry->data;
+		}
 	}
 
 	return NULL;
+}
+
+void *visual_hashmap_get_integer (VisHashmap *hashmap, uint32_t key)
+{
+	return visual_hashmap_get (hashmap, &key, VISUAL_HASHMAP_KEY_TYPE_INTEGER);
+}
+
+void *visual_hashmap_get_string (VisHashmap *hashmap, char *key)
+{
+	return visual_hashmap_get (hashmap, key, VISUAL_HASHMAP_KEY_TYPE_STRING);
 }
 
 int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize)

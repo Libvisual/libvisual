@@ -25,6 +25,8 @@
 #define _LV_CACHE_H
 
 #include <libvisual/lv_common.h>
+#include <libvisual/lv_time.h>
+#include <libvisual/lv_list.h>
 #include <libvisual/lv_hashmap.h>
 
 #ifdef __cplusplus
@@ -41,34 +43,47 @@ typedef struct _VisCacheEntry VisCacheEntry;
  * Using the VisCache structure
  */
 struct _VisCache {
-	VisObject	 object;
+	VisObject			 object;
 
-	int		 tablesize;
-	int		 size;
+	VisCollectionDestroyerFunc	 destroyer;
 
-	VisHashmap	*hashmap;
+	int				 size;
+
+	int				 withmaxage;
+	VisTime				 maxage;
+
+	/* The reason that we index the cache items two times is because we both need
+	 * fast access to a sorted version and fast access by name, access as a sorted list
+	 * is needed so we can quickly identify old cache items that should be disposed when
+	 * the cache reaches it's limit */
+	VisList				*list;
+	VisHashmap			*index;
 };
 
 /**
  */
 struct _VisCacheEntry {
-	VisObject	 object;
-
 	VisTimer	 timer;
+
+	char		*key;
 
 	void		*data;
 };
 
 /* prototypes */
-VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer);
-int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer);
+VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage);
+int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage);
 
-int visual_cache_put (VisCache *cache, int key, void *data);
-int visual_cache_remove (VisCache *cache, int key);
+int visual_cache_put (VisCache *cache, char *key, void *data);
+int visual_cache_remove (VisCache *cache, char *key);
 
-void *visual_cache_get (VisCache *cache, int key);
+void *visual_cache_get (VisCache *cache, char *key);
 
 int visual_cache_size (VisCache *cache);
+
+int visual_cache_set_limits (VisCache *cache, int size, VisTime *maxage);
+
+VisList *visual_cache_get_list (VisCache *cache);
 
 #ifdef __cplusplus
 }

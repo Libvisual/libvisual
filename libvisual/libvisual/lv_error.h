@@ -64,6 +64,9 @@ enum {
 	VISUAL_ERROR_BUFFER_NULL,			/**< The VisBuffer is NULL. */
 	VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS,		/**< The requested operation would be out of bounds. */
 
+	/* Error entries for the VisCache system */
+	VISUAL_ERROR_CACHE_NULL,			/**< The VisCache is NULL. */
+
 	/* Error entries for the VisCollection system */
 	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
 	VISUAL_ERROR_COLLECTION_ITER_NULL,		/**< The VisCollectionIter is NULL. */
@@ -92,6 +95,7 @@ enum {
 	/* Error entries for the VisHashmap system */
 	VISUAL_ERROR_HASHMAP_NULL,			/**< The VisHashmap is NULL. */
 	VISUAL_ERROR_HASHMAP_NOT_IN_MAP,		/**< Key is not in hashmap. */
+	VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE,		/**< Key type is not valid. */
 
 	/* Error entries for the VisInput system */
 	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */

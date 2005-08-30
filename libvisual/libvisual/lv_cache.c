@@ -30,9 +30,36 @@
 #include "lv_cache.h"
 
 static int cache_dtor (VisObject *object);
+static int cache_remove_list_entry (VisCache *cache, VisListEntry *le);
 
 static int cache_dtor (VisObject *object)
 {
+	VisCache *cache = VISUAL_CACHE (object);
+
+	if (cache->list != NULL)
+		visual_object_unref (VISUAL_OBJECT (cache->list));
+
+	if (cache->index != NULL)
+		visual_object_unref (VISUAL_OBJECT (cache->index));
+
+	cache->list = NULL;
+	cache->index = NULL;
+
+	return VISUAL_OK;
+}
+
+static int cache_remove_list_entry (VisCache *cache, VisListEntry *le)
+{
+	VisCacheEntry *centry;
+
+	centry = le->data;
+
+	visual_hashmap_remove_string (cache->index, centry->key, FALSE);
+
+	if (cache->destroyer != NULL)
+		cache->destroyer (centry->data);
+
+	visual_list_destroy (cache->list, &le);
 
 	return VISUAL_OK;
 }
@@ -47,22 +74,23 @@ static int cache_dtor (VisObject *object)
  * 
  * @return A newly allocated VisCache.
  */
-VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer)
+
+VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage)
 {
 	VisCache *cache;
 
 	cache = visual_mem_new0 (VisCache, 1);
 
-	visual_cache_init (cache, destroyer);
+	visual_cache_init (cache, destroyer, size, maxage);
 
-	/* do the visobject initialization */
+	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (cache), TRUE);
 	visual_object_ref (VISUAL_OBJECT (cache));
 
 	return cache;
 }
 
-int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer)
+int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage)
 {
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
 
@@ -71,32 +99,147 @@ int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer)
 	visual_object_set_dtor (VISUAL_OBJECT (cache), cache_dtor);
 	visual_object_set_allocated (VISUAL_OBJECT (cache), FALSE);
 
+	/* Set the VisCache data */
+	visual_cache_set_limits (cache, size, maxage);
+	cache->destroyer = destroyer;
+
+	cache->list = visual_list_new (visual_mem_free);
+
+	cache->index = visual_hashmap_new (NULL); /* FIXME create in set_limits, rehash if not NULL */
+	visual_hashmap_set_table_size (cache->index, size); /* <- also */
+
 	return VISUAL_OK;
 }
 
-int visual_cache_put (VisCache *cache, int key, void *data)
+int visual_cache_put (VisCache *cache, char *key, void *data)
+{
+	VisCacheEntry *centry;
+	VisListEntry *le;
+
+	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
+	visual_log_return_val_if_fail (key != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
+
+	le = visual_hashmap_get_string (cache->index, key);
+
+	if (le != NULL) {
+		centry = le->data;
+
+		centry->data = data;
+
+	} else {
+		centry = visual_mem_new0 (VisCacheEntry, 1);
+
+		visual_timer_init (&centry->timer);
+		visual_timer_start (&centry->timer);
+
+		centry->key = key;
+		centry->data = data;
+
+		visual_list_add (cache->list, centry);
+
+		le = cache->list->tail;
+
+		visual_hashmap_put_string (cache->index, key, le);
+	}
+
+	/* Remove items that are no longer wished in the cache */
+	while (visual_list_count (cache->list) > cache->size) {
+		le = cache->list->tail;
+
+		if (le == NULL)
+			return VISUAL_OK;
+
+		cache_remove_list_entry (cache, le);
+	}
+
+	/* Remove items that are out dated */
+	if (cache->withmaxage == TRUE) {
+		le = cache->list->tail;
+
+		if (le == NULL)
+			return VISUAL_OK;
+
+		centry = le->data;
+
+		while (visual_timer_elapsed (&centry->timer, &cache->maxage)) {
+			cache_remove_list_entry (cache, le);
+
+			le = cache->list->tail;
+
+			if (le == NULL)
+				return VISUAL_OK;
+
+			centry = le->data;
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+int visual_cache_remove (VisCache *cache, char *key)
+{
+	VisListEntry *le;
+
+	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
+	visual_log_return_val_if_fail (key != NULL, -VISUAL_ERROR_NULL);
+
+	le = visual_hashmap_get_string (cache->index, key);
+
+	if (le != NULL)
+		cache_remove_list_entry (cache, le);
+
+	return VISUAL_OK;
+}
+
+void *visual_cache_get (VisCache *cache, char *key)
+{
+	VisCacheEntry *centry;
+	VisListEntry *le;
+
+	visual_log_return_val_if_fail (cache != NULL, NULL);
+	visual_log_return_val_if_fail (key != NULL, NULL);
+
+	le = visual_hashmap_get_string (cache->index, key);
+
+	if (le == NULL)
+		return NULL;
+
+	centry = le;
+
+	return centry->data;
+}
+
+int visual_cache_get_size (VisCache *cache)
 {
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
 
+	return visual_collection_size (VISUAL_COLLECTION (cache->list));
 }
 
-int visual_cache_remove (VisCache *cache, int key)
+int visual_cache_set_limits (VisCache *cache, int size, VisTime *maxage)
 {
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
 
+	/* FIXME limit size change, rehash the index */
+
+	cache->size = size;
+
+	if (maxage != NULL) {
+		cache->withmaxage = TRUE;
+		visual_time_copy (&cache->maxage, maxage);
+	} else {
+		cache->withmaxage = FALSE;
+	}
+
+	return VISUAL_OK;
 }
 
-void *visual_cache_get (VisCache *cache, int key)
+VisList *visual_cache_get_list (VisCache *cache)
 {
 	visual_log_return_val_if_fail (cache != NULL, NULL);
 
-}
-
-int visual_cache_size (VisCache *cache)
-{
-	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
-
-	return visual_collection_size (VISUAL_COLLECTION (cache->hashmap));
+	return cache->list;
 }
 
 /**

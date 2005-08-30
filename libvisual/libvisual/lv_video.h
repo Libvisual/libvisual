@@ -197,6 +197,7 @@ int visual_video_allocate_buffer (VisVideo *video);
 int visual_video_have_allocated_buffer (VisVideo *video);
 int visual_video_clone (VisVideo *dest, VisVideo *src);
 int visual_video_compare (VisVideo *src1, VisVideo *src2);
+int visual_video_compare_ignore_pitch (VisVideo *src1, VisVideo *src2);
 
 int visual_video_set_palette (VisVideo *video, VisPalette *pal);
 int visual_video_set_buffer (VisVideo *video, void *buffer);

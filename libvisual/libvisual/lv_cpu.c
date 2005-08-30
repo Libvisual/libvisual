@@ -650,7 +650,7 @@ int visual_cpu_set_mmx2 (int enabled)
 
 	return VISUAL_OK;
 }
- 
+
 /**
  * Function to set if the SSE feature should be enabled or not, this function will also check
  * if the feature is actually available.
@@ -664,7 +664,7 @@ int visual_cpu_set_sse (int enabled)
 
 	if (__lv_cpu_caps.hasSSE == FALSE)
 		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
-	
+
 	__lv_cpu_caps.enabledSSE = enabled;
 
 	return VISUAL_OK;
@@ -683,7 +683,7 @@ int visual_cpu_set_sse2 (int enabled)
 
 	if (__lv_cpu_caps.hasSSE2 == FALSE)
 		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
-	
+
 	__lv_cpu_caps.enabledSSE2 = enabled;
 
 	return VISUAL_OK;
@@ -702,7 +702,7 @@ int visual_cpu_set_3dnow (int enabled)
 
 	if (__lv_cpu_caps.has3DNow == FALSE)
 		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
-	
+
 	__lv_cpu_caps.enabled3DNow = enabled;
 
 	return VISUAL_OK;
@@ -721,7 +721,7 @@ int visual_cpu_set_3dnow2 (int enabled)
 
 	if (__lv_cpu_caps.has3DNowExt == FALSE)
 		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
-	
+
 	__lv_cpu_caps.enabled3DNowExt = enabled;
 
 	return VISUAL_OK;
@@ -740,7 +740,7 @@ int visual_cpu_set_altivec (int enabled)
 
 	if (__lv_cpu_caps.hasAltiVec == FALSE)
 		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
-	
+
 	__lv_cpu_caps.enabledAltiVec = enabled;
 
 	return VISUAL_OK;

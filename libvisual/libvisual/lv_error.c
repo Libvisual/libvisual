@@ -60,6 +60,8 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_BUFFER_NULL] =			N_("VisBuffer is NULL"),
 	[VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS] =		N_("The requested operation on the VisBuffer is out of bounds"),
 
+	[VISUAL_ERROR_CACHE_NULL] =			N_("The VisCache is NULL"),
+
 	[VISUAL_ERROR_COLLECTION_NULL] =		N_("VisCollection is NULL"),
 	[VISUAL_ERROR_COLLECTION_ITER_NULL] =		N_("VisCollectionIter is NULL"),
 
@@ -80,6 +82,7 @@ static const char *__lv_error_human_readable[] = {
 
 	[VISUAL_ERROR_HASHMAP_NULL] =			N_("VisHashmap is NULL"),
 	[VISUAL_ERROR_HASHMAP_NOT_IN_MAP] =		N_("Key is not in hashmap"),
+	[VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE] =	N_("Key type is not valid"),
 
 	[VISUAL_ERROR_INPUT_NULL] =			N_("VisInput is NULL"),
 	[VISUAL_ERROR_INPUT_PLUGIN_NULL] =		N_("VisInput it's plugin is NULL"),

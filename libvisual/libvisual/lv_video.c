@@ -313,6 +313,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 	}
 
 	visual_buffer_set_destroyer (video->buffer, visual_buffer_destroyer_free);
+	visual_buffer_set_size (video->buffer, visual_video_get_size (video));
 	visual_buffer_allocate_data (video->buffer);
 
 	video->pixel_rows = visual_mem_new0 (void *, video->height);
@@ -393,6 +394,29 @@ int visual_video_compare (VisVideo *src1, VisVideo *src2)
 	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
+	if (visual_video_compare_ignore_pitch (src1, src2) == FALSE)
+		return FALSE;
+
+	if (src1->pitch != src2->pitch)
+		return FALSE;
+
+	/* We made it to the end, the VisVideos are likewise in depth, pitch, dimensions */
+	return TRUE;
+}
+
+/**
+ * Checks if two VisVideo objects are the same depth and dimension wise.
+ *
+ * @param src1 Pointer to the first VisVideo that is used in the compare.
+ * @param src2 Pointer to the second VisVideo that is used in the compare.
+ *
+ * @return FALSE on different, TRUE on same, -VISUAL_ERROR_VIDEO_NULL on failure.
+ */
+int visual_video_compare_ignore_pitch (VisVideo *src1, VisVideo *src2)
+{
+	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_VIDEO_NULL);
+
 	if (src1->depth != src2->depth)
 		return FALSE;
 
@@ -400,9 +424,6 @@ int visual_video_compare (VisVideo *src1, VisVideo *src2)
 		return FALSE;
 
 	if (src1->height != src2->height)
-		return FALSE;
-
-	if (src1->pitch != src2->pitch)
 		return FALSE;
 
 	/* We made it to the end, the VisVideos are likewise in depth, pitch, dimensions */
@@ -561,7 +582,7 @@ int visual_video_get_size (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	return visual_buffer_get_size (video->buffer);
+	return video->pitch * video->height;
 }
 
 /**
@@ -625,7 +646,7 @@ int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
 {
 	int i = depth;
-	
+
 	if (visual_video_depth_is_sane (depth) == 0)
 		return VISUAL_VIDEO_DEPTH_ERROR;
 
@@ -759,7 +780,7 @@ int visual_video_depth_is_sane (VisVideoDepth depth)
 
 	if (depth >= VISUAL_VIDEO_DEPTH_ENDLIST)
 		return FALSE;
-	
+
 	while (i < VISUAL_VIDEO_DEPTH_ENDLIST) {
 		if ((i & depth) > 0)
 			count++;
@@ -923,7 +944,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 	visual_video_set_attributes (dest, rect->width, rect->height,
 			(rect->width * src->bpp) + (src->pitch - (rect->width * src->bpp)), src->depth);
 	visual_video_set_buffer (dest, (uint8_t *) (visual_video_get_pixels (src)) + ((rect->y * src->pitch) + (rect->x * src->bpp)));
-	
+
 	return VISUAL_OK;
 }
 
@@ -945,7 +966,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height)
 {
 	VisRectangle rect;
-	
+
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
@@ -957,7 +978,7 @@ int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int
 int visual_video_region_sub_all (VisVideo *dest, VisVideo *src)
 {
 	VisRectangle rect;
-	
+
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
@@ -979,7 +1000,7 @@ int visual_video_region_sub_with_boundry (VisVideo *dest, VisRectangle *drect, V
 	visual_rectangle_copy (&rsrect, srect);
 
 	visual_video_get_boundry (src, &sbound);
-	
+
 	/* Merge the destination and source rect, so that only the allowed parts are sub regioned */
 	visual_rectangle_merge (&rsrect, &sbound, srect);
 	visual_rectangle_merge (&rsrect, drect, &rsrect);
@@ -2633,6 +2654,16 @@ int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale
 	visual_log_return_val_if_fail (scale_method == VISUAL_VIDEO_SCALE_NEAREST ||
 			scale_method == VISUAL_VIDEO_SCALE_BILINEAR, -VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD);
 
+
+	/* If the dest and source are equal in dimension and scale_method is nearest, do a
+	 * blit overlay */
+	if (visual_video_compare_ignore_pitch (dest, src) == TRUE && scale_method == VISUAL_VIDEO_SCALE_NEAREST) {
+		visual_video_blit_overlay (dest, src, 0, 0, FALSE);
+
+		return VISUAL_OK;
+	}
+
+
 	switch (dest->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
 			if (scale_method == VISUAL_VIDEO_SCALE_NEAREST)
@@ -2664,7 +2695,7 @@ int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale
 			else if (scale_method == VISUAL_VIDEO_SCALE_BILINEAR) {
 				if (visual_cpu_get_mmx () != 0)
 					_lv_scale_bilinear_32_mmx (dest, src);
-				else	
+				else
 					scale_bilinear_32 (dest, src);
 			}
 

@@ -94,7 +94,7 @@ struct _VisParamContainer {
  * A parameter callback entry, used for change notification callbacks.
  */
 struct _VisParamEntryCallback {
-	VisObject		 	 object;	/**< The VisObject data. */
+	VisObject			 object;	/**< The VisObject data. */
 	int				 id;		/**< Callback ID. */
 	VisParamChangedCallbackFunc	 callback;	/**< The param change callback function. */
 };
