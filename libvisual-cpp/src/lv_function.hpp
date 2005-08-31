@@ -3,7 +3,7 @@
 
 #include <memory>
 
-// This design is largely inspired (read: taken) from the callback
+// This design is largely inspired by (read: taken from) the callback
 // framework in Modern C++ Design.
 
 // Usage:
@@ -24,9 +24,11 @@
 
 namespace Lv
 {
-  // TODO: 
+  // TODO (highest priority first)
   // * allow variable number of arguments
   // * add comparators == and !=
+  // * eliminate virtual calls
+  // * allow custom allocators for FunctionImpl
 
   // Forward declarations
 
@@ -111,9 +113,9 @@ namespace Lv
   {
   public:
 
-      FunctionImplMem (const Object& object, MemFunction func) : 
-          m_object (object),
-          m_func (func)
+      FunctionImplMem (const Object& object, MemFunction func)
+          : m_object (object),
+            m_func (func)
       {}
 
       virtual ~FunctionImplMem ()
