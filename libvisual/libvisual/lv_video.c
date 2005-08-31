@@ -867,7 +867,7 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 	switch (depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
 			return 1;
-		
+
 		case VISUAL_VIDEO_DEPTH_16BIT:
 			return 2;
 
@@ -935,7 +935,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 
 	/* FIXME make non verbose */
 	visual_log_return_val_if_fail (visual_rectangle_within (&vrect, rect) == TRUE, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-	
+
 	visual_rectangle_copy (&dest->rect, rect);
 	visual_object_ref (VISUAL_OBJECT (src));
 
@@ -1262,7 +1262,6 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
 	visual_video_init (&tempregion);
 
 	/* Negative offset fixture */
-	/* FIXME make function out of this one */
 	if (x < 0) {
 		srect.x += 0 - x;
 		srect.width += x;
@@ -1310,6 +1309,14 @@ static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 	int y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf = visual_video_get_pixels (src);
+
+	/* src and dest are completely equal, do one big mem copy instead of a
+	 * per line */
+	if (visual_video_compare (dest, src) == TRUE) {
+		visual_mem_copy (destbuf, srcbuf, visual_video_get_size (dest));
+
+		return VISUAL_OK;
+	}
 
 	for (y = 0; y < src->height; y++) {
 		visual_mem_copy (destbuf, srcbuf, src->width * src->bpp);
@@ -1580,9 +1587,9 @@ int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t density, VisRect
 	if (errret < 0)
 		goto out;
 
-	visual_video_fill_alpha (&rvid, density);	
+	visual_video_fill_alpha (&rvid, density);
 
-out:	
+out:
 	visual_object_unref (VISUAL_OBJECT (&rvid));
 
 	return errret;
@@ -1605,17 +1612,17 @@ int visual_video_fill_color (VisVideo *video, VisColor *color)
 			fill_color16 (video, color);
 
 			break;
-			
+
 		case VISUAL_VIDEO_DEPTH_24BIT:
 			fill_color24 (video, color);
 
 			break;
-			
+
 		case VISUAL_VIDEO_DEPTH_32BIT:
 			fill_color32 (video, color);
 
 			break;
-			
+
 		default:
 			return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 
@@ -1643,7 +1650,7 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
 	visual_video_init (&svid);
 
 	visual_video_get_boundry (video, &dbound);
-	
+
 	visual_video_region_sub_with_boundry (&svid, &dbound, video, rect);
 
 	errret = visual_video_fill_color (&svid, color);
@@ -1660,10 +1667,10 @@ static int fill_color8 (VisVideo *video, VisColor *color)
 	int y;
 	uint8_t *buf = visual_video_get_pixels (video);
 	int8_t col = ((color->r + color->g + color->b) / 3);
-	
+
 	for (y = 0; y < video->height; y++) {
 		visual_mem_set (buf, col, video->width);
-		
+
 		buf += video->pitch;
 	}
 
@@ -1679,10 +1686,10 @@ static int fill_color16 (VisVideo *video, VisColor *color)
 	col16->r = color->r >> 3;
 	col16->g = color->g >> 2;
 	col16->b = color->b >> 3;
-	
+
 	for (y = 0; y < video->height; y++) {
 		visual_mem_set16 (buf, col, video->width);
-		
+
 		buf += (video->pitch / video->bpp);
 	}
 
@@ -1695,7 +1702,7 @@ static int fill_color24 (VisVideo *video, VisColor *color)
 	uint32_t *buf;
 	uint8_t *rbuf = visual_video_get_pixels (video);
 	uint8_t *buf8;
-	
+
 	int32_t cola =
 		(color->b << 24) |
 		(color->g << 16) |
@@ -1714,7 +1721,7 @@ static int fill_color24 (VisVideo *video, VisColor *color)
 
 	for (y = 0; y < video->height; y++) {
 		buf = (uint32_t *) rbuf;
-		
+
 		for (x = video->width; x >= video->bpp; x -= video->bpp) {
 			*(buf++) = cola;
 			*(buf++) = colb;
@@ -1767,7 +1774,7 @@ int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src)
 	visual_log_return_val_if_fail (visual_video_get_pixels (dest) != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 	visual_log_return_val_if_fail (visual_video_get_pixels (src) != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_8BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
-	
+
 	if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT)
 		bgr_to_rgb16 (dest, src);
 	else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT)
@@ -1938,7 +1945,7 @@ static int rotate_270 (VisVideo *dest, VisVideo *src)
 			for (i = 0; i < dest->bpp; i++) {
 				*(dbuf++) = *(sbuf + i);
 			}
-			
+
 			sbuf += src->pitch;
 		}
 
