@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.hpp,v 1.5 2005-09-01 02:40:40 descender Exp $
+// $Id: lv_thread.hpp,v 1.6 2005-09-01 08:30:13 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -49,7 +49,7 @@ namespace Lv
 
       static inline void enable (bool enabled)
       {
-          visual_thread_enable (enabled ? TRUE : FALSE);
+          visual_thread_enable (enabled);
       }
 
       static inline bool is_enabled ()
@@ -169,4 +169,4 @@ namespace Lv
 
 } // namespace Lv
 
-#endif // #ifdef LVCPP_THREAD_HPP
+#endif // #ifndef LVCPP_THREAD_HPP

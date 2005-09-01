@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.hpp,v 1.3 2005-09-01 07:25:50 descender Exp $
+// $Id: lv_object.hpp,v 1.4 2005-09-01 08:30:13 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -91,4 +91,4 @@ namespace Lv
 
 } // namespace Lv
 
-#endif // #ifdef LVCPP_OBJECT_HPP
+#endif // #ifndef LVCPP_OBJECT_HPP

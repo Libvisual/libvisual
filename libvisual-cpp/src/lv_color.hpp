@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_color.hpp,v 1.2 2005-09-01 07:25:50 descender Exp $
+// $Id: lv_color.hpp,v 1.3 2005-09-01 08:30:13 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -39,6 +39,7 @@ namespace Lv
 
       Color (const Color& other)
       {
+          // NOTE: should we copy what's in Lv::Object?
           visual_color_copy (&vis_color (),
                              const_cast<VisColor *> (&other.vis_color ()));
       }
@@ -51,6 +52,7 @@ namespace Lv
 
       const Color& operator = (const Color& other)
       {
+          // NOTE: should we copy what's in Lv::Object?
           visual_color_copy (&vis_color (), 
                              const_cast<VisColor *> (&other.vis_color ()));
           return *this;
@@ -103,7 +105,7 @@ namespace Lv
 
   private:
       
-      static VisObject *vis_color_to_object (VisColor *color)
+      static inline VisObject *vis_color_to_object (VisColor *color)
       {
           return reinterpret_cast<VisObject *> (color);
       }
@@ -111,4 +113,4 @@ namespace Lv
 
 } // namespace Lv
 
-#endif // #ifdef LVCPP_COLOR_HPP
+#endif // #ifndef LVCPP_COLOR_HPP
