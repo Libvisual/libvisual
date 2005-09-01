@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_function.cpp,v 1.3 2005-09-01 02:40:40 descender Exp $
+// $Id: lv_function.cpp,v 1.4 2005-09-01 04:48:16 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,7 +20,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <config.h>
+#include <lv_config.hpp>
 #include <lv_function.hpp>
 
 #ifdef LVCPP_FUNCTION_TEST

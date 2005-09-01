@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.cpp,v 1.2 2005-09-01 02:40:40 descender Exp $
+// $Id: libvisual_cpp.cpp,v 1.3 2005-09-01 04:48:16 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,7 +20,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <config.h>
+#include <lv_config.hpp>
 #include <libvisual_cpp.hpp>
 #include <libvisual/libvisual.h>
 #include <iostream>
@@ -37,7 +37,7 @@ namespace
   void handle_unexpected ()
   {
       std::cerr << "Unexpected exception caught" << std::endl;
-      throw Lv::unexpected_error ();
+      throw Lv::UnexpectedError ();
   }
 
   void handle_terminate ()
@@ -172,9 +172,9 @@ int main (int argc, char **argv)
         std::cout << "Unexpected exception test\n";
         throw_unexpected_error ();
     }
-    catch (Lv::unexpected_error& error)
+    catch (Lv::UnexpectedError& error)
     {
-        std::cout << "unexpected_error caught\n";
+        std::cout << "UnexpectedError caught\n";
         std::cout << error.what () << std::endl;
     }
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
+libtoolize && \
 aclocal && \
 autoheader && \
-libtoolize && \
-autoconf && \
-automake -a
+automake -a && \
+autoconf
