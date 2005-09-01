@@ -1,5 +1,5 @@
-#ifndef LVCPP_LVCPP_H
-#define LVCPP_LVCPP_H
+#ifndef LVCPP_LVCPP_HPP
+#define LVCPP_LVCPP_HPP
 
 #include <string>
 #include <stdexcept>
@@ -31,4 +31,4 @@ namespace Lv
 
 } // namespace Lv
 
-#endif // #ifdef LVCPP_LVCPP
+#endif // #ifdef LVCPP_LVCPP_HPP
