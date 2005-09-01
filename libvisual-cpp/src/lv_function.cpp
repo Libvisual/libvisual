@@ -1,7 +1,8 @@
-#ifdef LVPP_FUNCTION_TEST
+#include <lv_function.hpp>
+
+#ifdef LVCPP_FUNCTION_TEST
 
 #include <iostream>
-#include <lv_function.hpp>
 
 int print_hello_world ()
 {
@@ -63,4 +64,4 @@ int main ()
     }
 }
 
-#endif // #ifdef LVPP_FUNCTION_TEST
+#endif // #ifdef LVCPP_FUNCTION_TEST

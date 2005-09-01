@@ -145,7 +145,6 @@ namespace Lv
       ScopedTryLock (const ScopedTryLock& lock);
   };
 
+} // namespace Lv
 
-}
-
-#endif
+#endif // #ifdef LVCPP_THREAD_HPP

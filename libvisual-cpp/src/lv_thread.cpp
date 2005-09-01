@@ -16,7 +16,7 @@ namespace Lv
 }
 
 
-#ifdef LVPP_THREAD_TEST
+#ifdef LVCPP_THREAD_TEST
 
 #include <iostream>
 #include <list>
@@ -220,4 +220,4 @@ int main ()
     thread_test ();
 }
 
-#endif // #ifdef LVPP_THREAD_TEST
+#endif // #ifdef LVCPP_THREAD_TEST

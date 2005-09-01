@@ -167,4 +167,4 @@ namespace Lv
 
 } // namespace Lv
 
-#endif
+#endif // #ifdef LVCPP_FUNCTION_HPP
