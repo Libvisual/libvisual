@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.hpp,v 1.2 2005-09-01 07:10:25 descender Exp $
+// $Id: lv_object.hpp,v 1.3 2005-09-01 07:25:50 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -57,7 +57,7 @@ namespace Lv
           unref ();
       }
 
-      inline Object& operator = (const Object& other)
+      inline const Object& operator = (const Object& other)
       {
           m_object = other.m_object;
           ref ();

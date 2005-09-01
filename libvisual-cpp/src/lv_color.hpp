@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_color.hpp,v 1.1 2005-09-01 07:10:25 descender Exp $
+// $Id: lv_color.hpp,v 1.2 2005-09-01 07:25:50 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -49,7 +49,7 @@ namespace Lv
           set (r, g, b);
       }
 
-      Color& operator = (const Color& other)
+      const Color& operator = (const Color& other)
       {
           visual_color_copy (&vis_color (), 
                              const_cast<VisColor *> (&other.vis_color ()));

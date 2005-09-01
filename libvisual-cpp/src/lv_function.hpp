@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_function.hpp,v 1.4 2005-09-01 02:40:40 descender Exp $
+// $Id: lv_function.hpp,v 1.5 2005-09-01 07:25:50 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -97,13 +97,13 @@ namespace Lv
           : m_impl (new FunctionImplMem<Object, MemFunction, Result> (object, func))
       {}
 
-      Function& operator = (const Function& other)
+      inline const Function& operator = (const Function& other)
       {
           m_impl = std::auto_ptr<Impl> (other.m_impl->clone ());
           return *this;
       }
 
-      Result operator () ()
+      inline Result operator () ()
       {
           return (*m_impl) ();
       }
