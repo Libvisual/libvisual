@@ -53,8 +53,8 @@ if test "$WITH_HTML_DOCS" = "yes"; then
   AC_PATH_PROG(DOXYGEN, doxygen)
   AC_PATH_PROG(DOT, dot)
 
-  test -n "DOXYGEN" && HAVE_DOXYGEN=yes
-  test -n "DOT" && HAVE_DOT=yes
+  test -n "$DOXYGEN" && HAVE_DOXYGEN=yes
+  test -n "$DOT" && HAVE_DOT=yes
 
   if test "$HAVE_DOXYGEN" = "no"; then
     AC_MSG_WARN([Doxygen not found, skipping HTML documentation generation])
