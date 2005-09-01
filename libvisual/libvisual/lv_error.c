@@ -255,7 +255,7 @@ const char *visual_error_to_string (int err)
 	if (abs (err) >= VISUAL_ERROR_LIST_END)
 		return _("The error value given to visual_error_to_string() is invalid");
 
-	return __lv_error_human_readable[abs (err)];
+	return _(__lv_error_human_readable[abs (err)]);
 }
 
 /**

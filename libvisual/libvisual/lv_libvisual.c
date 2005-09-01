@@ -91,8 +91,8 @@ static int init_params (VisParamContainer *paramcontainer)
 	param = visual_param_entry_new ("songinfo timeout");
 	visual_param_entry_set_integer (param, 5);
 	visual_param_container_add (paramcontainer, param);
-	
-	/* 
+
+	/*
 	 * Show songinfo in plugins, plugins that optionally show song
 	 * info should query this parameter
 	 */
@@ -104,7 +104,7 @@ static int init_params (VisParamContainer *paramcontainer)
 	param = visual_param_entry_new ("songinfo cover size x");
 	visual_param_entry_set_integer (param, 128);
 	visual_param_container_add (paramcontainer, param);
-	
+
 	param = visual_param_entry_new ("songinfo cover size y");
 	visual_param_entry_set_integer (param, 128);
 	visual_param_container_add (paramcontainer, param);
@@ -132,7 +132,7 @@ static VisUIWidget *make_userinterface ()
 	hbox1 = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 	hbox2 = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 	hbox3 = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
-	
+
 	label1 = visual_ui_label_new (_("Show info for"), FALSE);
 	label2 = visual_ui_label_new (_("seconds"), FALSE);
 	label3 = visual_ui_label_new (_("cover art width"), FALSE);
@@ -160,7 +160,7 @@ static VisUIWidget *make_userinterface ()
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric3),
 			visual_param_container_get (__lv_paramcontainer, "songinfo cover size y"));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric3), 32, 256, 2, 0);
-	
+
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox1), label1);
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox1), numeric1);
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox1), label2);
@@ -170,7 +170,7 @@ static VisUIWidget *make_userinterface ()
 
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox3), label4);
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox3), numeric3);
-	
+
 	visual_ui_box_pack (VISUAL_UI_BOX (vbox), checkbox1);
 	visual_ui_box_pack (VISUAL_UI_BOX (vbox), checkbox2);
 	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox1);
@@ -249,23 +249,24 @@ int visual_init (int *argc, char ***argv)
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 #endif
 
 	if (__lv_initialized == TRUE) {
 		visual_log (VISUAL_LOG_ERROR, _("Over initialized"));
                 return -VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED;
         }
-		
+
 	if (argc == NULL || argv == NULL) {
 		if (argc == NULL && argv == NULL) {
 			__lv_progname = strdup (_("no progname"));
-	
+
 
 			if (__lv_progname == NULL)
 				visual_log (VISUAL_LOG_WARNING, _("Could not set program name"));
 		} else
 			visual_log (VISUAL_LOG_ERROR, _("Initialization failed, bad argv, argc"));
-		
+
 	} else {
                 /*
                  * We must copy the argument, to let the client
@@ -279,7 +280,7 @@ int visual_init (int *argc, char ***argv)
                 if (__lv_progname == NULL)
                         visual_log (VISUAL_LOG_WARNING, _("Could not set program name"));
         }
-	
+
 	/* Initialize CPU caps */
 	visual_cpu_initialize ();
 
@@ -288,7 +289,7 @@ int visual_init (int *argc, char ***argv)
 
 	/* Initialize Thread system */
 	visual_thread_initialize ();
-	
+
 	/* Add the standard plugin paths */
 	ret = visual_init_path_add (PLUGPATH"/actor");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
@@ -378,7 +379,7 @@ int visual_quit ()
 
         if (__lv_progname != NULL) {
                 visual_mem_free (__lv_progname);
-	
+
 		__lv_progname = NULL;
 	}
 
