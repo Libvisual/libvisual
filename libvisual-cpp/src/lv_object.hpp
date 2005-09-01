@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.hpp,v 1.1 2005-09-01 03:22:05 descender Exp $
+// $Id: lv_object.hpp,v 1.2 2005-09-01 07:10:25 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -27,34 +27,66 @@
 
 namespace Lv
 {
+  // Notes: 
+  // * Might be nice if we can allocate Object entirely on the
+  //   stack.
 
   class Object
   {
   public:
 
+      // need to make this exception safe
       Object ()
+          : m_object (visual_object_new ())
+      {}
+
+      Object (const Object& object)
+          : m_object (object.m_object)
       {
-          visual_object_initialize (&m_object, FALSE, NULL);
+          // this is a shallow copy, we need to increase the reference
+          // count
+          ref ();
       }
-  
+
+      Object (VisObject *object)
+          : m_object (object)
+      {}
+
       ~Object ()
       {
-          visual_object_destroy (&m_object);
+          unref ();
       }
 
-      const VisObject &vis_object () const
+      inline Object& operator = (const Object& other)
       {
-          return m_object;
+          m_object = other.m_object;
+          ref ();
+          return *this;
       }
 
-      VisObject &vis_object ()
+      inline void ref ()
       {
-          return m_object;
+          visual_object_ref (m_object);
+      }
+
+      inline void unref ()
+      {
+          visual_object_unref (m_object);
+      }
+
+      inline const VisObject& vis_object () const
+      {
+          return *m_object;
+      }
+
+      inline VisObject& vis_object ()
+      {
+          return *m_object;
       }
 
   private:
 
-      VisObject m_object;
+      VisObject *m_object;
   };
 
 } // namespace Lv

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.cpp,v 1.2 2005-09-01 04:48:16 descender Exp $
+// $Id: lv_object.cpp,v 1.3 2005-09-01 07:10:25 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -46,14 +46,33 @@ int main (int argc, char **argv)
     std::cout << "Lv::Object test\n";
 
     {
-        Lv::Object  object;
-        VisObject  *vis_object = &object.vis_object ();
+        Lv::Object object;
 
-        visual_object_ref (vis_object);
-        visual_object_unref (vis_object);
+        for (int i = 0; i < 5; i++)
+            object.ref ();
 
-        visual_object_set_dtor (vis_object, test_visual_object_dtor);
-        visual_object_set_private (vis_object, const_cast <void *> (static_cast<const void *> ("hello world!")));
+        for (int i = 0; i < 5; i++)
+            object.unref ();
+
+        // Libvisual doesn't provide a function to get the reference count,        
+        // so we peek inside ourselves
+        std::cout << "Final reference count: " << object.vis_object ().refcount << "\n";
+    }
+
+    {
+        Lv::Object a;
+
+        visual_object_set_dtor (&a.vis_object (), test_visual_object_dtor);
+        visual_object_set_private (&a.vis_object (), const_cast<void *> (static_cast<const void *> ("hello world!")));
+    }
+
+    {
+        Lv::Object a;
+
+        visual_object_set_dtor (&a.vis_object (), test_visual_object_dtor);
+        visual_object_set_private (&a.vis_object (), const_cast<void *> (static_cast<const void *> ("hello world again!")));
+
+        Lv::Object b(a);
     }
 
     Lv::quit ();
