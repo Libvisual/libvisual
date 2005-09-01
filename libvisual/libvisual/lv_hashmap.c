@@ -237,7 +237,7 @@ int visual_hashmap_init (VisHashmap *hashmap, VisCollectionDestroyerFunc destroy
 	visual_collection_set_iter_func (VISUAL_COLLECTION (hashmap), hashmap_iter);
 
 	/* Set the VisHashmap data */
-	hashmap->tablesize = 0;
+	hashmap->tablesize = VISUAL_HASHMAP_START_SIZE;
 	hashmap->size = 0;
 	hashmap->table = NULL;
 
@@ -426,12 +426,25 @@ void *visual_hashmap_get_string (VisHashmap *hashmap, char *key)
 
 int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize)
 {
+	VisHashmapEntry *oldtable;
+	int oldsize;
+
 	visual_log_return_val_if_fail (hashmap != NULL, -VISUAL_ERROR_HASHMAP_NULL);
 
 	hashmap->tablesize = tablesize;
 
 	/* Table was not empty, rehash */
 	if (hashmap->table != NULL) {
+		oldtable = hashmap->table;
+		oldsize = hashmap->tablesize;
+
+		create_table (hashmap);
+
+		/* Rehash all entries */
+
+
+
+		/* Free old table */
 
 	}
 

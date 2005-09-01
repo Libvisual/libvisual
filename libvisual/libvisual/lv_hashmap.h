@@ -32,7 +32,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define VISUAL_HASHMAP_START_SIZE	512
+#define VISUAL_HASHMAP_START_SIZE	1024
 
 #define VISUAL_HASHMAP(obj)				(VISUAL_CHECK_CAST ((obj), VisHashmap))
 #define VISUAL_HASHMAPENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisHashmapEntry))
