@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_color.hpp,v 1.3 2005-09-01 08:30:13 descender Exp $
+// $Id: lv_color.hpp,v 1.4 2005-09-04 21:59:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -38,6 +38,7 @@ namespace Lv
       {}
 
       Color (const Color& other)
+          : Object (vis_color_to_object (visual_color_new ()))
       {
           // NOTE: should we copy what's in Lv::Object?
           visual_color_copy (&vis_color (),

@@ -7,6 +7,7 @@ libvisual_cpp_include_HEADERS = \
 	lv_function.hpp		\
 	lv_object.hpp		\
 	lv_color.hpp		\
+	lv_rectangle.hpp 	\
 	lv_cpu.hpp		\
 	lv_random.hpp
 
@@ -20,6 +21,6 @@ libvisual_cpp_la_SOURCES =	\
 	lv_function.cpp		\
 	lv_object.cpp		\
 	lv_color.cpp		\
+	lv_rectangle.cpp	\
 	lv_cpu.cpp		\
 	lv_random.cpp
-

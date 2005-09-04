@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.hpp,v 1.4 2005-09-01 08:30:13 descender Exp $
+// $Id: lv_object.hpp,v 1.5 2005-09-04 21:59:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -72,6 +72,12 @@ namespace Lv
       inline void unref ()
       {
           visual_object_unref (m_object);
+      }
+
+      inline void take_vis_object (VisObject *object)
+      {
+          unref ();
+          m_object = object;
       }
 
       inline const VisObject& vis_object () const

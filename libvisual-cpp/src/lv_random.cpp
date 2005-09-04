@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_random.cpp,v 1.1 2005-09-01 10:19:51 descender Exp $
+// $Id: lv_random.cpp,v 1.2 2005-09-04 21:59:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -23,8 +23,7 @@
 #include <lv_config.hpp>
 #include <lv_random.hpp>
 
-#ifndef LVCPP_RANDOM_TEST
-#define LVCPP_RANDOM_TEST
+#ifdef LVCPP_RANDOM_TEST
 
 #include <iostream>
 

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.hpp,v 1.5 2005-09-04 21:59:33 descender Exp $
+// $Id: lv_rectangle.cpp,v 1.1 2005-09-04 21:59:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,38 +20,37 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#ifndef LVCPP_LVCPP_HPP
-#define LVCPP_LVCPP_HPP
+#include <lv_config.hpp>
+#include <lv_rectangle.hpp>
 
-#include <string>
-#include <stdexcept>
+#ifdef LVCPP_RECTANGLE_TEST
 
-namespace Lv
+#include <iostream>
+
+std::ostream& operator << (std::ostream& out, const Lv::Rectangle& rect)
 {
-  class UnexpectedError
-      : public std::runtime_error
-  {
-  public:
+    return (out << "Rect (" 
+                << rect.get_x () << ", " << rect.get_y () << ", "
+                << rect.get_width() << ", " << rect.get_height ()
+                << ')');
+}
 
-      UnexpectedError ()
-          : std::runtime_error ("Unexpected exception")
-      {}
-  };
+int main ()
+{
+    std::cout << "Lv::Rectangle test\n";
 
-  const char *get_version ();
+    Lv::Rectangle a;
+    std::cout << a << '\n';
 
-  const char *get_lv_version ();
+    Lv::Rectangle b (10, 20, 100, 200);
+    std::cout << b << '\n';
 
-  int init (int &argc, char **&argv, bool trap_exceptions = true);
+    Lv::Rectangle c (b);
+    std::cout << c << '\n';
 
-  int init (bool trap_exceptions = true);
+    // TODO: more to come
 
-  bool is_init ();
+    return 0;
+}
 
-  int quit ();
-
-  int init_path_add (const std::string& path);
-
-} // namespace Lv
-
-#endif // #ifdef LVCPP_LVCPP_HPP
+#endif // #ifdef LVCPP_RECTANGLE_TEST
