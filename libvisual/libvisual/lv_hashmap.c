@@ -47,11 +47,14 @@ static int hashmap_chain_destroy (VisHashmap *hashmap, VisList *list);
 static int hashmap_size (VisCollection *collection);
 static VisCollectionIter *hashmap_iter (VisCollection *collection);
 
+static void hashmap_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index);
 static int hashmap_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
-static void *hashmap_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
+static void hashmap_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
+static void *hashmap_iter_get_data (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
 
 static int integer_hash (int key);
 static int string_hash (char *key);
+static int get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype);
 
 static int create_table (VisHashmap *hashmap);
 
@@ -115,9 +118,15 @@ static VisCollectionIter *hashmap_iter (VisCollection *collection)
 	context->index = 0;
 	context->le = NULL;
 
-	iter = visual_collection_iter_new (hashmap_iter_next, hashmap_iter_has_more, collection, VISUAL_OBJECT (context));
+	iter = visual_collection_iter_new (hashmap_iter_assign, hashmap_iter_next, hashmap_iter_has_more,
+			hashmap_iter_get_data, collection, VISUAL_OBJECT (context));
 
 	return iter;
+}
+
+static void hashmap_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index)
+{
+
 }
 
 static int hashmap_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
@@ -125,18 +134,21 @@ static int hashmap_iter_has_more (VisCollectionIter *iter, VisCollection *collec
 
 }
 
-static void *hashmap_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+static void hashmap_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
 {
 	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
 	HashmapIterContext *context = HASHMAP_ITERCONTEXT (itercontext);
 	int i;
 
 	if (context->index >= hashmap->size)
-		return NULL;
+		return;
 
 	/* FIXME initial start case doesn't work */
-	if (context->le->next != NULL)
-		return visual_list_next (&hashmap->table[i].list, &context->le);
+	if (context->le->next != NULL) {
+		visual_list_next (&hashmap->table[i].list, &context->le);
+
+		return;
+	}
 
 	/* Find the next valid chain */
 	for (i = context->index; i < hashmap->size; i++) {
@@ -148,8 +160,14 @@ static void *hashmap_iter_next (VisCollectionIter *iter, VisCollection *collecti
 
 	}
 
-	return NULL;
+	return;
 }
+
+static void *hashmap_iter_get_data (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+{
+
+}
+
 
 /* Thomas Wang's 32 bit Mix Function: http://www.concentric.net/~Ttwang/tech/inthash.htm */
 static int integer_hash (int key)
@@ -174,6 +192,16 @@ static int string_hash (char *key)
 		hash = (hash << 5) - hash  + *p;
 
 	return hash;
+}
+
+static int get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype)
+{
+	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
+		return integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
+	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
+		return string_hash ((char *) key) % hashmap->tablesize;
+
+	return 0;
 }
 
 static int create_table (VisHashmap *hashmap)
@@ -257,12 +285,7 @@ int visual_hashmap_put (VisHashmap *hashmap, void *key, VisHashmapKeyType keytyp
 	if (hashmap->table == NULL)
 		create_table (hashmap);
 
-	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
-		hash = integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
-	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
-		hash = string_hash ((char *) key) % hashmap->tablesize;
-	else
-		return -VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE;
+	hash = get_hash (hashmap, key, keytype);
 
 	chain = &hashmap->table[hash].list;
 
@@ -327,12 +350,7 @@ int visual_hashmap_remove (VisHashmap *hashmap, void *key, VisHashmapKeyType key
 	if (hashmap->table == NULL)
 		return -VISUAL_ERROR_HASHMAP_NOT_IN_MAP;
 
-	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
-		hash = integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
-	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
-		hash = string_hash ((char *) key) % hashmap->tablesize;
-	else
-		return -VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE;
+	hash = get_hash (hashmap, key, keytype);
 
 	chain = &hashmap->table[hash].list;
 
@@ -388,12 +406,7 @@ void *visual_hashmap_get (VisHashmap *hashmap, void *key, VisHashmapKeyType keyt
 	if (hashmap->table == NULL)
 		return NULL;
 
-	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
-		hash = integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
-	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
-		hash = string_hash ((char *) key) % hashmap->tablesize;
-	else
-		return NULL;
+	hash = get_hash (hashmap, key, keytype);
 
 	chain = &hashmap->table[hash].list;
 

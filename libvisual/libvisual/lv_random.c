@@ -55,7 +55,8 @@ VisRandomContext *visual_random_context_new (uint32_t seed)
 	visual_random_context_init (rcontext, seed);
 
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (rcontext), TRUE, NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (rcontext), TRUE);
+	visual_object_ref (VISUAL_OBJECT (rcontext));
 
 	return rcontext;
 }

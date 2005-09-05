@@ -32,16 +32,34 @@
 
 #include "lv_fft.h"
 
+
+static VisCache __lv_fft_cache;
+static int __lv_fft_initialized = FALSE;
+
+
 static int fft_dtor (VisObject *object);
 
 static void table_bitrev_init (VisFFT *fft);
 static void table_cossin_init (VisFFT *fft);
+
+static int fft_cache_destroyer (void *data);
+
 
 static int fft_dtor (VisObject *object)
 {
 	VisFFT *fft = VISUAL_FFT (object);
 
 	/* FIXME not all object elements are freed, destroyed, whatever */
+
+	if (fft->real != NULL)
+		visual_mem_free (fft->real);
+
+	if (fft->imag != NULL)
+		visual_mem_free (fft->imag);
+
+	fft->real = NULL;
+	fft->imag = NULL;
+
 
 	return VISUAL_OK;
 }
@@ -104,11 +122,41 @@ static void table_cossin_init (VisFFT *fft)
 	}
 }
 
+static int fft_cache_destroyer (void *data)
+{
+
+}
 
 /**
  * @defgroup VisFFT VisFFT
  * @{
  */
+
+int visual_fft_initialize ()
+{
+	visual_cache_init (&__lv_fft_cache, fft_cache_destroyer, 50, NULL);
+
+	__lv_fft_initialized = TRUE;
+
+	return VISUAL_OK;
+}
+
+int visual_fft_is_initialized ()
+{
+	return __lv_fft_initialized;
+}
+
+int visual_fft_deinitialize ()
+{
+	if (__lv_fft_initialized == FALSE)
+		return -VISUAL_ERROR_FFT_NOT_INITIALIZED;
+
+	visual_object_unref (VISUAL_OBJECT (&__lv_fft_cache));
+
+	__lv_fft_initialized = FALSE;
+
+	return VISUAL_OK;
+}
 
 /**
  * Function to create a new VisFFT Fast Fourier Transform context used 
@@ -125,19 +173,35 @@ VisFFT *visual_fft_new (int samples_in, int samples_out)
 
 	fft = visual_mem_new0 (VisFFT, 1);
 
-	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (fft), TRUE, fft_dtor);
+	visual_fft_init (fft, samples_in, samples_out);
 
+	/* Do the VisObject initialization */
+	visual_object_set_allocated (VISUAL_OBJECT (fft), TRUE);
+
+	return fft;
+}
+
+int visual_fft_init (VisFFT *fft, int samples_in, int samples_out)
+{
+	visual_log_return_val_if_fail (fft != NULL, -VISUAL_ERROR_FFT_NULL);
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (fft));
+	visual_object_set_dtor (VISUAL_OBJECT (fft), fft_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (fft), FALSE);
+
+	/* Set the VisFFT data */
 	fft->samples_in = samples_in;
 	fft->spectrum_size = samples_out * 2;
 
+	/* Initialize the VisFFT */
 	table_bitrev_init (fft);
 	table_cossin_init (fft);
 
 	fft->real = visual_mem_malloc0 (sizeof (float) * fft->spectrum_size);
 	fft->imag = visual_mem_malloc0 (sizeof (float) * fft->spectrum_size);
 
-	return fft;
+	return VISUAL_OK;
 }
 
 /**

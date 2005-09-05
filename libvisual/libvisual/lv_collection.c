@@ -155,15 +155,16 @@ VisCollectionIter *visual_collection_get_iter (VisCollection *collection)
 	return NULL;
 }
 
-
-VisCollectionIter *visual_collection_iter_new (VisCollectionIterNextFunc nextfunc,
-		                VisCollectionIterHasMoreFunc hasmorefunc, VisCollection *collection, VisObject *context)
+VisCollectionIter *visual_collection_iter_new (
+		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
+		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
+		VisCollection *collection, VisObject *context)
 {
 	VisCollectionIter *iter;
 
 	iter = visual_mem_new0 (VisCollectionIter, 1);
 
-	visual_collection_iter_init (iter, nextfunc, hasmorefunc, collection, context);
+	visual_collection_iter_init (iter, assignfunc, nextfunc, hasmorefunc, getdatafunc, collection, context);
 
 	/* do the visobject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (iter), TRUE);
@@ -172,8 +173,10 @@ VisCollectionIter *visual_collection_iter_new (VisCollectionIterNextFunc nextfun
 	return iter;
 }
 
-int visual_collection_iter_init (VisCollectionIter *iter, VisCollectionIterNextFunc nextfunc,
-		                VisCollectionIterHasMoreFunc hasmorefunc, VisCollection *collection, VisObject *context)
+int visual_collection_iter_init (VisCollectionIter *iter,
+		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
+		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
+		VisCollection *collection, VisObject *context)
 {
 	visual_log_return_val_if_fail (iter != NULL, -VISUAL_ERROR_COLLECTION_ITER_NULL);
 
@@ -183,8 +186,10 @@ int visual_collection_iter_init (VisCollectionIter *iter, VisCollectionIterNextF
 	visual_object_set_allocated (VISUAL_OBJECT (iter), FALSE);
 
 	/* Set the VisCollectionIter data */
+	iter->assignfunc = assignfunc;
 	iter->nextfunc = nextfunc;
 	iter->hasmorefunc = hasmorefunc;
+	iter->getdatafunc = getdatafunc;
 	iter->collection = collection;
 	iter->context = context;
 
@@ -194,15 +199,21 @@ int visual_collection_iter_init (VisCollectionIter *iter, VisCollectionIterNextF
 	return VISUAL_OK;
 }
 
-
-void *visual_collection_iter_next (VisCollectionIter *iter)
+void visual_collection_iter_assign (VisCollectionIter *iter, int index)
 {
-	visual_log_return_val_if_fail (iter != NULL, NULL);
+	visual_log_return_if_fail (iter != NULL);
+
+	if (iter->assignfunc != NULL)
+		iter->assignfunc (iter, iter->collection, iter->context, index);
+}
+
+
+void visual_collection_iter_next (VisCollectionIter *iter)
+{
+	visual_log_return_if_fail (iter != NULL);
 
 	if (iter->nextfunc != NULL)
-		return iter->nextfunc (iter, iter->collection, iter->context);
-
-	return NULL;
+		iter->nextfunc (iter, iter->collection, iter->context);
 }
 
 int visual_collection_iter_has_more (VisCollectionIter *iter)
@@ -213,6 +224,16 @@ int visual_collection_iter_has_more (VisCollectionIter *iter)
 		return iter->hasmorefunc (iter, iter->collection, iter->context);
 
 	return FALSE;
+}
+
+void *visual_collection_iter_get_data (VisCollectionIter *iter)
+{
+	visual_log_return_val_if_fail (iter != NULL, NULL);
+
+	if (iter->getdatafunc != NULL)
+		return iter->getdatafunc (iter, iter->collection, iter->context);
+
+	return NULL;
 }
 
 /**

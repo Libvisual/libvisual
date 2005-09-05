@@ -32,7 +32,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #define VISUAL_SONGINFO(obj)				(VISUAL_CHECK_CAST ((obj), VisSongInfo))
-	
+
 /**
  * Used to define the type of song info being used.
  * There are two interfaces to notify libvisual of song
@@ -65,7 +65,7 @@ struct _VisSongInfo {
 	/* Simple type */
 	char		*songname;	/**< A string containing the song name using
 					  * the simple interface. */
-	
+
 	/* Advanced type */
 	char		*artist;	/**< A string containing the artist name using
 					  * the advanced interface. */
@@ -82,7 +82,10 @@ struct _VisSongInfo {
 };
 
 VisSongInfo *visual_songinfo_new (VisSongInfoType type);
+int visual_songinfo_init (VisSongInfo *songinfo, VisSongInfoType type);
+
 int visual_songinfo_free_strings (VisSongInfo *songinfo);
+
 int visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type);
 int visual_songinfo_set_length (VisSongInfo *songinfo, int length);
 int visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed);
@@ -91,6 +94,7 @@ int visual_songinfo_set_artist (VisSongInfo *songinfo, char *artist);
 int visual_songinfo_set_album (VisSongInfo *songinfo, char *album);
 int visual_songinfo_set_song (VisSongInfo *songinfo, char *song);
 int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover);
+
 int visual_songinfo_mark (VisSongInfo *songinfo);
 long visual_songinfo_age (VisSongInfo *songinfo);
 int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src);

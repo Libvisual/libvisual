@@ -323,15 +323,15 @@ int visual_actor_valid_by_name (const char *name)
 VisActor *visual_actor_new (const char *actorname)
 {
 	VisActor *actor;
-	
+
 	actor = visual_mem_new0 (VisActor, 1);
 
 	visual_actor_init (actor, actorname);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (actor), TRUE);
 	visual_object_ref (VISUAL_OBJECT (actor));
-	
+
 	return actor;
 }
 
@@ -354,7 +354,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 	VisActorPluginEnviron *actenviron;
 
 	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-	
+
 	if (__lv_plugins_actor == NULL && actorname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 

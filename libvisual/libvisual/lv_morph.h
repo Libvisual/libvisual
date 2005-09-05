@@ -106,6 +106,7 @@ typedef int (*VisPluginMorphApplyFunc)(VisPluginData *plugin, float rate, VisAud
  */
 struct _VisMorph {
 	VisObject	 object;	/**< The VisObject data. */
+
 	VisPluginData	*plugin;	/**< Pointer to the plugin itself. */
 	VisVideo	*dest;		/**< Destination video, this is where
 					 * the result of the morph gets drawn. */

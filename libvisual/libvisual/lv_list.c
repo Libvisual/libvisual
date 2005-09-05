@@ -56,8 +56,10 @@ static int list_destroy (VisCollection *collection);
 static int list_size (VisCollection *collection);
 static VisCollectionIter *list_iter (VisCollection *collection);
 
+static void list_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index);
 static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
-static void *list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
+static void list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
+static void *list_iter_getdata (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
 
 
 static int list_destroy (VisCollection *collection)
@@ -106,22 +108,40 @@ static VisCollectionIter *list_iter (VisCollection *collection)
 	visual_object_initialize (VISUAL_OBJECT (context), TRUE, NULL);
 	context->cur = list->head;
 
-	iter = visual_collection_iter_new (list_iter_next, list_iter_has_more, collection, VISUAL_OBJECT (context));
+	iter = visual_collection_iter_new (list_iter_assign, list_iter_next, list_iter_has_more,
+			list_iter_getdata, collection, VISUAL_OBJECT (context));
 
 	return iter;
 }
 
-static void *list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+static void list_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index)
+{
+	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
+	VisList *list = VISUAL_LIST (collection);
+	int i;
+
+	context->cur = list->head;
+
+	if (context->cur == NULL)
+		return;
+
+	for (i = 0; i < index; i++) {
+		context->cur = context->cur->next;
+
+		if (context->cur == NULL)
+			return;
+	}
+}
+
+static void list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
 {
 	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
 	VisListEntry *le = context->cur;
 
 	if (le == NULL)
-		return NULL;
+		return;
 
 	context->cur = le->next;
-
-	return le->data;
 }
 
 static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
@@ -134,6 +154,16 @@ static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collectio
 	return TRUE;
 }
 
+static void *list_iter_getdata (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+{
+	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
+	VisListEntry *le = context->cur;
+
+	if (le == NULL)
+		return NULL;
+
+	return le->data;
+}
 
 /**
  * @defgroup VisList VisList
@@ -294,28 +324,17 @@ void *visual_list_get (VisList *list, int index)
  */
 int visual_list_add_at_begin (VisList *list, void *data)
 {
-	VisListEntry *current, *next;
+	VisListEntry *le;
 
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	/* Allocate memory for new list entry */
-	current = visual_mem_new0 (VisListEntry, 1);
+	le = visual_mem_new0 (VisListEntry, 1);
 
 	/* Assign data element */
-	current->data = data;
+	le->data = data;
 
-	if (list->head == NULL) {
-		list->head = current;
-		list->tail = current;
-	} else {
-		next = list->head;
-
-		current->next = next;
-		list->head = current;
-	}
-
-	/* Done */
-	list->count++;
+	visual_list_chain_at_begin (list, le);
 
 	return VISUAL_OK;
 }
@@ -331,30 +350,93 @@ int visual_list_add_at_begin (VisList *list, void *data)
  */
 int visual_list_add (VisList *list, void *data)
 {
-	VisListEntry *current, *prev;
+	VisListEntry *le;
 
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
-	current = visual_mem_new0 (VisListEntry, 1);
+	le = visual_mem_new0 (VisListEntry, 1);
 
 	/* Assign data element */
-	current->data = data;
+	le->data = data;
+
+	visual_list_chain (list, le);
+
+	return VISUAL_OK;
+}
+
+/**
+ * Chains an VisListEntry at the beginning of the list.
+ *
+ * @param list Pointer to the VisList to which an entry needs to be added
+ * 	at it's tail.
+ * @param le A pointer to the VisListEntry that needs to be chained to the list.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
+ */
+int visual_list_chain_at_begin (VisList *list, VisListEntry *le)
+{
+	VisListEntry *next;
+
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+
+	if (list->head == NULL) {
+		list->head = le;
+		list->tail = le;
+
+		le->prev = NULL;
+		le->next = NULL;
+	} else {
+		next = list->head;
+
+		le->next = next;
+		list->head = le;
+
+		le->prev = NULL;
+	}
+
+	/* Done */
+	list->count++;
+
+	return VISUAL_OK;
+}
+
+/**
+ * Chains an VisListEntry at the end of the list.
+ *
+ * @param list Pointer to the VisList to which an entry needs to be added
+ * 	at it's tail.
+ * @param le A pointer to the VisListEntry that needs to be chained to the list.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
+ */
+int visual_list_chain (VisList *list, VisListEntry *le)
+{
+	VisListEntry *prev;
+
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 
 	/* Add list entry to list */
 	/* Is this the first entry for this list ? */
 	if (list->head == NULL) {
-		list->head = current;
-		list->tail = current;
+		list->head = le;
+		list->tail = le;
+
+		le->prev = NULL;
+		le->next = NULL;
 	} else {
 		/* Nope, add to tail of this list */
 		prev = list->tail;
 
 		/* Exchange pointers */
-		prev->next = current;
-		current->prev = prev;
+		prev->next = le;
+		le->prev = prev;
+
+		le->next = NULL;
 
 		/* Point tail to new entry */
-		list->tail = current;
+		list->tail = le;
 	}
 
 	/* Done */

@@ -53,7 +53,7 @@ int visual_rectangle_position_within (VisRectangle *rect, int x, int y);
 int visual_rectangle_within_partially (VisRectangle *dest, VisRectangle *src);
 int visual_rectangle_within (VisRectangle *dest, VisRectangle *src);
 int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src);
-int visual_rectangle_merge (VisRectangle *dest, VisRectangle *within, VisRectangle *src);
+int visual_rectangle_clip (VisRectangle *dest, VisRectangle *within, VisRectangle *src);
 int visual_rectangle_normalise (VisRectangle *rect);
 int visual_rectangle_normalise_to (VisRectangle *dest, VisRectangle *src);
 int visual_rectangle_is_empty (VisRectangle *rect);

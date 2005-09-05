@@ -172,13 +172,16 @@ int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src)
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	visual_mem_copy (dest, src, sizeof (VisRectangle));
+	dest->x = src->x;
+	dest->y = src->y;
+	dest->width = src->width;
+	dest->height = src->height;
 
 	return VISUAL_OK;
 }
 
 /**
- * Merges two VisRectangles into one, This is done by using the within parameter as the
+ * Clips two VisRectangles into one, This is done by using the within parameter as the
  * boundry for the src parameter, so src is adopten so that is falls within the within parameter.
  * The final result is stored in dest. It's legal to give the same VisRectangle for the dest
  * and src VisRectangle.
@@ -190,21 +193,21 @@ int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src)
  * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL or -VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS
  *	on failure.
  */
-int visual_rectangle_merge (VisRectangle *dest, VisRectangle *within, VisRectangle *src)
+int visual_rectangle_clip (VisRectangle *dest, VisRectangle *within, VisRectangle *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 	visual_log_return_val_if_fail (within != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
-	
-	/* If not partially within, don't even try to merge */
+
+	/* If not partially within, don't even try to clip */
 	if (visual_rectangle_within_partially (within, src) == FALSE) {
 		visual_rectangle_set (dest, 0, 0, 0, 0);
 
 		return -VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS;
 	}
-	
+
 	visual_rectangle_copy (dest, src);
-	
+
 	/* Left, Upper boundries */
 	if (src->x < within->x) {
 		dest->width = src->width - (within->x - src->x);
@@ -259,7 +262,7 @@ int visual_rectangle_normalise_to (VisRectangle *dest, VisRectangle *src)
 
 	dest->x = src->x;
 	dest->y = src->y;
-	
+
 	return VISUAL_OK;
 }
 
@@ -337,6 +340,8 @@ int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy,
 int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int *xlist, int *ylist, int size)
 {
 	int i;
+
+	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	for (i = 0; i < size; i++) {
 		xlist[i] = rect->width * fxlist[i];

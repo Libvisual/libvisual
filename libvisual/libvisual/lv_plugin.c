@@ -102,7 +102,7 @@ static int plugin_ref_dtor (VisObject *object)
 
 	if (ref->info != NULL)
 		visual_object_unref (VISUAL_OBJECT (ref->info));
-	
+
 	ref->file = NULL;
 	ref->info = NULL;
 
@@ -155,11 +155,11 @@ static char *get_delim_node (const char *str, char delim, int index)
 			/* Last section doesn't contain a delim */
 			if (end == NULL)
 				end = str + strlen (str);
-			
+
 			/* Cut off the delim that is in front */
 			if (i > 0)
 				start++;
-			
+
 			break;
 		}
 

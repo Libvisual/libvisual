@@ -1002,8 +1002,8 @@ int visual_video_region_sub_with_boundry (VisVideo *dest, VisRectangle *drect, V
 	visual_video_get_boundry (src, &sbound);
 
 	/* Merge the destination and source rect, so that only the allowed parts are sub regioned */
-	visual_rectangle_merge (&rsrect, &sbound, srect);
-	visual_rectangle_merge (&rsrect, drect, &rsrect);
+	visual_rectangle_clip (&rsrect, &sbound, srect);
+	visual_rectangle_clip (&rsrect, drect, &rsrect);
 
 	return visual_video_region_sub (dest, src, &rsrect);
 }

@@ -240,7 +240,7 @@ union _VisEvent {
 struct _VisEventQueue {
 	VisObject	 object;	/**< The VisObject data. */
 	VisList		 events;	/**< List of VisEvents in the queue. */
-	VisEvent 	 lastresize;	/**< Last resize event to provide quick access
+	VisEvent	 lastresize;	/**< Last resize event to provide quick access
 					  * to this high piority event. */
 	int		 resizenew;	/**< Flag that is set when there is a new resize event. */
 	int		 eventcount;	/**< Contains the number of events in queue. */

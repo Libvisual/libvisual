@@ -60,12 +60,20 @@ typedef VisCollectionIter *(*VisCollectionIterFunc)(VisCollection *collection);
 
 /**
  */
-typedef void *(*VisCollectionIterNextFunc)(VisCollectionIter *iter, VisCollection *collection, VisObject *context);
+typedef void (*VisCollectionIterAssignFunc)(VisCollectionIter *iter, VisCollection *collection, VisObject *context,
+		int index);
+
+/**
+ */
+typedef void (*VisCollectionIterNextFunc)(VisCollectionIter *iter, VisCollection *collection, VisObject *context);
 
 /**
  */
 typedef int (*VisCollectionIterHasMoreFunc)(VisCollectionIter *iter, VisCollection *collection, VisObject *context);
 
+/**
+ */
+typedef void *(*VisCollectionIterGetDataFunc)(VisCollectionIter *iter, VisCollection *collection, VisObject *context);
 
 /**
  */
@@ -83,8 +91,10 @@ struct _VisCollection {
 struct _VisCollectionIter {
 	VisObject			 object;
 
+	VisCollectionIterAssignFunc	 assignfunc;
 	VisCollectionIterNextFunc	 nextfunc;
 	VisCollectionIterHasMoreFunc	 hasmorefunc;
+	VisCollectionIterGetDataFunc	 getdatafunc;
 
 	VisCollection			*collection;
 
@@ -111,13 +121,19 @@ int visual_collection_size (VisCollection *collection);
 VisCollectionIter *visual_collection_get_iter (VisCollection *collection);
 
 
-VisCollectionIter *visual_collection_iter_new (VisCollectionIterNextFunc nextfunc,
-		VisCollectionIterHasMoreFunc hasmorefunc, VisCollection *collection, VisObject *context);
-int visual_collection_iter_init (VisCollectionIter *iter, VisCollectionIterNextFunc nextfunc,
-		VisCollectionIterHasMoreFunc hasmorefunc, VisCollection *collection, VisObject *context);
+VisCollectionIter *visual_collection_iter_new (
+		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
+		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
+		VisCollection *collection, VisObject *context);
+int visual_collection_iter_init (VisCollectionIter *iter,
+		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
+		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
+		VisCollection *collection, VisObject *context);
 
-void *visual_collection_iter_next (VisCollectionIter *iter);
+void visual_collection_iter_assign (VisCollectionIter *iter, int index);
+void visual_collection_iter_next (VisCollectionIter *iter);
 int visual_collection_iter_has_more (VisCollectionIter *iter);
+void *visual_collection_iter_get_data (VisCollectionIter *iter);
 
 #ifdef __cplusplus
 }

@@ -28,6 +28,7 @@
 #define _LV_FFT_H
 
 #include <libvisual/lv_common.h>
+#include <libvisual/lv_cache.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,7 +56,13 @@ struct _VisFFT {
 };
 
 /* prototypes */
+int visual_fft_initialize (void);
+int visual_fft_is_initialized (void);
+int visual_fft_deinitialize (void);
+
 VisFFT *visual_fft_new (int samples_in, int samples_out);
+int visual_fft_init (VisFFT *fft, int samples_in, int samples_out);
+
 int visual_fft_perform (VisFFT *fft, float *input, float *output);
 
 #ifdef __cplusplus

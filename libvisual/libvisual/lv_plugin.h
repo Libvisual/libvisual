@@ -141,7 +141,7 @@ typedef int (*VisPluginEventsFunc)(VisPluginData *plugin, VisEventQueue *events)
  * and does refcounting. It is also used as entries in the plugin registry.
  */
 struct _VisPluginRef {
-	VisObject		 object;	/**< The VisObject data. */	
+	VisObject		 object;	/**< The VisObject data. */
 
 	char			*file;		/**< The file location of the plugin. */
 	int			 index;		/**< Contains the index number for the entry in the VisPluginInfo table. */
@@ -216,7 +216,9 @@ struct _VisPluginData {
  */
 struct _VisPluginEnviron {
 	VisObject		 object;	/**< The VisObject data. */
+
 	const char		*type;		/**< Almost the same as _VisPluginInfo.type. */
+
 	VisObject		*environment;	/**< VisObject that contains environ specific data. */
 };
 

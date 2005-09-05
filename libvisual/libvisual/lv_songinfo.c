@@ -62,13 +62,29 @@ VisSongInfo *visual_songinfo_new (VisSongInfoType type)
 	VisSongInfo *songinfo;
 
 	songinfo = visual_mem_new0 (VisSongInfo, 1);
-	
-	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (songinfo), TRUE, songinfo_dtor);
 
-	songinfo->type = type;
+	visual_songinfo_init (songinfo, type);
+
+	/* Do the VisObject initialization */
+	visual_object_set_allocated (VISUAL_OBJECT (songinfo), TRUE);
+	visual_object_ref (VISUAL_OBJECT (songinfo));
 
 	return songinfo;
+}
+
+int visual_songinfo_init (VisSongInfo *songinfo, VisSongInfoType type)
+{
+	visual_log_return_val_if_fail (songinfo != NULL, -VISUAL_ERROR_SONGINFO_NULL);
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (songinfo));
+	visual_object_set_dtor (VISUAL_OBJECT (songinfo), songinfo_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (songinfo), FALSE);
+
+	/* Set the VisSongInfo data */
+	songinfo->type = type;
+
+	return VISUAL_OK;
 }
 
 /**

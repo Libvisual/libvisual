@@ -72,6 +72,7 @@ char **__lv_plugpaths = NULL;
 
 static int init_params (VisParamContainer *paramcontainer);
 static VisUIWidget *make_userinterface (void);
+static int free_plugpaths (void);
 
 static int init_params (VisParamContainer *paramcontainer)
 {
@@ -180,6 +181,19 @@ static VisUIWidget *make_userinterface ()
 	return vbox;
 }
 
+static int free_plugpaths ()
+{
+	int i;
+
+	if (__lv_plugpaths == NULL)
+			return VISUAL_OK;
+
+	for (i = 0; i < __lv_plugpath_cnt; i++)
+		visual_mem_free (__lv_plugpaths[i]);
+
+	free (__lv_plugpaths);
+}
+
 /**
  * @defgroup Libvisual Libvisual
  * @{
@@ -229,7 +243,10 @@ int visual_init_path_add (char *pathadd)
 
 	visual_log_return_val_if_fail (__lv_plugpaths != NULL, -VISUAL_ERROR_LIBVISUAL_NO_PATHS);
 
-	__lv_plugpaths[__lv_plugpath_cnt - 1] = pathadd;
+	if (pathadd == NULL)
+		__lv_plugpaths[__lv_plugpath_cnt - 1] = NULL;
+	else
+		__lv_plugpaths[__lv_plugpath_cnt - 1] = strdup (pathadd);
 
 	return VISUAL_OK;
 }
@@ -290,6 +307,9 @@ int visual_init (int *argc, char ***argv)
 	/* Initialize Thread system */
 	visual_thread_initialize ();
 
+	/* Initialize FFT system */
+	visual_fft_initialize ();
+
 	/* Add the standard plugin paths */
 	ret = visual_init_path_add (PLUGPATH"/actor");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
@@ -321,6 +341,9 @@ int visual_init (int *argc, char ***argv)
 
 	__lv_initialized = TRUE;
 
+	/* Free the strdupped plugpaths */
+	free_plugpaths ();
+
 	return VISUAL_OK;
 }
 
@@ -348,6 +371,9 @@ int visual_quit ()
 
 		return -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED;
 	}
+
+	if (visual_fft_is_initialized () == TRUE)
+		visual_fft_deinitialize ();
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins));
 	if (ret < 0)

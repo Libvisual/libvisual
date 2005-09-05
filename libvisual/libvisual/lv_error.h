@@ -91,6 +91,7 @@ enum {
 
 	/* Error entries for VisFFT system */
 	VISUAL_ERROR_FFT_NULL,				/**< The VisFFT is NULL. */
+	VISUAL_ERROR_FFT_NOT_INITIALIZED,		/**< The VisFFT subsystem is not initialized. */
 
 	/* Error entries for the VisHashmap system */
 	VISUAL_ERROR_HASHMAP_NULL,			/**< The VisHashmap is NULL. */

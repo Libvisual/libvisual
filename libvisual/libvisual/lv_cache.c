@@ -35,7 +35,13 @@ static int cache_remove_list_entry (VisCache *cache, VisListEntry *le);
 static int cache_dtor (VisObject *object)
 {
 	VisCache *cache = VISUAL_CACHE (object);
+	VisListEntry *le = NULL;
 
+	/* Destroy all entries in cache first */
+	while (visual_list_next (cache->list, &le) != NULL)
+		cache_remove_list_entry (cache, le);
+
+	/* Destroy the rest */
 	if (cache->list != NULL)
 		visual_object_unref (VISUAL_OBJECT (cache->list));
 
@@ -103,7 +109,7 @@ int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, in
 	visual_cache_set_limits (cache, size, maxage);
 	cache->destroyer = destroyer;
 
-	cache->list = visual_list_new (visual_mem_free);
+	cache->list = visual_list_new (NULL);
 
 	cache->index = visual_hashmap_new (NULL); /* FIXME create in set_limits, rehash if not NULL */
 	visual_hashmap_set_table_size (cache->index, size); /* <- also */
@@ -205,7 +211,7 @@ void *visual_cache_get (VisCache *cache, char *key)
 	if (le == NULL)
 		return NULL;
 
-	centry = le;
+	centry = le->data;
 
 	return centry->data;
 }

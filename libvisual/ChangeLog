@@ -1,3 +1,24 @@
+2005-09-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_collection.*: Refining the Iter interface.
+
+	* libvisual/lv_list.*: Update to new Iter interface.
+	(visual_list_chain_at_begin, visual_list_chain): Added functions
+	to chain elements.
+	
+	* libvisual/lv_hashmap.*: More fixes.
+
+	* libvisual/lv_cache.*: More work.
+
+	* libvisual/lv_fft.*: Started working on VisCache support.
+
+	* libvisual/lv_rectangle.*: Various improvements, and renamed:
+	_merge -> _clip
+
+	* libvisual/lv_random.*: Fixed VisObject boilerplating.
+
+	* libvisual/lv_songinfo.*: Better VisObject support.
+
 2005-09-01  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_error.c: i18n corrections.

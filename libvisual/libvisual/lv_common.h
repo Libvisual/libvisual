@@ -24,6 +24,14 @@
 #ifndef _LV_COMMON_H
 #define _LV_COMMON_H
 
+#ifdef __cplusplus
+# define VISUAL_BEGIN_DECLS	extern "C" {
+# define VISUAL_END_DECLS	}
+#else
+# define VISUAL_BEGIN_DECLS
+# define VISUAL_END_DECLS
+#endif /* __cplusplus */
+
 #include <libvisual/lv_mem.h>
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_error.h>
@@ -58,5 +66,5 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-	
+
 #endif /* _LV_COMMON_H */

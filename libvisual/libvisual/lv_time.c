@@ -55,7 +55,7 @@ VisTime *visual_time_new ()
 	time_ = visual_mem_new0 (VisTime, 1);
 
 	visual_time_init (time_);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (time_), TRUE);
 	visual_object_ref (VISUAL_OBJECT (time_));
@@ -78,12 +78,12 @@ VisTime *visual_time_new ()
 int visual_time_init (VisTime *time_)
 {
 	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (time_));
 	visual_object_set_dtor (VISUAL_OBJECT (time_), NULL);
 	visual_object_set_allocated (VISUAL_OBJECT (time_), FALSE);
-				
+
 	/* Reset the VisTime data */
 	visual_time_set	(time_, 0, 0);
 
