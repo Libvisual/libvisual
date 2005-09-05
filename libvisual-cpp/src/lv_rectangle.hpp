@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_rectangle.hpp,v 1.1 2005-09-04 21:59:33 descender Exp $
+// $Id: lv_rectangle.hpp,v 1.2 2005-09-05 17:46:13 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -41,17 +41,12 @@ namespace Lv
       Rectangle (const Rectangle& other)
           : Object (vis_rect_to_object (visual_rectangle_new (0, 0, 0, 0)))
       {
-          // WARNING: vis_rect_copy () is IMHO a little dubious
-          // right now, it copies the entire VisRectangle struct using
-          // memcpy, therefore including VisObject fields such as
-          // reference count and destructor.
           visual_rectangle_copy (&vis_rect (), 
                                  const_cast<VisRectangle *> (&other.vis_rect ()));
       }
 
       inline const Rectangle& operator = (const Rectangle& other)
       {
-          // WARNING: (see copy constructor)
           visual_rectangle_copy (&vis_rect (), 
                                  const_cast<VisRectangle *> (&other.vis_rect ()));
           return *this;
@@ -103,9 +98,9 @@ namespace Lv
       inline int clip (const Rectangle& boundary,
                        const Rectangle& rect)
       {
-          return visual_rectangle_merge (&vis_rect (),
-                                         const_cast<VisRectangle *> (&boundary.vis_rect ()),
-                                         const_cast<VisRectangle *> (&rect.vis_rect ()));
+          return visual_rectangle_clip (&vis_rect (),
+                                        const_cast<VisRectangle *> (&boundary.vis_rect ()),
+                                        const_cast<VisRectangle *> (&rect.vis_rect ()));
       }
 
       inline void normalise ()
