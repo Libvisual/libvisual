@@ -1,5 +1,12 @@
 2005-09-05  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_cache.c: Use visual_collection_size instead of obsolete
+	visual_list_count.
+
+	* libvisual/lv_hashmap.c: unresolved symbol, doh.
+
+2005-09-05  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_collection.*: Refining the Iter interface.
 
 	* libvisual/lv_list.*: Update to new Iter interface.

@@ -92,7 +92,7 @@ static int hashmap_chain_destroy (VisHashmap *hashmap, VisList *list)
 			visual_list_destroy (list, &le);
 	} else {
 		while ((mentry = visual_list_next (list, &le)) != NULL) {
-			destroy (mentry->data);
+			destroyer (mentry->data);
 			visual_list_destroy (list, &le);
 		}
 	}

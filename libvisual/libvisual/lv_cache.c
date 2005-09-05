@@ -150,7 +150,7 @@ int visual_cache_put (VisCache *cache, char *key, void *data)
 	}
 
 	/* Remove items that are no longer wished in the cache */
-	while (visual_list_count (cache->list) > cache->size) {
+	while (visual_collection_size (VISUAL_COLLECTION (cache->list)) > cache->size) {
 		le = cache->list->tail;
 
 		if (le == NULL)
