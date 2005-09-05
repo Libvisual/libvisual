@@ -3,6 +3,7 @@
 gcc -o alphablend_bench alphablend_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o blit_bench blit_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o init_bench init_bench.c `pkg-config --libs --cflags libvisual`
+gcc -o cache_bench cache_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o denormalise_bench denormalise_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o fft_bench fft_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o audio_bench audio_bench.c `pkg-config --libs --cflags libvisual`
