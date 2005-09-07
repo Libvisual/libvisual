@@ -30,7 +30,26 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include <string.h>
+
+#include "lv_cache.h"
 #include "lv_fft.h"
+
+#define FFT_CACHEENTRY(obj)				(VISUAL_CHECK_CAST ((obj), FFTCacheEntry))
+
+
+typedef struct _FFTCacheEntry FFTCacheEntry;
+
+struct _FFTCacheEntry {
+	VisObject	 object;
+
+	int		 spectrum_size;
+
+	float		*bitrevtable;
+
+	float		*sintable;
+	float		*costable;
+};
 
 
 static VisCache __lv_fft_cache;
@@ -39,11 +58,11 @@ static int __lv_fft_initialized = FALSE;
 
 static int fft_dtor (VisObject *object);
 
-static void table_bitrev_init (VisFFT *fft);
-static void table_cossin_init (VisFFT *fft);
+static void fft_table_bitrev_init (FFTCacheEntry *fcache, VisFFT *fft);
+static void fft_table_cossin_init (FFTCacheEntry *fcache, VisFFT *fft);
 
-static int fft_cache_destroyer (void *data);
-
+static int fft_cache_destroyer (VisObject *object);
+static FFTCacheEntry *fft_cache_get (VisFFT *fft);
 
 static int fft_dtor (VisObject *object)
 {
@@ -64,21 +83,21 @@ static int fft_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
-static void table_bitrev_init (VisFFT *fft)
+static void fft_table_bitrev_init (FFTCacheEntry *fcache, VisFFT *fft)
 {
 	int i, m, temp;
 	int j = 0;
 
-	fft->bitrevtable = visual_mem_malloc0 (sizeof (int) * fft->spectrum_size);
+	fcache->bitrevtable = visual_mem_malloc0 (sizeof (int) * fft->spectrum_size);
 
 	for (i = 0; i < fft->spectrum_size; i++)
-		fft->bitrevtable[i] = i;
+		fcache->bitrevtable[i] = i;
 
 	for (i = 0; i < fft->spectrum_size; i++) {
 		if (j > i) {
-			temp = fft->bitrevtable[i];
-			fft->bitrevtable[i] = fft->bitrevtable[j];
-			fft->bitrevtable[j] = temp;
+			temp = fcache->bitrevtable[i];
+			fcache->bitrevtable[i] = fcache->bitrevtable[j];
+			fcache->bitrevtable[j] = temp;
 		}
 
 		m = fft->spectrum_size >> 1;
@@ -92,7 +111,7 @@ static void table_bitrev_init (VisFFT *fft)
 	}
 }
 
-static void table_cossin_init (VisFFT *fft)
+static void fft_table_cossin_init (FFTCacheEntry *fcache, VisFFT *fft)
 {
 	int i, dftsize, tabsize;
 	float theta;
@@ -105,16 +124,16 @@ static void table_cossin_init (VisFFT *fft)
 		dftsize <<= 1;
 	}
 
-	fft->sintable = visual_mem_malloc0 (sizeof (float) * tabsize);
-	fft->costable = visual_mem_malloc0 (sizeof (float) * tabsize);
+	fcache->sintable = visual_mem_malloc0 (sizeof (float) * tabsize);
+	fcache->costable = visual_mem_malloc0 (sizeof (float) * tabsize);
 
 	dftsize = 2;
 	i = 0;
 	while (dftsize <= fft->spectrum_size) {
 		theta = (float) (-2.0f * FFT_PI / (float) dftsize);
 
-		fft->sintable[i] = (float) cosf (theta);
-		fft->costable[i] = (float) sinf (theta);
+		fcache->sintable[i] = (float) cosf (theta);
+		fcache->costable[i] = (float) sinf (theta);
 
 		i++;
 
@@ -122,10 +141,50 @@ static void table_cossin_init (VisFFT *fft)
 	}
 }
 
-static int fft_cache_destroyer (void *data)
+static int fft_cache_destroyer (VisObject *object)
 {
+	FFTCacheEntry *fcache = FFT_CACHEENTRY (object);
 
+	if (fcache->bitrevtable != NULL)
+		visual_mem_free (fcache->bitrevtable);
+
+	if (fcache->sintable != NULL)
+		visual_mem_free (fcache->sintable);
+
+	if (fcache->costable != NULL)
+		visual_mem_free (fcache->costable);
+
+	fcache->bitrevtable = NULL;
+	fcache->sintable = NULL;
+	fcache->costable = NULL;
+
+	return VISUAL_OK;
 }
+
+static FFTCacheEntry *fft_cache_get (VisFFT *fft)
+{
+	FFTCacheEntry *fcache;
+	char key[16];
+
+	visual_log_return_val_if_fail (__lv_fft_initialized == TRUE, NULL);
+
+	snprintf (key, 16, "%d", fft->spectrum_size);
+	fcache = visual_cache_get (&__lv_fft_cache, key);
+
+	if (fcache == NULL) {
+		fcache = visual_mem_new0 (FFTCacheEntry, 1);
+
+		visual_object_initialize (VISUAL_OBJECT (fcache), TRUE, fft_cache_destroyer);
+
+		fft_table_bitrev_init (fcache, fft);
+		fft_table_cossin_init (fcache, fft);
+
+		visual_cache_put (&__lv_fft_cache, key, fcache);
+	}
+
+	return fcache;
+}
+
 
 /**
  * @defgroup VisFFT VisFFT
@@ -134,7 +193,7 @@ static int fft_cache_destroyer (void *data)
 
 int visual_fft_initialize ()
 {
-	visual_cache_init (&__lv_fft_cache, fft_cache_destroyer, 50, NULL);
+	visual_cache_init (&__lv_fft_cache, visual_object_collection_destroyer, 50, NULL);
 
 	__lv_fft_initialized = TRUE;
 
@@ -195,8 +254,7 @@ int visual_fft_init (VisFFT *fft, int samples_in, int samples_out)
 	fft->spectrum_size = samples_out * 2;
 
 	/* Initialize the VisFFT */
-	table_bitrev_init (fft);
-	table_cossin_init (fft);
+	fft_cache_get (fft);
 
 	fft->real = visual_mem_malloc0 (sizeof (float) * fft->spectrum_size);
 	fft->imag = visual_mem_malloc0 (sizeof (float) * fft->spectrum_size);
@@ -215,6 +273,7 @@ int visual_fft_init (VisFFT *fft, int samples_in, int samples_out)
  */
 int visual_fft_perform (VisFFT *fft, float *input, float *output)
 {
+	FFTCacheEntry *fcache;
 	int j, m, i, dftsize, hdftsize, t;
 	float wr, wi, wpi, wpr, wtemp, tempr, tempi;
 
@@ -222,8 +281,11 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output)
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
 
+	fcache = fft_cache_get (fft);
+	visual_object_ref (VISUAL_OBJECT (fcache));
+
 	for (i = 0; i < fft->spectrum_size; i++) {
-		int idx = fft->bitrevtable[i];
+		int idx = fcache->bitrevtable[i];
 
 		if (idx < fft->samples_in)
 			fft->real[i] = input[idx] / 32768.00f;
@@ -236,8 +298,8 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output)
 	dftsize = 2;
 	t = 0;
 	while (dftsize <= fft->spectrum_size) {
-		wpr = fft->sintable[t];
-		wpi = fft->costable[t];
+		wpr = fcache->sintable[t];
+		wpi = fcache->costable[t];
 		wr = 1.0f;
 		wi = 0.0f;
 		hdftsize = dftsize >> 1;
@@ -261,6 +323,8 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output)
 				  that a log scale will be calculated for this */
 		t++;
 	}
+
+	visual_object_unref (VISUAL_OBJECT (fcache));
 
 	for (i = 0; i < fft->spectrum_size / 2; i++)
 		output[i] = sqrtf (fft->real[i] * fft->real[i] + fft->imag[i] * fft->imag[i]);

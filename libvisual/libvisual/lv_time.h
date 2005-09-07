@@ -32,7 +32,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-	
+
 #define VISUAL_USEC_PER_SEC	1000000
 
 #define VISUAL_TIME(obj)				(VISUAL_CHECK_CAST ((obj), VisTime))

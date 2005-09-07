@@ -1,3 +1,19 @@
+2005-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c (input_interleaved_stereo): Fixed memleak
+	caused by not setting a VisBuffer destroyer to the two VisBuffers
+	containing the deinterleaved sample fragments.
+
+	* libvisual/lv_audio.c: Reintergrating VisFFT now it's back in
+	business. This is not how the final interface will look since
+	libvisual it's audio core will move to a pull interface instead of a
+	push interface, however internally the sample part is already being
+	pulled, but it's still bridged by the old interface.
+
+	* libvisual/lv_fft.*: Implement fft table cache, so the different tables are
+	shared between multiple instances of the VisFFT class, this will be
+	major when the pull interface is complete.
+
 2005-09-05  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_cache.c: Use visual_collection_size instead of obsolete

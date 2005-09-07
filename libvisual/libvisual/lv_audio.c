@@ -189,7 +189,7 @@ int visual_audio_init (VisAudio *audio)
 	visual_object_set_allocated (VISUAL_OBJECT (audio), FALSE);
 
 	/* Reset the VisAudio data */
-	audio->fft = NULL;
+	audio->fft = visual_fft_new (512, 256);
 	audio->samplepool = visual_audio_samplepool_new ();
 
 	return VISUAL_OK;
@@ -280,14 +280,10 @@ int visual_audio_analyze (VisAudio *audio)
 
 	/* Convert int16_t audio to float audio, (won't be needed when the rest of the new audio
 	 * core lands). */
-#if 0
 	for (i = 0; i < 512; i++) {
 		temp_audio[0][i] = audio->pcm[0][i];
 		temp_audio[1][i] = audio->pcm[1][i];
 	}
-	/* Initialize fft if not yet initialized */
-	if (audio->fft == NULL)
-		audio->fft = visual_fft_new (512, 256);
 
 	/* FFT analyze the pcm data */
 	visual_fft_perform (audio->fft, temp_audio[0], temp_out);
@@ -322,6 +318,7 @@ int visual_audio_analyze (VisAudio *audio)
 	}
 
 
+#if 0
 	/* BPM stuff, used for the audio energy only right now */
 	for (i = 1023; i > 0; i--) {
 		visual_mem_copy (&audio->bpmhistory[i], &audio->bpmhistory[i - 1], 6 * sizeof (short int));
@@ -960,6 +957,9 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 
 	visual_log_return_val_if_fail (chan1 != NULL, -1);
 	visual_log_return_val_if_fail (chan2 != NULL, -1);
+
+	visual_buffer_set_destroyer (chan1, visual_buffer_destroyer_free);
+	visual_buffer_set_destroyer (chan2, visual_buffer_destroyer_free);
 
 	sample = visual_audio_sample_new (chan1, &timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, "front left 1");

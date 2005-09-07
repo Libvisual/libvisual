@@ -149,9 +149,9 @@ int visual_input_valid_by_name (const char *name)
 VisInput *visual_input_new (const char *inputname)
 {
 	VisInput *input;
-	
+
 	input = visual_mem_new0 (VisInput, 1);
-	
+
 	visual_input_init (input, inputname);
 
 	/* Do the VisObject initialization */
@@ -178,28 +178,28 @@ int visual_input_init (VisInput *input, const char *inputname)
 	VisPluginRef *ref;
 
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
-	
+
 	if (__lv_plugins_input == NULL && inputname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
-	
+
 		return -VISUAL_ERROR_PLUGIN_NO_LIST;
 	}
-	
+
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (input));
 	visual_object_set_dtor (VISUAL_OBJECT (input), input_dtor);
 	visual_object_set_allocated (VISUAL_OBJECT (input), FALSE);
 
 	/* Reset the VisInput data */
-	input->audio = visual_audio_new (); /* FIXME don't allocate in the future */
+	input->audio = visual_audio_new ();
 	input->plugin = NULL;
 	input->callback = NULL;
 
 	if (inputname == NULL)
 		return VISUAL_OK;
-	
+
 	ref = visual_plugin_find (__lv_plugins_input, inputname);
-	
+
 	input->plugin = visual_plugin_load (ref);
 
 	return VISUAL_OK;
@@ -264,10 +264,10 @@ int visual_input_run (VisInput *input)
 
 		if (inplugin == NULL) {
 			visual_log (VISUAL_LOG_CRITICAL, "The input plugin is not loaded correctly.");
-		
+
 			return -VISUAL_ERROR_INPUT_PLUGIN_NULL;
 		}
-		
+
 		inplugin->upload (input->plugin, input->audio);
 	} else
 		input->callback (input, input->audio, visual_object_get_private (VISUAL_OBJECT (input)));
