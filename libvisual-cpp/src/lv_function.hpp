@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_function.hpp,v 1.6 2005-09-01 08:30:13 descender Exp $
+// $Id: lv_function.hpp,v 1.7 2005-09-08 03:27:09 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -24,6 +24,7 @@
 #define LVCPP_FUNCTION_HPP
 
 #include <memory>
+#include <lv_typelist.hpp>
 
 // This design is largely inspired by (read: taken from) the callback
 // framework in Modern C++ Design.

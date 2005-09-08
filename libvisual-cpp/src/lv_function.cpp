@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_function.cpp,v 1.4 2005-09-01 04:48:16 descender Exp $
+// $Id: lv_function.cpp,v 1.5 2005-09-08 03:27:09 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -48,7 +48,7 @@ struct Action
     }
 };
 
-int main ()
+void function_test ()
 {
     using Lv::Function;
 
@@ -85,6 +85,24 @@ int main ()
         b = a;
         a ();
     }
+}
+
+#define LIST_NTH(list,n) Lv::Typelist::Nth<list,n>::Result
+#define LIST_3 LVCPP_TYPELIST_3(char, int, long)
+
+void typelist_test ()
+{
+    std::cout << typeid (LIST_NTH(LIST_3, 0)).name () << ' '
+              << typeid (LIST_NTH(LIST_3, 1)).name () << ' '
+              << typeid (LIST_NTH(LIST_3, 2)).name () << std::endl;
+}
+
+int main ()
+{
+    function_test ();
+    typelist_test ();
+
+    return 0;
 }
 
 #endif // #ifdef LVCPP_FUNCTION_TEST
