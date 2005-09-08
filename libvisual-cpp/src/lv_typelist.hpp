@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_typelist.hpp,v 1.2 2005-09-08 03:50:28 descender Exp $
+// $Id: lv_typelist.hpp,v 1.3 2005-09-08 22:19:58 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -29,11 +29,6 @@
 // C++ does not support variable number of template parameters, so
 // we're forced to define the type list recursively, in Lisp style.
 
-// Here we use macros instead of template typedefs, because C++ does
-// not support them. The well-known workaround by wrapping typedefs in
-// structs requires the annoying typename keyword because the alias is
-// a dependent name. E.g. typename Lv::TypeList<int, int, int>::Type
-
 // The Car and Cdr functions defined here are probably not very
 // useful. We can easily decompose a Cons since it's parameterised by
 // by a Head type (= Car), and a Tail type (= Cdr).
@@ -41,8 +36,14 @@
 // TODO:
 // * add template parameter checks
 
+
+// Here we use macros instead of template typedefs, because C++ does
+// not support them. The well-known workaround by wrapping typedefs in
+// structs requires the annoying typename keyword because the alias is
+// a dependent name. E.g. typename Lv::Typelist<T0, T1, T2>::Type
+
 #define LVCPP_TYPELIST_0                 Lv::Typelist::Null
-#define LVCPP_TYPELIST_1(T0)             T0
+#define LVCPP_TYPELIST_1(T0)             Lv::Typelist::Cons<T0,Lv::Typelist::Null>
 #define LVCPP_TYPELIST_2(T0,T1)          Lv::Typelist::Cons<T0,LVCPP_TYPELIST_1(T1)>
 #define LVCPP_TYPELIST_3(T0,T1,T2)       Lv::Typelist::Cons<T0,LVCPP_TYPELIST_2(T1,T2)>
 #define LVCPP_TYPELIST_4(T0,T1,T2,T3)    Lv::Typelist::Cons<T0,LVCPP_TYPELIST_3(T1,T2,T3)>
@@ -71,13 +72,11 @@ namespace Lv
 
     // (length list)
     template <typename List>
-    struct Length
-    { static const unsigned int value = 1; };
+    struct Length;
 
     // (nth n list)
     template <typename List, int n>
-    struct Nth
-    { typedef List Result; };
+    struct Nth;
 
     // (car ()) -> ()
     template <>
@@ -104,13 +103,13 @@ namespace Lv
     struct Length<Null>
     { static const unsigned int value = 0; };
 
-    // (length list) -> (+ (length (cdr list)) 1)
+    // (length list) -> (1+ (length (cdr list)))
     template <typename Head, typename Tail>
     struct Length<Cons<Head,Tail> > 
     { static const unsigned int value = 1 + Length<Tail>::value; };
 
     // (nth n ()) -> ()
-    // where n is an non-negative integer 
+    // where n is a non-negative integer 
     template <int n>
     struct Nth<Null, n>
     { typedef Null Result; };
@@ -120,7 +119,7 @@ namespace Lv
     struct Nth<Cons<Head,Tail>, 0>
     { typedef Head Result; };
 
-    // (nth n list) -> (nth (- n 1) (cdr list))
+    // (nth n list) -> (nth (1- n) (cdr list))
     // where n is a postive integer
     template <typename Head, typename Tail, int n>
     struct Nth<Cons<Head,Tail>, n>
