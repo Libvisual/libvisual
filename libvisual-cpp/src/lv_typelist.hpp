@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_typelist.hpp,v 1.1 2005-09-08 03:27:09 descender Exp $
+// $Id: lv_typelist.hpp,v 1.2 2005-09-08 03:50:28 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -43,10 +43,10 @@
 
 #define LVCPP_TYPELIST_0                 Lv::Typelist::Null
 #define LVCPP_TYPELIST_1(T0)             T0
-#define LVCPP_TYPELIST_2(T0,T1)          Lv::Typelist::Cons<T0,LVCPP_TYPELIST_1(T1)>::Result
-#define LVCPP_TYPELIST_3(T0,T1,T2)       Lv::Typelist::Cons<T0,LVCPP_TYPELIST_2(T1,T2)>::Result
-#define LVCPP_TYPELIST_4(T0,T1,T2,T3)    Lv::Typelist::Cons<T0,LVCPP_TYPELIST_3(T1,T2,T3)>::Result
-#define LVCPP_TYPELIST_5(T0,T1,T2,T3,T4) Lv::Typelist::Cons<T0,LVCPP_TYPELIST_4(T1,T2,T3,T4)>::Result
+#define LVCPP_TYPELIST_2(T0,T1)          Lv::Typelist::Cons<T0,LVCPP_TYPELIST_1(T1)>
+#define LVCPP_TYPELIST_3(T0,T1,T2)       Lv::Typelist::Cons<T0,LVCPP_TYPELIST_2(T1,T2)>
+#define LVCPP_TYPELIST_4(T0,T1,T2,T3)    Lv::Typelist::Cons<T0,LVCPP_TYPELIST_3(T1,T2,T3)>
+#define LVCPP_TYPELIST_5(T0,T1,T2,T3,T4) Lv::Typelist::Cons<T0,LVCPP_TYPELIST_4(T1,T2,T3,T4)>
 
 namespace Lv
 {
@@ -71,7 +71,8 @@ namespace Lv
 
     // (length list)
     template <typename List>
-    struct Length;
+    struct Length
+    { static const unsigned int value = 1; };
 
     // (nth n list)
     template <typename List, int n>

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_function.cpp,v 1.5 2005-09-08 03:27:09 descender Exp $
+// $Id: lv_function.cpp,v 1.6 2005-09-08 03:50:28 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -52,22 +52,24 @@ void function_test ()
 {
     using Lv::Function;
 
+    std::cout << "\nLv::Function test:\n";
+
     {
         Function<int> functor (&print_hello_world);
-        std::cout << "Result: " << functor () << std::endl;
+        std::cout << "Result: " << functor () << '\n';
     }
 
     {
         Action action;
 
         Function<int> functor(&action, &Action::execute);
-        std::cout << "Result: " << functor () << std::endl;
+        std::cout << "Result: " << functor () << '\n';
     }
 
     {
         Action action;
         Function<int> functor(action);
-        std::cout << "Result: " << functor () << std::endl;
+        std::cout << "Result: " << functor () << '\n';
     }
     
     {
@@ -87,15 +89,30 @@ void function_test ()
     }
 }
 
-#define LIST_NTH(list,n) Lv::Typelist::Nth<list,n>::Result
-#define LIST_3 LVCPP_TYPELIST_3(char, int, long)
-
 void typelist_test ()
 {
-    std::cout << typeid (LIST_NTH(LIST_3, 0)).name () << ' '
-              << typeid (LIST_NTH(LIST_3, 1)).name () << ' '
-              << typeid (LIST_NTH(LIST_3, 2)).name () << std::endl;
+#define LIST5 LVCPP_TYPELIST_5(char, int, long, std::string, Lv::Function<void>)
+
+    namespace List = Lv::Typelist;
+
+    std::cout << "\nLv typelist test:\n";
+
+    std::cout << "List type: " << typeid (LIST5).name () << '\n';
+    std::cout << "Car: " << typeid (List::Car<LIST5>::Result).name () << '\n';
+    std::cout << "Cdr: " << typeid (List::Cdr<LIST5>::Result).name () << '\n';
+
+    std::cout << "Type list: "
+              << typeid (List::Nth<LIST5, 0>::Result).name () << ' '
+              << typeid (List::Nth<LIST5, 1>::Result).name () << ' '
+              << typeid (List::Nth<LIST5, 2>::Result).name () << ' '
+              << typeid (List::Nth<LIST5, 3>::Result).name () << ' '
+              << typeid (List::Nth<LIST5, 4>::Result).name () << '\n';
+
+    std::cout << "Type list length: " << List::Length<LIST5>::value << '\n';
+
+#undef LIST5
 }
+
 
 int main ()
 {
