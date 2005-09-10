@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_function.cpp,v 1.6 2005-09-08 03:50:28 descender Exp $
+// $Id: lv_function.cpp,v 1.7 2005-09-10 02:18:12 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -27,65 +27,86 @@
 
 #include <iostream>
 
-int print_hello_world ()
+void print_hello_world ()
 {
-    std::cout << "Free function" << std::endl;
-    return 0;
+    std::cout << "Hello World!\n";
 }
 
-struct Action
+int identity (int x)
 {
-    int execute ()
+    return x;
+}
+
+struct Identity
+{
+    int operator () (int x)
     {
-        std::cout << "Member function" << std::endl;
-        return 1;
+        return identity (x) + 1;
     }
 
-    int operator () ()
+    int execute (int x)
     {
-        std::cout << "Function" << std::endl;
-        return 2;
+        return identity (x) + 2;
     }
 };
+
+int add (int a, int b)
+{
+    return a + b;
+}
+
+struct Add
+{
+    int operator () (int a, int b)
+    {
+        return add (a, b) + 1;
+    }
+
+    int execute (int a, int b)
+    {
+        return add (a, b) + 2;
+    }
+};
+
 
 void function_test ()
 {
     using Lv::Function;
 
     std::cout << "\nLv::Function test:\n";
-
-    {
-        Function<int> functor (&print_hello_world);
-        std::cout << "Result: " << functor () << '\n';
-    }
-
-    {
-        Action action;
-
-        Function<int> functor(&action, &Action::execute);
-        std::cout << "Result: " << functor () << '\n';
-    }
-
-    {
-        Action action;
-        Function<int> functor(action);
-        std::cout << "Result: " << functor () << '\n';
-    }
     
     {
-        Function<int> a (&print_hello_world);
-        Function<int> b;
+        Function<void> a (&print_hello_world);
+        Function<void> b;
 
         b = a;
         a ();
     }
 
     {
-        Function<int> a (&print_hello_world);
-        Function<int> b;
+        Identity a_identity;
 
-        b = a;
-        a ();
+        Function<int, LVCPP_TYPELIST_1(int)> a (&identity);
+        Function<int, LVCPP_TYPELIST_1(int)> b (a_identity);
+        Function<int, LVCPP_TYPELIST_1(int)> c (&a_identity, &Identity::execute);
+
+        std::cout << "identity: " 
+                  << a (1) << ' ' 
+                  << b (2) << ' '
+                  << c (3) << '\n';
+    }
+
+    {
+        Add a_add;
+
+        Function<int, LVCPP_TYPELIST_2(int, int)> a (&add);
+        Function<int, LVCPP_TYPELIST_2(int, int)> b (a_add);
+        Function<int, LVCPP_TYPELIST_2(int, int)> c (&a_add, &Add::execute);
+
+        std::cout << "add: "
+                  << a(1, 2) << ' ' 
+                  << b(1, 2) << ' ' 
+                  << c(1, 2) << '\n';
     }
 }
 
