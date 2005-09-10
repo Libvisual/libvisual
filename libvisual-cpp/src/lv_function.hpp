@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_function.hpp,v 1.8 2005-09-10 02:18:12 descender Exp $
+// $Id: lv_function.hpp,v 1.9 2005-09-10 02:21:03 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -51,7 +51,7 @@ namespace Lv
   template <typename Result, class ParamList>
   class FunctionImpl;
 
-  template <typename Object, typename MemFunction, class BaseFunctor>
+  template <class Object, typename MemFunction, class BaseFunctor>
   class FunctionImplMem;
 
   template <typename Functor, class BaseFunctor>
@@ -93,7 +93,7 @@ namespace Lv
           : m_impl (new FunctionImplFun<Functor, Function> (func))
       {}
 
-      template <typename Object, typename MemFunction>
+      template <class Object, typename MemFunction>
       Function (const Object& object, MemFunction func)
           : m_impl (new FunctionImplMem<Object, MemFunction, Function> (object, func))
       {}
@@ -208,7 +208,7 @@ namespace Lv
   };
 
 
-  template <typename Object, typename MemFunction, typename BaseFunctor>
+  template <class Object, typename MemFunction, class BaseFunctor>
   class FunctionImplMem
       : public FunctionImpl<typename BaseFunctor::Result,
                             typename BaseFunctor::ParamList>
