@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.cpp,v 1.4 2005-09-04 21:59:33 descender Exp $
+// $Id: libvisual_cpp.cpp,v 1.5 2005-09-11 12:39:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -24,8 +24,6 @@
 #include <libvisual_cpp.hpp>
 #include <libvisual/libvisual.h>
 #include <iostream>
-#include <cstdlib>
-#include <cstring>
 
 namespace
 {
@@ -116,18 +114,7 @@ namespace Lv
 
   int init_path_add (const std::string& path)
   {
-      // visual_init_path_add () currently does not duplicate the path
-      // string (CVS 20050901). Passing path.c_str () directly is an
-      // error because the actual parameter of path may go out of
-      // scope (esp for temp. objects). Consider:
-      //   Lv::init_path_add (prefix + std::string("/dir"));
-
-      std::size_t length = std::strlen (path.c_str ()) + 1;
-
-      char *str = new char[length];
-      std::memcpy (str, path.c_str (), length);
-
-      return visual_init_path_add (str);
+      return visual_init_path_add (const_cast<char *> (path.c_str ()));
   }
 
 } // namespace Lv
