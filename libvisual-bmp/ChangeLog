@@ -1,3 +1,7 @@
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* COPYING: Fixed.
+
 2005-03-14  Duilio Protti  <dprotti@users.sourceforge.net>
 
 	* src/lv_bmp_config.c src/main.c: patch #1112147
