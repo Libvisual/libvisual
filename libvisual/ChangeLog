@@ -1,3 +1,22 @@
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.* (visual_audio_get_sample): Added pull interface
+	for sample data.
+
+	(visual_audio_get_spectrum): Added pull interface for spectrum data.
+
+	(visual_audio_get_spectrum_for_sample): Added pull interface for
+	spectrum data, using an already pulled sample.
+
+	* libvisual/lv_buffer.* (visual_buffer_init_allocate): New init and
+	allocate function.
+
+	(visual_buffer_fill): Fill the buffer with a byte value, handy to
+	\0 init the buffer.
+
+	* libvisual/lv_libvisual.c (free_plugpaths): Don't free the NULL
+	terminate entry.
+
 2005-09-08  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_audio.c (input_interleaved_stereo): Fixed memleak

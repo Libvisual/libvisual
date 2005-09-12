@@ -97,7 +97,7 @@ int visual_mem_initialize ()
 	visual_mem_set = mem_set8_c;
 	visual_mem_set16 = mem_set16_c;
 	visual_mem_set32 = mem_set32_c;
-	
+
 	if (visual_cpu_get_mmx () > 0) {
 		visual_mem_copy = mem_copy_mmx;
 		visual_mem_set = mem_set8_mmx;
@@ -141,7 +141,7 @@ void *visual_mem_malloc0 (visual_size_t nbytes)
 
 		return NULL;
 	}
-	
+
 	visual_mem_set (buf, 0, nbytes);
 
 	return buf;
@@ -314,7 +314,7 @@ static void *mem_copy_sse (void *dest, const void *src, visual_size_t n)
 	const uint8_t *sc = src;
 
 	/* FIXME add support for aligned copies. */
-	
+
 #ifdef VISUAL_ARCH_X86
 	while (n >= 64) {
 		__asm __volatile
@@ -412,7 +412,7 @@ static void *mem_set8_mmx (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t movq %%mm0, (%0)"
@@ -472,7 +472,7 @@ static void *mem_set8_mmx2 (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t movntq %%mm0, (%0)"
@@ -529,7 +529,7 @@ static void *mem_set8_sse (void *dest, int c, visual_size_t n)
 		 "\n\t por %%mm1, %%mm0"
 		 "\n\t"
 
-		 
+
 		 "\n\t movq %%mm0, %%mm2"
 		 "\n\t movq %%mm0, %%mm1"
 		 "\n\t movq %%mm2, %%mm3"
@@ -538,7 +538,7 @@ static void *mem_set8_sse (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t prefetchnta 256(%0)"
@@ -559,7 +559,7 @@ static void *mem_set8_sse (void *dest, int c, visual_size_t n)
 
 		n -= 64;
 	}
-#endif 
+#endif
 #endif /* VISUAL_ARCH_X86 */
 	while (n >= 4) {
 		*d++ = setflag32;
@@ -630,7 +630,7 @@ static void *mem_set16_mmx (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t movq %%mm0, (%0)"
@@ -688,7 +688,7 @@ static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 32) {
 		__asm __volatile
 			("\n\t movntq %%mm0, (%0)"
@@ -743,7 +743,7 @@ static void *mem_set16_sse (void *dest, int c, visual_size_t n)
 		 "\n\t por %%mm1, %%mm0"
 		 "\n\t"
 
-		 
+
 		 "\n\t movq %%mm0, %%mm2"
 		 "\n\t movq %%mm0, %%mm1"
 		 "\n\t movq %%mm2, %%mm3"
@@ -752,7 +752,7 @@ static void *mem_set16_sse (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t prefetchnta 256(%0)"
@@ -773,7 +773,7 @@ static void *mem_set16_sse (void *dest, int c, visual_size_t n)
 
 		n -= 64;
 	}
-#endif 
+#endif
 #endif /* VISUAL_ARCH_X86 */
 	while (n >= 2) {
 		*d++ = setflag32;
@@ -829,7 +829,7 @@ static void *mem_set32_mmx (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t movq %%mm0, (%0)"
@@ -861,7 +861,7 @@ static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint32_t setflag32 = c;
-	
+
 #ifdef VISUAL_ARCH_X86
 	__asm __volatile
 		("\n\t movd (%0), %%mm0"
@@ -876,7 +876,7 @@ static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t movntq %%mm0, (%0)"
@@ -920,7 +920,7 @@ static void *mem_set32_sse (void *dest, int c, visual_size_t n)
 		 "\n\t por %%mm1, %%mm0"
 		 "\n\t"
 
-		 
+
 		 "\n\t movq %%mm0, %%mm2"
 		 "\n\t movq %%mm0, %%mm1"
 		 "\n\t movq %%mm2, %%mm3"
@@ -929,7 +929,7 @@ static void *mem_set32_sse (void *dest, int c, visual_size_t n)
 		 "\n\t movq %%mm2, %%mm6"
 		 "\n\t movq %%mm1, %%mm7"
 		 :: "r" (&setflag32) : "memory");
-	
+
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t prefetchnta 256(%0)"
@@ -950,7 +950,7 @@ static void *mem_set32_sse (void *dest, int c, visual_size_t n)
 
 		n -= 64;
 	}
-#endif 
+#endif
 #endif /* VISUAL_ARCH_X86 */
 	while (n--)
 		*d++ = setflag32;

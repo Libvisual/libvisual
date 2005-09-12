@@ -61,6 +61,7 @@ VisBuffer *visual_buffer_new (void);
 int visual_buffer_init (VisBuffer *buffer, void *data, int datasize, VisBufferDestroyerFunc destroyer);
 VisBuffer *visual_buffer_new_with_buffer (void *data, int datasize, VisBufferDestroyerFunc destroyer);
 VisBuffer *visual_buffer_new_allocate (int datasize, VisBufferDestroyerFunc destroyer);
+int visual_buffer_init_allocate (VisBuffer *buffer, int datasize, VisBufferDestroyerFunc destroyer);
 int visual_buffer_destroy_content (VisBuffer *buffer);
 
 int visual_buffer_set_destroyer (VisBuffer *buffer, VisBufferDestroyerFunc destroyer);
@@ -82,6 +83,8 @@ VisBuffer *visual_buffer_clone_new (VisBuffer *src);
 int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
 int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
 int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
+
+int visual_buffer_fill (VisBuffer *buffer, char value);
 
 void visual_buffer_destroyer_free (VisBuffer *buffer);
 

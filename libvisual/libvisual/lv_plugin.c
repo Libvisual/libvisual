@@ -547,12 +547,12 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 	snprintf (szDir, MAX_PATH, "%s\\*", dir);
 
 	hList = FindFirstFile (szDir, &FileData);
-	if (hList == INVALID_HANDLE_VALUE) { 
+	if (hList == INVALID_HANDLE_VALUE) {
 		FindClose (hList);
-		
+
 		return 0;
 	}
-	
+
 	fFinished = FALSE;
 
 	while (!fFinished) {
@@ -567,7 +567,7 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 				ref = visual_plugin_get_references (temp, &cnt);
 
 			if (ref != NULL) {
-				for (j = 0; j < cnt; j++) 
+				for (j = 0; j < cnt; j++)
 					visual_list_add (list, ref[j]);
 
 				/* This is the pointer pointer pointer, not a ref itself */
@@ -605,9 +605,9 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 			ref = visual_plugin_get_references (temp, &cnt);
 
 		if (ref != NULL) {
-			for (j = 0; j < cnt; j++) 
+			for (j = 0; j < cnt; j++)
 				visual_list_add (list, ref[j]);
-		
+
 			/* This is the pointer pointer pointer, not a ref itself */
 			visual_mem_free (ref);
 		}

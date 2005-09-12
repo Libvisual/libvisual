@@ -38,10 +38,6 @@
 #include <libvisual/lv_types.h>
 #include <libvisual/lv_object.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 #ifndef NULL
 /**
  * NULL define.
@@ -62,9 +58,5 @@ extern "C" {
  */
 #define TRUE	(!FALSE)
 #endif
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* _LV_COMMON_H */

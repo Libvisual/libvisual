@@ -99,9 +99,23 @@ VisBuffer *visual_buffer_new_allocate (int datasize, VisBufferDestroyerFunc dest
 	VisBuffer *buffer = visual_buffer_new ();
 
 	visual_buffer_set_size (buffer, datasize);
+	visual_buffer_set_destroyer (buffer, destroyer);
 	visual_buffer_allocate_data (buffer);
 
 	return buffer;
+}
+
+int visual_buffer_init_allocate (VisBuffer *buffer, int datasize, VisBufferDestroyerFunc destroyer)
+{
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	visual_buffer_init (buffer, NULL, 0, NULL);
+
+	visual_buffer_set_size (buffer, datasize);
+	visual_buffer_set_destroyer (buffer, destroyer);
+	visual_buffer_allocate_data (buffer);
+
+	return VISUAL_OK;
 }
 
 int visual_buffer_destroy_content (VisBuffer *buffer)
@@ -262,6 +276,15 @@ int visual_buffer_append (VisBuffer *dest, VisBuffer *src)
 	dest->data = visual_mem_realloc (dest->data, dest->datasize + src->datasize);
 
 	return visual_buffer_put (dest, src, dest->datasize);
+}
+
+int visual_buffer_fill (VisBuffer *buffer, char value)
+{
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	visual_mem_set (buffer->data, value, buffer->datasize);
+
+	return VISUAL_OK;
 }
 
 void visual_buffer_destroyer_free (VisBuffer *buffer)

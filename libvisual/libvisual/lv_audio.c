@@ -346,6 +346,79 @@ int visual_audio_analyze (VisAudio *audio)
 	return VISUAL_OK;
 }
 
+int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid)
+{
+	VisAudioSamplePoolChannel *channel;
+
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	channel = visual_audio_samplepool_get_channel (audio->samplepool, channelid);
+
+	if (channel == NULL) {
+		visual_buffer_fill (buffer, 0);
+
+		return -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL;
+	}
+
+	visual_ringbuffer_get_data (channel->samples, buffer, visual_buffer_get_size (buffer));
+
+	return VISUAL_OK;
+}
+
+int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid)
+{
+	VisBuffer sample;
+
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	visual_buffer_init_allocate (&sample, samplelen, visual_buffer_destroyer_free);
+
+	visual_audio_get_sample (audio, &sample, channelid);
+
+	visual_audio_get_spectrum_for_sample (audio, buffer, &sample);
+
+	visual_object_unref (VISUAL_OBJECT (&sample));
+
+	return VISUAL_OK;
+}
+
+int visual_audio_get_spectrum_for_sample (VisAudio *audio, VisBuffer *buffer, VisBuffer *sample)
+{
+	VisFFT fft;
+        float temp_out[4096]; /* FIXME temp, should be gone when internal repres is float only */
+	float temp_audio[4096];
+	double scale;
+	int i, j, y;
+
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	visual_fft_init (&fft,
+			visual_buffer_get_size (sample) / sizeof (float),
+			visual_buffer_get_size (buffer) / sizeof (float));
+
+	/* Convert int16_t audio to float audio, (won't be needed when the rest of the new audio
+	 * core lands). */
+	for (i = 0; i < visual_buffer_get_size (sample) / 4; i++) {
+		short *data = visual_buffer_get_data (sample);
+		temp_audio[i] = data[i];
+	}
+
+	/* FFT analyze the pcm data */
+	visual_fft_perform (audio->fft, temp_audio, temp_out);
+
+	for (i = 0; i < visual_buffer_get_size (buffer) / 4; i++) {
+		short *data = visual_buffer_get_data (buffer);
+		data[i] = temp_out[i] * 50;
+	}
+
+	return VISUAL_OK;
+}
 
 VisAudioSamplePool *visual_audio_samplepool_new ()
 {

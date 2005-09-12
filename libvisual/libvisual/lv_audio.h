@@ -38,6 +38,10 @@ extern "C" {
 #define VISUAL_AUDIO_SAMPLEPOOL_CHANNEL(obj)		(VISUAL_CHECK_CAST ((obj), VisAudioSamplePoolChannel))
 #define VISUAL_AUDIO_SAMPLE(obj)			(VISUAL_CHECK_CAST ((obj), VisAudioSample))
 
+#define VISUAL_AUDIO_CHANNEL_LEFT	"front left 1"
+#define VISUAL_AUDIO_CHANNEL_RIGHT	"front right 1"
+
+
 typedef enum {
 	VISUAL_AUDIO_SAMPLE_RATE_NONE = 0,
 	VISUAL_AUDIO_SAMPLE_RATE_8000,
@@ -131,6 +135,10 @@ struct _VisAudioSample {
 VisAudio *visual_audio_new (void);
 int visual_audio_init (VisAudio *audio);
 int visual_audio_analyze (VisAudio *audio);
+
+int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid);
+int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid);
+int visual_audio_get_spectrum_for_sample (VisAudio *audio, VisBuffer *buffer, VisBuffer *sample);
 
 VisAudioSamplePool *visual_audio_samplepool_new ();
 int visual_audio_samplepool_init (VisAudioSamplePool *samplepool);
