@@ -60,7 +60,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	static VisInputPlugin input[] = {{
 		.upload = inp_alsa_upload
 	}};
-	
+
 	static VisPluginInfo info[] = {{
 		.struct_size = sizeof (VisPluginInfo),
 		.api_version = VISUAL_PLUGIN_API_VERSION,
@@ -75,7 +75,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.init = inp_alsa_init,
 		.cleanup = inp_alsa_cleanup,
-		
+
 		.plugin = VISUAL_OBJECT (&input[0])
 	}};
 
@@ -99,15 +99,15 @@ int inp_alsa_init (VisPluginData *plugin)
 #endif
 
 	visual_log_return_val_if_fail(plugin != NULL, -1);
-	
+
 	priv = visual_mem_new0 (alsaPrivate, 1);
 	visual_log_return_val_if_fail(priv != NULL, -1);
-	
+
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	if ((err = snd_pcm_open(&priv->chandle, strdup(inp_alsa_var_cdevice),
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
-  	        visual_log(VISUAL_LOG_CRITICAL, 
+		visual_log(VISUAL_LOG_CRITICAL, 
 			    _("Record open error: %s"), snd_strerror(err));
 		return -1;
 	}
@@ -116,7 +116,7 @@ int inp_alsa_init (VisPluginData *plugin)
 	visual_log_return_val_if_fail(hwparams != NULL, -1);
 
 	if (snd_pcm_hw_params_any(priv->chandle, hwparams) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, 
+		visual_log(VISUAL_LOG_CRITICAL, 
 			   _("Cannot configure this PCM device"));
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
@@ -124,7 +124,7 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_set_access(priv->chandle, hwparams, 
 					 SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, _("Error setting access"));
+		visual_log(VISUAL_LOG_CRITICAL, _("Error setting access"));
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -136,7 +136,7 @@ int inp_alsa_init (VisPluginData *plugin)
 	if (snd_pcm_hw_params_set_format(priv->chandle, hwparams,
 					 SND_PCM_FORMAT_S16_BE) < 0) {
 #endif
- 	        visual_log(VISUAL_LOG_CRITICAL, _("Error setting format"));
+		visual_log(VISUAL_LOG_CRITICAL, _("Error setting format"));
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -145,12 +145,12 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_set_rate_near(priv->chandle, hwparams,
 					    &exact_rate, &dir) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, _("Error setting rate"));
+		visual_log(VISUAL_LOG_CRITICAL, _("Error setting rate"));
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 	if (exact_rate != rate) {
- 	        visual_log(VISUAL_LOG_INFO, 
+		visual_log(VISUAL_LOG_INFO, 
 			   _("The rate %d Hz is not supported by your " \
 			   "hardware.\n" \
 			   "==> Using %d Hz instead"), rate, exact_rate);
@@ -182,13 +182,13 @@ int inp_alsa_init (VisPluginData *plugin)
 
 
 	if (snd_pcm_hw_params(priv->chandle, hwparams) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, _("Error setting HW params"));
+		visual_log(VISUAL_LOG_CRITICAL, _("Error setting HW params"));
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	if (snd_pcm_prepare(priv->chandle) < 0) {
- 	        visual_log(VISUAL_LOG_CRITICAL, _("Failed to prepare interface"));
+		visual_log(VISUAL_LOG_CRITICAL, _("Failed to prepare interface"));
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -228,6 +228,19 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
+#if 0
+	{	/* DEBUG STUFF, REMOVE IN RELEASE FIXME FIXME XXX TODO WHATEVER */
+		VisBuffer buffer;
+
+		visual_buffer_init (&buffer, data, 512, NULL);
+
+		for (i = 0; i < 16; i++) {
+			visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+					VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+		}
+		return 0;
+	}
+#endif
 	do {
 		rcnt = snd_pcm_readi(priv->chandle, data, PCM_BUF_SIZE / 2);
 

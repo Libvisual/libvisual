@@ -36,6 +36,9 @@ typedef struct {
 	OinksiePrivate			 priv1;
 	OinksiePrivate			 priv2;
 
+	VisBuffer			*pcmbuf;
+	VisBuffer			*spmbuf;
+
 	int				 color_mode;
 
 	int				 depth;
@@ -115,7 +118,7 @@ int act_oinksie_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Sanity edge", 4),
 		VISUAL_PARAM_LIST_END
 	};
-	
+
 	VisUIWidget *hbox;
 	VisUIWidget *label;
 	VisUIWidget *popup;
@@ -130,7 +133,7 @@ int act_oinksie_init (VisPluginData *plugin)
         visual_param_container_add_many (paramcontainer, params);
 
 	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
-	
+
 	label = visual_ui_label_new (_("Color mode:"), FALSE);
 
 	popup = visual_ui_popup_new ();
@@ -142,7 +145,7 @@ int act_oinksie_init (VisPluginData *plugin)
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox), popup);
 
         visual_plugin_set_userinterface (plugin, hbox);
-	
+
 	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
 	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);
 
@@ -155,7 +158,10 @@ int act_oinksie_init (VisPluginData *plugin)
 
 	oinksie_init (&priv->priv1, 64, 64);
 	oinksie_init (&priv->priv2, 64, 64);
-	
+
+	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (int16_t), visual_buffer_destroyer_free);
+	priv->spmbuf = visual_buffer_new_allocate (256 * sizeof (int16_t), visual_buffer_destroyer_free);
+
 	return 0;
 }
 
@@ -185,6 +191,9 @@ int act_oinksie_cleanup (VisPluginData *plugin)
 
 	visual_palette_free_colors (&priv->priv2.pal_cur);
 	visual_palette_free_colors (&priv->priv2.pal_old);
+
+	visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
+	visual_object_unref (VISUAL_OBJECT (priv->spmbuf));
 
 	visual_mem_free (priv);
 
@@ -219,7 +228,7 @@ int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height)
 int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	oinksie_size_set (&priv->priv1, video->width, video->height);
@@ -283,7 +292,7 @@ int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 				}
 
 				break;
-								
+
 			default: /* to avoid warnings */
 				break;
 		}
@@ -296,7 +305,7 @@ VisPalette *act_oinksie_palette (VisPluginData *plugin)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisPalette *pal;
-	
+
 	pal = oinksie_palette_get (&priv->priv1);
 
 	return pal;
@@ -305,17 +314,35 @@ VisPalette *act_oinksie_palette (VisPluginData *plugin)
 int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	int pitch;
+	int i = 0;
 
-	visual_mem_copy (&priv->priv1.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
-	visual_mem_copy (&priv->priv2.audio.freq, &audio->freq, sizeof (short) * 3 * 256);
+	/* Left audio */
+	visual_audio_get_sample (audio, priv->pcmbuf, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_mem_copy (&priv->priv1.audio.pcm, visual_buffer_get_data (priv->pcmbuf), sizeof (int16_t) * 512);
 
-	visual_mem_copy (&priv->priv1.audio.pcm, &audio->pcm, sizeof (short) * 3 * 512);
-	visual_mem_copy (&priv->priv2.audio.pcm, &audio->pcm, sizeof (short) * 3 * 512);
+	visual_audio_get_spectrum_for_sample (audio, priv->spmbuf, priv->pcmbuf);
+	visual_mem_copy (priv->priv1.audio.freq[0], &audio->freq, sizeof (int16_t) * 256);
 
+	/* Right audio */
+	visual_audio_get_sample (audio, priv->pcmbuf, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_mem_copy (priv->priv1.audio.pcm[1], visual_buffer_get_data (priv->pcmbuf), sizeof (int16_t) * 512);
+
+	visual_audio_get_spectrum_for_sample (audio, priv->spmbuf, priv->pcmbuf);
+	visual_mem_copy (priv->priv1.audio.freq[1], &audio->freq, sizeof (int16_t) * 256);
+
+	/* FIXME at a later stage, do this within VisAudio */
+	for (i = 0; i < 512; i++)
+		priv->priv1.audio.pcm[2][i] = (priv->priv1.audio.pcm[0][i] + priv->priv1.audio.pcm[1][i]) / 2;
+
+	/* Duplicate for second oinksie instance */
+	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (int16_t) * 512 * 3);
+	visual_mem_copy (&priv->priv2.audio.freq, &priv->priv1.audio.freq, sizeof (int16_t) * 256 * 2);
+
+	/* Audio energy */
 	priv->priv1.audio.energy = audio->energy;
 	priv->priv2.audio.energy = audio->energy;
 
+	/* Let's get rendering */
 	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		oinksie_sample (&priv->priv1);
 

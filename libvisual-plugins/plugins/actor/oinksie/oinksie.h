@@ -76,8 +76,8 @@ typedef struct {
 
 	int highest;
 
-	short freq[3][256];
-	short pcm[3][512];
+	int16_t pcm[3][512];
+	int16_t freq[2][256];
 
 	int musicmood;
 	char beat;
@@ -135,11 +135,10 @@ typedef struct {
 typedef struct {
 	/* Major vars */
 	uint8_t			*drawbuf;
-	short			 pcmdata[2][512];
 
 	/* Palette vars */
 	OinksiePalFade		 pal_fades[256];
-	OinksiePalData		 pal_data;	
+	OinksiePalData		 pal_data;
 	VisPalette		 pal_cur;
 	VisPalette		 pal_old;
 	int			 pal_startup;
