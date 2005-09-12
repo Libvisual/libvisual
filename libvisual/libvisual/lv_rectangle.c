@@ -52,7 +52,7 @@ VisRectangle *visual_rectangle_new (int x, int y, int width, int height)
 	visual_object_initialize (VISUAL_OBJECT (rect), TRUE, NULL);
 
 	visual_rectangle_set (rect, x, y, width, height);
-	
+
 	return rect;
 }
 
@@ -70,7 +70,7 @@ VisRectangle *visual_rectangle_new (int x, int y, int width, int height)
 int visual_rectangle_set (VisRectangle *rect, int x, int y, int width, int height)
 {
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
-	
+
 	rect->x = x;
 	rect->y = y;
 	rect->width = width;
@@ -96,11 +96,11 @@ int visual_rectangle_position_within (VisRectangle *rect, int x, int y)
 		(x <= rect->x + rect->width) &&
 		(y >= rect->y) &&
 		(y <= rect->y + rect->height)) {
-	
+
 		return TRUE;
 	}
-	
-	return FALSE;	
+
+	return FALSE;
 }
 
 /**
@@ -127,7 +127,7 @@ int visual_rectangle_within_partially (VisRectangle *dest, VisRectangle *src)
 
 	if (src->y > (dest->y + dest->height))
 		return FALSE;
-	
+
 	return TRUE;
 }
 

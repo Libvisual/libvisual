@@ -113,7 +113,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 			/* fracU = frac(u) = u & 0xffff */
 			/* fixed point format convertion: fracU >>= 8) */
 			fracU  = ((u & 0xffff) >> 12) | 0x100000;
-			
+
 			__asm__ __volatile__
 				("\n\t pxor %%mm7, %%mm7"
 				 /* Prefetching does not show improvement on my Duron (maybe due to its small cache?) */
@@ -204,7 +204,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 				, [pixel_l] "m"(src_pixel_rowl[u>>16])
 				, [fracu]   "m"(fracU)
 				, [fracv]   "m"(fracV));
-			
+
 			++dest_pixel;
 		}
 

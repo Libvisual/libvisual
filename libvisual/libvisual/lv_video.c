@@ -40,9 +40,6 @@
 #include "lv_log.h"
 #include "lv_mem.h"
 
-#define HAVE_ALLOCATED_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER)
-#define HAVE_EXTERNAL_BUFFER(video)	((video)->flags & VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER)
-
 
 typedef struct {
 	uint16_t b:5, g:6, r:5;
@@ -132,10 +129,6 @@ static int video_dtor (VisObject *object)
 	if (video->parent != NULL)
 		visual_object_unref (VISUAL_OBJECT (video->parent));
 
-//        if (HAVE_ALLOCATED_BUFFER (video)) {
-//		visual_mem_free (video->buffer->data);
-//	}
-
 	if (video->buffer != NULL)
 		visual_object_unref (VISUAL_OBJECT (video->buffer));
 
@@ -195,10 +188,9 @@ int visual_video_init (VisVideo *video)
 	visual_object_set_dtor (VISUAL_OBJECT (video), video_dtor);
 	visual_object_set_allocated (VISUAL_OBJECT (video), FALSE);
 
-	/* By default, we suppose an external buffer will be used */
+	/* Reset the VisVideo data */
 	video->buffer = visual_buffer_new ();
 
-	video->flags = VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER;
 	video->pixel_rows = NULL;
 
 	visual_video_set_attributes (video, 0, 0, 0, VISUAL_VIDEO_DEPTH_NONE);
@@ -236,10 +228,6 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 	ret = visual_video_allocate_buffer (video);
 
 	if (ret < 0) {
-		/*
-		 * Restore the flag set by visual_video_new().
-		 */
-		video->flags = VISUAL_VIDEO_FLAG_EXTERNAL_BUFFER;
 		visual_object_unref (VISUAL_OBJECT (video));
 
 		return NULL;
@@ -264,7 +252,7 @@ int visual_video_free_buffer (VisVideo *video)
 	if (video->pixel_rows != NULL)
 		visual_mem_free (video->pixel_rows);
 
-	if (HAVE_ALLOCATED_BUFFER (video)) {
+	if (visual_buffer_get_allocated (video->buffer)) {
 
 		visual_buffer_destroy_content (video->buffer);
 
@@ -274,8 +262,6 @@ int visual_video_free_buffer (VisVideo *video)
 
 	video->pixel_rows = NULL;
 	visual_buffer_set_data_pair (video->buffer, NULL, 0);
-
-	video->flags = VISUAL_VIDEO_FLAG_NONE;
 
 	return VISUAL_OK;
 }
@@ -294,7 +280,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 	visual_log_return_val_if_fail (video->buffer != NULL, -VISUAL_ERROR_VIDEO_BUFFER_NULL);
 
 	if (visual_video_get_pixels (video) != NULL) {
-		if (HAVE_ALLOCATED_BUFFER (video)) {
+		if (visual_buffer_get_allocated (video->buffer)) {
 			visual_video_free_buffer (video);
 		} else {
 			visual_log (VISUAL_LOG_CRITICAL, _("Trying to allocate an screen buffer on "
@@ -307,8 +293,6 @@ int visual_video_allocate_buffer (VisVideo *video)
 	if (visual_video_get_size (video) == 0) {
 		visual_buffer_set_data (video->buffer, NULL);
 
-		video->flags = VISUAL_VIDEO_FLAG_NONE;
-
 		return VISUAL_OK;
 	}
 
@@ -318,8 +302,6 @@ int visual_video_allocate_buffer (VisVideo *video)
 
 	video->pixel_rows = visual_mem_new0 (void *, video->height);
 	precompute_row_table (video);
-
-	video->flags = VISUAL_VIDEO_FLAG_ALLOCATED_BUFFER;
 
 	return VISUAL_OK;
 }
@@ -335,10 +317,7 @@ int visual_video_have_allocated_buffer (VisVideo *video)
 {
 	visual_log_return_val_if_fail (video != NULL, FALSE);
 
-	if (HAVE_ALLOCATED_BUFFER (video))
-		return TRUE;
-
-	return FALSE;
+	return visual_buffer_get_allocated (video->buffer);
 }
 
 static void precompute_row_table (VisVideo *video)
@@ -375,8 +354,6 @@ int visual_video_clone (VisVideo *dest, VisVideo *src)
 	visual_video_set_depth (dest, src->depth);
 	visual_video_set_dimension (dest, src->width, src->height);
 	visual_video_set_pitch (dest, src->pitch);
-
-	dest->flags = src->flags;
 
 	return VISUAL_OK;
 }
@@ -464,7 +441,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 {
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	if (HAVE_ALLOCATED_BUFFER (video)) {
+	if (visual_buffer_get_allocated (video->buffer)) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Trying to set a screen buffer on "
 				"a VisVideo structure which points to an allocated screen buffer"));
 
@@ -1956,39 +1933,62 @@ static int rotate_270 (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
-/* FIXME make functions */
 int visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_log_return_val_if_fail (src->depth == dest->depth, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
+
+	switch (orient) {
+		case VISUAL_VIDEO_MIRROR_NONE:
+			visual_video_blit_overlay (dest, src, 0, 0, FALSE);
+			break;
+
+		case VISUAL_VIDEO_MIRROR_X:
+			mirror_x (dest, src);
+			break;
+
+		case VISUAL_VIDEO_MIRROR_Y:
+			mirror_y (dest, src);
+			break;
+
+		default:
+			break;
+	}
 
 	return VISUAL_OK;
 }
 
 VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient)
 {
-	return NULL;
+	VisVideo *video;
+
+	visual_log_return_val_if_fail (src != NULL, NULL);
+
+	video = visual_video_new_with_buffer (src->width, src->height, src->depth);
+
+	visual_video_mirror (video, src, orient);
+
+	return video;
 }
 
 /* Mirror functions */
-/* FIXME untested and prolly not perfect */
 static int mirror_x (VisVideo *dest, VisVideo *src)
 {
-	int x, y, i;
-
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
-
 	const int step2 = dest->bpp << 1;
-	const int w1b = (dest->width - 1)*dest->bpp;
+	const int w1b = (dest->width - 1) * dest->bpp;
+	int x, y, i;
 
 	for (y = 0; y < dest->height; y++) {
 		sbuf = src->pixel_rows[y] + w1b;
 		dbuf = dest->pixel_rows[y];
+
 		for (x = 0; x < dest->width; x++) {
-			for (i = 0; i < dest->bpp; i++) {
+
+			for (i = 0; i < dest->bpp; i++)
 				*(dbuf++) = *(sbuf++);
-			}
 
 			sbuf -= step2;
 		}

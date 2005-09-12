@@ -1,5 +1,15 @@
 2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_video.c: Removed the internal external buffer flag
+	crap, this is now nicely managed by VisBuffer.
+
+	(visual_video_mirror): Fixed the mirror stuff to work, backends done
+	by Jaak, (sorry for enabling them only now, totally forgot it).
+
+	* libvisual/lv_video_mmx.c -> libvisual/lv_video_simd.c: Renamed file.
+
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_audio.* (visual_audio_get_sample): Added pull interface
 	for sample data.
 
