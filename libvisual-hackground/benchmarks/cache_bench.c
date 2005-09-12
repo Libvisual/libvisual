@@ -52,6 +52,8 @@ int main (int argc, char **argv)
 
 	printf ("Visual cache fill, added %d elements.\n", SIZE);
 
+	visual_quit ();
+
 	return 0;
 }
 

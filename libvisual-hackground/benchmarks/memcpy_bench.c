@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 
 	buf1 = visual_mem_malloc0 (BYTES);
 	buf2 = visual_mem_malloc0 (BYTES);
-	
+
 	while (i--)
 		visual_mem_copy (buf1, buf2, BYTES);
 

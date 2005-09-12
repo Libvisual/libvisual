@@ -1,4 +1,8 @@
-2005-07-25  Dennis Smit  <ds@nerds-incorporated.org>
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* benchmarks/memcpy_bench_advanced.c: Added.
+
+2005-08-25  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* benchmarks/audio_bench.c: Forgot to add to cvs.
 
