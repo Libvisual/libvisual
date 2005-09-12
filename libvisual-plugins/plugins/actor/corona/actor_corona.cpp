@@ -86,7 +86,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[1];
 	static VisPluginInfo info[1];
-			
+
 	actor[0].requisition = lv_corona_requisition;
 	actor[0].palette = lv_corona_palette;
 	actor[0].render  = lv_corona_render;
@@ -134,9 +134,9 @@ extern "C" int lv_corona_init (VisPluginData *plugin)
 	priv->tl.state     = normal_state;
 
 	visual_time_get (&priv->oldtime);
-	
+
 	visual_palette_allocate_colors (&priv->pal, 256);
-	
+
 	return 0;
 }
 
@@ -145,7 +145,7 @@ extern "C" int lv_corona_cleanup (VisPluginData *plugin)
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_palette_free_colors (&priv->pal);
-	
+
 	if (priv->corona != NULL)
 		delete priv->corona;
 
@@ -175,7 +175,7 @@ extern "C" int lv_corona_requisition (VisPluginData *plugin, int *width, int *he
 
 	*width = reqw;
 	*height = reqh;
-	
+
 	return 0;
 }
 
@@ -184,16 +184,16 @@ extern "C" int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int 
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_video_set_dimension (video, width, height);
-	
+
 	delete priv->corona;
 	delete priv->pcyl;
- 
+
 	priv->corona       = new Corona();
 	priv->pcyl         = new PaletteCycler(PALETTEDATA, NB_PALETTES);
 	priv->tl.timeStamp = 0;
 	priv->tl.lastbeat  = 0;
 	priv->tl.state     = normal_state;
-	
+
 	priv->corona->setUpSurface(width, height);
 
 	return 0;
@@ -233,10 +233,11 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisTime curtime;
 	VisTime difftime;
+	VisVideo vidcorona;
 	short freqdata[2][512];
 	unsigned long timemilli = 0;
 	int i;
-	
+
 	for (i = 0; i < 256; ++i) {
 		freqdata[0][i*2]   = audio->freqnorm[0][i];
 		freqdata[1][i*2]   = audio->freqnorm[1][i];
@@ -245,7 +246,7 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	}
 
 	visual_time_get (&curtime);
-	
+
 	visual_time_difference (&difftime, &priv->oldtime, &curtime);
 
 	timemilli = difftime.tv_sec * 1000 + difftime.tv_usec / 1000;
@@ -253,21 +254,22 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	priv->tl.timeStamp += timemilli;
 
 	visual_time_copy (&priv->oldtime, &curtime);
-	
+
 	for (i = 0; i < 512; ++i) {
 		priv->tl.frequency[0][i] = freqdata[0][i];
 		priv->tl.frequency[1][i] = freqdata[1][i];
 	}
-	
+
 	priv->corona->update(&priv->tl); // Update Corona
 	priv->pcyl->update(&priv->tl);    // Update Palette Cycler
 
-	for (i = 0; i < video->height; i++) {
-		visual_mem_copy ((uint8_t *)(visual_video_get_pixels (video)) + i * video->pitch,
-				priv->corona->getSurface() + (video->height - 1 - i) * video->width,
-				video->width);
-	}
-	
+	visual_video_init (&vidcorona);
+	visual_video_set_depth (&vidcorona, VISUAL_VIDEO_DEPTH_8BIT);
+	visual_video_set_dimension (&vidcorona, video->width, video->height);
+	visual_video_set_buffer (&vidcorona, priv->corona->getSurface());
+
+	visual_video_mirror (video, &vidcorona, VISUAL_VIDEO_MIRROR_Y);
+
 	return 0;
 }
 

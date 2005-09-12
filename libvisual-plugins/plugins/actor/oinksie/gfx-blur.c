@@ -35,7 +35,7 @@ void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 	if (visual_cpu_get_mmx ()) {
 #ifdef VISUAL_ARCH_X86
 		int fadeflag = fade | fade << 8 | fade << 16 | fade << 24;
-		
+
 		/* Prepare substraction register */
 		__asm __volatile
 			("\n\t movd %[fade], %%mm3"
@@ -44,7 +44,7 @@ void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 			 "\n\t por %%mm4, %%mm3"
 			 :: [fade] "m" (fadeflag));
 
-		
+
 		for (i = 0; i < priv->screen_size; i += 8) {
 			__asm __volatile
 				("\n\t movq %[buf], %%mm0"

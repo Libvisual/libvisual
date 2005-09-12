@@ -1,5 +1,13 @@
 2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/corona/actor_corona.cpp (actor_corona_render):
+	Use visual_video_mirror to mirror the BMP style buffer.
+
+	Eventually (or rather, soonish) this should be rehacked to draw right
+	directly.
+
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/oinksie/*: Use the pull interface for audio.
 
 2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>

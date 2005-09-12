@@ -43,10 +43,10 @@ inline int _oink_gfx_pixel_get (OinksiePrivate *priv, uint8_t *buf, int x, int y
 inline void _oink_gfx_pixel_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y)
 {
 	int pos = (y * priv->screen_width) + x;
-	
-	if (pos < priv->screen_size && pos > 0)	
+
+	if (pos < priv->screen_size && pos > 0)
 		buf[pos] = color;
-	
+
 }
 
 /* FIXME this routine shows errors */
@@ -72,12 +72,12 @@ inline void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x
 			x1 = 0;
 		else if (x1 > priv->screen_width - 1)
 			x1 = priv->screen_width - 1;
-	
+
 		if (y0 < 0)
 			y0 = 0;
 		else if (y0 > priv->screen_height - 1);
 			y0 = priv->screen_height - 1;
-		
+
 		if (y1 < 0)
 			y1 = 0;
 		else if (y1 > priv->screen_height - 1);
@@ -86,61 +86,61 @@ inline void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x
 		return; /* FIXME */
 	}
 
-	if (dy < 0) 
+	if (dy < 0)
 	{
-		dy = -dy; 
-		stepy_ = -priv->screen_width; 
-		stepy = -1; 
-	} 
+		dy = -dy;
+		stepy_ = -priv->screen_width;
+		stepy = -1;
+	}
 	else
-	{ 
-		stepy = 1; 
-		stepy_ = priv->screen_width; 
+	{
+		stepy = 1;
+		stepy_ = priv->screen_width;
 	}
 
-	if (dx < 0) 
-	{ 
-		dx = -dx;  
-		stepx = -1; 
-	} 
-	else 
-	{ 
-		stepx = 1; 
+	if (dx < 0)
+	{
+		dx = -dx;
+		stepx = -1;
 	}
-        
+	else
+	{
+		stepx = 1;
+	}
+
 	dy <<= 1;
 	dx <<= 1;
 
 	bp = x0 + y0 * priv->screen_width;
-	
+
 	_oink_gfx_pixel_set (priv, buf, color, x0, y0);
-	
+
 	x = x0;
 	y = y0;
-	
-	if (dx > dy) 
+
+	if (dx > dy)
 	{
 		fraction = dy - (dx >> 1);
-		while (x0 != x1) 
+		while (x0 != x1)
 		{
-			if (fraction >= 0) 
+			if (fraction >= 0)
 			{
 				bp += stepy_;
-				fraction -= dx; 
+				fraction -= dx;
 			}
 			x0 += stepx;
 			bp += stepx;
 			fraction += dy;
-			
+
 			buf[bp] = color;
 		}
-	} 
-	else 
+	}
+	else
 	{
 		fraction = dx - (dy >> 1);
-		while (y0 != y1) 
+		while (y0 != y1)
 		{
-			if (fraction >= 0) 
+			if (fraction >= 0)
 			{
 				bp += stepx;
 				x0 += stepx;
@@ -157,7 +157,7 @@ inline void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x
 
 inline void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int y, int x1, int x2)
 {
-	int firstx = x1 < x2 ? x1 : x2; 
+	int firstx = x1 < x2 ? x1 : x2;
 	int endx = x1 > x2 ? x1 : x2;
 	int begin;
 
@@ -165,12 +165,12 @@ inline void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int 
 		firstx = priv->screen_width - 1;
 	else if (firstx < 0)
 		firstx = 0;
-		
+
 	if (endx > priv->screen_width - 1)
 		endx = priv->screen_width - 1;
 	else if (endx < 0)
 		endx = 0;
-		
+
 	if (y < 0 || y > priv->screen_height - 1)
 		return;
 		
