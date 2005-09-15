@@ -825,7 +825,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	visual_log_return_val_if_fail (pluginpath != NULL, NULL);
 
 #if defined(VISUAL_OS_WIN32)
-	handle = LoadLibrary (pluginpath);	
+	handle = LoadLibrary (pluginpath);
 #else
 	handle = dlopen (pluginpath, RTLD_LAZY);
 #endif
@@ -858,7 +858,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 #endif
 
 		return NULL;
-		
+
 	}
 
 	plug_info = VISUAL_PLUGININFO (get_plugin_info (&cnt));
@@ -898,7 +898,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	}
 
 	ref = visual_mem_new0 (VisPluginRef *, cnt);
-	
+
 	for (i = 0; i < cnt; i++) {
 		ref[i] = visual_plugin_ref_new ();
 

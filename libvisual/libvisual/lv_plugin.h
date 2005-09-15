@@ -53,12 +53,25 @@ extern "C" {
 /**
  * Indicates at which version the plugin API is.
  */
-#define VISUAL_PLUGIN_API_VERSION	3
+#define VISUAL_PLUGIN_API_VERSION	3001
 
 /**
- * Type defination that should be used in plugins to set the plugin type for a NULL plugin.
+ * Defination that should be used in plugins to set the plugin type for a NULL plugin.
  */
 #define VISUAL_PLUGIN_TYPE_NULL		"Libvisual:core:null"
+
+/**
+ * Standard defination for GPL plugins, use this for the .license entry in VisPluginInfo
+ */
+#define VISUAL_PLUGIN_LICENSE_GPL	"GPL"
+/**
+ * Standard defination for LGPL plugins, use this for the .license entry in VisPluginInfo
+ */
+#define VISUAL_PLUGIN_LICENSE_LGPL	"LGPL"
+/**
+ * Standard defination for BSD plugins, use this for the .license entry in VisPluginInfo
+ */
+#define VISUAL_PLUGIN_LICENSE_BSD	"BSD"
 
 /**
  * Enumerate to define the plugin flags. Plugin flags can be used to
@@ -168,6 +181,7 @@ struct _VisPluginInfo {
 	char			*version;	/**< Version */
 	char			*about;		/**< About */
 	char			*help;		/**< Help */
+	char			*license;	/**< License */
 
 	VisPluginInitFunc	 init;		/**< The standard init function, every plugin has to implement this. */
 	VisPluginCleanupFunc	 cleanup;	/**< The standard cleanup function, every plugin has to implement this. */
@@ -272,7 +286,6 @@ VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj
 int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
 int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
 VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
-	
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,12 @@
+2005-09-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.h: Adding runtime license check support.
+
+	BUG: Found a bug (can't find the cause just yet) that makes the
+	realtime API version check crash, could use some help with this one.
+
+	Thanks.
+
 2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c: Removed the internal external buffer flag
