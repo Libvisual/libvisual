@@ -9,8 +9,8 @@
  * $Id:
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
@@ -87,6 +87,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = N_("Libvisual GL analyzer plugin"),
 		.help =  N_("This plugin shows an openGL bar analyzer like the xmms one"),
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_gltest_init,
 		.cleanup = lv_gltest_cleanup,

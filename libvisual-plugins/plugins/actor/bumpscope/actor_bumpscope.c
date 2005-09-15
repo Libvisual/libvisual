@@ -63,6 +63,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.0.1",
 		.about = N_("Bumpscope visual plugin"),
 		.help = N_("This is the libvisual port of the xmms Bumpscope plugin"),
+		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = act_bumpscope_init,
 		.cleanup = act_bumpscope_cleanup,

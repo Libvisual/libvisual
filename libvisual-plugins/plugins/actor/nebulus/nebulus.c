@@ -99,6 +99,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = VERSION,
 		.about = N_("Libvisual nebulus plugin"),
 		.help = N_("This plugin shows multiple visual effect using openGL"),
+		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = lv_nebulus_init,
 		.cleanup = lv_nebulus_cleanup,

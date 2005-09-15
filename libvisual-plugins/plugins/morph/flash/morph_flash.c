@@ -7,8 +7,8 @@
  * $Id:
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,7 +16,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-                                                                                                                                               
+
 #include <libvisual/libvisual.h>
 
 typedef struct {
@@ -70,10 +70,11 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = "An flash in and out morph plugin",
 		.help = "This morph plugin morphs between two video sources using a bright flash",
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_flash_init,
 		.cleanup = lv_morph_flash_cleanup,
-		
+
 		.plugin = VISUAL_OBJECT (&morph[0])
 	}};
 
@@ -97,7 +98,7 @@ int lv_morph_flash_init (VisPluginData *plugin)
 		priv->whitepal.colors[i].g = 0xff;
 		priv->whitepal.colors[i].b = 0xff;
 	}
-	
+
 	return 0;
 }
 
@@ -116,12 +117,12 @@ int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, 
 
 	if (src1->pal == NULL || src2->pal == NULL)
 		return;
-	
+
 	if (rate < 0.5)
 		visual_palette_blend (pal, src1->pal, &priv->whitepal, rate * 2);
 	else
 		visual_palette_blend (pal, &priv->whitepal, src2->pal, (rate - 0.5) * 2);
-	
+
 	return 0;
 }
 
@@ -131,11 +132,11 @@ int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
 	switch (dest->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
-			flash_8 (priv, rate, dest, src1, src2);	
+			flash_8 (priv, rate, dest, src1, src2);
 			break;
 
 		case VISUAL_VIDEO_DEPTH_16BIT:
-			
+
 			break;
 
 		case VISUAL_VIDEO_DEPTH_24BIT:
@@ -190,7 +191,7 @@ static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *
 		scrbuf = visual_video_get_pixels (src2);
 		size = visual_video_get_size (src2);
 	}
-	
+
 	for (i = 0; i < size; i++)
 		destbuf[i] = priv->replacetable[scrbuf[i]];
 }

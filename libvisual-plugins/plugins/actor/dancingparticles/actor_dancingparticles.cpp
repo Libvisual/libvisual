@@ -73,13 +73,14 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info[0].version = "0.1";
 	info[0].about = N_("Libvisual Dancing Particles plugin");
 	info[0].help =  N_("This plugin shows dancing particles");
+	info[0].license = VISUAL_PLUGIN_LICENSE_GPL,
 
 	info[0].init = lv_dancingparticles_init;
 	info[0].cleanup = lv_dancingparticles_cleanup;
 	info[0].events = lv_dancingparticles_events;
 
 	info[0].plugin = VISUAL_OBJECT (&actor[0]);
-	
+
 	*count = sizeof (info) / sizeof (*info);
 
 	return info;

@@ -7,8 +7,8 @@
  * $Id:
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,7 +16,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
@@ -64,10 +64,11 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugname = "lv_analyzer",
 		.name = "libvisual analyzer",
-		.author = N_("Original by: Andy Lo A Foe <andy@alsaplayer.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.1",
+		.author = N_("Dennis Smit <ds@nerds-incorporated.org>"),
+		.version = "0.2",
 		.about = N_("Libvisual analyzer plugin"),
 		.help = N_("This is a test plugin that'll display a simple analyzer"),
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_analyzer_init,
 		.cleanup = lv_analyzer_cleanup,

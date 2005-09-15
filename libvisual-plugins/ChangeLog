@@ -1,3 +1,8 @@
+2005-09-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Adding .license flag to the plugins so apps can do a
+	realtime license check.
+
 2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/corona/actor_corona.cpp (actor_corona_render):

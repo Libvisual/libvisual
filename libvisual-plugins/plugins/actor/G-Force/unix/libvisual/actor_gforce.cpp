@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+/*
+ * Note that the above license is only for the glue layer between G-Force
+ * and libvisual, the license around G-Force remains very unclear.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -81,6 +86,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info[0].version = "0.1.0";
 	info[0].about = N_("Libvisual G-Force plugin");
 	info[0].help = N_("This plugin is a port of the well known G-Force winamp plugin, based on an old unix port");
+	info[0].license = "Unknown",
 
 	info[0].init = lv_gforce_init;
 	info[0].cleanup = lv_gforce_cleanup;
@@ -115,14 +121,14 @@ extern "C" int lv_gforce_init (VisPluginData *plugin)
 	/* Randomize the seed */
 	srand (EgOSUtils::CurTimeMS ());
 
-	
+
 	priv->gGF = new GForce;
 
 	SetRect (&r, 0, 0, 64, 64);
 
 	priv->gGF->SetWinPort (0, &r);
 	priv->gGF->StoreWinRect ();
-	
+
 	return 0;
 }
 

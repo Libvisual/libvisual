@@ -7,8 +7,8 @@
  * $Id:
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,7 +16,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-                                                                                                                                               
+
 #include <libvisual/libvisual.h>
 
 typedef enum {
@@ -39,7 +39,7 @@ typedef enum {
 
 typedef struct {
 	SlideType	slide_type;
-} SlidePrivate; 
+} SlidePrivate;
 
 int lv_morph_slide_init_left (VisPluginData *plugin);
 int lv_morph_slide_init_right (VisPluginData *plugin);
@@ -70,6 +70,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = "A slide in/out morph plugin",
 		.help = "This morph plugin morphs between two video sources by sliding one in and the other out",
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_slide_init_left,
 		.cleanup = lv_morph_slide_cleanup,
@@ -87,6 +88,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = "A slide in/out morph plugin",
 		.help = "This morph plugin morphs between two video sources by sliding one in and the other out",
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_slide_init_right,
 		.cleanup = lv_morph_slide_cleanup,
@@ -104,6 +106,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = "A slide in/out morph plugin",
 		.help = "This morph plugin morphs between two video sources by sliding one in and the other out",
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_slide_init_bottom,
 		.cleanup = lv_morph_slide_cleanup,
@@ -121,6 +124,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = "A slide in/out morph plugin",
 		.help = "This morph plugin morphs between two video sources by sliding one in and the other out",
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_slide_init_upper,
 		.cleanup = lv_morph_slide_cleanup,
@@ -129,7 +133,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	*count = sizeof (info) / sizeof (*info);
-	
+
 	return info;
 }
 
@@ -141,7 +145,7 @@ int lv_morph_slide_init_left (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->slide_type = SLIDE_LEFT;
-	
+
 	return 0;
 }
 
@@ -153,7 +157,7 @@ int lv_morph_slide_init_right (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->slide_type = SLIDE_RIGHT;
-	
+
 	return 0;
 }
 
@@ -165,7 +169,7 @@ int lv_morph_slide_init_bottom (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->slide_type = SLIDE_BOTTOM;
-	
+
 	return 0;
 }
 
@@ -177,7 +181,7 @@ int lv_morph_slide_init_upper (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->slide_type = SLIDE_UPPER;
-	
+
 	return 0;
 }
 
@@ -193,7 +197,7 @@ int lv_morph_slide_cleanup (VisPluginData *plugin)
 int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-        uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf1 = visual_video_get_pixels (src1);
 	uint8_t *srcbuf2 = visual_video_get_pixels (src2);
 	int i;
@@ -202,10 +206,10 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 	int hadd;
 
 	visual_mem_set (destbuf, 0, visual_video_get_size (dest));
-	
+
 	if (priv->slide_type == SLIDE_RIGHT || priv->slide_type == SLIDE_UPPER)
 		rate = 1.0 - rate;
-	
+
 	diff1 = dest->pitch * rate;
 	diff1 -= diff1 % dest->bpp;
 
@@ -215,7 +219,7 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 	diff2 = dest->pitch - diff1;
 
 	hadd = dest->height * rate;
-	
+
 	switch (priv->slide_type) {
 		case SLIDE_LEFT:
 			for (i = 0; i < dest->height; i++) {
@@ -230,7 +234,7 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 				visual_mem_copy (destbuf + (i * dest->pitch), srcbuf1 + (i * dest->pitch) + diff2, diff1);
 				visual_mem_copy (destbuf + (i * dest->pitch) + (diff1), srcbuf2 + (i * dest->pitch), diff2);
 			}
-			
+
 			break;
 
 		case SLIDE_BOTTOM:
@@ -251,7 +255,7 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
 			break;
 	}
-	
+
 	return 0;
 }
 

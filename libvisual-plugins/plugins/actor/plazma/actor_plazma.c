@@ -63,6 +63,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.0.1",
 		.about = N_("Libvisual Plazma visual plugin"),
 		.help = N_("This is the libvisual port of the xmms Plazma plugin"),
+		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = act_plazma_init,
 		.cleanup = act_plazma_cleanup,

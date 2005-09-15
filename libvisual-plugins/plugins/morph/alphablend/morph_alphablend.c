@@ -7,8 +7,8 @@
  * $Id:
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2
+ * it under the terms of the Lesser GNU General Public License as
+ * published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,7 +16,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
@@ -26,13 +26,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-                                                                                                                                               
+
 #include <libvisual/libvisual.h>
 
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
-        
+
 static inline int alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha);
 
 /* alpha blenders */
@@ -72,6 +72,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = "An alphablend morph plugin",
 		.help = "This morph plugin morphs between two video sources using the alphablend method",
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_alpha_init,
 		.cleanup = lv_morph_alpha_cleanup,
@@ -110,7 +111,7 @@ int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
 static inline int alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha)
 {
-	
+
 	if (visual_cpu_get_mmx ()) {
 		if (depth == VISUAL_VIDEO_DEPTH_8BIT)
 			return alpha_blend_8_mmx (dest, src1, src2, size, alpha);
@@ -209,7 +210,7 @@ static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2
 
 	ialpha |= ialpha << 16;
 
-#ifdef VISUAL_ARCH_X86	
+#ifdef VISUAL_ARCH_X86
 	__asm __volatile
 		("\n\t pxor %%mm6, %%mm6"
 		 ::);
@@ -238,7 +239,7 @@ static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2
 
 	while (i--)
 		dest[i] = (aalpha * (src2[i] - src1[i])) / 255 + src1[i];
-	
+
 	__asm __volatile
 		("\n\t emms");
 #endif
@@ -280,11 +281,11 @@ static inline int alpha_blend_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src
 	uint32_t ialpha = (alpha * 255);
 	int i;
 
-#ifdef VISUAL_ARCH_X86	
+#ifdef VISUAL_ARCH_X86
 	__asm __volatile
 		("\n\t pxor %%mm6, %%mm6"
 		 ::);
-	
+
 	for (i = 0; i < size; i += 4) {
 		__asm __volatile
 			("\n\t movd %[src2], %%mm0"
@@ -309,11 +310,11 @@ static inline int alpha_blend_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src
 			 , [src2] "m" (*(src2 + i))
 			 , [alpha] "m" (ialpha));
 	}
-        
+
 	__asm __volatile
 		("\n\t emms");
 #endif
-	
+
 	return 0;
 }
 

@@ -52,6 +52,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = N_("Libvisual DNA helix animation plugin"),
 		.help = N_("This plugin shows an openGL DNA twisting unfolding and folding on the music"),
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_dna_init,
 		.cleanup = lv_dna_cleanup,
@@ -61,7 +62,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	*count = sizeof (info) / sizeof (*info);
-	
+
 	return info;
 }
 

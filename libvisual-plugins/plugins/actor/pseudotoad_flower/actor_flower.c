@@ -76,6 +76,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = N_("Libvisual yellow rose of texas port"),
 		.help =  N_("This renders an awesome responsive flower"),
+		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = lv_flower_init,
 		.cleanup = lv_flower_cleanup,

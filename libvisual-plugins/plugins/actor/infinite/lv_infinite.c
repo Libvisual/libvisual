@@ -61,6 +61,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = N_("Infinite visual plugin"),
 		.help = N_("This is the libvisual plugin for the infinite visual"),
+		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = act_infinite_init,
 		.cleanup = act_infinite_cleanup,

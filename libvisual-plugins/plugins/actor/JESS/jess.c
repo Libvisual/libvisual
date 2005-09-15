@@ -73,6 +73,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = N_("Jess visual plugin"),
 		.help = N_("This is the libvisual plugin for the jess visual"),
+		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = act_jess_init,
 		.cleanup = act_jess_cleanup,

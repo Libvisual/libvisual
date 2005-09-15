@@ -98,6 +98,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = N_("Libvisual madspin plugin"),
 		.help = N_("This plugin shows a nifty visual effect using openGL"),
+		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = lv_madspin_init,
 		.cleanup = lv_madspin_cleanup,

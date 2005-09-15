@@ -7,8 +7,8 @@
  * $Id:
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,7 +16,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
@@ -85,6 +85,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.0.1",
 		.about = N_("GdkPixbuf image loader for libvisual"),
 		.help = N_("This plugin can be used to show images"),
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = act_gdkpixbuf_init,
 		.cleanup = act_gdkpixbuf_cleanup,
@@ -102,7 +103,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 {
 	PixbufPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);;
-	
+
 	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING	("filename",	""),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("scaled",	TRUE),
@@ -126,9 +127,9 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 
 	/* Initialize g_type, needed for GdkPixbuf */
 	g_type_init ();
-	
+
 	visual_param_container_add_many (paramcontainer, params);
-	
+
 	return 0;
 }
 
@@ -173,7 +174,7 @@ int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
 int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	priv->width = width;
@@ -185,7 +186,7 @@ int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, 
 		/* If there is no image reset the VisVideo pixels, just to be sure */
 		if (visual_video_get_pixels (&priv->target) != NULL)
 			visual_video_free_buffer (&priv->target);
-		
+
 		visual_video_set_buffer (&priv->target, NULL);
 	}
 	return 0;
@@ -215,9 +216,9 @@ int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 
 				} else if (visual_param_entry_is (param, "scaled")) {
 					priv->set_scaled = visual_param_entry_get_integer (param);
-					
+
 					update_scaled_pixbuf (priv);
-					
+
 				} else if (visual_param_entry_is (param, "aspect")) {
 					priv->aspect = visual_param_entry_get_integer (param);
 
@@ -225,7 +226,7 @@ int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 
 				} else if (visual_param_entry_is (param, "center")) {
 					priv->center = visual_param_entry_get_integer (param);
-				
+
 				} else if (visual_param_entry_is (param, "set size")) {
 					priv->set_size = visual_param_entry_get_integer (param);
 
@@ -235,25 +236,25 @@ int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 					priv->set_width = visual_param_entry_get_integer (param);
 
 					update_scaled_pixbuf (priv);
-				
+
 				} else if (visual_param_entry_is (param, "height")) {
 					priv->set_height = visual_param_entry_get_integer (param);
 
 					update_scaled_pixbuf (priv);
-				
+
 				} else if (visual_param_entry_is (param, "x")) {
 					priv->x_offset = visual_param_entry_get_integer (param);
-				
+
 				} else if (visual_param_entry_is (param, "y")) {
 					priv->y_offset = visual_param_entry_get_integer (param);
-				
+
 				} else if (visual_param_entry_is (param, "interpolate")) {
 					priv->interpolate = visual_param_entry_get_integer (param);
 
 					update_scaled_pixbuf (priv);
 
 				}
-					
+
 			default: /* to avoid warnings */
 				break;
 		}
@@ -270,11 +271,11 @@ VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
 int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	
+
 	if (visual_video_get_pixels (&priv->target) != NULL) {
 		if (priv->center == TRUE) {
 			int xoff, yoff;
-			
+
 			xoff = (video->width - priv->target.width) / 2;
 			yoff = (video->height - priv->target.height) / 2;
 
@@ -298,11 +299,11 @@ static int load_new_file (PixbufPrivate *priv, const char *filename)
 
 	if (priv->filename != NULL)
 		free (priv->filename);
-	
+
 	priv->filename = strdup (filename);
 
 	priv->pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
-	visual_log_return_val_if_fail (priv->pixbuf != NULL, -1);	
+	visual_log_return_val_if_fail (priv->pixbuf != NULL, -1);
 
 	return update_scaled_pixbuf (priv);
 }
@@ -335,7 +336,7 @@ static int update_scaled_pixbuf (PixbufPrivate *priv)
 			inter = GDK_INTERP_NEAREST;
 			break;
 	}
-	
+
 	if (priv->set_scaled == TRUE) {
 		if (priv->set_size == TRUE) {
 			/* We want to allow this, but gdk_pixbuf does spit warnings, so we catch this */
@@ -362,13 +363,13 @@ static int update_scaled_pixbuf (PixbufPrivate *priv)
 				as_w = priv->width;
 				as_h = rh * ((float) as_w / rw);
 			}
-			
+
 			priv->scaled = gdk_pixbuf_scale_simple (priv->pixbuf, as_w, as_h, inter);
-			
+
 		} else {
 			priv->scaled = gdk_pixbuf_scale_simple (priv->pixbuf, priv->width, priv->height, inter);
 		}
-		
+
 		visual_log_return_val_if_fail (priv->scaled != NULL, -1);
 
 		update_into_visvideo (priv, priv->scaled);
@@ -379,7 +380,7 @@ static int update_scaled_pixbuf (PixbufPrivate *priv)
 		update_into_visvideo (priv, priv->pixbuf);
 
 	}
-	
+
 	return 0;
 }
 
@@ -387,7 +388,7 @@ static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src)
 {
 	VisVideo *target;
 	VisVideo bgr;
-	
+
 	target = &priv->target;
 
 	/* Create a VisVideo from the pixbuf */

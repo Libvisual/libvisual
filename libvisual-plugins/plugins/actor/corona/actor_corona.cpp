@@ -102,6 +102,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info[0].version  = "0.1";
 	info[0].about    = N_("Libvisual corona plugin");
 	info[0].help     = N_("This plugin adds support for the neat corona plugin");
+	info[0].license = VISUAL_PLUGIN_LICENSE_GPL,
 
 	info[0].init     = lv_corona_init;
 	info[0].cleanup  = lv_corona_cleanup;
