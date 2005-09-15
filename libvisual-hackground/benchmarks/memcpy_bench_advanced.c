@@ -23,6 +23,7 @@ void test()
 		for (i = 0; i < TIMES; i++)
 			visual_mem_copy (buf1, buf2, size);
 
+		visual_timer_stop (&timer);
 		show_elapsed ("\tTimer done: ", &timer);
 		printf ("\tTimes %d Size %d\n", TIMES, size);
 

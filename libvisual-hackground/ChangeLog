@@ -1,3 +1,7 @@
+2005-09-15  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* *: Some random micro changes.
+
 2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* benchmarks/memcpy_bench_advanced.c: Added.

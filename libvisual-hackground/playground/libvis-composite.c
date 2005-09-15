@@ -452,7 +452,7 @@ int main (int argc, char *argv[])
 				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym) {
 						case SDLK_F11:
-							sdl_fullscreen_toggle ();
+							SDL_WM_ToggleFullScreen (screen);
 							break;
 
 						case SDLK_UP:
