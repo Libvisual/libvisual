@@ -9,7 +9,8 @@ libvisual_cpp_include_HEADERS = \
 	lv_color.hpp		\
 	lv_rectangle.hpp 	\
 	lv_cpu.hpp		\
-	lv_random.hpp
+	lv_random.hpp		\
+	lv_fft.hpp
 
 libvisual_cpp_la_LDFLAGS = -export-dynamic -version-info $(LVCPP_ABI_VERSION)
 libvisual_cpp_la_CXXFLAGS = $(LV_CFLAGS)
@@ -23,4 +24,5 @@ libvisual_cpp_la_SOURCES =	\
 	lv_color.cpp		\
 	lv_rectangle.cpp	\
 	lv_cpu.cpp		\
-	lv_random.cpp
+	lv_random.cpp		\
+	lv_fft.cpp
