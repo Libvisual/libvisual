@@ -266,7 +266,7 @@ VisTimer *visual_timer_new ()
 
 /**
  * Initializes a VisTimer, this should not be used to reset a VisTimer.
- * The resulting initialized VisTimer is a valid VisObject even if it was not allocated.
+ * The resulting initialized VisTimer is a valid VisObject even if it was not allocated with visual_timer_new().
  * Keep in mind that VisTimer structures that were created by visual_timer_new() should not
  * be passed to visual_timer_init().
  *
@@ -422,11 +422,11 @@ int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
 
 /**
  * Returns the amount of milliseconds passed since the timer has started.
- * Be aware to not confuse milliseconds with microseconds.
+ * Be careful not to confuse milliseconds with microseconds.
  *
  * @param timer Pointer to the VisTimer from which we want to know the amount of milliseconds passed since activation.
  *
- * @return The amount of milliseconds passed, or -1 on error, this function is not clockscrew safe.
+ * @return The amount of milliseconds passed, or -1 on error, this function will fail if your system goes back in time.
  */
 int visual_timer_elapsed_msecs (VisTimer *timer)
 {
