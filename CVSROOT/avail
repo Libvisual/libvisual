@@ -1,15 +1,15 @@
 unavail
-avail|extace, synap|CVSROOT
-avail|dprotti, mxcl, razziana, synap, vitalyvb|libvisual
-avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb|libvisual-avs
-avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb|libvisual-bmp
-avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb|libvisual-display
-avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb|libvisual-gforce
+avail|synap|CVSROOT
+avail|dprotti, mxcl, razziana, synap, vitalyvb, descender|libvisual
+avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-avs
+avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-bmp
+avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-display
+avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-gforce
 avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-hackground
-avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb|libvisual-nebulus
+avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-nebulus
 avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-plugins
-avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb|libvisual-widgets
-avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb|libvisual-xmms
+avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-widgets
+avail|dprotti, gsbarbieri, mxcl, razziana, synap, vitalyvb, descender|libvisual-xmms
 avail|dprotti, mxcl, razziana, synap, vitalyvb, descender|libvisual-cpp
 avail|andrewgodwin|libvisualwebsite
 avail|extace, dprotti, mxcl, razziana, synap, vitalyvb|libvisual|core_redesign_branch_VISAUDIO
