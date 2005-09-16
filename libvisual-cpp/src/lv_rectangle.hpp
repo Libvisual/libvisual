@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_rectangle.hpp,v 1.2 2005-09-05 17:46:13 descender Exp $
+// $Id: lv_rectangle.hpp,v 1.3 2005-09-16 20:09:53 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -53,20 +53,20 @@ namespace Lv
       }
 
       // We're forced to provide the following functions because x, y,
-      // width and height are public fields and 'rect.vis_rect ().width'
-      // is uglier than 'rect.get_width ()'.
+      // width and height are public fields and 'rect.vis_rect ().width = x'
+      // is uglier than 'rect.width () = x'.
 
-      inline int& get_x () { return vis_rect ().x; }
-      inline int& get_y () { return vis_rect ().y; }
+      inline int& x () { return vis_rect ().x; }
+      inline int& y () { return vis_rect ().y; }
 
-      inline int& get_width  () { return vis_rect ().width; }
-      inline int& get_height () { return vis_rect ().height; }
+      inline int& width  () { return vis_rect ().width; }
+      inline int& height () { return vis_rect ().height; }
 
-      inline const int& get_x () const { return vis_rect ().x; }
-      inline const int& get_y () const { return vis_rect ().y; }
+      inline int get_x () const { return vis_rect ().x; }
+      inline int get_y () const { return vis_rect ().y; }
       
-      inline const int& get_width  () const { return vis_rect ().width; }
-      inline const int& get_height () const { return vis_rect ().height; }
+      inline int get_width  () const { return vis_rect ().width; }
+      inline int get_height () const { return vis_rect ().height; }
 
       inline void set (int x, int y, int width, int height)
       {

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_fft.hpp,v 1.1 2005-09-16 19:10:07 descender Exp $
+// $Id: lv_fft.hpp,v 1.2 2005-09-16 20:09:53 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -84,6 +84,10 @@ namespace Lv
       {
           return reinterpret_cast<VisObject *> (fft);
       }
+
+      // hide copy constructor and assignment operator for the moment
+      FFT (const FFT& other);
+      const FFT& operator = (const FFT& other);
   };
 
 } // namespace Lv
