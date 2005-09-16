@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_time.hpp,v 1.1 2005-09-16 20:09:53 descender Exp $
+// $Id: lv_time.hpp,v 1.2 2005-09-16 21:44:44 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -116,6 +116,84 @@ namespace Lv
       {
           return reinterpret_cast<VisObject *> (time);
       }
+  };
+
+  class Timer
+      : public Object
+  {
+  public:
+
+      Timer ()
+          : Object (vis_timer_to_object (visual_timer_new ()))
+      {}
+
+      inline void reset ()
+      {
+          visual_timer_reset (&vis_timer ());
+      }
+
+      inline void start ()
+      {
+          visual_timer_start (&vis_timer ());
+      }
+
+      inline void stop ()
+      {
+          visual_timer_stop (&vis_timer ());
+      }
+
+      inline void cont ()
+      {
+          visual_timer_continue (&vis_timer ());
+      }
+
+      inline bool is_active () const
+      {
+          return visual_timer_is_active (const_cast<VisTimer *> (&vis_timer ()));
+      }
+
+      void elapsed (Time& time) const
+      {
+          visual_timer_elapsed (const_cast<VisTimer *> (&vis_timer ()),
+                                &time.vis_time ());
+      }
+
+      int elasped_msecs () const
+      {
+          return visual_timer_elapsed_msecs (const_cast<VisTimer *> (&vis_timer ()));
+      }
+
+      bool has_passed (const Time& time) const
+      {
+          return visual_timer_has_passed (const_cast<VisTimer *> (&vis_timer ()),
+                                          const_cast<VisTime *> (&time.vis_time ()));
+      }
+
+      bool has_passed (long sec, long usec) const
+      {
+          return visual_timer_has_passed_by_values (const_cast<VisTimer *> (&vis_timer ()),
+                                                    sec, usec);
+      }
+
+      inline const VisTimer &vis_timer () const
+      {
+          return *reinterpret_cast<const VisTimer *> (&vis_object ());
+      }
+
+      inline VisTimer &vis_timer ()
+      {
+          return *reinterpret_cast<VisTimer *> (&vis_object ());
+      }
+
+  private:
+
+      static inline VisObject *vis_timer_to_object (VisTimer *timer)
+      {
+          return reinterpret_cast<VisObject *> (timer);
+      }
+
+      Timer (const Timer& timer);
+      const Timer& operator = (const Timer& rhs);
   };
 
 } // namespace Lv
