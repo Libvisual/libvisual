@@ -1,3 +1,8 @@
+2005-09-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/esd/input_esd.c: Won't block anylonger, solved using
+	a select timeout.
+
 2005-09-15  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*: Adding .license flag to the plugins so apps can do a

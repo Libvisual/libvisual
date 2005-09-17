@@ -15,7 +15,6 @@ input/esd: (post 0.1)
 inputs:
 	esd:
 		Esd plugin isn't timing, should be fixed when buffer queues land before 0.2 (post 0.1)
-		ESD BLOCKS ON LIKE EVERYTHING (post 0.1) (if it is fixable at all)
 	alsa:
 		Fix the small issues within the plugin
 		(alsa_init) Take parameters from the 'params'

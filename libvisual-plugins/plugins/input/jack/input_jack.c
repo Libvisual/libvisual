@@ -37,12 +37,14 @@
 #define PCM_BUF_SIZE	1024
 
 typedef struct {
-	jack_client_t *client;
-	jack_port_t *input_port;
+	jack_client_t	*client;
+	jack_port_t	*input_port;
 
-	int shutdown;
+	int		 shutdown;
 
-	short fakebuf[PCM_BUF_SIZE];
+	VisBuffer	*buffer;
+
+	short		 fakebuf[PCM_BUF_SIZE];
 } JackPrivate;
 
 static int process_callback (jack_nframes_t nframes, void *arg);
@@ -129,6 +131,8 @@ int inp_jack_init (VisPluginData *plugin)
 
 	visual_mem_free (ports);
 
+//	visual_buffer_init_allocate (&priv->buffer, 65536, 
+
 	return 0;
 }
 
@@ -151,6 +155,7 @@ int inp_jack_cleanup (VisPluginData *plugin)
 int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	JackPrivate *priv = NULL;
+	VisBuffer buffer;
 	int i;
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
@@ -165,6 +170,13 @@ int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 
 		return -1;
 	}
+
+/*
+	visual_buffer_init (&buffer, data, rcnt, NULL);
+
+	visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+			VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+*/
 
 	for (i = 0; i < PCM_BUF_SIZE && i < 1024; i += 2) {
 		audio->plugpcm[0][i >> 1] = priv->fakebuf[i];

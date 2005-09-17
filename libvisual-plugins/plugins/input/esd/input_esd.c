@@ -28,28 +28,24 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <errno.h>
+
 #include <gettext.h>
 
 #include <esd.h>
 
 #include <libvisual/libvisual.h>
 
-#define PCM_BUF_SIZE	1024
+#define PCM_BUF_SIZE	4096
 
 typedef struct {
 	int esdhandle;
-	int fakebufloaded;
-	short fakebuf[PCM_BUF_SIZE];
-	int clearcount;
-
-	int loaded;
 } EsdPrivate;
 
 int inp_esd_init (VisPluginData *plugin);
 int inp_esd_cleanup (VisPluginData *plugin);
 int inp_esd_upload (VisPluginData *plugin, VisAudio *audio);
 
-static const int inp_esd_var_btmul = sizeof (short);
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
@@ -93,16 +89,12 @@ int inp_esd_init (VisPluginData *plugin)
 
 	priv = visual_mem_new0 (EsdPrivate, 1);
 	visual_log_return_val_if_fail (priv != NULL, -1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);	
+	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->esdhandle = esd_monitor_stream (ESD_BITS16 | ESD_STEREO | ESD_STREAM | ESD_MONITOR, 44100, NULL, "lv_esd_plugin");
 
 	if (priv->esdhandle <= 0)
 		return -1;
-
-	fcntl (priv->esdhandle, F_SETFL, O_NONBLOCK);
-
-	priv->loaded = 1;
 
 	return 0;
 }
@@ -114,9 +106,8 @@ int inp_esd_cleanup (VisPluginData *plugin)
 	visual_log_return_val_if_fail( plugin != NULL, -1 );
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail( priv != NULL, -1 );
-	
-	if (priv->loaded == 1)
-		esd_close (priv->esdhandle);
+
+	esd_close (priv->esdhandle);
 
 	visual_mem_free (priv);
 
@@ -126,8 +117,9 @@ int inp_esd_cleanup (VisPluginData *plugin)
 int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	EsdPrivate *priv = NULL;
-	short esddata[PCM_BUF_SIZE];
-	int rcnt;	
+	short data[PCM_BUF_SIZE];
+	struct timeval tv;
+	int r;
 	int i;
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
@@ -135,34 +127,45 @@ int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
-	rcnt = read (priv->esdhandle, esddata,
-		     PCM_BUF_SIZE * inp_esd_var_btmul);
-	
-	if (rcnt < 0) {
-		if (priv->fakebufloaded == 1) {
-			priv->clearcount++;
+	do {
+		fd_set rdset;
 
-			if (priv->clearcount > 100)
-				visual_mem_set (priv->fakebuf, 0, 
-					PCM_BUF_SIZE * inp_esd_var_btmul);
-			
-			visual_mem_copy (esddata, priv->fakebuf, 
-				PCM_BUF_SIZE * inp_esd_var_btmul);
-		} else {
-			visual_mem_set (esddata, 0, sizeof (esddata));
-		}	
-	} else {
-		priv->clearcount = 0;
-	}
-	
-	priv->fakebufloaded = 1;
+		FD_ZERO (&rdset);
+		FD_SET (priv->esdhandle, &rdset);
 
-	visual_mem_copy (priv->fakebuf, esddata, PCM_BUF_SIZE * inp_esd_var_btmul);
+		tv.tv_sec = 0;
+		tv.tv_usec = 10000;
 
-	for (i = 0; i < PCM_BUF_SIZE && i < 1024; i += 2) {
-		audio->plugpcm[0][i >> 1] = priv->fakebuf[i];
-		audio->plugpcm[1][i >> 1] = priv->fakebuf[i + 1];
-	}
+		r = select (priv->esdhandle + 1, &rdset, NULL, NULL, &tv);
+
+		/* Select time out */
+		if (r == 0)
+			return -1;
+
+		if (r < 0) {
+			visual_log (VISUAL_LOG_CRITICAL, _("ESD: Select error (%d, %s)"), errno, strerror (errno));
+
+			return -1;
+		}
+
+		r = read (priv->esdhandle, data, PCM_BUF_SIZE);
+
+		if (r > 0) {
+			VisBuffer buffer;
+
+			visual_buffer_init (&buffer, data, r, NULL);
+
+			visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+					VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+		}
+
+		if (r < 0) {
+			visual_log (VISUAL_LOG_CRITICAL, _("ESD: Error while reading data"));
+
+			return -1;
+		}
+
+	} while (r > 0);
 
 	return 0;
 }
