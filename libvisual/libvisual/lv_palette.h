@@ -26,13 +26,11 @@
 
 #include <libvisual/lv_common.h>
 #include <libvisual/lv_color.h>
-	
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_PALETTE(obj)				(VISUAL_CHECK_CAST ((obj), VisPalette))
-	
+
 typedef struct _VisPalette VisPalette;
 
 /**
@@ -58,8 +56,6 @@ int visual_palette_free_colors (VisPalette *pal);
 int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate);
 VisColor *visual_palette_color_cycle (VisPalette *pal, float rate);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_PALETTE_H */

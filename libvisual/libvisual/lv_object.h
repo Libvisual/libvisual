@@ -24,11 +24,10 @@
 #ifndef _LV_OBJECT_H
 #define _LV_OBJECT_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lv_defines.h>
+#include <libvisual/lv_types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_OBJECT(obj)				(VISUAL_CHECK_CAST ((obj), VisObject))
 
@@ -83,8 +82,6 @@ int visual_object_unref (VisObject *object);
 int visual_object_set_private (VisObject *object, void *priv);
 void *visual_object_get_private (VisObject *object);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_OBJECT_H */

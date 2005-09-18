@@ -30,9 +30,7 @@
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_event.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_PARAMCONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), VisParamContainer))
 #define VISUAL_PARAMENTRY_CALLBACK(obj)			(VISUAL_CHECK_CAST ((obj), VisParamEntryCallback))
@@ -167,8 +165,6 @@ VisColor *visual_param_entry_get_color (VisParamEntry *param);
 VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
 VisObject *visual_param_entry_get_object (VisParamEntry *param);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_PARAM_H */

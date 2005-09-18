@@ -6,9 +6,7 @@
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_keysym.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_EVENT_KEYBOARD(obj)			(VISUAL_CHECK_CAST ((obj), VisEventKeyboard))
 #define VISUAL_EVENT_MOUSEMOTION(obj)			(VISUAL_CHECK_CAST ((obj), VisEventMouseMotion))
@@ -264,8 +262,6 @@ int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please
 int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible);
 int visual_event_queue_add_generic (VisEventQueue *eventqueue, int eid, int param_int, void *param_ptr);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_EVENT_H */

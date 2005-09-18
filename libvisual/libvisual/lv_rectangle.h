@@ -26,9 +26,7 @@
 
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_RECTANGLE(obj)				(VISUAL_CHECK_CAST ((obj, VisRectangle))
 
@@ -63,8 +61,6 @@ int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist,
 int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float fy, int *x, int *y);
 int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int *xlist, int *ylist, int size);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_RECTANGLE_H */

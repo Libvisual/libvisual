@@ -41,9 +41,7 @@
 #include <windows.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginRef))
 #define VISUAL_PLUGININFO(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginInfo))
@@ -287,8 +285,6 @@ int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
 int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
 VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_PLUGIN_H */

@@ -27,6 +27,8 @@
 #include <string.h>
 
 #include "lv_log.h"
+#include "lv_error.h"
+#include "lv_mem.h"
 #include "lv_object.h"
 
 

@@ -24,9 +24,7 @@
 #ifndef _LV_KEYSYM_H
 #define _LV_KEYSYM_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 /**
  * Enumerate values used within the libvisual event system for keyboard events.
@@ -228,8 +226,6 @@ struct _VisKeySym {
 	int		mod;	/**< Modifier vlags, Using key modifiers from the VisKeyMod enumerate. */
 };
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_KEYSYM_H */

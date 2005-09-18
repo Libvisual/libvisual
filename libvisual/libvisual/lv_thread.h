@@ -20,9 +20,7 @@
 #endif
 #endif /* VISUAL_HAVE_THREADS */
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 typedef struct _VisThread VisThread;
 typedef struct _VisMutex VisMutex;
@@ -96,8 +94,6 @@ int visual_mutex_lock (VisMutex *mutex);
 int visual_mutex_trylock (VisMutex *mutex);
 int visual_mutex_unlock (VisMutex *mutex);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_THREAD_H */

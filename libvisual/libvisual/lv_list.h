@@ -39,9 +39,7 @@
 #include <sys/queue.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_LIST(obj)				(VISUAL_CHECK_CAST ((obj), VisList))
 
@@ -97,8 +95,6 @@ int visual_list_destroy (VisList *list, VisListEntry **le);
 
 int visual_list_count (VisList *list);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_LIST_H */

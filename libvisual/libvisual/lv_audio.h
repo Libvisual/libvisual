@@ -29,9 +29,7 @@
 #include <libvisual/lv_ringbuffer.h>
 #include <libvisual/lv_hashmap.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_AUDIO(obj)				(VISUAL_CHECK_CAST ((obj), VisAudio))
 #define VISUAL_AUDIO_SAMPLEPOOL(obj)			(VISUAL_CHECK_CAST ((obj), VisAudioSamplePool))
@@ -173,8 +171,6 @@ int visual_audio_sample_rate_get_length (VisAudioSampleRateType rate);
 int visual_audio_sample_format_get_size (VisAudioSampleFormatType format);
 int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_AUDIO_H */

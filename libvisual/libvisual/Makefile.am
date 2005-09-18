@@ -12,7 +12,7 @@ library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_types.h lv_thread.h lv_object.h \
 			  lv_transform.h lv_rectangle.h lv_ringbuffer.h \
 			  lv_buffer.h lv_config.h lv_hashmap.h \
-			  lv_cache.h lv_collection.h
+			  lv_cache.h lv_collection.h lv_defines.h
 
 lib_LTLIBRARIES = libvisual.la
 

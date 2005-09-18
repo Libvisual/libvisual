@@ -24,9 +24,9 @@
 #ifndef _LV_ERROR_H
 #define _LV_ERROR_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+#include <libvisual/lv_defines.h>
+
+VISUAL_BEGIN_DECLS
 
 /* WARNING when you add an new error to this list, make sure that you update lv_error.c it's
  * human readable string list as well!!! */
@@ -242,8 +242,6 @@ int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
 
 const char *visual_error_to_string (int err);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_ERROR_H */

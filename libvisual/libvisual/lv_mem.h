@@ -26,9 +26,9 @@
 
 #include <libvisual/lvconfig.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+#include <libvisual/lv_defines.h>
+
+VISUAL_BEGIN_DECLS
 
 #ifndef __attribute_malloc__
 #define __attribute_malloc__
@@ -100,8 +100,6 @@ extern VisMemSet32Func visual_mem_set32;
 #define visual_mem_new0(struct_type, n_structs)           \
     ((struct_type *) visual_mem_malloc0 (((visual_size_t) sizeof (struct_type)) * ((visual_size_t) (n_structs))))
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_MEM_H */

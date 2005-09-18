@@ -31,9 +31,7 @@
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_event.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_TRANSFORM(obj)				(VISUAL_CHECK_CAST ((obj), VisTransform))
 #define VISUAL_TRANSFORM_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisTransformPlugin))
@@ -132,8 +130,6 @@ int visual_transform_run (VisTransform *transform, VisAudio *audio);
 int visual_transform_run_video (VisTransform *transform, VisAudio *audio);
 int visual_transform_run_palette (VisTransform *transform, VisAudio *audio);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_TRANSFORM_H */

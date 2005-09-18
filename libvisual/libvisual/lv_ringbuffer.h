@@ -28,9 +28,7 @@
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_buffer.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_RINGBUFFER(obj)				(VISUAL_CHECK_CAST ((obj), VisRingBuffer))
 #define VISUAL_RINGBUFFER_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisRingBufferEntry))
@@ -123,8 +121,6 @@ int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
 		void *functiondata);
 void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_RINGBUFFER_H */

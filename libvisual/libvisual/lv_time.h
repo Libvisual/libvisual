@@ -29,9 +29,7 @@
 
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_USEC_PER_SEC	1000000
 
@@ -85,8 +83,6 @@ int visual_timer_elapsed_msecs (VisTimer *timer);
 int visual_timer_has_passed (VisTimer *timer, VisTime *time_);
 int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_TIME_H */

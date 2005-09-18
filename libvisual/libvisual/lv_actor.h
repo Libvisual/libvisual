@@ -31,9 +31,7 @@
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_event.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
 #define VISUAL_ACTOR_PLUGINENVIRON(obj)			(VISUAL_CHECK_CAST ((obj), VisActorPluginEnviron))
@@ -184,8 +182,6 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video);
 
 int visual_actor_run (VisActor *actor, VisAudio *audio);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_ACTOR_H */

@@ -30,9 +30,7 @@
 #include <libvisual/lv_video.h>
 #include <libvisual/lv_time.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_MORPH(obj)				(VISUAL_CHECK_CAST ((obj), VisMorph))
 #define VISUAL_MORPH_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisMorphPlugin))
@@ -177,8 +175,6 @@ int visual_morph_requests_audio (VisMorph *morph);
 
 int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_MORPH_H */

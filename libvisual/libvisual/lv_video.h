@@ -32,9 +32,7 @@
 #include <libvisual/lv_rectangle.h>
 #include <libvisual/lv_buffer.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_VIDEO(obj)				(VISUAL_CHECK_CAST ((obj), VisVideo))
 
@@ -264,8 +262,6 @@ VisVideo *visual_video_scale_depth_new (VisVideo *src, int width, int height, Vi
 int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, VisVideo *src);
 int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_VIDEO_H */

@@ -28,9 +28,7 @@
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS;
 
 /**
  * Enumerate containing the different architectual types.
@@ -100,8 +98,6 @@ int visual_cpu_set_3dnow (int enabled);
 int visual_cpu_set_3dnow2 (int enabled);
 int visual_cpu_set_altivec (int enabled);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_CPU_H */

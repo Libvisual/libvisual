@@ -29,9 +29,9 @@
 #include <stdarg.h>
 #include <assert.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+#include <libvisual/lv_defines.h>
+
+VISUAL_BEGIN_DECLS
 
 /* This is read-only */
 extern char *__lv_progname;
@@ -306,8 +306,6 @@ void _lv_log (VisLogSeverity severity, const char *file,
 		int line, const char *funcname, const char *fmt, ...);
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_LOG_H */

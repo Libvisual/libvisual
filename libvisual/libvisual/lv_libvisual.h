@@ -27,9 +27,7 @@
 #include <libvisual/lv_param.h>
 #include <libvisual/lv_ui.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 const char *visual_get_version (void);
 VisParamContainer *visual_get_params (void);
@@ -39,8 +37,6 @@ int visual_init (int *argc, char ***argv);
 int visual_is_initialized (void);
 int visual_quit (void);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_LIBVISUAL_H */

@@ -26,9 +26,7 @@
 
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_COLLECTION(obj)				(VISUAL_CHECK_CAST ((obj), VisCollection))
 #define VISUAL_COLLECTIONITER(obj)			(VISUAL_CHECK_CAST ((obj), VisCollectionIter))
@@ -135,8 +133,6 @@ void visual_collection_iter_next (VisCollectionIter *iter);
 int visual_collection_iter_has_more (VisCollectionIter *iter);
 void *visual_collection_iter_get_data (VisCollectionIter *iter);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_COLLECTION_H */

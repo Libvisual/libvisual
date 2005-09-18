@@ -26,9 +26,7 @@
 
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_BUFFER(obj)				(VISUAL_CHECK_CAST ((obj), VisBuffer))
 
@@ -88,8 +86,6 @@ int visual_buffer_fill (VisBuffer *buffer, char value);
 
 void visual_buffer_destroyer_free (VisBuffer *buffer);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_BUFFER_H */

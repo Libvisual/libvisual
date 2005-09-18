@@ -1,3 +1,7 @@
+2005-09-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_*.h: Use VISUAL_BEGIN_DECLS and VISUAL_END_DECLS.
+
 2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_cache.c: Changed the new and init to have a request

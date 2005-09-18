@@ -28,9 +28,7 @@
 #include <libvisual/lv_plugin.h>
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_INPUT(obj)				(VISUAL_CHECK_CAST ((obj), VisInput))
 #define VISUAL_INPUT_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisInputPlugin))
@@ -125,8 +123,6 @@ int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callb
 
 int visual_input_run (VisInput *input);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_INPUT_H */

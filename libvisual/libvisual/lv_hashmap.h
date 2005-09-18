@@ -28,9 +28,7 @@
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_collection.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_HASHMAP_START_SIZE	1024
 
@@ -98,8 +96,6 @@ void *visual_hashmap_get_string (VisHashmap *hashmap, char *key);
 int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize);
 int visual_hashmap_get_table_size (VisHashmap *hashmap);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_HASHMAP_H */

@@ -27,9 +27,7 @@
 #include <libvisual/lv_common.h>
 #include <libvisual/lv_list.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_CONFIG_REGISTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisConfigRegistry))
 #define VISUAL_CONFIG_REGISTRYSECTION(obj)		(VISUAL_CHECK_CAST ((obj), VisConfigRegistrySection))
@@ -84,8 +82,6 @@ int visual_config_registry_write_by_data (VisConfigRegistry *registry, const cha
 int visual_config_registry_write (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
 int visual_config_registry_sync (VisConfigRegistry *registry);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_CONFIG_H */

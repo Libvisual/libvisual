@@ -29,9 +29,7 @@
 #include <libvisual/lv_video.h>
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_UI_WIDGET(obj)				(VISUAL_CHECK_CAST ((obj), VisUIWidget))
 #define VISUAL_UI_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), VisUIContainer))
@@ -512,8 +510,6 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient);
 
 VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_UI_H */

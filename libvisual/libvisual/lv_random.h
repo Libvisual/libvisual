@@ -27,9 +27,7 @@
 
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_RANDOMCONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), VisRandomContext))
 
@@ -75,8 +73,6 @@ double visual_random_context_double (VisRandomContext *rcontext);
 float visual_random_context_float (VisRandomContext *rcontext);
 int visual_random_context_decide (VisRandomContext *rcontext, float a);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_RANDOM_H */

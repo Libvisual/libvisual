@@ -29,9 +29,7 @@
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_hashmap.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_CACHE(obj)				(VISUAL_CHECK_CAST ((obj), VisCache))
 #define VISUAL_CACHEENTRY(obj)				(VISUAL_CHECK_CAST ((obj), VisCacheEntry))
@@ -90,8 +88,6 @@ int visual_cache_set_limits (VisCache *cache, int size, VisTime *maxage);
 
 VisList *visual_cache_get_list (VisCache *cache);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_CACHE_H */

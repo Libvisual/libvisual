@@ -26,9 +26,7 @@
 
 #include <libvisual/lvconfig.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 /**
  * Macros to convert LE <-> BE
@@ -67,9 +65,6 @@ extern "C" {
 #	define VISUAL_ENDIAN_BEI32(x) VISUAL_ENDIAN_LE_BE_I32(x)
 #endif
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */   
+VISUAL_END_DECLS
 
 #endif /* _LV_ENDIANESS_H */

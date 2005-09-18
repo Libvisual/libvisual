@@ -21,35 +21,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_TYPES_H
-#define _LV_TYPES_H
+#ifndef _LV_DEFINES_H
+#define _LV_DEFINES_H
 
-#include <libvisual/lv_defines.h>
-
-#if defined(VISUAL_OS_WIN32)
-#include <stdint.h>
+#ifdef __cplusplus
+# define VISUAL_BEGIN_DECLS	extern "C" {
+# define VISUAL_END_DECLS	}
 #else
-#include <sys/types.h>
-#endif /* !VISUAL_OS_WIN32 */
+# define VISUAL_BEGIN_DECLS
+# define VISUAL_END_DECLS
+#endif /* __cplusplus */
 
-VISUAL_BEGIN_DECLS
-
-#define VISUAL_CHECK_CAST(uiobj, cast)    ((cast*) (uiobj))
-
-#if !defined(VISUAL_OS_WIN32)
-#ifndef uint8_t
-#define uint8_t		u_int8_t
+#ifndef NULL
+/**
+ * NULL define.
+ */
+#define NULL	(0)
 #endif
 
-#ifndef uint16_t
-#define uint16_t	u_int16_t
+#ifndef FALSE
+/**
+ * FALSE define.
+ */
+#define FALSE	(0)
 #endif
 
-#ifndef uint32_t
-#define uint32_t	u_int32_t
+#ifndef TRUE
+/**
+ * TRUE define.
+ */
+#define TRUE	(!FALSE)
 #endif
-#endif /* !VISUAL_OS_WIN32 */
 
-VISUAL_END_DECLS
-
-#endif /* _LV_TYPES_H */
+#endif /* _LV_DEFINES_H */

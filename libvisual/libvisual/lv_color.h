@@ -26,9 +26,7 @@
 
 #include <libvisual/lv_common.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_COLOR(obj)				(VISUAL_CHECK_CAST ((obj), VisColor))
 
@@ -53,8 +51,6 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v);
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
 int visual_color_copy (VisColor *dest, VisColor *src);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_COLOR_H */

@@ -27,9 +27,7 @@
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_video.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+VISUAL_BEGIN_DECLS
 
 #define VISUAL_SONGINFO(obj)				(VISUAL_CHECK_CAST ((obj), VisSongInfo))
 
@@ -100,8 +98,6 @@ long visual_songinfo_age (VisSongInfo *songinfo);
 int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src);
 int visual_songinfo_compare (VisSongInfo *s1, VisSongInfo *s2);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+VISUAL_END_DECLS
 
 #endif /* _LV_SONGINFO_H */

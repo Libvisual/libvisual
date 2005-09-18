@@ -24,39 +24,12 @@
 #ifndef _LV_COMMON_H
 #define _LV_COMMON_H
 
-#ifdef __cplusplus
-# define VISUAL_BEGIN_DECLS	extern "C" {
-# define VISUAL_END_DECLS	}
-#else
-# define VISUAL_BEGIN_DECLS
-# define VISUAL_END_DECLS
-#endif /* __cplusplus */
+#include <libvisual/lv_defines.h>
 
 #include <libvisual/lv_mem.h>
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_error.h>
 #include <libvisual/lv_types.h>
 #include <libvisual/lv_object.h>
-
-#ifndef NULL
-/**
- * NULL define.
- */
-#define NULL	(0)
-#endif
-
-#ifndef FALSE
-/**
- * FALSE define.
- */
-#define FALSE	(0)
-#endif
-
-#ifndef TRUE
-/**
- * TRUE define.
- */
-#define TRUE	(!FALSE)
-#endif
 
 #endif /* _LV_COMMON_H */
