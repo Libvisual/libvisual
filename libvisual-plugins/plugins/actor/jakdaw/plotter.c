@@ -29,50 +29,7 @@ static void vert_line(JakdawPrivate *priv, int x, int a, int b, uint32_t col, ui
 static int no_of_shifts(int val);
 static int p2(int val);
 
-void _jakdaw_plotter_init(JakdawPrivate *priv, int x, int y)
-{
-	double delta, acc, scalefact;
-	int a;
-	
-	priv->xlat_table=visual_mem_malloc0(priv->xres*sizeof(int));
-
-	delta=512.0 / (double) priv->xres;
-	acc=0;
-
-	for(a=0;a<priv->xres;a++)
-	{
-		priv->xlat_table[a]=(int) acc;
-		acc+=delta;
-	}
-	
-	priv->shifts=no_of_shifts((priv->yres*priv->plotter_amplitude)/100);
-	scalefact=((double)(priv->yres*priv->plotter_amplitude)/100.0)/(double)p2(16-priv->shifts);
-
-	priv->amplitude_table=visual_mem_malloc0(p2(16-priv->shifts)*sizeof(int));
-
-	for(a=0;a<p2(16-priv->shifts);a++)
-	{
-		priv->amplitude_table[a]=(a*scalefact)+((int)(priv->yres-(p2(16-priv->shifts)*scalefact))>>1);
-	}
-			
-}
-
-void _jakdaw_plotter_reset(JakdawPrivate *priv, int x, int y)
-{
-	_jakdaw_plotter_close(priv);
-	_jakdaw_plotter_init(priv, x,y);
-}
-
-void _jakdaw_plotter_close(JakdawPrivate *priv)
-{
-	if (priv->xlat_table != NULL)
-		visual_mem_free(priv->xlat_table);
-
-	if (priv->amplitude_table != NULL)
-		visual_mem_free(priv->amplitude_table);
-}
-
-void _jakdaw_plotter_draw(JakdawPrivate *priv, int16_t pcm_data[3][512], int16_t freq_data[3][256], uint32_t *vscr)
+void _jakdaw_plotter_draw(JakdawPrivate *priv, float *pcm_data, int16_t freq_data[3][256], uint32_t *vscr)
 {
 	int x, y;
 	int oy;
@@ -82,7 +39,7 @@ void _jakdaw_plotter_draw(JakdawPrivate *priv, int16_t pcm_data[3][512], int16_t
 	{
 		case PLOTTER_COLOUR_SOLID: col=priv->plotter_scopecolor; break;
 		case PLOTTER_COLOUR_RANDOM: col=visual_random_context_int (priv->rcontext); break;
-		case PLOTTER_COLOUR_MUSICTRIG: 
+		case PLOTTER_COLOUR_MUSICTRIG:
 		default:
 			{
 				int c,d;					/* PLAY WITH THESE VALUES */
@@ -91,29 +48,30 @@ void _jakdaw_plotter_draw(JakdawPrivate *priv, int16_t pcm_data[3][512], int16_t
 					d=d+freq_data[2][c];
 					d>>=8;
 				col=(int)((double) d*(255.0/16.0));
-		
+
 				d=0;
 				for(c=16;c<108;c++)
 					d=d+freq_data[2][c];
 				d>>=8;
 				col|=((int)((double) d*(255.0/72.0)))<<8;
-		
+
 				d=0;
 				for(c=108;c<255;c++)
 					d=d+freq_data[2][c];
 				d>>=8;
 				col|=((int)((double) d*(255.0/144.0)))<<16;
-		
-			}		
+
+			}
 	}
 
-	oy=priv->amplitude_table[(p2(16-priv->shifts)>>1) + (pcm_data[2][priv->xlat_table[0]] >> priv->shifts)];
+	oy = (priv->yres / 2) + ((pcm_data[0] * priv->plotter_amplitude) * (priv->yres / 2));
+
 	oy=oy<0 ? 0 : oy>=priv->yres ? priv->yres -1 : oy;
 
 	for(x=0;x<priv->xres;x++)
 	{
-		y=priv->amplitude_table[(p2(16-priv->shifts)>>1) + (pcm_data[2][priv->xlat_table[x]] >> priv->shifts)];
-		
+		y = (priv->yres / 2) + ((pcm_data[x % 512] * priv->plotter_amplitude) * (priv->yres / 2));
+
 		if(y<0) y=0;
 		if(y>=priv->yres) y=priv->yres-1;
 		if(priv->plotter_scopetype==PLOTTER_SCOPE_LINES)
@@ -136,7 +94,7 @@ void _jakdaw_plotter_draw(JakdawPrivate *priv, int16_t pcm_data[3][512], int16_t
 static void vert_line(JakdawPrivate *priv, int x,int a, int b, uint32_t col, uint32_t *vscr)
 {
 	int y, ptr;
-	
+
 	if(b<a)
 	{
 		y=a; a=b; b=y;
@@ -144,13 +102,13 @@ static void vert_line(JakdawPrivate *priv, int x,int a, int b, uint32_t col, uin
 
 	if(a<0 || a>=priv->yres || b<0 || b>=priv->yres)
 		return;
-	
+
 	ptr=(a*priv->xres)+x;
-	
+
 	for(y=a;y<=b;y++)
 	{
-			vscr[ptr]=col;
-			ptr+=priv->xres;
+		vscr[ptr]=col;
+		ptr+=priv->xres;
 	}
 }
 
@@ -161,7 +119,7 @@ static int no_of_shifts(int val)
 {
 
 	int a=1, b=0;
-	
+
 	while(a<val)
 	{
 		b++;
@@ -176,9 +134,9 @@ static int no_of_shifts(int val)
 static int p2(int val)
 {
 	int a=1;
-	
+
 	for(;val>0;val--)
 		a*=2;
-		
+
 	return a;
 }

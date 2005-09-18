@@ -25,9 +25,6 @@
 
 #include "actor_jakdaw.h"
 
-void _jakdaw_plotter_init (JakdawPrivate *priv, int x, int y);
-void _jakdaw_plotter_reset (JakdawPrivate *priv, int x, int y);
-void _jakdaw_plotter_close (JakdawPrivate *priv);
-void _jakdaw_plotter_draw (JakdawPrivate *priv, int16_t pcm_data[3][512], int16_t freq_data[3][256], uint32_t *vscr);
+void _jakdaw_plotter_draw (JakdawPrivate *priv, float pcm_data[512], int16_t freq_data[3][256], uint32_t *vscr);
 
 #endif /* _PLOTTER_H */

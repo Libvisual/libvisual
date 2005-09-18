@@ -105,8 +105,8 @@ int act_jakdaw_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("On music",		PLOTTER_COLOUR_MUSICTRIG),
 		VISUAL_PARAM_LIST_END
 	};
-	
-		
+
+
 	static VisParamEntry scopeparamchoices[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Lines",		PLOTTER_SCOPE_LINES),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Dots",		PLOTTER_SCOPE_DOTS),
@@ -134,12 +134,12 @@ int act_jakdaw_init (VisPluginData *plugin)
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
 	priv->decay_rate = 1;
-	
+
 	priv->zoom_ripplesize = 32;
 	priv->zoom_ripplefact = 0.1;
 	priv->zoom_zoomfact = 0.9;
 
-	priv->plotter_amplitude = 100;
+	priv->plotter_amplitude = 0.5;
 
 	/* FIXME make param of this one as well */
 	priv->plotter_scopecolor = 0xff00ff;
@@ -147,7 +147,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 	visual_param_container_add_many (paramcontainer, params);
 
 	table = visual_ui_table_new (3, 2);
-	
+
 	label1 = visual_ui_label_new (_("Blur mode:"), FALSE);
 	label2 = visual_ui_label_new (_("Plotter color:"), FALSE);
 	label3 = visual_ui_label_new (_("Plotter type:"), FALSE);
@@ -166,10 +166,10 @@ int act_jakdaw_init (VisPluginData *plugin)
 	visual_ui_widget_set_tooltip (popup3, _("The plotter it's shape"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup3), visual_param_container_get (paramcontainer, "plotter type"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup3), scopeparamchoices);
-	
+
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), label1, 0, 0);
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup1, 0, 1);
-	
+
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), label2, 1, 0);
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup2, 1, 1);
 
@@ -177,6 +177,8 @@ int act_jakdaw_init (VisPluginData *plugin)
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup3, 2, 1);
 
 	visual_plugin_set_userinterface (plugin, table);
+
+	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
 
 	return 0;
 }
@@ -190,7 +192,9 @@ int act_jakdaw_cleanup (VisPluginData *plugin)
 	visual_object_unref (VISUAL_OBJECT (ui));
 
 	_jakdaw_feedback_close (priv);
-	
+
+	visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
+
 	visual_mem_free (priv);
 
 	return 0;
@@ -218,15 +222,14 @@ int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height)
 int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	priv->xres = width;
 	priv->yres = height;
 
 	_jakdaw_feedback_reset (priv, width, height);
-	_jakdaw_plotter_reset (priv, width, height);
-	
+
 	return 0;
 }
 
@@ -262,7 +265,6 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 
 					priv->plotter_colortype = visual_param_entry_get_integer (param);
 
-					_jakdaw_plotter_reset (priv, priv->xres, priv->yres);
 				}
 				else if (visual_param_entry_is (param, "plotter type")) {
 					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter type param: %d\n",
@@ -272,7 +274,7 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 
 					_jakdaw_feedback_reset (priv, priv->xres, priv->yres);
 				}
-				
+
 				break;
 
 			default: /* to avoid warnings */
@@ -293,9 +295,15 @@ int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint32_t *vscr = visual_video_get_pixels (video);
 
+	visual_audio_get_sample_mixed (audio, priv->pcmbuf, TRUE, 2,
+			VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT,
+			1.0,
+			1.0);
+
 	_jakdaw_feedback_render (priv, vscr);
-	_jakdaw_plotter_draw (priv, audio->pcm, audio->freq, vscr);
-	
+	_jakdaw_plotter_draw (priv, visual_buffer_get_data (priv->pcmbuf), audio->freq, vscr);
+
 	return 0;
 }
 

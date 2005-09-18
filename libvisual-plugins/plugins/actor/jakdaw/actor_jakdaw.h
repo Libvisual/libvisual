@@ -60,20 +60,18 @@ typedef struct {
 	double			 zoom_ripplefact;
 	double			 zoom_zoomfact;
 
-	int			 plotter_amplitude;
+	float			 plotter_amplitude;
 	JakdawPlotterColor	 plotter_colortype;
 	int			 plotter_scopecolor;
 	JakdawPlotterOptions	 plotter_scopetype;
-
-	/* Plotter privates */
-	int			*xlat_table;
-	int			*amplitude_table;
-	int			 shifts;
 
 	/* Feedback privates */
 	uint32_t		*table;
 	uint32_t		*new_image;
 	int			 tableptr;
+
+	/* PCM Buffer */
+	VisBuffer		*pcmbuf;
 
 	/* Plugin it's random context */
 	VisRandomContext	*rcontext;
