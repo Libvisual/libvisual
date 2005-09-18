@@ -34,16 +34,16 @@ void _oink_gfx_scope_balls (OinksiePrivate *priv, uint8_t *buf, int color, int h
 	int adder = priv->screen_width > 502 ? (priv->screen_width - 502) / 2 : 0;
 	int x = 0;
 	int y;
-	
+
 	for (; x < (priv->screen_width - 10) && x < 512; x += space)
 	{
-		y = ((priv->screen_halfheight) + (priv->audio.pcm[2][x >> 1] >> 9)) * height;
+		y = (priv->screen_halfheight) + (((priv->audio.pcm[2][x >> 1]) * height) * 0.4);
 
 		if (y < 15)
 			y = 15;
 		else if (y > (priv->screen_height - 15))
 			y = priv->screen_height - 15;
-		
+
 		_oink_gfx_circle_filled (priv, buf, color - 4, 5, x + adder, y);
 	}
 }
@@ -79,8 +79,8 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 	int base = priv->screen_halfheight - (space / 2);
 	int base2 = priv->screen_halfheight + (space / 2);
 		
-	y1_old = ((base) + (priv->audio.pcm[0][0 >> 1] >> 9)) * height;
-	y2_old = ((base2) + (priv->audio.pcm[1][0 >> 1] >> 9)) * height;
+	y1_old = ((base) + (priv->audio.pcm[0][0 >> 1])) * height;
+	y2_old = ((base2) + (priv->audio.pcm[1][0 >> 1])) * height;
 
 	if (rotate != 0)
 	{
@@ -93,8 +93,8 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 	
 	for (x = 0; x < priv->screen_width && x < 512; x++)
 	{
-		y1 = ((base) + (priv->audio.pcm[0][x >> 1] >> 9)) * height;
-		y2 = ((base2) + (priv->audio.pcm[1][x >> 1] >> 9)) * height;
+		y1 = ((base) + (priv->audio.pcm[0][x >> 1]) * height);
+		y2 = ((base2) + (priv->audio.pcm[1][x >> 1]) * height);
 
 		if (y1 < 0)
 			y1 = 0;
@@ -148,7 +148,7 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 	}
 }
 
-void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int height, int mode)
+void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int height)
 {
 	int adder = priv->screen_width > 512 ? (priv->screen_width - 512) / 2 : 0;
 	float tabadd = priv->screen_width > 512 ? ((float) OINK_TABLE_NORMAL_SIZE / 512.00) / 2.00 : 
@@ -159,29 +159,17 @@ void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int
 	int y2;
 	int y_old;
 
- 	y = ((((priv->screen_halfheight) + (priv->audio.pcm[2][0] >> 9)) * height) * _oink_table_sin[0]);
-	if (mode == 0)
-		y = ((priv->screen_halfheight) + (((priv->audio.pcm[2][0] >> 8) * height) * _oink_table_sin[(int) tab])); 
-	else
-		y = ((((priv->screen_halfheight) + (priv->audio.pcm[2][0] >> 9)) * height) * _oink_table_sin[(int) tab]);
+	y = ((priv->screen_halfheight) + (((priv->audio.pcm[2][0]) * height) * _oink_table_sin[(int) tab])); 
 
         y_old = y;
- 
+
 	for (x = 0; x < priv->screen_width && x < 512; x++)
 	{
 		tab += tabadd;
-		
-		if (mode == 0)
-		{	
-			y = ((priv->screen_halfheight) + (((priv->audio.pcm[2][x >> 1] >> 8) * height) * _oink_table_sin[(int) tab]));
-			y2 = ((priv->screen_halfheight) + ((((priv->audio.pcm[2][x >> 1] >> 8) * height) * _oink_table_sin[(int) tab]) * 1.4));
-		}
-		else
-		{
-			y = ((((priv->screen_halfheight) + (priv->audio.pcm[2][x >> 2] >> 9)) * height) * _oink_table_sin[(int) tab]);
-			y2 = y * 0.9;
-		}
-		
+
+		y = ((priv->screen_halfheight) + (((priv->audio.pcm[2][x >> 1]) * height) * _oink_table_sin[(int) tab]));
+		y2 = ((priv->screen_halfheight) + ((((priv->audio.pcm[2][x >> 1]) * height) * _oink_table_sin[(int) tab]) * 1.4));
+
 		if (y < 0) 
 			y = 0;
 		else if (y > priv->screen_height)
@@ -191,10 +179,10 @@ void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int
 			y2 = 0;
 		else if (y2 > priv->screen_height)
 			y2 = priv->screen_height - 1;
-		
+
 		_oink_gfx_vline (priv, buf, color, x + adder, y, y2);
 		_oink_gfx_vline (priv, buf, color, x + adder, y, y_old);
-		
+
 		y_old = y;
 	}			
 }
@@ -214,7 +202,7 @@ void _oink_gfx_scope_normal (OinksiePrivate *priv, uint8_t *buf, int color, int 
 	for (i = 0; i < 512; i++) {
 		fx[i] = (1.0 / 512.0) * i;
 		fy[i] = (1 + sin(i)) * 0.5;
-		fy[i] = 0.5 + (priv->audio.pcm[2][i] * (priv->screen_halfheight * 0.00000003));
+		fy[i] = 0.5 + ((priv->audio.pcm[2][i]) * 0.2);
 	}
 
 	visual_rectangle_denormalise_many_values (&rect, fx, fy, x, y, 512);
@@ -231,35 +219,35 @@ void _oink_gfx_scope_circle (OinksiePrivate *priv, uint8_t *buf, int color, int 
 
 	int xs1;
 	int ys1;
-	
+
 	int xs2;
 	int ys2;
 
 	int xcon;
 	int ycon;
-	
+
 	int adder = (OINK_TABLE_NORMAL_SIZE - 1) / 50;
 	int tab = 0;
 
-	xs2 = (_oink_table_sin[tab] * ((priv->audio.pcm[2][0] >> 9) + size)) + x;
-	ys2 = (_oink_table_cos[tab] * ((priv->audio.pcm[2][0] >> 9) + size)) + y;
-	
+	xs2 = (_oink_table_sin[tab] * ((priv->audio.pcm[2][0]) + size)) + x;
+	ys2 = (_oink_table_cos[tab] * ((priv->audio.pcm[2][0]) + size)) + y;
+
 	xcon = xs2;
 	ycon = ys2;	
-	
+
 	for (i = 0; i < 50; i++)
 	{
-		xs1 = (_oink_table_sin[tab] * ((priv->audio.pcm[2][i >> 1] >> 9) + size)) + x;	
-		ys1 = (_oink_table_cos[tab] * ((priv->audio.pcm[2][i >> 1] >> 9) + size)) + y;
-		
+		xs1 = (_oink_table_sin[tab] * ((priv->audio.pcm[2][i >> 1]) + size)) + x;	
+		ys1 = (_oink_table_cos[tab] * ((priv->audio.pcm[2][i >> 1]) + size)) + y;
+
 		tab += adder;
 
 		_oink_gfx_line (priv, buf, color, xs1, ys1, xs2, ys2);
-		
+
 		xs2 = xs1;
 		ys2 = ys1;
 	}
-	
+
 	_oink_gfx_line (priv, buf, color, xcon, ycon, xs1, ys1);
 }
 

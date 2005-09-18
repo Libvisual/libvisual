@@ -160,7 +160,7 @@ int act_oinksie_init (VisPluginData *plugin)
 	oinksie_init (&priv->priv1, 64, 64);
 	oinksie_init (&priv->priv2, 64, 64);
 
-	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (int16_t), visual_buffer_destroyer_free);
+	priv->pcmbuf = visual_buffer_new_allocate (4096 * sizeof (float), visual_buffer_destroyer_free);
 	priv->spmbuf = visual_buffer_new_allocate (256 * sizeof (int16_t), visual_buffer_destroyer_free);
 
 	return 0;
@@ -319,24 +319,24 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	/* Left audio */
 	visual_audio_get_sample (audio, priv->pcmbuf, VISUAL_AUDIO_CHANNEL_LEFT);
-	visual_mem_copy (&priv->priv1.audio.pcm, visual_buffer_get_data (priv->pcmbuf), sizeof (int16_t) * 512);
+	visual_mem_copy (&priv->priv1.audio.pcm, visual_buffer_get_data (priv->pcmbuf), sizeof (float) * 4096);
 
 	visual_audio_get_spectrum_for_sample (audio, priv->spmbuf, priv->pcmbuf);
 	visual_mem_copy (priv->priv1.audio.freq[0], &audio->freq, sizeof (int16_t) * 256);
 
 	/* Right audio */
 	visual_audio_get_sample (audio, priv->pcmbuf, VISUAL_AUDIO_CHANNEL_RIGHT);
-	visual_mem_copy (priv->priv1.audio.pcm[1], visual_buffer_get_data (priv->pcmbuf), sizeof (int16_t) * 512);
+	visual_mem_copy (priv->priv1.audio.pcm[1], visual_buffer_get_data (priv->pcmbuf), sizeof (float) * 4096);
 
 	visual_audio_get_spectrum_for_sample (audio, priv->spmbuf, priv->pcmbuf);
 	visual_mem_copy (priv->priv1.audio.freq[1], &audio->freq, sizeof (int16_t) * 256);
 
 	/* FIXME at a later stage, do this within VisAudio */
-	for (i = 0; i < 512; i++)
-		priv->priv1.audio.pcm[2][i] = (priv->priv1.audio.pcm[0][i] + priv->priv1.audio.pcm[1][i]) / 2;
+	for (i = 0; i < 4096; i++)
+		priv->priv1.audio.pcm[2][i] = (priv->priv1.audio.pcm[0][i] + priv->priv1.audio.pcm[1][i]) / 2.0;
 
 	/* Duplicate for second oinksie instance */
-	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (int16_t) * 512 * 3);
+	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (float) * 4096 * 3);
 	visual_mem_copy (&priv->priv2.audio.freq, &priv->priv1.audio.freq, sizeof (int16_t) * 256 * 2);
 
 	/* Audio energy */

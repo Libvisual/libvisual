@@ -76,7 +76,7 @@ typedef struct {
 
 	int highest;
 
-	int16_t pcm[3][512];
+	float pcm[3][4096];
 	int16_t freq[2][256];
 
 	int musicmood;
