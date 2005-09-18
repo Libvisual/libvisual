@@ -80,6 +80,7 @@ typedef void *(*VisMemSet32Func)(void *dest, int c, visual_size_t n);
 
 /* prototypes */
 int visual_mem_initialize (void);
+void *visual_mem_malloc (visual_size_t nbytes) __attribute_malloc__;
 void *visual_mem_malloc0 (visual_size_t nbytes) __attribute_malloc__;
 void *visual_mem_realloc (void *ptr, visual_size_t nbytes) __attribute_malloc__;
 int visual_mem_free (void *ptr);

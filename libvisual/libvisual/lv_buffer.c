@@ -239,6 +239,16 @@ VisBuffer *visual_buffer_clone_new (VisBuffer *src)
 	return dest;
 }
 
+int visual_buffer_copy_data_to (VisBuffer *src, void *dest)
+{
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+
+	visual_mem_copy (dest, src->data, src->datasize);
+
+	return VISUAL_OK;
+}
+
 int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset)
 {
 	int amount;

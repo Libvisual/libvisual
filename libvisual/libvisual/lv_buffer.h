@@ -79,11 +79,11 @@ int visual_buffer_get_allocated (VisBuffer *buffer);
 
 int visual_buffer_clone (VisBuffer *dest, VisBuffer *src);
 VisBuffer *visual_buffer_clone_new (VisBuffer *src);
+int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
 
 int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
 int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
 int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
-
 int visual_buffer_fill (VisBuffer *buffer, char value);
 
 void visual_buffer_destroyer_free (VisBuffer *buffer);

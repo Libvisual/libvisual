@@ -121,6 +121,31 @@ int visual_mem_initialize ()
 }
 
 /**
+ * Allocates @a nbytes of uninitialized memory.
+ *
+ * @param nbytes N bytes of mem requested to be allocated.
+ * 
+ * @return On success, a pointer to a new allocated memory block
+ * of size @a nbytes, on failure, program is aborted. 
+ */
+void *visual_mem_malloc (visual_size_t nbytes)
+{
+	void *buf;
+
+	visual_log_return_val_if_fail (nbytes > 0, NULL);
+
+	buf = malloc (nbytes);
+
+	if (buf == NULL) {
+		visual_log (VISUAL_LOG_ERROR, _("Cannot get %" VISUAL_SIZE_T_FORMAT " bytes of memory"), nbytes);
+
+		return NULL;
+	}
+
+	return buf;
+}
+
+/**
  * Allocates @a nbytes of memory initialized to 0.
  *
  * @param nbytes N bytes of mem requested to be allocated.
@@ -134,13 +159,7 @@ void *visual_mem_malloc0 (visual_size_t nbytes)
 
 	visual_log_return_val_if_fail (nbytes > 0, NULL);
 
-	buf = malloc (nbytes);
-
-	if (buf == NULL) {
-		visual_log (VISUAL_LOG_ERROR, _("Cannot get %" VISUAL_SIZE_T_FORMAT " bytes of memory"), nbytes);
-
-		return NULL;
-	}
+	buf = visual_mem_malloc (nbytes);
 
 	visual_mem_set (buf, 0, nbytes);
 

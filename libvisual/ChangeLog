@@ -1,5 +1,22 @@
 2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_audio.c (visual_audio_get_sample_mixed):
+	New function to get the channels mixed.
+
+	(visual_audio_sample_buffer_mix): New function to mix two pcm buffers.
+
+	(visual_audio_sample_buffer_mix_many): New function to mix many pcm
+	buffers using a valist.
+
+	* libvisual/lv_buffer.c (visual_buffer_copy_data_to): Added convenient
+	function that can be used to copy a buffer into a chunk of plain
+	memory.
+
+	* libvisual/lv_mem.c (visual_mem_malloc): Malloc that doesn't set to
+	0. Sometimes this is totally not needed so let us spare the cycles!
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_audio.c: We won't return int16_t data anymore for PCM,
 	instead we're now doing floats, all plugins need to be ported.
 

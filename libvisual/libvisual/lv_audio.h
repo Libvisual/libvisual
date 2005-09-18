@@ -137,6 +137,7 @@ int visual_audio_init (VisAudio *audio);
 int visual_audio_analyze (VisAudio *audio);
 
 int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid);
+int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divide, int channels, ...);
 int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid);
 int visual_audio_get_spectrum_for_sample (VisAudio *audio, VisBuffer *buffer, VisBuffer *sample);
 
@@ -155,6 +156,9 @@ VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (char *channelid)
 int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, char *channelid);
 int visual_audio_samplepool_channel_add (VisAudioSamplePoolChannel *channel, VisAudioSample *sample);
 int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channel);
+
+int visual_audio_sample_buffer_mix (VisBuffer *dest, VisBuffer *src, int divide, float multiplier);
+int visual_audio_sample_buffer_mix_many (VisBuffer *dest, int divide, int channels, ...);
 
 VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
 		VisAudioSampleFormatType format,

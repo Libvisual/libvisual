@@ -23,6 +23,7 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <math.h>
 
@@ -367,6 +368,52 @@ int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid
 	return VISUAL_OK;
 }
 
+int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divide, int channels, ...)
+{
+	VisBuffer temp;
+	char **chanids;
+	double *chanmuls;
+	va_list ap;
+	int i;
+
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
+
+	chanids = visual_mem_malloc (channels * sizeof (char *));
+	chanmuls = visual_mem_malloc (channels * sizeof (double));
+
+	va_start (ap, channels);
+
+	/* Retrieving mixing data from valist */
+	for (i = 0; i < channels; i++)
+		chanids[i] = va_arg (ap, char *);
+
+	for (i = 0; i < channels; i++)
+		chanmuls[i] = va_arg (ap, double);
+
+	visual_audio_get_sample (audio, &temp, chanids[0]);
+
+	visual_buffer_fill (buffer, 0);
+	visual_audio_sample_buffer_mix (buffer, &temp, FALSE, chanmuls[0]);
+
+	/* The mixing loop */
+	for (i = 1; i < channels; i++) {
+		visual_audio_get_sample (audio, &temp, chanids[i]);
+		visual_audio_sample_buffer_mix (buffer, &temp, divide, chanmuls[i]);
+	}
+
+	va_end (ap);
+
+	visual_object_unref (VISUAL_OBJECT (&temp));
+
+	visual_mem_free (chanids);
+	visual_mem_free (chanmuls);
+
+	return VISUAL_OK;
+}
+
 int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid)
 {
 	VisBuffer sample;
@@ -604,6 +651,81 @@ int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channe
 		if (visual_time_past (&diff, &channel->samples_timeout) == TRUE)
 			visual_list_destroy (list, &le);
 	}
+
+	return VISUAL_OK;
+}
+
+int visual_audio_sample_buffer_mix (VisBuffer *dest, VisBuffer *src, int divide, float multiplier)
+{
+	float *dbuf;
+	float *sbuf;
+	int scnt;
+	int i;
+
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (visual_buffer_get_size (dest) == visual_buffer_get_size (src),
+			-VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS);
+
+	dbuf = visual_buffer_get_data (dest);
+	sbuf = visual_buffer_get_data (src);
+
+	scnt = visual_buffer_get_size (dest) / sizeof (float);
+
+	/* FIXME make simd version of these */
+	if (divide == FALSE) {
+		if (multiplier == 1.0) {
+			for (i = 0; i < scnt; i++)
+				dbuf[i] += sbuf[i];
+		} else {
+			for (i = 0; i < scnt; i++)
+				dbuf[i] += (sbuf[i] * multiplier);
+		}
+	} else {
+		if (multiplier == 1.0) {
+			for (i = 0; i < scnt; i++)
+				dbuf[i] = (dbuf[i] + sbuf[i]) * 0.5;
+		} else {
+			for (i = 0; i < scnt; i++)
+				dbuf[i] = (dbuf[i] + (sbuf[i] * multiplier)) * 0.5;
+		}
+	}
+
+	return VISUAL_OK;
+}
+
+int visual_audio_sample_buffer_mix_many (VisBuffer *dest, int divide, int channels, ...)
+{
+	VisBuffer **buffers;
+	double *chanmuls;
+	va_list ap;
+	int i;
+
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	buffers = visual_mem_malloc (channels * sizeof (VisBuffer *));
+	chanmuls = visual_mem_malloc (channels * sizeof (double));
+
+	va_start (ap, channels);
+
+	/* Retrieving mixing data from valist */
+	for (i = 0; i < channels; i++)
+		buffers[i] = va_arg (ap, VisBuffer *);
+
+	for (i = 0; i < channels; i++)
+		chanmuls[i] = va_arg (ap, double);
+
+	visual_buffer_fill (dest, 0);
+	visual_audio_sample_buffer_mix (dest, buffers[0], FALSE, chanmuls[0]);
+
+	/* The mixing loop */
+	for (i = 1; i < channels; i++)
+		visual_audio_sample_buffer_mix (dest, buffers[0], divide, chanmuls[i]);
+
+	va_end (ap);
+
+	visual_mem_free (buffers);
+	visual_mem_free (chanmuls);
 
 	return VISUAL_OK;
 }
