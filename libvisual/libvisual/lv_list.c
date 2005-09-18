@@ -446,6 +446,45 @@ int visual_list_chain (VisList *list, VisListEntry *le)
 }
 
 /**
+ * Unchain a VisListEntry from a VisList, entry won't be deleted. This function will only remove the
+ * links with it's VisList.
+ *
+ * @param list Pointer to the VisList from which an entry is unchained.
+ * @param le Pointer to a VisListEntry that is being unchained.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL
+ * 	on failure.
+ */
+int visual_list_unchain (VisList *list, VisListEntry *le)
+{
+	VisListEntry *prev;
+	VisListEntry *next;
+
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+
+	/* Point new to le's previous entry */
+	prev = le->prev;
+	next = le->next;
+
+	/* Does it have a previous entry ? */
+	if (prev != NULL)
+		prev->next = next;
+	else
+		list->head = next;
+
+	if (next != NULL) /* It does have a next entry ? */
+		next->prev = prev;
+	else
+		list->tail = prev;
+
+	/* Free 'old' pointer */
+	list->count--;
+
+	return VISUAL_OK;
+}
+
+/**
  * Insert an entry in the middle of a list. By adding it
  * after the le entry.
  *
@@ -530,28 +569,10 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 		return -VISUAL_ERROR_LIST_ENTRY_INVALID; /* Nope */
 	}
 
-	/* Point new to le's previous entry */
-	current = *le;
-	prev = current->prev;
-	next = current->next;
+	visual_list_unchain (list, *le);
+	prev = (*le)->next;
 
-	/* Does it have a previous entry ? */
-	if (prev != NULL) 
-		prev->next = next;
-	else
-		list->head = next;
-
-	if (next != NULL) /* It does have a next entry ? */
-		next->prev = prev;
-	else
-		list->tail = prev;
-
-	/* Point current entry to previous one */
-	*le = prev;
-
-	/* Free 'old' pointer */
-	list->count--;
-	visual_mem_free (current);
+	visual_mem_free (*le);
 
 	return VISUAL_OK;
 }

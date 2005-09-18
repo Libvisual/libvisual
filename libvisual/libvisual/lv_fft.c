@@ -193,7 +193,7 @@ static FFTCacheEntry *fft_cache_get (VisFFT *fft)
 
 int visual_fft_initialize ()
 {
-	visual_cache_init (&__lv_fft_cache, visual_object_collection_destroyer, 50, NULL);
+	visual_cache_init (&__lv_fft_cache, visual_object_collection_destroyer, 50, NULL, TRUE);
 
 	__lv_fft_initialized = TRUE;
 

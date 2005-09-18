@@ -32,6 +32,8 @@
 static int cache_dtor (VisObject *object);
 static int cache_remove_list_entry (VisCache *cache, VisListEntry *le);
 
+static inline void handle_request_reset (VisCache *cache, VisListEntry *le);
+
 static int cache_dtor (VisObject *object)
 {
 	VisCache *cache = VISUAL_CACHE (object);
@@ -70,6 +72,24 @@ static int cache_remove_list_entry (VisCache *cache, VisListEntry *le)
 	return VISUAL_OK;
 }
 
+
+static inline void handle_request_reset (VisCache *cache, VisListEntry *le)
+{
+	VisCacheEntry *centry;
+
+	if (cache->reqreset == FALSE)
+		return;
+
+	centry = le->data;
+	visual_timer_start (&centry->timer);
+
+	/* Unchain from the list */
+	visual_list_unchain (cache->list, le);
+
+	/* Rechain at the head */
+	visual_list_chain_at_begin (cache->list, le);
+}
+
 /**
  * @defgroup VisCache VisCache
  * @{
@@ -81,13 +101,13 @@ static int cache_remove_list_entry (VisCache *cache, VisListEntry *le)
  * @return A newly allocated VisCache.
  */
 
-VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage)
+VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset)
 {
 	VisCache *cache;
 
 	cache = visual_mem_new0 (VisCache, 1);
 
-	visual_cache_init (cache, destroyer, size, maxage);
+	visual_cache_init (cache, destroyer, size, maxage, reqreset);
 
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (cache), TRUE);
@@ -96,7 +116,7 @@ VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisT
 	return cache;
 }
 
-int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage)
+int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset)
 {
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
 
@@ -108,11 +128,61 @@ int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, in
 	/* Set the VisCache data */
 	visual_cache_set_limits (cache, size, maxage);
 	cache->destroyer = destroyer;
+	cache->reqreset = reqreset;
 
 	cache->list = visual_list_new (NULL);
 
 	cache->index = visual_hashmap_new (NULL); /* FIXME create in set_limits, rehash if not NULL */
 	visual_hashmap_set_table_size (cache->index, size); /* <- also */
+
+	return VISUAL_OK;
+}
+
+int visual_cache_clear (VisCache *cache)
+{
+	VisListEntry *le = NULL;
+
+	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
+
+	/* Destroy all entries in cache first */
+	while (visual_list_next (cache->list, &le) != NULL)
+		cache_remove_list_entry (cache, le);
+
+	if (cache->index != NULL)
+		visual_object_unref (VISUAL_OBJECT (cache->index));
+
+	cache->index = visual_hashmap_new (NULL);
+	visual_hashmap_set_table_size (cache->index, cache->size);
+
+	return VISUAL_OK;
+}
+
+int visual_cache_flush_outdated (VisCache *cache)
+{
+	VisCacheEntry *centry;
+	VisListEntry *le;
+
+	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
+
+	if (cache->withmaxage == TRUE) {
+		le = cache->list->tail;
+
+		if (le == NULL)
+			return VISUAL_OK;
+
+		centry = le->data;
+
+		while (visual_timer_elapsed (&centry->timer, &cache->maxage)) {
+			cache_remove_list_entry (cache, le);
+
+			le = cache->list->tail;
+
+			if (le == NULL)
+				return VISUAL_OK;
+
+			centry = le->data;
+		}
+	}
 
 	return VISUAL_OK;
 }
@@ -132,6 +202,8 @@ int visual_cache_put (VisCache *cache, char *key, void *data)
 		centry = le->data;
 
 		centry->data = data;
+
+		handle_request_reset (cache, le);
 
 	} else {
 		centry = visual_mem_new0 (VisCacheEntry, 1);
@@ -160,25 +232,7 @@ int visual_cache_put (VisCache *cache, char *key, void *data)
 	}
 
 	/* Remove items that are out dated */
-	if (cache->withmaxage == TRUE) {
-		le = cache->list->tail;
-
-		if (le == NULL)
-			return VISUAL_OK;
-
-		centry = le->data;
-
-		while (visual_timer_elapsed (&centry->timer, &cache->maxage)) {
-			cache_remove_list_entry (cache, le);
-
-			le = cache->list->tail;
-
-			if (le == NULL)
-				return VISUAL_OK;
-
-			centry = le->data;
-		}
-	}
+	visual_cache_flush_outdated (cache);
 
 	return VISUAL_OK;
 }
@@ -212,6 +266,8 @@ void *visual_cache_get (VisCache *cache, char *key)
 		return NULL;
 
 	centry = le->data;
+
+	handle_request_reset (cache, le);
 
 	return centry->data;
 }

@@ -52,6 +52,8 @@ struct _VisCache {
 	int				 withmaxage;
 	VisTime				 maxage;
 
+	int				 reqreset;
+
 	/* The reason that we index the cache items two times is because we both need
 	 * fast access to a sorted version and fast access by name, access as a sorted list
 	 * is needed so we can quickly identify old cache items that should be disposed when
@@ -71,8 +73,11 @@ struct _VisCacheEntry {
 };
 
 /* prototypes */
-VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage);
-int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage);
+VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset);
+int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset);
+
+int visual_cache_clear (VisCache *cache);
+int visual_cache_flush_outdated (VisCache *cache);
 
 int visual_cache_put (VisCache *cache, char *key, void *data);
 int visual_cache_remove (VisCache *cache, char *key);

@@ -88,6 +88,7 @@ int visual_list_add (VisList *list, void *data);
 
 int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
 int visual_list_chain (VisList *list, VisListEntry *le);
+int visual_list_unchain (VisList *list, VisListEntry *le);
 
 int visual_list_insert (VisList *list, VisListEntry **le, void *data);
 int visual_list_delete (VisList *list, VisListEntry **le);

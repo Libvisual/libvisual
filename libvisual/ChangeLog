@@ -1,5 +1,19 @@
 2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_cache.c: Changed the new and init to have a request
+	reset flag. When set this will reset the age stage and position in the
+	dispose list of cache entries that are requested or reput.
+
+	(visual_cache_clear): Added function to clear the complete cache.
+
+	(visual_cache_flush_outdated): Added public function to flush outdated
+	entries from the cache.
+
+	* libvisual/lv_list.c (visual_list_unchain): Added helper function to
+	unlink an entry from the list.
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_audio.c (visual_audio_get_sample_mixed):
 	New function to get the channels mixed.
 
