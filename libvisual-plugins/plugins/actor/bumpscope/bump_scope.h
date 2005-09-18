@@ -28,7 +28,7 @@
 
 void __bumpscope_generate_palette (BumpscopePrivate *priv, VisColor *col);
 void __bumpscope_generate_phongdat (BumpscopePrivate *priv);
-void __bumpscope_render_pcm (BumpscopePrivate *priv, float data[3][512]);
+void __bumpscope_render_pcm (BumpscopePrivate *priv, float *data);
 void __bumpscope_init (BumpscopePrivate *priv);
 void __bumpscope_cleanup (BumpscopePrivate *priv);
 

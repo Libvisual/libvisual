@@ -1,5 +1,9 @@
 2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/bumpscope/*.c: Audio retrieval made nicer.
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/bumpscope/*.c: Ported to floating point audio.
 
 2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>

@@ -305,22 +305,18 @@ VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 
 int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	float pcm[3][512];
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	int i;
 
 	priv->video = video;
 
-	visual_audio_get_sample (audio, priv->pcmbuf, VISUAL_AUDIO_CHANNEL_LEFT);
-	visual_buffer_copy_data_to (priv->pcmbuf, pcm[0]);
+	visual_audio_get_sample_mixed (audio, priv->pcmbuf, TRUE, 2,
+			VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT,
+			1.0,
+			1.0);
 
-	visual_audio_get_sample (audio, priv->pcmbuf, VISUAL_AUDIO_CHANNEL_RIGHT);
-	visual_buffer_copy_data_to (priv->pcmbuf, pcm[1]);
-
-	for (i = 0; i < 512; i++)
-		pcm[2][i] = (pcm[0][i] + pcm[1][i]) / 2.0;
-
-	__bumpscope_render_pcm (priv, pcm);
+	__bumpscope_render_pcm (priv, visual_buffer_get_data (priv->pcmbuf));
 
 	visual_mem_copy (visual_video_get_pixels (video), priv->rgb_buf2, visual_video_get_size (video));
 

@@ -80,7 +80,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info[0].api_version = VISUAL_PLUGIN_API_VERSION;
 	info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
 
-	info[0].plugname = "G-Force";
+	info[0].plugname = "gforce";
 	info[0].name = "libvisual G-Force plugin";
 	info[0].author = "Winamp version: Andy O'Meara, Unix port: Boris Gjenero, Libvisual port and cleanups: Dennis Smit <ds@nerds-incorporated.org";
 	info[0].version = "0.1.0";
@@ -138,7 +138,7 @@ extern "C" int lv_gforce_cleanup (VisPluginData *plugin)
 
 	if (priv->gGF)
 		delete priv->gGF;
-		
+
 	EgOSUtils::Shutdown ();
 
 	visual_palette_free_colors (&priv->pal);
@@ -177,7 +177,7 @@ extern "C" int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int 
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	Rect r;
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	SetRect (&r, 0, 0, width, height);
@@ -204,7 +204,7 @@ extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_MOUSEBUTTONDOWN:
 			case VISUAL_EVENT_MOUSEBUTTONUP:
 				break;
-		
+
 			case VISUAL_EVENT_KEYDOWN:
 				priv->gGF->HandleKey (ev.keyboard.keysym.sym);
 				break;
@@ -224,13 +224,13 @@ extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin)
 	int i;
 
 	GFpal = priv->gGF->GetPalette ();
-	
+
 	for (i = 0; i < 256; i++) {
 		priv->pal.colors[i].r = GFpal[i].red;
 		priv->pal.colors[i].g = GFpal[i].green;
 		priv->pal.colors[i].b = GFpal[i].blue;
 	}
-	
+
 	return &priv->pal;
 }
 
@@ -240,9 +240,9 @@ extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	int i, j = 0, ns;
 	short int sbuf[NUMSAMPLES];
 	long time;
-	float gSoundBuf[SND_BUF_SIZE];	
+	float gSoundBuf[SND_BUF_SIZE];
 	float gFFTBuf[FFT_BUF_SIZE];
-	
+
 	// Make the sample ready for G-Force usage
 	for (i = 0; i < NUMSAMPLES; i++) {
 		sbuf[i] = audio->pcm[2][j];
@@ -261,7 +261,7 @@ extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	for (ns = 0; ns < FFT_BUF_SIZE; ns++) {
 		gFFTBuf[ns] = (float) audio->freqnorm[2][ns] / 500.0000;
 	}
-	
+
 	// Set the video buffer
 	priv->gGF->SetOutVideoBuffer ((unsigned char *) visual_video_get_pixels (video));
 
