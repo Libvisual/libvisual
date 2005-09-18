@@ -215,7 +215,15 @@ clip_line (const SDL_Rect *bound,
            Point *p0,
            Point *p1)
 {
-    if (outcode (bound, p0) & outcode (bound, p1))
+    int outcode0, outcode1;
+
+    outcode0 = outcode (bound, p0);
+    outcode1 = outcode (bound, p1);
+
+    if (!(outcode0 | outcode1))
+        return 1;
+
+    if (outcode0 & outcode1)
         return 0;
 
     if (p0->y < bound->y)

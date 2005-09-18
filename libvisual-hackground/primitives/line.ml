@@ -80,11 +80,16 @@ let clip_line bound p0 p1 =
     if (p0.y <> p1.y) then clip_below (clip_above (p0, p1)) else p0, p1
   in
 
-  if (outcode p0) land (outcode p1) = 0 then
+  let outcode0 = outcode p0 in
+  let outcode1 = outcode p1 in
+
+  if outcode0 lor outcode1 = 0 then
+    p0, p1, true
+  else if outcode0 land outcode1 <> 0 then
+    p0, p1, false
+  else
     let p0, p1 = clip_left_right (clip_above_below (p0, p1)) in
     p0, p1, (contains p0) && (contains p1)
-  else
-    p0, p1, false
 ;;
 
 (* draws a horizontal line (no clipping) *)
@@ -177,7 +182,7 @@ let draw_y_major_line surface p0 p1 color =
   draw_loop p0.x p0.y 0;
 ;;
 
-(* draws a staright line (no clipping) *)
+(* draws a straight line (no clipping) *)
 let draw_line_no_clip surface p0 p1 color =
   let dx, dy = (p1.x - p0.x), (p1.y - p0.y) in
 

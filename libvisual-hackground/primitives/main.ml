@@ -107,7 +107,7 @@ let texture_triangle_demo () =
 
   with
     Sdlloader.SDLloader_exception error ->
-      eprintf "Error loading texture: %s" error
+      eprintf "Error loading texture: %s\n" error
 ;;
 
 
