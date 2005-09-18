@@ -20,7 +20,9 @@ New in 0.3.0: xxxx-xx-xx:
 * Removed obsolete visual_video_depth_transform_to_buffer(). (Jaak)
 * Added VisCollection system. (Dennis)
 * Added VisHashmap. (Dennis)
+* Added VisCache. (Dennis)
 * VisAudio rewrite. (Dennis)
+* Added .license bit to VisPluginInfo for realtime license check. (Dennis)
 
 New in 0.2.0: 2005-02-09:
 * VisTransform subsystem. (Dennis)

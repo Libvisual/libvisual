@@ -848,7 +848,7 @@ static int transform_format_buffer_to_float (VisBuffer *dest, VisBuffer *src, in
 	int signedcorr;
 	int i;
 
-	signedcorr += byte_max_numeric (size) / 2;
+	signedcorr = byte_max_numeric (size) / 2;
 
 	if (size == 1)
 		FORMAT_BUFFER_TO_FLOAT(int8_t, uint8_t)
@@ -959,12 +959,23 @@ static VisBuffer *sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntr
 {
 	VisAudioSample *sample = entry->functiondata;
 
-	/* FIXME transform to end format here, and cache this */
-//	if (visual_
+	/* We have internal format ready */
+	if (sample->processed != NULL) {
+		visual_object_ref (VISUAL_OBJECT (sample->processed));
 
-	visual_object_ref (VISUAL_OBJECT (sample->buffer));
+		return sample->processed;
+	}
 
-	return sample->buffer;
+	sample->processed = visual_buffer_new_allocate ((visual_buffer_get_size (sample->buffer) /
+				visual_audio_sample_format_get_size (sample->format)) * sizeof (float), visual_buffer_destroyer_free);
+
+	transform_format_buffer_to_float (sample->processed, sample->buffer,
+			visual_audio_sample_format_get_size (sample->format),
+			visual_audio_sample_format_is_signed (sample->format));
+
+	visual_object_ref (VISUAL_OBJECT (sample->processed));
+
+	return sample->processed;
 }
 
 static void sample_destroy_func (VisRingBufferEntry *entry)
@@ -978,9 +989,8 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 {
 	VisAudioSample *sample = entry->functiondata;
 
-	/* FIXME return the size without the buffer */
-
-	return visual_buffer_get_size (sample->buffer);
+	return (visual_buffer_get_size (sample->buffer) /
+		visual_audio_sample_format_get_size (sample->format)) * sizeof (float);
 }
 
 /*  functions */

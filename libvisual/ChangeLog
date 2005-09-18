@@ -1,3 +1,8 @@
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c: We won't return int16_t data anymore for PCM,
+	instead we're now doing floats, all plugins need to be ported.
+
 2005-09-15  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_plugin.h: Adding runtime license check support.
