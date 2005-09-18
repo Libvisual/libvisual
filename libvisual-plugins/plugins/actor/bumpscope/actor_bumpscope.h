@@ -49,7 +49,7 @@ typedef struct {
 
 	int			 colorchanged;
 	int			 colorupdate;
-	
+
 	/* Configs */
 	VisColor		 color;
 	VisColor		 old_color;
@@ -58,6 +58,8 @@ typedef struct {
 	int			 diamond;
 	int			 light_x;
 	int			 light_y;
+
+	VisBuffer		*pcmbuf;
 
 	/* Random context for the plugin */
 	VisRandomContext	*rcontext;

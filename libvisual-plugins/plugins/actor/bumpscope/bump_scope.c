@@ -382,11 +382,11 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 	}
 }
 
-void __bumpscope_render_pcm (BumpscopePrivate *priv, short data[3][512])
+void __bumpscope_render_pcm (BumpscopePrivate *priv, float data[3][512])
 {
 	int i, y, prev_y;
 
-	prev_y = (int)priv->height/(int)2 + ((int)data[2][0]*(int)priv->height)/(int)0x10000;
+	prev_y = (int)priv->height/(int)2 + (data[2][0] * priv->height);
 
 	if (prev_y < 0) prev_y = 0;
 	if (prev_y >= priv->height) prev_y = priv->height-1;
@@ -395,7 +395,7 @@ void __bumpscope_render_pcm (BumpscopePrivate *priv, short data[3][512])
 	{
 		y = (i*511)/(priv->width-1);
 
-		y = (int)priv->height/(int)2 + ((int)data[2][y]*(int)priv->height)/(int)0x10000;
+		y = (int)priv->height/(int)2 + (data[2][y] * priv->height);
 
 		/* This should _never_ happen (and doesn't), but I test anyway. */
 		if (y < 0) y = 0;

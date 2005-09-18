@@ -148,7 +148,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	check1 = visual_ui_checkbox_new (_("Cycling colors"), TRUE);
 	visual_ui_widget_set_tooltip (check1, _("Automatic cycling through colors"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check1), visual_param_container_get (paramcontainer, "color cycle"));
-	
+
 	check2 = visual_ui_checkbox_new (_("Moving light"), TRUE);
 	visual_ui_widget_set_tooltip (check2,
 			_("Automatic movement of the light, when disabled it's possible to select it" \
@@ -172,6 +172,8 @@ int act_bumpscope_init (VisPluginData *plugin)
 
 	visual_plugin_set_userinterface (plugin, vbox);
 
+	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
+
 	return 0;
 }
 
@@ -186,6 +188,8 @@ int act_bumpscope_cleanup (VisPluginData *plugin)
 	__bumpscope_cleanup (priv);
 
 	visual_palette_free_colors (&priv->pal);
+
+	visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
 
 	visual_mem_free (priv);
 
@@ -220,7 +224,7 @@ int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height)
 int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	priv->video = video;
@@ -255,7 +259,7 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 				}
 
 				break;
-				
+
 			case VISUAL_EVENT_PARAM:
 				param = ev.param.param;
 
@@ -269,16 +273,16 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 					__bumpscope_cleanup (priv);
 					__bumpscope_init (priv);
-					
+
 				} else if (visual_param_entry_is (param, "color cycle")) {
 					priv->color_cycle = visual_param_entry_get_integer (param);
-					
+
 				} else if (visual_param_entry_is (param, "moving light")) {
 					priv->moving_light = visual_param_entry_get_integer (param);
-				
+
 				} else if (visual_param_entry_is (param, "diamond")) {
 					priv->diamond = visual_param_entry_get_integer (param);
-					
+
 					__bumpscope_generate_phongdat (priv);
 				}
 
@@ -301,11 +305,22 @@ VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 
 int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	float pcm[3][512];
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	int i;
 
 	priv->video = video;
 
-	__bumpscope_render_pcm (priv, audio->pcm);
+	visual_audio_get_sample (audio, priv->pcmbuf, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_buffer_copy_data_to (priv->pcmbuf, pcm[0]);
+
+	visual_audio_get_sample (audio, priv->pcmbuf, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_buffer_copy_data_to (priv->pcmbuf, pcm[1]);
+
+	for (i = 0; i < 512; i++)
+		pcm[2][i] = (pcm[0][i] + pcm[1][i]) / 2.0;
+
+	__bumpscope_render_pcm (priv, pcm);
 
 	visual_mem_copy (visual_video_get_pixels (video), priv->rgb_buf2, visual_video_get_size (video));
 
