@@ -25,6 +25,7 @@
 #define _LV_ENDIANESS_H
 
 #include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 
 VISUAL_BEGIN_DECLS
 
