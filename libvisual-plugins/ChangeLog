@@ -1,3 +1,13 @@
+2005-09-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/JESS/*
+	* plugins/actor/infinite/*
+	* plugins/actor/lv_scope/*:
+
+	Ported all over to new audio API.
+
+	* plugins/actor/oinksie/*: Improved new audio api port.
+
 2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* plugins/actor/jakdaw/*.c: Yep, new audio core, and removed

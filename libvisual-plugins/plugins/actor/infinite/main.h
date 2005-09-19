@@ -36,14 +36,14 @@ typedef struct t_effect {
 } t_effect;
 
 typedef struct {
-	short pcm_data[2][512];
+	float pcm_data[2][512];
 	int plugwidth;
 	int plugheight;
 	VisPalette pal;
 
 	/* Random context for this plugin */
 	VisRandomContext *rcontext;
-	
+
 	uint8_t *surface1;
 	uint8_t *surface2;
 

@@ -283,12 +283,12 @@ struct sincos {
 static struct sincos cosw = { 0, NULL };
 static struct sincos sinw = { 0, NULL };
 
-void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect,short data[2][512])
+void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect, float data[2][512])
 {
 	int i, halfheight, halfwidth;
 	float old_y1,old_y2;
-	float y1=(((data[0][0]+data[1][0])>>9)*current_effect->spectral_amplitude*priv->plugheight)>>12;
-	float y2=(((data[0][0]+data[1][0])>>9)*current_effect->spectral_amplitude*priv->plugheight)>>12;  
+	float y1=(((data[0][0]+data[1][0]) * 128)*current_effect->spectral_amplitude*priv->plugheight) * (1.0 / 4096.0);
+	float y2=(((data[0][0]+data[1][0]) * 128)*current_effect->spectral_amplitude*priv->plugheight) * (1.0 / 4096.0);
 	const int density_lines=5;
 	const int step=4;
 	const int shift=(current_effect->spectral_shift*priv->plugheight)>>8;
@@ -305,18 +305,18 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect,short data[2]
 	}
 
 	if (cosw.i == 0 || cosw.f == NULL) {
-	 	float halfPI  = (float)PI/2;
+		float halfPI  = (float)PI/2;
 		cosw.i = priv->plugwidth;
 		cosw.f = visual_mem_malloc0(sizeof(float)*priv->plugwidth);
-		for (i=0; i<priv->plugwidth;i+=step) 
+		for (i=0; i<priv->plugwidth;i+=step)
 			cosw.f[i] = cos((float)i/priv->plugwidth*PI+halfPI);
 	}
 
 	if (sinw.i == 0 || sinw.f == NULL) {
-	 	float halfPI = (float)PI/2;
+		float halfPI = (float)PI/2;
 		sinw.i = priv->plugwidth;
 		sinw.f = visual_mem_malloc0(sizeof(float)*priv->plugwidth);
-		for (i=0; i<priv->plugwidth;i+=step) 
+		for (i=0; i<priv->plugwidth;i+=step)
 			sinw.f[i] = sin((float)i/priv->plugwidth*PI+halfPI);
 	}
 
@@ -332,10 +332,10 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect,short data[2]
 	for (i=step;i<priv->plugwidth;i+=step) {
 		old_y1=y1;
 		old_y2=y2;
-		y1=((data[1][(i<<9)/priv->plugwidth/density_lines]>>8)*
-		    current_effect->spectral_amplitude*priv->plugheight)>>12;
-		y2=((data[0][(i<<9)/priv->plugwidth/density_lines]>>8)*
-		    current_effect->spectral_amplitude*priv->plugheight)>>12;
+		y1=((data[1][(i<<9)/priv->plugwidth/density_lines] * 256)*
+		    current_effect->spectral_amplitude*priv->plugheight) * (1.0 / 4096.0);
+		y2=((data[0][(i<<9)/priv->plugwidth/density_lines] * 256)*
+		    current_effect->spectral_amplitude*priv->plugheight) * (1.0 / 4096.0);
 
 		switch (current_effect->mode_spectre) { 
 		case 0:

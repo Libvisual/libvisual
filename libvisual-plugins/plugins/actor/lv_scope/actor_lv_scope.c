@@ -32,8 +32,11 @@
 
 #include <libvisual/libvisual.h>
 
+#define PCM_SIZE	1024
+
 typedef struct {
-	VisPalette pal;
+	VisPalette	pal;
+	VisBuffer	pcm;
 } ScopePrivate;
 
 int lv_scope_init (VisPluginData *plugin);
@@ -90,6 +93,8 @@ int lv_scope_init (VisPluginData *plugin)
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
+	visual_buffer_init_allocate (&priv->pcm, sizeof (float) * PCM_SIZE, visual_buffer_destroyer_free);
+
 	return 0;
 }
 
@@ -98,6 +103,8 @@ int lv_scope_cleanup (VisPluginData *plugin)
 	ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_palette_free_colors (&priv->pal);
+
+	visual_object_unref (VISUAL_OBJECT (&priv->pcm));
 
 	visual_mem_free (priv);
 
@@ -158,7 +165,7 @@ VisPalette *lv_scope_palette (VisPluginData *plugin)
 {
 	ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	int i;
-	
+
 	for (i = 0; i < 256; i++) {
 		priv->pal.colors[i].r = i;
 		priv->pal.colors[i].g = i;
@@ -170,28 +177,43 @@ VisPalette *lv_scope_palette (VisPluginData *plugin)
 
 int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	int adder = video->width > 512 ? (video->width - 512) / 2 : 0;
-	int i, y;
+	ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisColor col;
+	float *pcmbuf;
+	int i, y, y_old;
 	uint8_t *buf;
 
 	if (video == NULL)
 		return -1;
 
 	y = video->height >> 1;
-	
+
+	visual_audio_get_sample_mixed (audio, &priv->pcm, TRUE, 2,
+			VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT,
+			1.0,
+			1.0);
+
+	pcmbuf = visual_buffer_get_data (&priv->pcm);
+
+	visual_color_set (&col, 0, 0, 0);
+	visual_video_fill_color (video, &col);
+
 	buf = (uint8_t *) visual_video_get_pixels (video);
 
-	visual_mem_set (buf, 0, video->pitch * video->height);
-	
-	for (i = 0; i < video->width && i < 512; i++) {
-		y = (video->height / 2) + (audio->pcm[2][i >> 1] >> 9);
+	y_old = video->height / 2;
+	for (i = 0; i < video->width; i++) {
+		int j;
 
-		if (y < 0)
-			y = 0;
-		else if (y > video->height - 1)
-			y = video->height - 1;
-		
-		buf[(y * video->pitch) + i + adder] = i;
+		y = (video->height / 2) + (pcmbuf[(i >> 1) % PCM_SIZE] * (video->height / 4));
+
+		if (y > y_old) {
+			for (j = y_old; j < y; j++)
+				buf[(j * video->pitch) + i] = 255;
+		} else {
+			for (j = y; j < y_old; j++)
+				buf[(j * video->pitch) + i] = 255;
+		}
 	}
 
 	return 0;

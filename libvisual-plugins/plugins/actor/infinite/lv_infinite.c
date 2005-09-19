@@ -71,7 +71,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	*count = sizeof (info) / sizeof (*info);
-	
+
 	return info;
 }
 
@@ -195,7 +195,7 @@ int act_infinite_events (VisPluginData *plugin, VisEventQueue *events)
 VisPalette *act_infinite_palette (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
-	
+
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
@@ -205,6 +205,7 @@ VisPalette *act_infinite_palette (VisPluginData *plugin)
 
 int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	VisBuffer buffer;
 	InfinitePrivate *priv;
 	int i;
 
@@ -214,10 +215,11 @@ int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	for (i = 0; i < 512; i++) {
-		priv->pcm_data[0][i] = audio->pcm[0][i];
-		priv->pcm_data[1][i] = audio->pcm[1][i];
-	}
+	visual_buffer_set_data_pair (&buffer, priv->pcm_data[0], sizeof (float) * 512);
+	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+
+	visual_buffer_set_data_pair (&buffer, priv->pcm_data[1], sizeof (float) * 512);
+	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
 
 	_inf_renderer (priv);
 	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video));

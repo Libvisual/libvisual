@@ -16,7 +16,7 @@
 #define wrap(a) ( a < 0 ? 0 : ( a > 255 ? 255 : a )) 
 
 void _inf_init_renderer(InfinitePrivate *priv)
-{	
+{
 	int allocsize;
 
 	allocsize = ((priv->plugwidth * priv->plugheight) + (priv->plugwidth * 2)) * NB_FCT * sizeof(t_interpol);

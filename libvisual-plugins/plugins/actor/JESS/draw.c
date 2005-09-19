@@ -224,7 +224,7 @@ quit:; /* pas de nouvelle ligne */
 /**************** GRANDE GRILLE ************************************/
 /*******************************************************************/
 
-void grille_3d (JessPrivate *priv, uint8_t * buffer, short data[2][512], float alpha, float beta,
+void grille_3d (JessPrivate *priv, uint8_t * buffer, float data[2][512], float alpha, float beta,
 		float gamma, int persp, int dist_cam)
 {
 
@@ -248,13 +248,13 @@ void grille_3d (JessPrivate *priv, uint8_t * buffer, short data[2][512], float a
 
 			if (j >= 16)
 			{
-				z = RESFACTXF ((float) (data[0][i + nb_x * (j - 16)]) / 256);
-				color = data[0][i + nb_x * (j - 16)] / 512 + 100;
+				z = RESFACTXF ((float) (data[0][i + nb_x * (j - 16)]) * 256);
+				color = data[0][i + nb_x * (j - 16)] * 64 + 100;
 			}
 			else
 			{
 				z = RESFACTXF ((float) (data[1][i + nb_x * j]) / 256);
-				color = (data[1][i + nb_x * j]) / 512 + 100;
+				color = (data[1][i + nb_x * j]) * 64 + 100;
 			}
 
 			rotation_3d (&x, &y, &z, alpha, beta, gamma);
@@ -297,7 +297,7 @@ void grille_3d (JessPrivate *priv, uint8_t * buffer, short data[2][512], float a
 /**************** 2 GRILLES JUMELLES *******************************/
 /*******************************************************************/
 
-void l2_grilles_3d (JessPrivate *priv, uint8_t * buffer, short data[2][512], float alpha, float beta,
+void l2_grilles_3d (JessPrivate *priv, uint8_t * buffer, float data[2][512], float alpha, float beta,
 		float gamma, int persp, int dist_cam)
 {
 
@@ -320,8 +320,8 @@ void l2_grilles_3d (JessPrivate *priv, uint8_t * buffer, short data[2][512], flo
 		{
 			y = RESFACTYF ((j - ((float) nb_y / 2)) * 15);
 
-			z = abs(RESFACTXF ((float) (data[1][i + nb_x * j]) / 256));
-			color[i][j] = data[1][i + nb_x * j] / 512 + 100;
+			z = abs(RESFACTXF ((float) (data[1][i + nb_x * j]) * 256));
+			color[i][j] = data[1][i + nb_x * j] * 64 + 100;
 
 			rotation_3d (&x, &y, &z, alpha, beta, gamma);
 			perspective (&x, &y, &z, persp, dist_cam);
@@ -348,7 +348,7 @@ void l2_grilles_3d (JessPrivate *priv, uint8_t * buffer, short data[2][512], flo
 /**************** BURN 3D ******************************************/
 /*******************************************************************/
 
-void burn_3d (JessPrivate *priv, uint8_t * buffer, short data[2][512], float alpha, float beta,
+void burn_3d (JessPrivate *priv, uint8_t * buffer, float data[2][512], float alpha, float beta,
 		float gamma, int persp, int dist_cam, int mode)
 {
 	float x,y,z,xres2 = (float) (priv->resx >> 1), yres2 = (float) (priv->resy >> 1);
@@ -630,7 +630,7 @@ uint8_t couleur (JessPrivate *priv, short x)
 			(resx2f * resx2f));
 }
 
-void courbes (JessPrivate *priv, uint8_t * buffer, short data[2][512], uint8_t color, int type)
+void courbes (JessPrivate *priv, uint8_t * buffer, float data[2][512], uint8_t color, int type)
 {
 	int j, i, x1, y1, x2=0, y2=0;
 	int r;
@@ -646,19 +646,19 @@ void courbes (JessPrivate *priv, uint8_t * buffer, short data[2][512], uint8_t c
 			for (i = 0; i < resx - 1 && i < 511; i++)
 			{
 				j = i - 256;
-				droite (priv, buffer, j, data[0][i] / (256) + resy / 6, j + 1,
-						data[0][i + 1] / (256) + resy / 6, couleur (priv, j));
-				droite (priv, buffer, j, data[1][i] / (256) - resy / 6, j + 1,
-						data[1][i + 1] / (256) - resy / 6, couleur (priv, j));
+				droite (priv, buffer, j, data[0][i] * (128) + resy / 6, j + 1,
+						data[0][i + 1] * (128) + resy / 6, couleur (priv, j));
+				droite (priv, buffer, j, data[1][i] * (128) - resy / 6, j + 1,
+						data[1][i + 1] * (128) - resy / 6, couleur (priv, j));
 			}
 			break;
 		case 1:
-			r = data[0][255] >> 8;
-			x2 = (RAYON+r) * cos (255*2*PI/256);	
+			r = data[0][255] * 256;
+			x2 = (RAYON+r) * cos (255*2*PI/256);
 			y2 = (RAYON+r) * sin (255*2*PI/256);
 			for (i = 0; i < 256 ;i++)
 			{
-				r = data[0][i] >> 8;
+				r = data[0][i] * 256;
 				x1 = (RAYON+r) * cos (i*2*PI/256);
 				y1 = (RAYON+r) * sin( i*2*PI/256);
 				droite(priv, buffer,x1,y1,x2,y2,100);

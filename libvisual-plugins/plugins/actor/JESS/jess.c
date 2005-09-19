@@ -108,7 +108,7 @@ int act_jess_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
-	
+
 	priv->conteur.burn_mode = 4;
 	priv->conteur.draw_mode = 4;
 	priv->conteur.blur_mode = 3;
@@ -141,7 +141,11 @@ int act_jess_init (VisPluginData *plugin)
 
 	visual_palette_allocate_colors (&priv->jess_pal, 256);
 
+	visual_buffer_init (&priv->pcm_data1, priv->pcm_data[0], 512 * sizeof (float), NULL);
+	visual_buffer_init (&priv->pcm_data2, priv->pcm_data[1], 512 * sizeof (float), NULL);
+
 	start_ticks (priv);
+
 	return 0;
 }
 
@@ -186,7 +190,7 @@ int act_jess_cleanup (VisPluginData *plugin)
 	visual_palette_free_colors (&priv->jess_pal);
 
 	visual_mem_free (priv);
-	
+
 	return 0;
 }
 
@@ -306,16 +310,15 @@ int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	visual_log_return_val_if_fail (video != NULL, -1);
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
 	if (priv == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 				_("The given plugin doesn't have priv info"));
 		return -1;
 	}
 
-	for (i = 0; i < 512; i++) {
-		priv->pcm_data[0][i] = audio->pcm[0][i];
-		priv->pcm_data[1][i] = audio->pcm[1][i];
-	}
+	visual_audio_get_sample (audio, &priv->pcm_data1, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_audio_get_sample (audio, &priv->pcm_data2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	for (i = 0;i < 256; i++) {
 		freqdata[0][i] = audio->freq[0][i];
