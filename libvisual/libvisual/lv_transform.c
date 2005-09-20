@@ -148,11 +148,11 @@ int visual_transform_valid_by_name (const char *name)
 VisTransform *visual_transform_new (const char *transformname)
 {
 	VisTransform *transform;
-	
+
 	transform = visual_mem_new0 (VisTransform, 1);
 
 	visual_transform_init (transform, transformname);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (transform), TRUE);
 	visual_object_ref (VISUAL_OBJECT (transform));
@@ -177,7 +177,7 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
 	VisPluginRef *ref;
 
 	visual_log_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
-	
+
 	if (__lv_plugins_transform == NULL && transformname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 		return -VISUAL_ERROR_PLUGIN_NO_LIST;
@@ -228,7 +228,7 @@ int visual_transform_realize (VisTransform *transform)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL
  * 	or -VISUAL_ERROR_TRANSFORM_NEGOTIATE on failure. 
- */ 
+ */
 int visual_transform_video_negotiate (VisTransform *transform)
 {
 	int depthflag;
@@ -241,7 +241,7 @@ int visual_transform_video_negotiate (VisTransform *transform)
 
 	if (visual_video_depth_is_supported (depthflag, transform->video->depth) == FALSE)
 		return -VISUAL_ERROR_TRANSFORM_NEGOTIATE;
-	
+
 	visual_event_queue_add_resize (&transform->plugin->eventqueue, transform->video,
 			transform->video->width, transform->video->height);
 
@@ -315,7 +315,7 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video)
  * @param palette Pointer to the VisPalette which is used to override the palette in the VisTransform.
  * 
  * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL on failure.
- */ 
+ */
 int visual_transform_set_palette (VisTransform *transform, VisPalette *palette)
 {
 	visual_log_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
@@ -347,7 +347,7 @@ int visual_transform_run (VisTransform *transform, VisAudio *audio)
 		if ((ret = visual_transform_run_video (transform, audio)) != VISUAL_OK)
 			return ret;
 	}
-	
+
 	if (transform->pal != NULL) {
 		if ((ret = visual_transform_run_palette (transform, audio)) != VISUAL_OK)
 			return ret;

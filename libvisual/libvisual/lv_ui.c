@@ -53,7 +53,7 @@ static int table_dtor (VisObject *object)
 	VisUITable *table = VISUAL_UI_TABLE (object);
 
 	visual_collection_destroy (VISUAL_COLLECTION (&table->childs));
-	
+
 	widget_dtor (object);
 
 	return VISUAL_OK;

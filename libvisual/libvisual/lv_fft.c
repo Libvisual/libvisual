@@ -236,6 +236,7 @@ VisFFT *visual_fft_new (int samples_in, int samples_out)
 
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (fft), TRUE);
+	visual_object_ref (VISUAL_OBJECT (fft));
 
 	return fft;
 }

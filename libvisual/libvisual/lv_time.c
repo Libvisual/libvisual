@@ -256,7 +256,7 @@ VisTimer *visual_timer_new ()
 	timer = visual_mem_new0 (VisTimer, 1);
 
 	visual_timer_init (timer);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (timer), TRUE);
 	visual_object_ref (VISUAL_OBJECT (timer));
@@ -279,17 +279,17 @@ VisTimer *visual_timer_new ()
 int visual_timer_init (VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (timer));
 	visual_object_set_dtor (VISUAL_OBJECT (timer), NULL);
 	visual_object_set_allocated (VISUAL_OBJECT (timer), FALSE);
-				
+
 	/* Reset the VisTime data */
 	visual_time_init (&timer->start);
 	visual_time_init (&timer->stop);
-	
-	visual_timer_reset (timer);	
+
+	visual_timer_reset (timer);
 
 	return VISUAL_OK;
 }
@@ -308,8 +308,8 @@ int visual_timer_reset (VisTimer *timer)
 	visual_time_set (&timer->start, 0, 0);
 	visual_time_set (&timer->stop, 0, 0);
 
-	timer->active = FALSE;	
-	
+	timer->active = FALSE;
+
 	return VISUAL_OK;
 }
 
@@ -333,7 +333,7 @@ int visual_timer_is_active (VisTimer *timer)
  * @param timer Pointer to the VisTimer in which we start the timer.
  *
  * return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
- */ 
+ */
 int visual_timer_start (VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);

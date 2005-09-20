@@ -202,7 +202,7 @@ int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParam
 		visual_param_entry_set_from_param (pnew, &params[i]);
 
 		visual_param_container_add (paramcontainer, pnew);
-		
+
 		i++;
 	}
 

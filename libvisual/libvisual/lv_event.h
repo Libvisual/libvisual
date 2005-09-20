@@ -214,7 +214,6 @@ struct _VisEventParam {
  * @see visual_event_new
  */
 union _VisEvent {
-	VisObject		object;		/**< The VisObject data. */
 	VisEventType		type;		/**< Event type of the event being emitted. */
 	VisEventKeyboard	keyboard;	/**< Keyboard event. */
 	VisEventMouseMotion	mousemotion;	/**< Mouse movement event. */
@@ -249,8 +248,13 @@ struct _VisEventQueue {
 };
 
 VisEvent *visual_event_new (void);
+int visual_event_init (VisEvent *event);
+
 VisEventQueue *visual_event_queue_new (void);
+int visual_event_queue_init (VisEventQueue *eventqueue);
+
 int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
+
 int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event);
 int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, int keymod, VisKeyState state);
 int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y);

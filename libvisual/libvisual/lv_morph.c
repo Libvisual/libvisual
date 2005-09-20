@@ -145,7 +145,7 @@ int visual_morph_valid_by_name (const char *name)
  * 	morph.
  * 
  * @return A newly allocated VisMorph, optionally containing a loaded plugin. Or NULL on failure.
- */  
+ */
 VisMorph *visual_morph_new (const char *morphname)
 {
 	VisMorph *morph;

@@ -51,9 +51,11 @@ static int event_list_destroy (void *data)
 	VisEvent *event = VISUAL_EVENT (data);
 
 	if (event == NULL)
-		return;
+		return 0;
 
 	visual_object_unref (VISUAL_OBJECT (event));
+
+	return 0;
 }
 
 
@@ -75,10 +77,28 @@ VisEvent *visual_event_new ()
 
 	event = visual_mem_new0 (VisEvent, 1);
 
+	visual_event_init (event);
+
 	/* Do the VisObject initialization*/
-	visual_object_initialize (VISUAL_OBJECT (event), TRUE, NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (event), TRUE);
+	visual_object_ref (VISUAL_OBJECT (event));
 
 	return event;
+}
+
+int visual_event_init (VisEvent *event)
+{
+	visual_log_return_val_if_fail (event != NULL, -VISUAL_ERROR_EVENT_NULL);
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (event));
+	visual_object_set_dtor (VISUAL_OBJECT (event), NULL);
+	visual_object_set_allocated (VISUAL_OBJECT (event), FALSE);
+
+	/* Set the VisEvent data */
+	visual_object_clean (VISUAL_OBJECT (event), VisEvent);
+
+	return VISUAL_OK;
 }
 
 /**
@@ -92,14 +112,32 @@ VisEventQueue *visual_event_queue_new ()
 
 	eventqueue = visual_mem_new0 (VisEventQueue, 1);
 
+	visual_event_queue_init (eventqueue);
+
 	/* Do the VisObject initialization*/
-	visual_object_initialize (VISUAL_OBJECT (eventqueue), TRUE, eventqueue_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (eventqueue), TRUE);
+	visual_object_ref (VISUAL_OBJECT (eventqueue));
+
+	return eventqueue;
+}
+
+int visual_event_queue_init (VisEventQueue *eventqueue)
+{
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
+
+	/* Do the VisObject initialization */
+	visual_object_clear (VISUAL_OBJECT (eventqueue));
+	visual_object_set_dtor (VISUAL_OBJECT (eventqueue), eventqueue_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (eventqueue), FALSE);
+
+	/* Set the VisEventQueue data */
+	visual_object_clean (VISUAL_OBJECT (eventqueue), VisEventQueue);
 
 	eventqueue->mousestate = VISUAL_MOUSE_UP;
 
 	visual_collection_set_destroyer (VISUAL_COLLECTION (&eventqueue->events), event_list_destroy);
 
-	return eventqueue;
+	return VISUAL_OK;
 }
 
 /**
