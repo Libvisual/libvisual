@@ -81,6 +81,8 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_FFT_NULL] =			N_("VisFFT is NULL"),
 	[VISUAL_ERROR_FFT_NOT_INITIALIZED]		N_("The VisFFT subsystem is not initialized"),
 
+	[VISUAL_ERROR_HASHLIST_NULL]			N_("The VisHashlist is NULL"),
+
 	[VISUAL_ERROR_HASHMAP_NULL] =			N_("VisHashmap is NULL"),
 	[VISUAL_ERROR_HASHMAP_NOT_IN_MAP] =		N_("Key is not in hashmap"),
 	[VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE] =	N_("Key type is not valid"),

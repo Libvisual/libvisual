@@ -1,3 +1,7 @@
+2005-09-22  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_hashlist.*: Adding
+
 2005-09-20  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_object.h (visual_object_clean): Added convenient macro

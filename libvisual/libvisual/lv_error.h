@@ -93,6 +93,9 @@ enum {
 	VISUAL_ERROR_FFT_NULL,				/**< The VisFFT is NULL. */
 	VISUAL_ERROR_FFT_NOT_INITIALIZED,		/**< The VisFFT subsystem is not initialized. */
 
+	/* Error entries for the VisHashlist system */
+	VISUAL_ERROR_HASHLIST_NULL,			/**< The VisHashlist is NULL. */
+
 	/* Error entries for the VisHashmap system */
 	VISUAL_ERROR_HASHMAP_NULL,			/**< The VisHashmap is NULL. */
 	VISUAL_ERROR_HASHMAP_NOT_IN_MAP,		/**< Key is not in hashmap. */
