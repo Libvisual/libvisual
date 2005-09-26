@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_rectangle.cpp,v 1.1 2005-09-04 21:59:33 descender Exp $
+// $Id: lv_rectangle.cpp,v 1.2 2005-09-26 13:21:38 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,7 +20,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_config.hpp>
+#include <lv_build_config.hpp>
 #include <lv_rectangle.hpp>
 
 #ifdef LVCPP_RECTANGLE_TEST
@@ -29,7 +29,7 @@
 
 std::ostream& operator << (std::ostream& out, const Lv::Rectangle& rect)
 {
-    return (out << "Rect (" 
+    return (out << "Rect ("
                 << rect.get_x () << ", " << rect.get_y () << ", "
                 << rect.get_width() << ", " << rect.get_height ()
                 << ')');

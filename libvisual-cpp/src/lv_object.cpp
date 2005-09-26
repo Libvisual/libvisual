@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.cpp,v 1.5 2005-09-26 05:30:22 descender Exp $
+// $Id: lv_object.cpp,v 1.6 2005-09-26 13:21:38 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,7 +20,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_config.hpp>
+#include <lv_build_config.hpp>
 #include <lv_object.hpp>
 #include <cstdlib>
 

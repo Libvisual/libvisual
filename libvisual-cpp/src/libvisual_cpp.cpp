@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.cpp,v 1.5 2005-09-11 12:39:33 descender Exp $
+// $Id: libvisual_cpp.cpp,v 1.6 2005-09-26 13:21:38 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,7 +20,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_config.hpp>
+#include <lv_build_config.hpp>
 #include <libvisual_cpp.hpp>
 #include <libvisual/libvisual.h>
 #include <iostream>
@@ -28,7 +28,7 @@
 namespace
 {
   bool trap_exceptions = false;
-  
+
   void (*last_terminate_handler) () = 0;
   void (*last_unexpected_handler) () = 0;
 
@@ -96,7 +96,7 @@ namespace Lv
       if (result == VISUAL_OK)
           init_common (trap_exceptions_);
 
-      return result;      
+      return result;
   }
 
   bool is_init ()

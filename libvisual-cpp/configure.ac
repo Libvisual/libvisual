@@ -10,7 +10,7 @@ AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE
 
-AC_CONFIG_HEADERS([lv_config.hpp])
+AC_CONFIG_HEADERS([lv_build_config.hpp])
 
 AC_LANG(C++)
 

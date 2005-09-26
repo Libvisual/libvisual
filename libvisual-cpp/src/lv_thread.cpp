@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.cpp,v 1.6 2005-09-01 04:48:16 descender Exp $
+// $Id: lv_thread.cpp,v 1.7 2005-09-26 13:21:38 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,7 +20,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_config.hpp>
+#include <lv_build_config.hpp>
 #include <lv_thread.hpp>
 
 namespace Lv
@@ -28,7 +28,7 @@ namespace Lv
   void *Thread::invoke_functor (void *params)
   {
       Lv::Function<void> *m_func = static_cast<Lv::Function<void> *> (params);
-      
+
       (*m_func) ();
 
       visual_thread_exit (NULL);
@@ -51,7 +51,7 @@ struct DebugLock
     Lock *m_lock;
     bool  m_own;
 
-    DebugLock () 
+    DebugLock ()
         : m_lock (new Lock),
           m_own (true)
     {}
@@ -60,7 +60,7 @@ struct DebugLock
     {
         if (m_own)
             delete m_lock;
-    }        
+    }
 
     DebugLock (Lock& lock)
         : m_lock (&lock),
@@ -77,7 +77,7 @@ struct DebugLock
     {
         std::cout << "DebugLock: trying to lock." << std::endl;
         return m_lock->try_lock ();
-    }    
+    }
 
     void unlock ()
     {
@@ -103,7 +103,7 @@ public:
     bool is_empty ()
     {
         ScopedLock lock(m_lock);
-        
+
         return m_queue.empty ();
     }
 
@@ -193,7 +193,7 @@ public:
     }
 
 private:
-    
+
     int m_id;
     Queue& m_queue;
     int m_limit;
@@ -211,7 +211,7 @@ void mutex_test ()
         Lv::ScopedLock<DebugMutex> scoped_lock(lock);
         std::cout << "Middle of scope 1\n";
     }
-    
+
     {
         Lv::ScopedTryLock<DebugMutex> scoped_try_lock(lock);
         std::cout << "Middle of scope 2\n";
