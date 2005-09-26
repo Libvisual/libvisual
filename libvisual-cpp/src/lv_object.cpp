@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.cpp,v 1.4 2005-09-26 05:20:47 descender Exp $
+// $Id: lv_object.cpp,v 1.5 2005-09-26 05:30:22 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -74,12 +74,17 @@ int main (int argc, char **argv)
         visual_object_set_private (&a->vis_object (), const_cast<void *>
                                    (static_cast<const void *> ("Reference counted object destroyed")));
 
-
         std::cout << a->vis_object ().refcount << '\n';
 
         {
             Lv::RefPtr<Lv::Object> b (a);
-            std::cout << b->vis_object ().refcount << '\n';
+            std::cout << a->vis_object ().refcount << '\n';
+
+            Lv::RefPtr<Lv::Object> c (b);
+            std::cout << a->vis_object ().refcount << '\n';
+
+            c = Lv::RefPtr<Lv::Object> (0);
+            std::cout << a->vis_object ().refcount << '\n';
         }
 
         std::cout << a->vis_object ().refcount << '\n';

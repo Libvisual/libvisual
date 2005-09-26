@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.hpp,v 1.6 2005-09-26 05:20:47 descender Exp $
+// $Id: lv_object.hpp,v 1.7 2005-09-26 05:30:22 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -108,10 +108,15 @@ namespace Lv
 
       const RefPtr& operator = (const RefPtr& other)
       {
+          if (m_object)
+              m_object->unref ();
+
           m_object = other.m_object;
 
           if (m_object)
               m_object->ref ();
+
+          return *this;
       }
 
       const Object *operator -> () const
