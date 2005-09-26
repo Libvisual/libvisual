@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.hpp,v 1.8 2005-09-26 13:28:07 descender Exp $
+// $Id: lv_object.hpp,v 1.9 2005-09-26 14:06:06 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -24,25 +24,36 @@
 #define LVCPP_OBJECT_HPP
 
 #include <libvisual/lv_object.h>
+#include <lv_error.hpp>
 
 namespace Lv
 {
   // Notes:
   // * Might be nice if we can allocate Object entirely on the
   //   stack.
+  //
+  // * Right now, we're throwing NullObjectError if allocation fails
+  //   for the default constructor. Derived classes also rely on this
+  //   to catch their corresponding object allocation failures. Need
+  //   to throw a memory exception instead.
 
   class Object
   {
   public:
 
-      // need to make this exception safe
       Object ()
           : m_object (visual_object_new ())
-      {}
+      {
+          if (!m_object)
+              throw NullObjectError ();
+      }
 
-      Object (VisObject *object)
+      explicit Object (VisObject *object)
           : m_object (object)
-      {}
+      {
+          if (!object)
+              throw NullObjectError ();
+      }
 
       ~Object ()
       {

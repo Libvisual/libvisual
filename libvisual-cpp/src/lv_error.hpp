@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.hpp,v 1.7 2005-09-26 14:06:06 descender Exp $
+// $Id: lv_error.hpp,v 1.1 2005-09-26 14:06:06 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,28 +20,44 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#ifndef LVCPP_LVCPP_HPP
-#define LVCPP_LVCPP_HPP
+#ifndef LVCPP_ERROR_HPP
+#define LVCPP_ERROR_HPP
 
-#include <string>
-#include <lv_error.hpp>
+#include <stdexcept>
 
 namespace Lv
 {
-  const char *get_version ();
 
-  const char *get_lv_version ();
+  class UnexpectedError
+      : public std::runtime_error
+  {
+  public:
 
-  int init (int &argc, char **&argv, bool trap_exceptions = true);
+      UnexpectedError ()
+          : std::runtime_error ("Unexpected exception")
+      {}
+  };
 
-  int init (bool trap_exceptions = true);
+  class NullObjectError
+      : public std::runtime_error
+  {
+  public:
 
-  bool is_init ();
+      NullObjectError ()
+          : std::runtime_error ("Attempt to use null object")
+      {}
+  };
 
-  int quit ();
+  class FileError
+      : public std::runtime_error
+  {
+  public:
 
-  int init_path_add (const std::string& path);
+      FileError (const std::string& error)
+          : std::runtime_error ("File error: " + error)
+      {}
+  };
 
 } // namespace Lv
 
-#endif // #ifdef LVCPP_LVCPP_HPP
+#endif // #ifndef LVCPP_ERROR_HPP
