@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_fft.hpp,v 1.2 2005-09-16 20:09:53 descender Exp $
+// $Id: lv_fft.hpp,v 1.3 2005-09-26 13:28:07 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -28,7 +28,7 @@
 
 namespace Lv
 {
-  
+
   class FFT
       : public Object
   {

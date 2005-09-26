@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_color.hpp,v 1.5 2005-09-05 17:46:13 descender Exp $
+// $Id: lv_color.hpp,v 1.6 2005-09-26 13:28:07 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -52,7 +52,7 @@ namespace Lv
 
       const Color& operator = (const Color& other)
       {
-          visual_color_copy (&vis_color (), 
+          visual_color_copy (&vis_color (),
                              const_cast<VisColor *> (&other.vis_color ()));
           return *this;
       }
@@ -103,7 +103,7 @@ namespace Lv
       }
 
   private:
-      
+
       static inline VisObject *vis_color_to_object (VisColor *color)
       {
           return reinterpret_cast<VisObject *> (color);

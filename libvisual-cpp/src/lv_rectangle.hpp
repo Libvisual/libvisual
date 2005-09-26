@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_rectangle.hpp,v 1.3 2005-09-16 20:09:53 descender Exp $
+// $Id: lv_rectangle.hpp,v 1.4 2005-09-26 13:28:07 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -41,13 +41,13 @@ namespace Lv
       Rectangle (const Rectangle& other)
           : Object (vis_rect_to_object (visual_rectangle_new (0, 0, 0, 0)))
       {
-          visual_rectangle_copy (&vis_rect (), 
+          visual_rectangle_copy (&vis_rect (),
                                  const_cast<VisRectangle *> (&other.vis_rect ()));
       }
 
       inline const Rectangle& operator = (const Rectangle& other)
       {
-          visual_rectangle_copy (&vis_rect (), 
+          visual_rectangle_copy (&vis_rect (),
                                  const_cast<VisRectangle *> (&other.vis_rect ()));
           return *this;
       }
@@ -64,7 +64,7 @@ namespace Lv
 
       inline int get_x () const { return vis_rect ().x; }
       inline int get_y () const { return vis_rect ().y; }
-      
+
       inline int get_width  () const { return vis_rect ().width; }
       inline int get_height () const { return vis_rect ().height; }
 
@@ -85,13 +85,13 @@ namespace Lv
 
       inline bool contains (const Rectangle& other)
       {
-          return visual_rectangle_within (&vis_rect (), 
+          return visual_rectangle_within (&vis_rect (),
                                           const_cast<VisRectangle *> (&other.vis_rect ()));
       }
 
       inline bool intersects (const Rectangle& other)
       {
-          return visual_rectangle_within_partially (&vis_rect (), 
+          return visual_rectangle_within_partially (&vis_rect (),
                                                     const_cast<VisRectangle *> (&other.vis_rect ()));
       }
 

@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_random.hpp,v 1.1 2005-09-01 10:19:51 descender Exp $
+// $Id: lv_random.hpp,v 1.2 2005-09-26 13:28:07 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -52,7 +52,7 @@ namespace Lv
       {
           return visual_random_context_get_seed_state (const_cast<VisRandomContext *> (&vis_random_context ()));
       }
-      
+
       template <typename Value>
       Value value ();
 
@@ -94,13 +94,13 @@ namespace Lv
   {
       return visual_random_context_int (&vis_random_context ());
   }
-  
+
   template <>
   inline float RandomContext::value<float> ()
   {
       return visual_random_context_float (&vis_random_context ());
   }
-  
+
   template <>
   inline double RandomContext::value<double> ()
   {

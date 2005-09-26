@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_typelist.hpp,v 1.3 2005-09-08 22:19:58 descender Exp $
+// $Id: lv_typelist.hpp,v 1.4 2005-09-26 13:28:07 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -105,11 +105,11 @@ namespace Lv
 
     // (length list) -> (1+ (length (cdr list)))
     template <typename Head, typename Tail>
-    struct Length<Cons<Head,Tail> > 
+    struct Length<Cons<Head,Tail> >
     { static const unsigned int value = 1 + Length<Tail>::value; };
 
     // (nth n ()) -> ()
-    // where n is a non-negative integer 
+    // where n is a non-negative integer
     template <int n>
     struct Nth<Null, n>
     { typedef Null Result; };

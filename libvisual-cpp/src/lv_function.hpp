@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_function.hpp,v 1.9 2005-09-10 02:21:03 descender Exp $
+// $Id: lv_function.hpp,v 1.10 2005-09-26 13:28:07 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -30,14 +30,14 @@
 // framework in Modern C++ Design.
 
 // TODO (highest priority first)
-// * wrap parameter types so that structs and classes are 
+// * wrap parameter types so that structs and classes are
 //   passed by reference
 // * add comparators == and !=
 // * eliminate virtual calls
 // * allow custom allocators for FunctionImpl
 
 // Implementation notes:
-// * the 'virtual' keyword must be omitted for the () operators in 
+// * the 'virtual' keyword must be omitted for the () operators in
 //   FunctionImplMem and FunctionImplFun because it will force the
 //   compiler to instantiate them
 
@@ -236,7 +236,7 @@ namespace Lv
       }
 
       Result operator () ()
-      { 
+      {
           return (m_object->*m_func) ();
       }
 
@@ -254,7 +254,7 @@ namespace Lv
       {
           return (m_object->*m_func) (arg1, arg2, arg3);
       }
-    
+
       Result operator () (Param1 arg1, Param2 arg2, Param3 arg3,
                           Param4 arg4)
       {
@@ -300,7 +300,7 @@ namespace Lv
           return new FunctionImplFun (*this);
       }
 
-      Result operator () () 
+      Result operator () ()
       {
           return m_func ();
       }

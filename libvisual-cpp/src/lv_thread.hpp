@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.hpp,v 1.6 2005-09-01 08:30:13 descender Exp $
+// $Id: lv_thread.hpp,v 1.7 2005-09-26 13:28:07 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -96,14 +96,14 @@ namespace Lv
 	  visual_mutex_init (&m_mutex);
       }
 
-      ~Mutex () 
+      ~Mutex ()
       {}
 
       inline int try_lock ()
       {
 	  return visual_mutex_trylock (&m_mutex);
       }
-      
+
       inline int lock ()
       {
 	  return visual_mutex_lock (&m_mutex);
@@ -154,7 +154,7 @@ namespace Lv
       {
 	  m_lock.try_lock ();
       }
-      
+
       ~ScopedTryLock ()
       {
 	  m_lock.unlock ();
