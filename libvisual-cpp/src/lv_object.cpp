@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.cpp,v 1.3 2005-09-01 07:10:25 descender Exp $
+// $Id: lv_object.cpp,v 1.4 2005-09-26 05:20:47 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -24,7 +24,6 @@
 #include <lv_object.hpp>
 #include <cstdlib>
 
-
 #ifdef LVCPP_OBJECT_TEST
 
 #include <libvisual_cpp.hpp>
@@ -36,7 +35,7 @@ int test_visual_object_dtor (VisObject *object)
 
     std::cout << "Stored private data: " << privates << "\n";
 
-    return VISUAL_OK;
+    return 0; // VISUAL_OK
 }
 
 int main (int argc, char **argv)
@@ -54,25 +53,36 @@ int main (int argc, char **argv)
         for (int i = 0; i < 5; i++)
             object.unref ();
 
-        // Libvisual doesn't provide a function to get the reference count,        
+        // Libvisual doesn't provide a function to get the reference count,
         // so we peek inside ourselves
-        std::cout << "Final reference count: " << object.vis_object ().refcount << "\n";
+        std::cout << "Final reference count: " << object.vis_object ().refcount << '\n';
     }
+
 
     {
         Lv::Object a;
 
         visual_object_set_dtor (&a.vis_object (), test_visual_object_dtor);
-        visual_object_set_private (&a.vis_object (), const_cast<void *> (static_cast<const void *> ("hello world!")));
+        visual_object_set_private (&a.vis_object (), const_cast<void *>
+                                   (static_cast<const void *> ("hello world!")));
     }
 
     {
-        Lv::Object a;
+        Lv::RefPtr<Lv::Object> a (new Lv::Object);
 
-        visual_object_set_dtor (&a.vis_object (), test_visual_object_dtor);
-        visual_object_set_private (&a.vis_object (), const_cast<void *> (static_cast<const void *> ("hello world again!")));
+        visual_object_set_dtor (&a->vis_object (), test_visual_object_dtor);
+        visual_object_set_private (&a->vis_object (), const_cast<void *>
+                                   (static_cast<const void *> ("Reference counted object destroyed")));
 
-        Lv::Object b(a);
+
+        std::cout << a->vis_object ().refcount << '\n';
+
+        {
+            Lv::RefPtr<Lv::Object> b (a);
+            std::cout << b->vis_object ().refcount << '\n';
+        }
+
+        std::cout << a->vis_object ().refcount << '\n';
     }
 
     Lv::quit ();

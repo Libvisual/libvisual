@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-// 
+//
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_time.hpp,v 1.2 2005-09-16 21:44:44 descender Exp $
+// $Id: lv_time.hpp,v 1.3 2005-09-26 05:20:47 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -33,7 +33,7 @@ namespace Lv
       : public Object
   {
   public:
-      
+
       static inline void usleep (unsigned long ms)
       {
           // TODO: throw exception if visual_time_usleep() fails
@@ -152,24 +152,24 @@ namespace Lv
           return visual_timer_is_active (const_cast<VisTimer *> (&vis_timer ()));
       }
 
-      void elapsed (Time& time) const
+      inline void elapsed (Time& time) const
       {
           visual_timer_elapsed (const_cast<VisTimer *> (&vis_timer ()),
                                 &time.vis_time ());
       }
 
-      int elasped_msecs () const
+      inline int elasped_msecs () const
       {
           return visual_timer_elapsed_msecs (const_cast<VisTimer *> (&vis_timer ()));
       }
 
-      bool has_passed (const Time& time) const
+      inline bool has_passed (const Time& time) const
       {
           return visual_timer_has_passed (const_cast<VisTimer *> (&vis_timer ()),
                                           const_cast<VisTime *> (&time.vis_time ()));
       }
 
-      bool has_passed (long sec, long usec) const
+      inline bool has_passed (long sec, long usec) const
       {
           return visual_timer_has_passed_by_values (const_cast<VisTimer *> (&vis_timer ()),
                                                     sec, usec);

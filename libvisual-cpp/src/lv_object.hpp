@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_object.hpp,v 1.5 2005-09-04 21:59:33 descender Exp $
+// $Id: lv_object.hpp,v 1.6 2005-09-26 05:20:47 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -27,7 +27,7 @@
 
 namespace Lv
 {
-  // Notes: 
+  // Notes:
   // * Might be nice if we can allocate Object entirely on the
   //   stack.
 
@@ -40,14 +40,6 @@ namespace Lv
           : m_object (visual_object_new ())
       {}
 
-      Object (const Object& object)
-          : m_object (object.m_object)
-      {
-          // this is a shallow copy, we need to increase the reference
-          // count
-          ref ();
-      }
-
       Object (VisObject *object)
           : m_object (object)
       {}
@@ -55,13 +47,6 @@ namespace Lv
       ~Object ()
       {
           unref ();
-      }
-
-      inline const Object& operator = (const Object& other)
-      {
-          m_object = other.m_object;
-          ref ();
-          return *this;
       }
 
       inline void ref ()
@@ -93,6 +78,65 @@ namespace Lv
   private:
 
       VisObject *m_object;
+
+      Object (const Object& object);
+      const Object& operator = (const Object& other);
+  };
+
+
+  template <class Object>
+  class RefPtr
+  {
+  public:
+
+      explicit RefPtr (Object *object = 0)
+          : m_object (object)
+      {}
+
+      RefPtr (const RefPtr& other)
+          : m_object (other.m_object)
+      {
+          if (m_object)
+              m_object->ref ();
+      }
+
+      ~RefPtr ()
+      {
+          if (m_object)
+              m_object->unref ();
+      }
+
+      const RefPtr& operator = (const RefPtr& other)
+      {
+          m_object = other.m_object;
+
+          if (m_object)
+              m_object->ref ();
+      }
+
+      const Object *operator -> () const
+      {
+          return m_object;
+      }
+
+      Object *operator -> ()
+      {
+          return m_object;
+      }
+
+      const Object& operator * () const
+      {
+          return *m_object;
+      }
+
+      Object& operator * ()
+      {
+          return m_object;
+      }
+
+  private:
+
+      Object *m_object;
   };
 
 } // namespace Lv
