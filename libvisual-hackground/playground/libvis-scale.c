@@ -185,7 +185,7 @@ int main (int argc, char *argv[])
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
 	else
-		actor = visual_actor_new ("G-Force");
+		actor = visual_actor_new ("gforce");
 
 	visual_actor_realize (actor);
 

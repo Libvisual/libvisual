@@ -361,7 +361,7 @@ int main (int argc, char *argv[])
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
 	else
-		actor = visual_actor_new ("G-Force");
+		actor = visual_actor_new ("gforce");
 
 	visual_actor_realize (actor);
 
@@ -425,28 +425,28 @@ int main (int argc, char *argv[])
 	visual_video_set_dimension (sdlvid, screen->w, screen->h);
 	visual_video_set_pitch (sdlvid, screen->pitch);
 	visual_video_set_buffer (sdlvid, scrbuf);
-	
+
 	input = visual_input_new ("alsa");
 	visual_input_realize (input);
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-	
+
 	while (1) {
 		visual_input_run (input);
 		visual_actor_run (actor, input->audio);
 		visual_actor_run (actor2, input->audio);
 		visual_actor_run (actor3, input->audio);
-	
+
 		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);
 
 		visual_video_blit_overlay (sdlvid, video2, 0, 0, TRUE);
-		
+
 		visual_video_blit_overlay (sdlvid, video3, 0, 0, TRUE);
 
 		sdl_draw_buf ();
-		
+
 		usleep (5000);
-		
+
 		while (SDL_PollEvent (&event)) {
 			switch (event.type) {
 				case SDL_KEYDOWN:
