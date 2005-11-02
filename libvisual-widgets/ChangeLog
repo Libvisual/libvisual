@@ -1,3 +1,7 @@
+2005-11-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* autogen.sh: Use right package name.
+
 2005-07-03  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* gtk2/*.c: Adopted to API changes within VisVideo.
