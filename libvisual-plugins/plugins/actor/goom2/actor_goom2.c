@@ -38,6 +38,8 @@
 #include <libvisual/libvisual.h>
 
 typedef struct {
+	VisBuffer	 pcmbuf1;
+	VisBuffer	 pcmbuf2;
 	PluginInfo	*goominfo; /* The goom internal private struct */
 } GoomPrivate;
 
@@ -95,7 +97,10 @@ int lv_goom_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->goominfo = goom_init (128, 128);
-	
+
+	visual_buffer_init (&priv->pcmbuf1, NULL, 0, NULL);
+	visual_buffer_init (&priv->pcmbuf2, NULL, 0, NULL);
+
 	return 0;
 }
 
@@ -136,11 +141,11 @@ int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_goom_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_goom_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 
 				break;
-			
+
 			default: /* to avoid warnings */
 				break;
 		}
@@ -161,10 +166,21 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	VisParamContainer *paramcontainer;
 	VisParamEntry *param;
 	short pcmdata[2][512];
+	float fpcmdata[2][512];
 	uint32_t *buf;
 	int showinfo = TRUE;
+	int i;
 
-	visual_mem_copy (pcmdata, audio->pcm, sizeof (short) * 512 * 2);
+	visual_buffer_set_data_pair (&priv->pcmbuf1, fpcmdata[0], sizeof (float) * 512);
+	visual_audio_get_sample (audio, &priv->pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
+
+	visual_buffer_set_data_pair (&priv->pcmbuf2, fpcmdata[1], sizeof (float) * 512);
+	visual_audio_get_sample (audio, &priv->pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	for (i = 0; i < 512; i++) {
+		pcmdata[0][i] = fpcmdata[0][i] * 32767;
+		pcmdata[1][i] = fpcmdata[2][i] * 32767;
+	}
 
 	/* Retrieve the songinfo */
 	songinfo = &VISUAL_ACTOR_PLUGIN (visual_plugin_get_specific (plugin))->songinfo;
@@ -174,7 +190,7 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	param = visual_param_container_get (paramcontainer, "songinfo in plugin");
 	if (param != NULL)
 		showinfo = visual_param_entry_get_integer (param);
-	
+
 	/* FIXME goom should support setting a pointer, so we don't need that final visual_mem_copy */
 	if (songinfo != NULL && visual_songinfo_age (songinfo) <= 1 && showinfo == TRUE) {
 		if (songinfo->type == VISUAL_SONGINFO_TYPE_SIMPLE)

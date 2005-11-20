@@ -272,8 +272,8 @@ int act_jess_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_jess_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				act_jess_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 			default: /* to avoid warnings */
 				break;
@@ -302,6 +302,8 @@ VisPalette *act_jess_palette (VisPluginData *plugin)
 int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	JessPrivate *priv;
+	VisBuffer fbuf[2];
+	float freq[2][256];
 	short freqdata[2][256];
 	int i;
 
@@ -320,9 +322,15 @@ int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	visual_audio_get_sample (audio, &priv->pcm_data1, VISUAL_AUDIO_CHANNEL_LEFT);
 	visual_audio_get_sample (audio, &priv->pcm_data2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
+	visual_buffer_set_data_pair (&fbuf[0], freq[0], sizeof (freq[0]));
+	visual_buffer_set_data_pair (&fbuf[1], freq[1], sizeof (freq[1]));
+
+	visual_audio_get_spectrum_for_sample (&fbuf[0], &priv->pcm_data1, FALSE);
+	visual_audio_get_spectrum_for_sample (&fbuf[1], &priv->pcm_data2, FALSE);
+
 	for (i = 0;i < 256; i++) {
-		freqdata[0][i] = audio->freq[0][i];
-		freqdata[1][i] = audio->freq[1][i];
+		freqdata[0][i] = freq[0][i];
+		freqdata[1][i] = freq[1][i];
 	}
 
 	priv->lys.conteur[ZERO]++;

@@ -268,13 +268,13 @@ int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_oinksie_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				act_oinksie_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "color mode")) {
 					priv->color_mode = visual_param_entry_get_integer (param);
@@ -322,15 +322,15 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	visual_buffer_set_data_pair (&priv->pcmbuf1, priv->priv1.audio.pcm[0], sizeof (float) * 4096);
 	visual_audio_get_sample (audio, &priv->pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	visual_buffer_set_data_pair (&priv->spmbuf, &priv->priv1.audio.freq[0], sizeof (int16_t) * 256);
-	visual_audio_get_spectrum_for_sample (audio, &priv->spmbuf, &priv->pcmbuf1);
+	visual_buffer_set_data_pair (&priv->spmbuf, &priv->priv1.audio.freq[0], sizeof (float) * 256);
+	visual_audio_get_spectrum_for_sample (&priv->spmbuf, &priv->pcmbuf1, FALSE);
 
 	/* Right audio */
 	visual_buffer_set_data_pair (&priv->pcmbuf2, priv->priv1.audio.pcm[1], sizeof (float) * 4096);
 	visual_audio_get_sample (audio, &priv->pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&priv->spmbuf, priv->priv1.audio.freq[1], sizeof (int16_t) * 256);
-	visual_audio_get_spectrum_for_sample (audio, &priv->spmbuf, &priv->pcmbuf2);
+	visual_buffer_set_data_pair (&priv->spmbuf, priv->priv1.audio.freq[1], sizeof (float) * 256);
+	visual_audio_get_spectrum_for_sample (&priv->spmbuf, &priv->pcmbuf2, FALSE);
 
 	/* Mix channels */
 	visual_buffer_set_data_pair (&priv->pcmmix, priv->priv1.audio.pcm[2], sizeof (float) * 4096);
@@ -338,7 +338,7 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	/* Duplicate for second oinksie instance */
 	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (float) * 4096 * 3);
-	visual_mem_copy (&priv->priv2.audio.freq, &priv->priv1.audio.freq, sizeof (int16_t) * 256 * 2);
+	visual_mem_copy (&priv->priv2.audio.freq, &priv->priv1.audio.freq, sizeof (float) * 256 * 2);
 
 	/* Audio energy */
 	priv->priv1.audio.energy = audio->energy;

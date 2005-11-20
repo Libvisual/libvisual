@@ -130,8 +130,8 @@ int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_gstreamer_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				act_gstreamer_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 

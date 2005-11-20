@@ -248,20 +248,20 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_bumpscope_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				act_bumpscope_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_MOUSEMOTION:
-				if (ev.mousemotion.state == VISUAL_MOUSE_DOWN) {
-					priv->light_x = ev.mousemotion.x;
-					priv->light_y = ev.mousemotion.y;
+				if (ev.event.mousemotion.state == VISUAL_MOUSE_DOWN) {
+					priv->light_x = ev.event.mousemotion.x;
+					priv->light_y = ev.event.mousemotion.y;
 				}
 
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "color")) {
 					tmp = visual_param_entry_get_color (param);

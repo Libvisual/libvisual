@@ -266,12 +266,13 @@ static void perspective (float *x, float *y, float *z, int persp, int dist_cam)
 static void grille_3d (PlazmaPrivate *priv, float alpha, float beta, float gamma, int persp, int dist_cam, int col_grille_3d, int cx, int cy)
 {
 	float x, y, z;
-	int16_t ax = 0, ay = 0, ampli_grille = 0, ix, iy, i, j, nb_x, nb_y;
+	int16_t ax = 0, ay = 0, ix, iy, i, j, nb_x, nb_y;
+	float ampli_grille = 20;
 	nb_x = 32;
 	nb_y = 32;
 
 	if (priv->spectrum == 0 && priv->lines == 1)
-		ampli_grille = 128;
+		ampli_grille = 30;
 
 	for (i = 0; i < nb_x; i++)
 	{
@@ -279,7 +280,7 @@ static void grille_3d (PlazmaPrivate *priv, float alpha, float beta, float gamma
 		{
 			x = RESFACTXF ((i - ((float) nb_x) / 2) * 10);
 			y = RESFACTYF ((j - ((float) nb_y) / 2) * 10);
-			z = RESFACTXF ((float) (priv->pcm_buffer[i + (nb_x/3)*j])/(1024-ampli_grille));
+			z = RESFACTXF ((float) (priv->pcm_buffer[(i + (nb_x/3)*j) % 1024]) * (priv->height / ampli_grille));
 			rotation_3d (&x, &y, &z, alpha, beta, gamma);
 			perspective (&x, &y, &z, persp, dist_cam);
 			ix = (int) x;
@@ -305,7 +306,7 @@ static void cercle_3d (PlazmaPrivate *priv, float alpha, float beta, float gamma
 		{
 			x = RESFACTXF ((i - ((float) nb_x) / 2) * 30);
 			y = RESFACTYF ((j - ((float) nb_y) / 2) * 30);
-			z = RESFACTXF ((float) (priv->render_buffer[i + (nb_x/32)*j])/64);
+			z = RESFACTXF ((float) (priv->render_buffer[i + (nb_x/32)*j])*64);
 			rotation_3d (&x, &y, &z, alpha, beta, gamma);
 			perspective (&x, &y, &z, persp, dist_cam);
 			ix = (int) x;
@@ -324,7 +325,7 @@ static void do_radial_wave(PlazmaPrivate *priv)
 {
 	int i, halfheight, halfwidth, shift, col_fleur;
 	float y1, old_y1, k, opt, opt_old;
-	y1 = priv->pcm_buffer[0]/450;
+	y1 = priv->pcm_buffer[0]*82;
 	col_fleur = 74;
 	shift = priv->height/3.1;
 
@@ -336,7 +337,7 @@ static void do_radial_wave(PlazmaPrivate *priv)
 	halfwidth  = priv->width >> 1;
 	for (i=1 ; i<priv->width ; i++) {
 		old_y1 = y1;
-		y1 = priv->pcm_buffer[i]/450;
+		y1 = priv->pcm_buffer[i % 1024]*82;
 		if (y1<-50)
 			y1 = y1/2;
 		for (k=1 ; k<2.6 ; k+=0.4)	{
@@ -403,15 +404,16 @@ static void do_tourni_spec(PlazmaPrivate *priv)
 
 static void do_lines(PlazmaPrivate *priv)
 {
-	int lc, lc2lc, reg_lines,larg_lines;
+	int lc, lc2lc, reg_lines;
+	float larg_lines;
 	float pluseffect, coul_lines;
 	if (priv->lines == 1 && priv->spectrum == 0)	{
 		reg_lines = (priv->height/2)-3;
-		larg_lines = 240;
+		larg_lines = 154;
 	}
 	else	{
 		reg_lines = 77;
-		larg_lines = 420;
+		larg_lines = 88;
 	}
 	for (lc=0 ; lc<priv->width ; lc++)	{
 		for (lc2lc=0 ; lc2lc<7 ; lc2lc++)	{
@@ -423,7 +425,7 @@ static void do_lines(PlazmaPrivate *priv)
 			}
 			if (lc2lc==0 || lc2lc==1 || lc2lc==4 || lc2lc==5 || lc2lc==6)
 				coul_lines = 400/(3.4+pluseffect);
-			aff_pixel(priv, lc, reg_lines+(priv->pcm_buffer[lc % 1024]/larg_lines)+lc2lc, coul_lines);
+			aff_pixel(priv, lc, reg_lines+(priv->pcm_buffer[lc % 1024]*larg_lines)+lc2lc, coul_lines);
 		}
 	}
 }

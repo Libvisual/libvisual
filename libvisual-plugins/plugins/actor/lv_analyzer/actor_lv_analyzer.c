@@ -140,8 +140,8 @@ int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_analyzer_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_analyzer_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 			default: /* to avoid warnings */
 				break;
@@ -177,53 +177,67 @@ VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 
 int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	VisBuffer buffer;
+	VisBuffer pcmb;
+	float freq[256];
+	float pcm[256];
 	int maxbar[BARS];
 	unsigned char *bits = visual_video_get_pixels (video);
-	unsigned int val;
+	float val;
 	int j;
-	int k = 0;
+	float k = 0;
 	int i, h;
 	uint8_t *loc;
 	float scale;
 	float colscale;
 
-	visual_mem_set (bits, 0, visual_video_get_size (video));
+	visual_video_fill_color (video, NULL);
 	visual_mem_set (maxbar, 0, sizeof (maxbar));
-	
+
+	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
+	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+
+	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2, VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+
 	scale = (float) video->height / 127;
 
 	colscale = 1 / scale;
-	
+
 	for (i=0; i < BARS; i++) {
 		val = 0;
 		for (j = xranges[i]; j < xranges[i + 1]; j++) {
-			k = (audio->freq[2][j]) / 128;
+			k = (freq[j] * 256.0);
 			val += k;
 		}
+
+		val *= 127;
 
 		if(val > 127)
 			val = 127;
 
 		val *= scale;
-		
+
 		if (val >= video->height)
 			val = video->height - 1;
 
 
 		if (val > (unsigned int)maxbar[ i ])
 			maxbar[ i ] = val;
-		
+
 		else {
 			k = maxbar[ i ] - (4 + (8 / (128 - maxbar[ i ])));
 			val = k > 0 ? k : 0;
 			maxbar[ i ] = val;
 		}
-	
-		
+
+
 		loc = bits + video->pitch * (video->height - 1);
 		for (h = val; h > 0; h--) {
 			for (j = (video->pitch / BARS) * i + 0; j < (video->pitch / BARS) * i + ((video->pitch / BARS) - 1); j++) {
-				*(loc + j) = (float) (val-h) * colscale;
+				*(loc + j) = (float) ((int) (val)-h) * colscale;
 			}
 			loc -= video->pitch;
 		}

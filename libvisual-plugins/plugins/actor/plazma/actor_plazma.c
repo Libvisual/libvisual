@@ -81,7 +81,7 @@ int act_plazma_init (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	
+
 	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("bass sensitivity",	0),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("plazma effect",	TRUE),
@@ -103,12 +103,12 @@ int act_plazma_init (VisPluginData *plugin)
 	visual_palette_allocate_colors (&priv->colors, 256);
 
 	visual_param_container_add_many (paramcontainer, params);
-	
+
 	priv->val_maxi =		127;
 	priv->chcol0 =			36;
 	priv->state =			1368;
 	priv->old_state =		1368;
-	
+
 	return 0;
 }
 
@@ -153,7 +153,7 @@ int act_plazma_requisition (VisPluginData *plugin, int *width, int *height)
 int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	priv->width = width;
@@ -177,32 +177,32 @@ int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_plazma_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				act_plazma_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "bass sensitivity")) {
 					priv->bass_sensibility = visual_param_entry_get_integer (param);
-					
+
 				} else if (visual_param_entry_is (param, "plasma effect")) {
 					priv->effect = visual_param_entry_get_integer (param);
 					_plazma_change_effect (priv);
 
 				} else if (visual_param_entry_is (param, "3d effect option")) {
 					priv->options = visual_param_entry_get_integer (param);
-				
+
 				} else if (visual_param_entry_is (param, "lines")) {
 					priv->lines = visual_param_entry_get_integer (param);
-				
+
 				} else if (visual_param_entry_is (param, "spectrum")) {
 					priv->spectrum = visual_param_entry_get_integer (param);
-				
+
 				} else if (visual_param_entry_is (param, "3d effect")) {
 					priv->use_3d = visual_param_entry_get_integer (param);
-				
+
 				} else if (visual_param_entry_is (param, "rotation speed")) {
 					priv->rot_tourni = visual_param_entry_get_float (param);
 				}
@@ -227,15 +227,28 @@ VisPalette *act_plazma_palette (VisPluginData *plugin)
 int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisBuffer pcmback;
+	VisBuffer fbuf;
+	float freq[256];
 	int i;
-	
+
+	visual_buffer_set_data_pair (&pcmback, priv->pcm_buffer, sizeof (float) * 1024);
+	visual_audio_get_sample_mixed (audio, &pcmback, TRUE, 2,
+			VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT,
+			1.0,
+			1.0);
+
+	visual_buffer_set_data_pair (&fbuf, freq, sizeof (freq));
+	visual_audio_get_spectrum_for_sample (&fbuf, &pcmback, TRUE);
+
 	/* Analyse spectrum data */
 	priv->bass = 0;
 	for (i = 0; i < 6; i++)
-		priv->bass += audio->freq[2][i] >> 4;
+		priv->bass += (freq[i]);
 
 	priv->old_state = priv->state;
-	
+
 	if (priv->bass_sensibility >= 0)
 		priv->state += (priv->bass / 400) + 1 + (priv->bass_sensibility / 2);
 	if (priv->bass_sensibility < 0)   {
@@ -244,14 +257,15 @@ int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 			priv->state = priv->old_state + 1;
 	}
 
-	visual_mem_copy (priv->render_buffer, audio->freq, sizeof (priv->render_buffer));
-	visual_mem_copy (priv->pcm_buffer, audio->pcm, sizeof (priv->pcm_buffer));
+	/* FIXME use floats internally as well */
+	for (i = 0; i < 256; i++)
+		priv->render_buffer[i] = freq[i] * 256;
 
 	priv->video = video;
 	priv->pixel = visual_video_get_pixels (video);
 
 	_plazma_run (priv);
-	
+
 	return 0;
 }
 

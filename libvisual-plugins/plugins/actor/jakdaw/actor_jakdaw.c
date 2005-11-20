@@ -179,6 +179,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 	visual_plugin_set_userinterface (plugin, table);
 
 	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
+	priv->freqbuf = visual_buffer_new_allocate (256 * sizeof (float), visual_buffer_destroyer_free);
 
 	return 0;
 }
@@ -194,6 +195,7 @@ int act_jakdaw_cleanup (VisPluginData *plugin)
 	_jakdaw_feedback_close (priv);
 
 	visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
+	visual_object_unref (VISUAL_OBJECT (priv->freqbuf));
 
 	visual_mem_free (priv);
 
@@ -242,12 +244,12 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_jakdaw_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				act_jakdaw_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				visual_log (VISUAL_LOG_DEBUG, "Param changed: %s\n", param->name);
 
@@ -295,14 +297,16 @@ int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint32_t *vscr = visual_video_get_pixels (video);
 
-	visual_audio_get_sample_mixed (audio, priv->pcmbuf, TRUE, 2,
+	visual_audio_get_sample_mixed_simple (audio, priv->pcmbuf, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
-			VISUAL_AUDIO_CHANNEL_RIGHT,
-			1.0,
-			1.0);
+			VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	visual_audio_get_spectrum_for_sample (priv->freqbuf, priv->pcmbuf, TRUE);
 
 	_jakdaw_feedback_render (priv, vscr);
-	_jakdaw_plotter_draw (priv, visual_buffer_get_data (priv->pcmbuf), audio->freq, vscr);
+	_jakdaw_plotter_draw (priv,
+			visual_buffer_get_data (priv->pcmbuf),
+			visual_buffer_get_data (priv->freqbuf), vscr);
 
 	return 0;
 }

@@ -63,8 +63,8 @@ typedef struct {
 } OinksieConfig;
 
 typedef struct {
-	int basssens;
-	int tripplesens;
+	float basssens;
+	float tripplesens;
 
 	int bass;
 	int bassleft;
@@ -77,7 +77,7 @@ typedef struct {
 	int highest;
 
 	float pcm[3][4096];
-	int16_t freq[2][256];
+	float freq[2][256];
 
 	int musicmood;
 	char beat;

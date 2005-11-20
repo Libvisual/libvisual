@@ -227,12 +227,12 @@ int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_gltest_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_gltest_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "transparant bars")) {
 					priv->transparant = visual_param_entry_get_integer (param);
@@ -259,11 +259,24 @@ VisPalette *lv_gltest_palette (VisPluginData *plugin)
 int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisBuffer buffer;
+	VisBuffer pcmb;
+	float freq[256];
+	float pcm[256];
 	int i,c;
 	int y;
 	GLfloat val;
 
 	int xscale[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
+
+	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
+	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+
+	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2,
+			VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
 
 	for (y = 15; y > 0; y--)
 	{
@@ -277,8 +290,8 @@ int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	{
 		for(c = xscale[i], y = 0; c < xscale[i + 1]; c++)
 		{
-			if(audio->freq[0][c] > y)
-				y = audio->freq[0][c];
+			if(freq[c] > y)
+				y = freq[c];
 		}
 		y >>= 7;
 		if (y > 0)

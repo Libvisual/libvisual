@@ -44,7 +44,7 @@ typedef struct {
 
 	int			 draw_mode;
 
-	int			 texture[2];
+	GLuint			 texture[2];
 
 	int			 maxlines;
 	float			 texsize;
@@ -205,7 +205,7 @@ int lv_madspin_init (VisPluginData *plugin)
 
 	madspin_load_textures (priv);
 
-	priv->initialized = 1;
+	priv->initialized = TRUE;
 
 	return 0;
 }
@@ -215,9 +215,8 @@ int lv_madspin_cleanup (VisPluginData *plugin)
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisUIWidget *ui;
 
-	if (priv->initialized){
+	if (priv->initialized == TRUE)
 		glDeleteTextures (2, priv->texture);
-	}
 
 	/* Destroy the VisUI tree */
 	ui = visual_plugin_get_userinterface (plugin);
@@ -265,21 +264,18 @@ int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_madspin_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_madspin_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
-
-				/* FIXME remove this debug line */
-				visual_log (VISUAL_LOG_DEBUG, "WE'RE SCREAMIGN HARD!! A PARAM HAS BEEN CHANGED!!!\n");
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "num stars"))
 					priv->num_stars = visual_param_entry_get_integer (param);
 				else if (visual_param_entry_is (param, "speed"))
 					priv->speed = visual_param_entry_get_integer (param);
-	
+
 			default: /* to avoid warnings */
 				break;
 		}
@@ -333,10 +329,22 @@ static int madspin_load_textures (MadspinPrivate *priv)
 static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
 {
 	int i;
+	VisBuffer buffer;
+	VisBuffer pcmb;
+	float freq[256];
+	float pcm[256];
+
+	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
+	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+
+	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2, VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
 
 	/* Make our data from the freq data */
 	for (i = 0; i < 256; i++) {
-		priv->gdata[i] = (float) audio->freq[0][i] / 2000.0;
+		priv->gdata[i] = (float) freq[i] / 2000.0;
 
 		if (priv->gdata[i] > 1.0)
 			priv->gdata[i] = 1.0;

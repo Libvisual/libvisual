@@ -29,7 +29,7 @@ static void vert_line(JakdawPrivate *priv, int x, int a, int b, uint32_t col, ui
 static int no_of_shifts(int val);
 static int p2(int val);
 
-void _jakdaw_plotter_draw(JakdawPrivate *priv, float *pcm_data, int16_t freq_data[3][256], uint32_t *vscr)
+void _jakdaw_plotter_draw(JakdawPrivate *priv, float *pcm_data, float *freq_data, uint32_t *vscr)
 {
 	int x, y;
 	int oy;
@@ -41,27 +41,25 @@ void _jakdaw_plotter_draw(JakdawPrivate *priv, float *pcm_data, int16_t freq_dat
 		case PLOTTER_COLOUR_RANDOM: col=visual_random_context_int (priv->rcontext); break;
 		case PLOTTER_COLOUR_MUSICTRIG:
 		default:
-			{
-				int c,d;					/* PLAY WITH THESE VALUES */
-				d=0;
-				for(c=0;c<16;c++)
-					d=d+freq_data[2][c];
-					d>>=8;
-				col=(int)((double) d*(255.0/16.0));
+					    {
+						    float d;
+						    int c;
+						    d=0;
+						    for(c=0;c<16;c++)
+							    d=d+freq_data[c];
+						    col=(int)((double) d*(256.0 * 16.0));
 
-				d=0;
-				for(c=16;c<108;c++)
-					d=d+freq_data[2][c];
-				d>>=8;
-				col|=((int)((double) d*(255.0/72.0)))<<8;
+						    d=0;
+						    for(c=16;c<108;c++)
+							    d=d+freq_data[c];
+						    col|=((int)((double) d*(256.0 * 64.0)))<<8;
 
-				d=0;
-				for(c=108;c<255;c++)
-					d=d+freq_data[2][c];
-				d>>=8;
-				col|=((int)((double) d*(255.0/144.0)))<<16;
+						    d=0;
+						    for(c=108;c<255;c++)
+							    d=d+freq_data[c];
+						    col|=((int)((double) d*(256.0 * 128.0)))<<16;
 
-			}
+					    }
 	}
 
 	oy = (priv->yres / 2) + ((pcm_data[0] * priv->plotter_amplitude) * (priv->yres / 2));

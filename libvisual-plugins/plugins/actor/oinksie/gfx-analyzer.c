@@ -33,16 +33,16 @@
 void _oink_gfx_analyzer_stereo (OinksiePrivate *priv, uint8_t *buf, int color, int y)
 {
 	int adder = (priv->screen_width - ((priv->screen_halfwidth / ANALYZER_BANDS) * ANALYZER_BANDS * 2)) / 2;
-	
+
 	int i;
- 	
+
 	int y1;
 	int x1;
-	
+
 	int y2;
 	int x2;
 
-	int real_x = 0;	
+	int real_x = 0;
 	int real_x_add = (priv->screen_halfwidth / ANALYZER_BANDS);
 
 	y2 = y;
@@ -50,29 +50,29 @@ void _oink_gfx_analyzer_stereo (OinksiePrivate *priv, uint8_t *buf, int color, i
 
 	for (i = ANALYZER_BANDS; i >= 0; i--)
 	{
-		y1 = (-priv->audio.freq[0][i] >> 6) + y;
+		y1 = (-(priv->audio.freq[0][i] * priv->screen_height) * 100) + y;
 		x1 = real_x += real_x_add;
-		
+
 		if (y1 < 0) y1 = 0;
-		
+
 		_oink_gfx_line (priv, buf, color, x1 + adder, y1, x2 + adder, y2);
-		
+
 		y2 = y1;
 		x2 = x1;
 	}
-	
+
 	for (i = 1; i < ANALYZER_BANDS; i++)
 	{
-		y1 = (-priv->audio.freq[1][i] >> 6) + y;
+		y1 = (-(priv->audio.freq[1][i] * priv->screen_height) * 100) + y;
 		if (y1 == ANALYZER_BANDS - 1)
 			y1 = y;
 
 		x1 = real_x += real_x_add;
-		
+
 		if (y1 < 0) y1 = 0;
-	
+
 		_oink_gfx_line (priv, buf, color, x1 + adder, y1, x2 + adder, y2);
-		
+
 		y2 = y1;
 		x2 = x1;
 	}

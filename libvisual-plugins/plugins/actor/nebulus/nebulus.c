@@ -40,6 +40,7 @@ typedef struct {
 
 	VisTime rendertime;
 
+	VisBuffer pcmbuf;
 } NebulusPrivate;
 
 
@@ -135,6 +136,8 @@ int lv_nebulus_init (VisPluginData *plugin)
 	if (tunnel_first)
 		precalculate_tunnel();
 
+	visual_buffer_init_allocate (&priv->pcmbuf, 1024 * sizeof (float), visual_buffer_destroyer_free);
+
 	init_gl();
 
 	return 0;
@@ -169,6 +172,8 @@ int lv_nebulus_cleanup (VisPluginData *plugin)
 	visual_video_free_buffer (&twist_image);
 	visual_video_free_buffer (&background_image);
 
+	visual_object_unref (VISUAL_OBJECT (&priv->pcmbuf));
+
 	visual_mem_free (priv);
 
 	return 0;
@@ -176,7 +181,8 @@ int lv_nebulus_cleanup (VisPluginData *plugin)
 
 int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height)
 {
-	int reqw, reqh;                                                                                                                   
+	int reqw, reqh;
+
 	reqw = *width;
 	reqh = *height;
 
@@ -187,7 +193,8 @@ int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height)
 		reqh = 32;
 
 	*width = reqw;
-	*height = reqh;						                                                                                                                   
+	*height = reqh;
+
 	return 0;
 }
 
@@ -217,8 +224,8 @@ int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_nebulus_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_nebulus_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 			default:
 				break;
@@ -331,9 +338,23 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 	int i, c, y, tmp;
 	GLfloat val, energy = 0;
 	int xscale[] = { 0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255 };
+	float *fbuf;
+	VisBuffer buf;
+	float freq[256];
 
-	/* Copy over the pcmdata into the internal pcmdata */
-	visual_mem_copy (pcm_data, audio->pcm, sizeof(pcm_data));
+	visual_audio_get_sample_mixed_simple (audio, &priv->pcmbuf, 2,
+			VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	visual_buffer_set_data_pair (&buf, freq, sizeof (freq));
+
+	visual_audio_spectrum_from_spectrum (&buf, &priv->pcmbuf, FALSE);
+
+	fbuf = visual_buffer_get_data (&priv->pcmbuf);
+
+	for (i = 0; i < 1024; i++) {
+		pcm_data[i] = fbuf[i] * 32767; // FIXME pull the 32767 as a constant from somewhere, also in goom2.c
+	}
 
 	for(y = 15; y > 0; y--) {
 		for(i = 0; i < 16; i++)
@@ -341,8 +362,8 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 	}
 	for(i = 0; i < NUM_BANDS; i++) {
 		for(c = xscale[i], y = 0; c < xscale[i + 1]; c++) {
-			if(audio->freq[0][c] > y)
-				y = audio->freq[0][c];
+			if(freq[c] > y)
+				y = freq[c];
 		}
 		loudness += (y / (xscale[i + 1] - xscale[i] + 1)) *
 			(abs (i - NUM_BANDS / 2) + NUM_BANDS / 2) * (4 + i);
@@ -373,7 +394,7 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 		}
 	}
 	for (i = 0; i < 256; i++) {
-		tmp = audio->freq[0][i] >> 4;
+		tmp = freq[i] * 0.0625;
 		energy += tmp * tmp;
 	}
 	energy =  energy / 65536 / 256 * 256;

@@ -73,6 +73,9 @@ typedef struct {
 	/* PCM Buffer */
 	VisBuffer		*pcmbuf;
 
+	/* Spectrum buffer */
+	VisBuffer		*freqbuf;
+
 	/* Plugin it's random context */
 	VisRandomContext	*rcontext;
 } JakdawPrivate;

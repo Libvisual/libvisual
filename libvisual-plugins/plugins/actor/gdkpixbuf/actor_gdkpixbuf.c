@@ -201,12 +201,12 @@ int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_gdkpixbuf_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				act_gdkpixbuf_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "filename")) {
 					visual_log (VISUAL_LOG_DEBUG, "New file to be loaded: %s\n",

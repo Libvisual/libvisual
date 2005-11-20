@@ -32,19 +32,20 @@
 
 void _oink_audio_init (OinksiePrivate *priv)
 {
-	priv->audio.basssens = 20;
-	priv->audio.tripplesens = 20;
+	priv->audio.basssens = 0.00002;
+	priv->audio.tripplesens = 0.00002;
 }
 
 /* audio priv->audio.freq analyze */
 void _oink_audio_analyse (OinksiePrivate *priv)
 {
-	int i, j, total, mean;
-	
+	int i, j;
+	float total, mean;
+
 	/* Tripple left */
 	for (i = 50, total = 0; i < 190; i++)
 		total += priv->audio.freq[0][i];
-	
+
 	mean = (total / 140);
 
 	priv->audio.trippleleft = 1;
@@ -61,7 +62,7 @@ void _oink_audio_analyse (OinksiePrivate *priv)
 	/* Tripple Right */
 	for (i = 50, total = 0; i < 190; i++)
 		total += priv->audio.freq[1][i];
-	
+
 	mean = (total / 140);
 
 	priv->audio.trippleright = 1;
@@ -121,7 +122,7 @@ void _oink_audio_analyse (OinksiePrivate *priv)
 		priv->audio.musicmood = 0;
 
 	priv->audio.beat = FALSE;
-	
+
 	if (priv->audio.bass >= 9)
 		priv->audio.beat = TRUE;
 }

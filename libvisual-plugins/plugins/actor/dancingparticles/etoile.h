@@ -12,7 +12,7 @@ typedef FloatPoint FloatPoint;
 
 #include "matrix.h"
 
-void dp_render_freq(short int spectrum[3][256]);
+void dp_render_freq(float spectrum[3][256]);
 
 /* Globals */
 
@@ -99,14 +99,14 @@ void loadepic(char *file);
 class beatdetector
 {
 public:
-  uint32_t filter[NUM_BANDS];
-  uint32_t filter2[NUM_BANDS];
-  uint32_t filterpower;      // sum of all the bands
+  float filter[NUM_BANDS];
+  float filter2[NUM_BANDS];
+  float filterpower;      // sum of all the bands
 
   int lastbeats[10];
   int freq; // in CLK_TCK
   uint16_t variance;
-  uint32_t loudness;
+  float loudness;
   int beat;
 
   uint32_t	avloudness;
@@ -118,9 +118,9 @@ public:
   int	beatquiet;	/* force "quiet" situation? */
   
   beatdetector();
-  void calc_loudness(short int data[3][256]);
+  void calc_loudness(float data[3][256]);
   void detect_beat();
-  void learnbeat(short int data[3][256]);
+  void learnbeat(float data[3][256]);
 
 };
 extern beatdetector detector;

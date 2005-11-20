@@ -32,13 +32,13 @@ typedef struct {
 } SinCos;
 
 typedef struct {
-	int16_t		 pcm_buffer[1024];
+	float		 pcm_buffer[1024];
 	uint16_t	 render_buffer[512];
 
 	int		 bass;
 	int		 state;
 	int		 old_state;
-	
+
 	int		 width;
 	int		 height;
 

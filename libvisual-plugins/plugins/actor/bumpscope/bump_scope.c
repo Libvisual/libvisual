@@ -48,15 +48,14 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 
 	iptr = ptr + bpl + 1;
 	i = bpl * h;
-	
-	/* MMX blurrer by Dennis Smit, got bored for a sec, thus :) */
+
 	if (visual_cpu_get_mmx ()) {
 #ifdef VISUAL_ARCH_X86
 
 		__asm __volatile
 			("pxor %%mm6, %%mm6"
 			 ::);
-		
+
 		while(i -= 4)
 		{
 			__asm __volatile
@@ -81,7 +80,7 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 				 , [pix3] "m" (*(iptr - 1))
 				 , [pix4] "m" (*(iptr + 1))
 				 , [pix5] "m" (*(iptr + bpl)));
-			
+
 			iptr += 4;
 		}
 
@@ -386,7 +385,7 @@ void __bumpscope_render_pcm (BumpscopePrivate *priv, float *data)
 {
 	int i, y, prev_y;
 
-	prev_y = (int)priv->height/(int)2 + (data[0] * priv->height);
+	prev_y = (int)priv->height/(int)2 + (data[0] * (priv->height / 2));
 
 	if (prev_y < 0) prev_y = 0;
 	if (prev_y >= priv->height) prev_y = priv->height-1;

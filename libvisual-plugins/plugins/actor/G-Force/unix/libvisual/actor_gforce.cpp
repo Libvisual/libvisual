@@ -194,8 +194,8 @@ extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_gforce_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_gforce_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_MOUSEMOTION:
@@ -206,7 +206,7 @@ extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 				break;
 
 			case VISUAL_EVENT_KEYDOWN:
-				priv->gGF->HandleKey (ev.keyboard.keysym.sym);
+				priv->gGF->HandleKey (ev.event.keyboard.keysym.sym);
 				break;
 
 			default:
@@ -237,15 +237,30 @@ extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin)
 extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisBuffer pcmbuf;
+	VisBuffer freqbuf;
 	int i, j = 0, ns;
-	short int sbuf[NUMSAMPLES];
 	long time;
 	float gSoundBuf[SND_BUF_SIZE];
 	float gFFTBuf[FFT_BUF_SIZE];
 
+	visual_buffer_set_data_pair (&pcmbuf, gSoundBuf, sizeof (gSoundBuf));
+	visual_audio_get_sample_mixed_simple (audio, &pcmbuf, 2,
+			VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	visual_buffer_set_data_pair (&freqbuf, gFFTBuf, sizeof (gFFTBuf));
+//	visual_audio_get_spectrum_for_sample (&freqbuf, &pcmbuf, TRUE);
+
+	// Increase volume
+	for (i = 0; i < SND_BUF_SIZE; i++)
+		gSoundBuf[i] *= 32768;
+
+	// FIXME remove this mess
+#if 0
 	// Make the sample ready for G-Force usage
 	for (i = 0; i < NUMSAMPLES; i++) {
-		sbuf[i] = audio->pcm[2][j];
+//		sbuf[i] = audio->pcm[2][j]; FIXME needs audio again
 
 #ifdef SAMPSKIP
 		j += 1 + SAMPSKIP;
@@ -257,10 +272,10 @@ extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	for (ns = 0; ns < NUMSAMPLES; ns++) {
 		gSoundBuf[ns] = sbuf[ns];
 	}
-
 	for (ns = 0; ns < FFT_BUF_SIZE; ns++) {
 		gFFTBuf[ns] = (float) audio->freqnorm[2][ns] / 500.0000;
 	}
+#endif
 
 	// Set the video buffer
 	priv->gGF->SetOutVideoBuffer ((unsigned char *) visual_video_get_pixels (video));

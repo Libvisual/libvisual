@@ -207,8 +207,8 @@ extern "C" int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_corona_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_corona_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 
 				break;
 
@@ -232,18 +232,32 @@ extern "C" VisPalette *lv_corona_palette (VisPluginData *plugin)
 extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisBuffer buffer;
+	VisBuffer pcmb;
+	float freq[2][256];
+	float pcm[256];
 	VisTime curtime;
 	VisTime difftime;
 	VisVideo vidcorona;
-	short freqdata[2][512];
+	short freqdata[2][512]; // FIXME Move to floats
 	unsigned long timemilli = 0;
 	int i;
 
+	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+
+	visual_audio_get_sample (audio, &pcmb, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_buffer_set_data_pair (&buffer, freq[0], sizeof (freq[0]));
+	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+
+	visual_audio_get_sample (audio, &pcmb, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_buffer_set_data_pair (&buffer, freq[1], sizeof (freq[1]));
+	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+
 	for (i = 0; i < 256; ++i) {
-		freqdata[0][i*2]   = audio->freqnorm[0][i];
-		freqdata[1][i*2]   = audio->freqnorm[1][i];
-		freqdata[0][i*2+1] = audio->freqnorm[0][i];
-		freqdata[1][i*2+1] = audio->freqnorm[1][i];
+		freqdata[0][i*2]   = freq[0][i];
+		freqdata[1][i*2]   = freq[1][i];
+		freqdata[0][i*2+1] = freq[0][i];
+		freqdata[1][i*2+1] = freq[1][i];
 	}
 
 	visual_time_get (&curtime);

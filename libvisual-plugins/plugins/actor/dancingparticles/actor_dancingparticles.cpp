@@ -171,12 +171,12 @@ extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_dancingparticles_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_dancingparticles_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = (VisParamEntry *) ev.param.param;
+				param = static_cast<VisParamEntry *> (ev.event.param.param);
 
 				if (visual_param_entry_is (param, "transparant bars")) {
 					priv->transparant = visual_param_entry_get_integer (param);
@@ -202,10 +202,22 @@ extern "C" VisPalette *lv_dancingparticles_palette (VisPluginData *plugin)
 
 extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	VisBuffer fbuf;
+	float freq[3][256];
 	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	int i;
+
+	visual_buffer_set_data_pair (&fbuf, freq[0], sizeof(freq[0]));
+	visual_audio_get_spectrum (audio, &fbuf, 256, VISUAL_AUDIO_CHANNEL_LEFT, FALSE);
+
+	visual_buffer_set_data_pair (&fbuf, freq[1], sizeof(freq[1]));
+	visual_audio_get_spectrum (audio, &fbuf, 256, VISUAL_AUDIO_CHANNEL_RIGHT, FALSE);
+
+	for (i = 0; i < sizeof(freq[2]); i++)
+		freq[2][i] = (freq[0][i] + freq[1][i]) / 2;
 
 	/* FIXME on title change, do something */
-	dp_render_freq (audio->freq);
+	dp_render_freq (freq);
 //	update_playlist_info ();
 	etoileLoop ();
 	draw_gl ();

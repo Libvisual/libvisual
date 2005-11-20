@@ -176,8 +176,8 @@ int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_flower_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_flower_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			default: /* to avoid warnings */
@@ -196,6 +196,19 @@ VisPalette *lv_flower_palette (VisPluginData *plugin)
 int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisBuffer pcmbuf;
+	VisBuffer freqbuf;
+	float pcm[512];
+	float freqnorm[256];
+
+	visual_buffer_set_data_pair (&pcmbuf, pcm, sizeof (pcm));
+	visual_buffer_set_data_pair (&freqbuf, freqnorm, sizeof (freqnorm));
+
+	visual_audio_get_sample_mixed_simple (audio, &pcmbuf, 2,
+			VISUAL_AUDIO_CHANNEL_LEFT,
+			VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	visual_audio_get_spectrum_for_sample (&freqbuf, &pcmbuf, TRUE);
 
 	/* Activate the effect change timer */
 	if (visual_timer_is_active (&priv->t) == FALSE)
@@ -213,7 +226,7 @@ int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	if (visual_timer_is_active (&priv->flower.timer) == FALSE)
 		visual_timer_start (&priv->flower.timer);
 
-	
+
 	{
 #define HEIGHT 1.0
 #define D 0.45
@@ -229,14 +242,14 @@ int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		float y;
 		int i;
 		for (i=0; i<nof_bands; i++) {
-			y=audio->freqnorm[2][i * 8];
+			y=freqnorm[i * 8];
 			y=y*(i*lk+l0);
 
 			y = ( log(y - x00) * scale + y00 ); /* Logarithmic amplitude */
 
 			y = ( (DIF-2.0)*y +
-					(i==0       ? 0 : audio->freqnorm[2][(i * 8) - 1]) +
-					(i==31 ? 0 : audio->freqnorm[2][(i * 8) + 1])) / DIF;
+					(i==0  ? 0 : freqnorm[(i * 8) - 1]) +
+					(i==31 ? 0 : freqnorm[(i * 8) + 1])) / DIF;
 
 			y=((1.0-TAU)*priv->flower.audio_bars[i]+TAU*y) / 100.00;
 			priv->flower.audio_bars[i]=y;
