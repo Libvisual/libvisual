@@ -1,3 +1,19 @@
+2005-11-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Sigh, 2 months since last commit. 
+
+	* libvisual/lv_event.*: Fixes and cleanups.
+
+	* libvisual/lv_defines.h: Added VIS_LIKELY and VIS_UNLIKELY that can
+	be used in conditional statements.
+	
+	* libvisual/lv_video.c (visual_video_fill_color): when NULL Is given
+	as a color, it'll use 0,0,0 as color value, this is handy for simple
+	screen cleans.
+
+	* libvisual/lv_audio.*: The never ending saga of the new VisAudio
+	core.
+
 2005-09-22  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* libvisual/lv_hashlist.*: Adding

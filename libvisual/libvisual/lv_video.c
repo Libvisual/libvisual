@@ -1572,31 +1572,47 @@ out:
 	return errret;
 }
 
-int visual_video_fill_color (VisVideo *video, VisColor *color)
+/**
+ * This function is used to fill a VisVideo with one color. It's highly advice to use this function to fill
+ * a VisVideo with a color instead of using visual_mem_set, the reason is that this function takes the pitch
+ * of a line in consideration. When you use a visual_mem_set on sub regions the results won't be pretty.
+ * 
+ * @param video Pointer to the VisVideo which is filled with one color
+ * @param color Pointer to the VisColor that is used as color. NULL is a valid color and will be interperted
+ * 	as black.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ */
+int visual_video_fill_color (VisVideo *video, VisColor *rcolor)
 {
+	VisColor color;
 	VisRectangle rect;
 
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+
+	if (rcolor == NULL)
+		visual_color_set (&color, 0, 0, 0);
+	else
+		visual_color_copy (&color, rcolor);
 
 	switch (video->depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
-			fill_color8 (video, color);
+			fill_color8 (video, &color);
 
 			break;
 
 		case VISUAL_VIDEO_DEPTH_16BIT:
-			fill_color16 (video, color);
+			fill_color16 (video, &color);
 
 			break;
 
 		case VISUAL_VIDEO_DEPTH_24BIT:
-			fill_color24 (video, color);
+			fill_color24 (video, &color);
 
 			break;
 
 		case VISUAL_VIDEO_DEPTH_32BIT:
-			fill_color32 (video, color);
+			fill_color32 (video, &color);
 
 			break;
 

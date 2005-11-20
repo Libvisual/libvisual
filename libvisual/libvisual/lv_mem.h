@@ -30,10 +30,6 @@
 
 VISUAL_BEGIN_DECLS
 
-#ifndef __attribute_malloc__
-#define __attribute_malloc__
-#endif
-
 /**
  * The visual_mem_copy function needs this signature.
  *
@@ -80,9 +76,9 @@ typedef void *(*VisMemSet32Func)(void *dest, int c, visual_size_t n);
 
 /* prototypes */
 int visual_mem_initialize (void);
-void *visual_mem_malloc (visual_size_t nbytes) __attribute_malloc__;
-void *visual_mem_malloc0 (visual_size_t nbytes) __attribute_malloc__;
-void *visual_mem_realloc (void *ptr, visual_size_t nbytes) __attribute_malloc__;
+void *visual_mem_malloc (visual_size_t nbytes) __malloc;
+void *visual_mem_malloc0 (visual_size_t nbytes) __malloc;
+void *visual_mem_realloc (void *ptr, visual_size_t nbytes) __malloc;
 int visual_mem_free (void *ptr);
 
 /* Optimal performance functions set by visual_mem_initialize(). */

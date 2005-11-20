@@ -65,8 +65,8 @@ typedef enum {
 } VisAudioSampleFormatType;
 
 typedef enum {
-	VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO,
-	NEE
+	VISUAL_AUDIO_SAMPLE_CHANNEL_NONE = 0,
+	VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO
 } VisAudioSampleChannelType;
 
 
@@ -83,24 +83,23 @@ typedef struct _VisAudioSample VisAudioSample;
  * @see visual_audio_new
  */
 struct _VisAudio {
-	VisObject	 object;			/**< The VisObject data. */
+	VisObject		 object;			/**< The VisObject data. */
 
 	VisAudioSamplePool	*samplepool;
-	short		 plugpcm[2][512];		/**< PCM data that comes from the input plugin
-							 * or a callback function. */
-	short		 pcm[3][512];			/**< PCM data that should be used within plugins
-							 * pcm[0][x] is the left channel, pcm[1][x] is the right
-							 * channel and pcm[2][x] is an average of both channels. */
-	short		 freq[3][256];			/**< Rateuency data as a 256 bands analyzer, with the channels
-							 * like with the pcm element. */
-	short		 freqnorm[3][256];		/**< Rateuency data like the freq member, however this time the bands
-							 * are normalized. */
-	VisFFT		*fft;				/**< Private member that contains context information for the FFT engine. */
+	short			 plugpcm[2][512];		/**< PCM data that comes from the input plugin
+								 * or a callback function. */
+//	short			 pcm[3][512];			/**< PCM data that should be used within plugins
+//								 * pcm[0][x] is the left channel, pcm[1][x] is the right
+//								 * channel and pcm[2][x] is an average of both channels. */
+//	short			 freq[3][256];			/**< Rateuency data as a 256 bands analyzer, with the channels
+//								 * like with the pcm element. */
+//	short			 freqnorm[3][256];		/**< Rateuency data like the freq member, however this time the bands
+//								 * are normalized. */
 
-	short int	 bpmhistory[1024][6];		/**< Private member for BPM detection, not implemented right now. */
-	short int	 bpmdata[1024][6];		/**< Private member for BPM detection, not implemented right now. */
-	short int	 bpmenergy[6];			/**< Private member for BPM detection, not implemented right now. */
-	int		 energy;			/**< Audio energy level. */
+	short int		 bpmhistory[1024][6];		/**< Private member for BPM detection, not implemented right now. */
+	short int		 bpmdata[1024][6];		/**< Private member for BPM detection, not implemented right now. */
+	short int		 bpmenergy[6];			/**< Private member for BPM detection, not implemented right now. */
+	int			 energy;			/**< Audio energy level. */
 };
 
 struct _VisAudioSamplePool {
@@ -116,6 +115,8 @@ struct _VisAudioSamplePoolChannel {
 	VisTime		 samples_timeout;
 
 	char		*channelid;
+
+	float		 factor;
 };
 
 struct _VisAudioSample {
@@ -135,11 +136,14 @@ int visual_audio_init (VisAudio *audio);
 int visual_audio_analyze (VisAudio *audio);
 
 int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid);
+int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, int channels, ...);
 int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divide, int channels, ...);
-int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid);
-int visual_audio_get_spectrum_for_sample (VisAudio *audio, VisBuffer *buffer, VisBuffer *sample);
+int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid, int normalised);
+int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised);
 
-VisAudioSamplePool *visual_audio_samplepool_new ();
+int visual_audio_normalise_spectrum (VisBuffer *buffer);
+
+VisAudioSamplePool *visual_audio_samplepool_new (void);
 int visual_audio_samplepool_init (VisAudioSamplePool *samplepool);
 int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample *sample, char *channelid);
 int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudioSamplePoolChannel *channel);

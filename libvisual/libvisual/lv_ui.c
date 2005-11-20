@@ -948,7 +948,7 @@ VisUIWidget *visual_ui_color_new ()
 
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (color), TRUE, widget_dtor);
-	
+
 	VISUAL_UI_WIDGET (color)->type = VISUAL_WIDGET_TYPE_COLOR;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (color), -1, -1);
@@ -969,7 +969,7 @@ VisUIWidget *visual_ui_colorbutton_new ()
 
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (colorbutton), TRUE, widget_dtor);
-	
+
 	VISUAL_UI_WIDGET (colorbutton)->type = VISUAL_WIDGET_TYPE_COLORBUTTON;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (colorbutton), -1, -1);
@@ -991,7 +991,7 @@ VisUIWidget *visual_ui_colorpalette_new ()
 
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (colorpalette), TRUE, widget_dtor);
-	
+
 	VISUAL_UI_WIDGET (colorpalette)->type = VISUAL_WIDGET_TYPE_COLORPALETTE;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (colorpalette), -1, -1);
@@ -1019,7 +1019,7 @@ VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, VisParamEntry *v
 
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (centry), TRUE, NULL);
-	
+
 	centry->name = name;
 	centry->value = value;
 
@@ -1146,7 +1146,7 @@ int visual_ui_choice_get_active (VisUIChoice *choice)
 
 	while ((centry = visual_list_next (&choice->choices.choices, &le)) != NULL) {
 		VisParamEntry *cparam;
-		
+
 		cparam = centry->value;
 
 		if (visual_param_entry_compare (param, cparam) == TRUE)
@@ -1201,7 +1201,7 @@ VisUIWidget *visual_ui_popup_new ()
 
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (popup), TRUE, choice_dtor);
-	
+
 	VISUAL_UI_WIDGET (popup)->type = VISUAL_WIDGET_TYPE_POPUP;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (popup), -1, -1);
@@ -1223,7 +1223,7 @@ VisUIWidget *visual_ui_list_new ()
 
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (list), TRUE, choice_dtor);
-	
+
 	VISUAL_UI_WIDGET (list)->type = VISUAL_WIDGET_TYPE_LIST;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (list), -1, -1);
@@ -1251,7 +1251,7 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
 	VISUAL_UI_WIDGET (radio)->type = VISUAL_WIDGET_TYPE_RADIO;
 
 	radio->orient = orient;
-	
+
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (radio), -1, -1);
 
 	return VISUAL_UI_WIDGET (radio);

@@ -60,7 +60,7 @@ VISUAL_BEGIN_DECLS
  * Enumerate to define the different types of VisUIWidgets.
  */
 typedef enum {
-	VISUAL_WIDGET_TYPE_NULL,	/**< NULL widget */
+	VISUAL_WIDGET_TYPE_NULL = 0,	/**< NULL widget */
 	VISUAL_WIDGET_TYPE_WIDGET,	/**< Base widget: \a VisUIWidget. */
 	VISUAL_WIDGET_TYPE_CONTAINER,	/**< Container widget: \a VisUIContainer. */
 	VISUAL_WIDGET_TYPE_BOX,		/**< Box widget: \a VisUIBox. */

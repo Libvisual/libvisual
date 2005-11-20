@@ -88,6 +88,7 @@ VisEvent *visual_event_new ()
 
 int visual_event_init (VisEvent *event)
 {
+	char *buf;
 	visual_log_return_val_if_fail (event != NULL, -VISUAL_ERROR_EVENT_NULL);
 
 	/* Do the VisObject initialization */
@@ -96,7 +97,10 @@ int visual_event_init (VisEvent *event)
 	visual_object_set_allocated (VISUAL_OBJECT (event), FALSE);
 
 	/* Set the VisEvent data */
-	visual_object_clean (VISUAL_OBJECT (event), VisEvent);
+	//visual_object_clean (VISUAL_OBJECT (event), VisEvent); // FIXME wtf!
+// (VisObject *) object + sizeof(VisObject) == &object[sizeof(VisOBject)]
+//	buf = event;
+//	printf ("ja %p %p\n", (VisObject *) event + sizeof (VisObject), &buf[sizeof(VisObject)]);
 
 	return VISUAL_OK;
 }
@@ -136,6 +140,8 @@ int visual_event_queue_init (VisEventQueue *eventqueue)
 	eventqueue->mousestate = VISUAL_MOUSE_UP;
 
 	visual_collection_set_destroyer (VISUAL_COLLECTION (&eventqueue->events), event_list_destroy);
+
+	visual_event_init (&eventqueue->lastresize);
 
 	return VISUAL_OK;
 }
@@ -195,7 +201,7 @@ int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event)
 	visual_log_return_val_if_fail (event != NULL, -VISUAL_ERROR_EVENT_NULL);
 
 	/* We've got way too much on the queue, not adding events, the important
-	 * resize event got data in the event queue structure that makes sure it gets
+	 * event.resize event got data in the event queue structure that makes sure it gets
 	 * looked at */
 	if (eventqueue->eventcount > VISUAL_EVENT_MAXEVENTS) {
 		visual_object_unref (VISUAL_OBJECT (event));
@@ -242,9 +248,8 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 	else
 		event->type = VISUAL_EVENT_KEYUP;
 
-	event->keyboard.type = event->type;
-	event->keyboard.keysym.sym = keysym;
-	event->keyboard.keysym.mod = keymod;
+	event->event.keyboard.keysym.sym = keysym;
+	event->event.keyboard.keysym.mod = keymod;
 
 	return visual_event_queue_add (eventqueue, event);
 }
@@ -270,14 +275,12 @@ int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y)
 
 	event->type = VISUAL_EVENT_MOUSEMOTION;
 
-	event->mousemotion.type = event->type;
+	event->event.mousemotion.state = eventqueue->mousestate;
+	event->event.mousemotion.x = x;
+	event->event.mousemotion.y = y;
 
-	event->mousemotion.state = eventqueue->mousestate;
-	event->mousemotion.x = x;
-	event->mousemotion.y = y;
-
-	event->mousemotion.xrel = x - eventqueue->mousex;
-	event->mousemotion.yrel = y - eventqueue->mousey;
+	event->event.mousemotion.xrel = x - eventqueue->mousex;
+	event->event.mousemotion.yrel = y - eventqueue->mousey;
 
 	eventqueue->mousex = x;
 	eventqueue->mousey = y;
@@ -311,13 +314,11 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
 	else
 		event->type = VISUAL_EVENT_MOUSEBUTTONUP;
 
-	event->mousebutton.type = event->type;
+	event->event.mousebutton.button = button;
+	event->event.mousebutton.state = state;
 
-	event->mousebutton.button = button;
-	event->mousebutton.state = state;
-
-	event->mousebutton.x = x;
-	event->mousebutton.y = y;
+	event->event.mousebutton.x = x;
+	event->event.mousebutton.y = y;
 
 	eventqueue->mousestate = state;
 
@@ -348,11 +349,9 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 
 	event->type = VISUAL_EVENT_RESIZE;
 
-	event->resize.type = event->type;
-
-	event->resize.video = video;
-	event->resize.width = width;
-	event->resize.height = height;
+	event->event.resize.video = video;
+	event->event.resize.width = width;
+	event->event.resize.height = height;
 
 	eventqueue->resizenew = TRUE;
 
@@ -380,8 +379,7 @@ int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *song
 
 	event->type = VISUAL_EVENT_NEWSONG;
 
-	event->newsong.type = event->type;
-	event->newsong.songinfo = songinfo;
+	event->event.newsong.songinfo = songinfo;
 
 	return visual_event_queue_add (eventqueue, event);
 }
@@ -406,8 +404,7 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_PARAM;
 
-	event->param.type = event->type;
-	event->param.param = param;
+	event->event.param.param = param;
 
 	return visual_event_queue_add (eventqueue, event);
 }
@@ -430,8 +427,6 @@ int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_QUIT;
 
-	event->quit.type = event->type;
-
 	return visual_event_queue_add (eventqueue, event);
 }
 
@@ -453,8 +448,7 @@ int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_VISIBILITY;
 
-	event->visibility.type = event->type;
-	event->visibility.is_visible = is_visible;
+	event->event.visibility.is_visible = is_visible;
 
 	return visual_event_queue_add (eventqueue, event);
 }
@@ -480,10 +474,9 @@ int visual_event_queue_add_generic (VisEventQueue *eventqueue, int eid, int para
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_GENERIC;
 
-	event->generic.type = event->type;
-	event->generic.event_id = eid;
-	event->generic.data_int = param_int;
-	event->generic.data_ptr = param_ptr;
+	event->event.generic.event_id = eid;
+	event->event.generic.data_int = param_int;
+	event->event.generic.data_ptr = param_ptr;
 
 	return visual_event_queue_add (eventqueue, event);
 }

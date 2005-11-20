@@ -71,7 +71,7 @@ typedef struct _VisEventQuit VisEventQuit;
 typedef struct _VisEventVisibility VisEventVisibility;
 typedef struct _VisEventGeneric VisEventGeneric;
 typedef struct _VisEventParam VisEventParam;
-typedef union _VisEvent VisEvent;
+typedef struct _VisEvent VisEvent;
 typedef struct _VisEventQueue VisEventQueue;
 
 /**
@@ -82,8 +82,6 @@ typedef struct _VisEventQueue VisEventQueue;
  * @see visual_event_queue_add_keyboard
  */
 struct _VisEventKeyboard {
-	VisObject	object;		/**< The VisObject data. */
-	VisEventType	type;		/**< Event type of the event being emitted */
 	VisKeySym	keysym;		/**< A keysym entry that contains which key had an
 					  * event and information about modifier keys. */
 };
@@ -96,8 +94,6 @@ struct _VisEventKeyboard {
  * @see visual_event_queue_add_mousemotion
  */
 struct _VisEventMouseMotion {
-	VisObject	object;		/**< The VisObject data. */
-	VisEventType	type;		/**< Event type of the event being emitted. */
 	VisMouseState	state;		/**< Mouse button state. */
 	int		x;		/**< The absolute mouse X value, where 0 is left of screen. */
 	int		y;		/**< The absolute mouse Y value. where 0 is top of screen. */
@@ -113,8 +109,6 @@ struct _VisEventMouseMotion {
  * @see visual_event_queue_add_mousebutton
  */
 struct _VisEventMouseButton {
-	VisObject	object;		/**< The VisObject data. */
-	VisEventType	type;		/**< Event type of the event being emitted. */
 	VisMouseState	state;		/**< Mouse button state. */
 	int		button;		/**< The button the state relates to. */
 	int		x;		/**< The absolute mouse X value. */
@@ -129,8 +123,6 @@ struct _VisEventMouseButton {
  * @see visual_event_queue_add_resize
  */
 struct _VisEventResize {
-	VisObject	 object;	/**< The VisObject data. */
-	VisEventType	 type;		/**< Event type of the event being emitted. */
 	VisVideo	*video;		/**< Pointer to the VisVideo structure containing all the screen information. */
 	int		 width;		/**< Width of the surface. */
 	int		 height;	/**< Height of the surface. */
@@ -144,8 +136,6 @@ struct _VisEventResize {
  * @see visual_event_queue_add_newsong
  */
 struct _VisEventNewSong {
-	VisObject	 object;	/**< The VisObject data. */
-	VisEventType	 type;		/**< Event type of the event being emitted. */
 	VisSongInfo	*songinfo;	/**< Pointer to the VisSongInfo structure containing all the information about
 					 * the new song. */
 };
@@ -158,8 +148,6 @@ struct _VisEventNewSong {
  * @see visual_event_queue_add_quit
  */
 struct _VisEventQuit {
-	VisObject	 object;	/**< The VisObject data. */
-	VisEventType	 type;		/**< Event type of the event being emitted. */
 	int		 dummy;		/**< some day may contain a request urgency: quit NOW or schedule quit. */
 };
 
@@ -171,8 +159,6 @@ struct _VisEventQuit {
  * @see visual_event_queue_add_visibiity
  */
 struct _VisEventVisibility {
-	VisObject	 object;	/**< The VisObject data. */
-	VisEventType	 type;		/**< Event type of the event being emitted. */
 	int		 dummy;		/**< Some day will contain window ID. very OS-specific. maybe use indices ? */
 	int		 is_visible;	/**< Set TRUE or FALSE to indicate visibility. */
 };
@@ -185,8 +171,6 @@ struct _VisEventVisibility {
  * @see visual_event_queue_add_generic
  */
 struct _VisEventGeneric {
-	VisObject	 object;	/**< The VisObject data. */
-	VisEventType	 type;		/**< Event type of the event being emitted. */
 	int		 event_id;	/**< some event id. */
 	int		 data_int;	/**< Data in the form of an integer. */
 	void		*data_ptr;	/**< More advanced generic events can use a pointer. */
@@ -200,8 +184,6 @@ struct _VisEventGeneric {
  * @see visual_event_queue_add_param
  */
 struct _VisEventParam {
-	VisObject	 object;	/**< The VisObject data. */
-	VisEventType	 type;		/**< Event type of the event being emitted. */
 	/* FiXME: Having VisEventParam here creates a circulair depency in lv_event.h and lv_param.h */
 	void		*param;		/**< The parameter entry which has been changed. */
 };
@@ -213,17 +195,21 @@ struct _VisEventParam {
  *
  * @see visual_event_new
  */
-union _VisEvent {
-	VisEventType		type;		/**< Event type of the event being emitted. */
-	VisEventKeyboard	keyboard;	/**< Keyboard event. */
-	VisEventMouseMotion	mousemotion;	/**< Mouse movement event. */
-	VisEventMouseButton	mousebutton;	/**< Mouse button event. */
-	VisEventResize		resize;		/**< Dimension change event. */
-	VisEventNewSong		newsong;	/**< Song change event. */
-	VisEventQuit		quit;		/**< Quit event. */
-	VisEventVisibility	visibility;	/**< Plugin visible event. */
-	VisEventGeneric		generic;	/**< Generic event. */
-	VisEventParam		param;		/**< Param change event. */
+struct _VisEvent {
+	VisObject	object;		/**< The VisObject data. */
+	VisEventType	type;
+
+	union {
+		VisEventKeyboard	keyboard;	/**< Keyboard event. */
+		VisEventMouseMotion	mousemotion;	/**< Mouse movement event. */
+		VisEventMouseButton	mousebutton;	/**< Mouse button event. */
+		VisEventResize		resize;		/**< Dimension change event. */
+		VisEventNewSong		newsong;	/**< Song change event. */
+		VisEventQuit		quit;		/**< Quit event. */
+		VisEventVisibility	visibility;	/**< Plugin visible event. */
+		VisEventGeneric		generic;	/**< Generic event. */
+		VisEventParam		param;		/**< Param change event. */
+	} event;
 };
 
 /**

@@ -269,10 +269,11 @@ int visual_fft_init (VisFFT *fft, int samples_in, int samples_out)
  * @param fft Pointer to the VisFFT context for this transform.
  * @param input Pointer to the input samples.
  * @param output Pointer to the output spectrum buffer.
+ * @param normalised TRUE to normalise the values, FALSE to not normalise the values.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_FFT_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_fft_perform (VisFFT *fft, float *input, float *output)
+int visual_fft_perform (VisFFT *fft, float *input, float *output, int normalised)
 {
 	FFTCacheEntry *fcache;
 	int j, m, i, dftsize, hdftsize, t;
@@ -331,6 +332,11 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output)
 		output[i] = sqrtf (fft->real[i] * fft->real[i] + fft->imag[i] * fft->imag[i]);
 
 	return VISUAL_OK;
+}
+
+int visual_fft_normalise (float *spectrum, int size)
+{
+
 }
 
 /**

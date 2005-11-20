@@ -553,6 +553,8 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 		return 0;
 	}
 
+	visual_mem_set (temp, 0, sizeof (temp));
+
 	fFinished = FALSE;
 
 	while (!fFinished) {
@@ -594,6 +596,8 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 	/* Free the . and .. entries */
 	visual_mem_free (namelist[0]);
 	visual_mem_free (namelist[1]);
+
+	visual_mem_set (temp, 0, sizeof (temp));
 
 	for (i = 2; i < n; i++) {
 		ref = NULL;

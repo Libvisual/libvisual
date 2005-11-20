@@ -56,7 +56,8 @@ int visual_fft_deinitialize (void);
 VisFFT *visual_fft_new (int samples_in, int samples_out);
 int visual_fft_init (VisFFT *fft, int samples_in, int samples_out);
 
-int visual_fft_perform (VisFFT *fft, float *input, float *output);
+int visual_fft_perform (VisFFT *fft, float *input, float *output, int normalised);
+int visual_fft_normalise (float *spectrum, int size);
 
 VISUAL_END_DECLS
 
