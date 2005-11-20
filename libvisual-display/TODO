@@ -1,1 +1,46 @@
- Write a TODO ;)
+After libvisual 0.4.0 is released we're going to work on this list:
+Version 0.4.0:
+	Define requirements
+	Design API
+	Refactor everything to the API
+	Cleanup code
+
+	Have the following functional:
+		x11 window
+		x11 fullscreen (include xfvmode.h in source tree)
+		GLX
+		Event chaining
+		FPS Control
+
+Version 0.4.1:
+	Ability to easily auto find a driver to a display setup.
+	Ability to transfer a video to a different driver (think x11 window -> x11 fullscreen).
+	Good multiple window API.
+	Good multihead API.
+
+	SDL driver
+	VNC driver
+
+Version 0.4.2:
+	Easy on the fly depth changing.
+	Rectangle update request.
+
+Version 0.4.3:
+	Multiple GLX context support (for same GLcore driver).
+	PBuffer abstraction for plugins (projectm and friends)
+		Also the time when we could look into including projectM with libvisual.
+
+Version 0.4.4:
+	Some kind of GLX abstraction.
+
+	AAlib
+	Libcaca
+	Svgalib
+	Framebuffer
+
+Version 0.4.5:
+	Make gstreamer and xine display plugins.
+
+Version 0.6.0:
+	Look into the possibility of supporting GL contexts for multiple cards in the same proces (dlopen!?)
+
