@@ -411,7 +411,6 @@ static int visual_initialize (int width, int height)
 static int visual_upload_callback (VisInput *input, VisAudio *audio, void *private_data)
 {
 	VisBuffer buf;
-	int i;
 
 	visual_log_return_val_if_fail (audio != NULL, -1);
 
