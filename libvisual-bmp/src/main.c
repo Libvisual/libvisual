@@ -410,14 +410,18 @@ static int visual_initialize (int width, int height)
 
 static int visual_upload_callback (VisInput *input, VisAudio *audio, void *private_data)
 {
+	VisBuffer buf;
 	int i;
 
 	visual_log_return_val_if_fail (audio != NULL, -1);
 
-	for (i = 0; i < 512; i++) {
-		audio->plugpcm[0][i] = xmmspcm[0][i];
-		audio->plugpcm[1][i] = xmmspcm[1][i];
-	}
+	visual_buffer_set_data_pair (&buf, xmmspcm[0], sizeof (xmmspcm[0]));
+	visual_audio_samplepool_input_channel (audio->samplepool, &buf, VISUAL_AUDIO_SAMPLE_RATE_44100,
+		VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_CHANNEL_LEFT);
+
+	visual_buffer_set_data_pair (&buf, xmmspcm[1], sizeof (xmmspcm[1]));
+	visual_audio_samplepool_input_channel (audio->samplepool, &buf, VISUAL_AUDIO_SAMPLE_RATE_44100,
+		VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	return 0;
 }
