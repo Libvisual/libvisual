@@ -130,8 +130,8 @@ static int audio_band_energy (VisAudio *audio, int band, int length)
 	int energytotal = 0;
 	int i;
 
-	for (i = 0; i < length; i++)
-		energytotal += audio->bpmhistory[i][band];
+//	for (i = 0; i < length; i++)
+//		energytotal += audio->bpmhistory[i][band];
 
 	if (energytotal > 0)
 		return energytotal / length;
@@ -621,6 +621,31 @@ int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *bu
 	return VISUAL_OK;
 }
 
+int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBuffer *buffer,
+		VisAudioSampleRateType rate,
+		VisAudioSampleFormatType format,
+		char *channelid)
+{
+	VisAudioSample *sample;
+	VisBuffer *pcmbuf;
+	VisTime timestamp;
+
+	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	pcmbuf = visual_buffer_new ();
+	visual_buffer_clone (pcmbuf, buffer);
+
+	visual_time_get (&timestamp);
+
+	visual_buffer_set_destroyer (pcmbuf, visual_buffer_destroyer_free);
+
+	sample = visual_audio_sample_new (pcmbuf, &timestamp, format, rate);
+	visual_audio_samplepool_add (samplepool, sample, channelid);
+
+	return VISUAL_OK;
+}
+
 VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (char *channelid)
 {
 	VisAudioSamplePoolChannel *channel;
@@ -647,7 +672,7 @@ int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, ch
 
 	/* Reset the VisAudioSamplePoolChannel data */
 	channel->samples = visual_ringbuffer_new ();
-	visual_time_set (&channel->samples_timeout, 1, 0); /* FIXME not save against time screws */
+	visual_time_set (&channel->samples_timeout, 1, 0); /* FIXME not safe against time screws */
 	channel->channelid = strdup (channelid);
 	channel->factor = 1.0f;
 
@@ -879,6 +904,7 @@ int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *sr
 
 	if (dest->buffer != NULL)
 		visual_object_unref (VISUAL_OBJECT (dest->buffer));
+
 
 	dest->buffer = visual_buffer_new_allocate (
 			visual_audio_sample_rate_get_length (rate) *

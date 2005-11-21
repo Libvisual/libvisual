@@ -1287,8 +1287,7 @@ static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf = visual_video_get_pixels (src);
 
-	/* src and dest are completely equal, do one big mem copy instead of a
-	 * per line */
+	/* src and dest are completely equal, do one big mem copy instead of a per line mem copy */
 	if (visual_video_compare (dest, src) == TRUE) {
 		visual_mem_copy (destbuf, srcbuf, visual_video_get_size (dest));
 
@@ -1394,6 +1393,7 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
+/* FIXME look at both src and dest */
 static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 {
 	int x, y;

@@ -96,9 +96,9 @@ struct _VisAudio {
 //	short			 freqnorm[3][256];		/**< Rateuency data like the freq member, however this time the bands
 //								 * are normalized. */
 
-	short int		 bpmhistory[1024][6];		/**< Private member for BPM detection, not implemented right now. */
-	short int		 bpmdata[1024][6];		/**< Private member for BPM detection, not implemented right now. */
-	short int		 bpmenergy[6];			/**< Private member for BPM detection, not implemented right now. */
+//	short int		 bpmhistory[1024][6];		/**< Private member for BPM detection, not implemented right now. */
+//	short int		 bpmdata[1024][6];		/**< Private member for BPM detection, not implemented right now. */
+//	short int		 bpmenergy[6];			/**< Private member for BPM detection, not implemented right now. */
 	int			 energy;			/**< Audio energy level. */
 };
 
@@ -149,10 +149,15 @@ int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample 
 int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudioSamplePoolChannel *channel);
 VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, char *channelid);
 int visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool);
+
 int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *buffer,
 		VisAudioSampleRateType rate,
 		VisAudioSampleFormatType format,
 		VisAudioSampleChannelType channeltype);
+int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBuffer *buffer,
+		VisAudioSampleRateType rate,
+		VisAudioSampleFormatType format,
+		char *channelid);
 
 VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (char *channelid);
 int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, char *channelid);
