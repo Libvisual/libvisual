@@ -32,7 +32,7 @@
 # define VISUAL_END_DECLS
 #endif /* __cplusplus */
 
-#ifndef NULL
+#ifdef NULL
 #undef NULL
 #endif
 
