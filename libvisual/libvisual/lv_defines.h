@@ -33,11 +33,13 @@
 #endif /* __cplusplus */
 
 #ifndef NULL
+#undef NULL
+#endif
+
 /**
  * NULL define.
  */
-#define NULL	(0)
-#endif
+#define NULL	((void *) 0)
 
 #ifndef FALSE
 /**
