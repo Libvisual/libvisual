@@ -61,7 +61,7 @@ void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 			valuetab[i] = (i - fade) > 0 ? i - fade : 0;
 
 		for (i = 0; i < priv->screen_size; i++)
-			*++buf = valuetab[*buf];
+			*(buf++) = valuetab[*buf];
 	}
 }
 
