@@ -3,6 +3,8 @@
 
 #include <SDL/SDL.h>
 
+#include <string.h>
+
 SDL_Surface *screen;
 SDL_Color colors[256];
 int bpp;

@@ -5,6 +5,7 @@
 
 #include <libvisual/libvisual.h>
 
+#include <math.h>
 
 SDL_Surface *screen;
 SDL_Color colors[256];
