@@ -1,3 +1,7 @@
+2005-12-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/debug/*: Added debug input.
+
 2005-11-20  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/JESS/*

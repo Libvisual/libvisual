@@ -277,6 +277,20 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([inputdebug],
+            AC_HELP_STRING([--disable-inputdebug],
+                           [Do not build input debug plugin @<:@default=enabled@:>@]),
+	    [inputdebug=$enableval],
+	    [inputdebug=yes])
+AC_MSG_CHECKING([whether to build input debug plugin])
+if test x$inputdebug = xyes; then
+  AC_MSG_RESULT([yes])
+  build_input="$build_input debug"
+  AC_SUBST([INPUTDEBUG], ['input_debug.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([gltest],
             AC_HELP_STRING([--disable-gltest],
                            [Do not build lv_gltest plugin @<:@default=enabled@:>@]),
@@ -707,6 +721,7 @@ AC_CONFIG_FILES([
 	plugins/input/alsa/Makefile
 	plugins/input/mplayer/Makefile
 	plugins/input/jack/Makefile
+	plugins/input/debug/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile

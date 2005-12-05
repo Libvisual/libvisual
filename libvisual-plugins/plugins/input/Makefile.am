@@ -1,3 +1,3 @@
 
-SUBDIRS = mplayer esd jack alsa 
+SUBDIRS = mplayer esd jack alsa debug 
 

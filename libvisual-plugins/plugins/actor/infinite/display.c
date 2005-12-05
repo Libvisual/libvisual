@@ -238,7 +238,7 @@ void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int c) {
 			SWAP(x1, x2);
 		}
 
-		if (x1 > x2) 
+		if (x1 > x2)
 			dxy = -1;
 		else
 			dxy = 1;
@@ -250,7 +250,7 @@ void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int c) {
 				cxy -= dy;
 			}
 			_inf_plot1(priv, x1, y1, c);
-		}		
+		}
 	} else {
 		/* Follow X axis */
 		if (x1 > x2) {
