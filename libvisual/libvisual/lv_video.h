@@ -164,7 +164,7 @@ struct _VisVideo {
 	VisPalette			*pal;		/**< Optional pointer to the palette. */
 
 	/* Sub region */
-	VisVideo			*parent;	/**< The surface it's parent, it it's a subregion. */
+	VisVideo			*parent;	/**< The surface it's parent, ONLY when it is a subregion. */
 	VisRectangle			 rect;		/**< The rectangle over the parent surface. */
 
 	/* Composite control */

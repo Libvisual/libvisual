@@ -36,6 +36,10 @@
 static int ringbuffer_dtor (VisObject *object);
 static int ringbuffer_entry_dtor (VisObject *object);
 
+static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes,
+		int *buffercorr);
+
+
 static int ringbuffer_dtor (VisObject *object)
 {
 	VisRingBuffer *ringbuffer = VISUAL_RINGBUFFER (object);
@@ -205,18 +209,41 @@ VisList *visual_ringbuffer_get_list (VisRingBuffer *ringbuffer)
 
 int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes)
 {
-	VisListEntry *le;
+	return visual_ringbuffer_get_data_offset (ringbuffer, data, 0, nbytes);
+}
+
+int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes)
+{
+	VisListEntry *le = NULL;
 	VisRingBufferEntry *entry;
 	int curposition = 0;
+	int curoffset = 0;
+	int positioncorr = 0;
+	int startat = 0;
+	int buffercorr = 0;
 
 	visual_log_return_val_if_fail (ringbuffer != NULL, -VISUAL_ERROR_RINGBUFFER_NULL);
 	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
+	/* Fixate possible partial buffer */
+	if (offset > 0)
+		startat = fixate_with_partial_data_request (ringbuffer, data, offset, nbytes, &buffercorr);
+
+	curposition = buffercorr;
+
+	/* Buffer fixated with partial segment, request the other segments */
 	while (curposition < nbytes) {
+		int lindex = 0;
 		le = NULL;
 
 		while ((entry = visual_list_next (ringbuffer->entries, &le)) != NULL) {
 			VisBuffer *tempbuf;
+
+			lindex++;
+
+			/* Skip to the right offset buffer fragment */
+			if (lindex <= startat)
+				continue;
 
 			if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
 
@@ -224,10 +251,11 @@ int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int 
 
 			} else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
 
-				/* Will bail out through visual_error_raise(), this is fatal, let's not try to recover, it's a
-				 * very obvious bug in the software */
+				/* Will bail out through visual_error_raise(), this is fatal, let's not try to
+				 * recover, it's a very obvious bug in the software */
 				if (entry->datafunc == NULL) {
-					visual_log (VISUAL_LOG_ERROR, _("No VisRingBufferDataFunc data provider function set on "
+					visual_log (VISUAL_LOG_ERROR,
+							_("No VisRingBufferDataFunc data provider function set on "
 								"type VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION"));
 
 					return -VISUAL_ERROR_IMPOSSIBLE;
@@ -244,6 +272,9 @@ int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int 
 
 				visual_buffer_put (data, &buf, curposition);
 
+				if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
+					visual_object_unref (VISUAL_OBJECT (tempbuf));
+
 				return VISUAL_OK;
 			}
 
@@ -258,9 +289,101 @@ int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int 
 			if (curposition == nbytes)
 				return VISUAL_OK;
 		}
+
+		startat = 0;
 	}
 
 	return VISUAL_OK;
+}
+
+static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes,
+		int *buffercorr)
+{
+	VisListEntry *le = NULL;
+	VisRingBufferEntry *entry;
+	int curposition = 0;
+	int curoffset = 0;
+	int startat = 0;
+
+	*buffercorr = 0;
+
+	while ((entry = visual_list_next (ringbuffer->entries, &le)) != NULL) {
+		int bsize = 0;
+
+		startat++;
+
+		if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
+
+			if ((bsize = visual_buffer_get_size (entry->buffer)) > 0)
+				curoffset += bsize;
+
+			/* This buffer partially falls within the offset */
+			if (curoffset > offset) {
+				visual_buffer_put_data (data,
+						(visual_buffer_get_data (entry->buffer) +
+						 visual_buffer_get_size (entry->buffer)) -
+						(curoffset - offset), curoffset - offset, 0);
+
+				*buffercorr = curoffset - offset;
+
+				break;
+			}
+		} else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
+
+			if (entry->sizefunc != NULL) {
+				curoffset += entry->sizefunc (ringbuffer, entry);
+
+				/* This buffer partially falls within the offset */
+				if (curoffset > offset) {
+
+					VisBuffer *tempbuf = entry->datafunc (ringbuffer, entry);
+
+					visual_buffer_put_data (data,
+							(visual_buffer_get_data (tempbuf) +
+							visual_buffer_get_size (tempbuf)) -
+							(curoffset - offset), curoffset - offset, 0);
+
+					visual_object_unref (VISUAL_OBJECT (tempbuf));
+
+					*buffercorr = curoffset - offset;
+
+					break;
+				}
+			} else {
+				VisBuffer *tempbuf = entry->datafunc (ringbuffer, entry);
+
+				if ((bsize = visual_buffer_get_size (tempbuf)) > 0)
+					curoffset += bsize;
+
+				/* This buffer partially falls within the offset */
+				if (curoffset > offset) {
+					visual_buffer_put_data (data,
+							(visual_buffer_get_data (tempbuf) +
+							visual_buffer_get_size (tempbuf)) -
+							(curoffset - offset), curoffset - offset, 0);
+
+					*buffercorr = curoffset - offset;
+
+					break;
+				}
+
+				visual_object_unref (VISUAL_OBJECT (tempbuf));
+			}
+		}
+	}
+
+	return startat;
+}
+
+int visual_ringbuffer_get_data_from_end (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes)
+{
+	int totalsize = visual_ringbuffer_get_size (ringbuffer);
+	int offset = totalsize - nbytes;
+
+	if ((nbytes / totalsize) > 0)
+		offset = totalsize - (nbytes % totalsize);
+
+	return visual_ringbuffer_get_data_offset (ringbuffer, data, offset, nbytes);
 }
 
 int visual_ringbuffer_get_data_without_wrap (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes)
@@ -273,7 +396,7 @@ int visual_ringbuffer_get_data_without_wrap (VisRingBuffer *ringbuffer, VisBuffe
 	if ((ringsize = visual_ringbuffer_get_size (ringbuffer)) < nbytes)
 		amount = ringsize;
 
-	return visual_ringbuffer_get_data (ringbuffer, data, amount);
+	return visual_ringbuffer_get_data_offset (ringbuffer, data, 0, amount);
 }
 
 VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int nbytes)
@@ -284,7 +407,7 @@ VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int nbytes
 
 	buffer = visual_buffer_new_allocate (nbytes, NULL);
 
-	visual_ringbuffer_get_data (ringbuffer, buffer, nbytes);
+	visual_ringbuffer_get_data_offset (ringbuffer, buffer, 0, nbytes);
 
 	return buffer;
 }

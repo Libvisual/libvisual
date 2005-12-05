@@ -240,15 +240,14 @@ int visual_audio_analyze (VisAudio *audio)
 		VisAudioSamplePoolChannel *channel;
 		VisBuffer buffer;
 
+		visual_audio_samplepool_flush_old (audio->samplepool);
+
 		channel = visual_audio_samplepool_get_channel (audio->samplepool, "front left 1");
 
 		if (channel != 0) {
 			visual_buffer_init (&buffer, pcm[0], 1024, NULL);
 
-			visual_audio_samplepool_flush_old (audio->samplepool);
-
 			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
-
 			visual_ringbuffer_get_data (channel->samples, &buffer, 1024);
 
 			visual_object_unref (VISUAL_OBJECT (&buffer));
@@ -259,10 +258,7 @@ int visual_audio_analyze (VisAudio *audio)
 		if (channel != 0) {
 			visual_buffer_init (&buffer, pcm[1], 1024, NULL);
 
-			visual_audio_samplepool_flush_old (audio->samplepool);
-
 			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
-
 			visual_ringbuffer_get_data (channel->samples, &buffer, 1024);
 
 			visual_object_unref (VISUAL_OBJECT (&buffer));
@@ -359,7 +355,7 @@ int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid
 		return -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL;
 	}
 
-	visual_ringbuffer_get_data (channel->samples, buffer, visual_buffer_get_size (buffer));
+	visual_ringbuffer_get_data_from_end (channel->samples, buffer, visual_buffer_get_size (buffer));
 
 	return VISUAL_OK;
 }
@@ -672,6 +668,7 @@ int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, ch
 
 	/* Reset the VisAudioSamplePoolChannel data */
 	channel->samples = visual_ringbuffer_new ();
+
 	visual_time_set (&channel->samples_timeout, 1, 0); /* FIXME not safe against time screws */
 	channel->channelid = strdup (channelid);
 	channel->factor = 1.0f;
@@ -722,8 +719,23 @@ int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channe
 */
 		/* add buffer time length to the time, so we always have N amount of seconds of audio. */
 
-		if (visual_time_past (&diff, &channel->samples_timeout) == TRUE)
+		if (visual_time_past (&diff, &channel->samples_timeout) == TRUE) {
+			VisListEntry *prev = le;
+			VisListEntry *next = le;
+
+			visual_list_prev (list, &prev);
+			visual_list_next (list, &next);
+
 			visual_list_destroy (list, &le);
+
+			/* No more entries, don't try to do magic */
+			if (next == NULL)
+				break;
+
+			/* More entries, set current to the previous entry, so in the
+			 * next iteration the next valid entry gets selected */
+			le = prev;
+		}
 	}
 
 	return VISUAL_OK;
@@ -1163,8 +1175,10 @@ static VisBuffer *sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntr
 		return sample->processed;
 	}
 
-	sample->processed = visual_buffer_new_allocate ((visual_buffer_get_size (sample->buffer) /
-				visual_audio_sample_format_get_size (sample->format)) * sizeof (float), visual_buffer_destroyer_free);
+	sample->processed = visual_buffer_new_allocate (
+			(visual_buffer_get_size (sample->buffer) /
+			 visual_audio_sample_format_get_size (sample->format)) * sizeof (float),
+			visual_buffer_destroyer_free);
 
 	transform_format_buffer_to_float (sample->processed, sample->buffer,
 			visual_audio_sample_format_get_size (sample->format),

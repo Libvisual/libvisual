@@ -478,7 +478,6 @@ int visual_list_unchain (VisList *list, VisListEntry *le)
 	else
 		list->tail = prev;
 
-	/* Free 'old' pointer */
 	list->count--;
 
 	return VISUAL_OK;
@@ -555,12 +554,10 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
  */
 int visual_list_delete (VisList *list, VisListEntry **le)
 {
-	VisListEntry *prev, *current, *next;
+	VisListEntry *next;
 
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
-
-	prev = current = next = NULL;
 
 	/* Valid list entry ? */
 	if (*le == NULL) {
@@ -569,10 +566,12 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 		return -VISUAL_ERROR_LIST_ENTRY_INVALID; /* Nope */
 	}
 
+	next = (*le)->next;
 	visual_list_unchain (list, *le);
-	prev = (*le)->next;
 
 	visual_mem_free (*le);
+
+	*le = next;
 
 	return VISUAL_OK;
 }

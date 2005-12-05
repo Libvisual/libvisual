@@ -102,6 +102,9 @@ int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer);
 VisList *visual_ringbuffer_get_list (VisRingBuffer *ringbuffer);
 
 int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
+int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes);
+int visual_ringbuffer_get_data_from_end (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
+
 int visual_ringbuffer_get_data_without_wrap (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
 
 VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int nbytes);

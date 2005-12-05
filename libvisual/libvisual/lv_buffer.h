@@ -46,12 +46,12 @@ typedef void (*VisBufferDestroyerFunc)(VisBuffer *buffer);
 struct _VisBuffer {
 	VisObject		 object;	/**< The VisObject data. */
 
-	int			 allocated;
+	int			 allocated;	/**< Is the buffer allocated or not. */
 
-	VisBufferDestroyerFunc	 destroyer;
+	VisBufferDestroyerFunc	 destroyer;	/**< The destroyer function for the encapsulated data. */
 
-	void			*data;
-	int			 datasize;
+	void			*data;		/**< Pointer to the data. */
+	int			 datasize;	/**< The size of the data in N bytes. */
 };
 
 /* prototypes */
@@ -71,6 +71,7 @@ int visual_buffer_set_data (VisBuffer *buffer, void *data);
 int visual_buffer_allocate_data (VisBuffer *buffer);
 
 void *visual_buffer_get_data (VisBuffer *buffer);
+void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset);
 int visual_buffer_get_size (VisBuffer *buffer);
 
 int visual_buffer_get_allocated (VisBuffer *buffer);
@@ -80,8 +81,13 @@ VisBuffer *visual_buffer_clone_new (VisBuffer *src);
 int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
 
 int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
+int visual_buffer_put_data (VisBuffer *dest, void *data, int size, int byteoffset);
 int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
+int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, int size, int byteoffset);
+
 int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
+int visual_buffer_append_data (VisBuffer *dest, void *data, int size);
+
 int visual_buffer_fill (VisBuffer *buffer, char value);
 
 void visual_buffer_destroyer_free (VisBuffer *buffer);

@@ -33,6 +33,7 @@
 #define val_a 1664525L		/* As suggested by Knuth */
 #define val_c 1013904223L	/* As suggested by H.W. Lewis and is a prime close to 2^32 * (sqrt(5) - 2)) */
 
+VisRandomContext __lv_internal_random_context;
 
 /**
  * @defgroup VisRandom VisRandom
