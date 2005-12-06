@@ -9,7 +9,7 @@ ResourceFile::ResourceFile() :
 	mFile( false ) {
 
 	mLargestSerialNum = cRezBaseID;
-	mHead = NULL;
+	mHead = 0;
 }
 
 
@@ -109,14 +109,14 @@ void ResourceFile::deleteRezRefs() {
 		delete rezPtr;
 		rezPtr = nextPtr;
 	}
-	mHead = NULL;
+	mHead = 0;
 }
 
 
 
 RezT* ResourceFile::FetchRez( RezRefNum inSerialNum, RezT** outPrevRez, long inVersNum ) {
-	RezT*	prevPtr	= NULL;
-	RezT* 	retPtr	= NULL;
+	RezT*	prevPtr	= 0;
+	RezT* 	retPtr	= 0;
 	RezT*	rezPtr;
 
 	if ( inVersNum < 1 )
@@ -171,7 +171,7 @@ void ResourceFile::ReleaseExtraVersions( RezRefNum inSerialNum, long inMaxNum ) 
 
 
 CEgErr ResourceFile::GetResInfo( RezRefNum inRefNum, long* outSize ) {
-	RezT*	rezPtr	= FetchRez( inRefNum, NULL, 1 );	
+	RezT*	rezPtr	= FetchRez( inRefNum, 0, 1 );	
 		
 	if ( rezPtr )  {
 		if ( outSize )
@@ -188,7 +188,7 @@ CEgErr ResourceFile::GetResInfo( RezRefNum inRefNum, long* outSize ) {
 
 
 CEgErr ResourceFile::GetRes( RezRefNum inRefNum, UtilStr& outData ) {
-	RezT*	rezPtr	= FetchRez( inRefNum, NULL, 1 );	
+	RezT*	rezPtr	= FetchRez( inRefNum, 0, 1 );	
 		
 	mFile.throwErr( cNoErr );
 	
@@ -205,7 +205,7 @@ CEgErr ResourceFile::GetRes( RezRefNum inRefNum, UtilStr& outData ) {
 
 
 CEgErr ResourceFile::GetRes( RezRefNum inRefNum, CEgIStream& outStream ) {
-	RezT*	rezPtr	= FetchRez( inRefNum, NULL, 1 );	
+	RezT*	rezPtr	= FetchRez( inRefNum, 0, 1 );	
 	
 	mFile.throwErr( cNoErr );
 	
@@ -222,7 +222,7 @@ CEgErr ResourceFile::GetRes( RezRefNum inRefNum, CEgIStream& outStream ) {
 
 
 CEgErr ResourceFile::SetRes( RezRefNum inRefNum, const UtilStr* inData, RezWriteMode inMode, unsigned short inSlop ) {
-	void*		srce = NULL;
+	void*		srce = 0;
 	long		len = 0;
 	
 	if ( inData ) {
@@ -236,7 +236,7 @@ CEgErr ResourceFile::SetRes( RezRefNum inRefNum, const UtilStr* inData, RezWrite
 
 
 CEgErr ResourceFile::SetRes( RezRefNum inRefNum, const void* inPtr, unsigned long inSize, RezWriteMode inMode, unsigned short inSlop ) {
-	RezT*	rezPtr = ( inMode == cReplaceMode ) ? FetchRez( inRefNum, NULL, 1 ) : NULL;
+	RezT*	rezPtr = ( inMode == cReplaceMode ) ? FetchRez( inRefNum, 0, 1 ) : 0;
 	CEgErr	retErr;
 	bool	addNew = true;
 
@@ -384,7 +384,7 @@ CEgErr ResourceFile::Duplicate( CEgFileSpec& inDestSpec ) {
 	err = newRF.open( &inDestSpec );
 	
 	while ( rezPtr && err.noErr() ) {
-		if ( ! newRF.FetchRez( rezPtr -> mSerialNum, NULL, 1 ) ) {			// Don't write old resource versions
+		if ( ! newRF.FetchRez( rezPtr -> mSerialNum, 0, 1 ) ) {			// Don't write old resource versions
 			err = GetRes( rezPtr -> mSerialNum, theData );
 			if ( err.noErr() ) {
 				slop = rezPtr -> mPhysicalSize - rezPtr -> mLogicalSize;
@@ -428,7 +428,7 @@ long ResourceFile::sFilePosHitFcn( void* inProcArg, long inFilePos ) {
 	
 long ResourceFile::filePosHitFcn( void* inProcArg, long inFilePos, AddRefHitFcnT inRefHitFcn ) {
 	RezT*		rezPtr		= mHead;
-	RezT*		hitPtr		= NULL;
+	RezT*		hitPtr		= 0;
 	long		skipBytes	= 0;
 	
 	while ( rezPtr && ! hitPtr ) {
@@ -440,7 +440,7 @@ long ResourceFile::filePosHitFcn( void* inProcArg, long inFilePos, AddRefHitFcnT
 	
 	if ( hitPtr ) {
 		skipBytes = hitPtr -> mPhysicalSize - ( inFilePos - hitPtr -> mPos );
-		rezPtr = FetchRez( hitPtr -> mSerialNum, NULL, 1 );				
+		rezPtr = FetchRez( hitPtr -> mSerialNum, 0, 1 );				
 		if ( rezPtr == hitPtr ) { 											// Make sure the hit was in a non-backup Rez
 			if ( ! inRefHitFcn( inProcArg, hitPtr -> mSerialNum ) )
 				skipBytes = -1;												// Send flag to stop search

@@ -107,8 +107,8 @@ class PixPort {
 		long					SetBackColor( long inR, long inG, long inB );
 
 		//	Blurs the rect given in this image, with a given box filter of size (1=no blur)
-		//	If the dest is NULL, the blur is applied to itself
-		void					GaussBlur( int inBoxWidth, const Rect& inRect, void* inDestBits = NULL );	
+		//	If the dest is 0, the blur is applied to itself
+		void					GaussBlur( int inBoxWidth, const Rect& inRect, void* inDestBits = 0 );	
 		
 		//	A different, more primitive blur that doesn't look as good as GaussBlur,
 		void					CrossBlur( const Rect& inRect );
@@ -120,8 +120,8 @@ class PixPort {
 		void					Line( int sx, int sy, int ex, int ey, long inColor );
 		void					Line( int sx, int sy, int ex, int ey, const RGBColor& inS, const RGBColor& inE );
 
-		//	Sets the clip rgn for all drawing operations.  NULL for the cliprect means to remove all clipping.
-		void					SetClipRect( const Rect* inRect = NULL );
+		//	Sets the clip rgn for all drawing operations.  0 for the cliprect means to remove all clipping.
+		void					SetClipRect( const Rect* inRect = 0 );
 		void					SetClipRect( long inSX, long inSY, long inEX, long inEY );
 		
 		//  Note:  For 8 bit ports, the red 0-2^16 component maps directly to 0-255 pixel value
@@ -144,7 +144,7 @@ class PixPort {
 		void					TextRect( const char* inStr, long& outWidth, long& outHeight );
 		
 		//	Set the given rect to the current background color.  If no rect is specified, the entire port rect is cleared.
-		void					EraseRect( const Rect* inRect = NULL );
+		void					EraseRect( const Rect* inRect = 0 );
 		
 		//	Copies the pixels in a rectangle from this pixel rect to the destination.  If the port is in fullscreen, inDestWin and inDest are ignored.
 		void					CopyBits( unsigned char* inOutVideo, const Rect* inSrce, const Rect* inDest );

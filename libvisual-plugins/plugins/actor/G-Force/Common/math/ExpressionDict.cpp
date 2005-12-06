@@ -29,7 +29,7 @@ float* ExpressionDict::LookupVar( const UtilStr& inName ) {
 	if ( mVarDict.Get( &inName, (void **)(&addr) ) )
 		return addr;
 	else
-		return NULL;
+		return 0;
 }
 
 

@@ -202,7 +202,7 @@ long CEgIStream::ReadInt() {
 		
 		
 void CEgIStream::Read( UtilStr& outStr, unsigned long inBytes ) {
-	outStr.Assign( NULL, inBytes );
+	outStr.Assign( 0, inBytes );
 	GetBlock( outStr.getCStr(), inBytes );
 }
 

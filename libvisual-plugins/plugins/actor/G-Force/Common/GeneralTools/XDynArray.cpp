@@ -19,12 +19,12 @@ void* XDynArray::operator[] ( const long inIndex ) {
 		len = length();
 		if ( inIndex >= mNumElements ) {
 			mNumElements = inIndex + 1;
-			Append( NULL, ( mNumElements ) * mRecSize - len );
+			Append( 0, ( mNumElements ) * mRecSize - len );
 		}
 			
 		return (void*) ( mBuf + inIndex * mRecSize + 1 ); }
 	else
-		return NULL;
+		return 0;
 }
 			
 

@@ -50,8 +50,8 @@ GForce::GForce( void* inRefCon ) :
 	mWaveShapes		( cNoDuplicates_CaseInsensitive, cSortLowToHigh )  {
 	
 	// Do initting...
-	mWind				= NULL;
-	mOutPort			= NULL;
+	mWind				= 0;
+	mOutPort			= 0;
 	mRefCon				= inRefCon;
 	mFrameCount			= 0;
 	mT_MS_Base			= EgOSUtils::CurTimeMS();
@@ -191,8 +191,8 @@ GForce::GForce( void* inRefCon ) :
 	// Transition bookkeeping
 	mColorTransTime		= -1;
 	mShapeTransTime		= -1;
-	mGF_Palette			= NULL;
-	mWave				= NULL;
+	mGF_Palette			= 0;
+	mWave				= 0;
 
 	
 	// Look in G-Force's support folders and see what we have to select from...
@@ -938,7 +938,7 @@ void GForce::RecordSample( long inCurTime ) {
 		float morphPct = (float) ( mShapeTransEnd - mT_MS ) / ( (float) mShapeTransTime );
 		mWave -> Draw( mNum_S_Steps, *mCurPort, 1, mNextWave, morphPct ); }
 	else
-		mWave -> Draw( mNum_S_Steps, *mCurPort, 1, NULL, 0 );
+		mWave -> Draw( mNum_S_Steps, *mCurPort, 1, 0, 0 );
 
 
 	// If we're not currently drawing track text, check to see if we start new text
@@ -1152,7 +1152,7 @@ void GForce::loadColorMap( long inColorMapNum, bool inAllowMorph ) {
 		
 	
 	// If first time load, don't do any transition/morph, otherwise set up the morph
-	if ( mGF_Palette == NULL || ! inAllowMorph ) {
+	if ( mGF_Palette == 0 || ! inAllowMorph ) {
 		mGF_Palette = &mPal1;
 		mNextPal	= &mPal2;
 		mGF_Palette -> Assign( args );
@@ -1249,7 +1249,7 @@ void GForce::loadWaveShape( long inShapeNum, bool inAllowMorph ) {
  
 	
 	// If first time load, don't do any transition/morph, otherwise set up the morph
-	if ( mWave == NULL || ! inAllowMorph ) {
+	if ( mWave == 0 || ! inAllowMorph ) {
 		mWave		= &mWave1;
 		mNextWave	= &mWave2;
 		mWave -> Load( args, mNum_S_Steps );
@@ -1480,7 +1480,7 @@ void GForce::SetWinPort( WindowPtr inWin, const Rect* inRect ) {
 	long x = r.right - r.left;
 	long y = r.bottom - r.top;
 
-	SetPort( NULL, r, false );
+	SetPort( 0, r, false );
 
 	// Signal that this thread is done with SetPortWin()
 	mDoingSetPortWin = false;
@@ -1513,7 +1513,7 @@ void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
 	mNeedsPaneErased = true;
 	
 	// If setting port for the first time...
-	if ( mWave == NULL ) {
+	if ( mWave == 0 ) {
 		loadWaveShape( mShapePlayList.Fetch( 1 ), false );
 		loadColorMap( mColorPlayList.Fetch( 1 ), false );
 		

@@ -2,9 +2,6 @@
 #ifndef _NODECLASS_
 #define _NODECLASS_
 
-#ifndef NULL
-#define NULL 0L
-#endif
 
 class nodeClass;
 class CEgIStream;
@@ -40,8 +37,8 @@ enum {
 
 typedef nodeClass*	(*CreatorFuncT)( nodeClass* inParent );
 
-#define isPLItem( nodePtr )				(( nodePtr -> GetType() == 90 ) ? (CPLItem*) nodePtr : NULL)
-#define Cast( nodePtr, className )		(( nodePtr -> GetType() == className##T ) ? (className*) nodePtr : NULL)
+#define isPLItem( nodePtr )				(( nodePtr -> GetType() == 90 ) ? (CPLItem*) nodePtr : 0)
+#define Cast( nodePtr, className )		(( nodePtr -> GetType() == className##T ) ? (className*) nodePtr : 0)
 
 
 
@@ -171,7 +168,7 @@ class nodeClass {
 						
 			void f( nodeClass* ceiling ) {
 				node = ceiling;
-				while ( node != NULL ) {
+				while ( node != 0 ) {
 					print( node );
 					node = node -> NextInChain( ceiling )
 				}
@@ -196,7 +193,7 @@ class nodeClass {
 		
 		//	Post:	Returns the highest parent, say p, of this node where (p -> GetDeepTail() == this) is true. 
 		//			In other words, this returns the highest parent that has prev node.
-		//	Note:	Returns NULL if no such parent exists.
+		//	Note:	Returns 0 if no such parent exists.
 		nodeClass*						GetParentDeepTail( const nodeClass* inCeiling ) const;
 		
 		//	Post:	this -> CountDepth( GetParentDeepTail( inCeiling ) );
@@ -235,11 +232,11 @@ class nodeClass {
 		nodeClass*						getHighestParent();
 				
 		//	Post:	Returns <true> if <inMaybeParent> is any parent of this.
-		//	Note:	If inMaybeParent == NULL, false is returned.
+		//	Note:	If inMaybeParent == 0, false is returned.
 		bool							HasTheParent( const nodeClass* inMaybeParent ) const;
 		
 		//	Post:	Returns <true> if this node contains other nodes  (optimized for speed)
-		inline bool						IsEmpty() const 								{ return mHead == NULL;		}
+		inline bool						IsEmpty() const 								{ return mHead == 0;		}
 		
 		//	Post:	Returns the number of nodes in this node's sub list (in contrast to deepCount() )
 		inline long						shallowCount() const							{ return mShallowCount;		}
@@ -256,7 +253,7 @@ class nodeClass {
 		//			a 0 is returned.
 		long							findInstance() const;
 		
-		//	Post:	Returns the <inNodeNum>th node in this node's (shallow) sub list. A NULL is returned if <inNodeNum>
+		//	Post:	Returns the <inNodeNum>th node in this node's (shallow) sub list. A 0 is returned if <inNodeNum>
 		//			is less than or equal to zero or if greater than the number of items in this node's sub list.
 		nodeClass*						findNodeNum( long inNodeNum );
 
@@ -264,12 +261,12 @@ class nodeClass {
 		//			_sub_ _tree_ (as opposed to the base sub level).  If we had 2 sub nodes per node and we had 3 levels of
 		//			these, there would be a total of 2^3 leaves and a total of 2^4-1 nodes.  findSubNode( 8 ) would return the
 		//			second node at the root level.  The inverse of this function is findSubNode( nodeClass* ) and findNum(). 
-		//	Note:	If <inNodeNum> does not exist (ie, it's <= 0 or > deepCount()) then NULL is returned.
+		//	Note:	If <inNodeNum> does not exist (ie, it's <= 0 or > deepCount()) then 0 is returned.
 		virtual nodeClass*				findSubNode( long inNodeNum );
 					
 		//	Post:	This is the exact inverse function of findSubNode( long ). This fcn returns the deep instance number of <inNodePtr>
 		//			in this node deep sub tree.  If the node was not found in this node's sub tree, 0 is returned.
-		//	Note:	If <inNodePtr> is NULL, 0 is returned.
+		//	Note:	If <inNodePtr> is 0, 0 is returned.
 		virtual long					findSubNode( nodeClass* inNodePtr );
 
 		//	Post:	All sub nodes in <sourceList> are appended in order inside this node.  If <inPutAtHead> is true, the nodes

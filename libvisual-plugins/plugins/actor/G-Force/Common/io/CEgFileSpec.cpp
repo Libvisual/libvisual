@@ -33,12 +33,12 @@
 
 CEgFileSpec::CEgFileSpec() {
 	
-	Assign( NULL, 0 );
+	Assign( 0, 0 );
 }
 
 
 CEgFileSpec::CEgFileSpec( const char* inFileName, long inType  ) {
-	Assign( NULL, 0 );
+	Assign( 0, 0 );
 	AssignPathName( inFileName );
 	SetType( inType );
 }
@@ -392,5 +392,5 @@ const void* CEgFileSpec::OSSpec() const {
 	if ( mSpecData.length() > 0 )
 		return mSpecData.getCStr();
 	else
-		return NULL;
+		return 0;
 }

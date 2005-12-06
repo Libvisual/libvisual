@@ -60,7 +60,7 @@ class ArgList  {
 		//	Note:	If the arg is found, true is returned, else false is returned and <outArg> is zeroed.
 		//  Note: 	If the arg is found and is a string, GetArg( long, UtilStr& ) puts a copy of the arg's string in the argument. 
 		//          If the arg is found and is a long, GetArg( long, UtilStr& ) stores a string of the long (in base 10)
-		inline bool				ArgExists( long inArgID ) const								{ return FetchArg( inArgID ) != NULL;			}
+		inline bool				ArgExists( long inArgID ) const								{ return FetchArg( inArgID ) != 0;			}
 		bool					GetArg( long inArgID, bool& outArg ) const;
 #if 0
 		bool					GetArg( long inArgID, char& outArg ) const;

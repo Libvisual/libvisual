@@ -5,7 +5,7 @@
 
 UnionFind::UnionFind() {
 	mDimSize = 0;
-	mElements = NULL;
+	mElements = 0;
 }
 
 UnionFind::~UnionFind() {

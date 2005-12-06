@@ -65,6 +65,6 @@ void ParticleGroup::DrawGroup( PixPort& inDest ) {
 		
 	// Remember mID can be accessed be accesed byt he particle
 	for ( mID = 0; mID < mNumInstances; mID += 1 ) {
-		Draw( 32, inDest, fader, NULL, 0 );
+		Draw( 32, inDest, fader, 0, 0 );
 	}
 }

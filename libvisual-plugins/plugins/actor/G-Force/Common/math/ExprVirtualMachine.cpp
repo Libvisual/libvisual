@@ -112,8 +112,8 @@ ExprUserFcn ExprVirtualMachine::sZeroFcn = { 0, 0 };
 							}
 		
 ExprVirtualMachine::ExprVirtualMachine() {
-	mPCStart	= NULL;
-	mPCEnd		= NULL;
+	mPCStart	= 0;
+	mPCEnd		= 0;
 
 	sZeroFcn.mNumFcnBins = 1;
 	sZeroFcn.mFcn[ 0 ] = 0;

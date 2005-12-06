@@ -70,7 +70,7 @@ class ResourceFile {
 		CEgErr					GetRes( RezRefNum inRefNum, CEgIStream& outData );
 		CEgErr					GetRes( RezRefNum inRefNum, UtilStr& outData );
 
-		//	Post:	Gives some info about the block (ie, the block logical size) to the caller if <outSize> != NULL
+		//	Post:	Gives some info about the block (ie, the block logical size) to the caller if <outSize> != 0
 		//	Note:	Possible errors returned: cResourceNotFound, cResourceInvalid
 		CEgErr					GetResInfo( RezRefNum inRefNum, long* outSize );
 		

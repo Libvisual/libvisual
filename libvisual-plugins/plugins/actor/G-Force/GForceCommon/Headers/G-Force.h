@@ -74,7 +74,7 @@ class PortPage {
 class GForce {
 
 	public:	
-								GForce( void* inRefCon = NULL );
+								GForce( void* inRefCon = 0 );
 								~GForce();
 
 
@@ -101,7 +101,7 @@ class GForce {
 
 		void					SetPort( GrafPtr inPort, const Rect& inRect, bool inAtFullsceen );
 		
-		void					SetWinPort( WindowPtr inPort, const Rect* inRect = NULL );
+		void					SetWinPort( WindowPtr inPort, const Rect* inRect = 0 );
 		
 		void					GetWinRect( Rect& outRect );
 		
@@ -146,7 +146,7 @@ class GForce {
 		void					Print( char* inStr );
 		void					Print( UtilStr* inStr )											{ if ( inStr ) Print( inStr -> getCStr() );		}
 		void					Println( char* inStr );
-		void					Println( UtilStr* inStr )										{ Println( inStr ? inStr -> getCStr() : NULL ); }
+		void					Println( UtilStr* inStr )										{ Println( inStr ? inStr -> getCStr() : 0 ); }
 				
 		// Palette stuff
 		PixPalEntry				mPalette[ 256 ];

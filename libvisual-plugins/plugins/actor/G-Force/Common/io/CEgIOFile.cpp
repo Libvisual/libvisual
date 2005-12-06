@@ -92,7 +92,7 @@ CEgIOFile::~CEgIOFile() {
 
 #define 	__OSWOpen( specPtr )			mFile = (long) ::CreateFile( (char*) (specPtr -> OSSpec()), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_ALWAYS, 0, 0 );	\
 											if ( ((void*) mFile) == INVALID_HANDLE_VALUE ) {																		\
-												mFile = NULL;																										\
+												mFile = 0;																										\
 												mOSErr = ::GetLastError();																							\
 											}
 
@@ -166,7 +166,7 @@ void CEgIOFile::PutBlock( const void* inSrce, long numBytes ) {
 		flush();													// Dump our buf to disk
 		
 	while ( numBytes > cMaxOBufSize ) {								// We do this loop crap because to avoid code duplication/maintainance and
-		PutBlock( inSrce, cMaxOBufSize );							// to avoid giving OSWrite a NULL srce ptr (which is perfectly valid from a skip call)
+		PutBlock( inSrce, cMaxOBufSize );							// to avoid giving OSWrite a 0 srce ptr (which is perfectly valid from a skip call)
 		if ( inSrce )
 			inSrce = (char*) inSrce + cMaxOBufSize;
 		numBytes -= cMaxOBufSize;

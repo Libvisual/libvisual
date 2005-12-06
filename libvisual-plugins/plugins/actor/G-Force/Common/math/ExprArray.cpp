@@ -9,8 +9,8 @@
 #include "Hashtable.h"
 
 ExprArray::ExprArray() {
-	mExprs	= NULL;
-	mVals	= NULL;
+	mExprs	= 0;
+	mVals	= 0;
 	mNumExprs			= 0;
 	mDimNumExprs		= 0;
 }

@@ -5,7 +5,7 @@
 XList::XList( nodeClass* inParent ) :
 	nodeClass( inParent ) {
 	
-	mCachedNode = NULL;
+	mCachedNode = 0;
 }
 
 
@@ -15,13 +15,13 @@ void XList::UpdateCounts( int inShallowChange ) {
 	
 	nodeClass::UpdateCounts( inShallowChange );
 	
-	mCachedNode = NULL;
+	mCachedNode = 0;
 }	
 
 
 
 nodeClass* XList::findSubNode( long inNum ) {
-	nodeClass*		retPtr = NULL;
+	nodeClass*		retPtr = 0;
 	long			i;
 	
 	if ( mCachedNode ) {								//	Check cached node...
@@ -144,7 +144,7 @@ void XList::DoBestInsert( nodeClass* inNodeToAdd ) {
 				insDepth--;
 				
 				if ( insertPt == this )
-					insertPt = NULL;
+					insertPt = 0;
 			}
 		}
 		
@@ -172,7 +172,7 @@ void XList::SetInsertPtBefore( nodeClass* inInsertPt ) {
 	if ( n <= 0 )
 		inInsertPt = GetDeepTail();
 	else if ( n == 1 ) 
-		inInsertPt = NULL;
+		inInsertPt = 0;
 	else 
 		inInsertPt = inInsertPt -> PrevInChain( this ); 
 					

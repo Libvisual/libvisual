@@ -8,10 +8,6 @@
 	#define false 0
 	#endif
 
-	#ifndef NULL
-	#define NULL 0L
-	#endif
-	
 	struct Rect {
 		short left, top, right, bottom;
 	};

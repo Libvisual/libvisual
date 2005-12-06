@@ -2,10 +2,6 @@
 #define _UTILSTR_
 
 
-#ifndef NULL
-#define NULL 0L
-#endif
-
 #include "Hashable.h"
 
 
@@ -57,7 +53,7 @@ class UtilStr : public Hashable {
 		
 		//	Post:					Makes the length of this <numBytes>.
 		//	Note:					The data in this is garbage!
-		char*						Dim( unsigned long numBytes )						{ mStrLen = 0; Append( (void*) NULL, numBytes );	 return mBuf;	}
+		char*						Dim( unsigned long numBytes )						{ mStrLen = 0; Append( (void*) 0, numBytes );	 return mBuf;	}
 		
 		//	Post:	Swaps the internal string ptrs.  This fcn is useful if you need to assign a string value and don't care
 		//			if the original string changes.
@@ -242,7 +238,7 @@ class UtilStr : public Hashable {
 		//			except a leading '-'
 		//			<*outPlacePtr> is set to 10^( 1 + trunc( log10( <strVal> ) ) )
 		//	Usage:	"12.9".GetIntValue( &i ) returns 12 and assigns i to 100
-		static long					GetIntValue( char* inStr, long inLen, long* outPlacePtr = NULL );
+		static long					GetIntValue( char* inStr, long inLen, long* outPlacePtr = 0 );
 
 		//	Longest Common Substring Seach Score
 		// 	Post:	Returns a 'score' -- the greater the score, the more similar inStr is this string.

@@ -13,7 +13,7 @@ long Hashtable::sTableSizes[ NUM_SIZES ] = { 23, 97, 397, 797, 3203, 6421, 12853
 Hashtable::Hashtable( bool inKeysOwned, int inLoadFactor ) {
 	mKeysOwned		= inKeysOwned;
 	mTableSize		= 0;
-	mTable			= NULL;
+	mTable			= 0;
 	mNumEntries		= 0;
 	mThreshold		= 0;
 	mLoadFactor		= inLoadFactor;
@@ -49,7 +49,7 @@ void Hashtable::Rehash() {
 	// Alloc the new table and make it empty	
 	mTable = new KEntry*[ mTableSize ];
 	for ( i = 0; i < mTableSize; i++ )
-		mTable[ i ] = NULL;
+		mTable[ i ] = 0;
 	
 	// Rehash all the old values into the new table
 	for ( i = 0; i < oldSize; i++ ) {
@@ -90,7 +90,7 @@ void* Hashtable::put( long inKey, const Hashable* inHKey, void* inValue ) {
 		if ( mKeysOwned && inHKey )
 			delete inHKey; }
 	else { 
-		oldVal				= NULL;
+		oldVal				= 0;
 		index				= ((unsigned long) inKey) % mTableSize;
 		entry				= new KEntry;
 		entry -> mHashable	= inHKey;
@@ -108,12 +108,12 @@ void* Hashtable::put( long inKey, const Hashable* inHKey, void* inValue ) {
 
 
 bool Hashtable::Get( long inKey, void** outValue ) const {
-	KEntry*	entry = fetchEntry( inKey, NULL );
+	KEntry*	entry = fetchEntry( inKey, 0 );
 
 	if ( entry && outValue ) 
 		*outValue = entry -> mValue;
 
-	return entry != NULL;
+	return entry != 0;
 }
 
 
@@ -123,7 +123,7 @@ bool Hashtable::Get( const Hashable* inKey, void** outValue ) const {
 	if ( entry && outValue ) 
 		*outValue = entry -> mValue;
 
-	return entry != NULL;
+	return entry != 0;
 }
 
 
@@ -183,7 +183,7 @@ KEntry*	Hashtable::fetchEntry( long inKey, const Hashable* inHKey ) const {
 		entry = entry -> mNext;
 	}
 	
-	return NULL;
+	return 0;
 }
 
 
@@ -204,7 +204,7 @@ void Hashtable::RemoveAll() {
 			delete entry;
 			entry = temp;
 		}
-		mTable[ i ] = NULL;
+		mTable[ i ] = 0;
 	}
 	mNumEntries = 0;
 }
@@ -213,7 +213,7 @@ void Hashtable::RemoveAll() {
 
 void* Hashtable::remove( long inKey, const Hashable* inHKey ) {
 	long		index = ( (unsigned long) inKey ) % mTableSize;
-	KEntry*		entry = mTable[ index ], *prev = NULL;
+	KEntry*		entry = mTable[ index ], *prev = 0;
 	bool		isEqual;
 	void*		retVal;
 
@@ -229,8 +229,8 @@ void* Hashtable::remove( long inKey, const Hashable* inHKey ) {
 				if ( mKeysOwned && entry -> mHashable )
 					delete entry -> mHashable;
 
-				if ( prev == NULL ) 
-					mTable[ index ] = NULL;
+				if ( prev == 0 ) 
+					mTable[ index ] = 0;
 				else 
 					prev -> mNext = entry -> mNext;
 				retVal = entry -> mValue;
@@ -243,17 +243,17 @@ void* Hashtable::remove( long inKey, const Hashable* inHKey ) {
 		entry = entry -> mNext;
 	}
 	
-	return NULL;
+	return 0;
 }
 
 
 
 long& Hashtable::operator[] ( const long inKey ) {
-	KEntry*	entry = fetchEntry( inKey, NULL );
+	KEntry*	entry = fetchEntry( inKey, 0 );
 	
 	if ( ! entry ) {
 		Put( inKey, 0 );
-		entry = fetchEntry( inKey, NULL );
+		entry = fetchEntry( inKey, 0 );
 	}
 	
 	return (long&) entry -> mValue;
@@ -262,11 +262,11 @@ long& Hashtable::operator[] ( const long inKey ) {
 
 
 void*& Hashtable::operator[] ( const void* inKey ) {
-	KEntry*	entry = fetchEntry( (long) inKey, NULL );
+	KEntry*	entry = fetchEntry( (long) inKey, 0 );
 	
 	if ( ! entry ) {
 		Put( (long) inKey, 0 );
-		entry = fetchEntry( (long) inKey, NULL );
+		entry = fetchEntry( (long) inKey, 0 );
 	}
 	
 	return entry -> mValue;

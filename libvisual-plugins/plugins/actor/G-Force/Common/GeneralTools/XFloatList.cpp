@@ -28,7 +28,7 @@ XFloatList::XFloatList( ListOrderingT inOrdering ) :
 
 void XFloatList::FindMeans( long inNumMeans, float outMeans[], float inSigmaScale ) const {
 	long start, end, m, i, n = mList.Count();
-	float* srce = (float*) mList.getCStr(), *smoothed = new float[ n ], *temp = NULL;
+	float* srce = (float*) mList.getCStr(), *smoothed = new float[ n ], *temp = 0;
 	float sigma = 0.1 + inSigmaScale * ( (float) ( n  / inNumMeans ) ); 
 	float left, cen, right, sum;
 	

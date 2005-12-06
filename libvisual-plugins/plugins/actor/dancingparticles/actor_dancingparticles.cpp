@@ -197,7 +197,7 @@ extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue 
 
 extern "C" VisPalette *lv_dancingparticles_palette (VisPluginData *plugin)
 {
-	return NULL;
+	return 0;
 }
 
 extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)

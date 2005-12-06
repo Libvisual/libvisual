@@ -117,7 +117,7 @@ void CEgOStream::PutBlock( CEgIStream& inStream, long inBytes ) {
 void CEgOStream::skip( long inBytes ) {
 	
 	if ( inBytes > 0 )
-		PutBlock( NULL, inBytes );
+		PutBlock( 0, inBytes );
 }
 
 

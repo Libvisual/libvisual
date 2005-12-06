@@ -46,7 +46,7 @@ DeltaFieldData* DeltaField::GetField() {
 	}
 	
 	
-	return NULL;
+	return 0;
 }
 
 

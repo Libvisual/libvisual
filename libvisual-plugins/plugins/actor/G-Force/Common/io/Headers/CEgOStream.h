@@ -26,7 +26,7 @@ class CEgOStream : public virtual CEgErr {
 		void							Write( const char* inStr );
 		void							Write( const UtilStr* inStr );
 		void							Writeln( const UtilStr& inStr );
-		void							Writeln( const char* inStr = NULL );
+		void							Writeln( const char* inStr = 0 );
 		
 		virtual void					skip( long inBytes );
 		

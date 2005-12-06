@@ -1,3 +1,9 @@
+2005-12-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Renamed all NULLs to 0 in C++ plugins. NULL is
+	defined as ((void *) 0) and using NULL in C++ doesn't make sense
+	anyway.
+
 2005-12-05  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/input/debug/*: Added debug input.

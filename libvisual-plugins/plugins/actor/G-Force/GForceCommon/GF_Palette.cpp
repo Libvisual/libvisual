@@ -70,9 +70,9 @@ void GF_Palette::Evaluate( PixPalEntry outPalette[ 256 ] ) {
 
 void GF_Palette::SetupTransition( GF_Palette* inDest, float* inC ) {
 
-	mH.Weight( inDest -> mH, inC, NULL );
-	mS.Weight( inDest -> mS, inC, NULL );	
-	mV.Weight( inDest -> mV, inC, NULL );
+	mH.Weight( inDest -> mH, inC, 0 );
+	mS.Weight( inDest -> mS, inC, 0 );	
+	mV.Weight( inDest -> mV, inC, 0 );
 	
 	mH_I_Dep = mH_I_Dep || inDest -> mH_I_Dep;
 	mS_I_Dep = mS_I_Dep || inDest -> mS_I_Dep;

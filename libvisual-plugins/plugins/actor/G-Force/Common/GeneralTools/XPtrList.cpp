@@ -2,13 +2,13 @@
 #include "nodeClass.h"
 
 
-void* XPtrList::sDummy = NULL;
+void* XPtrList::sDummy = 0;
 
 
 XPtrList::XPtrList( ListOrderingT inOrdering ) {
 
 	mOrdering	= inOrdering;
-	mCompFcn	= NULL;
+	mCompFcn	= 0;
 }
 
 
@@ -237,7 +237,7 @@ void* XPtrList::Fetch( long inIndex ) const {
 	if ( inIndex >= 1 && inIndex <= length() >> 2 )
 		return *( (void**) (getCStr() + ( inIndex - 1 ) * 4) );
 	else
-		return NULL;
+		return 0;
 }
 
 
@@ -248,7 +248,7 @@ bool XPtrList::Fetch( long inIndex, void** ioPtrDest ) const {
 			*ioPtrDest = *( (void**) (getCStr() + ( inIndex - 1 ) * 4) );
 			return true; }
 		else
-			*ioPtrDest = NULL;
+			*ioPtrDest = 0;
 	}
 	
 	return false;

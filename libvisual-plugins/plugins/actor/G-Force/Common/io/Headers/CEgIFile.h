@@ -32,7 +32,7 @@ class CEgIFile : public CEgIStream {
 		void							open( const char* inFileName );
 		
 		virtual void					close();
-		inline bool						is_open()						{ return mFile != NULL;		}
+		inline bool						is_open()						{ return mFile != 0;		}
 		virtual long					size();
 		void							seekEnd();
 		virtual long					tell();

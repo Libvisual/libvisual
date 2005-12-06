@@ -243,7 +243,7 @@ bool ListableClientBase::FindItemStatus( long inItemID, bool& ) {
 void ListableClientBase::HandleKeyPress( unsigned char c ) {
 	static UtilStr		sRecentStr;
 	long				n, t = clock();
-	XLongList*			refreshList = NULL;
+	XLongList*			refreshList = 0;
 
 	if ( c >= '0' && c <= '9' ) {
 		if ( t - 2*CLOCKS_PER_SEC >= sLastKeyTime )

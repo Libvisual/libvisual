@@ -69,7 +69,7 @@ void WaveShape::Load( ArgList& inArgs, long inDefaultNumSteps ) {
 	// FIXME debug
 	visual_log (VISUAL_LOG_DEBUG, "The number of bins requested: %s", str.getCStr());
 	mNum_S_Steps.Compile( str, mDict );
-	CalcNumS_Steps( NULL, inDefaultNumSteps );
+	CalcNumS_Steps( 0, inDefaultNumSteps );
 	
 	// Compile and link all the temp exprs.  By their spec, A vars can be evaluated now
 	mA.Compile( inArgs, 'A', mDict );
@@ -129,8 +129,8 @@ void WaveShape::SetSize( long inWidth, long inHeight ) {
 
 void WaveShape::SetupTransition( WaveShape* inDest ) {
 	
-	mIntensity.Weight( inDest -> mIntensity, &mShapeTrans, NULL );
-	mLineWidth.Weight( inDest -> mLineWidth, &mShapeTrans, NULL );
+	mIntensity.Weight( inDest -> mIntensity, &mShapeTrans, 0 );
+	mLineWidth.Weight( inDest -> mLineWidth, &mShapeTrans, 0 );
 	
 	mPen_Dep_S			= mPen_Dep_S || inDest -> mPen_Dep_S;
 	mLineWidth_Dep_S	= mLineWidth_Dep_S|| inDest -> mLineWidth_Dep_S;

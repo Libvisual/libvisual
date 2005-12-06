@@ -9,7 +9,7 @@
 
 
 #ifdef EG_DEBUG
-nodeClass*	nodeClass::sFirstDebug	= NULL;
+nodeClass*	nodeClass::sFirstDebug	= 0;
 long		nodeClass::sCacheHitsA	= 0;
 long		nodeClass::sCacheHitsB	= 0;
 long		nodeClass::sCacheHitsC	= 0;
@@ -52,7 +52,7 @@ nodeClass::~nodeClass() {
 	detach();													// Remove the node from the chain
 
 	#ifdef EG_DEBUG	
-	nodeClass*	prevPtr = NULL;
+	nodeClass*	prevPtr = 0;
 	nodeClass*	nodePtr = sFirstDebug;
 	
 	while ( nodePtr != this ) {
@@ -93,7 +93,7 @@ nodeClass* nodeClass::CreateNode( long inClassID, nodeClass* inParent ) {
 			return sCreatorFunc[ i ]( inParent );
 	}
 	
-	return NULL;
+	return 0;
 }
 
 			
@@ -107,12 +107,12 @@ void nodeClass::RegisterNodeClass( long inID, CreatorFuncT inCreatorFunc ) {
 
 
 void nodeClass::initSelf() {
-	mNext = NULL;
-	mPrev = NULL;
-	mParent = NULL;
+	mNext = 0;
+	mPrev = 0;
+	mParent = 0;
 
-	mTail = NULL;
-	mHead = NULL;
+	mTail = 0;
+	mHead = 0;
 	
 	mFlags = 0;
 	mDeepCount		= -1;
@@ -293,7 +293,7 @@ void nodeClass::VerifyNode( nodeClass* ) {
 
 
 void nodeClass::absorbMarked( nodeClass* inSourceList ) {
-	nodeClass*	nodePtr = NULL;
+	nodeClass*	nodePtr = 0;
 	nodeClass*	nextPtr;
 	
 	if ( inSourceList )
@@ -383,9 +383,9 @@ void nodeClass::detach() {
 			mParent -> mTail = mPrev;							// tell header where new last link is
 	}
 	
-	mNext = NULL;												// if something still points here,
-	mPrev = NULL;												// the data remaining will be NULL/bad;
-	mParent = NULL;												// be safe
+	mNext = 0;												// if something still points here,
+	mPrev = 0;												// the data remaining will be 0/bad;
+	mParent = 0;												// be safe
 
 }
 
@@ -541,13 +541,13 @@ void nodeClass::addToHead( nodeClass* nodeToAdd ) {
 		nodeToAdd -> detach();								// Detach it before we add it here
 		nodeToAdd -> mParent = this;						// let ob know where parent group is
 		UpdateCounts( 1 );
-		if ( mTail == NULL) {								// if this is the 1st item in the list to be...
-			nodeToAdd -> mPrev = NULL;						// there is no prev link
-			nodeToAdd -> mNext = NULL;	 					// there is no next link
+		if ( mTail == 0) {								// if this is the 1st item in the list to be...
+			nodeToAdd -> mPrev = 0;						// there is no prev link
+			nodeToAdd -> mNext = 0;	 					// there is no next link
 			mHead = mTail = nodeToAdd;	}					// let link header know where the 1st and last link is
 		else {												// if there is already items in the list...
 			mHead -> mPrev = nodeToAdd;						// let old first link know where new last link is
-			nodeToAdd -> mPrev = NULL;						// tell new last link there is no prev link 
+			nodeToAdd -> mPrev = 0;						// tell new last link there is no prev link 
 			nodeToAdd -> mNext = mHead; 					// let new first link know where old last link is
 			mHead = nodeToAdd; 								// let link header know where new last link is
 		}
@@ -567,11 +567,11 @@ void nodeClass::addToTail( nodeClass* nodeToAdd ) {
 		if ( mHead ) {										// if there is already items in the list...
 			mTail -> mNext = nodeToAdd;						// let old last link know where new last link is
 			nodeToAdd -> mPrev = mTail;						// let new last link know where old last link is
-			nodeToAdd -> mNext = NULL; 						// tell new last link there is no next link
+			nodeToAdd -> mNext = 0; 						// tell new last link there is no next link
 			mTail = nodeToAdd; 	}							// let link header know where new last link is
 		else {												// if this is the 1st item in the list to be...
-			nodeToAdd -> mPrev = NULL;						// there is no prev link
-			nodeToAdd -> mNext = NULL; 						// there is no next link
+			nodeToAdd -> mPrev = 0;						// there is no prev link
+			nodeToAdd -> mNext = 0; 						// there is no next link
 			mHead = nodeToAdd;								// let link header know where the 1st link is
 			mTail = nodeToAdd; 								// let link header know where the last link is
 		}
@@ -621,7 +621,7 @@ nodeClass* nodeClass::findNodeNum( long inNum ) {
 		nodePtr = nodePtr -> GetNext();
 	}
 	
-	return NULL;
+	return 0;
 
 }
 
@@ -632,7 +632,7 @@ nodeClass* nodeClass::findPrevNonMarkedSubNode( long inNum ) {
 	nodeStep	i( this );
 	nodeClass*	start 		= findSubNode( inNum );	
 	nodeClass*	nodePtr 	= i.GetNext();
-	nodeClass*	prevPtr 	= NULL;	
+	nodeClass*	prevPtr 	= 0;	
 	
 	if ( start ) {
 		if ( start -> isMarked() )  {
@@ -713,7 +713,7 @@ nodeClass* nodeClass::findSubNode( long inNum ) {
 		mDeepCount = i;												// If deepCount is invalid, we might as well use what we have
 	}
 	
-	return NULL;
+	return 0;
 }
 
 
@@ -775,12 +775,12 @@ nodeClass* nodeClass::NextInChain( const nodeClass* inCeiling ) const {
 	if ( mHead )
 		return mHead;
 	else if ( this == inCeiling )
-		return NULL;
+		return 0;
 	else if ( mNext )
 		return mNext;
 	else { 
 		nodePtr = mParent;
-		retPtr 	= NULL;
+		retPtr 	= 0;
 		while ( nodePtr && ! retPtr && inCeiling != nodePtr ) {
 			retPtr	= nodePtr -> GetNext();
 			nodePtr = nodePtr -> GetParent();
@@ -804,7 +804,7 @@ nodeClass* nodeClass::PrevInChain( const nodeClass* inCeiling ) const {
 	else if ( mParent != inCeiling )
 		return mParent;
 	else
-		return NULL;
+		return 0;
 }
 
 
@@ -819,7 +819,7 @@ nodeClass* nodeClass::PrevInChain( const nodeClass* inCeiling ) const {
 		return mPrev;
 	else { 
 		nodePtr = mParent;
-		retPtr 	= NULL;
+		retPtr 	= 0;
 		while ( nodePtr && ! retPtr && inCeiling != nodePtr ) {
 			retPtr	= nodePtr -> GetPrev();
 			nodePtr = nodePtr -> GetParent();

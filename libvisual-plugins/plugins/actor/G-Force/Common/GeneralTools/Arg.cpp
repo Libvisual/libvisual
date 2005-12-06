@@ -23,7 +23,7 @@ Arg::Arg( long inID, const char* inStr, Arg* inNext ) {
 	mID			= inID;
 	mIsStr		= true;
 	mNext 		= inNext;
-	mData		= NULL; 
+	mData		= 0; 
 
 	Assign( inStr );
 }

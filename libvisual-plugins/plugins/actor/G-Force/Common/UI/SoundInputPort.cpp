@@ -20,7 +20,7 @@
 
 
 SoundInput::SoundInput() {
-	mParams = NULL;
+	mParams = 0;
 	mIsRecording = false;
 	
 	DimBufSize( 16 );
@@ -285,8 +285,8 @@ WAVEFORMAT offset,
 			mParams->recordRec.count = 0;
 			mParams->recordRec.milliseconds = 0;
 			mParams->recordRec.bufferLength = 0 ;//buffSize;
-			mParams->recordRec.bufferPtr = NULL; //myVars->recBuffer;
-			mParams->recordRec.completionRoutine = NULL; // MyRecCompUPP;
+			mParams->recordRec.bufferPtr = 0; //myVars->recBuffer;
+			mParams->recordRec.completionRoutine = 0; // MyRecCompUPP;
 			mParams->recordRec.interruptRoutine = MyIntCompUPP;
 			mParams->recordRec.userLong = (long) mParams;
 			mParams->recordRec.error = 0;

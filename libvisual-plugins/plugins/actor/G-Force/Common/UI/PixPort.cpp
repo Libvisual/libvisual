@@ -21,7 +21,7 @@
 #define __setupPort		GDHandle		saveDev;								\
  						GWorldPtr		savePort;								\
 						::GetGWorld( &savePort, &saveDev );						\
-						::SetGWorld( mWorld, NULL );				
+						::SetGWorld( mWorld, 0 );				
 
 
 #define __restorePort 	::SetGWorld( savePort, saveDev );			
@@ -39,7 +39,7 @@
 
 
 long		PixPort::sTempSize			= 0;
-char*		PixPort::sTemp				= NULL;
+char*		PixPort::sTemp				= 0;
 
 	
 
@@ -47,8 +47,8 @@ char*		PixPort::sTemp				= NULL;
 
 
 PixPort::PixPort() {
-	mBM = NULL;
-	mWorld = NULL;
+	mBM = 0;
+	mWorld = 0;
 	mX = 0;
 	mY = 0;
 	mLineWidth = 1;
@@ -58,12 +58,12 @@ PixPort::PixPort() {
 	mDeviceLineHeight = 0;
 	
 	#if EG_WIN
-	mWorld		= ::CreateCompatibleDC( NULL );
-	mBM			= NULL;
+	mWorld		= ::CreateCompatibleDC( 0 );
+	mBM			= 0;
 	#endif
 
 	#ifdef UNIX_X
-	mBits = NULL;  // So we know if we need to delete it
+	mBits = 0;  // So we know if we need to delete it
 	#endif
 }
 
@@ -108,7 +108,7 @@ PixPort::~PixPort() {
 	
 	if ( sTemp ) {
 		delete []sTemp;
-		sTemp = NULL;
+		sTemp = 0;
 		sTempSize = 0;
 	}
 }
@@ -123,7 +123,7 @@ void PixPort::Un_Init() {
 	if ( mWorld ) {
 		::UnlockPixels( mBM );
 		::DisposeGWorld( mWorld );
-		mWorld = NULL;
+		mWorld = 0;
 	}
 	#endif
 
@@ -131,13 +131,13 @@ void PixPort::Un_Init() {
 	// Destroy font context
 	if (mWorld) {
 	  mfl_DestroyContext(mWorld);
-	  mWorld = NULL;
+	  mWorld = 0;
 	}
 
 	// Free buffer
 	if (mBits) {
 	  delete mBits;
-	  mBits = NULL;
+	  mBits = 0;
 	}
 	#endif
 
@@ -247,7 +247,7 @@ void PixPort::Init( int inWidth, int inHeight, int inDepth ) {
 	
 	Rect r;
 	::SetRect( &r, 0, 0, mX, mY+1 );
-	::NewGWorld( &mWorld, inDepth, &r, NULL, NULL, useTempMem );
+	::NewGWorld( &mWorld, inDepth, &r, 0, 0, useTempMem );
 	mBM = ::GetGWorldPixMap( mWorld );
 	mBytesPerRow	= (**mBM).rowBytes & 0xFFF;
 	mBytesPerPix	= (**mBM).pixelSize / 8;
@@ -272,7 +272,7 @@ void PixPort::Init( int inWidth, int inHeight, int inDepth ) {
 	mInfo.bmiHeader.biClrImportant	= 0;
 
 	// Tell windows to make a bitmap and give us acess to its pixel data
-	mBM = ::CreateDIBSection( mWorld, &mInfo, DIB_RGB_COLORS, &mBits, NULL, 0 );
+	mBM = ::CreateDIBSection( mWorld, &mInfo, DIB_RGB_COLORS, &mBits, 0, 0 );
 	HGDIOBJ oldBM = ::SelectObject( mWorld, mBM );
 	if ( oldBM ) 
 		::DeleteObject( oldBM );	
@@ -436,7 +436,7 @@ void PixPort::GaussBlur( int inBoxWidth, const Rect& inRect, void* inDestBits ) 
 
 	// 3 box convolutions, 3 colors per pixel, 4 bytes per color
 	long 	boxTempSize	= 36 * inBoxWidth;
-	char*	tempBits	= NULL;
+	char*	tempBits	= 0;
 	unsigned long*	boxTemp;
 	long	imgOffset	= mBytesPerPix * r.left + r.top * mBytesPerRow;
 	long	bytesNeeded	= mBytesPerRow * (mY + 2) + boxTempSize;
@@ -512,7 +512,7 @@ void PixPort::CopyBits( GrafPtr inPort, const Rect* inSrce, const Rect* inDest )
 
 			
 		#if EG_MAC
-		::CopyBits( (BitMap*) *mBM, &inPort->portBits, inSrce, inDest, srcCopy, NULL );
+		::CopyBits( (BitMap*) *mBM, &inPort->portBits, inSrce, inDest, srcCopy, 0 );
 		
 		
 		#elif EG_WIN
@@ -532,7 +532,7 @@ void PixPort::CopyBits( PixPort& inDestPort, const Rect* inSrce, const Rect* inD
 			inDest -> left <= inDest -> right && inDest -> top <= inDest -> bottom ) {
 				
 		#if EG_MAC
-		::CopyBits( (BitMap*) *mBM, (BitMap*) *inDestPort.mBM, inSrce, inDest, srcCopy, NULL );
+		::CopyBits( (BitMap*) *mBM, (BitMap*) *inDestPort.mBM, inSrce, inDest, srcCopy, 0 );
 		#elif EG_WIN
 		::BitBlt( inDestPort.mWorld, inDest -> left, inDest -> top, inDest -> right - inDest -> left, inDest -> bottom - inDest -> top, mWorld, inSrce -> left, inSrce -> top, SRCCOPY );
 		#endif

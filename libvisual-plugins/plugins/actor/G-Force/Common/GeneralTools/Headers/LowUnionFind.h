@@ -24,7 +24,7 @@ class LowUnionFind {
 		// 	Note: O( N )
 		void					AddEdge( long inA, long inB );
 		
-		//	Returns access to the largest union/subtree in this graph. NULL is returned if there's
+		//	Returns access to the largest union/subtree in this graph. 0 is returned if there's
 		//  no verticies in this graph.
 	 	const XLongList* 		LargestPile()					{ return mLargest;			}
 	 	

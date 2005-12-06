@@ -21,7 +21,7 @@ class XList : protected nodeClass, public ListSocket {
 		void						DoBestInsert( nodeClass* inNodeToAdd );
 
 		//	Post:	Sets the current insertion point before the node <inInsertPt>.
-		//	Note:	If <inInsertPt> is NULL, the insert pt is at the end of the list
+		//	Note:	If <inInsertPt> is 0, the insert pt is at the end of the list
 		void						SetInsertPtBefore( nodeClass* inInsertPt );
 		
 		//	*** nodeClass overrides--see nodeClass.h for fcn docs ***
@@ -52,7 +52,7 @@ class XList : protected nodeClass, public ListSocket {
 		virtual void				UpdateCounts( int inShallowChange );
 
 		
-		nodeClass*					mCachedNode;		//	NULL if Dirty
+		nodeClass*					mCachedNode;		//	0 if Dirty
 		long						mCachedNodeNum;		//	Deep instance of mCachedNode
 
 };

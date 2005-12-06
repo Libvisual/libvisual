@@ -106,7 +106,7 @@ void EgOSUtils::Initialize( void* inModuleInstance ) {
 	#endif
 	
 	#ifdef EG_WIN
-	HDC	hDC = ::CreateDC( "DISPLAY", NULL, NULL, NULL );
+	HDC	hDC = ::CreateDC( "DISPLAY", 0, 0, 0 );
 	if ( hDC ) {
 		sXdpi = ::GetDeviceCaps( hDC, LOGPIXELSX );
 		sYdpi = ::GetDeviceCaps( hDC, LOGPIXELSY );
@@ -264,7 +264,7 @@ bool EgOSUtils::AskOpen( const char* inPrompt, CEgFileSpec& outSpec, long inType
 		
 	//UDesktop::Deactivate();
 	typeList[0] = inTypeMask;
-	::StandardGetFile( NULL, inTypeMask ? 1 : 0, typeList, &macFileReply );
+	::StandardGetFile( 0, inTypeMask ? 1 : 0, typeList, &macFileReply );
 	//UDesktop::Activate();
 
 	if ( macFileReply.sfGood ) {
@@ -333,14 +333,14 @@ bool EgOSUtils::AreYouSure( const UtilStr& inMsg ) {
 	#ifdef EG_MAC
 	::ParamText( inMsg.getPasStr(), "\p", "\p", "\p");
 	//UDesktop::Deactivate();
-	ans = ::CautionAlert( 2000, NULL );
+	ans = ::CautionAlert( 2000, 0 );
 	//UDesktop::Activate();
 	
 	return ans == 1; //answer_Save;
 	#endif
 	
 	#ifdef EG_WIN
-	ans = ::MessageBox( NULL, inMsg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_YESNO | MB_SETFOREGROUND | MB_TASKMODAL );
+	ans = ::MessageBox( 0, inMsg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_YESNO | MB_SETFOREGROUND | MB_TASKMODAL );
 	return ans == IDYES;
 	#endif
 }	
@@ -367,7 +367,7 @@ int EgOSUtils::AskSaveChanges( const UtilStr& inName ) {
 	#ifdef EG_MAC
 	::ParamText( inName.getPasStr(), "\p", "\p", "\p" );
 	//UDesktop::Deactivate();
-	ans = ::CautionAlert( 2001, NULL );
+	ans = ::CautionAlert( 2001, 0 );
 	//UDesktop::Activate();
 		
 	return 2 - ans;
@@ -377,7 +377,7 @@ int EgOSUtils::AskSaveChanges( const UtilStr& inName ) {
 	UtilStr	msg( "Save changes to \"" );
 	msg.Append( inName );
 	msg.Append( "\" before closing?" );
-	ans = ::MessageBox( NULL, msg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_YESNOCANCEL | MB_SETFOREGROUND | MB_TASKMODAL );
+	ans = ::MessageBox( 0, msg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_YESNOCANCEL | MB_SETFOREGROUND | MB_TASKMODAL );
 	if ( ans == IDYES )
 		return 1;
 	else if ( ans == IDNO )
@@ -404,7 +404,7 @@ void EgOSUtils::SpinCursor() {
 		#endif
 		
 		#ifdef EG_WIN
-		SetCursor( ::LoadCursor( NULL, IDC_WAIT ) );
+		SetCursor( ::LoadCursor( 0, IDC_WAIT ) );
 		sLastCursor = 1;
 		#endif
 	}
@@ -425,7 +425,7 @@ void EgOSUtils::ShowCursor() {
 	#endif
 	
 	#ifdef EG_WIN
-	::SetCursor( ::LoadCursor( NULL, IDC_ARROW ) );
+	::SetCursor( ::LoadCursor( 0, IDC_ARROW ) );
 	while ( ::ShowCursor( true ) < 0 ) { }
 	#endif
 	
@@ -535,25 +535,25 @@ bool EgOSUtils::GetNextFile( const CEgFileSpec& folderSpec, CEgFileSpec& outSpec
 	bool				isDir, tryAgain;
 	UtilStr                         fullname;
 
-	static DIR *d = NULL;
+	static DIR *d = 0;
 	struct dirent *de;
 
 	ok = true;
 	do { 
 	  if ( inStartOver ) {
-	    if (d != NULL) {
+	    if (d != 0) {
 	      closedir(d);
-	      d = NULL;
+	      d = 0;
 	    }
 	    inStartOver = false;	
 	    name.Assign( (char*) folderSpec.OSSpec() );
 	    if ( name.getChar( name.length() ) == '/' )
 	      name.Trunc( 1 );
 	    d = opendir(name.getCStr());
-	    if (d == NULL) return 0;
+	    if (d == 0) return 0;
 	  }
 	  de = readdir(d);
-	  if (de == NULL) return 0;
+	  if (de == 0) return 0;
 	  name.Assign(de->d_name);
 	  struct stat statdata;
 	  fullname.Assign( (char*) folderSpec.OSSpec() );
@@ -655,13 +655,13 @@ void EgOSUtils::ShowMsg( const UtilStr& inMsg ) {
 	#ifdef EG_MAC
 	//UDesktop::Deactivate();
 	::ParamText( inMsg.getPasStr(), "\p", "\p", "\p");
-	::StopAlert( 2002, NULL );
+	::StopAlert( 2002, 0 );
 	//#pragma rem back in!
 	//UDesktop::Activate();
 	#endif
 	
 	#ifdef WIN32
-	::MessageBox( NULL, inMsg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_OK | MB_SETFOREGROUND | MB_APPLMODAL );
+	::MessageBox( 0, inMsg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_OK | MB_SETFOREGROUND | MB_APPLMODAL );
 	//ZafMessageWindow* w = new ZafMessageWindow( "Message", ZAF_EXCLAMATION_ICON, ZAF_DIALOG_OK, ZAF_DIALOG_OK, inMsg.getCStr() );
 	//zafWindowManager -> Add( w );
 	//w -> Control();

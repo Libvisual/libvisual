@@ -21,8 +21,8 @@ class EgOSUtils {
 						
 	public:
 		// 			Call this once at program startup/end!!
-		//  If you're compiling under windows and making a DLL, pass the DLL instance otherwise NULL is fine.
-		static void					Initialize( void* inModuleInstance = NULL );
+		//  If you're compiling under windows and making a DLL, pass the DLL instance otherwise 0 is fine.
+		static void					Initialize( void* inModuleInstance = 0 );
 		static void					Shutdown();
 	
 		//	Post:	Assigns spec info for the next file in the dir specified by <folderSpec>.  If the directory doesn't exist or there

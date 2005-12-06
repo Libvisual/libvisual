@@ -87,7 +87,7 @@ class ExprVirtualMachine {
 		float v1 = this.Execute();
 		float v2 = inVM.Execute();
 		return ( *inC1 ) * v1 + ( *inC2 ) * v2;
-		Note: If inC2 is NULL, *inC2 will be set to ( 1 - *inC1 ) */
+		Note: If inC2 is 0, *inC2 will be set to ( 1 - *inC1 ) */
 		void				Chain( ExprVirtualMachine& inVM, float* inC1, float* inC2 );
 		
 		static ExprUserFcn	sZeroFcn;

@@ -70,7 +70,7 @@ class XPtrList : protected UtilStr {
 
 		// 	Allows easy dynamic array usage.  Simple use any index and XPtrList will expand to meet that size.
 		//	Impt:	Zero based indexing is used here!! (In contrast to Fetch())
-		//	Note:	Elements that are newly accessed are initialized to NULL
+		//	Note:	Elements that are newly accessed are initialized to 0
 		//	Note:	Indexs below 0 lead to sDummy;
 		//	Note:	Since caller has access to changes values, any current sorting fcn is not used
 		void*&					operator[] ( const long inIndex );			

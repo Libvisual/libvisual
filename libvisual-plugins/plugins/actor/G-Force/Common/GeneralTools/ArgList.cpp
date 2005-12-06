@@ -12,7 +12,7 @@
 
 ArgList::ArgList() {
 	
-	mHeadArg = NULL;
+	mHeadArg = 0;
 }
 
 
@@ -29,7 +29,7 @@ void ArgList::Clear() {
 
 	if ( mHeadArg ) {
 		delete mHeadArg;
-		mHeadArg = NULL;
+		mHeadArg = 0;
 	}
 }
 
@@ -94,7 +94,7 @@ Arg* ArgList::FetchArg( long inID ) const {
 		arg = arg -> mNext;
 	}
 	
-	return NULL;
+	return 0;
 }
 
 
@@ -103,7 +103,7 @@ Arg* ArgList::FetchArg( long inID ) const {
 
 
 void ArgList::DeleteArg( long inArgID ) {
-	Arg* prev = NULL, *arg = mHeadArg;
+	Arg* prev = 0, *arg = mHeadArg;
 	
 	while ( arg ) {
 		if ( arg -> GetID() == inArgID ) {
@@ -111,9 +111,9 @@ void ArgList::DeleteArg( long inArgID ) {
 				prev -> mNext = arg -> mNext;
 			else
 				mHeadArg = arg -> mNext;
-			arg -> mNext = NULL;
+			arg -> mNext = 0;
 			delete arg;
-			arg = NULL; }
+			arg = 0; }
 		else {
 			prev = arg;
 			arg = arg -> mNext;
@@ -212,7 +212,7 @@ const UtilStr* ArgList::GetStr( long inArgID ) const {
 			return (UtilStr*) arg -> GetData();
 	}
 	
-	return NULL;
+	return 0;
 }
 
 

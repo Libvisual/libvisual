@@ -81,7 +81,7 @@ void UtilStr::init() {
 
 	mStrLen			= 0;
 	mBufSize 		= 0;
-	mBuf			= NULL;
+	mBuf			= 0;
 }
 
 
@@ -350,7 +350,7 @@ void UtilStr::Insert( unsigned long inPos, char inChar, long inNumTimes ) {
 	if ( inPos > oldLen )
 		inPos = oldLen;
 	
-	Insert( inPos, (char*) NULL, inNumTimes );
+	Insert( inPos, (char*) 0, inNumTimes );
 	numAddable = length() - oldLen;
 	if ( numAddable > 0 && mBuf ) {
 		while ( inNumTimes > 0 ) {
@@ -379,7 +379,7 @@ void UtilStr::Insert( unsigned long inPos, const char* inSrce, long inBytes ) {
 	if ( inPos >= len )
 		Append( inSrce, inBytes );
 	else if ( inBytes > 0 ) {
-		Append( NULL, inBytes );
+		Append( 0, inBytes );
 		numToMove = len - inPos;
 		if ( numToMove > 0 )
 			Move( &mBuf[ inPos + inBytes + 1 ], &mBuf[ inPos + 1 ], numToMove );
@@ -1041,7 +1041,7 @@ long UtilStr::LCSMatchScore( const char* inStr, long ALen ) const {
 
 /*
 bool UtilStr::equalTo( const char* inStr, int inFlags ) const {
-	bool		stillOk 			= inStr != NULL;
+	bool		stillOk 			= inStr != 0;
 	char*		thisStr 			= getCStr();
 	char		c1 = 1, c2			= 2;
 	bool		caseInsensitive 	= inFlags & cCaseInsensitive != 0;

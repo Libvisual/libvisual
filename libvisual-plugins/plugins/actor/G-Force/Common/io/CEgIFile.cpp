@@ -75,7 +75,7 @@
 
 #define __OSROpen( specPtr )			mFile = (long) ::CreateFile( (char*) (specPtr -> OSSpec()), GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0 );	\
 										if ( ((void*) mFile) == INVALID_HANDLE_VALUE ) {														\
-											mFile = NULL;																						\
+											mFile = 0;																						\
 											mOSErr = ::GetLastError();																			\
 										}
 
@@ -189,7 +189,7 @@ long CEgIFile::size() {
 		#endif
 		
 		#ifdef EG_WIN32
-		retSize = ::SetFilePointer( (void*) mFile, 0, NULL, FILE_END );
+		retSize = ::SetFilePointer( (void*) mFile, 0, 0, FILE_END );
 		#endif
 	}
 	
@@ -241,7 +241,7 @@ void CEgIFile::diskSeek( long inPos ) {
 		#endif
 		
 		#ifdef EG_WIN32
-		if ( ::SetFilePointer( (void*) mFile, inPos, NULL, FILE_BEGIN ) != inPos )
+		if ( ::SetFilePointer( (void*) mFile, inPos, 0, FILE_BEGIN ) != inPos )
 			throwErr( cSeekErr );
 		#endif
 	}	
