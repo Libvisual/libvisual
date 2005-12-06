@@ -262,15 +262,15 @@ void _oink_scene_background_select (OinksiePrivate *priv, uint8_t *buf)
 			break;
 
 		case 2:
-			_oink_gfx_background_circles_star (priv, priv->drawbuf, 242, 
+			_oink_gfx_background_circles_star (priv, priv->drawbuf, 242,
 					priv->screen_xysmallest / 4,
-					5, 6, priv->audio.bass * 2, priv->audio.tripple * 30, 
+					5, 6, priv->audio.bass * 2, priv->audio.tripple * 30,
 					priv->screen_halfwidth, priv->screen_halfheight);
 			break;
 
 		default:
 			break;
-	}		
+	}
 
 }
 
@@ -279,8 +279,6 @@ void _oink_scene_blur_select (OinksiePrivate *priv, uint8_t *buf)
 	switch (priv->config.blurmode)
 	{
 		case 0:
-			/*	FIXME: blur simple totally sucks */
-			/*		__gfx_blur_simple (buf); */
 			_oink_gfx_blur_midstrange (priv, buf);
 			break;
 
@@ -290,7 +288,7 @@ void _oink_scene_blur_select (OinksiePrivate *priv, uint8_t *buf)
 
 		case 2:
 			_oink_gfx_blur_midstrange (priv, buf);
-			break;	
+			break;
 
 		default:
 			_oink_gfx_blur_midstrange (priv, buf);
@@ -340,7 +338,7 @@ void _oink_scene_scope_select (OinksiePrivate *priv, uint8_t *buf, int color, in
 	default:
 		_oink_gfx_scope_bulbous (priv, buf, color, height);
 		break;
-	}		
+	}
 }
 
 void _oink_scene_randomize (OinksiePrivate *priv)

@@ -55,10 +55,10 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 	int x = 0;
 
 	int xc = 0;
-	
+
 	int xc1r = 0;
 	int xc2r = 0;
-	
+
 	int xc_old = 0;
 
 	int xc1_oldr = 0;
@@ -69,7 +69,7 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 
 	int y1r;
 	int y2r;
-	
+
 	int y1_old;
 	int y2_old;
 
@@ -78,20 +78,20 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 
 	int base = priv->screen_halfheight - (space / 2);
 	int base2 = priv->screen_halfheight + (space / 2);
-		
-	y1_old = ((base) + (priv->audio.pcm[0][0 >> 1])) * height;
-	y2_old = ((base2) + (priv->audio.pcm[1][0 >> 1])) * height;
+
+	y1_old = ((base) + (priv->audio.pcm[0][0]) * height);
+	y2_old = ((base2) + (priv->audio.pcm[1][0]) * height);
 
 	if (rotate != 0)
 	{
 		y1_oldr = y1_old - priv->screen_halfheight;
 		y2_oldr = y2_old - priv->screen_halfheight;
-		
+
 		_oink_pixel_rotate (&xc1_oldr, &y1_oldr, rotate);
 		_oink_pixel_rotate (&xc2_oldr, &y2_oldr, rotate);
-	} 
-	
-	for (x = 0; x < priv->screen_width && x < 512; x++)
+	}
+
+	for (x = 1; x < priv->screen_width && x < 512; x++)
 	{
 		y1 = ((base) + (priv->audio.pcm[0][x >> 1]) * height);
 		y2 = ((base2) + (priv->audio.pcm[1][x >> 1]) * height);
@@ -107,12 +107,12 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 			y2= priv->screen_height - 1;
 
 		xc = x + adder;
-		
+
 		if (rotate != 0)
 		{
 			xc1r = xc - priv->screen_halfwidth;
 			xc2r = xc - priv->screen_halfwidth;
-			
+
 			xc1_oldr = xc_old - priv->screen_halfwidth;
 			xc2_oldr = xc_old - priv->screen_halfwidth;
 
@@ -140,7 +140,7 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 			_oink_gfx_vline (priv, buf, color1, xc, y1, y1_old);
 			_oink_gfx_vline (priv, buf, color2, xc, y2, y2_old);
 		}
-		
+
 		y1_old = y1;
 		y2_old = y2;
 
@@ -151,17 +151,17 @@ void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int
 void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int height)
 {
 	int adder = priv->screen_width > 512 ? (priv->screen_width - 512) / 2 : 0;
-	float tabadd = priv->screen_width > 512 ? ((float) OINK_TABLE_NORMAL_SIZE / 512.00) / 2.00 : 
-		       ((float) OINK_TABLE_NORMAL_SIZE / priv->screen_width) / 2.00;
+	float tabadd = priv->screen_width > 512 ? ((float) OINK_TABLE_NORMAL_SIZE / 512.00) / 2.00 :
+		((float) OINK_TABLE_NORMAL_SIZE / priv->screen_width) / 2.00;
 	float tab = 0;
 	int x;
 	int y;
 	int y2;
 	int y_old;
 
-	y = ((priv->screen_halfheight) + (((priv->audio.pcm[2][0]) * height) * _oink_table_sin[(int) tab])); 
+	y = ((priv->screen_halfheight) + (((priv->audio.pcm[2][0]) * height) * _oink_table_sin[(int) tab]));
 
-        y_old = y;
+	y_old = y;
 
 	for (x = 0; x < priv->screen_width && x < 512; x++)
 	{
@@ -170,7 +170,7 @@ void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int
 		y = ((priv->screen_halfheight) + (((priv->audio.pcm[2][x >> 1]) * height) * _oink_table_sin[(int) tab]));
 		y2 = ((priv->screen_halfheight) + ((((priv->audio.pcm[2][x >> 1]) * height) * _oink_table_sin[(int) tab]) * 1.4));
 
-		if (y < 0) 
+		if (y < 0)
 			y = 0;
 		else if (y > priv->screen_height)
 			y = priv->screen_height - 1;
@@ -184,7 +184,7 @@ void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int
 		_oink_gfx_vline (priv, buf, color, x + adder, y, y_old);
 
 		y_old = y;
-	}			
+	}
 }
 
 void _oink_gfx_scope_normal (OinksiePrivate *priv, uint8_t *buf, int color, int height)
@@ -233,11 +233,11 @@ void _oink_gfx_scope_circle (OinksiePrivate *priv, uint8_t *buf, int color, int 
 	ys2 = (_oink_table_cos[tab] * ((priv->audio.pcm[2][0]) + size)) + y;
 
 	xcon = xs2;
-	ycon = ys2;	
+	ycon = ys2;
 
 	for (i = 0; i < 50; i++)
 	{
-		xs1 = (_oink_table_sin[tab] * ((priv->audio.pcm[2][i >> 1]) + size)) + x;	
+		xs1 = (_oink_table_sin[tab] * ((priv->audio.pcm[2][i >> 1]) + size)) + x;
 		ys1 = (_oink_table_cos[tab] * ((priv->audio.pcm[2][i >> 1]) + size)) + y;
 
 		tab += adder;

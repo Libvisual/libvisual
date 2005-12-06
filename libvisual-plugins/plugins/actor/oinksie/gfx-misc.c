@@ -23,6 +23,8 @@
 
 #include <string.h>
 
+#include <math.h>
+
 #include "common.h"
 #include "config.h"
 #include "audio.h"
@@ -33,7 +35,7 @@
 inline int _oink_gfx_pixel_get (OinksiePrivate *priv, uint8_t *buf, int x, int y)
 {
 	int pos = (y * priv->screen_width) + x;
-		
+
 	if (pos < priv->screen_size && pos > 0)
 		return buf[pos];
 
