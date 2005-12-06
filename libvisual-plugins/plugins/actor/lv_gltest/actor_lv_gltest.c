@@ -265,6 +265,7 @@ int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	float pcm[256];
 	int i,c;
 	int y;
+	float ff;
 	GLfloat val;
 
 	int xscale[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
@@ -288,19 +289,20 @@ int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	for (i = 0; i < NUM_BANDS; i++)
 	{
-		for(c = xscale[i], y = 0; c < xscale[i + 1]; c++)
+		ff = 0;
+		for (c = xscale[i]; c < xscale[i + 1]; c++)
 		{
-			if(freq[c] > y)
-				y = freq[c];
+			if(freq[c] > ff)
+				ff = freq[c] * video->height;
 		}
-		y >>= 7;
-		if (y > 0)
-			val = (log(y) * priv->scale);
+
+		if (ff > 0)
+			val = (log(ff) * priv->scale) * 0.7;
 		else
 			val = 0;
 
 
-		priv->heights[0][i] = val;
+		priv->heights[0][i] = -val;
 
 
 	}

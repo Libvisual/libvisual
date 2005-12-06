@@ -300,7 +300,6 @@ void _oink_scene_blur_select (OinksiePrivate *priv, uint8_t *buf)
 
 void _oink_scene_scope_select (OinksiePrivate *priv, uint8_t *buf, int color, int height)
 {
-	priv->config.scopemode = 2;
 	switch (priv->config.scopemode)
 	{
 		case 0:
