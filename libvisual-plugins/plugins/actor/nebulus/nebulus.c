@@ -138,6 +138,13 @@ int lv_nebulus_init (VisPluginData *plugin)
 
 	visual_buffer_init_allocate (&priv->pcmbuf, 1024 * sizeof (float), visual_buffer_destroyer_free);
 
+	visual_video_init (&child_image);
+	visual_video_init (&energy_image);
+	visual_video_init (&tentacle_image);
+	visual_video_init (&tunnel_image);
+	visual_video_init (&twist_image);
+	visual_video_init (&background_image);
+
 	init_gl();
 
 	return 0;
@@ -348,7 +355,7 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 
 	visual_buffer_set_data_pair (&buf, freq, sizeof (freq));
 
-	visual_audio_spectrum_from_spectrum (&buf, &priv->pcmbuf, FALSE);
+	visual_audio_get_spectrum_for_sample (&buf, &priv->pcmbuf, FALSE);
 
 	fbuf = visual_buffer_get_data (&priv->pcmbuf);
 
