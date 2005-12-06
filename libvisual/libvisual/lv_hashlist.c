@@ -39,8 +39,20 @@ static int hashlist_destroy (VisCollection *collection)
 	VisListEntry *le = NULL;
 
 	/* Destroy all entries in hashlist first */
-	while (visual_list_next (hashlist->list, &le) != NULL)
+	while (visual_list_next (hashlist->list, &le) != NULL) {
+		VisListEntry *prev = le;
+		VisListEntry *next = le;
+
+		visual_list_prev (hashlist->list, &prev);
+		visual_list_next (hashlist->list, &next);
+
 		visual_hashlist_remove_list_entry (hashlist, le);
+
+		if (next == NULL)
+			break;
+
+		le = prev;
+	}
 
 	/* Destroy the rest */
 	if (hashlist->list != NULL)

@@ -52,7 +52,7 @@ static int hashmap_iter_has_more (VisCollectionIter *iter, VisCollection *collec
 static void hashmap_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
 static void *hashmap_iter_get_data (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
 
-static int integer_hash (int key);
+static int integer_hash (uint32_t key);
 static int string_hash (char *key);
 static int get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype);
 
@@ -170,7 +170,7 @@ static void *hashmap_iter_get_data (VisCollectionIter *iter, VisCollection *coll
 
 
 /* Thomas Wang's 32 bit Mix Function: http://www.concentric.net/~Ttwang/tech/inthash.htm */
-static int integer_hash (int key)
+static int integer_hash (uint32_t key)
 {
 	key += ~(key << 15);
 	key ^=  (key >> 10);
@@ -188,7 +188,7 @@ static int string_hash (char *key)
 	char *p;
 	int hash = 0;
 
-	for (p = key; *p != '\0'; p += 1)
+	for (p = key; *p != '\0'; p++)
 		hash = (hash << 5) - hash  + *p;
 
 	return hash;

@@ -40,8 +40,20 @@ static int cache_dtor (VisObject *object)
 	VisListEntry *le = NULL;
 
 	/* Destroy all entries in cache first */
-	while (visual_list_next (cache->list, &le) != NULL)
+	while (visual_list_next (cache->list, &le) != NULL) {
+		VisListEntry *prev = le;
+		VisListEntry *next = le;
+
+		visual_list_prev (cache->list, &prev);
+		visual_list_next (cache->list, &next);
+
 		cache_remove_list_entry (cache, le);
+
+		if (next == NULL)
+			break;
+
+		le = prev;
+	}
 
 	/* Destroy the rest */
 	if (cache->list != NULL)
@@ -62,7 +74,8 @@ static int cache_remove_list_entry (VisCache *cache, VisListEntry *le)
 
 	centry = le->data;
 
-	visual_hashmap_remove_string (cache->index, centry->key, FALSE);
+	if (centry->key != NULL)
+		visual_hashmap_remove_string (cache->index, centry->key, FALSE);
 
 	if (cache->destroyer != NULL)
 		cache->destroyer (centry->data);
@@ -145,8 +158,20 @@ int visual_cache_clear (VisCache *cache)
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
 
 	/* Destroy all entries in cache first */
-	while (visual_list_next (cache->list, &le) != NULL)
+	while (visual_list_next (cache->list, &le) != NULL) {
+		VisListEntry *prev = le;
+		VisListEntry *next = le;
+
+		visual_list_prev (cache->list, &prev);
+		visual_list_next (cache->list, &next);
+
 		cache_remove_list_entry (cache, le);
+
+		if (next == NULL)
+			break;
+
+		le = prev;
+	}
 
 	if (cache->index != NULL)
 		visual_object_unref (VISUAL_OBJECT (cache->index));
@@ -211,7 +236,7 @@ int visual_cache_put (VisCache *cache, char *key, void *data)
 		visual_timer_init (&centry->timer);
 		visual_timer_start (&centry->timer);
 
-		centry->key = key;
+		centry->key = strdup (key);
 		centry->data = data;
 
 		visual_list_add (cache->list, centry);
