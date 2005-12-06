@@ -36,13 +36,14 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PARAMENTRY_CALLBACK(obj)			(VISUAL_CHECK_CAST ((obj), VisParamEntryCallback))
 #define VISUAL_PARAMENTRY(obj)				(VISUAL_CHECK_CAST ((obj), VisParamEntry))
 
-#define VISUAL_PARAM_LIST_ENTRY(name)			{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_NULL }
-#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_STRING, string, {0, 0, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_INTEGER, NULL, {val, 0, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_FLOAT, NULL, {0, val, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_DOUBLE, NULL, {0, 0, val}}
-#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ {}, NULL, name, VISUAL_PARAM_ENTRY_TYPE_COLOR, NULL, {0, 0, 0}, {{}, r, g, b, 0}}
-#define VISUAL_PARAM_LIST_END				{ {}, NULL, NULL, VISUAL_PARAM_ENTRY_TYPE_END }
+/* Use 0 for pointers instead of NULL because of C++ programs shocking on ((void *) 0) */
+#define VISUAL_PARAM_LIST_ENTRY(name)			{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_NULL }
+#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_STRING, string, {0, 0, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_INTEGER, 0, {val, 0, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_FLOAT, 0, {0, val, 0}}
+#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_DOUBLE, 0, {0, 0, val}}
+#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_COLOR, 0, {0, 0, 0}, {{}, r, g, b, 0}}
+#define VISUAL_PARAM_LIST_END				{ {}, 0, 0, VISUAL_PARAM_ENTRY_TYPE_END }
 
 #define VISUAL_PARAM_CALLBACK_ID_MAX	2147483647
 

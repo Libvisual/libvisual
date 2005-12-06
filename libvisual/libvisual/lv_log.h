@@ -125,7 +125,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	va_list va;
 	char sever_msg[10];
 	VisLogVerboseness v;
-	
+
 	assert (fmt != NULL);
 
 	va_start (va, fmt);
