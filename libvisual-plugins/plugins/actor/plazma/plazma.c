@@ -306,7 +306,8 @@ static void cercle_3d (PlazmaPrivate *priv, float alpha, float beta, float gamma
 		{
 			x = RESFACTXF ((i - ((float) nb_x) / 2) * 30);
 			y = RESFACTYF ((j - ((float) nb_y) / 2) * 30);
-			z = RESFACTXF ((float) (priv->render_buffer[i + (nb_x/32)*j])*64);
+			z = RESFACTXF (-((float) (priv->render_buffer[i + (nb_x/32)*j])*32000));
+
 			rotation_3d (&x, &y, &z, alpha, beta, gamma);
 			perspective (&x, &y, &z, persp, dist_cam);
 			ix = (int) x;
@@ -396,7 +397,7 @@ static void do_tourni_spec(PlazmaPrivate *priv)
 	}
 	for (i=0 ; i<l ; i++ , k++) {
 		x = cos(k/(v*priv->rot_tourni))*amplitude+(priv->render_buffer[i>>2]/j);
-		y = sin(k/(v*0.6))*amplitude+(priv->render_buffer[i>>2]/20);
+		y = sin(k/(v*0.6))*amplitude+(priv->render_buffer[i>>2]);
 		aff_pixel (priv, x*cos(k*vr)+y*sin(k*vr)+halfwidth, x*sin(k*vr)-y*cos(k*vr)+halfheight, col_tourni);
 	}
 	priv->k_put = k;
@@ -449,7 +450,7 @@ static void do_spectrum(PlazmaPrivate *priv)
 				coul_lines=7.4+priv->chcol0+precision+(lc2lc*2);
 				if (lc2lc2lc==0 || lc2lc2lc==1 || lc2lc2lc==5 || lc2lc2lc==6)
 					coul_lines = priv->chcol0+(lc2lc*2);
-				aff_pixel(priv, lc+lc2lc, (priv->height - 10) -((priv->render_buffer[toujours]/(l_spect+too_hard))&priv->val_maxi)+lc2lc2lc, coul_lines);
+				aff_pixel(priv, lc+lc2lc, (priv->height - 10) -((int)(((priv->render_buffer[toujours] * 32000)/(l_spect+too_hard)))&priv->val_maxi)+lc2lc2lc, coul_lines);
 			}
 		}
 		if (!too_hard)
@@ -478,7 +479,7 @@ static void do_grille_3d(PlazmaPrivate *priv)
 	else
 		grille_3d (priv, 1.1, 0, priv->compt_grille_3d/30, 200, 20, dis_col, priv->width / 2, priv->height / 5);
 	priv->compt_grille_3d += 0.1;
-}	
+}
 
 static void do_cercle_3d(PlazmaPrivate *priv)
 {
@@ -490,7 +491,7 @@ static void do_cercle_3d(PlazmaPrivate *priv)
 	else
 		cercle_3d (priv, 3.2, 0, priv->compt_cercle_3d/30, 200, 80, dis_col, priv->width / 2, priv->height / 2);
 	priv->compt_cercle_3d -= 0.1;
-}	
+}
 
 static void what_display(PlazmaPrivate *priv)
 {

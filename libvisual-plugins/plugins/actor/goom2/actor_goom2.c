@@ -179,7 +179,7 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	for (i = 0; i < 512; i++) {
 		pcmdata[0][i] = fpcmdata[0][i] * 32767;
-		pcmdata[1][i] = fpcmdata[2][i] * 32767;
+		pcmdata[1][i] = fpcmdata[1][i] * 32767;
 	}
 
 	/* Retrieve the songinfo */

@@ -38,7 +38,9 @@
 
 #include <libvisual/libvisual.h>
 
-#define NUM_BANDS	16
+#define BARS	16
+
+static int xranges[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
 
 typedef struct {
 	GLfloat y_angle;
@@ -48,7 +50,6 @@ typedef struct {
 	GLfloat z_angle;
 	GLfloat z_speed;
 	GLfloat heights[16][16];
-	GLfloat scale;
 
 	int transparant;
 } GLtestPrivate;
@@ -152,8 +153,6 @@ int lv_gltest_init (VisPluginData *plugin)
 			priv->heights[y][x] = 0.0;
 		}
 	}
-
-	priv->scale = 1.0 / log (256.0);
 
 	priv->x_speed = 0.0;
 	priv->y_speed = 0.5;
@@ -268,8 +267,6 @@ int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	float ff;
 	GLfloat val;
 
-	int xscale[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
-
 	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
 	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
 
@@ -279,32 +276,24 @@ int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
 
-	for (y = 15; y > 0; y--)
+	for (y = BARS - 1; y > 0; y--)
 	{
-		for(i = 0; i < 16; i++)
+		for(i = 0; i < BARS; i++)
 		{
 			priv->heights[y][i] = priv->heights[y - 1][i];
 		}
 	}
 
-	for (i = 0; i < NUM_BANDS; i++)
+	for (i = 0; i < BARS; i++)
 	{
 		ff = 0;
-		for (c = xscale[i]; c < xscale[i + 1]; c++)
+		for (c = xranges[i]; c < xranges[i + 1]; c++)
 		{
-			if(freq[c] > ff)
+			if (freq[c] > ff)
 				ff = freq[c] * video->height;
 		}
 
-		if (ff > 0)
-			val = (log(ff) * priv->scale) * 0.7;
-		else
-			val = 0;
-
-
-		priv->heights[0][i] = -val;
-
-
+		priv->heights[0][i] = ff * 2;
 	}
 
 	priv->x_angle += priv->x_speed;

@@ -33,7 +33,7 @@ typedef struct {
 
 typedef struct {
 	float		 pcm_buffer[1024];
-	uint16_t	 render_buffer[512];
+	float		 render_buffer[512];
 
 	int		 bass;
 	int		 state;

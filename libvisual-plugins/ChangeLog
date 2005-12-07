@@ -1,5 +1,9 @@
 2005-12-07  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/*: Random plugin fixes.
+
+2005-12-07  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/nebulus/*: Don't crash directly (still a big mess).
 
 2005-12-06  Dennis Smit  <ds@nerds-incorporated.org>

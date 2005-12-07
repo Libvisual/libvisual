@@ -172,12 +172,12 @@ int lv_nebulus_cleanup (VisPluginData *plugin)
 	delete_gl_texture(childbg);
 	delete_gl_texture(energy);
 
-	visual_video_free_buffer (&child_image);
-	visual_video_free_buffer (&energy_image);
-	visual_video_free_buffer (&tentacle_image);
-	visual_video_free_buffer (&tunnel_image);
-	visual_video_free_buffer (&twist_image);
-	visual_video_free_buffer (&background_image);
+	visual_object_unref (VISUAL_OBJECT (&child_image));
+	visual_object_unref (VISUAL_OBJECT (&energy_image));
+	visual_object_unref (VISUAL_OBJECT (&tentacle_image));
+	visual_object_unref (VISUAL_OBJECT (&tunnel_image));
+	visual_object_unref (VISUAL_OBJECT (&twist_image));
+	visual_object_unref (VISUAL_OBJECT (&background_image));
 
 	visual_object_unref (VISUAL_OBJECT (&priv->pcmbuf));
 
@@ -220,7 +220,7 @@ static int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int wid
 
 	point_general->WIDTH = width;
 	point_general->HEIGHT = height;
-	
+
 	return 0;
 }
 

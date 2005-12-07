@@ -1,4 +1,4 @@
-/* Libvisual-plugins - Standard plugins for libvisual
+/* lIBvisual-plugins - Standard plugins for libvisual
  * 
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -344,7 +344,7 @@ static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
 
 	/* Make our data from the freq data */
 	for (i = 0; i < 256; i++) {
-		priv->gdata[i] = (float) freq[i] / 2000.0;
+		priv->gdata[i] = (float) freq[i] * 8000.0;
 
 		if (priv->gdata[i] > 1.0)
 			priv->gdata[i] = 1.0;

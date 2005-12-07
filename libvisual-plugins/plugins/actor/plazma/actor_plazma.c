@@ -229,7 +229,6 @@ int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer pcmback;
 	VisBuffer fbuf;
-	float freq[256];
 	int i;
 
 	visual_buffer_set_data_pair (&pcmback, priv->pcm_buffer, sizeof (float) * 1024);
@@ -239,27 +238,23 @@ int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 			1.0,
 			1.0);
 
-	visual_buffer_set_data_pair (&fbuf, freq, sizeof (freq));
+	visual_buffer_set_data_pair (&fbuf, priv->render_buffer, sizeof (float) * 256);
 	visual_audio_get_spectrum_for_sample (&fbuf, &pcmback, TRUE);
 
 	/* Analyse spectrum data */
 	priv->bass = 0;
 	for (i = 0; i < 6; i++)
-		priv->bass += (freq[i]);
+		priv->bass += (priv->render_buffer[i]);
 
 	priv->old_state = priv->state;
 
 	if (priv->bass_sensibility >= 0)
-		priv->state += (priv->bass / 400) + 1 + (priv->bass_sensibility / 2);
+		priv->state += (priv->bass) + 1 + (priv->bass_sensibility / 2);
 	if (priv->bass_sensibility < 0)   {
-		priv->state += (priv->bass / 400) + 1 - (abs (priv->bass_sensibility / 2));
+		priv->state += (priv->bass) + 1 - (abs (priv->bass_sensibility / 2));
 		if (priv->state < (priv->old_state + 1))
 			priv->state = priv->old_state + 1;
 	}
-
-	/* FIXME use floats internally as well */
-	for (i = 0; i < 256; i++)
-		priv->render_buffer[i] = freq[i] * 256;
 
 	priv->video = video;
 	priv->pixel = visual_video_get_pixels (video);
