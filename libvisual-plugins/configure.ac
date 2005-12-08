@@ -310,6 +310,25 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([nastyfft],
+            AC_HELP_STRING([--disable-nastyfft],
+                           [Do not build nastyfft plugin @<:@default=enabled@:>@]),
+	    [nastyfft=$enableval],
+	    [nastyfft=yes])
+AC_MSG_CHECKING([whether to build nastyfft plugin])
+if test x$nastyfft = xyes; then
+  AC_MSG_RESULT([yes])
+  if test x$opengl = xyes; then
+    build_actor="$build_actor nastyfft"
+    AC_SUBST([NASTYFFT], ['actor_nastyfft.la'])
+  else
+    AC_MSG_WARN([*** No OpenGL found.
+		nastyfft plugin will not be built.])
+  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([madspin],
             AC_HELP_STRING([--disable-madspin],
                            [Do not build Madspin plugin @<:@default=enabled@:>@]),
@@ -680,6 +699,7 @@ AC_CONFIG_FILES([
 	plugins/actor/lv_analyzer/Makefile
 	plugins/actor/lv_scope/Makefile
 	plugins/actor/lv_gltest/Makefile
+	plugins/actor/nastyfft/Makefile
 	plugins/actor/madspin/Makefile
 	plugins/actor/dancingparticles/Makefile
 	plugins/actor/pseudotoad_flower/Makefile
