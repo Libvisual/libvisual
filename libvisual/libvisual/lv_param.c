@@ -264,10 +264,10 @@ int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer 
 		/* Already exists, overwrite */
 		if (tempparam != NULL) {
 			visual_param_entry_set_from_param (tempparam, srcparam);
-			
+
 			continue;
 		}
-		
+
 		/* Does not yet exist, create a new entry */
 		destparam = visual_param_entry_new (visual_param_entry_get_name (srcparam));
 		visual_param_entry_set_from_param (destparam, srcparam);
@@ -323,11 +323,11 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
 
 	while ((param = visual_list_next (&paramcontainer->entries, &le)) != NULL) {
 		param = le->data;
-		
+
 		if (strcmp (param->name, name) == 0)
 			return param;
 	}
-	
+
 	return NULL;
 }
 
@@ -408,7 +408,7 @@ int visual_param_entry_remove_callback (VisParamEntry *param, int id)
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL) {
-		
+
 		if (id == pcall->id) {
 			visual_list_delete (&param->callbacks, &le);
 

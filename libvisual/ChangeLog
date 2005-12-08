@@ -1,3 +1,12 @@
+2005-12-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c (visual_audio_samplepool_channel_flush_old):
+	Revamped flushing loop (again), it's good now! :)
+
+	* libvisual/lv_cache.c (cache_remove_list_entry): Take a
+	VisListEntry** instead of a VisListEntry* so it updates the pointer in
+	the outer loops as well.
+
 2005-12-06  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_cache.c: Fixed crashers.

@@ -710,31 +710,11 @@ int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channe
 
 		visual_time_difference (&diff, &sample->timestamp, &curtime);
 
-		/* FIXME: check if we have enough data */
-/*
-		printf ("Jow %d %d | %d %d | %d %d\n",
-				curtime.tv_sec, curtime.tv_usec,
-				sample->timestamp.tv_sec, sample->timestamp.tv_usec,
-				diff.tv_sec, diff.tv_usec);
-*/
-		/* add buffer time length to the time, so we always have N amount of seconds of audio. */
-
 		if (visual_time_past (&diff, &channel->samples_timeout) == TRUE) {
-			VisListEntry *prev = le;
-			VisListEntry *next = le;
-
-			visual_list_prev (list, &prev);
-			visual_list_next (list, &next);
-
 			visual_list_destroy (list, &le);
 
-			/* No more entries, don't try to do magic */
-			if (next == NULL)
+			if (le == NULL)
 				break;
-
-			/* More entries, set current to the previous entry, so in the
-			 * next iteration the next valid entry gets selected */
-			le = prev;
 		}
 	}
 

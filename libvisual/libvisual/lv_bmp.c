@@ -50,10 +50,10 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	uint8_t *data;
 	int i;
 	int pad;
-	
+
 	pad = (4 - (video->pitch & 3)) & 3;
 	data = (uint8_t *) visual_video_get_pixels (video) + (video->height * video->pitch);
-	
+
 	switch (depth) {
 		case 24:
 		case 8:
@@ -68,7 +68,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 			}
 			break;
 
-		case 4: 
+		case 4:
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 4 bpp pixels aka 2 pixels per byte */
 				uint8_t *col = data - video->pitch;
@@ -80,10 +80,10 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 					*col++ = p >> 4;
 					*col++ = p & 0xf;
 				}
-				
-				if (video->pitch & 1) 
+
+				if (video->pitch & 1)
 					*col++ = fgetc (fp) >> 4;
-				
+
 				if (pad)
 					fseek (fp, pad, SEEK_CUR);
 			}
@@ -103,7 +103,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 						p <<= 1;
 					}
 				}
-				
+
 				if (video->pitch & 7) {
 					uint8_t p = fgetc (fp);
 					uint8_t count = video->pitch & 7;
@@ -112,7 +112,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 						p <<= 1;
 					}
 				}
-			
+
 				if (pad)
 					fseek (fp, pad, SEEK_CUR);
 			}
@@ -120,9 +120,10 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	}
 
 	return VISUAL_OK;
-	
+
 err:
 	visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
+
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
 
@@ -132,7 +133,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	uint8_t p;
 	int c, y, k, pad;
 	int processing = 1;
-	
+
 	end = (uint8_t *)visual_video_get_pixels (video) + (video->height * video->pitch);
 	col = end - video->pitch;
 	y = video->height - 1;
@@ -140,11 +141,11 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	do {
 		if ((c = fgetc (fp)) == EOF)
 			goto err;
-	
+
 		if (c) {
 			if (y < 0)
 				goto err;
-			
+
 			/* Encoded mode */
 			p = fgetc (fp); /* Color */
 			if (mode == BI_RLE8) {
@@ -168,7 +169,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 		switch (c) {
 			case EOF:
 				goto err;
-				
+
 			case 0: /* End of line */
 				y--;
 				col = (uint8_t *) visual_video_get_pixels (video) + video->pitch * y;
@@ -194,14 +195,14 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 
 				if (col < (uint8_t *)visual_video_get_pixels (video))
 					goto err;
-				
+
 				break;
 
 			default: /* Absolute mode: 3 - 255 */
 				if (mode == BI_RLE8) {
 					pad = c & 1;
 					while (c-- && col < end)
-						*col++ = fgetc (fp);	
+						*col++ = fgetc (fp);
 				} else {
 					pad = ((c + 1) >> 1) & 1;
 					k = c >> 1; /* Even count */
@@ -218,7 +219,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 				if (pad)
 					fgetc (fp);
 				break;
-				
+
 		}
 	} while (processing);
 
@@ -226,6 +227,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 
 err:
 	visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
+
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
 
@@ -417,7 +419,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	}
 
 	fclose (fp);
-	if (!error) 
+	if (!error)
 		return VISUAL_OK;
 
 	visual_video_free_buffer (video);
@@ -439,7 +441,7 @@ VisVideo *visual_bitmap_load_new_video (const char *filename)
 	VisVideo *video;
 
 	video = visual_video_new ();
-	
+
 	if (visual_bitmap_load (video, filename) < 0) {
 		visual_object_unref (VISUAL_OBJECT (video));
 
