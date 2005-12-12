@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_fft.hpp,v 1.3 2005-09-26 13:28:07 descender Exp $
+// $Id: lv_fft.hpp,v 1.4 2005-12-12 00:29:56 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -53,9 +53,14 @@ namespace Lv
           : Object (vis_fft_to_object (visual_fft_new (samples_in, samples_out)))
       {}
 
-      inline void perform (const float *input, float *output)
+      inline void perform (const float *input, float *output, bool normalised)
       {
-          visual_fft_perform (&vis_fft (), const_cast<float *> (input), output);
+          visual_fft_perform (&vis_fft (), const_cast<float *> (input), output, normalised ? 1 : 0);
+      }
+
+      inline int normalise (float *spectrum, int size)
+      {
+          return visual_fft_normalise (spectrum, size);
       }
 
       inline int get_spectrum_size () const

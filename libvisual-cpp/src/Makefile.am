@@ -13,7 +13,8 @@ libvisual_cpp_include_HEADERS = \
 	lv_fft.hpp		\
 	lv_time.hpp		\
 	lv_config.hpp		\
-	lv_error.hpp
+	lv_error.hpp		\
+	lv_video.hpp
 
 libvisual_cpp_la_LDFLAGS = -export-dynamic -version-info $(LVCPP_ABI_VERSION)
 libvisual_cpp_la_CXXFLAGS = $(LV_CFLAGS)
@@ -30,5 +31,6 @@ libvisual_cpp_la_SOURCES =	\
 	lv_random.cpp		\
 	lv_fft.cpp		\
 	lv_time.cpp		\
-	lv_config.cpp
+	lv_config.cpp		\
+	lv_video.cpp
 
