@@ -873,7 +873,7 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
-int visual_video_get_boundry (VisVideo *video, VisRectangle *rect)
+int visual_video_get_boundary (VisVideo *video, VisRectangle *rect)
 {
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
@@ -908,7 +908,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 	/* FIXME make non verbose */
 	visual_log_return_val_if_fail (visual_rectangle_is_empty (rect) == FALSE, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
 
-	visual_video_get_boundry (src, &vrect);
+	visual_video_get_boundary (src, &vrect);
 
 	/* FIXME make non verbose */
 	visual_log_return_val_if_fail (visual_rectangle_within (&vrect, rect) == TRUE, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
@@ -959,12 +959,12 @@ int visual_video_region_sub_all (VisVideo *dest, VisVideo *src)
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	visual_video_get_boundry (dest, &rect);
+	visual_video_get_boundary (dest, &rect);
 
 	return visual_video_region_sub (dest, src, &rect);
 }
 
-int visual_video_region_sub_with_boundry (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect)
+int visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect)
 {
 	VisRectangle rsrect;
 	VisRectangle sbound;
@@ -976,7 +976,7 @@ int visual_video_region_sub_with_boundry (VisVideo *dest, VisRectangle *drect, V
 
 	visual_rectangle_copy (&rsrect, srect);
 
-	visual_video_get_boundry (src, &sbound);
+	visual_video_get_boundary (src, &sbound);
 
 	/* Merge the destination and source rect, so that only the allowed parts are sub regioned */
 	visual_rectangle_clip (&rsrect, &sbound, srect);
@@ -1110,7 +1110,7 @@ int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *dr
 	visual_rectangle_copy (&ndrect, drect);
 	visual_rectangle_normalise_to (&ndrect, srect);
 
-	if ((errret = visual_video_region_sub_with_boundry (&vsrc, &ndrect, src, srect)) == VISUAL_OK)
+	if ((errret = visual_video_region_sub_with_boundary (&vsrc, &ndrect, src, srect)) == VISUAL_OK)
 		errret = visual_video_blit_overlay_custom (dest, &vsrc, drect->x, drect->y, compfunc);
 
 	visual_object_unref (VISUAL_OBJECT (&vsrc));
@@ -1142,7 +1142,7 @@ int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectang
 	visual_video_init (&svid);
 	visual_video_init (&ssrc);
 
-	visual_video_get_boundry (dest, &sbound);
+	visual_video_get_boundary (dest, &sbound);
 
 	/* check if the rectangle is in the screen, if not, don't scale and such */
 	if (visual_rectangle_within_partially (&sbound, drect) == FALSE)
@@ -1210,8 +1210,8 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
 	visual_log_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
 			src->depth != VISUAL_VIDEO_DEPTH_GL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 
-	visual_video_get_boundry (dest, &drect);
-	visual_video_get_boundry (src, &srect);
+	visual_video_get_boundary (dest, &drect);
+	visual_video_get_boundary (src, &srect);
 
 	if (visual_rectangle_within_partially (&drect, &srect) == FALSE)
 		return -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
@@ -1254,16 +1254,16 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
 	/* Retrieve sub regions */
 	visual_rectangle_set (&trect, x, y, srect.width, srect.height);
 
-	if ((ret = visual_video_region_sub_with_boundry (&dregion, &drect, dest, &trect)) != VISUAL_OK)
+	if ((ret = visual_video_region_sub_with_boundary (&dregion, &drect, dest, &trect)) != VISUAL_OK)
 		goto out;
 
-	visual_video_get_boundry (&dregion, &redestrect);
+	visual_video_get_boundary (&dregion, &redestrect);
 
 	if ((ret = visual_video_region_sub (&tempregion, srcp, &srect)) != VISUAL_OK)
 		goto out;
 
 
-	if ((ret = visual_video_region_sub_with_boundry (&sregion, &drect, &tempregion, &redestrect)) != VISUAL_OK)
+	if ((ret = visual_video_region_sub_with_boundary (&sregion, &drect, &tempregion, &redestrect)) != VISUAL_OK)
 		goto out;
 
 	/* Call blitter */
@@ -1636,15 +1636,15 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
 	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	visual_video_get_boundry (video, &vrect);
+	visual_video_get_boundary (video, &vrect);
 
 	visual_log_return_val_if_fail (visual_rectangle_within_partially (&vrect, rect) != FALSE, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
 
 	visual_video_init (&svid);
 
-	visual_video_get_boundry (video, &dbound);
+	visual_video_get_boundary (video, &dbound);
 
-	visual_video_region_sub_with_boundry (&svid, &dbound, video, rect);
+	visual_video_region_sub_with_boundary (&svid, &dbound, video, rect);
 
 	errret = visual_video_fill_color (&svid, color);
 

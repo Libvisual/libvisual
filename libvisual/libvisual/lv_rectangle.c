@@ -182,13 +182,13 @@ int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src)
 
 /**
  * Clips two VisRectangles into one, This is done by using the within parameter as the
- * boundry for the src parameter, so src is adopten so that is falls within the within parameter.
+ * boundary for the src parameter, so src is adopten so that is falls within the within parameter.
  * The final result is stored in dest. It's legal to give the same VisRectangle for the dest
  * and src VisRectangle.
  *
  * @param dest Pointer to the destination VisRectangle.
- * @param within Pointer to the boundry VisRectangle.
- * @param src Pointer to the source VisRectangle which is boundry adopted to the within parameter.
+ * @param within Pointer to the boundary VisRectangle.
+ * @param src Pointer to the source VisRectangle which is boundary adopted to the within parameter.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL or -VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS
  *	on failure.

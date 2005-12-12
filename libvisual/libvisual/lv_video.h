@@ -209,12 +209,12 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
 
 int visual_video_bpp_from_depth (VisVideoDepth depth);
 
-int visual_video_get_boundry (VisVideo *video, VisRectangle *rect);
+int visual_video_get_boundary (VisVideo *video, VisRectangle *rect);
 
 int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect);
 int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
 int visual_video_region_sub_all (VisVideo *dest, VisVideo *src);
-int visual_video_region_sub_with_boundry (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
+int visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
 
 int visual_video_composite_set_type (VisVideo *video, VisVideoCompositeType type);
 int visual_video_composite_set_colorkey (VisVideo *video, VisColor *color);
