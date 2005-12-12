@@ -14,6 +14,7 @@ int main (int argc, char **argv)
 	float audio[512];
 
 	visual_cpu_initialize ();
+	visual_fft_initialize ();
 //	visual_init (&argc, &argv);
 
 	fft = visual_fft_new (512, FFT_OUT);

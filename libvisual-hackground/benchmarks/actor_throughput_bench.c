@@ -34,6 +34,8 @@ int main (int argc, char **argv)
 	if (argc > 2)
 		visual_video_set_depth (dest, visual_video_depth_enum_from_value (atoi (argv[2])));
 
+	visual_audio_init (&audio);
+	
 	visual_video_set_dimension (dest, 640, 400);
 	visual_video_allocate_buffer (dest);
 
