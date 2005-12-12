@@ -1,3 +1,7 @@
+2005-12-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/goom2k4/*: Merged complete goom2k4.
+
 2005-12-08  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/nastyfft/*: Adding plugin (imported from

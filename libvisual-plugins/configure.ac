@@ -39,6 +39,9 @@ AC_PROG_LN_S
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
+AM_PROG_LEX
+AC_PROG_YACC
+
 # Internationalization
 ALL_LINGUAS="es_ES es_AR"
 GETTEXT_PACKAGE=libvisual-plugins
@@ -85,19 +88,6 @@ fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
 	
-PKG_CHECK_MODULES(LIBGOOM2, libgoom2 = 2k4, [libgoom="yes"], [libgoom="no"])
-if test x$libgoom = xno; then
-	AC_MSG_WARN([*** libgoom 2k4 not found.
-			The goom plugin won't be build.
-			you can download goom at http://www.ios-software.com/])
-fi
-AC_SUBST(LIBGOOM2_LIBS)
-AC_SUBST(LIBGOOM2_CFLAGS)
-if test x$libgoom = xyes; then
-  build_actor="$build_actor goom2"
-  AC_SUBST([GOOM2], ['actor_goom2.la'])
-fi
-
 AC_ARG_ENABLE([gdkpixbuf-plugin],
             AC_HELP_STRING([--disable-gdkpixbuf-plugin],
                            [Do not build GdkPixbuf visualization plugin @<:@default=enabled@:>@]),
@@ -549,6 +539,20 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([goom2k4],
+            AC_HELP_STRING([--disable-goom2k4],
+                           [Do not build goom2k4 plugin @<:@default=enabled@:>@]),
+	    [goom2k4=$enableval],
+	    [goom2k4=yes])
+AC_MSG_CHECKING([whether to build goom2k4 plugin])
+if test x$goom2k4 = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor goom2k4"
+  AC_SUBST([GOOM2K4], ['actor_goom2k4.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([alphablend],
             AC_HELP_STRING([--disable-alphablend],
                            [Do not build alphablend morph plugin @<:@default=enabled@:>@]),
@@ -711,7 +715,7 @@ AC_CONFIG_FILES([
 	plugins/actor/infinite/Makefile
 	plugins/actor/JESS/Makefile
 	plugins/actor/corona/Makefile
-	plugins/actor/goom2/Makefile
+	plugins/actor/goom2k4/Makefile
 	plugins/actor/gdkpixbuf/Makefile
 	plugins/actor/gstreamer/Makefile
 	plugins/actor/G-Force/Makefile
@@ -759,7 +763,6 @@ LIBVISUAL-PLUGINS, PLUGINS FOR LIBVISUAL $VERSION
 
 Packages found:
 libvisual:                            : ${libvis}
-libgoom2:                             : ${libgoom}
 libesd:                               : ${libesd}
 alsa:                                 : ${alsa_found}
 opengl:                               : ${opengl}
