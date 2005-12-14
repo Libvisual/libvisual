@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.1 2005-12-12 00:29:56 descender Exp $
+// $Id: lv_video.hpp,v 1.2 2005-12-14 00:43:12 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -106,7 +106,7 @@ namespace Lv
 
       void get_boundary (Rectangle& rect)
       {
-          visual_video_get_boundry (&vis_video (), &rect.vis_rect ());
+          visual_video_get_boundary (&vis_video (), &rect.vis_rect ());
       }
 
       inline bool has_allocated_buffer ()
