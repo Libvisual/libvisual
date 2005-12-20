@@ -328,6 +328,7 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output, int normalised
 
 	visual_object_unref (VISUAL_OBJECT (fcache));
 
+	/* FIXME SSEfy */
 	for (i = 0; i < fft->spectrum_size / 2; i++)
 		output[i] = sqrtf (fft->real[i] * fft->real[i] + fft->imag[i] * fft->imag[i]);
 
