@@ -532,7 +532,7 @@ const char *visual_plugin_get_prev_by_name (VisList *list, const char *name)
 static int plugin_add_dir_to_list (VisList *list, const char *dir)
 {
 	VisPluginRef **ref;
-	char temp[1024];
+	char temp[FILENAME_MAX];
 	int i, j, n;
 	size_t len;
 	int cnt = 0;
@@ -908,7 +908,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 
 		dup_info = visual_plugin_info_new ();
 		visual_plugin_info_copy (dup_info, &plug_info[i]);
-		
+
 		ref[i]->index = i;
 		ref[i]->info = dup_info;
 		ref[i]->file = strdup (pluginpath);
@@ -916,14 +916,14 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 		visual_object_unref (plug_info[i].plugin);
 		visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
 	}
-	
+
 #if defined(VISUAL_OS_WIN32)
 	FreeLibrary (handle);
 #else
 	dlclose (handle);
 #endif
 
-	*count = cnt;	
+	*count = cnt;
 
 	return ref;
 }
