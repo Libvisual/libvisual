@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Andrew Birck <birck@uiuc.edu>
  *
- * $Id:
+ * $Id: madspin.c,v 1.27 2005-12-20 18:49:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

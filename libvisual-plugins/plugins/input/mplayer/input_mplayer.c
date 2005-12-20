@@ -5,7 +5,7 @@
  * Authors: Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: input_mplayer.c,v 1.17 2005-12-20 18:49:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -90,7 +90,7 @@ const VisPluginInfo *get_plugin_info( int *count )
 			.plugname = "mplayer",
 			.name = "mplayer",
 			.author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-			.version = "$Revision: 1.16 $",
+			.version = "$Revision: 1.17 $",
 			.about = N_("Use data exported from MPlayer"),
 			.help = N_("This plugin uses data exported from 'mplayer -af export'"),
 			.license = VISUAL_PLUGIN_LICENSE_LGPL,

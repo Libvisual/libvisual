@@ -5,7 +5,7 @@
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: notch.c,v 1.2 2005-12-20 18:49:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
