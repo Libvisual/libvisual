@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: x11.c,v 1.6 2005-07-03 10:18:25 synap Exp $
+ * $Id: x11.c,v 1.7 2005-12-20 18:34:32 synap Exp $ x11.c,v 1.6 2005/07/03 10:18:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

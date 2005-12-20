@@ -4,7 +4,7 @@
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: main.c,v 1.20 2005-02-15 15:43:47 vitalyvb Exp $
+ * $Id: main.c,v 1.21 2005-12-20 18:34:32 synap Exp $ main.c,v 1.20 2005/02/15 15:43:47 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

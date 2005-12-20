@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *          Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: testactor2.c,v 1.1 2005-02-13 17:36:15 vitalyvb Exp $
+ * $Id: testactor2.c,v 1.2 2005-12-20 18:34:32 synap Exp $ testactor2.c,v 1.1 2005/02/13 17:36:15 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

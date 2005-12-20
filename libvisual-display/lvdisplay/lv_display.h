@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.h,v 1.16 2005-02-15 15:43:47 vitalyvb Exp $
+ * $Id: lv_display.h,v 1.17 2005-12-20 18:34:33 synap Exp $ lv_display.h,v 1.16 2005/02/15 15:43:47 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

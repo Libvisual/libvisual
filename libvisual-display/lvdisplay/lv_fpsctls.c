@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fpsctls.c,v 1.3 2005-02-22 13:33:03 vitalyvb Exp $
+ * $Id: lv_fpsctls.c,v 1.4 2005-12-20 18:34:33 synap Exp $ lv_fpsctls.c,v 1.3 2005/02/22 13:33:03 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
