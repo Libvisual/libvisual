@@ -88,7 +88,7 @@ void *visual_object_get_private (VisObject *object);
  * Macro that will set the data after the VisObject data to 0.
  */
 #define visual_object_clean(object, struct_type)	\
-	visual_mem_set (object + sizeof (VisObject), 0, sizeof (struct_type) - sizeof (VisObject))
+	visual_mem_set ((uint8_t *) (object) + sizeof (VisObject), 0, sizeof (struct_type) - sizeof (VisObject))
 
 VISUAL_END_DECLS
 
