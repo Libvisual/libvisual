@@ -97,7 +97,7 @@ int visual_event_init (VisEvent *event)
 	visual_object_set_allocated (VISUAL_OBJECT (event), FALSE);
 
 	/* Set the VisEvent data */
-	//visual_object_clean (VISUAL_OBJECT (event), VisEvent); // FIXME wtf!
+	visual_object_clean (VISUAL_OBJECT (event), VisEvent); // FIXME wtf!
 // (VisObject *) object + sizeof(VisObject) == &object[sizeof(VisOBject)]
 //	buf = event;
 //	printf ("ja %p %p\n", (VisObject *) event + sizeof (VisObject), &buf[sizeof(VisObject)]);
