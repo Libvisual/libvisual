@@ -771,7 +771,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	plugin->realized = FALSE;
 	plugin->handle = handle;
 
-	/* Now the plugin is set up and ready to be realized, also random seed it's random context */
+	/* Now the plugin is set up and ready to be realized, also random seed its random context */
 	visual_time_get (&time_);
 	visual_random_context_set_seed (&plugin->random, time_.tv_usec);
 
@@ -884,7 +884,14 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 			plug_info[0].api_version != VISUAL_PLUGIN_API_VERSION) {
 
 		for (i = 0; i < cnt; i++) {
-			visual_object_unref (plug_info[i].plugin);
+			/* We would like todo:
+			 * visual_object_unref (plug_info[i].plugin);
+			 * as well here, but we can't because we don't know the ref location
+			 * in the old struct, shit happens, we'll leak...
+			 *
+			 * In future revisions of lv (think 0.6.0 or 0.8.0) we'll revamp this.
+			 */
+
 			visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
 		}
 
