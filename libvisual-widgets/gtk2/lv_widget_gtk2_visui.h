@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Milosz Derezynski <md@relevantive.de>
  *
- * $Id:
+ * $Id: lv_widget_gtk2_visui.h,v 1.3 2005-12-20 18:43:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
