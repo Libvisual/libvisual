@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_plugin.c,v 1.77 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_plugin.c,v 1.78 2005-12-22 21:47:40 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -819,6 +819,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	VisPluginInfo *dup_info;
 	const char *plug_name;
 	VisPluginGetInfoFunc get_plugin_info;
+	int *plugin_version;
 #if defined(VISUAL_OS_WIN32)
 	HMODULE handle;
 #else /* !VISUAL_OS_WIN32 */
@@ -845,6 +846,25 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	}
 
 #if defined(VISUAL_OS_WIN32)
+	plugin_version = (int *) GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG);
+#else
+	plugin_version = (int *) dlsym (handle, VISUAL_PLUGIN_VERSION_TAG);
+#endif
+
+	if (plugin_version == NULL || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
+		visual_log (VISUAL_LOG_CRITICAL, _("Plugin %s is not compatible with version %s of libvisual"),
+				pluginpath, visual_get_version ());
+
+#if defined(VISUAL_OS_WIN32)
+		FreeLibrary (handle);
+#else
+		dlclose (handle);
+#endif
+
+		return NULL;
+	}
+
+#if defined(VISUAL_OS_WIN32)
 	get_plugin_info = (VisPluginGetInfoFunc) GetProcAddress (handle, "get_plugin_info");
 #else
 	get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
@@ -862,42 +882,12 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 #endif
 
 		return NULL;
-
 	}
 
 	plug_info = VISUAL_PLUGININFO (get_plugin_info (&cnt));
 
 	if (plug_info == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Cannot get plugin info"));
-
-#if defined(VISUAL_OS_WIN32)
-		FreeLibrary (handle);
-#else
-		dlclose (handle);
-#endif
-
-		return NULL;
-	}
-
-	/* Check for API and struct size */
-	if (plug_info[0].struct_size != sizeof (VisPluginInfo) ||
-			plug_info[0].api_version != VISUAL_PLUGIN_API_VERSION) {
-
-		for (i = 0; i < cnt; i++) {
-			/* We would like todo:
-			 * visual_object_unref (plug_info[i].plugin);
-			 * as well here, but we can't because we don't know the ref location
-			 * in the old struct, shit happens, we'll leak...
-			 *
-			 * In future revisions of lv (think 0.6.0 or 0.8.0) we'll revamp this.
-			 */
-
-			visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
-		}
-
-		visual_log (VISUAL_LOG_CRITICAL, _("Plugin %s is not compatible with version %s of libvisual"),
-				pluginpath, visual_get_version ());
-
 
 #if defined(VISUAL_OS_WIN32)
 		FreeLibrary (handle);
@@ -1116,7 +1106,7 @@ int visual_plugin_type_member_of (const char *domain, const char *type)
 		strncpy (ndomain, domain, tmp - domain);
 	else
 		strcpy (ndomain, domain);
-	
+
 	while (i < visual_plugin_type_get_depth (ndomain)) {
 		comp1 = get_delim_node (ndomain, ':', i);
 		comp2 = get_delim_node (type, ':', i);

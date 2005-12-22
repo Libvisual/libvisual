@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_plugin.h,v 1.45 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_plugin.h,v 1.46 2005-12-22 21:47:40 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -70,6 +70,11 @@ VISUAL_BEGIN_DECLS
  * Standard defination for BSD plugins, use this for the .license entry in VisPluginInfo
  */
 #define VISUAL_PLUGIN_LICENSE_BSD	"BSD"
+
+#define VISUAL_PLUGIN_VERSION_TAG		"__lv_plugin_libvisual_api_version"
+#define VISUAL_PLUGIN_API_VERSION_VALIDATOR	extern "C" const int __lv_plugin_libvisual_api_version = \
+						VISUAL_PLUGIN_API_VERSION;
+
 
 /**
  * Enumerate to define the plugin flags. Plugin flags can be used to
@@ -167,8 +172,6 @@ struct _VisPluginRef {
 struct _VisPluginInfo {
 	VisObject		 object;	/**< The VisObject data. */
 
-	uint32_t		 struct_size;	/**< Struct size, should always be set for compatability checks. */
-	uint32_t		 api_version;	/**< API version, compile plugins always with .api_version = VISUAL_PLUGIN_API_VERSION. */
 	char			*type;		/**< Plugin type, in the format of "domain:package:type", as example,
 						 * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
 						 * instead of filling in the string yourself. */
