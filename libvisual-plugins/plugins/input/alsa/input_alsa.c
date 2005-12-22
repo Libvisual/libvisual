@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@urk,net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_alsa.c,v 1.20 2005-12-20 18:49:14 synap Exp $
+ * $Id: input_alsa.c,v 1.21 2005-12-22 21:50:09 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -55,6 +55,8 @@ static const char *inp_alsa_var_cdevice   = "hw:0,0";
 static const int  inp_alsa_var_samplerate = 44100;
 static const int  inp_alsa_var_channels   = 2;
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisInputPlugin input[] = {{
@@ -62,8 +64,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
 		.plugname = "alsa",

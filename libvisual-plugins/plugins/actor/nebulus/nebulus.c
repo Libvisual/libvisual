@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Pascal Brochart <pbrochart@tuxfamily.org> and many others
  *
- * $Id: nebulus.c,v 1.11 2005-12-20 18:49:14 synap Exp $
+ * $Id: nebulus.c,v 1.12 2005-12-22 21:50:09 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -79,6 +79,8 @@ static int nebulus_detect_beat (int loudness);
 static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio);
 static int nebulus_draw (NebulusPrivate *priv, VisVideo *video);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (int *count)
 {
@@ -90,8 +92,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "nebulus",

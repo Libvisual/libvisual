@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_debug.c,v 1.2 2005-12-20 18:49:14 synap Exp $
+ * $Id: input_debug.c,v 1.3 2005-12-22 21:50:10 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,6 +36,8 @@ static int inp_debug_init (VisPluginData *plugin);
 static int inp_debug_cleanup (VisPluginData *plugin);
 static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisInputPlugin input[] = {{
@@ -43,8 +45,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
 		.plugname = "debug",

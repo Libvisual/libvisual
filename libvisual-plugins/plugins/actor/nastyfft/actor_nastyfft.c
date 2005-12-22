@@ -68,6 +68,8 @@ static void init_gl(NastyfftPrivate *priv);
 static void draw_scene(NastyfftPrivate *priv);
 static void make_all(NastyfftPrivate *priv);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (int *count)
 {
@@ -79,8 +81,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static const VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = N_("nastyfft"),

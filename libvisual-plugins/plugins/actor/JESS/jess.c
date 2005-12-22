@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: jess.c,v 1.21 2005-12-20 18:49:12 synap Exp $
+ * $Id: jess.c,v 1.22 2005-12-22 21:50:07 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -51,6 +51,8 @@ int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 void jess_init (JessPrivate *priv);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[] = {{
@@ -63,8 +65,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "jess",

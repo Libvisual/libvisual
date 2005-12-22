@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: morph_tentacle.c,v 1.15 2005-12-20 18:49:15 synap Exp $
+ * $Id: morph_tentacle.c,v 1.16 2005-12-22 21:50:10 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -49,6 +49,8 @@ int lv_morph_tentacle_init (VisPluginData *plugin);
 int lv_morph_tentacle_cleanup (VisPluginData *plugin);
 int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisMorphPlugin morph[] = {{
@@ -61,8 +63,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "tentacle",

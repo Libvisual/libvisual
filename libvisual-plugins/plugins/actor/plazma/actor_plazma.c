@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_plazma.c,v 1.17 2005-12-20 18:49:14 synap Exp $
+ * $Id: actor_plazma.c,v 1.18 2005-12-22 21:50:09 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -43,6 +43,8 @@ int act_plazma_events (VisPluginData *plugin, VisEventQueue *events);
 VisPalette *act_plazma_palette (VisPluginData *plugin);
 int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[] = {{
@@ -53,8 +55,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "plazma",

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_goom2.c,v 1.22 2005-12-20 18:49:13 synap Exp $
+ * $Id: actor_goom2.c,v 1.23 2005-12-22 21:50:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -50,6 +50,8 @@ int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int he
 int lv_goom_events (VisPluginData *plugin, VisEventQueue *events);
 VisPalette *lv_goom_palette (VisPluginData *plugin);
 int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 const VisPluginInfo *get_plugin_info (int *count)
 {

@@ -5,7 +5,7 @@
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_flower.c,v 1.6 2005-12-20 18:49:14 synap Exp $
+ * $Id: actor_flower.c,v 1.7 2005-12-22 21:50:09 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -55,6 +55,8 @@ int lv_flower_events (VisPluginData *plugin, VisEventQueue *events);
 VisPalette *lv_flower_palette (VisPluginData *plugin);
 int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (int *count)
 {
@@ -66,8 +68,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "lv_flower",

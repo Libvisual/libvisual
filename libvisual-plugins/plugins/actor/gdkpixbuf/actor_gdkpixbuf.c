@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_gdkpixbuf.c,v 1.16 2005-12-20 18:49:13 synap Exp $
+ * $Id: actor_gdkpixbuf.c,v 1.17 2005-12-22 21:50:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -65,6 +65,8 @@ int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events);
 VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin);
 int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[] = {{
@@ -75,8 +77,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "gdkpixbuf",

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_gforce.cpp,v 1.8 2005-12-20 18:49:12 synap Exp $
+ * $Id: actor_gforce.cpp,v 1.9 2005-12-22 21:50:07 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -66,6 +66,8 @@ extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events);
 extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin);
 extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 extern "C" const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[1];
@@ -76,8 +78,6 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	actor[0].render = lv_gforce_render;
 	actor[0].depth = VISUAL_VIDEO_DEPTH_8BIT;
 
-	info[0].struct_size = sizeof (VisPluginInfo);
-	info[0].api_version = VISUAL_PLUGIN_API_VERSION;
 	info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
 
 	info[0].plugname = "gforce";

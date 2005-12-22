@@ -5,7 +5,7 @@
  * Authors: Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_mplayer.c,v 1.17 2005-12-20 18:49:14 synap Exp $
+ * $Id: input_mplayer.c,v 1.18 2005-12-22 21:50:10 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -69,6 +69,8 @@ int inp_mplayer_init( VisPluginData *plugin );
 int inp_mplayer_cleanup( VisPluginData *plugin );
 int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio );
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 /**
  * set up plugin
  *
@@ -83,22 +85,20 @@ const VisPluginInfo *get_plugin_info( int *count )
 	}};
 
 	static VisPluginInfo info[] = {{
-		.struct_size = sizeof( VisPluginInfo ),
-			.api_version = VISUAL_PLUGIN_API_VERSION,
-			.type = VISUAL_PLUGIN_TYPE_INPUT,
+		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
-			.plugname = "mplayer",
-			.name = "mplayer",
-			.author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-			.version = "$Revision: 1.17 $",
-			.about = N_("Use data exported from MPlayer"),
-			.help = N_("This plugin uses data exported from 'mplayer -af export'"),
-			.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.plugname = "mplayer",
+		.name = "mplayer",
+		.author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
+		.version = "$Revision: 1.18 $",
+		.about = N_("Use data exported from MPlayer"),
+		.help = N_("This plugin uses data exported from 'mplayer -af export'"),
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
-			.init = inp_mplayer_init,
-			.cleanup = inp_mplayer_cleanup,
+		.init = inp_mplayer_init,
+		.cleanup = inp_mplayer_cleanup,
 
-			.plugin = VISUAL_OBJECT (&input[0])
+		.plugin = VISUAL_OBJECT (&input[0])
 	}};
 
 	*count = sizeof( info ) / sizeof( *info );
@@ -168,8 +168,8 @@ int inp_mplayer_init( VisPluginData *plugin )
 	{
 		visual_log( VISUAL_LOG_ERROR,
 				_("Data in wrong format. It should be 2 channels" \
-				" with 512 16bit samples. There are %d channels %d 16bit " \
-				"samples in it (buffer is %d bytes)"),
+					" with 512 16bit samples. There are %d channels %d 16bit " \
+					"samples in it (buffer is %d bytes)"),
 				priv->mmap_area->nch,
 				priv->mmap_area->bs / 2 / priv->mmap_area->nch,
 				priv->mmap_area->bs );
@@ -183,7 +183,7 @@ int inp_mplayer_init( VisPluginData *plugin )
 	{
 		visual_log( VISUAL_LOG_CRITICAL, 
 				_("Could not mremap() area from file '%s' " \
-				" (%p from %d to %d bytes): %s"),
+					" (%p from %d to %d bytes): %s"),
 				priv->sharedfile, 
 				priv->mmap_area, sizeof( mplayer_data_t ),
 				sizeof( mplayer_data_t ) + priv->mmap_area->bs,
