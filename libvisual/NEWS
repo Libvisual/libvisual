@@ -3,7 +3,7 @@ of Libvisual.
 
 These are only visible changes, for more details look at the ChangeLog.
 
-New in 0.3.0: xxxx-xx-xx:
+New in 0.4.0: xxxx-xx-xx:
 * Will unref plugins that don't match the ABI version, BE SURE TO HAVE NO 0.1.x
   plugins laying around, it's not compatible, and it will most likely crash.
   (Dennis)
@@ -23,6 +23,10 @@ New in 0.3.0: xxxx-xx-xx:
 * Added VisCache. (Dennis)
 * VisAudio rewrite. (Dennis)
 * Added .license bit to VisPluginInfo for realtime license check. (Dennis)
+* Removed .struct_size and .api_version from the VisPluginInfo structure,
+  and revamped the plugin version check system. Put
+  VISUAL_PLUGIN_API_VERSION_VALIDATOR somewhere in your plugin and it'll
+  work
 
 New in 0.2.0: 2005-02-09:
 * VisTransform subsystem. (Dennis)
