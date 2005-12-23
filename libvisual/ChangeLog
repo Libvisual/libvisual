@@ -1,3 +1,10 @@
+2005-12-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_defines.h: VISUAL_C_LINKAGE added.
+
+	* libvisual/lv_plugin.h: CPP/C issues fixed regarding version
+	detection.
+
 2005-12-22  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_plugin.*: Use new api version matching scheme, not error

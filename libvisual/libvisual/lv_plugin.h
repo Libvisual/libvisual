@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_plugin.h,v 1.46 2005-12-22 21:47:40 synap Exp $
+ * $Id: lv_plugin.h,v 1.47 2005-12-23 18:37:11 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -72,7 +72,7 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PLUGIN_LICENSE_BSD	"BSD"
 
 #define VISUAL_PLUGIN_VERSION_TAG		"__lv_plugin_libvisual_api_version"
-#define VISUAL_PLUGIN_API_VERSION_VALIDATOR	extern "C" const int __lv_plugin_libvisual_api_version = \
+#define VISUAL_PLUGIN_API_VERSION_VALIDATOR	VISUAL_C_LINKAGE const int __lv_plugin_libvisual_api_version = \
 						VISUAL_PLUGIN_API_VERSION;
 
 

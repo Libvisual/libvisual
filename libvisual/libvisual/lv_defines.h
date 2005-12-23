@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_defines.h,v 1.5 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_defines.h,v 1.6 2005-12-23 18:37:11 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,7 +25,13 @@
 #define _LV_DEFINES_H
 
 #ifdef __cplusplus
-# define VISUAL_BEGIN_DECLS	extern "C" {
+# define VISUAL_C_LINKAGE extern "C"
+#else
+# define VISUAL_C_LINKAGE
+#endif /* __cplusplus */
+
+#ifdef __cplusplus
+# define VISUAL_BEGIN_DECLS	VISUAL_C_LINKAGE {
 # define VISUAL_END_DECLS	}
 #else
 # define VISUAL_BEGIN_DECLS
