@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fft.c,v 1.20 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_fft.c,v 1.21 2005-12-25 02:35:15 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -132,8 +132,8 @@ static void fft_table_cossin_init (FFTCacheEntry *fcache, VisFFT *fft)
 	while (dftsize <= fft->spectrum_size) {
 		theta = (float) (-2.0f * FFT_PI / (float) dftsize);
 
-		fcache->sintable[i] = (float) cosf (theta);
-		fcache->costable[i] = (float) sinf (theta);
+		fcache->costable[i] = (float) cosf (theta);
+		fcache->sintable[i] = (float) sinf (theta);
 
 		i++;
 
@@ -300,8 +300,8 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output, int normalised
 	dftsize = 2;
 	t = 0;
 	while (dftsize <= fft->spectrum_size) {
-		wpr = fcache->sintable[t];
-		wpi = fcache->costable[t];
+		wpr = fcache->costable[t];
+		wpi = fcache->sintable[t];
 		wr = 1.0f;
 		wi = 0.0f;
 		hdftsize = dftsize >> 1;
