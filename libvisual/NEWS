@@ -26,7 +26,8 @@ New in 0.4.0: xxxx-xx-xx:
 * Removed .struct_size and .api_version from the VisPluginInfo structure,
   and revamped the plugin version check system. Put
   VISUAL_PLUGIN_API_VERSION_VALIDATOR somewhere in your plugin and it'll
-  work
+  work. (Dennis)
+* Homedir installable plugins ~/.libvisual/actor transform morph input. (Dennis)
 
 New in 0.2.0: 2005-02-09:
 * VisTransform subsystem. (Dennis)

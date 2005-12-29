@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_libvisual.c,v 1.34 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_libvisual.c,v 1.35 2005-12-29 02:46:05 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -262,6 +262,8 @@ int visual_init_path_add (char *pathadd)
  */
 int visual_init (int *argc, char ***argv)
 {
+        char temppluginpath[FILENAME_MAX];
+	char *homedir = NULL;
 	int ret = 0;
 
 #if ENABLE_NLS
@@ -322,6 +324,26 @@ int visual_init (int *argc, char ***argv)
 
 	ret = visual_init_path_add (PLUGPATH"/transform");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+
+#if !defined(VISUAL_OS_WIN32)
+	/* Add homedirectory plugin paths */
+	homedir = getenv ("HOME");
+	snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/actor", homedir);
+	ret = visual_init_path_add (temppluginpath);
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+
+	snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/input", homedir);
+	ret = visual_init_path_add (temppluginpath);
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+
+	snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/morph", homedir);
+	ret = visual_init_path_add (temppluginpath);
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+
+	snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/transform", homedir);
+	ret = visual_init_path_add (temppluginpath);
+	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+#endif
 
 	/* And null terminate the list */
 	ret = visual_init_path_add (NULL);
