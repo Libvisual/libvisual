@@ -1,3 +1,19 @@
+2005-12-29  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_color.* (visual_color_from_uint32)
+	(visual_color_from_uint16)
+	(visual_color_to_uint32)
+	(visual_color_to_uint16)
+	(visual_color_black)
+	(visual_color_white): Added new functions to the VisColor system.
+
+	* libvisual/lv_video.c: Did some work on the composite system,
+	surfacecolorkey still bugs tho.
+
+	(visual_video_region_sub): Copy the composite flags tho the target
+	VisVideo. The right solution is to make a 'class' out of the composite
+	stuff and ref it. Will fix that later.
+
 2005-12-23  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_defines.h: VISUAL_C_LINKAGE added.

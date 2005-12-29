@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_color.h,v 1.15 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_color.h,v 1.16 2005-12-29 02:30:59 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -50,6 +50,14 @@ int visual_color_compare (VisColor *src1, VisColor *src2);
 int visual_color_from_hsv (VisColor *color, float h, float s, float v);
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
 int visual_color_copy (VisColor *dest, VisColor *src);
+
+int visual_color_from_uint32 (VisColor *color, uint32_t rgb);
+int visual_color_from_uint16 (VisColor *color, uint16_t rgb);
+uint32_t visual_color_to_uint32 (VisColor *color);
+uint16_t visual_color_to_uint16 (VisColor *color);
+
+VisColor *visual_color_black (void);
+VisColor *visual_color_white (void);
 
 VISUAL_END_DECLS
 

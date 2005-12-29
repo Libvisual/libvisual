@@ -7,7 +7,7 @@
  *	    Chong Kai Xiong <descender@phreaker.net>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video.h,v 1.31 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_video.h,v 1.32 2005-12-29 02:30:59 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -89,7 +89,6 @@ typedef enum {
 typedef enum {
 	VISUAL_VIDEO_COMPOSITE_TYPE_NONE = 0,		/**< No composite set, use default. */
 	VISUAL_VIDEO_COMPOSITE_TYPE_SRC,		/**< Source alpha channel. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_SRCDEST,		/**< True alpha composite, both source and dest. */
 	VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY,		/**< Colorkey alpha. */
 	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE,		/**< One alpha channel for the complete surface. */
 	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY,	/**< Use surface alpha on colorkey. */
@@ -259,7 +258,7 @@ VisVideo *visual_video_scale_depth_new (VisVideo *src, int width, int height, Vi
 
 /* Optimized versions of performance sensitive routines */
 /* mmx from lv_video_simd.c */ /* FIXME can we do this nicer ? */
-int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, VisVideo *src);
+int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src);
 int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src);
 
 VISUAL_END_DECLS

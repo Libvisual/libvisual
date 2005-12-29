@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_palette.h,v 1.13 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_palette.h,v 1.14 2005-12-29 02:30:59 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -50,11 +50,16 @@ struct _VisPalette {
 /* prototypes */
 VisPalette *visual_palette_new (int ncolors);
 int visual_palette_init (VisPalette *pal);
+
 int visual_palette_copy (VisPalette *dest, VisPalette *src);
+
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors);
 int visual_palette_free_colors (VisPalette *pal);
+
 int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate);
 VisColor *visual_palette_color_cycle (VisPalette *pal, float rate);
+
+int visual_palette_find_color (VisPalette *pal, VisColor *color);
 
 VISUAL_END_DECLS
 

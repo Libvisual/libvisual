@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_bin.c,v 1.26 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_bin.c,v 1.27 2005-12-29 02:30:59 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>                                                                                            
+#include <string.h>
 #include <gettext.h>
 
 /*
@@ -124,7 +124,7 @@ VisBin *visual_bin_new ()
 
 	bin->morphmode = VISUAL_MORPH_MODE_TIME;
 	visual_time_set (&bin->morphtime, 4, 0);
-	
+
 	bin->depthpreferred = VISUAL_BIN_DEPTH_HIGHEST;
 
 	return bin;

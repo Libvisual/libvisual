@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.78 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_video.c,v 1.79 2005-12-29 02:30:59 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,7 +40,7 @@
 #include "lv_log.h"
 #include "lv_mem.h"
 
-
+/* FIXME put these in lv_color.h */
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
@@ -59,7 +59,7 @@ static void precompute_row_table (VisVideo *video);
 
 /* Blit overlay functions */
 static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src);
-static int blit_overlay_alpha32 (VisVideo *dest, VisVideo *src);
+static int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src);
 static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src);
 static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src);
 static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src);
@@ -922,6 +922,17 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 			(rect->width * src->bpp) + (src->pitch - (rect->width * src->bpp)), src->depth);
 	visual_video_set_buffer (dest, (uint8_t *) (visual_video_get_pixels (src)) + ((rect->y * src->pitch) + (rect->x * src->bpp)));
 
+	/* Copy composite */
+	dest->compositetype = src->compositetype;
+	dest->compfunc = src->compfunc;
+	visual_color_copy (&dest->colorkey, &src->colorkey);
+	dest->density = src->density;
+
+	if (src->pal != NULL)
+		visual_object_ref (VISUAL_OBJECT (src->pal));
+
+	dest->pal = src->pal;
+
 	return VISUAL_OK;
 }
 
@@ -1039,47 +1050,23 @@ VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest,
 			return blit_overlay_noalpha;
 
 		if (visual_cpu_get_mmx () != 0)
-			return _lv_blit_overlay_alpha32_mmx;
+			return _lv_blit_overlay_alphasrc_mmx;
 		else
-			return blit_overlay_alpha32;
-
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SRCDEST) {
-
-		if (alpha == FALSE)
-			return blit_overlay_noalpha;
-
-		/* FIXME make src dest alpha versions */
-		if (visual_cpu_get_mmx () != 0)
-			return _lv_blit_overlay_alpha32_mmx;
-		else
-			return blit_overlay_alpha32;
-
+			return blit_overlay_alphasrc;
 
 	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY) {
-
-		if (alpha == FALSE)
-			return blit_overlay_noalpha;
 
 		return blit_overlay_colorkey;
 
 	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE) {
 
-		if (alpha == FALSE)
-			return blit_overlay_noalpha;
-
 		return blit_overlay_surfacealpha;
 
 	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY) {
 
-		if (alpha == FALSE)
-			return blit_overlay_noalpha;
-
 		return blit_overlay_surfacealphacolorkey;
 
 	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM) {
-
-		if (alpha == FALSE)
-			return blit_overlay_noalpha;
 
 		return src->compfunc;
 	}
@@ -1304,7 +1291,7 @@ static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
-static int blit_overlay_alpha32 (VisVideo *dest, VisVideo *src)
+static int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -1333,14 +1320,24 @@ static int blit_overlay_alpha32 (VisVideo *dest, VisVideo *src)
 static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
-	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
-	uint8_t alpha;
 
 	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+		uint8_t *destbuf = visual_video_get_pixels (dest);
+		uint8_t *srcbuf = visual_video_get_pixels (src);
+		VisPalette *pal = src->pal;
+
+		if (pal == NULL) {
+			blit_overlay_noalpha (dest, src);
+
+			return VISUAL_OK;
+		}
+
+		int index = visual_palette_find_color (pal, &src->colorkey);
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
+				if (*srcbuf != index)
+					*destbuf = *srcbuf;
 
 				destbuf += dest->bpp;
 				srcbuf += src->bpp;
@@ -1351,22 +1348,37 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
+		uint16_t *destbuf = visual_video_get_pixels (dest);
+		uint16_t *srcbuf = visual_video_get_pixels (src);
+		uint16_t color = visual_color_to_uint16 (&src->colorkey);
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
+				if (color != *srcbuf)
+					*destbuf = *srcbuf;
 
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
+				destbuf++;
+				srcbuf++;
 			}
 
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
+			destbuf += (dest->pitch / dest->bpp) - dest->width;
+			srcbuf += (src->pitch / src->bpp) - src->width;
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT) {
+		uint8_t *destbuf = visual_video_get_pixels (dest);
+		uint8_t *srcbuf = visual_video_get_pixels (src);
+		uint8_t r = src->colorkey.r;
+		uint8_t g = src->colorkey.g;
+		uint8_t b = src->colorkey.b;
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
+				if (b != *srcbuf && g != *(srcbuf + 1) && r != *(srcbuf + 2)) {
+					*destbuf = *srcbuf;
+					*(destbuf + 1) = *(srcbuf + 1);
+					*(destbuf + 2) = *(srcbuf + 2);
+				}
 
 				destbuf += dest->bpp;
 				srcbuf += src->bpp;
@@ -1377,23 +1389,31 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
+		uint32_t *destbuf = visual_video_get_pixels (dest);
+		uint32_t *srcbuf = visual_video_get_pixels (src);
+		uint32_t color = visual_color_to_uint32 (&src->colorkey);
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
+				if (color != *srcbuf) {
+					uint8_t alpha = *destbuf >> 24;
 
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
+					*destbuf = *srcbuf;
+					*destbuf = (*destbuf & 0x00ffffff) | alpha << 24;
+				}
+
+				destbuf++;
+				srcbuf++;
 			}
 
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
+			destbuf += (dest->pitch / dest->bpp) - dest->width;
+			srcbuf += (src->pitch / src->bpp) - src->width;
 		}
 	}
 
 	return VISUAL_OK;
 }
 
-/* FIXME look at both src and dest */
 static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
@@ -1472,7 +1492,99 @@ static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 
 static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 {
+	int x, y;
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t alpha = src->density;
 
+	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+		VisPalette *pal = src->pal;
+
+		if (pal == NULL) {
+			blit_overlay_noalpha (dest, src);
+
+			return VISUAL_OK;
+		}
+
+		int index = visual_palette_find_color (pal, &src->colorkey);
+
+		for (y = 0; y < src->height; y++) {
+			for (x = 0; x < src->width; x++) {
+				if (*srcbuf != index)
+					*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
+
+				destbuf += dest->bpp;
+				srcbuf += src->bpp;
+			}
+
+			destbuf += dest->pitch - (dest->width * dest->bpp);
+			srcbuf += src->pitch - (src->width * src->bpp);
+		}
+
+	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
+		uint16_t color = visual_color_to_uint16 (&src->colorkey);
+
+		for (y = 0; y < src->height; y++) {
+			_color16 *destr = (_color16 *) destbuf;
+			_color16 *srcr = (_color16 *) srcbuf;
+
+			for (x = 0; x < src->width; x++) {
+				if (color != *((uint16_t *) *srcbuf)) {
+					destr->r = ((alpha * (srcr->r - destr->r) >> 8) + destr->r);
+					destr->g = ((alpha * (srcr->g - destr->g) >> 8) + destr->g);
+					destr->b = ((alpha * (srcr->b - destr->b) >> 8) + destr->b);
+				}
+
+				destr++;
+				srcr++;
+			}
+
+			destbuf += dest->pitch;
+			srcbuf += src->pitch;
+		}
+
+	} else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT) {
+		uint8_t r = src->colorkey.r;
+		uint8_t g = src->colorkey.g;
+		uint8_t b = src->colorkey.b;
+
+		for (y = 0; y < src->height; y++) {
+			for (x = 0; x < src->width; x++) {
+				if (b != *srcbuf && g != *(srcbuf + 1) && r != *(srcbuf + 2)) {
+					*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
+					*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
+					*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+				}
+
+				destbuf += dest->bpp;
+				srcbuf += src->bpp;
+			}
+
+			destbuf += dest->pitch - (dest->width * dest->bpp);
+			srcbuf += src->pitch - (src->width * src->bpp);
+		}
+
+	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
+		uint32_t color = visual_color_to_uint32 (&src->colorkey);
+
+		for (y = 0; y < src->height; y++) {
+			for (x = 0; x < src->width; x++) {
+				if (color == *((uint32_t *) destbuf)) {
+					*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
+					*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
+					*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+				}
+
+				destbuf += dest->bpp;
+				srcbuf += src->bpp;
+			}
+
+			destbuf += dest->pitch - (dest->width * dest->bpp);
+			srcbuf += src->pitch - (src->width * src->bpp);
+		}
+	}
+
+	return VISUAL_OK;
 }
 
 /**

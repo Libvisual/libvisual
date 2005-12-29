@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video_simd.c,v 1.2 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_video_simd.c,v 1.3 2005-12-29 02:30:59 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,7 +31,7 @@
 #include "lv_common.h"
 #include "lv_video.h"
 
-int _lv_blit_overlay_alpha32_mmx (VisVideo *dest, VisVideo *src)
+int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src)
 {
 #ifdef VISUAL_ARCH_X86
 	int i, j;

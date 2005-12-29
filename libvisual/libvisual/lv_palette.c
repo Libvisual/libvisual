@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_palette.c,v 1.19 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_palette.c,v 1.20 2005-12-29 02:30:59 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -148,7 +148,7 @@ int visual_palette_free_colors (VisPalette *pal)
 
 	if (pal->colors != NULL)
 		visual_mem_free (pal->colors);
-	
+
 	pal->colors = NULL;
 	pal->ncolors = 0;
 
@@ -173,7 +173,7 @@ int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, 
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
 	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_PALETTE_NULL);
 	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_PALETTE_NULL);
-	
+
 	if (src1->ncolors != src2->ncolors)
 		return -VISUAL_ERROR_PALETTE_SIZE;
 
@@ -208,7 +208,7 @@ VisColor *visual_palette_color_cycle (VisPalette *pal, float rate)
 	float rdiff = rate - irate;
 
 	visual_log_return_val_if_fail (pal != NULL, NULL);
-	
+
 	irate = irate % pal->ncolors;
 	alpha = rdiff * 255;
 
@@ -233,6 +233,18 @@ VisColor *visual_palette_color_cycle (VisPalette *pal, float rate)
 	color->b = ((alpha * (tmp1->b - tmp2->b) >> 8) + tmp2->b);
 
 	return color;
+}
+
+int visual_palette_find_color (VisPalette *pal, VisColor *color)
+{
+	int i;
+
+	for (i = 0; i < pal->ncolors; i++) {
+		if (visual_color_compare (&pal->colors[i], color) == TRUE)
+			return i;
+	}
+
+	return -1;
 }
 
 /**
