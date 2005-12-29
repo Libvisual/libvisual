@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_libvisual.c,v 1.35 2005-12-29 02:46:05 synap Exp $
+ * $Id: lv_libvisual.c,v 1.36 2005-12-29 02:48:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -328,21 +328,24 @@ int visual_init (int *argc, char ***argv)
 #if !defined(VISUAL_OS_WIN32)
 	/* Add homedirectory plugin paths */
 	homedir = getenv ("HOME");
-	snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/actor", homedir);
-	ret = visual_init_path_add (temppluginpath);
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/input", homedir);
-	ret = visual_init_path_add (temppluginpath);
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+	if (homedir != NULL) {
+		snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/actor", homedir);
+		ret = visual_init_path_add (temppluginpath);
+		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/morph", homedir);
-	ret = visual_init_path_add (temppluginpath);
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+		snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/input", homedir);
+		ret = visual_init_path_add (temppluginpath);
+		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/transform", homedir);
-	ret = visual_init_path_add (temppluginpath);
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+		snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/morph", homedir);
+		ret = visual_init_path_add (temppluginpath);
+		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+
+		snprintf (temppluginpath, sizeof (temppluginpath), "%s/.libvisual/transform", homedir);
+		ret = visual_init_path_add (temppluginpath);
+		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+	}
 #endif
 
 	/* And null terminate the list */
