@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.79 2005-12-29 02:30:59 synap Exp $
+ * $Id: lv_video.c,v 1.80 2005-12-30 15:51:16 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -1529,7 +1529,7 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 			_color16 *srcr = (_color16 *) srcbuf;
 
 			for (x = 0; x < src->width; x++) {
-				if (color != *((uint16_t *) *srcbuf)) {
+				if (color != *srcr) {
 					destr->r = ((alpha * (srcr->r - destr->r) >> 8) + destr->r);
 					destr->g = ((alpha * (srcr->g - destr->g) >> 8) + destr->g);
 					destr->b = ((alpha * (srcr->b - destr->b) >> 8) + destr->b);
