@@ -1,3 +1,8 @@
+2005-12-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (blit_overlay_surfacealphacolorkey): Reversed
+	changes.
+
 2005-12-30  Chong Kai Xiong <descender@phreaker.net>
 	
 	* libvisual/lv_video.c (blit_overlay_surfacealphacolorkey): Fix

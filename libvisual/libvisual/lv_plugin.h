@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_plugin.h,v 1.47 2005-12-23 18:37:11 synap Exp $
+ * $Id: lv_plugin.h,v 1.48 2005-12-31 19:42:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -51,7 +51,7 @@ VISUAL_BEGIN_DECLS
 /**
  * Indicates at which version the plugin API is.
  */
-#define VISUAL_PLUGIN_API_VERSION	3001
+#define VISUAL_PLUGIN_API_VERSION	3002
 
 /**
  * Defination that should be used in plugins to set the plugin type for a NULL plugin.
