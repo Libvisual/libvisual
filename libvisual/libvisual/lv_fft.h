@@ -1,13 +1,13 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
  * The FFT implementation found in this file is based upon the NULLSOFT
  * Milkdrop FFT implementation.
- * 
+ *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fft.h,v 1.16 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_fft.h,v 1.17 2006-01-08 15:43:30 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,12 +40,11 @@ typedef struct _VisFFT VisFFT;
  */
 struct _VisFFT {
 	VisObject	 object;			/**< The VisObject data. */
-
 	int		 samples_in;			/**< The number of input samples. */
 	int		 spectrum_size;			/**< The size of the spectrum (power of two). */
-
 	float		*real;				/**< Private data that is used by the FFT engine. */
 	float		*imag;				/**< Private data that is used by the FFT engine. */
+	int		 brute_force;			/**< Private data that is used by the FFT engine. */
 };
 
 /* prototypes */
