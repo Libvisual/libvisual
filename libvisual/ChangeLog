@@ -1,15 +1,25 @@
+2006-01-09  Chong Kai Xiong <descender@phreaker.net>
+	* lv_fft.c (visual_fft_init): Fix wrong condition for brute forcing.
+
+	(perform_dft_brute_force): Only compute n/2 outputs since we're
+	dealing with real-value signals.
+	
+2006-01-08  Chong Kai Xiong <descender@phreaker.net>
+	* lv_fft.c, lv_fft.h: Perform DFT with brute force for non power of 2
+	sample counts
+
 2005-12-31  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_video.c (blit_overlay_surfacealphacolorkey): Reversed
 	changes.
 
-2005-12-30  Chong Kai Xiong <descender@phreaker.net>
+2005-12-30  Chong Kai Xiong  <descender@phreaker.net>
 	
 	* libvisual/lv_video.c (blit_overlay_surfacealphacolorkey): Fix
 	16-bit source buffer pixel and colour key comparison.
 	
 
-2005-12-30  Chong Kai Xiong <descender@phreaker.net>
+2005-12-30  Chong Kai Xiong  <descender@phreaker.net>
 	
 	* libvisual/lv_libvisual.c (visual_init): Make sure temppluginpath
 	is null terminated after truncation (when value of $HOME is overly
@@ -36,9 +46,9 @@
 	VisVideo. The right solution is to make a 'class' out of the composite
 	stuff and ref it. Will fix that later.
 
-2005-12-25  Chong Kai Xiong <descender@phreaker.net>
+2005-12-25  Chong Kai Xiong  <descender@phreaker.net>
 	
-	* libvisual/lv_fft.c: Fix wrong named sine and cosine tables.
+	* libvisual/lv_fft.c: Fix wrongly named sine and cosine tables.
 	
 2005-12-23  Dennis Smit  <ds@nerds-incorporated.org>
 
@@ -52,7 +62,7 @@
 	* libvisual/lv_plugin.*: Use new api version matching scheme, not error
 	prone and working[tm].
 
-2005-12-20  Chong Kai Xiong <descender@phreaker.net>
+2005-12-20  Chong Kai Xiong  <descender@phreaker.net>
 
 	* libvisual/lv_object.h (visual_object_clean): Cast object pointer
 	to uint8_t *.

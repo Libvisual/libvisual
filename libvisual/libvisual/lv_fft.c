@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fft.c,v 1.22 2006-01-08 15:43:30 descender Exp $
+ * $Id: lv_fft.c,v 1.23 2006-01-09 07:20:18 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -304,7 +304,7 @@ int visual_fft_init (VisFFT *fft, int samples_in, int samples_out)
 	/* Set the VisFFT data */
 	fft->samples_in = samples_in;
 	fft->spectrum_size = samples_out * 2;
-	fft->brute_force = is_power2 (fft->spectrum_size);
+	fft->brute_force = !is_power2 (fft->spectrum_size);
 
 	/* Initialize the VisFFT */
 	fft_cache_get (fft);
@@ -324,16 +324,14 @@ static void perform_dft_brute_force (VisFFT *fft, float *input, float *output)
 	fcache = fft_cache_get (fft);
 	visual_object_ref (VISUAL_OBJECT (fcache));
 
-	for (i = 0; i < fft->spectrum_size; i++)
-	{
+	for (i = 0; i < fft->spectrum_size / 2; i++) {
 		xr = input[i] / 32768.00f;
 		xi = 0.0f;
 
 		wr = 1.0f;
 		wi = 0.0f;
 
-		for (j = 0; j < fft->spectrum_size; j++)
-		{
+		for (j = 0; j < fft->spectrum_size; j++) {
 			xr += fft->real[j] * wr;
 			xi += fft->real[j] * wi;
 
