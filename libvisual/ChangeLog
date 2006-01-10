@@ -1,4 +1,10 @@
 2006-01-10  Chong Kai Xiong <descender@phreaker.net>
+
+	* lv_fft.c (is_power2): Get rid of mask variable.
+
+	(dft_table_cossin_init): Allocate for only N/2 entries.
+
+2006-01-10  Chong Kai Xiong <descender@phreaker.net>
 	
 	* lv_fft.c, lv_fft.h, lv_audio.c (visual_fft_perform): Remove normalised
 	parameter.

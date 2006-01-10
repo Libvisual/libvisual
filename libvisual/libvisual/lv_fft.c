@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fft.c,v 1.25 2006-01-10 06:25:14 descender Exp $
+ * $Id: lv_fft.c,v 1.26 2006-01-10 07:00:03 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,7 +29,6 @@
 #include <config.h>
 #include <stdlib.h>
 #include <math.h>
-#include <limits.h>
 
 #include <string.h>
 
@@ -148,13 +147,14 @@ static void fft_table_cossin_init (FFTCacheEntry *fcache, VisFFT *fft)
 
 static void dft_table_cossin_init (FFTCacheEntry *fcache, VisFFT *fft)
 {
-	int i;
+	int i, tabsize;
 	float theta;
 
-	fcache->sintable = visual_mem_malloc0 (sizeof (float) * fft->spectrum_size);
-	fcache->costable = visual_mem_malloc0 (sizeof (float) * fft->spectrum_size);
+	tabsize = fft->spectrum_size / 2;
+	fcache->sintable = visual_mem_malloc0 (sizeof (float) * tabsize);
+	fcache->costable = visual_mem_malloc0 (sizeof (float) * tabsize);
 
-	for (i = 0; i < fft->spectrum_size; i++) {
+	for (i = 0; i < tabsize; i++) {
 		theta = (-2.0f * FFT_PI * i) / fft->spectrum_size;
 
 		fcache->costable[i] = cosf (theta);
@@ -212,26 +212,22 @@ static FFTCacheEntry *fft_cache_get (VisFFT *fft)
 
 static int is_power2 (int n)
 {
-	unsigned int mask;
-	int bits_found;
+	int bits_found = FALSE;
 
 	if (n < 1)
 		return FALSE;
 
-	mask = ~INT_MAX;
-	bits_found = FALSE;
-
 	do {
-		if (n & mask) {
+		if (n & 1) {
 			if (bits_found)
 				return FALSE;
 
 			bits_found = TRUE;
 		}
 
-		mask >>= 1;
+		n >>= 1;
 
-	} while (mask > 0);
+	} while (n > 0);
 
 	return TRUE;
 }
