@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fft.c,v 1.23 2006-01-09 07:20:18 descender Exp $
+ * $Id: lv_fft.c,v 1.24 2006-01-10 05:32:13 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -325,15 +325,15 @@ static void perform_dft_brute_force (VisFFT *fft, float *input, float *output)
 	visual_object_ref (VISUAL_OBJECT (fcache));
 
 	for (i = 0; i < fft->spectrum_size / 2; i++) {
-		xr = input[i] / 32768.00f;
+		xr = 0.0f;
 		xi = 0.0f;
 
 		wr = 1.0f;
 		wi = 0.0f;
 
 		for (j = 0; j < fft->spectrum_size; j++) {
-			xr += fft->real[j] * wr;
-			xi += fft->real[j] * wi;
+			xr += input[j] * wr;
+			xi += input[j] * wi;
 
 			wtemp = wr;
 			wr = wr * fcache->costable[i] - wi * fcache->sintable[i];
@@ -360,7 +360,7 @@ static void perform_fft_radix2_dit (VisFFT *fft, float *input, float *output)
 		int idx = fcache->bitrevtable[i];
 
 		if (idx < fft->samples_in)
-			fft->real[i] = input[idx] / 32768.00f;
+			fft->real[i] = input[idx];
 		else
 			fft->real[i] = 0;
 	}
@@ -424,12 +424,12 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output, int normalised
 
 	if (fft->brute_force)
 		perform_dft_brute_force (fft, input, output);
-        else
+	else
 		perform_fft_radix2_dit (fft, input, output);
 
 	/* FIXME SSEfy */
 	for (i = 0; i < fft->spectrum_size / 2; i++)
-		output[i] = sqrtf (fft->real[i] * fft->real[i] + fft->imag[i] * fft->imag[i]);
+		output[i] = sqrtf (fft->real[i] * fft->real[i] + fft->imag[i] * fft->imag[i]) / 32768.0f;
 
 	return VISUAL_OK;
 }
