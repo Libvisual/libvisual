@@ -24,11 +24,11 @@ main (int    n_args,
             std::vector<float> output (input.size () / 2);
 
             for (int i = 1; i < n_args; i++)
-                input[i - 1] = boost::lexical_cast<float> (args[i]) * 32768.0f;
+                input[i - 1] = boost::lexical_cast<float> (args[i]);
 
             VisFFT *fft = visual_fft_new (input.size (), output.size ());
 
-            visual_fft_perform (fft, &input[0], &output[0], false);
+            visual_fft_perform (fft, &input[0], &output[0]);
 
             visual_object_unref (reinterpret_cast<VisObject *> (fft));
 
