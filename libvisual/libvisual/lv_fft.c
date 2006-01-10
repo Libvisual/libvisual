@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fft.c,v 1.24 2006-01-10 05:32:13 descender Exp $
+ * $Id: lv_fft.c,v 1.25 2006-01-10 06:25:14 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -410,11 +410,10 @@ static void perform_fft_radix2_dit (VisFFT *fft, float *input, float *output)
  * @param fft Pointer to the VisFFT context for this transform.
  * @param input Pointer to the input samples.
  * @param output Pointer to the output spectrum buffer.
- * @param normalised TRUE to normalise the values, FALSE to not normalise the values.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_FFT_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_fft_perform (VisFFT *fft, float *input, float *output, int normalised)
+int visual_fft_perform (VisFFT *fft, float *input, float *output)
 {
 	int i;
 
@@ -429,7 +428,7 @@ int visual_fft_perform (VisFFT *fft, float *input, float *output, int normalised
 
 	/* FIXME SSEfy */
 	for (i = 0; i < fft->spectrum_size / 2; i++)
-		output[i] = sqrtf (fft->real[i] * fft->real[i] + fft->imag[i] * fft->imag[i]) / 32768.0f;
+		output[i] = sqrtf (fft->real[i] * fft->real[i] + fft->imag[i] * fft->imag[i]) / fft->spectrum_size;
 
 	return VISUAL_OK;
 }

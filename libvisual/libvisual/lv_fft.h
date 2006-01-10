@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fft.h,v 1.17 2006-01-08 15:43:30 descender Exp $
+ * $Id: lv_fft.h,v 1.18 2006-01-10 06:25:14 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -55,7 +55,7 @@ int visual_fft_deinitialize (void);
 VisFFT *visual_fft_new (int samples_in, int samples_out);
 int visual_fft_init (VisFFT *fft, int samples_in, int samples_out);
 
-int visual_fft_perform (VisFFT *fft, float *input, float *output, int normalised);
+int visual_fft_perform (VisFFT *fft, float *input, float *output);
 int visual_fft_normalise (float *spectrum, int size);
 
 VISUAL_END_DECLS

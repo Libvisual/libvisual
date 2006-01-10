@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.28 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_audio.c,v 1.29 2006-01-10 06:25:14 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -494,7 +494,7 @@ int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, 
 			visual_buffer_get_size (buffer) / sizeof (float));
 
 	/* FFT analyze the pcm data */
-	visual_fft_perform (&fft, visual_buffer_get_data (sample), visual_buffer_get_data (buffer), normalised);
+	visual_fft_perform (&fft, visual_buffer_get_data (sample), visual_buffer_get_data (buffer));
 
 	visual_object_unref (VISUAL_OBJECT (&fft));
 
