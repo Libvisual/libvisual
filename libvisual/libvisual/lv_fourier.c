@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fourier.c,v 1.1 2006-01-11 05:46:58 synap Exp $
+ * $Id: lv_fourier.c,v 1.2 2006-01-11 05:51:46 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -70,7 +70,7 @@ static void perform_fft_radix2_dit (VisFourier *fourier, float *input, float *ou
 
 static int fourier_dtor (VisObject *object)
 {
-	VisFourier *fourier = VISUAL_FFT (object);
+	VisFourier *fourier = VISUAL_FOURIER (object);
 
 	/* FIXME not all object elements are freed, destroyed, whatever */
 
