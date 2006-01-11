@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_utils.c,v 1.2 2006-01-11 07:06:38 synap Exp $
+ * $Id: lv_gl.c,v 1.1 2006-01-11 07:06:38 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,42 +27,57 @@
 #include <string.h>
 #include <fcntl.h>
 
-#include "lv_utils.h"
+#include "lv_gl.h"
+
+static VisGLCallbacks callbacks;
 
 /**
- * @defgroup VisUtils VisUtils
+ * @defgroup VisGL VisGL
  * @{
  */
 
-/**
- * Checks if the given value is a power of 2.
- *
- * @param n Value to be checked if it's being a power of 2.
- *
- * @return TRUE if power of 2, FALSE if not.
- */
-int visual_utils_is_power_of_2 (int n)
+int visual_gl_set_callback_attribute_set (VisGLSetAttributeFunc attribute_set)
 {
-	int bits_found = FALSE;
+	callbacks.attribute_set = attribute_set;
 
-	if (n < 1)
-		return FALSE;
+	return VISUAL_OK;
+}
 
-	do {
-		if (n & 1) {
-			if (bits_found)
-				return FALSE;
+int visual_gl_set_callback_attribute_get (VisGLGetAttributeFunc attribute_get)
+{
+	callbacks.attribute_get = attribute_get;
 
-			bits_found = TRUE;
-		}
+	return VISUAL_OK;
+}
 
-		n >>= 1;
 
-	} while (n > 0);
+int visual_gl_set_attribute (VisGLAttribute attribute, int value)
+{
+	if (callbacks.attribute_set == NULL)
+		return -VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED;
 
-	return TRUE;
+	callbacks.attribute_set (attribute, value);
+
+	return VISUAL_OK;
+}
+
+int visual_gl_get_attribute (VisGLAttribute attribute, int *value)
+{
+	if (callbacks.attribute_get == NULL)
+		return -VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED;
+
+	callbacks.attribute_get (attribute, value);
+
+	return VISUAL_OK;
+}
+
+
+void *visual_gl_get_proc_address (char *procname)
+{
+	return NULL;
 }
 
 /**
  * @}
  */
+

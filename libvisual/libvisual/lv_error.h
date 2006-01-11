@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.h,v 1.36 2006-01-11 05:46:58 synap Exp $
+ * $Id: lv_error.h,v 1.37 2006-01-11 07:06:38 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -89,9 +89,12 @@ enum {
 	VISUAL_ERROR_EVENT_NULL,			/**< The VisEvent is NULL. */
 	VISUAL_ERROR_EVENT_QUEUE_NULL,			/**< The VisEventQueue is NULL. */
 
-	/* Error entries for VisFOURIER system */
+	/* Error entries for the VisFourier system */
 	VISUAL_ERROR_FOURIER_NULL,			/**< The VisFourier is NULL. */
 	VISUAL_ERROR_FOURIER_NOT_INITIALIZED,		/**< The VisFourier subsystem is not initialized. */
+
+	/* Error entries for the VisGL system */
+	VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED,		/**< The native callback for a gl related function is not present. */
 
 	/* Error entries for the VisHashlist system */
 	VISUAL_ERROR_HASHLIST_NULL,			/**< The VisHashlist is NULL. */

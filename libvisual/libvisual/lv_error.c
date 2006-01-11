@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.c,v 1.35 2006-01-11 05:46:58 synap Exp $
+ * $Id: lv_error.c,v 1.36 2006-01-11 07:06:38 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -79,9 +79,11 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_EVENT_QUEUE_NULL] =		N_("VisEventQueue is NULL"),
 
 	[VISUAL_ERROR_FOURIER_NULL] =			N_("VisFourier is NULL"),
-	[VISUAL_ERROR_FOURIER_NOT_INITIALIZED]		N_("The VisFourier subsystem is not initialized"),
+	[VISUAL_ERROR_FOURIER_NOT_INITIALIZED]	=	N_("The VisFourier subsystem is not initialized"),
 
-	[VISUAL_ERROR_HASHLIST_NULL]			N_("The VisHashlist is NULL"),
+	[VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED] =	N_("The native callback for a gl related function is not present."),
+
+	[VISUAL_ERROR_HASHLIST_NULL] =			N_("The VisHashlist is NULL"),
 
 	[VISUAL_ERROR_HASHMAP_NULL] =			N_("VisHashmap is NULL"),
 	[VISUAL_ERROR_HASHMAP_NOT_IN_MAP] =		N_("Key is not in hashmap"),

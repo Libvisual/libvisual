@@ -1,5 +1,10 @@
 2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* lv_gl.*: Added, will provide functions for better opengl support,
+	and abstraction for gl parameters.
+
+2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* lv_utils.*: Added.
 
 	(visual_utils_is_power_of_2): Added utility function.

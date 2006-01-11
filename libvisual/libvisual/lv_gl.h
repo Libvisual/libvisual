@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_utils.c,v 1.2 2006-01-11 07:06:38 synap Exp $
+ * $Id: lv_gl.h,v 1.1 2006-01-11 07:06:38 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,48 +21,39 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
+#ifndef _LV_GL_H
+#define _LV_GL_H
 
-#include "lv_utils.h"
+#include <libvisual/lv_common.h>
 
-/**
- * @defgroup VisUtils VisUtils
- * @{
- */
+VISUAL_BEGIN_DECLS
 
-/**
- * Checks if the given value is a power of 2.
- *
- * @param n Value to be checked if it's being a power of 2.
- *
- * @return TRUE if power of 2, FALSE if not.
- */
-int visual_utils_is_power_of_2 (int n)
-{
-	int bits_found = FALSE;
+typedef enum {
+	VISUAL_GL_ATTRIBUTE_NONE = 0
+} VisGLAttribute;
 
-	if (n < 1)
-		return FALSE;
 
-	do {
-		if (n & 1) {
-			if (bits_found)
-				return FALSE;
+typedef struct _VisGLCallbacks VisGLCallbacks;
 
-			bits_found = TRUE;
-		}
 
-		n >>= 1;
+typedef int (*VisGLSetAttributeFunc)(VisGLAttribute attribute, int value);
+typedef int (*VisGLGetAttributeFunc)(VisGLAttribute attribute, int *value);
 
-	} while (n > 0);
 
-	return TRUE;
-}
+struct _VisGLCallbacks {
+	VisGLSetAttributeFunc	attribute_set;
+	VisGLGetAttributeFunc	attribute_get;
+};
 
-/**
- * @}
- */
+/* prototypes */
+int visual_gl_set_callback_attribute_set (VisGLSetAttributeFunc attribute_set);
+int visual_gl_set_callback_attribute_get (VisGLGetAttributeFunc attribute_get);
+
+int visual_gl_set_attribute (VisGLAttribute attribute, int value);
+int visual_gl_get_attribute (VisGLAttribute attribute, int *value);
+
+void *visual_gl_get_proc_address (char *procname);
+
+VISUAL_END_DECLS
+
+#endif /* _LV_GL_H */
