@@ -1,5 +1,11 @@
 2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* lv_utils.*: Added.
+
+	(visual_utils_is_power_of_2): Added utility function.
+
+2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* lv_fft.c: renamed to lv_fourier.c
 	* lv_fft.h: renamed to lv_fourier.h
 

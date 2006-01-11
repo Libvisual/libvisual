@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fourier.c,v 1.2 2006-01-11 05:51:46 synap Exp $
+ * $Id: lv_fourier.c,v 1.3 2006-01-11 06:06:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,6 +34,7 @@
 
 #include "lv_cache.h"
 #include "lv_fourier.h"
+#include "lv_utils.h"
 
 #define FFT_CACHEENTRY(obj)				(VISUAL_CHECK_CAST ((obj), FourierCacheEntry))
 
@@ -62,8 +63,6 @@ static void dft_table_cossin_init (FourierCacheEntry *fcache, VisFourier *fourie
 
 static int fourier_cache_destroyer (VisObject *object);
 static FourierCacheEntry *fourier_cache_get (VisFourier *fourier);
-
-static int is_power2 (int n);
 
 static void perform_dft_brute_force (VisFourier *fourier, float *input, float *output);
 static void perform_fft_radix2_dit (VisFourier *fourier, float *input, float *output);
@@ -209,28 +208,6 @@ static FourierCacheEntry *fourier_cache_get (VisFourier *fourier)
 	return fcache;
 }
 
-static int is_power2 (int n)
-{
-	int bits_found = FALSE;
-
-	if (n < 1)
-		return FALSE;
-
-	do {
-		if (n & 1) {
-			if (bits_found)
-				return FALSE;
-
-			bits_found = TRUE;
-		}
-
-		n >>= 1;
-
-	} while (n > 0);
-
-	return TRUE;
-}
-
 
 /**
  * @defgroup VisFourier VisFourier
@@ -299,7 +276,7 @@ int visual_fourier_init (VisFourier *fourier, int samples_in, int samples_out)
 	/* Set the VisFourier data */
 	fourier->samples_in = samples_in;
 	fourier->spectrum_size = samples_out * 2;
-	fourier->brute_force = !is_power2 (fourier->spectrum_size);
+	fourier->brute_force = !visual_utils_is_power_of_2 (fourier->spectrum_size);
 
 	/* Initialize the VisFourier */
 	fourier_cache_get (fourier);
