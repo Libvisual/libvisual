@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_libvisual.c,v 1.37 2005-12-30 15:42:35 descender Exp $
+ * $Id: lv_libvisual.c,v 1.38 2006-01-11 05:46:58 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -310,7 +310,7 @@ int visual_init (int *argc, char ***argv)
 	visual_thread_initialize ();
 
 	/* Initialize FFT system */
-	visual_fft_initialize ();
+	visual_fourier_initialize ();
 
 	/* Add the standard plugin paths */
 	ret = visual_init_path_add (PLUGPATH"/actor");
@@ -399,8 +399,8 @@ int visual_quit ()
 		return -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED;
 	}
 
-	if (visual_fft_is_initialized () == TRUE)
-		visual_fft_deinitialize ();
+	if (visual_fourier_is_initialized () == TRUE)
+		visual_fourier_deinitialize ();
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins));
 	if (ret < 0)

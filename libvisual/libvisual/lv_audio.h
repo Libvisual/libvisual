@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.h,v 1.19 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_audio.h,v 1.20 2006-01-11 05:46:58 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,7 +24,7 @@
 #ifndef _LV_AUDIO_H
 #define _LV_AUDIO_H
 
-#include <libvisual/lv_fft.h>
+#include <libvisual/lv_fourier.h>
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_ringbuffer.h>
 #include <libvisual/lv_hashmap.h>

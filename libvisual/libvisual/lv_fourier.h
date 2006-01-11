@@ -2,12 +2,12 @@
  *
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
- * The FFT implementation found in this file is based upon the NULLSOFT
- * Milkdrop FFT implementation.
+ * The FOURIER implementation found in this file is based upon the NULLSOFT
+ * Milkdrop FOURIER implementation.
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fft.h,v 1.18 2006-01-10 06:25:14 descender Exp $
+ * $Id: lv_fourier.h,v 1.1 2006-01-11 05:46:58 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,40 +24,40 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_FFT_H
-#define _LV_FFT_H
+#ifndef _LV_FOURIER_H
+#define _LV_FOURIER_H
 
 #include <libvisual/lv_common.h>
 
 VISUAL_BEGIN_DECLS
 
-#define VISUAL_FFT(obj)					(VISUAL_CHECK_CAST ((obj), VisFFT))
+#define VISUAL_FOURIER(obj)					(VISUAL_CHECK_CAST ((obj), VisFourier))
 
-typedef struct _VisFFT VisFFT;
+typedef struct _VisFourier VisFourier;
 
 /**
- * Private structure to contain Fast Fourier Transform states in.
+ * Private structure to embed Fourier Transform states in.
  */
-struct _VisFFT {
+struct _VisFourier {
 	VisObject	 object;			/**< The VisObject data. */
 	int		 samples_in;			/**< The number of input samples. */
 	int		 spectrum_size;			/**< The size of the spectrum (power of two). */
-	float		*real;				/**< Private data that is used by the FFT engine. */
-	float		*imag;				/**< Private data that is used by the FFT engine. */
-	int		 brute_force;			/**< Private data that is used by the FFT engine. */
+	float		*real;				/**< Private data that is used by the fourier engine. */
+	float		*imag;				/**< Private data that is used by the fourier engine. */
+	int		 brute_force;			/**< Private data that is used by the fourier engine. */
 };
 
 /* prototypes */
-int visual_fft_initialize (void);
-int visual_fft_is_initialized (void);
-int visual_fft_deinitialize (void);
+int visual_fourier_initialize (void);
+int visual_fourier_is_initialized (void);
+int visual_fourier_deinitialize (void);
 
-VisFFT *visual_fft_new (int samples_in, int samples_out);
-int visual_fft_init (VisFFT *fft, int samples_in, int samples_out);
+VisFourier *visual_fourier_new (int samples_in, int samples_out);
+int visual_fourier_init (VisFourier *fourier, int samples_in, int samples_out);
 
-int visual_fft_perform (VisFFT *fft, float *input, float *output);
-int visual_fft_normalise (float *spectrum, int size);
+int visual_fourier_perform (VisFourier *fourier, float *input, float *output);
+int visual_fourier_normalise (float *spectrum, int size);
 
 VISUAL_END_DECLS
 
-#endif /* _LV_FFT_H */
+#endif /* _LV_FOURIER_H */

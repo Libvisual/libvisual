@@ -1,3 +1,10 @@
+2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lv_fft.c: renamed to lv_fourier.c
+	* lv_fft.h: renamed to lv_fourier.h
+
+	* lv_audio.*, lv_libvisual.c: Updated to API changes.
+
 2006-01-10  Chong Kai Xiong <descender@phreaker.net>
 
 	* lv_fft.c (is_power2): Get rid of mask variable.

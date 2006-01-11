@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.29 2006-01-10 06:25:14 descender Exp $
+ * $Id: lv_audio.c,v 1.30 2006-01-11 05:46:58 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -192,7 +192,7 @@ int visual_audio_init (VisAudio *audio)
 }
 
 /**
- * This function analyzes the VisAudio, the FFT frequency magic gets done here, also
+ * This function analyzes the VisAudio, the Fourier frequency magic gets done here, also
  * the audio energy is calculated and some other magic to provide the developer more
  * information about the current sample and the stream.
  *
@@ -278,13 +278,13 @@ int visual_audio_analyze (VisAudio *audio)
 		temp_audio[0][i] = audio->pcm[0][i];
 		temp_audio[1][i] = audio->pcm[1][i];
 	}
-	/* FFT analyze the pcm data */
-	visual_fft_perform (audio->fft, temp_audio[0], temp_out);
+	/* Fourier analyze the pcm data */
+	visual_fourier_perform (audio->fourier, temp_audio[0], temp_out);
 
 	for (i = 0; i < 256; i++)
 		audio->freq[0][i] = temp_out[i] * 50;
 
-	visual_fft_perform (audio->fft, temp_audio[1], temp_out);
+	visual_fourier_perform (audio->fourier, temp_audio[1], temp_out);
 
 	for (i = 0; i < 256; i++)
 		audio->freq[1][i] = temp_out[i] * 50;
@@ -484,19 +484,19 @@ int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen
 
 int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised)
 {
-	VisFFT fft;
+	VisFourier fourier;
 
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_fft_init (&fft,
+	visual_fourier_init (&fourier,
 			visual_buffer_get_size (sample) / sizeof (float),
 			visual_buffer_get_size (buffer) / sizeof (float));
 
-	/* FFT analyze the pcm data */
-	visual_fft_perform (&fft, visual_buffer_get_data (sample), visual_buffer_get_data (buffer));
+	/* Fourier analyze the pcm data */
+	visual_fourier_perform (&fourier, visual_buffer_get_data (sample), visual_buffer_get_data (buffer));
 
-	visual_object_unref (VISUAL_OBJECT (&fft));
+	visual_object_unref (VISUAL_OBJECT (&fourier));
 
 	return VISUAL_OK;
 }
@@ -506,7 +506,7 @@ int visual_audio_normalise_spectrum (VisBuffer *buffer)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_fft_normalise (visual_buffer_get_data (buffer), visual_buffer_get_size (buffer));
+	visual_fourier_normalise (visual_buffer_get_data (buffer), visual_buffer_get_size (buffer));
 
 	return VISUAL_OK;
 }

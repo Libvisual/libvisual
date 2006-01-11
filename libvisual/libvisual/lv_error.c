@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.c,v 1.34 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_error.c,v 1.35 2006-01-11 05:46:58 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -78,8 +78,8 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_EVENT_NULL] =			N_("VisEvent is NULL"),
 	[VISUAL_ERROR_EVENT_QUEUE_NULL] =		N_("VisEventQueue is NULL"),
 
-	[VISUAL_ERROR_FFT_NULL] =			N_("VisFFT is NULL"),
-	[VISUAL_ERROR_FFT_NOT_INITIALIZED]		N_("The VisFFT subsystem is not initialized"),
+	[VISUAL_ERROR_FOURIER_NULL] =			N_("VisFourier is NULL"),
+	[VISUAL_ERROR_FOURIER_NOT_INITIALIZED]		N_("The VisFourier subsystem is not initialized"),
 
 	[VISUAL_ERROR_HASHLIST_NULL]			N_("The VisHashlist is NULL"),
 
