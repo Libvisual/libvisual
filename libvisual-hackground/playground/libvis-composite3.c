@@ -222,7 +222,7 @@ int main (int argc, char *argv[])
 	visual_video_allocate_buffer (video2);
 
 	visual_video_composite_set_type (video2, VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY);
-	visual_video_composite_set_surface (video2, 128);
+	visual_video_composite_set_surface (video2, 255);
 	visual_video_composite_set_colorkey (video2, visual_color_black ());
 
 	visual_actor_video_negotiate (actor2, 0, FALSE, FALSE);

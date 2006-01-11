@@ -1,4 +1,4 @@
-//-*- Mode: C++; compile-command: "g++ -Wall -ansi -pedantic $(pkg-config --cflags --libs libvisual) lv_fft_test.cpp -o lv_fft_test"; -*-
+//-*- Mode: C++; compile-command: "g++ -Wall -ansi -pedantic $(pkg-config --cflags --libs libvisual) lv_fourier_test.cpp -o lv_fourier_test"; -*-
 
 #include <iostream>
 #include <iomanip>
@@ -26,11 +26,11 @@ main (int    n_args,
             for (int i = 1; i < n_args; i++)
                 input[i - 1] = boost::lexical_cast<float> (args[i]);
 
-            VisFFT *fft = visual_fft_new (input.size (), output.size ());
+            VisFourier *fourier = visual_fourier_new (input.size (), output.size ());
 
-            visual_fft_perform (fft, &input[0], &output[0]);
+            visual_fourier_perform (fourier, &input[0], &output[0]);
 
-            visual_object_unref (reinterpret_cast<VisObject *> (fft));
+            visual_object_unref (reinterpret_cast<VisObject *> (fourier));
 
             std::cout << std::setprecision (6);
 
