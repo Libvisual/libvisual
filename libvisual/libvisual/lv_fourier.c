@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fourier.c,v 1.4 2006-01-13 06:14:36 descender Exp $
+ * $Id: lv_fourier.c,v 1.5 2006-01-13 08:02:24 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -249,22 +249,22 @@ int visual_fourier_deinitialize ()
  *
  * @return A newly created VisDFT.
  */
-VisDFT *visual_fourier_new (int samples_in, int samples_out)
+VisDFT *visual_dft_new (int samples_in, int samples_out)
 {
-	VisDFT *fourier;
+	VisDFT *dft;
 
-	fourier = visual_mem_new0 (VisDFT, 1);
+	dft = visual_mem_new0 (VisDFT, 1);
 
-	visual_fourier_init (fourier, samples_in, samples_out);
+	visual_dft_init (dft, samples_in, samples_out);
 
 	/* Do the VisObject initialization */
-	visual_object_set_allocated (VISUAL_OBJECT (fourier), TRUE);
-	visual_object_ref (VISUAL_OBJECT (fourier));
+	visual_object_set_allocated (VISUAL_OBJECT (dft), TRUE);
+	visual_object_ref (VISUAL_OBJECT (dft));
 
-	return fourier;
+	return dft;
 }
 
-int visual_fourier_init (VisDFT *dft, int samples_in, int samples_out)
+int visual_dft_init (VisDFT *dft, int samples_in, int samples_out)
 {
 	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
 

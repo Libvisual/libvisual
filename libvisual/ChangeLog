@@ -1,7 +1,12 @@
+2006-01-13  Chong Kai Xiong <descneder@phreaker.net>
+
+	* lv_fourier.c: Forgot to rename visual_dft_init() and
+	visual_dft_new().
+
 2006-01-13  Chong Kai Xiong <descender@phreaker.net>
 
 	* lv_audio.c, lv_fourier.[ch]: Rename DFT specific functions.
-	
+
 2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* lv_gl.*: Added, will provide functions for better opengl support,
