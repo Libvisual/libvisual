@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fourier.h,v 1.1 2006-01-11 05:46:58 synap Exp $
+ * $Id: lv_fourier.h,v 1.2 2006-01-13 06:14:36 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,14 +31,14 @@
 
 VISUAL_BEGIN_DECLS
 
-#define VISUAL_FOURIER(obj)					(VISUAL_CHECK_CAST ((obj), VisFourier))
+#define VISUAL_DFT(obj)					(VISUAL_CHECK_CAST ((obj), VisDFT))
 
-typedef struct _VisFourier VisFourier;
+typedef struct _VisDFT VisDFT;
 
 /**
  * Private structure to embed Fourier Transform states in.
  */
-struct _VisFourier {
+struct _VisDFT {
 	VisObject	 object;			/**< The VisObject data. */
 	int		 samples_in;			/**< The number of input samples. */
 	int		 spectrum_size;			/**< The size of the spectrum (power of two). */
@@ -52,11 +52,11 @@ int visual_fourier_initialize (void);
 int visual_fourier_is_initialized (void);
 int visual_fourier_deinitialize (void);
 
-VisFourier *visual_fourier_new (int samples_in, int samples_out);
-int visual_fourier_init (VisFourier *fourier, int samples_in, int samples_out);
+VisDFT *visual_dft_new (int samples_in, int samples_out);
+int visual_dft_init (VisDFT *fourier, int samples_in, int samples_out);
 
-int visual_fourier_perform (VisFourier *fourier, float *input, float *output);
-int visual_fourier_normalise (float *spectrum, int size);
+int visual_dft_perform (VisDFT *fourier, float *input, float *output);
+int visual_dft_normalise (float *spectrum, int size);
 
 VISUAL_END_DECLS
 

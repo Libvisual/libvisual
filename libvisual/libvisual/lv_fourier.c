@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fourier.c,v 1.3 2006-01-11 06:06:41 synap Exp $
+ * $Id: lv_fourier.c,v 1.4 2006-01-13 06:14:36 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,11 +36,11 @@
 #include "lv_fourier.h"
 #include "lv_utils.h"
 
-#define FFT_CACHEENTRY(obj)				(VISUAL_CHECK_CAST ((obj), FourierCacheEntry))
+#define DFT_CACHE_ENTRY(obj)				(VISUAL_CHECK_CAST ((obj), DFTCacheEntry))
 
-typedef struct _FourierCacheEntry FourierCacheEntry;
+typedef struct _DFTCacheEntry DFTCacheEntry;
 
-struct _FourierCacheEntry {
+struct _DFTCacheEntry {
 	VisObject	 object;
 
 	int		 spectrum_size;
@@ -51,41 +51,41 @@ struct _FourierCacheEntry {
 	float		*costable;
 };
 
-static VisCache __lv_fourier_cache;
+static VisCache __lv_dft_cache;
 static int __lv_fourier_initialized = FALSE;
 
 
-static int fourier_dtor (VisObject *object);
+static int dft_dtor (VisObject *object);
 
-static void fft_table_bitrev_init (FourierCacheEntry *fcache, VisFourier *fourier);
-static void fft_table_cossin_init (FourierCacheEntry *fcache, VisFourier *fourier);
-static void dft_table_cossin_init (FourierCacheEntry *fcache, VisFourier *fourier);
+static void fft_table_bitrev_init (DFTCacheEntry *fcache, VisDFT *fourier);
+static void fft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier);
+static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier);
 
-static int fourier_cache_destroyer (VisObject *object);
-static FourierCacheEntry *fourier_cache_get (VisFourier *fourier);
+static int dft_cache_destroyer (VisObject *object);
+static DFTCacheEntry *dft_cache_get (VisDFT *dft);
 
-static void perform_dft_brute_force (VisFourier *fourier, float *input, float *output);
-static void perform_fft_radix2_dit (VisFourier *fourier, float *input, float *output);
+static void perform_dft_brute_force (VisDFT *fourier, float *input, float *output);
+static void perform_fft_radix2_dit (VisDFT *fourier, float *input, float *output);
 
-static int fourier_dtor (VisObject *object)
+static int dft_dtor (VisObject *object)
 {
-	VisFourier *fourier = VISUAL_FOURIER (object);
+	VisDFT *dft = VISUAL_DFT (object);
 
 	/* FIXME not all object elements are freed, destroyed, whatever */
 
-	if (fourier->real != NULL)
-		visual_mem_free (fourier->real);
+	if (dft->real != NULL)
+		visual_mem_free (dft->real);
 
-	if (fourier->imag != NULL)
-		visual_mem_free (fourier->imag);
+	if (dft->imag != NULL)
+		visual_mem_free (dft->imag);
 
-	fourier->real = NULL;
-	fourier->imag = NULL;
+	dft->real = NULL;
+	dft->imag = NULL;
 
 	return VISUAL_OK;
 }
 
-static void fft_table_bitrev_init (FourierCacheEntry *fcache, VisFourier *fourier)
+static void fft_table_bitrev_init (DFTCacheEntry *fcache, VisDFT *fourier)
 {
 	int i, m, temp;
 	int j = 0;
@@ -113,7 +113,7 @@ static void fft_table_bitrev_init (FourierCacheEntry *fcache, VisFourier *fourie
 	}
 }
 
-static void fft_table_cossin_init (FourierCacheEntry *fcache, VisFourier *fourier)
+static void fft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 {
 	int i, dftsize, tabsize;
 	float theta;
@@ -143,7 +143,7 @@ static void fft_table_cossin_init (FourierCacheEntry *fcache, VisFourier *fourie
 	}
 }
 
-static void dft_table_cossin_init (FourierCacheEntry *fcache, VisFourier *fourier)
+static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 {
 	int i, tabsize;
 	float theta;
@@ -160,9 +160,9 @@ static void dft_table_cossin_init (FourierCacheEntry *fcache, VisFourier *fourie
 	}
 }
 
-static int fourier_cache_destroyer (VisObject *object)
+static int dft_cache_destroyer (VisObject *object)
 {
-	FourierCacheEntry *fcache = FFT_CACHEENTRY (object);
+	DFTCacheEntry *fcache = DFT_CACHE_ENTRY (object);
 
 	if (fcache->bitrevtable != NULL)
 		visual_mem_free (fcache->bitrevtable);
@@ -180,20 +180,20 @@ static int fourier_cache_destroyer (VisObject *object)
 	return VISUAL_OK;
 }
 
-static FourierCacheEntry *fourier_cache_get (VisFourier *fourier)
+static DFTCacheEntry *dft_cache_get (VisDFT *fourier)
 {
-	FourierCacheEntry *fcache;
+	DFTCacheEntry *fcache;
 	char key[16];
 
 	visual_log_return_val_if_fail (__lv_fourier_initialized == TRUE, NULL);
 
 	snprintf (key, 16, "%d", fourier->spectrum_size);
-	fcache = visual_cache_get (&__lv_fourier_cache, key);
+	fcache = visual_cache_get (&__lv_dft_cache, key);
 
 	if (fcache == NULL) {
-		fcache = visual_mem_new0 (FourierCacheEntry, 1);
+		fcache = visual_mem_new0 (DFTCacheEntry, 1);
 
-		visual_object_initialize (VISUAL_OBJECT (fcache), TRUE, fourier_cache_destroyer);
+		visual_object_initialize (VISUAL_OBJECT (fcache), TRUE, dft_cache_destroyer);
 
 		if (fourier->brute_force) {
 			dft_table_cossin_init (fcache, fourier);
@@ -202,7 +202,7 @@ static FourierCacheEntry *fourier_cache_get (VisFourier *fourier)
 			fft_table_cossin_init (fcache, fourier);
 		}
 
-		visual_cache_put (&__lv_fourier_cache, key, fcache);
+		visual_cache_put (&__lv_dft_cache, key, fcache);
 	}
 
 	return fcache;
@@ -210,13 +210,13 @@ static FourierCacheEntry *fourier_cache_get (VisFourier *fourier)
 
 
 /**
- * @defgroup VisFourier VisFourier
+ * @defgroup VisDFT VisDFT
  * @{
  */
 
 int visual_fourier_initialize ()
 {
-	visual_cache_init (&__lv_fourier_cache, visual_object_collection_destroyer, 50, NULL, TRUE);
+	visual_cache_init (&__lv_dft_cache, visual_object_collection_destroyer, 50, NULL, TRUE);
 
 	__lv_fourier_initialized = TRUE;
 
@@ -233,7 +233,7 @@ int visual_fourier_deinitialize ()
 	if (__lv_fourier_initialized == FALSE)
 		return -VISUAL_ERROR_FOURIER_NOT_INITIALIZED;
 
-	visual_object_unref (VISUAL_OBJECT (&__lv_fourier_cache));
+	visual_object_unref (VISUAL_OBJECT (&__lv_dft_cache));
 
 	__lv_fourier_initialized = FALSE;
 
@@ -241,19 +241,19 @@ int visual_fourier_deinitialize ()
 }
 
 /**
- * Function to create a new VisFourier Fast Fourier Transform context used
+ * Function to create a new VisDFT Fast Fourier Transform context used
  * to calculate spectrums over audio data.
  *
  * @param samples_in The number of samples provided every visual_fourier_perform() as input.
  * @param samples_out The size of the output spectrum.
  *
- * @return A newly created VisFourier.
+ * @return A newly created VisDFT.
  */
-VisFourier *visual_fourier_new (int samples_in, int samples_out)
+VisDFT *visual_fourier_new (int samples_in, int samples_out)
 {
-	VisFourier *fourier;
+	VisDFT *fourier;
 
-	fourier = visual_mem_new0 (VisFourier, 1);
+	fourier = visual_mem_new0 (VisDFT, 1);
 
 	visual_fourier_init (fourier, samples_in, samples_out);
 
@@ -264,46 +264,46 @@ VisFourier *visual_fourier_new (int samples_in, int samples_out)
 	return fourier;
 }
 
-int visual_fourier_init (VisFourier *fourier, int samples_in, int samples_out)
+int visual_fourier_init (VisDFT *dft, int samples_in, int samples_out)
 {
-	visual_log_return_val_if_fail (fourier != NULL, -VISUAL_ERROR_FOURIER_NULL);
+	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (fourier));
-	visual_object_set_dtor (VISUAL_OBJECT (fourier), fourier_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (fourier), FALSE);
+	visual_object_clear (VISUAL_OBJECT (dft));
+	visual_object_set_dtor (VISUAL_OBJECT (dft), dft_dtor);
+	visual_object_set_allocated (VISUAL_OBJECT (dft), FALSE);
 
-	/* Set the VisFourier data */
-	fourier->samples_in = samples_in;
-	fourier->spectrum_size = samples_out * 2;
-	fourier->brute_force = !visual_utils_is_power_of_2 (fourier->spectrum_size);
+	/* Set the VisDFT data */
+	dft->samples_in = samples_in;
+	dft->spectrum_size = samples_out * 2;
+	dft->brute_force = !visual_utils_is_power_of_2 (dft->spectrum_size);
 
-	/* Initialize the VisFourier */
-	fourier_cache_get (fourier);
+	/* Initialize the VisDFT */
+	dft_cache_get (dft);
 
-	fourier->real = visual_mem_malloc0 (sizeof (float) * fourier->spectrum_size);
-	fourier->imag = visual_mem_malloc0 (sizeof (float) * fourier->spectrum_size);
+	dft->real = visual_mem_malloc0 (sizeof (float) * dft->spectrum_size);
+	dft->imag = visual_mem_malloc0 (sizeof (float) * dft->spectrum_size);
 
 	return VISUAL_OK;
 }
 
-static void perform_dft_brute_force (VisFourier *fourier, float *input, float *output)
+static void perform_dft_brute_force (VisDFT *dft, float *input, float *output)
 {
-	FourierCacheEntry *fcache;
+	DFTCacheEntry *fcache;
 	int i, j;
 	float xr, xi, wr, wi, wtemp;
 
-	fcache = fourier_cache_get (fourier);
+	fcache = dft_cache_get (dft);
 	visual_object_ref (VISUAL_OBJECT (fcache));
 
-	for (i = 0; i < fourier->spectrum_size / 2; i++) {
+	for (i = 0; i < dft->spectrum_size / 2; i++) {
 		xr = 0.0f;
 		xi = 0.0f;
 
 		wr = 1.0f;
 		wi = 0.0f;
 
-		for (j = 0; j < fourier->spectrum_size; j++) {
+		for (j = 0; j < dft->spectrum_size; j++) {
 			xr += input[j] * wr;
 			xi += input[j] * wi;
 
@@ -312,36 +312,36 @@ static void perform_dft_brute_force (VisFourier *fourier, float *input, float *o
 			wi = wtemp * fcache->sintable[i] + wi * fcache->costable[i];
 		}
 
-		fourier->real[i] = xr;
-		fourier->imag[i] = xi;
+		dft->real[i] = xr;
+		dft->imag[i] = xi;
 	}
 
 	visual_object_unref (VISUAL_OBJECT (fcache));
 }
 
-static void perform_fft_radix2_dit (VisFourier *fourier, float *input, float *output)
+static void perform_fft_radix2_dit (VisDFT *dft, float *input, float *output)
 {
-	FourierCacheEntry *fcache;
+	DFTCacheEntry *fcache;
 	int j, m, i, dftsize, hdftsize, t;
 	float wr, wi, wpi, wpr, wtemp, tempr, tempi;
 
-	fcache = fourier_cache_get (fourier);
+	fcache = dft_cache_get (dft);
 	visual_object_ref (VISUAL_OBJECT (fcache));
 
-	for (i = 0; i < fourier->spectrum_size; i++) {
+	for (i = 0; i < dft->spectrum_size; i++) {
 		int idx = fcache->bitrevtable[i];
 
-		if (idx < fourier->samples_in)
-			fourier->real[i] = input[idx];
+		if (idx < dft->samples_in)
+			dft->real[i] = input[idx];
 		else
-			fourier->real[i] = 0;
+			dft->real[i] = 0;
 	}
 
-	visual_mem_set (fourier->imag, 0, sizeof (float) * fourier->spectrum_size);
+	visual_mem_set (dft->imag, 0, sizeof (float) * dft->spectrum_size);
 
 	dftsize = 2;
 	t = 0;
-	while (dftsize <= fourier->spectrum_size) {
+	while (dftsize <= dft->spectrum_size) {
 		wpr = fcache->costable[t];
 		wpi = fcache->sintable[t];
 
@@ -351,17 +351,17 @@ static void perform_fft_radix2_dit (VisFourier *fourier, float *input, float *ou
 		hdftsize = dftsize >> 1;
 
 		for (m = 0; m < hdftsize; m += 1) {
-			for (i = m; i < fourier->spectrum_size; i+=dftsize) {
+			for (i = m; i < dft->spectrum_size; i+=dftsize) {
 				j = i + hdftsize;
 
-				tempr = wr * fourier->real[j] - wi * fourier->imag[j];
-				tempi = wr * fourier->imag[j] + wi * fourier->real[j];
+				tempr = wr * dft->real[j] - wi * dft->imag[j];
+				tempi = wr * dft->imag[j] + wi * dft->real[j];
 
-				fourier->real[j] = fourier->real[i] - tempr;
-				fourier->imag[j] = fourier->imag[i] - tempi;
+				dft->real[j] = dft->real[i] - tempr;
+				dft->imag[j] = dft->imag[i] - tempi;
 
-				fourier->real[i] += tempr;
-				fourier->imag[i] += tempi;
+				dft->real[i] += tempr;
+				dft->imag[i] += tempi;
 			}
 
 			wr = (wtemp = wr) * wpr - wi * wpi;
@@ -379,29 +379,29 @@ static void perform_fft_radix2_dit (VisFourier *fourier, float *input, float *ou
 /**
  * Function to perform a Fourier Transform over a set of data.
  *
- * @param fourier Pointer to the VisFourier context for this transform.
+ * @param fourier Pointer to the VisDFT context for this transform.
  * @param input Pointer to the input samples.
  * @param output Pointer to the output fourier transformed buffer.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_FOURIER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_fourier_perform (VisFourier *fourier, float *input, float *output)
+int visual_dft_perform (VisDFT *dft, float *input, float *output)
 {
 	int i;
 
-	visual_log_return_val_if_fail (fourier != NULL, -VISUAL_ERROR_FOURIER_NULL);
+	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
 
-	if (fourier->brute_force)
-		perform_dft_brute_force (fourier, input, output);
+	if (dft->brute_force)
+		perform_dft_brute_force (dft, input, output);
 	else
-		perform_fft_radix2_dit (fourier, input, output);
+		perform_fft_radix2_dit (dft, input, output);
 
 	/* FIXME SSEfy */
-	for (i = 0; i < fourier->spectrum_size / 2; i++)
-		output[i] = sqrtf (fourier->real[i] * fourier->real[i] +
-				fourier->imag[i] * fourier->imag[i]) / fourier->spectrum_size;
+	for (i = 0; i < dft->spectrum_size / 2; i++)
+		output[i] = sqrtf (dft->real[i] * dft->real[i] +
+				dft->imag[i] * dft->imag[i]) / dft->spectrum_size;
 
 	return VISUAL_OK;
 }
