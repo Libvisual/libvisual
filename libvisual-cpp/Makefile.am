@@ -1,4 +1,7 @@
-SUBDIRS = libvisual-cpp
+SUBDIRS = libvisual-cpp tests
+
+libvisual_cpp_includedir = $(includedir)/libvisual-cpp
+libvisual_cpp_include_HEADERS = lv_build_config.hpp
 
 # HTML documentation target
 
