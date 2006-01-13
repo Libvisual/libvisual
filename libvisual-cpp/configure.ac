@@ -82,7 +82,8 @@ echo
 AC_CONFIG_FILES([
     Doxyfile
     Makefile
-    src/Makefile
+    libvisual-cpp/Makefile
+    tests/Makefile
 ])
 
 AC_OUTPUT

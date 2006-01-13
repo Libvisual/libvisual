@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.hpp,v 1.7 2005-09-26 14:06:06 descender Exp $
+// $Id: libvisual_cpp.hpp,v 1.1 2006-01-13 07:00:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as

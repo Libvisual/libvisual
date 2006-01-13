@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_config.hpp,v 1.2 2006-01-13 06:51:53 descender Exp $
+// $Id: lv_config.hpp,v 1.1 2006-01-13 07:00:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as

@@ -1,4 +1,4 @@
-SUBDIRS = src
+SUBDIRS = libvisual-cpp
 
 # HTML documentation target
 
