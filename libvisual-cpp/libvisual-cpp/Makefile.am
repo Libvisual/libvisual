@@ -17,7 +17,7 @@ libvisual_cpp_include_HEADERS = \
 	lv_video.hpp
 
 libvisual_cpp_la_LDFLAGS = -export-dynamic -version-info $(LVCPP_ABI_VERSION)
-libvisual_cpp_la_CXXFLAGS = $(LV_CFLAGS)
+libvisual_cpp_la_CXXFLAGS = $(LV_CFLAGS) -I $(top_srcdir)
 libvisual_cpp_la_LIBADD = $(LV_LIBS)
 
 libvisual_cpp_la_SOURCES =	\

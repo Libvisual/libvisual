@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_config.hpp,v 1.1 2006-01-13 07:00:33 descender Exp $
+// $Id: lv_config.hpp,v 1.2 2006-01-13 07:44:44 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -23,9 +23,9 @@
 #ifndef LVCPP_CONFIG_HPP
 #define LVCPP_CONFIG_HPP
 
+#include <libvisual-cpp/lv_object.hpp>
+#include <libvisual-cpp/lv_error.hpp>
 #include <libvisual/lv_config.h>
-#include <lv_object.hpp>
-#include <lv_error.hpp>
 #include <string>
 
 // Notes:

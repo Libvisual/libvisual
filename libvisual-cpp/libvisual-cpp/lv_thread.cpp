@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.cpp,v 1.1 2006-01-13 07:00:33 descender Exp $
+// $Id: lv_thread.cpp,v 1.2 2006-01-13 07:44:44 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -21,7 +21,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #include <lv_build_config.hpp>
-#include <lv_thread.hpp>
+#include "lv_thread.hpp"
 
 namespace Lv
 {

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.hpp,v 1.1 2006-01-13 07:00:33 descender Exp $
+// $Id: libvisual_cpp.hpp,v 1.2 2006-01-13 07:44:44 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -23,8 +23,8 @@
 #ifndef LVCPP_LVCPP_HPP
 #define LVCPP_LVCPP_HPP
 
+#include <libvisual-cpp/lv_error.hpp>
 #include <string>
-#include <lv_error.hpp>
 
 namespace Lv
 {
