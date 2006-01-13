@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_cpu.cpp,v 1.2 2005-09-26 13:21:38 descender Exp $
+// $Id: lv_config.cpp,v 1.1 2006-01-13 06:51:54 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,19 +20,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_build_config.hpp>
-#include <lv_cpu.hpp>
+#include <lv_config.hpp>
 
-
-#ifdef LVCPP_CPU_TEST
-
-int main ()
-{
-    Lv::CPU::init ();
-
-    // more to come...
-
-    return 0;
-}
-
-#endif // #ifdef LVCPP_CPU_TEST
+// TODO: write test

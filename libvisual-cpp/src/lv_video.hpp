@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.2 2005-12-14 00:43:12 descender Exp $
+// $Id: lv_video.hpp,v 1.3 2006-01-13 06:51:54 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -86,7 +86,10 @@ namespace Lv
           visual_video_set_buffer (&vis_video (), buffer);
       }
 
-      // Buffer *get_buffer ()
+      // inline Buffer *get_buffer ()
+      // {}
+
+      // inline void set_palette (Palette *palette)
       // {}
 
       const void *get_pixels () const

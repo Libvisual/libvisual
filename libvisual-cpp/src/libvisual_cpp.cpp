@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.cpp,v 1.6 2005-09-26 13:21:38 descender Exp $
+// $Id: libvisual_cpp.cpp,v 1.7 2006-01-13 06:51:53 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -118,60 +118,3 @@ namespace Lv
   }
 
 } // namespace Lv
-
-
-#ifdef LIBVISUAL_CPP_TEST
-
-void throw_unexpected_error ()
-    throw ()
-{
-    throw std::runtime_error ("throw unexpected exception");
-}
-
-int main (int argc, char **argv)
-{
-    std::cout << "Libvisual version: " << Lv::get_lv_version () << "\n";
-
-    // startup test
-    std::cout << "Startup test\n";
-
-    try
-    {
-        if (Lv::init (argc, argv) != VISUAL_OK)
-            throw std::runtime_error ("Lv::init (argc, argv) fail");
-
-        if (!Lv::is_init ())
-            throw std::runtime_error ("Lv::is_init () returns false");
-
-        if (Lv::quit () != VISUAL_OK)
-            throw std::runtime_error ("Lv::quit () fail");
-
-        if (Lv::init () != VISUAL_OK)
-            throw std::runtime_error ("Lv::init (NULL, NULL) fail");
-
-        if (!Lv::is_init ())
-            throw std::runtime_error ("Lv::is_init () returns false");
-    }
-    catch (std::runtime_error& error)
-    {
-        std::cout << error.what () << std::endl;
-    }
-
-    // uncaught exception test
-
-    try
-    {
-        std::cout << "Unexpected exception test\n";
-        throw_unexpected_error ();
-    }
-    catch (Lv::UnexpectedError& error)
-    {
-        std::cout << "UnexpectedError caught\n";
-        std::cout << error.what () << std::endl;
-    }
-
-    std::cout << "Uncaught exception test\n";
-    throw std::runtime_error ("test uncaught exception");
-}
-
-#endif // #ifdef LIBVISUAL_CPP_TEST

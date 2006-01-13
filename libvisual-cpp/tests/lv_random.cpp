@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_color.cpp,v 1.2 2005-09-26 13:21:38 descender Exp $
+// $Id: lv_random.cpp,v 1.1 2006-01-13 06:51:54 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,49 +20,36 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_build_config.hpp>
-#include <lv_color.hpp>
-
-#ifdef LVCPP_COLOR_TEST
-
+#include <lv_random.hpp>
 #include <iostream>
-
-std::ostream& operator << (std::ostream& out, const Lv::Color& color)
-{
-    uint8_t r, g, b;
-    color.get (r, g, b);
-
-    return (out << int (r) << ',' << int (g) << ',' << int (b));
-}
 
 int main ()
 {
-    Lv::Color a;
-    std::cout << a << '\n';
+    Lv::RandomContext random (1);
 
-    a.set (128, 128, 128);
-    std::cout << a << '\n';
+    std::cout << "Lv::RandomContext test\n";
 
-    float h, s, v;
-    a.to_hsv (h, s, v);
-    std::cout << h << ',' << s << ',' << v << '\n';
+    std::cout << "Seed: " << random.get_seed () << '\n';
 
-    a.from_hsv (h, s, v);
-    std::cout << a << '\n';
+    random.set_seed (0);
+    std::cout << "Seed: " << random.get_seed () << '\n';
 
-    Lv::Color b(a);
-    std::cout << b << '\n';
+    std::cout << "Seed state: " <<  random.get_seed_state () << '\n';
 
-    std::cout << "a == b: " << (a == b) << '\n';
-    std::cout << "a != b: " << (a != b) << '\n';
+    int    a = random.value<int> ();
+    float  b = random.value<float> ();
+    double c = random.value<double> ();
 
-    a.set (0, 0, 0);
-    b = a;
+    int    d = random.value_range<int> (0, 0);
+    int    e = random.value_range (1, 1);
 
-    std::cout << a << '\n';
-    std::cout << b << '\n';
+    std::cout << "Seed state: " <<  random.get_seed_state () << '\n';
+
+    std::cout << "Random values: " 
+              << a << ' ' << b << ' ' << c << ' '
+              << d << ' ' << e << '\n';
+
+    std::cout << "To be or not to be: " << random.decide (0.9) << '\n';
 
     return 0;
 }
-
-#endif

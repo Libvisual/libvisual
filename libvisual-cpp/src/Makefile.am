@@ -22,15 +22,4 @@ libvisual_cpp_la_LIBADD = $(LV_LIBS)
 
 libvisual_cpp_la_SOURCES =	\
 	libvisual_cpp.cpp	\
-	lv_thread.cpp		\
-	lv_function.cpp		\
-	lv_object.cpp		\
-	lv_color.cpp		\
-	lv_rectangle.cpp	\
-	lv_cpu.cpp		\
-	lv_random.cpp		\
-	lv_fourier.cpp		\
-	lv_time.cpp		\
-	lv_config.cpp		\
-	lv_video.cpp
-
+	lv_thread.cpp

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.cpp,v 1.8 2006-01-13 06:51:54 descender Exp $
+// $Id: lv_rectangle.cpp,v 1.1 2006-01-13 06:51:54 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,20 +20,31 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_build_config.hpp>
-#include <lv_thread.hpp>
+#include <lv_rectangle.hpp>
+#include <iostream>
 
-namespace Lv
+std::ostream& operator << (std::ostream& out, const Lv::Rectangle& rect)
 {
-  void *Thread::invoke_functor (void *params)
-  {
-      Lv::Function<void> *m_func = static_cast<Lv::Function<void> *> (params);
+    return (out << "Rect ("
+                << rect.get_x () << ", " << rect.get_y () << ", "
+                << rect.get_width() << ", " << rect.get_height ()
+                << ')');
+}
 
-      (*m_func) ();
+int main ()
+{
+    std::cout << "Lv::Rectangle test\n";
 
-      visual_thread_exit (NULL);
+    Lv::Rectangle a;
+    std::cout << a << '\n';
 
-      // Used to shut GCC up
-      return NULL;
-  }
+    Lv::Rectangle b (10, 20, 100, 200);
+    std::cout << b << '\n';
+
+    Lv::Rectangle c (b);
+    std::cout << c << '\n';
+
+    // TODO: more to come
+
+    return 0;
 }

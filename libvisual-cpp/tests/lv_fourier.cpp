@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
-//
+// 
 // Copyright (C) 2005 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.cpp,v 1.1 2005-12-12 00:29:56 descender Exp $
+// $Id: lv_fourier.cpp,v 1.1 2006-01-13 06:51:54 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,6 +20,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_video.hpp>
+#include <lv_fft.hpp>
 
 // TODO: write test

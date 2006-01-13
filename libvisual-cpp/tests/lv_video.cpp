@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_rectangle.cpp,v 1.2 2005-09-26 13:21:38 descender Exp $
+// $Id: lv_video.cpp,v 1.1 2006-01-13 06:51:54 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,37 +20,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#include <lv_build_config.hpp>
-#include <lv_rectangle.hpp>
+#include <lv_video.hpp>
 
-#ifdef LVCPP_RECTANGLE_TEST
-
-#include <iostream>
-
-std::ostream& operator << (std::ostream& out, const Lv::Rectangle& rect)
-{
-    return (out << "Rect ("
-                << rect.get_x () << ", " << rect.get_y () << ", "
-                << rect.get_width() << ", " << rect.get_height ()
-                << ')');
-}
-
-int main ()
-{
-    std::cout << "Lv::Rectangle test\n";
-
-    Lv::Rectangle a;
-    std::cout << a << '\n';
-
-    Lv::Rectangle b (10, 20, 100, 200);
-    std::cout << b << '\n';
-
-    Lv::Rectangle c (b);
-    std::cout << c << '\n';
-
-    // TODO: more to come
-
-    return 0;
-}
-
-#endif // #ifdef LVCPP_RECTANGLE_TEST
+// TODO: write test
