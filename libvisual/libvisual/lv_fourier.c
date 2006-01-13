@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fourier.c,v 1.5 2006-01-13 08:02:24 descender Exp $
+ * $Id: lv_fourier.c,v 1.6 2006-01-13 08:57:58 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -87,10 +87,10 @@ static int dft_dtor (VisObject *object)
 
 static void fft_table_bitrev_init (DFTCacheEntry *fcache, VisDFT *fourier)
 {
-	int i, m, temp;
-	int j = 0;
+	unsigned int i, m, temp;
+	unsigned int j = 0;
 
-	fcache->bitrevtable = visual_mem_malloc0 (sizeof (int) * fourier->spectrum_size);
+	fcache->bitrevtable = visual_mem_malloc0 (sizeof (unsigned int) * fourier->spectrum_size);
 
 	for (i = 0; i < fourier->spectrum_size; i++)
 		fcache->bitrevtable[i] = i;
@@ -115,7 +115,7 @@ static void fft_table_bitrev_init (DFTCacheEntry *fcache, VisDFT *fourier)
 
 static void fft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 {
-	int i, dftsize, tabsize;
+	unsigned int i, dftsize, tabsize;
 	float theta;
 
 	dftsize = 2;
@@ -145,7 +145,7 @@ static void fft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 
 static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 {
-	int i, tabsize;
+	unsigned int i, tabsize;
 	float theta;
 
 	tabsize = fourier->spectrum_size / 2;
@@ -241,15 +241,23 @@ int visual_fourier_deinitialize ()
 }
 
 /**
- * Function to create a new VisDFT Fast Fourier Transform context used
- * to calculate spectrums over audio data.
+ * Function to create a new VisDFT Discrete Fourier Transform context used
+ * to calculate amplitude spectrums over audio data.
  *
- * @param samples_in The number of samples provided every visual_fourier_perform() as input.
- * @param samples_out The size of the output spectrum.
+ * \note For optimal performance, use a power-of-2 spectrum size. The
+ * current implementation does not use the Fast Fourier Transform for
+ * non powers of 2.
+ *
+ * \note If samples_in is smaller than 2 * samples_out, the input will be padded
+ * with zeroes.
+ *
+ * @param samples_in The number of samples provided to every call to
+ * visual_fourier_perform() as input.
+ * @param samples_out Size of output spectrum (number of output samples).
  *
  * @return A newly created VisDFT.
  */
-VisDFT *visual_dft_new (int samples_in, int samples_out)
+VisDFT *visual_dft_new (unsigned int samples_in, unsigned int samples_out)
 {
 	VisDFT *dft;
 
@@ -264,7 +272,7 @@ VisDFT *visual_dft_new (int samples_in, int samples_out)
 	return dft;
 }
 
-int visual_dft_init (VisDFT *dft, int samples_in, int samples_out)
+int visual_dft_init (VisDFT *dft, unsigned int samples_in, unsigned int samples_out)
 {
 	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
 
@@ -290,7 +298,7 @@ int visual_dft_init (VisDFT *dft, int samples_in, int samples_out)
 static void perform_dft_brute_force (VisDFT *dft, float *input, float *output)
 {
 	DFTCacheEntry *fcache;
-	int i, j;
+	unsigned int i, j;
 	float xr, xi, wr, wi, wtemp;
 
 	fcache = dft_cache_get (dft);
@@ -322,14 +330,14 @@ static void perform_dft_brute_force (VisDFT *dft, float *input, float *output)
 static void perform_fft_radix2_dit (VisDFT *dft, float *input, float *output)
 {
 	DFTCacheEntry *fcache;
-	int j, m, i, dftsize, hdftsize, t;
+	unsigned int j, m, i, dftsize, hdftsize, t;
 	float wr, wi, wpi, wpr, wtemp, tempr, tempi;
 
 	fcache = dft_cache_get (dft);
 	visual_object_ref (VISUAL_OBJECT (fcache));
 
 	for (i = 0; i < dft->spectrum_size; i++) {
-		int idx = fcache->bitrevtable[i];
+		unsigned int idx = fcache->bitrevtable[i];
 
 		if (idx < dft->samples_in)
 			dft->real[i] = input[idx];
@@ -377,17 +385,20 @@ static void perform_fft_radix2_dit (VisDFT *dft, float *input, float *output)
 
 
 /**
- * Function to perform a Fourier Transform over a set of data.
+ * Function to perform a Discrete Fourier Transform over a set of data.
+ *
+ * \note Output samples are normalised to [0.0, 1.0] by dividing with the
+ * spectrum size.
  *
  * @param fourier Pointer to the VisDFT context for this transform.
- * @param input Pointer to the input samples.
- * @param output Pointer to the output fourier transformed buffer.
+ * @param input Array of input samples with values in [-1.0, 1.0]
+ * @param output Array of output samples
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_FOURIER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_dft_perform (VisDFT *dft, float *input, float *output)
 {
-	int i;
+	unsigned int i;
 
 	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);

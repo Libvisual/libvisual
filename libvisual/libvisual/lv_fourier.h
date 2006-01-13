@@ -7,7 +7,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_fourier.h,v 1.2 2006-01-13 06:14:36 descender Exp $
+ * $Id: lv_fourier.h,v 1.3 2006-01-13 08:57:58 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,8 +40,8 @@ typedef struct _VisDFT VisDFT;
  */
 struct _VisDFT {
 	VisObject	 object;			/**< The VisObject data. */
-	int		 samples_in;			/**< The number of input samples. */
-	int		 spectrum_size;			/**< The size of the spectrum (power of two). */
+	unsigned int	 samples_in;			/**< The number of input samples. */
+	unsigned int	 spectrum_size;			/**< The size of the spectrum (power of two). */
 	float		*real;				/**< Private data that is used by the fourier engine. */
 	float		*imag;				/**< Private data that is used by the fourier engine. */
 	int		 brute_force;			/**< Private data that is used by the fourier engine. */
@@ -52,8 +52,8 @@ int visual_fourier_initialize (void);
 int visual_fourier_is_initialized (void);
 int visual_fourier_deinitialize (void);
 
-VisDFT *visual_dft_new (int samples_in, int samples_out);
-int visual_dft_init (VisDFT *fourier, int samples_in, int samples_out);
+VisDFT *visual_dft_new (unsigned int samples_in, unsigned int samples_out);
+int visual_dft_init (VisDFT *fourier, unsigned int samples_in, unsigned int samples_out);
 
 int visual_dft_perform (VisDFT *fourier, float *input, float *output);
 int visual_dft_normalise (float *spectrum, int size);

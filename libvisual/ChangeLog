@@ -1,3 +1,11 @@
+2006-01-13  Chong Kai Xiong <descender@phreaker.net>
+
+	* lv_fourier.c, lv_fourier.h (visual_dft_init, visual_dft_new):
+	Change samples_in and samples_out to unsigned int.
+
+	* lv_fourier.c: Document padding and performance of non powers of
+	2 transforms.
+
 2006-01-13  Chong Kai Xiong <descneder@phreaker.net>
 
 	* lv_fourier.c: Forgot to rename visual_dft_init() and
