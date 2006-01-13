@@ -1,6 +1,6 @@
 #!/bin/sh
 
-libtoolize && \
+libtoolize -f && \
 aclocal && \
 autoheader && \
 automake -a && \

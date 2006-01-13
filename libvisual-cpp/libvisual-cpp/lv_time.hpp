@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_time.hpp,v 1.2 2006-01-13 07:44:44 descender Exp $
+// $Id: lv_time.hpp,v 1.3 2006-01-13 08:12:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -63,6 +63,7 @@ namespace Lv
       {
           visual_time_copy (&vis_time (),
                              const_cast<VisTime *> (&other.vis_time ()));
+          return *this;
       }
 
       inline void set (long sec, long usec = 0)
