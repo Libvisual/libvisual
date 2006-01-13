@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_fft.hpp,v 1.4 2005-12-12 00:29:56 descender Exp $
+// $Id: lv_fourier.hpp,v 1.1 2006-01-13 06:25:01 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -20,81 +20,85 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#ifndef LVCPP_FFT_HPP
-#define LVCPP_FFT_HPP
+#ifndef LVCPP_FOURIER_HPP
+#define LVCPP_FOURIER_HPP
 
-#include <libvisual/lv_fft.h>
+#include <libvisual/lv_fourier.h>
 #include <lv_object.hpp>
 
 namespace Lv
 {
-
-  class FFT
-      : public Object
+  class Fourier
   {
   public:
 
       static inline int init ()
       {
-          return visual_fft_initialize ();
+          return visual_fourier_initialize ();
       }
 
       static inline bool is_init ()
       {
-          return visual_fft_is_initialized ();
+          return visual_fourier_is_initialized ();
       }
 
       static inline void deinit ()
       {
-          visual_fft_deinitialize ();
+          visual_fourier_deinitialize ();
       }
+  };
 
-      FFT (int samples_in, int samples_out)
-          : Object (vis_fft_to_object (visual_fft_new (samples_in, samples_out)))
+  class DFT
+      : public Object
+  {
+  public:
+
+      DFT (int samples_in, int samples_out)
+          : Object (vis_dft_to_object (visual_dft_new (samples_in, samples_out)))
       {}
 
-      inline void perform (const float *input, float *output, bool normalised)
+      inline void perform (const float *input, float *output)
       {
-          visual_fft_perform (&vis_fft (), const_cast<float *> (input), output, normalised ? 1 : 0);
+          visual_dft_perform (&vis_dft (), const_cast<float *> (input), output);
       }
 
       inline int normalise (float *spectrum, int size)
       {
-          return visual_fft_normalise (spectrum, size);
+          return visual_dft_normalise (spectrum, size);
       }
 
       inline int get_spectrum_size () const
       {
-          return vis_fft ().spectrum_size;
+          return vis_dft ().spectrum_size;
       }
 
       inline int get_samples_in () const
       {
-          return vis_fft ().samples_in;
+          return vis_dft ().samples_in;
       }
 
-      inline const VisFFT &vis_fft () const
+      inline const VisDFT &vis_dft () const
       {
-          return *reinterpret_cast<const VisFFT *> (&vis_object ());
+          return *reinterpret_cast<const VisDFT *> (&vis_object ());
       }
 
-      inline VisFFT &vis_fft ()
+      inline VisDFT &vis_dft ()
       {
-          return *reinterpret_cast<VisFFT *> (&vis_object ());
+          return *reinterpret_cast<VisDFT *> (&vis_object ());
       }
 
   private:
 
-      static VisObject *vis_fft_to_object (VisFFT *fft)
+      static VisObject *vis_dft_to_object (VisDFT *dft)
       {
-          return reinterpret_cast<VisObject *> (fft);
+          return reinterpret_cast<VisObject *> (dft);
       }
 
       // hide copy constructor and assignment operator for the moment
-      FFT (const FFT& other);
-      const FFT& operator = (const FFT& other);
+      DFT (const DFT& other);
+      const DFT& operator = (const DFT& other);
   };
 
 } // namespace Lv
 
-#endif // #ifndef LVCPP_FFT_HPP
+#endif // #ifndef LVCPP_FOURIER_HPP

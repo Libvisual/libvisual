@@ -10,7 +10,7 @@ libvisual_cpp_include_HEADERS = \
 	lv_rectangle.hpp 	\
 	lv_cpu.hpp		\
 	lv_random.hpp		\
-	lv_fft.hpp		\
+	lv_fourier.hpp		\
 	lv_time.hpp		\
 	lv_config.hpp		\
 	lv_error.hpp		\
@@ -29,7 +29,7 @@ libvisual_cpp_la_SOURCES =	\
 	lv_rectangle.cpp	\
 	lv_cpu.cpp		\
 	lv_random.cpp		\
-	lv_fft.cpp		\
+	lv_fourier.cpp		\
 	lv_time.cpp		\
 	lv_config.cpp		\
 	lv_video.cpp
