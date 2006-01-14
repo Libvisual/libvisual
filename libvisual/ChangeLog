@@ -1,3 +1,17 @@
+2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.*
+	(visual_audio_get_sample_mixed_category)
+	(visual_audio_get_sample_mixed_all): Added new mixing methods.
+
+	VISUAL_AUDIO_CHANNEL_CATEGORY_*: Added standard category filter
+	entries.
+
+	The mixed_category does nothing more/less than a strstr on the name.
+	Using the channel naming convention this works perfectly well. I still
+	use the name 'category' because the naming scheme is hidden for
+	application / plugin developers.
+
 2006-01-13  Chong Kai Xiong <descender@phreaker.net>
 
 	* lv_fourier.c, lv_fourier.h (visual_dft_init, visual_dft_new):

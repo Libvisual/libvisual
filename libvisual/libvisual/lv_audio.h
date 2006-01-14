@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.h,v 1.20 2006-01-11 05:46:58 synap Exp $
+ * $Id: lv_audio.h,v 1.21 2006-01-14 15:27:09 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -39,6 +39,10 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_AUDIO_CHANNEL_LEFT	"front left 1"
 #define VISUAL_AUDIO_CHANNEL_RIGHT	"front right 1"
 
+#define VISUAL_AUDIO_CHANNEL_CATEGORY_FRONT	"front"
+#define VISUAL_AUDIO_CHANNEL_CATEGORY_REAR	"rear"
+#define VISUAL_AUDIO_CHANNEL_CATEGORY_RIGHT	"left"
+#define VISUAL_AUDIO_CHANNEL_CATEGORY_LEFT	"right"
 
 typedef enum {
 	VISUAL_AUDIO_SAMPLE_RATE_NONE = 0,
@@ -131,6 +135,7 @@ struct _VisAudioSample {
 	VisBuffer			*processed;
 };
 
+/* prototypes */
 VisAudio *visual_audio_new (void);
 int visual_audio_init (VisAudio *audio);
 int visual_audio_analyze (VisAudio *audio);
@@ -138,6 +143,9 @@ int visual_audio_analyze (VisAudio *audio);
 int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid);
 int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, int channels, ...);
 int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divide, int channels, ...);
+int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, char *category, int divide);
+int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int divide);
+
 int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid, int normalised);
 int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised);
 

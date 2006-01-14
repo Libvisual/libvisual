@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.31 2006-01-13 06:14:36 descender Exp $
+ * $Id: lv_audio.c,v 1.32 2006-01-14 15:27:09 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -388,13 +388,13 @@ int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, in
 	/* The mixing loop */
 	for (i = 0; i < channels; i++) {
 		if (visual_audio_get_sample (audio, &temp, chanids[i]) == VISUAL_OK) {
+			channel = visual_audio_samplepool_get_channel (audio->samplepool, chanids[i]);
+
 			if (first == TRUE) {
-				channel = visual_audio_samplepool_get_channel (audio->samplepool, chanids[i]);
 				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, channel->factor);
 
 				first = FALSE;
 			} else {
-				channel = visual_audio_samplepool_get_channel (audio->samplepool, chanids[i]);
 				visual_audio_sample_buffer_mix (buffer, &temp, TRUE, channel->factor);
 			}
 		}
@@ -440,14 +440,12 @@ int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divid
 	/* The mixing loop */
 	for (i = 0; i < channels; i++) {
 		if (visual_audio_get_sample (audio, &temp, chanids[i]) == VISUAL_OK) {
-			visual_audio_sample_buffer_mix (buffer, &temp, divide, chanmuls[i]);
-
 			if (first == TRUE) {
 				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, chanmuls[i]);
 
 				first = FALSE;
 			} else {
-				visual_audio_sample_buffer_mix (buffer, &temp, TRUE, chanmuls[i]);
+				visual_audio_sample_buffer_mix (buffer, &temp, divide, chanmuls[i]);
 			}
 		}
 	}
@@ -458,6 +456,69 @@ int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divid
 
 	visual_mem_free (chanids);
 	visual_mem_free (chanmuls);
+
+	return VISUAL_OK;
+}
+
+int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, char *category, int divide)
+{
+	VisListEntry *le = NULL;
+	VisAudioSamplePool *samplepool;
+	VisAudioSamplePoolChannel *channel;
+	VisBuffer temp;
+	int first = TRUE;
+
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_log_return_val_if_fail (category != NULL, -VISUAL_ERROR_NULL);
+
+	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
+
+	while ((channel = visual_list_next (samplepool->channels, &le)) != NULL) {
+		if (strstr (channel->channelid, category) != NULL) {
+			if (visual_audio_get_sample (audio, &temp, channel->channelid) == VISUAL_OK) {
+				if (first == TRUE) {
+					visual_audio_sample_buffer_mix (buffer, &temp, FALSE, 1.0);
+
+					first = FALSE;
+				} else {
+					visual_audio_sample_buffer_mix (buffer, &temp, divide, 1.0);
+				}
+			}
+		}
+	}
+
+	visual_object_unref (VISUAL_OBJECT (&temp));
+
+	return VISUAL_OK;
+}
+
+int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int divide)
+{
+	VisListEntry *le = NULL;
+	VisAudioSamplePool *samplepool;
+	VisAudioSamplePoolChannel *channel;
+	VisBuffer temp;
+	int first = TRUE;
+
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+
+	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
+
+	while ((channel = visual_list_next (samplepool->channels, &le)) != NULL) {
+		if (visual_audio_get_sample (audio, &temp, channel->channelid) == VISUAL_OK) {
+			if (first == TRUE) {
+				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, 1.0);
+
+				first = FALSE;
+			} else {
+				visual_audio_sample_buffer_mix (buffer, &temp, divide, 1.0);
+			}
+		}
+	}
+
+	visual_object_unref (VISUAL_OBJECT (&temp));
 
 	return VISUAL_OK;
 }
@@ -671,7 +732,7 @@ int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, ch
 
 	visual_time_set (&channel->samples_timeout, 1, 0); /* FIXME not safe against time screws */
 	channel->channelid = strdup (channelid);
-	channel->factor = 1.0f;
+	channel->factor = 1.0;
 
 	return VISUAL_OK;
 }
