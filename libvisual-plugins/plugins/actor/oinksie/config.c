@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: config.c,v 1.4 2005-12-20 18:49:14 synap Exp $
+ * $Id: config.c,v 1.5 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -43,11 +43,6 @@ inline void _oink_config_random_scopemode (OinksiePrivate *priv)
 inline void _oink_config_random_backgroundmode (OinksiePrivate *priv)
 {
 	priv->config.backgroundmode = visual_random_context_int_range (priv->rcontext, 0, CONFIG_BACKGROUNDMODES);
-}
-
-inline void _oink_config_random_beatdots (OinksiePrivate *priv)
-{
-	priv->config.beatdots = visual_random_context_int_range (priv->rcontext, 0, 1);
 }
 
 inline void _oink_config_random_palfunky (OinksiePrivate *priv)

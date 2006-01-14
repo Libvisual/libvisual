@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: audio.c,v 1.4 2005-12-20 18:49:14 synap Exp $
+ * $Id: audio.c,v 1.5 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -30,11 +30,6 @@
 #include "config.h"
 #include "audio.h"
 
-void _oink_audio_init (OinksiePrivate *priv)
-{
-	priv->audio.basssens = 0.00002;
-	priv->audio.tripplesens = 0.00002;
-}
 
 /* audio priv->audio.freq analyze */
 void _oink_audio_analyse (OinksiePrivate *priv)
@@ -42,74 +37,10 @@ void _oink_audio_analyse (OinksiePrivate *priv)
 	int i, j;
 	float total, mean;
 
-	/* Tripple left */
-	for (i = 50, total = 0; i < 190; i++)
-		total += priv->audio.freq[0][i];
+	priv->audio.bass = (priv->audio.freqsmall[0] + priv->audio.freqsmall[1]) * 20;
+	priv->audio.tripple = (priv->audio.freqsmall[2] + priv->audio.freqsmall[3]) * 100;
 
-	mean = (total / 140);
 
-	priv->audio.trippleleft = 1;
-	for (i = 9; i > 1; i--)
-	{
-		if (mean > priv->audio.tripplesens * i)
-		{
-			priv->audio.trippleleft = i;
-			break;
-		}
-
-	}
-
-	/* Tripple Right */
-	for (i = 50, total = 0; i < 190; i++)
-		total += priv->audio.freq[1][i];
-
-	mean = (total / 140);
-
-	priv->audio.trippleright = 1;
-	for (i = 9; i > 1; i--)
-	{
-		if (mean > priv->audio.tripplesens * i)
-		{
-			priv->audio.trippleright = i;
-			break;
-		}
-
-	}
-
-	/* Bass left */
-	for (i = 0, total = 0; i < 35; i++)
-		total += priv->audio.freq[0][i];
-
-	mean = (total / 35);
-
-	priv->audio.bassleft = 1;
-	for (i = 9, j = 350; i > 1; i--, j -= 35)
-	{
-		if (mean > priv->audio.basssens * j)
-		{
-			priv->audio.bassleft = i;
-			break;
-		}
-	}
-
-	/* Bass Right */
-	for (i = 0, total = 0; i < 35; i++)
-		total += priv->audio.freq[1][i];
-
-	mean = (total / 35);
-
-	priv->audio.bassright = 1;
-	for (i = 9, j = 350; i > 1; i--, j -= 35)
-	{
-		if (mean > priv->audio.basssens * j)
-		{
-			priv->audio.bassright = i;
-			break;
-		}
-	}
-
-	priv->audio.bass = (priv->audio.bassleft + priv->audio.bassright) / 2;
-	priv->audio.tripple = (priv->audio.trippleleft + priv->audio.trippleright) / 2;
 	priv->audio.highest = MAX (priv->audio.bass, priv->audio.tripple);
 
 	if (priv->audio.bass >= 0 && priv->audio.bass <= 2)

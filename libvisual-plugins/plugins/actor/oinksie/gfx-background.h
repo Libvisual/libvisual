@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-background.h,v 1.3 2005-12-20 18:49:14 synap Exp $
+ * $Id: gfx-background.h,v 1.4 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -34,8 +34,6 @@ void _oink_gfx_background_ball_shooting (OinksiePrivate *priv,
 		uint8_t *buf, int color, int distance, int xb, int yb, int x, int y);
 void _oink_gfx_background_ball_whirling (OinksiePrivate *priv,
 		uint8_t *buf, int color, int size, int dia, int rot, int x, int y);
-void _oink_gfx_background_dots (OinksiePrivate *priv,
-		uint8_t *buf, int color, int number);
 void _oink_gfx_background_fill (OinksiePrivate *priv,
 		uint8_t *buf, int color);
 void _oink_gfx_background_circles_star (OinksiePrivate *priv,

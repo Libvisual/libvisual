@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-misc.c,v 1.6 2005-12-20 18:49:14 synap Exp $
+ * $Id: gfx-misc.c,v 1.7 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -215,7 +215,7 @@ inline void _oink_gfx_circle_filled (OinksiePrivate *priv, uint8_t *buf, int col
 	
 	float adder = (float) ((float) OINK_TABLE_LARGE_SIZE / (float) sizei) / 4.00000;
 	float tab = 0;
-	
+
 	for (i = 0; i < sizei; i++)
 	{
 		cosi = _oink_table_sinlarge[(int) tab] * size;

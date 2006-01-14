@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_oinksie.c,v 1.33 2005-12-22 21:50:09 synap Exp $
+ * $Id: actor_oinksie.c,v 1.34 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,11 +35,6 @@
 typedef struct {
 	OinksiePrivate			 priv1;
 	OinksiePrivate			 priv2;
-
-	VisBuffer			 pcmbuf1;
-	VisBuffer			 pcmbuf2;
-	VisBuffer			 pcmmix;
-	VisBuffer			 spmbuf;
 
 	int				 color_mode;
 
@@ -110,6 +105,7 @@ int act_oinksie_init (VisPluginData *plugin)
 
 	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("acid palette", 0),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -125,6 +121,8 @@ int act_oinksie_init (VisPluginData *plugin)
 	VisUIWidget *hbox;
 	VisUIWidget *label;
 	VisUIWidget *popup;
+
+	/* FIXME: add UI to access the acid palette parameter */
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
@@ -161,11 +159,6 @@ int act_oinksie_init (VisPluginData *plugin)
 
 	oinksie_init (&priv->priv1, 64, 64);
 	oinksie_init (&priv->priv2, 64, 64);
-
-	visual_buffer_init (&priv->pcmbuf1, NULL, 0, NULL);
-	visual_buffer_init (&priv->pcmbuf2, NULL, 0, NULL);
-	visual_buffer_init (&priv->pcmmix, NULL, 0, NULL);
-	visual_buffer_init (&priv->spmbuf, NULL, 0, NULL);
 
 	return 0;
 }
@@ -291,6 +284,8 @@ int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 						priv->currentcomp = composite_blend5_32_c;
 					else
 						priv->currentcomp = composite_blend2_32_c;
+				} else if (visual_param_entry_is (param, "acid palette")) {
+					priv->priv1.config.acidpalette = visual_param_entry_get_integer (param);
 				}
 
 				break;
@@ -316,29 +311,37 @@ VisPalette *act_oinksie_palette (VisPluginData *plugin)
 int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisBuffer			 pcmbuf1;
+	VisBuffer			 pcmbuf2;
+	VisBuffer			 pcmmix;
+	VisBuffer			 spmbuf;
 	int i = 0;
 
 	/* Left audio */
-	visual_buffer_set_data_pair (&priv->pcmbuf1, priv->priv1.audio.pcm[0], sizeof (float) * 4096);
-	visual_audio_get_sample (audio, &priv->pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_buffer_set_data_pair (&pcmbuf1, priv->priv1.audio.pcm[0], sizeof (float) * 4096);
+	visual_audio_get_sample (audio, &pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	visual_buffer_set_data_pair (&priv->spmbuf, &priv->priv1.audio.freq[0], sizeof (float) * 256);
-	visual_audio_get_spectrum_for_sample (&priv->spmbuf, &priv->pcmbuf1, FALSE);
+	visual_buffer_set_data_pair (&spmbuf, &priv->priv1.audio.freq[0], sizeof (float) * 256);
+	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmbuf1, FALSE);
 
 	/* Right audio */
-	visual_buffer_set_data_pair (&priv->pcmbuf2, priv->priv1.audio.pcm[1], sizeof (float) * 4096);
-	visual_audio_get_sample (audio, &priv->pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_buffer_set_data_pair (&pcmbuf2, priv->priv1.audio.pcm[1], sizeof (float) * 4096);
+	visual_audio_get_sample (audio, &pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&priv->spmbuf, priv->priv1.audio.freq[1], sizeof (float) * 256);
-	visual_audio_get_spectrum_for_sample (&priv->spmbuf, &priv->pcmbuf2, FALSE);
+	visual_buffer_set_data_pair (&spmbuf, priv->priv1.audio.freq[1], sizeof (float) * 256);
+	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmbuf2, FALSE);
 
 	/* Mix channels */
-	visual_buffer_set_data_pair (&priv->pcmmix, priv->priv1.audio.pcm[2], sizeof (float) * 4096);
-	visual_audio_sample_buffer_mix_many (&priv->pcmmix, TRUE, 2, &priv->pcmbuf1, &priv->pcmbuf2, 1.0, 1.0);
+	visual_buffer_set_data_pair (&pcmmix, priv->priv1.audio.pcm[2], sizeof (float) * 4096);
+	visual_audio_sample_buffer_mix_many (&pcmmix, TRUE, 2, &pcmbuf1, &pcmbuf2, 1.0, 1.0);
+
+	visual_buffer_set_data_pair (&spmbuf, priv->priv1.audio.freqsmall, sizeof (float) * 4);
+	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmmix, FALSE);
 
 	/* Duplicate for second oinksie instance */
 	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (float) * 4096 * 3);
 	visual_mem_copy (&priv->priv2.audio.freq, &priv->priv1.audio.freq, sizeof (float) * 256 * 2);
+	visual_mem_copy (&priv->priv2.audio.freqsmall, &priv->priv1.audio.freqsmall, sizeof (float) * 4);
 
 	/* Audio energy */
 	priv->priv1.audio.energy = audio->energy;

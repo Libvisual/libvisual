@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-analyzer.c,v 1.4 2005-12-20 18:49:14 synap Exp $
+ * $Id: gfx-analyzer.c,v 1.5 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -50,7 +50,7 @@ void _oink_gfx_analyzer_stereo (OinksiePrivate *priv, uint8_t *buf, int color, i
 
 	for (i = ANALYZER_BANDS; i >= 0; i--)
 	{
-		y1 = (-(priv->audio.freq[0][i] * priv->screen_height) * 100) + y;
+		y1 = (-(priv->audio.freq[0][i] * priv->screen_height) * 2) + y;
 		x1 = real_x += real_x_add;
 
 		if (y1 < 0) y1 = 0;
@@ -63,7 +63,7 @@ void _oink_gfx_analyzer_stereo (OinksiePrivate *priv, uint8_t *buf, int color, i
 
 	for (i = 1; i < ANALYZER_BANDS; i++)
 	{
-		y1 = (-(priv->audio.freq[1][i] * priv->screen_height) * 100) + y;
+		y1 = (-(priv->audio.freq[1][i] * priv->screen_height) * 2) + y;
 		if (y1 == ANALYZER_BANDS - 1)
 			y1 = y;
 

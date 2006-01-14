@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: oinksie.h,v 1.8 2005-12-20 18:49:14 synap Exp $
+ * $Id: oinksie.h,v 1.9 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -53,31 +53,25 @@ typedef struct {
 	int scopemode;
 	int backgroundmode;
 
-	int beatdots;
-
 	int audiodebug;
 
 	int palfunky;
 
 	int scenenew;
+
+	int acidpalette;
 } OinksieConfig;
 
 typedef struct {
-	float basssens;
-	float tripplesens;
-
 	int bass;
-	int bassleft;
-	int bassright;
 
 	int tripple;
-	int trippleleft;
-	int trippleright;
 
 	int highest;
 
 	float pcm[3][4096];
 	float freq[2][256];
+	float freqsmall[4];
 
 	int musicmood;
 	char beat;
@@ -100,23 +94,11 @@ typedef struct {
 	int ball_adder;
 	int ball_spread;
 
-	/* towards screen twisting whirling ball vars */
-	int whirl_enabled;
-	int whirl_dia;
-	int whirl_diadec;
-	int whirl_size;
-	int whirl_sizeadd;
-	int whirl_rot;
-	int whirl_rotadder;
-
 	/* turning circles vars */
 	int circles_enabled;
 	int circles_direction;
 	int circles_nr;
 	int circles_turn;
-
-	/* flashing balls */
-	int flashball_enabled;
 
 	/* ball sine */
 	int ballsine_enabled;

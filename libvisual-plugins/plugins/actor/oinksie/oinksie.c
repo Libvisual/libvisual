@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: oinksie.c,v 1.3 2005-12-20 18:49:14 synap Exp $
+ * $Id: oinksie.c,v 1.4 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -37,7 +37,6 @@
 void oinksie_init (OinksiePrivate *priv, int width, int height)
 {
 	_oink_screen_init (priv, width, height);
-	_oink_audio_init (priv);
 	_oink_table_init ();
 	_oink_gfx_palette_init (priv);
 	_oink_scene_randomize (priv);

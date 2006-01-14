@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-background.c,v 1.5 2005-12-20 18:49:14 synap Exp $
+ * $Id: gfx-background.c,v 1.6 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -144,27 +144,11 @@ void _oink_gfx_background_ball_whirling (OinksiePrivate *priv,
 {
 	int xd;
 	int yd;
-	
+
 	xd = (_oink_table_sin[rot % OINK_TABLE_NORMAL_SIZE] * dia) + x;
 	yd = (_oink_table_cos[rot % OINK_TABLE_NORMAL_SIZE] * dia) + y;
-	
+
 	_oink_gfx_circle_filled (priv, buf, color, size, xd, yd);
-}
-
-void _oink_gfx_background_dots (OinksiePrivate *priv,
-		uint8_t *buf, int color, int number)
-{
-	int i;
-	int x;
-	int y;
-	
-	for (i = 0; i < number; i++)
-	{
-		x = visual_random_context_int_range (priv->rcontext, 15, priv->screen_width - 15);
-		y = visual_random_context_int_range (priv->rcontext, 15, priv->screen_height - 15);
-
-		_oink_gfx_circle_filled (priv, buf, color, 5,  x, y);
-	}
 }
 
 void _oink_gfx_background_fill (OinksiePrivate *priv,
@@ -185,17 +169,17 @@ void _oink_gfx_background_circles_star (OinksiePrivate *priv,
 	int bdef = 0;
 	int xd;
 	int yd;
-	
+
 	for (i = 0; i < tentnr; i++)
 	{
 		sizedef = 0;
-		
+
 		bdef = 0;
 		for (i2 = 0; i2 < ballnr; i2++)
 		{
 			xd = (_oink_table_sin[sindef % OINK_TABLE_NORMAL_SIZE] * bdef) + x;
 			yd = (_oink_table_cos[sindef % OINK_TABLE_NORMAL_SIZE] * bdef) + y;
-			
+
 			_oink_gfx_circle_filled (priv, buf, color, size - sizedef, xd, yd);
 
 			bdef += badd;

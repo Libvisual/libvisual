@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-scope.h,v 1.4 2005-12-20 18:49:14 synap Exp $
+ * $Id: gfx-scope.h,v 1.5 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -26,7 +26,6 @@
 
 #include "oinksie.h"
 
-void _oink_gfx_scope_balls (OinksiePrivate *priv, uint8_t *buf, int color, int height, int space);
 void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int color2, int height, int space, int rotate);
 void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int height);
 void _oink_gfx_scope_normal (OinksiePrivate *priv, uint8_t *buf, int color, int height);

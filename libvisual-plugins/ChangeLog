@@ -1,5 +1,10 @@
 2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/oinksie/*.c: Lot's of work to get it
+	good looking again.
+
+2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/actor/lv_analyzer/*.c: Rewrote, superb now.
 
 	A lot of work is needed to adopt all the plugins to our

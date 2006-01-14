@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-scope.c,v 1.6 2005-12-20 18:49:14 synap Exp $
+ * $Id: gfx-scope.c,v 1.7 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -29,24 +29,6 @@
 #include "gfx-misc.h"
 #include "gfx-scope.h"
 
-void _oink_gfx_scope_balls (OinksiePrivate *priv, uint8_t *buf, int color, int height, int space)
-{
-	int adder = priv->screen_width > 502 ? (priv->screen_width - 502) / 2 : 0;
-	int x = 0;
-	int y;
-
-	for (; x < (priv->screen_width - 10) && x < 512; x += space)
-	{
-		y = (priv->screen_halfheight) + (((priv->audio.pcm[2][x >> 1]) * height) * 0.4);
-
-		if (y < 15)
-			y = 15;
-		else if (y > (priv->screen_height - 15))
-			y = priv->screen_height - 15;
-
-		_oink_gfx_circle_filled (priv, buf, color - 4, 5, x + adder, y);
-	}
-}
 
 void _oink_gfx_scope_stereo (OinksiePrivate *priv, uint8_t *buf, int color1, int color2, int height, int space, int rotate)
 {
@@ -195,7 +177,7 @@ void _oink_gfx_scope_normal (OinksiePrivate *priv, uint8_t *buf, int color, int 
 	float fy[512];
 	int x[512];
 	int y[512];
-	int yold = 0;
+	int yold = priv->screen_halfheight;
 
 	visual_rectangle_set (&rect, 0, 0, priv->screen_width, priv->screen_height);
 
@@ -237,8 +219,8 @@ void _oink_gfx_scope_circle (OinksiePrivate *priv, uint8_t *buf, int color, int 
 
 	for (i = 0; i < 50; i++)
 	{
-		xs1 = (_oink_table_sin[tab] * ((priv->audio.pcm[2][i >> 1]) + size)) + x;
-		ys1 = (_oink_table_cos[tab] * ((priv->audio.pcm[2][i >> 1]) + size)) + y;
+		xs1 = (_oink_table_sin[tab] * ((priv->audio.pcm[2][i >> 1] * 50) + size)) + x;
+		ys1 = (_oink_table_cos[tab] * ((priv->audio.pcm[2][i >> 1] * 50) + size)) + y;
 
 		tab += adder;
 

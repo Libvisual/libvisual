@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: scene.c,v 1.8 2005-12-20 18:49:14 synap Exp $
+ * $Id: scene.c,v 1.9 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -71,34 +71,16 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 		if (visual_random_context_int_range (priv->rcontext, 0, 140) == 42 && priv->scene.ball_enabled == FALSE)
 		{
 			priv->scene.ball_enabled = TRUE;
-			
+
 			priv->scene.ball_xstart = visual_random_context_int_range (priv->rcontext, 0, priv->screen_width - 1);
 			priv->scene.ball_ystart = priv->screen_height;
-		
+
 			priv->scene.ball_distance = _oink_line_length (priv->screen_halfheight, priv->scene.ball_ystart,
 						     priv->screen_halfwidth, priv->scene.ball_xstart);
 
 			/* FIXME use fps data instead of '25' here */
 			priv->scene.ball_adder = (priv->scene.ball_distance / (25 + 1)) + 1;
 		}
-
-		if (visual_random_context_int_range (priv->rcontext, 0, 380) == 42 && priv->scene.whirl_enabled == FALSE)
-		{
-			priv->scene.whirl_enabled = TRUE;
-
-			priv->scene.whirl_size = 0;
-
-			/* FIXME use fps data instead of '25' here */
-			priv->scene.whirl_sizeadd = priv->screen_xysmallest / ((25 * 2) + 1);
-
-			priv->scene.whirl_dia = priv->screen_xysmallest / 2;
-			/* FIXME ditto */
-			priv->scene.whirl_diadec = priv->scene.whirl_dia / ((25 * 1) + 1);
-
-			/* FIXME ditto */
-			priv->scene.whirl_rotadder = (OINK_TABLE_NORMAL_SIZE * 2) / ((25 * 2) + 1);
-			priv->scene.whirl_rot = 0;
-		}					
 
 		if (visual_random_context_int_range (priv->rcontext, 0, 5) == 4)
 			priv->scene.circles_direction = 1 - priv->scene.circles_direction;
@@ -108,31 +90,9 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 		priv->scene.circles_turn += priv->audio.bass * 4;
 	else
 		priv->scene.circles_turn -= priv->audio.bass * 4;
-	
-	if (priv->scene.circles_enabled == FALSE && priv->scene.flashball_enabled == FALSE)
-	{
-		if (visual_random_context_int_range (priv->rcontext, 0, 100) == 42)
-		{
-			priv->scene.circles_enabled = TRUE;
 
-			priv->scene.circles_turn = 0;
-			priv->scene.circles_nr = visual_random_context_int_range (priv->rcontext, 4, 10);
-		}
-	}
-	else
-	{
-		if (visual_random_context_int_range (priv->rcontext, 0, 100) == 42)
-		{
-			priv->scene.circles_enabled = FALSE;
-			priv->scene.circles_turn = 0;
-		}
-	}
-
-	if (priv->scene.circles_enabled == FALSE && visual_random_context_int_range (priv->rcontext, 0, 100) == 42)
-		priv->scene.flashball_enabled = 1 - priv->scene.flashball_enabled;
-	
 	if (visual_random_context_int_range (priv->rcontext, 0, 450) == 42)
-	{	
+	{
 		priv->scene.ballsine_enabled = 1 - priv->scene.ballsine_enabled;
 		priv->scene.ballsine_infade = 0;
 	}
@@ -151,23 +111,6 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 		if (priv->scene.ball_distance < 0)
 		{
 			priv->scene.ball_enabled = FALSE;
-		}
-	}
-
-	if (priv->scene.whirl_enabled == TRUE)
-	{
-		_oink_gfx_background_ball_whirling (priv, buf, 250, priv->scene.whirl_size, priv->scene.whirl_dia,
-					      priv->scene.whirl_rot, priv->screen_halfwidth, priv->screen_halfheight);
-
-		priv->scene.whirl_size += priv->scene.whirl_sizeadd;
-		priv->scene.whirl_dia -= priv->scene.whirl_diadec;
-		priv->scene.whirl_rot += priv->scene.whirl_rotadder;
-		
-		if (priv->scene.whirl_rot > OINK_TABLE_NORMAL_SIZE * 2 || priv->scene.whirl_dia < 0)
-		{
-			priv->scene.ballsine_infade = 0;
-			priv->scene.whirl_enabled = FALSE;
-			_oink_gfx_background_fill (priv, buf, 250);
 		}
 	}
 
@@ -202,15 +145,7 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 					       priv->scene.circles_turn, priv->screen_halfwidth, priv->screen_halfheight);
 
 	}
-
-	if (priv->scene.flashball_enabled == TRUE && priv->audio.bass >= 7 && priv->config.backgroundmode != 2)
-	{
-		_oink_gfx_background_circles_filled (priv, buf, 250, priv->screen_xysmallest / 10,
-					       visual_random_context_int_range (priv->rcontext, 3, 7), (priv->audio.tripple * (priv->screen_xysmallest / 50)) + 
-					       (priv->screen_xysmallest / 10) + 10, 
-					       priv->audio.highest * 60, priv->screen_halfwidth, priv->screen_halfheight);  
-	}
-
+/*
 	if (priv->scene.ballsine_enabled == TRUE)
 	{
 		if (priv->audio.beat == 1 && visual_random_context_int_range (priv->rcontext, 0, 42) == 0)
@@ -233,6 +168,7 @@ void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf)
 			priv->scene.ballsine_rotate -= ((priv->audio.energy >> 3) + 1);
 		}
 	}
+	*/
 }
 
 void _oink_scene_background_select (OinksiePrivate *priv, uint8_t *buf)
@@ -261,13 +197,13 @@ void _oink_scene_background_select (OinksiePrivate *priv, uint8_t *buf)
 					priv->screen_height - (priv->screen_height / 4), 0, priv->audio.energy);
 			break;
 
-		case 2:
+/*		case 2:
 			_oink_gfx_background_circles_star (priv, priv->drawbuf, 242,
 					priv->screen_xysmallest / 4,
-					5, 6, priv->audio.bass * 2, priv->audio.tripple * 30,
+					5, 6, priv->audio.bass * 3, priv->audio.tripple * 30,
 					priv->screen_halfwidth, priv->screen_halfheight);
 			break;
-
+*/
 		default:
 			break;
 	}
@@ -301,11 +237,8 @@ void _oink_scene_scope_select (OinksiePrivate *priv, uint8_t *buf, int color, in
 	switch (priv->config.scopemode)
 	{
 		case 0:
-			_oink_gfx_scope_normal (priv, buf, color, height);
-			break;
-
 		case 1:
-			_oink_gfx_scope_balls (priv, buf, color, height,  priv->audio.bass);
+			_oink_gfx_scope_normal (priv, buf, color, height);
 			break;
 
 		case 2:
@@ -343,12 +276,11 @@ void _oink_scene_scope_select (OinksiePrivate *priv, uint8_t *buf, int color, in
 
 void _oink_scene_randomize (OinksiePrivate *priv)
 {
-	_oink_config_random_beatdots (priv);
 	_oink_config_random_scopemode (priv);
 	_oink_config_random_blurmode (priv);
 	_oink_config_random_backgroundmode (priv);
 
-	_oink_gfx_palette_build (priv, FALSE);
+	_oink_gfx_palette_build (priv, priv->config.acidpalette);
 }
 
 void _oink_scene_render (OinksiePrivate *priv)
@@ -372,7 +304,7 @@ void _oink_scene_render (OinksiePrivate *priv)
 			_oink_config_random_blurmode (priv);
 
 		if (visual_random_context_int_range (priv->rcontext, 0, 20) == 0)
-			_oink_gfx_palette_build (priv, FALSE);
+			_oink_gfx_palette_build (priv, priv->config.acidpalette);
 	}
 
 	_oink_gfx_blur_fade (priv, priv->drawbuf, priv->audio.bass / 2);
@@ -381,39 +313,6 @@ void _oink_scene_render (OinksiePrivate *priv)
 
 	if (visual_random_context_int_range (priv->rcontext, 0, 500) == 42) 
 		_oink_scene_randomize (priv);
-
-	if (priv->config.beatdots == TRUE)
-		_oink_gfx_background_dots (priv, priv->drawbuf, priv->audio.tripple * 13, priv->audio.bass >> 1);
-
-	if (priv->audio.beat == TRUE)
-	{
-		switch (visual_random_context_int_range (priv->rcontext, 0, 2))
-		{
-			case 0:
-				if (priv->timing > priv->timing_prev)
-				{
-					if (visual_random_context_int_range (priv->rcontext, 0, 10))
-						_oink_gfx_background_fill (priv, priv->drawbuf, 240);
-
-				}
-
-				priv->config.beatdots = FALSE;
-				break;
-
-			case 1:
-				if (visual_random_context_int_range (priv->rcontext, 0, 5))
-					priv->config.beatdots = TRUE;
-				break;
-
-			case 2:
-				if (visual_random_context_int_range (priv->rcontext, 0, 5))
-					_oink_gfx_background_dots (priv, priv->drawbuf, 210, 10);
-				break; 
-
-			default:
-				break;
-		}
-	}
 
 	switch (priv->audio.musicmood)
 	{

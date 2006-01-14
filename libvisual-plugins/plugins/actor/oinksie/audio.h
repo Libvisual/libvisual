@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: audio.h,v 1.3 2005-12-20 18:49:14 synap Exp $
+ * $Id: audio.h,v 1.4 2006-01-14 18:23:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -26,7 +26,6 @@
 
 #include "oinksie.h"
 
-void _oink_audio_init (OinksiePrivate *priv);
 void _oink_audio_analyse (OinksiePrivate *priv);
 
 #endif /* _OINK_AUDIO_H */
