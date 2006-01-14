@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_lv_analyzer.c,v 1.23 2005-12-22 21:50:08 synap Exp $
+ * $Id: actor_lv_analyzer.c,v 1.24 2006-01-14 11:23:05 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,11 +34,12 @@
 
 #define BARS 16
 
-static int xranges[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
-
 typedef struct {
 	VisPalette pal;
 } AnalyzerPrivate;
+
+static void draw_bar (VisVideo *video, int index, int nbars, float amplitude);
+static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color);
 
 int lv_analyzer_init (VisPluginData *plugin);
 int lv_analyzer_cleanup (VisPluginData *plugin);
@@ -65,9 +66,9 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.plugname = "lv_analyzer",
 		.name = "libvisual analyzer",
 		.author = N_("Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.2",
+		.version = "1.0",
 		.about = N_("Libvisual analyzer plugin"),
-		.help = N_("This is a test plugin that'll display a simple analyzer"),
+		.help = N_("A nice simple spectrum analyzer plugin."),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_analyzer_init,
@@ -120,7 +121,7 @@ int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
 
 	if (reqw < 32)
 		reqw = 32;
-	
+
 	*width = reqw;
 
 	return 0;
@@ -179,20 +180,11 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	VisBuffer buffer;
 	VisBuffer pcmb;
-	float freq[256];
+	float freq[BARS];
 	float pcm[256];
-	int maxbar[BARS];
-	unsigned char *bits = visual_video_get_pixels (video);
-	float val;
-	int j;
-	float k = 0;
-	int i, h;
-	uint8_t *loc;
-	float scale;
-	float colscale;
+	int i;
 
 	visual_video_fill_color (video, NULL);
-	visual_mem_set (maxbar, 0, sizeof (maxbar));
 
 	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
 	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
@@ -203,47 +195,35 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
 
-	scale = (float) video->height / 127;
-
-	colscale = 1 / scale;
-
-	for (i=0; i < BARS; i++) {
-		val = 0;
-		for (j = xranges[i]; j < xranges[i + 1]; j++) {
-			k = (freq[j] * 256.0);
-			val += k;
-		}
-
-		val *= 127;
-
-		if(val > 127)
-			val = 127;
-
-		val *= scale;
-
-		if (val >= video->height)
-			val = video->height - 1;
-
-
-		if (val > (unsigned int)maxbar[ i ])
-			maxbar[ i ] = val;
-
-		else {
-			k = maxbar[ i ] - (4 + (8 / (128 - maxbar[ i ])));
-			val = k > 0 ? k : 0;
-			maxbar[ i ] = val;
-		}
-
-
-		loc = bits + video->pitch * (video->height - 1);
-		for (h = val; h > 0; h--) {
-			for (j = (video->pitch / BARS) * i + 0; j < (video->pitch / BARS) * i + ((video->pitch / BARS) - 1); j++) {
-				*(loc + j) = (float) ((int) (val)-h) * colscale;
-			}
-			loc -= video->pitch;
-		}
-	}
+	for (i = 0; i < BARS; i++)
+		draw_bar (video, i, BARS, freq[i]);
 
 	return 0;
+}
+
+static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
+{
+	int startx = (video->width / nbars) * index;
+	int endx = ((video->width / nbars) * (index + 1)) - 1;
+	int height = video->height * amplitude;
+	int i;
+	float scale = 128.0 / video->height;
+
+	for (i = video->height - 1; i > (video->height - height); i--) {
+		draw_vline (video, startx, endx, i, (video->height - i) * scale);
+	}
+}
+
+static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color)
+{
+	uint8_t *pixels = visual_video_get_pixels (video);
+	int i;
+
+	if (video->depth != VISUAL_VIDEO_DEPTH_8BIT)
+		return;
+
+	pixels += (y * video->pitch) + x1;
+
+	visual_mem_set (pixels, color, x2 - x1);
 }
 

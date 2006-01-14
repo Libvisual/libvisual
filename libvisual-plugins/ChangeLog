@@ -1,3 +1,10 @@
+2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/lv_analyzer/*.c: Rewrote, superb now.
+
+	A lot of work is needed to adopt all the plugins to our
+	finally rightly working DFT stuff.
+
 2005-12-22  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*: Adopted to new API version checking scheme.
