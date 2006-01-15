@@ -30,8 +30,10 @@ int main (int argc, char **argv)
 
 	visual_timer_start (&timer);
 
+	visual_cpu_set_3dnow (FALSE);
+
 	for (i = 0; i < TIMES; i++)
-		visual_math_vectorized_multiplier_float_const_float (f, SIZE, mul);
+		visual_math_vectorized_multiplier_floats_const_float (f, SIZE, mul);
 
 	visual_timer_stop (&timer);
 
