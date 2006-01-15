@@ -1,5 +1,15 @@
 2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_time.h: tsc is working, needs some love tho, gonna
+	look at liboil it's profile stuff.
+
+	* libvisual/lv_math.*: Added more vectorized stuff. Regarding
+	visual_math_vectorized_: I want to build a collection that suites the
+	needs in libvisual, the more we have, the more will be usable for
+	people outside of the corelib.
+
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_math.*: Added float to integer and integer to float
 	vector conversions.
 

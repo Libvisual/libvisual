@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.c,v 1.26 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_time.c,v 1.27 2006-01-15 16:47:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -112,7 +112,7 @@ int visual_time_get (VisTime *time_)
 
 #else
 	struct timeval tv;
-	
+
 	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	gettimeofday (&tv, NULL);
@@ -134,7 +134,7 @@ int visual_time_get (VisTime *time_)
 int visual_time_set (VisTime *time_, long sec, long usec)
 {
 	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
-	
+
 	time_->tv_sec = sec;
 	time_->tv_usec = usec;
 

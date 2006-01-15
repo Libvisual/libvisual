@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.34 2006-01-15 11:01:42 synap Exp $
+ * $Id: lv_audio.c,v 1.35 2006-01-15 16:47:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -1081,6 +1081,7 @@ static int byte_max_numeric (int bytes)
 	return result;
 }
 
+/* FIXME use lv_math acceleration here! */
 #define FORMAT_BUFFER_FROM_FLOAT(a,b)										\
 	{													\
 		if (sign) {											\

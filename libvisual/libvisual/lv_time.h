@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.h,v 1.17 2006-01-15 11:01:42 synap Exp $
+ * $Id: lv_time.h,v 1.18 2006-01-15 16:47:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -83,7 +83,8 @@ int visual_timer_elapsed_msecs (VisTimer *timer);
 int visual_timer_has_passed (VisTimer *timer, VisTime *time_);
 int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
 
-/* FIXME: does this work everywhere (x86) ? Check the cycle.h that can be found in FFTW */
+/* FIXME: does this work everywhere (x86) ? Check the cycle.h that can be found in FFTW,
+ * also check liboil it's profile header */
 
 /**
  * This function can be used to retrieve the real time stamp counter. This function
@@ -97,19 +98,18 @@ int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
  * @param hi The higher 32 bits of the timestamp.
  *
  * @return Nothing.
- *//*
-inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
+ */
+static inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
 {
 	__asm __volatile
 		("\n\t cpuid"
 		 "\n\t rdtsc"
-		 "\n\t movl %%edx, (%0)"
-		 "\n\t movl %%eax, (%1)"
-		 "\n\t rdtsc"
+		 "\n\t movl %%edx, %0"
+		 "\n\t movl %%eax, %1"
 		 : "=r" (*hi), "=r" (*lo)
 		 :: "memory");
 }
-*/
+
 VISUAL_END_DECLS
 
 #endif /* _LV_TIME_H */

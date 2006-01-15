@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.2 2006-01-15 11:01:42 synap Exp $
+ * $Id: lv_math.c,v 1.3 2006-01-15 16:47:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -96,8 +96,134 @@ int visual_math_vectorized_multiplier_floats_const_float (float *vector, visual_
 	return VISUAL_OK;
 }
 
-/* FIXME when tsc works, play with these function to finetune it for performance */
-int visual_math_vectorized_floats_to_ints (float *flts, int *ints, visual_size_t n)
+int visual_math_vectorized_add_floats_const_float (float *vector, visual_size_t n, float adder)
+{
+	float *d = vector;
+
+	visual_log_return_val_if_fail (vector != NULL, -VISUAL_ERROR_NULL);
+
+	if (visual_cpu_get_3dnow ()) {
+		float packed_adder[2];
+
+		packed_adder[0] = adder;
+		packed_adder[1] = adder;
+
+#ifdef VISUAL_ARCH_X86
+		__asm __volatile
+			("\n\t movq %[adder], %%mm0"
+			 :: [adder] "m" (*packed_adder));
+
+		while (n > 14) {
+			__asm __volatile
+				("\n\t prefetch 256(%0)"
+				 "\n\t movq (%0), %%mm1"
+				 "\n\t pfadd %%mm0, %%mm1"
+				 "\n\t movq 8(%0), %%mm2"
+				 "\n\t movq %%mm1, (%0)"
+				 "\n\t pfadd %%mm0, %%mm2"
+				 "\n\t movq 16(%0), %%mm3"
+				 "\n\t movq %%mm2, 8(%0)"
+				 "\n\t pfadd %%mm0, %%mm3"
+				 "\n\t movq 24(%0), %%mm4"
+				 "\n\t movq %%mm3, 16(%0)"
+				 "\n\t pfadd %%mm0, %%mm4"
+				 "\n\t movq 32(%0), %%mm5"
+				 "\n\t movq %%mm4, 24(%0)"
+				 "\n\t pfadd %%mm0, %%mm5"
+				 "\n\t movq 40(%0), %%mm6"
+				 "\n\t movq %%mm5, 32(%0)"
+				 "\n\t pfadd %%mm0, %%mm6"
+				 "\n\t movq 48(%0), %%mm7"
+				 "\n\t movq %%mm6, 40(%0)"
+				 "\n\t pfadd %%mm0, %%mm7"
+				 "\n\t movq %%mm7, 48(%0)"
+				 :: "r" (d) : "memory");
+
+			d += 14;
+
+			n -= 14;
+		}
+
+		__asm __volatile
+			("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	}
+
+	while (n--) {
+		(*d) *= adder;
+
+		d++;
+	}
+
+	return VISUAL_OK;
+}
+
+int visual_math_vectorized_substract_floats_const_float (float *vector, visual_size_t n, float substracter)
+{
+	float *d = vector;
+
+	visual_log_return_val_if_fail (vector != NULL, -VISUAL_ERROR_NULL);
+
+	if (visual_cpu_get_3dnow ()) {
+		float packed_substracter[2];
+
+		packed_substracter[0] = substracter;
+		packed_substracter[1] = substracter;
+
+#ifdef VISUAL_ARCH_X86
+		__asm __volatile
+			("\n\t movq %[substracter], %%mm0"
+			 :: [substracter] "m" (*packed_substracter));
+
+		while (n > 14) {
+			__asm __volatile
+				("\n\t prefetch 256(%0)"
+				 "\n\t movq (%0), %%mm1"
+				 "\n\t pfsub %%mm0, %%mm1"
+				 "\n\t movq 8(%0), %%mm2"
+				 "\n\t movq %%mm1, (%0)"
+				 "\n\t pfsub %%mm0, %%mm2"
+				 "\n\t movq 16(%0), %%mm3"
+				 "\n\t movq %%mm2, 8(%0)"
+				 "\n\t pfsub %%mm0, %%mm3"
+				 "\n\t movq 24(%0), %%mm4"
+				 "\n\t movq %%mm3, 16(%0)"
+				 "\n\t pfsub %%mm0, %%mm4"
+				 "\n\t movq 32(%0), %%mm5"
+				 "\n\t movq %%mm4, 24(%0)"
+				 "\n\t pfsub %%mm0, %%mm5"
+				 "\n\t movq 40(%0), %%mm6"
+				 "\n\t movq %%mm5, 32(%0)"
+				 "\n\t pfsub %%mm0, %%mm6"
+				 "\n\t movq 48(%0), %%mm7"
+				 "\n\t movq %%mm6, 40(%0)"
+				 "\n\t pfsub %%mm0, %%mm7"
+				 "\n\t movq %%mm7, 48(%0)"
+				 :: "r" (d) : "memory");
+
+			d += 14;
+
+			n -= 14;
+		}
+
+		__asm __volatile
+			("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	}
+
+	while (n--) {
+		(*d) *= substracter;
+
+		d++;
+	}
+
+	return VISUAL_OK;
+}
+
+
+int visual_math_vectorized_floats_to_ints (float *flts, uint32_t *ints, visual_size_t n)
 {
 	float *s = flts;
 	int *d = ints;
@@ -105,14 +231,12 @@ int visual_math_vectorized_floats_to_ints (float *flts, int *ints, visual_size_t
 	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
-
 	if (visual_cpu_get_3dnow ()) {
 #ifdef VISUAL_ARCH_X86
 
 		while (n > 16) {
 			__asm __volatile
-				("\n\t prefetch 128(%0)"
-				 "\n\t prefetch 320(%0)"
+				("\n\t prefetch 256(%0)"
 				 "\n\t pf2id (%0), %%mm0"
 				 "\n\t pf2id 8(%0), %%mm1"
 				 "\n\t pf2id 16(%0), %%mm2"
@@ -153,7 +277,7 @@ int visual_math_vectorized_floats_to_ints (float *flts, int *ints, visual_size_t
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_ints_to_floats (int *ints, float *flts, visual_size_t n)
+int visual_math_vectorized_ints_to_floats (uint32_t *ints, float *flts, visual_size_t n)
 {
 	int *s = ints;
 	float *d = flts;
@@ -161,14 +285,12 @@ int visual_math_vectorized_ints_to_floats (int *ints, float *flts, visual_size_t
 	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
-
 	if (visual_cpu_get_3dnow ()) {
 #ifdef VISUAL_ARCH_X86
 
 		while (n > 16) {
 			__asm __volatile
-				("\n\t prefetch 128(%0)"
-				 "\n\t prefetch 320(%0)"
+				("\n\t prefetch 256(%0)"
 				 "\n\t pi2fd (%0), %%mm0"
 				 "\n\t pi2fd 8(%0), %%mm1"
 				 "\n\t pi2fd 16(%0), %%mm2"
@@ -206,6 +328,16 @@ int visual_math_vectorized_ints_to_floats (int *ints, float *flts, visual_size_t
 		s++;
 	}
 
+	return VISUAL_OK;
+}
+
+int visual_math_vectorized_floats_to_ints_multiply (float *flts, uint32_t *ints, visual_size_t n, float multiplier)
+{
+	return VISUAL_OK;
+}
+
+int visual_math_vectorized_ints_to_floats_multiply (uint32_t *ints, float *flts, visual_size_t n, float multiplier)
+{
 	return VISUAL_OK;
 }
 
