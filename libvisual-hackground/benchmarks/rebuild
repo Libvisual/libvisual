@@ -14,3 +14,5 @@ gcc -o zoom_bench zoom_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o actor_throughput_bench actor_throughput_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o morph_throughput_bench morph_throughput_bench.c `pkg-config --libs --cflags libvisual`
 gcc -o depth_transform_bench depth_transform_bench.c `pkg-config --libs --cflags libvisual`
+gcc -o math_bench math_bench.c `pkg-config --libs --cflags libvisual` -ggdb
+gcc -o math_bench2 math_bench2.c `pkg-config --libs --cflags libvisual` -ggdb
