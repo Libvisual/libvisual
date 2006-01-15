@@ -2,12 +2,10 @@
  *
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
- * The FOURIER implementation found in this file is based upon the NULLSOFT
- * Milkdrop FOURIER implementation.
- *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ *	    Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.h,v 1.3 2006-01-13 08:57:58 descender Exp $
+ * $Id: lv_fourier.h,v 1.4 2006-01-15 00:15:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

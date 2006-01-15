@@ -6,8 +6,9 @@
  * Milkdrop FFT implementation.
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ *	    Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.c,v 1.6 2006-01-13 08:57:58 descender Exp $
+ * $Id: lv_fourier.c,v 1.7 2006-01-15 00:15:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.32 2006-01-14 15:27:09 synap Exp $
+ * $Id: lv_audio.c,v 1.33 2006-01-15 00:15:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,6 +28,7 @@
 #include <math.h>
 
 #include "lv_common.h"
+#include "lv_math.h"
 #include "lv_audio.h"
 
 static int audio_dtor (VisObject *object);
@@ -543,6 +544,27 @@ int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen
 	return VISUAL_OK;
 }
 
+int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid, int normalised, float multiplier)
+{
+	int ret;
+	float *data;
+	int datasize;
+	int i;
+
+	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	ret = visual_audio_get_spectrum (audio, buffer, samplelen, channelid, normalised);
+
+	data = visual_buffer_get_data (buffer);
+	datasize = visual_buffer_get_size (buffer) / sizeof (float);
+
+	visual_math_vectorized_multiplier_float_const_float (data, datasize, multiplier);
+
+	return ret;
+}
+
 int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised)
 {
 	VisDFT dft;
@@ -562,6 +584,25 @@ int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, 
 	return VISUAL_OK;
 }
 
+int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffer *sample, int normalised, float multiplier)
+{
+	int ret;
+	float *data;
+	int datasize;
+	int i;
+
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	ret = visual_audio_get_spectrum_for_sample (buffer, sample, normalised);
+
+	data = visual_buffer_get_data (buffer);
+	datasize = visual_buffer_get_size (buffer) / sizeof (float);
+
+	visual_math_vectorized_multiplier_float_const_float (data, datasize, multiplier);
+
+	return ret;
+}
 
 int visual_audio_normalise_spectrum (VisBuffer *buffer)
 {

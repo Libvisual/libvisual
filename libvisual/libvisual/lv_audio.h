@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.h,v 1.21 2006-01-14 15:27:09 synap Exp $
+ * $Id: lv_audio.h,v 1.22 2006-01-15 00:15:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -147,7 +147,9 @@ int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, 
 int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int divide);
 
 int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid, int normalised);
+int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid, int normalised, float multiplier);
 int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised);
+int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffer *sample, int normalised, float multiplier);
 
 int visual_audio_normalise_spectrum (VisBuffer *buffer);
 

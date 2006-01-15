@@ -1,3 +1,15 @@
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.*: New files, added vectorized float bij const
+	float multiplier. (with my computer 30% to 40% faster than a pure C version,
+	good enough for me).
+
+	* libvisual/lv_audio.*
+	(visual_audio_get_spectrum_for_sample_multiplied)
+	(visual_audio_get_spectrum_multiplied):
+	Added api that takes a multiplier argument to boost the spectrum a
+	bit.
+
 2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_audio.*
