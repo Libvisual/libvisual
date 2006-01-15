@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.h,v 1.15 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_time.h,v 1.16 2006-01-15 10:02:32 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -82,6 +82,33 @@ int visual_timer_elapsed (VisTimer *timer, VisTime *time_);
 int visual_timer_elapsed_msecs (VisTimer *timer);
 int visual_timer_has_passed (VisTimer *timer, VisTime *time_);
 int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
+
+/* FIXME: does this work everywhere (x86) ? Check the cycle.h that can be found in FFTW */
+
+/**
+ * This function can be used to retrieve the real time stamp counter. This function
+ * will not check of rdtsc is around, the reason for this is because it will make
+ * the timing less reliable since overhead will go into check the rdtsc availability. You
+ * must make arrangments for this.
+ *
+ * @see visual_cpu_get_tsc
+ *
+ * @param lo The lower 32 bits of the timestmap.
+ * @param hi The higher 32 bits of the timestamp.
+ *
+ * @return Nothing.
+ */
+inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
+{
+	__asm __volatile
+		("\n\t cpuid"
+		 "\n\t rdtsc"
+		 "\n\t movl %%edx, (%0)"
+		 "\n\t movl %%eax, (%1)"
+		 "\n\t rdtsc"
+		 : "=r" (*hi), "=r" (*lo)
+		 :: "memory");
+}
 
 VISUAL_END_DECLS
 

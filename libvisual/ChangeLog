@@ -1,5 +1,13 @@
 2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_os.*: Added files, will contain tools to set the
+	scheduling priority (we need to be able in realtime mode).
+
+	* libvisual/lv_time.*: Added a rdtsc timestamper for benchmarks (and
+	such).
+
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_math.*: New files, added vectorized float bij const
 	float multiplier. (with my computer 30% to 40% faster than a pure C version,
 	good enough for me).
