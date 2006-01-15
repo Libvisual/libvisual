@@ -6,7 +6,7 @@
  * 	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_corona.cpp,v 1.14 2005-12-22 21:50:07 synap Exp $
+ * $Id: actor_corona.cpp,v 1.15 2006-01-15 00:18:01 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -271,8 +271,8 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	visual_time_copy (&priv->oldtime, &curtime);
 
 	for (i = 0; i < 512; ++i) {
-		priv->tl.frequency[0][i] = freqdata[0][i];
-		priv->tl.frequency[1][i] = freqdata[1][i];
+		priv->tl.frequency[0][i] = freqdata[0][i] * 1024;
+		priv->tl.frequency[1][i] = freqdata[1][i] * 1024;
 	}
 
 	priv->corona->update(&priv->tl); // Update Corona

@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: jess.c,v 1.22 2005-12-22 21:50:07 synap Exp $
+ * $Id: jess.c,v 1.23 2006-01-15 00:18:01 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -329,8 +329,8 @@ int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	visual_audio_get_spectrum_for_sample (&fbuf[1], &priv->pcm_data2, FALSE);
 
 	for (i = 0;i < 256; i++) {
-		freqdata[0][i] = freq[0][i];
-		freqdata[1][i] = freq[1][i];
+		freqdata[0][i] = freq[0][i] * 32768;
+		freqdata[1][i] = freq[1][i] * 32768;
 	}
 
 	priv->lys.conteur[ZERO]++;

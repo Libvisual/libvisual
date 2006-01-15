@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: def.h,v 1.3 2005-12-20 18:49:12 synap Exp $
+ * $Id: def.h,v 1.4 2006-01-15 00:18:01 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -50,7 +50,7 @@
 #define NEW 1
 #define REINIT 1
 #define NEW_SESSION 2
-#define DEDT_FACTOR 10000 /* speed fading control*/
+#define DEDT_FACTOR 80000 /* speed fading control*/
 
 #define STARS_MAX 256
 #define MORPH_SPEED 0.5

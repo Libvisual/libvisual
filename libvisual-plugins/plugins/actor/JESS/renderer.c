@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: renderer.c,v 1.9 2005-12-20 18:49:12 synap Exp $
+ * $Id: renderer.c,v 1.10 2006-01-15 00:18:01 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -227,12 +227,12 @@ void copy_and_fade(JessPrivate *priv, float factor)
 	buf = priv->buffer;
 	pix = priv->pixel;
 
-	if(priv->video == 8)    
+	if(priv->video == 8)
 	{
 		fade(factor, priv->dim);
-		
+
 		for (j = 0; j <  priv->resy * priv->resx; j++)
-		{	    
+		{
 			*(buf++) = priv->dim[*(pix++)];
 		}
 	}
@@ -242,10 +242,8 @@ void copy_and_fade(JessPrivate *priv, float factor)
 		fade(cos(0.25*factor)*factor*2, priv->dimG);
 		fade(cos(0.5*factor)*factor*2, priv->dimB);
 
-		/* FIXME MMX TARGET */
-		
 		for (j = 0; j <  priv->resy * priv->resx; j++)
-		{	    
+		{
 			*(buf++) = priv->dimR[*(pix++)];
 			*(buf++) = priv->dimG[*(pix++)];
 			*(buf++) = priv->dimB[*(pix++)];
@@ -263,7 +261,7 @@ void fade(float variable, uint8_t * dim)
 	float aux;
 
 	aux = 1-exp(-fabs(variable));
-	
+
 	if (aux>1)
 		aux=1;
 	if (aux<0)

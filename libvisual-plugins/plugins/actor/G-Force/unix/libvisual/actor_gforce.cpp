@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_gforce.cpp,v 1.9 2005-12-22 21:50:07 synap Exp $
+ * $Id: actor_gforce.cpp,v 1.10 2006-01-15 00:18:01 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -250,32 +250,12 @@ extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudi
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	visual_buffer_set_data_pair (&freqbuf, gFFTBuf, sizeof (gFFTBuf));
-//	visual_audio_get_spectrum_for_sample (&freqbuf, &pcmbuf, TRUE);
+
+	visual_audio_get_spectrum_for_sample_multiplied (&freqbuf, &pcmbuf, TRUE, 3.0);
 
 	// Increase volume
 	for (i = 0; i < SND_BUF_SIZE; i++)
 		gSoundBuf[i] *= 32768;
-
-	// FIXME remove this mess
-#if 0
-	// Make the sample ready for G-Force usage
-	for (i = 0; i < NUMSAMPLES; i++) {
-//		sbuf[i] = audio->pcm[2][j]; FIXME needs audio again
-
-#ifdef SAMPSKIP
-		j += 1 + SAMPSKIP;
-#else
-		j++;
-#endif
-	}
-
-	for (ns = 0; ns < NUMSAMPLES; ns++) {
-		gSoundBuf[ns] = sbuf[ns];
-	}
-	for (ns = 0; ns < FFT_BUF_SIZE; ns++) {
-		gFFTBuf[ns] = (float) audio->freqnorm[2][ns] / 500.0000;
-	}
-#endif
 
 	// Set the video buffer
 	priv->gGF->SetOutVideoBuffer ((unsigned char *) visual_video_get_pixels (video));

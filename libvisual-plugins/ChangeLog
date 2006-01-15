@@ -1,3 +1,11 @@
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/G-Force/*: Fixed for new audio core and cleanups.
+
+	* plugins/actor/corona/*: Fixed for new audio core.
+
+	* plugins/actor/JESS/*: Fixed for new audio core.
+
 2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/oinksie/*.c: Lot's of work to get it

@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <gettext.h>
 
-#include <libvisual/libvisual.h>
-
 #include "G-Force_Proj.h"
 #include "G-Force.h"
 #include "XFloatList.h"
@@ -1136,8 +1134,6 @@ void GForce::loadColorMap( long inColorMapNum, bool inAllowMorph ) {
 		}
 	}
  
-	visual_log (VISUAL_LOG_INFO, _("New Delta field: %s"), mColorMapName.getCStr ());
- 
 	
 	if ( ! ok ) {
 		args.SetArgs( __COLOR_FACTORY );
@@ -1201,8 +1197,6 @@ void GForce::loadDeltaField( long inFieldNum ) {
 		name.Assign( "<Factory Default>" );
 	}
 
-	visual_log (VISUAL_LOG_INFO, _("New Delta field: %s"), name.getCStr ());
-
 	// Initiate recomputation of mField	
 	mField -> Assign( args, name );
 	mNextFieldChange = mT + mFieldInterval.Evaluate();
@@ -1244,8 +1238,6 @@ void GForce::loadWaveShape( long inShapeNum, bool inAllowMorph ) {
 		Print( "Loaded WaveShape: " );
 		Println( &mWaveShapeName );
 	}
-
- 	visual_log (VISUAL_LOG_INFO, _("New wave shape: %s"), mWaveShapeName.getCStr ());
  
 	
 	// If first time load, don't do any transition/morph, otherwise set up the morph
@@ -1299,8 +1291,6 @@ void GForce::loadParticle( long inParticleNum ) {
 		}
 	}
 
-	visual_log (VISUAL_LOG_INFO, _("New Particle: %s"), name.getCStr ());
-	 
 
 	if ( ok ) {
 	
