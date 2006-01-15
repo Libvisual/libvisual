@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.h,v 1.1 2006-01-15 00:15:14 synap Exp $
+ * $Id: lv_math.h,v 1.2 2006-01-15 11:01:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,7 +29,10 @@
 VISUAL_BEGIN_DECLS
 
 /* prototypes */
-int visual_math_vectorized_multiplier_float_const_float (float *vector, visual_size_t n, float multiplier);
+int visual_math_vectorized_multiplier_floats_const_float (float *vector, visual_size_t n, float multiplier);
+
+int visual_math_vectorized_floats_to_ints (float *flts, int *ints, visual_size_t n);
+int visual_math_vectorized_ints_to_floats (int *ints, float *flts, visual_size_t n);
 
 VISUAL_END_DECLS
 

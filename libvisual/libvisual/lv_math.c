@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.1 2006-01-15 00:15:14 synap Exp $
+ * $Id: lv_math.c,v 1.2 2006-01-15 11:01:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,7 +33,7 @@
  * @{
  */
 
-int visual_math_vectorized_multiplier_float_const_float (float *vector, visual_size_t n, float multiplier)
+int visual_math_vectorized_multiplier_floats_const_float (float *vector, visual_size_t n, float multiplier)
 {
 	float *d = vector;
 
@@ -77,6 +77,7 @@ int visual_math_vectorized_multiplier_float_const_float (float *vector, visual_s
 				 :: "r" (d) : "memory");
 
 			d += 14;
+
 			n -= 14;
 		}
 
@@ -90,6 +91,119 @@ int visual_math_vectorized_multiplier_float_const_float (float *vector, visual_s
 		(*d) *= multiplier;
 
 		d++;
+	}
+
+	return VISUAL_OK;
+}
+
+/* FIXME when tsc works, play with these function to finetune it for performance */
+int visual_math_vectorized_floats_to_ints (float *flts, int *ints, visual_size_t n)
+{
+	float *s = flts;
+	int *d = ints;
+
+	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+
+
+	if (visual_cpu_get_3dnow ()) {
+#ifdef VISUAL_ARCH_X86
+
+		while (n > 16) {
+			__asm __volatile
+				("\n\t prefetch 128(%0)"
+				 "\n\t prefetch 320(%0)"
+				 "\n\t pf2id (%0), %%mm0"
+				 "\n\t pf2id 8(%0), %%mm1"
+				 "\n\t pf2id 16(%0), %%mm2"
+				 "\n\t pf2id 24(%0), %%mm3"
+				 "\n\t pf2id 32(%0), %%mm4"
+				 "\n\t pf2id 40(%0), %%mm5"
+				 "\n\t pf2id 48(%0), %%mm6"
+				 "\n\t pf2id 56(%0), %%mm7"
+				 "\n\t movntq %%mm0, (%1)"
+				 "\n\t movntq %%mm1, 8(%1)"
+				 "\n\t movntq %%mm2, 16(%1)"
+				 "\n\t movntq %%mm3, 24(%1)"
+				 "\n\t movntq %%mm4, 32(%1)"
+				 "\n\t movntq %%mm5, 40(%1)"
+				 "\n\t movntq %%mm6, 48(%1)"
+				 "\n\t movntq %%mm7, 56(%1)"
+				 :: "r" (d), "r" (s) : "memory");
+
+			d += 16;
+			s += 16;
+
+			n -= 16;
+		}
+
+		__asm __volatile
+			("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	}
+
+	while (n--) {
+		*d = *s;
+
+		d++;
+		s++;
+	}
+
+	return VISUAL_OK;
+}
+
+int visual_math_vectorized_ints_to_floats (int *ints, float *flts, visual_size_t n)
+{
+	int *s = ints;
+	float *d = flts;
+
+	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+
+
+	if (visual_cpu_get_3dnow ()) {
+#ifdef VISUAL_ARCH_X86
+
+		while (n > 16) {
+			__asm __volatile
+				("\n\t prefetch 128(%0)"
+				 "\n\t prefetch 320(%0)"
+				 "\n\t pi2fd (%0), %%mm0"
+				 "\n\t pi2fd 8(%0), %%mm1"
+				 "\n\t pi2fd 16(%0), %%mm2"
+				 "\n\t pi2fd 24(%0), %%mm3"
+				 "\n\t pi2fd 32(%0), %%mm4"
+				 "\n\t pi2fd 40(%0), %%mm5"
+				 "\n\t pi2fd 48(%0), %%mm6"
+				 "\n\t pi2fd 56(%0), %%mm7"
+				 "\n\t movntq %%mm0, (%1)"
+				 "\n\t movntq %%mm1, 8(%1)"
+				 "\n\t movntq %%mm2, 16(%1)"
+				 "\n\t movntq %%mm3, 24(%1)"
+				 "\n\t movntq %%mm4, 32(%1)"
+				 "\n\t movntq %%mm5, 40(%1)"
+				 "\n\t movntq %%mm6, 48(%1)"
+				 "\n\t movntq %%mm7, 56(%1)"
+				 :: "r" (s), "r" (d) : "memory");
+
+			d += 16;
+			s += 16;
+
+			n -= 16;
+		}
+
+		__asm __volatile
+			("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	}
+
+	while (n--) {
+		*d = *s;
+
+		d++;
+		s++;
 	}
 
 	return VISUAL_OK;
