@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_endianess.h,v 1.7 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_bits.h,v 1.1 2006-01-18 12:27:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -65,6 +65,12 @@ VISUAL_BEGIN_DECLS
 #	define VISUAL_ENDIAN_BEI16(x) VISUAL_ENDIAN_LE_BE_I16(x)
 #	define VISUAL_ENDIAN_BEI32(x) VISUAL_ENDIAN_LE_BE_I32(x)
 #endif
+
+/**
+ * Macro to check if 'x' is aligned on 'y' bytes. This macro will fail
+ * when supplied with '1'. However you wouldn't want to do that anyway.
+ */
+#define VISUAL_ALIGNED(x, y)	(!(((unsigned long) w) & (y - 1)))
 
 VISUAL_END_DECLS
 

@@ -1,3 +1,11 @@
+2006-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_endianess.h: renamed to lv_bits.h, and added the
+	VISUAL_ALIGNED macro.
+
+	* libvisual/lv_math.*: Added vectorized sqrtf and vectorized ints to
+	float conversion with a multiply factor.
+
 2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_time.h: tsc is working, needs some love tho, gonna

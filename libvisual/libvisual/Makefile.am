@@ -7,7 +7,7 @@ library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_list.h lv_log.h lv_palette.h lv_plugin.h \
 			  lv_video.h lv_libvisual.h lv_songinfo.h \
 			  lv_morph.h lv_bmp.h lv_param.h lv_mem.h \
-			  lv_endianess.h lv_cpu.h lv_color.h \
+			  lv_bits.h lv_cpu.h lv_color.h \
 			  lv_time.h lv_random.h lv_error.h lv_ui.h \
 			  lv_types.h lv_thread.h lv_object.h \
 			  lv_transform.h lv_rectangle.h lv_ringbuffer.h \

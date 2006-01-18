@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.h,v 1.3 2006-01-15 16:47:25 synap Exp $
+ * $Id: lv_math.h,v 1.4 2006-01-18 12:27:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,14 +33,19 @@ int visual_math_vectorized_multiplier_floats_const_float (float *vector, visual_
 int visual_math_vectorized_add_floats_const_float (float *vector, visual_size_t n, float adder);
 int visual_math_vectorized_substract_floats_const_float (float *vector, visual_size_t n, float substracter);
 
-int visual_math_vectorized_floats_to_ints (float *flts, uint32_t *ints, visual_size_t n);
-int visual_math_vectorized_ints_to_floats (uint32_t *ints, float *flts, visual_size_t n);
+int visual_math_vectorized_floats_to_ints (float *flts, int32_t *ints, visual_size_t n);
+int visual_math_vectorized_ints_to_floats (int32_t *ints, float *flts, visual_size_t n);
 
-int visual_math_vectorized_floats_to_ints_multiply (float *flts, uint32_t *ints, visual_size_t n, float multiplier);
-int visual_math_vectorized_ints_to_floats_multiply (uint32_t *ints, float *flts, visual_size_t n, float multiplier);
+int visual_math_vectorized_floats_to_ints_multiply (float *flts, int32_t *ints, visual_size_t n, float multiplier);
+int visual_math_vectorized_ints_to_floats_multiply (int32_t *ints, float *flts, visual_size_t n, float multiplier);
+
+int visual_math_vectorized_sqrt_floats (float *vector, visual_size_t n);
+
 
 /* FIXME add many more to suite both rectangle and audio systems 100% */
 /* FIXME also look into things we might be able to generalize from VisVideo. */
+/* FIXME add complex number handling and vectorized complex number to real conversion. */
+/* FIXME provide with source and dest when possible, source and dest can always be the same. */
 
 VISUAL_END_DECLS
 

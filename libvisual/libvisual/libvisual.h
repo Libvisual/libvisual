@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: libvisual.h,v 1.21 2006-01-15 10:02:32 synap Exp $
+ * $Id: libvisual.h,v 1.22 2006-01-18 12:27:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,7 +26,7 @@
 
 #include <libvisual/lvconfig.h>
 
-#include <libvisual/lv_endianess.h>
+#include <libvisual/lv_bits.h>
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_color.h>
 #include <libvisual/lv_param.h>

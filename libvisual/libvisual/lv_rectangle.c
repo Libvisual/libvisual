@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_rectangle.c,v 1.6 2006-01-15 00:15:14 synap Exp $
+ * $Id: lv_rectangle.c,v 1.7 2006-01-18 12:27:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -342,6 +342,7 @@ int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist,
 
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
+	/* FIXME simd target */
 	for (i = 0; i < size; i++) {
 		xlist[i] = rect->width * fxlist[i];
 		ylist[i] = rect->height * fylist[i];
@@ -409,6 +410,7 @@ int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxl
 {
 	int i;
 
+	/* FIXME simd target */
 	for (i = 0; i < size; i++) {
 		xlist[i] = rect->width * ((fxlist[i] + 1) * 0.5);
 		ylist[i] = rect->height * ((fylist[i] + 1) * 0.5);
