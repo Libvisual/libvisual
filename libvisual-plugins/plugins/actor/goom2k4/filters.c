@@ -14,6 +14,8 @@
 
 /* #define _DEBUG_PIXEL */
 
+#include <libvisual/libvisual.h>
+
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -589,8 +591,8 @@ void zoomFilterFastRGB (PluginInfo *goomInfo, Pixel * pix1, Pixel * pix2, ZoomFi
         makeZoomBufferStripe(data,resy);
         
         /* Copy the data from temp to dest and source */
-        memcpy(data->brutS,data->brutT,resx * resy * 2 * sizeof(int));
-        memcpy(data->brutD,data->brutT,resx * resy * 2 * sizeof(int));
+        visual_mem_copy(data->brutS,data->brutT,resx * resy * 2 * sizeof(int));
+        visual_mem_copy(data->brutD,data->brutT,resx * resy * 2 * sizeof(int));
     }
     
     /* generation du buffer de trans */

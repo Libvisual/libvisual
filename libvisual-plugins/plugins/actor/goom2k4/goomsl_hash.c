@@ -8,7 +8,7 @@ static GoomHashEntry *entry_new(const char *key, HashValue value) {
 	GoomHashEntry *entry = (GoomHashEntry*)malloc(sizeof(GoomHashEntry));
 
 	entry->key = (char *)malloc(len+1);
-	memcpy(entry->key,key,len+1);
+	visual_mem_copy(entry->key,key,len+1);
 	entry->value = value;
 	entry->lower = NULL;
 	entry->upper = NULL;

@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: draw.c,v 1.5 2005-12-20 18:49:12 synap Exp $
+ * $Id: draw.c,v 1.6 2006-01-18 19:45:23 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -253,7 +253,7 @@ void grille_3d (JessPrivate *priv, uint8_t * buffer, float data[2][512], float a
 			}
 			else
 			{
-				z = RESFACTXF ((float) (data[1][i + nb_x * j]) / 256);
+				z = RESFACTXF ((float) (data[1][i + nb_x * j]) * 256);
 				color = (data[1][i + nb_x * j]) * 64 + 100;
 			}
 

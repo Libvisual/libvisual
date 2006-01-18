@@ -1,3 +1,8 @@
+2006-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/JESS/*.c: Better with new audio core, fixed a small
+	bug.
+
 2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/G-Force/*: Fixed for new audio core and cleanups.

@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: jess.c,v 1.23 2006-01-15 00:18:01 synap Exp $
+ * $Id: jess.c,v 1.24 2006-01-18 19:45:24 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -206,7 +206,7 @@ int act_jess_requisition (VisPluginData *plugin, int *width, int *height)
 
 	while (reqw % 2 || (reqw / 2) % 2)
 		reqw--;
-	
+
 	while (reqh % 2 || (reqh / 2) % 2)
 		reqh--;
 
@@ -239,7 +239,7 @@ int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width, int h
 	priv->resy = height;
 
 	visual_video_set_dimension (video, width, height);
-	
+
 	if (priv->table1 != NULL)
 		visual_mem_free (priv->table1);
 

@@ -11,6 +11,8 @@
 #include "goom_config_param.h"
 #include <string.h>
 
+#include <libvisual/libvisual.h>
+
 /* TODO: Ajouter goom_ devant ces fonctions */
 
 static void empty_fct(PluginParam *dummy) {
@@ -93,7 +95,7 @@ void goom_set_str_param_value(PluginParam *p, const char *str) {
         SVAL(*p) = (char*)realloc(SVAL(*p), len+1);
     else
         SVAL(*p) = (char*)malloc(len+1);
-    memcpy(SVAL(*p), str, len+1);
+    visual_mem_copy(SVAL(*p), str, len+1);
 }
 
 void goom_set_list_param_value(PluginParam *p, const char *str) {
@@ -105,6 +107,6 @@ void goom_set_list_param_value(PluginParam *p, const char *str) {
         LVAL(*p) = (char*)realloc(LVAL(*p), len+1);
     else
         LVAL(*p) = (char*)malloc(len+1);
-    memcpy(LVAL(*p), str, len+1);
+    visual_mem_copy(LVAL(*p), str, len+1);
 }
 

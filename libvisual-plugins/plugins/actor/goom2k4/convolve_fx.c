@@ -316,7 +316,7 @@ static void convolve_apply(VisualFX *_this, Pixel *src, Pixel *dest, PluginInfo 
   }
 
   if ((ff > 0.98f) && (ff < 1.02f))
-    memcpy(dest, src, info->screen.size * sizeof(Pixel));
+    visual_mem_copy(dest, src, info->screen.size * sizeof(Pixel));
   else
     create_output_with_brightness(_this,src,dest,info,iff);
 /*
