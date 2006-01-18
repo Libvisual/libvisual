@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.81 2005-12-31 19:42:47 synap Exp $
+ * $Id: lv_video.c,v 1.82 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -1274,8 +1274,9 @@ static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf = visual_video_get_pixels (src);
 
-	/* src and dest are completely equal, do one big mem copy instead of a per line mem copy */
-	if (visual_video_compare (dest, src) == TRUE) {
+	/* src and dest are completely equal, do one big mem copy instead of a per line mem copy.
+	 * Also check if the pitch is equal to it's width * bpp, this is because of subregions. */
+	if (visual_video_compare (dest, src) == TRUE && (src->pitch == (src->width * src->bpp))) {
 		visual_mem_copy (destbuf, srcbuf, visual_video_get_size (dest));
 
 		return VISUAL_OK;
@@ -3110,7 +3111,6 @@ static int scale_bilinear_8 (VisVideo *dest, VisVideo *src)
 			*dest_pixel++ = b0 >> 16;
 		}
 
-		visual_mem_set (dest_pixel, 0, dest->pitch - (dest->width - 1));
 		dest_pixel += dest->pitch - (dest->width - 1);
 
 	}
@@ -3187,7 +3187,6 @@ static int scale_bilinear_16 (VisVideo *dest, VisVideo *src)
 			*dest_pixel++ = b;
 		}
 
-		visual_mem_set (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * dest->bpp)));
 		dest_pixel += (dest->pitch / dest->bpp) - ((dest->width - 1));
 	}
 
@@ -3263,7 +3262,6 @@ static int scale_bilinear_24 (VisVideo *dest, VisVideo *src)
 			*dest_pixel++ = b;
 		}
 
-		visual_mem_set (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * dest->bpp)));
 		dest_pixel += (dest->pitch / dest->bpp) - ((dest->width - 1));
 	}
 
@@ -3348,7 +3346,6 @@ static int scale_bilinear_32 (VisVideo *dest, VisVideo *src)
 			*dest_pixel++ = b.c32;
 		}
 
-		visual_mem_set (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * dest->bpp)));
 		dest_pixel += (dest->pitch / dest->bpp) - ((dest->width - 1));
 
 	}

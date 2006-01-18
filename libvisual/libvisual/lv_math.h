@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.h,v 1.4 2006-01-18 12:27:29 synap Exp $
+ * $Id: lv_math.h,v 1.5 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,17 +29,19 @@
 VISUAL_BEGIN_DECLS
 
 /* prototypes */
-int visual_math_vectorized_multiplier_floats_const_float (float *vector, visual_size_t n, float multiplier);
-int visual_math_vectorized_add_floats_const_float (float *vector, visual_size_t n, float adder);
-int visual_math_vectorized_substract_floats_const_float (float *vector, visual_size_t n, float substracter);
+int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *src, visual_size_t n, float multiplier);
+int visual_math_vectorized_add_floats_const_float (float *dest,float *src, visual_size_t n, float adder);
+int visual_math_vectorized_substract_floats_const_float (float *dest, float *src, visual_size_t n, float substracter);
 
-int visual_math_vectorized_floats_to_ints (float *flts, int32_t *ints, visual_size_t n);
-int visual_math_vectorized_ints_to_floats (int32_t *ints, float *flts, visual_size_t n);
+int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_size_t n);
+int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_size_t n);
 
-int visual_math_vectorized_floats_to_ints_multiply (float *flts, int32_t *ints, visual_size_t n, float multiplier);
-int visual_math_vectorized_ints_to_floats_multiply (int32_t *ints, float *flts, visual_size_t n, float multiplier);
+int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts, visual_size_t n, float multiplier);
+int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints, visual_size_t n, float multiplier);
 
-int visual_math_vectorized_sqrt_floats (float *vector, visual_size_t n);
+int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints, float *flts, visual_size_t n, float multiplier);
+
+int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n);
 
 
 /* FIXME add many more to suite both rectangle and audio systems 100% */

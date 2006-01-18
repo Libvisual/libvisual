@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_rectangle.h,v 1.4 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_rectangle.h,v 1.5 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -56,10 +56,10 @@ int visual_rectangle_normalise (VisRectangle *rect);
 int visual_rectangle_normalise_to (VisRectangle *dest, VisRectangle *src);
 int visual_rectangle_is_empty (VisRectangle *rect);
 
-int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy, int *x, int *y);
-int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int *xlist, int *ylist, int size);
-int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float fy, int *x, int *y);
-int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int *xlist, int *ylist, int size);
+int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
+int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size);
+int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
+int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size);
 
 VISUAL_END_DECLS
 

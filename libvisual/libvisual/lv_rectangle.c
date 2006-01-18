@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_rectangle.c,v 1.7 2006-01-18 12:27:29 synap Exp $
+ * $Id: lv_rectangle.c,v 1.8 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -300,7 +300,7 @@ int visual_rectangle_is_empty (VisRectangle *rect)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
-int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy, int *x, int *y)
+int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y)
 {
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
@@ -336,17 +336,12 @@ int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy,
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
-int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int *xlist, int *ylist, int size)
+int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size)
 {
-	int i;
-
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	/* FIXME simd target */
-	for (i = 0; i < size; i++) {
-		xlist[i] = rect->width * fxlist[i];
-		ylist[i] = rect->height * fylist[i];
-	}
+	visual_math_vectorized_floats_to_int32s_multiply (xlist, fxlist, size, rect->width);
+	visual_math_vectorized_floats_to_int32s_multiply (ylist, fylist, size, rect->height);
 
 	return VISUAL_OK;
 }
@@ -367,7 +362,7 @@ int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist,
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
-int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float fy, int *x, int *y)
+int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y)
 {
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
@@ -406,15 +401,10 @@ int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
-int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int *xlist, int *ylist, int size)
+int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size)
 {
-	int i;
-
-	/* FIXME simd target */
-	for (i = 0; i < size; i++) {
-		xlist[i] = rect->width * ((fxlist[i] + 1) * 0.5);
-		ylist[i] = rect->height * ((fylist[i] + 1) * 0.5);
-	}
+	visual_math_vectorized_floats_to_int32s_multiply_denormalise (xlist, fxlist, size, rect->width);
+	visual_math_vectorized_floats_to_int32s_multiply_denormalise (ylist, fylist, size, rect->height);
 
 	return VISUAL_OK;
 }

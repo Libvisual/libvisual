@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video_simd.c,v 1.3 2005-12-29 02:30:59 synap Exp $
+ * $Id: lv_video_simd.c,v 1.4 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -208,9 +208,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 			++dest_pixel;
 		}
 
-		visual_mem_set (dest_pixel, 0, (dest->pitch - ((dest->width - 1) * 4)));
 		dest_pixel += (dest->pitch / 4) - ((dest->width - 1));
-
 	}
 
 	__asm__ __volatile__ ("\n\t emms");

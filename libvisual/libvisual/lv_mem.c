@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_mem.c,v 1.27 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_mem.c,v 1.28 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,29 +40,22 @@
 static void *mem_copy_c (void *dest, const void *src, visual_size_t n);
 static void *mem_copy_mmx (void *dest, const void *src, visual_size_t n);
 static void *mem_copy_mmx2 (void *dest, const void *src, visual_size_t n);
-static void *mem_copy_sse (void *dest, const void *src, visual_size_t n);
-static void *mem_copy_sse2 (void *dest, const void *src, visual_size_t n);
+static void *mem_copy_3dnow (void *dest, const void *src, visual_size_t n);
 static void *mem_copy_altivec (void *dest, const void *src, visual_size_t n);
 
 static void *mem_set8_c (void *dest, int c, visual_size_t n);
 static void *mem_set8_mmx (void *dest, int c, visual_size_t n);
 static void *mem_set8_mmx2 (void *dest, int c, visual_size_t n);
-static void *mem_set8_sse (void *dest, int c, visual_size_t n);
-static void *mem_set8_sse2 (void *dest, int c, visual_size_t n);
 static void *mem_set8_altivec (void *dest, int c, visual_size_t n);
 
 static void *mem_set16_c (void *dest, int c, visual_size_t n);
 static void *mem_set16_mmx (void *dest, int c, visual_size_t n);
 static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n);
-static void *mem_set16_sse (void *dest, int c, visual_size_t n);
-static void *mem_set16_sse2 (void *dest, int c, visual_size_t n);
 static void *mem_set16_altivec (void *dest, int c, visual_size_t n);
 
 static void *mem_set32_c (void *dest, int c, visual_size_t n);
 static void *mem_set32_mmx (void *dest, int c, visual_size_t n);
 static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n);
-static void *mem_set32_sse (void *dest, int c, visual_size_t n);
-static void *mem_set32_sse2 (void *dest, int c, visual_size_t n);
 static void *mem_set32_altivec (void *dest, int c, visual_size_t n);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
@@ -105,16 +98,17 @@ int visual_mem_initialize ()
 		visual_mem_set32 = mem_set32_mmx;
 	}
 
+	/* The k6-II and k6-III don't have mmx2, but of course can use the prefetch
+	 * facility that 3dnow provides. */
+	if (visual_cpu_get_3dnow () > 0) {
+		visual_mem_copy = mem_copy_3dnow;
+	}
+
 	if (visual_cpu_get_mmx2 () > 0) {
 		visual_mem_copy = mem_copy_mmx2;
 		visual_mem_set = mem_set8_mmx2;
 		visual_mem_set16 = mem_set16_mmx2;
 		visual_mem_set32 = mem_set32_mmx2;
-	}
-
-	if (visual_cpu_get_sse () > 0) {
-//		visual_mem_copy = mem_copy_sse;
-
 	}
 
 	return VISUAL_OK;
@@ -325,29 +319,34 @@ static void *mem_copy_mmx2 (void *dest, const void *src, visual_size_t n)
 	return dest;
 }
 
-static void *mem_copy_sse (void *dest, const void *src, visual_size_t n)
+static void *mem_copy_3dnow (void *dest, const void *src, visual_size_t n)
 {
 	uint32_t *d = dest;
 	const uint32_t *s = src;
 	uint8_t *dc = dest;
 	const uint8_t *sc = src;
 
-	/* FIXME add support for aligned copies. */
-
 #ifdef VISUAL_ARCH_X86
 	while (n >= 64) {
 		__asm __volatile
-			("\n\t prefetchnta 256(%0)"
-			 "\n\t prefetchnta 320(%0)"
-			 "\n\t movups (%0), %%xmm0"
-			 "\n\t movups 16(%0), %%xmm1"
-			 "\n\t movups 32(%0), %%xmm2"
-			 "\n\t movups 48(%0), %%xmm3"
-			 "\n\t movntdq %%xmm0, (%1)"
-			 "\n\t movntdq %%xmm1, 16(%1)"
-			 "\n\t movntdq %%xmm2, 32(%1)"
-			 "\n\t movntdq %%xmm3, 48(%1)"
-			 ""
+			("\n\t prefetch 256(%0)"
+			 "\n\t prefetch 320(%0)"
+			 "\n\t movq (%0), %%mm0"
+			 "\n\t movq 8(%0), %%mm1"
+			 "\n\t movq 16(%0), %%mm2"
+			 "\n\t movq 24(%0), %%mm3"
+			 "\n\t movq 32(%0), %%mm4"
+			 "\n\t movq 40(%0), %%mm5"
+			 "\n\t movq 48(%0), %%mm6"
+			 "\n\t movq 56(%0), %%mm7"
+			 "\n\t movq %%mm0, (%1)"
+			 "\n\t movq %%mm1, 8(%1)"
+			 "\n\t movq %%mm2, 16(%1)"
+			 "\n\t movq %%mm3, 24(%1)"
+			 "\n\t movq %%mm4, 32(%1)"
+			 "\n\t movq %%mm5, 40(%1)"
+			 "\n\t movq %%mm6, 48(%1)"
+			 "\n\t movq %%mm7, 56(%1)"
 			 :: "r" (s), "r" (d) : "memory");
 
 		d += 16;
@@ -355,6 +354,9 @@ static void *mem_copy_sse (void *dest, const void *src, visual_size_t n)
 
 		n -= 64;
 	}
+
+	__asm __volatile
+		("\n\t emms");
 #endif /* VISUAL_ARCH_X86 */
 
 	while (n >= 4) {
@@ -369,11 +371,6 @@ static void *mem_copy_sse (void *dest, const void *src, visual_size_t n)
 		*dc++ = *sc++;
 
 	return dest;
-}
-
-static void *mem_copy_sse2 (void *dest, const void *src, visual_size_t n)
-{
-
 }
 
 static void *mem_copy_altivec (void *dest, const void *src, visual_size_t n)
@@ -526,78 +523,6 @@ static void *mem_set8_mmx2 (void *dest, int c, visual_size_t n)
 	return dest;
 }
 
-static void *mem_set8_sse (void *dest, int c, visual_size_t n)
-{
-	uint32_t *d = dest;
-	uint8_t *dc = dest;
-	uint32_t setflag32 =
-		(c & 0xff) |
-		((c << 8) & 0xff00) |
-		((c << 16) & 0xff0000) |
-		((c << 24) & 0xff000000);
-	uint8_t setflag8 = c & 0xff;
-
-	/* FIXME add support for aligned copies. */
-
-#ifdef VISUAL_ARCH_X86
-#if 0
-	__asm __volatile
-		("\n\t movss (%0), %%xmm0"
-		 "\n\t movss (%0), %%xmm1" // denk ik
-		 "\n\t psllq $32, %%mm1"
-		 "\n\t por %%mm1, %%mm0"
-		 "\n\t"
-
-
-		 "\n\t movq %%mm0, %%mm2"
-		 "\n\t movq %%mm0, %%mm1"
-		 "\n\t movq %%mm2, %%mm3"
-		 "\n\t movq %%mm1, %%mm4"
-		 "\n\t movq %%mm0, %%mm5"
-		 "\n\t movq %%mm2, %%mm6"
-		 "\n\t movq %%mm1, %%mm7"
-		 :: "r" (&setflag32) : "memory");
-
-	while (n >= 64) {
-		__asm __volatile
-			("\n\t prefetchnta 256(%0)"
-			 "\n\t prefetchnta 320(%0)"
-			 "\n\t movups (%0), %%xmm0"
-			 "\n\t movups 16(%0), %%xmm1"
-			 "\n\t movups 32(%0), %%xmm2"
-			 "\n\t movups 48(%0), %%xmm3"
-			 "\n\t movntdq %%xmm0, (%1)"
-			 "\n\t movntdq %%xmm1, 16(%1)"
-			 "\n\t movntdq %%xmm2, 32(%1)"
-			 "\n\t movntdq %%xmm3, 48(%1)"
-			 ""
-			 :: "r" (s), "r" (d) : "memory");
-
-		d += 16;
-		s += 16;
-
-		n -= 64;
-	}
-#endif
-#endif /* VISUAL_ARCH_X86 */
-	while (n >= 4) {
-		*d++ = setflag32;
-		n -= 4;
-	}
-
-	dc = (uint8_t *) d;
-
-	while (n--)
-		*dc++ = setflag8;
-
-	return dest;
-}
-
-static void *mem_set8_sse2 (void *dest, int c, visual_size_t n)
-{
-
-}
-
 static void *mem_set8_altivec (void *dest, int c, visual_size_t n)
 {
 
@@ -742,76 +667,6 @@ static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n)
 	return dest;
 }
 
-static void *mem_set16_sse (void *dest, int c, visual_size_t n)
-{
-	uint32_t *d = dest;
-	uint16_t *dc = dest;
-	uint32_t setflag32 =
-		(c & 0xffff) |
-		((c << 16) & 0xffff0000);
-	uint16_t setflag16 = c & 0xffff;
-
-	/* FIXME add support for aligned copies. */
-
-#ifdef VISUAL_ARCH_X86
-#if 0
-	__asm __volatile
-		("\n\t movss (%0), %%xmm0"
-		 "\n\t movss (%0), %%xmm1" // denk ik
-		 "\n\t psllq $32, %%mm1"
-		 "\n\t por %%mm1, %%mm0"
-		 "\n\t"
-
-
-		 "\n\t movq %%mm0, %%mm2"
-		 "\n\t movq %%mm0, %%mm1"
-		 "\n\t movq %%mm2, %%mm3"
-		 "\n\t movq %%mm1, %%mm4"
-		 "\n\t movq %%mm0, %%mm5"
-		 "\n\t movq %%mm2, %%mm6"
-		 "\n\t movq %%mm1, %%mm7"
-		 :: "r" (&setflag32) : "memory");
-
-	while (n >= 64) {
-		__asm __volatile
-			("\n\t prefetchnta 256(%0)"
-			 "\n\t prefetchnta 320(%0)"
-			 "\n\t movups (%0), %%xmm0"
-			 "\n\t movups 16(%0), %%xmm1"
-			 "\n\t movups 32(%0), %%xmm2"
-			 "\n\t movups 48(%0), %%xmm3"
-			 "\n\t movntdq %%xmm0, (%1)"
-			 "\n\t movntdq %%xmm1, 16(%1)"
-			 "\n\t movntdq %%xmm2, 32(%1)"
-			 "\n\t movntdq %%xmm3, 48(%1)"
-			 ""
-			 :: "r" (s), "r" (d) : "memory");
-
-		d += 16;
-		s += 16;
-
-		n -= 64;
-	}
-#endif
-#endif /* VISUAL_ARCH_X86 */
-	while (n >= 2) {
-		*d++ = setflag32;
-		n -= 2;
-	}
-
-	dc = (uint16_t *) d;
-
-	while (n--)
-		*dc++ = setflag16;
-
-	return dest;
-}
-
-static void *mem_set16_sse2 (void *dest, int c, visual_size_t n)
-{
-
-}
-
 static void *mem_set16_altivec (void *dest, int c, visual_size_t n)
 {
 
@@ -921,65 +776,6 @@ static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n)
 		*d++ = setflag32;
 
 	return dest;
-}
-
-static void *mem_set32_sse (void *dest, int c, visual_size_t n)
-{
-	uint32_t *d = dest;
-	uint32_t setflag32 = c;
-
-	/* FIXME add support for aligned copies. */
-
-#ifdef VISUAL_ARCH_X86
-#if 0
-	__asm __volatile
-		("\n\t movss (%0), %%xmm0"
-		 "\n\t movss (%0), %%xmm1" // denk ik
-		 "\n\t psllq $32, %%mm1"
-		 "\n\t por %%mm1, %%mm0"
-		 "\n\t"
-
-
-		 "\n\t movq %%mm0, %%mm2"
-		 "\n\t movq %%mm0, %%mm1"
-		 "\n\t movq %%mm2, %%mm3"
-		 "\n\t movq %%mm1, %%mm4"
-		 "\n\t movq %%mm0, %%mm5"
-		 "\n\t movq %%mm2, %%mm6"
-		 "\n\t movq %%mm1, %%mm7"
-		 :: "r" (&setflag32) : "memory");
-
-	while (n >= 64) {
-		__asm __volatile
-			("\n\t prefetchnta 256(%0)"
-			 "\n\t prefetchnta 320(%0)"
-			 "\n\t movups (%0), %%xmm0"
-			 "\n\t movups 16(%0), %%xmm1"
-			 "\n\t movups 32(%0), %%xmm2"
-			 "\n\t movups 48(%0), %%xmm3"
-			 "\n\t movntdq %%xmm0, (%1)"
-			 "\n\t movntdq %%xmm1, 16(%1)"
-			 "\n\t movntdq %%xmm2, 32(%1)"
-			 "\n\t movntdq %%xmm3, 48(%1)"
-			 ""
-			 :: "r" (s), "r" (d) : "memory");
-
-		d += 16;
-		s += 16;
-
-		n -= 64;
-	}
-#endif
-#endif /* VISUAL_ARCH_X86 */
-	while (n--)
-		*d++ = setflag32;
-
-	return dest;
-}
-
-static void *mem_set32_sse2 (void *dest, int c, visual_size_t n)
-{
-
 }
 
 static void *mem_set32_altivec (void *dest, int c, visual_size_t n)

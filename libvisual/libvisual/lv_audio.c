@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.35 2006-01-15 16:47:25 synap Exp $
+ * $Id: lv_audio.c,v 1.36 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -560,7 +560,7 @@ int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, in
 	data = visual_buffer_get_data (buffer);
 	datasize = visual_buffer_get_size (buffer) / sizeof (float);
 
-	visual_math_vectorized_multiplier_floats_const_float (data, datasize, multiplier);
+	visual_math_vectorized_multiplier_floats_const_float (data, data, datasize, multiplier);
 
 	return ret;
 }
@@ -599,7 +599,7 @@ int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffe
 	data = visual_buffer_get_data (buffer);
 	datasize = visual_buffer_get_size (buffer) / sizeof (float);
 
-	visual_math_vectorized_multiplier_floats_const_float (data, datasize, multiplier);
+	visual_math_vectorized_multiplier_floats_const_float (data, data, datasize, multiplier);
 
 	return ret;
 }

@@ -1,5 +1,25 @@
 2006-01-18  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_math.*: Renamed some stuff, added some more stuff
+	VisRectangle is now completely supported.
+
+	* libvisual/lv_buffer.*: Use visual_size_t everywhere.
+
+	(visual_buffer_fill_with_pattern): Added function (can fill a buffer
+	with a certain pattern over and over and over.
+
+	* libvisual/lv_mem.*: Cleaned the copy and set stuff up, added 3dnow
+	mem_copy variant for machines without mmx2.
+
+	* libvisual/lv_rectangle.c: Use VisMath.
+
+	* libvisual/lv_video.c: Removed the pitch-leftover memsets from the
+	bilinear interpolating functions.
+
+	* libvisual/lv_video_simd.c: Same.
+
+2006-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_endianess.h: renamed to lv_bits.h, and added the
 	VISUAL_ALIGNED macro.
 

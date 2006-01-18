@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_buffer.c,v 1.7 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_buffer.c,v 1.8 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -88,7 +88,7 @@ VisBuffer *visual_buffer_new ()
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_init (VisBuffer *buffer, void *data, int datasize, VisBufferDestroyerFunc destroyer)
+int visual_buffer_init (VisBuffer *buffer, void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
@@ -116,7 +116,7 @@ int visual_buffer_init (VisBuffer *buffer, void *data, int datasize, VisBufferDe
  *
  * @return A newly allocated VisBuffer.
  */
-VisBuffer *visual_buffer_new_with_buffer (void *data, int datasize, VisBufferDestroyerFunc destroyer)
+VisBuffer *visual_buffer_new_with_buffer (void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer)
 {
 	VisBuffer *buffer = visual_buffer_new ();
 
@@ -135,7 +135,7 @@ VisBuffer *visual_buffer_new_with_buffer (void *data, int datasize, VisBufferDes
  *
  * @return A newly allocated VisBuffer.
  */
-VisBuffer *visual_buffer_new_allocate (int datasize, VisBufferDestroyerFunc destroyer)
+VisBuffer *visual_buffer_new_allocate (visual_size_t datasize, VisBufferDestroyerFunc destroyer)
 {
 	VisBuffer *buffer = visual_buffer_new ();
 
@@ -161,7 +161,7 @@ VisBuffer *visual_buffer_new_allocate (int datasize, VisBufferDestroyerFunc dest
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_init_allocate (VisBuffer *buffer, int datasize, VisBufferDestroyerFunc destroyer)
+int visual_buffer_init_allocate (VisBuffer *buffer, visual_size_t datasize, VisBufferDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
@@ -233,7 +233,7 @@ VisBufferDestroyerFunc visual_buffer_get_destroyer (VisBuffer *buffer)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, int datasize)
+int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t datasize)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
@@ -251,7 +251,7 @@ int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, int datasize)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_set_size (VisBuffer *buffer, int datasize)
+int visual_buffer_set_size (VisBuffer *buffer, visual_size_t datasize)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
@@ -452,7 +452,7 @@ int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_put_data (VisBuffer *dest, void *data, int size, int byteoffset)
+int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int byteoffset)
 {
 	int amount;
 
@@ -501,7 +501,7 @@ int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, int size, int byteoffset)
+int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t size, int byteoffset)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
@@ -538,7 +538,7 @@ int visual_buffer_append (VisBuffer *dest, VisBuffer *src)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure. 
  */
-int visual_buffer_append_data (VisBuffer *dest, void *data, int size)
+int visual_buffer_append_data (VisBuffer *dest, void *data, visual_size_t size)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
@@ -561,6 +561,31 @@ int visual_buffer_fill (VisBuffer *buffer, char value)
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	visual_mem_set (buffer->data, value, buffer->datasize);
+
+	return VISUAL_OK;
+}
+
+/**
+ * Fills the buffer with a pattern of data. This can be used to fill a buffer with a structure, floats
+ * whatever. It's assumed that the buffer is rightly allocated, when this is not the case it can happen
+ * that only a part of the pattern is copied.
+ *
+ * @param buffer Pointer to the VisBuffer which is to be filled with a pattern.
+ * @param data The data pattern.
+ * @param size The size of the pattern
+ */
+int visual_buffer_fill_with_pattern (VisBuffer *buffer, void *data, visual_size_t size)
+{
+	int offset;
+
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
+
+	while (offset < buffer->datasize) {
+		visual_buffer_put_data (buffer, data, size, offset);
+
+		offset += size;
+	}
 
 	return VISUAL_OK;
 }

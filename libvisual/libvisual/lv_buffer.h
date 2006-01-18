@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_buffer.h,v 1.7 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_buffer.h,v 1.8 2006-01-18 21:30:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -51,22 +51,22 @@ struct _VisBuffer {
 	VisBufferDestroyerFunc	 destroyer;	/**< The destroyer function for the encapsulated data. */
 
 	void			*data;		/**< Pointer to the data. */
-	int			 datasize;	/**< The size of the data in N bytes. */
+	visual_size_t		 datasize;	/**< The size of the data in N bytes. */
 };
 
 /* prototypes */
 VisBuffer *visual_buffer_new (void);
-int visual_buffer_init (VisBuffer *buffer, void *data, int datasize, VisBufferDestroyerFunc destroyer);
-VisBuffer *visual_buffer_new_with_buffer (void *data, int datasize, VisBufferDestroyerFunc destroyer);
-VisBuffer *visual_buffer_new_allocate (int datasize, VisBufferDestroyerFunc destroyer);
-int visual_buffer_init_allocate (VisBuffer *buffer, int datasize, VisBufferDestroyerFunc destroyer);
+int visual_buffer_init (VisBuffer *buffer, void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
+VisBuffer *visual_buffer_new_with_buffer (void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
+VisBuffer *visual_buffer_new_allocate (visual_size_t datasize, VisBufferDestroyerFunc destroyer);
+int visual_buffer_init_allocate (VisBuffer *buffer, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
 int visual_buffer_destroy_content (VisBuffer *buffer);
 
 int visual_buffer_set_destroyer (VisBuffer *buffer, VisBufferDestroyerFunc destroyer);
 VisBufferDestroyerFunc visual_buffer_get_destroyer (VisBuffer *buffer);
 
-int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, int datasize);
-int visual_buffer_set_size (VisBuffer *buffer, int datasize);
+int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t datasize);
+int visual_buffer_set_size (VisBuffer *buffer, visual_size_t datasize);
 int visual_buffer_set_data (VisBuffer *buffer, void *data);
 int visual_buffer_allocate_data (VisBuffer *buffer);
 
@@ -81,14 +81,15 @@ VisBuffer *visual_buffer_clone_new (VisBuffer *src);
 int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
 
 int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
-int visual_buffer_put_data (VisBuffer *dest, void *data, int size, int byteoffset);
+int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
 int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
-int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, int size, int byteoffset);
+int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
 
 int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
-int visual_buffer_append_data (VisBuffer *dest, void *data, int size);
+int visual_buffer_append_data (VisBuffer *dest, void *data, visual_size_t size);
 
 int visual_buffer_fill (VisBuffer *buffer, char value);
+int visual_buffer_fill_with_pattern (VisBuffer *buffer, void *data, visual_size_t size);
 
 void visual_buffer_destroyer_free (VisBuffer *buffer);
 
