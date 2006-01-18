@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.4 2006-01-18 12:27:29 synap Exp $
+ * $Id: lv_math.c,v 1.5 2006-01-18 14:00:31 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -449,9 +449,6 @@ int visual_math_vectorized_sqrt_floats (float *vector, visual_size_t n)
 			d += 16;
 			n -= 16;
 		}
-
-		__asm __volatile
-			("\n\t emms");
 #endif /* VISUAL_ARCH_X86 */
 	}
 
