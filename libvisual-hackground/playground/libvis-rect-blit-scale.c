@@ -243,7 +243,7 @@ int main (int argc, char *argv[])
 //		visual_rectangle_set (&rect, xoff, yoff, sxsize, sysize);
 //		visual_video_region_sub (scalevid, video, &rect);
 
-		visual_video_blit_overlay (sdlvid, scalevid, 256, 0, FALSE);
+//		visual_video_blit_overlay (sdlvid, scalevid, 256, 0, FALSE);
 
 		sdl_draw_buf ();
 		
