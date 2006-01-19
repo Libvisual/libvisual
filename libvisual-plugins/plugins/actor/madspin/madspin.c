@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Andrew Birck <birck@uiuc.edu>
  *
- * $Id: madspin.c,v 1.28 2005-12-22 21:50:09 synap Exp $
+ * $Id: madspin.c,v 1.29 2006-01-19 19:39:31 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -161,7 +161,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider1), 200, -1);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider1), visual_param_container_get (paramcontainer, "num stars"));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider1), 50, 2500, 10, 0);
-	
+
 	slider2 = visual_ui_slider_new (FALSE);
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider2), 200, -1);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider2), visual_param_container_get (paramcontainer, "speed"));
@@ -182,9 +182,9 @@ int lv_madspin_init (VisPluginData *plugin)
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), label2, 1, 0);
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), slider2, 1, 1);
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), numeric2, 1, 2);
-	
+
 	visual_plugin_set_userinterface (plugin, table);
-	
+
 	/* GL and the such */
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
@@ -193,7 +193,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	glLoadIdentity ();
 
 	glDisable (GL_DEPTH_TEST);
-	
+
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glShadeModel (GL_SMOOTH);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -344,7 +344,7 @@ static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
 
 	/* Make our data from the freq data */
 	for (i = 0; i < 256; i++) {
-		priv->gdata[i] = (float) freq[i] * 8000.0;
+		priv->gdata[i] = (float) freq[i] * 2000.0;
 
 		if (priv->gdata[i] > 1.0)
 			priv->gdata[i] = 1.0;

@@ -5,7 +5,7 @@
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_flower.c,v 1.7 2005-12-22 21:50:09 synap Exp $
+ * $Id: actor_flower.c,v 1.8 2006-01-19 19:39:31 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -40,11 +40,14 @@
 #include "main.h"
 #include "notch.h"
 
+#define NOTCH_BANDS	32
+
 typedef struct {
-	VisTimer t;
-	FlowerInternal flower;
-	NOTCH_FILTER notch;
-	VisRandomContext *rcxt;
+	VisTimer		 t;
+	FlowerInternal		 flower;
+	int			 nof_bands;
+	NOTCH_FILTER		*notch[NOTCH_BANDS];
+	VisRandomContext	*rcxt;
 } FlowerPrivate;
 
 int lv_flower_init (VisPluginData *plugin);
@@ -84,7 +87,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 		.plugin = VISUAL_OBJECT (&actor[0])
 	}};
-	
+
 	*count = sizeof (info) / sizeof (*info);
 
 	return info;
@@ -93,6 +96,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 int lv_flower_init (VisPluginData *plugin)
 {
 	FlowerPrivate *priv;
+	float b;
+	int i;
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
@@ -111,7 +116,17 @@ int lv_flower_init (VisPluginData *plugin)
 
 	priv->flower.tension = (visual_random_context_float (priv->rcxt) - 0.5) * 8.0;
 	priv->flower.continuity = (visual_random_context_float (priv->rcxt) - 0.5) * 16.0;
-	
+
+
+	priv->nof_bands = NOTCH_BANDS;
+
+	for (i = 0; i < priv->nof_bands; i++) {
+		b = 80.0 + i * (22000.0 - 80.0) / priv->nof_bands;
+
+		priv->notch[i] = init_notch (b);
+	}
+
+
 	return 0;
 }
 
@@ -147,7 +162,7 @@ int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int 
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	GLfloat ratio;
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	ratio = (GLfloat) width / (GLfloat) height;
@@ -200,6 +215,10 @@ int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	VisBuffer freqbuf;
 	float pcm[512];
 	float freqnorm[256];
+	float temp_bars[NOTCH_BANDS];
+	float f;
+	int b;
+	int i;
 
 	visual_buffer_set_data_pair (&pcmbuf, pcm, sizeof (pcm));
 	visual_buffer_set_data_pair (&freqbuf, freqnorm, sizeof (freqnorm));
@@ -227,6 +246,19 @@ int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		visual_timer_start (&priv->flower.timer);
 
 
+	for (b=0; b<priv->nof_bands; b++)
+		temp_bars[b]=0.0;
+
+	for (i=0; i<256; i++) {
+		for (b=0; b<priv->nof_bands; b++) {
+			f=process_notch (priv->notch[b], freqnorm[i] * 15);
+			if (fabs(f)>temp_bars[b])
+				temp_bars[b]=fabs(f);
+		}
+	}
+
+
+	/* Not part of the if !!! */
 	{
 #define HEIGHT 1.0
 #define D 0.45
@@ -234,24 +266,23 @@ int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 #define DIF 5.0
 		float lk=2.0;
 		float l0=2.0;
-		int nof_bands = 32;
 
 		float scale = HEIGHT / ( log((1 - D) / D) * 2 );
 		float x00 = D*D*1.0/(2 * D - 1);
 		float y00 = -log(-x00) * scale;
 		float y;
 		int i;
-		for (i=0; i<nof_bands; i++) {
-			y=freqnorm[i * 8];
+		for (i=0; i<priv->nof_bands; i++) {
+			y=temp_bars[i * 8];
 			y=y*(i*lk+l0);
 
 			y = ( log(y - x00) * scale + y00 ); /* Logarithmic amplitude */
 
 			y = ( (DIF-2.0)*y +
-					(i==0  ? 0 : freqnorm[(i * 8) - 1]) +
-					(i==31 ? 0 : freqnorm[(i * 8) + 1])) / DIF;
+					(i==0  ? 0 : temp_bars[i - 1]) +
+					(i==31 ? 0 : temp_bars[i + 1])) / DIF;
 
-			y=((1.0-TAU)*priv->flower.audio_bars[i]+TAU*y) / 100.00;
+			y=((1.0-TAU)*priv->flower.audio_bars[i]+TAU*y) * 1.00;
 			priv->flower.audio_bars[i]=y;
 		}
 	}

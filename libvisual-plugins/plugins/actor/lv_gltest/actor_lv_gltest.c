@@ -6,7 +6,7 @@
  *	    Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
  *	    4Front Technologies
  *
- * $Id: actor_lv_gltest.c,v 1.22 2005-12-22 21:50:08 synap Exp $
+ * $Id: actor_lv_gltest.c,v 1.23 2006-01-19 19:39:31 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -290,10 +290,10 @@ int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		for (c = xranges[i]; c < xranges[i + 1]; c++)
 		{
 			if (freq[c] > ff)
-				ff = freq[c] * video->height;
+				ff = freq[c];
 		}
 
-		priv->heights[0][i] = ff * 2;
+		priv->heights[0][i] = ff * 10;
 	}
 
 	priv->x_angle += priv->x_speed;

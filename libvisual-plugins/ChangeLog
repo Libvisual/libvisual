@@ -1,3 +1,12 @@
+2006-01-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona/*: React better with new audio core.
+	
+	* plugins/actor/lv_gltest/*: same.
+	
+	* plugins/actor/pseudotoad_flower/*: same and implemented the notch
+	stuff.
+	
 2006-01-18  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/JESS/*.c: Better with new audio core, fixed a small
