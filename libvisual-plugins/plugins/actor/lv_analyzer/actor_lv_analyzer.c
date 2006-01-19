@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_lv_analyzer.c,v 1.24 2006-01-14 11:23:05 synap Exp $
+ * $Id: actor_lv_analyzer.c,v 1.25 2006-01-19 20:54:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -32,7 +32,7 @@
 
 #include <libvisual/libvisual.h>
 
-#define BARS 16
+#define BARS 256
 
 typedef struct {
 	VisPalette pal;
@@ -181,7 +181,7 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	VisBuffer buffer;
 	VisBuffer pcmb;
 	float freq[BARS];
-	float pcm[256];
+	float pcm[BARS * 2];
 	int i;
 
 	visual_video_fill_color (video, NULL);
@@ -204,7 +204,7 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
 {
 	int startx = (video->width / nbars) * index;
-	int endx = ((video->width / nbars) * (index + 1)) - 1;
+	int endx = ((video->width / nbars) * (index + 1));
 	int height = video->height * amplitude;
 	int i;
 	float scale = 128.0 / video->height;
