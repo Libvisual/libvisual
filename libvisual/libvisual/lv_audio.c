@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.36 2006-01-18 21:30:57 synap Exp $
+ * $Id: lv_audio.c,v 1.37 2006-01-19 20:15:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -579,6 +579,9 @@ int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, 
 	/* Fourier analyze the pcm data */
 	visual_dft_perform (&dft, visual_buffer_get_data (sample), visual_buffer_get_data (buffer));
 
+	if (normalised == TRUE)
+		visual_audio_normalise_spectrum (buffer);
+
 	visual_object_unref (VISUAL_OBJECT (&dft));
 
 	return VISUAL_OK;
@@ -608,7 +611,7 @@ int visual_audio_normalise_spectrum (VisBuffer *buffer)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_fourier_normalise (visual_buffer_get_data (buffer), visual_buffer_get_size (buffer));
+	visual_dft_log_scale (visual_buffer_get_data (buffer), visual_buffer_get_size (buffer));
 
 	return VISUAL_OK;
 }

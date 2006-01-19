@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.7 2006-01-19 16:11:23 synap Exp $
+ * $Id: lv_math.c,v 1.8 2006-01-19 20:15:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -657,7 +657,7 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	if (visual_cpu_get_sse () && n >= 16) {
 #ifdef VISUAL_ARCH_X86
 		while (!VISUAL_ALIGNED(d, 16)) {
-			*d = sqrtf (*d);
+			*d = sqrtf (*s);
 
 			d++;
 			n--;
@@ -689,10 +689,61 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	}
 
 	while (n--) {
-		*s = sqrtf (*d);
+		*d = sqrtf (*s);
 
 		d++;
 		s++;
+	}
+
+	return VISUAL_OK;
+}
+
+int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, float *imag, visual_size_t n, float scaler)
+{
+	float *d = dest;
+	float *r = real;
+	float *i = imag;
+
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
+
+	if (visual_cpu_get_sse () && n >= 16) {
+#ifdef VISUAL_ARCH_X86
+		while (!VISUAL_ALIGNED(d, 16)) {
+			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * scaler;
+
+			d++;
+			r++;
+			i++;
+
+			n--;
+		}
+
+		while (n > 4) {
+			__asm __volatile
+				("\n\t prefetchnta 256(%0)"
+				 "\n\t movaps (%0), %%xmm0"
+				 "\n\t movaps (%0), %%xmm0"
+				 "\n\t sqrtps %%xmm0, %%xmm4"
+				 "\n\t movntps %%xmm4, (%2)"
+				 :: "r" (r), "r" (i), "r" (d) : "memory");
+
+			d += 4;
+			i += 4;
+			r += 4;
+
+			n -= 4;
+		}
+#endif /* VISUAL_ARCH_X86 */
+	}
+
+	while (n--) {
+		*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * scaler;
+
+		d++;
+		r++;
+		i++;
 	}
 
 	return VISUAL_OK;

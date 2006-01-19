@@ -1,3 +1,9 @@
+2006-01-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c: Use logscale when requested.
+
+	* libvisual/lv_math.c: Added more stuff, fixes.
+
 2006-01-20  Chong Kai Xiong  <descender@phreaker.net>
 
 	* libvisual/lv_fourier.c, libvisual/lv_fourier.h
