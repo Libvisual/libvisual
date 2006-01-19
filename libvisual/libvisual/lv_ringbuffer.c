@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_ringbuffer.c,v 1.6 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_ringbuffer.c,v 1.7 2006-01-19 16:11:23 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -139,6 +139,16 @@ int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer)
 	return visual_ringbuffer_add_entry (ringbuffer, entry);
 }
 
+/* FIXME the list of errors is not correct, in the doc */
+/**
+ * Adds a portion of data to the ringbuffer of nbytes byte size.
+ *
+ * @param ringbuffer Pointer to the ringbuffer to which the data is added.
+ * @param data Pointer to the data that is added to the ringbuffer.
+ * @param nbytes The size of the data that is added to the ringbuffer.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_RINGBUFFER_NULL, -VISUAL_ERROR_NULL on failure.
+ */
 int visual_ringbuffer_add_buffer_by_data (VisRingBuffer *ringbuffer, void *data, int nbytes)
 {
 	VisBuffer *buffer;

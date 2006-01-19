@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.6 2006-01-18 21:30:57 synap Exp $
+ * $Id: lv_math.c,v 1.7 2006-01-19 16:11:23 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,6 +43,17 @@
  * @{
  */
 
+/**
+ * Multiplies an array of floats with one constant multiplier. The same destination and source arrays
+ * are allowed. With the right cpu features in place this function is very optimized.
+ *
+ * @param dest Pointer to the destination float array.
+ * @param src Pointer to the source float array.
+ * @param n The number of items in the array.
+ * @param multiplier The constant multiplier with which every element in the source array is multiplied.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *src, visual_size_t n, float multiplier)
 {
 	float *d = dest;
@@ -110,6 +121,17 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 	return VISUAL_OK;
 }
 
+/**
+ * Adds an array of floats with one constant adder. The same destination and source arrays
+ * are allowed. With the right cpu features in place this function is very optimized.
+ *
+ * @param dest Pointer to the destination float array.
+ * @param src Pointer to the source float array.
+ * @param n The number of items in the array.
+ * @param adder The constant adder that is added to every entry in the source array.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visual_size_t n, float adder)
 {
 	float *d = dest;
@@ -177,6 +199,17 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 	return VISUAL_OK;
 }
 
+/**
+ * Substracts an array of floats with one constant substracter. The same destination and source arrays
+ * are allowed. With the right cpu features in place this function is very optimized.
+ *
+ * @param dest Pointer to the destination float array.
+ * @param src Pointer to the source float array.
+ * @param n The number of items in the array.
+ * @param adder The constant substracter that is substracter from every entry in the source array.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_substract_floats_const_float (float *dest, float *src, visual_size_t n, float substracter)
 {
 	float *d = dest;
@@ -244,7 +277,16 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 	return VISUAL_OK;
 }
 
-
+/**
+ * Converts an array of floats to integers. With the right cpu features in place this function
+ * is very optimized.
+ * 
+ * @param ints Pointer to the destination int32_t array.
+ * @param flts Pointer to the source float array.
+ * @param n The number of items in the array.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_size_t n)
 {
 	float *s = flts;
@@ -299,6 +341,16 @@ int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_
 	return VISUAL_OK;
 }
 
+/**
+ * Converts an array of integers to floats. With the right cpu features in place this function
+ * is very optimized.
+ * 
+ * @param flts Pointer to the destination float array.
+ * @param ints Pointer to the source int32_t array.
+ * @param n The number of items in the array.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_size_t n)
 {
 	int32_t *s = ints;
@@ -353,6 +405,17 @@ int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_
 	return VISUAL_OK;
 }
 
+/**
+ * Converts an array of floats to integers and multiplies it with a const multiplier.
+ * With the right cpu features in place this function is very optimized.
+ * 
+ * @param ints Pointer to the destination int32_t array.
+ * @param flts Pointer to the source float array.
+ * @param n The number of items in the array.
+ * @param multiplier The constant multiplier with which every entry is multiplied.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts, visual_size_t n, float multiplier)
 {
 	float *s = flts;
@@ -412,6 +475,17 @@ int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts
 	return VISUAL_OK;
 }
 
+/**
+ * Converts an array of integers to floats and multiplies it with a const multiplier.
+ * With the right cpu features in place this function is very optimized.
+ * 
+ * @param flts Pointer to the destination float array.
+ * @param ints Pointer to the source int32_t array.
+ * @param n The number of items in the array.
+ * @param multiplier The constant multiplier with which every entry is multiplied.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints, visual_size_t n, float multiplier)
 {
 	int32_t *s = ints;
@@ -479,6 +553,18 @@ int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints
 	return VISUAL_OK;
 }
 
+/**
+ * Converts an array of floats to integers and multiplies it with a const multiplier. Furthermore
+ * the float values are denormalized in the following way: -1.0 to 1.0 will be converted to:
+ * 0.0 to 1.0. With the right cpu features in place this function is very optimized.
+ * 
+ * @param ints Pointer to the destination int32_t array.
+ * @param flts Pointer to the source float array.
+ * @param n The number of items in the array.
+ * @param multiplier The constant multiplier with which every entry is multiplied.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints, float *flts, visual_size_t n, float multiplier)
 {
 	float *s = flts;
@@ -612,7 +698,7 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	return VISUAL_OK;
 }
 
-/*_
+/**
  * @}
  */
 
