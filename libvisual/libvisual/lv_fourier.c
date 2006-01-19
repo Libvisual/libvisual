@@ -8,7 +8,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.c,v 1.7 2006-01-15 00:15:14 synap Exp $
+ * $Id: lv_fourier.c,v 1.8 2006-01-19 20:07:09 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -418,9 +418,36 @@ int visual_dft_perform (VisDFT *dft, float *input, float *output)
 	return VISUAL_OK;
 }
 
-int visual_fourier_normalise (float *spectrum, int size)
-{
+/* divisor = -log threshold */
+#define LOG_SCALE_THRESHOLD  0.001f
+#define LOG_SCALE_DIVISOR    6.908f
 
+/**
+ * Function to scale an ampltitude spectrum logarithmically.
+ *
+ * \note Scaled values are guaranteed to be in [0.0, 1.0].
+ *
+ * @param spectrum Array of input samples with values in [0.0, 1.0]
+ * @param size Number of input samples
+ *
+ * @Return VISUAL_OK on success, VISUAL_ERROR_NULL on failure.
+ **/
+
+int visual_dft_log_scale (float *spectrum, int size)
+{
+	unsigned int i;
+
+	visual_log_return_val_if_fail (spectrum != NULL, -VISUAL_ERROR_NULL);
+
+	for (i = 0; i < size; i++)
+	{
+		if (spectrum[i] > LOG_SCALE_THRESHOLD)
+			spectrum[i] = 1.0f + log (spectrum[i]) / LOG_SCALE_DIVISOR;
+		else
+			spectrum[i] = 0.0f;
+	}
+
+	return VISUAL_OK;
 }
 
 /**
