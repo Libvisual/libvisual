@@ -8,7 +8,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.c,v 1.9 2006-01-19 20:28:04 synap Exp $
+ * $Id: lv_fourier.c,v 1.10 2006-01-19 20:41:13 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -445,10 +445,7 @@ int visual_dft_log_scale (float *spectrum, int size)
 			spectrum[i] = 1.0f + log (spectrum[i]) / LOG_SCALE_DIVISOR;
 		else
 			spectrum[i] = 0.0f;
-
-		printf ("%f ", spectrum[i]);
 	}
-	printf ("END\n");
 
 	return VISUAL_OK;
 }
