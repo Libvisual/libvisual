@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.8 2006-01-19 20:15:17 synap Exp $
+ * $Id: lv_math.c,v 1.9 2006-01-19 20:28:04 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -698,6 +698,7 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	return VISUAL_OK;
 }
 
+/* FIXME: finish later. */
 int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, float *imag, visual_size_t n, float scaler)
 {
 	float *d = dest;
