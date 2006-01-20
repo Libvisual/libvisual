@@ -6,9 +6,9 @@
  * Milkdrop FFT implementation.
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Chong Kai Xiong <descender@phreaker.net>
+ *          Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.c,v 1.10 2006-01-19 20:41:13 synap Exp $
+ * $Id: lv_fourier.c,v 1.11 2006-01-20 11:20:36 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -37,6 +37,11 @@
 #include "lv_fourier.h"
 #include "lv_utils.h"
 
+/* Log scale settings */
+#define AMP_LOG_SCALE_THRESHOLD0	0.001f
+#define AMP_LOG_SCALE_DIVISOR		6.908f	/* divisor = -log threshold */
+#define FREQ_LOG_SCALE_BASE		2.0f
+
 #define DFT_CACHE_ENTRY(obj)				(VISUAL_CHECK_CAST ((obj), DFTCacheEntry))
 
 typedef struct _DFTCacheEntry DFTCacheEntry;
@@ -50,6 +55,7 @@ struct _DFTCacheEntry {
 
 	float		*sintable;
 	float		*costable;
+	int		*range;
 };
 
 static VisCache __lv_dft_cache;
@@ -61,6 +67,7 @@ static int dft_dtor (VisObject *object);
 static void fft_table_bitrev_init (DFTCacheEntry *fcache, VisDFT *fourier);
 static void fft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier);
 static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier);
+static void range_table_init (DFTCacheEntry *fcache, VisDFT *fourier);
 
 static int dft_cache_destroyer (VisObject *object);
 static DFTCacheEntry *dft_cache_get (VisDFT *dft);
@@ -161,6 +168,27 @@ static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 	}
 }
 
+static void range_table_init (DFTCacheEntry *cache, VisDFT *fourier)
+{
+	unsigned int i, tabsize;
+	float factor, factor_scale;
+
+	tabsize = fourier->spectrum_size / 2 + 1;
+
+	cache->range = visual_mem_malloc0 (sizeof (float) * tabsize);
+
+	factor = 1.0f;
+	factor_scale = 1.0f / FREQ_LOG_SCALE_BASE;
+
+	for (i = tabsize; i >= 1; i--)
+	{
+		cache->range[i] = (unsigned int) (factor * tabsize);
+		factor *= factor_scale;
+	}
+
+	/* cache->range[0] is 0.0 */
+}
+
 static int dft_cache_destroyer (VisObject *object)
 {
 	DFTCacheEntry *fcache = DFT_CACHE_ENTRY (object);
@@ -173,6 +201,9 @@ static int dft_cache_destroyer (VisObject *object)
 
 	if (fcache->costable != NULL)
 		visual_mem_free (fcache->costable);
+
+	if (fcache->range != NULL)
+		visual_mem_free (fcache->range);
 
 	fcache->bitrevtable = NULL;
 	fcache->sintable = NULL;
@@ -202,6 +233,8 @@ static DFTCacheEntry *dft_cache_get (VisDFT *fourier)
 			fft_table_bitrev_init (fcache, fourier);
 			fft_table_cossin_init (fcache, fourier);
 		}
+
+		range_table_init (fcache, fourier);
 
 		visual_cache_put (&__lv_dft_cache, key, fcache);
 	}
@@ -418,34 +451,46 @@ int visual_dft_perform (VisDFT *dft, float *input, float *output)
 	return VISUAL_OK;
 }
 
-/* divisor = -log threshold */
-#define LOG_SCALE_THRESHOLD  0.001f
-#define LOG_SCALE_DIVISOR    6.908f
-
 /**
  * Function to scale an ampltitude spectrum logarithmically.
  *
  * \note Scaled values are guaranteed to be in [0.0, 1.0].
  *
- * @param spectrum Array of input samples with values in [0.0, 1.0]
- * @param size Number of input samples
+ * @param dft Pointer to VisDFT context
+ * @param input  Array of input samples with values in [0.0, 1.0]
+ * @param output Array of output samples
  *
  * @Return VISUAL_OK on success, VISUAL_ERROR_NULL on failure.
  **/
 
-int visual_dft_log_scale (float *spectrum, int size)
+int visual_dft_log_scale (VisDFT *dft, float *input, float *output)
 {
-	unsigned int i;
+	DFTCacheEntry *fcache;
+	unsigned int i, j;
 
 	visual_log_return_val_if_fail (spectrum != NULL, -VISUAL_ERROR_NULL);
 
+	fcache = dft_cache_get (dft);
+
 	for (i = 0; i < size; i++)
 	{
-		if (spectrum[i] > LOG_SCALE_THRESHOLD)
-			spectrum[i] = 1.0f + log (spectrum[i]) / LOG_SCALE_DIVISOR;
+		amp = 0.0f;
+
+		for (j = fcache->range[i]; j < fcache->range[i+1]; j++)
+		{
+			if (amp < input[j])
+				amp = input[j];
+		}
+
+		if (amp > AMP_LOG_SCALE_THRESHOLD)
+			amp = 1.0f + log (input[i]) / AMP_LOG_SCALE_DIVISOR;
 		else
-			spectrum[i] = 0.0f;
+			amp = 0.0f;
+
+		output[i] = amp;
 	}
+
+	visual_object_unref (fcache);
 
 	return VISUAL_OK;
 }
