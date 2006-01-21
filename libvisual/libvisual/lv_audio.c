@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.38 2006-01-19 20:28:04 synap Exp $
+ * $Id: lv_audio.c,v 1.39 2006-01-21 10:06:28 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -572,12 +572,11 @@ int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, 
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_dft_init (&dft,
-			visual_buffer_get_size (sample) / sizeof (float),
-			visual_buffer_get_size (buffer) / sizeof (float));
+	visual_dft_init (&dft, visual_buffer_get_size (buffer) / sizeof (float),
+			visual_buffer_get_size (sample) / sizeof (float));
 
 	/* Fourier analyze the pcm data */
-	visual_dft_perform (&dft, visual_buffer_get_data (sample), visual_buffer_get_data (buffer));
+	visual_dft_perform (&dft, visual_buffer_get_data (buffer), visual_buffer_get_data (sample));
 
 	if (normalised == TRUE)
 		visual_audio_normalise_spectrum (buffer);
@@ -611,7 +610,9 @@ int visual_audio_normalise_spectrum (VisBuffer *buffer)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_dft_log_scale (visual_buffer_get_data (buffer), visual_buffer_get_size (buffer) / sizeof (float));
+	visual_dft_log_scale (visual_buffer_get_data (buffer),
+			visual_buffer_get_data (buffer),
+			visual_buffer_get_size (buffer) / sizeof (float));
 
 	return VISUAL_OK;
 }

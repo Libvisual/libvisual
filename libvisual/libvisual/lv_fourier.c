@@ -8,7 +8,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.c,v 1.11 2006-01-20 11:20:36 descender Exp $
+ * $Id: lv_fourier.c,v 1.12 2006-01-21 10:06:28 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,8 +43,10 @@
 #define FREQ_LOG_SCALE_BASE		2.0f
 
 #define DFT_CACHE_ENTRY(obj)				(VISUAL_CHECK_CAST ((obj), DFTCacheEntry))
+#define LOG_SCALE_CACHE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), LogScaleCacheEntry))
 
 typedef struct _DFTCacheEntry DFTCacheEntry;
+typedef struct _LogScaleCacheEntry LogScaleCacheEntry;
 
 struct _DFTCacheEntry {
 	VisObject	 object;
@@ -55,10 +57,16 @@ struct _DFTCacheEntry {
 
 	float		*sintable;
 	float		*costable;
-	int		*range;
+};
+
+struct _LogScaleCacheEntry {
+	VisObject	 object;
+
+	float		*range;
 };
 
 static VisCache __lv_dft_cache;
+static VisCache __lv_log_scale_cache;
 static int __lv_fourier_initialized = FALSE;
 
 
@@ -67,13 +75,16 @@ static int dft_dtor (VisObject *object);
 static void fft_table_bitrev_init (DFTCacheEntry *fcache, VisDFT *fourier);
 static void fft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier);
 static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier);
-static void range_table_init (DFTCacheEntry *fcache, VisDFT *fourier);
+static void range_table_init (LogScaleCacheEntry *lcache, int size);
 
 static int dft_cache_destroyer (VisObject *object);
 static DFTCacheEntry *dft_cache_get (VisDFT *dft);
 
-static void perform_dft_brute_force (VisDFT *fourier, float *input, float *output);
-static void perform_fft_radix2_dit (VisDFT *fourier, float *input, float *output);
+static int log_scale_cache_destroy (VisObject *object);
+static LogScaleCacheEntry *log_scale_cache_get (int size);
+
+static void perform_dft_brute_force (VisDFT *fourier, float *output, float *input);
+static void perform_fft_radix2_dit (VisDFT *fourier, float *output, float *input);
 
 static int dft_dtor (VisObject *object)
 {
@@ -168,21 +179,21 @@ static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 	}
 }
 
-static void range_table_init (DFTCacheEntry *cache, VisDFT *fourier)
+static void range_table_init (LogScaleCacheEntry *lcache, int size)
 {
 	unsigned int i, tabsize;
 	float factor, factor_scale;
 
-	tabsize = fourier->spectrum_size / 2 + 1;
+	tabsize = size;// / 2 + 1;
 
-	cache->range = visual_mem_malloc0 (sizeof (float) * tabsize);
+	lcache->range = visual_mem_malloc0 (sizeof (float) * tabsize);
 
 	factor = 1.0f;
 	factor_scale = 1.0f / FREQ_LOG_SCALE_BASE;
 
 	for (i = tabsize; i >= 1; i--)
 	{
-		cache->range[i] = (unsigned int) (factor * tabsize);
+		lcache->range[i] = (unsigned int) (factor * tabsize);
 		factor *= factor_scale;
 	}
 
@@ -201,9 +212,6 @@ static int dft_cache_destroyer (VisObject *object)
 
 	if (fcache->costable != NULL)
 		visual_mem_free (fcache->costable);
-
-	if (fcache->range != NULL)
-		visual_mem_free (fcache->range);
 
 	fcache->bitrevtable = NULL;
 	fcache->sintable = NULL;
@@ -234,12 +242,45 @@ static DFTCacheEntry *dft_cache_get (VisDFT *fourier)
 			fft_table_cossin_init (fcache, fourier);
 		}
 
-		range_table_init (fcache, fourier);
-
 		visual_cache_put (&__lv_dft_cache, key, fcache);
 	}
 
 	return fcache;
+}
+
+static int log_scale_cache_destroyer (VisObject *object)
+{
+	LogScaleCacheEntry *lcache = LOG_SCALE_CACHE_ENTRY (object);
+
+	if (lcache->range != NULL)
+		visual_mem_free (lcache->range);
+
+	lcache->range = NULL;
+
+	return VISUAL_OK;
+}
+
+static LogScaleCacheEntry *log_scale_cache_get (int size)
+{
+	LogScaleCacheEntry *lcache;
+	char key[16];
+
+	visual_log_return_val_if_fail (__lv_fourier_initialized == TRUE, NULL);
+
+	snprintf (key, 16, "%d", size);
+	lcache = visual_cache_get (&__lv_log_scale_cache, key);
+
+	if (lcache == NULL) {
+		lcache = visual_mem_new0 (LogScaleCacheEntry, 1);
+
+		visual_object_initialize (VISUAL_OBJECT (lcache), TRUE, log_scale_cache_destroyer);
+
+		range_table_init (lcache, size);
+
+		visual_cache_put (&__lv_log_scale_cache, key, lcache);
+	}
+
+	return lcache;
 }
 
 
@@ -251,6 +292,7 @@ static DFTCacheEntry *dft_cache_get (VisDFT *fourier)
 int visual_fourier_initialize ()
 {
 	visual_cache_init (&__lv_dft_cache, visual_object_collection_destroyer, 50, NULL, TRUE);
+	visual_cache_init (&__lv_log_scale_cache, visual_object_collection_destroyer, 50, NULL, TRUE);
 
 	__lv_fourier_initialized = TRUE;
 
@@ -268,6 +310,7 @@ int visual_fourier_deinitialize ()
 		return -VISUAL_ERROR_FOURIER_NOT_INITIALIZED;
 
 	visual_object_unref (VISUAL_OBJECT (&__lv_dft_cache));
+	visual_object_unref (VISUAL_OBJECT (&__lv_log_scale_cache));
 
 	__lv_fourier_initialized = FALSE;
 
@@ -286,12 +329,12 @@ int visual_fourier_deinitialize ()
  * with zeroes.
  *
  * @param samples_in The number of samples provided to every call to
- * visual_fourier_perform() as input.
+ * visual_dft_perform() as input.
  * @param samples_out Size of output spectrum (number of output samples).
  *
  * @return A newly created VisDFT.
  */
-VisDFT *visual_dft_new (unsigned int samples_in, unsigned int samples_out)
+VisDFT *visual_dft_new (unsigned int samples_out, unsigned int samples_in)
 {
 	VisDFT *dft;
 
@@ -306,7 +349,7 @@ VisDFT *visual_dft_new (unsigned int samples_in, unsigned int samples_out)
 	return dft;
 }
 
-int visual_dft_init (VisDFT *dft, unsigned int samples_in, unsigned int samples_out)
+int visual_dft_init (VisDFT *dft, unsigned int samples_out, unsigned int samples_in)
 {
 	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
 
@@ -329,7 +372,7 @@ int visual_dft_init (VisDFT *dft, unsigned int samples_in, unsigned int samples_
 	return VISUAL_OK;
 }
 
-static void perform_dft_brute_force (VisDFT *dft, float *input, float *output)
+static void perform_dft_brute_force (VisDFT *dft, float *output, float *input)
 {
 	DFTCacheEntry *fcache;
 	unsigned int i, j;
@@ -361,7 +404,7 @@ static void perform_dft_brute_force (VisDFT *dft, float *input, float *output)
 	visual_object_unref (VISUAL_OBJECT (fcache));
 }
 
-static void perform_fft_radix2_dit (VisDFT *dft, float *input, float *output)
+static void perform_fft_radix2_dit (VisDFT *dft, float *output, float *input)
 {
 	DFTCacheEntry *fcache;
 	unsigned int j, m, i, dftsize, hdftsize, t;
@@ -425,23 +468,23 @@ static void perform_fft_radix2_dit (VisDFT *dft, float *input, float *output)
  * spectrum size.
  *
  * @param fourier Pointer to the VisDFT context for this transform.
- * @param input Array of input samples with values in [-1.0, 1.0]
  * @param output Array of output samples
+ * @param input Array of input samples with values in [-1.0, 1.0]
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_FOURIER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_dft_perform (VisDFT *dft, float *input, float *output)
+int visual_dft_perform (VisDFT *dft, float *output, float *input)
 {
 	unsigned int i;
 
 	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 
 	if (dft->brute_force)
-		perform_dft_brute_force (dft, input, output);
+		perform_dft_brute_force (dft, output, input);
 	else
-		perform_fft_radix2_dit (dft, input, output);
+		perform_fft_radix2_dit (dft, output, input);
 
 	/* FIXME SSEfy */
 	for (i = 0; i < dft->spectrum_size / 2; i++)
@@ -457,32 +500,34 @@ int visual_dft_perform (VisDFT *dft, float *input, float *output)
  * \note Scaled values are guaranteed to be in [0.0, 1.0].
  *
  * @param dft Pointer to VisDFT context
- * @param input  Array of input samples with values in [0.0, 1.0]
  * @param output Array of output samples
+ * @param input  Array of input samples with values in [0.0, 1.0]
  *
  * @Return VISUAL_OK on success, VISUAL_ERROR_NULL on failure.
- **/
-
-int visual_dft_log_scale (VisDFT *dft, float *input, float *output)
+ */
+int visual_dft_log_scale (float *output, float *input, int size)
 {
-	DFTCacheEntry *fcache;
+	LogScaleCacheEntry *lcache;
 	unsigned int i, j;
+	float amp;
 
-	visual_log_return_val_if_fail (spectrum != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 
-	fcache = dft_cache_get (dft);
+	lcache = log_scale_cache_get (size);
+	visual_object_ref (VISUAL_OBJECT (lcache));
 
 	for (i = 0; i < size; i++)
 	{
 		amp = 0.0f;
 
-		for (j = fcache->range[i]; j < fcache->range[i+1]; j++)
+		for (j = lcache->range[i]; j < lcache->range[i+1]; j++)
 		{
 			if (amp < input[j])
 				amp = input[j];
 		}
 
-		if (amp > AMP_LOG_SCALE_THRESHOLD)
+		if (amp > AMP_LOG_SCALE_THRESHOLD0)
 			amp = 1.0f + log (input[i]) / AMP_LOG_SCALE_DIVISOR;
 		else
 			amp = 0.0f;
@@ -490,7 +535,7 @@ int visual_dft_log_scale (VisDFT *dft, float *input, float *output)
 		output[i] = amp;
 	}
 
-	visual_object_unref (fcache);
+	visual_object_unref (VISUAL_OBJECT (lcache));
 
 	return VISUAL_OK;
 }

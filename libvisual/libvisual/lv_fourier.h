@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.h,v 1.6 2006-01-20 11:20:36 descender Exp $
+ * $Id: lv_fourier.h,v 1.7 2006-01-21 10:06:28 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -50,11 +50,11 @@ int visual_fourier_initialize (void);
 int visual_fourier_is_initialized (void);
 int visual_fourier_deinitialize (void);
 
-VisDFT *visual_dft_new (unsigned int samples_in, unsigned int samples_out);
-int visual_dft_init (VisDFT *fourier, unsigned int samples_in, unsigned int samples_out);
+VisDFT *visual_dft_new (unsigned int samples_out, unsigned int samples_in);
+int visual_dft_init (VisDFT *fourier, unsigned int samples_out, unsigned int samples_in);
 
-int visual_dft_perform (VisDFT *fourier, float *input, float *output);
-int visual_dft_log_scale (VisDFT *fourier, float *input, float *output);
+int visual_dft_perform (VisDFT *fourier, float *output, float *input);
+int visual_dft_log_scale (float *output, float *input, int size);
 
 VISUAL_END_DECLS
 
