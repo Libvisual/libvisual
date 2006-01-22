@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * List implementation from RCL.
  * Copyright (C) 2002, 2003, 2004
@@ -12,7 +12,7 @@
  *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- * $Id: lv_list.h,v 1.18 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_list.h,v 1.19 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

@@ -1,13 +1,13 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Duilio J. Protti <dprotti@users.sourceforge.net>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video.h,v 1.32 2005-12-29 02:30:59 synap Exp $
+ * $Id: lv_video.h,v 1.33 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

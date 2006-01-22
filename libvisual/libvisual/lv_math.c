@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.9 2006-01-19 20:28:04 synap Exp $
+ * $Id: lv_math.c,v 1.10 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -62,7 +62,54 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
-	if (visual_cpu_get_3dnow ()) {
+	/* FIXME check what is faster on AMD (sse or 3dnow) */
+	if (visual_cpu_get_sse () && n >= 16) {
+		float packed_multiplier[4];
+
+		packed_multiplier[0] = multiplier;
+		packed_multiplier[1] = multiplier;
+		packed_multiplier[2] = multiplier;
+		packed_multiplier[3] = multiplier;
+
+#ifdef VISUAL_ARCH_X86
+		while (!VISUAL_ALIGNED(d, 16)) {
+			(*d) = (*s) * multiplier;
+
+			d++;
+			s++;
+
+			n--;
+		}
+
+		__asm __volatile
+			("\n\t movups (%0), %%xmm7"
+			 :: "r" (packed_multiplier) : "memory");
+
+
+		while (n > 16) {
+			__asm __volatile
+				("\n\t prefetchnta 256(%0)"
+				 "\n\t movups (%0), %%xmm0"
+				 "\n\t movups 16(%0), %%xmm1"
+				 "\n\t movups 32(%0), %%xmm2"
+				 "\n\t movups 48(%0), %%xmm3"
+				 "\n\t mulps %%xmm7, %%xmm0"
+				 "\n\t mulps %%xmm7, %%xmm1"
+				 "\n\t mulps %%xmm7, %%xmm2"
+				 "\n\t mulps %%xmm7, %%xmm3"
+				 "\n\t movntps %%xmm0, (%1)"
+				 "\n\t movntps %%xmm1, 16(%1)"
+				 "\n\t movntps %%xmm2, 32(%1)"
+				 "\n\t movntps %%xmm3, 48(%1)"
+				 :: "r" (s), "r" (d) : "memory");
+
+			d += 16;
+			s += 16;
+
+			n -= 16;
+		}
+#endif /* VISUAL_ARCH_X86 */
+	} else if (visual_cpu_get_3dnow ()) {
 		float packed_multiplier[2];
 
 		packed_multiplier[0] = multiplier;
@@ -641,7 +688,7 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
  * Vectorized square root for single precision floats. This function works best with data
  * sizes larger than 16 or equal to 16.
  *
- * @param vector The vector of floats of which the squere roots will be calculated.
+ * @param vector The vector of floats of which the square roots will be calculated.
  * @param n The number of floats in the vector.
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
@@ -698,7 +745,18 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	return VISUAL_OK;
 }
 
-/* FIXME: finish later. */
+/**
+ * Vectorized complex to norm conversion and result value scaler. Will make norm values from a real and imaginary
+ * array, after the conversion has been made it will be multiplied by the scaler.
+ *
+ * @param dest Pointer to the destination float array.
+ * @param real Pointer to the real part float array.
+ * @param imag pointer to the imaginary part float array.
+ * @param n The number of elements to be converted.
+ * @param scaler The scaler that is used to scale the result value.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, float *imag, visual_size_t n, float scaler)
 {
 	float *d = dest;
@@ -710,6 +768,13 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, floa
 	visual_log_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
 
 	if (visual_cpu_get_sse () && n >= 16) {
+		float packed_scaler[4];
+
+		packed_scaler[0] = scaler;
+		packed_scaler[1] = scaler;
+		packed_scaler[2] = scaler;
+		packed_scaler[3] = scaler;
+
 #ifdef VISUAL_ARCH_X86
 		while (!VISUAL_ALIGNED(d, 16)) {
 			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * scaler;
@@ -721,20 +786,46 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, floa
 			n--;
 		}
 
-		while (n > 4) {
+		__asm __volatile
+			("\n\t movups (%0), %%xmm7"
+			 :: "r" (packed_scaler) : "memory");
+
+		/* FIXME optimize more, look into how we can get it atleast partially aligned, right */
+		while (n > 8) {
 			__asm __volatile
 				("\n\t prefetchnta 256(%0)"
-				 "\n\t movaps (%0), %%xmm0"
-				 "\n\t movaps (%0), %%xmm0"
-				 "\n\t sqrtps %%xmm0, %%xmm4"
-				 "\n\t movntps %%xmm4, (%2)"
+				 "\n\t prefetchnta 256(%1)"
+
+				 "\n\t movups (%0), %%xmm0"
+				 "\n\t movups 16(%0), %%xmm2"
+
+				 "\n\t movups (%1), %%xmm1"
+				 "\n\t movups 16(%1), %%xmm3"
+
+				 "\n\t mulps %%xmm0, %%xmm0"
+				 "\n\t mulps %%xmm1, %%xmm1"
+
+				 "\n\t mulps %%xmm2, %%xmm2"
+				 "\n\t mulps %%xmm3, %%xmm3"
+
+				 "\n\t addps %%xmm0, %%xmm1"
+				 "\n\t addps %%xmm2, %%xmm3"
+
+				 "\n\t sqrtps %%xmm1, %%xmm0"
+				 "\n\t sqrtps %%xmm3, %%xmm2"
+
+				 "\n\t mulps %%xmm7, %%xmm0"
+				 "\n\t mulps %%xmm7, %%xmm2"
+
+				 "\n\t movups %%xmm0, (%2)"
+				 "\n\t movups %%xmm2, 16(%2)"
 				 :: "r" (r), "r" (i), "r" (d) : "memory");
 
-			d += 4;
-			i += 4;
-			r += 4;
+			d += 8;
+			i += 8;
+			r += 8;
 
-			n -= 4;
+			n -= 8;
 		}
 #endif /* VISUAL_ARCH_X86 */
 	}

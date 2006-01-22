@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_os.h,v 1.1 2006-01-15 10:02:32 synap Exp $
+ * $Id: lv_os.h,v 1.2 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,6 +30,10 @@ VISUAL_BEGIN_DECLS
 
 /* prototypes */
 /* FIXME add tools to tap into the operation system it's scheduling priority (we want to be able to be in realtime mode) */
+int visual_os_scheduler_get_priority_max (int policy);
+int visual_os_scheduler_get_priority_min (int policy);
+int visual_os_scheduler_get_scheduler ();
+int visual_os_scheduler_yield ();
 
 VISUAL_END_DECLS
 

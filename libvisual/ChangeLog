@@ -1,3 +1,26 @@
+2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*.c, libvisual/*.h: Added 2006 to the (C) notice.
+
+	* libvisual/lv_fourier.*: Use VisMath for the complex to norm
+	conversion.
+
+	(visual_dft_log_scale_standard): Added function, that uses the old
+	log_scale stuff.
+
+	(visual_dft_log_scale_custom): Ability to give a custom log divisor.
+
+	* libvisual/lv_libvisual.* (visual_get_api_version): Added function to
+	check the numeric api version.
+
+	* libvisual/lv_math.*: Fixing.
+
+	* libvisual/lv_os.*: Some more very basic work.
+
+	* libvisual/lv_ringbuffer.*: Added a few more docs.
+
+	* libvisual/lv_time.h: More work on the rdtsc stuff.
+
 2006-01-21  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_fourier.c: Make stuff compile, very not working.

@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_libvisual.h,v 1.10 2005-12-20 18:30:25 synap Exp $
+ * $Id: lv_libvisual.h,v 1.11 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,9 +29,18 @@
 
 VISUAL_BEGIN_DECLS
 
+/**
+ * Indicates at which version the API is.
+ */
+#define VISUAL_API_VERSION	4000
+
+/* prototypes */
 const char *visual_get_version (void);
+int visual_get_api_version ();
+
 VisParamContainer *visual_get_params (void);
 VisUIWidget *visual_get_userinterface (void);
+
 int visual_init_path_add (char *pathadd);
 int visual_init (int *argc, char ***argv);
 int visual_is_initialized (void);

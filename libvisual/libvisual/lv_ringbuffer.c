@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_ringbuffer.c,v 1.7 2006-01-19 16:11:23 synap Exp $
+ * $Id: lv_ringbuffer.c,v 1.8 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -118,6 +118,15 @@ int visual_ringbuffer_init (VisRingBuffer *ringbuffer)
 	return VISUAL_OK;
 }
 
+/**
+ * Adds a VisRingBufferEntry to the end of the ringbuffer.
+ *
+ * @param ringbuffer The VisRingBuffer to which the VisRingBufferEntry is added.
+ * @param entry The VisRingBufferEntry that is added to the end of the ringbuffer.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_RINGBUFFER_NULL or -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL
+ *	on failure.
+ */
 int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry)
 {
 	visual_log_return_val_if_fail (ringbuffer != NULL, -VISUAL_ERROR_RINGBUFFER_NULL);
@@ -128,6 +137,15 @@ int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *
 	return VISUAL_OK;
 }
 
+/**
+ * Adds a VisBuffer to the end of the ringbuffer.
+ *
+ * @param ringbuffer The VisRingBuffer to which the VisBuffer is added.
+ * @param buffer The VisBuffer that is added to the VisRingBuffer.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_RINGBUFFER_NULL, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL
+ *	on failure.
+ */
 int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer)
 {
 	VisRingBufferEntry *entry;
@@ -139,7 +157,6 @@ int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer)
 	return visual_ringbuffer_add_entry (ringbuffer, entry);
 }
 
-/* FIXME the list of errors is not correct, in the doc */
 /**
  * Adds a portion of data to the ringbuffer of nbytes byte size.
  *
@@ -147,13 +164,15 @@ int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer)
  * @param data Pointer to the data that is added to the ringbuffer.
  * @param nbytes The size of the data that is added to the ringbuffer.
  *
- * @return VISUAL_OK on succes or -VISUAL_ERROR_RINGBUFFER_NULL, -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_RINGBUFFER_NULL, -VISUAL_ERROR_NULL,
+ *	-VISUAL_ERROR_RINGBUFFER_ENTRY_NULL on failure.
  */
 int visual_ringbuffer_add_buffer_by_data (VisRingBuffer *ringbuffer, void *data, int nbytes)
 {
 	VisBuffer *buffer;
 
 	visual_log_return_val_if_fail (ringbuffer != NULL, -VISUAL_ERROR_RINGBUFFER_NULL);
+	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
 
 	buffer = visual_buffer_new_with_buffer (data, nbytes, NULL);
 
@@ -210,6 +229,13 @@ int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer)
 	return totalsize;
 }
 
+/**
+ * Gets a list of all ringbuffer fragments that are currently in the ringbuffer.
+ *
+ * @param ringbuffer Pointer to the VisRingBuffer of which the fragments are requested.
+ *
+ * @return A VisList of VisRingBufferEntry items or NULL on failure.
+ */
 VisList *visual_ringbuffer_get_list (VisRingBuffer *ringbuffer)
 {
 	visual_log_return_val_if_fail (ringbuffer != NULL, NULL);

@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.h,v 1.5 2006-01-18 21:30:57 synap Exp $
+ * $Id: lv_math.h,v 1.6 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,6 +43,7 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 
 int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n);
 
+int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, float *imag, visual_size_t n, float scaler);
 
 /* FIXME add many more to suite both rectangle and audio systems 100% */
 /* FIXME also look into things we might be able to generalize from VisVideo. */

@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_os.c,v 1.1 2006-01-15 10:02:32 synap Exp $
+ * $Id: lv_os.c,v 1.2 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,12 +26,44 @@
 #include <unistd.h>
 #include <string.h>
 
+#ifdef HAVE_SCHED_H
+#include <sched.h>
+#elif defined HAVE_SYS_SCHED_H
+#include <sys/sched.h>
+#endif
+
 #include "lv_os.h"
 
 /**
  * @defgroup VisOS VisOS
  * @{
  */
+
+int visual_os_scheduler_get_priority_max (int policy)
+{
+	return VISUAL_OK;
+}
+
+int visual_os_scheduler_get_priority_min (int policy)
+{
+	return VISUAL_OK;
+}
+
+//int visual_os_scheduler_getparam (struct visual_os_scheduler_param *);
+//int visual_os_scheduler_setparam (const struct visual_os_scheduler_param *);
+
+int visual_os_scheduler_get_scheduler ()
+{
+	return VISUAL_OK;
+}
+
+//int visual_os_scheduler_setscheduler (int, const struct visual_os_scheduler_param *);
+
+int visual_os_scheduler_yield ()
+{
+	return VISUAL_OK;
+}
+
 
 /**
  * @}

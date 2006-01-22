@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.h,v 1.18 2006-01-15 16:47:25 synap Exp $
+ * $Id: lv_time.h,v 1.19 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -84,12 +84,12 @@ int visual_timer_has_passed (VisTimer *timer, VisTime *time_);
 int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
 
 /* FIXME: does this work everywhere (x86) ? Check the cycle.h that can be found in FFTW,
- * also check liboil it's profile header */
+ * also check liboil it's profile header: add powerpc support */
 
 /**
  * This function can be used to retrieve the real time stamp counter. This function
- * will not check of rdtsc is around, the reason for this is because it will make
- * the timing less reliable since overhead will go into check the rdtsc availability. You
+ * will not check if timestamping is around, the reason for this is because it will make
+ * the timing less reliable since checking for timestamping gives overhead. You
  * must make arrangments for this.
  *
  * @see visual_cpu_get_tsc
@@ -101,6 +101,7 @@ int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
  */
 static inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
 {
+#ifdef VISUAL_ARCH_X86
 	__asm __volatile
 		("\n\t cpuid"
 		 "\n\t rdtsc"
@@ -108,6 +109,17 @@ static inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
 		 "\n\t movl %%eax, %1"
 		 : "=r" (*hi), "=r" (*lo)
 		 :: "memory");
+#endif
+}
+
+/* FIXME use uint64_t here, make sure type exists */
+static inline unsigned long long visual_timer_tsc_get_returned ()
+{
+	uint32_t lo, hi;
+
+	visual_timer_tsc_get (&lo, &hi);
+
+	return ((unsigned long long) hi << 32) | lo;
 }
 
 VISUAL_END_DECLS

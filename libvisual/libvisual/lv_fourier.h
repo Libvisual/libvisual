@@ -1,11 +1,11 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.h,v 1.7 2006-01-21 10:06:28 synap Exp $
+ * $Id: lv_fourier.h,v 1.8 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -55,6 +55,8 @@ int visual_dft_init (VisDFT *fourier, unsigned int samples_out, unsigned int sam
 
 int visual_dft_perform (VisDFT *fourier, float *output, float *input);
 int visual_dft_log_scale (float *output, float *input, int size);
+int visual_dft_log_scale_standard (float *output, float *input, int size);
+int visual_dft_log_scale_custom (float *output, float *input, int size, float log_scale_divisor);
 
 VISUAL_END_DECLS
 

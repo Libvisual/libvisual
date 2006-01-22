@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * The FFT implementation found in this file is based upon the NULLSOFT
  * Milkdrop FFT implementation.
@@ -8,7 +8,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.c,v 1.12 2006-01-21 10:06:28 synap Exp $
+ * $Id: lv_fourier.c,v 1.13 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,8 +34,9 @@
 #include <string.h>
 
 #include "lv_cache.h"
-#include "lv_fourier.h"
 #include "lv_utils.h"
+#include "lv_math.h"
+#include "lv_fourier.h"
 
 /* Log scale settings */
 #define AMP_LOG_SCALE_THRESHOLD0	0.001f
@@ -487,9 +488,13 @@ int visual_dft_perform (VisDFT *dft, float *output, float *input)
 		perform_fft_radix2_dit (dft, output, input);
 
 	/* FIXME SSEfy */
-	for (i = 0; i < dft->spectrum_size / 2; i++)
-		output[i] = sqrtf (dft->real[i] * dft->real[i] +
-				dft->imag[i] * dft->imag[i]) / dft->spectrum_size;
+//	for (i = 0; i < dft->spectrum_size / 2; i++)
+//		output[i] = sqrtf (dft->real[i] * dft->real[i] +
+//				dft->imag[i] * dft->imag[i]) / dft->spectrum_size;
+
+	visual_math_vectorized_complex_to_norm_scale (output, dft->real, dft->imag,
+			dft->spectrum_size / 2,
+			1.0 / dft->spectrum_size);
 
 	return VISUAL_OK;
 }
@@ -514,15 +519,15 @@ int visual_dft_log_scale (float *output, float *input, int size)
 	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 
+	return visual_dft_log_scale_standard (output, input, size);
+
 	lcache = log_scale_cache_get (size);
 	visual_object_ref (VISUAL_OBJECT (lcache));
 
-	for (i = 0; i < size; i++)
-	{
+	for (i = 0; i < size; i++) {
 		amp = 0.0f;
 
-		for (j = lcache->range[i]; j < lcache->range[i+1]; j++)
-		{
+		for (j = lcache->range[i]; j < lcache->range[i+1]; j++) {
 			if (amp < input[j])
 				amp = input[j];
 		}
@@ -536,6 +541,33 @@ int visual_dft_log_scale (float *output, float *input, int size)
 	}
 
 	visual_object_unref (VISUAL_OBJECT (lcache));
+
+	return VISUAL_OK;
+}
+
+int visual_dft_log_scale_standard (float *output, float *input, int size)
+{
+	int i;
+
+	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
+
+	return visual_dft_log_scale_custom (output, input, size, AMP_LOG_SCALE_DIVISOR);
+}
+
+int visual_dft_log_scale_custom (float *output, float *input, int size, float log_scale_divisor)
+{
+	int i;
+
+	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
+
+	for (i = 0; i < size; i++) {
+		if (input[i] > AMP_LOG_SCALE_THRESHOLD0)
+			output[i] = 1.0f + log (input[i]) / log_scale_divisor;
+		else
+			output[i] = 0.0f;
+	}
 
 	return VISUAL_OK;
 }

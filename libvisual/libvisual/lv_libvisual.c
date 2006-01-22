@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_libvisual.c,v 1.38 2006-01-11 05:46:58 synap Exp $
+ * $Id: lv_libvisual.c,v 1.39 2006-01-22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -207,6 +207,17 @@ static int free_plugpaths ()
 const char *visual_get_version ()
 {
 	return VERSION;
+}
+
+/**
+ * Gives the libvisual API verison. Can be used to compare against the
+ * compile time VISUAL_API_VERSION to validate if the API is at the right version.
+ *
+ * @return A const integer equal to VISUAL_API_VERSION.
+ */
+int visual_get_api_version ()
+{
+	return VISUAL_API_VERSION;
 }
 
 /**
