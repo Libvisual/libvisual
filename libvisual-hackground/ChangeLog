@@ -1,5 +1,9 @@
 2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* standalone/*: More work.
+
+2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* standalone/*: Adding the beginning of a standalone client, this
 	client is mostly experimental and for debugging reasons. However in
 	the near future it will also be partial reference material for people who want

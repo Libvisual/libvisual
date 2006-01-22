@@ -11,12 +11,13 @@
 
 typedef struct _SDLNative SDLNative;
 
-static int native_create (SADisplay *display, VisVideoDepth depth, int width, int height);
+static int native_create (SADisplay *display, VisVideoDepth depth, int width, int height, int resizable);
 static int native_lock (SADisplay *display);
 static int native_unlock (SADisplay *display);
 static int native_fullscreen (SADisplay *display, int fullscreen);
 static int native_getvideo (SADisplay *display, VisVideo *screen);
 static int native_updaterect (SADisplay *display, VisRectangle *rect);
+static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue);
 
 static int sdl_initialized;
 
@@ -41,15 +42,16 @@ SADisplayDriver *sdl_driver_new ()
 	driver->fullscreen = native_fullscreen;
 	driver->getvideo = native_getvideo;
 	driver->updaterect = native_updaterect;
+	driver->drainevents = native_drainevents;
 
 	return driver;
 }
 
-static int native_create (SADisplay *display, VisVideoDepth depth, int width, int height)
+static int native_create (SADisplay *display, VisVideoDepth depth, int width, int height, int resizable)
 {
 	SDLNative *native = SDL_NATIVE (display->native);
         const SDL_VideoInfo *videoinfo;
-	int videoflags;
+	int videoflags = 0;
 	int bpp;
 
 	if (native == NULL) {
@@ -61,6 +63,8 @@ static int native_create (SADisplay *display, VisVideoDepth depth, int width, in
 	if (native->screen != NULL) {
 		SDL_FreeSurface (native->screen);
 	}
+
+	videoflags |= resizable ? SDL_RESIZABLE : 0;
 
 	if (sdl_initialized == FALSE) {
 		if (SDL_Init (SDL_INIT_VIDEO) < 0) {
@@ -79,7 +83,7 @@ static int native_create (SADisplay *display, VisVideoDepth depth, int width, in
 			return -1;
 		}
 
-		videoflags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE | SDL_RESIZABLE;
+		videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE;
 
 		if (videoinfo->hw_available)
 			videoflags |= SDL_HWSURFACE;
@@ -101,7 +105,7 @@ static int native_create (SADisplay *display, VisVideoDepth depth, int width, in
 	} else {
 		native->screen = SDL_SetVideoMode (width, height,
 				visual_video_depth_value_from_enum (depth),
-				SDL_RESIZABLE);
+				videoflags);
 	}
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
@@ -168,4 +172,50 @@ static int native_updaterect (SADisplay *display, VisRectangle *rect)
 	SDL_UpdateRect (sdlscreen, rect->x, rect->y, rect->width, rect->height);
 
 	return 0;
+}
+
+static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
+{
+	SDL_Event event;
+
+	while (SDL_PollEvent (&event)) {
+
+		switch (event.type) {
+			case SDL_KEYUP:
+				visual_event_queue_add_keyboard (eventqueue, event.key.keysym.sym, event.key.keysym.mod,
+						VISUAL_KEY_UP);
+				break;
+
+			case SDL_KEYDOWN:
+				visual_event_queue_add_keyboard (eventqueue, event.key.keysym.sym, event.key.keysym.mod,
+						VISUAL_KEY_DOWN);
+				break;
+
+			case SDL_VIDEORESIZE:
+				visual_event_queue_add_resize (eventqueue, display->screen, event.resize.w, event.resize.h);
+
+				native_create (display, display->screen->depth, event.resize.w, event.resize.h, TRUE);
+				break;
+
+			case SDL_MOUSEMOTION:
+				visual_event_queue_add_mousemotion (eventqueue, event.motion.x, event.motion.y);
+				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+				visual_event_queue_add_mousebutton (eventqueue, event.button.button, VISUAL_MOUSE_DOWN,
+						event.button.x, event.button.y);
+				break;
+
+			case SDL_MOUSEBUTTONUP:
+				visual_event_queue_add_mousebutton (eventqueue, event.button.button, VISUAL_MOUSE_UP,
+						event.button.x, event.button.y);
+				break;
+
+			case SDL_QUIT:
+				break;
+
+			default:
+				break;
+		}
+	}
 }

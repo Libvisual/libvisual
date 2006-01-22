@@ -14,9 +14,9 @@ SADisplay *display_new (SADisplayDriver *driver)
 	return display;
 }
 
-int display_create (SADisplay *display, VisVideoDepth depth, int width, int height)
+int display_create (SADisplay *display, VisVideoDepth depth, int width, int height, int resizable)
 {
-	return display->driver->create (display, depth, width, height);
+	return display->driver->create (display, depth, width, height, resizable);
 }
 
 VisVideo *display_get_video (SADisplay *display)
@@ -58,5 +58,10 @@ int display_update_rectangle (SADisplay *display, VisRectangle *rect)
 int display_set_fullscreen (SADisplay *display, int fullscreen)
 {
 	return display->driver->fullscreen (display, fullscreen);
+}
+
+int display_drain_events (SADisplay *display, VisEventQueue *eventqueue)
+{
+	return display->driver->drainevents (display, eventqueue);
 }
 
