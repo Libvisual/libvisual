@@ -1,10 +1,10 @@
 /* Libvisual-display example - The display library for libvisual.
  * 
- * Copyright (C) 2004, 2005 Vitaly V. Bursov <vitalyvb@ukr.net> 
+ * Copyright (C) 2004, 2005, 2006 Vitaly V. Bursov <vitalyvb@ukr.net> 
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: main.c,v 1.21 2005-12-20 18:34:32 synap Exp $ main.c,v 1.20 2005/02/15 15:43:47 vitalyvb Exp $
+ * $Id: main.c,v 1.22 2006-01-22 13:29:14 synap Exp $ main.c,v 1.20 2005/02/15 15:43:47 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

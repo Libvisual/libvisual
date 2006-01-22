@@ -1,11 +1,11 @@
 /* Libvisual-display - The display library for libvisual.
  * 
- * Copyright (C) 2004, 2005 Vitaly V. Bursov <vitalyvb@ukr.net> 
+ * Copyright (C) 2004, 2005, 2006 Vitaly V. Bursov <vitalyvb@ukr.net> 
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_display.c,v 1.24 2005-12-20 18:34:33 synap Exp $ lv_display.c,v 1.23 2005/02/15 15:43:47 vitalyvb Exp $
+ * $Id: lv_display.c,v 1.25 2006-01-22 13:29:14 synap Exp $ lv_display.c,v 1.23 2005/02/15 15:43:47 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

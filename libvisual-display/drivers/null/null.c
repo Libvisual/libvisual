@@ -1,11 +1,11 @@
 /* Libvisual-display NULL Backend, Frontend -
  *	The display library for libvisual.
  * 
- * Copyright (C) 2004, 2005 Vitaly V. Bursov <vitalyvb@ukr.net> 
+ * Copyright (C) 2004, 2005, 2006 Vitaly V. Bursov <vitalyvb@ukr.net> 
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: null.c,v 1.6 2005-12-20 18:34:32 synap Exp $ null.c,v 1.5 2005/02/12 18:17:27 vitalyvb Exp $
+ * $Id: null.c,v 1.7 2006-01-22 13:29:14 synap Exp $ null.c,v 1.5 2005/02/12 18:17:27 vitalyvb Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

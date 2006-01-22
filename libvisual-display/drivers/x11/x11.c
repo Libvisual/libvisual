@@ -1,10 +1,10 @@
 /* Libvisual-display X11 backend - The display library for libvisual.
  * 
- * Copyright (C) 2004, 2005 Vitaly V. Bursov <vitalyvb@ukr.net> 
+ * Copyright (C) 2004, 2005, 2006 Vitaly V. Bursov <vitalyvb@ukr.net> 
  *
  * Authors: Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: x11.c,v 1.7 2005-12-20 18:34:32 synap Exp $ x11.c,v 1.6 2005/07/03 10:18:25 synap Exp $
+ * $Id: x11.c,v 1.8 2006-01-22 13:29:14 synap Exp $ x11.c,v 1.6 2005/07/03 10:18:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
