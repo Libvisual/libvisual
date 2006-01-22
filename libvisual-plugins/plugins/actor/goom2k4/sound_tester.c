@@ -1,3 +1,5 @@
+#include <libvisual/libvisual.h>
+
 #include "sound_tester.h"
 
 #include <stdlib.h>
@@ -15,7 +17,7 @@ void evaluate_sound(gint16 data[2][512], SoundInfo *info) {
 
 	int i;
 	float difaccel;
-  float prevspeed;
+	float prevspeed;
 
 	/* find the max */
 	int incvar = 0;
@@ -29,8 +31,8 @@ void evaluate_sound(gint16 data[2][512], SoundInfo *info) {
 
 	/* volume sonore */
 	info->volume = (float)incvar / (float)info->allTimesMax;
-	visual_mem_copy(info->samples[0],data[0],512*sizeof(short));
-	visual_mem_copy(info->samples[1],data[1],512*sizeof(short));
+	visual_mem_copy(info->samples[0], data[0], 512 * sizeof(short));
+	visual_mem_copy(info->samples[1], data[1], 512 * sizeof(short));
 
 	difaccel = info->accelvar;
 	info->accelvar = info->volume; /* accel entre 0 et 1 */

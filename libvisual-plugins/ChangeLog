@@ -1,5 +1,9 @@
 2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/actor/goom2k4/sound_tester.c: Include libvisual.h.
+
+2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* plugins/*: (C) updates.
 
 2006-01-19  Dennis Smit  <ds@nerds-incorporated.org>
