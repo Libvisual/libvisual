@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_event.c,v 1.25 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_event.c,v 1.26 2006-01-22 20:07:56 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -97,10 +97,7 @@ int visual_event_init (VisEvent *event)
 	visual_object_set_allocated (VISUAL_OBJECT (event), FALSE);
 
 	/* Set the VisEvent data */
-	visual_object_clean (VISUAL_OBJECT (event), VisEvent); // FIXME wtf!
-// (VisObject *) object + sizeof(VisObject) == &object[sizeof(VisOBject)]
-//	buf = event;
-//	printf ("ja %p %p\n", (VisObject *) event + sizeof (VisObject), &buf[sizeof(VisObject)]);
+	visual_object_clean (VISUAL_OBJECT (event), VisEvent); 
 
 	return VISUAL_OK;
 }

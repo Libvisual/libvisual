@@ -8,7 +8,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.c,v 1.13 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_fourier.c,v 1.14 2006-01-22 20:07:56 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -486,11 +486,6 @@ int visual_dft_perform (VisDFT *dft, float *output, float *input)
 		perform_dft_brute_force (dft, output, input);
 	else
 		perform_fft_radix2_dit (dft, output, input);
-
-	/* FIXME SSEfy */
-//	for (i = 0; i < dft->spectrum_size / 2; i++)
-//		output[i] = sqrtf (dft->real[i] * dft->real[i] +
-//				dft->imag[i] * dft->imag[i]) / dft->spectrum_size;
 
 	visual_math_vectorized_complex_to_norm_scale (output, dft->real, dft->imag,
 			dft->spectrum_size / 2,

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.40 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_audio.c,v 1.41 2006-01-22 20:07:56 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -248,7 +248,7 @@ int visual_audio_analyze (VisAudio *audio)
 		if (channel != 0) {
 			visual_buffer_init (&buffer, pcm[0], 1024, NULL);
 
-			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
+//			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
 			visual_ringbuffer_get_data (channel->samples, &buffer, 1024);
 
 			visual_object_unref (VISUAL_OBJECT (&buffer));
@@ -259,7 +259,7 @@ int visual_audio_analyze (VisAudio *audio)
 		if (channel != 0) {
 			visual_buffer_init (&buffer, pcm[1], 1024, NULL);
 
-			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
+//			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
 			visual_ringbuffer_get_data (channel->samples, &buffer, 1024);
 
 			visual_object_unref (VISUAL_OBJECT (&buffer));
