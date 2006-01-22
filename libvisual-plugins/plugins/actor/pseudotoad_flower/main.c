@@ -1,11 +1,11 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Antti Silvast <asilvast@iki.fi>
+ * Copyright (C) 2004, 2005, 2006 Antti Silvast <asilvast@iki.fi>
  *
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: main.c,v 1.2 2005-12-20 18:49:14 synap Exp $
+ * $Id: main.c,v 1.3 2006-01-22 13:25:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

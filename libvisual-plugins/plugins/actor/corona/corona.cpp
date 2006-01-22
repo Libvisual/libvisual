@@ -6,7 +6,7 @@
  * 	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: corona.cpp,v 1.8 2005-12-20 18:49:13 synap Exp $
+ * $Id: corona.cpp,v 1.9 2006-01-22 13:25:23 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -179,6 +179,7 @@ void Corona::chooseRandomSwirl()
 	m_swirl.pull = random(1.0, 1.04);
 }
 
+// FIXME: inline, optimize, simd
 void Corona::setPointDelta(int x, int y)
 {
 	/* FIXME calculate using fixed point ? */

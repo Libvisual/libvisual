@@ -1,11 +1,11 @@
 /* lIBvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Andrew Birck <birck@uiuc.edu>
  *
- * $Id: madspin.c,v 1.29 2006-01-19 19:39:31 synap Exp $
+ * $Id: madspin.c,v 1.30 2006-01-22 13:25:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

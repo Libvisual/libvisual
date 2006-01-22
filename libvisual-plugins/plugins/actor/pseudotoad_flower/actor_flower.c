@@ -1,11 +1,11 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Antti Silvast <asilvast@iki.fi>
+ * Copyright (C) 2004, 2005, 2006 Antti Silvast <asilvast@iki.fi>
  *
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_flower.c,v 1.8 2006-01-19 19:39:31 synap Exp $
+ * $Id: actor_flower.c,v 1.9 2006-01-22 13:25:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

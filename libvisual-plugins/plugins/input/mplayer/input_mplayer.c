@@ -1,11 +1,11 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
+ * Copyright (C) 2004, 2005, 2006 Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  *
  * Authors: Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_mplayer.c,v 1.18 2005-12-22 21:50:10 synap Exp $
+ * $Id: input_mplayer.c,v 1.19 2006-01-22 13:25:27 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -90,7 +90,7 @@ const VisPluginInfo *get_plugin_info( int *count )
 		.plugname = "mplayer",
 		.name = "mplayer",
 		.author = "Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>",
-		.version = "$Revision: 1.18 $",
+		.version = "$Revision: 1.19 $",
 		.about = N_("Use data exported from MPlayer"),
 		.help = N_("This plugin uses data exported from 'mplayer -af export'"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,

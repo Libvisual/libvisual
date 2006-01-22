@@ -1,10 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_infinite.c,v 1.21 2005-12-22 21:50:08 synap Exp $
+ * $Id: lv_infinite.c,v 1.22 2006-01-22 13:25:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

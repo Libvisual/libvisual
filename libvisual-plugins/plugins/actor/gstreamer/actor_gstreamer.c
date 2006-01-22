@@ -1,10 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_gstreamer.c,v 1.7 2005-12-22 21:50:08 synap Exp $
+ * $Id: actor_gstreamer.c,v 1.8 2006-01-22 13:25:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

@@ -1,10 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_jakdaw.h,v 1.6 2005-12-20 18:49:13 synap Exp $
+ * $Id: actor_jakdaw.h,v 1.7 2006-01-22 13:25:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

@@ -216,7 +216,7 @@ static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *de
 	  }
 
 	  __asm__ __volatile__ ("\n\t emms");
-#endif 
+#endif
   } else {
 	  for (y=info->screen.height;y--;) {
 		  int xtex,ytex;

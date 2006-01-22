@@ -1,12 +1,12 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
  *	    4Front Technologies
  *
- * $Id: actor_lv_gltest.c,v 1.23 2006-01-19 19:39:31 synap Exp $
+ * $Id: actor_lv_gltest.c,v 1.24 2006-01-22 13:25:25 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

@@ -1,10 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2002, 2003, 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_oinksie.c,v 1.34 2006-01-14 18:23:04 synap Exp $
+ * $Id: actor_oinksie.c,v 1.35 2006-01-22 13:25:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -351,6 +351,9 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		oinksie_sample (&priv->priv1);
 
+		/* FIXME this is not pitch safe, will screw up region buffers.
+		 * pass on the VisVideo to the plugin, and be pitch safe.
+		 */
 		priv->priv1.drawbuf = visual_video_get_pixels (video);
 		oinksie_render (&priv->priv1);
 	} else {

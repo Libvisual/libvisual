@@ -1,10 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2002, 2003, 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-blur.c,v 1.10 2005-12-20 18:49:14 synap Exp $
+ * $Id: gfx-blur.c,v 1.11 2006-01-22 13:25:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -87,13 +87,12 @@ void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 	int i;
 	int scrsh = priv->screen_size / 2;
 
-	if (visual_cpu_get_mmx ()) { 
+	if (visual_cpu_get_mmx ()) {
 #ifdef VISUAL_ARCH_X86
 		__asm __volatile
 			("\n\t pxor %%mm6, %%mm6"
 			 ::);
-		
-		/* Prepare substraction register */
+
 		for (i = 0; i < scrsh; i += 4) {
 			__asm __volatile
 				("\n\t movd %[buf], %%mm0"
@@ -137,7 +136,7 @@ void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 				 , [add2] "m" (*(buf + i - priv->screen_width + 1))
 				 , [add3] "m" (*(buf + i - priv->screen_width - 1)));
 		}
-		
+
 		__asm __volatile
 			("\n\t emms");
 #endif
@@ -171,7 +170,6 @@ void _oink_gfx_blur_midstrange (OinksiePrivate *priv, uint8_t *buf)
 			("\n\t pxor %%mm6, %%mm6"
 			 ::);
 
-		/* Prepare substraction register */
 		for (i = scrsh; i > 0; i -= 4) {
 			__asm __volatile
 				("\n\t movd %[buf], %%mm0"

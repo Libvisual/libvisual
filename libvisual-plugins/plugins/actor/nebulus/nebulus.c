@@ -1,11 +1,11 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Pascal Brochart <pbrochart@tuxfamily.org> and many others
  *
- * $Id: nebulus.c,v 1.12 2005-12-22 21:50:09 synap Exp $
+ * $Id: nebulus.c,v 1.13 2006-01-22 13:25:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

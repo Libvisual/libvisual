@@ -1,11 +1,11 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  * 
- * Copyright (C) 2004, 2005 Vitaly V. Bursov <vitalyvb@urk,net>
+ * Copyright (C) 2004, 2005, 2006 Vitaly V. Bursov <vitalyvb@urk,net>
  *
  * Authors: Vitaly V. Bursov <vitalyvb@urk,net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_alsa.c,v 1.21 2005-12-22 21:50:09 synap Exp $
+ * $Id: input_alsa.c,v 1.22 2006-01-22 13:25:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
