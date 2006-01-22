@@ -15,7 +15,7 @@ int main (int argc, char **argv)
 
 	visual_cpu_initialize ();
 
-	visual_math_vectorized_multiplier_floats_const_float (f, 16, 2);
+	visual_math_vectorized_multiplier_floats_const_float (f, f, 16, 2);
 
 	for (i = 0; i < 16; i++)
 		printf ("%f\n", f[i]);

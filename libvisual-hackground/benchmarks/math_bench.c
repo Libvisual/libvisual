@@ -26,7 +26,7 @@ void hit () {
 int main (int argc, char **argv)
 {
 	VisRectangle rect;
-	float *f;
+	float *f, *real, *imag;
 	int *ints;
 	float mul = 2;
 	int i;
@@ -34,6 +34,8 @@ int main (int argc, char **argv)
 	hit (); hit ();
 
 	f = malloc (SIZE * sizeof (float));
+	real = malloc (SIZE * sizeof (float));
+	imag = malloc (SIZE * sizeof (float));
 	ints = malloc (SIZE * sizeof (int));
 
 	hit ();
@@ -55,7 +57,7 @@ int main (int argc, char **argv)
 
 	hit ();
 	for (i = 0; i < TIMES; i++)
-		visual_math_vectorized_multiplier_floats_const_float (f, SIZE, mul);
+		visual_math_vectorized_multiplier_floats_const_float (f, f, SIZE, mul);
 
 	hit ();
 
@@ -71,7 +73,7 @@ int main (int argc, char **argv)
 	printf ("\n");
 	hit ();
 	for (i = 0; i < TIMES; i++)
-		visual_math_vectorized_floats_to_ints (f, ints, SIZE);
+		visual_math_vectorized_floats_to_int32s (ints, f, SIZE);
 
 	hit ();
 
@@ -87,7 +89,7 @@ int main (int argc, char **argv)
 	printf ("\n");
 	hit ();
 	for (i = 0; i < TIMES; i++)
-		visual_math_vectorized_ints_to_floats (ints, f, SIZE);
+		visual_math_vectorized_int32s_to_floats (f, ints, SIZE);
 
 	hit ();
 
@@ -96,6 +98,22 @@ int main (int argc, char **argv)
 	show_elapsed ("Timer done: ", &timer);
 
 	printf ("Ints to float %d :: %d times {}> %d\n", SIZE, TIMES, SIZE * TIMES);
+
+	/* complex to normal scale */
+	visual_timer_start (&timer);
+
+	printf ("\n");
+	hit ();
+	for (i = 0; i < TIMES; i++)
+		visual_math_vectorized_complex_to_norm_scale (f, real, imag, SIZE, 1);
+
+	hit ();
+
+	visual_timer_stop (&timer);
+
+	show_elapsed ("Timer done: ", &timer);
+
+	printf ("Complex to normal scale %d :: %d times {}> %d\n", SIZE, TIMES, SIZE * TIMES);
 
 }
 

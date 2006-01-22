@@ -8,20 +8,20 @@
 
 int main (int argc, char **argv)
 {
-	VisFFT *fft;
+	VisDFT *fft;
 	int i;
 	float temp[FFT_OUT];
 	float audio[512];
 
 	visual_cpu_initialize ();
-	visual_fft_initialize ();
+	visual_fourier_initialize ();
 //	visual_init (&argc, &argv);
 
-	fft = visual_fft_new (512, FFT_OUT);
+	fft = visual_dft_new (512, FFT_OUT);
 
 	for (i = 0; i < TIMES; i++)
-		visual_fft_perform (fft, audio, temp);
+		visual_dft_perform (fft, audio, temp);
 
-	printf ("FFT analyze %d times, size: %d\n", TIMES, FFT_OUT);
+	printf ("DFT analyze %d times, size: %d\n", TIMES, FFT_OUT);
 }
 
