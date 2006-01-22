@@ -1,0 +1,4 @@
+#!/bin/bash
+
+gcc -o lv-standalone client.c display.c sdldriver.c `sdl-config --libs --cflags` -ggdb -lvisual
+
