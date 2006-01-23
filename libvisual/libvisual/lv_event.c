@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_event.c,v 1.26 2006-01-22 20:07:56 synap Exp $
+ * $Id: lv_event.c,v 1.27 2006-01-23 21:06:24 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -88,7 +88,6 @@ VisEvent *visual_event_new ()
 
 int visual_event_init (VisEvent *event)
 {
-	char *buf;
 	visual_log_return_val_if_fail (event != NULL, -VISUAL_ERROR_EVENT_NULL);
 
 	/* Do the VisObject initialization */
@@ -97,7 +96,18 @@ int visual_event_init (VisEvent *event)
 	visual_object_set_allocated (VISUAL_OBJECT (event), FALSE);
 
 	/* Set the VisEvent data */
-	visual_object_clean (VISUAL_OBJECT (event), VisEvent); 
+	visual_object_clean (VISUAL_OBJECT (event), VisEvent);
+
+	return VISUAL_OK;
+}
+
+int visual_event_copy (VisEvent *dest, VisEvent *src)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_EVENT_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_EVENT_NULL);
+
+	/* FIXME: This is far from safe, since it won't do any refcounting jobs */
+	visual_object_copy_data (dest, src, VisEvent);
 
 	return VISUAL_OK;
 }
@@ -155,15 +165,34 @@ int visual_event_queue_init (VisEventQueue *eventqueue)
 int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 {
 	VisEvent *lev;
+	int more_events;
+
+	more_events = visual_event_queue_poll_by_reference (eventqueue, &lev);
+
+	if (more_events != FALSE) {
+		visual_event_copy (event, lev);
+
+		/* FIXME when we start to ref count attributes in events, we need to unref here */
+		visual_object_unref (VISUAL_OBJECT (lev));
+	}
+
+	return more_events;
+}
+
+int visual_event_queue_poll_by_reference (VisEventQueue *eventqueue, VisEvent **event)
+{
+	VisEvent *lev;
 	VisListEntry *listentry = NULL;;
 
 	visual_log_return_val_if_fail (eventqueue != NULL, FALSE);
 	visual_log_return_val_if_fail (event != NULL, FALSE);
 
+	/* FIXME solve this better */
 	if (eventqueue->resizenew == TRUE) {
 		eventqueue->resizenew = FALSE;
 
-		visual_mem_copy (event, &eventqueue->lastresize, sizeof (VisEvent));
+		*event = visual_event_new ();
+		visual_event_copy (*event, &eventqueue->lastresize);
 
 		return TRUE;
 	}
@@ -172,9 +201,8 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 		return FALSE;
 
 	lev = visual_list_next (&eventqueue->events, &listentry);
-	visual_mem_copy (event, lev, sizeof (VisEvent));
 
-	visual_object_unref (VISUAL_OBJECT (lev));
+	*event = lev;
 
 	visual_list_delete (&eventqueue->events, &listentry);
 
@@ -182,6 +210,7 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 
 	return TRUE;
 }
+
 
 /**
  * Adds an event to the event queue. Add new VisEvents into the VisEventQueue.
@@ -346,6 +375,7 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 
 	event->type = VISUAL_EVENT_RESIZE;
 
+	/* FIXME ref counting */
 	event->event.resize.video = video;
 	event->event.resize.width = width;
 	event->event.resize.height = height;
@@ -376,6 +406,7 @@ int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *song
 
 	event->type = VISUAL_EVENT_NEWSONG;
 
+	/* FIXME refcounting */
 	event->event.newsong.songinfo = songinfo;
 
 	return visual_event_queue_add (eventqueue, event);
@@ -401,6 +432,7 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_PARAM;
 
+	/* FIXME ref count the param */
 	event->event.param.param = param;
 
 	return visual_event_queue_add (eventqueue, event);
@@ -410,7 +442,7 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
  * Adds a new quit event to the event queue.
  *
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
- * @param pass_zero_please Might be used in the future, but for now just pass .
+ * @param pass_zero_please Might be used in the future, but for now just pass.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL
  * 	or error values returned by visual_event_queue_add () on failure.

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_object.h,v 1.13 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_object.h,v 1.14 2006-01-23 21:06:24 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -89,6 +89,17 @@ void *visual_object_get_private (VisObject *object);
  */
 #define visual_object_clean(object, struct_type)	\
 	visual_mem_set ((uint8_t *) (object) + sizeof (VisObject), 0, sizeof (struct_type) - sizeof (VisObject))
+
+/**
+ * @ingroup VisObject
+ *
+ * Macro that will copy the data after the VisObject data to another VisObject.
+ */
+#define visual_object_copy_data(dest, src, struct_type)			\
+	visual_mem_copy ((uint8_t *) (dest) + sizeof (VisObject),	\
+			(uint8_t *) (src) + sizeof (VisObject),		\
+			sizeof (struct_type) - sizeof (VisObject))
+
 
 VISUAL_END_DECLS
 
