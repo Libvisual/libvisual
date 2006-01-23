@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.c,v 1.28 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_time.c,v 1.29 2006-01-23 22:32:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -424,6 +424,8 @@ int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
  * Returns the amount of milliseconds passed since the timer has started.
  * Be careful not to confuse milliseconds with microseconds.
  *
+ * @see visual_timer_elapsed_usecs
+ *
  * @param timer Pointer to the VisTimer from which we want to know the amount of milliseconds passed since activation.
  *
  * @return The amount of milliseconds passed, or -1 on error, this function will fail if your system goes back in time.
@@ -436,7 +438,28 @@ int visual_timer_elapsed_msecs (VisTimer *timer)
 
 	visual_timer_elapsed (timer, &cur);
 
-	return (cur.tv_sec * 1000) + (cur.tv_usec / 1000);
+	return (cur.tv_sec * VISUAL_MSEC_PER_SEC) + (cur.tv_usec / VISUAL_MSEC_PER_SEC);
+}
+
+/**
+ * Returns the amount of microseconds passed since the timer has started.
+ * Be careful not to confuse milliseconds with microseconds.
+ *
+ * @see visual_timer_elapsed_msecs
+ *
+ * @param timer Pointer to the VisTimer from which we want to know the amount of microseconds passed since activation.
+ *
+ * @return The amount of microseconds passed, or -1 on error, this function will fail if your system goes back in time.
+ */
+int visual_timer_elapsed_usecs (VisTimer *timer)
+{
+	VisTime cur;
+
+	visual_log_return_val_if_fail (timer != NULL, -1);
+
+	visual_timer_elapsed (timer, &cur);
+
+	return (cur.tv_sec * VISUAL_USEC_PER_SEC) + cur.tv_usec;
 }
 
 /**

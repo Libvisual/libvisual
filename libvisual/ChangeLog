@@ -1,5 +1,12 @@
 2006-01-23  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* libvisual/lv_time.* (visual_timer_elapsed_usecs):
+	Added function, same as msecs, but then for micro seconds.
+
+	also added: VISUAL_USECS_PER_SEC define.
+
+2006-01-23  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* libvisual/lv_object.h (visual_object_copy_data): Added macro that
 	only copies the non visobject part of an visobject. (Be very careful
 	with using this macro).

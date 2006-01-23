@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.h,v 1.19 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_time.h,v 1.20 2006-01-23 22:32:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -32,6 +32,7 @@
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_USEC_PER_SEC	1000000
+#define VISUAL_MSEC_PER_SEC	1000
 
 #define VISUAL_TIME(obj)				(VISUAL_CHECK_CAST ((obj), VisTime))
 #define VISUAL_TIMER(obj)				(VISUAL_CHECK_CAST ((obj), VisTimer))
@@ -80,6 +81,7 @@ int visual_timer_stop (VisTimer *timer);
 int visual_timer_continue (VisTimer *timer);
 int visual_timer_elapsed (VisTimer *timer, VisTime *time_);
 int visual_timer_elapsed_msecs (VisTimer *timer);
+int visual_timer_elapsed_usecs (VisTimer *timer);
 int visual_timer_has_passed (VisTimer *timer, VisTime *time_);
 int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
 
