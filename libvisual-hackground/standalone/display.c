@@ -47,6 +47,11 @@ int display_update_all (SADisplay *display)
 	rect.width = video->width;
 	rect.height = video->height;
 
+	display->frames_drawn++;
+
+	if (visual_timer_is_active (&display->timer) == FALSE)
+		visual_timer_start (&display->timer);
+
 	return display_update_rectangle (display, &rect);
 }
 
@@ -55,13 +60,28 @@ int display_update_rectangle (SADisplay *display, VisRectangle *rect)
 	return display->driver->updaterect (display, rect);
 }
 
-int display_set_fullscreen (SADisplay *display, int fullscreen)
+int display_set_fullscreen (SADisplay *display, int fullscreen, int autoscale)
 {
-	return display->driver->fullscreen (display, fullscreen);
+	return display->driver->fullscreen (display, fullscreen, autoscale);
 }
 
 int display_drain_events (SADisplay *display, VisEventQueue *eventqueue)
 {
 	return display->driver->drainevents (display, eventqueue);
+}
+
+int display_fps_limit (SADisplay *display, int fps)
+{
+	return 0;
+}
+
+int display_fps_total (SADisplay *display)
+{
+	return display->frames_drawn;
+}
+
+float display_fps_average (SADisplay *display)
+{
+	return display->frames_drawn / (visual_timer_elapsed_usecs (&display->timer) / (float) VISUAL_USEC_PER_SEC);
 }
 

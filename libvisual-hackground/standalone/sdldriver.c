@@ -14,17 +14,31 @@ typedef struct _SDLNative SDLNative;
 static int native_create (SADisplay *display, VisVideoDepth depth, int width, int height, int resizable);
 static int native_lock (SADisplay *display);
 static int native_unlock (SADisplay *display);
-static int native_fullscreen (SADisplay *display, int fullscreen);
+static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale);
 static int native_getvideo (SADisplay *display, VisVideo *screen);
 static int native_updaterect (SADisplay *display, VisRectangle *rect);
 static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue);
 
+static get_nearest_resolution (SADisplay *display, int *width, int *height);
+
+
 static int sdl_initialized;
+
 
 struct _SDLNative {
 	VisObject object;
 
 	SDL_Surface *screen;
+
+	VisVideoDepth requested_depth;
+
+	int oldx;
+	int oldy;
+
+	int oldwidth;
+	int oldheight;
+
+	int resizable;
 };
 
 SADisplayDriver *sdl_driver_new ()
@@ -74,6 +88,9 @@ static int native_create (SADisplay *display, VisVideoDepth depth, int width, in
 
 		sdl_initialized = TRUE;
 	}
+
+	native->resizable = resizable;
+	native->requested_depth = depth;
 
 	if (depth == VISUAL_VIDEO_DEPTH_GL) {
 		videoinfo = SDL_GetVideoInfo ();
@@ -136,17 +153,36 @@ static int native_unlock (SADisplay *display)
 	return 0;
 }
 
-static int native_fullscreen (SADisplay *display, int fullscreen)
+static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale)
 {
 	SDLNative *native = SDL_NATIVE (display->native);
 	SDL_Surface *screen = native->screen;
 
 	if (fullscreen == TRUE) {
-		if (!(screen->flags & SDL_FULLSCREEN))
+		if (!(screen->flags & SDL_FULLSCREEN)) {
+			if (autoscale == TRUE) {
+				int width = display->screen->width;
+				int height = display->screen->height;
+
+				native->oldwidth = width;
+				native->oldheight = height;
+
+				get_nearest_resolution (display, &width, &height);
+
+				native_create (display, native->requested_depth, width, height, native->resizable);
+			}
+
+			SDL_ShowCursor (SDL_FALSE);
 			SDL_WM_ToggleFullScreen (screen);
+		}
 	} else {
-		if ((screen->flags & SDL_FULLSCREEN))
+		if ((screen->flags & SDL_FULLSCREEN)) {
+			SDL_ShowCursor (SDL_TRUE);
 			SDL_WM_ToggleFullScreen (screen);
+
+			if (autoscale == TRUE)
+				native_create (display, native->requested_depth, native->oldwidth, native->oldheight, native->resizable);
+		}
 	}
 }
 
@@ -155,7 +191,11 @@ static int native_getvideo (SADisplay *display, VisVideo *screen)
 	SDLNative *native = SDL_NATIVE (display->native);
 	SDL_Surface *sdlscreen = native->screen;
 
-	visual_video_set_depth (screen, visual_video_depth_enum_from_value (sdlscreen->format->BitsPerPixel));
+	if (native->requested_depth == VISUAL_VIDEO_DEPTH_GL)
+		visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
+	else
+		visual_video_set_depth (screen, visual_video_depth_enum_from_value (sdlscreen->format->BitsPerPixel));
+
 	visual_video_set_dimension (screen, sdlscreen->w, sdlscreen->h);
 	visual_video_set_pitch (screen, sdlscreen->pitch);
 	visual_video_set_buffer (screen, sdlscreen->pixels);
@@ -187,13 +227,17 @@ static int native_updaterect (SADisplay *display, VisRectangle *rect)
 		}
 	}
 
-	SDL_UpdateRect (sdlscreen, rect->x, rect->y, rect->width, rect->height);
+	if (native->requested_depth == VISUAL_VIDEO_DEPTH_GL)
+		SDL_GL_SwapBuffers ();
+	else
+		SDL_UpdateRect (sdlscreen, rect->x, rect->y, rect->width, rect->height);
 
 	return 0;
 }
 
 static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 {
+	SDLNative *native = SDL_NATIVE (display->native);
 	SDL_Event event;
 
 	while (SDL_PollEvent (&event)) {
@@ -212,7 +256,7 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 			case SDL_VIDEORESIZE:
 				visual_event_queue_add_resize (eventqueue, display->screen, event.resize.w, event.resize.h);
 
-				native_create (display, display->screen->depth, event.resize.w, event.resize.h, TRUE);
+				native_create (display, display->screen->depth, event.resize.w, event.resize.h, native->resizable);
 				break;
 
 			case SDL_MOUSEMOTION:
@@ -236,4 +280,39 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 				break;
 		}
 	}
+}
+
+static get_nearest_resolution (SADisplay *display, int *width, int *height)
+{
+	SDL_Rect **modelist;
+	int w, h;
+	int i;
+
+	modelist = SDL_ListModes (NULL, SDL_FULLSCREEN);
+
+	if (modelist == NULL)
+		return -1;
+
+	w = *width;
+	h = *height;
+
+	/* Window is bigger than highest resolution */
+	if (modelist[0]->w <= *width || modelist[0]->h <= *height) {
+		*width = modelist[0]->w;
+		*height = modelist[0]->h;
+
+		return 0;
+	}
+
+	for (i = 0; modelist[i]; i++) {
+		if (modelist[i]->w >= *width && modelist[i]->h >= *height) {
+			w = modelist[i]->w;
+			h = modelist[i]->h;
+		}
+	}
+
+	*width = w;
+	*height = h;
+
+	return 0;
 }

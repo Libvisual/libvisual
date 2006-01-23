@@ -27,12 +27,15 @@ int main (int argc, char **argv)
 	else
 		actor = visual_actor_new ("gforce");
 
-	visual_actor_realize (actor);
 
-//	depth = visual_video_depth_get_highest (visual_actor_get_plugin (actor)->depth);
-	depth = VISUAL_VIDEO_DEPTH_8BIT;
+	if (argc > 3) {
+		depth = visual_video_depth_enum_from_value (atoi (argv[3]));
+	} else
+		depth = visual_video_depth_get_highest (visual_actor_get_supported_depth (actor));
 
 	display_create (display, depth, 320, 200, TRUE);
+
+	visual_actor_realize (actor);
 
 	video = display_get_video (display);
 
@@ -50,17 +53,18 @@ int main (int argc, char **argv)
 
 	while (running) {
 		VisEventQueue *pluginqueue;
-		VisEvent ev;
+		VisEvent *ev;
 
 		/* Handle all events */
 		display_drain_events (display, localqueue);
 
 		pluginqueue = visual_plugin_get_eventqueue (visual_actor_get_plugin (actor));
-		while (visual_event_queue_poll (localqueue, &ev)) {
-			// FIXME need some extra api in VisEvent (copy from event, a poll by reference)
-//			visual_event_queue_add (pluginqueue, &ev);
+		while (visual_event_queue_poll_by_reference (localqueue, &ev)) {
 
-			switch (ev.type) {
+			if (ev->type != VISUAL_EVENT_RESIZE)
+				visual_event_queue_add (pluginqueue, ev);
+
+			switch (ev->type) {
 				case VISUAL_EVENT_RESIZE:
 					video = display_get_video (display);
 					visual_actor_set_video (actor, video);
@@ -76,7 +80,7 @@ int main (int argc, char **argv)
 					break;
 
 				case VISUAL_EVENT_KEYDOWN:
-					switch (ev.event.keyboard.keysym.sym) {
+					switch (ev->event.keyboard.keysym.sym) {
 						case VKEY_ESCAPE:
 							running = FALSE;
 							break;
@@ -84,7 +88,14 @@ int main (int argc, char **argv)
 						case VKEY_TAB:
 							fullscreen = !fullscreen;
 
-							display_set_fullscreen (display, fullscreen);
+							display_set_fullscreen (display, fullscreen, TRUE);
+
+							/* Resync video */
+							video = display_get_video (display);
+							visual_actor_set_video (actor, video);
+
+							visual_actor_video_negotiate (actor, depth, FALSE, FALSE);
+
 							break;
 
 						default:
@@ -109,10 +120,14 @@ int main (int argc, char **argv)
 		display_unlock (display);
 
 		display_update_all (display);
+
+		display_fps_limit (display, 30);
 	}
 
 	/* Termination procedure */
-	display_set_fullscreen (display, FALSE);
+	display_set_fullscreen (display, FALSE, TRUE);
+
+	printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
 
 	return 0;
 }
