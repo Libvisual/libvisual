@@ -30,7 +30,7 @@ int main (int argc, char **argv)
 	visual_actor_realize (actor);
 
 //	depth = visual_video_depth_get_highest (visual_actor_get_plugin (actor)->depth);
-	depth = VISUAL_VIDEO_DEPTH_32BIT;
+	depth = VISUAL_VIDEO_DEPTH_8BIT;
 
 	display_create (display, depth, 320, 200, TRUE);
 

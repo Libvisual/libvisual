@@ -25,7 +25,6 @@ struct _SDLNative {
 	VisObject object;
 
 	SDL_Surface *screen;
-	SDL_Color colors[256];
 };
 
 SADisplayDriver *sdl_driver_new ()
@@ -168,6 +167,25 @@ static int native_updaterect (SADisplay *display, VisRectangle *rect)
 {
 	SDLNative *native = SDL_NATIVE (display->native);
 	SDL_Surface *sdlscreen = native->screen;
+
+	if (sdlscreen->format->BitsPerPixel == 8) {
+		SDL_Color colors[256];
+		VisPalette *pal = display->screen->pal;
+
+		visual_mem_set (colors, 0, sizeof (colors));
+
+		if (pal != NULL && pal->ncolors <= 256) {
+			int i;
+
+			for (i = 0; i < pal->ncolors; i++) {
+				colors[i].r = pal->colors[i].r;
+				colors[i].g = pal->colors[i].g;
+				colors[i].b = pal->colors[i].b;
+			}
+
+			SDL_SetColors (sdlscreen, colors, 0, 256);
+		}
+	}
 
 	SDL_UpdateRect (sdlscreen, rect->x, rect->y, rect->width, rect->height);
 
