@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.83 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_video.c,v 1.84 2006-01-23 20:24:22 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -80,6 +80,8 @@ static int mirror_x (VisVideo *dest, VisVideo *src);
 static int mirror_y (VisVideo *dest, VisVideo *src);
 
 /* Depth conversions */
+static int depth_transform_get_smallest (VisVideo *dest, VisVideo *src, int *width, int *height);
+
 static int depth_transform_8_to_16_c (VisVideo *dest, VisVideo *src);
 static int depth_transform_8_to_24_c (VisVideo *dest, VisVideo *src);
 static int depth_transform_8_to_32_c (VisVideo *dest, VisVideo *src);
@@ -2216,32 +2218,26 @@ int visual_video_depth_transform (VisVideo *dest, VisVideo *src)
  * @}
  */
 
-/* Depth transform C code */
-/* FIXME TODO depths:	c	sse	mmx	altivec
- * 8 - 16		x
- * 8 - 24		x
- * 8 - 32		x
- * 16 - 8		x
- * 16 - 24		x
- * 16 - 32		x
- * 24 - 8		x
- * 24 - 16		x
- * 24 - 32		x
- * 32 - 8		x
- * 32 - 24		x
- * 32 - 16		x
- */
+static int depth_transform_get_smallest (VisVideo *dest, VisVideo *src, int *width, int *height)
+{
+	*width = dest->width > src->width ? src->width : dest->width;
+	*height = dest->height > src->height ? src->height : dest->height;
+
+	return 0;
+}
 
 /* Depth conversion functions */
 static int depth_transform_8_to_16_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y, i;
+	int w;
+	int h;
+
+	int ddiff;
+	int sdiff;
 
 	_color16* dbuf = visual_video_get_pixels (dest);
 	uint8_t* sbuf = visual_video_get_pixels (src);
-
-	const int ddiff = (dest->pitch / dest->bpp) - dest->width;
-	const int sdiff = src->pitch - (src->width * src->bpp);
 
 	_color16 colors[256];
 
@@ -2251,8 +2247,13 @@ static int depth_transform_8_to_16_c (VisVideo *dest, VisVideo *src)
 		colors[i].b = src->pal->colors[i].b >> 3;
 	}
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = (dest->pitch / dest->bpp) - w;
+	sdiff = src->pitch - (w * src->bpp);
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			*(dbuf++) = colors[*(sbuf++)];
 		}
 
@@ -2266,15 +2267,23 @@ static int depth_transform_8_to_16_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_8_to_24_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
+
+	int ddiff;
+	int sdiff;
 
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = src->pitch - (src->width *src->bpp);
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = src->pitch - (w * src->bpp);
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			*(dbuf++) = src->pal->colors[*(sbuf)].b;
 			*(dbuf++) = src->pal->colors[*(sbuf)].g;
 			*(dbuf++) = src->pal->colors[*(sbuf)].r;
@@ -2291,12 +2300,14 @@ static int depth_transform_8_to_24_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_8_to_32_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y, i;
+	int w;
+	int h;
 
 	uint32_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = (dest->pitch / dest->bpp) - dest->width;
-	const int sdiff = src->pitch - (src->width * src->bpp);
+	int ddiff;
+	int sdiff;
 
 	uint32_t colors[256];
 
@@ -2307,8 +2318,13 @@ static int depth_transform_8_to_32_c (VisVideo *dest, VisVideo *src)
 			src->pal->colors[i].b;
 	}
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = (dest->pitch / dest->bpp) - w;
+	sdiff = src->pitch - (w * src->bpp);
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			*(dbuf++) = colors[*(sbuf++)];
 		}
 
@@ -2322,17 +2338,24 @@ static int depth_transform_8_to_32_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_16_to_8_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	_color16 *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = (src->pitch / src->bpp) - src->width;
+	int ddiff;
+	int sdiff;
 
 	uint8_t r, g, b, col;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = (src->pitch  / src->bpp) - w;
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			r = sbuf->r << 3;
 			g = sbuf->g << 2;
 			b = sbuf->b << 3;
@@ -2357,15 +2380,22 @@ static int depth_transform_16_to_8_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_16_to_24_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	_color16 *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = (src->pitch / src->bpp) - src->width;
+	int ddiff;
+	int sdiff;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = (src->pitch  / src->bpp) - w;
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			*(dbuf++) = sbuf->b << 3;
 			*(dbuf++) = sbuf->g << 2;
 			*(dbuf++) = sbuf->r << 3;
@@ -2383,15 +2413,22 @@ static int depth_transform_16_to_24_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_16_to_32_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	_color16 *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = (src->pitch / src->bpp) - src->width;
+	int ddiff;
+	int sdiff;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = (src->pitch  / src->bpp) - w;
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			*(dbuf++) = sbuf->b << 3;
 			*(dbuf++) = sbuf->g << 2;
 			*(dbuf++) = sbuf->r << 3;
@@ -2410,16 +2447,23 @@ static int depth_transform_16_to_32_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_24_to_8_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 	uint8_t r, g, b, col;
 
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = src->pitch - (src->width * src->bpp);
+	int ddiff;
+	int sdiff;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = src->pitch - (w * src->bpp);
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			b = *(sbuf++);
 			g = *(sbuf++);
 			r = *(sbuf++);
@@ -2443,15 +2487,22 @@ static int depth_transform_24_to_8_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_24_to_16_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 
 	_color16 *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = (src->pitch / src->bpp) - src->width;
+	int ddiff;
+	int sdiff;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = (src->pitch / src->bpp) - w;
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			dbuf->b = *(sbuf++) >> 3;
 			dbuf->g = *(sbuf++) >> 2;
 			dbuf->r = *(sbuf++) >> 3;
@@ -2469,15 +2520,22 @@ static int depth_transform_24_to_16_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_24_to_32_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = src->pitch - (src->width * src->bpp);
+	int ddiff;
+	int sdiff;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = src->pitch - (w * src->bpp);
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
@@ -2494,17 +2552,24 @@ static int depth_transform_24_to_32_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_32_to_8_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 
 	uint8_t r, g, b, col;
 
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = src->pitch - (src->width * src->bpp);
+	int ddiff;
+	int sdiff;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = src->pitch - (w * src->bpp);
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			b = *(sbuf++);
 			g = *(sbuf++);
 			r = *(sbuf++);
@@ -2515,6 +2580,8 @@ static int depth_transform_32_to_8_c (VisVideo *dest, VisVideo *src)
 			dest->pal->colors[col].r = r;
 			dest->pal->colors[col].g = g;
 			dest->pal->colors[col].b = b;
+
+			*(dbuf++) = col;
 		}
 
 		dbuf += ddiff;
@@ -2527,15 +2594,22 @@ static int depth_transform_32_to_8_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_32_to_16_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 
 	_color16 *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = (dest->pitch / dest->bpp) - dest->width;
-	const int sdiff = src->pitch - (src->width * src->bpp);
+	int ddiff;
+	int sdiff;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = (dest->pitch / dest->bpp) - w;
+	sdiff = src->pitch - (w * src->bpp);
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			dbuf->b = *(sbuf++) >> 3;
 			dbuf->g = *(sbuf++) >> 2;
 			dbuf->r = *(sbuf++) >> 3;
@@ -2554,15 +2628,22 @@ static int depth_transform_32_to_16_c (VisVideo *dest, VisVideo *src)
 static int depth_transform_32_to_24_c (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
+	int w;
+	int h;
 
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
-	const int ddiff = dest->pitch - (dest->width * dest->bpp);
-	const int sdiff = src->pitch - (src->width * src->bpp);
+	int ddiff;
+	int sdiff;
 
-	for (y = 0; y < dest->height; y++) {
-		for (x = 0; x < dest->width; x++) {
+	depth_transform_get_smallest (dest, src, &w, &h);
+
+	ddiff = dest->pitch - (w * dest->bpp);
+	sdiff = src->pitch - (w * src->bpp);
+
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_actor.c,v 1.37 2006-01-22 13:23:36 synap Exp $
+ * $Id: lv_actor.c,v 1.38 2006-01-23 20:24:22 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -140,7 +140,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
 			gl = TRUE;
 		else
 			gl = FALSE;
-	
+
 		visual_plugin_unload (plugin);
 
 	} while (gl == FALSE);
@@ -171,7 +171,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
 
 		if (prev == NULL)
 			return NULL;
-		
+
 		ref = visual_plugin_find (__lv_plugins_actor, prev);
 		plugin = visual_plugin_load (ref);
 		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
@@ -180,7 +180,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
 			gl = TRUE;
 		else
 			gl = FALSE;
-	
+
 		visual_plugin_unload (plugin);
 
 	} while (gl == FALSE);
@@ -385,8 +385,8 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 	/* Adding the VisActorPluginEnviron */
 	actenviron = visual_mem_new0 (VisActorPluginEnviron, 1);
 
-	visual_object_initialize (VISUAL_OBJECT (actenviron), TRUE, NULL);	
-	
+	visual_object_initialize (VISUAL_OBJECT (actenviron), TRUE, NULL);
+
 	enve = visual_plugin_environ_new (VISUAL_ACTOR_PLUGIN_ENVIRON, VISUAL_OBJECT (actenviron));
 	visual_plugin_environ_add (actor->plugin, enve);
 
@@ -451,7 +451,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
 	visual_log_return_val_if_fail (actor != NULL, NULL);
 
 	actplugin = get_actor_plugin (actor);
-	
+
 	if (actplugin == NULL) {
 		visual_log (VISUAL_LOG_CRITICAL,
 			_("The given actor does not reference any actor plugin"));
@@ -460,7 +460,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
 
 	if (actor->transform != NULL &&
 		actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-		
+
 		return actor->ditherpal;
 
 	} else {
@@ -511,16 +511,16 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 
 		actor->transform = NULL;
 	}
-	
+
 	if (actor->fitting != NULL) {
 		visual_object_unref (VISUAL_OBJECT (actor->fitting));
-		
+
 		actor->fitting = NULL;
 	}
 
 	if (actor->ditherpal != NULL) {
 		visual_object_unref (VISUAL_OBJECT (actor->ditherpal));
-		
+
 		actor->ditherpal = NULL;
 	}
 
@@ -718,7 +718,7 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	/* Songinfo handling */
 	if (visual_songinfo_compare (&actor->songcompare, &actplugin->songinfo) == FALSE) {
 		visual_songinfo_mark (&actplugin->songinfo);
-		
+
 		visual_event_queue_add_newsong (
 			visual_plugin_get_eventqueue (plugin),
 			&actplugin->songinfo);
@@ -737,9 +737,9 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	 * events in the event loop.
 	 */
 	visual_plugin_events_pump (actor->plugin);
-	
+
 	visual_video_set_palette (video, visual_actor_get_palette (actor));
-	
+
 	/* Set the palette to the target video */
 	video->pal = visual_actor_get_palette (actor);
 
