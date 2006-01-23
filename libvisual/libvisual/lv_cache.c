@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_cache.c,v 1.9 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_cache.c,v 1.10 2006-01-23 15:53:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -197,6 +197,24 @@ int visual_cache_put (VisCache *cache, char *key, void *data)
 	visual_log_return_val_if_fail (key != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
 
+	/* Don't try to put in a 0 sized cache */
+	if (cache->size < 1)
+		return VISUAL_OK;
+
+	/* Remove items that are no longer wished in the cache */
+	while (visual_collection_size (VISUAL_COLLECTION (cache->list)) > cache->size - 1) {
+		le = cache->list->tail;
+
+		if (le == NULL)
+			return VISUAL_OK;
+
+		cache_remove_list_entry (cache, &le);
+	}
+
+	/* Remove items that are out dated */
+	visual_cache_flush_outdated (cache);
+
+	/* Add to cache */
 	le = visual_hashmap_get_string (cache->index, key);
 
 	if (le != NULL) {
@@ -221,19 +239,6 @@ int visual_cache_put (VisCache *cache, char *key, void *data)
 
 		visual_hashmap_put_string (cache->index, key, le);
 	}
-
-	/* Remove items that are no longer wished in the cache */
-	while (visual_collection_size (VISUAL_COLLECTION (cache->list)) > cache->size) {
-		le = cache->list->tail;
-
-		if (le == NULL)
-			return VISUAL_OK;
-
-		cache_remove_list_entry (cache, &le);
-	}
-
-	/* Remove items that are out dated */
-	visual_cache_flush_outdated (cache);
 
 	return VISUAL_OK;
 }
