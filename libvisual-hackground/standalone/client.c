@@ -1,5 +1,7 @@
 #include <libvisual/libvisual.h>
 
+#include <stdlib.h>
+
 #include "display.h"
 #include "sdldriver.h"
 

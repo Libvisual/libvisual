@@ -22,7 +22,7 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue);
 static int native_gl_attribute_set (VisGLAttribute attribute, int value);
 static int native_gl_attribute_get (VisGLAttribute attribute, int *value);
 
-static get_nearest_resolution (SADisplay *display, int *width, int *height);
+static int get_nearest_resolution (SADisplay *display, int *width, int *height);
 
 
 static int sdl_initialized;
@@ -211,6 +211,8 @@ static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale)
 				native_create (display, native->requested_depth, native->oldwidth, native->oldheight, native->resizable);
 		}
 	}
+
+	return 0;
 }
 
 static int native_getvideo (SADisplay *display, VisVideo *screen)
@@ -307,6 +309,8 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 				break;
 		}
 	}
+
+	return 0;
 }
 
 static int native_gl_attribute_set (VisGLAttribute attribute, int value)
@@ -329,7 +333,7 @@ static int native_gl_attribute_get (VisGLAttribute attribute, int *value)
 	return SDL_GL_GetAttribute (sdl_attribute, value);
 }
 
-static get_nearest_resolution (SADisplay *display, int *width, int *height)
+static int get_nearest_resolution (SADisplay *display, int *width, int *height)
 {
 	SDL_Rect **modelist;
 	int w, h;
