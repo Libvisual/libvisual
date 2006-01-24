@@ -19,10 +19,34 @@ static int native_getvideo (SADisplay *display, VisVideo *screen);
 static int native_updaterect (SADisplay *display, VisRectangle *rect);
 static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue);
 
+static int native_gl_attribute_set (VisGLAttribute attribute, int value);
+static int native_gl_attribute_get (VisGLAttribute attribute, int *value);
+
 static get_nearest_resolution (SADisplay *display, int *width, int *height);
 
 
 static int sdl_initialized;
+
+static SDL_GLattr attribute_map[] = {
+	[VISUAL_GL_ATTRIBUTE_NONE]		= -1,
+	[VISUAL_GL_ATTRIBUTE_BUFFER_SIZE]	= SDL_GL_BUFFER_SIZE,
+	[VISUAL_GL_ATTRIBUTE_LEVEL]		= -1,
+	[VISUAL_GL_ATTRIBUTE_RGBA]		= -1,
+	[VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER]	= SDL_GL_DOUBLEBUFFER,
+	[VISUAL_GL_ATTRIBUTE_STEREO]		= SDL_GL_STEREO,
+	[VISUAL_GL_ATTRIBUTE_AUX_BUFFERS]	= -1,
+	[VISUAL_GL_ATTRIBUTE_RED_SIZE]		= SDL_GL_RED_SIZE,
+	[VISUAL_GL_ATTRIBUTE_GREEN_SIZE]	= SDL_GL_GREEN_SIZE,
+	[VISUAL_GL_ATTRIBUTE_BLUE_SIZE]		= SDL_GL_BLUE_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ALPHA_SIZE]	= SDL_GL_ALPHA_SIZE,
+	[VISUAL_GL_ATTRIBUTE_DEPTH_SIZE]	= SDL_GL_DEPTH_SIZE,
+	[VISUAL_GL_ATTRIBUTE_STENCIL_SIZE]	= SDL_GL_STENCIL_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE]	= SDL_GL_ACCUM_RED_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_GREEN_SIZE]	= SDL_GL_ACCUM_GREEN_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE]	= SDL_GL_ACCUM_BLUE_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE]	= SDL_GL_ACCUM_ALPHA_SIZE,
+	[VISUAL_GL_ATTRIBUTE_LAST]		= -1
+};
 
 
 struct _SDLNative {
@@ -56,6 +80,9 @@ SADisplayDriver *sdl_driver_new ()
 	driver->getvideo = native_getvideo;
 	driver->updaterect = native_updaterect;
 	driver->drainevents = native_drainevents;
+
+	visual_gl_set_callback_attribute_set (native_gl_attribute_set);
+	visual_gl_set_callback_attribute_get (native_gl_attribute_get);
 
 	return driver;
 }
@@ -282,6 +309,26 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 	}
 }
 
+static int native_gl_attribute_set (VisGLAttribute attribute, int value)
+{
+	SDL_GLattr sdl_attribute = attribute_map[attribute];
+
+	if (sdl_attribute < 0)
+		return -1;
+
+	return SDL_GL_SetAttribute (sdl_attribute, value);
+}
+
+static int native_gl_attribute_get (VisGLAttribute attribute, int *value)
+{
+	SDL_GLattr sdl_attribute = attribute_map[attribute];
+
+	if (sdl_attribute < 0)
+		return -1;
+
+	return SDL_GL_GetAttribute (sdl_attribute, value);
+}
+
 static get_nearest_resolution (SADisplay *display, int *width, int *height)
 {
 	SDL_Rect **modelist;
@@ -316,3 +363,4 @@ static get_nearest_resolution (SADisplay *display, int *width, int *height)
 
 	return 0;
 }
+
