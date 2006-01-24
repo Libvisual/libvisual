@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_gl.h,v 1.2 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_gl.h,v 1.3 2006-01-24 00:01:39 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,8 +28,28 @@
 
 VISUAL_BEGIN_DECLS
 
+/**
+ * Enumerate with GL attributes.
+ */
 typedef enum {
-	VISUAL_GL_ATTRIBUTE_NONE = 0
+	VISUAL_GL_ATTRIBUTE_NONE = 0,		/**< No attribute. */
+	VISUAL_GL_ATTRIBUTE_BUFFER_SIZE,	/**< Depth of the color buffer. */
+	VISUAL_GL_ATTRIBUTE_LEVEL,		/**< Level in plane stacking. */
+	VISUAL_GL_ATTRIBUTE_RGBA,		/**< True if RGBA mode. */
+	VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER,	/**< Double buffering supported. */
+	VISUAL_GL_ATTRIBUTE_STEREO,		/**< Stereo buffering supported. */
+	VISUAL_GL_ATTRIBUTE_AUX_BUFFERS,	/**< Number of aux buffers. */
+	VISUAL_GL_ATTRIBUTE_RED_SIZE,		/**< Number of red component bits. */
+	VISUAL_GL_ATTRIBUTE_GREEN_SIZE,		/**< Number of green component bits. */
+	VISUAL_GL_ATTRIBUTE_BLUE_SIZE,		/**< Number of blue component bits. */
+	VISUAL_GL_ATTRIBUTE_ALPHA_SIZE,		/**< Number of alpha component bits. */
+	VISUAL_GL_ATTRIBUTE_DEPTH_SIZE,		/**< Number of depth bits. */
+	VISUAL_GL_ATTRIBUTE_STENCIL_SIZE,	/**< Number of stencil bits. */
+	VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE,	/**< Number of red accum bits. */
+	VISUAL_GL_ATTRIBUTE_ACCUM_GREEN_SIZE,	/**< Number of green accum bits. */
+	VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE,	/**< Number of blue accum bits. */
+	VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE,	/**< Number of alpha accum bits. */
+	VISUAL_GL_ATTRIBUTE_LAST
 } VisGLAttribute;
 
 
@@ -53,6 +73,8 @@ int visual_gl_set_attribute (VisGLAttribute attribute, int value);
 int visual_gl_get_attribute (VisGLAttribute attribute, int *value);
 
 void *visual_gl_get_proc_address (char *procname);
+
+VisGLCallbacks *visual_gl_get_callbacks (void);
 
 VISUAL_END_DECLS
 

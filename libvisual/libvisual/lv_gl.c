@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_gl.c,v 1.2 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_gl.c,v 1.3 2006-01-24 00:01:39 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,7 +29,7 @@
 
 #include "lv_gl.h"
 
-static VisGLCallbacks callbacks;
+static VisGLCallbacks __lv_gl_callbacks;
 
 /**
  * @defgroup VisGL VisGL
@@ -38,14 +38,14 @@ static VisGLCallbacks callbacks;
 
 int visual_gl_set_callback_attribute_set (VisGLSetAttributeFunc attribute_set)
 {
-	callbacks.attribute_set = attribute_set;
+	__lv_gl_callbacks.attribute_set = attribute_set;
 
 	return VISUAL_OK;
 }
 
 int visual_gl_set_callback_attribute_get (VisGLGetAttributeFunc attribute_get)
 {
-	callbacks.attribute_get = attribute_get;
+	__lv_gl_callbacks.attribute_get = attribute_get;
 
 	return VISUAL_OK;
 }
@@ -53,20 +53,20 @@ int visual_gl_set_callback_attribute_get (VisGLGetAttributeFunc attribute_get)
 
 int visual_gl_set_attribute (VisGLAttribute attribute, int value)
 {
-	if (callbacks.attribute_set == NULL)
+	if (__lv_gl_callbacks.attribute_set == NULL)
 		return -VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED;
 
-	callbacks.attribute_set (attribute, value);
+	__lv_gl_callbacks.attribute_set (attribute, value);
 
 	return VISUAL_OK;
 }
 
 int visual_gl_get_attribute (VisGLAttribute attribute, int *value)
 {
-	if (callbacks.attribute_get == NULL)
+	if (__lv_gl_callbacks.attribute_get == NULL)
 		return -VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED;
 
-	callbacks.attribute_get (attribute, value);
+	__lv_gl_callbacks.attribute_get (attribute, value);
 
 	return VISUAL_OK;
 }
@@ -75,6 +75,11 @@ int visual_gl_get_attribute (VisGLAttribute attribute, int *value)
 void *visual_gl_get_proc_address (char *procname)
 {
 	return NULL;
+}
+
+VisGLCallbacks *visual_gl_get_callbacks ()
+{
+	return &__lv_gl_callbacks;
 }
 
 /**
