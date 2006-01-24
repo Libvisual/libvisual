@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-gcc -o lv-standalone client.c display.c sdldriver.c `sdl-config --libs --cflags` -ggdb -lvisual
-
+gcc -Wall -o lv-standalone client.c display.c sdldriver.c \
+  `pkg-config --cflags --libs libvisual` \
+  `sdl-config --libs --cflags` \
+  -ggdb
