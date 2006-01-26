@@ -451,6 +451,20 @@ else
   AC_MSG_RESULT([no])
 fi
 
+AC_ARG_ENABLE([finespectrum],
+	    AC_HELP_STRING([--disable-finespectrum],
+                           [Do not build Finespectrum plugin @<:@default=enabled@:>@]),
+	    [finespectrum=$enableval],
+	    [finespectrum=yes])
+AC_MSG_CHECKING([whether to build Finespectrum plugin])
+if test x$finespectrum = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor finespectrum"
+  AC_SUBST([FINESPECTRUM], ['actor_finespectrum.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([scope],
             AC_HELP_STRING([--disable-scope],
                            [Do not build Scope plugin @<:@default=enabled@:>@]),
@@ -701,6 +715,7 @@ AC_CONFIG_FILES([
 	plugins/Makefile
 	plugins/actor/Makefile
 	plugins/actor/lv_analyzer/Makefile
+	plugins/actor/finespectrum/Makefile
 	plugins/actor/lv_scope/Makefile
 	plugins/actor/lv_gltest/Makefile
 	plugins/actor/nastyfft/Makefile

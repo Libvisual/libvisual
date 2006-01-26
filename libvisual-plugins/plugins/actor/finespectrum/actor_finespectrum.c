@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_lv_analyzer.c,v 1.27 2006-01-26 15:15:15 synap Exp $
+ * $Id: actor_finespectrum.c,v 1.1 2006-01-26 15:15:15 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,50 +30,65 @@
 #include <string.h>
 #include <gettext.h>
 
+#include <math.h>
+
 #include <libvisual/libvisual.h>
+
+/* Linearity of the amplitude scale (0.5 for linear, keep in [0.1, 0.9]) */
+#define d 0.33
+
+/* Time factor of the band dinamics. 3 means that the coefficient of the
+ * last value is half of the current one's. (see source) */
+#define tau 3
+
+/* Factor used for the diffusion. 4 means that half of the height is
+ * added to the neighbouring bars */
+#define dif 4
 
 #define BARS 256
 
 typedef struct {
-	VisPalette pal;
-} AnalyzerPrivate;
+	VisPalette	pal;
 
-static void draw_bar (VisVideo *video, int index, int nbars, float amplitude);
+	int		bar_heights[BARS];
+} FinespectrumPrivate;
+
+static void draw_bar (FinespectrumPrivate *priv, VisVideo *video, int index, int nbars, float amplitude);
 static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color);
 
-int lv_analyzer_init (VisPluginData *plugin);
-int lv_analyzer_cleanup (VisPluginData *plugin);
-int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height);
-int lv_analyzer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *lv_analyzer_palette (VisPluginData *plugin);
-int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+int actor_finespectrum_init (VisPluginData *plugin);
+int actor_finespectrum_cleanup (VisPluginData *plugin);
+int actor_finespectrum_requisition (VisPluginData *plugin, int *width, int *height);
+int actor_finespectrum_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int actor_finespectrum_events (VisPluginData *plugin, VisEventQueue *events);
+VisPalette *actor_finespectrum_palette (VisPluginData *plugin);
+int actor_finespectrum_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[] = {{
-		.requisition = lv_analyzer_requisition,
-		.palette = lv_analyzer_palette,
-		.render = lv_analyzer_render,
+		.requisition = actor_finespectrum_requisition,
+		.palette = actor_finespectrum_palette,
+		.render = actor_finespectrum_render,
 		.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
 	static VisPluginInfo info[] = {{
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-		.plugname = "lv_analyzer",
-		.name = "libvisual analyzer",
+		.plugname = "finespectrum",
+		.name = "libvisual finespectrum",
 		.author = N_("Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "1.0",
-		.about = N_("Libvisual analyzer plugin"),
-		.help = N_("A nice simple spectrum analyzer plugin."),
+		.about = N_("Libvisual finespectrum plugin"),
+		.help = N_("A spectrum analyzer plugin."),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_analyzer_init,
-		.cleanup = lv_analyzer_cleanup,
-		.events = lv_analyzer_events,
+		.init = actor_finespectrum_init,
+		.cleanup = actor_finespectrum_cleanup,
+		.events = actor_finespectrum_events,
 
 		.plugin = VISUAL_OBJECT (&actor[0])
 	}};
@@ -83,15 +98,15 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_analyzer_init (VisPluginData *plugin)
+int actor_finespectrum_init (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv;
+	FinespectrumPrivate *priv;
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
 
-	priv = visual_mem_new0 (AnalyzerPrivate, 1);
+	priv = visual_mem_new0 (FinespectrumPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_palette_allocate_colors (&priv->pal, 256);
@@ -99,9 +114,9 @@ int lv_analyzer_init (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_analyzer_cleanup (VisPluginData *plugin)
+int actor_finespectrum_cleanup (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	FinespectrumPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_palette_free_colors (&priv->pal);
 
@@ -110,7 +125,7 @@ int lv_analyzer_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
+int actor_finespectrum_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw;
 
@@ -127,21 +142,21 @@ int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_analyzer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+int actor_finespectrum_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	visual_video_set_dimension (video, width, height);
 
 	return 0;
 }
 
-int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
+int actor_finespectrum_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_analyzer_dimension (plugin, ev.event.resize.video,
+				actor_finespectrum_dimension (plugin, ev.event.resize.video,
 						ev.event.resize.width, ev.event.resize.height);
 				break;
 			default: /* to avoid warnings */
@@ -152,9 +167,9 @@ int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_analyzer_palette (VisPluginData *plugin)
+VisPalette *actor_finespectrum_palette (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	FinespectrumPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	int i;
 
 	for (i = 0; i < 256; i++) {
@@ -176,12 +191,17 @@ VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 	return &priv->pal;
 }
 
-int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+int actor_finespectrum_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
+	FinespectrumPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer buffer;
 	VisBuffer pcmb;
 	float freq[BARS];
 	float pcm[BARS * 2];
+	float scale;
+	float x00;
+	float y00;
+	float y;
 	int i;
 
 	visual_video_fill_color (video, NULL);
@@ -193,21 +213,44 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, FALSE);
 
+	/* Init */
+	scale = video->height / ( log((1 - d) / d) * 2 );
+	x00 = d*d*32768.0/(2 * d - 1);
+	y00 = -log(-x00) * scale;
+
+	/* Work */
+	for (i = 0; i < BARS; i++) {
+		y = (double)(freq[i] * 3200) * (i + 1); /* Compensating the energy */
+		printf ("%f ", y);
+		y = ( log(y - x00) * scale + y00 ); /* Logarithmic amplitude */
+
+		y = ( (dif-2)*y + /* FIXME: conditionals should be rolled out of the loop */
+				(i==0       ? y : priv->bar_heights[i-1]) +
+				(i==BARS-1 ? y : priv->bar_heights[i+1])) / dif; /* Add some diffusion */
+		y = ((tau-1)*priv->bar_heights[i] + y) / tau; /* Add some dynamics */
+		priv->bar_heights[i] = (int16_t)y;
+//		printf ("%d ", priv->bar_heights[i]);
+	}
+	printf ("\n");
+
+	/* Draw */
 	for (i = 0; i < BARS; i++)
-		draw_bar (video, i, BARS, freq[i]);
+		draw_bar (priv, video, i, BARS, freq[i]);
 
 	return 0;
 }
 
-static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
+static void draw_bar (FinespectrumPrivate *priv, VisVideo *video, int index, int nbars, float amplitude)
 {
 	int startx = (video->width / nbars) * index;
 	int endx = ((video->width / nbars) * (index + 1));
 	int height = video->height * amplitude;
 	int i;
 	float scale = 128.0 / video->height;
+
+
 
 	for (i = video->height - 1; i > (video->height - height); i--) {
 		draw_vline (video, index, index + 1, i, (video->height - i) * scale);
