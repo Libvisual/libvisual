@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.c,v 1.37 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_error.c,v 1.38 2006-01-26 15:13:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -105,6 +105,9 @@ static const char *__lv_error_human_readable[] = {
 
 	[VISUAL_ERROR_MORPH_NULL] =			N_("VisMorph is NULL"),
 	[VISUAL_ERROR_MORPH_PLUGIN_NULL] =		N_("VisMorph it's plugin is NULL"),
+
+	[VISUAL_ERROR_OS_SCHED] =			N_("The scheduler related call wasn't succesful."),
+	[VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED] =		N_("Scheduler operations are not supported on the platform."),
 
 	[VISUAL_ERROR_PALETTE_NULL] =			N_("VisPalette is NULL"),
 	[VISUAL_ERROR_PALETTE_SIZE] =			N_("VisPalette it's size conflicts"),

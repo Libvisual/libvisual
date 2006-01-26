@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_plugin.c,v 1.79 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_plugin.c,v 1.80 2006-01-26 15:13:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -1236,7 +1236,7 @@ VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj
 
 	enve->type = type;
 	enve->environment = envobj;
-	
+
 	return enve;
 }
 
@@ -1256,7 +1256,7 @@ int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve)
 	visual_log_return_val_if_fail (enve->type != NULL, -VISUAL_ERROR_NULL);
 
 	visual_plugin_environ_remove (plugin, enve->type);
-		
+
 	return visual_list_add (&plugin->environment, enve);
 }
 
@@ -1277,7 +1277,7 @@ int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
 	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
 
 	while ((enve = visual_list_next (&plugin->environment, &le)) != NULL) {
-		
+
 		/* Remove from list */
 		if (strcmp (enve->type, type) == 0) {
 			visual_list_delete (&plugin->environment, &le);
@@ -1303,12 +1303,12 @@ VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
 {
 	VisPluginEnviron *enve;
 	VisListEntry *le = NULL;
-	
+
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
 	visual_log_return_val_if_fail (type != NULL, NULL);
 
 	while ((enve = visual_list_next (&plugin->environment, &le)) != NULL) {
-		
+
 		if (strcmp (enve->type, type) == 0)
 			return enve->environment;
 	}

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_os.c,v 1.2 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_os.c,v 1.3 2006-01-26 15:13:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,10 +26,16 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "config.h"
+
 #ifdef HAVE_SCHED_H
-#include <sched.h>
+# include <sched.h>
+# include <sys/types.h>
+# define HAVE_SCHED 1
 #elif defined HAVE_SYS_SCHED_H
-#include <sys/sched.h>
+# include <sys/sched.h>
+# include <sys/types.h>
+# define HAVE_SCHED 1
 #endif
 
 #include "lv_os.h"
@@ -39,29 +45,58 @@
  * @{
  */
 
-int visual_os_scheduler_get_priority_max (int policy)
+/* FIXME: Lock all memory in realtime mode ? */
+
+/**
+ * Puts the process in soft realtime mode. Be very careful with using this, it's very much possible to lock your
+ * system up. Only works as super user.
+ */
+int visual_os_scheduler_realtime_start ()
 {
-	return VISUAL_OK;
+#ifdef HAVE_SCHED
+	struct sched_param attr;
+	int ret;
+	attr.sched_priority = 99;
+
+	/* FIXME: Do we want RR or FIFO here ? */
+	ret = sched_setscheduler (getpid (), SCHED_FIFO, &attr);
+
+	return ret >= 0 ? VISUAL_OK : -VISUAL_ERROR_OS_SCHED;
+#else
+	return -VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED;
+#endif
 }
 
-int visual_os_scheduler_get_priority_min (int policy)
+/**
+ * Returns to normal execution mode. Only works as super user.
+ */
+int visual_os_scheduler_realtime_stop ()
 {
-	return VISUAL_OK;
+#ifdef HAVE_SCHED
+	struct sched_param attr;
+	int ret;
+	attr.sched_priority = 0;
+
+	ret = sched_setscheduler (getpid (), SCHED_OTHER, &attr);
+
+	return ret >= 0 ? VISUAL_OK : -VISUAL_ERROR_OS_SCHED;
+#else
+	return -VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED;
+#endif
 }
 
-//int visual_os_scheduler_getparam (struct visual_os_scheduler_param *);
-//int visual_os_scheduler_setparam (const struct visual_os_scheduler_param *);
-
-int visual_os_scheduler_get_scheduler ()
-{
-	return VISUAL_OK;
-}
-
-//int visual_os_scheduler_setscheduler (int, const struct visual_os_scheduler_param *);
-
+/**
+ * Yield the process. Don't rely on this.
+ */
 int visual_os_scheduler_yield ()
 {
+#ifdef HAVE_SCHED
+	sched_yield ();
+
 	return VISUAL_OK;
+#else
+	return -VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED;
+#endif
 }
 
 

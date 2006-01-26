@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.h,v 1.38 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_error.h,v 1.39 2006-01-26 15:13:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -125,6 +125,10 @@ enum {
 	/* Error entries for the VisMorph system */
 	VISUAL_ERROR_MORPH_NULL,			/**< The VisMorph is NULL. */
 	VISUAL_ERROR_MORPH_PLUGIN_NULL,			/**< The VisMorphPlugin is NULL. */
+
+	/* Error entries for the VisOS system */
+	VISUAL_ERROR_OS_SCHED,				/**< The scheduler related call wasn't succesful. */
+	VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED,		/**< Scheduler operations are not supported on the platform. */
 
 	/* Error entries for the VisPalette system */
 	VISUAL_ERROR_PALETTE_NULL,			/**< The VisPalette is NULL. */

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_gl.c,v 1.3 2006-01-24 00:01:39 synap Exp $
+ * $Id: lv_gl.c,v 1.4 2006-01-26 15:13:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -80,6 +80,21 @@ void *visual_gl_get_proc_address (char *procname)
 VisGLCallbacks *visual_gl_get_callbacks ()
 {
 	return &__lv_gl_callbacks;
+}
+
+VisGLAttributeEnviron *visual_gl_attribute_environ_new ()
+{
+
+}
+
+int visual_gl_attribute_environ_put (VisGLAttributeEnviron *glenviron, VisGLAttribute attribute, int value)
+{
+
+}
+
+int visual_gl_attribute_environ_remove (VisGLAttributeEnviron *glenviron, VisGLAttribute attribute)
+{
+
 }
 
 /**
