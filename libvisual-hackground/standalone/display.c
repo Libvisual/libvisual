@@ -14,9 +14,10 @@ SADisplay *display_new (SADisplayDriver *driver)
 	return display;
 }
 
-int display_create (SADisplay *display, VisVideoDepth depth, int width, int height, int resizable)
+int display_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
+		int width, int height, int resizable)
 {
-	return display->driver->create (display, depth, width, height, resizable);
+	return display->driver->create (display, depth, vidoptions, width, height, resizable);
 }
 
 VisVideo *display_get_video (SADisplay *display)

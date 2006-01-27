@@ -13,9 +13,11 @@ int main (int argc, char **argv)
 	VisInput *input;
 	VisActor *actor;
 	VisEventQueue *localqueue;
+	VisVideoAttributeOptions *vidoptions;
 
 	int running = TRUE;
 	int fullscreen = FALSE;
+	int visible = TRUE;
 
 	int depth;
 
@@ -35,7 +37,9 @@ int main (int argc, char **argv)
 	} else
 		depth = visual_video_depth_get_highest (visual_actor_get_supported_depth (actor));
 
-	display_create (display, depth, 320, 200, TRUE);
+	vidoptions = visual_actor_get_video_attribute_options (actor);
+
+	display_create (display, depth, vidoptions, 320, 200, TRUE);
 
 	visual_actor_realize (actor);
 
@@ -109,9 +113,25 @@ int main (int argc, char **argv)
 				case VISUAL_EVENT_KEYUP:
 					break;
 
+				case VISUAL_EVENT_QUIT:
+					running = FALSE;
+					break;
+
+				case VISUAL_EVENT_VISIBILITY:
+					visible = ev->event.visibility.is_visible;
+					break;
+
 				default:
 					break;
 			}
+		}
+
+		if (visible == FALSE) {
+			visual_input_run (input);
+
+			visual_time_usleep (10000);
+
+			continue;
 		}
 
 		/* Do a run cycle */

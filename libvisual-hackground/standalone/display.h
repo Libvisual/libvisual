@@ -7,7 +7,8 @@ typedef struct _SADisplayDriver SADisplayDriver;
 typedef struct _SADisplay SADisplay;
 
 
-typedef int (*SADisplayDriverCreateFunc)(SADisplay *display, VisVideoDepth depth, int width, int height, int resizable);
+typedef int (*SADisplayDriverCreateFunc)(SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
+		int width, int height, int resizable);
 typedef int (*SADisplayDriverLockFunc)(SADisplay *display);
 typedef int (*SADisplayDriverUnlockFunc)(SADisplay *display);
 typedef int (*SADisplayDriverFullScreenFunc)(SADisplay *display, int fullscreen, int autoscale);
@@ -42,7 +43,8 @@ struct _SADisplay {
 /* prototypes */
 SADisplay *display_new (SADisplayDriver *driver);
 
-int display_create (SADisplay *display, VisVideoDepth depth, int width, int height, int resizable);
+int display_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
+		int width, int height, int resizable);
 
 VisVideo *display_get_video (SADisplay *display);
 

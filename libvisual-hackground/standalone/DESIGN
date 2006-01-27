@@ -8,7 +8,7 @@ DONE		handle fullscreen
 DONE	support resize.
 3	support a fps limiter.
 
-4	add support for libvisual it's gl param system (also make in lv).
+DONE	add support for libvisual it's gl param system (also make in lv).
 
 DONE	Add SDL events to a libvisual event queue.
 DONE	events to plugin.
@@ -24,9 +24,10 @@ DONE	support auto scaling on fullscreen, and return to old scale/position.
 	When all is done, check where the API fails, and update in lv.
 	When all is done, let the playground make use of the display system (finally clean it up).
 
-2	make use of visibility events.
-1	make use of quit events.
+DONE	make use of visibility events.
+DONE	make use of quit events.
 
+	add glx backend.
 
 Make a few end clients:
 	simple.

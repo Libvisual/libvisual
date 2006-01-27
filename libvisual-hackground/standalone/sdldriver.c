@@ -11,7 +11,8 @@
 
 typedef struct _SDLNative SDLNative;
 
-static int native_create (SADisplay *display, VisVideoDepth depth, int width, int height, int resizable);
+static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
+		int width, int height, int resizable);
 static int native_lock (SADisplay *display);
 static int native_unlock (SADisplay *display);
 static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale);
@@ -63,6 +64,8 @@ struct _SDLNative {
 	int oldheight;
 
 	int resizable;
+
+	int active;
 };
 
 SADisplayDriver *sdl_driver_new ()
@@ -87,7 +90,8 @@ SADisplayDriver *sdl_driver_new ()
 	return driver;
 }
 
-static int native_create (SADisplay *display, VisVideoDepth depth, int width, int height, int resizable)
+static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
+		int width, int height, int resizable)
 {
 	SDLNative *native = SDL_NATIVE (display->native);
         const SDL_VideoInfo *videoinfo;
@@ -136,11 +140,8 @@ static int native_create (SADisplay *display, VisVideoDepth depth, int width, in
 		if (videoinfo->blit_hw)
 			videoflags |= SDL_HWACCEL;
 
-		SDL_GL_SetAttribute (SDL_GL_RED_SIZE, 5);
-		SDL_GL_SetAttribute (SDL_GL_GREEN_SIZE, 5);
-		SDL_GL_SetAttribute (SDL_GL_BLUE_SIZE, 5);
-		SDL_GL_SetAttribute (SDL_GL_DEPTH_SIZE, 16);
-		SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+		if (vidoptions != NULL)
+			visual_video_gl_pump_options (vidoptions);
 
 		bpp = videoinfo->vfmt->BitsPerPixel;
 		native->screen = SDL_SetVideoMode (width, height, bpp, videoflags);
@@ -196,7 +197,7 @@ static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale)
 
 				get_nearest_resolution (display, &width, &height);
 
-				native_create (display, native->requested_depth, width, height, native->resizable);
+				native_create (display, native->requested_depth, NULL, width, height, native->resizable);
 			}
 
 			SDL_ShowCursor (SDL_FALSE);
@@ -208,7 +209,8 @@ static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale)
 			SDL_WM_ToggleFullScreen (screen);
 
 			if (autoscale == TRUE)
-				native_create (display, native->requested_depth, native->oldwidth, native->oldheight, native->resizable);
+				native_create (display, native->requested_depth, NULL, native->oldwidth,
+						native->oldheight, native->resizable);
 		}
 	}
 
@@ -269,6 +271,16 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 	SDLNative *native = SDL_NATIVE (display->native);
 	SDL_Event event;
 
+	/* Visible or not */
+	if (((SDL_GetAppState () & SDL_APPACTIVE) == 0) && (native->active == TRUE)) {
+		native->active = FALSE;
+		visual_event_queue_add_visibility (eventqueue, FALSE);
+	} else if (((SDL_GetAppState () & SDL_APPACTIVE) != 0) && (native->active == FALSE)) {
+		native->active = TRUE;
+		visual_event_queue_add_visibility (eventqueue, TRUE);
+	}
+
+	/* Events */
 	while (SDL_PollEvent (&event)) {
 
 		switch (event.type) {
@@ -285,7 +297,7 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 			case SDL_VIDEORESIZE:
 				visual_event_queue_add_resize (eventqueue, display->screen, event.resize.w, event.resize.h);
 
-				native_create (display, display->screen->depth, event.resize.w, event.resize.h, native->resizable);
+				native_create (display, display->screen->depth, NULL, event.resize.w, event.resize.h, native->resizable);
 				break;
 
 			case SDL_MOUSEMOTION:
@@ -303,6 +315,7 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 				break;
 
 			case SDL_QUIT:
+				visual_event_queue_add_quit (eventqueue, FALSE);
 				break;
 
 			default:
