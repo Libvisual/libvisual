@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_actor.c,v 1.38 2006-01-23 20:24:22 synap Exp $
+ * $Id: lv_actor.c,v 1.39 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -136,7 +136,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
 
 		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
-		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
+		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
 		else
 			gl = FALSE;
@@ -176,7 +176,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
 		plugin = visual_plugin_load (ref);
 		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
-		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
+		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
 		else
 			gl = FALSE;
@@ -216,7 +216,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
 		plugin = visual_plugin_load (ref);
 		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
-		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
+		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
 		else
 			gl = FALSE;
@@ -256,7 +256,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
 		plugin = visual_plugin_load (ref);
 		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
-		if ((actplugin->depth & VISUAL_VIDEO_DEPTH_GL) > 0)
+		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
 			gl = TRUE;
 		else
 			gl = FALSE;
@@ -648,7 +648,22 @@ int visual_actor_get_supported_depth (VisActor *actor)
 	if (actplugin == NULL)
 		return -VISUAL_ERROR_ACTOR_PLUGIN_NULL;
 
-	return actplugin->depth;
+	return actplugin->vidoptions.depth;
+}
+
+VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *actor)
+{
+	VisActorPlugin *actplugin;
+
+	visual_log_return_val_if_fail (actor != NULL, NULL);
+	visual_log_return_val_if_fail (actor->plugin != NULL, NULL);
+
+	actplugin = get_actor_plugin (actor);
+
+	if (actplugin == NULL)
+		return NULL;
+
+	return &actplugin->vidoptions;
 }
 
 /**

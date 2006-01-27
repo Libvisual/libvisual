@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.h,v 1.39 2006-01-26 15:13:37 synap Exp $
+ * $Id: lv_error.h,v 1.40 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -219,6 +219,7 @@ enum {
 	VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE,		/**< there is no VisUIChoiceEntry active. */
 
 	/* Error entries for the VisVideo system */
+	VISUAL_ERROR_VIDEO_ATTRIBUTE_OPTIONS_NULL,	/**< The VisVideoAttributeOptions is NULL. */
 	VISUAL_ERROR_VIDEO_NULL,			/**< The VisVideo is NULL. */
 	VISUAL_ERROR_VIDEO_HAS_ALLOCATED,		/**< The VisVideo has an allocated buffer. */
 	VISUAL_ERROR_VIDEO_BUFFER_NULL,			/**< The VisVideo has no VisBuffer object. */

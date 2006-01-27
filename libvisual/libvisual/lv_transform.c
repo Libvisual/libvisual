@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_transform.c,v 1.7 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_transform.c,v 1.8 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -271,7 +271,22 @@ int visual_transform_get_supported_depth (VisTransform *transform)
 	if (transplugin == NULL)
 		return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
 
-	return transplugin->depth;
+	return transplugin->vidoptions.depth;
+}
+
+VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTransform *transform)
+{
+	VisTransformPlugin *transplugin;
+
+	visual_log_return_val_if_fail (transform != NULL, NULL);
+	visual_log_return_val_if_fail (transform->plugin != NULL, NULL);
+
+	transplugin = get_transform_plugin (transform);
+
+	if (transplugin == NULL)
+		return NULL;
+
+	return &transplugin->vidoptions;
 }
 
 /**

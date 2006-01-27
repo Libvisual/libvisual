@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_transform.h,v 1.5 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_transform.h,v 1.6 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -102,10 +102,10 @@ struct _VisTransformPlugin {
 	VisPluginTransformPaletteFunc	 palette;	/**< Used to transform a VisPalette. Writes directly into the source. */
 	VisPluginTransformVideoFunc	 video;		/**< Used to transform a VisVideo. Writes directly into the source. */
 
-	int				 depth;		/**< The depth flag for the VisActorPlugin. This contains an ORred
-							  * value of depths that are supported by the plugin. */
 	int				 requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
 							  * requires an VisAudio context in order to render properly. */
+
+	VisVideoAttributeOptions	 vidoptions;
 };
 
 /* prototypes */
@@ -121,7 +121,9 @@ VisTransform *visual_transform_new (const char *transformname);
 int visual_transform_realize (VisTransform *transform);
 
 int visual_transform_video_negotiate (VisTransform *transform);
+
 int visual_transform_get_supported_depth (VisTransform *transform);
+VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTransform *transform);
 
 int visual_transform_set_video (VisTransform *transform, VisVideo *video);
 int visual_transform_set_palette (VisTransform *transform, VisPalette *palette);

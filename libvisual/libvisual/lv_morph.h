@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_morph.h,v 1.16 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_morph.h,v 1.17 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -139,10 +139,9 @@ struct _VisMorphPlugin {
 							  * VisMorph system morphs between palettes itself. */
 	VisPluginMorphApplyFunc		 apply;		/**< The plugin it's main function. This is used to morph
 							  * between two VisVideo sources. */
-	int				 depth;		/**< The depth flag for the VisMorphPlugin. This contains an ORred
-							  * value of depths that are supported by the plugin. */
 	int				 requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
 							  * requires an VisAudio context in order to render properly. */
+	VisVideoAttributeOptions	 vidoptions;
 };
 
 
@@ -160,6 +159,7 @@ int visual_morph_init (VisMorph *morph, const char *morphname);
 int visual_morph_realize (VisMorph *morph);
 
 int visual_morph_get_supported_depth (VisMorph *morph);
+VisVideoAttributeOptions *visual_morph_get_video_attribute_options (VisMorph *morph);
 
 int visual_morph_set_video (VisMorph *morph, VisVideo *video);
 int visual_morph_set_time (VisMorph *morph, VisTime *time);

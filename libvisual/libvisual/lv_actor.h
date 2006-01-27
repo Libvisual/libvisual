@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_actor.h,v 1.18 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_actor.h,v 1.19 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -151,8 +151,7 @@ struct _VisActorPlugin {
 	VisSongInfo			 songinfo;	/**< Pointer to VisSongInfo that contains information about
 							 *the current playing song. This can be NULL. */
 
-	int				 depth;		/**< The depth flag for the VisActorPlugin. This contains an ORred
-							  * value of depths that are supported by the plugin. */
+	VisVideoAttributeOptions	 vidoptions;
 };
 
 /* prototypes */
@@ -176,7 +175,9 @@ VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
 VisPalette *visual_actor_get_palette (VisActor *actor);
 
 int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced);
+
 int visual_actor_get_supported_depth (VisActor *actor);
+VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *actor);
 
 int visual_actor_set_video (VisActor *actor, VisVideo *video);
 

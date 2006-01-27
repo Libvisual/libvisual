@@ -1,3 +1,9 @@
+2006-01-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.*, libvisual/lv_gl.*, libvisual/lv_video.*,
+	libvisual/lv_morph.*, libvisual/lv_transform.*: Added support for
+	gl attributes.
+
 2006-01-26  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* libvisual/lv_os.*: Added some realtime stuff.

@@ -7,7 +7,7 @@
  *	    Chong Kai Xiong <descender@phreaker.net>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video.h,v 1.33 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_video.h,v 1.34 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,10 +31,18 @@
 #include <libvisual/lv_palette.h>
 #include <libvisual/lv_rectangle.h>
 #include <libvisual/lv_buffer.h>
+#include <libvisual/lv_gl.h>
 
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_VIDEO(obj)				(VISUAL_CHECK_CAST ((obj), VisVideo))
+#define VISUAL_VIDEO_ATTRIBUTE_OPTIONS(obj)		(VISUAL_CHECK_CAST ((obj), VisVideoAttributeOptions))
+
+#define VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(options, attr, val)	\
+	options.gl_attributes[attr].attribute = attr;			\
+	options.gl_attributes[attr].value = val;			\
+	options.gl_attributes[attr].mutated = TRUE;
+
 
 /* NOTE: The depth find helper code in lv_actor depends on an arrangment from low to high */
 /**
@@ -97,6 +105,7 @@ typedef enum {
 
 
 typedef struct _VisVideo VisVideo;
+typedef struct _VisVideoAttributeOptions VisVideoAttributeOptions;
 
 /* VisVideo custom composite method */
 
@@ -173,6 +182,14 @@ struct _VisVideo {
 	uint8_t				 density;	/**< The surface it's global alpha density. */
 };
 
+struct _VisVideoAttributeOptions {
+	VisObject			 object;
+
+	int				 depth;
+
+	VisGLAttributeEntry		 gl_attributes[VISUAL_GL_ATTRIBUTE_LAST];
+};
+
 /* prototypes */
 VisVideo *visual_video_new (void);
 int visual_video_init (VisVideo *video);
@@ -190,6 +207,8 @@ int visual_video_set_dimension (VisVideo *video, int width, int height);
 int visual_video_set_pitch (VisVideo *video, int pitch);
 int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
 int visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
+
+int visual_video_gl_pump_options (VisVideoAttributeOptions *vidoptions);
 
 int visual_video_get_size (VisVideo *video);
 

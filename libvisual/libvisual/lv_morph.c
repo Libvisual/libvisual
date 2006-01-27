@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_morph.c,v 1.30 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_morph.c,v 1.31 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -251,7 +251,23 @@ int visual_morph_get_supported_depth (VisMorph *morph)
 	if (morphplugin == NULL)
 		return -VISUAL_ERROR_MORPH_PLUGIN_NULL;
 
-	return morphplugin->depth;
+	return morphplugin->vidoptions.depth;
+}
+
+VisVideoAttributeOptions *visual_morph_get_video_attribute_options (VisMorph *morph)
+{
+	VisPluginData *plugin;
+	VisMorphPlugin *morphplugin;
+
+	visual_log_return_val_if_fail (morph != NULL, NULL);
+	visual_log_return_val_if_fail (morph->plugin != NULL, NULL);
+
+	morphplugin = get_morph_plugin (morph);
+
+	if (morphplugin == NULL)
+		return NULL;
+
+	return &morphplugin->vidoptions;
 }
 
 /**

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.c,v 1.38 2006-01-26 15:13:37 synap Exp $
+ * $Id: lv_error.c,v 1.39 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -186,6 +186,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_UI_CHOICE_ENTRY_NULL] =		N_("VisUIChoiceEntry is NULL"),
 	[VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE] =		N_("No choice in VisUIChoice is activated"),
 
+	[VISUAL_ERROR_VIDEO_ATTRIBUTE_OPTIONS_NULL] =	N_("The VisVideoAttributeOptions is NULL."),
 	[VISUAL_ERROR_VIDEO_NULL] =			N_("VisVideo is NULL"),
 	[VISUAL_ERROR_VIDEO_HAS_ALLOCATED] =		N_("VisVideo has allocated pixel buffer"),
 	[VISUAL_ERROR_VIDEO_BUFFER_NULL] =		N_("VisVideo has no VisBuffer object"),

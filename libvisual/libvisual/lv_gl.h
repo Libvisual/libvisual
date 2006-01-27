@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_gl.h,v 1.4 2006-01-26 15:13:37 synap Exp $
+ * $Id: lv_gl.h,v 1.5 2006-01-27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,6 +28,8 @@
 #include <libvisual/lv_hashmap.h>
 
 VISUAL_BEGIN_DECLS
+
+#define VISUAL_GL_ATTRIBUTE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisGLAttributeEntry))
 
 /**
  * Enumerate with GL attributes.
@@ -55,7 +57,7 @@ typedef enum {
 
 
 typedef struct _VisGLCallbacks VisGLCallbacks;
-typedef struct _VisGLAttributeEnviron VisGLAttributeEnviron;
+typedef struct _VisGLAttributeEntry VisGLAttributeEntry;
 
 typedef int (*VisGLSetAttributeFunc)(VisGLAttribute attribute, int value);
 typedef int (*VisGLGetAttributeFunc)(VisGLAttribute attribute, int *value);
@@ -66,10 +68,10 @@ struct _VisGLCallbacks {
 	VisGLGetAttributeFunc	attribute_get;
 };
 
-struct _VisGLAttributeEnviron {
-	VisObject	 object;
-
-	VisHashmap	 map;
+struct _VisGLAttributeEntry {
+	VisGLAttribute	attribute;
+	int		value;
+	int		mutated;
 };
 
 /* prototypes */
@@ -82,10 +84,6 @@ int visual_gl_get_attribute (VisGLAttribute attribute, int *value);
 void *visual_gl_get_proc_address (char *procname);
 
 VisGLCallbacks *visual_gl_get_callbacks (void);
-
-VisGLAttributeEnviron *visual_gl_attribute_environ_new (void);
-int visual_gl_attribute_environ_put (VisGLAttributeEnviron *glenviron, VisGLAttribute attribute, int value);
-int visual_gl_attribute_environ_remove (VisGLAttributeEnviron *glenviron, VisGLAttribute attribute);
 
 VISUAL_END_DECLS
 
