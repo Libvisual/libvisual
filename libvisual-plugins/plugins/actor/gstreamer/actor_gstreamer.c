@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_gstreamer.c,v 1.8 2006-01-22 13:25:25 synap Exp $
+ * $Id: actor_gstreamer.c,v 1.9 2006-01-27 20:19:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -61,7 +61,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = act_gstreamer_requisition,
 		.palette = act_gstreamer_palette,
 		.render = act_gstreamer_render,
-		.depth = VISUAL_VIDEO_DEPTH_24BIT
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_24BIT
 	}};
 
 	static VisPluginInfo info[] = {{

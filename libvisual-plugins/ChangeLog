@@ -1,3 +1,7 @@
+2006-01-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*/*: Updated to new vidoptions api.
+
 2006-01-26  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/actor/finespectrum/*: Started on port, non functional.

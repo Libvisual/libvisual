@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_oinksie.c,v 1.35 2006-01-22 13:25:26 synap Exp $
+ * $Id: actor_oinksie.c,v 1.36 2006-01-27 20:19:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -69,9 +69,9 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = act_oinksie_requisition,
 		.palette = act_oinksie_palette,
 		.render = act_oinksie_render,
-		.depth =
+		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
-			VISUAL_VIDEO_DEPTH_32BIT,
+			VISUAL_VIDEO_DEPTH_32BIT
 	}};
 
 	static VisPluginInfo info[] = {{

@@ -5,7 +5,7 @@
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_flower.c,v 1.9 2006-01-22 13:25:26 synap Exp $
+ * $Id: actor_flower.c,v 1.10 2006-01-27 20:19:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -67,7 +67,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = lv_flower_requisition,
 		.palette = lv_flower_palette,
 		.render = lv_flower_render,
-		.depth = VISUAL_VIDEO_DEPTH_GL
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
 	}};
 
 	static VisPluginInfo info[] = {{
@@ -89,6 +89,12 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	*count = sizeof (info) / sizeof (*info);
+
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
 
 	return info;
 }

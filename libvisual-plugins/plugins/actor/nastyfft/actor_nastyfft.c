@@ -73,11 +73,11 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (int *count)
 {
-	static const VisActorPlugin actor[] = {{
+	static VisActorPlugin actor[] = {{
 		.requisition = lv_nastyfft_requisition,
 		.palette = lv_nastyfft_palette,
 		.render = lv_nastyfft_render,
-		.depth = VISUAL_VIDEO_DEPTH_GL
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
 	}};
 
 	static const VisPluginInfo info[] = {{
@@ -99,6 +99,12 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	*count = sizeof (info) / sizeof (*info);
+
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
 
 	return info;
 }

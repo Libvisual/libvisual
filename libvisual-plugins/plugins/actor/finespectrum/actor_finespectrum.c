@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_finespectrum.c,v 1.1 2006-01-26 15:15:15 synap Exp $
+ * $Id: actor_finespectrum.c,v 1.2 2006-01-27 20:19:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -72,7 +72,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = actor_finespectrum_requisition,
 		.palette = actor_finespectrum_palette,
 		.render = actor_finespectrum_render,
-		.depth = VISUAL_VIDEO_DEPTH_8BIT
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
 	static VisPluginInfo info[] = {{

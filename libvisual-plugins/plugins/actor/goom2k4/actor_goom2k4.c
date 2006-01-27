@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_goom2k4.c,v 1.4 2006-01-22 13:25:24 synap Exp $
+ * $Id: actor_goom2k4.c,v 1.5 2006-01-27 20:19:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -59,7 +59,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = lv_goom_requisition,
 		.palette = lv_goom_palette,
 		.render = lv_goom_render,
-		.depth = VISUAL_VIDEO_DEPTH_32BIT
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT
 	}};
 
 	static VisPluginInfo info[] = {{

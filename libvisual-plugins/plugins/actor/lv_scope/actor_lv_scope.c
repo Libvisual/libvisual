@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_lv_scope.c,v 1.20 2006-01-22 13:25:25 synap Exp $
+ * $Id: actor_lv_scope.c,v 1.21 2006-01-27 20:19:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -55,7 +55,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = lv_scope_requisition,
 		.palette = lv_scope_palette,
 		.render = lv_scope_render,
-		.depth = VISUAL_VIDEO_DEPTH_8BIT
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
 	static VisPluginInfo info[] = {{

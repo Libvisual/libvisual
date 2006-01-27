@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Andrew Birck <birck@uiuc.edu>
  *
- * $Id: madspin.c,v 1.30 2006-01-22 13:25:25 synap Exp $
+ * $Id: madspin.c,v 1.31 2006-01-27 20:19:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -86,7 +86,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = lv_madspin_requisition,
 		.palette = lv_madspin_palette,
 		.render = lv_madspin_render,
-		.depth = VISUAL_VIDEO_DEPTH_GL
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
 	}};
 
 	static VisPluginInfo info[] = {{
@@ -108,6 +108,12 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	*count = sizeof (info) / sizeof (*info);
+
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
 
 	return info;
 }

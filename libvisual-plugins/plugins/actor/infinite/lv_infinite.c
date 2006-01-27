@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_infinite.c,v 1.22 2006-01-22 13:25:25 synap Exp $
+ * $Id: lv_infinite.c,v 1.23 2006-01-27 20:19:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -49,7 +49,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = act_infinite_requisition,
 		.palette = act_infinite_palette,
 		.render = act_infinite_render,
-		.depth = VISUAL_VIDEO_DEPTH_8BIT
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
 	static VisPluginInfo info[] = {{

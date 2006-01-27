@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_dancingparticles.cpp,v 1.9 2005-12-22 21:50:08 synap Exp $
+ * $Id: actor_dancingparticles.cpp,v 1.10 2006-01-27 20:19:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -63,7 +63,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	actor[0].requisition = lv_dancingparticles_requisition;
 	actor[0].palette = lv_dancingparticles_palette;
 	actor[0].render = lv_dancingparticles_render;
-	actor[0].depth = VISUAL_VIDEO_DEPTH_GL;
+	actor[0].vidoptions.depth = VISUAL_VIDEO_DEPTH_GL;
 
 	info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
 
@@ -82,6 +82,12 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info[0].plugin = VISUAL_OBJECT (&actor[0]);
 
 	*count = sizeof (info) / sizeof (*info);
+
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
 
 	return info;
 }

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_gforce.cpp,v 1.10 2006-01-15 00:18:01 synap Exp $
+ * $Id: actor_gforce.cpp,v 1.11 2006-01-27 20:19:13 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -76,7 +76,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	actor[0].requisition = lv_gforce_requisition;
 	actor[0].palette = lv_gforce_palette;
 	actor[0].render = lv_gforce_render;
-	actor[0].depth = VISUAL_VIDEO_DEPTH_8BIT;
+	actor[0].vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT;
 
 	info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
 

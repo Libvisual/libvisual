@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_plazma.c,v 1.19 2006-01-22 13:25:26 synap Exp $
+ * $Id: actor_plazma.c,v 1.20 2006-01-27 20:19:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -51,7 +51,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = act_plazma_requisition,
 		.palette = act_plazma_palette,
 		.render = act_plazma_render,
-		.depth = VISUAL_VIDEO_DEPTH_8BIT
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
 	static VisPluginInfo info[] = {{

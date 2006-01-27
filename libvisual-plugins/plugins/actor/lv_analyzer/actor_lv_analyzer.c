@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_lv_analyzer.c,v 1.27 2006-01-26 15:15:15 synap Exp $
+ * $Id: actor_lv_analyzer.c,v 1.28 2006-01-27 20:19:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -57,7 +57,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = lv_analyzer_requisition,
 		.palette = lv_analyzer_palette,
 		.render = lv_analyzer_render,
-		.depth = VISUAL_VIDEO_DEPTH_8BIT
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	}};
 
 	static VisPluginInfo info[] = {{

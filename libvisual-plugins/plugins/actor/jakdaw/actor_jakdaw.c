@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_jakdaw.c,v 1.25 2006-01-22 13:25:25 synap Exp $
+ * $Id: actor_jakdaw.c,v 1.26 2006-01-27 20:19:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -51,7 +51,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = act_jakdaw_requisition,
 		.palette = act_jakdaw_palette,
 		.render = act_jakdaw_render,
-		.depth = VISUAL_VIDEO_DEPTH_32BIT
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT
 	}};
 
 	static VisPluginInfo info[] = {{

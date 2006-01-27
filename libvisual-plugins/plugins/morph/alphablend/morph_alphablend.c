@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: morph_alphablend.c,v 1.18 2006-01-22 13:25:27 synap Exp $
+ * $Id: morph_alphablend.c,v 1.19 2006-01-27 20:19:18 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -56,7 +56,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisMorphPlugin morph[] = {{
 		.apply = lv_morph_alpha_apply,
-		.depth =
+		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT  |
 			VISUAL_VIDEO_DEPTH_16BIT |
 			VISUAL_VIDEO_DEPTH_24BIT |

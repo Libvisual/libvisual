@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: morph_tentacle.c,v 1.17 2006-01-22 13:25:28 synap Exp $
+ * $Id: morph_tentacle.c,v 1.18 2006-01-27 20:19:18 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -55,7 +55,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisMorphPlugin morph[] = {{
 		.apply = lv_morph_tentacle_apply,
-		.depth =
+		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
 			VISUAL_VIDEO_DEPTH_16BIT |
 			VISUAL_VIDEO_DEPTH_24BIT |

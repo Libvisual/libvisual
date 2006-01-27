@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: jess.c,v 1.24 2006-01-18 19:45:24 synap Exp $
+ * $Id: jess.c,v 1.25 2006-01-27 20:19:14 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -59,7 +59,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.requisition = act_jess_requisition,
 		.palette = act_jess_palette,
 		.render = act_jess_render,
-		.depth =
+		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
 	}};
