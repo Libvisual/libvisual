@@ -408,7 +408,7 @@ static int visual_initialize (int width, int height)
                 return -1;
         }        
 	
-	visual_bin_switch_set_style (bin, VISUAL_SWITCH_STYLE_DIRECT);
+	visual_bin_switch_set_style (bin, VISUAL_SWITCH_STYLE_MORPH);
 	visual_bin_switch_set_automatic (bin, TRUE);
 	visual_bin_switch_set_mode (bin, VISUAL_MORPH_MODE_TIME);
 	visual_bin_switch_set_time (bin, 4, 0);

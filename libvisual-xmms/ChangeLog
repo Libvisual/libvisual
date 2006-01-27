@@ -1,3 +1,7 @@
+2006-01-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/*: Works with new vidoptions api.
+
 2005-11-21  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* src/main.c: Upload into new audio core.

@@ -644,7 +644,7 @@ static int is_gl_actor (VisPluginRef *actor)
 
 	plugin = visual_plugin_load (actor);
 	actplugin = plugin->info->plugin;
-	if (actplugin->depth & VISUAL_VIDEO_DEPTH_GL) {
+	if (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) {
 		visual_plugin_unload (plugin);
 		return TRUE;
 	} else {
