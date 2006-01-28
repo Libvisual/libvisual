@@ -58,7 +58,7 @@ build_morph=""
 PKG_CHECK_MODULES(LIBESD, esound >= esound_required_version, [libesd="yes"], [libesd="no"])
 if test x$libesd = xno; then
 	AC_MSG_WARN([*** esound not found or too old.
-			The esound input plugin won't be build])
+			The esound input plugin won't be built])
 fi
 AC_SUBST(LIBESD_LIBS)
 AC_SUBST(LIBESD_CFLAGS)
@@ -70,7 +70,7 @@ fi
 PKG_CHECK_MODULES(LIBJACK, jack >= jack_required_version, [jack="yes"], [jack="no"])
 if test x$jack = xno; then
 	AC_MSG_WARN([*** libjack is too old. You can download a newer version at
-		     	http://jackit.sf.net/. The jackit input plugin won't be build])
+		     	http://jackit.sf.net/. The jackit input plugin won't be built])
 fi
 AC_SUBST(LIBJACK_LIBS)
 AC_SUBST(LIBJACK_CFLAGS)
