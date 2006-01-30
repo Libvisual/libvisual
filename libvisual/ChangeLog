@@ -1,3 +1,7 @@
+2006-01-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.c: More sse code, nothing too exciting.
+
 2006-01-27  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_actor.*, libvisual/lv_gl.*, libvisual/lv_video.*,

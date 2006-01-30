@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.10 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_math.c,v 1.11 2006-01-30 18:20:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -187,7 +187,53 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
-	if (visual_cpu_get_3dnow ()) {
+	if (visual_cpu_get_sse () && n >= 16) {
+		float packed_adder[4];
+
+		packed_adder[0] = adder;
+		packed_adder[1] = adder;
+		packed_adder[2] = adder;
+		packed_adder[3] = adder;
+
+#ifdef VISUAL_ARCH_X86
+		while (!VISUAL_ALIGNED(d, 16)) {
+			(*d) = (*s) + adder;
+
+			d++;
+			s++;
+
+			n--;
+		}
+
+		__asm __volatile
+			("\n\t movups (%0), %%xmm7"
+			 :: "r" (packed_adder) : "memory");
+
+
+		while (n > 16) {
+			__asm __volatile
+				("\n\t prefetchnta 256(%0)"
+				 "\n\t movups (%0), %%xmm0"
+				 "\n\t movups 16(%0), %%xmm1"
+				 "\n\t movups 32(%0), %%xmm2"
+				 "\n\t movups 48(%0), %%xmm3"
+				 "\n\t addps %%xmm7, %%xmm0"
+				 "\n\t addps %%xmm7, %%xmm1"
+				 "\n\t addps %%xmm7, %%xmm2"
+				 "\n\t addps %%xmm7, %%xmm3"
+				 "\n\t movntps %%xmm0, (%1)"
+				 "\n\t movntps %%xmm1, 16(%1)"
+				 "\n\t movntps %%xmm2, 32(%1)"
+				 "\n\t movntps %%xmm3, 48(%1)"
+				 :: "r" (s), "r" (d) : "memory");
+
+			d += 16;
+			s += 16;
+
+			n -= 16;
+		}
+#endif /* VISUAL_ARCH_X86 */
+	} else if (visual_cpu_get_3dnow ()) {
 		float packed_adder[2];
 
 		packed_adder[0] = adder;
@@ -265,7 +311,53 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
-	if (visual_cpu_get_3dnow ()) {
+	if (visual_cpu_get_sse () && n >= 16) {
+		float packed_substracter[4];
+
+		packed_substracter[0] = substracter;
+		packed_substracter[1] = substracter;
+		packed_substracter[2] = substracter;
+		packed_substracter[3] = substracter;
+
+#ifdef VISUAL_ARCH_X86
+		while (!VISUAL_ALIGNED(d, 16)) {
+			(*d) = (*s) - substracter;
+
+			d++;
+			s++;
+
+			n--;
+		}
+
+		__asm __volatile
+			("\n\t movups (%0), %%xmm7"
+			 :: "r" (packed_substracter) : "memory");
+
+
+		while (n > 16) {
+			__asm __volatile
+				("\n\t prefetchnta 256(%0)"
+				 "\n\t movups (%0), %%xmm0"
+				 "\n\t movups 16(%0), %%xmm1"
+				 "\n\t movups 32(%0), %%xmm2"
+				 "\n\t movups 48(%0), %%xmm3"
+				 "\n\t addps %%xmm7, %%xmm0"
+				 "\n\t addps %%xmm7, %%xmm1"
+				 "\n\t addps %%xmm7, %%xmm2"
+				 "\n\t addps %%xmm7, %%xmm3"
+				 "\n\t movntps %%xmm0, (%1)"
+				 "\n\t movntps %%xmm1, 16(%1)"
+				 "\n\t movntps %%xmm2, 32(%1)"
+				 "\n\t movntps %%xmm3, 48(%1)"
+				 :: "r" (s), "r" (d) : "memory");
+
+			d += 16;
+			s += 16;
+
+			n -= 16;
+		}
+#endif /* VISUAL_ARCH_X86 */
+	} else if (visual_cpu_get_3dnow ()) {
 		float packed_substracter[2];
 
 		packed_substracter[0] = substracter;
