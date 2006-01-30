@@ -28,6 +28,11 @@ New in 0.4.0: xxxx-xx-xx:
   VISUAL_PLUGIN_API_VERSION_VALIDATOR somewhere in your plugin and it'll
   work. (Dennis)
 * Homedir installable plugins ~/.libvisual/actor transform morph input. (Dennis)
+* Added VisOS. Realtime priority functions are hosted in this module. (Dennis)
+* Added VisMath. All kind of math related functions have been added, most
+  note worthy are the _vectorized_. All of these are accelerated by
+  mmx/3dnow/sse instructions.
+* VisFourier completely revamped. (Chong Kai Xiong)
 
 New in 0.2.0: 2005-02-09:
 * VisTransform subsystem. (Dennis)
