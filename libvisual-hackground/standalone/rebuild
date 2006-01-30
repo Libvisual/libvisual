@@ -4,3 +4,8 @@ gcc -Wall -o lv-standalone client.c display.c sdldriver.c \
   `pkg-config --cflags --libs libvisual` \
   `sdl-config --libs --cflags` \
   -ggdb
+
+gcc -Wall -o lv-morph morphclient.c display.c sdldriver.c \
+  `pkg-config --cflags --libs libvisual` \
+  `sdl-config --libs --cflags` \
+  -ggdb
