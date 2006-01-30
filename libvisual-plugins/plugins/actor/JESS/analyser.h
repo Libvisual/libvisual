@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: analyser.h,v 1.3 2005-12-20 18:49:12 synap Exp $
+ * $Id: analyser.h,v 1.4 2006-01-30 19:06:46 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -32,4 +32,4 @@ void C_E_moyen(JessPrivate *priv, short data_freq_tmp[2][256]);
 float energy(JessPrivate *priv, short data_freq_tmp[2][256], int type_E);
 int start_ticks(JessPrivate *priv);
 float time_last(JessPrivate *priv, int i, int reinit);
-inline void ips(JessPrivate *priv);
+void ips(JessPrivate *priv);

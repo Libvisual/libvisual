@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: analyser.c,v 1.5 2005-12-20 18:49:12 synap Exp $
+ * $Id: analyser.c,v 1.6 2006-01-30 19:06:46 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -153,7 +153,7 @@ float time_last(JessPrivate *priv, int i, int reinit)
 
 
 
-inline void ips(JessPrivate *priv)
+void ips(JessPrivate *priv)
 {
 	priv->conteur.dt = time_last(priv, FOUR, NON);
 	priv->conteur.fps = (int) 1 / time_last(priv, FOUR, REINIT);
