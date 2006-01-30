@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_goom2k4.c,v 1.5 2006-01-27 20:19:16 synap Exp $
+ * $Id: actor_goom2k4.c,v 1.6 2006-01-30 18:22:50 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -168,6 +168,7 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	short pcmdata[2][512];
 	float fpcmdata[2][512];
 	uint32_t *buf;
+	uint8_t *vidbuf = visual_video_get_pixels (video);
 	int showinfo = TRUE;
 	int i;
 
@@ -203,7 +204,11 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	else
 		buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 
-	visual_mem_copy (visual_video_get_pixels (video), buf, video->width * video->height * video->bpp);
+	for (i = 0; i < video->height; i++) {
+		visual_mem_copy (vidbuf, buf + (video->width * i), video->width * video->bpp);
+
+		vidbuf += video->pitch;
+	}
 
 	return 0;
 }

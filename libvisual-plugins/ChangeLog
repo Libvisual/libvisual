@@ -1,3 +1,10 @@
+2006-01-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/infinite,
+	plugins/actor/goom2k4: Made the plugins pitch (rowstride) aware!.
+
+	This is a new requirement for plugins.
+
 2006-01-27  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*/*: Updated to new vidoptions api.

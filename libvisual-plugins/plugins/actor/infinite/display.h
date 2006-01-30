@@ -5,7 +5,7 @@
 
 #include "main.h"
 
-void _inf_display (InfinitePrivate *priv, uint8_t *surf);
+void _inf_display (InfinitePrivate *priv, uint8_t *surf, int pitch);
 
 void _inf_generate_colors(InfinitePrivate *priv);
 void _inf_change_color(InfinitePrivate *priv, int old_p,int p,int w);

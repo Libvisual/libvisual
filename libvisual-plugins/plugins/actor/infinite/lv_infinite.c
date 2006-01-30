@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_infinite.c,v 1.23 2006-01-27 20:19:16 synap Exp $
+ * $Id: lv_infinite.c,v 1.24 2006-01-30 18:22:50 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -222,7 +222,7 @@ int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
 
 	_inf_renderer (priv);
-	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video));
+	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video), video->pitch);
 
 	return 0;
 }

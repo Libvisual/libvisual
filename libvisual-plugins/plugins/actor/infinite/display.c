@@ -182,16 +182,23 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 			}
 		}
 	}
-	
-	
+
+
 	ptr_swap=priv->surface1;
 	priv->surface1=priv->surface2;
 	priv->surface2=ptr_swap;
 }
 
-void _inf_display (InfinitePrivate *priv, uint8_t *surf)
+void _inf_display (InfinitePrivate *priv, uint8_t *surf, int pitch)
 {
-	visual_mem_copy (surf, priv->surface1, priv->plugwidth * priv->plugheight);
+	int i;
+
+	for (i = 0; i < priv->plugheight; i++) {
+
+		visual_mem_copy (surf, priv->surface1 + (i * priv->plugwidth), priv->plugwidth);
+
+		surf += pitch;
+	}
 }
 
 void _inf_blur(InfinitePrivate *priv, t_interpol* vector_field)
