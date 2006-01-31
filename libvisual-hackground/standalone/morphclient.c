@@ -36,10 +36,9 @@ int main (int argc, char **argv)
 		inputn = argv[2];
 
 	bin = visual_bin_new ();
+	visual_bin_set_supported_depth (bin, VISUAL_VIDEO_DEPTH_ALL);
 
 	visual_bin_connect_by_names (bin, actorn, inputn);
-
-	visual_bin_set_supported_depth (bin, VISUAL_VIDEO_DEPTH_ALL);
 
 	vidoptions = visual_actor_get_video_attribute_options (visual_bin_get_actor (bin));
 
@@ -60,7 +59,6 @@ int main (int argc, char **argv)
 
 	visual_bin_realize (bin);
 
-	bin->depthforcedmain = depth; /* EHR!? FIXME hmms */
 	visual_bin_sync (bin, FALSE);
 
 
@@ -114,7 +112,8 @@ int main (int argc, char **argv)
 							break;
 
 						case VKEY_PAGEUP:
-							visual_bin_set_morph_by_name (bin, "alphablend");
+							visual_bin_set_morph_by_name (bin, "tentacle");
+
 							visual_bin_switch_actor_by_name (bin, "oinksie");
 
 							break;

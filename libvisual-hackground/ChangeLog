@@ -1,3 +1,8 @@
+2006-01-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* standalone/morphclient.c: Kinda works now, this once again reminds
+	me how fucked up VisBin is coded.
+
 2006-01-30  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* new_tests/*: Adding.
