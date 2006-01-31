@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-misc.h,v 1.4 2006-01-22 13:25:26 synap Exp $
+ * $Id: gfx-misc.h,v 1.5 2006-01-31 16:42:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -26,14 +26,14 @@
 
 #include "oinksie.h"
 
-inline void _oink_gfx_something_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y, int type, int pixmap);
-inline void _oink_gfx_pixmap_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y, int type);
-inline int _oink_gfx_pixel_get (OinksiePrivate *priv, uint8_t *buf, int x, int y);
-inline void _oink_gfx_pixel_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y);
-inline void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x0, int y0, int x1, int y1);
-inline void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2);
-inline void _oink_gfx_vline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2);
-inline void _oink_gfx_circle_filled (OinksiePrivate *priv, uint8_t *buf, int color, int size, int x, int y);
-inline void _oink_gfx_circle (OinksiePrivate *priv, uint8_t *buf, int color, int xsize, int ysize, int x, int y);
+void _oink_gfx_something_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y, int type, int pixmap);
+void _oink_gfx_pixmap_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y, int type);
+int _oink_gfx_pixel_get (OinksiePrivate *priv, uint8_t *buf, int x, int y);
+void _oink_gfx_pixel_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y);
+void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x0, int y0, int x1, int y1);
+void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2);
+void _oink_gfx_vline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2);
+void _oink_gfx_circle_filled (OinksiePrivate *priv, uint8_t *buf, int color, int size, int x, int y);
+void _oink_gfx_circle (OinksiePrivate *priv, uint8_t *buf, int color, int xsize, int ysize, int x, int y);
 
 #endif /* _OINK_GFX_MISC_H */

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-misc.c,v 1.8 2006-01-22 13:25:26 synap Exp $
+ * $Id: gfx-misc.c,v 1.9 2006-01-31 16:42:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -32,7 +32,7 @@
 #include "screen.h"
 #include "gfx-misc.h"
 
-inline int _oink_gfx_pixel_get (OinksiePrivate *priv, uint8_t *buf, int x, int y)
+int _oink_gfx_pixel_get (OinksiePrivate *priv, uint8_t *buf, int x, int y)
 {
 	int pos = (y * priv->screen_width) + x;
 
@@ -42,7 +42,7 @@ inline int _oink_gfx_pixel_get (OinksiePrivate *priv, uint8_t *buf, int x, int y
 	return 0;
 }
 
-inline void _oink_gfx_pixel_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y)
+void _oink_gfx_pixel_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y)
 {
 	int pos = (y * priv->screen_width) + x;
 
@@ -52,7 +52,7 @@ inline void _oink_gfx_pixel_set (OinksiePrivate *priv, uint8_t *buf, int color, 
 }
 
 /* FIXME this routine shows errors */
-inline void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x0, int y0, int x1, int y1)
+void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x0, int y0, int x1, int y1)
 {
 	register int dy = y1 - y0;
 	register int dx = x1 - x0;
@@ -157,7 +157,7 @@ inline void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x
 	}
 }
 
-inline void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int y, int x1, int x2)
+void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int y, int x1, int x2)
 {
 	int firstx = x1 < x2 ? x1 : x2;
 	int endx = x1 > x2 ? x1 : x2;
@@ -186,7 +186,7 @@ inline void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int 
 	visual_mem_set (buf + begin, color, endx - firstx);
 }
 
-inline void _oink_gfx_vline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2)
+void _oink_gfx_vline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2)
 {
 	int y;
 	
@@ -206,7 +206,7 @@ inline void _oink_gfx_vline (OinksiePrivate *priv, uint8_t *buf, int color, int 
 	}
 }
 
-inline void _oink_gfx_circle_filled (OinksiePrivate *priv, uint8_t *buf, int color, int size, int x, int y)
+void _oink_gfx_circle_filled (OinksiePrivate *priv, uint8_t *buf, int color, int size, int x, int y)
 {
 	int i;
 	int sizei = (size * PI) > 0 ? (size * PI) : 1;
@@ -228,7 +228,7 @@ inline void _oink_gfx_circle_filled (OinksiePrivate *priv, uint8_t *buf, int col
 	}
 }
 
-inline void _oink_gfx_circle (OinksiePrivate *priv, uint8_t *buf, int color, int xsize, int ysize, int x, int y)
+void _oink_gfx_circle (OinksiePrivate *priv, uint8_t *buf, int color, int xsize, int ysize, int x, int y)
 {
 	int i;
 	int size = 300;

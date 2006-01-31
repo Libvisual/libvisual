@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: config.h,v 1.4 2006-01-22 13:25:26 synap Exp $
+ * $Id: config.h,v 1.5 2006-01-31 16:42:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -27,11 +27,11 @@
 #include "oinksie.h"
 
 /* random config sets */
-inline void _oink_config_random_blurmode (OinksiePrivate *priv);
-inline void _oink_config_random_scopemode (OinksiePrivate *priv);
-inline void _oink_config_random_backgroundmode (OinksiePrivate *priv);
-inline void _oink_config_random_beatdots (OinksiePrivate *priv);
-inline void _oink_config_random_scopestereo (OinksiePrivate *priv);
-inline void _oink_config_random_palfunky (OinksiePrivate *priv);
+void _oink_config_random_blurmode (OinksiePrivate *priv);
+void _oink_config_random_scopemode (OinksiePrivate *priv);
+void _oink_config_random_backgroundmode (OinksiePrivate *priv);
+void _oink_config_random_beatdots (OinksiePrivate *priv);
+void _oink_config_random_scopestereo (OinksiePrivate *priv);
+void _oink_config_random_palfunky (OinksiePrivate *priv);
 
 #endif /* _OINK_CONFIG_H */
