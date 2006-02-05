@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_hashmap.c,v 1.9 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_hashmap.c,v 1.10 2006-02-05 18:45:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -62,11 +62,10 @@ static int create_table (VisHashmap *hashmap);
 static int hashmap_destroy (VisCollection *collection)
 {
 	VisCollectionDestroyerFunc destroyer;
-	VisHashmap *hashmap = VISUAL_HASHMAP (hashmap);
+	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
 	VisHashmapEntry *mentry;
 	int i;
 
-	/* FIXME borked, does not free the string keys */
 	for (i = 0; i < hashmap->size; i++)
 		hashmap_chain_destroy (hashmap, &hashmap->table[i].list);
 
@@ -96,6 +95,20 @@ static int hashmap_chain_destroy (VisHashmap *hashmap, VisList *list)
 			visual_list_destroy (list, &le);
 		}
 	}
+}
+
+static int hashmap_list_entry_destroyer (void *data)
+{
+	VisHashmapChainEntry *mentry = VISUAL_HASHMAPCHAINENTRY (data);
+
+	if (mentry == NULL)
+		return -1;
+
+	if (mentry->keytype == VISUAL_HASHMAP_KEY_TYPE_STRING) {
+		visual_mem_free (mentry->key.string);
+	}
+
+	return visual_mem_free (mentry);
 }
 
 static int hashmap_size (VisCollection *collection)
@@ -211,7 +224,7 @@ static int create_table (VisHashmap *hashmap)
 	hashmap->table = visual_mem_new0 (VisHashmapEntry, hashmap->tablesize);
 
 	/* Initialize first entry */
-	visual_list_init (&hashmap->table[0].list, visual_mem_free);
+	visual_list_init (&hashmap->table[0].list, hashmap_list_entry_destroyer);
 
 	/* Copy the entries to increase speed */
 	for (i = 1; i < hashmap->tablesize; i *= 2) {
@@ -439,26 +452,44 @@ void *visual_hashmap_get_string (VisHashmap *hashmap, char *key)
 
 int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize)
 {
-	VisHashmapEntry *oldtable;
 	int oldsize;
 
 	visual_log_return_val_if_fail (hashmap != NULL, -VISUAL_ERROR_HASHMAP_NULL);
 
-	hashmap->tablesize = tablesize;
-
 	/* Table was not empty, rehash */
 	if (hashmap->table != NULL) {
-		oldtable = hashmap->table;
-		oldsize = hashmap->tablesize;
+		VisHashmap tempmap;
 
+		visual_hashmap_init (&tempmap, NULL);
+
+		tempmap.table = hashmap->table;
+		tempmap.tablesize = hashmap->tablesize;
+		tempmap.size = hashmap->size;
+
+		VisCollectionIter *iter = visual_collection_get_iter (VISUAL_COLLECTION (hashmap));
+
+		hashmap->tablesize = tablesize;
 		create_table (hashmap);
 
 		/* Rehash all entries */
+		while (visual_collection_iter_has_more (iter) == TRUE) {
+			VisHashmapChainEntry *mentry = visual_collection_iter_get_data (iter);
 
+			if (mentry->keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER) {
+				visual_hashmap_put_integer (hashmap, mentry->key.integer, mentry->data);
 
+			} else if (mentry->keytype == VISUAL_HASHMAP_KEY_TYPE_STRING) {
+				visual_hashmap_put_string (hashmap, mentry->key.string, mentry->data);
+
+			}
+		}
 
 		/* Free old table */
+		visual_object_unref (VISUAL_OBJECT (&tempmap));
 
+	} else {
+		hashmap->tablesize = tablesize;
+		create_table (hashmap);
 	}
 
 	return VISUAL_OK;

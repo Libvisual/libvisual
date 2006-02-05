@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video_simd.c,v 1.5 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_video_simd.c,v 1.6 2006-02-05 18:45:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,7 +33,7 @@
 
 int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src)
 {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf = visual_video_get_pixels (src);
@@ -82,7 +82,7 @@ int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src)
 
 int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	uint32_t y;
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint32_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;

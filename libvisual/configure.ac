@@ -14,6 +14,7 @@ lv_mips=no
 lv_alpha=no
 lv_sparc=no
 lv_ix86=no
+lv_x86_64=no
 lv_powerpc=no
 
 case "$host_cpu" in
@@ -21,6 +22,7 @@ case "$host_cpu" in
 	alpha)          lv_alpha=yes;;
 	sparc)          lv_sparc=yes;;
 	i*86)           lv_ix86=yes;;
+	x86_64*)	lv_x86_64=yes;;
        	powerpc|ppc)    lv_powerpc=yes;;
 	*)		lv_arch_unknown=yes;;
 esac
@@ -563,6 +565,13 @@ _______EOF
                 cat >>$outfile <<_______EOF
 
 #define VISUAL_ARCH_X86
+_______EOF
+        fi
+
+        if test x$lv_x86_64 = xyes ; then
+                cat >>$outfile <<_______EOF
+
+#define VISUAL_ARCH_X86_64
 _______EOF
         fi
 

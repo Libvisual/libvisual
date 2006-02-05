@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.h,v 1.20 2006-01-23 22:32:42 synap Exp $
+ * $Id: lv_time.h,v 1.21 2006-02-05 18:45:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -103,7 +103,7 @@ int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
  */
 static inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
 {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("\n\t cpuid"
 		 "\n\t rdtsc"

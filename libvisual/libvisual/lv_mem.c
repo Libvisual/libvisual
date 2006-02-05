@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_mem.c,v 1.29 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_mem.c,v 1.30 2006-02-05 18:45:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -220,7 +220,7 @@ static void *mem_copy_mmx (void *dest, const void *src, visual_size_t n)
 	uint8_t *dc = dest;
 	const uint8_t *sc = src;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t movq (%0), %%mm0"
@@ -272,7 +272,7 @@ static void *mem_copy_mmx2 (void *dest, const void *src, visual_size_t n)
 	uint8_t *dc = dest;
 	const uint8_t *sc = src;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t prefetchnta 256(%0)"
@@ -326,7 +326,7 @@ static void *mem_copy_3dnow (void *dest, const void *src, visual_size_t n)
 	uint8_t *dc = dest;
 	const uint8_t *sc = src;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	while (n >= 64) {
 		__asm __volatile
 			("\n\t prefetch 256(%0)"
@@ -414,7 +414,7 @@ static void *mem_set8_mmx (void *dest, int c, visual_size_t n)
 		((c << 24) & 0xff000000);
 	uint8_t setflag8 = c & 0xff;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("\n\t movd (%0), %%mm0"
 		 "\n\t movd (%0), %%mm1"
@@ -474,7 +474,7 @@ static void *mem_set8_mmx2 (void *dest, int c, visual_size_t n)
 		((c << 24) & 0xff000000);
 	uint8_t setflag8 = c & 0xff;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("\n\t movd (%0), %%mm0"
 		 "\n\t movd (%0), %%mm1"
@@ -560,7 +560,7 @@ static void *mem_set16_mmx (void *dest, int c, visual_size_t n)
 		((c << 16) & 0xffff0000);
 	uint16_t setflag16 = c & 0xffff;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("\n\t movd (%0), %%mm0"
 		 "\n\t movd (%0), %%mm1"
@@ -618,7 +618,7 @@ static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n)
 		((c << 16) & 0xffff0000);
 	uint16_t setflag16 = c & 0xffff;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("\n\t movd (%0), %%mm0"
 		 "\n\t movd (%0), %%mm1"
@@ -689,7 +689,7 @@ static void *mem_set32_mmx (void *dest, int c, visual_size_t n)
 	uint32_t *d = dest;
 	uint32_t setflag32 = c;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("\n\t movd (%0), %%mm0"
 		 "\n\t movd (%0), %%mm1"
@@ -736,7 +736,7 @@ static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n)
 	uint32_t *d = dest;
 	uint32_t setflag32 = c;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("\n\t movd (%0), %%mm0"
 		 "\n\t movd (%0), %%mm1"

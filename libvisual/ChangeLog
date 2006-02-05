@@ -1,3 +1,14 @@
+2006-02-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Added x86_64 detection.
+
+	* libvisual/*: x86_64 supports x86 simd sets.
+
+	* libvisual/lv_hashmap.c: Fixed a critical bug found by in
+	the destructor. (Found by Jaak)
+
+	* libvisual/lv_hashmap.c: More work on rehashing.
+
 2006-01-30  Dennis Smit  <ds@nerds-incorporated.org>
 	
 	* NEWS: updated.

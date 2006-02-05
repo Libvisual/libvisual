@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.11 2006-01-30 18:20:53 synap Exp $
+ * $Id: lv_math.c,v 1.12 2006-02-05 18:45:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -71,7 +71,7 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 		packed_multiplier[2] = multiplier;
 		packed_multiplier[3] = multiplier;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			(*d) = (*s) * multiplier;
 
@@ -115,7 +115,7 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 		packed_multiplier[0] = multiplier;
 		packed_multiplier[1] = multiplier;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
 			 :: [multiplier] "m" (*packed_multiplier));
@@ -195,7 +195,7 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 		packed_adder[2] = adder;
 		packed_adder[3] = adder;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			(*d) = (*s) + adder;
 
@@ -239,7 +239,7 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 		packed_adder[0] = adder;
 		packed_adder[1] = adder;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[adder], %%mm0"
 			 :: [adder] "m" (*packed_adder));
@@ -319,7 +319,7 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 		packed_substracter[2] = substracter;
 		packed_substracter[3] = substracter;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			(*d) = (*s) - substracter;
 
@@ -363,7 +363,7 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 		packed_substracter[0] = substracter;
 		packed_substracter[1] = substracter;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[substracter], %%mm0"
 			 :: [substracter] "m" (*packed_substracter));
@@ -435,7 +435,7 @@ int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 	if (visual_cpu_get_3dnow ()) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 		while (n > 16) {
 			__asm __volatile
@@ -499,7 +499,7 @@ int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 	if (visual_cpu_get_3dnow ()) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 		while (n > 16) {
 			__asm __volatile
@@ -569,7 +569,7 @@ int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts
 		packed_multiplier[0] = multiplier;
 		packed_multiplier[1] = multiplier;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
 			 :: [multiplier] "m" (*packed_multiplier));
@@ -639,7 +639,7 @@ int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints
 		packed_multiplier[0] = multiplier;
 		packed_multiplier[1] = multiplier;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
 			 :: [multiplier] "m" (*packed_multiplier));
@@ -726,7 +726,7 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 		packed_adder[0] = 1;
 		packed_adder[1] = 1;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
 			 "\n\t movq %[normalise_mul], %%mm6"
@@ -794,7 +794,7 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
 	if (visual_cpu_get_sse () && n >= 16) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			*d = sqrtf (*s);
 
@@ -867,7 +867,7 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, floa
 		packed_scaler[2] = scaler;
 		packed_scaler[3] = scaler;
 
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * scaler;
 
