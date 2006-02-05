@@ -7,7 +7,7 @@
  *
  * Notes: Bumpscope plugin originally from XMMS.
  * 
- * $Id: bump_scope.c,v 1.17 2005-12-20 18:49:13 synap Exp $
+ * $Id: bump_scope.c,v 1.18 2006-02-05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -50,7 +50,7 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 	i = bpl * h;
 
 	if (visual_cpu_get_mmx ()) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 		__asm __volatile
 			("pxor %%mm6, %%mm6"
@@ -74,7 +74,7 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 				 "\n\t paddw %%mm2, %%mm4"
 				 "\n\t psrlw $2, %%mm4"
 				 "\n\t packuswb %%mm6, %%mm4"
-				 "\n\t movd %%mm4, %[dest]" 
+				 "\n\t movd %%mm4, %[dest]"
 				 :: [dest] "m" (*(iptr))
 				 , [pix2] "m" (*(iptr - bpl))
 				 , [pix3] "m" (*(iptr - 1))

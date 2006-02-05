@@ -145,6 +145,7 @@ static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *de
   }
 
   if (visual_cpu_get_mmx ()) {
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	  for (y=info->screen.height;y--;) {
 		  int xtex,ytex;
 
@@ -154,7 +155,6 @@ static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *de
 		  ytex = yprime + yi + CONV_MOTIF_W * 0x10000 / 2;
 		  yprime += c;
 
-#ifdef VISUAL_ARCH_X86
 		  __asm__ __volatile__
 			  ("\n\t pxor  %%mm7,  %%mm7"  /* mm7 = 0   */
 			   "\n\t movd %[xtex],  %%mm2"

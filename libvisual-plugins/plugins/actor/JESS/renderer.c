@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: renderer.c,v 1.10 2006-01-15 00:18:01 synap Exp $
+ * $Id: renderer.c,v 1.11 2006-02-05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -388,7 +388,7 @@ void render_blur(JessPrivate *priv, int blur)
 	{
 		if (visual_cpu_get_mmx ()) {
 			bmax = priv->resx * (priv->resy-1) + (uint32_t) priv->pixel;
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"
 				 ::);
@@ -426,11 +426,11 @@ void render_blur(JessPrivate *priv, int blur)
 		bmax = priv->pitch*(priv->resy-1) + (uint32_t) priv->pixel;
 
 		if (visual_cpu_get_mmx ()) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"
 				 ::);
-		
+
 			for (pix = priv->pixel; pix < (uint8_t *) bmax-4; )
 			{
 				__asm __volatile

@@ -6,7 +6,7 @@
  * 	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: corona.cpp,v 1.9 2006-01-22 13:25:23 synap Exp $
+ * $Id: corona.cpp,v 1.10 2006-02-05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -339,7 +339,7 @@ void Corona::blurImage()
 	int n = (m_real_height - 2) * m_width;
 
 	if (visual_cpu_get_mmx ()) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("pxor %%mm6, %%mm6"
 			 ::);

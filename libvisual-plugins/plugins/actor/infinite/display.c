@@ -73,7 +73,7 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 	 * van deze plugin from scratch doen... */
 	if (0) {
 #if 0
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		int add_src2[2];
 		uint8_t *ptr_pix2[2];
 		int plugwidth = priv->plugwidth;
@@ -156,7 +156,7 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 
 		__asm __volatile
 			("emms");
-#endif /* #ifdef VISUAL_ARCH_X86 */
+#endif /* #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
 #endif /* #if 0 */
 	} else {
 		for (j=0;j<priv->plugheight;j++) {

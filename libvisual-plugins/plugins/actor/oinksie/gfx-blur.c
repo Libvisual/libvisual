@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-blur.c,v 1.11 2006-01-22 13:25:26 synap Exp $
+ * $Id: gfx-blur.c,v 1.12 2006-02-05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -33,7 +33,7 @@ void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 	uint8_t valuetab[256];
 
 	if (visual_cpu_get_mmx ()) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		int fadeflag = fade | fade << 8 | fade << 16 | fade << 24;
 
 		/* Prepare substraction register */
@@ -88,7 +88,7 @@ void _oink_gfx_blur_middle (OinksiePrivate *priv, uint8_t *buf)
 	int scrsh = priv->screen_size / 2;
 
 	if (visual_cpu_get_mmx ()) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t pxor %%mm6, %%mm6"
 			 ::);
@@ -165,7 +165,7 @@ void _oink_gfx_blur_midstrange (OinksiePrivate *priv, uint8_t *buf)
 	int scrsh = priv->screen_size / 2;
 
 	if (visual_cpu_get_mmx ()) {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t pxor %%mm6, %%mm6"
 			 ::);
