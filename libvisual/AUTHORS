@@ -7,8 +7,8 @@ Vitaly V. Bursov <vitalyvb@ukr.net>
 Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
 Jaak Randmets <jaak.ra@gmail.com>
 
-The new FFT implementation that is used by libvisual:
-based upon the FFT implementation found in NULLSOFT Milkdrop.
+The new FFT implementation that is used by libvisual is written by:
+Chong Kai Xiong <descender@phreaker.net>
 
 The old FFT implementation that was used by libvisual:
 Richard Boulton <richard@tartarus.org>

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_bin.c,v 1.28 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_bin.c,v 1.29 2006-02-08 18:55:12 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -801,7 +801,6 @@ int visual_bin_switch_set_time (VisBin *bin, long sec, long usec)
 	return 0;
 }
 
-
 int visual_bin_run (VisBin *bin)
 {
 	visual_log_return_val_if_fail (bin != NULL, -1);
@@ -823,9 +822,9 @@ int visual_bin_run (VisBin *bin)
 		 * to check this, it's a bit hacky */
 		visual_log_return_val_if_fail (bin->actmorph != NULL, -1);
 		visual_log_return_val_if_fail (bin->actmorph->plugin != NULL, -1);
- 		if (bin->actmorph->plugin->realized == FALSE) {
+		if (bin->actmorph->plugin->realized == FALSE) {
 			visual_actor_realize (bin->actmorph);
-			
+
 			if (bin->actmorphmanaged == TRUE)
 				visual_actor_video_negotiate (bin->actmorph, bin->depthforced, FALSE, TRUE);
 			else
@@ -837,7 +836,7 @@ int visual_bin_run (VisBin *bin)
 		visual_log_return_val_if_fail (bin->actor->plugin != NULL, -1);
 		if (bin->actor->plugin->realized == FALSE) {
 			visual_actor_realize (bin->actor);
-			
+
 			if (bin->managed == TRUE)
 				visual_actor_video_negotiate (bin->actor, bin->depthforced, FALSE, TRUE);
 			else
@@ -849,7 +848,7 @@ int visual_bin_run (VisBin *bin)
 		visual_log_return_val_if_fail (bin->actor->video != NULL, -1);
 		if (bin->morphstyle == VISUAL_SWITCH_STYLE_DIRECT ||
 			bin->actor->video->depth == VISUAL_VIDEO_DEPTH_GL) {
-		
+
 			visual_bin_switch_finalize (bin);
 
 			/* We can't start drawing yet, the client needs to catch up with
@@ -877,7 +876,7 @@ int visual_bin_run (VisBin *bin)
 
 			if (bin->morph == NULL || bin->morph->plugin == NULL) {
 				visual_bin_switch_finalize (bin);
-		
+
 				return 0;
 			}
 

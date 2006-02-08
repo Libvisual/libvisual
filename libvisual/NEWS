@@ -4,10 +4,8 @@ of Libvisual.
 These are only visible changes, for more details look at the ChangeLog.
 
 New in 0.4.0: xxxx-xx-xx:
-* Will unref plugins that don't match the ABI version, BE SURE TO HAVE NO 0.1.x
-  plugins laying around, it's not compatible, and it will most likely crash.
-  (Dennis)
-* New FFT implementation, based upon that of NULLSOFT Milkdrop. (Dennis)
+* Real time timestamping support. (Dennis)
+* Will unref plugins that don't match the ABI version. (Dennis)
 * Added VisRectangle system. (Dennis)
 * New BMP loader that supports all depths and RLE encoding. (Sepp)
 * visual_mem_set(), visual_mem_set16(), visual_mem_set32()
