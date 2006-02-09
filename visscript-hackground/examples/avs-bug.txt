@@ -1,0 +1,15 @@
+u=u+.9;r=i*pi*1000;d=cos(r*30+t+u%30*.1);
+x=cos(r+tt*.2)*d;
+y=sin(r+tt*.2)*d;
+z1=cos(i*pi+tt)*.3+u%3*.4;
+x=x*z1;
+y=y*z1;
+red=u%3*.5+cos(t)*.1;
+blue=1-red;
+green=.6;
+
+x=xp+(r*i)*sin(p2*i*31);y=yp+(r*i)*cos(p2*i*31);
+red=1.5-i*i;green=1-i;blue=1-i;
+
+d=i/2; 
+r=10;

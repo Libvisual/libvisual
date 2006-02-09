@@ -1,0 +1,22 @@
+
+Instructions:
+		* Nop
+		* Negate
+		* Call
+		* Assign
+		* Add
+		* Sub
+		* Mul
+		* Div
+		* Mod
+		* And 
+		* Or
+
+Flow control:
+		* LoadCounter
+		* Loop
+		* Condjump
+		* LoadPtr
+		* AssignToPtr
+		* AssignFromPtr
+

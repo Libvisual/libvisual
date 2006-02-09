@@ -1,0 +1,1 @@
+loop(10, exec2(z = if(above(y, 1), 1, 0), assign(if(below(y, 100), x, z), x + z)));
