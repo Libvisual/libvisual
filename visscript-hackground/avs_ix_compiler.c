@@ -54,17 +54,30 @@ static int compile_opcode(IXRunnableData *rd, ILInstruction *insn)
 	
 	switch (insn->type) {
 		case ILInstructionAssign:
-			op = opcode_add(rd, IXOpcodeAssign);
+		case ILInstructionAdd:
+		case ILInstructionSub:
+		case ILInstructionMul:
+		case ILInstructionDiv:
+		case ILInstructionMod:
+		case ILInstructionAnd:
+		case ILInstructionOr: {
+			#define _L(x) ILInstruction##x
+			#define _R(x) IXOpcode##x
+			static unsigned char insn2insn[ILInstructionCount] = {
+				[_L(Assign)]	= _R(Assign),	[_L(Add)] = _R(Add),
+				[_L(Sub)]	= _R(Sub),	[_L(Mul)] = _R(Mul),
+				[_L(Div)]	= _R(Div),	[_L(Mod)] = _R(Mod),
+				[_L(And)]	= _R(And),	[_L(Or)]  = _R(Or),
+			};
+			#undef _L
+			#undef _R
+			
+			op = opcode_add(rd, insn2insn[insn->type]);
 			op->reg[0] = get_operand(insn->reg[0]);
 			op->reg[1] = get_operand(insn->reg[1]);
+			op->reg[2] = get_operand(insn->reg[2]);
 			break;
-
-		case ILInstructionMul:
-			op = opcode_add(rd, IXOpcodeMul);
-			op->reg[0] = get_operand(insn->reg[0]); /* Dest */
-			op->reg[1] = get_operand(insn->reg[1]); /* Source0 */
-			op->reg[2] = get_operand(insn->reg[2]); /* Source1 */
-			break;
+		}
 
 		default:
 			break;

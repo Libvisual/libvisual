@@ -12,7 +12,13 @@ typedef struct _AvsIXOpcode IXOpcode;
 typedef enum _AvsIXOpcodeType {
 	IXOpcodeNop,
 	IXOpcodeAssign,
+	IXOpcodeAdd,
+	IXOpcodeSub,
 	IXOpcodeMul,
+	IXOpcodeDiv,
+	IXOpcodeMod,
+	IXOpcodeAnd,
+	IXOpcodeOr,
 	IXOpcodeInvalid
 } IXOpcodeType;
 

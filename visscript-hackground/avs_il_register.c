@@ -36,6 +36,8 @@ static ILRegister * load_identifier(AvsILAssemblerContext *ctx, AvsRunnable *rob
 		var = avs_runnable_variable_create(robj, arg->value.identifier, 0);
 	}
 
+	avs_debug(print("ILR: Variable name: %s", var->name));
+
 	reg->type = ILRegisterTypeVariable;
 	reg->value.variable = var;
 
@@ -49,6 +51,7 @@ static ILRegister * load_worker(AvsILAssemblerContext *ctx, AvsRunnableVariable 
 	ILRegister *reg = avs_il_register_create();
 	
 	reg->type = ILRegisterTypeConstant;
+	convert_argument(arg, reg);
 	return reg;
 }
 

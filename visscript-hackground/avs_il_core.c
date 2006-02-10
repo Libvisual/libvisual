@@ -8,6 +8,20 @@
 
 
 extern ILCore il_core_ix;
+extern ILCore il_core_x86;
+
+static ILCore * get_core(void)
+{
+	ILCore *cores[] =
+	{
+		&il_core_ix,
+		&il_core_x86,
+		NULL,
+	};
+
+	return cores[1];
+}
+
 
 
 static void context_ctor(ILCoreContext *ctx, ILCore *core)
@@ -21,17 +35,6 @@ static ILCoreContext * create_context(ILCore *core)
 	ILCoreContext *ctx = malloc(sizeof(ILCoreContext));
 	context_ctor(ctx, core);
 	return ctx;
-}
-
-static ILCore * get_core(void)
-{
-	ILCore *cores[] =
-	{
-		&il_core_ix,
-		NULL,
-	};
-
-	return cores[0];
 }
 
 int avs_il_core_compile(ILCoreContext *ctx, AvsILTreeContext *tree, AvsRunnable *obj)
