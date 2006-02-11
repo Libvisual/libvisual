@@ -1,7 +1,7 @@
 #ifndef _AVS_BLOB_POOL_H
 #define _AVS_BLOB_POOL_H 1
 
-#define AVS_BLOB_POOL(obj)			(VISUAL_CHECK_CAST ((obj), 0, AvsBlobPool))
+#define AVS_BLOB_POOL(obj)			(VISUAL_CHECK_CAST ((obj), AvsBlobPool))
 
 struct _AvsBlobPool;
 typedef struct _AvsBlobPool AvsBlobPool;

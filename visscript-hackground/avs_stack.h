@@ -4,7 +4,7 @@
 struct _AvsStack;
 typedef struct _AvsStack AvsStack;
 
-#define AVS_STACK(obj)			(VISUAL_CHECK_CAST ((obj), 0, AvsStack))
+#define AVS_STACK(obj)			(VISUAL_CHECK_CAST ((obj), AvsStack))
 
 #define AVS_STACK_TEMPLATE(elem_type, prefix, name, initial_elem_count, max_elem_count) \
 	prefix inline AvsStack * name##_new(void) { \

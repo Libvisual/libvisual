@@ -1,7 +1,7 @@
 #ifndef _AVS_BLOB_H
 #define _AVS_BLOB_H 1
 
-#define AVS_BLOB_MANAGER(obj)	(VISUAL_CHECK_CAST ((obj), 0, AvsBlobManager))
+#define AVS_BLOB_MANAGER(obj)	(VISUAL_CHECK_CAST ((obj), AvsBlobManager))
 
 struct _AvsBlobManager;
 typedef struct _AvsBlobManager AvsBlobManager;

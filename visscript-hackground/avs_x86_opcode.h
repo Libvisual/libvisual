@@ -1,7 +1,7 @@
 #ifndef _AVS_X86_OPCODE_H
 #define _AVS_X86_OPCODE_H 1
 
-#define AVS_X86_CONTEXT(obj)		(VISUAL_CHECK_CAST ((obj), 0, X86Context))
+#define AVS_X86_CONTEXT(obj)		(VISUAL_CHECK_CAST ((obj), X86Context))
 
 struct _X86Context;
 typedef struct _X86Context X86Context;

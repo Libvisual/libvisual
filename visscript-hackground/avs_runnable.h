@@ -1,8 +1,8 @@
 #ifndef _AVS_RUNNABLE_H
 #define _AVS_RUNNABLE_H 1
 
-#define AVS_RUNNABLE_CONTEXT(obj)	(VISUAL_CHECK_CAST ((obj), 0, AvsRunnableContext))
-#define AVS_RUNNABLE(obj)		(VISUAL_CHECK_CAST ((obj), 0, AvsRunnable))
+#define AVS_RUNNABLE_CONTEXT(obj)	(VISUAL_CHECK_CAST ((obj), AvsRunnableContext))
+#define AVS_RUNNABLE(obj)		(VISUAL_CHECK_CAST ((obj), AvsRunnable))
 
 enum _AvsRunnableVariableFlag;
 typedef enum _AvsRunnableVariableFlag AvsRunnableVariableFlag;
