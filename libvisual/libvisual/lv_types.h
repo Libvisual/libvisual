@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_types.h,v 1.10 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_types.h,v 1.11 2006-02-13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,7 +34,9 @@
 
 VISUAL_BEGIN_DECLS
 
-#define VISUAL_CHECK_CAST(uiobj, cast)    ((cast*) (uiobj))
+#define VISUAL_CHECK_CAST(uiobj, cast)		((cast*) (uiobj))
+
+#define VISUAL_TABLESIZE(table)			(sizeof (table) / sizeof (table[0]))
 
 #if !defined(VISUAL_OS_WIN32)
 #ifndef uint8_t

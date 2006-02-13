@@ -8,7 +8,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.c,v 1.14 2006-01-22 20:07:56 synap Exp $
+ * $Id: lv_fourier.c,v 1.15 2006-02-13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -468,7 +468,7 @@ static void perform_fft_radix2_dit (VisDFT *dft, float *output, float *input)
  * \note Output samples are normalised to [0.0, 1.0] by dividing with the
  * spectrum size.
  *
- * @param fourier Pointer to the VisDFT context for this transform.
+ * @param dft Pointer to the VisDFT context for this transform.
  * @param output Array of output samples
  * @param input Array of input samples with values in [-1.0, 1.0]
  *
@@ -499,9 +499,9 @@ int visual_dft_perform (VisDFT *dft, float *output, float *input)
  *
  * \note Scaled values are guaranteed to be in [0.0, 1.0].
  *
- * @param dft Pointer to VisDFT context
  * @param output Array of output samples
  * @param input  Array of input samples with values in [0.0, 1.0]
+ * @param size Array size.
  *
  * @Return VISUAL_OK on success, VISUAL_ERROR_NULL on failure.
  */

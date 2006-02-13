@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_rectangle.c,v 1.9 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_rectangle.c,v 1.10 2006-02-13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "lv_math.h"
 #include "lv_rectangle.h"
 
 /**
@@ -328,16 +329,18 @@ int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy,
  * floating point locations are NOT clamped. This is done because of performance reasons.
  *
  * @param rect Pointer to the VisRectangle used as the reference.
- * @param fx Pointer to a floating point X location ranging from 0.0 to 1.0 array.
- * @param fy Pointer to a floating point Y location ranging from 0.0 to 1.0 array.
- * @param x Pointer to an array of integers in which the absolute X location are stored.
- * @param y Pointer to an array of integers in which the absolute Y location are stored.
+ * @param fxlist Pointer to a floating point X location ranging from 0.0 to 1.0 array.
+ * @param fylist Pointer to a floating point Y location ranging from 0.0 to 1.0 array.
+ * @param xlist  Pointer to an array of integers in which the absolute X location are stored.
+ * @param ylist  Pointer to an array of integers in which the absolute Y location are stored.
  * @param size The size of the arrays for all X Y locations.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size)
 {
+	int i;
+
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	visual_math_vectorized_floats_to_int32s_multiply (xlist, fxlist, size, rect->width);
@@ -393,10 +396,10 @@ int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float
  * floating point locations are NOT clamped. This is done because of performance reasons.
  *
  * @param rect Pointer to the VisRectangle used as the reference.
- * @param fx Pointer to a floating point X location ranging from -1.0 to 1.0 array.
- * @param fy Pointer to a floating point Y location ranging from -1.0 to 1.0 array.
- * @param x Pointer to an array of integers in which the absolute X location are stored.
- * @param y Pointer to an array of integers in which the absolute Y location are stored.
+ * @param fxlist Pointer to a floating point X location ranging from -1.0 to 1.0 array.
+ * @param fylist Pointer to a floating point Y location ranging from -1.0 to 1.0 array.
+ * @param xlist Pointer to an array of integers in which the absolute X location are stored.
+ * @param ylist Pointer to an array of integers in which the absolute Y location are stored.
  * @param size The size of the arrays for all X Y locations.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.

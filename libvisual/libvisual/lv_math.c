@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.c,v 1.12 2006-02-05 18:45:57 synap Exp $
+ * $Id: lv_math.c,v 1.13 2006-02-13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -299,7 +299,7 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
  * @param dest Pointer to the destination float array.
  * @param src Pointer to the source float array.
  * @param n The number of items in the array.
- * @param adder The constant substracter that is substracter from every entry in the source array.
+ * @param substracter The constant substracter that is substracter from every entry in the source array.
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
@@ -341,10 +341,10 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 				 "\n\t movups 16(%0), %%xmm1"
 				 "\n\t movups 32(%0), %%xmm2"
 				 "\n\t movups 48(%0), %%xmm3"
-				 "\n\t addps %%xmm7, %%xmm0"
-				 "\n\t addps %%xmm7, %%xmm1"
-				 "\n\t addps %%xmm7, %%xmm2"
-				 "\n\t addps %%xmm7, %%xmm3"
+				 "\n\t subps %%xmm7, %%xmm0"
+				 "\n\t subps %%xmm7, %%xmm1"
+				 "\n\t subps %%xmm7, %%xmm2"
+				 "\n\t subps %%xmm7, %%xmm3"
 				 "\n\t movntps %%xmm0, (%1)"
 				 "\n\t movntps %%xmm1, 16(%1)"
 				 "\n\t movntps %%xmm2, 32(%1)"
@@ -411,6 +411,104 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 
 		d++;
 		s++;
+	}
+
+	return VISUAL_OK;
+}
+
+int visual_math_vectorized_multiplier_floats_floats (float *dest, float *src1, float *src2, visual_size_t n)
+{
+	float *d = dest;
+	float *s1 = src1;
+	float *s2 = src2;
+
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_NULL);
+
+	if (visual_cpu_get_sse () && n >= 16) {
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+		while (!VISUAL_ALIGNED(d, 16)) {
+			(*d) = (*s1) * (*s2);
+
+			d++;
+			s1++;
+			s2++;
+
+			n--;
+		}
+
+		while (n > 16) {
+			__asm __volatile
+				("\n\t prefetchnta 256(%0)"
+				 "\n\t prefetchnta 256(%1)"
+				 "\n\t movups (%0), %%xmm0"
+				 "\n\t movups 16(%0), %%xmm1"
+				 "\n\t movups 32(%0), %%xmm2"
+				 "\n\t movups 48(%0), %%xmm3"
+				 "\n\t movups (%1), %%xmm4"
+				 "\n\t movups 16(%1), %%xmm5"
+				 "\n\t movups 32(%1), %%xmm6"
+				 "\n\t movups 48(%1), %%xmm7"
+				 "\n\t mulps %%xmm4, %%xmm0"
+				 "\n\t mulps %%xmm5, %%xmm1"
+				 "\n\t mulps %%xmm6, %%xmm2"
+				 "\n\t mulps %%xmm7, %%xmm3"
+				 "\n\t movntps %%xmm0, (%2)"
+				 "\n\t movntps %%xmm1, 16(%2)"
+				 "\n\t movntps %%xmm2, 32(%2)"
+				 "\n\t movntps %%xmm3, 48(%2)"
+				 :: "r" (s1), "r" (s2), "r" (d) : "memory");
+
+			d += 16;
+			s1 += 16;
+			s2 += 16;
+
+			n -= 16;
+		}
+#endif /* VISUAL_ARCH_X86 */
+	} else if (visual_cpu_get_3dnow ()) {
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+		while (n > 8) {
+			__asm __volatile
+				("\n\t prefetch 256(%0)"
+				 "\n\t movq (%0), %%mm0"
+				 "\n\t movq 8(%0), %%mm1"
+				 "\n\t movq 16(%0), %%mm2"
+				 "\n\t movq 24(%0), %%mm3"
+				 "\n\t movq (%1), %%mm4"
+				 "\n\t movq 8(%1), %%mm5"
+				 "\n\t movq 16(%1), %%mm6"
+				 "\n\t movq 24(%1), %%mm7"
+				 "\n\t pfmul %%mm4, %%mm0"
+				 "\n\t pfmul %%mm5, %%mm1"
+				 "\n\t pfmul %%mm6, %%mm2"
+				 "\n\t pfmul %%mm7, %%mm3"
+				 "\n\t movq %%mm0, (%2)"
+				 "\n\t movq %%mm1, 8(%2)"
+				 "\n\t movq %%mm2, 16(%2)"
+				 "\n\t movq %%mm3, 24(%2)"
+				 :: "r" (s1), "r" (s2), "r" (d) : "memory");
+
+			d += 8;
+			s1 += 8;
+			s2 += 8;
+
+			n -= 8;
+		}
+
+		__asm __volatile
+			("\n\t emms");
+#endif /* VISUAL_ARCH_X86 */
+
+	}
+
+	while (n--) {
+		(*d) = (*s1) * (*s2);
+
+		d++;
+		s1++;
+		s2++;
 	}
 
 	return VISUAL_OK;
@@ -780,7 +878,8 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
  * Vectorized square root for single precision floats. This function works best with data
  * sizes larger than 16 or equal to 16.
  *
- * @param vector The vector of floats of which the square roots will be calculated.
+ * @param dest The destination vector of floats in which the results are placed.
+ * @param src The source vector of floats of which the square roots will be calculated.
  * @param n The number of floats in the vector.
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
@@ -805,10 +904,10 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 		while (n > 16) {
 			__asm __volatile
 				("\n\t prefetchnta 256(%0)"
-				 "\n\t movaps (%0), %%xmm0"
-				 "\n\t movaps 16(%0), %%xmm1"
-				 "\n\t movaps 32(%0), %%xmm2"
-				 "\n\t movaps 48(%0), %%xmm3"
+				 "\n\t movups (%0), %%xmm0"
+				 "\n\t movups 16(%0), %%xmm1"
+				 "\n\t movups 32(%0), %%xmm2"
+				 "\n\t movups 48(%0), %%xmm3"
 				 "\n\t sqrtps %%xmm0, %%xmm4"
 				 "\n\t sqrtps %%xmm1, %%xmm5"
 				 "\n\t sqrtps %%xmm2, %%xmm6"
@@ -832,6 +931,80 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 
 		d++;
 		s++;
+	}
+
+	return VISUAL_OK;
+}
+
+/**
+ * Vectorized complex to norm conversion. Will make norm values from a real and imaginary
+ * array.
+ *
+ * @param dest Pointer to the destination float array.
+ * @param real Pointer to the real part float array.
+ * @param imag pointer to the imaginary part float array.
+ * @param n The number of elements to be converted.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_math_vectorized_complex_to_norm (float *dest, float *real, float *imag, visual_size_t n)
+{
+	float *d = dest;
+	float *r = real;
+	float *i = imag;
+
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
+
+	if (visual_cpu_get_sse () && n >= 16) {
+
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+		while (!VISUAL_ALIGNED(d, 16)) {
+			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i)));
+
+			d++;
+			r++;
+			i++;
+
+			n--;
+		}
+
+		while (n > 8) {
+			__asm __volatile
+				("\n\t prefetchnta 256(%0)"
+				 "\n\t prefetchnta 256(%1)"
+				 "\n\t movups (%0), %%xmm0"
+				 "\n\t movups 16(%0), %%xmm2"
+				 "\n\t movups (%1), %%xmm1"
+				 "\n\t movups 16(%1), %%xmm3"
+				 "\n\t mulps %%xmm0, %%xmm0"
+				 "\n\t mulps %%xmm1, %%xmm1"
+				 "\n\t mulps %%xmm2, %%xmm2"
+				 "\n\t mulps %%xmm3, %%xmm3"
+				 "\n\t addps %%xmm0, %%xmm1"
+				 "\n\t addps %%xmm2, %%xmm3"
+				 "\n\t sqrtps %%xmm1, %%xmm0"
+				 "\n\t sqrtps %%xmm3, %%xmm2"
+				 "\n\t movntps %%xmm0, (%2)"
+				 "\n\t movntps %%xmm2, 16(%2)"
+				 :: "r" (r), "r" (i), "r" (d) : "memory");
+
+			d += 8;
+			i += 8;
+			r += 8;
+
+			n -= 8;
+		}
+#endif /* VISUAL_ARCH_X86 */
+	}
+
+	while (n--) {
+		*d = sqrtf (((*r) * (*r)) + ((*i) * (*i)));
+
+		d++;
+		r++;
+		i++;
 	}
 
 	return VISUAL_OK;
@@ -882,35 +1055,26 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, floa
 			("\n\t movups (%0), %%xmm7"
 			 :: "r" (packed_scaler) : "memory");
 
-		/* FIXME optimize more, look into how we can get it atleast partially aligned, right */
 		while (n > 8) {
 			__asm __volatile
 				("\n\t prefetchnta 256(%0)"
 				 "\n\t prefetchnta 256(%1)"
-
 				 "\n\t movups (%0), %%xmm0"
 				 "\n\t movups 16(%0), %%xmm2"
-
 				 "\n\t movups (%1), %%xmm1"
 				 "\n\t movups 16(%1), %%xmm3"
-
 				 "\n\t mulps %%xmm0, %%xmm0"
 				 "\n\t mulps %%xmm1, %%xmm1"
-
 				 "\n\t mulps %%xmm2, %%xmm2"
 				 "\n\t mulps %%xmm3, %%xmm3"
-
 				 "\n\t addps %%xmm0, %%xmm1"
 				 "\n\t addps %%xmm2, %%xmm3"
-
 				 "\n\t sqrtps %%xmm1, %%xmm0"
 				 "\n\t sqrtps %%xmm3, %%xmm2"
-
 				 "\n\t mulps %%xmm7, %%xmm0"
 				 "\n\t mulps %%xmm7, %%xmm2"
-
-				 "\n\t movups %%xmm0, (%2)"
-				 "\n\t movups %%xmm2, 16(%2)"
+				 "\n\t movntps %%xmm0, (%2)"
+				 "\n\t movntps %%xmm2, 16(%2)"
 				 :: "r" (r), "r" (i), "r" (d) : "memory");
 
 			d += 8;

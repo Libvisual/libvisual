@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_thread.c,v 1.18 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_thread.c,v 1.19 2006-02-13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -233,7 +233,7 @@ int visual_thread_is_enabled (void)
 
 /**
  * Is used to check if threading is supported. When threading is used this should always
- * be checked, it's possible to disable threads from within the code, so no #ifdefs should
+ * be checked, it's possible to disable threads from within the code, so no \#ifdefs should
  * be used.
  *
  * @return TRUE if threading is supported or FALSE if not.

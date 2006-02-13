@@ -1,3 +1,18 @@
+2006-02-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.c: Added a bit more stuff.
+
+	* libvisual/lv_audio.c: Use macro names instead of const string
+	entries.
+
+2006-02-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_fourier.c, libvisual/lv_rectangle.c,
+	libvisual/lv_math.c, libvisual/lv_video.c: Fixed doxygen errors.
+
+	* libvisual/lv_rectangle.c: Include lv_math.h, errornous normalisation
+	was because of down cast to int because the prototypes were missing.
+
 2006-02-05  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* configure.ac: Added x86_64 detection.

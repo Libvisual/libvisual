@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_math.h,v 1.6 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_math.h,v 1.7 2006-02-13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,6 +33,8 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 int visual_math_vectorized_add_floats_const_float (float *dest,float *src, visual_size_t n, float adder);
 int visual_math_vectorized_substract_floats_const_float (float *dest, float *src, visual_size_t n, float substracter);
 
+int visual_math_vectorized_multiplier_floats_floats (float *dest, float *src1, float *src2, visual_size_t n);
+
 int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_size_t n);
 int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_size_t n);
 
@@ -43,11 +45,11 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 
 int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n);
 
+int visual_math_vectorized_complex_to_norm (float *dest, float *real, float *imag, visual_size_t n);
 int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, float *imag, visual_size_t n, float scaler);
 
 /* FIXME add many more to suite both rectangle and audio systems 100% */
 /* FIXME also look into things we might be able to generalize from VisVideo. */
-/* FIXME add complex number handling and vectorized complex number to real conversion. */
 /* FIXME provide with source and dest when possible, source and dest can always be the same. */
 
 VISUAL_END_DECLS

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.41 2006-01-22 20:07:56 synap Exp $
+ * $Id: lv_audio.c,v 1.42 2006-02-13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -243,7 +243,7 @@ int visual_audio_analyze (VisAudio *audio)
 
 		visual_audio_samplepool_flush_old (audio->samplepool);
 
-		channel = visual_audio_samplepool_get_channel (audio->samplepool, "front left 1");
+		channel = visual_audio_samplepool_get_channel (audio->samplepool, VISUAL_AUDIO_CHANNEL_LEFT);
 
 		if (channel != 0) {
 			visual_buffer_init (&buffer, pcm[0], 1024, NULL);
@@ -254,7 +254,7 @@ int visual_audio_analyze (VisAudio *audio)
 			visual_object_unref (VISUAL_OBJECT (&buffer));
 		}
 
-		channel = visual_audio_samplepool_get_channel (audio->samplepool, "front right 1");
+		channel = visual_audio_samplepool_get_channel (audio->samplepool, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 		if (channel != 0) {
 			visual_buffer_init (&buffer, pcm[1], 1024, NULL);
@@ -1343,10 +1343,10 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 	visual_buffer_set_destroyer (chan2, visual_buffer_destroyer_free);
 
 	sample = visual_audio_sample_new (chan1, &timestamp, format, rate);
-	visual_audio_samplepool_add (samplepool, sample, "front left 1");
+	visual_audio_samplepool_add (samplepool, sample, VISUAL_AUDIO_CHANNEL_LEFT);
 
 	sample = visual_audio_sample_new (chan2, &timestamp, format, rate);
-	visual_audio_samplepool_add (samplepool, sample, "front right 1");
+	visual_audio_samplepool_add (samplepool, sample, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	return VISUAL_OK;
 }

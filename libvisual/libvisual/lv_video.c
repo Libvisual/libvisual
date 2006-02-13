@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.85 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_video.c,v 1.86 2006-02-13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -1709,7 +1709,7 @@ out:
  * of a line in consideration. When you use a visual_mem_set on sub regions the results won't be pretty.
  * 
  * @param video Pointer to the VisVideo which is filled with one color
- * @param color Pointer to the VisColor that is used as color. NULL is a valid color and will be interperted
+ * @param rcolor Pointer to the VisColor that is used as color. NULL is a valid color and will be interperted
  * 	as black.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
