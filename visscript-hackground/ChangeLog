@@ -1,0 +1,4 @@
+2006-02-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* *.h: Updated the VISUAL_CHECK_CAST api.
+
