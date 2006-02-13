@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@urk,net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_alsa.c,v 1.22 2006-01-22 13:25:26 synap Exp $
+ * $Id: input_alsa.c,v 1.23 2006-02-13 20:36:11 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -39,7 +39,7 @@
 
 #include <libvisual/libvisual.h>
 
-#define PCM_BUF_SIZE 512
+#define PCM_BUF_SIZE 4096
 
 typedef struct {
 	snd_pcm_t *chandle;
@@ -89,11 +89,11 @@ int inp_alsa_init (VisPluginData *plugin)
 {
 	snd_pcm_hw_params_t *hwparams = NULL;
 	alsaPrivate *priv;
-	int rate = inp_alsa_var_samplerate;
-	int exact_rate;
+	unsigned int rate = inp_alsa_var_samplerate;
+	unsigned int exact_rate;
+	unsigned int tmp;
 	int dir;
 	int err;
-	int tmp;
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
