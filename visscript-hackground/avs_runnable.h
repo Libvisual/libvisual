@@ -6,8 +6,6 @@
 
 enum _AvsRunnableVariableFlag;
 typedef enum _AvsRunnableVariableFlag AvsRunnableVariableFlag;
-struct _AvsRunnableFunction;
-typedef struct _AvsRunnableFunction AvsRunnableFunction;
 
 struct _AvsRunnableContext {
 	VisObject		object;

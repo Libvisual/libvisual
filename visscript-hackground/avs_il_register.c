@@ -46,7 +46,7 @@ static ILRegister * load_identifier(AvsILAssemblerContext *ctx, AvsRunnable *rob
 	return reg;
 }
 
-static ILRegister * load_worker(AvsILAssemblerContext *ctx, AvsRunnableVariable *robj, AvsCompilerArgument *arg)
+static ILRegister * load_worker(AvsILAssemblerContext *ctx, AvsRunnable *robj, AvsCompilerArgument *arg)
 {
 	ILRegister *reg = avs_il_register_create();
 	
@@ -55,7 +55,7 @@ static ILRegister * load_worker(AvsILAssemblerContext *ctx, AvsRunnableVariable 
 	return reg;
 }
 
-ILRegister * avs_il_register_load_worker(AvsILAssemblerContext *ctx, AvsRunnableVariable *robj, AvsCompilerArgument *arg)
+ILRegister * avs_il_register_load_worker(AvsILAssemblerContext *ctx, AvsRunnable *robj, AvsCompilerArgument *arg)
 {
 	return load_worker(ctx, robj, arg);
 }

@@ -36,7 +36,7 @@ AVS_BUILTIN_FUNCTION(rand,	0xdeadbeaf * *args[0]);
 AVS_BUILTIN_FUNCTION(band,	AVS_VALUEBOOL(*args[0]) && AVS_VALUEBOOL(*args[1]));
 AVS_BUILTIN_FUNCTION(bor,	AVS_VALUEBOOL(*args[0]) || AVS_VALUEBOOL(*args[1]));
 AVS_BUILTIN_FUNCTION(bnot,	!AVS_VALUEBOOL(*args[0]));
-AVS_BUILTIN_FUNCTION(equal,	AVS_VALUEBOOL(*args[0] - *args[1]) ? 1.0 : 0.0)
+AVS_BUILTIN_FUNCTION(equal,	AVS_VALUEBOOL(*args[0] - *args[1]) ? 0.0 : 1.0)
 AVS_BUILTIN_FUNCTION(above,	*args[0] > *args[1] ? 1.0 : 0.0)
 AVS_BUILTIN_FUNCTION(below,	*args[0] < *args[1] ? 1.0 : 0.0)
 

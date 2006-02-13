@@ -17,6 +17,8 @@ struct _AvsRunnable;
 typedef struct _AvsRunnable AvsRunnable;
 struct _AvsRunnableVariable;
 typedef struct _AvsRunnableVariable AvsRunnableVariable;
+struct _AvsRunnableFunction;
+typedef struct _AvsRunnableFunction AvsRunnableFunction;
 
 /* Internal numeric representation */
 typedef float AvsNumber;

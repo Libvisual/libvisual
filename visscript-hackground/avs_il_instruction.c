@@ -6,6 +6,7 @@
 
 #include "avs.h"
 
+#if 0
 ILInstruction *avs_il_instruction_emit_load(AvsILAssemblerContext *ctx, AvsRunnable *obj, ILRegister *dest, AvsRunnableVariable *variable)
 {
 	ILInstruction *insn = avs_il_instruction_create(ctx, obj);
@@ -33,6 +34,32 @@ ILInstruction *avs_il_instruction_emit_load_constant(AvsILAssemblerContext *ctx,
 	/* Update reference counts */
 	avs_il_register_reference(dest);
 
+	return insn;
+}
+#endif 
+
+ILInstruction *avs_il_instruction_emit(AvsILAssemblerContext *ctx, 
+				       AvsRunnable *obj,
+				       ILInstructionType insntype)
+{
+	ILInstruction *insn = avs_il_instruction_create(ctx, obj);
+
+	insn->type = insntype;
+	return insn;
+}
+
+ILInstruction *avs_il_instruction_emit_single(AvsILAssemblerContext *ctx, AvsRunnable *obj, 
+					      ILInstructionType insntype,
+					      ILRegister *reg0)
+{
+	ILInstruction *insn = avs_il_instruction_create(ctx, obj);
+
+	insn->type = insntype;
+	insn->reg[0] = reg0;
+
+	/* Update reference counts */
+	avs_il_register_reference(reg0);
+	
 	return insn;
 }
 

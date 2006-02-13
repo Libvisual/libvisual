@@ -2576,6 +2576,7 @@
 #define NT116(p, e)\
 	p##_register_eax_offset = e,
 #define NT117(p, e)\
+	p##_register_eax_scale = e,\
 	p##_register_ecx_offset = e,\
 	p##_register_ecx_scale = e,\
 	p##_register_edx_offset = e,\
@@ -4662,52 +4663,52 @@ static X86OpcodeTable opcodetable[] = {
 				X86_OP(0, ignored, 4),
 			},},
 	/*  105 */ { "jo"        , 1, { 0x70, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  106 */ { "jno"       , 1, { 0x71, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  107 */ { "jb"        , 1, { 0x72, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  108 */ { "jnb"       , 1, { 0x73, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  109 */ { "jz"        , 1, { 0x74, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  110 */ { "jnz"       , 1, { 0x75, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  111 */ { "jbe"       , 1, { 0x76, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  112 */ { "jnbe"      , 1, { 0x77, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  113 */ { "js"        , 1, { 0x78, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  114 */ { "jns"       , 1, { 0x79, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  115 */ { "jp"        , 1, { 0x7a, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  116 */ { "jnp"       , 1, { 0x7b, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  117 */ { "jl"        , 1, { 0x7c, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  118 */ { "jnl"       , 1, { 0x7d, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  119 */ { "jle"       , 1, { 0x7e, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  120 */ { "jnle"      , 1, { 0x7f, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  121 */ { "test"      , 1, { 0x84, 0x00, 0x00, 0x00 }, X86_OPCODE_MODRM, 2, {
 				X86_OP(1, register_byte, 1),
@@ -4963,16 +4964,16 @@ static X86OpcodeTable opcodetable[] = {
 			},},
 	/*  195 */ { "xlat"      , 1, { 0xd7, 0x00, 0x00, 0x00 }, 0, 0, {}, },
 	/*  196 */ { "loopne"    , 1, { 0xe0, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  197 */ { "loope"     , 1, { 0xe1, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  198 */ { "loop"      , 1, { 0xe2, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  199 */ { "jcxz"      , 1, { 0xe3, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  200 */ { "in"        , 1, { 0xe4, 0x00, 0x00, 0x00 }, 0, 2, {
 				X86_OP(0, register, X86_REGISTER(al)),
@@ -4991,17 +4992,17 @@ static X86OpcodeTable opcodetable[] = {
 				X86_OP(0, register, X86_REGISTER(eax)),
 			},},
 	/*  204 */ { "call"      , 1, { 0xe8, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  205 */ { "jmp"       , 1, { 0xe9, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  206 */ { "ljmp"      , 1, { 0xea, 0x00, 0x00, 0x00 }, 0, 2, {
 				X86_OP(0, offset, 4),
 				X86_OP(0, immediate, 2),
 			},},
 	/*  207 */ { "jmp"       , 1, { 0xeb, 0x00, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 1),
+				X86_OP(0, relative, 1),
 			},},
 	/*  208 */ { "in"        , 1, { 0xec, 0x00, 0x00, 0x00 }, 0, 2, {
 				X86_OP(0, register, X86_REGISTER(al)),
@@ -5343,52 +5344,52 @@ static X86OpcodeTable opcodetable[] = {
 				X86_OP(2, register_mmx, 8),
 			},},
 	/*  309 */ { "jo"        , 2, { 0x0f, 0x80, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  310 */ { "jno"       , 2, { 0x0f, 0x81, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  311 */ { "jb"        , 2, { 0x0f, 0x82, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  312 */ { "jae"       , 2, { 0x0f, 0x83, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  313 */ { "je"        , 2, { 0x0f, 0x84, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  314 */ { "jne"       , 2, { 0x0f, 0x85, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  315 */ { "jbe"       , 2, { 0x0f, 0x86, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  316 */ { "ja"        , 2, { 0x0f, 0x87, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  317 */ { "js"        , 2, { 0x0f, 0x88, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  318 */ { "jns"       , 2, { 0x0f, 0x89, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  319 */ { "jp"        , 2, { 0x0f, 0x8a, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  320 */ { "jnp"       , 2, { 0x0f, 0x8b, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  321 */ { "jl"        , 2, { 0x0f, 0x8c, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  322 */ { "jnl"       , 2, { 0x0f, 0x8d, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  323 */ { "jle"       , 2, { 0x0f, 0x8e, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  324 */ { "jnle"      , 2, { 0x0f, 0x8f, 0x00, 0x00 }, 0, 1, {
-				X86_OP(0, offset, 4),
+				X86_OP(0, relative, 4),
 			},},
 	/*  325 */ { "seto"      , 2, { 0x0f, 0x90, 0x00, 0x00 }, X86_OPCODE_MODRM, 1, {
 				X86_OP(1, register_byte, 1),
@@ -8245,3 +8246,4 @@ static X86OpcodeTable opcodetable[] = {
 #endif
 
 #endif /* !_AVS_X86_OPCODE_TABLE_H */
+

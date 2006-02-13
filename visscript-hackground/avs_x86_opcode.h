@@ -14,12 +14,16 @@ typedef enum _X86OpcodeOperandType X86OpcodeOperandType;
 enum _X86OpcodeSib;
 typedef enum _X86OpcodeSib X86OpcodeSib;
 
+typedef unsigned int X86OpcodeArgumentOffset;
+
 struct _X86Context {
-	VisObject	object;
-	unsigned char	*buf;
-	unsigned int	length;
-	unsigned int	length_max;
-	unsigned int	position;
+	VisObject		object;
+	unsigned char		*buf;
+	unsigned int		length;
+	unsigned int		length_max;
+	unsigned int		position;
+	unsigned int		opcode_position;
+	X86OpcodeArgumentOffset offset[4];
 };
 
 enum _X86OpcodeModReg {
@@ -362,6 +366,8 @@ struct _X86OpcodeTable {
 
 /* prototypes */
 void x86_emit_opcode(X86Context *ctx, int op, ...);
+unsigned char *x86_argument_offset(X86Context *ctx, unsigned int index);
+unsigned char *x86_next_offset(X86Context *ctx);
 int x86_context_reset(X86Context *ctx);
 int x86_context_init(X86Context *ctx, unsigned int initial_length, unsigned int maximum_length);
 X86Context *x86_context_new(unsigned int initial_length, unsigned int maximum_length);

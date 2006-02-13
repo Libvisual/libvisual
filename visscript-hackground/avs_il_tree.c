@@ -8,6 +8,33 @@
 
 
 /**
+ * Return tree base 
+ *
+ * @param ctx IL Tree context.
+ */
+ILInstruction * avs_il_tree_base(AvsILTreeContext *ctx)
+{
+	return ctx->base->insn.base;
+}
+
+void avs_il_tree_merge(AvsILTreeContext *ctx, AvsILTreeNode *node)
+{
+	AvsILTreeNode *current = ctx->current;
+
+	if (!node->insn.base)
+		return;
+
+	if (!current->insn.end) {
+		current->insn.base = node->insn.base;
+		current->insn.end = node->insn.end;
+	} else {
+		node->insn.base->prev = current->insn.end;
+		current->insn.end->next = node->insn.base;
+		current->insn.end = node->insn.end;
+	}
+}
+
+/**
  * Add a instruction to the IL Tree.
  *
  * @param ctx IL Tree context.
@@ -17,15 +44,17 @@
  */
 void avs_il_tree_add(AvsILTreeContext *ctx, ILInstruction *insn)
 {
-	if (!ctx->end) {
-		ctx->base = insn;
-		ctx->end = insn;
+	AvsILTreeNode *node = ctx->current;
+	
+	if (!node->insn.end) {
+		node->insn.base = insn;
+		node->insn.end = insn;
 	} else {
-		insn->prev = ctx->end;
+		insn->prev = node->insn.end;
 		insn->next = NULL;
 
-		ctx->end->next = insn;
-		ctx->end = insn;
+		node->insn.end->next = insn;
+		node->insn.end = insn;
 	}
 }
 
@@ -67,6 +96,9 @@ int avs_il_tree_cleanup(AvsILTreeContext *ctx)
 int avs_il_tree_init(AvsILTreeContext *ctx)
 {
 	memset(ctx, 0, sizeof(AvsILTreeContext));
+
+	/* Allocate base tree node */
+	avs_il_tree_node_init(ctx);
 
 	/* Allocate Instruction Stack */
 	ctx->ixstack = avs_stack_new0(ILInstruction, AVS_ILTREE_INITIAL_STACKSIZE,

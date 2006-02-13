@@ -6,8 +6,7 @@ typedef struct _AvsILInstruction ILInstruction;
 
 typedef enum _AvsILInstructionType {
 	ILInstructionNop,
-	ILInstructionLoad,
-	ILInstructionLoadConstant,
+	ILInstructionCall,
 	ILInstructionNegate,
 	ILInstructionAssign,
 	ILInstructionAdd,
@@ -17,6 +16,13 @@ typedef enum _AvsILInstructionType {
 	ILInstructionMod,
 	ILInstructionAnd,
 	ILInstructionOr,
+	ILInstructionLoopInit,
+	ILInstructionLoop,
+	ILInstructionJump,
+	ILInstructionJumpTrue,
+	ILInstructionMergeMarker,
+	ILInstructionLoadReference,
+	ILInstructionStoreReference,
 	ILInstructionCount
 } ILInstructionType;
 
@@ -35,7 +41,22 @@ struct _AvsILInstruction {
 		struct AvsILInstructionJumpArguments {
 			ILInstruction			*pointer;
 		} jmp;
+		struct AvsILInstructionCallArguments {
+			AvsRunnableFunction		*call;
+			unsigned int			argc;
+			ILRegister			**argv;
+		} call;
+		struct AvsILInstructionMergeArguments {
+			enum AvsILinstructionMergeType {
+				AvsILInstructionMergeTypeJumpConditional,
+				AvsILInstructionMergeTypeLoop,
+			} type;
+			ILInstruction			*from[3];
+		} merge;
 	} ex;
+
+	/* Private pointer for compilers */
+	void			*private;
 
 	/* Linked list pointers */
 	ILInstruction		*prev;

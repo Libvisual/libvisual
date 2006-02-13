@@ -304,6 +304,11 @@ static inline void emit_opcode_argument(X86Context *ctx,
 			encode_number(ctx, arg->value, op->size);
 			break;
 
+		case x86_opcode_relative:
+			encode_number(ctx, arg->value - (int)(ctx->buf + ctx->opcode_position) - opc->length - 4, 4); /* oprsize */
+			encode_modrm(modrm, x86_modrm_rm, 5); /* select disp32 am */
+			break;
+
 		case x86_opcode_offset:
 			encode_number(ctx, arg->value, 4); /* oprsize */
 			encode_modrm(modrm, x86_modrm_rm, 5); /* select disp32 am */
@@ -355,11 +360,12 @@ void x86_emit_opcode(X86Context *ctx, int op, ...)
 	int i;
 
 	avs_debug(print("X86: Emitting opcode: %s (%d)", opc->name, op));
-	
+	ctx->opcode_position = ctx->position;
+
 	/* Copy opcode into code buffer */
 	if ((code=request_buf(ctx, opc->length)) == NULL)
 		return;
-	
+
 	memcpy(code, opc->opcode, opc->length);
 
 	if (opc->flags & X86_OPCODE_ENCODED) {
@@ -408,6 +414,7 @@ void x86_emit_opcode(X86Context *ctx, int op, ...)
 				"value = 0x%08x, disp = 0x%08x, base = %d",
 				arg.index, arg.type, arg.value, arg.disp, arg.base));
 
+		ctx->offset[i] = ctx->position;
 		emit_opcode_argument(ctx, opc, modrm, &arg);
 	}
 	va_end(ap);
@@ -436,6 +443,18 @@ static int context_ctor(X86Context *ctx, int initial_length, int maximum_length)
 	ctx->position = 0;
 
 	return VISUAL_OK;
+}
+
+/**
+ */
+unsigned char * x86_argument_offset(X86Context *ctx, unsigned int index)
+{
+	return ctx->buf + ctx->offset[index & 3];
+}
+
+unsigned char * x86_next_offset(X86Context *ctx)
+{
+	return ctx->buf + ctx->position;
 }
 
 /**

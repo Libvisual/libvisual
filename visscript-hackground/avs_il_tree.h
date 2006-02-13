@@ -8,7 +8,7 @@ struct _AvsILTreeContext;
 typedef struct _AvsILTreeContext AvsILTreeContext;
 
 struct _AvsILTreeContext {
-	ILInstruction		*base, *end;
+	AvsILTreeNode		*base, *currentlevel, *current;
 	AvsStack		*ixstack;
 };
 
