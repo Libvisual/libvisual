@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_gl_sdl.h,v 1.1 2006-01-30 18:19:27 synap Exp $
+ * $Id: lv_gl_sdl.h,v 1.2 2006-02-13 20:32:24 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,7 +29,7 @@
 
 VISUAL_BEGIN_DECLS
 
-static SDL_GLattr attribute_map[] = {
+static SDL_GLattr __lv_sdl_gl_attribute_map[] = {
 	[VISUAL_GL_ATTRIBUTE_NONE]		= -1,
 	[VISUAL_GL_ATTRIBUTE_BUFFER_SIZE]	= SDL_GL_BUFFER_SIZE,
 	[VISUAL_GL_ATTRIBUTE_LEVEL]		= -1,
@@ -50,9 +50,9 @@ static SDL_GLattr attribute_map[] = {
 	[VISUAL_GL_ATTRIBUTE_LAST]		= -1
 };
 
-static int native_gl_attribute_set (VisGLAttribute attribute, int value)
+static int lv_sdl_gl_attribute_set (VisGLAttribute attribute, int value)
 {
-	SDL_GLattr sdl_attribute = attribute_map[attribute];
+	SDL_GLattr sdl_attribute = __lv_sdl_gl_attribute_map[attribute];
 
 	if (sdl_attribute < 0)
 		return -1;
@@ -60,9 +60,9 @@ static int native_gl_attribute_set (VisGLAttribute attribute, int value)
 	return SDL_GL_SetAttribute (sdl_attribute, value);
 }
 
-static int native_gl_attribute_get (VisGLAttribute attribute, int *value)
+static int lv_sdl_gl_attribute_get (VisGLAttribute attribute, int *value)
 {
-	SDL_GLattr sdl_attribute = attribute_map[attribute];
+	SDL_GLattr sdl_attribute = __lv_sdl_gl_attribute_map[attribute];
 
 	if (sdl_attribute < 0)
 		return -1;

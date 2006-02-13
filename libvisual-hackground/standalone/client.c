@@ -4,6 +4,8 @@
 
 #include "display.h"
 #include "sdldriver.h"
+#include "x11driver.h"
+#include "glxdriver.h"
 
 int main (int argc, char **argv)
 {
@@ -23,7 +25,7 @@ int main (int argc, char **argv)
 
 	visual_init (&argc, &argv);
 
-	display = display_new (sdl_driver_new ());
+	display = display_new (caca_driver_new ());
 
 	/* Libvisual stuff */
 	if (argc > 1)
@@ -82,6 +84,9 @@ int main (int argc, char **argv)
 					break;
 
 				case VISUAL_EVENT_MOUSEBUTTONDOWN:
+
+					break;
+
 				case VISUAL_EVENT_MOUSEBUTTONUP:
 					break;
 
@@ -105,6 +110,7 @@ int main (int argc, char **argv)
 							break;
 
 						default:
+							printf ("key: %c\n", ev->event.keyboard.keysym.sym);
 							break;
 					}
 
@@ -148,6 +154,7 @@ int main (int argc, char **argv)
 
 	/* Termination procedure */
 	display_set_fullscreen (display, FALSE, TRUE);
+	display_close (display);
 
 	printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
 

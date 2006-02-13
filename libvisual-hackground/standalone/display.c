@@ -20,6 +20,11 @@ int display_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOp
 	return display->driver->create (display, depth, vidoptions, width, height, resizable);
 }
 
+int display_close (SADisplay *display)
+{
+	return display->driver->close (display);
+}
+
 VisVideo *display_get_video (SADisplay *display)
 {
 	display->driver->getvideo (display, display->screen);

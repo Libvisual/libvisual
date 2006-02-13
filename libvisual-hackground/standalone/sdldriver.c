@@ -14,15 +14,13 @@ typedef struct _SDLNative SDLNative;
 
 static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
 		int width, int height, int resizable);
+static int native_close (SADisplay *display);
 static int native_lock (SADisplay *display);
 static int native_unlock (SADisplay *display);
 static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale);
 static int native_getvideo (SADisplay *display, VisVideo *screen);
 static int native_updaterect (SADisplay *display, VisRectangle *rect);
 static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue);
-
-static int native_gl_attribute_set (VisGLAttribute attribute, int value);
-static int native_gl_attribute_get (VisGLAttribute attribute, int *value);
 
 static int get_nearest_resolution (SADisplay *display, int *width, int *height);
 
@@ -56,6 +54,7 @@ SADisplayDriver *sdl_driver_new ()
 	visual_object_initialize (VISUAL_OBJECT (driver), TRUE, NULL);
 
 	driver->create = native_create;
+	driver->close = native_close;
 	driver->lock = native_lock;
 	driver->unlock = native_unlock;
 	driver->fullscreen = native_fullscreen;
@@ -63,8 +62,8 @@ SADisplayDriver *sdl_driver_new ()
 	driver->updaterect = native_updaterect;
 	driver->drainevents = native_drainevents;
 
-	visual_gl_set_callback_attribute_set (native_gl_attribute_set);
-	visual_gl_set_callback_attribute_get (native_gl_attribute_get);
+	visual_gl_set_callback_attribute_set (lv_sdl_gl_attribute_set);
+	visual_gl_set_callback_attribute_get (lv_sdl_gl_attribute_get);
 
 	return driver;
 }
@@ -135,6 +134,11 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 
 	display->native = VISUAL_OBJECT (native);
 
+	return 0;
+}
+
+static int native_close (SADisplay *display)
+{
 	return 0;
 }
 
