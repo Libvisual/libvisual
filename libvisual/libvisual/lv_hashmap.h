@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_hashmap.h,v 1.7 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_hashmap.h,v 1.8 2006-02-17 22:00:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -52,19 +52,21 @@ typedef enum {
 struct _VisHashmap {
 	VisCollection		 collection;	/**< The VisCollection data. */
 
-	int			 tablesize;
-	int			 size;
+	int			 tablesize;	/**< Size of the table array. */
+	int			 size;		/**< Number of entries stored in the VisHashmap. */
 
-	VisHashmapEntry		*table;
+	VisHashmapEntry		*table;		/**< The VisHashmap array. */
 };
 
 /**
+ * Private VisHashmap array entry.
  */
 struct _VisHashmapEntry {
 	VisList			 list;
 };
 
 /**
+ * Private VisHashmap chain entry.
  */
 struct _VisHashmapChainEntry {
 	VisHashmapKeyType	 keytype;

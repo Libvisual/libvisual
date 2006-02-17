@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_hashmap.c,v 1.10 2006-02-05 18:45:57 synap Exp $
+ * $Id: lv_hashmap.c,v 1.11 2006-02-17 22:00:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -38,6 +38,9 @@ struct _HashmapIterContext {
 	VisObject	*object;
 
 	int		 index;
+	int		 retrieved;
+	int		 first;
+
 	VisListEntry	*le;
 };
 
@@ -130,6 +133,8 @@ static VisCollectionIter *hashmap_iter (VisCollection *collection)
 	visual_object_initialize (VISUAL_OBJECT (context), TRUE, NULL);
 	context->index = 0;
 	context->le = NULL;
+	context->retrieved = FALSE;
+	context->first = TRUE;
 
 	iter = visual_collection_iter_new (hashmap_iter_assign, hashmap_iter_next, hashmap_iter_has_more,
 			hashmap_iter_get_data, collection, VISUAL_OBJECT (context));
@@ -139,46 +144,91 @@ static VisCollectionIter *hashmap_iter (VisCollection *collection)
 
 static void hashmap_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index)
 {
+	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
+	int i;
 
+	if (index >= hashmap->tablesize)
+		return;
+
+	for (i = 0; i < index; i++) {
+		hashmap_iter_next (iter, collection, itercontext);
+	}
 }
 
 static int hashmap_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
 {
+	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
+	HashmapIterContext *context = HASHMAP_ITERCONTEXT (itercontext);
 
+	if (context->index >= hashmap->tablesize)
+		return FALSE;
+
+	/* First entry */
+	if (context->first) {
+		context->first = FALSE;
+
+		for (; context->index < hashmap->tablesize; context->index++) {
+			if (visual_collection_size (VISUAL_COLLECTION (&hashmap->table[context->index].list)) > 0) {
+				context->le = hashmap->table[context->index].list.head;
+				context->retrieved = FALSE;
+
+				return TRUE;
+			}
+		}
+	}
+
+	/* Check for next chain entry */
+	if (context->le != NULL && context->le->next != NULL) {
+		context->le = context->le->next;
+
+		return TRUE;
+	}
+
+	/* No next in chain, next array entry */
+	context->index++;
+	for (; context->index < hashmap->tablesize; context->index++) {
+		if (visual_collection_size (VISUAL_COLLECTION (&hashmap->table[context->index].list)) > 0) {
+			context->le = hashmap->table[context->index].list.head;
+			context->retrieved = FALSE;
+
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }
 
 static void hashmap_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
 {
 	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
 	HashmapIterContext *context = HASHMAP_ITERCONTEXT (itercontext);
-	int i;
 
-	if (context->index >= hashmap->size)
-		return;
+	if (context->retrieved == FALSE) {
+		if (context->first == TRUE) {
+			hashmap_iter_has_more (iter, collection, itercontext);
 
-	/* FIXME initial start case doesn't work */
-	if (context->le->next != NULL) {
-		visual_list_next (&hashmap->table[i].list, &context->le);
+			context->first = FALSE;
+		}
+
+		context->retrieved = TRUE;
 
 		return;
 	}
 
-	/* Find the next valid chain */
-	for (i = context->index; i < hashmap->size; i++) {
-		VisHashmapEntry *mentry;
-
-		mentry = &hashmap->table[i];
-
-
-
-	}
+	hashmap_iter_has_more (iter, collection, itercontext);
+	context->retrieved = TRUE;
 
 	return;
 }
 
 static void *hashmap_iter_get_data (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
 {
+	HashmapIterContext *context = HASHMAP_ITERCONTEXT (itercontext);
+	VisHashmapChainEntry *mentry;
 
+	mentry = context->le->data;
+
+	return mentry->data;
 }
 
 

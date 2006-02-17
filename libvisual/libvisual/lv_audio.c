@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.42 2006-02-13 20:54:08 synap Exp $
+ * $Id: lv_audio.c,v 1.43 2006-02-17 22:00:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -610,7 +610,7 @@ int visual_audio_normalise_spectrum (VisBuffer *buffer)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_dft_log_scale (visual_buffer_get_data (buffer),
+	visual_dft_log_scale_standard (visual_buffer_get_data (buffer),
 			visual_buffer_get_data (buffer),
 			visual_buffer_get_size (buffer) / sizeof (float));
 
