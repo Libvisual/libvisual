@@ -2,10 +2,12 @@
 
 SUBDIRS = m4 libvisual po
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libvisual-$(LIBVISUAL_VERSION_SUFFIX).pc
+PKG_CONFIG_FILE = libvisual-$(LIBVISUAL_VERSION_SUFFIX).pc
 
-libvisual-$(LIBVISUAL_VERSION_SUFFIX).pc: libvisual.pc
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = $(PKG_CONFIG_FILE)
+
+$(PKG_CONFIG_FILE): libvisual.pc
 	cp -f $< $@
 
 install-exec-local: libvisual/lvconfig.h 
@@ -21,11 +23,8 @@ stamp-gc-h: config.status
 	cd $(top_builddir) && $(SHELL) ./config.status libvisual/lvconfig.h
 	echo timestamp > stamp-gc-h
 
-uninstall-local:
-	rmdir $(includedir)/libvisual
-
 EXTRA_DIST = Doxyfile config.rpath libvisual.pc.in
 
-DISTCLEANFILES = libvisual/lvconfig.h
+DISTCLEANFILES = libvisual/lvconfig.h $(PKG_CONFIG_FILE)
 
 ACLOCAL_AMFLAGS = -I m4

@@ -1,10 +1,23 @@
-# Process this file with autoconf to produce a configure script.
+dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.57)
 
-AC_INIT([Libvisual Library], [0.4.0], [synap@nerds-incorporated.org], [libvisual])
+dnl Version numbers
+m4_define([libvisual_version_major], [0])
+m4_define([libvisual_version_minor], [4])
+m4_define([libvisual_version_micro], [0])
+
+m4_define([libvisual_version], [libvisual_version_major.libvisual_version_minor.libvisual_version_micro])
+
+AC_INIT([Libvisual Library], [libvisual_version], [synap@nerds-incorporated.org], [libvisual])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
-LIBVISUAL_VERSION_SUFFIX="0.4"
+dnl TODO: Add these into lv_config.h (or maybe lv_version.h)
+LIBVISUAL_VERSION_MAJOR=libvisual_version_major
+LIBVISUAL_VERSION_MINOR=libvisual_version_minor
+LIBVISUAL_VERSION_MICRO=libvisual_version_micro
+LIBVISUAL_VERSION=libvisual_version
+
+LIBVISUAL_VERSION_SUFFIX="$LIBVISUAL_VERSION_MAJOR.$LIBVISUAL_VERSION_MINOR"
 AC_SUBST(LIBVISUAL_VERSION_SUFFIX)
 
 AC_CONFIG_HEADER(config.h)
