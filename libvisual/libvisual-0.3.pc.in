@@ -1,7 +1,7 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
-includedir=@includedir@
+includedir=@includedir@/libvisual-0.3
 pluginsbasedir=@LIBVISUAL_PLUGINS_BASE_DIR@
 
 Name: libvisual
@@ -10,4 +10,3 @@ Description: an audio visualisation abstraction library.
 Requires: @VISUAL_PKG_CONFIG_DEP@
 Libs: -L${libdir} @VISUAL_LIBS@
 Cflags: -I${includedir} @VISUAL_CFLAGS@
-

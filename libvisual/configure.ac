@@ -1,12 +1,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual Library, 0.3.0, synap@nerds-incorporated.org, libvisual)
+AC_INIT([Libvisual Library], [0.3.0], [synap@nerds-incorporated.org], [libvisual])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_HEADER(config.h)
-
-AC_PREFIX_DEFAULT(/usr)
 
 AC_CANONICAL_HOST
 
@@ -136,7 +134,6 @@ AC_CHECK_LIB([m], [sqrt], [LIBS="-lm $LIBS"],
 	     AC_MSG_ERROR([*** You need the Standard C Math Library to build Libvisual.]))
 
 # Internationalization
-ALL_LINGUAS="es_ES es_AR"
 GETTEXT_PACKAGE=libvisual
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [GETTEXT package name])
@@ -349,7 +346,7 @@ elif test x"$LV_THREAD_CFLAGS" != x; then
 fi
 AC_SUBST(VISUAL_PKG_CONFIG_DEP)
 
-VISUAL_LIBS="$LIBS -lvisual"
+VISUAL_LIBS="$LIBS -lvisual-0.3"
 if test x"$LV_THREAD_LIBS" != x; then
   VISUAL_LIBS="$LV_THREAD_LIBS $VISUAL_LIBS"
 fi
@@ -472,7 +469,7 @@ AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
 AC_SUBST(BUILD_SUBDIRS, "libvisual")
 
-LIBVISUAL_PLUGINS_BASE_DIR="${libdir}/libvisual"
+LIBVISUAL_PLUGINS_BASE_DIR="${libdir}/libvisual-0.3"
 AC_SUBST(LIBVISUAL_PLUGINS_BASE_DIR)
 
 dnl Output the LibVisual config file
@@ -804,7 +801,7 @@ AC_CONFIG_FILES([
 m4/Makefile
 po/Makefile.in
 Makefile
-libvisual.pc
+libvisual-0.3.pc
 libvisual/Makefile
 ])
 #
@@ -827,4 +824,3 @@ plugins base dir                     : $plugins_base_dir
 compiler                             : ${CC}
 debug enabled                        : ${debug}
 "
-

@@ -3,11 +3,11 @@
 SUBDIRS = m4  libvisual po
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libvisual.pc
+pkgconfig_DATA = libvisual-0.3.pc
 
 install-exec-local: libvisual/lvconfig.h 
 	        $(mkinstalldirs) $(DESTDIR)$(includedir)/libvisual
-	        file=$(DESTDIR)$(includedir)/libvisual/lvconfig.h; \
+	        file=$(DESTDIR)$(includedir)/libvisual-0.3/libvisual/lvconfig.h; \
 	        if test -r $$file && cmp -s libvisual/lvconfig.h $$file; then :; \
 	        else $(INSTALL_DATA) libvisual/lvconfig.h $$file; fi
 
