@@ -4,9 +4,9 @@ DEFS = @DEFS@
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/examples
 
-AM_CFLAGS = @VISUAL_CFLAGS@
+AM_CFLAGS = $(VISUAL_CFLAGS)
 
-lv_inspect_LDADD = @VISUAL_LIBS@
+lv_inspect_LDADD = $(VISUAL_LIBS)
 
 bin_PROGRAMS = lv-inspect
 
