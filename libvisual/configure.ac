@@ -806,7 +806,7 @@ AC_CONFIG_FILES([
 m4/Makefile
 po/Makefile.in
 Makefile
-libvisual-0.3.pc
+libvisual.pc
 libvisual/Makefile
 ])
 #
