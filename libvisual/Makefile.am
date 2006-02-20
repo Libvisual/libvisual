@@ -1,29 +1,28 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = m4  libvisual po
+SUBDIRS = m4 libvisual po
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libvisual-0.3.pc
+pkgconfig_DATA = libvisual-$(LIBVISUAL_VERSION_SUFFIX).pc
 
 install-exec-local: libvisual/lvconfig.h 
-	        $(mkinstalldirs) $(DESTDIR)$(includedir)/libvisual
-	        file=$(DESTDIR)$(includedir)/libvisual-0.3/libvisual/lvconfig.h; \
+	        file=$(DESTDIR)$(LIBVISUAL_INCLUDE_DIR)/libvisual/lvconfig.h; \
 	        if test -r $$file && cmp -s libvisual/lvconfig.h $$file; then :; \
 	        else $(INSTALL_DATA) libvisual/lvconfig.h $$file; fi
 
 lvconfig.h: stamp-gc-h
 	@if test -f libvisual/lvconfig.h; then :; \
 	else rm -f stamp-gc-h; $(MAKE) stamp-gc-h; fi
+
 stamp-gc-h: config.status
 	cd $(top_builddir) && $(SHELL) ./config.status libvisual/lvconfig.h
 	echo timestamp > stamp-gc-h
 
 uninstall-local:
-		rmdir $(includedir)/libvisual
+	rmdir $(includedir)/libvisual
 
 EXTRA_DIST = config.rpath mkinstalldirs  config.rpath mkinstalldirs  config.rpath mkinstalldirs  Doxyfile
 
 DISTCLEANFILES = libvisual/lvconfig.h
-
 
 ACLOCAL_AMFLAGS = -I m4

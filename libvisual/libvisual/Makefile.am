@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-library_includedir = $(includedir)/libvisual-0.3/libvisual
+library_includedir = $(LIBVISUAL_INCLUDE_DIR)/libvisual
 library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_audio.h lv_bin.h lv_common.h lv_fourier.h \
 			  lv_input.h lv_event.h lv_keysym.h \
@@ -15,7 +15,7 @@ library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_hashlist.h lv_cache.h lv_collection.h \
 			  lv_utils.h lv_os.h lv_math.h lv_gl.h lv_defines.h
 
-lib_LTLIBRARIES = libvisual-0.3.la
+lib_LTLIBRARIES = libvisual-@LIBVISUAL_VERSION_SUFFIX@.la
 
 DEFS = @DEFS@
 
@@ -29,9 +29,9 @@ AM_CFLAGS = -DPLUGPATH="\"$(LIBVISUAL_PLUGINS_BASE_DIR)\"" \
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libvisual \
 	   -I$(top_builddir) -I$(top_builddir)/libvisual
 
-libvisual_0_3_la_LDFLAGS = -export-dynamic -no-undefined
+libvisual_@LIBVISUAL_VERSION_SUFFIX@_la_LDFLAGS = -export-dynamic -no-undefined
 
-libvisual_0_3_la_SOURCES = lv_actor.c lv_input.c lv_event.c \
+libvisual_@LIBVISUAL_VERSION_SUFFIX@_la_SOURCES = lv_actor.c lv_input.c lv_event.c \
 		       lv_bin.c lv_plugin.c lv_video.c lv_video_simd.c lv_mem.c \
 		       lv_audio.c lv_fourier.c lv_list.c lv_log.c lv_palette.c \
 		       lv_libvisual.c lv_songinfo.c lv_morph.c lv_bmp.c lv_param.c \

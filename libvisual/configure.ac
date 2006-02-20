@@ -1,8 +1,11 @@
 # Process this file with autoconf to produce a configure script.
-
 AC_PREREQ(2.57)
+
 AC_INIT([Libvisual Library], [0.3.0], [synap@nerds-incorporated.org], [libvisual])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
+
+LIBVISUAL_VERSION_SUFFIX="0.3"
+AC_SUBST(LIBVISUAL_VERSION_SUFFIX)
 
 AC_CONFIG_HEADER(config.h)
 
@@ -346,7 +349,7 @@ elif test x"$LV_THREAD_CFLAGS" != x; then
 fi
 AC_SUBST(VISUAL_PKG_CONFIG_DEP)
 
-VISUAL_LIBS="$LIBS -lvisual-0.3"
+VISUAL_LIBS="$LIBS -lvisual${LIBVISUAL_VERSION_SUFFIX}"
 if test x"$LV_THREAD_LIBS" != x; then
   VISUAL_LIBS="$LV_THREAD_LIBS $VISUAL_LIBS"
 fi
@@ -467,9 +470,10 @@ AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
 libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
 
-AC_SUBST(BUILD_SUBDIRS, "libvisual")
-
-LIBVISUAL_PLUGINS_BASE_DIR="${libdir}/libvisual-0.3"
+dnl Installation paths
+LIBVISUAL_INCLUDE_DIR="${includedir}/libvisual-${LIBVISUAL_VERSION_SUFFIX}"
+LIBVISUAL_PLUGINS_BASE_DIR="${libdir}/libvisual-${LIBVISUAL_VERSION_SUFFIX}"
+AC_SUBST(LIBVISUAL_INCLUDE_DIR)
 AC_SUBST(LIBVISUAL_PLUGINS_BASE_DIR)
 
 dnl Output the LibVisual config file
@@ -812,7 +816,7 @@ libvisual/Makefile
 
 AC_OUTPUT
 
-plugins_base_dir=`eval echo \`eval echo $LIBVISUAL_PLUGINS_BASE_DIR\``
+plugins_base_dir=`eval echo \`eval echo ${LIBVISUAL_PLUGINS_BASE_DIR}\``
 
 echo "
 =====================================================================
@@ -820,7 +824,7 @@ LIBVISUAL, AN AUDIO VISUALISATION ABSTRACTION LIBRARY, VERSION $VERSION
 =====================================================================
 
 install path                         : ${prefix}/lib
-plugins base dir                     : $plugins_base_dir
+plugins base directory               : $plugins_base_dir
 compiler                             : ${CC}
 debug enabled                        : ${debug}
 "
