@@ -5,6 +5,9 @@ SUBDIRS = m4 libvisual po
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvisual-$(LIBVISUAL_VERSION_SUFFIX).pc
 
+libvisual-$(LIBVISUAL_VERSION_SUFFIX).pc: libvisual.pc
+	cp -f $< $@
+
 install-exec-local: libvisual/lvconfig.h 
 	        file=$(DESTDIR)$(LIBVISUAL_INCLUDE_DIR)/libvisual/lvconfig.h; \
 	        if test -r $$file && cmp -s libvisual/lvconfig.h $$file; then :; \
@@ -21,7 +24,7 @@ stamp-gc-h: config.status
 uninstall-local:
 	rmdir $(includedir)/libvisual
 
-EXTRA_DIST = Doxyfile config.rpath
+EXTRA_DIST = Doxyfile config.rpath libvisual.pc.in
 
 DISTCLEANFILES = libvisual/lvconfig.h
 
