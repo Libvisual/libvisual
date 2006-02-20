@@ -137,11 +137,12 @@ AC_CHECK_LIB([m], [sqrt], [LIBS="-lm $LIBS"],
 	     AC_MSG_ERROR([*** You need the Standard C Math Library to build Libvisual.]))
 
 # Internationalization
-GETTEXT_PACKAGE=libvisual
+GETTEXT_PACKAGE="libvisual-${LIBVISUAL_VERSION_SUFFIX}"
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [GETTEXT package name])
 AC_DEFINE_UNQUOTED(LOCALEDIR, "${prefix}/share/locale", [String catalog location])
 AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.14.1])
 
 dnl -------------------------------
 dnl Check for native thread support
@@ -349,7 +350,7 @@ elif test x"$LV_THREAD_CFLAGS" != x; then
 fi
 AC_SUBST(VISUAL_PKG_CONFIG_DEP)
 
-VISUAL_LIBS="$LIBS -lvisual${LIBVISUAL_VERSION_SUFFIX}"
+VISUAL_LIBS="$LIBS -lvisual-${LIBVISUAL_VERSION_SUFFIX}"
 if test x"$LV_THREAD_LIBS" != x; then
   VISUAL_LIBS="$LV_THREAD_LIBS $VISUAL_LIBS"
 fi
