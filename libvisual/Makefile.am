@@ -21,7 +21,7 @@ stamp-gc-h: config.status
 uninstall-local:
 	rmdir $(includedir)/libvisual
 
-EXTRA_DIST = config.rpath mkinstalldirs  config.rpath mkinstalldirs  config.rpath mkinstalldirs  Doxyfile
+EXTRA_DIST = Doxyfile config.rpath
 
 DISTCLEANFILES = libvisual/lvconfig.h
 
