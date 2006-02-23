@@ -17,7 +17,7 @@ AC_CONFIG_HEADER([config.h])
 m4_define([libvisual_required_version], [0.3.0])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
-m4_define([gdk_pixbuf_required_version], [2.0])
+m4_define([gtk_required_version], [2.0])
 m4_define([gst_required_version], [0.8])
 
 m4_define([libvisual_pkg], [libvisual-lv_plugins_version_suffix])
@@ -118,14 +118,14 @@ AC_ARG_ENABLE([gdkpixbuf-plugin],
   [ENABLE_PLUGIN_GDKPIXBUF=yes])
 
 if test "$ENABLE_PLUGIN_GDKPIXBUF" = "yes"; then
-  PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= gdk_pixbuf_required_version],
-    [HAVE_GDKPIXBUF="yes"], [HAVE_GDKPIXBUF="no"])
+  PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= gtk_required_version],
+    [HAVE_GTK="yes"], [HAVE_GTK="no"])
 
-  if test "$HAVE_GDKPIXBUF" = "yes"; then
+  if test "$HAVE_GTK" = "yes"; then
     build_actor_plugins="$build_actor_plugins gdkpixbuf"
   else
-    AC_MSG_WARN([*** GdkPixbuf >= ${gdk_pixbuf_required_version} is not found.
-	  	The libvisual gdkpixbuf image loader plugin won't be build.
+    AC_MSG_WARN([*** GTK+ >= ${gtk_required_version} is not found.
+	  	The libvisual GdkPixbuf image loader plugin won't be build.
 		GdkPixbuf is included within gtk-2.0 and newer, which can be
 		downloaded at http://www.gtk.org/])
   fi
@@ -597,25 +597,28 @@ AC_CONFIG_FILES([
 	po/Makefile.in
 	plugins/Makefile
 	plugins/actor/Makefile
-	plugins/actor/lv_analyzer/Makefile
-	plugins/actor/finespectrum/Makefile
-	plugins/actor/lv_scope/Makefile
-	plugins/actor/lv_gltest/Makefile
-	plugins/actor/nastyfft/Makefile
-	plugins/actor/madspin/Makefile
+	plugins/actor/bumpscope/Makefile
+	plugins/actor/corona/Makefile
 	plugins/actor/dancingparticles/Makefile
-	plugins/actor/pseudotoad_flower/Makefile
+	plugins/actor/dna/Makefile
+	plugins/actor/finespectrum/Makefile
+	plugins/actor/gdkpixbuf/Makefile
+	plugins/actor/goom2/Makefile
+	plugins/actor/goom2k4/Makefile
+	plugins/actor/gstreamer/Makefile
+	plugins/actor/infinite/Makefile
+	plugins/actor/jakdaw/Makefile
+	plugins/actor/JESS/Makefile
+	plugins/actor/lv_analyzer/Makefile
+	plugins/actor/lv_gltest/Makefile
+	plugins/actor/lv_scope/Makefile
+	plugins/actor/madspin/Makefile
+	plugins/actor/nastyfft/Makefile
 	plugins/actor/nebulus/Makefile
 	plugins/actor/oinksie/Makefile
-	plugins/actor/jakdaw/Makefile
 	plugins/actor/plazma/Makefile
-	plugins/actor/bumpscope/Makefile
-	plugins/actor/infinite/Makefile
-	plugins/actor/JESS/Makefile
-	plugins/actor/corona/Makefile
-	plugins/actor/goom2k4/Makefile
-	plugins/actor/gdkpixbuf/Makefile
-	plugins/actor/gstreamer/Makefile
+	plugins/actor/pseudotoad_flower/Makefile
+	plugins/actor/xpyre/Makefile
 	plugins/actor/G-Force/Makefile
 	plugins/actor/G-Force/docs/Makefile
 	plugins/actor/G-Force/Common/Makefile

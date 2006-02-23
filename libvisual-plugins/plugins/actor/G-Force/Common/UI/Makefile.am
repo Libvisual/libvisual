@@ -1,15 +1,18 @@
 
 SUBDIRS = Headers
 
-INCLUDES = -I../../unix/Headers\
-	-I../../Common\
-	-I../../Common/GeneralTools/Headers\
-	-I../../Common/UI/Headers\
-	-I../../Common/math/Headers\
-	-I../../Common/io/Headers\
-	-I../../unix/libxpce\
-	-I../../unix/libmfl\
-	-I../../unix/libvisual
+GFORCE_TOP_SRCDIR = $(top_srcdir)/plugins/actor/G-Force
+
+INCLUDES = \
+	-I$(GFORCE_TOP_SRCDIR)/unix/Headers \
+	-I$(GFORCE_TOP_SRCDIR)/Common \
+	-I$(GFORCE_TOP_SRCDIR)/Common/GeneralTools/Headers \
+	-I$(GFORCE_TOP_SRCDIR)/Common/UI/Headers \
+	-I$(GFORCE_TOP_SRCDIR)/Common/math/Headers \
+	-I$(GFORCE_TOP_SRCDIR)/Common/io/Headers \
+	-I$(GFORCE_TOP_SRCDIR)/unix/libxpce \
+	-I$(GFORCE_TOP_SRCDIR)/unix/libmfl \
+	-I$(GFORCE_TOP_SRCDIR)/unix/libvisual
 
 DATADIR = $(LIBVISUAL_PLUGINS_DATA_DIR)
 AM_CXXFLAGS = -DDATADIR="\"$(DATADIR)\""

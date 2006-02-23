@@ -2,9 +2,9 @@
 
 actor_plugin_LTLIBRARIES = actor_gdkpixbuf.la
 
-LIBS += $(LIBVISUAL_LIBS) $(GDKPIXBUF_LIBS)
+LIBS += $(LIBVISUAL_LIBS) $(GTK_LIBS)
 
-AM_CFLAGS = $(LIBVISUAL_CFLAGS) $(GDKPIXBUF_CFLAGS)
+AM_CFLAGS = $(LIBVISUAL_CFLAGS) $(GTK_CFLAGS)
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 

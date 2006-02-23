@@ -11,4 +11,3 @@ INCLUDES = $(all_includes) -I$(top_srcdir)
 actor_goom2_la_LDFLAGS = -module -avoid-version
 
 actor_goom2_la_SOURCES = actor_goom2.c
-

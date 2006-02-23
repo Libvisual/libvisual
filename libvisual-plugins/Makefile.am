@@ -2,4 +2,4 @@
 
 SUBDIRS = plugins po
 
-EXTRA_DIST = libvisual-plugins.spec gettext.h
+EXTRA_DIST = libvisual-plugins.spec gettext.h po/Makevars.in
