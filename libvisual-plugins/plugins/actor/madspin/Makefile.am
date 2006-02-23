@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-imagesdir = $(datadir)/libvisual/actor/actor_madspin
+imagesdir = $(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_madspin
 images_DATA = star1.bmp \
 	      star2.bmp
 

@@ -21,12 +21,5 @@ actor_gforce_la_LIBADD = \
 	unix/libmfl/libmfl.la \
 	unix/libvisual/libactor_gforce.la
 
-install-data-local:
-	test -d "$(DESTDIR)$(pkgdatadir)" || mkdirhier "$(DESTDIR)$(pkgdatadir)"
-	cp -r deffont "GForceColorMaps" "GForceDeltaFields" "GForceParticles" "GForceWaveShapes" "$(DESTDIR)$(pkgdatadir)"
-
-uninstall-local:
-	rm -rf "$(DESTDIR)$(pkgdatadir)"
-
 EXTRA_DIST = deffont
 

@@ -11,10 +11,10 @@ INCLUDES = -I../../unix/Headers\
 	-I../../unix/libmfl\
 	-I../../unix/libvisual
 
-DATADIR = $(datadir)/libvisual/actor/actor_gforce
-AM_CXXFLAGS = -DDATADIR="\"$(pkgdatadir)\""
+DATADIR = $(LIBVISUAL_PLUGINS_DATA_DIR)
+AM_CXXFLAGS = -DDATADIR="\"$(DATADIR)\""
 
-# Are missing DrawXX.cpp and LineXX.cpp
+# Missing DrawXX.cpp and LineXX.cpp
 ALLSOURCES = EgOSUtils.cpp PixPort.cpp ScreenDevice.cpp
 
 noinst_LTLIBRARIES = libUI.la

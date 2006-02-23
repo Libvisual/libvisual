@@ -1,5 +1,5 @@
 
-pkgdatadir = $(datadir)/libvisual/actor/actor_gforce/GForceWaveShapes
+pkgdatadir = $(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_gforce/GForceWaveShapes
 pkgdata_DATA = \
 3D_Cylinder \
 DT_-_Circle_II \

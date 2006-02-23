@@ -1,5 +1,5 @@
 
-pkgdatadir = $(datadir)/libvisual/actor/actor_gforce/GForceColorMaps
+pkgdatadir = $(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_gforce/GForceColorMaps
 pkgdata_DATA = \
 Acid_Gap \
 DT_-_Antarctis \

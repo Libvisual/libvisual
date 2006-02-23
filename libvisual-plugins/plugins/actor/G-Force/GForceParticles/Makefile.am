@@ -1,5 +1,5 @@
 
-pkgdatadir = $(datadir)/libvisual/actor/actor_gforce/GForceParticles
+pkgdatadir = $(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_gforce/GForceParticles
 pkgdata_DATA = \
 A_Wounded_Deer \
 Converge_-_Circle \

@@ -1,7 +1,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual plugins, 0.3.0, ds@nerds-incorporated.org)
+
+m4_define([lv_plugins_version_major], [0])
+m4_define([lv_plugins_version_minor], [3])
+m4_define([lv_plugins_version_micro], [0])
+m4_define([lv_plugins_version], [lv_plugins_version_major.lv_plugins_version_minor.lv_plugins_version_micro])
+m4_define([lv_plugins_version_suffix], [lv_plugins_version_major.lv_plugins_version_minor])
+
+AC_INIT(Libvisual plugins, lv_plugins_version, ds@nerds-incorporated.org)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
@@ -13,7 +20,7 @@ m4_define([jack_required_version], [0.98.0])
 m4_define([gdk_pixbuf_required_version], [2.0])
 m4_define([gst_required_version], [0.8])
 
-m4_define([libvisual_pkg], [libvisual-0.3])
+m4_define([libvisual_pkg], [libvisual-lv_plugins_version_suffix])
 LIBVISUAL_PKG=libvisual_pkg
 
 dnl Check for pkg-config
@@ -22,11 +29,14 @@ if test -z "$PKG_CONFIG"; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/])
 fi
 
-dnl Initial sanity check, done here so that users get told they 
-dnl have the wrong dependencies as early in the process as possible.
-dnl Later on we actually use the cflags/libs from separate pkg-config
-dnl calls.
-PKG_CHECK_MODULES(BASE_DEPENDENCIES, [libvisual_pkg >= libvisual_required_version])
+dnl Check for libvisual here so that users get told they have the
+dnl wrong dependencies as early in the process as possible.
+PKG_CHECK_MODULES([LIBVISUAL], [libvisual_pkg >= libvisual_required_version],
+  [],
+  [AC_MSG_ERROR([*** libvisual libvisual_required_version not found.
+ 		It is needed to build this package.
+		You can download libvisual at http://libvisual.sf.net/])]
+)
 
 dnl C/C++ compilers
 AC_PROG_CC
@@ -62,26 +72,19 @@ AM_PROG_LEX
 AC_PROG_YACC
 
 dnl Internationalization
-GETTEXT_PACKAGE=libvisual-plugins
+GETTEXT_PACKAGE=libvisual-plugins-lv_plugins_version_suffix
 AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [GETTEXT package name])
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [gettext package name])
 AC_DEFINE_UNQUOTED(LOCALEDIR, "${prefix}/share/locale", [String catalog location])
-AM_GNU_GETTEXT_VERSION([0.14.1])
+
 AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.14.1])
 
 dnl Dynamic linking library
 DYNAMIC_LOADER_LIBS="-ldl"
 AC_SUBST([DYNAMIC_LOADER_LIBS])
 
-dnl Libraries.
-PKG_CHECK_MODULES([LIBVISUAL], [libvisual_pkg = libvisual_required_version],
-  [HAVE_LIBVISUAL="yes"], [HAVE_LIBVISUAL="no"])
-
-if test "$HAVE_LIBVISUAL" = "no"; then
-  AC_MSG_ERROR([*** libvisual not found.
-		libvisual is needed to build this package.
-		You can download libvisual at http://libvisual.sf.net/])
-fi
+dnl Libraries
 
 dnl EsounD
 PKG_CHECK_MODULES([LIBESD], [esound >= esound_required_version],
@@ -99,10 +102,10 @@ if test "$HAVE_JACK" = "yes"; then
   build_input_plugins="$build_input_plugins jack"
 else
   AC_MSG_WARN([*** libjack is too old. You can download a newer version at
-	     	http://jackit.sf.net/. The jackit input plugin won't be built])
+             http://jackit.sf.net/. The jackit input plugin won't be built])
 fi
 
-dnl Plugins
+dnl List of plugins to build
 build_input_plugins=""
 build_actor_plugins=""
 build_morph_plugins=""
@@ -156,6 +159,7 @@ dnl OpenGL, GLX
 HAVE_OPENGL=no
 
 if test "$have_x" = "yes" ; then
+  # FIXME: Don't modify LDFLAGS and CPPFLAGS permanently
   LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 
@@ -171,7 +175,7 @@ XF86VMODE_LIB=
 AC_CHECK_HEADERS([X11/extensions/xf86vmode.h],
   [AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], 
     [AC_DEFINE([HAVE_XF86VMODE], [], [XF86VidMode is available])
-     XF86VM_LIB=-lXxf86vm
+     XF86VMODE_LIB=-lXxf86vm
      HAVE_XF86VMODE=yes])],
   [],
   [#include <X11/Xlib.h>
@@ -580,15 +584,16 @@ AC_SUBST([actor_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/actor])
 AC_SUBST([input_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/input])
 AC_SUBST([morph_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/morph])
 
+AC_SUBST(LIBVISUAL_PLUGINS_DATA_DIR, [$datadir/libvisual-plugins-lv_plugins_version_suffix])
+
 dnl Plugins to build
 AC_SUBST([build_actor_plugins])
 AC_SUBST([build_input_plugins])
 AC_SUBST([build_morph_plugins])
 
-AC_SUBST(DATADIR, "$datadir")
-
 AC_CONFIG_FILES([
 	Makefile
+	po/Makevars
 	po/Makefile.in
 	plugins/Makefile
 	plugins/actor/Makefile
@@ -655,7 +660,6 @@ LIBVISUAL-PLUGINS, PLUGINS FOR LIBVISUAL $VERSION
 ================================================
 
 Packages found:
-libvisual:                            : $HAVE_LIBVISUAL
 libesd:                               : $HAVE_ESD
 alsa:                                 : $HAVE_ALSA
 opengl:                               : $HAVE_OPENGL
@@ -678,4 +682,3 @@ Extra optimization                    : $ENABLE_EXTRA_OPT
 Debug build                           : $ENABLE_DEBUG
 Profiling support                     : $ENABLE_PROFILING
 "
-

@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-imagesdir = $(datadir)/libvisual/actor/actor_nebulus
+imagesdir = $(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_nebulus
 images_DATA = background_texture.bmp \
 	      child_texture.bmp \
 	      energy_texture.bmp \

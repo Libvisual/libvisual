@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-pkgdatadir = $(datadir)/libvisual/actor/actor_gforce/GForceDeltaFields
+pkgdatadir = $(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_gforce/GForceDeltaFields
 pkgdata_DATA = \
 6_Feet_Under \
 Directed_Spread \
