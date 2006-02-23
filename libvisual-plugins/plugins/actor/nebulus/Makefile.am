@@ -10,19 +10,15 @@ images_DATA = background_texture.bmp \
 
 EXTRA_DIST = $(images_DATA)
 
-lib_LTLIBRARIES = $(NEBULUS)
+actor_plugin_LTLIBRARIES = actor_nebulus.la
 
-EXTRA_LTLIBRARIES = actor_nebulus.la
+LIBS += -lGL -lGLU $(LIBVISUAL_LIBS)
 
-libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
-
-LIBS += -L. -L$(prefix)/lib -lGL -lGLU @LIBVISUAL_LIBS@
-
-AM_CFLAGS = @LIBVISUAL_CFLAGS@ -DBITMAP_DIR=\"$(imagesdir)/\"
+AM_CFLAGS = $(LIBVISUAL_CFLAGS) -DBITMAP_DIR=\"$(imagesdir)/\"
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
-actor_nebulus_la_LDFLAGS = -rpath $(libdir) -module -avoid-version
+actor_nebulus_la_LDFLAGS = -module -avoid-version
 
 actor_nebulus_la_SOURCES = nebulus.c nebulus.h \
 		    draw_gl.c spectrum.c face.c \

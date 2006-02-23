@@ -1,18 +1,14 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = $(corona)
+actor_plugin_LTLIBRARIES = actor_corona.la
 
-EXTRA_LTLIBRARIES = actor_corona.la
+LIBS += $(LIBVISUAL_LIBS)
 
-libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
-
-LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
-
-AM_CXXFLAGS = @LIBVISUAL_CFLAGS@
+AM_CXXFLAGS = $(LIBVISUAL_CFLAGS)
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
-actor_corona_la_LDFLAGS = -rpath $(libdir) -module -avoid-version
+actor_corona_la_LDFLAGS = -module -avoid-version
 
 actor_corona_la_SOURCES = actor_corona.cpp \
 			  autopal.h \

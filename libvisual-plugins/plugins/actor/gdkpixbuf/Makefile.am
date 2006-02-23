@@ -1,18 +1,14 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = $(GDKPIXBUF)
+actor_plugin_LTLIBRARIES = actor_gdkpixbuf.la
 
-EXTRA_LTLIBRARIES = actor_gdkpixbuf.la
+LIBS += $(LIBVISUAL_LIBS) $(GDKPIXBUF_LIBS)
 
-libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
-
-LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@ @GDKPIXBUF_LIBS@
-
-AM_CFLAGS = @LIBVISUAL_CFLAGS@ @GDKPIXBUF_CFLAGS@
+AM_CFLAGS = $(LIBVISUAL_CFLAGS) $(GDKPIXBUF_CFLAGS)
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
-actor_gdkpixbuf_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
+actor_gdkpixbuf_la_LDFLAGS = -module -avoid-version 
 
 actor_gdkpixbuf_la_SOURCES = actor_gdkpixbuf.c
 

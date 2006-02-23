@@ -11,668 +11,554 @@ m4_define([libvisual_required_version], [0.3.0])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
 m4_define([gdk_pixbuf_required_version], [2.0])
-m4_define([g_streamer_required_version], [0.8])
+m4_define([gst_required_version], [0.8])
 
-# Checks for programs.
-AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
-if test x$PKG_CONFIG = xno ; then
+m4_define([libvisual_pkg], [libvisual-0.3])
+LIBVISUAL_PKG=libvisual_pkg
+
+dnl Check for pkg-config
+PKG_PROG_PKG_CONFIG([0.14])
+if test -z "$PKG_CONFIG"; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/])
 fi
 
-if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
-  :
-else
-  AC_MSG_ERROR([*** pkg-config too old; version 0.14 or better required.])
-fi
+dnl Initial sanity check, done here so that users get told they 
+dnl have the wrong dependencies as early in the process as possible.
+dnl Later on we actually use the cflags/libs from separate pkg-config
+dnl calls.
+PKG_CHECK_MODULES(BASE_DEPENDENCIES, [libvisual_pkg >= libvisual_required_version])
 
-## Initial sanity check, done here so that users get told they 
-## have the wrong dependencies as early in the process as possible.
-## Later on we actually use the cflags/libs from separate pkg-config
-## calls.
-PKG_CHECK_MODULES(BASE_DEPENDENCIES, [libvisual = libvisual_required_version])
-
+dnl C/C++ compilers
 AC_PROG_CC
 AC_PROG_CXX
+
+dnl Check for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+
+dnl 'Standard' header files.
+AC_HEADER_TIME
+AC_CHECK_HEADERS([fcntl.h unistd.h stdlib.h string.h sys/time.h])
+
+dnl Library functions.
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([floor gettimeofday memmove memset pow sqrt])
+AC_CHECK_FUNC([munmap], lv_have_munmap=yes, lv_have_munmap=no)
+AC_FUNC_MMAP
+
+dnl Installation tools
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
+dnl Libtool
 AC_DISABLE_STATIC
+
+m4_undefine([AC_PROG_F77])
+m4_defun([AC_PROG_F77],[])
 AC_PROG_LIBTOOL
 
+dnl Lex/Yacc
 AM_PROG_LEX
 AC_PROG_YACC
 
-# Internationalization
-ALL_LINGUAS="es_ES es_AR"
+dnl Internationalization
 GETTEXT_PACKAGE=libvisual-plugins
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [GETTEXT package name])
 AC_DEFINE_UNQUOTED(LOCALEDIR, "${prefix}/share/locale", [String catalog location])
-AM_GLIB_GNU_GETTEXT
+AM_GNU_GETTEXT_VERSION([0.14.1])
+AM_GNU_GETTEXT([external])
 
-# Checks for libraries.
-build_input=""
-build_actor=""
-build_morph=""
+dnl Dynamic linking library
+DYNAMIC_LOADER_LIBS="-ldl"
+AC_SUBST([DYNAMIC_LOADER_LIBS])
 
-PKG_CHECK_MODULES(LIBESD, esound >= esound_required_version, [libesd="yes"], [libesd="no"])
-if test x$libesd = xno; then
-	AC_MSG_WARN([*** esound not found or too old.
-			The esound input plugin won't be built])
-fi
-AC_SUBST(LIBESD_LIBS)
-AC_SUBST(LIBESD_CFLAGS)
-if test x$libesd = xyes; then
-  build_input="$build_input esd"
-  AC_SUBST([ESD], ['input_esd.la'])
+dnl Libraries.
+PKG_CHECK_MODULES([LIBVISUAL], [libvisual_pkg = libvisual_required_version],
+  [HAVE_LIBVISUAL="yes"], [HAVE_LIBVISUAL="no"])
+
+if test "$HAVE_LIBVISUAL" = "no"; then
+  AC_MSG_ERROR([*** libvisual not found.
+		libvisual is needed to build this package.
+		You can download libvisual at http://libvisual.sf.net/])
 fi
 
-PKG_CHECK_MODULES(LIBJACK, jack >= jack_required_version, [jack="yes"], [jack="no"])
-if test x$jack = xno; then
-	AC_MSG_WARN([*** libjack is too old. You can download a newer version at
-		     	http://jackit.sf.net/. The jackit input plugin won't be built])
-fi
-AC_SUBST(LIBJACK_LIBS)
-AC_SUBST(LIBJACK_CFLAGS)
-if test x$jack = xyes; then
-  build_input="$build_input jack"
-  AC_SUBST([JACK], ['input_jack.la'])
+dnl EsounD
+PKG_CHECK_MODULES([LIBESD], [esound >= esound_required_version],
+  [HAVE_ESD="yes"], [HAVE_ESD="no"])
+
+if test "$HAVE_ESD" = "yes"; then
+  build_input_plugins="$build_input_plugins esd"
+else
+  AC_MSG_WARN([*** EsounD not found or too old. The EsounD input plugin won't be built])
 fi
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = libvisual_required_version, [libvis="yes"], [libvis="no"])
-if test x$libvis = xno; then
-	AC_MSG_ERROR([*** libvisual not found.
-			libvisual is needed to build this package.
-			You can download libvisual at http://libvisual.sf.net/])
+dnl JACK
+PKG_CHECK_MODULES([LIBJACK], [jack >= jack_required_version], [HAVE_JACK="yes"], [HAVE_JACK="no"])
+if test "$HAVE_JACK" = "yes"; then
+  build_input_plugins="$build_input_plugins jack"
+else
+  AC_MSG_WARN([*** libjack is too old. You can download a newer version at
+	     	http://jackit.sf.net/. The jackit input plugin won't be built])
 fi
-AC_SUBST(LIBVISUAL_LIBS)
-AC_SUBST(LIBVISUAL_CFLAGS)
-	
+
+dnl Plugins
+build_input_plugins=""
+build_actor_plugins=""
+build_morph_plugins=""
+
+dnl GdkPixbuf
 AC_ARG_ENABLE([gdkpixbuf-plugin],
-            AC_HELP_STRING([--disable-gdkpixbuf-plugin],
-                           [Do not build GdkPixbuf visualization plugin @<:@default=enabled@:>@]),
-	    [gdkpixbuf_plugin=$enableval],
-	    [gdkpixbuf_plugin=yes])
-AC_MSG_CHECKING([whether to enable GdkPixbuf visualization plugin])
-if test x$gdkpixbuf_plugin = xyes; then
-  AC_MSG_RESULT([yes])
-  PKG_CHECK_MODULES(GDKPIXBUF, gdk-2.0 >= gdk_pixbuf_required_version, [gdkpixbuf="yes"], [gdkpixbuf="no"])
-  if test x$gdkpixbuf = xyes; then
-    AC_SUBST(GDKPIXBUF_LIBS)
-    AC_SUBST(GDKPIXBUF_CFLAGS)
-    build_actor="$build_actor gdkpixbuf"
-    AC_SUBST([GDKPIXBUF], ['actor_gdkpixbuf.la'])
+  AS_HELP_STRING([--disable-gdkpixbuf-plugin],
+    [Do not build GdkPixbuf visualization plugin @<:@default=enabled@:>@]),
+  [ENABLE_PLUGIN_GDKPIXBUF=$enableval],
+  [ENABLE_PLUGIN_GDKPIXBUF=yes])
+
+if test "$ENABLE_PLUGIN_GDKPIXBUF" = "yes"; then
+  PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= gdk_pixbuf_required_version],
+    [HAVE_GDKPIXBUF="yes"], [HAVE_GDKPIXBUF="no"])
+
+  if test "$HAVE_GDKPIXBUF" = "yes"; then
+    build_actor_plugins="$build_actor_plugins gdkpixbuf"
   else
     AC_MSG_WARN([*** GdkPixbuf >= ${gdk_pixbuf_required_version} is not found.
 	  	The libvisual gdkpixbuf image loader plugin won't be build.
 		GdkPixbuf is included within gtk-2.0 and newer, which can be
 		downloaded at http://www.gtk.org/])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl GStreamer
 AC_ARG_ENABLE([gstreamer-plugin],
-            AC_HELP_STRING([--disable-gstreamer-plugin],
-                           [Do not build Gstreamer visualization plugin @<:@default=enabled@:>@]),
-	    [gstreamer_plugin=$enableval],
-	    [gstreamer_plugin=yes])
-AC_MSG_CHECKING([whether to enable Gstreamer visualization plugin])
-if test x$gstreamer_plugin = xyes; then
-  AC_MSG_RESULT([yes])
-  PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.8 >= g_streamer_required_version, [gstreamer="yes"], [gstreamer="no"])
-  if test x$gstreamer = xyes; then
-    AC_SUBST(GSTREAMER_LIBS)
-    AC_SUBST(GSTREAMER_CFLAGS)
-    build_actor="$build actor_gstreamer"
-    AC_SUBST([GSTREAMER], ['actor_gstreamer.la'])
+  AS_HELP_STRING([--disable-gstreamer-plugin],
+    [Do not build GStreamer visualization plugin @<:@default=enabled@:>@]),
+  [ENABLE_GSTREAMER_PLUGIN=$enableval],
+  [ENABLE_GSTREAMER_PLUGIN=yes])
+
+if test "$ENABLE_GSTREAMER_PLUGIN" = "yes"; then
+  PKG_CHECK_MODULES([GSTREAMER], [gstreamer-0.8 >= gst_required_version],
+    [HAVE_GSTREAMER="yes"], [HAVE_GSTREAMER="no"])
+
+  if test "$HAVE_GSTREAMER" = "yes"; then
+    build_actor_plugins="$build_actor_plugins gstreamer"
   else
-    AC_MSG_WARN([*** Gstreamer >= ${g_streamer_required_version} is not found.
-	  	The libvisual gstreamer viewer plugin won't be build.
-		Gstreamer can be downloaded from http://www.gstreamer.org/])
+    AC_MSG_WARN([*** GStreamer >= ${gst_required_version} is not found.
+	  	The libvisual GStreamer viewer plugin won't be build.
+		GStreamer can be downloaded from http://www.gstreamer.org/])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
-AC_PATH_X
+dnl Xlib
+AC_PATH_XTRA
+AM_CONDITIONAL(HAVE_X, test "$have_x" = "yes")
 
-opengl=no
-if test x$have_x = xyes ; then
+dnl OpenGL, GLX
+HAVE_OPENGL=no
 
-    LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
-    CPPFLAGS="$CPPFLAGS -I$x_includes"
+if test "$have_x" = "yes" ; then
+  LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
+  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 
-    std_place=no
-    AC_CHECK_HEADERS([\
-	X11/keysym.h	\
-	X11/X.h	\
-	X11/Xlib.h	\
-	X11/Xutil.h],
-	[std_place=yes],
-	[std_place=no])
-
-    AC_MSG_CHECKING([whether X headers are on a standard place])
-    if test x$std_place = xyes ; then
-        AC_MSG_RESULT([yes])
-    else
-        AC_MSG_RESULT([no])
-	# On some distros, like Gentoo, X headers are in /usr/X11R6/include/X11/
-        AC_CHECK_HEADERS([\
-		include/X11/keysym.h	\
-		include/X11/X.h	\
-		include/X11/Xlib.h	\
-		include/X11/Xutil.h],
-		[],
-		AC_MSG_ERROR([Required X11 headers not found.]))
-    fi
-
-    AC_CHECK_HEADERS([\
-	GL/gl.h \
-	GL/glx.h], [have_gl_headers=yes], [have_gl_headers=no])
-
-    if test x$have_gl_headers = xyes ; then
-	AC_CHECK_LIB([GL], [glBegin], [have_lib_gl=yes], [have_lib_gl=no])
-    else
-	have_lib_gl=no
-    fi
-
-    opengl=$have_lib_gl
-
-    AM_CONDITIONAL(HAVE_LIB_GL,  test x$have_lib_gl = xyes)
-
-    XF86VM_LIB=
-    AC_CHECK_HEADERS([\
-	X11/extensions/xf86vmode.h], [
-	    AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], [
-		AC_DEFINE(HAVE_XF86VMODE, [], [XF86VidMode is available])
-		XF86VM_LIB=-lXxf86vm
-		xf86vm=yes
-	    ], [xf86vm=no]) ], [],
-	    [[#include <X11/Xlib.h>
-	    ]])
-
-    AC_SUBST(XF86VM_LIB)
-    AM_CONDITIONAL(HAVE_XF86VMODE,  test x$xf86vm = xyes)
-else
-    opengl=no
+  AC_CHECK_HEADERS([GL/gl.h GL/glx.h],
+    [AC_CHECK_LIB([GL], [glBegin], [HAVE_OPENGL=yes])])
 fi
 
-AM_CONDITIONAL(HAVE_X,  test x$have_x = xyes)
+AM_CONDITIONAL([HAVE_OPENGL], [test "$HAVE_OPENGL" = "yes"])
 
+dnl XF86VidMode
+HAVE_XF86VMODE=no
+XF86VMODE_LIB=
+AC_CHECK_HEADERS([X11/extensions/xf86vmode.h],
+  [AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], 
+    [AC_DEFINE([HAVE_XF86VMODE], [], [XF86VidMode is available])
+     XF86VM_LIB=-lXxf86vm
+     HAVE_XF86VMODE=yes])],
+  [],
+  [#include <X11/Xlib.h>
+  ]
+)
 
-# Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-# Checks for header files.
-AC_HEADER_TIME
-AC_CHECK_HEADERS([fcntl.h unistd.h stdlib.h string.h sys/time.h])
-AC_C_INLINE
+AC_SUBST([XF86VMODE_LIB])
+AM_CONDITIONAL([HAVE_XF86VMODE], [test "$HAVE_XF86VMODE" = "yes"])
 
-# Checks for library functions.
-AC_FUNC_MALLOC
-AC_CHECK_FUNCS([floor gettimeofday memmove memset pow sqrt])
-AC_CHECK_FUNC([munmap], lv_have_munmap=yes, lv_have_munmap=no)
-AC_FUNC_MMAP
-
-# Arguments to specify certain features.
+dnl ALSA
 LV_ALSA_MIN_VERSION=0.9.0
 AC_ARG_ENABLE([alsa],
-            AC_HELP_STRING([--disable-alsa],
-                           [Do not build Alsa input plugin @<:@default=enabled@:>@]),
-	    [alsa=$enableval],
-	    [alsa=yes])
-AC_MSG_CHECKING([whether to enable Alsa input plugin])
-if test x$alsa = xyes; then
-  AC_MSG_RESULT([yes])
-  build_alsa=yes
-  AM_PATH_ALSA($LV_ALSA_MIN_VERSION,[ build_alsa=yes ], [ build_alsa=no ])
-  if test x$build_alsa = xyes; then
-    build_input="$build_input alsa"
-    AC_SUBST([ALSA], ['input_alsa.la'])
+  AS_HELP_STRING([--disable-alsa],
+    [Do not build ALSA input plugin @<:@default=enabled@:>@]),
+  [ENABLE_ALSA=$enableval],
+  [ENABLE_ALSA=yes])
+
+if test "$ENABLE_ALSA" = "yes"; then
+  AM_PATH_ALSA([$LV_ALSA_MIN_VERSION], [BUILD_ALSA=yes], [BUILD_ALSA=no])
+
+  if test "$BUILD_ALSA" = "yes"; then
+    build_input_plugins="$build_input_plugins alsa"
     AC_TRY_COMPILE([#include <stdlib.h>
-		    #include <alsa/asoundlib.h>],
+		    #include <alsa/asoundlib.h>
+                   ],
 		   [#if(SND_LIB_MAJOR == 0)
-		     exit(0);
-		    #else
-		     something that fails to compile
-		    #endif],
-		   [ AC_DEFINE([HAVE_0_9_X_ALSA], [1], [Alsa Library is from 0.9 series]) ],
-		   [ AC_DEFINE([HAVE_1_X_X_ALSA], [1], [Alsa Library is from 1 series]) ])
+		    exit(0);
+                    #else
+		    #error ALSA library version 1.x
+		    #endif
+                   ],
+		   [ AC_DEFINE([HAVE_0_9_X_ALSA], [1], [ALSA Library is from 0.9 series]) ],
+		   [ AC_DEFINE([HAVE_1_X_X_ALSA], [1], [ALSA Library is from 1 series]) ])
   else
     AC_MSG_WARN([*** Alsa input plugin cannot be built.
 		 May be you have an ALSA library older than $LV_ALSA_MIN_VERSION.
 		 Take a look at {prefix}/include/alsa/version.h file.])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl MPlayer
 AC_ARG_ENABLE([mplayer],
-            AC_HELP_STRING([--disable-mplayer],
-                           [Do not build mplayer input plugin @<:@default=enabled@:>@]),
-	    [mplayer=$enableval],
-	    [mplayer=yes])
-AC_MSG_CHECKING([whether to build mplayer input plugin])
-if test x$mplayer = xyes; then
-  AC_MSG_RESULT([yes])
+  AS_HELP_STRING([--disable-mplayer],
+    [Do not build mplayer input plugin @<:@default=enabled@:>@]),
+  [ENABLE_MPLAYER=$enableval],
+  [ENABLE_MPLAYER=yes])
+
+# FIXME: Missing check for MPlayer...
+if test "$ENABLE_MPLAYER" = "yes"; then
   # FIXME we must check also for HAVE_MMAP here
-  if test x$lv_have_munmap = xyes; then
-    build_input="$build_input mplayer"
-    AC_SUBST([MPLAYER], ['input_mplayer.la'])
+  if test "$lv_have_munmap" = "yes"; then
+    build_input_plugins="$build_input_plugins mplayer"
   else
     AC_MSG_WARN([*** There is not a working munmap function available.
 		mplayer input plugin will not be built.])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl Input debug plugin
 AC_ARG_ENABLE([inputdebug],
-            AC_HELP_STRING([--disable-inputdebug],
-                           [Do not build input debug plugin @<:@default=enabled@:>@]),
-	    [inputdebug=$enableval],
-	    [inputdebug=yes])
-AC_MSG_CHECKING([whether to build input debug plugin])
-if test x$inputdebug = xyes; then
-  AC_MSG_RESULT([yes])
-  build_input="$build_input debug"
-  AC_SUBST([INPUTDEBUG], ['input_debug.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-inputdebug],
+    [Do not build input debug plugin @<:@default=enabled@:>@]),
+  [ENABLE_INPUTDEBUG=$enableval],
+  [ENABLE_INPUTDEBUG=yes])
+
+if test "$inputdebug" = "yes"; then
+  build_input_plugins="$build_input_plugins debug"
 fi
 
+dnl OpenGL test plugin
 AC_ARG_ENABLE([gltest],
-            AC_HELP_STRING([--disable-gltest],
-                           [Do not build lv_gltest plugin @<:@default=enabled@:>@]),
-	    [lvgltest=$enableval],
-	    [lvgltest=yes])
-AC_MSG_CHECKING([whether to build lv_gltest plugin])
-if test x$lvgltest = xyes; then
-  AC_MSG_RESULT([yes])
-  if test x$opengl = xyes; then
-    build_actor="$build_actor lv_gltest"
-    AC_SUBST([GLTEST], ['actor_lv_gltest.la'])
+  AS_HELP_STRING([--disable-gltest],
+    [Do not build lv_gltest plugin @<:@default=enabled@:>@]),
+  [ENABLE_LVGLTEST=$enableval],
+  [ENABLE_LVGLTEST=yes])
+
+if test "$ENABLE_LVGLTEST" = "yes"; then
+  if test "$HAVE_OPENGL" = "yes"; then
+    build_actor_plugins="$build_actor_plugins lv_gltest"
   else
     AC_MSG_WARN([*** No OpenGL found.
 		lv_gltest plugin will not be built.])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl NastyFFT
 AC_ARG_ENABLE([nastyfft],
-            AC_HELP_STRING([--disable-nastyfft],
-                           [Do not build nastyfft plugin @<:@default=enabled@:>@]),
-	    [nastyfft=$enableval],
-	    [nastyfft=yes])
-AC_MSG_CHECKING([whether to build nastyfft plugin])
-if test x$nastyfft = xyes; then
-  AC_MSG_RESULT([yes])
-  if test x$opengl = xyes; then
-    build_actor="$build_actor nastyfft"
-    AC_SUBST([NASTYFFT], ['actor_nastyfft.la'])
+  AS_HELP_STRING([--disable-nastyfft],
+    [Do not build nastyfft plugin @<:@default=enabled@:>@]),
+  [ENABLE_NASTYFFT=$enableval],
+  [ENABLE_NASTYFFT=yes])
+
+if test "$ENABLE_NASTYFFT" = "yes"; then
+  if test "$HAVE_OPENGL" = "yes"; then
+    build_actor_plugins="$build_actor_plugins nastyfft"
   else
     AC_MSG_WARN([*** No OpenGL found.
 		nastyfft plugin will not be built.])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl Madspin
 AC_ARG_ENABLE([madspin],
-            AC_HELP_STRING([--disable-madspin],
-                           [Do not build Madspin plugin @<:@default=enabled@:>@]),
-	    [madspin=$enableval],
-	    [madspin=yes])
-AC_MSG_CHECKING([whether to build Madspin plugin])
-if test x$madspin = xyes; then
-  AC_MSG_RESULT([yes])
-  if test x$opengl = xyes; then
-    build_actor="$build_actor madspin"
-    AC_SUBST([MADSPIN], ['actor_madspin.la'])
+  AS_HELP_STRING([--disable-madspin],
+    [Do not build Madspin plugin @<:@default=enabled@:>@]),
+  [ENABLE_MADSPIN=$enableval],
+  [ENABLE_MADSPIN=yes])
+
+if test "$ENABLE_MADSPIN" = "yes"; then
+  if test "$HAVE_OPENGL" = "yes"; then
+    build_actor_plugins="$build_actor_plugins madspin"
   else
     AC_MSG_WARN([*** No OpenGL found.
 		Madspin plugin will not be built.])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl Dancing Particles
 AC_ARG_ENABLE([dancingparticles],
-            AC_HELP_STRING([--disable-dancingparticles],
-                           [Do not build Dancing Particles plugin @<:@default=enabled@:>@]),
-	    [dancingparticles=$enableval],
-	    [dancingparticles=yes])
-AC_MSG_CHECKING([whether to build Dancing Particles plugin])
-if test x$dancingparticles = xyes; then
-  AC_MSG_RESULT([yes])
-  if test x$opengl = xyes; then
-    build_actor="$build_actor dancingparticles"
-    AC_SUBST([DANCINGPARTICLES], ['actor_dancingparticles.la'])
+  AS_HELP_STRING([--disable-dancingparticles],
+    [Do not build Dancing Particles plugin @<:@default=enabled@:>@]),
+  [ENABLE_DANCINGPARTICLES=$enableval],
+  [ENABLE_DANCINGPARTICLES=yes])
+
+if test "$ENABLE_DANCINGPARTICLES" = "yes"; then
+  if test "$HAVE_OPENGL" = "yes"; then
+    build_actor_plugins="$build_actor_plugins dancingparticles"
   else
     AC_MSG_WARN([*** No OpenGL found.
 		Dancing Particles plugin will not be built.])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl Pseudotoad Flower
 AC_ARG_ENABLE([flower],
-            AC_HELP_STRING([--disable-flower],
-                           [Do not build Pseudotoad Flower plugin @<:@default=enabled@:>@]),
-	    [flower=$enableval],
-	    [flower=yes])
-AC_MSG_CHECKING([whether to build Pseudotoad Flower plugin])
-if test x$flower = xyes; then
-  AC_MSG_RESULT([yes])
-  if test x$opengl = xyes; then
-    build_actor="$build_actor flower"
-    AC_SUBST([FLOWER], ['actor_flower.la'])
+  AS_HELP_STRING([--disable-flower],
+    [Do not build Pseudotoad Flower plugin @<:@default=enabled@:>@]),
+  [ENABLE_FLOWER=$enableval],
+  [ENABLE_FLOWER=yes])
+
+if test "$ENABLE_FLOWER" = "yes"; then
+  if test "$HAVE_OPENGL" = "yes"; then
+    build_actor_plugins="$build_actor_plugins pseudotoad_flower"
   else
     AC_MSG_WARN([*** No OpenGL found.
 		Pseudotoad Flower plugin will not be built.])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl Nebulus
 AC_ARG_ENABLE([nebulus],
-            AC_HELP_STRING([--disable-nebulus],
-                           [Do not build Nebulus plugin @<:@default=enabled@:>@]),
-	    [nebulus=$enableval],
-	    [nebulus=yes])
-AC_MSG_CHECKING([whether to build Nebulus plugin])
-if test x$nebulus = xyes; then
-  AC_MSG_RESULT([yes])
-  if test x$opengl = xyes; then
-    build_actor="$build_actor nebulus"
-    AC_SUBST([NEBULUS], ['actor_nebulus.la'])
+  AS_HELP_STRING([--disable-nebulus],
+    [Do not build Nebulus plugin @<:@default=enabled@:>@]),
+  [ENABLE_NEBULUS=$enableval],
+  [ENABLE_NEBULUS=yes])
+
+if test "$ENABLE_NEBULUS" = "yes"; then
+  if test "$HAVE_OPENGL" = "yes"; then
+    build_actor_plugins="$build_actor_plugins nebulus"
   else
     AC_MSG_WARN([*** No OpenGL found.
 		Nebulus plugin will not be built.])
   fi
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl Infinite
 AC_ARG_ENABLE([infinite],
-            AC_HELP_STRING([--disable-infinite],
-                           [Do not build Infinite plugin @<:@default=enabled@:>@]),
-	    [infinite=$enableval],
-	    [infinite=yes])
-AC_MSG_CHECKING([whether to build Infinite plugin])
-if test x$infinite = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor infinite"
-  AC_SUBST([INFINITE], ['actor_infinite.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-infinite],
+    [Do not build Infinite plugin @<:@default=enabled@:>@]),
+  [ENABLE_INFINITE=$enableval],
+  [ENABLE_INFINITE=yes])
+
+if test "$ENABLE_INFINITE" = "yes"; then
+  build_actor_plugins="$build_actor_plugins infinite"
 fi
 
+dnl JESS
 AC_ARG_ENABLE([jess],
-            AC_HELP_STRING([--disable-jess],
-                           [Do not build JESS plugin @<:@default=enabled@:>@]),
-	    [jess=$enableval],
-	    [jess=yes])
-AC_MSG_CHECKING([whether to build JESS plugin])
-if test x$jess = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor JESS"
-  AC_SUBST([JESS], ['actor_JESS.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-jess],
+    [Do not build JESS plugin @<:@default=enabled@:>@]),
+  [ENABLE_JESS=$enableval],
+  [ENABLE_JESS=yes])
+
+if test "$ENABLE_JESS" = "yes"; then
+  build_actor_plugins="$build_actor_plugins JESS"
 fi
 
+dnl Corona
 AC_ARG_ENABLE([corona],
-            AC_HELP_STRING([--disable-corona],
-                           [Do not build corona plugin @<:@default=enabled@:>@]),
-	    [corona=$enableval],
-	    [corona=yes])
-AC_MSG_CHECKING([whether to build corona plugin])
-if test x$corona = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor corona"
-  AC_SUBST([corona], ['actor_corona.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-corona],
+    [Do not build corona plugin @<:@default=enabled@:>@]),
+  [ENABLE_CORONA=$enableval],
+  [ENABLE_CORONA=yes])
+
+if test "$ENABLE_CORONA" = "yes"; then
+  build_actor_plugins="$build_actor_plugins corona"
 fi
 
+dnl Analyzer
 AC_ARG_ENABLE([analyzer],
-            AC_HELP_STRING([--disable-analyzer],
-                           [Do not build Analyzer plugin @<:@default=enabled@:>@]),
-	    [analyzer=$enableval],
-	    [analyzer=yes])
-AC_MSG_CHECKING([whether to build Analyzer plugin])
-if test x$analyzer = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor lv_analyzer"
-  AC_SUBST([ANALYZER], ['actor_lv_analyzer.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-analyzer],
+    [Do not build Analyzer plugin @<:@default=enabled@:>@]),
+  [ENABLE_ANALYZER=$enableval],
+  [ENABLE_ANALYZER=yes])
+
+if test "$ENABLE_ANALYZER" = xyes; then
+  build_actor_plugins="$build_actor_plugins lv_analyzer"
 fi
 
+dnl Finespectrum
 AC_ARG_ENABLE([finespectrum],
-	    AC_HELP_STRING([--disable-finespectrum],
-                           [Do not build Finespectrum plugin @<:@default=enabled@:>@]),
-	    [finespectrum=$enableval],
-	    [finespectrum=yes])
-AC_MSG_CHECKING([whether to build Finespectrum plugin])
-if test x$finespectrum = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor finespectrum"
-  AC_SUBST([FINESPECTRUM], ['actor_finespectrum.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-finespectrum],
+    [Do not build Finespectrum plugin @<:@default=enabled@:>@]),
+  [ENABLE_FINESPECTRUM=$enableval],
+  [ENABLE_FINESPECTRUM=yes])
+
+if test "$ENABLE_FINESPECTRUM" = "yes"; then
+  build_actor_plugins="$build_actor_plugins finespectrum"
 fi
 
+dnl Scope
 AC_ARG_ENABLE([scope],
-            AC_HELP_STRING([--disable-scope],
-                           [Do not build Scope plugin @<:@default=enabled@:>@]),
-	    [scope=$enableval],
-	    [scope=yes])
-AC_MSG_CHECKING([whether to build Scope plugin])
-if test x$scope = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor lv_scope"
-  AC_SUBST([SCOPE], ['actor_lv_scope.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-scope],
+    [Do not build Scope plugin @<:@default=enabled@:>@]),
+  [ENABLE_SCOPE=$enableval],
+  [ENABLE_SCOPE=yes])
+
+if test "$ENABLE_SCOPE" = "yes"; then
+  build_actor_plugins="$build_actor_plugins lv_scope"
 fi
 
+dnl Oinksie
 AC_ARG_ENABLE([oinksie],
-            AC_HELP_STRING([--disable-oinksie],
-                           [Do not build Oinksie plugin @<:@default=enabled@:>@]),
-	    [oinksie=$enableval],
-	    [oinksie=yes])
-AC_MSG_CHECKING([whether to build Oinksie plugin])
-if test x$oinksie = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor oinksie"
-  AC_SUBST([OINKSIE], ['actor_oinksie.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-oinksie],
+    [Do not build Oinksie plugin @<:@default=enabled@:>@]),
+  [ENABLE_OINKSIE=$enableval],
+  [ENABLE_OINKSIE=yes])
+
+if test "$ENABLE_OINKSIE" = "yes"; then
+  build_actor_plugins="$build_actor_plugins oinksie"
 fi
 
+dnl Jakdaw
 AC_ARG_ENABLE([jakdaw],
-            AC_HELP_STRING([--disable-jakdaw],
-                           [Do not build Jakdaw plugin @<:@default=enabled@:>@]),
-	    [jakdaw=$enableval],
-	    [jakdaw=yes])
-AC_MSG_CHECKING([whether to build Jakdaw plugin])
-if test x$jakdaw = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor jakdaw"
-  AC_SUBST([JAKDAW], ['actor_jakdaw.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-jakdaw],
+    [Do not build Jakdaw plugin @<:@default=enabled@:>@]),
+  [ENABLE_JAKDAW=$enableval],
+  [ENABLE_JAKDAW=yes])
+
+if test "$ENABLE_JAKDAW" = "yes"; then
+  build_actor_plugins="$build_actor_plugins jakdaw"
 fi
 
+dnl Plazma
 AC_ARG_ENABLE([plazma],
-            AC_HELP_STRING([--disable-plazma],
-                           [Do not build plazma plugin @<:@default=enabled@:>@]),
-	    [plazma=$enableval],
-	    [plazma=yes])
-AC_MSG_CHECKING([whether to build plazma plugin])
-if test x$plazma = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor plazma"
-  AC_SUBST([PLAZMA], ['actor_plazma.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-plazma],
+    [Do not build plazma plugin @<:@default=enabled@:>@]),
+  [ENABLE_PLAZMA=$enableval],
+  [ENABLE_PLAZMA=yes])
+
+if test "$ENABLE_PLAZMA" = "yes"; then
+  build_actor_plugins="$build_actor_plugins plazma"
 fi
 
+dnl Bumpscope
 AC_ARG_ENABLE([bumpscope],
-            AC_HELP_STRING([--disable-bumpscope],
-                           [Do not build bumpscope plugin @<:@default=enabled@:>@]),
-	    [bumpscope=$enableval],
-	    [bumpscope=yes])
-AC_MSG_CHECKING([whether to build bumpscope plugin])
-if test x$bumpscope = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor bumpscope"
-  AC_SUBST([BUMPSCOPE], ['actor_bumpscope.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-bumpscope],
+    [Do not build bumpscope plugin @<:@default=enabled@:>@]),
+  [ENABLE_BUMPSCOPE=$enableval],
+  [ENABLE_BUMPSCOPE=yes])
+
+if test "$ENABLE_BUMPSCOPE" = "yes"; then
+  build_actor_plugins="$build_actor_plugins bumpscope"
 fi
 
+dnl G-Force
 AC_ARG_ENABLE([gforce],
-            AC_HELP_STRING([--disable-gforce],
-                           [Do not build the G-Force plugin @<:@default=enabled@:>@]),
-	    [gforce=$enableval],
-	    [gforce=yes])
-AC_MSG_CHECKING([whether to build the G-Force plugin])
-if test x$gforce = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor G-Force"
-  AC_SUBST([GFORCE], ['actor_gforce.la'])
+  AS_HELP_STRING([--disable-gforce],
+    [Do not build the G-Force plugin @<:@default=enabled@:>@]),
+    [ENABLE_GFORCE=$enableval],
+    [ENABLE_GFORCE=yes])
+
+if test "$ENABLE_GFORCE" = "yes"; then
+  build_actor_plugins="$build_actor_plugins G-Force"
   
   # Special flags for G-Force, make this only for G-Force FIXME FIXME!!! 
   GFORCE_CFLAGS="-DUNIX_X -D_REENTRANT"
-  AC_SUBST(GFORCE_FLAGS, "${GFORCE_CFLAGS}")
-else
-  AC_MSG_RESULT([no])
+  AC_SUBST([GFORCE_FLAGS])
 fi
 
+dnl goom2k4
 AC_ARG_ENABLE([goom2k4],
-            AC_HELP_STRING([--disable-goom2k4],
-                           [Do not build goom2k4 plugin @<:@default=enabled@:>@]),
-	    [goom2k4=$enableval],
-	    [goom2k4=yes])
-AC_MSG_CHECKING([whether to build goom2k4 plugin])
-if test x$goom2k4 = xyes; then
-  AC_MSG_RESULT([yes])
-  build_actor="$build_actor goom2k4"
-  AC_SUBST([GOOM2K4], ['actor_goom2k4.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-goom2k4],
+    [Do not build goom2k4 plugin @<:@default=enabled@:>@]),
+    [ENABLE_GOOM2K4=$enableval],
+    [ENABLE_GOOM2K4=yes])
+
+if test "$ENABLE_GOOM2K4" = "yes"; then
+  build_actor_plugins="$build_actor_plugins goom2k4"
 fi
 
+dnl Alphabend
 AC_ARG_ENABLE([alphablend],
-            AC_HELP_STRING([--disable-alphablend],
-                           [Do not build alphablend morph plugin @<:@default=enabled@:>@]),
-	    [alphablend=$enableval],
-	    [alphablend=yes])
-AC_MSG_CHECKING([whether to build alphablend morph plugin])
-if test x$alphablend = xyes; then
-  AC_MSG_RESULT([yes])
-  build_morph="$build_morph alphablend"
-  AC_SUBST([ALPHABLEND], ['morph_alphablend.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-alphablend],
+    [Do not build alphablend morph plugin @<:@default=enabled@:>@]),
+  [ENABLE_ALPHABLEND=$enableval],
+  [ENABLE_ALPHABLEND=yes])
+
+if test "$ENABLE_ALPHABLEND" = "yes"; then
+  build_morph_plugins="$build_morph_plugins alphablend"
 fi
 
+dnl Flash
 AC_ARG_ENABLE([flash],
-            AC_HELP_STRING([--disable-flash],
-                           [Do not build flash morph plugin @<:@default=enabled@:>@]),
-	    [flash=$enableval],
-	    [flash=yes])
-AC_MSG_CHECKING([whether to build flash morph plugin])
-if test x$flash = xyes; then
-  AC_MSG_RESULT([yes])
-  build_morph="$build_morph flash"
-  AC_SUBST([FLASH], ['morph_flash.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-flash],
+    [Do not build flash morph plugin @<:@default=enabled@:>@]),
+  [ENABLE_FLASH=$enableval],
+  [ENABLE_FLASH=yes])
+
+if test "$ENABLE_FLASH" = "yes"; then
+  build_morph_plugins="$build_morph_plugins flash"
 fi
 
+dnl Tentacle
 AC_ARG_ENABLE([tentacle],
-            AC_HELP_STRING([--disable-tentacle],
-                           [Do not build tentacle morph plugin @<:@default=enabled@:>@]),
-	    [tentacle=$enableval],
-	    [tentacle=yes])
-AC_MSG_CHECKING([whether to build tentacle morph plugin])
-if test x$tentacle = xyes; then
-  AC_MSG_RESULT([yes])
-  build_morph="$build_morph tentacle"
-  AC_SUBST([TENTACLE], ['morph_tentacle.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-tentacle],
+    [Do not build tentacle morph plugin @<:@default=enabled@:>@]),
+  [ENABLE_TENTACLE=$enableval],
+  [ENABLE_TENTACLE=yes])
+
+if test "$ENABLE_TENTACLE" = "yes"; then
+  build_morph_plugins="$build_morph_plugins tentacle"
 fi
 
+dnl Slide
 AC_ARG_ENABLE([slide],
-            AC_HELP_STRING([--disable-slide],
-                           [Do not build slide morph plugin @<:@default=enabled@:>@]),
-	    [slide=$enableval],
-	    [slide=yes])
-AC_MSG_CHECKING([whether to build slide morph plugin])
-if test x$slide = xyes; then
-  AC_MSG_RESULT([yes])
-  build_morph="$build_morph slide"
-  AC_SUBST([SLIDE], ['morph_slide.la'])
-else
-  AC_MSG_RESULT([no])
+  AS_HELP_STRING([--disable-slide],
+     [Do not build slide morph plugin @<:@default=enabled@:>@]),
+  [ENABLE_SLIDE=$enableval],
+  [ENABLE_SLIDE=yes])
+
+if test "$ENABLE_SLIDE" = "yes"; then
+  build_morph_plugins="$build_morph_plugins slide"
 fi
 
-#
-# Build paramaters
-#
+dnl Build parameters
 
-DEBUG_CFLAGS=""
+DEBUG_CFLAGS=
 
+dnl Profiling
 AC_ARG_ENABLE([profiling],
-  AC_HELP_STRING([--enable-profiling],
+  AS_HELP_STRING([--enable-profiling],
 		[Enable emision of profile data to be used by gprof @<:@default=disabled@:>@]),
-		[profiling=$enableval],
-		[profiling=no])
-AC_MSG_CHECKING([whether to enable profiling])
-if test x$profiling = xyes; then
-  AC_MSG_RESULT([yes])
+		[ENABLE_PROFILING=$enableval],
+		[ENABLE_PROFILING=no])
+
+if test "$ENABLE_PROFILING" = "yes"; then
   DEBUG_CFLAGS="$DEBUG_CFLAGS -pg"
-else
-  AC_MSG_RESULT([no])
 fi
 
+dnl Debug build
 AC_ARG_ENABLE([debug],
-            AC_HELP_STRING([--enable-debug],
-                           [Enable debug @<:@default=disabled@:>@]),
-	    [debug=$enableval],
-	    [debug=no])
-AC_MSG_CHECKING([whether to enable debug])
-if test "$debug" = yes; then
-  AC_MSG_RESULT([yes])
+  AS_HELP_STRING([--enable-debug],
+    [Enable debug @<:@default=disabled@:>@]),
+  [ENABLE_DEBUG=$enableval],
+  [ENABLE_DEBUG=no])
+
+if test "$ENABLE_DEBUG" = "yes"; then
   DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3"
   DEBUG_CFLAGS="$DEBUG_CFLAGS -Wall -Wmissing-braces -Wimplicit -Wunused"
   DEBUG_CFLAGS="$DEBUG_CFLAGS -Wmissing-prototypes -Wno-unused-variable"
-else
-  AC_MSG_RESULT([no])
 fi
 AC_SUBST(DEBUG_CFLAGS)
 
+dnl Optimization
 AC_ARG_ENABLE([extra-optimization],
-              AC_HELP_STRING([--enable-extra-optimization],
-                             [Enable extra optimizations @<:@default=disabled@:>@]),
-              [extra_opt=$enableval],
-              [extra_opt=no])
-AC_MSG_CHECKING([wheter to enable extra optimizations])
-if test x$extra_opt = xyes; then
-  AC_MSG_RESULT([yes])
+  AS_HELP_STRING([--enable-extra-optimization],
+    [Enable extra optimizations @<:@default=disabled@:>@]),
+    [ENABLE_EXTRA_OPT=$enableval],
+    [ENABLE_EXTRA_OPT=no])
+
+OPT_CFLAGS=
+if test "$ENABLE_EXTRA_OPT" = "yes"; then
   OPT_CFLAGS="-O3 -fexpensive-optimizations"
 else
-  AC_MSG_RESULT([no])
-  if test x$debug = xyes; then
-	OPT_CFLAGS="-O0"
-  else
-	OPT_CFLAGS=""
+  if test "$debug" = "yes"; then
+    OPT_CFLAGS="-O0"
   fi
 fi
 AC_SUBST(OPT_CFLAGS)
@@ -680,32 +566,24 @@ AC_SUBST(OPT_CFLAGS)
 AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
 AC_SUBST(CXXFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
 
+dnl Plugin installation paths
+
 AC_ARG_WITH([plugins-base-dir],
-            AC_HELP_STRING([--with-plugins-base-dir="dir"],
-                           [Install plugins to this base directory. Defaults to Libvisual's base dir ]),
-dnl ' # fix string coloring ;)
-	    [plugins_base_dir=$withval],
-	    [plugins_base_dir=])
-
-AC_MSG_CHECKING([where to install plugins])
-
-if test -z "$plugins_base_dir"; then
-    plugins_base_dir=`$PKG_CONFIG --variable=pluginsbasedir libvisual`
-    AC_MSG_RESULT([$plugins_base_dir])
-else
-    if test -d "$plugins_base_dir"; then
-        AC_MSG_RESULT([$plugins_base_dir])
-    else
-        AC_MSG_RESULT([not found])
-        AC_MSG_ERROR([Specified plugins base directory "$plugins_base_dir" is not accesible!])
-    fi
-fi
+  AS_HELP_STRING([--with-plugins-base-dir=DIR],
+    [Install plugins to this base directory. Defaults to Libvisual's base dir]),
+  [plugins_base_dir=$withval],
+  [plugins_base_dir=`$PKG_CONFIG --variable=pluginsbasedir $LIBVISUAL_PKG`])
 
 LIBVISUAL_PLUGINS_BASE_DIR="$plugins_base_dir"
-AC_SUBST(LIBVISUAL_PLUGINS_BASE_DIR)
+AC_SUBST([LIBVISUAL_PLUGINS_BASE_DIR])
+AC_SUBST([actor_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/actor])
+AC_SUBST([input_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/input])
+AC_SUBST([morph_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/morph])
 
-libs_dynamic_loader="-ldl"
-AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
+dnl Plugins to build
+AC_SUBST([build_actor_plugins])
+AC_SUBST([build_input_plugins])
+AC_SUBST([build_morph_plugins])
 
 AC_SUBST(DATADIR, "$datadir")
 
@@ -777,16 +655,16 @@ LIBVISUAL-PLUGINS, PLUGINS FOR LIBVISUAL $VERSION
 ================================================
 
 Packages found:
-libvisual:                            : ${libvis}
-libesd:                               : ${libesd}
-alsa:                                 : ${alsa_found}
-opengl:                               : ${opengl}
-gdkpixbuf:                            : ${gdkpixbuf}
+libvisual:                            : $HAVE_LIBVISUAL
+libesd:                               : $HAVE_ESD
+alsa:                                 : $HAVE_ALSA
+opengl:                               : $HAVE_OPENGL
+gdkpixbuf:                            : $HAVE_GDKPIXBUF
 
 Plugins being build:
-input:                                : ${build_input}
-actor:                                : ${build_actor}
-morph:                                : ${build_morph}
+input:                                : ${build_input_plugins}
+actor:                                : ${build_actor_plugins}
+morph:                                : ${build_morph_plugins}
 
 Libvisual plugin data dir:            : ${prefix}/share
 
@@ -794,5 +672,10 @@ Build options:
 install path                          : $plugins_base_dir
 source code location:                 : ${srcdir}
 compiler:                             : ${CC}
+
+Compiler options:
+Extra optimization                    : $ENABLE_EXTRA_OPT
+Debug build                           : $ENABLE_DEBUG
+Profiling support                     : $ENABLE_PROFILING
 "
 

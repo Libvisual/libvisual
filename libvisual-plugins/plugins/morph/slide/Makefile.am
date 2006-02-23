@@ -1,18 +1,12 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = $(SLIDE)
+morph_plugin_LTLIBRARIES = morph_slide.la
 
-EXTRA_LTLIBRARIES = morph_slide.la
+LIBS += $(LIBVISUAL_LIBS)
 
-libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/morph
-
-LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
-
-AM_CFLAGS = @LIBVISUAL_CFLAGS@
+AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
-morph_slide_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
-
+morph_slide_la_LDFLAGS = -module -avoid-version 
 morph_slide_la_SOURCES = morph_slide.c
-

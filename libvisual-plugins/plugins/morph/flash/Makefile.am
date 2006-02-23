@@ -1,19 +1,12 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = $(FLASH)
+morph_plugin_LTLIBRARIES = morph_flash.la
 
-EXTRA_LTLIBRARIES = morph_flash.la
+LIBS += $(LIBVISUAL_LIBS)
 
-libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/morph
+AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
-LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
+INCLUDES = $(all_includes) -I$(top_srcdir) 
 
-AM_CFLAGS = @LIBVISUAL_CFLAGS@
-
-INCLUDES = $(all_includes) \
-	-I$(top_srcdir) 
-
-morph_flash_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
-
+morph_flash_la_LDFLAGS = -module -avoid-version 
 morph_flash_la_SOURCES = morph_flash.c
-

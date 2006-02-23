@@ -6,19 +6,15 @@ images_DATA = star1.bmp \
 
 EXTRA_DIST = $(images_DATA)
 
-lib_LTLIBRARIES = $(MADSPIN)
+actor_plugin_LTLIBRARIES = actor_madspin.la
 
-EXTRA_LTLIBRARIES = actor_madspin.la
+LIBS += -lGL $(LIBVISUAL_LIBS)
 
-libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
-
-LIBS += -L. -L$(prefix)/lib -lGL @LIBVISUAL_LIBS@
-
-AM_CFLAGS = @LIBVISUAL_CFLAGS@ -DSTAR_DIR=\""$(imagesdir)/"\"
+AM_CFLAGS = $(LIBVISUAL_CFLAGS) -DSTAR_DIR=\""$(imagesdir)/"\"
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
-actor_madspin_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
+actor_madspin_la_LDFLAGS = -module -avoid-version 
 
 actor_madspin_la_SOURCES = madspin.c
 

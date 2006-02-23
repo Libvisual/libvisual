@@ -1,4 +1,5 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = alphablend flash tentacle slide
+SUBDIRS = $(build_morph_plugins)
 
+DIST_SUBDIRS = alphablend flash tentacle slide

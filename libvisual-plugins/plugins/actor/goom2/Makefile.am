@@ -1,18 +1,14 @@
 ## Process this file with automake to generate a Makefile.in
 
-lib_LTLIBRARIES = $(GOOM2)
+actor_plugin_LTLIBRARIES = actor_goom2.la
 
-EXTRA_LTLIBRARIES = actor_goom2.la
+LIBS += $(LIBGOOM2_LIBS) $(LIBVISUAL_LIBS)
 
-libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
-
-LIBS += -L. -L$(prefix)/lib @LIBGOOM2_LIBS@ @LIBVISUAL_LIBS@
-
-AM_CFLAGS = @LIBGOOM2_CFLAGS@ @LIBVISUAL_CFLAGS@
+AM_CFLAGS = $(LIBGOOM2_CFLAGS) $(LIBVISUAL_CFLAGS)
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
-actor_goom2_la_LDFLAGS = -rpath $(libdir) -module -avoid-version
+actor_goom2_la_LDFLAGS = -module -avoid-version
 
 actor_goom2_la_SOURCES = actor_goom2.c
 
