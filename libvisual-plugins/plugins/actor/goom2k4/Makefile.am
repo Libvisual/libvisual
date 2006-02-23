@@ -22,18 +22,52 @@ INCLUDES = $(all_includes) -I$(top_srcdir)
 
 actor_goom2k4_la_LDFLAGS = -module -avoid-version
 
+GOOMSL_FILES = goomsl_yacc.c goomsl_yacc.h goomsl_lex.c
+
 actor_goom2k4_la_SOURCES = \
-	goomsl_yacc.y goomsl_lex.l goomsl.c goomsl_hash.c goomsl_heap.c \
-	goom_tools.c $(MMX_FILES) $(PPC_FILES) \
+	actor_goom2k4.c \
 	config_param.c convolve_fx.c filters.c \
-	flying_stars_fx.c gfontlib.c gfontrle.c \
-	goom_core.c graphic.c ifs.c lines.c \
-	mathtools.c sound_tester.c surf3d.c \
-	tentacle3d.c plugin_info.c \
-	v3d.c drawmethods.c \
-	cpu_info.c actor_goom2k4.c \
-	goom.h goom_plugin_info.h goom_typedefs.h \
-	goom_graphic.h goom_config_param.h goom_visual_fx.h \
-	goom_filters.h goom_tools.h goomsl.h goomsl_hash.h \
-	goomsl_heap.h goom_tools.h goom_config.h \
-	gooms1_private.h
+	cpu_info.c cpu_info.h \
+	default_scripts.h \
+	drawmethods.c drawmethods.h \
+	flying_stars_fx.c  \
+	gfontlib.c gfontlib.h \
+	gfontrle.c gfontrle.h \
+	goom.h \
+	goom_config.h goom_config_param.h \
+	goom_core.c \
+	goom_filters.h \
+	goom_fx.h \
+	goom_graphic.h \
+	goom_plugin_info.h \
+	goom_visual_fx.h \
+	goom_tools.c goom_tools.h \
+	goom_typedefs.h \
+	goomsl.c goomsl.h \
+	goomsl_hash.c goomsl_hash.h \
+	goomsl_heap.c goomsl_heap.h \
+	goomsl_private.h \
+	$(MMX_FILES) $(PPC_FILES) \
+	graphic.c \
+	ifs.c ifs.h \
+	lines.c lines.h \
+	mathtools.c mathtools.h \
+	motif_goom1.h motif_goom2.h \
+	plugin_info.c \
+	sound_tester.c sound_tester.h \
+	surf3d.c surf3d.h \
+	tentacle3d.c tentacle3d.h \
+	v3d.c v3d.h \
+	$(GOOMSL_FILES)
+
+EXTRA_DIST = goomsl_yacc.y goomsl_lex.l 
+BUILT_SOURCES = $(GOOMSL_FILES)
+
+CLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(BUILT_SOURCES)
+
+goomsl_yacc.c goomsl_yacc.h: goomsl_yacc.y
+	$(YACC) -d -o$@ $<
+
+goomsl_lex.c: goomsl_lex.l
+	$(LEX) -o$@ $<

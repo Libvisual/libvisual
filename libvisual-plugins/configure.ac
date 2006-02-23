@@ -194,9 +194,9 @@ AC_ARG_ENABLE([alsa],
   [ENABLE_ALSA=yes])
 
 if test "$ENABLE_ALSA" = "yes"; then
-  AM_PATH_ALSA([$LV_ALSA_MIN_VERSION], [BUILD_ALSA=yes], [BUILD_ALSA=no])
+  AM_PATH_ALSA([$LV_ALSA_MIN_VERSION], [HAVE_ALSA=yes], [HAVE_ALSA=no])
 
-  if test "$BUILD_ALSA" = "yes"; then
+  if test "$HAVE_ALSA" = "yes"; then
     build_input_plugins="$build_input_plugins alsa"
     AC_TRY_COMPILE([#include <stdlib.h>
 		    #include <alsa/asoundlib.h>
@@ -663,25 +663,28 @@ LIBVISUAL-PLUGINS, PLUGINS FOR LIBVISUAL $VERSION
 ================================================
 
 Packages found:
-libesd:                               : $HAVE_ESD
-alsa:                                 : $HAVE_ALSA
-opengl:                               : $HAVE_OPENGL
-gdkpixbuf:                            : $HAVE_GDKPIXBUF
+libesd                   : $HAVE_ESD
+ALSA                     : $HAVE_ALSA
+OpenGL                   : $HAVE_OPENGL
+GTK+                     : $HAVE_GTK
 
-Plugins being build:
-input:                                : ${build_input_plugins}
-actor:                                : ${build_actor_plugins}
-morph:                                : ${build_morph_plugins}
+Plugins being build
+-------------------
+Input plugins            : ${build_input_plugins}
+Actor plugins            : ${build_actor_plugins}
+Morph plugins            : ${build_morph_plugins}
 
-Libvisual plugin data dir:            : ${prefix}/share
+Libvisual plugin data dir: ${prefix}/share
 
-Build options:
-install path                          : $plugins_base_dir
-source code location:                 : ${srcdir}
-compiler:                             : ${CC}
+Build options
+-------------
+install path             : $plugins_base_dir
+source code location     : ${srcdir}
+compiler                 : ${CC}
 
-Compiler options:
-Extra optimization                    : $ENABLE_EXTRA_OPT
-Debug build                           : $ENABLE_DEBUG
-Profiling support                     : $ENABLE_PROFILING
+Compiler options
+----------------
+Extra optimization       : $ENABLE_EXTRA_OPT
+Debug build              : $ENABLE_DEBUG
+Profiling support        : $ENABLE_PROFILING
 "
