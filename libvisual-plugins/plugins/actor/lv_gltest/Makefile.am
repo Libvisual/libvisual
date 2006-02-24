@@ -2,13 +2,7 @@
 
 actor_plugin_LTLIBRARIES = actor_lv_gltest.la
 
-LIBS += -lGL -lGLU $(LIBVISUAL_LIBS)
-
-AM_CFLAGS = $(LIBVISUAL_CFLAGS)
-
-INCLUDES = $(all_includes) -I$(top_srcdir) 
-
+actor_lv_gltest_la_CFLAGS = -I$(top_srcdir) $(LIBVISUAL_CFLAGS) $(X_CFLAGS)
 actor_lv_gltest_la_LDFLAGS = -module -avoid-version 
-
+actor_lv_gltest_la_LIBS = $(LIBVISUAL_LIBS) $(X_LIBS) -lGL -lGLU 
 actor_lv_gltest_la_SOURCES = actor_lv_gltest.c
-

@@ -2,10 +2,7 @@
 
 actor_plugin_LTLIBRARIES = actor_nastyfft.la
 
-AM_CFLAGS = $(LIBVISUAL_CFLAGS)
-
-INCLUDES = $(all_includes) -I$(top_srcdir) 
-LIBS += -lGL -lGLU $(LIBVISUAL_LIBS)
-
+actor_nastyfft_la_CFLAGS = -I$(top_srcdir) $(LIBVISUAL_CFLAGS) $(X_CFLAGS)
 actor_nastyfft_la_LDFLAGS = -module -avoid-version 
+actor_nastyfft_la_LIBS = $(LIBVISUAL_LIBS) $(X_LIBS) -lGL -lGLU
 actor_nastyfft_la_SOURCES = actor_nastyfft.c

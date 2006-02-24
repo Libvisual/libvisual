@@ -159,12 +159,13 @@ dnl OpenGL, GLX
 HAVE_OPENGL=no
 
 if test "$have_x" = "yes" ; then
-  # FIXME: Don't modify LDFLAGS and CPPFLAGS permanently
-  LDFLAGS="$LDFLAGS -Wl,-rpath,$x_libraries -L$x_libraries"
+  CPPFLAGS_SAVE=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 
   AC_CHECK_HEADERS([GL/gl.h GL/glx.h],
-    [AC_CHECK_LIB([GL], [glBegin], [HAVE_OPENGL=yes])])
+    [AC_CHECK_LIB([GL], [glBegin], [HAVE_OPENGL=yes], [], [$X_LIBS])])
+
+  CPPFLAGS=$CPPFLAGS_SAVE
 fi
 
 AM_CONDITIONAL([HAVE_OPENGL], [test "$HAVE_OPENGL" = "yes"])
@@ -172,15 +173,23 @@ AM_CONDITIONAL([HAVE_OPENGL], [test "$HAVE_OPENGL" = "yes"])
 dnl XF86VidMode
 HAVE_XF86VMODE=no
 XF86VMODE_LIB=
+
+CPPFLAGS_SAVE=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+
 AC_CHECK_HEADERS([X11/extensions/xf86vmode.h],
   [AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], 
     [AC_DEFINE([HAVE_XF86VMODE], [], [XF86VidMode is available])
      XF86VMODE_LIB=-lXxf86vm
-     HAVE_XF86VMODE=yes])],
+     HAVE_XF86VMODE=yes],
+    [],
+    [$X_LIBS])],
   [],
   [#include <X11/Xlib.h>
   ]
 )
+
+CPPFLAGS=$CPPFLAGS_SAVE
 
 AC_SUBST([XF86VMODE_LIB])
 AM_CONDITIONAL([HAVE_XF86VMODE], [test "$HAVE_XF86VMODE" = "yes"])
