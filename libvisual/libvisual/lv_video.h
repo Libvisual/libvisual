@@ -7,7 +7,7 @@
  *	    Chong Kai Xiong <descender@phreaker.net>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video.h,v 1.34 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_video.h,v 1.35 2006-02-25 18:44:18 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -207,8 +207,6 @@ int visual_video_set_dimension (VisVideo *video, int width, int height);
 int visual_video_set_pitch (VisVideo *video, int pitch);
 int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
 int visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
-
-int visual_video_gl_pump_options (VisVideoAttributeOptions *vidoptions);
 
 int visual_video_get_size (VisVideo *video);
 

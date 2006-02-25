@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.86 2006-02-13 20:54:08 synap Exp $
+ * $Id: lv_video.c,v 1.87 2006-02-25 18:44:18 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -553,22 +553,6 @@ int visual_video_set_attributes (VisVideo *video, int width, int height, int pit
 	visual_video_set_depth (video, depth);
 	visual_video_set_dimension (video, width, height);
 	visual_video_set_pitch (video, pitch);
-
-	return VISUAL_OK;
-}
-
-int visual_video_gl_pump_options (VisVideoAttributeOptions *vidoptions)
-{
-	int i;
-
-	visual_log_return_val_if_fail (vidoptions != NULL, -VISUAL_ERROR_VIDEO_ATTRIBUTE_OPTIONS_NULL);
-
-	for (i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
-		if (vidoptions->gl_attributes[i].mutated == TRUE) {
-			visual_gl_set_attribute (vidoptions->gl_attributes[i].attribute,
-					vidoptions->gl_attributes[i].value);
-		}
-	}
 
 	return VISUAL_OK;
 }

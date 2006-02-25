@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual Library 0.3.0\n"
 "Report-Msgid-Bugs-To: http://libvisual.sf.net\n"
-"POT-Creation-Date: 2006-02-20 18:49+0800\n"
+"POT-Creation-Date: 2006-02-25 19:43+0100\n"
 "PO-Revision-Date: 2005-03-20 17:09-0300\n"
 "Last-Translator:  <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish\n"
@@ -917,7 +917,7 @@ msgid ""
 "allocated screen buffer"
 msgstr ""
 
-#: libvisual/lv_video.c:2791 libvisual/lv_video.c:2938
+#: libvisual/lv_video.c:2775 libvisual/lv_video.c:2922
 msgid "Invalid depth passed to the scaler"
 msgstr "Profundidad pasada al escalador inválida"
 
