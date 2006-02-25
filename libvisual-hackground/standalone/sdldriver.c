@@ -4,13 +4,33 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "lv_gl_sdl.h"
 #include "sdldriver.h"
 
 #define SDL_NATIVE(obj)					(VISUAL_CHECK_CAST ((obj), SDLNative))
 
 
 typedef struct _SDLNative SDLNative;
+
+static SDL_GLattr __lv_sdl_gl_attribute_map[] = {
+	[VISUAL_GL_ATTRIBUTE_NONE]		= -1,
+	[VISUAL_GL_ATTRIBUTE_BUFFER_SIZE]	= SDL_GL_BUFFER_SIZE,
+	[VISUAL_GL_ATTRIBUTE_LEVEL]		= -1,
+	[VISUAL_GL_ATTRIBUTE_RGBA]		= -1,
+	[VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER]	= SDL_GL_DOUBLEBUFFER,
+	[VISUAL_GL_ATTRIBUTE_STEREO]		= SDL_GL_STEREO,
+	[VISUAL_GL_ATTRIBUTE_AUX_BUFFERS]	= -1,
+	[VISUAL_GL_ATTRIBUTE_RED_SIZE]		= SDL_GL_RED_SIZE,
+	[VISUAL_GL_ATTRIBUTE_GREEN_SIZE]	= SDL_GL_GREEN_SIZE,
+	[VISUAL_GL_ATTRIBUTE_BLUE_SIZE]		= SDL_GL_BLUE_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ALPHA_SIZE]	= SDL_GL_ALPHA_SIZE,
+	[VISUAL_GL_ATTRIBUTE_DEPTH_SIZE]	= SDL_GL_DEPTH_SIZE,
+	[VISUAL_GL_ATTRIBUTE_STENCIL_SIZE]	= SDL_GL_STENCIL_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE]	= SDL_GL_ACCUM_RED_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_GREEN_SIZE]	= SDL_GL_ACCUM_GREEN_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE]	= SDL_GL_ACCUM_BLUE_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE]	= SDL_GL_ACCUM_ALPHA_SIZE,
+	[VISUAL_GL_ATTRIBUTE_LAST]		= -1
+};
 
 static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
 		int width, int height, int resizable);
@@ -62,9 +82,6 @@ SADisplayDriver *sdl_driver_new ()
 	driver->updaterect = native_updaterect;
 	driver->drainevents = native_drainevents;
 
-	visual_gl_set_callback_attribute_set (lv_sdl_gl_attribute_set);
-	visual_gl_set_callback_attribute_get (lv_sdl_gl_attribute_get);
-
 	return driver;
 }
 
@@ -75,6 +92,7 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
         const SDL_VideoInfo *videoinfo;
 	int videoflags = 0;
 	int bpp;
+	int i;
 
 	if (native == NULL) {
 		native = visual_mem_new0 (SDLNative, 1);
@@ -118,8 +136,20 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 		if (videoinfo->blit_hw)
 			videoflags |= SDL_HWACCEL;
 
-		if (vidoptions != NULL)
-			visual_video_gl_pump_options (vidoptions);
+		if (vidoptions != NULL) {
+			for (i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
+				if (vidoptions->gl_attributes[i].mutated == TRUE) {
+					SDL_GLattr sdl_attribute =
+						__lv_sdl_gl_attribute_map[
+						vidoptions->gl_attributes[i].attribute];
+
+					if (sdl_attribute < 0)
+						continue;
+
+					SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attributes[i].value);
+				}
+			}
+		}
 
 		bpp = videoinfo->vfmt->BitsPerPixel;
 		native->screen = SDL_SetVideoMode (width, height, bpp, videoflags);

@@ -1,3 +1,7 @@
+2006-02-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* standalone/*: GL attrib work.
+
 2006-02-13  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* standalone/*: Adding a shitload more of display drivers.

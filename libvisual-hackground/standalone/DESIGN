@@ -28,6 +28,11 @@ DONE	make use of visibility events.
 DONE	make use of quit events.
 
 	add glx backend.
+		add support for a on texture renderer.
+
+	fix the x11 renderer
+
+	add fullscreen support to the x11 and glx renderer.
 
 Make a few end clients:
 	simple.

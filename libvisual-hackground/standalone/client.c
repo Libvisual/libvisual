@@ -1,3 +1,7 @@
+/* When using the sdl driver and Xgl, sdl will show a nice empty window. Be sure to set the:
+ * XLIB_SKIP_ARGB_VISUALS environment variable to 1
+ */
+
 #include <libvisual/libvisual.h>
 
 #include <stdlib.h>
@@ -6,6 +10,7 @@
 #include "sdldriver.h"
 #include "x11driver.h"
 #include "glxdriver.h"
+#include "cacadriver.h"
 
 int main (int argc, char **argv)
 {
@@ -25,7 +30,7 @@ int main (int argc, char **argv)
 
 	visual_init (&argc, &argv);
 
-	display = display_new (caca_driver_new ());
+	display = display_new (sdl_driver_new ());
 
 	/* Libvisual stuff */
 	if (argc > 1)

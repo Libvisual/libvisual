@@ -19,6 +19,27 @@
 
 typedef struct _GLXNative GLXNative;
 
+static int __lv_glx_gl_attribute_map[] = {
+	[VISUAL_GL_ATTRIBUTE_NONE]              = -1,
+	[VISUAL_GL_ATTRIBUTE_BUFFER_SIZE]       = GLX_BUFFER_SIZE,
+	[VISUAL_GL_ATTRIBUTE_LEVEL]             = GLX_LEVEL,
+	[VISUAL_GL_ATTRIBUTE_RGBA]              = GLX_RGBA,
+	[VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER]      = GLX_DOUBLEBUFFER,
+	[VISUAL_GL_ATTRIBUTE_STEREO]            = GLX_STEREO,
+	[VISUAL_GL_ATTRIBUTE_AUX_BUFFERS]       = GLX_AUX_BUFFERS,
+	[VISUAL_GL_ATTRIBUTE_RED_SIZE]          = GLX_RED_SIZE,
+	[VISUAL_GL_ATTRIBUTE_GREEN_SIZE]        = GLX_GREEN_SIZE,
+	[VISUAL_GL_ATTRIBUTE_BLUE_SIZE]         = GLX_BLUE_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ALPHA_SIZE]        = GLX_ALPHA_SIZE,
+	[VISUAL_GL_ATTRIBUTE_DEPTH_SIZE]        = GLX_DEPTH_SIZE,
+	[VISUAL_GL_ATTRIBUTE_STENCIL_SIZE]      = GLX_STENCIL_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE]    = GLX_ACCUM_RED_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_GREEN_SIZE]  = GLX_ACCUM_GREEN_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE]   = GLX_ACCUM_BLUE_SIZE,
+	[VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE]  = GLX_ACCUM_ALPHA_SIZE,
+	[VISUAL_GL_ATTRIBUTE_LAST]              = -1
+};
+
 static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
 		int width, int height, int resizable);
 static int native_close (SADisplay *display);
@@ -31,22 +52,10 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue);
 
 static int get_nearest_resolution (SADisplay *display, int *width, int *height);
 
-int X11_Pending(Display *display);
+static int X11_Pending(Display *display);
 
-static int attrListSgl[] = {GLX_RGBA, GLX_RED_SIZE, 4,
-	GLX_GREEN_SIZE, 4,
-	GLX_BLUE_SIZE, 4,
-	GLX_DEPTH_SIZE, 16,
-	None
-};
+static XVisualInfo *get_xvisualinfo_filter_capabilities (Display *dpy, int screen, VisVideoAttributeOptions *vidoptions);
 
-static int attrListDbl[] = { GLX_RGBA, GLX_DOUBLEBUFFER,
-	GLX_RED_SIZE, 4,
-	GLX_GREEN_SIZE, 4,
-	GLX_BLUE_SIZE, 4,
-	GLX_DEPTH_SIZE, 16,
-	None
-};
 
 struct _GLXNative {
 	VisObject object;
@@ -107,9 +116,6 @@ SADisplayDriver *glx_driver_new ()
 	driver->updaterect = native_updaterect;
 	driver->drainevents = native_drainevents;
 
-//	visual_gl_set_callback_attribute_set (native_gl_attribute_set);
-//	visual_gl_set_callback_attribute_get (native_gl_attribute_get);
-
 	return driver;
 }
 
@@ -141,6 +147,7 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 
 	/* set best mode to current */
 	bestMode = 0;
+
 	/* get a connection */
 	native->dpy = XOpenDisplay(0);
 	native->screen = DefaultScreen(native->dpy);
@@ -159,23 +166,20 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 			bestMode = i;
 		}
 	}
+
 	/* get an appropriate visual */
-	vi = glXChooseVisual(native->dpy, native->screen, attrListDbl);
-	if (vi == NULL)
-	{
-		vi = glXChooseVisual(native->dpy, native->screen, attrListSgl);
-		native->doubleBuffered = False;
-		printf("Only Singlebuffered Visual!\n");
+	vi = get_xvisualinfo_filter_capabilities (native->dpy, native->screen, vidoptions);
+	if (vi == NULL)	{
+		printf ("No visual found.\n");
+		visual_error_raise ();
 	}
-	else
-	{
-		native->doubleBuffered = True;
-		printf("Got Doublebuffered Visual!\n");
-	}
+
 	glXQueryVersion(native->dpy, &glxMajorVersion, &glxMinorVersion);
 	printf("glX-Version %d.%d\n", glxMajorVersion, glxMinorVersion);
+
 	/* create a GLX context */
 	native->ctx = glXCreateContext(native->dpy, vi, 0, GL_TRUE);
+
 	/* create a color map */
 	cmap = XCreateColormap(native->dpy, RootWindow(native->dpy, vi->screen),
 			vi->visual, AllocNone);
@@ -189,6 +193,9 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 	native->win = XCreateWindow(native->dpy, RootWindow(native->dpy, vi->screen),
 			0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
 			CWBorderPixel | CWColormap | CWEventMask, &native->attr);
+
+
+	XFree (vi);
 	/* only set window title and handle wm_delete_events if in windowed mode */
 	wmDelete = XInternAtom(native->dpy, "WM_DELETE_WINDOW", True);
 	XSetWMProtocols(native->dpy, native->win, &wmDelete, 1);
@@ -203,7 +210,7 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 
 	printf("Depth %d\n", native->depth);
 
-	if (glXIsDirect(native->dpy, native->ctx)) 
+	if (glXIsDirect(native->dpy, native->ctx))
 		printf("Congrats, you have Direct Rendering!\n");
 	else
 		printf("Sorry, no Direct Rendering possible!\n");
@@ -255,10 +262,10 @@ static int native_unlock (SADisplay *display)
 static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale)
 {
 	GLXNative *native = GLX_NATIVE (display->native);
-//	SDL_Surface *screen = native->screen;
+//	Surface *screen = native->screen;
 /*
 	if (fullscreen == TRUE) {
-		if (!(screen->flags & SDL_FULLSCREEN)) {
+		if (!(screen->flags & FULLSCREEN)) {
 			if (autoscale == TRUE) {
 				int width = display->screen->width;
 				int height = display->screen->height;
@@ -271,13 +278,13 @@ static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale)
 				native_create (display, native->requested_depth, NULL, width, height, native->resizable);
 			}
 
-			SDL_ShowCursor (SDL_FALSE);
-			SDL_WM_ToggleFullScreen (screen);
+			ShowCursor (SDL_FALSE);
+			WM_ToggleFullScreen (screen);
 		}
 	} else {
-		if ((screen->flags & SDL_FULLSCREEN)) {
-			SDL_ShowCursor (SDL_TRUE);
-			SDL_WM_ToggleFullScreen (screen);
+		if ((screen->flags & FULLSCREEN)) {
+			ShowCursor (SDL_TRUE);
+			WM_ToggleFullScreen (screen);
 
 			if (autoscale == TRUE)
 				native_create (display, native->requested_depth, NULL, native->oldwidth,
@@ -401,7 +408,7 @@ static int get_nearest_resolution (SADisplay *display, int *width, int *height)
 
 /* Ack!  XPending() actually performs a blocking read if no events available */
 /* Taken from SDL */
-int X11_Pending(Display *display)
+static int X11_Pending(Display *display)
 {
 	/* Flush the display connection and look to see if events are queued */
 	XFlush(display);
@@ -425,5 +432,38 @@ int X11_Pending(Display *display)
 
 	/* Oh well, nothing is ready .. */
 	return(0);
+}
+
+static XVisualInfo *get_xvisualinfo_filter_capabilities (Display *dpy, int screen, VisVideoAttributeOptions *vidoptions)
+{
+	int attrList[64];
+	int attrc = 0;
+	int i;
+
+	if (vidoptions == NULL)
+		return NULL;
+
+	/* FIXME filter for capabilities, like doublebuffer */
+	for (i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
+		if (vidoptions->gl_attributes[i].mutated == TRUE) {
+			int glx_attribute =
+				__lv_glx_gl_attribute_map[
+				vidoptions->gl_attributes[i].attribute];
+
+			if (glx_attribute < 0)
+				continue;
+
+			attrList[attrc++] = glx_attribute;
+
+			/* Check if it's a non boolean attribute */
+			if (glx_attribute != GLX_RGBA && glx_attribute != GLX_DOUBLEBUFFER && glx_attribute != GLX_STEREO) {
+				attrList[attrc++] = vidoptions->gl_attributes[i].value;
+			}
+		}
+	}
+
+	attrList[attrc++] = None;
+
+	return glXChooseVisual (dpy, screen, attrList);
 }
 
