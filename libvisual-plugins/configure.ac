@@ -609,10 +609,8 @@ AC_CONFIG_FILES([
 	plugins/actor/bumpscope/Makefile
 	plugins/actor/corona/Makefile
 	plugins/actor/dancingparticles/Makefile
-	plugins/actor/dna/Makefile
 	plugins/actor/finespectrum/Makefile
 	plugins/actor/gdkpixbuf/Makefile
-	plugins/actor/goom2/Makefile
 	plugins/actor/goom2k4/Makefile
 	plugins/actor/gstreamer/Makefile
 	plugins/actor/infinite/Makefile
@@ -627,7 +625,6 @@ AC_CONFIG_FILES([
 	plugins/actor/oinksie/Makefile
 	plugins/actor/plazma/Makefile
 	plugins/actor/pseudotoad_flower/Makefile
-	plugins/actor/xpyre/Makefile
 	plugins/actor/G-Force/Makefile
 	plugins/actor/G-Force/docs/Makefile
 	plugins/actor/G-Force/Common/Makefile
@@ -679,9 +676,9 @@ GTK+                     : $HAVE_GTK
 
 Plugins being build
 -------------------
-Input plugins            : ${build_input_plugins}
-Actor plugins            : ${build_actor_plugins}
-Morph plugins            : ${build_morph_plugins}
+Input plugins            :${build_input_plugins}
+Actor plugins            :${build_actor_plugins}
+Morph plugins            :${build_morph_plugins}
 
 Libvisual plugin data dir: ${prefix}/share
 

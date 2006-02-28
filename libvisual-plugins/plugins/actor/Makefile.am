@@ -5,11 +5,9 @@ DIST_SUBDIRS = \
   bumpscope \
   corona \
   dancingparticles \
-  dna \
   finespectrum \
   G-Force \
   gdkpixbuf \
-  goom2 \
   goom2k4 \
   gstreamer \
   infinite \
@@ -23,5 +21,4 @@ DIST_SUBDIRS = \
   nebulus \
   oinksie \
   plazma  \
-  pseudotoad_flower \
-  xpyre
+  pseudotoad_flower
