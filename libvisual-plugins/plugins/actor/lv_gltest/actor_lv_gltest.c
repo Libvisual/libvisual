@@ -6,7 +6,7 @@
  *	    Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
  *	    4Front Technologies
  *
- * $Id: actor_lv_gltest.c,v 1.26 2006-02-25 18:45:15 synap Exp $
+ * $Id: actor_lv_gltest.c,v 1.27 2006-03-02 23:50:06 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -385,7 +385,7 @@ static void draw_bars (GLtestPrivate *priv)
 		for(x = 0; x < 16; x++)
 		{
 			x_offset = -1.6 + (x * 0.2);
-			draw_bar (priv, x_offset, z_offset, priv->heights[y][x], r_base - (x * (r_base / 15.0)), x * (1.0 / 15), b_base);
+			draw_bar (priv, x_offset, z_offset, priv->heights[y][x] * 0.2, r_base - (x * (r_base / 15.0)), x * (1.0 / 15), b_base);
 		}
 	}
 	glEnd ();

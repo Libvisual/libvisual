@@ -1,4 +1,12 @@
+## Process this file with automake to generate a Makefile.in
+
+actor_plugin_LTLIBRARIES = actor_gforce.la
+
 GFORCE_TOP_SRCDIR = $(top_srcdir)/plugins/actor/G-Force
+
+LIBS += $(LIBVISUAL_LIBS)
+
+AM_CXXFLAGS = $(LIBVISUAL_CFLAGS)
 
 INCLUDES = \
 	-I$(GFORCE_TOP_SRCDIR)/GForceCommon/Headers \
@@ -11,11 +19,6 @@ INCLUDES = \
 	-I$(GFORCE_TOP_SRCDIR)/unix/libmfl \
 	-I$(top_srcdir)
 
-ALLSOURCES = actor_gforce.cpp
+actor_gforce_la_LDFLAGS = -module -avoid-version
 
-LIBS += $(LIBVISUAL_LIBS)
-AM_CXXFLAGS = $(LIBVISUAL_CFLAGS)
-
-noinst_LTLIBRARIES = libactor_gforce.la
-
-libactor_gforce_la_SOURCES = $(ALLSOURCES)
+actor_gforce_la_SOURCES = actor_gforce.cpp

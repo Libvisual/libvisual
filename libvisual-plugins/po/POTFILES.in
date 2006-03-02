@@ -4,7 +4,6 @@
 plugins/actor/bumpscope/actor_bumpscope.c
 plugins/actor/corona/actor_corona.cpp
 plugins/actor/dancingparticles/actor_dancingparticles.cpp
-plugins/actor/dna/actor_lv_dna.c
 plugins/actor/gdkpixbuf/actor_gdkpixbuf.c
 plugins/actor/G-Force/GForceCommon/G-Force.cpp
 plugins/actor/G-Force/unix/libvisual/actor_gforce.cpp

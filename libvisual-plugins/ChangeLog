@@ -1,3 +1,7 @@
+2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* po/POTFILES.in: removed dna.
+
 2006-02-25  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*: Fixed the attributes for all GL plugins to be glx compat
