@@ -3,7 +3,7 @@ AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 noinst_LTLIBRARIES = libvisscript.la
 
-libvisscript_la_SOURCES = avs_functions.c avs_il_tree.c avs_lexer.c avs_test.c \
+libvisscript_la_SOURCES = avs_functions.c avs_il_tree.c avs_lexer.c \
 			  avs_x86_opcode.c avs_il_assembler.c avs_il_tree_node.c \
 			  avs_parser.c avs_blob.c avs_il_core.c \
 			  avs_runnable.c avs_blob_pool.c avs_il_instruction.c avs_ix_compiler.c \
