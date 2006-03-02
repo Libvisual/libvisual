@@ -8,7 +8,6 @@ plugins/actor/gdkpixbuf/actor_gdkpixbuf.c
 plugins/actor/G-Force/GForceCommon/G-Force.cpp
 plugins/actor/G-Force/unix/libvisual/actor_gforce.cpp
 plugins/actor/G-Force/Common/math/Expression.cpp
-plugins/actor/goom2/actor_goom2.c
 plugins/actor/infinite/lv_infinite.c
 plugins/actor/jakdaw/actor_jakdaw.c
 plugins/actor/JESS/jess.c
