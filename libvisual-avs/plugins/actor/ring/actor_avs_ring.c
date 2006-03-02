@@ -25,6 +25,7 @@
  *
  * config UI.
  */
+#include <math.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,7 +35,7 @@
 
 #include <libvisual/libvisual.h>
 
-#include "avs.h"
+#include "avs_common.h"
 
 typedef struct {
 	int			 source;
@@ -56,18 +57,21 @@ int lv_ring_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 short get_data (RingPrivate *priv, VisAudio *audio, int index);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static const VisActorPlugin actor[] = {{
 		.requisition = lv_ring_requisition,
 		.palette = lv_ring_palette,
 		.render = lv_ring_render,
-		.depth = VISUAL_VIDEO_DEPTH_32BIT
+		.vidoptions.depth =
+			VISUAL_VIDEO_DEPTH_8BIT |
+			VISUAL_VIDEO_DEPTH_32BIT
+
 	}};
 
 	static const VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR".[avs]",
 
 		.plugname = "avs_ring",
@@ -154,15 +158,15 @@ int lv_ring_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_ring_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				lv_ring_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "source"))
-					priv->source = visual_param_entry_get_integer (param);					
+					priv->source = visual_param_entry_get_integer (param);
 				else if (visual_param_entry_is (param, "place"))
 					priv->place = visual_param_entry_get_integer (param);
 				else if (visual_param_entry_is (param, "size"))
@@ -184,7 +188,6 @@ int lv_ring_events (VisPluginData *plugin, VisEventQueue *events)
 					priv->cycler = avs_gfx_color_cycler_new (&priv->pal);
 					avs_gfx_color_cycler_set_mode (priv->cycler, AVS_GFX_COLOR_CYCLER_TYPE_TIME);
 					avs_gfx_color_cycler_set_time (priv->cycler, avs_config_standard_color_cycler_time ());
-					
 				}
 
 				break;
@@ -214,7 +217,7 @@ int lv_ring_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	float a = 0;
 	float add = (2 * 3.1415) / 100;
 	float size_mult;
-	uint32_t *buf = video->pixels;
+	uint32_t *buf = visual_video_get_pixels (video);
 	VisColor *col;
 
 	if (priv->place == 1)

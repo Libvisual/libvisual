@@ -49,18 +49,18 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events);
 VisPalette *act_avs_palette (VisPluginData *plugin);
 int act_avs_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static const VisActorPlugin actor[] = {{
 		.requisition = act_avs_requisition,
 		.palette = act_avs_palette,
 		.render = act_avs_render,
-		.depth = VISUAL_VIDEO_DEPTH_32BIT,
+		.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT,
 	}};
 
 	static const VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "avs",
@@ -89,7 +89,8 @@ int act_avs_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual/libvisual-avs/testpresets/ringshift.avs"),
+//		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual/libvisual-avs/testpresets/ringshift.avs"),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
 		VISUAL_PARAM_LIST_END
 	};
@@ -157,13 +158,13 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_avs_dimension (plugin, ev.resize.video,
-						ev.resize.width, ev.resize.height);
+				act_avs_dimension (plugin, ev.event.resize.video,
+						ev.event.resize.width, ev.event.resize.height);
 
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "filename")) {
 					char *filename = visual_param_entry_get_string (param);
@@ -194,7 +195,7 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 
 						visual_list_add (preset->main->members,
 								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
-									"oinksie"));
+									"avs_superscope"));
 
 						priv->lvtree = preset;
 					}
@@ -238,11 +239,12 @@ int act_avs_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	}
 
 	/* Clear screen bit is on, clear screen every frame (This is from winamp AVS main section) */
+#if 0
 	if (visual_param_entry_get_integer (visual_param_container_get (LVAVS_PRESET_ELEMENT (priv->lvtree->main)->pcont,
 					"clear screen")) == 1) {
-		memset ((uint8_t *) video->pixels, 0, video->size);
+		memset ((uint8_t *) visual_video_get_pixels (video), 0, visual_video_get_size (video));
 	}
-
+#endif
 	lvavs_pipeline_run (priv->pipeline, video, audio);
 
 	return 0;

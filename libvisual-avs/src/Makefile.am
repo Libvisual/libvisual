@@ -22,9 +22,5 @@ actor_AVS_la_SOURCES = actor_AVS.c \
 		       lvavs_preset.c \
 		       lvavs_preset.h \
 		       lvavs_pipeline.c \
-		       lvavs_pipeline.h \
-		       lvavs_script_tree.c \
-		       lvavs_script_tree.h \
-		       lvavs_script_vmcompile.c \
-		       lvavs_script_vmcompile.h
+		       lvavs_pipeline.h
 

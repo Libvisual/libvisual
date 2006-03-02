@@ -36,11 +36,12 @@
 
 short avs_sound_get_from_source (VisAudio *audio, AVSSoundSourceType source, AVSSoundChannelType channel, int index)
 {
+	/* FIXME update to new audiio api.
 	if (source == 0)
 		return audio->pcm[channel][index % 512];
 	else
 		return audio->freqnorm[channel][index % 256];
-
+*/
 	return 0;
 }
 

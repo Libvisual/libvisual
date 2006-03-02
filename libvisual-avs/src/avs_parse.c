@@ -240,10 +240,15 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 			isnamed = TRUE;
 			marker = 0xffff;
 		}
-		
+
 		next_section = AVS_SERIALIZE_GET_NEXT_SECTION (AVS_TREE_GET_CURRENT_POINTER (avstree));
+		avstree->cur_section_length = next_section - avstree->cur;
+
 		AVS_SERIALIZE_SKIP_INT (AVS_TREE_GET_CURRENT_POINTER (avstree));
-		
+
+		printf (":: 0x%x marker!\n", marker);
+
+
 		/* FIXME: Use a table lookup here instead of giant function */
 		switch (marker) {
 			case 0x15:	// comment
@@ -301,7 +306,14 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 				visual_list_add (curcontainer->members, element);
 
 				break;
-			
+
+			case 0x0f:	// movement
+				element = AVS_ELEMENT (avs_parse_trans_movement (avstree));
+
+				visual_list_add (curcontainer->members, element);
+
+				break;
+
 			case 0xffff:
 
 				printf ("APE NAME: %s\n", namedelem);
@@ -373,7 +385,7 @@ AVSContainer *avs_parse_main (AVSTree *avstree)
 	AVS_ELEMENT (avsmain)->pcont = pcont;
 	AVS_ELEMENT (avsmain)->type = AVS_ELEMENT_TYPE_MAIN;
 
-	AVS_CONTAINER (avsmain)->members = visual_list_new (visual_object_list_destroyer);
+	AVS_CONTAINER (avsmain)->members = visual_list_new (visual_object_collection_destroyer);
 
 	scont = avs_serialize_container_new ();
 	avs_serialize_container_add_byte (scont, visual_param_container_get (pcont, "clear screen"));
@@ -452,17 +464,17 @@ AVSElement *avs_parse_render_superscope (AVSTree *avstree)
 
 	AVS_ELEMENT (superscope)->pcont = pcont;
 	AVS_ELEMENT (superscope)->type = AVS_ELEMENT_TYPE_RENDER_SUPERSCOPE;
-	
+
 	scont = avs_serialize_container_new ();
 	avs_serialize_container_add_byte (scont, NULL); // not sure what kind of bit this is
 	avs_serialize_container_add_string (scont, visual_param_container_get (pcont, "point"));
 	avs_serialize_container_add_string (scont, visual_param_container_get (pcont, "frame"));
 	avs_serialize_container_add_string (scont, visual_param_container_get (pcont, "beat"));
 	avs_serialize_container_add_string (scont, visual_param_container_get (pcont, "init"));
-	avs_serialize_container_add_byte_int_skip_with_boundry (scont, visual_param_container_get (pcont, "channel source"), 0x06);	
+	avs_serialize_container_add_byte_int_skip_with_boundry (scont, visual_param_container_get (pcont, "channel source"), 0x06);
 	avs_serialize_container_add_palette (scont, visual_param_container_get (pcont, "palette"));
 	avs_serialize_container_add_byte_with_boundry (scont, visual_param_container_get (pcont, "draw type"), 0x01);
-	
+
 	avs_element_connect_serialize_container (AVS_ELEMENT (superscope), scont);
 
 	avs_element_deserialize (AVS_ELEMENT (superscope), avstree);
@@ -766,6 +778,125 @@ AVSElement *avs_parse_trans_channelshift (AVSTree *avstree)
 	return shift;
 }
 
+AVSElement *avs_parse_trans_movement (AVSTree *avstree)
+{
+	AVSElement *movement;
+	AVSSerializeContainer *scont;
+	int len = avstree->cur_section_length;
+	int pos=0;
+
+	int effect;
+	int rectangular;
+	int effect_exp;
+	int blend;
+	int sourcemapped;
+	int subpixel;
+	int wrap;
+	int REFFECT_MAX = 23;
+	int effect_exp_ch;
+
+	char buf[257];
+
+	VisParamContainer *pcont;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("effect", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("rectangular", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("blend", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("sourcemapped", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("subpixel", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("wrap", 0),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("code", ""),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+
+	visual_param_container_add_many (pcont, params);
+
+	movement = visual_mem_new0 (AVSElement, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (movement), TRUE, avs_element_dtor);
+
+	AVS_ELEMENT (movement)->pcont = pcont;
+	AVS_ELEMENT (movement)->type = AVS_ELEMENT_TYPE_TRANS_MOVEMENT;
+
+	/* Deserialize without using the container, too complex (borked) serialization */
+	if (len - pos >= 4) {
+		effect=AVS_SERIALIZE_GET_INT (avstree->cur);
+		AVS_SERIALIZE_SKIP_INT (avstree->cur);
+		pos += 4;
+	}
+	if (effect == 32767)
+	{
+		if (!memcmp(avstree->cur,"!rect ",6))
+		{
+			AVS_SERIALIZE_SKIP_LENGTH (avstree->cur, 6);
+			rectangular=1;
+		}
+		if (AVS_SERIALIZE_GET_BYTE (avstree->cur) == 1)
+		{
+			AVS_SERIALIZE_SKIP_BYTE (avstree->cur);
+			pos++;
+
+			int l=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur); pos += 4;
+			if (l > 0 && len-pos >= l)
+			{
+//				effect_exp.resize(l);
+				memcpy(buf, avstree->cur, l);
+				buf[l] = 0;
+//				memcpy(effect_exp.get(), data+pos, l);
+				AVS_SERIALIZE_SKIP_LENGTH (avstree->cur, l);
+				pos+=l;
+			}
+			else
+			{
+//				effect_exp.resize(1);
+//				effect_exp.get()[0]=0;
+			}
+		}
+		else if (len-pos >= 256)
+		{
+			int l=256-(rectangular?6:0);
+			memcpy(buf,avstree->cur,l);
+			buf[l]=0;
+//			effect_exp.assign(buf);
+			AVS_SERIALIZE_SKIP_LENGTH (avstree->cur, l);
+			pos+=l;
+			printf ("%s\n", buf);
+		}
+	}
+	if (len-pos >= 4) { blend=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur);pos+=4; }
+	if (len-pos >= 4) { sourcemapped=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur);pos+=4; }
+	if (len-pos >= 4) { rectangular=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur);pos+=4; }
+	if (len-pos >= 4) { subpixel=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur);pos+=4; }
+	else subpixel=0;
+	if (len-pos >= 4) { wrap=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur);pos+=4; }
+	else wrap=0;
+	if (!effect && len-pos >= 4)
+	{
+		effect=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur);pos+=4;
+	}
+
+	if (effect != 32767 && effect > REFFECT_MAX || effect < 0)
+		effect=0;
+	effect_exp_ch=1;
+
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "effect"), effect);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "rectangular"), rectangular);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "blend"), blend);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "sourcemapped"), sourcemapped);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "subpixel"), subpixel);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "wrap"), wrap);
+	visual_param_entry_set_string (visual_param_container_get (pcont, "code"), buf);
+
+	printf ("effect: %d, rectangular: %d, blend %d, sourcemapped %d, subpixel %d, wrap %d\n",
+			effect, rectangular, blend, sourcemapped, subpixel, wrap);
+
+	return movement;
+}
+
 int avs_parse_data (AVSTree *avstree, char *filename)
 {
 	int fd;
@@ -781,7 +912,7 @@ int avs_parse_data (AVSTree *avstree, char *filename)
 
 	if (fd < 0) {
 		printf ("FILE NOT FOUND BLAH\n");
-		
+
 		exit (-1);
 	}
 

@@ -1,4 +1,3 @@
 #!/bin/bash
 
-gcc -o avs_parse main.c avs_parse.c avs_serialize.c -ggdb `pkg-config --libs --cflags gtk+-2.0 libvisual`
-gcc -o scripttree scripttree.c lvavs_script.c lvavs_script_tree.c lvavs_script_vmcompile.c -ggdb `pkg-config --libs --cflags gtk+-2.0 libvisual`
+gcc -o avs_parse main.c avs_parse.c avs_serialize.c -ggdb `pkg-config --libs --cflags gtk+-2.0 libvisual-0.3`

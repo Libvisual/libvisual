@@ -141,7 +141,7 @@ int avs_gfx_line_non_naieve_ints (VisVideo *video, int x0, int y0, int x1, int y
 	m = abs (u);
 	n = abs (v);
 	uint32_t color = col->r << 16 | col->g << 8 | col->b;
-	uint32_t *buf = video->pixels;
+	uint32_t *buf = visual_video_get_pixels (video);
 	int pbpp = video->pitch / 4;
 
 	if (m <= n) {
@@ -186,7 +186,7 @@ int avs_gfx_line_ints (VisVideo *video, int x0, int y0, int x1, int y1, VisColor
 	register int x;
 	register int y;
 	uint32_t color = col->r << 16 | col->g << 8 | col->b;
-	uint32_t *buf = video->pixels;
+	uint32_t *buf = visual_video_get_pixels (video);
 	int pbpp = video->pitch / 4;
 
 	if (dy < 0) {

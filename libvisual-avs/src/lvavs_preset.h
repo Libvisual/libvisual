@@ -58,10 +58,10 @@ struct _LVAVSPreset {
 };
 
 struct _LVAVSPresetElement {
-	VisObject	 	 object;
+	VisObject		 object;
 
 	LVAVSPresetElementType	 type;
-	
+
 	const char		*element_name;
 
 	VisParamContainer	*pcont;
@@ -69,7 +69,7 @@ struct _LVAVSPresetElement {
 
 struct _LVAVSPresetContainer {
 	LVAVSPresetElement	 element;
-	
+
 	VisList			*members;
 };
 

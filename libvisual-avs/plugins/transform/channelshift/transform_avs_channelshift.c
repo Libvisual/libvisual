@@ -36,7 +36,7 @@
 
 #include <libvisual/libvisual.h>
 
-#include "avs.h"
+#include "avs_common.h"
 
 typedef struct {
 	int shift;
@@ -51,19 +51,19 @@ int lv_channelshift_video (VisPluginData *plugin, VisVideo *video, VisAudio *aud
 
 void channelshift_video (VisPluginData *plugin, VisVideo *video, int a, int b);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static const VisTransformPlugin transform[] = {{
 		.palette = lv_channelshift_palette,
 		.video = lv_channelshift_video,
-		.depth =
+		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_32BIT,
 		.requests_audio = FALSE
 	}};
 
 	static const VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_TRANSFORM".[avs]",
 
 		.plugname = "avs_channelshift",
@@ -123,7 +123,7 @@ int lv_channelshift_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "shift"))
 					priv->shift = visual_param_entry_get_integer (param);
@@ -189,11 +189,12 @@ int lv_channelshift_video (VisPluginData *plugin, VisVideo *video, VisAudio *aud
 
 void channelshift_video (VisPluginData *plugin, VisVideo *video, int a, int b)
 {
-	uint8_t *buf = video->pixels;
+	uint8_t *buf = visual_video_get_pixels (video);
+	int size = visual_video_get_size (video);
 	uint8_t swap;
 	int i;
 
-	for (i = 0; i < video->size / 4; i++) {
+	for (i = 0; i < size / 4; i++) {
 		swap = buf[a];
 		buf[a] = buf[b];
 		buf[b] = swap;

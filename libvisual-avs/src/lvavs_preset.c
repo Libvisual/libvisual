@@ -41,8 +41,10 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 LVAVSPresetElement *wavs_convert_main_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem);
+LVAVSPresetElement *wavs_convert_superscope_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_multiplier_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem);
+LVAVSPresetElement *wavs_convert_movement_new (AVSElement *avselem);
 
 /* Object destructors */
 static int lvavs_preset_dtor (VisObject *object)
@@ -149,7 +151,7 @@ LVAVSPresetContainer *lvavs_preset_container_new ()
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (container), TRUE, lvavs_preset_container_dtor);
 
-	container->members = visual_list_new (visual_object_list_destroyer);
+	container->members = visual_list_new (visual_object_collection_destroyer);
 
 	return container;
 }
@@ -187,11 +189,11 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 				break;
 
 			case AVS_ELEMENT_TYPE_RENDER_SUPERSCOPE:
-			
+				visual_list_add (presetcont->members, wavs_convert_superscope_new (avselem));
 				break;
 
 			case AVS_ELEMENT_TYPE_TRANS_BLUR:
-			
+
 				break;
 
 			case AVS_ELEMENT_TYPE_TRANS_FASTBRIGHTNESS:
@@ -209,6 +211,11 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 			case AVS_ELEMENT_TYPE_TRANS_CHANNELSHIFT:
 				visual_list_add (presetcont->members, wavs_convert_channelshift_new (avselem));
+
+				break;
+
+			case AVS_ELEMENT_TYPE_TRANS_MOVEMENT:
+				visual_list_add (presetcont->members, wavs_convert_movement_new (avselem));
 
 				break;
 
@@ -273,11 +280,43 @@ LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 	visual_param_container_copy_match (pcont, pcontw);
 
 	sourceplace = visual_param_entry_get_integer (visual_param_container_get (pcontw, "source and place"));
-	
+
 	visual_param_entry_set_integer (visual_param_container_get (pcont, "place"), sourceplace >> 4);
 	visual_param_entry_set_integer (visual_param_container_get (pcont, "source"), (sourceplace & 0x0f) / 4);
 
 	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_ring");
+	element->pcont = pcont;
+
+	return element;
+}
+
+LVAVSPresetElement *wavs_convert_superscope_new (AVSElement *avselem)
+{
+	LVAVSPresetElement *element;
+	VisParamContainer *pcont;
+	VisParamContainer *pcontw;
+	int sourceplace;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("point"),
+		VISUAL_PARAM_LIST_ENTRY ("frame"),
+		VISUAL_PARAM_LIST_ENTRY ("beat"),
+		VISUAL_PARAM_LIST_ENTRY ("init"),
+		VISUAL_PARAM_LIST_ENTRY ("channel source"),
+		VISUAL_PARAM_LIST_ENTRY ("palette"),
+		VISUAL_PARAM_LIST_ENTRY ("draw type"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+	visual_param_container_add_many (pcont, params);
+
+	pcontw = avselem->pcont;
+
+	/* Copy all the matching */
+	visual_param_container_copy_match (pcont, pcontw);
+
+	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_superscope");
 	element->pcont = pcont;
 
 	return element;
@@ -369,6 +408,37 @@ LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem)
 	visual_param_entry_set_integer (visual_param_container_get (pcont, "shift"), shift);
 
 	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_channelshift");
+	element->pcont = pcont;
+
+	return element;
+}
+
+LVAVSPresetElement *wavs_convert_movement_new (AVSElement *avselem)
+{
+	LVAVSPresetElement *element;
+	VisParamContainer *pcont;
+	VisParamContainer *pcontw;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("effect"),
+		VISUAL_PARAM_LIST_ENTRY ("rectangular"),
+		VISUAL_PARAM_LIST_ENTRY ("blend"),
+		VISUAL_PARAM_LIST_ENTRY ("sourcemapped"),
+		VISUAL_PARAM_LIST_ENTRY ("subpixel"),
+		VISUAL_PARAM_LIST_ENTRY ("wrap"),
+		VISUAL_PARAM_LIST_ENTRY ("code"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+	visual_param_container_add_many (pcont, params);
+
+	pcontw = avselem->pcont;
+
+	/* Copy all the matching */
+	visual_param_container_copy_match (pcont, pcontw);
+
+	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_movement");
 	element->pcont = pcont;
 
 	return element;

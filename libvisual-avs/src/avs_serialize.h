@@ -39,7 +39,7 @@ extern "C" {
 #define AVS_SERIALIZE_SKIP_BYTE(f)		((f)++)
 #define AVS_SERIALIZE_SKIP_LENGTH(f,i)		((f) += (i))
 #define AVS_SERIALIZE_GET_NEXT_SECTION(f)	((f) + *f + 4)
-	
+
 typedef struct _AVSSerializeContainer AVSSerializeContainer;
 typedef struct _AVSSerializeEntry AVSSerializeEntry;
 
@@ -70,6 +70,10 @@ struct _AVSSerializeEntry {
 };
 
 /* Prototypes */
+char *avs_serialize_retrieve_palette_from_preset_section (char *section, VisParamEntry *param);
+char *avs_serialize_retrieve_color_from_preset_section (char *section, VisParamEntry *param);
+char *avs_serialize_retrieve_string_from_preset_section (char *section, VisParamEntry *param);
+
 AVSSerializeContainer *avs_serialize_container_new (void);
 int avs_serialize_container_add_string (AVSSerializeContainer *scont, VisParamEntry *param);
 int avs_serialize_container_add_byte (AVSSerializeContainer *scont, VisParamEntry *param);

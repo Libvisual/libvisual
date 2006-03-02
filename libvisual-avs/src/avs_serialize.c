@@ -35,29 +35,25 @@
 
 static int avs_data_serialize_container_dtor (VisObject *object);
 
-static char *retrieve_palette_from_preset_section (char *section, VisParamEntry *param);
-static char *retrieve_color_from_preset_section (char *section, VisParamEntry *param);
-static char *retrieve_string_from_preset_section (char *section, VisParamEntry *param);
-
 /* Object destructors */
 static int avs_data_serialize_container_dtor (VisObject *object)
 {
 	AVSSerializeContainer *scont = AVS_SERIALIZE_CONTAINER (object);
 
-	visual_list_set_destroyer (&scont->layout, visual_object_list_destroyer);
-	visual_list_destroy_elements (&scont->layout);
+	visual_collection_set_destroyer (VISUAL_COLLECTION (&scont->layout), visual_object_collection_destroyer);
+	visual_collection_destroy (VISUAL_COLLECTION (&scont->layout));
 
 	return VISUAL_OK;
 }
 
 /* Static parser helper functions */
-static char *retrieve_palette_from_preset_section (char *section, VisParamEntry *param)
+char *avs_serialize_retrieve_palette_from_preset_section (char *section, VisParamEntry *param)
 {
 	int i;
 	VisPalette pal;
 
 	visual_palette_allocate_colors (&pal, AVS_SERIALIZE_GET_BYTE (section));
-	
+
 	AVS_SERIALIZE_SKIP_INT (section);
 
 	for (i = 0; i < pal.ncolors; i++) {
@@ -78,7 +74,7 @@ static char *retrieve_palette_from_preset_section (char *section, VisParamEntry 
 	return section;
 }
 
-static char *retrieve_color_from_preset_section (char *section, VisParamEntry *param)
+char *avs_serialize_retrieve_color_from_preset_section (char *section, VisParamEntry *param)
 {
 	unsigned char r, g, b;
 	
@@ -96,26 +92,27 @@ static char *retrieve_color_from_preset_section (char *section, VisParamEntry *p
 	return section;
 }
 
-static char *retrieve_string_from_preset_section (char *section, VisParamEntry *param)
+char *avs_serialize_retrieve_string_from_preset_section (char *section, VisParamEntry *param)
 {
 	char *string;
 	int len;
 
-	len = AVS_SERIALIZE_GET_BYTE (section);
+	/* FIXME should just get an int ? */
+	len = AVS_SERIALIZE_GET_INT (section);
 	AVS_SERIALIZE_SKIP_INT (section);
 
 	if (string != NULL && len > 0) {
 		string = visual_mem_malloc0 (len);
 
 		strncpy (string, section, len);
-	
+
 		visual_param_entry_set_string (param, string);
 
 		visual_mem_free (string);
 	}
 
 	AVS_SERIALIZE_SKIP_LENGTH (section, len);
-	
+
 	return section;
 }
 
@@ -256,7 +253,7 @@ char *avs_serialize_container_deserialize (AVSSerializeContainer *scont, char *s
 						visual_param_entry_set_integer (sentry->param, 0);
 					}
 				}
-				
+
 				AVS_SERIALIZE_SKIP_BYTE (section);
 
 				break;
@@ -271,7 +268,7 @@ char *avs_serialize_container_deserialize (AVSSerializeContainer *scont, char *s
 						visual_param_entry_set_integer (sentry->param, 0);
 					}
 				}
-				
+
 				AVS_SERIALIZE_SKIP_INT (section);
 
 				break;
@@ -287,26 +284,26 @@ char *avs_serialize_container_deserialize (AVSSerializeContainer *scont, char *s
 						visual_param_entry_set_integer (sentry->param, 0);
 					}
 				}
-	
+
 				AVS_SERIALIZE_SKIP_INT (section);
 
 				break;
 
 			case AVS_SERIALIZE_ENTRY_TYPE_STRING:
 
-				section = retrieve_string_from_preset_section (section, sentry->param);
-				
+				section = avs_serialize_retrieve_string_from_preset_section (section, sentry->param);
+
 				break;
 
 			case AVS_SERIALIZE_ENTRY_TYPE_COLOR:
 
-				section = retrieve_color_from_preset_section (section, sentry->param);
+				section = avs_serialize_retrieve_color_from_preset_section (section, sentry->param);
 
 				break;
 				
 			case AVS_SERIALIZE_ENTRY_TYPE_PALETTE:
 			
-				section = retrieve_palette_from_preset_section (section, sentry->param);
+				section = avs_serialize_retrieve_palette_from_preset_section (section, sentry->param);
 				
 				break;
 

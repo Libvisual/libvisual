@@ -35,7 +35,7 @@
 
 #include <libvisual/libvisual.h>
 
-#include "avs.h"
+#include "avs_common.h"
 
 typedef struct {
 	int multiply;
@@ -51,13 +51,14 @@ static void multiply_video_root (VisPluginData *plugin, VisVideo *video);
 static void multiply_video_shift (VisPluginData *plugin, VisVideo *video, int shift);
 static void multiply_video_square (VisPluginData *plugin, VisVideo *video);
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static const VisTransformPlugin transform[] = {{
 		.palette = lv_multiplier_palette,
 		.video = lv_multiplier_video,
-		.depth =
+		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_32BIT |
 			VISUAL_VIDEO_DEPTH_24BIT |
 			VISUAL_VIDEO_DEPTH_16BIT |
@@ -66,8 +67,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static const VisPluginInfo info[] = {{
-		.struct_size = sizeof (VisPluginInfo),
-		.api_version = VISUAL_PLUGIN_API_VERSION,
 		.type = VISUAL_PLUGIN_TYPE_TRANSFORM".[avs]",
 
 		.plugname = "avs_multiplier",
@@ -126,7 +125,7 @@ int lv_multiplier_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_PARAM:
-				param = ev.param.param;
+				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "multiply"))
 					priv->multiply = visual_param_entry_get_integer (param);
@@ -200,8 +199,9 @@ int lv_multiplier_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio
 
 static void multiply_video_root (VisPluginData *plugin, VisVideo *video)
 {
-	uint32_t *ibuf = video->pixels;
-	uint8_t *buf = video->pixels;
+	uint32_t *ibuf = visual_video_get_pixels (video);
+	uint8_t *buf = visual_video_get_pixels (video);
+	int size = visual_video_get_size (video);
 	uint8_t bytetable[256];
 	int i;
 
@@ -211,15 +211,15 @@ static void multiply_video_root (VisPluginData *plugin, VisVideo *video)
 		bytetable[i] = 0xff;
 	
 	if (video->depth == VISUAL_VIDEO_DEPTH_32BIT) {
-		for (i = 0; i < video->size / 4; i++, ++ibuf) {
+		for (i = 0; i < size / 4; i++, ++ibuf) {
 			if ((*(ibuf) & 0x00ffffff) > 0)
 				*(ibuf) |= 0x00ffffff;
 		}
 	} else if (video->depth == VISUAL_VIDEO_DEPTH_16BIT) {
-		for (i = 0; i < video->size; i++)
+		for (i = 0; i < size; i++)
 			*(buf++) = 0;
 	} else {
-		for (i = 0; i < video->size; i++)
+		for (i = 0; i < size; i++)
 			*(buf++) = 0;
 	}
 
@@ -227,21 +227,22 @@ static void multiply_video_root (VisPluginData *plugin, VisVideo *video)
 
 static void multiply_video_shift (VisPluginData *plugin, VisVideo *video, int shift)
 {
-	uint8_t *buf = video->pixels;
+	uint8_t *buf = visual_video_get_pixels (video);
+	int size = visual_video_get_size (video);
 	int shiftr = abs (shift);
 	int i;
 	
 	/* FIXME endianess.. */
 	if (video->depth == VISUAL_VIDEO_DEPTH_32BIT) {
 		if (shift > 0) {
-			for (i = 0; i < video->size / 4; i++) {
+			for (i = 0; i < size / 4; i++) {
 				*(buf++) <<= shiftr;
 				*(buf++) <<= shiftr;
 				*(buf++) <<= shiftr;
 				buf++;
 			}
 		} else {
-			for (i = 0; i < video->size / 4; i++) {
+			for (i = 0; i < size / 4; i++) {
 				*(buf++) >>= shiftr;
 				*(buf++) >>= shiftr;
 				*(buf++) >>= shiftr;
@@ -250,10 +251,10 @@ static void multiply_video_shift (VisPluginData *plugin, VisVideo *video, int sh
 		}
 	} else {
 		if (shift > 0) {
-			for (i = 0; i < video->size; i++)
+			for (i = 0; i < size; i++)
 				*(buf++) <<= shiftr;
 		} else {
-			for (i = 0; i < video->size; i++)
+			for (i = 0; i < size; i++)
 				*(buf++) >>= shiftr;
 		}
 	}
@@ -261,18 +262,19 @@ static void multiply_video_shift (VisPluginData *plugin, VisVideo *video, int sh
 
 static void multiply_video_square (VisPluginData *plugin, VisVideo *video)
 {
-	uint8_t *buf = video->pixels;
+	uint8_t *buf = visual_video_get_pixels (video);
+	int size = visual_video_get_size (video);
 	int i;
-	
+
 	if (video->depth == VISUAL_VIDEO_DEPTH_32BIT) {
-		for (i = 0; i < video->size / 4; i++) {
+		for (i = 0; i < size / 4; i++) {
 			*(buf++) = 0;
 			*(buf++) = 0;
 			*(buf++) = 0;
 			buf++;
 		}
 	} else {
-		memset (video->pixels, 0, video->size);
+		memset (visual_video_get_pixels (video), 0, size);
 	}
 }
 

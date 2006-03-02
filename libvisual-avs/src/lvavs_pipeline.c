@@ -69,7 +69,7 @@ static int lvavs_pipeline_element_dtor (VisObject *object)
 
 	if (element->params != NULL)
 		visual_object_unref (VISUAL_OBJECT (element->params));
-	
+
 	switch (element->type) {
 		case LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR:
 		case LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM:
@@ -90,7 +90,7 @@ static int lvavs_pipeline_element_dtor (VisObject *object)
 	element->pipeline = NULL;
 	element->params = NULL;
 	element->data.actor = NULL;
-	
+
 	return VISUAL_OK;
 }
 
@@ -146,8 +146,8 @@ LVAVSPipelineContainer *lvavs_pipeline_container_new ()
 	visual_object_initialize (VISUAL_OBJECT (container), TRUE, lvavs_pipeline_container_dtor);
 
 	LVAVS_PIPELINE_ELEMENT (container)->type = LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER;
-	
-	container->members = visual_list_new (visual_object_list_destroyer);
+
+	container->members = visual_list_new (visual_object_collection_destroyer);
 
 	return container;
 }
@@ -160,7 +160,7 @@ LVAVSPipeline *lvavs_pipeline_new_from_preset (LVAVSPreset *preset)
 
 	pipeline->container = lvavs_pipeline_container_new ();
 	LVAVS_PIPELINE_ELEMENT (pipeline->container)->pipeline = pipeline;
-	
+
 	pipeline_from_preset (pipeline->container, preset->main);
 
 	return pipeline;
@@ -217,16 +217,18 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 					break;
 				}
 
+				/* FIXME fix libvisual type lookup and use the functions here */
 				if (strcmp (ref->info->type, VISUAL_PLUGIN_TYPE_ACTOR) == 0) {
 
+					printf ("element in\n");
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR);
 					element->data.actor = visual_actor_new (pelem->element_name);
 
 				} else if (strcmp (ref->info->type, VISUAL_PLUGIN_TYPE_MORPH) == 0) {
-					
+
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_MORPH);
 					element->data.morph = visual_morph_new (pelem->element_name);
-	
+
 				} else if (strcmp (ref->info->type, VISUAL_PLUGIN_TYPE_TRANSFORM) == 0) {
 
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM);
@@ -239,18 +241,18 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 				}
 
 				element->pipeline = LVAVS_PIPELINE_ELEMENT (container)->pipeline;
-				
+
 				visual_list_add (container->members, element);
-				
+
 				break;
 
 			case LVAVS_PRESET_ELEMENT_TYPE_CONTAINER:
 				cont = lvavs_pipeline_container_new ();
-				
+
 				visual_list_add (container->members, cont);
-				
+
 				pipeline_from_preset (cont, LVAVS_PRESET_CONTAINER (pelem));
-				
+
 				break;
 
 			case LVAVS_PRESET_ELEMENT_TYPE_RENDERMODE:
@@ -275,42 +277,42 @@ int pipeline_container_realize (LVAVSPipelineContainer *container)
 {
 	VisListEntry *le = NULL;
 	LVAVSPipelineElement *element;
-	
+
 	while ((element = visual_list_next (container->members, &le)) != NULL) {
 
 		switch (element->type) {
 			case LVAVS_PIPELINE_ELEMENT_TYPE_NULL:
 
 				break;
-				
+
 			case LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR:
 
 				visual_actor_realize (element->data.actor);
 				visual_param_container_copy_match (visual_plugin_get_params (
 							visual_actor_get_plugin (element->data.actor)), element->params);
-				
+
 				break;
 
 			case LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM:
-	
+
 				visual_transform_realize (element->data.transform);
 				visual_param_container_copy_match (visual_plugin_get_params (
 							visual_transform_get_plugin (element->data.transform)), element->params);
-				
+
 				break;
-			
+
 			case LVAVS_PIPELINE_ELEMENT_TYPE_MORPH:
-				
+
 				visual_morph_realize (element->data.morph);
-				
+
 				break;
-			
+
 			case LVAVS_PIPELINE_ELEMENT_TYPE_RENDERSTATE:
-				
+
 				break;
 
 			case LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER:
-				
+
 				pipeline_container_realize (LVAVS_PIPELINE_CONTAINER (element));
 
 				break;
@@ -327,7 +329,7 @@ int pipeline_container_negotiate (LVAVSPipelineContainer *container, VisVideo *v
 {
 	VisListEntry *le = NULL;
 	LVAVSPipelineElement *element;
-	
+
 	while ((element = visual_list_next (container->members, &le)) != NULL) {
 
 		switch (element->type) {
@@ -345,7 +347,7 @@ int pipeline_container_negotiate (LVAVSPipelineContainer *container, VisVideo *v
 
 
 			case LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER:
-				
+
 				pipeline_container_negotiate (LVAVS_PIPELINE_CONTAINER (element), video);
 
 				break;
@@ -363,7 +365,7 @@ int pipeline_container_run (LVAVSPipelineContainer *container, VisVideo *video, 
 {
 	VisListEntry *le = NULL;
 	LVAVSPipelineElement *element;
-	
+
 	while ((element = visual_list_next (container->members, &le)) != NULL) {
 
 		switch (element->type) {
@@ -382,7 +384,7 @@ int pipeline_container_run (LVAVSPipelineContainer *container, VisVideo *video, 
 				break;
 
 			case LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER:
-				
+
 				pipeline_container_run (LVAVS_PIPELINE_CONTAINER (element), video, audio);
 
 				break;

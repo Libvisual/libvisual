@@ -1,11 +1,23 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
+
+m4_define([lv_avs_version_major], [0])
+m4_define([lv_avs_version_minor], [3])
+m4_define([lv_avs_version_micro], [0])
+m4_define([lv_avs_version], [lv_avs_version_major.lv_avs_version_minor.lv_avs_version_micro])
+m4_define([lv_avs_version_suffix], [lv_avs_version_major.lv_avs_version_minor])
+
 AC_INIT(Libvisual avs, 0.3.0, ds@nerds-incorporated.org)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
+
+m4_define([libvisual_required_version], [0.3.0])
+
+m4_define([libvisual_pkg], [libvisual-lv_avs_version_suffix])
+LIBVISUAL_PKG=libvisual_pkg
 
 # Checks for programs.
 AC_PROG_CC
@@ -31,7 +43,7 @@ fi
 build_actor=""
 build_trans=""
 
-PKG_CHECK_MODULES(LIBVISUAL, libvisual = 0.3.0, [libvis="yes"], [libvis="no"])
+PKG_CHECK_MODULES(LIBVISUAL, libvisual_pkg = libvisual_required_version, [libvis="yes"], [libvis="no"])
 if test x$libvis = xno; then
 	AC_MSG_ERROR([*** libvisual not found.
 			libvisual is needed to build this package.
@@ -79,6 +91,21 @@ if test x$avs_ring = xyes; then
   AC_MSG_RESULT([yes])
   build_actor="$build_actor ring"
   AC_SUBST([AVS_RING], ['actor_avs_ring.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
+# The AVS elements.
+AC_ARG_ENABLE([avs_superscope],
+	      AC_HELP_STRING([--disable-superscope],
+			     [Do not build the AVS render superscope plugin @<:@default=enabled@:>@]),
+	      [avs_superscope=$enableval],
+	      [avs_superscope=yes])
+AC_MSG_CHECKING([whether to build AVS render superscope plugin])
+if test x$avs_superscope = xyes; then
+  AC_MSG_RESULT([yes])
+  build_actor="$build_actor superscope"
+  AC_SUBST([AVS_SUPERSCOPE], ['actor_avs_superscope.la'])
 else
   AC_MSG_RESULT([no])
 fi
@@ -178,21 +205,19 @@ dnl ' # fix string coloring ;)
 
 AC_MSG_CHECKING([where to install plugins])
 
-if test -z "$plugins_base_dir"; then
-    plugins_base_dir=`$PKG_CONFIG --variable=pluginsbasedir libvisual`
-    AC_MSG_RESULT([$plugins_base_dir])
-else
-    if test -d "$plugins_base_dir"; then
-        AC_MSG_RESULT([$plugins_base_dir])
-    else
-        AC_MSG_RESULT([not found])
-        AC_MSG_ERROR([Specified plugins base directory "$plugins_base_dir" is not accesible!])
-        exit 1
-    fi
-fi
+AC_ARG_WITH([plugins-base-dir],
+  AS_HELP_STRING([--with-plugins-base-dir=DIR],
+    [Install plugins to this base directory. Defaults to Libvisual's base dir]),
+  [plugins_base_dir=$withval],
+  [plugins_base_dir=`$PKG_CONFIG --variable=pluginsbasedir $LIBVISUAL_PKG`])
 
 LIBVISUAL_PLUGINS_BASE_DIR="$plugins_base_dir"
-AC_SUBST(LIBVISUAL_PLUGINS_BASE_DIR)
+AC_SUBST([LIBVISUAL_PLUGINS_BASE_DIR])
+AC_SUBST([actor_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/actor])
+AC_SUBST([input_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/input])
+AC_SUBST([morph_plugindir], [$LIBVISUAL_PLUGINS_BASE_DIR/morph])
+
+AC_SUBST(LIBVISUAL_PLUGINS_DATA_DIR, [$datadir/libvisual-plugins-lv_avs_version_suffix])
 
 libs_dynamic_loader="-ldl"
 AC_SUBST(LIBS_DYNAMIC_LOADER, "$libs_dynamic_loader")
@@ -202,10 +227,12 @@ AC_SUBST(DATADIR, "$datadir")
 AC_CONFIG_FILES([
 	Makefile
 	common/Makefile
+	visscript/Makefile
 	src/Makefile
 	plugins/Makefile
 	plugins/actor/Makefile
 	plugins/actor/ring/Makefile
+	plugins/actor/superscope/Makefile
 	plugins/transform/Makefile
 	plugins/transform/multiplier/Makefile
 	plugins/transform/channelshift/Makefile

@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "avs_parse.h"
 
 int main (int argc, char *argv[])
