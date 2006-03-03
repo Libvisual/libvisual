@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_actor.c,v 1.40 2006-03-03 01:25:46 synap Exp $
+ * $Id: lv_actor.c,v 1.41 2006-03-03 01:27:02 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -380,7 +380,6 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 
 	ref = visual_plugin_find (__lv_plugins_actor, actorname);
 
-	printf ("%p :: ref is helemaal de maffeballe geworden :: %s\n", ref, actorname);
 	actor->plugin = visual_plugin_load (ref);
 
 	/* Adding the VisActorPluginEnviron */
