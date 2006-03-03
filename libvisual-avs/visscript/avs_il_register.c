@@ -102,7 +102,7 @@ ILRegister * avs_il_register_create(void)
 	ILRegister *reg;
 
 	reg = malloc(sizeof(ILRegister));
-	memset(reg, 0, sizeof(reg));
+	memset(reg, 0, sizeof(ILRegister));
 
 	return reg;
 }

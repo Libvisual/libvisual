@@ -153,6 +153,9 @@ int avs_runnable_compile(AvsRunnable *obj, unsigned char *data, unsigned int len
 	/* Point lexer to new input data */
 	avs_lexer_reset(&obj->ctx->lexer, data, length);
 
+	/* Reset compiler */
+	avs_compile_reset_stack(&obj->ctx->compiler);
+
 	/* Initialize IL assembler for output object */
 	avs_il_runnable_init(&obj->ctx->assembler, obj);
 
