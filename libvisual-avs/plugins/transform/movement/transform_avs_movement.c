@@ -42,7 +42,7 @@
 AvsNumber PI = M_PI;
 
 typedef struct {
-	uint8_t	*swapbuf;
+	uint8_t	*swapbuf, *renderbuf;
 
 	uint32_t	*tab;
 	uint32_t	width, height;
@@ -159,7 +159,7 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	MovementPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint8_t *pixels = visual_video_get_pixels (video);
-	uint8_t *vidbuf;
+	uint8_t *vidbuf, *vidoutbuf;
 	int i;
 
 	if (priv->lastWidth != video->width || priv->lastHeight != video->height || priv->lastPitch != video->pitch) {
@@ -167,24 +167,30 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		priv->width = video->width;
 		priv->height = video->height;
 		priv->subpixel = 1;
-		trans_initialize(priv, video->width, video->height, "r = sin(r * 3);");
+		trans_initialize(priv, video->width, video->height, "r = cos(r * 3);");
 
 		if (priv->swapbuf != NULL)
 			visual_mem_free (priv->swapbuf);
 
 		/* FIXME: would allocate way too much on subregion buffers, think about this. */
 		priv->swapbuf = visual_mem_malloc0 (visual_video_get_size (video));
+		priv->renderbuf = visual_mem_malloc0(video->width * video->height * video->bpp);
 	}
 
 	vidbuf = priv->swapbuf;
 	for (i = 0; i < video->height; i++) {
-		visual_mem_copy (vidbuf, pixels + (video->width * i), video->width * video->bpp);
-
-		vidbuf += video->pitch;
+		visual_mem_copy (vidbuf, pixels + (video->pitch * i), video->width * video->bpp);
+		vidbuf += video->width * video->bpp;
 	}
 
-	trans_render(priv, (uint32_t *) priv->swapbuf,  (uint32_t *) pixels);
-
+	visual_mem_set(priv->renderbuf, 0, video->width * video->height * video->bpp);
+	trans_render(priv, (uint32_t *) priv->swapbuf,  (uint32_t *) priv->renderbuf);
+	
+	for (i =0; i < video->height; i++) {
+		visual_mem_copy (pixels, priv->renderbuf + (i * video->width * video->bpp), video->width * video->bpp);
+		pixels += video->pitch;
+	} 
+	
 	priv->lastWidth = video->width;
 	priv->lastHeight = video->height;
 	priv->lastPitch = video->pitch;
