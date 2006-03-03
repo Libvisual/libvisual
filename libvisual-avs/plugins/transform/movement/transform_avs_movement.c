@@ -167,7 +167,8 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		priv->width = video->width;
 		priv->height = video->height;
 		priv->subpixel = 1;
-		trans_initialize(priv, video->width, video->height, "r = cos(r * 3);");
+		//trans_initialize(priv, video->width, video->height, "r = cos(r * 3);");
+		trans_initialize(priv, video->width, video->height, "d = d * (1.01 + (cos((r-$PI*0.5) * 4) * 0.04)); r = r + (0.03 * sin(d * $PI * 4));");
 
 		if (priv->swapbuf != NULL)
 			visual_mem_free (priv->swapbuf);

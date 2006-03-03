@@ -320,7 +320,7 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	if (l > 128*1024)
 		l = 128*1024;
 
-	priv->drawmode = 0.0; /* 0 = dots, 1 = lines */
+	priv->drawmode = 1.0; /* 0 = dots, 1 = lines */
 	for (a=0; a < l; a++, lx = x, ly = y) {
 		priv->v = pcmbuf[a * 288 / l];
 		priv->i = (AvsNumber)a/(AvsNumber)(l-1);
