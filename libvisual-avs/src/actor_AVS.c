@@ -179,7 +179,7 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 						visual_object_unref (VISUAL_OBJECT (priv->pipeline));
 
 					priv->wtree = NULL;
-				
+
 					priv->wavs = TRUE;
 					if (filename != NULL) {
 						if (priv->wavs == TRUE) {
