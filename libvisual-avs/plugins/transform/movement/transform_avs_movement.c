@@ -163,7 +163,11 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	int i;
 
 	if (priv->lastWidth != video->width || priv->lastHeight != video->height || priv->lastPitch != video->pitch) {
-		trans_initialize(priv, video->width, video->height, "r = cos(r * 3);");
+
+		priv->width = video->width;
+		priv->height = video->height;
+		priv->subpixel = 1;
+		trans_initialize(priv, video->width, video->height, "r = sin(r * 3);");
 
 		if (priv->swapbuf != NULL)
 			visual_mem_free (priv->swapbuf);
@@ -178,7 +182,6 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 		vidbuf += video->pitch;
 	}
-
 
 	trans_render(priv, (uint32_t *) priv->swapbuf,  (uint32_t *) pixels);
 
