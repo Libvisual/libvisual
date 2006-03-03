@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_color.c,v 1.18 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_color.c,v 1.19 2006-03-03 01:25:46 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -303,7 +303,7 @@ VisColor *visual_color_white ()
 
 	if (white_initialized == FALSE) {
 		visual_object_initialize (VISUAL_OBJECT (&white), FALSE, NULL);
-		visual_color_set (&white, 0, 0, 0);
+		visual_color_set (&white, 255, 255, 255);
 
 		white_initialized = TRUE;
 	}

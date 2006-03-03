@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_plugin.c,v 1.80 2006-01-26 15:13:37 synap Exp $
+ * $Id: lv_plugin.c,v 1.81 2006-03-03 01:25:46 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -717,7 +717,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 #else
 	handle = dlopen (ref->file, RTLD_LAZY);
 #endif
-	
+
 	if (handle == NULL) {
 #if defined(VISUAL_OS_WIN32)
 		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: win32 error code: %d", GetLastError ());
@@ -1045,7 +1045,7 @@ const char *visual_plugin_type_get_type (const char *type)
 
 		return typestr;
 	}
-	
+
 	return str;
 }
 

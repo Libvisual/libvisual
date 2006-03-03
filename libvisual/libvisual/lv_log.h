@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_log.h,v 1.19 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_log.h,v 1.20 2006-03-03 01:25:46 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,6 +30,7 @@
 #include <assert.h>
 
 #include <libvisual/lv_defines.h>
+#include <libvisual/lvconfig.h>
 
 VISUAL_BEGIN_DECLS
 
@@ -208,7 +209,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	va_list va;
 	char sever_msg[10];
 	VisLogVerboseness v;
-	
+
 	assert (fmt != NULL);
 
 	va_start (va, fmt);
