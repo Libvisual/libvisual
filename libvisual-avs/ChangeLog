@@ -1,5 +1,10 @@
 2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
 
+	* plugins/transform/movement/*: Added the movement elem (also ty to
+	Sepp).
+
+2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
+
 	* visscript/*: Importing visscript here, will be visscript home for a
 	while.
 

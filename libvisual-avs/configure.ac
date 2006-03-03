@@ -140,6 +140,21 @@ else
   AC_MSG_RESULT([no])
 fi
 
+# The AVS elements.
+AC_ARG_ENABLE([avs_movement],
+	      AC_HELP_STRING([--disable-movement],
+			     [Do not build the AVS trans movement plugin @<:@default=enabled@:>@]),
+	      [avs_movement=$enableval],
+	      [avs_movement=yes])
+AC_MSG_CHECKING([whether to build AVS trans movement plugin])
+if test x$avs_movement = xyes; then
+  AC_MSG_RESULT([yes])
+  build_trans="$build_trans movement"
+  AC_SUBST([AVS_MOVEMENT], ['transform_avs_movement.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 #
 # Build paramaters
 #
@@ -236,6 +251,7 @@ AC_CONFIG_FILES([
 	plugins/transform/Makefile
 	plugins/transform/multiplier/Makefile
 	plugins/transform/channelshift/Makefile
+	plugins/transform/movement/Makefile
 ])
 
 

@@ -1,3 +1,3 @@
 
-SUBDIRS = multiplier channelshift
+SUBDIRS = multiplier channelshift movement
 

@@ -197,6 +197,10 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
 									"avs_superscope"));
 
+						visual_list_add (preset->main->members,
+								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
+									"avs_movement"));
+
 						priv->lvtree = preset;
 					}
 
