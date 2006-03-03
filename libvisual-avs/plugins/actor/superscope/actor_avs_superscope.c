@@ -294,7 +294,7 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	SuperScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint32_t *buf = visual_video_get_pixels (video);
 	VisBuffer pcm;
-	float pcmbuf[512];
+	float pcmbuf[288];
 	int isBeat = 0;
 
         visual_buffer_set_data_pair (&pcm, pcmbuf, sizeof (pcmbuf));
@@ -305,6 +305,7 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 			1.0,
 			1.0);
 
+	visual_video_fill_color(video, visual_color_black()); 
         buf = visual_video_get_pixels (video);
 
 	int a, l, lx, ly, x, y;
@@ -319,8 +320,9 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	if (l > 128*1024)
 		l = 128*1024;
 
+	priv->drawmode = 1.0; /* 0 = dots, 1 = lines */
 	for (a=0; a < l; a++, lx = x, ly = y) {
-		priv->v = 0.0;
+		priv->v = pcmbuf[a * 288 / l];
 		priv->i = (AvsNumber)a/(AvsNumber)(l-1);
 		priv->skip = 0.0;
 		scope_run(priv, SCOPE_RUNNABLE_POINT);
@@ -335,8 +337,17 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 				 (makeint(priv->green) << 8) |
 				 (makeint(priv->red) << 16);
 
-		if (y >= 0 && y < video->height && x >= 0 && x < video->width)
-			*((buf) + y * video->pitch / 4 + x) = 0xffffff;
+		if (priv->drawmode < 0.00001) {
+			if (y >= 0 && y < video->height && x >= 0 && x < video->width)
+				*((buf) + y * video->pitch / 4 + x) = 0xffffff;
+		} else {
+			if (a > 0) {
+				if (y >= 0 && y < video->height && x >= 0 && x < video->width &&
+				    ly >= 0 && ly < video->height && lx >= 0 && lx < video->width)
+						avs_gfx_line_ints(video, lx, ly, x, y, visual_color_white());
+			}
+		}
+				
 	}
 
 	return 0;
