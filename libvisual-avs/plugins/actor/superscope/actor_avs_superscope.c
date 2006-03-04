@@ -137,10 +137,10 @@ int lv_superscope_init (VisPluginData *plugin)
 	int i;
 
 	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING ("point", ""),
-		VISUAL_PARAM_LIST_ENTRY_STRING ("frame", ""),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("point", "d=i+v*0.2; r=t+i*$PI*4; x = cos(r)*d; y = sin(r) * d;"),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("frame", "t=t-0.01;"),
 		VISUAL_PARAM_LIST_ENTRY_STRING ("beat", ""),
-		VISUAL_PARAM_LIST_ENTRY_STRING ("init", ""),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("init", "n=800;"),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("channel source", 0),
 		VISUAL_PARAM_LIST_ENTRY ("palette"),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("draw type", 0),
@@ -185,15 +185,6 @@ int lv_superscope_init (VisPluginData *plugin)
 	avs_runnable_variable_bind(priv->vm, "skip", &priv->skip);
 	avs_runnable_variable_bind(priv->vm, "drawmode", &priv->drawmode);
 
-
-	scope_load_runnable(priv, SCOPE_RUNNABLE_INIT, "n=800");
-	scope_load_runnable(priv, SCOPE_RUNNABLE_FRAME, "t=t-0.01;");
-	scope_load_runnable(priv, SCOPE_RUNNABLE_BEAT, "");
-	scope_load_runnable(priv, SCOPE_RUNNABLE_POINT, "d=i+v*0.2; r=t+i*$PI*4; x = cos(r)*d; y = sin(r) * d");
-
-	scope_run(priv, SCOPE_RUNNABLE_INIT);
-
-
 	return 0;
 }
 
@@ -234,15 +225,28 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "point"))
+				if (visual_param_entry_is (param, "point")) {
+
 					priv->point = visual_param_entry_get_string (param);
-				else if (visual_param_entry_is (param, "frame"))
+					scope_load_runnable(priv, SCOPE_RUNNABLE_POINT, priv->point);
+
+				} else if (visual_param_entry_is (param, "frame")) {
+
 					priv->frame = visual_param_entry_get_string (param);
-				else if (visual_param_entry_is (param, "beat"))
+					scope_load_runnable(priv, SCOPE_RUNNABLE_FRAME, priv->frame);
+
+				} else if (visual_param_entry_is (param, "beat")) {
+
 					priv->beat = visual_param_entry_get_string (param);
-				else if (visual_param_entry_is (param, "init"))
+					scope_load_runnable(priv, SCOPE_RUNNABLE_BEAT, priv->beat);
+
+				} else if (visual_param_entry_is (param, "init")) {
+
 					priv->init = visual_param_entry_get_string (param);
-				else if (visual_param_entry_is (param, "channel source"))
+					scope_load_runnable(priv, SCOPE_RUNNABLE_INIT, priv->init);
+					scope_run(priv, SCOPE_RUNNABLE_INIT);
+
+				} else if (visual_param_entry_is (param, "channel source"))
 					priv->channel_source = visual_param_entry_get_integer (param);
 				else if (visual_param_entry_is (param, "draw type"))
 					priv->draw_type = visual_param_entry_get_integer (param);

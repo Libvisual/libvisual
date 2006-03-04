@@ -89,7 +89,7 @@ int act_avs_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-//		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual/libvisual-avs/testpresets/ringshift.avs"),
+//		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual-bromo/libvisual-avs/testpresets/sscope_movement2.avs"),
 		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
 		VISUAL_PARAM_LIST_END
@@ -99,7 +99,7 @@ int act_avs_init (VisPluginData *plugin)
 
 	priv = visual_mem_new0 (AVSPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
-	
+
 	return 0;
 }
 
@@ -201,6 +201,10 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
 									"avs_movement"));
 
+//						visual_list_add (preset->main->members,
+//								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
+//									"avs_onetone"));
+
 						priv->lvtree = preset;
 					}
 
@@ -214,7 +218,7 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 
 				if (visual_param_entry_is (param, "winamp avs")) {
 					priv->wavs = visual_param_entry_get_integer (param);
-						
+
 				}
 
 				break;

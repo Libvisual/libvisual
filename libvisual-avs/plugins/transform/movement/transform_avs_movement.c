@@ -49,6 +49,14 @@ typedef struct {
 	uint32_t	subpixel;
 	unsigned char	blendtable[256][256];
 
+	int effect;
+	int rectangular;
+	int blend;
+	int sourcemapped;
+	int wrap;
+
+	char *code;
+
 	int lastWidth;
 	int lastHeight;
 	int lastPitch;
@@ -106,6 +114,14 @@ int lv_movement_init (VisPluginData *plugin)
 	int i;
 
 	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("effect", 32767),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("rectangular", 1),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("blend", 1),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("sourcemapped", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("subpixel", 1),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("wrap", 0),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("code",
+				"d = d * (1.01 + (cos((r-$PI*0.5) * 4) * 0.04)); r = r + (0.03 * sin(d * $PI * 4));"),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -140,6 +156,21 @@ int lv_movement_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
+				if (visual_param_entry_is (param, "effect"))
+					priv->effect = visual_param_entry_get_integer (param);
+				else if (visual_param_entry_is (param, "rectangular"))
+					priv->rectangular = visual_param_entry_get_integer (param);
+				else if (visual_param_entry_is (param, "blend"))
+					priv->blend = visual_param_entry_get_integer (param);
+				else if (visual_param_entry_is (param, "sourcemapped"))
+					priv->sourcemapped = visual_param_entry_get_integer (param);
+				else if (visual_param_entry_is (param, "subpixel"))
+					priv->subpixel = visual_param_entry_get_integer (param);
+				else if (visual_param_entry_is (param, "wrap"))
+					priv->wrap = visual_param_entry_get_integer (param);
+				else if (visual_param_entry_is (param, "code"))
+					priv->code = visual_param_entry_get_string (param);
+
 				break;
 
 			default:
@@ -164,11 +195,8 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	if (priv->lastWidth != video->width || priv->lastHeight != video->height || priv->lastPitch != video->pitch) {
 
-		priv->width = video->width;
-		priv->height = video->height;
-		priv->subpixel = 1;
 		//trans_initialize(priv, video->width, video->height, "r = cos(r * 3);");
-		trans_initialize(priv, video->width, video->height, "d = d * (1.01 + (cos((r-$PI*0.5) * 4) * 0.04)); r = r + (0.03 * sin(d * $PI * 4));");
+		trans_initialize(priv, video->width, video->height, priv->code);
 
 		if (priv->swapbuf != NULL)
 			visual_mem_free (priv->swapbuf);
@@ -186,12 +214,12 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	visual_mem_set(priv->renderbuf, 0, video->width * video->height * video->bpp);
 	trans_render(priv, (uint32_t *) priv->swapbuf,  (uint32_t *) priv->renderbuf);
-	
+
 	for (i =0; i < video->height; i++) {
 		visual_mem_copy (pixels, priv->renderbuf + (i * video->width * video->bpp), video->width * video->bpp);
 		pixels += video->pitch;
-	} 
-	
+	}
+
 	priv->lastWidth = video->width;
 	priv->lastHeight = video->height;
 	priv->lastPitch = video->pitch;
@@ -358,17 +386,17 @@ static uint32_t BLEND4(MovementPrivate *priv, uint32_t *p1, uint32_t w, int xp, 
 {
 	register int t;
 	unsigned char a1,a2,a3,a4;
-	
+
 	a1 = priv->blendtable[255-xp][255-yp];
 	a2 = priv->blendtable[xp][255-yp];
 	a3 = priv->blendtable[255-xp][yp];
 	a4 = priv->blendtable[xp][yp];
-	
+
 	t = priv->blendtable[p1[0] & 0xff][a1] +
-	    priv->blendtable[p1[1] & 0xff][a2] + 
+	    priv->blendtable[p1[1] & 0xff][a2] +
 	    priv->blendtable[p1[w] & 0xff][a3] +
 	    priv->blendtable[p1[w+1] & 0xff][a4];
-	
+
 	t |= (priv->blendtable[(p1[0]>>8)&0xff][a1]+priv->blendtable[(p1[1]>>8)&0xff][a2]+priv->blendtable[(p1[w]>>8)&0xff][a3]+priv->blendtable[(p1[w+1]>>8)&0xff][a4])<<8;
 	t |= (priv->blendtable[(p1[0]>>16)&0xff][a1]+priv->blendtable[(p1[1]>>16)&0xff][a2]+priv->blendtable[(p1[w]>>16)&0xff][a3]+priv->blendtable[(p1[w+1]>>16)&0xff][a4])<<16;
 	return t;
@@ -389,7 +417,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
 				for (i=0; i < 4; i++) {
 					int offs = transp[i] & OFFSET_MASK;
 					outp[i] = BLEND4(priv, &fbin[offs], priv->width, ((transp[i] >> 24) & (31 << 3)),
-									     	     ((transp[i] >> 19) & (31 << 3)));
+							((transp[i] >> 19) & (31 << 3)));
 				}
 
 				transp += 4;
@@ -400,7 +428,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
 			while (x--) {
 				int offs = transp[0] & OFFSET_MASK;
 				*outp++ = BLEND4(priv, &fbin[offs], priv->width, ((transp[0] >> 24) & (31 << 3)),
-									     ((transp[0] >> 19) & (31 << 3)));
+						((transp[0] >> 19) & (31 << 3)));
 				transp++;
 			}
 		} else {
@@ -412,7 +440,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
 				outp += 4;
 				transp += 4;
 			}
-		}	
+		}
 	}
 }
 

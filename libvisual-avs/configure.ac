@@ -155,6 +155,36 @@ else
   AC_MSG_RESULT([no])
 fi
 
+# The AVS elements.
+AC_ARG_ENABLE([avs_invert],
+	      AC_HELP_STRING([--disable-invert],
+			     [Do not build the AVS trans invert plugin @<:@default=enabled@:>@]),
+	      [avs_invert=$enableval],
+	      [avs_invert=yes])
+AC_MSG_CHECKING([whether to build AVS trans invert plugin])
+if test x$avs_invert = xyes; then
+  AC_MSG_RESULT([yes])
+  build_trans="$build_trans invert"
+  AC_SUBST([AVS_INVERT], ['transform_avs_invert.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
+# The AVS elements.
+AC_ARG_ENABLE([avs_onetone],
+	      AC_HELP_STRING([--disable-onetone],
+			     [Do not build the AVS trans onetone plugin @<:@default=enabled@:>@]),
+	      [avs_onetone=$enableval],
+	      [avs_onetone=yes])
+AC_MSG_CHECKING([whether to build AVS trans onetone plugin])
+if test x$avs_onetone = xyes; then
+  AC_MSG_RESULT([yes])
+  build_trans="$build_trans onetone"
+  AC_SUBST([AVS_ONETONE], ['transform_avs_onetone.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
 #
 # Build paramaters
 #
@@ -252,6 +282,8 @@ AC_CONFIG_FILES([
 	plugins/transform/multiplier/Makefile
 	plugins/transform/channelshift/Makefile
 	plugins/transform/movement/Makefile
+	plugins/transform/invert/Makefile
+	plugins/transform/onetone/Makefile
 ])
 
 

@@ -314,6 +314,13 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 
 				break;
 
+			case 0x4242:	// onetone FIXME > needs right ID
+				element = AVS_ELEMENT (avs_parse_trans_onetone (avstree));
+
+				visual_list_add (curcontainer->members, element);
+
+				break;
+
 			case 0xffff:
 
 				printf ("APE NAME: %s\n", namedelem);
@@ -895,6 +902,48 @@ AVSElement *avs_parse_trans_movement (AVSTree *avstree)
 			effect, rectangular, blend, sourcemapped, subpixel, wrap);
 
 	return movement;
+}
+
+AVSElement *avs_parse_trans_onetone (AVSTree *avstree)
+{
+	AVSElement *onetone;
+	AVSSerializeContainer *scont;
+
+	VisParamContainer *pcont;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("enabled"),
+		VISUAL_PARAM_LIST_ENTRY ("color"),
+		VISUAL_PARAM_LIST_ENTRY ("blend"),
+		VISUAL_PARAM_LIST_ENTRY ("blendavg"),
+		VISUAL_PARAM_LIST_ENTRY ("invert"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+
+	visual_param_container_add_many (pcont, params);
+
+	onetone = visual_mem_new0 (AVSElement, 1);
+
+	/* Do the VisObject initialization */
+	visual_object_initialize (VISUAL_OBJECT (onetone), TRUE, avs_element_dtor);
+
+	AVS_ELEMENT (onetone)->pcont = pcont;
+	AVS_ELEMENT (onetone)->type = AVS_ELEMENT_TYPE_TRANS_ONETONE;
+
+	scont = avs_serialize_container_new ();
+	avs_serialize_container_add_byte_int_skip (scont, visual_param_container_get (pcont, "enabled"));
+	avs_serialize_container_add_byte_int_skip (scont, visual_param_container_get (pcont, "color"));
+	avs_serialize_container_add_byte_int_skip (scont, visual_param_container_get (pcont, "blend"));
+	avs_serialize_container_add_byte_int_skip (scont, visual_param_container_get (pcont, "blendavg"));
+	avs_serialize_container_add_byte_int_skip (scont, visual_param_container_get (pcont, "invert"));
+
+	avs_element_connect_serialize_container (AVS_ELEMENT (onetone), scont);
+
+	avs_element_deserialize (AVS_ELEMENT (onetone), avstree);
+
+	return onetone;
 }
 
 int avs_parse_data (AVSTree *avstree, char *filename)

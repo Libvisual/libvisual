@@ -45,6 +45,8 @@ LVAVSPresetElement *wavs_convert_superscope_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_multiplier_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_movement_new (AVSElement *avselem);
+LVAVSPresetElement *wavs_convert_invert_new (AVSElement *avselem);
+LVAVSPresetElement *wavs_convert_onetone_new (AVSElement *avselem);
 
 /* Object destructors */
 static int lvavs_preset_dtor (VisObject *object)
@@ -165,6 +167,7 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 	while ((avselem = visual_list_next (cont->members, &le)) != NULL) {
 
+		/* FIXME make table. */
 		switch (avselem->type) {
 			case AVS_ELEMENT_TYPE_MAIN:
 				visual_list_add (presetcont->members, wavs_convert_main_new (avselem));
@@ -201,6 +204,7 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 				break;
 
 			case AVS_ELEMENT_TYPE_TRANS_INVERT:
+				visual_list_add (presetcont->members, wavs_convert_invert_new (avselem));
 
 				break;
 
@@ -216,6 +220,11 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 			case AVS_ELEMENT_TYPE_TRANS_MOVEMENT:
 				visual_list_add (presetcont->members, wavs_convert_movement_new (avselem));
+
+				break;
+
+			case AVS_ELEMENT_TYPE_TRANS_ONETONE:
+				visual_list_add (presetcont->members, wavs_convert_onetone_new (avselem));
 
 				break;
 
@@ -374,34 +383,34 @@ LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem)
 	switch (shift & 0xff) {
 		case 0xfb: /* BRG */
 			shift = 2;
-			
+
 			break;
 
 		case 0xfc: /* RBG */
 			shift = 1;
-			
+
 			break;
 
 		case 0xfd: /* BGR */
 			shift = 3;
-			
+
 			break;
-		
+
 		case 0xfa: /* GBR */
 			shift = 4;
-			
+
 			break;
-		
+
 		case 0xfe: /* GRB */
 			shift = 5;
-			
+
 			break;
 
 		default: /* Default to RGB */
 			shift = 0;
-			
+
 			break;
-			
+
 
 	}
 
@@ -443,3 +452,58 @@ LVAVSPresetElement *wavs_convert_movement_new (AVSElement *avselem)
 
 	return element;
 }
+
+LVAVSPresetElement *wavs_convert_invert_new (AVSElement *avselem)
+{
+	LVAVSPresetElement *element;
+	VisParamContainer *pcont;
+	VisParamContainer *pcontw;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("enabled"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+	visual_param_container_add_many (pcont, params);
+
+	pcontw = avselem->pcont;
+
+	/* Copy all the matching */
+	visual_param_container_copy_match (pcont, pcontw);
+
+	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_invert");
+	element->pcont = pcont;
+
+	return element;
+}
+
+LVAVSPresetElement *wavs_convert_onetone_new (AVSElement *avselem)
+{
+	LVAVSPresetElement *element;
+	VisParamContainer *pcont;
+	VisParamContainer *pcontw;
+
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY ("enabled"),
+		VISUAL_PARAM_LIST_ENTRY ("color"),
+		VISUAL_PARAM_LIST_ENTRY ("blend"),
+		VISUAL_PARAM_LIST_ENTRY ("blendavg"),
+		VISUAL_PARAM_LIST_ENTRY ("invert"),
+		VISUAL_PARAM_LIST_END
+	};
+
+	pcont = visual_param_container_new ();
+	visual_param_container_add_many (pcont, params);
+
+	pcontw = avselem->pcont;
+
+	/* Copy all the matching */
+	visual_param_container_copy_match (pcont, pcontw);
+
+	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_onetone");
+	element->pcont = pcont;
+
+	return element;
+}
+

@@ -65,7 +65,7 @@ Trans:
 	Invert						Yes
 	Mirror
 	Mosaic
-	Movement
+	Movement					Yes
 	Multi Delay
 	Multi Filter
 	Multiplier					Yes				Partially

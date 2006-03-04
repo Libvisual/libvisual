@@ -1,3 +1,9 @@
+2006-03-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/transform/movement/onetone/*,
+	plugins/transform/movement/invert/*:
+	Adding plugins.
+
 2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/transform/movement/*: Added the movement elem (also ty to
