@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_utils.c,v 1.3 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_utils.c,v 1.3.2.1 2006-03-04 12:32:47 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -59,6 +59,9 @@ int visual_utils_is_power_of_2 (int n)
 		n >>= 1;
 
 	} while (n > 0);
+
+	/* Couldn't we use this: */
+	/* FIXME: (n & (n -1)) == 0) */
 
 	return TRUE;
 }

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_actor.c,v 1.39 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_actor.c,v 1.39.2.1 2006-03-04 12:32:47 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

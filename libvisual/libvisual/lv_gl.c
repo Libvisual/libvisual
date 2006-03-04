@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_gl.c,v 1.5 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_gl.c,v 1.5.2.1 2006-03-04 12:32:47 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,57 +29,13 @@
 
 #include "lv_gl.h"
 
-static VisGLCallbacks __lv_gl_callbacks;
-
 /**
  * @defgroup VisGL VisGL
  * @{
  */
-
-int visual_gl_set_callback_attribute_set (VisGLSetAttributeFunc attribute_set)
-{
-	__lv_gl_callbacks.attribute_set = attribute_set;
-
-	return VISUAL_OK;
-}
-
-int visual_gl_set_callback_attribute_get (VisGLGetAttributeFunc attribute_get)
-{
-	__lv_gl_callbacks.attribute_get = attribute_get;
-
-	return VISUAL_OK;
-}
-
-
-int visual_gl_set_attribute (VisGLAttribute attribute, int value)
-{
-	if (__lv_gl_callbacks.attribute_set == NULL)
-		return -VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED;
-
-	__lv_gl_callbacks.attribute_set (attribute, value);
-
-	return VISUAL_OK;
-}
-
-int visual_gl_get_attribute (VisGLAttribute attribute, int *value)
-{
-	if (__lv_gl_callbacks.attribute_get == NULL)
-		return -VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED;
-
-	__lv_gl_callbacks.attribute_get (attribute, value);
-
-	return VISUAL_OK;
-}
-
-
 void *visual_gl_get_proc_address (char *procname)
 {
 	return NULL;
-}
-
-VisGLCallbacks *visual_gl_get_callbacks ()
-{
-	return &__lv_gl_callbacks;
 }
 
 /**

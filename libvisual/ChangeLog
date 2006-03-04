@@ -1,3 +1,24 @@
+2006-03-04  Chong Kai Xiong  <descender@phreaker.net>
+	
+	* *: Merge from HEAD
+	* po/*.po: Update LV version.
+
+2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_color.c (visual_color_white): Black, White, what is the
+	difference. Biggest doh ever.
+
+2006-02-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.*, libvisual/lv_gl.*: Don't use a callback
+	system for GL attribs, let the display target work with the lists.
+
+2006-02-19  Chong Kai Xiong  <descender@phreaker.net>
+
+	* configure.ac, Makefile.am, libvisual/Makefile.am,
+	libvisual.pc.in, po/Makefile.in.in: Allow parallel installation
+	with LV 0.2.0.
+
 2006-02-17  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_audio.c (visual_audio_normalise_spectrum): Use the
