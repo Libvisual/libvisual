@@ -7,6 +7,10 @@
 
 	* plugins/*: Fixed the attributes for all GL plugins to be glx compat
 
+2006-02-23  Chong Kai Xiong  <descender@phreaker.net>
+
+	* */: Fix build system, allow parallel installation with LV 0.2.0.
+
 2006-02-05  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* plugins/*: Made x86_64 aware.
