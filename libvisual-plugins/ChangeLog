@@ -1,3 +1,9 @@
+2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
+
+	* plugins/actor/G-Force/*: Fix G-Force plugin build. Don't use '+='
+	for LIBS, link all internal libraries statically, rename
+	internal actor_plugin.la to libactor_plugin.la.
+		
 2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* po/POTFILES.in: removed dna, goom2 interface (since we now include

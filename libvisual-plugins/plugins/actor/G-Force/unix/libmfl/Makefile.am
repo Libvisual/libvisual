@@ -2,10 +2,9 @@ ALLSOURCES = mfl.c
 
 noinst_LTLIBRARIES = libmfl.la
 
-LIBS += $(LIBVISUAL_LIBS)
+LIBS = $(LIBVISUAL_LIBS)
 AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
 libmfl_la_SOURCES = $(ALLSOURCES)
 
 EXTRA_DIST = libmfl.h
-
