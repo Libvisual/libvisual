@@ -3,7 +3,7 @@
 AC_PREREQ(2.57)
 
 m4_define([lv_plugins_version_major], [0])
-m4_define([lv_plugins_version_minor], [3])
+m4_define([lv_plugins_version_minor], [4])
 m4_define([lv_plugins_version_micro], [0])
 m4_define([lv_plugins_version], [lv_plugins_version_major.lv_plugins_version_minor.lv_plugins_version_micro])
 m4_define([lv_plugins_version_suffix], [lv_plugins_version_major.lv_plugins_version_minor])
@@ -14,7 +14,7 @@ AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
-m4_define([libvisual_required_version], [0.3.0])
+m4_define([libvisual_required_version], [lv_plugins_version])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
 m4_define([gtk_required_version], [2.0])

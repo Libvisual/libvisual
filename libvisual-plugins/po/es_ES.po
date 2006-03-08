@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-25 19:55+0100\n"
+"POT-Creation-Date: 2006-03-08 20:52+0800\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -88,21 +88,6 @@ msgstr ""
 
 #: plugins/actor/dancingparticles/actor_dancingparticles.cpp:75
 msgid "This plugin shows dancing particles"
-msgstr ""
-
-#: plugins/actor/dna/actor_lv_dna.c:51
-msgid ""
-"Written by: Dennis Smit <ds@nerds-incorporated.org>, after some begging by "
-"Ronald Bultje"
-msgstr ""
-
-#: plugins/actor/dna/actor_lv_dna.c:53
-msgid "Libvisual DNA helix animation plugin"
-msgstr ""
-
-#: plugins/actor/dna/actor_lv_dna.c:54
-msgid ""
-"This plugin shows an openGL DNA twisting unfolding and folding on the music"
 msgstr ""
 
 #: plugins/actor/gdkpixbuf/actor_gdkpixbuf.c:86
@@ -223,16 +208,6 @@ msgid ""
 msgstr ""
 "Éste plugin es un port del bien conocido plugin para Winamp G-Force, basado "
 "en un viejo port a unix"
-
-#: plugins/actor/goom2/actor_goom2.c:74
-msgid "Libvisual goom2 plugin"
-msgstr ""
-
-#: plugins/actor/goom2/actor_goom2.c:75
-msgid ""
-"This plugin adds support for the supercool goom2 plugin that is simply "
-"awesome"
-msgstr ""
 
 #: plugins/actor/infinite/lv_infinite.c:60
 msgid ""
