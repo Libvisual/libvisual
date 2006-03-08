@@ -1,5 +1,10 @@
 2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
 
+	* plugins/actor/pseudotoad_flower/Makefile.am: Add missing \,
+	fixes pseudo_toad plugin build.
+	
+2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
+
 	* plugins/actor/G-Force/*: Fix G-Force plugin build. Don't use '+='
 	for LIBS, link all internal libraries statically, rename
 	internal actor_plugin.la to libactor_plugin.la.
