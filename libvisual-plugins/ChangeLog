@@ -1,5 +1,10 @@
 2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
 
+	* configure.ac: Make configure die if neither Bison nor Yacc
+	could be found.
+
+2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
+
 	* plugins/actor/pseudotoad_flower/Makefile.am: Add missing \,
 	fixes pseudo_toad plugin build.
 	

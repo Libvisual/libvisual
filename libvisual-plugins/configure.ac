@@ -69,7 +69,10 @@ AC_PROG_LIBTOOL
 
 dnl Lex/Yacc
 AM_PROG_LEX
-AC_PROG_YACC
+AC_CHECK_PROGS([YACC], ['bison -y' byacc yacc])
+if test -z "$YACC"; then
+   AC_MSG_ERROR([Bison or Yacc not found])
+fi
 
 dnl Internationalization
 GETTEXT_PACKAGE=libvisual-plugins-lv_plugins_version_suffix
