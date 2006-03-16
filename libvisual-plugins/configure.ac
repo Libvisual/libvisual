@@ -305,22 +305,6 @@ if test "$ENABLE_MADSPIN" = "yes"; then
   fi
 fi
 
-dnl Dancing Particles
-AC_ARG_ENABLE([dancingparticles],
-  AS_HELP_STRING([--disable-dancingparticles],
-    [Do not build Dancing Particles plugin @<:@default=enabled@:>@]),
-  [ENABLE_DANCINGPARTICLES=$enableval],
-  [ENABLE_DANCINGPARTICLES=yes])
-
-if test "$ENABLE_DANCINGPARTICLES" = "yes"; then
-  if test "$HAVE_OPENGL" = "yes"; then
-    build_actor_plugins="$build_actor_plugins dancingparticles"
-  else
-    AC_MSG_WARN([*** No OpenGL found.
-		Dancing Particles plugin will not be built.])
-  fi
-fi
-
 dnl Pseudotoad Flower
 AC_ARG_ENABLE([flower],
   AS_HELP_STRING([--disable-flower],
@@ -334,22 +318,6 @@ if test "$ENABLE_FLOWER" = "yes"; then
   else
     AC_MSG_WARN([*** No OpenGL found.
 		Pseudotoad Flower plugin will not be built.])
-  fi
-fi
-
-dnl Nebulus
-AC_ARG_ENABLE([nebulus],
-  AS_HELP_STRING([--disable-nebulus],
-    [Do not build Nebulus plugin @<:@default=enabled@:>@]),
-  [ENABLE_NEBULUS=$enableval],
-  [ENABLE_NEBULUS=yes])
-
-if test "$ENABLE_NEBULUS" = "yes"; then
-  if test "$HAVE_OPENGL" = "yes"; then
-    build_actor_plugins="$build_actor_plugins nebulus"
-  else
-    AC_MSG_WARN([*** No OpenGL found.
-		Nebulus plugin will not be built.])
   fi
 fi
 
@@ -397,17 +365,6 @@ if test "$ENABLE_ANALYZER" = xyes; then
   build_actor_plugins="$build_actor_plugins lv_analyzer"
 fi
 
-dnl Finespectrum
-AC_ARG_ENABLE([finespectrum],
-  AS_HELP_STRING([--disable-finespectrum],
-    [Do not build Finespectrum plugin @<:@default=enabled@:>@]),
-  [ENABLE_FINESPECTRUM=$enableval],
-  [ENABLE_FINESPECTRUM=yes])
-
-if test "$ENABLE_FINESPECTRUM" = "yes"; then
-  build_actor_plugins="$build_actor_plugins finespectrum"
-fi
-
 dnl Scope
 AC_ARG_ENABLE([scope],
   AS_HELP_STRING([--disable-scope],
@@ -441,17 +398,6 @@ if test "$ENABLE_JAKDAW" = "yes"; then
   build_actor_plugins="$build_actor_plugins jakdaw"
 fi
 
-dnl Plazma
-AC_ARG_ENABLE([plazma],
-  AS_HELP_STRING([--disable-plazma],
-    [Do not build plazma plugin @<:@default=enabled@:>@]),
-  [ENABLE_PLAZMA=$enableval],
-  [ENABLE_PLAZMA=yes])
-
-if test "$ENABLE_PLAZMA" = "yes"; then
-  build_actor_plugins="$build_actor_plugins plazma"
-fi
-
 dnl Bumpscope
 AC_ARG_ENABLE([bumpscope],
   AS_HELP_STRING([--disable-bumpscope],
@@ -476,17 +422,6 @@ if test "$ENABLE_GFORCE" = "yes"; then
   # Special flags for G-Force, make this only for G-Force FIXME FIXME!!! 
   GFORCE_CFLAGS="-DUNIX_X -D_REENTRANT"
   AC_SUBST([GFORCE_FLAGS])
-fi
-
-dnl goom2k4
-AC_ARG_ENABLE([goom2k4],
-  AS_HELP_STRING([--disable-goom2k4],
-    [Do not build goom2k4 plugin @<:@default=enabled@:>@]),
-    [ENABLE_GOOM2K4=$enableval],
-    [ENABLE_GOOM2K4=yes])
-
-if test "$ENABLE_GOOM2K4" = "yes"; then
-  build_actor_plugins="$build_actor_plugins goom2k4"
 fi
 
 dnl Alphabend
@@ -611,10 +546,7 @@ AC_CONFIG_FILES([
 	plugins/actor/Makefile
 	plugins/actor/bumpscope/Makefile
 	plugins/actor/corona/Makefile
-	plugins/actor/dancingparticles/Makefile
-	plugins/actor/finespectrum/Makefile
 	plugins/actor/gdkpixbuf/Makefile
-	plugins/actor/goom2k4/Makefile
 	plugins/actor/gstreamer/Makefile
 	plugins/actor/infinite/Makefile
 	plugins/actor/jakdaw/Makefile
@@ -624,9 +556,7 @@ AC_CONFIG_FILES([
 	plugins/actor/lv_scope/Makefile
 	plugins/actor/madspin/Makefile
 	plugins/actor/nastyfft/Makefile
-	plugins/actor/nebulus/Makefile
 	plugins/actor/oinksie/Makefile
-	plugins/actor/plazma/Makefile
 	plugins/actor/pseudotoad_flower/Makefile
 	plugins/actor/G-Force/Makefile
 	plugins/actor/G-Force/docs/Makefile

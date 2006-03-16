@@ -1,3 +1,9 @@
+2006-03-17  Chong Kai Xiong  <descender@phreaker.net>
+
+	* configure.ac, plugins/actor/Makefile.am, po/POTFILES.in: Remove
+	dancing particles, finescope, goom2k4, nebulus and plazma from
+	distribution.
+	
 2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
 
 	* configure.ac: Make configure die if neither Bison nor Yacc
