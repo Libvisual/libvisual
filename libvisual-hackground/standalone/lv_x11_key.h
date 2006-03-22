@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_x11_key.h,v 1.1 2006-02-13 20:32:24 synap Exp $
+ * $Id: lv_x11_key.h,v 1.2 2006-03-22 18:24:09 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,19 +36,20 @@ struct _LVX11Key {
 
 	XComposeStatus compose_state;
 
-	unsigned int meta_l_mask;
-	unsigned int meta_r_mask;
-	unsigned int alt_l_mask;
-        unsigned int alt_r_mask;
-	unsigned int num_mask;
-	unsigned int mode_switch_mask;
-
-	unsigned int got_masks;
+	int lshift;
+	int rshift;
+	int lctrl;
+	int rctrl;
+	int lalt;
+	int ralt;
+	int num;
+	int caps;
 };
 
 int lv_x11_key_init (LVX11Key *x11key);
 
-VisKeySym *lv_x11_key_lookup (LVX11Key *x11key, Display *display, XKeyEvent *xkey, KeyCode kc, VisKeySym *keysym);
+VisKeySym *lv_x11_key_lookup (LVX11Key *x11key, Display *display, XKeyEvent *xkey, KeyCode kc, VisKeySym *keysym,
+		int pressed);
 
 VISUAL_END_DECLS
 

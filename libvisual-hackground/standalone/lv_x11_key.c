@@ -146,7 +146,8 @@ int lv_x11_key_init (LVX11Key *x11key)
 	return 0;
 }
 
-VisKeySym *lv_x11_key_lookup (LVX11Key *x11key, Display *display, XKeyEvent *xkey, KeyCode kc, VisKeySym *keysym)
+VisKeySym *lv_x11_key_lookup (LVX11Key *x11key, Display *display, XKeyEvent *xkey, KeyCode kc, VisKeySym *keysym,
+		int pressed)
 {
 	KeySym xsym;
 
@@ -223,6 +224,35 @@ VisKeySym *lv_x11_key_lookup (LVX11Key *x11key, Display *display, XKeyEvent *xke
 		}
 	}
 	keysym->mod = VKMOD_NONE;
+
+	if (keysym->sym == VKEY_LSHIFT)
+		x11key->lshift = pressed;
+	else if (keysym->sym == VKEY_RSHIFT)
+		x11key->rshift = pressed;
+
+	else if (keysym->sym == VKEY_LCTRL)
+		x11key->lctrl = pressed;
+	else if (keysym->sym == VKEY_RCTRL)
+		x11key->rctrl = pressed;
+
+	else if (keysym->sym == VKEY_LALT)
+		x11key->lalt = pressed;
+	else if (keysym->sym == VKEY_RALT)
+		x11key->ralt = pressed;
+
+	else if (keysym->sym == VKEY_NUMLOCK)
+		x11key->num = pressed;
+	else if (keysym->sym == VKEY_CAPSLOCK)
+		x11key->caps = pressed;
+
+	keysym->mod |= x11key->lshift ? VKMOD_LSHIFT : VKMOD_NONE;
+	keysym->mod |= x11key->rshift ? VKMOD_RSHIFT : VKMOD_NONE;
+	keysym->mod |= x11key->lctrl ? VKMOD_LCTRL : VKMOD_NONE;
+	keysym->mod |= x11key->rctrl ? VKMOD_RCTRL : VKMOD_NONE;
+	keysym->mod |= x11key->lalt ? VKMOD_LALT : VKMOD_NONE;
+	keysym->mod |= x11key->ralt ? VKMOD_RALT : VKMOD_NONE;
+	keysym->mod |= x11key->num ? VKMOD_NUM : VKMOD_NONE;
+	keysym->mod |= x11key->caps ? VKMOD_CAPS : VKMOD_NONE;
 
 	/* If UNICODE is on, get the UNICODE value for the key */
 #if 0

@@ -2,12 +2,12 @@
 
 gcc -Wall -o lv-standalone client.c display.c sdldriver.c x11driver.c glxdriver.c cacadriver.c lv_x11_key.c \
   -L/usr/X11R6/lib -lGL -lGLU -lXxf86vm \
-  `pkg-config --cflags --libs libvisual-0.3` \
+  `pkg-config --cflags --libs libvisual-0.4` \
   `sdl-config --libs --cflags` \
   `caca-config --libs --cflags` \
   -ggdb
 
 gcc -Wall -o lv-morph morphclient.c display.c sdldriver.c \
-  `pkg-config --cflags --libs libvisual-0.3` \
+  `pkg-config --cflags --libs libvisual-0.4` \
   `sdl-config --libs --cflags` \
   -ggdb

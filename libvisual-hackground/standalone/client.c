@@ -46,7 +46,7 @@ int main (int argc, char **argv)
 
 	vidoptions = visual_actor_get_video_attribute_options (actor);
 
-	display_create (display, depth, vidoptions, 320, 200, TRUE);
+	display_create (display, depth, vidoptions, 480, 360, TRUE);
 
 	visual_actor_realize (actor);
 

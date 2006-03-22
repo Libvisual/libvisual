@@ -356,7 +356,8 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 				break;
 
 			case KeyPress:
-				lv_x11_key_lookup (&native->key, native->dpy, &xevent.xkey, xevent.xkey.keycode, &keysym);
+				lv_x11_key_lookup (&native->key, native->dpy, &xevent.xkey, xevent.xkey.keycode, &keysym,
+						TRUE);
 
 				visual_event_queue_add_keyboard (eventqueue, keysym.sym, keysym.mod,
 						VISUAL_KEY_DOWN);
@@ -364,7 +365,8 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 				break;
 
 			case KeyRelease:
-				lv_x11_key_lookup (&native->key, native->dpy, &xevent.xkey, xevent.xkey.keycode, &keysym);
+				lv_x11_key_lookup (&native->key, native->dpy, &xevent.xkey, xevent.xkey.keycode, &keysym,
+						FALSE);
 
 				visual_event_queue_add_keyboard (eventqueue, keysym.sym, keysym.mod,
 						VISUAL_KEY_UP);
