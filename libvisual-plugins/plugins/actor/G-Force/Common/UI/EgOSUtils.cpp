@@ -343,7 +343,10 @@ bool EgOSUtils::AreYouSure( const UtilStr& inMsg ) {
 	ans = ::MessageBox( 0, inMsg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_YESNO | MB_SETFOREGROUND | MB_TASKMODAL );
 	return ans == IDYES;
 	#endif
-}	
+
+	// FIXME: Need implementation for UNIX_X
+	return false;
+}
 
 
 bool EgOSUtils::AreYouSure( const char* inMsg ) {
@@ -385,6 +388,9 @@ int EgOSUtils::AskSaveChanges( const UtilStr& inName ) {
 	else
 		return 0;
 	#endif
+
+	// FIXME: Need implementation for UNIX_X
+	return -1;
 }
 
 

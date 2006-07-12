@@ -1,3 +1,8 @@
+2006-07-12  Chong Kai Xiong  <descender@phreaker-net>
+
+	* plugins/actor/G-Force/Common/UI/*: Fix functions that did not
+	return values when compiled with UNIX_X defined.
+
 2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
 
 	* configure.ac: Make configure die if neither Bison nor Yacc
