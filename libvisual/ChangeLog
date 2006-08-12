@@ -1,3 +1,8 @@
+2006-08-12  Chong Kai Xiong  <descender@phreaker.net>
+
+	* libvisual/lv_utils.c (visual_util_is_power_of_2): Use an O(1)
+	algorithm.
+
 2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* libvisual/lv_color.c (visual_color_white): Black, White, what is the
