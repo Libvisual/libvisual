@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_utils.c,v 1.4 2006-03-03 01:25:46 synap Exp $
+ * $Id: lv_utils.c,v 1.5 2006-08-12 12:51:28 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,27 +43,7 @@
  */
 int visual_utils_is_power_of_2 (int n)
 {
-	int bits_found = FALSE;
-
-	if (n < 1)
-		return FALSE;
-
-	do {
-		if (n & 1) {
-			if (bits_found)
-				return FALSE;
-
-			bits_found = TRUE;
-		}
-
-		n >>= 1;
-
-	} while (n > 0);
-
-	/* Couldn't we use this: */
-	/* FIXME: (n & (n -1)) == 0) */
-
-	return TRUE;
+	return (n > 0) && !(n & (n - 1));
 }
 
 /**
