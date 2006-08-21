@@ -1,3 +1,8 @@
+2006-08-21  Sepp Wijnands  <sw@nerds-incorporated.org>
+
+	* unittests/*: Added simple unit testing framework, primarily for
+	testing VisBuffer offset sequential ocde.
+
 2006-02-25  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* standalone/*: GL attrib work.
