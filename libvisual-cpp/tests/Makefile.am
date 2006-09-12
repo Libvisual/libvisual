@@ -1,4 +1,4 @@
-AM_CXXFLAGS = $(CXXFLAGS) $(LV_CFLAGS) -I $(top_srcdir)/libvisual-cpp
+AM_CXXFLAGS = $(CXXFLAGS) $(LV_CFLAGS) -I $(top_srcdir)
 AM_LDFLAGS  = $(top_builddir)/libvisual-cpp/libvisual-cpp.la
 
 noinst_PROGRAMS = \
@@ -9,6 +9,7 @@ noinst_PROGRAMS = \
 	lv_fourier    \
 	lv_function   \
 	lv_object     \
+	lv_palette    \
 	lv_random     \
 	lv_rectangle  \
 	lv_thread     \
@@ -24,6 +25,7 @@ lv_function_SOURCES = lv_function.cpp
 lv_object_SOURCES = lv_object.cpp
 lv_random_SOURCES = lv_random.cpp
 lv_rectangle_SOURCES = lv_rectangle.cpp
+lv_palette_SOURCES = lv_palette.cpp
 lv_thread_SOURCES = lv_thread.cpp
 lv_time_SOURCES = lv_time.cpp
 lv_video_SOURCES = lv_video.cpp
