@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_time.hpp,v 1.3 2006-01-13 08:12:33 descender Exp $
+// $Id: lv_time.hpp,v 1.4 2006-09-12 02:00:38 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -159,7 +159,7 @@ namespace Lv
                                 &time.vis_time ());
       }
 
-      inline int elasped_msecs () const
+      inline int elapsed_msecs () const
       {
           return visual_timer_elapsed_msecs (const_cast<VisTimer *> (&vis_timer ()));
       }
