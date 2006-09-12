@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_fourier.hpp,v 1.2 2006-01-13 07:44:44 descender Exp $
+// $Id: lv_fourier.hpp,v 1.3 2006-09-12 00:42:52 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -53,18 +53,15 @@ namespace Lv
   {
   public:
 
-      DFT (int samples_in, int samples_out)
+      typedef unsigned int size_type;
+
+      DFT (size_type samples_in, size_type samples_out)
           : Object (vis_dft_to_object (visual_dft_new (samples_in, samples_out)))
       {}
 
-      inline void perform (const float *input, float *output)
+      inline void perform (float *output, const float *input)
       {
-          visual_dft_perform (&vis_dft (), const_cast<float *> (input), output);
-      }
-
-      inline int normalise (float *spectrum, int size)
-      {
-          return visual_dft_normalise (spectrum, size);
+          visual_dft_perform (&vis_dft (), output, const_cast<float *> (input));
       }
 
       inline int get_spectrum_size () const
@@ -75,6 +72,21 @@ namespace Lv
       inline int get_samples_in () const
       {
           return vis_dft ().samples_in;
+      }
+
+      static void log_scale (float *output, const float *input, size_type size)
+      {
+          visual_dft_log_scale (output, const_cast<float *> (input), int (size));
+      }
+
+      static void log_scale_standard (float *output, const float *input, size_type size)
+      {
+          visual_dft_log_scale_standard (output, const_cast<float *> (input), int (size));
+      }
+
+      static void log_scale_custom (float *output, const float *input, size_type size, float divisor)
+      {
+          visual_dft_log_scale_custom (output, const_cast<float *> (input), int (size), divisor);
       }
 
       inline const VisDFT &vis_dft () const
