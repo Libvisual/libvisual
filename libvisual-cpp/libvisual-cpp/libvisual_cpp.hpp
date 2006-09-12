@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: libvisual_cpp.hpp,v 1.2 2006-01-13 07:44:44 descender Exp $
+// $Id: libvisual_cpp.hpp,v 1.3 2006-09-12 00:50:21 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -28,9 +28,9 @@
 
 namespace Lv
 {
-  const char *get_version ();
+  std::string get_version ();
 
-  const char *get_lv_version ();
+  std::string get_lv_version ();
 
   int init (int &argc, char **&argv, bool trap_exceptions = true);
 
