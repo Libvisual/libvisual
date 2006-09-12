@@ -33,43 +33,45 @@ AC_PROG_LIBTOOL
 
 dnl Check for libvisual
 
-LV_MAJOR_VERSION=0
-LV_MINOR_VERSION=3
-LV_MICRO_VERSION=0
-LV_VERSION="${LV_MAJOR_VERSION}.${LV_MINOR_VERSION}.${LV_MICRO_VERSION}"
+m4_define([lv_req_version_major], [0])
+m4_define([lv_req_version_minor], [4])
+m4_define([lv_req_version_micro], [0])
 
-PKG_CHECK_MODULES([LV], [libvisual >= $LV_VERSION], [], 
-    [AC_MSG_ERROR([Cannot find libvisual $LV_VERSION development files])]
+m4_define([lv_req_version], [lv_req_version_major.lv_req_version_minor.lv_req_version_micro])
+m4_define([lv_pkg_name], [libvisual-lv_req_version_major.lv_req_version_minor])
+
+PKG_CHECK_MODULES([LV], [lv_pkg_name >= lv_req_version], [], 
+    [AC_MSG_ERROR([Cannot find libvisual lv_req_version development files])]
 )
 
 dnl HTML documentation
 
 AC_ARG_WITH(html-docs,
-  [AS_HELP_STRING([--with-html-docs],
-                 [HTML documentation (requires Doxygen, default no)])],
-  [WITH_HTML_DOCS=$withval],
-  [WITH_HTML_DOCS=no]
+    [AS_HELP_STRING([--with-html-docs],
+        [HTML documentation (requires Doxygen, default no)])],
+    [WITH_HTML_DOCS=$withval],
+    [WITH_HTML_DOCS=no]
 )
 
 HAVE_DOXYGEN=no
 HAVE_DOT=no
 
 if test "$WITH_HTML_DOCS" = "yes"; then
-  dnl Check for Doxygen and Graphviz
-  AC_PATH_PROG([DOXYGEN], [doxygen])
-  AC_PATH_PROG([DOT], [dot])
+    dnl Check for Doxygen and Graphviz
+    AC_PATH_PROG([DOXYGEN], [doxygen])
+    AC_PATH_PROG([DOT], [dot])
 
-  test -n "$DOXYGEN" && HAVE_DOXYGEN=yes
-  test -n "$DOT" && HAVE_DOT=yes
+    test -n "$DOXYGEN" && HAVE_DOXYGEN=yes
+    test -n "$DOT" && HAVE_DOT=yes
 
-  if test "$HAVE_DOXYGEN" = "no"; then
-    AC_MSG_WARN([Doxygen not found, skipping HTML documentation generation])
-    WITH_HTML_DOCS=no
-  else
-    if test "$HAVE_DOT" = "no"; then
-      AC_MSG_WARN([Graphviz not found, HTML documentation will not have diagrams])
-    fi
-  fi
+    if test "$HAVE_DOXYGEN" = "no"; then
+        AC_MSG_WARN([Doxygen not found, skipping HTML documentation generation])
+        WITH_HTML_DOCS=no
+    else
+        if test "$HAVE_DOT" = "no"; then
+            AC_MSG_WARN([Graphviz not found, HTML documentation will not have diagrams])
+        fi
+     fi
 fi
 
 AM_CONDITIONAL([WITH_HTML_DOCS], [test "$WITH_HTML_DOCS" = "yes"])
@@ -101,7 +103,8 @@ fi
 dnl Print configured options
 
 echo
-echo "Configured options: "
+echo "Configured options"
+echo "------------------"
 echo "Generate HTML docs: $WITH_HTML_DOCS"
 echo
 
