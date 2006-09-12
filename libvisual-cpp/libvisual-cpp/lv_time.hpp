@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_time.hpp,v 1.4 2006-09-12 02:00:38 descender Exp $
+// $Id: lv_time.hpp,v 1.5 2006-09-12 02:02:04 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -193,8 +193,8 @@ namespace Lv
           return reinterpret_cast<VisObject *> (timer);
       }
 
-      Timer (const Timer& timer);
-      const Timer& operator = (const Timer& rhs);
+      Timer (const Timer& other);
+      const Timer& operator = (const Timer& other);
   };
 
 } // namespace Lv
