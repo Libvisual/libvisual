@@ -14,6 +14,7 @@ noinst_PROGRAMS = \
 	lv_rectangle  \
 	lv_thread     \
 	lv_time       \
+	lv_utils      \
 	lv_video
 
 libvisual_cpp_SOURCES = libvisual_cpp.cpp
@@ -28,4 +29,5 @@ lv_rectangle_SOURCES = lv_rectangle.cpp
 lv_palette_SOURCES = lv_palette.cpp
 lv_thread_SOURCES = lv_thread.cpp
 lv_time_SOURCES = lv_time.cpp
+lv_utils_SOURCES = lv_utils.cpp
 lv_video_SOURCES = lv_video.cpp
