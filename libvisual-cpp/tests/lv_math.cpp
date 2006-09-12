@@ -1,10 +1,10 @@
 // Libvisual-c++ - C++ bindings for Libvisual
 //
-// Copyright (C) 2005-2006 Chong Kai Xiong <descender@phreaker.net>
+// Copyright (C) 2006 Chong Kai Xiong <descender@phreaker.net>
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_math.cpp,v 1.1 2006-09-12 14:24:34 descender Exp $
+// $Id: lv_math.cpp,v 1.2 2006-09-12 14:26:42 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
