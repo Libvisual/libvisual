@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.6 2006-09-12 04:35:31 descender Exp $
+// $Id: lv_video.hpp,v 1.7 2006-09-12 04:38:36 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -126,6 +126,11 @@ namespace Lv
       {
           // FIXME: visual_video_allocate_buffer() may return VISUAL_ERROR_VIDEO_PIXELS_NULL
           visual_video_free_buffer (&vis_video ());
+      }
+
+      inline bool have_allocated_buffer () const
+      {
+          return visual_video_have_allocated_buffer (const_cast<VisVideo *> (&vis_video ()));
       }
 
       inline void set_attributes (int width, int height, int pitch, Depth depth)
