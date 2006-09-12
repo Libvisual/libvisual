@@ -15,7 +15,8 @@ libvisual_cpp_include_HEADERS = \
 	lv_config.hpp		\
 	lv_error.hpp		\
 	lv_video.hpp		\
-	lv_palette.hpp
+	lv_palette.hpp		\
+	lv_flags_wrapper.hpp
 
 libvisual_cpp_la_LDFLAGS = -export-dynamic -version-info $(LVCPP_ABI_VERSION)
 libvisual_cpp_la_CXXFLAGS = $(LV_CFLAGS) -I $(top_srcdir)

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.4 2006-09-12 03:36:09 descender Exp $
+// $Id: lv_video.hpp,v 1.5 2006-09-12 04:00:20 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -28,6 +28,7 @@
 #include <libvisual-cpp/lv_function.hpp>
 #include <libvisual-cpp/lv_rectangle.hpp>
 #include <libvisual-cpp/lv_palette.hpp>
+#include <libvisual-cpp/lv_flags_wrapper.hpp>
 
 namespace Lv
 {
@@ -36,7 +37,18 @@ namespace Lv
   {
   public:
 
-      typedef VisVideoDepth Depth;
+      enum Depth
+      {
+          DEPTH_ERROR   = VISUAL_VIDEO_DEPTH_ERROR,
+          DEPTH_NONE    = VISUAL_VIDEO_DEPTH_NONE,
+          DEPTH_8BIT    = VISUAL_VIDEO_DEPTH_8BIT,
+          DEPTH_16BIT   = VISUAL_VIDEO_DEPTH_16BIT,
+          DEPTH_24BIT   = VISUAL_VIDEO_DEPTH_24BIT,
+          DEPTH_32BIT   = VISUAL_VIDEO_DEPTH_32BIT,
+          DEPTH_GL      = VISUAL_VIDEO_DEPTH_GL,
+          DEPTH_ENDLIST = VISUAL_VIDEO_DEPTH_ENDLIST,
+          DEPTH_ALL     = VISUAL_VIDEO_DEPTH_ALL
+      };
 
       enum ScaleMethod
       {
@@ -66,7 +78,8 @@ namespace Lv
       {}
 
       Video (int width, int height, Depth depth)
-          : Object (vis_video_to_object (visual_video_new_with_buffer (width, height, depth)))
+          : Object (vis_video_to_object
+                (visual_video_new_with_buffer (width, height, VisVideoDepth (depth))))
       {}
 
       Video (const Video& other)
@@ -97,7 +110,7 @@ namespace Lv
 
       inline void set_attributes (int width, int height, int pitch, Depth depth)
       {
-          visual_video_set_attributes (&vis_video (), width, height, pitch, depth);
+          visual_video_set_attributes (&vis_video (), width, height, pitch, VisVideoDepth (depth));
       }
 
       inline void set_dimension (int width, int height)
@@ -112,7 +125,7 @@ namespace Lv
 
       inline void set_depth (Depth depth)
       {
-          visual_video_set_depth (&vis_video (), depth);
+          visual_video_set_depth (&vis_video (), VisVideoDepth (depth));
       }
 
       inline void set_buffer (void *buffer)
@@ -212,6 +225,8 @@ namespace Lv
           return reinterpret_cast<VisObject *> (video);
       }
   };
+
+  LV_FLAGS_WRAP (Video::Depth)
 
 } // namespace Lv
 
