@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_palette.hpp,v 1.1 2006-09-12 02:36:00 descender Exp $
+// $Id: lv_palette.hpp,v 1.2 2006-09-12 02:54:46 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -40,6 +40,15 @@ namespace Lv
           : Object (vis_palette_to_object (visual_palette_new (n_colors)))
       {}
 
+      // TODO: inline Color get_color (size_type index) const;
+
+      // TODO: inline void set_color (size_type index, const Color& color);
+
+      inline size_type get_n_colors () const
+      {
+          return size_type (vis_palette ().ncolors);
+      }
+
       inline void copy (const Palette& other)
       {
           visual_palette_copy (&vis_palette (), const_cast<VisPalette *> (&other.vis_palette ()));
@@ -60,6 +69,17 @@ namespace Lv
           return size_type (visual_palette_find_color (const_cast<VisPalette *> (&vis_palette ()),
                                                        const_cast<VisColor *> (&color.vis_color ())));
       }
+
+      inline void blend (const Palette& src1, const Palette& src2, float t)
+      {
+          // FIXME: throw exception if we get VISUAL_ERROR_PALETTE_SIZE or VISUAL_ERROR_PALETTE_NULL
+          visual_palette_blend (&vis_palette (),
+                                const_cast<VisPalette *> (&src1.vis_palette ()),
+                                const_cast<VisPalette *> (&src2.vis_palette ()),
+                                t);
+      }
+
+      // TODO: Bind: VisColor *visual_palette_color_cycle (VisPalette *pal, float rate)
 
       inline const VisPalette& vis_palette () const
       {
