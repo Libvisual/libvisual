@@ -16,6 +16,7 @@ libvisual_cpp_include_HEADERS = \
 	lv_palette.hpp		\
 	lv_thread.hpp		\
 	lv_time.hpp		\
+	lv_utils.hpp            \
 	lv_video.hpp
 
 libvisual_cpp_la_LDFLAGS = -export-dynamic -version-info $(LVCPP_ABI_VERSION)
