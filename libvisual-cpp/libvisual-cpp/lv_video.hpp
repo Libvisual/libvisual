@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.8 2006-09-12 04:50:24 descender Exp $
+// $Id: lv_video.hpp,v 1.9 2006-09-12 04:53:18 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -171,22 +171,22 @@ namespace Lv
           visual_video_set_palette (&vis_video (), const_cast<VisPalette *> (&palette.vis_palette ()));
       }
 
-      const void *get_pixels () const
+      inline const void *get_pixels () const
       {
           return visual_video_get_pixels (const_cast<VisVideo *> (&vis_video ()));
       }
 
-      void *get_pixels ()
+      inline void *get_pixels ()
       {
           return visual_video_get_pixels (&vis_video ());
       }
 
-      int get_size () const
+      inline int get_size () const
       {
           return visual_video_get_size (const_cast<VisVideo *> (&vis_video ()));
       }
 
-      void get_boundary (Rectangle& rect) const
+      inline void get_boundary (Rectangle& rect) const
       {
           visual_video_get_boundary (const_cast<VisVideo *> (&vis_video ()), &rect.vis_rect ());
       }
@@ -278,7 +278,7 @@ namespace Lv
 
   private:
 
-      static VisObject *vis_video_to_object (VisVideo *video)
+      inline static VisObject *vis_video_to_object (VisVideo *video)
       {
           return reinterpret_cast<VisObject *> (video);
       }
