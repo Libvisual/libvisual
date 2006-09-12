@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.7 2006-09-12 04:38:36 descender Exp $
+// $Id: lv_video.hpp,v 1.8 2006-09-12 04:50:24 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -90,11 +90,11 @@ namespace Lv
                 (visual_video_new_with_buffer (width, height, VisVideoDepth (depth))))
       {}
 
+      // NOTE: Is this a good idea?
       Video (const Video& other)
           : Object (vis_video_to_object (visual_video_new ()))
       {
-          visual_video_clone (&vis_video (),
-                              const_cast<VisVideo *> (&other.vis_video ()));
+          clone (other);
       }
 
       Video (const Video& source, MirrorOrient orient)
@@ -115,6 +115,11 @@ namespace Lv
                                         VisVideoScaleMethod (scale_method),
                                         zoom_factor)))
       {}
+
+      inline void clone (const Video& source)
+      {
+          visual_video_clone (&vis_video (), const_cast<VisVideo *> (&source.vis_video ()));
+      }
 
       inline void allocate_buffer ()
       {
@@ -213,9 +218,26 @@ namespace Lv
           return !(lhs == rhs);
       }
 
-      inline void clone (const Video& source)
+      inline void fill_alpha_color (const Color& color, uint8_t alpha)
       {
-          visual_video_clone (&vis_video (), const_cast<VisVideo *> (&source.vis_video ()));
+          visual_video_fill_alpha_color (&vis_video (), const_cast<VisColor *> (&color.vis_color ()),
+                                         alpha);
+      }
+
+      inline void fill_alpha (uint8_t alpha)
+      {
+          visual_video_fill_alpha (&vis_video (), alpha);
+      }
+
+      inline void fill_color (const Color& color)
+      {
+          visual_video_fill_color (&vis_video (), const_cast<VisColor *> (&color.vis_color ()));
+      }
+
+      inline void fill_alpha_rectangle (uint8_t density, const Rectangle& rect)
+      {
+          visual_video_fill_alpha_rectangle (&vis_video (), density,
+                                             const_cast<VisRectangle *> (&rect.vis_rect()));
       }
 
       inline void color_bgr_to_rgb (const Video& source)
