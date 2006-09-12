@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.3 2006-09-12 02:34:48 descender Exp $
+// $Id: lv_video.hpp,v 1.4 2006-09-12 03:36:09 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -27,6 +27,7 @@
 #include <libvisual-cpp/lv_object.hpp>
 #include <libvisual-cpp/lv_function.hpp>
 #include <libvisual-cpp/lv_rectangle.hpp>
+#include <libvisual-cpp/lv_palette.hpp>
 
 namespace Lv
 {
@@ -35,10 +36,29 @@ namespace Lv
   {
   public:
 
-      typedef VisVideoDepth         Depth;
-      typedef VisVideoScaleMethod   ScaleMethod;
-      typedef VisVideoRotateDegrees Rotation;
-      typedef VisVideoMirrorOrient  MirrorOrient;
+      typedef VisVideoDepth Depth;
+
+      enum ScaleMethod
+      {
+          SCALE_NEAREST  = VISUAL_VIDEO_SCALE_NEAREST,
+          SCALE_BILINEAR = VISUAL_VIDEO_SCALE_BILINEAR
+      };
+
+      enum Rotation
+      {
+          ROTATE_NONE = VISUAL_VIDEO_ROTATE_NONE,
+          ROTATE_90   = VISUAL_VIDEO_ROTATE_90,
+          ROTATE_180  = VISUAL_VIDEO_ROTATE_180,
+          ROTATE_270  = VISUAL_VIDEO_ROTATE_270
+      };
+
+      enum MirrorOrient
+      {
+          MIRROR_NONE = VISUAL_VIDEO_MIRROR_NONE,
+          MIRROR_X    = VISUAL_VIDEO_MIRROR_X,
+          MIRROR_Y    = VISUAL_VIDEO_MIRROR_Y
+      };
+
       typedef VisVideoCompositeType CompositeType;
 
       Video ()
@@ -58,7 +78,21 @@ namespace Lv
 
       Video (const Video& source, MirrorOrient orient)
           : Object (vis_video_to_object
-                (visual_video_mirror_new (const_cast<VisVideo *> (&source.vis_video ()), orient)))
+                (visual_video_mirror_new (const_cast<VisVideo *> (&source.vis_video ()),
+                                          VisVideoMirrorOrient (orient))))
+      {}
+
+      Video (const Video& source, Rotation rotation)
+          : Object (vis_video_to_object
+                (visual_video_rotate_new (const_cast<VisVideo *> (&source.vis_video ()),
+                                          VisVideoRotateDegrees (rotation))))
+      {}
+
+      Video (const Video& source, ScaleMethod scale_method, float zoom_factor)
+          : Object (vis_video_to_object
+                (visual_video_zoom_new (const_cast<VisVideo *> (&source.vis_video ()),
+                                        VisVideoScaleMethod (scale_method),
+                                        zoom_factor)))
       {}
 
       inline void set_attributes (int width, int height, int pitch, Depth depth)
@@ -89,8 +123,10 @@ namespace Lv
       // inline Buffer *get_buffer ()
       // {}
 
-      // inline void set_palette (Palette *palette)
-      // {}
+      inline void set_palette (const Palette& palette)
+      {
+          visual_video_set_palette (&vis_video (), const_cast<VisPalette *> (&palette.vis_palette ()));
+      }
 
       const void *get_pixels () const
       {
@@ -102,19 +138,19 @@ namespace Lv
           return visual_video_get_pixels (&vis_video ());
       }
 
-      int get_size ()
+      int get_size () const
       {
-          return visual_video_get_size (&vis_video ());
+          return visual_video_get_size (const_cast<VisVideo *> (&vis_video ()));
       }
 
-      void get_boundary (Rectangle& rect)
+      void get_boundary (Rectangle& rect) const
       {
-          visual_video_get_boundary (&vis_video (), &rect.vis_rect ());
+          visual_video_get_boundary (const_cast<VisVideo *> (&vis_video ()), &rect.vis_rect ());
       }
 
-      inline bool has_allocated_buffer ()
+      inline bool has_allocated_buffer () const
       {
-          return visual_video_have_allocated_buffer (&vis_video ());
+          return visual_video_have_allocated_buffer (const_cast<VisVideo *> (&vis_video ()));
       }
 
       inline bool compare (const Video& other) const
@@ -137,6 +173,26 @@ namespace Lv
       friend bool operator != (const Video& lhs, const Video& rhs)
       {
           return !(lhs == rhs);
+      }
+
+      inline void rotate (const Video& source, Rotation rotation)
+      {
+          // FIXME: visual_video_rotate() may return VISUAL_ERROR_VIDEO_INVALID_ROTATE
+          visual_video_rotate (&vis_video (), const_cast<VisVideo *> (&source.vis_video ()),
+                               VisVideoRotateDegrees (rotation));
+      }
+
+      inline void scale (const Video& source, ScaleMethod scale_method)
+      {
+          // FIXME: visual_video_rotate() may return VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD, etc.
+          visual_video_scale (&vis_video (), const_cast<VisVideo *> (&source.vis_video ()),
+                              VisVideoScaleMethod (scale_method));
+      }
+
+      inline void depth_transform (const Video &source)
+      {
+          // FIXME: visual_video_depth_transform() may return VISUAL_ERROR_PALETTE_NULL, etc.
+          visual_video_depth_transform (&vis_video (), const_cast<VisVideo *> (&source.vis_video ()));
       }
 
       inline const VisVideo& vis_video () const
