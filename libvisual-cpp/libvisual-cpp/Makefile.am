@@ -7,16 +7,17 @@ libvisual_cpp_include_HEADERS = \
 	lv_config.hpp		\
 	lv_cpu.hpp		\
 	lv_error.hpp		\
-	lv_flags_wrapper.hpp    \
+	lv_flags_wrapper.hpp	\
 	lv_fourier.hpp		\
 	lv_function.hpp		\
+	lv_math.hpp		\
 	lv_object.hpp		\
 	lv_random.hpp		\
 	lv_rectangle.hpp 	\
 	lv_palette.hpp		\
 	lv_thread.hpp		\
 	lv_time.hpp		\
-	lv_utils.hpp            \
+	lv_utils.hpp		\
 	lv_video.hpp
 
 libvisual_cpp_la_LDFLAGS = -export-dynamic -version-info $(LVCPP_ABI_VERSION)
