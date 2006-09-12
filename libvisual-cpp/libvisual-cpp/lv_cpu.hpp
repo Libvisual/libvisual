@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_cpu.hpp,v 1.2 2006-01-13 07:44:44 descender Exp $
+// $Id: lv_cpu.hpp,v 1.3 2006-09-12 01:50:35 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -29,32 +29,133 @@
 namespace Lv
 {
 
-  // I personally like names like Lv::CPU::Type::MIPS, but I somehow
-  // have this feeling that someone would be using macros like X86,
-  // ALPHA, etc. and ruining the day with weird errors.
-  enum
-  {
-      CPU_TYPE_MIPS    = VISUAL_CPU_TYPE_MIPS,
-      CPU_TYPE_ALPHA   = VISUAL_CPU_TYPE_SPARC,
-      CPU_TYPE_X86     = VISUAL_CPU_TYPE_X86,
-      CPU_TYPE_POWERPC = VISUAL_CPU_TYPE_POWERPC,
-      CPU_TYPE_OTHER   = VISUAL_CPU_TYPE_OTHER
-  };
-
   namespace CPU
   {
+    // I personally like names like Lv::CPU::Type::MIPS, but I somehow
+    // have this feeling that someone would be using macros like X86,
+    // ALPHA, etc. and ruining the day with weird errors.
+
+    enum Type
+    {
+        TYPE_MIPS    = VISUAL_CPU_TYPE_MIPS,
+        TYPE_ALPHA   = VISUAL_CPU_TYPE_SPARC,
+        TYPE_X86     = VISUAL_CPU_TYPE_X86,
+        TYPE_POWERPC = VISUAL_CPU_TYPE_POWERPC,
+        TYPE_OTHER   = VISUAL_CPU_TYPE_OTHER
+    };
+
     class Caps
         : public Object
     {
     public:
 
-        // TODO: need a short way to get at various members of VisCPU,
-        // without having to write something like:
-        //   bool has_mmx = caps.vis_cpu ().hasMMX;
-
         Caps ()
             : Object (vis_cpu_to_object (visual_cpu_get_caps ()))
-        {}
+        {
+            // Increase reference count because visual_cpu_get_caps()
+            // returns a globally shared object.
+            ref ();
+        }
+
+        inline Type type () const
+        {
+            return Type (vis_cpu ().type);
+        }
+
+        inline int n_cpus () const
+        {
+            return vis_cpu ().nrcpu;
+        }
+
+        inline int x86_cpu_type () const
+        {
+            return vis_cpu ().x86cpuType;
+        }
+
+        inline int cacheline () const
+        {
+            return vis_cpu ().cacheline;
+        }
+
+        inline bool has_tsc () const
+        {
+            return vis_cpu ().hasTSC;
+        }
+
+        inline bool has_mmx () const
+        {
+            return vis_cpu ().hasMMX;
+        }
+
+        inline bool has_mmx2 () const
+        {
+            return vis_cpu ().hasMMX2;
+        }
+
+        inline bool has_sse () const
+        {
+            return vis_cpu ().hasSSE;
+        }
+
+        inline bool has_sse2 () const
+        {
+            return vis_cpu ().hasSSE2;
+        }
+
+        inline bool has_3dnow () const
+        {
+            return vis_cpu ().has3DNow;
+        }
+
+        inline bool has_3dnow_ext () const
+        {
+            return vis_cpu ().has3DNowExt;
+        }
+
+        inline bool has_altivec () const
+        {
+            return vis_cpu ().hasAltiVec;
+        }
+
+        inline bool enabled_tsc () const
+        {
+            return vis_cpu ().enabledTSC;
+        }
+
+        inline bool enabled_mmx () const
+        {
+            return vis_cpu ().enabledMMX;
+        }
+
+        inline bool enabled_mmx2 () const
+        {
+            return vis_cpu ().enabledMMX2;
+        }
+
+        inline bool enabled_sse () const
+        {
+            return vis_cpu ().enabledSSE;
+        }
+
+        inline bool enabled_sse2 () const
+        {
+            return vis_cpu ().enabledSSE2;
+        }
+
+        inline bool enabled_3dnow () const
+        {
+            return vis_cpu ().enabled3DNow;
+        }
+
+        inline bool enabled_3dnow_ext () const
+        {
+            return vis_cpu ().enabled3DNowExt;
+        }
+
+        inline bool enabled_altivec () const
+        {
+            return vis_cpu ().enabledAltiVec;
+        }
 
         inline const VisCPU& vis_cpu () const
         {
