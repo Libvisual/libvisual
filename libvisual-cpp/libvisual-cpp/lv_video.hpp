@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.5 2006-09-12 04:00:20 descender Exp $
+// $Id: lv_video.hpp,v 1.6 2006-09-12 04:35:31 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -71,7 +71,15 @@ namespace Lv
           MIRROR_Y    = VISUAL_VIDEO_MIRROR_Y
       };
 
-      typedef VisVideoCompositeType CompositeType;
+      enum CompositeType
+      {
+          COMPOSITE_TYPE_NONE              = VISUAL_VIDEO_COMPOSITE_TYPE_NONE,
+          COMPOSITE_TYPE_SRC               = VISUAL_VIDEO_COMPOSITE_TYPE_SRC,
+          COMPOSITE_TYPE_COLOR_KEY         = VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY,
+          COMPOSITE_TYPE_SURFACE           = VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE,
+          COMPOSITE_TYPE_SURFACE_COLOR_KEY = VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY,
+          COMPOSITE_TYPE_CUSTOM            = VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM
+      };
 
       Video ()
           : Object (vis_video_to_object (visual_video_new ()))
@@ -107,6 +115,18 @@ namespace Lv
                                         VisVideoScaleMethod (scale_method),
                                         zoom_factor)))
       {}
+
+      inline void allocate_buffer ()
+      {
+          // FIXME: visual_video_allocate_buffer() may return VISUAL_ERROR_VIDEO_HAS_PIXELS
+          visual_video_allocate_buffer (&vis_video ());
+      }
+
+      inline void free_buffer ()
+      {
+          // FIXME: visual_video_allocate_buffer() may return VISUAL_ERROR_VIDEO_PIXELS_NULL
+          visual_video_free_buffer (&vis_video ());
+      }
 
       inline void set_attributes (int width, int height, int pitch, Depth depth)
       {
@@ -188,9 +208,20 @@ namespace Lv
           return !(lhs == rhs);
       }
 
+      inline void clone (const Video& source)
+      {
+          visual_video_clone (&vis_video (), const_cast<VisVideo *> (&source.vis_video ()));
+      }
+
+      inline void color_bgr_to_rgb (const Video& source)
+      {
+          // FIXME: visual_video_rotate() may return VISUAL_ERROR_VIDEO_NOT_IDENTICAL, etc.
+          visual_video_color_bgr_to_rgb (&vis_video (), const_cast<VisVideo *> (&source.vis_video ()));
+      }
+
       inline void rotate (const Video& source, Rotation rotation)
       {
-          // FIXME: visual_video_rotate() may return VISUAL_ERROR_VIDEO_INVALID_ROTATE
+          // FIXME: visual_video_rotate() may return VISUAL_ERROR_VIDEO_INVALID_ROTATE, etc.
           visual_video_rotate (&vis_video (), const_cast<VisVideo *> (&source.vis_video ()),
                                VisVideoRotateDegrees (rotation));
       }
