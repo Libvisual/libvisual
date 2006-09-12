@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.hpp,v 1.2 2006-01-13 07:44:44 descender Exp $
+// $Id: lv_thread.hpp,v 1.3 2006-09-12 02:03:07 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -118,7 +118,8 @@ namespace Lv
 
       VisMutex m_mutex;
 
-      Mutex (const Mutex& mutex);
+      Mutex (const Mutex& other);
+      const Mutex& operator = (const Mutex& other);
   };
 
   template <typename Lock>
@@ -141,7 +142,8 @@ namespace Lv
 
       Lock& m_lock;
 
-      ScopedLock (const ScopedLock& lock);
+      ScopedLock (const ScopedLock& other);
+      const ScopedLock& operator = (const ScopedLock& other);
   };
 
   template <typename Lock>
@@ -164,7 +166,8 @@ namespace Lv
 
       Lock& m_lock;
 
-      ScopedTryLock (const ScopedTryLock& lock);
+      ScopedTryLock (const ScopedTryLock& other);
+      const ScopedTryLock& operator = (const ScopedTryLock& other);
   };
 
 } // namespace Lv
