@@ -10,6 +10,7 @@ noinst_PROGRAMS = \
 	lv_function   \
 	lv_math       \
 	lv_object     \
+	lv_os         \
 	lv_palette    \
 	lv_random     \
 	lv_rectangle  \
@@ -26,6 +27,7 @@ lv_fourier_SOURCES = lv_fourier.cpp
 lv_function_SOURCES = lv_function.cpp
 lv_math_SOURCES = lv_math.cpp
 lv_object_SOURCES = lv_object.cpp
+lv_os_SOURCES = lv_os.cpp
 lv_random_SOURCES = lv_random.cpp
 lv_rectangle_SOURCES = lv_rectangle.cpp
 lv_palette_SOURCES = lv_palette.cpp

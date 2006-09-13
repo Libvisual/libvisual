@@ -12,6 +12,7 @@ libvisual_cpp_include_HEADERS = \
 	lv_function.hpp		\
 	lv_math.hpp		\
 	lv_object.hpp		\
+	lv_os.hpp		\
 	lv_random.hpp		\
 	lv_rectangle.hpp 	\
 	lv_palette.hpp		\
