@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_os.hpp,v 1.1 2006-09-13 21:06:30 descender Exp $
+// $Id: lv_os.hpp,v 1.2 2006-09-13 21:24:49 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -28,23 +28,27 @@
 namespace Lv
 {
 
-  inline void scheduler_realtime_start ()
+  namespace OS
   {
-      // FIXME: May return VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED and others
-      visual_os_scheduler_realtime_start ();
-  }
+    inline void scheduler_realtime_start ()
+    {
+        // FIXME: May return VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED and others
+        visual_os_scheduler_realtime_start ();
+    }
 
-  inline void scheduler_realtime_stop ()
-  {
-      // FIXME: May return VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED and others
-      visual_os_scheduler_realtime_stop ();
-  }
+    inline void scheduler_realtime_stop ()
+    {
+        // FIXME: May return VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED and others
+        visual_os_scheduler_realtime_stop ();
+    }
 
-  inline void scheduler_realtime_yield ()
-  {
-      // FIXME: May return VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED and others
-      visual_os_scheduler_yield ();
-  }
+    inline void scheduler_realtime_yield ()
+    {
+        // FIXME: May return VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED and others
+        visual_os_scheduler_yield ();
+    }
+
+  } // namespace OS
 
 } // namespace Lv
 
