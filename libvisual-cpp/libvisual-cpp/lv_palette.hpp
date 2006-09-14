@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_palette.hpp,v 1.2 2006-09-12 02:54:46 descender Exp $
+// $Id: lv_palette.hpp,v 1.3 2006-09-14 23:07:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -83,12 +83,12 @@ namespace Lv
 
       inline const VisPalette& vis_palette () const
       {
-          return *reinterpret_cast<const VisPalette *> (&vis_object ());
+          return reinterpret_cast<const VisPalette&> (vis_object ());
       }
 
       inline VisPalette& vis_palette ()
       {
-          return *reinterpret_cast<VisPalette *> (&vis_object ());
+          return reinterpret_cast<VisPalette&> (vis_object ());
       }
 
   private:

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_fourier.hpp,v 1.4 2006-09-12 05:22:29 descender Exp $
+// $Id: lv_fourier.hpp,v 1.5 2006-09-14 23:07:33 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -89,14 +89,14 @@ namespace Lv
           visual_dft_log_scale_custom (output, const_cast<float *> (input), int (size), divisor);
       }
 
-      inline const VisDFT &vis_dft () const
+      inline const VisDFT& vis_dft () const
       {
-          return *reinterpret_cast<const VisDFT *> (&vis_object ());
+          return reinterpret_cast<const VisDFT&> (vis_object ());
       }
 
-      inline VisDFT &vis_dft ()
+      inline VisDFT& vis_dft ()
       {
-          return *reinterpret_cast<VisDFT *> (&vis_object ());
+          return reinterpret_cast<VisDFT&> (vis_object ());
       }
 
   private:

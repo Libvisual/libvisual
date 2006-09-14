@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_rectangle.hpp,v 1.3 2006-09-12 05:22:29 descender Exp $
+// $Id: lv_rectangle.hpp,v 1.4 2006-09-14 23:07:34 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -153,14 +153,14 @@ namespace Lv
                                                         size);
       }
 
-      inline const VisRectangle &vis_rect () const
+      inline const VisRectangle& vis_rect () const
       {
-          return *reinterpret_cast<const VisRectangle *> (&vis_object ());
+          return reinterpret_cast<const VisRectangle&> (vis_object ());
       }
 
-      inline VisRectangle &vis_rect ()
+      inline VisRectangle& vis_rect ()
       {
-          return *reinterpret_cast<VisRectangle *> (&vis_object ());
+          return reinterpret_cast<VisRectangle&> (vis_object ());
       }
 
   private:

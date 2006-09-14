@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.10 2006-09-12 05:22:29 descender Exp $
+// $Id: lv_video.hpp,v 1.11 2006-09-14 23:07:34 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -268,12 +268,12 @@ namespace Lv
 
       inline const VisVideo& vis_video () const
       {
-          return *reinterpret_cast<const VisVideo *> (&vis_object ());
+          return reinterpret_cast<const VisVideo&> (vis_object ());
       }
 
       inline VisVideo& vis_video ()
       {
-          return *reinterpret_cast<VisVideo *> (&vis_object ());
+          return reinterpret_cast<VisVideo&> (vis_object ());
       }
 
   private:

@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_time.hpp,v 1.6 2006-09-12 05:22:29 descender Exp $
+// $Id: lv_time.hpp,v 1.7 2006-09-14 23:07:34 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -101,14 +101,14 @@ namespace Lv
                                    const_cast<VisTime *> (&rhs.vis_time ()));
       }
 
-      inline const VisTime &vis_time () const
+      inline const VisTime& vis_time () const
       {
-          return *reinterpret_cast<const VisTime *> (&vis_object ());
+          return reinterpret_cast<const VisTime&> (vis_object ());
       }
 
-      inline VisTime &vis_time ()
+      inline VisTime& vis_time ()
       {
-          return *reinterpret_cast<VisTime *> (&vis_object ());
+          return reinterpret_cast<VisTime&> (vis_object ());
       }
 
   private:
