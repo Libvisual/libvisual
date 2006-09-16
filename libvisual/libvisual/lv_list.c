@@ -12,7 +12,7 @@
  *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- * $Id: lv_list.c,v 1.30 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_list.c,v 1.30.2.1 2006-09-16 18:43:45 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -46,7 +46,7 @@
 typedef struct _ListIterContext ListIterContext;
 
 struct _ListIterContext {
-	VisObject	*object;
+	VisObject	 object;
 
 	VisListEntry	*cur;
 };
