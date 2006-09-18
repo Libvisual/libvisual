@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_video.hpp,v 1.11 2006-09-14 23:07:34 descender Exp $
+// $Id: lv_video.hpp,v 1.12 2006-09-18 06:08:08 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -25,7 +25,6 @@
 
 #include <libvisual/lv_video.h>
 #include <libvisual-cpp/lv_object.hpp>
-#include <libvisual-cpp/lv_function.hpp>
 #include <libvisual-cpp/lv_rectangle.hpp>
 #include <libvisual-cpp/lv_palette.hpp>
 #include <libvisual-cpp/lv_flags_wrapper.hpp>
