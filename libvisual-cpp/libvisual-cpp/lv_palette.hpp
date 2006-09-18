@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_palette.hpp,v 1.3 2006-09-14 23:07:33 descender Exp $
+// $Id: lv_palette.hpp,v 1.4 2006-09-18 06:19:32 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -36,8 +36,8 @@ namespace Lv
 
       typedef unsigned int size_type;
 
-      Palette (int n_colors)
-          : Object (vis_palette_to_object (visual_palette_new (n_colors)))
+      Palette (size_type n_colors)
+          : Object (vis_palette_to_object (visual_palette_new (int (n_colors))))
       {}
 
       // TODO: inline Color get_color (size_type index) const;
