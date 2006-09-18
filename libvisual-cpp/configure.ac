@@ -47,6 +47,8 @@ PKG_CHECK_MODULES([LV], [lv_pkg_name >= lv_req_version], [],
     [AC_MSG_ERROR([Cannot find libvisual lv_req_version development files])]
 )
 
+PC_REQUIRES="$PC_REQUIRES lv_pkg_name >= lv_req_version"
+
 dnl HTML documentation
 
 AC_ARG_WITH(html-docs,
@@ -115,6 +117,8 @@ if test "$enable_debug" = "yes"; then
     CXXFLAGS="$CXXFLAGS -g"
 fi
 
+AC_SUBST([PC_REQUIRES])
+
 dnl Print configured options
 
 echo
@@ -125,6 +129,7 @@ echo
 
 AC_CONFIG_FILES([
     Doxyfile
+    libvisual-cpp.pc
     Makefile
     libvisual-cpp/Makefile
     tests/Makefile
