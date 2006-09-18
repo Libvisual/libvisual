@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.hpp,v 1.4 2006-09-12 05:22:29 descender Exp $
+// $Id: lv_thread.hpp,v 1.5 2006-09-18 06:14:49 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -24,7 +24,7 @@
 #define LVCPP_THREAD_HPP
 
 #include <libvisual/lv_thread.h>
-#include <libvisual-cpp/lv_function.hpp>
+#include <boost/function/function0.hpp>
 
 namespace Lv
 {
@@ -62,8 +62,7 @@ namespace Lv
 	  visual_thread_yield ();
       }
 
-      explicit Thread (const Lv::Function<void>& func,
-                       bool joinable = true)
+      explicit Thread (const boost::function0<void>& func, bool joinable = true)
           : m_func (func)
       {
 	  m_thread = visual_thread_create (invoke_functor, static_cast<void *> (&m_func), joinable);
@@ -81,8 +80,8 @@ namespace Lv
 
   private:
 
-      VisThread *m_thread;
-      Lv::Function<void> m_func;
+      VisThread              *m_thread;
+      boost::function0<void>  m_func;
 
       static void *invoke_functor (void *params);
   };

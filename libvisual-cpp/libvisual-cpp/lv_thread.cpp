@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.cpp,v 1.2 2006-01-13 07:44:44 descender Exp $
+// $Id: lv_thread.cpp,v 1.3 2006-09-18 06:14:49 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -27,7 +27,7 @@ namespace Lv
 {
   void *Thread::invoke_functor (void *params)
   {
-      Lv::Function<void> *m_func = static_cast<Lv::Function<void> *> (params);
+      boost::function0<void> *m_func = static_cast<boost::function0<void> *> (params);
 
       (*m_func) ();
 

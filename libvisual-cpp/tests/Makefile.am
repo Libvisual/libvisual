@@ -7,7 +7,6 @@ noinst_PROGRAMS = \
 	lv_config     \
 	lv_cpu        \
 	lv_fourier    \
-	lv_function   \
 	lv_math       \
 	lv_object     \
 	lv_os         \
@@ -24,7 +23,6 @@ lv_color_SOURCES = lv_color.cpp
 lv_config_SOURCES = lv_config.cpp
 lv_cpu_SOURCES = lv_cpu.cpp
 lv_fourier_SOURCES = lv_fourier.cpp
-lv_function_SOURCES = lv_function.cpp
 lv_math_SOURCES = lv_math.cpp
 lv_object_SOURCES = lv_object.cpp
 lv_os_SOURCES = lv_os.cpp

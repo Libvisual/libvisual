@@ -4,7 +4,7 @@
 //
 // Author: Chong Kai Xiong <descender@phreaker.net>
 //
-// $Id: lv_thread.cpp,v 1.2 2006-09-12 02:40:37 descender Exp $
+// $Id: lv_thread.cpp,v 1.3 2006-09-18 06:14:49 descender Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as
@@ -22,14 +22,12 @@
 
 #include <libvisual-cpp/lv_thread.hpp>
 #include <iostream>
-#include <list>
 #include <queue>
 
 template <class Lock>
-struct DebugLock
+class DebugLock
 {
-    Lock *m_lock;
-    bool  m_own;
+public:
 
     DebugLock ()
         : m_lock (new Lock),
@@ -64,6 +62,11 @@ struct DebugLock
         std::cout << "DebugLock: unlocking." << std::endl;
         m_lock->unlock ();
     }
+
+private:
+
+    Lock *m_lock;
+    bool  m_own;
 };
 
 typedef DebugLock<Lv::Mutex> DebugMutex;
@@ -77,7 +80,8 @@ public:
     SynchronizedQueue ()
     {}
 
-    ~SynchronizedQueue ()
+    SynchronizedQueue (const SynchronizedQueue& other)
+        : m_queue (other.m_queue)
     {}
 
     bool is_empty ()
@@ -106,10 +110,8 @@ public:
 
 private:
 
-    std::queue<T, std::list<T> > m_queue;
-    Lock m_lock;
-
-    SynchronizedQueue (SynchronizedQueue&);
+    std::queue<T> m_queue;
+    Lock          m_lock;
 };
 
 template <class Queue>
@@ -120,20 +122,20 @@ public:
     Consumer (int id, Queue& queue, int limit)
         : m_id (id),
           m_queue (queue),
-          m_collected (0),
           m_limit (limit)
     {}
 
     void operator () ()
     {
         int item;
+        int collected = 0;
 
-        while (m_collected < m_limit)
+        while (collected < m_limit)
         {
             if  (!m_queue.is_empty ())
             {
                 item = m_queue.dequeue ();
-                m_collected++;
+                collected++;
 
                 std::cout << m_id << ": Consumed: " << item << "\n";
             }
@@ -142,10 +144,9 @@ public:
 
 private:
 
-    int m_id;
+    int    m_id;
     Queue& m_queue;
-    int m_collected;
-    int m_limit;
+    int    m_limit;
 };
 
 template <class Queue>
@@ -174,11 +175,10 @@ public:
 
 private:
 
-    int m_id;
+    int    m_id;
     Queue& m_queue;
-    int m_limit;
+    int    m_limit;
 };
-
 
 void mutex_test ()
 {
@@ -206,13 +206,20 @@ void thread_test ()
 
     Queue queue;
 
-    Lv::Thread consumer  (Consumer<Queue> (0, queue, 50));
-    Lv::Thread producer1 (Producer<Queue> (1, queue, 25));
-    Lv::Thread producer2 (Producer<Queue> (2, queue, 25));
+    // FIXME: gcc fails to compile the following lines for some
+    // fscking reason, citing:
+    //
+    // sorry, unimplemented: inlining failed in call to ‘bool
+    // boost::detail::function::has_empty_target(...)’: function not
+    // inlinable
 
-    producer1.join ();
-    producer2.join ();
-    consumer.join ();
+    //Lv::Thread consumer  (Consumer<Queue> (0, queue, 50));
+    //Lv::Thread producer1 (Producer<Queue> (1, queue, 25));
+    //Lv::Thread producer2 (Producer<Queue> (2, queue, 25));
+
+    //producer1.join ();
+    //producer2.join ();
+    //consumer.join ();
 }
 
 int main ()

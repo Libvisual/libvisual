@@ -9,7 +9,6 @@ libvisual_cpp_include_HEADERS = \
 	lv_error.hpp		\
 	lv_flags_wrapper.hpp	\
 	lv_fourier.hpp		\
-	lv_function.hpp		\
 	lv_math.hpp		\
 	lv_object.hpp		\
 	lv_os.hpp		\
