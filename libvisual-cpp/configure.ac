@@ -13,6 +13,9 @@ AM_INIT_AUTOMAKE([1.8])
 AC_CONFIG_HEADERS([lv_build_config.hpp])
 
 dnl C++ build environment
+AC_PROG_CXX
+AC_PROG_CXXCPP
+
 AC_LANG([C++])
 CXXFLAGS="$CXXFLAGS -Wall -ansi"
 
@@ -77,6 +80,18 @@ fi
 AM_CONDITIONAL([WITH_HTML_DOCS], [test "$WITH_HTML_DOCS" = "yes"])
 AC_SUBST([HAVE_DOT])
 AC_SUBST([HAVE_DOXYGEN])
+
+dnl Boost libraries
+LV_CHECK_BOOST_VERSION([1.32.0], [103200], [],
+    [AC_MSG_ERROR([Boost version 1.32.0 or above is required to build libvisual-cpp])]
+)
+
+LV_CHECK_BOOST_FUNCTION([],
+    [AC_MSG_ERROR([Boost.Function is required to build libvisual-cpp])]
+)
+LV_CHECK_BOOST_CALL_TRAITS([],
+    [AC_MSG_ERROR([Boost Call Traits is required to build libvisual-cpp])]
+)
 
 dnl Profiling
 AC_ARG_ENABLE([profile],
