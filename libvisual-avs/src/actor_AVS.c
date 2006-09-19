@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: actor_AVS.c,v 1.12 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -88,14 +88,15 @@ int act_avs_init (VisPluginData *plugin)
 
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
-//		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", "/usr/src/libvisual-bromo/libvisual-avs/testpresets/sscope_movement2.avs"),
-		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_STRING ("filename",
+				"/usr/src/libvisual-bromo/libvisual-avs/testpresets/sscope_movement2.avs"),
+//		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
 		VISUAL_PARAM_LIST_END
 	};
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	priv = visual_mem_new0 (AVSPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
@@ -152,23 +153,38 @@ int act_avs_dimension (VisPluginData *plugin, VisVideo *video, int width, int he
 int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	AVSPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisEvent ev;
+	VisEvent *ev;
 	VisParamEntry *param;
 
-	while (visual_event_queue_poll (events, &ev)) {
-		switch (ev.type) {
+	while (visual_event_queue_poll_by_reference (events, &ev)) {
+		switch (ev->type) {
 			case VISUAL_EVENT_RESIZE:
-				act_avs_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				act_avs_dimension (plugin, ev->event.resize.video,
+						ev->event.resize.width, ev->event.resize.height);
+
+				break;
+
+			case VISUAL_EVENT_KEYDOWN:
+			case VISUAL_EVENT_KEYUP:
+			case VISUAL_EVENT_MOUSEMOTION:
+			case VISUAL_EVENT_MOUSEBUTTONDOWN:
+			case VISUAL_EVENT_MOUSEBUTTONUP:
+			case VISUAL_EVENT_TOUCH:
+			case VISUAL_EVENT_NEWSONG:
+			case VISUAL_EVENT_QUIT:
+			case VISUAL_EVENT_GENERIC:
+			case VISUAL_EVENT_VISIBILITY:
+				if (priv->pipeline != NULL)
+					lvavs_pipeline_propagate_event (priv->pipeline, ev);
 
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = ev.event.param.param;
+				param = ev->event.param.param;
 
-				if (visual_param_entry_is (param, "filename")) {
+				if (visual_param_entry_is (param, VIS_BSTR ("filename"))) {
 					char *filename = visual_param_entry_get_string (param);
-					
+
 					if (priv->wtree != NULL)
 						visual_object_unref (VISUAL_OBJECT (priv->wtree));
 
@@ -193,9 +209,13 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 						preset = lvavs_preset_new ();
 						preset->main = lvavs_preset_container_new ();
 
+//						visual_list_add (preset->main->members,
+//								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
+//									"avs_superscope"));
+
 						visual_list_add (preset->main->members,
 								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
-									"avs_superscope"));
+									"touch"));
 
 						visual_list_add (preset->main->members,
 								lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
@@ -216,7 +236,7 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 					priv->needsnego = TRUE;
 				}
 
-				if (visual_param_entry_is (param, "winamp avs")) {
+				if (visual_param_entry_is (param, VIS_BSTR ("winamp avs"))) {
 					priv->wavs = visual_param_entry_get_integer (param);
 
 				}
@@ -226,6 +246,9 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 			default: /* to avoid warnings */
 				break;
 		}
+
+		/* Unref reference to event */
+		visual_object_unref (VISUAL_OBJECT (ev));
 	}
 
 	return 0;

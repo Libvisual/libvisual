@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: actor_avs_ring.c,v 1.6 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -99,7 +99,7 @@ int lv_ring_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 	int i;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("source", 1),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("place", 2),
 		VISUAL_PARAM_LIST_ENTRY ("palette"),
@@ -119,7 +119,7 @@ int lv_ring_init (VisPluginData *plugin)
 		priv->pal.colors[i].b = 0xff;
 	}
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, "palette"), &priv->pal);
 
@@ -165,15 +165,15 @@ int lv_ring_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "source"))
+				if (visual_param_entry_is (param, VIS_BSTR ("source")))
 					priv->source = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "place"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("place")))
 					priv->place = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "size"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("size")))
 					priv->size = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "type"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("type")))
 					priv->type = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "palette")) {
+				else if (visual_param_entry_is (param, VIS_BSTR ("palette"))) {
 					VisPalette *pal;
 
 					pal = visual_param_entry_get_palette (param);

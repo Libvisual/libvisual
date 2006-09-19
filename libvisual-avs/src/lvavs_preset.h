@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: lvavs_preset.h,v 1.5 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

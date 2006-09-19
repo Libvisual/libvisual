@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: lvavs_pipeline.h,v 1.6 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -82,15 +82,15 @@ struct _LVAVSPipeline {
 };
 
 struct _LVAVSPipelineRenderState {
-	VisObject			 	object;
+	VisObject				object;
 
-	int				 	enabled;
+	int					enabled;
 
-	unsigned char			 	blendadjust;
+	unsigned char				blendadjust;
 
 	LVAVSPipelineRenderStateBlendMode	blendmode;
 
-	int				 	linewidth;
+	int					linewidth;
 };
 
 struct _LVAVSPipelineElement {
@@ -101,7 +101,7 @@ struct _LVAVSPipelineElement {
 	LVAVSPipeline			*pipeline;
 
 	VisParamContainer		*params;
-	
+
 	union {
 		VisActor			*actor;
 		VisMorph			*morph;
@@ -126,6 +126,7 @@ LVAVSPipelineContainer *lvavs_pipeline_container_new ();
 LVAVSPipeline *lvavs_pipeline_new_from_preset (LVAVSPreset *preset);
 int lvavs_pipeline_realize (LVAVSPipeline *pipeline);
 int lvavs_pipeline_negotiate (LVAVSPipeline *pipeline, VisVideo *video);
+int lvavs_pipeline_propagate_event (LVAVSPipeline *pipeline, VisEvent *event);
 int lvavs_pipeline_run (LVAVSPipeline *pipeline, VisVideo *video, VisAudio *audio);
 
 #ifdef __cplusplus

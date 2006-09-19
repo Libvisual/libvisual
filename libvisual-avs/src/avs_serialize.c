@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: avs_serialize.c,v 1.5 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -43,7 +43,7 @@ static int avs_data_serialize_container_dtor (VisObject *object)
 	visual_collection_set_destroyer (VISUAL_COLLECTION (&scont->layout), visual_object_collection_destroyer);
 	visual_collection_destroy (VISUAL_COLLECTION (&scont->layout));
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 /* Static parser helper functions */
@@ -70,23 +70,23 @@ char *avs_serialize_retrieve_palette_from_preset_section (char *section, VisPara
 	visual_param_entry_set_palette (param, &pal);
 
 	visual_palette_free_colors (&pal);
-	
+
 	return section;
 }
 
 char *avs_serialize_retrieve_color_from_preset_section (char *section, VisParamEntry *param)
 {
 	unsigned char r, g, b;
-	
-	r = AVS_SERIALIZE_GET_BYTE (section);
+
+	b = AVS_SERIALIZE_GET_BYTE (section);
 	AVS_SERIALIZE_SKIP_BYTE (section);
 	g = AVS_SERIALIZE_GET_BYTE (section);
 	AVS_SERIALIZE_SKIP_BYTE (section);
-	b = AVS_SERIALIZE_GET_BYTE (section);
+	r = AVS_SERIALIZE_GET_BYTE (section);
 	AVS_SERIALIZE_SKIP_BYTE (section);
-	
+
 	visual_param_entry_set_color (param, r, g, b);
-	
+
 	AVS_SERIALIZE_SKIP_BYTE (section);
 
 	return section;
@@ -300,11 +300,11 @@ char *avs_serialize_container_deserialize (AVSSerializeContainer *scont, char *s
 				section = avs_serialize_retrieve_color_from_preset_section (section, sentry->param);
 
 				break;
-				
+
 			case AVS_SERIALIZE_ENTRY_TYPE_PALETTE:
-			
+
 				section = avs_serialize_retrieve_palette_from_preset_section (section, sentry->param);
-				
+
 				break;
 
 			default:
@@ -330,10 +330,10 @@ AVSSerializeEntry *avs_serialize_entry_new (VisParamEntry *param)
 	visual_object_initialize (VISUAL_OBJECT (sentry), TRUE, NULL);
 
 	sentry->param = param;
-	
+
 	/* No boundry */
 	sentry->boundry = -1;
-	
+
 	return sentry;
 }
 
@@ -366,7 +366,7 @@ AVSSerializeEntry *avs_serialize_entry_new_byte_with_boundry (VisParamEntry *par
 	sentry = avs_serialize_entry_new (param);
 
 	sentry->type = AVS_SERIALIZE_ENTRY_TYPE_BYTE;
-	
+
 	sentry->boundry = boundry;
 
 	return sentry;

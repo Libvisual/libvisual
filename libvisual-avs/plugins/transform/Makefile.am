@@ -1,3 +1,3 @@
 
-SUBDIRS = multiplier channelshift movement invert onetone
+SUBDIRS = multiplier channelshift movement invert onetone grain
 

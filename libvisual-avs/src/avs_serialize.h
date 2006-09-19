@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: avs_serialize.h,v 1.6 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -52,7 +52,7 @@ typedef enum {
 	AVS_SERIALIZE_ENTRY_TYPE_PALETTE
 } AVSSerializeEntryType;
 
-/* The AVS data layour description structures for the automatic serializer / deserializer */
+/* The AVS data layout description structures for the automatic serializer / deserializer */
 struct _AVSSerializeContainer {
 	VisObject object;
 

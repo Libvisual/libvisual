@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: lvavs_pipeline.c,v 1.6 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -41,6 +41,7 @@ static int lvavs_pipeline_container_dtor (VisObject *object);
 int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContainer *presetcont);
 int pipeline_container_realize (LVAVSPipelineContainer *container);
 int pipeline_container_negotiate (LVAVSPipelineContainer *container, VisVideo *video);
+int pipeline_container_propagate_event (LVAVSPipelineContainer *container, VisEvent *event);
 int pipeline_container_run (LVAVSPipelineContainer *container, VisVideo *video, VisAudio *audio);
 
 /* Object destructors */
@@ -57,27 +58,38 @@ static int lvavs_pipeline_dtor (VisObject *object)
 	pipeline->renderstate = NULL;
 	pipeline->container = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int lvavs_pipeline_element_dtor (VisObject *object)
 {
 	LVAVSPipelineElement *element = LVAVS_PIPELINE_ELEMENT (object);
 
-	if (element->pipeline != NULL)
-		visual_object_unref (VISUAL_OBJECT (element->pipeline));
-
 	if (element->params != NULL)
 		visual_object_unref (VISUAL_OBJECT (element->params));
 
 	switch (element->type) {
 		case LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR:
+			visual_object_unref (VISUAL_OBJECT (element->data.actor));
+			element->data.actor = NULL;
+
+			break;
+
 		case LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM:
+			visual_object_unref (VISUAL_OBJECT (element->data.transform));
+			element->data.transform = NULL;
+
+			break;
+
+
 		case LVAVS_PIPELINE_ELEMENT_TYPE_MORPH:
+			visual_object_unref (VISUAL_OBJECT (element->data.morph));
+			element->data.morph = NULL;
+
+			break;
+
 		case LVAVS_PIPELINE_ELEMENT_TYPE_RENDERSTATE:
 		case LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER:
-
-			visual_object_unref (VISUAL_OBJECT (element->data.actor));
 
 			break;
 
@@ -89,9 +101,8 @@ static int lvavs_pipeline_element_dtor (VisObject *object)
 
 	element->pipeline = NULL;
 	element->params = NULL;
-	element->data.actor = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int lvavs_pipeline_container_dtor (VisObject *object)
@@ -103,9 +114,9 @@ static int lvavs_pipeline_container_dtor (VisObject *object)
 
 	container->members = NULL;
 
-	lvavs_element_dtor (object);
+	lvavs_pipeline_element_dtor (object);
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 
@@ -181,6 +192,11 @@ int lvavs_pipeline_negotiate (LVAVSPipeline *pipeline, VisVideo *video)
 	pipeline_container_negotiate (LVAVS_PIPELINE_CONTAINER (pipeline->container), video);
 
 	return VISUAL_OK;
+}
+
+int lvavs_pipeline_propagate_event (LVAVSPipeline *pipeline, VisEvent *event)
+{
+	return pipeline_container_propagate_event (pipeline->container, event);
 }
 
 int lvavs_pipeline_run (LVAVSPipeline *pipeline, VisVideo *video, VisAudio *audio)
@@ -357,6 +373,49 @@ int pipeline_container_negotiate (LVAVSPipelineContainer *container, VisVideo *v
 				break;
 		}
 	}
+
+	return VISUAL_OK;
+}
+
+int pipeline_container_propagate_event (LVAVSPipelineContainer *container, VisEvent *event)
+{
+	VisListEntry *le = NULL;
+	VisEventQueue *pluginqueue;
+	LVAVSPipelineElement *element;
+
+	while ((element = visual_list_next (container->members, &le)) != NULL) {
+
+		switch (element->type) {
+			case LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR:
+
+				pluginqueue = visual_plugin_get_eventqueue (visual_actor_get_plugin (element->data.actor));
+
+				visual_object_ref (VISUAL_OBJECT (event));
+				visual_event_queue_add (pluginqueue, event);
+
+				break;
+
+			case LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM:
+
+				pluginqueue = visual_plugin_get_eventqueue (visual_actor_get_plugin (element->data.actor));
+
+				visual_object_ref (VISUAL_OBJECT (event));
+				visual_event_queue_add (pluginqueue, event);
+
+				break;
+
+			case LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER:
+
+				pipeline_container_propagate_event (LVAVS_PIPELINE_CONTAINER (element), event);
+
+				break;
+
+			default:
+
+				break;
+		}
+	}
+
 
 	return VISUAL_OK;
 }

@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: lvavs_preset.c,v 1.9 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -32,6 +32,59 @@
 
 #include "lvavs_preset.h"
 
+static const char *id_to_name_map[] = {
+	[AVS_ELEMENT_TYPE_RENDER_SIMPLESPECTRUM]	= "avs_superscope",
+	[AVS_ELEMENT_TYPE_RENDER_DOTPLANE]		= "avs_dotplane",
+	[AVS_ELEMENT_TYPE_RENDER_OSCSTARS]		= "avs_stars",
+	[AVS_ELEMENT_TYPE_TRANS_FADEOUT]		= "avs_fadeout",
+	[AVS_ELEMENT_TYPE_TRANS_BLITTERFB]		= "avs_blitterfb",
+	[AVS_ELEMENT_TYPE_TRANS_NFRAMECLEAR]		= "avs_nframeclear",
+	[AVS_ELEMENT_TYPE_TRANS_BLUR]			= "avs_blur",
+	[AVS_ELEMENT_TYPE_RENDER_BASSSPIN]		= "avs_bassspin",
+	[AVS_ELEMENT_TYPE_RENDER_PARTICLE]		= "avs_particle",
+	[AVS_ELEMENT_TYPE_RENDER_ROTBLIT]		= "avs_rotblitter",
+	[AVS_ELEMENT_TYPE_UNKNOWN_SVP]			= "error",
+	[AVS_ELEMENT_TYPE_TRANS_COLORFADE]		= "avs_colorfade",
+	[AVS_ELEMENT_TYPE_TRANS_CONTRASTENHANCE]	= "avs_contrastenhance",
+	[AVS_ELEMENT_TYPE_RENDER_ROTSTAR]		= "avs_rotstar",
+	[AVS_ELEMENT_TYPE_RENDER_RING]			= "avs_ring",
+	[AVS_ELEMENT_TYPE_TRANS_MOVEMENT]		= "avs_movement",
+	[AVS_ELEMENT_TYPE_TRANS_SCATTER]		= "avs_scatter",
+	[AVS_ELEMENT_TYPE_RENDER_DOTGRID]		= "avs_dotgrid",
+	[AVS_ELEMENT_TYPE_UNKNOWN_STACK]		= "error",
+	[AVS_ELEMENT_TYPE_RENDER_DOTFOUNTAIN]		= "avs_dotfountain",
+	[AVS_ELEMENT_TYPE_TRANS_WATER]			= "avs_water",
+	[AVS_ELEMENT_TYPE_MISC_COMMENT]			= "error",
+	[AVS_ELEMENT_TYPE_TRANS_BRIGHTNESS]		= "avs_brightness",
+	[AVS_ELEMENT_TYPE_TRANS_INTERLEAVE]		= "avs_interleave",
+	[AVS_ELEMENT_TYPE_TRANS_GRAIN]			= "avs_grain",
+	[AVS_ELEMENT_TYPE_RENDER_CLEARSCREEN]		= "avs_clearscreen",
+	[AVS_ELEMENT_TYPE_TRANS_MIRROR]			= "avs_mirror",
+	[AVS_ELEMENT_TYPE_RENDER_STARFIELD]		= "avs_starfield",
+	[AVS_ELEMENT_TYPE_RENDER_TEXT]			= "avs_text",
+	[AVS_ELEMENT_TYPE_TRANS_BUMPMAP]		= "avs_bumpmap",
+	[AVS_ELEMENT_TYPE_TRANS_MOSAIC]			= "avs_mosaic",
+	[AVS_ELEMENT_TYPE_TRANS_WATERBUMP]		= "avs_waterbump",
+	[AVS_ELEMENT_TYPE_RENDER_AVI]			= "avs_avi",
+	[AVS_ELEMENT_TYPE_UNKNOWN_BPM]			= "error",
+	[AVS_ELEMENT_TYPE_RENDER_PICTURE]		= "avs_picture",
+	[AVS_ELEMENT_TYPE_UNKNOWN_DDM]			= "error",
+	[AVS_ELEMENT_TYPE_RENDER_SUPERSCOPE]		= "avs_superscope",
+	[AVS_ELEMENT_TYPE_TRANS_INVERT]			= "avs_invert",
+	[AVS_ELEMENT_TYPE_TRANS_ONETONE]		= "avs_onetone",
+	[AVS_ELEMENT_TYPE_RENDER_TIMESCOPE]		= "avs_timescope",
+	[AVS_ELEMENT_TYPE_MISC_LINEMODE]		= "error",
+	[AVS_ELEMENT_TYPE_TRANS_INTERFERENCES]		= "avs_interferences",
+	[AVS_ELEMENT_TYPE_TRANS_CHANNELSHIFT]		= "avs_channelshift",
+	[AVS_ELEMENT_TYPE_UNKNOWN_DMOVE]		= "error",
+	[AVS_ELEMENT_TYPE_TRANS_FASTBRIGHT]		= "avs_fastbright",
+	[AVS_ELEMENT_TYPE_UNKNOWN_DCOLORMODE]		= "error",
+
+	[AVS_ELEMENT_TYPE_MAIN]				= "error",
+	[AVS_ELEMENT_TYPE_APE]				= "error",
+	[AVS_ELEMENT_TYPE_TRANS_MULTIPLIER]		= "avs_multiplier"
+};
+
 /* Prototypes */
 static int lvavs_preset_dtor (VisObject *object);
 static int lvavs_preset_element_dtor (VisObject *object);
@@ -41,12 +94,9 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 LVAVSPresetElement *wavs_convert_main_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem);
-LVAVSPresetElement *wavs_convert_superscope_new (AVSElement *avselem);
-LVAVSPresetElement *wavs_convert_multiplier_new (AVSElement *avselem);
 LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem);
-LVAVSPresetElement *wavs_convert_movement_new (AVSElement *avselem);
-LVAVSPresetElement *wavs_convert_invert_new (AVSElement *avselem);
-LVAVSPresetElement *wavs_convert_onetone_new (AVSElement *avselem);
+
+LVAVSPresetElement *wavs_convert_remap (AVSElement *avselem, const char *plugname);
 
 /* Object destructors */
 static int lvavs_preset_dtor (VisObject *object)
@@ -58,11 +108,11 @@ static int lvavs_preset_dtor (VisObject *object)
 
 	if (preset->main != NULL)
 		visual_object_unref (VISUAL_OBJECT (preset->main));
-	
+
 	preset->origfile = NULL;
 	preset->main = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int lvavs_preset_element_dtor (VisObject *object)
@@ -71,10 +121,10 @@ static int lvavs_preset_element_dtor (VisObject *object)
 
 	if (element->pcont != NULL)
 		visual_object_unref (VISUAL_OBJECT (element->pcont));
-	
+
 	element->pcont = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int lvavs_preset_container_dtor (VisObject *object)
@@ -86,9 +136,9 @@ static int lvavs_preset_container_dtor (VisObject *object)
 
 	container->members = NULL;
 
-	lvavs_element_dtor (object);
+	lvavs_preset_element_dtor (object);
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 
@@ -110,9 +160,9 @@ LVAVSPreset *lvavs_preset_new_from_preset (char *filename)
 	LVAVSPreset *preset;
 
 	preset = lvavs_preset_new ();
-	
+
 	/* FIXME make */
-	
+
 	return preset;
 }
 
@@ -167,22 +217,9 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 	while ((avselem = visual_list_next (cont->members, &le)) != NULL) {
 
-		/* FIXME make table. */
 		switch (avselem->type) {
 			case AVS_ELEMENT_TYPE_MAIN:
 				visual_list_add (presetcont->members, wavs_convert_main_new (avselem));
-
-				break;
-
-			case AVS_ELEMENT_TYPE_MISC_COMMENT:
-
-				break;
-
-			case AVS_ELEMENT_TYPE_RENDER_BASSSPIN:
-
-				break;
-
-			case AVS_ELEMENT_TYPE_RENDER_CLEARSCREEN:
 
 				break;
 
@@ -191,48 +228,21 @@ static int preset_convert_from_wavs (LVAVSPresetContainer *presetcont, AVSContai
 
 				break;
 
-			case AVS_ELEMENT_TYPE_RENDER_SUPERSCOPE:
-				visual_list_add (presetcont->members, wavs_convert_superscope_new (avselem));
-				break;
-
-			case AVS_ELEMENT_TYPE_TRANS_BLUR:
-
-				break;
-
-			case AVS_ELEMENT_TYPE_TRANS_FASTBRIGHTNESS:
-
-				break;
-
-			case AVS_ELEMENT_TYPE_TRANS_INVERT:
-				visual_list_add (presetcont->members, wavs_convert_invert_new (avselem));
-
-				break;
-
-			case AVS_ELEMENT_TYPE_TRANS_MULTIPLIER:
-				visual_list_add (presetcont->members, wavs_convert_multiplier_new (avselem));
-
-				break;
-
 			case AVS_ELEMENT_TYPE_TRANS_CHANNELSHIFT:
 				visual_list_add (presetcont->members, wavs_convert_channelshift_new (avselem));
 
 				break;
 
-			case AVS_ELEMENT_TYPE_TRANS_MOVEMENT:
-				visual_list_add (presetcont->members, wavs_convert_movement_new (avselem));
-
-				break;
-
-			case AVS_ELEMENT_TYPE_TRANS_ONETONE:
-				visual_list_add (presetcont->members, wavs_convert_onetone_new (avselem));
-
-				break;
-
 			default:
-				visual_log (VISUAL_LOG_CRITICAL, "Unhandled winamp AVS type %d\n", avselem->type);
+				if (avselem->type >= AVS_ELEMENT_TYPE_RENDER_SIMPLESPECTRUM &&
+						avselem->type < AVS_ELEMENT_TYPE_LAST) {
+
+					visual_list_add (presetcont->members, wavs_convert_remap (avselem,
+								id_to_name_map[avselem->type]));
+
+				}
 
 				break;
-
 		}
 	}
 
@@ -245,13 +255,13 @@ LVAVSPresetElement *wavs_convert_main_new (AVSElement *avselem)
 	VisParamContainer *pcont;
 	VisParamContainer *pcontw;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY ("clear screen"),
 		VISUAL_PARAM_LIST_END
 	};
 
 	pcont = visual_param_container_new ();
-	visual_param_container_add_many (pcont, params);
+	visual_param_container_add_many_proxy (pcont, params);
 
 	pcontw = avselem->pcont;
 
@@ -271,7 +281,7 @@ LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 	VisParamContainer *pcontw;
 	int sourceplace;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY ("source"),
 		VISUAL_PARAM_LIST_ENTRY ("place"),
 		VISUAL_PARAM_LIST_ENTRY ("palette"),
@@ -281,76 +291,19 @@ LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 	};
 
 	pcont = visual_param_container_new ();
-	visual_param_container_add_many (pcont, params);
+	visual_param_container_add_many_proxy (pcont, params);
 
 	pcontw = avselem->pcont;
 
 	/* Copy all the matching */
 	visual_param_container_copy_match (pcont, pcontw);
 
-	sourceplace = visual_param_entry_get_integer (visual_param_container_get (pcontw, "source and place"));
+	sourceplace = visual_param_entry_get_integer (visual_param_container_get (pcontw, VIS_BSTR ("source and place")));
 
-	visual_param_entry_set_integer (visual_param_container_get (pcont, "place"), sourceplace >> 4);
-	visual_param_entry_set_integer (visual_param_container_get (pcont, "source"), (sourceplace & 0x0f) / 4);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("place")), sourceplace >> 4);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("source")), (sourceplace & 0x0f) / 4);
 
 	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_ring");
-	element->pcont = pcont;
-
-	return element;
-}
-
-LVAVSPresetElement *wavs_convert_superscope_new (AVSElement *avselem)
-{
-	LVAVSPresetElement *element;
-	VisParamContainer *pcont;
-	VisParamContainer *pcontw;
-	int sourceplace;
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY ("point"),
-		VISUAL_PARAM_LIST_ENTRY ("frame"),
-		VISUAL_PARAM_LIST_ENTRY ("beat"),
-		VISUAL_PARAM_LIST_ENTRY ("init"),
-		VISUAL_PARAM_LIST_ENTRY ("channel source"),
-		VISUAL_PARAM_LIST_ENTRY ("palette"),
-		VISUAL_PARAM_LIST_ENTRY ("draw type"),
-		VISUAL_PARAM_LIST_END
-	};
-
-	pcont = visual_param_container_new ();
-	visual_param_container_add_many (pcont, params);
-
-	pcontw = avselem->pcont;
-
-	/* Copy all the matching */
-	visual_param_container_copy_match (pcont, pcontw);
-
-	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_superscope");
-	element->pcont = pcont;
-
-	return element;
-}
-
-LVAVSPresetElement *wavs_convert_multiplier_new (AVSElement *avselem)
-{
-	LVAVSPresetElement *element;
-	VisParamContainer *pcont;
-	VisParamContainer *pcontw;
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY ("multiply"),
-		VISUAL_PARAM_LIST_END
-	};
-
-	pcont = visual_param_container_new ();
-	visual_param_container_add_many (pcont, params);
-
-	pcontw = avselem->pcont;
-
-	/* Copy all the matching */
-	visual_param_container_copy_match (pcont, pcontw);
-
-	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_multiplier");
 	element->pcont = pcont;
 
 	return element;
@@ -363,21 +316,21 @@ LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem)
 	VisParamContainer *pcontw;
 	int shift;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY ("shift"),
 		VISUAL_PARAM_LIST_ENTRY ("onbeat"),
 		VISUAL_PARAM_LIST_END
 	};
 
 	pcont = visual_param_container_new ();
-	visual_param_container_add_many (pcont, params);
+	visual_param_container_add_many_proxy (pcont, params);
 
 	pcontw = avselem->pcont;
 
 	/* Copy all the matching */
 	visual_param_container_copy_match (pcont, pcontw);
 
-	shift = visual_param_entry_get_integer (visual_param_container_get (pcontw, "shift"));
+	shift = visual_param_entry_get_integer (visual_param_container_get (pcontw, VIS_BSTR ("shift")));
 
 	/* Yes, the RGB and BRG entries have the same value here, I think it's a bug in winamp AVS */
 	switch (shift & 0xff) {
@@ -414,7 +367,7 @@ LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem)
 
 	}
 
-	visual_param_entry_set_integer (visual_param_container_get (pcont, "shift"), shift);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("shift")), shift);
 
 	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_channelshift");
 	element->pcont = pcont;
@@ -422,87 +375,14 @@ LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem)
 	return element;
 }
 
-LVAVSPresetElement *wavs_convert_movement_new (AVSElement *avselem)
+LVAVSPresetElement *wavs_convert_remap (AVSElement *avselem, const char *plugname)
 {
 	LVAVSPresetElement *element;
-	VisParamContainer *pcont;
-	VisParamContainer *pcontw;
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY ("effect"),
-		VISUAL_PARAM_LIST_ENTRY ("rectangular"),
-		VISUAL_PARAM_LIST_ENTRY ("blend"),
-		VISUAL_PARAM_LIST_ENTRY ("sourcemapped"),
-		VISUAL_PARAM_LIST_ENTRY ("subpixel"),
-		VISUAL_PARAM_LIST_ENTRY ("wrap"),
-		VISUAL_PARAM_LIST_ENTRY ("code"),
-		VISUAL_PARAM_LIST_END
-	};
+	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, plugname);
 
-	pcont = visual_param_container_new ();
-	visual_param_container_add_many (pcont, params);
-
-	pcontw = avselem->pcont;
-
-	/* Copy all the matching */
-	visual_param_container_copy_match (pcont, pcontw);
-
-	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_movement");
-	element->pcont = pcont;
-
-	return element;
-}
-
-LVAVSPresetElement *wavs_convert_invert_new (AVSElement *avselem)
-{
-	LVAVSPresetElement *element;
-	VisParamContainer *pcont;
-	VisParamContainer *pcontw;
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY ("enabled"),
-		VISUAL_PARAM_LIST_END
-	};
-
-	pcont = visual_param_container_new ();
-	visual_param_container_add_many (pcont, params);
-
-	pcontw = avselem->pcont;
-
-	/* Copy all the matching */
-	visual_param_container_copy_match (pcont, pcontw);
-
-	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_invert");
-	element->pcont = pcont;
-
-	return element;
-}
-
-LVAVSPresetElement *wavs_convert_onetone_new (AVSElement *avselem)
-{
-	LVAVSPresetElement *element;
-	VisParamContainer *pcont;
-	VisParamContainer *pcontw;
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY ("enabled"),
-		VISUAL_PARAM_LIST_ENTRY ("color"),
-		VISUAL_PARAM_LIST_ENTRY ("blend"),
-		VISUAL_PARAM_LIST_ENTRY ("blendavg"),
-		VISUAL_PARAM_LIST_ENTRY ("invert"),
-		VISUAL_PARAM_LIST_END
-	};
-
-	pcont = visual_param_container_new ();
-	visual_param_container_add_many (pcont, params);
-
-	pcontw = avselem->pcont;
-
-	/* Copy all the matching */
-	visual_param_container_copy_match (pcont, pcontw);
-
-	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_onetone");
-	element->pcont = pcont;
+	visual_object_ref (VISUAL_OBJECT (avselem->pcont));
+	element->pcont = avselem->pcont;
 
 	return element;
 }

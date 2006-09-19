@@ -46,36 +46,36 @@ Misc:
 Trans:
 	Blitter feedback
 	Blur						Yes
-	Brightness
-	Bump
-	Channel Shift
+	Brightness					Yes
+	Bump						
+	Channel Shift					Yes				Yes
 	Color Clip
 	Color Modifier
 	Color Reduction
-	Colorfade
+	Colorfade					
 	Convolution Filter
 	Dynamic Distance Modifier
 	Dynamic Movement
 	Dynamic Shift
-	Fadeout
+	Fadeout						Yes
 	Fast Brightness					Yes
-	Grain
+	Grain						Yes
 	Interference
-	Interleave
-	Invert						Yes
-	Mirror
-	Mosaic
+	Interleave					
+	Invert						Yes				Yes
+	Mirror						Yes
+	Mosaic						Yes
 	Movement					Yes
 	Multi Delay
 	Multi Filter
 	Multiplier					Yes				Partially
 	Roto Blitter
-	Scatter
+	Scatter						Yes
 	Texer
-	Unique tone
+	Unique tone					Yes
 	Video Delay
-	Water
-	Water Bump
+	Water						Yes
+	Water Bump					Yes
 
 							In Parser			As VisPlugin
 Render:
@@ -85,9 +85,9 @@ Render:
 	Dot Fountain
 	Dot Grid
 	Dot Plane
-	Moving Particle
-	OnBeat Clear
-	Oscilliscope Star
+	Moving Particle					Yes
+	OnBeat Clear					Yes
+	Oscilliscope Star				Yes
 	Picture
 	Ring						Yes
 	Rotating Stars

@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: actor_avs_superscope.c,v 1.6 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -48,7 +48,6 @@ enum scope_runnable {
 	SCOPE_RUNNABLE_BEAT,
 	SCOPE_RUNNABLE_POINT,
 };
-
 
 typedef struct {
 	AvsRunnableContext		*ctx;
@@ -136,7 +135,7 @@ int lv_superscope_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 	int i;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING ("point", "d=i+v*0.2; r=t+i*$PI*4; x = cos(r)*d; y = sin(r) * d;"),
 		VISUAL_PARAM_LIST_ENTRY_STRING ("frame", "t=t-0.01;"),
 		VISUAL_PARAM_LIST_ENTRY_STRING ("beat", ""),
@@ -158,9 +157,9 @@ int lv_superscope_init (VisPluginData *plugin)
 		priv->pal.colors[i].b = 0xff;
 	}
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
-	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, "palette"), &priv->pal);
+	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, VIS_BSTR ("palette")), &priv->pal);
 
 	visual_palette_free_colors (&priv->pal);
 
@@ -225,32 +224,32 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "point")) {
+				if (visual_param_entry_is (param, VIS_BSTR ("point"))) {
 
 					priv->point = visual_param_entry_get_string (param);
 					scope_load_runnable(priv, SCOPE_RUNNABLE_POINT, priv->point);
 
-				} else if (visual_param_entry_is (param, "frame")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("frame"))) {
 
 					priv->frame = visual_param_entry_get_string (param);
 					scope_load_runnable(priv, SCOPE_RUNNABLE_FRAME, priv->frame);
 
-				} else if (visual_param_entry_is (param, "beat")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("beat"))) {
 
 					priv->beat = visual_param_entry_get_string (param);
 					scope_load_runnable(priv, SCOPE_RUNNABLE_BEAT, priv->beat);
 
-				} else if (visual_param_entry_is (param, "init")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("init"))) {
 
 					priv->init = visual_param_entry_get_string (param);
 					scope_load_runnable(priv, SCOPE_RUNNABLE_INIT, priv->init);
 					scope_run(priv, SCOPE_RUNNABLE_INIT);
 
-				} else if (visual_param_entry_is (param, "channel source"))
+				} else if (visual_param_entry_is (param, VIS_BSTR ("channel source")))
 					priv->channel_source = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "draw type"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("draw type")))
 					priv->draw_type = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "palette")) {
+				else if (visual_param_entry_is (param, VIS_BSTR ("palette"))) {
 					VisPalette *pal;
 
 					pal = visual_param_entry_get_palette (param);

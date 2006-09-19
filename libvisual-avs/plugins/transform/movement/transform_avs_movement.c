@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: transform_avs_movement.c,v 1.6 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -62,6 +62,42 @@ typedef struct {
 	int lastPitch;
 } MovementPrivate;
 
+typedef struct {
+	char *list_desc; // The string to show in the listbox.
+	char *eval_desc; // The optional string to display in the evaluation editor.
+	char uses_eval;   // If this is true, the preset engages the eval library and there is NULL in the radial_effects array for its entry
+	char uses_rect;   // This value sets the checkbox for rectangular calculation
+} MovementTemplateDescription;
+
+static MovementTemplateDescription __movement_descriptions[] =
+{
+	{/* 0,*/ "none", "", 0, 0},
+	{/* 1,*/ "slight fuzzify", "", 0, 0},
+	{/* 2,*/ "shift rotate left", "x=x+1/32; // use wrap for this one", 0, 1},
+	{/* 3,*/ "big swirl out", "r = r + (0.1 - (0.2 * d));\r\nd = d * 0.96;", 0, 0},
+	{/* 4,*/ "medium swirl", "d = d * (0.99 * (1.0 - sin(r-$PI*0.5) / 32.0));\r\nr = r + (0.03 * sin(d * $PI * 4));", 0, 0},
+	{/* 5,*/ "sunburster", "d = d * (0.94 + (cos((r-$PI*0.5) * 32.0) * 0.06));", 0, 0},
+	{/* 6,*/ "swirl to center", "d = d * (1.01 + (cos((r-$PI*0.5) * 4) * 0.04));\r\nr = r + (0.03 * sin(d * $PI * 4));", 0, 0},
+	{/* 7,*/ "blocky partial out", "", 0, 0},
+	{/* 8,*/ "swirling around both ways at once", "r = r + (0.1 * sin(d * $PI * 5));", 0, 0},
+	{/* 9,*/ "bubbling outward", "t = sin(d * $PI);\r\nd = d - (8*t*t*t*t*t)/sqrt((sw*sw+sh*sh)/4);", 0, 0},
+	{/*10,*/ "bubbling outward with swirl", "t = sin(d * $PI);\r\nd = d - (8*t*t*t*t*t)/sqrt((sw*sw+sh*sh)/4);\r\nt=cos(d*$PI/2.0);\r\nr= r + 0.1*t*t*t;", 0, 0},
+	{/*11,*/ "5 pointed distro", "d = d * (0.95 + (cos(((r-$PI*0.5) * 5.0) - ($PI / 2.50)) * 0.03));", 0, 0},
+	{/*12,*/ "tunneling", "r = r + 0.04;\r\nd = d * (0.96 + cos(d * $PI) * 0.05);", 0, 0},
+	{/*13,*/ "bleedin'", "t = cos(d * $PI);\r\nr = r + (0.07 * t);\r\nd = d * (0.98 + t * 0.10);", 0, 0},
+	{/*14,*/ "shifted big swirl out", "// this is a very bad approximation in script. fixme.\r\nd=sqrt(x*x+y*y); r=atan2(y,x);\r\nr=r+0.1-0.2*d; d=d*0.96;\r\nx=cos(r)*d + 8/128; y=sin(r)*d;", 0, 1},
+	{/*15,*/ "psychotic beaming outward", "d = 0.15", 0, 0},
+	{/*16,*/ "cosine radial 3-way", "r = cos(r * 3)", 0, 0},
+	{/*17,*/ "spinny tube", "d = d * (1 - ((d - .35) * .5));\r\nr = r + .1;", 0, 0},
+	{/*18,*/ "radial swirlies", "d = d * (1 - (sin((r-$PI*0.5) * 7) * .03));\r\nr = r + (cos(d * 12) * .03);", 1, 0},
+	{/*19,*/ "swill", "d = d * (1 - (sin((r - $PI*0.5) * 12) * .05));\r\nr = r + (cos(d * 18) * .05);\r\nd = d * (1-((d - .4) * .03));\r\nr = r + ((d - .4) * .13)", 1, 0},
+	{/*20,*/ "gridley", "x = x + (cos(y * 18) * .02);\r\ny = y + (sin(x * 14) * .03);", 1, 1},
+	{/*21,*/ "grapevine", "x = x + (cos(abs(y-.5) * 8) * .02);\r\ny = y + (sin(abs(x-.5) * 8) * .05);\r\nx = x * .95;\r\ny = y * .95;", 1, 1},
+	{/*22,*/ "quadrant", "y = y * ( 1 + (sin(r + $PI/2) * .3) );\r\nx = x * ( 1 + (cos(r + $PI/2) * .3) );\r\nx = x * .995;\r\ny = y * .995;", 1, 1},
+	{/*23,*/ "6-way kaleida (use wrap!)", "y = (r*6)/($PI); x = d;", 1, 1},
+};
+
+
 int lv_movement_init (VisPluginData *plugin);
 int lv_movement_cleanup (VisPluginData *plugin);
 int lv_movement_events (VisPluginData *plugin, VisEventQueue *events);
@@ -113,7 +149,7 @@ int lv_movement_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 	int i;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("effect", 32767),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("rectangular", 1),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("blend", 1),
@@ -128,7 +164,7 @@ int lv_movement_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (MovementPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	return 0;
 }
@@ -156,19 +192,28 @@ int lv_movement_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "effect"))
+				if (visual_param_entry_is (param, VIS_BSTR ("effect"))) {
 					priv->effect = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "rectangular"))
+
+					if (priv->effect != 32767) {
+						if (priv->effect >= 0 && priv->effect < 23) {
+							visual_param_entry_set_string (
+									visual_param_container_get (param->parent, VIS_BSTR ("code")),
+									__movement_descriptions[priv->effect].eval_desc);
+						}
+					}
+
+				} else if (visual_param_entry_is (param, VIS_BSTR ("rectangular")))
 					priv->rectangular = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "blend"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("blend")))
 					priv->blend = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "sourcemapped"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("sourcemapped")))
 					priv->sourcemapped = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "subpixel"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("subpixel")))
 					priv->subpixel = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "wrap"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("wrap")))
 					priv->wrap = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "code"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("code")))
 					priv->code = visual_param_entry_get_string (param);
 
 				break;
@@ -238,6 +283,7 @@ static void trans_generate_table(MovementPrivate *priv, char *effect, int rectan
 	avs_runnable_variable_bind(vm, "d", &d);
 	avs_runnable_variable_bind(vm, "r", &r);
 	avs_runnable_variable_bind(vm, "x", &px);
+	
 	avs_runnable_variable_bind(vm, "y", &py);
 	avs_runnable_variable_bind(vm, "sw", &pw);
 	avs_runnable_variable_bind(vm, "sh", &ph);

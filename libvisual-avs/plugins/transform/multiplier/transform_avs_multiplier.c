@@ -1,10 +1,10 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
  * 
- * Copyright (C) 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id:
+ * $Id: transform_avs_multiplier.c,v 1.5 2006-09-19 19:05:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -94,7 +94,7 @@ int lv_multiplier_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 	int i;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("multiply", 3),
 		VISUAL_PARAM_LIST_END
 	};
@@ -102,7 +102,7 @@ int lv_multiplier_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (MultiplierPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	return 0;
 }
@@ -127,7 +127,7 @@ int lv_multiplier_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "multiply"))
+				if (visual_param_entry_is (param, VIS_BSTR ("multiply")))
 					priv->multiply = visual_param_entry_get_integer (param);
 
 				break;

@@ -3,18 +3,18 @@
 AC_PREREQ(2.57)
 
 m4_define([lv_avs_version_major], [0])
-m4_define([lv_avs_version_minor], [3])
+m4_define([lv_avs_version_minor], [4])
 m4_define([lv_avs_version_micro], [0])
 m4_define([lv_avs_version], [lv_avs_version_major.lv_avs_version_minor.lv_avs_version_micro])
 m4_define([lv_avs_version_suffix], [lv_avs_version_major.lv_avs_version_minor])
 
-AC_INIT(Libvisual avs, 0.3.0, ds@nerds-incorporated.org)
+AC_INIT(Libvisual avs, 0.4.0, ds@nerds-incorporated.org)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
-m4_define([libvisual_required_version], [0.3.0])
+m4_define([libvisual_required_version], [0.4.0])
 
 m4_define([libvisual_pkg], [libvisual-lv_avs_version_suffix])
 LIBVISUAL_PKG=libvisual_pkg
@@ -185,6 +185,22 @@ else
   AC_MSG_RESULT([no])
 fi
 
+# The AVS elements.
+AC_ARG_ENABLE([avs_grain],
+	      AC_HELP_STRING([--disable-grain],
+			     [Do not build the AVS trans grain plugin @<:@default=enabled@:>@]),
+	      [avs_grain=$enableval],
+	      [avs_grain=yes])
+AC_MSG_CHECKING([whether to build AVS trans grain plugin])
+if test x$avs_grain = xyes; then
+  AC_MSG_RESULT([yes])
+  build_trans="$build_trans grain"
+  AC_SUBST([AVS_GRAIN], ['transform_avs_grain.la'])
+else
+  AC_MSG_RESULT([no])
+fi
+
+
 #
 # Build paramaters
 #
@@ -284,6 +300,7 @@ AC_CONFIG_FILES([
 	plugins/transform/movement/Makefile
 	plugins/transform/invert/Makefile
 	plugins/transform/onetone/Makefile
+	plugins/transform/grain/Makefile
 ])
 
 
