@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_buffer.c,v 1.9 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_buffer.c,v 1.10 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,7 +43,7 @@ static int buffer_dtor (VisObject *object)
 
 	buffer->data = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 /**
@@ -108,7 +108,7 @@ int visual_buffer_init (VisBuffer *buffer, void *data, visual_size_t datasize, V
 
 /**
  * Creates a new VisBuffer with data, datasize and destroyer set.
- * 
+ *
  * @param data The which the VisBuffer encapsulates.
  * @param datasize The size of the data (in bytes).
  * @param destroyer The destroyer that is to be used on the data when the buffer is destroyed or the refcount
@@ -280,6 +280,37 @@ int visual_buffer_set_data (VisBuffer *buffer, void *data)
 }
 
 /**
+ * Sets the sequential offset of a VisBuffer.
+ *
+ * @param buffer Pointer to the VisBuffer of which the sequential offset has to set.
+ * @param offset Sequential offset.
+ * 
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS on failure.
+ */
+int visual_buffer_set_offset_sequential (VisBuffer *buffer, int offset)
+{
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (offset >= 0 && offset <= visual_buffer_get_size (buffer), 
+				       -VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS);
+
+	buffer->offset = offset;
+
+	return VISUAL_OK;
+}
+
+/**
+ * Resets the sequential offset of a VisBuffer.
+ *
+ * @param buffer Pointer to the VisBuffer of which the sequential offset has to be reset.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
+ */
+int visual_buffer_reset_offset_sequential (VisBuffer *buffer)
+{
+	return visual_buffer_set_offset_sequential (buffer, 0);
+}
+
+/**
  * Allocates the data for a VisBuffer, the amount of bytes allocated is defined by the data size
  * that is set to the VisBuffer.
  *
@@ -330,6 +361,21 @@ void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset)
 }
 
 /**
+ * Gets pointer to the data that is encapsulated by the VisBuffer using its internal sequential
+ * offset.
+ *
+ * @param buffer Pointer to the VisBuffer of which the data is requested.
+ *
+ * @return Pointer to the data offsetted by the internal sequential offset, NULL on failure.
+ */
+void *visual_buffer_get_data_offset_sequential (VisBuffer *buffer)
+{
+	visual_log_return_val_if_fail (buffer != NULL, NULL);
+
+	return (unsigned char *) (buffer->data) + buffer->offset;
+}
+
+/**
  * Gets the size in bytes of a VisBuffer.
  *
  * @param buffer Pointer to the VisBuffer of which the size is requested.
@@ -355,6 +401,34 @@ int visual_buffer_get_allocated (VisBuffer *buffer)
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	return buffer->allocated;
+}
+
+/**
+ * Returns the sequential offset in bytes of a VisBuffer.
+ *
+ * @param buffer Pointer to the VisBuffer of which the sequential offset is requested.
+ *
+ * @return Offset in bytes on success, -VISUAL_ERROR_BUFFER_NULL on failure.
+ */
+int visual_buffer_get_offset_sequential (VisBuffer *buffer)
+{
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	return buffer->offset;
+}
+
+/**
+ * Returns the available remaining sequential space in bytes of a VisBuffer.
+ *
+ * @param buffer Pointer to the VisBuffer of which the available sequential space is requested.
+ *
+ * @return Available sequential space in bytes on success, -VISUAL_ERROR_BUFFER_NULL on failure.
+ */
+int visual_buffer_get_available_sequential (VisBuffer *buffer)
+{
+	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	return buffer->datasize - buffer->offset;
 }
 
 /**
@@ -385,6 +459,27 @@ int visual_buffer_clone (VisBuffer *dest, VisBuffer *src)
 }
 
 /**
+ * Clones a VisBuffer, this will copy the data and all attributes.
+ *
+ * @param dest Pointer to the destination VisBuffer.
+ * @param src Pointer to the source VisBuffer.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
+ */
+int visual_buffer_clone_with_attributes (VisBuffer *dest, VisBuffer *src)
+{
+	int error;
+
+	error = visual_buffer_clone (dest, src);
+	if (error != VISUAL_OK)
+		return error;
+
+	dest->offset = src->offset;
+
+	return VISUAL_OK;
+}
+
+/**
  * Clones a VisBuffer in the form of a newly allocated structure, this will copy the data.
  *
  * @param src Pointer to the source VisBuffer.
@@ -400,6 +495,26 @@ VisBuffer *visual_buffer_clone_new (VisBuffer *src)
 	dest = visual_buffer_new ();
 
 	visual_buffer_clone (dest, src);
+
+	return dest;
+}
+
+/**
+ * Clones a VisBuffer in the form of a newly allocated structure, this will copy the data and all attributes.
+ *
+ * @param src Pointer to the source VisBuffer.
+ *
+ * @return Newly allocated cloned VisBuffer on success, NULL on failure.
+ */
+VisBuffer *visual_buffer_clone_new_with_attributes (VisBuffer *src)
+{
+	VisBuffer *dest;
+
+	visual_log_return_val_if_fail (src != NULL, NULL);
+
+	dest = visual_buffer_new ();
+
+	visual_buffer_clone_with_attributes (dest, src);
 
 	return dest;
 }
@@ -423,6 +538,46 @@ int visual_buffer_copy_data_to (VisBuffer *src, void *dest)
 }
 
 /**
+ * Copies size amount of bytes of data contained by the VisBuffer into dest.
+ *
+ * @param src Pointer to the VisBuffer which contains the source data.
+ * @param dest Pointer to the buffer in which all the data is copied.
+ * @param size The number of bytes to be copied.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_buffer_copy_data_to_length (VisBuffer *src, void *dest, visual_size_t size)
+{
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+
+	visual_mem_copy (dest, src->data, size);
+
+	return VISUAL_OK;
+}
+
+/**
+ * Copies size amount of bytes of data contained by the VisBuffer into dest using a byteoffset on the
+ * source buffer.
+ *
+ * @param src Pointer to the VisBuffer which contains the source data.
+ * @param dest Pointer to the buffer in which all the data is copied.
+ * @param byteoffset Byte offset on the source buffer.
+ * @param size The number of bytes to be copied.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_buffer_copy_data_to_offset_length (VisBuffer *src, void *dest, int byteoffset, visual_size_t size)
+{
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+
+	visual_mem_copy (dest + byteoffset, src->data, size);
+
+	return VISUAL_OK;
+}
+
+/**
  * Copies data into the VisBuffer from another VisBuffer starting at byteoffset. The copy is
  * NOT atomic.
  *
@@ -438,6 +593,25 @@ int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset)
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	return visual_buffer_put_data (dest, src->data, src->datasize, byteoffset);
+}
+
+/**
+ * Copies data into the VisBuffer from another VisBuffer starting at byteoffset for size amount of bytes.
+ * The copy is NOT atomic.
+ *
+ * @param dest Pointer to the destination VisBuffer.
+ * @param src Pointer to the source VisBuffer.
+ * @param byteoffset The offset in the destination VisBuffer.
+ * @param size The number of bytes to be copied.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_buffer_put_length (VisBuffer *dest, VisBuffer *src, int byteoffset, visual_size_t size)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	return visual_buffer_put_data (dest, src->data, size, byteoffset);
 }
 
 /**
@@ -512,6 +686,96 @@ int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t si
 }
 
 /**
+ * Copies data into the VisBuffer from another VisBuffer sequentially. The copy is
+ * NOT atomic.
+ *
+ * @param dest Pointer to the destination VisBuffer.
+ * @param src Pointer to the source VisBuffer.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_buffer_put_sequential (VisBuffer *dest, VisBuffer *src)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	return visual_buffer_put_data_sequential (dest, src->data, src->datasize);
+}
+
+/**
+ * Copies data into the VisBuffer sequentially using a data pointer and it's size. The copy is NOT atomic.
+ *
+ * @see visual_buffer_put_sequential
+ *
+ * @param dest Pointer to the destination VisBuffer.
+ * @param data Pointer to the data.
+ * @param size The size of the data.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_buffer_put_data_sequential (VisBuffer *dest, void *data, visual_size_t size)
+{
+	int amount;
+
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
+	visual_log_return_val_if_fail (dest->offset <= dest->datasize,
+				       -VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS);
+
+	amount = size;
+
+	if (dest->offset + size > dest->datasize)
+		amount = dest->datasize - dest->offset;
+
+	if (amount > 0) {
+		visual_mem_copy (dest->data + dest->offset, data, amount);
+		visual_buffer_set_offset_sequential(dest, dest->offset + amount);
+	}
+
+	return VISUAL_OK;
+}
+
+/**
+ * Copies data into the VisBuffer from another VisBuffer sequentially.
+ * The copy is atomic, everything or nothing is copied.
+ *
+ * @param dest Pointer to the destination VisBuffer.
+ * @param src Pointer to the source VisBuffer.
+ * @param byteoffset The offset in the destination VisBuffer.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_buffer_put_sequential_atomic (VisBuffer *dest, VisBuffer *src)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	return visual_buffer_put_data_sequential_atomic (dest, src->data, src->datasize);
+}
+
+/**
+ * Copies data into the VisBuffer sequentially using a data pointer and it's size. The copy is atomic,
+ * everything or nothing is copied.
+ *
+ * @see visual_buffer_put_sequential_atomic
+ *
+ * @param dest Pointer to the destination VisBuffer.
+ * @param data Pointer to the data.
+ * @param size The size of the data.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ */
+int visual_buffer_put_data_sequential_atomic (VisBuffer *dest, void *data, visual_size_t size)
+{
+	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+
+	if (dest->offset + size > dest->datasize)
+		return -VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS;
+
+	return visual_buffer_put_data_sequential (dest, data, size);
+}
+
+/**
  * Appends a VisBuffer to a VisBuffer, this will also reallocate the buffer so it's big enough.
  *
  * @param dest Pointer to the VisBuffer to which the other VisBuffer is appended.
@@ -576,7 +840,7 @@ int visual_buffer_fill (VisBuffer *buffer, char value)
  */
 int visual_buffer_fill_with_pattern (VisBuffer *buffer, void *data, visual_size_t size)
 {
-	int offset;
+	int offset = 0;
 
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);

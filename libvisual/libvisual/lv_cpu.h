@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_cpu.h,v 1.16 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_cpu.h,v 1.17 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -63,18 +63,20 @@ struct _VisCPU {
 	int		hasMMX2;		/**< The CPU has the mmx2 feature. */
 	int		hasSSE;			/**< The CPU has the sse feature. */
 	int		hasSSE2;		/**< The CPU has the sse2 feature. */
+	int		hasSSE3;		/**< The CPU has the sse3 feature. */
 	int		has3DNow;		/**< The CPU has the 3dnow feature. */
 	int		has3DNowExt;		/**< The CPU has the 3dnowext feature. */
-	int		hasAltiVec;		/**< The CPU has the altivec feature. */	
+	int		hasAltiVec;		/**< The CPU has the altivec feature. */
 
 	int		enabledTSC;		/**< The tsc feature is enabled. */
-	int		enabledMMX;		/**< The mmx feature is enabled. */ 
+	int		enabledMMX;		/**< The mmx feature is enabled. */
 	int		enabledMMX2;		/**< The tsc feature is enabled. */
 	int		enabledSSE;		/**< The sse feature is enabled. */
 	int		enabledSSE2;		/**< The sse2 feature is enabled. */
+	int		enabledSSE3;		/**< The sse3 feature is enabled. */
 	int		enabled3DNow;		/**< The 3dnow feature is enabled. */
-	int		enabled3DNowExt;	/**< The 3dnowext feature is enabled. */ 
-	int		enabledAltiVec;		/**< The altivec feature is enabled. */  
+	int		enabled3DNowExt;	/**< The 3dnowext feature is enabled. */
+	int		enabledAltiVec;		/**< The altivec feature is enabled. */
 };
 
 void visual_cpu_initialize (void);
@@ -85,6 +87,7 @@ int visual_cpu_get_mmx (void);
 int visual_cpu_get_mmx2 (void);
 int visual_cpu_get_sse (void);
 int visual_cpu_get_sse2 (void);
+int visual_cpu_get_sse3 (void);
 int visual_cpu_get_3dnow (void);
 int visual_cpu_get_3dnow2 (void);
 int visual_cpu_get_altivec (void);
@@ -94,6 +97,7 @@ int visual_cpu_set_mmx (int enabled);
 int visual_cpu_set_mmx2 (int enabled);
 int visual_cpu_set_sse (int enabled);
 int visual_cpu_set_sse2 (int enabled);
+int visual_cpu_set_sse3 (int enabled);
 int visual_cpu_set_3dnow (int enabled);
 int visual_cpu_set_3dnow2 (int enabled);
 int visual_cpu_set_altivec (int enabled);

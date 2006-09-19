@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_actor.h,v 1.19 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_actor.h,v 1.20 2006-09-19 18:28:50 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -157,14 +157,8 @@ struct _VisActorPlugin {
 /* prototypes */
 VisPluginData *visual_actor_get_plugin (VisActor *actor);
 
-VisList *visual_actor_get_list (void);
-const char *visual_actor_get_next_by_name_gl (const char *name);
-const char *visual_actor_get_prev_by_name_gl (const char *name);
-const char *visual_actor_get_next_by_name_nogl (const char *name);
-const char *visual_actor_get_prev_by_name_nogl (const char *name);
-const char *visual_actor_get_next_by_name (const char *name);
-const char *visual_actor_get_prev_by_name (const char *name);
-int visual_actor_valid_by_name (const char *name);
+int visual_morph_set_map (VisHashmap *map);
+VisHashmap *visual_actor_get_map (void);
 
 VisActor *visual_actor_new (const char *actorname);
 int visual_actor_init (VisActor *actor, const char *actorname);

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_libvisual.c,v 1.39 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_libvisual.c,v 1.40 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -47,17 +47,6 @@ int __lv_initialized = FALSE;
 /** Set a progname from argv[0] when we're capable of doing so. */
 char *__lv_progname = NULL;
 
-/** Contains the completely plugin registry after initialize. */
-VisList *__lv_plugins = NULL;
-/** Contains all the actor plugins after initialize. */
-VisList *__lv_plugins_actor = NULL;
-/** Contains all the input plugins after initialize. */
-VisList *__lv_plugins_input = NULL;
-/** Contains all the morph plugins after initialize. */
-VisList *__lv_plugins_morph = NULL;
-/** Contains all the transform plugins after initialize. */
-VisList *__lv_plugins_transform = NULL;
-
 /** The global params container */
 VisParamContainer *__lv_paramcontainer = NULL;
 
@@ -84,12 +73,12 @@ static int init_params (VisParamContainer *paramcontainer)
 
 	/* Song information parameters */
 	/* Show songinfo */
-	param = visual_param_entry_new ("songinfo show");
+	param = visual_param_entry_new (VIS_BSTR ("songinfo show"));
 	visual_param_entry_set_integer (param, 1);
 	visual_param_container_add (paramcontainer, param);
 
 	/* Songinfo timeout, in seconds */
-	param = visual_param_entry_new ("songinfo timeout");
+	param = visual_param_entry_new (VIS_BSTR ("songinfo timeout"));
 	visual_param_entry_set_integer (param, 5);
 	visual_param_container_add (paramcontainer, param);
 
@@ -97,16 +86,16 @@ static int init_params (VisParamContainer *paramcontainer)
 	 * Show songinfo in plugins, plugins that optionally show song
 	 * info should query this parameter
 	 */
-	param = visual_param_entry_new ("songinfo in plugin");
+	param = visual_param_entry_new (VIS_BSTR ("songinfo in plugin"));
 	visual_param_entry_set_integer (param, 1);
 	visual_param_container_add (paramcontainer, param);
 
 	/* Cover art dimension */
-	param = visual_param_entry_new ("songinfo cover size x");
+	param = visual_param_entry_new (VIS_BSTR ("songinfo cover size x"));
 	visual_param_entry_set_integer (param, 128);
 	visual_param_container_add (paramcontainer, param);
 
-	param = visual_param_entry_new ("songinfo cover size y");
+	param = visual_param_entry_new (VIS_BSTR ("songinfo cover size y"));
 	visual_param_entry_set_integer (param, 128);
 	visual_param_container_add (paramcontainer, param);
 
@@ -134,32 +123,41 @@ static VisUIWidget *make_userinterface ()
 	hbox2 = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 	hbox3 = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 
+	/* FIXME fix */
+#if 0
 	label1 = visual_ui_label_new (_("Show info for"), FALSE);
 	label2 = visual_ui_label_new (_("seconds"), FALSE);
 	label3 = visual_ui_label_new (_("cover art width"), FALSE);
 	label4 = visual_ui_label_new (_("cover art height"), FALSE);
 
+	visual_string_init (&name);
+
 	checkbox1 = visual_ui_checkbox_new (_("Show song information"), TRUE);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox1),
-			visual_param_container_get (__lv_paramcontainer, "songinfo show"));
+			visual_param_container_get (__lv_paramcontainer,
+				VIS_BSTR ("songinfo show")));
 
 	checkbox2 = visual_ui_checkbox_new (_("Show song information in plugins"), TRUE);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox2),
-			visual_param_container_get (__lv_paramcontainer, "songinfo in plugin"));
+			visual_param_container_get (__lv_paramcontainer,
+				VIS_BSTR ("songinfo in plugin")));
 
 	numeric1 = visual_ui_numeric_new ();
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1),
-			visual_param_container_get (__lv_paramcontainer, "songinfo timeout"));
+			visual_param_container_get (__lv_paramcontainer,
+				VIS_BSTR ("songinfo timeout")));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 1, 60, 1, 0);
 
 	numeric2 = visual_ui_numeric_new ();
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2),
-			visual_param_container_get (__lv_paramcontainer, "songinfo cover size x"));
+			visual_param_container_get (__lv_paramcontainer,
+				VIS_BSTR ("songinfo cover size x")));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric2), 32, 256, 2, 0);
 
 	numeric3 = visual_ui_numeric_new ();
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric3),
-			visual_param_container_get (__lv_paramcontainer, "songinfo cover size y"));
+			visual_param_container_get (__lv_paramcontainer,
+				VIS_BSTR ("songinfo cover size y")));
 	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric3), 32, 256, 2, 0);
 
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox1), label1);
@@ -177,6 +175,7 @@ static VisUIWidget *make_userinterface ()
 	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox1);
 	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox2);
 	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox3);
+#endif
 
 	return vbox;
 }
@@ -186,12 +185,14 @@ static int free_plugpaths ()
 	int i;
 
 	if (__lv_plugpaths == NULL)
-			return VISUAL_OK;
+		return VISUAL_OK;
 
 	for (i = 0; i < __lv_plugpath_cnt - 1; i++)
 		visual_mem_free (__lv_plugpaths[i]);
 
 	free (__lv_plugpaths);
+
+	return VISUAL_OK;
 }
 
 /**
@@ -247,10 +248,10 @@ VisUIWidget *visual_get_userinterface ()
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NO_PATHS on failure.
  */
-int visual_init_path_add (char *pathadd)
+int visual_init_path_add (const char *pathadd)
 {
 	__lv_plugpath_cnt++;
-	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);
+	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (const char *) * __lv_plugpath_cnt);
 
 	visual_log_return_val_if_fail (__lv_plugpaths != NULL, -VISUAL_ERROR_LIBVISUAL_NO_PATHS);
 
@@ -315,10 +316,13 @@ int visual_init (int *argc, char ***argv)
 	visual_cpu_initialize ();
 
 	/* Initialize Mem system */
-	visual_mem_initialize ();
+	visual_mem_ops_initialize ();
 
 	/* Initialize Thread system */
 	visual_thread_initialize ();
+
+	/* Initialize VisString systen */
+	visual_string_initialize ();
 
 	/* Initialize FFT system */
 	visual_fourier_initialize ();
@@ -365,13 +369,18 @@ int visual_init (int *argc, char ***argv)
 	ret = visual_init_path_add (NULL);
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	__lv_plugins = visual_plugin_get_list ((const char**)__lv_plugpaths, TRUE);
-	visual_log_return_val_if_fail (__lv_plugins != NULL, -VISUAL_ERROR_LIBVISUAL_NO_REGISTRY);
+	visual_plugin_set_registry (visual_plugin_get_map ((const char **) __lv_plugpaths, TRUE));
 
-	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
-	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
-	__lv_plugins_morph = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_MORPH);
-	__lv_plugins_transform = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
+	if (visual_plugin_get_registry () != NULL) {
+		visual_actor_set_map (visual_plugin_registry_filter (visual_plugin_get_registry (),
+					VISUAL_PLUGIN_TYPE_ACTOR));
+		visual_input_set_map (visual_plugin_registry_filter (visual_plugin_get_registry (),
+					VISUAL_PLUGIN_TYPE_INPUT));
+		visual_morph_set_map (visual_plugin_registry_filter (visual_plugin_get_registry (),
+					VISUAL_PLUGIN_TYPE_MORPH));
+		visual_transform_set_map (visual_plugin_registry_filter (visual_plugin_get_registry (),
+					VISUAL_PLUGIN_TYPE_TRANSFORM));
+	}
 
 	__lv_paramcontainer = visual_param_container_new ();
 	init_params (__lv_paramcontainer);
@@ -410,28 +419,12 @@ int visual_quit ()
 		return -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED;
 	}
 
-	if (visual_fourier_is_initialized () == TRUE)
-		visual_fourier_deinitialize ();
+	visual_plugin_set_registry (NULL);
 
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Plugins references list: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_actor));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Actor plugins list: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_input));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Input plugins list: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_morph));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Morph plugins list: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_transform));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Transform plugins list: destroy failed: %s"), visual_error_to_string (ret));
+	visual_actor_set_map (NULL);
+	visual_input_set_map (NULL);
+	visual_morph_set_map (NULL);
+	visual_transform_set_map (NULL);
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_paramcontainer));
 	if (ret < 0)
@@ -440,6 +433,12 @@ int visual_quit ()
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_userinterface));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, _("Error during UI destroy: %s"), visual_error_to_string (ret));
+
+	if (visual_fourier_is_initialized () == TRUE)
+		visual_fourier_deinitialize ();
+
+	if (visual_string_is_initialized () == TRUE)
+		visual_string_deinitialize ();
 
         if (__lv_progname != NULL) {
                 visual_mem_free (__lv_progname);

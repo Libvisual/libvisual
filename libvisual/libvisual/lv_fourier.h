@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Chong Kai Xiong <descender@phreaker.net>
  *
- * $Id: lv_fourier.h,v 1.8 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_fourier.h,v 1.9 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -38,8 +38,8 @@ typedef struct _VisDFT VisDFT;
  */
 struct _VisDFT {
 	VisObject	 object;			/**< The VisObject data. */
-	unsigned int	 samples_in;			/**< The number of input samples. */
-	unsigned int	 spectrum_size;			/**< The size of the spectrum (power of two). */
+	visual_size_t	 samples_in;			/**< The number of input samples. */
+	visual_size_t	 spectrum_size;			/**< The size of the spectrum (power of two). */
 	float		*real;				/**< Private data that is used by the fourier engine. */
 	float		*imag;				/**< Private data that is used by the fourier engine. */
 	int		 brute_force;			/**< Private data that is used by the fourier engine. */
@@ -50,13 +50,13 @@ int visual_fourier_initialize (void);
 int visual_fourier_is_initialized (void);
 int visual_fourier_deinitialize (void);
 
-VisDFT *visual_dft_new (unsigned int samples_out, unsigned int samples_in);
-int visual_dft_init (VisDFT *fourier, unsigned int samples_out, unsigned int samples_in);
+VisDFT *visual_dft_new (visual_size_t samples_out, visual_size_t samples_in);
+int visual_dft_init (VisDFT *fourier, unsigned int samples_out, visual_size_t samples_in);
 
-int visual_dft_perform (VisDFT *fourier, float *output, float *input);
-int visual_dft_log_scale (float *output, float *input, int size);
-int visual_dft_log_scale_standard (float *output, float *input, int size);
-int visual_dft_log_scale_custom (float *output, float *input, int size, float log_scale_divisor);
+int visual_dft_perform (VisDFT *fourier, float *output, const float *input);
+int visual_dft_log_scale (float *output, const float *input, visual_size_t size);
+int visual_dft_log_scale_standard (float *output, const float *input, visual_size_t size);
+int visual_dft_log_scale_custom (float *output, const float *input, visual_size_t size, float log_scale_divisor);
 
 VISUAL_END_DECLS
 

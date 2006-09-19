@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.c,v 1.29 2006-01-23 22:32:42 synap Exp $
+ * $Id: lv_time.c,v 1.30 2006-09-19 18:28:52 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -72,7 +72,7 @@ VisTime *visual_time_new ()
  * @see visual_time_new
  *
  * @param time_ Pointer to the VisTime which needs to be initialized.
- * 
+ *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
  */
 int visual_time_init (VisTime *time_)

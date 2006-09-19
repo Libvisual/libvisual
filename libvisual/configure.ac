@@ -3,7 +3,7 @@ AC_PREREQ(2.57)
 
 dnl Version numbers
 m4_define([libvisual_version_major], [0])
-m4_define([libvisual_version_minor], [3])
+m4_define([libvisual_version_minor], [4])
 m4_define([libvisual_version_micro], [0])
 
 m4_define([libvisual_version], [libvisual_version_major.libvisual_version_minor.libvisual_version_micro])
@@ -60,21 +60,21 @@ lv_os_unknown=no
 
 case "$host_os" in
 	hpux9* | hpux10* | hpux11*)	lv_hpux=yes;;
-	aix*)		lv_aix=yes;;
-	beos*)		lv_beos=yes;;
-	*osf*)		lv_osf=yes;;
-	irix*)          lv_irix=yes;;
-	sunos*)         lv_sunos=yes;;
-	solaris*)       lv_solaris=yes;;
-	linux*)         lv_linux=yes;;
-	*sco*)          lv_sco=yes;;
-	freebsd*)	lv_freebsd=yes;;
-	netbsd*)	lv_netbsd=yes;;
-	openbsd*)	lv_openbsd=yes;;
-	*darwin*)	lv_darwin=yes;;
-	cygwin*)	lv_cygwin=yes;;
-  	mingw*)		lv_mingw=yes;;
-	*)		lv_os_unknown=yes;;
+	aix*)				lv_aix=yes;;
+	beos*)				lv_beos=yes;;
+	*osf*)				lv_osf=yes;;
+	irix*)         			lv_irix=yes;;
+	sunos*)				lv_sunos=yes;;
+	solaris*)   		    	lv_solaris=yes;;
+	linux*)         		lv_linux=yes;;
+	*sco*)          		lv_sco=yes;;
+	freebsd*|dragonfly*)		lv_freebsd=yes;;
+	netbsd*)			lv_netbsd=yes;;
+	openbsd*)			lv_openbsd=yes;;
+	*darwin*)			lv_darwin=yes;;
+	cygwin*)			lv_cygwin=yes;;
+  	mingw*)				lv_mingw=yes;;
+	*)				lv_os_unknown=yes;;
 esac
 
 AC_MSG_CHECKING([for Win32])
@@ -256,13 +256,13 @@ if test "x$enable_threads" = xyes && test "x$have_threads" != xnone; then
             *)
               LV_THREAD_LIBS=error
 	      lv_save_LIBS="$LIBS"
-	      for thread_lib in "" pthread pthread32 pthreads thread dce; do
+	      for thread_lib in "" -lpthread -lpthread32 -lpthreads -lthread -ldce -pthread; do
 		if test x"$thread_lib" = x; then
 			add_thread_lib=""
 			IN=""
 else
-			add_thread_lib="-l$thread_lib"
-			IN=" in -l$thread_lib"
+			add_thread_lib="$thread_lib"
+			IN=" in $thread_lib"
 		fi
 		if test x"$have_threads" = xposix; then
 			defattr=0

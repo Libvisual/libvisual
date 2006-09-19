@@ -4,7 +4,9 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_color.c,v 1.19 2006-03-03 01:25:46 synap Exp $
+ * HLS <-> RGB conversion routines barrowed from Compiz.
+ *
+ * $Id: lv_color.c,v 1.20 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,11 +30,6 @@
 
 #include "lv_common.h"
 #include "lv_color.h"
-
-typedef struct {
-	uint16_t b:5, g:6, r:5;
-} _color16;
-
 
 /**
  * @defgroup VisColor VisColor
@@ -207,6 +204,154 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 	return VISUAL_OK;
 }
 
+int visual_color_from_hls (VisColor *color, float h, float l, float s)
+{
+	float hue;
+	float lightness;
+	float saturation;
+	float m1, m2;
+	float r, g, b;
+
+	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+
+	lightness = l;
+	saturation = s;
+
+	if (lightness <= 0.5)
+		m2 = lightness * (1 + saturation);
+	else
+		m2 = lightness + saturation - lightness * saturation;
+
+	m1 = 2 * lightness - m2;
+
+	if (saturation == 0)
+	{
+		color->r = lightness;
+		color->g = lightness;
+		color->b = lightness;
+	}
+	else
+	{
+		hue = h + 120;
+		while (hue > 360)
+			hue -= 360;
+		while (hue < 0)
+			hue += 360;
+
+		if (hue < 60)
+			r = m1 + (m2 - m1) * hue / 60;
+		else if (hue < 180)
+			r = m2;
+		else if (hue < 240)
+			r = m1 + (m2 - m1) * (240 - hue) / 60;
+		else
+			r = m1;
+
+		hue = h;
+		while (hue > 360)
+			hue -= 360;
+		while (hue < 0)
+			hue += 360;
+
+		if (hue < 60)
+			g = m1 + (m2 - m1) * hue / 60;
+		else if (hue < 180)
+			g = m2;
+		else if (hue < 240)
+			g = m1 + (m2 - m1) * (240 - hue) / 60;
+		else
+			g = m1;
+
+		hue = h - 120;
+		while (hue > 360)
+			hue -= 360;
+		while (hue < 0)
+			hue += 360;
+
+		if (hue < 60)
+			b = m1 + (m2 - m1) * hue / 60;
+		else if (hue < 180)
+			b = m2;
+		else if (hue < 240)
+			b = m1 + (m2 - m1) * (240 - hue) / 60;
+		else
+			b = m1;
+
+		color->r = r;
+		color->g = g;
+		color->b = b;
+	}
+
+	return VISUAL_OK;
+}
+
+int visual_color_to_hls (VisColor *color, float *h, float *l, float *s)
+{
+	float min;
+	float max;
+	float red;
+	float green;
+	float blue;
+	float delta;
+
+	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+
+	red = color->r;
+	green = color->g;
+	blue = color->b;
+
+	if (red > green)
+	{
+		if (red > blue)
+			max = red;
+		else
+			max = blue;
+
+		if (green < blue)
+			min = green;
+		else
+			min = blue;
+	}
+	else
+	{
+		if (green > blue)
+			max = green;
+		else
+			max = blue;
+
+		if (red < blue)
+			min = red;
+		else
+			min = blue;
+	}
+
+	*l = (max + min) / 2;
+	*s = 0;
+	*h = 0;
+
+	if (max != min)
+	{
+		if (*l <= 0.5)
+			*s = (max - min) / (max + min);
+		else
+			*s = (max - min) / (2 - max - min);
+
+		delta = max -min;
+		if (red == max)
+			*h = (green - blue) / delta;
+		else if (green == max)
+			*h = 2 + (blue - red) / delta;
+		else if (blue == max)
+			*h = 4 + (red - green) / delta;
+
+		*h *= 60;
+		if (*h < 0.0)
+			*h += 360;
+	}
+
+	return VISUAL_OK;
+}
+
 /**
  * Copies the RGB data of one VisColor into another.
  *
@@ -243,7 +388,7 @@ int visual_color_from_uint32 (VisColor *color, uint32_t rgb)
 
 int visual_color_from_uint16 (VisColor *color, uint16_t rgb)
 {
-	_color16 *colors = (_color16 *) &rgb;
+	VisColorPacked16 *colors = (VisColorPacked16 *) &rgb;
 
 	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
@@ -270,7 +415,7 @@ uint32_t visual_color_to_uint32 (VisColor *color)
 
 uint16_t visual_color_to_uint16 (VisColor *color)
 {
-	_color16 colors;
+	VisColorPacked16 colors;
 
 	visual_log_return_val_if_fail (color != NULL, 0);
 

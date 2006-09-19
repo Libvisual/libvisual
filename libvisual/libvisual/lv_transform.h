@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_transform.h,v 1.6 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_transform.h,v 1.7 2006-09-19 18:28:52 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -111,10 +111,8 @@ struct _VisTransformPlugin {
 /* prototypes */
 VisPluginData *visual_transform_get_plugin (VisTransform *transform);
 
-VisList *visual_transform_get_list (void);
-const char *visual_transform_get_next_by_name (const char *name);
-const char *visual_transform_get_prev_by_name (const char *name);
-int visual_transform_valid_by_name (const char *name);
+int visual_transform_set_map (VisHashmap *map);
+VisHashmap *visual_transform_get_map (void);
 
 VisTransform *visual_transform_new (const char *transformname);
 

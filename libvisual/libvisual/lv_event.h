@@ -3,7 +3,7 @@
 
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_video.h>
-#include <libvisual/lv_list.h>
+#include <libvisual/lv_queue.h>
 #include <libvisual/lv_keysym.h>
 
 VISUAL_BEGIN_DECLS
@@ -11,6 +11,7 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_EVENT_KEYBOARD(obj)			(VISUAL_CHECK_CAST ((obj), VisEventKeyboard))
 #define VISUAL_EVENT_MOUSEMOTION(obj)			(VISUAL_CHECK_CAST ((obj), VisEventMouseMotion))
 #define VISUAL_EVENT_MOUSEBUTTON(obj)			(VISUAL_CHECK_CAST ((obj), VisEventMouseButton))
+#define VISUAL_EVENT_TOUCH(obj)				(VISUAL_CHECK_CAST ((obj), VisEventTouch))
 #define VISUAL_EVENT_RESIZE(obj)			(VISUAL_CHECK_CAST ((obj), VisEventResize))
 #define VISUAL_EVENT_NEWSONG(obj)			(VISUAL_CHECK_CAST ((obj), VisEventNewSong))
 #define VISUAL_EVENT_QUIT(obj)				(VISUAL_CHECK_CAST ((obj), VisEventQuit))
@@ -19,11 +20,6 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_EVENT_PARAM(obj)				(VISUAL_CHECK_CAST ((obj), VisEventParam))
 #define VISUAL_EVENT(obj)				(VISUAL_CHECK_CAST ((obj), VisEvent))
 #define VISUAL_EVENTQUEUE(obj)				(VISUAL_CHECK_CAST ((obj), VisEventQueue))
-
-/**
- * Number of events allowed in the queue
- */
-#define VISUAL_EVENT_MAXEVENTS	256
 
 /**
  * Used to define what kind of event is emitted by the VisEvent system.
@@ -35,6 +31,7 @@ typedef enum {
 	VISUAL_EVENT_MOUSEMOTION,	/**< Mouse movement event. */
 	VISUAL_EVENT_MOUSEBUTTONDOWN,	/**< Mouse button pressed event. */
 	VISUAL_EVENT_MOUSEBUTTONUP,	/**< Mouse button released event. */
+	VISUAL_EVENT_TOUCH,		/**< Touch event. */
 	VISUAL_EVENT_NEWSONG,		/**< Song change event. */
 	VISUAL_EVENT_RESIZE,		/**< Window dimension change event. */
 	VISUAL_EVENT_PARAM,		/**< Param set event, gets emitted when a parameter has been changed. */
@@ -45,12 +42,21 @@ typedef enum {
 	VISUAL_EVENT_LAST = 0xffffff,	/**< last event number. Libvisual & friends will never use ids greater than this */
 } VisEventType;
 
+/* FIXME FIXME FIXME */
 /**
  * Used to define key states within the VisEvent system.
  */
 typedef enum {
 	VISUAL_KEY_DOWN,		/**< Key is pressed. */
 	VISUAL_KEY_UP			/**< Key is released. */
+} VisKeyFIXME_REMOVE_ME_THIS_IS_JUST_FOR_NOWState;
+
+/**
+ * Used to define key states within the VisEvent system.
+ */
+typedef enum {
+	VISUAL_KEYB_DOWN,		/**< Key is pressed. */
+	VISUAL_KEYB_UP			/**< Key is released. */
 } VisKeyState;
 
 /**
@@ -65,6 +71,7 @@ typedef enum {
 typedef struct _VisEventKeyboard VisEventKeyboard;
 typedef struct _VisEventMouseMotion VisEventMouseMotion;
 typedef struct _VisEventMouseButton VisEventMouseButton;
+typedef struct _VisEventTouch VisEventTouch;
 typedef struct _VisEventResize VisEventResize;
 typedef struct _VisEventNewSong VisEventNewSong;
 typedef struct _VisEventQuit VisEventQuit;
@@ -113,6 +120,20 @@ struct _VisEventMouseButton {
 	int		button;		/**< The button the state relates to. */
 	int		x;		/**< The absolute mouse X value. */
 	int		y;		/**< The absolute mouse Y value. */
+};
+
+/**
+ * Touch event data structure.
+ *
+ * Contains information about touch events in multitouch screen situations.
+ *
+ * @see visual_event_queue_add_touch
+ */
+struct _VisEventTouch {
+	float	x;
+	float	y;
+	float	pressure;
+	float	diameter;
 };
 
 /**
@@ -176,6 +197,10 @@ struct _VisEventGeneric {
 	void		*data_ptr;	/**< More advanced generic events can use a pointer. */
 };
 
+#ifndef _LV_VIS_PARAM_ENTRY_FORWARD_DECL
+typedef void VisParamEntry;
+#endif /* _LV_VIS_PARAM_ENTRY_FORWARD_DECL */
+
 /**
  * Param change event data structure.
  *
@@ -184,13 +209,12 @@ struct _VisEventGeneric {
  * @see visual_event_queue_add_param
  */
 struct _VisEventParam {
-	/* FiXME: Having VisEventParam here creates a circulair depency in lv_event.h and lv_param.h */
-	void		*param;		/**< The parameter entry which has been changed. */
+	VisParamEntry	*param;		/**< The parameter entry which has been changed. */
 };
 
 /**
  * The main event data structure.
- * 
+ *
  * All events are encapsulated using the VisEvent structure.
  *
  * @see visual_event_new
@@ -203,6 +227,7 @@ struct _VisEvent {
 		VisEventKeyboard	keyboard;	/**< Keyboard event. */
 		VisEventMouseMotion	mousemotion;	/**< Mouse movement event. */
 		VisEventMouseButton	mousebutton;	/**< Mouse button event. */
+		VisEventTouch		touch;		/**< Touch event. */
 		VisEventResize		resize;		/**< Dimension change event. */
 		VisEventNewSong		newsong;	/**< Song change event. */
 		VisEventQuit		quit;		/**< Quit event. */
@@ -222,7 +247,7 @@ struct _VisEvent {
  */
 struct _VisEventQueue {
 	VisObject	 object;	/**< The VisObject data. */
-	VisList		 events;	/**< List of VisEvents in the queue. */
+	VisQueue	 events;	/**< Queue of VisEvents in the queue. */
 	VisEvent	 lastresize;	/**< Last resize event to provide quick access
 					  * to this high piority event. */
 	int		 resizenew;	/**< Flag that is set when there is a new resize event. */
@@ -247,6 +272,7 @@ int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event);
 int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, int keymod, VisKeyState state);
 int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y);
 int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state, int x, int y);
+int visual_event_queue_add_touch (VisEventQueue *eventqueue, float x, float y, float pressure, float diameter);
 int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, int width, int height);
 int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *songinfo);
 int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param);

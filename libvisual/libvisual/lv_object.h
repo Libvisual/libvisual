@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_object.h,v 1.14 2006-01-23 21:06:24 synap Exp $
+ * $Id: lv_object.h,v 1.15 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,6 +31,13 @@ VISUAL_BEGIN_DECLS
 
 #define VISUAL_OBJECT(obj)				(VISUAL_CHECK_CAST ((obj), VisObject))
 
+/**
+ * Use as the end marker for an unref list
+ *
+ * @see visual_object_unref_many
+ */
+#define VISUAL_OBJECT_LIST_END	((void *) ~((void *) 0))
+
 typedef struct _VisObject VisObject;
 
 /**
@@ -42,10 +49,35 @@ typedef struct _VisObject VisObject;
  * however make sure that freed members are set to NULL and that it's checked.
  *
  * @arg object The VisObject that is passed to the destructor.
- * 
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_DTOR_FAILED on failure.
+ *
+ * @return TRUE if VisObject should free the memory (will check if allocated), or FALSE when memory management
+ *	is arranged by other facilities, for example a memory pool.
  */
 typedef int (*VisObjectDtorFunc)(VisObject *object);
+
+/**
+ * The function defination for an object ref callback. This can be assigned to an object if it wants
+ * to do extra work when it's reference is increased.
+ *
+ * @see visual_object_set_ref
+ *
+ * @arg object The VisObject that is passed to the ref.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_REF_FAILED on failure
+ */
+typedef int (*VisObjectRefFunc)(VisObject *object);
+
+/**
+ * The function defination for an object unref callback. This can be assigned to an object if it wants
+ * to do extra work when it's reference is decreased.
+ *
+ * @see visual_object_set_unref
+ *
+ * @arg object The VisObject that is passed to the unref.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_UNREF_FAILED on failure
+ */
+typedef int (*VisObjectUnrefFunc)(VisObject *object);
 
 /**
  * The VisObject structure contains all the VisObject housekeeping data like refcounting and a pointer
@@ -58,15 +90,19 @@ struct _VisObject {
 						  * if set to FALSE, it will run the VisObjectDtorFunc but won't free the VisObject
 						  * itself when refcount reaches 0. */
 	int			 refcount;	/**< Contains the number of references to this object. */
+
 	VisObjectDtorFunc	 dtor;		/**< Pointer to the object destruction function. */
+	VisObjectRefFunc	 ref;		/**< Pointer to the object it's ref increase function. */
+	VisObjectUnrefFunc	 unref;		/**< Pointer to the object it's ref decrease function. */
 
 	void			*priv;		/**< Private which can be used by application or plugin developers
 						 * depending on the sub class object. */
 };
 
-int visual_object_collection_destroyer (void *data);
+void visual_object_collection_destroyer (void *data);
 
 VisObject *visual_object_new (void);
+VisObject *visual_object_new_of_size (visual_size_t size);
 int visual_object_free (VisObject *object);
 int visual_object_destroy (VisObject *object);
 
@@ -76,8 +112,16 @@ int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor);
 int visual_object_set_allocated (VisObject *object, int allocated);
 int visual_object_set_refcount (VisObject *object, int refcount);
 
+int visual_object_set_ref (VisObject *object, VisObjectRefFunc ref);
+int visual_object_set_unref (VisObject *object, VisObjectUnrefFunc unref);
+
 int visual_object_ref (VisObject *object);
+int visual_object_ref_many (VisObject *object, ...);
+
 int visual_object_unref (VisObject *object);
+int visual_object_unref_many (VisObject *object, ...);
+
+int visual_object_refcount (VisObject *object);
 
 int visual_object_set_private (VisObject *object, void *priv);
 void *visual_object_get_private (VisObject *object);
@@ -99,6 +143,13 @@ void *visual_object_get_private (VisObject *object);
 	visual_mem_copy ((uint8_t *) (dest) + sizeof (VisObject),	\
 			(uint8_t *) (src) + sizeof (VisObject),		\
 			sizeof (struct_type) - sizeof (VisObject))
+/**
+ * @ingroup VisObject
+ *
+ * Convenient macro that will simple initialize and create a VisObject of type @a struct_type.
+ */
+#define visual_object_new_and_clean(struct_type)	\
+	((struct_type *) visual_object_new_of_size ((visual_size_t) (sizeof (struct_type))))
 
 
 VISUAL_END_DECLS

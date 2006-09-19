@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_thread.c,v 1.19 2006-02-13 20:54:08 synap Exp $
+ * $Id: lv_thread.c,v 1.20 2006-09-19 18:28:52 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -44,6 +44,7 @@
 
 
 typedef struct _ThreadFuncs ThreadFuncs;
+typedef struct _TLSData TLSData;
 
 typedef VisThread *(*ThreadFuncCreate)(VisThreadFunc func, void *data, int joinable);
 typedef int (*ThreadFuncFree)(VisThread *thread);
@@ -58,6 +59,12 @@ typedef int (*MutexFuncLock)(VisMutex *mutex);
 typedef int (*MutexFuncTrylock)(VisMutex *mutex);
 typedef int (*MutexFuncUnlock)(VisMutex *mutex);
 
+typedef VisTLS *(*TLSCreateKey)(VisTLSDestroyerFunc destroyer);
+typedef int (*TLSDeleteKey)(VisTLS *tls);
+typedef int (*TLSSetData)(VisTLS *tls, void *data);
+typedef void *(*TLSGetData)(VisTLS *tls);
+
+
 struct _ThreadFuncs {
 	ThreadFuncCreate	thread_create;
 	ThreadFuncFree		thread_free;
@@ -71,6 +78,16 @@ struct _ThreadFuncs {
 	MutexFuncLock		mutex_lock;
 	MutexFuncTrylock	mutex_trylock;
 	MutexFuncUnlock		mutex_unlock;
+
+	TLSCreateKey		tls_createkey;
+	TLSDeleteKey		tls_deletekey;
+	TLSSetData		tls_setdata;
+	TLSGetData		tls_getdata;
+};
+
+struct _TLSData {
+	VisTLS	*key;
+	void	*data;
 };
 
 /* Internal variables */
@@ -78,6 +95,9 @@ static int __lv_thread_initialized = FALSE;
 static int __lv_thread_supported = FALSE;
 static int __lv_thread_enabled = TRUE;
 static ThreadFuncs __lv_thread_funcs;
+
+/* Functions */
+static void tls_data_destroyer (void *ptr);
 
 /* Posix implementation */
 static VisThread *thread_create_posix (VisThreadFunc func, void *data, int joinable);
@@ -93,6 +113,11 @@ static int mutex_lock_posix (VisMutex *mutex);
 static int mutex_trylock_posix (VisMutex *mutex);
 static int mutex_unlock_posix (VisMutex *mutex);
 
+static VisTLS *tls_createkey_posix (VisTLSDestroyerFunc destroyer);
+static int tls_deletekey_posix (VisTLS *tls);
+static int tls_setdata_posix (VisTLS *tls, void *data);
+static void *tls_getdata_posix (VisTLS *tls);
+
 /* Windows32 implementation */
 static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joinable);
 static int thread_free_win32 (VisThread *thread);
@@ -106,6 +131,11 @@ static int mutex_init_win32 (VisMutex *mutex);
 static int mutex_lock_win32 (VisMutex *mutex);
 static int mutex_trylock_win32 (VisMutex *mutex);
 static int mutex_unlock_win32 (VisMutex *mutex);
+
+static VisTLS *tls_createkey_win32 (VisTLSDestroyerFunc destroyer);
+static int tls_deletekey_win32 (VisTLS *tls);
+static int tls_setdata_win32 (VisTLS *tls, void *data);
+static void *tls_getdata_win32 (VisTLS *tls);
 
 /* GThread implementation */
 static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joinable);
@@ -121,6 +151,27 @@ static int mutex_lock_gthread (VisMutex *mutex);
 static int mutex_trylock_gthread (VisMutex *mutex);
 static int mutex_unlock_gthread (VisMutex *mutex);
 
+static VisTLS *tls_createkey_gthread (VisTLSDestroyerFunc destroyer);
+static int tls_deletekey_gthread (VisTLS *tls);
+static int tls_setdata_gthread (VisTLS *tls, void *data);
+static void *tls_getdata_gthread (VisTLS *tls);
+
+
+static void tls_data_destroyer (void *ptr)
+{
+	TLSData *tlsdata = (TLSData *) ptr;
+
+	if (tlsdata == NULL)
+		return;
+
+	if (tlsdata->key != NULL && tlsdata->key->destroyer != NULL)
+		tlsdata->key->destroyer (tlsdata->data);
+
+	tlsdata->key = NULL;
+
+	visual_mem_free (tlsdata);
+}
+
 
 /**
  * @defgroup VisThread VisThread
@@ -130,7 +181,7 @@ static int mutex_unlock_gthread (VisMutex *mutex);
 /**
  * Initializes the VisThread subsystem. This function needs to be called before VisThread can be used. Also
  * this function is called from within visual_init().
- * 
+ *
  * @return TRUE if initialized, FALSE if not initialized.
  */
 int visual_thread_initialize ()
@@ -141,7 +192,7 @@ int visual_thread_initialize ()
 
 #ifdef VISUAL_THREAD_MODEL_POSIX
 	__lv_thread_supported = TRUE;
-	
+
 	__lv_thread_funcs.thread_create = thread_create_posix;
 	__lv_thread_funcs.thread_free = thread_free_posix;
 	__lv_thread_funcs.thread_join = thread_join_posix;
@@ -154,6 +205,11 @@ int visual_thread_initialize ()
 	__lv_thread_funcs.mutex_lock = mutex_lock_posix;
 	__lv_thread_funcs.mutex_trylock = mutex_trylock_posix;
 	__lv_thread_funcs.mutex_unlock = mutex_unlock_posix;
+
+	__lv_thread_funcs.tls_createkey = tls_createkey_posix;
+	__lv_thread_funcs.tls_deletekey = tls_deletekey_posix;
+	__lv_thread_funcs.tls_setdata = tls_setdata_posix;
+	__lv_thread_funcs.tls_getdata = tls_getdata_posix;
 
 	return TRUE;
 #elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
@@ -172,6 +228,11 @@ int visual_thread_initialize ()
 	__lv_thread_funcs.mutex_trylock = mutex_trylock_win32;
 	__lv_thread_funcs.mutex_unlock = mutex_unlock_win32;
 
+	__lv_thread_funcs.tls_createkey = tls_createkey_win32;
+	__lv_thread_funcs.tls_deletekey = tls_deletekey_win32;
+	__lv_thread_funcs.tls_setdata = tls_setdata_win32;
+	__lv_thread_funcs.tls_getdata = tls_getdata_win32;
+
 	return TRUE;
 #elif defined(VISUAL_THREAD_MODEL_GTHREAD2) /* !VISUAL_THREAD_MODEL_WIN32 */
 	__lv_thread_supported = TRUE;
@@ -189,10 +250,15 @@ int visual_thread_initialize ()
 	__lv_thread_funcs.mutex_trylock = mutex_trylock_gthread;
 	__lv_thread_funcs.mutex_unlock = mutex_unlock_gthread;
 
+	__lv_thread_funcs.tls_createkey = tls_createkey_gthread;
+	__lv_thread_funcs.tls_deletekey = tls_deletekey_gthread;
+	__lv_thread_funcs.tls_setdata = tls_setdata_gthread;
+	__lv_thread_funcs.tls_getdata = tls_getdata_gthread;
+
 	return TRUE;
 #else /* !VISUAL_THREAD_MODEL_GTHREAD2 */
 	return FALSE;
-#endif 
+#endif
 #else
 	return FALSE;
 #endif /* VISUAL_HAVE_THREADS */
@@ -211,7 +277,7 @@ int visual_thread_is_initialized ()
 
 /**
  * Enable or disable threading support. This can be used to disallow threads, which might be needed in some environments.
- * 
+ *
  * @see visual_thread_is_enabled
  *
  * @param enabled TRUE to enable threads, FALSE to disable threads.
@@ -311,7 +377,7 @@ void visual_thread_exit (void *retval)
 	visual_log_return_if_fail (visual_thread_is_initialized () != FALSE);
 	visual_log_return_if_fail (visual_thread_is_supported () != FALSE);
 	visual_log_return_if_fail (visual_thread_is_enabled () != FALSE);
-	
+
 	return __lv_thread_funcs.thread_exit (retval);
 }
 
@@ -323,7 +389,7 @@ void visual_thread_yield ()
 	visual_log_return_if_fail (visual_thread_is_initialized () != FALSE);
 	visual_log_return_if_fail (visual_thread_is_supported () != FALSE);
 	visual_log_return_if_fail (visual_thread_is_enabled () != FALSE);
-	
+
 	return __lv_thread_funcs.thread_yield ();
 }
 
@@ -370,7 +436,7 @@ int visual_mutex_free (VisMutex *mutex)
  * @param mutex Pointer to the VisMutex which needs to be initialized.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL,  -VISUAL_ERROR_THREAD_NOT_INTIALIZED,
- * 	-VISUAL_ERROR_THREAD_NOT_SUPPORTED or -VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
+ *	-VISUAL_ERROR_THREAD_NOT_SUPPORTED or -VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
 int visual_mutex_init (VisMutex *mutex)
 {
@@ -379,7 +445,7 @@ int visual_mutex_init (VisMutex *mutex)
 	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
 	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
 	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
-	
+
 	return __lv_thread_funcs.mutex_init (mutex);
 }
 
@@ -431,7 +497,7 @@ int visual_mutex_trylock (VisMutex *mutex)
  * @param mutex Pointer to the VisMutex that is unlocked.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_UNLOCK_FAILURE.
- *	-VISUAL_ERROR_THREAD_NOT_INITIALIZED, -VISUAL_ERROR_THREAD_NOT_SUPPORTED or 
+ *	-VISUAL_ERROR_THREAD_NOT_INITIALIZED, -VISUAL_ERROR_THREAD_NOT_SUPPORTED or
  *	-VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
 int visual_mutex_unlock (VisMutex *mutex)
@@ -443,6 +509,48 @@ int visual_mutex_unlock (VisMutex *mutex)
 	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
 
 	return __lv_thread_funcs.mutex_unlock (mutex);
+}
+
+VisTLS *visual_thread_tls_create_key (VisTLSDestroyerFunc destroyer)
+{
+	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, NULL);
+	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, NULL);
+	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, NULL);
+
+	return __lv_thread_funcs.tls_createkey (destroyer);
+}
+
+int visual_thread_tls_delete_key (VisTLS *tlskey)
+{
+	visual_log_return_val_if_fail (tlskey != NULL, -VISUAL_ERROR_TLSKEY_NULL);
+
+	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
+	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
+
+	return __lv_thread_funcs.tls_deletekey (tlskey);
+}
+
+int visual_thread_tls_set_data (VisTLS *tlskey, void *data)
+{
+	visual_log_return_val_if_fail (tlskey != NULL, -VISUAL_ERROR_TLSKEY_NULL);
+
+	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
+	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
+
+	return __lv_thread_funcs.tls_setdata (tlskey, data);
+}
+
+void *visual_thread_tls_get_data (VisTLS *tlskey)
+{
+	visual_log_return_val_if_fail (tlskey != NULL, NULL);
+
+	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, NULL);
+	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, NULL);
+	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, NULL);
+
+	return __lv_thread_funcs.tls_getdata (tlskey);
 }
 
 /**
@@ -580,12 +688,64 @@ static int mutex_unlock_posix (VisMutex *mutex)
 	return VISUAL_OK;
 }
 
+static VisTLS *tls_createkey_posix (VisTLSDestroyerFunc destroyer)
+{
+	VisTLS *tls;
+#ifdef VISUAL_THREAD_MODEL_POSIX
+	tls = visual_mem_new0 (VisTLS, 1);
+
+	tls->destroyer = destroyer;
+
+	pthread_key_create (&tls->key, tls_data_destroyer);
+#endif
+	return tls;
+}
+
+static int tls_deletekey_posix (VisTLS *tls)
+{
+#ifdef VISUAL_THREAD_MODEL_POSIX
+	pthread_key_delete (tls->key);
+#endif
+
+	visual_mem_free (tls);
+
+	return VISUAL_OK;
+}
+
+static int tls_setdata_posix (VisTLS *tls, void *data)
+{
+#ifdef VISUAL_THREAD_MODEL_POSIX
+	TLSData *tlsdata = visual_mem_new0 (TLSData, 1);
+	tlsdata->data = data;
+	tlsdata->key = tls;
+
+	pthread_setspecific (tls->key, tlsdata);
+#endif
+
+	return VISUAL_OK;
+}
+
+static void *tls_getdata_posix (VisTLS *tls)
+{
+#ifdef VISUAL_THREAD_MODEL_POSIX
+	TLSData *tlsdata;
+
+	tlsdata = pthread_getspecific (tls->key);
+
+	if (tlsdata != NULL)
+		return tlsdata->data;
+#endif
+
+	return NULL;
+}
+
+
 /* Windows32 implementation */
 static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joinable)
 {
 	VisThread *thread = NULL;
 #ifdef VISUAL_THREAD_MODEL_WIN32
-	
+
 	thread = visual_mem_new0 (VisThread, 1);
 
 	thread->thread = CreateThread (NULL, 0, func, (PVOID) data, 0, &thread->threadId);
@@ -693,6 +853,34 @@ static int mutex_unlock_win32 (VisMutex *mutex)
 #endif
 }
 
+static VisTLS *tls_createkey_win32 (VisTLSDestroyerFunc destroyer)
+{
+	VisTLS *tls;
+#ifdef VISUAL_THREAD_MODEL_WIN32
+	tls = visual_mem_new0 (VisTLS, 1);
+
+	tls->destroyer = destroyer;
+	tls->key = TlsAlloc ();
+#endif
+	return tls;
+
+}
+
+static int tls_deletekey_win32 (VisTLS *tls)
+{
+
+}
+
+static int tls_setdata_win32 (VisTLS *tls, void *data)
+{
+
+}
+
+static void *tls_getdata_win32 (VisTLS *tls)
+{
+
+}
+
 /* GThread implementation */
 static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joinable)
 {
@@ -728,7 +916,7 @@ static void *thread_join_gthread (VisThread *thread)
 	visual_log_return_val_if_fail (thread->thread != NULL, NULL);
 
 	result = g_thread_join (thread->thread);
-	
+
 	return result;
 #else
 	return NULL;
@@ -753,10 +941,10 @@ static void thread_yield_gthread ()
 static VisMutex *mutex_new_gthread ()
 {
 	VisMutex *mutex;
-	
+
 	mutex = visual_mem_new0 (VisMutex, 1);
-	
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2	
+
+#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	mutex->static_mutex_used = FALSE;
 
 	mutex->mutex = g_mutex_new ();
@@ -821,5 +1009,25 @@ static int mutex_unlock_gthread (VisMutex *mutex)
 #endif
 
 	return VISUAL_OK;
+}
+
+static VisTLS *tls_createkey_gthread (VisTLSDestroyerFunc destroyer)
+{
+
+}
+
+static int tls_deletekey_gthread (VisTLS *tls)
+{
+
+}
+
+static int tls_setdata_gthread (VisTLS *tls, void *data)
+{
+
+}
+
+static void *tls_getdata_gthread (VisTLS *tls)
+{
+
 }
 

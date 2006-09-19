@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_defines.h,v 1.7 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_defines.h,v 1.8 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -59,6 +59,14 @@
  * TRUE define.
  */
 #define TRUE	(!FALSE)
+#endif
+
+#ifndef VISUAL_MAX
+#define VISUAL_MAX(a, b)	(a > b ? a : b)
+#endif
+
+#ifndef VISUAL_MIN
+#define VISUAL_MIN(a, b)	(a < b ? a : b)
 #endif
 
 /* Compiler specific optimalization macros */

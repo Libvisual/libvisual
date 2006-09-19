@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_ui.c,v 1.59 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_ui.c,v 1.60 2006-09-19 18:28:52 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,7 +34,9 @@ static int box_dtor (VisObject *object);
 static int table_dtor (VisObject *object);
 static int table_entry_dtor (VisObject *object);
 static int frame_dtor (VisObject *object);
+static int label_dtor (VisObject *object);
 static int choice_dtor (VisObject *object);
+static int checkbox_dtor (VisObject *object);
 static int widget_dtor (VisObject *object);
 
 static int box_dtor (VisObject *object)
@@ -45,7 +47,7 @@ static int box_dtor (VisObject *object)
 
 	widget_dtor (object);
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int table_dtor (VisObject *object)
@@ -56,7 +58,7 @@ static int table_dtor (VisObject *object)
 
 	widget_dtor (object);
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int table_entry_dtor (VisObject *object)
@@ -68,7 +70,7 @@ static int table_entry_dtor (VisObject *object)
 
 	tentry->widget = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int notebook_dtor (VisObject *object)
@@ -80,7 +82,7 @@ static int notebook_dtor (VisObject *object)
 
 	widget_dtor (object);
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int frame_dtor (VisObject *object)
@@ -94,29 +96,47 @@ static int frame_dtor (VisObject *object)
 
 	widget_dtor (object);
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
+static int label_dtor (VisObject *object)
+{
+	VisUILabel *label = VISUAL_UI_LABEL (object);
+
+	visual_object_unref (VISUAL_OBJECT (&label->text));
+
+	widget_dtor (object);
+
+	return TRUE;
+}
 
 static int choice_dtor (VisObject *object)
 {
 	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (object));
 
 	widget_dtor (object);
-	
-	return VISUAL_OK;
+
+	return TRUE;
+}
+
+static int checkbox_dtor (VisObject *object)
+{
+	VisUICheckbox *checkbox = VISUAL_UI_CHECKBOX (object);
+
+	visual_object_unref (VISUAL_OBJECT (&checkbox->name));
+
+	widget_dtor (object);
+
+	return TRUE;
 }
 
 static int widget_dtor (VisObject *object)
 {
 	VisUIWidget *widget = VISUAL_UI_WIDGET (object);
 
-	if (widget->tooltip != NULL)
-		visual_mem_free ((char *) widget->tooltip);
+	visual_object_unref (VISUAL_OBJECT (&widget->tooltip));
 
-	widget->tooltip = NULL;
-
-	return VISUAL_OK;
+	return TRUE;
 }
 
 /**
@@ -138,6 +158,8 @@ VisUIWidget *visual_ui_widget_new ()
 
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (widget), TRUE, widget_dtor);
+
+	visual_string_init (&widget->tooltip);
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (widget), -1, -1);
 
@@ -171,14 +193,13 @@ int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int heigh
  *
  * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_WIDGET_NULL on failure.
  */
-int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
+int visual_ui_widget_set_tooltip (VisUIWidget *widget, VisString *tooltip)
 {
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
-	if (widget->tooltip != NULL)
-		visual_mem_free ((char *) widget->tooltip);
-	
-	widget->tooltip = strdup (tooltip);
+	visual_string_copy (&widget->tooltip, tooltip);
+
+	visual_string_unref_parameter (tooltip);
 
 	return VISUAL_OK;
 }
@@ -190,11 +211,11 @@ int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
  *
  * @return The tooltip, possibly NULL, NULL on failure.
  */
-const char *visual_ui_widget_get_tooltip (VisUIWidget *widget)
+VisString *visual_ui_widget_get_tooltip (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, NULL);
 
-	return widget->tooltip;
+	return &widget->tooltip;
 }
 
 /**
@@ -402,7 +423,7 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 VisUITableEntry *visual_ui_table_entry_new (VisUIWidget *widget, int row, int col)
 {
 	VisUITableEntry *tentry;
-	
+
 	visual_log_return_val_if_fail (widget != NULL, NULL);
 
 	tentry = visual_mem_new0 (VisUITableEntry, 1);
@@ -488,16 +509,22 @@ VisUIWidget *visual_ui_notebook_new ()
  * @param label The label attached to the tab of this notebook entry.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_NOTEBOOK_NULL, -VISUAL_ERROR_UI_WIDGET_NULL or -VISUAL_ERROR_NULL
- * 	on failure.
+ *	on failure.
  */
-int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, char *label)
+int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, VisString *label)
 {
+	/* FIXME label is not always cleaned, same as in visparam, we need something that easily destroys object parameters */
+
 	visual_log_return_val_if_fail (notebook != NULL, -VISUAL_ERROR_UI_NOTEBOOK_NULL);
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_NULL);
 
+	visual_string_ref_parameter (label);
+
 	visual_list_add (&notebook->labels, visual_ui_label_new (label, FALSE));
 	visual_list_add (&notebook->childs, widget);
+
+	visual_string_unref_parameter (label);
 
 	return VISUAL_OK;
 }
@@ -532,26 +559,30 @@ VisList *visual_ui_notebook_get_childlabels (VisUINotebook *notebook)
 
 /**
  * Creates a new VisUIFrame, which can be used to put a frame around a VisUIWidget.
- * 
+ *
  * @param name The name of this frame.
  *
  * @return The newly created VisUIFrame in the form of a VisUIWidget.
  */
-VisUIWidget *visual_ui_frame_new (const char *name)
+VisUIWidget *visual_ui_frame_new (VisString *name)
 {
 	VisUIFrame *frame;
 
 	frame = visual_mem_new0 (VisUIFrame, 1);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (frame), TRUE, frame_dtor);
 
 	VISUAL_UI_WIDGET (frame)->type = VISUAL_WIDGET_TYPE_FRAME;
 
-	frame->name = name;
+	visual_string_init (&frame->name);
+
+	visual_string_copy (&frame->name, name);
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (frame), -1, -1);
-	
+
+	visual_string_unref_parameter (name);
+
 	return VISUAL_UI_WIDGET (frame);
 }
 
@@ -563,28 +594,32 @@ VisUIWidget *visual_ui_frame_new (const char *name)
  *
  * @return The newly created VisUILabel in the form of a VisUIWidget.
  */
-VisUIWidget *visual_ui_label_new (const char *text, int bold)
+VisUIWidget *visual_ui_label_new (VisString *text, int bold)
 {
 	VisUILabel *label;
 
 	label = visual_mem_new0 (VisUILabel, 1);
 
 	/* Do the VisObject initialization */
-	visual_object_initialize (VISUAL_OBJECT (label), TRUE, widget_dtor);
+	visual_object_initialize (VISUAL_OBJECT (label), TRUE, label_dtor);
 
 	VISUAL_UI_WIDGET (label)->type = VISUAL_WIDGET_TYPE_LABEL;
 
-	label->text = text;
+	visual_string_init (&label->text);
+
+	visual_string_copy (&label->text, text);
 	label->bold = bold;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (label), -1, -1);
-	
+
+	visual_string_unref_parameter (text);
+
 	return VISUAL_UI_WIDGET (label);
 }
 
 /**
  * Sets the bold flag for a VisUILabel.
- * 
+ *
  * @param label Pointer to the VisUILabel of which the bold flag is set, or unset.
  * @param bold Flag that indicates if a label should be drawn bold or not.
  *
@@ -607,11 +642,13 @@ int visual_ui_label_set_bold (VisUILabel *label, int bold)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_LABEL_NULL on failure.
  */
-int visual_ui_label_set_text (VisUILabel *label, const char *text)
+int visual_ui_label_set_text (VisUILabel *label, VisString *text)
 {
 	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);
 
-	label->text = text;
+	visual_string_copy (&label->text, text);
+
+	visual_string_unref_parameter (text);
 
 	return VISUAL_OK;
 }
@@ -620,14 +657,14 @@ int visual_ui_label_set_text (VisUILabel *label, const char *text)
  * Retrieve the text from a VisUILabel.
  *
  * @param label Pointer to the VisUILabel from which the text is being requested.
- * 
+ *
  * return The text contained in the label, NULL on failure.
  */
-const char *visual_ui_label_get_text (VisUILabel *label)
+VisString *visual_ui_label_get_text (VisUILabel *label)
 {
 	visual_log_return_val_if_fail (label != NULL, NULL);
 
-	return label->text;
+	return &label->text;
 }
 
 /**
@@ -764,55 +801,17 @@ VisParamEntry *visual_ui_mutator_get_param (VisUIMutator *mutator)
  * Set the properties for a VisUIRange.
  *
  * @param range Pointer to the VisUIRange to which the properties are set.
- * @param min The minimal value.
- * @param max The maximal value.
  * @param step The increase/decrease step value.
  * @param precision The precision in numbers behind the comma.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_RANGE_NULL on failure.
  */
-int visual_ui_range_set_properties (VisUIRange *range, double min, double max, double step, int precision)
+int visual_ui_range_set_properties (VisUIRange *range, double step, int precision)
 {
 	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
 
-	range->min = min;
-	range->max = max;
 	range->step = step;
 	range->precision = precision;
-
-	return VISUAL_OK;
-}
-
-/**
- * Sets the maximal value for a VisUIRange.
- *
- * @param range Pointer to the VisUIRange to which the maximum value is set.
- * @param max The maximal value.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_RANGE_NULL on failure.
- */
-int visual_ui_range_set_max (VisUIRange *range, double max)
-{
-	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
-
-	range->max = max;
-
-	return VISUAL_OK;
-}
-
-/**
- * Sets the minimal value for a VisUIRange.
- *
- * @param range Pointer to the VisUIRange to which the minimal value is set.
- * @param min The minimal value.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_RANGE_NULL on failure.
- */
-int visual_ui_range_set_min (VisUIRange *range, double min)
-{
-	visual_log_return_val_if_fail (range != NULL, -VISUAL_ERROR_UI_RANGE_NULL);
-
-	range->min = min;
 
 	return VISUAL_OK;
 }
@@ -1008,20 +1007,27 @@ VisUIWidget *visual_ui_colorpalette_new ()
  *
  * @return The newly created VisUIChoiceEntry.
  */
-VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, VisParamEntry *value)
+VisUIChoiceEntry *visual_ui_choice_entry_new (VisString *name, VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
 
+	/* FIXME, again.. the string parameter is not always cleaned */
 	visual_log_return_val_if_fail (name != NULL, NULL);
 	visual_log_return_val_if_fail (value != NULL, NULL);
 
 	centry = visual_mem_new0 (VisUIChoiceEntry, 1);
 
 	/* Do the VisObject initialization */
+	/* FIXME add choice entry dtor that destroys teh string and unrefs the paramentry */
 	visual_object_initialize (VISUAL_OBJECT (centry), TRUE, NULL);
 
-	centry->name = name;
+	visual_string_init (&centry->name);
+
+	visual_string_copy (&centry->name, name);
+
 	centry->value = value;
+
+	visual_string_unref_parameter (name);
 
 	return centry;
 }
@@ -1036,19 +1042,23 @@ VisUIChoiceEntry *visual_ui_choice_entry_new (const char *name, VisParamEntry *v
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL, -VISUAL_ERROR_NULL
  *	or -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_ui_choice_add (VisUIChoice *choice, const char *name, VisParamEntry *value)
+int visual_ui_choice_add (VisUIChoice *choice, VisString *name, VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
 
+	/* FIXME, again.. the string parameter is not always cleaned */
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 	visual_log_return_val_if_fail (name != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (value != NULL, -VISUAL_ERROR_PARAM_NULL);
 
+	visual_string_ref_parameter (name);
 	centry = visual_ui_choice_entry_new (name, value);
 
 	choice->choices.count++;
 
 	visual_list_add (&choice->choices.choices, centry);
+
+	visual_string_unref_parameter (name);
 
 	return VISUAL_OK;
 }
@@ -1064,16 +1074,21 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, VisParamEntry *
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL or -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_ui_choice_add_many (VisUIChoice *choice, VisParamEntry *paramchoices)
+int visual_ui_choice_add_many (VisUIChoice *choice, VisParamEntryProxy *paramchoices)
 {
 	VisUIChoiceEntry *centry;
+	VisParamEntry *param;
 	int i = 0;
 
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
 	visual_log_return_val_if_fail (paramchoices != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	while (paramchoices[i].type != VISUAL_PARAM_ENTRY_TYPE_END) {
-		visual_ui_choice_add (choice, paramchoices[i].name, &paramchoices[i]);
+		param = visual_param_entry_new (VIS_BSTR (paramchoices[i].name));
+
+		visual_param_entry_set_from_proxy_param (param, &paramchoices[i]);
+
+		visual_ui_choice_add (choice, visual_param_entry_get_name (param), param);
 
 		i++;
 	}
@@ -1265,12 +1280,12 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
  *
  * @return The newly created VisUICheckbox in the form of a VisUIWidget.
  */
-VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
+VisUIWidget *visual_ui_checkbox_new (VisString *name, int boolcheck)
 {
 	VisUICheckbox *checkbox;
-	static VisParamEntry truefalse[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("false",	FALSE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("true",	TRUE),
+	static VisParamEntryProxy truefalse[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("false", FALSE, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("true",  TRUE,  VISUAL_PARAM_LIMIT_NONE),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -1281,13 +1296,17 @@ VisUIWidget *visual_ui_checkbox_new (const char *name, int boolcheck)
 
 	VISUAL_UI_WIDGET (checkbox)->type = VISUAL_WIDGET_TYPE_CHECKBOX;
 
-	checkbox->name = name;
+	visual_string_init (&checkbox->name);
+
+	visual_string_copy (&checkbox->name, name);
 
 	/* Boolean checkbox, generate a FALSE, TRUE choicelist ourself */
 	if (boolcheck == TRUE)
 		visual_ui_choice_add_many (VISUAL_UI_CHOICE (checkbox), truefalse);
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (checkbox), -1, -1);
+
+	visual_string_unref_parameter (name);
 
 	return VISUAL_UI_WIDGET (checkbox);
 }

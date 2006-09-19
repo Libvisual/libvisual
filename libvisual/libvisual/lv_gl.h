@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_gl.h,v 1.6 2006-02-25 18:44:18 synap Exp $
+ * $Id: lv_gl.h,v 1.7 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -63,9 +63,6 @@ struct _VisGLAttributeEntry {
 	int		value;
 	int		mutated;
 };
-
-/* prototypes */
-void *visual_gl_get_proc_address (char *procname);
 
 VISUAL_END_DECLS
 

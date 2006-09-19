@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_cache.c,v 1.10 2006-01-23 15:53:16 synap Exp $
+ * $Id: lv_cache.c,v 1.11 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -53,7 +53,7 @@ static int cache_dtor (VisObject *object)
 	cache->list = NULL;
 	cache->index = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int cache_remove_list_entry (VisCache *cache, VisListEntry **le)
@@ -98,10 +98,14 @@ static inline void handle_request_reset (VisCache *cache, VisListEntry *le)
 
 /**
  * Creates a new VisCache.
- * 
+ *
+ * @param destroyer The collection destroyer that is used to destroy the individual members.
+ * @param size The number of elements allowed in the cache.
+ * @param maxage The maximum age of cache elemnts. A copy is made, not a reference.
+ * @param reqreset Reset position and age of an element that is requested.
+ *
  * @return A newly allocated VisCache.
  */
-
 VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset)
 {
 	VisCache *cache;
@@ -117,6 +121,16 @@ VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisT
 	return cache;
 }
 
+/**
+ * Initializes a VisCache structure.
+ *
+ * @param destroyer The collection destroyer that is used to destroy the individual members.
+ * @param size The number of elements allowed in the cache.
+ * @param maxage The maximum age of cache elemnts. A copy is made, not a reference.
+ * @param reqreset Reset position and age of an element that is requested.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CACHE_NULL on failure.
+ */
 int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset)
 {
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
@@ -139,6 +153,13 @@ int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, in
 	return VISUAL_OK;
 }
 
+/**
+ * Clears the complete cache of cache elements.
+ *
+ * @param cache Pointer to the VisCache that is to be cleared.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CACHE_NULL on failure.
+ */
 int visual_cache_clear (VisCache *cache)
 {
 	VisListEntry *le = NULL;
@@ -158,6 +179,13 @@ int visual_cache_clear (VisCache *cache)
 	return VISUAL_OK;
 }
 
+/**
+ * Flushes all outdated cache entries, this only works when a max age has been set while creating the cache.
+ *
+ * @param cache Pointer to the VisCache that is cleared of outdated entries.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CACHE_NULL on failure.
+ */
 int visual_cache_flush_outdated (VisCache *cache)
 {
 	VisCacheEntry *centry;
@@ -188,6 +216,15 @@ int visual_cache_flush_outdated (VisCache *cache)
 	return VISUAL_OK;
 }
 
+/**
+ * Puts a new entry in the cache.
+ *
+ * @param cache Pointer to the VisCache in which an entry is added.
+ * @param key The key that links to this entry.
+ * @param data The cached data.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CACHE_NULL or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_cache_put (VisCache *cache, char *key, void *data)
 {
 	VisCacheEntry *centry;
@@ -243,6 +280,14 @@ int visual_cache_put (VisCache *cache, char *key, void *data)
 	return VISUAL_OK;
 }
 
+/**
+ * Removes an entry from the cache.
+ *
+ * @param cache Pointer to the VisCache from which an entry is removed.
+ * @param key The key that links to this entry.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CACHE_NULL or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_cache_remove (VisCache *cache, char *key)
 {
 	VisListEntry *le;
@@ -258,6 +303,14 @@ int visual_cache_remove (VisCache *cache, char *key)
 	return VISUAL_OK;
 }
 
+/**
+ * Retrieves an entry from the cache.
+ *
+ * @param cache Pointer to the VisCache from which an entry is requested.
+ * @param key The key that links to this entry.
+ *
+ * @return A pointer to the cache entry that links to the key or NULL on failure.
+ */
 void *visual_cache_get (VisCache *cache, char *key)
 {
 	VisCacheEntry *centry;
@@ -278,6 +331,14 @@ void *visual_cache_get (VisCache *cache, char *key)
 	return centry->data;
 }
 
+/**
+ * Gives the number of entries currently in the cache.
+ *
+ * @param cache Pointer to the VisCache of which the number of elements that
+ *	are currently in the cache is requested.
+ *
+ * @return The number of entries in the cache or -VISUAL_ERROR_CACHE_NULL on failure.
+ */
 int visual_cache_get_size (VisCache *cache)
 {
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
@@ -303,6 +364,15 @@ int visual_cache_set_limits (VisCache *cache, int size, VisTime *maxage)
 	return VISUAL_OK;
 }
 
+/**
+ * Gives the complete list of VisCacheEntry elements in the cache. Never add new
+ * entries to this list by hand as it won't update the indeces. The list obtained using
+ * this function is absolutely read only.
+ *
+ * @param cache Pointer to the VisCache of which the complete list of VisCacheEntry elements is requested.
+ *
+ * @return The VisList containing the VisCacheEntry elements or NULL on failure.
+ */
 VisList *visual_cache_get_list (VisCache *cache)
 {
 	visual_log_return_val_if_fail (cache != NULL, NULL);

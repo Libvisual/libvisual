@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_object.c,v 1.12 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_object.c,v 1.13 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -41,15 +42,30 @@
  * This function is a global VisListDestroyerFunc handler that unrefs VisObjects.
  *
  * @param data Pointer to the VisObject that needs to be unrefed
- *
- * @return VISUAL_OK on succes, or error failures by visual_object_unref() on failure.
  */
-int visual_object_collection_destroyer (void *data)
+void visual_object_collection_destroyer (void *data)
 {
 	if (data == NULL)
-		return VISUAL_OK;
+		return;
 
-	return visual_object_unref (VISUAL_OBJECT (data));
+	visual_object_unref (VISUAL_OBJECT (data));
+}
+
+/**
+ * Creates a new VisObject structure of a certain size. This can be used for
+ * easy allocation of simple VisObjects.
+ *
+ * @return A newly allocated VisObject.
+ */
+VisObject *visual_object_new_of_size (visual_size_t size)
+{
+	VisObject *object;
+
+	object = visual_mem_malloc0 (size);
+
+	visual_object_ref (object);
+
+	return object;
 }
 
 /**
@@ -87,7 +103,7 @@ int visual_object_free (VisObject *object)
 }
 
 /**
- * Destroys the VisObject. This does destruct the VisObject 
+ * Destroys the VisObject. This does destruct the VisObject
  * by using the dtor function if it's set and also frees the memory
  * it's using. It's valid to pass non allocated VisObjects,
  * the function will recognize this by a flag that is set in the VisObject.
@@ -100,8 +116,10 @@ int visual_object_destroy (VisObject *object)
 {
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
-	if (object->dtor != NULL)
-		object->dtor (object);
+	if (object->dtor != NULL) {
+		if (object->dtor (object) == FALSE)
+			return VISUAL_OK;
+	}
 
 	if (object->allocated == TRUE)
 		return visual_object_free (object);
@@ -148,6 +166,8 @@ int visual_object_clear (VisObject *object)
 
 	visual_object_set_private (object, NULL);
 	visual_object_set_refcount (object, 0);
+	visual_object_set_ref (object, NULL);
+	visual_object_set_unref (object, NULL);
 
 	return VISUAL_OK;
 }
@@ -173,10 +193,10 @@ int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor)
 /**
  * Sets whether a VisObject is allocated or not. This is used when a VisObject is unreffed. If it's
  * allocated it will get freed, if not, only the dtor gets called to cleanup the inside of the VisObject.
- * 
+ *
  * @param object pointer to a VisObject to which the destructor function is set.
  * @param allocated Boolean whether a VisObject is allocated or not.
- * 
+ *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
 int visual_object_set_allocated (VisObject *object, int allocated)
@@ -206,6 +226,32 @@ int visual_object_set_refcount (VisObject *object, int refcount)
 }
 
 /**
+ * Sets the ref increase callback.
+ *
+ * @param object Pointer to a VisObject to which the ref increase callback is set.
+ * @param ref The reference increase callback function.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ */
+int visual_object_set_ref (VisObject *object, VisObjectRefFunc ref)
+{
+	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+
+	object->ref = ref;
+
+	return VISUAL_OK;
+}
+
+int visual_object_set_unref (VisObject *object, VisObjectUnrefFunc unref)
+{
+	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+
+	object->unref = unref;
+
+	return VISUAL_OK;
+}
+
+/**
  * Increases the reference counter for a VisObject.
  *
  * @param object Pointer to a VisObject in which the reference count is increased.
@@ -217,6 +263,29 @@ int visual_object_ref (VisObject *object)
 	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	object->refcount++;
+
+	if (object->ref != NULL)
+		return object->ref (object);
+
+	return VISUAL_OK;
+}
+
+int visual_object_ref_many (VisObject *object, ...)
+{
+	VisObject *va_object;
+	va_list ap;
+
+//	if (object != NULL && object != VISUAL_OBJECT_LIST_END)
+		visual_object_ref (object);
+
+	va_start (ap, object);
+
+	while ((va_object = va_arg (ap, VisObject *)) /* != VISUAL_OBJECT_LIST_END*/) {
+		if (va_object != NULL)
+			visual_object_ref (va_object);
+	}
+
+	va_end (ap);
 
 	return VISUAL_OK;
 }
@@ -240,11 +309,52 @@ int visual_object_unref (VisObject *object)
 
 	/* No reference left, start dtoring of this VisObject */
 	if (object->refcount <= 0) {
+		if (object->unref != NULL)
+			object->unref (object);
+
 		object->refcount = 0;
 
 		return visual_object_destroy (object);
 	}
+
+	if (object->unref != NULL)
+		return object->unref (object);
+
 	return VISUAL_OK;
+}
+
+int visual_object_unref_many (VisObject *object, ...)
+{
+	VisObject *va_object;
+	va_list ap;
+
+//	if (object != NULL && object != VISUAL_OBJECT_LIST_END)
+		visual_object_unref (object);
+
+	va_start (ap, object);
+
+	while ((va_object = va_arg (ap, VisObject *))/* != VISUAL_OBJECT_LIST_END*/) {
+		if (va_object != NULL)
+			visual_object_unref (va_object);
+	}
+
+	va_end (ap);
+
+	return VISUAL_OK;
+}
+
+/**
+ * Returns the number of references to the object.
+ *
+ * @param object Pointer to a VisObject of which the number of references is requested.
+ *
+ * @return The number of references to the object, -VISUAL_ERROR_OBJECT_NULL on failure.
+ */
+int visual_object_refcount (VisObject *object)
+{
+	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+
+	return object->refcount;
 }
 
 /**

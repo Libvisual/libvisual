@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_rectangle.c,v 1.10 2006-02-13 20:54:08 synap Exp $
+ * $Id: lv_rectangle.c,v 1.11 2006-09-19 18:28:52 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -343,8 +343,8 @@ int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist,
 
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	visual_math_vectorized_floats_to_int32s_multiply (xlist, fxlist, size, rect->width);
-	visual_math_vectorized_floats_to_int32s_multiply (ylist, fylist, size, rect->height);
+	visual_math_vector_floats_to_int32s_multiply (xlist, fxlist, size, rect->width);
+	visual_math_vector_floats_to_int32s_multiply (ylist, fylist, size, rect->height);
 
 	return VISUAL_OK;
 }
@@ -406,8 +406,8 @@ int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float
  */
 int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size)
 {
-	visual_math_vectorized_floats_to_int32s_multiply_denormalise (xlist, fxlist, size, rect->width);
-	visual_math_vectorized_floats_to_int32s_multiply_denormalise (ylist, fylist, size, rect->height);
+	visual_math_vector_floats_to_int32s_multiply_denormalise (xlist, fxlist, size, rect->width);
+	visual_math_vector_floats_to_int32s_multiply_denormalise (ylist, fylist, size, rect->height);
 
 	return VISUAL_OK;
 }

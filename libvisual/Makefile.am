@@ -8,7 +8,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = $(PKG_CONFIG_FILE)
 
 $(PKG_CONFIG_FILE): libvisual.pc
-	cp -f $< $@
+	cp -f libvisual.pc $(PKG_CONFIG_FILE)
 
 install-exec-local: libvisual/lvconfig.h 
 	        file=$(DESTDIR)$(LIBVISUAL_INCLUDE_DIR)/libvisual/lvconfig.h; \

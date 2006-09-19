@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_rectangle.h,v 1.6 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_rectangle.h,v 1.7 2006-09-19 18:28:52 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -38,6 +38,7 @@ typedef struct _VisRectangle VisRectangle;
  */
 struct _VisRectangle {
 	VisObject	object;		/**< The VisObject data. */
+
 	int		x;		/**< X Position of the upper left corner. */
 	int		y;		/**< Y Position of the upper left corner. */
 	int		width;		/**< The width. */

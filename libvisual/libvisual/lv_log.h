@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_log.h,v 1.20 2006-03-03 01:25:46 synap Exp $
+ * $Id: lv_log.h,v 1.21 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -90,6 +90,10 @@ void visual_log_set_error_handler (VisLogMessageHandlerFunc handler, void *priv)
 
 void visual_log_set_all_messages_handler (VisLogMessageHandlerFunc handler, void *priv);
 
+#ifdef __GNUC__
+
+#ifdef LV_HAVE_ISO_VARARGS
+
 /**
  * Used for log messages, this is brought under a define so
  * that the __FILE__ and __LINE__ macros (and probably __PRETTY_FUNC__) work,
@@ -100,9 +104,6 @@ void visual_log_set_all_messages_handler (VisLogMessageHandlerFunc handler, void
  * @param severity Determines the severity of the message using VisLogSeverity.
  * @param format The format string of the log message.
  */
-#ifdef __GNUC__
-
-#ifdef LV_HAVE_ISO_VARARGS
 #define visual_log(severity,...)		\
 		_lv_log (severity,		\
 			__FILE__,		\
@@ -110,6 +111,17 @@ void visual_log_set_all_messages_handler (VisLogMessageHandlerFunc handler, void
 			__PRETTY_FUNCTION__,	\
 			__VA_ARGS__)
 #elif defined(LV_HAVE_GNUC_VARARGS)
+
+/**
+ * Used for log messages, this is brought under a define so
+ * that the __FILE__ and __LINE__ macros (and probably __PRETTY_FUNC__) work,
+ * and thus provide better information.
+ *
+ * @see VisLogSeverity
+ *
+ * @param severity Determines the severity of the message using VisLogSeverity.
+ * @param format The format string of the log message.
+ */
 #define visual_log(severity,format...)		\
 		_lv_log (severity,		\
 			__FILE__,		\

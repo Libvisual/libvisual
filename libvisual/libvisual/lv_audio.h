@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.h,v 1.23 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_audio.h,v 1.24 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -90,20 +90,6 @@ struct _VisAudio {
 	VisObject		 object;			/**< The VisObject data. */
 
 	VisAudioSamplePool	*samplepool;
-	short			 plugpcm[2][512];		/**< PCM data that comes from the input plugin
-								 * or a callback function. */
-//	short			 pcm[3][512];			/**< PCM data that should be used within plugins
-//								 * pcm[0][x] is the left channel, pcm[1][x] is the right
-//								 * channel and pcm[2][x] is an average of both channels. */
-//	short			 freq[3][256];			/**< Rateuency data as a 256 bands analyzer, with the channels
-//								 * like with the pcm element. */
-//	short			 freqnorm[3][256];		/**< Rateuency data like the freq member, however this time the bands
-//								 * are normalized. */
-
-//	short int		 bpmhistory[1024][6];		/**< Private member for BPM detection, not implemented right now. */
-//	short int		 bpmdata[1024][6];		/**< Private member for BPM detection, not implemented right now. */
-//	short int		 bpmenergy[6];			/**< Private member for BPM detection, not implemented right now. */
-	int			 energy;			/**< Audio energy level. */
 };
 
 struct _VisAudioSamplePool {
@@ -138,7 +124,6 @@ struct _VisAudioSample {
 /* prototypes */
 VisAudio *visual_audio_new (void);
 int visual_audio_init (VisAudio *audio);
-int visual_audio_analyze (VisAudio *audio);
 
 int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid);
 int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, int channels, ...);

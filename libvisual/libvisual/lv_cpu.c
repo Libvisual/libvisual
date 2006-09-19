@@ -8,7 +8,7 @@
  *
  * Extra Credits: MPlayer cpudetect hackers.
  *
- * $Id: lv_cpu.c,v 1.27 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_cpu.c,v 1.28 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -75,9 +75,9 @@ static int has_cpuid (void);
 static int cpuid (unsigned int ax, unsigned int *p);
 
 /* The sigill handlers */
-#if defined(VISUAL_ARCH_X86) //x86 (linux katmai handler check thing)
+#if defined(VISUAL_ARCH_X86) /* x86 (linux katmai handler check thing) */
 #if defined(VISUAL_OS_LINUX) && defined(_POSIX_SOURCE) && defined(X86_FXSR_MAGIC)
-static void sigill_handler_sse( int signal, struct sigcontext sc )
+static void sigill_handler_sse (int signal, struct sigcontext sc)
 {
 	/* Both the "xorps %%xmm0,%%xmm0" and "divps %xmm0,%%xmm1"
 	 * instructions are 3 bytes long.  We must increment the instruction
@@ -94,9 +94,9 @@ static void sigill_handler_sse( int signal, struct sigcontext sc )
 	__lv_cpu_caps.hasSSE=0;
 }
 
-static void sigfpe_handler_sse( int signal, struct sigcontext sc )
+static void sigfpe_handler_sse (int signal, struct sigcontext sc)
 {
-	if ( sc.fpstate->magic != 0xffff ) {
+	if (sc.fpstate->magic != 0xffff) {
 		/* Our signal context has the extended FPU state, so reset the
 		 * divide-by-zero exception mask and clear the divide-by-zero
 		 * exception bit.
@@ -116,7 +116,7 @@ LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep)
 {
 	if(ep->ExceptionRecord->ExceptionCode==EXCEPTION_ILLEGAL_INSTRUCTION){
 		ep->ContextRecord->Eip +=3;
-		__lv_cpu_caps.hasSSE=0;       
+		__lv_cpu_caps.hasSSE=0;
 		return EXCEPTION_CONTINUE_EXECUTION;
 	}
 	return EXCEPTION_CONTINUE_SEARCH;
@@ -141,15 +141,15 @@ static void sigill_handler (int sig)
 	siglongjmp (__lv_powerpc_jmpbuf, 1);
 }
 
-static void check_os_altivec_support( void )
+static void check_os_altivec_support (void)
 {
 #if defined(VISUAL_OS_DARWIN)
 	int sels[2] = {CTL_HW, HW_VECTORUNIT};
 	int has_vu = 0;
-	visual_size_t len = sizeof(has_vu);
+	visual_size_t len = sizeof (has_vu);
 	int err;
 
-	err = sysctl (sels, 2, &has_vu, &len, NULL, 0);   
+	err = sysctl (sels, 2, &has_vu, &len, NULL, 0);
 
 	if (err == 0)
 		if (has_vu != 0)
@@ -184,13 +184,12 @@ static void check_os_altivec_support( void )
  */
 static void check_os_katmai_support( void )
 {
-//	printf ("omg\n");
 #if defined(VISUAL_ARCH_X86)
 #if defined(VISUAL_OS_FREEBSD)
 	int has_sse=0, ret;
-	visual_size_t len=sizeof(has_sse);
+	visual_size_t len = sizeof (has_sse);
 
-	ret = sysctlbyname("hw.instruction_sse", &has_sse, &len, NULL, 0);
+	ret = sysctlbyname ("hw.instruction_sse", &has_sse, &len, NULL, 0);
 	if (ret || !has_sse)
 		__lv_cpu_caps.hasSSE=0;
 
@@ -200,9 +199,9 @@ static void check_os_katmai_support( void )
 
 	mib[0] = CTL_MACHDEP;
 	mib[1] = CPU_SSE;
-	varlen = sizeof(has_sse);
+	varlen = sizeof (has_sse);
 
-	ret = sysctl(mib, 2, &has_sse, &varlen, NULL, 0);
+	ret = sysctl (mib, 2, &has_sse, &varlen, NULL, 0);
 	if (ret < 0 || !has_sse) {
 		__lv_cpu_caps.hasSSE=0;
 	} else {
@@ -210,8 +209,8 @@ static void check_os_katmai_support( void )
 	}
 
 	mib[1] = CPU_SSE2;
-	varlen = sizeof(has_sse2);
-	ret = sysctl(mib, 2, &has_sse2, &varlen, NULL, 0);
+	varlen = sizeof (has_sse2);
+	ret = sysctl (mib, 2, &has_sse2, &varlen, NULL, 0);
 	if (ret < 0 || !has_sse2) {
 		__lv_cpu_caps.hasSSE2=0;
 	} else {
@@ -227,8 +226,6 @@ static void check_os_katmai_support( void )
 		SetUnhandledExceptionFilter(exc_fil);
 	}
 #elif defined(VISUAL_OS_LINUX)
-//	printf ("omg1\n");
-//	printf ("omg2\n");
 	struct sigaction saved_sigill;
 	struct sigaction saved_sigfpe;
 
@@ -273,15 +270,12 @@ static void check_os_katmai_support( void )
 	sigaction( SIGFPE, &saved_sigfpe, NULL );
 
 #else
-//	printf ("hier dan3\n");
 	/* We can't use POSIX signal handling to test the availability of
 	 * SSE, so we disable it by default.
 	 */
 	__lv_cpu_caps.hasSSE=0;
 #endif /* __linux__ */
-//	printf ("hier dan\n");
 #endif
-//	printf ("hier dan ha\n");
 }
 
 
@@ -374,7 +368,7 @@ void visual_cpu_initialize ()
 #elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
 
 	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU; 
+	mib[1] = HW_NCPU;
 
 	len = sizeof (ncpu);
 	sysctl (mib, 2, &ncpu, &len, NULL, 0);
@@ -383,17 +377,17 @@ void visual_cpu_initialize ()
 #else
 	__lv_cpu_caps.nrcpu = 1;
 #endif
-	
+
 #if defined(VISUAL_ARCH_X86)
 	/* No cpuid, old 486 or lower */
 	if (has_cpuid () == 0)
 		return;
 
 	__lv_cpu_caps.cacheline = 32;
-	
+
 	/* Get max cpuid level */
 	cpuid (0x00000000, regs);
-	
+
 	if (regs[0] >= 0x00000001) {
 		unsigned int cacheline;
 
@@ -402,25 +396,26 @@ void visual_cpu_initialize ()
 		__lv_cpu_caps.x86cpuType = (regs2[0] >> 8) & 0xf;
 		if (__lv_cpu_caps.x86cpuType == 0xf)
 		    __lv_cpu_caps.x86cpuType = 8 + ((regs2[0] >> 20) & 255); /* use extended family (P4, IA64) */
-		
+
 		/* general feature flags */
 		__lv_cpu_caps.hasTSC  = (regs2[3] & (1 << 8  )) >>  8; /* 0x0000010 */
 		__lv_cpu_caps.hasMMX  = (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
 		__lv_cpu_caps.hasSSE  = (regs2[3] & (1 << 25 )) >> 25; /* 0x2000000 */
 		__lv_cpu_caps.hasSSE2 = (regs2[3] & (1 << 26 )) >> 26; /* 0x4000000 */
+		__lv_cpu_caps.hasSSE3 = (regs2[2] & (1));	       /* 0x0000001 */
 		__lv_cpu_caps.hasMMX2 = __lv_cpu_caps.hasSSE; /* SSE cpus supports mmxext too */
 
 		cacheline = ((regs2[1] >> 8) & 0xFF) * 8;
 		if (cacheline > 0)
 			__lv_cpu_caps.cacheline = cacheline;
 	}
-	
+
 	cpuid (0x80000000, regs);
-	
+
 	if (regs[0] >= 0x80000001) {
 
 		cpuid (0x80000001, regs2);
-		
+
 		__lv_cpu_caps.hasMMX  |= (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
 		__lv_cpu_caps.hasMMX2 |= (regs2[3] & (1 << 22 )) >> 22; /* 0x400000 */
 		__lv_cpu_caps.has3DNow    = (regs2[3] & (1 << 31 )) >> 31; /* 0x80000000 */
@@ -437,11 +432,14 @@ void visual_cpu_initialize ()
 	if (__lv_cpu_caps.hasSSE)
 		check_os_katmai_support ();
 
-	if (!__lv_cpu_caps.hasSSE)
+	if (!__lv_cpu_caps.hasSSE) {
 		__lv_cpu_caps.hasSSE2 = 0;
+		__lv_cpu_caps.hasSSE3 = 0;
+	}
 #else
-	__lv_cpu_caps.hasSSE=0;
+	__lv_cpu_caps.hasSSE = 0;
 	__lv_cpu_caps.hasSSE2 = 0;
+	__lv_cpu_caps.hasSSE3 = 0;
 #endif
 #endif /* VISUAL_ARCH_X86 */
 
@@ -455,10 +453,11 @@ void visual_cpu_initialize ()
 	__lv_cpu_caps.enabledMMX2	= __lv_cpu_caps.hasMMX2;
 	__lv_cpu_caps.enabledSSE	= __lv_cpu_caps.hasSSE;
 	__lv_cpu_caps.enabledSSE2	= __lv_cpu_caps.hasSSE2;
+	__lv_cpu_caps.enabledSSE3	= __lv_cpu_caps.hasSSE3;
 	__lv_cpu_caps.enabled3DNow	= __lv_cpu_caps.has3DNow;
 	__lv_cpu_caps.enabled3DNowExt	= __lv_cpu_caps.has3DNowExt;
 	__lv_cpu_caps.enabledAltiVec	= __lv_cpu_caps.hasAltiVec;
-	
+
 	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", __lv_cpu_caps.nrcpu);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", __lv_cpu_caps.type);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
@@ -468,6 +467,7 @@ void visual_cpu_initialize ()
 	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX2 %d", __lv_cpu_caps.hasMMX2);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE %d", __lv_cpu_caps.hasSSE);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE2 %d", __lv_cpu_caps.hasSSE2);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE3 %d", __lv_cpu_caps.hasSSE3);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNow %d", __lv_cpu_caps.has3DNow);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNowExt %d", __lv_cpu_caps.has3DNowExt);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: AltiVec %d", __lv_cpu_caps.hasAltiVec);
@@ -556,6 +556,19 @@ int visual_cpu_get_sse2 ()
 }
 
 /**
+ * Function to retrieve if the sse3 CPU feature is enabled.
+ *
+ * @return Whether sse3 is enabled or not.
+ */
+int visual_cpu_get_sse3 ()
+{
+	if (__lv_cpu_initialized == FALSE)
+		visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	return __lv_cpu_caps.enabledSSE3;
+}
+
+/**
  * Function to retrieve if the 3dnow CPU feature is enabled.
  *
  * @return Whether 3dnow is enabled or not.
@@ -618,7 +631,7 @@ int visual_cpu_set_tsc (int enabled)
  * if the feature is actually available.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
+ */
 int visual_cpu_set_mmx (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -637,7 +650,7 @@ int visual_cpu_set_mmx (int enabled)
  * if the feature is actually available.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
+ */
 int visual_cpu_set_mmx2 (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -656,7 +669,7 @@ int visual_cpu_set_mmx2 (int enabled)
  * if the feature is actually available.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */  
+ */
 int visual_cpu_set_sse (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -675,7 +688,7 @@ int visual_cpu_set_sse (int enabled)
  * if the feature is actually available.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
+ */
 int visual_cpu_set_sse2 (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -690,11 +703,30 @@ int visual_cpu_set_sse2 (int enabled)
 }
 
 /**
+ * Function to set if the SSE3 feature should be enabled or not, this function will also check
+ * if the feature is actually available.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
+ */
+int visual_cpu_set_sse3 (int enabled)
+{
+	if (__lv_cpu_initialized == FALSE)
+		visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	if (__lv_cpu_caps.hasSSE3 == FALSE)
+		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
+
+	__lv_cpu_caps.enabledSSE3 = enabled;
+
+	return VISUAL_OK;
+}
+
+/**
  * Function to set if the 3DNow feature should be enabled or not, this function will also check
  * if the feature is actually available.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
+ */
 int visual_cpu_set_3dnow (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -713,7 +745,7 @@ int visual_cpu_set_3dnow (int enabled)
  * if the feature is actually available.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
+ */
 int visual_cpu_set_3dnow2 (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -732,7 +764,7 @@ int visual_cpu_set_3dnow2 (int enabled)
  * if the feature is actually available.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
+ */
 int visual_cpu_set_altivec (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: libvisual.h,v 1.23 2006-01-22 13:23:36 synap Exp $
+ * $Id: libvisual.h,v 1.24 2006-09-19 18:28:50 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,13 +26,18 @@
 
 #include <libvisual/lvconfig.h>
 
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_bits.h>
+#include <libvisual/lv_mem.h>
+#include <libvisual/lv_mem_utils.h>
+#include <libvisual/lv_mem_ops.h>
+#include <libvisual/lv_mem_pool.h>
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_color.h>
-#include <libvisual/lv_param.h>
 #include <libvisual/lv_config.h>
 #include <libvisual/lv_cpu.h>
 #include <libvisual/lv_bin.h>
+#include <libvisual/lv_param.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_keysym.h>
 #include <libvisual/lv_actor.h>
@@ -40,6 +45,7 @@
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_fourier.h>
 #include <libvisual/lv_list.h>
+#include <libvisual/lv_queue.h>
 #include <libvisual/lv_palette.h>
 #include <libvisual/lv_plugin.h>
 #include <libvisual/lv_video.h>
@@ -64,6 +70,7 @@
 #include <libvisual/lv_gl.h>
 #include <libvisual/lv_math.h>
 #include <libvisual/lv_os.h>
+#include <libvisual/lv_string.h>
 #include <libvisual/lv_common.h>
 
 #endif /* LV_LIBVISUAL_H */

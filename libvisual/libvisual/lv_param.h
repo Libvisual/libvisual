@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_param.h,v 1.32 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_param.h,v 1.33 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,7 +28,8 @@
 #include <libvisual/lv_color.h>
 #include <libvisual/lv_palette.h>
 #include <libvisual/lv_list.h>
-#include <libvisual/lv_event.h>
+#include <libvisual/lv_hashmap.h>
+#include <libvisual/lv_string.h>
 
 VISUAL_BEGIN_DECLS
 
@@ -37,14 +38,21 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PARAMENTRY(obj)				(VISUAL_CHECK_CAST ((obj), VisParamEntry))
 
 /* Use 0 for pointers instead of NULL because of C++ programs shocking on ((void *) 0) */
-#define VISUAL_PARAM_LIST_ENTRY(name)			{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_NULL }
-#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_STRING, string, {0, 0, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_INTEGER, 0, {val, 0, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_FLOAT, 0, {0, val, 0}}
-#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_DOUBLE, 0, {0, 0, val}}
-#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)	{ {}, 0, name, VISUAL_PARAM_ENTRY_TYPE_COLOR, 0, {0, 0, 0}, {{}, r, g, b, 0}}
-#define VISUAL_PARAM_LIST_END				{ {}, 0, 0, VISUAL_PARAM_ENTRY_TYPE_END }
+#define VISUAL_PARAM_LIST_ENTRY(name)				{ name, VISUAL_PARAM_ENTRY_TYPE_NULL }
+#define VISUAL_PARAM_LIST_ENTRY_STRING(name, string)		{ name, VISUAL_PARAM_ENTRY_TYPE_STRING, string, 0 }
+#define VISUAL_PARAM_LIST_ENTRY_INTEGER(name, val, lim)		{ name, VISUAL_PARAM_ENTRY_TYPE_INTEGER, 0, val, lim }
+#define VISUAL_PARAM_LIST_ENTRY_FLOAT(name, val, lim)		{ name, VISUAL_PARAM_ENTRY_TYPE_FLOAT, 0, val, lim }
+#define VISUAL_PARAM_LIST_ENTRY_DOUBLE(name, val, lim)		{ name, VISUAL_PARAM_ENTRY_TYPE_DOUBLE, 0, val, lim }
+#define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)		{ name, VISUAL_PARAM_ENTRY_TYPE_COLOR, 0, 0, {{}, r, g, b, 0}}
+#define VISUAL_PARAM_LIST_END					{ 0, VISUAL_PARAM_ENTRY_TYPE_END }
 
+#define VISUAL_PARAM_LIMIT_NONE					{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL }
+#define VISUAL_PARAM_LIMIT_BOOLEAN				{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL }
+#define VISUAL_PARAM_LIMIT_INTEGER(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_INTEGER }
+#define VISUAL_PARAM_LIMIT_FLOAT(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_FLOAT }
+#define VISUAL_PARAM_LIMIT_DOUBLE(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_DOUBLE }
+
+/* FIXME: put all limit in defines lv_types or lv_defines or something */
 #define VISUAL_PARAM_CALLBACK_ID_MAX	2147483647
 
 /**
@@ -62,15 +70,28 @@ typedef enum {
 	VISUAL_PARAM_ENTRY_TYPE_END		/**< List end, and used as terminator for VisParamEntry lists. */
 } VisParamEntryType;
 
+typedef enum {
+	VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL,
+	VISUAL_PARAM_ENTRY_LIMIT_TYPE_INTEGER,
+	VISUAL_PARAM_ENTRY_LIMIT_TYPE_FLOAT,
+	VISUAL_PARAM_ENTRY_LIMIT_TYPE_DOUBLE,
+	VISUAL_PARAM_ENTRY_LIMIT_TYPE_END
+} VisParamEntryLimitType;
+
 typedef struct _VisParamContainer VisParamContainer;
 typedef struct _VisParamEntryCallback VisParamEntryCallback;
+typedef struct _VisParamEntryProxy VisParamEntryProxy;
+typedef struct _VisParamEntryLimit VisParamEntryLimit;
 typedef struct _VisParamEntry VisParamEntry;
+
+#define _LV_VIS_PARAM_ENTRY_FORWARD_DECL	1
+#include <libvisual/lv_event.h>
 
 /**
  * The param changed callback is used to be able to notify of changes within parameters. This should
  * not be used within the plugin itself, instead use the event queue there. This is so it's possible to
  * notify of changes outside the plugin. For example, this is needed by VisUI.
- * 
+ *
  * @arg param Pointer to the param that has been changed, and to which the callback was set.
  * @arg priv Private argument, that can be set when adding the callback to the callback list.
  */
@@ -84,7 +105,7 @@ typedef void (*VisParamChangedCallbackFunc)(VisParamEntry *param, void *priv);
  */
 struct _VisParamContainer {
 	VisObject	 object;	/**< The VisObject data. */
-	VisList		 entries;	/**< The list that contains all the parameters. */
+	VisHashmap	 entries;	/**< The list that contains all the parameters. */
 	VisEventQueue	*eventqueue;	/**< Pointer to an optional eventqueue to which events can be emitted
 					  * on parameter changes. */
 };
@@ -99,6 +120,42 @@ struct _VisParamEntryCallback {
 };
 
 /**
+ *
+ */
+struct _VisParamEntryLimit {
+	VisParamEntryLimitType	type;
+
+	union {
+		int		 integer;		/**< Integer data. */
+		float		 floating;		/**< Floating point data. */
+		double		 doubleflt;		/**< Double floating point data. */
+	} min;
+
+	union {
+		int		 integer;		/**< Integer data. */
+		float		 floating;		/**< Floating point data. */
+		double		 doubleflt;		/**< Double floating point data. */
+	} max;
+};
+
+/**
+ * A proxy type for param entries so they can be defined statically more easily and converted
+ * as real entries in a param container.
+ */
+struct _VisParamEntryProxy {
+	const char		*name;
+
+	VisParamEntryType	 type;
+
+	char			*string;
+	double			 value;
+
+	VisColor		 color;
+
+	VisParamEntryLimit	 limit;
+};
+
+/**
  * A parameter entry, used for plugin parameters and such.
  *
  * All members should never be accessed directly, instead methods should be used.
@@ -106,13 +163,14 @@ struct _VisParamEntryCallback {
 struct _VisParamEntry {
 	VisObject		 object;	/**< The VisObject data. */
 	VisParamContainer	*parent;	/**< Parameter container in which the param entry is encapsulated. */
-	char			*name;		/**< Parameter name. */
+	VisString		*name;		/**< Parameter name. */
 	VisParamEntryType	 type;		/**< Parameter type. */
+
+	VisParamEntryLimit	 limit;		/**< Parameter limits. */
 
 	char			*string;	/**< String data. */
 
-	/* No union, we can't choose a member of the union using static initializers */
-	struct {
+	union {
 		int		 integer;		/**< Integer data. */
 		float		 floating;		/**< Floating point data. */
 		double		 doubleflt;		/**< Double floating point data. */
@@ -125,6 +183,7 @@ struct _VisParamEntry {
 	VisList			 callbacks;	/**< The change notify callbacks. */
 };
 
+
 /* prototypes */
 VisParamContainer *visual_param_container_new (void);
 int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue);
@@ -132,22 +191,24 @@ VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramco
 
 int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param);
 int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params);
-int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name);
+int visual_param_container_add_many_proxy (VisParamContainer *paramcontainer, VisParamEntryProxy *proxies);
+int visual_param_container_remove (VisParamContainer *paramcontainer, VisString *name);
 int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer *srccont);
 int visual_param_container_copy_match (VisParamContainer *destcont, VisParamContainer *srccont);
-VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name);
+VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, VisString *name);
 
-VisParamEntry *visual_param_entry_new (char *name);
+VisParamEntry *visual_param_entry_new (VisString *name);
 int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallbackFunc callback, void *priv);
 int visual_param_entry_remove_callback (VisParamEntry *param, int id);
 int visual_param_entry_notify_callbacks (VisParamEntry *param);
-int visual_param_entry_is (VisParamEntry *param, const char *name);
+int visual_param_entry_is (VisParamEntry *param, VisString *name);
 int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2);
 int visual_param_entry_changed (VisParamEntry *param);
 VisParamEntryType visual_param_entry_get_type (VisParamEntry *param);
 
+int visual_param_entry_set_from_proxy_param (VisParamEntry *param, VisParamEntryProxy *proxy);
 int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src);
-int visual_param_entry_set_name (VisParamEntry *param, char *name);
+int visual_param_entry_set_name (VisParamEntry *param, VisString *name);
 int visual_param_entry_set_string (VisParamEntry *param, char *string);
 int visual_param_entry_set_integer (VisParamEntry *param, int integer);
 int visual_param_entry_set_float (VisParamEntry *param, float floating);
@@ -157,7 +218,7 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color
 int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal);
 int visual_param_entry_set_object (VisParamEntry *param, VisObject *object);
 
-char *visual_param_entry_get_name (VisParamEntry *param);
+VisString *visual_param_entry_get_name (VisParamEntry *param);
 char *visual_param_entry_get_string (VisParamEntry *param);
 int visual_param_entry_get_integer (VisParamEntry *param);
 float visual_param_entry_get_float (VisParamEntry *param);
@@ -165,6 +226,17 @@ double visual_param_entry_get_double (VisParamEntry *param);
 VisColor *visual_param_entry_get_color (VisParamEntry *param);
 VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
 VisObject *visual_param_entry_get_object (VisParamEntry *param);
+
+int visual_param_entry_limit_set_from_limit (VisParamEntry *param, VisParamEntryLimit *limit);
+int visual_param_entry_limit_set_integer (VisParamEntry *param, int min, int max);
+int visual_param_entry_limit_set_float (VisParamEntry *param, float min, float max);
+int visual_param_entry_limit_set_double (VisParamEntry *param, double min, double max);
+int visual_param_entry_limit_nearest_integer (VisParamEntry *param, int *integer);
+int visual_param_entry_limit_nearest_float (VisParamEntry *param, float *floating);
+int visual_param_entry_limit_nearest_double (VisParamEntry *param, double *doubleflt);
+double visual_param_entry_limit_get_minimum (VisParamEntryLimit *limit);
+double visual_param_entry_limit_get_maximum (VisParamEntryLimit *limit);
+
 
 VISUAL_END_DECLS
 

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_actor.c,v 1.41 2006-03-03 01:27:02 synap Exp $
+ * $Id: lv_actor.c,v 1.42 2006-09-19 18:28:50 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,7 +35,7 @@
 #include "lv_actor.h"
 #include "lv_mem.h"
 
-extern VisList *__lv_plugins_actor;
+static VisHashmap *__lv_plugins_actor = NULL;
 
 static int actor_dtor (VisObject *object);
 
@@ -63,7 +63,7 @@ static int actor_dtor (VisObject *object)
 	actor->transform = NULL;
 	actor->fitting = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static VisActorPlugin *get_actor_plugin (VisActor *actor)
@@ -96,219 +96,30 @@ VisPluginData *visual_actor_get_plugin (VisActor *actor)
 }
 
 /**
- * Gives a list of VisActors in the current plugin registry.
+ * Sets the VisHashmap that is used as the plugin registry for actor plugins.
  *
- * @return An VisList containing the VisActors in the plugin registry.
+ * @param map Pointer to the VisHashmap that contains the actor plugin registry.
+ *
+ * @return VISUAL_OK on succes.
  */
-VisList *visual_actor_get_list ()
+int visual_actor_set_map (VisHashmap *map)
+{
+	if (__lv_plugins_actor != NULL)
+		visual_object_unref (VISUAL_OBJECT (__lv_plugins_actor));
+
+	__lv_plugins_actor = map;
+
+	return VISUAL_OK;
+}
+
+/**
+ * Gives a hashmap of actor plugins in the current plugin registry.
+ *
+ * @return A VisHashmap of VisPluginRef entries contaning the actor plugins in the plugin registry.
+ */
+VisHashmap *visual_actor_get_map ()
 {
 	return __lv_plugins_actor;
-}
-
-/** @todo find a way to NOT load, unload the plugins */
-
-/**
- * Gives the next actor plugin based on the name of a plugin but skips non
- * GL plugins.
- *
- * @see visual_actor_get_prev_by_name_gl
- *
- * @param name The name of the current plugin or NULL to get the first.
- *
- * @return The name of the next plugin within the list that is a GL plugin.
- */
-const char *visual_actor_get_next_by_name_gl (const char *name)
-{
-	const char *next = name;
-	VisPluginData *plugin;
-	VisPluginRef *ref;
-	VisActorPlugin *actplugin;
-	int gl;
-
-	do {
-		next = visual_plugin_get_next_by_name (visual_actor_get_list (), next);
-
-		if (next == NULL)
-			return NULL;
-		
-		ref = visual_plugin_find (__lv_plugins_actor, next);
-		plugin = visual_plugin_load (ref);
-
-		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
-
-		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
-			gl = TRUE;
-		else
-			gl = FALSE;
-
-		visual_plugin_unload (plugin);
-
-	} while (gl == FALSE);
-
-	return next;
-}
-
-/**
- * Gives the previous actor plugin based on the name of a plugin but skips non
- * GL plugins.
- *
- * @see visual_actor_get_next_by_name_gl
- *
- * @param name The name of the current plugin or NULL to get the last.
- *
- * @return The name of the previous plugin within the list that is a GL plugin.
- */
-const char *visual_actor_get_prev_by_name_gl (const char *name)
-{
-	const char *prev = name;
-	VisPluginData *plugin;
-	VisPluginRef *ref;
-	VisActorPlugin *actplugin;
-	int gl;
-
-	do {
-		prev = visual_plugin_get_prev_by_name (visual_actor_get_list (), prev);
-
-		if (prev == NULL)
-			return NULL;
-
-		ref = visual_plugin_find (__lv_plugins_actor, prev);
-		plugin = visual_plugin_load (ref);
-		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
-
-		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
-			gl = TRUE;
-		else
-			gl = FALSE;
-
-		visual_plugin_unload (plugin);
-
-	} while (gl == FALSE);
-
-	return prev;
-}
-
-/**
- * Gives the next actor plugin based on the name of a plugin but skips
- * GL plugins.
- *
- * @see visual_actor_get_prev_by_name_nogl
- *
- * @param name The name of the current plugin or NULL to get the first.
- *
- * @return The name of the next plugin within the list that is not a GL plugin.
- */
-const char *visual_actor_get_next_by_name_nogl (const char *name)
-{
-	const char *next = name;
-	VisPluginData *plugin;
-	VisPluginRef *ref;
-	VisActorPlugin *actplugin;
-	int gl;
-
-	do {
-		next = visual_plugin_get_next_by_name (visual_actor_get_list (), next);
-
-		if (next == NULL)
-			return NULL;
-		
-		ref = visual_plugin_find (__lv_plugins_actor, next);
-		plugin = visual_plugin_load (ref);
-		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
-
-		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
-			gl = TRUE;
-		else
-			gl = FALSE;
-	
-		visual_plugin_unload (plugin);
-
-	} while (gl == TRUE);
-
-	return next;
-}
-
-/**
- * Gives the previous actor plugin based on the name of a plugin but skips
- * GL plugins.
- *
- * @see visual_actor_get_next_by_name_nogl
- *
- * @param name The name of the current plugin or NULL to get the last.
- *
- * @return The name of the previous plugin within the list that is not a GL plugin.
- */
-const char *visual_actor_get_prev_by_name_nogl (const char *name)
-{
-	const char *prev = name;
-	VisPluginData *plugin;
-	VisPluginRef *ref;
-	VisActorPlugin *actplugin;
-	int gl;
-
-	do {
-		prev = visual_plugin_get_prev_by_name (visual_actor_get_list (), prev);
-
-		if (prev == NULL)
-			return NULL;
-		
-		ref = visual_plugin_find (__lv_plugins_actor, prev);
-		plugin = visual_plugin_load (ref);
-		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
-
-		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
-			gl = TRUE;
-		else
-			gl = FALSE;
-	
-		visual_plugin_unload (plugin);
-
-	} while (gl == TRUE);
-
-	return prev;
-}
-
-/**
- * Gives the next actor plugin based on the name of a plugin.
- *
- * @see visual_actor_get_prev_by_name
- * 
- * @param name The name of the current plugin, or NULL to get the first.
- *
- * @return The name of the next plugin within the list.
- */
-const char *visual_actor_get_next_by_name (const char *name)
-{
-	return visual_plugin_get_next_by_name (visual_actor_get_list (), name);
-}
-
-/**
- * Gives the previous actor plugin based on the name of a plugin.
- *
- * @see visual_actor_get_next_by_name
- * 
- * @param name The name of the current plugin. or NULL to get the last.
- *
- * @return The name of the previous plugin within the list.
- */
-const char *visual_actor_get_prev_by_name (const char *name)
-{
-	return visual_plugin_get_prev_by_name (visual_actor_get_list (), name);
-}
-
-/**
- * Checks if the actor plugin is in the registry, based on it's name.
- *
- * @param name The name of the plugin that needs to be checked.
- *
- * @return TRUE if found, else FALSE.
- */
-int visual_actor_valid_by_name (const char *name)
-{
-	if (visual_plugin_find (visual_actor_get_list (), name) == NULL)
-		return FALSE;
-	else
-		return TRUE;
 }
 
 /**
@@ -345,7 +156,7 @@ VisActor *visual_actor_new (const char *actorname)
  * @param actorname
  *	The name of the plugin to load, or NULL to simply initialize a new actor.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL or -VISUAL_ERROR_PLUGIN_NO_MAP on failure.
  */
 int visual_actor_init (VisActor *actor, const char *actorname)
 {
@@ -358,7 +169,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 	if (__lv_plugins_actor == NULL && actorname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 
-		return -VISUAL_ERROR_PLUGIN_NO_LIST;
+		return -VISUAL_ERROR_PLUGIN_NO_MAP;
 	}
 
 	/* Do the VisObject initialization */

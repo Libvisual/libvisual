@@ -22,8 +22,11 @@
 
 VISUAL_BEGIN_DECLS
 
+typedef void (*VisTLSDestroyerFunc)(void *data);
+
 typedef struct _VisThread VisThread;
 typedef struct _VisMutex VisMutex;
+typedef struct _VisTLS VisTLS;
 
 /**
  * The function defination for a function that forms the base of a new VisThread when
@@ -44,12 +47,12 @@ typedef void *(*VisThreadFunc)(void *data);
 struct _VisThread {
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
-	pthread_t thread;		/**< Private used for the pthread implementation. */
+	pthread_t	 thread;	/**< Private used for the pthread implementation. */
 #elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
-	HANDLE thread;
-	DWORD threadId;
+	HANDLE		 thread;
+	DWORD		 threadId;
 #elif defined(VISUAL_THREAD_MODEL_GTHREAD) /* !VISUAL_THREAD_MODEL_WIN32 */
-	GThread *thread;
+	GThread		*thread;
 #endif
 #endif /* VISUAL_HAVE_THREADS */
 };
@@ -61,16 +64,29 @@ struct _VisThread {
 struct _VisMutex {
 #ifdef VISUAL_HAVE_THREADS
 #ifdef VISUAL_THREAD_MODEL_POSIX
-	pthread_mutex_t mutex;		/**< Private used for the pthreads implementation. */
+	pthread_mutex_t	 mutex;		/**< Private used for the pthreads implementation. */
 #elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
 
 #elif defined(VISUAL_THREAD_MODEL_GTHREAD) /* !VISUAL_THREAD_MODEL_WIN32 */
-	GMutex *mutex;
+	GMutex		*mutex;
 
-	GStaticMutex static_mutex;
-	int static_mutex_used;
+	GStaticMutex	 static_mutex;
+	int		 static_mutex_used;
 #endif
 #endif /* VISUAL_HAVE_THREADS */
+};
+
+struct _VisTLS {
+#ifdef VISUAL_HAVE_THREADS
+#ifdef VISUAL_THREAD_MODEL_POSIX
+	pthread_key_t		 key;
+#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
+	DWORD			 key;
+#elif defined(VISUAL_THREAD_MODEL_GTHREAD) /* !VISUAL_THREAD_MODEL_WIN32 */
+
+#endif
+#endif /* VISUAL_HAVE_THREADS */
+	VisTLSDestroyerFunc	 destroyer;
 };
 
 int visual_thread_initialize (void);
@@ -93,6 +109,12 @@ int visual_mutex_init (VisMutex *mutex);
 int visual_mutex_lock (VisMutex *mutex);
 int visual_mutex_trylock (VisMutex *mutex);
 int visual_mutex_unlock (VisMutex *mutex);
+
+VisTLS *visual_thread_tls_create_key (VisTLSDestroyerFunc destroyer);
+int visual_thread_tls_delete_key (VisTLS *tlskey);
+int visual_thread_tls_set_data (VisTLS *tlskey, void *data);
+void *visual_thread_tls_get_data (VisTLS *tlskey);
+
 
 VISUAL_END_DECLS
 

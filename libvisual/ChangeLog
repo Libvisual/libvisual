@@ -1,3 +1,158 @@
+2006-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	The big flush.
+
+	* Makefile.am, configure.ac: Support for DragonFly.
+
+	* libvisual/lv_mem_ops.*: Moved mem copy and mem sets here.
+	
+	* libvisual/lv_mem_pool.*: Memory pool implementations. (TLS and non
+	TLS at this moment).
+
+	* libvisual/lv_mem_utils.*: MemChunk implementation, MemPointerStack
+	implementation, both are used by memory pools.
+
+	* libvisual/lv_queue.*: Added VisQueue, a queue extension on VisList.
+
+	* libvisual/lv_string.*: Added VisString, our new string class and
+	string handling system. The port to this is still on going.
+
+	* libvisual/lv_actor.*, libvisual/lv_morph.*, libvisual/lv_input.*,
+	libvisual/lv_transform.*: Removed the char * plugin iteration. A new
+	API based on collections and collection iterators will be added soon.
+
+	* libvisual/lv_plugin.*, libvisual/lv_libvisual/*, and the
+	actor/morph/input/transform set: Redid the plugin registry, now using
+	hashmaps.
+
+	* libvisual/lv_audio.*: Cleanup old cruft.
+
+	* libvisual/lv_math.*: Renamed functions to shorter and better naming.
+	Also did better const correctness.
+
+	* libvisual/lv_audio.c (visual_audio_get_sample):
+	Fixed typo: signedcorr += byte_max_numeric (size) / 2; to
+	signedcorr = byte_max_numeric (size) / 2;
+	
+	* libvisual/lv_buffer.* (visual_buffer_set_offset_sequential),
+	(visual_buffer_reset_offset_sequential),
+	(visual_buffer_get_data_offset_sequential),
+	(visual_buffer_get_offset_sequential),
+	(visual_buffer_get_available_sequential):
+	Added sequential buffer support: Sepp Wijnands
+
+	(visual_buffer_clone_with_attributes),
+	(visual_buffer_clone_new_with_attributes): Clone data and all buffer
+	attributes.
+
+	(visual_buffer_copy_data_to_length),
+	(visual_buffer_copy_data_to_offset_length),
+	(visual_buffer_put_length), (visual_buffer_put_sequential),
+	(visual_buffer_put_data_sequential),
+	(visual_buffer_put_sequential_atomic),
+	(visual_buffer_put_data_sequential_atomic): More copy and put
+	variants.
+
+	(visual_buffer_fill_with_pattern): Initialize offset variable.
+
+	* libvisual/lv_cache.*: Cleanup and documentation.
+
+	* libvisual/lv_collection.*: Renamed iter to iterator. Ability to use
+	iterators on the stach instead of heap only.
+
+	* libvisual/lv_hashmap.*, libvisual/lv_list.*,
+	libvisual/lv_hashlist.*, libvisual/lv_queue.*: Updated to
+	VisCollection changes.
+
+	* libvisual/lv_color.* (visual_color_from_hls), (visual_color_to_hls):
+	Added hls colors for better quality over hsv.
+
+	And added new types: VisColorPacked16, VisColorPacked24.
+
+	* libvisual/lv_cpu.*: Cleanups. Should be rewritten in the future. Not
+	this release however, also added support for SSE3.
+
+	* libvisual/lv_defines.h: Added VISUAL_MIN and VISUAL_MAX macros.
+
+	* libvisual/lv_error.*: Many new errors for new sub systems and such.
+
+	* libvisual/lv_event.*: Take care of reffing and unreffing object pointers
+	within events. Use VisQueue. Add touch events for multitouch devices.
+	General cleanups.
+
+	* libvisual/lv_fourier.*: More const correctness (thanks for pointing
+	out Chong), use visual_size_t where appropiate. Fixed the cache and
+	log scale cache dtors.
+
+	* libvisual/lv_math.*: Small fixes.
+
+	* libvisual/lv_mem.*: Added allocation abstraction and the beginning
+	of a runtime profile allocation strategy.
+
+	* libvisual/lv_object.* (visual_object_new_of_size): New initialized
+	VisObject with a certain size.
+
+	(visual_object_new_and_clean): Create a new VisObject of size and
+	clean data part.
+
+	* libvisual/lv_palette.* (visual_palette_init): Added ncolors
+	attribute, and removed color allocation from the _new method and moved
+	it to the _init method.
+
+	* libvisual/lv_param.*: Moved to hashmaps. Added param proxy objects
+	that still can be initialized with a static initializer. Moved param
+	limits from VisUI to VisParam. And ported mostly to VisString.
+
+	(visual_param_entry_set_from_proxy_param):
+	Set param from proxy param.
+	
+	(visual_param_entry_limit_set_from_limit),
+	(visual_param_entry_limit_set_integer),
+	(visual_param_entry_limit_set_float),
+	(visual_param_entry_limit_set_double):
+	Limit setters
+
+	(visual_param_entry_limit_nearest_integer)
+	(visual_param_entry_limit_nearest_float)
+	(visual_param_entry_limit_nearest_double):
+	Nearest valid value finders.
+
+	(visual_param_entry_limit_get_minimum)
+	(visual_param_entry_limit_get_maximum):
+	getter/setter for min and max value.
+
+	* libvisual/lv_plugin.* (visual_plugin_info_init): Added _init and use
+	it in the _new.
+
+	(visual_plugin_ref_init): Ditto.
+	(visual_plugin_init): Ditto.
+	(visual_plugin_set_registry): Ability to set a registry.
+
+	(*_*_by_name): Removed this, will be replaced with a more sane system.
+
+	* libvisual/lv_thread.*: Added TLS (thread local storage),
+	implementation not yet finished.
+
+	* libvisual/lv_ui.*: Removed all param limit stuff (now in VisParam).
+	Ported mostly to VisString. Fixed bugs. Added more and better dtors.
+
+	* libvisual/lv_video.*: removed _color16, _color24 now in VisColor
+	under a global namespace. Random cleanups.
+	
+
+	(visual_video_blit_overlay_rectangle_transform_reuse),
+	(visual_video_blit_overlay_rectangle_custom_transform_reuse),
+	(visual_video_blit_overlay_rectangle_scale_transform_reuse),
+	(visual_video_blit_overlay_rectangle_scale_custom_transform_reuse),
+	(visual_video_blit_overlay_transform_reuse),
+	(visual_video_blit_overlay_custom_transform_reuse): Added _reuse
+	variants for all blitters. This will reuse the VisVideo used for
+	potential depth transformation instead of allocating and destroying it
+	all the time.
+
+	(depth_transform_8_to_24_c): One lookup instead of three per pixel (on
+	my computer this increases speed more than 200%).
+
 2006-08-12  Chong Kai Xiong  <descender@phreaker.net>
 
 	* libvisual/lv_utils.c (visual_util_is_power_of_2): Use an O(1)

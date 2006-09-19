@@ -3,6 +3,8 @@ of Libvisual.
 
 These are only visible changes, for more details look at the ChangeLog.
 
+New in 0.6.0:
+
 New in 0.4.0: xxxx-xx-xx:
 * Real time timestamping support. (Dennis)
 * Will unref plugins that don't match the ABI version. (Dennis)

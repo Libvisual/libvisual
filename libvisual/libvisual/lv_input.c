@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_input.c,v 1.29 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_input.c,v 1.30 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -32,7 +32,7 @@
 #include "lv_list.h"
 #include "lv_input.h"
 
-extern VisList *__lv_plugins_input;
+static VisHashmap *__lv_plugins_input = NULL;
 
 static int input_dtor (VisObject *object);
 
@@ -51,7 +51,7 @@ static int input_dtor (VisObject *object)
 	input->plugin = NULL;
 	input->audio = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static VisInputPlugin *get_input_plugin (VisInput *input)
@@ -84,57 +84,30 @@ VisPluginData *visual_input_get_plugin (VisInput *input)
 }
 
 /**
- * Gives a list of input plugins in the current plugin registry.
+ * Sets the VisHashmap that is used as the plugin registry for input plugins.
  *
- * @return An VisList of VisPluginRef's containing the input plugins in the plugin registry.
+ * @param map Pointer to the VisHashmap that contains the input plugin registry.
+ *
+ * @return VISUAL_OK on succes.
  */
-VisList *visual_input_get_list ()
+int visual_input_set_map (VisHashmap *map)
+{
+	if (__lv_plugins_input != NULL)
+		visual_object_unref (VISUAL_OBJECT (__lv_plugins_input));
+
+	__lv_plugins_input = map;
+
+	return VISUAL_OK;
+}
+
+/**
+ * Gives a hashmap of input plugins in the current plugin registry.
+ *
+ * @return A VisHashmap of VisPluginRef entries containing the input plugins in the plugin registry.
+ */
+VisHashmap *visual_input_get_map ()
 {
 	return __lv_plugins_input;
-}
-
-/**
- * Gives the next input plugin based on the name of a plugin.
- *
- * @see visual_input_get_prev_by_name
- *
- * @param name The name of the current plugin, or NULL to get the first.
- *
- * @return The name of the next plugin within the list.
- */
-const char *visual_input_get_next_by_name (const char *name)
-{
-	return visual_plugin_get_next_by_name (visual_input_get_list (), name);
-}
-
-/**
- * Gives the previous input plugin based on the name of a plugin.
- *
- * @see visual_input_get_next_by_name
- *
- * @param name The name of the current plugin. or NULL to get the last.
- *
- * @return The name of the previous plugin within the list.
- */
-const char *visual_input_get_prev_by_name (const char *name)
-{
-	return visual_plugin_get_prev_by_name (visual_input_get_list (), name);
-}
-
-
-/**
- * Checks if the input plugin is in the registry, based on it's name.
- *
- * @param name The name of the plugin that needs to be checked.
- *
- * @return TRUE if found, else FALSE.
- */
-int visual_input_valid_by_name (const char *name)
-{
-	if (visual_plugin_find (visual_input_get_list (), name) == NULL)
-		return FALSE;
-	else
-		return TRUE;
 }
 
 /**
@@ -171,7 +144,7 @@ VisInput *visual_input_new (const char *inputname)
  * @param inputname
  *	The name of the plugin to load, or NULL to simply initialize a new input.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_PLUGIN_NO_MAP on failure.
  */
 int visual_input_init (VisInput *input, const char *inputname)
 {
@@ -182,7 +155,7 @@ int visual_input_init (VisInput *input, const char *inputname)
 	if (__lv_plugins_input == NULL && inputname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 
-		return -VISUAL_ERROR_PLUGIN_NO_LIST;
+		return -VISUAL_ERROR_PLUGIN_NO_MAP;
 	}
 
 	/* Do the VisObject initialization */
@@ -271,8 +244,6 @@ int visual_input_run (VisInput *input)
 		inplugin->upload (input->plugin, input->audio);
 	} else
 		input->callback (input, input->audio, visual_object_get_private (VISUAL_OBJECT (input)));
-
-	visual_audio_analyze (input->audio);
 
 	return VISUAL_OK;
 }

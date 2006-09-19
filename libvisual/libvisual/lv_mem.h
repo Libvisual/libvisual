@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_mem.h,v 1.20 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_mem.h,v 1.21 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,74 +27,65 @@
 #include <libvisual/lvconfig.h>
 
 #include <libvisual/lv_defines.h>
+#include <libvisual/lv_object.h>
+#include <libvisual/lv_mem_ops.h>
 
 VISUAL_BEGIN_DECLS
 
 /**
- * The visual_mem_copy function needs this signature.
- *
- * @arg dest Pointer to the dest buffer.
- * @arg src Pointer to the source buffer.
- * @arg n The number of bytes to be copied.
- *
- * @return Pointer to the dest buffer.
- */
-typedef void *(*VisMemCopyFunc)(void *dest, const void *src, visual_size_t n);
-
-/**
- * The visual_mem_set function needs this signature.
- *
- * @arg dest Pointer to the dest buffer.
- * @arg c Value that is used as the set value.
- * @arg n The number of bytes to be set.
- *
- * @return Pointer to the dest buffer.
- */
-typedef void *(*VisMemSet8Func)(void *dest, int c, visual_size_t n);
-
-/**
- * The visual_mem_set16 function needs this signature.
- *
- * @arg dest Pointer to the dest buffer.
- * @arg c Value that is used as the set value.
- * @arg n The number of words (16bits) to be set.
- *
- * @return Pointer to the dest buffer.
- */
-typedef void *(*VisMemSet16Func)(void *dest, int c, visual_size_t n);
-
-/**
- * The visual_mem_set32 function needs this signature.
- *
- * @arg dest Pointer to the dest buffer.
- * @arg c Value that is used as the set value.
- * @arg n The number of integers (32bits) to be set.
- *
- * @return Pointer to the dest buffer.
- */
-typedef void *(*VisMemSet32Func)(void *dest, int c, visual_size_t n);
-
-/* prototypes */
-int visual_mem_initialize (void);
-void *visual_mem_malloc (visual_size_t nbytes) __malloc;
-void *visual_mem_malloc0 (visual_size_t nbytes) __malloc;
-void *visual_mem_realloc (void *ptr, visual_size_t nbytes) __malloc;
-int visual_mem_free (void *ptr);
-
-/* Optimal performance functions set by visual_mem_initialize(). */
-extern VisMemCopyFunc visual_mem_copy;
-extern VisMemSet8Func visual_mem_set;
-extern VisMemSet16Func visual_mem_set16;
-extern VisMemSet32Func visual_mem_set32;
-
-/**
  * @ingroup VisMem
- * 
+ *
  * Convenient macro to request @a n_structs structures of type @a struct_type
  * initialized to 0.
  */
 #define visual_mem_new0(struct_type, n_structs)           \
     ((struct_type *) visual_mem_malloc0 (((visual_size_t) sizeof (struct_type)) * ((visual_size_t) (n_structs))))
+
+#define visual_mem_malloc(size)		\
+	visual_mem_malloc_impl (size, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+
+#define visual_mem_malloc0(size)	\
+	visual_mem_malloc0_impl (size, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+
+#define visual_mem_realloc(ptr, size)	\
+	visual_mem_realloc_impl (ptr, size, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+
+#define visual_mem_free(ptr)		\
+	visual_mem_free_impl (ptr, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+
+
+typedef struct _VisMemAllocVTable VisMemAllocVTable;
+
+typedef void *(*VisMemMallocFunc)(visual_size_t nbytes, const char *file, int line, const char *funcname);
+typedef void *(*VisMemMalloc0Func)(visual_size_t nbytes, const char *file, int line, const char *funcname);
+typedef void *(*VisMemReallocFunc)(void *ptr, visual_size_t nbytes, const char *file, int line, const char *funcname);
+typedef int (*VisMemFreeFunc)(void *ptr, const char *file, int line, const char *funcname);
+
+
+struct _VisMemAllocVTable {
+	VisMemMallocFunc	 malloc;
+	VisMemMalloc0Func	 malloc0;
+	VisMemReallocFunc	 realloc;
+	VisMemFreeFunc		 free;
+
+	VisObject		*priv;
+};
+
+
+/* prototypes */
+void *visual_mem_malloc_impl (visual_size_t nbytes, const char *file, int line, const char *funcname) __malloc;
+void *visual_mem_malloc0_impl (visual_size_t nbytes, const char *file, int line, const char *funcname) __malloc;
+void *visual_mem_realloc_impl (void *ptr, visual_size_t nbytes, const char *file, int line, const char *funcname) __malloc;
+int visual_mem_free_impl (void *ptr, const char *file, int line, const char *funcname);
+
+VisMemAllocVTable *visual_mem_alloc_vtable_standard (void);
+VisMemAllocVTable *visual_mem_alloc_vtable_profile (void);
+
+int visual_mem_alloc_profile (void);
+
+int visual_mem_alloc_install_vtable (VisMemAllocVTable *allocvtable);
+VisMemAllocVTable *visual_mem_alloc_installed_vtable (void);
+
 
 VISUAL_END_DECLS
 

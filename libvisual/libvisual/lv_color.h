@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_color.h,v 1.17 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_color.h,v 1.18 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,6 +31,8 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_COLOR(obj)				(VISUAL_CHECK_CAST ((obj), VisColor))
 
 typedef struct _VisColor VisColor;
+typedef struct _VisColorPacked16 VisColorPacked16;
+typedef struct _VisColorPacked24 VisColorPacked24;
 
 /**
  * Data type to describe a palette entry, or a color. The HSV isn't kept in sync with RGB automaticly
@@ -44,11 +46,27 @@ struct _VisColor {
 	uint8_t		unused;	/**< Unused. */
 };
 
+#pragma pack(1)
+struct _VisColorPacked16 {
+	uint16_t b:5, g:6, r:5;
+};
+
+struct _VisColorPacked24 {
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+};
+#pragma pack()
+
 VisColor *visual_color_new (void);
 int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
 int visual_color_compare (VisColor *src1, VisColor *src2);
+
 int visual_color_from_hsv (VisColor *color, float h, float s, float v);
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
+int visual_color_from_hls (VisColor *color, float h, float l, float s);
+int visual_color_to_hls (VisColor *color, float *h, float *l, float *s);
+
 int visual_color_copy (VisColor *dest, VisColor *src);
 
 int visual_color_from_uint32 (VisColor *color, uint32_t rgb);

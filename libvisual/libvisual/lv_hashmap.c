@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_hashmap.c,v 1.11 2006-02-17 22:00:17 synap Exp $
+ * $Id: lv_hashmap.c,v 1.12 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,15 +27,16 @@
 #include <string.h>
 
 #include "lv_common.h"
+#include "lv_string.h"
 #include "lv_hashmap.h"
 
-#define HASHMAP_ITERCONTEXT(obj)                           (VISUAL_CHECK_CAST ((obj), HashmapIterContext))
+#define HASHMAP_ITERATORCONTEXT(obj)                           (VISUAL_CHECK_CAST ((obj), HashmapIteratorContext))
 
 
-typedef struct _HashmapIterContext HashmapIterContext;
+typedef struct _HashmapIteratorContext HashmapIteratorContext;
 
-struct _HashmapIterContext {
-	VisObject	*object;
+struct _HashmapIteratorContext {
+	VisObject	 object;
 
 	int		 index;
 	int		 retrieved;
@@ -47,17 +48,17 @@ struct _HashmapIterContext {
 
 static int hashmap_destroy (VisCollection *collection);
 static int hashmap_chain_destroy (VisHashmap *hashmap, VisList *list);
+static void hashmap_list_entry_destroyer (void *data);
 static int hashmap_size (VisCollection *collection);
-static VisCollectionIter *hashmap_iter (VisCollection *collection);
+static int hashmap_iter (VisCollectionIterator *iter, VisCollection *collection);
 
-static void hashmap_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index);
-static int hashmap_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
-static void hashmap_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
-static void *hashmap_iter_get_data (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
+static void hashmap_iter_assign (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext, int index);
+static int hashmap_iter_has_more (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext);
+static void hashmap_iter_next (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext);
+static void *hashmap_iter_get_data (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext);
 
-static int integer_hash (uint32_t key);
-static int string_hash (char *key);
-static int get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype);
+static uint32_t integer_hash (uint32_t key);
+static uint32_t get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype);
 
 static int create_table (VisHashmap *hashmap);
 
@@ -98,20 +99,22 @@ static int hashmap_chain_destroy (VisHashmap *hashmap, VisList *list)
 			visual_list_destroy (list, &le);
 		}
 	}
+
+	return VISUAL_OK;
 }
 
-static int hashmap_list_entry_destroyer (void *data)
+static void hashmap_list_entry_destroyer (void *data)
 {
 	VisHashmapChainEntry *mentry = VISUAL_HASHMAPCHAINENTRY (data);
 
 	if (mentry == NULL)
-		return -1;
+		return;
 
 	if (mentry->keytype == VISUAL_HASHMAP_KEY_TYPE_STRING) {
-		visual_mem_free (mentry->key.string);
+		visual_mem_free ((void *) mentry->key.string);
 	}
 
-	return visual_mem_free (mentry);
+	visual_mem_free (mentry);
 }
 
 static int hashmap_size (VisCollection *collection)
@@ -121,13 +124,12 @@ static int hashmap_size (VisCollection *collection)
 	return hashmap->size;
 }
 
-static VisCollectionIter *hashmap_iter (VisCollection *collection)
+static int hashmap_iter (VisCollectionIterator *iter, VisCollection *collection)
 {
-	VisCollectionIter *iter;
-	HashmapIterContext *context;
+	HashmapIteratorContext *context;
 	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
 
-	context = visual_mem_new0 (HashmapIterContext, 1);
+	context = visual_mem_new0 (HashmapIteratorContext, 1);
 
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (context), TRUE, NULL);
@@ -136,13 +138,13 @@ static VisCollectionIter *hashmap_iter (VisCollection *collection)
 	context->retrieved = FALSE;
 	context->first = TRUE;
 
-	iter = visual_collection_iter_new (hashmap_iter_assign, hashmap_iter_next, hashmap_iter_has_more,
+	visual_collection_iterator_init (iter, hashmap_iter_assign, hashmap_iter_next, hashmap_iter_has_more,
 			hashmap_iter_get_data, collection, VISUAL_OBJECT (context));
 
-	return iter;
+	return VISUAL_OK;
 }
 
-static void hashmap_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index)
+static void hashmap_iter_assign (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext, int index)
 {
 	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
 	int i;
@@ -155,10 +157,10 @@ static void hashmap_iter_assign (VisCollectionIter *iter, VisCollection *collect
 	}
 }
 
-static int hashmap_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+static int hashmap_iter_has_more (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext)
 {
 	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
-	HashmapIterContext *context = HASHMAP_ITERCONTEXT (itercontext);
+	HashmapIteratorContext *context = HASHMAP_ITERATORCONTEXT (itercontext);
 
 	if (context->index >= hashmap->tablesize)
 		return FALSE;
@@ -198,10 +200,10 @@ static int hashmap_iter_has_more (VisCollectionIter *iter, VisCollection *collec
 	return FALSE;
 }
 
-static void hashmap_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+static void hashmap_iter_next (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext)
 {
 	VisHashmap *hashmap = VISUAL_HASHMAP (collection);
-	HashmapIterContext *context = HASHMAP_ITERCONTEXT (itercontext);
+	HashmapIteratorContext *context = HASHMAP_ITERATORCONTEXT (itercontext);
 
 	if (context->retrieved == FALSE) {
 		if (context->first == TRUE) {
@@ -221,19 +223,19 @@ static void hashmap_iter_next (VisCollectionIter *iter, VisCollection *collectio
 	return;
 }
 
-static void *hashmap_iter_get_data (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+static void *hashmap_iter_get_data (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext)
 {
-	HashmapIterContext *context = HASHMAP_ITERCONTEXT (itercontext);
+	HashmapIteratorContext *context = HASHMAP_ITERATORCONTEXT (itercontext);
 	VisHashmapChainEntry *mentry;
 
 	mentry = context->le->data;
 
-	return mentry->data;
+	return mentry;
 }
 
 
 /* Thomas Wang's 32 bit Mix Function: http://www.concentric.net/~Ttwang/tech/inthash.htm */
-static int integer_hash (uint32_t key)
+static uint32_t integer_hash (uint32_t key)
 {
 	key += ~(key << 15);
 	key ^=  (key >> 10);
@@ -245,24 +247,12 @@ static int integer_hash (uint32_t key)
 	return key;
 }
 
-/* X31 HASH found in g_str_hash */
-static int string_hash (char *key)
-{
-	char *p;
-	int hash = 0;
-
-	for (p = key; *p != '\0'; p++)
-		hash = (hash << 5) - hash  + *p;
-
-	return hash;
-}
-
-static int get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype)
+static uint32_t get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype)
 {
 	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
 		return integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
 	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
-		return string_hash ((char *) key) % hashmap->tablesize;
+		return visual_string_get_hashcode_cstring ((char *) key) % hashmap->tablesize;
 
 	return 0;
 }
@@ -294,7 +284,9 @@ static int create_table (VisHashmap *hashmap)
 
 /**
  * Creates a new VisHashmap.
- * 
+ *
+ * @param destroyer The collection destroyer that is used to destroy the individual members.
+ *
  * @return A newly allocated VisHashmap.
  */
 VisHashmap *visual_hashmap_new (VisCollectionDestroyerFunc destroyer)
@@ -325,7 +317,7 @@ int visual_hashmap_init (VisHashmap *hashmap, VisCollectionDestroyerFunc destroy
 	visual_collection_set_destroyer (VISUAL_COLLECTION (hashmap), destroyer);
 	visual_collection_set_destroy_func (VISUAL_COLLECTION (hashmap), hashmap_destroy);
 	visual_collection_set_size_func (VISUAL_COLLECTION (hashmap), hashmap_size);
-	visual_collection_set_iter_func (VISUAL_COLLECTION (hashmap), hashmap_iter);
+	visual_collection_set_iterator_func (VISUAL_COLLECTION (hashmap), hashmap_iter);
 
 	/* Set the VisHashmap data */
 	hashmap->tablesize = VISUAL_HASHMAP_START_SIZE;
@@ -352,6 +344,7 @@ int visual_hashmap_put (VisHashmap *hashmap, void *key, VisHashmapKeyType keytyp
 
 	chain = &hashmap->table[hash].list;
 
+	// FIXME why only when key is of type INTEGER ???
 	/* Iterate list to check if the key is already in the chain */
 	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER) {
 		while ((mentry = visual_list_next (chain, &le)) != NULL) {
@@ -395,9 +388,9 @@ int visual_hashmap_put_integer (VisHashmap *hashmap, uint32_t key, void *data)
 	return visual_hashmap_put (hashmap, &key, VISUAL_HASHMAP_KEY_TYPE_INTEGER, data);
 }
 
-int visual_hashmap_put_string (VisHashmap *hashmap, char *key, void *data)
+int visual_hashmap_put_string (VisHashmap *hashmap, const char *key, void *data)
 {
-	return visual_hashmap_put (hashmap, key, VISUAL_HASHMAP_KEY_TYPE_STRING, data);
+	return visual_hashmap_put (hashmap, (void *) key, VISUAL_HASHMAP_KEY_TYPE_STRING, data);
 }
 
 int visual_hashmap_remove (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype, int destroy)
@@ -451,9 +444,9 @@ int visual_hashmap_remove_integer (VisHashmap *hashmap, uint32_t key, int destro
 	return visual_hashmap_remove (hashmap, &key, VISUAL_HASHMAP_KEY_TYPE_INTEGER, destroy);
 }
 
-int visual_hashmap_remove_string (VisHashmap *hashmap, char *key, int destroy)
+int visual_hashmap_remove_string (VisHashmap *hashmap, const char *key, int destroy)
 {
-	return visual_hashmap_remove (hashmap, key, VISUAL_HASHMAP_KEY_TYPE_STRING, destroy);
+	return visual_hashmap_remove (hashmap, (void *) key, VISUAL_HASHMAP_KEY_TYPE_STRING, destroy);
 }
 
 void *visual_hashmap_get (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype)
@@ -473,7 +466,7 @@ void *visual_hashmap_get (VisHashmap *hashmap, void *key, VisHashmapKeyType keyt
 
 	chain = &hashmap->table[hash].list;
 
-	/* Iterate list to check if the key is already in the chain */
+	/* Iteratorate list to check if the key is already in the chain */
 	while ((mentry = visual_list_next (chain, &le)) != NULL) {
 		if (mentry->keytype == keytype) {
 			if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER &&
@@ -495,11 +488,28 @@ void *visual_hashmap_get_integer (VisHashmap *hashmap, uint32_t key)
 	return visual_hashmap_get (hashmap, &key, VISUAL_HASHMAP_KEY_TYPE_INTEGER);
 }
 
-void *visual_hashmap_get_string (VisHashmap *hashmap, char *key)
+void *visual_hashmap_get_string (VisHashmap *hashmap, const char *key)
 {
-	return visual_hashmap_get (hashmap, key, VISUAL_HASHMAP_KEY_TYPE_STRING);
+	return visual_hashmap_get (hashmap, (void *) key, VISUAL_HASHMAP_KEY_TYPE_STRING);
 }
 
+void *visual_hashmap_chain_entry_get_data (VisHashmapChainEntry *mentry)
+{
+	visual_log_return_val_if_fail (mentry != NULL, NULL);
+
+	return mentry->data;
+}
+
+/**
+ * Resizes the hashmap. This is an expensive function as it has to rehash all the entries. Try
+ * to avoid using this. Also keep in mind that since we're using chain-on-collide implementation
+ * the hashmap will work even if it's 100% full (tho performance starts to decrase of course).
+ *
+ * @param hashmap Pointer to the VisHashmap that is to be resized.
+ * @param tablesize The size of the hashtable.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_HASHMAP_NULL on failure.
+ */
 int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize)
 {
 	int oldsize;
@@ -507,8 +517,13 @@ int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize)
 	visual_log_return_val_if_fail (hashmap != NULL, -VISUAL_ERROR_HASHMAP_NULL);
 
 	/* Table was not empty, rehash */
-	if (hashmap->table != NULL) {
+	if (hashmap->table != NULL && hashmap->tablesize == tablesize) {
+
+		return VISUAL_OK;
+
+	} else if (hashmap->table != NULL) {
 		VisHashmap tempmap;
+		VisCollectionIterator iter;
 
 		visual_hashmap_init (&tempmap, NULL);
 
@@ -516,14 +531,14 @@ int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize)
 		tempmap.tablesize = hashmap->tablesize;
 		tempmap.size = hashmap->size;
 
-		VisCollectionIter *iter = visual_collection_get_iter (VISUAL_COLLECTION (hashmap));
+		visual_collection_get_iterator (&iter, VISUAL_COLLECTION (hashmap));
 
 		hashmap->tablesize = tablesize;
 		create_table (hashmap);
 
 		/* Rehash all entries */
-		while (visual_collection_iter_has_more (iter) == TRUE) {
-			VisHashmapChainEntry *mentry = visual_collection_iter_get_data (iter);
+		while (visual_collection_iterator_has_more (&iter) == TRUE) {
+			VisHashmapChainEntry *mentry = visual_collection_iterator_get_data (&iter);
 
 			if (mentry->keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER) {
 				visual_hashmap_put_integer (hashmap, mentry->key.integer, mentry->data);
@@ -533,6 +548,8 @@ int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize)
 
 			}
 		}
+
+		visual_object_unref (VISUAL_OBJECT (&iter));
 
 		/* Free old table */
 		visual_object_unref (VISUAL_OBJECT (&tempmap));
@@ -545,6 +562,13 @@ int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize)
 	return VISUAL_OK;
 }
 
+/**
+ * Retrieves the table size of the hashmap.
+ *
+ * @param hashmap Pointer to the VisHashmap of which the table size is requested.
+ *
+ * @return The table size on succes, -VISUAL_ERROR_HASHMAP_NULL on failure.
+ */
 int visual_hashmap_get_table_size (VisHashmap *hashmap)
 {
 	visual_log_return_val_if_fail (hashmap != NULL, -VISUAL_ERROR_HASHMAP_NULL);

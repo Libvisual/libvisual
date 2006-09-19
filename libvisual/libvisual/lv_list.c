@@ -12,7 +12,7 @@
  *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- * $Id: lv_list.c,v 1.30 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_list.c,v 1.31 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,13 +40,13 @@
 #include "lv_log.h"
 #include "lv_mem.h"
 
-#define LIST_ITERCONTEXT(obj)				(VISUAL_CHECK_CAST ((obj), ListIterContext))
+#define LIST_ITERATORCONTEXT(obj)				(VISUAL_CHECK_CAST ((obj), ListIteratorContext))
 
 
-typedef struct _ListIterContext ListIterContext;
+typedef struct _ListIteratorContext ListIteratorContext;
 
-struct _ListIterContext {
-	VisObject	*object;
+struct _ListIteratorContext {
+	VisObject	 object;
 
 	VisListEntry	*cur;
 };
@@ -54,12 +54,12 @@ struct _ListIterContext {
 
 static int list_destroy (VisCollection *collection);
 static int list_size (VisCollection *collection);
-static VisCollectionIter *list_iter (VisCollection *collection);
+static int list_iter (VisCollectionIterator *iter, VisCollection *collection);
 
-static void list_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index);
-static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
-static void list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
-static void *list_iter_getdata (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
+static void list_iter_assign (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext, int index);
+static int list_iter_has_more (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext);
+static void list_iter_next (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext);
+static void *list_iter_getdata (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext);
 
 
 static int list_destroy (VisCollection *collection)
@@ -96,27 +96,26 @@ static int list_size (VisCollection *collection)
 	return list->count;
 }
 
-static VisCollectionIter *list_iter (VisCollection *collection)
+static int list_iter (VisCollectionIterator *iter, VisCollection *collection)
 {
-	VisCollectionIter *iter;
-	ListIterContext *context;
+	ListIteratorContext *context;
 	VisList *list = VISUAL_LIST (collection);
 
-	context = visual_mem_new0 (ListIterContext, 1);
+	context = visual_mem_new0 (ListIteratorContext, 1);
 
-	/* Do the VisObject initialization for the ListIterContext */
+	/* Do the VisObject initialization for the ListIteratorContext */
 	visual_object_initialize (VISUAL_OBJECT (context), TRUE, NULL);
 	context->cur = list->head;
 
-	iter = visual_collection_iter_new (list_iter_assign, list_iter_next, list_iter_has_more,
+	visual_collection_iterator_init (iter, list_iter_assign, list_iter_next, list_iter_has_more,
 			list_iter_getdata, collection, VISUAL_OBJECT (context));
 
-	return iter;
+	return VISUAL_OK;
 }
 
-static void list_iter_assign (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext, int index)
+static void list_iter_assign (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext, int index)
 {
-	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
+	ListIteratorContext *context = LIST_ITERATORCONTEXT (itercontext);
 	VisList *list = VISUAL_LIST (collection);
 	int i;
 
@@ -133,9 +132,9 @@ static void list_iter_assign (VisCollectionIter *iter, VisCollection *collection
 	}
 }
 
-static void list_iter_next (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+static void list_iter_next (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext)
 {
-	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
+	ListIteratorContext *context = LIST_ITERATORCONTEXT (itercontext);
 	VisListEntry *le = context->cur;
 
 	if (le == NULL)
@@ -144,9 +143,9 @@ static void list_iter_next (VisCollectionIter *iter, VisCollection *collection, 
 	context->cur = le->next;
 }
 
-static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+static int list_iter_has_more (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext)
 {
-	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
+	ListIteratorContext *context = LIST_ITERATORCONTEXT (itercontext);
 
 	if (context->cur == NULL)
 		return FALSE;
@@ -154,9 +153,9 @@ static int list_iter_has_more (VisCollectionIter *iter, VisCollection *collectio
 	return TRUE;
 }
 
-static void *list_iter_getdata (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext)
+static void *list_iter_getdata (VisCollectionIterator *iter, VisCollection *collection, VisObject *itercontext)
 {
-	ListIterContext *context = LIST_ITERCONTEXT (itercontext);
+	ListIteratorContext *context = LIST_ITERATORCONTEXT (itercontext);
 	VisListEntry *le = context->cur;
 
 	if (le == NULL)
@@ -173,6 +172,8 @@ static void *list_iter_getdata (VisCollectionIter *iter, VisCollection *collecti
 /**
  * Creates a new VisList structure.
  * The VisList system is a double linked list implementation.
+ *
+ * @param destroyer The collection destroyer that is used to destroy the individual members.
  *
  * @return A newly allocated VisList.
  */
@@ -193,7 +194,10 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 
 /**
  *
-*/
+ * @param destroyer The collection destroyer that is used to destroy the individual members.
+ *
+ * 
+ */
 int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
@@ -207,7 +211,7 @@ int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 	visual_collection_set_destroyer (VISUAL_COLLECTION (list), destroyer);
 	visual_collection_set_destroy_func (VISUAL_COLLECTION (list), list_destroy);
 	visual_collection_set_size_func (VISUAL_COLLECTION (list), list_size);
-	visual_collection_set_iter_func (VISUAL_COLLECTION (list), list_iter);
+	visual_collection_set_iterator_func (VISUAL_COLLECTION (list), list_iter);
 
 	/* Set the VisList data */
 	list->head = NULL;
@@ -223,12 +227,12 @@ int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
  * to the data element.
  *
  * @see visual_list_prev
- * 
+ *
  * @param list Pointer to the VisList we're traversing.
  * @param le Pointer to a VisListEntry to store the next entry within
- * 	and also to use as a reference to determine at which entry we're
- * 	currently. To begin traversing do: VisListEntry *le = NULL and pass
- * 	it as &le in the argument.
+ *	and also to use as a reference to determine at which entry we're
+ *	currently. To begin traversing do: VisListEntry *le = NULL and pass
+ *	it as &le in the argument.
  *
  * @return The data element of the next entry, or NULL.
  */
@@ -254,12 +258,12 @@ void *visual_list_next (VisList *list, VisListEntry **le)
  * to the data element.
  *
  * @see visual_list_next
- * 
+ *
  * @param list Pointer to the VisList we're traversing.
  * @param le Pointer to a VisListEntry to store the previous entry within
- * 	and also to use as a reference to determine at which entry we're
- * 	currently. To begin traversing at the end of the list do:
- * 	VisList *le = NULL and pass it as &le in the argument.
+ *	and also to use as a reference to determine at which entry we're
+ *	currently. To begin traversing at the end of the list do:
+ *	VisList *le = NULL and pass it as &le in the argument.
  *
  * @return The data element of the previous entry, or NULL.
  */
@@ -285,7 +289,7 @@ void *visual_list_prev (VisList *list, VisListEntry **le)
  *
  * @param list Pointer to the VisList of which we want an element.
  * @param index Index to determine which entry we want. The index starts at
- * 	1.
+ *	1.
  *
  * @return The data element of the requested entry, or NULL.
  */
@@ -317,7 +321,7 @@ void *visual_list_get (VisList *list, int index)
  * Adds an entry at the beginning of the list.
  *
  * @param list Pointer to the VisList to which an entry needs to be added
- * 	at it's head.
+ *	at it's head.
  * @param data A pointer to the data that needs to be added to the list.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
@@ -343,7 +347,7 @@ int visual_list_add_at_begin (VisList *list, void *data)
  * Adds an entry at the end of the list.
  *
  * @param list Pointer to the VisList to which an entry needs to be added
- * 	at it's tail.
+ *	at it's tail.
  * @param data A pointer to the data that needs to be added to the list.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
@@ -368,7 +372,7 @@ int visual_list_add (VisList *list, void *data)
  * Chains an VisListEntry at the beginning of the list.
  *
  * @param list Pointer to the VisList to which an entry needs to be added
- * 	at it's tail.
+ *	at it's tail.
  * @param le A pointer to the VisListEntry that needs to be chained to the list.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
@@ -405,7 +409,7 @@ int visual_list_chain_at_begin (VisList *list, VisListEntry *le)
  * Chains an VisListEntry at the end of the list.
  *
  * @param list Pointer to the VisList to which an entry needs to be added
- * 	at it's tail.
+ *	at it's tail.
  * @param le A pointer to the VisListEntry that needs to be chained to the list.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
@@ -453,7 +457,7 @@ int visual_list_chain (VisList *list, VisListEntry *le)
  * @param le Pointer to a VisListEntry that is being unchained.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL
- * 	on failure.
+ *	on failure.
  */
 int visual_list_unchain (VisList *list, VisListEntry *le)
 {
@@ -492,7 +496,7 @@ int visual_list_unchain (VisList *list, VisListEntry *le)
  * @param data Pointer to the data the new entry represents.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL, -VISUAL_ERROR_LIST_ENTRY_NULL or
- * 	-VISUAL_ERROR_NULL on failure.
+ *	-VISUAL_ERROR_NULL on failure.
  */
 int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 {

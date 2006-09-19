@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_bin.c,v 1.29 2006-02-08 18:55:12 synap Exp $
+ * $Id: lv_bin.c,v 1.30 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -83,7 +83,7 @@ static int bin_dtor (VisObject *object)
 	bin->actmorphvideo = NULL;
 	bin->privvid = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static void fix_depth_with_bin (VisBin *bin, VisVideo *video, int depth)

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_config.c,v 1.10 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_config.c,v 1.11 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -59,7 +59,7 @@ static int config_registry_dtor (VisObject *object)
 
 	registry->filename = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int config_registry_section_dtor (VisObject *object)
@@ -75,7 +75,7 @@ static int config_registry_section_dtor (VisObject *object)
 	rsection->name = NULL;
 	rsection->data = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 

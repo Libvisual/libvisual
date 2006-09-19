@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_palette.h,v 1.15 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_palette.h,v 1.16 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,7 +35,7 @@ typedef struct _VisPalette VisPalette;
 
 /**
  * Data type to describe the palette for an 8 bits screen depth.
- * 
+ *
  * To access the RGB value of a certain indexed color simply do:
  * pal->colors[index].(r,g,b)
  *
@@ -49,7 +49,7 @@ struct _VisPalette {
 
 /* prototypes */
 VisPalette *visual_palette_new (int ncolors);
-int visual_palette_init (VisPalette *pal);
+int visual_palette_init (VisPalette *pal, int ncolors);
 
 int visual_palette_copy (VisPalette *dest, VisPalette *src);
 

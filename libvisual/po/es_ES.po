@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual Library 0.3.0\n"
 "Report-Msgid-Bugs-To: http://libvisual.sf.net\n"
-"POT-Creation-Date: 2006-02-25 19:43+0100\n"
+"POT-Creation-Date: 2006-04-05 11:37+0200\n"
 "PO-Revision-Date: 2005-03-20 17:09-0300\n"
 "Last-Translator:  <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish\n"
@@ -566,222 +566,227 @@ msgid "VisMutex unlock failed"
 msgstr ""
 
 #: libvisual/lv_error.c:152
+#, fuzzy
+msgid "VisString is NULL"
+msgstr "VisActor es NULL"
+
+#: libvisual/lv_error.c:154
 msgid "VisTransform is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:153
+#: libvisual/lv_error.c:155
 msgid "The VisTransform negotiate with the target VisVideo failed"
 msgstr "Falló la negociación de VisTransform con el VisVideo objetivo"
 
-#: libvisual/lv_error.c:154
+#: libvisual/lv_error.c:156
 msgid "The VisTransform it's plugin is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:155
+#: libvisual/lv_error.c:157
 msgid "The VisTransform it's video is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:156
+#: libvisual/lv_error.c:158
 msgid "The VisTransform it's palette is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:158
+#: libvisual/lv_error.c:160
 msgid "VisObject destruction failed"
 msgstr "Destrucción de VisObject fallida"
 
-#: libvisual/lv_error.c:159
+#: libvisual/lv_error.c:161
 msgid "VisObject is NULL"
 msgstr "VisObject es NULL"
 
-#: libvisual/lv_error.c:160
+#: libvisual/lv_error.c:162
 #, fuzzy
 msgid "VisObject is not allocated"
 msgstr "Destrucción de VisObject fallida"
 
-#: libvisual/lv_error.c:162
+#: libvisual/lv_error.c:164
 #, fuzzy
 msgid "VisTime is NULL"
 msgstr "VisList es NULL"
 
-#: libvisual/lv_error.c:163
+#: libvisual/lv_error.c:165
 msgid "visual_time_usleep() is not supported"
 msgstr ""
 
-#: libvisual/lv_error.c:164
+#: libvisual/lv_error.c:166
 #, fuzzy
 msgid "VisTimer is NULL"
 msgstr "VisList es NULL"
 
-#: libvisual/lv_error.c:166
+#: libvisual/lv_error.c:168
 #, fuzzy
 msgid "VisUIWidget is NULL"
 msgstr "VisList es NULL"
 
-#: libvisual/lv_error.c:167
+#: libvisual/lv_error.c:169
 #, fuzzy
 msgid "VisUIContainer is NULL"
 msgstr "VisParamContainer es NULL"
 
-#: libvisual/lv_error.c:168
+#: libvisual/lv_error.c:170
 #, fuzzy
 msgid "VisUIBox is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:169
+#: libvisual/lv_error.c:171
 #, fuzzy
 msgid "VisUITable is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:170
+#: libvisual/lv_error.c:172
 #, fuzzy
 msgid "VisUINotebook is NULL"
 msgstr "VisColor es NULL"
 
-#: libvisual/lv_error.c:171
+#: libvisual/lv_error.c:173
 #, fuzzy
 msgid "VisUIFrame is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:172
+#: libvisual/lv_error.c:174
 #, fuzzy
 msgid "VisUILabel is NULL"
 msgstr "VisObject es NULL"
 
-#: libvisual/lv_error.c:173
+#: libvisual/lv_error.c:175
 #, fuzzy
 msgid "VisUIImage is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:174
+#: libvisual/lv_error.c:176
 #, fuzzy
 msgid "VisUISeparator is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:175
+#: libvisual/lv_error.c:177
 #, fuzzy
 msgid "VisUIMutator is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:176
+#: libvisual/lv_error.c:178
 #, fuzzy
 msgid "VisUIRange is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:177
+#: libvisual/lv_error.c:179
 #, fuzzy
 msgid "VisUIEntry is NULL"
 msgstr "VisListEntry es NULL"
 
-#: libvisual/lv_error.c:178
+#: libvisual/lv_error.c:180
 #, fuzzy
 msgid "VisUISlider is NULL"
 msgstr "VisColor es NULL"
 
-#: libvisual/lv_error.c:179
+#: libvisual/lv_error.c:181
 #, fuzzy
 msgid "VisUINumeric is NULL"
 msgstr "VisAudio es NULL"
 
-#: libvisual/lv_error.c:180
+#: libvisual/lv_error.c:182
 #, fuzzy
 msgid "VisUIColor is NULL"
 msgstr "VisColor es NULL"
 
-#: libvisual/lv_error.c:181
+#: libvisual/lv_error.c:183
 #, fuzzy
 msgid "VisUIChoice is NULL"
 msgstr "VisColor es NULL"
 
-#: libvisual/lv_error.c:182
+#: libvisual/lv_error.c:184
 #, fuzzy
 msgid "VisUIPopup is NULL"
 msgstr "VisMorph es NULL"
 
-#: libvisual/lv_error.c:183
+#: libvisual/lv_error.c:185
 #, fuzzy
 msgid "VisUIList is NULL"
 msgstr "VisList es NULL"
 
-#: libvisual/lv_error.c:184
+#: libvisual/lv_error.c:186
 #, fuzzy
 msgid "VisUIRadio is NULL"
 msgstr "VisAudio es NULL"
 
-#: libvisual/lv_error.c:185
+#: libvisual/lv_error.c:187
 #, fuzzy
 msgid "VisUICheckbox is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:186
+#: libvisual/lv_error.c:188
 #, fuzzy
 msgid "VisUIChoiceEntry is NULL"
 msgstr "VisListEntry es NULL"
 
-#: libvisual/lv_error.c:187
+#: libvisual/lv_error.c:189
 msgid "No choice in VisUIChoice is activated"
 msgstr ""
 
-#: libvisual/lv_error.c:189
+#: libvisual/lv_error.c:191
 #, fuzzy
 msgid "The VisVideoAttributeOptions is NULL."
 msgstr "VisAudio es NULL"
 
-#: libvisual/lv_error.c:190
+#: libvisual/lv_error.c:192
 #, fuzzy
 msgid "VisVideo is NULL"
 msgstr "VisAudio es NULL"
 
-#: libvisual/lv_error.c:191
+#: libvisual/lv_error.c:193
 msgid "VisVideo has allocated pixel buffer"
 msgstr ""
 
-#: libvisual/lv_error.c:192
+#: libvisual/lv_error.c:194
 msgid "VisVideo has no VisBuffer object"
 msgstr ""
 
-#: libvisual/lv_error.c:193
+#: libvisual/lv_error.c:195
 #, fuzzy
 msgid "VisVideo it's pixel buffer is NULL"
 msgstr "El plugin del VisActor es NULL"
 
-#: libvisual/lv_error.c:194
+#: libvisual/lv_error.c:196
 msgid "VisVideo it's pixel buffer is not allocated"
 msgstr ""
 
-#: libvisual/lv_error.c:195
+#: libvisual/lv_error.c:197
 msgid "VisVideo has pixel buffer"
 msgstr ""
 
-#: libvisual/lv_error.c:196
+#: libvisual/lv_error.c:198
 msgid "VisVideo is of invalid bytes per pixel"
 msgstr ""
 
-#: libvisual/lv_error.c:197
+#: libvisual/lv_error.c:199
 msgid "VisVideo is of invalid depth"
 msgstr "Profundidad inválida para un VisVideo"
 
-#: libvisual/lv_error.c:198
+#: libvisual/lv_error.c:200
 msgid "Invalid scale method given"
 msgstr "Método de escalado inválido"
 
-#: libvisual/lv_error.c:199
+#: libvisual/lv_error.c:201
 #, fuzzy
 msgid "Invalid rotate degrees given"
 msgstr "Método de escalado inválido"
 
-#: libvisual/lv_error.c:200
+#: libvisual/lv_error.c:202
 msgid "Given coordinates are out of bounds"
 msgstr "Las coordenadas dadas están fuera de los límites"
 
-#: libvisual/lv_error.c:201
+#: libvisual/lv_error.c:203
 msgid "Given VisVideos are not indentical"
 msgstr "Los VisVideos dados no son idénticos"
 
-#: libvisual/lv_error.c:202
+#: libvisual/lv_error.c:204
 msgid "VisVideo is not depth transformed as requested"
 msgstr ""
 
-#: libvisual/lv_error.c:265
+#: libvisual/lv_error.c:267
 msgid "The error value given to visual_error_to_string() is invalid"
 msgstr "El valor de error dado a visual_error_to_string() es inválido"
 

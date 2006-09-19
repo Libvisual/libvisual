@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_input.h,v 1.17 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_input.h,v 1.18 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -79,7 +79,7 @@ typedef int (*VisPluginInputUploadFunc)(VisPluginData *plugin, VisAudio *audio);
  * it's adviced to use the methods provided.
  *
  * @see visual_input_new
- */ 
+ */
 struct _VisInput {
 	VisObject			 object;	/**< The VisObject data. */
 
@@ -109,10 +109,8 @@ struct _VisInputPlugin {
 /* prototypes */
 VisPluginData *visual_input_get_plugin (VisInput *input);
 
-VisList *visual_input_get_list (void);
-const char *visual_input_get_next_by_name (const char *name);
-const char *visual_input_get_prev_by_name (const char *name);
-int visual_input_valid_by_name (const char *name);
+int visual_input_set_map (VisHashmap *map);
+VisHashmap *visual_input_get_map (void);
 
 VisInput *visual_input_new (const char *inputname);
 int visual_input_init (VisInput *input, const char *inputname);

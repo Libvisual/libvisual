@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_morph.c,v 1.31 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_morph.c,v 1.32 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,7 +35,7 @@
 #include "lv_log.h"
 #include "lv_mem.h"
 
-extern VisList *__lv_plugins_morph;
+static VisHashmap *__lv_plugins_morph = NULL;
 
 static int morph_dtor (VisObject *object);
 
@@ -52,7 +52,7 @@ static int morph_dtor (VisObject *object)
 
 	morph->plugin = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
@@ -85,56 +85,30 @@ VisPluginData *visual_morph_get_plugin (VisMorph *morph)
 }
 
 /**
- * Gives a list of morph plugins in the current plugin registry.
+ * Sets the VisHashmap that is used as the plugin registry for morph plugins.
  *
- * @return a VisList containing the morph plugins in the plugin registry.
+ * @param map Pointer to the VisHashmap that contains the morph plugin registry.
+ *
+ * @return VISUAL_OK on succes.
  */
-VisList *visual_morph_get_list ()
+int visual_morph_set_map (VisHashmap *map)
+{
+	if (__lv_plugins_morph != NULL)
+		visual_object_unref (VISUAL_OBJECT (__lv_plugins_morph));
+
+	__lv_plugins_morph = map;
+
+	return VISUAL_OK;
+}
+
+/**
+ * Gives a hashmap of morph plugins in the current plugin registry.
+ *
+ * @return a VisHashmap of VisPluginRef entries containing the morph plugins in the plugin registry.
+ */
+VisHashmap *visual_morph_get_map ()
 {
 	return __lv_plugins_morph;
-}
-
-/**
- * Gives the next morph plugin based on the name of a plugin.
- *
- * @see visual_morph_get_prev_by_name
- *
- * @param name The name of the current plugin, or NULL to get the first.
- *
- * @return The name of the next plugin within the list.
- */
-const char *visual_morph_get_next_by_name (const char *name)
-{
-	return visual_plugin_get_next_by_name (visual_morph_get_list (), name);
-}
-
-/**
- * Gives the previous morph plugin based on the name of a plugin.
- *
- * @see visual_morph_get_next_by_name
- *
- * @param name The name of the current plugin. or NULL to get the last.
- *
- * @return The name of the previous plugin within the list.
- */
-const char *visual_morph_get_prev_by_name (const char *name)
-{
-	return visual_plugin_get_prev_by_name (visual_morph_get_list (), name);
-}
-
-/**
- * Checks if the morph plugin is in the registry, based on it's name.
- *
- * @param name The name of the plugin that needs to be checked.
- *
- * @return TRUE if found, else FALSE.
- */
-int visual_morph_valid_by_name (const char *name)
-{
-	if (visual_plugin_find (visual_morph_get_list (), name) == NULL)
-		return FALSE;
-	else
-		return TRUE;
 }
 
 /**
@@ -171,7 +145,7 @@ VisMorph *visual_morph_new (const char *morphname)
  * @param morphname
  *	The name of the plugin to load, or NULL to simply initialize a new morph.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_PLUGIN_NO_MAP on failure.
  */
 int visual_morph_init (VisMorph *morph, const char *morphname)
 {
@@ -182,18 +156,18 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
 	if (__lv_plugins_morph == NULL && morphname != NULL) {
 		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
 
-		return -VISUAL_ERROR_PLUGIN_NO_LIST;
+		return -VISUAL_ERROR_PLUGIN_NO_MAP;
 	}
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (morph));
 	visual_object_set_dtor (VISUAL_OBJECT (morph), morph_dtor);
 	visual_object_set_allocated (VISUAL_OBJECT (morph), FALSE);
-	
+
 	/* Reset the VisMorph data */
 	morph->plugin = NULL;
 	morph->dest = NULL;
-	visual_palette_init (&morph->morphpal);
+	visual_palette_init (&morph->morphpal, 0);
 	visual_time_init (&morph->morphtime);
 	visual_timer_init (&morph->timer);
 	visual_morph_set_rate (morph, 0);

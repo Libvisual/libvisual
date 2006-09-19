@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_hashmap.h,v 1.8 2006-02-17 22:00:17 synap Exp $
+ * $Id: lv_hashmap.h,v 1.9 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -75,7 +75,7 @@ struct _VisHashmapChainEntry {
 
 	union {
 		uint32_t	 integer;
-		char		*string;
+		const char	*string;
 	} key;
 };
 
@@ -85,15 +85,17 @@ int visual_hashmap_init (VisHashmap *hashmap, VisCollectionDestroyerFunc destroy
 
 int visual_hashmap_put (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype, void *data);
 int visual_hashmap_put_integer (VisHashmap *hashmap, uint32_t key, void *data);
-int visual_hashmap_put_string (VisHashmap *hashmap, char *key, void *data);
+int visual_hashmap_put_string (VisHashmap *hashmap, const char *key, void *data);
 
 int visual_hashmap_remove (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype, int destroy);
 int visual_hashmap_remove_integer (VisHashmap *hashmap, uint32_t key, int destroy);
-int visual_hashmap_remove_string (VisHashmap *hashmap, char *key, int destroy);
+int visual_hashmap_remove_string (VisHashmap *hashmap, const char *key, int destroy);
 
 void *visual_hashmap_get (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype);
 void *visual_hashmap_get_integer (VisHashmap *hashmap, uint32_t key);
-void *visual_hashmap_get_string (VisHashmap *hashmap, char *key);
+void *visual_hashmap_get_string (VisHashmap *hashmap, const char *key);
+
+void *visual_hashmap_chain_entry_get_data (VisHashmapChainEntry *mentry);
 
 int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize);
 int visual_hashmap_get_table_size (VisHashmap *hashmap);

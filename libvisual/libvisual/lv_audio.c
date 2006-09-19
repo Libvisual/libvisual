@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_audio.c,v 1.43 2006-02-17 22:00:17 synap Exp $
+ * $Id: lv_audio.c,v 1.44 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,9 +36,6 @@ static int audio_samplepool_dtor (VisObject *object);
 static int audio_samplepool_channel_dtor (VisObject *object);
 static int audio_sample_dtor (VisObject *object);
 
-static int audio_band_total (VisAudio *audio, int begin, int end);
-static int audio_band_energy (VisAudio *audio, int band, int length);
-
 /* Format transform functions */
 static int transform_format_buffer_from_float (VisBuffer *dest, VisBuffer *src, int size, int sign);
 static int transform_format_buffer_to_float (VisBuffer *dest, VisBuffer *src, int size, int sign);
@@ -64,7 +61,7 @@ static int audio_dtor (VisObject *object)
 
 	audio->samplepool = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int audio_samplepool_dtor (VisObject *object)
@@ -76,7 +73,7 @@ static int audio_samplepool_dtor (VisObject *object)
 
 	samplepool->channels = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int audio_samplepool_channel_dtor (VisObject *object)
@@ -92,7 +89,7 @@ static int audio_samplepool_channel_dtor (VisObject *object)
 	channel->samples = NULL;
 	channel->channelid= NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int audio_sample_dtor (VisObject *object)
@@ -108,37 +105,9 @@ static int audio_sample_dtor (VisObject *object)
 	sample->buffer = NULL;
 	sample->processed = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
-
-static int audio_band_total (VisAudio *audio, int begin, int end)
-{
-	int bpmtotal = 0;
-	int i;
-
-//	for (i = begin; i < end; i++)
-//		bpmtotal += audio->freq[2][i];
-
-	if (bpmtotal > 0)
-		return bpmtotal / (end - begin);
-	else
-		return 0;
-}
-
-static int audio_band_energy (VisAudio *audio, int band, int length)
-{
-	int energytotal = 0;
-	int i;
-
-//	for (i = 0; i < length; i++)
-//		energytotal += audio->bpmhistory[i][band];
-
-	if (energytotal > 0)
-		return energytotal / length;
-	else
-		return 0;
-}
 
 /**
  * @defgroup VisAudio VisAudio
@@ -188,154 +157,6 @@ int visual_audio_init (VisAudio *audio)
 
 	/* Reset the VisAudio data */
 	audio->samplepool = visual_audio_samplepool_new ();
-
-	return VISUAL_OK;
-}
-
-/**
- * This function analyzes the VisAudio, the Fourier frequency magic gets done here, also
- * the audio energy is calculated and some other magic to provide the developer more
- * information about the current sample and the stream.
- *
- * For every sample that is being retrieved this needs to be called. However keep in mind
- * that the VisBin runs it automaticly.
- *
- * @param audio Pointer to a VisAudio that needs to be analyzed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL on failure.
- */
-int visual_audio_analyze (VisAudio *audio)
-{
-        float temp_out[256];
-	float temp_audio[2][512];
-	short pcm[3][1024];
-	double scale;
-	int i, j, y;
-
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-
-	/* Load the pcm data */
-#if 0
-	for (i = 0; i < 512; i++) {
-		audio->pcm[0][i] = audio->plugpcm[0][i];
-		audio->pcm[1][i] = audio->plugpcm[1][i];
-		audio->pcm[2][i] = (audio->plugpcm[0][i] + audio->plugpcm[1][i]) >> 1;
-	}
-#endif
-	/* -------------------------------- audio pool testing */
-	{
-/*		VisBuffer *buffer = visual_buffer_new_allocate (sizeof (int16_t) * 512, visual_buffer_destroyer_free);
-		VisTime timestamp;
-		VisAudioSample *sample;
-
-		visual_mem_copy (visual_buffer_get_data (buffer), audio->plugpcm[2], sizeof (int16_t) * 512);
-
-		visual_time_get (&timestamp);
-
-		sample = visual_audio_sample_new (buffer, &timestamp,
-				VISUAL_AUDIO_SAMPLE_RATE_44100,
-				VISUAL_AUDIO_SAMPLE_FORMAT_S8);
-
-		visual_audio_samplepool_add (audio->samplepool, sample, "front");
-*/
-		VisAudioSamplePoolChannel *channel;
-		VisBuffer buffer;
-
-		visual_audio_samplepool_flush_old (audio->samplepool);
-
-		channel = visual_audio_samplepool_get_channel (audio->samplepool, VISUAL_AUDIO_CHANNEL_LEFT);
-
-		if (channel != 0) {
-			visual_buffer_init (&buffer, pcm[0], 1024, NULL);
-
-//			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
-			visual_ringbuffer_get_data (channel->samples, &buffer, 1024);
-
-			visual_object_unref (VISUAL_OBJECT (&buffer));
-		}
-
-		channel = visual_audio_samplepool_get_channel (audio->samplepool, VISUAL_AUDIO_CHANNEL_RIGHT);
-
-		if (channel != 0) {
-			visual_buffer_init (&buffer, pcm[1], 1024, NULL);
-
-//			printf ("--channel debug: %s: %d\n", channel->channelid, visual_ringbuffer_get_size (channel->samples));
-			visual_ringbuffer_get_data (channel->samples, &buffer, 1024);
-
-			visual_object_unref (VISUAL_OBJECT (&buffer));
-		}
-
-	}
-	/* /-------------------------------- audio pool testing */
-
-//	for (i = 0; i < 512; i++) {
-//		audio->pcm[2][i] = (audio->pcm[0][i] + audio->pcm[1][i]) >> 1;
-//	}
-
-#if 0
-	/* Convert int16_t audio to float audio, (won't be needed when the rest of the new audio
-	 * core lands). */
-	for (i = 0; i < 512; i++) {
-		temp_audio[0][i] = audio->pcm[0][i];
-		temp_audio[1][i] = audio->pcm[1][i];
-	}
-	/* Fourier analyze the pcm data */
-	visual_fourier_perform (audio->fourier, temp_audio[0], temp_out);
-
-	for (i = 0; i < 256; i++)
-		audio->freq[0][i] = temp_out[i] * 50;
-
-	visual_fourier_perform (audio->fourier, temp_audio[1], temp_out);
-
-	for (i = 0; i < 256; i++)
-		audio->freq[1][i] = temp_out[i] * 50;
-
-	/* Average channel */
-	for (i = 0; i < 256; i++)
-		audio->freq[2][i] = (audio->freq[0][i] + audio->freq[1][i]) >> 1;
-
-	/* Normalized frequency analyzer */
-	/** @todo FIXME Not sure if this is totally correct */
-	for (i = 0; i < 3; i++) {
-		for (j = 0; j < 256; j++) {
-			/* (Height / log (256)) */
-			scale = 256 / log (256);
-
-			y = audio->freq[i][j];
-			y = log (y) * scale;
-
-			if (y < 0)
-				y = 0;
-
-			audio->freqnorm[i][j] = y;
-		}
-	}
-
-#endif
-#if 0
-	/* BPM stuff, used for the audio energy only right now */
-	for (i = 1023; i > 0; i--) {
-		visual_mem_copy (&audio->bpmhistory[i], &audio->bpmhistory[i - 1], 6 * sizeof (short int));
-		visual_mem_copy (&audio->bpmdata[i], &audio->bpmdata[i - 1], 6 * sizeof (short int));
-	}
-
-	/* Calculate the audio energy */
-	audio->energy = 0;
-
-	for (i = 0; i < 6; i++)	{
-		audio->bpmhistory[0][i] = audio_band_total (audio, i * 2, (i * 2) + 3);
-		audio->bpmenergy[i] = audio_band_energy (audio, i, 10);
-
-		audio->bpmdata[0][i] = audio->bpmhistory[0][i] - audio->bpmenergy[i];
-
-		audio->energy += audio_band_energy(audio, i, 50);
-	}
-
-	audio->energy >>= 7;
-
-	if (audio->energy > 100)
-		audio->energy = 100;
-#endif
 
 	return VISUAL_OK;
 }
@@ -560,7 +381,7 @@ int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, in
 	data = visual_buffer_get_data (buffer);
 	datasize = visual_buffer_get_size (buffer) / sizeof (float);
 
-	visual_math_vectorized_multiplier_floats_const_float (data, data, datasize, multiplier);
+	visual_math_vector_multiplier_floats_scalar_float (data, data, datasize, multiplier);
 
 	return ret;
 }
@@ -601,7 +422,7 @@ int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffe
 	data = visual_buffer_get_data (buffer);
 	datasize = visual_buffer_get_size (buffer) / sizeof (float);
 
-	visual_math_vectorized_multiplier_floats_const_float (data, data, datasize, multiplier);
+	visual_math_vector_multiplier_floats_scalar_float (data, data, datasize, multiplier);
 
 	return ret;
 }
@@ -1108,7 +929,7 @@ static int transform_format_buffer_from_float (VisBuffer *dest, VisBuffer *src, 
 	int signedcorr;
 	int i;
 
-	signedcorr += byte_max_numeric (size) / 2;
+	signedcorr = byte_max_numeric (size) / 2;
 
 	if (size == 1)
 		FORMAT_BUFFER_FROM_FLOAT(int8_t, uint8_t)

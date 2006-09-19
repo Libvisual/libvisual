@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_ringbuffer.c,v 1.8 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_ringbuffer.c,v 1.9 2006-09-19 18:28:52 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -49,7 +49,7 @@ static int ringbuffer_dtor (VisObject *object)
 
 	ringbuffer->entries = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 static int ringbuffer_entry_dtor (VisObject *object)
@@ -74,7 +74,7 @@ static int ringbuffer_entry_dtor (VisObject *object)
 	entry->buffer = NULL;
 	entry->functiondata = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 /**

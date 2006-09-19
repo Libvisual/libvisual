@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_hashlist.c,v 1.4 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_hashlist.c,v 1.5 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,7 +31,7 @@
 
 static int hashlist_destroy (VisCollection *collection);
 static int hashlist_size (VisCollection *collection);
-static VisCollectionIter *hashlist_iter (VisCollection *collection);
+static int hashlist_iter (VisCollectionIterator *iter, VisCollection *collection);
 
 static int hashlist_destroy (VisCollection *collection)
 {
@@ -74,11 +74,11 @@ static int hashlist_size (VisCollection *collection)
 	return visual_collection_size (VISUAL_COLLECTION (hashlist->list));
 }
 
-static VisCollectionIter *hashlist_iter (VisCollection *collection)
+static int hashlist_iter (VisCollectionIterator *iter, VisCollection *collection)
 {
 	VisHashlist *hashlist = VISUAL_HASHLIST (collection);
 
-	return visual_collection_get_iter (VISUAL_COLLECTION (hashlist->list));
+	return visual_collection_get_iterator (iter, VISUAL_COLLECTION (hashlist->list));
 }
 
 
@@ -121,7 +121,7 @@ int visual_hashlist_init (VisHashlist *hashlist, VisCollectionDestroyerFunc dest
 	visual_collection_set_destroyer (VISUAL_COLLECTION (hashlist), destroyer);
 	visual_collection_set_destroy_func (VISUAL_COLLECTION (hashlist), hashlist_destroy);
 	visual_collection_set_size_func (VISUAL_COLLECTION (hashlist), hashlist_size);
-	visual_collection_set_iter_func (VISUAL_COLLECTION (hashlist), hashlist_iter);
+	visual_collection_set_iterator_func (VISUAL_COLLECTION (hashlist), hashlist_iter);
 
 	/* Set the VisHashlist data */
 	visual_hashlist_set_size (hashlist, size);

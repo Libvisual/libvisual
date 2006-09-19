@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.h,v 1.40 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_error.h,v 1.41 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,12 +30,13 @@ VISUAL_BEGIN_DECLS
 
 /* WARNING when you add an new error to this list, make sure that you update lv_error.c it's
  * human readable string list as well!!! */
+
 /**
- * Enumerate of all possible numeric error values. 
+ * Enumerate of all possible numeric error values.
  */
 enum {
 	/* Ok! */
-	VISUAL_OK,					/**< No error. */
+	VISUAL_OK = 0,					/**< No error. */
 
 	/* Standard error entries */
 	VISUAL_ERROR_GENERAL,				/**< General error. */
@@ -69,7 +70,7 @@ enum {
 
 	/* Error entries for the VisCollection system */
 	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
-	VISUAL_ERROR_COLLECTION_ITER_NULL,		/**< The VisCollectionIter is NULL. */
+	VISUAL_ERROR_COLLECTION_ITERATOR_NULL,		/**< The VisCollectionIterator is NULL. */
 
 	/* Error entries for the VisColor system */
 	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
@@ -121,6 +122,11 @@ enum {
 
 	/* Error entries for the VisMem system */
 	VISUAL_ERROR_MEM_NULL,				/**< The memory pointer given is NULL. */
+	VISUAL_ERROR_MEM_POOL_NULL,			/**< The VisMemPool is NULL. */
+	VISUAL_ERROR_MEM_CHUNK_NULL,			/**< The VisMemChunk is NULL. */
+	VISUAL_ERROR_MEM_POINTERSTACK_NULL,		/**< The VisMemPointerStack is NULL. */
+	VISUAL_ERROR_MEM_POINTERSTACK_FULL,		/**< The VisMemPointerStack is full. */
+	VISUAL_ERROR_MEM_POINTERSTACK_EMPTY,		/**< The VisMemPointerStack is empty. */
 
 	/* Error entries for the VisMorph system */
 	VISUAL_ERROR_MORPH_NULL,			/**< The VisMorph is NULL. */
@@ -136,7 +142,9 @@ enum {
 
 	/* Error entries for the VisParam system */
 	VISUAL_ERROR_PARAM_NULL,			/**< The VisParamEntry is NULL. */
+	VISUAL_ERROR_PARAM_PROXY_NULL,			/**< The VisParamEntryProxy is NULL. */
 	VISUAL_ERROR_PARAM_CONTAINER_NULL,		/**< The VisParamContainer is NULL. */
+	VISUAL_ERROR_PARAM_LIMIT_NULL,			/**< The VisParamEntryLimit is NULL. */
 	VISUAL_ERROR_PARAM_NOT_FOUND,			/**< The requested VisParamEntry is not found. */
 	VISUAL_ERROR_PARAM_CALLBACK_NULL,		/**< The given param change callback is NULL. */
 	VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY,		/**< Too many param change callbacks are registered. */
@@ -150,7 +158,7 @@ enum {
 	VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER,		/**< The plugin has no event handler registrated. */
 	VISUAL_ERROR_PLUGIN_HANDLE_NULL,		/**< The dlopen handle of the plugin is NULL. */
 	VISUAL_ERROR_PLUGIN_ALREADY_REALIZED,		/**< The plugin is already realized. */
-	VISUAL_ERROR_PLUGIN_NO_LIST,			/**< The plugin list can't be found. */
+	VISUAL_ERROR_PLUGIN_NO_MAP,			/**< The plugin map can't be found. */
 
 	/* Error entries for the VisRandom system */
 	VISUAL_ERROR_RANDOM_CONTEXT_NULL,		/**< The VisRandomContext is NULL. */
@@ -176,6 +184,19 @@ enum {
 	VISUAL_ERROR_MUTEX_LOCK_FAILURE,		/**< Failed locking the VisMutex. */
 	VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE,		/**< Failed trylocking the VisMutex. */
 	VISUAL_ERROR_MUTEX_UNLOCK_FAILURE,		/**< Failed unlocking the VisMutex. */
+	VISUAL_ERROR_TLSKEY_NULL,			/**< The VisTLS is NULL. */
+
+	/* Error entries for the VisQueue system */
+	VISUAL_ERROR_QUEUE_NULL,			/**< The VisQueue is NULL. */
+
+	/* Error entries for the VisString system */
+	VISUAL_ERROR_STRING_NULL,			/**< The VisString is NULL. */
+	VISUAL_ERROR_STRING_NOT_INITIALIZED,		/**< The VisString system is not initialized. */
+	VISUAL_ERROR_STRING_NOT_FOUND,			/**< A find request didn't deliver any results. */
+	VISUAL_ERROR_STRING_ITERATOR_NULL,		/**< The VisStringIterator is NULL. */
+	VISUAL_ERROR_STRING_ITERATOR_NO_ENTRIES,	/**< No more entries to be iterated. */
+	VISUAL_ERROR_STRING_ITERATOR_TOKEN_NULL,	/**< The VisStringIteratorToken is NULL. */
+	VISUAL_ERROR_STRING_ITERATOR_INVALID_TYPE,	/**< The VisStringIteratorType is not valid for this method. */
 
 	/* Error entries for the VisTransform system */
 	VISUAL_ERROR_TRANSFORM_NULL,			/**< The VisTransform is NULL. */
@@ -186,6 +207,8 @@ enum {
 
 	/* Error entries for the VisObject system */
 	VISUAL_ERROR_OBJECT_DTOR_FAILED,		/**< The destructor assigned to a VisObject failed destroying the VisObject. */
+	VISUAL_ERROR_OBJECT_REF_FAILED,			/**< Increasing the reference for a VisObject failed. */
+	VISUAL_ERROR_OBJECT_UNREF_FAILED,		/**< Decreasing the reference for a VisObject failed. */
 	VISUAL_ERROR_OBJECT_NULL,			/**< The VisObject is NULL. */
 	VISUAL_ERROR_OBJECT_NOT_ALLOCATED,		/**< The VisObject is not allocated. */
 

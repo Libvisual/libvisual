@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_event.c,v 1.27 2006-01-23 21:06:24 synap Exp $
+ * $Id: lv_event.c,v 1.28 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,12 +30,16 @@
 #include <gettext.h>
 
 #include "lvconfig.h"
+#include "lv_param.h"
 #include "lv_event.h"
 #include "lv_log.h"
 
 static int eventqueue_dtor (VisObject *object);
+static int event_dtor (VisObject *object);
 
-static int event_list_destroy (void *data);
+static int event_ref_subtype_pointers (VisEvent *event);
+static int event_unref_subtype_pointers (VisEvent *event);
+
 
 static int eventqueue_dtor (VisObject *object)
 {
@@ -43,21 +47,70 @@ static int eventqueue_dtor (VisObject *object)
 
 	visual_collection_destroy (VISUAL_COLLECTION (&eventqueue->events));
 
+	return TRUE;
+}
+
+static int event_dtor (VisObject *object)
+{
+	VisEvent *event = VISUAL_EVENT (object);
+
+	event_unref_subtype_pointers (event);
+
+	visual_object_clean (VISUAL_OBJECT (event), VisEvent);
+
+	return TRUE;
+}
+
+
+static int event_ref_subtype_pointers (VisEvent *event)
+{
+	switch (event->type) {
+		case VISUAL_EVENT_RESIZE:
+			if (event->event.resize.video != NULL)
+				visual_object_ref (VISUAL_OBJECT (event->event.resize.video));
+			break;
+
+		case VISUAL_EVENT_NEWSONG:
+			if (event->event.newsong.songinfo != NULL)
+				visual_object_ref (VISUAL_OBJECT (event->event.newsong.songinfo));
+			break;
+
+		case VISUAL_EVENT_PARAM:
+			if (event->event.param.param != NULL)
+				visual_object_ref (VISUAL_OBJECT (event->event.param.param));
+			break;
+
+		default:
+			break;
+	}
+
 	return VISUAL_OK;
 }
 
-static int event_list_destroy (void *data)
+static int event_unref_subtype_pointers (VisEvent *event)
 {
-	VisEvent *event = VISUAL_EVENT (data);
+	switch (event->type) {
+		case VISUAL_EVENT_RESIZE:
+			if (event->event.resize.video != NULL)
+				visual_object_unref (VISUAL_OBJECT (event->event.resize.video));
+			break;
 
-	if (event == NULL)
-		return 0;
+		case VISUAL_EVENT_NEWSONG:
+			if (event->event.newsong.songinfo != NULL)
+				visual_object_unref (VISUAL_OBJECT (event->event.newsong.songinfo));
+			break;
 
-	visual_object_unref (VISUAL_OBJECT (event));
+		case VISUAL_EVENT_PARAM:
+			if (event->event.param.param != NULL)
+				visual_object_unref (VISUAL_OBJECT (event->event.param.param));
+			break;
 
-	return 0;
+		default:
+			break;
+	}
+
+	return VISUAL_OK;
 }
-
 
 /**
  * @defgroup VisEvent VisEvent
@@ -92,7 +145,7 @@ int visual_event_init (VisEvent *event)
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (event));
-	visual_object_set_dtor (VISUAL_OBJECT (event), NULL);
+	visual_object_set_dtor (VISUAL_OBJECT (event), event_dtor);
 	visual_object_set_allocated (VISUAL_OBJECT (event), FALSE);
 
 	/* Set the VisEvent data */
@@ -106,8 +159,9 @@ int visual_event_copy (VisEvent *dest, VisEvent *src)
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_EVENT_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_EVENT_NULL);
 
-	/* FIXME: This is far from safe, since it won't do any refcounting jobs */
 	visual_object_copy_data (dest, src, VisEvent);
+
+	event_ref_subtype_pointers (dest);
 
 	return VISUAL_OK;
 }
@@ -144,9 +198,9 @@ int visual_event_queue_init (VisEventQueue *eventqueue)
 	/* Set the VisEventQueue data */
 	visual_object_clean (VISUAL_OBJECT (eventqueue), VisEventQueue);
 
-	eventqueue->mousestate = VISUAL_MOUSE_UP;
+	visual_queue_init (&eventqueue->events, visual_object_collection_destroyer);
 
-	visual_collection_set_destroyer (VISUAL_COLLECTION (&eventqueue->events), event_list_destroy);
+	eventqueue->mousestate = VISUAL_MOUSE_UP;
 
 	visual_event_init (&eventqueue->lastresize);
 
@@ -172,7 +226,6 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 	if (more_events != FALSE) {
 		visual_event_copy (event, lev);
 
-		/* FIXME when we start to ref count attributes in events, we need to unref here */
 		visual_object_unref (VISUAL_OBJECT (lev));
 	}
 
@@ -182,7 +235,6 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 int visual_event_queue_poll_by_reference (VisEventQueue *eventqueue, VisEvent **event)
 {
 	VisEvent *lev;
-	VisListEntry *listentry = NULL;;
 
 	visual_log_return_val_if_fail (eventqueue != NULL, FALSE);
 	visual_log_return_val_if_fail (event != NULL, FALSE);
@@ -197,16 +249,10 @@ int visual_event_queue_poll_by_reference (VisEventQueue *eventqueue, VisEvent **
 		return TRUE;
 	}
 
-	if (eventqueue->eventcount <= 0)
+	if (visual_collection_size (VISUAL_COLLECTION (&eventqueue->events)) <= 0)
 		return FALSE;
 
-	lev = visual_list_next (&eventqueue->events, &listentry);
-
-	*event = lev;
-
-	visual_list_delete (&eventqueue->events, &listentry);
-
-	eventqueue->eventcount--;
+	*event = visual_queue_pop (&eventqueue->events);
 
 	return TRUE;
 }
@@ -226,18 +272,9 @@ int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event)
 	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
 	visual_log_return_val_if_fail (event != NULL, -VISUAL_ERROR_EVENT_NULL);
 
-	/* We've got way too much on the queue, not adding events, the important
-	 * event.resize event got data in the event queue structure that makes sure it gets
-	 * looked at */
-	if (eventqueue->eventcount > VISUAL_EVENT_MAXEVENTS) {
-		visual_object_unref (VISUAL_OBJECT (event));
+	event_ref_subtype_pointers (event);
 
-		return -1;
-	}
-
-	visual_list_add (&eventqueue->events, event);
-
-	eventqueue->eventcount++;
+	visual_queue_push (&eventqueue->events, event);
 
 	return VISUAL_OK;
 }
@@ -268,8 +305,7 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 		return -VISUAL_ERROR_EVENT_NULL;
 	}
 
-	/* FIXME name to VISUAL_KEYB_DOWN and KEYB_UP */
-	if (state == VISUAL_KEY_DOWN)
+	if (state == VISUAL_KEYB_DOWN)
 		event->type = VISUAL_EVENT_KEYDOWN;
 	else
 		event->type = VISUAL_EVENT_KEYUP;
@@ -352,14 +388,44 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
 }
 
 /**
+ * Adds a new touch event to the event queue. By giving all the touch information a
+ * VisEvent will be created and added to the event queue.
+ *
+ * @param eventqueue Pointer to the VisEventQueue to which new events are added.
+ * @param x Absolute X value for the touch location.
+ * @param y Absolute Y value for the touch location.
+ * @param pressure Pressure ranging from 0.0 to 1.0 of the touch.
+ * @param diameter Diameter of the touch.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL or error values returned by
+ *	visual_event_queue_add () on failure.
+ */
+int visual_event_queue_add_touch (VisEventQueue *eventqueue, float x, float y, float pressure, float diameter)
+{
+	VisEvent *event;
+
+	visual_log_return_val_if_fail (eventqueue != NULL, -VISUAL_ERROR_EVENT_QUEUE_NULL);
+
+	event = visual_event_new ();
+	event->type = VISUAL_EVENT_TOUCH;
+
+	event->event.touch.x = x;
+	event->event.touch.y = y;
+	event->event.touch.pressure = pressure;
+	event->event.touch.diameter = diameter;
+
+	return visual_event_queue_add (eventqueue, event);
+}
+
+/**
  * Adds a new dimension change event to the event queue. By giving a pointer to
  * the VisVideo containing all the surface information and new width and height
  * a new VisEvent will be created and added to the event queue.
  *
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param video Pointer to the VisVideo containing all the display information,
- * 	also used for negotiation so values can change within the VisVideo
- * 	structure.
+ *	also used for negotiation so values can change within the VisVideo
+ *	structure.
  * @param width The width for the new surface.
  * @param height The height for the new surface.
  *
@@ -375,12 +441,13 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 
 	event->type = VISUAL_EVENT_RESIZE;
 
-	/* FIXME ref counting */
 	event->event.resize.video = video;
 	event->event.resize.width = width;
 	event->event.resize.height = height;
 
 	eventqueue->resizenew = TRUE;
+
+	event_ref_subtype_pointers (event);
 
 	return VISUAL_OK;
 }
@@ -393,7 +460,7 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
  * @param songinfo Pointer to the VisSongInfo containing all the new song information.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_SONGINFO_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
+ *	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *songinfo)
 {
@@ -406,7 +473,6 @@ int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *song
 
 	event->type = VISUAL_EVENT_NEWSONG;
 
-	/* FIXME refcounting */
 	event->event.newsong.songinfo = songinfo;
 
 	return visual_event_queue_add (eventqueue, event);
@@ -420,7 +486,7 @@ int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *song
  * @param param Pointer to the VisParamEntry containing the parameter that has been changed.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_PARAM_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
+ *	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
 {
@@ -432,7 +498,6 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
 	event = visual_event_new ();
 	event->type = VISUAL_EVENT_PARAM;
 
-	/* FIXME ref count the param */
 	event->event.param.param = param;
 
 	return visual_event_queue_add (eventqueue, event);
@@ -445,7 +510,7 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param)
  * @param pass_zero_please Might be used in the future, but for now just pass.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
+ *	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please)
 {
@@ -466,7 +531,7 @@ int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please
  * @param is_visible TRUE when visible, FALSE when not visible.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
+ *	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible)
 {
@@ -491,7 +556,7 @@ int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible
  * @param param_ptr Pointer to data for the custom event..
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
+ *	or error values returned by visual_event_queue_add () on failure.
  */
 
 int visual_event_queue_add_generic (VisEventQueue *eventqueue, int eid, int param_int, void *param_ptr)

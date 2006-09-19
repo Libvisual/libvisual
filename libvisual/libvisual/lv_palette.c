@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_palette.c,v 1.21 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_palette.c,v 1.22 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,7 +40,7 @@ static int palette_dtor (VisObject *object)
 
 	pal->colors = NULL;
 
-	return VISUAL_OK;
+	return TRUE;
 }
 
 /**
@@ -51,6 +51,8 @@ static int palette_dtor (VisObject *object)
 /**
  * Creates a new VisPalette.
  *
+ * @param ncolors The number of colors allocated for the VisPalette.
+ *
  * @return A newly allocated VisPalette.
  */
 VisPalette *visual_palette_new (int ncolors)
@@ -59,13 +61,11 @@ VisPalette *visual_palette_new (int ncolors)
 
 	pal = visual_mem_new0 (VisPalette, 1);
 
-	visual_palette_init (pal);
+	visual_palette_init (pal, ncolors);
 
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (pal), TRUE);
 	visual_object_ref (VISUAL_OBJECT (pal));
-
-	visual_palette_allocate_colors (pal, ncolors);
 
 	return pal;
 }
@@ -79,10 +79,11 @@ VisPalette *visual_palette_new (int ncolors)
  * @see visual_palette_new
  *
  * @param pal Pointer to the VisPalette which needs to be initialized.
+ * @param ncolors The number of colors allocated for the VisPalette.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL on failure.
  */
-int visual_palette_init (VisPalette *pal)
+int visual_palette_init (VisPalette *pal, int ncolors)
 {
 	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
@@ -92,8 +93,7 @@ int visual_palette_init (VisPalette *pal)
 	visual_object_set_allocated (VISUAL_OBJECT (pal), FALSE);
 
 	/* Reset the VisPalette data */
-	pal->ncolors = 0;
-	pal->colors = NULL;
+	visual_palette_allocate_colors (pal, ncolors);
 
 	return VISUAL_OK;
 }
@@ -129,8 +129,13 @@ int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
 {
 	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
-	pal->colors = visual_mem_new0 (VisColor, ncolors);
-	pal->ncolors = ncolors;
+	if (ncolors <= 0) {
+		pal->colors = NULL;
+		pal->ncolors = 0;
+	} else {
+		pal->colors = visual_mem_new0 (VisColor, ncolors);
+		pal->ncolors = ncolors;
+	}
 
 	return VISUAL_OK;
 }
@@ -159,7 +164,7 @@ int visual_palette_free_colors (VisPalette *pal)
  * This function is capable of morphing from one palette to another.
  *
  * @param dest Pointer to the destination VisPalette, this is where the result of the morph
- * 	  is put.
+ *	  is put.
  * @param src1 Pointer to a VisPalette that acts as the first source for the morph.
  * @param src2 Pointer to a VisPalette that acts as the second source for the morph.
  * @param rate Value that sets the rate of the morph, which is valid between 0 and 1.
@@ -196,7 +201,7 @@ int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, 
  *
  * @param pal Pointer to the VisPalette in which the VisColors are cycled.
  * @param rate Selection of the VisColor from the VisPalette, goes from 0.0 to number of VisColors in the VisPalette
- * 	and morphs between colors if needed.
+ *	and morphs between colors if needed.
  *
  * @return A new VisColor, possibly a morph between two VisColors, NULL on failure.
  */

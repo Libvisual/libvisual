@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_buffer.h,v 1.9 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_buffer.h,v 1.10 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -52,6 +52,8 @@ struct _VisBuffer {
 
 	void			*data;		/**< Pointer to the data. */
 	visual_size_t		 datasize;	/**< The size of the data in N bytes. */
+
+	int			offset;		/**< Offset in data buffer in N bytes. */
 };
 
 /* prototypes */
@@ -68,22 +70,38 @@ VisBufferDestroyerFunc visual_buffer_get_destroyer (VisBuffer *buffer);
 int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t datasize);
 int visual_buffer_set_size (VisBuffer *buffer, visual_size_t datasize);
 int visual_buffer_set_data (VisBuffer *buffer, void *data);
+int visual_buffer_set_offset_sequential (VisBuffer *buffer, int offset);
+int visual_buffer_reset_offset_sequential (VisBuffer *buffer);
 int visual_buffer_allocate_data (VisBuffer *buffer);
 
 void *visual_buffer_get_data (VisBuffer *buffer);
 void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset);
+void *visual_buffer_get_data_offset_sequential (VisBuffer *buffer);
 int visual_buffer_get_size (VisBuffer *buffer);
+int visual_buffer_get_offset_sequential (VisBuffer *buffer);
+int visual_buffer_get_available_sequential (VisBuffer *buffer);
+
 
 int visual_buffer_get_allocated (VisBuffer *buffer);
 
 int visual_buffer_clone (VisBuffer *dest, VisBuffer *src);
+int visual_buffer_clone_with_attributes (VisBuffer *dest, VisBuffer *src);
 VisBuffer *visual_buffer_clone_new (VisBuffer *src);
+VisBuffer *visual_buffer_clone_new_with_attributes (VisBuffer *src);
+
 int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
+int visual_buffer_copy_data_to_length (VisBuffer *src, void *dest, visual_size_t size);
+int visual_buffer_copy_data_to_offset_length (VisBuffer *src, void *dest, int byteoffset, visual_size_t size);
 
 int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
+int visual_buffer_put_length (VisBuffer *dest, VisBuffer *src, int byteoffset, visual_size_t size);
 int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
 int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
 int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
+int visual_buffer_put_sequential (VisBuffer *dest, VisBuffer *src);
+int visual_buffer_put_data_sequential (VisBuffer *dest, void *data, visual_size_t size);
+int visual_buffer_put_sequential_atomic (VisBuffer *dest, VisBuffer *src);
+int visual_buffer_put_data_sequential_atomic (VisBuffer *dest, void *data, visual_size_t size);
 
 int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
 int visual_buffer_append_data (VisBuffer *dest, void *data, visual_size_t size);

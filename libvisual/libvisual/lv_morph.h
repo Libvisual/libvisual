@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_morph.h,v 1.17 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_morph.h,v 1.18 2006-09-19 18:28:51 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -148,10 +148,8 @@ struct _VisMorphPlugin {
 /* prototypes */
 VisPluginData *visual_morph_get_plugin (VisMorph *morph);
 
-VisList *visual_morph_get_list (void);
-const char *visual_morph_get_next_by_name (const char *name);
-const char *visual_morph_get_prev_by_name (const char *name);
-int visual_morph_valid_by_name (const char *name);
+int visual_morph_set_map (VisHashmap *map);
+VisHashmap *visual_morph_get_map (void);
 
 VisMorph *visual_morph_new (const char *morphname);
 int visual_morph_init (VisMorph *morph, const char *morphname);
