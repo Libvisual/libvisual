@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TIMES	500
+#define TIMES	1000
 
 int main (int argc, char **argv)
 {
@@ -40,6 +40,6 @@ int main (int argc, char **argv)
 	for (i = 0; i < TIMES; i++)
 		visual_video_depth_transform (dest, src);
 
-	printf ("Depth transformed %d times from %s to %s\n", TIMES, d1, d2);
+	printf ("Depth transformed %d times from %s to %s\n", TIMES, d2, d1);
 }
 

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-gcc -o bmp-header bmp-header.c -ggdb `pkg-config gdk-2.0 libvisual --libs --cflags` `sdl-config --libs --cflags`
-gcc -o aurora aurora.c -ggdb `pkg-config gdk-2.0 libvisual --libs --cflags` `sdl-config --libs --cflags`
+gcc -o bmp-header bmp-header.c -ggdb `pkg-config gdk-2.0 libvisual-0.4 --libs --cflags` `sdl-config --libs --cflags`
+gcc -o aurora aurora.c -ggdb `pkg-config gdk-2.0 libvisual-0.4 --libs --cflags` `sdl-config --libs --cflags`
 

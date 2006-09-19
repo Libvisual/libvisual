@@ -1,4 +1,4 @@
-//-*- Mode: C++; compile-command: "g++ -Wall -ansi -pedantic $(pkg-config --cflags --libs libvisual) lv_fourier_test.cpp -o lv_fourier_test"; -*-
+//-*- Mode: C++; compile-command: "g++ -Wall -ansi -pedantic $(pkg-config --cflags --libs libvisual-0.4) lv_fourier_test.cpp -o lv_fourier_test"; -*-
 
 #include <iostream>
 #include <iomanip>

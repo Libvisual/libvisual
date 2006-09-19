@@ -1,7 +1,7 @@
 #!/bin/sh
 
 gcc -Wall -o plugin_pitch_test plugin_pitch_test.c display.c sdldriver.c \
-  `pkg-config --cflags --libs libvisual` \
+  `pkg-config --cflags --libs libvisual-0.4` \
   `sdl-config --libs --cflags` \
   -ggdb
 

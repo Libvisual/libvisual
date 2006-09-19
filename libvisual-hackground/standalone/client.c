@@ -28,6 +28,8 @@ int main (int argc, char **argv)
 
 	int depth;
 
+	visual_mem_alloc_install_vtable (visual_mem_alloc_vtable_profile ());
+
 	visual_init (&argc, &argv);
 
 	display = display_new (sdl_driver_new ());
@@ -160,6 +162,10 @@ int main (int argc, char **argv)
 	/* Termination procedure */
 	display_set_fullscreen (display, FALSE, TRUE);
 	display_close (display);
+
+	visual_quit ();
+
+	visual_mem_alloc_profile ();
 
 	printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
 

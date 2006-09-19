@@ -11,3 +11,9 @@ gcc -Wall -o lv-morph morphclient.c display.c sdldriver.c \
   `pkg-config --cflags --libs libvisual-0.4` \
   `sdl-config --libs --cflags` \
   -ggdb
+
+gcc -Wall -o lv-testclient testclient.c display.c sdldriver.c \
+  `pkg-config --cflags --libs libvisual-0.4` \
+  `sdl-config --libs --cflags` \
+  -ggdb
+

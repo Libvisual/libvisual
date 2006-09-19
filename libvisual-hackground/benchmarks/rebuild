@@ -1,18 +1,19 @@
 #!/bin/bash
 
-gcc -o alphablend_bench alphablend_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o blit_bench blit_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o init_bench init_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o cache_bench cache_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o denormalise_bench denormalise_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o fft_bench fft_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o audio_bench audio_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o memcpy_bench memcpy_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o memcpy_bench_advanced memcpy_bench_advanced.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o scale_bench scale_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o zoom_bench zoom_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o actor_throughput_bench actor_throughput_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o morph_throughput_bench morph_throughput_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o depth_transform_bench depth_transform_bench.c `pkg-config --libs --cflags libvisual-0.3`
-gcc -o math_bench math_bench.c `pkg-config --libs --cflags libvisual-0.3` -ggdb
-gcc -o math_bench2 math_bench2.c `pkg-config --libs --cflags libvisual-0.3` -ggdb
+gcc -o alphablend_bench alphablend_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o blit_bench blit_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o init_bench init_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o cache_bench cache_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o denormalise_bench denormalise_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o fft_bench fft_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o audio_bench audio_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o memcpy_bench memcpy_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o memcpy_pitch_bench memcpy_pitch_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o memcpy_bench_advanced memcpy_bench_advanced.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o scale_bench scale_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o zoom_bench zoom_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o actor_throughput_bench actor_throughput_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o morph_throughput_bench morph_throughput_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o depth_transform_bench depth_transform_bench.c `pkg-config --libs --cflags libvisual-0.4`
+gcc -o math_bench math_bench.c `pkg-config --libs --cflags libvisual-0.4` -ggdb
+gcc -o math_bench2 math_bench2.c `pkg-config --libs --cflags libvisual-0.4` -ggdb
