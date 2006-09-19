@@ -1,11 +1,11 @@
 /* Libvisual-widgets - The standard widgets for libvisual.
  * 
- * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Milosz Derezynski <md@relevantive.de>
  * 
- * $Id: lv_widget_gtk2_visui.c,v 1.10 2005-12-20 18:43:16 synap Exp $
+ * $Id: lv_widget_gtk2_visui.c,v 1.11 2006-09-19 18:43:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -191,7 +191,7 @@ lvwidget_visui_destroy (GtkObject *object)
 	 *
 	 * AND RUN THAT AFTER WE'RE DESTROYED.. aka major problem in the sync.
 	 */
-	
+
 	priv = LVW_VISUI_GET_PRIVATE (object);
 
 	g_assert (priv != NULL);
@@ -204,7 +204,7 @@ lvwidget_visui_destroy (GtkObject *object)
 		GSList *ltmp;
 
 		/* FIXME lock the damn thread on cb unreg */
-		do {	
+		do {
 			cbentry = lentry->data;
 
 			visual_param_entry_remove_callback (cbentry->param, cbentry->id);
@@ -227,7 +227,7 @@ lvwidget_visui_destroy (GtkObject *object)
 
 	priv->tooltips = NULL;
 
-	priv->destroyed = TRUE;	
+	priv->destroyed = TRUE;
 
 	klass = LVW_VISUI_CLASS (g_type_class_peek (LVW_VISUI_TYPE));
 	parent_class = GTK_OBJECT_CLASS (g_type_class_peek_parent (klass));

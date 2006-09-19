@@ -1,13 +1,23 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(Libvisual-widgets Library, 0.3.0, ds@nerds-incorporated.org, libvisual-widgets)
+
+m4_define([lv_widgets_version_major], [0])
+m4_define([lv_widgets_version_minor], [4])
+m4_define([lv_widgets_version_micro], [0])
+m4_define([lv_widgets_version], [lv_widgets_version_major.lv_widgets_version_minor.lv_widgets_version_micro])
+m4_define([lv_widgets_version_suffix], [lv_widgets_version_major.lv_widgets_version_minor])
+
+AC_INIT(Libvisual widgets Library, lv_widgets_version, ds@nerds-incorporated.org)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
-m4_define([libvisual_required_version], [0.3.0])
+AC_CONFIG_HEADER(config.h)
+
+m4_define([libvisual_required_version], [0.4.0])
 m4_define([gtk1_required_version], [1.2.0])
 
-AC_CONFIG_HEADER(config.h)
+m4_define([libvisual_pkg], [libvisual-lv_widgets_version_suffix])
+LIBVISUAL_PKG=libvisual_pkg
 
 AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
 if test x$PKG_CONFIG = xno ; then
@@ -24,11 +34,25 @@ fi
 ## have the wrong dependencies as early in the process as possible.
 ## Later on we actually use the cflags/libs from separate pkg-config
 ## calls.
-PKG_CHECK_MODULES(BASE_DEPENDENCIES,
-  [ libvisual = libvisual_required_version dnl
-    gtk+ >= gtk1_required_version dnl
-    gtk+-2.0])
 
+PKG_CHECK_MODULES([LIBVISUAL], [libvisual_pkg >= libvisual_required_version],
+  [],
+  [AC_MSG_ERROR([*** libvisual libvisual_required_version not found.
+ 		It is needed to build this package.
+		You can download libvisual at http://libvisual.sf.net/])]
+)
+
+PKG_CHECK_MODULES(BASE_DEPENDENCIES,
+  [ gtk+ >= gtk1_required_version dnl
+    gtk+-2.0])
+dnl Check for libvisual here so that users get told they have the
+dnl wrong dependencies as early in the process as possible.
+PKG_CHECK_MODULES([LIBVISUAL], [libvisual_pkg >= libvisual_required_version],
+  [],
+  [AC_MSG_ERROR([*** libvisual libvisual_required_version not found.
+ 		It is needed to build this package.
+		You can download libvisual at http://libvisual.sf.net/])]
+)
 AC_PREFIX_DEFAULT(/usr)
 
 LVWMSG_GTK1_NOT_FOUND="
