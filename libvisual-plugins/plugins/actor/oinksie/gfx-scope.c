@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-scope.c,v 1.8 2006-01-22 13:25:26 synap Exp $
+ * $Id: gfx-scope.c,v 1.9 2006-09-19 18:41:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -20,6 +20,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
+#include <math.h>
 
 #include "common.h"
 #include "screen.h"

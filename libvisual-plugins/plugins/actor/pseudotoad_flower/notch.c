@@ -5,7 +5,7 @@
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: notch.c,v 1.3 2006-01-22 13:25:26 synap Exp $
+ * $Id: notch.c,v 1.4 2006-09-19 18:41:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -30,7 +30,7 @@
 
 NOTCH_FILTER *  init_notch(float cutoff) {
     NOTCH_FILTER * l=malloc(sizeof(NOTCH_FILTER));
-    float steep = 0.99;;
+    float steep = 0.99;
     float r = steep * 0.99609375;
     float f = cos(M_PI * cutoff / SAMPLING_RATE);
     l->cutoff = cutoff;

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-blur.c,v 1.12 2006-02-05 18:47:26 synap Exp $
+ * $Id: gfx-blur.c,v 1.13 2006-09-19 18:41:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -65,7 +65,7 @@ void _oink_gfx_blur_fade (OinksiePrivate *priv, uint8_t *buf, int fade)
 	}
 }
 
-/* FIXME also make mmx versions for these, let's rock this babe! */
+/* FIXME also make mmx versions for these. */
 void _oink_gfx_blur_simple (OinksiePrivate *priv, uint8_t *buf)
 {
 	int i;

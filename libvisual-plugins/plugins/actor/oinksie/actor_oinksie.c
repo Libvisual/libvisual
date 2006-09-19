@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_oinksie.c,v 1.36 2006-01-27 20:19:17 synap Exp $
+ * $Id: actor_oinksie.c,v 1.37 2006-09-19 18:41:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,6 +43,8 @@ typedef struct {
 	uint8_t				*tbuf2;
 	uint8_t				*buf1;
 	uint8_t				*buf2;
+
+	VisVideo			*transform;
 
 	VisVideoCustomCompositeFunc	 currentcomp;
 } OinksiePrivContainer;
@@ -103,18 +105,18 @@ int act_oinksie_init (VisPluginData *plugin)
 	VisRandomContext *rcontext;
         VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("acid palette", 0),
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1, VISUAL_PARAM_LIMIT_INTEGER (0, 4)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("acid palette", 0, VISUAL_PARAM_LIMIT_BOOLEAN),
 		VISUAL_PARAM_LIST_END
 	};
 
-	static VisParamEntry cmodeparamchoices[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Fair blended", 0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Turbelent temperature", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Acid summer", 2),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Perfect match", 3),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Sanity edge", 4),
+	static VisParamEntryProxy cmodeparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Fair blended", 0, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Turbelent temperature", 1, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Acid summer", 2, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Perfect match", 3, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Sanity edge", 4, VISUAL_PARAM_LIMIT_NONE),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -131,15 +133,19 @@ int act_oinksie_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (OinksiePrivContainer, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-        visual_param_container_add_many (paramcontainer, params);
+        visual_param_container_add_many_proxy (paramcontainer, params);
 
+	/* UI */
 	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 
-	label = visual_ui_label_new (_("Color mode:"), FALSE);
+	label = visual_ui_label_new (VIS_BSTR (_("Color mode:")), FALSE);
 
 	popup = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup, _("The coloring method (only works when the plugin is in 32 bits mode)"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup), visual_param_container_get (paramcontainer, "color mode"));
+	visual_ui_widget_set_tooltip (popup,
+			VIS_BSTR (_("The coloring method (only works when the plugin is in 32 bits mode)")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup),
+			visual_param_container_get (paramcontainer, VIS_BSTR ("color mode")));
+
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup), cmodeparamchoices);
 
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label);
@@ -147,6 +153,7 @@ int act_oinksie_init (VisPluginData *plugin)
 
         visual_plugin_set_userinterface (plugin, hbox);
 
+	/* Init */
 	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
 	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);
 
@@ -189,6 +196,9 @@ int act_oinksie_cleanup (VisPluginData *plugin)
 
 	visual_palette_free_colors (&priv->priv2.pal_cur);
 	visual_palette_free_colors (&priv->priv2.pal_old);
+
+	if (priv->transform != NULL)
+		visual_object_unref (VISUAL_OBJECT (priv->transform));
 
 	visual_mem_free (priv);
 
@@ -269,7 +279,8 @@ int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "color mode")) {
+				/* FIXME, store the strings within the private */
+				if (visual_param_entry_is (param, VIS_BSTR ("color mode"))) {
 					priv->color_mode = visual_param_entry_get_integer (param);
 
 					if (priv->color_mode == 0)
@@ -284,7 +295,7 @@ int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 						priv->currentcomp = composite_blend5_32_c;
 					else
 						priv->currentcomp = composite_blend2_32_c;
-				} else if (visual_param_entry_is (param, "acid palette")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("acid palette"))) {
 					priv->priv1.config.acidpalette = visual_param_entry_get_integer (param);
 				}
 
@@ -344,8 +355,8 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	visual_mem_copy (&priv->priv2.audio.freqsmall, &priv->priv1.audio.freqsmall, sizeof (float) * 4);
 
 	/* Audio energy */
-	priv->priv1.audio.energy = audio->energy;
-	priv->priv2.audio.energy = audio->energy;
+//	priv->priv1.audio.energy = audio->energy;
+//	priv->priv2.audio.energy = audio->energy;
 
 	/* Let's get rendering */
 	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {
@@ -377,7 +388,7 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		visual_video_set_buffer (&vid1, priv->buf1);
 		visual_video_set_palette (&vid1, oinksie_palette_get (&priv->priv1));
 
-		visual_video_blit_overlay (video, &vid1, 0, 0, FALSE);
+		visual_video_blit_overlay_transform_reuse (video, &vid1, &priv->transform, 0, 0, TRUE);
 
 		visual_video_set_depth (&vid2, VISUAL_VIDEO_DEPTH_8BIT);
 		visual_video_set_dimension (&vid2, video->width, video->height);
@@ -387,7 +398,7 @@ int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		visual_video_composite_set_type (&vid2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
 		visual_video_composite_set_function (&vid2, priv->currentcomp);
 
-		visual_video_blit_overlay (video, &vid2, 0, 0, TRUE);
+		visual_video_blit_overlay_transform_reuse (video, &vid2, &priv->transform, 0, 0, TRUE);
 
 		visual_object_unref (VISUAL_OBJECT (&vid1));
 		visual_object_unref (VISUAL_OBJECT (&vid2));

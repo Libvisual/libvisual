@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_jakdaw.h,v 1.7 2006-01-22 13:25:25 synap Exp $
+ * $Id: actor_jakdaw.h,v 1.8 2006-09-19 18:41:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -30,13 +30,15 @@ typedef enum {
 	PLOTTER_SCOPE_LINES,
 	PLOTTER_SCOPE_DOTS,
 	PLOTTER_SCOPE_SOLID,
-	PLOTTER_SCOPE_NOTHING
+	PLOTTER_SCOPE_NOTHING,
+	PLOTTER_SCOPE_LAST
 } JakdawPlotterOptions;
 
 typedef enum {
 	PLOTTER_COLOUR_SOLID,
 	PLOTTER_COLOUR_RANDOM,
-	PLOTTER_COLOUR_MUSICTRIG
+	PLOTTER_COLOUR_MUSICTRIG,
+	PLOTTER_COLOUR_LAST
 } JakdawPlotterColor;
 
 typedef enum
@@ -46,7 +48,8 @@ typedef enum
 	FEEDBACK_ZOOMROTATE,
 	FEEDBACK_SCROLL,
 	FEEDBACK_INTOSCREEN,
-	FEEDBACK_NEWRIPPLE
+	FEEDBACK_NEWRIPPLE,
+	FEEDBACK_LAST
 } JakdawFeedbackType;
 
 typedef struct {

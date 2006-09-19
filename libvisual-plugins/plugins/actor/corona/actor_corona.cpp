@@ -6,7 +6,7 @@
  * 	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_corona.cpp,v 1.17 2006-01-27 20:19:14 synap Exp $
+ * $Id: actor_corona.cpp,v 1.18 2006-09-19 18:41:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -239,7 +239,7 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	VisTime curtime;
 	VisTime difftime;
 	VisVideo vidcorona;
-	short freqdata[2][512]; // FIXME Move to floats
+	float freqdata[2][512];
 	unsigned long timemilli = 0;
 	int i;
 
@@ -271,8 +271,8 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	visual_time_copy (&priv->oldtime, &curtime);
 
 	for (i = 0; i < 512; ++i) {
-		priv->tl.frequency[0][i] = freqdata[0][i] * 32768;
-		priv->tl.frequency[1][i] = freqdata[1][i] * 32768;
+		priv->tl.frequency[0][i] = (unsigned char) (freqdata[0][i] * 255.0f);
+		priv->tl.frequency[1][i] = (unsigned char) (freqdata[1][i] * 255.0f);
 	}
 
 	priv->corona->update(&priv->tl); // Update Corona

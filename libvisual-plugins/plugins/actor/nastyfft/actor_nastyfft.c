@@ -301,7 +301,7 @@ static int nastyfft_sound (NastyfftPrivate *priv, VisAudio *audio)
 	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
 
 	for (i = 0; i < 256; i++)
-		rfreq[i] = freq[i] * 320000.0;
+		rfreq[i] = freq[i] * 32768.0;
 
 	for(y = SCOPE_DEPTH-1; y > 0; y--) {
 		for(i = 0; i < NUM_BANDS; i++)

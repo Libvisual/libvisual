@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_jakdaw.c,v 1.26 2006-01-27 20:19:16 synap Exp $
+ * $Id: actor_jakdaw.c,v 1.27 2006-09-19 18:41:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -82,36 +82,36 @@ int act_jakdaw_init (VisPluginData *plugin)
 	JakdawPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("zoom mode",		FEEDBACK_ZOOMRIPPLE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter trigger",	PLOTTER_COLOUR_MUSICTRIG),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter type",	PLOTTER_SCOPE_LINES),
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("zoom mode",		FEEDBACK_ZOOMRIPPLE, VISUAL_PARAM_LIMT_INTEGER (0, FEEDBACK_LAST)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter trigger",	PLOTTER_COLOUR_MUSICTRIG, VISUAL_PARAM_LIMIT_INTEGER (0, PLOTTER_COLOUR_LAST)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter type",	PLOTTER_SCOPE_LINES, VISUAL_PARAM_LIMIT_INTEGER (0, PLOTTER_LAST)),
 		VISUAL_PARAM_LIST_END
 	};
 
-	static VisParamEntry zoomparamchoices[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom ripple",		FEEDBACK_ZOOMRIPPLE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Blur only",		FEEDBACK_BLURONLY),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom rotate",		FEEDBACK_ZOOMROTATE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Scroll",		FEEDBACK_SCROLL),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Into screen",		FEEDBACK_INTOSCREEN),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Ripple",		FEEDBACK_NEWRIPPLE),
+	static VisParamEntryProxy zoomparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom ripple",		FEEDBACK_ZOOMRIPPLE, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Blur only",		FEEDBACK_BLURONLY, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom rotate",		FEEDBACK_ZOOMROTATE, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Scroll",		FEEDBACK_SCROLL, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Into screen",		FEEDBACK_INTOSCREEN, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Ripple",		FEEDBACK_NEWRIPPLE, VISUAL_PARAM_LIMIT_NONE),
 		VISUAL_PARAM_LIST_END
 	};
 
-	static VisParamEntry colorparamchoices[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Solid",		PLOTTER_COLOUR_SOLID),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Random",		PLOTTER_COLOUR_RANDOM),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("On music",		PLOTTER_COLOUR_MUSICTRIG),
+	static VisParamEntryProxy colorparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Solid",		PLOTTER_COLOUR_SOLID, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Random",		PLOTTER_COLOUR_RANDOM, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("On music",		PLOTTER_COLOUR_MUSICTRIG, VISUAL_PARAM_LIMIT_NONE),
 		VISUAL_PARAM_LIST_END
 	};
 
 
-	static VisParamEntry scopeparamchoices[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Lines",		PLOTTER_SCOPE_LINES),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Dots",		PLOTTER_SCOPE_DOTS),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Solid",		PLOTTER_SCOPE_SOLID),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Nothing",		PLOTTER_SCOPE_NOTHING),
+	static VisParamEntryProxy scopeparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Lines",		PLOTTER_SCOPE_LINES, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Dots",		PLOTTER_SCOPE_DOTS, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Solid",		PLOTTER_SCOPE_SOLID, VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Nothing",		PLOTTER_SCOPE_NOTHING, VISUAL_PARAM_LIMIT_NONE),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -144,27 +144,27 @@ int act_jakdaw_init (VisPluginData *plugin)
 	/* FIXME make param of this one as well */
 	priv->plotter_scopecolor = 0xff00ff;
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	table = visual_ui_table_new (3, 2);
 
-	label1 = visual_ui_label_new (_("Blur mode:"), FALSE);
-	label2 = visual_ui_label_new (_("Plotter color:"), FALSE);
-	label3 = visual_ui_label_new (_("Plotter type:"), FALSE);
+	label1 = visual_ui_label_new (VIS_BSTR (_("Blur mode:")), FALSE);
+	label2 = visual_ui_label_new (VIS_BSTR (_("Plotter color:")), FALSE);
+	label3 = visual_ui_label_new (VIS_BSTR (_("Plotter type:")), FALSE);
 
 	popup1 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup1, _("The method of blurring"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup1), visual_param_container_get (paramcontainer, "zoom mode"));
+	visual_ui_widget_set_tooltip (popup1, VIS_BSTR (_("The method of blurring")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup1), visual_param_container_get (paramcontainer, VIS_BSTR ("zoom mode")));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup1), zoomparamchoices);
 
 	popup2 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup2, _("The color of the plotter"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup2), visual_param_container_get (paramcontainer, "plotter trigger"));
+	visual_ui_widget_set_tooltip (popup2, VIS_BSTR (_("The color of the plotter")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup2), visual_param_container_get (paramcontainer, VIS_BSTR ("plotter trigger")));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup2), colorparamchoices);
 
 	popup3 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup3, _("The plotter it's shape"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup3), visual_param_container_get (paramcontainer, "plotter type"));
+	visual_ui_widget_set_tooltip (popup3, VIS_BSTR (_("The plotter it's shape")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup3), visual_param_container_get (paramcontainer, VIS_BSTR ("plotter type")));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup3), scopeparamchoices);
 
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), label1, 0, 0);
@@ -253,7 +253,7 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 
 				visual_log (VISUAL_LOG_DEBUG, "Param changed: %s\n", param->name);
 
-				if (visual_param_entry_is (param, "zoom mode")) {
+				if (visual_param_entry_is (param, VIS_BSTR ("zoom mode"))) {
 					visual_log (VISUAL_LOG_DEBUG, "New value for the zoom mode param: %d\n",
 							param->numeric.integer);
 
@@ -261,14 +261,14 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 
 					_jakdaw_feedback_reset (priv, priv->xres, priv->yres);
 				}
-				else if (visual_param_entry_is (param, "plotter trigger")) {
+				else if (visual_param_entry_is (param, VIS_BSTR ("plotter trigger"))) {
 					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter trigger param: %d\n",
 							param->numeric.integer);
 
 					priv->plotter_colortype = visual_param_entry_get_integer (param);
 
 				}
-				else if (visual_param_entry_is (param, "plotter type")) {
+				else if (visual_param_entry_is (param, VIS_BSTR ("plotter type"))) {
 					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter type param: %d\n",
 							param->numeric.integer);
 

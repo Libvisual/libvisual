@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_goom2k4.c,v 1.6 2006-01-30 18:22:50 synap Exp $
+ * $Id: actor_goom2k4.c,v 1.7 2006-09-19 18:41:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -188,9 +188,10 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	/* Check the global parameter for showing songinfo in plugins */
 	paramcontainer = visual_get_params ();
-	param = visual_param_container_get (paramcontainer, "songinfo in plugin");
-	if (param != NULL)
-		showinfo = visual_param_entry_get_integer (param);
+	/* FIXME re-enable! */
+//	param = visual_param_container_get (paramcontainer, "songinfo in plugin");
+//	if (param != NULL)
+//		showinfo = visual_param_entry_get_integer (param);
 
 	/* FIXME goom should support setting a pointer, so we don't need that final visual_mem_copy */
 	if (songinfo != NULL && visual_songinfo_age (songinfo) <= 1 && showinfo == TRUE) {
@@ -204,11 +205,10 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	else
 		buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 
-	for (i = 0; i < video->height; i++) {
-		visual_mem_copy (vidbuf, buf + (video->width * i), video->width * video->bpp);
-
-		vidbuf += video->pitch;
-	}
+	visual_mem_copy_pitch (vidbuf, buf, video->pitch,
+			video->width * video->bpp,
+			video->width * video->bpp,
+			video->height);
 
 	return 0;
 }

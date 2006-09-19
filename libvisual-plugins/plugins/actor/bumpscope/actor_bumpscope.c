@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_bumpscope.c,v 1.29 2006-01-27 20:19:14 synap Exp $
+ * $Id: actor_bumpscope.c,v 1.30 2006-09-19 18:41:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -82,12 +82,12 @@ int act_bumpscope_init (VisPluginData *plugin)
 	BumpscopePrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_COLOR	("color",		122, 204, 255),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("light size",		256),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color cycle",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("moving light",	TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("diamond",		FALSE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("light size",		256,	VISUAL_PARAM_LIMIT_INTEGER (8, 512)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color cycle",		TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("moving light",	TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("diamond",		FALSE,	VISUAL_PARAM_LIMIT_BOOLEAN),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -115,49 +115,46 @@ int act_bumpscope_init (VisPluginData *plugin)
 
 	visual_palette_allocate_colors (&priv->pal, 256);
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
+	/* UI */
 	vbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_VERTICAL);
 	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 
-	label1 = visual_ui_label_new ("Light size:", FALSE);
+	label1 = visual_ui_label_new (VIS_BSTR (_("Light size:")), FALSE);
 
 	color = visual_ui_color_new ();
-	visual_ui_widget_set_tooltip (color, _("The color of the light"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (color), visual_param_container_get (paramcontainer, "color"));
+	visual_ui_widget_set_tooltip (color, VIS_BSTR (_("The color of the light")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (color), visual_param_container_get (paramcontainer, VIS_BSTR ("color")));
 
 	separator = visual_ui_separator_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
 
 	numeric = visual_ui_numeric_new ();
-	visual_ui_widget_set_tooltip (numeric, _("The size of the light"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric), visual_param_container_get (paramcontainer, "light size"));
-	visual_ui_range_set_min (VISUAL_UI_RANGE (numeric), 8);
-	visual_ui_range_set_max (VISUAL_UI_RANGE (numeric), 512);
+	visual_ui_widget_set_tooltip (numeric, VIS_BSTR (_("The size of the light")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric), visual_param_container_get (paramcontainer, VIS_BSTR ("light size")));
 	visual_ui_range_set_step (VISUAL_UI_RANGE (numeric), 8);
 	visual_ui_range_set_precision (VISUAL_UI_RANGE (numeric), 0);
 
 	slider = visual_ui_slider_new (FALSE);
-	visual_ui_widget_set_tooltip (slider, _("The size of the light"));
+	visual_ui_widget_set_tooltip (slider, VIS_BSTR (_("The size of the light")));
 	visual_ui_widget_set_size_request (slider, 200, -1);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider), visual_param_container_get (paramcontainer, "light size"));
-	visual_ui_range_set_min (VISUAL_UI_RANGE (slider), 8);
-	visual_ui_range_set_max (VISUAL_UI_RANGE (slider), 512);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider), visual_param_container_get (paramcontainer, VIS_BSTR ("light size")));
 	visual_ui_range_set_step (VISUAL_UI_RANGE (slider), 8);
 	visual_ui_range_set_precision (VISUAL_UI_RANGE (slider), 0);
 
-	check1 = visual_ui_checkbox_new (_("Cycling colors"), TRUE);
-	visual_ui_widget_set_tooltip (check1, _("Automatic cycling through colors"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check1), visual_param_container_get (paramcontainer, "color cycle"));
+	check1 = visual_ui_checkbox_new (VIS_BSTR (_("Cycling colors")), TRUE);
+	visual_ui_widget_set_tooltip (check1, VIS_BSTR (_("Automatic cycling through colors")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check1), visual_param_container_get (paramcontainer, VIS_BSTR ("color cycle")));
 
-	check2 = visual_ui_checkbox_new (_("Moving light"), TRUE);
-	visual_ui_widget_set_tooltip (check2,
+	check2 = visual_ui_checkbox_new (VIS_BSTR (_("Moving light")), TRUE);
+	visual_ui_widget_set_tooltip (check2, VIS_BSTR (
 			_("Automatic movement of the light, when disabled it's possible to select it" \
-			"using the mouse cursor"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check2), visual_param_container_get (paramcontainer, "moving light"));
+			"using the mouse cursor")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check2), visual_param_container_get (paramcontainer, VIS_BSTR ("moving light")));
 
-	check3 = visual_ui_checkbox_new (_("Diamond"), TRUE);
-	visual_ui_widget_set_tooltip (check3, _("Diamond shaped light"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check3), visual_param_container_get (paramcontainer, "diamond"));
+	check3 = visual_ui_checkbox_new (VIS_BSTR (_("Diamond")), TRUE);
+	visual_ui_widget_set_tooltip (check3, VIS_BSTR (_("Diamond shaped light")));
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check3), visual_param_container_get (paramcontainer, VIS_BSTR ("diamond")));
 
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label1);
 	visual_ui_box_pack (VISUAL_UI_BOX (hbox), slider);
@@ -171,6 +168,8 @@ int act_bumpscope_init (VisPluginData *plugin)
 	visual_ui_box_pack (VISUAL_UI_BOX (vbox), check3);
 
 	visual_plugin_set_userinterface (plugin, vbox);
+
+	/* Init */
 
 	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
 
@@ -263,24 +262,25 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "color")) {
+				if (visual_param_entry_is (param, VIS_BSTR ("color"))) {
 					tmp = visual_param_entry_get_color (param);
 					visual_color_copy (&priv->color, tmp);
 
 					__bumpscope_generate_palette (priv, &priv->color);
-				} else if (visual_param_entry_is (param, "light size")) {
+
+				} else if (visual_param_entry_is (param, VIS_BSTR ("light size"))) {
 					priv->phongres = visual_param_entry_get_integer (param);
 
 					__bumpscope_cleanup (priv);
 					__bumpscope_init (priv);
 
-				} else if (visual_param_entry_is (param, "color cycle")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("color cycle"))) {
 					priv->color_cycle = visual_param_entry_get_integer (param);
 
-				} else if (visual_param_entry_is (param, "moving light")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("moving light"))) {
 					priv->moving_light = visual_param_entry_get_integer (param);
 
-				} else if (visual_param_entry_is (param, "diamond")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("diamond"))) {
 					priv->diamond = visual_param_entry_get_integer (param);
 
 					__bumpscope_generate_phongdat (priv);
@@ -330,7 +330,7 @@ int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 		/* I couldn't hold myself */
 		visual_param_entry_set_color_by_color (
 			visual_param_container_get (
-				visual_plugin_get_params (plugin), "color"), &priv->color);
+				visual_plugin_get_params (plugin), VIS_BSTR ("color")), &priv->color);
 	}
 
 	return 0;

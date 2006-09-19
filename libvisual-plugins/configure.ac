@@ -3,7 +3,7 @@
 AC_PREREQ(2.57)
 
 m4_define([lv_plugins_version_major], [0])
-m4_define([lv_plugins_version_minor], [3])
+m4_define([lv_plugins_version_minor], [4])
 m4_define([lv_plugins_version_micro], [0])
 m4_define([lv_plugins_version], [lv_plugins_version_major.lv_plugins_version_minor.lv_plugins_version_micro])
 m4_define([lv_plugins_version_suffix], [lv_plugins_version_major.lv_plugins_version_minor])
@@ -14,7 +14,7 @@ AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
-m4_define([libvisual_required_version], [0.3.0])
+m4_define([libvisual_required_version], [0.4.0])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
 m4_define([gtk_required_version], [2.0])
@@ -127,7 +127,7 @@ if test "$ENABLE_PLUGIN_GDKPIXBUF" = "yes"; then
   if test "$HAVE_GTK" = "yes"; then
     build_actor_plugins="$build_actor_plugins gdkpixbuf"
   else
-    AC_MSG_WARN([*** GTK+ >= ${gtk_required_version} is not found.
+    AC_MSG_WARN([*** GTK+ >= gtk_required_version is not found.
 	  	The libvisual GdkPixbuf image loader plugin won't be build.
 		GdkPixbuf is included within gtk-2.0 and newer, which can be
 		downloaded at http://www.gtk.org/])
@@ -148,7 +148,7 @@ if test "$ENABLE_GSTREAMER_PLUGIN" = "yes"; then
   if test "$HAVE_GSTREAMER" = "yes"; then
     build_actor_plugins="$build_actor_plugins gstreamer"
   else
-    AC_MSG_WARN([*** GStreamer >= ${gst_required_version} is not found.
+    AC_MSG_WARN([*** GStreamer >= gst_required_version is not found.
 	  	The libvisual GStreamer viewer plugin won't be build.
 		GStreamer can be downloaded from http://www.gstreamer.org/])
   fi
@@ -255,6 +255,17 @@ AC_ARG_ENABLE([inputdebug],
 
 if test "$inputdebug" = "yes"; then
   build_input_plugins="$build_input_plugins debug"
+fi
+
+dnl Input null plugin
+AC_ARG_ENABLE([inputnull],
+  AS_HELP_STRING([--disable-inputnull],
+    [Do not build input null plugin @<:@default=enabled@:>@]),
+  [ENABLE_INPUTDEBUG=$enableval],
+  [ENABLE_INPUTDEBUG=yes])
+
+if test "$inputdebug" = "yes"; then
+  build_input_plugins="$build_input_plugins null"
 fi
 
 dnl OpenGL test plugin
@@ -417,6 +428,17 @@ AC_ARG_ENABLE([scope],
 
 if test "$ENABLE_SCOPE" = "yes"; then
   build_actor_plugins="$build_actor_plugins lv_scope"
+fi
+
+dnl Touch 
+AC_ARG_ENABLE([touch],
+  AS_HELP_STRING([--disable-touch],
+    [Do not build Touch plugin @<:@default=enabled@:>@]),
+  [ENABLE_TOUCH=$enableval],
+  [ENABLE_TOUCH=yes])
+
+if test "$ENABLE_TOUCH" = "yes"; then
+  build_actor_plugins="$build_actor_plugins touch"
 fi
 
 dnl Oinksie
@@ -622,6 +644,7 @@ AC_CONFIG_FILES([
 	plugins/actor/lv_analyzer/Makefile
 	plugins/actor/lv_gltest/Makefile
 	plugins/actor/lv_scope/Makefile
+	plugins/actor/touch/Makefile
 	plugins/actor/madspin/Makefile
 	plugins/actor/nastyfft/Makefile
 	plugins/actor/nebulus/Makefile
@@ -656,6 +679,7 @@ AC_CONFIG_FILES([
 	plugins/input/mplayer/Makefile
 	plugins/input/jack/Makefile
 	plugins/input/debug/Makefile
+	plugins/input/null/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile

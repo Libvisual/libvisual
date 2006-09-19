@@ -7,7 +7,7 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="Libvisual"
+PKG_NAME="Libvisual plugins"
 
 if [ ! -f $srcdir/configure.ac ]; then
     #echo -n "**Error**: Directory "\`$srcdir\'" does "

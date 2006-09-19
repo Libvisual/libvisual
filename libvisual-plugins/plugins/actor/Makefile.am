@@ -21,4 +21,5 @@ DIST_SUBDIRS = \
   nebulus \
   oinksie \
   plazma  \
-  pseudotoad_flower
+  pseudotoad_flower \
+  touch

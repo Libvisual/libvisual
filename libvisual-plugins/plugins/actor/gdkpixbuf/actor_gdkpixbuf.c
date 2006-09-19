@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_gdkpixbuf.c,v 1.19 2006-01-27 20:19:15 synap Exp $
+ * $Id: actor_gdkpixbuf.c,v 1.20 2006-09-19 18:41:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -104,7 +104,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 	PixbufPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING	("filename",	""),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("scaled",	TRUE),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("aspect",	FALSE),
@@ -128,7 +128,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 	/* Initialize g_type, needed for GdkPixbuf */
 	g_type_init ();
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	return 0;
 }

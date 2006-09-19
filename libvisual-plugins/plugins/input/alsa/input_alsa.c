@@ -5,7 +5,7 @@
  * Authors: Vitaly V. Bursov <vitalyvb@urk,net>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_alsa.c,v 1.23 2006-02-13 20:36:11 synap Exp $
+ * $Id: input_alsa.c,v 1.24 2006-09-19 18:41:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -39,7 +39,7 @@
 
 #include <libvisual/libvisual.h>
 
-#define PCM_BUF_SIZE 4096
+#define PCM_BUF_SIZE 2048
 
 typedef struct {
 	snd_pcm_t *chandle;
