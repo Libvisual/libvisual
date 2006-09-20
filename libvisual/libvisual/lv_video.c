@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.88 2006-09-19 18:28:52 synap Exp $
+ * $Id: lv_video.c,v 1.89 2006-09-20 19:26:07 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -2276,8 +2276,8 @@ int visual_video_depth_transform (VisVideo *dest, VisVideo *src)
 
 static int depth_transform_get_smallest (VisVideo *dest, VisVideo *src, int *width, int *height)
 {
-	*width = dest->width > src->width ? src->width : dest->width;
-	*height = dest->height > src->height ? src->height : dest->height;
+	*width = VISUAL_MIN (dest->width, src->width);
+	*height = VISUAL_MIN (dest->height, src->height);
 
 	return 0;
 }

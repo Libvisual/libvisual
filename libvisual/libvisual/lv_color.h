@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_color.h,v 1.18 2006-09-19 18:28:51 synap Exp $
+ * $Id: lv_color.h,v 1.19 2006-09-20 19:26:07 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -47,10 +47,16 @@ struct _VisColor {
 };
 
 #pragma pack(1)
+/**
+ * Packed 16 bits color structure rgb: 565
+ */
 struct _VisColorPacked16 {
 	uint16_t b:5, g:6, r:5;
 };
 
+/**
+ * Packed 24 bits color structure rgb: 888
+ */
 struct _VisColorPacked24 {
 	uint8_t r;
 	uint8_t g;

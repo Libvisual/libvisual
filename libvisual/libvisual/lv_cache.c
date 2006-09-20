@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_cache.c,v 1.11 2006-09-19 18:28:51 synap Exp $
+ * $Id: lv_cache.c,v 1.12 2006-09-20 19:26:07 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -346,6 +346,16 @@ int visual_cache_get_size (VisCache *cache)
 	return visual_collection_size (VISUAL_COLLECTION (cache->list));
 }
 
+/**
+ * Sets the boundaries in which the cache is operating. This can be bound to the maximum cache size
+ * and also the maximum age of elements within the cache.
+ *
+ * @param cache Pointer to the VisCache on which boundaries are being set.
+ * @param size The maximum size of the cache in N elements.
+ * @param maxage The maximum age of cache elements within the cache. NULL is a valid argument.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CACHE_NULL on failure.
+ */
 int visual_cache_set_limits (VisCache *cache, int size, VisTime *maxage)
 {
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);

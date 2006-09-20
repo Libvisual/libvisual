@@ -12,7 +12,7 @@
  *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- * $Id: lv_list.c,v 1.31 2006-09-19 18:28:51 synap Exp $
+ * $Id: lv_list.c,v 1.32 2006-09-20 19:26:07 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -193,10 +193,14 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 }
 
 /**
- *
+ * Initializes a VisList.
+ * 
+ * @see visual_list_new
+ * 
+ * @param list Pointer to the VisList that is initialized.
  * @param destroyer The collection destroyer that is used to destroy the individual members.
  *
- * 
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure. 
  */
 int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 {

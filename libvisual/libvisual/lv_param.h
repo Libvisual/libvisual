@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_param.h,v 1.33 2006-09-19 18:28:51 synap Exp $
+ * $Id: lv_param.h,v 1.34 2006-09-20 19:26:07 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -46,11 +46,11 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PARAM_LIST_ENTRY_COLOR(name, r, g, b)		{ name, VISUAL_PARAM_ENTRY_TYPE_COLOR, 0, 0, {{}, r, g, b, 0}}
 #define VISUAL_PARAM_LIST_END					{ 0, VISUAL_PARAM_ENTRY_TYPE_END }
 
-#define VISUAL_PARAM_LIMIT_NONE					{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL }
-#define VISUAL_PARAM_LIMIT_BOOLEAN				{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL }
-#define VISUAL_PARAM_LIMIT_INTEGER(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_INTEGER }
-#define VISUAL_PARAM_LIMIT_FLOAT(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_FLOAT }
-#define VISUAL_PARAM_LIMIT_DOUBLE(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_DOUBLE }
+#define VISUAL_PARAM_LIMIT_NONE					{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL, 0, 0, 0, 0, 0, 0 }
+#define VISUAL_PARAM_LIMIT_BOOLEAN				{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL, 0, 0, 0, 0, 0, 0 }
+#define VISUAL_PARAM_LIMIT_INTEGER(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_INTEGER, min, 0, 0, max, 0, 0 }
+#define VISUAL_PARAM_LIMIT_FLOAT(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_FLOAT, 0, min, 0, 0, max, 0 }
+#define VISUAL_PARAM_LIMIT_DOUBLE(min, max)			{ VISUAL_PARAM_ENTRY_LIMIT_TYPE_DOUBLE, 0, 0, min, 0, 0, max }
 
 /* FIXME: put all limit in defines lv_types or lv_defines or something */
 #define VISUAL_PARAM_CALLBACK_ID_MAX	2147483647
@@ -125,13 +125,14 @@ struct _VisParamEntryCallback {
 struct _VisParamEntryLimit {
 	VisParamEntryLimitType	type;
 
-	union {
+	/* FIXME: Make a proxy for this one as well ?.... */
+	struct {
 		int		 integer;		/**< Integer data. */
 		float		 floating;		/**< Floating point data. */
 		double		 doubleflt;		/**< Double floating point data. */
 	} min;
 
-	union {
+	struct {
 		int		 integer;		/**< Integer data. */
 		float		 floating;		/**< Floating point data. */
 		double		 doubleflt;		/**< Double floating point data. */
