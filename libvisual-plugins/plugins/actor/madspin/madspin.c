@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Andrew Birck <birck@uiuc.edu>
  *
- * $Id: madspin.c,v 1.32 2006-02-25 18:45:15 synap Exp $
+ * $Id: madspin.c,v 1.33 2006-09-20 19:28:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -124,9 +124,9 @@ int lv_madspin_init (VisPluginData *plugin)
 	MadspinPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715),
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512,	VISUAL_PARAM_LIMIT_INTEGER (50, 2500)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715,	VISUAL_PARAM_LIMIT_INTEGER (200, 2000)),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -147,7 +147,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
-	
+
 	priv->maxlines = 1;
 	priv->texsize = 0.25f;
 	priv->xrot = 0.0f;
@@ -156,31 +156,31 @@ int lv_madspin_init (VisPluginData *plugin)
 	priv->total = 0;
 	priv->frame = 0;
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	/* The VisUI description that serves as config dialog */
 	table = visual_ui_table_new (2, 3);
 
-	label1 = visual_ui_label_new (_("Number of stars:"), FALSE);
-	label2 = visual_ui_label_new (_("Speed:"), FALSE);
+	label1 = visual_ui_label_new (VIS_BSTR (_("Number of stars:")), FALSE);
+	label2 = visual_ui_label_new (VIS_BSTR (_("Speed:")), FALSE);
 
 	slider1 = visual_ui_slider_new (FALSE);
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider1), 200, -1);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider1), visual_param_container_get (paramcontainer, "num stars"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider1), 50, 2500, 10, 0);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider1), visual_param_container_get (paramcontainer, VIS_BSTR ("num stars")));
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider1), 10, 0);
 
 	slider2 = visual_ui_slider_new (FALSE);
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider2), 200, -1);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider2), visual_param_container_get (paramcontainer, "speed"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider2), 200, 2000, 10, 0);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider2), visual_param_container_get (paramcontainer, VIS_BSTR ("speed")));
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider2), 10, 0);
 
 	numeric1 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1), visual_param_container_get (paramcontainer, "num stars"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 50, 2500, 10, 0);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1), visual_param_container_get (paramcontainer, VIS_BSTR ("num stars")));
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 10, 0);
 
 	numeric2 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2), visual_param_container_get (paramcontainer, "speed"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric2), 200, 2000, 10, 0);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2), visual_param_container_get (paramcontainer, VIS_BSTR ("speed")));
+	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric2), 10, 0);
 
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), label1, 0, 0);
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), slider1, 0, 1);
@@ -278,9 +278,9 @@ int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "num stars"))
+				if (visual_param_entry_is (param, VIS_BSTR ("num stars")))
 					priv->num_stars = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "speed"))
+				else if (visual_param_entry_is (param, VIS_BSTR ("speed")))
 					priv->speed = visual_param_entry_get_integer (param);
 
 			default: /* to avoid warnings */

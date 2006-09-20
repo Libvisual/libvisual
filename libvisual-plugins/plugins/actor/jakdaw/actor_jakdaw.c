@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_jakdaw.c,v 1.27 2006-09-19 18:41:41 synap Exp $
+ * $Id: actor_jakdaw.c,v 1.28 2006-09-20 19:28:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -83,7 +83,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("zoom mode",		FEEDBACK_ZOOMRIPPLE, VISUAL_PARAM_LIMT_INTEGER (0, FEEDBACK_LAST)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("zoom mode",		FEEDBACK_ZOOMRIPPLE, VISUAL_PARAM_LIMIT_INTEGER (0, FEEDBACK_LAST)),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter trigger",	PLOTTER_COLOUR_MUSICTRIG, VISUAL_PARAM_LIMIT_INTEGER (0, PLOTTER_COLOUR_LAST)),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("plotter type",	PLOTTER_SCOPE_LINES, VISUAL_PARAM_LIMIT_INTEGER (0, PLOTTER_LAST)),
 		VISUAL_PARAM_LIST_END

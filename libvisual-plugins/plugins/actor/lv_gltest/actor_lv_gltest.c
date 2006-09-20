@@ -6,7 +6,7 @@
  *	    Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
  *	    4Front Technologies
  *
- * $Id: actor_lv_gltest.c,v 1.27 2006-03-02 23:50:06 synap Exp $
+ * $Id: actor_lv_gltest.c,v 1.28 2006-09-20 19:28:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -113,12 +113,12 @@ int lv_gltest_init (VisPluginData *plugin)
 {
 	GLtestPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE),
+
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
 		VISUAL_PARAM_LIST_END
 	};
-	
+
 	int x, y;
 
 	/* UI Vars */
@@ -131,16 +131,17 @@ int lv_gltest_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (GLtestPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
-	checkbox = visual_ui_checkbox_new (_("Transparant bars"), TRUE);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox), visual_param_container_get (paramcontainer, "transparant bars"));
+	checkbox = visual_ui_checkbox_new (VIS_BSTR (_("Transparant bars")), TRUE);
+	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox), visual_param_container_get (paramcontainer,
+				VIS_BSTR ("transparant bars")));
 
 	visual_plugin_set_userinterface (plugin, checkbox);
 
-	/* GL setting up the rest! */	
+	/* GL setting up the rest! */
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	glMatrixMode (GL_PROJECTION);
 
 	glLoadIdentity ();
@@ -207,7 +208,7 @@ int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height)
 int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	GLfloat ratio;
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	ratio = (GLfloat) width / (GLfloat) height;
@@ -240,7 +241,7 @@ int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "transparant bars")) {
+				if (visual_param_entry_is (param, VIS_BSTR ("transparant bars"))) {
 					priv->transparant = visual_param_entry_get_integer (param);
 
 					if (priv->transparant == FALSE)

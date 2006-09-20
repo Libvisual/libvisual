@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_plazma.c,v 1.20 2006-01-27 20:19:17 synap Exp $
+ * $Id: actor_plazma.c,v 1.21 2006-09-20 19:28:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -82,14 +82,14 @@ int act_plazma_init (VisPluginData *plugin)
 	PlazmaPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("bass sensitivity",	0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("plazma effect",	TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect option",	FALSE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("lines",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("spectrum",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_FLOAT	("rotation speed",	0.4),
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("bass sensitivity",	0,	VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("plazma effect",	TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect option",	FALSE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("lines",		TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("spectrum",		TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect",		TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_FLOAT	("rotation speed",	0.4,	VISUAL_PARAM_LIMIT_FLOAT(0.0f, 1000.0f)),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -102,7 +102,7 @@ int act_plazma_init (VisPluginData *plugin)
 
 	visual_palette_allocate_colors (&priv->colors, 256);
 
-	visual_param_container_add_many (paramcontainer, params);
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	priv->val_maxi =		127;
 	priv->chcol0 =			36;
@@ -184,26 +184,26 @@ int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "bass sensitivity")) {
+				if (visual_param_entry_is (param, VIS_BSTR ("bass sensitivity"))) {
 					priv->bass_sensibility = visual_param_entry_get_integer (param);
 
-				} else if (visual_param_entry_is (param, "plasma effect")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("plasma effect"))) {
 					priv->effect = visual_param_entry_get_integer (param);
 					_plazma_change_effect (priv);
 
-				} else if (visual_param_entry_is (param, "3d effect option")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("3d effect option"))) {
 					priv->options = visual_param_entry_get_integer (param);
 
-				} else if (visual_param_entry_is (param, "lines")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("lines"))) {
 					priv->lines = visual_param_entry_get_integer (param);
 
-				} else if (visual_param_entry_is (param, "spectrum")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("spectrum"))) {
 					priv->spectrum = visual_param_entry_get_integer (param);
 
-				} else if (visual_param_entry_is (param, "3d effect")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("3d effect"))) {
 					priv->use_3d = visual_param_entry_get_integer (param);
 
-				} else if (visual_param_entry_is (param, "rotation speed")) {
+				} else if (visual_param_entry_is (param, VIS_BSTR ("rotation speed"))) {
 					priv->rot_tourni = visual_param_entry_get_float (param);
 				}
 
