@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_param.c,v 1.51 2006-09-19 18:28:51 synap Exp $
+ * $Id: lv_param.c,v 1.52 2006-09-25 20:42:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -717,19 +717,19 @@ int visual_param_entry_set_from_proxy_param (VisParamEntry *param, VisParamEntry
 
 		case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
 			visual_param_entry_set_integer (param, proxy->value);
-			visual_param_entry_limit_set_from_limit (param, &proxy->limit);
+			visual_param_entry_limit_set_from_limit_proxy (param, &proxy->limit);
 
 			break;
 
 		case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
 			visual_param_entry_set_float (param, proxy->value);
-			visual_param_entry_limit_set_from_limit (param, &proxy->limit);
+			visual_param_entry_limit_set_from_limit_proxy (param, &proxy->limit);
 
 			break;
 
 		case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
 			visual_param_entry_set_double (param, proxy->value);
-			visual_param_entry_limit_set_from_limit (param, &proxy->limit);
+			visual_param_entry_limit_set_from_limit_proxy (param, &proxy->limit);
 
 			break;
 
@@ -1210,6 +1210,41 @@ VisObject *visual_param_entry_get_object (VisParamEntry *param)
 	return param->objdata;
 }
 
+int visual_param_entry_limit_set_from_limit_proxy (VisParamEntry *param, VisParamEntryLimitProxy *limit)
+{
+	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+	visual_log_return_val_if_fail (limit != NULL, -VISUAL_ERROR_PARAM_LIMIT_PROXY_NULL);
+
+	switch (param->type) {
+		case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
+			visual_param_entry_limit_set_integer (param,
+					visual_param_entry_limit_proxy_get_minimum (limit),
+					visual_param_entry_limit_proxy_get_maximum (limit));
+
+			break;
+
+		case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
+			visual_param_entry_limit_set_float (param,
+					visual_param_entry_limit_proxy_get_minimum (limit),
+					visual_param_entry_limit_proxy_get_maximum (limit));
+
+			break;
+
+		case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
+			visual_param_entry_limit_set_double (param,
+					visual_param_entry_limit_proxy_get_minimum (limit),
+					visual_param_entry_limit_proxy_get_maximum (limit));
+			break;
+
+		default:
+			return -VISUAL_ERROR_PARAM_INVALID_TYPE;
+
+			break;
+	}
+
+	return VISUAL_OK;
+}
+
 int visual_param_entry_limit_set_from_limit (VisParamEntry *param, VisParamEntryLimit *limit)
 {
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
@@ -1338,8 +1373,23 @@ int visual_param_entry_limit_nearest_double (VisParamEntry *param, double *doubl
 	return VISUAL_OK;
 }
 
-
+/*
+ * FIXME how to handle the case where there is no limit ? */
 double visual_param_entry_limit_get_minimum (VisParamEntryLimit *limit)
+{
+	visual_log_return_val_if_fail (limit != NULL, 0);
+
+	return VISUAL_OK;
+}
+
+double visual_param_entry_limit_get_maximum (VisParamEntryLimit *limit)
+{
+	visual_log_return_val_if_fail (limit != NULL, 0);
+
+	return VISUAL_OK;
+}
+
+double visual_param_entry_limit_proxy_get_minimum (VisParamEntryLimitProxy *limit)
 {
 	visual_log_return_val_if_fail (limit != NULL, 0);
 
@@ -1347,12 +1397,14 @@ double visual_param_entry_limit_get_minimum (VisParamEntryLimit *limit)
 	return VISUAL_OK;
 }
 
-double visual_param_entry_limit_get_maximum (VisParamEntryLimit *limit)
+double visual_param_entry_limit_proxy_get_maximum (VisParamEntryLimitProxy *limit)
 {
-	visual_log_return_val_if_fail (limit != NULL, -VISUAL_ERROR_PARAM_LIMIT_NULL);
+	visual_log_return_val_if_fail (limit != NULL, 0);
 
 	return VISUAL_OK;
 }
+
+
 
 /**
  * @}

@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video_simd.c,v 1.6 2006-02-05 18:45:57 synap Exp $
+ * $Id: lv_video_simd.c,v 1.7 2006-09-25 20:42:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -76,7 +76,7 @@ int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src)
 
 	return VISUAL_OK;
 #else /* !VISUAL_ARCH_X86 */
-	return VISUAL_ERROR_CPU_INVALID_CODE;
+	return -VISUAL_ERROR_CPU_INVALID_CODE;
 #endif
 }
 
@@ -147,7 +147,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 				"#2\n\t movq      %%mm6, %%mm3"
 
 				"#1\n\t pxor      %%mm5, %%mm5"
-				"#2\n\t punpckldq %%mm6, %%mm6" /* mm6 = [ 0x10 | fracv | 0x10 | fracV ] */ 
+				"#2\n\t punpckldq %%mm6, %%mm6" /* mm6 = [ 0x10 | fracv | 0x10 | fracV ] */
 				"#3\n\t movq %[pixel_u], %%mm0" /* mm0 = [ col[0] | col[2] ] */
 
 				"#1\n\t punpckldq %%mm4, %%mm5" /* mm5 = [ fracU | fracU | 0 | 0 ] */
@@ -215,7 +215,7 @@ int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src)
 
 	return VISUAL_OK;
 #else /* !VISUAL_ARCH_X86 */
-	return VISUAL_ERROR_CPU_INVALID_CODE;
+	return -VISUAL_ERROR_CPU_INVALID_CODE;
 #endif
 }
 

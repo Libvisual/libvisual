@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_error.h,v 1.41 2006-09-19 18:28:51 synap Exp $
+ * $Id: lv_error.h,v 1.42 2006-09-25 20:42:52 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,7 +34,7 @@ VISUAL_BEGIN_DECLS
 /**
  * Enumerate of all possible numeric error values.
  */
-enum {
+typedef enum {
 	/* Ok! */
 	VISUAL_OK = 0,					/**< No error. */
 
@@ -145,6 +145,7 @@ enum {
 	VISUAL_ERROR_PARAM_PROXY_NULL,			/**< The VisParamEntryProxy is NULL. */
 	VISUAL_ERROR_PARAM_CONTAINER_NULL,		/**< The VisParamContainer is NULL. */
 	VISUAL_ERROR_PARAM_LIMIT_NULL,			/**< The VisParamEntryLimit is NULL. */
+	VISUAL_ERROR_PARAM_LIMIT_PROXY_NULL,		/**< The VisParamEntryLimitProxy is NULL. */
 	VISUAL_ERROR_PARAM_NOT_FOUND,			/**< The requested VisParamEntry is not found. */
 	VISUAL_ERROR_PARAM_CALLBACK_NULL,		/**< The given param change callback is NULL. */
 	VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY,		/**< Too many param change callbacks are registered. */
@@ -258,7 +259,7 @@ enum {
 	VISUAL_ERROR_VIDEO_NOT_TRANSFORMED,		/**< Could not depth transform a VisVideo. */
 
 	VISUAL_ERROR_LIST_END				/**< Last entry, to check against for the number of errors. */
-};
+} VisErrorCodes;
 
 /**
  * Functions that want to handle libvisual errors must match this signature. The standard

@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.89 2006-09-20 19:26:07 synap Exp $
+ * $Id: lv_video.c,v 1.90 2006-09-25 20:42:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -61,12 +61,20 @@ static int fill_color24 (VisVideo *video, VisColor *color);
 static int fill_color32 (VisVideo *video, VisColor *color);
 
 /* Rotate functions */
-static int rotate_90 (VisVideo *dest, VisVideo *src);
-static int rotate_180 (VisVideo *dest, VisVideo *src);
-static int rotate_270 (VisVideo *dest, VisVideo *src);
+static int rotate_clockwise_8 (VisVideo *dest, VisVideo *src, int rotate_270);
+static int rotate_clockwise_16 (VisVideo *dest, VisVideo *src, int rotate_270);
+static int rotate_clockwise_24 (VisVideo *dest, VisVideo *src, int rotate_270);
+static int rotate_clockwise_32 (VisVideo *dest, VisVideo *src, int rotate_270);
+static int rotate_180_8 (VisVideo *dest, VisVideo *src);
+static int rotate_180_16 (VisVideo *dest, VisVideo *src);
+static int rotate_180_24 (VisVideo *dest, VisVideo *src);
+static int rotate_180_32 (VisVideo *dest, VisVideo *src);
 
 /* Mirror functions */
-static int mirror_x (VisVideo *dest, VisVideo *src);
+static int mirror_x_8 (VisVideo *dest, VisVideo *src);
+static int mirror_x_16 (VisVideo *dest, VisVideo *src);
+static int mirror_x_24 (VisVideo *dest, VisVideo *src);
+static int mirror_x_32 (VisVideo *dest, VisVideo *src);
 static int mirror_y (VisVideo *dest, VisVideo *src);
 
 /* Depth conversions */
@@ -1968,18 +1976,55 @@ int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees de
 
 			break;
 
-		case VISUAL_VIDEO_ROTATE_90:
-			ret = rotate_90 (dest, src);
-
-			break;
-
 		case VISUAL_VIDEO_ROTATE_180:
-			ret = rotate_180 (dest, src);
+			switch (dest->depth) {
+				case VISUAL_VIDEO_DEPTH_8BIT:
+					ret = rotate_180_8 (dest, src);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_16BIT:
+					ret = rotate_180_16 (dest, src);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_24BIT:
+					ret = rotate_180_24 (dest, src);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_32BIT:
+					ret = rotate_180_32 (dest, src);
+
+					break;
+			}
+
 
 			break;
 
+		case VISUAL_VIDEO_ROTATE_90:
 		case VISUAL_VIDEO_ROTATE_270:
-			ret = rotate_270 (dest, src);
+			switch (dest->depth) {
+				case VISUAL_VIDEO_DEPTH_8BIT:
+					ret = rotate_clockwise_8 (dest, src, degrees == VISUAL_VIDEO_ROTATE_270);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_16BIT:
+					ret = rotate_clockwise_16 (dest, src, degrees == VISUAL_VIDEO_ROTATE_270);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_24BIT:
+					ret = rotate_clockwise_24 (dest, src, degrees == VISUAL_VIDEO_ROTATE_270);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_32BIT:
+					ret = rotate_clockwise_32 (dest, src, degrees == VISUAL_VIDEO_ROTATE_270);
+
+					break;
+			}
 
 			break;
 
@@ -2031,97 +2076,86 @@ VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees)
 	return dest;
 }
 
-/* rotate functions, works with all depths now */
-/* FIXME: do more testing with those badasses */
-static int rotate_90 (VisVideo *dest, VisVideo *src)
-{
-	int x, y, i;
-
-	uint8_t *tsbuf = src->pixel_rows[src->height-1];
-	uint8_t *dbuf;
-	uint8_t *sbuf = tsbuf;
-
-	visual_log_return_val_if_fail (dest->width == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-	visual_log_return_val_if_fail (dest->height == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-
-	for (y = 0; y < dest->height; y++) {
-		dbuf = dest->pixel_rows[y];
-
-		for (x = 0; x < dest->width; x++) {
-			for (i = 0; i < dest->bpp; i++) {
-				*(dbuf++) = *(sbuf + i);
-			}
-
-			sbuf -= src->pitch;
-		}
-
-		tsbuf += src->bpp;
-		sbuf = tsbuf;
-	}
-
-	return VISUAL_OK;
+#define ROTATE_CLOCKWISE(name, type)										\
+static int name (VisVideo *dest, VisVideo *src, int rotate_270)							\
+{														\
+	int x, y;												\
+	type *tsbuf;												\
+	type *sbuf;												\
+	int pitchadd;												\
+	int sbufadd;												\
+														\
+	visual_log_return_val_if_fail (dest->width == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);		\
+	visual_log_return_val_if_fail (dest->height == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);		\
+														\
+	if (rotate_270 == FALSE) {										\
+		tsbuf = src->pixel_rows[src->height-1];								\
+		sbuf = tsbuf;											\
+														\
+		pitchadd = -src->pitch / src->bpp;								\
+		sbufadd = 1;											\
+	} else {												\
+		tsbuf = visual_video_get_pixels (src) + src->pitch - src->bpp;					\
+		sbuf = tsbuf;											\
+														\
+		pitchadd = src->pitch / src->bpp;								\
+		sbufadd = -1;											\
+	}													\
+														\
+	for (y = 0; y < dest->height; y++) {									\
+		type *dbuf = dest->pixel_rows[y];								\
+														\
+		for (x = 0; x < dest->width; x++) {								\
+			*(dbuf++) = *(sbuf);									\
+														\
+			sbuf += pitchadd;									\
+		}												\
+														\
+		tsbuf += sbufadd;										\
+		sbuf = tsbuf;											\
+	}													\
+														\
+	return VISUAL_OK;											\
 }
+ROTATE_CLOCKWISE(rotate_clockwise_8, uint8_t)
+ROTATE_CLOCKWISE(rotate_clockwise_16, uint16_t)
+ROTATE_CLOCKWISE(rotate_clockwise_24, VisColorPacked24)
+ROTATE_CLOCKWISE(rotate_clockwise_32, uint32_t)
 
-static int rotate_180 (VisVideo *dest, VisVideo *src)
-{
-	int x, y, i;
-
-	uint8_t *dbuf;
-	uint8_t *sbuf;
-
-	const int h1 = src->height - 1;
-	const int w1 = (src->width - 1) * src->bpp;
-
-	visual_log_return_val_if_fail (dest->width == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-	visual_log_return_val_if_fail (dest->height == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-
-	for (y = 0; y < dest->height; y++) {
-		dbuf = dest->pixel_rows[y];
-		sbuf = src->pixel_rows[h1 - y] + w1;
-
-		for (x = 0; x < dest->width; x++) {
-			for (i = 0; i < src->bpp; i++) {
-				*(dbuf++) = *(sbuf + i);
-			}
-
-			sbuf -= src->bpp;
-		}
-	}
-
-	return VISUAL_OK;
+#define ROTATE_180(name, type)											\
+static int name (VisVideo *dest, VisVideo *src)									\
+{														\
+	int x, y;												\
+														\
+	type *dbuf;												\
+	type *sbuf;												\
+														\
+	visual_log_return_val_if_fail (dest->width == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);		\
+	visual_log_return_val_if_fail (dest->height == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);		\
+														\
+	for (y = 0; y < dest->height; y++) {									\
+		dbuf = dest->pixel_rows[y];									\
+		sbuf = src->pixel_rows[(src->height - 1) - y];							\
+		sbuf += (src->width - 1);									\
+														\
+		for (x = 0; x < dest->width; x++) {								\
+			*(dbuf++) = *(sbuf);									\
+														\
+			sbuf--;											\
+		}												\
+	}													\
+														\
+	return VISUAL_OK;											\
 }
-
-static int rotate_270 (VisVideo *dest, VisVideo *src)
-{
-	int x, y, i;
-
-	uint8_t *tsbuf = visual_video_get_pixels (src) + src->pitch - src->bpp;
-	uint8_t *dbuf = visual_video_get_pixels (dest);
-	uint8_t *sbuf = tsbuf;
-
-	visual_log_return_val_if_fail (dest->width == src->height, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-	visual_log_return_val_if_fail (dest->height == src->width, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
-
-	for (y = 0; y < dest->height; y++) {
-		dbuf = dest->pixel_rows[y];
-
-		for (x = 0; x < dest->width; x++) {
-			for (i = 0; i < dest->bpp; i++) {
-				*(dbuf++) = *(sbuf + i);
-			}
-
-			sbuf += src->pitch;
-		}
-
-		tsbuf -= src->bpp;
-		sbuf = tsbuf;
-	}
-
-	return VISUAL_OK;
-}
+ROTATE_180(rotate_180_8, uint8_t)
+ROTATE_180(rotate_180_16, uint16_t)
+ROTATE_180(rotate_180_24, VisColorPacked24)
+ROTATE_180(rotate_180_32, uint32_t)
 
 int visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient)
 {
+	int ret = VISUAL_OK;
+
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_log_return_val_if_fail (src->depth == dest->depth, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
@@ -2132,18 +2166,40 @@ int visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient ori
 			break;
 
 		case VISUAL_VIDEO_MIRROR_X:
-			mirror_x (dest, src);
+			switch (dest->depth) {
+				case VISUAL_VIDEO_DEPTH_8BIT:
+					ret = mirror_x_8 (dest, src);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_16BIT:
+					ret = mirror_x_16 (dest, src);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_24BIT:
+					ret = mirror_x_24 (dest, src);
+
+					break;
+
+				case VISUAL_VIDEO_DEPTH_32BIT:
+					ret = mirror_x_32 (dest, src);
+
+					break;
+			}
+
 			break;
 
 		case VISUAL_VIDEO_MIRROR_Y:
-			mirror_y (dest, src);
+			ret = mirror_y (dest, src);
+
 			break;
 
 		default:
 			break;
 	}
 
-	return VISUAL_OK;
+	return ret;
 }
 
 VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient)
@@ -2159,30 +2215,31 @@ VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient)
 	return video;
 }
 
-/* Mirror functions */
-static int mirror_x (VisVideo *dest, VisVideo *src)
-{
-	uint8_t *dbuf = visual_video_get_pixels (dest);
-	uint8_t *sbuf = visual_video_get_pixels (src);
-	const int step2 = dest->bpp << 1;
-	const int w1b = (dest->width - 1) * dest->bpp;
-	int x, y, i;
-
-	for (y = 0; y < dest->height; y++) {
-		sbuf = src->pixel_rows[y] + w1b;
-		dbuf = dest->pixel_rows[y];
-
-		for (x = 0; x < dest->width; x++) {
-
-			for (i = 0; i < dest->bpp; i++)
-				*(dbuf++) = *(sbuf++);
-
-			sbuf -= step2;
-		}
-	}
-
-	return VISUAL_OK;
+#define MIRROR_X(name, type)						\
+static int name (VisVideo *dest, VisVideo *src)				\
+{									\
+	type *dbuf = visual_video_get_pixels (dest);			\
+	type *sbuf = visual_video_get_pixels (src);			\
+	int x, y, i;							\
+									\
+	for (y = 0; y < dest->height; y++) {				\
+		sbuf = src->pixel_rows[y];				\
+		sbuf += dest->width;					\
+		dbuf = dest->pixel_rows[y];				\
+									\
+		for (x = 0; x < dest->width; x++) {			\
+									\
+			*(dbuf++) = *(sbuf--);				\
+									\
+		}							\
+	}								\
+									\
+	return VISUAL_OK;						\
 }
+MIRROR_X(mirror_x_8, uint8_t)
+MIRROR_X(mirror_x_16, uint16_t)
+MIRROR_X(mirror_x_24, VisColorPacked24)
+MIRROR_X(mirror_x_32, uint32_t)
 
 static int mirror_y (VisVideo *dest, VisVideo *src)
 {
@@ -2845,77 +2902,33 @@ int visual_video_zoom_double (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
-static int zoom_8 (VisVideo *dest, VisVideo *src)
-{
-	uint8_t *dbuf = visual_video_get_pixels (dest);
-	uint8_t *sbuf = visual_video_get_pixels (src);
-	int x, y;
-
-	for (y = 0; y < src->height; y++) {
-		for (x = 0; x < src->width; x++) {
-			*(dbuf++) = *sbuf;
-			*(dbuf++) = *sbuf;
-
-			sbuf++;
-		}
-
-		sbuf += src->pitch - (src->width * src->bpp);
-		dbuf += dest->pitch - (dest->width * dest->bpp);
-	}
-
-	return VISUAL_OK;
+#define ZOOM(name, type)						\
+static int name (VisVideo *dest, VisVideo *src)				\
+{									\
+	type *sbuf = visual_video_get_pixels (src);			\
+	type *dbuf = visual_video_get_pixels (dest);			\
+	int x, y;							\
+									\
+	for (y = 0; y < src->height; y++) {				\
+		dbuf = dest->pixel_rows[y << 1];			\
+		for (x = 0; x < src->width; x++) {			\
+			*(dbuf + dest->width) = *sbuf;			\
+			*(dbuf++) = *sbuf;				\
+			*(dbuf + dest->width) = *sbuf;			\
+			*(dbuf++) = *sbuf;				\
+									\
+			sbuf++;						\
+		}							\
+									\
+		sbuf += src->pitch - (src->width * src->bpp);		\
+	}								\
+									\
+	return VISUAL_OK;						\
 }
-
-static int zoom_16 (VisVideo *dest, VisVideo *src)
-{
-	uint16_t *dbuf = visual_video_get_pixels (dest);
-	uint16_t *sbuf = visual_video_get_pixels (src);
-	int x, y;
-
-	for (y = 0; y < src->height; y++) {
-		for (x = 0; x < src->width; x++) {
-			*(dbuf++) = *sbuf;
-			*(dbuf++) = *sbuf;
-
-			sbuf++;
-		}
-
-		sbuf += src->pitch - (src->width * src->bpp);
-		dbuf += dest->pitch - (dest->width * dest->bpp);
-	}
-
-	return VISUAL_OK;
-}
-
-static int zoom_24 (VisVideo *dest, VisVideo *src)
-{
-
-	return VISUAL_OK;
-}
-
-static int zoom_32 (VisVideo *dest, VisVideo *src)
-{
-	uint32_t *sbuf = visual_video_get_pixels (src);
-	uint32_t *dbuf = visual_video_get_pixels (dest);
-	int x, y;
-
-	const int spdiff = src->pitch - src->width*src->bpp;
-	for (y = 0; y < src->height; y++) {
-		dbuf = dest->pixel_rows[y << 1];
-		for (x = 0; x < src->width; x++) {
-			*(dbuf + dest->width) = *sbuf;
-			*(dbuf++) = *sbuf;
-			*(dbuf + dest->width) = *sbuf;
-			*(dbuf++) = *sbuf;
-
-			sbuf++;
-		}
-
-		sbuf += spdiff;
-	}
-
-	return VISUAL_OK;
-}
+ZOOM(zoom_8, uint8_t)
+ZOOM(zoom_16, uint16_t)
+ZOOM(zoom_24, VisColorPacked24)
+ZOOM(zoom_32, uint32_t)
 
 /**
  * Scale VisVideo.

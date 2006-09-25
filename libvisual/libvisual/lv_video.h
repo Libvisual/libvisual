@@ -7,7 +7,7 @@
  *	    Chong Kai Xiong <descender@phreaker.net>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video.h,v 1.36 2006-09-19 18:28:52 synap Exp $
+ * $Id: lv_video.h,v 1.37 2006-09-25 20:42:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -284,7 +284,6 @@ VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient);
 
 int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
 
-VisVideo *visual_video_zoom_new (VisVideo *src, VisVideoScaleMethod scale_method, float zoom_factor);
 int visual_video_zoom_double (VisVideo *dest, VisVideo *src);
 
 int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);

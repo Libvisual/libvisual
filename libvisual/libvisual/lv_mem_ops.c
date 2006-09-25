@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_mem_ops.c,v 1.1 2006-09-19 18:28:51 synap Exp $
+ * $Id: lv_mem_ops.c,v 1.2 2006-09-25 20:42:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -916,7 +916,7 @@ static void *mem_set32_mmx (void *dest, int c, visual_size_t n)
 		("\n\t emms");
 #endif /* VISUAL_ARCH_X86 */
 
-	while (n--) 
+	while (n--)
 		*d++ = setflag32;
 
 	return dest;

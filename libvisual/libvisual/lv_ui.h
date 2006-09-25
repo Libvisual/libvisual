@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_ui.h,v 1.43 2006-09-19 18:28:52 synap Exp $
+ * $Id: lv_ui.h,v 1.44 2006-09-25 20:42:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -82,7 +82,8 @@ typedef enum {
 	VISUAL_WIDGET_TYPE_POPUP,	/**< Popup widget: \a VisUIPopup. */
 	VISUAL_WIDGET_TYPE_LIST,	/**< List widget: \a VisUIList. */
 	VISUAL_WIDGET_TYPE_RADIO,	/**< Radio widget: \a VisUIRadio. */
-	VISUAL_WIDGET_TYPE_CHECKBOX	/**< Checkbox widget: \a VisUICheckbox. */
+	VISUAL_WIDGET_TYPE_CHECKBOX,	/**< Checkbox widget: \a VisUICheckbox. */
+	VISUAL_WIDGET_TYPE_LAST		/**< Last entry in enumeration, not a widget. */
 } VisUIWidgetType;
 
 /**

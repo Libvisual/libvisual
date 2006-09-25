@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_param.h,v 1.34 2006-09-20 19:26:07 synap Exp $
+ * $Id: lv_param.h,v 1.35 2006-09-25 20:42:53 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -80,8 +80,9 @@ typedef enum {
 
 typedef struct _VisParamContainer VisParamContainer;
 typedef struct _VisParamEntryCallback VisParamEntryCallback;
-typedef struct _VisParamEntryProxy VisParamEntryProxy;
+typedef struct _VisParamEntryLimitProxy VisParamEntryLimitProxy;
 typedef struct _VisParamEntryLimit VisParamEntryLimit;
+typedef struct _VisParamEntryProxy VisParamEntryProxy;
 typedef struct _VisParamEntry VisParamEntry;
 
 #define _LV_VIS_PARAM_ENTRY_FORWARD_DECL	1
@@ -122,10 +123,9 @@ struct _VisParamEntryCallback {
 /**
  *
  */
-struct _VisParamEntryLimit {
+struct _VisParamEntryLimitProxy {
 	VisParamEntryLimitType	type;
 
-	/* FIXME: Make a proxy for this one as well ?.... */
 	struct {
 		int		 integer;		/**< Integer data. */
 		float		 floating;		/**< Floating point data. */
@@ -133,6 +133,25 @@ struct _VisParamEntryLimit {
 	} min;
 
 	struct {
+		int		 integer;		/**< Integer data. */
+		float		 floating;		/**< Floating point data. */
+		double		 doubleflt;		/**< Double floating point data. */
+	} max;
+};
+
+/**
+ *
+ */
+struct _VisParamEntryLimit {
+	VisParamEntryLimitType	type;
+
+	union {
+		int		 integer;		/**< Integer data. */
+		float		 floating;		/**< Floating point data. */
+		double		 doubleflt;		/**< Double floating point data. */
+	} min;
+
+	union {
 		int		 integer;		/**< Integer data. */
 		float		 floating;		/**< Floating point data. */
 		double		 doubleflt;		/**< Double floating point data. */
@@ -153,7 +172,7 @@ struct _VisParamEntryProxy {
 
 	VisColor		 color;
 
-	VisParamEntryLimit	 limit;
+	VisParamEntryLimitProxy	 limit;
 };
 
 /**
@@ -228,6 +247,7 @@ VisColor *visual_param_entry_get_color (VisParamEntry *param);
 VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
 VisObject *visual_param_entry_get_object (VisParamEntry *param);
 
+int visual_param_entry_limit_set_from_limit_proxy (VisParamEntry *param, VisParamEntryLimitProxy *limit);
 int visual_param_entry_limit_set_from_limit (VisParamEntry *param, VisParamEntryLimit *limit);
 int visual_param_entry_limit_set_integer (VisParamEntry *param, int min, int max);
 int visual_param_entry_limit_set_float (VisParamEntry *param, float min, float max);
@@ -237,6 +257,8 @@ int visual_param_entry_limit_nearest_float (VisParamEntry *param, float *floatin
 int visual_param_entry_limit_nearest_double (VisParamEntry *param, double *doubleflt);
 double visual_param_entry_limit_get_minimum (VisParamEntryLimit *limit);
 double visual_param_entry_limit_get_maximum (VisParamEntryLimit *limit);
+double visual_param_entry_limit_proxy_get_minimum (VisParamEntryLimitProxy *limit);
+double visual_param_entry_limit_proxy_get_maximum (VisParamEntryLimitProxy *limit);
 
 
 VISUAL_END_DECLS
