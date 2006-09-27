@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_param.h,v 1.35 2006-09-25 20:42:53 synap Exp $
+ * $Id: lv_param.h,v 1.36 2006-09-27 22:17:36 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -255,11 +255,12 @@ int visual_param_entry_limit_set_double (VisParamEntry *param, double min, doubl
 int visual_param_entry_limit_nearest_integer (VisParamEntry *param, int *integer);
 int visual_param_entry_limit_nearest_float (VisParamEntry *param, float *floating);
 int visual_param_entry_limit_nearest_double (VisParamEntry *param, double *doubleflt);
-double visual_param_entry_limit_get_minimum (VisParamEntryLimit *limit);
-double visual_param_entry_limit_get_maximum (VisParamEntryLimit *limit);
-double visual_param_entry_limit_proxy_get_minimum (VisParamEntryLimitProxy *limit);
-double visual_param_entry_limit_proxy_get_maximum (VisParamEntryLimitProxy *limit);
-
+int visual_param_entry_limit_get_integer_minimum (VisParamEntryLimit *limit);
+int visual_param_entry_limit_get_integer_maximum (VisParamEntryLimit *limit);
+float visual_param_entry_limit_get_float_minimum (VisParamEntryLimit *limit);
+float visual_param_entry_limit_get_float_maximum (VisParamEntryLimit *limit);
+double visual_param_entry_limit_get_double_minimum (VisParamEntryLimit *limit);
+double visual_param_entry_limit_get_double_maximum (VisParamEntryLimit *limit);
 
 VISUAL_END_DECLS
 

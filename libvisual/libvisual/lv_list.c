@@ -12,7 +12,7 @@
  *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
  *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
- * $Id: lv_list.c,v 1.32 2006-09-20 19:26:07 synap Exp $
+ * $Id: lv_list.c,v 1.33 2006-09-27 22:17:36 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -64,24 +64,15 @@ static void *list_iter_getdata (VisCollectionIterator *iter, VisCollection *coll
 
 static int list_destroy (VisCollection *collection)
 {
-	VisCollectionDestroyerFunc destroyer;
 	VisList *list = VISUAL_LIST (collection);
 	VisListEntry *le = NULL;
-	void *elem;
 
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
-	destroyer = visual_collection_get_destroyer (collection);
-
 	/* Walk through the given list, possibly calling the destroyer for it */
-	if (destroyer == NULL) {
-		while ((elem = visual_list_next (list, &le)) != NULL)
-			visual_list_delete (list, &le);
-	} else {
-		while ((elem = visual_list_next (list, &le)) != NULL) {
-			destroyer (elem);
-			visual_list_delete (list, &le);
-		}
+	visual_list_next (list, &le);
+	while (le != NULL) {
+		visual_list_destroy (list, &le);
 	}
 
 	return VISUAL_OK;

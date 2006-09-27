@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_param.c,v 1.52 2006-09-25 20:42:53 synap Exp $
+ * $Id: lv_param.c,v 1.53 2006-09-27 22:17:36 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -37,9 +37,9 @@ static int param_entry_dtor (VisObject *object);
 
 static int get_next_pcall_id (VisList *callbacks);
 
-static int limits_to_integer (VisParamEntry *param);
-static int limits_to_float (VisParamEntry *param);
-static int limits_to_double (VisParamEntry *param);
+static int limits_to_integer (VisParamEntryLimit *limit);
+static int limits_to_float (VisParamEntryLimit *limit);
+static int limits_to_double (VisParamEntryLimit *limit);
 
 static int param_container_dtor (VisObject *object)
 {
@@ -106,17 +106,17 @@ static int get_next_pcall_id (VisList *callbacks)
 }
 
 
-static int limits_to_integer (VisParamEntry *param)
+static int limits_to_integer (VisParamEntryLimit *limit)
 {
-	switch (param->limit.type) {
+	switch (limit->type) {
 		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_FLOAT:
-			param->limit.min.integer = param->limit.min.floating;
-			param->limit.max.integer = param->limit.max.floating;
+			limit->min.integer = limit->min.floating;
+			limit->max.integer = limit->max.floating;
 			break;
 
 		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_DOUBLE:
-			param->limit.min.integer = param->limit.min.doubleflt;
-			param->limit.max.integer = param->limit.max.doubleflt;
+			limit->min.integer = limit->min.doubleflt;
+			limit->max.integer = limit->max.doubleflt;
 			break;
 
 		default:
@@ -126,17 +126,17 @@ static int limits_to_integer (VisParamEntry *param)
 	return VISUAL_OK;
 }
 
-static int limits_to_float (VisParamEntry *param)
+static int limits_to_float (VisParamEntryLimit *limit)
 {
-	switch (param->limit.type) {
+	switch (limit->type) {
 		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_INTEGER:
-			param->limit.min.floating = param->limit.min.integer;
-			param->limit.max.floating = param->limit.max.integer;
+			limit->min.floating = limit->min.integer;
+			limit->max.floating = limit->max.integer;
 			break;
 
 		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_DOUBLE:
-			param->limit.min.floating = param->limit.min.doubleflt;
-			param->limit.max.floating = param->limit.max.doubleflt;
+			limit->min.floating = limit->min.doubleflt;
+			limit->max.floating = limit->max.doubleflt;
 			break;
 
 		default:
@@ -146,17 +146,17 @@ static int limits_to_float (VisParamEntry *param)
 	return VISUAL_OK;
 }
 
-static int limits_to_double (VisParamEntry *param)
+static int limits_to_double (VisParamEntryLimit *limit)
 {
-	switch (param->limit.type) {
+	switch (limit->type) {
 		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_INTEGER:
-			param->limit.min.doubleflt = param->limit.min.integer;
-			param->limit.max.doubleflt = param->limit.max.integer;
+			limit->min.doubleflt = limit->min.integer;
+			limit->max.doubleflt = limit->max.integer;
 			break;
 
 		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_FLOAT:
-			param->limit.min.doubleflt = param->limit.min.floating;
-			param->limit.max.doubleflt = param->limit.max.floating;
+			limit->min.doubleflt = limit->min.floating;
+			limit->max.doubleflt = limit->max.floating;
 			break;
 
 		default:
@@ -885,7 +885,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer)
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_INTEGER)
-		limits_to_integer (param);
+		limits_to_integer (&param->limit);
 
 	param->type = VISUAL_PARAM_ENTRY_TYPE_INTEGER;
 
@@ -913,7 +913,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_FLOAT)
-		limits_to_float (param);
+		limits_to_float (&param->limit);
 
 	param->type = VISUAL_PARAM_ENTRY_TYPE_FLOAT;
 
@@ -941,7 +941,7 @@ int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	if (param->type != VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
-		limits_to_double (param);
+		limits_to_double (&param->limit);
 
 	param->type = VISUAL_PARAM_ENTRY_TYPE_DOUBLE;
 
@@ -1212,28 +1212,33 @@ VisObject *visual_param_entry_get_object (VisParamEntry *param)
 
 int visual_param_entry_limit_set_from_limit_proxy (VisParamEntry *param, VisParamEntryLimitProxy *limit)
 {
+	VisParamEntryLimit rlimit;
+
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 	visual_log_return_val_if_fail (limit != NULL, -VISUAL_ERROR_PARAM_LIMIT_PROXY_NULL);
 
-	switch (param->type) {
-		case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
-			visual_param_entry_limit_set_integer (param,
-					visual_param_entry_limit_proxy_get_minimum (limit),
-					visual_param_entry_limit_proxy_get_maximum (limit));
+	rlimit.type = limit->type;
+
+	switch (limit->type) {
+		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_INTEGER:
+			rlimit.min.integer = limit->min.integer;
+			rlimit.max.integer = limit->max.integer;
 
 			break;
 
-		case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
-			visual_param_entry_limit_set_float (param,
-					visual_param_entry_limit_proxy_get_minimum (limit),
-					visual_param_entry_limit_proxy_get_maximum (limit));
+		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_FLOAT:
+			rlimit.min.floating = limit->min.floating;
+			rlimit.max.floating = limit->max.floating;
 
 			break;
 
-		case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
-			visual_param_entry_limit_set_double (param,
-					visual_param_entry_limit_proxy_get_minimum (limit),
-					visual_param_entry_limit_proxy_get_maximum (limit));
+		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_DOUBLE:
+			rlimit.min.doubleflt = limit->min.doubleflt;
+			rlimit.max.doubleflt = limit->max.doubleflt;
+
+			break;
+
+		case VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL:
 			break;
 
 		default:
@@ -1242,7 +1247,7 @@ int visual_param_entry_limit_set_from_limit_proxy (VisParamEntry *param, VisPara
 			break;
 	}
 
-	return VISUAL_OK;
+	return visual_param_entry_limit_set_from_limit (param, &rlimit);
 }
 
 int visual_param_entry_limit_set_from_limit (VisParamEntry *param, VisParamEntryLimit *limit)
@@ -1250,25 +1255,31 @@ int visual_param_entry_limit_set_from_limit (VisParamEntry *param, VisParamEntry
 	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 	visual_log_return_val_if_fail (limit != NULL, -VISUAL_ERROR_PARAM_LIMIT_NULL);
 
+	if (limit->type == VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL) {
+		param->limit.type = VISUAL_PARAM_ENTRY_LIMIT_TYPE_NULL;
+
+		return VISUAL_OK;
+	}
+
 	switch (param->type) {
 		case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
 			visual_param_entry_limit_set_integer (param,
-					visual_param_entry_limit_get_minimum (limit),
-					visual_param_entry_limit_get_maximum (limit));
+					visual_param_entry_limit_get_integer_minimum (limit),
+					visual_param_entry_limit_get_integer_maximum (limit));
 
 			break;
 
 		case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
 			visual_param_entry_limit_set_float (param,
-					visual_param_entry_limit_get_minimum (limit),
-					visual_param_entry_limit_get_maximum (limit));
+					visual_param_entry_limit_get_float_minimum (limit),
+					visual_param_entry_limit_get_float_maximum (limit));
 
 			break;
 
 		case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
 			visual_param_entry_limit_set_double (param,
-					visual_param_entry_limit_get_minimum (limit),
-					visual_param_entry_limit_get_maximum (limit));
+					visual_param_entry_limit_get_double_minimum (limit),
+					visual_param_entry_limit_get_double_maximum (limit));
 			break;
 
 		default:
@@ -1373,38 +1384,83 @@ int visual_param_entry_limit_nearest_double (VisParamEntry *param, double *doubl
 	return VISUAL_OK;
 }
 
-/*
- * FIXME how to handle the case where there is no limit ? */
-double visual_param_entry_limit_get_minimum (VisParamEntryLimit *limit)
+int visual_param_entry_limit_get_integer_minimum (VisParamEntryLimit *limit)
 {
+	VisParamEntryLimit rlimit;
+
 	visual_log_return_val_if_fail (limit != NULL, 0);
 
-	return VISUAL_OK;
+	visual_mem_copy (&rlimit, limit, sizeof (VisParamEntryLimit));
+
+	limits_to_integer (&rlimit);
+
+	return rlimit.min.integer;
 }
 
-double visual_param_entry_limit_get_maximum (VisParamEntryLimit *limit)
+int visual_param_entry_limit_get_integer_maximum (VisParamEntryLimit *limit)
 {
+	VisParamEntryLimit rlimit;
+
 	visual_log_return_val_if_fail (limit != NULL, 0);
 
-	return VISUAL_OK;
+	visual_mem_copy (&rlimit, limit, sizeof (VisParamEntryLimit));
+
+	limits_to_integer (&rlimit);
+
+	return rlimit.max.integer;
 }
 
-double visual_param_entry_limit_proxy_get_minimum (VisParamEntryLimitProxy *limit)
+float visual_param_entry_limit_get_float_minimum (VisParamEntryLimit *limit)
 {
-	visual_log_return_val_if_fail (limit != NULL, 0);
+	VisParamEntryLimit rlimit;
 
+	visual_log_return_val_if_fail (limit != NULL, 0.0f);
 
-	return VISUAL_OK;
+	visual_mem_copy (&rlimit, limit, sizeof (VisParamEntryLimit));
+
+	limits_to_float (&rlimit);
+
+	return rlimit.min.floating;
 }
 
-double visual_param_entry_limit_proxy_get_maximum (VisParamEntryLimitProxy *limit)
+float visual_param_entry_limit_get_float_maximum (VisParamEntryLimit *limit)
 {
-	visual_log_return_val_if_fail (limit != NULL, 0);
+	VisParamEntryLimit rlimit;
 
-	return VISUAL_OK;
+	visual_log_return_val_if_fail (limit != NULL, 0.0f);
+
+	visual_mem_copy (&rlimit, limit, sizeof (VisParamEntryLimit));
+
+	limits_to_float (&rlimit);
+
+	return rlimit.max.floating;
 }
 
+double visual_param_entry_limit_get_double_minimum (VisParamEntryLimit *limit)
+{
+	VisParamEntryLimit rlimit;
 
+	visual_log_return_val_if_fail (limit != NULL, 0.0f);
+
+	visual_mem_copy (&rlimit, limit, sizeof (VisParamEntryLimit));
+
+	limits_to_double (&rlimit);
+
+	return rlimit.min.doubleflt;
+}
+
+double visual_param_entry_limit_get_double_maximum (VisParamEntryLimit *limit)
+{
+	VisParamEntryLimit rlimit;
+
+	visual_log_return_val_if_fail (limit != NULL, 0.0f);
+
+	visual_mem_copy (&rlimit, limit, sizeof (VisParamEntryLimit));
+
+	limits_to_double (&rlimit);
+
+	return rlimit.max.doubleflt;
+}
 
 /**
  * @}
