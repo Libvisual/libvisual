@@ -549,6 +549,7 @@ _______EOF
         if test x$lv_have_long_long = xyes ; then
                 cat >>$outfile <<_______EOF
 #define LV_HAVE_LONG_LONG
+#define LV_LONG_LONG_SIZE       ($lv_long_long_size)
 _______EOF
         fi
 
@@ -805,6 +806,7 @@ echo >>$outfile
    lv_have_stdint_h=$lv_have_stdint_h
    lv_have_inttypes_h=$lv_have_inttypes_h
    lv_have_long_long=$ac_cv_type_long_long
+   lv_long_long_size=$ac_cv_sizeof_long_long
    lv_have_ms_int64=$ac_cv_type___int64
    visual_size_type=$visual_size_type
    fastfprng=$fastfprng
