@@ -326,12 +326,18 @@ if test "x$enable_threads" = xyes && test "x$have_threads" != xnone; then
 fi
 AC_SUBST(LV_THREAD_CFLAGS)
 
+# Check for headers defining fixed-width integer types
+AC_CHECK_HEADER([stdint.h], [lv_have_stdint_h="yes"])
+AC_CHECK_HEADER([inttypes.h], [lv_have_inttypes_h="yes"])
+
 # check for type sizes
-AC_CHECK_SIZEOF(short)
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(size_t)
-                                                                                                               
+AC_CHECK_SIZEOF([short])
+AC_CHECK_SIZEOF([int])
+AC_CHECK_SIZEOF([long])
+AC_CHECK_SIZEOF([long long])
+AC_CHECK_SIZEOF([__int64])
+AC_CHECK_SIZEOF([size_t])
+
 dnl Try to figure out whether visual_size should be long or int
 AC_MSG_CHECKING([for the appropriate definition for size_t])
                                                                                                                
@@ -494,7 +500,7 @@ dnl Output the LibVisual config file
 AC_CONFIG_COMMANDS([libvisual/lvconfig.h],
 [
 	outfile=libvisual/lvconfig.h-tmp
-	cat > $outfile <<\_______EOF
+	cat > $outfile <<_______EOF
 /* lvconfig.h
  *
  * This is a generated file.  Please modify 'configure.ac'
@@ -526,7 +532,31 @@ _______EOF
 
 #define LV_HAVE_GNUC_VARARGS	(1)
 _______EOF
-       fi
+	fi
+
+	if test x$lv_have_stdint_h = xyes ; then
+		cat >>$outfile <<_______EOF
+#define LV_HAVE_STDINT_H
+_______EOF
+        fi
+
+	if test x$lv_have_inttypes_h = xyes ; then
+		cat >>$outfile <<_______EOF
+#define LV_HAVE_INTTYPES_H
+_______EOF
+        fi
+
+        if test x$lv_have_long_long = xyes ; then
+                cat >>$outfile <<_______EOF
+#define LV_HAVE_LONG_LONG
+_______EOF
+        fi
+
+        if test x$lv_have_ms_int64 = xyes ; then
+                cat >>$outfile <<_______EOF
+        fi
+#define LV_HAVE_MS_INT64
+________EOF
 
         if test x$bigendian = xyes ; then
                 cat >>$outfile <<_______EOF
@@ -772,6 +802,10 @@ echo >>$outfile
 ],[
    lv_have_iso_c_varargs=$lv_have_iso_c_varargs
    lv_have_gnuc_varargs=$lv_have_gnuc_varargs
+   lv_have_stdint_h=$lv_have_stdint_h
+   lv_have_inttypes_h=$lv_have_inttypes_h
+   lv_have_long_long=$ac_cv_type_long_long
+   lv_have_ms_int64=$ac_cv_type___int64
    visual_size_type=$visual_size_type
    fastfprng=$fastfprng
    lv_win32=$lv_win32
