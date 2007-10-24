@@ -1,0 +1,89 @@
+NEWS - list of user-visible changes between releases
+of Libvisual.
+
+These are only visible changes, for more details look at the ChangeLog.
+
+New in 0.4.0: xxxx-xx-xx:
+* Real time timestamping support. (Dennis)
+* Will unref plugins that don't match the ABI version. (Dennis)
+* Added VisRectangle system. (Dennis)
+* New BMP loader that supports all depths and RLE encoding. (Sepp)
+* visual_mem_set(), visual_mem_set16(), visual_mem_set32()
+  Optimized memset functions. (Dennis)
+* VisVideo new composite system. (Dennis)
+* VisVideo sub regions. (Dennis)
+* visual_video_zoom_*(). (Jaak)
+* visual_video_mirror_*(). (Jaak)
+* visual_video_rotate_*(). (Jaak)
+* Removed obsolete visual_video_depth_transform_to_buffer(). (Jaak)
+* Added VisCollection system. (Dennis)
+* Added VisHashmap. (Dennis)
+* Added VisCache. (Dennis)
+* VisAudio rewrite. (Dennis)
+* Added .license bit to VisPluginInfo for realtime license check. (Dennis)
+* Removed .struct_size and .api_version from the VisPluginInfo structure,
+  and revamped the plugin version check system. Put
+  VISUAL_PLUGIN_API_VERSION_VALIDATOR somewhere in your plugin and it'll
+  work. (Dennis)
+* Homedir installable plugins ~/.libvisual/actor transform morph input. (Dennis)
+* Added VisOS. Realtime priority functions are hosted in this module. (Dennis)
+* Added VisMath. All kind of math related functions have been added, most
+  note worthy are the _vectorized_. All of these are accelerated by
+  mmx/3dnow/sse instructions.
+* VisFourier completely revamped. (Chong Kai Xiong)
+
+New in 0.2.0: 2005-02-09:
+* VisTransform subsystem. (Dennis)
+* visual_palette_color_cycle() function. (Dennis)
+* visual_param_container_copy_match() function. (Dennis)
+* visual_param_container_copy() function. (Dennis)
+* visual_timer_elapsed_msecs() function. (Dennis)
+* VisCPU subsystem. (Dennis)
+* visual_mem_copy(), will contain mmx, sse versions later on. (Dennis)
+* MMX version of the 32bits bilinear filter. (Jean-Christophe)
+* Fixed the visual_video_blit_overlay(). (Dennis)
+* MMX versions of the 32bits alpha overlay. (Dennis)
+* VisPluginEnviron system added. (Vitaly, Dennis)
+* Nearest scalers. (Chong Kai Xiong, Dennis)
+* Bilinear scalers. (Jean-Christophe, Dennis)
+* VisError error values, and human readable errors. (Dennis)
+* Objectification of all libvisual structures. (Dennis)
+* Complete VisObject system. (Dennis)
+* VisSongInfo, use the bilinear filterer, scaler for coverart. (Dennis)
+* VisPalette VisParamEntry type. (Dennis)
+* VisObject VisParamEntry type. (Dennis)
+* VisThread threading wrapper system. (Dennis)
+* VisUI Complete userinterface abstraction layer. (Dennis)
+* Have a string only plugin type, plugins are now members of domains. (Dennis, Vitaly)
+* Many many fixes, improvements and such. (Everyone)
+
+New in 0.1.7: 2004-10-14:
+* Removed examples from dist, they are out dated, broken and caused problems.
+  (Dennis)
+* Plugin libraries now work for real. (Dennis)
+* Added visual_plugin_get_api_version function. (Dennis)
+* Added visual_is_initialized function. (Duilio)
+* visual_log verboseness control. (Duilio)
+* visual_log custom callbacks. (Duilio)
+* VisRandom subsystem and plugin specific VisRandomContexts. (Dennis)
+* Bugfixes. (everyone)
+
+New in 0.1.6: 2004-09-10:
+* Created the VisParam system that is used for parameters in both
+  libvisual and the plugins. (Dennis)
+* Completely revamped plugin system that also supports API version
+  check and such. (Dennis, Vitaly)
+* VisTimer module for both time and timing. (Dennis, Duilio)
+* VisColor module for color units in a palette and hsv->rgb
+  conversions. (Dennis)
+* VisMem module for memory related things. (Duilio, Dennis)
+* Method to check if a morph needs an VisAudio context. (Dennis)
+* Byteswap macros. (Vitaly, Duilio)
+* Fix cover art support. (Dennis)
+* HSV <-> RGB helper functions in VisColor. (Dennis)
+* Timed morph (Dennis, Duilio)
+
+New in 0.1.5: 2004-06-27:
+* visual_log does now accept format strings and variable arguments.
+* Major cleanups and build tree fixes.
+

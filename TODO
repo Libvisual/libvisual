@@ -1,0 +1,216 @@
+THIS FILE IS OUT DATED
+
+double check the bmp loader for possibly errors when
+	the header has been tampered
+
+
+
+FIX the VERSION define
+
+Fix that lv-inspect builds, after the lib has been installed.
+
+
+replace stdint.h with sys/types.h and have defines so we don't have to change all
+the code (besides u_int16_t sounds less nice than uint16_t :))
+
+
+This file is not very ordered and kinda a scrapbook, but it contains all
+the future planning.
+
+Soon:
+	bin:
+		***** REWRITE THE BIN MESS, I WROTE UTTERLY FUCKING SHIT *****
+		* check if we don't negotiate too often.
+		* crash when very quickly switching in xmms plugin
+x		* if morphing from 8 to 32 and then while morphing to 8 again, the main actor stays in 32 bits
+		* check if memory is released as soon as possible all the time.
+x		* property to force morphs in high bpp
+		* when switching quickly sometimes plugins don't get drawn to the right depth surface
+		* test the bin, toggle between direct and morph, check if depthflag works good etc etc
+		* nogwel wat meer issues met switchen, maak een switch random ofzo om het eens hard te
+		  testen
+		* vanuit gl naar oinksie direct door naar JESS kaboem.
+		* outdate songinfo on a switch.
+		* FOR RERWITE: on morph do both actors in two thread when threading
+		  is available.
+
+	auto sched:
+		
+	random:
+		* easily filter out gl plugins
+
+	examples:
+		* find a way to compile examples AFTER installing the current library.
+		* port simplesdl to the new bin system.
+		* make an example using a NON managed bin, and also a test if this is still working :)
+
+Af te werken:
+	* when the whole bin stuff is working, test excluding opengl stuff within the xmms plugin
+
+Automakeify todo:
+x	fix lib version
+
+LEGAL:
+x	Add copyright notice to all the files
+
+DOCS:
+	optimization docs:
+		http://www.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/22007.pdf
+		http://www.intel.com/cd/ids/developer/asmo-na/eng/microprocessors/index.htm
+
+	mmx, sse etc:
+		http://www.angelcode.com/refdb/category/51.asp
+		http://aggregate.org/PPLINUX/19971124/pphowto-4.html
+
+	Alpha blending:
+		http://www.gamedev.net/reference/programming/features/mmxblend/page2.asp
+
+	3d,4d functions:
+		http://www.geocities.com/projectgreenshift/4dgraphs.html
+
+	gcc inline assembler:
+		http://www.osdever.net/tutorials/gccasmtut.php?the_id=68
+
+plugins:
+	!(option flags, include a 'reentrant' flag that indicates that the plugin is allowed to load twice) (make a notreentrant flag rather)
+
+docs:
+	plugin tutorial
+	application tutorial
+	plugin writers guide
+
+libvisual:
+	audio:
+		allow pre buffer to be requested, implement a queue buffer (post 0.1)
+		More advanced audio core and capable of transforming audio buffers
+			to different ones (post 0.3)
+		investigate bpm detection (post 0.4)
+
+	video:
+		font system
+		
+		check for opengl when setting up transformation buffers
+
+		add a superfast double pixeler (post 0.2)
+
+		make start framework that handles sse, mmx etc (post 0.2)
+		sse, sse2, mmx work: (post 0.2):
+			colorspace transformations
+			alpha blend code
+
+		16 bits alpha optimize:	And do two at once using 32 bits ints (post 0.2)
+
+		test >all< the video transformation stuff very well
+
+		sizing: When not fitting, it doesn't place in the middle, this is easy
+			to do for the fitting enviroment but a bit less easy for the
+			depth transform env, because the advantage we have within
+			the depth transform is that we can give an pitch.
+			we have to look into this better
+
+	sched: (post 0.2)
+		implement the auto scheduler.
+		have the auto scheduler react on music
+
+	property: (post 0.4)
+		implement an property system which plugins can use to set properties
+			and (g)uis can use to present them to the user.
+		implement an within buffer fallback to do settings as well
+			use the syneathesia in buffer stuff as an example for this ! 
+
+	settings: (post 0.5) (do we need this ?)
+		a mechanism to enable/disable VISUAL_LOG_DEBUG messages.
+		
+		a system to store plugin settings.
+
+		next plugin, prev plugin keymaps how do we do ?
+
+	util: (post 0.2)
+		functions to check for mmx, sse etc and a good arch detection system.
+	
+	actor:
+		Honor plugin flags better (post 0.1)
+		Have a mechanism to request a depth from within the plugin, which is needed
+			for plugins like the pixbuf loader.
+
+	plugins:
+		have a way to version tag plugins (post 0.1) (Within the new plugin system ?)
+		
+		global params:
+			a global prop to do settings for songinfo (to show, how long shown)
+			a param that disables blurs and field displacement in a plugin
+				so that you can use other plugins to render
+				inside another
+
+	libvisual:
+		After the events stuff do a good code review + cleanups.
+
+	cleanups:
+		functions returning strings that cannot be changed, must be
+			typed with const returns.
+		cleanup the fixmes
+		make use of the lv_log system and do better error checking
+		void * -> byte/word types on other archs !?
+		comment code
+		go through all the structs and cleanup naming here and there
+		move the headers to include/ ?? (really ??)
+		test against: http://www.linuxbase.org/
+		I've always been declaring vars at the top of the function, however
+			Ive started to think it's cleaner to declare them in their target
+			scope.
+		VISUAL_ACTOR ( ), VISUAL_INPUT ( ) cast like macros (???) ?
+
+	doxygen:
+		fix alphabetic list, why is this borked for functions ?
+		rename actor, input to VisActor, etc at some places.
+		use # at places where this is useful.
+		fix docs for plugin function.
+
+	portability:
+		have byteswap helper functions and use them where endianess issues
+			arise (lv_bmp.c)
+
+	Other:
+		Make Gstreamer elements from the actors.
+			morph plugins.
+			and input plugins.
+
+	Tools:
+		lv-inspect: to get detailed information about a plugin
+
+	Threading:
+		Have VisThread, VisMutex and threading api to wrap other
+			threading systems within, like pthreads or win32 native threading API.
+			this is for internal usage within the library, plugins shouldn't
+			be threaded.
+
+		Threadify some plugin opts, like the input plugin, two actor plugins at
+			morph
+
+	Params:
+		When libvisual settings backend lands, have a 'serialize' flag that does save, load parameters.
+	
+	VisCPU:
+		A small sub system to obtain information about the processor, processors, cpu flags, simd set flags.
+
+		Use this for the timed morph as well.
+
+		explicitly disable 'mmx' through an API. mmx can be a disaster in multithreading environments
+		because of it's sharing registers with the fpu registers thingy.
+
+
+INTERNAL:
+	LOG:
+		Make public the maximum length of the string that can be showed.
+
+tests:
+	port the tests over to the application API (post 0.1).
+	with some people they start out in fullscreen mode (post 0.1)
+		seems to be somewhat related to esd running as an user and
+		launching the tests as root (?!), or better sdl not using
+		x as it's backend but something else.
+
+FUTURE:
+	* an highend API and library that also helps with displaying (do display support plugin wise ??)
+	* an highend API and library that allows scheduling on a timeline, scene based etc etc for VJ like stuff.
+
