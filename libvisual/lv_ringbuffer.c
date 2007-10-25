@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
-#include <gettext.h>
+//#include <gettext.h>
 
 #include <lvconfig.h>
 #include "lv_ringbuffer.h"

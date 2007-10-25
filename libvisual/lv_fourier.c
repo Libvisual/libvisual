@@ -27,7 +27,7 @@
 
 #define FOURIER_PI 3.141592653589793238462643383279502884197169399f
 
-#include <config.h>
+//#include <config.h>
 #include <stdlib.h>
 #include <math.h>
 

@@ -21,11 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+//#include <config.h>
 
 #include <string.h>
 #include <stdlib.h>
-#include <gettext.h>
+//#include <gettext.h>
 
 #include "lv_mem.h"
 #include "lv_common.h"

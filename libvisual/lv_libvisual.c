@@ -21,13 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+//#include <config.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <gettext.h>
+#include "gettext.h"
 
 #include "lvconfig.h"
 #include "lv_plugin.h"
@@ -41,6 +41,9 @@
 #include "lv_thread.h"
 #include "config.h"
 
+#ifndef PLUGPATH
+#define PLUGPATH "/usr/lib"
+#endif
 
 /** Set when libvisual is initialized. */
 int __lv_initialized = FALSE;
