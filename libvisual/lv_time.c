@@ -33,7 +33,6 @@
 #include <windows.h>
 #endif
 
-#include "config.h"
 #include "lv_common.h"
 #include "lv_thread.h"
 #include "lv_time.h"

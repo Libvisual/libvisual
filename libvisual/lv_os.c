@@ -26,8 +26,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "config.h"
-
 #ifdef HAVE_SCHED_H
 # include <sched.h>
 # include <sys/types.h>

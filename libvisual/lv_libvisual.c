@@ -39,7 +39,7 @@
 #include "lv_log.h"
 #include "lv_param.h"
 #include "lv_thread.h"
-#include "config.h"
+//#include "config.h"
 
 #ifndef PLUGPATH
 #define PLUGPATH "/usr/lib"

@@ -1,5 +1,5 @@
 
-ADD_DEFINITIONS(-DLINUX)
+ADD_DEFINITIONS(-DLINUX -DVERSION)
 
 set (libvisual_version 0.4)
 

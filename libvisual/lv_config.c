@@ -40,7 +40,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "config.h"
+//#include "config.h"
 #include "lv_common.h"
 #include "lv_mem.h"
 #include "lv_config.h"
