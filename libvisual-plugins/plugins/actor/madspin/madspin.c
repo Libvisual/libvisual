@@ -124,9 +124,9 @@ int lv_madspin_init (VisPluginData *plugin)
 	MadspinPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715),
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512,	VISUAL_PARAM_LIMIT_INTEGER (50, 2500)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715,	VISUAL_PARAM_LIMIT_INTEGER (200, 2000)),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -159,7 +159,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	/* The VisUI description that serves as config dialog */
-	/*table = visual_ui_table_new (2, 3);
+	table = visual_ui_table_new (2, 3);
 
 	label1 = visual_ui_label_new (VIS_BSTR (_("Number of stars:")), FALSE);
 	label2 = visual_ui_label_new (VIS_BSTR (_("Speed:")), FALSE);
@@ -191,7 +191,6 @@ int lv_madspin_init (VisPluginData *plugin)
 	visual_ui_table_attach (VISUAL_UI_TABLE (table), numeric2, 1, 2);
 
 	visual_plugin_set_userinterface (plugin, table);
-    */
 
 	/* GL and the such */
 	glMatrixMode (GL_PROJECTION);

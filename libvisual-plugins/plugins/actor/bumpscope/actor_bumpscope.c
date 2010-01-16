@@ -82,12 +82,12 @@ int act_bumpscope_init (VisPluginData *plugin)
 	BumpscopePrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_COLOR	("color",		122, 204, 255),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("light size",		256),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color cycle",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("moving light",	TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("diamond",		FALSE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("light size",		256,	VISUAL_PARAM_LIMIT_INTEGER (8, 512)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color cycle",		TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("moving light",	TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("diamond",		FALSE,	VISUAL_PARAM_LIMIT_BOOLEAN),
 		VISUAL_PARAM_LIST_END
 	};
 

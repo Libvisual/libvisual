@@ -98,8 +98,8 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 	DancingParticlesPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars", FALSE),
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars", FALSE, VISUAL_PARAM_LIMIT_BOOLEAN),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -113,14 +113,14 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (DancingParticlesPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
-/*
+	visual_param_container_add_many_proxy (paramcontainer, params);
+
 	checkbox = visual_ui_checkbox_new (VIS_BSTR ("Transparant bars"), TRUE);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox), visual_param_container_get (paramcontainer,
 				VIS_BSTR ("transparant bars")));
 
 	visual_plugin_set_userinterface (plugin, checkbox);
-*/
+
 	build_sqrt_table ();
 
 	init_gl ();
@@ -186,14 +186,14 @@ extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue 
 			case VISUAL_EVENT_PARAM:
 				param = static_cast<VisParamEntry *> (ev.event.param.param);
 
-				/*if (visual_param_entry_is (param, VIS_BSTR ("transparant bars"))) {
+				if (visual_param_entry_is (param, VIS_BSTR ("transparant bars"))) {
 					priv->transparant = visual_param_entry_get_integer (param);
 
 					if (priv->transparant == FALSE)
 						glDisable (GL_BLEND);
 					else
 						glEnable (GL_BLEND);
-				}*/
+				}
 
 			default: /* to avoid warnings */
 				break;

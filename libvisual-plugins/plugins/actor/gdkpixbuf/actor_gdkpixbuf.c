@@ -104,7 +104,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 	PixbufPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);;
 
-	static VisParamEntry params[] = {
+	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING	("filename",	""),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("scaled",	TRUE),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER	("aspect",	FALSE),

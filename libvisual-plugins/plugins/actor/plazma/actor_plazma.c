@@ -82,14 +82,14 @@ int act_plazma_init (VisPluginData *plugin)
 	PlazmaPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("bass sensitivity",	0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("plazma effect",	TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect option",	FALSE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("lines",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("spectrum",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_FLOAT	("rotation speed",	0.4),
+	static VisParamEntryProxy params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("bass sensitivity",	0,	VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("plazma effect",	TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect option",	FALSE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("lines",		TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("spectrum",		TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect",		TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+		VISUAL_PARAM_LIST_ENTRY_FLOAT	("rotation speed",	0.4,	VISUAL_PARAM_LIMIT_FLOAT(0.0f, 1000.0f)),
 		VISUAL_PARAM_LIST_END
 	};
 
