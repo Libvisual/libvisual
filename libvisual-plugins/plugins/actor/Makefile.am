@@ -22,4 +22,4 @@ DIST_SUBDIRS = \
   oinksie \
   plazma  \
   pseudotoad_flower \
-  touch
+  blursk
