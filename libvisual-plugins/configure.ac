@@ -673,6 +673,7 @@ AC_CONFIG_FILES([
 	plugins/actor/G-Force/GForceParticles/Makefile
 	plugins/actor/G-Force/GForceWaveShapes/Makefile
 	plugins/actor/G-Force/NotWorkingWaveShapes/Makefile
+    plugins/actor/blursk/Makefile
 	plugins/input/Makefile
 	plugins/input/esd/Makefile
 	plugins/input/alsa/Makefile
@@ -680,6 +681,7 @@ AC_CONFIG_FILES([
 	plugins/input/jack/Makefile
 	plugins/input/debug/Makefile
 	plugins/input/null/Makefile
+    plugins/input/xmms2/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile
