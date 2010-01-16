@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual Library 0.3.0\n"
 "Report-Msgid-Bugs-To: http://libvisual.sf.net\n"
-"POT-Creation-Date: 2006-04-05 11:37+0200\n"
+"POT-Creation-Date: 2010-01-16 08:18-0600\n"
 "PO-Revision-Date: 2005-03-20 17:09-0300\n"
 "Last-Translator:  <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish\n"
@@ -16,115 +16,90 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: libvisual/lv_libvisual.c:137
+#: libvisual/lv_libvisual.c:128
 msgid "Show info for"
 msgstr "Mostrar información para"
 
-#: libvisual/lv_libvisual.c:138
+#: libvisual/lv_libvisual.c:129
 msgid "seconds"
 msgstr "segundos"
 
-#: libvisual/lv_libvisual.c:139
+#: libvisual/lv_libvisual.c:130
 msgid "cover art width"
 msgstr ""
 
-#: libvisual/lv_libvisual.c:140
+#: libvisual/lv_libvisual.c:131
 msgid "cover art height"
 msgstr ""
 
-#: libvisual/lv_libvisual.c:142
+#: libvisual/lv_libvisual.c:135
 msgid "Show song information"
 msgstr "Mostrar información de canción"
 
-#: libvisual/lv_libvisual.c:146
+#: libvisual/lv_libvisual.c:140
 msgid "Show song information in plugins"
 msgstr "Mostrar información de canción en los plugins"
 
-#: libvisual/lv_libvisual.c:286
+#: libvisual/lv_libvisual.c:287
 msgid "Over initialized"
 msgstr "Sobreinicializado"
 
-#: libvisual/lv_libvisual.c:292
+#: libvisual/lv_libvisual.c:293
 msgid "no progname"
 msgstr "programa sin nombre"
 
-#: libvisual/lv_libvisual.c:296 libvisual/lv_libvisual.c:311
+#: libvisual/lv_libvisual.c:297 libvisual/lv_libvisual.c:312
 msgid "Could not set program name"
 msgstr "No se puede establecer nombre de programa"
 
-#: libvisual/lv_libvisual.c:298
+#: libvisual/lv_libvisual.c:299
 msgid "Initialization failed, bad argv, argc"
 msgstr "Inicialización fallida, argv o argc incorrectos"
 
-#: libvisual/lv_libvisual.c:408
+#: libvisual/lv_libvisual.c:417
 msgid "Never initialized"
 msgstr "Nunca fue inicializada"
 
-#: libvisual/lv_libvisual.c:418
-#, fuzzy, c-format
-msgid "Plugins references list: destroy failed: %s"
-msgstr "Lista de referencias de plugins: destrucción fallida"
-
-#: libvisual/lv_libvisual.c:422
-#, fuzzy, c-format
-msgid "Actor plugins list: destroy failed: %s"
-msgstr "Lista de plugins actores: destrucción fallida"
-
-#: libvisual/lv_libvisual.c:426
-#, fuzzy, c-format
-msgid "Input plugins list: destroy failed: %s"
-msgstr "Lista de plugins de captura: destrucción fallida"
-
-#: libvisual/lv_libvisual.c:430
-#, fuzzy, c-format
-msgid "Morph plugins list: destroy failed: %s"
-msgstr "Lista de plugins de morphing: destrucción fallida"
-
-#: libvisual/lv_libvisual.c:434
-#, fuzzy, c-format
-msgid "Transform plugins list: destroy failed: %s"
-msgstr "Lista de plugins de transformación: destrucción fallida"
-
-#: libvisual/lv_libvisual.c:438
+#: libvisual/lv_libvisual.c:431
 #, fuzzy, c-format
 msgid "Global param container: destroy failed: %s"
 msgstr "Contenedor de parámetros global: destrucción fallida"
 
-#: libvisual/lv_libvisual.c:442
+#: libvisual/lv_libvisual.c:435
 #, fuzzy, c-format
 msgid "Error during UI destroy: %s"
 msgstr "Error al destruir Interfaz de Usuario:"
 
-#: libvisual/lv_actor.c:359 libvisual/lv_input.c:183 libvisual/lv_morph.c:183
-#: libvisual/lv_transform.c:182
+#: libvisual/lv_actor.c:170 libvisual/lv_input.c:156 libvisual/lv_morph.c:157
+#: libvisual/lv_transform.c:156
 msgid "the plugin list is NULL"
 msgstr "La lista de plugins es NULL"
 
-#: libvisual/lv_actor.c:457 libvisual/lv_actor.c:728
+#: libvisual/lv_actor.c:268 libvisual/lv_actor.c:539
 msgid "The given actor does not reference any actor plugin"
 msgstr "El actor dado no referencia ningún plugin actor"
 
-#: libvisual/lv_actor.c:553
+#: libvisual/lv_actor.c:364
 #, c-format
 msgid "run depth %d forced %d\n"
 msgstr ""
 
-#: libvisual/lv_actor.c:561
+#: libvisual/lv_actor.c:372
 #, c-format
 msgid "transpitch1 %d depth %d bpp %d"
 msgstr ""
 
-#: libvisual/lv_actor.c:569
+#: libvisual/lv_actor.c:380
 #, c-format
 msgid "transpitch2 %d %d"
 msgstr ""
 
-#: libvisual/lv_actor.c:572
+#: libvisual/lv_actor.c:383
 #, c-format
 msgid "transpitch3 %d"
 msgstr ""
 
-#: libvisual/lv_actor.c:586
+#: libvisual/lv_actor.c:397
 #, c-format
 msgid "rundepth: %d transpitch %d\n"
 msgstr ""
@@ -314,7 +289,7 @@ msgstr "VisColor es NULL"
 
 #: libvisual/lv_error.c:66
 #, fuzzy
-msgid "VisCollectionIter is NULL"
+msgid "VisCollectionIterator is NULL"
 msgstr "VisColor es NULL"
 
 #: libvisual/lv_error.c:68
@@ -421,510 +396,612 @@ msgstr "VisListEntry es inválida"
 msgid "Given memory pointer is NULL"
 msgstr ""
 
+#: libvisual/lv_error.c:105
+#, fuzzy
+msgid "The VisMemPool is NULL"
+msgstr "VisAudio es NULL"
+
 #: libvisual/lv_error.c:106
-msgid "VisMorph is NULL"
-msgstr "VisMorph es NULL"
+#, fuzzy
+msgid "The VisMemChunk is NULL"
+msgstr "VisColor es NULL"
 
 #: libvisual/lv_error.c:107
-msgid "VisMorph it's plugin is NULL"
+#, fuzzy
+msgid "The VisMemPointerStack is NULL"
+msgstr "VisPalette es NULL"
+
+#: libvisual/lv_error.c:108
+msgid "The VisMemPointerStack is full"
 msgstr ""
 
 #: libvisual/lv_error.c:109
+msgid "The VisMemPointerStack is empty"
+msgstr ""
+
+#: libvisual/lv_error.c:111
+msgid "VisMorph is NULL"
+msgstr "VisMorph es NULL"
+
+#: libvisual/lv_error.c:112
+msgid "VisMorph it's plugin is NULL"
+msgstr ""
+
+#: libvisual/lv_error.c:114
 msgid "The scheduler related call wasn't succesful."
 msgstr ""
 
-#: libvisual/lv_error.c:110
+#: libvisual/lv_error.c:115
 msgid "Scheduler operations are not supported on the platform."
 msgstr ""
 
-#: libvisual/lv_error.c:112
+#: libvisual/lv_error.c:117
 msgid "VisPalette is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:113
+#: libvisual/lv_error.c:118
 msgid "VisPalette it's size conflicts"
 msgstr ""
 
 # VisParamEntry es NULL
-#: libvisual/lv_error.c:115
+#: libvisual/lv_error.c:120
 msgid "VisParamEntry is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:116
+#: libvisual/lv_error.c:121
+#, fuzzy
+msgid "VisParamEntryProxy is NULL"
+msgstr "VisParamContainer es NULL"
+
+#: libvisual/lv_error.c:122
 msgid "VisParamContainer is NULL"
 msgstr "VisParamContainer es NULL"
 
-#: libvisual/lv_error.c:117
+#: libvisual/lv_error.c:123
+#, fuzzy
+msgid "VisParamEntryLimit is NULL"
+msgstr "VisParamContainer es NULL"
+
+#: libvisual/lv_error.c:124
+#, fuzzy
+msgid "VisParamEntryLimitProxy is NULL"
+msgstr "VisParamContainer es NULL"
+
+#: libvisual/lv_error.c:125
 msgid "VisParamEntry not found in VisParamContainer"
 msgstr ""
 
-#: libvisual/lv_error.c:118
+#: libvisual/lv_error.c:126
 msgid "VisParamEntry it's change notify callback is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:119
+#: libvisual/lv_error.c:127
 msgid "VisParamEntry contains too many change notify callbacks"
 msgstr ""
 
-#: libvisual/lv_error.c:120
+#: libvisual/lv_error.c:128
 msgid "VisParamEntry is of invalid type"
 msgstr ""
 
-#: libvisual/lv_error.c:122
+#: libvisual/lv_error.c:130
 msgid "VisPluginData is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:123
+#: libvisual/lv_error.c:131
 msgid "VisPluginInfo is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:124
+#: libvisual/lv_error.c:132
 msgid "VisPluginRef is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:125
+#: libvisual/lv_error.c:133
 msgid "VisPluginEnvironElement is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:126
+#: libvisual/lv_error.c:134
 msgid "Plugin does not have an event handler"
 msgstr ""
 
-#: libvisual/lv_error.c:127
+#: libvisual/lv_error.c:135
 msgid "Plugin handle is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:128
+#: libvisual/lv_error.c:136
 msgid "Plugin is already realized"
 msgstr ""
 
-#: libvisual/lv_error.c:129
-msgid "Plugin list can not be found in memory"
+#: libvisual/lv_error.c:137
+msgid "Plugin hashmap can not be found in memory"
 msgstr ""
 
-#: libvisual/lv_error.c:131
+#: libvisual/lv_error.c:139
 msgid "VisRandomContext is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:133
+#: libvisual/lv_error.c:141
 #, fuzzy
 msgid "VisRectangle is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:134
+#: libvisual/lv_error.c:142
 msgid "The VisRectangle operation is out of bounds"
 msgstr ""
 
-#: libvisual/lv_error.c:136
+#: libvisual/lv_error.c:144
 #, fuzzy
 msgid "The VisRingBuffer is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:137
+#: libvisual/lv_error.c:145
 #, fuzzy
 msgid "The VisRingBufferEntry is NULL"
 msgstr "VisListEntry es NULL"
 
-#: libvisual/lv_error.c:138
+#: libvisual/lv_error.c:146
 msgid "The VisRingBufferDataFunc data provider function callback is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:140
+#: libvisual/lv_error.c:148
 msgid "VisSongInfo is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:142
+#: libvisual/lv_error.c:150
 msgid "VisThread is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:143
+#: libvisual/lv_error.c:151
 msgid "The VisThread subsystem is not initialized"
 msgstr ""
 
-#: libvisual/lv_error.c:144
+#: libvisual/lv_error.c:152
 msgid "The VisThread subsystem couldn't find any threading model to use"
 msgstr ""
 
-#: libvisual/lv_error.c:145
+#: libvisual/lv_error.c:153
 msgid "The VisThread subsystem is not enabled"
 msgstr ""
 
-#: libvisual/lv_error.c:147
+#: libvisual/lv_error.c:155
 msgid "VisMutex is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:148
+#: libvisual/lv_error.c:156
 msgid "VisMutex lock failed"
 msgstr ""
 
-#: libvisual/lv_error.c:149
+#: libvisual/lv_error.c:157
 msgid "VisMutex trylock failed"
 msgstr ""
 
-#: libvisual/lv_error.c:150
+#: libvisual/lv_error.c:158
 msgid "VisMutex unlock failed"
 msgstr ""
 
-#: libvisual/lv_error.c:152
+#: libvisual/lv_error.c:160
+#, fuzzy
+msgid "The VisTLS is NULL"
+msgstr "VisColor es NULL"
+
+#: libvisual/lv_error.c:162
+#, fuzzy
+msgid "The VisQueue is NULL"
+msgstr "VisColor es NULL"
+
+#: libvisual/lv_error.c:164
 #, fuzzy
 msgid "VisString is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:154
+#: libvisual/lv_error.c:165
+msgid "The VisString system is not initialized"
+msgstr ""
+
+#: libvisual/lv_error.c:166
+msgid "A find request didn't deliver any results"
+msgstr ""
+
+#: libvisual/lv_error.c:167
+#, fuzzy
+msgid "The VisStringIterator is NULL"
+msgstr "VisListEntry es NULL"
+
+#: libvisual/lv_error.c:168
+msgid "No more entries to be iterated"
+msgstr ""
+
+#: libvisual/lv_error.c:169
+#, fuzzy
+msgid "The VisStringIteratorToken is NULL"
+msgstr "VisListEntry es NULL"
+
+#: libvisual/lv_error.c:170
+msgid "The VisStringIteratorType is not valid for this method"
+msgstr ""
+
+#: libvisual/lv_error.c:172
 msgid "VisTransform is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:155
+#: libvisual/lv_error.c:173
 msgid "The VisTransform negotiate with the target VisVideo failed"
 msgstr "Falló la negociación de VisTransform con el VisVideo objetivo"
 
-#: libvisual/lv_error.c:156
+#: libvisual/lv_error.c:174
 msgid "The VisTransform it's plugin is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:157
+#: libvisual/lv_error.c:175
 msgid "The VisTransform it's video is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:158
+#: libvisual/lv_error.c:176
 msgid "The VisTransform it's palette is NULL"
 msgstr ""
 
-#: libvisual/lv_error.c:160
+#: libvisual/lv_error.c:178
 msgid "VisObject destruction failed"
 msgstr "Destrucción de VisObject fallida"
 
-#: libvisual/lv_error.c:161
+#: libvisual/lv_error.c:179
+msgid "Increasing the reference for a VisObject failed"
+msgstr ""
+
+#: libvisual/lv_error.c:180
+msgid "Decreasing the reference for a VisObject failed"
+msgstr ""
+
+#: libvisual/lv_error.c:181
 msgid "VisObject is NULL"
 msgstr "VisObject es NULL"
 
-#: libvisual/lv_error.c:162
+#: libvisual/lv_error.c:182
 #, fuzzy
 msgid "VisObject is not allocated"
 msgstr "Destrucción de VisObject fallida"
 
-#: libvisual/lv_error.c:164
+#: libvisual/lv_error.c:184
 #, fuzzy
 msgid "VisTime is NULL"
 msgstr "VisList es NULL"
 
-#: libvisual/lv_error.c:165
+#: libvisual/lv_error.c:185
 msgid "visual_time_usleep() is not supported"
 msgstr ""
 
-#: libvisual/lv_error.c:166
+#: libvisual/lv_error.c:186
 #, fuzzy
 msgid "VisTimer is NULL"
 msgstr "VisList es NULL"
 
-#: libvisual/lv_error.c:168
+#: libvisual/lv_error.c:188
 #, fuzzy
 msgid "VisUIWidget is NULL"
 msgstr "VisList es NULL"
 
-#: libvisual/lv_error.c:169
+#: libvisual/lv_error.c:189
 #, fuzzy
 msgid "VisUIContainer is NULL"
 msgstr "VisParamContainer es NULL"
 
-#: libvisual/lv_error.c:170
+#: libvisual/lv_error.c:190
 #, fuzzy
 msgid "VisUIBox is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:171
+#: libvisual/lv_error.c:191
 #, fuzzy
 msgid "VisUITable is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:172
+#: libvisual/lv_error.c:192
 #, fuzzy
 msgid "VisUINotebook is NULL"
 msgstr "VisColor es NULL"
 
-#: libvisual/lv_error.c:173
+#: libvisual/lv_error.c:193
 #, fuzzy
 msgid "VisUIFrame is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:174
+#: libvisual/lv_error.c:194
 #, fuzzy
 msgid "VisUILabel is NULL"
 msgstr "VisObject es NULL"
 
-#: libvisual/lv_error.c:175
+#: libvisual/lv_error.c:195
 #, fuzzy
 msgid "VisUIImage is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:176
+#: libvisual/lv_error.c:196
 #, fuzzy
 msgid "VisUISeparator is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:177
+#: libvisual/lv_error.c:197
 #, fuzzy
 msgid "VisUIMutator is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:178
+#: libvisual/lv_error.c:198
 #, fuzzy
 msgid "VisUIRange is NULL"
 msgstr "VisPalette es NULL"
 
-#: libvisual/lv_error.c:179
+#: libvisual/lv_error.c:199
 #, fuzzy
 msgid "VisUIEntry is NULL"
 msgstr "VisListEntry es NULL"
 
-#: libvisual/lv_error.c:180
+#: libvisual/lv_error.c:200
 #, fuzzy
 msgid "VisUISlider is NULL"
 msgstr "VisColor es NULL"
 
-#: libvisual/lv_error.c:181
+#: libvisual/lv_error.c:201
 #, fuzzy
 msgid "VisUINumeric is NULL"
 msgstr "VisAudio es NULL"
 
-#: libvisual/lv_error.c:182
+#: libvisual/lv_error.c:202
 #, fuzzy
 msgid "VisUIColor is NULL"
 msgstr "VisColor es NULL"
 
-#: libvisual/lv_error.c:183
+#: libvisual/lv_error.c:203
 #, fuzzy
 msgid "VisUIChoice is NULL"
 msgstr "VisColor es NULL"
 
-#: libvisual/lv_error.c:184
+#: libvisual/lv_error.c:204
 #, fuzzy
 msgid "VisUIPopup is NULL"
 msgstr "VisMorph es NULL"
 
-#: libvisual/lv_error.c:185
+#: libvisual/lv_error.c:205
 #, fuzzy
 msgid "VisUIList is NULL"
 msgstr "VisList es NULL"
 
-#: libvisual/lv_error.c:186
+#: libvisual/lv_error.c:206
 #, fuzzy
 msgid "VisUIRadio is NULL"
 msgstr "VisAudio es NULL"
 
-#: libvisual/lv_error.c:187
+#: libvisual/lv_error.c:207
 #, fuzzy
 msgid "VisUICheckbox is NULL"
 msgstr "VisActor es NULL"
 
-#: libvisual/lv_error.c:188
+#: libvisual/lv_error.c:208
 #, fuzzy
 msgid "VisUIChoiceEntry is NULL"
 msgstr "VisListEntry es NULL"
 
-#: libvisual/lv_error.c:189
+#: libvisual/lv_error.c:209
 msgid "No choice in VisUIChoice is activated"
 msgstr ""
 
-#: libvisual/lv_error.c:191
+#: libvisual/lv_error.c:211
 #, fuzzy
 msgid "The VisVideoAttributeOptions is NULL."
 msgstr "VisAudio es NULL"
 
-#: libvisual/lv_error.c:192
+#: libvisual/lv_error.c:212
 #, fuzzy
 msgid "VisVideo is NULL"
 msgstr "VisAudio es NULL"
 
-#: libvisual/lv_error.c:193
+#: libvisual/lv_error.c:213
 msgid "VisVideo has allocated pixel buffer"
 msgstr ""
 
-#: libvisual/lv_error.c:194
+#: libvisual/lv_error.c:214
 msgid "VisVideo has no VisBuffer object"
 msgstr ""
 
-#: libvisual/lv_error.c:195
+#: libvisual/lv_error.c:215
 #, fuzzy
 msgid "VisVideo it's pixel buffer is NULL"
 msgstr "El plugin del VisActor es NULL"
 
-#: libvisual/lv_error.c:196
+#: libvisual/lv_error.c:216
 msgid "VisVideo it's pixel buffer is not allocated"
 msgstr ""
 
-#: libvisual/lv_error.c:197
+#: libvisual/lv_error.c:217
 msgid "VisVideo has pixel buffer"
 msgstr ""
 
-#: libvisual/lv_error.c:198
+#: libvisual/lv_error.c:218
 msgid "VisVideo is of invalid bytes per pixel"
 msgstr ""
 
-#: libvisual/lv_error.c:199
+#: libvisual/lv_error.c:219
 msgid "VisVideo is of invalid depth"
 msgstr "Profundidad inválida para un VisVideo"
 
-#: libvisual/lv_error.c:200
+#: libvisual/lv_error.c:220
 msgid "Invalid scale method given"
 msgstr "Método de escalado inválido"
 
-#: libvisual/lv_error.c:201
+#: libvisual/lv_error.c:221
 #, fuzzy
 msgid "Invalid rotate degrees given"
 msgstr "Método de escalado inválido"
 
-#: libvisual/lv_error.c:202
+#: libvisual/lv_error.c:222
 msgid "Given coordinates are out of bounds"
 msgstr "Las coordenadas dadas están fuera de los límites"
 
-#: libvisual/lv_error.c:203
+#: libvisual/lv_error.c:223
 msgid "Given VisVideos are not indentical"
 msgstr "Los VisVideos dados no son idénticos"
 
-#: libvisual/lv_error.c:204
+#: libvisual/lv_error.c:224
 msgid "VisVideo is not depth transformed as requested"
 msgstr ""
 
-#: libvisual/lv_error.c:267
+#: libvisual/lv_error.c:287
 msgid "The error value given to visual_error_to_string() is invalid"
 msgstr "El valor de error dado a visual_error_to_string() es inválido"
 
-#: libvisual/lv_event.c:266
+#: libvisual/lv_event.c:303
 msgid "Cannot create a new VisEvent structure"
 msgstr "No se puede crear una nueva estructura VisEvent"
 
-#: libvisual/lv_mem.c:134
+#: libvisual/lv_mem.c:246 libvisual/lv_mem.c:293
 msgid "Cannot get %"
 msgstr "No se pueden obtener %"
 
-#: libvisual/lv_mem.c:134
-msgid " bytes of memory"
-msgstr " bytes de memoria"
-
-#: libvisual/lv_morph.c:429 libvisual/lv_morph.c:468
+#: libvisual/lv_morph.c:403 libvisual/lv_morph.c:442
 msgid "The given morph does not reference any plugin"
 msgstr "El morph dado no referencia ningún plugin"
 
-#: libvisual/lv_param.c:568 libvisual/lv_param.c:632
+#: libvisual/lv_param.c:693 libvisual/lv_param.c:742 libvisual/lv_param.c:807
 msgid "param type is not valid"
 msgstr "tipo de parámetro inválido"
 
-#: libvisual/lv_param.c:904
+#: libvisual/lv_param.c:1090
 msgid "Requesting string from a non string param"
 msgstr "Pidiendo una string desde un parámetro que no es de tipo string"
 
-#: libvisual/lv_param.c:924
+#: libvisual/lv_param.c:1110
 msgid "Requesting integer from a non integer param"
 msgstr "Pidiendo un entero desde un parámetro que no es de tipo entero"
 
-#: libvisual/lv_param.c:941
+#: libvisual/lv_param.c:1127
 msgid "Requesting float from a non float param"
 msgstr ""
 
-#: libvisual/lv_param.c:958
+#: libvisual/lv_param.c:1144
 msgid "Requesting double from a non double param"
 msgstr ""
 
-#: libvisual/lv_param.c:978
+#: libvisual/lv_param.c:1164
 msgid "Requesting color from a non color param"
 msgstr ""
 
-#: libvisual/lv_param.c:999
+#: libvisual/lv_param.c:1185
 msgid "Requested palette from a non palette param\n"
 msgstr ""
 
-#: libvisual/lv_param.c:1019
+#: libvisual/lv_param.c:1205
 msgid "Requested object from a non object param\n"
 msgstr "Pidiendo un objeto desde un parámetro que no es de tipo objeto\n"
 
-#: libvisual/lv_plugin.c:101
+#: libvisual/lv_plugin.c:102
 #, fuzzy, c-format
 msgid "A plugin reference with %d instances has been destroyed."
 msgstr "Lista de referencias de plugins: destrucción fallida"
 
-#: libvisual/lv_plugin.c:432
-msgid "Cannot create a new list"
+#: libvisual/lv_plugin.c:509
+#, fuzzy
+msgid "Cannot create a new map"
 msgstr "No se puede crear una nueva lista"
 
-#: libvisual/lv_plugin.c:649
+#: libvisual/lv_plugin.c:657
 msgid "Tried unloading a plugin that never has been loaded."
 msgstr "Tratando de dar de baja un plugin que nunca fue cargado."
 
-#: libvisual/lv_plugin.c:709
+#: libvisual/lv_plugin.c:717
 #, c-format
 msgid ""
 "Cannot load plugin %s, the plugin is already loaded and is not reentrant."
 msgstr ""
 "No se puede cargar el plugin %s, el plugin ya fue cargado y no es reentrante."
 
-#: libvisual/lv_plugin.c:725 libvisual/lv_plugin.c:842
+#: libvisual/lv_plugin.c:733 libvisual/lv_plugin.c:850
 #, c-format
 msgid "Cannot load plugin: %s"
 msgstr "No se puede cargar plugin: %s"
 
-#: libvisual/lv_plugin.c:742 libvisual/lv_plugin.c:879
+#: libvisual/lv_plugin.c:750 libvisual/lv_plugin.c:887
 #, c-format
 msgid "Cannot initialize plugin: %s"
 msgstr "No se puede inicilalizar plugin: %s"
 
-#: libvisual/lv_plugin.c:753
+#: libvisual/lv_plugin.c:761
 msgid "Cannot get plugin info while loading."
 msgstr ""
 
-#: libvisual/lv_plugin.c:855
+#: libvisual/lv_plugin.c:863
 #, c-format
 msgid "Plugin %s is not compatible with version %s of libvisual"
 msgstr "El plugin %s no es compatible con la versión %s de libvisual"
 
-#: libvisual/lv_plugin.c:890
+#: libvisual/lv_plugin.c:898
 msgid "Cannot get plugin info"
 msgstr "No se puede obtener información del plugin"
 
-#: libvisual/lv_plugin.c:946
+#: libvisual/lv_plugin.c:954
 #, c-format
 msgid "Failed to add the %s directory to the plugin registry"
 msgstr "Fallo al añadir el directorio %s al registro de plugins"
 
-#: libvisual/lv_thread.c:277
+#: libvisual/lv_thread.c:343
 msgid ""
 "Tried freeing thread memory while threading is not supported, simply freeing "
 "mem"
 msgstr ""
 
-#: libvisual/lv_thread.c:358
+#: libvisual/lv_thread.c:424
 msgid ""
 "Tried freeing mutex memory while threading is not supported, simply freeing "
 "mem"
 msgstr ""
 
-#: libvisual/lv_thread.c:478 libvisual/lv_thread.c:707
+#: libvisual/lv_thread.c:586 libvisual/lv_thread.c:895
 msgid "Error while creating thread"
 msgstr "Error al crear thread"
 
-#: libvisual/lv_thread.c:500
+#: libvisual/lv_thread.c:608
 msgid "Error while joining thread"
 msgstr "Error al hacer 'join' a un thread"
 
-#: libvisual/lv_transform.c:398 libvisual/lv_transform.c:434
+#: libvisual/lv_transform.c:372 libvisual/lv_transform.c:408
 msgid "The given transform does not reference any transform plugin"
 msgstr ""
 
-#: libvisual/lv_video.c:288
+#: libvisual/lv_video.c:286
 msgid ""
 "Trying to allocate an screen buffer on a VisVideo structure which points to "
 "an external screen buffer"
 msgstr ""
 
-#: libvisual/lv_video.c:447
+#: libvisual/lv_video.c:445
 msgid ""
 "Trying to set a screen buffer on a VisVideo structure which points to an "
 "allocated screen buffer"
 msgstr ""
 
-#: libvisual/lv_video.c:2775 libvisual/lv_video.c:2922
+#: libvisual/lv_video.c:2895 libvisual/lv_video.c:2998
 msgid "Invalid depth passed to the scaler"
 msgstr "Profundidad pasada al escalador inválida"
+
+#, fuzzy
+#~ msgid "Plugins references list: destroy failed: %s"
+#~ msgstr "Lista de referencias de plugins: destrucción fallida"
+
+#, fuzzy
+#~ msgid "Actor plugins list: destroy failed: %s"
+#~ msgstr "Lista de plugins actores: destrucción fallida"
+
+#, fuzzy
+#~ msgid "Input plugins list: destroy failed: %s"
+#~ msgstr "Lista de plugins de captura: destrucción fallida"
+
+#, fuzzy
+#~ msgid "Morph plugins list: destroy failed: %s"
+#~ msgstr "Lista de plugins de morphing: destrucción fallida"
+
+#, fuzzy
+#~ msgid "Transform plugins list: destroy failed: %s"
+#~ msgstr "Lista de plugins de transformación: destrucción fallida"
+
+#~ msgid " bytes of memory"
+#~ msgstr " bytes de memoria"
 
 #~ msgid "Only uncompressed bitmaps are supported"
 #~ msgstr "Sólo se soportan mapas de bits sin comprimir"

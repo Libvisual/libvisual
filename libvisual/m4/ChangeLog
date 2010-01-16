@@ -1,3 +1,14 @@
+2010-01-16  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* gettext.m4: Upgrade to gettext-0.17.
+	* iconv.m4: Upgrade to gettext-0.17.
+	* lib-ld.m4: Upgrade to gettext-0.17.
+	* lib-link.m4: Upgrade to gettext-0.17.
+	* lib-prefix.m4: Upgrade to gettext-0.17.
+	* nls.m4: Upgrade to gettext-0.17.
+	* po.m4: Upgrade to gettext-0.17.
+	* progtest.m4: Upgrade to gettext-0.17.
+
 2005-03-29  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* codeset.m4: New file, from gettext-0.14.1.

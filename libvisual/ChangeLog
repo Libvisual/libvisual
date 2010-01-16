@@ -1,3 +1,7 @@
+2010-01-16  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.17.
+
 2006-11-27  Chong Kai Xiong  <descender@dreamerbox.segfault-net>
 
 	* configure.ac: Add checks for stdint.h, inttypes.h, long long and
