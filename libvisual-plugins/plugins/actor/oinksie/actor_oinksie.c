@@ -105,18 +105,18 @@ int act_oinksie_init (VisPluginData *plugin)
 	VisRandomContext *rcontext;
         VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1, VISUAL_PARAM_LIMIT_INTEGER (0, 4)),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("acid palette", 0, VISUAL_PARAM_LIMIT_BOOLEAN),
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("acid palette", 0),
 		VISUAL_PARAM_LIST_END
 	};
 
-	static VisParamEntryProxy cmodeparamchoices[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Fair blended", 0, VISUAL_PARAM_LIMIT_NONE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Turbelent temperature", 1, VISUAL_PARAM_LIMIT_NONE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Acid summer", 2, VISUAL_PARAM_LIMIT_NONE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Perfect match", 3, VISUAL_PARAM_LIMIT_NONE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Sanity edge", 4, VISUAL_PARAM_LIMIT_NONE),
+	static VisParamEntry cmodeparamchoices[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Fair blended", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Turbelent temperature", 1),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Acid summer", 2),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Perfect match", 3),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Sanity edge", 4),
 		VISUAL_PARAM_LIST_END
 	};
 

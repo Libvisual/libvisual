@@ -6,3 +6,5 @@ EXTRA_DIST = libvisual-plugins.spec gettext.h po/Makevars.in
 
 CLEANFILES = po/Makevars
 DISTCLEANFILES = $(CLEANFILES)
+
+ACLOCAL_AMFLAGS = -I m4

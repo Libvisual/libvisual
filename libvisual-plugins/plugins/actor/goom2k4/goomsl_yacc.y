@@ -1206,7 +1206,7 @@
     GSL_Struct *gsl_struct;
     GSL_StructField *gsl_struct_field;
   };
-  
+
 %token <strValue>   LTYPE_INTEGER
 %token <strValue>   LTYPE_FLOAT
 %token <strValue>   LTYPE_VAR

@@ -114,8 +114,8 @@ int lv_gltest_init (VisPluginData *plugin)
 	GLtestPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE,	VISUAL_PARAM_LIMIT_BOOLEAN),
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE),
 		VISUAL_PARAM_LIST_END
 	};
 

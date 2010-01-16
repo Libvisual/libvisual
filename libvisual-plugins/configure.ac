@@ -42,6 +42,9 @@ dnl C/C++ compilers
 AC_PROG_CC
 AC_PROG_CXX
 
+dnl Assembly compiler
+AM_PROG_AS
+
 dnl Check for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
@@ -197,6 +200,10 @@ CPPFLAGS=$CPPFLAGS_SAVE
 AC_SUBST([XF86VMODE_LIB])
 AM_CONDITIONAL([HAVE_XF86VMODE], [test "$HAVE_XF86VMODE" = "yes"])
 
+dnl x86
+AM_CONDITIONAL(ARCH_X86,test "$ARCH_TYPE" = "i386" || test "$ARCH_TYPE" = "i486" || test "$ARCH_TYPE" =
+"i586" || test "$ARCH_TYPE" = "i686" || test "$ARCH_TYPE" = "i86pc")
+
 dnl ALSA
 LV_ALSA_MIN_VERSION=0.9.0
 AC_ARG_ENABLE([alsa],
@@ -255,17 +262,6 @@ AC_ARG_ENABLE([inputdebug],
 
 if test "$inputdebug" = "yes"; then
   build_input_plugins="$build_input_plugins debug"
-fi
-
-dnl Input null plugin
-AC_ARG_ENABLE([inputnull],
-  AS_HELP_STRING([--disable-inputnull],
-    [Do not build input null plugin @<:@default=enabled@:>@]),
-  [ENABLE_INPUTDEBUG=$enableval],
-  [ENABLE_INPUTDEBUG=yes])
-
-if test "$inputdebug" = "yes"; then
-  build_input_plugins="$build_input_plugins null"
 fi
 
 dnl OpenGL test plugin
@@ -428,17 +424,6 @@ AC_ARG_ENABLE([scope],
 
 if test "$ENABLE_SCOPE" = "yes"; then
   build_actor_plugins="$build_actor_plugins lv_scope"
-fi
-
-dnl Touch 
-AC_ARG_ENABLE([touch],
-  AS_HELP_STRING([--disable-touch],
-    [Do not build Touch plugin @<:@default=enabled@:>@]),
-  [ENABLE_TOUCH=$enableval],
-  [ENABLE_TOUCH=yes])
-
-if test "$ENABLE_TOUCH" = "yes"; then
-  build_actor_plugins="$build_actor_plugins touch"
 fi
 
 dnl Oinksie
@@ -644,7 +629,6 @@ AC_CONFIG_FILES([
 	plugins/actor/lv_analyzer/Makefile
 	plugins/actor/lv_gltest/Makefile
 	plugins/actor/lv_scope/Makefile
-	plugins/actor/touch/Makefile
 	plugins/actor/madspin/Makefile
 	plugins/actor/nastyfft/Makefile
 	plugins/actor/nebulus/Makefile
@@ -680,7 +664,6 @@ AC_CONFIG_FILES([
 	plugins/input/mplayer/Makefile
 	plugins/input/jack/Makefile
 	plugins/input/debug/Makefile
-	plugins/input/null/Makefile
     plugins/input/xmms2/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
