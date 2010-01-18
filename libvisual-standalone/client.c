@@ -31,6 +31,8 @@ int main (int argc, char **argv)
 
 	visual_init (&argc, &argv);
 
+    //visual_log_set_verboseness(VISUAL_LOG_VERBOSENESS_NONE);
+
 	display = display_new (sdl_driver_new ());
 
 	/* Libvisual stuff */
@@ -65,7 +67,8 @@ int main (int argc, char **argv)
 
     params = visual_plugin_get_params(input->plugin);
 
-    param = visual_param_container_get(params, "songinfo");
+    VisString *string = visual_string_new_with_value("songinfo");
+    param = visual_param_container_get(params, string);
 
     if(param != NULL)
         visual_param_entry_set_object(param, 
@@ -73,10 +76,12 @@ int main (int argc, char **argv)
 
     params = visual_plugin_get_params(actor->plugin);
 
-    param = visual_param_container_get(params, "show_info");
+    string = visual_string_new_with_value("show_info");
+    param = visual_param_container_get(params, string);
     visual_param_entry_set_string(param, "Always");
 
 	localqueue = visual_event_queue_new ();
+
 
 	while (running) {
 		VisEventQueue *pluginqueue;
