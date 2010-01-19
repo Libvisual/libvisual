@@ -90,9 +90,8 @@ int act_avs_init (VisPluginData *plugin)
 
 	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING ("filename",
-				"/usr/src/libvisual-bromo/libvisual-avs/testpresets/sscope_movement2.avs"),
-//		VISUAL_PARAM_LIST_ENTRY_STRING ("filename", NULL),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1),
+				"/home/starlon/Projects/libvisual-svn/trunk/libvisual-avs/testpresets/superscope.avs", ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1, VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -185,6 +184,7 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 				if (visual_param_entry_is (param, VIS_BSTR ("filename"))) {
 					char *filename = visual_param_entry_get_string (param);
 
+                    printf("event filename %s\n", filename);
 					if (priv->wtree != NULL)
 						visual_object_unref (VISUAL_OBJECT (priv->wtree));
 

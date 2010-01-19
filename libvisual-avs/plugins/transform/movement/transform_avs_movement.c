@@ -150,14 +150,15 @@ int lv_movement_init (VisPluginData *plugin)
 	int i;
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("effect", 32767),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("rectangular", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("blend", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("sourcemapped", 0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("subpixel", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("wrap", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("effect", 32767, VISUAL_PARAM_LIMIT_INTEGER(0, 32767), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("rectangular", 1, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("blend", 1, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("sourcemapped", 0, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("subpixel", 1, VISUAL_PARAM_LIMIT_INTEGER(0, 1000), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("wrap", 0, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
 		VISUAL_PARAM_LIST_ENTRY_STRING ("code",
-				"d = d * (1.01 + (cos((r-$PI*0.5) * 4) * 0.04)); r = r + (0.03 * sin(d * $PI * 4));"),
+				"d = d * (1.01 + (cos((r-$PI*0.5) * 4) * 0.04)); r = r + (0.03 * sin(d * $PI * 4));"
+                , ""),
 		VISUAL_PARAM_LIST_END
 	};
 

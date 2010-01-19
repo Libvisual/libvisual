@@ -88,7 +88,7 @@ int lv_invert_init (VisPluginData *plugin)
 	int i;
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("enabled", 1),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("enabled", 1, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
 		VISUAL_PARAM_LIST_END
 	};
 

@@ -96,17 +96,19 @@ static int avs_container_dtor (VisObject *object)
 static void show_options (AVSElement *element)
 {
 	VisParamEntry *param;
-	VisCollectionIterator* iter;
+    VisHashmapChainEntry *mentry;
+	VisCollectionIterator iter;
 
 	if (element == NULL)
 		return;
 
 	printf ("Element options of element type: %d\n", element->type);
 
-	iter = visual_collection_get_iterator (VISUAL_COLLECTION (&element->pcont->entries));
+	visual_collection_get_iterator (&iter, VISUAL_COLLECTION (&element->pcont->entries));
 
-	while (visual_collection_iterator_has_more (iter)) {
-		param = visual_collection_iterator_get_data (iter);
+	while (visual_collection_iterator_has_more (&iter)) {
+		mentry = visual_collection_iterator_get_data (&iter);
+        param = mentry->data;
 
 		switch (param->type) {
 			case VISUAL_PARAM_ENTRY_TYPE_NULL:
@@ -250,7 +252,7 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 
 		AVS_SERIALIZE_SKIP_INT (AVS_TREE_GET_CURRENT_POINTER (avstree));
 
-		printf (":: 0x%x marker!\n", marker);
+		printf (":: 0x%x marker! %d\n", marker, marker);
 
 
 		/* FIXME: Use a table lookup here instead of giant function */
@@ -633,13 +635,13 @@ AVSElement *avs_parse_trans_movement (AVSTree *avstree)
 	VisParamContainer *pcont;
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("effect", 0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("rectangular", 0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("blend", 0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("sourcemapped", 0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("subpixel", 0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("wrap", 0),
-		VISUAL_PARAM_LIST_ENTRY_STRING ("code", ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("effect", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 1000), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("rectangular", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 100), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("blend", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 1000), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("sourcemapped", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 1000), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("subpixel", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 1000), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("wrap", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 1000), ""),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("code", "", ""),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -700,7 +702,7 @@ AVSElement *avs_parse_trans_movement (AVSTree *avstree)
 //			effect_exp.assign(buf);
 			AVS_SERIALIZE_SKIP_LENGTH (avstree->cur, l);
 			pos+=l;
-			printf ("%s\n", buf);
+			printf ("trans_movement buf %s\n", buf);
 		}
 	}
 	if (len-pos >= 4) { blend=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur);pos+=4; }
@@ -789,7 +791,7 @@ int avs_parse_data (AVSTree *avstree, char *filename)
 	fd = open (filename, O_RDONLY);
 
 	if (fd < 0) {
-		printf ("FILE NOT FOUND BLAH\n");
+		printf ("FILE NOT FOUND BLAH: %s\n", filename);
 
 		exit (-1);
 	}

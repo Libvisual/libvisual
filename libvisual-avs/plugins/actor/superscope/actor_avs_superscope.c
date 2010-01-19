@@ -136,15 +136,17 @@ int lv_superscope_init (VisPluginData *plugin)
 	int i;
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING ("point", "d=i+v*0.2; r=t+i*$PI*4; x = cos(r)*d; y = sin(r) * d;"),
-		VISUAL_PARAM_LIST_ENTRY_STRING ("frame", "t=t-0.01;"),
-		VISUAL_PARAM_LIST_ENTRY_STRING ("beat", ""),
-		VISUAL_PARAM_LIST_ENTRY_STRING ("init", "n=800;"),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("channel source", 0),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("point", "d=i+v*0.2; r=t+i*$PI*4; x = cos(r)*d; y = sin(r) * d;", ""),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("frame", "t=t-0.01;", ""),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("beat", "", ""),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("init", "n=800;", ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("channel source", 0, VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_ENTRY ("palette"),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("draw type", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("draw type", 0, VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_END
 	};
+
+	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	priv = visual_mem_new0 (SuperScopePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
@@ -156,8 +158,6 @@ int lv_superscope_init (VisPluginData *plugin)
 		priv->pal.colors[i].g = 0xff;
 		priv->pal.colors[i].b = 0xff;
 	}
-
-	visual_param_container_add_many_proxy (paramcontainer, params);
 
 	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, VIS_BSTR ("palette")), &priv->pal);
 
@@ -223,6 +223,7 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
+                printf("superscope_events param %p %p\n", param, param->name);
 
 				if (visual_param_entry_is (param, VIS_BSTR ("point"))) {
 
@@ -275,7 +276,7 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 	return 0;
 }
-
+/*
 static int makeint(AvsNumber t)
 {
 	if (t <= 0.0)
@@ -284,10 +285,10 @@ static int makeint(AvsNumber t)
 		return 255;
 	return (int)(t*255.0);
 }
-
+*/
 VisPalette *lv_superscope_palette (VisPluginData *plugin)
 {
-	SuperScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	//SuperScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	return NULL;
 }
@@ -323,6 +324,9 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	if (l > 128*1024)
 		l = 128*1024;
 
+    lx = 0;
+    ly = 0;
+
 	priv->drawmode = 1.0; /* 0 = dots, 1 = lines */
 	for (a=0; a < l; a++, lx = x, ly = y) {
 		priv->v = pcmbuf[a * 288 / l];
@@ -336,9 +340,9 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 		if (priv->skip >= 0.00001)
 			continue;
 
-		int this_color = makeint(priv->blue) |
-				 (makeint(priv->green) << 8) |
-				 (makeint(priv->red) << 16);
+		//int this_color = makeint(priv->blue) |
+		//		 (makeint(priv->green) << 8) |
+		//		 (makeint(priv->red) << 16);
 
 		if (priv->drawmode < 0.00001) {
 			if (y >= 0 && y < video->height && x >= 0 && x < video->width)

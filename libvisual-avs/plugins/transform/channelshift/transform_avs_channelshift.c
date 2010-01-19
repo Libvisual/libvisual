@@ -92,8 +92,8 @@ int lv_channelshift_init (VisPluginData *plugin)
 	int i;
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("shift", 0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("onbeat", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("shift", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 1000), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("onbeat", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 1000), ""),
 		VISUAL_PARAM_LIST_END
 	};
 

@@ -101,7 +101,7 @@ char *avs_serialize_retrieve_string_from_preset_section (char *section, VisParam
 	len = AVS_SERIALIZE_GET_INT (section);
 	AVS_SERIALIZE_SKIP_INT (section);
 
-	if (string != NULL && len > 0) {
+	if (len > 0) {
 		string = visual_mem_malloc0 (len);
 
 		strncpy (string, section, len);
