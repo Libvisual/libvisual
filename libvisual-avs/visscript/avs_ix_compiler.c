@@ -153,6 +153,9 @@ static AvsNumber * get_operand(ILRegister *reg)
 
 		case ILRegisterTypeVariable:
 			return reg->value.variable->value;
+
+        default:
+            break;
 	}
 	
 	return NULL;
