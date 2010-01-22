@@ -5,4 +5,4 @@ avs_x86_opcode.c avs_il_assembler.c avs_il_tree_node.c avs_parser.c \
 avs_blob.c avs_il_core.c avs_runnable.c avs_blob_pool.c \
 avs_il_instruction.c avs_ix_compiler.c avs_stack.c avs_compiler.c \
 avs_il_register.c avs_ix_machine.c avs_x86_compiler.c main.c \
--Wall -I/usr/include/libvisual-0.6 -lvisual-0.6
+-Wall -I/usr/include/libvisual-0.6 -lvisual-0.6 -z execstack
