@@ -18,7 +18,7 @@ typedef unsigned int X86OpcodeArgumentOffset;
 
 struct _X86Context {
 	VisObject		object;
-    int                 fp;
+    int                 fd;
 	unsigned char		*buf;
 	unsigned int		length;
 	unsigned int		length_max;
