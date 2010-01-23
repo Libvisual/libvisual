@@ -30,6 +30,8 @@ typedef float AvsNumber;
 #define AVS_EPSILON 0.00001
 #define AVS_VALUEBOOL(x) (abs(x) > AVS_EPSILON)
 
+extern float vispcmdata[576*4];
+
 #include <libvisual/libvisual.h>
 #include "avs_stack.h"
 #include "avs_blob.h"

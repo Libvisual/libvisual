@@ -4,10 +4,17 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #define AVS_X86_OPCODE_TABLE 1
 #include "avs.h"
 #include "avs_x86_opcode.h"
+
+#define PIDFILE "/tmp/visscript.mem"
+#define MAXFILESIZE 1024*1024
 
 struct emit_argument {
 	unsigned int	index;
@@ -17,30 +24,13 @@ struct emit_argument {
 	unsigned int	sib_base, sib_index, sib_scale;
 };
 
-static inline int resize_buf(X86Context *ctx)
-{
-	if (ctx->length >= ctx->length_max)
-		return -1;
-	
-	ctx->length *= 2;
-	if (ctx->length > ctx->length_max)
-		ctx->length = ctx->length_max;
-
-	ctx->buf = realloc(ctx->buf, ctx->length); /* FIXME: should use visual_ */
-	if (!ctx->buf)
-		return -1;
-
-	return 0;
-}
-
 static inline unsigned char *request_buf(X86Context *ctx, int size)
 {
 	unsigned char *retval;
 	
-	while (ctx->position + size >= ctx->length)
-		if (resize_buf(ctx))
-			return NULL;
-	
+    if(ctx->position + size > MAXFILESIZE)
+        return NULL;
+
 	retval = ctx->buf + ctx->position;
 	ctx->position += size;
 	return retval;
@@ -422,24 +412,49 @@ void x86_emit_opcode(X86Context *ctx, int op, ...)
 
 static int context_dtor(VisObject *object)
 {
+    char file[512];
 	X86Context *ctx = AVS_X86_CONTEXT(object);
 
-	if (ctx->buf)
-		visual_mem_free(ctx->buf);
+    sprintf(file, "%s.%d", PIDFILE, getpid());
+    close(ctx->fd);
+    unlink(file);
 
 	return 0; 
 }
 
-static int context_ctor(X86Context *ctx, int initial_length, int maximum_length)
+static int context_ctor(X86Context *ctx)
 {
+    char file[512];
+
 	memset(ctx, 0, sizeof(X86Context));
-			
-	ctx->buf = visual_mem_malloc0(initial_length);
-	if (!ctx->buf)
-		return VISUAL_ERROR_GENERAL;
+	
+    snprintf(file, sizeof(file), "%s.%d", PIDFILE, getpid());
+
+    if((ctx->fd = open(file, O_RDWR | O_CREAT, (mode_t)0600)) < 0) {
+        perror("open() failed");
+        return -VISUAL_ERROR_GENERAL;
+    }
+
+    if(lseek(ctx->fd, MAXFILESIZE-1, SEEK_SET) < 0) {
+        close(ctx->fd);
+        perror("Unable to expand memory map\n");
+        return -VISUAL_ERROR_GENERAL;
+    }
+
+    if(write(ctx->fd, "", 1) != 1) {
+        close(ctx->fd);
+        perror("Unable to write to file\n");
+        return -VISUAL_ERROR_GENERAL;
+    }
+
+    ctx->buf = mmap(0, MAXFILESIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, ctx->fd, 0);
+
+    if(ctx->buf == MAP_FAILED) {
+        close(ctx->fd);
+        perror("Unable to map memory\n");
+        return -VISUAL_ERROR_GENERAL;
+    }
 		
-	ctx->length = initial_length;
-	ctx->length_max = maximum_length;
 	ctx->position = 0;
 
 	return VISUAL_OK;
@@ -474,26 +489,21 @@ int x86_context_reset(X86Context *ctx)
  * Initialize a X86 context structure
  * 
  * @param ctx X86 context to initialize
- * @param initial_length Initial length of code output buffer.
- * @param maximum_length Maximum length of code output buffer.
  *
  * @returns VISUAL_OK on success, VISUAL_ERROR_GENERAL on failure.
  */
-int x86_context_init(X86Context *ctx, unsigned int initial_length, unsigned int maximum_length)
+int x86_context_init(X86Context *ctx)
 {
 	visual_object_initialize(VISUAL_OBJECT(ctx), FALSE, context_dtor);
-	return context_ctor(ctx, initial_length, maximum_length);
+	return context_ctor(ctx);
 }
 
 /**
  * Create and initialize a X86 context structure
  *
- * @param initial_length Initial length of code output buffer.
- * @param maximum_length Maximum length of code output buffer.
- *
  * @returns VISUAL_OK on success, VISUAL_ERROR_GENERAL on failure.
  */
-X86Context * x86_context_new(unsigned int initial_length, unsigned int maximum_length)
+X86Context * x86_context_new()
 {
 	X86Context *ctx;
 
@@ -504,7 +514,7 @@ X86Context * x86_context_new(unsigned int initial_length, unsigned int maximum_l
 	visual_object_initialize(VISUAL_OBJECT(ctx), TRUE, context_dtor);
 
 	/* Initialize X86 Context Object */
-	if (context_ctor(ctx, initial_length, maximum_length) != VISUAL_OK) {
+	if (context_ctor(ctx) != VISUAL_OK) {
 		visual_object_unref(VISUAL_OBJECT(ctx));
 		return NULL;
 	}

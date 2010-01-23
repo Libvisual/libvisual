@@ -269,6 +269,7 @@ int act_avs_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		priv->needsnego = FALSE;
 	}
 
+
 	/* Clear screen bit is on, clear screen every frame (This is from winamp AVS main section) */
 #if 0
 	if (visual_param_entry_get_integer (visual_param_container_get (LVAVS_PRESET_ELEMENT (priv->lvtree->main)->pcont,
@@ -276,6 +277,7 @@ int act_avs_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		memset ((uint8_t *) visual_video_get_pixels (video), 0, visual_video_get_size (video));
 	}
 #endif
+
 	lvavs_pipeline_run (priv->pipeline, video, audio);
 
 	return 0;

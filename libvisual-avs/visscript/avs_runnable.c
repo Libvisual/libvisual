@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/mman.h>
 
 #include "avs.h"
 
@@ -256,7 +257,6 @@ static int context_dtor(VisObject *object)
 	avs_parser_cleanup(&ctx->parser);
 	avs_compiler_cleanup(&ctx->compiler);
 	avs_il_cleanup(&ctx->assembler);
-
 	return VISUAL_OK;
 }
 

@@ -18,6 +18,7 @@ typedef unsigned int X86OpcodeArgumentOffset;
 
 struct _X86Context {
 	VisObject		object;
+    int                 fp;
 	unsigned char		*buf;
 	unsigned int		length;
 	unsigned int		length_max;
@@ -369,7 +370,7 @@ void x86_emit_opcode(X86Context *ctx, int op, ...);
 unsigned char *x86_argument_offset(X86Context *ctx, unsigned int index);
 unsigned char *x86_next_offset(X86Context *ctx);
 int x86_context_reset(X86Context *ctx);
-int x86_context_init(X86Context *ctx, unsigned int initial_length, unsigned int maximum_length);
-X86Context *x86_context_new(unsigned int initial_length, unsigned int maximum_length);
+int x86_context_init(X86Context *ctx);
+X86Context *x86_context_new();
 
 #endif /* !_AVS_X86_OPCODE_H */

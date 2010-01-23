@@ -353,7 +353,7 @@ IL_CORE_COMPILE(avs_x86_compiler_compile)
 	
 	avs_debug(print("X86: Compiling started..."));
 	/* Initialize X86 Assembler opcode context */
-	x86_context_init(&gd->ctx, 4096, 1024*1024);
+	x86_context_init(&gd->ctx);
 
 	/* Compile function entrance, setup stack frame*/
 	x86_emit1(&gd->ctx, pushl, ebp);
@@ -395,7 +395,7 @@ IL_CORE_INIT(avs_x86_compiler_init)
 	ctx->ctx = gd;
 
 	/* Initialize X86 Assembler opcode context */
-	x86_context_init(&gd->ctx, 4096, 1024*1024);
+	x86_context_init(&gd->ctx);
 	
 	return 0;
 }
