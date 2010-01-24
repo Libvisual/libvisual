@@ -4,12 +4,18 @@
 #define AVS_DEBUG 1
 #ifdef AVS_DEBUG
 	#define avs_log(args...)	visual_log(VISUAL_LOG_DEBUG, args)
-	#define avs_print(fmt, args...)	fprintf(stderr, fmt "\n", ## args)
+	#define avs_print(args...)	message(1, args)
+    #define avs_error(args...)  message(0, args)
 	#define avs_call(args...)	args
 	#define avs_debug(x) avs_##x 
 #else
 	#define avs_debug(x)
 #endif
+
+void message(const int level, const char *format, ...) __attribute__ ((format(__printf__, 2, 3)));
+
+
+extern int verbose_level;
 
 struct _AvsRunnableContext;
 typedef struct _AvsRunnableContext AvsRunnableContext;

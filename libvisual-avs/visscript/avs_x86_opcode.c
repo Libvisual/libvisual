@@ -431,19 +431,19 @@ static int context_ctor(X86Context *ctx)
     snprintf(file, sizeof(file), "%s.%d", PIDFILE, getpid());
 
     if((ctx->fd = open(file, O_RDWR | O_CREAT, (mode_t)0600)) < 0) {
-        perror("open() failed");
+        avs_debug(error("open() failed"));
         return -VISUAL_ERROR_GENERAL;
     }
 
     if(lseek(ctx->fd, MAXFILESIZE-1, SEEK_SET) < 0) {
         close(ctx->fd);
-        perror("Unable to expand memory map\n");
+        avs_debug(error("Unable to expand file"));
         return -VISUAL_ERROR_GENERAL;
     }
 
     if(write(ctx->fd, "", 1) != 1) {
         close(ctx->fd);
-        perror("Unable to write to file\n");
+        avs_debug(error("Unable to write to file"));
         return -VISUAL_ERROR_GENERAL;
     }
 
@@ -451,7 +451,7 @@ static int context_ctor(X86Context *ctx)
 
     if(ctx->buf == MAP_FAILED) {
         close(ctx->fd);
-        perror("Unable to map memory\n");
+        avs_debug(error("Unable to map memory"));
         return -VISUAL_ERROR_GENERAL;
     }
 		
