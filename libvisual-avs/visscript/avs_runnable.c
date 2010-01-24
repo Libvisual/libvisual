@@ -264,7 +264,8 @@ static int context_ctor(AvsRunnableContext *ctx)
 {
     /* Set debug verboseness */
     char *verbose = getenv("VERBOSELVL");
-    verbose_level = atoi(verbose);
+    if(verbose)
+        verbose_level = atoi(verbose);
 
 	/* Initialize avs system contexts */
 	avs_il_core_context_init(&ctx->core);

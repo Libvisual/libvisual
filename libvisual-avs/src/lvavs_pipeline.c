@@ -236,7 +236,6 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 				/* FIXME fix libvisual type lookup and use the functions here */
 				if (strcmp (ref->info->type, VISUAL_PLUGIN_TYPE_ACTOR) == 0) {
 
-					printf ("element in\n");
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR);
 					element->data.actor = visual_actor_new (pelem->element_name);
 
@@ -249,7 +248,9 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM);
 					element->data.transform = visual_transform_new (pelem->element_name);
-				}
+				} else {
+                    printf("uknown type '%s' '%s'\n", ref->info->type, ref->info->name);
+                }
 
 				if (pelem->pcont != NULL) {
 					element->params = visual_param_container_new ();

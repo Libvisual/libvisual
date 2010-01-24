@@ -150,51 +150,6 @@ int lv_superscope_init (VisPluginData *plugin)
 
 	visual_param_container_add_many_proxy (paramcontainer, params);
 
-    VisString string;
-
-    visual_string_init(&string);
-
-    visual_string_set(&string, "init");
-
-    VisParamEntry *param = visual_param_container_get(paramcontainer, &string);
-    visual_param_entry_set_string(param, "n=8;g=23;ig=1/(g-1);mhx=getosc(.41,0,0)*2;mfx=sin((getosc(0.41,0,0)+getosc(0.78,0,0))*5);mfy=sin((getosc(0.71,0,0)+getosc(.13,0,0))*5);d=.4;pi=acos(-1); \
-    md=bnot(md);d=-d;rfz=rfz+sin(getosc(.41,0,0)+getosc(.74,0,0)+getosc(.55,0,0));mfx=sin((getosc(0.41,0,0)+getosc(0.78,0,0))*5)*2.2;mfy=sin((getosc(0.71,0,0)+getosc(.13,0,0))*5)*1.2-.25; \
-    mgx=mfx;mgy=mfy;mhx=mfx;mhy=mfy;");
-
-    visual_string_set(&string, "frame");
-    param = visual_param_container_get(paramcontainer, &string);
-    visual_param_entry_set_string(param, "ti=ti*.8;ph=0; \
-    gx=3;gy=2;t=t+d;tm=gettime(0); \
-    dec=pow(0.95,30*(tm-lasttime)); \
-    lasttime=tm; \
-    rgz=rfz+(rgz-rfz)*dec; \
-    rhz=rgz+(rhz-rgz)*dec; \
-    cr=cos(rhz);sr=sin(rhz); \
-    mgx=mfx+(mgx-mfx)*dec; \
-    mgy=mfy+(mgy-mfy)*dec; \
-    mhx=mgx+(mhx-mgx)*dec; \
-    mhy=mgy+(mhy-mgy)*dec; \
-    jk=jk+.1;af=w/h; \
-    £XXXXXXXXXXXXXXXXXXXX;px=.5;py=.5;x=px*px-py*py+sin(px)+mhx;y=2*px*py+mhy;px=x;py=y;x=px*px-py*py+sin(px)+mhx;y=2*px*py-cos(py)*.5+mhy;px=x;py=y;x=px*px-py*py+sin(px);y=2*px*py;esx=x;esy=y;px=.3;py=.5;x=px*px-py*py+sin(px)+mhx;y=2*px*py+mhy;px=x;py=y;x=px*px-py*py+sin(px)+mhx;y=2*px*py-cos(py)*.5+mhy;px=x;py=y;x=px*px-py*py+sin(px);y=2*px*py;esx=esx+x;esy=esy+y;px=.5;py=.14;x=px*px-py*py+sin(px)+mhx;y=2*px*py+mhy;px=x;py=y;x=px*px-py*py+sin(px)+mhx;y=2*px*py-cos(py)*.5+mhy;px=x;py=y;x=px*px-py*py+sin(px);y=2*px*py;esx=esx+x;esy=esy+y;px=.3;py=.14;x=px*px-py*py+sin(px)+mhx;y=2*px*py+mhy;px=x;py=y;x=px*px-py*py+sin(px)+mhx;y=2*px*py-cos(py)*.5+mhy;px=x;py=y;x=px*px-py*py+sin(px);y=2*px*py;esx=(esx+x)*.0125;esy=(esy+y)*.0125;");
-
-    visual_string_set(&string, "beat");
-    param = visual_param_container_get(paramcontainer, &string);
-    visual_param_entry_set_string(param, "md=bnot(md);d=-d;rfz=rfz+sin(getosc(.41,0,0)+getosc(.74,0,0)+getosc(.55,0,0));mfx=sin((getosc(0.41,0,0)+getosc(0.78,0,0))*5)*2.2;mfy=sin((getosc(0.71,0,0)+getosc(.13,0,0))*5)*1.2-.25;ti=1;");
-
-    visual_string_set(&string, "point");
-    param = visual_param_container_get(paramcontainer, &string);
-    visual_param_entry_set_string(param, "px=(gy*ig*2-1)*.8;py=(gx*ig*1.2-.2)*.8; \
-    x=px*px-py*py+sin(px)+mhx;y=2*px*py+mhy;px=x;py=y; \
-    x=px*px-py*py+sin(px)+mhx;y=2*px*py-cos(py)*.5+mhy;px=x;py=y; \
-    x=px*px-py*py+sin(px);py=.3*px*py-esy;px=x*.15-esx; \
-    x=px*cr-py*sr;y=px*sr+py*cr; \
-    px=(ti*.05+.1)*4; \
-    i=equal(ph,0)+if(equal(ph,1),px,0)-equal(ph,4)-if(equal(ph,5),px,0); \
-    px=equal(ph,2)+if(equal(ph,3),px,0)-equal(ph,6)-if(equal(ph,7),px,0); \
-    x=x+i*.23;y=y+px*af*.23; \
-    red=if(bnot(equal(ph,2)+equal(ph,4)+equal(ph,6)),sin(jk)*.125+.875,0);green=red;blue=red; \
-    ph=ph+1;");
-
 	priv = visual_mem_new0 (SuperScopePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
@@ -377,6 +332,8 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	l = priv->n;
 	if (l > 128*1024)
 		l = 128*1024;
+
+    memset((uint8_t *) visual_video_get_pixels(video), 0, visual_video_get_size(video));
 
 	priv->drawmode = 1.0; /* 0 = dots, 1 = lines */
 	for (a=0; a < l; a++, lx = x, ly = y) {

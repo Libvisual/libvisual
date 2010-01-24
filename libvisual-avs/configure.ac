@@ -201,6 +201,21 @@ else
 fi
 
 
+# The AVS elements
+AC_ARG_ENABLE([avs_dmovement],
+        AC_HELP_STRING([--disable-dmovement],
+            [Do not build the AVS dynamic movement plugin @<:@default=enabled@:>@]),
+        [avs_dmovement=$enableval],
+        [avs_dmovement=yes])
+AC_MSG_CHECKING([Whether to build AVS dynamic movement plugin])
+if test x$avs_dmovement = xyes; then
+    AC_MSG_RESULT([yes])
+    build_trans="$build_trans dmovement"
+    AC_SUBST([AVS_DMOVEMENT], ['transform_avs_dmovement.la'])
+else
+    AC_MSG_RESULT([no])
+fi
+
 #
 # Build paramaters
 #
@@ -241,12 +256,12 @@ AC_ARG_ENABLE([extra-optimization],
               [extra_opt=$enableval],
               [extra_opt=no])
 AC_MSG_CHECKING([wheter to enable extra optimizations])
-if test x$extra_opt = xyes; then
+if test "$extra_opt" = yes; then
   AC_MSG_RESULT([yes])
   OPT_CFLAGS="-O3 -fexpensive-optimizations"
 else
   AC_MSG_RESULT([no])
-  if test x$debug = xyes; then
+  if test "$debug" = yes; then
 	OPT_CFLAGS="-O0"
   else
 	OPT_CFLAGS=""
@@ -256,6 +271,19 @@ AC_SUBST(OPT_CFLAGS)
 
 AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
 AC_SUBST(CXXFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS}")
+
+AC_ARG_ENABLE([mmx],
+            AC_HELP_STRING([--enable-mmx],
+                        [Enable mmx support @<:@default=disabled@:>@]),
+            [with_mmx=$enableval],
+            [with_mmx=no])
+AC_MSG_CHECKING([Whether to enable mmx support])
+if test "$with_mmx" = yes; then
+    AC_MSG_RESULT([yes])
+else
+    AC_DEFINE(NO_MMX, 1, "User doesn't want mmx support")
+    AC_MSG_RESULT([no])
+fi
 
 AC_ARG_WITH([plugins_base_dir],
             AC_HELP_STRING([--with-plugins_base_dir="dir"],
@@ -300,6 +328,7 @@ AC_CONFIG_FILES([
 	plugins/transform/movement/Makefile
 	plugins/transform/invert/Makefile
 	plugins/transform/onetone/Makefile
+    plugins/transform/dmovement/Makefile
 ])
 
 
@@ -323,5 +352,10 @@ Build options:
 install path                          : $plugins_base_dir
 source code location:                 : ${srcdir}
 compiler:                             : ${CC}
+
+Other options:
+Debug support:                        : ${debug}
+Extra optimization                    : ${extra_opt}
+MMX support                           : ${with_mmx}
 "
 

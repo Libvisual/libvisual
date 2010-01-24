@@ -72,7 +72,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static const VisPluginInfo info[] = {{
-		.type = VISUAL_PLUGIN_TYPE_ACTOR".[avs]",
+		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "avs_ring",
 		.name = "Libvisual AVS Render: ring element",
@@ -100,11 +100,11 @@ int lv_ring_init (VisPluginData *plugin)
 	int i;
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("source", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("place", 2),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("source", 1, VISUAL_PARAM_LIMIT_NONE, ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("place", 2, VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_ENTRY ("palette"),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("size", 0x10),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("type", 0),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("size", 0x10, VISUAL_PARAM_LIMIT_NONE, ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("type", 0, VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -121,7 +121,7 @@ int lv_ring_init (VisPluginData *plugin)
 
 	visual_param_container_add_many_proxy (paramcontainer, params);
 
-	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, "palette"), &priv->pal);
+	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, VIS_BSTR("palette")), &priv->pal);
 
 	visual_palette_free_colors (&priv->pal);
 

@@ -1,3 +1,3 @@
 
-SUBDIRS = superscope 
+SUBDIRS = superscope ring
 
