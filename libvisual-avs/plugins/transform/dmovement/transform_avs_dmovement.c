@@ -38,8 +38,11 @@
 
 #include "avs_common.h"
 #include "avs.h"
+#include "avs_inlines.h"
 
 AvsNumber PI = M_PI;
+
+typedef enum trans_runnable TransRunnable;
 
 enum trans_runnable {
     TRANS_RUNNABLE_INIT,
@@ -49,6 +52,8 @@ enum trans_runnable {
 };
 
 typedef struct {
+    Generic obj;
+
     AvsRunnableContext *ctx;
     AvsRunnableVariableManager *vm;
     AvsRunnable *runnable[4];
@@ -58,14 +63,19 @@ typedef struct {
 
     char *init, *pixel, *frame, *beat;
 
+    uint32_t *tab;
+    uint32_t *wmul;
+
     uint32_t last_width, last_height, last_pitch;
     uint32_t last_xres, last_yres, xres, yres;
     uint32_t buffern;
     uint32_t subpixel, rectcoords, blend, wrap, nomove;
+    uint32_t preset;
 
     uint32_t __subpixel, __rectcoords, __blend, __wrap, __nomove;
     uint32_t w_adj, h_adj;
     uint32_t XRES, YRES;
+    uint32_t width, height;
     uint8_t needs_init;
 } DMovementPrivate;
 
@@ -100,10 +110,8 @@ int lv_dmovement_events (VisPluginData *plugin, VisEventQueue *events);
 int lv_dmovement_palette (VisPluginData *plugin, VisPalette *pal, VisAudio *audio);
 int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-static void trans_generate_table(DMovementPrivate *priv, char *effect, int rectangular, int wrap);
-static void trans_generate_blend_table(DMovementPrivate *priv);
-static void trans_initialize(DMovementPrivate *priv, int width, int height, char *effect);
-static void trans_render(DMovementPrivate *priv, uint32_t *fbin, uint32_t *fbout);
+static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, uint32_t *fbout);
+static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, uint32_t *fbout);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -139,7 +147,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int trans_load_runnable(DMovementPrivate *priv, ScopeRunnable runnable, char *buf)
+int trans_load_runnable(DMovementPrivate *priv, TransRunnable runnable, char *buf)
 {
     AvsRunnable *obj = avs_runnable_new(priv->ctx);
     avs_runnable_set_variable_manager(obj, priv->vm);
@@ -148,7 +156,7 @@ int trans_load_runnable(DMovementPrivate *priv, ScopeRunnable runnable, char *bu
     return 0;
 }
 
-int trans_run_runnable(DMovementPrivate *priv, ScopeRunnable runnable)
+int trans_run_runnable(DMovementPrivate *priv, TransRunnable runnable)
 {
     avs_runnable_execute(priv->runnable[runnable]);
     return 0;
@@ -183,7 +191,7 @@ int lv_dmovement_init (VisPluginData *plugin)
 	visual_param_container_add_many_proxy (paramcontainer, params);
 
     priv->ctx = avs_runnable_context_new();
-    priv->vm = avs_runnable_varialbe_manager_new();
+    priv->vm = avs_runnable_variable_manager_new();
 
     avs_runnable_variable_bind(priv->vm, "d", &priv->var_d);
     avs_runnable_variable_bind(priv->vm, "b", &priv->var_b);
@@ -215,27 +223,27 @@ void load_preset(VisPluginData *plugin)
 {
 	DMovementPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-    VisParam *param;
+    VisParamEntry *param;
     
-    param = visual_param_container_get(parmacontainer, VIS_BSTR("rectcoords"));
+    param = visual_param_container_get(paramcontainer, "rectcoords");
     visual_param_entry_set_integer(param, presets[priv->preset].rect);
 
-    param = visual_param_container_get(paramcontainer, VIS_BSTR("wrap"));
+    param = visual_param_container_get(paramcontainer, "wrap");
     visual_param_entry_set_integer(param, presets[priv->preset].wrap);
 
-    param = visual_param_container_get(paramcontainer, VIS_BSTR("init"));
+    param = visual_param_container_get(paramcontainer, "init");
     visual_param_entry_set_string(param, presets[priv->preset].init);
 
-    param = visual_param_container_get(paramcontainer, VIS_BSTR("pixel"));
+    param = visual_param_container_get(paramcontainer, "pixel");
     visual_param_entry_set_string(param, presets[priv->preset].pixel);
 
-    param = visual_param_container_get(paramcontainer, VIS_BSTR("frame"));
+    param = visual_param_container_get(paramcontainer, "frame");
     visual_param_entry_set_string(param, presets[priv->preset].frame);
 
-    param = visual_param_container_get(paramcontainer, VIS_BSTR("beat"));
+    param = visual_param_container_get(paramcontainer, "beat");
     visual_param_entry_set_string(param, presets[priv->preset].beat);
 
-    param = visual_param_container_get(paramcontainer, VIS_BSTR("preset"));
+    param = visual_param_container_get(paramcontainer, "preset");
     visual_param_entry_set_integer(param, -1);
 }
 
@@ -249,44 +257,44 @@ int lv_dmovement_events (VisPluginData *plugin, VisEventQueue *events)
 		switch (ev.type) {
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
-			    if (visual_param_entry_is (param, VIS_BSTR ("init"))) {
+			    if (visual_param_entry_is (param, "init")) {
                     if(priv->init)
                         visual_mem_free(priv->init);
 					priv->init = strdup(visual_param_entry_get_string (param));
-                    trans_load_runnable(priv, TRANS_RUNNABLE_INIT);
+                    trans_load_runnable(priv, TRANS_RUNNABLE_INIT, priv->init);
                     priv->needs_init = TRUE;
-				} else if (visual_param_entry_is (param, VIS_BSTR ("frame"))) {
+				} else if (visual_param_entry_is (param, "frame")) {
                     if(priv->frame)
                         visual_mem_free(priv->frame);
 					priv->frame = strdup(visual_param_entry_get_string (param));
-                    trans_load_runnable(priv, TRANS_RUNNABLE_FRAME);
-				} else if (visual_param_entry_is (param, VIS_BSTR ("beat"))) {
+                    trans_load_runnable(priv, TRANS_RUNNABLE_FRAME, priv->frame);
+				} else if (visual_param_entry_is (param, "beat")) {
                     if(priv->beat)
                         visual_mem_free(priv->beat);
 					priv->beat = strdup(visual_param_entry_get_string (param));
-                    trans_load_runnable(priv, TRANS_RUNNABLE_BEAT);
-				} else if (visual_param_entry_is (param, VIS_BSTR ("pixel"))) {
+                    trans_load_runnable(priv, TRANS_RUNNABLE_BEAT, priv->beat);
+				} else if (visual_param_entry_is (param, "pixel")) {
                     if(priv->pixel)
                         visual_mem_free(priv->pixel);
 					priv->pixel = strdup(visual_param_entry_get_string (param));
-                    trans_load_runnable(priv, TRANS_RUNNABLE_PIXEL);
-				} else if (visual_param_entry_is (param, VIS_BSTR ("preset")))
+                    trans_load_runnable(priv, TRANS_RUNNABLE_PIXEL, priv->pixel);
+				} else if (visual_param_entry_is (param, "preset"))
 					priv->preset = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("subpixel")))
+				else if (visual_param_entry_is (param, "subpixel"))
                     priv->subpixel = visual_param_entry_get_integer(param);
-                else if (visual_param_entry_is (param, VIS_BSTR ("rectcoords")))
+                else if (visual_param_entry_is (param, "rectcoords"))
                     priv->rectcoords = visual_param_entry_get_integer(param);
-                else if (visual_param_entry_is (param, VIS_BSTR ("xres")))
+                else if (visual_param_entry_is (param, "xres"))
                     priv->xres = visual_param_entry_get_integer(param);
-                else if (visual_param_entry_is (param, VIS_BSTR ("yres")))
+                else if (visual_param_entry_is (param, "yres"))
                     priv->yres = visual_param_entry_get_integer(param);
-                else if (visual_param_entry_is (param, VIS_BSTR ("blend")))
+                else if (visual_param_entry_is (param, "blend"))
                     priv->blend = visual_param_entry_get_integer(param);
-                else if (visual_param_entry_is (param, VIS_BSTR ("wrap")))
+                else if (visual_param_entry_is (param, "wrap"))
                     priv->wrap = visual_param_entry_get_integer(param);
-                else if (visual_param_entry_is (param, VIS_BSTR ("buffern")))
+                else if (visual_param_entry_is (param, "buffern"))
                     priv->buffern = visual_param_entry_get_integer(param);
-                else if (visual_param_entry_is (param, VIS_BSTR ("nomove")))
+                else if (visual_param_entry_is (param, "nomove"))
                     priv->nomove = visual_param_entry_get_integer(param);
 
 				break;
@@ -313,19 +321,10 @@ int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	uint8_t *pixels = visual_video_get_pixels (video);
     uint8_t *vidbuf, vidoutbuf;
     int i;
-    VisBuffer buffer;
-    uint8_t isBeat = FALSE;
-
-    if(visual_audio_get_spectrum (audio, &buffer, 2, VISUAL_AUDIO_CHANNEL_CATEGORY_REAR, 0) == VISUAL_OK) 
-    {
-        float *data = visual_buffer_get_data(&buffer); 
-        int bass = (data[0] + data[1]) * 20;
-        if(base >= 9)
-            isBeat = TRUE;
-    }
+    uint8_t isBeat = visual_audio_is_beat(audio);
 
     if(priv->last_width != video->width || priv->last_height != video->height || priv->last_pitch != video->pitch) {
-        trans_initalize(priv, video->width, video_height);
+        //trans_initalize(priv, video->width, video->height);
 
         if(priv->swapbuf != NULL)
             visual_mem_free(priv->swapbuf);
@@ -359,6 +358,7 @@ int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
         visual_mem_copy( pixels, priv->renderbuf + (i * video->width * video->bpp), video->width * video->bpp);
         pixels += video->pitch;
     }
+    return 0;
 }
 
 static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, uint32_t *fbout)
@@ -372,11 +372,12 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
     priv->w_adj = (priv->width - 2)<<16;
     priv->h_adj = (priv->height - 2)<<16;
     
-    if(priv->lastxres != priv->xres || priv->lastyres != priv->yres || 
+    if(priv->last_xres != priv->xres || priv->last_yres != priv->yres || 
             priv->last_width != priv->width || priv->last_height != priv->height || 
             !priv->tab || !priv->wmul ) {
-        priv->lastxres = priv->xres;
-        priv->lastyres = priv->yres;
+        int y;
+        priv->last_xres = priv->xres;
+        priv->last_yres = priv->yres;
         priv->last_width = priv->width;
         priv->last_height = priv->height;
 
@@ -400,7 +401,7 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
     }
 
     if(isBeat&0x80000000)
-        return 0;
+        return;
 
     priv->var_w = (AvsNumber)priv->width;
     priv->var_h = (AvsNumber)priv->height;
@@ -418,7 +419,8 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
         trans_run_runnable(priv, TRANS_RUNNABLE_BEAT);
 
     {
-        int x, y, *tabptr=priv->tab;
+        int32_t x, y;
+        uint32_t *tabptr=priv->tab;
 
         double xsc = 2.0/priv->width, ysc=2.0/priv->height;
         double dw2 = ((double)priv->width*32768.0);
@@ -452,9 +454,9 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
                 priv->var_x = xd*xsc;
                 priv->var_y = yd*ysc;
                 priv->var_d = sqrt(xd*xd + yd*yd)*divmax_d;
-                var_r = atan2(yd, xd) + PI*0.5;
+                priv->var_r = atan2(yd, xd) + PI*0.5;
 
-                trans_run_runnable(priv, TRANS_RUNNABLE_POINT);
+                trans_run_runnable(priv, TRANS_RUNNABLE_PIXEL);
 
                 if(!priv->__rectcoords)
                 {
@@ -493,11 +495,10 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
 
 static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, uint32_t *fbout)
 {
-    int ypos = 0;
     int max_threads = 1;
     int this_thread = 0;
 
-    int start_l = (this_thread * h) / max_threads;
+    int start_l = (this_thread * priv->height) / max_threads;
     int end_l;
     int ypos = 0;
 
@@ -506,20 +507,20 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
 
     int outh = end_l-start_l;
 
-    int *fbin = fb; // !buffern ? fb | (int *)getGlobalBuffer(w, h, buffern-1, 0);
+    uint32_t *fbin = fb; // !buffern ? fb | (int *)getGlobalBuffer(w, h, buffern-1, 0);
 {}
     if(outh<1) return;
 
     {
-        int *intertab = priv->tab + priv->xres * priv->yres * 3 + this_thread * (priv->xres * 6 + 6);
-        int *rdtab = priv->tab;
+        uint32_t *interptab = priv->tab + priv->xres * priv->yres * 3 + this_thread * (priv->xres * 6 + 6);
+        uint32_t *rdtab = priv->tab;
         unsigned int *in = (unsigned int *)fbin;
         unsigned int *blendin = (unsigned int *)fb;
         unsigned int *out = (unsigned int *)fbout;
         int yseek = 1;
         int xc_dpos, yc_pos=0, yc_dpos;
         xc_dpos = (priv->width<<16)/(priv->xres-1);
-        yc_dpos = (priv<height<<16)/(priv->yres-1);
+        yc_dpos = (priv->height<<16)/(priv->yres-1);
         int lypos = 0;
         int yl = end_l;
         while(yl>0)
@@ -535,14 +536,14 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
             }
             lypos = yc_pos >> 16;
             int l = priv->xres;
-            int *stab = interptab;
+            uint32_t *stab = interptab;
             int xr3=priv->xres * 3;
             while(l--)
             {
                 int tmp1, tmp2, tmp3;
                 tmp1 = rdtab[0];
                 tmp2 = rdtab[1];
-                tmp3 = rdtab[2]
+                tmp3 = rdtab[2];
                 stab[0] = tmp1;
                 stab[1] = tmp2;
                 stab[2] = (rdtab[xr3]-tmp1)/yseek;
@@ -563,12 +564,12 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
                 int d_a;
                 int ap;
                 int seek;
-                int *seektab = interptab;
+                uint32_t *seektab = interptab;
                 int xp,yp;
                 int l = priv->width;
                 int lpos = 0;
                 int xc_pos = 0;
-                ypos++
+                ypos++;
                 {
                     while(l>0)
                     {
@@ -576,24 +577,26 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
                         seek = (xc_pos>>16)-lpos;
                         if(!seek)
                         {
-                            #ifdef HAS_MMX;
+                            #ifdef HAS_MMX
                                 //__asm emms;
                             #endif
                             return;
                         }
                         lpos = xc_pos >> 16;
                         xp = seektab[0];
-                        yp = seektab[1]
+                        yp = seektab[1];
                         ap = seektab[4];
                         d_a = (seektab[10]-ap)/seek;
                         d_x = (seektab[6]-xp)/seek;
                         d_y = (seektab[7]-yp)/seek;
                         seektab[0] += seektab[2];
                         seektab[1] += seektab[3];
-                        seektab[4] += seektab[5]
+                        seektab[4] += seektab[5];
                         seektab += 6;
 
-                        if(seek > l) seek = l;
+                        if(seek > l) 
+                            seek = l;
+
                         l -= seek;
                         if(seek > 0 && ypos <= start_l)
                         {
@@ -610,36 +613,36 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
 #define NORMAL_LOOP(Z) while ((seek--)) { Z; yp+=d_x; yp+=d_y; }
 
 #define WRAPPING_LOOPS(Z) \
-    NORMAL_LOOP(if (xp < 0) xp += w_adj;  \
-                else if (xp >= w_adj) xp-=w_adj;  \
-                if (yp < 0) yp += h_adj;  \
-                else if (yp >= h_adj) yp-=h_adj;  \
+    NORMAL_LOOP(if (xp < 0) xp += priv->w_adj;  \
+                else if (xp >= priv->w_adj) xp-=priv->w_adj;  \
+                if (yp < 0) yp += priv->h_adj;  \
+                else if (yp >= priv->h_adj) yp-=priv->h_adj;  \
                 Z)
 
 #define CLAMPED_LOOPS(Z) \
     NORMAL_LOOP(if (xp < 0) xp=0; \
-                else if (xp >= w_adj) xp=w_adj-1; \
+                else if (xp >= priv->w_adj) xp=priv->w_adj-1; \
                 if (yp < 0) yp=0; \
-                else if (yp >= h_adj) yp=h_adj-1; \
+                else if (yp >= priv->h_adj) yp=priv->h_adj-1; \
                 Z)
 
 #define LOOPS(DO)  \
-                if (__blend && __subpixel) DO(CHECK *out++=BLEND_ADJ(BLEND4_16(in+(xp>>16)+(m_wmul[yp>>16]),w,xp,yp),*blendin++,ap>>16); ap+=d_a) \
-                else if (__blend) DO(CHECK *out++=BLEND_ADJ(in[(xp>>16)+(m_wmul[yp>>16])],*blendin++,ap>>16); ap+=d_a) \
-                else if (__subpixel) DO(CHECK *out++=BLEND4_16(in+(xp>>16)+(m_wmul[yp>>16]),w,xp,yp)) \
-                else DO(CHECK *out++=in[(xp>>16)+(m_wmul[yp>>16])])
+                if (priv->__blend && priv->__subpixel) DO(CHECK *out++=BLEND_ADJ(&priv->obj, BLEND4_16(&priv->obj, in+(xp>>16)+(priv->wmul[yp>>16]),priv->width,xp,yp),*blendin++,ap>>16); ap+=d_a) \
+                else if (priv->__blend) DO(CHECK *out++=BLEND_ADJ(&priv->obj, in[(xp>>16)+(priv->wmul[yp>>16])],*blendin++,ap>>16); ap+=d_a) \
+                else if (priv->__subpixel) DO(CHECK *out++=BLEND4_16(&priv->obj, in+(xp>>16)+(priv->wmul[yp>>16]),priv->width,xp,yp)) \
+                else DO(CHECK *out++=in[(xp>>16)+(priv->wmul[yp>>16])])
 
                             if(priv->__nomove)
                             {
-                                if(fbin != framebuffer) while(seek--)
+                                if(fbin != fb) while(seek--)
                                 {
-                                    *blendin=BLEND_ADJ(*in++, *blendin, ap>>16);
+                                    *blendin=BLEND_ADJ(&priv->obj, *in++, *blendin, ap>>16);
                                     ap+=d_a;
                                     blendin++;
                                 }
                                 else while( seek--)
                                 {
-                                    *blendin=BLEND_ADJ(0, *blendin, ap>>16);
+                                    *blendin=BLEND_ADJ(&priv->obj, 0, *blendin, ap>>16);
                                     ap+=d_a;
                                     blendin++;
                                 }
@@ -647,24 +650,24 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
                             else if (!priv->__wrap)
                             {
                                 if(xp < 0) xp = 0;
-                                else if (xp >= w_adj) xp=w_adj-1;
+                                else if (xp >= priv->w_adj) xp=priv->w_adj-1;
                                 if(yp < 0) yp = 0;
-                                else if (yp >= h_adj) yp=h_adj-1;
+                                else if (yp >= priv->h_adj) yp=priv->h_adj-1;
 
                                 LOOPS(CLAMPED_LOOPS)
                             }
                             else
                             {
-                                xp %= w_adj;
-                                yp %= h_adj;
-                                if(xp < 0) xp+=w_adj;
-                                if(yp < 0) yp+=h_adj;
+                                xp %= priv->w_adj;
+                                yp %= priv->h_adj;
+                                if(xp < 0) xp+=priv->w_adj;
+                                if(yp < 0) yp+=priv->h_adj;
 
-                                if(d_x <= -w_adj) d_x = -w_adj + 1;
-                                else if (d_x >= w_adj) d_x = w_adj - 1;
+                                if(d_x <= -priv->w_adj) d_x = -priv->w_adj + 1;
+                                else if (d_x >= priv->w_adj) d_x = priv->w_adj - 1;
 
-                                if(d_y <= -h_adj) d_y = -h_adj + 1;
-                                else if (d_y >= h_adj) d_y = h_adj - 1;
+                                if(d_y <= -priv->h_adj) d_y = -priv->h_adj + 1;
+                                else if (d_y >= priv->h_adj) d_y = priv->h_adj - 1;
 
                                 LOOPS(WRAPPING_LOOPS)
                             }

@@ -120,7 +120,7 @@ int lv_invert_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, VIS_BSTR ("enabled")))
+				if (visual_param_entry_is (param, "enabled"))
 					priv->enabled = visual_param_entry_get_integer (param);
 
 				break;
@@ -159,5 +159,7 @@ int lv_invert_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 		buf += diff;
 	}
+
+    return 0;
 }
 

@@ -53,6 +53,7 @@ typedef int (*AvsRunnableExecuteCall)(AvsRunnable *);
 
 struct _AvsRunnable {
 	VisObject			object;
+    VisAudio            *audio;
 	AvsBlobManager			bm;
 	AvsRunnableContext		*ctx;
 	AvsRunnableVariableManager	*variable_manager;

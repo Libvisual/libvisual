@@ -100,7 +100,7 @@ in_word_set (str, len)
 #line 13 "avs_functions.perf"
       {"atan", AVS_BUILTIN_FUNCTION_ATAN},
       {(char*)0,-1}, {(char*)0,-1},
-#line 39 "avs_functions.perf"
+#line 42 "avs_functions.perf"
       {"gettime", AVS_BUILTIN_FUNCTION_GETTIME},
       {(char*)0,-1},
 #line 11 "avs_functions.perf"
@@ -123,9 +123,9 @@ in_word_set (str, len)
       {"bnot", AVS_BUILTIN_FUNCTION_BNOT},
 #line 33 "avs_functions.perf"
       {"above", AVS_BUILTIN_FUNCTION_ABOVE},
-#line 37 "avs_functions.perf"
+#line 40 "avs_functions.perf"
       {"getosc", AVS_BUILTIN_FUNCTION_GETOSC},
-#line 38 "avs_functions.perf"
+#line 41 "avs_functions.perf"
       {"getspec", AVS_BUILTIN_FUNCTION_GETSPEC},
 #line 7 "avs_functions.perf"
       {"abs", AVS_BUILTIN_FUNCTION_ABS},
@@ -159,18 +159,18 @@ in_word_set (str, len)
       {"sqr", AVS_BUILTIN_FUNCTION_SQR},
 #line 29 "avs_functions.perf"
       {"band", AVS_BUILTIN_FUNCTION_BAND},
-#line 41 "avs_functions.perf"
+#line 38 "avs_functions.perf"
       {"exec3", AVS_BUILTIN_FUNCTION_EXEC3},
       {(char*)0,-1}, {(char*)0,-1},
 #line 18 "avs_functions.perf"
       {"pow", AVS_BUILTIN_FUNCTION_POW},
       {(char*)0,-1},
-#line 40 "avs_functions.perf"
+#line 37 "avs_functions.perf"
       {"exec2", AVS_BUILTIN_FUNCTION_EXEC2},
       {(char*)0,-1}, {(char*)0,-1},
 #line 19 "avs_functions.perf"
       {"exp", AVS_BUILTIN_FUNCTION_EXP},
-#line 42 "avs_functions.perf"
+#line 39 "avs_functions.perf"
       {"loop", AVS_BUILTIN_FUNCTION_LOOP},
 #line 21 "avs_functions.perf"
       {"log10", AVS_BUILTIN_FUNCTION_LOG10},

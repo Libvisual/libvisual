@@ -21,7 +21,7 @@ int main (int argc, char *argv[])
 
     pcont = visual_param_container_new();
 
-    VisParamEntry *param = visual_param_entry_new(VIS_BSTR("TEST"));
+    VisParamEntry *param = visual_param_entry_new("TEST");
 
     printf("param1: %p\n", param);
 

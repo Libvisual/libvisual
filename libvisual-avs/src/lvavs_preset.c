@@ -298,10 +298,10 @@ LVAVSPresetElement *wavs_convert_ring_new (AVSElement *avselem)
 	/* Copy all the matching */
 	visual_param_container_copy_match (pcont, pcontw);
 
-	sourceplace = visual_param_entry_get_integer (visual_param_container_get (pcontw, VIS_BSTR ("source and place")));
+	sourceplace = visual_param_entry_get_integer (visual_param_container_get (pcontw, "source and place"));
 
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("place")), sourceplace >> 4);
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("source")), (sourceplace & 0x0f) / 4);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "place"), sourceplace >> 4);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "source"), (sourceplace & 0x0f) / 4);
 
 	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_ring");
 	element->pcont = pcont;
@@ -330,7 +330,7 @@ LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem)
 	/* Copy all the matching */
 	visual_param_container_copy_match (pcont, pcontw);
 
-	shift = visual_param_entry_get_integer (visual_param_container_get (pcontw, VIS_BSTR ("shift")));
+	shift = visual_param_entry_get_integer (visual_param_container_get (pcontw, "shift"));
 
 	/* Yes, the RGB and BRG entries have the same value here, I think it's a bug in winamp AVS */
 	switch (shift & 0xff) {
@@ -367,7 +367,7 @@ LVAVSPresetElement *wavs_convert_channelshift_new (AVSElement *avselem)
 
 	}
 
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("shift")), shift);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "shift"), shift);
 
 	element = lvavs_preset_element_new (LVAVS_PRESET_ELEMENT_TYPE_PLUGIN, "avs_channelshift");
 	element->pcont = pcont;

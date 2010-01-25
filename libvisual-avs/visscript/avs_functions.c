@@ -9,16 +9,13 @@
 #include "avs.h"
 #include "avs_functions.perf.h"
 
-float vispcmdata[576*4];
-
 #define AVS_BUILTIN_FUNCTION(x, expr) \
 	AVS_RUNNABLE_FUNCTION(avs_builtin_function_##x) { *retval = (expr); }
 
-float _getosc(float band, float width, float channel);
-float _getspec(float band, float width, float channel);
-float _gettime(float start);
+AvsNumber _getosc(VisAudio *audio, AvsNumber band, AvsNumber width, AvsNumber channel);
+AvsNumber _getspec(VisAudio *audio, AvsNumber band, AvsNumber width, AvsNumber channel);
+AvsNumber _gettime(AvsNumber start);
 
-AVS_BUILTIN_FUNCTION(if,    AVS_VALUEBOOL(*args[0])? *args[1]:*args[2]);
 AVS_BUILTIN_FUNCTION(abs,	fabs(*args[0]));
 AVS_BUILTIN_FUNCTION(sin,	sin(*args[0]));
 AVS_BUILTIN_FUNCTION(cos,	cos(*args[0]));
@@ -47,12 +44,9 @@ AVS_BUILTIN_FUNCTION(bnot,	!AVS_VALUEBOOL(*args[0]));
 AVS_BUILTIN_FUNCTION(equal,	AVS_VALUEBOOL(*args[0] - *args[1]) ? 0.0 : 1.0)
 AVS_BUILTIN_FUNCTION(above,	*args[0] > *args[1] ? 1.0 : 0.0)
 AVS_BUILTIN_FUNCTION(below,	*args[0] < *args[1] ? 1.0 : 0.0)
-AVS_BUILTIN_FUNCTION(assign, (*args[0] = *args[1]));
-AVS_BUILTIN_FUNCTION(getosc, _getosc(*args[0], *args[1], *args[2]));
-AVS_BUILTIN_FUNCTION(getspec, _getspec(*args[0], *args[1], *args[2]));
+AVS_BUILTIN_FUNCTION(getosc, _getosc(obj->audio, *args[0], *args[1], *args[2]));
+AVS_BUILTIN_FUNCTION(getspec, _getspec(obj->audio, *args[0], *args[1], *args[2]));
 AVS_BUILTIN_FUNCTION(gettime, _gettime(*args[0]));
-//AVS_BUILTIN_FUNCTION(exec2, _exec2(*args[0], *args[1]));
-//AVS_BUILTIN_FUNCTION(exec3, _exec3(*args[0], *args[1], *args[2]));
 
 AvsRunnableFunction avs_builtin_functions[] =
 {
@@ -84,14 +78,9 @@ AvsRunnableFunction avs_builtin_functions[] =
 	{ "equal",	avs_builtin_function_equal,	2, },
 	{ "above",	avs_builtin_function_above,	2, },
 	{ "below",	avs_builtin_function_below,	2, },
-    { "if",     avs_builtin_function_if,    3, },
-    { "assign", avs_builtin_function_assign,2, },
     { "getosc", avs_builtin_function_getosc, 3, },
     { "getspec", avs_builtin_function_getspec, 3, },
     { "gettime", avs_builtin_function_gettime, 1, },
-//    { "exec2",  avs_builtin_function_exec2, 2, },
-//    { "exec3",  avs_builtin_function_exec3, 3, },
-//    { "loop",   avs_builtin_function_loop,  
 	{ NULL, },
 };
 
@@ -184,30 +173,46 @@ static float getvis(unsigned char *visdata, int bc, int bw, int ch, int xorv)
     }
 }
 
-AvsNumber _getosc(AvsNumber band, AvsNumber bandw, AvsNumber chan)
+#define MAXSIZE 2304
+
+unsigned char *get_pcm_data(VisAudio *audio)
 {
-    unsigned char visdata[576*2];
+    VisBuffer buf;
+    float pcmbuf[MAXSIZE];
+    static unsigned char retbuf[MAXSIZE];
     int i;
 
-    if(vispcmdata == NULL)
-        return 0.0;
+    visual_buffer_set_data_pair(&buf, pcmbuf, MAXSIZE);
 
-    for(i = 0; i < 576*2; i++)
-        visdata[i] = vispcmdata[i] * 255;
+    visual_audio_get_sample_mixed(audio, &buf, TRUE, 2,
+        VISUAL_AUDIO_CHANNEL_LEFT,
+        VISUAL_AUDIO_CHANNEL_RIGHT,
+        1.0,
+        1.0);
+    
+    for(i = MAXSIZE; i; i--)
+    {
+        retbuf[i-1] = pcmbuf[i-1] * 255;
+    }
+    
+    return retbuf;
+}
+
+AvsNumber _getosc(VisAudio *audio, AvsNumber band, AvsNumber bandw, AvsNumber chan)
+{
+    unsigned char *visdata;
+
+    visdata = get_pcm_data(audio);
 
     return getvis(visdata, (int)(band*576.0), (int)(bandw*576.0), (int)(chan+0.5),0)*0.5;
 }
 
-AvsNumber _getspec(AvsNumber band, AvsNumber bandw, AvsNumber chan)
+AvsNumber _getspec(VisAudio *audio, AvsNumber band, AvsNumber bandw, AvsNumber chan)
 {
-    unsigned char visdata[576*2];
+    unsigned char *visdata;
     int i;
 
-    if(vispcmdata == NULL)
-        return 0.0;
-
-    for(i = 0; i < 576*2; i++)
-        visdata[i] = vispcmdata[i + 576*2] * 255;
+    visdata = get_pcm_data(audio);
 
     return getvis(visdata, (int)(band*576.0), (int)(bandw*576.0), (int)(chan+0.5),128);
 }
@@ -216,10 +221,13 @@ AvsNumber _gettime(AvsNumber sc)
 {
     static struct timeval start = {0, 0};
     struct timeval now;
-    float start_ms = start.tv_sec * 1000 + start.tv_usec / 1000;
-    float now_ms;
+    double start_ms = start.tv_sec * 1000 + start.tv_usec / 1000;
+    double now_ms;
     int ispos;
     
+    if(start.tv_sec == 0 && start.tv_usec == 0)
+        gettimeofday(&start, 0);
+
     gettimeofday(&now, 0);
     now_ms = now.tv_sec * 1000 + now.tv_usec / 1000;
     
@@ -229,9 +237,10 @@ AvsNumber _gettime(AvsNumber sc)
 
        if( !ispos ) return (AvsNumber)pos;
 
-       return pos / 1000.0;
+       return (AvsNumber)(pos / 1000.0);
     }
 
-    return (start_ms - now_ms) - sc;
+    return (AvsNumber)((start_ms - now_ms) - sc);
 }
+
 

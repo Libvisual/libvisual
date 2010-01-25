@@ -121,7 +121,7 @@ int lv_ring_init (VisPluginData *plugin)
 
 	visual_param_container_add_many_proxy (paramcontainer, params);
 
-	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, VIS_BSTR("palette")), &priv->pal);
+	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, "palette"), &priv->pal);
 
 	visual_palette_free_colors (&priv->pal);
 
@@ -165,15 +165,15 @@ int lv_ring_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, VIS_BSTR ("source")))
+				if (visual_param_entry_is (param, "source"))
 					priv->source = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("place")))
+				else if (visual_param_entry_is (param, "place"))
 					priv->place = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("size")))
+				else if (visual_param_entry_is (param, "size"))
 					priv->size = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("type")))
+				else if (visual_param_entry_is (param, "type"))
 					priv->type = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("palette"))) {
+				else if (visual_param_entry_is (param, "palette")) {
 					VisPalette *pal;
 
 					pal = visual_param_entry_get_palette (param);

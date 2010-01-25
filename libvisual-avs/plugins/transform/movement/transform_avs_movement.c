@@ -38,16 +38,18 @@
 
 #include "avs_common.h"
 #include "avs.h"
+#include "avs_inlines.h"
 
 AvsNumber PI = M_PI;
 
 typedef struct {
+    Generic obj;
+
 	uint8_t	*swapbuf, *renderbuf;
 
 	uint32_t	*tab;
 	uint32_t	width, height;
 	uint32_t	subpixel;
-	unsigned char	blendtable[256][256];
 
 	int effect;
 	int rectangular;
@@ -110,6 +112,8 @@ static void trans_initialize(MovementPrivate *priv, int width, int height, char 
 static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (int *count);
 
 const VisPluginInfo *get_plugin_info (int *count)
 {
@@ -177,6 +181,9 @@ int lv_movement_cleanup (VisPluginData *plugin)
 	if (priv->swapbuf != NULL)
 		visual_mem_free (priv->swapbuf);
 
+    if(priv->code != NULL)
+        visual_mem_free (priv->code);
+
 	visual_mem_free (priv);
 
 	return 0;
@@ -193,29 +200,35 @@ int lv_movement_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, VIS_BSTR ("effect"))) {
+				if (visual_param_entry_is (param, "effect")) {
 					priv->effect = visual_param_entry_get_integer (param);
 
 					if (priv->effect != 32767) {
 						if (priv->effect >= 0 && priv->effect < 23) {
 							visual_param_entry_set_string (
-									visual_param_container_get (param->parent, VIS_BSTR ("code")),
+									visual_param_container_get (param->parent, "code"),
 									__movement_descriptions[priv->effect].eval_desc);
 						}
 					}
 
-				} else if (visual_param_entry_is (param, VIS_BSTR ("rectangular")))
+				} else if (visual_param_entry_is (param, "rectangular"))
 					priv->rectangular = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("blend")))
+				else if (visual_param_entry_is (param, "blend"))
 					priv->blend = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("sourcemapped")))
+				else if (visual_param_entry_is (param, "sourcemapped"))
 					priv->sourcemapped = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("subpixel")))
+				else if (visual_param_entry_is (param, "subpixel"))
 					priv->subpixel = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("wrap")))
+				else if (visual_param_entry_is (param, "wrap"))
 					priv->wrap = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("code")))
-					priv->code = visual_param_entry_get_string (param);
+				else if (visual_param_entry_is (param, "code")) {
+
+                    if(priv->code)
+                        visual_mem_free(priv->code);
+
+					priv->code = strdup(visual_param_entry_get_string (param));
+
+                }
 
 				break;
 
@@ -269,6 +282,8 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	priv->lastWidth = video->width;
 	priv->lastHeight = video->height;
 	priv->lastPitch = video->pitch;
+
+    return VISUAL_OK;
 }
 
 static void trans_generate_table(MovementPrivate *priv, char *effect, int rectangular, int wrap)
@@ -401,7 +416,7 @@ static void trans_generate_blend_table(MovementPrivate *priv)
 	
 	for (j=0; j < 256; j++)
 		for (i=0; i < 256; i++)
-			priv->blendtable[i][j] = (unsigned char)((i / 255.0) * (float)j);
+			priv->obj.blendtable[i][j] = (unsigned char)((i / 255.0) * (float)j);
 
 }
 
@@ -429,31 +444,11 @@ static void trans_initialize(MovementPrivate *priv, int width, int height, char 
 
 #define OFFSET_MASK ((1<<22)-1)
 
-static uint32_t BLEND4(MovementPrivate *priv, uint32_t *p1, uint32_t w, int xp, int yp)
-{
-	register int t;
-	unsigned char a1,a2,a3,a4;
-
-	a1 = priv->blendtable[255-xp][255-yp];
-	a2 = priv->blendtable[xp][255-yp];
-	a3 = priv->blendtable[255-xp][yp];
-	a4 = priv->blendtable[xp][yp];
-
-	t = priv->blendtable[p1[0] & 0xff][a1] +
-	    priv->blendtable[p1[1] & 0xff][a2] +
-	    priv->blendtable[p1[w] & 0xff][a3] +
-	    priv->blendtable[p1[w+1] & 0xff][a4];
-
-	t |= (priv->blendtable[(p1[0]>>8)&0xff][a1]+priv->blendtable[(p1[1]>>8)&0xff][a2]+priv->blendtable[(p1[w]>>8)&0xff][a3]+priv->blendtable[(p1[w+1]>>8)&0xff][a4])<<8;
-	t |= (priv->blendtable[(p1[0]>>16)&0xff][a1]+priv->blendtable[(p1[1]>>16)&0xff][a2]+priv->blendtable[(p1[w]>>16)&0xff][a3]+priv->blendtable[(p1[w+1]>>16)&0xff][a4])<<16;
-	return t;
-}
-
 static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
 {
 	uint32_t *inp = fbin;
 	uint32_t *outp = fbout;
-	int *transp = priv->tab;
+	unsigned int *transp = priv->tab;
 
 	if (1 /* !sourcemapped */) {
 		/* !blend */
@@ -463,7 +458,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
 			while (x--) {
 				for (i=0; i < 4; i++) {
 					int offs = transp[i] & OFFSET_MASK;
-					outp[i] = BLEND4(priv, &fbin[offs], priv->width, ((transp[i] >> 24) & (31 << 3)),
+					outp[i] = BLEND4(&priv->obj, &fbin[offs], priv->width, ((transp[i] >> 24) & (31 << 3)),
 							((transp[i] >> 19) & (31 << 3)));
 				}
 
@@ -474,7 +469,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
 			x = (priv->width * priv->height) & 3;
 			while (x--) {
 				int offs = transp[0] & OFFSET_MASK;
-				*outp++ = BLEND4(priv, &fbin[offs], priv->width, ((transp[0] >> 24) & (31 << 3)),
+				*outp++ = BLEND4(&priv->obj, &fbin[offs], priv->width, ((transp[0] >> 24) & (31 << 3)),
 						((transp[0] >> 19) & (31 << 3)));
 				transp++;
 			}

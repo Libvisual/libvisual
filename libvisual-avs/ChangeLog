@@ -1,3 +1,8 @@
+2010-01-25  Scott Sibley <scott@starlon.net>
+
+	* plugins/*: Remove VisString code
+	* visscript/*: Provide getosc and getspec with a VisAudio
+
 2006-09-19  Dennis Smit  <ds@nerds-incorporated.org>
 
 	* *: Many updates and improvements.

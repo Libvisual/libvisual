@@ -90,7 +90,7 @@ int act_avs_init (VisPluginData *plugin)
 
 	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING ("filename",
-				"/home/starlon/Projects/libvisual-svn/trunk/libvisual-avs/testpresets/spindle.avs", ""),
+				"/home/starlon/Projects/libvisual-svn/trunk/libvisual-avs/testpresets/superscope.avs", ""),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1, VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_END
 	};
@@ -181,7 +181,7 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev->event.param.param;
 
-				if (visual_param_entry_is (param, VIS_BSTR ("filename"))) {
+				if (visual_param_entry_is (param, "filename")) {
 					char *filename = visual_param_entry_get_string (param);
 
                     printf("event filename %s\n", filename);
@@ -236,7 +236,7 @@ int act_avs_events (VisPluginData *plugin, VisEventQueue *events)
 					priv->needsnego = TRUE;
 				}
 
-				if (visual_param_entry_is (param, VIS_BSTR ("winamp avs"))) {
+				if (visual_param_entry_is (param, "winamp avs")) {
 					priv->wavs = visual_param_entry_get_integer (param);
 
 				}

@@ -175,36 +175,36 @@ static int emit_if(
 
 	return VISUAL_OK;
 }
-			
-static void emit_trampoline(
-		AvsILAssemblerContext *ctx,
-		AvsRunnable *obj,
-		AvsCompilerArgument *retval, 
-		AvsCompilerArgument *args,
-		int count,
-		AvsRunnableFunction *fn)
-{
-	ILInstruction *insn;
-	ILRegister *reg;
-	int i;
 
-	/* Note: retrieving the result value before retrieving the function arguments
-	 * is normally dangerous, because it'll overwrite the first argument.
-	 * but since the first stack value is equal to the function name 
-	 * it isn't a problem in this instance. */
-	reg = avs_il_register_load_worker(ctx, obj, retval);
-	insn = avs_il_instruction_emit_single(ctx, obj, ILInstructionCall, reg);
-	
-	insn->ex.call.call = fn;
-	insn->ex.call.argc = count - 1;
-	insn->ex.call.argv = malloc(sizeof(ILRegister **) * insn->ex.call.argc);
-	
-	/* Load function arguments */
-	for (i=1; i < count; i++) 
-		insn->ex.call.argv[i-1] = avs_il_register_load_from_argument(ctx, obj, &args[i]);
-	
-	avs_il_tree_add(&ctx->tree, insn);
-	return;
+static void emit_trampoline(
+        AvsILAssemblerContext *ctx,
+        AvsRunnable *obj,
+        AvsCompilerArgument *retval,
+        AvsCompilerArgument *args,
+        int count,
+        AvsRunnableFunction *fn)
+{
+    ILInstruction *insn;
+    ILRegister *reg;
+    int i;
+
+    /* Note: retrieving the result value before retrieving the function arguments
+     * is normally dangerous, because it'll overwrite the first argument.
+     * but since the first stack value is equal to the function name 
+     * it isn't a problem in this instance. */
+    reg = avs_il_register_load_worker(ctx, obj, retval);
+    insn = avs_il_instruction_emit_single(ctx, obj, ILInstructionCall, reg);
+
+    insn->ex.call.call = fn;
+    insn->ex.call.argc = count - 1;
+    insn->ex.call.argv = malloc(sizeof(ILRegister **) * insn->ex.call.argc);
+
+    /* Load function arguments */
+    for (i=1; i < count; i++)
+        insn->ex.call.argv[i-1] = avs_il_register_load_from_argument(ctx, obj, &args[i]);
+
+    avs_il_tree_add(&ctx->tree, insn);
+    return;
 }
 
 static int emit_call(
@@ -242,9 +242,9 @@ static int emit_call(
 		case AVS_BUILTIN_FUNCTION_IF:
 			emit_if(ctx, obj, insn, retval, args, count);
 			break;
-			
+
 		default: {
-			AvsRunnableFunction *fn = avs_builtin_function_lookup(type);
+            AvsRunnableFunction *fn = avs_builtin_function_lookup(type);
 			if (!fn) 
 				avs_debug(print("il: Unable to find builtin function: %s", name));
 

@@ -113,41 +113,41 @@ static void show_options (AVSElement *element)
 		switch (param->type) {
 			case VISUAL_PARAM_ENTRY_TYPE_NULL:
 				printf ("\t%s: Type NULL\n",
-						visual_string_get_cstring (visual_param_entry_get_name (param)));
+						visual_param_entry_get_name (param));
 
 				break;
 
 			case VISUAL_PARAM_ENTRY_TYPE_STRING:
 				printf ("\t%s: Type STRING: %s\n",
-						visual_string_get_cstring (visual_param_entry_get_name (param)),
+						visual_param_entry_get_name (param),
 						visual_param_entry_get_string (param));
 
 				break;
 
 			case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
 				printf ("\t%s: Type INTEGER: %d\n",
-						visual_string_get_cstring (visual_param_entry_get_name (param)),
+						visual_param_entry_get_name (param),
 						visual_param_entry_get_integer (param));
 
 				break;
 
 			case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
 				printf ("\t%s: Type FLOAT: %f\n",
-						visual_string_get_cstring (visual_param_entry_get_name (param)),
+						visual_param_entry_get_name (param),
 						visual_param_entry_get_float (param));
 
 				break;
 
 			case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
 				printf ("\t%s: Type DOUBLE: %f\n",
-						visual_string_get_cstring (visual_param_entry_get_name (param)),
+						visual_param_entry_get_name (param),
 						visual_param_entry_get_double (param));
 
 				break;
 
 			case VISUAL_PARAM_ENTRY_TYPE_COLOR:
 				printf ("\t%s: Type COLOR: %d %d %d\n",
-						visual_string_get_cstring (visual_param_entry_get_name (param)),
+						visual_param_entry_get_name (param),
 						param->color.r, param->color.g, param->color.b);
 
 				break;
@@ -157,7 +157,7 @@ static void show_options (AVSElement *element)
 					int i;
 
 					printf ("\t%s: Type PALETTE:\n",
-							visual_string_get_cstring (visual_param_entry_get_name (param)));
+							visual_param_entry_get_name (param));
 
 					for (i = 0; i < param->pal.ncolors; i++) {
 						printf ("\t\tcolor[%d] %d %d %d\n", i,
@@ -167,6 +167,9 @@ static void show_options (AVSElement *element)
 					}
 				}
 				break;
+
+            default:
+                break;
 		}
 	}
 
@@ -558,7 +561,7 @@ int avs_element_deserialize_many_new_params (AVSElement *element, AVSTree *avstr
 	va_start (ap, avstree);
 
 	while ((pname = va_arg (ap, char *)) != NULL) {
-		VisParamEntry *param = visual_param_entry_new (VIS_BSTR (pname));
+		VisParamEntry *param = visual_param_entry_new (pname);
 		AVSSerializeEntry *sentry;
 
 		sentry = avs_serialize_entry_new (param);
@@ -602,7 +605,7 @@ AVSContainer *avs_parse_main (AVSTree *avstree)
 	AVS_CONTAINER (avsmain)->members = visual_list_new (visual_object_collection_destroyer);
 
 	scont = avs_serialize_container_new ();
-	avs_serialize_container_add_byte (scont, visual_param_container_get (pcont, VIS_BSTR ("clear screen")));
+	avs_serialize_container_add_byte (scont, visual_param_container_get (pcont, "clear screen"));
 
 	avs_element_connect_serialize_container (AVS_ELEMENT (avsmain), scont);
 
@@ -717,17 +720,17 @@ AVSElement *avs_parse_trans_movement (AVSTree *avstree)
 		effect=AVS_SERIALIZE_GET_INT(avstree->cur); AVS_SERIALIZE_SKIP_INT (avstree->cur);pos+=4;
 	}
 
-	if (effect != 32767 && effect > REFFECT_MAX || effect < 0)
+	if (effect != 32767 && (effect > REFFECT_MAX || effect < 0))
 		effect=0;
 	effect_exp_ch=1;
 
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("effect")), effect);
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("rectangular")), rectangular);
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("blend")), blend);
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("sourcemapped")), sourcemapped);
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("subpixel")), subpixel);
-	visual_param_entry_set_integer (visual_param_container_get (pcont, VIS_BSTR ("wrap")), wrap);
-	visual_param_entry_set_string (visual_param_container_get (pcont, VIS_BSTR ("code")), buf);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "effect"), effect);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "rectangular"), rectangular);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "blend"), blend);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "sourcemapped"), sourcemapped);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "subpixel"), subpixel);
+	visual_param_entry_set_integer (visual_param_container_get (pcont, "wrap"), wrap);
+	visual_param_entry_set_string (visual_param_container_get (pcont, "code"), buf);
 
 	printf ("effect: %d, rectangular: %d, blend %d, sourcemapped %d, subpixel %d, wrap %d\n",
 			effect, rectangular, blend, sourcemapped, subpixel, wrap);
@@ -757,7 +760,7 @@ AVSElement *avs_parse_element_non_complex (AVSTree *avstree, AVSElementType type
 	va_start (ap, type);
 
 	while ((pname = va_arg (ap, char *)) != NULL) {
-		VisParamEntry *param = visual_param_entry_new (VIS_BSTR (pname));
+		VisParamEntry *param = visual_param_entry_new (pname);
 		AVSSerializeEntry *sentry;
 
 		sentry = avs_serialize_entry_new (param);

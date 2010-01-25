@@ -50,6 +50,8 @@ enum scope_runnable {
 };
 
 typedef struct {
+    VisAudio    *audio;
+
 	AvsRunnableContext		*ctx;
 	AvsRunnableVariableManager	*vm;
 	AvsRunnable			*runnable[4];
@@ -126,6 +128,7 @@ int scope_load_runnable(SuperScopePrivate *priv, ScopeRunnable runnable, char *b
 
 int scope_run(SuperScopePrivate *priv, ScopeRunnable runnable)
 {
+    priv->runnable[runnable]->audio = priv->audio;
 	avs_runnable_execute(priv->runnable[runnable]);
 	return 0;
 }
@@ -161,7 +164,7 @@ int lv_superscope_init (VisPluginData *plugin)
 		priv->pal.colors[i].b = 0xff;
 	}
 
-	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, VIS_BSTR ("palette")), &priv->pal);
+	visual_param_entry_set_palette (visual_param_container_get (paramcontainer, "palette"), &priv->pal);
 
 	visual_palette_free_colors (&priv->pal);
 
@@ -192,6 +195,18 @@ int lv_superscope_init (VisPluginData *plugin)
 int lv_superscope_cleanup (VisPluginData *plugin)
 {
 	SuperScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+    if(priv->point)
+        visual_mem_free(priv->point);
+
+    if(priv->frame)
+        visual_mem_free(priv->frame);
+
+    if(priv->beat)
+        visual_mem_free(priv->beat);
+
+    if(priv->init)
+        visual_mem_free(priv->init);
 
 	visual_mem_free (priv);
 
@@ -225,34 +240,50 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
-                printf("superscope_events param %p %p\n", param, param->name);
 
-				if (visual_param_entry_is (param, VIS_BSTR ("point"))) {
+				if (visual_param_entry_is (param, "point")) {
 
-					priv->point = visual_param_entry_get_string (param);
+                    if(priv->point)
+                        visual_mem_free(priv->point);
+
+					priv->point = strdup(visual_param_entry_get_string (param));
 					scope_load_runnable(priv, SCOPE_RUNNABLE_POINT, priv->point);
 
-				} else if (visual_param_entry_is (param, VIS_BSTR ("frame"))) {
+				} else if (visual_param_entry_is (param, "frame")) {
 
-					priv->frame = visual_param_entry_get_string (param);
+                    if(priv->frame)
+                        visual_mem_free(priv->frame);
+
+					priv->frame = strdup(visual_param_entry_get_string (param));
 					scope_load_runnable(priv, SCOPE_RUNNABLE_FRAME, priv->frame);
 
-				} else if (visual_param_entry_is (param, VIS_BSTR ("beat"))) {
+				} else if (visual_param_entry_is (param, "beat")) {
 
-					priv->beat = visual_param_entry_get_string (param);
+                    if(priv->beat)
+                        visual_mem_free(priv->beat);
+
+					priv->beat = strdup(visual_param_entry_get_string (param));
 					scope_load_runnable(priv, SCOPE_RUNNABLE_BEAT, priv->beat);
 
-				} else if (visual_param_entry_is (param, VIS_BSTR ("init"))) {
+				} else if (visual_param_entry_is (param, "init")) {
 
-					priv->init = visual_param_entry_get_string (param);
+                    if(priv->init)
+                        visual_mem_free(priv->init);
+
+					priv->init = strdup(visual_param_entry_get_string (param));
 					scope_load_runnable(priv, SCOPE_RUNNABLE_INIT, priv->init);
                     priv->needs_init = TRUE;
 
-				} else if (visual_param_entry_is (param, VIS_BSTR ("channel source")))
+				} else if (visual_param_entry_is (param, "channel source"))
+
 					priv->channel_source = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("draw type")))
+
+				else if (visual_param_entry_is (param, "draw type"))
+
 					priv->draw_type = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("palette"))) {
+
+				else if (visual_param_entry_is (param, "palette")) {
+
 					VisPalette *pal;
 
 					pal = visual_param_entry_get_palette (param);
@@ -299,19 +330,20 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 {
 	SuperScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint32_t *buf = visual_video_get_pixels (video);
-	VisBuffer pcm;
-	float pcmbuf[576*4];
-	int isBeat = 0;
+	int isBeat = visual_audio_is_beat(audio);
+    VisBuffer pcm;
+    float pcmbuf[576*4];
 
     visual_buffer_set_data_pair (&pcm, pcmbuf, sizeof (pcmbuf));
 
-	visual_audio_get_sample_mixed (audio, &pcm, TRUE, 2,
-			VISUAL_AUDIO_CHANNEL_LEFT,
-			VISUAL_AUDIO_CHANNEL_RIGHT,
-			1.0,
-			1.0);
+    visual_audio_get_sample_mixed (audio, &pcm, TRUE, 2,
+            VISUAL_AUDIO_CHANNEL_LEFT,
+            VISUAL_AUDIO_CHANNEL_RIGHT,
+            1.0,
+            1.0);
 
-    visual_mem_copy(vispcmdata, pcmbuf, 576*4);
+    /* Provide audio for AvsRunnable */
+    priv->audio = audio;
 
     if(priv->needs_init) {
         priv->needs_init = FALSE;
@@ -324,10 +356,9 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	int a, l, lx = 0, ly = 0, x = 0, y = 0;
 	
 	scope_run(priv, SCOPE_RUNNABLE_FRAME);
-//	priv->beat = isBeat;
+
 	if (isBeat)
 		scope_run(priv, SCOPE_RUNNABLE_BEAT);
-
 
 	l = priv->n;
 	if (l > 128*1024)

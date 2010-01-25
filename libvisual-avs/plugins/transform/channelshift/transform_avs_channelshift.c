@@ -125,9 +125,9 @@ int lv_channelshift_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, VIS_BSTR ("shift")))
+				if (visual_param_entry_is (param, "shift"))
 					priv->shift = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, VIS_BSTR ("onbeat")))
+				else if (visual_param_entry_is (param, "onbeat"))
 					priv->onbeat = visual_param_entry_get_integer (param);
 
 				break;
