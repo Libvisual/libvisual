@@ -180,7 +180,18 @@ unsigned char *get_pcm_data(VisAudio *audio)
     VisBuffer buf;
     float pcmbuf[MAXSIZE];
     static unsigned char retbuf[MAXSIZE];
+    static int first_call = TRUE;
+    static int then = 0;
+    int now = _gettime(0);
     int i;
+
+    /* Cache results every 25ms apart, skipping first call */
+    if(first_call == FALSE && now - then > 25) {
+        then = now;
+        return retbuf;
+    }
+
+    first_call = FALSE;
 
     visual_buffer_set_data_pair(&buf, pcmbuf, MAXSIZE);
 
@@ -192,7 +203,7 @@ unsigned char *get_pcm_data(VisAudio *audio)
     
     for(i = MAXSIZE; i; i--)
     {
-        retbuf[i-1] = pcmbuf[i-1] * 255;
+        retbuf[i-1] = pcmbuf[i-1] * UCHAR_MAX;
     }
     
     return retbuf;
@@ -201,6 +212,8 @@ unsigned char *get_pcm_data(VisAudio *audio)
 AvsNumber _getosc(VisAudio *audio, AvsNumber band, AvsNumber bandw, AvsNumber chan)
 {
     unsigned char *visdata;
+
+    visual_log_return_val_if_fail(audio != NULL, 0.0);
 
     visdata = get_pcm_data(audio);
 
@@ -211,6 +224,8 @@ AvsNumber _getspec(VisAudio *audio, AvsNumber band, AvsNumber bandw, AvsNumber c
 {
     unsigned char *visdata;
     int i;
+
+    visual_log_return_val_if_fail(audio != NULL, 0.0);
 
     visdata = get_pcm_data(audio);
 
