@@ -50,8 +50,6 @@ enum scope_runnable {
 };
 
 typedef struct {
-    VisAudio    *audio;
-
 	AvsRunnableContext		*ctx;
 	AvsRunnableVariableManager	*vm;
 	AvsRunnable			*runnable[4];
@@ -67,6 +65,8 @@ typedef struct {
 	VisPalette		 pal;
 
     int             needs_init;
+
+    VisAudio    *audio;
 
 	AVSGfxColorCycler	*cycler;
 } SuperScopePrivate;
@@ -332,7 +332,7 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	uint32_t *buf = visual_video_get_pixels (video);
 	int isBeat = visual_audio_is_beat(audio);
     VisBuffer pcm;
-    float pcmbuf[576*4];
+    float pcmbuf[1024];
 
     visual_buffer_set_data_pair (&pcm, pcmbuf, sizeof (pcmbuf));
 
@@ -364,7 +364,6 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 	if (l > 128*1024)
 		l = 128*1024;
 
-    memset((uint8_t *) visual_video_get_pixels(video), 0, visual_video_get_size(video));
 
 	priv->drawmode = 1.0; /* 0 = dots, 1 = lines */
 	for (a=0; a < l; a++, lx = x, ly = y) {

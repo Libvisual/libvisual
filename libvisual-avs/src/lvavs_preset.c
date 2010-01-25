@@ -76,7 +76,7 @@ static const char *id_to_name_map[] = {
 	[AVS_ELEMENT_TYPE_MISC_LINEMODE]		= "error",
 	[AVS_ELEMENT_TYPE_TRANS_INTERFERENCES]		= "avs_interferences",
 	[AVS_ELEMENT_TYPE_TRANS_CHANNELSHIFT]		= "avs_channelshift",
-	[AVS_ELEMENT_TYPE_UNKNOWN_DMOVE]		= "error",
+	[AVS_ELEMENT_TYPE_TRANS_DMOVE]		= "avs_dmovement",
 	[AVS_ELEMENT_TYPE_TRANS_FASTBRIGHT]		= "avs_fastbright",
 	[AVS_ELEMENT_TYPE_UNKNOWN_DCOLORMODE]		= "error",
 

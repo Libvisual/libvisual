@@ -90,7 +90,7 @@ int act_avs_init (VisPluginData *plugin)
 
 	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING ("filename",
-				"/home/starlon/Projects/libvisual-svn/trunk/libvisual-avs/testpresets/superscope.avs", ""),
+				"/home/starlon/Projects/libvisual-svn/trunk/libvisual-avs/testpresets/sscopedmove.avs", ""),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1, VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_END
 	};
@@ -271,12 +271,10 @@ int act_avs_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 
 	/* Clear screen bit is on, clear screen every frame (This is from winamp AVS main section) */
-#if 0
 	if (visual_param_entry_get_integer (visual_param_container_get (LVAVS_PRESET_ELEMENT (priv->lvtree->main)->pcont,
 					"clear screen")) == 1) {
-		memset ((uint8_t *) visual_video_get_pixels (video), 0, visual_video_get_size (video));
+        memset((uint8_t *) visual_video_get_pixels(video), 0, visual_video_get_size(video));
 	}
-#endif
 
 	lvavs_pipeline_run (priv->pipeline, video, audio);
 

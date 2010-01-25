@@ -291,6 +291,24 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 
 				break;
 
+            case AVS_ELEMENT_TYPE_TRANS_DMOVE:
+                element = avs_parse_element_non_complex (avstree, AVS_ELEMENT_TYPE_TRANS_DMOVE,
+                        "empty", AVS_SERIALIZE_ENTRY_TYPE_BYTE,
+                        "point", AVS_SERIALIZE_ENTRY_TYPE_STRING,
+                        "frame", AVS_SERIALIZE_ENTRY_TYPE_STRING,
+                        "beat", AVS_SERIALIZE_ENTRY_TYPE_STRING,
+                        "init", AVS_SERIALIZE_ENTRY_TYPE_STRING,
+                        "subpixel", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "rectcoords", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "xres", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "yres", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "blend", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "wrap", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "buffern", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "nomove", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        NULL);
+                break;
+
 			case AVS_ELEMENT_TYPE_RENDER_CLEARSCREEN:
 				element = avs_parse_element_non_complex (avstree, AVS_ELEMENT_TYPE_RENDER_CLEARSCREEN,
 						"enabled", AVS_SERIALIZE_ENTRY_TYPE_INT,

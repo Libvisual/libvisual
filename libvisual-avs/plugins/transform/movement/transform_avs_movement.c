@@ -43,7 +43,7 @@
 AvsNumber PI = M_PI;
 
 typedef struct {
-    Generic obj;
+    AVSGlobalProxy *proxy;
 
 	uint8_t	*swapbuf, *renderbuf;
 
@@ -167,6 +167,10 @@ int lv_movement_init (VisPluginData *plugin)
 	};
 
 	priv = visual_mem_new0 (MovementPrivate, 1);
+
+    priv->proxy = AVS_GLOBAL_PROXY(visual_object_get_private(VISUAL_OBJECT (plugin)));
+    visual_object_ref(VISUAL_OBJECT(priv->proxy));
+
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_param_container_add_many_proxy (paramcontainer, params);
@@ -183,6 +187,8 @@ int lv_movement_cleanup (VisPluginData *plugin)
 
     if(priv->code != NULL)
         visual_mem_free (priv->code);
+
+    visual_object_unref(VISUAL_OBJECT(priv->proxy));
 
 	visual_mem_free (priv);
 
@@ -221,15 +227,8 @@ int lv_movement_events (VisPluginData *plugin, VisEventQueue *events)
 					priv->subpixel = visual_param_entry_get_integer (param);
 				else if (visual_param_entry_is (param, "wrap"))
 					priv->wrap = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "code")) {
-
-                    if(priv->code)
-                        visual_mem_free(priv->code);
-
-					priv->code = strdup(visual_param_entry_get_string (param));
-
-                }
-
+				else if (visual_param_entry_is (param, "code")) 
+					priv->code = visual_param_entry_get_string (param);
 				break;
 
 			default:
@@ -413,17 +412,17 @@ static void trans_generate_table(MovementPrivate *priv, char *effect, int rectan
 static void trans_generate_blend_table(MovementPrivate *priv)
 {
 	int i,j;
-	
+
 	for (j=0; j < 256; j++)
 		for (i=0; i < 256; i++)
-			priv->obj.blendtable[i][j] = (unsigned char)((i / 255.0) * (float)j);
+			priv->proxy->blendtable[i][j] = (unsigned char)((i / 255.0) * (float)j);
 
 }
 
 static void trans_initialize(MovementPrivate *priv, int width, int height, char *effect)
 {
-	if (priv->tab)
-		free(priv->tab);
+	if (priv->tab != NULL)
+		visual_mem_free(priv->tab);
 	
 	priv->width = width;
 	priv->height = height;
@@ -458,7 +457,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
 			while (x--) {
 				for (i=0; i < 4; i++) {
 					int offs = transp[i] & OFFSET_MASK;
-					outp[i] = BLEND4(&priv->obj, &fbin[offs], priv->width, ((transp[i] >> 24) & (31 << 3)),
+					outp[i] = BLEND4(priv->proxy, &fbin[offs], priv->width, ((transp[i] >> 24) & (31 << 3)),
 							((transp[i] >> 19) & (31 << 3)));
 				}
 
@@ -469,7 +468,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
 			x = (priv->width * priv->height) & 3;
 			while (x--) {
 				int offs = transp[0] & OFFSET_MASK;
-				*outp++ = BLEND4(&priv->obj, &fbin[offs], priv->width, ((transp[0] >> 24) & (31 << 3)),
+				*outp++ = BLEND4(priv->proxy, &fbin[offs], priv->width, ((transp[0] >> 24) & (31 << 3)),
 						((transp[0] >> 19) & (31 << 3)));
 				transp++;
 			}

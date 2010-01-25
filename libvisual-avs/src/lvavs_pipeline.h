@@ -28,6 +28,8 @@
 
 #include "lvavs_preset.h"
 
+#include "avs_globals.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -79,6 +81,8 @@ struct _LVAVSPipeline {
 //	VisVideo			*buffers[16];
 
 	LVAVSPipelineContainer		*container;
+
+    AVSGlobalProxy      *proxy;
 };
 
 struct _LVAVSPipelineRenderState {

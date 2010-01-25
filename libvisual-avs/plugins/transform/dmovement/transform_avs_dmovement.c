@@ -38,7 +38,6 @@
 
 #include "avs_common.h"
 #include "avs.h"
-#include "avs_inlines.h"
 
 AvsNumber PI = M_PI;
 
@@ -52,7 +51,7 @@ enum trans_runnable {
 };
 
 typedef struct {
-    Generic obj;
+    AVSGlobalProxy *proxy;
 
     AvsRunnableContext *ctx;
     AvsRunnableVariableManager *vm;
@@ -70,7 +69,7 @@ typedef struct {
     uint32_t last_xres, last_yres, xres, yres;
     uint32_t buffern;
     uint32_t subpixel, rectcoords, blend, wrap, nomove;
-    uint32_t preset;
+    int32_t preset;
 
     uint32_t __subpixel, __rectcoords, __blend, __wrap, __nomove;
     uint32_t w_adj, h_adj;
@@ -169,10 +168,10 @@ int lv_dmovement_init (VisPluginData *plugin)
 	int i;
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING ("init", "", "Init expression"),
-        VISUAL_PARAM_LIST_ENTRY_STRING ("frame", "", "Frame expression"),
-        VISUAL_PARAM_LIST_ENTRY_STRING ("beat", "", "Beat expression"),
-        VISUAL_PARAM_LIST_ENTRY_STRING ("pixel", "", "Pixel expression"),
+		VISUAL_PARAM_LIST_ENTRY_STRING ("init", "", "Set intial variable values here"),
+        VISUAL_PARAM_LIST_ENTRY_STRING ("frame", "", "Used to define movement and transformations"),
+        VISUAL_PARAM_LIST_ENTRY_STRING ("beat", "", "Expression that gets evaluated on the beat"),
+        VISUAL_PARAM_LIST_ENTRY_STRING ("pixel", "", "This is where the shape is defined"),
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("preset", -1, VISUAL_PARAM_LIMIT_INTEGER(-1, 7), "Preset choice"),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("subpixel", 1, VISUAL_PARAM_LIMIT_NONE, ""),
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("rectcoords", 1, VISUAL_PARAM_LIMIT_BOOLEAN, "Rectangular coordinates"),
@@ -180,12 +179,16 @@ int lv_dmovement_init (VisPluginData *plugin)
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("yres", 20, VISUAL_PARAM_LIMIT_INTEGER(2, 256), "Grid size y axis"),
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("blend", 1, VISUAL_PARAM_LIMIT_BOOLEAN, "Blend"),
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("wrap", 1, VISUAL_PARAM_LIMIT_BOOLEAN, "Wrap"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("buffern", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 8), "Source"),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("buffern", 0, VISUAL_PARAM_LIMIT_INTEGER(0, 8), "Source buffer"),
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("nomove", 0, VISUAL_PARAM_LIMIT_BOOLEAN, "No movement (just blend)"),
 		VISUAL_PARAM_LIST_END
 	};
 
 	priv = visual_mem_new0 (DMovementPrivate, 1);
+
+    priv->proxy = AVS_GLOBAL_PROXY(visual_object_get_private(VISUAL_OBJECT(plugin)));
+    visual_object_ref(VISUAL_OBJECT(priv->proxy));
+
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_param_container_add_many_proxy (paramcontainer, params);
@@ -252,31 +255,24 @@ int lv_dmovement_events (VisPluginData *plugin, VisEventQueue *events)
 	DMovementPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisParamEntry *param;
 	VisEvent ev;
+    char *str;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 			    if (visual_param_entry_is (param, "init")) {
-                    if(priv->init)
-                        visual_mem_free(priv->init);
-					priv->init = strdup(visual_param_entry_get_string (param));
+					priv->init = (str = visual_param_entry_get_string (param)) ? str : "";
                     trans_load_runnable(priv, TRANS_RUNNABLE_INIT, priv->init);
                     priv->needs_init = TRUE;
 				} else if (visual_param_entry_is (param, "frame")) {
-                    if(priv->frame)
-                        visual_mem_free(priv->frame);
-					priv->frame = strdup(visual_param_entry_get_string (param));
+					priv->frame = (str = visual_param_entry_get_string (param)) ? str : "";
                     trans_load_runnable(priv, TRANS_RUNNABLE_FRAME, priv->frame);
 				} else if (visual_param_entry_is (param, "beat")) {
-                    if(priv->beat)
-                        visual_mem_free(priv->beat);
-					priv->beat = strdup(visual_param_entry_get_string (param));
+					priv->beat = (str = visual_param_entry_get_string (param)) ? str : "";
                     trans_load_runnable(priv, TRANS_RUNNABLE_BEAT, priv->beat);
 				} else if (visual_param_entry_is (param, "pixel")) {
-                    if(priv->pixel)
-                        visual_mem_free(priv->pixel);
-					priv->pixel = strdup(visual_param_entry_get_string (param));
+					priv->pixel = (str = visual_param_entry_get_string (param)) ? str : "";
                     trans_load_runnable(priv, TRANS_RUNNABLE_PIXEL, priv->pixel);
 				} else if (visual_param_entry_is (param, "preset"))
 					priv->preset = visual_param_entry_get_integer (param);
@@ -304,8 +300,10 @@ int lv_dmovement_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-    if(priv->preset >= 0)
+    if(priv->preset >= 0) {
+        printf("preset %d\n", priv->preset);
         load_preset(plugin);
+    }
 
 	return 0;
 }
@@ -322,6 +320,8 @@ int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
     uint8_t *vidbuf, vidoutbuf;
     int i;
     uint8_t isBeat = visual_audio_is_beat(audio);
+
+    printf("lv_dmovement_video\n");
 
     if(priv->last_width != video->width || priv->last_height != video->height || priv->last_pitch != video->pitch) {
         //trans_initalize(priv, video->width, video->height);
@@ -343,16 +343,16 @@ int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
     visual_mem_set(priv->renderbuf, 0, video->width * video->height * video->bpp);
 
-    trans_begin(priv, isBeat, (uint32_t *) priv->swapbuf, (uint32_t *)priv->renderbuf);
-
-    priv->last_width = video->width;
-    priv->last_height = video->height;
+    priv->last_width = priv->width = video->width;
+    priv->last_height = priv->height = video->height;
     priv->last_pitch = video->pitch;
+
+    trans_begin(priv, isBeat, (uint32_t *) pixels, (uint32_t *)priv->renderbuf);
 
     if(!isBeat)
         return 0;
 
-    trans_render(priv, isBeat, (uint32_t *) priv->swapbuf, (uint32_t *)priv->renderbuf);
+    trans_render(priv, isBeat, (uint32_t *) pixels, (uint32_t *)priv->renderbuf);
 
     for(i = 0; i < video->height; i++) {
         visual_mem_copy( pixels, priv->renderbuf + (i * video->width * video->bpp), video->width * video->bpp);
@@ -363,6 +363,9 @@ int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, uint32_t *fbout)
 {
+    int thread = 0;
+    int max_threads = 1;
+
     priv->__subpixel = priv->subpixel;
     priv->__rectcoords = priv->rectcoords;
     priv->__blend = priv->blend;
@@ -371,6 +374,11 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
 
     priv->w_adj = (priv->width - 2)<<16;
     priv->h_adj = (priv->height - 2)<<16;
+    
+    if(priv->xres < 2) priv->xres = 2;
+    if(priv->xres > 256) priv->xres = 256;
+    if(priv->yres < 2) priv->yres = 2;
+    if(priv->yres > 256) priv->yres = 256;
     
     if(priv->last_xres != priv->xres || priv->last_yres != priv->yres || 
             priv->last_width != priv->width || priv->last_height != priv->height || 
@@ -381,17 +389,17 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
         priv->last_width = priv->width;
         priv->last_height = priv->height;
 
-        if(priv->wmul) 
+        if(priv->wmul != NULL) 
             visual_mem_free(priv->wmul);
         priv->wmul = visual_mem_malloc0(sizeof(int)*priv->height);
 
         for(y = 0; y < priv->height; y++) 
             priv->wmul[y] = y * priv->width;
 
-        if(priv->tab)
+        if(priv->tab != NULL)
             visual_mem_free(priv->tab);
 
-        priv->tab = visual_mem_malloc0((priv->xres * priv->yres * 3 + (priv->xres * 6 + 6)) * sizeof(int));
+        priv->tab = visual_mem_malloc0((priv->xres * priv->yres * 3 + (priv->xres * 6 + 6)*max_threads) * sizeof(int));
     }
 
     if(!priv->__subpixel)
@@ -400,8 +408,8 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
         priv->w_adj = (priv->height-1)<<16;
     }
 
-    if(isBeat&0x80000000)
-        return;
+    //if(isBeat&0x80000000)
+    //    return;
 
     priv->var_w = (AvsNumber)priv->width;
     priv->var_h = (AvsNumber)priv->height;
@@ -506,10 +514,10 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
     else end_l = ((this_thread+1) * priv->height) / max_threads;
 
     int outh = end_l-start_l;
-
-    uint32_t *fbin = fb; // !buffern ? fb | (int *)getGlobalBuffer(w, h, buffern-1, 0);
-{}
     if(outh<1) return;
+
+    uint32_t *fbin = !priv->buffern ? fb : 
+        (uint32_t *)avs_get_global_buffer(priv->proxy, priv->width, priv->height, priv->buffern-1, 0)->buffer;
 
     {
         uint32_t *interptab = priv->tab + priv->xres * priv->yres * 3 + this_thread * (priv->xres * 6 + 6);
@@ -610,7 +618,7 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
                         if (seek > 0)
                         {
 #define CHECK
-#define NORMAL_LOOP(Z) while ((seek--)) { Z; yp+=d_x; yp+=d_y; }
+#define NORMAL_LOOP(Z) while ((seek--)) { Z; xp+=d_x; yp+=d_y; }
 
 #define WRAPPING_LOOPS(Z) \
     NORMAL_LOOP(if (xp < 0) xp += priv->w_adj;  \
@@ -627,22 +635,22 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
                 Z)
 
 #define LOOPS(DO)  \
-                if (priv->__blend && priv->__subpixel) DO(CHECK *out++=BLEND_ADJ(&priv->obj, BLEND4_16(&priv->obj, in+(xp>>16)+(priv->wmul[yp>>16]),priv->width,xp,yp),*blendin++,ap>>16); ap+=d_a) \
-                else if (priv->__blend) DO(CHECK *out++=BLEND_ADJ(&priv->obj, in[(xp>>16)+(priv->wmul[yp>>16])],*blendin++,ap>>16); ap+=d_a) \
-                else if (priv->__subpixel) DO(CHECK *out++=BLEND4_16(&priv->obj, in+(xp>>16)+(priv->wmul[yp>>16]),priv->width,xp,yp)) \
+                if (priv->__blend && priv->__subpixel) DO(CHECK *out++=BLEND_ADJ(priv->proxy, BLEND4_16(priv->proxy, in+(xp>>16)+(priv->wmul[yp>>16]),priv->width,xp,yp),*blendin++,ap>>16); ap+=d_a) \
+                else if (priv->__blend) DO(CHECK *out++=BLEND_ADJ(priv->proxy, in[(xp>>16)+(priv->wmul[yp>>16])],*blendin++,ap>>16); ap+=d_a) \
+                else if (priv->__subpixel) DO(CHECK *out++=BLEND4_16(priv->proxy, in+(xp>>16)+(priv->wmul[yp>>16]),priv->width,xp,yp)) \
                 else DO(CHECK *out++=in[(xp>>16)+(priv->wmul[yp>>16])])
 
                             if(priv->__nomove)
                             {
                                 if(fbin != fb) while(seek--)
                                 {
-                                    *blendin=BLEND_ADJ(&priv->obj, *in++, *blendin, ap>>16);
+                                    *blendin=BLEND_ADJ(priv->proxy, *in++, *blendin, ap>>16);
                                     ap+=d_a;
                                     blendin++;
                                 }
                                 else while( seek--)
                                 {
-                                    *blendin=BLEND_ADJ(&priv->obj, 0, *blendin, ap>>16);
+                                    *blendin=BLEND_ADJ(priv->proxy, 0, *blendin, ap>>16);
                                     ap+=d_a;
                                     blendin++;
                                 }

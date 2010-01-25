@@ -55,6 +55,9 @@ static int lvavs_pipeline_dtor (VisObject *object)
 	if (pipeline->container != NULL)
 		visual_object_unref (VISUAL_OBJECT (pipeline->container));
 
+    if (pipeline->proxy != NULL)
+        visual_object_unref (VISUAL_OBJECT (pipeline->proxy));
+
 	pipeline->renderstate = NULL;
 	pipeline->container = NULL;
 
@@ -169,6 +172,8 @@ LVAVSPipeline *lvavs_pipeline_new_from_preset (LVAVSPreset *preset)
 
 	pipeline = lvavs_pipeline_new ();
 
+    pipeline->proxy = avs_global_proxy_new();
+
 	pipeline->container = lvavs_pipeline_container_new ();
 	LVAVS_PIPELINE_ELEMENT (pipeline->container)->pipeline = pipeline;
 
@@ -214,6 +219,7 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 	LVAVSPipelineElement *element;
 	LVAVSPipelineContainer *cont;
 	VisPluginRef *ref;
+    LVAVSPipeline *pipeline = LVAVS_PIPELINE_ELEMENT(container)->pipeline; 
 
 	while ((pelem = visual_list_next (presetcont->members, &le)) != NULL) {
 
@@ -238,16 +244,20 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR);
 					element->data.actor = visual_actor_new (pelem->element_name);
+                    visual_object_set_private(VISUAL_OBJECT(element->data.actor->plugin), pipeline->proxy);
 
 				} else if (strcmp (ref->info->type, VISUAL_PLUGIN_TYPE_MORPH) == 0) {
 
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_MORPH);
 					element->data.morph = visual_morph_new (pelem->element_name);
+                    visual_object_set_private(VISUAL_OBJECT(element->data.morph->plugin), pipeline->proxy);
 
 				} else if (strcmp (ref->info->type, VISUAL_PLUGIN_TYPE_TRANSFORM) == 0) {
 
 					element = lvavs_pipeline_element_new (LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM);
 					element->data.transform = visual_transform_new (pelem->element_name);
+                    visual_object_set_private(VISUAL_OBJECT(element->data.transform->plugin), pipeline->proxy);
+
 				} else {
                     printf("uknown type '%s' '%s'\n", ref->info->type, ref->info->name);
                 }
@@ -340,6 +350,7 @@ int pipeline_container_realize (LVAVSPipelineContainer *container)
 				break;
 		}
 	}
+    return 0;
 }
 
 int pipeline_container_negotiate (LVAVSPipelineContainer *container, VisVideo *video)
