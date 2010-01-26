@@ -13,6 +13,7 @@
 	* common/avs_globals.*: Added GlobalProxy for pipeline globals -- the
 	proxy is set as the plugin's private object from within the pipeline.
 	Extract it before assigning the plugin's real private object, if desired.
+	Handle the proxy as you would any other VisObject.
 	* plugins/transform/dmovement/*: More attempts to get this working
 
 2006-09-19  Dennis Smit  <ds@nerds-incorporated.org>
