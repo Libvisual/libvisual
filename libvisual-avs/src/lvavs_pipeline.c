@@ -55,8 +55,8 @@ static int lvavs_pipeline_dtor (VisObject *object)
 	if (pipeline->container != NULL)
 		visual_object_unref (VISUAL_OBJECT (pipeline->container));
 
-    if (pipeline->proxy != NULL)
-        visual_object_unref (VISUAL_OBJECT (pipeline->proxy));
+    //if (pipeline->proxy != NULL)
+    //    visual_object_unref (VISUAL_OBJECT (pipeline->proxy));
 
 	pipeline->renderstate = NULL;
 	pipeline->container = NULL;

@@ -169,54 +169,46 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 			break;
 			
 		case ILInstructionCall:
-            printf("ILInstructionCall\n");
 			compile_function(gd, obj, insn);
 			break;
 
 		case ILInstructionNegate:
-            printf("ILInstructionNegate\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
 			x86_emit0(&gd->ctx, fchs);
 			x86_emit1(&gd->ctx, fstps, offset(get_operand(insn->reg[0])));
 			break;
 
 		case ILInstructionAssign:
-            printf("ILInstructionAssign\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[2])));
 			x86_emit1(&gd->ctx, fsts, offset(get_operand(insn->reg[1])));
 			x86_emit1(&gd->ctx, fstps, offset(get_operand(insn->reg[0])));	
 			break;
 
 		case ILInstructionAdd:
-            printf("ILInstructionAdd\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
 			x86_emit1(&gd->ctx, fadds, offset(get_operand(insn->reg[2])));
 			x86_emit1(&gd->ctx, fstps, offset(get_operand(insn->reg[0])));
 			break;
 			
 		case ILInstructionSub:
-            printf("ILInstructionSub\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
 			x86_emit1(&gd->ctx, fsubs, offset(get_operand(insn->reg[2])));
 			x86_emit1(&gd->ctx, fstps, offset(get_operand(insn->reg[0])));
 			break;
 
 		case ILInstructionMul:
-            printf("ILInstructionMul\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
 			x86_emit1(&gd->ctx, fmuls, offset(get_operand(insn->reg[2])));
 			x86_emit1(&gd->ctx, fstps, offset(get_operand(insn->reg[0])));
 			break;
 			
 		case ILInstructionDiv:
-            printf("ILInstructionDiv\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
 			x86_emit1(&gd->ctx, fdivs, offset(get_operand(insn->reg[2])));
 			x86_emit1(&gd->ctx, fstps, offset(get_operand(insn->reg[0])));
 			break;
 
 		case ILInstructionMod:
-            printf("ILInstructionMod\n");
 			/* Real floating point modulus */
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[2])));
 			x86_emit0(&gd->ctx, frndint);
@@ -236,7 +228,6 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 			break;
 			
 		case ILInstructionAnd:
-            printf("ILInstructionAnd\n");
 			x86_emit1(&gd->ctx, pushl, ebx);
 			x86_emit2(&gd->ctx, subl, imm(8), esp);
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
@@ -252,7 +243,6 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 			break;
 			
 		case ILInstructionOr:
-            printf("ILInstructionOr\n");
 			x86_emit1(&gd->ctx, pushl, ebx);
 			x86_emit2(&gd->ctx, subl, imm(8), esp);
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
@@ -268,7 +258,6 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 			break;
 			
 		case ILInstructionLoopInit: {
-            printf("ILInstructionLoopInit\n");
 			X86ExLoop *xl = loop_new(gd);
 			x86_emit1(&gd->ctx, pushl, ebx);
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
@@ -283,7 +272,6 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 		}
 					    
 		case ILInstructionLoop: {
-            printf("ILInstructionLoop\n");
 			X86ExLoop *xl = loop_finish(gd);
 			x86_emit1(&gd->ctx, decl, ebx);
 			x86_emit1(&gd->ctx, jnel, relative(xl->jpt_start));
@@ -298,7 +286,6 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 		}
 
 		case ILInstructionJump: 
-            printf("ILInstructionJump\n");
 			x86_emit1(&gd->ctx, jmpl, relative(0));
 			xi = xinfo_create(insn->ex.jmp.pointer, X86ExInfoTypeLinkJump);
 			xi->ex.jmp.offset = x86_argument_offset(&gd->ctx, 0);
@@ -306,7 +293,6 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 			break;
 					
 		case ILInstructionJumpTrue:
-            printf("ILInstructionTrue\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[0])));
 			x86_emit0(&gd->ctx, fld1);
 			x86_emit0(&gd->ctx, fucompp);
@@ -319,11 +305,9 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 			break;
 
 		case ILInstructionMergeMarker:
-            printf("ILInstructionMergeMarker\n");
 			break;
 			
 		case ILInstructionLoadReference:
-            printf("ILInstructionLoadReference\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[1])));
 			x86_emit1(&gd->ctx, fstps, offset(get_operand(insn->reg[0])));
 			x86_emit2(&gd->ctx, leal, offset(get_operand(insn->reg[1])), eax);
@@ -331,7 +315,6 @@ static int compile_opcode(X86GlobalData *gd, AvsRunnable *obj, ILInstruction *in
 			break;
 			
 		case ILInstructionStoreReference:
-            printf("ILInstructionStoreReference\n");
 			x86_emit1(&gd->ctx, flds, offset(get_operand(insn->reg[2])));
 			x86_emit1(&gd->ctx, fsts, offset(get_operand(insn->reg[1])));
 			x86_emit1(&gd->ctx, fsts, offset(get_operand(insn->reg[0])));	

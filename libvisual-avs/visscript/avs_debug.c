@@ -2,23 +2,35 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <syslog.h>
+#include <libvisual/libvisual.h>
 
 #include "avs.h"
 
-int verbose_level = 0;
-
-void message(const int level, const char *format, ...)
+void message(const VisLogVerboseness level, const char *format, ...)
 {
     va_list ap;
     char buffer[256];
-
-    if (level > verbose_level)
-    return;
+    char tag[32];
+    char *info = "VisScript INFO: ";
+    char *warning = "VisScript WARNING: ";
+    char *error = "VisScript ERROR: ";
 
     va_start(ap, format);
     vsnprintf(buffer, sizeof(buffer), format, ap);
     va_end(ap);
 
-    fprintf(level ? stdout : stderr, "%s\n", buffer);
+    if(visual_log_get_verboseness() < level)
+        return;
+
+    if(level == VISUAL_LOG_VERBOSENESS_LOW)
+        snprintf(tag, 31, error);
+    else if (level == VISUAL_LOG_VERBOSENESS_MEDIUM)
+        snprintf(tag, 31, warning);
+    else if (level == VISUAL_LOG_VERBOSENESS_HIGH)
+        snprintf(tag, 31, info);
+    else 
+        return;
+
+    fprintf(level == VISUAL_LOG_VERBOSENESS_LOW ? stdout : stderr, "%s%s\n", tag, buffer);
 }
 

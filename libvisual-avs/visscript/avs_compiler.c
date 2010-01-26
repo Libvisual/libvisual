@@ -6,40 +6,59 @@
 
 #include "avs.h"
 
+#define check_str(str1, str2) if(strlen(str1) + strlen(str2) >= sizeof(str1)) break;
+
 static inline int dump_stack(AvsCompilerContext *ctx)
 {
 	AvsCompilerArgument *pa;
-	
-	fprintf(stderr, "compiler: stackdump: Stack dump\n");
+	char output[2048];
+    char tmp[2048];
+
+	snprintf(output, 2047, "\ncompiler: stackdump: Stack dump\n");
 	for (pa=(AvsCompilerArgument *)ctx->stack->base; pa < (AvsCompilerArgument *)ctx->stack->pointer; pa++) {
-		fprintf(stderr, "compiler: stackdump: [%2d] = ", (pa - (AvsCompilerArgument *)ctx->stack->base));
+		snprintf(tmp, 2047, "compiler: stackdump: [%2d] = ", (pa - (AvsCompilerArgument *)ctx->stack->base));
+        check_str(output, tmp);
+        strcat(output, tmp);
 		switch (pa->type) {
 			case AvsCompilerArgumentInvalid:
-				fprintf(stderr, "invalid");
+                snprintf(tmp, 2047, "invalid");
+                check_str(output, tmp);
+                strcat(output, tmp);
 				break;
 
 			case AvsCompilerArgumentConstant:
-				fprintf(stderr, "%.2f", pa->value.constant);
+				snprintf(tmp, 2047, "%.2f", pa->value.constant);
+                check_str(output, tmp);
+                strcat(output, tmp);
 				break;
 
 			case AvsCompilerArgumentIdentifier:
-				fprintf(stderr, "%s", pa->value.identifier);
+				snprintf(tmp, 2047, "%s", pa->value.identifier);
+                check_str(output, tmp);
+                strcat(output, tmp);
 				break;
 				
 			case AvsCompilerArgumentMarker: {
 				char *markers[] = { "invalid", "function", "argument", NULL };
-				fprintf(stderr, "--- %s marker ---", markers[pa->value.marker]);
+				snprintf(tmp, 2047, "--- %s marker ---", markers[pa->value.marker]);
+                check_str(output, tmp);
+                strcat(output, tmp);
 				break;
 			}
 							
 			case AvsCompilerArgumentPrivate:
-				fprintf(stderr, "private");
+                snprintf(tmp, 2047, "private");
+                check_str(output, tmp);
+                strcat(output, tmp);
 				break;
 
 		}
-		fputc('\n', stderr);
+        snprintf(tmp, 2047, "\n");
+        check_str(output, tmp);
+        strcat(output, tmp);
 	}
 
+    avs_debug(print(output));
 	return VISUAL_OK;
 }
 

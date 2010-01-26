@@ -399,7 +399,7 @@ void x86_emit_opcode(X86Context *ctx, int op, ...)
 				arg.value = va_arg(ap, int);
 				break;
 		}
-	
+
 		avs_debug(print("X86: Argument: index = %d, type = %d, "
 				"value = 0x%08x, disp = 0x%08x, base = %d",
 				arg.index, arg.type, arg.value, arg.disp, arg.base));

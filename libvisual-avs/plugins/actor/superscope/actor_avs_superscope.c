@@ -196,16 +196,16 @@ int lv_superscope_cleanup (VisPluginData *plugin)
 {
 	SuperScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-    if(priv->point)
+    if(priv->point != NULL)
         visual_mem_free(priv->point);
 
-    if(priv->frame)
+    if(priv->frame != NULL)
         visual_mem_free(priv->frame);
 
-    if(priv->beat)
+    if(priv->beat != NULL)
         visual_mem_free(priv->beat);
 
-    if(priv->init)
+    if(priv->init != NULL)
         visual_mem_free(priv->init);
 
 	visual_mem_free (priv);
@@ -243,7 +243,7 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 				if (visual_param_entry_is (param, "point")) {
 
-                    if(priv->point)
+                    if(priv->point != NULL)
                         visual_mem_free(priv->point);
 
 					priv->point = strdup(visual_param_entry_get_string (param));
@@ -251,7 +251,7 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 				} else if (visual_param_entry_is (param, "frame")) {
 
-                    if(priv->frame)
+                    if(priv->frame != NULL)
                         visual_mem_free(priv->frame);
 
 					priv->frame = strdup(visual_param_entry_get_string (param));
@@ -259,7 +259,7 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 				} else if (visual_param_entry_is (param, "beat")) {
 
-                    if(priv->beat)
+                    if(priv->beat != NULL)
                         visual_mem_free(priv->beat);
 
 					priv->beat = strdup(visual_param_entry_get_string (param));
@@ -267,7 +267,7 @@ int lv_superscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 				} else if (visual_param_entry_is (param, "init")) {
 
-                    if(priv->init)
+                    if(priv->init != NULL)
                         visual_mem_free(priv->init);
 
 					priv->init = strdup(visual_param_entry_get_string (param));

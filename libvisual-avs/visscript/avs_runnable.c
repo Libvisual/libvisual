@@ -262,11 +262,6 @@ static int context_dtor(VisObject *object)
 
 static int context_ctor(AvsRunnableContext *ctx)
 {
-    /* Set debug verboseness */
-    char *verbose = getenv("VERBOSELVL");
-    if(verbose)
-        verbose_level = atoi(verbose);
-
 	/* Initialize avs system contexts */
 	avs_il_core_context_init(&ctx->core);
 	avs_il_init(&ctx->assembler, &ctx->core);
