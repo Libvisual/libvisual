@@ -334,6 +334,8 @@ int lv_superscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
     VisBuffer pcm;
     float pcmbuf[1024];
 
+    printf("lv_superscope_render %p\n", video);
+
     visual_buffer_set_data_pair (&pcm, pcmbuf, sizeof (pcmbuf));
 
     visual_audio_get_sample_mixed (audio, &pcm, TRUE, 2,

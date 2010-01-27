@@ -1,3 +1,8 @@
+2010-01-27  Scott Sibley <scott@starlon.net>
+
+	* plugins/transform/movement/: Updated to current code. It's buggy at the
+	moment.
+
 2010-01-26  Scott Sibley <scott@starlon.net>
 
 	* visscript/avs.h, visscript/avs_debug.h, visscript/avs_compile.c:

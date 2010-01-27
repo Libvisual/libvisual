@@ -437,6 +437,7 @@ int pipeline_container_run (LVAVSPipelineContainer *container, VisVideo *video, 
 	VisListEntry *le = NULL;
 	LVAVSPipelineElement *element;
 
+    printf("pipeline_container_run\n");
 	while ((element = visual_list_next (container->members, &le)) != NULL) {
 
 		switch (element->type) {
