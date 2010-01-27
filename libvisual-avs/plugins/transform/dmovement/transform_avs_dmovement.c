@@ -349,8 +349,8 @@ int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
     trans_begin(priv, isBeat, (uint32_t *) pixels, (uint32_t *)priv->renderbuf);
 
-    if(!isBeat)
-        return 0;
+    //if(!isBeat)
+    //    return 0;
 
     trans_render(priv, isBeat, (uint32_t *) pixels, (uint32_t *)priv->renderbuf);
 
@@ -363,6 +363,7 @@ int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, uint32_t *fbout)
 {
+    printf("trans_begin\n");
     int thread = 0;
     int max_threads = 1;
 
@@ -408,8 +409,8 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
         priv->w_adj = (priv->height-1)<<16;
     }
 
-    //if(isBeat&0x80000000)
-    //    return;
+    if(isBeat&0x80000000)
+        return;
 
     priv->var_w = (AvsNumber)priv->width;
     priv->var_h = (AvsNumber)priv->height;
@@ -503,6 +504,8 @@ static void trans_begin(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fbin, 
 
 static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, uint32_t *fbout)
 {
+    printf("trans_render\n");
+
     int max_threads = 1;
     int this_thread = 0;
 
@@ -519,6 +522,7 @@ static void trans_render(DMovementPrivate *priv, uint8_t isBeat, uint32_t *fb, u
     uint32_t *fbin = !priv->buffern ? fb : 
         (uint32_t *)avs_get_global_buffer(priv->proxy, priv->width, priv->height, priv->buffern-1, 0)->buffer;
 
+    printf("buffern = %d\n", priv->buffern);
     {
         uint32_t *interptab = priv->tab + priv->xres * priv->yres * 3 + this_thread * (priv->xres * 6 + 6);
         uint32_t *rdtab = priv->tab;

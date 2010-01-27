@@ -342,6 +342,8 @@ static void trans_generate_table(MovementPrivate *priv, char *effect, int rectan
     //double max_d = sqrt((double)(priv->width*priv->width + priv->height*priv->height)) / 2.0;
     //double divmax_d = 1.0/max_d;
 
+    printf("trans_generate_table enter\n");
+
     if (priv->tab_w != priv->width || priv->tab_h != priv->height || priv->trans_effect != priv->effect || priv->effect_exp_ch)
     {
 
@@ -404,10 +406,10 @@ static void trans_generate_table(MovementPrivate *priv, char *effect, int rectan
         }
         else if(priv->trans_effect >= REFFECT_MIN && priv->trans_effect <= REFFECT_MAX && !effect_uses_eval(priv->trans_effect))
         {
-            printf("trans_effect generate_table level 1 %d\n", priv->trans_effect-REFFECT_MIN);
             double max_d = sqrt((priv->width*priv->width+priv->height*priv->height)/4.0);
             int y;
             t_reffect *ref = radial_effects[priv->trans_effect-REFFECT_MIN];
+            printf("trans_effect generate_table level 1 %d\n", priv->trans_effect-REFFECT_MIN);
             if(ref) for (y = 0; y < priv->height; y++)
             {
                 for(x = 0; x < priv->width; x++)
@@ -445,7 +447,7 @@ static void trans_generate_table(MovementPrivate *priv, char *effect, int rectan
                             if(oh < 0) { xpartial=0; oh=0; }
                             if(oh > priv->height - 1) { xpartial=31; oh=priv->height-2; }
                         }
-                        *transp++ = (ow+oh*priv->width) | (ypartial<<22) | (xpartial<<27);
+                        *transp++ = ow+oh*priv->width | (ypartial<<22) | (xpartial<<27);
                     }
                     else
                     {
@@ -635,9 +637,21 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
     uint32_t *outp = fbout;
     unsigned int *transp = priv->tab, x;
 
+    int max_threads = 1;
+    int this_thread = 0;
+
+    int start_l = (this_thread * priv->height) / max_threads;
+    int end_l;
+
+    if(this_thread >= max_threads - 1) end_l = priv->height;
+    else end_l = ((this_thread+1) * priv->height) / max_threads;
+
+    int outh=end_l-start_l;
+    if(outh<1) return;
+
     if(!priv->effect) return;
 
-    int skip_pix = 0;
+    int skip_pix = start_l*priv->width;
 
     x = (priv->width * priv->height ) / 4;
     if (priv->sourcemapped&1) {
@@ -707,6 +721,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
         transp += skip_pix;
         if(priv->subpixel && priv->blend)
         {
+            printf("trans render level 1.4.1 x=%d w=%d h=%d\n", x, priv->width, priv->height);
             while(x--)
             {
                 int offs=transp[0]&OFFSET_MASK;
@@ -718,7 +733,7 @@ static void trans_render(MovementPrivate *priv, uint32_t *fbin, uint32_t *fbout)
                 outp+=4;
                 inp+=4;
             }
-            x = (priv->width * priv->height)&3;
+            x = (priv->width * outh)&3;
             while (x--)
             {
                 int offs=transp[0]&OFFSET_MASK;
