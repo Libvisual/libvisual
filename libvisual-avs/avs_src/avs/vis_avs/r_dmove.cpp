@@ -61,21 +61,21 @@ static void __docheck(int xp, int yp, int m_lastw, int m_lasth, int d_x, int d_y
 #define MOD_NAME "Trans / Dynamic Movement"
 
 class C_THISCLASS : public C_RBASE2 {
-    protected:
-    public:
-        C_THISCLASS();
-        virtual ~C_THISCLASS();
-        virtual int render(char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h);
+	protected:
+	public:
+		C_THISCLASS();
+		virtual ~C_THISCLASS();
+		virtual int render(char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h);
 
     virtual int smp_getflags() { return 1; }
-        virtual int smp_begin(int max_threads, char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h); 
+		virtual int smp_begin(int max_threads, char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h); 
     virtual void smp_render(int this_thread, int max_threads, char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h); 
     virtual int smp_finish(char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h); // return value is that of render() for fbstuff etc
 
-        virtual char *get_desc() { return MOD_NAME; }
-        virtual HWND conf(HINSTANCE hInstance, HWND hwndParent);
-        virtual void load_config(unsigned char *data, int len);
-        virtual int  save_config(unsigned char *data);
+		virtual char *get_desc() { return MOD_NAME; }
+		virtual HWND conf(HINSTANCE hInstance, HWND hwndParent);
+		virtual void load_config(unsigned char *data, int len);
+		virtual int  save_config(unsigned char *data);
     RString effect_exp[4];
 
     int m_lastw,m_lasth;
@@ -84,7 +84,7 @@ class C_THISCLASS : public C_RBASE2 {
     int *m_tab;
     int AVS_EEL_CONTEXTNAME;
     double *var_d, *var_b, *var_r, *var_x, *var_y, *var_w, *var_h, *var_alpha;
-        int inited;
+		int inited;
     int codehandle[4];
     int need_recompile;
     int buffern;
@@ -105,7 +105,7 @@ class C_THISCLASS : public C_RBASE2 {
 #define GET_INT() (data[pos]|(data[pos+1]<<8)|(data[pos+2]<<16)|(data[pos+3]<<24))
 void C_THISCLASS::load_config(unsigned char *data, int len)
 {
-    int pos=0;
+	int pos=0;
   if (data[pos] == 1)
   {
     pos++;
@@ -131,35 +131,35 @@ void C_THISCLASS::load_config(unsigned char *data, int len)
       effect_exp[0].assign(buf);
     }
   }
-    if (len-pos >= 4) { subpixel=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { rectcoords=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { m_xres=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { m_yres=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { blend=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { wrap=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { buffern=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { subpixel=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { rectcoords=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { m_xres=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { m_yres=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { blend=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { wrap=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { buffern=GET_INT(); pos+=4; }
   else buffern=0;
-    if (len-pos >= 4) { nomove=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { nomove=GET_INT(); pos+=4; }
   else nomove=0;
 
 }
 int  C_THISCLASS::save_config(unsigned char *data)
 {
-    int pos=0;
+	int pos=0;
   data[pos++]=1;
   save_string(data,pos,effect_exp[0]);
   save_string(data,pos,effect_exp[1]);
   save_string(data,pos,effect_exp[2]);
   save_string(data,pos,effect_exp[3]);
-    PUT_INT(subpixel); pos+=4;
-    PUT_INT(rectcoords); pos+=4;
-    PUT_INT(m_xres); pos+=4;
-    PUT_INT(m_yres); pos+=4;
-    PUT_INT(blend); pos+=4;
-    PUT_INT(wrap); pos+=4;
-    PUT_INT(buffern); pos+=4;
-    PUT_INT(nomove); pos+=4;
-    return pos;
+	PUT_INT(subpixel); pos+=4;
+	PUT_INT(rectcoords); pos+=4;
+	PUT_INT(m_xres); pos+=4;
+	PUT_INT(m_yres); pos+=4;
+	PUT_INT(blend); pos+=4;
+	PUT_INT(wrap); pos+=4;
+	PUT_INT(buffern); pos+=4;
+	PUT_INT(nomove); pos+=4;
+	return pos;
 }
 
 C_THISCLASS::C_THISCLASS()
@@ -287,7 +287,7 @@ int C_THISCLASS::smp_begin(int max_threads, char visdata[2][2][576], int isBeat,
   }
   if (isBeat&0x80000000) return 0;
   int *fbin = !buffern ? framebuffer : (int *)getGlobalBuffer(w,h,buffern-1,0);
-    if (!fbin) return 0;
+	if (!fbin) return 0;
 
   *var_w=(double)w;
   *var_h=(double)h;
@@ -384,7 +384,7 @@ void C_THISCLASS::smp_render(int this_thread, int max_threads, char visdata[2][2
   if (outh<1) return;
 
   int *fbin = !buffern ? framebuffer : (int *)getGlobalBuffer(w,h,buffern-1,0);
-    if (!fbin) return;
+	if (!fbin) return;
   // yay, the table is generated. now we do a fixed point 
   // interpolation of the whole thing and pray.
 
@@ -586,8 +586,8 @@ void C_THISCLASS::smp_render(int this_thread, int max_threads, char visdata[2][2
 
 C_RBASE *R_DMove(char *desc)
 {
-    if (desc) { strcpy(desc,MOD_NAME); return NULL; }
-    return (C_RBASE *) new C_THISCLASS();
+	if (desc) { strcpy(desc,MOD_NAME); return NULL; }
+	return (C_RBASE *) new C_THISCLASS();
 }
 
 typedef struct 
@@ -620,9 +620,9 @@ static C_THISCLASS *g_this;
 static BOOL CALLBACK g_DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,LPARAM lParam)
 {
   static int isstart;
-    switch (uMsg)
-    {
-        case WM_INITDIALOG:
+	switch (uMsg)
+	{
+		case WM_INITDIALOG:
       isstart=1;
       SetDlgItemText(hwndDlg,IDC_EDIT1,g_this->effect_exp[0].get());
       SetDlgItemText(hwndDlg,IDC_EDIT2,g_this->effect_exp[1].get());
@@ -640,16 +640,16 @@ static BOOL CALLBACK g_DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,LPARAM lPa
         CheckDlgButton(hwndDlg,IDC_NOMOVEMENT,BST_CHECKED);
 
       SendDlgItemMessage(hwndDlg, IDC_COMBO1, CB_ADDSTRING, 0, (int)"Current");
+  		{
+				int i=0;
+				char txt[64];
+				for (i=0;i<NBUF;i++)
         {
-                int i=0;
-                char txt[64];
-                for (i=0;i<NBUF;i++)
-        {
-                     wsprintf(txt, "Buffer %d", i+1);
-                     SendDlgItemMessage(hwndDlg, IDC_COMBO1, CB_ADDSTRING, 0, (int)txt);
-                }
+					 wsprintf(txt, "Buffer %d", i+1);
+					 SendDlgItemMessage(hwndDlg, IDC_COMBO1, CB_ADDSTRING, 0, (int)txt);
+				}
       }
-          SendDlgItemMessage(hwndDlg, IDC_COMBO1, CB_SETCURSEL, (WPARAM) g_this->buffern, 0);
+		  SendDlgItemMessage(hwndDlg, IDC_COMBO1, CB_SETCURSEL, (WPARAM) g_this->buffern, 0);
 
       SetDlgItemInt(hwndDlg,IDC_EDIT5,g_this->m_xres,FALSE);
       SetDlgItemInt(hwndDlg,IDC_EDIT6,g_this->m_yres,FALSE);
@@ -736,8 +736,8 @@ static BOOL CALLBACK g_DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,LPARAM lPa
         DestroyMenu(hMenu);
       }
 
-      if (!isstart && HIWORD(wParam) == CBN_SELCHANGE && LOWORD(wParam) == IDC_COMBO1) // handle clicks to combo box
-          g_this->buffern = SendDlgItemMessage(hwndDlg, IDC_COMBO1, CB_GETCURSEL, 0, 0);
+  	  if (!isstart && HIWORD(wParam) == CBN_SELCHANGE && LOWORD(wParam) == IDC_COMBO1) // handle clicks to combo box
+	  	  g_this->buffern = SendDlgItemMessage(hwndDlg, IDC_COMBO1, CB_GETCURSEL, 0, 0);
  
       if (!isstart && HIWORD(wParam) == EN_CHANGE)
       {
@@ -756,20 +756,20 @@ static BOOL CALLBACK g_DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,LPARAM lPa
           g_this->effect_exp[2].get_from_dlgitem(hwndDlg,IDC_EDIT3);
           g_this->effect_exp[3].get_from_dlgitem(hwndDlg,IDC_EDIT4);
           g_this->need_recompile=1;
-                  if (LOWORD(wParam) == IDC_EDIT4) g_this->inited = 0;
+				  if (LOWORD(wParam) == IDC_EDIT4) g_this->inited = 0;
           LeaveCriticalSection(&g_this->rcs);
         }
       }
     return 0;
   }
-    return 0;
+	return 0;
 }
 
 
 HWND C_THISCLASS::conf(HINSTANCE hInstance, HWND hwndParent)
 {
-    g_this = this;
-    return CreateDialog(hInstance,MAKEINTRESOURCE(IDD_CFG_DMOVE),hwndParent,g_DlgProc);
+	g_this = this;
+	return CreateDialog(hInstance,MAKEINTRESOURCE(IDD_CFG_DMOVE),hwndParent,g_DlgProc);
 }
 
 #else

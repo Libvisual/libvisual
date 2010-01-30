@@ -144,7 +144,11 @@ char *scanstr_back(char *str, char *toscan, char *defval)
 		if (t==s) return defval;
 		s=t;
 	}
-}	
+}
+
+HWND GetWinampHwnd(void){
+	return hwnd_WinampParent;
+}
 
 int LoadPreset(int preset)
 {

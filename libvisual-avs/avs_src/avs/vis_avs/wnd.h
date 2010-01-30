@@ -30,6 +30,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int Wnd_Init(struct winampVisModule *this_mod);
 void Wnd_Quit(void);
 void SetTransparency(HWND hWnd, int enable, int amount);
+HWND GetWinampHwnd(void);
 
 extern HWND g_hwnd;
 extern HINSTANCE g_hInstance;

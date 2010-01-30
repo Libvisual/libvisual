@@ -589,7 +589,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "Close",IDOK,77,129,50,14
     LTEXT           "version string",IDC_VERSTR,7,7,191,8
-    LTEXT           "Copyright (C) 1998-2004 Nullsoft",IDC_STATIC,7,16,191,8
+    LTEXT           "Copyright (C) 1998-2006 Nullsoft",IDC_STATIC,7,16,191,8
     CTEXT           "Justin Frankel, Francis Gastellu, Christophe Thibault\r\nBrennan Underwood && mig",
                     IDC_STATIC,22,85,168,19
     CTEXT           "Advanced Visualization Studio:\nWhat we (at Nullsoft) use to (try to) get chicks at parties.",

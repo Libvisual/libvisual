@@ -31,6 +31,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "render.h"
 #include "timing.h"
 #include "undo.h"
+#include "wnd.h"
+#include "wa_ipc.h"
 
 #ifdef LASER
 C_LineListBase *g_laser_linelist;
@@ -84,13 +86,13 @@ void Render_Init(HINSTANCE hDllInstance)
 
 	char INI_FILE[MAX_PATH];
 	char *p=INI_FILE;
-	GetModuleFileName(hDllInstance,INI_FILE,sizeof(INI_FILE));
-	if (p[0]) while (p[1]) p++;
+	strncpy(INI_FILE,(char*)SendMessage(GetWinampHwnd(),WM_WA_IPC,0,IPC_GETINIFILE),MAX_PATH);
+	p += strlen(INI_FILE) - 1;
 	while (p >= INI_FILE && *p != '\\') p--;
 #ifdef LASER
-	strcpy(p,"\\vis_avs_laser.dat");
+	strcpy(p,"\\plugins\\vis_avs_laser.dat");
 #else
-	strcpy(p,"\\vis_avs.dat");
+	strcpy(p,"\\plugins\\vis_avs.dat");
 #endif
   extern int g_saved_preset_dirty;
   // clear the undo stack before loading a file.
@@ -112,13 +114,13 @@ void Render_Quit(HINSTANCE hDllInstance)
   {
 		char INI_FILE[MAX_PATH];
 		char *p=INI_FILE;
-		GetModuleFileName(hDllInstance,INI_FILE,sizeof(INI_FILE));
-		if (p[0]) while (p[1]) p++;
+		strncpy(INI_FILE,(char*)SendMessage(GetWinampHwnd(),WM_WA_IPC,0,IPC_GETINIFILE),MAX_PATH);
+		p += strlen(INI_FILE) - 1;
 		while (p >= INI_FILE && *p != '\\') p--;
   #ifdef LASER
-	  strcpy(p,"\\vis_avs_laser.dat");
+	  strcpy(p,"\\plugins\\vis_avs_laser.dat");
   #else
-	  strcpy(p,"\\vis_avs.dat");
+	  strcpy(p,"\\plugins\\vis_avs.dat");
   #endif
 
     g_render_effects->__SavePreset(INI_FILE);

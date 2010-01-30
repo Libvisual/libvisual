@@ -59,7 +59,7 @@ char *verstr=
 #else
 "AVS/Laser"
 #endif
-" v2.81b"
+" v2.81d"
 ;
 
 static unsigned int WINAPI RenderThread(LPVOID a);
