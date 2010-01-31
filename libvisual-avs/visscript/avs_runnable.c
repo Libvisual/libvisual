@@ -7,6 +7,10 @@
 
 #include "avs.h"
 
+#define PI 3.14159
+#define E 2.71828
+#define PHI 1.618033
+
 /**
  * 	Create a new variable manager, used for sharing variables between
  * 	runnable objects.
@@ -17,6 +21,12 @@ AvsRunnableVariableManager * avs_runnable_variable_manager_new()
 {
 	AvsRunnableVariableManager *manager = malloc(sizeof(AvsRunnableVariableManager));
 	memset(manager, 0, sizeof(AvsRunnableVariableManager));
+
+    // Every manager should have these variables
+    avs_runnable_variable_create(manager, "$PI", PI);
+    avs_runnable_variable_create(manager, "$E", E);
+    avs_runnable_variable_create(manager, "$PHI", PHI);
+
 	return manager;
 }
 
