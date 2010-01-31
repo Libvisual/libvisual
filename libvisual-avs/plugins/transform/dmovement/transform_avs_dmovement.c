@@ -319,10 +319,11 @@ int lv_dmovement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	uint8_t *pixels = visual_video_get_pixels (video);
     uint8_t *vidbuf, vidoutbuf;
     int i;
-    uint8_t isBeat = visual_audio_is_beat(audio);
+    uint8_t isBeat = visual_audio_is_beat(audio, VISUAL_BEAT_ALGORITHM_ADV);
 
     printf("lv_dmovement_video\n");
 
+    return 0;
     if(priv->last_width != video->width || priv->last_height != video->height || priv->last_pitch != video->pitch) {
         //trans_initalize(priv, video->width, video->height);
 

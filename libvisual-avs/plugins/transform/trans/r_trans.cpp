@@ -125,21 +125,21 @@ static inline bool effect_uses_eval(int t)
 
 
 class C_THISCLASS : public C_RBASE2 {
-    protected:
-    public:
-        C_THISCLASS();
-        virtual ~C_THISCLASS();
-        virtual int render(char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h);
+	protected:
+	public:
+		C_THISCLASS();
+		virtual ~C_THISCLASS();
+		virtual int render(char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h);
 
     virtual int smp_getflags() { return 1; }
-        virtual int smp_begin(int max_threads, char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h); 
+		virtual int smp_begin(int max_threads, char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h); 
     virtual void smp_render(int this_thread, int max_threads, char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h); 
     virtual int smp_finish(char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h); // return value is that of render() for fbstuff etc
 
-        virtual char *get_desc() { return MOD_NAME; }
-        virtual HWND conf(HINSTANCE hInstance, HWND hwndParent);
-        virtual void load_config(unsigned char *data, int len);
-        virtual int  save_config(unsigned char *data);
+		virtual char *get_desc() { return MOD_NAME; }
+		virtual HWND conf(HINSTANCE hInstance, HWND hwndParent);
+		virtual void load_config(unsigned char *data, int len);
+		virtual int  save_config(unsigned char *data);
 
     int *trans_tab, trans_tab_w, trans_tab_h, trans_tab_subpixel;
     int trans_effect;
@@ -157,8 +157,8 @@ class C_THISCLASS : public C_RBASE2 {
 #define GET_INT() (data[pos]|(data[pos+1]<<8)|(data[pos+2]<<16)|(data[pos+3]<<24))
 void C_THISCLASS::load_config(unsigned char *data, int len)
 {
-    int pos=0;
-    if (len-pos >= 4) { effect=GET_INT(); pos+=4; }
+	int pos=0;
+	if (len-pos >= 4) { effect=GET_INT(); pos+=4; }
   if (effect == 32767)
   {
     if (!memcmp(data+pos,"!rect ",6))
@@ -173,8 +173,8 @@ void C_THISCLASS::load_config(unsigned char *data, int len)
       if (l > 0 && len-pos >= l)
       {
         effect_exp.resize(l);
-          memcpy(effect_exp.get(), data+pos, l);
-          pos+=l;
+	      memcpy(effect_exp.get(), data+pos, l);
+	      pos+=l;
       }
       else
       {
@@ -192,14 +192,14 @@ void C_THISCLASS::load_config(unsigned char *data, int len)
       pos+=l;
     }
   }
-    if (len-pos >= 4) { blend=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { sourcemapped=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { rectangular=GET_INT(); pos+=4; }
-    if (len-pos >= 4) { subpixel=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { blend=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { sourcemapped=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { rectangular=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { subpixel=GET_INT(); pos+=4; }
   else subpixel=0;
-    if (len-pos >= 4) { wrap=GET_INT(); pos+=4; }
+	if (len-pos >= 4) { wrap=GET_INT(); pos+=4; }
   else wrap=0;
-    if (!effect && len-pos >= 4) 
+	if (!effect && len-pos >= 4) 
   { 
     effect=GET_INT(); pos+=4; 
   }
@@ -222,7 +222,7 @@ void C_THISCLASS::load_config(unsigned char *data, int len)
 }
 int  C_THISCLASS::save_config(unsigned char *data)
 {
-    int pos=0;
+	int pos=0;
 
   // the reason this is 15, and not REFFECT_MAX, is because old versions of AVS barf
   // if effect is > 15, so we put 0, and at the end put the new value
@@ -231,7 +231,7 @@ int  C_THISCLASS::save_config(unsigned char *data)
     PUT_INT(0); 
     pos += 4;
   }
-    else
+	else
   {
     PUT_INT(effect); 
     pos+=4;
@@ -245,8 +245,8 @@ int  C_THISCLASS::save_config(unsigned char *data)
     memcpy(data+pos,effect_exp.get(),strlen(effect_exp.get())+1);
     pos+=strlen(effect_exp.get())+1;
   }
-    PUT_INT(blend); pos+=4;
-    PUT_INT(sourcemapped); pos+=4;
+	PUT_INT(blend); pos+=4;
+	PUT_INT(sourcemapped); pos+=4;
   PUT_INT(rectangular); pos+=4;
   PUT_INT(subpixel); pos+=4;
   PUT_INT(wrap); pos+=4;
@@ -257,7 +257,7 @@ int  C_THISCLASS::save_config(unsigned char *data)
     PUT_INT(effect);
     pos+=4;
   }
-    return pos;
+	return pos;
 }
 
 
@@ -313,28 +313,28 @@ int C_THISCLASS::smp_begin(int max_threads, char visdata[2][2][576], int isBeat,
     x=w*h;
     p=0;
 
-      if (trans_effect == 1)
-      {
-          while (x--)
-          {
-            int r=(p++)+(rand()%3)-1 + ((rand()%3)-1)*w;
-            *transp++ = min(w*h-1,max(r,0));
-          }
-      }
-      else if (trans_effect == 2)
-      {
-          int y=h;
-          while (y--)
-          {
-            int x=w;
-            int lp=w/64;
-            while (x--)
-            {
-              *transp++ = p+lp++;
-              if (lp >= w) lp-=w;
-            }
-            p+=w;
-          }
+	  if (trans_effect == 1)
+	  {
+		  while (x--)
+		  {
+		    int r=(p++)+(rand()%3)-1 + ((rand()%3)-1)*w;
+		    *transp++ = min(w*h-1,max(r,0));
+		  }
+	  }
+	  else if (trans_effect == 2)
+	  {
+		  int y=h;
+		  while (y--)
+		  {
+		    int x=w;
+		    int lp=w/64;
+		    while (x--)
+		    {
+			  *transp++ = p+lp++;
+			  if (lp >= w) lp-=w;
+		    }
+		    p+=w;
+		  }
     }
     else if (trans_effect == 7)
     {
@@ -750,7 +750,7 @@ int C_THISCLASS::smp_finish(char visdata[2][2][576], int isBeat, int *framebuffe
 {
   return !!effect;
 }
-    
+	
 int C_THISCLASS::render(char visdata[2][2][576], int isBeat, int *framebuffer, int *fbout, int w, int h)
 {
   smp_begin(1,visdata,isBeat,framebuffer,fbout,w,h);
@@ -762,8 +762,8 @@ int C_THISCLASS::render(char visdata[2][2][576], int isBeat, int *framebuffer, i
 
 C_RBASE *R_Trans(char *desc)
 {
-    if (desc) { strcpy(desc,MOD_NAME); return NULL; }
-    return (C_RBASE *) new C_THISCLASS();
+	if (desc) { strcpy(desc,MOD_NAME); return NULL; }
+	return (C_RBASE *) new C_THISCLASS();
 }
 
 
@@ -772,9 +772,9 @@ static C_THISCLASS *g_this;
 static BOOL CALLBACK g_DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,LPARAM lParam)
 {
   static int isstart;
-    switch (uMsg)
-    {
-        case WM_INITDIALOG:
+	switch (uMsg)
+	{
+		case WM_INITDIALOG:
       {
         int x;
         for (x = 0; x < sizeof(descriptions)/sizeof(descriptions[0]); x ++) 
@@ -832,7 +832,7 @@ static BOOL CALLBACK g_DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,LPARAM lPa
           EnableWindow(GetDlgItem(hwndDlg,IDC_LABEL1),0);
         }
       }
-            return 1;
+			return 1;
     case WM_TIMER:
       if (wParam == 1)
       {
@@ -957,15 +957,15 @@ static BOOL CALLBACK g_DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam,LPARAM lPa
       }
       return 0;
     return 0;
-    }
-    return 0;
+	}
+	return 0;
 }
 
 
 HWND C_THISCLASS::conf(HINSTANCE hInstance, HWND hwndParent)
 {
-    g_this = this;
-    return CreateDialog(hInstance,MAKEINTRESOURCE(IDD_CFG_TRANS),hwndParent,g_DlgProc);
+	g_this = this;
+	return CreateDialog(hInstance,MAKEINTRESOURCE(IDD_CFG_TRANS),hwndParent,g_DlgProc);
 }
 
 #else
