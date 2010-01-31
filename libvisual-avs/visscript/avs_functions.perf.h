@@ -1,5 +1,5 @@
 /* C code produced by gperf version 3.0.3 */
-/* Command-line: gperf avs_functions.perf  */
+/* Command-line: gperf ./avs_functions.perf  */
 /* Computed positions: -k'1-2,$' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -30,9 +30,9 @@ error "gperf generated tables don't work with this execution character set. Plea
 #endif
 
 
-#define TOTAL_KEYWORDS 36
+#define TOTAL_KEYWORDS 37
 #define MIN_WORD_LENGTH 2
-#define MAX_WORD_LENGTH 7
+#define MAX_WORD_LENGTH 10
 #define MIN_HASH_VALUE 3
 #define MAX_HASH_VALUE 68
 /* maximum key range = 66, duplicates = 0 */
@@ -95,92 +95,93 @@ in_word_set (str, len)
   static AvsBuiltinFunctionToken wordlist[] =
     {
       {(char*)0,-1}, {(char*)0,-1}, {(char*)0,-1},
-#line 10 "avs_functions.perf"
+#line 10 "./avs_functions.perf"
       {"tan", AVS_BUILTIN_FUNCTION_TAN},
-#line 13 "avs_functions.perf"
+#line 13 "./avs_functions.perf"
       {"atan", AVS_BUILTIN_FUNCTION_ATAN},
       {(char*)0,-1}, {(char*)0,-1},
-#line 42 "avs_functions.perf"
+#line 42 "./avs_functions.perf"
       {"gettime", AVS_BUILTIN_FUNCTION_GETTIME},
       {(char*)0,-1},
-#line 11 "avs_functions.perf"
+#line 11 "./avs_functions.perf"
       {"asin", AVS_BUILTIN_FUNCTION_ASIN},
-      {(char*)0,-1},
-#line 36 "avs_functions.perf"
+#line 43 "./avs_functions.perf"
+      {"getkbmouse", AVS_BUILTIN_FUNCTION_GETKBMOUSE},
+#line 36 "./avs_functions.perf"
       {"assign", AVS_BUILTIN_FUNCTION_ASSIGN},
-#line 17 "avs_functions.perf"
+#line 17 "./avs_functions.perf"
       {"invsqrt", AVS_BUILTIN_FUNCTION_INVSQRT},
-#line 8 "avs_functions.perf"
+#line 8 "./avs_functions.perf"
       {"sin", AVS_BUILTIN_FUNCTION_SIN},
-#line 24 "avs_functions.perf"
+#line 24 "./avs_functions.perf"
       {"sign", AVS_BUILTIN_FUNCTION_SIGN},
       {(char*)0,-1}, {(char*)0,-1},
-#line 35 "avs_functions.perf"
+#line 35 "./avs_functions.perf"
       {"if", AVS_BUILTIN_FUNCTION_IF},
-#line 20 "avs_functions.perf"
+#line 20 "./avs_functions.perf"
       {"log", AVS_BUILTIN_FUNCTION_LOG},
-#line 31 "avs_functions.perf"
+#line 31 "./avs_functions.perf"
       {"bnot", AVS_BUILTIN_FUNCTION_BNOT},
-#line 33 "avs_functions.perf"
+#line 33 "./avs_functions.perf"
       {"above", AVS_BUILTIN_FUNCTION_ABOVE},
-#line 40 "avs_functions.perf"
+#line 40 "./avs_functions.perf"
       {"getosc", AVS_BUILTIN_FUNCTION_GETOSC},
-#line 41 "avs_functions.perf"
+#line 41 "./avs_functions.perf"
       {"getspec", AVS_BUILTIN_FUNCTION_GETSPEC},
-#line 7 "avs_functions.perf"
+#line 7 "./avs_functions.perf"
       {"abs", AVS_BUILTIN_FUNCTION_ABS},
-#line 12 "avs_functions.perf"
+#line 12 "./avs_functions.perf"
       {"acos", AVS_BUILTIN_FUNCTION_ACOS},
-#line 34 "avs_functions.perf"
+#line 34 "./avs_functions.perf"
       {"below", AVS_BUILTIN_FUNCTION_BELOW},
       {(char*)0,-1}, {(char*)0,-1},
-#line 9 "avs_functions.perf"
+#line 9 "./avs_functions.perf"
       {"cos", AVS_BUILTIN_FUNCTION_COS},
-#line 23 "avs_functions.perf"
+#line 23 "./avs_functions.perf"
       {"ceil", AVS_BUILTIN_FUNCTION_CEIL},
-#line 22 "avs_functions.perf"
+#line 22 "./avs_functions.perf"
       {"floor", AVS_BUILTIN_FUNCTION_FLOOR},
       {(char*)0,-1}, {(char*)0,-1},
-#line 30 "avs_functions.perf"
+#line 30 "./avs_functions.perf"
       {"bor", AVS_BUILTIN_FUNCTION_BOR},
-#line 16 "avs_functions.perf"
+#line 16 "./avs_functions.perf"
       {"sqrt", AVS_BUILTIN_FUNCTION_SQRT},
-#line 14 "avs_functions.perf"
+#line 14 "./avs_functions.perf"
       {"atan2", AVS_BUILTIN_FUNCTION_ATAN2},
       {(char*)0,-1}, {(char*)0,-1}, {(char*)0,-1},
-#line 28 "avs_functions.perf"
+#line 28 "./avs_functions.perf"
       {"rand", AVS_BUILTIN_FUNCTION_RAND},
-#line 32 "avs_functions.perf"
+#line 32 "./avs_functions.perf"
       {"equal", AVS_BUILTIN_FUNCTION_EQUAL},
       {(char*)0,-1},
-#line 27 "avs_functions.perf"
+#line 27 "./avs_functions.perf"
       {"sigmoid", AVS_BUILTIN_FUNCTION_SIGMOID},
-#line 15 "avs_functions.perf"
+#line 15 "./avs_functions.perf"
       {"sqr", AVS_BUILTIN_FUNCTION_SQR},
-#line 29 "avs_functions.perf"
+#line 29 "./avs_functions.perf"
       {"band", AVS_BUILTIN_FUNCTION_BAND},
-#line 38 "avs_functions.perf"
+#line 38 "./avs_functions.perf"
       {"exec3", AVS_BUILTIN_FUNCTION_EXEC3},
       {(char*)0,-1}, {(char*)0,-1},
-#line 18 "avs_functions.perf"
+#line 18 "./avs_functions.perf"
       {"pow", AVS_BUILTIN_FUNCTION_POW},
       {(char*)0,-1},
-#line 37 "avs_functions.perf"
+#line 37 "./avs_functions.perf"
       {"exec2", AVS_BUILTIN_FUNCTION_EXEC2},
       {(char*)0,-1}, {(char*)0,-1},
-#line 19 "avs_functions.perf"
+#line 19 "./avs_functions.perf"
       {"exp", AVS_BUILTIN_FUNCTION_EXP},
-#line 39 "avs_functions.perf"
+#line 39 "./avs_functions.perf"
       {"loop", AVS_BUILTIN_FUNCTION_LOOP},
-#line 21 "avs_functions.perf"
+#line 21 "./avs_functions.perf"
       {"log10", AVS_BUILTIN_FUNCTION_LOG10},
       {(char*)0,-1}, {(char*)0,-1},
-#line 25 "avs_functions.perf"
+#line 25 "./avs_functions.perf"
       {"min", AVS_BUILTIN_FUNCTION_MIN},
       {(char*)0,-1}, {(char*)0,-1}, {(char*)0,-1},
       {(char*)0,-1}, {(char*)0,-1}, {(char*)0,-1},
       {(char*)0,-1}, {(char*)0,-1}, {(char*)0,-1},
-#line 26 "avs_functions.perf"
+#line 26 "./avs_functions.perf"
       {"max", AVS_BUILTIN_FUNCTION_MAX}
     };
 
@@ -198,5 +199,5 @@ in_word_set (str, len)
     }
   return 0;
 }
-#line 43 "avs_functions.perf"
+#line 44 "./avs_functions.perf"
 

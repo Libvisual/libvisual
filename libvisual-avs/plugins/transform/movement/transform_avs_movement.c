@@ -74,7 +74,7 @@ static t_reffect *radial_effects[REFFECT_MAX-REFFECT_MIN+1]=
 };
 
 typedef struct {
-    AVSGlobalProxy *proxy;
+    AvsGlobalProxy *proxy;
 
     uint8_t *swapbuf, *renderbuf;
 
@@ -295,7 +295,7 @@ int lv_movement_video (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
     MovementPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     uint8_t *pixels = visual_video_get_pixels (video);
     uint8_t *vidbuf, *vidoutbuf;
-    int isBeat = visual_audio_is_beat(audio);
+    int isBeat = priv->proxy->isBeat;
     int i;
 
     printf("lv_movement_video %p\n", video);

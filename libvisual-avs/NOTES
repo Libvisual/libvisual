@@ -30,3 +30,11 @@ static const AVSDataDescriptionEntry datadescription[] = {
 AVSActorPlugin:
 	Propogate special AVS stuff through parameters ?
 
+// render function
+// render should return 0 if it only used framebuffer, or 1 if the new output data is in fbout. this
+// is
+// used when you want to do something that you'd otherwise need to make a copy of the framebuffer.
+// w and h are the width and height of the screen, in pixels.
+// isBeat is 1 if a beat has been detected.
+// visdata is in the format of [spectrum:0,wave:1][channel][band].
+

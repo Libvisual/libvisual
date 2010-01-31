@@ -82,7 +82,7 @@ struct _LVAVSPipeline {
 
 	LVAVSPipelineContainer		*container;
 
-    AVSGlobalProxy      *proxy;
+    AvsGlobalProxy      *proxy;
 };
 
 struct _LVAVSPipelineRenderState {

@@ -248,18 +248,29 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 			AVS_SERIALIZE_SKIP_LENGTH (avstree->cur, 32);
 			isnamed = TRUE;
 			marker = AVS_ELEMENT_TYPE_APE;
-		}
 
+            printf("avstree->cur %s\n", avstree->cur);
+            exit(0);
+		}
+        // FIXME: In some files next_section doesn't point to the correct location.
+        // Check the location of the section's size data. For now I've commented the
+        // line at the bottom of this function where avstree->cur is assigned next_section.
+        // This may not work for every file, but it works with the few I've checked.
 		next_section = AVS_SERIALIZE_GET_NEXT_SECTION (AVS_TREE_GET_CURRENT_POINTER (avstree));
 		avstree->cur_section_length = next_section - avstree->cur;
 
 		AVS_SERIALIZE_SKIP_INT (AVS_TREE_GET_CURRENT_POINTER (avstree));
 
-		printf (":: 0x%x marker! %d\n", marker, marker);
+        printf("next_section %s\n", next_section);
 
+		printf (":: 0x%x marker! %d\n", marker, marker);
 
 		/* FIXME: Use a table lookup here instead of giant function */
 		switch (marker) {
+            case AVS_ELEMENT_TYPE_RENDER_SIMPLESPECTRUM:
+
+                break;
+
 			case AVS_ELEMENT_TYPE_MISC_COMMENT:
 				element = avs_parse_element_non_complex (avstree, AVS_ELEMENT_TYPE_MISC_COMMENT,
 						"text", AVS_SERIALIZE_ENTRY_TYPE_STRING,
@@ -267,6 +278,34 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 
 				break;
 
+            case AVS_ELEMENT_TYPE_MISC_RENDERSTATE:
+                element = avs_parse_element_non_complex (avstree, AVS_ELEMENT_TYPE_MISC_RENDERSTATE,
+                        "newmode", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        NULL);
+                break;
+            
+            case AVS_ELEMENT_TYPE_MISC_BPM:
+                element = avs_parse_element_non_complex (avstree, AVS_ELEMENT_TYPE_MISC_BPM,
+                        "enabled", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "arbitrary", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "skip", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "invert", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "arbVal", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "skipVal", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "skipfirst", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        NULL);
+                break;
+
+            
+            case AVS_ELEMENT_TYPE_MISC_STACK:
+                element = avs_parse_element_non_complex (avstree, AVS_ELEMENT_TYPE_MISC_STACK,
+                        "dir", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "which", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "blend", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        "adjblend_val", AVS_SERIALIZE_ENTRY_TYPE_INT,
+                        NULL);
+                break;
+            
 			case AVS_ELEMENT_TYPE_RENDER_RING:
 				element = avs_parse_element_non_complex (avstree, AVS_ELEMENT_TYPE_RENDER_RING,
 						"source and place", AVS_SERIALIZE_ENTRY_TYPE_INT,
@@ -543,7 +582,7 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 		}
 
 
-		avstree->cur = next_section;
+		//avstree->cur = next_section;
 	}
 
 	return 0;
@@ -561,6 +600,7 @@ int avs_element_deserialize (AVSElement *element, AVSTree *avstree)
 	AVS_TREE_GET_CURRENT_POINTER (avstree) =
 		avs_serialize_container_deserialize (element->serialize, AVS_TREE_GET_CURRENT_POINTER (avstree));
 
+    printf("avs_element_deeserialize %s\n", avstree->cur);
 	return 0;
 }
 
@@ -794,6 +834,8 @@ AVSElement *avs_parse_element_non_complex (AVSTree *avstree, AVSElementType type
 	avs_element_connect_serialize_container (element, scont);
 
 	avs_element_deserialize (element, avstree);
+
+    printf("after deserialize %s\n", avstree->cur);
 
 	return element;
 }

@@ -1,7 +1,16 @@
+2010-01-31  Scott Sibley <scott@starlon.net>
+
+	* plugins/actor/superscope/: Superscope now handles colors, although only
+	32 bit.
+	* plugins/transform/*: Ported several plugins. No testing was done, and
+	they're likely incomplete. I more less did params and some copy/paste work.
+
 2010-01-27  Scott Sibley <scott@starlon.net>
 
 	* plugins/transform/movement/: Updated to current code. It's buggy at the
 	moment.
+	* plugins/*: Included copies of all avs source into their respective
+	directories.
 
 2010-01-26  Scott Sibley <scott@starlon.net>
 

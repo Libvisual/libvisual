@@ -26,7 +26,7 @@ int run(Private *priv)
 
 int main(int argc, char **argv)
 {
-    char *script = "foo=3*0.2;";
+    char *script = "foo=3*0.2; bar=foo*10; baz=foo*bar;";
     Private *priv;
     priv = visual_mem_new0 (Private, 1);
 

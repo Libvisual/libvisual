@@ -193,7 +193,7 @@ static unsigned int __inline BLEND_SUB(unsigned int a, unsigned int b)
 #define BLEND_ADJ BLEND_ADJ_NOMMX
 #endif
 
-static unsigned int __inline BLEND_ADJ_NOMMX(AVSGlobalProxy *obj, unsigned int a, unsigned int b, int v)
+static unsigned int __inline BLEND_ADJ_NOMMX(AvsGlobalProxy *obj, unsigned int a, unsigned int b, int v)
 {
 	register int t;
 	t=obj->blendtable[a&0xFF][v]+obj->blendtable[b&0xFF][0xFF-v];
@@ -202,7 +202,7 @@ static unsigned int __inline BLEND_ADJ_NOMMX(AVSGlobalProxy *obj, unsigned int a
 	return t;
 }
 
-static unsigned int __inline BLEND_MUL(AVSGlobalProxy *obj, unsigned int a, unsigned int b)
+static unsigned int __inline BLEND_MUL(AvsGlobalProxy *obj, unsigned int a, unsigned int b)
 {
 	register int t;
 	t=obj->blendtable[a&0xFF][b&0xFF];
@@ -211,7 +211,7 @@ static unsigned int __inline BLEND_MUL(AVSGlobalProxy *obj, unsigned int a, unsi
 	return t;
 }
 
-static __inline void BLEND_LINE(AVSGlobalProxy *obj, int *fb, int color)
+static __inline void BLEND_LINE(AvsGlobalProxy *obj, uint32_t *fb, int color)
 {
   register int bm=obj->line_blend_mode&0xff;
   switch (obj->line_blend_mode&0xff)
@@ -269,7 +269,7 @@ static unsigned int __inline BLEND_ADJ(unsigned int a, unsigned int b, int v)
 #endif
 
 
-static __inline unsigned int BLEND4(AVSGlobalProxy *obj, unsigned int *p1, unsigned int w, int xp, int yp)
+static __inline unsigned int BLEND4(AvsGlobalProxy *obj, unsigned int *p1, unsigned int w, int xp, int yp)
 {
 #ifdef NO_MMX
   register int t;
@@ -353,7 +353,7 @@ static __inline unsigned int BLEND4(AVSGlobalProxy *obj, unsigned int *p1, unsig
 }
 
 
-static __inline unsigned int BLEND4_16(AVSGlobalProxy *obj, unsigned int *p1, unsigned int w, int xp, int yp)
+static __inline unsigned int BLEND4_16(AvsGlobalProxy *obj, unsigned int *p1, unsigned int w, int xp, int yp)
 {
 #ifdef NO_MMX
   register int t;
@@ -533,7 +533,7 @@ mmx_addblend_loop:
 #endif
 }
 
-static __inline void mmx_mulblend_block(AVSGlobalProxy *obj, int *output, int *input, int l)
+static __inline void mmx_mulblend_block(AvsGlobalProxy *obj, int *output, int *input, int l)
 {
 #ifdef NO_MMX
   while (l--)

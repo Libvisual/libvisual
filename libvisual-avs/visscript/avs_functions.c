@@ -47,6 +47,7 @@ AVS_BUILTIN_FUNCTION(below,	*args[0] < *args[1] ? 1.0 : 0.0)
 AVS_BUILTIN_FUNCTION(getosc, _getosc(obj->audio, *args[0], *args[1], *args[2]));
 AVS_BUILTIN_FUNCTION(getspec, _getspec(obj->audio, *args[0], *args[1], *args[2]));
 AVS_BUILTIN_FUNCTION(gettime, _gettime(*args[0]));
+AVS_BUILTIN_FUNCTION(getkbmouse, 0);
 
 AvsRunnableFunction avs_builtin_functions[] =
 {
@@ -81,6 +82,7 @@ AvsRunnableFunction avs_builtin_functions[] =
     { "getosc", avs_builtin_function_getosc, 3, },
     { "getspec", avs_builtin_function_getspec, 3, },
     { "gettime", avs_builtin_function_gettime, 1, },
+    { "getkbmouse", avs_builtin_function_getkbmouse, 1, },
 	{ NULL, },
 };
 

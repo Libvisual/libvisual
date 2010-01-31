@@ -96,6 +96,7 @@ char *avs_serialize_retrieve_string_from_preset_section (char *section, VisParam
 {
 	char *string;
 	int len;
+    int i;
 
 	/* FIXME should just get an int ? */
 	len = AVS_SERIALIZE_GET_INT (section);
@@ -113,6 +114,7 @@ char *avs_serialize_retrieve_string_from_preset_section (char *section, VisParam
 
 	AVS_SERIALIZE_SKIP_LENGTH (section, len);
 
+    printf("after length skip :%s\n", section);
 	return section;
 }
 

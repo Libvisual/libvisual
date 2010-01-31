@@ -1,13 +1,13 @@
 
 #include "avs_globals.h"
 
-AVSGlobalBuffer *avs_get_global_buffer(AVSGlobalProxy *obj, int w, int h, int n, int do_alloc)
+AvsGlobalBuffer *avs_get_global_buffer(AvsGlobalProxy *obj, int w, int h, int n, int do_alloc)
 {
     if(n < 0 || n >= MAXBUF)
         return NULL;
 
     if(obj->buffers == NULL) {
-        obj->buffers = visual_mem_new0(AVSGlobalBuffer, MAXBUF);
+        obj->buffers = visual_mem_new0(AvsGlobalBuffer, MAXBUF);
     }
     
     if(!obj->buffers[n].buffer || obj->buffers[n].w != w || obj->buffers[n].h != h)
@@ -34,7 +34,7 @@ AVSGlobalBuffer *avs_get_global_buffer(AVSGlobalProxy *obj, int w, int h, int n,
 
 int global_proxy_dtor(VisObject *obj)
 {
-    AVSGlobalProxy *proxy = AVS_GLOBAL_PROXY(obj);
+    AvsGlobalProxy *proxy = AVS_GLOBAL_PROXY(obj);
 
     if(proxy->buffers != NULL) {
         int i;
@@ -49,9 +49,9 @@ int global_proxy_dtor(VisObject *obj)
     return FALSE;
 }
 
-AVSGlobalProxy *avs_global_proxy_new() 
+AvsGlobalProxy *avs_global_proxy_new() 
 {
-    AVSGlobalProxy *proxy = visual_mem_new0(AVSGlobalProxy, 1);
+    AvsGlobalProxy *proxy = visual_mem_new0(AvsGlobalProxy, 1);
     visual_object_initialize(VISUAL_OBJECT(proxy), 1, global_proxy_dtor);
     return proxy;
 }

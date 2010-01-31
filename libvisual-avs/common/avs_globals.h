@@ -4,7 +4,7 @@
 
 #include <libvisual/libvisual.h>
 
-#define AVS_GLOBAL_PROXY(obj)   VISUAL_CHECK_CAST((obj), AVSGlobalProxy)
+#define AVS_GLOBAL_PROXY(obj)   VISUAL_CHECK_CAST((obj), AvsGlobalProxy)
 
 #define MAXBUF 8
 
@@ -12,19 +12,21 @@ typedef struct {
     uint32_t *buffer;
     int w;
     int h;
-} AVSGlobalBuffer;
+} AvsGlobalBuffer;
 
 typedef struct {
     VisObject obj;
     unsigned char   blendtable[256][256];
     int reset_vars_on_recompile;
     int line_blend_mode;
-    AVSGlobalBuffer *buffers;
+    AvsGlobalBuffer *buffers;
     int numbuffers;
+    int isBeat;
+    float audiodata[2][2][1024]; // Is in the format of [spectrum:0,wave:1][channel][band]
     char path[];
-} AVSGlobalProxy;
+} AvsGlobalProxy;
 
-AVSGlobalBuffer *avs_get_global_buffer(AVSGlobalProxy *obj, int w, int h, int n, int do_alloc);
-AVSGlobalProxy *avs_global_proxy_new();
+AvsGlobalBuffer *avs_get_global_buffer(AvsGlobalProxy *obj, int w, int h, int n, int do_alloc);
+AvsGlobalProxy *avs_global_proxy_new();
 
 #endif

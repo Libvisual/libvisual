@@ -282,7 +282,7 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 
 				break;
 
-			case LVAVS_PRESET_ELEMENT_TYPE_RENDERMODE:
+			case LVAVS_PRESET_ELEMENT_TYPE_RENDERSTATE:
 
 				break;
 
@@ -290,6 +290,14 @@ int pipeline_from_preset (LVAVSPipelineContainer *container, LVAVSPresetContaine
 
 				break;
 
+            case LVAVS_PRESET_ELEMENT_TYPE_BPM:
+
+                break;
+
+            case LVAVS_PRESET_ELEMENT_TYPE_STACK:
+
+                break;
+            
 			default:
 				visual_log (VISUAL_LOG_CRITICAL, "Invalid LVAVSPresetElementType in LVAVSPresetElement");
 
@@ -436,9 +444,60 @@ int pipeline_container_run (LVAVSPipelineContainer *container, VisVideo *video, 
 {
 	VisListEntry *le = NULL;
 	LVAVSPipelineElement *element;
+    VisBuffer pcmbuf1;
+    VisBuffer pcmbuf2;
+    VisBuffer spmbuf1;
+    VisBuffer spmbuf2;
+    VisBuffer tmp;
+    float data[2][2][1024];
+    
+    
+    visual_buffer_init_allocate(&tmp, sizeof(float) * 1024, visual_buffer_destroyer_free);
+
+    /* Left audio */
+    visual_buffer_set_data_pair(&pcmbuf1, data[0][0], sizeof(float) * 1024);
+
+    if(visual_audio_get_sample(audio, &tmp, VISUAL_AUDIO_CHANNEL_LEFT) == VISUAL_OK)
+
+        visual_audio_sample_buffer_mix(&pcmbuf1, &tmp, TRUE, 1.0);
+
+    visual_buffer_set_data_pair(&spmbuf1, &data[1][0], sizeof(float) * 1024);
+
+    visual_audio_get_spectrum_for_sample (&spmbuf1, &tmp, TRUE);
+
+    /* Right audio */
+    visual_buffer_set_data_pair(&pcmbuf2, data[0][1], sizeof(float) * 1024);
+
+    if(visual_audio_get_sample(audio, &tmp, VISUAL_AUDIO_CHANNEL_LEFT) == VISUAL_OK)
+
+        visual_audio_sample_buffer_mix(&pcmbuf2, &tmp, TRUE, 1.0);
+
+    visual_buffer_set_data_pair(&spmbuf2, data[1][1], sizeof(float) * 1024);
+
+    visual_audio_get_spectrum_for_sample(&spmbuf2, &tmp, TRUE);
+
+    visual_object_unref(VISUAL_OBJECT(&tmp));
 
     printf("pipeline_container_run\n");
 	while ((element = visual_list_next (container->members, &le)) != NULL) {
+
+        AvsGlobalProxy *proxy = element->pipeline->proxy;
+        int i;
+        float *beatdata = visual_mem_malloc0(2048 * sizeof(float));
+        
+        for(i = 0; i < 1024; i++) {
+            proxy->audiodata[0][0][i] = data[0][0][i];
+            proxy->audiodata[1][0][i] = data[1][0][i];
+            proxy->audiodata[0][1][i] = data[0][1][i];
+            proxy->audiodata[1][1][i] = data[1][1][i];
+        }
+        
+        beatdata = data[0][0];
+        beatdata += 1024;
+        beatdata = data[0][1];
+        beatdata -= 1024;
+
+        proxy->isBeat = visual_audio_is_beat_with_data(audio, VISUAL_BEAT_ALGORITHM_ADV, beatdata, 2408);
 
 		switch (element->type) {
 			case LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR:
