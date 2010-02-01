@@ -51,7 +51,7 @@ enum trans_runnable {
 };
 
 typedef struct {
-    AVSGlobalProxy *proxy;
+    AvsGlobalProxy *proxy;
 
     AvsRunnableContext *ctx;
     AvsRunnableVariableManager *vm;

@@ -44,14 +44,64 @@ int global_proxy_dtor(VisObject *obj)
         }
         visual_mem_free(proxy->buffers);
     }
+
+    visual_object_unref(VISUAL_OBJECT(proxy->multidelay));
+
     visual_mem_free(proxy);
 
     return FALSE;
 }
 
+int multidelay_dtor(VisObject *obj)
+{
+    AvsMultidelayGlobals *multidelay = AVS_MULTIDELAY(obj);
+    int i;
+
+    for(i = 0; i < 6; i++)
+    {
+        visual_mem_free(multidelay->buffer[i].fb);
+    }
+
+    visual_mem_free(multidelay);
+
+    return VISUAL_OK;
+}
+
+int multidelay_init(AvsMultidelayGlobals *multidelay)
+{
+    int i;
+    for(i = 0; i < 6; i++)
+    {
+        multidelay->renderid = 0;
+        multidelay->framessincebeat = 0;
+        multidelay->framesperbeat = 0;
+        multidelay->framemem = 1;
+        multidelay->oldframemem = 1;
+        multidelay->usebeats[i] = FALSE;
+        multidelay->delay[i] = 0;
+        multidelay->framedelay[i] = 0;
+        multidelay->buffersize[i] = 1;
+        multidelay->virtualbuffersize[i] = 1;
+        multidelay->oldvirtualbuffersize[i] = 1;
+        multidelay->buffer[i] = visual_mem_malloc0(multidelay->buffersize[i]);
+        multidelay->inpos[i] = buffer[i];
+        multidelay->outpos[i] = buffer[i];
+    }
+
+    return VISUAL_OK;
+}
+
 AvsGlobalProxy *avs_global_proxy_new() 
 {
     AvsGlobalProxy *proxy = visual_mem_new0(AvsGlobalProxy, 1);
-    visual_object_initialize(VISUAL_OBJECT(proxy), 1, global_proxy_dtor);
+    
+    visual_object_initialize(VISUAL_OBJECT(proxy), 0, global_proxy_dtor);
+
+    proxy->multidelay = visual_mem_new0(AvsMultidelayGlobals, 1);
+
+    visual_object_initialize(VISUAL_OBJECT(proxy->multidelay), 0, multidelay_dtor);
+
+    multidelay_init(proxy->multidelay);
+
     return proxy;
 }

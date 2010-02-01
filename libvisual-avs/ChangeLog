@@ -1,3 +1,9 @@
+2010-02-01  Scott Sibley <scott@starlon.net>
+
+	* plugins/transform/*: Ported more plugins. Again, no testing done. No
+	build scripts. No voodoo. Just params, copy/paste, and privatizing.
+	* common/avs_globals.*: Added AvsLPVOID for two trans plugins.
+
 2010-01-31  Scott Sibley <scott@starlon.net>
 
 	* plugins/actor/superscope/: Superscope now handles colors, although only
