@@ -83,9 +83,9 @@ int multidelay_init(AvsMultidelayGlobals *multidelay)
         multidelay->buffersize[i] = 1;
         multidelay->virtualbuffersize[i] = 1;
         multidelay->oldvirtualbuffersize[i] = 1;
-        multidelay->buffer[i] = visual_mem_malloc0(multidelay->buffersize[i]);
-        multidelay->inpos[i] = buffer[i];
-        multidelay->outpos[i] = buffer[i];
+        multidelay->buffer[i].fb = visual_mem_malloc0(multidelay->buffersize[i]);
+        multidelay->inpos[i].fb = multidelay->buffer[i].fb;
+        multidelay->outpos[i].fb = multidelay->buffer[i].fb;
     }
 
     return VISUAL_OK;

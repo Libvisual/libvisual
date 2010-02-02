@@ -90,7 +90,7 @@ int act_avs_init (VisPluginData *plugin)
 
 	static VisParamEntryProxy params[] = {
 		VISUAL_PARAM_LIST_ENTRY_STRING ("filename",
-				"/home/starlon/Projects/libvisual-svn/trunk/libvisual-avs/testpresets/drive.avs", ""),
+				"/home/starlon/Projects/libvisual-svn/trunk/libvisual-avs/testpresets/bump3d.avs", ""),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("winamp avs", 1, VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_END
 	};

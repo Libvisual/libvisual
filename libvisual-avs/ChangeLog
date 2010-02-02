@@ -1,3 +1,7 @@
+2010-02-02  Scott Sibley <scott@starlon.net>
+
+	* plguins/actor/*: More plugin templates. Just the basics for now.
+
 2010-02-01  Scott Sibley <scott@starlon.net>
 
 	* plugins/transform/*: Ported more plugins. Again, no testing done. No
