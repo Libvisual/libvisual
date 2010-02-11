@@ -31,7 +31,7 @@ int main (int argc, char **argv)
 
 	visual_init (&argc, &argv);
 
-    //visual_log_set_verboseness(VISUAL_LOG_VERBOSENESS_NONE);
+    visual_log_set_verboseness(VISUAL_LOG_VERBOSENESS_HIGH);
 
 	display = display_new (sdl_driver_new ());
 
@@ -67,18 +67,17 @@ int main (int argc, char **argv)
 
     params = visual_plugin_get_params(input->plugin);
 
-    VisString *string = visual_string_new_with_value("songinfo");
-    param = visual_param_container_get(params, string);
+    param = visual_param_container_get(params, "songinfo");
 
     if(param != NULL)
         visual_param_entry_set_object(param, 
             VISUAL_OBJECT(visual_actor_get_songinfo(actor)));
 
-    params = visual_plugin_get_params(actor->plugin);
+    //params = visual_plugin_get_params(actor->plugin);
 
-    string = visual_string_new_with_value("show_info");
-    param = visual_param_container_get(params, string);
-    visual_param_entry_set_string(param, "Always");
+    //string = visual_string_new_with_value("filename");
+    //param = visual_param_container_get(params, string);
+    //visual_param_entry_set_string(param, "/home/starlon/Projects/libvisual-svn/trunk/libvisual-avs/testpresets/ring10.avs");
 
 	localqueue = visual_event_queue_new ();
 

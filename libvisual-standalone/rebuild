@@ -4,5 +4,5 @@ gcc -Wall -o lv-standalone client.c display.c sdldriver.c x11driver.c glxdriver.
   -L/usr/X11R6/lib -lGL -lGLU -lXxf86vm \
   `pkg-config --cflags --libs libvisual-0.6` \
   `sdl-config --libs --cflags` \
-  -ggdb
+  -ggdb -z execstack
 

@@ -250,7 +250,6 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 			marker = AVS_ELEMENT_TYPE_APE;
 
             printf("avstree->cur %s\n", avstree->cur);
-            exit(0);
 		}
         // FIXME: In some files next_section doesn't point to the correct location.
         // Check the location of the section's size data. For now I've commented the
@@ -260,8 +259,6 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 		avstree->cur_section_length = next_section - avstree->cur;
 
 		AVS_SERIALIZE_SKIP_INT (AVS_TREE_GET_CURRENT_POINTER (avstree));
-
-        printf("next_section %s\n", next_section);
 
 		printf (":: 0x%x marker! %d\n", marker, marker);
 
@@ -582,7 +579,7 @@ int avs_parse_tree (AVSTree *avstree, AVSContainer *curcontainer)
 		}
 
 
-		//avstree->cur = next_section;
+		avstree->cur = next_section;
 	}
 
 	return 0;
