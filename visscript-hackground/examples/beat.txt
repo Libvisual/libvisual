@@ -1,2 +1,0 @@
-Counter=if(equal(beat,1),1,counter-0.05);
-Enabled=above(counter,0);

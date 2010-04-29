@@ -1,3 +1,0 @@
-#!/bin/bash
-
-gcc -o gtk2vis_test gtk2vis_test.c `pkg-config --libs --cflags gtk+-2.0 libvisual-0.4 libvisual-widgets-gtk2`

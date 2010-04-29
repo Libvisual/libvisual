@@ -1,9 +1,0 @@
-yypact		== proper action 					== state
-yytranslate	== translation lex token into bison token		== lextoken
-yycheck		== check if token state exists lookup = yypact + token	== lookup == yypact + token
-yytable		== reduce (rule)/shift (state) table 			== lookup
-yydefact	== default action to take				== state
-yyr2		== reduce length					== lookup == rule
-yyr1		== rule -> nt						== lookup == rule
-yypgoto		== nt -> state						== lookup == rule nt
-yydefgoto	== default state to goto after reduce			== lookup == rule nt

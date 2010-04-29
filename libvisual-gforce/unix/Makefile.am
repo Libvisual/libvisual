@@ -1,3 +1,0 @@
-
-SUBDIRS = Headers libmfl libvisual
-
