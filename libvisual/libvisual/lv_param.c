@@ -1262,6 +1262,34 @@ int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
 }
 
 /**
+ * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_COLLECTION and assigns a VisCollection to the VisParamEntry.
+ * With a VisCollection VisParamEntry, the VisCollection is referenced, not cloned.
+ *
+ * @param param Pointer to the VisParamEntry to which a parameter is set.
+ * @param collection Pointer to the VisCollection that is linked to the VisParamEntry.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ */
+int visual_param_entry_set_collection (VisParamEntry *param, VisCollection *collection)
+{
+	visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+
+	param->type = VISUAL_PARAM_ENTRY_TYPE_COLLECTION;
+
+	if (param->collection != NULL)
+		visual_object_unref (VISUAL_OBJECT(param->collection));
+
+	param->collection = collection;
+
+	if (param->collection != NULL)
+		visual_object_ref (VISUAL_OBJECT(param->collection));
+
+	visual_param_entry_changed (param);
+
+	return VISUAL_OK;
+}
+
+/**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_OBJECT and assigns a VisObject to the VisParamEntry.
  * With a VisObject VisParamEntry, the VisObject is referenced, not cloned.
  *
@@ -1551,6 +1579,27 @@ VisObject *visual_param_entry_get_object (VisParamEntry *param)
 	}
 
 	return param->objdata;
+}
+
+
+/**
+ * Get the collection parameter from a VisParamEntry.
+ *
+ * @param param Pointer to the VisParamEntry from which the collection parameter is requested.
+ *
+ * @return Pointer to the VisCollection parameter from the VisParamEntry.
+ */
+VisCollection *visual_param_entry_get_collection (VisParamEntry *param)
+{
+	visual_log_return_val_if_fail (param != NULL, NULL);
+
+	if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLLECTION) {
+		visual_log (VISUAL_LOG_WARNING, _("Requested collection from non collection param\n"));
+
+		return NULL;
+	}
+
+	return param->collection;
 }
 
 /**

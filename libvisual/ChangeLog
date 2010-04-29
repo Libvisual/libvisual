@@ -1,3 +1,7 @@
+2010-04-29  Scott  <scott@localhost.localdomain>
+
+	* libvisual/lv_param.*: Include a VisCollection param
+
 2010-02-11  Scott Sibley <scott@starlon.net>
 
 	* libvisual/lv_audio.c: Provide isBeat with and without data provided by

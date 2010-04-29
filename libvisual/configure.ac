@@ -11,6 +11,8 @@ m4_define([libvisual_version], [libvisual_version_major.libvisual_version_minor.
 AC_INIT([Libvisual Library], [libvisual_version], [synap@nerds-incorporated.org], [libvisual])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
+AC_CONFIG_MACRO_DIR([m4])
+
 dnl TODO: Add these into lv_config.h (or maybe lv_version.h)
 LIBVISUAL_VERSION_MAJOR=libvisual_version_major
 LIBVISUAL_VERSION_MINOR=libvisual_version_minor

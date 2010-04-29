@@ -66,6 +66,7 @@ typedef enum {
 	VISUAL_PARAM_ENTRY_TYPE_COLOR,		/**< VisColor parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_PALETTE,	/**< VisPalette parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_OBJECT,		/**< VisObject parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_COLLECTION,	/**< VisCollection parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_END		/**< List end, and used as terminator for VisParamEntry lists. */
 } VisParamEntryType;
 
@@ -173,7 +174,7 @@ struct _VisParamEntryProxy {
 
 	VisColor		 color;
 
-    char            *annotation;
+	char            *annotation;
 };
 
 /**
@@ -190,7 +191,7 @@ struct _VisParamEntry {
 	VisParamEntryLimit	 limit;		/**< Parameter limits. */
 
 	char			*string;	/**< String data. */
-    char            *string_default;/**< Parameter default string. */
+	char            *string_default;/**< Parameter default string. */
 
 	union {
 		int		 integer;		/**< Integer data. */
@@ -198,18 +199,19 @@ struct _VisParamEntry {
 		double		 doubleflt;		/**< Double floating point data. */
 	} numeric;
 
-    union {
-        int     integer;            /**< Default integer data. */
-        float       floating;       /**< Default floating point data. */
-        double      doubleflt;      /**< Default double floating point data. */
-    } numeric_default;
+	union {
+		int     integer;            /**< Default integer data. */
+		float       floating;       /**< Default floating point data. */
+		double      doubleflt;      /**< Default double floating point data. */
+	} numeric_default;
 
 	VisColor		 color;		/**< VisColor data. */
-    VisColor         color_default; /**< Default VisColor data. */
+	VisColor         color_default; /**< Default VisColor data. */
 	VisPalette		 pal;		/**< VisPalette data. */
 	VisObject		*objdata;	/**< VisObject data for a VisObject parameter. */
+	VisCollection		 *collection;
 
-    char            *annotation;    /**< Annotation data. */
+	char            *annotation;    /**< Annotation data. */
 
 	VisList			 callbacks;	/**< The change notify callbacks. */
 };
@@ -258,6 +260,7 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color
 int visual_param_entry_set_color_default (VisParamEntry *param, VisColor *color);
 int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal);
 int visual_param_entry_set_object (VisParamEntry *param, VisObject *object);
+int visual_param_entry_set_collection (VisParamEntry *param, VisCollection *collection);
 int visual_param_entry_set_annotation (VisParamEntry *param, char *ann);
 
 char *visual_param_entry_get_name (VisParamEntry *param);
@@ -273,6 +276,7 @@ VisColor *visual_param_entry_get_color (VisParamEntry *param);
 VisColor *visual_param_entry_get_color_default (VisParamEntry *param);
 VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
 VisObject *visual_param_entry_get_object (VisParamEntry *param);
+VisCollection *visual_param_entry_get_collection (VisParamEntry *param);
 char *visual_param_entry_get_annotation(VisParamEntry *param);
 
 int visual_param_entry_limit_set_from_limit_proxy (VisParamEntry *param, VisParamEntryLimitProxy *limit);
