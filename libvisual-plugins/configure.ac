@@ -130,7 +130,7 @@ if test "$ENABLE_PLUGIN_GDKPIXBUF" = "yes"; then
     [HAVE_GTK="yes"], [HAVE_GTK="no"])
 
   if test "$HAVE_GTK" = "yes"; then
-    build_actor_plugins="$build_actor_plugins gdkpixbuf"
+    build_actor_plugins="$build_actor_plugins" # gdkpixbuf"
   else
     AC_MSG_WARN([*** GTK+ >= gtk_required_version is not found.
 	  	The libvisual GdkPixbuf image loader plugin won't be build.
@@ -510,7 +510,7 @@ AC_ARG_ENABLE([goom2k4],
     [ENABLE_GOOM2K4=yes])
 
 if test "$ENABLE_GOOM2K4" = "yes"; then
-  build_actor_plugins="$build_actor_plugins goom2k4"
+  build_actor_plugins="$build_actor_plugins" # goom2k4"
 fi
 
 dnl blursk

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-28 18:18+0200\n"
+"POT-Creation-Date: 2010-04-29 09:45-0500\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -31,28 +31,32 @@ msgstr ""
 msgid "This is the libvisual port of the xmms Bumpscope plugin"
 msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:126
+#: plugins/actor/bumpscope/actor_bumpscope.c:124
+msgid "Light size:"
+msgstr ""
+
+#: plugins/actor/bumpscope/actor_bumpscope.c:127
 msgid "The color of the light"
 msgstr "Color de la luz"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:132
-#: plugins/actor/bumpscope/actor_bumpscope.c:140
+#: plugins/actor/bumpscope/actor_bumpscope.c:133
+#: plugins/actor/bumpscope/actor_bumpscope.c:139
 msgid "The size of the light"
 msgstr "Tamaño de la luz"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:148
+#: plugins/actor/bumpscope/actor_bumpscope.c:145
 msgid "Cycling colors"
 msgstr "Colores cíclicos"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:149
+#: plugins/actor/bumpscope/actor_bumpscope.c:146
 msgid "Automatic cycling through colors"
 msgstr "Ciclar automáticamente a través de los colores"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:152
+#: plugins/actor/bumpscope/actor_bumpscope.c:149
 msgid "Moving light"
 msgstr "Luz en movimiento"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:154
+#: plugins/actor/bumpscope/actor_bumpscope.c:151
 msgid ""
 "Automatic movement of the light, when disabled it's possible to select "
 "itusing the mouse cursor"
@@ -60,11 +64,11 @@ msgstr ""
 "Movimiento automático de la luz; cuando está desactivada, es posible "
 "seleccionarla utilizando el mouse"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:158
+#: plugins/actor/bumpscope/actor_bumpscope.c:155
 msgid "Diamond"
 msgstr "Diamante"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:159
+#: plugins/actor/bumpscope/actor_bumpscope.c:156
 msgid "Diamond shaped light"
 msgstr ""
 
@@ -224,43 +228,43 @@ msgstr ""
 msgid "This is the libvisual plugin for the infinite visual"
 msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:62
+#: plugins/actor/jakdaw/actor_jakdaw.c:63
 msgid ""
 "Original by: Christopher Wilson <Jakdaw@usa.net>, Port by: Dennis Smit "
 "<ds@nerds-incorporated.org>"
 msgstr ""
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:64
+#: plugins/actor/jakdaw/actor_jakdaw.c:65
 msgid "jakdaw visual plugin"
 msgstr ""
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:65
+#: plugins/actor/jakdaw/actor_jakdaw.c:66
 #, fuzzy
 msgid "This is the libvisual port of the xmms Jakdaw plugin"
 msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:151
+#: plugins/actor/jakdaw/actor_jakdaw.c:152
 msgid "Blur mode:"
 msgstr "Modo difuminado:"
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:152
+#: plugins/actor/jakdaw/actor_jakdaw.c:153
 msgid "Plotter color:"
 msgstr ""
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:153
+#: plugins/actor/jakdaw/actor_jakdaw.c:154
 msgid "Plotter type:"
 msgstr ""
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:156
+#: plugins/actor/jakdaw/actor_jakdaw.c:157
 msgid "The method of blurring"
 msgstr "El método de difuminado"
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:161
+#: plugins/actor/jakdaw/actor_jakdaw.c:162
 #, fuzzy
 msgid "The color of the plotter"
 msgstr "Color de la luz"
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:166
+#: plugins/actor/jakdaw/actor_jakdaw.c:167
 msgid "The plotter it's shape"
 msgstr "La superficie del plotter"
 

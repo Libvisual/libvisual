@@ -7,9 +7,9 @@ DIST_SUBDIRS = \
   dancingparticles \
   finespectrum \
   G-Force \
-  gdkpixbuf \
-  goom2k4 \
   gstreamer \
+  goom2k4 \
+  gdkpixbuf \
   infinite \
   jakdaw \
   JESS \
