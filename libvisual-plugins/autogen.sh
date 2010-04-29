@@ -130,7 +130,7 @@ check_m4macros() {
 
     cm_status=0
     if [ -n "$REQUIRED_M4MACROS" ]; then
-	echo "Checking for required M4 macros..."
+	echo "Checking for required M4 macros... ($REQUIRED_M4MACROS)"
 	# check that each macro file is in one of the macro dirs
 	for cm_macro in $REQUIRED_M4MACROS; do
 	    cm_macrofound=false
@@ -323,16 +323,16 @@ for configure_ac in $configure_files; do
 
 	# Finally, run automake to create the makefiles ...
 	echo "Running $AUTOMAKE..."
-        cp -pf COPYING COPYING.autogen_bak
-        cp -pf INSTALL INSTALL.autogen_bak
+        #cp -pf COPYING COPYING.autogen_bak
+        #cp -pf INSTALL INSTALL.autogen_bak
 	if [ $REQUIRED_AUTOMAKE_VERSION != 1.4 ]; then
 	    $AUTOMAKE --gnu --add-missing --force --copy || exit 1
 	else
 	    $AUTOMAKE --gnu --add-missing --copy || exit 1
 	fi
-        cmp COPYING COPYING.autogen_bak || cp -pf COPYING.autogen_bak COPYING
-        cmp INSTALL INSTALL.autogen_bak || cp -pf INSTALL.autogen_bak INSTALL
-        rm -f COPYING.autogen_bak INSTALL.autogen_bak
+        #cmp COPYING COPYING.autogen_bak || cp -pf COPYING.autogen_bak COPYING
+        #cmp INSTALL INSTALL.autogen_bak || cp -pf INSTALL.autogen_bak INSTALL
+        #rm -f COPYING.autogen_bak INSTALL.autogen_bak
 
 	cd "$topdir"
     fi

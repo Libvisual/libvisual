@@ -1,6 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
+AC_CONFIG_MACRO_DIR([m4])
 
 m4_define([lv_plugins_version_major], [0])
 m4_define([lv_plugins_version_minor], [6])
