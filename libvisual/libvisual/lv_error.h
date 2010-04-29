@@ -150,6 +150,7 @@ typedef enum {
 	VISUAL_ERROR_PARAM_CALLBACK_NULL,		/**< The given param change callback is NULL. */
 	VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY,		/**< Too many param change callbacks are registered. */
 	VISUAL_ERROR_PARAM_INVALID_TYPE,		/**< The VisParamEntry is of invalid type. */
+    VISUAL_PARAM_CHANGED,                   /**< The VisParamEntry changed */
 
 	/* Error entries for the VisPlugin system */
 	VISUAL_ERROR_PLUGIN_NULL,			/**< The VisPluginData is NULL. */
@@ -257,6 +258,9 @@ typedef enum {
 	VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS,		/**< The X or Y value are greater than the VisVideo it's dimension. */
 	VISUAL_ERROR_VIDEO_NOT_INDENTICAL,		/**< The two VisVideo their configuration are not indentical. */
 	VISUAL_ERROR_VIDEO_NOT_TRANSFORMED,		/**< Could not depth transform a VisVideo. */
+
+    VISUAL_ERROR_BEAT_NULL,                 /**< The VisBeat is NULL */
+    VISUAL_ERROR_BEAT_ADV_NULL,              /**< The VisBeatAdv is NULL */
 
 	VISUAL_ERROR_LIST_END				/**< Last entry, to check against for the number of errors. */
 } VisErrorCodes;

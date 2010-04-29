@@ -469,6 +469,10 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 {
 	VisActor *actor;
 	VisVideo *video;
+    VisInput *input;
+    VisPluginData *input_plugin;
+    VisParamContainer *params;
+    VisParamEntry *entry;
 	int depthflag;
 	int depth;
 
@@ -588,6 +592,15 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 
 	bin->actmorphvideo = video;
 	bin->actmorphmanaged = TRUE;
+
+    input = visual_bin_get_input(bin);
+
+    if(input != NULL &&
+        (input_plugin = visual_input_get_plugin(input)) &&
+        (params = visual_plugin_get_params(input_plugin)) &&
+        (entry = visual_param_container_get(params, "songinfo"))) {
+        visual_param_entry_set_object(entry, VISUAL_OBJECT(entry));
+    }
 
 	visual_log (VISUAL_LOG_INFO, _("switching... ******************************************"));
 	visual_bin_switch_actor (bin, actor);

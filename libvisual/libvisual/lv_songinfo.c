@@ -83,6 +83,10 @@ int visual_songinfo_init (VisSongInfo *songinfo, VisSongInfoType type)
 
 	/* Set the VisSongInfo data */
 	songinfo->type = type;
+    songinfo->songname = NULL;
+    songinfo->artist = NULL;
+    songinfo->album = NULL;
+    songinfo->cover = NULL;
 
 	return VISUAL_OK;
 }
@@ -274,7 +278,7 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	VisParamContainer *params;
 	VisParamEntry *xparam;
 	VisParamEntry *yparam;
-	VisString name;
+    char *name;
 	int cawidth = 64;
 	int caheight = 64;
 
@@ -283,12 +287,10 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	if (songinfo->cover != NULL)
 		visual_object_unref (VISUAL_OBJECT (songinfo->cover));
 
-	visual_string_init (&name);
-
 	/* Get the desired cover art size */
 	params = visual_get_params ();
-	xparam = visual_param_container_get (params, visual_string_set (&name, "songinfo cover size x"));
-	yparam = visual_param_container_get (params, visual_string_set (&name, "songinfo cover size y"));
+	xparam = visual_param_container_get (params, "songinfo cover size x");
+	yparam = visual_param_container_get (params, "songinfo cover size y");
 
 	if (xparam != NULL && yparam != NULL) {
 		cawidth = visual_param_entry_get_integer (xparam);
@@ -299,8 +301,6 @@ int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover)
 	songinfo->cover = visual_video_scale_depth_new (cover, cawidth, caheight,
 			VISUAL_VIDEO_DEPTH_32BIT,
 			VISUAL_VIDEO_SCALE_BILINEAR);
-
-	visual_object_unref (VISUAL_OBJECT (&name));
 
 	return VISUAL_OK;
 }

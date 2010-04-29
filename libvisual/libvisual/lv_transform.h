@@ -109,6 +109,8 @@ struct _VisTransformPlugin {
 };
 
 /* prototypes */
+int visual_transform_init (VisTransform *transform, const char *transformname);
+
 VisPluginData *visual_transform_get_plugin (VisTransform *transform);
 
 int visual_transform_set_map (VisHashmap *map);

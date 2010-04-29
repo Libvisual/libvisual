@@ -2,9 +2,9 @@
 
 input_plugin_LTLIBRARIES = input_xmms2.la
 
-LIBS += $(ALSA_LIBS) $(LIBVISUAL_LIBS)
+LIBS += $(XMMS2_LIBS) $(LIBVISUAL_LIBS)
 
-AM_CFLAGS = $(ALSA_CFLAGS) $(LIBVISUAL_CFLAGS)
+AM_CFLAGS = $(XMMS2_CFLAGS) $(LIBVISUAL_CFLAGS)
 
 INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_builddir)
 

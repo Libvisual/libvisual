@@ -8,7 +8,7 @@ LIBS += $(LIBVISUAL_LIBS)
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
 COMMON_SRC = actor_blursk.c actor_blursk.h blur.c blursk.c blursk.h color.c \
-        config.c config.h img.c render.c preset.c bitmap.c paste.c text.c
+        config.c config.h img.c render.c bitmap.c paste.c text.c
 
 if ARCH_X86
 

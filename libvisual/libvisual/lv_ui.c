@@ -134,7 +134,8 @@ static int widget_dtor (VisObject *object)
 {
 	VisUIWidget *widget = VISUAL_UI_WIDGET (object);
 
-	visual_object_unref (VISUAL_OBJECT (&widget->tooltip));
+    if(widget->tooltip)
+        visual_mem_free(widget->tooltip);
 
 	return TRUE;
 }
@@ -159,7 +160,7 @@ VisUIWidget *visual_ui_widget_new ()
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (widget), TRUE, widget_dtor);
 
-	visual_string_init (&widget->tooltip);
+    widget->tooltip = NULL;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (widget), -1, -1);
 
@@ -193,13 +194,12 @@ int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int heigh
  *
  * @return VISUAL_OK on succes, or -VISUAL_ERROR_UI_WIDGET_NULL on failure.
  */
-int visual_ui_widget_set_tooltip (VisUIWidget *widget, VisString *tooltip)
+int visual_ui_widget_set_tooltip (VisUIWidget *widget, char *tooltip)
 {
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 
-	visual_string_copy (&widget->tooltip, tooltip);
-
-	visual_string_unref_parameter (tooltip);
+    if(widget->tooltip)
+        visual_mem_free(widget->tooltip);
 
 	return VISUAL_OK;
 }
@@ -211,11 +211,11 @@ int visual_ui_widget_set_tooltip (VisUIWidget *widget, VisString *tooltip)
  *
  * @return The tooltip, possibly NULL, NULL on failure.
  */
-VisString *visual_ui_widget_get_tooltip (VisUIWidget *widget)
+char *visual_ui_widget_get_tooltip (VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (widget != NULL, NULL);
 
-	return &widget->tooltip;
+	return widget->tooltip;
 }
 
 /**
@@ -511,7 +511,7 @@ VisUIWidget *visual_ui_notebook_new ()
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_NOTEBOOK_NULL, -VISUAL_ERROR_UI_WIDGET_NULL or -VISUAL_ERROR_NULL
  *	on failure.
  */
-int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, VisString *label)
+int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, char *label)
 {
 	/* FIXME label is not always cleaned, same as in visparam, we need something that easily destroys object parameters */
 
@@ -519,12 +519,8 @@ int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, VisStr
 	visual_log_return_val_if_fail (widget != NULL, -VISUAL_ERROR_UI_WIDGET_NULL);
 	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_NULL);
 
-	visual_string_ref_parameter (label);
-
 	visual_list_add (&notebook->labels, visual_ui_label_new (label, FALSE));
 	visual_list_add (&notebook->childs, widget);
-
-	visual_string_unref_parameter (label);
 
 	return VISUAL_OK;
 }
@@ -564,7 +560,7 @@ VisList *visual_ui_notebook_get_childlabels (VisUINotebook *notebook)
  *
  * @return The newly created VisUIFrame in the form of a VisUIWidget.
  */
-VisUIWidget *visual_ui_frame_new (VisString *name)
+VisUIWidget *visual_ui_frame_new (char *name)
 {
 	VisUIFrame *frame;
 
@@ -575,13 +571,9 @@ VisUIWidget *visual_ui_frame_new (VisString *name)
 
 	VISUAL_UI_WIDGET (frame)->type = VISUAL_WIDGET_TYPE_FRAME;
 
-	visual_string_init (&frame->name);
-
-	visual_string_copy (&frame->name, name);
+    frame->name = strdup(name);
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (frame), -1, -1);
-
-	visual_string_unref_parameter (name);
 
 	return VISUAL_UI_WIDGET (frame);
 }
@@ -594,7 +586,7 @@ VisUIWidget *visual_ui_frame_new (VisString *name)
  *
  * @return The newly created VisUILabel in the form of a VisUIWidget.
  */
-VisUIWidget *visual_ui_label_new (VisString *text, int bold)
+VisUIWidget *visual_ui_label_new (char *text, int bold)
 {
 	VisUILabel *label;
 
@@ -605,14 +597,11 @@ VisUIWidget *visual_ui_label_new (VisString *text, int bold)
 
 	VISUAL_UI_WIDGET (label)->type = VISUAL_WIDGET_TYPE_LABEL;
 
-	visual_string_init (&label->text);
+    label->text = strdup(text);
 
-	visual_string_copy (&label->text, text);
 	label->bold = bold;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (label), -1, -1);
-
-	visual_string_unref_parameter (text);
 
 	return VISUAL_UI_WIDGET (label);
 }
@@ -642,13 +631,14 @@ int visual_ui_label_set_bold (VisUILabel *label, int bold)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_LABEL_NULL on failure.
  */
-int visual_ui_label_set_text (VisUILabel *label, VisString *text)
+int visual_ui_label_set_text (VisUILabel *label, char *text)
 {
 	visual_log_return_val_if_fail (label != NULL, -VISUAL_ERROR_UI_LABEL_NULL);
 
-	visual_string_copy (&label->text, text);
+    if(label->text)
+        visual_mem_free(label->text);
 
-	visual_string_unref_parameter (text);
+    label->text = strdup(text);
 
 	return VISUAL_OK;
 }
@@ -660,11 +650,11 @@ int visual_ui_label_set_text (VisUILabel *label, VisString *text)
  *
  * return The text contained in the label, NULL on failure.
  */
-VisString *visual_ui_label_get_text (VisUILabel *label)
+char *visual_ui_label_get_text (VisUILabel *label)
 {
 	visual_log_return_val_if_fail (label != NULL, NULL);
 
-	return &label->text;
+	return label->text;
 }
 
 /**
@@ -1007,7 +997,7 @@ VisUIWidget *visual_ui_colorpalette_new ()
  *
  * @return The newly created VisUIChoiceEntry.
  */
-VisUIChoiceEntry *visual_ui_choice_entry_new (VisString *name, VisParamEntry *value)
+VisUIChoiceEntry *visual_ui_choice_entry_new (char *name, VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
 
@@ -1021,13 +1011,9 @@ VisUIChoiceEntry *visual_ui_choice_entry_new (VisString *name, VisParamEntry *va
 	/* FIXME add choice entry dtor that destroys teh string and unrefs the paramentry */
 	visual_object_initialize (VISUAL_OBJECT (centry), TRUE, NULL);
 
-	visual_string_init (&centry->name);
-
-	visual_string_copy (&centry->name, name);
+    centry->name = strdup(name);
 
 	centry->value = value;
-
-	visual_string_unref_parameter (name);
 
 	return centry;
 }
@@ -1042,7 +1028,7 @@ VisUIChoiceEntry *visual_ui_choice_entry_new (VisString *name, VisParamEntry *va
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_CHOICE_NULL, -VISUAL_ERROR_NULL
  *	or -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_ui_choice_add (VisUIChoice *choice, VisString *name, VisParamEntry *value)
+int visual_ui_choice_add (VisUIChoice *choice, char *name, VisParamEntry *value)
 {
 	VisUIChoiceEntry *centry;
 
@@ -1051,14 +1037,11 @@ int visual_ui_choice_add (VisUIChoice *choice, VisString *name, VisParamEntry *v
 	visual_log_return_val_if_fail (name != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (value != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-	visual_string_ref_parameter (name);
 	centry = visual_ui_choice_entry_new (name, value);
 
 	choice->choices.count++;
 
 	visual_list_add (&choice->choices.choices, centry);
-
-	visual_string_unref_parameter (name);
 
 	return VISUAL_OK;
 }
@@ -1084,7 +1067,7 @@ int visual_ui_choice_add_many (VisUIChoice *choice, VisParamEntryProxy *paramcho
 	visual_log_return_val_if_fail (paramchoices != NULL, -VISUAL_ERROR_PARAM_NULL);
 
 	while (paramchoices[i].type != VISUAL_PARAM_ENTRY_TYPE_END) {
-		param = visual_param_entry_new (VIS_BSTR (paramchoices[i].name));
+		param = visual_param_entry_new (paramchoices[i].name);
 
 		visual_param_entry_set_from_proxy_param (param, &paramchoices[i]);
 
@@ -1280,12 +1263,12 @@ VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)
  *
  * @return The newly created VisUICheckbox in the form of a VisUIWidget.
  */
-VisUIWidget *visual_ui_checkbox_new (VisString *name, int boolcheck)
+VisUIWidget *visual_ui_checkbox_new (char *name, int boolcheck)
 {
 	VisUICheckbox *checkbox;
 	static VisParamEntryProxy truefalse[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("false", FALSE, VISUAL_PARAM_LIMIT_NONE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("true",  TRUE,  VISUAL_PARAM_LIMIT_NONE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("false", FALSE, VISUAL_PARAM_LIMIT_NONE, ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("true",  TRUE,  VISUAL_PARAM_LIMIT_NONE, ""),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -1296,17 +1279,13 @@ VisUIWidget *visual_ui_checkbox_new (VisString *name, int boolcheck)
 
 	VISUAL_UI_WIDGET (checkbox)->type = VISUAL_WIDGET_TYPE_CHECKBOX;
 
-	visual_string_init (&checkbox->name);
-
-	visual_string_copy (&checkbox->name, name);
+    checkbox->name = strdup(name);
 
 	/* Boolean checkbox, generate a FALSE, TRUE choicelist ourself */
 	if (boolcheck == TRUE)
 		visual_ui_choice_add_many (VISUAL_UI_CHOICE (checkbox), truefalse);
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (checkbox), -1, -1);
-
-	visual_string_unref_parameter (name);
 
 	return VISUAL_UI_WIDGET (checkbox);
 }

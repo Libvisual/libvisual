@@ -157,7 +157,7 @@ struct _VisActorPlugin {
 /* prototypes */
 VisPluginData *visual_actor_get_plugin (VisActor *actor);
 
-int visual_morph_set_map (VisHashmap *map);
+int visual_actor_set_map (VisHashmap *map);
 VisHashmap *visual_actor_get_map (void);
 
 VisActor *visual_actor_new (const char *actorname);

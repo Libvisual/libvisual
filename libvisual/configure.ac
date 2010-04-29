@@ -3,7 +3,7 @@ AC_PREREQ(2.57)
 
 dnl Version numbers
 m4_define([libvisual_version_major], [0])
-m4_define([libvisual_version_minor], [4])
+m4_define([libvisual_version_minor], [6])
 m4_define([libvisual_version_micro], [0])
 
 m4_define([libvisual_version], [libvisual_version_major.libvisual_version_minor.libvisual_version_micro])
@@ -112,7 +112,7 @@ fi
 # Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h sys/types.h stdlib.h string.h sys/time.h unistd.h sched.h sys/sched.h])
+AC_CHECK_HEADERS([fcntl.h sys/types.h stdlib.h sys/time.h unistd.h sched.h sys/sched.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -853,7 +853,6 @@ esac
 				    
 AC_CONFIG_FILES([
 m4/Makefile
-po/Makefile.in
 Makefile
 libvisual.pc
 libvisual/Makefile

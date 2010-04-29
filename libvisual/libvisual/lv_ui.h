@@ -162,7 +162,7 @@ struct _VisUIWidget {
 
 	VisUIWidgetType		 type;		/**< Type of VisUIWidget. */
 
-	VisString		 tooltip;	/**< Optional tooltip text, this can be used to
+	char *tooltip;	/**< Optional tooltip text, this can be used to
 						 * give the user some extra explanation about the
 						 * user interface. */
 
@@ -240,7 +240,7 @@ struct _VisUINotebook {
 struct _VisUIFrame {
 	VisUIContainer		 container;	/**< The VisUIContainer data. */
 
-	VisString		 name;		/**< The frame label text. */
+	char *name;		/**< The frame label text. */
 };
 
 /**
@@ -249,7 +249,7 @@ struct _VisUIFrame {
 struct _VisUILabel {
 	VisUIWidget		 widget;	/**< The VisUIWidget data. */
 
-	VisString		 text;		/**< The label text. */
+	char *text;		/**< The label text. */
 	int			 bold;		/**< Whatever the label is being printed in bold or not. */
 };
 
@@ -372,7 +372,7 @@ struct _VisUIChoiceList {
 struct _VisUIChoiceEntry {
 	VisObject		 object;	/**< The VisObject data. */
 
-	VisString		 name;		/**< Name of this VisChoiceEntry. */
+	char *name;		/**< Name of this VisChoiceEntry. */
 
 	VisParamEntry		*value;		/**< Link to the VisParamEntry that contains the value
 						 * for this VisChoiceEntry. */
@@ -424,14 +424,14 @@ struct _VisUIRadio {
 struct _VisUICheckbox {
 	VisUIChoice		 choice;	/**< The VisUIChoice data. */
 
-	VisString		 name;		/**< Optional text behind the textbox. */
+	char *name;		/**< Optional text behind the textbox. */
 };
 
 /* prototypes */
 VisUIWidget *visual_ui_widget_new (void);
 int visual_ui_widget_set_size_request (VisUIWidget *widget, int width, int height);
-int visual_ui_widget_set_tooltip (VisUIWidget *widget, VisString *tooltip);
-VisString *visual_ui_widget_get_tooltip (VisUIWidget *widget);
+int visual_ui_widget_set_tooltip (VisUIWidget *widget, char *tooltip);
+char *visual_ui_widget_get_tooltip (VisUIWidget *widget);
 VisUIWidget *visual_ui_widget_get_top (VisUIWidget *widget);
 VisUIWidget *visual_ui_widget_get_parent (VisUIWidget *widget);
 VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget);
@@ -450,16 +450,16 @@ int visual_ui_table_attach (VisUITable *table, VisUIWidget *widget, int row, int
 VisList *visual_ui_table_get_childs (VisUITable *table);
 
 VisUIWidget *visual_ui_notebook_new (void);
-int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, VisString *label);
+int visual_ui_notebook_add (VisUINotebook *notebook, VisUIWidget *widget, char *label);
 VisList *visual_ui_notebook_get_childs (VisUINotebook *notebook);
 VisList *visual_ui_notebook_get_childlabels (VisUINotebook *notebook);
 
-VisUIWidget *visual_ui_frame_new (VisString *name);
+VisUIWidget *visual_ui_frame_new (char *name);
 
-VisUIWidget *visual_ui_label_new (VisString *text, int bold);
-int visual_ui_label_set_text (VisUILabel *label, VisString *text);
+VisUIWidget *visual_ui_label_new (char *text, int bold);
+int visual_ui_label_set_text (VisUILabel *label, char *text);
 int visual_ui_label_set_bold (VisUILabel *label, int bold);
-VisString *visual_ui_label_get_text (VisUILabel *label);
+char *visual_ui_label_get_text (VisUILabel *label);
 
 VisUIWidget *visual_ui_image_new (VisVideo *video);
 int visual_ui_image_set_video (VisUIImage *image, VisVideo *video);
@@ -488,8 +488,8 @@ VisUIWidget *visual_ui_colorbutton_new (void);
 
 VisUIWidget *visual_ui_colorpalette_new (void);
 
-VisUIChoiceEntry *visual_ui_choice_entry_new (VisString *name, VisParamEntry *value);
-int visual_ui_choice_add (VisUIChoice *choice, VisString *name, VisParamEntry *value);
+VisUIChoiceEntry *visual_ui_choice_entry_new (char *name, VisParamEntry *value);
+int visual_ui_choice_add (VisUIChoice *choice, char *name, VisParamEntry *value);
 int visual_ui_choice_add_many (VisUIChoice *choice, VisParamEntryProxy *paramchoices);
 int visual_ui_choice_free_choices (VisUIChoice *choice);
 int visual_ui_choice_set_active (VisUIChoice *choice, int index);
@@ -505,7 +505,7 @@ VisUIWidget *visual_ui_list_new (void);
 
 VisUIWidget *visual_ui_radio_new (VisUIOrientType orient);
 
-VisUIWidget *visual_ui_checkbox_new (VisString *name, int boolcheck);
+VisUIWidget *visual_ui_checkbox_new (char *name, int boolcheck);
 
 VISUAL_END_DECLS
 

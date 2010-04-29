@@ -1,20 +1,20 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.57)
+AC_PREREQ(2.63)
 
 m4_define([lv_plugins_version_major], [0])
-m4_define([lv_plugins_version_minor], [4])
+m4_define([lv_plugins_version_minor], [6])
 m4_define([lv_plugins_version_micro], [0])
 m4_define([lv_plugins_version], [lv_plugins_version_major.lv_plugins_version_minor.lv_plugins_version_micro])
 m4_define([lv_plugins_version_suffix], [lv_plugins_version_major.lv_plugins_version_minor])
 
-AC_INIT(Libvisual plugins, lv_plugins_version, ds@nerds-incorporated.org)
+AC_INIT([Libvisual plugins],[lv_plugins_version],[ds@nerds-incorporated.org])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
-m4_define([libvisual_required_version], [0.4.0])
+m4_define([libvisual_required_version], [0.6.0])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
 m4_define([gtk_required_version], [2.0])
@@ -68,7 +68,7 @@ AC_DISABLE_STATIC
 
 m4_undefine([AC_PROG_F77])
 m4_defun([AC_PROG_F77],[])
-AC_PROG_LIBTOOL
+LT_INIT
 
 dnl Lex/Yacc
 AM_PROG_LEX
@@ -217,17 +217,14 @@ if test "$ENABLE_ALSA" = "yes"; then
 
   if test "$HAVE_ALSA" = "yes"; then
     build_input_plugins="$build_input_plugins alsa"
-    AC_TRY_COMPILE([#include <stdlib.h>
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
 		    #include <alsa/asoundlib.h>
-                   ],
-		   [#if(SND_LIB_MAJOR == 0)
+                   ]], [[#if(SND_LIB_MAJOR == 0)
 		    exit(0);
                     #else
 		    #error ALSA library version 1.x
 		    #endif
-                   ],
-		   [ AC_DEFINE([HAVE_0_9_X_ALSA], [1], [ALSA Library is from 0.9 series]) ],
-		   [ AC_DEFINE([HAVE_1_X_X_ALSA], [1], [ALSA Library is from 1 series]) ])
+                   ]])],[ AC_DEFINE([HAVE_0_9_X_ALSA], [1], [ALSA Library is from 0.9 series]) ],[ AC_DEFINE([HAVE_1_X_X_ALSA], [1], [ALSA Library is from 1 series]) ])
   else
     AC_MSG_WARN([*** Alsa input plugin cannot be built.
 		 May be you have an ALSA library older than $LV_ALSA_MIN_VERSION.
@@ -250,6 +247,24 @@ if test "$ENABLE_MPLAYER" = "yes"; then
   else
     AC_MSG_WARN([*** There is not a working munmap function available.
 		mplayer input plugin will not be built.])
+  fi
+fi
+
+dnl Xmms2
+AC_ARG_ENABLE([xmms2],
+  AS_HELP_STRING([--disable-xmms2],
+    [Do not build xmms2 input plugin @<:@default=enabled@:>@]),
+  [ENABLE_XMMS2=$enableval],
+  [ENABLE_XMMS2=yes])
+
+if test "$ENABLE_XMMS2" = "yes"; then
+  PKG_CHECK_MODULES(XMMS2, xmms2-client >= 0.6, [HAVE_XMMS2=yes], [HAVE_XMMS2=no])
+  if test "$HAVE_XMMS2" = "yes"; then
+    AC_SUBST(XMMS2_CFLAGS)
+    AC_SUBST(XMMS2_LIBS)
+    build_input_plugins="$build_input_plugins xmms2"
+  else
+    AC_MSG_WARN([*** xmms2 not found. Plugin will not be built.])
   fi
 fi
 
@@ -494,6 +509,17 @@ AC_ARG_ENABLE([goom2k4],
 
 if test "$ENABLE_GOOM2K4" = "yes"; then
   build_actor_plugins="$build_actor_plugins goom2k4"
+fi
+
+dnl blursk
+AC_ARG_ENABLE([blursk],
+  AS_HELP_STRING([--disable-blursk],
+  [Do not build blursk plugin @<:@default=enabled@:>@]),
+  [ENABLE_BLURSK=$enableval],
+  [ENABLE_BLURSK=yes])
+
+if test "$ENABLE_BLURSK" = "yes"; then
+  build_actor_plugins="$build_actor_plugins blursk"
 fi
 
 dnl Alphabend

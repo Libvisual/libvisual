@@ -27,7 +27,6 @@
 #include <string.h>
 
 #include "lv_common.h"
-#include "lv_string.h"
 #include "lv_hashmap.h"
 
 #define HASHMAP_ITERATORCONTEXT(obj)                           (VISUAL_CHECK_CAST ((obj), HashmapIteratorContext))
@@ -91,8 +90,9 @@ static int hashmap_chain_destroy (VisHashmap *hashmap, VisList *list)
 	destroyer = visual_collection_get_destroyer (VISUAL_COLLECTION (hashmap));
 
 	if (destroyer == NULL) {
-		while ((mentry = visual_list_next (list, &le)) != NULL)
+		while ((mentry = visual_list_next (list, &le)) != NULL) {
 			visual_list_destroy (list, &le);
+        }
 	} else {
 		while ((mentry = visual_list_next (list, &le)) != NULL) {
 			destroyer (mentry->data);
@@ -250,9 +250,17 @@ static uint32_t integer_hash (uint32_t key)
 static uint32_t get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype)
 {
 	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
+    {
 		return integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
-	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
-		return visual_string_get_hashcode_cstring ((char *) key) % hashmap->tablesize;
+    }
+	else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING) 
+    {
+        char *s = (char *)key;
+        uint32_t hash = 0;
+        for (; *s != '\0'; *s++)
+            hash = (hash << 5) - hash  + *s;
+		return hash % hashmap->tablesize;
+    }
 
 	return 0;
 }
@@ -335,6 +343,7 @@ int visual_hashmap_put (VisHashmap *hashmap, void *key, VisHashmapKeyType keytyp
 	int hash;
 
 	visual_log_return_val_if_fail (hashmap != NULL, -VISUAL_ERROR_HASHMAP_NULL);
+    visual_log_return_val_if_fail (key != NULL, -VISUAL_ERROR_GENERAL);
 
 	/* Create initial hashtable */
 	if (hashmap->table == NULL)
@@ -371,8 +380,9 @@ int visual_hashmap_put (VisHashmap *hashmap, void *key, VisHashmapKeyType keytyp
 
 	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
 		mentry->key.integer = *((uint32_t *) key);
-	else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING)
+	else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING) {
 		mentry->key.string = strdup ((char *) key);
+    }
 
 	mentry->data = data;
 

@@ -82,31 +82,31 @@ int act_blursk_init (VisPluginData *plugin) {
     BlurskPrivate *priv;
     VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-    static VisParamEntry params[] = {
-        VISUAL_PARAM_LIST_ENTRY_COLOR   ("color", 0x00, 0xff, 0xff),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("color_style", "Rainbow"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("signal_color", "Normal signal"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("contour_lines", FALSE),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("hue_on_beats", FALSE),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("background", "Black bkgnd"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_style", "Random"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("transition_speed", "Medium switch"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_when", "Full blur"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_stencil", "No stencil"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("fade_speed", "Medium fade"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("slow_motion", FALSE),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("signal_style", "Stereo spectrum"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("plot_style", "Line"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("thick_on_beats", TRUE),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("flash_style", "No flash"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("overall_effect", "Normal effect"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("floaters", "No floaters"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("cpu_speed", "Fast CPU"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("beat_sensitivity", 4),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("config_string", ""),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("show_info", "Never show info"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("info_timeout", 4),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("show_timestamp", 0),
+    static VisParamEntryProxy params[] = {
+        VISUAL_PARAM_LIST_ENTRY_COLOR   ("color", 0x00, 0xff, 0xff, ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("color_style", "Rainbow", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("signal_color", "Normal signal", ""),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("contour_lines", FALSE, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("hue_on_beats", FALSE, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("background", "Black bkgnd", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_style", "Random", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("transition_speed", "Medium switch", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_when", "Full blur", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_stencil", "No stencil", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("fade_speed", "Medium fade", ""),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("slow_motion", FALSE, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("signal_style", "Stereo spectrum", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("plot_style", "Line", ""),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("thick_on_beats", TRUE, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("flash_style", "No flash", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("overall_effect", "Normal effect", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("floaters", "No floaters", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("cpu_speed", "Fast CPU", ""),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("beat_sensitivity", 4, VISUAL_PARAM_LIMIT_NONE, ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("config_string", "", ""),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("show_info", "Never show info", ""),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("info_timeout", 4, VISUAL_PARAM_LIMIT_NONE, ""),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("show_timestamp", FALSE, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
         VISUAL_PARAM_LIST_END
     };
 
@@ -120,7 +120,7 @@ int act_blursk_init (VisPluginData *plugin) {
 
     visual_palette_allocate_colors (&priv->pal, 256);
 
-    visual_param_container_add_many (paramcontainer, params);
+    visual_param_container_add_many_proxy (paramcontainer, params);
         
     priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
 

@@ -290,27 +290,52 @@ void *visual_list_prev (VisList *list, VisListEntry **le)
  */
 void *visual_list_get (VisList *list, int index)
 {
-	VisListEntry *le = NULL;
-	void *data = NULL;
-	int i, lc;
+    VisListEntry *le = NULL;
 
-	visual_log_return_val_if_fail (list != NULL, NULL);
-	visual_log_return_val_if_fail (index >= 0, NULL);
+    visual_log_return_val_if_fail (list != NULL, NULL);
+    visual_log_return_val_if_fail (index >= 0, NULL);
 
-	lc = visual_collection_size (VISUAL_COLLECTION (list));
+    le = visual_list_get_entry(list, index);
 
-	if (lc - 1 < index)
-		return NULL;
+    if(le == NULL)
+        return NULL;
 
-	for (i = 0; i <= index; i++) {
-		data = visual_list_next (list, &le);
-
-		if (data == NULL)
-			return NULL;
-	}
-
-	return data;
+	return le->data;
 }
+
+/**
+ * Get an VisListEntry by index. 
+ *
+ * @param list Pointer to the VisList of which we want an entry.
+ * @param index Index to determine which entry we want. The index starts at
+ *  1.
+ *
+ * @return A pointer to the VisListEntry pointed to by index, or NULL.
+ */
+VisListEntry *visual_list_get_entry (VisList *list, int index)
+{
+    VisListEntry *le = NULL;
+    void *data = NULL;
+    int i, lc;
+
+    visual_log_return_val_if_fail (list != NULL, NULL);
+    visual_log_return_val_if_fail (index >= 0, NULL);
+
+    lc = visual_collection_size (VISUAL_COLLECTION (list));
+
+    if (lc - 1 < index)
+        return NULL;
+
+    for (i = 0; i <= index; i++) {
+        data = visual_list_next (list, &le);
+
+        if (data == NULL)
+            return NULL;
+    }
+
+    return le;
+}
+
 
 /**
  * Adds an entry at the beginning of the list.

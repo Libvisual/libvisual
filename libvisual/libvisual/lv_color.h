@@ -43,7 +43,7 @@ struct _VisColor {
 	uint8_t		r;	/**< The red channel of this VisColor. */
 	uint8_t		g;	/**< The green channel of this VisColor. */
 	uint8_t		b;	/**< The blue channel of this VisColor. */
-	uint8_t		unused;	/**< Unused. */
+	uint8_t		a;	/**< Some may need alpha. */
 };
 
 #pragma pack(1)

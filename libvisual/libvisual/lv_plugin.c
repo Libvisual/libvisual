@@ -231,6 +231,27 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 
+    if(dest->plugname != NULL)
+        free(dest->plugname);
+
+    if(dest->type != NULL)
+        visual_mem_free(dest->type);
+
+    if(dest->name != NULL)
+        visual_mem_free(dest->name);
+
+    if(dest->author != NULL)
+        visual_mem_free(dest->author);
+
+    if(dest->version != NULL)
+        visual_mem_free(dest->version);
+
+    if(dest->about != NULL)
+        visual_mem_free(dest->about);
+
+    if(dest->help != NULL)
+        visual_mem_free(dest->help);
+
 	visual_mem_copy (dest, src, sizeof (VisPluginInfo));
 
 	dest->plugname = strdup (src->plugname);
@@ -240,7 +261,6 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 	dest->version = strdup (src->version);
 	dest->about = strdup (src->about);
 	dest->help = strdup (src->help);
-
 	return VISUAL_OK;
 }
 
@@ -544,6 +564,7 @@ static int plugin_add_dir_to_map (VisHashmap *map, const char *dir)
 	int i, j, n;
 	size_t len;
 	int cnt = 0;
+
 
 #if defined(VISUAL_OS_WIN32)
 	BOOL fFinished;
@@ -1288,12 +1309,10 @@ int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve)
  */
 int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
 {
-	VisPluginEnviron *enve;
-
 	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
 
-	visual_hashmap_remove_string (&plugin->environment, enve->type, TRUE);
+	visual_hashmap_remove_string (&plugin->environment, type, TRUE);
 
 	return VISUAL_OK;
 }

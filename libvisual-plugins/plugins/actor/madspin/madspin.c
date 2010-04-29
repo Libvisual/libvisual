@@ -125,8 +125,8 @@ int lv_madspin_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512,	VISUAL_PARAM_LIMIT_INTEGER (50, 2500)),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715,	VISUAL_PARAM_LIMIT_INTEGER (200, 2000)),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512,	VISUAL_PARAM_LIMIT_INTEGER (50, 2500), ""),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715,	VISUAL_PARAM_LIMIT_INTEGER (200, 2000), ""),
 		VISUAL_PARAM_LIST_END
 	};
 

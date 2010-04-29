@@ -682,8 +682,9 @@ void config_change_param(BlurskPrivate *priv, VisParamEntry *p)
     for(i = 0; i < QTY(parms); i++)
     {
         /* not our parameter? -> continue the quest */
-        if(!visual_param_entry_is(p, parms[i].name))
+        if(!visual_param_entry_is(p, parms[i].name)) {
             continue;
+        }
         
         /* call this parameters' change handler */
         if(parms[i].change)
@@ -696,7 +697,7 @@ void config_change_param(BlurskPrivate *priv, VisParamEntry *p)
         return;
     }
     
-    printf("Unknown param '%s'\n", visual_param_entry_get_name(p));
+    printf("Unknown param '%s'\n", VIS_CSTR(visual_param_entry_get_name(p)));
 }
 
 

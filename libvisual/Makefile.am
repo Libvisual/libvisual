@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = m4 libvisual po
+SUBDIRS = m4 libvisual
 
 PKG_CONFIG_FILE = libvisual-$(LIBVISUAL_VERSION_SUFFIX).pc
 
@@ -23,7 +23,7 @@ stamp-gc-h: config.status
 	cd $(top_builddir) && $(SHELL) ./config.status libvisual/lvconfig.h
 	echo timestamp > stamp-gc-h
 
-EXTRA_DIST = Doxyfile config.rpath libvisual.pc.in
+EXTRA_DIST = config.rpath m4/ChangeLog  Doxyfile config.rpath libvisual.pc.in
 
 DISTCLEANFILES = libvisual/lvconfig.h $(PKG_CONFIG_FILE)
 

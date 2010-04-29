@@ -1,0 +1,56 @@
+// lv_have_iso_c_varargs=$lv_have_iso_c_varargs
+// lv_have_gnuc_varargs=$lv_have_gnuc_varargs
+// lv_have_stdint_h=$lv_have_stdint_h
+// lv_have_inttypes_h=$lv_have_inttypes_h
+// lv_have_long_long=$ac_cv_type_long_long
+// lv_long_long_size=$ac_cv_sizeof_long_long
+// lv_have_ms_int64=$ac_cv_type___int64
+// visual_size_type=$visual_size_type
+// fastfprng=$fastfprng
+// lv_win32=$lv_win32
+// 
+// lv_mips=$lv_mips
+// lv_alpha=$lv_alpha
+// lv_sparc=$lv_sparc
+// lv_ix86=$lv_ix86
+// lv_powerpc=$lv_powerpc
+// lv_arch_unknown=$lv_arch_unknown
+// 
+// lv_hpux=$lv_hpux
+// lv_aix=$lv_aix
+// lv_beos=$lv_beos
+// lv_osf=$lv_osf
+// lv_irix=$lv_irix
+// lv_sunos=$lv_sunos
+// lv_solaris=$lv_solaris
+// lv_linux=$lv_linux
+// lv_sco=$lv_sco
+// lv_bsd=$lv_bsd
+// lv_darwin=$lv_darwin
+// lv_cygwin=$lv_cygwin
+// lv_mingw=$lv_mingw
+// lv_os_unknown=$lv_os_unknown
+// 
+// lv_have_threads=$have_threads
+// lv_enable_threads=$enable_threads
+// 
+// case $visual_size_type in
+// short)
+//   visual_size_format='"hu"'
+//   ;;
+// int)
+//   visual_size_format='"u"'
+//   ;;
+// long)
+//   visual_size_format='"lu"'
+//   ;;
+// esac
+// plugins_base_dir=`eval echo \`eval echo ${LIBVISUAL_PLUGINS_BASE_DIR}\``
+
+#define visual_size_t size_t
+
+#define VISUAL_SIZE_T_FORMAT "lu"
+
+#cmakedefine LV_HAVE_STDINT_H @LV_HAVE_STDINT_H@
+#cmakedefine LV_HAVE_INTTYPES_H @LV_HAVE_INTTYPES_H@
+

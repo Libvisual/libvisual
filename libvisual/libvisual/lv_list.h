@@ -81,6 +81,8 @@ void *visual_list_prev (VisList *list, VisListEntry **le);
 
 void *visual_list_get (VisList *list, int index);
 
+VisListEntry *visual_list_get_entry(VisList *list, int index);
+
 int visual_list_add_at_begin (VisList *list, void *data);
 int visual_list_add (VisList *list, void *data);
 

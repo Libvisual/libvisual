@@ -58,6 +58,7 @@
 #  endif
 #endif
 
+/*
 #if !defined(UINT64_MAX)
 #  if defined(LV_HAVE_LONG_LONG) && LV_LONG_LONG_SIZE == 8
 #    if defined(__GNUC__)
@@ -77,6 +78,7 @@
 #    error Cannot find integral type to use to define int64_t and uint64_t
 #  endif
 #endif
+*/
 
 VISUAL_BEGIN_DECLS
 

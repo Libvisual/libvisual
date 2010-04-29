@@ -28,6 +28,7 @@
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_ringbuffer.h>
 #include <libvisual/lv_hashmap.h>
+#include <libvisual/lv_beat.h>
 
 VISUAL_BEGIN_DECLS
 
@@ -73,7 +74,6 @@ typedef enum {
 	VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO
 } VisAudioSampleChannelType;
 
-
 typedef struct _VisAudio VisAudio;
 typedef struct _VisAudioSamplePool VisAudioSamplePool;
 typedef struct _VisAudioSamplePoolChannel VisAudioSamplePoolChannel;
@@ -90,6 +90,8 @@ struct _VisAudio {
 	VisObject		 object;			/**< The VisObject data. */
 
 	VisAudioSamplePool	*samplepool;
+
+    VisBeat         *beat;
 };
 
 struct _VisAudioSamplePool {
@@ -174,6 +176,10 @@ int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *sr
 int visual_audio_sample_rate_get_length (VisAudioSampleRateType rate);
 int visual_audio_sample_format_get_size (VisAudioSampleFormatType format);
 int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format);
+
+VisBeat *visual_audio_get_beat(VisAudio *audio);
+int visual_audio_is_beat(VisAudio *audio, VisBeatAlgorithm algo);
+int visual_audio_is_beat_with_data(VisAudio *audio, VisBeatAlgorithm algo, float *data, int size);
 
 VISUAL_END_DECLS
 

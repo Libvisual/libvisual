@@ -261,6 +261,8 @@ int inp_mplayer_cleanup( VisPluginData *plugin )
  */
 int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 {
+    VisBuffer buffer;
+
 	mplayer_priv_t *priv = NULL;
 
 	visual_log_return_val_if_fail( audio != NULL, -1 );
@@ -269,9 +271,9 @@ int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 	visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
-	visual_mem_copy( audio->plugpcm, 
-			((void *)priv->mmap_area) + sizeof( mplayer_data_t ),
-			2048 );
+    visual_buffer_init(&buffer, (void *)priv->mmap_area + sizeof(mplayer_data_t), 2048, NULL);
+    visual_audio_samplepool_input(audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+        VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
 	return 0;
 }
