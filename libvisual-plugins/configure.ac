@@ -1,7 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
-AC_CONFIG_MACRO_DIR([m4])
 
 m4_define([lv_plugins_version_major], [0])
 m4_define([lv_plugins_version_minor], [6])
@@ -23,6 +22,8 @@ m4_define([gst_required_version], [0.8])
 
 m4_define([libvisual_pkg], [libvisual-lv_plugins_version_suffix])
 LIBVISUAL_PKG=libvisual_pkg
+
+AC_CONFIG_MACRO_DIR([m4])
 
 dnl Check for pkg-config
 PKG_PROG_PKG_CONFIG([0.14])
