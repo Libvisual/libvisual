@@ -3,7 +3,7 @@ AC_PREREQ(2.57)
 
 dnl Version numbers
 m4_define([libvisual_version_major], [0])
-m4_define([libvisual_version_minor], [6])
+m4_define([libvisual_version_minor], [5])
 m4_define([libvisual_version_micro], [0])
 
 m4_define([libvisual_version], [libvisual_version_major.libvisual_version_minor.libvisual_version_micro])

@@ -3,18 +3,18 @@
 AC_PREREQ(2.57)
 
 m4_define([lv_avs_version_major], [0])
-m4_define([lv_avs_version_minor], [6])
+m4_define([lv_avs_version_minor], [5])
 m4_define([lv_avs_version_micro], [0])
 m4_define([lv_avs_version], [lv_avs_version_major.lv_avs_version_minor.lv_avs_version_micro])
 m4_define([lv_avs_version_suffix], [lv_avs_version_major.lv_avs_version_minor])
 
-AC_INIT(Libvisual avs, 0.6.0, ds@nerds-incorporated.org)
+AC_INIT(Libvisual avs, 0.5.0, ds@nerds-incorporated.org)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
-m4_define([libvisual_required_version], [0.6.0])
+m4_define([libvisual_required_version], [0.5.0])
 
 m4_define([libvisual_pkg], [libvisual-lv_avs_version_suffix])
 LIBVISUAL_PKG=libvisual_pkg
