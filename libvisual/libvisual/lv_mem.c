@@ -209,7 +209,7 @@ int visual_mem_alloc_profile ()
 		VisHashmapChainEntry *mentry = visual_collection_iterator_get_data (&iter);
 
 		visual_log (VISUAL_LOG_INFO, "[ALLOC PROFILE] Allocated sizes %d\t::\t%d",
-				mentry->key.integer, mentry->data);
+				mentry->key.integer, (int) mentry->data);
 
 		visual_collection_iterator_next (&iter);
 	}

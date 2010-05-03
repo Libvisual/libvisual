@@ -546,7 +546,7 @@ VisHashmap *visual_plugin_registry_filter (VisHashmap *plugmap, const char *doma
 
 				visual_hashmap_put_string (map, ref->info->plugname, ref);
 		} else if (ret != FALSE) {
-			visual_log (VISUAL_LOG_WARNING, visual_error_to_string (ret));
+			visual_log (VISUAL_LOG_WARNING, "%s", visual_error_to_string (ret));
 		}
 
 		visual_collection_iterator_next (&iter);

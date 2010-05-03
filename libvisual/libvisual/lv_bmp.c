@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <math.h>
 #include <gettext.h>
 
@@ -282,7 +283,12 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	}
 
 	/* Read the magic string */
-	fread (magic, 2, 1, fp);
+	if(fread (magic, 2, 1, fp) != 1)
+	{
+		visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+		return -VISUAL_ERROR_BMP_NO_BMP;
+	}
+	
 	if (strncmp (magic, "BM", 2) != 0) {
 		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file")); 
 		fclose (fp);
@@ -290,24 +296,45 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	}
 
 	/* Read the file size */
-	fread (&bf_size, 4, 1, fp);
+	if(fread (&bf_size, 4, 1, fp) != 1)
+	{
+		visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+		return -VISUAL_ERROR_BMP_NO_BMP;
+	}
+	
 	bf_size = VISUAL_ENDIAN_LEI32 (bf_size);
 
 	/* Skip past the reserved bits */
 	fseek (fp, 4, SEEK_CUR);
 
 	/* Read the offset bits */
-	fread (&bf_bits, 4, 1, fp);
+	if(fread (&bf_bits, 4, 1, fp) != 1)
+	{
+		visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+		return -VISUAL_ERROR_BMP_NO_BMP;
+	}
 	bf_bits = VISUAL_ENDIAN_LEI32 (bf_bits);
 
 	/* Read the info structure size */
-	fread (&bi_size, 4, 1, fp);
+	if(fread (&bi_size, 4, 1, fp) != 1)
+	{
+		visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+		return -VISUAL_ERROR_BMP_NO_BMP;
+	}
 	bi_size = VISUAL_ENDIAN_LEI32 (bi_size);
 
 	if (bi_size == 12) {
 		/* And read the width, height */
-		fread (&bi_width, 2, 1, fp);
-		fread (&bi_height, 2, 1, fp);
+		if(fread (&bi_width, 2, 1, fp) != 1)
+		{
+			visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+			return -VISUAL_ERROR_BMP_NO_BMP;
+		}
+		if(fread (&bi_height, 2, 1, fp) != 1)
+		{
+			visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+			return -VISUAL_ERROR_BMP_NO_BMP;
+		}
 		bi_width = VISUAL_ENDIAN_LEI16 (bi_width);
 		bi_height = VISUAL_ENDIAN_LEI16 (bi_height);
 
@@ -315,13 +342,26 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 		fseek (fp, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
-		fread (&bi_bitcount, 2, 1, fp);
+		if(fread (&bi_bitcount, 2, 1, fp) != 1)
+		{
+			visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+			return -VISUAL_ERROR_BMP_NO_BMP;
+		}
 		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 		bi_compression = BI_RGB;
 	} else {
 		/* And read the width, height */
-		fread (&bi_width, 4, 1, fp);
-		fread (&bi_height, 4, 1, fp);
+		if(fread (&bi_width, 4, 1, fp) != 1)
+		{
+			visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+			return -VISUAL_ERROR_BMP_NO_BMP;
+		}
+		if(fread (&bi_height, 4, 1, fp) != 1)
+		{
+			visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+			return -VISUAL_ERROR_BMP_NO_BMP;
+		}
+		
 		bi_width = VISUAL_ENDIAN_LEI32 (bi_width);
 		bi_height = VISUAL_ENDIAN_LEI32 (bi_height);
 
@@ -329,18 +369,33 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 		fseek (fp, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
-		fread (&bi_bitcount, 2, 1, fp);
+		if(fread (&bi_bitcount, 2, 1, fp) != 1)
+		{
+			visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+			return -VISUAL_ERROR_BMP_NO_BMP;
+		}
+		
 		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 
 		/* Read the compression flag */
-		fread (&bi_compression, 4, 1, fp);
+		if(fread (&bi_compression, 4, 1, fp) != 1)
+		{
+			visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+			return -VISUAL_ERROR_BMP_NO_BMP;
+		}
+		
 		bi_compression = VISUAL_ENDIAN_LEI32 (bi_compression);
 
 		/* Skip over the nonsense we don't want to know */
 		fseek (fp, 12, SEEK_CUR);
 
 		/* Number of colors in palette */
-		fread (&bi_clrused, 4, 1, fp);
+		if(fread (&bi_clrused, 4, 1, fp) != 1)
+		{
+			visual_log(VISUAL_LOG_WARNING, "%s", strerror(errno));
+			return -VISUAL_ERROR_BMP_NO_BMP;
+		}
+		
 		bi_clrused = VISUAL_ENDIAN_LEI32 (bi_clrused);
 
 		/* Skip over the other nonsense */
