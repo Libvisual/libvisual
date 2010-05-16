@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_debug.c,v 1.3 2005-12-22 21:50:10 synap Exp $
+ * $Id: input_debug.c,v 1.3 2005/12/22 21:50:10 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

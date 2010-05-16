@@ -5,7 +5,7 @@
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_flower.c,v 1.11 2006-02-25 18:45:16 synap Exp $
+ * $Id: actor_flower.c,v 1.11 2006/02/25 18:45:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

@@ -6,7 +6,7 @@
  *	    Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
  *	    4Front Technologies
  *
- * $Id: actor_lv_gltest.c,v 1.27 2006-03-02 23:50:06 synap Exp $
+ * $Id: actor_lv_gltest.c,v 1.27 2006/03/02 23:50:06 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

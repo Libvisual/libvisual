@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: renderer.c,v 1.11 2006-02-05 18:47:26 synap Exp $
+ * $Id: renderer.c,v 1.11 2006/02/05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

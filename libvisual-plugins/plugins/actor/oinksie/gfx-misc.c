@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: gfx-misc.c,v 1.9 2006-01-31 16:42:47 synap Exp $
+ * $Id: gfx-misc.c,v 1.9 2006/01/31 16:42:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

@@ -7,7 +7,7 @@
  *	    Chong Kai Xiong <descender@phreaker.net>
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *
- * $Id: lv_video.h,v 1.34.2.1 2006-03-04 12:32:48 descender Exp $
+ * $Id: lv_video.h,v 1.34.2.1 2006/03/04 12:32:48 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

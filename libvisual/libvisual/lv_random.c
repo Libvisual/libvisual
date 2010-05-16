@@ -5,7 +5,7 @@
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  * 	    Vitaly V. Bursov <vitalyvb@ukr.net>
  *
- * $Id: lv_random.c,v 1.19 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_random.c,v 1.19 2006/01/22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

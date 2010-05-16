@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: draw.c,v 1.6 2006-01-18 19:45:23 synap Exp $
+ * $Id: draw.c,v 1.6 2006/01/18 19:45:23 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

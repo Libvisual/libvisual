@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_actor.c,v 1.39.2.1 2006-03-04 12:32:47 descender Exp $
+ * $Id: lv_actor.c,v 1.39.2.1 2006/03/04 12:32:47 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -305,7 +305,7 @@ const char *visual_actor_get_prev_by_name (const char *name)
  */
 int visual_actor_valid_by_name (const char *name)
 {
-	if (visual_plugin_find (visual_actor_get_list (), name) == NULL)
+	if (visual_plugin_find (__lv_plugins_actor, name) == NULL)
 		return FALSE;
 	else
 		return TRUE;

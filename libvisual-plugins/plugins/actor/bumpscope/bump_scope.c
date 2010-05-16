@@ -7,7 +7,7 @@
  *
  * Notes: Bumpscope plugin originally from XMMS.
  * 
- * $Id: bump_scope.c,v 1.18 2006-02-05 18:47:26 synap Exp $
+ * $Id: bump_scope.c,v 1.18 2006/02/05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

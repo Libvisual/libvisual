@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-08 20:52+0800\n"
+"POT-Creation-Date: 2006-03-21 02:50+0800\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -74,20 +74,6 @@ msgstr ""
 
 #: plugins/actor/corona/actor_corona.cpp:104
 msgid "This plugin adds support for the neat corona plugin"
-msgstr ""
-
-#: plugins/actor/dancingparticles/actor_dancingparticles.cpp:72
-msgid ""
-"Original by: Pierre Tardy <tardyp@free.fr>, Port by: Dennis Smit <ds@nerds-"
-"incorporated.org>"
-msgstr ""
-
-#: plugins/actor/dancingparticles/actor_dancingparticles.cpp:74
-msgid "Libvisual Dancing Particles plugin"
-msgstr ""
-
-#: plugins/actor/dancingparticles/actor_dancingparticles.cpp:75
-msgid "This plugin shows dancing particles"
 msgstr ""
 
 #: plugins/actor/gdkpixbuf/actor_gdkpixbuf.c:86
@@ -350,39 +336,6 @@ msgstr "Número de estrellas:"
 msgid "Speed:"
 msgstr "Velocidad:"
 
-#: plugins/actor/nebulus/nebulus.c:99
-msgid ""
-"Original by: Pascal Brochart <pbrochart@tuxfamily.org> and many others, Port "
-"and maintaince by: Dennis Smit <ds@nerds-incorporated.org>"
-msgstr ""
-
-#: plugins/actor/nebulus/nebulus.c:101
-msgid "Libvisual nebulus plugin"
-msgstr ""
-
-#: plugins/actor/nebulus/nebulus.c:102
-msgid "This plugin shows multiple visual effect using openGL"
-msgstr "Éste plugin muestra múltiples efectos visuales utilizando OpenGL"
-
-#: plugins/actor/nebulus/nebulus.c:139
-msgid "Nebulus: max texture size is lower than 256"
-msgstr "Nebulus: el tamaño de textura máximo es menor que 256"
-
-#: plugins/actor/plazma/actor_plazma.c:62
-msgid ""
-"Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis "
-"Smit <ds@nerds-incorporated.org>"
-msgstr ""
-
-#: plugins/actor/plazma/actor_plazma.c:64
-msgid "Libvisual Plazma visual plugin"
-msgstr ""
-
-#: plugins/actor/plazma/actor_plazma.c:65
-#, fuzzy
-msgid "This is the libvisual port of the xmms Plazma plugin"
-msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
-
 #: plugins/actor/pseudotoad_flower/actor_flower.c:78
 msgid ""
 "Original by: Antti Silvast <asilvast@iki.fi>, Port by: Dennis Smit <ds@nerds-"
@@ -558,6 +511,16 @@ msgstr "%d es un descriptor de archivo erróneo"
 #, c-format
 msgid "Could not munmap() area %p+%d. %s"
 msgstr "No se puede munmap()-ear área %p+%d: %s"
+
+#~ msgid "This plugin shows multiple visual effect using openGL"
+#~ msgstr "Éste plugin muestra múltiples efectos visuales utilizando OpenGL"
+
+#~ msgid "Nebulus: max texture size is lower than 256"
+#~ msgstr "Nebulus: el tamaño de textura máximo es menor que 256"
+
+#, fuzzy
+#~ msgid "This is the libvisual port of the xmms Plazma plugin"
+#~ msgstr "Éste es el port a Libvisual del plugin de XMMS Bumpscope"
 
 #~ msgid "New Delta field: %s"
 #~ msgstr "Nuevo campo Delta: %s"

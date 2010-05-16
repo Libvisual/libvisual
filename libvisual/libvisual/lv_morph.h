@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_morph.h,v 1.17 2006-01-27 20:18:26 synap Exp $
+ * $Id: lv_morph.h,v 1.17 2006/01/27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

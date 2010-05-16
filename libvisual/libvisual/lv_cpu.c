@@ -8,7 +8,7 @@
  *
  * Extra Credits: MPlayer cpudetect hackers.
  *
- * $Id: lv_cpu.c,v 1.27 2006-01-22 13:23:37 synap Exp $
+ * $Id: lv_cpu.c,v 1.27 2006/01/22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_mem.c,v 1.30 2006-02-05 18:45:57 synap Exp $
+ * $Id: lv_mem.c,v 1.30 2006/02/05 18:45:57 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

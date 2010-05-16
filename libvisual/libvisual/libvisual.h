@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: libvisual.h,v 1.23 2006-01-22 13:23:36 synap Exp $
+ * $Id: libvisual.h,v 1.23 2006/01/22 13:23:36 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

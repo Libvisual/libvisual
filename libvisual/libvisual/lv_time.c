@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_time.c,v 1.29 2006-01-23 22:32:42 synap Exp $
+ * $Id: lv_time.c,v 1.29 2006/01/23 22:32:42 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

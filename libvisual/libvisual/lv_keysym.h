@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_keysym.h,v 1.6 2006-02-13 20:54:08 synap Exp $
+ * $Id: lv_keysym.h,v 1.6 2006/02/13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: morph_alphablend.c,v 1.19 2006-01-27 20:19:18 synap Exp $
+ * $Id: morph_alphablend.c,v 1.19 2006/01/27 20:19:18 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as

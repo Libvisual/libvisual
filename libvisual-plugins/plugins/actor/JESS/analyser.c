@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: analyser.c,v 1.6 2006-01-30 19:06:46 synap Exp $
+ * $Id: analyser.c,v 1.6 2006/01/30 19:06:46 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

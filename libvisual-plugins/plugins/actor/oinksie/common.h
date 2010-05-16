@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: common.h,v 1.6 2006-01-31 16:42:47 synap Exp $
+ * $Id: common.h,v 1.6 2006/01/31 16:42:47 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

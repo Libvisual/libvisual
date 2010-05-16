@@ -8,7 +8,7 @@
  *	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Jaak Randmets <jaak.ra@gmail.com>
  *
- * $Id: lv_video.c,v 1.86.2.1 2006-03-04 12:32:47 descender Exp $
+ * $Id: lv_video.c,v 1.86.2.1 2006/03/04 12:32:47 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

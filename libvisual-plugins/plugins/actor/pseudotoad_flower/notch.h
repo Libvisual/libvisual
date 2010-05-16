@@ -5,7 +5,7 @@
  * Authors: Antti Silvast <asilvast@iki.fi>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: notch.h,v 1.3 2006-01-22 13:25:26 synap Exp $
+ * $Id: notch.h,v 1.3 2006/01/22 13:25:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

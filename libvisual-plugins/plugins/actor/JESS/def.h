@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: def.h,v 1.4 2006-01-15 00:18:01 synap Exp $
+ * $Id: def.h,v 1.4 2006/01/15 00:18:01 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

@@ -5,7 +5,7 @@
  * Authors: Remi Arquier <arquier@crans.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: draw_low_level.c,v 1.5 2005-12-20 18:49:12 synap Exp $
+ * $Id: draw_low_level.c,v 1.5 2005/12/20 18:49:12 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

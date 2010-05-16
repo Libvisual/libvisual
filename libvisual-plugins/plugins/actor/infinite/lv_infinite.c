@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_infinite.c,v 1.24 2006-01-30 18:22:50 synap Exp $
+ * $Id: lv_infinite.c,v 1.24 2006/01/30 18:22:50 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

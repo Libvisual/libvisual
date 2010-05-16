@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_object.h,v 1.14 2006-01-23 21:06:24 synap Exp $
+ * $Id: lv_object.h,v 1.14 2006/01/23 21:06:24 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

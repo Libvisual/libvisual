@@ -6,7 +6,7 @@
  * 	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: corona.cpp,v 1.10 2006-02-05 18:47:26 synap Exp $
+ * $Id: corona.cpp,v 1.10 2006/02/05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

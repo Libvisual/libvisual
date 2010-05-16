@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_hashmap.h,v 1.8 2006-02-17 22:00:17 synap Exp $
+ * $Id: lv_hashmap.h,v 1.8 2006/02/17 22:00:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

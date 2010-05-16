@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_jakdaw.c,v 1.26 2006-01-27 20:19:16 synap Exp $
+ * $Id: actor_jakdaw.c,v 1.26 2006/01/27 20:19:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

@@ -4,7 +4,7 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: lv_log.h,v 1.19.2.1 2006-03-04 12:32:47 descender Exp $
+ * $Id: lv_log.h,v 1.19.2.1 2006/03/04 12:32:47 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

@@ -6,7 +6,7 @@
  * 	    Jean-Christophe Hoelt <jeko@ios-software.com>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: palette.cpp,v 1.6 2005-12-20 18:49:13 synap Exp $
+ * $Id: palette.cpp,v 1.6 2005/12/20 18:49:13 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
