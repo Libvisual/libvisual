@@ -256,7 +256,7 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 
 		if (rcnt < 0) {
 			if (rcnt == -EPIPE) {
-				visual_log(VISUAL_LOG_CRITICAL, _("ALSA: Buffer Overrun"));
+				visual_log(VISUAL_LOG_WARNING, _("ALSA: Buffer Overrun"));
 
 				if (snd_pcm_prepare(priv->chandle) < 0) {
 					visual_log(VISUAL_LOG_CRITICAL,

@@ -573,7 +573,7 @@ FGREP='/bin/grep -F'
 LD='/usr/i686-pc-linux-gnu/bin/ld'
 NM='/usr/bin/nm -B'
 LN_S='ln -s'
-max_cmd_len='1572864'
+max_cmd_len='805306365'
 ac_objext='o'
 exeext=''
 lt_unset='unset'
@@ -788,7 +788,7 @@ fi
     # from automake < 1.5.
     eval 'OBSOLETE_ALL_LINGUAS''=""'
     # Capture the value of LINGUAS because we need it to compute CATALOGS.
-    LINGUAS="de"
+    LINGUAS="de_DE.UTF-8"
 
 
 
