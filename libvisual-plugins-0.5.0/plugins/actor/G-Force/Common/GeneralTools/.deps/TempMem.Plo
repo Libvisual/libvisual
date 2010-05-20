@@ -1,0 +1,10 @@
+TempMem.lo: TempMem.cpp \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/TempMem.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/TempMem.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h:

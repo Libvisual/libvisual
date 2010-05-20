@@ -1,0 +1,10 @@
+RectUtils.lo: RectUtils.cpp \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/RectUtils.h \
+  ../../../../../plugins/actor/G-Force/Common/EgCommon.h \
+  ../../../../../plugins/actor/G-Force/unix/libmfl/libmfl.h
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/RectUtils.h:
+
+../../../../../plugins/actor/G-Force/Common/EgCommon.h:
+
+../../../../../plugins/actor/G-Force/unix/libmfl/libmfl.h:

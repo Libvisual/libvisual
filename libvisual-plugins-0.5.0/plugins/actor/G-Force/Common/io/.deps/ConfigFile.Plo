@@ -1,0 +1,31 @@
+ConfigFile.lo: ConfigFile.cpp \
+  ../../../../../plugins/actor/G-Force/Common/io/Headers/ConfigFile.h \
+  ../../../../../plugins/actor/G-Force/Common/io/Headers/CEgFileSpec.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h \
+  ../../../../../plugins/actor/G-Force/Common/io/Headers/CEgErr.h \
+  ../../../../../plugins/actor/G-Force/Common/io/Headers/CEgIFile.h \
+  ../../../../../plugins/actor/G-Force/Common/io/Headers/CEgIStream.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/ArgList.h \
+  ../../../../../plugins/actor/G-Force/unix/Headers/null.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h
+
+../../../../../plugins/actor/G-Force/Common/io/Headers/ConfigFile.h:
+
+../../../../../plugins/actor/G-Force/Common/io/Headers/CEgFileSpec.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h:
+
+../../../../../plugins/actor/G-Force/Common/io/Headers/CEgErr.h:
+
+../../../../../plugins/actor/G-Force/Common/io/Headers/CEgIFile.h:
+
+../../../../../plugins/actor/G-Force/Common/io/Headers/CEgIStream.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/ArgList.h:
+
+../../../../../plugins/actor/G-Force/unix/Headers/null.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h:

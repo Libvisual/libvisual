@@ -1,0 +1,13 @@
+XStrList.lo: XStrList.cpp \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XStrList.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XPtrList.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XStrList.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XPtrList.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h:

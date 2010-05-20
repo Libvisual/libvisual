@@ -1,0 +1,25 @@
+FileSpecList.lo: FileSpecList.cpp \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/FileSpecList.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XStrList.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XPtrList.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h \
+  ../../../../../plugins/actor/G-Force/Common/io/Headers/CEgFileSpec.h \
+  ../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h \
+  ../../../../../plugins/actor/G-Force/Common/io/Headers/CEgErr.h
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/FileSpecList.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XStrList.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XPtrList.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h:
+
+../../../../../plugins/actor/G-Force/Common/io/Headers/CEgFileSpec.h:
+
+../../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h:
+
+../../../../../plugins/actor/G-Force/Common/io/Headers/CEgErr.h:

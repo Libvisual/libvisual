@@ -1,7 +1,0 @@
-# List of source files containing translatable strings.
-
-# Package source files
-src/main.c
-src/lv_bmp_config.c
-src/config_gui.c
-src/about.c

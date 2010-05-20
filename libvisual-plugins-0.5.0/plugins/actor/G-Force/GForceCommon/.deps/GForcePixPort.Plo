@@ -1,0 +1,45 @@
+GForcePixPort.lo: GForcePixPort.cpp \
+  ../../../../plugins/actor/G-Force/GForceCommon/Headers/GForcePixPort.h \
+  ../../../../plugins/actor/G-Force/Common/UI/Headers/PixPort.h \
+  /usr/include/stdint.h /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+  /usr/include/gnu/stubs-32.h /usr/include/bits/wchar.h \
+  ../../../../plugins/actor/G-Force/Common/EgCommon.h \
+  ../../../../plugins/actor/G-Force/unix/libmfl/libmfl.h \
+  ../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h \
+  ../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h \
+  ../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/TempMem.h \
+  ../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h \
+  ../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XPtrList.h
+
+../../../../plugins/actor/G-Force/GForceCommon/Headers/GForcePixPort.h:
+
+../../../../plugins/actor/G-Force/Common/UI/Headers/PixPort.h:
+
+/usr/include/stdint.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-32.h:
+
+/usr/include/bits/wchar.h:
+
+../../../../plugins/actor/G-Force/Common/EgCommon.h:
+
+../../../../plugins/actor/G-Force/unix/libmfl/libmfl.h:
+
+../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h:
+
+../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/Hashable.h:
+
+../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/TempMem.h:
+
+../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/UtilStr.h:
+
+../../../../plugins/actor/G-Force/Common/GeneralTools/Headers/XPtrList.h:
