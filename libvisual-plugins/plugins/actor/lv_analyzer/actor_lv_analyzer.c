@@ -29,13 +29,22 @@
 #include <fcntl.h>
 #include <string.h>
 #include <gettext.h>
+#include <limits.h>
 
 #include <libvisual/libvisual.h>
 
-#define BARS 256
+/** default amount of bars */
+#define BARS_DEFAULT -1
 
-typedef struct {
+/* helper macro */
+#define QTY(array)  (sizeof(array) / sizeof(*(array)))
+
+typedef struct 
+{
 	VisPalette pal;
+	VisParamContainer *paramcontainer;
+	int bars;
+	int width, height;
 } AnalyzerPrivate;
 
 static void draw_bar (VisVideo *video, int index, int nbars, float amplitude);
@@ -83,17 +92,45 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
+static _bars(VisPluginData *plugin)
+{
+	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	return priv->bars;
+}
+
 int lv_analyzer_init (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv;
-
+	
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
 
-	priv = visual_mem_new0 (AnalyzerPrivate, 1);
+	AnalyzerPrivate *priv = visual_mem_new0 (AnalyzerPrivate, 1);
+	visual_log_return_val_if_fail(priv != NULL, -1);
+	
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
-
+	
+	/* default values */
+	priv->bars = BARS_DEFAULT;
+	
+	/* get plugins param-container */
+	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+	visual_log_return_val_if_fail(paramcontainer != NULL, -1);
+	
+	/* save paramcontainer */
+	priv->paramcontainer = paramcontainer;
+	
+	/* parameter-description */
+	static VisParamEntry params[] = 
+	{
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("bars", BARS_DEFAULT),
+        VISUAL_PARAM_LIST_END
+    };
+    
+    /* register parameters */
+	visual_param_container_add_many (paramcontainer, params);
+	
+	/* allocate space for palette */
 	visual_palette_allocate_colors (&priv->pal, 256);
 
 	return 0;
@@ -127,25 +164,113 @@ int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_analyzer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int _validate_bars(VisPluginData *plugin, int *bars)
 {
-	visual_video_set_dimension (video, width, height);
-
+	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	
+	if(*bars > 0 && *bars < priv->width)
+		return 1;
+	
 	return 0;
+}
+
+static void _change_bars(VisPluginData *plugin,  
+                       VisParamEntry *p, int (*validator)(VisPluginData *plugin, void *value))
+{
+	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	
+	int integer = visual_param_entry_get_integer(p);
+	
+	if(!validator || validator(plugin, &integer))
+    {
+		priv->bars = integer;
+        return;
+    }
+    /* reset to previous value */
+    else
+        visual_param_entry_set_integer(p, priv->bars);
+}
+
+static int _change_param(VisPluginData *plugin, VisParamEntry *p)
+{
+	/**
+     * structure defining handler functions for configuration values
+     */
+    struct
+    {
+        /* parameter-name */
+        char *name;
+        /* validator function */
+        int (*validator)(void *value);
+        /* function called to change parameter */
+        void (*change)(VisPluginData *plugin,  
+                       VisParamEntry *parameter, int (*validator)(void *value));
+        /* function called after parameter change */
+        void (*postchange)(VisPluginData *plugin);
+    } parms[] =
+    {
+        {"bars", (void *) _validate_bars, (void *) _change_bars, NULL},
+    };
+    
+    
+    
+    /** look for parameter in our structure */
+    int i;
+    for(i = 0; i < QTY(parms); i++)
+    {
+        /* not our parameter? -> continue the quest */
+        if(!visual_param_entry_is(p, parms[i].name))
+            continue;
+        
+        /* call this parameters' change handler */
+        if(parms[i].change)
+            parms[i].change(plugin, p, parms[i].validator);
+        
+        /* call this parameters' post-change handler */
+        if(parms[i].postchange)
+            parms[i].postchange(plugin);
+        
+        return;
+    }
+    
+    printf("Unknown param '%s'\n", visual_param_entry_get_name(p));
 }
 
 int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
-
-	while (visual_event_queue_poll (events, &ev)) {
-		switch (ev.type) {
+	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	
+	
+	while (visual_event_queue_poll (events, &ev)) 
+	{
+		switch (ev.type) 
+		{
+			case VISUAL_EVENT_PARAM:
+			{
+                VisParamEntry *param = ev.event.param.param;
+                /* change config parameter */
+                _change_param(plugin, param);          
+                break;
+			}
+			
 			case VISUAL_EVENT_RESIZE:
-				lv_analyzer_dimension (plugin, ev.event.resize.video,
+			{
+				visual_video_set_dimension (ev.event.resize.video, 
 						ev.event.resize.width, ev.event.resize.height);
+				priv->width = ev.event.resize.video->width;
+				priv->height = ev.event.resize.video->height;
+				
+				if(priv->width > priv->bars)
+					priv->bars = priv->width;
+					
 				break;
+			}
+			
 			default: /* to avoid warnings */
+			{
 				break;
+			}
 		}
 	}
 
@@ -176,12 +301,63 @@ VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 	return &priv->pal;
 }
 
+/** 
+ * draw vertical line to VisVideo
+ * @p[in] video - VisVideo to draw on
+ * @p[in] x1 - start coordinate
+ * @p[in] x2 - end coordinate
+ * @p[in] y - height
+ * @p[in] color - color to draw bar
+ */
+static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color)
+{
+	uint8_t *pixels = visual_video_get_pixels (video);
+	int i;
+
+	if (video->depth != VISUAL_VIDEO_DEPTH_8BIT)
+		return;
+
+	pixels += (y * video->pitch) + x1;
+	visual_mem_set (pixels, color, x2 - x1);
+}
+
+/**
+ * draw one vertical bar
+ * @p[in] video - VisVideo to draw on
+ * @p[in] index - index of this bar
+ * @p[in] nbars - total amount of bars
+ * @p[in] amplitude - amplitude of waveform
+ */
+static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
+{
+	int startx = (video->width / nbars) * index;
+	int endx = ((video->width / nbars) * (index + 1));
+	int height = video->height * amplitude;
+	int i;
+	float scale = 128.0 / video->height;
+	int width = (video->width-1)/nbars;
+	
+	for (i = video->height - 1; i > (video->height - height); i--) 
+	{
+		draw_vline(video, index*width, index*width + width, i, (video->height - i) * scale);
+	}
+}
+
+/**
+ * render analyzer - calledback
+ */
 int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	VisBuffer buffer;
 	VisBuffer pcmb;
-	float freq[BARS];
-	float pcm[BARS * 2];
+	int bars = _bars(plugin);
+	
+	/* no value configured? */
+	if(bars < 0)
+		bars = video->width/2;
+		
+	float freq[bars];
+	float pcm[bars * 2];
 	int i;
 
 	visual_video_fill_color (video, NULL);
@@ -195,35 +371,13 @@ int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
 
-	for (i = 0; i < BARS; i++)
-		draw_bar (video, i, BARS, freq[i]);
+	for (i = 0; i < bars; i++)
+		draw_bar (video, i, bars, freq[i]);
 
 	return 0;
 }
 
-static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
-{
-	int startx = (video->width / nbars) * index;
-	int endx = ((video->width / nbars) * (index + 1));
-	int height = video->height * amplitude;
-	int i;
-	float scale = 128.0 / video->height;
 
-	for (i = video->height - 1; i > (video->height - height); i--) {
-		draw_vline (video, index, index + 1, i, (video->height - i) * scale);
-	}
-}
 
-static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color)
-{
-	uint8_t *pixels = visual_video_get_pixels (video);
-	int i;
 
-	if (video->depth != VISUAL_VIDEO_DEPTH_8BIT)
-		return;
-
-	pixels += (y * video->pitch) + x1;
-
-	visual_mem_set (pixels, color, x2 - x1);
-}
 
