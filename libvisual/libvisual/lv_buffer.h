@@ -72,7 +72,7 @@ int visual_buffer_allocate_data (VisBuffer *buffer);
 
 void *visual_buffer_get_data (VisBuffer *buffer);
 void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset);
-int visual_buffer_get_size (VisBuffer *buffer);
+visual_size_t visual_buffer_get_size (VisBuffer *buffer);
 
 int visual_buffer_get_allocated (VisBuffer *buffer);
 

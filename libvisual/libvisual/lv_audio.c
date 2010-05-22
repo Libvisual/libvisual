@@ -1293,18 +1293,31 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 
 /*  functions */
 #define STEREO_INTERLEAVED(x)											\
-		{												\
-			chan1 = visual_buffer_new_allocate (sizeof (x) * (visual_buffer_get_size (buffer) / 2),	\
+		{																\
+			/* do we have at least one complete frame? */				\
+			visual_size_t bufsize = visual_buffer_get_size (buffer); 	\
+			visual_log_return_val_if_fail(bufsize > sizeof(x), -1);		\
+			/* go around troubles with bufsizes <= 1) */				\
+			visual_log_return_val_if_fail(bufsize > 1, -1);				\
+																		\
+			chan1 = visual_buffer_new_allocate (sizeof (x) * ((visual_buffer_get_size (buffer) / 2)),	\
 				visual_buffer_destroyer_free);							\
-			chan2 = visual_buffer_new_allocate (sizeof (x) * (visual_buffer_get_size (buffer) / 2),	\
+			chan2 = visual_buffer_new_allocate (sizeof (x) * ((visual_buffer_get_size (buffer) / 2)),	\
 					visual_buffer_destroyer_free);						\
-			x *pcm = visual_buffer_get_data (buffer);						\
-			x *chan1buf = visual_buffer_get_data (chan1);						\
-			x *chan2buf = visual_buffer_get_data (chan2);						\
-			for (i = 0; i < visual_buffer_get_size (buffer); i += 2) {				\
-				chan1buf[i >> 1] = pcm[i];							\
+																		\
+			x *pcm = visual_buffer_get_data (buffer);					\
+			x *chan1buf = visual_buffer_get_data (chan1);				\
+			x *chan2buf = visual_buffer_get_data (chan2);				\
+																		\
+			visual_log_return_val_if_fail (pcm != NULL, -1); 			\
+			visual_log_return_val_if_fail (chan1buf != NULL, -1); 		\
+			visual_log_return_val_if_fail (chan2buf != NULL, -1); 		\
+																		\
+			for (i = 0; i < visual_buffer_get_size (buffer); i += 2) 	\
+			{															\
+				chan1buf[i >> 1] = pcm[i];								\
 				chan2buf[i >> 1] = pcm[i + 1];							\
-			}											\
+			}															\
 		}
 
 static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *buffer,

@@ -336,7 +336,7 @@ void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset)
  *
  * @return Size in bytes on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_get_size (VisBuffer *buffer)
+visual_size_t visual_buffer_get_size (VisBuffer *buffer)
 {
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 

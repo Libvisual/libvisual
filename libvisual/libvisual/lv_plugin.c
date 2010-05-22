@@ -442,11 +442,11 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 				
 				visual_list_add (list, ref);
 			} else if (ret != FALSE) {
-				visual_log (VISUAL_LOG_WARNING, visual_error_to_string (ret));
+				visual_log (VISUAL_LOG_WARNING, "%s", visual_error_to_string (ret));
 			}
 		}
 		else if (ret != FALSE) { /* FIXME XXX TODO, patch frmo duilio check how this works */
-			visual_log (VISUAL_LOG_WARNING, visual_error_to_string (ret));
+			visual_log (VISUAL_LOG_WARNING, "%s", visual_error_to_string (ret));
 		}
 	}
 
