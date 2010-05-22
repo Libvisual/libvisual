@@ -192,8 +192,23 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 }
 
 /**
- *
-*/
+ * get amount of elements in a VisList
+ * 
+ * @p list - the list of which the element-count is requested
+ * @return amount of elements currently in list (or -VISUAL_ERROR_COLLECTION_NULL on error)
+ */
+int visual_list_count(VisList *list)
+{
+	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	return list->count;
+}
+
+/**
+ * initialize a new VisList
+ * 
+ * @p list - newly generated list (output of @ref visual_list_new() )
+ * @p destroyer - the function that cleans up the list upon @ref visual_list_destroy()
+ */
 int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);

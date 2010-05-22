@@ -272,6 +272,10 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 		int lindex = 0;
 		le = NULL;
 
+		/* return immediately if there are no elements in the list */
+		if(visual_list_count(ringbuffer->entries) == 0)
+			return VISUAL_OK;
+			
 		while ((entry = visual_list_next (ringbuffer->entries, &le)) != NULL) {
 			VisBuffer *tempbuf;
 
