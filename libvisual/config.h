@@ -120,7 +120,7 @@
 #define HAVE_USLEEP 1
 
 /* String catalog location */
-#define LOCALEDIR "/usr/share/locale"
+#define LOCALEDIR "NONE/share/locale"
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */

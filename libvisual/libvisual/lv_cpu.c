@@ -76,7 +76,7 @@ static int cpuid (unsigned int ax, unsigned int *p);
 
 /* The sigill handlers */
 #if defined(VISUAL_ARCH_X86) //x86 (linux katmai handler check thing)
-#if defined(VISUAL_OS_LINUX) && defined(_POSIX_SOURCE) && defined(X86_FXSR_MAGIC)
+#if defined(VISUAL_OS_LINUX) && defined(_POSIX_SOURCE)
 static void sigill_handler_sse( int signal, struct sigcontext sc )
 {
 	/* Both the "xorps %%xmm0,%%xmm0" and "divps %xmm0,%%xmm1"
