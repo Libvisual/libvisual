@@ -59,6 +59,7 @@ typedef enum {
 	VISUAL_PARAM_ENTRY_TYPE_COLOR,		/**< VisColor parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_PALETTE,	/**< VisPalette parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_OBJECT,		/**< VisObject parameter. */
+	VISUAL_PARAM_ENTRY_TYPE_COLLECTION,	/**< VisCollection parameter. */
 	VISUAL_PARAM_ENTRY_TYPE_END		/**< List end, and used as terminator for VisParamEntry lists. */
 } VisParamEntryType;
 
@@ -123,6 +124,8 @@ struct _VisParamEntry {
 	VisObject		*objdata;	/**< VisObject data for a VisObject parameter. */
 
 	VisList			 callbacks;	/**< The change notify callbacks. */
+
+	VisCollection		*collection;	/**< VisCollection data. */
 };
 
 /* prototypes */
@@ -156,6 +159,7 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
 int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color);
 int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal);
 int visual_param_entry_set_object (VisParamEntry *param, VisObject *object);
+int visual_param_entry_set_collection (VisParamEntry *param, VisCollection *collection);
 
 char *visual_param_entry_get_name (VisParamEntry *param);
 char *visual_param_entry_get_string (VisParamEntry *param);
@@ -165,6 +169,7 @@ double visual_param_entry_get_double (VisParamEntry *param);
 VisColor *visual_param_entry_get_color (VisParamEntry *param);
 VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
 VisObject *visual_param_entry_get_object (VisParamEntry *param);
+VisCollection *visual_param_entry_get_collection (VisParamEntry *param);
 
 VISUAL_END_DECLS
 
