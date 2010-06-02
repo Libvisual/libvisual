@@ -60,6 +60,9 @@ dnl Installation tools
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
+dnl Assembly
+AM_PROG_AS
+
 dnl Libtool
 AC_DISABLE_STATIC
 
@@ -210,6 +213,10 @@ CPPFLAGS=$CPPFLAGS_SAVE
 
 AC_SUBST([XF86VMODE_LIB])
 AM_CONDITIONAL([HAVE_XF86VMODE], [test "$HAVE_XF86VMODE" = "yes"])
+
+dnl x86
+AM_CONDITIONAL(ARCH_X86,test "$ARCH_TYPE" = "i386" || test "$ARCH_TYPE" = "i486" || test "$ARCH_TYPE" =
+"i586" || test "$ARCH_TYPE" = "i686" || test "$ARCH_TYPE" = "i86pc")
 
 dnl ALSA
 LV_ALSA_MIN_VERSION=0.9.0
@@ -438,6 +445,17 @@ if test "$ENABLE_GFORCE" = "yes"; then
   AC_SUBST([GFORCE_FLAGS])
 fi
 
+dnl Blursk
+AC_ARG_ENABLE([blursk],
+  AS_HELP_STRING([--disable-blursk],
+    [Do not build the Blursk plugin @<:@default=enabled@:>@]),
+    [ENABLE_BLURSK=$enableval],
+    [ENABLE_BLURSK=yes])
+
+if test "$ENABLE_BLURSK" = "yes"; then
+  build_actor_plugins="$build_actor_plugins blursk"
+fi
+
 dnl Alphabend
 AC_ARG_ENABLE([alphablend],
   AS_HELP_STRING([--disable-alphablend],
@@ -594,6 +612,7 @@ AC_CONFIG_FILES([
 	plugins/actor/G-Force/GForceParticles/Makefile
 	plugins/actor/G-Force/GForceWaveShapes/Makefile
 	plugins/actor/G-Force/NotWorkingWaveShapes/Makefile
+	plugins/actor/blursk/Makefile
 	plugins/input/Makefile
 	plugins/input/esd/Makefile
 	plugins/input/alsa/Makefile

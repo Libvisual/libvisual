@@ -16,4 +16,5 @@ DIST_SUBDIRS = \
   madspin \
   nastyfft \
   oinksie \
-  pseudotoad_flower
+  pseudotoad_flower \
+  blursk
