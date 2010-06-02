@@ -71,6 +71,8 @@ int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2);
 int visual_time_past (VisTime *time_, VisTime *past);
 int visual_time_copy (VisTime *dest, VisTime *src);
 int visual_time_usleep (unsigned long microseconds);
+long visual_time_get_msec (VisTime *time_);
+int visual_time_set_from_msec (VisTime *time_, long msec);
 
 VisTimer *visual_timer_new (void);
 int visual_timer_init (VisTimer *timer);
