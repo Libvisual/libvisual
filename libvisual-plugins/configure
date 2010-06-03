@@ -759,6 +759,8 @@ LIBVISUAL_PLUGINS_BASE_DIR
 OPT_CFLAGS
 DEBUG_CFLAGS
 GFORCE_FLAGS
+XMMS2_LIBS
+XMMS2_CFLAGS
 ALSA_LIBS
 ALSA_CFLAGS
 ARCH_X86_FALSE
@@ -954,6 +956,7 @@ with_alsa_prefix
 with_alsa_inc_prefix
 enable_alsatest
 enable_mplayer
+enable_xmms2
 enable_inputdebug
 enable_gltest
 enable_nastyfft
@@ -1004,7 +1007,9 @@ GTK_CFLAGS
 GTK_LIBS
 GSTREAMER_CFLAGS
 GSTREAMER_LIBS
-XMKMF'
+XMKMF
+XMMS2_CFLAGS
+XMMS2_LIBS'
 
 
 # Initialize some variables set by options.
@@ -1651,6 +1656,7 @@ Optional Features:
   --disable-alsa          Do not build ALSA input plugin [default=enabled]
   --disable-alsatest      Do not try to compile and run a test Alsa program
   --disable-mplayer       Do not build mplayer input plugin [default=enabled]
+  --disable-xmms2         Do not build xmms2 input plugin [default=enabled]
   --disable-inputdebug    Do not build input debug plugin [default=enabled]
   --disable-gltest        Do not build lv_gltest plugin [default=enabled]
   --disable-nastyfft      Do not build nastyfft plugin [default=enabled]
@@ -1729,6 +1735,9 @@ Some influential environment variables:
   GSTREAMER_LIBS
               linker flags for GSTREAMER, overriding pkg-config
   XMKMF       Path to xmkmf, Makefile generator for X Window System
+  XMMS2_CFLAGS
+              C compiler flags for XMMS2, overriding pkg-config
+  XMMS2_LIBS  linker flags for XMMS2, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -6319,13 +6328,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:6322: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:6331: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6325: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:6334: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6328: output\"" >&5)
+  (eval echo "\"\$as_me:6337: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -7519,7 +7528,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7522 "configure"' > conftest.$ac_ext
+  echo '#line 7531 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9274,11 +9283,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9277: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9286: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9281: \$? = $ac_status" >&5
+   echo "$as_me:9290: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9613,11 +9622,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9616: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9625: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9620: \$? = $ac_status" >&5
+   echo "$as_me:9629: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9718,11 +9727,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9721: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9730: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9725: \$? = $ac_status" >&5
+   echo "$as_me:9734: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9773,11 +9782,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9776: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9785: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9780: \$? = $ac_status" >&5
+   echo "$as_me:9789: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12153,7 +12162,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12156 "configure"
+#line 12165 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12249,7 +12258,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12252 "configure"
+#line 12261 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14205,11 +14214,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14208: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14217: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14212: \$? = $ac_status" >&5
+   echo "$as_me:14221: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14304,11 +14313,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14307: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14316: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14311: \$? = $ac_status" >&5
+   echo "$as_me:14320: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14356,11 +14365,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14359: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14368: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14363: \$? = $ac_status" >&5
+   echo "$as_me:14372: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18931,6 +18940,92 @@ $as_echo "$as_me: WARNING: *** There is not a working munmap function available.
   fi
 fi
 
+# Check whether --enable-xmms2 was given.
+if test "${enable_xmms2+set}" = set; then :
+  enableval=$enable_xmms2; ENABLE_XMMS2=$enableval
+else
+  ENABLE_XMMS2=yes
+fi
+
+
+if test "$ENABLE_XMMS2" = "yes"; then
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for XMMS2" >&5
+$as_echo_n "checking for XMMS2... " >&6; }
+
+if test -n "$XMMS2_CFLAGS"; then
+    pkg_cv_XMMS2_CFLAGS="$XMMS2_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmms2-client >= 0.6\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "xmms2-client >= 0.6") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_XMMS2_CFLAGS=`$PKG_CONFIG --cflags "xmms2-client >= 0.6" 2>/dev/null`
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$XMMS2_LIBS"; then
+    pkg_cv_XMMS2_LIBS="$XMMS2_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmms2-client >= 0.6\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "xmms2-client >= 0.6") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_XMMS2_LIBS=`$PKG_CONFIG --libs "xmms2-client >= 0.6" 2>/dev/null`
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        XMMS2_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "xmms2-client >= 0.6" 2>&1`
+        else
+	        XMMS2_PKG_ERRORS=`$PKG_CONFIG --print-errors "xmms2-client >= 0.6" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$XMMS2_PKG_ERRORS" >&5
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+                HAVE_XMMS2=no
+elif test $pkg_failed = untried; then
+	HAVE_XMMS2=no
+else
+	XMMS2_CFLAGS=$pkg_cv_XMMS2_CFLAGS
+	XMMS2_LIBS=$pkg_cv_XMMS2_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	HAVE_XMMS2=yes
+fi
+  if test "$HAVE_XMMS2" = "yes"; then
+
+
+    build_input_plugins="$build_input_plugins xmms2"
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** xmms2 not found. Plugin will not be built." >&5
+$as_echo "$as_me: WARNING: *** xmms2 not found. Plugin will not be built." >&2;}
+  fi
+fi
+
 # Check whether --enable-inputdebug was given.
 if test "${enable_inputdebug+set}" = set; then :
   enableval=$enable_inputdebug; ENABLE_INPUTDEBUG=$enableval
@@ -19270,7 +19365,7 @@ LIBVISUAL_PLUGINS_DATA_DIR=$datadir/libvisual-plugins-0.5
 
 
 
-ac_config_files="$ac_config_files Makefile po/Makevars po/Makefile.in plugins/Makefile plugins/actor/Makefile plugins/actor/bumpscope/Makefile plugins/actor/corona/Makefile plugins/actor/gdkpixbuf/Makefile plugins/actor/gstreamer/Makefile plugins/actor/infinite/Makefile plugins/actor/jakdaw/Makefile plugins/actor/JESS/Makefile plugins/actor/lv_analyzer/Makefile plugins/actor/lv_gltest/Makefile plugins/actor/lv_scope/Makefile plugins/actor/madspin/Makefile plugins/actor/nastyfft/Makefile plugins/actor/oinksie/Makefile plugins/actor/pseudotoad_flower/Makefile plugins/actor/G-Force/Makefile plugins/actor/G-Force/docs/Makefile plugins/actor/G-Force/Common/Makefile plugins/actor/G-Force/Common/GeneralTools/Makefile plugins/actor/G-Force/Common/GeneralTools/Headers/Makefile plugins/actor/G-Force/Common/io/Makefile plugins/actor/G-Force/Common/io/Headers/Makefile plugins/actor/G-Force/Common/math/Makefile plugins/actor/G-Force/Common/math/Headers/Makefile plugins/actor/G-Force/Common/UI/Makefile plugins/actor/G-Force/Common/UI/Headers/Makefile plugins/actor/G-Force/GForceCommon/Makefile plugins/actor/G-Force/GForceCommon/Headers/Makefile plugins/actor/G-Force/unix/Makefile plugins/actor/G-Force/unix/Headers/Makefile plugins/actor/G-Force/unix/libmfl/Makefile plugins/actor/G-Force/unix/libvisual/Makefile plugins/actor/G-Force/GForceColorMaps/Makefile plugins/actor/G-Force/GForceDeltaFields/Makefile plugins/actor/G-Force/GForceParticles/Makefile plugins/actor/G-Force/GForceWaveShapes/Makefile plugins/actor/G-Force/NotWorkingWaveShapes/Makefile plugins/actor/blursk/Makefile plugins/input/Makefile plugins/input/esd/Makefile plugins/input/alsa/Makefile plugins/input/mplayer/Makefile plugins/input/jack/Makefile plugins/input/debug/Makefile plugins/morph/Makefile plugins/morph/alphablend/Makefile plugins/morph/tentacle/Makefile plugins/morph/flash/Makefile plugins/morph/slide/Makefile"
+ac_config_files="$ac_config_files Makefile po/Makevars po/Makefile.in plugins/Makefile plugins/actor/Makefile plugins/actor/bumpscope/Makefile plugins/actor/corona/Makefile plugins/actor/gdkpixbuf/Makefile plugins/actor/gstreamer/Makefile plugins/actor/infinite/Makefile plugins/actor/jakdaw/Makefile plugins/actor/JESS/Makefile plugins/actor/lv_analyzer/Makefile plugins/actor/lv_gltest/Makefile plugins/actor/lv_scope/Makefile plugins/actor/madspin/Makefile plugins/actor/nastyfft/Makefile plugins/actor/oinksie/Makefile plugins/actor/pseudotoad_flower/Makefile plugins/actor/G-Force/Makefile plugins/actor/G-Force/docs/Makefile plugins/actor/G-Force/Common/Makefile plugins/actor/G-Force/Common/GeneralTools/Makefile plugins/actor/G-Force/Common/GeneralTools/Headers/Makefile plugins/actor/G-Force/Common/io/Makefile plugins/actor/G-Force/Common/io/Headers/Makefile plugins/actor/G-Force/Common/math/Makefile plugins/actor/G-Force/Common/math/Headers/Makefile plugins/actor/G-Force/Common/UI/Makefile plugins/actor/G-Force/Common/UI/Headers/Makefile plugins/actor/G-Force/GForceCommon/Makefile plugins/actor/G-Force/GForceCommon/Headers/Makefile plugins/actor/G-Force/unix/Makefile plugins/actor/G-Force/unix/Headers/Makefile plugins/actor/G-Force/unix/libmfl/Makefile plugins/actor/G-Force/unix/libvisual/Makefile plugins/actor/G-Force/GForceColorMaps/Makefile plugins/actor/G-Force/GForceDeltaFields/Makefile plugins/actor/G-Force/GForceParticles/Makefile plugins/actor/G-Force/GForceWaveShapes/Makefile plugins/actor/G-Force/NotWorkingWaveShapes/Makefile plugins/actor/blursk/Makefile plugins/input/Makefile plugins/input/esd/Makefile plugins/input/alsa/Makefile plugins/input/mplayer/Makefile plugins/input/jack/Makefile plugins/input/debug/Makefile plugins/input/xmms2/Makefile plugins/morph/Makefile plugins/morph/alphablend/Makefile plugins/morph/tentacle/Makefile plugins/morph/flash/Makefile plugins/morph/slide/Makefile"
 
 
 
@@ -20422,6 +20517,7 @@ do
     "plugins/input/mplayer/Makefile") CONFIG_FILES="$CONFIG_FILES plugins/input/mplayer/Makefile" ;;
     "plugins/input/jack/Makefile") CONFIG_FILES="$CONFIG_FILES plugins/input/jack/Makefile" ;;
     "plugins/input/debug/Makefile") CONFIG_FILES="$CONFIG_FILES plugins/input/debug/Makefile" ;;
+    "plugins/input/xmms2/Makefile") CONFIG_FILES="$CONFIG_FILES plugins/input/xmms2/Makefile" ;;
     "plugins/morph/Makefile") CONFIG_FILES="$CONFIG_FILES plugins/morph/Makefile" ;;
     "plugins/morph/alphablend/Makefile") CONFIG_FILES="$CONFIG_FILES plugins/morph/alphablend/Makefile" ;;
     "plugins/morph/tentacle/Makefile") CONFIG_FILES="$CONFIG_FILES plugins/morph/tentacle/Makefile" ;;
