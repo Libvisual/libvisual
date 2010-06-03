@@ -1,0 +1,8 @@
+#!/bin/sh
+
+gcc -Wall -o lv-standalone client.c display.c sdldriver.c x11driver.c glxdriver.c ledsdriver.c lv_x11_key.c \
+  -L/usr/X11R6/lib -lGL -lGLU -lXxf86vm \
+  `pkg-config --cflags --libs libvisual-0.5` \
+  `sdl-config --libs --cflags` \
+  -ggdb -z execstack
+
