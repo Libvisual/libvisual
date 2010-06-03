@@ -267,6 +267,24 @@ if test "$ENABLE_MPLAYER" = "yes"; then
   fi
 fi
 
+dnl Xmms2
+AC_ARG_ENABLE([xmms2],
+  AS_HELP_STRING([--disable-xmms2],
+    [Do not build xmms2 input plugin @<:@default=enabled@:>@]),
+  [ENABLE_XMMS2=$enableval],
+  [ENABLE_XMMS2=yes])
+
+if test "$ENABLE_XMMS2" = "yes"; then
+  PKG_CHECK_MODULES(XMMS2, xmms2-client >= 0.6, [HAVE_XMMS2=yes], [HAVE_XMMS2=no])
+  if test "$HAVE_XMMS2" = "yes"; then
+    AC_SUBST(XMMS2_CFLAGS)
+    AC_SUBST(XMMS2_LIBS)
+    build_input_plugins="$build_input_plugins xmms2"
+  else
+    AC_MSG_WARN([*** xmms2 not found. Plugin will not be built.])
+  fi
+fi
+
 dnl Input debug plugin
 AC_ARG_ENABLE([inputdebug],
   AS_HELP_STRING([--disable-inputdebug],
@@ -619,6 +637,7 @@ AC_CONFIG_FILES([
 	plugins/input/mplayer/Makefile
 	plugins/input/jack/Makefile
 	plugins/input/debug/Makefile
+	plugins/input/xmms2/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile
