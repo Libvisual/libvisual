@@ -50,7 +50,8 @@ static JSFunctionSpec global_functions[] = {
 	JS_FS("atan", function_atan, 1, 0, 0),
 	JS_FS("if", function_if, 3, 0, 0),
 	JS_FS("div", function_div, 1, 0, 0),
-	JS_FS("rand", function_rand, 2, 0, 0)
+	JS_FS("rand", function_rand, 2, 0, 0),
+	JS_FS_END
 };
 
 void * get_context(VisPluginData *plugin)
@@ -104,9 +105,6 @@ int script_visscript_init (VisPluginData *plugin)
 	priv->rt = JS_NewRuntime(8L * 1024L * 1024L);
 	visual_log_return_val_if_fail(priv->rt != NULL, -VISUAL_ERROR_GENERAL);
 
-	priv->global = JS_NewObject(priv->ctx, &global_class, NULL, NULL);
-	visual_log_return_val_if_fail(priv->global != NULL, -VISUAL_ERROR_GENERAL);
-
 	return VISUAL_OK;
 }
 
@@ -114,7 +112,6 @@ int script_visscript_cleanup (VisPluginData *plugin)
 {
 	VisscriptPrivate *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
-	JS_DestroyContext(priv->ctx);
 	JS_DestroyRuntime(priv->rt);
 	JS_ShutDown();
 
