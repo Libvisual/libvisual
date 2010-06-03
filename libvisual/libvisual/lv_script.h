@@ -9,8 +9,7 @@
 typedef struct _VisScript VisScript;
 typedef struct _VisScriptPlugin VisScriptPlugin;
 
-//typedef void * (*VisPluginScriptGetGlobal)(VisPluginData *plugin);
-//typedef void * (*VisPluginScriptGetContext)(VisPluginData *plugin)
+typedef void *(*VisPluginScriptGetContext)(VisPluginData *plugin);
 
 struct _VisScript {
 	VisObject object;	/**< The VisObject data. */
@@ -21,9 +20,16 @@ struct _VisScript {
 struct _VisScriptPlugin {
 	VisObject object;	/**<The VisObject data. */
 
-	//VisPluginScriptGetGlobal *get_global;
-	//VisPluginScriptGetContext *get_context;
+	VisPluginScriptGetContext *get_context; /**< Script context */
 };
 
+VisPluginData *visual_script_get_plugin (VisScript *script);
+
+VisList *visual_script_get_list (void);
+
+VisScript *visual_script_new (const char *scriptname);
+int visual_script_init(VisScript *script, const char *scriptname);
+
+int visual_script_realize (VisScript *morph);
 
 #endif
