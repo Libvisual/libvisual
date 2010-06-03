@@ -11,6 +11,10 @@ m4_define([lv_plugins_version_suffix], [lv_plugins_version_major.lv_plugins_vers
 AC_INIT(Libvisual plugins, lv_plugins_version, ds@nerds-incorporated.org)
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
+# Test for new silent rules and enable only if they are available
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
+
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 
@@ -84,7 +88,7 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [gettext package name])
 AC_DEFINE_UNQUOTED(LOCALEDIR, "${prefix}/share/locale", [String catalog location])
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.14.1])
+AM_GNU_GETTEXT_VERSION([0.17])
 
 dnl Dynamic linking library
 DYNAMIC_LOADER_LIBS="-ldl"
