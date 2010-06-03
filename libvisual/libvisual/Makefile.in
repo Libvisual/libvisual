@@ -87,7 +87,7 @@ am_libvisual_@LIBVISUAL_VERSION_SUFFIX@_la_OBJECTS = lv_actor.lo \
 	lv_thread.lo lv_object.lo lv_transform.lo lv_rectangle.lo \
 	lv_config.lo lv_ringbuffer.lo lv_buffer.lo lv_cache.lo \
 	lv_hashmap.lo lv_hashlist.lo lv_collection.lo lv_utils.lo \
-	lv_os.lo lv_math.lo lv_gl.lo
+	lv_os.lo lv_math.lo lv_gl.lo lv_script.lo
 libvisual_@LIBVISUAL_VERSION_SUFFIX@_la_OBJECTS =  \
 	$(am_libvisual_@LIBVISUAL_VERSION_SUFFIX@_la_OBJECTS)
 libvisual_@LIBVISUAL_VERSION_SUFFIX@_la_LINK = $(LIBTOOL) --tag=CC \
@@ -271,7 +271,8 @@ library_include_HEADERS = lvconfig.h libvisual.h lv_actor.h \
 			  lv_transform.h lv_rectangle.h lv_ringbuffer.h \
 			  lv_buffer.h lv_config.h lv_hashmap.h \
 			  lv_hashlist.h lv_cache.h lv_collection.h \
-			  lv_utils.h lv_os.h lv_math.h lv_gl.h lv_defines.h
+			  lv_utils.h lv_os.h lv_math.h lv_gl.h lv_defines.h \
+			  lv_script.h
 
 lib_LTLIBRARIES = libvisual-@LIBVISUAL_VERSION_SUFFIX@.la
 PLUGPATH = $(libdir)/libvisual
@@ -289,7 +290,8 @@ libvisual_@LIBVISUAL_VERSION_SUFFIX@_la_SOURCES = lv_actor.c lv_input.c lv_event
 		       lv_cpu.c lv_color.c lv_time.c lv_random.c lv_error.c lv_ui.c \
 		       lv_thread.c lv_object.c lv_transform.c lv_rectangle.c lv_config.c \
 		       lv_ringbuffer.c lv_buffer.c lv_cache.c lv_hashmap.c lv_hashlist.c \
-		       lv_collection.c lv_utils.c lv_os.c lv_math.c lv_gl.c gettext.h
+		       lv_collection.c lv_utils.c lv_os.c lv_math.c lv_gl.c gettext.h \
+		       lv_script.c
 
 all: all-am
 
@@ -397,6 +399,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lv_random.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lv_rectangle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lv_ringbuffer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lv_script.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lv_songinfo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lv_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lv_time.Plo@am__quote@

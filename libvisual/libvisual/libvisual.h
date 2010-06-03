@@ -65,5 +65,6 @@
 #include <libvisual/lv_math.h>
 #include <libvisual/lv_os.h>
 #include <libvisual/lv_common.h>
+#include <libvisual/lv_script.h>
 
 #endif /* LV_LIBVISUAL_H */
