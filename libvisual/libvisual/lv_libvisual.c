@@ -437,10 +437,6 @@ int visual_quit ()
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, _("Global param container: destroy failed: %s"), visual_error_to_string (ret));
 
-	ret = visual_object_unref(VISUAL_OBJECT (__lv_paramcontainer));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Script param container: destroy failed: %s"), visual_error_to_string(ret));
-
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_userinterface));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, _("Error during UI destroy: %s"), visual_error_to_string (ret));

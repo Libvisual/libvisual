@@ -237,8 +237,6 @@ enum {
 	VISUAL_ERROR_BEAT_NULL,				/**< The VisBeat is NULL */
 	VISUAL_ERROR_BEAT_ADV_NULL,			/**< The VisBeatAdv is NULL */
 
-	VISUAL_ERROR_SCRIPT_NULL,			/**< The VisScript is NULL */
-
 	VISUAL_ERROR_LIST_END				/**< Last entry, to check against for the number of errors. */
 };
 
