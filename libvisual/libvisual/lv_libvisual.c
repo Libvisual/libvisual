@@ -35,7 +35,6 @@
 #include "lv_input.h"
 #include "lv_morph.h"
 #include "lv_transform.h"
-#include "lv_script.h"
 #include "lv_libvisual.h"
 #include "lv_log.h"
 #include "lv_param.h"
@@ -58,8 +57,6 @@ VisList *__lv_plugins_input = NULL;
 VisList *__lv_plugins_morph = NULL;
 /** Contains all the transform plugins after initialize. */
 VisList *__lv_plugins_transform = NULL;
-/** Contains all the script plugins after initialize. */
-VisList *__lv_plugins_script = NULL;
 
 /** The global params container */
 VisParamContainer *__lv_paramcontainer = NULL;
@@ -339,9 +336,6 @@ int visual_init (int *argc, char ***argv)
 	ret = visual_init_path_add (PLUGPATH"/transform");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	ret = visual_init_path_add (PLUGPATH"/script");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
 #if !defined(VISUAL_OS_WIN32)
 	/* Add homedirectory plugin paths */
 	homedir = getenv ("HOME");
@@ -364,10 +358,6 @@ int visual_init (int *argc, char ***argv)
 		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/transform", homedir);
 		ret = visual_init_path_add (temppluginpath);
 		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/script", homedir);
-		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 	}
 #endif
 
@@ -382,7 +372,6 @@ int visual_init (int *argc, char ***argv)
 	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
 	__lv_plugins_morph = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_MORPH);
 	__lv_plugins_transform = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
-	__lv_plugins_script = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_SCRIPT);
 
 	__lv_paramcontainer = visual_param_container_new ();
 	init_params (__lv_paramcontainer);
@@ -466,12 +455,6 @@ int visual_quit ()
 	return VISUAL_OK;
 }
 
-VisScript *visual_get_script(int num)
-{
-	vis_error_return_val_if_fail(num < vis_list_count(__lv_plugins_script), NULL);
-
-	return visual_list_get(__lv_plugins_script, num);
-}
 /**
  * @}
  */
