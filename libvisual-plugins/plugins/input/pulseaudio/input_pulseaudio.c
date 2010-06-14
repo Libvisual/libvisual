@@ -16,14 +16,14 @@
 
 #include <stdlib.h>
 #include <libvisual/libvisual.h>
-#include <pulse/pulseaudio.h>
 #include <pulse/simple.h>
+#include <pulse/error.h>
+#include <pulse/gccmacro.h>
 
 #define PCM_BUF_SIZE 1024
 
 typedef struct {
     pa_simple *simple;
-    int error;
 } pulseaudio_priv_t;
 
 int inp_pulseaudio_init( VisPluginData *plugin );
@@ -61,16 +61,24 @@ const VisPluginInfo *get_plugin_info( int *count ) {
 int inp_pulseaudio_init( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv;
     pa_sample_spec sample_spec;
+    int error;
 
     priv = visual_mem_new0(pulseaudio_priv_t, 1);
 
     visual_object_set_private(VISUAL_OBJECT(plugin), priv);
 
+    memset(priv, 0, sizeof(pulseaudio_priv_t));
+
     sample_spec.format = PA_SAMPLE_S16LE;
     sample_spec.rate = 44100;
     sample_spec.channels = 2;
 
-    priv->simple = pa_simple_new(NULL, "lv-pulseaudio", PA_STREAM_RECORD, NULL, "Libvisual pulseaudio plugin", &sample_spec, NULL, NULL, &priv->error);
+    priv->simple = pa_simple_new(NULL, "lv-pulseaudio", PA_STREAM_RECORD, NULL, "Libvisual pulseaudio plugin", &sample_spec, NULL, NULL, &error);
+
+    if( priv->simple == NULL ) {
+        visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
+        return -VISUAL_ERROR_GENERAL;
+    }
 
     return VISUAL_OK;
 }
@@ -93,6 +101,9 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
     pulseaudio_priv_t *priv = NULL;
     short pcm_data[PCM_BUF_SIZE];
     VisBuffer buffer;
+    int error;
+
+    memset(pcm_data, 0, PCM_BUF_SIZE * sizeof(short));
 
     visual_log_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
     visual_log_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
@@ -101,12 +112,15 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 
     visual_log_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
-    /* Provide the VisAudio with pcm data */
-    if(pa_simple_read(priv->simple, pcm_data, PCM_BUF_SIZE, NULL)) {
-        visual_buffer_init(&buffer, pcm_data, PCM_BUF_SIZE, NULL);
-        visual_audio_samplepool_input(audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
-            VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+    if(pa_simple_read(priv->simple, pcm_data, PCM_BUF_SIZE, &error) < 0) {
+        visual_log(VISUAL_LOG_CRITICAL, "pa_simple_read() failed: %s", pa_strerror(error));
+        return -VISUAL_ERROR_GENERAL;
     }
+
+    visual_buffer_init(&buffer, pcm_data, PCM_BUF_SIZE, NULL);
+    visual_audio_samplepool_input(audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+        VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+   
     return 0;
 }
 
