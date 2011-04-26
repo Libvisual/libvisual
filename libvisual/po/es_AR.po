@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual Library 0.5.0\n"
 "Report-Msgid-Bugs-To: http://libvisual.sf.net\n"
-"POT-Creation-Date: 2010-05-20 04:36+0200\n"
+"POT-Creation-Date: 2011-04-26 03:30-0500\n"
 "PO-Revision-Date: 2005-03-20 17:09-0300\n"
 "Last-Translator:  <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -801,32 +802,37 @@ msgstr "El morph dado no referencia ningún plugin"
 msgid "param type is not valid"
 msgstr "tipo de parámetro inválido"
 
-#: libvisual/lv_param.c:904
+#: libvisual/lv_param.c:929
 msgid "Requesting string from a non string param"
 msgstr "Pidiendo una string desde un parámetro que no es de tipo string"
 
-#: libvisual/lv_param.c:924
+#: libvisual/lv_param.c:949
 msgid "Requesting integer from a non integer param"
 msgstr "Pidiendo un entero desde un parámetro que no es de tipo entero"
 
-#: libvisual/lv_param.c:941
+#: libvisual/lv_param.c:966
 msgid "Requesting float from a non float param"
 msgstr ""
 
-#: libvisual/lv_param.c:958
+#: libvisual/lv_param.c:983
 msgid "Requesting double from a non double param"
 msgstr ""
 
-#: libvisual/lv_param.c:978
+#: libvisual/lv_param.c:1003
 msgid "Requesting color from a non color param"
 msgstr ""
 
-#: libvisual/lv_param.c:999
+#: libvisual/lv_param.c:1024
 msgid "Requested palette from a non palette param\n"
 msgstr ""
 
-#: libvisual/lv_param.c:1019
+#: libvisual/lv_param.c:1044
 msgid "Requested object from a non object param\n"
+msgstr "Pidiendo un objeto desde un parámetro que no es de tipo objeto\n"
+
+#: libvisual/lv_param.c:1064
+#, fuzzy
+msgid "Requested collection from non collection param\n"
 msgstr "Pidiendo un objeto desde un parámetro que no es de tipo objeto\n"
 
 #: libvisual/lv_plugin.c:101
