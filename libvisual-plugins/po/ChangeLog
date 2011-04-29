@@ -1,0 +1,9 @@
+2010-06-03  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.17.
+
+2005-03-15  Duilio Protti <dprotti@users.sourceforge.net>
+ 
+        * LINGUAS: added es and es_AR.
+        * POTFILES.in: added plugins/actor/JESS/jess.c and
+	plugins/actor/G-Force/GForceCommon/G-Force.cpp.
