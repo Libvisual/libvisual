@@ -48,6 +48,8 @@ VisRectangle *visual_rectangle_new (int x, int y, int width, int height)
 {
 	VisRectangle *rect;
 
+	rect = visual_mem_new0(VisRectangle, 1);
+
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (rect), TRUE, NULL);
 

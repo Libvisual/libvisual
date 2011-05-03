@@ -31,6 +31,7 @@
 #include "lv_common.h"
 #include "lv_math.h"
 #include "lv_audio.h"
+#include "lv_beat.h"
 
 static int audio_dtor (VisObject *object);
 static int audio_samplepool_dtor (VisObject *object);
@@ -158,6 +159,8 @@ VisAudio *visual_audio_new ()
 	audio = visual_mem_new0 (VisAudio, 1);
 
 	visual_audio_init (audio);
+
+	audio->beat = visual_beat_new();
 
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (audio), TRUE);
