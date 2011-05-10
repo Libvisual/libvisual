@@ -24,6 +24,7 @@ typedef struct {
     xmmsc_connection_t *connection;
     int vis;
     VisSongInfo *songinfo;
+    int current_id;
 } xmms2_priv_t;
 
 int inp_xmms2_init( VisPluginData *plugin );
@@ -252,55 +253,59 @@ int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
         xmmsc_result_wait(res);
     
         val = xmmsc_result_get_value(res);
-    
+
         visual_log_return_val_if_fail(xmmsv_get_int(val, &id) > 0, -VISUAL_ERROR_GENERAL);
-    
-        xmmsc_result_unref(res);
-    
-        /* Get media info about the current song and fill the VisSongInfo */
-        res = xmmsc_medialib_get_info(priv->connection, id);
-    
-        xmmsc_result_wait(res);
-    
-        visual_songinfo_set_type(songinfo, VISUAL_SONGINFO_TYPE_ADVANCED);
+
+	if(id != priv->current_id) 
+        {
+            priv->current_id = id;
         
-        if(result_get_string(res, "title", &dictbuf)) {
-            visual_songinfo_set_song(songinfo, (char *)dictbuf);
-        } else {
-            visual_songinfo_set_song(songinfo, "(null)");
-        }
-        if(result_get_int(res, "duration", &dictnum)) {
-            visual_songinfo_set_length(songinfo, dictnum);
-        } else {
-            visual_songinfo_set_length(songinfo, -1);
-        }
-    
-        if(result_get_string(res, "album", &dictbuf)) {
-            visual_songinfo_set_album(songinfo, (char *)dictbuf);
-        } else {
-            visual_songinfo_set_album(songinfo, "(null)");
-        }
-    
-        if(result_get_string(res, "artist", &dictbuf)) {
-            visual_songinfo_set_artist(songinfo, (char *)dictbuf);
-        } else {
-            visual_songinfo_set_artist(songinfo, "(null)");
-        }
-    
-        xmmsc_result_unref(res);
-    
-        /* Get current playtime */
-        res = xmmsc_signal_playback_playtime(priv->connection);
-    
-        xmmsc_result_wait(res);
-    
-        val = xmmsc_result_get_value(res);
-        if(xmmsv_get_int(val, &time)) {
-            visual_songinfo_set_elapsed(songinfo, time);
-        } else {
-            visual_songinfo_set_elapsed(songinfo, -1);
-        }
-    
+            xmmsc_result_unref(res);
+        
+            /* Get media info about the current song and fill the VisSongInfo */
+            res = xmmsc_medialib_get_info(priv->connection, id);
+        
+            xmmsc_result_wait(res);
+        
+            visual_songinfo_set_type(songinfo, VISUAL_SONGINFO_TYPE_ADVANCED);
+            
+            if(result_get_string(res, "title", &dictbuf)) {
+                visual_songinfo_set_song(songinfo, (char *)dictbuf);
+            } else {
+                visual_songinfo_set_song(songinfo, "(null)");
+            }
+            if(result_get_int(res, "duration", &dictnum)) {
+                visual_songinfo_set_length(songinfo, dictnum);
+            } else {
+                visual_songinfo_set_length(songinfo, -1);
+            }
+        
+            if(result_get_string(res, "album", &dictbuf)) {
+                visual_songinfo_set_album(songinfo, (char *)dictbuf);
+            } else {
+                visual_songinfo_set_album(songinfo, "(null)");
+            }
+        
+            if(result_get_string(res, "artist", &dictbuf)) {
+                visual_songinfo_set_artist(songinfo, (char *)dictbuf);
+            } else {
+                visual_songinfo_set_artist(songinfo, "(null)");
+            }
+        
+            xmmsc_result_unref(res);
+        
+            /* Get current playtime */
+            res = xmmsc_signal_playback_playtime(priv->connection);
+        
+            xmmsc_result_wait(res);
+        
+            val = xmmsc_result_get_value(res);
+            if(xmmsv_get_int(val, &time)) {
+                visual_songinfo_set_elapsed(songinfo, time);
+            } else {
+                visual_songinfo_set_elapsed(songinfo, -1);
+            }
+    	}
         xmmsc_result_unref(res);
 
     }
