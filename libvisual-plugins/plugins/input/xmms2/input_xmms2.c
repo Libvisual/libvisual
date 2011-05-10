@@ -305,6 +305,8 @@ int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
             } else {
                 visual_songinfo_set_elapsed(songinfo, -1);
             }
+
+            visual_beat_change_song(audio->beat);
     	}
         xmmsc_result_unref(res);
 
