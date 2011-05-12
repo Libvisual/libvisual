@@ -1,0 +1,7 @@
+#!/bin/bash
+
+gcc -o alphablend_bench alphablend_bench.c `pkg-config --libs --cflags libvisual-0.5`
+gcc -o scale_bench scale_bench.c `pkg-config --libs --cflags libvisual-0.5`
+gcc -o actor_throughput_bench actor_throughput_bench.c `pkg-config --libs --cflags libvisual-0.5`
+gcc -o morph_throughput_bench morph_throughput_bench.c `pkg-config --libs --cflags libvisual-0.5`
+gcc -o depth_transform_bench depth_transform_bench.c `pkg-config --libs --cflags libvisual-0.5`
