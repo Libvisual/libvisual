@@ -118,6 +118,8 @@ VisParamContainer *visual_param_container_new ()
 
 	paramcontainer = visual_mem_new0 (VisParamContainer, 1);
 
+	visual_list_init(&paramcontainer->entries, NULL);
+
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (paramcontainer), TRUE, param_container_dtor);
 
