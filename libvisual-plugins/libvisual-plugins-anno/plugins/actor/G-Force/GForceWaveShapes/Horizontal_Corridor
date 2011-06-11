@@ -1,0 +1,26 @@
+name="Horizontal Corridor",
+
+
+Aspc=0,
+
+A0="10 + rnd( 40 )",
+
+C0=".4 + mag( s ) * .75",
+C1="2 * (s - .5)",
+
+A1=".4 + rnd( 1.2 )",  // phase shift of color
+
+Pen="( .5 + .5 * sin( s * a0 + A1 * t ) )",
+
+X0="c1",
+Y0="c0",
+
+X1="c1",
+Y1="-c0",
+
+LWdt="2",
+
+ConB=1,
+
+
+Vers=100

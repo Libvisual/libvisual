@@ -1,0 +1,21 @@
+name="Eyes",
+// "Eyes" by Kasuha
+
+Aspc=0,
+
+A0="1+rnd(1)",
+A1="0.05+rnd(0.2)",
+A2="( 0.5+rnd(.5) ) / a0",
+
+
+D0="2 * x * y * a0",
+D1="( y * y - x * x ) * a0 + a2",
+
+D2="a1 * ( rnd(2) - 1 )",
+
+srcX="x+(d0-x)*d2",
+srcY="y+(d1-y)*d2",
+
+Vers=100
+
+

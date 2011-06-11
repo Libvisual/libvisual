@@ -1,0 +1,61 @@
+name="SOLs Vinyl",
+
+// Create by Brad Anderson for G-Force
+//e-mail: javalizard@mac.com
+//I was really bored one early early Saturday morning after a night of fun and wrote a
+//few waveshapes
+
+//Sound of Lights Record
+//looks like Vinyl, almost
+
+Aspc=1,
+
+A0="trnc( sqrt( NUM_S_STEPS ) )",
+
+// Let A1 be our "a", the angle difference from the camera view plane to the spinning plane.
+A1="sin( - 3.14 * .35 )",
+A2="cos( - 3.14 * .35 )",
+
+
+A5=".3 + rnd( .3 )",  // Choose a random grid rotation speed
+
+// Rotation angle for the grid
+B0="sin( t * a5 )",
+B1="cos( t * a5 )",
+
+// Let (C0, C1, 0) be (x', y', z')  (as s goes from 0 to 1, a grid is stepped out)
+C0=" 3 * (mag( s ) * 0.35 + .4) * cos(s * 6.28318530)",   // x', x
+C1=" 3 * (mag( s ) * 0.35 + .4) * sin(s * 6.28318530)",   // y'
+// z' is 0
+
+C2="c0 * b1 - c1 * b0",
+C3="c0 * b0 + c1 * b1",
+
+
+A3="2 + rnd( 2 )",              // This mixes up the perspective distortion
+A4="a3 * ( .4 + rnd( .5 ) )",   // This mixes up the total size
+
+C4="c3 * a2",       // y
+C5="a3 - c3 * a1",  // z
+
+C6="a3 - c3 * .95 * a1",
+C7="a3 - c3 * .9 * a1",
+C8="a3 - c3 * .85 * a1",
+C9="a3 - c3 * .8 * a1",
+
+// Now transform them to the camera's cord system
+X0=" a4 * c2 / c5",
+Y0=" a4 * c4 / c5",
+
+X1=" a4 * c2 * .95 / c6",
+Y1=" a4 * c4 * .95 / c6",
+
+X2=" a4 * c2 * .9 / c7",
+Y2=" a4 * c4 * .9 / c7",
+
+X3=" a4 * c2 * .85 / c8",
+Y3=" a4 * c4 * .85 / c8",
+
+ConB=0,
+
+Vers=100

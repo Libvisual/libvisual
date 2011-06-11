@@ -1,0 +1,8 @@
+name="Ice Nightshade",
+
+
+H="wrap( (.7 - .4 * i )^.6 )", 
+S=".9",
+V="i^.9",
+
+Vers=100

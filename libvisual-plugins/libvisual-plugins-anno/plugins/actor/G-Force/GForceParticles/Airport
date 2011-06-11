@@ -1,0 +1,42 @@
+name="Airport",
+/*  Wave                                    */
+/*                                          */
+/*  Look into the Sun                       */
+/*                                          */
+/* By Thomas Geier                          */
+/*  E-mail: ziggystar@gmx.de                */
+
+
+Aspc= 0 ,
+
+A0="(.5+rnd(2))*sgn(rnd(1)-.5)",
+
+A1="rnd(12)+4",
+
+C0="s^2",
+
+C1="sin(s*A1+t*A0)",
+
+X0="C0",
+Y0="C0",
+
+X1="-C0",
+Y1="C0",
+
+X2="-C0",
+Y2="-C0",
+
+X3="C0",
+Y3="-C0",
+
+
+Pen="C1^8",
+
+Stps="40",
+
+LWdt="C1^10*20",
+
+ConB=0,
+
+
+Vers=100

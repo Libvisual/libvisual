@@ -1,0 +1,34 @@
+name="A New Hope",
+// "A New Hope" by Andy
+
+Stps="130",
+
+Aspc=0,
+
+B0="t * 0.15",
+
+
+C0="mag( s ) * 0.35 + .8",      // radius
+C1="s *  1.570796326794 + b0",		 // angle
+C2="c0 * cos( c1 )", // x
+C3="c0 * sin( c1 )", // y
+
+
+X0="c2",
+Y0="c3",
+
+X1="-c3",
+Y1="c2",
+
+
+X2="-c2",
+Y2="-c3",
+
+X3="c3",
+Y3="-c2",
+
+ConB=1,
+
+LWdt="( 8.5 * abs( mag( s ) ) ) ^ 1.5",
+
+Vers=100

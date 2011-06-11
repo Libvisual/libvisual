@@ -1,0 +1,7 @@
+name="Hip-no-Therapy",
+Aspc=1,
+
+srcR=" r * .92 ",
+srcT=" theta - .090",
+
+Vers=100

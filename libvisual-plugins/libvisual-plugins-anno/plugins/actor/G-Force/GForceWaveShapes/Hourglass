@@ -1,0 +1,31 @@
+name="Hourglass",
+// Hourglass by Erik, aka HHunter.
+
+Stps=-1,
+ConB=0,
+Aspc=1,
+
+A0="2*PI",
+
+B0="t * .6",
+B1=".5 * cos( b0 )",
+B2=".5 * sin( b0 )",
+
+C0="s * a0",
+C1="mag(s) * .2 + .5",
+C2="s + .2",
+C3="cos( c0 )",
+C4="sin( c0 )",
+
+C5=".1 * mag(s)",
+
+X0="5 * C5 + .5 * C3 + B1",
+Y0=".5 * C4 + B2",
+
+X1="5 * C5 + .5 * C3 - B1",
+Y1=".5 * C4 - B2",
+
+X2="C5 + .12 * C3",
+Y2="C5 + .12 * C4",
+
+Vers=100

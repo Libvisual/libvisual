@@ -1,0 +1,12 @@
+name="Twist of Fate",
+// A Simple Twist of Fate by Demonseed
+// If fate could be twisted would the outcome
+// benefit or destroy?
+
+
+Aspc= 1,
+
+srcX="x - .0119",
+srcY=" y - (.055*(x-.324))*(r+.279)",
+
+Vers=100

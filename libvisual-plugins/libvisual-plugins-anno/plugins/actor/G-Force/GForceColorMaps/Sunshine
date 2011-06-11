@@ -1,0 +1,10 @@
+name="Sunshine",
+// Sunshine in a Jar By Demonseed
+// Based on Sunset
+
+H="1-((.99 - .4 * i )^.6)", 
+S="1 - (.123456789 / .987654321)",
+V="(.4 + .6 * i ) * ( .5 * cos( (1-i) *  15.707963267 ) + .5 )",
+
+
+Vers=100

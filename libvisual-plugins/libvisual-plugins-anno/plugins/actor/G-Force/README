@@ -1,0 +1,150 @@
+This is README for the Unix/X11 port of G-Force 1.1.6.  It deals with
+things that are only relevant in the Unix port.
+
+If you are wondering about G-Force itself, look at docs/G-Force.txt
+and "docs/G-Force Extras.txt".  They are pure text versions of
+documentation that was distributed with the Windows version of G-Force
+1.1.6.  The originals are the files with the .doc extension.
+
+Quick Start
+-----------
+
+./configure
+make
+make install
+
+If everything succeeded, you should now be able to run standalone G-Force
+as gforce and select the G-Force visualization plugin in XMMS.  Press
+'?' to get a list of keyboard commands.  (Note:  If you run G-Force before
+you install it you certainly won't be impressed because it won't be able
+to find any of it's data files.)
+
+Using G-Force
+-------------
+
+The  standalone program is  called gforce.   Run it and you'll  get a
+display using random data.
+
+To use the XMMS plugin run xmms, bring up the visualization plugins 
+dialog (<Ctrl>+<V>), select G-Force from the list and click on 
+"Enable Plugin".  G-Force will then use actual audio input.
+
+G-Force uses a configuration file and many data files.  The data files
+are in /usr/local/share/gforce or wherever you told install to put
+them.  The configuration file is "$HOME/.G-Force".  For more info about
+these look at files in the docs directory of the distribution. 
+
+Note that many of the files are Macintosh text format.  Lines end with
+a carriage return instead of a line-feed.  Translation is easy with tr
+("tr '\r' '\n' < infile > outfile") and G-Force should be able to read
+Unix, MS-DOS and Macintosh text files.
+
+Detailed installation issues 
+----------------------------
+
+For more info about the ./configure mechanism and the available
+options look at the file named INSTALL.
+
+Basically ./configure does various checks.  It must find the X11
+header files and libraries.  If it doesn't find XMMS stuff, the XMMS
+plugin won't be built.  (Though you could probably override that and
+build it anyways; for now it doesn't depend on XMMS.)
+
+./configure will default to -O2 optimization.  You can get a bit of a
+performance improvement if you use more optimization.  If you're using
+gcc on a pentium or any better x86 CPU you could do something like
+this when you run configure:
+ 
+CFLAGS="-O3 -march=pentium -mpentium -fomit-frame-pointer" CXXFLAGS="-O3
+-march=pentium -mpentium -fomit-frame-pointer" ./configure
+
+(That was all one line.)
+
+If you're building with GCC and g++ you'll see lots of warnings.  Most
+of them are about about multi-character character constants as in
+"long a = 'abcd';".  GCC does the right thing with these.  If things
+break on some other compiler, then try GCC and contact me
+(bgjenero@sympatico.ca).
+
+Here's a list of what will be installed and a typical directory where
+it will go.
+
+standalone:  gforce                  /usr/local/bin
+
+XMMS plugin: libgforce.so            /usr/lib/xmms/Visualization/ 
+
+data files:  G-Force ColorMaps/*     subdirectories of /usr/local/share/gforce
+             G-Force WaveShapes/*    ...
+             G-Force Particles/*     ...
+             G-Force DeltaFields/*   ...
+	     deffont                 /usr/local/share/gforce
+
+docs:        docs/*                  /usr/local/share/gforce/docs
+             README, INSTALL, etc.   
+
+
+Problems and (Maybe) Solutions
+------------------------------
+
+Portability: Yes, I want to make it portable.  If you run into a
+problem let me know, and I will include the fix in the next release.
+
+If make dies with an error message containing "read.c:892: failed
+assertion", you are using an old buggy version of GNU make, and it is
+failing due to spaces in filenames.  Get GNU make 3.79.1 or later from
+your distribution or from ftp://ftp.gnu.org/gnu/make/ 
+That's probably a good thing to try if you're having any other
+make-related problems.
+
+If you configure gives you the error "configure: error: X11 headers
+and libraries are required" you will need to install those.  You're
+looking for stuff like "Xlib.h" and "libX11.*".  They're probably
+found in some X development package or something like that.  (Yeah,
+you may need to do this even if you're already able to run an X server
+and X clients.)
+
+If configure fails to find Xmms it won't build the Xmms plugin.  If
+you actually have Xmms that probably means you don't have the
+developer files.  You need stuff like the "xmms-config" shell script
+and "plugin.h".  Try to find some "Xmms development" package in your
+distribution or get XMMS from http://www.xmms.org/ (There is a way
+around this, but if you want to build the Xmms plugin without Xmms you
+are on your own.)
+
+If G-Force is boring and the the '?' key doesn't bring up help then
+G-Force isn't finding data files.  Check if you have done "make
+install".  Also note that the directory is hard-coded in at compile
+time.
+
+Using a private colormap in full screen mode: This is a problem.  My
+graphics library (libxpce) has several strategies for dealing with it,
+but since there's no interface for changing libxpce options you can't
+change the strategy.  The default strategy uses window manager hints
+to create a full screen window, and some window managers won't respect
+them.  If you're using TrueColor you don't have to worry about this.
+
+Speed: Yeah, this is CPU intensive.  I should add mode switching
+support for full screen mode.
+
+Invalid math operations: G-Force executes user-specified expressions
+(from config files) with practically no error checking.  On a Pentium
+this seems okay... invalid floating point computations like dividing
+by zero just return garbage results.  I don't know if other
+architectures do the same thing.  You certainly don't want to get a
+SIGFPE. 
+
+Crashes: You can let me know about crashes, but I do need information
+on what happened.  The best info would be a procedure to reproduce the
+crash and/or info from a debugger.
+
+Authors and websites
+--------------------
+
+G-Force force was written by Andy O'Meara <aco5@cornell.edu>.  The
+G-Force web page is at:  http://55ware.audiogalaxy.com/gforce/ 
+You probably don't want to bug Andy with Unix-port related issues
+because he is not involved in that.  Do check out the web page.
+
+G-Force was ported to Unix/X11 by Boris Gjenero
+<bgjenero@sympatico.ca>.  You can download the Unix version of G-Force
+from: http://www.mnsi.net/~bgjenero/gforce/

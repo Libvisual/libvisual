@@ -1,0 +1,29 @@
+name="Zoomed Square",
+//Created by Justin Swidler
+//Code editted from Hortizontal Sweep and changed to add a vertical sweep as well.
+
+Stps=-1,
+
+Aspc=0,
+
+B0=".7 * sin( .5 * t )",
+
+C0="2 * s - 1",
+C1="b0 + mag( s ) * .25",
+
+
+X0="c1",
+Y0="c0",
+
+X1="-c1",
+Y1="c0",
+
+X2="c0",
+Y2="-c1",
+
+X3="-c0",
+Y3="c1",
+
+ConB=1,
+
+Vers=100

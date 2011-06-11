@@ -1,0 +1,39 @@
+name="Centipede",
+
+
+Stps=1,
+
+
+
+Aspc=1,
+
+A0=".75",// + rnd( .3 )", // A Radius
+A1=".1 + rnd( .4 )", // B Radius
+
+A2="3 + rnd( 5 )", // Dot size
+
+A3=".5 + rnd( .5 )", // Rotation rate
+A4="1.1+ rnd( .4 )", // Orbit rate
+
+A5="rnd( 7 )", // Phase offset
+
+NUM="1 + rnd( 7 )",
+
+B0="t - .2 * ID + a5",
+
+B1="sin( a3 * b0 )",
+B2="cos( a3 * b0 )",
+
+B3="A0 * cos( a4 * b0 )",
+B4="A1 * sin( a4 * b0 )",
+
+
+X0="B3 * b2 - B4 * b1",
+Y0="B4 * b2 + B3 * b1",
+
+
+LWdt="a2",
+
+ConB=0,
+
+Vers=100

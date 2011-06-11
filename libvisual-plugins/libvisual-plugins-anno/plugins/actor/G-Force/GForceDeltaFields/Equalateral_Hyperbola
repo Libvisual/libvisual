@@ -1,0 +1,9 @@
+name="Equalateral Hyperbola",
+
+
+Aspc=1,
+
+srcR="r - .18 * x * y",
+srcT="theta - .005",
+
+Vers=100

@@ -1,0 +1,23 @@
+I am Boris Gjenero <bgjenero@sympatico.ca>.  I am not the author of
+G-Force; I only ported it to Unix.  The source that I started with did
+not come with a COPYING file, and although I have contacted the author
+I haven't gotten a response yet.
+
+I only wrote the source in the _Unix-X directory and its
+subdirectories.  The _Unix-X/libxpce and _Unix-X/libmfl are being
+released under the LGPL.  See _Unix-X/libxpce/COPYING for more
+information.  Note that I consider libmfl and libxpce to be separate
+libraries.  They're only being distributed along with this package for
+convenience.
+
+As for the rest of the entire G-Force source, well I can't speak for
+the author; here's what he says in G-Force.doc:
+
+  This plugin is open source.  Don't steal the source code (feel free
+  to use it, just give credit to where you got it from).
+
+Regarding using the program itself, here's what the author says:
+
+  Use of G-Force is intended only for non-profit and hobbyist use and
+  explicit permission to use it otherwise is required Andy O'Meara
+  <aco5@cornell.edu>

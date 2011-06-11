@@ -1,0 +1,10 @@
+name="Scattered Flow In",
+
+
+Aspc=1,
+
+srcR="(.99 + rnd( .11 ) ) * r",
+
+srcT="theta + .007",  // Turn everything a little
+
+Vers=100

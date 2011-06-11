@@ -1,0 +1,40 @@
+name="Pearl",
+/*
+
+Pearl
+
+By Thomas Geier
+
+ziggystar@gmx.de
+
+*/
+
+NUM="20+rnd(40)",
+
+Stps=17,
+
+
+Aspc=0,
+
+A0="t",			//should be clear
+A1="END_TIME-t",	//the same
+A2="3+rnd(3)",		//The Radius of the rings(Width)
+
+B0="-1+ID*2/NUM",	//Base X
+
+B1="sin(ID/NUM*6.28+t)*A2*sin((t-A0)/A1*3.14)",			//Radius
+
+B2=".1 * B1",
+B3=".03 * B1",
+
+X0="sin(s*6.28)*B2",
+Y0="B0+cos(s*6.28)*B3",
+
+Pen="1",
+
+
+LWdt="abs(B1/A2*7)",
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,16 @@
+name="Quantum Ripple",
+// "Quantum Ripple" by DJ Alter-N8 (djaltern8@earthlink.net)
+// Inspired by Andy's "Quantum Theta"
+// Inspired by Justin and Jesse Swidler's "Spinner"
+
+Aspc=1,
+
+A0="2 * trnc( 2 + rnd( 6 ) )",
+A1="1.04 + rnd( .4 )",
+A2="rnd(.02)",
+
+
+srcR="(r * .97) + (r * a2 * sin(theta))",
+srcT="theta + a2 * (rnd(a1) * ( 2 + sin( 7 * r ) + sin( a0 * theta) ))",
+
+Vers=100

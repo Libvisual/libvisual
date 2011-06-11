@@ -1,0 +1,19 @@
+name="Directrix Expand - Y",
+
+
+Aspc=0,
+
+// Randomly chose a grainularity/noise offset to source point.
+A0="rnd( .0045 )",
+
+// Randomly choose the scale of outflow
+A1=".10 + rnd( .06 )",
+
+// Choose a random rotation factor
+A2=".003 + rnd( .006 )",
+
+
+srcR="( .99 - a1 * (abs( y )^ 1.3) ) * r - rnd( a0 )",
+srcT="theta + a2",
+
+Vers=100

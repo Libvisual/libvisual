@@ -1,0 +1,15 @@
+name="Krabben",
+// Created by Thomas Geier
+//ziggystar@gmx.de
+//Krabben
+
+//I know, this (or something similar) already exists(this is in a different velocity)
+
+Aspc=1,
+
+A0="rnd(0.1)-.03",
+
+srcR="r+A0*x",
+srcT="theta+A0*sin(y*6)",
+
+Vers=100

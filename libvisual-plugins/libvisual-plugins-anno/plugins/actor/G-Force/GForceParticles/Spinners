@@ -1,0 +1,54 @@
+name="Spinners",
+/*
+     This file documents how a particle config works.  You should be famialiar with the info presented in the waveshape "Rotating Corridor" and should be famialiar with what's presented in the G-Force documentation.  "Pollock Dots" and "Lizy's Staryy Night" are also documented.  A "particle" config is a config that draws text (see "Example Text"), draws an image (see "Example Image"), or draws lines and shapes (this config) on top of whatever waveshape is active.
+
+   There's 4 differences between a particle and a waveshape.  Other than these 4 things, all the documentation from "Rotating Corridor" applies.  Particles are difficult to learn, so the best way is to glance at these 4 differences, then study the particle, ten glance back at the 4 differences until things start to make sense.
+1)  One or more particles appear randomly while only one waveshape appears at any given time.  The PPrb parameter in your G-Force preferences file determines the probability one (or more) particles appear.  Once per second, G-Force evaluates PPrb and if a random number from 0 to 1 is less than PPrb, a new particle is started (PPrb is the probabilty a particle will be started).
+2)  Each particle has an additional parameter called NUM, and it's evaluated once, before the particle starts.  When G-Force decides that it's going to start a given particle, it runs NUM copies of that particle (NUM is how many instances or "threads" that are made).  Every frame, for each instance/thread, every the paramater except the A-vars are reevaluated.    
+3)  You have access to a variable called "ID".  It's a number from 0 to NUM-1 that identifies the copy/instance.  For example, if NUM="5", then the B, C, X, Y, Pen, and LWdt expressions would be evaluated 5 different times per frame.  Each of those 5 times, ID would be either 0, 1, 2, 3, or 4.
+4)  You have access to a variable called "END_TIME".  It's the system time (the same units as "t") when the particle will expire.  For example, ( END_TIME - t ) is how many seconds remain until the particle expires.
+
+     The description of the 'NUM' parameter describes why you can just move items from your WaveShapes folder to your particles folder to make them particles.  This particle makes 2 to 6 orbiting arc segments that slowly revolve around (0,0). 
+
+*/
+
+
+
+/*  2 to 6 sub arcs is fine.  rnd() will return a non-integer, but that doesn't matter since NUM will chop off any non-integer part.  Remember that whatever NUM ends up being here will be the range of ID (used later).   If you omit this parameter from a config in the particle folder, it's assumed to be "1".  This allows you to simply drop waveshapes into your particles folder to make them appear as particles do.  */
+NUM="2 + rnd( 4.5 )",
+
+/*  We're only making small arc segments so a dozen or two lines is plenty to make each arc segment look round */
+Stps=15,
+
+
+//  This will cause the orbits to be elliptical (vs. circular, depending on the current aspect ratio of the window)
+Aspc=0,
+
+/*  The A variables are the same for each arc instance. 
+A0 is the orbit size/radius
+A1 is the orbit speed
+A2 is how big each arc segment will be */
+A0=".4 + rnd( .5 )",
+A1=".15 + rnd( .4 )",
+A2="( .03 + rnd( .07 ) ) / a0",
+
+
+/*  Here we assume we're processing sub arc number ID.  Since we know it steps from 0 to NUM-1, 
+[2 * PI * ( ID / NUM )] expresses the angle of subarc ID.  The [a1*t] term just causes the angle of subarc ID to slowly move through time.  We make this a B variable because all the stuff in quotes is constant for any given frame (ie, only depends on time). */ 
+B0="a1 * t + 2 * PI * ( ID / NUM )",
+
+/*  We set up B0 to express the angle of the startpoint of subarc ID at time t.  The [a2*s] term adds to B0 so that a subarc is traced as s goes from 0 to 1.   In the end, C0 is an angle for a given time and a given value of s.  We make this a C variable because we need to use it multiple times in the X and Y expressions (and want to avoid redundant computation) and because it contains s.*/ 
+C0="b0 + a2 * s",
+
+
+// We set up a0 to be our radius, so just draw the subarc, baby!
+X0="a0 * cos( C0 )",
+Y0="a0 * sin( C0 )",
+
+
+/* 'PDur' is how many seconds the particle stays around until it's no longer drawn (ie, when it expires).  G-Force normally uses the pref 'PDur' to decide how many seconds the particle will exist (PDur is evaluated for each particle when the particle starts and that's how many seconds until particle expires).  If for some reason you wanted to override that duration and set your own, you'd define 'PDur' in your particle file and assign it an expression that you wanted (ex, "30", "1", "rnd( 200 )").  For example, if this particle got ugly after 4 seconds, we'd include the line PDur="3.5" to override whatever is in G-Force's 'PDur' parameter.  However, this particle has no such limitations, so we omit the 'PDur' parameter from this particle.  */
+
+// See "Rotating Corridor"
+ConB=1,
+
+Vers=100

@@ -1,0 +1,19 @@
+name="one",
+/*                                                     */
+/* ONE   v1.1                                          */
+/*   Paint on acid                                     */
+/*                                                     */
+/* By Steve Steve Wheeler                              */
+/*  E-mail: stevewheeler@mac.com                       */
+
+
+Aspc= 0,
+
+
+
+
+srcR=" sin( r ) ",
+srcT=" theta - ( ( r - .042 ) * rnd( .09 ) ) ",
+
+
+Vers=100

@@ -1,0 +1,40 @@
+name="Explosion II",
+/*
+
+Explosion II
+
+By Thomas Geier
+
+ziggystar@gmx.de
+
+*/
+
+NUM="1 + rnd( 3.5 )",
+
+Stps="30 + rnd( 90 )",
+
+
+Aspc=1,
+
+A0="rnd( 10000 )",			// used as a unique seed scale
+A1="t", // time of start
+A2=".09",				//g
+A3="6 + rnd( 5 )", // Max particle size
+
+B0="seed( A0 * (1+ID) )",
+B1="rnd( 1.8 ) - .9", // x start cord
+B2="rnd(.8 )", // y start cord
+
+
+B3="t-A1",		//time from start
+B4=".4 + rnd( 1.5 )",  // Dispersion factor
+
+X0="B1 + B3*B4*( rnd(.4)-.25 )",
+Y0="B2 + B3*B4*( rnd(.4)-.15 )- A2*sqr( B3 )",
+
+
+LWdt="1 + A3 * s",
+
+ConB=0,
+
+Vers=100

@@ -1,0 +1,18 @@
+name="Tunnel Vision",
+// Tunnel Vision by Angelseed
+// Flying Fast Through a Tunnel
+// Simmalar to Turbo Flow Out - More  but confined to a tunnel
+
+
+A0=".02 + rnd( .2 )",
+
+
+
+Aspc=0,
+
+
+srcR="( 1 - A0 * r ) * r",
+srcT="theta",
+
+
+Vers=100

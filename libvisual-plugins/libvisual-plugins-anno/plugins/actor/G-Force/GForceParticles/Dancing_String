@@ -1,0 +1,29 @@
+name="Dancing String",
+/*                             */
+/*                             */
+/*  Dancing String             */
+/*                             */
+/* By Thomas Geier             */
+/*  E-mail: ziggystar@gmx.de  	*/
+
+
+Aspc= 1 ,
+
+A0="0.1",	//nothing
+A1="0.7",	//size
+A2="1 + rnd( 2.5 )", // line width
+
+B0=".5 * t",  // time scale
+
+X0="A1*cos(s*6.28*(1.3+sin(B0*0.414)))*sqrt(0.2*sin(s*3.8+B0*1.435)^2+cos(s*6.28+B0*1.2754)^2)",
+Y0="A1*sin(s*6.28*(1.3+sin(B0*0.628)))*sqrt(sin(s*6.28+B0*1.643)^2+0.2*cos(s*6.28+B0)^2)",
+
+
+Stps="300",
+
+LWdt="A2",
+
+ConB=1,
+
+
+Vers=100

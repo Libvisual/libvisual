@@ -1,0 +1,74 @@
+name="Rotating Corridor",
+/* 
+       This file documents how a waveshape config works and gives some background instructions that apply to all types of "config" files.  A "config" file is any file like this for G-Force that contains textual commands (that we can edit) that G-Force interprets when it runs.  You can consider configs programs that run on G-Force.
+
+       This is a documented WhiteCap 'config' file designed to explain them in the hopes that you can make you own.  If you make your own configs and they turn out well, please send me them--I'll include what you send in a cool configs folder when i release the next version of G-Force.  Check out other config files to see how the various parameters can be used in different ways.  To make things easier, I put the stuff seen by G-Force in boldface type (ie. not the "comments" you're reading now).  There's two ways to make comments (that is, have text ignored by G-Force):  
+   1)  "//" tells WhiteCap to ignore whatever text follows on that line, 
+   2)  Text enclosed within "/*" and "* /" is also ignored (like this big block of text you're reading now)
+       In a config file, if you see something is quotes or just a number with an "=" in front of it, it's matched up to the 3 or 4 letter parameter name on its left.   If you see something in quotes, it's called an expression and you can do all the things described below as well as use various other global values (A, B, C, D vars, dt, st, t, and mag()--all explained later).  When you see a parameter not in quotes, it means that you can only put an numerical value there (ex, 4, -55, 4343--nothing but digits and a leading dash if it's negative).  Also, be sure you don't forget key things like commas and quotes that signify where data stops and starts.    Parameters are assumed to be 0 or "0" (depending on the type) if they are left out from a config file.  So as a general note about configs, look at which statements take quotes and which don't.  The ones which do can have any combination of variables (provided they are available to that statement), commands, and anything else.  The ones which don't can only take numbers. 
+        Many parameters in a WhiteCap config are 'expressions'.  Expressions are functions--they represent a single value that depends on a combonation of other numbers, variables, and functions.  "3*b", "3.141", "sqrt(t+7)", and "(s+t+2.7)^dt" are all examples of expressions.  The following functions are available (note all angles are in radians):  sin(x), cos(x), tan(x), atan(x), sqrt(x), log(x), exp(x), tan(x) and...
+pos(x)  == x if x >= 0 and 0 otherwise  
+abs(x)  == |x|
+sqr(x)  == x * x
+sgn(x)  == 1 if x >= 0 and -1 if x < 0
+rnd(x)  == a random real number from 0 to x
+clip(x) == 0 when x < 0, 1 when x > 1, and x when  0 <= x <= 1
+trnc(x) == x with everything right of the decimal point dropped
+flor(x) == the largest integer that's also less than x (ex, flor(3.2) == 3, flor(-2.7) == -3 )
+wrap(x) == x - flor( x )  (ex: wrap( .3 ) = .3, wrap( 4.12 ) = .12, wrap( - 2.7 ) = .3 )
+sqwv(x) == 1 if |x| <= 1.0 and 0 otherwise.
+trwv(x) == Triangle shape that passes thru (0,0), (1,1), (2,0) and repeats in both directions
+seed(x) seeds the random number generator based on the bits of x, returns x
+       An operator is a something that joins to numbers, like the + and - we're used to from grade school.  Operators are used to combine two values into a single value, and the operators available in WhiteCap are: +,-,*,/,%,^  ( "a % b" means "mod" or "the remainder when a is divided by b", and "a^b" means "a raised to the b power").  Traditional order of operations apply and you may freely use parentheses to control them.
+       On a final note, don't get discouraged if the math seems like a lot.  It's simply a matter of experience and it'll come much easier with just a little time--like riding a bike.  You may want to try using a graphing calculator to help see how a certain equation behaves.
+*/
+
+
+
+/* Coordinate Aspect: 
+ 1 forces the x:y scale to 1:1,
+ 0 warps the scale so that (-1,-1) is the bottom-left of the window and (1,1) is the top-right of the window.  In G-Force, the center of the screen/window is (0,0), the top-right corner is (1,1), the bottom-right corner is (1,-1), and so on.  When Aspc is set to 1, the x to y ratio is forced to 1:1 (making either the x or the y greater than 1 at the corners. */
+Aspc=1,
+
+/*  The "A" variables are evaluated only when a config is loaded/executed.  They're useful for setting random variables that will used for the duration of the waveshape (and will remain constant while the config is in use).  Here, we randomly calculate the rotational speed of our "corridor".  
+Variables avalable: t (the system time index in seconds), A[].  */
+A0="0.1 + rnd( 0.2 )",
+
+
+/*  This is how many steps G-Force will chop the interval [0,1] into when it steps 's' from 0 to 1.  In G-Force and WhiteCap, when you see 's' in an expression, it really means, "all the values from 0 to 1 separated by small intervals."  The 'Stps' parameter tells G-Force and WhiteCap how many steps to take from 0 to 1, so the larger 'Stps' is, the smaller the interval between each step of s.  Normally, you'll want to step s the same number of times as the of pieces of data you have because you want each step of s to correspond to one piece of data--taking more of less steps wouldn't make any sense.   Therefore, you'll normally want the number of s-steps to be equal to the resolution of the mag() function.  The mag() function takes a number from 0 to 1 and uses that number to return one of the sub-samples within in mag():  mag(0) returns the first sub-sample, mag(1) returns the last sub-sample, etc. Note that mag() is only made up of a finite number of sub-samples (ex, mag(.4) and mag(.40001) refer to the same data value).  You control how many sub-samples compose mag() via the 'SNum' in your preferences file and you can access that value using NUM_SAMPLE_BINS.   Similarly, you control the number of sub-samples in fft(), the frequency spectrum, via the 'FNum' pref and you can access it with NUM_FFT_BINS.  Because most G-Force configs use mag() (as opposed to fft()), when the 'Stps' parameter is either 0 or omitted from a config file, G-Force assumes:  Stps="NUM_SAMPLE_BINS".  Unless you have a specific reason to have a certain number of s steps, you'll want to let G-Force to step s the number of times there are sub-samples in mag().   For example, if you only use fft(), it only makes sense to step s exactly 'FNum' number of times, so you'd set Stps="NUM_FFT_BINS".  You're free to put whatever expression you like here, but note that you don't have access to any A-Vars here.  Finally, the 'Stps' expression is evaluated only once when a WaveShape loads and its value after is stored in NUM_S_STEPS.  */
+Stps="NUM_SAMPLE_BINS",
+
+
+/* The "B" expressions are evaluated at the start of a new frame.  They're useful for computing cpu-intensive values that the whole frame's waves(s) may have in common.  Here, we calculate some values that don't depend on what part of the wavesshape we're drawing.  We then use the "B vars" in expressions later on.  Note that the current sound sample is accessed using the mag() function, and its domain of is from 0 to 1.  
+Variables avalable: mag(), t, A[], B[]. */
+B0="cos( t * 0.2 )",
+B1="sin( t * 0.2 )",
+
+/* The "C" expressions are evaluated for each change in s (ie, as the waveshape is drawn). s varies from 0 to 1 and this interval is chopped into a preset number of steps, set by the pref 'SNum'.  C expressions are useful for computing values that are intensive to compute and used multiple times in the x and y expressions (and would be redundently computed if put in the x and y expressions).    The most confusing thing about learning to write configs is the s variable.  Take some time to play with it; its hard to explain what it does. 
+Variables avalable: s, mag(), t, A[], B[], and C[]. */
+C0="mag( s ) * 0.25 + .2",
+C1="2.1 * ( s - .5 )",
+
+
+/* The X and Y expressions define what's to be drawn.  For example, X="s+5*t" and Y="3*s" froms a straight path with a slope of 3 and travels rightward at 5 units per second.  G-Force lets you have more than one path and you separate them by the indexing each X and Y (ex, x1, y1, x2, y2, ..., x5, x6).   v1.0 allows up to X14 and Y14, 
+Variables avalable: s, mag(), t, A[], B[], and C[].  */
+
+X0="  b0 * c1 + b1 * c0",
+Y0="- b0 * c0 + b1 * c1",
+
+X1="  b0 * c1 - b1 * c0",
+Y1="  b0 * c0 + b1 * c1",
+
+/* When G-Force draws a waveshape, it draws in a certain color.  You specify this color here, by saying what value/intensity the pen will draw in, from 0 to 1 (the color your see will depend on whatever colormap is loaded).  If you omit this parameter, it's assumed to be 1.  Also, if Pen is evaluated and it's greater than 1, it's "clipped" at 1 (ie, the limit for Pen is 1).  See the WaveShape "Big & Banded" for an example of how the Pen parameter can be used.  */
+Pen="1",
+
+/*  This tells how many pixels thick to draw the lines (or dots if ConB is 0).  If you omit this parameter, G-Force will automatically set it to 1.  As an example, see how "A New Hope" uses the amplitude of the sample to so that the waveshape is thicker when the have is larger in amplitide.
+Variables avalable: s, mag(), t, A[], B[], C[].  */
+LWdt="1",
+
+
+// Set ConB to 0 if you want just dots  (ConB comes from connect bins)
+ConB=1,
+
+// This should always equal the version of G-Force they're written for (times one hundred)
+Vers=100

@@ -1,0 +1,19 @@
+     ../plugins/actor/bumpscope/actor_bumpscope.c \
+     ../plugins/actor/corona/actor_corona.cpp \
+     ../plugins/actor/gdkpixbuf/actor_gdkpixbuf.c \
+     ../plugins/actor/G-Force/GForceCommon/G-Force.cpp \
+     ../plugins/actor/G-Force/unix/libvisual/actor_gforce.cpp \
+     ../plugins/actor/G-Force/Common/math/Expression.cpp \
+     ../plugins/actor/infinite/lv_infinite.c \
+     ../plugins/actor/jakdaw/actor_jakdaw.c \
+     ../plugins/actor/JESS/jess.c \
+     ../plugins/actor/lv_analyzer/actor_lv_analyzer.c \
+     ../plugins/actor/lv_gltest/actor_lv_gltest.c \
+     ../plugins/actor/lv_scope/actor_lv_scope.c \
+     ../plugins/actor/madspin/madspin.c \
+     ../plugins/actor/oinksie/oinksie.c \
+     ../plugins/actor/pseudotoad_flower/actor_flower.c \
+     ../plugins/input/esd/input_esd.c \
+     ../plugins/input/alsa/input_alsa.c \
+     ../plugins/input/jack/input_jack.c \
+     ../plugins/input/mplayer/input_mplayer.c

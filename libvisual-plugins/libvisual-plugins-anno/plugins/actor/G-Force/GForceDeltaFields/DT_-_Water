@@ -1,0 +1,14 @@
+name="DT - Water",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+  //A0=out, A1=sinwaves, A2=power
+ A0="rnd(0.02)+0.01",
+ A1="rnd(60)+10",
+ A2="Pi/A1*0.8",
+ 
+ srcR="r-A0",
+ srcT="theta+A2*(1.3+sin(theta*A1))",
+ 
+ Vers=100
+ 

@@ -1,0 +1,58 @@
+
+pkgdatadir = $(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_gforce/GForceParticles
+pkgdata_DATA = \
+A_Wounded_Deer \
+Converge_-_Circle \
+DT_-_Snake \
+Lizy_s_Starry_Night \
+Pair \
+Solala \
+Spiral \
+Airport \
+Converge_3 \
+DT_-_ZoomPlanet \
+Pearl \
+Sparkling_Table_Water \
+Sprinkles \
+Art__I_Suppose \
+Crosshairs \
+Dancing_String \
+Pollock_Dots \
+Spinners \
+Storm_Beat \
+Attack \
+Cycling_Dots \
+Darren_Bird \
+Prophesy_SC \
+Suck_Me_In \
+Brain_Candy \
+DT_-_Birds \
+Dot_Grid \
+Metors \
+Protozoan_Lovers \
+Spinning_Cube \
+Tango_Particles \
+DT_-_Explode \
+Explosion_I \
+Miri_s_Ball \
+Raining_Oscilliscopes \
+Spinning_Plane \
+Tosser \
+Centipede \
+DT_-_Galaxy \
+Explosion_II \
+Moon_N_Sun \
+Robox \
+Spinning_Tetra \
+Tri-Cycling_Dots \
+Converge \
+DT_-_Mysko \
+Falling_Orbs \
+Orbiting_Rods \
+Snakes \
+Spinning_Tetraeder \
+Warp_Me_Away
+
+
+EXTRA_DIST = $(pkgdata_DATA)
+

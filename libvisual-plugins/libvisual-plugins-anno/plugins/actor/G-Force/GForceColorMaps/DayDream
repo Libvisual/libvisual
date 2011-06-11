@@ -1,0 +1,10 @@
+name="DayDream",
+// Day Dream By Demonseed
+// Acid Gap update ver 1.6
+
+H="i^.4",
+S="i^.6",
+V="(.4 + .6 * i ) * ( .5 * cos( (1-i) *  15.707963267 ) + .5 )",
+
+
+Vers=100

@@ -1,0 +1,29 @@
+name="DT - BorderThunder",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ ConB=1,
+ Pen="clip(mag(s)*8)",
+ 
+ C0="-1 + 8*(mag( s )+0.2)^3.5",
+ C1="2 * s - 1",
+ 
+ X0="c1",
+ Y0="c0",
+ X1="c1",
+ Y1="-c0",
+ X2="c0",
+ Y2="c1",
+ X3="-c0",
+ Y3="c1",
+ 
+ X4="c1",
+ Y4="c0+0.03",
+ X5="c1",
+ Y5="-c0-0.03",
+ X6="c0+0.03",
+ Y6="c1",
+ X7="-c0-0.03",
+ Y7="c1",
+ 
+ Vers=100
+ 

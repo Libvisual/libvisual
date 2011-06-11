@@ -1,0 +1,8 @@
+name="Purple & Blues II",
+// Purple & Blues II
+
+H=".66 + .166 * i^1.4",
+S=".9 + .9 * (1.18*i-1)^2",
+V="i^.4",
+
+Vers=100

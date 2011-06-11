@@ -1,0 +1,50 @@
+name="ColorWheel",
+/*  
+   This documents how a G-Force ColorMap works.  Please be familiar with the information already presented in the G-Force documentation.  
+
+   Deltafields are no more than a function:  you give an image to a deltafield and it hands you back a new image.  This file is no more than a recipe G-Force follows to go from an input image to an output image (see the "Background" section in the documentation).
+   To make a new frame, G-Force uses the current deltafield to move each pixel in the input frame to the output frame.  This process involves sequentually stepping through every pixel in the output frame, asking the current deltafield the source pixel location for the current pixel, and copying the the source pixel to the destination:
+
+for (x,y) = each pixel in the output frame {
+   (sx, sy) = ask the current deltafield for the "source location" for (x,y)
+   i = pixel value of (sx, sy) in the source frame
+   (i is a value from 0 to 255, 255 being the foreground/brightest)
+   decrease i
+   set the pixel value at (x,y) in the destination frame to i
+}
+
+   When G-Force finishes this loop, it must now draw the frame.  The OS will want to know what RGB color is meant by all the 0 to 255 pixel values in the frame, so we have to tell it pixels that are 0's are color A, pixels that are 1's are color B, pixels that are 2's are color C, and so on.  In other words, G-Force uses a "black box" called a ColorMap that translates pixel values into actual RGB colors (ie, it maps each index value into a certain color).  Therefore, ColorMap files like this one include a variable that mean the pixel value (the variable name happens to be "i" for "intensity" and instead of going from 0 to 255, it's scaled from 0 to 1).  
+   Finally, we may may want a colormap to change though time (ex, slow transitions from green to blue every few seconds).  To allow this, you have access to the variable "t", representing the system time (in seconds).  
+   In summary, a colormap is a path through the HSV color space, parameterized by i, and able to vary through time.  
+   When G-Force needs to draw pixel having intensity i, it evaluates three functions (of i), H, S, and V.  If you're not familiar with the HSV color space, play around in Photoshop or another darkroom to get a feel for it.  The HSV expressions in a ColorMap file always range of 0 to 1:
+Hue:         The angle in the color wheel; the color content/essence:
+        Red=0, Magenta=0.8333
+        Blue=0.6666, Cyan=0.5
+        Green=0.3333 Yellow=0.1666
+Saturation:  How much of the hue is present:
+           No Hue/Gray=0
+        Full Hue=1
+Value:       The amount of black (ie, brightness)
+        Full Black=0
+        No Black=0
+
+   See the waveshape tourtorial file for a complete list of functions and operators available. In a colormap, the only two variables you have access to are t, the system time index (in seconds) and i.
+
+*/ 
+
+/*  Here, the slowly change the hue through time, using wrap() and t.  wrap() just wraps a value back to 0 when it goes over 1 (ex, wrap( 2.31 ) == .31 ) */
+H="wrap( .03 * t )",
+
+//  Let's keep the saturation at 1 to get only pure hues
+S="1 - .6 * i^2.5",
+
+/*  Putting i to a weird exponent effects how quickly the color dissolves into the background.  Try changing the exponent and watching the effects...  Use a graphing calculator and put x^whatever to see what the intensity falloff will be like.  After a while you'll get a "feel" for how exponents affect numbers based on how close/far they are from 1. */
+V="i",
+
+
+// This should always equal the version of G-Force they're written for (times one hundred)
+Vers=100
+
+// That's right, there's only four things in a ColorMap file: H, S, V, and Vers
+
+

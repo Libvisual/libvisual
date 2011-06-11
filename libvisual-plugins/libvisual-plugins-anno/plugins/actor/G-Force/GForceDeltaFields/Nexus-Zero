@@ -1,0 +1,10 @@
+name="Nexus-Zero",
+// Nexus-Zero By Demonseed
+// A Holy Place where Evil Cannot Enter
+
+Aspc=0,
+
+srcR="r + ((rnd( .101 ) - x) * .005)",
+srcT="(theta - .03) - ((y-1.3) * .04)",
+
+Vers=100

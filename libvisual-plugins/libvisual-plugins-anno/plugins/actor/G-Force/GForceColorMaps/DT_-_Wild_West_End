@@ -1,0 +1,17 @@
+name="DT - Wild West End",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+  // Red=0, Magenta=0.833
+  // Blue=0.667, Cyan=0.5
+  // Green=0.333 Yellow=0.167
+ H="i*0.2",
+ 
+  // 0=Grey, 1=Full Color
+ S="1-i",
+ 
+  // 0=Black, 1=Full Bright
+ V="2*i^0.5-1.8*i^1.8",
+ 
+ Vers=100
+ 

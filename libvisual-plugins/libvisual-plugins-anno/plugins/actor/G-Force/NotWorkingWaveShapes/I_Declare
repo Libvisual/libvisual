@@ -1,0 +1,81 @@
+/* 
+   Lord, I declare, I choose death over NPTU, so I pray you take me or get me out of here with haste.     */
+name="I Declare",
+
+Aspc=1,
+
+// triangle, square, pentagon, or hexagon (100 steps per side)
+Stps="100 * ( 3 + rnd( 400 ) % 4 )", 
+
+/*
+
+A simple coordinate system:  
+Offset the XY plane by D and then rotate it alone its x'-axis by some a:
+|x|              x'
+|y|  =  y' cos a + z' sin a 
+|z|     z' cos a - y' sin a + D 
+
+Perspective transformation:
+scrn_x = k1 * x / ( k2 + z )
+sxrn_y = k1 * y / ( k2 + z )
+
+*/
+
+
+
+
+Pen="1",
+
+
+
+A0=".1 + rnd( .3 )",      // Choose a camera revolution speed
+A5="rnd( .6 )",           // Choose a base-plane rotation speed
+
+
+A6="2 * PI / A1",         // Calc angular length of each side
+A7="2 * tan( PI / A1 )",  // Calc inner radius of the polygon for a side of len 1
+
+
+A1="trnc( NUM_S_STEPS / 100 )",       // A1 is how many sides there are
+A2="NUM_S_STEPS / A1",                // A2 is how many steps per side there are
+
+A3="2.5 + rnd( 2 )",                  // Choose a perspective factor
+A4="a3 * ( .4 + rnd( .5 ) )",         // Choose a global scale
+
+// Rotation angle for the grid
+B0="sin( t * a5 )",
+B1="cos( t * a5 )",
+
+// The angle difference from the camera view plane to the base plane of the polygon.
+B2="sin( t * a0 )",
+B3="cos( t * a0 )",
+
+// C0 is what side point s belongs to (0 to A1-1) and C1 is where on the side it is (0 to 1)
+C0="a6 * trnc( s * a1 )",
+C1="a7 * ( wrap( s * a1 ) - .5 )",
+
+
+// Let (C3, C4, 0) be (x', y', z')  (as s goes from 0 to 1, a polygon is plotted)
+C2="1 + .55 * mag( wrap( s * a1 ) )",    // pre x on the base plane
+C3="C2 * cos( c0 ) - C1 * sin( c0 )",    // x', x
+C4="C2 * sin( c0 ) + C1 * cos( c0 )",    // y'
+// z' is 0
+
+// Rotate all the points around the local z axis based on A5...
+C5="c3 * b1 - c4 * b0",  // x
+C6="c3 * b0 + c4 * b1",  // y
+// z is 0
+
+
+C7="c6 * b3",       // y
+C8="a3 - c6 * b2",  // z
+
+// Now transform them to the camera's cord system
+X0=" a4 * c5 / c8",
+Y0=" a4 * c7 / c8",
+
+LWdt="2",
+
+ConB=1,
+
+Vers=100

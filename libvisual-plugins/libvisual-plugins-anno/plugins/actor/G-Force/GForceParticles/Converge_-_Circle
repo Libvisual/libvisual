@@ -1,0 +1,34 @@
+name="Converge - Circle",
+// Converge by Andy - Circle editted by Tomi 
+Sajaniemi
+
+
+
+Stps=54,
+
+
+Aspc=1,
+
+A0="t", // starttime
+A1=".05 + rnd( .5 )", // dr rate
+A2="4 + rnd( 7 )",   // Dot size
+
+
+
+NUM="1",
+
+B0="abs( ( t - a0 ) * a1 - 1.7 )",
+
+
+C0="6.2831853 * s",
+
+X0="B0 * cos( c0 )",
+Y0="B0 * sin( c0 )",
+
+
+LWdt="a2",
+
+ConB=1, // Line between dots
+
+Vers=100
+

@@ -1,0 +1,32 @@
+name="Parkening Power",
+
+Aspc=0,
+
+A0="pos( rnd( .9 ) - .2 )",
+A1="rnd( .3 ) + .05",  // rnd 
+
+A2="4 + rnd( 10 )", // rnd pen size
+
+C0="1 - 2 * s",
+C1="A1 + A0 * sqr( C0 )",
+
+
+
+X0="C0",
+Y0="C1",
+
+
+X1="-C0",
+Y1="-C1",
+
+
+ConB=1,
+
+LWdt="A2",
+
+
+Pen="clip( 12 * fft( 1 - abs( ( s - .5 ) ) ) ) * ( 1 - sqrt( abs( C0 ) ) )",
+
+Stps="50",
+
+Vers=100

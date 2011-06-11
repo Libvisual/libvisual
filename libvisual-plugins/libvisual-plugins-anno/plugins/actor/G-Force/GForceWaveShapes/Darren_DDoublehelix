@@ -1,0 +1,42 @@
+name="Darren DDoublehelix",
+/*Darren DDoublehelix (by Darren Izzard, zysyshelp@yahoo.com)
+	- waveshape for G-Force.
+
+  Two double-helix waveforms in an X move lengthways and rotate.
+*/
+
+Aspc=1,
+
+A0="0.2+0.3*rnd(1)",	//Z-plane rotation speed
+A1="0.2+4.0*rnd(1)",	//Y-plane rotation speed (well, phase-change-rate)
+A2="12.0+12.0*rnd(1)",	//density of spirals
+A3="0.1+0.3*rnd(1)",	//width of spirals
+
+B0="cos(t*a0)",
+B1="sin(t*a0)",
+B2="cos(t*a0+PI/2)",
+B3="sin(t*a0+PI/2)",
+
+C0="sin( (a2*s)+(a1*t) )",
+C1="s*4-2",
+C2="( c0 + abs( c0 ) * mag(s) * 2 )*a3",
+
+
+X0="c2*b0+c1*b1",
+Y0="c1*b0-c2*b1",
+
+X1="-c2*b0+c1*b1",
+Y1="c1*b0+c2*b1",
+
+X2="c2*b2+c1*b3",
+Y2="c1*b2-c2*b3",
+
+X3="-c2*b2+c1*b3",
+Y3="c1*b2+c2*b3",
+
+Pen="1",
+
+
+ConB=1,
+
+Vers=100

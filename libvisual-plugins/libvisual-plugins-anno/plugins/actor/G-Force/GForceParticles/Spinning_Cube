@@ -1,0 +1,129 @@
+name="Spinning Cube",
+/*
+Spinning Cube
+
+the sequel to Spinning Tetraeder
+
+This config was created by Thomas Geier (ziggystar@gmx.de), who made the programming
+
+and Aaron Pinsker, who had the idea for this.
+
+It shows a spinning cube
+Feel free to change some parameters, but include this header please
+*/
+
+
+
+Aspc= "1" ,	//We want the tetraeder to look like one
+
+A0=".8",		//This is the size of the cube
+A1="1 + rnd( 5 )",  // Cube line width
+A2="clip( .6 + rnd( 1 ) )", // Cube intensity
+
+/*
+
+These are the x,y(screen) coordinates of the already rotated points
+The formulae have been created using matrix multiplication
+
+If one wants to change the rotation speed:
+The cube only rotates around the x and y axis!
+
+X="-.5*cos(t*vy)-.5*sin(t*vy)
+Y=".5*cos(t*vx)-sin(t*vx)*(-.5*cos(t*vy)+.5*sin(t*vy))
+
+You'll have to insert variables in these positons (use very low values, due to a multiplication with t! 0.0001 or so).
+Eg. insert A1, where the vy is located in the above functions in every of the following lines, to change the speed of rotation around the y axis. (Of course you'll first have to set A1 above!) Same with vx for rotation around x axis
+
+*/
+
+
+B0="sin( .4 * t )",
+B1="cos( .4 * t )",
+
+B2=".5*B1-.5*B0",					//P2
+B3=".5*B1-B0*(-.5*B1-.5*B0)",				
+
+B4=".5*B1+.5*B0",					//P3
+B5=".5*B1-B0*(.5*B1-.5*B0)",
+
+B6="-.5*B1+.5*B0",					//P4
+B7=".5*B1-B0*(.5*B1+.5*B0)",
+
+B8="-.5*B1-.5*B0",					//P5
+B9="-.5*B1-B0*(-.5*B1+.5*B0)",
+
+B10=".5*B1-.5*B0",					//P6
+B11="-.5*B1-B0*(-.5*B1-.5*B0)",				
+
+B12=".5*B1+.5*B0",					//P7
+B13="-.5*B1-B0*(.5*B1-.5*B0)",				
+
+B14="-.5*B1+.5*B0",				//P8
+B15="-.5*B1-B0*(.5*B1+.5*B0)",				
+
+B17="-.5*B1-.5*B0",					//P1
+B18=".5*B1-B0*(-.5*B1+.5*B0)",				
+
+
+
+B16="1 ",
+
+
+
+//These are two switches, I use to draw lines from point a to point b
+//Only one of these is 1, while the other is 0, depending on  s
+
+C0="pos(sgn(.5-s))*A0*B16",
+C1="pos(sgn(-.5+s))*A0*B16",
+
+
+//And the following lines draw the lines
+
+X0="C0*B17+C1*B2",		//P1-P2	(The line connecting these points)
+Y0="C0*B18+C1*B3",
+
+X1="C0*B2+C1*B4",		//P2-P3	(The line connecting these points)
+Y1="C0*B3+C1*B5",
+
+X2="C0*B4+C1*B6",		//P3-P4	(The line connecting these points)
+Y2="C0*B5+C1*B7",
+
+X3="C0*B6+C1*B17",		//P4-P1	(The line connecting these points)
+Y3="C0*B7+C1*B18",
+
+X4="C0*B8+C1*B17",		//P5-P1	(The line connecting these points)
+Y4="C0*B9+C1*B18",
+
+X5="C0*B10+C1*B2",		//P6-P2	(The line connecting these points)
+Y5="C0*B11+C1*B3",
+
+X6="C0*B12+C1*B4",		//P7-P3	(The line connecting these points)
+Y6="C0*B13+C1*B5",
+
+X7="C0*B14+C1*B6",		//P8-P4	(The line connecting these points)
+Y7="C0*B15+C1*B7",
+
+X8="C0*B8+C1*B10",		//P5-P6	(The line connecting these points)
+Y8="C0*B9+C1*B11",
+
+X9="C0*B10+C1*B12",		//P6-P7	(The line connecting these points)
+Y9="C0*B11+C1*B13",
+
+X10="C0*B12+C1*B14",		//P7-P8	(The line connecting these points)
+Y10="C0*B13+C1*B15",
+
+X11="C0*B14+C1*B8",		//P8-P5	(The line connecting these points)
+Y11="C0*B15+C1*B9",
+
+
+Pen="a2",
+
+Stps="2",	//We only need two steps for starting and ending point of each drawn line
+
+LWdt="a1",	//The line width (I made changing. Looks good)
+
+ConB=1,		//Let G-Force draw the lines (connect the two points)
+
+
+Vers=100
+

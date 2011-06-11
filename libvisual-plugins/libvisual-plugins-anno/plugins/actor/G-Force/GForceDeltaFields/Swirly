@@ -1,0 +1,43 @@
+name="Swirly",
+// By August Schack
+// edwanji@visto.com
+
+A0="sgn(.5 - rnd(1))*(6 + rnd( 2 ))",//Rotation Speed
+A1="1000 + rnd( 1000 )",//Rotation Falloff
+A2="rnd(.5)+rnd(.5)", //X0
+A3="rnd(.5)+rnd(.5)", //Y0
+
+A4="sgn(.5 - rnd(1))*(6 + rnd( 2 ))",//Rotation Speed
+A5="1000 + rnd( 1000 )",//Rotation Falloff
+A6="rnd(.5)+rnd(.5)", //X1
+A7="-rnd(.5)-rnd(.5)", //Y1
+
+A8="sgn(.5 - rnd(1))*(6 + rnd( 2 ))",//Rotation Speed
+A9="1000 + rnd( 1000 )",//Rotation Falloff
+A10="-rnd(.5)-rnd(.5)", //X2
+A11="rnd(.5)+rnd(.5)", //Y2
+
+A12="sgn(.5 - rnd(1))*(6 + rnd( 2 ))",//Rotation Speed
+A13="1000 + rnd( 1000 )",//Rotation Falloff
+A14="-rnd(.5)-rnd(.5)", //X3
+A15="-rnd(.5)-rnd(.5)", //Y3
+
+Aspc=1,
+
+D0="(sqr(x+a2)+sqr(y+a3))",
+D1="(A0/(10+(d0*A1)))",
+
+D2="(sqr(x+a6)+sqr(y+a7))",
+D3="(A4/(10+(d2*A5)))",
+
+D4="(sqr(x+a10)+sqr(y+a11))",
+D5="(A8/(10+(d4*A9)))",
+
+D6="(sqr(x+a14)+sqr(y+a15))",
+D7="(A12/(10+(d6*A13)))",
+
+srcX="x + (d1*(y+a3) + d3*(y+a7) + d5*(y+a11) + d7*(y+a15))",
+srcY="y - (d1*(x+a2) + d3*(x+a6) + d5*(x+a10) + d7*(x+a14))",
+
+Vers=100
+

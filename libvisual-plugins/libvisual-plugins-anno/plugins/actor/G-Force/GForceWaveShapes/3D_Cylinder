@@ -1,0 +1,60 @@
+name="3D Cylinder",
+
+
+Aspc=1,
+
+
+/*
+
+A simple coordinate system:  
+Offset the XY plane by D and then rotate it alone its x'-axis by some a:
+[x]              x'
+[y]  =  y' cos a + z' sin a 
+[z]     z' cos a - y' sin a + D 
+
+Perspective transformation:
+scrn_x = k1 * x / ( k2 + z )
+sxrn_y = k1 * y / ( k2 + z )
+
+*/
+
+
+
+A0="0",
+
+// Let A1 be our "a", the angle difference from the camera view plane to the spinning plane.
+A1="sin( - 3.14 * .4 )",
+A2="cos( - 3.14 * .4 )",
+
+
+A5=".3 + rnd( .3 )",  // Choose a random rotation speed
+
+// Rotation angle for the grid
+B0="t * a5",
+
+
+// Let (C0, C1, mag(s)) be (x', y', z')
+C0="cos( 6.2831853 * s + B0 )",   // x'
+C1="sin( 6.2831853 * s + B0 )",   // y'
+C2=".5 * mag( s )",               // z'
+
+
+
+A3="2 + rnd( 2 )",            // This mixes up the perspective distortion
+A4="a3 * ( .7 + rnd( .3 ) )",   // This mixes up the total size
+
+C3="     c1 * a2 + c2 * a1",  // y
+C4="a3 + c2 * a2 - c3 * a1",  // z
+
+
+// Now transform them to the camera's cord system
+X0=" a4 * c0 / c4",
+Y0=" a4 * c3 / c4",
+
+// Beef up them lines!
+LWdt="2",
+
+
+ConB=1,
+
+Vers=100

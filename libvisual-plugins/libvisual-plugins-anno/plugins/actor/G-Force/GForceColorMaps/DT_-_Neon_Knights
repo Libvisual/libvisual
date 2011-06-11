@@ -1,0 +1,17 @@
+name="DT - Neon Knights",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+  // Red=0, Magenta=0.833
+  // Blue=0.667, Cyan=0.5
+  // Green=0.333 Yellow=0.167
+ H="wrap(t*0.05 +i*0.2 )",
+ 
+  // 0=Grey, 1=Full Color
+ S="1-0.7*sin(1.2+12*i^0.5)^2-sqwv(1.999-i)",
+ 
+  // 0=Black, 1=Full Bright
+ V="1-sin(1.2+12*i^0.5)+sqwv(1.999-i)",
+ 
+ Vers=100
+ 

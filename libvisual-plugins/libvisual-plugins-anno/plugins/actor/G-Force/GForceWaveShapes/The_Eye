@@ -1,0 +1,38 @@
+name="The Eye",
+/*                                    */
+/* 	                                		*/
+/*   The Eye	                        	*/
+/*                                    */
+/* By Thomas Geier                    */
+/*  E-mail:  ziggystar@gmx.de         */
+
+
+Aspc= 1 ,
+
+A0=".3 + rnd( .4 )", // Choose sweep speed
+
+
+B0="- sin( a0 * t )",
+
+C0="sin( s * PI ) * b0 + mag(s) * 0.3",
+C1="2 * s - 1",
+
+X0="1.7 * c1",
+Y0="c0",
+
+X1="c0",
+Y1="c1",
+
+X2="1.7 * c1",
+Y2="-c0",
+
+
+X3="-c0",
+Y3="c1",
+
+
+
+ConB=1,
+
+
+Vers=100

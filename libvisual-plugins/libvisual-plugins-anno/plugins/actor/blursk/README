@@ -1,0 +1,420 @@
+                        Blursk-libvisual
+
+          Copyright (c) 2010 by Scott Sibley
+          Copyright (C) 2010 Daniel Hiepler
+          Copyright (c) 2002 by Steve Kirkendall
+ Freely redistributable under the Gnu GPL version 3 or later
+
+                   <scott@starlon.net>
+         http://code.google.com/p/blursk-libvisual/
+
+
+Blursk-libvisual is a visualization plugin for libvisual.
+It was originally written by Steve Kirkendall, and was
+ported to libvisual by starlon and rigid. Below is 
+directly from the original Blursk's README. Below that
+I've included as reference all configuration options.
+
+----------------------------------------------------------
+
+Blursk is a visualization plugin for XMMS.  It was inspired
+by the "Blur Scope" plugin, but Blursk goes far beyond that.
+It supports a variety of colormaps, blur patterns, plotting
+styles, and other options.  The only things that haven't
+changed are parts of the XMMS interface and configuration
+code.
+
+To configure Blursk, select it in the Visualization Plugin
+menu, and then click the [Configure] button, as usual.  If
+Blursk is running while you're configuring it, then you can
+see the effects of your changes immediately as you make them.
+
+Right-clicking on the Blursk window will also bring up the
+configuration dialog.  Dragging the left mouse button will
+move the window, and Blursk will even remember that position
+the next time you start it.
+
+Blursk allows you to store combinations of settings as a
+"preset".  The preset controls are located at the top of
+the configuration dialog, above the options.  The controls
+consist of a combo box where you can type in the name of a
+preset, and three buttons for loading/saving/erasing the
+preset named in the combo box.  Changing the name in the
+combo box has no direct affect on the configuration; you
+must press one of the buttons to make something happen.
+
+As a special case, loading "Random preset on quiet" will
+cause Blursk to randomly choose one of the other presets
+each time silence is detected on the input.  You can end the
+random choices by loading any other preset, or by altering
+any property of the current preset.
+
+Blursk also supports a variety of full-screen modes.  First
+you must configure the full-screen method by clicking the
+[Advanced] button on the Configure dialog.  (The full-
+screen options are described at the end of this file.)
+After that, you should be able to switch to full-screen
+mode by typing <Alt-Enter> or <F> in the Blursk window.
+To switch back, hit <Alt-Enter> again.
+
+=============================================================
+OPTIONS
+-------------------------------------------------------------
+
+BASE COLOR
+    This allows you to select the drawing color.  Some
+    colormaps add extra colors, but all of them will use
+    this color as a reference in one way or another.
+
+COLOR OPTIONS
+    The first item here is the color style.  It controls the
+    way that Blursk will generate a color map.  In addition
+    to a variety of hardcoded color styles, there is also a
+    "Random" setting which causes one of the other color
+    maps to be chosen at random; in addition, each time the
+    blur motion changes (see below), a new color map will be
+    chosen.
+
+    The fade options come next.  Images are always drawn in
+    the color at one end of the color map (usually the
+    brightest end); over time, the image color is shifted
+    toward the other end of the color map.  This option
+    controls the speed at which this shifting takes place.
+
+    The next option determines which color the signal will
+    be drawn in.  "Normal signal" uses the brightest color,
+    "White signal" forces the brightest color to be white,
+    and "Cycling signal" causes the signal to be drawn in
+    different colors.
+
+    Setting the "Contour lines" flag will add some other
+    white lines to the color map.
+
+    Setting "Hue on beats" will cause a different base color
+    to be chosen when Blursk detects beats in the music.
+    Unfortunately, the beat detector isn't very good yet.
+
+    The default background color is "Black backgnd", but
+    you can also choose "White" (really light gray),
+    "Dark" (a dark version of the base color), "Shift"
+    (120 degrees around the color wheel from the base
+    color), "Color" (a random color), or "Flash" (the
+    background color flickers in response to the music).
+
+BLUR OPTIONS
+    Blur motion is the first option in this group.  It
+    determines the way that the image's pixels drift.
+    There are many blur motions supported here, plus
+    "Random", "Random slow", and "Random quiet" settings
+    which cause one of the other blur motions to be chosen
+    randomly, either at regular intervals or at the start
+    of a quiet period.
+
+    Next is the switching speed.  When you change blur
+    styles (or "Random" does it for you), the new style
+    doesn't instantly replace the old style.  It happens
+    gradually, under control of the switch speed option.
+
+    The third option in this section controls the type of
+    blurring.
+
+    Next is the "stencil" option.  Blursk contains a
+    variety of bitmapped images; this options allows you
+    to incorporate one of the images into the blur motion
+    in a subtle way.  "Random stencil" chooses one of the
+    images randomly whenever the blur motion changes.
+    "Maybe stencil" does the same except that it usually
+    chooses no image at all.
+
+    The "Slow motion" option cuts the frame rate in half.
+    This slows down the image's motion, and it also reduces
+    the CPU load.
+
+EFFECTS
+    The first option in this section controls the way that
+    the sound signal is converted to an (X,Y) position in
+    the window.
+
+    The next option controls the way that those points are
+    plotted on the window.  The "Radar" setting is unusual
+    in that it uses the X value as a radius, and the Y value
+    as a brightness.  "Edges" also uses Y as a brightness,
+    and uses X to select a position along the perimeter of
+    the window.
+
+    The "Thick on beats" flag attempts to make the renderer
+    use thicker lines when the sound is loud.  For some
+    combinations of options, this can make the entire image
+    seem to throb in step with the music.
+
+    The next option controls flashing.  When Blursk detects
+    a beat, it can brighten the whole image, invert the
+    whole image, or add a bitmap image (from the same pool
+    or images as the "blur stencil" option).  If this option
+    is set to "Random flash", then it will choose a bitmap
+    randomly; except if the stencil option is also random,
+    then blursk will use the stencil bitmap for flashing.
+
+    The effect option is next.  The "Normal effect" converts
+    the pixel values to colors directly.  The "Bump effect"
+    interprets the pixel values as heights, and chooses a
+    color based on height differences to achieve a cheap
+    3D effect.  The "Anti-fade effect" cycles the colormap
+    at exactly the same speed as fading, so that pixels tend
+    to remain the same color as they fade, so you see mostly
+    the blurring and motion but not the fading.  The "Ripple
+    effect" causes the fade to be subtly nonlinear.
+
+    The "floaters" option offers a way to spice up some
+    of the more sedate configurations.  "Dots" causes random
+    flashing dots to be added to the image.  The other values
+    add persistent dots which follow the blur motion, leaving
+    trails.
+
+=============================================================
+ADVANCED OPTIONS
+-------------------------------------------------------------
+
+MISCELLANY
+    The "CPU speed" option gives you a simple way to affect
+    the CPU load, by changing the image resolution.  The
+    "Fast CPU" setting uses the full resolution of the
+    window.  "Medium CPU" reduces the horizontal resolution
+    by half, and then interpolates points to expand the
+    image to fill the window.  The blur motions will be
+    distorted, but it should still look interesting.  The
+    "Slow CPU" setting reduces both vertical and horizontal
+    resolution.
+
+    The "Show window title" option causes the Blursk window
+    to be displayed as a normal application window, with a
+    title bar.  Normally it is displayed without a title
+    bar, like a dialog, but some window managers don't let
+    dialogs choose their own position.  This option is
+    normally off; if Blursk is unable to create its window
+    where you normally want it, then try turning this
+    option on.
+
+    The "Show info" option causes the track number and song
+    title to be shown in the image.
+
+BEAT SENSITIVITY
+    The beat sensitivity slider affects the beat sensor,
+    which is used by the "hue on beats", "blur on beats",
+    and "flash" features.  Moving the slider to the left
+    makes it less sensitive; moving it right increases
+    sensitivity.  Sadly, this isn't nearly as effective as
+    I'd hoped.
+
+
+=========================================================
+
+
+Below are all possible config settings:
+
+color_style:
+Dimming
+Brightening
+Milky
+Graying
+Flame
+Cloud
+Metal
+Layers
+Color layers
+Standoff
+Color standoff
+Threshhold
+Stripes
+Color stripes
+Color bands
+Rainbow
+Noise
+
+signal_color:
+Normal signal
+White signal
+Cycling signal
+
+fade_speed:
+No fade
+Slow fade
+Medium fade
+Fast fade
+
+contour_lines:
+0
+1
+
+hue_on_beats:
+0
+1
+
+background:
+Black bkgnd
+White bkgnd
+Dark bkgnd
+Shift bkgnd
+Color bkgnd
+Flash bkgnd
+Random bkgnd
+
+blur_style:
+Simple
+Wobble
+Grainy
+Four way
+Rise
+Wiggle
+Cylinder
+Gravity
+Up down
+Left right
+Spray
+Forward
+Fast forward
+Backward
+Wobble back
+Sphere
+Spin
+Bullseye
+Spiral
+Drain
+Ripple
+Prismatic
+Swirl
+Tangram
+Divided
+Shred
+Weave
+Binary
+Fractal
+Fractal sphere
+Flow between
+Flow around
+Random
+Random slow
+Random quiet
+
+transition_speed:
+Slow switch
+Medium switch
+Fast switch
+
+blur_when:
+No blur
+Reduced blur
+Full blur
+Melt
+Smear
+Random blur
+Blur on beats
+
+blur_stencil:
+No stencil
+Random stencil
+Maybe stencil
+Red Hat stencil
+SuSE stencil
+Blursk stencil
+Tux stencil
+XMMS stencil
+X stencil
+Gnome stencil
+Notes stencil
+Clef stencil
+Flower stencil
+Peace stencil
+Question stencil
+Bob stencil
+
+
+slow_motion:
+0
+1
+
+signal_style:
+Oscilloscope
+Phase shift
+Flower
+Radial spectrum
+High/Low plot
+Stereo spectrum
+Mono spectrum
+
+plot_style:
+Line
+Mirrored
+Dots
+Fuzzy dots
+Plus signs
+Airbrush
+Starburst
+Inertia
+Radar
+Edges
+None
+
+thick_on_beats:
+0
+1
+
+flash_style:
+No flash
+Random flash
+Full flash
+Invert flash
+Red Hat flash
+SuSE flash
+Blursk flash
+Tux flash
+XMMS flash
+X flash
+Gnome flash
+Notes flash
+Clef flash
+Flower flash
+Peace flash
+Question flash
+Bob flash
+
+overall_effect:
+Normal effect
+Bump effect
+Anti-fade effect
+Ripple effect
+
+floaters:
+No floaters
+Dots
+Slow floaters
+Fast floaters
+Retro floaters
+
+cpu_speed:
+Slow
+Medium
+Fast
+
+beat_sensitivity:
+signed integer value
+
+config_string:
+This is our solution to the original Blursk's paste feature.
+You can set this string to a Blursk config string.
+
+show_info:
+Instruct Blursk-libvisual when to show song info.
+Never show info
+Timed
+Always
+
+info_timeout:
+Integer value in seconds that info will be shown.
+This is related to show_info=Timed.
+
+show_timestamp:
+Value 0 or 1 (true/false) indicating if Blursk-libvisual
+should show elapsed time in song info.
+0
+1

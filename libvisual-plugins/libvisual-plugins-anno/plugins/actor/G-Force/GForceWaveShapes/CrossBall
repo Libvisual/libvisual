@@ -1,0 +1,86 @@
+name="CrossBall",
+/*                                         */
+/* CrossBall                               */
+/*                                         */
+/*                                         */
+/* By Thomas Geier                         */
+/*  E-mail: ziggystar@gmx.de               */
+
+
+Aspc= 1 ,
+
+A0=".6",	 // rotation speed
+A1="0.9",	// size
+
+/* setting some of the following values (A2-4) to zero may result in a inproper displaying. (Don't know why)  */
+
+A2=".1*A0",		 // x-Rotation speed
+A3=".7*A0",		 // y-Rotation speed
+A4=".57*A0",		// z-Rotation speed
+
+/* 
+   I use a normal-vector to determine the position of each circle (the vector, that stands straight up on the circle plane).  The starting vector for circle 1 is (0/0/1).  Now rotate this vector around x, y, and z.
+*/
+
+B0="cos(t*A4)*sin(t*A3)+sin(t*A4)*sin(t*A2)*cos(t*A3)",		// x1 of the rotated vector (x1/x2/x3)
+B1="sin(t*A4)*sin(t*A3)-cos(t*A4)*sin(t*A2)*cos(t*A3)",		// x2
+
+B2="sqrt(1-sqrt(B0^2+B1^2))",					// width of the ellipse
+B3="atan(B1/B0)",					           	// angle for rotating the ellipse
+
+//(0/-1/0)
+
+
+B4="-sin(A4*t)*cos(A2*t)",
+B5="cos(A4*t)*cos(A2*t)",
+
+B6="sqrt(1-sqrt(B4^2+B5^2))",
+B7="atan(B5/B4)",
+
+//(1/0/0)
+
+
+B8="cos(A4*t)*cos(A3*t)-sin(A4*t)*sin(A2*t)*sin(A3*t)",
+B9="sin(A4*t)*cos(A3*t)+cos(A4*t)*sin(A2*t)*sin(A3*t)",
+
+B10="sqrt(1-sqrt(B8^2+B9^2))",
+B11="atan(B9/B8)",
+
+B12=".7 * BASS ",
+
+
+
+C0="sin(s*6.28)",
+C1="cos(s*6.28)",
+
+
+X0="A1*(C1*B2*cos(B3)-C0*sin(B3))",
+Y0="A1*(C0*cos(B3)+C1*B2*sin(B3))",
+
+
+X1="A1*(C1*B6*cos(B7)-C0*sin(B7))",
+Y1="A1*(C0*cos(B7)+C1*B6*sin(B7))",
+
+
+X2="A1*(C1*B10*cos(B11)-C0*sin(B11))",
+Y2="A1*(C0*cos(B11)+C1*B10*sin(B11))",
+
+
+X3="B12*(-B8+s*(2*B8))",
+Y3="B12*(-B9+s*(2*B9))",
+
+X4="B12*(-B0+s*(2*B0))",
+Y4="B12*(-B1+s*(2*B1))",
+
+X5="B12*(-B4+s*(2*B4))",
+Y5="B12*(-B5+s*(2*B5))",
+
+
+
+/*   Since the waveforms are smaller, we won't lose a noticeable quality by having less S-Steps (to save some CPU)  */
+Stps="50",
+
+ConB=1,
+
+
+Vers=100

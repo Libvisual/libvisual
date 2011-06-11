@@ -1,0 +1,13 @@
+name="DT - Wild",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ ConB=1,
+ 
+ C0="Pi*2*s-1",
+ C1="0.5+.4 * mag(s)",
+
+ X0="C1*cos(sin(C0)+t*0.5)",
+ Y0="C1*sin(cos(C0)+t)",
+ 
+ Vers=100
+ 

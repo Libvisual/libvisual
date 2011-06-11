@@ -1,0 +1,17 @@
+name="Galaxy",
+// By August Schack
+// edwanji@visto.com
+
+A0="rnd( PI )",
+A1=".01 * ( .5+rnd(.5)+rnd(.5) )",
+A2=" .1 * ( .5+rnd(.5)+rnd(.5) )",
+
+Aspc=1,
+
+D0="2*theta+6.28*r+a0",
+
+srcR="r + A1*cos( D0 )",
+srcT="theta + A2*sin( D0 )",
+
+Vers=100
+

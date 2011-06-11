@@ -1,0 +1,36 @@
+name="Null",
+// "Null" by Andy
+
+B0="cos( t * 0.3 )",
+B1="sin( t * 0.3 )",
+
+B2="t * 0.3",
+
+// For line...
+C0="sin( s * PI ) * mag( s ) * 0.3",
+C1="2 * s - 1",
+
+// For circ...
+C2="mag( s ) * 0.35 + .5",  // radius
+C3="s * PI",		// angle
+
+
+Aspc=1,
+
+// Line...
+X0=" - b0 * c1 - b1 * c0",
+Y0="   b0 * c0 - b1 * c1",
+
+// Circ 1/2...
+X1="c2 * cos( b2 + c3 )",
+Y1="c2 * sin( b2 + c3 )",
+
+
+// Circ 2/2...
+X2="c2 * cos( b2 - c3 )",
+Y2="c2 * sin( b2 - c3 )",
+
+
+ConB=1,
+
+Vers=100

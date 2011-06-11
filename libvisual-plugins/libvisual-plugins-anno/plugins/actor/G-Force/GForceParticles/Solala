@@ -1,0 +1,38 @@
+name="Solala",
+/*
+
+Solala
+
+By Thomas Geier
+
+ziggystar@gmx.de
+
+*/
+
+NUM="1",
+
+Stps="2 + rnd( 50 )",
+
+
+Aspc=0,
+
+A0="t",			//should be clear
+A1="END_TIME-t",	//the same
+
+A3="",	 // reserved
+A4="2 + rnd( 7 )",  // rnd pulse rate
+A5=".2 + rnd( .6 )", // rnd rotate rate
+
+B0=".97 * sin(A4*(t-A0)/A1)",
+
+
+X0="sin(A5*t+ s * 6.2831853 )*B0",
+Y0="cos(A5*t+ s * 6.2831853 )*B0",
+
+
+A2="4 + rnd( 5 )",	 // rnd dot size
+LWdt="A2",
+
+ConB=0,
+
+Vers=100

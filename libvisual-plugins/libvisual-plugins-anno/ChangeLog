@@ -1,0 +1,998 @@
+2010-06-03  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add m4/ChangeLog.
+	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.17.
+
+2006-03-17  Chong Kai Xiong  <descender@phreaker.net>
+
+	* configure.ac, plugins/actor/Makefile.am, po/POTFILES.in: Remove
+	dancing particles, finescope, goom2k4, nebulus and plazma from
+	distribution.
+	
+2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
+
+	* configure.ac: Make configure die if neither Bison nor Yacc
+	could be found.
+
+2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
+
+	* plugins/actor/pseudotoad_flower/Makefile.am: Add missing \,
+	fixes pseudo_toad plugin build.
+	
+2006-03-08  Chong Kai Xiong  <descender@phreaker.net>
+
+	* plugins/actor/G-Force/*: Fix G-Force plugin build. Don't use '+='
+	for LIBS, link all internal libraries statically, rename
+	internal actor_plugin.la to libactor_plugin.la.
+		
+2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* po/POTFILES.in: removed dna, goom2 interface (since we now include
+	goom2k4).
+
+2006-02-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Fixed the attributes for all GL plugins to be glx compat
+
+2006-02-23  Chong Kai Xiong  <descender@phreaker.net>
+
+	* */: Fix build system, allow parallel installation with LV 0.2.0.
+
+2006-02-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Made x86_64 aware.
+
+2006-01-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*: Unsatisfiable inlines remoed.
+
+2006-01-30  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/actor/JESS/*: Unsatisfiable inlines remoed.
+
+2006-01-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/infinite,
+	plugins/actor/goom2k4: Made the plugins pitch (rowstride) aware!.
+
+	This is a new requirement for plugins.
+
+2006-01-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*/*: Updated to new vidoptions api.
+
+2006-01-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/finespectrum/*: Started on port, non functional.
+
+2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/goom2k4/sound_tester.c: Include libvisual.h.
+
+2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: (C) updates.
+
+2006-01-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona/*: React better with new audio core.
+	
+	* plugins/actor/lv_gltest/*: same.
+	
+	* plugins/actor/pseudotoad_flower/*: same and implemented the notch
+	stuff.
+	
+2006-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/JESS/*.c: Better with new audio core, fixed a small
+	bug.
+
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/G-Force/*: Fixed for new audio core and cleanups.
+
+	* plugins/actor/corona/*: Fixed for new audio core.
+
+	* plugins/actor/JESS/*: Fixed for new audio core.
+
+2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*.c: Lot's of work to get it
+	good looking again.
+
+2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/lv_analyzer/*.c: Rewrote, superb now.
+
+	A lot of work is needed to adopt all the plugins to our
+	finally rightly working DFT stuff.
+
+2005-12-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Adopted to new API version checking scheme.
+
+2005-12-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/goom2k4/*: Merged complete goom2k4.
+
+2005-12-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/nastyfft/*: Adding plugin (imported from
+	libvisual-nastyfft).
+
+2005-12-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Random plugin fixes.
+
+2005-12-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/nebulus/*: Don't crash directly (still a big mess).
+
+2005-12-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*: Fixed bug in stereo scope.
+
+2005-12-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*: Don't lock scope mode on the spectrum
+	analyzer.
+
+	* plugins/actor/lv_gltest/*: Response to fft, NOT RIGHT YET.
+
+2005-12-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Renamed all NULLs to 0 in C++ plugins. NULL is
+	defined as ((void *) 0) and using NULL in C++ doesn't make sense
+	anyway.
+
+2005-12-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/debug/*: Added debug input.
+
+2005-11-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/JESS/*
+	* plugins/actor/infinite/*
+	* plugins/actor/lv_scope/*:
+
+	Ported all over to new audio API. (MORE AND MORE)
+
+2005-09-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/JESS/*
+	* plugins/actor/infinite/*
+	* plugins/actor/lv_scope/*:
+
+	Ported all over to new audio API.
+
+	* plugins/actor/oinksie/*: Improved new audio api port.
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/actor/jakdaw/*.c: Yep, new audio core, and removed
+	some crap that was total bullshit.
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/bumpscope/*.c: Audio retrieval made nicer.
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/bumpscope/*.c: Ported to floating point audio.
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*.c: Adopted to the floating point audio
+	format.
+
+2005-09-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/esd/input_esd.c: Won't block anylonger, solved using
+	a select timeout.
+
+2005-09-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Adding .license flag to the plugins so apps can do a
+	realtime license check.
+
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona/actor_corona.cpp (actor_corona_render):
+	Use visual_video_mirror to mirror the BMP style buffer.
+
+	Eventually (or rather, soonish) this should be rehacked to draw right
+	directly.
+
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*: Use the pull interface for audio.
+
+2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* *: gcc-4.0 fixes
+
+	Patch by: Jaak
+
+	* plugins/actor/corona/*: Converted to unix linedelim.
+
+2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/alsa/input_alsa.c: Support new VisAudio stuff, alsa
+	input is now smooth and flawless, finally!
+
+2005-07-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/*: Adopted to VisVideo api changes.
+
+	* plugins/actor/*: Adopted to VisVideo api changes.
+
+2005-06-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/gstreamer/*: Added gstreamer plugin for gstreamer
+	pipeline -> libvisual stuff (aka video playback and such). Far from
+	finished tho.
+
+2005-06-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*: Use custom compositers for the 32bits
+	compositer, and use (only for normal scope at the moment) the
+	denormalization stuff for scaling.
+
+2005-04-22  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac:
+	  - GdkPixbuf plugin made optional.
+	  - X headers check works on Gentoo.
+
+2005-04-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Don't use static const for the plugin structures, instead
+	use 'const' because VisObject will try and decrease the ref count on
+	the object and on some machines the const is really placed in .rodata
+	and checked for changes. (aka will crash).
+
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Replaced memset by visual_mem_set (mmx/sse enabled and
+	such).
+
+2005-04-09  Tom Verbroekken  <tverbroekken@gmail.com>
+
+	* plugins/*: Replaced the memcpy function with the visual_mem_copy,
+	highly optimized, super the duper and such! :)
+
+2005-04-09  Tom Verbroekken  <tverbroekken@gmail.com>
+
+	* plugins/*: Files containing VisCAPS and ->hasMMX refactored to
+	visual_cpu_get_mmx (), First patch YAY!
+
+2005-03-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/goom2/actor_goom.c: Fixed a stupid compile error.
+
+2005-03-19  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/G-Force/unix/libmfl/mfl.c: added param
+	check to mfl_DestroyFont(), it could be NULL if G-Force
+	have not showed any font yet.
+
+	* plugins/actor/*: added i18n support.
+	* plugins/input/*: added i18n support.
+	* po/LINGUAS: added es_ES and es_AR translations.
+	
+2005-03-16  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/G-Force/Common/GeneralTools/Headers/Makefile.am:
+	DeleteThread.h, EgThread.h and Printable.h removed
+	from SOURCES.
+
+2005-03-16  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added i18n support.
+	* po/*: added.
+	* autogen.sh: added check for alsa.m4 macro file and
+	defined REQUIRED_GLIB_GETTEXT_VERSION.
+
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/goom/actor_goom.c: Fixed songinfo retrieving.
+
+2005-03-08  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/actor/G-Force/*: Cleanups here and there.
+
+2005-02-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Fixing two cosmetic pastos.
+
+	Found by: Thomas Klausner <thomasklausner@users.sourceforge.net>
+
+2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/jakdaw/actor_jakdaw.c (actor_jakdaw_cleanup):
+	Fixing a HUGE per instance memory leak.
+
+	I am completely ashamed for this one :)
+
+2005-02-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Bumping up to 0.3.0
+
+2005-02-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	TAGGING 0.2.0 RELEASE!
+
+2005-02-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Build fixes by Duilio. Thanks!
+
+2005-02-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* *: Made nearly 0.2.0 release ready.
+
+	* libvisual-plugins.spec: rpm spec file
+	by: Michael A. Peters <mpeters@mac.com>
+
+2005-01-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Adding pseudotoad_flower
+
+	* plugins/actor/pseudotoad_flower/*: Adding the pseudotoad flower
+	plugin, effect was also used in the 4k demo 'Yellow Rose of Texas'
+	by Antti Silvast <asilvast@iki.fi>.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* configure.ac: Bah broken build with g-force, someone with more clue
+	should look into this.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/dancingparticles/*: Now less ugly, more sexy,
+	responsive to music, just like the girl next door, but better.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/actor/lv_analyzer/actor_lv_analyzer.c
+	(lv_analyzer_requisition): Make less braindead.
+
+	* configure.ac: Fix email address.
+
+2005-01-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona/*: Added copyright headers.
+
+2005-01-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: G-Force fixes.
+
+	* plugins/actor/G-Force/Makefile.am: Install path, defines fixes.
+
+	* plugins/actor/G-Force/Common/GeneralTools/nodeClass.cpp:
+	Actually randomize, and seed it (kinda hacky, woop)
+
+	Result: A randomized G-Force! I hope Salsaman enjoys it! (Lives
+	author)
+
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona/corona.cpp: Made an mmx version for the blurrer
+
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/dancingparticles/*: Adding the beginning, very rough
+	port still.
+
+	* configure.ac: Adapted for dancingparticles.
+
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/bumpscope/bumpscope.c (__bumpscope_generate_phongdat):
+	Nicer light edge.
+
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona/*: Fixed the kickbeat detection.
+
+2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona/*: Non crashy, working, still rough edges, but
+	hey, let's just welcome this new plugin :)
+
+	Thanks a lot to Jeko for the original linux port, and to Richard
+	Asbury for writing it originally on windows, I think for the sonique
+	player, not sure tho :)
+
+2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/G-Force/docs/*: Fixing up
+
+2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/G-Force/*: Some Makefile.ins
+
+	* plugins/actor/G-Force/NotWorkingWaveShapes/*: Fixing up.
+
+2005-01-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Howdy how
+
+	* plugins/actor/G-Force/*: Adding G-Force to the libvisual-plugins
+	source tree. I REPEAT THE G-FORCE PLUGIN NOW LIVES IN THIS TREE!
+
+	* configure.ac: Guess.
+
+2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/infinite/*: Tried to vectorize, failed misserably.
+
+	Plan: Redo the whole interpolation stuff, with different vector
+	buffers so there is zero pre setup needed when an
+	interpolation/displacement is done. This is a shit job, and I'll do it
+	in the upcoming weeks, because I want it to be faster :)
+
+2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/bumpscope/bump_scope.c
+	(__bumpscope_generate_phongdat):
+
+	FIXED! :)
+
+2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/corona: Adding plugin, still shitload of lose ends in
+	this one, need to fixup a lot.
+
+	* plugins/actor/oinksie/gfx-blur.c (_oink_gfx_blur_fade): Don't load a
+	quad word, only a double word in mmx code for the fade flag.
+
+2005-01-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/JESS/renderer.c (render_blur): Added mmx versions.
+	Doesn't really mather a lot, because it's still sucking CPU at other,
+	harder to optimize places. But hey, it's a start :)
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/alphablend/morph_alphablend.c:
+	Implemented 8,32 bits mmx versions.
+
+	With my athlon, the speed improvement is drastic (a factor 3) (yes
+	seriously).
+
+	Boy, am I happy to have dived into mmx, can advice it to everyone!
+
+	* plugins/morph/flash/morph_flash.c: Do not try to mix pals if there
+	is no pal attached to the VisVideo.
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/actor/oinksie/gfx-blur.c (_oink_gfx_blur_middle,
+	_oink_gfx_blur_midstrange):
+	Added mmx versions, another performance kick :)
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/gfx-blur.c (_oink_gfx_blur_fade):
+	MMXified the color fader.
+
+	Btw, the plugin it's performance doubled due to last changes :)
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/bumpscope/bump_scope.c (__bumpscope_cleanup):
+	Check for NULL.
+
+	* plugins/actor/oinksie/actor_oinksie.c: Adding different blending
+	methods for nice and shiny colors. Also created a VisUI option for
+	this.
+
+2005-01-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/JESS/*: Copyright headers.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/JESS/jess.c: Fixed some NULL frees.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Added more copyright headers, not yet done.
+
+2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/*: Added copyright headers.
+
+	* plugins/input/*: Added copyright headers.
+
+	* plugins/actor/oinksie/*: Added copyright headers.
+
+2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* AUTHORS: Update.
+
+2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/mplayer/input_mplayer.c: Reindented, with testing CIA
+	CVS logger as excuse.
+
+2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Fixes by Vitaly V. Bursov regarding openGL detection.
+
+2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/jakdaw, plugins/actor/infinite: Some NULL free fixes,
+	nothing shocking.
+
+2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac, plugins/actor/Makefile.am: Don't build dna,
+	don't include it in the dist.
+
+2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac, plugins/actor/Makefile.am, 
+	plugins/actor/nebulus/*: Added nebulus to this package and the
+	libvisual-nebulus package is because ofe this discontinued.
+
+2004-12-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugin/*:
+	Micro API update.
+
+2004-11-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Automake and Autoconf fixes by Vitaly V. Bursov thanks a lot!!!
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Added some tooltips here and there to the VisUI
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: VisVideo is an object as well use the right unref
+	methods and such.
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/*: Adapted everything to the new VisObject private stuff.
+
+2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: We don't have visual_ui_widget_destroy anylonger.
+	we now use visual_object_unref here.	
+
+2004-11-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/actor_oinksie.c: Fixed crash,
+	because some VisVideo struct wasn't nicely filled with zeros.
+
+2004-11-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Fixed install path message:
+
+	Patch by: Thomas Klausner <thomasklausner@users.sourceforge.net>,
+	Thanks a lot!!!
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/lv_gltest/actor_lv_gltest.c:
+	Free the user interface after cleanup.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/lv_gltest/actor_lv_gltest.c:
+	And make the VisUI option actually work.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: VisParamEntry listfy everything.
+
+	* plugins/actor/lv_gltest/actor_lv_gltest.c:
+	Added a VisUI.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/goom2/*: Adapt to API changes
+	regarding songinfo
+
+2004-10-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/jakdaw/*: More work on VisUI.
+
+	* plugins/actor/bumpscope/*: Added VisUI config dialog.
+
+2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/jakdaw/*: Added VisUI config dialog.
+
+	* plugins/actor/madspin/*: Added VisUI config dialog.
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Updated to API change
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinskie/actor_oinksie.c (act_oinksie_cleanup):
+	Check for NULL pointers.
+
+2004-10-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Bumped version to 0.2.0
+
+2004-10-11  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* plugins/actor/oinksie/actor_oinksie.c: removed
+	semicolons just after if()
+
+2004-10-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Use the visual_plugin_get_params
+	method instead of direct access of the paramcontainer
+	with the VisPluginData structure.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/infinite/lv_infite.c (lv_infinite_init):
+	Randomized color at startup.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/*: Replaced the random system
+	of every plugin with that of libvisual.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/flash/morph_flash.c: Fixed the
+	white palette. Forgot to port over
+	from the old palette system. The 8bit to 8bit
+	flash morph works again :)
+
+2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/oinksie/*: Removed custom
+	random functions, use libvisual it's
+	VisRandomContext from VisPluginData.
+
+2004-10-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*:
+
+	Removed printfs.
+
+2004-09-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/slide/morph_slide.c: Finished
+	the plugin, fully working now! YAY.
+
+2004-09-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/slide/*: Added slide plugin, this
+	is a plugin library, containing 4 plugins (atm).
+
+	Take a look at how it works.
+
+2004-09-22  Duilio Protti <dprotti@user.sourceforge.net>
+
+	* configure.ac:
+	- mplayer input plugin made optional, and don't
+	builded if we don't find a munmap().
+	- optional building system revamped: visit all 
+	directories always, but still possible to disable
+	building of any plugin, and dist target still
+	working.
+
+2004-09-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/lv_analyzer/actor_lv_analyzer.c
+	(lv_analyzer_render): Fixed bug with the scale
+	factor, now scaling and heights lower than 127
+	works, and scaling is more precise (didn't
+	float cast an integer calculation).
+
+2004-09-20  Duilio Protti <dprotti@user.sourceforge.net>
+
+	* configure.ac: alsa dependency lowered to 0.9.0.
+	* plugins/input/alsa/input_alsa.c: we request the new alsa
+	API if we have 0.9.x series installed.
+
+2004-09-13  Duilio Protti <dprotti@user.sourceforge.net>
+
+	* plugins/actor/madspin/madspin.c: removed include
+	of GLU headers.
+
+2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/jack/input_jack.c
+	(process_callback): Push the frames.
+
+	* plugins/input/jack/input_jack.c
+	(inp_jack_cleanup): Don't try to close a client
+	if one was not opened.
+
+	Heya This plugin now rocks[tm]
+
+2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/infinte/lv_infinite.c
+	(act_infinite_init):
+	Begin with a random effect.
+
+	* plugins/actor/infinite/render.c
+	(_inf_renderer): Remove the random
+	seed here, we seed at init, which is
+	more than anough.
+
+2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* plugins/actor/lv_analyzer/actor_lv_analyzer.c
+	(lv_analyzer_palette): Build nice palette.
+
+	(lv_analyzer_render): Draw analyzer bars (mostly
+	stolen from alsaplayer). Yeah I'm a lazy guy.
+
+	Also removed unused cruft.
+
+2004-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/jack/*: Added jack input plugin.
+	Doesn't work yet tho :)
+
+2004-09-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* NEWS: Updated.
+
+	Release 0.1.6
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*:
+	free -> visual_mem_free and the same for malloc
+	cleanups.
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/madspin/madspin.c (lv_madspin_events):
+	Actually listen to parameter changes.
+
+	* plugins/actor/lv_gltest/actor_lv_gltest.c
+	(lv_gltest_init): Add a parameter for enabling
+	transparant bars, and enable this by default.
+
+	(lv_gltest_events): Listen to the new parameter.
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/alsa/input_alsa.c: Changed the buffer request
+	size to 1024 so the wave form is actually responding.
+
+2004-09-07  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/input/alsa/input_alsa.c (inp_alsa_init):
+	- changed use of snd_pcm_hw_params_alloca() to
+	snd_pcm_hw_params_malloc(), otherwise the return value's
+	check for NULL doesn't make sense. alloca() is translated
+	into a single instruction adjusting the stack pointer, and
+	does not check for stack overflow, so there is no NULL error
+	return. alloca() is a not portable function.
+	- calling snd_pcm_hw_params_set_format() with the correct endianness.
+	- changed all VISUAL_LOG_ERROR to VISUAL_LOG_CRITICAL.
+
+2004-09-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/gdkpixbuf/actor_gdkpixbuf.c:
+	Now fixing the crasher for real, use g_type_init
+	instead of gdk_parse_args. All gdkpixbuf needed
+	was the g_type_init and calling gdk_parse_args
+	more than once in a process was quite fatal so
+	to say. Anyway it's fixed now !
+
+	* plugins/actor/bumpscope/actor_bumpscope.c:
+	Setting the params as they should be, I still haven't
+	fixed the light issue, I don't understand it at all...
+
+2004-09-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Removed xpyre from the build :))
+
+2004-09-06  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/input/mplayer/input_mplayer.c:
+	 - manage memory through libvisual.
+	 - fix: mmap return -1 on error, not NULL.
+
+2004-09-01  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added xpyre to build_actor (oops).
+	When ALSA check fails, configure is not aborted, just don't builds
+	ALSA input plugin. GL detection is leave to installed Libvisual.
+	All GL plugin made optionals.
+
+2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Plugins that build are ported to the new plugin system.
+
+	* plugins/madspin/madspin.c (lv_madspin_init): Use params for number
+	of stars and speed.
+
+2004-08-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/gdkpixbuf/actor_gdkpixbuf.c: Fixed a crasher due
+	to gdk over initializing. Not sure if the current fix is 'the way to
+	go' tho.
+
+	* plugins/actor/bumpscope/bump_scope.c, bump_scope.h: Checking in.
+	Bumpscope kinda works now. Although the light is borked for some
+	reason.
+
+	* plugins/actor/bumpscope/actor_bumpscope.c: Params installed.
+
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* TODO: Updates.
+
+	* plugins/actor/bumpscope/*: Added, not finished yet.
+
+	* plugins/actor/gdkpixbuf/*: Added, quite ready, some things todo. (A
+	gdkpixbuf image loader).
+
+	* plugins/actor/jakdaw/*: Ported the xmms jakdaw plugin!
+
+	* plugins/actor/plazma/*: Ported the xmms plazma plugin!
+
+	* plugins/actor/xpyre/*: Start port of the xmms Xpyre plugin, not finished.
+
+	* plugins/*: Small cleanups all around.
+
+2004-07-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*: Renamed private to priv everywhere to adopt to 
+	libvisual API changes.
+
+	* plugins/input/alsa/input_alsa.c: Use VISUAL_LOG_WARNING instead
+	of VISUAL_LOG_ERROR when the requested audio output hz is not
+	supported but a different one is used, since this is not fatal.
+
+2004-07-13  Gustavo Sverzut Barbieri <gsbarbieri@users.sourceforge.net>
+	* plugins/input/mplayer: New input plugin
+
+2004-07-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* plugins/input/alsa/input_alsa.c: Check if
+	sample rate was set successfully in another way.
+	Try to use a large buffer.
+	* plugins/actor/madspin/madspin.c: Free allocated
+	textures on cleanup.
+
+2004-07-13  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: Alsa plugin made optional.
+	* plugins/actor/infinite/main.h: TRUE and FALSE macros
+	removed, they are already defined on Libvisual.
+
+2004-07-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/flash/morph_flash.c (flash_32):
+	Renamed to flash_24, seen it was prototyped
+	and used in the source like this, aka the plugin
+	was broken.
+
+2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/madspin/madspin.c
+	(madspin_load_textures): Nicer texture
+	filename parsing.
+
+2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/morph/flash/morph_flash.c
+	(replacetable_generate_24): Added function
+	to generate color value replacement table
+	for 24, 32 bits mode.
+
+2004-07-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* TODO, NEWS: Updates.
+
+2004-07-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/input/alsa/*: Added semi working ALSA
+	input plugin wrote by:
+	Vitaly V. Bursov  <vitalyvb@ukr.net>
+
+2004-06-30  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: removed some redundant tests.
+
+2004-06-28  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/JESS/jess.c: added error checking.
+	* plugins/morph/alphablend/alphablend.c: added
+	error checking, some funcs made inline.
+
+2004-06-27  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/infinite: all header now includes
+	config.h header. Added error checking.
+	
+2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* NEWS: Updated.
+
+2004-06-26  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* plugins/actor/*/*.c: cleanup to avoid warnings.
+	Removed many unused things.
+	* plugins/actor/infinite/Makefile.am: added header
+	files to SOURCES target.
+	* plugins/actor/oinksie/Makefile.am: added header
+	files to SOURCES target.
+	* plugins/actor/JESS/Makefile.am: added header
+	files to SOURCES target.
+	* configure.ac: videotest plugin removed from the
+	package. CFLAGS user variable overrided. Changed esound
+	dependency from >= 0.2.29 to >= 0.2.28, because it works
+	well on my system :-).
+	* AUTHORS: added myself.
+	* BUGS: note the installation problem when some plugin
+	is disabled and exists some older version of the plugins
+	installed on the system.
+
+2004-06-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Remove the videotest items, we don't
+	want to build this neither include it in the dist.
+
+2004-06-21  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: reorganized, more verbose. Some actor
+	plugins made optionals.
+	* Makefile.am's: user variables CFLAGS and LDFLAGS not
+	overrided, instead we use AM_CFLAGS and AM_LDFLAGS.
+	* autogen.sh: check for libtool and run libtoolize --force
+
+2004-06-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Removed some files that REALLY shouldn't went in while
+	importing.
+
+2004-06-19  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.in: moved to configure.ac
+	* configure.ac: updated to meet autoconf 2.57 requirements.
+	Many checks added.
+	* autogen.sh: added.
+
+2004-06-17  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.4 has been released.
+
+	* Portability fixes.
+	* Using precise integral types from stdint.
+	* All kinds of cleanups.
+
+2004-05-27  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.3 has been released.
+
+	* Added a madspin port.
+	* Fixed all the actor plugins to support size requisition (this is
+	  mandatory btw).
+	* Added support for retrieving VisAudio within the morph plugins.
+	* Cleanups.
+
+2004-05-13  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.2 has been released.
+
+	* Bug fixes.
+	* Added some morph plugins.
+
+2004-04-24  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1-pre4 has been made public.
+
+	* Code for the new universal plugin loader
+	* Fixed bug in the esd plugin that caused the
+	  wrong FD to be closed while registering.
+	* Random fixes.
+

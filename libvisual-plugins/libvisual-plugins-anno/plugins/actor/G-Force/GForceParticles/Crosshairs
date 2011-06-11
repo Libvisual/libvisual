@@ -1,0 +1,31 @@
+name="Crosshairs",
+
+
+
+Stps=4,
+
+
+
+
+Aspc=1,
+
+A0=".3 + rnd( .3 )",  // radius
+A1="- .1 - rnd( .4 )", // rotation rate
+A2=".001 + rnd( .12 )", // segment length
+
+
+// 2 to 7 angular divisions
+NUM="2 + rnd( 4.1 )",
+
+B0="a1 * t + 2 * PI * ( ID / NUM )",  // theta
+C0="a0 + a2 * s",    // r
+
+X0="C0 * cos( B0 )",
+Y0="C0 * sin( B0 )",
+
+
+
+
+ConB=1,
+
+Vers=100

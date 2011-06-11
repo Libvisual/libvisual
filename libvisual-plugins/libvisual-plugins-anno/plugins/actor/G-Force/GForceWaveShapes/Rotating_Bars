@@ -1,0 +1,39 @@
+name="Rotating Bars",
+// Rotating Bars by Deft: s_inglis@hotmailcom
+
+Stps="30",
+
+C0="sin(t) * mag( s ) * .8",
+C1="cos(t) * mag( s ) * .8",
+
+X0=".5+c0",
+Y0=".5-c1",
+X1="-.5+c0",
+Y1="-.5-c1",
+
+X2=".5+c0",
+Y2="-.5+c1",
+X3="-.5+c0",
+Y3=".5+c1",
+
+X4="-2*c0",
+Y4="c1",
+X5="2*c0",
+Y5="c1",
+ 
+C2="sin( 2 * t ) * mag( s ) * .8",
+
+X6="c2",
+Y6="-c1",
+X7="c2",
+Y7="c1", 
+
+X8="-c1",
+Y8="c2",
+X9="c1",
+Y9="c2",
+
+ConB=1,
+
+Vers=100
+                                                                           

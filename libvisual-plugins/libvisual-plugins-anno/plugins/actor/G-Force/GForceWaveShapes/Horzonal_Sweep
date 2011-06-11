@@ -1,0 +1,19 @@
+name="Horzonal Sweep",
+
+Stps=-1,
+
+Aspc=0,
+
+C0="2 * (s - .5)",
+C1=".7 * sin( .5 * t ) + mag( s ) * .25",
+
+
+X0="c1",
+Y0="c0",
+
+X1="-c1",
+Y1="c0",
+
+ConB=1,
+
+Vers=100

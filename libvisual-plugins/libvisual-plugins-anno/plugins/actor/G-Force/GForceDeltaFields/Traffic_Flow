@@ -1,0 +1,11 @@
+name="Traffic Flow",
+
+Aspc=1,
+
+
+A0=".005 + rnd( .03 )",        // How fast the "traffic" flow is
+A1="A0 * ( .9 + rnd( .1 ) )",  // How blurry the "buildings" are
+
+srcX="x + A0 * sin( 8 * y ) - abs( A1 * sin( 8 * y ) )",
+srcY="y + A0 * cos( 8 * x ) - abs( A1 * cos( 8 * x ) )",
+Vers=100

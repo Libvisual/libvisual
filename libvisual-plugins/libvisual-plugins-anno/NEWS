@@ -1,0 +1,40 @@
+NEWS - list of user-visible changes between releases
+of Libvisual plugins. 
+
+These are only visible changes, for more details look at the ChangeLog.
+
+New in 0.3.x: xxxx-xx-xx:
+* ESD won't block anylonger, solved with a select timeout. (Dennis)
+* NastyFFT: Adding new actor plugin. (yodor <yodor@developer.bg>)
+
+New in 0.2.0: 2005-02-09:
+* Adding pseudotoad flower actor plugin, ported. (Dennis)
+* Adding dancing particles plugin, ported. (Dennis)
+* Including G-Force in package. (Dennis)
+* Including Nebulus in package. (Dennis)
+* Adding corona actor plugin, ported. (Dennis, Jean-Christophe)
+* Fixed bumpscope actor plugin. (Dennis)
+* MMX code added to JESS, alphablend, oinksie (Dennis)
+* Fixing many bugs in plugins. (Everyone)
+* Adding VisUI userinterfaces to plugins, not usable yet
+  because there is no client support yet. (Dennis)
+
+New in 0.1.7: 2004-10-14:
+* Updates to API changes.
+* All plugins use the VisRandom stuff for randomizing.
+* New slide morph plugin.
+* Bugfix in flash plugin, that caused it to not work on 8bits depth.
+
+New in 0.1.6: 2004-09-10:
+* New ALSA capture input plugin. (Vitaly)
+* New MPlayer export input plugin. (Gustavo)
+* New Plazma actor plugin, ported from xmms. (Dennis)
+* New Jakdaw actor plugin, ported from xmms. (Dennis)
+* New Bumpscope actor plugin (has issues), ported from xmms. (Dennis)
+* New GdkPixbuf actor plugin to be used with images. (Dennis)
+
+New in 0.1.5: 2004-06-27:
+* Removed the videotest plugin, it was used for early debugging.
+* Esound dependency lowered from 0.2.29 to 0.2.28.
+* Major cleanups and a new build tree.
+

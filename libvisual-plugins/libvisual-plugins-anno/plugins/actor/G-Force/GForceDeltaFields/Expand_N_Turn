@@ -1,0 +1,9 @@
+name="Expand & Turn",
+
+
+Aspc=1,
+
+srcR=".97 * r",
+srcT="theta - .021",
+
+Vers=100

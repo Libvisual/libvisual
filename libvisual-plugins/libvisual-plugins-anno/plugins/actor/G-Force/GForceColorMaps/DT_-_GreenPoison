@@ -1,0 +1,17 @@
+name="DT - GreenPoison",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+  // Red=0, Magenta=0.833
+  // Blue=0.667, Cyan=0.5
+  // Green=0.333 Yellow=0.167
+ H="wrap( 0.1+0.5*i^0.6+0.68*sqwv(1.999-i) )",
+  
+  // 0=Grey, 1=Full Color
+ S="1+0.5*sin(i^0.6*3)-i^2+sqwv(1.999-i)",
+ 
+  // 0=Black, 1=Full Bright
+ V="2*sqwv(1.999-i)-sin(i^0.6*7)",
+ 
+ Vers=100
+ 

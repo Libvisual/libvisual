@@ -1,0 +1,29 @@
+name="A Wounded Deer",
+
+
+
+
+A0="rnd( 2 ) - 1",    // X
+A1="rnd( 1 ) - .2",   // Y
+
+
+A2="t + 6",
+
+
+// Make the text fall like gravity
+X="A0",
+Y="A1 - .09 * sqr( pos( t - A2 ) )",
+
+/*  I bet Emily never thought she'd be quoted in a music visualizer (not that she'd have much idea what one was).   Nonetheless, her words are just as elegant and truthful today as they were when she composed them in the late 1800's.  I would have liked to meet you, Emily.  */
+ 
+
+TSze=14,
+
+
+
+PDur="11",
+
+
+
+Vers=100
+ 

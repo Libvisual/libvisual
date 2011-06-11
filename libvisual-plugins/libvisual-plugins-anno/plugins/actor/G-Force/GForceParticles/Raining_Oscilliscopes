@@ -1,0 +1,39 @@
+name="Raining Oscilliscopes",
+
+
+Aspc=0,
+
+Stps="40",
+
+
+NUM="2 + rnd( 12 ) + rnd( 12 )",
+
+A0="t",    // Record start time
+
+A1=".3",                 // The accelleration constant
+A2=".03 * ( 1 + rnd( 4 ) )", // The width of each scope
+A3="rnd( 7 )",           // Time offset variance
+A4="1.1 * a2",           // Magnitude scale
+
+B0="seed( ID * a0 )",    // Seed the particle thread
+B1="-.5 + rnd( 1.5 )",   // Pick starting y
+B2="rnd( 2 - a2 ) - 1",  // Pick starting x
+B3="rnd( a3 ) + 3",      // Pick time offset
+
+// B4: The base y of the scope
+B4="b1 - a1 * sqr( pos( t - a0 - b3 ) )", 
+
+
+Pen=".9",
+
+
+X0="b2 + s * a2",
+Y0="b4 + a4 * mag( .7 * s ) * sin( s * 3.14159 )",
+
+
+
+LWdt="1",
+
+ConB=1,
+
+Vers=100

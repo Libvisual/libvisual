@@ -1,0 +1,13 @@
+name="DT - Galaxy",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ NUM=1,
+ Stps=333,
+ 
+ X0="1*sin(33*s-t*.3)*s",
+ Y0="0.4*cos(33*s-t)*s",
+ X1="1*sin(33*s-t*.3+Pi)*s",
+ Y1="0.4*cos(33*s-t+Pi)*s",
+ 
+ Vers=100
+ 

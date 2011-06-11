@@ -1,0 +1,44 @@
+name="Miri's Ball",
+/* Miri's Ball, by Jeff Osborn (jo009j@mail.rochester.edu)
+This is a ball-shaped object spinning around in "3D".  Of course, real 3D isn't possible on a 2D screen :-P  Plus, G-Force doesn't deal with 3D.  But anyhow.  I wrote it for my bestest friend Miriam, who is indescribably cool.  This is for her, so that everyone can marvel at least PART of her panis :-P */
+
+/* This took a lot of hacking around and tweaking, so explaining it is a bit tough.  Change some of the parameters and see what happens...  Maybe you can improve upon it :-P  I put basic comments in, but I don't want to bloat this config up with un-needed confusing comments which noone would understand :-P  The bulk of it is that I used sin() and cos() a lot because they vary from -1 to 1; they are good for spinning.  I just used them to simulate spinning in three dimensions :-P  */
+
+NUM="rnd(5) + 8", /* The number of circles (actually pairs of circles..because the sphere has two circles of any given radius the same distance from the center, I saved some CPU by drawing them at once) which will make up the ball.  This varies from 8 to 13  */
+
+Stps="NUM + (NUM - ID)", // Each circle has a different amount of dots so it looks cooler.  :-P
+
+Aspc=1,
+
+A0="rnd(0.3) + 0.1", // Random initial radius
+A1="rnd(.9)", //This is used to calcluate the path the entire ball travels
+A2="rnd(.9)", //So is this
+
+B0="t * A1", /* This helps make the circles spin..the dots, that is.  The dots spin _along_ the cirlce; this has nothing to do with the psuedo-3D motion  */
+
+B1="sin(t * A1)", //The path of the entire ball
+B2="sin(t * A2)", //Same
+B3="ID / NUM", //The unique ID of each pair of circles.
+
+
+
+
+B4="B3 * A0 * sin(.8 * t)",
+B5="B3 * A0 * cos(.8 * t)",
+
+B6="(A0 - (A0 * B3)) * cos(.8 * t)",  // radius in Y, after calculations and spinning
+B7="(A0 - (A0 * B3)) * sin(.8 * t)",  // radius in X, after calculations and spinning
+
+C0="B7 * cos( s * 6.2831853 + B0 ) + B1",
+C1="B6 * sin( s * 6.2831853 + B0 ) + B2",
+
+X0="( C0 + B5 ) * .54",
+Y0="( C1 + B4 ) * .84",
+
+X1="( C0 - B5 ) * .54",
+Y1="( C1 - B4 ) * .84",
+
+ConB=0,
+LWdt="1",
+
+Vers=100

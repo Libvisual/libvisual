@@ -1,0 +1,10 @@
+name="Drawn and Quartered",
+// Drawn & Quartered by Demonseed
+// A pull from the center out
+
+Aspc=0,
+
+srcX="sin(x) + rnd( .008 ) - .005",
+srcY="sin(y) + rnd( .008 ) - .005",
+
+Vers=100

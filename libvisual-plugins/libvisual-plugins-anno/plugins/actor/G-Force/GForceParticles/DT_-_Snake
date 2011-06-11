@@ -1,0 +1,19 @@
+name="DT - Snake",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ NUM=1,
+ Stps=28,
+ Aspc=1,
+ LWdt="2+15*mag(s)",
+ 
+ B0="0.6*sin(t*0.2) - 0.3",
+ B1="sin(t*0.2)",
+
+B2="3*(1+0.5*sin(t*0.2))",
+B3="20*sin(t*0.1)",
+
+ X0="0.8*sin(s*B2- B3 ) + B1",
+ Y0="0.6*s + B0",
+ 
+ Vers=100
+ 

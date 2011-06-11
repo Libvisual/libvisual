@@ -1,0 +1,18 @@
+name="Victorian Corset",
+/*Nothing is more beautifull than a woman in a corset....
+         -E. Kodotai   kodotai@mi.freei.net    */
+
+
+A3="sqr( 4 /5 )",
+
+Aspc=1,
+srcX="x ^ 2 - y ^ 2",
+srcY="y + ( x - a3 )* d0",
+
+A0="rnd( 1.6 ) - .8",  
+A1="rnd( 1.6 ) - .8",  
+A2="-1.7",
+
+D0=".021* ( ( sqrt( sqr( y - a1 ) + sqr( x - a0 ) ) +.17 ) ^ a2 )",
+
+Vers=100

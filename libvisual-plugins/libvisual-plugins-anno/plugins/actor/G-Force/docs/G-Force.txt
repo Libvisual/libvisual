@@ -1,0 +1,156 @@
+
+G-Force
+1.1.6
+
+
+
+	G-Force is a Macast, SoundJam, and Winamp visual plugin and 
+standalone sound-screensaver.  This file has key info, and if you skip over 
+it, you'll miss out on some nice features of G-Force.  I dedicate G-Force to 
+God and His uncanny patience:  "`If you hold to my teaching, you are really 
+my disciples.  Then you will know the truth, and the truth will set you free' 
+" (Jesus, John 8:31-32).
+
+
+Instructions
+Run Winamp and press CTRL+K.  Highlight G-Force and then press the Close 
+button.  
+Tell Winamp to run the current visual plugin by double-clicking in the 
+spectrum-part of the Winamp console.  
+
+
+Notes
+-	Press the ? key in G-Force to see the key commands
+-	"Configs" are just text files that contain commands for G-Force, and 
+they need to be in one of the G-Force folders (there are 4) in order for 
+G-Force to see them. Use Microsoft Word to open and edit them (it properly 
+handles LF/CRs). 
+
+
+FAQ
+Q:		How can I learn about G-Force config files so I can make my 
+own?
+A:		The config files "ColorWheel", "Linear Spread", "Rotating 
+Corridor", and "Spinners" are documented (try them out in that order).  
+First, be sure you're familiar with the documentation found inside Extras 
+folder.  This information is essential to learning about G-Force and how to 
+make configs for it.  When WhiteCap (my other plugin) was first released, it 
+came with about 20 configs. Today, thanks to users who sent in configs they 
+made, 130 configs now come with WhiteCap.  G-Force is the same way:  if you 
+send in new configs, you'll make G-Force that much better for everyone else.  
+
+Q: 	What's in the Extras folder?
+A:  	Two things: Information about fullscreen mode, screensaver mode, 
+'letterbox' modes, and text options and you find a zip archive of the source 
+code of G-Force. 
+
+Q:  	What will change in future G-Force versions?
+A:  	G-Force is far from being complete.  The best thing about future 
+versions will be user-contributed configs, so try to make one and send it in 
+(and everyone will know of your config!).  The first release of G-Force only 
+had about 15 configs total--most of other configs added since then were made 
+by fellow users of G-Force just like you.
+
+Q:  	Why should a person send in feedback and bug reports?
+A:  	G-Force can't improve unless you send me ideas, feedback, and bug 
+reports!  Most of the features added to WhiteCap and G-Force in the last year 
+started out as user comments.
+
+Q:  	What the story behind G-Force?
+A: 		Geiss for Winamp really impressed me, and I wanted to provide 
+something similar to the Mac community.  Hoping I could make a port of Geiss 
+for the Mac, I emailed the author, Ryan Geiss.  He's shifted gears and isn't 
+in a position where he can to offer collaborate now.  As a result, G-Force 
+was made from scratch and has some really neat capabilities over Geiss due to 
+its virtual machine internals (a virtual machine is how user-supplied text 
+files can be "run").   
+
+Q: 	Why the name "G-Force"?
+A: 		I'll give ya a hint:  the "G" has something to do with who 
+G-Force is dedicated to.  ;^)
+
+Q: 	How do I get rid of the blank horizontal bands once when the G-Force 
+window gets large (called 'letterbox mode')?
+A: 		The MaxX and MaxY prefs (covered in the Extras documentation) 
+control the letterbox dimensions.
+
+Q: 	Could G-Force benefit from MMX?
+A: 		After much analysis and with the help of a couple others, the 
+critical section of G-Force doesn't take the form MMX is designed to compute. 
+ I wish I could become experienced with these technologies to rewrite parts 
+of G-Force but there's no time anymore.
+
+Q: 	Can G-Force get 3D accelerated?
+A: 		No: 0% percent of G-Force lends itself to 3D hardware. 
+
+
+
+Final Notes
+-  If you write in with a problem or question, please  be sure you've already 
+read through all the documentation (including what's in the Extras folder) 
+and be sure you include lots of details.  Getting an email that only says "it 
+doesn't work" isn't helpful.
+-  This plugin is open source.  Don't steal the source code (feel free to use 
+it, just give credit to where you got it from).  It's open source because I 
+want to expose upcoming software authors to source code other than snippets 
+and freeware hacks for UNIX that nobody cares about.  I ask other software 
+authors to consider this and to do the same.  The source code is located in 
+the "Extras" folder.
+-  Don't blame G-Force for messing up your PC when you happened to be 
+formatting a HD, while installing Photoshop, while plotting the space 
+shuttle's electrical system from AutoCAD, while you were playing Quake VI 
+beta.
+-  Use of G-Force is intended only for non-profit and hobbyist use and 
+explicit permission to use it otherwise is required.  
+
+
+
+
+Andy O'Meara
+(aco5@cornell.edu)
+
+
+
+Version History
+1.1.1 - 2 Feb 00
+- Winamp:  First public release
+1.1.2 - 8 Feb 00
+- Improved track text drawing for better readability
+- Added some command keys
+- Added abiliy to store and recall config combos (see onscreen help)
+1.1.5 - 7 Mar 00
+- Added prefs: KMap, CDur, CLin, TDur, P_On
+- Keys commands  now remappable
+- New implementation of DeltaFields: better blur quality & more flexibility
+- Track text didn't always display when it should have
+- Track text appeared after each window resize
+- Track text can now be centered in the screen
+- Signal now flattened to zero at ends to look nicer (mag(s) approaches  0 as 
+s approaches 0 or 1)
+- Prefs WInt, DInt, and CInt can now be expressions
+- ColorMaps now allow "A" variables
+- Fixed diagonal/banding problem
+- Fixed case where fullscreen wasn't working
+1.1.6 - 15 Mar 00
+- About 5% frame rate  (Thanks Hen!)
+1.2 - ?? Mar 00
+- "G-Force Images" folder allowing  BMPs to be arbitrarily drawn
+- Access to frequency spectrum and bass level
+- Winamp: Standalone screen saver version
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Copyright (c) 2000           Andrew O'Meara

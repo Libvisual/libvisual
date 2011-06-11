@@ -1,0 +1,67 @@
+name="Dancing days",
+/*                            	     */
+/* Dancind Days	                   	*/
+/*                          		      */
+/*                                  */
+/* By Thomas Geier                  */
+/*  E-mail: ziggystar@gmx.de        */
+
+/*Some Waves rotate around the center. Speed, length and radius vary through the time.*/
+
+
+Aspc= 1 ,
+
+B0="0.0002*sin(t*0.2)",	//the velocities of the bows
+B1="0.0003*cos(t*0.5)",
+B2="0.0004*cos(t*0.05)",
+B3="0.0005*cos(t*0.3)",
+B4="0.0006*cos(t*0.2)",
+B5="0.0004*cos(t*0.1)",
+
+B6="sin(0.1*t)",	//the length
+B7="sin(0.1*t)",
+B8="sin(0.2*t)",
+B9="cos(0.6*t)",
+B10="cos(0.1*t)",
+B11="cos(0.08*t)",
+
+B12="cos(t*0.01)",		//the distance to the center
+B13="cos(t*0.02)",
+B14="cos(t*0.05)",
+B15="sin(t*0.07)",
+
+B16="wrap(t*B0)*6.28",
+B17="wrap(t*B1)*6.28",
+B18="wrap(t*B2)*6.28",
+B19="wrap(t*B3)*6.28",
+B20="wrap(t*B4)*6.28",
+B21="wrap(t*B5)*6.28",
+
+C0=".3 * mag( s )",
+
+
+X0="cos(b16 + s * B6)*(B12+c0)",
+Y0="sin(b16 + s * B6)*(0.3+c0)",
+
+X1="cos(b17 + s * B7)*(0.7+c0)",
+Y1="sin(b17 + s * B7)*(B13+c0)",
+
+X2="cos(b18 + s * B8)*(B14+c0)",
+Y2="sin(b18 + s * B8)*(B14+c0)",
+
+X3="cos(b19 + s * B9)*(B15+c0)",
+Y3="sin(b19 + s * B9)*(B15+c0)",
+
+X4="cos(b20 + s * B10)*(0.6+c0)",
+Y4="sin(b20 + s * B10)*(0.3+c0)",
+
+X5="cos(b21 + s * B11)*(0.4+c0)",
+Y5="sin(b21 + s * B11)*(0.7+c0)",
+
+/*  Since the waveforms are smaller, we won't lose a noticeable quality by having less S-Steps (to saving some CPU)  */
+Stps="150",
+
+ConB=1,
+
+
+Vers=100

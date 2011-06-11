@@ -1,0 +1,139 @@
+Update 'rand' usage everywhere, to use randomness from libvisual, through the plugin random context.
+
+
+README:
+	update doc on goom version required
+
+LEGAL:
+	check copyrights add copyright notices to all the files. 
+
+input/esd: (post 0.1)
+	Esd plugin isn't timing.
+	I HATE THE WAY ESD BLOCKS ON EVERYTHING. (actually i just hate esd generally)
+
+(keep in minds that stuff will change within audio after 0.1)
+inputs:
+	esd:
+		Esd plugin isn't timing, should be fixed when buffer queues land before 0.2 (post 0.1)
+	alsa:
+		Fix the small issues within the plugin
+		(alsa_init) Take parameters from the 'params'
+		field of the given plugin.
+
+	usound:
+		Make an usound server plugin (someone else)
+	
+	artsd:
+		Make an artsd plugin (someone else, i'm not running kde)
+
+	mplayer mmap output:
+	visual_video_set_depth (video, V
+		Make an mplayer mmap thingy plugin (someone else)
+
+	jack:
+		finish it actually.
+
+	Any other input method:
+		Make plugins for these (someone else),
+			remember rather add a plugin than use the callback method
+			so everyone can make use of it.
+
+actors:
+	frameproxy:
+		A plugin which can be used to easily import frames into libvisual
+		through mmap, shared mem, function callback. SPECIALIZED PLUGIN
+
+	bumpscope:
+		Fix the light.
+
+	GLPLUGINS:
+		make sure the states are being resetted very well.
+
+	plazma:
+		valgrind.
+		cleanup the code.
+		translate from french to english (some of the code).
+
+	jakdaw:
+		cleanup, hang the configs to params, have some automatic
+		config cycling.
+
+	infinity:
+		build tables in strides instead of blocking (post 0.2)
+		valgrind
+
+	lv_analyzer:
+		add two param VisColors to use it as a gradient for the palette.
+
+	JESS:
+		build tables in strides instead of blocking (post 0.2)
+		could someone from france PLEASE translate
+			the plugin to english? (post 0.1)
+		valgrind
+
+	cthugha: (suggestion for someone with too much time)
+		http://www.afn.org/~cthugha/
+
+	goom:
+		libgoom:
+			leaking quite seriously
+			use extern "C" stuff in the headers
+			does not compile on alpha (because of mmx, sse, should use a C fallback)
+			make an libvisual gfx effect that enables libvisual
+				plugins to draw within goom
+
+	synaethesia:
+		port the port that is done by the mythtv people (post 0.1).
+
+	oinksie:
+		use the libvisual palette blender
+		use the libvisual timer module
+		fix the 24 bit mode again.
+	
+	a gdkpixbuf image loader:
+		implement depth requester, (needs bits in libvisual as well).
+		implement support for alpha transparency.
+		implement support for animated image files.
+
+	auto sched plugin:
+		have a auto schedded bin running in an actor so that
+			gstreamer, xine and such can easily use
+			the auto scheduler.
+	corona:
+		Fix leaks in the dtors.
+		Make the image not a copy, but do a direct pointer
+		Unmirror the image in the code itself
+
+	bin in actor:
+		have a plugin that embeds a complete bin. that is configurable through params.
+
+	More: (post 0.2)
+		When api is stable, start porting over some more xmms plugins.
+
+morph: (lots of these effects can be taken from the demo world, this should turn
+	visuals into scenes rather than standalone plugins, o boy!)
+
+	alphablend:
+		mmx sse optimize.
+
+	tentacle:
+		Add a soft edges variant.
+		optimize
+
+	flash:
+		make 16, 24, 32 bits support.
+
+	blockwise flash in, like in the ODD demo:
+		make.
+
+	negative flash:
+		make.
+
+	something:
+		that uses the audio as example.
+
+	burn in:
+		JC says he knew what he was talking about
+			so JC make this !! :)
+
+	

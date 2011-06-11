@@ -1,0 +1,11 @@
+name="Sine Slide",
+
+A0="17", // 2 + rnd( 16 )",
+A1=".020", // * ( 1 + rnd( 4 ) )",
+
+Aspc=0,
+
+srcX="x - sgn( x ) * a1 * ( 1 - cos( a0 * x ) ) - .02 * x + .001 - rnd( .002 )",
+srcY="y + .001 - rnd( .002 )",
+
+Vers=100

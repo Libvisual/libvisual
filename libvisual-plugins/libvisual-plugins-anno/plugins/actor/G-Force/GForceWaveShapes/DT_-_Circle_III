@@ -1,0 +1,15 @@
+name="DT - Circle III",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ ConB=1,
+ Aspc=1,
+ 
+ B0="0.8*B0+(abs(mag(0.1))+abs(mag(0.3))+abs(mag(0.5))+abs(mag(0.7)))^2",
+
+ C0="0.95*clip(B0)*(0.6+1.5*sqr(mag(s)))",
+ 
+ X0="c0*sin(6.2831853*s)",
+ Y0="c0*cos(6.2831853*s)",
+ 
+ Vers=100
+ 

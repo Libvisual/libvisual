@@ -1,0 +1,17 @@
+name="DT - Plastic",
+  /* config for G-Force Winamp, SoundJam & Macast visual plugin
+         made by David Tryse TomteSkogen42@hotmail.com */
+ 
+  // Red=0, Magenta=0.833
+  // Blue=0.667, Cyan=0.5
+  // Green=0.333 Yellow=0.167
+ H="wrap( sin(5*wrap(t*0.01)) )",
+ 
+  // 0=Grey, 1=Full Color
+ S="sin(5*i)",
+ 
+  // 0=Black, 1=Full Bright
+ V="1-sin(8*i)-pos(0.03-i)*35+i^6",
+ 
+ Vers=100
+ 
