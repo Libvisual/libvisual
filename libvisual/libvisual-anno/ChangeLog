@@ -1,0 +1,2992 @@
+2006-03-04  Chong Kai Xiong  <descender@phreaker.net>
+	
+	* *: Merge from HEAD
+	* po/*.po: Update LV version.
+
+2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_color.c (visual_color_white): Black, White, what is the
+	difference. Biggest doh ever.
+
+2006-02-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.*, libvisual/lv_gl.*: Don't use a callback
+	system for GL attribs, let the display target work with the lists.
+
+2006-02-19  Chong Kai Xiong  <descender@phreaker.net>
+
+	* configure.ac, Makefile.am, libvisual/Makefile.am,
+	libvisual.pc.in, po/Makefile.in.in: Allow parallel installation
+	with LV 0.2.0.
+
+2006-02-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c (visual_audio_normalise_spectrum): Use the
+	standard log scale.
+
+	* libvisual/lv_hashmap.c: Finally finished the iterator.
+
+2006-02-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.c: Added a bit more stuff.
+
+	* libvisual/lv_audio.c: Use macro names instead of const string
+	entries.
+
+2006-02-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_fourier.c, libvisual/lv_rectangle.c,
+	libvisual/lv_math.c, libvisual/lv_video.c: Fixed doxygen errors.
+
+	* libvisual/lv_rectangle.c: Include lv_math.h, errornous normalisation
+	was because of down cast to int because the prototypes were missing.
+
+2006-02-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Added x86_64 detection.
+
+	* libvisual/*: x86_64 supports x86 simd sets.
+
+	* libvisual/lv_hashmap.c: Fixed a critical bug found by in
+	the destructor. (Found by Jaak)
+
+	* libvisual/lv_hashmap.c: More work on rehashing.
+
+2006-01-30  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* NEWS: updated.
+
+2006-01-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.c: More sse code, nothing too exciting.
+
+2006-01-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.*, libvisual/lv_gl.*, libvisual/lv_video.*,
+	libvisual/lv_morph.*, libvisual/lv_transform.*: Added support for
+	gl attributes.
+
+2006-01-26  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_os.*: Added some realtime stuff.
+
+2006-01-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_gl.*: Added attributes, and some simple stuff.
+
+2006-01-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_time.* (visual_timer_elapsed_usecs):
+	Added function, same as msecs, but then for micro seconds.
+
+	also added: VISUAL_USECS_PER_SEC define.
+
+2006-01-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_object.h (visual_object_copy_data): Added macro that
+	only copies the non visobject part of an visobject. (Be very careful
+	with using this macro).
+
+	* libvisual/lv_event.* (visual_event_copy):
+	Added function to copy over an event.
+
+	(visual_event_queue_poll_by_reference): Added function that gets an
+	event by reference, it will get deleted from the event list, however
+	it won't be destroyed. (You have to unref it yourself, or pass it on
+	to another event stack).
+
+	*** Btw: The event stuff needs a lot of work, probably a semi
+	redesign.
+
+2006-01-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: Fixed all depth transform to support different
+	source/dest width,height sets.
+
+2006-01-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cache.c: First make room before putting something in
+	the cache.
+
+2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_fourier.c, libvisual/lv_audio.c: Micro cleanups.
+
+2006-01-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*.c, libvisual/*.h: Added 2006 to the (C) notice.
+
+	* libvisual/lv_fourier.*: Use VisMath for the complex to norm
+	conversion.
+
+	(visual_dft_log_scale_standard): Added function, that uses the old
+	log_scale stuff.
+
+	(visual_dft_log_scale_custom): Ability to give a custom log divisor.
+
+	* libvisual/lv_libvisual.* (visual_get_api_version): Added function to
+	check the numeric api version.
+
+	* libvisual/lv_math.*: Fixing.
+
+	* libvisual/lv_os.*: Some more very basic work.
+
+	* libvisual/lv_ringbuffer.*: Added a few more docs.
+
+	* libvisual/lv_time.h: More work on the rdtsc stuff.
+
+2006-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_fourier.c: Make stuff compile, very not working.
+
+2006-01-20  Chong Kai Xiong  <descender@phreaker.net>
+
+	* libvisual/lv_fourier.c, libvisual/lv_fourier.h
+	(visual_fourier_log_scale): Log scale frequency.
+		
+2006-01-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c: Use logscale when requested.
+
+	* libvisual/lv_math.c: Added more stuff, fixes.
+
+2006-01-20  Chong Kai Xiong  <descender@phreaker.net>
+
+	* libvisual/lv_fourier.c, libvisual/lv_fourier.h
+	(visual_fourier_log_scale): New function.
+	
+2006-01-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.c: Added docs.
+
+	* libvisual/lv_ringbuffer.c: Added a tiny piece of doc.
+
+2006-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.*: Renamed some stuff, added some more stuff
+	VisRectangle is now completely supported.
+
+	* libvisual/lv_buffer.*: Use visual_size_t everywhere.
+
+	(visual_buffer_fill_with_pattern): Added function (can fill a buffer
+	with a certain pattern over and over and over.
+
+	* libvisual/lv_mem.*: Cleaned the copy and set stuff up, added 3dnow
+	mem_copy variant for machines without mmx2.
+
+	* libvisual/lv_rectangle.c: Use VisMath.
+
+	* libvisual/lv_video.c: Removed the pitch-leftover memsets from the
+	bilinear interpolating functions.
+
+	* libvisual/lv_video_simd.c: Same.
+
+2006-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_endianess.h: renamed to lv_bits.h, and added the
+	VISUAL_ALIGNED macro.
+
+	* libvisual/lv_math.*: Added vectorized sqrtf and vectorized ints to
+	float conversion with a multiply factor.
+
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_time.h: tsc is working, needs some love tho, gonna
+	look at liboil it's profile stuff.
+
+	* libvisual/lv_math.*: Added more vectorized stuff. Regarding
+	visual_math_vectorized_: I want to build a collection that suites the
+	needs in libvisual, the more we have, the more will be usable for
+	people outside of the corelib.
+
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.*: Added float to integer and integer to float
+	vector conversions.
+
+	* libvisual/lv_time.h: Disabled tsc for now, won't compile for some
+	stupid reason.
+
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_os.*: Added files, will contain tools to set the
+	scheduling priority (we need to be able in realtime mode).
+
+	* libvisual/lv_time.*: Added a rdtsc timestamper for benchmarks (and
+	such).
+
+2006-01-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_math.*: New files, added vectorized float bij const
+	float multiplier. (with my computer 30% to 40% faster than a pure C version,
+	good enough for me).
+
+	* libvisual/lv_audio.*
+	(visual_audio_get_spectrum_for_sample_multiplied)
+	(visual_audio_get_spectrum_multiplied):
+	Added api that takes a multiplier argument to boost the spectrum a
+	bit.
+
+2006-01-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.*
+	(visual_audio_get_sample_mixed_category)
+	(visual_audio_get_sample_mixed_all): Added new mixing methods.
+
+	VISUAL_AUDIO_CHANNEL_CATEGORY_*: Added standard category filter
+	entries.
+
+	The mixed_category does nothing more/less than a strstr on the name.
+	Using the channel naming convention this works perfectly well. I still
+	use the name 'category' because the naming scheme is hidden for
+	application / plugin developers.
+
+2006-01-13  Chong Kai Xiong <descender@phreaker.net>
+
+	* lv_fourier.c, lv_fourier.h (visual_dft_init, visual_dft_new):
+	Change samples_in and samples_out to unsigned int.
+
+	* lv_fourier.c: Document padding and performance of non powers of
+	2 transforms.
+
+2006-01-13  Chong Kai Xiong <descneder@phreaker.net>
+
+	* lv_fourier.c: Forgot to rename visual_dft_init() and
+	visual_dft_new().
+
+2006-01-13  Chong Kai Xiong <descender@phreaker.net>
+
+	* lv_audio.c, lv_fourier.[ch]: Rename DFT specific functions.
+
+2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lv_gl.*: Added, will provide functions for better opengl support,
+	and abstraction for gl parameters.
+
+2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lv_utils.*: Added.
+
+	(visual_utils_is_power_of_2): Added utility function.
+
+2006-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* lv_fft.c: renamed to lv_fourier.c
+	* lv_fft.h: renamed to lv_fourier.h
+
+	* lv_audio.*, lv_libvisual.c: Updated to API changes.
+
+2006-01-10  Chong Kai Xiong <descender@phreaker.net>
+
+	* lv_fft.c (is_power2): Get rid of mask variable.
+
+	(dft_table_cossin_init): Allocate for only N/2 entries.
+
+2006-01-10  Chong Kai Xiong <descender@phreaker.net>
+	
+	* lv_fft.c, lv_fft.h, lv_audio.c (visual_fft_perform): Remove normalised
+	parameter.
+
+	* lv_fft.c (visual_fft_perform): Divide by N (spectrum_size) for normalisation.
+	
+2006-01-10  Chong Kai Xiong <descender@phreaker.net>
+	
+	lv_fft.c (perform_dft_brute_force): Fix calculation.
+
+	(perform_fft_radix2_dit): Move normalisation step out
+	into visual_fft_perform().
+	
+2006-01-09  Chong Kai Xiong <descender@phreaker.net>
+	
+	* lv_fft.c (visual_fft_init): Fix wrong condition for brute forcing.
+
+	(perform_dft_brute_force): Only compute n/2 outputs since we're
+	dealing with real-value signals.
+	
+2006-01-08  Chong Kai Xiong <descender@phreaker.net>
+	
+	* lv_fft.c, lv_fft.h: Perform DFT with brute force for non power of 2
+	sample counts
+
+2005-12-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (blit_overlay_surfacealphacolorkey): Reversed
+	changes.
+
+2005-12-30  Chong Kai Xiong  <descender@phreaker.net>
+	
+	* libvisual/lv_video.c (blit_overlay_surfacealphacolorkey): Fix
+	16-bit source buffer pixel and colour key comparison.
+	
+
+2005-12-30  Chong Kai Xiong  <descender@phreaker.net>
+	
+	* libvisual/lv_libvisual.c (visual_init): Make sure temppluginpath
+	is null terminated after truncation (when value of $HOME is overly
+	long).
+
+2005-12-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_libvisual.c (visual_init):
+	Added support for homedir installable plugins.
+
+2005-12-29  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_color.* (visual_color_from_uint32)
+	(visual_color_from_uint16)
+	(visual_color_to_uint32)
+	(visual_color_to_uint16)
+	(visual_color_black)
+	(visual_color_white): Added new functions to the VisColor system.
+
+	* libvisual/lv_video.c: Did some work on the composite system,
+	surfacecolorkey still bugs tho.
+
+	(visual_video_region_sub): Copy the composite flags tho the target
+	VisVideo. The right solution is to make a 'class' out of the composite
+	stuff and ref it. Will fix that later.
+
+2005-12-25  Chong Kai Xiong  <descender@phreaker.net>
+	
+	* libvisual/lv_fft.c: Fix wrongly named sine and cosine tables.
+	
+2005-12-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_defines.h: VISUAL_C_LINKAGE added.
+
+	* libvisual/lv_plugin.h: CPP/C issues fixed regarding version
+	detection.
+
+2005-12-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Use new api version matching scheme, not error
+	prone and working[tm].
+
+2005-12-20  Chong Kai Xiong  <descender@phreaker.net>
+
+	* libvisual/lv_object.h (visual_object_clean): Cast object pointer
+	to uint8_t *.
+	
+2005-12-12  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_video.*, libvisual/lv_rectangle.*: Renamed boundry to
+	boundary. Doh.
+
+2005-12-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c (visual_audio_samplepool_channel_flush_old):
+	Revamped flushing loop (again), it's good now! :)
+
+	* libvisual/lv_cache.c (cache_remove_list_entry): Take a
+	VisListEntry** instead of a VisListEntry* so it updates the pointer in
+	the outer loops as well.
+
+2005-12-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cache.c: Fixed crashers.
+
+	* libvisual/lv_hashmap.c: Cleanups.
+
+2005-12-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_log.h: Made more C++ friendly.
+
+2005-12-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_defines.h: Better NULL define.
+
+2005-12-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c: Read audio data from the end of the fragment
+	buffer instead of the beginning, so it's NOT lagged.
+
+	Fixed invalid listnode usage.
+
+	* libvisual/lv_buffer.c: Added documentation, small fixes.
+
+	* libvisual/lv_list.c: Small fixes.
+
+	* libvisual/lv_random.c: Added private local random context that is
+	used by the local context macros.
+
+	* libvisual/lv_ringbuffer.c: Added with offset requests (needed to get
+	the audio right).
+
+2005-11-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c (visual_audio_samplepool_input_channel):
+	Input into a channel, handy for use with input callbacks in clients
+	like xmms, bmp, audacious.
+
+2005-11-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	Sigh, 2 months since last commit. 
+
+	* libvisual/lv_event.*: Fixes and cleanups.
+
+	* libvisual/lv_defines.h: Added VIS_LIKELY and VIS_UNLIKELY that can
+	be used in conditional statements.
+	
+	* libvisual/lv_video.c (visual_video_fill_color): when NULL Is given
+	as a color, it'll use 0,0,0 as color value, this is handy for simple
+	screen cleans.
+
+	* libvisual/lv_audio.*: The never ending saga of the new VisAudio
+	core.
+
+2005-09-22  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_hashlist.*: Adding
+
+2005-09-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_object.h (visual_object_clean): Added convenient macro
+	to clean the data after the VisObject data within an object.
+
+	* libvisual/lv_event.*: Better VisObject support.
+
+	* libvisual/lv_fft.c (visual_fft_new): Forgot to add a reference to a
+	newly created VisFF.
+
+2005-09-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_endianess.h: Ooopsy, forgot to include lv_defines.h.
+
+2005-09-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_*.h: Use VISUAL_BEGIN_DECLS and VISUAL_END_DECLS.
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cache.c: Changed the new and init to have a request
+	reset flag. When set this will reset the age stage and position in the
+	dispose list of cache entries that are requested or reput.
+
+	(visual_cache_clear): Added function to clear the complete cache.
+
+	(visual_cache_flush_outdated): Added public function to flush outdated
+	entries from the cache.
+
+	* libvisual/lv_list.c (visual_list_unchain): Added helper function to
+	unlink an entry from the list.
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c (visual_audio_get_sample_mixed):
+	New function to get the channels mixed.
+
+	(visual_audio_sample_buffer_mix): New function to mix two pcm buffers.
+
+	(visual_audio_sample_buffer_mix_many): New function to mix many pcm
+	buffers using a valist.
+
+	* libvisual/lv_buffer.c (visual_buffer_copy_data_to): Added convenient
+	function that can be used to copy a buffer into a chunk of plain
+	memory.
+
+	* libvisual/lv_mem.c (visual_mem_malloc): Malloc that doesn't set to
+	0. Sometimes this is totally not needed so let us spare the cycles!
+
+2005-09-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c: We won't return int16_t data anymore for PCM,
+	instead we're now doing floats, all plugins need to be ported.
+
+2005-09-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.h: Adding runtime license check support.
+
+	BUG: Found a bug (can't find the cause just yet) that makes the
+	realtime API version check crash, could use some help with this one.
+
+	Thanks.
+
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: Removed the internal external buffer flag
+	crap, this is now nicely managed by VisBuffer.
+
+	(visual_video_mirror): Fixed the mirror stuff to work, backends done
+	by Jaak, (sorry for enabling them only now, totally forgot it).
+
+	* libvisual/lv_video_mmx.c -> libvisual/lv_video_simd.c: Renamed file.
+
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.* (visual_audio_get_sample): Added pull interface
+	for sample data.
+
+	(visual_audio_get_spectrum): Added pull interface for spectrum data.
+
+	(visual_audio_get_spectrum_for_sample): Added pull interface for
+	spectrum data, using an already pulled sample.
+
+	* libvisual/lv_buffer.* (visual_buffer_init_allocate): New init and
+	allocate function.
+
+	(visual_buffer_fill): Fill the buffer with a byte value, handy to
+	\0 init the buffer.
+
+	* libvisual/lv_libvisual.c (free_plugpaths): Don't free the NULL
+	terminate entry.
+
+2005-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.c (input_interleaved_stereo): Fixed memleak
+	caused by not setting a VisBuffer destroyer to the two VisBuffers
+	containing the deinterleaved sample fragments.
+
+	* libvisual/lv_audio.c: Reintergrating VisFFT now it's back in
+	business. This is not how the final interface will look since
+	libvisual it's audio core will move to a pull interface instead of a
+	push interface, however internally the sample part is already being
+	pulled, but it's still bridged by the old interface.
+
+	* libvisual/lv_fft.*: Implement fft table cache, so the different tables are
+	shared between multiple instances of the VisFFT class, this will be
+	major when the pull interface is complete.
+
+2005-09-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cache.c: Use visual_collection_size instead of obsolete
+	visual_list_count.
+
+	* libvisual/lv_hashmap.c: unresolved symbol, doh.
+
+2005-09-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_collection.*: Refining the Iter interface.
+
+	* libvisual/lv_list.*: Update to new Iter interface.
+	(visual_list_chain_at_begin, visual_list_chain): Added functions
+	to chain elements.
+	
+	* libvisual/lv_hashmap.*: More fixes.
+
+	* libvisual/lv_cache.*: More work.
+
+	* libvisual/lv_fft.*: Started working on VisCache support.
+
+	* libvisual/lv_rectangle.*: Various improvements, and renamed:
+	_merge -> _clip
+
+	* libvisual/lv_random.*: Fixed VisObject boilerplating.
+
+	* libvisual/lv_songinfo.*: Better VisObject support.
+
+2005-09-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.c: i18n corrections.
+
+	* libvisual/lv_libvisual.c: use bind_textdomain_codeset().
+
+	Patch by: Chong Kai Xiong  <descender@phreaker.net>
+
+2005-08-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: noalpha blitter callback, speed up on 
+	visual_video_compare() == TRUE. (one big memcpy, instead of
+	per line).
+
+2005-08-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cache.*: Implemented.
+
+	* libvisual/lv_hashmap.*: Solved the destroyer chaining problem,
+	and made it much nicer.
+
+	* libvisual/lv_video.* (visual_video_compare_ignore_pitch): Added
+	function that compares but ignores the pitch.
+
+	* libvisual/lv_video.*: Fixed problem with scaler, which actually was
+	a problem in calculating the rows, which was because of the VisBuffer
+	changes, it was a silly but funny bug, and I am not going to explain
+	it!
+
+	(visual_video_scale): Do blit_overlay when scale_method is nearest
+	and dimension is equal.
+
+2005-08-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* COPYING: Fixed.
+
+	* libvisual/lv_mem.*: size_t -> visual_size_t.
+
+	* libvisual/lv_cpu.c: size_t -> visual_size_t.
+
+2005-08-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_collection.*: Common collection_dtor.
+
+	* libvisual/lv_hashmap.*: Made most of the hashmap impl.
+
+	* libvisual/lv_list.*: More iter stuff.
+
+	* libvisual/lv_random.*: Split _new up into _new and _init.
+
+2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_collection.*: Did the iter stuff.
+
+	* libvisual/lv_list.*: Completely ported over to collection stuff.
+
+	* libvisual/*.c: Adapt to changes in VisList.
+
+2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: Cleanups.
+
+	* libvisual/lv_video_mmx.c: gcc-4.0 fixes.
+
+	Patch by Jaak.
+
+2005-08-15  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* NEWS: Updated.
+
+	* libvisual/lv_audio.*: More work.
+
+	* libvisual/lv_buffer.c (visual_buffer_put): Fixed segv bug.
+
+	* libvisual/lv_collection.*: Added new system, both VisList and
+	VisHashmap inherent from VisCollection. VisCollection is an
+	abstraction to all kind of collections. It handles the generalized
+	parts.
+
+	* libvisual/lv_hashmap.*: Added hashmap, to be used by VisAudio and
+	VisFFT. The impl is not yet really done.
+
+	* libvisual/lv_list.*: Partially moved over to collection stuff.
+
+	* libvisual/lv_ringbuffer.c (visual_ringbuffer_get_data): Combine data
+	right.
+
+	* libvisual/*.c: Adapt to VisList (because of VisCollection) api
+	changes.
+
+	TODO:
+		Finish up VisCollection impl in VisList and use it everywhere.
+		Implement the VisHashmap.
+
+2005-08-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	I need to create some temporal rift to increase my time for coding.
+
+	* libvisual/lv_audio.*: Lot's of rerwite stuff.
+
+2005-07-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_bmp.c: Patch by Sepp to fix loading bmps that are
+	encoded by some ass encoders.
+
+2005-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: rotate stuff.
+
+	Patch by Jaak.
+
+2005-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_audio.*: Rewrite stuff
+
+	* libvisual/lv_error.*: Added new errors
+
+	* libvisual/lv_video.*: Added a whole bunch of stuff from Jaak,
+	great!
+
+	* libvisual/lv_list.*: Added visual_list_destroy (destroys an elem,
+	dtorring).
+
+	* libvisual/lv_ringbuffer.*: Yay.
+
+	* libvisual/lv_time.*: Added visual_time_past()
+
+2005-07-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_buffer.*: Added VisBuffer subsystem.
+
+	* libvisual/lv_ringbuffer.*: Advanced ringbuffer system. not yet
+	finished.
+
+	* libvisual/lv_audio.*: Start of the rewrite, nothing special yet.
+
+	* libvisual/lv_video.*: Use VisBuffer for the pixels, size pair.
+
+	* libvisual/lv_bmp.c, libvisual/lv_bin.c: Adopted to VisVideo api
+	changes.
+
+	* libvisual/lv_error.*: Added error codes for the VisBuffer system.
+
+2005-06-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_audio.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_color.c (visual_color_set): Added function.
+	
+	* libvisual/lv_cpu.c: Fixed borked #ifdef stuff.
+	
+	* libvisual/lv_error.*: Added new errors.
+	
+	* libvisual/lv_input.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_mem.c (visual_mem_set16, visual_mem_set32): Added
+	functions, and many simd optimized versions.
+	
+	* libvisual/lv_morph.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_object.c (visual_object_clear): Added function that
+	resets the object it's bookkeeping.
+
+	(visual_object_set_dtor): Set the dtor.
+
+	(visual_object_set_allocated): Set allocated flag.
+
+	(visual_object_set_refcount): Set refcount.
+
+	* libvisual/lv_palette.c: Split _new up into _new and _init.
+	
+	* libvisual/lv_param.c (visual_param_entry_set_color): Use visual_color_set().
+	
+	* libvisual/lv_rectangle.*: Added both files to do rectangle
+	management, calculus for multiple reasons, heavily used in VisVideo
+	for bounding control and subregion.
+
+	* libvisual/lv_songinfo.c (visual_songinfo_set_cover): Use
+	visual_video_scale_depth_new(), single function replaces 15 lines of
+	code here.
+	
+	* libvisual/lv_time.c: for both VisTime and VisTimer split _new up
+	into _new and _init.
+
+	* libvisual/lv_transform.c: Split up _new into _new and _init.
+	
+	* libvisual/lv_ui.c (visual_ui_colorpalette_new): Actually use a
+	VisUIColorPalette, instead of VisUIColorButton. doh.
+
+	* libvisual/lv_video.c (visual_video_new): Split up _new into _new and
+	_init.
+
+	(visual_video_set_attributes):
+	Set all video attribute with one function.
+
+	(visual_video_get_boundry): Get bounds as a VisRectangle
+	
+	(visual_video_region_sub): Generate a sub region from a VisVideo, the
+	subregion will point to the same buffer, pitch aware functions are
+	very important for this reason.
+	
+	(visual_video_region_sub_by_values): Variant of the former.
+	
+	(visual_video_region_sub_all): Subregion of the complete screen.
+	
+	(visual_video_region_sub_with_boundry): Subregion with dest bounds.
+	
+	(visual_video_composite_set_type): Set composite type (many new
+	compositing methods have been added, including custom compositing,
+	check lv_video.h for more information.
+	
+	(visual_video_composite_set_colorkey): Set the colorkey value.
+	
+	(visual_video_composite_set_surface): Set the global surface density
+
+	(visual_video_composite_get_function): Get the composite function that
+	applies to a dest, src and alpha toggle.
+	
+	(visual_video_composite_set_function): Set custom composite function.
+
+	(visual_video_blit_overlay_rectangle): Overlay within a rectangle
+	area.
+
+	(visual_video_blit_overlay_rectangle_custom): Overlay with a rectangle
+	area + custom composite as argument
+	
+	(visual_video_blit_overlay_rectangle_scale): Overlay and scale source
+	to the rectangle.
+
+	(visual_video_blit_overlay_rectangle_scale_custom): Like the former
+	but with custom composite as argument.
+	
+	(visual_video_blit_overlay): Normal blit overlay, but changed to new
+	composite system.
+
+	(visual_video_blit_overlay_custom): As former, but with custom
+	composite.
+
+	(visual_video_fill_alpha): Fill VisVideo with one alpha value.
+
+	(visual_video_fill_alpha_rectangle): Fill a rectangle with one alpha
+	value.
+
+	(visual_video_fill_color): Fill with color.
+
+	(visual_video_fill_color_rectangle): Fill rectangle with color.
+
+	(visual_video_zoom_new): Zoom and create a new version.
+
+	(visual_video_zoom_double): Pixel doubler (not finished, but should
+	become highly optimized).
+
+	(visual_video_scale): Basic scaller, but has been adopted to new API.
+
+	(visual_video_scale_new): Create new VisVideo for the scale.
+
+	(visual_video_scale_depth): Scale and depth transform if needed.
+
+	(visual_video_scale_depth_new): New VisVideo, and depth transform, and
+	scale.
+
+	* libvisual/lv_video.h: Added more advanved composite (alpha stuff) to
+	VisVideo, added support for custom composite functions (neat).
+
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx): Adopted to
+	new way way neater, simpler composite system.
+
+2005-05-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_fft.*: Added new FFT engine based upon NULLSOFT
+	Milkdrop it's implementation.
+
+	* libvisual/lv_audio.*: Adopted to the new FFT engine.
+
+	Things left todo: Vectorize it with SSE.
+
+2005-05-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video_mmx.c (_lv_scale_bilinear_32_mmx):
+	Fixed compile error in the assembly directives.
+
+	Patch by: Nickolay Semyonov-Kolchin  <kolchin@users.sourceforge.net>
+
+2005-04-30  Sepp Wijnands  <sw@nerds-incorporated.org>
+	
+	* libvisual/lv_bmp.c: Fixed a couple of minor bugs. Added support for
+	all bit depths. Added decompression support for RLE4 and RLE8
+	compression schemes. Fixed indentation to adhere to the coding
+	guidelines.
+
+2005-04-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_bmp.c (visual_bitmap_load): Fixed super stupid bug
+	while unreffing the pal on the video.
+
+2005-04-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_libvisual.c (visual_quit): Use visual_error_to_string
+	to be more verbose on exceptions.
+
+2005-04-25  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_plugin.c (visual_plugin_get_references): unref old
+	plugins., will crash on 0.1.x, seriously just don't have any 0.1.x
+	stuff laying around. 0.2.x also had a problem with const plugin
+	descriptions, which was placed in .rodata on some systems, that while
+	the reffing system wants to write in the structure, so DO NOT have
+	const plugin description functions.
+
+	* NEWS: Updated a bit.
+
+2005-04-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_libvisual.c, libvisual/lv_songinfo.c: Added support for
+	cover art size setting.
+
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Added ColorButton.
+
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.c: SSE work, memset not done yet, hey someone up
+	for the altivec version, I don't have a PowerPC!
+
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_ui.c: Doc fixes.
+
+2005-04-09  Tom Verbroekken  <tverbroekken@gmail.com>
+
+	* libvisual/lv_cpu.*: Added documentation blocks to the getter and
+	setter functions for the cpu features. Also documentated the VisCPU
+	structure and the enums containing the architecture.
+
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.c: More work!
+
+2005-04-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.* (visual_mem_initialize, visual_mem_set): Added
+	functions.
+
+	* libvisual/lv_mem.*: Redid the optimized mem ops.
+
+	* libvisual/lv_cpu.*: Use setters/getters for cpu features. The
+	setters check if an option is actually available.
+
+	* libvisual/*: memset() -> visual_mem_set().
+
+2005-04-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* COPYING: we had GPL copying instead of LGPL ? how the heck is this
+	possible..
+
+2005-04-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Added notebook widget.
+
+2005-04-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.c: Changing the static initializers for the error
+	message to have a format like [VISUAL_ERROR_CODE] = N_("error
+	message"),
+
+2005-03-29  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	Any build tree gurus out there ?
+
+2005-03-29  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add m4.
+	(EXTRA_DIST): Add config.rpath mkinstalldirs.
+	* configure.ac (AC_CONFIG_FILES): Add m4/Makefile.
+
+2005-03-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* *: Trying to check in the i18n enabled libvisual!
+	
+2005-03-23  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add m4.
+	(EXTRA_DIST): Add config.rpath mkinstalldirs.
+	* configure.ac (AC_CONFIG_FILES): Add po/Makefile.in,
+
+2005-03-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.c (visual_mem_realloc): Added function, same as
+	realloc 3.
+
+2005-03-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: With some luck, this is working windows dll
+	load support.
+
+2005-03-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.*, libvisual/lv_thread.*:
+	Ok revamped the VisThread system, now the only thing left is w32
+	native threads, might do that later today.
+
+2005-03-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_thread.*: Setting ifdefs right.
+
+2005-03-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Set VISUAL_THREAD_MODEL_GTHREAD2 when appropiate.
+
+2005-03-16  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Adding detection for gthread, fixing spelling
+	mistakes.
+
+	* libvisual.pc.in: Add package dep.
+
+	* libvisual/Makefile.am: Add thread libs/cflags.
+
+	Patch by Duilio, thanks!
+
+2005-03-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (video_negotiate): Don't try to fitt blit GL
+	surfaces!
+
+2005-03-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c: Some small but sharp changes by Duilio
+
+2005-03-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_config.c: strdrup, what is that ? :) 
+	thanks for pointing out Duilio!
+
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_config.*: Some more work.
+
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.*, libvisual/lv_input.*, libvisual/lv_morph.*,
+	libvisual/lv_transform.*, libvisual/lv_plugin.*,
+	libvisual/lv_libvisual.c:
+
+	Have the plugin specific structure data and stuff within the specific
+	subsystem, not in lv_plugin. Renamed a few defines.
+
+	* libvisual/lv_actor.*: Added VisActorPluginEnviron for desired fps,
+	and later more environmental requests.
+
+	* libvisual/lv_types.h: Removed the cast type check since we don't
+	have a full blown type systems, and will never have (Just don't code
+	like a naieve, mkay).
+
+	* libvisual/*.h: Adopted everything to the new VISUAL_CHECK_CAST
+	define.
+
+	Cheers.
+
+2005-03-08  Dennis smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_config.*: Some more work. Just small bits.
+
+2005-03-08  Dennis smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (depth_transform_8_to_24_c,
+	depth_transform_8_to_32_c, depth_transform_16_to_8_c,
+	depth_transform_16_to_24_c, depth_transform_24_to_8_c,
+	depth_transform_32_to_8_c, depth_transform_32_to_16_c):
+	finally fixed color conversions to be right. atleast on intel, now
+	if someone could take a look at apple ;)
+
+	also some small cleanups!
+
+2005-03-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (video_depth_transform functions):
+	Don't use array index, but use pointer arithmics.
+
+	Just to notice, the project is now around a year old!!!
+	
+	Geez how fast did that go :)
+
+2005-02-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.* (visual_plugin_get_list): Added flag to
+	disable or enable verbose directory existance checking.
+
+	TRUE = ignore, FALSE = not ignore.
+
+2005-02-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.c: Use the same nrcpu detection for FreeBSD and
+	OpenBSD as with NetBSD.
+
+2005-02-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.c: Adding NetBSD nrcpu detection, thanks to
+	Thomas Klausner <thomasklausner@users.sourceforge.net> for
+	the information.
+
+2005-02-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.c: Check for _SC_NPROCESSORS_ONLN when
+	counting the number of CPUs online.
+
+	Patch by: Thomas Klausner <thomasklausner@users.sourceforge.net>
+
+2005-02-19  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_types.h: Don't check for MINGW
+	instead check for OS_WIN32 regarding stdint.h
+
+	should help with cygwin.
+
+2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/Makefile.am: Adding lv_config.*
+
+	* libvisual/lv_config.*: Adding the beginning
+	of the config registry system.
+	
+	* libvisual/lv_error.*: Adding the config registry errors.
+
+	* libvisual/lv_param.c: Renaming the dtors a bit.
+
+	* libvisual/lv_time.h: Adding the object cast defines.
+
+	* libvisual/lv_plugin.c (visual_plugin_type_get_flags):
+	Fixing docs.
+
+2005-02-16  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* autogen.sh: New version by Duilio, derived
+	from the gnome-common autogen.sh
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c (plugin_add_dir_to_list): Adding
+	back alphasort.
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_plugin.c (plugin_add_dir_to_list):
+	Win 32 version.
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: More windows work!
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_time.c (visual_time_get): Adding support
+	for windows32.
+
+	(visual_time_usleep): Adding support using windows32. We use
+	sleep here, so it's milliseconds precise.
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_time.c: Small string change.
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_time.c: We need to use the win32 specific gettimeofday
+	under windows.
+
+	* libvisual/lv_plugin.c: More windows32 define stuff.
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.c (visual_error_raise): No error raise under
+	windows!
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Fixing up the environ_ prototypes.
+
+2005-02-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c: Reorder some headers.
+
+2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c (plugin_add_dir_to_list): Do not use alphasort
+	in the readdir, instead pass NULL as argument.
+
+	* libvisual/lv_plugin.c: Place ifdefs around all the dlopen functions
+	for windows32.
+
+2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Renamed 'environ' to 'environment' for some
+	reason mingw does not like a struct member to be called 'environ'. 
+
+2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_types.h: Adding defines for a mingw
+	environment.
+
+2005-02-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.c: Merging patch found at:
+	http://cvs.mandrakesoft.com/cgi-bin/cvsweb.cgi/SPECS/libvisual/libvisual-0.2.0-ppc-build-fix.patch?rev=1.1&content-type=text/x-cvsweb-markup
+	Thanks to Christiaan Welvaart <cjw@daneel.dyndns.org> for pointing out
+	and submitting the patch!
+
+2005-02-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Adding visual_plugin_type_get_flags(),
+	visual_plugin_type_has_flag(). and adopt other functions to be able
+	to use plugin flags, for example:
+
+	"Libvisual:core:actor.[avs]" would have "avs" as a flag, flags are
+	delimited by '|'. In plugins you can simply use, in this scenario:
+	.type = VISUAL_PLUGIN_TYPE_ACTOR".[avs]"
+
+2005-02-10  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* configure.ac: Bumping up to 0.3.0
+
+	* libvisual/lv_plugin.h: Bumped PLUGIN_API version up to '3'.
+
+2005-02-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	TAGGING 0.2.0 RELEASE!
+
+2005-02-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Small doh in VisObject param.
+
+2005-02-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* *: Made 0.2.0 release ready, nearly.
+
+	* libvisual/lv_param.*: Added VisObject param type.
+
+2005-01-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Return the ->environ member VisObject
+	on visual_plugin_environ_get.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_transform.*: Adding new subsystem (and new plugin
+	type).
+
+	* libvisual/lv_error.*:
+	* libvisual/lv_plugin.h:
+	* libvisual/lv_libvisual.c:
+	Adopting to new plugin type.
+
+	VisTransformPlugins can be used to transform a VisVideo, VisPalette
+	and they are also used to implement the 'trans' elements in
+	libvisual-avs.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_palette.* (visual_palette_color_cycle): Adding a color
+	cycler.
+
+	* libvisual/lv_param.c (visual_param_entry_compare,
+	visual_param_entry_set_from_param): Support
+	VISUAL_PARAM_ENTRY_TYPE_PALETTE as well.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_param.c: It's nearly unbelievable how much shit one can
+	code (self inflicted yeah).
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Renamed visual_param_container_match_copy to
+	visual_param_container_copy_match.	
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.* (visual_param_container_copy): Added function
+	to copy complete containers into others.
+
+2005-01-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_time.c (visual_timer_elapsed_msecs): added function
+	that can be used as a drop in replacement for SDL_GetTicks(). Handy
+	for porting.
+
+	* libvisual/lv_time.c: past -> passed. .. yeah language screw up.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.c (visual_param_container_match_copy): Adding
+	function for the upcoming libvisual advanced visual studio stuff, is
+	used to sync with winamp AVS presets and LV avs presets.
+
+	* libvisual/lv_video.c: Some general small changes.
+
+2005-01-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.c: More work.
+
+2005-01-18  Max Howell  <max.howell@methylblue.com>
+
+	* .cvsignore libvisual/.cvsignore:
+	Ignore the generated files
+
+2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_alpha_fill):
+	Do not over run, be cooler. yay!
+
+2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.c (visual_mem_copy): I'll be looking at it
+	throughly soon, let's just fallback to memcpy for now. ..
+
+2005-01-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.* (visual_mem_copy): We were uint32_t indexing not
+	uint8_t indexing, so add 16, instead of 64 every cycle, in the mmx
+	variant, yes this was quite aggressive :)
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.* (visual_mem_copy): Added function, will contain
+	optimized memcopies for mmx,sse etc.
+
+	* libvisual/*: Use visual_mem_copy.
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Finish up the VisPluginEnviron stuff.
+
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx): Made a bit
+	smaller, we don't need to pxor items when we're already moving data
+	inside them anyway.
+
+2005-01-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx):
+	Fixed some mmx.
+
+	* libvisual/lv_video.c (depth_transform_8_to_32_c): Optimized
+	a bit.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configurea.ac: Splitting out VISUAL_OS_BSD into VISUAL_OS_FREEBSD,
+	VISUAL_OS_NETBSD, VISUAL_OS_OPENBSD.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* AUTHORS, libvisual/lv_cpu.c:
+	Updating some credits
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_alpha_fill):
+	Fixed very stupid bug, not the alpha is correct.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Added check for sysconf()
+	
+	* libvisual/lv_cpu.*: More work.
+
+2005-01-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Renamed VISUAL_ARCH_Ix86 to VISUAL_ARCH_X86.
+
+	* libvisual/lv_cpu.*: More work.
+
+	* libvisual/lv_error.*: Added VISUAL_ERROR_CPU_INVALID_CODE.
+
+	* libvisual/lv_video_mmx.*: #ifdefs around arch dependant
+	assembly code.
+
+2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx):
+	Small changes.
+	
+2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video_mmx.c (_lv_blit_overlay_alpha32_mmx):
+	Added a MMX version of the 32 bits alpha overlay blitter.
+
+	* libvisual/lv_video.c (blit_overlay_alpha32): Removed the buffer
+	indexes, and change the pointers directly.
+
+	* libvisual/lv_video.* (visual_video_blit_overlay):
+	Use the MMX blitter, when appropiate.
+
+2005-01-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_random.c: Removed unused global internal random
+	context.
+
+2005-01-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.*: Some small fixes, cleanups.
+
+2005-01-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.*: Loads of work, ideas and code from mplayer,
+	needs shitload more work.
+
+	* libvisual/lv_video_mmx.c: Added, contains mmx optimized versions of
+	functions within VisVideo. (Currently a 32 bits bilinear scaler
+	in mmx by Jeko.
+
+	* libvisual/lv_video.*: Updated for the mmx stuff.
+
+	PLEASE ALL TEST THIS WELL
+
+2005-01-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: VisPluginEnviron stuff added, thanks to
+	Vitaly!
+
+2005-01-02  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_cpu.*: Some work, still needs a lot, look at mplayers
+	cpudetect.c for hints.
+
+2005-01-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: Made all the nearest scalers fixed point.
+
+2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* *: Fixed copyright headers, updated for 2005, fixed emails, and
+	credits. I am sure that I forgot many names in all the copyright
+	headers of the source files, make sure you add yourself at the
+	appropiate places. (Add yourself to the Authors: list when you've
+	worked on that file).
+
+2005-01-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* COPYING: Fixed to be LGPL.
+
+2004-12-31  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Fixes by Vitaly V. Bursov regarding openGL detection,
+	or rather the removal of it (now done within plugin package). And also
+	stuff for fastrnd is now defined.
+
+2004-12-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Fixed some stupid mistakes.
+
+	* libvisual/lv_log.h: Use visual_error_raise instead of
+	raise(SIGTRAP).
+
+2004-12-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Moved the plugin specific structs to be
+	objects, and unref the stuff from the get_plugin_info function.
+
+	* libvisual/lv_morph.c, libvisual/lv_actor.c, libvisual/lv_input.c:
+	Updated to changes.
+
+2004-12-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: Removed unused bits from the nearest scalers
+
+	* libvisual/*: Made all the LV objects NON const, it's only annoying.
+	char * are still consts (and will stay consts) at the right points.
+
+2004-12-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.c: Finished the human readable error translation
+	table thingy.
+
+2004-12-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (scale_bilinear_32): Small fix.
+
+	(scale_bilinear_24, scale_bilinear_16, scale_bilinear_8):
+	Implemented.
+
+2004-12-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (scale_bilinear_32): New version
+	by Jeko from Goom, fixed point and a lot faster. Thanks a lot!
+
+2004-12-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_filter_bilinear): Removed
+	and incorporated in the visual_video_scale. Also created the 32 bits
+	version of a bilinear scaler, based on numerous docs and an old
+	patch that was done by Duilio. It should be optimized a lot still.
+
+	Also some random pitch correction fixed to the nearest scalers have
+	been done.
+
+	* libvisual/lv_songinfo.c (visual_songinfo_set_cover): Use the
+	bilinear scaler.
+
+	* libvisual/lv_error.c: Added the human readable error string list,
+	strings still empty, also updated the visual_error_to_string function.
+
+2004-12-16  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_blit_overlay,
+	blit_overlay_noalpha, blit_overlay_alpha32): Completely rewritten
+	both blitters, they are now: understandable, faster, readable,
+	maintable, especially NON buggy.
+
+	(visual_video_scale): Check if both depths are equal.
+
+2004-12-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: FORGOT TO COMPILE BEFORE COMMIT.. I am dumb.
+
+	* libvisual/lv_thread.*: Fixes and added visual_thread_enable ()
+	and visual_thread_is_enabled () functions, to manually overwrite
+	thread support.
+
+2004-12-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.h: Finished up documentation mostly. Also removed
+	all traces of VisChoiceType, it was bullocks.
+
+2004-12-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_thread.* (visual_mutex_init): Added new functions
+	to initialize non allocated mutexes.
+
+2004-12-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (scale_nearest_24): 24 now works, tho I am not
+	very happy with the implementation.
+
+2004-12-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Fixing my constant screw up and added
+	an empty param list define.
+
+2004-12-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Added a palette param and did some serious
+	bug fixes in the param system.
+
+2004-12-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_thread.*: Removed the set_priority function and
+	documentated.
+
+2004-12-10  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_video.c (visual_video_filter_bilinear): Added function
+	frame, and basics, not yet the bili impl.
+
+2004-12-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (depth_transform_16_to_32_c): Somehow I find it
+	extremely non trivial to get color ordering right.
+
+	I really have to make a test it all color transform tester to get rid
+	of these kinds of bugs.
+
+	* libvisual/lv_video.c (scale_nearest_16, scale_nearest_24,
+	scale_nearest_32): Added, 24 bit version is still lame tho.
+
+2004-12-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: Use visual_object_initialize instead of
+	doing boilerplating in the objects themselves.
+
+2004-12-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_object.*: Introduced visual_object_initialize, to
+	replace VisObject boilerplating with.
+
+2004-12-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.h: Renamed VISUAL_PARAM_TYPE to
+	VISUAL_PARAM_ENTRY_TYPE.
+
+	Added visual_param_entry_get_type method.
+
+	* libvisual/lv_param.c, libvisual/lv_ui.c:
+	Sync with lv_param.h
+
+2004-12-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_thread.c: Implemented the joinable flag, played a
+	bit with defines, did some other stuff!
+
+	* libvisual/lv_param.c (visual_param_entry_notify_callbacks):
+	Lock the thread when traversing the change callbacks.
+
+2004-12-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: All methods documentated now!
+
+	Yeah I've been slacking a bit lately, been very busy...
+	On the other hand I also started to reverse engineer
+	the winamp advanced visual studio preset format!
+
+2004-12-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_palette.c (visual_palette_free_colors):
+	After colors are freed set ncolors to 0.
+
+2004-12-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_songinfo.c (visual_songinfo_copy): Ooops
+	cover art copying borked totally, because of some changes.
+
+	We don't copy anylonger, instead just ref the object, yay! :)
+
+2004-12-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_songinfo.c (visual_songinfo_set_cover):
+	Fixed up to work with the scaler, won't work yet because
+	we don't support the depth yet, but the API is right this way.
+
+	* libvisual/lv_video.c (visual_video_scale): Bug fixed.
+
+2004-12-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_bin.c (bin_dtor): Fixed a few things.
+
+2004-12-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.c (visual_video_negotiate): Splitted up
+	the function internally, to give it a bit more overview.
+
+2004-12-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Check for gcc and version, to set some
+	options. Patch by Duilio Javier Protti, thanks!
+
+2004-11-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c (visual_plugin_get_list):
+	Don't completely bail out when there is a invalid path in the plugin
+	registry. Instead spit a warning and just use those that are valid.
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Added widget_dtor to destroy the tooltip string
+	in. Destroyers of widgets that inherent from VisUIWidget chain with the widget_dtor
+	function.
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.* (visual_ui_widget_get_tooltip): Added function to
+	retrieve the tooltip from a VisUIWidget.
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_color.*: Backing out changes that I did to the VisColor
+	struct. I might have been smoking crack...
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac, libvisual.pc.in, tools/Makefile.am,
+	examples/Makefile.am, libvisual/Makefile.am:
+
+	Cleanups, added LIBVISUAL_PLUGINS_BASE_DIR. 
+
+	Patch by: Vitaly V. Bursov
+
+2004-11-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Updates from Duilio
+
+2004-11-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_color.*: Added H S V entry in the VisColor struct, this
+	is mostly for VisUI...
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c, libvisual/lv_event.h, libvisual/lv_video.c:
+	Docs update.
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: Yeah, made a crasher..
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: More docs.
+
+	* libvisual/lv_video.*: VisVideo now is an VisObject as well!
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: Use VisObject it's private to load private data in.
+	deprecate all the per struct private functions.
+
+2004-11-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Implemented VisObject through the VisPlugin
+	system.
+
+2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: NULLify members in the dtor.
+
+2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.h: Fixed param creation macro!
+
+2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Moved to VisObject!
+
+2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_object.h: Small doc addition
+
+2004-11-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_morph.c (visual_morph_run): Don't try to blend NULL
+	palettes. This fixed the error spitting at blending between 8 bits and
+	non 8 bits plugins.
+
+2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_songinfo.c (visual_songinfo_compare):
+	Fixed the comparing, the songinfo borkage problem is solved by this.
+
+2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_list.c, libvisual/lv_ui.c: Doxygen fixes.
+
+2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: This change is BIG, most Vis systems are now moved
+	over to the VisObject system, losing their old destroy/free functions
+	in favor of the object_unref/destroy functions. Ref counting is
+	implemented all over the place and VisObjects (nearly everything)
+	can register dtors. an object can even be destroyed when it's not
+	allocated. In such case it will only cleanup internals.
+
+	YES THIS BREAKS EVERYTHING! :)
+
+2004-11-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_object.*: Added files, containing the VisObject
+	system. This still needs to be implemented all over the libvisual
+	system, included with ref counting, this will probably happen over the
+	days.
+
+	* libvisual/lv_error.h: Updated with new error codes.
+
+	* libvisual/*: Some small cleanups in a few files.
+
+2004-11-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_thread.h: A bit of documentation and #ifdef magic.
+
+2004-11-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Implemented a string only plugin type
+	system in the fashion of "Domain:package:type", as example:
+	"Libvisual:core:actor". These are very easy to filter and such.
+
+	Yes this is an API break, so need to recompile EVERYTHING.
+
+2004-11-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_thread.c: Added #ifdefs to check for threading model
+	and if threading is actually supported.
+
+	* configure.ac: Check for threading model (Duilio thanks!!)
+
+2004-11-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: Renamed all the blah_blah_func_t to VisBlahBlahFunc. I
+	think this naming suites better with the rest.
+
+2004-11-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_thread.*: Added part of the implementation.
+
+2004-11-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_thread.c, libvisual/lv_thread.h: Added files,
+	nothing implemented yet, but we need a VisThread and VisMutex
+	here. This is needed to lock when we do the callbacks in VisParam.
+
+2004-11-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Generate a callback 'id' when param change
+	callbacks are added, and adapted the rest to this.
+
+2004-11-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: Small doc updates.
+
+2004-11-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: A lot more doc work, and some small cleanups!! :).
+
+2004-11-09  Duilio Protti <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_cpu.c (cpuid): use cpuid instruction only
+	if we are on an Intel machine (486 or 386 checking need to
+	be done).
+
+2004-11-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: Mostly doc work, and some small cleanups.
+
+2004-11-08  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	I WILL COMPILE BEFORE COMMIT.
+	I WILL COMPILE BEFORE COMMIT.
+	I WILL COMPILE BEFORE COMMIT.
+	I WILL COMPILE BEFORE CO
+
+	* libvisual/lv_video.c: Some cleanups.
+
+2004-11-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_cpu.*: Added a part of the implementation!
+
+	Thanks to: Chong Kai Xiong  <descender@phreaker.net> for initial code
+	regarding cpuid.
+
+	* libvisual/lv_video.*: Added beginning of the VisVideo scaler
+	thingies.
+
+	Thanks to: Chong Kai Xiong  <descender@phreaker.net> for the patch!
+
+2004-11-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: More doc work, and some small cleanups...
+
+2004-11-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.* (visual_ui_box_get_next): Removed in favor for
+	visual_ui_box_get_childs, which is more consistent with the rest of
+	the API, and way more sane implementation wise.
+
+	And added loads of documentation!
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_types.h: Check if uint*_t's are already
+	defined.
+
+	* libvisual/lv_mem.h: Fix __attribute_malloc__ on different
+	systems.
+
+	Patch by: Thomas Klausner <thomasklausner@users.sourceforge.net>
+
+	Thanks!!!
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.h, libvisual/lv_video.c: More docs,
+	and more VisError.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.h, libvisual/lv_ui.c: More documentation.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_fft.*: Cleanups a bit.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_libvisual.* (visual_get_userinterface):
+	Added VisUI config for libvisual global parameters.
+
+2004-11-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_types.h: Added new file, that contains common types, and type
+	helper macros.
+
+	* libvisual/lv_plugin.* (visual_plugin_get_specific):
+	Added function that gives a void * to the plugin specific part of a
+	plugin.
+
+	(visual_plugin_actor_get_songinfo): Added function that gets the
+	songinfo from an actor plugin.
+
+	(VISUAL_PLUGIN_ACTOR, VISUAL_PLUGIN_INPUT, VISUAL_PLUGIN_MACROS):
+	Added these casting macros. Keep in mind that these are for casting
+	over the void * retrieved by the visual_plugin_get_specific function.
+
+	NOT complete VisPluginData structures.
+
+	* libvisual/lv_ui.h: Adapted to lv_types.h
+
+2004-11-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* ChangeLog: Renamed src to libvisual, I must be psychotic or
+	something.. or maybe it's something deep in my mind telling me
+	I should rename a certain dir...
+
+	* libvisual/lv_actor.h: Removed songinfo entry, and made the
+	songcompare entry non pointer.
+
+	* libvisual/lv_actor.c: Point to the songinfo that is encapsulated in
+	the VisActorPlugin and adapt to other songinfo related changes. Really
+	made the songinfo check for update piece much much much shorter and
+	nicer, without stupid allocations all the time.
+
+	* libvisual/lv_error.h: Did a bit of docs, and added a few entries.
+
+	* libvisual/lv_plugin.h: Moved VisSongInfo from VisPluginData to
+	VisActorPlugin, where it, in my opinion belongs.
+
+	* libvisual/lv_ui.c: Added a bit of docs, and propogate errors from
+	the destroyer functions.
+
+2004-11-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: Loads of work on better error reporting, and many cleanups
+	all around.
+
+2004-11-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.h, libvisual/lv_error.c
+	(visual_error_to_string): Added function that translates
+	an error value into a string.
+
+2004-10-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_blit_overlay): Splitted up into
+	smaller functions. Need to clean this up, and fix the negative offset
+	bug. AND optimize it :)
+
+2004-10-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Added support for tooltips.
+
+2004-10-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.c (visual_actor_run):
+	Moved the event handler, to be really really first of everything.
+
+	* libvisual/lv_color.c (visual_color_compare): Changed a bit.
+
+	* libvisual/lv_param.c (visual_param_container_add): Emit a change event
+	when a param gets added. Now you can sync internal vars with the param
+	completely through the event loop in a plugin. So no double inits
+	in a plugin it's init function.
+
+	* libvisual/lv_param.c (visual_param_entry_compare): Added to compare an
+	entry.
+
+	* libvisual/lv_plugin.c (visual_plugin_realize): Set eventqueue before init.
+
+	* libvisual/lv_ui.c (visual_ui_choice_get_active): Added function, to
+	retrieve the index of the active choice.
+
+	* libvisual/lv_ui.c (visual_ui_checkbox_new): Added extra flag indicating if
+	the checkbox is a boolean param. If so, you don't have to provide the
+	TRUE, FALSE choices yourself.
+
+2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*, libvisual/lv_ui.c: Added support for paramlists, through
+	the add_many interface, for both VISUAL_UI_CHOICE and paramcontainer.
+
+	Look at the jakdaw plugin how this is used.
+
+	Owyeah, recompile EVERYTHING
+
+2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: And the finishing touch.. hopefully :)
+
+2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Adding methods to destroy widgets as well.
+
+2004-10-22  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_color.* (visual_color_compare): Added function.
+
+	* libvisual/lv_param.*: Added support for change notify callback functions,
+	check if the value REALLY changed, on change notify.
+
+	* libvisual/lv_ui.*: Implemented VisUITable.
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Adding some more handy functions. 
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Added functions to support the VisUI config ui from
+	within the plugins.
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*:
+
+	Renamed screenbuffer to pixels, regarding VisVideo.
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Added 'bold' property for VisUILabel, and some
+	small changes.
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Added: visual_param_entry_set_from_param.
+	And overhauled string param handling, color param handling.
+
+	And some more changes/fixes.
+
+	* libvisual/lv_ui.*: Work on the choice group, get, set API.
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.c (visual_param_entry_set_string):
+	strdup string, so we always have the exact entry.
+
+	(visual_param_entry_free): Free the string if it's
+	allocated
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: OOPS.
+
+2004-10-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Added VisUISeparator, and some more
+	fixes/changes.
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: For all instance creation functions, unset
+	size requisition on widgets, standard.
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Yeah, lots of checkins today, there is a huge
+	thunderstorm here, so, I'm getting a bit paranoia :)...
+
+	Anyway, more impl!
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: More impl.
+
+2004-10-20  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/*: added const pointers on API functions anywhere.
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.c (visual_param_entry_get_double):
+	sanity checked on FLOAT instead of DOUBLE, doh!
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.*: Added visual_ui_mutator_set_precision.
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Fixed namespaces for the get_eventqueue,
+	set_eventqueue methods on the visual_param_container 'class'.
+
+	* libvisual/lv_plugin.c: Adapt to changes in VisParam
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	 * libvisual/lv_ui.c, libvisual/lv_ui.h: Renamed VisUIText to VisUIEntry,
+	 same story.
+
+2004-10-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Renamed VisUIGroup to VisUIFrame,
+	seen that is the GTK equalevant.
+
+2004-10-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Some details on VisUIBox.
+
+2004-10-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Added functions to set and
+	retrieve a private on a VisUI component, this is for client
+	use, not plugin use. Clients might want to add a pointer to
+	their own widget, and such.
+
+2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: Most of the UI description work is done,
+	next we have to make a test widget, do the event and propogate UI
+	changes into the param.
+
+2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: More work.
+
+2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: Load of work on the VisUI implementation.
+
+	* libvisual/lv_ui.h: Some fixes.
+
+2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.c: Adding functions, still need to do the impl.
+
+2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_list.h: Removed unused function define.
+	* libvisual/lv_ui.h: Added many prototypes, defines, enums etc.
+
+2004-10-18  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_ui.h: Added many structures and typedefs
+	that should form the main structure for VisUI.
+
+2004-10-17  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/Makefile.am: Added lv_ui.*
+
+	* libvisual/lv_ui.c, libvisual/lv_ui.h: Added files.
+
+2004-10-14  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Bumped version to 0.2.0
+
+2004-10-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.*: Added visual_param_entry_set_double
+	and visual_param_entry_get_double for the double parameter.
+
+2004-10-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.h: Documentated all the libvisual
+	plugin method function signatures.
+
+2004-10-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.c: Renamed the static globals, to be non
+	__lv_ prefixed, these are statics so won't be exported.
+
+2004-10-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_error.*: Added files containing the
+	visual_error_raise and visual_error_set_handler
+	methods.
+
+	* libvisual/lv_log.c (_lv_log): Use the visual_error_raise
+	function.
+
+	* libvisual/lv_log.h (VisLogSeverity): Some docs update for
+	this structure.
+
+2004-10-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_event.* (visual_event_queue_add_mousebutton):
+	Adopted to also have x, y coords as arguments.
+
+2004-10-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_random.*: A bit of a overhaul by
+	Vitaly V. Bursov, thanks Vitaly :) (owyeah
+	also added double, float)
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_input.c (input_upload_callback_func_t):
+	Documentated this callback function.
+
+2004-10-03  Dennis Smit  <ds@Nerds-incorporated.org>
+
+	* libvisual/lv_random.*: Documentated, and
+	a few small fixes.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_random.c (visual_random_int_range,
+	visual_random_context_int_range):
+
+	Don't use modulo operator to limit max. Instead
+	do a division. Modulo tends to quickly generate
+	the same pattern over and over.
+
+	Thanks to Vitaly V. Bursov for pointing this out.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_bin.c (visual_bin_set_morph_by_name):
+	Destroy the morph plugin if it's already there
+	in the managed bin.
+
+2004-10-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.*: Added the VisPluginFlags enumerate.
+	Added the 'flags' field to the VisPluginInfo structure.
+
+	(visual_plugin_load):
+	Check if the plugin is already loaded, while having
+	the VISUAL_PLUGIN_FLAG_NOT_REENTRANT flag.
+
+2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_event.c: Fixing docs.
+
+	* libvisual/lv_log.c: Finish private for callbacks support.
+	Also finished docs.
+
+	* libvisual/lv_plugin.c (visual_plugin_load): Seed the
+	private randomizer.
+
+2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.* (visual_plugin_get_random_context):
+	Added function to obtain the VisRandomContext for this plugin.
+
+	(visual_plugin_actor_new, visual_plugin_actor_free, 
+	visual_plugin_input_new, visual_plugin_input_free,
+	visual_plugin_morph_new, visual_plugin_morph_free):
+	Removed unused and deprecated functions. Plugin 
+	specific data should never be allocated.
+
+	Added VisRandomContext to the VisPluginData structure.
+
+	* libvisual/lv_random.*: Implemented more, and added the 
+	VisRandomContext related functions.
+	
+2004-10-02  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_log.*: Added visual_log_set_all_messages_handler().
+
+2004-10-02  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_random.*: Added some functions to
+	do randomness and such.
+
+	* libvisual/*.h: Header include cleanups.
+
+2004-10-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_log.c: Small codestyle fix.
+
+2004-10-01  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_log.*:
+	added VisLogVerboseness enum type.
+	added visual_log_{set/get}_verboseness().
+	added visual_log_set_{info/warning/critical/error}_handler().
+
+	For now handlers will not work on systems without varargs
+	macros.
+
+2004-10-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_random.h, libvisual/lv_random.c:
+	Added files, which will contain the random subsystem.
+
+	* libvisual/libvisual.h: Added lv_random.h.
+
+	* libvisual/Makefile.am: Updated the makefile.
+
+2004-09-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.h: Added an index field to the
+	VisPluginRef structure. This field contains the index
+	number for the given plugin within a plugin.so it's
+	VisPluginInfo table.
+
+	* libvisual/lv_plugin.c (plugin_add_dir_to_list):
+	Adapted to changes in visual_plugin_get_references.
+
+	(visual_plugin_load): Support plugin libraries.
+
+	(visual_plugin_get_references): Supprt plugin
+	libraries, and return a VisPluginRef ** instead of
+	VisPluginRef *.
+
+	Plugin libraries now work, as demonstrated in the
+	slide morph plugin.
+
+2004-09-28  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual.pc.in: Cflags changed to -I${includedir} instead
+	of -I${includedir}/libvisual.
+
+2004-09-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.c: Reverted changes and use
+	visual_list_destroy_elements to destroy the elements
+	without destroying the non allocated list.
+
+	* libvisual/lv_event.c: Same scenario as in param, same
+	solution.
+
+	* libvisual/lv_list.c (visual_list_destroy_elements):
+	Added function.
+
+2004-09-28  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.c: Made VisList entries
+	VisList *entries, allocate it, and now the destroyer
+	doesn't screw up memory anylonger, thanks Vitaly.
+
+2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_libvisual.c (visual_quit):
+	Moved the resetting of progname to the bottom
+	so error messages in visual_quit still had a progname.
+
+	Also set progname to null after the free.
+
+	* libvisual/lv_param.c (visual_param_container_destroy):
+	Have to investigate this, weird affairs, valgrind
+	reports here in the visual_list_destroy.. out commented
+	for now. but needs fixage obviously.
+
+2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_list.c, libvisual/lv_list.h:
+	Small fixes in the list implementation and a
+	bugfix in visual_list_get that didn't allow
+	'0' as an index.
+
+2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_event.c, libvisual/lv_event.h:
+	Several changes for libvisual-display. Also
+	contains a few new events. This is >NOT< ABI
+	compatible, and VISUAL_PLUGIN_API_VERSION has been bumped.
+
+2004-09-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c (visual_plugin_get_api_version):
+	Added function that returns VISUAL_PLUGIN_API_VERSION.
+
+2004-09-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_libvisual.c (visual_is_initialized):
+	Conform to codingstyle.
+
+2004-09-23  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added --enable-profiling option. Now
+	example programs are included on the dist target even
+	if they are disabled.
+	* libvisual/lv_input.c (visual_input_get_list): small doc
+	update.
+	* libvisual/lv_libvisual.*: added public API function
+	visual_is_initialized().
+
+2004-09-21  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_log.c: now only VISUAL_LOG_DEBUG shows the
+	file where the message is showed from (otherwise there is
+	too much output).
+
+2004-09-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*.c: Renamed all the remaining LVPlugin
+	to VisPluginData (in the docs).
+
+	* libvisual/lv_plugin.c (visual_plugin_unload): Free
+	the VisPluginData structure after unload, fixes a memleak.
+
+2004-09-16  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/Makefile.am: don't redefine $(libdir),
+	just use the substituted one.
+
+	Patch from: Jeremy Huddleston <eradicator@gentoo.org>
+
+2004-09-15  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c: Removed some unused vars.
+
+2004-09-14  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* Makefile.am: $(includedir)/libvisual directory is
+	removed on uninstall. Added support for DESTDIR variable
+	on install-exec-local target (which installs lvconfig.h),
+	needed for packagers (thanks to Burkhard Plaum).
+	
+2004-09-13  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac:
+	 - now examples refuses to build if libvisual is not
+	installed, and takes flags through pkg-config.
+	 - GL detection is done not just looking for headers,
+	but also we try to link against the library (thanks
+	salsaman).
+	* libvisual/lv_libvisual.c (visual_get_version): return
+	version defined on config.h.
+
+2004-09-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* NEWS: Updated.
+
+	Release 0.1.6
+
+2004-09-10  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* libvisual/lv_video.c: Changed the way
+	*->8 bits conversions are done. We don't
+	try to make an 3-2-3 colorspace anylonger.
+	Instead we make a grayscale from the rgb
+	image and place a palette over that.
+
+2004-09-09  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/Makefile.am: fixed include problem
+	when installing for first time (thanks salsaman).
+	
+2004-09-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_bin.c (visual_bin_switch_actor):
+	Changed to use the new morph API stuff.
+
+	(visual_bin_switch_set_mode): Added function
+	that upstreams the preferred morph mode to
+	the VisMorph.
+
+	(visual_bin_switch_set_time): Added function
+	that upstreams the preferred morph time when
+	VISUAL_MORPH_MODE_TIME is used.
+
+	(visual_bin_run): Use the new VisMorph API
+	stuff.
+
+	* libvisual/lv_bin.h: Updated for lv_bin.c.
+
+	* libvisual/lv_morph.c (visual_morph_set_time):
+	Added API for timed morph.
+
+	(visual_morph_set_steps): Added API to set
+	the number of steps when in VISUAL_MORPH_MODE_STEPS.
+
+	(visual_morph_set_mode): Added API to set
+	the morph to a certain mode. The new morph
+	stuff also enables the morph to automaticly
+	set the morph rate and such.
+
+	(visual_morph_is_done): Returns TRUE if the morph
+	is done after an automatic morph.
+
+	(visual_morph_run): Added support for the automatic
+	morph options.
+
+	* libvisual/lv_morph.h: Updated for lv_morph.c.
+
+	* libvisual/lv_time.c (visual_time_new): Use
+	visual_time_set.
+
+	(visual_time_set): New API call to set VisTime
+	to a certain value.
+
+	(visual_time_copy): New API to copy a VisTime
+	in another.
+
+	(visual_timer_is_active): New API that returns
+	TRUE if the timer is currently active.
+	
+	(visual_timer_has_past_by_values): Use visual_time_set.
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c
+	(visual_video_depth_transform_to_buffer):
+	Only check in 8BIT for pal.
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_morph.c (visual_morph_run):
+	Set the morph palette on the dest video.
+
+	* libvisual/lv_actor.c (visual_actor_run):
+	Set the actor palette on the dest video.
+
+	* libvisual/lv_video.c
+	(visual_video_blit_overlay):
+	Don't use the borked temp local VisPalette
+	but the one set on the VisVideo when
+	transforming from an 8BIT to blah depth.
+
+2004-09-08  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added ARCH and OS checks.
+
+2004-09-08  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* examples/morph.c: Use alsa as the standard
+	input plugin.
+
+2004-09-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	I will first compile before commit.
+	I will first compile before commit.
+	I will first compile before commit.
+	I will first compi.....
+
+	* libvisual/lv_morph.c: Fixed compile errors.
+
+	* libvisual/lv_plugin.c: Removed some debug
+	printfs.
+
+2004-09-06  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.h: Added a requests_audio field
+	to the VisMorphPlugin structure.
+
+	And fixed some documentation.
+
+	* libvisual/lv_morph.h, libvisual/lv_morph.c
+	(visual_morph_requests_audio): Added function
+	to check if a VisMorphPlugin requires a VisAudio
+	context or not.
+
+2004-09-05  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_mem.c: visual_mem_malloc0() fails if
+	we request 0 bytes of memory (malloc(0) leads to a memory
+	leak).
+
+2004-09-04  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac:
+	 - Added checks for Win32 portability and
+	OpenGL support.
+	 - tools removed from build tree (temporary).
+	* lvconfig.h:
+	 - VISUAL_WIN32 macro is defined if we are on one
+	of these systems.
+	 - VISUAL_HAVE_OPENGL macro is defined accordingly.
+	 * libvisual/lv_time.c: visual_time_usleep()
+	 implemented.
+	
+2004-09-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*: New plugin loader. Is capable of loading
+	multiply features per plugin, does API, struct size checks etc.
+
+	Mostly thanks to Vitaly for the first design!
+
+	Also some bug fixes and small other thingies went in.
+
+2004-08-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_color.c (visual_color_copy): Added function.
+
+2004-08-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_have_allocated_buffer):
+	Added function to check if a VisVideo has a private allocated
+	buffer.
+
+	(visual_video_depth_transform): Use visual_video_blit_overlay
+	if the depths are the same, this is done because while the
+	dimension is the same, pitch can still be different.
+
+	* libvisual/lv_songinfo.c, libvisual/lv_songinfo.h: Made the cover
+	not a pointer but a real member of the VisSongInfo structure,
+	and adapted code for this and some coverart support work.
+
+	* libvisual/lv_video.c (visual_video_allocate_buffer): If a buffer
+	allocation for a 0 sized video is requested don't try to malloc,
+	instead set screenbuffer to NULL and set VISUAL_VIDEO_FLAGS_NONE.
+
+	* TODO: Updates.
+
+2004-08-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_color.c (visual_color_from_hsv,
+	visual_color_to_hsv): Added functions to do rgb<->hsv
+	conversions.
+
+	* libvisual/lv_morph.c (visual_morph_new, visual_morph_free):
+	Allocate, free colors for the morphpalette. Fixed crasher.
+
+	* libvisual/lv_palette.c: Finished some documentation.
+
+2004-08-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* Makefile.am, libvisual/Makefile.am, configure.ac:
+	Fixed some build issues regarding lvconfig.h
+
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_libvisual.c (visual_init): Improved
+	error checking, by Duilio
+
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c (visual_plugin_registry_filter):
+	Improved error checking, possible memleak plugged. Originally
+	by Duilio.
+
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* examples/simplesdl.c: Returning Duilios changes (with some fixes).
+
+2004-08-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* TODO: Updates.
+
+	* examples/simplesdl.c, examples/morphsdl.c:
+	Random API updates and such.
+
+	* libvisual/lv_audio.c (visual_audio_analyze):
+	Added normalized audio freq analyser.
+
+	* libvisual/lv_bmp.c (visual_bitmap_load):
+	Updates to api changes and palette support.
+
+	* libvisual/lv_color.c, libvisual/lv_color.h: Added, supports
+	for VisColor.
+
+	* libvisual/lv_cpu.c, libvisual/lv_cpu.h: Added, far from finished.
+
+	* libvisual/lv_event.c, libvisual/lv_event.h: Added support for
+	param change events.
+
+	* libvisual/lv_input.c (visual_input_new): Fixed bug, function was
+	always failing.
+
+	* libvisual/lv_libvisual.c: Added global params.
+
+	* libvisual/lv_palette.c, libvisual/lv_palette.h: Updated to VisColor
+	and added some methods to help with colors.
+
+	* libvisual/lv_param.c, libvisual/lv_param.h: Complete parameter
+	sub system.
+
+	* libvisual/lv_param.c (visual_plugin_get_params): Added function.
+
+	* libvisual/lv_songinfo.c: Using VisTime for all timing related
+	things.
+
+	* libvisual/lv_video.c (visual_video_color_bgr_to_rgb): Added rgb, bgr conversion.
+	(visual_video_compare): Checks if two VisVideos have the same
+	settings.
+
+	* libvisual/lv_time.c, libvisual/lv_time.h: Added time, timer subsystems.
+
+	* tools/lv-inspect.c: Added more help.
+
+2004-07-25  Dennis smit  <ds@nerds-incorporated.org>
+
+	* tools/lv-inspect.c: Some more work!
+
+	* libvisual/lv_plugin.c (visual_plugin_get_info):
+	Added function.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* tools/lv-inspect.c: More work on lv-inspect.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*.c: More VisMemizing.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*.c: Partily VisMemized. Replaced
+	mallocs by visual_mem_new0 mostly and such.
+
+	* tools/lv-inspect.c: Changes the output text.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_input.c (visual_input_set_callback):
+	Fixed documentation.
+
+	* libvisual/lv_mem.h: Added the visual_mem_new0 macro
+	to group VisMem in documentation.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.c: Added visual_mem_free
+	wrapper function.
+
+2004-07-24  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Add 'tools' to build_subdirs. 
+
+	* tools/Makefile.am: Added.
+
+	* tools/lv-inspect.c: Added, a tool to inspect
+	a certain plugin.
+
+	* libvisual/lv_plugin.c (plugin_init), (visual_plugin_load):
+	Fixed small bugs while setting the reference on the plugin type
+	encapsulation.
+
+2004-07-23  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/*.c, *.h: Renamed 'private' to 'priv' everywhere
+	so the header files are usable by C++ programs, plugins.
+
+	This is especially needed for the G-Force plugin seen it's
+	a C++ plugin!
+
+2004-07-13  Duilio Protti <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_bmp.c: check for video parameter sanity.
+	* Makefile.am: now lvconfig.h gets installed right.
+	
+2004-07-13  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* libvisual/lv_endianess.h: Added.
+
+	* libvisual/lv_bmp.c: Fixed endianess issues. Needs testing.
+
+	* libvisual/libvisual.h: Include lv_endianess.h
+
+	* libvisual/Makefile.am: Add lv_endianess.h to headers list.
+
+2004-07-10  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.c: Moved out the actor
+	specific event queue stuff and adopted to
+	the visual_plugin_event... stuff.
+
+	Added visual_actor_get_plugin function to get
+	a LVPlugin from a VisActor
+
+	* libvisual/lv_plugin.c (visual_plugin_events_pump,
+	visual_plugin_get_eventqueue): Added event function
+	to LVPlugin system.
+
+	* libvisual/lv_plugin.h: Added VisEventQueue eventqueue to
+	the LVPlugin data structure.
+
+	* libvisual/lv_morph.c, libvisual/lv_input.c:
+	Added visual_..._get_plgin functions to get
+	a LVPlugin from the VisMorph and VisInput.
+
+2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_plugin.c: Renamed all the
+	private _lv_plugin functions to public
+	visual_plugin functions.
+
+2004-07-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* examples/morphsdl.c: Runs again.
+
+2004-07-08  Vitaly V. Bursov  <vitalyvb@users.sourceforge.net>
+
+	* libvisual/lv_plugin.c: fixed double free() of list
+	in visual_plugin_ref_list_destroy()
+	* libvisual/lv_list.c: fixed typo in if condition
+	in visual_list_destroy()
+
+2004-07-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.c:
+	(visual_actor_get_next_by_name_gl,
+	visual_actor_get_prev_by_name_gl,
+	visual_actor_get_next_by_name_nogl,
+	visual_actor_get_prev_by_name_nogl):
+	New methods.
+
+2004-07-07  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_mem.c: Doc fixes.
+
+2004-07-06  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_mem.c: added.
+	* libvisual/lv_video.c: use visual_mem functions.
+	* libvisual/lv_list.c: use visual_mem functions.
+	* configure.ac: added macro AC_TYPE_SIZE_T required for
+	lv_mem.h, and also check for size_t type size.
+	* lvconfig.h: addet visual_size_t typedef and 
+	VISUAL_SIZE_T_FORMAT macro.
+
+2004-07-05  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_blit_overlay):
+	Nearly complete by now.
+
+2004-07-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_param.c, libvisual/lv_param.h:
+	Very beginning of the param system.
+
+2004-07-02  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_video.c: added flags field to VisVideo
+	structure. Now function checks where the screenbuffer
+	was allocated by us or was set pointing to an externally
+	allocated memory.
+	* libvisual/lv_log.h: if the system is GNU, we add printf
+	format attribute to lv_log(). This way gcc will print
+	warnings if format string doesn't match the number/type
+	of variable arguments.
+
+2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_blit_overlay):
+	Fscking ehm. I mean negative offsets are kinda
+	working, but I'm to tired!
+
+2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_blit_overlay):
+	More alpha overlay fixes, now works in 8bits depth
+	as well. Only thing left is negative offset values.
+
+2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_blit_fit):
+	Deprecated for the overlay function.
+
+	(visual_video_alpha_fill): Added, sets an alpha
+	value for the complete context in a VisVideo.
+
+2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_alpha_color):
+	Added function that sets a certain color as the
+	alpha channel.
+
+	(visual_video_blit_overlay): More work on the alpha
+	overlay, getting there.
+
+	* TODO: Updates.
+
+2004-07-01  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c (visual_video_blit_overlay):
+	Fixed up, almost completely working alpha support.
+
+	This function will deprecate the blit_fit when it's
+	finished.
+
+2004-06-30  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_plugin.c: added extensive error checking.
+	* libvisual/lv_bin.c: added more error checking to
+	visual_bin_sync().
+	* libvisual/lv_video.c: Removed temporarily the free()
+	call from visual_video_free_buffer(), because we don't
+	known if this is memory malloc'ed from us (in XMMS plugin
+	this point to the pixels field of the SDL_ScreenSurface
+	created by SDL, which can be even a hardware surface).
+	* configure.ac: endianness macros renamed to 
+	VISUAL_BIG_ENDIAN and VISUAL_LITTLE_ENDIAN.
+
+2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c,
+	libvisual/lv_log.c:
+	Some doxygen fixes.
+
+2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_video.c:
+	Renamed visual_video_fit_in_video to
+	visual_video_blit_fit.
+
+	Added visual_video_blit_overlay, no alpha
+	support yet tho.
+
+	* libvisual/lv_video.h:
+	Changed the prototypes appropiately to the
+	changes in lv_video.c.
+
+2004-06-30  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Remove the check for stdint.h
+	and do check for sys/types.h.
+
+	* libvisual/*.c, libvisual/*.h:
+	Removed stdint and use sys/types.h for portability
+	reasons.
+
+2004-06-29  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added check for endianess, and set
+	LV_BIG_ENDIAN and LV_LITTLE_ENDIAN macros on lvconfig.h
+	accordingly.
+	* libvisual/lv_bin.c: show messages through visual_log,
+	added error checking. Now the XMMS plugin doesn't hang
+	the terminal on exit, but still crashing.
+
+2004-06-27  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: output file lvconfig.h with macro
+	definitions for the installed LibVisual.
+	* libvisual/libvisual.h: added #include <lvconfig.h>.
+	* libvisual/lv_log.*: now VISUAL_LOG_ERROR causes to
+	program abort. Added visual_log_return_if_fail(expr)
+	and visual_log_return_val_if_fail() macros to show
+	useful messages.
+	* libvisual/*.c: make use of visual_log_return_val_if_fail()
+	macro to some modules.
+	
+2004-06-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* NEWS: Updating the NEWS file.
+
+2004-06-26  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added check for ISOC99 and GNUC varargs
+	macros, to be used by visual_log().
+	* libvisual/lv_log.* : now visual_log() accepts a format
+	string and variable arguments.
+
+2004-06-25  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* libvisual/lv_libvisual.h: visual_init() signature changed to
+	int (*) (int*, char***). Added messages using visual_log().
+	* configure.ac: user variable CFLAGS overrided.
+	* examples/simplesdl.c: some cleanup to avoid warnings.
+	* examples/morphsdl.c: cleanup to avoid warnings, moved
+	visual_init() call to use new signature, #include now is
+	made relative to the current dir, to use the new libvisual
+	instead of the installed one.
+	* libvisual/lv_bin.h: added visual_bin_set_morph_by_name()
+	and visual_bin_set_steps().
+	* libvisual/*.h: changed all function f() declarations to
+	funcion f(void), because f() are not valid ISOC99 prototypes.
+	* libvisual/lv_plugin.c: with the previous prototypes correction,
+	I have found a major bug on visual_plugin_ref_list_destroy()
+	when passing a function pointer of incorrect type to 
+	visual_list_destroy().
+	* libvisual/Makefile.am: to avoid above type errors, added
+	compiler flag -Wstrict-prototypes.
+	
+2004-06-21  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* autogen.sh: check for libtool and run libtoolize --force
+	
+2004-06-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* libvisual/lv_actor.c (visual_actor_video_negotiate):
+	Removed unused variable.
+
+	* configure.ac: Renamed AM_PROG_LIBTOOL to AC_PROG_LIBTOOL.
+
+2004-06-20  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.ac: added check for SDL, needed to
+	compile the examples.
+	* examples/Makefile.am: added, replacing the old
+	hand made Makefile.in.
+	* libvisual/Makefile.am: included DEFS variable,
+	so things like inline will be defined as preprocessor
+	define's
+	
+2004-06-18  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* configure.in: moved to configure.ac
+	* configure.ac: updated to autoconf 2.57 requirements,
+	and too much checks added.
+	* autogen.sh: script added
+	
+2004-06-17  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.4 has been released.
+	
+	* Fixes for SGI regarding time.h
+	* Architecture fixes, using precise intergral types from stdint.h
+	* Made an builtin bitmap loader, for loading textures and such.
+	* Documentated the code using doxygen.
+	* Many many cleanups.
+	* Made all the enumerate non anonymous.
+
+2004-05-27  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.3 has been released.
+
+	* Install lv_log.h
+	* Lots and lots of work on the managed bin.
+	* Managed bin now seamlessly automaticly morphs from whatever
+	  to whatever. (Ok i lied here, the managed bin needs
+	  a rewrite, but it SEEMS to work)
+	* Better support for openGL.
+	* Have requisition method for the actor plugins.
+	* Pass audio to the morph plugins.
+	* Don't open the plugins with RTL_GLOBAL.
+
+2004-05-13  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1.2 has been released.
+
+	* Morph plugins (transistion between actors).
+	* Event layer for both keyboard, mouse, song change, resolution
+	  change.
+	* Songinfo system which can be used to set and read songinfo
+	  so you can draw text with the song name in visuals (i already
+	  fixed this up for the goom plugin, worked out of the box!)
+	* The Bin is extended a lot, and i added support for managed
+	  bins, where a bin creates it's own actor and input so you
+	  don't have to manage those, also you can morph to a new
+	  actor using the bin as simple as
+	  'visual_bin_switch_actor (bin, actor)' or
+	  'visual_bin_switch_actor_by_name (bin, name_of_actor)'.
+	* Fixed the issues regarding resize.
+	* Have a visual_init and visual_quit, libvisual manages
+	  the plugin registry itself now.
+	* New plugin layer, instead of a loader for every type there
+	  is now an universal plugin loader that wraps the
+	  different types in a VisPlugin type.
+	* Some small stuff.
+
+2004-04-24  Dennis Smit  <ds@nerds-incorporated.org>
+	Version 0.1-pre4 has been released.
+	
+	* Changed the way plugins are registred, you can now use
+	  libvisual_init (&argc, &argv) (or NULL, NULL), also
+	  don't forget to do a libvisual_quit ().
+	* Made an universal plugin loader instead of separated ones.
+	* Random small stuff i forgot about.
+

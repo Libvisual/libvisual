@@ -1,0 +1,78 @@
+-- What is libvisual --
+Libvisual is a library that acts as a middle layer between
+applications that want audio visualisation and audio visualisation
+plugins.
+
+Libvisual is aimed at developers who, have a need for audio
+visualisation and those who actually write the visualisation
+plugins.
+
+By writing an audio visualisation plugin for libvisual
+every application that uses libvisual is capable of using
+this plugin. The application handles the end drawing of
+the graphics and thus rendering done by plugins using
+libvisual can be drawn everywhere. That is but not limited
+to: ascii art, sdl, on gl object as a surface , alpha blended
+or just, anywhere.
+
+Libvisual also provides complete easy to use transparant
+depth transformation, so that even when the display
+isn't supported by the plugin, libvisual will make
+it suite. Besides using libvisual for rendering your
+2d buffers, you can also render openGL when an openGL
+context is open. Besides you don't have to render
+to a buffer. You can also make hardware hacks
+that do visualisation using libvisual. There are simply no borders
+
+
+-- Why should you use libvisual --
+As an application writer, using libvisual provides you an easy
+way to do audio visualisation. Also when using libvisual you'll
+have easy access to all the plugins that are written for libvisual.
+
+As an plugin writer, libvisual provides a nice host for your plugin.
+It runs analyzes over the audio input for easy usage and it handles
+all the displaying stuff through the library and application. And
+mainly your plugin will be accessible to all the applications.
+
+
+-- License --
+The libvisual library that is in libvisual/ is licensed under the LGPL.
+
+The example applications in examples/ are licensed under the GPL.
+
+The tests in tests/ are licensed under the GPL.
+
+
+-- Development --
+If you'd like to use libvisual for your applications, write plugins
+or hack on the core. Please read HACKING. It contains some very 
+useful information regarding to policies and such.
+
+
+-- Requirement --
+The library is quite self containing and there is almost no depency
+at all to get it working. Libvisual it self does not depend on
+anything besides glibc ofcourse.
+
+Examples/Tests: To compile the examples and most tests libSDL is
+	required.
+
+
+-- Compiling and installing --
+Configuration:
+	./configure
+		To set a prefix use --prefix, other options can be seen by
+		using ./configure --help
+
+Building:
+	make
+		This will compile the library.
+		
+		If you want to compile the examples, reconfigure the package
+		with --enable-examples AFTER installing the library.
+
+Installing:
+	make install
+		This will install the library.
+

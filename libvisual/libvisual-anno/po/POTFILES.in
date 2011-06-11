@@ -1,0 +1,20 @@
+# List of source files containing translatable strings.
+ 
+# Package source files
+libvisual/lv_libvisual.c
+libvisual/lv_actor.c
+libvisual/lv_bin.c
+libvisual/lv_bmp.c
+libvisual/lv_config.c
+libvisual/lv_error.c
+libvisual/lv_event.c
+libvisual/lv_libvisual.c
+libvisual/lv_input.c
+libvisual/lv_log.c
+libvisual/lv_mem.c
+libvisual/lv_morph.c
+libvisual/lv_param.c
+libvisual/lv_plugin.c
+libvisual/lv_thread.c
+libvisual/lv_transform.c
+libvisual/lv_video.c
