@@ -1,9 +1,0 @@
-name="Constant Out",
-
-
-Aspc=1,
-
-srcR=" r - .01",
-srcT=" theta",
-
-Vers=100

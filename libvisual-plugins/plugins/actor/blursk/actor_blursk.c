@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <limits.h>
 
 
 
@@ -81,6 +82,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 int act_blursk_init (VisPluginData *plugin) {
     BlurskPrivate *priv;
     VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+    VisParamEntry *param;
 
     static VisParamEntry params[] = {
         VISUAL_PARAM_LIST_ENTRY_COLOR   ("color", 0x00, 0xff, 0xff),
@@ -104,9 +106,9 @@ int act_blursk_init (VisPluginData *plugin) {
         VISUAL_PARAM_LIST_ENTRY_STRING  ("cpu_speed", "Fast CPU"),
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("beat_sensitivity", 4),
         VISUAL_PARAM_LIST_ENTRY_STRING  ("config_string", ""),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("show_info", "Never show info"),
+        VISUAL_PARAM_LIST_ENTRY_STRING  ("show_info", "Aever show info"),
         VISUAL_PARAM_LIST_ENTRY_INTEGER ("info_timeout", 4),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("show_timestamp", FALSE),
+        VISUAL_PARAM_LIST_ENTRY_INTEGER ("show_timestamp", TRUE),
         VISUAL_PARAM_LIST_END
     };
 
@@ -121,7 +123,86 @@ int act_blursk_init (VisPluginData *plugin) {
     visual_palette_allocate_colors (&priv->pal, 256);
 
     visual_param_container_add_many (paramcontainer, params);
-        
+
+    param = visual_param_container_get(paramcontainer, "color");
+    visual_param_entry_set_annotation(param, "Color");
+
+    param = visual_param_container_get(paramcontainer, "color_style");
+    visual_param_entry_set_annotation(param, "Color style");
+
+    param = visual_param_container_get(paramcontainer, "signal_color");
+    visual_param_entry_set_annotation(param, "Signal color");
+
+    param = visual_param_container_get(paramcontainer, "contour_lines");
+    visual_param_entry_set_annotation(param, "Contour lines");
+    visual_param_entry_min_set_integer(param, 0);
+    visual_param_entry_max_set_integer(param, 1);
+
+    param = visual_param_container_get(paramcontainer, "hue_on_beats");
+    visual_param_entry_set_annotation(param, "Huge on beats");
+    visual_param_entry_min_set_integer(param, 0);
+    visual_param_entry_max_set_integer(param, 1);
+
+    param = visual_param_container_get(paramcontainer, "background");
+    visual_param_entry_set_annotation(param, "Background");
+
+    param = visual_param_container_get(paramcontainer, "blur_style");
+    visual_param_entry_set_annotation(param, "Blur style");
+
+    param = visual_param_container_get(paramcontainer, "blur_stencil");
+    visual_param_entry_set_annotation(param, "Blur stencil");
+
+    param = visual_param_container_get(paramcontainer, "fade_speed");
+    visual_param_entry_set_annotation(param, "Fade speed");
+
+    param = visual_param_container_get(paramcontainer, "slow_motion");
+    visual_param_entry_set_annotation(param, "Slow motion");
+    visual_param_entry_min_set_integer(param, 0);
+    visual_param_entry_max_set_integer(param, 1);
+
+    param = visual_param_container_get(paramcontainer, "signal_style");
+    visual_param_entry_set_annotation(param, "Signal style");
+
+    param = visual_param_container_get(paramcontainer, "plot_style");
+    visual_param_entry_set_annotation(param, "Plot style");
+
+    param = visual_param_container_get(paramcontainer, "thick_on_beats");
+    visual_param_entry_min_set_integer(param, 0);
+    visual_param_entry_max_set_integer(param, 1);
+    visual_param_entry_set_annotation(param, "Thick on beats");
+
+    param = visual_param_container_get(paramcontainer, "flash_style");
+    visual_param_entry_set_annotation(param, "Flash style");
+
+    param = visual_param_container_get(paramcontainer, "overall_effect");
+    visual_param_entry_set_annotation(param, "Overall effect");
+
+    param = visual_param_container_get(paramcontainer, "floaters");
+    visual_param_entry_set_annotation(param, "Floaters");
+
+    param = visual_param_container_get(paramcontainer, "cpu_speed");
+    visual_param_entry_set_annotation(param, "Cpu speed");
+
+    param = visual_param_container_get(paramcontainer, "beat_sensitivity");
+    visual_param_entry_set_annotation(param, "Beat sensitivity");
+    visual_param_entry_min_set_integer(param, 0);
+    visual_param_entry_max_set_integer(param, 10);
+
+    param = visual_param_container_get(paramcontainer, "config_string");
+    visual_param_entry_set_annotation(param, "Config string");
+    param = visual_param_container_get(paramcontainer, "show_info");
+    visual_param_entry_set_annotation(param, "Show info");
+
+    param = visual_param_container_get(paramcontainer, "info_timeout");
+    visual_param_entry_set_annotation(param, "Info timeout");
+    visual_param_entry_min_set_integer(param, 0);
+    visual_param_entry_max_set_integer(param, INT_MAX);
+
+    param = visual_param_container_get(paramcontainer, "show_timestamp");
+    visual_param_entry_set_annotation(param, "Show timestamp");
+    visual_param_entry_min_set_integer(param, 0);
+    visual_param_entry_max_set_integer(param, 1);
+
     priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
 
     config_default(&config);

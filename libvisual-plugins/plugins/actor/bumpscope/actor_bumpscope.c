@@ -45,6 +45,7 @@ int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
+const VisPluginInfo *get_plugin_info (int *count);
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[] = {{
@@ -81,6 +82,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+    VisParamEntry *param;
 
 	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_COLOR	("color",		122, 204, 255),
@@ -116,6 +118,25 @@ int act_bumpscope_init (VisPluginData *plugin)
 	visual_palette_allocate_colors (&priv->pal, 256);
 
 	visual_param_container_add_many (paramcontainer, params);
+
+    param = visual_param_container_get(paramcontainer, "color");
+    visual_param_entry_set_annotation(param, "The light's color");
+
+    param = visual_param_container_get(paramcontainer, "light size");
+    visual_param_entry_set_annotation(param, "The size of the light");
+    visual_param_entry_max_set_integer(param, 1);
+
+    param = visual_param_container_get(paramcontainer, "color cycle");
+    visual_param_entry_set_annotation(param, "Whether to cycle colors");
+    visual_param_entry_max_set_integer(param, 1);
+
+    param = visual_param_container_get(paramcontainer, "moving light");
+    visual_param_entry_set_annotation(param, "Whether the light moves with the mouse");
+    visual_param_entry_max_set_integer(param, 1);
+
+    param = visual_param_container_get(paramcontainer, "diamond");
+    visual_param_entry_set_annotation(param, "Whether to use a diamond shape light or not");
+    visual_param_entry_max_set_integer(param, 1);
 
 	vbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_VERTICAL);
 	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);

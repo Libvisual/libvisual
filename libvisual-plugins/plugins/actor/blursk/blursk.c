@@ -325,6 +325,7 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
     {
         then = now;
         pos = songinfo->elapsed;
+
         convert_ms_to_timestamp(posstr, pos);
         length = songinfo->length;
         convert_ms_to_timestamp(lenstr, length);

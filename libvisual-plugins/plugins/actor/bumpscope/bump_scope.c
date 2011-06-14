@@ -340,7 +340,7 @@ void __bumpscope_generate_palette (BumpscopePrivate *priv, VisColor *col)
 void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 {
 	int y, x;
-	double i, i2, cont;
+	double i, i2, cont = 0;
 	int phresd2 = priv->phongres / 2;
 
 	for (y = phresd2; y < priv->phongres; y++) {
