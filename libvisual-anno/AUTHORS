@@ -1,0 +1,32 @@
+Main author, project leader:
+Dennis Smit <ds@nerds-incorporated.org>
+
+Developers:
+Duilio J. Protti <dprotti@users.sourceforge.net>
+Vitaly V. Bursov <vitalyvb@ukr.net>
+Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
+Jaak Randmets <jaak.ra@gmail.com>
+
+The new FFT implementation that is used by libvisual is written by:
+Chong Kai Xiong <descender@phreaker.net>
+
+The old FFT implementation that was used by libvisual:
+Richard Boulton <richard@tartarus.org>
+
+Nearest scalers, initial VisCPU stuff:
+Chong Kai Xiong <descender@phreaker.net>
+
+Bilinear scaler:
+Jean-Christophe Hoelt <jeko@ios-software.com> (goom2 main author)
+
+CPU Detect code based on the work by:
+Eric Anholt <anholt@FreeBSD.org>
+and MPlayer cpudetect hackers.
+
+List implementation from RCL:
+Sepp Wijnands <mrrazz@nerds-incorporated.org>
+Tom Wimmenhove <nohup@nerds-incorporated.org>
+
+Many thanks for quality suggestions and input:
+Burkhard Plaum <plaum@ipf.uni-stuttgart.de> (lemuria author)
+
