@@ -1,0 +1,171 @@
+2010-02-02  Scott Sibley <scott@starlon.net>
+
+	* plguins/actor/*: More plugin templates. Just the basics for now.
+
+2010-02-01  Scott Sibley <scott@starlon.net>
+
+	* plugins/transform/*: Ported more plugins. Again, no testing done. No
+	build scripts. No voodoo. Just params, copy/paste, and privatizing.
+	* common/avs_globals.*: Added AvsLPVOID for two trans plugins.
+
+2010-01-31  Scott Sibley <scott@starlon.net>
+
+	* plugins/actor/superscope/: Superscope now handles colors, although only
+	32 bit.
+	* plugins/transform/*: Ported several plugins. No testing was done, and
+	they're likely incomplete. I more less did params and some copy/paste work.
+	* visscript/avs_runnable.c: Inject $PI, $E, and $PHI into every variable
+	manager.
+
+2010-01-27  Scott Sibley <scott@starlon.net>
+
+	* plugins/transform/movement/: Updated to current code. It's buggy at the
+	moment.
+	* plugins/*: Included copies of all avs source into their respective
+	directories.
+
+2010-01-26  Scott Sibley <scott@starlon.net>
+
+	* visscript/avs.h, visscript/avs_debug.h, visscript/avs_compile.c:
+	Improved VisScript debugging. It will now follow libvisual's verbosness.
+	Check avs.h for additional debug macros. Also I modified dump_stack so 
+	it now uses the debug facility instead of writing directly to stdout.
+
+2010-01-25  Scott Sibley <scott@starlon.net>
+
+	* plugins/*: Remove VisString code
+	* visscript/*: Provide getosc and getspec with a VisAudio
+	* visscript/avs_functions.c: Cache getosc/getspec results
+	* common/avs_globals.*: Added GlobalProxy for pipeline globals -- the
+	proxy is set as the plugin's private object from within the pipeline.
+	Extract it before assigning the plugin's real private object, if desired.
+	Handle the proxy as you would any other VisObject.
+	* plugins/transform/dmovement/*: More attempts to get this working
+
+2006-09-19  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* *: Many updates and improvements.
+
+2006-03-04  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/transform/movement/onetone/*,
+	plugins/transform/movement/invert/*:
+	Adding plugins.
+
+2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/transform/movement/*: Added the movement elem (also ty to
+	Sepp).
+
+2006-03-03  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* visscript/*: Importing visscript here, will be visscript home for a
+	while.
+
+	* plugins/actor/superscope/*: super scope plugin.
+
+	* src/*: Random fixes/cleanups etc etc.
+
+	Sepp Wijnands bears all credit for visscript and superscope.
+
+2005-09-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* COPYING: Fixed.
+
+2005-05-12  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* docs/avs_format.txt: Added, by Zevensoft from #avs, freenode.
+
+2005-03-14  Duilio Protti  <dprotti@users.sourceforge.net>
+
+	* common/Makefile.am: added LIBVISUAL_CFLAGS to
+	AM_CFLAGS.
+
+2005-03-13  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* W_AVS_WISHLIST: Adding, let's learn from it.
+
+2005-03-09  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* common/*.h, src/*.h: Adopted new casting API.
+
+2005-02-11  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/*/*: Added the "avs" flag to the plugins.
+
+2005-01-29  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/lvavs_script*.*: Adding beginning of avs script support.
+
+	* src/scripttree.c: Adding test thingy.
+
+	* src/avs_parse: remove.
+
+2005-01-27  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Adding channelshift.
+
+	* plugins/transform/channelshift/*: Adding plugin.
+
+	* src/*: Fixed, adding support for channelshift, named APE avs entries.
+
+2005-01-26  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* configure.ac: Adding multiplier.
+
+	* plugins/transform/multiplier/*: Adding plugin.
+
+	* src/*: Fixed, adding support for multiplier, named APE avs entries.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/*: Small updates.
+
+	* plugins/actor/ring/*: Using the avs_gfx_color_cycler.
+
+	* common/avs_gfx.*: Adding the color_cycler.
+
+	* common/avs_config.*: Adding standard config stuff.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/*: updates.
+
+2005-01-25  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/ring/*: Nearly finished.
+
+	* common/*: Adding common routines here.
+
+	* src/*: More fixing.
+
+	Yeah very specific ChangeLog entry, I know.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* plugins/actor/ring/*: Adding begin frame of ring element. Needs some
+	investigation in the render pipeline and such, so it's going to proof
+	to be a good testbed for the whole AVS stuff.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/lvavs_preset.c, src/lvavs_preset.h,
+	src/lvavs_pipeline.c, src?lvavs_preset.h: Fixed the compile errors,
+	and super small bugs.
+
+	* src/actor_AVS.c: nego is before events, catch this.
+
+2005-01-21  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* src/lvavs_preset.c, src/lvavs_preset.h,
+	src/lvavs_pipeline.c, src?lvavs_preset.h: The 1k code spray, I haven't
+	yet compiled this :).
+
+2005-01-20  Dennis Smit  <ds@nerds-incorporated.org>
+	
+	* *: Adding a whole load of files here.
+
+2005-01-20  Dennis Smit  <ds@nerds-incorporated.org>
+
+	* *: Checking all this stuff in.
+

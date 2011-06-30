@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
-"Report-Msgid-Bugs-To: ds@nerds-incorporated.org\n"
-"POT-Creation-Date: 2011-05-13 16:05-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-05-20 05:30+0200\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -275,15 +275,15 @@ msgstr "El plugin no tiene información privada"
 msgid "The given plugin doesn't have priv info"
 msgstr "El plugin no tiene información privada"
 
-#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:77
+#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:68
 msgid "Dennis Smit <ds@nerds-incorporated.org>"
 msgstr ""
 
-#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:79
+#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:70
 msgid "Libvisual analyzer plugin"
 msgstr ""
 
-#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:80
+#: plugins/actor/lv_analyzer/actor_lv_analyzer.c:71
 msgid "A nice simple spectrum analyzer plugin."
 msgstr ""
 

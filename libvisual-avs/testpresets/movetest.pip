@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+
+<pipeline_preset>
+ <params>
+   <blendmode type="integer">2</blendmode>
+ </params>
+ <container_main>
+  <avs_movement>
+      <effect type="integer">0</effect>
+      <rectangular type="integer">0</rectangular>
+      <blend type="integer">0</blend>
+      <sourcemapped type="integer">0</sourcemapped>
+      <subpixel type="integer">1</subpixel>
+      <wrap type="integer">1</wrap>
+      <code type="string">r = r + (0.1 - (0.2 * d));\r\nd = d * 0.96;</code>
+  </avs_movement>
+  <avs_superscope>
+   <init type="string">
+   n=500;
+   r=10;
+   mx=0;
+   my=0;
+   mz=0;
+   dst=0.2;
+   rx=0;
+   ry=0;
+   rz=0;
+   rdx=1;
+   rdy=1;
+   rdz=1;
+   p=3.14159265;
+   p2=10.0*p;
+   p3=50/p;
+   </init>
+   <beat type="string">r=rand(8) + 2;</beat>
+   <frame type="string">
+   rx=rx+rdx;
+   ry=ry+rdy;
+   rz=rz+rdz;
+   xs=sin(rx/p3);
+   ys=sin(ry/p3);
+   zs=sin(rz/p3);
+   xc=cos(rx/p3);
+   yc=cos(ry/p3);
+   zc=cos(rz/p3);</frame>
+   <point type="string">
+   x1=v*sin(p2*i);
+   y1=v * i / cos(z1);
+   z1=r*cos(p2*i);
+   y2=y1*xc-z1*xs;
+   z2=y1*xs+z1*xc;
+   x2=z2*ys+x1*yc;
+   z3=z2*yc-x1*ys;
+   x3=x2*zc-y2*zs;
+   y3=y2*zc+x2*zs;
+   x4=mx+x3;
+   y4=my+y3;
+   z4=mz+z3;
+   x=x4/(1+z4/dst);
+   y=y4/(1+z4/dst);
+   </point>
+   <channel_source type="integer">0</channel_source>
+   <drawmode type="integer">1</drawmode>
+  </avs_superscope>
+ </container_main>
+</pipeline_preset>

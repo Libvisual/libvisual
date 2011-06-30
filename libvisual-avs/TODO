@@ -1,0 +1,123 @@
+This is our TODO list for our VisAVS implementation, VisAVS is going to be awesome, and rock,
+but there is a catch. It's an aweful lot of work, so help us out! :)
+
+I hope you have a wide terminal screen, because I do.
+
+
+__
+Very short term TODO:
+	Finish avs_ring element.
+	Setup VisTrans.
+	Update deserializer for the named APE stuff.
+	Make avs_blur.
+	Make avs_fadeout.
+	Look into render state stuff.
+	Add an AVS environment, use this for overlay states, line width and such.
+	Implement all the blend methods. (look at APETriangle from tomylobo)
+
+General TODO:
+	Finish preset parser.
+	VisAVS tree (including it's own (de)serializer). (Depends on: VisParamSerialize)
+	Preset loader (When loading from Winamp AVS presets, translate them to a VisAVS tree)
+	AVSActor, using the VisAVSTree. (basically a dynamic libvisual pipeline creater)
+	All the standard AVS elements. (Depends on: VisScript)
+
+Details TODO:
+	prefix winamp avs_blah preset loader with wavs_
+	Merge LVAVSPipeline partially into Libvisual, for purely it's pipeline pieces, see how we can do this best.
+
+
+__
+Listed here are all the standard AVS elements, these are the first to be implemented.
+
+Elements TODO:
+							In Parser			As VisPlugin
+Render APE:
+	fyrewurX
+
+							In Parser			As VisPlugin
+Misc:
+	Buffer Save
+	Comment						Yes
+	Custom BPM
+	Set Render Mode
+
+							In Parser			As VisPlugin
+Trans:
+	Blitter feedback
+	Blur						Yes
+	Brightness					Yes
+	Bump						
+	Channel Shift					Yes				Yes
+	Color Clip
+	Color Modifier
+	Color Reduction
+	Colorfade					
+	Convolution Filter
+	Dynamic Distance Modifier
+	Dynamic Movement
+	Dynamic Shift
+	Fadeout						Yes
+	Fast Brightness					Yes
+	Grain						Yes
+	Interference
+	Interleave					
+	Invert						Yes				Yes
+	Mirror						Yes
+	Mosaic						Yes
+	Movement					Yes
+	Multi Delay
+	Multi Filter
+	Multiplier					Yes				Partially
+	Roto Blitter
+	Scatter						Yes
+	Texer
+	Unique tone					Yes
+	Video Delay
+	Water						Yes
+	Water Bump					Yes
+
+							In Parser			As VisPlugin
+Render:
+	AVI
+	Bass Spin					Yes
+	Clear screen					Yes
+	Dot Fountain
+	Dot Grid
+	Dot Plane
+	Moving Particle					Yes
+	OnBeat Clear					Yes
+	Oscilliscope Star				Yes
+	Picture
+	Ring						Yes
+	Rotating Stars
+	SVP Loader
+	Simple
+	Starfield
+	SuperScope					Yes
+	Texer II
+	Text
+	Timescope
+
+Non standard:
+	Render:
+		Webcam plugin: http://www.itsdarkhere.com/~josh/prj/projects.phtml?uri=winamp
+		AVS slideshow: http://www.itsdarkhere.com/~josh/prj/projects.phtml?uri=winamp
+		Traigle Rasterizer APE: http://www.deviantart.com/deviation/7891629/
+
+	Trans:
+		Shreyas - Dynamic Clear Screen: http://www.deviantart.com/deviation/2466305/
+		water clock: http://www.deviantart.com/deviation/7443404/
+		Buffer blend: http://www.deviantart.com/deviation/9561609/
+		Normalise APE: http://www.deviantart.com/deviation/10334263/
+
+	http://goebish.free.fr/vfx/
+
+	Syntax avs:
+		http://www.deviantart.com/deviation/12811411/
+		http://tomylobo.dyndns.org/share/AVSTrans_cpp/
+
+__
+People to watch:
+	http://tomylobo.deviantart.com/
+

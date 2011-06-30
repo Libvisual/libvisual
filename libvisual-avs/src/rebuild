@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc -o avs_test main.c lvavs_preset.c -ggdb `pkg-config --libs --cflags glib-2.0 libvisual-0.5 libxml-2.0` -I../common/

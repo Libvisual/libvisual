@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<pipeline_preset>
+ <container_main>
+
+ <avs_superscope>
+    <init type="string">n = 10;</init>
+ </avs_superscope>
+
+ <avs_dmovement>
+    <init type="string">
+dr = rand(100) / 100 * PI;
+    </init>
+    <frame type="string">
+    </frame>
+    <beat type="string">
+dr = (rand(100) / 100) * PI;d = d * .95;
+    </beat>
+    <pixel type="string">
+r = r + dr;
+    </pixel>
+    <preset type="integer">-1</preset>
+    <rectcoords type="integer">0</rectcoords>
+    <wrap type="integer">1</wrap>
+    <xres type="integer">2</xres>
+    <yres type="integer">2</yres>
+    <blend type="integer">0</blend>
+    <subpixel type="integer">0</subpixel>
+    <buffern type="integer">0</buffern>
+    <nomove type="integer">0</nomove>
+ </avs_dmovement>
+
+ <avs_blur/>
+ </container_main>
+</pipeline_preset>
