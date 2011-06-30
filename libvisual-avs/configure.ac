@@ -445,7 +445,6 @@ AC_CONFIG_FILES([
         plugins/transform/water/Makefile
         plugins/actor/timescope/Makefile
         plugins/actor/stars/Makefile
-    plugins/transform/bump/Makefile
 	visscript/Makefile
 ])
 
