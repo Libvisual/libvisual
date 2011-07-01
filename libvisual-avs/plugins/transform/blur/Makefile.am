@@ -15,7 +15,7 @@ INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/common \
 	-I$(top_srcdir)/src
 
-transform_avs_blur_la_LDFLAGS = -rpath $(libdir) -module -avoid-version -laudcore 
+transform_avs_blur_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
 transform_avs_blur_la_SOURCES = transform_avs_blur.c
 

@@ -229,7 +229,7 @@ int lvavs_pipeline_run (LVAVSPipeline *pipeline, VisVideo *video, VisAudio *audi
     VisBuffer spmbuf2;
     VisBuffer tmp;
 
-    int size = BEAT_ADV_SIZE/2;
+    int size = BEAT_MAX_SIZE/2;
 
     float data[2][2][size];
 
@@ -270,8 +270,8 @@ int lvavs_pipeline_run (LVAVSPipeline *pipeline, VisVideo *video, VisAudio *audi
     pipeline->audiodata[1][1][i] = (data[1][1][i] + 1) / 2;
     }
 
-    float beatdata[BEAT_ADV_SIZE];
-    unsigned char visdata[BEAT_ADV_SIZE];
+    float beatdata[BEAT_MAX_SIZE];
+    unsigned char visdata[BEAT_MAX_SIZE];
 
     memcpy(beatdata, data[1][0], size * sizeof(float));
     memcpy(beatdata + size, data[1][1], size * sizeof(float));
@@ -280,11 +280,11 @@ int lvavs_pipeline_run (LVAVSPipeline *pipeline, VisVideo *video, VisAudio *audi
 #pragma omp parallel for private(i)
 #endif
 
-    for(i = BEAT_ADV_SIZE - 1; i >= 0; i--) {
+    for(i = BEAT_MAX_SIZE - 1; i >= 0; i--) {
         visdata[i] = (beatdata[i] + 1) / 2.0 * UCHAR_MAX;
     }
 
-    pipeline->isBeat = visual_audio_is_beat_with_data(audio, VISUAL_BEAT_ALGORITHM_PEAK, visdata, BEAT_ADV_SIZE);
+    pipeline->isBeat = visual_audio_is_beat_with_data(audio, VISUAL_BEAT_ALGORITHM_PEAK, visdata, BEAT_MAX_SIZE);
 
     pipeline_container_run (LVAVS_PIPELINE_CONTAINER (pipeline->container), video, audio);
 

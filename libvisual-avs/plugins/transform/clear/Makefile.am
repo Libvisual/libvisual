@@ -16,7 +16,7 @@ INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/visscript \
 	-I$(top_srcdir)/src
 
-transform_avs_clear_la_LDFLAGS = -rpath $(libdir) -module -avoid-version -laudcore 
+transform_avs_clear_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
 transform_avs_clear_la_SOURCES = transform_avs_clear.c
 

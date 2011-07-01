@@ -16,7 +16,7 @@ INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/src \
         -I$(top_srcdir)/visscript
 
-transform_avs_water_la_LDFLAGS = -rpath $(libdir) -module -avoid-version -laudcore 
+transform_avs_water_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
 transform_avs_water_la_SOURCES = transform_avs_water.c
 

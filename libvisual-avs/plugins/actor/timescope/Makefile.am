@@ -17,7 +17,7 @@ INCLUDES = $(all_includes) \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/visscript
 
-actor_avs_timescope_la_LDFLAGS = -rpath $(libdir) -module -avoid-version -laudcore
+actor_avs_timescope_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 
 
 actor_avs_timescope_la_SOURCES = actor_avs_timescope.c
 
