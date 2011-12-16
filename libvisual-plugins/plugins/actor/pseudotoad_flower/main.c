@@ -244,6 +244,7 @@ void render_flower_effect(FlowerInternal *flower) {
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
+	glPushMatrix();
 	glTranslatef(0.0,0.0,-1.0);
 
 	lights(flower);
