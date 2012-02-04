@@ -16,8 +16,10 @@ int main (int argc, char **argv)
 	SADisplay *display;
 	VisVideo *video;
 
-	VisInput *input;
+    VisBin *bin;
 	VisActor *actor;
+    VisInput *input;
+    VisMorph *morph;
 	VisEventQueue *localqueue;
     VisParamContainer *params;
     VisParamEntry *param;
@@ -26,52 +28,58 @@ int main (int argc, char **argv)
 	int running = TRUE;
 	int fullscreen = FALSE;
 	int visible = TRUE;
-
+    int depthflag;
 	int depth;
 
 	visual_init (&argc, &argv);
 
     visual_log_set_verboseness(VISUAL_LOG_VERBOSENESS_HIGH);
 
-	display = display_new (sdl_driver_new ());
 
-	/* Libvisual stuff */
-	if (argc > 1)
-		actor = visual_actor_new (argv[1]);
-	else
-		actor = visual_actor_new ("blursk");
+    bin = visual_bin_new();
 
+    actor = visual_actor_new("lv_scope");
+    input = visual_input_new("xmms2");
+    visual_bin_set_supported_depth(bin, VISUAL_VIDEO_DEPTH_ALL);
+    visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
 
-	if (argc > 3) {
-		depth = visual_video_depth_enum_from_value (atoi (argv[3]));
-	} else
-		depth = visual_video_depth_get_highest (visual_actor_get_supported_depth (actor));
+    depthflag = visual_actor_get_supported_depth(actor);
+    if(depthflag == VISUAL_VIDEO_DEPTH_GL)
+        visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
+    else
+    {
+        depth = visual_video_depth_get_highest(depthflag);
+        if((bin->depthflag & depth) > 0)
+            visual_bin_set_depth(bin, depth);
+        else
+            visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
+    }
+    bin->depthforcedmain = bin->depth;
 
+    //depth = visual_video_depth_get_highest_nogl(depthflag);
 	vidoptions = visual_actor_get_video_attribute_options (actor);
+
+	display = display_new (sdl_driver_new ());
 
 	display_create (display, depth, vidoptions, 320, 200, TRUE);
 
-	visual_actor_realize (actor);
-
 	video = display_get_video (display);
 
-        visual_actor_set_video (actor, video);
-	visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
+    visual_bin_connect(bin, actor, input);
+    visual_bin_set_video(bin, video);
+    visual_bin_realize(bin);
+    visual_bin_sync(bin, FALSE);
+    visual_bin_depth_changed(bin);
 
-	if (argc > 2)
-		input = visual_input_new (argv[2]);
-	else
-		input = visual_input_new ("xmms2");
-
-	visual_input_realize (input);
-
-    params = visual_plugin_get_params(input->plugin);
+/*
+    params = visual_plugin_get_params(bin->input->plugin);
 
     param = visual_param_container_get(params, "songinfo");
 
     if(param != NULL)
         visual_param_entry_set_object(param, 
-            VISUAL_OBJECT(visual_actor_get_songinfo(actor)));
+            VISUAL_OBJECT(visual_actor_get_songinfo(bin->actor)));
+*/
 
     //params = visual_plugin_get_params(actor->plugin);
 
@@ -89,7 +97,7 @@ int main (int argc, char **argv)
 		/* Handle all events */
 		display_drain_events (display, localqueue);
 
-		pluginqueue = visual_plugin_get_eventqueue (visual_actor_get_plugin (actor));
+		pluginqueue = visual_plugin_get_eventqueue (visual_actor_get_plugin (bin->actor));
 		while (visual_event_queue_poll_by_reference (localqueue, &ev)) {
 
 			if (ev->type != VISUAL_EVENT_RESIZE)
@@ -99,16 +107,40 @@ int main (int argc, char **argv)
                 case VISUAL_EVENT_PARAM:
                     break;
 				case VISUAL_EVENT_RESIZE:
+/*
 					video = display_get_video (display);
-					visual_actor_set_video (actor, video);
-
-					visual_actor_video_negotiate (actor, depth, FALSE, FALSE);
+					visual_bin_set_video (bin, video);
+                    visual_bin_depth_changed(bin);
+*/
 					break;
 
 				case VISUAL_EVENT_MOUSEMOTION:
 					break;
 
 				case VISUAL_EVENT_MOUSEBUTTONDOWN:
+                    actor = visual_bin_get_actor(bin);
+
+                    const char *morph_name = visual_morph_get_next_by_name(0);
+
+                    const char *actor_name = visual_actor_get_next_by_name(actor->plugin->info->name);
+                    if(!actor_name)
+                        actor_name = visual_actor_get_next_by_name(0);
+
+                    visual_bin_set_morph_by_name(bin, (char *)morph_name);
+                    visual_bin_switch_actor_by_name(bin, (char *)actor_name);
+                    actor = visual_bin_get_actor(bin);
+                    depthflag = visual_actor_get_supported_depth(actor);
+                    if(depthflag == VISUAL_VIDEO_DEPTH_GL)
+                        visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
+                    else
+                    {
+                        depth = visual_video_depth_get_highest(depthflag);
+                        if((bin->depthflag & depth) > 0)
+                            visual_bin_set_depth(bin, depth);
+                        else
+                            visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
+                    }
+                    bin->depthforcedmain = bin->depth;
 
 					break;
 
@@ -122,6 +154,7 @@ int main (int argc, char **argv)
 							break;
 
 						case VKEY_TAB:
+#if 0
 							fullscreen = !fullscreen;
 
 							display_set_fullscreen (display, fullscreen, TRUE);
@@ -131,7 +164,7 @@ int main (int argc, char **argv)
 							visual_actor_set_video (actor, video);
 
 							visual_actor_video_negotiate (actor, depth, FALSE, FALSE);
-
+#endif
 							break;
 
 						default:
@@ -157,19 +190,26 @@ int main (int argc, char **argv)
 			}
 		}
 
-		if (visible == FALSE) {
-			visual_input_run (input);
-
-			visual_time_usleep (10000);
-
-			continue;
-		}
-
+        if(visual_bin_depth_changed(bin)) 
+        {
+/*
+            int w = video->width;
+            int h = video->width;
+        	vidoptions = visual_actor_get_video_attribute_options (bin->actor);
+        	display_create (display, depth, vidoptions, w, h, TRUE);
+            visual_object_unref(VISUAL_OBJECT(video));
+			video = display_get_video (display);
+			visual_bin_set_video (bin, video);
+*/
+            visual_bin_sync(bin, TRUE);
+        }
 		/* Do a run cycle */
-		visual_input_run (input);
+
+        if(!visible)
+            continue;
 
 		display_lock (display);
-		visual_actor_run (actor, input->audio);
+		visual_bin_run (bin);
 		display_unlock (display);
 
 		display_update_all (display);
@@ -182,7 +222,7 @@ int main (int argc, char **argv)
 	display_close (display);
 
 	visual_quit ();
-
+    
 	printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
 
 	return 0;
