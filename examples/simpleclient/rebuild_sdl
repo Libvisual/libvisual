@@ -1,0 +1,8 @@
+#!/bin/sh
+
+gcc -Wall -o client libvisual.c \
+  `pkg-config --cflags --libs libvisual-0.5` \
+  `pkg-config --cflags --libs xmms2-client` \
+  `sdl-config --libs --cflags` \
+  -ggdb
+
