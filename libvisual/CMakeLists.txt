@@ -29,7 +29,6 @@ SET(LV_INCLUDE_DIR      "${INCLUDE_DIR}/libvisual-${LV_VERSION_SUFFIX}")
 SET(LV_PLUGINS_BASE_DIR "${LIB_DIR}/libvisual-${LV_VERSION_SUFFIX}")
 
 # Include basic CMake modules
-INCLUDE(CheckCCompiler)
 INCLUDE(CheckFunctionExists)
 INCLUDE(CheckIncludeFile)
 INCLUDE(CheckIncludeFiles)
@@ -114,9 +113,11 @@ CHECK_INCLUDE_FILE(sys/time.h   HAVE_SYS_TIME_H)
 
 # Checks for typedefs, structures, and compiler characteristics.
 
-INCLUDE(CheckForVarArgs)
+INCLUDE(CheckCCompiler)
 CHECK_C_COMPILER_SUPPORTS_CONST(HAVE_C_CONST)
 CHECK_C_COMPILER_SUPPORTS_INLINE(INLINE HAVE_C_INLINE)
+
+INCLUDE(CheckForVarArgs)
 CHECK_FOR_ISO_C_VARARGS(LV_HAVE_ISO_C_VARARGS)
 CHECK_FOR_GNU_C_VARARGS(LV_HAVE_GNU_C_VARARGS)
 
@@ -222,16 +223,17 @@ ENDIF(ENABLE_FAST_FP_RNG)
 SET(LV_PKG_CONFIG_LIBS   "")
 SET(LV_PKG_CONFIG_CFLAGS "")
 SET(LV_PKG_CONFIG_DEPS   "")
+SET(LV_PKG_CONFIG_NAME   "libvisual-${LV_VERSION_SUFFIX}")
 
 ADD_SUBDIRECTORY(libvisual)
 
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual/lvconfig.h.cmake ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h)
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual.pc.cmake ${PROJECT_BINARY_DIR}/libvisual.pc)
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual.pc.cmake ${PROJECT_BINARY_DIR}/${LV_PKG_CONFIG_NAME}.pc)
 
 # Installation
 
-INSTALL(FILES ${PROJECT_BINARY_DIR}/libvisual.pc DESTINATION ${LIB_DIR}/pkgconfig)
+INSTALL(FILES ${PROJECT_BINARY_DIR}/${LV_PKG_CONFIG_NAME}.pc DESTINATION ${LIB_DIR}/pkgconfig)
 
 # Uninstallation
 # Script copied from CMake FAQ
