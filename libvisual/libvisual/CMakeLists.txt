@@ -56,6 +56,7 @@ SET(libvisual_HEADERS
   lv_math.h
   lv_gl.h
   lv_defines.h
+  ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h
 )
 
 SET(libvisual_SOURCES
