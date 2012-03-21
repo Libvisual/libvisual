@@ -1,0 +1,230 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
+PROJECT(libvisual)
+
+# Version numbers
+SET(LV_VERSION_MAJOR  0)
+SET(LV_VERSION_MINOR  5)
+SET(LV_VERSION_MICRO  0)
+SET(LV_VERSION        "${LV_VERSION_MAJOR}.${LV_VERSION_MINOR}.${LV_VERSION_MICRO}")
+SET(LV_VERSION_SUFFIX "${LV_VERSION_MAJOR}.${LV_VERSION_MINOR}")
+
+SET(PACKAGE           "libvisual")
+SET(PACKAGE_VERSION   "${LV_VERSION}")
+SET(PACKAGE_BUGREPORT "http://libvisual.sf.net")
+SET(PACKAGE_NAME      "${PACKAGE}")
+SET(PACKAGE_STRING    "${PACKAGE}-${PACKAGE_VERSION}")
+SET(PACKAGE_TARNAME   "${PACKAGE}-${PACKAGE_TARNAME}")
+SET(PACKAGE_URL       "http://libvisual.sf.net")
+
+# Installation Paths
+SET(EXEC_PREFIX "${CMAKE_INSTALL_PREFIX}")
+SET(BIN_DIR     "${EXEC_PREFIX}/bin")
+SET(LIB_DIR     "${EXEC_PREFIX}/lib")
+SET(DATA_DIR    "${CMAKE_INSTALL_PREFIX}/share")
+SET(LOCALE_DIR  "${DATA_DIR}/share/locale")
+SET(INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include")
+SET(LV_INCLUDE_DIR      "${INCLUDE_DIR}/libvisual-${LV_VERSION_SUFFIX}")
+SET(LV_PLUGINS_BASE_DIR "${LIB_DIR}/libvisual-${LV_VERSION_SUFFIX}")
+
+# Include basic CMake modules
+INCLUDE(CheckCCompiler)
+INCLUDE(CheckFunctionExists)
+INCLUDE(CheckIncludeFile)
+INCLUDE(CheckIncludeFiles)
+INCLUDE(CheckLibraryExists)
+INCLUDE(CheckTypeSize)
+INCLUDE(FeatureSummary)
+INCLUDE(TestBigEndian)
+FIND_PACKAGE(PkgConfig REQUIRED)
+
+# Check target processor architecture
+IF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i.86|x86)$")
+  SET(VISUAL_ARCH_IX86 yes)
+ELSEIF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  SET(VISUAL_ARCH_X86_64 yes)
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^mips")
+  SET(VISUAL_ARCH_MIPS yes)
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^alpha")
+  SET(VISUAL_ARCH_ALPHA yes)
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sparc")
+  SET(VISUAL_ARCH_SPARC yes)
+ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)")
+  SET(VISUAL_ARCH_POWERPC yes)
+ELSE()
+  SET(VISUAL_ARCH_UNKNOWN yes)
+ENDIF()
+
+TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
+IF(IS_BIG_ENDIAN)
+  SET(VISUAL_BIG_ENDIAN yes)
+  SET(VISUAL_LITTLE_ENDIAN no)
+ELSE(IS_BIG_ENDIAN)
+  SET(VISUAL_BIG_ENDIAN no)
+  SET(VISUAL_LITTLE_ENDIAN yes)
+ENDIF(IS_BIG_ENDIAN)
+
+# Check target platform
+IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  SET(VISUAL_OS_LINUX yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "(FreeBSD|DragonFly)")
+  SET(VISUAL_OS_FREEBSD yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "NetBSD")
+  SET(VISUAL_OS_NETBSD yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
+  SET(VISUAL_OS_OPENBSD yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "SunOS")
+  SET(VISUAL_OS_SOLARIS yes)
+  SET(VISUAL_OS_SUNOS yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "HP-UX")
+  SET(VISUAL_OS_HPUX yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "AIX")
+  SET(VISUAL_OS_AIX yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "BeOS")
+  SET(VISUAL_OS_BEOS yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "IRIX")
+  SET(VISUAL_OS_IRIX yes)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+  SET(VISUAL_OS_DARWIN yes)
+ELSEIF(WIN32)
+  SET(VISUAL_OS_WIN32 ${WIN32})
+ELSE()
+  SET(VISUAL_OS_UNKNOWN yes)
+ENDIF()
+
+SET(VISUAL_WITH_CYGWIN ${CYGWIN})
+SET(VISUAL_WITH_MINGW  ${MINGW})
+
+# Checks for header files.
+INCLUDE(CheckStdCHeaders)
+IF(NOT STDC_HEADERS)
+  MESSAGE(FATAL ERROR "Libvisual requires standard C library headers to build")
+ENDIF(NOT STDC_HEADERS)
+
+# TODO: Generate error when required header is missing
+CHECK_INCLUDE_FILE(dirent.h     HAVE_DIRENT_H)
+CHECK_INCLUDE_FILE(fcntl.h      HAVE_FCNTL_H)
+CHECK_INCLUDE_FILE(sched.h      HAVE_SCHED_H)
+CHECK_INCLUDE_FILE(sys/types.h  HAVE_SYS_TYPES_H)
+CHECK_INCLUDE_FILE(sys/stat.h   HAVE_SYS_STAT_H)
+CHECK_INCLUDE_FILE(sys/sched.h  HAVE_SYS_SCHED_H)
+CHECK_INCLUDE_FILE(sys/socket.h HAVE_SYS_SOCKET_H)
+CHECK_INCLUDE_FILE(sys/time.h   HAVE_SYS_TIME_H)
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+INCLUDE(CheckForVarArgs)
+CHECK_C_COMPILER_SUPPORTS_CONST(HAVE_C_CONST)
+CHECK_C_COMPILER_SUPPORTS_INLINE(INLINE HAVE_C_INLINE)
+CHECK_FOR_ISO_C_VARARGS(LV_HAVE_ISO_C_VARARGS)
+CHECK_FOR_GNU_C_VARARGS(LV_HAVE_GNU_C_VARARGS)
+
+# Checks for library functions.
+CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
+CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
+CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
+CHECK_FUNCTION_EXISTS(sqrt HAVE_SQRT)
+CHECK_FUNCTION_EXISTS(strdup HAVE_STRDUP)
+CHECK_FUNCTION_EXISTS(strndup HAVE_STRNDUP)
+CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
+CHECK_FUNCTION_EXISTS(select HAVE_SELECT)
+# TODO: Translate AC_FUNC_SELECT_ARGTYPES
+
+CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DL)
+IF(NOT HAVE_DL)
+  MESSAGE(FATAL_ERROR "Libvisual requires dl to build")
+ENDIF(NOT HAVE_DL)
+
+CHECK_LIBRARY_EXISTS(m sqrt "" HAVE_STDC_MATH)
+IF(NOT HAVE_STDC_MATH)
+  MESSAGE(FATAL_ERROR "Libvisual requires libm to build")
+ENDIF(NOT HAVE_STDC_MATH)
+
+#---------------------
+# Internationalization
+#---------------------
+
+OPTION(ENABLE_NLS "Enable localization" no)
+IF(ENABLE_NLS)
+  FIND_PACKAGE(Gettext REQUIRED)
+  SET(HAVE_GETTEXT ${GETTEXT_FOUND})
+  ADD_SUBDIRECTORY(po)
+ENDIF(ENABLE_NLS)
+
+SET(GETTEXT_PACKAGE "libvisual-${LV_VERSION_SUFFIX}")
+
+#--------------------------------
+# Check for native thread support
+#--------------------------------
+
+FIND_PACKAGE(Threads)
+
+OPTION(ENABLE_THREADS "Turn on basic thread support (default:enabled)" yes)
+IF(ENABLE_THREADS)
+  IF(NOT Threads_FOUND)
+	MESSAGE(WARNING "You do not have any supported thread implementation available. Libvisual will be built without thread support.")
+  ELSE(NOT Threads_FOUND)
+   # TODO: Attempt to figure out the right thread library to link
+   # (pthread pthread32 pthreads thread dce)
+  ENDIF(NOT Threads_FOUND)
+ENDIF(ENABLE_THREADS)
+
+# check for type sizes
+CHECK_TYPE_SIZE(short  SIZEOF_SHORT)
+CHECK_TYPE_SIZE(int    SIZEOF_INT)
+CHECK_TYPE_SIZE(long   SIZEOF_LONG)
+CHECK_TYPE_SIZE(size_t SIZEOF_SIZE_T)
+
+# Try to figure out whether visual_size should be long or int
+MESSAGE(STATUS "Checking for the appropriate definition for size_t")
+
+IF(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
+  SET(VISUAL_SIZE_TYPE short)
+  SET(VISUAL_SIZE_T_FORMAT "hu")
+ELSEIF(SIZEOF_SIZE_T EQUAL SIZEOF_INT)
+  SET(VISUAL_SIZE_TYPE int)
+  SET(VISUAL_SIZE_T_FORMAT "u")
+ELSEIF(SIZEOF_SIZE_T EQUAL SIZEOF_LONG)
+  SET(VISUAL_SIZE_TYPE int)
+  SET(VISUAL_SIZE_T_FORMAT "lu")
+ELSE(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
+  MESSAGE(FATAL_ERROR "No type matching size_t in size")
+ENDIF(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
+MESSAGE(STATUS "Size of size_t is ${VISUAL_SIZE_TYPE}")
+
+#---------------------------------------
+# Profiling and Debugging build profiles
+#---------------------------------------
+
+SET(CMAKE_C_FLAGS_PROFILING "-pg")
+SET(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes") # Add -Werror?
+# TODO:Check if gcc >= 2.95 and add -Wno-unused-variable
+
+#------------------------
+# High performance optimizations
+#------------------------
+
+SET(CMAKE_C_FLAGS_EXTRA_OPTIMIZATIONS "-O3 -fexpensive-optimizations")
+# TODO:Check if we're using gcc
+
+IF(CMAKE_BUILD_TYPE STREQUAL EXTRA_OPTIMIZATIONS)
+  SET(USE_EXTRA_OPTIMIZATIONS yes)
+ENDIF(CMAKE_BUILD_TYPE STREQUAL EXTRA_OPTIMIZATIONS)
+
+OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator (enabled by default if building with extra optimization)" USE_EXTRA_OPTIMIZATIONS)
+IF(ENABLE_FAST_FP_RNG)
+  SET(VISUAL_RANDOM_FAST_FP_RNG yes)
+ENDIF(ENABLE_FAST_FP_RNG)
+
+# TODO: Set this correctly.
+# Add gthread-2.0 as dependency to .pc file if necessary
+SET(LV_PKG_CONFIG_LIBS   "")
+SET(LV_PKG_CONFIG_CFLAGS "")
+SET(LV_PKG_CONFIG_DEPS   "")
+
+#ADD_SUBDIRECTORY(libvisual)
+
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual/lvconfig.h.cmake ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h)
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual.pc.cmake ${PROJECT_BINARY_DIR}/libvisual.pc)
