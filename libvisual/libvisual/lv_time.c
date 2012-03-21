@@ -265,12 +265,12 @@ int visual_time_usleep (unsigned long microseconds)
 	request.tv_nsec = 1000 * (microseconds % VISUAL_USEC_PER_SEC);
 	while (nanosleep (&request, &remaining) == EINTR)
 		request = remaining;
-#elif HAVE_SELECT
+#elif defined(HAVE_SELECT)
 	struct timeval tv;
 	tv.tv_sec = microseconds / VISUAL_USEC_PER_SEC;
 	tv.tv_usec = microseconds % VISUAL_USEC_PER_SEC;
 	select (0, NULL, NULL, NULL, &tv);
-#elif HAVE_USLEEP
+#elif defined(HAVE_USLEEP)
 	return usleep (microseconds);
 #else
 #warning visual_time_usleep() will not work!

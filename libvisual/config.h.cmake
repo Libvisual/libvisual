@@ -54,4 +54,4 @@
 #endif
 #endif
 
-#endif CONFIG_H
+#endif /* CONFIG_H */

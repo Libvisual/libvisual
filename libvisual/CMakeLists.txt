@@ -15,7 +15,7 @@ SET(PACKAGE_VERSION   "${LV_VERSION}")
 SET(PACKAGE_BUGREPORT "http://libvisual.sf.net")
 SET(PACKAGE_NAME      "${PACKAGE}")
 SET(PACKAGE_STRING    "${PACKAGE}-${PACKAGE_VERSION}")
-SET(PACKAGE_TARNAME   "${PACKAGE}-${PACKAGE_TARNAME}")
+SET(PACKAGE_TARNAME   "${PACKAGE}-${PACKAGE_VERSION}")
 SET(PACKAGE_URL       "http://libvisual.sf.net")
 
 # Installation Paths
@@ -58,11 +58,11 @@ ENDIF()
 
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
 IF(IS_BIG_ENDIAN)
-  SET(VISUAL_BIG_ENDIAN yes)
-  SET(VISUAL_LITTLE_ENDIAN no)
+  SET(VISUAL_BIG_ENDIAN 1)
+  SET(VISUAL_LITTLE_ENDIAN 0)
 ELSE(IS_BIG_ENDIAN)
-  SET(VISUAL_BIG_ENDIAN no)
-  SET(VISUAL_LITTLE_ENDIAN yes)
+  SET(VISUAL_BIG_ENDIAN 0)
+  SET(VISUAL_LITTLE_ENDIAN 1)
 ENDIF(IS_BIG_ENDIAN)
 
 # Check target platform
@@ -223,8 +223,56 @@ SET(LV_PKG_CONFIG_LIBS   "")
 SET(LV_PKG_CONFIG_CFLAGS "")
 SET(LV_PKG_CONFIG_DEPS   "")
 
-#ADD_SUBDIRECTORY(libvisual)
+ADD_SUBDIRECTORY(libvisual)
 
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual/lvconfig.h.cmake ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h)
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual.pc.cmake ${PROJECT_BINARY_DIR}/libvisual.pc)
+
+# Installation
+
+INSTALL(FILES ${PROJECT_BINARY_DIR}/libvisual.pc DESTINATION ${LIB_DIR}/pkgconfig)
+
+# Uninstallation
+# Script copied from CMake FAQ
+
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+  IMMEDIATE @ONLY
+)
+
+ADD_CUSTOM_TARGET(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+)
+
+# Source packaging
+
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${PACKAGE_TARNAME}")
+SET(CPACK_SOURCE_GENERATOR TGZ TBZ2)
+
+SET(CPACK_SOURCE_IGNORE_FILES
+  /\\\\.git/
+  /\\\\.gitignore$
+  /_CPack_Packages/
+  /CMakeCache.txt$
+  CMakeFiles/
+  /CPackConfig.cmake$
+  /CPackSourceConfig.cmake$
+  cmake_install.cmake$
+  cmake_uninstall.cmake$
+  Makefile$
+  /install_manifest.txt$
+  \\\\.service$
+  \\\\.desktop$
+  \\\\.pc$
+  \\\\.o$
+  \\\\.a$
+  \\\\.so$
+  \\\\.so\\\\..*$
+  \\\\.mo$
+  \\\\.tar\\\\.gz$
+  \\\\.tar\\\\.bz2$
+)
+
+INCLUDE(CPack)

@@ -208,7 +208,7 @@ static int free_plugpaths ()
  */
 const char *visual_get_version ()
 {
-	return VERSION;
+	return VISUAL_VERSION;
 }
 
 /**
@@ -326,16 +326,16 @@ int visual_init (int *argc, char ***argv)
 	visual_fourier_initialize ();
 
 	/* Add the standard plugin paths */
-	ret = visual_init_path_add (PLUGPATH"/actor");
+	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/actor");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	ret = visual_init_path_add (PLUGPATH"/input");
+	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/input");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	ret = visual_init_path_add (PLUGPATH"/morph");
+	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/morph");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
-	ret = visual_init_path_add (PLUGPATH"/transform");
+	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/transform");
 	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
 
 #if !defined(VISUAL_OS_WIN32)

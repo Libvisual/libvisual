@@ -1,6 +1,9 @@
 #ifndef __LV_CONFIG_H__
 #define __LV_CONFIG_H__
 
+#define VISUAL_VERSION     "@LV_VERSION@"
+#define VISUAL_PLUGIN_PATH "@LV_PLUGINS_BASE_DIR@"
+
 #ifndef __cplusplus
 #cmakedefine LV_HAVE_ISO_C_VARARGS
 #endif
@@ -15,12 +18,12 @@
 
 #cmakedefine LV_HAVE_GNUC_VARARGS
 
-#cmakedefine VISUAL_BIG_ENDIAN
-#cmakedefine VISUAL_LITTLE_ENDIAN
+#cmakedefine VISUAL_BIG_ENDIAN    @VISUAL_BIG_ENDIAN@
+#cmakedefine VISUAL_LITTLE_ENDIAN @VISUAL_LITTLE_ENDIAN@
 
 typedef unsigned @VISUAL_SIZE_TYPE@ visual_size_t;
 
-#cmakedefine VISUAL_SIZE_T_FORMAT @VISUAL_SIZE_T_FORMAT@
+#cmakedefine VISUAL_SIZE_T_FORMAT "@VISUAL_SIZE_T_FORMAT@"
 
 #cmakedefine VISUAL_RANDOM_FAST_FP_RNG
 
