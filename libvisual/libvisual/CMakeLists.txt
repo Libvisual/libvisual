@@ -3,6 +3,7 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_BINARY_DIR}
   ${PROJECT_SOURCE_DIR}/libvisual
   ${PROJECT_BINARY_DIR}/libvisual
+  ${THREAD_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(
@@ -110,12 +111,15 @@ SET_TARGET_PROPERTIES(libvisual
   SOVERSION ${LV_VERSION_SUFFIX}
 )
 
-#TODO: Link with thread implementation
+TARGET_LINK_LIBRARIES(libvisual
+  ${THREAD_LIBS}
+)
+
 #TODO: Handle linker flags: -export-dynamic -no-undefined
 
 INSTALL(TARGETS libvisual LIBRARY DESTINATION ${LIB_DIR})
 
 INSTALL(
   FILES ${libvisual_HEADERS}
-  DESTINATION ${LV_INCLUDE_DIR}
+  DESTINATION ${LV_INCLUDE_DIR}/libvisual
 )

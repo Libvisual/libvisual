@@ -163,12 +163,27 @@ FIND_PACKAGE(Threads)
 
 OPTION(ENABLE_THREADS "Turn on basic thread support (default:enabled)" yes)
 IF(ENABLE_THREADS)
-  IF(NOT Threads_FOUND)
-	MESSAGE(WARNING "You do not have any supported thread implementation available. Libvisual will be built without thread support.")
-  ELSE(NOT Threads_FOUND)
-   # TODO: Attempt to figure out the right thread library to link
-   # (pthread pthread32 pthreads thread dce)
-  ENDIF(NOT Threads_FOUND)
+  IF(Threads_FOUND)
+	SET(VISUAL_HAVE_THREADS yes)
+    SET(THREAD_INCLUDE_DIRS "")
+    SET(THREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
+
+	IF(CMAKE_USE_PTHREADS_INIT)
+      SET(VISUAL_THREAD_MODEL_POSIX yes)
+    ELSEIF(CMAKE_USE_WIN32_THREADS_INIT)
+      SET(VISUAL_THREAD_MODEL_WIN32 yes)
+    ENDIF(CMAKE_USE_PTHREADS_INIT)
+  ELSE(Threads_FOUND)
+    PKG_CHECK_MODULES(GTHREAD2 gthread-2.0)
+    IF(GTHREAD2_FOUND)
+      SET(VISUAL_HAVE_THREADS yes)
+      SET(VISUAL_THREAD_MODEL_GTHREAD2 yes)
+      SET(THREAD_INCLUDE_DIRS ${GTHREAD2_INCLUDE_DIRS})
+      SET(THREAD_LIBS ${GTHREAD2_LIBRARIES})
+    ELSE(GTHREAD2_FOUND)
+	  MESSAGE(WARNING "You do not have any supported thread implementation available. Libvisual will be built without thread support.")
+    ENDIF(GTHREAD2_FOUND)
+  ENDIF(Threads_FOUND)
 ENDIF(ENABLE_THREADS)
 
 # check for type sizes
@@ -218,18 +233,19 @@ IF(ENABLE_FAST_FP_RNG)
   SET(VISUAL_RANDOM_FAST_FP_RNG yes)
 ENDIF(ENABLE_FAST_FP_RNG)
 
-# TODO: Set this correctly.
-# Add gthread-2.0 as dependency to .pc file if necessary
-SET(LV_PKG_CONFIG_LIBS   "")
+SET(LV_PKG_CONFIG_NAME   "libvisual-${LV_VERSION_SUFFIX}")
+SET(LV_PKG_CONFIG_LIBS   "-lvisual-${LV_VERSION_SUFFIX} ${CMAKE_THREAD_LIBS_INIT}")
 SET(LV_PKG_CONFIG_CFLAGS "")
 SET(LV_PKG_CONFIG_DEPS   "")
-SET(LV_PKG_CONFIG_NAME   "libvisual-${LV_VERSION_SUFFIX}")
+IF(VISUAL_THREAD_MODEL_GTHREAD2)
+  SET(LV_PKG_CONFIG_DEPS "gthread-2.0")
+ENDIF(VISUAL_THREAD_MODEL_GTHREAD2)
 
 ADD_SUBDIRECTORY(libvisual)
 
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual/lvconfig.h.cmake ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h)
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual.pc.cmake ${PROJECT_BINARY_DIR}/${LV_PKG_CONFIG_NAME}.pc)
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual.pc.cmake ${PROJECT_BINARY_DIR}/${LV_PKG_CONFIG_NAME}.pc @ONLY)
 
 # Installation
 
