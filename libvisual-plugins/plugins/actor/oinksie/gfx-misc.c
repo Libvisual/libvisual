@@ -59,8 +59,6 @@ void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x0, int 
 	register int stepx, stepy, stepy_;
 	register int fraction;
 	register int bp;
-	register int x;
-	register int y;
 
 	if (x0 < 0 || x0 > priv->screen_width - 1 || x1 < 0 || x1 > priv->screen_width - 1||
 	    y0 < 0 || y0 > priv->screen_height - 1 || y1 < 0 || y1 > priv->screen_height - 1)
@@ -116,9 +114,6 @@ void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x0, int 
 	bp = x0 + y0 * priv->screen_width;
 
 	_oink_gfx_pixel_set (priv, buf, color, x0, y0);
-
-	x = x0;
-	y = y0;
 
 	if (dx > dy)
 	{
