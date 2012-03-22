@@ -35,17 +35,18 @@
 #include "actor_bumpscope.h"
 #include "bump_scope.h"
 
-int act_bumpscope_init (VisPluginData *plugin);
-int act_bumpscope_cleanup (VisPluginData *plugin);
-int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height);
-int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *act_bumpscope_palette (VisPluginData *plugin);
-int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+const VisPluginInfo *get_plugin_info (int *count);
+
+static int act_bumpscope_init (VisPluginData *plugin);
+static int act_bumpscope_cleanup (VisPluginData *plugin);
+static int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height);
+static int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_bumpscope_palette (VisPluginData *plugin);
+static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (int *count);
 const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[] = {{
@@ -78,7 +79,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int act_bumpscope_init (VisPluginData *plugin)
+static int act_bumpscope_init (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
@@ -198,7 +199,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 	return 0;
 }
 
-int act_bumpscope_cleanup (VisPluginData *plugin)
+static int act_bumpscope_cleanup (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
         VisUIWidget *ui;
@@ -217,7 +218,7 @@ int act_bumpscope_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height)
+static int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -242,7 +243,7 @@ int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -259,7 +260,7 @@ int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int width, 
 	return 0;
 }
 
-int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
+static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
@@ -317,14 +318,14 @@ int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_bumpscope_palette (VisPluginData *plugin)
+static VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	return &priv->pal;
 }
 
-int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	int i;
