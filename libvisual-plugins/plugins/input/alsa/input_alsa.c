@@ -31,7 +31,8 @@
 #include <string.h>
 #include <gettext.h>
 
-#ifdef HAVE_0_9_X_ALSA
+#include <alsa/version.h>
+#if (SND_LIB_MAJOR == 0 && SND_LIB_MINOR == 9)
 #define ALSA_PCM_NEW_HW_PARAMS_API
 #define ALSA_PCM_NEW_SW_PARAMS_API
 #endif
