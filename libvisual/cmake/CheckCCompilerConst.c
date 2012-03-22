@@ -1,5 +1,6 @@
 /* Copied from GNU autoconf's c.m4 file (which is GPL) */
 #ifndef __cplusplus
+int main() {
   /* Ultrix mips cc rejects this.  */
   typedef int charset[2];
   const charset x;
@@ -43,4 +44,5 @@
   { /* ULTRIX-32 V3.1 (Rev 9) vcc rejects this */
     const int foo = 10;
   }
+}
 #endif
