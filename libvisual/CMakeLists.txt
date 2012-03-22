@@ -207,20 +207,25 @@ ENDIF(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
 MESSAGE(STATUS "Size of size_t is ${VISUAL_SIZE_TYPE}")
 
 # Build profiles
-SET(CMAKE_C_FLAGS "-Wall -O2")
-SET(CMAKE_C_FLAGS_PROFILING "-pg")
-SET(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes") # Add -Werror?
 
-# Extra optimizations for GCC
-IF(CMAKE_COMPILER_IS_GNUCC)
-  SET(CMAKE_C_FLAGS_EXTRA_OPTIMIZATIONS "-O3 -fexpensive-optimizations")
-ENDIF(CMAKE_COMPILER_IS_GNUCC)
+OPTION(ENABLE_PROFILING "Enable profiling" no)
+OPTION(ENABLE_EXTRA_OPTIMIZATIONS "Enable extra optimizations" no)
 
-IF(CMAKE_BUILD_TYPE STREQUAL EXTRA_OPTIMIZATIONS)
-  SET(USE_EXTRA_OPTIMIZATIONS yes)
-ENDIF(CMAKE_BUILD_TYPE STREQUAL EXTRA_OPTIMIZATIONS)
+IF(ENABLE_EXTRA_OPTIMIZATIONS)
+  SET(OPT_C_FLAGS "-O3 -fexpensive-optimizations")
+ELSEIF(CMAKE_BUILD_TYPE STREQUAL Debug)
+  SET(OPT_C_FLAGS "-O0")
+ENDIF(ENABLE_EXTRA_OPTIMIZATIONS)
 
-OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator (enabled by default if building with extra optimizations)" USE_EXTRA_OPTIMIZATIONS)
+IF(ENABLE_PROFILING)
+  SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg")
+ENDIF(ENABLE_PROFILING)
+
+# Add -Werror to debug builds?
+SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
+SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes")
+
+OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
 
 # Generate pkg-config file

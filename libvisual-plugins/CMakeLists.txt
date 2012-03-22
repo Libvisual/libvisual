@@ -45,7 +45,6 @@ FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(LIBVISUAL ${LIBVISUAL_PKG}>=${LV_REQUIRED_VERSION} REQUIRED)
 
 # Determine plugin installation paths
-
 IF(NOT DEFINED LV_PLUGIN_DIR)
   EXECUTE_PROCESS(
     COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=pluginsbasedir ${LIBVISUAL_PKG}
@@ -222,20 +221,24 @@ ENDIF(ENABLE_XMMS2)
 
 # Build parameters
 
-SET(CMAKE_C_FLAGS "-Wall -O2")
-SET(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS})
+OPTION(ENABLE_PROFILING "Enable profiling" no)
+OPTION(ENABLE_EXTRA_OPTIMIZATIONS "Enable extra optimizations" no)
 
-# Debug build
-SET(CMAKE_C_FLAGS_DEBUG   "-O0 -ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes -Wno-unused-variable")
-SET(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+IF(ENABLE_EXTRA_OPTIMIZATIONS)
+  SET(OPT_C_FLAGS "-O3 -fexpensive-optimizations")
+ELSEIF(CMAKE_BUILD_TYPE STREQUAL Debug)
+  SET(OPT_C_FLAGS "-O0")
+ENDIF(ENABLE_EXTRA_OPTIMIZATIONS)
 
-# Extra optimization build
-SET(CMAKE_C_FLAGS_EXTRA_OPTIMIZATION "-O3 -fexpensive-optimizations")
-SET(CMAKE_CXX_FLAGS_EXTRA_OPTIMIZATION ${CMAKE_C_FLAGS_EXTRA_OPTIMIZATION})
+IF(ENABLE_PROFILING)
+  SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg")
+ENDIF(ENABLE_PROFILING)
 
-# Profiling build
-SET(CMAKE_C_FLAGS_PROFILE "-pg")
-SET(CMAKE_CXX_FLAGS_PROFILE ${CMAKE_C_FLAGS_PROFILE})
+# Add -Werror to debug builds?
+SET(CMAKE_C_FLAGS         "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
+SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
+SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes")
+SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes")
 
 # Generate config header
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
