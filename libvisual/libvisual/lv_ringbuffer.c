@@ -21,6 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -28,7 +30,7 @@
 #include <fcntl.h>
 #include <gettext.h>
 
-#include <lvconfig.h>
+#include "lvconfig.h"
 #include "lv_ringbuffer.h"
 #include "lv_log.h"
 #include "lv_mem.h"
