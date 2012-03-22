@@ -83,24 +83,24 @@ IF(ENABLE_JACK)
 ENDIF(ENABLE_JACK)
 
 # GdkPixbuf
-OPTION(ENABLE_GDKPIXBUF_PLUGIN "Build GdkPixbuf visualization plugin (default=enabled)" yes)
-IF(ENABLE_GDKPIXBUF_PLUGIN)
+OPTION(ENABLE_GDKPIXBUF "Build GdkPixbuf visualization plugin (default=enabled)" yes)
+IF(ENABLE_GDKPIXBUF)
   PKG_CHECK_MODULES(GTK gtk+-2.0>=${GTK_REQUIRED_VERSION})
   IF(NOT GTK_FOUND)
-    MESSAGE(WARNING "GTK+ >= ${GTK_REQUIRED_VERSION} is not found. The GdkPixbuf image loader plugin won't be build. GdkPixbuf is included within gtk-2.0 and newer, which can be downloaded at http://www.gtk.org/")
-    SET(ENABLE_GDKPIXBUF_PLUGIN no)
+    MESSAGE(WARNING "GTK+ >= ${GTK_REQUIRED_VERSION} is not found. The GdkPixbuf image loader plugin won't be built. GdkPixbuf is included within gtk-2.0 and newer, which can be downloaded at http://www.gtk.org/")
+    SET(ENABLE_GDKPIXBUF no)
   ENDIF(NOT GTK_FOUND)
-ENDIF(ENABLE_GDKPIXBUF_PLUGIN)
+ENDIF(ENABLE_GDKPIXBUF)
 
 # GStreamer
-OPTION(ENABLE_GSTREAMER_PLUGIN "Build GStreamer visualization plugin (default=enabled)" yes)
-IF(ENABLE_GSTREAMER_PLUGIN)
+OPTION(ENABLE_GSTREAMER "Build GStreamer visualization plugin (default=enabled)" yes)
+IF(ENABLE_GSTREAMER)
   PKG_CHECK_MODULES(GSTREAMER gstreamer-0.8>=${GST_REQUIRED_VERSION})
   IF(NOT GSTREAMER_FOUND)
-    MESSAGE(WARNING "GStreamer >= ${GST_REQUIRED_VERSION} is not found. The GStreamer viewer plugin won't be build. GStreamer can be downloaded from http://www.gstreamer.org/")
-    SET(ENABLE_GSTREAMER_PLUGIN no)
+    MESSAGE(WARNING "GStreamer >= ${GST_REQUIRED_VERSION} is not found. The GStreamer viewer plugin won't be built. GStreamer can be downloaded from http://www.gstreamer.org/")
+    SET(ENABLE_GSTREAMER no)
   ENDIF(NOT GSTREAMER_FOUND)
-ENDIF(ENABLE_GSTREAMER_PLUGIN)
+ENDIF(ENABLE_GSTREAMER)
 
 FIND_PACKAGE(X11)
 SET(HAVE_X ${X11_FOUND})
@@ -211,10 +211,6 @@ OPTION(ENABLE_BUMPSCOPE "Build the bumpscope plugin (default=enabled)" yes)
 
 # G-Force
 OPTION(ENABLE_GFORCE "Build the G-Force plugin (default=enabled)" yes)
-IF(ENABLE_GFORCE)
-  # Special flags for G-Force, make this only for G-Force FIXME FIXME!!!
-  SET(GFORCE_CFLAGS "-DUNIX_X -D_REENTRANT")
-ENDIF(ENABLE_GFORCE)
 
 # Blursk
 OPTION(ENABLE_BLURSK "Build the Blursk plugin (default=enabled)" yes)
@@ -232,11 +228,20 @@ OPTION(ENABLE_TENTACLE "Build the tentacle morph plugin (default=enabled)" yes)
 OPTION(ENABLE_SLIDE "Build the slide morph plugin (default=enabled)" yes)
 
 # Build parameters
+SET(CMAKE_C_FLAGS "-Wall -O2")
+SET(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS})
 
 # Debug build
-SET(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes -Wno-unused-variable")
+SET(CMAKE_C_FLAGS_DEBUG   "-O0 -ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes -Wno-unused-variable")
+SET(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+
+# Extra optimization build
 SET(CMAKE_C_FLAGS_EXTRA_OPTIMIZATION "-O3 -fexpensive-optimizations")
+SET(CMAKE_CXX_FLAGS_EXTRA_OPTIMIZATION ${CMAKE_C_FLAGS_EXTRA_OPTIMIZATION})
+
+# Profiling build
 SET(CMAKE_C_FLAGS_PROFILE "-pg")
+SET(CMAKE_CXX_FLAGS_PROFILE ${CMAKE_C_FLAGS_PROFILE})
 
 # Plugin installation paths
 EXECUTE_PROCESS(

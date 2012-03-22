@@ -1,0 +1,22 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+  ${LIBVISUAL_INCLUDE_DIRS}
+  ${GTK_INCLUDE_DIRS}
+)
+
+LINK_DIRECTORIES(
+  ${LIBVISUAL_LIBRARY_DIRS}
+  ${GTK_LIBRARY_DIRS}
+)
+
+SET(actor_gdkpixbuf_SOURCES
+  actor_gdkpixbuf.c
+)
+
+ADD_LIBRARY(actor_gdkpixbuf MODULE ${actor_gdkpixbuf_SOURCES})
+#-avoid-version
+
+TARGET_LINK_LIBRARIES(actor_gdkpixbuf
+  ${LIBVISUAL_LIBRARIES}
+)
