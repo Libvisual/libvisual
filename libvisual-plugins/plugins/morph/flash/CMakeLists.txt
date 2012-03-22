@@ -1,0 +1,20 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+  ${LIBVISUAL_INCLUDE_DIRS}
+)
+
+LINK_DIRECTORIES(
+  ${LIBVISUAL_LIBRARY_DIRS}
+)
+
+SET(morph_flash_SOURCES
+  morph_flash.c
+)
+
+ADD_LIBRARY(morph_flash MODULE ${morph_flash_SOURCES})
+#-avoid-version
+
+TARGET_LINK_LIBRARIES(morph_flash
+  ${LIBVISUAL_LIBRARIES}
+)

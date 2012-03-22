@@ -1,0 +1,20 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+  ${LIBVISUAL_INCLUDE_DIRS}
+)
+
+LINK_DIRECTORIES(
+  ${LIBVISUAL_LIBRARY_DIRS}
+)
+
+SET(morph_slide_SOURCES
+  morph_slide.c
+)
+
+ADD_LIBRARY(morph_slide MODULE ${morph_slide_SOURCES})
+#-avoid-version
+
+TARGET_LINK_LIBRARIES(morph_slide
+  ${LIBVISUAL_LIBRARIES}
+)
