@@ -31,7 +31,7 @@
 #include "gfx-misc.h"
 #include "gfx-analyzer.h"
 #include "gfx-background.h"
-#include "config.h"
+#include "oink-config.h"
 #include "misc.h"
 #include "scene.h"
 
