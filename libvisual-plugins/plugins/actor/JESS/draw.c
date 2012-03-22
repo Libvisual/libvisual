@@ -303,7 +303,6 @@ void l2_grilles_3d (JessPrivate *priv, uint8_t * buffer, float data[2][512], flo
 
 	float x, y, z, xres4 = (float) (priv->resx >> 2);
 	short ax = 0, ay = 0, ix, iy, i, j, nb_x, nb_y;
-	int tx[16][16], ty[16][16];
 	uint8_t color[16][16];
 
 	int resx = priv->resx;
@@ -328,9 +327,6 @@ void l2_grilles_3d (JessPrivate *priv, uint8_t * buffer, float data[2][512], flo
 
 			ix = (int) x;
 			iy = (int) y;
-
-			tx[i][j] = ix;
-			ty[i][j] = iy;
 
 			if (j != 0)
 			{
@@ -621,7 +617,7 @@ void stars_manage(JessPrivate *priv, uint8_t *buffer, int new,  float alpha, flo
 /**************** OSCILLO ******************************************/
 /*******************************************************************/
 
-uint8_t couleur (JessPrivate *priv, short x)
+static uint8_t couleur (JessPrivate *priv, short x)
 {
 	int resx = priv->resx;
 
