@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -36,6 +37,8 @@
 #define NUM_BANDS 16
 #define SCOPE_DEPTH 16
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	VisTime rendertime;
 	float cam_y;
@@ -53,13 +56,13 @@ typedef struct {
 	//short pcm_data[256];
 } NastyfftPrivate;
 
-int lv_nastyfft_init (VisPluginData *plugin);
-int lv_nastyfft_cleanup (VisPluginData *plugin);
-int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height);
-int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events);
-int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
-VisPalette *lv_nastyfft_palette (VisPluginData *plugin);
-int lv_nastyfft_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_nastyfft_init (VisPluginData *plugin);
+static int lv_nastyfft_cleanup (VisPluginData *plugin);
+static int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events);
+static int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_nastyfft_palette (VisPluginData *plugin);
+static int lv_nastyfft_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
 
 static int nastyfft_sound (NastyfftPrivate *priv, VisAudio *audio);
 static int nastyfft_draw (NastyfftPrivate *priv, VisVideo *video);
@@ -110,7 +113,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_nastyfft_init (VisPluginData *plugin)
+static int lv_nastyfft_init (VisPluginData *plugin)
 {
 	NastyfftPrivate *priv;
 
@@ -149,9 +152,7 @@ int lv_nastyfft_init (VisPluginData *plugin)
 	return 0;
 }
 
-
-
-int lv_nastyfft_cleanup (VisPluginData *plugin)
+static int lv_nastyfft_cleanup (VisPluginData *plugin)
 {
 	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -162,7 +163,7 @@ int lv_nastyfft_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height)
+static int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -181,12 +182,12 @@ int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-VisPalette *lv_nastyfft_palette (VisPluginData *plugin)
+static VisPalette *lv_nastyfft_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_nastyfft_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_nastyfft_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -204,7 +205,7 @@ int lv_nastyfft_dimension (VisPluginData *plugin, VisVideo *video, int width, in
 	return 0;
 }
 
-int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
+static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -265,7 +266,7 @@ int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
