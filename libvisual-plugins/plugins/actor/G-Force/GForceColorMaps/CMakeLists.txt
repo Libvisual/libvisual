@@ -1,5 +1,3 @@
-#$(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_gforce/GForceColorMaps
-
 SET(COLORMAP_FILES
   Acid_Gap
   DT_-_Antarctis
