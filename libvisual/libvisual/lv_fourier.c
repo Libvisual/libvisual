@@ -81,7 +81,7 @@ static void range_table_init (LogScaleCacheEntry *lcache, int size);
 static int dft_cache_destroyer (VisObject *object);
 static DFTCacheEntry *dft_cache_get (VisDFT *dft);
 
-static int log_scale_cache_destroy (VisObject *object);
+static int log_scale_cache_destroyer (VisObject *object);
 static LogScaleCacheEntry *log_scale_cache_get (int size);
 
 static void perform_dft_brute_force (VisDFT *fourier, float *output, float *input);
