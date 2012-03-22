@@ -6,7 +6,7 @@ morph_tentacle_la_LIBADD = $(LIBVISUAL_LIBS)
 
 AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
-INCLUDES = $(all_includes) -I$(top_srcdir) 
+INCLUDES = $(all_includes) -I$(top_srcdir)
 
-morph_tentacle_la_LDFLAGS = -module -avoid-version 
+morph_tentacle_la_LDFLAGS = -module -avoid-version
 morph_tentacle_la_SOURCES = morph_tentacle.c

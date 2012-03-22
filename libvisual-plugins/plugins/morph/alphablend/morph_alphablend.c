@@ -29,6 +29,8 @@
 
 #include <libvisual/libvisual.h>
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
@@ -46,9 +48,9 @@ static inline int alpha_blend_16_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src
 static inline int alpha_blend_24_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
 static inline int alpha_blend_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
 
-int lv_morph_alpha_init (VisPluginData *plugin);
-int lv_morph_alpha_cleanup (VisPluginData *plugin);
-int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static int lv_morph_alpha_init (VisPluginData *plugin);
+static int lv_morph_alpha_cleanup (VisPluginData *plugin);
+static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -85,17 +87,17 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_morph_alpha_init (VisPluginData *plugin)
+static int lv_morph_alpha_init (VisPluginData *plugin)
 {
 	return 0;
 }
 
-int lv_morph_alpha_cleanup (VisPluginData *plugin)
+static int lv_morph_alpha_cleanup (VisPluginData *plugin)
 {
 	return 0;
 }
 
-int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	visual_log_return_val_if_fail (dest != NULL, -1);
 	visual_log_return_val_if_fail (src1 != NULL, -1);

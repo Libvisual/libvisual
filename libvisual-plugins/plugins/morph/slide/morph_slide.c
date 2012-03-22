@@ -30,6 +30,8 @@
 
 #include <libvisual/libvisual.h>
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef enum {
 	SLIDE_LEFT,
 	SLIDE_RIGHT,
@@ -41,12 +43,12 @@ typedef struct {
 	SlideType	slide_type;
 } SlidePrivate;
 
-int lv_morph_slide_init_left (VisPluginData *plugin);
-int lv_morph_slide_init_right (VisPluginData *plugin);
-int lv_morph_slide_init_bottom (VisPluginData *plugin);
-int lv_morph_slide_init_upper (VisPluginData *plugin);
-int lv_morph_slide_cleanup (VisPluginData *plugin);
-int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static int lv_morph_slide_init_left (VisPluginData *plugin);
+static int lv_morph_slide_init_right (VisPluginData *plugin);
+static int lv_morph_slide_init_bottom (VisPluginData *plugin);
+static int lv_morph_slide_init_upper (VisPluginData *plugin);
+static int lv_morph_slide_cleanup (VisPluginData *plugin);
+static int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -131,7 +133,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_morph_slide_init_left (VisPluginData *plugin)
+static int lv_morph_slide_init_left (VisPluginData *plugin)
 {
 	SlidePrivate *priv;
 
@@ -143,7 +145,7 @@ int lv_morph_slide_init_left (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_slide_init_right (VisPluginData *plugin)
+static int lv_morph_slide_init_right (VisPluginData *plugin)
 {
 	SlidePrivate *priv;
 
@@ -155,7 +157,7 @@ int lv_morph_slide_init_right (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_slide_init_bottom (VisPluginData *plugin)
+static int lv_morph_slide_init_bottom (VisPluginData *plugin)
 {
 	SlidePrivate *priv;
 
@@ -167,7 +169,7 @@ int lv_morph_slide_init_bottom (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_slide_init_upper (VisPluginData *plugin)
+static int lv_morph_slide_init_upper (VisPluginData *plugin)
 {
 	SlidePrivate *priv;
 
@@ -179,7 +181,7 @@ int lv_morph_slide_init_upper (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_slide_cleanup (VisPluginData *plugin)
+static int lv_morph_slide_cleanup (VisPluginData *plugin)
 {
 	SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -188,7 +190,7 @@ int lv_morph_slide_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint8_t *destbuf = visual_video_get_pixels (dest);

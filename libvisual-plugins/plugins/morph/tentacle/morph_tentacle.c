@@ -30,6 +30,8 @@
 
 #include <libvisual/libvisual.h>
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
@@ -45,9 +47,9 @@ static void vline_from_video_16 (VisVideo *dest, VisVideo *src, int x, int y1, i
 static void vline_from_video_24 (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
 static void vline_from_video_32 (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
 
-int lv_morph_tentacle_init (VisPluginData *plugin);
-int lv_morph_tentacle_cleanup (VisPluginData *plugin);
-int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static int lv_morph_tentacle_init (VisPluginData *plugin);
+static int lv_morph_tentacle_cleanup (VisPluginData *plugin);
+static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -84,7 +86,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_morph_tentacle_init (VisPluginData *plugin)
+static int lv_morph_tentacle_init (VisPluginData *plugin)
 {
 	TentaclePrivate *priv;
 
@@ -94,7 +96,7 @@ int lv_morph_tentacle_init (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_tentacle_cleanup (VisPluginData *plugin)
+static int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 {
 	TentaclePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -103,7 +105,7 @@ int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	TentaclePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint8_t *destbuf = visual_video_get_pixels (dest);
