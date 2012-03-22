@@ -259,3 +259,7 @@ ADD_SUBDIRECTORY(plugins/input)
 ADD_SUBDIRECTORY(plugins/morph)
 
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
+
+ADD_CUSTOM_TARGET(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+)
