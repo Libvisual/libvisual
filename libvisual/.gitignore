@@ -1,3 +1,11 @@
+CMakeCache.txt
+CMakeFiles
+CMakeOutput.log
+cmake_install.cmake
+cmake_uninstall.cmake
+CPack*Config.cmake
+Makefile
+
 .deps
 .libs
 Makefile.in
