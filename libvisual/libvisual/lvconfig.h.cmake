@@ -2,7 +2,7 @@
 #define __LV_CONFIG_H__
 
 #define VISUAL_VERSION     "@LV_VERSION@"
-#define VISUAL_PLUGIN_PATH "@LV_PLUGINS_BASE_DIR@"
+#define VISUAL_PLUGIN_PATH "@LV_PLUGIN_DIR@"
 
 #ifndef __cplusplus
 #cmakedefine LV_HAVE_ISO_C_VARARGS 1

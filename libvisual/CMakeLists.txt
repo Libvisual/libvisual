@@ -10,6 +10,7 @@ SET(LV_VERSION_MICRO  0)
 SET(LV_VERSION        "${LV_VERSION_MAJOR}.${LV_VERSION_MINOR}.${LV_VERSION_MICRO}")
 SET(LV_VERSION_SUFFIX "${LV_VERSION_MAJOR}.${LV_VERSION_MINOR}")
 
+# Package information
 SET(PACKAGE           "libvisual")
 SET(PACKAGE_VERSION   "${LV_VERSION}")
 SET(PACKAGE_BUGREPORT "http://libvisual.sf.net")
@@ -23,10 +24,10 @@ SET(EXEC_PREFIX "${CMAKE_INSTALL_PREFIX}")
 SET(BIN_DIR     "${EXEC_PREFIX}/bin")
 SET(LIB_DIR     "${EXEC_PREFIX}/lib")
 SET(DATA_DIR    "${CMAKE_INSTALL_PREFIX}/share")
-SET(LOCALE_DIR  "${DATA_DIR}/share/locale")
+SET(LOCALE_DIR  "${DATA_DIR}/locale")
 SET(INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include")
-SET(LV_INCLUDE_DIR      "${INCLUDE_DIR}/libvisual-${LV_VERSION_SUFFIX}")
-SET(LV_PLUGINS_BASE_DIR "${LIB_DIR}/libvisual-${LV_VERSION_SUFFIX}")
+SET(LV_INCLUDE_DIR "${INCLUDE_DIR}/libvisual-${LV_VERSION_SUFFIX}")
+SET(LV_PLUGIN_DIR  "${LIB_DIR}/libvisual-${LV_VERSION_SUFFIX}")
 
 # Include basic CMake modules
 INCLUDE(CheckFunctionExists)
@@ -55,6 +56,7 @@ ELSE()
   SET(VISUAL_ARCH_UNKNOWN yes)
 ENDIF()
 
+# Check endianness
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
 IF(IS_BIG_ENDIAN)
   SET(VISUAL_BIG_ENDIAN 1)
@@ -87,7 +89,7 @@ ELSEIF(CMAKE_SYSTEM_NAME MATCHES "IRIX")
 ELSEIF(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   SET(VISUAL_OS_DARWIN yes)
 ELSEIF(WIN32)
-  SET(VISUAL_OS_WIN32 ${WIN32})
+  SET(VISUAL_OS_WIN32 yes)
 ELSE()
   SET(VISUAL_OS_UNKNOWN yes)
 ENDIF()
@@ -95,7 +97,15 @@ ENDIF()
 SET(VISUAL_WITH_CYGWIN ${CYGWIN})
 SET(VISUAL_WITH_MINGW  ${MINGW})
 
-# Checks for header files.
+# Check for typedefs, structures, and compiler characteristics
+INCLUDE(CheckCCompiler)
+CHECK_C_COMPILER_SUPPORTS_CONST(HAVE_C_CONST)
+CHECK_C_COMPILER_SUPPORTS_INLINE(INLINE HAVE_C_INLINE)
+INCLUDE(CheckForVarArgs)
+CHECK_FOR_ISO_C_VARARGS(LV_HAVE_ISO_C_VARARGS)
+CHECK_FOR_GNU_C_VARARGS(LV_HAVE_GNU_C_VARARGS)
+
+# Check for standard C library headers
 INCLUDE(CheckStdCHeaders)
 IF(NOT STDC_HEADERS)
   MESSAGE(FATAL ERROR "Libvisual requires standard C library headers to build")
@@ -111,41 +121,31 @@ CHECK_INCLUDE_FILE(sys/sched.h  HAVE_SYS_SCHED_H)
 CHECK_INCLUDE_FILE(sys/socket.h HAVE_SYS_SOCKET_H)
 CHECK_INCLUDE_FILE(sys/time.h   HAVE_SYS_TIME_H)
 
-# Checks for typedefs, structures, and compiler characteristics.
-
-INCLUDE(CheckCCompiler)
-CHECK_C_COMPILER_SUPPORTS_CONST(HAVE_C_CONST)
-CHECK_C_COMPILER_SUPPORTS_INLINE(INLINE HAVE_C_INLINE)
-
-INCLUDE(CheckForVarArgs)
-CHECK_FOR_ISO_C_VARARGS(LV_HAVE_ISO_C_VARARGS)
-CHECK_FOR_GNU_C_VARARGS(LV_HAVE_GNU_C_VARARGS)
-
-# Checks for library functions.
+# Check for non standard C library functions
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
 CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
-CHECK_FUNCTION_EXISTS(sqrt HAVE_SQRT)
 CHECK_FUNCTION_EXISTS(strdup HAVE_STRDUP)
 CHECK_FUNCTION_EXISTS(strndup HAVE_STRNDUP)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 CHECK_FUNCTION_EXISTS(select HAVE_SELECT)
 # TODO: Translate AC_FUNC_SELECT_ARGTYPES
 
+# Check for dynamic linking library
 CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DL)
 IF(NOT HAVE_DL)
   MESSAGE(FATAL_ERROR "Libvisual requires dl to build")
 ENDIF(NOT HAVE_DL)
 
+# Check for standard math library
 CHECK_LIBRARY_EXISTS(m sqrt "" HAVE_STDC_MATH)
 IF(NOT HAVE_STDC_MATH)
   MESSAGE(FATAL_ERROR "Libvisual requires libm to build")
 ENDIF(NOT HAVE_STDC_MATH)
+SET(HAVE_SQRT 1)
 
-#---------------------
 # Internationalization
-#---------------------
-
+SET(GETTEXT_PACKAGE "libvisual-${LV_VERSION_SUFFIX}")
 OPTION(ENABLE_NLS "Enable localization" no)
 IF(ENABLE_NLS)
   FIND_PACKAGE(Gettext REQUIRED)
@@ -153,16 +153,10 @@ IF(ENABLE_NLS)
   ADD_SUBDIRECTORY(po)
 ENDIF(ENABLE_NLS)
 
-SET(GETTEXT_PACKAGE "libvisual-${LV_VERSION_SUFFIX}")
-
-#--------------------------------
-# Check for native thread support
-#--------------------------------
-
-FIND_PACKAGE(Threads)
-
+# Check for thread implementation
 OPTION(ENABLE_THREADS "Turn on basic thread support (default:enabled)" yes)
 IF(ENABLE_THREADS)
+  FIND_PACKAGE(Threads)
   IF(Threads_FOUND)
 	SET(VISUAL_HAVE_THREADS yes)
     SET(THREAD_INCLUDE_DIRS "")
@@ -186,7 +180,7 @@ IF(ENABLE_THREADS)
   ENDIF(Threads_FOUND)
 ENDIF(ENABLE_THREADS)
 
-# check for type sizes
+# Check for type sizes
 CHECK_TYPE_SIZE(short  SIZEOF_SHORT)
 CHECK_TYPE_SIZE(int    SIZEOF_INT)
 CHECK_TYPE_SIZE(long   SIZEOF_LONG)
@@ -194,7 +188,6 @@ CHECK_TYPE_SIZE(size_t SIZEOF_SIZE_T)
 
 # Try to figure out whether visual_size should be long or int
 MESSAGE(STATUS "Checking for the appropriate definition for size_t")
-
 IF(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
   SET(VISUAL_SIZE_TYPE short)
   SET(VISUAL_SIZE_T_FORMAT "hu")
@@ -209,31 +202,24 @@ ELSE(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
 ENDIF(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
 MESSAGE(STATUS "Size of size_t is ${VISUAL_SIZE_TYPE}")
 
-#---------------------------------------
-# Profiling and Debugging build profiles
-#---------------------------------------
-
+# Build profiles
 SET(CMAKE_C_FLAGS "-Wall -O2")
 SET(CMAKE_C_FLAGS_PROFILING "-pg")
 SET(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes") # Add -Werror?
-# TODO:Check if gcc >= 2.95 and add -Wno-unused-variable
 
-#------------------------
-# High performance optimizations
-#------------------------
-
-SET(CMAKE_C_FLAGS_EXTRA_OPTIMIZATIONS "-O3 -fexpensive-optimizations")
-# TODO:Check if we're using gcc
+# Extra optimizations for GCC
+IF(CMAKE_COMPILER_IS_GNUCC)
+  SET(CMAKE_C_FLAGS_EXTRA_OPTIMIZATIONS "-O3 -fexpensive-optimizations")
+ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
 IF(CMAKE_BUILD_TYPE STREQUAL EXTRA_OPTIMIZATIONS)
   SET(USE_EXTRA_OPTIMIZATIONS yes)
 ENDIF(CMAKE_BUILD_TYPE STREQUAL EXTRA_OPTIMIZATIONS)
 
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator (enabled by default if building with extra optimization)" USE_EXTRA_OPTIMIZATIONS)
-IF(ENABLE_FAST_FP_RNG)
-  SET(VISUAL_RANDOM_FAST_FP_RNG yes)
-ENDIF(ENABLE_FAST_FP_RNG)
+SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
 
+# Generate pkg-config file
 SET(LV_PKG_CONFIG_NAME   "libvisual-${LV_VERSION_SUFFIX}")
 SET(LV_PKG_CONFIG_LIBS   "-lvisual-${LV_VERSION_SUFFIX} ${CMAKE_THREAD_LIBS_INIT}")
 SET(LV_PKG_CONFIG_CFLAGS "")
@@ -241,19 +227,17 @@ SET(LV_PKG_CONFIG_DEPS   "")
 IF(VISUAL_THREAD_MODEL_GTHREAD2)
   SET(LV_PKG_CONFIG_DEPS "gthread-2.0")
 ENDIF(VISUAL_THREAD_MODEL_GTHREAD2)
-
-ADD_SUBDIRECTORY(libvisual)
-
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual/lvconfig.h.cmake ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h)
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual.pc.cmake ${PROJECT_BINARY_DIR}/${LV_PKG_CONFIG_NAME}.pc @ONLY)
-
-# Installation
-
 INSTALL(FILES ${PROJECT_BINARY_DIR}/${LV_PKG_CONFIG_NAME}.pc DESTINATION ${LIB_DIR}/pkgconfig)
 
-# Uninstallation
-# Script copied from CMake FAQ
+# Generate config headers
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual/lvconfig.h.cmake ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h)
+
+# Build libvisual
+ADD_SUBDIRECTORY(libvisual)
+
+# Uninstallation (script copied from CMake FAQ)
 
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"

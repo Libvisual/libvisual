@@ -104,6 +104,7 @@ SET(libvisual_SOURCES
 )
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
+#TODO: Handle linker flags: -no-undefined
 
 SET_TARGET_PROPERTIES(libvisual
   PROPERTIES
@@ -115,8 +116,6 @@ SET_TARGET_PROPERTIES(libvisual
 TARGET_LINK_LIBRARIES(libvisual
   ${THREAD_LIBS}
 )
-
-#TODO: Handle linker flags: -export-dynamic -no-undefined
 
 INSTALL(TARGETS libvisual LIBRARY DESTINATION ${LIB_DIR})
 
