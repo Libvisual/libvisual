@@ -199,10 +199,10 @@ ENDIF(ENABLE_MADSPIN)
 IF(ENABLE_MPLAYER)
   # FIXME: Missing check for MPlayer...
   # FIXME: we must check also for HAVE_MMAP here
-  IF(NOT LV_HAVE_MUNMAP)
+  IF(NOT HAVE_MUNMAP)
     MESSAGE(WARNING "There is no working munmap() function available. The MPlayer input plugin will not be built.")
     SET(ENABLE_MPLAYER no)
-  ENDIF(NOT LV_HAVE_MUNMAP)
+  ENDIF(NOT HAVE_MUNMAP)
 ENDIF(ENABLE_MPLAYER)
 
 IF(ENABLE_NASTYFFT)
