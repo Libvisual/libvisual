@@ -1,0 +1,20 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+  ${LIBVISUAL_INCLUDE_DIRS}
+)
+
+LINK_DIRECTORIES(
+  ${LIBVISUAL_LIBRARY_DIRS}
+)
+
+SET(input_mplayer_SOURCES
+  input_mplayer.c
+)
+
+ADD_LIBRARY(input_mplayer MODULE ${input_mplayer_SOURCES})
+#-avoid-version
+
+TARGET_LINK_LIBRARIES(input_mplayer
+  ${LIBVISUAL_LIBRARIES}
+)

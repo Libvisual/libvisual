@@ -147,7 +147,7 @@ IF(ENABLE_XMMS2)
 ENDIF(ENABLE_XMMS2)
 
 # Input debug plugin
-OPTION(ENABLE_INPUTDEBUG "Build the input debug plugin (default=enabled)" yes)
+OPTION(ENABLE_INPUT_DEBUG "Build the input debug plugin (default=enabled)" yes)
 
 # OpenGL test plugin
 OPTION(ENABLE_LV_GLTEST "Build the lv_gltest plugin (default=enabled)" yes)
