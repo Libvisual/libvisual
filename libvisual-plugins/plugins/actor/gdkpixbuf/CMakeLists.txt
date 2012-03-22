@@ -19,4 +19,5 @@ ADD_LIBRARY(actor_gdkpixbuf MODULE ${actor_gdkpixbuf_SOURCES})
 
 TARGET_LINK_LIBRARIES(actor_gdkpixbuf
   ${LIBVISUAL_LIBRARIES}
+  ${GTK_LIBRARIES}
 )
