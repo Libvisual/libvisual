@@ -6,28 +6,6 @@ cmake_uninstall.cmake
 CPack*Config.cmake
 Makefile
 
-.deps
-.libs
-Makefile.in
-aclocal.m4
-autom4te.cache
-config.h
-config.h.in
-config.log
-config.status
-config.guess
-config.rpath
-config.sub
-configure
-INSTALL
-Makefile
-m4/*.m4
-depcomp
-install-sh
-libtool
-ltmain.sh
-missing
-mkinstalldirs
 po/Makefile
 po/Makefile.in
 po/*.pot
@@ -39,7 +17,5 @@ po/en@quot.header
 po/stamp-po
 stamp-h1
 
-*.lo
-*.la
 libvisual*.pc
 libvisual/lvconfig.h
