@@ -9,6 +9,14 @@ SET(LV_PLUGINS_VERSION_MICRO  0)
 SET(LV_PLUGINS_VERSION        ${LV_PLUGINS_VERSION_MAJOR}.${LV_PLUGINS_VERSION_MINOR}.${LV_PLUGINS_VERSION_MICRO})
 SET(LV_PLUGINS_VERSION_SUFFIX ${LV_PLUGINS_VERSION_MAJOR}.${LV_PLUGINS_VERSION_MINOR})
 
+SET(PACKAGE           "libvisual-plugins")
+SET(PACKAGE_VERSION   "${LV_PLUGINS_VERSION}")
+SET(PACKAGE_BUGREPORT "http://libvisual.sf.net")
+SET(PACKAGE_NAME      "${PACKAGE}")
+SET(PACKAGE_STRING    "${PACKAGE}-${PACKAGE_VERSION}")
+SET(PACKAGE_TARNAME   "${PACKAGE}-${PACKAGE_VERSION}")
+SET(PACKAGE_URL       "http://libvisual.sf.net")
+
 SET(LIBVISUAL_REQUIRED_VERSION ${LV_PLUGINS_VERSION})
 SET(ESOUND_REQUIRED_VERSION 0.2.28)
 SET(JACK_REQUIRED_VERSION 0.98.0)
@@ -263,3 +271,32 @@ CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
 )
+
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${PACKAGE_TARNAME}")
+SET(CPACK_SOURCE_GENERATOR TGZ TBZ2)
+
+SET(CPACK_SOURCE_IGNORE_FILES
+  /\\\\.git/
+  /\\\\.gitignore$
+  /_CPack_Packages/
+  /CMakeCache.txt$
+  CMakeFiles/
+  /CPackConfig.cmake$
+  /CPackSourceConfig.cmake$
+  cmake_install.cmake$
+  cmake_uninstall.cmake$
+  Makefile$
+  /install_manifest.txt$
+  \\\\.service$
+  \\\\.desktop$
+  \\\\.pc$
+  \\\\.o$
+  \\\\.a$
+  \\\\.so$
+  \\\\.so\\\\..*$
+  \\\\.mo$
+  \\\\.tar\\\\.gz$
+  \\\\.tar\\\\.bz2$
+)
+
+INCLUDE(CPack)
