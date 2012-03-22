@@ -6,7 +6,7 @@
 
 #define PI 3.14159
 
-t_complex _inf_fct(InfinitePrivate *priv, t_complex a,int n,int p1,int p2)   //p1 et p2:0-4 
+static t_complex _inf_fct(InfinitePrivate *priv, t_complex a,int n,int p1,int p2)   //p1 et p2:0-4 
 {
 	t_complex b;
 	float fact;
@@ -119,7 +119,7 @@ t_complex _inf_fct(InfinitePrivate *priv, t_complex a,int n,int p1,int p2)   //p
 }
 
 
-void _inf_generate_sector(InfinitePrivate *priv, int g,int f,int p1,int p2,int debut,int step,t_interpol* vector_field)
+static void _inf_generate_sector(InfinitePrivate *priv, int g,int f,int p1,int p2,int debut,int step,t_interpol* vector_field)
 {
 	int fin=debut+step;
 	const int prop_transmitted=249;

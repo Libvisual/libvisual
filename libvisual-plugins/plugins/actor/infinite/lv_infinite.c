@@ -33,13 +33,15 @@
 #include "renderer.h"
 #include "display.h"
 
-int act_infinite_init (VisPluginData *plugin);
-int act_infinite_cleanup (VisPluginData *plugin);
-int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int act_infinite_requisition (VisPluginData *plugin, int *width, int *height);
-int act_infinite_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *act_infinite_palette (VisPluginData *plugin);
-int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+const VisPluginInfo *get_plugin_info (int *count);
+
+static int act_infinite_init (VisPluginData *plugin);
+static int act_infinite_cleanup (VisPluginData *plugin);
+static int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_infinite_requisition (VisPluginData *plugin, int *width, int *height);
+static int act_infinite_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_infinite_palette (VisPluginData *plugin);
+static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -75,7 +77,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int act_infinite_init (VisPluginData *plugin)
+static int act_infinite_init (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
 
@@ -124,7 +126,7 @@ int act_infinite_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int act_infinite_requisition (VisPluginData *plugin, int *width, int *height)
+static int act_infinite_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -151,7 +153,7 @@ int act_infinite_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	InfinitePrivate *priv;
 
@@ -174,7 +176,7 @@ int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, i
 	return 0;
 }
 
-int act_infinite_events (VisPluginData *plugin, VisEventQueue *events)
+static int act_infinite_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -192,7 +194,7 @@ int act_infinite_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_infinite_palette (VisPluginData *plugin)
+static VisPalette *act_infinite_palette (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
 
@@ -203,7 +205,7 @@ VisPalette *act_infinite_palette (VisPluginData *plugin)
 	return &priv->pal;
 }
 
-int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	VisBuffer buffer;
 	InfinitePrivate *priv;
