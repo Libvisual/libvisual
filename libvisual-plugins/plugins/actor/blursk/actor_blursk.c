@@ -25,18 +25,18 @@
 #include <stdlib.h>
 #include <limits.h>
 
-
-
 #include "actor_blursk.h"
 #include "blursk.h"
 
-int act_blursk_init (VisPluginData *plugin);
-int act_blursk_cleanup (VisPluginData *plugin);
-int act_blursk_requisition (VisPluginData *plugin, int *width, int *height);
-int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int act_blursk_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *act_blursk_palette (VisPluginData *plugin);
-int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+const VisPluginInfo *get_plugin_info (int *count);
+
+static int act_blursk_init (VisPluginData *plugin);
+static int act_blursk_cleanup (VisPluginData *plugin);
+static int act_blursk_requisition (VisPluginData *plugin, int *width, int *height);
+static int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_blursk_palette (VisPluginData *plugin);
+static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -79,7 +79,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 
 
 
-int act_blursk_init (VisPluginData *plugin) {
+static int act_blursk_init (VisPluginData *plugin) {
     BlurskPrivate *priv;
     VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
     VisParamEntry *param;
@@ -211,7 +211,7 @@ int act_blursk_init (VisPluginData *plugin) {
     return 0;
 }
 
-int act_blursk_cleanup (VisPluginData *plugin) {
+static int act_blursk_cleanup (VisPluginData *plugin) {
     return 0;
     BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -226,7 +226,7 @@ int act_blursk_cleanup (VisPluginData *plugin) {
     return 0;
 }
 
-int act_blursk_requisition (VisPluginData *plugin, int *width, int *height) {
+static int act_blursk_requisition (VisPluginData *plugin, int *width, int *height) {
         int reqw, reqh;
 
         reqw = *width;
@@ -269,7 +269,7 @@ int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int
         return 0;
 }
 
-int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
+static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
     BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT(plugin));
     VisEvent ev;
     VisParamEntry *param;
@@ -324,13 +324,13 @@ int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
     return 0;
 }
 
-VisPalette *act_blursk_palette (VisPluginData *plugin) {
+static VisPalette *act_blursk_palette (VisPluginData *plugin) {
     BlurskPrivate *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
     return &priv->pal;
 }
 
-int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio) {
+static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio) {
         int16_t tpcm[512];
         float *pcm;
     

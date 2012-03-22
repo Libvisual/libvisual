@@ -741,10 +741,10 @@ static unsigned char *bigtext(unsigned char *cursor, int bpl, char **shape, int 
 static int fitwords(int maxwidth, char *text, int *width)
 {
     int scale = big ? 2 : 1;
-    int i, last, w, lastw, ch;
+    int i, w, last, lastw, ch;
     int fudgefactor = 0;
 
-    for (i = last = w = 0; text[i] && w < maxwidth - fudgefactor; i++)
+    for (i = last = lastw = w = 0; text[i] && w < maxwidth - fudgefactor; i++)
     {
         ch = tolower(text[i]);
         switch (ch)
@@ -894,7 +894,7 @@ void convert_ms_to_timestamp(char *buf, int time)
 /* Draw text into an image.  */
 void textdraw(unsigned char *img, int height, int bpl, char *side, char *text)
 {
-    int i, max, twidth;
+    int max, twidth;
 
     /* parse the font table, if necessary */
     textinit();
@@ -906,7 +906,7 @@ void textdraw(unsigned char *img, int height, int bpl, char *side, char *text)
     textbg = (*config.overall_effect == 'B' ? 0x80 : 0);
 
     /* for each row of text... */
-    for (i = 0; *text; )
+    while (text)
     {
         /* find out how much can fit on this row */
         max = fitwords(bpl - 3, text, &twidth);

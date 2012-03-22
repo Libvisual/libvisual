@@ -275,7 +275,6 @@ static void airbrush(int x, int y, unsigned char color)
 
 static void edges(int x, int y, int thick)
 {
-    int per;    /* length of perimeter */
     double  frac;   /* X, scaled to be between 0.0 and 1.0 */
     int iw, ih; /* image width & height, minus 20 */
     int color;
@@ -294,7 +293,7 @@ static void edges(int x, int y, int thick)
      */
     iw = img_width - 20;
     ih = img_height - 20;
-    per = 2 * (iw + ih);
+
     if (config.thick_on_beats)
         color = (ih - y) * (1600 - 200 * thick) / ih;
     else
@@ -505,7 +504,7 @@ static void plotafter(void)
  * the points are copied into renderdata[].  The return value indicates the
  * final number of data points.
  */
-int condition_data(int max, int ndata, int16_t **dataref)
+static int condition_data(int max, int ndata, int16_t **dataref)
 {
     int i, j, step;
 
