@@ -13,7 +13,7 @@
 #cmakedefine GETTEXT_PACKAGE   "@GETTEXT_PACKAGE@"
 #cmakedefine HAVE_GETTEXT      1
 #cmakedefine HAVE_ICONV        1
-#cmakedefine LOCALE_DIR        "@LOCALE_DIR@"
+#cmakedefine LOCALE_DIR        "@CMAKE_INSTALL_FULL_LOCALEDIR@"
 
 #cmakedefine HAVE_DIRENT_H     1
 #cmakedefine HAVE_DLFCN_H      1

@@ -1,8 +1,8 @@
 prefix=@CMAKE_INSTALL_PREFIX@
-exec_prefix=@EXEC_PREFIX@
-libdir=@LIB_DIR@
-includedir=@LV_INCLUDE_DIR@
-pluginsbasedir=@LV_PLUGIN_DIR@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+includedir=@LV_INCLUDE_DIR_FULL@
+pluginsbasedir=@LV_PLUGIN_DIR_FULL@
 
 Name: libvisual
 Version: @LV_VERSION@
