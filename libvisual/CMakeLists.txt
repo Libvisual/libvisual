@@ -158,7 +158,7 @@ IF(ENABLE_NLS)
 ENDIF(ENABLE_NLS)
 
 # Check for thread implementation
-OPTION(ENABLE_THREADS "Turn on basic thread support (default:enabled)" yes)
+OPTION(ENABLE_THREADS "Turn on basic thread support" yes)
 IF(ENABLE_THREADS)
   FIND_PACKAGE(Threads)
   IF(Threads_FOUND)
@@ -220,7 +220,7 @@ IF(CMAKE_BUILD_TYPE STREQUAL EXTRA_OPTIMIZATIONS)
   SET(USE_EXTRA_OPTIMIZATIONS yes)
 ENDIF(CMAKE_BUILD_TYPE STREQUAL EXTRA_OPTIMIZATIONS)
 
-OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator (enabled by default if building with extra optimization)" USE_EXTRA_OPTIMIZATIONS)
+OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator (enabled by default if building with extra optimizations)" USE_EXTRA_OPTIMIZATIONS)
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
 
 # Generate pkg-config file
