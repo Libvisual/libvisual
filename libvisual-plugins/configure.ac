@@ -22,7 +22,7 @@ m4_define([libvisual_required_version], [lv_plugins_version])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
 m4_define([gtk_required_version], [2.0])
-m4_define([gst_required_version], [0.8])
+m4_define([gst_required_version], [0.10])
 
 m4_define([libvisual_pkg], [libvisual-lv_plugins_version_suffix])
 LIBVISUAL_PKG=libvisual_pkg
@@ -163,7 +163,7 @@ AC_ARG_ENABLE([gstreamer-plugin],
   [ENABLE_GSTREAMER_PLUGIN=yes])
 
 if test "$ENABLE_GSTREAMER_PLUGIN" = "yes"; then
-  PKG_CHECK_MODULES([GSTREAMER], [gstreamer-0.8 >= gst_required_version],
+  PKG_CHECK_MODULES([GSTREAMER], [gstreamer-0.10 >= gst_required_version],
     [HAVE_GSTREAMER="yes"], [HAVE_GSTREAMER="no"])
 
   if test "$HAVE_GSTREAMER" = "yes"; then
@@ -535,6 +535,7 @@ AC_ARG_ENABLE([profiling],
 
 if test "$ENABLE_PROFILING" = "yes"; then
   DEBUG_CFLAGS="$DEBUG_CFLAGS -pg"
+  DEBUG_CXXFLAGS="$DEBUG_CXXFLAGS -pg"
 fi
 
 dnl Debug build
@@ -545,9 +546,8 @@ AC_ARG_ENABLE([debug],
   [ENABLE_DEBUG=no])
 
 if test "$ENABLE_DEBUG" = "yes"; then
-  DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3"
-  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wall -Wmissing-braces -Wimplicit -Wunused"
-  DEBUG_CFLAGS="$DEBUG_CFLAGS -Wmissing-prototypes -Wno-unused-variable"
+  DEBUG_CFLAGS="$DEBUG_CFLAGS -ggdb3 -Wall -Wmissing-braces -Wunused -Wno-unused-variable -Wimplicit -Wmissing-prototypes"
+  DEBUG_CXXFLAGS="$DEBUG_CXXFLAGS -ggdb3 -Wall -Wmissing-braces -Wunused -Wno-unused-variable"
 fi
 AC_SUBST(DEBUG_CFLAGS)
 
@@ -569,7 +569,7 @@ fi
 AC_SUBST(OPT_CFLAGS)
 
 AC_SUBST(CFLAGS, "${CFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
-AC_SUBST(CXXFLAGS, "${CXXFLAGS} ${DEBUG_CFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
+AC_SUBST(CXXFLAGS, "${CXXFLAGS} ${DEBUG_CXXFLAGS} ${OPT_CFLAGS} ${GFORCE_CFLAGS}")
 
 dnl Plugin installation paths
 
