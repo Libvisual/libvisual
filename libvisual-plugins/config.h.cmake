@@ -9,10 +9,6 @@
 #cmakedefine HAVE_DLFCN_H    1
 #cmakedefine HAVE_FCNTL_H    1
 
-#cmakedefine HAVE_LIBASOUND  1
-#cmakedefine HAVE_0_9_X_ALSA 1
-#cmakedefine HAVE_1_X_X_ALSA 1
-
 #cmakedefine HAVE_MMAP         1
 #cmakedefine HAVE_GETTIMEOFDAY 1
 #cmakedefine HAVE_POW          1
@@ -20,7 +16,9 @@
 #cmakedefine HAVE_FLOOR        1
 
 #cmakedefine HAVE_UNISTD_H     1
+#cmakedefine HAVE_X            1
 #cmakedefine HAVE_XF86VMODE    1
+#cmakedefine HAVE_OPENGL       1
 
 #cmakedefine STDC_HEADERS      1
 
