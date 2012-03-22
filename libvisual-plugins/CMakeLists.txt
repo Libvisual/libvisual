@@ -42,7 +42,7 @@ FIND_PACKAGE(PkgConfig REQUIRED)
 
 # Check for libvisual here so that users get told they have the
 # wrong dependencies as early in the process as possible.
-PKG_CHECK_MODULES(LIBVISUAL ${LIBVISUAL_PKG}>=${LIBVISUAL_REQUIRED_VERSION} REQUIRED)
+PKG_CHECK_MODULES(LIBVISUAL ${LIBVISUAL_PKG}>=${LV_REQUIRED_VERSION} REQUIRED)
 
 # Determine plugin installation paths
 
