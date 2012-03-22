@@ -181,7 +181,7 @@ IF(ENABLE_NASTYFFT)
 ENDIF(ENABLE_NASTYFFT)
 
 # Madspin
-OPTION(madspin "Build the Madspin plugin (default=enabled)" yes)
+OPTION(ENABLE_MADSPIN "Build the Madspin plugin (default=enabled)" yes)
 IF(ENABLE_MADSPIN)
   IF(NOT HAVE_OPENGL)
     MESSAGE(WARNING "No OpenGL found. Madspin plugin will not be built.")
