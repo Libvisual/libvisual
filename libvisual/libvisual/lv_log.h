@@ -102,14 +102,14 @@ void visual_log_set_all_messages_handler (VisLogMessageHandlerFunc handler, void
  */
 #ifdef __GNUC__
 
-#ifdef LV_HAVE_ISO_VARARGS
+#ifdef LV_HAVE_ISO_C_VARARGS
 #define visual_log(severity,...)		\
 		_lv_log (severity,		\
 			__FILE__,		\
 			__LINE__,		\
 			__PRETTY_FUNCTION__,	\
 			__VA_ARGS__)
-#elif defined(LV_HAVE_GNUC_VARARGS)
+#elif defined(LV_HAVE_GNU_C_VARARGS)
 #define visual_log(severity,format...)		\
 		_lv_log (severity,		\
 			__FILE__,		\
@@ -185,14 +185,14 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 			break;
 	}
 }
-#endif /* !(ISO_VARARGS || GNUC_VARARGS) */
+#endif /* !(LV_HAVE_ISO_C_VARARGS || LV_HAVE_GNU_C_VARARGS) */
 
 #endif /* __GNUC__ */
 
 
 #ifndef __GNUC__
 
-#ifdef LV_HAVE_ISO_VARARGS
+#ifdef LV_HAVE_ISO_C_VARARGS
 #define visual_log(severity,...)		\
 		_lv_log (severity,		\
 			__FILE__,		\
@@ -268,7 +268,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 			break;
 	}
 }
-#endif /* ISO_VARARGS */
+#endif /* LV_HAVE_ISO_C_VARARGS */
 
 #endif /* !__GNUC__ */
 
