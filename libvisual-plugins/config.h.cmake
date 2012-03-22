@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #cmakedefine ENABLE_NLS      1
-#cmakedefine GETTEXT_PACKAGE "@GETTEXT_PACKAGE@
+#cmakedefine GETTEXT_PACKAGE "@GETTEXT_PACKAGE@"
 #cmakedefine LOCALE_DIR      "@LOCALE_DIR@"
 #cmakedefine HAVE_GETTEXT    1
 
