@@ -213,6 +213,7 @@ MESSAGE(STATUS "Size of size_t is ${VISUAL_SIZE_TYPE}")
 # Profiling and Debugging build profiles
 #---------------------------------------
 
+SET(CMAKE_C_FLAGS "-Wall -O2")
 SET(CMAKE_C_FLAGS_PROFILING "-pg")
 SET(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes") # Add -Werror?
 # TODO:Check if gcc >= 2.95 and add -Wno-unused-variable
