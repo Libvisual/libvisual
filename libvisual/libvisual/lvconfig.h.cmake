@@ -5,7 +5,7 @@
 #define VISUAL_PLUGIN_PATH "@LV_PLUGINS_BASE_DIR@"
 
 #ifndef __cplusplus
-#cmakedefine LV_HAVE_ISO_C_VARARGS
+#cmakedefine LV_HAVE_ISO_C_VARARGS 1
 #endif
 
 /* gcc-2.95.x supports both gnu style and ISO varargs, but if -ansi
@@ -13,13 +13,13 @@
  * around to turn it on, so we unconditionally turn it off.
  */
 #if __GNUC__ == 2 && __GNUC_MINOR__ == 95
-#undef LV_HAVE_ISO_VARARGS
+#undef LV_HAVE_ISO_C_VARARGS
 #endif
 
-#cmakedefine LV_HAVE_GNUC_VARARGS
+#cmakedefine LV_HAVE_GNUC_VARARGS 1
 
-#cmakedefine VISUAL_BIG_ENDIAN    @VISUAL_BIG_ENDIAN@
-#cmakedefine VISUAL_LITTLE_ENDIAN @VISUAL_LITTLE_ENDIAN@
+#define VISUAL_BIG_ENDIAN    @VISUAL_BIG_ENDIAN@
+#define VISUAL_LITTLE_ENDIAN @VISUAL_LITTLE_ENDIAN@
 
 typedef unsigned @VISUAL_SIZE_TYPE@ visual_size_t;
 
