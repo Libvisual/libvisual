@@ -219,7 +219,7 @@ static void *error_handler_priv = NULL;
  *
  * @return Returns the return value from the handler that is set.
  */
-int visual_error_raise ()
+int visual_error_raise (void)
 {
 	if (error_handler == NULL) {
 #if !defined(VISUAL_OS_WIN32)
