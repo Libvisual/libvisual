@@ -57,6 +57,7 @@
 #include <windows.h>
 #endif
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -287,7 +288,7 @@ static void check_os_katmai_support( void )
 
 static int has_cpuid (void)
 {
-#if defined(VISUAL_ARCH_X86)
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	int a, c;
 
 	__asm __volatile
@@ -311,7 +312,7 @@ static int has_cpuid (void)
 
 static int cpuid (unsigned int ax, unsigned int *p)
 {
-#if defined(VISUAL_ARCH_X86)
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	uint32_t flags;
 
 	__asm __volatile

@@ -42,6 +42,8 @@
 
 #define PCM_BUF_SIZE 4096
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	snd_pcm_t *chandle;
 	int loaded;

@@ -34,8 +34,9 @@
 
 #include <gst/gst.h>
 
-
 #define BARS 16
+
+const VisPluginInfo *get_plugin_info (int *count);
 
 typedef struct {
 	VisVideo *old_video;
@@ -45,13 +46,13 @@ typedef struct {
 
 static void have_data (GstElement *sink, GstBuffer *buffer, gpointer data);
 
-int act_gstreamer_init (VisPluginData *plugin);
-int act_gstreamer_cleanup (VisPluginData *plugin);
-int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height);
-int act_gstreamer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *act_gstreamer_palette (VisPluginData *plugin);
-int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int act_gstreamer_init (VisPluginData *plugin);
+static int act_gstreamer_cleanup (VisPluginData *plugin);
+static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height);
+static int act_gstreamer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_gstreamer_palette (VisPluginData *plugin);
+static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -87,7 +88,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int act_gstreamer_init (VisPluginData *plugin)
+static int act_gstreamer_init (VisPluginData *plugin)
 {
 	GstreamerPrivate *priv;
 
@@ -101,7 +102,7 @@ int act_gstreamer_init (VisPluginData *plugin)
 	return 0;
 }
 
-int act_gstreamer_cleanup (VisPluginData *plugin)
+static int act_gstreamer_cleanup (VisPluginData *plugin)
 {
 	GstreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -110,20 +111,20 @@ int act_gstreamer_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height)
+static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height)
 {
 
 	return 0;
 }
 
-int act_gstreamer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_gstreamer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	visual_video_set_dimension (video, width, height);
 
 	return 0;
 }
 
-int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
+static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -143,12 +144,12 @@ int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_gstreamer_palette (VisPluginData *plugin)
+static VisPalette *act_gstreamer_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GstreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	static int playing = 0;
@@ -170,7 +171,7 @@ int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 
 		GError *err = NULL;
 
-		priv->pipe = gst_parse_launch (pipe, &err);
+		priv->pipe = GST_PIPELINE_CAST(gst_parse_launch (pipe, &err));
 
 		if (err)
 			g_print ("FUCK UUU %s\n", err->message);

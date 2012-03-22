@@ -125,7 +125,7 @@ int start_ticks(JessPrivate *priv)
 	return 0;
 }
 
-int get_ticks(JessPrivate *priv)
+static int get_ticks(JessPrivate *priv)
 {
 	struct timeval now;
 	int ticks;

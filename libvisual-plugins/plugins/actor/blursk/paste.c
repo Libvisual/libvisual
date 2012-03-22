@@ -239,7 +239,7 @@ static char *parsefield(
 }
 
 /* This is like parsefield(), but for booleans */
-int parsebool(
+static int parsebool(
     char **field,   /* pointer to current field within pasted string */
     int dflt)   /* default value */
 {
@@ -265,12 +265,11 @@ int parsebool(
 /* parse a configuration string & set the current configuration accordingly */
 BlurskConfig *paste_parsestring(char *str)
 {
-    char        *title;
     char        *afternumber;
     uint32_t     newcolor;
     static BlurskConfig c;
     static int first_call = TRUE;
-    
+
     if(first_call)
     {
         memset(&c, 0, sizeof(BlurskConfig));    
@@ -285,23 +284,20 @@ BlurskConfig *paste_parsestring(char *str)
     /* skip title, if any */
     if (*str == '[')
     {
-        title = ++str;
+        ++str;
         while (*str && *str != ']')
             str++;
         if (*str)
             *str++ = '\0';
     }
-    else
-        title = "";
-
 
     /* parse the color */
     newcolor = (uint32_t) strtol(str, &afternumber, 10);
-    
+
     /* no color parsed? */
     if (afternumber == str)
         return &c;
-    
+
     c.color = newcolor;
     str = afternumber;
 

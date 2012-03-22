@@ -33,6 +33,8 @@
 #include <gdk/gdk.h>
 #include <libvisual/libvisual.h>
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	GdkPixbuf	*pixbuf;
 	GdkPixbuf	*scaled;
@@ -57,13 +59,13 @@ static int load_new_file (PixbufPrivate *priv, const char *filename);
 static int update_scaled_pixbuf (PixbufPrivate *priv);
 static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src);
 
-int act_gdkpixbuf_init (VisPluginData *plugin);
-int act_gdkpixbuf_cleanup (VisPluginData *plugin);
-int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height);
-int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin);
-int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int act_gdkpixbuf_init (VisPluginData *plugin);
+static int act_gdkpixbuf_cleanup (VisPluginData *plugin);
+static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height);
+static int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin);
+static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -99,7 +101,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int act_gdkpixbuf_init (VisPluginData *plugin)
+static int act_gdkpixbuf_init (VisPluginData *plugin)
 {
 	PixbufPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);;
@@ -133,7 +135,7 @@ int act_gdkpixbuf_init (VisPluginData *plugin)
 	return 0;
 }
 
-int act_gdkpixbuf_cleanup (VisPluginData *plugin)
+static int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -154,7 +156,7 @@ int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
+static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw = *width;
 	int reqh = *height;
@@ -192,7 +194,7 @@ int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, 
 	return 0;
 }
 
-int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
+static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisParamEntry *param;
@@ -263,12 +265,12 @@ int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
+static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 

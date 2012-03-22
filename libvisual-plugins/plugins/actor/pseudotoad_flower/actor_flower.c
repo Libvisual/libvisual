@@ -42,6 +42,8 @@
 
 #define NOTCH_BANDS	32
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	VisTimer		 t;
 	FlowerInternal		 flower;
@@ -50,13 +52,13 @@ typedef struct {
 	VisRandomContext	*rcxt;
 } FlowerPrivate;
 
-int lv_flower_init (VisPluginData *plugin);
-int lv_flower_cleanup (VisPluginData *plugin);
-int lv_flower_requisition (VisPluginData *plugin, int *width, int *height);
-int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int lv_flower_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *lv_flower_palette (VisPluginData *plugin);
-int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int lv_flower_init (VisPluginData *plugin);
+static int lv_flower_cleanup (VisPluginData *plugin);
+static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *lv_flower_palette (VisPluginData *plugin);
+static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -100,7 +102,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_flower_init (VisPluginData *plugin)
+static int lv_flower_init (VisPluginData *plugin)
 {
 	FlowerPrivate *priv;
 	float b;
@@ -137,7 +139,7 @@ int lv_flower_init (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_flower_cleanup (VisPluginData *plugin)
+static int lv_flower_cleanup (VisPluginData *plugin)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -146,7 +148,7 @@ int lv_flower_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_flower_requisition (VisPluginData *plugin, int *width, int *height)
+static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -165,7 +167,7 @@ int lv_flower_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	GLfloat ratio;
@@ -189,7 +191,7 @@ int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int 
 	return 0;
 }
 
-int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
+static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
@@ -210,12 +212,12 @@ int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_flower_palette (VisPluginData *plugin)
+static VisPalette *lv_flower_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer pcmbuf;

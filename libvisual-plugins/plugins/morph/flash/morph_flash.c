@@ -29,6 +29,8 @@
 
 #include <libvisual/libvisual.h>
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
@@ -42,10 +44,10 @@ static void replacetable_generate_24 (FlashPrivate *priv, float rate);
 static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-int lv_morph_flash_init (VisPluginData *plugin);
-int lv_morph_flash_cleanup (VisPluginData *plugin);
-int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
-int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static int lv_morph_flash_init (VisPluginData *plugin);
+static int lv_morph_flash_cleanup (VisPluginData *plugin);
+static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
+static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -83,7 +85,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_morph_flash_init (VisPluginData *plugin)
+static int lv_morph_flash_init (VisPluginData *plugin)
 {
 	int i;
 	FlashPrivate *priv;
@@ -102,7 +104,7 @@ int lv_morph_flash_init (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_flash_cleanup (VisPluginData *plugin)
+static int lv_morph_flash_cleanup (VisPluginData *plugin)
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -111,12 +113,12 @@ int lv_morph_flash_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
+static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	if (src1->pal == NULL || src2->pal == NULL)
-		return;
+		return 0;
 
 	if (rate < 0.5)
 		visual_palette_blend (pal, src1->pal, &priv->whitepal, rate * 2);
@@ -126,7 +128,7 @@ int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, 
 	return 0;
 }
 
-int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 

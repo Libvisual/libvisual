@@ -40,7 +40,11 @@
 #include "corona.h"
 #include "palette.h"
 
-static const int PALETTEDATA[][NB_PALETTES] = {
+extern "C" const VisPluginInfo *get_plugin_info (int *count);
+
+namespace {
+
+const int PALETTEDATA[][NB_PALETTES] = {
 	{ 4, 85, 0xff0000, 170, 0xffff00, 224, 0xffffff, 240, 0xf8f8e0 },     // 0. fire
 	{ 3, 85, 0xff, 170, 0xffff, 256, 0xffffff },                          // 1. ice
 	{ 1, 256, 0xffffff },                                                 // 2. white
@@ -66,56 +70,61 @@ static const int PALETTEDATA[][NB_PALETTES] = {
 	{ 3, 0, 0xc0c0ff, 128, 0xa0a0a0, 256, 0xffffff }                      // 22. clouds
 };
 
-typedef struct {
-	VisTime		 oldtime;
-	VisPalette	 pal;
-	Corona		*corona; /* The corona internal private struct */
-	PaletteCycler	*pcyl;
-	TimedLevel	 tl;
-} CoronaPrivate;
+  typedef struct {
+	  VisTime		 oldtime;
+	  VisPalette	 pal;
+	  Corona		*corona; /* The corona internal private struct */
+	  PaletteCycler	*pcyl;
+  	  TimedLevel	 tl;
+  } CoronaPrivate;
 
-extern "C" int lv_corona_init (VisPluginData *plugin);
-extern "C" int lv_corona_cleanup (VisPluginData *plugin);
-extern "C" int lv_corona_requisition (VisPluginData *plugin, int *width, int *height);
-extern "C" int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-extern "C" int lv_corona_events (VisPluginData *plugin, VisEventQueue *events);
-extern "C" VisPalette *lv_corona_palette (VisPluginData *plugin);
-extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+  int lv_corona_init (VisPluginData *plugin);
+  int lv_corona_cleanup (VisPluginData *plugin);
+  int lv_corona_requisition (VisPluginData *plugin, int *width, int *height);
+  int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+  int lv_corona_events (VisPluginData *plugin, VisEventQueue *events);
+  VisPalette *lv_corona_palette (VisPluginData *plugin);
+  int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+
+}
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 extern "C" const VisPluginInfo *get_plugin_info (int *count)
 {
-	static VisActorPlugin actor[1];
-	static VisPluginInfo info[1];
+    static VisActorPlugin actor;
+	static VisPluginInfo info;
 
-	actor[0].requisition = lv_corona_requisition;
-	actor[0].palette = lv_corona_palette;
-	actor[0].render  = lv_corona_render;
-	actor[0].vidoptions.depth   = VISUAL_VIDEO_DEPTH_8BIT;
+	actor.requisition = lv_corona_requisition;
+	actor.palette = lv_corona_palette;
+	actor.render = lv_corona_render;
+	actor.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT;
 
-	info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
+	info.type = VISUAL_PLUGIN_TYPE_ACTOR;
 
-	info[0].plugname = "corona";
-	info[0].name     = "libvisual corona plugin";
-	info[0].author   = "Jean-Christophe Hoelt <jeko@ios-software.com> and Richard Ashburn <richard.asbury@btinternet.com>";
-	info[0].version  = "0.1";
-	info[0].about    = N_("Libvisual corona plugin");
-	info[0].help     = N_("This plugin adds support for the neat corona plugin");
-	info[0].license = VISUAL_PLUGIN_LICENSE_GPL,
+	info.plugname = "corona";
+	info.name     = "libvisual corona plugin";
+	info.author   = "Jean-Christophe Hoelt <jeko@ios-software.com> and Richard Ashburn <richard.asbury@btinternet.com>";
+	info.version  = "0.1";
+	info.about    = N_("Libvisual corona plugin");
+	info.help     = N_("This plugin adds support for the neat corona plugin");
+	info.license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-	info[0].init     = lv_corona_init;
-	info[0].cleanup  = lv_corona_cleanup;
-	info[0].events   = lv_corona_events;
+	info.init     = lv_corona_init;
+	info.cleanup  = lv_corona_cleanup;
+	info.events   = lv_corona_events;
 
-	info[0].plugin   = VISUAL_OBJECT (&actor[0]);
+	info.plugin = VISUAL_OBJECT (&actor);
 
-	*count = sizeof (info) / sizeof (*info);
+	*count = 1;
 
-	return info;
+	return &info;
 }
 
-extern "C" int lv_corona_init (VisPluginData *plugin)
+
+namespace {
+
+int lv_corona_init (VisPluginData *plugin)
 {
 	CoronaPrivate *priv;
 
@@ -141,24 +150,20 @@ extern "C" int lv_corona_init (VisPluginData *plugin)
 	return 0;
 }
 
-extern "C" int lv_corona_cleanup (VisPluginData *plugin)
+int lv_corona_cleanup (VisPluginData *plugin)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_palette_free_colors (&priv->pal);
 
-	if (priv->corona != NULL)
-		delete priv->corona;
-
-	if (priv->pcyl != NULL)
-		delete priv->pcyl;
-
+	delete priv->corona;
+	delete priv->pcyl;
 	delete priv;
 
 	return 0;
 }
 
-extern "C" int lv_corona_requisition (VisPluginData *plugin, int *width, int *height)
+int lv_corona_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -180,7 +185,7 @@ extern "C" int lv_corona_requisition (VisPluginData *plugin, int *width, int *he
 	return 0;
 }
 
-extern "C" int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -200,7 +205,7 @@ extern "C" int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int 
 	return 0;
 }
 
-extern "C" int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
+int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -220,7 +225,7 @@ extern "C" int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-extern "C" VisPalette *lv_corona_palette (VisPluginData *plugin)
+VisPalette *lv_corona_palette (VisPluginData *plugin)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -229,7 +234,7 @@ extern "C" VisPalette *lv_corona_palette (VisPluginData *plugin)
 	return &priv->pal;
 }
 
-extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer buffer;
@@ -287,4 +292,6 @@ extern "C" int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudi
 
 	return 0;
 }
+
+} // anonymous namespace
 

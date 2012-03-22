@@ -38,13 +38,15 @@
 
 #define PCM_BUF_SIZE	4096
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	int esdhandle;
 } EsdPrivate;
 
-int inp_esd_init (VisPluginData *plugin);
-int inp_esd_cleanup (VisPluginData *plugin);
-int inp_esd_upload (VisPluginData *plugin, VisAudio *audio);
+static int inp_esd_init (VisPluginData *plugin);
+static int inp_esd_cleanup (VisPluginData *plugin);
+static int inp_esd_upload (VisPluginData *plugin, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -76,7 +78,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int inp_esd_init (VisPluginData *plugin)
+static int inp_esd_init (VisPluginData *plugin)
 {
 	EsdPrivate *priv;
 
@@ -98,7 +100,7 @@ int inp_esd_init (VisPluginData *plugin)
 	return 0;
 }
 
-int inp_esd_cleanup (VisPluginData *plugin)
+static int inp_esd_cleanup (VisPluginData *plugin)
 {
 	EsdPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -113,7 +115,7 @@ int inp_esd_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
+static int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	EsdPrivate *priv = NULL;
 	short data[PCM_BUF_SIZE];

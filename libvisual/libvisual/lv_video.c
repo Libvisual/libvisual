@@ -1763,7 +1763,6 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
 
 	errret = visual_video_fill_color (&svid, color);
 
-out:
 	visual_object_unref (VISUAL_OBJECT (&svid));
 
 	return errret;

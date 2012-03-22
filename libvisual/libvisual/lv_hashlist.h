@@ -72,6 +72,7 @@ void *visual_hashlist_get (VisHashlist *hashlist, char *key);
 int visual_hashlist_size (VisHashlist *hashlist);
 
 int visual_hashlist_set_size (VisHashlist *hashlist, int size);
+int visual_hashlist_get_size (VisHashlist *hashlist);
 
 VisList *visual_hashlist_get_list (VisHashlist *hashlist);
 

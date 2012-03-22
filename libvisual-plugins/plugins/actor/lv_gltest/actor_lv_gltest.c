@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -40,6 +40,8 @@
 
 #define BARS	16
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 static int xranges[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
 
 typedef struct {
@@ -54,13 +56,13 @@ typedef struct {
 	int transparant;
 } GLtestPrivate;
 
-int lv_gltest_init (VisPluginData *plugin);
-int lv_gltest_cleanup (VisPluginData *plugin);
-int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height);
-int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *lv_gltest_palette (VisPluginData *plugin);
-int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int lv_gltest_init (VisPluginData *plugin);
+static int lv_gltest_cleanup (VisPluginData *plugin);
+static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *lv_gltest_palette (VisPluginData *plugin);
+static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static void draw_bars (GLtestPrivate *priv);
 static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2);
@@ -109,16 +111,16 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_gltest_init (VisPluginData *plugin)
+static int lv_gltest_init (VisPluginData *plugin)
 {
 	GLtestPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	
+
 	static VisParamEntry params[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE),
 		VISUAL_PARAM_LIST_END
 	};
-	
+
 	int x, y;
 
 	/* UI Vars */
@@ -138,9 +140,9 @@ int lv_gltest_init (VisPluginData *plugin)
 
 	visual_plugin_set_userinterface (plugin, checkbox);
 
-	/* GL setting up the rest! */	
+	/* GL setting up the rest! */
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	glMatrixMode (GL_PROJECTION);
 
 	glLoadIdentity ();
@@ -171,7 +173,7 @@ int lv_gltest_init (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_gltest_cleanup (VisPluginData *plugin)
+static int lv_gltest_cleanup (VisPluginData *plugin)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisUIWidget *ui;
@@ -185,7 +187,7 @@ int lv_gltest_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height)
+static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -204,10 +206,10 @@ int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	GLfloat ratio;
-	
+
 	visual_video_set_dimension (video, width, height);
 
 	ratio = (GLfloat) width / (GLfloat) height;
@@ -224,7 +226,7 @@ int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int 
 	return 0;
 }
 
-int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
+static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
@@ -257,12 +259,12 @@ int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_gltest_palette (VisPluginData *plugin)
+static VisPalette *lv_gltest_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer buffer;

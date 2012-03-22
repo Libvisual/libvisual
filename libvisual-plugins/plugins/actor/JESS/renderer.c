@@ -284,12 +284,11 @@ void render_deformation(JessPrivate *priv, int defmode)
 {
 	intptr_t bmax;
 	uint32_t *tab1 = NULL, *tab2, *tab3, *tab4, i;
-	uint8_t *pix = priv->pixel, *buf = priv->buffer, *aux;
+	uint8_t *pix = priv->pixel, *aux;
 
 	/**************** BUFFER DEFORMATION ****************/
 	if (priv->video == 8)
 	{
-		buf = priv->buffer;
 		tab1 = priv->table1;
 		tab2 = priv->table2;
 		tab3 = priv->table3;
@@ -387,8 +386,9 @@ void render_blur(JessPrivate *priv, int blur)
 	/* Il y avait des overflows sur les boucles (indice supérieur trop élevé de 1) */
 	if (priv->video == 8)
 	{
+		bmax = priv->resx * (priv->resy-1) + (intptr_t) priv->pixel;
+
 		if (visual_cpu_get_mmx ()) {
-			bmax = priv->resx * (priv->resy-1) + (intptr_t) priv->pixel;
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"

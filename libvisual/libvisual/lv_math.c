@@ -62,6 +62,8 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
 	/* FIXME check what is faster on AMD (sse or 3dnow) */
 	if (visual_cpu_get_sse () && n >= 16) {
 		float packed_multiplier[4];
@@ -71,7 +73,6 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 		packed_multiplier[2] = multiplier;
 		packed_multiplier[3] = multiplier;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			(*d) = (*s) * multiplier;
 
@@ -84,7 +85,6 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 		__asm __volatile
 			("\n\t movups (%0), %%xmm7"
 			 :: "r" (packed_multiplier) : "memory");
-
 
 		while (n > 16) {
 			__asm __volatile
@@ -108,14 +108,12 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 
 			n -= 16;
 		}
-#endif /* VISUAL_ARCH_X86 */
 	} else if (visual_cpu_get_3dnow ()) {
 		float packed_multiplier[2];
 
 		packed_multiplier[0] = multiplier;
 		packed_multiplier[1] = multiplier;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
 			 :: [multiplier] "m" (*packed_multiplier));
@@ -154,9 +152,9 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
-
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		(*d) = (*s) * multiplier;
@@ -187,6 +185,8 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
 	if (visual_cpu_get_sse () && n >= 16) {
 		float packed_adder[4];
 
@@ -195,7 +195,6 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 		packed_adder[2] = adder;
 		packed_adder[3] = adder;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			(*d) = (*s) + adder;
 
@@ -232,14 +231,12 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 
 			n -= 16;
 		}
-#endif /* VISUAL_ARCH_X86 */
 	} else if (visual_cpu_get_3dnow ()) {
 		float packed_adder[2];
 
 		packed_adder[0] = adder;
 		packed_adder[1] = adder;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[adder], %%mm0"
 			 :: [adder] "m" (*packed_adder));
@@ -278,9 +275,9 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
-
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		(*d) = (*s) + adder;
@@ -311,6 +308,7 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	if (visual_cpu_get_sse () && n >= 16) {
 		float packed_substracter[4];
 
@@ -319,7 +317,6 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 		packed_substracter[2] = substracter;
 		packed_substracter[3] = substracter;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			(*d) = (*s) - substracter;
 
@@ -356,14 +353,12 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 
 			n -= 16;
 		}
-#endif /* VISUAL_ARCH_X86 */
 	} else if (visual_cpu_get_3dnow ()) {
 		float packed_substracter[2];
 
 		packed_substracter[0] = substracter;
 		packed_substracter[1] = substracter;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[substracter], %%mm0"
 			 :: [substracter] "m" (*packed_substracter));
@@ -402,9 +397,9 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
-
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		(*d) = (*s) - substracter;
@@ -426,8 +421,9 @@ int visual_math_vectorized_multiplier_floats_floats (float *dest, float *src1, f
 	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_NULL);
 
-	if (visual_cpu_get_sse () && n >= 16) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
+	if (visual_cpu_get_sse () && n >= 16) {
 		while (!VISUAL_ALIGNED(d, 16)) {
 			(*d) = (*s1) * (*s2);
 
@@ -466,9 +462,7 @@ int visual_math_vectorized_multiplier_floats_floats (float *dest, float *src1, f
 
 			n -= 16;
 		}
-#endif /* VISUAL_ARCH_X86 */
 	} else if (visual_cpu_get_3dnow ()) {
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (n > 8) {
 			__asm __volatile
 				("\n\t prefetch 256(%0)"
@@ -499,9 +493,9 @@ int visual_math_vectorized_multiplier_floats_floats (float *dest, float *src1, f
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
-
 	}
+
+#endif /* VISUAL_ARCH_X86) || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		(*d) = (*s1) * (*s2);
@@ -532,8 +526,9 @@ int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_
 	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
-	if (visual_cpu_get_3dnow ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
+	if (visual_cpu_get_3dnow ()) {
 
 		while (n > 16) {
 			__asm __volatile
@@ -564,9 +559,10 @@ int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
 
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		*d = *s;
@@ -596,8 +592,9 @@ int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_
 	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
-	if (visual_cpu_get_3dnow ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
+	if (visual_cpu_get_3dnow ()) {
 
 		while (n > 16) {
 			__asm __volatile
@@ -628,9 +625,9 @@ int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
-
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		*d = *s;
@@ -661,13 +658,14 @@ int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts
 	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
 	if (visual_cpu_get_3dnow ()) {
 		float packed_multiplier[2];
 
 		packed_multiplier[0] = multiplier;
 		packed_multiplier[1] = multiplier;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
 			 :: [multiplier] "m" (*packed_multiplier));
@@ -698,9 +696,9 @@ int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
-
 	}
+
+#endif
 
 	while (n--) {
 		*d = (float) *s * multiplier;
@@ -731,13 +729,13 @@ int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints
 	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	if (visual_cpu_get_3dnow ()) {
 		float packed_multiplier[2];
 
 		packed_multiplier[0] = multiplier;
 		packed_multiplier[1] = multiplier;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
 			 :: [multiplier] "m" (*packed_multiplier));
@@ -776,9 +774,8 @@ int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
-
 	}
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		*d = (float) *s * multiplier;
@@ -810,6 +807,7 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	if (visual_cpu_get_3dnow ()) {
 		float packed_multiplier[2];
 		float packed_normalise_mul[2];
@@ -824,7 +822,6 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 		packed_adder[0] = 1;
 		packed_adder[1] = 1;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
 			 "\n\t movq %[normalise_mul], %%mm6"
@@ -860,9 +857,9 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 
 		__asm __volatile
 			("\n\t emms");
-#endif /* VISUAL_ARCH_X86 */
-
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		*d = (float) (((*s) + 1) * 0.5) * multiplier;
@@ -892,8 +889,9 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
-	if (visual_cpu_get_sse () && n >= 16) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
+	if (visual_cpu_get_sse () && n >= 16) {
 		while (!VISUAL_ALIGNED(d, 16)) {
 			*d = sqrtf (*s);
 
@@ -923,8 +921,9 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 
 			n -= 16;
 		}
-#endif /* VISUAL_ARCH_X86 */
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		*d = sqrtf (*s);
@@ -957,9 +956,10 @@ int visual_math_vectorized_complex_to_norm (float *dest, float *real, float *ima
 	visual_log_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
 	if (visual_cpu_get_sse () && n >= 16) {
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i)));
 
@@ -996,8 +996,9 @@ int visual_math_vectorized_complex_to_norm (float *dest, float *real, float *ima
 
 			n -= 8;
 		}
-#endif /* VISUAL_ARCH_X86 */
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
 		*d = sqrtf (((*r) * (*r)) + ((*i) * (*i)));
@@ -1032,6 +1033,8 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, floa
 	visual_log_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+
 	if (visual_cpu_get_sse () && n >= 16) {
 		float packed_scaler[4];
 
@@ -1040,7 +1043,6 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, floa
 		packed_scaler[2] = scaler;
 		packed_scaler[3] = scaler;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		while (!VISUAL_ALIGNED(d, 16)) {
 			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * scaler;
 
@@ -1083,8 +1085,10 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, floa
 
 			n -= 8;
 		}
-#endif /* VISUAL_ARCH_X86 */
 	}
+
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
+
 
 	while (n--) {
 		*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * scaler;

@@ -53,7 +53,7 @@ void _inf_change_color(InfinitePrivate *priv, int t2,int t1,int w)
 	}
 }
 
-void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field) 
+static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field) 
 {
 	int i,j;
 	int add_dest=0,add_src;
@@ -206,14 +206,14 @@ void _inf_blur(InfinitePrivate *priv, t_interpol* vector_field)
 	_inf_compute_surface(priv, vector_field);
 }
 
-void _inf_plot1(InfinitePrivate *priv, int x,int y,int c)
+static void _inf_plot1(InfinitePrivate *priv, int x,int y,int c)
 {
 	if (x>0 && x<priv->plugwidth-3 && y>0 && y<priv->plugheight-3)
 		assign_max(&(priv->surface1)[x+y*priv->plugwidth],c);
 }
 
 
-void _inf_plot2(InfinitePrivate *priv, int x,int y,int c)
+static void _inf_plot2(InfinitePrivate *priv, int x,int y,int c)
 {
 	int ty;
 	
@@ -231,7 +231,7 @@ void _inf_plot2(InfinitePrivate *priv, int x,int y,int c)
 	y = x - y;	\
 	x = x - y;
 
-void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int c) {
+static void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int c) {
 	int dx, dy, cxy,dxy;
 	/* calculate the distances */
 	dx = abs(x1 - x2);

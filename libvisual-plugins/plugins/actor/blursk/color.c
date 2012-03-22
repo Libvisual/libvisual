@@ -101,7 +101,7 @@ static int  transition_bound;
 /*---------------------------------------------------------------------------*/
 
 /* Convert a color from RGB format to HSV format */
-hsv_t *rgb_to_hsv(int32_t rgb)
+static hsv_t *rgb_to_hsv(int32_t rgb)
 {
     static hsv_t    hsv;    /* HSV value (saved between invocations */
     double      r, g, b;/* the RGB components, in range 0.0 - 1.0 */
@@ -165,7 +165,7 @@ hsv_t *rgb_to_hsv(int32_t rgb)
 
 
 /* convert a color from HSV format to RGB format */
-int32_t hsv_to_rgb(hsv_t *hsv)
+static int32_t hsv_to_rgb(hsv_t *hsv)
 {
     int32_t r, g, b;/* RGB color components */
     double  h;  /* copy of the "hsv.hue" */

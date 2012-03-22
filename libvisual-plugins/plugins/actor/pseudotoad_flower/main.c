@@ -31,7 +31,7 @@
 
 #include "main.h"
 
-void set_vector (Vect v, float x, float y, float z)
+static void set_vector (Vect v, float x, float y, float z)
 {
 	v[0] = x;
 	v[1] = y;
@@ -79,7 +79,7 @@ int init_flower(FlowerInternal *flower)
 	return 0;
 }
 
-void splineTCP(FlowerInternal *flower, float u, Vect * control, Vect * result)
+static void splineTCP(FlowerInternal *flower, float u, Vect * control, Vect * result)
 {
 
 	(*result)[0] = (2*u*u*u - 3*u*u + 1)*control[1][0]
@@ -101,7 +101,7 @@ void splineTCP(FlowerInternal *flower, float u, Vect * control, Vect * result)
 //			flower->tension, flower->bias, flower->continuity);
 }
 
-void lights(FlowerInternal *flower) {
+static void lights(FlowerInternal *flower) {
 	GLfloat light_position[]={10.0,9.0,-12.0,0.0};
 	GLfloat light_diffuse[]={0.8,0.7,0.7,0.0};
 	GLfloat light_specular[]={0.85,0.85,0.8,0.0};
@@ -133,7 +133,7 @@ void lights(FlowerInternal *flower) {
 
 }
 
-void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama) {
+static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama) {
 #define NBTW 12
 	int i,j,k;
 	int size=sizeof(flower->kukka)/sizeof(Vect);
@@ -212,7 +212,7 @@ void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama) {
 #define F 0.006
 #define FR 0.006
 
-void render_flower(FlowerInternal *flower) {
+static void render_flower(FlowerInternal *flower) {
 	int t;
 	int time=visual_timer_elapsed_msecs(&flower->timer);
 

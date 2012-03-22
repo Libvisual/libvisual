@@ -1,5 +1,5 @@
 /* lIBvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -35,9 +35,10 @@
 #include <time.h>
 
 #include <GL/gl.h>
-/*#include <GL/glu.h>*/
 
 #include <libvisual/libvisual.h>
+
+const VisPluginInfo *get_plugin_info (int *count);
 
 typedef struct {
 	int			 initialized;
@@ -65,13 +66,13 @@ typedef struct {
 	VisRandomContext	*rcontext;
 } MadspinPrivate;
 
-int lv_madspin_init (VisPluginData *plugin);
-int lv_madspin_cleanup (VisPluginData *plugin);
-int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height);
-int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *lv_madspin_palette (VisPluginData *plugin);
-int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int lv_madspin_init (VisPluginData *plugin);
+static int lv_madspin_cleanup (VisPluginData *plugin);
+static int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *lv_madspin_palette (VisPluginData *plugin);
+static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static int madspin_load_textures (MadspinPrivate *priv);
 static int madspin_sound (MadspinPrivate *priv, VisAudio *audio);
@@ -119,7 +120,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int lv_madspin_init (VisPluginData *plugin)
+static int lv_madspin_init (VisPluginData *plugin)
 {
 	MadspinPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
@@ -147,7 +148,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
-	
+
 	priv->maxlines = 1;
 	priv->texsize = 0.25f;
 	priv->xrot = 0.0f;
@@ -217,7 +218,7 @@ int lv_madspin_init (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_madspin_cleanup (VisPluginData *plugin)
+static int lv_madspin_cleanup (VisPluginData *plugin)
 {
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisUIWidget *ui;
@@ -234,7 +235,7 @@ int lv_madspin_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height)
+static int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -253,7 +254,7 @@ int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	visual_video_set_dimension (video, width, height);
 
@@ -262,7 +263,7 @@ int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int
 	return 0;
 }
 
-int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
+static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
@@ -291,12 +292,12 @@ int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_madspin_palette (VisPluginData *plugin)
+static VisPalette *lv_madspin_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -480,7 +481,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 				/* Bottom Left */
 				glTexCoord2d (0, 0);
 				glVertex3f (-priv->texsize, -priv->texsize, (float) z);
-				
+
 				glEnd ();
 			}
 

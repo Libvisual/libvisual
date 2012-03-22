@@ -31,11 +31,11 @@
 #include "gfx-misc.h"
 #include "gfx-analyzer.h"
 #include "gfx-background.h"
-#include "config.h"
+#include "oink-config.h"
 #include "misc.h"
 #include "scene.h"
 
-void _oink_scene_scope_special (OinksiePrivate *priv, uint8_t *buf)
+static void _oink_scene_scope_special (OinksiePrivate *priv, uint8_t *buf)
 {
 	if (visual_random_context_int_range (priv->rcontext, 0, 500) == 42)
 	{
