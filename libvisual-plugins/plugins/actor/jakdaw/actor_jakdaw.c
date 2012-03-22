@@ -35,13 +35,15 @@
 
 #include <libvisual/libvisual.h>
 
-int act_jakdaw_init (VisPluginData *plugin);
-int act_jakdaw_cleanup (VisPluginData *plugin);
-int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height);
-int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *act_jakdaw_palette (VisPluginData *plugin);
-int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+const VisPluginInfo *get_plugin_info (int *count);
+
+static int act_jakdaw_init (VisPluginData *plugin);
+static int act_jakdaw_cleanup (VisPluginData *plugin);
+static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height);
+static int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_jakdaw_palette (VisPluginData *plugin);
+static int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -77,7 +79,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int act_jakdaw_init (VisPluginData *plugin)
+static int act_jakdaw_init (VisPluginData *plugin)
 {
 	JakdawPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
@@ -184,7 +186,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 	return 0;
 }
 
-int act_jakdaw_cleanup (VisPluginData *plugin)
+static int act_jakdaw_cleanup (VisPluginData *plugin)
 {
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisUIWidget *ui;
@@ -202,7 +204,7 @@ int act_jakdaw_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height)
+static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -221,7 +223,7 @@ int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -235,7 +237,7 @@ int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int
 	return 0;
 }
 
-int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
+static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
@@ -287,12 +289,12 @@ int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_jakdaw_palette (VisPluginData *plugin)
+static VisPalette *act_jakdaw_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	uint32_t *vscr = visual_video_get_pixels (video);

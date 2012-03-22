@@ -26,8 +26,6 @@
 #include "plotter.h"
 
 static void vert_line(JakdawPrivate *priv, int x, int a, int b, uint32_t col, uint32_t *vscr);
-static int no_of_shifts(int val);
-static int p2(int val);
 
 void _jakdaw_plotter_draw(JakdawPrivate *priv, float *pcm_data, float *freq_data, uint32_t *vscr)
 {
@@ -108,33 +106,4 @@ static void vert_line(JakdawPrivate *priv, int x,int a, int b, uint32_t col, uin
 		vscr[ptr]=col;
 		ptr+=priv->xres;
 	}
-}
-
-// Calculate maximum no of right shifts that can be applied to a sample so
-// that val can still be represented.
-
-static int no_of_shifts(int val)
-{
-
-	int a=1, b=0;
-
-	while(a<val)
-	{
-		b++;
-		a*=2;
-	}
-
-	return 16-b;
-}
-
-// Calc a power of 2
-
-static int p2(int val)
-{
-	int a=1;
-
-	for(;val>0;val--)
-		a*=2;
-
-	return a;
 }
