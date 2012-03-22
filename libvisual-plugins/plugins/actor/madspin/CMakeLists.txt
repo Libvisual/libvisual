@@ -1,0 +1,28 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+  ${LIBVISUAL_INCLUDE_DIRS}
+  ${OPENGL_INCLUDE_DIR}
+)
+
+LINK_DIRECTORIES(
+  ${LIBVISUAL_LIBRARY_DIRS}
+)
+
+SET(actor_madspin_SOURCES
+  actor_madspin.c
+)
+
+SET(actor_madspin_IMAGES
+  star1.bmp
+  star2.bmp
+)
+
+ADD_LIBRARY(actor_madspin MODULE ${actor_madspin_SOURCES})
+#-avoid-version
+
+TARGET_LINK_LIBRARIES(actor_madspin
+  ${LIBVISUAL_LIBRARIES}
+  ${OPENGL_gl_LIRBARY}
+  ${OPENGL_glu_LIBRARY}
+)

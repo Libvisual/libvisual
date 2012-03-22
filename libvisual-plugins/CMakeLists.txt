@@ -150,13 +150,13 @@ ENDIF(ENABLE_XMMS2)
 OPTION(ENABLE_INPUTDEBUG "Build the input debug plugin (default=enabled)" yes)
 
 # OpenGL test plugin
-OPTION(ENABLE_LVGLTEST "Build the lv_gltest plugin (default=enabled)" yes)
-IF(ENABLE_LVGLTEST)
+OPTION(ENABLE_LV_GLTEST "Build the lv_gltest plugin (default=enabled)" yes)
+IF(ENABLE_LV_GLTEST)
   IF(NOT HAVE_OPENGL)
     MESSAGE(WARNING "No OpenGL found. lv_gltest plugin will not be built.")
-    SET(ENABLE_LVGLTEST no)
+    SET(ENABLE_LV_GLTEST no)
   ENDIF(NOT HAVE_OPENGL)
-ENDIF(ENABLE_LVGLTEST)
+ENDIF(ENABLE_LV_GLTEST)
 
 # NastyFFT
 OPTION(ENABLE_NASTYFFT "Do not build nastyfft plugin (default=enabled)" yes)

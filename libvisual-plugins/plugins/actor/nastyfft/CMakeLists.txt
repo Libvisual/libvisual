@@ -1,0 +1,23 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+  ${LIBVISUAL_INCLUDE_DIRS}
+  ${OPENGL_INCLUDE_DIR}
+)
+
+LINK_DIRECTORIES(
+  ${LIBVISUAL_LIBRARY_DIRS}
+)
+
+SET(actor_nastyfft_SOURCES
+  actor_nastyfft.c
+)
+
+ADD_LIBRARY(actor_nastyfft MODULE ${actor_nastyfft_SOURCES})
+#-avoid-version
+
+TARGET_LINK_LIBRARIES(actor_nastyfft
+  ${LIBVISUAL_LIBRARIES}
+  ${OPENGL_gl_LIRBARY}
+  ${OPENGL_glu_LIBRARY}
+)
