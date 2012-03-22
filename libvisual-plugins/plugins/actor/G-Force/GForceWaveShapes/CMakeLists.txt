@@ -1,5 +1,3 @@
-# ${GFORCE_DATA_DIR}/GForceWaveShapes
-
 SET(WAVESHAPE_FILES
   3D_Cylinder
   DT_-_Circle_II
@@ -58,3 +56,5 @@ SET(WAVESHAPE_FILES
   Random_Corridor
   SpinIt
 )
+
+INSTALL(FILES ${WAVESHAPE_FILES} DESTINATION ${GFORCE_DATA_DIR}/GForceWaveShapes)

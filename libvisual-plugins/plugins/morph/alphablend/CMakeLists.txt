@@ -18,3 +18,5 @@ ADD_LIBRARY(morph_alphablend MODULE ${morph_alphablend_SOURCES})
 TARGET_LINK_LIBRARIES(morph_alphablend
   ${LIBVISUAL_LIBRARIES}
 )
+
+INSTALL(TARGETS morph_alphablend LIBRARY DESTINATION ${LV_MORPH_PLUGIN_DIR})

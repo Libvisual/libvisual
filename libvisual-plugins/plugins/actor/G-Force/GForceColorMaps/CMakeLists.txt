@@ -53,3 +53,5 @@ SET(COLORMAP_FILES
   Orange_To_Blue
   The_Spectrologist_s_Assistant
 )
+
+INSTALL(FILES ${COLORMAP_FILES} DESTINATION ${GFORCE_DATA_DIR}/GForceColorMaps)

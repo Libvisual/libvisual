@@ -21,3 +21,5 @@ ADD_LIBRARY(actor_bumpscope MODULE ${actor_bumpscope_SOURCES})
 TARGET_LINK_LIBRARIES(actor_bumpscope
   ${LIBVISUAL_LIBRARIES}
 )
+
+INSTALL(TARGETS actor_bumpscope LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

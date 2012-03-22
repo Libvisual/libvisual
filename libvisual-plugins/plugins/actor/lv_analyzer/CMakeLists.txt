@@ -18,3 +18,5 @@ ADD_LIBRARY(actor_lv_analyzer MODULE ${actor_lv_analyzer_SOURCES})
 TARGET_LINK_LIBRARIES(actor_lv_analyzer
   ${LIBVISUAL_LIBRARIES}
 )
+
+INSTALL(TARGETS actor_lv_analyzer LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

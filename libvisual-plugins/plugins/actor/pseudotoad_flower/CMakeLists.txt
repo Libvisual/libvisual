@@ -22,3 +22,5 @@ ADD_LIBRARY(actor_pseudotoad_flower MODULE ${actor_pseudotoad_flower_SOURCES})
 TARGET_LINK_LIBRARIES(actor_pseudotoad_flower
   ${LIBVISUAL_LIBRARIES}
 )
+
+INSTALL(TARGETS actor_pseudotoad_flower LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

@@ -1,5 +1,3 @@
-# ${LIBVISUAL_PLUGINS_DATA_DIR}/actor/actor_gforce/GForceParticles
-
 SET(PARTICLE_FILES
   A_Wounded_Deer
   Converge_-_Circle
@@ -53,3 +51,5 @@ SET(PARTICLE_FILES
   Spinning_Tetraeder
   Warp_Me_Away
 )
+
+INSTALL(FILES ${PARTICLE_FILES} DESTINATION ${GFORCE_DATA_DIR}/GForceParticles)

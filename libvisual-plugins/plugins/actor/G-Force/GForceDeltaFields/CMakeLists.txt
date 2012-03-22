@@ -1,4 +1,3 @@
-#${LIBVISUAL_PLUGINS_DATA_DIR}/actor/actor_gforce/GForceDeltaFields
 SET(DELTAFIELD_FILES
   6_Feet_Under
   Directed_Spread
@@ -92,3 +91,5 @@ SET(DELTAFIELD_FILES
   SOLs_Point_and_Hang
   Theta_Divergence
 )
+
+INSTALL(FILES ${DELTAFIELD_FILES} DESTINATION ${GFORCE_DATA_DIR}/GForceDeltaFields)

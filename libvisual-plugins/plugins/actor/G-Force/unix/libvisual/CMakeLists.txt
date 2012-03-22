@@ -36,3 +36,5 @@ TARGET_LINK_LIBRARIES(actor_gforce
   gforce_gt
   gforce_unix_mfl
 )
+
+INSTALL(TARGETS actor_gforce LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})
