@@ -80,6 +80,7 @@ static int __lv_thread_enabled = TRUE;
 static ThreadFuncs __lv_thread_funcs;
 
 /* Posix implementation */
+#ifdef VISUAL_THREAD_MODEL_POSIX
 static VisThread *thread_create_posix (VisThreadFunc func, void *data, int joinable);
 static int thread_free_posix (VisThread *thread);
 static void *thread_join_posix (VisThread *thread);
@@ -92,8 +93,10 @@ static int mutex_init_posix (VisMutex *mutex);
 static int mutex_lock_posix (VisMutex *mutex);
 static int mutex_trylock_posix (VisMutex *mutex);
 static int mutex_unlock_posix (VisMutex *mutex);
+#endif
 
 /* Windows32 implementation */
+#ifdef VISUAL_THREAD_MODEL_WIN32
 static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joinable);
 static int thread_free_win32 (VisThread *thread);
 static void *thread_join_win32 (VisThread *thread);
@@ -106,8 +109,10 @@ static int mutex_init_win32 (VisMutex *mutex);
 static int mutex_lock_win32 (VisMutex *mutex);
 static int mutex_trylock_win32 (VisMutex *mutex);
 static int mutex_unlock_win32 (VisMutex *mutex);
+#endif
 
 /* GThread implementation */
+#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joinable);
 static int thread_free_gthread (VisThread *thread);
 static void *thread_join_gthread (VisThread *thread);
@@ -120,7 +125,7 @@ static int mutex_init_gthread (VisMutex *mutex);
 static int mutex_lock_gthread (VisMutex *mutex);
 static int mutex_trylock_gthread (VisMutex *mutex);
 static int mutex_unlock_gthread (VisMutex *mutex);
-
+#endif
 
 /**
  * @defgroup VisThread VisThread
@@ -452,11 +457,12 @@ int visual_mutex_unlock (VisMutex *mutex)
 
 /* Native implementations */
 
+#ifdef VISUAL_THREAD_MODEL_POSIX
+
 /* Posix implementation */
 static VisThread *thread_create_posix (VisThreadFunc func, void *data, int joinable)
 {
 	VisThread *thread = NULL;
-#ifdef VISUAL_THREAD_MODEL_POSIX
 
 	pthread_attr_t attr;
 	int res;
@@ -481,7 +487,6 @@ static VisThread *thread_create_posix (VisThreadFunc func, void *data, int joina
 
 		return NULL;
 	}
-#endif
 
 	return thread;
 }
@@ -494,42 +499,34 @@ static int thread_free_posix (VisThread *thread)
 static void *thread_join_posix (VisThread *thread)
 {
 	void *result = NULL;
-#ifdef VISUAL_THREAD_MODEL_POSIX
 
 	if (pthread_join (thread->thread, &result) < 0) {
 		visual_log (VISUAL_LOG_CRITICAL, _("Error while joining thread"));
 
 		return NULL;
 	}
-#endif
 
 	return result;
 }
 
 static void thread_exit_posix (void *retval)
 {
-#ifdef VISUAL_THREAD_MODEL_POSIX
 	pthread_exit (retval);
-#endif
 }
 
 static void thread_yield_posix ()
 {
-#ifdef VISUAL_THREAD_MODEL_POSIX
 	sched_yield ();
-#endif
 }
 
 
 static VisMutex *mutex_new_posix ()
 {
 	VisMutex *mutex;
-#ifdef VISUAL_THREAD_MODEL_POSIX
 
 	mutex = visual_mem_new0 (VisMutex, 1);
 
 	pthread_mutex_init (&mutex->mutex, NULL);
-#endif
 
 	return mutex;
 }
@@ -542,50 +539,45 @@ static int mutex_free_posix (VisMutex *mutex)
 static int mutex_init_posix (VisMutex *mutex)
 {
 	visual_mem_set (mutex, 0, sizeof (VisMutex));
-#ifdef VISUAL_THREAD_MODEL_POSIX
 
 	pthread_mutex_init (&mutex->mutex, NULL);
-#endif
 
 	return VISUAL_OK;
 }
 
 static int mutex_lock_posix (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_POSIX
 	if (pthread_mutex_lock (&mutex->mutex) < 0)
 		return -VISUAL_ERROR_MUTEX_LOCK_FAILURE;
-#endif
 
 	return VISUAL_OK;
 }
 
 static int mutex_trylock_posix (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_POSIX
 	if (pthread_mutex_trylock (&mutex->mutex) < 0)
 		return -VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE;
-#endif
 
 	return VISUAL_OK;
 }
 
 static int mutex_unlock_posix (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_POSIX
 	if (pthread_mutex_unlock (&mutex->mutex) < 0)
 		return -VISUAL_ERROR_MUTEX_UNLOCK_FAILURE;
-#endif
 
 	return VISUAL_OK;
 }
 
+#endif // VISUAL_THREAD_MODEL_POSIX
+
 /* Windows32 implementation */
+#ifdef VISUAL_THREAD_MODEL_WIN32
+
 static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joinable)
 {
 	VisThread *thread = NULL;
-#ifdef VISUAL_THREAD_MODEL_WIN32
-	
+
 	thread = visual_mem_new0 (VisThread, 1);
 
 	thread->thread = CreateThread (NULL, 0, func, (PVOID) data, 0, &thread->threadId);
@@ -606,7 +598,6 @@ static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joina
 */
 	// Retrieve the code returned by the thread.
 	//     GetExitCodeThread(a_thread, &thread_result);
-#endif
 
 	return thread;
 }
@@ -619,7 +610,6 @@ static int thread_free_win32 (VisThread *thread)
 static void *thread_join_win32 (VisThread *thread)
 {
 	void *result = NULL;
-#ifdef VISUAL_THREAD_MODEL_WIN32
 	DWORD thread_result;
 
 	if (WaitForSingleObject(thread->thread, INFINITE) != WAIT_OBJECT_0) {
@@ -631,73 +621,57 @@ static void *thread_join_win32 (VisThread *thread)
 	GetExitCodeThread(thread->thread, &thread_result);
 
 	result = (void *) thread_result;
-#endif
 
 	return result;
 }
 
 static void thread_exit_win32 (void *retval)
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
 }
 
 static void thread_yield_win32 ()
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
 }
 
 
 static VisMutex *mutex_new_win32 ()
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
+    return 0;
 }
 
 static int mutex_free_win32 (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
+    return 0;
 }
 
 static int mutex_init_win32 (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
+    return 0;
 }
 
 static int mutex_lock_win32 (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
+    return 0;
 }
 
 static int mutex_trylock_win32 (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
+    return 0;
 }
 
 static int mutex_unlock_win32 (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_WIN32
-
-#endif
+    return 0;
 }
 
+#endif /* VISUAL_THREAD_MODEL_WIN32 */
+
 /* GThread implementation */
+#ifdef VISUAL_THREAD_MODEL_GTHREAD2
+
 static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joinable)
 {
 	VisThread *thread = NULL;
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 
 	thread = visual_mem_new0 (VisThread, 1);
 
@@ -710,7 +684,6 @@ static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joi
 
 		return NULL;
 	}
-#endif
 
 	return thread;
 }
@@ -722,104 +695,85 @@ static int thread_free_gthread (VisThread *thread)
 
 static void *thread_join_gthread (VisThread *thread)
 {
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	gpointer result;
 
 	visual_log_return_val_if_fail (thread->thread != NULL, NULL);
 
 	result = g_thread_join (thread->thread);
-	
+
 	return result;
-#else
-	return NULL;
-#endif
 }
 
 static void thread_exit_gthread (void *retval)
 {
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	g_thread_exit (retval);
-#endif
 }
 
 static void thread_yield_gthread ()
 {
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	g_thread_yield ();
-#endif
 }
 
 
 static VisMutex *mutex_new_gthread ()
 {
 	VisMutex *mutex;
-	
+
 	mutex = visual_mem_new0 (VisMutex, 1);
-	
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2	
+
 	mutex->static_mutex_used = FALSE;
 
 	mutex->mutex = g_mutex_new ();
-#endif
 
 	return mutex;
 }
 
 static int mutex_free_gthread (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	visual_log_return_val_if_fail (mutex->mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
 	g_mutex_free (mutex->mutex);
-#endif
 
 	return visual_mem_free (mutex);
 }
 
 static int mutex_init_gthread (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	mutex->static_mutex_used = TRUE;
 
 	g_static_mutex_init (&mutex->static_mutex);
-#endif
 
 	return VISUAL_OK;
 }
 
 static int mutex_lock_gthread (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	if (mutex->static_mutex_used == TRUE)
 		g_static_mutex_lock (&mutex->static_mutex);
 	else
 		g_mutex_lock (mutex->mutex);
-#endif
 
 	return VISUAL_OK;
 }
 
 static int mutex_trylock_gthread (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	if (mutex->static_mutex_used == TRUE)
 		g_static_mutex_trylock (&mutex->static_mutex);
 	else
 		g_mutex_trylock (mutex->mutex);
-#endif
 
 	return VISUAL_OK;
 }
 
 static int mutex_unlock_gthread (VisMutex *mutex)
 {
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
 	if (mutex->static_mutex_used == TRUE)
 		g_static_mutex_unlock (&mutex->static_mutex);
 	else
 		g_mutex_unlock (mutex->mutex);
-#endif
 
 	return VISUAL_OK;
 }
 
+#endif // VISUAL_THREAD_MODEL_GTHREAD2
