@@ -14,7 +14,7 @@ SET(actor_oinksie_SOURCES
   oinksie.c
   oinksie.h
   config.c
-  config.h
+  oink-config.h
   gfx-background.c
   gfx-background.h
   gfx-misc.c
