@@ -31,6 +31,7 @@
 
 #include <libvisual/lv_defines.h>
 #include <libvisual/lvconfig.h>
+#include <libvisual/lv_error.h>
 
 VISUAL_BEGIN_DECLS
 
