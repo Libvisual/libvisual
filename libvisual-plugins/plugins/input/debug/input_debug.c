@@ -32,6 +32,8 @@
 
 #include <libvisual/libvisual.h>
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 static int inp_debug_init (VisPluginData *plugin);
 static int inp_debug_cleanup (VisPluginData *plugin);
 static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio);
@@ -66,17 +68,17 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int inp_debug_init (VisPluginData *plugin)
+static int inp_debug_init (VisPluginData *plugin)
 {
 	return 0;
 }
 
-int inp_debug_cleanup (VisPluginData *plugin)
+static int inp_debug_cleanup (VisPluginData *plugin)
 {
 	return 0;
 }
 
-int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
+static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	int16_t data[32768];
 	int i;

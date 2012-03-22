@@ -36,6 +36,8 @@
 
 #define PCM_BUF_SIZE	1024
 
+const VisPluginInfo *get_plugin_info (int *count);
+
 typedef struct {
 	jack_client_t	*client;
 	jack_port_t	*input_port;
@@ -50,9 +52,9 @@ typedef struct {
 static int process_callback (jack_nframes_t nframes, void *arg);
 static void shutdown_callback (void *arg);
 
-int inp_jack_init (VisPluginData *plugin);
-int inp_jack_cleanup (VisPluginData *plugin);
-int inp_jack_upload (VisPluginData *plugin, VisAudio *audio);
+static int inp_jack_init (VisPluginData *plugin);
+static int inp_jack_cleanup (VisPluginData *plugin);
+static int inp_jack_upload (VisPluginData *plugin, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -84,7 +86,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	return info;
 }
 
-int inp_jack_init (VisPluginData *plugin)
+static int inp_jack_init (VisPluginData *plugin)
 {
 	JackPrivate *priv;
 	const char **ports;
@@ -136,7 +138,7 @@ int inp_jack_init (VisPluginData *plugin)
 	return 0;
 }
 
-int inp_jack_cleanup (VisPluginData *plugin)
+static int inp_jack_cleanup (VisPluginData *plugin)
 {
 	JackPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -152,7 +154,7 @@ int inp_jack_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
+static int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	JackPrivate *priv = NULL;
 	VisBuffer buffer;

@@ -20,6 +20,8 @@
 
 #define PCM_BUF_SIZE 1024
 
+const VisPluginInfo *get_plugin_info(int *count);
+
 typedef struct {
     xmmsc_connection_t *connection;
     int vis;
@@ -27,13 +29,13 @@ typedef struct {
     int current_id;
 } xmms2_priv_t;
 
-int inp_xmms2_init( VisPluginData *plugin );
-int inp_xmms2_cleanup( VisPluginData *plugin );
-int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio );
-int inp_xmms2_events(VisPluginData *plugin, VisEventQueue *events);
+static int inp_xmms2_init( VisPluginData *plugin );
+static int inp_xmms2_cleanup( VisPluginData *plugin );
+static int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio );
+static int inp_xmms2_events(VisPluginData *plugin, VisEventQueue *events);
 
-int result_get_string(xmmsc_result_t *res, const char *key, const char **buf);
-int result_get_int(xmmsc_result_t *res, const char *key, int *num);
+static int result_get_string(xmmsc_result_t *res, const char *key, const char **buf);
+static int result_get_int(xmmsc_result_t *res, const char *key, int *num);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -64,7 +66,7 @@ const VisPluginInfo *get_plugin_info( int *count ) {
     return info;
 }
 
-int inp_xmms2_init( VisPluginData *plugin ) {
+static int inp_xmms2_init( VisPluginData *plugin ) {
     xmms2_priv_t *priv;
     const char *err_buf;
     VisParamContainer *paramcontainer = visual_plugin_get_params(plugin);
@@ -73,7 +75,7 @@ int inp_xmms2_init( VisPluginData *plugin ) {
     param->type = VISUAL_PARAM_ENTRY_TYPE_OBJECT;
 
     visual_param_container_add(paramcontainer, param);
-    
+
     priv = visual_mem_malloc0(sizeof(xmms2_priv_t));
 
     visual_object_set_private(VISUAL_OBJECT(plugin), priv);
@@ -110,7 +112,7 @@ int inp_xmms2_init( VisPluginData *plugin ) {
         xmmsv_get_int(v, &version);
 
         if(version < 1) {
-            visual_log(VISUAL_LOG_ERROR, 
+            visual_log(VISUAL_LOG_ERROR,
                 "The xmms2 server only supports formats up to version %d (needed is %d)", version, 1);
                 return -VISUAL_ERROR_GENERAL;
         }
@@ -147,7 +149,7 @@ int inp_xmms2_init( VisPluginData *plugin ) {
     while(!xmmsc_visualization_started(priv->connection, priv->vis)) {
         res = xmmsc_visualization_start(priv->connection, priv->vis);
         if(xmmsc_visualization_errored(priv->connection, priv->vis)) {
-            visual_log(VISUAL_LOG_ERROR, 
+            visual_log(VISUAL_LOG_ERROR,
                 "Couldn't start visualization transfer: %s", xmmsc_get_last_error(priv->connection));
             return -VISUAL_ERROR_GENERAL;
         }
@@ -161,7 +163,7 @@ int inp_xmms2_init( VisPluginData *plugin ) {
     return VISUAL_OK;
 }
 
-int inp_xmms2_cleanup( VisPluginData *plugin ) {
+static int inp_xmms2_cleanup( VisPluginData *plugin ) {
     xmms2_priv_t *priv = NULL;
 
     visual_log_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
@@ -175,13 +177,13 @@ int inp_xmms2_cleanup( VisPluginData *plugin ) {
 }
 
 /* Extract a string from an xmms2 dict */
-int result_get_string(xmmsc_result_t *res, const char *key, const char **buf)
+static int result_get_string(xmmsc_result_t *res, const char *key, const char **buf)
 {
     xmmsv_t *val = xmmsc_result_get_value(res);
     xmmsv_t *tmp;
     if(xmmsv_get_type(val) != XMMSV_TYPE_DICT) {
         return false;
-    } 
+    }
     if(!xmmsv_dict_get(val, key, &tmp)) {
         return false;
     }
@@ -199,7 +201,7 @@ int result_get_string(xmmsc_result_t *res, const char *key, const char **buf)
 }
 
 /* Extract an integer from an xmms2 dict */
-int result_get_int(xmmsc_result_t *res, const char *key, int *num)
+static int result_get_int(xmmsc_result_t *res, const char *key, int *num)
 {
     xmmsv_t *val = xmmsc_result_get_value(res);
     xmmsv_t *tmp;
@@ -222,7 +224,7 @@ int result_get_int(xmmsc_result_t *res, const char *key, int *num)
     return true;
 }
 
-int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
+static int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
 {
     xmms2_priv_t *priv = NULL;
     short pcm_data[PCM_BUF_SIZE];
@@ -249,26 +251,26 @@ int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
     {
         /* Get ID of the currently playing song */
         res = xmmsc_playback_current_id(priv->connection);
-    
+
         xmmsc_result_wait(res);
-    
+
         val = xmmsc_result_get_value(res);
 
         visual_log_return_val_if_fail(xmmsv_get_int(val, &id) > 0, -VISUAL_ERROR_GENERAL);
 
-	if(id != priv->current_id) 
+	if(id != priv->current_id)
         {
             priv->current_id = id;
-        
+
             xmmsc_result_unref(res);
-        
+
             /* Get media info about the current song and fill the VisSongInfo */
             res = xmmsc_medialib_get_info(priv->connection, id);
-        
+
             xmmsc_result_wait(res);
-        
+
             visual_songinfo_set_type(songinfo, VISUAL_SONGINFO_TYPE_ADVANCED);
-            
+
             if(result_get_string(res, "title", &dictbuf)) {
                 visual_songinfo_set_song(songinfo, (char *)dictbuf);
             } else {
@@ -279,26 +281,26 @@ int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
             } else {
                 visual_songinfo_set_length(songinfo, -1);
             }
-        
+
             if(result_get_string(res, "album", &dictbuf)) {
                 visual_songinfo_set_album(songinfo, (char *)dictbuf);
             } else {
                 visual_songinfo_set_album(songinfo, "(null)");
             }
-        
+
             if(result_get_string(res, "artist", &dictbuf)) {
                 visual_songinfo_set_artist(songinfo, (char *)dictbuf);
             } else {
                 visual_songinfo_set_artist(songinfo, "(null)");
             }
-        
+
             xmmsc_result_unref(res);
-        
+
             /* Get current playtime */
             res = xmmsc_signal_playback_playtime(priv->connection);
-        
+
             xmmsc_result_wait(res);
-        
+
             val = xmmsc_result_get_value(res);
             if(xmmsv_get_int(val, &time)) {
                 visual_songinfo_set_elapsed(songinfo, time);
@@ -321,7 +323,7 @@ int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
     return 0;
 }
 
-int inp_xmms2_events(VisPluginData *plugin, VisEventQueue *events) {
+static int inp_xmms2_events(VisPluginData *plugin, VisEventQueue *events) {
     xmms2_priv_t *priv = visual_object_get_private (VISUAL_OBJECT(plugin));
     VisEvent ev;
     VisParamEntry *param;

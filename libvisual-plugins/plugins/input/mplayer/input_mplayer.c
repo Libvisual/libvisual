@@ -44,6 +44,7 @@
 						   relative to $HOME */
 #endif /* SHARED_FILE */
 
+const VisPluginInfo *get_plugin_info(int *count);
 
 /* Data structures ***********************************************************/
 typedef struct {
@@ -65,9 +66,9 @@ typedef struct {
 
 
 /* Functions *****************************************************************/
-int inp_mplayer_init( VisPluginData *plugin );
-int inp_mplayer_cleanup( VisPluginData *plugin );
-int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio );
+static int inp_mplayer_init( VisPluginData *plugin );
+static int inp_mplayer_cleanup( VisPluginData *plugin );
+static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio );
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -113,7 +114,7 @@ const VisPluginInfo *get_plugin_info( int *count )
  *
  * @return 0 on success.
  */
-int inp_mplayer_init( VisPluginData *plugin )
+static int inp_mplayer_init( VisPluginData *plugin )
 {
 	mplayer_priv_t *priv = NULL;
 
@@ -155,7 +156,7 @@ int inp_mplayer_init( VisPluginData *plugin )
 
 	priv->mmap_area = mmap( 0, sizeof( mplayer_data_t ),
 			PROT_READ, MAP_SHARED, priv->fd, 0 );
-	visual_log_return_val_if_fail( (int)priv->mmap_area != -1, -1 );
+	visual_log_return_val_if_fail( (intptr_t)priv->mmap_area != -1, -1 );
 
 	if ( priv->mmap_area->nch == 0 )
 	{
@@ -179,11 +180,11 @@ int inp_mplayer_init( VisPluginData *plugin )
 	priv->mmap_area = mremap( priv->mmap_area, sizeof( mplayer_data_t ),
 			sizeof( mplayer_data_t ) + priv->mmap_area->bs,
 			0 );
-	if ( (int)priv->mmap_area == -1 )
+	if ( (intptr_t)priv->mmap_area == -1 )
 	{
 		visual_log( VISUAL_LOG_CRITICAL, 
 				_("Could not mremap() area from file '%s' " \
-					" (%p from %d to %d bytes): %s"),
+					" (%p from %" VISUAL_SIZE_T_FORMAT " to %" VISUAL_SIZE_T_FORMAT " bytes): %s"),
 				priv->sharedfile, 
 				priv->mmap_area, sizeof( mplayer_data_t ),
 				sizeof( mplayer_data_t ) + priv->mmap_area->bs,
@@ -202,7 +203,7 @@ int inp_mplayer_init( VisPluginData *plugin )
  *
  * @return 0 on success.
  */
-int inp_mplayer_cleanup( VisPluginData *plugin )
+static int inp_mplayer_cleanup( VisPluginData *plugin )
 {
 	int unclean = 0;
 	mplayer_priv_t *priv = NULL;
@@ -259,7 +260,7 @@ int inp_mplayer_cleanup( VisPluginData *plugin )
  * 
  * @return 0 on success.
  */
-int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
+static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 {
 	mplayer_priv_t *priv = NULL;
 
