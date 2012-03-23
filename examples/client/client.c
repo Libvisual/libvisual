@@ -39,7 +39,7 @@ int main (int argc, char **argv)
     bin = visual_bin_new();
 
     actor = visual_actor_new("lv_scope");
-    input = visual_input_new("xmms2");
+    input = visual_input_new("alsa");
     visual_bin_set_supported_depth(bin, VISUAL_VIDEO_DEPTH_ALL);
     visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
 
@@ -221,6 +221,7 @@ int main (int argc, char **argv)
 	display_set_fullscreen (display, FALSE, TRUE);
 	display_close (display);
 
+        
 	visual_quit ();
     
 	printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
