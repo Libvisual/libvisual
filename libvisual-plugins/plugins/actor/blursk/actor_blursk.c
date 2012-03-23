@@ -73,12 +73,6 @@ const VisPluginInfo *get_plugin_info (int *count)
         return info;
 }
 
-
-
-
-
-
-
 static int act_blursk_init (VisPluginData *plugin) {
     BlurskPrivate *priv;
     VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
@@ -117,7 +111,7 @@ static int act_blursk_init (VisPluginData *plugin) {
     visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
     priv->plugin = plugin;
-    
+
     priv->rcontext = visual_plugin_get_random_context (plugin);
 
     visual_palette_allocate_colors (&priv->pal, 256);
@@ -250,7 +244,7 @@ static int act_blursk_requisition (VisPluginData *plugin, int *width, int *heigh
         return 0;
 }
 
-int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int height) 
+static int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
         BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
