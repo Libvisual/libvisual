@@ -24,6 +24,7 @@ SET(libvisual_HEADERS
   lv_log.h
   lv_palette.h
   lv_plugin.h
+  lv_plugin_registry.h
   lv_video.h
   lv_libvisual.h
   lv_songinfo.h
@@ -65,6 +66,7 @@ SET(libvisual_SOURCES
   lv_event.c
   lv_bin.c
   lv_plugin.c
+  lv_plugin_registry.c
   lv_video.c
   lv_video_simd.c
   lv_mem.c

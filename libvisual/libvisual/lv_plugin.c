@@ -1318,4 +1318,3 @@ VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
 /**
  * @}
  */
-

@@ -30,12 +30,8 @@
 #include <gettext.h>
 
 #include "lvconfig.h"
-#include "lv_plugin.h"
-#include "lv_actor.h"
-#include "lv_input.h"
-#include "lv_morph.h"
-#include "lv_transform.h"
 #include "lv_libvisual.h"
+#include "lv_plugin_registry.h"
 #include "lv_log.h"
 #include "lv_param.h"
 #include "lv_thread.h"
@@ -48,28 +44,11 @@ int __lv_initialized = FALSE;
 /** Set a progname from argv[0] when we're capable of doing so. */
 char *__lv_progname = NULL;
 
-/** Contains the completely plugin registry after initialize. */
-VisList *__lv_plugins = NULL;
-/** Contains all the actor plugins after initialize. */
-VisList *__lv_plugins_actor = NULL;
-/** Contains all the input plugins after initialize. */
-VisList *__lv_plugins_input = NULL;
-/** Contains all the morph plugins after initialize. */
-VisList *__lv_plugins_morph = NULL;
-/** Contains all the transform plugins after initialize. */
-VisList *__lv_plugins_transform = NULL;
-
 /** The global params container */
 VisParamContainer *__lv_paramcontainer = NULL;
 
 /** The userinterface for the global params */
 VisUIWidget *__lv_userinterface = NULL;
-
-/** Contains the number of plugin registry paths. */
-int __lv_plugpath_cnt = 0;
-/** Char ** list of all the plugin paths. */
-char **__lv_plugpaths = NULL;
-
 
 static int init_params (VisParamContainer *paramcontainer);
 static VisUIWidget *make_userinterface (void);
@@ -182,20 +161,6 @@ static VisUIWidget *make_userinterface ()
 	return vbox;
 }
 
-static int free_plugpaths ()
-{
-	int i;
-
-	if (__lv_plugpaths == NULL)
-			return VISUAL_OK;
-
-	for (i = 0; i < __lv_plugpath_cnt - 1; i++)
-		visual_mem_free (__lv_plugpaths[i]);
-
-	free (__lv_plugpaths);
-	return VISUAL_OK;
-}
-
 /**
  * @defgroup Libvisual Libvisual
  * @{
@@ -243,28 +208,6 @@ VisUIWidget *visual_get_userinterface ()
 }
 
 /**
- * Adds extra plugin registry paths.
- *
- * @param pathadd A string containing a path where plugins are located.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NO_PATHS on failure.
- */
-int visual_init_path_add (char *pathadd)
-{
-	__lv_plugpath_cnt++;
-	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);
-
-	visual_log_return_val_if_fail (__lv_plugpaths != NULL, -VISUAL_ERROR_LIBVISUAL_NO_PATHS);
-
-	if (pathadd == NULL)
-		__lv_plugpaths[__lv_plugpath_cnt - 1] = NULL;
-	else
-		__lv_plugpaths[__lv_plugpath_cnt - 1] = strdup (pathadd);
-
-	return VISUAL_OK;
-}
-
-/**
  * Initialize libvisual. Sets up a plugin registry, register the program name and such.
  *
  * @param argc Pointer to an int containing the number of arguments within argv or NULL.
@@ -275,8 +218,6 @@ int visual_init_path_add (char *pathadd)
  */
 int visual_init (int *argc, char ***argv)
 {
-	char temppluginpath[FILENAME_MAX+1];
-	char *homedir = NULL;
 	int ret = 0;
 
 #if ENABLE_NLS
@@ -325,64 +266,15 @@ int visual_init (int *argc, char ***argv)
 	/* Initialize FFT system */
 	visual_fourier_initialize ();
 
-	/* Add the standard plugin paths */
-	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/actor");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/input");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/morph");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/transform");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-#if !defined(VISUAL_OS_WIN32)
-	/* Add homedirectory plugin paths */
-	homedir = getenv ("HOME");
-
-	if (homedir != NULL) {
-		temppluginpath[sizeof (temppluginpath) - 1] = 0;
-
-		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/actor", homedir);
-		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/input", homedir);
-		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/morph", homedir);
-		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/transform", homedir);
-		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-	}
-#endif
-
-	/* And null terminate the list */
-	ret = visual_init_path_add (NULL);
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
-
-	__lv_plugins = visual_plugin_get_list ((const char**)__lv_plugpaths, TRUE);
-	visual_log_return_val_if_fail (__lv_plugins != NULL, -VISUAL_ERROR_LIBVISUAL_NO_REGISTRY);
-
-	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
-	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
-	__lv_plugins_morph = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_MORPH);
-	__lv_plugins_transform = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
+	/* Initialize the plugin registry */
+	visual_plugin_registry_initialize ();
 
 	__lv_paramcontainer = visual_param_container_new ();
 	init_params (__lv_paramcontainer);
+
 	__lv_userinterface = make_userinterface ();
 
 	__lv_initialized = TRUE;
-
-	/* Free the strdupped plugpaths */
-	free_plugpaths ();
 
 	return VISUAL_OK;
 }
@@ -415,25 +307,7 @@ int visual_quit ()
 	if (visual_fourier_is_initialized () == TRUE)
 		visual_fourier_deinitialize ();
 
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Plugins references list: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_actor));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Actor plugins list: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_input));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Input plugins list: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_morph));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Morph plugins list: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_plugins_transform));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Transform plugins list: destroy failed: %s"), visual_error_to_string (ret));
+	visual_plugin_registry_deinitialize ();
 
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_paramcontainer));
 	if (ret < 0)

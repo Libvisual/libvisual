@@ -41,7 +41,6 @@ int visual_get_api_version (void);
 VisParamContainer *visual_get_params (void);
 VisUIWidget *visual_get_userinterface (void);
 
-int visual_init_path_add (char *pathadd);
 int visual_init (int *argc, char ***argv);
 int visual_is_initialized (void);
 int visual_quit (void);
