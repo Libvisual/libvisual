@@ -491,11 +491,8 @@ bool EgOSUtils::GetNextFile( const CEgFileSpec& folderSpec, CEgFileSpec& outSpec
 		sLastIndex = pb.ioFDirIndex;
 	} while ( err == noErr && ! ok );
 
-	#endif
-	
-	
+	#elif defined(EG_WIN)
 
-	#ifdef EG_WIN
 	WIN32_FIND_DATA		fileData;
 	static HANDLE		hSearch;
 	UtilStr				name;
@@ -526,10 +523,8 @@ bool EgOSUtils::GetNextFile( const CEgFileSpec& folderSpec, CEgFileSpec& outSpec
 				tryAgain = true;
 		}
 	} while ( ok && tryAgain );
-		
-	#endif
-		
-	#ifdef UNIX_X
+
+	#elif defined(UNIX_X)
 
 	UtilStr				name;
 	bool				isDir, tryAgain;
@@ -577,6 +572,10 @@ bool EgOSUtils::GetNextFile( const CEgFileSpec& folderSpec, CEgFileSpec& outSpec
 	  else
 	    tryAgain = true;
 	} while ( ok && tryAgain );
+
+	#else
+
+	ok = false;
 
 	#endif
 
