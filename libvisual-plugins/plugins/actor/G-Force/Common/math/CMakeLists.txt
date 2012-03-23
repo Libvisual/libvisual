@@ -27,7 +27,7 @@ SET(gforce_math_SOURCES
   V3.cpp
 )
 
-ADD_LIBRARY(gforce_math SHARED ${gforce_math_SOURCES})
+ADD_LIBRARY(gforce_math STATIC ${gforce_math_SOURCES})
 
 TARGET_LINK_LIBRARIES(gforce_math
   ${LIBVISUAL_LIBRARIES}
