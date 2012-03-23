@@ -87,8 +87,8 @@ SET(GETTEXT_PACKAGE "libvisual-plugins-${LV_PLUGINS_VERSION_SUFFIX}")
 
 # Check for system architecture
 
-IF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i.86|x86|x86_64)$")
-  SET(ARCH_X86 yes)
+IF(CMAKE_SYSTEM_PROCESSOR MATCHES "i.86")
+  SET(TARGET_ARCH_X86 yes)
 ENDIF()
 
 # Check for libraries
