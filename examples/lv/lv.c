@@ -1,4 +1,25 @@
-
+/* Libvisual - The audio visualisation framework cli tool
+ * 
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
+ * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
+ *
+ * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ *          Daniel Hiepler <daniel@niftylight.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 
 
 #include <stdlib.h>
@@ -130,6 +151,9 @@ int main (int argc, char **argv)
         /* parse commandline arguments */
         if(_parse_args(argc, argv) != EXIT_SUCCESS)
                 return EXIT_FAILURE;
+
+        /* print warm welcome */
+        fprintf(stderr, "%s v0.1\n", argv[0]);
         
         /**
          * initialize libvisual once (this is meant to be called only once,
@@ -146,6 +170,7 @@ int main (int argc, char **argv)
         visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
 
         /* initialize actor plugin */
+        fprintf(stderr, "Loading actor \"%s\"...\n", actor_name);
         VisActor *actor;
         if(!(actor = visual_actor_new(actor_name)))
         {
@@ -154,6 +179,7 @@ int main (int argc, char **argv)
         }
         
         /* initialize input plugin */
+        fprintf(stderr, "Loading input \"%s\"...\n", input_name);
         VisInput *input;
         if(!(input = visual_input_new(input_name)))
         {

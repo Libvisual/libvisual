@@ -1,3 +1,27 @@
+/* Libvisual - The audio visualisation framework cli tool
+ * 
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
+ * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
+ *
+ * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ *          Daniel Hiepler <daniel@niftylight.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -5,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <niftyled.h>
 #include "display.h"
 
 
@@ -84,6 +109,9 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 
 	fclose (dimensions);*/
 
+        native->width = 20;
+        native->height = 20;
+        
 	display->native = VISUAL_OBJECT (native);
 
 	return 0;
@@ -131,17 +159,17 @@ static int native_getvideo (SADisplay *display, VisVideo *screen)
 	return 0;
 }
 
-static int native_updaterect (SADisplay *display, VisRectangle *rect)
+static int native_updaterect(SADisplay *display, VisRectangle *rect)
 {
-	LedsNative *native = LEDS_NATIVE (display->native);
+	LedsNative *native = LEDS_NATIVE(display->native);
 
-	int fd = open (LEDS_RAW_INPUT_FILE, O_WRONLY);
+	
 
-	write (fd, native->area, native->width * native->height * (visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8));
+	//write (fd, native->area, native->width * native->height * (visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8));
 
 	printf ("%d %d\n", native->width, native->height);
 
-	close (fd);
+	//close (fd);
 
 	return 0;
 }
