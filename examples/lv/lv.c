@@ -376,12 +376,15 @@ int main (int argc, char **argv)
 				case VISUAL_EVENT_MOUSEBUTTONDOWN:
                                 {
                                         /* switch to next actor */
-                                        strncpy(actor_name, 
-                                                visual_actor_get_next_by_name(actor->plugin->info->name), 
-                                                sizeof(actor_name)-1);
-                                        
-                                        visual_bin_set_morph_by_name(bin, (char *) morph_name);
-                                        visual_bin_switch_actor_by_name(bin, (char *) actor_name);
+                                        const char *next_name;
+                                        if(!(next_name = visual_actor_get_next_by_name(actor->plugin->info->name)))
+                                        {
+                                                next_name = DEFAULT_ACTOR;
+                                        }
+                                        strncpy(actor_name, next_name, sizeof(actor_name)-1);
+                
+                                        visual_bin_set_morph_by_name(bin, morph_name);
+                                        visual_bin_switch_actor_by_name(bin, actor_name);
 
                                         /* get new actor */
                                         actor = visual_bin_get_actor(bin);
