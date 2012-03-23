@@ -68,7 +68,7 @@ struct _SADisplay {
 
 
 #include "niftyled_driver.h"
-
+#include "sdl_driver.h"
 
 
 

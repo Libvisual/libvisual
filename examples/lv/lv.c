@@ -33,12 +33,16 @@
 #define DEFAULT_ACTOR   "lv_analyzer"
 #define DEFAULT_INPUT   "debug"
 #define DEFAULT_MORPH   "slide"
+#define DEFAULT_WIDTH   320
+#define DEFAULT_HEIGHT  200
 #define DEFAULT_FPS     30
 
 
 static char actor_name[128];
 static char input_name[128];
 static char morph_name[128];
+static int  width;
+static int  height;
 static int  framerate;
 static int  driver;
 
@@ -52,6 +56,7 @@ typedef struct
 
 SADisplayDriverDescription all_display_drivers[] =
 {
+        { .name = "sdl",      .creator = &sdl_driver_new      },
         { .name = "niftyled", .creator = &niftyled_driver_new },
 };
 
@@ -68,6 +73,7 @@ static void _print_help(char *name)
 	       "Valid options:\n"
 	       "\t--help\t\t\t-h\t\tThis help text\n"
                /*"\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"*/
+               "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
                "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
 	       "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"               
@@ -75,6 +81,7 @@ static void _print_help(char *name)
                "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",               
 	       "http://github.com/StarVisuals/libvisual", 
                name, 
+               width, height,
                all_display_drivers[0].name,
                input_name, 
                actor_name, 
@@ -92,6 +99,7 @@ static int _parse_args(int argc, char *argv[])
 	{
 		{"help",        no_argument,       0, 'h'},
                 {"plugin-help", no_argument,       0, 'p'},
+                {"dimensions",  required_argument, 0, 'D'},
                 {"driver",      required_argument, 0, 'd'},
 		{"input",       required_argument, 0, 'i'},
 		{"actor",       required_argument, 0, 'a'},
@@ -100,7 +108,7 @@ static int _parse_args(int argc, char *argv[])
 		{0,             0,                 0,  0 }
 	};
 
-	while((argument = getopt_long(argc, argv, "hpd:i:a:m:f:", loptions, &index)) >= 0)
+	while((argument = getopt_long(argc, argv, "hpD:d:i:a:m:f:", loptions, &index)) >= 0)
 	{
 		
 		switch(argument)
@@ -119,6 +127,18 @@ static int _parse_args(int argc, char *argv[])
                                 return EXIT_FAILURE;
                         }
 
+                        /* --dimensions */
+                        case 'D':
+                        {
+                                if(sscanf(optarg, "%dx%d", &width, &height) != 2)
+                                {
+                                        fprintf(stderr, 
+                                                "Invalid dimensions: \"%s\". Use <width>x<height> (e.g. 320x200)\n", optarg);
+                                        return EXIT_FAILURE;
+                                }
+                                break;
+                        }
+                                
                         /* --driver */
                         case 'd':
                         {
@@ -206,6 +226,8 @@ static int _parse_args(int argc, char *argv[])
 int main (int argc, char **argv)
 {
         /* set defaults */
+        width = DEFAULT_WIDTH;
+        height = DEFAULT_HEIGHT;
         driver = 0;
         strncpy(actor_name, DEFAULT_ACTOR, sizeof(actor_name)-1);
         strncpy(input_name, DEFAULT_INPUT, sizeof(input_name)-1);
@@ -284,14 +306,14 @@ int main (int argc, char **argv)
 
         /* initialize display */
         SADisplay *display;
-        if(!(display = display_new(niftyled_driver_new())))
+        if(!(display = display_new(all_display_drivers[driver].creator())))
         {
                 fprintf(stderr, "Failed to initialize display.\n");
                 goto _m_exit;
         }
 
         /* create display */
-	display_create(display, depth, vidoptions, 320, 200, TRUE);
+	display_create(display, depth, vidoptions, width, height, TRUE);
         VisVideo *video;
 	if(!(video = display_get_video(display)))
         {

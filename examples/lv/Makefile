@@ -5,6 +5,7 @@ TARGET=lv
 SOURCES= \
 	display/display.c \
 	display/niftyled_driver.c \
+	display/sdl_driver.c \
 	lv.c
 
 WARN_FLAGS=-Wall -g -O0
