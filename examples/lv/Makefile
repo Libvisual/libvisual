@@ -7,7 +7,7 @@ SOURCES= \
 	display/niftyled_driver.c \
 	lv.c
 
-WARN_FLAGS="-Wall"
+WARN_FLAGS=-Wall -g -O0
 SDL_FLAGS=`sdl-config --libs --cflags`
 NIFTYLED_FLAGS=`pkg-config --cflags --libs niftyled`
 LV_FLAGS=`pkg-config --cflags --libs libvisual-0.5`
