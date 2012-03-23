@@ -30,14 +30,16 @@
 
 
 
-#define DEFAULT_ACTOR "lv_analyzer"
-#define DEFAULT_INPUT "debug"
-#define DEFAULT_MORPH "slide"
+#define DEFAULT_ACTOR   "lv_analyzer"
+#define DEFAULT_INPUT   "debug"
+#define DEFAULT_MORPH   "slide"
+#define DEFAULT_FPS     30
 
 
 static char actor_name[128];
 static char input_name[128];
 static char morph_name[128];
+static int  framerate;
 
 
 
@@ -52,9 +54,10 @@ static void _print_help(char *name)
                "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
                "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
 	       "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"               
-               "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n\n",               
+               "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
+               "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",               
 	       "http://github.com/StarVisuals/libvisual", 
-               name, input_name, actor_name, morph_name);
+               name, input_name, actor_name, morph_name, framerate);
 }
 
 
@@ -69,11 +72,12 @@ static int _parse_args(int argc, char *argv[])
                 {"plugin-help", no_argument,       0, 'p'},
 		{"input",       required_argument, 0, 'i'},
 		{"actor",       required_argument, 0, 'a'},
-                {"morph",       required_argument, 0, 'm'},                
+                {"morph",       required_argument, 0, 'm'},       
+                {"fps",         required_argument, 0, 'f'},
 		{0,             0,                 0,  0 }
 	};
 
-	while((argument = getopt_long(argc, argv, "hpi:a:m:", loptions, &index)) >= 0)
+	while((argument = getopt_long(argc, argv, "hpi:a:m:f:", loptions, &index)) >= 0)
 	{
 		
 		switch(argument)
@@ -115,6 +119,14 @@ static int _parse_args(int argc, char *argv[])
 				strncpy(morph_name, optarg, sizeof(morph_name)-1);
 				break;
 			}
+
+                        /** --fps */
+                        case 'f':
+                        {
+                                /* set framerate */
+                                sscanf(optarg, "%d", &framerate);
+                                break;
+                        }
                                 
 			/* invalid argument */
 			case '?':
@@ -147,6 +159,8 @@ int main (int argc, char **argv)
         strncpy(actor_name, DEFAULT_ACTOR, sizeof(actor_name)-1);
         strncpy(input_name, DEFAULT_INPUT, sizeof(input_name)-1);
         strncpy(morph_name, DEFAULT_MORPH, sizeof(morph_name)-1);
+        framerate = DEFAULT_FPS;
+
         
         /* parse commandline arguments */
         if(_parse_args(argc, argv) != EXIT_SUCCESS)
@@ -215,7 +229,7 @@ int main (int argc, char **argv)
 
         //depth = visual_video_depth_get_highest_nogl(depthflag);
         VisVideoAttributeOptions *vidoptions;
-        vidoptions = visual_actor_get_video_attribute_options (actor);
+        vidoptions = visual_actor_get_video_attribute_options(actor);
 
 
         /* initialize display */
@@ -385,7 +399,7 @@ int main (int argc, char **argv)
                 visual_bin_run(bin);
                 display_unlock(display);
                 display_update_all(display);
-                display_fps_limit(display, 30);
+                display_fps_limit(display, framerate);
         }
 
 
