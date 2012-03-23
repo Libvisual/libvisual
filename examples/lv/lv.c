@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <libvisual/libvisual.h>
+#include "display/display.h"
+
+
 
 
 #define DEFAULT_ACTOR "lv_analyzer"
@@ -189,11 +192,35 @@ int main (int argc, char **argv)
         vidoptions = visual_actor_get_video_attribute_options (actor);
 
 
+        /* initialize display */
+        SADisplay *display;
+        if(!(display = display_new(niftyled_driver_new())))
+        {
+                fprintf(stderr, "Failed to initialize display.\n");
+                goto _m_exit;
+        }
+
+        /* create display */
+	display_create(display, depth, vidoptions, 320, 200, TRUE);
+        VisVideo *video;
+	if(!(video = display_get_video(display)))
+        {
+                fprintf(stderr, "Failed to get VisVideo from display.\n");
+                goto _m_exit_display;
+        }
 
 
-_m_exit:
+
 
         
+        
+
+_m_exit_display:
+        /* cleanup display stuff */
+	display_set_fullscreen(display, FALSE, TRUE);
+	display_close(display);
+        
+_m_exit:        
         /* cleanup resources allocated by visual_init() */
         visual_quit ();
     

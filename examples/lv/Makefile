@@ -1,8 +1,11 @@
 
 
 
-TARGET="lv"
-SOURCES="lv.c"
+TARGET=lv
+SOURCES= \
+	display/display.c \
+	display/niftyled_driver.c \
+	lv.c
 
 WARN_FLAGS="-Wall"
 SDL_FLAGS=`sdl-config --libs --cflags`
