@@ -43,7 +43,6 @@
  */
 #include "actor_blursk.h"
 #include "blursk.h"
-#ifndef X86_ASM_OPT
 
 # define BLUR   src = *srcref++; \
         *dest++ = (src[-img_bpl] + src[0] \
@@ -350,4 +349,3 @@ void loopinterp(void)
 
     } while (--i != 0);
 }
-#endif /* ndef X86_ASM_OPT */

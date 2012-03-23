@@ -43,27 +43,7 @@
  */
 int visual_utils_is_power_of_2 (int n)
 {
-	int bits_found = FALSE;
-
-	if (n < 1)
-		return FALSE;
-
-	do {
-		if (n & 1) {
-			if (bits_found)
-				return FALSE;
-
-			bits_found = TRUE;
-		}
-
-		n >>= 1;
-
-	} while (n > 0);
-
-	/* Couldn't we use this: */
-	/* FIXME: (n & (n -1)) == 0) */
-
-	return TRUE;
+	return (n > 0) && !(n & (n - 1));
 }
 
 /**
