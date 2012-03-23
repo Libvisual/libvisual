@@ -56,7 +56,7 @@ static uint8_t courbes_palette(JessPrivate *priv, uint8_t i, int no_courbe)
 	return 0;
 }
 
-static void random_palette(JessPrivate *priv)
+void random_palette(JessPrivate *priv)
 {
 	int i,j,k,l;
 
