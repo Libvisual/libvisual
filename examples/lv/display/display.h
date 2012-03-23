@@ -31,7 +31,6 @@
 typedef struct _SADisplayDriver SADisplayDriver;
 typedef struct _SADisplay SADisplay;
 
-
 typedef int (*SADisplayDriverCreateFunc)(SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
 		int width, int height, int resizable);
 typedef int (*SADisplayDriverCloseFunc)(SADisplay *display);
@@ -69,6 +68,7 @@ struct _SADisplay {
 
 
 #include "niftyled_driver.h"
+
 
 
 

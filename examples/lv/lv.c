@@ -40,9 +40,25 @@ static char actor_name[128];
 static char input_name[128];
 static char morph_name[128];
 static int  framerate;
+static int  driver;
+
+
+/* list of available driver-creators */
+typedef struct
+{
+        const char name[64];
+        SADisplayDriver *(*creator)(void);
+}SADisplayDriverDescription;
+
+SADisplayDriverDescription all_display_drivers[] =
+{
+        { .name = "niftyled", .creator = &niftyled_driver_new },
+};
 
 
 
+
+/******************************************************************************/
 
 /** print commandline help */
 static void _print_help(char *name)
@@ -51,13 +67,19 @@ static void _print_help(char *name)
 	       "Usage: %s [options]\n\n"
 	       "Valid options:\n"
 	       "\t--help\t\t\t-h\t\tThis help text\n"
-               "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
+               /*"\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"*/
+               "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
 	       "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"               
                "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",               
 	       "http://github.com/StarVisuals/libvisual", 
-               name, input_name, actor_name, morph_name, framerate);
+               name, 
+               all_display_drivers[0].name,
+               input_name, 
+               actor_name, 
+               morph_name, 
+               framerate);
 }
 
 
@@ -70,6 +92,7 @@ static int _parse_args(int argc, char *argv[])
 	{
 		{"help",        no_argument,       0, 'h'},
                 {"plugin-help", no_argument,       0, 'p'},
+                {"driver",      required_argument, 0, 'd'},
 		{"input",       required_argument, 0, 'i'},
 		{"actor",       required_argument, 0, 'a'},
                 {"morph",       required_argument, 0, 'm'},       
@@ -77,7 +100,7 @@ static int _parse_args(int argc, char *argv[])
 		{0,             0,                 0,  0 }
 	};
 
-	while((argument = getopt_long(argc, argv, "hpi:a:m:f:", loptions, &index)) >= 0)
+	while((argument = getopt_long(argc, argv, "hpd:i:a:m:f:", loptions, &index)) >= 0)
 	{
 		
 		switch(argument)
@@ -96,6 +119,33 @@ static int _parse_args(int argc, char *argv[])
                                 return EXIT_FAILURE;
                         }
 
+                        /* --driver */
+                        case 'd':
+                        {
+                                int n;
+                                for(n = 0; 
+                                    n < sizeof(all_display_drivers)/sizeof(SADisplayDriverDescription);
+                                    n++)
+                                {
+                                        /* is this our driver? */
+                                        if(strcmp(optarg, all_display_drivers[n].name) == 0)
+                                        {
+                                                /* stop search */
+                                                break;
+                                        }
+                                }
+
+                                /* found something? */
+                                if(n < sizeof(all_display_drivers)/sizeof(SADisplayDriverDescription))
+                                {
+                                        driver = n;
+                                        break;
+                                }
+                                
+                                fprintf(stderr, "Unsupported display driver: %s\n", optarg);
+                                return EXIT_FAILURE;
+                        }
+                                
 			/* --input */
 			case 'i':
 			{
@@ -156,6 +206,7 @@ static int _parse_args(int argc, char *argv[])
 int main (int argc, char **argv)
 {
         /* set defaults */
+        driver = 0;
         strncpy(actor_name, DEFAULT_ACTOR, sizeof(actor_name)-1);
         strncpy(input_name, DEFAULT_INPUT, sizeof(input_name)-1);
         strncpy(morph_name, DEFAULT_MORPH, sizeof(morph_name)-1);
@@ -224,7 +275,6 @@ int main (int argc, char **argv)
                 }
         }
 
-        /* what is this for? */
         bin->depthforcedmain = bin->depth;
 
         //depth = visual_video_depth_get_highest_nogl(depthflag);
