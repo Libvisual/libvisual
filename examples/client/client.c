@@ -39,11 +39,8 @@ int main (int argc, char **argv)
     bin = visual_bin_new();
 
     actor = visual_actor_new("lv_scope");
-<<<<<<< HEAD
-    input = visual_input_new("alsa");
-=======
     input = visual_input_new("debug");
->>>>>>> 2679f3550822841d3b481655ab072c8abaa53188
+
     visual_bin_set_supported_depth(bin, VISUAL_VIDEO_DEPTH_ALL);
     visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
 

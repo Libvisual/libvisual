@@ -1,5 +1,7 @@
 # Backup files
 *~
+.*
+\#*
 
 # Emacs Semantic cache files
 *.cache
