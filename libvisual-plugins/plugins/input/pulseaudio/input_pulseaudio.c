@@ -22,13 +22,15 @@
 
 #define PCM_BUF_SIZE 1024
 
+const VisPluginInfo *get_plugin_info(int *count);
+
 typedef struct {
     pa_simple *simple;
 } pulseaudio_priv_t;
 
-int inp_pulseaudio_init( VisPluginData *plugin );
-int inp_pulseaudio_cleanup( VisPluginData *plugin );
-int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );
+static int inp_pulseaudio_init( VisPluginData *plugin );
+static int inp_pulseaudio_cleanup( VisPluginData *plugin );
+static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -58,7 +60,7 @@ const VisPluginInfo *get_plugin_info( int *count ) {
     return info;
 }
 
-int inp_pulseaudio_init( VisPluginData *plugin ) {
+static int inp_pulseaudio_init( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv;
     pa_sample_spec sample_spec;
     int error;
@@ -83,7 +85,7 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
     return VISUAL_OK;
 }
 
-int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
+static int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv = NULL;
 
     visual_log_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
@@ -96,7 +98,7 @@ int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     return VISUAL_OK;
 }
 
-int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
+static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 {
     pulseaudio_priv_t *priv = NULL;
     short pcm_data[PCM_BUF_SIZE];
