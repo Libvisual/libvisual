@@ -69,7 +69,7 @@ SADisplayDriverDescription all_display_drivers[] =
 /** print commandline help */
 static void _print_help(char *name)
 {
-	printf("libvisual commandline utility - %s\n"
+	printf("libvisual commandline tool - %s\n"
 	       "Usage: %s [options]\n\n"
 	       "Valid options:\n"
 	       "\t--help\t\t\t-h\t\tThis help text\n"

@@ -25,7 +25,7 @@ LINK_DIRECTORIES(
 )
 
 SET(SOURCES
-  lv.c
+  lv-tool.c
   display/display.c
   display/sdl_driver.c
   display/niftyled_driver.c
@@ -33,9 +33,9 @@ SET(SOURCES
 
 SET(CMAKE_C_FLAGS_DEBUG "-Wall -ggdb")
 
-ADD_EXECUTABLE(lv ${SOURCES})
+ADD_EXECUTABLE(lv-tool ${SOURCES})
 
-TARGET_LINK_LIBRARIES(lv
+TARGET_LINK_LIBRARIES(lv-tool
   ${LIBVISUAL_LIBRARIES}
   ${SDL_LIBRARY}
   ${NIFTYLED_LIBRARIES}
