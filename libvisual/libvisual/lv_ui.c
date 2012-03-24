@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -103,7 +103,7 @@ static int choice_dtor (VisObject *object)
 	visual_ui_choice_free_choices (VISUAL_UI_CHOICE (object));
 
 	widget_dtor (object);
-	
+
 	return VISUAL_OK;
 }
 
@@ -177,7 +177,7 @@ int visual_ui_widget_set_tooltip (VisUIWidget *widget, const char *tooltip)
 
 	if (widget->tooltip != NULL)
 		visual_mem_free ((char *) widget->tooltip);
-	
+
 	widget->tooltip = strdup (tooltip);
 
 	return VISUAL_OK;
@@ -254,7 +254,7 @@ VisUIWidgetType visual_ui_widget_get_type (VisUIWidget *widget)
  *
  * @see visual_ui_box_pack
  * @see visual_ui_table_attach
- * 
+ *
  * @param container Pointer to the VisUIContainer in which a VisUIWidget is put.
  * @param widget Pointer to the VisUIWidget that is been put in the VisUIContainer.
  *
@@ -332,16 +332,13 @@ int visual_ui_box_pack (VisUIBox *box, VisUIWidget *widget)
 
 /**
  * Retrieve a VisList of VisUIWidget elements, being the childs of the VisUIBox.
- * 
+ *
  * @param box Pointer to the VisUIBox from which the childs are requested.
- * 
+ *
  * @return VisList containing the childs of the VisUIBox or NULL on failure.
  */
 VisList *visual_ui_box_get_childs (VisUIBox *box)
 {
-	VisUIWidget *next;
-	VisListEntry *le = NULL;
-
 	visual_log_return_val_if_fail (box != NULL, NULL);
 
 	return &box->childs;
@@ -402,7 +399,7 @@ VisUIWidget *visual_ui_table_new (int rows, int cols)
 VisUITableEntry *visual_ui_table_entry_new (VisUIWidget *widget, int row, int col)
 {
 	VisUITableEntry *tentry;
-	
+
 	visual_log_return_val_if_fail (widget != NULL, NULL);
 
 	tentry = visual_mem_new0 (VisUITableEntry, 1);
@@ -420,12 +417,12 @@ VisUITableEntry *visual_ui_table_entry_new (VisUIWidget *widget, int row, int co
 
 /**
  * Attaches a VisUIWidget to a cell within a VisUITable.
- * 
+ *
  * @param table Pointer to the VisUITable to which a VisUiWidget is attached.
  * @param widget Pointer to the VisUIWidget that is being attached to the VisUITable.
  * @param row The row number starting at 0.
  * @param col The column number starting at 0.
- * 
+ *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_UI_TABLE_NULL, -VISUAL_ERROR_UI_WIDGET_NULL or
  * 	error values returned by visual_list_add () on failure.
  */
@@ -532,7 +529,7 @@ VisList *visual_ui_notebook_get_childlabels (VisUINotebook *notebook)
 
 /**
  * Creates a new VisUIFrame, which can be used to put a frame around a VisUIWidget.
- * 
+ *
  * @param name The name of this frame.
  *
  * @return The newly created VisUIFrame in the form of a VisUIWidget.
@@ -542,7 +539,7 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 	VisUIFrame *frame;
 
 	frame = visual_mem_new0 (VisUIFrame, 1);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (frame), TRUE, frame_dtor);
 
@@ -551,7 +548,7 @@ VisUIWidget *visual_ui_frame_new (const char *name)
 	frame->name = name;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (frame), -1, -1);
-	
+
 	return VISUAL_UI_WIDGET (frame);
 }
 
@@ -578,13 +575,13 @@ VisUIWidget *visual_ui_label_new (const char *text, int bold)
 	label->bold = bold;
 
 	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (label), -1, -1);
-	
+
 	return VISUAL_UI_WIDGET (label);
 }
 
 /**
  * Sets the bold flag for a VisUILabel.
- * 
+ *
  * @param label Pointer to the VisUILabel of which the bold flag is set, or unset.
  * @param bold Flag that indicates if a label should be drawn bold or not.
  *
@@ -620,7 +617,7 @@ int visual_ui_label_set_text (VisUILabel *label, const char *text)
  * Retrieve the text from a VisUILabel.
  *
  * @param label Pointer to the VisUILabel from which the text is being requested.
- * 
+ *
  * return The text contained in the label, NULL on failure.
  */
 const char *visual_ui_label_get_text (VisUILabel *label)
@@ -676,7 +673,7 @@ int visual_ui_image_set_video (VisUIImage *image, VisVideo *video)
  * Retrieves the VisVideo from a VisUIImage.
  *
  * @param image Pointer to the VisUIImage from which the VisVideo is requested.
- * 
+ *
  * return The VisVideo that is connected to the VisUIImage.
  */
 VisVideo *visual_ui_image_get_video (VisUIImage *image)
@@ -893,7 +890,7 @@ int visual_ui_entry_set_length (VisUIEntry *entry, int length)
  * Creates a new VisUISlider, which can be used as a VisUIRange type, in the form of a slider.
  *
  * @param showvalue Show the value of the slider place.
- * 
+ *
  * @return The newly created VisUISlider in the form of a VisUIWidget.
  */
 VisUIWidget *visual_ui_slider_new (int showvalue)
@@ -1066,7 +1063,6 @@ int visual_ui_choice_add (VisUIChoice *choice, const char *name, VisParamEntry *
  */
 int visual_ui_choice_add_many (VisUIChoice *choice, VisParamEntry *paramchoices)
 {
-	VisUIChoiceEntry *centry;
 	int i = 0;
 
 	visual_log_return_val_if_fail (choice != NULL, -VISUAL_ERROR_UI_CHOICE_NULL);
@@ -1177,7 +1173,7 @@ VisUIChoiceEntry *visual_ui_choice_get_choice (VisUIChoice *choice, int index)
  * Retrvies the VisUIChoiceList from a VisUIChoice widget.
  *
  * @param choice Pointer to the VisUIChoice widget from which the VisUIChoiceList is requested.
- * 
+ *
  * @return The VisUIChoiceList that is associated to the VisUIChoice.
  */
 VisUIChoiceList *visual_ui_choice_get_choices (VisUIChoice *choice)
@@ -1236,7 +1232,7 @@ VisUIWidget *visual_ui_list_new ()
  * can be choosen.
  *
  * @param orient The orientation of the radio button layout.
- * 
+ *
  * @return The newly created VisUIRadio in the form of a VisUIWidget.
  */
 VisUIWidget *visual_ui_radio_new (VisUIOrientType orient)

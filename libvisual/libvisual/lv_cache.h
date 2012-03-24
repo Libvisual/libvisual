@@ -82,7 +82,7 @@ int visual_cache_remove (VisCache *cache, char *key);
 
 void *visual_cache_get (VisCache *cache, char *key);
 
-int visual_cache_size (VisCache *cache);
+int visual_cache_get_size (VisCache *cache);
 
 int visual_cache_set_limits (VisCache *cache, int size, VisTime *maxage);
 

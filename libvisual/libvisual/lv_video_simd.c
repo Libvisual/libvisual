@@ -37,7 +37,6 @@ int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src)
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf = visual_video_get_pixels (src);
-	uint8_t alpha;
 
 	for (i = 0; i < src->height; i++) {
 		for (j = 0; j < src->width; j++) {

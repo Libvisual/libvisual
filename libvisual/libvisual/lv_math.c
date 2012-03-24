@@ -30,6 +30,7 @@
 
 #include "lv_bits.h"
 #include "lv_math.h"
+#include "lv_cpu.h"
 
 /* This file is getting big and bloated because of the large chunks of simd code. When all is in place we'll take a serious
  * look how we can reduce this. For example by using macros for common blocks. */

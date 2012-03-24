@@ -31,6 +31,7 @@
 
 #include "lvconfig.h"
 #include "lv_libvisual.h"
+#include "lv_fourier.h"
 #include "lv_plugin_registry.h"
 #include "lv_log.h"
 #include "lv_param.h"
@@ -52,7 +53,6 @@ VisUIWidget *__lv_userinterface = NULL;
 
 static int init_params (VisParamContainer *paramcontainer);
 static VisUIWidget *make_userinterface (void);
-static int free_plugpaths (void);
 
 static int init_params (VisParamContainer *paramcontainer)
 {
@@ -218,8 +218,6 @@ VisUIWidget *visual_get_userinterface ()
  */
 int visual_init (int *argc, char ***argv)
 {
-	int ret = 0;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");

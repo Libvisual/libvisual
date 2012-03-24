@@ -69,8 +69,6 @@ int visual_hashlist_remove_list_entry (VisHashlist *hashlist, VisListEntry *le);
 
 void *visual_hashlist_get (VisHashlist *hashlist, char *key);
 
-int visual_hashlist_size (VisHashlist *hashlist);
-
 int visual_hashlist_set_size (VisHashlist *hashlist, int size);
 int visual_hashlist_get_size (VisHashlist *hashlist);
 
