@@ -281,6 +281,7 @@ int main (int argc, char **argv)
         if((depthflag = visual_actor_get_supported_depth(actor)) 
                 == VISUAL_VIDEO_DEPTH_GL)
         {
+                depth = visual_video_depth_get_highest_nogl(depthflag);
                 visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
         }
         else
@@ -300,7 +301,6 @@ int main (int argc, char **argv)
 
         bin->depthforcedmain = bin->depth;
 
-        //depth = visual_video_depth_get_highest_nogl(depthflag);
         VisVideoAttributeOptions *vidoptions;
         vidoptions = visual_actor_get_video_attribute_options(actor);
 
