@@ -288,7 +288,6 @@ static void check_os_katmai_support( void )
 
 static int has_cpuid (void)
 {
-	/* FIXME: Make this work for x86_64 */
 #if defined(VISUAL_ARCH_X86)
 	int a, c;
 
@@ -306,15 +305,16 @@ static int has_cpuid (void)
 		 : "cc");
 
 	return a != c;
+#elif defined(VISUAL_ARCH_X86_64)
+	return TRUE;
 #else
-	return 0;
+	return FALSE;
 #endif
 }
 
 static int cpuid (unsigned int ax, unsigned int *p)
 {
-	/* FIXME: Make this work for x86_64 */
-#if defined(VISUAL_ARCH_X86)
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	uint32_t flags;
 
 	__asm __volatile
@@ -387,7 +387,7 @@ void visual_cpu_initialize ()
 	__lv_cpu_caps.nrcpu = 1;
 #endif
 	
-#if defined(VISUAL_ARCH_X86)
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	/* No cpuid, old 486 or lower */
 	if (has_cpuid () == 0)
 		return;
