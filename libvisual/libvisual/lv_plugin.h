@@ -24,6 +24,7 @@
 #ifndef _LV_PLUGIN_H
 #define _LV_PLUGIN_H
 
+#include <libvisual/lvconfig.h>
 #include <libvisual/lv_video.h>
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_palette.h>
@@ -34,8 +35,6 @@
 #include <libvisual/lv_ui.h>
 #include <libvisual/lv_random.h>
 #include <libvisual/lv_types.h>
-
-#include "lvconfig.h"
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
