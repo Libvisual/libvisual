@@ -13,8 +13,6 @@ AM_CFLAGS = $(GLIB_CFLAGS) @LIBVISUAL_CFLAGS@
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/common \
-	-I$(top_srcdir)/libcalc \
-	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/visscript
 
 actor_avs_timescope_la_LDFLAGS = -rpath $(libdir) -module -avoid-version 

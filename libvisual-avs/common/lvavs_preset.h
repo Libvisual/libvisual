@@ -32,6 +32,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
+
 #define LVAVS_PRESET(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSPreset))
 #define LVAVS_PRESET_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPresetElement))
 #define LVAVS_PRESET_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPresetContainer))
@@ -79,7 +80,7 @@ struct _LVAVSPresetContainer {
 /* Prototypes */
 LVAVSPreset *lvavs_preset_new (void);
 LVAVSPreset *lvavs_preset_new_from_preset (char *filename);
-LVAVSPreset *lvavs_preset_new_from_wavs (AVSTree *wavs);
+//LVAVSPreset *lvavs_preset_new_from_wavs (AVSTree *wavs);
 
 LVAVSPresetElement *lvavs_preset_element_new (LVAVSPresetElementType type, const char *name);
 LVAVSPresetContainer *lvavs_preset_container_new (void);

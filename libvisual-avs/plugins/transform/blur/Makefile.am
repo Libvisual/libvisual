@@ -8,7 +8,7 @@ libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/transform
 
 LIBS += -L. $(GLIB_LIBS) -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-AM_CFLAGS = $(GLIB_CFLAGS) @LIBVISUAL_CFLAGS@ -fopenmp
+AM_CFLAGS = $(GLIB_CFLAGS) @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir) \
