@@ -33,7 +33,9 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <math.h>
+#ifdef __OPENMP
 #include <omp.h>
+#endif
 
 #include <libvisual/libvisual.h>
 
