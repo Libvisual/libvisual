@@ -239,6 +239,9 @@ IF(ENABLE_DOCS)
       COMMENT "Generating API documentation.."
       VERBATIM
     )
+  ELSE(DOXYGEN_FOUND)
+    MESSAGE(WARNING "Doxygen not found. No API documentation will be generated")
+    SET(ENABLE_DOCS no)
   ENDIF(DOXYGEN_FOUND)
 ENDIF(ENABLE_DOCS)
 
