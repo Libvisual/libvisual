@@ -85,7 +85,7 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 	int i;
         static double count = 0;
         
-	for(i = 0; i < sizeof(data) / sizeof(int16_t); i++)
+	for(i = 0; i < VISUAL_TABLESIZE(data); i++)
         {
 		data[i] = (int16_t) (AMPLITUDE*sin(count));
                 count += STEP;
