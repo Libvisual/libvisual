@@ -247,8 +247,8 @@ int main (int argc, char **argv)
          * initialize libvisual once (this is meant to be called only once,
          * visual_init() after visual_quit() results in undefined state) 
          */
-        visual_init (&argc, &argv);
         visual_log_set_verboseness(VISUAL_LOG_VERBOSENESS_HIGH);
+        visual_init (&argc, &argv);        
 
 
         /* create new VisBin for video output */
