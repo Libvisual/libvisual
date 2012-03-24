@@ -239,7 +239,7 @@ SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wm
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes")
 
 # Generate config header
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.cmake ${PROJECT_BINARY_DIR}/config.h)
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_BINARY_DIR}/config.h)
 
 # Build plugins
 
