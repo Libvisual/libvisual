@@ -8,12 +8,11 @@ libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
 LIBS += -L. -L$(prefix)/lib @LIBVISUAL_LIBS@
 
-AM_CFLAGS = @LIBVISUAL_CFLAGS@ -fopenmp
+AM_CFLAGS = @LIBVISUAL_CFLAGS@
 
 INCLUDES = $(all_includes) \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/common \
-	-I$(top_srcdir)/src
+	-I$(top_srcdir)/common
 
 actor_avs_stars_la_LDFLAGS = -rpath $(libdir) -module -avoid-version
 

@@ -1,7 +1,9 @@
 
-AM_CFLAGS = @LIBVISUAL_CFLAGS@ -fopenmp
-
 noinst_LTLIBRARIES = libavs.la
+
+LIBS += -L. -L$(prefix)/lib $(XML_LIBS) $(GLIB_LIBS) @LIBVISUAL_LIBS@ -lxml2
+
+AM_CFLAGS = $(XML_CFLAGS) $(GLIB_CFLAGS) @LIBVISUAL_CFLAGS@
 
 libavs_la_SOURCES = avs_gfx.c \
 		    avs_gfx.h \
@@ -15,5 +17,9 @@ libavs_la_SOURCES = avs_gfx.c \
 			avs_globals.c \
 			avs_globals.h \
 			avs_matrix.c \
-			avs_matrix.h
+			avs_matrix.h \
+            lvavs_preset.c \
+            lvavs_preset.h \
+            lvavs_pipeline.c \
+            lvavs_pipeline.h
 
