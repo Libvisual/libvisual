@@ -69,7 +69,7 @@ void fusee(JessPrivate *priv, uint8_t * buffer, int new)
 		while (priv->life[i] > 0)
 		{
 			i++;
-			if (i == FUSEE_MAX+1)
+			if (i == FUSEE_MAX)
 				return;
 		}
 		priv->xi[i] = visual_random_context_int(priv->rcontext) % priv->resx - priv->xres2;
