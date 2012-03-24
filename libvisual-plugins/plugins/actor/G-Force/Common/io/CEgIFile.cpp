@@ -306,5 +306,5 @@ void CEgIFile::Search( UtilStr& inSearchStr, void* inProcArg, bool inCaseSensiti
 		}
 	}
 	
-	delete buf;
+	delete []buf;
 }
