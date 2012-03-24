@@ -8,6 +8,9 @@ LINK_DIRECTORIES(
   ${LIBVISUAL_LIBRARY_DIRS}
 )
 
+# NOTE: This is required for mremap()
+ADD_DEFINITIONS(-D_GNU_SOURCE)
+
 SET(input_mplayer_SOURCES
   input_mplayer.c
 )

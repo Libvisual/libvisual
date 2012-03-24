@@ -29,10 +29,11 @@
 #include "struct.h"
 #include "analyser_struct.h"
 #include "jess.h"
+#include "pal.h"
 
 const float __magic = 2.0 * PI / 256;
 
-static uint8_t courbes_palette(JessPrivate *priv, uint8_t i, int no_courbe)
+uint8_t courbes_palette(JessPrivate *priv, uint8_t i, int no_courbe)
 {
 	/* Optimisation par Karl Soulabaille */
 	switch(no_courbe)

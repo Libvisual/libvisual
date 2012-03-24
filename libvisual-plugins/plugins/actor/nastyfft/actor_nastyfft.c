@@ -353,8 +353,8 @@ static void init_gl(NastyfftPrivate *priv)
 	glLoadIdentity();
 
 
-	GLfloat ambientMaterial[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat difuseMaterial[] = { .5, .5, .5, 1.0 };
+	//GLfloat ambientMaterial[] = { 1.0, 1.0, 1.0, 1.0 };
+	//GLfloat difuseMaterial[] = { .5, .5, .5, 1.0 };
 	GLfloat mat_specular[] = { 0.2, 0.2, 0.2, 1.0 };
 
 

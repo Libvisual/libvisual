@@ -157,7 +157,7 @@ static int inp_jack_cleanup (VisPluginData *plugin)
 static int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	JackPrivate *priv = NULL;
-	VisBuffer buffer;
+/*	VisBuffer buffer; */
 	int i;
 
 	visual_log_return_val_if_fail(audio != NULL, -1);

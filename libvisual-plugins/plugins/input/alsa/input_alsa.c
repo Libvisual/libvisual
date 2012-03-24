@@ -225,7 +225,6 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 	int16_t data[PCM_BUF_SIZE];
 	alsaPrivate *priv = NULL;
 	int rcnt;
-	int i;
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
 	visual_log_return_val_if_fail(plugin != NULL, -1);

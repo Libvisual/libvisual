@@ -293,7 +293,8 @@ void ball_init(JessPrivate *priv)
 void ball(JessPrivate *priv, uint8_t *buffer, int x, int y, int r, uint8_t color)
 {
 	int i,j,k,d= 2*r;
-	int *pt=priv->big_ball_scale[d],colorc;
+	uint32_t *pt=priv->big_ball_scale[d];
+	int colorc;
 	float fcolor = (float) color;
 
 	int a,b,c,e,f,g,h,l;

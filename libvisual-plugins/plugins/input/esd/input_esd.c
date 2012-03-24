@@ -121,7 +121,6 @@ static int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 	short data[PCM_BUF_SIZE];
 	struct timeval tv;
 	int r;
-	int i;
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
 	visual_log_return_val_if_fail(plugin != NULL, -1);
