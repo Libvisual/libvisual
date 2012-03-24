@@ -224,6 +224,24 @@ SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmis
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
 
+# API Documentation
+OPTION(ENABLE_DOCS "Enable the creation of API documentation" no)
+IF(ENABLE_DOCS)
+  FIND_PACKAGE(Doxygen)
+  IF(DOXYGEN_FOUND)
+    IF(NOT DOXYGEN_DOT_FOUND)
+      MESSAGE(WARNING "Graphviz Dot tool not found. API documentation will not have diagrams")
+    ENDIF(NOT DOXYGEN_DOT_FOUND)
+    CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile)
+    # FIXME/TODO: Figure out how to generate the docs in the first make run
+    ADD_CUSTOM_TARGET(docs
+      COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
+      COMMENT "Generating API documentation.."
+      VERBATIM
+    )
+  ENDIF(DOXYGEN_FOUND)
+ENDIF(ENABLE_DOCS)
+
 # Generate pkg-config file
 SET(LV_PKG_CONFIG_NAME   "libvisual-${LV_VERSION_SUFFIX}")
 SET(LV_PKG_CONFIG_LIBS   "-lvisual-${LV_VERSION_SUFFIX} ${CMAKE_THREAD_LIBS_INIT}")
