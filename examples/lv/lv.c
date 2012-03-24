@@ -29,7 +29,7 @@
 
 
 
-
+/* defaults */
 #define DEFAULT_ACTOR   "lv_analyzer"
 #define DEFAULT_INPUT   "debug"
 #define DEFAULT_MORPH   "slide"
@@ -38,6 +38,7 @@
 #define DEFAULT_FPS     30
 
 
+/* local variables */
 static char actor_name[128];
 static char input_name[128];
 static char morph_name[128];
@@ -47,7 +48,7 @@ static int  framerate;
 static int  driver;
 
 
-/* list of available driver-creators */
+/* list of available driver-creators - register new drivers here */
 typedef struct
 {
         const char name[64];
