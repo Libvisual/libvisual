@@ -22,11 +22,11 @@
  */
 
 #include <config.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <math.h>
 #include <string.h>
 #include <gettext.h>
 
@@ -52,14 +52,12 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.plugname = "debug",
 		.name = "debug",
 		.author = "Vitaly V. Bursov <vitalyvb@urk.net>",
-		.version = "0.1",
-		.about = N_("ALSA capture plugin"),
-		.help = N_("Use this plugin to capture PCM data from the ALSA record device"),
+		.version = "0.2",
+		.about = N_("debug input plugin"),
+		.help = N_("this will generate a sine wave for debugging purposes"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
-
 		.init = inp_debug_init,
 		.cleanup = inp_debug_cleanup,
-
 		.plugin = VISUAL_OBJECT (&input[0])
 	}};
 
@@ -80,14 +78,21 @@ static int inp_debug_cleanup (VisPluginData *plugin)
 
 static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 {
-	int16_t data[32768];
+#define STEP 0.05
+#define AMPLITUDE 65536/2
+        
+	int16_t data[4096];
 	int i;
-
-	for (i = 0; i < 32768; i++)
-		data[i] = visual_random_int ();
+        static double count;
+        
+	for(i = 0; i < sizeof(data); i++)
+        {
+		data[i] = (int16_t) (AMPLITUDE*sin(count));
+                count += STEP;
+        }
 
 	VisBuffer buffer;
-	visual_buffer_init (&buffer, data, (visual_random_int () % 16384) * 2, NULL);
+	visual_buffer_init (&buffer, data, sizeof(data), NULL);
 
 	visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
 			VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
