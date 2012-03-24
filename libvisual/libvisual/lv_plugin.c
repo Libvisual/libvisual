@@ -58,27 +58,6 @@ static int plugin_info_dtor (VisObject *object)
 {
 	VisPluginInfo *pluginfo = VISUAL_PLUGININFO (object);
 
-	if (pluginfo->plugname != NULL)
-		visual_mem_free (pluginfo->plugname);
-
-	if (pluginfo->type != NULL)
-		visual_mem_free (pluginfo->type);
-
-	if (pluginfo->name != NULL)
-		visual_mem_free (pluginfo->name);
-
-	if (pluginfo->author != NULL)
-		visual_mem_free (pluginfo->author);
-
-	if (pluginfo->version != NULL)
-		visual_mem_free (pluginfo->version);
-
-	if (pluginfo->about != NULL)
-		visual_mem_free (pluginfo->about);
-
-	if (pluginfo->help != NULL)
-		visual_mem_free (pluginfo->help);
-
 	pluginfo->plugname = NULL;
 	pluginfo->type = NULL;
 	pluginfo->name = NULL;

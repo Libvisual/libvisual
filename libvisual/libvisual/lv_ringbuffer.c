@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -275,9 +275,9 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 		/* return immediately if there are no elements in the list */
 		if(visual_list_count(ringbuffer->entries) == 0)
 			return VISUAL_OK;
-			
+
 		while ((entry = visual_list_next (ringbuffer->entries, &le)) != NULL) {
-			VisBuffer *tempbuf;
+			VisBuffer *tempbuf = NULL;
 
 			lindex++;
 

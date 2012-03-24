@@ -354,7 +354,7 @@ int visual_audio_analyze (VisAudio *audio)
 	return VISUAL_OK;
 }
 
-int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, char *channelid)
+int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, const char *channelid)
 {
 	VisAudioSamplePoolChannel *channel;
 
@@ -476,7 +476,7 @@ int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divid
 }
 
 // FIXME: This function is entirely broken from the looks of it.
-int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, char *category, int divide)
+int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, const char *category, int divide)
 {
 	VisListEntry *le = NULL;
 	VisAudioSamplePool *samplepool;
@@ -544,7 +544,7 @@ int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int d
 	return VISUAL_OK;
 }
 
-int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid, int normalised)
+int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, const char *channelid, int normalised)
 {
 	VisBuffer sample;
 
@@ -564,7 +564,7 @@ int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen
 	return VISUAL_OK;
 }
 
-int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, int samplelen, char *channelid, int normalised, float multiplier)
+int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, int samplelen, const char *channelid, int normalised, float multiplier)
 {
 	int ret;
 	float *data;
@@ -665,7 +665,7 @@ int visual_audio_samplepool_init (VisAudioSamplePool *samplepool)
 	return VISUAL_OK;
 }
 
-int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample *sample, char *channelid)
+int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample *sample, const char *channelid)
 {
 	VisAudioSamplePoolChannel *channel;
 
@@ -697,7 +697,7 @@ int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudi
 	return VISUAL_OK;
 }
 
-VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, char *channelid)
+VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, const char *channelid)
 {
 	VisListEntry *le = NULL;
 	VisAudioSamplePoolChannel *channel;
@@ -744,7 +744,7 @@ int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *bu
 int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBuffer *buffer,
 		VisAudioSampleRateType rate,
 		VisAudioSampleFormatType format,
-		char *channelid)
+		const char *channelid)
 {
 	VisAudioSample *sample;
 	VisBuffer *pcmbuf;
@@ -766,7 +766,7 @@ int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBu
 	return VISUAL_OK;
 }
 
-VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (char *channelid)
+VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (const char *channelid)
 {
 	VisAudioSamplePoolChannel *channel;
 
@@ -781,7 +781,7 @@ VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (char *channelid)
 	return channel;
 }
 
-int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, char *channelid)
+int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, const char *channelid)
 {
 	visual_log_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
 

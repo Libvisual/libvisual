@@ -171,17 +171,17 @@ struct _VisPluginRef {
 struct _VisPluginInfo {
 	VisObject		 object;	/**< The VisObject data. */
 
-	char			*type;		/**< Plugin type, in the format of "domain:package:type", as example,
+	const char		*type;		/**< Plugin type, in the format of "domain:package:type", as example,
 						 * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
 						 * instead of filling in the string yourself. */
-	char			*plugname;	/**< The plugin name as it's saved in the registry. */
+	const char		*plugname;	/**< The plugin name as it's saved in the registry. */
 
-	char			*name;		/**< Long name */
-	char			*author;	/**< Author */
-	char			*version;	/**< Version */
-	char			*about;		/**< About */
-	char			*help;		/**< Help */
-	char			*license;	/**< License */
+	const char		*name;		/**< Long name */
+	const char		*author;	/**< Author */
+	const char		*version;	/**< Version */
+	const char		*about;		/**< About */
+	const char		*help;		/**< Help */
+	const char		*license;	/**< License */
 
 	VisPluginInitFunc	 init;		/**< The standard init function, every plugin has to implement this. */
 	VisPluginCleanupFunc	 cleanup;	/**< The standard cleanup function, every plugin has to implement this. */
