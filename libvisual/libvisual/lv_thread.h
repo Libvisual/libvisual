@@ -4,8 +4,6 @@
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_common.h>
 
-#include "lvconfig.h"
-
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
 #endif
