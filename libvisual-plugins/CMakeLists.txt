@@ -245,8 +245,8 @@ ENDIF(ENABLE_PROFILING)
 # Add -Werror to debug builds?
 SET(CMAKE_C_FLAGS         "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
 SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
-SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes")
-SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall -Wmissing-braces -Wunused")
+SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3 -Wall -Wunused -Wmissing-prototypes")
+SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall -Wunused")
 
 # Generate config header
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_BINARY_DIR}/config.h)

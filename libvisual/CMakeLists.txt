@@ -219,7 +219,7 @@ ENDIF(ENABLE_PROFILING)
 
 # Add -Werror to debug builds?
 SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
-SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes")
+SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Wall -Wunused -Wmissing-prototypes")
 
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
