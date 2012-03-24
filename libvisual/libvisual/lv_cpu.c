@@ -288,7 +288,8 @@ static void check_os_katmai_support( void )
 
 static int has_cpuid (void)
 {
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+	/* FIXME: Make this work for x86_64 */
+#if defined(VISUAL_ARCH_X86)
 	int a, c;
 
 	__asm __volatile
@@ -312,7 +313,8 @@ static int has_cpuid (void)
 
 static int cpuid (unsigned int ax, unsigned int *p)
 {
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+	/* FIXME: Make this work for x86_64 */
+#if defined(VISUAL_ARCH_X86)
 	uint32_t flags;
 
 	__asm __volatile
