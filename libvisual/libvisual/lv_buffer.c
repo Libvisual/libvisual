@@ -576,7 +576,7 @@ int visual_buffer_fill (VisBuffer *buffer, char value)
  */
 int visual_buffer_fill_with_pattern (VisBuffer *buffer, void *data, visual_size_t size)
 {
-	int offset;
+	visual_size_t offset = 0;
 
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);

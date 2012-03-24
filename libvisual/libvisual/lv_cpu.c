@@ -315,8 +315,6 @@ static int has_cpuid (void)
 static int cpuid (unsigned int ax, unsigned int *p)
 {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	uint32_t flags;
-
 	__asm __volatile
 		("movl %%ebx, %%esi\n\t"
 		 "cpuid\n\t"
@@ -344,12 +342,13 @@ static int cpuid (unsigned int ax, unsigned int *p)
  */
 void visual_cpu_initialize ()
 {
-	uint32_t cpu_flags;
 	unsigned int regs[4];
 	unsigned int regs2[4];
 
+#if defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
 	int mib[2], ncpu;
 	visual_size_t len;
+#endif
 
 	visual_mem_set (&__lv_cpu_caps, 0, sizeof (VisCPU));
 

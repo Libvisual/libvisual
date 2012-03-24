@@ -278,7 +278,7 @@ void *visual_cache_get (VisCache *cache, char *key)
 	return centry->data;
 }
 
-static int visual_cache_get_size (VisCache *cache)
+int visual_cache_get_size (VisCache *cache)
 {
 	visual_log_return_val_if_fail (cache != NULL, -VISUAL_ERROR_CACHE_NULL);
 

@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -123,9 +123,9 @@ int visual_mem_initialize ()
  * Allocates @a nbytes of uninitialized memory.
  *
  * @param nbytes N bytes of mem requested to be allocated.
- * 
+ *
  * @return On success, a pointer to a new allocated memory block
- * of size @a nbytes, on failure, program is aborted. 
+ * of size @a nbytes, on failure, program is aborted.
  */
 void *visual_mem_malloc (visual_size_t nbytes)
 {
@@ -148,9 +148,9 @@ void *visual_mem_malloc (visual_size_t nbytes)
  * Allocates @a nbytes of memory initialized to 0.
  *
  * @param nbytes N bytes of mem requested to be allocated.
- * 
+ *
  * @return On success, a pointer to a new allocated memory initialized
- * to 0 of size @a nbytes, on failure, program is aborted. 
+ * to 0 of size @a nbytes, on failure, program is aborted.
  */
 void *visual_mem_malloc0 (visual_size_t nbytes)
 {
@@ -701,7 +701,7 @@ static void *mem_set32_mmx (void *dest, int c, visual_size_t n)
 	__asm __volatile
 		("\n\t emms");
 
-	while (n--) 
+	while (n--)
 		*d++ = setflag32;
 
 	return dest;
