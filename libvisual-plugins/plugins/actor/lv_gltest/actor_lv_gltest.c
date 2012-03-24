@@ -274,7 +274,6 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	int i,c;
 	int y;
 	float ff;
-	GLfloat val;
 
 	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
 	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));

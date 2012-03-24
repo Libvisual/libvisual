@@ -313,7 +313,6 @@ static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color)
 {
 	uint8_t *pixels = visual_video_get_pixels (video);
-	int i;
 
 	if (video->depth != VISUAL_VIDEO_DEPTH_8BIT)
 		return;
@@ -331,8 +330,6 @@ static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t c
  */
 static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
 {
-	int startx = (video->width / nbars) * index;
-	int endx = ((video->width / nbars) * (index + 1));
 	int height = video->height * amplitude;
 	int i;
 	float scale = 128.0 / video->height;

@@ -328,7 +328,6 @@ static VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	int i;
 
 	priv->video = video;
 

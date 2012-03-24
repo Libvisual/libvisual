@@ -317,7 +317,6 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	VisBuffer			 pcmbuf2;
 	VisBuffer			 pcmmix;
 	VisBuffer			 spmbuf;
-	int i = 0;
 
 	/* Left audio */
 	visual_buffer_set_data_pair (&pcmbuf1, priv->priv1.audio.pcm[0], sizeof (float) * 4096);
@@ -499,7 +498,6 @@ static int composite_blend5_32_c (VisVideo *dest, VisVideo *src)
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf = visual_video_get_pixels (src);
-	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
 		for (j = 0; j < src->width; j++) {

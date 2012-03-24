@@ -209,7 +209,6 @@ static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio
 {
 	VisBuffer buffer;
 	InfinitePrivate *priv;
-	int i;
 
 	visual_log_return_val_if_fail (plugin != NULL, -1);
 	visual_log_return_val_if_fail (video != NULL, -1);
