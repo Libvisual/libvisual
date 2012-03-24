@@ -206,7 +206,7 @@ static inline int alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2,
 
 static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
 {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	uint32_t aalpha = (alpha * 255);
 	uint32_t ialpha = aalpha;
 	int i;
@@ -280,7 +280,7 @@ static inline int alpha_blend_24_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src
 
 static inline int alpha_blend_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
 {
-#ifdef VISUAL_ARCH_X86
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 	uint32_t ialpha = (alpha * 255);
 	int i;
