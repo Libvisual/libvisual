@@ -102,7 +102,6 @@ SET(libvisual_SOURCES
   lv_os.c
   lv_math.c
   lv_gl.c
-  gettext.h
 )
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
