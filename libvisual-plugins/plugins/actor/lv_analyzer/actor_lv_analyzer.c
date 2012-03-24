@@ -34,7 +34,7 @@
 #include <libvisual/libvisual.h>
 
 /** default amount of bars */
-#define BARS_DEFAULT -1
+#define BARS_DEFAULT 25
 
 /* helper macro */
 #define QTY(array)  (sizeof(array) / sizeof(*(array)))
