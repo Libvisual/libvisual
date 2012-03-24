@@ -295,6 +295,7 @@ SET(CPACK_SOURCE_IGNORE_FILES
   \\\\.mo$
   \\\\.tar\\\\.gz$
   \\\\.tar\\\\.bz2$
+  ~$
 )
 
 INCLUDE(CPack)
