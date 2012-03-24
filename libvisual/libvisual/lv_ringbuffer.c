@@ -255,8 +255,6 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 	VisListEntry *le = NULL;
 	VisRingBufferEntry *entry;
 	int curposition = 0;
-	int curoffset = 0;
-	int positioncorr = 0;
 	int startat = 0;
 	int buffercorr = 0;
 
@@ -343,7 +341,6 @@ static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffe
 {
 	VisListEntry *le = NULL;
 	VisRingBufferEntry *entry;
-	int curposition = 0;
 	int curoffset = 0;
 	int startat = 0;
 

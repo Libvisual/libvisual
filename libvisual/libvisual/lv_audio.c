@@ -40,8 +40,10 @@ static int audio_samplepool_dtor (VisObject *object);
 static int audio_samplepool_channel_dtor (VisObject *object);
 static int audio_sample_dtor (VisObject *object);
 
+#if 0
 static int audio_band_total (VisAudio *audio, int begin, int end);
 static int audio_band_energy (VisAudio *audio, int band, int length);
+#endif
 
 /* Format transform functions */
 static int transform_format_buffer_from_float (VisBuffer *dest, VisBuffer *src, int size, int sign);
@@ -115,14 +117,15 @@ static int audio_sample_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
+#if 0
 
 static int audio_band_total (VisAudio *audio, int begin, int end)
 {
 	int bpmtotal = 0;
-	int i;
+	/* int i; */
 
-//	for (i = begin; i < end; i++)
-//		bpmtotal += audio->freq[2][i];
+	/* for (i = begin; i < end; i++) */
+	/* 	bpmtotal += audio->freq[2][i]; */
 
 	if (bpmtotal > 0)
 		return bpmtotal / (end - begin);
@@ -133,16 +136,18 @@ static int audio_band_total (VisAudio *audio, int begin, int end)
 static int audio_band_energy (VisAudio *audio, int band, int length)
 {
 	int energytotal = 0;
-	int i;
+	/* int i; */
 
-//	for (i = 0; i < length; i++)
-//		energytotal += audio->bpmhistory[i][band];
+	/* for (i = 0; i < length; i++) */
+	/* 	energytotal += audio->bpmhistory[i][band]; */
 
 	if (energytotal > 0)
 		return energytotal / length;
 	else
 		return 0;
 }
+
+#endif /* 0 */
 
 /**
  * @defgroup VisAudio VisAudio
@@ -212,11 +217,14 @@ int visual_audio_init (VisAudio *audio)
  */
 int visual_audio_analyze (VisAudio *audio)
 {
-        float temp_out[256];
-	float temp_audio[2][512];
 	short pcm[3][1024];
+
+#if 0
+	float temp_out[256];
+	float temp_audio[2][512];
 	double scale;
 	int i, j, y;
+#endif
 
 	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
@@ -561,7 +569,6 @@ int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, in
 	int ret;
 	float *data;
 	int datasize;
-	int i;
 
 	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
@@ -603,7 +610,6 @@ int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffe
 	int ret;
 	float *data;
 	int datasize;
-	int i;
 
 	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
@@ -1564,7 +1570,7 @@ int visual_audio_is_beat(VisAudio *audio, VisBeatAlgorithm algo)
     visual_log_return_val_if_fail(audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
     VisBuffer pcm;
-    float buffer[BEAT_MAX_SIZE], *p;
+    float buffer[BEAT_MAX_SIZE];
     unsigned char visdata[BEAT_MAX_SIZE];
     int i;
 

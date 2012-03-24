@@ -132,6 +132,7 @@ void visual_collection_iter_assign (VisCollectionIter *iter, int index);
 void visual_collection_iter_next (VisCollectionIter *iter);
 int visual_collection_iter_has_more (VisCollectionIter *iter);
 void *visual_collection_iter_get_data (VisCollectionIter *iter);
+int visual_collection_iter_dtor (VisCollectionIter *iter);
 
 VISUAL_END_DECLS
 

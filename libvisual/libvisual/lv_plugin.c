@@ -816,7 +816,6 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	VisPluginRef **ref;
 	VisPluginInfo *plug_info;
 	VisPluginInfo *dup_info;
-	const char *plug_name;
 	VisPluginGetInfoFunc get_plugin_info;
 	int *plugin_version;
 #if defined(VISUAL_OS_WIN32)

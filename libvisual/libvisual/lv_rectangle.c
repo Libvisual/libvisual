@@ -341,8 +341,6 @@ int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy,
  */
 int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size)
 {
-	int i;
-
 	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	visual_math_vectorized_floats_to_int32s_multiply (xlist, fxlist, size, rect->width);

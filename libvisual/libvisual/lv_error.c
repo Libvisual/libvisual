@@ -29,7 +29,7 @@
 #include <string.h>
 #include <assert.h>
 #include <signal.h>
-#include <gettext.h>
+#include "gettext.h"
 
 #include "lvconfig.h"
 #include "lv_log.h"
