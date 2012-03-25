@@ -22,14 +22,14 @@
  */
 
 
-#ifndef _LV_STANDALONE_NIFTYLED_DRIVER_H
-#define _LV_STANDALONE_NIFTYLED_DRIVER_H
+#ifndef _LV_STDOUT_DRIVER_H
+#define _LV_STDOUT_DRIVER_H
 
 
 
 
-SADisplayDriver *       niftyled_driver_new(void);
+SADisplayDriver *       stdout_driver_new(void);
 
 
 
-#endif /* _LV_STANDALONE_NIFTYLED_DRIVER_H */
+#endif /* _LV_STDOUT_DRIVER_H */
