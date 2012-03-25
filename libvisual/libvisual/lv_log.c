@@ -13,7 +13,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -38,15 +38,15 @@ static VisLogVerboseness verboseness = VISUAL_LOG_VERBOSENESS_MEDIUM;
 
 typedef struct {
 	VisLogMessageHandlerFunc  func;
-	void				     *priv;
+	void					 *priv;
 } MessageHandler;
 
 static const char *severity_labels[] = {
-	"DEBUG    ",
-	"INFO     ",
+	"DEBUG	  ",
+	"INFO	  ",
 	"WARNING  ",
 	"CRITICAL ",
-	"ERROR    "
+	"ERROR	  "
 };
 
 static MessageHandler message_handlers[VISUAL_TABLESIZE(severity_labels)];
@@ -113,7 +113,7 @@ void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandl
 void _lv_log (VisLogSeverity severity, const char *file,
 			int line, const char *funcname, const char *fmt, ...)
 {
-    MessageHandler *handler;
+	MessageHandler *handler;
 	char str[1024];
 	va_list va;
 
@@ -127,7 +127,7 @@ void _lv_log (VisLogSeverity severity, const char *file,
 	handler = &message_handlers[severity];
 
 	if (handler->func != NULL) {
-	    VisLogMessageSource source;
+		VisLogMessageSource source;
 
 		source.file = file;
 		source.func = funcname;
@@ -136,10 +136,10 @@ void _lv_log (VisLogSeverity severity, const char *file,
 		(*handler->func) (severity, str, &source, handler->priv);
 
 	} else {
-	    FILE *out = stderr;
+		FILE *out = stderr;
 
 		if (severity == VISUAL_LOG_INFO)
-		    out = stdin;
+			out = stdin;
 
 		fprintf (out, "%s %s:%d:%s: %s\n", severity_labels[severity], file, line, funcname, str);
 	}
