@@ -8,6 +8,7 @@
 #include "lv_input.h"
 #include "lv_morph.h"
 #include "lv_transform.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 /** Contains the completely plugin registry after initialize. */
