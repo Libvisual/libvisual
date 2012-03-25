@@ -24,11 +24,9 @@
 #ifndef _LV_AUDIO_H
 #define _LV_AUDIO_H
 
-#include <libvisual/lv_fourier.h>
+#include <libvisual/lv_beat.h>
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_ringbuffer.h>
-#include <libvisual/lv_hashmap.h>
-#include <libvisual/lv_beat.h>
 
 VISUAL_BEGIN_DECLS
 

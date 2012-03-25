@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -53,7 +53,7 @@ struct _VisBin {
 	VisActor	*actor;
 	VisVideo	*actvideo;
 	VisVideo	*privvid;
-	
+
 	int		 actmorphmanaged;
 	VisVideo	*actmorphvideo;
 	VisActor	*actmorph;

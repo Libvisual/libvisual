@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework cli tool
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
  * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
  *
@@ -22,15 +22,9 @@
  */
 
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include "display.h"
 
+#include <unistd.h>
 
 
 #define STDOUT_NATIVE(obj)  (VISUAL_CHECK_CAST ((obj), StdoutNative))
@@ -39,7 +33,7 @@
 typedef struct _StdoutNative StdoutNative;
 
 /** private descriptor */
-struct _StdoutNative 
+struct _StdoutNative
 {
 	VisObject       object;
     int             width,height;
@@ -47,21 +41,16 @@ struct _StdoutNative
 	void *          area;
 };
 
-
-
-
-
-
 /** create display */
-static int native_create(SADisplay *display, 
-                         VisVideoDepth depth, 
+static int native_create(SADisplay *display,
+                         VisVideoDepth depth,
                          VisVideoAttributeOptions *vidoptions,
                          int width, int height, int resizable)
 {
 	StdoutNative *native;
-	
+
     /* allocate new private descriptor */
-	if(!(native = STDOUT_NATIVE (display->native))) 
+	if(!(native = STDOUT_NATIVE (display->native)))
     {
 		native = visual_mem_new0(StdoutNative, 1);
 		visual_object_initialize(VISUAL_OBJECT (native), TRUE, NULL);
@@ -71,12 +60,12 @@ static int native_create(SADisplay *display,
     if(native->area != NULL)
         visual_mem_free(native->area);
     native->area = visual_mem_malloc0(width * height * (visual_video_depth_value_from_enum(VISUAL_VIDEO_DEPTH_24BIT) / 8));
-        
+
     /* save dimensions */
     native->width = width;
     native->height = height;
     native->depth = depth;
-        
+
 	display->native = VISUAL_OBJECT(native);
 
 	return 0;
@@ -133,10 +122,10 @@ static int native_updaterect(SADisplay *display, VisRectangle *rect)
 	StdoutNative *native = STDOUT_NATIVE(display->native);
 
     /* write data */
-	write(STDOUT_FILENO, 
-          native->area, 
-          native->width * 
-            native->height * 
+	write(STDOUT_FILENO,
+          native->area,
+          native->width *
+            native->height *
             (visual_video_depth_value_from_enum(VISUAL_VIDEO_DEPTH_24BIT) / 8));
 	return 0;
 }

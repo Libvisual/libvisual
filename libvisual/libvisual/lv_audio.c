@@ -21,20 +21,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <unistd.h>
+#include <config.h>
+#include "lvconfig.h"
+#include "lv_audio.h"
+
+#include "lv_common.h"
+#include "lv_fourier.h"
+#include "lv_math.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <math.h>
-#include <stdint.h>
 #include <limits.h>
-
-#include "lv_common.h"
-#include "lv_math.h"
-#include "lv_audio.h"
-#include "lv_beat.h"
-#include "lv_time.h"
 
 static int audio_dtor (VisObject *object);
 static int audio_samplepool_dtor (VisObject *object);

@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -22,18 +22,13 @@
  */
 
 #include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <gettext.h>
-
 #include "lvconfig.h"
+#include "lv_actor.h"
+
 #include "lv_log.h"
 #include "lv_list.h"
-#include "lv_actor.h"
 #include "lv_mem.h"
+#include "gettext.h"
 
 extern VisList *__lv_plugins_actor;
 
@@ -130,7 +125,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
 
 		if (next == NULL)
 			return NULL;
-		
+
 		ref = visual_plugin_find (__lv_plugins_actor, next);
 		plugin = visual_plugin_load (ref);
 
@@ -211,7 +206,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
 
 		if (next == NULL)
 			return NULL;
-		
+
 		ref = visual_plugin_find (__lv_plugins_actor, next);
 		plugin = visual_plugin_load (ref);
 		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
@@ -220,7 +215,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
 			gl = TRUE;
 		else
 			gl = FALSE;
-	
+
 		visual_plugin_unload (plugin);
 
 	} while (gl == TRUE);
@@ -251,7 +246,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
 
 		if (prev == NULL)
 			return NULL;
-		
+
 		ref = visual_plugin_find (__lv_plugins_actor, prev);
 		plugin = visual_plugin_load (ref);
 		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
@@ -260,7 +255,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
 			gl = TRUE;
 		else
 			gl = FALSE;
-	
+
 		visual_plugin_unload (plugin);
 
 	} while (gl == TRUE);
@@ -272,7 +267,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
  * Gives the next actor plugin based on the name of a plugin.
  *
  * @see visual_actor_get_prev_by_name
- * 
+ *
  * @param name The name of the current plugin, or NULL to get the first.
  *
  * @return The name of the next plugin within the list.
@@ -286,7 +281,7 @@ const char *visual_actor_get_next_by_name (const char *name)
  * Gives the previous actor plugin based on the name of a plugin.
  *
  * @see visual_actor_get_next_by_name
- * 
+ *
  * @param name The name of the current plugin. or NULL to get the last.
  *
  * @return The name of the previous plugin within the list.
@@ -316,7 +311,7 @@ int visual_actor_valid_by_name (const char *name)
  *
  * @param actorname
  * 	The name of the plugin to load, or NULL to simply allocate a new
- * 	actor. 
+ * 	actor.
  *
  * @return A newly allocated VisActor, optionally containing a loaded plugin. Or NULL on failure.
  */
@@ -400,7 +395,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or
  *	error values returned by visual_plugin_realize () on failure.
- * 
+ *
  */
 int visual_actor_realize (VisActor *actor)
 {
@@ -477,10 +472,10 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
  * The function has a few extra arguments that are mainly to be used from within internal code.
  *
  * This function needs to be called everytime there is a change within either the size or depth of
- * the target video. 
+ * the target video.
  *
  * The main method of calling this function is: "visual_actor_video_negotiate (actor, 0, FALSE, FALSE)"
- * 
+ *
  * @see visual_actor_set_video
  *
  * @param actor Pointer to a VisActor that needs negotiation.
@@ -495,8 +490,8 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
  * 	  depth.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL,
- * 	-VISUAL_ERROR_ACTOR_VIDEO_NULL or -VISUAL_ERROR_ACTOR_GL_NEGOTIATE on failure. 
- */ 
+ * 	-VISUAL_ERROR_ACTOR_VIDEO_NULL or -VISUAL_ERROR_ACTOR_GL_NEGOTIATE on failure.
+ */
 int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced)
 {
 	int depthflag;
@@ -544,7 +539,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth
 {
 	VisActorPlugin *actplugin = get_actor_plugin (actor);
 	int depthflag = visual_actor_get_supported_depth (actor);
-	
+
 	/* Depth transform enviroment, it automaticly
 	 * fits size because it can use the pitch from
 	 * the dest video context */
@@ -676,7 +671,7 @@ VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *ac
  *
  * @see visual_video_new
  * @see visual_actor_video_negotiate
- * 
+ *
  * @param actor Pointer to a VisActor to which the VisVideo needs to be set.
  * @param video Pointer to a VisVideo which contains information about the target display and the pointer
  * 	  to it's screenbuffer.
@@ -693,7 +688,7 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video)
 }
 
 /**
- * This is called to run a VisActor. It also pump it's events when needed, checks for new song events and also does the fitting 
+ * This is called to run a VisActor. It also pump it's events when needed, checks for new song events and also does the fitting
  * and depth transformation actions when needed.
  *
  * Every run cycle one frame is created, so this function needs to be used in the main draw loop of the application.

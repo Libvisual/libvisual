@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -34,8 +34,8 @@
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
-#define VISUAL_ACTOR_PLUGINENVIRON(obj)			(VISUAL_CHECK_CAST ((obj), VisActorPluginEnviron))
-#define VISUAL_ACTOR_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
+#define VISUAL_ACTOR_PLUGINENVIRON(obj) (VISUAL_CHECK_CAST ((obj), VisActorPluginEnviron))
+#define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
 
 /**
  * Type defination that should be used in plugins to set the plugin type for an actor plugin.
@@ -94,8 +94,8 @@ typedef int (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video, 
 
 /**
  * The VisActor structure encapsulates the actor plugin and provides
- * abstract interfaces to the actor. The VisActor system 
- * it's methods are also capable of doing automatic size fitting 
+ * abstract interfaces to the actor. The VisActor system
+ * it's methods are also capable of doing automatic size fitting
  * and depth transformations, and it keeps track on songinfo and events.
  *
  * Members in the structure shouldn't be accessed directly but instead
@@ -109,7 +109,7 @@ struct _VisActor {
 	VisPluginData	*plugin;		/**< Pointer to the plugin itself. */
 
 	/* Video management and fake environments when needed */
-	VisVideo	*video;			/**< Pointer to the target display video. 
+	VisVideo	*video;			/**< Pointer to the target display video.
 						 * @see visual_actor_set_video */
 	VisVideo	*transform;		/**< Private member which is used for depth transformation. */
 	VisVideo	*fitting;		/**< Private member which is used to fit the plugin. */
@@ -124,8 +124,8 @@ struct _VisActor {
 
 /**
  * The VisActorPluginEnviron structure is the main environmental element for a VisActorPlugin. The environmental name
- * is stored in the VISUAL_ACTOR_PLUGIN_ENVIRON define. The structure is used to set environmental data like, 
- * desired frames per second. The VisActorPluginEnviron element should be polled by either libvisual-display 
+ * is stored in the VISUAL_ACTOR_PLUGIN_ENVIRON define. The structure is used to set environmental data like,
+ * desired frames per second. The VisActorPluginEnviron element should be polled by either libvisual-display
  * or a custom target to check for changes.
  */
 struct _VisActorPluginEnviron {
