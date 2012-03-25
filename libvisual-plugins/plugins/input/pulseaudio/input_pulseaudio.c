@@ -15,6 +15,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <libvisual/libvisual.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>

@@ -20,13 +20,13 @@
  */
 
 #include <libvisual/libvisual.h>
+#include "actor_blursk.h"
+#include "blursk.h"
+
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <limits.h>
-
-#include "actor_blursk.h"
-#include "blursk.h"
 
 const VisPluginInfo *get_plugin_info (int *count);
 
