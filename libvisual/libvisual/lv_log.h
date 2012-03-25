@@ -24,11 +24,8 @@
 #ifndef _LV_LOG_H
 #define _LV_LOG_H
 
-#include <stdarg.h>
-
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
-#include <libvisual/lv_error.h>
 
 VISUAL_BEGIN_DECLS
 
@@ -84,62 +81,32 @@ void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandl
  * @param severity Determines the severity of the message using VisLogSeverity.
  * @param format The format string of the log message.
  */
-#ifdef __GNUC__
-
 #ifdef LV_HAVE_ISO_C_VARARGS
+
 #define visual_log(severity,...)		\
-		_lv_log (severity,		\
-			__FILE__,		\
-			__LINE__,		\
-			__PRETTY_FUNCTION__,	\
-			__VA_ARGS__)
+	_lv_log (severity,					\
+		__FILE__,						\
+		__LINE__,						\
+		__PRETTY_FUNCTION__,			\
+		__VA_ARGS__)
+
 #elif defined(LV_HAVE_GNU_C_VARARGS)
-#define visual_log(severity,format...)		\
-		_lv_log (severity,		\
-			__FILE__,		\
-			__LINE__,		\
-			__PRETTY_FUNCTION__,	\
-			format)
+
+#define visual_log(severity,format...)	\
+	_lv_log (severity,					\
+		__FILE__,						\
+		__LINE__,						\
+		__PRETTY_FUNCTION__,			\
+		format)
 #else
 
-#include <stdarg.h>
-
-static void visual_log (VisLogSeverity severity, const char *fmt, ...)
-{
-	va_list va;
-
-	va_start (va, fmt);
-	_lv_log (severity, "");
-	va_end (va);
-}
-#endif /* !(LV_HAVE_ISO_C_VARARGS || LV_HAVE_GNU_C_VARARGS) */
-
-#endif /* __GNUC__ */
-
-
-#ifndef __GNUC__
-
-#ifdef LV_HAVE_ISO_C_VARARGS
-#define visual_log(severity,...)		\
-		_lv_log (severity,		\
-			__FILE__,		\
-			__LINE__,		\
-			(NULL),			\
-			__VA_ARGS__)
-#else
-
-static void visual_log (VisLogSeverity severity, const char *fmt, ...)
-{
-	va_list va;
-
-	va_start (va, fmt);
-	_lv_log_bare (severity, fmt, va);
-	va_end (va);
-}
+void visual_log (VisLogSeverity severity, const char *fmt, ...);
 
 #endif /* LV_HAVE_ISO_C_VARARGS */
 
-#endif /* !__GNUC__ */
+void _lv_log (VisLogSeverity severity, const char *file,
+	int line, const char *funcname, const char *fmt, ...)
+	VIS_CHECK_PRINTF_FORMAT(5, 6);
 
 /**
  * Return if @a expr is FALSE, showing a critical message with
@@ -162,21 +129,6 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
 			"assertion `%s' failed", #expr);		\
 		return (val);								\
 	}
-
-#if defined __GNUC__
-
-void _lv_log (VisLogSeverity severity, const char *file,
-	int line, const char *funcname, const char *fmt, ...)
-	__attribute__ ((__format__ (__printf__, 5, 6)));
-
-#else
-
-void _lv_log (VisLogSeverity severity, const char *file,
-	int line, const char *funcname, const char *fmt, ...);
-
-#endif
-
-void _lv_log_bare (VisLogSeverity severity, const char *fmt, va_list va);
 
 VISUAL_END_DECLS
 

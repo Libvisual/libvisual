@@ -114,6 +114,9 @@ void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandl
  * @param funcname Function name in which the log message is called.
  * @param fmt Format string to display the log message.
  */
+
+#if defined(LV_HAVE_ISO_C_VARARGS) || defined(LV_HAVE_GNU_C_VARARGS)
+
 void _lv_log (VisLogSeverity severity, const char *file,
 	int line, const char *funcname, const char *fmt, ...)
 {
@@ -145,9 +148,11 @@ void _lv_log (VisLogSeverity severity, const char *file,
 	}
 }
 
-void _lv_log_bare (VisLogSeverity severity, const char *fmt, va_list va)
+#else /* LV_HAVE_ISO_C_VARARGS && LV_HAVE_GNU_C_VARARGS */
+
+void visual_log (VisLogSeverity severity, const char *fmt, ...)
 {
-	VisLogMessageSource source;
+	va_list vargs;
 	MessageHandler *handler;
 	char str[LV_LOG_MAX_MESSAGE_SIZE];
 
@@ -157,16 +162,20 @@ void _lv_log_bare (VisLogSeverity severity, const char *fmt, va_list va)
 	if (verboseness > severity)
 		 return;
 
-	vsnprintf (str, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
+	va_start (vargs, fmt);
+	vsnprintf (str, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, vargs);
+	va_end (vargs);
 
 	handler = &message_handlers[severity];
 
 	if (handler->func != NULL) {
-		(*handler->func) (severity, str, &source, handler->priv);
+		(*handler->func) (severity, str, NULL, handler->priv);
 	} else {
-		default_log_handler (severity, &source, str);
+		default_log_handler (severity, NULL, str);
 	}
 }
+
+#endif /* LV_HAVE_ISO_C_VARARGS && LV_HAVE_GNU_C_VARARGS */
 
 static void default_log_handler (VisLogSeverity severity, VisLogMessageSource const *source, const char *msg)
 {
@@ -174,7 +183,7 @@ static void default_log_handler (VisLogSeverity severity, VisLogMessageSource co
 		fprintf (stderr, "%s %s:%d:%s: %s\n", severity_labels[severity],
 			 source->file, source->line, source->func, msg);
 	} else {
-		fprintf (stderr, "%s %s", severity_labels[severity], msg);
+		fprintf (stderr, "%s %s\n", severity_labels[severity], msg);
 	}
 }
 
