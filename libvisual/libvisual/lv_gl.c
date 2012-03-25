@@ -25,16 +25,7 @@
 #include "lv_gl.h"
 #include "lv_common.h"
 
-/**
- * @defgroup VisGL VisGL
- * @{
- */
 void *visual_gl_get_proc_address (char *procname)
 {
 	return NULL;
 }
-
-/**
- * @}
- */
-

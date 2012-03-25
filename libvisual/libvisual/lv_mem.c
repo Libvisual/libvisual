@@ -62,23 +62,6 @@ VisMemSet8Func visual_mem_set = mem_set8_c;
 VisMemSet16Func visual_mem_set16 = mem_set16_c;
 VisMemSet32Func visual_mem_set32 = mem_set32_c;
 
-
-/**
- * @defgroup VisMem VisMem
- * @{
- */
-
-/**
- * Initialize the memory functions. This is used to set the function pointers to the right optimized version.
- * It's legal to call visual_mem_initialize more than once in the same context if it's needed to reset the optimal
- * function pointers. This function bases it's choices upon the VisCPU system.
- *
- * Be aware that visual_mem_initialize() should be called to set the most optimize mem_copy() and
- * mem_set() functions is called. Be sure that visual_cpu_initialize() is called before this however if
- * possible the best solution is to just call visual_init() which will call all the libvisual initialize functions.
- *
- * return VISUAL_OK on succes.
- */
 int visual_mem_initialize ()
 {
 	/* Arranged from slow to fast, so the slower version gets overloaded
@@ -116,14 +99,6 @@ int visual_mem_initialize ()
 	return VISUAL_OK;
 }
 
-/**
- * Allocates @a nbytes of uninitialized memory.
- *
- * @param nbytes N bytes of mem requested to be allocated.
- *
- * @return On success, a pointer to a new allocated memory block
- * of size @a nbytes, on failure, program is aborted.
- */
 void *visual_mem_malloc (visual_size_t nbytes)
 {
 	void *buf;
@@ -141,14 +116,6 @@ void *visual_mem_malloc (visual_size_t nbytes)
 	return buf;
 }
 
-/**
- * Allocates @a nbytes of memory initialized to 0.
- *
- * @param nbytes N bytes of mem requested to be allocated.
- *
- * @return On success, a pointer to a new allocated memory initialized
- * to 0 of size @a nbytes, on failure, program is aborted.
- */
 void *visual_mem_malloc0 (visual_size_t nbytes)
 {
 	void *buf;
@@ -162,26 +129,11 @@ void *visual_mem_malloc0 (visual_size_t nbytes)
 	return buf;
 }
 
-/**
- * Reallocates memory, can be used to grow a buffer.
- *
- * @param ptr Pointer that is to be reallocated.
- * @param nbytes The size of the new buffer.
- *
- * @return On success, a pointer to the new reallocated memory, on failure NULL.
- */
 void *visual_mem_realloc (void *ptr, visual_size_t nbytes)
 {
 	return realloc (ptr, nbytes);
 }
 
-/**
- * Frees allocated memory.
- *
- * @param ptr Frees memory to which ptr points to.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MEM_NULL on failure.
- */
 int visual_mem_free (void *ptr)
 {
 	/* FIXME remove eventually, we keep it for now for explicit debug */
@@ -750,9 +702,3 @@ static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n)
 }
 
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
-
-
-/**
- * @}
- */
-

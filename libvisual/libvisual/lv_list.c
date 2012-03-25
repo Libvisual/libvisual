@@ -163,12 +163,6 @@ static void *list_iter_getdata (VisCollectionIter *iter, VisCollection *collecti
  * @{
  */
 
-/**
- * Creates a new VisList structure.
- * The VisList system is a double linked list implementation.
- *
- * @return A newly allocated VisList.
- */
 VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 {
 	VisList *list;
@@ -184,24 +178,12 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 	return list;
 }
 
-/**
- * get amount of elements in a VisList
- * 
- * @p list - the list of which the element-count is requested
- * @return amount of elements currently in list (or -VISUAL_ERROR_COLLECTION_NULL on error)
- */
 int visual_list_count(VisList *list)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 	return list->count;
 }
 
-/**
- * initialize a new VisList
- * 
- * @p list - newly generated list (output of @ref visual_list_new() )
- * @p destroyer - the function that cleans up the list upon @ref visual_list_destroy()
- */
 int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
@@ -225,21 +207,6 @@ int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 	return VISUAL_OK;
 }
 
-/**
- * Go to the next entry in the list and return it's data element.
- * This function will load the next entry in le and return a pointer
- * to the data element.
- *
- * @see visual_list_prev
- * 
- * @param list Pointer to the VisList we're traversing.
- * @param le Pointer to a VisListEntry to store the next entry within
- * 	and also to use as a reference to determine at which entry we're
- * 	currently. To begin traversing do: VisListEntry *le = NULL and pass
- * 	it as &le in the argument.
- *
- * @return The data element of the next entry, or NULL.
- */
 void *visual_list_next (VisList *list, VisListEntry **le)
 {
 	visual_log_return_val_if_fail (list != NULL, NULL);
@@ -256,21 +223,6 @@ void *visual_list_next (VisList *list, VisListEntry **le)
 	return NULL;
 }
 
-/**
- * Go to the previous entry in the list and return it's data element.
- * This function will load the previous entry in le and return a pointer
- * to the data element.
- *
- * @see visual_list_next
- * 
- * @param list Pointer to the VisList we're traversing.
- * @param le Pointer to a VisListEntry to store the previous entry within
- * 	and also to use as a reference to determine at which entry we're
- * 	currently. To begin traversing at the end of the list do:
- * 	VisList *le = NULL and pass it as &le in the argument.
- *
- * @return The data element of the previous entry, or NULL.
- */
 void *visual_list_prev (VisList *list, VisListEntry **le)
 {
 	visual_log_return_val_if_fail (list != NULL, NULL);
@@ -287,16 +239,6 @@ void *visual_list_prev (VisList *list, VisListEntry **le)
 	return NULL;
 }
 
-/**
- * Get an data entry by index. This will give the pointer to an data
- * element based on the index in the list.
- *
- * @param list Pointer to the VisList of which we want an element.
- * @param index Index to determine which entry we want. The index starts at
- * 	1.
- *
- * @return The data element of the requested entry, or NULL.
- */
 void *visual_list_get (VisList *list, int index)
 {
 	VisListEntry *le = NULL;
@@ -321,15 +263,6 @@ void *visual_list_get (VisList *list, int index)
 	return data;
 }
 
-/**
- * Adds an entry at the beginning of the list.
- *
- * @param list Pointer to the VisList to which an entry needs to be added
- * 	at it's head.
- * @param data A pointer to the data that needs to be added to the list.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
- */
 int visual_list_add_at_begin (VisList *list, void *data)
 {
 	VisListEntry *le;
@@ -347,15 +280,6 @@ int visual_list_add_at_begin (VisList *list, void *data)
 	return VISUAL_OK;
 }
 
-/**
- * Adds an entry at the end of the list.
- *
- * @param list Pointer to the VisList to which an entry needs to be added
- * 	at it's tail.
- * @param data A pointer to the data that needs to be added to the list.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
- */
 int visual_list_add (VisList *list, void *data)
 {
 	VisListEntry *le;
@@ -372,15 +296,6 @@ int visual_list_add (VisList *list, void *data)
 	return VISUAL_OK;
 }
 
-/**
- * Chains an VisListEntry at the beginning of the list.
- *
- * @param list Pointer to the VisList to which an entry needs to be added
- * 	at it's tail.
- * @param le A pointer to the VisListEntry that needs to be chained to the list.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
- */
 int visual_list_chain_at_begin (VisList *list, VisListEntry *le)
 {
 	VisListEntry *next;
@@ -409,15 +324,6 @@ int visual_list_chain_at_begin (VisList *list, VisListEntry *le)
 	return VISUAL_OK;
 }
 
-/**
- * Chains an VisListEntry at the end of the list.
- *
- * @param list Pointer to the VisList to which an entry needs to be added
- * 	at it's tail.
- * @param le A pointer to the VisListEntry that needs to be chained to the list.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
- */
 int visual_list_chain (VisList *list, VisListEntry *le)
 {
 	VisListEntry *prev;
@@ -453,16 +359,6 @@ int visual_list_chain (VisList *list, VisListEntry *le)
 	return VISUAL_OK;
 }
 
-/**
- * Unchain a VisListEntry from a VisList, entry won't be deleted. This function will only remove the
- * links with it's VisList.
- *
- * @param list Pointer to the VisList from which an entry is unchained.
- * @param le Pointer to a VisListEntry that is being unchained.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL
- * 	on failure.
- */
 int visual_list_unchain (VisList *list, VisListEntry *le)
 {
 	VisListEntry *prev;
@@ -491,17 +387,6 @@ int visual_list_unchain (VisList *list, VisListEntry *le)
 	return VISUAL_OK;
 }
 
-/**
- * Insert an entry in the middle of a list. By adding it
- * after the le entry.
- *
- * @param list Pointer to the VisList in which an entry needs to be inserted.
- * @param le Pointer to a VisListEntry after which the entry needs to be inserted.
- * @param data Pointer to the data the new entry represents.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL, -VISUAL_ERROR_LIST_ENTRY_NULL or
- * 	-VISUAL_ERROR_NULL on failure.
- */
 int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 {
 	VisListEntry *prev, *next, *current;
@@ -552,14 +437,6 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 	return VISUAL_OK;
 }
 
-/**
- * Removes an entry from the list.
- *
- * @param list A pointer to the VisList in which an entry needs to be deleted.
- * @param le A pointer to the entry that needs to be deleted.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
- */
 int visual_list_delete (VisList *list, VisListEntry **le)
 {
 	VisListEntry *next;
@@ -584,14 +461,6 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 	return VISUAL_OK;
 }
 
-/**
- * Removes and entry from the list and uses the VisListDestroyerFunc when present to clean up the data.
- *
- * @param list A pointer to the VisList in which an entry needs to be destroyed.
- * @param le A pointer to the entry that needs to be destroyed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
- */
 int visual_list_destroy (VisList *list, VisListEntry **le)
 {
 	VisCollectionDestroyerFunc destroyer;
@@ -606,8 +475,3 @@ int visual_list_destroy (VisList *list, VisListEntry **le)
 
 	return visual_list_delete (list, le);
 }
-
-/**
- * @}
- */
-

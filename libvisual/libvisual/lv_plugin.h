@@ -36,6 +36,11 @@
 #include <windows.h>
 #endif
 
+/**
+ * @defgroup VisPlugin VisPlugin
+ * @{
+ */
+
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginRef))
@@ -232,57 +237,350 @@ struct _VisPluginEnviron {
 	VisObject		*environment;	/**< VisObject that contains environ specific data. */
 };
 
-/* prototypes */
+/**
+ * Creates a new VisPluginInfo structure.
+ *
+ * @return A newly allocated VisPluginInfo
+ */
 VisPluginInfo *visual_plugin_info_new (void);
+
+/**
+ * Copies data from one VisPluginInfo to another, this does not copy everything
+ * but only things that are needed in the local copy for the plugin registry.
+ *
+ * @param dest Pointer to the destination VisPluginInfo in which some data is copied.
+ * @param src Pointer to the source VisPluginInfo from which some data is copied.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
+ */
 int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src);
 
+/**
+ * Pumps the queued events into the plugin it's event handler if it has one.
+ *
+ * @param plugin Pointer to a VisPluginData of which the events need to be pumped into
+ *	the handler.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER on failure.
+ */
 int visual_plugin_events_pump (VisPluginData *plugin);
+
+/**
+ * Gives the event queue from a VisPluginData. This queue needs to be used
+ * when you want to send events to the plugin.
+ *
+ * @see visual_plugin_events_pump
+ *
+ * @param plugin Pointer to the VisPluginData from which we want the queue.
+ *
+ * @return A pointer to the requested VisEventQueue or NULL on failure.
+ */
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
+
+/**
+ * Sets a VisUIWidget as top user interface widget for the plugin. When a VisUI
+ * tree is requested by a client, to render a configuration userinterface, this
+ * VisUIWidget is used as top widget.
+ *
+ * @param plugin Pointer to the VisPluginData to which we set the VisUIWidget as top widget.
+ * @param widget Pointer to the VisUIWidget that we use as top widget for the user interface.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL on failure.
+ */
 int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget);
+
+/**
+ * Retrieves the VisUI top widget for the plugin.
+ *
+ * @param plugin Pointer to the VisPluginData of which we request the VisUIWidget that serves as top widget.
+ *
+ * @return Pointer to the VisUIWidget that serves as top widget, possibly NULL.
+ */
 VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin);
 
+/**
+ * Gives the VisPluginInfo related to a VisPluginData.
+ *
+ * @param plugin The VisPluginData of which the VisPluginInfo is requested.
+ *
+ * @return The VisPluginInfo within the VisPluginData, or NULL on failure.
+ */
 VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
 
+/**
+ * Gives the VisParamContainer related to a VisPluginData.
+ *
+ * @param plugin The VisPluginData of which the VisParamContainer is requested.
+ *
+ * @return The VisParamContainer within the VisPluginData, or NULL on failure.
+ */
 VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
 
+/**
+ * Gives the VisRandomContext related to a VisPluginData.
+ *
+ * @param plugin The VisPluginData of which the VisRandomContext is requested.
+ *
+ * @return The VisRandomContext within the VisPluginDAta, or NULL on failure.
+ */
 VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin);
 
+/**
+ * Retrieves the plugin specific part of a plugin.
+ *
+ * @param plugin The pointer to the VisPluginData from which we want the plugin specific part.
+ *
+ * @return Void * pointing to the plugin specific part which can be cast.
+ */
 void *visual_plugin_get_specific (VisPluginData *plugin);
 
+/**
+ * Creates a new VisPluginRef structure.
+ *
+ * The VisPluginRef contains data for the plugin loader.
+ *
+ * @return Newly allocated VisPluginRef.
+ */
 VisPluginRef *visual_plugin_ref_new (void);
 
+/**
+ * Creates a new VisPluginData structure.
+ *
+ * @return A newly allocated VisPluginData.
+ */
 VisPluginData *visual_plugin_new (void);
 
+/**
+ * Gives a VisList that contains references to all the plugins in the registry.
+ *
+ * @see VisPluginRef
+ *
+ * @return VisList of references to all the libvisual plugins.
+ */
 VisList *visual_plugin_get_registry (void);
+
+/**
+ * Gives a newly allocated VisList with references for one plugin type.
+ *
+ * @see VisPluginRef
+ *
+ * @param pluglist Pointer to the VisList that contains the plugin registry.
+ * @param domain The plugin type that is filtered for.
+ *
+ * @return Newly allocated VisList that is a filtered version of the plugin registry.
+ */
 VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain);
 
+/**
+ * Get the next plugin based on it's name.
+ *
+ * @see visual_plugin_registry_filter
+ *
+ * @param list Pointer to the VisList containing the plugins. Adviced is to filter
+ *	this list first using visual_plugin_registry_filter.
+ * @param name Name of a plugin entry of which we want the next entry or NULL to get
+ * 	the first entry.
+ *
+ * @return The name of the next plugin or NULL on failure.
+ */
 const char *visual_plugin_get_next_by_name (VisList *list, const char *name);
+
+/**
+ * Get the previous plugin based on it's name.
+ *
+ * @see visual_plugin_registry_filter
+ *
+ * @param list Pointer to the VisList containing the plugins. Adviced is to filter
+ *	this list first using visual_plugin_registry_filter.
+ * @param name Name of a plugin entry of which we want the previous entry or NULL to get
+ * 	the last entry.
+ *
+ * @return The name of the next plugin or NULL on failure.
+ */
 const char *visual_plugin_get_prev_by_name (VisList *list, const char *name);
 
+/**
+ * Private function to unload a plugin. After calling this function the
+ * given argument is no longer usable.
+ *
+ * @param plugin Pointer to the VisPluginData that needs to be unloaded.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_HANDLE_NULL or
+ *	-VISUAL_ERROR_PLUGIN_REF_NULL on failure.
+ */
 int visual_plugin_unload (VisPluginData *plugin);
+
+/**
+ * Private function to load a plugin.
+ *
+ * @param ref Pointer to the VisPluginRef containing information about
+ *	the plugin that needs to be loaded.
+ *
+ * @return A newly created and loaded VisPluginData.
+ */
 VisPluginData *visual_plugin_load (VisPluginRef *ref);
+
+/**
+ * Private function to realize the plugin. This initializes the plugin.
+ *
+ * @param plugin Pointer to the VisPluginData that needs to be realized.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
+ */
 int visual_plugin_realize (VisPluginData *plugin);
 
+/**
+ * Private function to create VisPluginRefs from plugins.
+ *
+ * @param pluginpath The full path and filename to the plugin of which a reference
+ *	needs to be obtained.
+ * @param count Int pointer that will contain the number of VisPluginRefs returned.
+ *
+ * @return The optionally newly allocated VisPluginRefs for the plugin.
+ */
 VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
+
+/**
+ * Private function to create the complete plugin registry from a set of paths.
+ *
+ * @param paths A pointer list to a set of paths.
+ * @param ignore_non_existing A flag that can be set with TRUE or FALSE to ignore non existing dirs.
+ *
+ * @return A newly allocated VisList containing the plugin registry for the set of paths.
+ */
 VisList *visual_plugin_get_list (const char **paths, int ignore_non_existing);
 
+/**
+ * Get the type part from a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A newly allocated string containing the type part of this plugin type, or NULL on failure.
+ */
 VisPluginRef *visual_plugin_find (VisList *list, const char *name);
 
+/**
+ * Gives the VISUAL_PLUGIN_API_VERSION value for which the library is compiled.
+ * This can be used to check against for API/ABI compatibility check.
+ *
+ * @return The VISUAL_PLUGIN_API_VERSION define value.
+ */
 int visual_plugin_get_api_version (void);
 
+/**
+ * Get the domain part from a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A newly allocated string containing the domain part of this plugin type, or NULL on failure.
+ */
 const char *visual_plugin_type_get_domain (const char *type);
+
+/**
+ * Get the package part from a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A newly allocated string containing the package part of this plugin type, or NULL on failure.
+ */
 const char *visual_plugin_type_get_package (const char *type);
+
+/**
+ * Get the type part from a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A newly allocated string containing the type part of this plugin type, or NULL on failure.
+ */
 const char *visual_plugin_type_get_type (const char *type);
+
+/**
+ * Get the depth of a plugin type string.
+ *
+ * @param type The type string.
+ *
+ * @return A VisPluginTypeDepth enum value that describes out of how many parts this plugin
+ *	type string consists, -VISUAL_ERROR_NULL on failure.
+ */
 VisPluginTypeDepth visual_plugin_type_get_depth (const char *type);
+
+/**
+ * Check if a certain plugin type string falls within the domain of the other.
+ *
+ * @param domain The domain in which the type string should fall.
+ * @param type The type string that is checked against the given domain.
+ *
+ * @return TRUE if it falls within the domain, FALSE when not, -VISUAL_ERROR_NULL on failure
+ */
 int visual_plugin_type_member_of (const char *domain, const char *type);
+
+/**
+ * Retrieves the flags section from the plugin type string.
+ *
+ * @param type The type string, containing the plugin type and optional flags.
+ *
+ * return NULL if no flags are found, the flags between the '[' and ']' braces on succes.
+ *	for example when the plugin type string is "Libvisual:core:actor.[special|something]"
+ *	the returned flag string would be "special|something". Keep in mind that the string is
+ *	allocated and should be freed after it's not being used anylonger.
+ */
 const char *visual_plugin_type_get_flags (const char *type);
+
+/**
+ * Checks if a certain flag is found within a plugin type string.
+ *
+ * @param type The type string, containing the plugin type and optional flags.
+ * @param flag The flag string to check for within the type string.
+ *
+ * @return TRUE in found, FALSE if not found, -VISUAL_ERROR_NULL on failure.
+ */
 int visual_plugin_type_has_flag (const char *type, const char *flag);
 
+/**
+ * Creates a VisPluginEnviron structure.
+ *
+ * @param type The Environ type that is requested.
+ * @param envobj The VisObject connected to this Environ type.
+ *
+ * @return A newly allocated VisPluginEnviron, or NULL on failure.
+ */
 VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj);
+
+/**
+ * Adds a VisPluginEnviron to the plugin its environment list.
+ *
+ * @param plugin Pointer to the VisPluginData to which the VisPluginEnviron is added.
+ * @param enve Pointer to the VisPluginEnviron that is added to the VisPluginData.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL,
+ *	-VISUAL_ERROR_NULL or error values returned by visual_list_add() on failure.
+ */
 int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
+
+/**
+ * Removes a VisPluginEnviron from the plugin it's environment list.
+ *
+ * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is removed.
+ * @param type The Environ type that is removed.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_NULL on failure.
+ */
 int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
+
+/**
+ * Retrieves a VisPluginEnviron from the plugin it's environment list.
+ *
+ * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is requested.
+ * @param type The Environ type that is requested.
+ *
+ * @return The requested VisPluginEnviron it's environ specific VisObject, or NULL on failure
+ */
 VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_PLUGIN_H */

@@ -78,17 +78,6 @@ static VisCollectionIter *hashlist_iter (VisCollection *collection)
 }
 
 
-/**
- * @defgroup VisHashlist VisHashlist
- * @{
- */
-
-/**
- * Creates a new VisHashlist.
- * 
- * @return A newly allocated VisHashlist.
- */
-
 VisHashlist *visual_hashlist_new (VisCollectionDestroyerFunc destroyer, int size)
 {
 	VisHashlist *hashlist;
@@ -260,8 +249,3 @@ VisList *visual_hashlist_get_list (VisHashlist *hashlist)
 
 	return hashlist->list;
 }
-
-/**
- * @}
- */
-

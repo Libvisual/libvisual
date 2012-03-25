@@ -283,12 +283,6 @@ static LogScaleCacheEntry *log_scale_cache_get (int size)
 	return lcache;
 }
 
-
-/**
- * @defgroup VisDFT VisDFT
- * @{
- */
-
 int visual_fourier_initialize ()
 {
 	visual_cache_init (&__lv_dft_cache, visual_object_collection_destroyer, 50, NULL, TRUE);
@@ -317,23 +311,6 @@ int visual_fourier_deinitialize ()
 	return VISUAL_OK;
 }
 
-/**
- * Function to create a new VisDFT Discrete Fourier Transform context used
- * to calculate amplitude spectrums over audio data.
- *
- * \note For optimal performance, use a power-of-2 spectrum size. The
- * current implementation does not use the Fast Fourier Transform for
- * non powers of 2.
- *
- * \note If samples_in is smaller than 2 * samples_out, the input will be padded
- * with zeroes.
- *
- * @param samples_in The number of samples provided to every call to
- * visual_dft_perform() as input.
- * @param samples_out Size of output spectrum (number of output samples).
- *
- * @return A newly created VisDFT.
- */
 VisDFT *visual_dft_new (unsigned int samples_out, unsigned int samples_in)
 {
 	VisDFT *dft;
@@ -460,19 +437,6 @@ static void perform_fft_radix2_dit (VisDFT *dft, float *output, float *input)
 	visual_object_unref (VISUAL_OBJECT (fcache));
 }
 
-
-/**
- * Function to perform a Discrete Fourier Transform over a set of data.
- *
- * \note Output samples are normalised to [0.0, 1.0] by dividing with the
- * spectrum size.
- *
- * @param dft Pointer to the VisDFT context for this transform.
- * @param output Array of output samples
- * @param input Array of input samples with values in [-1.0, 1.0]
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_FOURIER_NULL or -VISUAL_ERROR_NULL on failure.
- */
 int visual_dft_perform (VisDFT *dft, float *output, float *input)
 {
 	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
@@ -491,17 +455,6 @@ int visual_dft_perform (VisDFT *dft, float *output, float *input)
 	return VISUAL_OK;
 }
 
-/**
- * Function to scale an ampltitude spectrum logarithmically.
- *
- * \note Scaled values are guaranteed to be in [0.0, 1.0].
- *
- * @param output Array of output samples
- * @param input  Array of input samples with values in [0.0, 1.0]
- * @param size Array size.
- *
- * @Return VISUAL_OK on success, VISUAL_ERROR_NULL on failure.
- */
 int visual_dft_log_scale (float *output, float *input, int size)
 {
 	LogScaleCacheEntry *lcache;
@@ -562,7 +515,4 @@ int visual_dft_log_scale_custom (float *output, float *input, int size, float lo
 	return VISUAL_OK;
 }
 
-/**
- * @}
- */
 

@@ -283,17 +283,6 @@ static int create_table (VisHashmap *hashmap)
 	return VISUAL_OK;
 }
 
-
-/**
- * @defgroup VisHashmap VisHashmap
- * @{
- */
-
-/**
- * Creates a new VisHashmap.
- * 
- * @return A newly allocated VisHashmap.
- */
 VisHashmap *visual_hashmap_new (VisCollectionDestroyerFunc destroyer)
 {
 	VisHashmap *hashmap;
@@ -547,7 +536,4 @@ int visual_hashmap_get_table_size (VisHashmap *hashmap)
 	return hashmap->tablesize;
 }
 
-/**
- * @}
- */
 

@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -147,7 +147,7 @@ int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, Vi
  * Get the pointer to the VisEventQueue the VisParamContainer is emitting events to.
  *
  * @param paramcontainer A pointer to the VisParamContainer from which the VisEventQueue is requested.
- * 
+ *
  * @return Pointer to the VisEventQueue possibly NULL, NULL on failure.
  */
 VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer)
@@ -419,7 +419,7 @@ int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallba
     pcall->id = id;
     pcall->callback = callback;
     visual_object_set_private (VISUAL_OBJECT (pcall), priv);
-    
+
     visual_list_add (&param->callbacks, pcall);
 
     return id;
@@ -466,7 +466,7 @@ int visual_param_entry_notify_callbacks (VisParamEntry *param)
 {
     VisListEntry *le = NULL;
     VisParamEntryCallback *pcall;
-    
+
     visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
     while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL)
@@ -496,7 +496,7 @@ int visual_param_entry_is (VisParamEntry *param, const char *name)
 /**
  * When called, emits an event in the VisParamContainer it's VisEventQueue when the VisEventQueue
  * is set.
- * 
+ *
  * @param param Pointer to the VisParamEntry that is changed.
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
@@ -555,7 +555,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
     switch (src1->type) {
         case VISUAL_PARAM_ENTRY_TYPE_NULL:
             return TRUE;
-            
+
             break;
 
         case VISUAL_PARAM_ENTRY_TYPE_STRING:
@@ -567,7 +567,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
         case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
             if (src1->numeric.integer == src2->numeric.integer)
                 return TRUE;
-            
+
             break;
 
         case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
@@ -584,7 +584,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
 
         case VISUAL_PARAM_ENTRY_TYPE_COLOR:
             return visual_color_compare (&src1->color, &src2->color);
-            
+
             break;
 
         case VISUAL_PARAM_ENTRY_TYPE_PALETTE:
@@ -633,7 +633,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 
         case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
             visual_param_entry_set_integer (param, visual_param_entry_get_integer (src));
-            
+
             break;
 
         case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
@@ -660,7 +660,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
             visual_param_entry_set_object (param, visual_param_entry_get_object (src));
 
             break;
-        
+
         default:
             visual_log (VISUAL_LOG_ERROR, _("param type is not valid"));
 
@@ -668,7 +668,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 
             break;
     }
-    
+
     return VISUAL_OK;
 }
 
@@ -688,7 +688,7 @@ int visual_param_entry_set_name (VisParamEntry *param, char *name)
         visual_mem_free (param->name);
 
     param->name = NULL;
-    
+
     if (name != NULL)
         param->name = strdup (name);
 
@@ -725,7 +725,7 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
 
     } else if (strcmp (string, param->string) != 0) {
         visual_mem_free (param->string);
-        
+
         param->string = strdup (string);
 
         visual_param_entry_changed (param);
@@ -753,7 +753,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer)
 
         visual_param_entry_changed (param);
     }
-    
+
     return VISUAL_OK;
 }
 
@@ -776,7 +776,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
 
         visual_param_entry_changed (param);
     }
-    
+
     return VISUAL_OK;
 }
 
@@ -868,15 +868,15 @@ int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
     param->type = VISUAL_PARAM_ENTRY_TYPE_PALETTE;
 
     visual_palette_free_colors (&param->pal);
-    
+
     if (pal != NULL) {
         visual_palette_allocate_colors (&param->pal, pal->ncolors);
-        
+
         visual_palette_copy (&param->pal, pal);
     }
 
     visual_param_entry_changed (param);
-    
+
     return VISUAL_OK;
 }
 
@@ -904,7 +904,7 @@ int visual_param_entry_set_object (VisParamEntry *param, VisObject *object)
         visual_object_ref (param->objdata);
 
     visual_param_entry_changed (param);
-    
+
     return VISUAL_OK;
 }
 
@@ -959,7 +959,7 @@ int visual_param_entry_set_annotation (VisParamEntry *param, char *anno)
  * Get the name of the VisParamEntry.
  *
  * @param param Pointer to the VisParamEntry from which the name is requested.
- * 
+ *
  * @return The name of the VisParamEntry or NULL.
  */
 char *visual_param_entry_get_name (VisParamEntry *param)

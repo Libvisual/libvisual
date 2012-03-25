@@ -27,6 +27,11 @@
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
 
+/**
+ * @defgroup VisGL VisGL
+ * @{
+ */
+
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_GL_ATTRIBUTE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisGLAttributeEntry))
@@ -68,5 +73,9 @@ struct _VisGLAttributeEntry {
 void *visual_gl_get_proc_address (char *procname);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_GL_H */

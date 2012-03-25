@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -324,7 +324,7 @@ void *visual_plugin_get_specific (VisPluginData *plugin)
 
 	pluginfo = visual_plugin_get_info (plugin);
 	visual_log_return_val_if_fail (pluginfo != NULL, NULL);
-	
+
 	return pluginfo->plugin;
 }
 
@@ -357,7 +357,7 @@ VisPluginData *visual_plugin_new ()
 	VisPluginData *plugin;
 
 	plugin = visual_mem_new0 (VisPluginData, 1);
-	
+
 	/* Do the VisObject initialization */
 	visual_object_initialize (VISUAL_OBJECT (plugin), TRUE, plugin_dtor);
 
@@ -370,7 +370,7 @@ VisPluginData *visual_plugin_new ()
  * Gives a VisList that contains references to all the plugins in the registry.
  *
  * @see VisPluginRef
- * 
+ *
  * @return VisList of references to all the libvisual plugins.
  */
 VisList *visual_plugin_get_registry ()
@@ -406,11 +406,11 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 	}
 
 	while ((ref = visual_list_next (pluglist, &entry)) != NULL) {
-		
+
 		if ((ret = visual_plugin_type_member_of (ref->info->type, domain))) {
 			if (ret == TRUE) {
 				visual_object_ref (VISUAL_OBJECT (ref));
-				
+
 				visual_list_add (list, ref);
 			} else if (ret != FALSE) {
 				visual_log (VISUAL_LOG_WARNING, "%s", visual_error_to_string (ret));
@@ -428,7 +428,7 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
  * Get the next plugin based on it's name.
  *
  * @see visual_plugin_registry_filter
- * 
+ *
  * @param list Pointer to the VisList containing the plugins. Adviced is to filter
  *	this list first using visual_plugin_registry_filter.
  * @param name Name of a plugin entry of which we want the next entry or NULL to get
@@ -462,7 +462,7 @@ const char *visual_plugin_get_next_by_name (VisList *list, const char *name)
  * Get the previous plugin based on it's name.
  *
  * @see visual_plugin_registry_filter
- * 
+ *
  * @param list Pointer to the VisList containing the plugins. Adviced is to filter
  *	this list first using visual_plugin_registry_filter.
  * @param name Name of a plugin entry of which we want the previous entry or NULL to get
@@ -621,7 +621,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 		return -VISUAL_ERROR_PLUGIN_HANDLE_NULL;
 	}
-	
+
 	if (plugin->realized == TRUE)
 		plugin->info->cleanup (plugin);
 
@@ -632,7 +632,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 		visual_object_unref (VISUAL_OBJECT (plugin->info));
 
 #if defined(VISUAL_OS_WIN32)
-	FreeLibrary (plugin->handle);	
+	FreeLibrary (plugin->handle);
 #else
 	dlclose (plugin->handle);
 #endif
@@ -647,7 +647,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 	visual_param_container_set_eventqueue (plugin->params, NULL);
 
 	visual_object_unref (VISUAL_OBJECT (plugin));
-	
+
 	return VISUAL_OK;
 }
 
@@ -711,7 +711,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 		FreeLibrary (handle);
 #else
 		visual_log (VISUAL_LOG_ERROR, _("Cannot initialize plugin: %s"), dlerror ());
-	
+
 		dlclose (handle);
 #endif
 
@@ -753,7 +753,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
  * Private function to realize the plugin. This initializes the plugin.
  *
  * @param plugin Pointer to the VisPluginData that needs to be realized.
- * 
+ *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
  */
 int visual_plugin_realize (VisPluginData *plugin)
@@ -921,15 +921,6 @@ VisList *visual_plugin_get_list (const char **paths, int ignore_non_existing)
 	return list;
 }
 
-/**
- * Private function to find a plugin in a plugin registry.
- *
- * @param list Pointer to a VisList containing VisPluginRefs in which
- *	the search is done.
- * @param name The name of the plugin we're looking for.
- *
- * @return The VisPluginRef for the plugin if found, or NULL when not found.
- */
 VisPluginRef *visual_plugin_find (VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
@@ -950,24 +941,11 @@ VisPluginRef *visual_plugin_find (VisList *list, const char *name)
 	return NULL;
 }
 
-/**
- * Gives the VISUAL_PLUGIN_API_VERSION value for which the library is compiled.
- * This can be used to check against for API/ABI compatibility check.
- *
- * @return The VISUAL_PLUGIN_API_VERSION define value.
- */
 int visual_plugin_get_api_version ()
 {
 	return VISUAL_PLUGIN_API_VERSION;
 }
 
-/**
- * Get the domain part from a plugin type string.
- *
- * @param type The type string.
- *
- * @return A newly allocated string containing the domain part of this plugin type, or NULL on failure.
- */
 const char *visual_plugin_type_get_domain (const char *type)
 {
 	visual_log_return_val_if_fail (type != NULL, NULL);
@@ -975,13 +953,6 @@ const char *visual_plugin_type_get_domain (const char *type)
 	return get_delim_node (type, ':', 0);
 }
 
-/**
- * Get the package part from a plugin type string.
- *
- * @param type The type string.
- *
- * @return A newly allocated string containing the package part of this plugin type, or NULL on failure.
- */
 const char *visual_plugin_type_get_package (const char *type)
 {
 	visual_log_return_val_if_fail (type != NULL, NULL);
@@ -989,13 +960,6 @@ const char *visual_plugin_type_get_package (const char *type)
 	return get_delim_node (type, ':', 1);
 }
 
-/**
- * Get the type part from a plugin type string.
- *
- * @param type The type string.
- *
- * @return A newly allocated string containing the type part of this plugin type, or NULL on failure.
- */
 const char *visual_plugin_type_get_type (const char *type)
 {
 	char *str;
@@ -1021,14 +985,6 @@ const char *visual_plugin_type_get_type (const char *type)
 	return str;
 }
 
-/**
- * Get the depth of a plugin type string.
- *
- * @param type The type string.
- *
- * @return A VisPluginTypeDepth enum value that describes out of how many parts this plugin
- *	type string consists, -VISUAL_ERROR_NULL on failure.
- */
 VisPluginTypeDepth visual_plugin_type_get_depth (const char *type)
 {
 	int i = 0;
@@ -1051,14 +1007,6 @@ VisPluginTypeDepth visual_plugin_type_get_depth (const char *type)
 	return i;
 }
 
-/**
- * Check if a certain plugin type string falls within the domain of the other.
- *
- * @param domain The domain in which the type string should fall.
- * @param type The type string that is checked against the given domain.
- *
- * @return TRUE if it falls within the domain, FALSE when not, -VISUAL_ERROR_NULL on failure
- */
 int visual_plugin_type_member_of (const char *domain, const char *type)
 {
 	char *ndomain;
@@ -1112,16 +1060,6 @@ int visual_plugin_type_member_of (const char *domain, const char *type)
 	return TRUE;
 }
 
-/**
- * Retrieves the flags section from the plugin type string.
- *
- * @param type The type string, containing the plugin type and optional flags.
- *
- * return NULL if no flags are found, the flags between the '[' and ']' braces on succes.
- *	for example when the plugin type string is "Libvisual:core:actor.[special|something]"
- *	the returned flag string would be "special|something". Keep in mind that the string is
- *	allocated and should be freed after it's not being used anylonger.
- */
 const char *visual_plugin_type_get_flags (const char *type)
 {
 	char *flagsret;
@@ -1135,28 +1073,20 @@ const char *visual_plugin_type_get_flags (const char *type)
 		return NULL;
 
 	flagstr += 2; /* Skip the ".[" */
-	
+
 	flagsret = visual_mem_malloc0 (strlen (flagstr) - 1);
 
 	strncpy (flagsret, flagstr, strlen (flagstr) - 1);
 	flagsret[strlen (flagstr) - 1] = '\0';
-	
+
 	return flagsret;
 }
 
-/**
- * Checks if a certain flag is found within a plugin type string.
- *
- * @param type The type string, containing the plugin type and optional flags.
- * @param flag The flag string to check for within the type string.
- *
- * @return TRUE in found, FALSE if not found, -VISUAL_ERROR_NULL on failure.
- */
 int visual_plugin_type_has_flag (const char *type, const char *flag)
 {
 	char *flags;
 	char *nflag, *s;
-	
+
 	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
 	visual_log_return_val_if_fail (flag != NULL, -VISUAL_ERROR_NULL);
 
@@ -1167,7 +1097,7 @@ int visual_plugin_type_has_flag (const char *type, const char *flag)
 
 	do {
 		s = strchr (nflag, '|');
-		
+
 		if (s != NULL) {
 			if (strncmp (nflag, flag, s - nflag - 1) == 0) {
 				visual_mem_free (flags);
@@ -1189,14 +1119,6 @@ int visual_plugin_type_has_flag (const char *type, const char *flag)
 	return FALSE;
 }
 
-/**
- * Creates a VisPluginEnviron structure.
- *
- * @param type The Environ type that is requested.
- * @param envobj The VisObject connected to this Environ type.
- *
- * @return A newly allocated VisPluginEnviron, or NULL on failure.
- */
 VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj)
 {
 	VisPluginEnviron *enve;
@@ -1212,15 +1134,7 @@ VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj
 	return enve;
 }
 
-/**
- * Adds a VisPluginEnviron to the plugin it's environment list.
- *
- * @param plugin Pointer to the VisPluginData to which the VisPluginEnviron is added.
- * @param enve Pointer to the VisPluginEnviron that is added to the VisPluginData.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL,
- *	-VISUAL_ERROR_NULL or error values returned by visual_list_add() on failure.
- */
+
 int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve)
 {
 	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
@@ -1232,14 +1146,6 @@ int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve)
 	return visual_list_add (&plugin->environment, enve);
 }
 
-/**
- * Removes a VisPluginEnviron from the plugin it's environment list.
- *
- * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is removed.
- * @param type The Environ type that is removed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_NULL on failure.
- */
 int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
 {
 	VisPluginEnviron *enve;
@@ -1263,14 +1169,6 @@ int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
 	return VISUAL_OK;
 }
 
-/**
- * Retrieves a VisPluginEnviron from the plugin it's environment list.
- *
- * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is requested.
- * @param type The Environ type that is requested.
- *
- * @return The requested VisPluginEnviron it's environ specific VisObject, or NULL on failure
- */
 VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
 {
 	VisPluginEnviron *enve;
@@ -1288,6 +1186,3 @@ VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
 	return NULL;
 }
 
-/**
- * @}
- */
