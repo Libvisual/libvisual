@@ -51,12 +51,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include <math.h>
-#include <stdlib.h>
-
 #include "lv_common.h"
 #include "lv_beat.h"
 #include "lv_time.h"
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int beat_song_changed(VisBeat *beat);
 void beat_insert_hist_step(VisBeat *beat, VisBeatType *t, clock_t TC, int type, int i);
