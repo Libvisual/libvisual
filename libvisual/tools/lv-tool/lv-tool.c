@@ -22,7 +22,9 @@
  */
 
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <getopt.h>
 #include <libvisual/libvisual.h>
 #include "display/display.h"
