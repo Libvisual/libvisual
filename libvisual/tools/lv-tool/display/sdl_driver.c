@@ -110,7 +110,7 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
                 if (SDL_Init (SDL_INIT_VIDEO) < 0) {
                         fprintf (stderr, "Unable to init SDL VIDEO: %s\n", SDL_GetError ());
 
-                        exit (0);
+                        return -1;
                 }
 
                 sdl_initialized = TRUE;
