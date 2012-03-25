@@ -281,12 +281,12 @@ int main (int argc, char **argv)
         if((depthflag = visual_actor_get_supported_depth(actor)) 
                 == VISUAL_VIDEO_DEPTH_GL)
         {
-                depth = visual_video_depth_get_highest_nogl(depthflag);
+                depth = visual_video_depth_get_highest(depthflag);
                 visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
         }
         else
         {
-                depth = visual_video_depth_get_highest(depthflag);
+                depth = visual_video_depth_get_highest_nogl(depthflag);
                 if((bin->depthflag & depth) > 0)
                 {
                         visual_bin_set_depth(bin, depth);
