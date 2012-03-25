@@ -29,18 +29,7 @@ typedef struct {
 	uint16_t b:5, g:6, r:5, a:6;
 } _color16;
 
-
-/**
- * @defgroup VisColor VisColor
- * @{
- */
-
-/**
- * Creates a new VisColor structure
- *
- * @return A newly allocated VisColor.
- */
-VisColor *visual_color_new ()
+VisColor *visual_color_new (void)
 {
 	VisColor *color;
 
@@ -52,17 +41,6 @@ VisColor *visual_color_new ()
 	return color;
 }
 
-/**
- * Sets the VisColor to a certain rgba value.
- *
- * @param color Pointer to the VisColor to which the rgb value is set.
- * @param r The red value.
- * @param g The green value.
- * @param b The blue value.
- * @param a The alpha value.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_set_with_alpha (VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
 	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
@@ -75,16 +53,6 @@ int visual_color_set_with_alpha (VisColor *color, uint8_t r, uint8_t g, uint8_t 
 	return VISUAL_OK;
 }
 
-/**
- * Sets the VisColor to a certain rgb value.
- *
- * @param color Pointer to the VisColor to which the rgb value is set.
- * @param r The red value.
- * @param g The green value.
- * @param b The blue value.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b)
 {
 	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
@@ -97,14 +65,6 @@ int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b)
 	return VISUAL_OK;
 }
 
-/**
- * Compares two VisColors with each other. If they are not the same, 0 is returned, if the same 1.
- *
- * @param src1 Pointer to the first VisColor for comparison.
- * @param src2 Pointer to the second VisColor for comparison.
- *
- * @return FALSE on different, TRUE on same, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_compare (VisColor *src1, VisColor *src2)
 {
 	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_COLOR_NULL)
@@ -116,16 +76,6 @@ int visual_color_compare (VisColor *src1, VisColor *src2)
 	return TRUE;
 }
 
-/**
- * Fills the VisColor it's rgb values from hsv colorspace values.
- *
- * @param color Pointer to a VisColor which rgb values are filled.
- * @param h Hue value for the hsv colorspace, ranging from 0 to 360.
- * @param s Saturation value for the hsv colorspace, ranging from 0 to 1.
- * @param v Value value for the hsv colorspace, ranging from 0 to 1.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_from_hsv (VisColor *color, float h, float s, float v)
 {
 	int i;
@@ -163,20 +113,9 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v)
 	return VISUAL_OK;
 }
 
-/**
- * Creates hsv colorspace values from a VisColor
- *
- * @param color Pointer to a VisColor from which hsv colorspace values are created.
- * @param h Float pointer to a hue value for the hsv colorspace, ranging from 0 to 360.
- * @param s Float pointer to a saturation value for the hsv colorspace, ranging from 0 to 1.
- * @param v Float pointer to a value value for the hsv colorspace, ranging from 0 to 1.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 {
-
-        float max, min, delta, r, g, b;
+	float max, min, delta, r, g, b;
 
 	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
@@ -227,14 +166,6 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 	return VISUAL_OK;
 }
 
-/**
- * Copies the RGB data of one VisColor into another.
- *
- * @param dest Pointer to the destination VisColor in which the RGB data is copied.
- * @param src Pointer to the source VisColor from which the RGB data is copied.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_copy (VisColor *dest, VisColor *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_COLOR_NULL);
@@ -279,7 +210,7 @@ uint32_t visual_color_to_uint32 (VisColor *color)
 
 	visual_log_return_val_if_fail (color != NULL, 0);
 
-	colors = (color->r << 24) | 
+	colors = (color->r << 24) |
 		(color->r << 16) |
 		(color->g << 8) |
 		(color->b);
@@ -330,8 +261,3 @@ VisColor *visual_color_white ()
 
 	return &white;
 }
-
-/**
- * @}
- */
-

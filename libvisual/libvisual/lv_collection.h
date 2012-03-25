@@ -26,6 +26,11 @@
 
 #include <libvisual/lv_object.h>
 
+/**
+ * @defgroup VisCollection VisCollection
+ * @{
+ */
+
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_COLLECTION(obj)				(VISUAL_CHECK_CAST ((obj), VisCollection))
@@ -135,5 +140,9 @@ void *visual_collection_iter_get_data (VisCollectionIter *iter);
 int visual_collection_iter_dtor (VisCollectionIter *iter);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_COLLECTION_H */

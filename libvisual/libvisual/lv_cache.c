@@ -89,17 +89,6 @@ static inline void handle_request_reset (VisCache *cache, VisListEntry *le)
 	visual_list_chain_at_begin (cache->list, le);
 }
 
-/**
- * @defgroup VisCache VisCache
- * @{
- */
-
-/**
- * Creates a new VisCache.
- * 
- * @return A newly allocated VisCache.
- */
-
 VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset)
 {
 	VisCache *cache;
@@ -307,8 +296,3 @@ VisList *visual_cache_get_list (VisCache *cache)
 
 	return cache->list;
 }
-
-/**
- * @}
- */
-

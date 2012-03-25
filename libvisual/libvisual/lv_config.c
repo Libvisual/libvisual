@@ -68,12 +68,6 @@ static int config_registry_section_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
-
-/**
- * @defgroup VisConfig VisConfig
- * @{
- */
-
 VisConfigRegistry *visual_config_registry_new ()
 {
 	VisConfigRegistry *registry;
@@ -268,8 +262,3 @@ int visual_config_registry_sync (VisConfigRegistry *registry)
 
 	return VISUAL_OK;
 }
-
-/**
- * @}
- */
-

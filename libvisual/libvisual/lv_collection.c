@@ -41,12 +41,6 @@ int visual_collection_iter_dtor (VisCollectionIter *object)
 	return VISUAL_OK;
 }
 
-
-/**
- * @defgroup VisCollection VisCollection
- * @{
- */
-
 int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer)
 {
 	visual_log_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
@@ -230,8 +224,4 @@ void *visual_collection_iter_get_data (VisCollectionIter *iter)
 
 	return NULL;
 }
-
-/**
- * @}
- */
 

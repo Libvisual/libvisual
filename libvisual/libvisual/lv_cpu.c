@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -108,7 +108,7 @@ LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep)
 {
 	if(ep->ExceptionRecord->ExceptionCode==EXCEPTION_ILLEGAL_INSTRUCTION){
 		ep->ContextRecord->Eip +=3;
-		__lv_cpu_caps.hasSSE=0;       
+		__lv_cpu_caps.hasSSE=0;
 		return EXCEPTION_CONTINUE_EXECUTION;
 	}
 	return EXCEPTION_CONTINUE_SEARCH;
@@ -141,7 +141,7 @@ static void check_os_altivec_support( void )
 	visual_size_t len = sizeof(has_vu);
 	int err;
 
-	err = sysctl (sels, 2, &has_vu, &len, NULL, 0);   
+	err = sysctl (sels, 2, &has_vu, &len, NULL, 0);
 
 	if (err == 0)
 		if (has_vu != 0)
@@ -320,17 +320,6 @@ static int cpuid (unsigned int ax, unsigned int *p)
 #endif
 }
 
-/**
- * @defgroup VisCPU VisCPU
- * @{
- */
-
-/**
- * Initializes the VisCPU caps structure by detecting the CPU features and flags.
- *
- * This is normally called by visual_init() and is needed by visual_mem_initialize() in order to
- * detect the most optimal mem_copy and mem_set functions.
- */
 void visual_cpu_initialize ()
 {
 	unsigned int regs[4];
@@ -367,7 +356,7 @@ void visual_cpu_initialize ()
 #elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
 
 	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU; 
+	mib[1] = HW_NCPU;
 
 	len = sizeof (ncpu);
 	sysctl (mib, 2, &ncpu, &len, NULL, 0);
@@ -376,17 +365,17 @@ void visual_cpu_initialize ()
 #else
 	__lv_cpu_caps.nrcpu = 1;
 #endif
-	
+
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	/* No cpuid, old 486 or lower */
 	if (has_cpuid () == 0)
 		return;
 
 	__lv_cpu_caps.cacheline = 32;
-	
+
 	/* Get max cpuid level */
 	cpuid (0x00000000, regs);
-	
+
 	if (regs[0] >= 0x00000001) {
 		unsigned int cacheline;
 
@@ -395,7 +384,7 @@ void visual_cpu_initialize ()
 		__lv_cpu_caps.x86cpuType = (regs2[0] >> 8) & 0xf;
 		if (__lv_cpu_caps.x86cpuType == 0xf)
 		    __lv_cpu_caps.x86cpuType = 8 + ((regs2[0] >> 20) & 255); /* use extended family (P4, IA64) */
-		
+
 		/* general feature flags */
 		__lv_cpu_caps.hasTSC  = (regs2[3] & (1 << 8  )) >>  8; /* 0x0000010 */
 		__lv_cpu_caps.hasMMX  = (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
@@ -407,13 +396,13 @@ void visual_cpu_initialize ()
 		if (cacheline > 0)
 			__lv_cpu_caps.cacheline = cacheline;
 	}
-	
+
 	cpuid (0x80000000, regs);
-	
+
 	if (regs[0] >= 0x80000001) {
 
 		cpuid (0x80000001, regs2);
-		
+
 		__lv_cpu_caps.hasMMX  |= (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
 		__lv_cpu_caps.hasMMX2 |= (regs2[3] & (1 << 22 )) >> 22; /* 0x400000 */
 		__lv_cpu_caps.has3DNow    = (regs2[3] & (1 << 31 )) >> 31; /* 0x80000000 */
@@ -451,7 +440,7 @@ void visual_cpu_initialize ()
 	__lv_cpu_caps.enabled3DNow	= __lv_cpu_caps.has3DNow;
 	__lv_cpu_caps.enabled3DNowExt	= __lv_cpu_caps.has3DNowExt;
 	__lv_cpu_caps.enabledAltiVec	= __lv_cpu_caps.hasAltiVec;
-	
+
 	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", __lv_cpu_caps.nrcpu);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", __lv_cpu_caps.type);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
@@ -468,12 +457,6 @@ void visual_cpu_initialize ()
 	__lv_cpu_initialized = TRUE;
 }
 
-/**
- * Function to get the VisCPU caps initialized by visual_cpu_initialize(), this contains information
- * regarding the CPU features and flags.
- *
- * @return The VisCPU caps structure.
- */
 VisCPU *visual_cpu_get_caps ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -482,12 +465,6 @@ VisCPU *visual_cpu_get_caps ()
 	return &__lv_cpu_caps;
 }
 
-/* The getters and setters for feature flags */
-/**
- * Function to retrieve if the tsc CPU feature is enabled.
- *
- * @return Whether tsc is enabled or not.
- */
 int visual_cpu_get_tsc ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -496,11 +473,6 @@ int visual_cpu_get_tsc ()
 	return __lv_cpu_caps.enabledTSC;
 }
 
-/**
- * Function to retrieve if the mmx CPU feature is enabled.
- *
- * @return Whether mmx is enabled or not.
- */
 int visual_cpu_get_mmx ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -509,11 +481,6 @@ int visual_cpu_get_mmx ()
 	return __lv_cpu_caps.enabledMMX;
 }
 
-/**
- * Function to retrieve if the mmx2 CPU feature is enabled.
- *
- * @return Whether mmx2 is enabled or not.
- */
 int visual_cpu_get_mmx2 ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -522,11 +489,6 @@ int visual_cpu_get_mmx2 ()
 	return __lv_cpu_caps.enabledMMX2;
 }
 
-/**
- * Function to retrieve if the sse CPU feature is enabled.
- *
- * @return Whether sse is enabled or not.
- */
 int visual_cpu_get_sse ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -534,12 +496,6 @@ int visual_cpu_get_sse ()
 
 	return __lv_cpu_caps.enabledSSE;
 }
-
-/**
- * Function to retrieve if the sse2 CPU feature is enabled.
- *
- * @return Whether sse2 is enabled or not.
- */
 int visual_cpu_get_sse2 ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -548,11 +504,6 @@ int visual_cpu_get_sse2 ()
 	return __lv_cpu_caps.enabledSSE2;
 }
 
-/**
- * Function to retrieve if the 3dnow CPU feature is enabled.
- *
- * @return Whether 3dnow is enabled or not.
- */
 int visual_cpu_get_3dnow ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -561,11 +512,6 @@ int visual_cpu_get_3dnow ()
 	return __lv_cpu_caps.enabled3DNow;
 }
 
-/**
- * Function to retrieve if the 3dnowext CPU feature is enabled.
- *
- * @return Whether 3dnowext is enabled or not.
- */
 int visual_cpu_get_3dnow2 ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -574,11 +520,6 @@ int visual_cpu_get_3dnow2 ()
 	return __lv_cpu_caps.enabled3DNowExt;
 }
 
-/**
- * Function to retrieve if the altivec CPU feature is enabled.
- *
- * @return Whether altivec is enabled or not.
- */
 int visual_cpu_get_altivec ()
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -587,12 +528,6 @@ int visual_cpu_get_altivec ()
 	return __lv_cpu_caps.enabledAltiVec;
 }
 
-/**
- * Function to set if the tsc feature should be enabled or not, this function will also check
- * if the feature is actually available.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */
 int visual_cpu_set_tsc (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -606,12 +541,6 @@ int visual_cpu_set_tsc (int enabled)
 	return VISUAL_OK;
 }
 
-/**
- * Function to set if the MMX feature should be enabled or not, this function will also check
- * if the feature is actually available.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
 int visual_cpu_set_mmx (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -625,12 +554,6 @@ int visual_cpu_set_mmx (int enabled)
 	return VISUAL_OK;
 }
 
-/**
- * Function to set if the MMX2 feature should be enabled or not, this function will also check
- * if the feature is actually available.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
 int visual_cpu_set_mmx2 (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -644,12 +567,6 @@ int visual_cpu_set_mmx2 (int enabled)
 	return VISUAL_OK;
 }
 
-/**
- * Function to set if the SSE feature should be enabled or not, this function will also check
- * if the feature is actually available.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */  
 int visual_cpu_set_sse (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -663,12 +580,6 @@ int visual_cpu_set_sse (int enabled)
 	return VISUAL_OK;
 }
 
-/**
- * Function to set if the SSE2 feature should be enabled or not, this function will also check
- * if the feature is actually available.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
 int visual_cpu_set_sse2 (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -682,12 +593,6 @@ int visual_cpu_set_sse2 (int enabled)
 	return VISUAL_OK;
 }
 
-/**
- * Function to set if the 3DNow feature should be enabled or not, this function will also check
- * if the feature is actually available.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
 int visual_cpu_set_3dnow (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -701,12 +606,6 @@ int visual_cpu_set_3dnow (int enabled)
 	return VISUAL_OK;
 }
 
-/**
- * Function to set if the 3dnowext feature should be enabled or not, this function will also check
- * if the feature is actually available.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
 int visual_cpu_set_3dnow2 (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -720,12 +619,6 @@ int visual_cpu_set_3dnow2 (int enabled)
 	return VISUAL_OK;
 }
 
-/**
- * Function to set if the altivec feature should be enabled or not, this function will also check
- * if the feature is actually available.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
- */ 
 int visual_cpu_set_altivec (int enabled)
 {
 	if (__lv_cpu_initialized == FALSE)
@@ -738,8 +631,3 @@ int visual_cpu_set_altivec (int enabled)
 
 	return VISUAL_OK;
 }
-
-/**
- * @}
- */
-

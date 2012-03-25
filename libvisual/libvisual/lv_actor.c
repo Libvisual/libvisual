@@ -471,7 +471,7 @@ static int negotiate_video (VisActor *actor, int noevent)
  * @param actor Pointer to a VisActor of which the supported depth of it's
  * 	  encapsulated plugin is requested.
  *
- * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on succes,
+ * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
  * 	-VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
 int visual_actor_get_supported_depth (VisActor *actor)
