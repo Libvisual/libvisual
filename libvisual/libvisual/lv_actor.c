@@ -124,8 +124,8 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
 			return NULL;
 
 		ref = visual_plugin_find (__lv_plugins_actor, next);
-		plugin = visual_plugin_load (ref);
 
+		plugin = visual_plugin_load (ref);
 		actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
 		if ((actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0)
@@ -315,10 +315,15 @@ int visual_actor_valid_by_name (const char *name)
 VisActor *visual_actor_new (const char *actorname)
 {
 	VisActor *actor;
+	int result;
 
 	actor = visual_mem_new0 (VisActor, 1);
 
-	visual_actor_init (actor, actorname);
+	result = visual_actor_init (actor, actorname);
+	if (result != VISUAL_OK) {
+		visual_mem_free (actor);
+		return NULL;
+	}
 
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (actor), TRUE);
@@ -341,7 +346,7 @@ VisActor *visual_actor_new (const char *actorname)
  */
 int visual_actor_init (VisActor *actor, const char *actorname)
 {
-	VisPluginRef *ref;
+	VisPluginRef *ref = NULL;
 	VisPluginEnviron *enve;
 	VisActorPluginEnviron *actenviron;
 
@@ -371,6 +376,9 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 		return VISUAL_OK;
 
 	ref = visual_plugin_find (__lv_plugins_actor, actorname);
+	if (ref == NULL) {
+		return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
+	}
 
 	actor->plugin = visual_plugin_load (ref);
 

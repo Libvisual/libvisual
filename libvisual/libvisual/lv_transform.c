@@ -140,10 +140,15 @@ int visual_transform_valid_by_name (const char *name)
 VisTransform *visual_transform_new (const char *transformname)
 {
 	VisTransform *transform;
+	int result;
 
 	transform = visual_mem_new0 (VisTransform, 1);
 
-	visual_transform_init (transform, transformname);
+	result = visual_transform_init (transform, transformname);
+	if (result != VISUAL_OK) {
+		visual_mem_free (transform);
+		return NULL;
+	}
 
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (transform), TRUE);
@@ -189,6 +194,9 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
 		return VISUAL_OK;
 
 	ref = visual_plugin_find (__lv_plugins_transform, transformname);
+	if (ref == NULL) {
+		return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
+	}
 
 	transform->plugin = visual_plugin_load (ref);
 

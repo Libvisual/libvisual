@@ -935,6 +935,9 @@ VisPluginRef *visual_plugin_find (VisList *list, const char *name)
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;
 
+	visual_log_return_val_if_fail (list != NULL, NULL);
+	visual_log_return_val_if_fail (name != NULL, NULL);
+
 	while ((ref = visual_list_next (list, &entry)) != NULL) {
 
 		if (ref->info->plugname == NULL)

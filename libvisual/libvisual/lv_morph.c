@@ -140,10 +140,15 @@ int visual_morph_valid_by_name (const char *name)
 VisMorph *visual_morph_new (const char *morphname)
 {
 	VisMorph *morph;
+	int result;
 
 	morph = visual_mem_new0 (VisMorph, 1);
 
-	visual_morph_init (morph, morphname);
+	result = visual_morph_init (morph, morphname);
+	if (result != VISUAL_OK) {
+		visual_mem_free (morph);
+		return NULL;
+	}
 
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (morph), TRUE);
@@ -199,6 +204,9 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
 		return VISUAL_OK;
 
 	ref = visual_plugin_find (__lv_plugins_morph, morphname);
+	if (ref == NULL) {
+		return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
+	}
 
 	morph->plugin = visual_plugin_load (ref);
 

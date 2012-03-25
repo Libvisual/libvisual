@@ -151,6 +151,7 @@ enum {
 	VISUAL_ERROR_PLUGIN_HANDLE_NULL,		/**< The dlopen handle of the plugin is NULL. */
 	VISUAL_ERROR_PLUGIN_ALREADY_REALIZED,		/**< The plugin is already realized. */
 	VISUAL_ERROR_PLUGIN_NO_LIST,			/**< The plugin list can't be found. */
+	VISUAL_ERROR_PLUGIN_NOT_FOUND,
 
 	/* Error entries for the VisRandom system */
 	VISUAL_ERROR_RANDOM_CONTEXT_NULL,		/**< The VisRandomContext is NULL. */

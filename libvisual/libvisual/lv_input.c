@@ -143,10 +143,15 @@ int visual_input_valid_by_name (const char *name)
 VisInput *visual_input_new (const char *inputname)
 {
 	VisInput *input;
+	int result;
 
 	input = visual_mem_new0 (VisInput, 1);
 
-	visual_input_init (input, inputname);
+	result = visual_input_init (input, inputname);
+	if (result != VISUAL_OK) {
+		visual_mem_free (input);
+		return NULL;
+	}
 
 	/* Do the VisObject initialization */
 	visual_object_set_allocated (VISUAL_OBJECT (input), TRUE);
@@ -193,6 +198,9 @@ int visual_input_init (VisInput *input, const char *inputname)
 		return VISUAL_OK;
 
 	ref = visual_plugin_find (__lv_plugins_input, inputname);
+	if (ref == NULL) {
+		return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
+	}
 
 	input->plugin = visual_plugin_load (ref);
 
