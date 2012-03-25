@@ -42,11 +42,11 @@ typedef struct {
 } MessageHandler;
 
 static const char *severity_labels[] = {
-	"DEBUG	  ",
-	"INFO	  ",
+	"DEBUG    ",
+	"INFO     ",
 	"WARNING  ",
 	"CRITICAL ",
-	"ERROR	  "
+	"ERROR    "
 };
 
 static MessageHandler message_handlers[VISUAL_TABLESIZE(severity_labels)];
@@ -111,7 +111,7 @@ void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandl
  * @param fmt Format string to display the log message.
  */
 void _lv_log (VisLogSeverity severity, const char *file,
-			int line, const char *funcname, const char *fmt, ...)
+	int line, const char *funcname, const char *fmt, ...)
 {
 	MessageHandler *handler;
 	char str[1024];
@@ -136,12 +136,7 @@ void _lv_log (VisLogSeverity severity, const char *file,
 		(*handler->func) (severity, str, &source, handler->priv);
 
 	} else {
-		FILE *out = stderr;
-
-		if (severity == VISUAL_LOG_INFO)
-			out = stdin;
-
-		fprintf (out, "%s %s:%d:%s: %s\n", severity_labels[severity], file, line, funcname, str);
+		fprintf (stderr, "%s %s:%d:%s: %s\n", severity_labels[severity], file, line, funcname, str);
 	}
 }
 
