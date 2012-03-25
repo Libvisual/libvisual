@@ -26,15 +26,12 @@
 
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_video.h>
-#include <libvisual/lv_palette.h>
 #include <libvisual/lv_plugin.h>
-#include <libvisual/lv_songinfo.h>
-#include <libvisual/lv_event.h>
 
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_TRANSFORM(obj)				(VISUAL_CHECK_CAST ((obj), VisTransform))
-#define VISUAL_TRANSFORM_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisTransformPlugin))
+#define VISUAL_TRANSFORM_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisTransformPlugin))
 
 /**
  * Type defination that should be used in plugins to set the plugin type for a transform plugin.

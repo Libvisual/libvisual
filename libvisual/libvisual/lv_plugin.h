@@ -25,16 +25,13 @@
 #define _LV_PLUGIN_H
 
 #include <libvisual/lvconfig.h>
-#include <libvisual/lv_video.h>
+#include <libvisual/lv_common.h>
 #include <libvisual/lv_audio.h>
-#include <libvisual/lv_palette.h>
 #include <libvisual/lv_list.h>
-#include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param.h>
 #include <libvisual/lv_ui.h>
 #include <libvisual/lv_random.h>
-#include <libvisual/lv_types.h>
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>

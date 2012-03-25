@@ -24,6 +24,7 @@
 #ifndef _LV_TYPES_H
 #define _LV_TYPES_H
 
+#include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
 
 /* Fixed-size int types */

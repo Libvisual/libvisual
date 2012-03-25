@@ -1,9 +1,7 @@
-#include <config.h>
-#include <gettext.h>
-
-#include "lv_log.h"
-#include "lv_error.h"
+#include "config.h"
 #include "lv_plugin_registry.h"
+#include "lv_common.h"
+#include "gettext.h"
 #include "lv_actor.h"
 #include "lv_input.h"
 #include "lv_morph.h"

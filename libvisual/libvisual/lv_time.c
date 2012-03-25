@@ -21,22 +21,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "config.h"
+#include "lv_time.h"
+#include "lv_common.h"
+#include <sys/time.h>
 #include <errno.h>
-#include <string.h>
-
-#include "lvconfig.h"
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
 #endif
-
-#include "config.h"
-#include "lv_common.h"
-#include "lv_thread.h"
-#include "lv_time.h"
 
 /**
  * @defgroup VisTime VisTime

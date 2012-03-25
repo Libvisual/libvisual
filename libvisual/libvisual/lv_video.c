@@ -26,19 +26,10 @@
  */
 
 #include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <gettext.h>
-
-#include <lvconfig.h>
-#include "lv_common.h"
 #include "lv_video.h"
+#include "lv_common.h"
 #include "lv_cpu.h"
-#include "lv_log.h"
-#include "lv_mem.h"
+#include "gettext.h"
 
 /* FIXME put these in lv_color.h */
 typedef struct {

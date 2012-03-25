@@ -22,14 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#include <lvconfig.h>
-#include "lv_common.h"
 #include "lv_video.h"
+#include "lv_common.h"
 
 int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src)
 {

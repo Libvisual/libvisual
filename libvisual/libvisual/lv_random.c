@@ -22,12 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
+#include "config.h"
 #include "lv_random.h"
+#include "lv_common.h"
 
 /* Thanks Burkhard Plaum <plaum@ipf.uni-stuttgart.de> for these values and some other hints */
 #define val_a 1664525L		/* As suggested by Knuth */

@@ -21,15 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <gettext.h>
-
-#include "lvconfig.h"
+#include "config.h"
+#include "lv_thread.h"
+#include "lv_common.h"
+#include "gettext.h"
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>

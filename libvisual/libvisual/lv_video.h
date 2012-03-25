@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -35,7 +35,7 @@
 
 VISUAL_BEGIN_DECLS
 
-#define VISUAL_VIDEO(obj)				(VISUAL_CHECK_CAST ((obj), VisVideo))
+#define VISUAL_VIDEO(obj)						(VISUAL_CHECK_CAST ((obj), VisVideo))
 #define VISUAL_VIDEO_ATTRIBUTE_OPTIONS(obj)		(VISUAL_CHECK_CAST ((obj), VisVideoAttributeOptions))
 
 #define VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(options, attr, val)	\
@@ -119,11 +119,11 @@ typedef struct _VisVideoAttributeOptions VisVideoAttributeOptions;
  *         int i
  *         uint8_t *destbuf = dest->pixels;
  *         uint8_t *srcbuf = src->pixels;
- * 
+ *
  *         for (i = 0; i < src->height; i++) {
  *                 for (j = 0; j < src->width; j++) {
- *	                   
- *	                   
+ *
+ *
  *	                   destbuf += dest->bpp;
  *	                   srcbuf += src->bpp;
  *                 }
