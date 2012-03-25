@@ -21,16 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#include "lv_log.h"
-#include "lv_error.h"
-#include "lv_mem.h"
+#include "config.h"
 #include "lv_object.h"
-
+#include "lv_common.h"
 
 /**
  * @defgroup VisObject VisObject

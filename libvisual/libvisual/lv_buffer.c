@@ -24,7 +24,6 @@
 #include <config.h>
 #include "lv_buffer.h"
 #include "lv_common.h"
-#include "lv_mem.h"
 
 static int buffer_dtor (VisObject *object);
 

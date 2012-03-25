@@ -25,7 +25,6 @@
 #define _LV_MEM_H
 
 #include <libvisual/lvconfig.h>
-
 #include <libvisual/lv_defines.h>
 
 VISUAL_BEGIN_DECLS

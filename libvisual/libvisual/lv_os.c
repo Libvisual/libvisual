@@ -21,12 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
 #include "config.h"
+#include "lv_os.h"
+#include "lv_common.h"
+#include <sys/types.h>
+#include <unistd.h>
 
 #ifdef HAVE_SCHED_H
 # include <sched.h>

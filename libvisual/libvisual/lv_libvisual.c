@@ -22,22 +22,16 @@
  */
 
 #include <config.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <gettext.h>
-
-#include "lvconfig.h"
 #include "lv_libvisual.h"
+#include "lv_common.h"
+
 #include "lv_fourier.h"
 #include "lv_plugin_registry.h"
 #include "lv_log.h"
 #include "lv_param.h"
 #include "lv_thread.h"
 #include "lv_cpu.h"
-#include "config.h"
+#include "gettext.h"
 
 
 /** Set when libvisual is initialized. */

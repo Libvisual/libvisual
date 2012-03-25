@@ -21,16 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#include <math.h>
-
-#include "lv_bits.h"
+#include "config.h"
 #include "lv_math.h"
+#include "lv_common.h"
+#include "lv_bits.h"
 #include "lv_cpu.h"
+#include <math.h>
 
 /* This file is getting big and bloated because of the large chunks of simd code. When all is in place we'll take a serious
  * look how we can reduce this. For example by using macros for common blocks. */

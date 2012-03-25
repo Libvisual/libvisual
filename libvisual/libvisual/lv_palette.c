@@ -21,13 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#include "lv_common.h"
+#include "lvconfig.h"
 #include "lv_palette.h"
+#include "lv_common.h"
 
 static int palette_dtor (VisObject *object);
 

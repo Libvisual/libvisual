@@ -24,6 +24,8 @@
 #ifndef _LV_KEYSYM_H
 #define _LV_KEYSYM_H
 
+#include <libvisual/lv_defines.h>
+
 VISUAL_BEGIN_DECLS
 
 /**

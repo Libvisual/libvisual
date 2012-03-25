@@ -24,10 +24,8 @@
 #include "config.h"
 #include "lvconfig.h"
 #include "lv_actor.h"
-
-#include "lv_log.h"
+#include "lv_common.h"
 #include "lv_list.h"
-#include "lv_mem.h"
 #include "gettext.h"
 
 extern VisList *__lv_plugins_actor;
