@@ -346,7 +346,17 @@ VisPalette *visual_actor_get_palette (VisActor *actor);
  */
 int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced);
 
+/**
+ * Gives the by the plugin natively supported depths
+ *
+ * @param actor Pointer to a VisActor of which the supported depth of it's
+ * 	  encapsulated plugin is requested.
+ *
+ * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
+ * 	-VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
+ */
 int visual_actor_get_supported_depth (VisActor *actor);
+
 VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *actor);
 
 /**

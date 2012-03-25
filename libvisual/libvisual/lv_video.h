@@ -470,6 +470,13 @@ int visual_video_depth_is_sane (VisVideoDepth depth);
  */
 int visual_video_depth_value_from_enum (VisVideoDepth depth);
 
+/**
+ * Returns a VisVideoDepth enumerate value from bits per pixel.
+ *
+ * @param depthvalue Integer containing the number of bits per pixel.
+ *
+ * @return The corespondending enumerate value or VISUAL_VIDEO_DEPTH_ERROR on failure.
+ */
 VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
 
 /**
@@ -482,6 +489,15 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
  */
 int visual_video_bpp_from_depth (VisVideoDepth depth);
 
+/**
+ * Converts the VisVideo it's buffer boundries to a VisRectangle. This means that the rectangle it's
+ * position will be set to 0, 0 and it's width and height respectively to that of the VisVideo.
+ *
+ * @param video Pointer to the VisVideo for which the buffer boundries are requested.
+ * @param rect Pointer to the VisRectangle in which the buffer boundries are set.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ */
 int visual_video_get_boundary (VisVideo *video, VisRectangle *rect);
 
 

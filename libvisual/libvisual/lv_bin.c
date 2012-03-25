@@ -92,11 +92,6 @@ static int bin_get_depth_using_preferred (VisBin *bin, int depthflag)
 		return visual_video_depth_get_highest (depthflag);
 }
 
-/**
- * @defgroup VisBin VisBin
- * @{
- */
-
 VisBin *visual_bin_new ()
 {
 	VisBin *bin;
@@ -880,8 +875,3 @@ int visual_bin_run (VisBin *bin)
 
 	return 0;
 }
-
-/**
- * @}
- */
-

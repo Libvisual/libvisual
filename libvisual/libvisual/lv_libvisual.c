@@ -34,15 +34,16 @@
 #include "gettext.h"
 
 
-/** Set when libvisual is initialized. */
-int __lv_initialized = FALSE;
-/** Set a progname from argv[0] when we're capable of doing so. */
+/* Set when libvisual is initialized. */
+in __lv_initialized = FALSE;
+
+/* Set a progname from argv[0] when we're capable of doing so. */
 char *__lv_progname = NULL;
 
-/** The global params container */
+/* The global params container */
 VisParamContainer *__lv_paramcontainer = NULL;
 
-/** The userinterface for the global params */
+/* The userinterface for the global params */
 VisUIWidget *__lv_userinterface = NULL;
 
 static int init_params (VisParamContainer *paramcontainer);
@@ -155,61 +156,26 @@ static VisUIWidget *make_userinterface ()
 	return vbox;
 }
 
-/**
- * @defgroup Libvisual Libvisual
- * @{
- */
-
-/**
- * Gives the libvisual version.
- *
- * @return A const char containing the libvisual version.
- */
 const char *visual_get_version ()
 {
 	return VISUAL_VERSION;
 }
 
-/**
- * Gives the libvisual API verison. Can be used to compare against the
- * compile time VISUAL_API_VERSION to validate if the API is at the right version.
- *
- * @return A const integer equal to VISUAL_API_VERSION.
- */
 int visual_get_api_version ()
 {
 	return VISUAL_API_VERSION;
 }
 
-/**
- * Returns a pointer to the libvisual global VisParamContainer.
- *
- * @return A pointer to the libvisual global VisParamContainer.
- */
 VisParamContainer *visual_get_params ()
 {
 	return __lv_paramcontainer;
 }
 
-/**
- * Returns a pointer to the top container of libvisual it's configuration userinterface.
- *
- * @return A pointer to the libvisual configuration VisUIWidget.
- */
 VisUIWidget *visual_get_userinterface ()
 {
 	return __lv_userinterface;
 }
 
-/**
- * Initialize libvisual. Sets up a plugin registry, register the program name and such.
- *
- * @param argc Pointer to an int containing the number of arguments within argv or NULL.
- * @param argv Pointer to a list of strings that make up the argument vector or NULL.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED,
- *	-VISUAL_ERROR_LIBVISUAL_NO_REGISTRY or error values returned by visual_init_path_add () on failure.
- */
 int visual_init (int *argc, char ***argv)
 {
 #if ENABLE_NLS
@@ -271,21 +237,11 @@ int visual_init (int *argc, char ***argv)
 	return VISUAL_OK;
 }
 
-/*
- * Tells whether Libvisual is (correctly) initialized.
- *
- * @return TRUE if is it is initialized, FALSE otherwise.
- */
 int visual_is_initialized ()
 {
 	return __lv_initialized;
 }
 
-/**
- * Quits libvisual, destroys all the plugin registries.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED on failure.
- */
 int visual_quit ()
 {
 	int ret;
@@ -318,8 +274,3 @@ int visual_quit ()
 	__lv_initialized = FALSE;
 	return VISUAL_OK;
 }
-
-/**
- * @}
- */
-

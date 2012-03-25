@@ -158,11 +158,6 @@ static void *list_iter_getdata (VisCollectionIter *iter, VisCollection *collecti
 	return le->data;
 }
 
-/**
- * @defgroup VisList VisList
- * @{
- */
-
 VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 {
 	VisList *list;

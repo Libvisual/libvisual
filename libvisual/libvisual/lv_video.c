@@ -568,13 +568,6 @@ int visual_video_depth_value_from_enum (VisVideoDepth depth)
 	return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 }
 
-/**
- * Returns a VisVideoDepth enumerate value from bits per pixel.
- *
- * @param depthvalue Integer containing the number of bits per pixel.
- *
- * @return The corespondending enumerate value or VISUAL_VIDEO_DEPTH_ERROR on failure.
- */
 VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
 {
 	switch (depthvalue) {
@@ -623,15 +616,6 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 	return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
-/**
- * Converts the VisVideo it's buffer boundries to a VisRectangle. This means that the rectangle it's
- * position will be set to 0, 0 and it's width and height respectively to that of the VisVideo.
- *
- * @param video Pointer to the VisVideo for which the buffer boundries are requested.
- * @param rect Pointer to the VisRectangle in which the buffer boundries are set.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
 int visual_video_get_boundary (VisVideo *video, VisRectangle *rect)
 {
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
@@ -1357,9 +1341,6 @@ int visual_video_fill_alpha (VisVideo *video, uint8_t density)
 	return VISUAL_OK;
 }
 
-/**
- *
- */
 int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t density, VisRectangle *rect)
 {
 	VisVideo rvid;
@@ -1607,9 +1588,6 @@ int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees de
 	return ret;
 }
 
-/**
- *
- */
 VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees)
 {
 	VisVideo *dest;
@@ -1873,10 +1851,6 @@ int visual_video_depth_transform (VisVideo *dest, VisVideo *src)
 
 	return -VISUAL_ERROR_VIDEO_NOT_TRANSFORMED;
 }
-
-/**
- * @}
- */
 
 static int depth_transform_get_smallest (VisVideo *dest, VisVideo *src, int *width, int *height)
 {

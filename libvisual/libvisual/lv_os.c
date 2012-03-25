@@ -39,17 +39,8 @@
 
 #include "lv_os.h"
 
-/**
- * @defgroup VisOS VisOS
- * @{
- */
-
 /* FIXME: Lock all memory in realtime mode ? */
 
-/**
- * Puts the process in soft realtime mode. Be very careful with using this, it's very much possible to lock your
- * system up. Only works as super user.
- */
 int visual_os_scheduler_realtime_start ()
 {
 #ifdef HAVE_SCHED
@@ -66,9 +57,6 @@ int visual_os_scheduler_realtime_start ()
 #endif
 }
 
-/**
- * Returns to normal execution mode. Only works as super user.
- */
 int visual_os_scheduler_realtime_stop ()
 {
 #ifdef HAVE_SCHED
@@ -84,9 +72,6 @@ int visual_os_scheduler_realtime_stop ()
 #endif
 }
 
-/**
- * Yield the process. Don't rely on this.
- */
 int visual_os_scheduler_yield ()
 {
 #ifdef HAVE_SCHED
@@ -98,8 +83,4 @@ int visual_os_scheduler_yield ()
 #endif
 }
 
-
-/**
- * @}
- */
 

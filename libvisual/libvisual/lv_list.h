@@ -41,10 +41,8 @@
 #endif
 
 /**
- * Creates a new VisList structure.
- * The VisList system is a double linked list implementation.
- *
- * @return A newly allocated VisList.
+ * @defgroup VisList VisList
+ * @{
  */
 
 VISUAL_BEGIN_DECLS
@@ -79,6 +77,12 @@ struct _VisList {
 	int			 count;		/**< Number of entries that are in the list. */
 };
 
+/**
+ * Creates a new VisList structure.
+ * The VisList system is a double linked list implementation.
+ *
+ * @return A newly allocated VisList.
+ */
 VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
 
 /**

@@ -309,6 +309,11 @@ char *visual_beat_get_info(VisBeat *beat);
  * @{
  */
 
+/**
+ * Create a VisBeat and initialize it. This object should not be reinitialized.
+ *
+ * @return A newly allocated VisBeatAdv, or NULL on failure.
+ */
 VisBeatAdv *visual_beat_adv_new(void);
 
 /**

@@ -400,16 +400,6 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	return error;
 }
 
-/**
- * Loads a bitmap into a VisVideo and return this, so it's not needed to 
- * allocate a VisVideo before by hand.
- *
- * @see visual_bitmap_load
- *
- * @param filename The filename of the bitmap to be loaded.
- *
- * @return The VisVideo containing the bitmap or NULL on failure.
- */
 VisVideo *visual_bitmap_load_new_video (const char *filename)
 {
 	VisVideo *video;
