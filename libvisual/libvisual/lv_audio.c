@@ -147,16 +147,6 @@ static int audio_band_energy (VisAudio *audio, int band, int length)
 
 #endif /* 0 */
 
-/**
- * @defgroup VisAudio VisAudio
- * @{
- */
-
-/**
- * Creates a new VisAudio structure.
- *
- * @return A newly allocated VisAudio, or NULL on failure.
- */
 VisAudio *visual_audio_new ()
 {
 	VisAudio *audio;
@@ -174,18 +164,6 @@ VisAudio *visual_audio_new ()
 	return audio;
 }
 
-/**
- * Initializes a VisAudio, this should not be used to reset a VisAudio.
- * The resulting initialized VisAudio is a valid VisObject even if it was not allocated.
- * Keep in mind that VisAudio structures that were created by visual_audio_new() should not
- * be passed to visual_audio_init().
- *
- * @see visual_audio_new
- *
- * @param audio Pointer to the VisAudio which needs to be initialized.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL on failure.
- */
 int visual_audio_init (VisAudio *audio)
 {
 	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
@@ -201,18 +179,6 @@ int visual_audio_init (VisAudio *audio)
 	return VISUAL_OK;
 }
 
-/**
- * This function analyzes the VisAudio, the Fourier frequency magic gets done here, also
- * the audio energy is calculated and some other magic to provide the developer more
- * information about the current sample and the stream.
- *
- * For every sample that is being retrieved this needs to be called. However keep in mind
- * that the VisBin runs it automaticly.
- *
- * @param audio Pointer to a VisAudio that needs to be analyzed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL on failure.
- */
 int visual_audio_analyze (VisAudio *audio)
 {
 	short pcm[3][1024];
@@ -1551,18 +1517,6 @@ static int detect_beat(VisBeatAdv *adv, int32_t loudness)
     return beat;
 }
 
-/**
- * Get the value indicating if we have a beat or not.
- *
- * @param audio The audio from which we want a beat.
- *
- * @return 0 or 1 on success, -VISUAL_ERROR_AUDIO_NULL on failure
- *
- * Peak algorithm adapted from Winamp's AVS plugin.
- * Adv algorithm adapted from the Blursk plugin for xmms.
- * See lv_beat.h for copyright details.
- */
-
 int visual_audio_is_beat(VisAudio *audio, VisBeatAlgorithm algo)
 {
     visual_log_return_val_if_fail(audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
@@ -1728,8 +1682,3 @@ int visual_audio_is_beat_with_data(VisAudio *audio, VisBeatAlgorithm algo, unsig
     return FALSE;
 
 }
-
-/**
- * @}
- */
-

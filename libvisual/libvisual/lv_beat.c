@@ -114,17 +114,6 @@ static int beat_dtor(VisObject *obj)
     return TRUE;
 }
 
-/**
- * @defgroup VisBeat VisBeat
- * @{
- */
-
-/**
- * Create a new VisBeat
- *
- * @return A newly allocated VisBeat, or NULL on failure.
- */
-//VisBeatAdv *visual_beat_adv_new()
 VisBeat *visual_beat_new()
 {
     VisBeat *beat = visual_mem_new0(VisBeat, 1);
@@ -136,13 +125,6 @@ VisBeat *visual_beat_new()
     return beat;
 }
 
-/**
- * Initialize a VisBeat. This should not be used on an already initialized VisBeat.
- *
- * @param beat The VisBeat to be initialized.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_BEAT_NULL on failure.
- */
 int visual_beat_init(VisBeat *beat)
 {
     visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
@@ -233,13 +215,6 @@ VisBeatAdv *visual_beat_adv_new()
     return adv;
 }
 
-/**
- * Initialize a VisBeatAdv.
- *
- * @param The VisBeatAdv to be initialized.
- *
- * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_ADV_NULL on failure.
- */
 int visual_beat_adv_init(VisBeatAdv *adv)
 {
     visual_log_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
@@ -263,19 +238,6 @@ int visual_beat_adv_init(VisBeatAdv *adv)
     return VISUAL_OK;
 }
 
-/**
- * Set the configuration parameters for a VisBeat.
- *
- * @parm beat The VisBeat for which the parameters are to be set.
- * @param smartbeat Advanced beat detection if TRUE. If this is not set, the other config
- *          parameters are ignored.
- * @param smartbeatsticky Auto-keep if TRUE.
- * @param smartbeatresetnewsong Upon song change if value is FALSE then adapt from known BPM,
-            if TRUE then restart from scratch.
- * @param smartbeatonlysticky Predict only if BPM has been found if set TRUE.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_BEAT_NULL on failure.
- */
 int visual_beat_set_config(VisBeat *beat, int smartbeat, int smartbeatsticky, int smartbeatresetnewsong, int smartbeatonlysticky)
 {
     visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
@@ -288,14 +250,6 @@ int visual_beat_set_config(VisBeat *beat, int smartbeat, int smartbeatsticky, in
     return VISUAL_OK;
 }
 
-/**
- * Set the smartbeat parameter for a VisBeat.
- *
- * @param beat The VisBeat for which parameter is set.
- * @param smartbeat See visual_beat_set_config
- *
- * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
- */
 int visual_beat_set_smartbeat(VisBeat *beat, int smartbeat)
 {
     visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
@@ -305,14 +259,6 @@ int visual_beat_set_smartbeat(VisBeat *beat, int smartbeat)
     return VISUAL_OK;
 }
 
-/**
- * Set the smartbeat parameter for a VisBeat.
- *
- * @param beat The VisBeat for which parameter is set.
- * @param smartbeat See visual_beat_set_config
- *
- * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
- */
 int visual_beat_set_smartbeat_sticky(VisBeat *beat, int smartbeatsticky)
 {
     visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
@@ -322,14 +268,6 @@ int visual_beat_set_smartbeat_sticky(VisBeat *beat, int smartbeatsticky)
     return VISUAL_OK;
 }
 
-/**
- * Set the smartbeat parameter for a VisBeat.
- *
- * @param beat The VisBeat for which parameter is set.
- * @param smartbeat See visual_beat_set_config
- *
- * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
- */
 int visual_beat_set_smartbeat_reset_on_newsong(VisBeat *beat, int smartbeatresetnewsong)
 {
     visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);

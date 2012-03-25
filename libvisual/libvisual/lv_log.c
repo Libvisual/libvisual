@@ -50,26 +50,11 @@ static MessageHandler message_handlers[VISUAL_TABLESIZE(severity_labels)];
 static void default_log_handler (VisLogSeverity severity,
 	VisLogMessageSource const *source, const char *msg);
 
-/**
- * @defgroup VisLog VisLog
- * @{
- */
-
-/**
- * Set the library it's verbosity level.
- *
- * @param v The verbose level as a VisLogVerboseness enumerate value.
- */
 void visual_log_set_verboseness (VisLogSeverity v)
 {
 	verboseness = v;
 }
 
-/**
- * Get the current library it's verbosity level.
- *
- * @return The verboseness level as a VisLogVerboseness enumerate value.
- */
 VisLogSeverity visual_log_get_verboseness ()
 {
 	return verboseness;
@@ -80,12 +65,6 @@ static int is_valid_severity (VisLogSeverity severity)
 	return (severity >= VISUAL_LOG_DEBUG && severity <= VISUAL_LOG_ERROR);
 }
 
-/**
- * Set the callback function that handles info messages.
- *
- * @param handler The custom message handler callback.
- * @param priv Optional private data to pass on to the handler.
- */
 void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandlerFunc func, void *priv)
 {
 	MessageHandler *handler;
@@ -96,19 +75,6 @@ void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandl
 	handler->func = func;
 	handler->priv = priv;
 }
-
-/**
- * Private library call used by the visual_log define to display debug,
- * warning and error messages.
- *
- * @see visual_log
- *
- * @param severity Severity of the log message.
- * @param file Char pointer to a string that contains the source filename.
- * @param line Line number for which the log message is.
- * @param funcname Function name in which the log message is called.
- * @param fmt Format string to display the log message.
- */
 
 #if defined(LV_HAVE_ISO_C_VARARGS) || defined(LV_HAVE_GNU_C_VARARGS)
 
@@ -181,7 +147,3 @@ static void default_log_handler (VisLogSeverity severity, VisLogMessageSource co
 		fprintf (stderr, "%s %s\n", severity_labels[severity], msg);
 	}
 }
-
-/**
- * @}
- */

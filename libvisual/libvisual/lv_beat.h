@@ -61,6 +61,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 VISUAL_BEGIN_DECLS
 
+/**
+ * @defgroup VisBeat VisBeat
+ * @{
+ */
+
 #define VISUAL_BEAT(obj)				(VISUAL_CHECK_CAST ((obj), VisBeat))
 #define VISUAL_BEAT_ADV(obj)       (VISUAL_CHECK_CAST ((obj), VisBeatAdv))
 
@@ -175,28 +180,189 @@ struct _VisBeat {
     unsigned char logtab[256];
 };
 
+/**
+ * Create a new VisBeat
+ *
+ * @return A newly allocated VisBeat, or NULL on failure.
+ */
 VisBeat *visual_beat_new(void);
+
+/**
+ * Initialize a VisBeat. This should not be used on an already initialized VisBeat.
+ *
+ * @param beat The VisBeat to be initialized.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BEAT_NULL on failure.
+ */
 int visual_beat_init(VisBeat *beat);
+
+/**
+ * Refine the beat indication through adaptive learning.
+ *
+ * @param beat The VisBeat for which a new beat is to be refined.
+ * @param isBeat The beat as a boolean -- TRUE for a beat, FALSE otherwise.
+ *
+ * @return TRUE or FALSE indicating whether this is a beat or not.
+ */
 int visual_beat_refine_beat(VisBeat *beat, int beat_in);
+
+/**
+ * Signal that the song has changed.
+ *
+ * @param beat This VisBeat for which we want to give the signal that the song changed.
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
+ */
 int visual_beat_change_song(VisBeat *beat);
+
+/**
+ * Reset a VisBeat so that it may readapt.
+ *
+ * @param beat The VisBeat to be reset.
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
+ */
 int visual_beat_reset_adapt(VisBeat *beat);
+
 int visual_beat_slider_get(VisBeat *beat, VisBeatSlider slider);
+
+/**
+ * Set the configuration parameters for a VisBeat.
+ *
+ * @parm beat The VisBeat for which the parameters are to be set.
+ * @param smartbeat Advanced beat detection if TRUE. If this is not set, the other config
+ *          parameters are ignored.
+ * @param smartbeatsticky Auto-keep if TRUE.
+ * @param smartbeatresetnewsong Upon song change if value is FALSE then adapt from known BPM,
+            if TRUE then restart from scratch.
+ * @param smartbeatonlysticky Predict only if BPM has been found if set TRUE.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BEAT_NULL on failure.
+ */
 int visual_beat_set_config(VisBeat *beat, int smartbeat, int smartbeatsticky, int smartbeatresetnewsong, int smartbeatonlysticky);
+
+/**
+ * Set the smartbeat parameter for a VisBeat.
+ *
+ * @param beat The VisBeat for which parameter is set.
+ * @param smartbeat See visual_beat_set_config
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
+ */
 int visual_beat_set_smartbeat(VisBeat *beat, int smartbeat);
+
 int visual_beat_set_smartbeat_sticky(VisBeat *beat, int smartbeatsticky);
+
+/**
+ * Set the smartbeat parameter for a VisBeat.
+ *
+ * @param beat The VisBeat for which parameter is set.
+ * @param smartbeat See visual_beat_set_config
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
+ */
 int visual_beat_set_smartbeat_reset_on_newsong(VisBeat *beat, int smartbeatnewsong);
+
+/**
+ * Set the smartbeat parameter for a VisBeat.
+ *
+ * @param beat The VisBeat for which parameter is set.
+ * @param smartbeat See visual_beat_set_config
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
+ */
 int visual_beat_set_smartbeat_only_sticky(VisBeat *beat, int smartbeatonlysticky);
+
+/**
+ * Retrieve the VisBeatPeak from a VisBeat.
+ *
+ * @param beat The VisBeat from which to retrieve its VisBeatPeak.
+ *
+ * @return The VisBeatPeak on success, NULL upon failure.
+ */
 VisBeatPeak *visual_beat_get_peak(VisBeat *beat);
+
+/**
+ * Retrieve the VisBeatAdv from a VisBeat.
+ *
+ * @param beat The VisBeat from which to retrieve its VisBeatAdv.
+ *
+ * @return The VisBeatAdv on success, NULL upon failure.
+ */
 VisBeatAdv *visual_beat_get_adv(VisBeat *beat);
+
+/**
+ * Retrive a formatted string indicating current BPM and confidence.
+ *
+ * @param beat The VisBeat from which info is desired.
+ *
+ * @return The formatted string on success, or NULL on failure.
+ */
 char *visual_beat_get_info(VisBeat *beat);
 
+/**
+ * @}
+ */
+
+/**
+ * @defgroup VisBeatAdv VisBeatAdv
+ * @{
+ */
+
 VisBeatAdv *visual_beat_adv_new(void);
+
+/**
+ * Initialize a VisBeatAdv.
+ *
+ * @param The VisBeatAdv to be initialized.
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_ADV_NULL on failure.
+ */
 int visual_beat_adv_init(VisBeatAdv *adv);
+
+/**
+ * Set the configuration parameters for a VisBeatAdv.
+ *
+ * @param adv The VisBeatAdv to be configured.
+ * @param sensitivity This parameter determines how sensitive the algorithm is to loudness.
+ * @param max_bpm This parameter determines the maximum bpm. This is useful if sensitivity
+ *      fails to throttle the beat detection.
+ * @param thick_on_beats This parameter determines whether to apply a thickness for line drawing.
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_ADV_NULL on failure.
+ */
 int visual_beat_adv_set_config(VisBeatAdv *adv, int sensitive, int max_bpm, int thick_on_beats);
+
+/**
+ * Set the sensitivy parameter for a VisBeatAdv.
+ *
+ * @param sensitivity See visual_beat_adv_set_config.
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_ADV_NULL on failure.
+ */
 int visual_beat_adv_set_sensitivity(VisBeatAdv *adv, int sensitive);
+
+/**
+ * Set the maximum BPM for a VisBeatAdv.
+ *
+ * @param max_bpm See visual_beat_adv_set_config.
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_ADV_NULL on failure.
+ */
 int visual_beat_adv_set_max_detect(VisBeatAdv *adv, int max_detect);
+
+/**
+ * Set the thick on beats parameter for a VisBeatAdv.
+ *
+ * @param thick_on_beats See visual_beat_adv_set_config.
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_ADV_NULL on failure.
+ */
 int visual_beat_adv_set_thick_on_beats(VisBeatAdv *adv, int thick_on_beats);
 
+/**
+ * @}
+ */
 
 VISUAL_END_DECLS
 

@@ -27,6 +27,11 @@
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
 
+/**
+ * @defgroup VisLog VisLog
+ * @{
+ */
+
 VISUAL_BEGIN_DECLS
 
 /* This is read-only */
@@ -66,9 +71,26 @@ typedef struct {
 typedef void (*VisLogMessageHandlerFunc) (VisLogSeverity severity, const char *message,
 	const VisLogMessageSource *source, void *priv);
 
+/**
+ * Set the library it's verbosity level.
+ *
+ * @param v The verbose level as a VisLogVerboseness enumerate value.
+ */
 void visual_log_set_verboseness (VisLogSeverity severity);
+
+/**
+ * Get the current library it's verbosity level.
+ *
+ * @return The verboseness level as a VisLogVerboseness enumerate value.
+ */
 VisLogSeverity visual_log_get_verboseness (void);
 
+/**
+ * Set the callback function that handles info messages.
+ *
+ * @param handler The custom message handler callback.
+ * @param priv Optional private data to pass on to the handler.
+ */
 void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandlerFunc handler, void *priv);
 
 /**
@@ -131,5 +153,9 @@ void _lv_log (VisLogSeverity severity, const char *file,
 	}
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_LOG_H */
