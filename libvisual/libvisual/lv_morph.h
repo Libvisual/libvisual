@@ -218,7 +218,7 @@ VisMorph *visual_morph_new (const char *morphname);
  * @param morphname
  *	The name of the plugin to load, or NULL to simply initialize a new morph.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
 int visual_morph_init (VisMorph *morph, const char *morphname);
 
@@ -227,7 +227,7 @@ int visual_morph_init (VisMorph *morph, const char *morphname);
  *
  * @param morph Pointer to a VisMorph that needs to be realized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_PLUGIN_NULL or error values
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_PLUGIN_NULL or error values
  *	returned by visual_plugin_realize () on failure.
  */
 int visual_morph_realize (VisMorph *morph);
@@ -238,7 +238,7 @@ int visual_morph_realize (VisMorph *morph);
  * @param morph Pointer to a VisMorph of which the supported depth of it's
  * 	  encapsulated plugin is requested.
  *
- * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on succes, -1 on failure
+ * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on success, -1 on failure
  */
 int visual_morph_get_supported_depth (VisMorph *morph);
 
@@ -253,7 +253,7 @@ VisVideoAttributeOptions *visual_morph_get_video_attribute_options (VisMorph *mo
  * @param video Pointer to a VisVideo which contains information about the target display and the pointer
  * 	  to it's screenbuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_morph_set_video (VisMorph *morph, VisVideo *video);
 
@@ -264,7 +264,7 @@ int visual_morph_set_video (VisMorph *morph, VisVideo *video);
  * @param morph Pointer to the VisMorph to which finish time is set.
  * @param time Pointer to the VisTime that contains the finish time.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_TIME_NULL or error values returned by
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_TIME_NULL or error values returned by
  * 	visual_time_copy () on failure.
  */
 int visual_morph_set_time (VisMorph *morph, VisTime *time);
@@ -278,7 +278,7 @@ int visual_morph_set_time (VisMorph *morph, VisTime *time);
  * 	  contains the amount that is currently being morphed and needs to be
  * 	  manually adjust. The morph system doesn't increase the rate itself.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
  */
 int visual_morph_set_rate (VisMorph *morph, float rate);
 
@@ -288,7 +288,7 @@ int visual_morph_set_rate (VisMorph *morph, float rate);
  * @param morph Pointer to a VisMorph to which the number of morph steps is set.
  * @param steps The number of steps that a morph should take.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
  */
 int visual_morph_set_steps (VisMorph *morph, int steps);
 
@@ -298,7 +298,7 @@ int visual_morph_set_steps (VisMorph *morph, int steps);
  * @param morph Pointer to a VisMorph to which the method of morphing is set.
  * @param mode Method of morphing that is of type VisMorphMode.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
  */
 int visual_morph_set_mode (VisMorph *morph, VisMorphMode mode);
 
@@ -343,7 +343,7 @@ int visual_morph_requests_audio (VisMorph *morph);
  * @param src1 Pointer to a VisVideo that acts as the first source for the morph.
  * @param src2 Pointer to a VisVideo that acts as the second source for the morph.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_AUDIO_NULL,
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_AUDIO_NULL,
  * 	-VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);

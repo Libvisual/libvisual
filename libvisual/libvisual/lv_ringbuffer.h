@@ -106,7 +106,7 @@ int visual_ringbuffer_init (VisRingBuffer *ringbuffer);
  * @param ringbuffer The VisRingBuffer to which the VisRingBufferEntry is added.
  * @param entry The VisRingBufferEntry that is added to the end of the ringbuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RINGBUFFER_NULL or -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RINGBUFFER_NULL or -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL
  *	on failure.
  */
 int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);

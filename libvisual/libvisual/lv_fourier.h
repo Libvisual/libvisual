@@ -81,7 +81,7 @@ int visual_dft_init (VisDFT *fourier, unsigned int samples_out, unsigned int sam
  * @param output Array of output samples
  * @param input Array of input samples with values in [-1.0, 1.0]
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_FOURIER_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_FOURIER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_dft_perform (VisDFT *fourier, float *output, float *input);
 

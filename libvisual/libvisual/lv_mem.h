@@ -130,7 +130,7 @@ void *visual_mem_realloc (void *ptr, visual_size_t nbytes) __malloc;
  *
  * @param ptr Frees memory to which ptr points to.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MEM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MEM_NULL on failure.
  */
 int visual_mem_free (void *ptr);
 

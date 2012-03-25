@@ -49,7 +49,7 @@ typedef struct _VisObject VisObject;
  *
  * @arg object The VisObject that is passed to the destructor.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_DTOR_FAILED on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_DTOR_FAILED on failure.
  */
 typedef int (*VisObjectDtorFunc)(VisObject *object);
 
@@ -75,7 +75,7 @@ struct _VisObject {
  *
  * @param data Pointer to the VisObject that needs to be unrefed
  *
- * @return VISUAL_OK on succes, or error failures by visual_object_unref() on failure.
+ * @return VISUAL_OK on success, or error failures by visual_object_unref() on failure.
  */
 int visual_object_collection_destroyer (void *data);
 
@@ -92,7 +92,7 @@ VisObject *visual_object_new (void);
  *
  * @param object Pointer to a VisObject that needs to be freed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED or error values
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED or error values
  *	returned by visual_mem_free on failure.
  */
 int visual_object_free (VisObject *object);
@@ -105,7 +105,7 @@ int visual_object_free (VisObject *object);
  *
  * @param object Pointer to a VisObject that needs to be destroyed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL or error values returned byvisual_object_free on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL or error values returned byvisual_object_free on failure.
  */
 int visual_object_destroy (VisObject *object);
 
@@ -118,7 +118,7 @@ int visual_object_destroy (VisObject *object);
  * @param dtor The destructor function, that is used to destroy the VisObject when it loses all references or when it's
  *	being destroyed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
 int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFunc dtor);
 
@@ -129,7 +129,7 @@ int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFun
  *
  * @param object Pointer to a VisObject that is to be cleared.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
 int visual_object_clear (VisObject *object);
 
@@ -140,7 +140,7 @@ int visual_object_clear (VisObject *object);
  * @param dtor The Destructor function, that is used to destroy the VisObject when it loses all references or when it's
  *	being destroyed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
 int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor);
 
@@ -152,7 +152,7 @@ int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor);
  * @param object pointer to a VisObject to which the destructor function is set.
  * @param allocated Boolean whether a VisObject is allocated or not.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
 int visual_object_set_allocated (VisObject *object, int allocated);
 
@@ -162,7 +162,7 @@ int visual_object_set_allocated (VisObject *object, int allocated);
  * @param object Pointer to a VisObject to which the refcount is set.
  * @param refcount The value for the VisObject it's refcount.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
 int visual_object_set_refcount (VisObject *object, int refcount);
 
@@ -171,7 +171,7 @@ int visual_object_set_refcount (VisObject *object, int refcount);
  *
  * @param object Pointer to a VisObject in which the reference count is increased.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
 int visual_object_ref (VisObject *object);
 
@@ -183,7 +183,7 @@ int visual_object_ref (VisObject *object);
  *
  * @param object Pointer to a VisObject in which the reference count is decreased.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL or error values returned by
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL or error values returned by
  *	visual_object_destroy on failure.
  */
 int visual_object_unref (VisObject *object);
@@ -194,7 +194,7 @@ int visual_object_unref (VisObject *object);
  * @param object Pointer to a VisObject to which the private data is set.
  * @param priv Pointer to the private data that is set to the VisObject.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_OBJECT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
 int visual_object_set_private (VisObject *object, void *priv);
 

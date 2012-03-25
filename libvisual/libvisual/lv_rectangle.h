@@ -70,7 +70,7 @@ VisRectangle *visual_rectangle_new (int x, int y, int width, int height);
  * @param width The width of the rectangle.
  * @param height The height of the rectangle.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_set (VisRectangle *rect, int x, int y, int width, int height);
 
@@ -112,7 +112,7 @@ int visual_rectangle_within (VisRectangle *dest, VisRectangle *src);
  * @param dest Pointer to the destination VisRectangle.
  * @param src Pointer to the source VisRectangle in which dest is copied.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src);
 
@@ -127,7 +127,7 @@ int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src);
  * @param within Pointer to the boundary VisRectangle.
  * @param src Pointer to the source VisRectangle which is boundary adopted to the within parameter.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL or -VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL or -VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS
  *	on failure.
  */
 int visual_rectangle_clip (VisRectangle *dest, VisRectangle *within, VisRectangle *src);
@@ -138,7 +138,7 @@ int visual_rectangle_clip (VisRectangle *dest, VisRectangle *within, VisRectangl
  *
  * @param rect Pointer to the VisRectangle that is to be normalized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_normalise (VisRectangle *rect);
 
@@ -151,7 +151,7 @@ int visual_rectangle_normalise (VisRectangle *rect);
  * @param dest Pointer to the VisRectangle that is to be normalized.
  * @param src Pointer to the VisRectangle that is used as the source for normalization.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_normalise_to (VisRectangle *dest, VisRectangle *src);
 
@@ -161,7 +161,7 @@ int visual_rectangle_normalise_to (VisRectangle *dest, VisRectangle *src);
  *
  * @param rect Pointer to the VisRectangle that is checked for emptyness.
  *
- * @return VISUAL_OK on succes, TRUE if it's empty, FALSE if not or
+ * @return VISUAL_OK on success, TRUE if it's empty, FALSE if not or
  *	-VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_is_empty (VisRectangle *rect);
@@ -181,7 +181,7 @@ int visual_rectangle_is_empty (VisRectangle *rect);
  * @param x Pointer to an integer in which the absolute X location is stored.
  * @param y Pointer to an integer in which the absolute Y location is stored.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
 
@@ -199,7 +199,7 @@ int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy,
  * @param ylist  Pointer to an array of integers in which the absolute Y location are stored.
  * @param size The size of the arrays for all X Y locations.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size);
 
@@ -219,7 +219,7 @@ int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist,
  * @param x Pointer to an integer in which the absolute X location is stored.
  * @param y Pointer to an integer in which the absolute Y location is stored.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
 
@@ -239,7 +239,7 @@ int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float
  * @param ylist Pointer to an array of integers in which the absolute Y location are stored.
  * @param size The size of the arrays for all X Y locations.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
  */
 int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size);
 

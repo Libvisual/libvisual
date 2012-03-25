@@ -279,7 +279,7 @@ int visual_event_queue_poll_by_reference (VisEventQueue *eventqueue, VisEvent **
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param event Pointer to a VisEvent that needs to be added to the queue.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL or -VISUAL_ERROR_EVENT_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL or -VISUAL_ERROR_EVENT_NULL
  *	on failure.
  */
 int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event);
@@ -306,7 +306,7 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
  * @param x Absolute X value for the mouse location.
  * @param y Absolute Y value for the mouse location.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL or error values returned by
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL or error values returned by
  *	visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y);
@@ -321,7 +321,7 @@ int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y)
  * @param x Absolute X value for the mouse location.
  * @param y Absolute Y value for the mouse location.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL or error values returned by
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL or error values returned by
  *	visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state, int x, int y);
@@ -338,7 +338,7 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
  * @param width The width for the new surface.
  * @param height The height for the new surface.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL on failure.
  */
 int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, int width, int height);
 
@@ -349,7 +349,7 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param songinfo Pointer to the VisSongInfo containing all the new song information.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_SONGINFO_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_SONGINFO_NULL
  * 	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *songinfo);
@@ -361,7 +361,7 @@ int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *song
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param param Pointer to the VisParamEntry containing the parameter that has been changed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_PARAM_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_PARAM_NULL
  * 	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param);
@@ -372,7 +372,7 @@ int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param);
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param pass_zero_please Might be used in the future, but for now just pass.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL
  * 	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please);
@@ -383,7 +383,7 @@ int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param is_visible TRUE when visible, FALSE when not visible.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL
  * 	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible);
@@ -396,7 +396,7 @@ int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible
  * @param param_int Integer value for the custom event.
  * @param param_ptr Pointer to data for the custom event..
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_EVENT_QUEUE_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL
  * 	or error values returned by visual_event_queue_add () on failure.
  */
 int visual_event_queue_add_generic (VisEventQueue *eventqueue, int eid, int param_int, void *param_ptr);

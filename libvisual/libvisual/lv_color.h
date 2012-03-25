@@ -64,7 +64,7 @@ VisColor *visual_color_new (void);
  * @param g The green value.
  * @param b The blue value.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
 
@@ -77,7 +77,7 @@ int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
  * @param b The blue value.
  * @param a The alpha value.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_set_with_alpha(VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
@@ -99,7 +99,7 @@ int visual_color_compare (VisColor *src1, VisColor *src2);
  * @param s Saturation value for the hsv colorspace, ranging from 0 to 1.
  * @param v Value value for the hsv colorspace, ranging from 0 to 1.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_from_hsv (VisColor *color, float h, float s, float v);
 
@@ -111,7 +111,7 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v);
  * @param s Float pointer to a saturation value for the hsv colorspace, ranging from 0 to 1.
  * @param v Float pointer to a value value for the hsv colorspace, ranging from 0 to 1.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
 
@@ -121,7 +121,7 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
  * @param dest Pointer to the destination VisColor in which the RGB data is copied.
  * @param src Pointer to the source VisColor from which the RGB data is copied.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_COLOR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
  */
 int visual_color_copy (VisColor *dest, VisColor *src);
 

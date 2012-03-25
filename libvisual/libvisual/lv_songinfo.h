@@ -228,7 +228,7 @@ long visual_songinfo_age (VisSongInfo *songinfo);
  * @param dest Pointer to the destination VisSongInfo.
  * @param src Pointer to the source VisSongInfo.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_SONGINFO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_SONGINFO_NULL on failure.
  */
 int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src);
 

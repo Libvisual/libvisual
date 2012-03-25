@@ -81,7 +81,7 @@ int visual_random_context_init (VisRandomContext *rcontext, uint32_t seed);
  * @param rcontext Pointer to the VisRandomContext for which the seed it set.
  * @param seed The seed which is set in the VisRandomContext.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
  */
 int visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed);
 

@@ -154,7 +154,7 @@ int visual_list_add_at_begin (VisList *list, void *data);
  * 	at it's tail.
  * @param data A pointer to the data that needs to be added to the list.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL on failure.
  */
 int visual_list_add (VisList *list, void *data);
 
@@ -165,7 +165,7 @@ int visual_list_add (VisList *list, void *data);
  * 	at it's tail.
  * @param le A pointer to the VisListEntry that needs to be chained to the list.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
 int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
 
@@ -176,7 +176,7 @@ int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
  * 	at it's tail.
  * @param le A pointer to the VisListEntry that needs to be chained to the list.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
 int visual_list_chain (VisList *list, VisListEntry *le);
 
@@ -187,7 +187,7 @@ int visual_list_chain (VisList *list, VisListEntry *le);
  * @param list Pointer to the VisList from which an entry is unchained.
  * @param le Pointer to a VisListEntry that is being unchained.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL
  * 	on failure.
  */
 int visual_list_unchain (VisList *list, VisListEntry *le);
@@ -200,7 +200,7 @@ int visual_list_unchain (VisList *list, VisListEntry *le);
  * @param le Pointer to a VisListEntry after which the entry needs to be inserted.
  * @param data Pointer to the data the new entry represents.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL, -VISUAL_ERROR_LIST_ENTRY_NULL or
+ * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL, -VISUAL_ERROR_LIST_ENTRY_NULL or
  * 	-VISUAL_ERROR_NULL on failure.
  */
 int visual_list_insert (VisList *list, VisListEntry **le, void *data);
@@ -211,7 +211,7 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data);
  * @param list A pointer to the VisList in which an entry needs to be deleted.
  * @param le A pointer to the entry that needs to be deleted.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
 int visual_list_delete (VisList *list, VisListEntry **le);
 
@@ -221,7 +221,7 @@ int visual_list_delete (VisList *list, VisListEntry **le);
  * @param list A pointer to the VisList in which an entry needs to be destroyed.
  * @param le A pointer to the entry that needs to be destroyed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
 int visual_list_destroy (VisList *list, VisListEntry **le);
 

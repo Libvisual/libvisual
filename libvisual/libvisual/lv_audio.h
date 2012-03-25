@@ -157,7 +157,7 @@ VisAudio *visual_audio_new (void);
  *
  * @param audio Pointer to the VisAudio which needs to be initialized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_AUDIO_NULL on failure.
  */
 int visual_audio_init (VisAudio *audio);
 
@@ -171,7 +171,7 @@ int visual_audio_init (VisAudio *audio);
  *
  * @param audio Pointer to a VisAudio that needs to be analyzed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_AUDIO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_AUDIO_NULL on failure.
  */
 int visual_audio_analyze (VisAudio *audio);
 

@@ -42,7 +42,7 @@ VISUAL_BEGIN_DECLS
  * @param video Destination video where the bitmap should be loaded in.
  * @param filename The filename of the bitmap to be loaded.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_BMP_NOT_FOUND,
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_BMP_NOT_FOUND,
  * 	-VISUAL_ERROR_BMP_NO_BMP, -VISUAL_ERROR_BMP_NOT_SUPPORTED or -VISUAL_ERROR_BMP_CORRUPTED
  * 	on failure.
  */

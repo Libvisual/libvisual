@@ -140,7 +140,7 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable);
  *
  * @param thread The VisThread that needs to be freed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_THREAD_NULL or
+ * @return VISUAL_OK on success, -VISUAL_ERROR_THREAD_NULL or
  *	error values returned by visual_mem_free on failure.
  */
 int visual_thread_free (VisThread *thread);
@@ -182,7 +182,7 @@ VisMutex *visual_mutex_new (void);
  *
  * @param mutex Pointer to the VisMutex that needs to be freed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MUTEX_NULL on failure.
  */
 int visual_mutex_free (VisMutex *mutex);
 
@@ -193,7 +193,7 @@ int visual_mutex_free (VisMutex *mutex);
  *
  * @param mutex Pointer to the VisMutex which needs to be initialized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL,  -VISUAL_ERROR_THREAD_NOT_INTIALIZED,
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MUTEX_NULL,  -VISUAL_ERROR_THREAD_NOT_INTIALIZED,
  * 	-VISUAL_ERROR_THREAD_NOT_SUPPORTED or -VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
 int visual_mutex_init (VisMutex *mutex);
@@ -206,7 +206,7 @@ int visual_mutex_init (VisMutex *mutex);
  *
  * @param mutex Pointer to the VisMutex to register the lock.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_LOCK_FAILURE,
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_LOCK_FAILURE,
  *	-VISUAL_ERROR_THREAD_NOT_INITIALIZED, -VISUAL_ERROR_THREAD_NOT_SUPPORTED,
  *	-VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
@@ -219,7 +219,7 @@ int visual_mutex_lock (VisMutex *mutex);
  *
  * @param mutex Pointer to the VisMutex that needs to be locked.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE,
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE,
  *	-VISUAL_ERROR_THREAD_NOT_INITIALIZED, -VISUAL_ERROR_THREAD_NOT_SUPPORTED or
  *	-VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
@@ -231,7 +231,7 @@ int visual_mutex_trylock (VisMutex *mutex);
  *
  * @param mutex Pointer to the VisMutex that is unlocked.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_UNLOCK_FAILURE.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_MUTEX_NULL, -VISUAL_ERROR_MUTEX_UNLOCK_FAILURE.
  *	-VISUAL_ERROR_THREAD_NOT_INITIALIZED, -VISUAL_ERROR_THREAD_NOT_SUPPORTED or
  *	-VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */

@@ -182,7 +182,7 @@ VisTransform *visual_transform_new (const char *transformname);
  * @param transformname
  *	The name of the plugin to load, or NULL to simply initialize a new transform.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
 int visual_transform_init (VisTransform *transform, const char *transformname);
 
@@ -191,7 +191,7 @@ int visual_transform_init (VisTransform *transform, const char *transformname);
  *
  * @param transform Pointer to a VisTransform that needs to be realized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL or
+ * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL or
  *	error values returned by visual_plugin_realize () on failure.
  *
  */
@@ -205,7 +205,7 @@ int visual_transform_realize (VisTransform *transform);
  *
  * @param transform Pointer to a VisTransform that needs negotiation.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL
  * 	or -VISUAL_ERROR_TRANSFORM_NEGOTIATE on failure.
  */
 int visual_transform_video_negotiate (VisTransform *transform);
@@ -216,7 +216,7 @@ int visual_transform_video_negotiate (VisTransform *transform);
  * @param transform Pointer to a VisTransform of which the supported depth of it's
  * 	  encapsulated plugin is requested.
  *
- * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on succes,
+ * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
  * 	-VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
  */
 int visual_transform_get_supported_depth (VisTransform *transform);
@@ -242,7 +242,7 @@ VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTrans
  * @param video Pointer to a VisVideo which contains information about the target display and the pointer
  * 	  to it's screenbuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL on failure.
  */
 int visual_transform_set_video (VisTransform *transform, VisVideo *video);
 
@@ -256,7 +256,7 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video);
  * @param transform Pointer to a VisTransform to which the VisVideo needs to be set.
  * @param palette Pointer to the VisPalette which is used to override the palette in the VisTransform.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL on failure.
  */
 int visual_transform_set_palette (VisTransform *transform, VisPalette *palette);
 
@@ -269,7 +269,7 @@ int visual_transform_set_palette (VisTransform *transform, VisPalette *palette);
  * @param transform Pointer to a VisTransform that needs to be runned.
  * @param audio Pointer to a VisAudio that contains all the audio data.
  *
- * return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL or error values returned by
+ * return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL or error values returned by
  *	either visual_transform_run_video or visual_transform_run_palette on failure.
  */
 int visual_transform_run (VisTransform *transform, VisAudio *audio);
@@ -283,7 +283,7 @@ int visual_transform_run (VisTransform *transform, VisAudio *audio);
  * @param transform Pointer to a VisTransform that needs to be runned.
  * @param audio Pointer to a VisAudio that contains all the audio data.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_TRANSFORM_VIDEO_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_TRANSFORM_VIDEO_NULL
  *	or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
  */
 int visual_transform_run_video (VisTransform *transform, VisAudio *audio);
@@ -296,7 +296,7 @@ int visual_transform_run_video (VisTransform *transform, VisAudio *audio);
  * @param transform Pointer to a VisTransform that needs to be runned.
  * @param audio Pointer to a VisAudio that contains all the audio data.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_TRANSFORM_PALETTE_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_TRANSFORM_PALETTE_NULL
  *	or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
  */
 int visual_transform_run_palette (VisTransform *transform, VisAudio *audio);

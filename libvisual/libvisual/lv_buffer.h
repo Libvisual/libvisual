@@ -81,7 +81,7 @@ VisBuffer *visual_buffer_new (void);
  * @param destroyer The destroyer that is to be used on the data when the buffer is destroyed or the refcount
  *	reaches 0.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_init (VisBuffer *buffer, void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
 
@@ -121,7 +121,7 @@ VisBuffer *visual_buffer_new_allocate (visual_size_t datasize, VisBufferDestroye
  * @param destroyer The destroyer that is to be used on the data when the buffer is destroyed or the refcount
  *	reaches 0.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_init_allocate (VisBuffer *buffer, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
 
@@ -130,7 +130,7 @@ int visual_buffer_init_allocate (VisBuffer *buffer, visual_size_t datasize, VisB
  *
  * @param buffer Pointer to the VisBuffer of which the content is destroyed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_destroy_content (VisBuffer *buffer);
 
@@ -140,7 +140,7 @@ int visual_buffer_destroy_content (VisBuffer *buffer);
  * @param buffer Pointer to the VisBuffer to which the destroyer function is set.
  * @param destroyer The destroyer function.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_set_destroyer (VisBuffer *buffer, VisBufferDestroyerFunc destroyer);
 
@@ -160,7 +160,7 @@ VisBufferDestroyerFunc visual_buffer_get_destroyer (VisBuffer *buffer);
  * @param data Pointer to the data.
  * @param datasize Size in bytes of the data.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t datasize);
 
@@ -170,7 +170,7 @@ int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t da
  * @param buffer Pointer to the VisBuffer to which the data size is set.
  * @param datasize Size in bytes of the data.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_set_size (VisBuffer *buffer, visual_size_t datasize);
 
@@ -180,7 +180,7 @@ int visual_buffer_set_size (VisBuffer *buffer, visual_size_t datasize);
  * @param buffer Pointer to the VisBuffer to which the data is set.
  * @param data Pointer to the data.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_set_data (VisBuffer *buffer, void *data);
 
@@ -190,7 +190,7 @@ int visual_buffer_set_data (VisBuffer *buffer, void *data);
  *
  * @param buffer Pointer to the VisBuffer for which the data is allocated.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_allocate_data (VisBuffer *buffer);
 
@@ -199,7 +199,7 @@ int visual_buffer_allocate_data (VisBuffer *buffer);
  *
  * @param buffer Pointer to the VisBuffer of which the data is requested.
  *
- * @return Pointer to the data on succes, NULL on failure.
+ * @return Pointer to the data on success, NULL on failure.
  */
 void *visual_buffer_get_data (VisBuffer *buffer);
 
@@ -210,7 +210,7 @@ void *visual_buffer_get_data (VisBuffer *buffer);
  * @param buffer Pointer to the VisBuffer of which the data is requested.
  * @param byteoffset The offset in N bytes.
  *
- * @return Pointer to the data on succes, NULL on failure.
+ * @return Pointer to the data on success, NULL on failure.
  */
 void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset);
 
@@ -219,7 +219,7 @@ void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset);
  *
  * @param buffer Pointer to the VisBuffer of which the size is requested.
  *
- * @return Size in bytes on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return Size in bytes on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 visual_size_t visual_buffer_get_size (VisBuffer *buffer);
 
@@ -228,7 +228,7 @@ visual_size_t visual_buffer_get_size (VisBuffer *buffer);
  *
  * @param buffer Pointer to the VisBuffer of which the allocated flag is requested.
  *
- * @return TRUE or FALSE depending on the allocated flag on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return TRUE or FALSE depending on the allocated flag on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_get_allocated (VisBuffer *buffer);
 
@@ -238,7 +238,7 @@ int visual_buffer_get_allocated (VisBuffer *buffer);
  * @param dest Pointer to the destination VisBuffer.
  * @param src Pointer to the source VisBuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_clone (VisBuffer *dest, VisBuffer *src);
 
@@ -247,7 +247,7 @@ int visual_buffer_clone (VisBuffer *dest, VisBuffer *src);
  *
  * @param src Pointer to the source VisBuffer.
  *
- * @return Newly allocated cloned VisBuffer on succes, NULL on failure.
+ * @return Newly allocated cloned VisBuffer on success, NULL on failure.
  */
 VisBuffer *visual_buffer_clone_new (VisBuffer *src);
 
@@ -257,7 +257,7 @@ VisBuffer *visual_buffer_clone_new (VisBuffer *src);
  * @param src Pointer to the VisBuffer which contains the source data.
  * @param dest Pointer to the buffer in which all the data is copied.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
 
@@ -269,7 +269,7 @@ int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
  * @param src Pointer to the source VisBuffer.
  * @param byteoffset The offset in the destination VisBuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
 
@@ -283,7 +283,7 @@ int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
  * @param size The size of the data.
  * @param byteoffset The offset in the destination VisBuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
 
@@ -295,7 +295,7 @@ int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int
  * @param src Pointer to the source VisBuffer.
  * @param byteoffset The offset in the destination VisBuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
 
@@ -310,7 +310,7 @@ int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
  * @param size The size of the data.
  * @param byteoffset The offset in the destination VisBuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
 
@@ -320,7 +320,7 @@ int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t si
  * @param dest Pointer to the VisBuffer to which the other VisBuffer is appended.
  * @param src Pointer to the VisBuffer that is appended.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
 
@@ -331,7 +331,7 @@ int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
  * @param data Pointer to the data that is appended.
  * @param size The size in bytes of the data that is appended to the VisBuffer
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_buffer_append_data (VisBuffer *dest, void *data, visual_size_t size);
 
@@ -341,7 +341,7 @@ int visual_buffer_append_data (VisBuffer *dest, void *data, visual_size_t size);
  * @param buffer Pointer to the VisBuffer which is to be filled with one byte value.
  * @param value The value that is used to fill the buffer with.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_BUFFER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
 int visual_buffer_fill (VisBuffer *buffer, char value);
 

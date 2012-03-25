@@ -276,7 +276,7 @@ VisActor *visual_actor_new (const char *actorname);
  * @param actor Pointer to the VisActor that is initialized.
  * @param actorname The name of the plugin to load, or NULL to simply initialize a new actor.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
 int visual_actor_init (VisActor *actor, const char *actorname);
 
@@ -285,7 +285,7 @@ int visual_actor_init (VisActor *actor, const char *actorname);
  *
  * @param actor Pointer to a VisActor that needs to be realized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or
+ * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or
  *	error values returned by visual_plugin_realize () on failure.
  *
  */
@@ -341,7 +341,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor);
  * @param forced This should be set if the rundepth argument is set, so it forces the plugin in a certain
  * 	  depth.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL,
+ * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL,
  * 	-VISUAL_ERROR_ACTOR_VIDEO_NULL or -VISUAL_ERROR_ACTOR_GL_NEGOTIATE on failure.
  */
 int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced);
@@ -364,7 +364,7 @@ VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *ac
  * @param video Pointer to a VisVideo which contains information about the target display and the pointer
  * 	  to it's screenbuffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL on failure.
  */
 int visual_actor_set_video (VisActor *actor, VisVideo *video);
 
@@ -377,7 +377,7 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video);
  * @param actor Pointer to a VisActor that needs to be runned.
  * @param audio Pointer to a VisAudio that contains all the audio data.
  *
- * return VISUAL_OK on succes, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL, -VISUAL_ERROR_NULL or
+ * return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL, -VISUAL_ERROR_NULL or
  * 	-VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
 int visual_actor_run (VisActor *actor, VisAudio *audio);

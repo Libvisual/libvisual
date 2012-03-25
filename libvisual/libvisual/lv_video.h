@@ -215,7 +215,7 @@ VisVideo *visual_video_new (void);
  *
  * @param video Pointer to the VisVideo that is to be initialized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_init (VisVideo *video);
 
@@ -235,7 +235,7 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
  *
  * @param video Pointer to a VisVideo of which the buffer needs to be freed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or -VISUAL_ERROR_VIDEO_NO_ALLOCATED
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or -VISUAL_ERROR_VIDEO_NO_ALLOCATED
  *	on failure.
  */
 int visual_video_free_buffer (VisVideo *video);
@@ -246,7 +246,7 @@ int visual_video_free_buffer (VisVideo *video);
  *
  * @param video Pointer to a VisVideo that needs an allocated buffer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_PIXELS  on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_PIXELS  on failure.
  */
 int visual_video_allocate_buffer (VisVideo *video);
 
@@ -269,7 +269,7 @@ int visual_video_have_allocated_buffer (VisVideo *video);
  * @param src Pointer to a source VisVideo from which the information needs to
  *	be obtained.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_clone (VisVideo *dest, VisVideo *src);
 
@@ -300,7 +300,7 @@ int visual_video_compare_ignore_pitch (VisVideo *src1, VisVideo *src2);
  * @param video Pointer to a VisVideo to which a VisPalette needs to be linked.
  * @param pal Pointer to a Vispalette that needs to be linked with the VisVideo.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_set_palette (VisVideo *video, VisPalette *pal);
 
@@ -314,7 +314,7 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal);
  * @param video Pointer to a VisVideo to which a buffer needs to be linked.
  * @param buffer Pointer to a buffer that needs to be linked with the VisVideo.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_ALLOCATED on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_ALLOCATED on failure.
  */
 int visual_video_set_buffer (VisVideo *video, void *buffer);
 
@@ -326,7 +326,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer);
  * @param width The width of the surface.
  * @param height The height of the surface.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_set_dimension (VisVideo *video, int width, int height);
 
@@ -339,7 +339,7 @@ int visual_video_set_dimension (VisVideo *video, int width, int height);
  * @param video Pointer to a VisVideo to which the pitch is set.
  * @param pitch The screen pitch in bytes per line.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_BPP on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_BPP on failure.
  */
 int visual_video_set_pitch (VisVideo *video, int pitch);
 
@@ -350,7 +350,7 @@ int visual_video_set_pitch (VisVideo *video, int pitch);
  * @param video Pointer to a VisVideo to which the depth is set.
  * @param depth The depth choosen from the VisVideoDepth enumerate.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
 
@@ -363,7 +363,7 @@ int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
  * @param pitch The pitch or rowstride of the surface.
  * @param depth The depth coohsen from the VisVideoDepth enumerate.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
 
@@ -496,7 +496,7 @@ int visual_video_get_boundary (VisVideo *video, VisRectangle *rect);
  * @param src Pointer to the source VisVideo from which a subregion is created.
  * @param rect Pointer to the rectangle containing the position and dimension information.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_RECTANGLE_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_RECTANGLE_NULL
  *	or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
  */
 int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect);
@@ -514,7 +514,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect);
  * @param width Width of the sub region.
  * @param height Height Height of the sub region.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
  */
 int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
 
@@ -546,7 +546,7 @@ int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectang
  * @param y Vertical placement offset.
  * @param alpha Sets if we want to check the alpha channel. Use FALSE or TRUE here.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_INVALID_DEPTH or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_INVALID_DEPTH or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
  */
 int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
 
@@ -560,7 +560,7 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
  * @param color Pointer to the VisColor containing the color value for the alpha channel.
  * @param density The alpha density for the other colors.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t density);
 
@@ -571,7 +571,7 @@ int visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t den
  * @param video Pointer to the VisVideo in which the alpha channel density is set.
  * @param density The alpha density that is to be set.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_fill_alpha (VisVideo *video, uint8_t density);
 
@@ -586,7 +586,7 @@ int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t density, VisRect
  * @param rcolor Pointer to the VisColor that is used as color. NULL is a valid color and will be interperted
  * 	as black.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_fill_color (VisVideo *video, VisColor *color);
 
@@ -599,7 +599,7 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
  *	depth, pitch, dimension wise.
  * @param src Pointer to the source VisVideo from which the bgr data is read.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
  *	-VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
 int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src);
@@ -619,7 +619,7 @@ VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient);
  * @param dest Pointer to the destination VisVideo to which the source VisVideo is transformed.
  * @param src Pointer to the source VisVideo.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_PALETTE_NULL, -VISUAL_ERROR_PALETTE_SIZE,
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_PALETTE_NULL, -VISUAL_ERROR_PALETTE_SIZE,
  * 	-VISUAL_ERROR_VIDEO_NOT_TRANSFORMED or error values returned by visual_video_blit_overlay on failure.
  */
 int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
@@ -632,7 +632,7 @@ VisVideo *visual_video_zoom_new (VisVideo *src, VisVideoScaleMethod scale_method
  * @param dest Pointer to destination VisVideo in which the pixel doubled VisVideo is stored.
  * @param src Pointer to source VisVideo that is pixel doubled.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 int visual_video_zoom_double (VisVideo *dest, VisVideo *src);
 
@@ -669,7 +669,7 @@ VisVideo *visual_video_scale_new (VisVideo *src, int width, int height, VisVideo
  * @param src Pointer to the source VisVideo whose image is to be scaled.
  * @param scale_method Scaling method to use.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_IMPOSSIBLE, -VISUAL_ERROR_VIDEO_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_IMPOSSIBLE, -VISUAL_ERROR_VIDEO_NULL
  *	or error values returned by visual_video_scale() on failure.
  */
 int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);

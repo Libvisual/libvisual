@@ -251,7 +251,7 @@ VisPluginInfo *visual_plugin_info_new (void);
  * @param dest Pointer to the destination VisPluginInfo in which some data is copied.
  * @param src Pointer to the source VisPluginInfo from which some data is copied.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
  */
 int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src);
 
@@ -261,7 +261,7 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src);
  * @param plugin Pointer to a VisPluginData of which the events need to be pumped into
  *	the handler.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER on failure.
  */
 int visual_plugin_events_pump (VisPluginData *plugin);
 
@@ -285,7 +285,7 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
  * @param plugin Pointer to the VisPluginData to which we set the VisUIWidget as top widget.
  * @param widget Pointer to the VisUIWidget that we use as top widget for the user interface.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL on failure.
  */
 int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget);
 
@@ -405,7 +405,7 @@ const char *visual_plugin_get_prev_by_name (VisList *list, const char *name);
  *
  * @param plugin Pointer to the VisPluginData that needs to be unloaded.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_HANDLE_NULL or
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_HANDLE_NULL or
  *	-VISUAL_ERROR_PLUGIN_REF_NULL on failure.
  */
 int visual_plugin_unload (VisPluginData *plugin);
@@ -425,7 +425,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref);
  *
  * @param plugin Pointer to the VisPluginData that needs to be realized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
  */
 int visual_plugin_realize (VisPluginData *plugin);
 
@@ -552,7 +552,7 @@ VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj
  * @param plugin Pointer to the VisPluginData to which the VisPluginEnviron is added.
  * @param enve Pointer to the VisPluginEnviron that is added to the VisPluginData.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL,
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL,
  *	-VISUAL_ERROR_NULL or error values returned by visual_list_add() on failure.
  */
 int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
@@ -563,7 +563,7 @@ int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
  * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is removed.
  * @param type The Environ type that is removed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_NULL on failure.
  */
 int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
 

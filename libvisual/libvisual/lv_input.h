@@ -181,7 +181,7 @@ VisInput *visual_input_new (const char *inputname);
  * @param inputname
  *	The name of the plugin to load, or NULL to simply initialize a new input.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
 int visual_input_init (VisInput *input, const char *inputname);
 
@@ -190,7 +190,7 @@ int visual_input_init (VisInput *input, const char *inputname);
  *
  * @param input Pointer to a VisInput that needs to be realized.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or error values returned by
+ * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or error values returned by
  *	visual_plugin_realize () on failure.
  */
 int visual_input_realize (VisInput *input);
@@ -205,7 +205,7 @@ int visual_input_realize (VisInput *input);
  * @param callback The in app callback function that should be used instead of a plugin.
  * @param priv A private that can be read within the callback function.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL on failure.
  */
 int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv);
 
@@ -216,7 +216,7 @@ int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callb
  *
  * @param input A pointer to a VisInput that needs to be runned.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_INPUT_PLUGIN_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_INPUT_PLUGIN_NULL on failure.
  */
 int visual_input_run (VisInput *input);
 
