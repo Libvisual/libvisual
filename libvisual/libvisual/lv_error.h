@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -26,12 +26,17 @@
 
 #include <libvisual/lv_defines.h>
 
+/**
+ * @defgroup VisError VisError
+ * @{
+ */
+
 VISUAL_BEGIN_DECLS
 
 /* WARNING when you add an new error to this list, make sure that you update lv_error.c it's
  * human readable string list as well!!! */
 /**
- * Enumerate of all possible numeric error values. 
+ * Enumerate of all possible numeric error values.
  */
 enum {
 	/* Ok! */
@@ -254,11 +259,43 @@ enum {
  */
 typedef int (*VisErrorHandlerFunc) (void *priv);
 
+/**
+ * Raise a libvisual error. With the standard error handler this will
+ * do a raise(SIGTRAP). You can set your own error handler function using the
+ * visual_error_set_handler.
+ *
+ * @see visual_error_set_handler
+ *
+ * @return Returns the return value from the handler that is set.
+ */
 int visual_error_raise (void);
+
+/**
+ * Sets the error handler callback. By using this function you
+ * can override libvisual it's default error handler.
+ *
+ * @param handler The error handler which you want to use
+ *      to handle libvisual errors.
+ * @param priv Optional private data which could be needed in the
+ *      error handler that has been set.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
+ */
 int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
 
+/**
+ * Translates an error into a human readable string, the returned string should not be freed.
+ *
+ * @param err Numeric error value.
+ *
+ * @return Human readable string, or NULL on failure.
+ */
 const char *visual_error_to_string (int err);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_ERROR_H */

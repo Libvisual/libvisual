@@ -199,20 +199,6 @@ static const char *__lv_error_human_readable[] = {
 static VisErrorHandlerFunc error_handler = NULL;
 static void *error_handler_priv = NULL;
 
-/**
- * @defgroup VisError VisError
- * @{
- */
-
-/**
- * Raise a libvisual error. With the standard error handler this will
- * do a raise(SIGTRAP). You can set your own error handler function using the
- * visual_error_set_handler.
- *
- * @see visual_error_set_handler
- *
- * @return Returns the return value from the handler that is set.
- */
 int visual_error_raise (void)
 {
 	if (error_handler == NULL) {
@@ -234,7 +220,7 @@ int visual_error_raise (void)
  * @param priv Optional private data which could be needed in the
  *      error handler that has been set.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
  */
 int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv)
 {
@@ -250,7 +236,7 @@ int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv)
  * Translates an error into a human readable string, the returned string should not be freed.
  *
  * @param err Numeric error value.
- * 
+ *
  * @return Human readable string, or NULL on failure.
  */
 const char *visual_error_to_string (int err)
