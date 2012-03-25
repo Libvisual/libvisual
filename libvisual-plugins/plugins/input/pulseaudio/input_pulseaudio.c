@@ -78,7 +78,7 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
     priv->simple = pa_simple_new(NULL, "lv-pulseaudio", PA_STREAM_RECORD, NULL, "Libvisual pulseaudio plugin", &sample_spec, NULL, NULL, &error);
 
     if( priv->simple == NULL ) {
-        visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
+        visual_log(VISUAL_LOG_ERROR, "pa_simple_new() failed: %s", pa_strerror(error));
         return -VISUAL_ERROR_GENERAL;
     }
 
@@ -115,7 +115,7 @@ static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
     visual_log_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
     if(pa_simple_read(priv->simple, pcm_data, PCM_BUF_SIZE, &error) < 0) {
-        visual_log(VISUAL_LOG_CRITICAL, "pa_simple_read() failed: %s", pa_strerror(error));
+        visual_log(VISUAL_LOG_ERROR, "pa_simple_read() failed: %s", pa_strerror(error));
         return -VISUAL_ERROR_GENERAL;
     }
 

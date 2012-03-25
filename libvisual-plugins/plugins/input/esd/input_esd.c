@@ -143,7 +143,7 @@ static int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 			return -1;
 
 		if (r < 0) {
-			visual_log (VISUAL_LOG_CRITICAL, _("ESD: Select error (%d, %s)"), errno, strerror (errno));
+			visual_log (VISUAL_LOG_ERROR, _("ESD: Select error (%d, %s)"), errno, strerror (errno));
 
 			return -1;
 		}
@@ -160,7 +160,7 @@ static int inp_esd_upload (VisPluginData *plugin, VisAudio *audio)
 		}
 
 		if (r < 0) {
-			visual_log (VISUAL_LOG_CRITICAL, _("ESD: Error while reading data"));
+			visual_log (VISUAL_LOG_ERROR, _("ESD: Error while reading data"));
 
 			return -1;
 		}

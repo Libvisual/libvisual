@@ -102,7 +102,7 @@ static int inp_jack_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	if ((priv->client = jack_client_new (_("Libvisual jackit capture"))) == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("jack server probably not running"));
+		visual_log (VISUAL_LOG_ERROR, _("jack server probably not running"));
 		return -1;
 	}
 
@@ -112,19 +112,19 @@ static int inp_jack_init (VisPluginData *plugin)
 	priv->input_port = jack_port_register (priv->client, "input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
 
 	if (jack_activate (priv->client) == 1) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot activate the jack client"));
+		visual_log (VISUAL_LOG_ERROR, _("Cannot activate the jack client"));
 
 		return -1;
 	}
 
 	if ((ports = jack_get_ports (priv->client, NULL, NULL, JackPortIsPhysical|JackPortIsOutput)) == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot find any physical capture ports"));
+		visual_log (VISUAL_LOG_ERROR, _("Cannot find any physical capture ports"));
 
 		return -1;
 	}
 
 	if (jack_connect (priv->client, ports[0], jack_port_name (priv->input_port))) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot connect input ports"));
+		visual_log (VISUAL_LOG_ERROR, _("Cannot connect input ports"));
 
 		visual_mem_free (ports);
 
@@ -168,7 +168,7 @@ static int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
 	if (priv->shutdown == TRUE) {
-		visual_log (VISUAL_LOG_CRITICAL, _("The jack server seems to have shutdown"));
+		visual_log (VISUAL_LOG_ERROR, _("The jack server seems to have shutdown"));
 
 		return -1;
 	}
