@@ -111,15 +111,16 @@ IF(NOT STDC_HEADERS)
   MESSAGE(FATAL ERROR "Libvisual requires standard C library headers to build")
 ENDIF(NOT STDC_HEADERS)
 
-# TODO: Generate error when required header is missing
+# TODO: Generate error when a required header is missing
 CHECK_INCLUDE_FILE(dirent.h     HAVE_DIRENT_H)
 CHECK_INCLUDE_FILE(fcntl.h      HAVE_FCNTL_H)
 CHECK_INCLUDE_FILE(sched.h      HAVE_SCHED_H)
-CHECK_INCLUDE_FILE(sys/types.h  HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILE(sys/stat.h   HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILE(sys/sched.h  HAVE_SYS_SCHED_H)
 CHECK_INCLUDE_FILE(sys/socket.h HAVE_SYS_SOCKET_H)
 CHECK_INCLUDE_FILE(sys/time.h   HAVE_SYS_TIME_H)
+CHECK_INCLUDE_FILE(stdint.h     _LV_HAVE_STDINT_H)
+CHECK_INCLUDE_FILE(inttypes.h   _LV_HAVE_INTTYPES_H)
 
 # Check for non standard C library functions
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
