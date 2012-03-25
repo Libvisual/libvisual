@@ -41,8 +41,10 @@ typedef struct _StdoutNative StdoutNative;
 /** private descriptor */
 struct _StdoutNative 
 {
-	VisObject object;
-	void *area;
+	VisObject       object;
+    int             width,height;
+    VisVideoDepth   depth;
+	void *          area;
 };
 
 
@@ -58,13 +60,22 @@ static int native_create(SADisplay *display,
 {
 	StdoutNative *native;
 	
-        /** allocate new private descriptor */
+    /* allocate new private descriptor */
 	if(!(native = STDOUT_NATIVE (display->native))) 
-        {
+    {
 		native = visual_mem_new0(StdoutNative, 1);
 		visual_object_initialize(VISUAL_OBJECT (native), TRUE, NULL);
 	}
 
+    /* create buffer */
+    if(native->area != NULL)
+        visual_mem_free(native->area);
+    native->area = visual_mem_malloc0(width * height * (visual_video_depth_value_from_enum(VISUAL_VIDEO_DEPTH_24BIT) / 8));
+        
+    /* save dimensions */
+    native->width = width;
+    native->height = height;
+    native->depth = depth;
         
 	display->native = VISUAL_OBJECT(native);
 
@@ -110,9 +121,8 @@ static int native_getvideo (SADisplay *display, VisVideo *screen)
 	StdoutNative *native = STDOUT_NATIVE (display->native);
 
 	visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
-
-	//visual_video_set_dimension (screen, native->width, native->height);
-	visual_video_set_buffer (screen, native->area);
+	visual_video_set_dimension (screen, native->width, native->height);
+	visual_video_set_buffer(screen, native->area);
 
 	return 0;
 }
@@ -122,15 +132,12 @@ static int native_updaterect(SADisplay *display, VisRectangle *rect)
 {
 	StdoutNative *native = STDOUT_NATIVE(display->native);
 
-	
-
-	//write (fd, native->area, native->width * native->height * (visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8));
-
-	printf ("%d %d\n", 
-                display->screen->width, display->screen->height);
-
-	//close (fd);
-
+    /* write data */
+	write(STDOUT_FILENO, 
+          native->area, 
+          native->width * 
+            native->height * 
+            (visual_video_depth_value_from_enum(VISUAL_VIDEO_DEPTH_24BIT) / 8));
 	return 0;
 }
 
