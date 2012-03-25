@@ -356,7 +356,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
 
 	if (__lv_plugins_actor == NULL && actorname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
+		visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
 
 		return -VISUAL_ERROR_PLUGIN_NO_LIST;
 	}
@@ -453,7 +453,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
 	actplugin = get_actor_plugin (actor);
 
 	if (actplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
+		visual_log (VISUAL_LOG_ERROR,
 			_("The given actor does not reference any actor plugin"));
 		return NULL;
 	}
@@ -724,7 +724,7 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	plugin = visual_actor_get_plugin (actor);
 
 	if (actplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
+		visual_log (VISUAL_LOG_ERROR,
 			_("The given actor does not reference any actor plugin"));
 
 		return -VISUAL_ERROR_ACTOR_PLUGIN_NULL;

@@ -123,7 +123,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	return VISUAL_OK;
 
 err:
-	visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
+	visual_log (VISUAL_LOG_ERROR, _("Bitmap data is not complete"));
 
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
@@ -227,7 +227,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	return VISUAL_OK;
 
 err:
-	visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
+	visual_log (VISUAL_LOG_ERROR, _("Bitmap data is not complete"));
 
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
@@ -350,13 +350,13 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 	/* Check if we can handle it */
 	if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
+		visual_log (VISUAL_LOG_ERROR, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
 		fclose (fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}
 
 	if (bi_compression > 3) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Bitmap uses an invalid or unsupported compression scheme"));
+		visual_log (VISUAL_LOG_ERROR, _("Bitmap uses an invalid or unsupported compression scheme"));
 		fclose (fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}

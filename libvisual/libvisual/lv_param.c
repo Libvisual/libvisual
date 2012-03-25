@@ -604,7 +604,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
             break;
 
         default:
-            visual_log (VISUAL_LOG_CRITICAL, _("param type is not valid"));
+            visual_log (VISUAL_LOG_ERROR, _("param type is not valid"));
 
             return -VISUAL_ERROR_PARAM_INVALID_TYPE;
 
@@ -668,7 +668,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
             break;
         
         default:
-            visual_log (VISUAL_LOG_CRITICAL, _("param type is not valid"));
+            visual_log (VISUAL_LOG_ERROR, _("param type is not valid"));
 
             return -VISUAL_ERROR_PARAM_INVALID_TYPE;
 

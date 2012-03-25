@@ -576,7 +576,7 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 
 	/* Valid list entry ? */
 	if (*le == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "There is no list entry to delete");
+		visual_log (VISUAL_LOG_ERROR, "There is no list entry to delete");
 
 		return -VISUAL_ERROR_LIST_ENTRY_INVALID; /* Nope */
 	}

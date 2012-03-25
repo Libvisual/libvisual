@@ -481,7 +481,7 @@ static VisThread *thread_create_posix (VisThreadFunc func, void *data, int joina
 	pthread_attr_destroy (&attr);
 
 	if (res != 0) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Error while creating thread"));
+		visual_log (VISUAL_LOG_ERROR, _("Error while creating thread"));
 
 		visual_mem_free (thread);
 
@@ -501,7 +501,7 @@ static void *thread_join_posix (VisThread *thread)
 	void *result = NULL;
 
 	if (pthread_join (thread->thread, &result) < 0) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Error while joining thread"));
+		visual_log (VISUAL_LOG_ERROR, _("Error while joining thread"));
 
 		return NULL;
 	}
@@ -583,7 +583,7 @@ static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joina
 	thread->thread = CreateThread (NULL, 0, func, (PVOID) data, 0, &thread->threadId);
 
 	if (thread == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, "Error while creating thread");
+		visual_log (VISUAL_LOG_ERROR, "Error while creating thread");
 
 		visual_mem_free (thread);
 
@@ -613,7 +613,7 @@ static void *thread_join_win32 (VisThread *thread)
 	DWORD thread_result;
 
 	if (WaitForSingleObject(thread->thread, INFINITE) != WAIT_OBJECT_0) {
-		visual_log (VISUAL_LOG_CRITICAL, "Error while joining thread");
+		visual_log (VISUAL_LOG_ERROR, "Error while joining thread");
 
 		return NULL;
 	}
@@ -678,7 +678,7 @@ static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joi
 	thread->thread = g_thread_create (func, data, joinable, NULL);
 
 	if (thread->thread == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Error while creating thread"));
+		visual_log (VISUAL_LOG_ERROR, _("Error while creating thread"));
 
 		visual_mem_free (thread);
 

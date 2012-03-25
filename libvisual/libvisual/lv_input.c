@@ -180,7 +180,7 @@ int visual_input_init (VisInput *input, const char *inputname)
 	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	if (__lv_plugins_input == NULL && inputname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
+		visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
 
 		return -VISUAL_ERROR_PLUGIN_NO_LIST;
 	}
@@ -263,7 +263,7 @@ int visual_input_run (VisInput *input)
 		inplugin = get_input_plugin (input);
 
 		if (inplugin == NULL) {
-			visual_log (VISUAL_LOG_CRITICAL, "The input plugin is not loaded correctly.");
+			visual_log (VISUAL_LOG_ERROR, "The input plugin is not loaded correctly.");
 
 			return -VISUAL_ERROR_INPUT_PLUGIN_NULL;
 		}

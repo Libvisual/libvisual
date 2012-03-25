@@ -77,7 +77,7 @@ static int plugin_ref_dtor (VisObject *object)
 		visual_mem_free (ref->file);
 
 	if (ref->usecount > 0)
-		visual_log (VISUAL_LOG_CRITICAL, _("A plugin reference with %d instances has been destroyed."), ref->usecount);
+		visual_log (VISUAL_LOG_ERROR, _("A plugin reference with %d instances has been destroyed."), ref->usecount);
 
 	if (ref->info != NULL)
 		visual_object_unref (VISUAL_OBJECT (ref->info));
@@ -408,7 +408,7 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 	list = visual_list_new (visual_object_collection_destroyer);
 
 	if (list == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot create a new list"));
+		visual_log (VISUAL_LOG_ERROR, _("Cannot create a new list"));
 
 		return NULL;
 	}
@@ -625,7 +625,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 	if (plugin->handle == NULL) {
 		visual_object_unref (VISUAL_OBJECT (plugin));
 
-		visual_log (VISUAL_LOG_CRITICAL, _("Tried unloading a plugin that never has been loaded."));
+		visual_log (VISUAL_LOG_ERROR, _("Tried unloading a plugin that never has been loaded."));
 
 		return -VISUAL_ERROR_PLUGIN_HANDLE_NULL;
 	}
@@ -685,7 +685,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
 	/* Check if this plugin is reentrant */
 	if (ref->usecount > 0 && (ref->info->flags & VISUAL_PLUGIN_FLAG_NOT_REENTRANT)) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot load plugin %s, the plugin is already loaded and is not reentrant."),
+		visual_log (VISUAL_LOG_ERROR, _("Cannot load plugin %s, the plugin is already loaded and is not reentrant."),
 				ref->info->plugname);
 
 		return NULL;
@@ -699,9 +699,9 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
 	if (handle == NULL) {
 #if defined(VISUAL_OS_WIN32)
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: win32 error code: %d", GetLastError ());
+		visual_log (VISUAL_LOG_ERROR, "Cannot load plugin: win32 error code: %d", GetLastError ());
 #else
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot load plugin: %s"), dlerror ());
+		visual_log (VISUAL_LOG_ERROR, _("Cannot load plugin: %s"), dlerror ());
 #endif
 		return NULL;
 	}
@@ -714,11 +714,11 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
 	if (get_plugin_info == NULL) {
 #if defined(VISUAL_OS_WIN32)
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: win32 error code: %d", GetLastError ());
+		visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %d", GetLastError ());
 
 		FreeLibrary (handle);
 #else
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot initialize plugin: %s"), dlerror ());
+		visual_log (VISUAL_LOG_ERROR, _("Cannot initialize plugin: %s"), dlerror ());
 	
 		dlclose (handle);
 #endif
@@ -729,7 +729,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	pluginfo = VISUAL_PLUGININFO (get_plugin_info (&cnt));
 
 	if (pluginfo == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot get plugin info while loading."));
+		visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info while loading."));
 
 #if defined(VISUAL_OS_WIN32)
 		FreeLibrary (handle);
@@ -814,9 +814,9 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 
 	if (handle == NULL) {
 #if defined(VISUAL_OS_WIN32)
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot load plugin: win32 error code: %d", GetLastError());
+		visual_log (VISUAL_LOG_ERROR, "Cannot load plugin: win32 error code: %d", GetLastError());
 #else
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot load plugin: %s"), dlerror ());
+		visual_log (VISUAL_LOG_ERROR, _("Cannot load plugin: %s"), dlerror ());
 #endif
 
 		return NULL;
@@ -829,7 +829,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 #endif
 
 	if (plugin_version == NULL || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Plugin %s is not compatible with version %s of libvisual"),
+		visual_log (VISUAL_LOG_ERROR, _("Plugin %s is not compatible with version %s of libvisual"),
 				pluginpath, visual_get_version ());
 
 #if defined(VISUAL_OS_WIN32)
@@ -849,11 +849,11 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 
 	if (get_plugin_info == NULL) {
 #if defined(VISUAL_OS_WIN32)
-		visual_log (VISUAL_LOG_CRITICAL, "Cannot initialize plugin: win32 error code: %d", GetLastError ());
+		visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %d", GetLastError ());
 
 		FreeLibrary (handle);
 #else
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot initialize plugin: %s"), dlerror ());
+		visual_log (VISUAL_LOG_ERROR, _("Cannot initialize plugin: %s"), dlerror ());
 
 		dlclose (handle);
 #endif
@@ -864,7 +864,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	plug_info = VISUAL_PLUGININFO (get_plugin_info (&cnt));
 
 	if (plug_info == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Cannot get plugin info"));
+		visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info"));
 
 #if defined(VISUAL_OS_WIN32)
 		FreeLibrary (handle);

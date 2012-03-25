@@ -127,13 +127,13 @@ int main (int argc, char **argv)
 
     if(SDL_Init(SDL_INIT_VIDEO) != 0)
     {
-        visual_log(VISUAL_LOG_CRITICAL, "Unable to init SDL: %s", SDL_GetError());
+        visual_log(VISUAL_LOG_ERROR, "Unable to init SDL: %s", SDL_GetError());
         return 0;
     }
 
     if(!(surface = SDL_SetVideoMode(SCREEN_W, SCREEN_H, 32, SDL_RESIZABLE)))
     {
-        visual_log(VISUAL_LOG_CRITICAL, "Unable to set video: %s", SDL_GetError());
+        visual_log(VISUAL_LOG_ERROR, "Unable to set video: %s", SDL_GetError());
         return 0;
     }
 

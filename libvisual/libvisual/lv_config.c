@@ -170,7 +170,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 	}
 
 broken:
-	visual_log (VISUAL_LOG_CRITICAL, _("Broken config registry, won't load"));
+	visual_log (VISUAL_LOG_ERROR, _("Broken config registry, won't load"));
 
 	/* Unload all sections, some might have been partially parsed, which can be dangerious, we don't
 	 * want that. */

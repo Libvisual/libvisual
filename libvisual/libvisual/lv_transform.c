@@ -180,7 +180,7 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
 	visual_log_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
 
 	if (__lv_plugins_transform == NULL && transformname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
+		visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
 		return -VISUAL_ERROR_PLUGIN_NO_LIST;
 	}
 
@@ -395,7 +395,7 @@ int visual_transform_run_video (VisTransform *transform, VisAudio *audio)
 	plugin = visual_transform_get_plugin (transform);
 
 	if (transplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
+		visual_log (VISUAL_LOG_ERROR,
 			_("The given transform does not reference any transform plugin"));
 
 		return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
@@ -431,7 +431,7 @@ int visual_transform_run_palette (VisTransform *transform, VisAudio *audio)
 	plugin = visual_transform_get_plugin (transform);
 
 	if (transplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
+		visual_log (VISUAL_LOG_ERROR,
 			_("The given transform does not reference any transform plugin"));
 
 		return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;

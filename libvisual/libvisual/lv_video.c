@@ -285,7 +285,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 		if (visual_buffer_get_allocated (video->buffer)) {
 			visual_video_free_buffer (video);
 		} else {
-			visual_log (VISUAL_LOG_CRITICAL, _("Trying to allocate an screen buffer on "
+			visual_log (VISUAL_LOG_ERROR, _("Trying to allocate an screen buffer on "
 					"a VisVideo structure which points to an external screen buffer"));
 
 			return -VISUAL_ERROR_VIDEO_HAS_PIXELS;
@@ -444,7 +444,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	if (visual_buffer_get_allocated (video->buffer)) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Trying to set a screen buffer on "
+		visual_log (VISUAL_LOG_ERROR, _("Trying to set a screen buffer on "
 				"a VisVideo structure which points to an allocated screen buffer"));
 
 		return -VISUAL_ERROR_VIDEO_HAS_ALLOCATED;
@@ -2769,7 +2769,7 @@ int visual_video_zoom_double (VisVideo *dest, VisVideo *src)
 			break;
 
 		default:
-			visual_log (VISUAL_LOG_CRITICAL, _("Invalid depth passed to the scaler"));
+			visual_log (VISUAL_LOG_ERROR, _("Invalid depth passed to the scaler"));
 
 			return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 
@@ -2916,7 +2916,7 @@ int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale
 			break;
 
 		default:
-			visual_log (VISUAL_LOG_CRITICAL, _("Invalid depth passed to the scaler"));
+			visual_log (VISUAL_LOG_ERROR, _("Invalid depth passed to the scaler"));
 
 			return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 

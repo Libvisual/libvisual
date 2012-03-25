@@ -262,7 +262,7 @@ int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, i
 
 	event = visual_event_new ();
 	if (event == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
+		visual_log (VISUAL_LOG_ERROR,
 				_("Cannot create a new VisEvent structure"));
 
 		return -VISUAL_ERROR_EVENT_NULL;

@@ -180,7 +180,7 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
 	visual_log_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
 
 	if (__lv_plugins_morph == NULL && morphname != NULL) {
-		visual_log (VISUAL_LOG_CRITICAL, _("the plugin list is NULL"));
+		visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
 
 		return -VISUAL_ERROR_PLUGIN_NO_LIST;
 	}
@@ -423,7 +423,7 @@ int visual_morph_requests_audio (VisMorph *morph)
 	morphplugin = get_morph_plugin (morph);
 	
 	if (morphplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
+		visual_log (VISUAL_LOG_ERROR,
 			_("The given morph does not reference any plugin"));
 
 		return -VISUAL_ERROR_MORPH_PLUGIN_NULL;
@@ -462,7 +462,7 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 	morphplugin = get_morph_plugin (morph);
 
 	if (morphplugin == NULL) {
-		visual_log (VISUAL_LOG_CRITICAL,
+		visual_log (VISUAL_LOG_ERROR,
 			_("The given morph does not reference any plugin"));
 
 		return -VISUAL_ERROR_MORPH_PLUGIN_NULL;
