@@ -35,6 +35,11 @@
  * Benchmark all the code very well.
  */
 
+int visual_math_is_power_of_2 (int n)
+{
+	return (n > 0) && !(n & (n - 1));
+}
+
 int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *src, visual_size_t n, float multiplier)
 {
 	float *d = dest;

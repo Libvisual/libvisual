@@ -29,7 +29,6 @@
 #include "lv_fourier.h"
 #include "lv_common.h"
 #include "lv_cache.h"
-#include "lv_utils.h"
 #include "lv_math.h"
 #include <stdio.h>
 #include <math.h>
@@ -338,7 +337,7 @@ int visual_dft_init (VisDFT *dft, unsigned int samples_out, unsigned int samples
 	/* Set the VisDFT data */
 	dft->samples_in = samples_in;
 	dft->spectrum_size = samples_out * 2;
-	dft->brute_force = !visual_utils_is_power_of_2 (dft->spectrum_size);
+	dft->brute_force = !visual_math_is_power_of_2 (dft->spectrum_size);
 
 	/* Initialize the VisDFT */
 	dft_cache_get (dft);

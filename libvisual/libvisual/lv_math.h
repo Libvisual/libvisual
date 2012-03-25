@@ -36,6 +36,15 @@
 VISUAL_BEGIN_DECLS
 
 /**
+ * Checks if the given value is a power of 2.
+ *
+ * @param n Value to be checked if it's being a power of 2.
+ *
+ * @return TRUE if power of 2, FALSE if not.
+ */
+int visual_math_is_power_of_2 (int n);
+
+/**
  * Multiplies an array of floats with one constant multiplier. The same destination and source arrays
  * are allowed. With the right cpu features in place this function is very optimized.
  *

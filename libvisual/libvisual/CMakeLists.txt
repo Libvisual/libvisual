@@ -52,7 +52,6 @@ SET(libvisual_HEADERS
   lv_hashlist.h
   lv_cache.h
   lv_collection.h
-  lv_utils.h
   lv_os.h
   lv_math.h
   lv_gl.h
@@ -98,7 +97,6 @@ SET(libvisual_SOURCES
   lv_hashmap.c
   lv_hashlist.c
   lv_collection.c
-  lv_utils.c
   lv_os.c
   lv_math.c
   lv_gl.c
