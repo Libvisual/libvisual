@@ -26,7 +26,7 @@
 #include "lv_common.h"
 
 typedef struct {
-	uint16_t b:5, g:6, r:5, a:6;
+	uint16_t b:5, g:6, r:5;
 } _color16;
 
 VisColor *visual_color_new (void)
@@ -196,10 +196,9 @@ int visual_color_from_uint16 (VisColor *color, uint16_t rgb)
 
 	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
-	color->r = colors->r << 2;
-	color->g = colors->g << 3;
-	color->b = colors->b << 2;
-	color->a = colors->a << 3;
+	color->r = colors->r << 3;
+	color->g = colors->g << 2;
+	color->b = colors->b << 3;
 
 	return VISUAL_OK;
 }
@@ -224,10 +223,9 @@ uint16_t visual_color_to_uint16 (VisColor *color)
 
 	visual_log_return_val_if_fail (color != NULL, 0);
 
-	colors.r = color->r >> 2;
-	colors.g = color->g >> 3;
-	colors.b = color->b >> 2;
-    colors.a = color->a >> 3;
+	colors.r = color->r >> 3;
+	colors.g = color->g >> 2;
+	colors.b = color->b >> 3;
 
 	return *((uint16_t *) &colors);
 }
