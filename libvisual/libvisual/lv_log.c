@@ -33,13 +33,14 @@
 #include "lv_error.h"
 #include "lv_log.h"
 
-
-static VisLogVerboseness verboseness = VISUAL_LOG_VERBOSENESS_MEDIUM;
+#define LV_LOG_MAX_MESSAGE_SIZE 1024
 
 typedef struct {
 	VisLogMessageHandlerFunc  func;
 	void					 *priv;
 } MessageHandler;
+
+static VisLogSeverity verboseness = VISUAL_LOG_WARNING;
 
 static const char *severity_labels[] = {
 	"DEBUG    ",
@@ -51,6 +52,9 @@ static const char *severity_labels[] = {
 
 static MessageHandler message_handlers[VISUAL_TABLESIZE(severity_labels)];
 
+static void default_log_handler (VisLogSeverity severity,
+	VisLogMessageSource const *source, const char *msg);
+
 /**
  * @defgroup VisLog VisLog
  * @{
@@ -61,7 +65,7 @@ static MessageHandler message_handlers[VISUAL_TABLESIZE(severity_labels)];
  *
  * @param v The verbose level as a VisLogVerboseness enumerate value.
  */
-void visual_log_set_verboseness (VisLogVerboseness v)
+void visual_log_set_verboseness (VisLogSeverity v)
 {
 	verboseness = v;
 }
@@ -71,7 +75,7 @@ void visual_log_set_verboseness (VisLogVerboseness v)
  *
  * @return The verboseness level as a VisLogVerboseness enumerate value.
  */
-VisLogVerboseness visual_log_get_verboseness ()
+VisLogSeverity visual_log_get_verboseness ()
 {
 	return verboseness;
 }
@@ -113,30 +117,64 @@ void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandl
 void _lv_log (VisLogSeverity severity, const char *file,
 	int line, const char *funcname, const char *fmt, ...)
 {
+	VisLogMessageSource source;
 	MessageHandler *handler;
-	char str[1024];
+	char str[LV_LOG_MAX_MESSAGE_SIZE];
 	va_list va;
 
 	visual_log_return_if_fail (is_valid_severity (severity));
 	visual_log_return_if_fail (fmt != NULL);
 
+	if (verboseness > severity)
+		 return;
+
 	va_start (va, fmt);
-	vsnprintf (str, 1023, fmt, va);
+	vsnprintf (str, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
 	va_end (va);
+
+	source.file = file;
+	source.func = funcname;
+	source.line = line;
 
 	handler = &message_handlers[severity];
 
 	if (handler->func != NULL) {
-		VisLogMessageSource source;
-
-		source.file = file;
-		source.func = funcname;
-		source.line = line;
-
 		(*handler->func) (severity, str, &source, handler->priv);
-
 	} else {
-		fprintf (stderr, "%s %s:%d:%s: %s\n", severity_labels[severity], file, line, funcname, str);
+		default_log_handler (severity, &source, str);
+	}
+}
+
+void _lv_log_bare (VisLogSeverity severity, const char *fmt, va_list va)
+{
+	VisLogMessageSource source;
+	MessageHandler *handler;
+	char str[LV_LOG_MAX_MESSAGE_SIZE];
+
+	visual_log_return_if_fail (is_valid_severity (severity));
+	visual_log_return_if_fail (fmt != NULL);
+
+	if (verboseness > severity)
+		 return;
+
+	vsnprintf (str, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
+
+	handler = &message_handlers[severity];
+
+	if (handler->func != NULL) {
+		(*handler->func) (severity, str, &source, handler->priv);
+	} else {
+		default_log_handler (severity, &source, str);
+	}
+}
+
+static void default_log_handler (VisLogSeverity severity, VisLogMessageSource const *source, const char *msg)
+{
+	if (source != NULL) {
+		fprintf (stderr, "%s %s:%d:%s: %s\n", severity_labels[severity],
+			 source->file, source->line, source->func, msg);
+	} else {
+		fprintf (stderr, "%s %s", severity_labels[severity], msg);
 	}
 }
 
