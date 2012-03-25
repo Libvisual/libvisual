@@ -21,19 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <assert.h>
-#include <signal.h>
-#include "gettext.h"
-
-#include "lvconfig.h"
-#include "lv_log.h"
+#include "config.h"
 #include "lv_error.h"
+#include "lv_log.h"
+#include "gettext.h"
+#include <stdlib.h>
+#include <signal.h>
+
 
 static const char *__lv_error_human_readable[] = {
 	[VISUAL_OK] =					N_("There was no error"),

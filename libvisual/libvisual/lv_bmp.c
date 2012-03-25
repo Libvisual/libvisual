@@ -23,19 +23,12 @@
  */
 
 #include <config.h>
-
 #include "lv_bmp.h"
 #include "lv_common.h"
 #include "lv_bits.h"
 #include "gettext.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <sys/stat.h>
-#include <fcntl.h>
-
 
 #define BI_RGB	0
 #define BI_RLE8	1

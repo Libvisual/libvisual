@@ -25,7 +25,6 @@
 #define _LV_GL_H
 
 #include <libvisual/lv_common.h>
-#include <libvisual/lv_hashmap.h>
 
 VISUAL_BEGIN_DECLS
 

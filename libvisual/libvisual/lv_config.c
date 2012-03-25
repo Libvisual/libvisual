@@ -22,28 +22,18 @@
  */
 
 #include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <gettext.h>
-
-#include "lvconfig.h"
+#include "lv_config.h"
+#include "lv_common.h"
+#include "gettext.h"
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
 #endif
 
-#include <sys/types.h>
+#include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
-
-#include "config.h"
-#include "lv_common.h"
-#include "lv_mem.h"
-#include "lv_config.h"
 
 static int config_registry_dtor (VisObject *object);
 static int config_registry_section_dtor (VisObject *object);

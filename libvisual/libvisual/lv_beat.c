@@ -51,10 +51,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include <config.h>
-#include "lvconfig.h"
+#include "config.h"
 #include "lv_beat.h"
-
 #include "lv_common.h"
 #include "lv_time.h"
 

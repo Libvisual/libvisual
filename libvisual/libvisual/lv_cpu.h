@@ -25,7 +25,6 @@
 #ifndef _LV_CPU_H
 #define _LV_CPU_H
 
-#include <libvisual/lvconfig.h>
 #include <libvisual/lv_common.h>
 
 VISUAL_BEGIN_DECLS;

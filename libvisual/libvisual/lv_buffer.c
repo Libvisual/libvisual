@@ -21,15 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
-
-#include <lvconfig.h>
+#include <config.h>
 #include "lv_buffer.h"
-#include "lv_log.h"
+#include "lv_common.h"
 #include "lv_mem.h"
 
 static int buffer_dtor (VisObject *object);

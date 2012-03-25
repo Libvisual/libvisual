@@ -24,9 +24,6 @@
 #ifndef _LV_HASHLIST_H
 #define _LV_HASHLIST_H
 
-#include <libvisual/lv_common.h>
-#include <libvisual/lv_time.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_hashmap.h>
 
 VISUAL_BEGIN_DECLS

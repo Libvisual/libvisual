@@ -24,7 +24,7 @@
 #ifndef _LV_BMP_H
 #define _LV_BMP_H
 
-#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_video.h>
 
 VISUAL_BEGIN_DECLS

@@ -25,19 +25,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#define FOURIER_PI 3.141592653589793238462643383279502884197169399f
-
-#include <config.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#include <string.h>
-
+#include "config.h"
+#include "lv_fourier.h"
+#include "lv_common.h"
 #include "lv_cache.h"
 #include "lv_utils.h"
 #include "lv_math.h"
-#include "lv_fourier.h"
+#include <stdio.h>
+#include <math.h>
+
+
+#define FOURIER_PI 3.141592653589793238462643383279502884197169399f
 
 /* Log scale settings */
 #define AMP_LOG_SCALE_THRESHOLD0	0.001f

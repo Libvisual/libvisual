@@ -27,7 +27,10 @@
 
 /* FIXME: clean this entire file up */
 
-#include "lvconfig.h"
+#include "config.h"
+#include "lv_cpu.h"
+#include "lv_common.h"
+#include "gettext.h"
 
 #if defined(VISUAL_ARCH_POWERPC)
 #if defined(VISUAL_OS_DARWIN)
@@ -56,18 +59,6 @@
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
 #endif
-
-#include <config.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#include "gettext.h"
-
-#include "lv_log.h"
-#include "lv_error.h"
-#include "lv_cpu.h"
 
 static VisCPU __lv_cpu_caps;
 static int __lv_cpu_initialized = FALSE;
