@@ -33,7 +33,7 @@
 #  include <stdint.h>
 #elif defined(_LV_HAVE_INTTYPES_H)
 #  include <inttypes.h>
-#elseif
+#else
 #  error FIXME: No fixed-size int type defined
 #endif // _LV_HAVE_STDINT_H
 
