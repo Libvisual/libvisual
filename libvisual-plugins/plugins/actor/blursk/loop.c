@@ -45,14 +45,14 @@
 #include "blursk.h"
 
 # define BLUR   src = *srcref++; \
-        *dest++ = (src[-img_bpl] + src[0] \
-            + src[img_bpl - 1] + src[img_bpl + 1]) >> 2; \
+        *dest++ = (src[-bpl] + src[0] \
+            + src[bpl - 1] + src[bpl + 1]) >> 2; \
         bpl = -bpl;
 
 # define SHARP  *dest++ = **srcref++;
 
 # define SMEAR  src = *srcref++; \
-        pix = (src[-img_bpl - 1] + src[img_bpl - 1] \
+        pix = (src[-bpl - 1] + src[bpl - 1] \
             + src[0] + src[1]) >> 2; \
         if (pix < *orig++) \
             pix = orig[-1]; \
@@ -62,16 +62,17 @@
 # define MELT   src = *srcref++; \
         pix = *orig++; \
         if (pix < 160) \
-            pix = (src[-img_bpl] + src[0] \
-                + src[img_bpl - 1] + src[img_bpl + 1]) >> 2; \
+            pix = (src[-bpl] + src[0] \
+                + src[bpl - 1] + src[bpl + 1]) >> 2; \
         *dest++ = pix; \
         bpl = -bpl;
 
 
 void loopblur(void)
 {
-    unsigned int    i = img_chunks, bpl = img_bpl;
-    unsigned char   *dest, *src, **srcref;
+    unsigned int i = img_chunks;
+    int bpl = img_bpl;
+    unsigned char *dest, *src, **srcref;
 
     i = img_chunks;
     dest = img_tmp;
@@ -92,8 +93,9 @@ void loopblur(void)
 
 void loopsmear(void)
 {
-    unsigned int    i = img_chunks, bpl = img_bpl;
-    unsigned char   *dest, *src, *orig, **srcref, pix;
+    unsigned int i = img_chunks;
+    int bpl = img_bpl;
+    unsigned char *dest, *src, *orig, **srcref, pix;
 
     i = img_chunks;
     dest = img_tmp;
@@ -115,8 +117,9 @@ void loopsmear(void)
 
 void loopmelt(void)
 {
-    unsigned int    i = img_chunks, bpl = img_bpl;
-    unsigned char   *dest, *src, *orig, **srcref, pix;
+    unsigned int i = img_chunks;
+    int bpl = img_bpl;
+    unsigned char *dest, *src, *orig, **srcref, pix;
 
     i = img_chunks;
     dest = img_tmp;
@@ -139,8 +142,8 @@ void loopmelt(void)
 
 void loopsharp(void)
 {
-    unsigned int    i;
-    unsigned char   *dest, **srcref;
+    unsigned int i;
+    unsigned char *dest, **srcref;
 
     i = img_chunks;
     dest = img_tmp;
@@ -161,8 +164,9 @@ void loopsharp(void)
 
 void loopreduced1(void)
 {
-    unsigned int    i, bpl;
-    unsigned char   *dest, *src, **srcref;
+    unsigned int i;
+    int bpl;
+    unsigned char *dest, *src, **srcref;
 
     i = img_chunks;
     bpl = img_bpl;
@@ -183,8 +187,9 @@ void loopreduced1(void)
 
 void loopreduced2(void)
 {
-    unsigned int    i, bpl;
-    unsigned char   *dest, *src, **srcref;
+    unsigned int i;
+    int bpl;
+    unsigned char *dest, *src, **srcref;
 
     i = img_chunks;
     bpl = img_bpl;
@@ -206,8 +211,9 @@ void loopreduced2(void)
 
 void loopreduced3(void)
 {
-    unsigned int    i, bpl;
-    unsigned char   *dest, *src, **srcref;
+    unsigned int i;
+    int bpl;
+    unsigned char *dest, *src, **srcref;
 
     i = img_chunks;
     bpl = img_bpl;
@@ -229,8 +235,9 @@ void loopreduced3(void)
 
 void loopreduced4(void)
 {
-    unsigned int    i, bpl;
-    unsigned char   *dest, *src, **srcref;
+    unsigned int i;
+    int bpl;
+    unsigned char *dest, *src, **srcref;
 
     i = img_chunks;
     bpl = img_bpl;
@@ -315,8 +322,8 @@ void loopfade(int change)
  */
 void loopinterp(void)
 {
-    unsigned int    i = img_chunks;
-    unsigned char   *dest, *src, prev;
+    unsigned int i = img_chunks;
+    unsigned char *dest, *src, prev;
 
     i = img_chunks;
     dest = img_tmp;
