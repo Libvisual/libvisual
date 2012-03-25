@@ -35,7 +35,7 @@
 
 
 /* Set when libvisual is initialized. */
-in __lv_initialized = FALSE;
+int __lv_initialized = FALSE;
 
 /* Set a progname from argv[0] when we're capable of doing so. */
 char *__lv_progname = NULL;
