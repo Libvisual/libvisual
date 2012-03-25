@@ -46,8 +46,8 @@ static const char *severity_labels[] = {
 	"DEBUG    ",
 	"INFO     ",
 	"WARNING  ",
-	"CRITICAL ",
-	"ERROR    "
+	"ERROR    ",
+	"CRITICAL "
 };
 
 static MessageHandler message_handlers[VISUAL_TABLESIZE(severity_labels)];

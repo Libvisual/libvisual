@@ -42,13 +42,11 @@ extern char *__lv_progname;
  * @see visual_log
  */
 typedef enum {
-	VISUAL_LOG_DEBUG,	/**< Debug message, to use for debug messages. */
-	VISUAL_LOG_INFO,	/**< Informative message, can be used for general info. */
-	VISUAL_LOG_WARNING,	/**< Warning message, use to warn the user. */
-	VISUAL_LOG_CRITICAL,	/**< Critical message, when a critical situation happens.
-				 * Like a NULL pointer passed to a method. */
-	VISUAL_LOG_ERROR	/**< Error message, use to notify the user of fatals. 
-				 * After the message has been showed, the program is aborted. */
+	VISUAL_LOG_DEBUG,	 /**< Debug message, to use for debug messages. */
+	VISUAL_LOG_INFO,	 /**< Informative message, can be used for general info. */
+	VISUAL_LOG_WARNING,	 /**< Warning message, use to warn the user. */
+	VISUAL_LOG_ERROR,	 /**< Error message, use to notify the user of fatals. */
+	VISUAL_LOG_CRITICAL  /**< Critical message, when a critical situation happens. */
 } VisLogSeverity;
 
 typedef struct {
@@ -149,7 +147,7 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
  */
 #define visual_log_return_if_fail(expr)			\
 	if (!(expr)) {								\
-		visual_log (VISUAL_LOG_CRITICAL,		\
+		visual_log (VISUAL_LOG_WARNING,			\
 			"assertion `%s' failed", #expr);	\
 		return;									\
 	}
@@ -160,8 +158,8 @@ static void visual_log (VisLogSeverity severity, const char *fmt, ...)
  */
 #define visual_log_return_val_if_fail(expr, val)	\
 	if (!(expr)) {									\
-		visual_log (VISUAL_LOG_CRITICAL,			\
-			 "assertion `%s' failed", #expr);		\
+		visual_log (VISUAL_LOG_WARNING,				\
+			"assertion `%s' failed", #expr);		\
 		return (val);								\
 	}
 
