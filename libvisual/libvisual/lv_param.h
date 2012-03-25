@@ -24,7 +24,8 @@
 #ifndef _LV_PARAM_H
 #define _LV_PARAM_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_color.h>
 #include <libvisual/lv_palette.h>
 #include <libvisual/lv_list.h>

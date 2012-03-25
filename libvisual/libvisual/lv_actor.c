@@ -22,7 +22,6 @@
  */
 
 #include "config.h"
-#include "lvconfig.h"
 #include "lv_actor.h"
 #include "lv_common.h"
 #include "lv_list.h"

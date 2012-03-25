@@ -21,28 +21,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
+#include "config.h"
+#include "lv_plugin.h"
+#include "lv_common.h"
+#include "lv_libvisual.h"
+#include "gettext.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <gettext.h>
-
-#include "lvconfig.h"
+#include <dirent.h>
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
 #else
 #include <dlfcn.h>
 #endif
-
-#include <dirent.h>
-
-#include "lv_libvisual.h"
-#include "lv_plugin.h"
-#include "lv_log.h"
-#include "lv_mem.h"
 
 extern VisList *__lv_plugins;
 

@@ -54,6 +54,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _LV_BEAT_H
 #define _LV_BEAT_H
 
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
+#include <libvisual/lv_types.h>
 #include <libvisual/lv_time.h>
 
 VISUAL_BEGIN_DECLS

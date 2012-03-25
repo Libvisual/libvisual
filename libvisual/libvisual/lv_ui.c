@@ -23,6 +23,7 @@
 
 #include "config.h"
 #include "lv_ui.h"
+#include "lv_common.h"
 #include <string.h>
 
 static int box_dtor (VisObject *object);

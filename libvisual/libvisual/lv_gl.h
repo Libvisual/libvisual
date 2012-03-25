@@ -24,7 +24,8 @@
 #ifndef _LV_GL_H
 #define _LV_GL_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 
 VISUAL_BEGIN_DECLS
 

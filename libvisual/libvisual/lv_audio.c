@@ -22,9 +22,7 @@
  */
 
 #include "config.h"
-#include "lvconfig.h"
 #include "lv_audio.h"
-
 #include "lv_common.h"
 #include "lv_fourier.h"
 #include "lv_math.h"

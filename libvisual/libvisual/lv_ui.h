@@ -24,10 +24,11 @@
 #ifndef _LV_UI_H
 #define _LV_UI_H
 
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_param.h>
 #include <libvisual/lv_video.h>
-#include <libvisual/lv_common.h>
 
 VISUAL_BEGIN_DECLS
 

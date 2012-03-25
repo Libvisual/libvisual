@@ -24,7 +24,8 @@
 #ifndef _LV_RINGBUFFER_H
 #define _LV_RINGBUFFER_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_buffer.h>
 

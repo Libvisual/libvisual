@@ -24,9 +24,10 @@
 #ifndef _LV_INPUT_H
 #define _LV_INPUT_H
 
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_plugin.h>
-#include <libvisual/lv_common.h>
 
 VISUAL_BEGIN_DECLS
 

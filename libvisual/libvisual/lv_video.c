@@ -27,6 +27,7 @@
 
 #include <config.h>
 #include "lv_video.h"
+#include "lv_color.h"
 #include "lv_common.h"
 #include "lv_cpu.h"
 #include "gettext.h"

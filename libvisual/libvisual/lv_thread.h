@@ -1,7 +1,8 @@
 #ifndef _LV_THREAD_H
 #define _LV_THREAD_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>

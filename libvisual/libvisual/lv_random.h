@@ -25,7 +25,7 @@
 #ifndef _LV_RANDOM_H
 #define _LV_RANDOM_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lv_object.h>
 
 VISUAL_BEGIN_DECLS
 

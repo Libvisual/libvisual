@@ -24,6 +24,7 @@
 #ifndef _LV_OBJECT_H
 #define _LV_OBJECT_H
 
+#include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_types.h>
 

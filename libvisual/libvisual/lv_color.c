@@ -21,8 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+#include "config.h"
 #include "lv_color.h"
+#include "lv_common.h"
 
 typedef struct {
 	uint16_t b:5, g:6, r:5, a:6;

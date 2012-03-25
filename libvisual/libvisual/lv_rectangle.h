@@ -24,7 +24,7 @@
 #ifndef _LV_RECTANGLE_H
 #define _LV_RECTANGLE_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lv_object.h>
 
 VISUAL_BEGIN_DECLS
 

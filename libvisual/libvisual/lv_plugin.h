@@ -25,7 +25,6 @@
 #define _LV_PLUGIN_H
 
 #include <libvisual/lvconfig.h>
-#include <libvisual/lv_common.h>
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_event.h>

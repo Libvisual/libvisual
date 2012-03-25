@@ -24,6 +24,8 @@
 #ifndef _LV_ACTOR_H
 #define _LV_ACTOR_H
 
+#include <libvisual/lv_defines.h>
+#include <libvisual/lv_types.h>
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_video.h>
 #include <libvisual/lv_palette.h>

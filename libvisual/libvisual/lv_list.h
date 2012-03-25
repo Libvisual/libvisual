@@ -32,7 +32,8 @@
 #ifndef _LV_LIST_H
 #define _LV_LIST_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_collection.h>
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__)
