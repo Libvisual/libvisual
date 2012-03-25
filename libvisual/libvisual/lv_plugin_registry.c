@@ -32,7 +32,7 @@ char **__lv_plugpaths = NULL;
  *
  * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NO_PATHS on failure.
  */
-int visual_init_path_add (char *pathadd)
+int visual_init_path_add (const char *pathadd)
 {
 	__lv_plugpath_cnt++;
 	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);

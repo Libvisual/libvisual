@@ -5,7 +5,7 @@
 
 VISUAL_BEGIN_DECLS
 
-int visual_init_path_add (char *path);
+int visual_init_path_add (const char *path);
 int visual_plugin_registry_initialize (void);
 int visual_plugin_registry_deinitialize (void);
 
