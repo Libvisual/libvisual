@@ -58,7 +58,7 @@ typedef struct
 SADisplayDriverDescription all_display_drivers[] =
 {
         { .name = "sdl",      .creator = &sdl_driver_new      },
-        { .name = "niftyled", .creator = &niftyled_driver_new },
+        { .name = "stdout",   .creator = &stdout_driver_new   },
 };
 
 
