@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -58,68 +58,26 @@ static VisTransformPlugin *get_transform_plugin (VisTransform *transform)
 	return transplugin;
 }
 
-/**
- * @defgroup VisTransform VisTransform
- * @{
- */
-
-/**
- * Gives the encapsulated VisPluginData from a VisTransform.
- *
- * @param transform Pointer of a VisTransform of which the VisPluginData needs to be returned.
- *
- * @return VisPluginData that is encapsulated in the VisTransform, possibly NULL.
- */
 VisPluginData *visual_transform_get_plugin (VisTransform *transform)
 {
 	return transform->plugin;
 }
 
-/**
- * Gives a list of VisTransforms in the current plugin registry.
- *
- * @return An VisList containing the VisTransforms in the plugin registry.
- */
 VisList *visual_transform_get_list ()
 {
 	return __lv_plugins_transform;
 }
 
-/**
- * Gives the next transform plugin based on the name of a plugin.
- *
- * @see visual_transform_get_prev_by_name
- * 
- * @param name The name of the current plugin, or NULL to get the first.
- *
- * @return The name of the next plugin within the list.
- */
 const char *visual_transform_get_next_by_name (const char *name)
 {
 	return visual_plugin_get_next_by_name (visual_transform_get_list (), name);
 }
 
-/**
- * Gives the previous transform plugin based on the name of a plugin.
- *
- * @see visual_transform_get_next_by_name
- * 
- * @param name The name of the current plugin. or NULL to get the last.
- *
- * @return The name of the previous plugin within the list.
- */
 const char *visual_transform_get_prev_by_name (const char *name)
 {
 	return visual_plugin_get_prev_by_name (visual_transform_get_list (), name);
 }
 
-/**
- * Checks if the transform plugin is in the registry, based on it's name.
- *
- * @param name The name of the plugin that needs to be checked.
- *
- * @return TRUE if found, else FALSE.
- */
 int visual_transform_valid_by_name (const char *name)
 {
 	if (visual_plugin_find (visual_transform_get_list (), name) == NULL)
@@ -128,15 +86,6 @@ int visual_transform_valid_by_name (const char *name)
 		return TRUE;
 }
 
-/**
- * Creates a new transform from name, the plugin will be loaded but won't be realized.
- *
- * @param transformname
- * 	The name of the plugin to load, or NULL to simply allocate a new
- * 	transform. 
- *
- * @return A newly allocated VisTransform, optionally containing a loaded plugin. Or NULL on failure.
- */
 VisTransform *visual_transform_new (const char *transformname)
 {
 	VisTransform *transform;
@@ -157,18 +106,6 @@ VisTransform *visual_transform_new (const char *transformname)
 	return transform;
 }
 
-/**
- * Initializes a VisTransform, this will set the allocated flag for the object to FALSE. Should not
- * be used to reset a VisTransform, or on a VisTransform created by visual_transform_new().
- *
- * @see visual_transform_new
- *
- * @param transform Pointer to the VisTransform that is initialized.
- * @param transformname
- *	The name of the plugin to load, or NULL to simply initialize a new transform.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
- */
 int visual_transform_init (VisTransform *transform, const char *transformname)
 {
 	VisPluginRef *ref;
@@ -203,15 +140,6 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
 	return VISUAL_OK;
 }
 
-/**
- * Realize the VisTransform. This also calls the plugin init function.
- *
- * @param transform Pointer to a VisTransform that needs to be realized.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL or
- *	error values returned by visual_plugin_realize () on failure.
- * 
- */
 int visual_transform_realize (VisTransform *transform)
 {
 	visual_log_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
@@ -220,15 +148,6 @@ int visual_transform_realize (VisTransform *transform)
 	return visual_plugin_realize (transform->plugin);
 }
 
-/**
- * This function negotiates the VisTransform with it's target video that is set by visual_transform_set_video.
- * When needed it also sets up size fitting environment and depth transformation environment.
- *
- * @param transform Pointer to a VisTransform that needs negotiation.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL
- * 	or -VISUAL_ERROR_TRANSFORM_NEGOTIATE on failure. 
- */
 int visual_transform_video_negotiate (VisTransform *transform)
 {
 	int depthflag;
@@ -250,15 +169,6 @@ int visual_transform_video_negotiate (VisTransform *transform)
 	return -VISUAL_OK;
 }
 
-/**
- * Gives the by the plugin natively supported depths
- *
- * @param transform Pointer to a VisTransform of which the supported depth of it's
- * 	  encapsulated plugin is requested.
- *
- * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on succes,
- * 	-VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
- */
 int visual_transform_get_supported_depth (VisTransform *transform)
 {
 	VisTransformPlugin *transplugin;
@@ -289,23 +199,6 @@ VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTrans
 	return &transplugin->vidoptions;
 }
 
-/**
- * Used to connect the target display it's VisVideo structure to the VisTransform.
- *
- * Using the visual_video methods the screenbuffer, it's depth and dimension and optionally it's pitch
- * can be set so the transform plugins know about their graphical environment and have a place to draw.
- *
- * After this function it's most likely that visual_transform_video_negotiate needs to be called.
- *
- * @see visual_video_new
- * @see visual_transform_video_negotiate
- * 
- * @param transform Pointer to a VisTransform to which the VisVideo needs to be set.
- * @param video Pointer to a VisVideo which contains information about the target display and the pointer
- * 	  to it's screenbuffer.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL on failure.
- */
 int visual_transform_set_video (VisTransform *transform, VisVideo *video)
 {
 	visual_log_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
@@ -320,17 +213,6 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video)
 	return VISUAL_OK;
 }
 
-/**
- * Used to override the palette that is extracted from the VisVideo that is given using
- * visual_transform_set_video. Always call this function after visual_transform_set_video is called.
- * 
- * @see visual_transform_set_video
- *
- * @param transform Pointer to a VisTransform to which the VisVideo needs to be set.
- * @param palette Pointer to the VisPalette which is used to override the palette in the VisTransform.
- * 
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL on failure.
- */
 int visual_transform_set_palette (VisTransform *transform, VisPalette *palette)
 {
 	visual_log_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
@@ -340,19 +222,6 @@ int visual_transform_set_palette (VisTransform *transform, VisPalette *palette)
 	return VISUAL_OK;
 }
 
-
-/**
- * This is called to run a VisTransform.
- *
- * @see visual_transform_run_video
- * @see visual_transform_run_palette
- *
- * @param transform Pointer to a VisTransform that needs to be runned.
- * @param audio Pointer to a VisAudio that contains all the audio data.
- *
- * return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL or error values returned by
- *	either visual_transform_run_video or visual_transform_run_palette on failure.
- */
 int visual_transform_run (VisTransform *transform, VisAudio *audio)
 {
 	int ret;
@@ -371,17 +240,6 @@ int visual_transform_run (VisTransform *transform, VisAudio *audio)
 	return VISUAL_OK;
 }
 
-/**
- * This is called to run the video part of a VisTransform.
- *
- * @see visual_transform_run
- *
- * @param transform Pointer to a VisTransform that needs to be runned.
- * @param audio Pointer to a VisAudio that contains all the audio data.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_TRANSFORM_VIDEO_NULL
- *	or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
- */
 int visual_transform_run_video (VisTransform *transform, VisAudio *audio)
 {
 	VisTransformPlugin *transplugin;
@@ -407,17 +265,6 @@ int visual_transform_run_video (VisTransform *transform, VisAudio *audio)
 	return VISUAL_OK;
 }
 
-/**
- * This is called to run the palette part of a VisTransform.
- *
- * @see visual_transform_run
- *
- * @param transform Pointer to a VisTransform that needs to be runned.
- * @param audio Pointer to a VisAudio that contains all the audio data.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TRANSFORM_NULL, -VISUAL_ERROR_TRANSFORM_PALETTE_NULL
- *	or -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL on failure.
- */
 int visual_transform_run_palette (VisTransform *transform, VisAudio *audio)
 {
 	VisTransformPlugin *transplugin;
@@ -442,8 +289,3 @@ int visual_transform_run_palette (VisTransform *transform, VisAudio *audio)
 
 	return VISUAL_OK;
 }
-
-/**
- * @}
- */
-

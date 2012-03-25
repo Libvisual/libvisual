@@ -24,23 +24,7 @@
 #include "config.h"
 #include "lv_utils.h"
 
-/**
- * @defgroup VisUtils VisUtils
- * @{
- */
-
-/**
- * Checks if the given value is a power of 2.
- *
- * @param n Value to be checked if it's being a power of 2.
- *
- * @return TRUE if power of 2, FALSE if not.
- */
 int visual_utils_is_power_of_2 (int n)
 {
 	return (n > 0) && !(n & (n - 1));
 }
-
-/**
- * @}
- */

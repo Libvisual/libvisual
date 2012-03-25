@@ -147,16 +147,6 @@ static char *get_delim_node (const char *str, char delim, int index)
 	return buf;
 }
 
-/**
- * @defgroup VisPlugin VisPlugin
- * @{
- */
-
-/**
- * Creates a new VisPluginInfo structure.
- *
- * @return A newly allocated VisPluginInfo
- */
 VisPluginInfo *visual_plugin_info_new ()
 {
 	VisPluginInfo *pluginfo;
@@ -169,15 +159,7 @@ VisPluginInfo *visual_plugin_info_new ()
 	return pluginfo;
 }
 
-/**
- * Copies data from one VisPluginInfo to another, this does not copy everything
- * but only things that are needed in the local copy for the plugin registry.
- *
- * @param dest Pointer to the destination VisPluginInfo in which some data is copied.
- * @param src Pointer to the source VisPluginInfo from which some data is copied.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
- */
+
 int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
@@ -196,14 +178,6 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 	return VISUAL_OK;
 }
 
-/**
- * Pumps the queued events into the plugin it's event handler if it has one.
- *
- * @param plugin Pointer to a VisPluginData of which the events need to be pumped into
- *	the handler.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER on failure.
- */
 int visual_plugin_events_pump (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
@@ -217,16 +191,6 @@ int visual_plugin_events_pump (VisPluginData *plugin)
 	return -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER;
 }
 
-/**
- * Gives the event queue from a VisPluginData. This queue needs to be used
- * when you want to send events to the plugin.
- *
- * @see visual_plugin_events_pump
- *
- * @param plugin Pointer to the VisPluginData from which we want the queue.
- *
- * @return A pointer to the requested VisEventQueue or NULL on failure.
- */
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
@@ -234,16 +198,6 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
 	return &plugin->eventqueue;
 }
 
-/**
- * Sets a VisUIWidget as top user interface widget for the plugin. When a VisUI
- * tree is requested by a client, to render a configuration userinterface, this
- * VisUIWidget is used as top widget.
- *
- * @param plugin Pointer to the VisPluginData to which we set the VisUIWidget as top widget.
- * @param widget Pointer to the VisUIWidget that we use as top widget for the user interface.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL on failure.
- */
 int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget)
 {
 	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
@@ -253,13 +207,6 @@ int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget)
 	return VISUAL_OK;
 }
 
-/**
- * Retrieves the VisUI top widget for the plugin.
- *
- * @param plugin Pointer to the VisPluginData of which we request the VisUIWidget that serves as top widget.
- *
- * @return Pointer to the VisUIWidget that serves as top widget, possibly NULL.
- */
 VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
@@ -267,13 +214,6 @@ VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin)
 	return plugin->userinterface;
 }
 
-/**
- * Gives the VisPluginInfo related to a VisPluginData.
- *
- * @param plugin The VisPluginData of which the VisPluginInfo is requested.
- *
- * @return The VisPluginInfo within the VisPluginData, or NULL on failure.
- */
 VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
@@ -281,13 +221,6 @@ VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
 	return plugin->info;
 }
 
-/**
- * Gives the VisParamContainer related to a VisPluginData.
- *
- * @param plugin The VisPluginData of which the VisParamContainer is requested.
- *
- * @return The VisParamContainer within the VisPluginData, or NULL on failure.
- */
 VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
@@ -295,13 +228,6 @@ VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
 	return plugin->params;
 }
 
-/**
- * Gives the VisRandomContext related to a VisPluginData.
- *
- * @param plugin The VisPluginData of which the VisRandomContext is requested.
- *
- * @return The VisRandomContext within the VisPluginDAta, or NULL on failure.
- */
 VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);
@@ -309,13 +235,6 @@ VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
 	return &plugin->random;
 }
 
-/**
- * Retrieves the plugin specific part of a plugin.
- *
- * @param plugin The pointer to the VisPluginData from which we want the plugin specific part.
- *
- * @return Void * pointing to the plugin specific part which can be cast.
- */
 void *visual_plugin_get_specific (VisPluginData *plugin)
 {
 	VisPluginInfo *pluginfo;
@@ -328,13 +247,6 @@ void *visual_plugin_get_specific (VisPluginData *plugin)
 	return pluginfo->plugin;
 }
 
-/**
- * Creates a new VisPluginRef structure.
- *
- * The VisPluginRef contains data for the plugin loader.
- *
- * @return Newly allocated VisPluginRef.
- */
 VisPluginRef *visual_plugin_ref_new ()
 {
 	VisPluginRef *ref;
@@ -347,11 +259,6 @@ VisPluginRef *visual_plugin_ref_new ()
 	return ref;
 }
 
-/**
- * Creates a new VisPluginData structure.
- *
- * @return A newly allocated VisPluginData.
- */
 VisPluginData *visual_plugin_new ()
 {
 	VisPluginData *plugin;
@@ -366,28 +273,11 @@ VisPluginData *visual_plugin_new ()
 	return plugin;
 }
 
-/**
- * Gives a VisList that contains references to all the plugins in the registry.
- *
- * @see VisPluginRef
- *
- * @return VisList of references to all the libvisual plugins.
- */
 VisList *visual_plugin_get_registry ()
 {
 	return __lv_plugins;
 }
 
-/**
- * Gives a newly allocated VisList with references for one plugin type.
- *
- * @see VisPluginRef
- *
- * @param pluglist Pointer to the VisList that contains the plugin registry.
- * @param domain The plugin type that is filtered for.
- *
- * @return Newly allocated VisList that is a filtered version of the plugin registry.
- */
 VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 {
 	VisList *list;
@@ -424,18 +314,6 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 	return list;
 }
 
-/**
- * Get the next plugin based on it's name.
- *
- * @see visual_plugin_registry_filter
- *
- * @param list Pointer to the VisList containing the plugins. Adviced is to filter
- *	this list first using visual_plugin_registry_filter.
- * @param name Name of a plugin entry of which we want the next entry or NULL to get
- * 	the first entry.
- *
- * @return The name of the next plugin or NULL on failure.
- */
 const char *visual_plugin_get_next_by_name (VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
@@ -458,18 +336,6 @@ const char *visual_plugin_get_next_by_name (VisList *list, const char *name)
 	return NULL;
 }
 
-/**
- * Get the previous plugin based on it's name.
- *
- * @see visual_plugin_registry_filter
- *
- * @param list Pointer to the VisList containing the plugins. Adviced is to filter
- *	this list first using visual_plugin_registry_filter.
- * @param name Name of a plugin entry of which we want the previous entry or NULL to get
- * 	the last entry.
- *
- * @return The name of the next plugin or NULL on failure.
- */
 const char *visual_plugin_get_prev_by_name (VisList *list, const char *name)
 {
 	VisListEntry *entry = NULL;
@@ -596,15 +462,6 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 	return 0;
 }
 
-/**
- * Private function to unload a plugin. After calling this function the
- * given argument is no longer usable.
- *
- * @param plugin Pointer to the VisPluginData that needs to be unloaded.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_HANDLE_NULL or
- *	-VISUAL_ERROR_PLUGIN_REF_NULL on failure.
- */
 int visual_plugin_unload (VisPluginData *plugin)
 {
 	VisPluginRef *ref;
@@ -651,14 +508,6 @@ int visual_plugin_unload (VisPluginData *plugin)
 	return VISUAL_OK;
 }
 
-/**
- * Private function to load a plugin.
- *
- * @param ref Pointer to the VisPluginRef containing information about
- *	the plugin that needs to be loaded.
- *
- * @return A newly created and loaded VisPluginData.
- */
 VisPluginData *visual_plugin_load (VisPluginRef *ref)
 {
 	VisPluginData *plugin;
@@ -749,13 +598,6 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 	return plugin;
 }
 
-/**
- * Private function to realize the plugin. This initializes the plugin.
- *
- * @param plugin Pointer to the VisPluginData that needs to be realized.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
- */
 int visual_plugin_realize (VisPluginData *plugin)
 {
 	VisParamContainer *paramcontainer;
@@ -773,15 +615,6 @@ int visual_plugin_realize (VisPluginData *plugin)
 	return VISUAL_OK;
 }
 
-/**
- * Private function to create VisPluginRefs from plugins.
- *
- * @param pluginpath The full path and filename to the plugin of which a reference
- *	needs to be obtained.
- * @param count Int pointer that will contain the number of VisPluginRefs returned.
- *
- * @return The optionally newly allocated VisPluginRefs for the plugin.
- */
 VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 {
 	VisPluginRef **ref;
@@ -894,14 +727,6 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 	return ref;
 }
 
-/**
- * Private function to create the complete plugin registry from a set of paths.
- *
- * @param paths A pointer list to a set of paths.
- * @param ignore_non_existing A flag that can be set with TRUE or FALSE to ignore non existing dirs.
- *
- * @return A newly allocated VisList containing the plugin registry for the set of paths.
- */
 VisList *visual_plugin_get_list (const char **paths, int ignore_non_existing)
 {
 	VisList *list;

@@ -31,16 +31,6 @@
 #include <windows.h>
 #endif
 
-/**
- * @defgroup VisTime VisTime
- * @{
- */
-
-/**
- * Creates a new VisTime structure.
- *
- * @return A newly allocated VisTime.
- */
 VisTime *visual_time_new ()
 {
 	VisTime *time_;
@@ -56,18 +46,6 @@ VisTime *visual_time_new ()
 	return time_;
 }
 
-/**
- * Initializes a VisTime, this should not be used to reset a VisTime.
- * The resulting initialized VisTime is a valid VisObject even if it was not allocated.
- * Keep in mind that VisTime structures that were created by visual_time_new() should not
- * be passed to visual_time_init().
- *
- * @see visual_time_new
- *
- * @param time_ Pointer to the VisTime which needs to be initialized.
- * 
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
- */
 int visual_time_init (VisTime *time_)
 {
 	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -83,14 +61,6 @@ int visual_time_init (VisTime *time_)
 	return VISUAL_OK;
 }
 
-
-/**
- * Loads the current time into the VisTime structure.
- *
- * @param time_ Pointer to the VisTime in which the current time needs to be set.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
- */
 int visual_time_get (VisTime *time_)
 {
 #if defined(VISUAL_OS_WIN32)
@@ -115,13 +85,6 @@ int visual_time_get (VisTime *time_)
 	return VISUAL_OK;
 }
 
-/**
- * Extract the milliseconds from a VisTime
- *
- * @param The VisTime from which milliseconds are to be extracted from
- *
- * @return Milliseconds on success, -1 on failure
- */
 
 long visual_time_get_msecs(VisTime *time_)
 {
@@ -130,15 +93,6 @@ long visual_time_get_msecs(VisTime *time_)
     return time_->tv_sec * 1000 + (time_->tv_usec + 500) / 1000;
 }
 
-/**
- * Sets the time by sec, usec in a VisTime structure.
- *
- * @param time_ Pointer to the VisTime in which the time is set.
- * @param sec The seconds.
- * @param usec The microseconds.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
- */
 int visual_time_set (VisTime *time_, long sec, long usec)
 {
 	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -149,14 +103,6 @@ int visual_time_set (VisTime *time_, long sec, long usec)
 	return VISUAL_OK;
 }
 
-/**
- * Sets the time by msecs in a VisTime structure.
- *
- * @param time_ Pointer to the VisTime in which the time is set.
- * @param msecs The milliseconds.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIME_NULL on failure
- */
 int visual_time_set_from_msecs(VisTime *time_, long msecs)
 {
     visual_log_return_val_if_fail(time_ != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -170,14 +116,6 @@ int visual_time_set_from_msecs(VisTime *time_, long msecs)
     return VISUAL_OK;
 }
 
-/**
- * Copies ine VisTime into another.
- *
- * @param dest Pointer to the destination VisTime in which the source VisTime is copied.
- * @param src Pointer to the source VisTime that is copied to the destination VisTime.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
- */
 int visual_time_copy (VisTime *dest, VisTime *src)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -189,15 +127,6 @@ int visual_time_copy (VisTime *dest, VisTime *src)
 	return VISUAL_OK;
 }
 
-/**
- * Calculates the difference between two VisTime structures.
- *
- * @param dest Pointer to the VisTime that contains the difference between time1 and time2.
- * @param time1 Pointer to the first VisTime.
- * @param time2 Pointer to the second VisTime from which the first is substracted to generate a result.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NULL on failure.
- */
 int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
 {
 	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -215,14 +144,6 @@ int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
 	return VISUAL_OK;
 }
 
-/**
- * Checks if a VisTime is later than another VisTime.
- *
- * @param time_ Pointer to the VisTime for which is checked whether it's later or not than the other.
- * @param past Pointer to the VisTime that acts as the past time source data.
- *
- * @return TRUE if past, FALSE if not on succes, -VISUAL_ERROR_TIME_NULL on failure.
- */
 int visual_time_past (VisTime *time_, VisTime *past)
 {
 	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
@@ -237,14 +158,6 @@ int visual_time_past (VisTime *time_, VisTime *past)
 	return FALSE;
 }
 
-/**
- * Sleeps an certain amount of microseconds.
- *
- * @param microseconds The amount of microseconds we're going to sleep. To sleep a certain amount of
- *	seconds you can call this function with visual_time_usleep (VISUAL_USEC_PER_SEC * seconds).
- * 
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIME_NO_USLEEP or -1 on failure.
- */
 int visual_time_usleep (unsigned long microseconds)
 {
 #if defined(VISUAL_OS_WIN32)
@@ -273,11 +186,6 @@ int visual_time_usleep (unsigned long microseconds)
 #endif /* !VISUAL_OS_WIN32 */
 }
 
-/**
- * Creates a new VisTimer structure.
- *
- * @return A newly allocated VisTimer.
- */
 VisTimer *visual_timer_new ()
 {
 	VisTimer *timer;
@@ -293,18 +201,6 @@ VisTimer *visual_timer_new ()
 	return timer;
 }
 
-/**
- * Initializes a VisTimer, this should not be used to reset a VisTimer.
- * The resulting initialized VisTimer is a valid VisObject even if it was not allocated with visual_timer_new().
- * Keep in mind that VisTimer structures that were created by visual_timer_new() should not
- * be passed to visual_timer_init().
- *
- * @see visual_timer_new
- *
- * @param timer Pointer to the VisTimer which needs to be initialized.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
- */
 int visual_timer_init (VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
@@ -323,13 +219,6 @@ int visual_timer_init (VisTimer *timer)
 	return VISUAL_OK;
 }
 
-/**
- * Resets a VisTimer.
- *
- * @param timer Pointer to the VisTimer that is to be reset.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
- */
 int visual_timer_reset (VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
@@ -342,13 +231,6 @@ int visual_timer_reset (VisTimer *timer)
 	return VISUAL_OK;
 }
 
-/**
- * Checks if the timer is active.
- *
- * @param timer Pointer to the VisTimer of which we want to know if it's active.
- *
- * @return TRUE or FALSE, -VISUAL_ERROR_TIMER_NULL on failure.
- */
 int visual_timer_is_active (VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
@@ -356,13 +238,6 @@ int visual_timer_is_active (VisTimer *timer)
 	return timer->active;
 }
 
-/**
- * Starts a timer.
- *
- * @param timer Pointer to the VisTimer in which we start the timer.
- *
- * return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
- */
 int visual_timer_start (VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
@@ -374,13 +249,6 @@ int visual_timer_start (VisTimer *timer)
 	return VISUAL_OK;
 }
 
-/**
- * Stops a timer.
- *
- * @param timer Pointer to the VisTimer that is stopped.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
- */
 int visual_timer_stop (VisTimer *timer)
 {
 	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
@@ -392,13 +260,6 @@ int visual_timer_stop (VisTimer *timer)
 	return VISUAL_OK;
 }
 
-/**
- * Continues a stopped timer. The timer needs to be stopped before continueing.
- *
- * @param timer Pointer to the VisTimer that is continued.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL on failure.
- */
 int visual_timer_continue (VisTimer *timer)
 {
 	VisTime elapsed;
@@ -423,14 +284,6 @@ int visual_timer_continue (VisTimer *timer)
 	return VISUAL_OK;
 }
 
-/**
- * Retrieve the amount of time passed since the timer has started.
- *
- * @param timer Pointer to the VisTimer from which we want to know the amount of time passed.
- * @param time_ Pointer to the VisTime in which we put the amount of time passed.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
- */
 int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
 {
 	VisTime cur;
@@ -449,16 +302,6 @@ int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
 	return VISUAL_OK;
 }
 
-/**
- * Returns the amount of milliseconds passed since the timer has started.
- * Be careful not to confuse milliseconds with microseconds.
- *
- * @see visual_timer_elapsed_usecs
- *
- * @param timer Pointer to the VisTimer from which we want to know the amount of milliseconds passed since activation.
- *
- * @return The amount of milliseconds passed, or -1 on error, this function will fail if your system goes back in time.
- */
 int visual_timer_elapsed_msecs (VisTimer *timer)
 {
 	VisTime cur;
@@ -470,16 +313,6 @@ int visual_timer_elapsed_msecs (VisTimer *timer)
 	return (cur.tv_sec * VISUAL_MSEC_PER_SEC) + (cur.tv_usec / VISUAL_MSEC_PER_SEC);
 }
 
-/**
- * Returns the amount of microseconds passed since the timer has started.
- * Be careful not to confuse milliseconds with microseconds.
- *
- * @see visual_timer_elapsed_msecs
- *
- * @param timer Pointer to the VisTimer from which we want to know the amount of microseconds passed since activation.
- *
- * @return The amount of microseconds passed, or -1 on error, this function will fail if your system goes back in time.
- */
 int visual_timer_elapsed_usecs (VisTimer *timer)
 {
 	VisTime cur;
@@ -491,14 +324,6 @@ int visual_timer_elapsed_usecs (VisTimer *timer)
 	return (cur.tv_sec * VISUAL_USEC_PER_SEC) + cur.tv_usec;
 }
 
-/**
- * Checks if the timer has passed a certain age.
- *
- * @param timer Pointer to the VisTimer which we check for age.
- * @param time_ Pointer to the VisTime containing the age we check against.
- *
- * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
- */
 int visual_timer_has_passed (VisTimer *timer, VisTime *time_)
 {
 	VisTime elapsed;
@@ -516,15 +341,6 @@ int visual_timer_has_passed (VisTimer *timer, VisTime *time_)
 	return FALSE;
 }
 
-/**
- * Checks if the timer has passed a certain age by values.
- *
- * @param timer Pointer to the VisTimer which we check for age.
- * @param sec The number of seconds we check against.
- * @param usec The number of microseconds we check against.
- *
- * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL on failure.
- */
 int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec)
 {
 	VisTime passed;
@@ -535,8 +351,3 @@ int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec)
 
 	return visual_timer_has_passed (timer, &passed);
 }
-
-/**
- * @}
- */
-

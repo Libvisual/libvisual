@@ -26,11 +26,26 @@
 
 #include <libvisual/lv_defines.h>
 
+/**
+ * @defgroup VisUtils VisUtils
+ * @{
+ */
+
 VISUAL_BEGIN_DECLS
 
-/* prototypes */
+/**
+ * Checks if the given value is a power of 2.
+ *
+ * @param n Value to be checked if it's being a power of 2.
+ *
+ * @return TRUE if power of 2, FALSE if not.
+ */
 int visual_utils_is_power_of_2 (int n);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_UTILS_H */
