@@ -88,12 +88,6 @@ void _lv_log (VisLogSeverity severity, const char *file,
 
 	if (!is_valid_severity (severity) || fmt == NULL) {
 		visual_log (VISUAL_LOG_ERROR, "(malformed message)");
-		if (fmt == NULL) {
-		  printf ("wtf null\n");
-		}
-		if (!is_valid_severity (severity)) {
-		  printf ("Wtf invalid severity\n");
-		}
 		return;
 	}
 
