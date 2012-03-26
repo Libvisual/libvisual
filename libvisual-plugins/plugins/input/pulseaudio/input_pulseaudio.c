@@ -22,7 +22,6 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <pulse/pulseaudio.h>
-#include <X11/Xlib.h> 
 
 #include <libvisual/libvisual.h>
 
@@ -94,7 +93,6 @@ const VisPluginInfo *get_plugin_info( int *count ) {
 }
 
 static int inp_pulseaudio_init( VisPluginData *plugin ) {
-    XInitThreads();
     pulseaudio_priv_t *priv;
 
     priv = visual_mem_new0(pulseaudio_priv_t, 1);
