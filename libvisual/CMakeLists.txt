@@ -249,7 +249,7 @@ IF(ENABLE_DOCS)
 ENDIF(ENABLE_DOCS)
 
 # Pedantic checks
-OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur" no)
+OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur)" no)
 IF(ENABLE_PEDANTIC_CHECKS)
   ADD_DEFINITIONS(-DVISUAL_PEDANTIC_CHECKS)
 ENDIF(ENABLE_PEDANTIC_CHECKS)
