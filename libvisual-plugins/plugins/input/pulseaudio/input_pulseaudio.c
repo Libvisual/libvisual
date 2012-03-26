@@ -22,14 +22,9 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <pulse/pulseaudio.h>
-#include <signal.h>
+#include <X11/Xlib.h> 
 
 #include <libvisual/libvisual.h>
-
-#define PCM_BUF_SIZE 1024
-
-
-int record_time=5;
 
 static pa_sample_spec sample_spec = {
     .format = PA_SAMPLE_S16LE,
@@ -99,6 +94,7 @@ const VisPluginInfo *get_plugin_info( int *count ) {
 }
 
 static int inp_pulseaudio_init( VisPluginData *plugin ) {
+    XInitThreads();
     pulseaudio_priv_t *priv;
 
     priv = visual_mem_new0(pulseaudio_priv_t, 1);
@@ -168,7 +164,6 @@ void record_thread(void *data){
     pa_mainloop_api *pa_mlapi;
     pa_context *context;
     pa_buffer_attr attr;
-//    int fd;
     int ret=1;
     char msi[16];
 
@@ -177,18 +172,6 @@ void record_thread(void *data){
     memset(&attr,0,sizeof(attr));
     attr.fragsize=(uint32_t)-1;
     attr.maxlength=(uint32_t)-1;
-
-/*
-    char output_file_name[file_name_length];
-    strcpy(output_file_name,(*td).pa_ctx_name);
-    strcat(output_file_name,".raw");
-*/
-/*
-    if((fd=open(output_file_name,O_WRONLY|O_TRUNC|O_CREAT,0777))<0){
-        printf("Failed to create file\n");
-        goto quit;
-    }
-*/
 
     pa_ml=pa_mainloop_new();
     pa_mlapi=pa_mainloop_get_api(pa_ml);
