@@ -22,7 +22,7 @@
 
 #define ACTOR "lv_analyzer"
 #define INPUT "debug"
-#define MORPH "tentacle"
+#define MORPH "alphablend"
 
 #define x_exit(msg) \
     printf ("Error: %s\n", msg); \
@@ -210,7 +210,7 @@ sdl_event_handler(void)
 
             morph:
                 sdl_lock();
-                  visual_bin_set_morph_by_name (v.bin, (char*)v.morph);
+                  visual_bin_set_morph_by_name (v.bin, "alphablend");
                   visual_bin_switch_actor_by_name (v.bin, (char*)v.plugin);
                 sdl_unlock();
 
@@ -276,6 +276,9 @@ v_init (int argc, char **argv)
     v.bin    = visual_bin_new ();
     depth  = visual_video_depth_enum_from_value( 24 );
 
+    visual_bin_switch_set_style (v.bin, VISUAL_SWITCH_STYLE_MORPH);
+    visual_bin_switch_set_steps (v.bin, 10);
+
     if (v.plugin == NULL) {
         puts ("Available plugins:");
         while ((v.plugin = visual_actor_get_next_by_name (v.plugin))) {
@@ -318,9 +321,6 @@ v_init (int argc, char **argv)
     /* Called so the flag is set to false, seen we create the initial environment here */
     visual_bin_depth_changed (v.bin);
 
-    visual_bin_switch_set_style (v.bin, VISUAL_SWITCH_STYLE_MORPH);
-    visual_bin_switch_set_automatic (v.bin, 1);
-    visual_bin_switch_set_steps (v.bin, 10);
 
     visual_bin_realize (v.bin);
     visual_bin_sync (v.bin, 0);
