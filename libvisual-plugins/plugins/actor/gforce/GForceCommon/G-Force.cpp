@@ -896,7 +896,6 @@ void GForce::RecordSample( long inCurTime, float* inSound, float inScale, long i
 
 
 void GForce::RecordSample( long inCurTime ) {
-	bool drewTitleText = false;
 	long intensity;
 	float t;
 

@@ -26,8 +26,6 @@ DeltaField::DeltaField() {
 
 
 DeltaFieldData* DeltaField::GetField() {
-	bool didCalc = false;
-	
 	if ( mCurrentY >= 0 ) {
 
 		if ( ! IsCalculated() ) {

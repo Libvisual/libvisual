@@ -19,7 +19,7 @@ class UtilStr : public Hashable {
 									UtilStr( const UtilStr& inStr );
 									UtilStr( const UtilStr* inStr );
 									UtilStr( long inNum );
-									UtilStr( const void* inPtr, long numBytes );
+									UtilStr( const void* inPtr, unsigned long numBytes );
 		virtual						~UtilStr();
 								
 		//	*** Assign ***
@@ -30,8 +30,8 @@ class UtilStr : public Hashable {
 		void						Assign( const UtilStr& inStr );
 		void						Assign( long inNum );
 		void						Assign( char inChar );
-		void						Assign( const void* inPtr, long numBytes );
-		void						Assign( CEgIStream& inStream, long numBytes );
+		void						Assign( const void* inPtr, unsigned long numBytes );
+		void						Assign( CEgIStream& inStream, unsigned long numBytes );
 		
 		//  *** Append ***
 		//	Post:	The argument is appended to this string
@@ -41,7 +41,7 @@ class UtilStr : public Hashable {
 		void						Append( long inNum );
 		inline void					Append( const UtilStr* inStr );
 		inline void					Append( const UtilStr& inStr )								{ Append( inStr.getCStr(), inStr.length() );	}
-		void						Append( const void* inSrce, long numBytes ); 
+		void						Append( const void* inSrce, unsigned long numBytes );
 		
 		//	*** Operators ***
 		//	The + signifies Append() an append and the = signifies Assign()
@@ -175,11 +175,11 @@ class UtilStr : public Hashable {
 		//	Post:	Returns the character position within this string of the leftmost occurance of <c> after pos <inPos>. 
 		//			If <c> is not found, 0 is returned. Setting inPos to 0 starts from the beginning.
 		//	"blah,blah!".FindNextInstanceOf( 0, ',' ) == 5
-		long						FindNextInstanceOf( long inPos, char c ) const;
+		long						FindNextInstanceOf( unsigned long inPos, char c ) const;
 
 		//	Post:	Returns the character position within this string of the rightmost occurance of <c> after pos <inPos>. 
 		//			If <c> is not found, 0 is returned.  	
-		long						FindPrevInstanceOf( long inPos, char c ) const;
+		long						FindPrevInstanceOf( unsigned long inPos, char c ) const;
 		
 		//	Post:	Compares this str with <inStr> and returns:
 		//			"hi".compareTo( "hi", 3, true ) == 0
@@ -209,7 +209,7 @@ class UtilStr : public Hashable {
 
 		//	Post:	Appends <inStr>, exporting/translating <inData> to "meta" format (ie, all translated bytes >= 32 or <= 127)
 		void						AppendAsMeta( const UtilStr* inData );
-		void						AppendAsMeta( const void* inData, long inLen );
+		void						AppendAsMeta( void* inData, unsigned long inLen );
 		
 		//	Post:	Appends <inStr>, importing/translating <inStr> from "meta" format.
 		//	Note:	See AppendAsMeta()
@@ -217,7 +217,7 @@ class UtilStr : public Hashable {
 		//			s.AppendAsMeta( dataPtr, 5 ); 					// Encode some data and put it in s
 		//			t.AppendFromMeta( s.getCStr(), s.length() );	// t now contains exactly what was in dataPtr				
 		void						AppendFromMeta( const UtilStr* inStr );
-		void						AppendFromMeta( const void* inStr, long inLen );
+		void						AppendFromMeta( const void* inStr, unsigned long inLen );
 		
 		// Post:	Returns a psudorandom long for this string
 		long						Hash() const;
@@ -232,13 +232,13 @@ class UtilStr : public Hashable {
 		void						AppendHex( char inB1, char inB2 );
 
 		// Post:	Returns a floating point number for the given ASCII chars
-		static double				GetFloatVal( char* inNumStr, long inLen );
+		static double				GetFloatVal( const char* inNumStr, unsigned long inLen );
 		
 		//	Post:	Returns the truncated signed long value of this string.  All characters not '0'..'9' are ignored
 		//			except a leading '-'
 		//			<*outPlacePtr> is set to 10^( 1 + trunc( log10( <strVal> ) ) )
 		//	Usage:	"12.9".GetIntValue( &i ) returns 12 and assigns i to 100
-		static long					GetIntValue( char* inStr, long inLen, long* outPlacePtr = 0 );
+		static long					GetIntValue( const char* inStr, unsigned long inLen, long* outPlacePtr = 0 );
 
 		//	Longest Common Substring Seach Score
 		// 	Post:	Returns a 'score' -- the greater the score, the more similar inStr is this string.

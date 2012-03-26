@@ -22,7 +22,7 @@ ExprArray::~ExprArray() {
 
 	if ( mVals )
 		delete []mVals;
-		
+
 	if ( mExprs )
 		delete []mExprs;
 }
@@ -35,7 +35,7 @@ ExprArray::~ExprArray() {
 void ExprArray::Compile( const ArgList& inArgs, long inID, ExpressionDict& ioDict ) {
 	UtilStr str;
 	unsigned long i;
-	
+
 	// Determine the name of this expression array
 	i = inID;
 	mIDStr.Wipe();
@@ -47,28 +47,28 @@ void ExprArray::Compile( const ArgList& inArgs, long inID, ExpressionDict& ioDic
 	// Maintain memory heap for arbitrary array size...
 	mNumExprs = inArgs.GetArraySize( inID );
 	if ( mNumExprs > mDimNumExprs ) {
-	
+
 		if ( mVals )
 			delete []mVals;
-				
+
 		if ( mExprs )
 			delete []mExprs;
-			
+
 		mVals	= new float[ mNumExprs + 1 ];
 		mExprs	= new Expression[ mNumExprs + 1 ];
 		mDimNumExprs = mNumExprs;
 	}
 
 	// Add/Insert the vars to the dict
-	for ( i = 0; i < mNumExprs; i++ ) {
+	for ( int i = 0; i < mNumExprs; i++ ) {
 		str.Assign( mIDStr );
 		str.Append( (long) i );
 		mVals[ i ] = 0;
 		ioDict.AddVar( str, &mVals[ i ] );
 	}
-		
+
 	// Compile each expression array element
-	for ( i = 0; i < mNumExprs; i++ ) {
+	for ( int i = 0; i < mNumExprs; i++ ) {
 		inArgs.GetArg( inID, str, i );
 		mExprs[ i ].Compile( str, ioDict );
 	}
@@ -77,7 +77,7 @@ void ExprArray::Compile( const ArgList& inArgs, long inID, ExpressionDict& ioDic
 
 void ExprArray::Evaluate() {
 	int i;
-	
+
 	for ( i = 0; i < mNumExprs; i++ )
 		mVals[ i ] = mExprs[ i ].Evaluate();
 }
@@ -85,13 +85,13 @@ void ExprArray::Evaluate() {
 
 bool ExprArray::IsDependent( char* inStr ) {
 	int i;
-		
+
 	for ( i = 0; i < mNumExprs; i++ ) {
 		if ( mExprs[ i ].IsDependent( inStr ) )
 			return true;
-			
+
 	}
-	
+
 	return false;
 }
 
