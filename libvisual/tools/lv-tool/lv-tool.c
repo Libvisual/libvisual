@@ -34,7 +34,7 @@
 /* defaults */
 #define DEFAULT_ACTOR   "lv_analyzer"
 #define DEFAULT_INPUT   "debug"
-#define DEFAULT_MORPH   "slide"
+#define DEFAULT_MORPH   "slide_left"
 #define DEFAULT_WIDTH   320
 #define DEFAULT_HEIGHT  200
 #define DEFAULT_FPS     30
