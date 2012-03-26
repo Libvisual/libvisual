@@ -28,6 +28,7 @@
 #include <getopt.h>
 #include <libvisual/libvisual.h>
 #include "display/display.h"
+#include "config.h"
 
 
 
@@ -59,7 +60,12 @@ typedef struct
 
 SADisplayDriverDescription all_display_drivers[] =
 {
+#ifdef HAVE_SDL
         { .name = "sdl",      .creator = &sdl_driver_new      },
+#endif
+#ifdef HAVE_GL
+        { .name = "glx",      .creator = &glx_driver_new      },
+#endif
         { .name = "stdout",   .creator = &stdout_driver_new   },
 };
 
