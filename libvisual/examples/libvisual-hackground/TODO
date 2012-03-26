@@ -1,9 +1,0 @@
-TODO:
-	tests:
-		Tests for rgb<->bgr.
-		Tests for depth transformation.
-
-	benchmarks:
-		Whatever we can benchmark.
-
-
