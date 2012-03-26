@@ -76,12 +76,14 @@ void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc func, vo
 	handler->priv = priv;
 }
 
-#if defined(LV_HAVE_ISO_C_VARARGS) || defined(LV_HAVE_GNU_C_VARARGS)
-
-void _lv_log (VisLogSeverity severity, const char *file,
-	int line, const char *funcname, const char *fmt, ...)
+void _lv_log (VisLogSeverity severity,
+#if defined(_LV_HAVE_LOG_SOURCE)
+    const char *file, int line, const char *funcname,
+#endif
+    const char *fmt, ...)
 {
 	VisLogSource source;
+
 	LogHandler *handler;
 	char message[LV_LOG_MAX_MESSAGE_SIZE];
 	va_list va;
@@ -91,64 +93,40 @@ void _lv_log (VisLogSeverity severity, const char *file,
 		return;
 	}
 
-	if (verbosity > severity)
+	if (verbosity > severity) {
 		 return;
+	}
 
 	va_start (va, fmt);
 	vsnprintf (message, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
 	va_end (va);
 
+#if defined(_LV_LOG_HAVE_SOURCE)
 	source.file = file;
 	source.func = funcname;
 	source.line = line;
+#else
+	source.file = "(unknown file)";
+	source.func = "(unknown func)";
+	source.line = 0;
+#endif
 
 	handler = &log_handlers[severity];
 
 	if (handler->func != NULL) {
-		(*handler->func) (severity, message, &source, handler->priv);
+		handler->func (severity, message, &source, handler->priv);
 	} else {
 		output_to_stderr (severity, message, &source);
 	}
 }
 
-#else /* LV_HAVE_ISO_C_VARARGS && LV_HAVE_GNU_C_VARARGS */
-
-void visual_log (VisLogSeverity severity, const char *fmt, ...)
-{
-	va_list vargs;
-	LogHandler *handler;
-	char str[LV_LOG_MAX_MESSAGE_SIZE];
-
-	if (!is_valid_severity (severity) || fmt == NULL) {
-		visual_log (VISUAL_LOG_ERROR, "(malformed message)");
-		return;
-	}
-
-	if (verbosity > severity)
-		 return;
-
-	va_start (vargs, fmt);
-	vsnprintf (str, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, vargs);
-	va_end (vargs);
-
-	handler = &message_handlers[severity];
-
-	if (handler->func != NULL) {
-		handler->func (severity, str, NULL, handler->priv);
-	} else {
-		output_to_stderr (severity, str, NULL);
-	}
-}
-
-#endif /* LV_HAVE_ISO_C_VARARGS && LV_HAVE_GNU_C_VARARGS */
-
 static void output_to_stderr (VisLogSeverity severity, const char *msg,
 	VisLogSource const *source)
 {
-	if (source != NULL) {
-		fprintf (stderr, "%s %s:%d:%s: %s\n", log_prefixes[severity],
-			 source->file, source->line, source->func, msg);
-	} else {
-		fprintf (stderr, "%s %s\n", log_prefixes[severity], msg);
-	}
+#if defined(_LV_LOG_HAVE_SOURCE)
+	fprintf (stderr, "%s %s:%d:%s: %s\n", log_prefixes[severity],
+		 source->file, source->line, source->func, msg);
+#else
+	fprintf (stderr, "%s %s\n", log_prefixes[severity], msg);
+#endif
 }

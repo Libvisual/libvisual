@@ -106,6 +106,7 @@ void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler,
  */
 #ifdef LV_HAVE_ISO_C_VARARGS
 
+#define _LV_HAVE_LOG_SOURCE
 #define visual_log(severity,...)		\
 	_lv_log (severity,					\
 		__FILE__,						\
@@ -115,6 +116,7 @@ void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler,
 
 #elif defined(LV_HAVE_GNU_C_VARARGS)
 
+#define _LV_HAVE_LOG_SOURCE
 #define visual_log(severity,format...)	\
 	_lv_log (severity,					\
 		__FILE__,						\
@@ -123,13 +125,17 @@ void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler,
 		format)
 #else
 
-void visual_log (VisLogSeverity severity, const char *fmt, ...);
+#define visual_log _lv_log
 
 #endif /* LV_HAVE_ISO_C_VARARGS */
 
-void _lv_log (VisLogSeverity severity, const char *file,
-	int line, const char *funcname, const char *fmt, ...)
-	VIS_CHECK_PRINTF_FORMAT(5, 6);
+#if defined(_LV_HAVE_LOG_SOURCE)
+void _lv_log (VisLogSeverity severity, const char *file, int line, const char *funcname,
+	const char *fmt, ...) VIS_CHECK_PRINTF_FORMAT(5, 6);
+#else
+void _lv_log (VisLogSeverity severity, const char *fmt, ...)
+	VIS_CHECK_PRINTF_FORMAT(2, 3);
+#endif
 
 VISUAL_END_DECLS
 
