@@ -29,6 +29,7 @@
 #include <libvisual/lv_types.h>
 #include <libvisual/lv_mem.h>
 #include <libvisual/lv_log.h>
+#include <libvisual/lv_checks.h>
 #include <libvisual/lv_error.h>
 #include <libvisual/lv_object.h>
 
