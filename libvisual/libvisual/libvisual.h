@@ -55,7 +55,6 @@
 #include <libvisual/lv_transform.h>
 #include <libvisual/lv_bmp.h>
 #include <libvisual/lv_random.h>
-#include <libvisual/lv_ui.h>
 #include <libvisual/lv_collection.h>
 #include <libvisual/lv_hashmap.h>
 #include <libvisual/lv_cache.h>

@@ -29,7 +29,6 @@
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param.h>
-#include <libvisual/lv_ui.h>
 #include <libvisual/lv_random.h>
 
 #if defined(VISUAL_OS_WIN32)
@@ -206,9 +205,6 @@ struct _VisPluginData {
 
 	VisEventQueue		 eventqueue;	/**< The plugin it's VisEventQueue for queueing events. */
 	VisParamContainer	*params;	/**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
-	VisUIWidget		*userinterface;	/**< The plugin it's top level VisUIWidget, this acts as the container for the
-						  * rest of the user interface. */
-
 	int			 plugflags;	/**< Plugin flags, currently unused but will be used in the future. */
 
 	VisRandomContext	 random;	/**< Pointer to the plugin it's private random context. It's highly adviced to use
@@ -276,27 +272,6 @@ int visual_plugin_events_pump (VisPluginData *plugin);
  * @return A pointer to the requested VisEventQueue or NULL on failure.
  */
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
-
-/**
- * Sets a VisUIWidget as top user interface widget for the plugin. When a VisUI
- * tree is requested by a client, to render a configuration userinterface, this
- * VisUIWidget is used as top widget.
- *
- * @param plugin Pointer to the VisPluginData to which we set the VisUIWidget as top widget.
- * @param widget Pointer to the VisUIWidget that we use as top widget for the user interface.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL on failure.
- */
-int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget);
-
-/**
- * Retrieves the VisUI top widget for the plugin.
- *
- * @param plugin Pointer to the VisPluginData of which we request the VisUIWidget that serves as top widget.
- *
- * @return Pointer to the VisUIWidget that serves as top widget, possibly NULL.
- */
-VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin);
 
 /**
  * Gives the VisPluginInfo related to a VisPluginData.

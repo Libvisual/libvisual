@@ -25,7 +25,6 @@
 #define _LV_LIBVISUAL_H
 
 #include <libvisual/lv_param.h>
-#include <libvisual/lv_ui.h>
 
 /**
  * @defgroup Libvisual Libvisual
@@ -60,13 +59,6 @@ int visual_get_api_version (void);
  * @return A pointer to the libvisual global VisParamContainer.
  */
 VisParamContainer *visual_get_params (void);
-
-/**
- * Returns a pointer to the top container of libvisual it's configuration userinterface.
- *
- * @return A pointer to the libvisual configuration VisUIWidget.
- */
-VisUIWidget *visual_get_userinterface (void);
 
 /**
  * Initialize libvisual. Sets up a plugin registry, register the program name and such.

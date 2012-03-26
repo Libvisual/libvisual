@@ -198,22 +198,6 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
 	return &plugin->eventqueue;
 }
 
-int visual_plugin_set_userinterface (VisPluginData *plugin, VisUIWidget *widget)
-{
-	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
-
-	plugin->userinterface = widget;
-
-	return VISUAL_OK;
-}
-
-VisUIWidget *visual_plugin_get_userinterface (VisPluginData *plugin)
-{
-	visual_log_return_val_if_fail (plugin != NULL, NULL);
-
-	return plugin->userinterface;
-}
-
 VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
 {
 	visual_log_return_val_if_fail (plugin != NULL, NULL);

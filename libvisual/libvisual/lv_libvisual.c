@@ -43,11 +43,7 @@ char *__lv_progname = NULL;
 /* The global params container */
 VisParamContainer *__lv_paramcontainer = NULL;
 
-/* The userinterface for the global params */
-VisUIWidget *__lv_userinterface = NULL;
-
 static int init_params (VisParamContainer *paramcontainer);
-static VisUIWidget *make_userinterface (void);
 
 static int init_params (VisParamContainer *paramcontainer)
 {
@@ -88,74 +84,6 @@ static int init_params (VisParamContainer *paramcontainer)
 	return 0;
 }
 
-static VisUIWidget *make_userinterface ()
-{
-	VisUIWidget *vbox;
-	VisUIWidget *hbox1;
-	VisUIWidget *hbox2;
-	VisUIWidget *hbox3;
-	VisUIWidget *label1;
-	VisUIWidget *label2;
-	VisUIWidget *label3;
-	VisUIWidget *label4;
-	VisUIWidget *checkbox1;
-	VisUIWidget *checkbox2;
-	VisUIWidget *numeric1;
-	VisUIWidget *numeric2;
-	VisUIWidget *numeric3;
-
-	vbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_VERTICAL);
-	hbox1 = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
-	hbox2 = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
-	hbox3 = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
-
-	label1 = visual_ui_label_new (_("Show info for"), FALSE);
-	label2 = visual_ui_label_new (_("seconds"), FALSE);
-	label3 = visual_ui_label_new (_("cover art width"), FALSE);
-	label4 = visual_ui_label_new (_("cover art height"), FALSE);
-
-	checkbox1 = visual_ui_checkbox_new (_("Show song information"), TRUE);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox1),
-			visual_param_container_get (__lv_paramcontainer, "songinfo show"));
-
-	checkbox2 = visual_ui_checkbox_new (_("Show song information in plugins"), TRUE);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox2),
-			visual_param_container_get (__lv_paramcontainer, "songinfo in plugin"));
-
-	numeric1 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1),
-			visual_param_container_get (__lv_paramcontainer, "songinfo timeout"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 1, 60, 1, 0);
-
-	numeric2 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2),
-			visual_param_container_get (__lv_paramcontainer, "songinfo cover size x"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric2), 32, 256, 2, 0);
-
-	numeric3 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric3),
-			visual_param_container_get (__lv_paramcontainer, "songinfo cover size y"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric3), 32, 256, 2, 0);
-
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox1), label1);
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox1), numeric1);
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox1), label2);
-
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox2), label3);
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox2), numeric2);
-
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox3), label4);
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox3), numeric3);
-
-	visual_ui_box_pack (VISUAL_UI_BOX (vbox), checkbox1);
-	visual_ui_box_pack (VISUAL_UI_BOX (vbox), checkbox2);
-	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox1);
-	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox2);
-	visual_ui_box_pack (VISUAL_UI_BOX (vbox), hbox3);
-
-	return vbox;
-}
-
 const char *visual_get_version ()
 {
 	return VISUAL_VERSION;
@@ -169,11 +97,6 @@ int visual_get_api_version ()
 VisParamContainer *visual_get_params ()
 {
 	return __lv_paramcontainer;
-}
-
-VisUIWidget *visual_get_userinterface ()
-{
-	return __lv_userinterface;
 }
 
 int visual_init (int *argc, char ***argv)
@@ -230,8 +153,6 @@ int visual_init (int *argc, char ***argv)
 	__lv_paramcontainer = visual_param_container_new ();
 	init_params (__lv_paramcontainer);
 
-	__lv_userinterface = make_userinterface ();
-
 	__lv_initialized = TRUE;
 
 	return VISUAL_OK;
@@ -260,16 +181,6 @@ int visual_quit ()
 	ret = visual_object_unref (VISUAL_OBJECT (__lv_paramcontainer));
 	if (ret < 0)
 		visual_log (VISUAL_LOG_WARNING, _("Global param container: destroy failed: %s"), visual_error_to_string (ret));
-
-	ret = visual_object_unref (VISUAL_OBJECT (__lv_userinterface));
-	if (ret < 0)
-		visual_log (VISUAL_LOG_WARNING, _("Error during UI destroy: %s"), visual_error_to_string (ret));
-
-        if (__lv_progname != NULL) {
-                visual_mem_free (__lv_progname);
-
-		__lv_progname = NULL;
-	}
 
 	__lv_initialized = FALSE;
 	return VISUAL_OK;
