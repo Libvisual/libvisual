@@ -11,10 +11,7 @@
 #include "lv_x11_key.h"
 #include "glx_driver.h"
 
-
-
 #define GLX_NATIVE(obj)					(VISUAL_CHECK_CAST ((obj), GLXNative))
-
 
 typedef struct _GLXNative GLXNative;
 
@@ -49,7 +46,7 @@ static int native_getvideo (SADisplay *display, VisVideo *screen);
 static int native_updaterect (SADisplay *display, VisRectangle *rect);
 static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue);
 
-static int get_nearest_resolution (SADisplay *display, int *width, int *height);
+/* static int get_nearest_resolution (SADisplay *display, int *width, int *height); */
 
 static int X11_Pending(Display *display);
 
@@ -124,13 +121,10 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 	GLXNative *native = GLX_NATIVE (display->native);
 	XVisualInfo *vi;
 	Colormap cmap;
-	int dpyWidth, dpyHeight;
-	int i;
 	int glxMajorVersion, glxMinorVersion;
 	int vidModeMajorVersion, vidModeMinorVersion;
 	XF86VidModeModeInfo **modes;
 	int modeNum;
-	int bestMode;
 	Atom wmDelete;
 	Window winDummy;
 	unsigned int borderDummy;
@@ -144,9 +138,6 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 
 	lv_x11_key_init (&native->key);
 
-	/* set best mode to current */
-	bestMode = 0;
-
 	/* get a connection */
 	native->dpy = XOpenDisplay(0);
 	native->screen = DefaultScreen(native->dpy);
@@ -157,7 +148,11 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 	XF86VidModeGetAllModeLines(native->dpy, native->screen, &modeNum, &modes);
 	/* save desktop-resolution before switching modes */
 	native->deskMode = *modes[0];
+
 	/* look for mode with requested resolution */
+/*
+	bestMode = 0;
+
 	for (i = 0; i < modeNum; i++)
 	{
 		if ((modes[i]->hdisplay == width) && (modes[i]->vdisplay == height))
@@ -165,6 +160,7 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 			bestMode = i;
 		}
 	}
+*/
 
 	/* get an appropriate visual */
 	vi = get_xvisualinfo_filter_capabilities (native->dpy, native->screen, vidoptions);
@@ -260,9 +256,10 @@ static int native_unlock (SADisplay *display)
 
 static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale)
 {
-	GLXNative *native = GLX_NATIVE (display->native);
-//	Surface *screen = native->screen;
 /*
+	GLXNative *native = GLX_NATIVE (display->native);
+	Surface *screen = native->screen;
+
 	if (fullscreen == TRUE) {
 		if (!(screen->flags & FULLSCREEN)) {
 			if (autoscale == TRUE) {
@@ -320,8 +317,6 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 {
 	GLXNative *native = GLX_NATIVE (display->native);
 	XEvent xevent;
-	int sym;
-	int mod;
 
 	while (X11_Pending (native->dpy) > 0) {
 		VisKeySym keysym;
@@ -401,11 +396,13 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 	return 0;
 }
 
+/*
 static int get_nearest_resolution (SADisplay *display, int *width, int *height)
 {
 
 	return 0;
 }
+*/
 
 /* Ack!  XPending() actually performs a blocking read if no events available */
 /* Taken from SDL */
