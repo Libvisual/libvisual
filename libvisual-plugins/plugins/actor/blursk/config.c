@@ -24,7 +24,6 @@
 #include "blursk.h"
 
 #include <libvisual/libvisual.h>
-#include <stdio.h>
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -54,7 +53,7 @@ void config_default(BlurskConfig *conf)
     char config_default_show_info[] = "Never show info";
     /*char config_default_fullscreen_method[] = "None";*/
 
-    
+
     /* window geometry -- generally ignored */
     conf->width = 256;
     conf->height = 128;
@@ -120,18 +119,18 @@ void config_default(BlurskConfig *conf)
 /**
  * generate a new config-string from current config
  */
-void config_string_genstring(BlurskPrivate *priv) 
+void config_string_genstring(BlurskPrivate *priv)
 {
     char *string = paste_genstring();
 
     VisParamContainer *paramcontainer = visual_plugin_get_params(priv->plugin);
-    
+
     VisParamEntry *param = visual_param_container_get(paramcontainer, "config_string");
 
     /* don't set if it has already been set */
     if(strcmp(string, visual_param_entry_get_string(param)) != 0)
         visual_param_entry_set_string(param, string);
-    
+
     priv->update_config_string = 0;
 }
 
@@ -166,36 +165,36 @@ static void _config_load_preset(BlurskPrivate *priv, BlurskConfig *conf)
         {"overall_effect", VISUAL_PARAM_ENTRY_TYPE_STRING, &conf->overall_effect},
         {"floaters", VISUAL_PARAM_ENTRY_TYPE_STRING, &conf->floaters},
     };
-    
-    
-    
+
+
+
     int i;
-        
+
     for(i = 0; i < QTY(entries); i++)
     {
         VisParamContainer *paramcontainer = visual_plugin_get_params(priv->plugin);
         VisParamEntry *ptmp = visual_param_container_get(paramcontainer, entries[i].name);
-        
+
         switch(entries[i].type)
         {
             case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
             {
                 int *integer = entries[i].val;
-                
+
                 /* only update if values differ */
                 if(*integer != visual_param_entry_get_integer(ptmp))
                     visual_param_entry_set_integer(ptmp, *integer);
                 break;
             }
-            
-            
+
+
             case VISUAL_PARAM_ENTRY_TYPE_COLOR:
             {
                 VisColor *color = visual_param_entry_get_color(ptmp);
                 VisColor ncolor;
                 uint32_t nicolor = (((color->b)<<16) + ((color->g)<<8) + color->r);
                 uint32_t *icolor = entries[i].val;
-            
+
                 /* only update if values differ */
                 if(*icolor != nicolor)
                 {
@@ -204,12 +203,12 @@ static void _config_load_preset(BlurskPrivate *priv, BlurskConfig *conf)
                 }
                 break;
             }
-            
-            
+
+
             case VISUAL_PARAM_ENTRY_TYPE_STRING:
             {
                 char **string = entries[i].val;
-            
+
                 /* only update if values differ */
                 if(strcmp(*string, visual_param_entry_get_string(ptmp)) != 0)
                     visual_param_entry_set_string(ptmp, *string);
@@ -230,31 +229,31 @@ static void __color_genmap(BlurskPrivate *priv)
 /**
  * parse a blursk-config-string (tm)
  */
-static void _change_config_string(BlurskPrivate *priv, char **string, VisParamEntry *p, int *(validator)(void *value)) 
+static void _change_config_string(BlurskPrivate *priv, char **string, VisParamEntry *p, int *(validator)(void *value))
 {
 
     if(!validator || validator(visual_param_entry_get_string(p)))
     {
         BlurskConfig *c;
-        
+
         /* free previous string? */
         if(*string)
             visual_mem_free(*string);
-        
+
         *string = strdup(visual_param_entry_get_string(p));
-        
+
         /* parse the string */
         c = paste_parsestring(*string);
 
         /* use this configuration */
         _config_load_preset(priv, c);
-        
+
     }
     /* reset to previous value */
     else
         visual_param_entry_set_string(p, *string);
-    
-    
+
+
 }
 
 /**
@@ -263,7 +262,7 @@ static void _change_config_string(BlurskPrivate *priv, char **string, VisParamEn
 static void _change_color(BlurskPrivate *priv, uint32_t **color, VisParamEntry *p, int *(validator)(void *value))
 {
     VisColor *c;
-    
+
     c = visual_param_entry_get_color(p);
     *color = 0;
     *color = (uint32_t *) (intptr_t)(((c->r)<<16) + ((c->g)<<8) + c->b);
@@ -273,9 +272,9 @@ static void _change_color(BlurskPrivate *priv, uint32_t **color, VisParamEntry *
 /**
  * callback to change a string parameter (called by config_change_param)
  */
-static void _change_string(BlurskPrivate *priv, char **string, 
+static void _change_string(BlurskPrivate *priv, char **string,
                            VisParamEntry *p, int *(validator)(void *value))
-{ 
+{
     visual_log_return_if_fail(visual_param_entry_get_string(p));
 
     if(!validator || validator(visual_param_entry_get_string(p)))
@@ -283,9 +282,9 @@ static void _change_string(BlurskPrivate *priv, char **string,
         /* free previous string? */
         if(*string)
             visual_mem_free(*string);
-        
+
         *string = strdup(visual_param_entry_get_string(p));
-        
+
         priv->update_config_string = 1;
     }
     /* reset to previous value */
@@ -300,14 +299,14 @@ static void _change_string(BlurskPrivate *priv, char **string,
 static void _change_bool(BlurskPrivate *priv, int **boolean, VisParamEntry *p, int *(validator)(void *value))
 {
     int t = visual_param_entry_get_integer(p);
-    
+
     /* validate boolean */
     if(t == 0 || t == 1)
     {
         *boolean = (int *) (intptr_t)t;
-        
+
         priv->update_config_string = 1;
-    }           
+    }
     /* reset to previous value */
     else
         visual_param_entry_set_integer(p, **boolean);
@@ -319,7 +318,7 @@ static void _change_bool(BlurskPrivate *priv, int **boolean, VisParamEntry *p, i
 static void _change_int(BlurskPrivate *priv, int **integer, VisParamEntry *p, int *(validator)(void *value))
 {
     *integer = (int *) (intptr_t)visual_param_entry_get_integer(p);
-    
+
     priv->update_config_string = 1;
 }
 
@@ -340,7 +339,7 @@ static int _fade_speed_validate(char *speed)
         case 'F':
             return 1;
     }
-    
+
     return 0;
 }
 
@@ -356,7 +355,7 @@ static int _flash_style_validate(char *style)
        strcmp(style, "No flash") == 0 ||
        strcmp(style, "Random flash"))
         return 1;
-    
+
     return 0;
 }
 
@@ -372,7 +371,7 @@ static int _overall_effect_validate(char *effect)
        strcmp(effect, "Ripple effect") == 0 ||
        strcmp(effect, "Normal effect") == 0)
         return 1;
-    
+
     return 0;
 }
 
@@ -385,14 +384,14 @@ static int _floaters_validate(char *floaters)
 {
     char *tmp;
     int i = 0;
-    
+
     while((tmp = floaters_name(i)))
     {
         if(strcmp(floaters, tmp) == 0)
             return 1;
         i++;
     }
-    
+
     return 0;
 }
 
@@ -420,14 +419,14 @@ static int _blur_style_validate(char *style)
 {
     char *tmp;
     int i = 0;
-    
+
     while((tmp = blur_name(i)))
     {
         if(strcmp(style, tmp) == 0)
             return 1;
         i++;
     }
-    
+
     return 0;
 }
 
@@ -448,7 +447,7 @@ static int _blur_transition_speed_validate(char *speed)
         case 'F':
             return 1;
     }
-    
+
     return 0;
 }
 
@@ -461,14 +460,14 @@ static int _blur_when_validate(char *when)
 {
     char *tmp;
     int i = 0;
-    
+
     while((tmp = blur_when_name(i)))
     {
         if(strcmp(when, tmp) == 0)
             return 1;
         i++;
     }
-    
+
     return 0;
 }
 
@@ -489,7 +488,7 @@ static int _cpu_speed_validate(char *speed)
         case 'F':
             return 1;
     }
-    
+
     return 0;
 }
 
@@ -518,7 +517,7 @@ static int _signal_style_validate(char *style)
         case 'P':
             return 1;
     }
-    
+
     return 0;
 }
 
@@ -538,24 +537,24 @@ static int _plot_style_validate(char *style)
         /* Radar */
         case 'R':
         /* Dots */
-        case 'D': 
+        case 'D':
         /* Fuzzy dots */
-        case 'F': 
+        case 'F':
         /* Plus signs */
-        case 'P': 
+        case 'P':
         /* Airbrush */
-        case 'A': 
+        case 'A':
         /* Edges */
-        case 'E': 
+        case 'E':
         /* Mirrored */
-        case 'M': 
+        case 'M':
         /* Starburst */
         case 'S':
         /* None */
         case 'N':
             return 1;
     }
-    
+
     return 0;
 }
 
@@ -568,17 +567,17 @@ static int _color_style_validate(char *name)
 {
     int i;
     char *oname;
-    
+
 
     for(i = 0; (oname = color_name(i)); i++)
     {
         if(strcmp(name, oname) == 0)
             return 1;
     }
-    
+
     if(strcmp(name, "Random") == 0)
         return 1;
-    
+
     return 0;
 }
 
@@ -588,7 +587,7 @@ static int _color_style_validate(char *name)
  * @return 0 if invalid, 1 if valid
  */
 static int _color_signal_validate(char *color)
-{    
+{
     switch(color[0])
     {
         case 'N':
@@ -596,7 +595,7 @@ static int _color_signal_validate(char *color)
         case 'C':
             return 1;
     }
-    
+
     return 0;
 }
 
@@ -618,7 +617,7 @@ static int _color_background_validate(char *bg)
         case 'F':
             return 1;
     }
-    
+
     return 0;
 }
 
@@ -642,7 +641,7 @@ void config_change_param(BlurskPrivate *priv, VisParamEntry *p)
         /* validator function */
         int (*validator)(void *value);
         /* function called to change parameter */
-        void (*change)(BlurskPrivate *priv, void **value, 
+        void (*change)(BlurskPrivate *priv, void **value,
                        VisParamEntry *parameter, int (*validator)(void *value));
         /* function called after parameter change */
         void (*postchange)(BlurskPrivate *priv);
@@ -673,9 +672,9 @@ void config_change_param(BlurskPrivate *priv, VisParamEntry *p)
         {"info_timeout", &config.info_timeout, NULL, (void *) _change_int, NULL},
         {"show_timestamp", &config.show_timestamp, NULL, (void *) _change_bool, NULL}
     };
-    
-    
-    
+
+
+
     /** look for parameter in our structure */
     int i;
     for(i = 0; i < QTY(parms); i++)
@@ -684,19 +683,17 @@ void config_change_param(BlurskPrivate *priv, VisParamEntry *p)
         if(!visual_param_entry_is(p, parms[i].name)) {
             continue;
         }
-        
+
         /* call this parameters' change handler */
         if(parms[i].change)
             parms[i].change(priv, parms[i].value, p, parms[i].validator);
-        
+
         /* call this parameters' post-change handler */
         if(parms[i].postchange)
             parms[i].postchange(priv);
-        
+
         return;
     }
-    
-    printf("Unknown param '%s'\n", visual_param_entry_get_name(p));
+
+    visual_log(VISUAL_LOG_WARNING, "Unknown param '%s'", visual_param_entry_get_name(p));
 }
-
-
