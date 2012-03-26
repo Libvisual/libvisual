@@ -222,12 +222,38 @@ static int _parse_args(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
+static void v_cycleActor (int prev)
+{
+    const char *name;
+    name = (prev ? visual_actor_get_prev_by_name ((char *)actor_name)
+                     : visual_actor_get_next_by_name ((char *)actor_name));
+    if (name == NULL) {
+        name = (prev ? visual_actor_get_prev_by_name (0)
+                         : visual_actor_get_next_by_name (0));
+    }
+    memset(actor_name, 0, sizeof(actor_name));
+    memcpy(actor_name, name, strlen(name));
+}
+
+static void v_cycleMorph ()
+{
+    const char *name;
+    name = visual_morph_get_next_by_name((char *)morph_name);
+    if(name == NULL) {
+        name = visual_morph_get_next_by_name(0);
+    }
+    memset(morph_name, 0, sizeof(morph_name));
+    memcpy(morph_name, name, strlen(name));
+}
 
 /******************************************************************************
  ******************************************************************************
  ******************************************************************************/
 int main (int argc, char **argv)
 {
+        int depthflag;
+        VisVideoDepth depth;
+
         /* set defaults */
         width = DEFAULT_WIDTH;
         height = DEFAULT_HEIGHT;
@@ -277,9 +303,7 @@ int main (int argc, char **argv)
                 goto _m_exit;
         }
 
-
         /* handle depth? */
-        int depthflag, depth;
         if((depthflag = visual_actor_get_supported_depth(actor)) 
            == VISUAL_VIDEO_DEPTH_GL)
         {
