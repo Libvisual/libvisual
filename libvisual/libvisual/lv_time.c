@@ -86,19 +86,19 @@ int visual_time_get (VisTime *time_)
 }
 
 
-long visual_time_get_msecs(VisTime *time_)
+long visual_time_get_msecs (VisTime *time_)
 {
-    visual_return_val_if_fail(time_ != NULL, 0);
+	visual_return_val_if_fail (time_ != NULL, 0);
 
-    return time_->tv_sec * 1000 + (time_->tv_usec + 500) / 1000;
+	return time_->sec * 1000 + (time_->usec + 500) / 1000;
 }
 
 int visual_time_set (VisTime *time_, long sec, long usec)
 {
 	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
-	time_->tv_sec = sec;
-	time_->tv_usec = usec;
+	time_->sec = sec;
+	time_->usec = usec;
 
 	return VISUAL_OK;
 }
@@ -121,8 +121,8 @@ int visual_time_copy (VisTime *dest, VisTime *src)
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_TIME_NULL);
 
-	dest->tv_sec = src->tv_sec;
-	dest->tv_usec = src->tv_usec;
+	dest->sec = src->sec;
+	dest->usec = src->usec;
 
 	return VISUAL_OK;
 }
@@ -133,12 +133,12 @@ int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
 	visual_return_val_if_fail (time1 != NULL, -VISUAL_ERROR_TIME_NULL);
 	visual_return_val_if_fail (time2 != NULL, -VISUAL_ERROR_TIME_NULL);
 
-	dest->tv_usec = time2->tv_usec - time1->tv_usec;
-	dest->tv_sec = time2->tv_sec - time1->tv_sec;
+	dest->usec = time2->usec - time1->usec;
+	dest->sec = time2->sec - time1->sec;
 
-	if (dest->tv_usec < 0) {
-		dest->tv_usec = VISUAL_USEC_PER_SEC + dest->tv_usec;
-		dest->tv_sec--;
+	if (dest->usec < 0) {
+		dest->usec = VISUAL_USEC_PER_SEC + dest->usec;
+		dest->sec--;
 	}
 
 	return VISUAL_OK;
@@ -149,10 +149,10 @@ int visual_time_past (VisTime *time_, VisTime *past)
 	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 	visual_return_val_if_fail (past != NULL, -VISUAL_ERROR_TIME_NULL);
 
-	if (time_->tv_sec > past->tv_sec)
+	if (time_->sec > past->sec)
 		return TRUE;
 
-	if (time_->tv_sec == past->tv_sec && time_->tv_usec > past->tv_usec)
+	if (time_->sec == past->sec && time_->usec > past->usec)
 		return TRUE;
 
 	return FALSE;
@@ -271,13 +271,13 @@ int visual_timer_continue (VisTimer *timer)
 
 	visual_time_get (&timer->start);
 
-	if (timer->start.tv_usec < elapsed.tv_usec) {
-		timer->start.tv_usec += VISUAL_USEC_PER_SEC;
-		timer->start.tv_sec--;
+	if (timer->start.usec < elapsed.usec) {
+		timer->start.usec += VISUAL_USEC_PER_SEC;
+		timer->start.sec--;
 	}
 
-	timer->start.tv_sec -= elapsed.tv_sec;
-	timer->start.tv_usec -= elapsed.tv_usec;
+	timer->start.sec -= elapsed.sec;
+	timer->start.usec -= elapsed.usec;
 
 	timer->active = TRUE;
 
@@ -310,7 +310,7 @@ int visual_timer_elapsed_msecs (VisTimer *timer)
 
 	visual_timer_elapsed (timer, &cur);
 
-	return (cur.tv_sec * VISUAL_MSEC_PER_SEC) + (cur.tv_usec / VISUAL_MSEC_PER_SEC);
+	return (cur.sec * VISUAL_MSEC_PER_SEC) + (cur.usec / VISUAL_MSEC_PER_SEC);
 }
 
 int visual_timer_elapsed_usecs (VisTimer *timer)
@@ -321,7 +321,7 @@ int visual_timer_elapsed_usecs (VisTimer *timer)
 
 	visual_timer_elapsed (timer, &cur);
 
-	return (cur.tv_sec * VISUAL_USEC_PER_SEC) + cur.tv_usec;
+	return (cur.sec * VISUAL_USEC_PER_SEC) + cur.usec;
 }
 
 int visual_timer_has_passed (VisTimer *timer, VisTime *time_)
@@ -333,9 +333,9 @@ int visual_timer_has_passed (VisTimer *timer, VisTime *time_)
 
 	visual_timer_elapsed (timer, &elapsed);
 
-	if (time_->tv_sec == elapsed.tv_sec && time_->tv_usec <= elapsed.tv_usec)
+	if (time_->sec == elapsed.sec && time_->usec <= elapsed.usec)
 		return TRUE;
-	else if (time_->tv_sec < elapsed.tv_sec)
+	else if (time_->sec < elapsed.sec)
 		return TRUE;
 
 	return FALSE;

@@ -577,7 +577,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
 	/* Now the plugin is set up and ready to be realized, also random seed its random context */
 	visual_time_get (&time_);
-	visual_random_context_set_seed (&plugin->random, time_.tv_usec);
+	visual_random_context_set_seed (&plugin->random, time_.usec);
 
 	return plugin;
 }

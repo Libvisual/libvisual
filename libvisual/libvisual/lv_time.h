@@ -47,9 +47,9 @@ typedef struct _VisTimer VisTimer;
  * The VisTime structure can contain seconds and microseconds for timing purpose.
  */
 struct _VisTime {
-	VisObject	object;		/**< The VisObject data. */
-	long		tv_sec;		/**< seconds. */
-	long		tv_usec;	/**< microseconds. */
+	VisObject object;     /**< The VisObject data. */
+	long      sec;        /**< seconds. */
+	long      usec;       /**< microseconds. */
 };
 
 /**

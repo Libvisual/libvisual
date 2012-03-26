@@ -917,7 +917,7 @@ long nodeClass::Rnd( long min, long max ) {
 
 	visual_time_get (&curTime);
 	
-	srand (curTime.tv_usec + curTime.tv_sec);
+	srand (curTime.usec + curTime.sec);
 	retNum = rand() / (maxRnd / (max - min + 1)) + min;
 
 	if ( retNum >= max )

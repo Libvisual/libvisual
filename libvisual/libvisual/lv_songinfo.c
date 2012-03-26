@@ -217,12 +217,12 @@ long visual_songinfo_age (VisSongInfo *songinfo)
 	visual_time_get (&cur);
 
 	/* Clock has been changed into the past */
-	if (cur.tv_sec < songinfo->timer.start.tv_sec)
+	if (cur.sec < songinfo->timer.start.sec)
 		visual_songinfo_mark (songinfo);
 
 	visual_time_difference (&cur, &songinfo->timer.start, &cur);
 
-	return cur.tv_sec;
+	return cur.sec;
 }
 
 int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
