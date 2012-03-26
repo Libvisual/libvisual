@@ -173,10 +173,10 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
 
 		priv->pipe = GST_PIPELINE_CAST(gst_parse_launch (pipe, &err));
 
-		if (err)
-			g_print ("FUCK UUU %s\n", err->message);
-
-		printf ("ja hooradfh\n");
+		if (err) {
+			visual_log (VISUAL_LOG_ERROR, "Failed to create pipeline", err->message);
+			return;
+		}
 
 		gst_element_set_state (GST_ELEMENT (priv->pipe), GST_STATE_PLAYING);
 
@@ -202,8 +202,6 @@ static void have_data (GstElement *sink, GstBuffer *buffer, gpointer data)
 	VisVideo *video = data;
 	uint32_t *dest = visual_video_get_pixels (video);
 	uint32_t *src = (uint32_t *) GST_BUFFER_DATA (buffer);
-
-	printf ("ja hoor\n");
 
 	visual_mem_copy (dest, src, GST_BUFFER_SIZE (buffer));
 }
