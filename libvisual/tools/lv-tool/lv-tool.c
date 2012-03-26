@@ -412,10 +412,9 @@ int main (int argc, char **argv)
                                         visual_bin_switch_actor_by_name(bin, actor_name);
 
                                         /* get new actor */
-                                        //actor = visual_bin_get_actor(bin);
+                                        actor = visual_bin_get_actor(bin);
 
                                         /* handle depth of new actor */
-/*
                                         depthflag = visual_actor_get_supported_depth(actor);
                                         if(depthflag == VISUAL_VIDEO_DEPTH_GL)
                                                 visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
@@ -428,7 +427,6 @@ int main (int argc, char **argv)
                                                         visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
                                         }
                                         bin->depthforcedmain = bin->depth;
-*/
                                         break;
                                 }
 
