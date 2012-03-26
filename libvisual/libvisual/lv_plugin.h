@@ -58,9 +58,21 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PLUGIN_TYPE_NULL		"Libvisual:core:null"
 
 /**
- * Standard defination for GPL plugins, use this for the .license entry in VisPluginInfo
+ * Standard defination for GPLv1 plugins, use this for the .license entry in VisPluginInfo
  */
-#define VISUAL_PLUGIN_LICENSE_GPL	"GPL"
+#define VISUAL_PLUGIN_LICENSE_GPLv1 "GPLv1"
+
+/**
+ * Standard defination for GPLv2 plugins, use this for the .license entry in VisPluginInfo
+ */
+#define VISUAL_PLUGIN_LICENSE_GPL   "GPLv2"
+
+/**
+ * Standard defination for GPLv3 plugins, use this for the .license entry in VisPluginInfo
+ */
+
+#define VISUAL_PLUGIN_LICENSE_GPLv3 "GPLv3"
+
 /**
  * Standard defination for LGPL plugins, use this for the .license entry in VisPluginInfo
  */
