@@ -75,7 +75,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 	static VisPluginInfo info[] = {{
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-		.plugname = "lv_flower",
+		.plugname = "flower",
 		.name = "libvisual Pseudotoad flower, yellow rose of texas",
 		.author = N_("Original by: Antti Silvast <asilvast@iki.fi>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
