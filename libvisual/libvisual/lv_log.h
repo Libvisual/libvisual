@@ -55,7 +55,7 @@ typedef struct {
 	const char	 *file;
 	const char	 *func;
 	unsigned int  line;
-} VisLogMessageSource;
+} VisLogSource;
 
 /**
  * Functions that want to handle messages must match this signature.
@@ -68,22 +68,23 @@ typedef struct {
  *
  * @arg priv Private field to be used by the client. The library will never touch this.
  */
-typedef void (*VisLogMessageHandlerFunc) (VisLogSeverity severity, const char *message,
-	const VisLogMessageSource *source, void *priv);
+typedef void (*VisLogHandlerFunc) (VisLogSeverity severity, const char *message,
+	const VisLogSource *source, void *priv);
 
 /**
- * Set the library it's verbosity level.
+ * Set the log verbosity level. Any message of a lower severity then
+ * the given level will be dropped.
  *
- * @param v The verbose level as a VisLogVerboseness enumerate value.
+ * @param level The verbosity level
  */
-void visual_log_set_verboseness (VisLogSeverity severity);
+void visual_log_set_verbosity (VisLogSeverity level);
 
 /**
  * Get the current library it's verbosity level.
  *
  * @return The verboseness level as a VisLogVerboseness enumerate value.
  */
-VisLogSeverity visual_log_get_verboseness (void);
+VisLogSeverity visual_log_get_verbosity (void);
 
 /**
  * Set the callback function that handles info messages.
@@ -91,7 +92,7 @@ VisLogSeverity visual_log_get_verboseness (void);
  * @param handler The custom message handler callback.
  * @param priv Optional private data to pass on to the handler.
  */
-void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandlerFunc handler, void *priv);
+void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *priv);
 
 /**
  * Used for log messages, this is brought under a define so

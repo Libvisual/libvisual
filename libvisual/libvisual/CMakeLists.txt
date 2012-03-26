@@ -39,6 +39,7 @@ SET(libvisual_HEADERS
   lv_time.h
   lv_random.h
   lv_error.h
+  lv_checks.h
   lv_types.h
   lv_thread.h
   lv_object.h

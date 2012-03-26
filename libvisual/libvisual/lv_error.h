@@ -31,28 +31,6 @@
  * @{
  */
 
-/**
- * Return if @a expr is FALSE, showing a critical message with
- * useful information.
- */
-#define visual_return_if_fail(expr)			\
-	if (!(expr)) {								\
-		visual_log (VISUAL_LOG_WARNING,			\
-			"Assertion `%s' failed", #expr);	\
-		return;									\
-	}
-
-/**
- * Return if @a val if @a expr is FALSE, showing a critical message
- * with useful information.
- */
-#define visual_return_val_if_fail(expr, val)	\
-	if (!(expr)) {									\
-		visual_log (VISUAL_LOG_WARNING,				\
-			"Assertion `%s' failed", #expr);		\
-		return (val);								\
-	}
-
 VISUAL_BEGIN_DECLS
 
 /* WARNING when you add an new error to this list, make sure that you update lv_error.c it's
@@ -68,6 +46,7 @@ enum {
 	VISUAL_ERROR_GENERAL,				/**< General error. */
 	VISUAL_ERROR_NULL,				/**< Something is NULL that shouldn't be. */
 	VISUAL_ERROR_IMPOSSIBLE,			/**< The impossible happened, this should never happen. */
+    VISUAL_ERROR_FAILED_CHECK,          /**< Failed an assertion check */
 
 	/* Error entries for the VisActor system */
 	VISUAL_ERROR_ACTOR_NULL,			/**< The VisActor is NULL. */
@@ -178,7 +157,7 @@ enum {
 	VISUAL_ERROR_PLUGIN_HANDLE_NULL,		/**< The dlopen handle of the plugin is NULL. */
 	VISUAL_ERROR_PLUGIN_ALREADY_REALIZED,		/**< The plugin is already realized. */
 	VISUAL_ERROR_PLUGIN_NO_LIST,			/**< The plugin list can't be found. */
-	VISUAL_ERROR_PLUGIN_NOT_FOUND,
+	VISUAL_ERROR_PLUGIN_NOT_FOUND,          /**< The plugin can't be found */
 
 	/* Error entries for the VisRandom system */
 	VISUAL_ERROR_RANDOM_CONTEXT_NULL,		/**< The VisRandomContext is NULL. */
@@ -279,7 +258,7 @@ enum {
  *
  * @arg priv Private field to be used by the client. The library will never touch this.
  */
-typedef int (*VisErrorHandlerFunc) (void *priv);
+typedef int (*VisErrorHandlerFunc) (int error, void *priv);
 
 /**
  * Raise a libvisual error. With the standard error handler this will
@@ -290,7 +269,7 @@ typedef int (*VisErrorHandlerFunc) (void *priv);
  *
  * @return Returns the return value from the handler that is set.
  */
-int visual_error_raise (void);
+int visual_error_raise (int error);
 
 /**
  * Sets the error handler callback. By using this function you
@@ -303,7 +282,7 @@ int visual_error_raise (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
  */
-int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
+void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
 
 /**
  * Translates an error into a human readable string, the returned string should not be freed.

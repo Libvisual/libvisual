@@ -248,6 +248,13 @@ SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
 SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3 -Wall -Wunused -Wmissing-prototypes")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall -Wunused")
 
+# Pedantic checks
+
+OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur" no)
+IF(ENABLE_PEDANTIC_CHECKS)
+  ADD_DEFINITIONS(-DVISUAL_PEDANTIC_CHECKS)
+ENDIF(ENABLE_PEDANTIC_CHECKS)
+
 # Generate config header
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_BINARY_DIR}/config.h)
 

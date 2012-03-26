@@ -170,7 +170,7 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
 	vi = get_xvisualinfo_filter_capabilities (native->dpy, native->screen, vidoptions);
 	if (vi == NULL)	{
 		printf ("No visual found.\n");
-		visual_error_raise ();
+		visual_error_raise (VISUAL_ERROR_GENERAL);
 	}
 
 	glXQueryVersion(native->dpy, &glxMajorVersion, &glxMinorVersion);

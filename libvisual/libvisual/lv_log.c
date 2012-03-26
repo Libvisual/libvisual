@@ -31,13 +31,13 @@
 #define LV_LOG_MAX_MESSAGE_SIZE 1024
 
 typedef struct {
-	VisLogMessageHandlerFunc  func;
-	void					 *priv;
-} MessageHandler;
+	VisLogHandlerFunc  func;
+	void			  *priv;
+} LogHandler;
 
-static VisLogSeverity verboseness = VISUAL_LOG_WARNING;
+static VisLogSeverity verbosity = VISUAL_LOG_WARNING;
 
-static const char *severity_labels[] = {
+static const char *log_prefixes[VISUAL_LOG_CRITICAL+1] = {
 	"DEBUG    ",
 	"INFO     ",
 	"WARNING  ",
@@ -45,33 +45,33 @@ static const char *severity_labels[] = {
 	"CRITICAL "
 };
 
-static MessageHandler message_handlers[VISUAL_TABLESIZE(severity_labels)];
+static LogHandler log_handlers[VISUAL_LOG_CRITICAL+1];
 
-static void default_log_handler (VisLogSeverity severity,
-	VisLogMessageSource const *source, const char *msg);
-
-void visual_log_set_verboseness (VisLogSeverity v)
-{
-	verboseness = v;
-}
-
-VisLogSeverity visual_log_get_verboseness ()
-{
-	return verboseness;
-}
+static void output_to_stderr (VisLogSeverity severity, const char *msg,
+    VisLogSource const *source);
 
 static int is_valid_severity (VisLogSeverity severity)
 {
-	return (severity >= VISUAL_LOG_DEBUG && severity <= VISUAL_LOG_ERROR);
+    return (severity >= VISUAL_LOG_DEBUG && severity <= VISUAL_LOG_CRITICAL);
 }
 
-void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandlerFunc func, void *priv)
+void visual_log_set_verbosity (VisLogSeverity level)
 {
-	MessageHandler *handler;
+	verbosity = level;
+}
+
+VisLogSeverity visual_log_get_verbosity ()
+{
+	return verbosity;
+}
+
+void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc func, void *priv)
+{
+	LogHandler *handler;
 
 	visual_return_if_fail (is_valid_severity (severity));
 
-	handler = &message_handlers[severity];
+	handler = &log_handlers[severity];
 	handler->func = func;
 	handler->priv = priv;
 }
@@ -81,31 +81,39 @@ void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandl
 void _lv_log (VisLogSeverity severity, const char *file,
 	int line, const char *funcname, const char *fmt, ...)
 {
-	VisLogMessageSource source;
-	MessageHandler *handler;
-	char str[LV_LOG_MAX_MESSAGE_SIZE];
+	VisLogSource source;
+	LogHandler *handler;
+	char message[LV_LOG_MAX_MESSAGE_SIZE];
 	va_list va;
 
-	visual_return_if_fail (is_valid_severity (severity));
-	visual_return_if_fail (fmt != NULL);
+	if (!is_valid_severity (severity) || fmt == NULL) {
+		visual_log (VISUAL_LOG_ERROR, "(malformed message)");
+		if (fmt == NULL) {
+		  printf ("wtf null\n");
+		}
+		if (!is_valid_severity (severity)) {
+		  printf ("Wtf invalid severity\n");
+		}
+		return;
+	}
 
-	if (verboseness > severity)
+	if (verbosity > severity)
 		 return;
 
 	va_start (va, fmt);
-	vsnprintf (str, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
+	vsnprintf (message, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
 	va_end (va);
 
 	source.file = file;
 	source.func = funcname;
 	source.line = line;
 
-	handler = &message_handlers[severity];
+	handler = &log_handlers[severity];
 
 	if (handler->func != NULL) {
-		(*handler->func) (severity, str, &source, handler->priv);
+		(*handler->func) (severity, message, &source, handler->priv);
 	} else {
-		default_log_handler (severity, &source, str);
+		output_to_stderr (severity, message, &source);
 	}
 }
 
@@ -114,13 +122,15 @@ void _lv_log (VisLogSeverity severity, const char *file,
 void visual_log (VisLogSeverity severity, const char *fmt, ...)
 {
 	va_list vargs;
-	MessageHandler *handler;
+	LogHandler *handler;
 	char str[LV_LOG_MAX_MESSAGE_SIZE];
 
-	visual_return_if_fail (is_valid_severity (severity));
-	visual_return_if_fail (fmt != NULL);
+	if (!is_valid_severity (severity) || fmt == NULL) {
+		visual_log (VISUAL_LOG_ERROR, "(malformed message)");
+		return;
+	}
 
-	if (verboseness > severity)
+	if (verbosity > severity)
 		 return;
 
 	va_start (vargs, fmt);
@@ -130,20 +140,21 @@ void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	handler = &message_handlers[severity];
 
 	if (handler->func != NULL) {
-		(*handler->func) (severity, str, NULL, handler->priv);
+		handler->func (severity, str, NULL, handler->priv);
 	} else {
-		default_log_handler (severity, NULL, str);
+		output_to_stderr (severity, str, NULL);
 	}
 }
 
 #endif /* LV_HAVE_ISO_C_VARARGS && LV_HAVE_GNU_C_VARARGS */
 
-static void default_log_handler (VisLogSeverity severity, VisLogMessageSource const *source, const char *msg)
+static void output_to_stderr (VisLogSeverity severity, const char *msg,
+	VisLogSource const *source)
 {
 	if (source != NULL) {
-		fprintf (stderr, "%s %s:%d:%s: %s\n", severity_labels[severity],
+		fprintf (stderr, "%s %s:%d:%s: %s\n", log_prefixes[severity],
 			 source->file, source->line, source->func, msg);
 	} else {
-		fprintf (stderr, "%s %s\n", severity_labels[severity], msg);
+		fprintf (stderr, "%s %s\n", log_prefixes[severity], msg);
 	}
 }
