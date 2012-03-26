@@ -39,7 +39,6 @@ SET(libvisual_HEADERS
   lv_time.h
   lv_random.h
   lv_error.h
-  lv_ui.h
   lv_types.h
   lv_thread.h
   lv_object.h
@@ -85,7 +84,6 @@ SET(libvisual_SOURCES
   lv_time.c
   lv_random.c
   lv_error.c
-  lv_ui.c
   lv_thread.c
   lv_object.c
   lv_transform.c
