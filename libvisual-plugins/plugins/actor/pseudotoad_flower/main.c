@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Antti Silvast <asilvast@iki.fi>
  *
  * Authors: Antti Silvast <asilvast@iki.fi>
@@ -55,7 +55,7 @@ int init_flower(FlowerInternal *flower)
 	flower->posz = 0.0;
 	flower->posz_new = 0.0;
 	flower->audio_strength = 30.0;
-	
+
 	v = flower->kukka;
 
 	set_vector (v[0], 0.0, 0.5, 0.0);
@@ -75,7 +75,7 @@ int init_flower(FlowerInternal *flower)
 	set_vector (v[4], 0.2, 0.0, 0.0);
 	set_vector (v[5], 0.1, 0.0, 0.0);
 	set_vector (v[6], 0.0, 0.1, 0.0);
-	
+
 	return 0;
 }
 
@@ -96,9 +96,6 @@ static void splineTCP(FlowerInternal *flower, float u, Vect * control, Vect * re
 					+ (1-flower->bias)*(1+flower->continuity)*(control[2][1]-control[1][1])))
 		+ (u*u*u - u*u)*(0.5*(1-flower->tension)*((1+flower->bias)*(1+flower->continuity)*(control[2][1]-control[1][1])
 					+ (1-flower->bias)*(1-flower->continuity)*(control[3][1]-control[2][1])));
-
-//	printf ("FUCKERS %f %f %f %f %f, %f %f %f\n", *result[0], *result[1], control[1][0], control[1][1], u,
-//			flower->tension, flower->bias, flower->continuity);
 }
 
 static void lights(FlowerInternal *flower) {
@@ -130,7 +127,6 @@ static void lights(FlowerInternal *flower) {
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0,GL_POSITION,light_position);
 	glEnable(GL_LIGHT0);
-
 }
 
 static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama) {
@@ -227,8 +223,6 @@ static void render_flower(FlowerInternal *flower) {
 
 			     );
 	}
-
-
 }
 
 float col1[]={1,1,1};
@@ -240,7 +234,6 @@ void render_flower_effect(FlowerInternal *flower) {
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
 	gluPerspective(60.0, (float)flower->width/(float)flower->height, 0.01, 1135.0);
-
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();

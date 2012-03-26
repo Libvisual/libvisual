@@ -111,6 +111,7 @@ static int act_oinksie_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_END
 	};
 
+/*
 	static VisParamEntry cmodeparamchoices[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Fair blended", 0),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Turbelent temperature", 1),
@@ -119,10 +120,7 @@ static int act_oinksie_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Sanity edge", 4),
 		VISUAL_PARAM_LIST_END
 	};
-
-	VisUIWidget *hbox;
-	VisUIWidget *label;
-	VisUIWidget *popup;
+*/
 
 	/* FIXME: add UI to access the acid palette parameter */
 
@@ -133,21 +131,7 @@ static int act_oinksie_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (OinksiePrivContainer, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-        visual_param_container_add_many (paramcontainer, params);
-
-	hbox = visual_ui_box_new (VISUAL_ORIENT_TYPE_HORIZONTAL);
-
-	label = visual_ui_label_new (_("Color mode:"), FALSE);
-
-	popup = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup, _("The coloring method (only works when the plugin is in 32 bits mode)"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup), visual_param_container_get (paramcontainer, "color mode"));
-	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup), cmodeparamchoices);
-
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox), label);
-	visual_ui_box_pack (VISUAL_UI_BOX (hbox), popup);
-
-        visual_plugin_set_userinterface (plugin, hbox);
+    visual_param_container_add_many (paramcontainer, params);
 
 	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
 	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);

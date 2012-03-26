@@ -123,9 +123,6 @@ static int lv_gltest_init (VisPluginData *plugin)
 
 	int x, y;
 
-	/* UI Vars */
-	VisUIWidget *checkbox;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
@@ -134,11 +131,6 @@ static int lv_gltest_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	visual_param_container_add_many (paramcontainer, params);
-
-	checkbox = visual_ui_checkbox_new (_("Transparant bars"), TRUE);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox), visual_param_container_get (paramcontainer, "transparant bars"));
-
-	visual_plugin_set_userinterface (plugin, checkbox);
 
 	/* GL setting up the rest! */
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -176,11 +168,6 @@ static int lv_gltest_init (VisPluginData *plugin)
 static int lv_gltest_cleanup (VisPluginData *plugin)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisUIWidget *ui;
-
-	/* Destroy the VisUI tree */
-	ui = visual_plugin_get_userinterface (plugin);
-	visual_object_unref (VISUAL_OBJECT (ui));
 
 	visual_mem_free (priv);
 

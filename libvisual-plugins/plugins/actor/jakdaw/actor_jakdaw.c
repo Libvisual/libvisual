@@ -91,6 +91,8 @@ static int act_jakdaw_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_END
 	};
 
+	/*
+
 	static VisParamEntry zoomparamchoices[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Zoom ripple",		FEEDBACK_ZOOMRIPPLE),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Blur only",		FEEDBACK_BLURONLY),
@@ -108,7 +110,6 @@ static int act_jakdaw_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_END
 	};
 
-
 	static VisParamEntry scopeparamchoices[] = {
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Lines",		PLOTTER_SCOPE_LINES),
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Dots",		PLOTTER_SCOPE_DOTS),
@@ -116,15 +117,7 @@ static int act_jakdaw_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_ENTRY_INTEGER ("Nothing",		PLOTTER_SCOPE_NOTHING),
 		VISUAL_PARAM_LIST_END
 	};
-
-	/* UI vars */
-	VisUIWidget *table;
-	VisUIWidget *label1;
-	VisUIWidget *label2;
-	VisUIWidget *label3;
-	VisUIWidget *popup1;
-	VisUIWidget *popup2;
-	VisUIWidget *popup3;
+	*/
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
@@ -148,38 +141,6 @@ static int act_jakdaw_init (VisPluginData *plugin)
 
 	visual_param_container_add_many (paramcontainer, params);
 
-	table = visual_ui_table_new (3, 2);
-
-	label1 = visual_ui_label_new (_("Blur mode:"), FALSE);
-	label2 = visual_ui_label_new (_("Plotter color:"), FALSE);
-	label3 = visual_ui_label_new (_("Plotter type:"), FALSE);
-
-	popup1 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup1, _("The method of blurring"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup1), visual_param_container_get (paramcontainer, "zoom mode"));
-	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup1), zoomparamchoices);
-
-	popup2 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup2, _("The color of the plotter"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup2), visual_param_container_get (paramcontainer, "plotter trigger"));
-	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup2), colorparamchoices);
-
-	popup3 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup3, _("The plotter it's shape"));
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup3), visual_param_container_get (paramcontainer, "plotter type"));
-	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup3), scopeparamchoices);
-
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), label1, 0, 0);
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup1, 0, 1);
-
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), label2, 1, 0);
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup2, 1, 1);
-
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), label3, 2, 0);
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), popup3, 2, 1);
-
-	visual_plugin_set_userinterface (plugin, table);
-
 	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
 	priv->freqbuf = visual_buffer_new_allocate (256 * sizeof (float), visual_buffer_destroyer_free);
 
@@ -189,10 +150,6 @@ static int act_jakdaw_init (VisPluginData *plugin)
 static int act_jakdaw_cleanup (VisPluginData *plugin)
 {
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisUIWidget *ui;
-
-	ui = visual_plugin_get_userinterface (plugin);
-	visual_object_unref (VISUAL_OBJECT (ui));
 
 	_jakdaw_feedback_close (priv);
 

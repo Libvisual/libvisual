@@ -131,15 +131,6 @@ static int lv_madspin_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_END
 	};
 
-	/* UI vars */
-	VisUIWidget *table;
-	VisUIWidget *label1;
-	VisUIWidget *label2;
-	VisUIWidget *slider1;
-	VisUIWidget *slider2;
-	VisUIWidget *numeric1;
-	VisUIWidget *numeric2;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
@@ -158,40 +149,6 @@ static int lv_madspin_init (VisPluginData *plugin)
 	priv->frame = 0;
 
 	visual_param_container_add_many (paramcontainer, params);
-
-	/* The VisUI description that serves as config dialog */
-	table = visual_ui_table_new (2, 3);
-
-	label1 = visual_ui_label_new (_("Number of stars:"), FALSE);
-	label2 = visual_ui_label_new (_("Speed:"), FALSE);
-
-	slider1 = visual_ui_slider_new (FALSE);
-	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider1), 200, -1);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider1), visual_param_container_get (paramcontainer, "num stars"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider1), 50, 2500, 10, 0);
-
-	slider2 = visual_ui_slider_new (FALSE);
-	visual_ui_widget_set_size_request (VISUAL_UI_WIDGET (slider2), 200, -1);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (slider2), visual_param_container_get (paramcontainer, "speed"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (slider2), 200, 2000, 10, 0);
-
-	numeric1 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric1), visual_param_container_get (paramcontainer, "num stars"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric1), 50, 2500, 10, 0);
-
-	numeric2 = visual_ui_numeric_new ();
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (numeric2), visual_param_container_get (paramcontainer, "speed"));
-	visual_ui_range_set_properties (VISUAL_UI_RANGE (numeric2), 200, 2000, 10, 0);
-
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), label1, 0, 0);
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), slider1, 0, 1);
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), numeric1, 0, 2);
-
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), label2, 1, 0);
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), slider2, 1, 1);
-	visual_ui_table_attach (VISUAL_UI_TABLE (table), numeric2, 1, 2);
-
-	visual_plugin_set_userinterface (plugin, table);
 
 	/* GL and the such */
 	glMatrixMode (GL_PROJECTION);
@@ -221,14 +178,9 @@ static int lv_madspin_init (VisPluginData *plugin)
 static int lv_madspin_cleanup (VisPluginData *plugin)
 {
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisUIWidget *ui;
 
 	if (priv->initialized == TRUE)
 		glDeleteTextures (2, priv->texture);
-
-	/* Destroy the VisUI tree */
-	ui = visual_plugin_get_userinterface (plugin);
-	visual_object_unref (VISUAL_OBJECT (ui));
 
 	visual_mem_free (priv);
 
