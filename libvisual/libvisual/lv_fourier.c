@@ -25,18 +25,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#define FOURIER_PI 3.141592653589793238462643383279502884197169399f
-
-#include <config.h>
-#include <stdlib.h>
+#include "config.h"
+#include "lv_fourier.h"
+#include "lv_common.h"
+#include "lv_cache.h"
+#include "lv_math.h"
+#include <stdio.h>
 #include <math.h>
 
-#include <string.h>
 
-#include "lv_cache.h"
-#include "lv_utils.h"
-#include "lv_math.h"
-#include "lv_fourier.h"
+#define FOURIER_PI 3.141592653589793238462643383279502884197169399f
 
 /* Log scale settings */
 #define AMP_LOG_SCALE_THRESHOLD0	0.001f
@@ -284,12 +282,6 @@ static LogScaleCacheEntry *log_scale_cache_get (int size)
 	return lcache;
 }
 
-
-/**
- * @defgroup VisDFT VisDFT
- * @{
- */
-
 int visual_fourier_initialize ()
 {
 	visual_cache_init (&__lv_dft_cache, visual_object_collection_destroyer, 50, NULL, TRUE);
@@ -318,23 +310,6 @@ int visual_fourier_deinitialize ()
 	return VISUAL_OK;
 }
 
-/**
- * Function to create a new VisDFT Discrete Fourier Transform context used
- * to calculate amplitude spectrums over audio data.
- *
- * \note For optimal performance, use a power-of-2 spectrum size. The
- * current implementation does not use the Fast Fourier Transform for
- * non powers of 2.
- *
- * \note If samples_in is smaller than 2 * samples_out, the input will be padded
- * with zeroes.
- *
- * @param samples_in The number of samples provided to every call to
- * visual_dft_perform() as input.
- * @param samples_out Size of output spectrum (number of output samples).
- *
- * @return A newly created VisDFT.
- */
 VisDFT *visual_dft_new (unsigned int samples_out, unsigned int samples_in)
 {
 	VisDFT *dft;
@@ -362,7 +337,7 @@ int visual_dft_init (VisDFT *dft, unsigned int samples_out, unsigned int samples
 	/* Set the VisDFT data */
 	dft->samples_in = samples_in;
 	dft->spectrum_size = samples_out * 2;
-	dft->brute_force = !visual_utils_is_power_of_2 (dft->spectrum_size);
+	dft->brute_force = !visual_math_is_power_of_2 (dft->spectrum_size);
 
 	/* Initialize the VisDFT */
 	dft_cache_get (dft);
@@ -461,19 +436,6 @@ static void perform_fft_radix2_dit (VisDFT *dft, float *output, float *input)
 	visual_object_unref (VISUAL_OBJECT (fcache));
 }
 
-
-/**
- * Function to perform a Discrete Fourier Transform over a set of data.
- *
- * \note Output samples are normalised to [0.0, 1.0] by dividing with the
- * spectrum size.
- *
- * @param dft Pointer to the VisDFT context for this transform.
- * @param output Array of output samples
- * @param input Array of input samples with values in [-1.0, 1.0]
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_FOURIER_NULL or -VISUAL_ERROR_NULL on failure.
- */
 int visual_dft_perform (VisDFT *dft, float *output, float *input)
 {
 	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
@@ -492,17 +454,6 @@ int visual_dft_perform (VisDFT *dft, float *output, float *input)
 	return VISUAL_OK;
 }
 
-/**
- * Function to scale an ampltitude spectrum logarithmically.
- *
- * \note Scaled values are guaranteed to be in [0.0, 1.0].
- *
- * @param output Array of output samples
- * @param input  Array of input samples with values in [0.0, 1.0]
- * @param size Array size.
- *
- * @Return VISUAL_OK on success, VISUAL_ERROR_NULL on failure.
- */
 int visual_dft_log_scale (float *output, float *input, int size)
 {
 	LogScaleCacheEntry *lcache;
@@ -563,7 +514,4 @@ int visual_dft_log_scale_custom (float *output, float *input, int size, float lo
 	return VISUAL_OK;
 }
 
-/**
- * @}
- */
 

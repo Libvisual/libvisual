@@ -25,6 +25,12 @@
 #define LV_LIBVISUAL_H
 
 #include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
+#include <libvisual/lv_types.h>
+#include <libvisual/lv_mem.h>
+#include <libvisual/lv_log.h>
+#include <libvisual/lv_error.h>
+#include <libvisual/lv_object.h>
 
 #include <libvisual/lv_bits.h>
 #include <libvisual/lv_time.h>
@@ -48,7 +54,6 @@
 #include <libvisual/lv_morph.h>
 #include <libvisual/lv_transform.h>
 #include <libvisual/lv_bmp.h>
-#include <libvisual/lv_log.h>
 #include <libvisual/lv_random.h>
 #include <libvisual/lv_ui.h>
 #include <libvisual/lv_collection.h>
@@ -56,14 +61,9 @@
 #include <libvisual/lv_cache.h>
 #include <libvisual/lv_ringbuffer.h>
 #include <libvisual/lv_rectangle.h>
-#include <libvisual/lv_error.h>
 #include <libvisual/lv_thread.h>
-#include <libvisual/lv_object.h>
-#include <libvisual/lv_types.h>
-#include <libvisual/lv_utils.h>
 #include <libvisual/lv_gl.h>
 #include <libvisual/lv_math.h>
 #include <libvisual/lv_os.h>
-#include <libvisual/lv_common.h>
 
 #endif /* LV_LIBVISUAL_H */

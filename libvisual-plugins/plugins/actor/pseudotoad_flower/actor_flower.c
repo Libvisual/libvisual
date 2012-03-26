@@ -193,9 +193,7 @@ static int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int widt
 
 static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {

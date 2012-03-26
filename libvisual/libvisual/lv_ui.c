@@ -21,14 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-
-#include "lv_log.h"
+#include "config.h"
 #include "lv_ui.h"
+#include "lv_common.h"
+#include <string.h>
 
 static int box_dtor (VisObject *object);
 static int table_dtor (VisObject *object);

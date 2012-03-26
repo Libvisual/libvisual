@@ -1,39 +1,35 @@
-#include <config.h>
-#include <gettext.h>
-
-#include "lv_log.h"
-#include "lv_error.h"
+#include "config.h"
 #include "lv_plugin_registry.h"
+#include "lv_common.h"
+#include "gettext.h"
 #include "lv_actor.h"
 #include "lv_input.h"
 #include "lv_morph.h"
 #include "lv_transform.h"
+#include <stdio.h>
 #include <stdlib.h>
 
-/** Contains the completely plugin registry after initialize. */
+/* Contains the completely plugin registry after initialize. */
 VisList *__lv_plugins = NULL;
-/** Contains all the actor plugins after initialize. */
+
+/* Contains all the actor plugins after initialize. */
 VisList *__lv_plugins_actor = NULL;
-/** Contains all the input plugins after initialize. */
+
+/* Contains all the input plugins after initialize. */
 VisList *__lv_plugins_input = NULL;
-/** Contains all the morph plugins after initialize. */
+
+/* Contains all the morph plugins after initialize. */
 VisList *__lv_plugins_morph = NULL;
-/** Contains all the transform plugins after initialize. */
+
+/* Contains all the transform plugins after initialize. */
 VisList *__lv_plugins_transform = NULL;
 
-/** Contains the number of plugin registry paths. */
+/* Contains the number of plugin registry paths. */
 int __lv_plugpath_cnt = 0;
-/** Char ** list of all the plugin paths. */
+/* char ** list of all the plugin paths. */
 char **__lv_plugpaths = NULL;
 
-/**
- * Adds extra plugin registry paths.
- *
- * @param pathadd A string containing a path where plugins are located.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NO_PATHS on failure.
- */
-int visual_init_path_add (char *pathadd)
+int visual_init_path_add (const char *pathadd)
 {
 	__lv_plugpath_cnt++;
 	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);

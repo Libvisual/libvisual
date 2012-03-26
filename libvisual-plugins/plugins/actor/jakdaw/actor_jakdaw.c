@@ -253,10 +253,10 @@ static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				visual_log (VISUAL_LOG_DEBUG, "Param changed: %s\n", param->name);
+				visual_log (VISUAL_LOG_DEBUG, "Param changed: %s", param->name);
 
 				if (visual_param_entry_is (param, "zoom mode")) {
-					visual_log (VISUAL_LOG_DEBUG, "New value for the zoom mode param: %d\n",
+					visual_log (VISUAL_LOG_DEBUG, "New value for the zoom mode param: %d",
 							param->numeric.integer);
 
 					priv->zoom_mode = visual_param_entry_get_integer (param);
@@ -264,14 +264,14 @@ static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 					_jakdaw_feedback_reset (priv, priv->xres, priv->yres);
 				}
 				else if (visual_param_entry_is (param, "plotter trigger")) {
-					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter trigger param: %d\n",
+					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter trigger param: %d",
 							param->numeric.integer);
 
 					priv->plotter_colortype = visual_param_entry_get_integer (param);
 
 				}
 				else if (visual_param_entry_is (param, "plotter type")) {
-					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter type param: %d\n",
+					visual_log (VISUAL_LOG_DEBUG, "New value for the plotter type param: %d",
 							param->numeric.integer);
 
 					priv->plotter_scopetype = visual_param_entry_get_integer (param);

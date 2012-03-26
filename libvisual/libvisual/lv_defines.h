@@ -76,4 +76,10 @@
 # define VIS_UNLIKELY(x)	(x)
 #endif
 
+#if defined __GNUC__
+#  define VIS_CHECK_PRINTF_FORMAT(a, b) __attribute__ ((__format__ (__printf__, a, b)))
+#else
+#  define VIS_CHECK_PRINTF_FORMAT(a, b) /* no compile-time format string check */
+#endif /* __GNUC__ */
+
 #endif /* _LV_DEFINES_H */

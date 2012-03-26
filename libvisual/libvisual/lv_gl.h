@@ -24,8 +24,13 @@
 #ifndef _LV_GL_H
 #define _LV_GL_H
 
-#include <libvisual/lv_common.h>
-#include <libvisual/lv_hashmap.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
+
+/**
+ * @defgroup VisGL VisGL
+ * @{
+ */
 
 VISUAL_BEGIN_DECLS
 
@@ -68,5 +73,9 @@ struct _VisGLAttributeEntry {
 void *visual_gl_get_proc_address (char *procname);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_GL_H */

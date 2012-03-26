@@ -24,33 +24,23 @@
 #ifndef _LV_TYPES_H
 #define _LV_TYPES_H
 
+#include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
 
-#if defined(VISUAL_OS_WIN32)
-#include <stdint.h>
+/* Fixed-size int types */
+
+#if defined(_LV_HAVE_STDINT_H)
+#  include <stdint.h>
+#elif defined(_LV_HAVE_INTTYPES_H)
+#  include <inttypes.h>
 #else
-#include <sys/types.h>
-#endif /* !VISUAL_OS_WIN32 */
+#  error FIXME: No fixed-size int type defined
+#endif // _LV_HAVE_STDINT_H
 
 VISUAL_BEGIN_DECLS
 
-#define VISUAL_CHECK_CAST(uiobj, cast)		((cast*) (uiobj))
-
+#define VISUAL_CHECK_CAST(uiobj, cast)	((cast*) (uiobj))
 #define VISUAL_TABLESIZE(table)			(sizeof (table) / sizeof (table[0]))
-
-#if !defined(VISUAL_OS_WIN32)
-#ifndef uint8_t
-#define uint8_t		u_int8_t
-#endif
-
-#ifndef uint16_t
-#define uint16_t	u_int16_t
-#endif
-
-#ifndef uint32_t
-#define uint32_t	u_int32_t
-#endif
-#endif /* !VISUAL_OS_WIN32 */
 
 VISUAL_END_DECLS
 

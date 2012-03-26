@@ -21,12 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include "lv_common.h"
+#include "config.h"
 #include "lv_collection.h"
+#include "lv_common.h"
 
 int visual_collection_iter_dtor (VisCollectionIter *object)
 {
@@ -43,12 +40,6 @@ int visual_collection_iter_dtor (VisCollectionIter *object)
 
 	return VISUAL_OK;
 }
-
-
-/**
- * @defgroup VisCollection VisCollection
- * @{
- */
 
 int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer)
 {
@@ -233,8 +224,4 @@ void *visual_collection_iter_get_data (VisCollectionIter *iter)
 
 	return NULL;
 }
-
-/**
- * @}
- */
 

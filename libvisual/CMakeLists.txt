@@ -1,4 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+MESSAGE(STATUS "${CMAKE_SOURCE_DIR}")
+
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 PROJECT(libvisual)
@@ -37,7 +39,7 @@ FIND_PACKAGE(PkgConfig REQUIRED)
 
 # Check target processor architecture
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i.86|x86)$")
-  SET(VISUAL_ARCH_IX86 yes)
+  SET(VISUAL_ARCH_X86 yes)
 ELSEIF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   SET(VISUAL_ARCH_X86_64 yes)
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^mips")
@@ -111,15 +113,16 @@ IF(NOT STDC_HEADERS)
   MESSAGE(FATAL ERROR "Libvisual requires standard C library headers to build")
 ENDIF(NOT STDC_HEADERS)
 
-# TODO: Generate error when required header is missing
+# TODO: Generate error when a required header is missing
 CHECK_INCLUDE_FILE(dirent.h     HAVE_DIRENT_H)
 CHECK_INCLUDE_FILE(fcntl.h      HAVE_FCNTL_H)
 CHECK_INCLUDE_FILE(sched.h      HAVE_SCHED_H)
-CHECK_INCLUDE_FILE(sys/types.h  HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILE(sys/stat.h   HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILE(sys/sched.h  HAVE_SYS_SCHED_H)
 CHECK_INCLUDE_FILE(sys/socket.h HAVE_SYS_SOCKET_H)
 CHECK_INCLUDE_FILE(sys/time.h   HAVE_SYS_TIME_H)
+CHECK_INCLUDE_FILE(stdint.h     _LV_HAVE_STDINT_H)
+CHECK_INCLUDE_FILE(inttypes.h   _LV_HAVE_INTTYPES_H)
 
 # Check for non standard C library functions
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
@@ -219,7 +222,7 @@ ENDIF(ENABLE_PROFILING)
 
 # Add -Werror to debug builds?
 SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
-SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Wall -Wmissing-braces -Wimplicit -Wunused -Wmissing-prototypes")
+SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Wall -Wunused -Wmissing-prototypes")
 
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
@@ -249,12 +252,8 @@ ENDIF(ENABLE_DOCS)
 OPTION(ENABLE_TOOLS "Build Libvisual tools" yes)
 IF(ENABLE_TOOLS)
   FIND_PACKAGE(SDL)
-  IF(NOT SDL_FOUND)
-	MESSAGE(FATAL_ERROR "SDL library is missing")
-  ENDIF(NOT SDL_FOUND)
-
-  PKG_CHECK_MODULES(NIFTYLED niftyled)
-
+  FIND_PACKAGE(OpenGL)
+  FIND_PACKAGE(X11Fixed)
   ADD_SUBDIRECTORY(tools/lv-tool)
 ENDIF(ENABLE_TOOLS)
 

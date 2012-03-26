@@ -24,10 +24,16 @@
 #ifndef _LV_CACHE_H
 #define _LV_CACHE_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_hashmap.h>
+
+/**
+ * @defgroup VisCache VisCache
+ * @{
+ */
 
 VISUAL_BEGIN_DECLS
 
@@ -64,13 +70,15 @@ struct _VisCache {
  */
 struct _VisCacheEntry {
 	VisTimer	 timer;
-
 	char		*key;
-
 	void		*data;
 };
 
-/* prototypes */
+/**
+ * Creates a new VisCache.
+ *
+ * @return A newly allocated VisCache.
+ */
 VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset);
 int visual_cache_init (VisCache *cache, VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset);
 
@@ -89,5 +97,9 @@ int visual_cache_set_limits (VisCache *cache, int size, VisTime *maxage);
 VisList *visual_cache_get_list (VisCache *cache);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_CACHE_H */

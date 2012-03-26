@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
  *
  * Authors: Gustavo Sverzut Barbieri <gsbarbieri@yahoo.com.br>
@@ -124,8 +124,8 @@ static int inp_mplayer_init( VisPluginData *plugin )
 
 	priv = visual_mem_new0(mplayer_priv_t, 1);
 
-	priv->sharedfile = visual_mem_malloc0( sizeof( char ) * 
-			( strlen( SHARED_FILE ) + 
+	priv->sharedfile = visual_mem_malloc0( sizeof( char ) *
+			( strlen( SHARED_FILE ) +
 			  strlen( getenv( "HOME" ) ) + 2 ) );
 
 	strcpy( priv->sharedfile, getenv( "HOME" ) );
@@ -143,12 +143,12 @@ static int inp_mplayer_init( VisPluginData *plugin )
 
 	if ( priv->fd < 0 )
 	{
-		/* 
+		/*
 		 * FIXME this will cause the application to abort,
 		 * may be we must print a warning and clean all
 		 * before to return the error value.
 		 */
-		visual_log( VISUAL_LOG_ERROR,
+		visual_log( VISUAL_LOG_CRITICAL,
 				_("Could not open file '%s': %s"),
 				priv->sharedfile, strerror( errno ) );
 		return -3;
@@ -160,14 +160,14 @@ static int inp_mplayer_init( VisPluginData *plugin )
 
 	if ( priv->mmap_area->nch == 0 )
 	{
-		visual_log( VISUAL_LOG_ERROR, _("No audio channel available") );
+		visual_log( VISUAL_LOG_CRITICAL, _("No audio channel available") );
 		return -5;
 	}
 
 	if ( ( priv->mmap_area->nch != 2 ) ||
 			( priv->mmap_area->bs  != 2048 ) )
 	{
-		visual_log( VISUAL_LOG_ERROR,
+		visual_log( VISUAL_LOG_CRITICAL,
 				_("Data in wrong format. It should be 2 channels" \
 					" with 512 16bit samples. There are %d channels %d 16bit " \
 					"samples in it (buffer is %d bytes)"),
@@ -182,15 +182,15 @@ static int inp_mplayer_init( VisPluginData *plugin )
 			0 );
 	if ( (intptr_t)priv->mmap_area == -1 )
 	{
-		visual_log( VISUAL_LOG_CRITICAL, 
+		visual_log( VISUAL_LOG_CRITICAL,
 				_("Could not mremap() area from file '%s' " \
 					" (%p from %" VISUAL_SIZE_T_FORMAT " to %" VISUAL_SIZE_T_FORMAT " bytes): %s"),
-				priv->sharedfile, 
+				priv->sharedfile,
 				priv->mmap_area, sizeof( mplayer_data_t ),
 				sizeof( mplayer_data_t ) + priv->mmap_area->bs,
 				strerror( errno ) );
 		return -7;
-	}  
+	}
 
 	priv->loaded = 1;
 	return 0;
@@ -221,7 +221,7 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 		{
 			if ( close( priv->fd ) != 0 )
 			{
-				visual_log( VISUAL_LOG_ERROR,
+				visual_log( VISUAL_LOG_CRITICAL,
 						_("Could not close file descriptor %d: %s"),
 						priv->fd, strerror( errno ) );
 				unclean |= 1;
@@ -230,19 +230,19 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 		}
 		else
 		{
-			visual_log( VISUAL_LOG_ERROR, _("Wrong file descriptor %d"), 
+			visual_log( VISUAL_LOG_CRITICAL, _("Wrong file descriptor %d"),
 					priv->fd );
 			unclean |= 2;
 		}
 
 		if ( munmap( mmap_area, mmap_count ) != 0 )
 		{
-			visual_log( VISUAL_LOG_ERROR,
+			visual_log( VISUAL_LOG_CRITICAL,
 					_("Could not munmap() area %p+%d. %s"),
 					mmap_area, mmap_count,
 					strerror( errno ) );
 			unclean |= 4;
-		}      
+		}
 	}
 
 	visual_mem_free( priv->sharedfile );
@@ -257,7 +257,7 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
  *
  * @param plugin plugin that should upload data.
  * @param where to upload data.
- * 
+ *
  * @return 0 on success.
  */
 static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
@@ -270,7 +270,7 @@ static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 	visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
-	visual_mem_copy( audio->plugpcm, 
+	visual_mem_copy( audio->plugpcm,
 			((void *)priv->mmap_area) + sizeof( mplayer_data_t ),
 			2048 );
 

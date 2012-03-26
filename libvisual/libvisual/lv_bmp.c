@@ -23,20 +23,12 @@
  */
 
 #include <config.h>
-
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <gettext.h>
-
-#include <sys/stat.h>
-#include <fcntl.h>
-
-#include "lv_common.h"
-#include "lv_log.h"
-#include "lv_bits.h"
 #include "lv_bmp.h"
+#include "lv_common.h"
+#include "lv_bits.h"
+#include "gettext.h"
+
+#include <stdio.h>
 
 #define BI_RGB	0
 #define BI_RLE8	1
@@ -122,7 +114,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	return VISUAL_OK;
 
 err:
-	visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
+	visual_log (VISUAL_LOG_ERROR, _("Bitmap data is not complete"));
 
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
@@ -226,30 +218,12 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	return VISUAL_OK;
 
 err:
-	visual_log (VISUAL_LOG_CRITICAL, _("Bitmap data is not complete"));
+	visual_log (VISUAL_LOG_ERROR, _("Bitmap data is not complete"));
 
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
 
 
-/**
- * @defgroup VisBitmap VisBitmap
- * @{
- */
-
-/**
- * Loads a BMP file into a VisVideo. The buffer will be located
- * for the VisVideo.
- *
- * Keep in mind that you need to free the palette by hand.
- * 
- * @param video Destination video where the bitmap should be loaded in.
- * @param filename The filename of the bitmap to be loaded.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_BMP_NOT_FOUND,
- * 	-VISUAL_ERROR_BMP_NO_BMP, -VISUAL_ERROR_BMP_NOT_SUPPORTED or -VISUAL_ERROR_BMP_CORRUPTED
- * 	on failure.
- */
 int visual_bitmap_load (VisVideo *video, const char *filename)
 {
 	/* The win32 BMP header */
@@ -349,13 +323,13 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 	/* Check if we can handle it */
 	if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
+		visual_log (VISUAL_LOG_ERROR, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
 		fclose (fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}
 
 	if (bi_compression > 3) {
-		visual_log (VISUAL_LOG_CRITICAL, _("Bitmap uses an invalid or unsupported compression scheme"));
+		visual_log (VISUAL_LOG_ERROR, _("Bitmap uses an invalid or unsupported compression scheme"));
 		fclose (fp);
 		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
 	}
@@ -426,16 +400,6 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	return error;
 }
 
-/**
- * Loads a bitmap into a VisVideo and return this, so it's not needed to 
- * allocate a VisVideo before by hand.
- *
- * @see visual_bitmap_load
- *
- * @param filename The filename of the bitmap to be loaded.
- *
- * @return The VisVideo containing the bitmap or NULL on failure.
- */
 VisVideo *visual_bitmap_load_new_video (const char *filename)
 {
 	VisVideo *video;
@@ -450,8 +414,3 @@ VisVideo *visual_bitmap_load_new_video (const char *filename)
 
 	return video;
 }
-
-/**
- * @}
- */
-

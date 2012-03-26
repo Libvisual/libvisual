@@ -1,10 +1,10 @@
-/* Libvisual - The audio visualisation framework.
+/* Libvisual - The audio visualisation framework cli tool
  * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
+ * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_utils.c,v 1.3.2.1 2006/03/04 12:32:47 descender Exp $
+ *          Daniel Hiepler <daniel@niftylight.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,31 +21,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
 
-#include "lv_utils.h"
+#ifndef _LV_STDOUT_DRIVER_H
+#define _LV_STDOUT_DRIVER_H
 
-/**
- * @defgroup VisUtils VisUtils
- * @{
- */
 
-/**
- * Checks if the given value is a power of 2.
- *
- * @param n Value to be checked if it's being a power of 2.
- *
- * @return TRUE if power of 2, FALSE if not.
- */
-int visual_utils_is_power_of_2 (int n)
-{
-	return (n > 0) && !(n & (n - 1));
-}
 
-/**
- * @}
- */
+
+SADisplayDriver *       stdout_driver_new(void);
+
+
+
+#endif /* _LV_STDOUT_DRIVER_H */

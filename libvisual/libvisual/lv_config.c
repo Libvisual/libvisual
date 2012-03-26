@@ -22,28 +22,18 @@
  */
 
 #include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <gettext.h>
-
-#include "lvconfig.h"
+#include "lv_config.h"
+#include "lv_common.h"
+#include "gettext.h"
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
 #endif
 
-#include <sys/types.h>
+#include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
-
-#include "config.h"
-#include "lv_common.h"
-#include "lv_mem.h"
-#include "lv_config.h"
 
 static int config_registry_dtor (VisObject *object);
 static int config_registry_section_dtor (VisObject *object);
@@ -77,12 +67,6 @@ static int config_registry_section_dtor (VisObject *object)
 
 	return VISUAL_OK;
 }
-
-
-/**
- * @defgroup VisConfig VisConfig
- * @{
- */
 
 VisConfigRegistry *visual_config_registry_new ()
 {
@@ -170,7 +154,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 	}
 
 broken:
-	visual_log (VISUAL_LOG_CRITICAL, _("Broken config registry, won't load"));
+	visual_log (VISUAL_LOG_ERROR, _("Broken config registry, won't load"));
 
 	/* Unload all sections, some might have been partially parsed, which can be dangerious, we don't
 	 * want that. */
@@ -278,8 +262,3 @@ int visual_config_registry_sync (VisConfigRegistry *registry)
 
 	return VISUAL_OK;
 }
-
-/**
- * @}
- */
-

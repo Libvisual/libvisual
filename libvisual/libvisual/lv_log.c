@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -13,7 +13,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
@@ -22,252 +22,128 @@
  */
 
 #include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdarg.h>
-#include <assert.h>
-#include <signal.h>
-#include <gettext.h>
-
-#include "lv_common.h"
-#include "lv_error.h"
 #include "lv_log.h"
+#include "lv_common.h"
+#include "gettext.h"
+#include <stdio.h>
+#include <stdarg.h>
 
+#define LV_LOG_MAX_MESSAGE_SIZE 1024
 
-static VisLogVerboseness verboseness = VISUAL_LOG_VERBOSENESS_MEDIUM;
+typedef struct {
+	VisLogMessageHandlerFunc  func;
+	void					 *priv;
+} MessageHandler;
 
-static void default_info_handler (const char *msg, const char *funcname, void *privdata);
-static void default_warning_handler (const char *msg, const char *funcname, void *privdata);
-static void default_critical_handler (const char *msg, const char *funcname, void *privdata);
-static void default_error_handler (const char *msg, const char *funcname, void *privdata);
+static VisLogSeverity verboseness = VISUAL_LOG_WARNING;
 
-static struct _message_handlers {
-	VisLogMessageHandlerFunc	 info_handler;
-	VisLogMessageHandlerFunc	 warning_handler;
-	VisLogMessageHandlerFunc	 critical_handler;
-	VisLogMessageHandlerFunc	 error_handler;
+static const char *severity_labels[] = {
+	"DEBUG    ",
+	"INFO     ",
+	"WARNING  ",
+	"ERROR    ",
+	"CRITICAL "
+};
 
-	void				*info_priv;
-	void				*warning_priv;
-	void				*critical_priv;
-	void				*error_priv;
-} message_handlers;
+static MessageHandler message_handlers[VISUAL_TABLESIZE(severity_labels)];
 
+static void default_log_handler (VisLogSeverity severity,
+	VisLogMessageSource const *source, const char *msg);
 
-/**
- * @defgroup VisLog VisLog
- * @{
- */
-
-/**
- * Set the library it's verbosity level.
- *
- * @param v The verbose level as a VisLogVerboseness enumerate value.
- */
-void visual_log_set_verboseness (VisLogVerboseness v)
+void visual_log_set_verboseness (VisLogSeverity v)
 {
 	verboseness = v;
 }
 
-/**
- * Get the current library it's verbosity level.
- *
- * @return The verboseness level as a VisLogVerboseness enumerate value.
- */
-VisLogVerboseness visual_log_get_verboseness ()
+VisLogSeverity visual_log_get_verboseness ()
 {
 	return verboseness;
 }
 
-/**
- * Set the callback function that handles info messages.
- *
- * @param handler The custom message handler callback.
- * @param priv Optional private data to pass on to the handler.
- */
-void visual_log_set_info_handler (VisLogMessageHandlerFunc handler, void *priv)
+static int is_valid_severity (VisLogSeverity severity)
 {
-	visual_log_return_if_fail (handler != NULL);
-
-	message_handlers.info_handler = handler;
-
-	message_handlers.info_priv = priv;
+	return (severity >= VISUAL_LOG_DEBUG && severity <= VISUAL_LOG_ERROR);
 }
 
-/**
- * Set the callback function that handles warning messages.
- *
- * @param handler The custom message handler callback.
- * @param priv Optional private data to pass on to the handler.
- */
-void visual_log_set_warning_handler (VisLogMessageHandlerFunc handler, void *priv)
+void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandlerFunc func, void *priv)
 {
-	visual_log_return_if_fail (handler != NULL);
+	MessageHandler *handler;
 
-	message_handlers.warning_handler = handler;
+	visual_log_return_if_fail (is_valid_severity (severity));
 
-	message_handlers.warning_priv = priv;
+	handler = &message_handlers[severity];
+	handler->func = func;
+	handler->priv = priv;
 }
 
-/**
- * Set the callback function that handles critical messages.
- *
- * @param handler The custom message handler callback.
- * @param priv Optional private data to pass on to the handler.
- */
-void visual_log_set_critical_handler (VisLogMessageHandlerFunc handler, void *priv)
-{
-	visual_log_return_if_fail (handler != NULL);
+#if defined(LV_HAVE_ISO_C_VARARGS) || defined(LV_HAVE_GNU_C_VARARGS)
 
-	message_handlers.critical_handler = handler;
-
-	message_handlers.critical_priv = priv;
-}
-
-/**
- * Set the callback function that handles error messages. After handling the message with
- * this function, libvisual will abort the program. This behavior cannot be
- * changed.
- *
- * @param handler The custom message handler callback.
- * @param priv Optional private data to pass on to the handler.
- */
-void visual_log_set_error_handler (VisLogMessageHandlerFunc handler, void *priv)
-{
-	visual_log_return_if_fail (handler != NULL);
-
-	message_handlers.error_handler = handler;
-
-	message_handlers.error_priv = priv;
-}
-
-/**
- * Set callback the function that handles all the messages.
- *
- * @param handler The custom message handler callback.
- * @param priv Optional private data to pass on to the handler.
- */
-void visual_log_set_all_messages_handler (VisLogMessageHandlerFunc handler, void *priv)
-{
-	visual_log_return_if_fail (handler != NULL);
-
-	message_handlers.info_handler = handler;
-	message_handlers.warning_handler = handler;
-	message_handlers.critical_handler = handler;
-	message_handlers.error_handler = handler;
-
-	message_handlers.info_priv = priv;
-	message_handlers.warning_priv = priv;
-	message_handlers.critical_priv = priv;
-	message_handlers.error_priv = priv;
-}
-	
-/**
- * Private library call used by the visual_log define to display debug,
- * warning and error messages.
- *
- * @see visual_log
- * 
- * @param severity Severity of the log message.
- * @param file Char pointer to a string that contains the source filename.
- * @param line Line number for which the log message is.
- * @param funcname Function name in which the log message is called.
- * @param fmt Format string to display the log message.
- */
 void _lv_log (VisLogSeverity severity, const char *file,
-			int line, const char *funcname, const char *fmt, ...)
+	int line, const char *funcname, const char *fmt, ...)
 {
-	char str[1024];
+	VisLogMessageSource source;
+	MessageHandler *handler;
+	char str[LV_LOG_MAX_MESSAGE_SIZE];
 	va_list va;
-	
-	assert (fmt != NULL);
+
+	visual_log_return_if_fail (is_valid_severity (severity));
+	visual_log_return_if_fail (fmt != NULL);
+
+	if (verboseness > severity)
+		 return;
 
 	va_start (va, fmt);
-	vsnprintf (str, 1023, fmt, va);
+	vsnprintf (str, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
 	va_end (va);
 
-	switch (severity) {
-		case VISUAL_LOG_DEBUG:
-			if (verboseness == VISUAL_LOG_VERBOSENESS_HIGH)
-				fprintf (stderr, "libvisual DEBUG: %s: %s() [(%s,%d)]: %s\n",
-						__lv_progname, funcname, file, line, str);
-		
-			break;
-		case VISUAL_LOG_INFO:
-			if (!message_handlers.info_handler)
-				visual_log_set_info_handler (default_info_handler, NULL);
+	source.file = file;
+	source.func = funcname;
+	source.line = line;
 
-			if (verboseness >= VISUAL_LOG_VERBOSENESS_MEDIUM)
-				message_handlers.info_handler (str, funcname, message_handlers.info_priv);
+	handler = &message_handlers[severity];
 
-			break;
-		case VISUAL_LOG_WARNING:
-			if (!message_handlers.warning_handler)
-				visual_log_set_warning_handler (default_warning_handler, NULL);
-
-			if (verboseness >= VISUAL_LOG_VERBOSENESS_MEDIUM)
-				message_handlers.warning_handler (str, funcname, message_handlers.warning_priv);
-			
-			break;
-
-		case VISUAL_LOG_CRITICAL:
-			if (!message_handlers.critical_handler)
-				visual_log_set_critical_handler (default_critical_handler, NULL);
-
-			if (verboseness >= VISUAL_LOG_VERBOSENESS_LOW)
-				message_handlers.critical_handler (str, funcname, message_handlers.critical_priv);
-		
-			break;
-
-		case VISUAL_LOG_ERROR:
-			if (!message_handlers.error_handler)
-				visual_log_set_error_handler (default_error_handler, NULL);
-
-			if (verboseness >= VISUAL_LOG_VERBOSENESS_LOW)
-				message_handlers.error_handler (str, funcname, message_handlers.error_priv);
-
-			visual_error_raise ();
-
-			break;
+	if (handler->func != NULL) {
+		(*handler->func) (severity, str, &source, handler->priv);
+	} else {
+		default_log_handler (severity, &source, str);
 	}
 }
 
-/**
- * @}
- */
+#else /* LV_HAVE_ISO_C_VARARGS && LV_HAVE_GNU_C_VARARGS */
 
-static void default_info_handler (const char *msg, const char *funcname, void *privdata)
+void visual_log (VisLogSeverity severity, const char *fmt, ...)
 {
-	printf ("libvisual INFO: %s: %s\n", __lv_progname, msg);
+	va_list vargs;
+	MessageHandler *handler;
+	char str[LV_LOG_MAX_MESSAGE_SIZE];
+
+	visual_log_return_if_fail (is_valid_severity (severity));
+	visual_log_return_if_fail (fmt != NULL);
+
+	if (verboseness > severity)
+		 return;
+
+	va_start (vargs, fmt);
+	vsnprintf (str, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, vargs);
+	va_end (vargs);
+
+	handler = &message_handlers[severity];
+
+	if (handler->func != NULL) {
+		(*handler->func) (severity, str, NULL, handler->priv);
+	} else {
+		default_log_handler (severity, NULL, str);
+	}
 }
 
-static void default_warning_handler (const char *msg, const char *funcname, void *privdata)
-{
-	if (funcname)
-		fprintf (stderr, "libvisual WARNING: %s: %s(): %s\n",
-				__lv_progname, funcname, msg);
-	else
-		fprintf (stderr, "libvisual WARNING: %s: %s\n", __lv_progname, msg);
-}
+#endif /* LV_HAVE_ISO_C_VARARGS && LV_HAVE_GNU_C_VARARGS */
 
-static void default_critical_handler (const char *msg, const char *funcname, void *privdata)
+static void default_log_handler (VisLogSeverity severity, VisLogMessageSource const *source, const char *msg)
 {
-	if (funcname)
-		fprintf (stderr, "libvisual CRITICAL: %s: %s(): %s\n",
-				__lv_progname, funcname, msg);
-	else
-		fprintf (stderr, "libvisual CRITICAL: %s: %s\n", __lv_progname, msg);
+	if (source != NULL) {
+		fprintf (stderr, "%s %s:%d:%s: %s\n", severity_labels[severity],
+			 source->file, source->line, source->func, msg);
+	} else {
+		fprintf (stderr, "%s %s\n", severity_labels[severity], msg);
+	}
 }
-
-static void default_error_handler (const char *msg, const char *funcname, void *privdata)
-{
-	if (funcname)
-		fprintf (stderr, "libvisual ERROR: %s: %s(): %s\n",
-				__lv_progname, funcname, msg);
-	else
-		fprintf (stderr, "libvisual ERROR: %s: %s\n", __lv_progname, msg);
-}
-

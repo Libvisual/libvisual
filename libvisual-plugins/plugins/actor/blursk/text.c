@@ -19,10 +19,12 @@
  * along with Blurks-libvisual.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-#include <ctype.h>
 #include "actor_blursk.h"
 #include "blursk.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
 static int textheight;  /* height of the tallest character, plus 1 */
 static int frame;   /* frame counter, used for color-cycling */

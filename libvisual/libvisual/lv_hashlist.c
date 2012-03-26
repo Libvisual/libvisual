@@ -21,13 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#include "lv_common.h"
+#include "config.h"
 #include "lv_hashlist.h"
+#include "lv_common.h"
 
 static int hashlist_destroy (VisCollection *collection);
 static int hashlist_size (VisCollection *collection);
@@ -81,17 +77,6 @@ static VisCollectionIter *hashlist_iter (VisCollection *collection)
 	return visual_collection_get_iter (VISUAL_COLLECTION (hashlist->list));
 }
 
-
-/**
- * @defgroup VisHashlist VisHashlist
- * @{
- */
-
-/**
- * Creates a new VisHashlist.
- * 
- * @return A newly allocated VisHashlist.
- */
 
 VisHashlist *visual_hashlist_new (VisCollectionDestroyerFunc destroyer, int size)
 {
@@ -264,8 +249,3 @@ VisList *visual_hashlist_get_list (VisHashlist *hashlist)
 
 	return hashlist->list;
 }
-
-/**
- * @}
- */
-

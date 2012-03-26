@@ -24,8 +24,14 @@
 #ifndef _LV_CONFIG_H
 #define _LV_CONFIG_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_list.h>
+
+/**
+ * @defgroup VisConfig VisConfig
+ * @{
+ */
 
 VISUAL_BEGIN_DECLS
 
@@ -45,10 +51,8 @@ typedef struct _VisConfigRegistrySection VisConfigRegistrySection;
  */
 struct _VisConfigRegistry {
 	VisObject	 object;	/**< The VisObject data. */
-
 	char		*filename;	/**< Filename of the config file that is represented
-					  *  by the VisConfigRegistry structure. */
-
+							  *	 by the VisConfigRegistry structure. */
 	VisList		 sections;	/**< List containing all the sections within the registry. */
 };
 
@@ -59,9 +63,9 @@ struct _VisConfigRegistrySection {
 	VisObject	 object;	/**< The VisObject data. */
 
 	char		*name;		/**< The name of the section in the form of:
-					  *  "domain:package:type:element:member".
-					  *  For example "Libvisual:core:actor:oinksie:color mode" could
-					  *  contain the "color mode" parameter off the oinksie actor plugin. */
+					*  "domain:package:type:element:member".
+					*  For example "Libvisual:core:actor:oinksie:color mode" could
+					*  contain the "color mode" parameter off the oinksie actor plugin. */
 
 	char		*data;		/**< The data that is associated with this registry element. */
 	int		 datalength;	/**< Length of the data stored for this registry element. */
@@ -83,5 +87,9 @@ int visual_config_registry_write (VisConfigRegistry *registry, VisConfigRegistry
 int visual_config_registry_sync (VisConfigRegistry *registry);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_CONFIG_H */

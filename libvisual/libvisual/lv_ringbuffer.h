@@ -24,9 +24,15 @@
 #ifndef _LV_RINGBUFFER_H
 #define _LV_RINGBUFFER_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_buffer.h>
+
+/**
+ * @defgroup VisRingBuffer VisRingBuffer
+ * @{
+ */
 
 VISUAL_BEGIN_DECLS
 
@@ -84,13 +90,50 @@ struct _VisRingBuffer {
 	VisList			*entries;	/**< The ring buffer entries list. */
 };
 
-/* prototypes */
+/**
+ * Creates a new VisRingBuffer structure. The VisRingBuffer system is
+ * a double linked ringbuffer implementation.
+ *
+ * @return A newly allocated VisRingBuffer.
+ */
 VisRingBuffer *visual_ringbuffer_new (void);
+
 int visual_ringbuffer_init (VisRingBuffer *ringbuffer);
 
+/**
+ * Adds a VisRingBufferEntry to the end of the ringbuffer.
+ *
+ * @param ringbuffer The VisRingBuffer to which the VisRingBufferEntry is added.
+ * @param entry The VisRingBufferEntry that is added to the end of the ringbuffer.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_RINGBUFFER_NULL or -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL
+ *	on failure.
+ */
 int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
+
+/**
+ * Adds a VisBuffer to the end of the ringbuffer.
+ *
+ * @param ringbuffer The VisRingBuffer to which the VisBuffer is added.
+ * @param buffer The VisBuffer that is added to the VisRingBuffer.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_RINGBUFFER_NULL, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL
+ *	on failure.
+ */
 int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer);
+
+/**
+ * Adds a portion of data to the ringbuffer of nbytes byte size.
+ *
+ * @param ringbuffer Pointer to the ringbuffer to which the data is added.
+ * @param data Pointer to the data that is added to the ringbuffer.
+ * @param nbytes The size of the data that is added to the ringbuffer.
+ *
+ * @return VISUAL_OK on succes or -VISUAL_ERROR_RINGBUFFER_NULL, -VISUAL_ERROR_NULL,
+ *	-VISUAL_ERROR_RINGBUFFER_ENTRY_NULL on failure.
+ */
 int visual_ringbuffer_add_buffer_by_data (VisRingBuffer *ringbuffer, void *data, int nbytes);
+
 int visual_ringbuffer_add_function (VisRingBuffer *ringbuffer,
 		VisRingBufferDataFunc datafunc,
 		VisRingBufferDestroyFunc destroyfunc,
@@ -99,6 +142,14 @@ int visual_ringbuffer_add_function (VisRingBuffer *ringbuffer,
 
 int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer);
 
+/**
+ * Gets a list of all ringbuffer fragments that are currently in the
+ * ringbuffer.
+ *
+ * @param ringbuffer Pointer to the VisRingBuffer of which the fragments are requested.
+ *
+ * @return A VisList of VisRingBufferEntry items or NULL on failure.
+ */
 VisList *visual_ringbuffer_get_list (VisRingBuffer *ringbuffer);
 
 int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
@@ -125,5 +176,9 @@ int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
 void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_RINGBUFFER_H */

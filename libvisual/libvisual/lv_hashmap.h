@@ -24,9 +24,15 @@
 #ifndef _LV_HASHMAP_H
 #define _LV_HASHMAP_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_collection.h>
+
+/**
+ * @defgroup VisHashmap VisHashmap
+ * @{
+ */
 
 VISUAL_BEGIN_DECLS
 
@@ -79,7 +85,11 @@ struct _VisHashmapChainEntry {
 	} key;
 };
 
-/* prototypes */
+/**
+ * Creates a new VisHashmap.
+ *
+ * @return A newly allocated VisHashmap.
+ */
 VisHashmap *visual_hashmap_new (VisCollectionDestroyerFunc destroyer);
 int visual_hashmap_init (VisHashmap *hashmap, VisCollectionDestroyerFunc destroyer);
 
@@ -99,5 +109,9 @@ int visual_hashmap_set_table_size (VisHashmap *hashmap, int tablesize);
 int visual_hashmap_get_table_size (VisHashmap *hashmap);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_HASHMAP_H */

@@ -10,6 +10,8 @@
 #cmakedefine HAVE_FCNTL_H    1
 
 #cmakedefine HAVE_MMAP         1
+#cmakedefine HAVE_MUNMAP       1
+#cmakedefine HAVE_MREMAP       1
 #cmakedefine HAVE_GETTIMEOFDAY 1
 #cmakedefine HAVE_POW          1
 #cmakedefine HAVE_SQRT         1

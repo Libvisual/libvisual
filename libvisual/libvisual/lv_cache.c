@@ -21,13 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#include "lv_common.h"
+#include <config.h>
 #include "lv_cache.h"
+#include "lv_common.h"
+
+#include <string.h>
 
 static int cache_dtor (VisObject *object);
 static int cache_remove_list_entry (VisCache *cache, VisListEntry **le);
@@ -90,17 +88,6 @@ static inline void handle_request_reset (VisCache *cache, VisListEntry *le)
 	/* Rechain at the head */
 	visual_list_chain_at_begin (cache->list, le);
 }
-
-/**
- * @defgroup VisCache VisCache
- * @{
- */
-
-/**
- * Creates a new VisCache.
- * 
- * @return A newly allocated VisCache.
- */
 
 VisCache *visual_cache_new (VisCollectionDestroyerFunc destroyer, int size, VisTime *maxage, int reqreset)
 {
@@ -309,8 +296,3 @@ VisList *visual_cache_get_list (VisCache *cache)
 
 	return cache->list;
 }
-
-/**
- * @}
- */
-

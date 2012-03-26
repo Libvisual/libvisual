@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -21,16 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <gettext.h>
-
-#include "lv_log.h"
+#include "config.h"
 #include "lv_param.h"
+#include "lv_common.h"
+#include "gettext.h"
 
 static int param_container_dtor (VisObject *object);
 static int param_entry_dtor (VisObject *object);
@@ -138,7 +132,7 @@ VisParamContainer *visual_param_container_new ()
  * @param paramcontainer A pointer to the VisParamContainer to which the VisEventQueue needs to be set.
  * @param eventqueue A Pointer to the VisEventQueue that is used for the events the VisParamContainer can emit.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL on failure.
  */
 int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue)
 {
@@ -153,7 +147,7 @@ int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, Vi
  * Get the pointer to the VisEventQueue the VisParamContainer is emitting events to.
  *
  * @param paramcontainer A pointer to the VisParamContainer from which the VisEventQueue is requested.
- * 
+ *
  * @return Pointer to the VisEventQueue possibly NULL, NULL on failure.
  */
 VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer)
@@ -169,7 +163,7 @@ VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramco
  * @param paramcontainer A pointer to the VisParamContainer in which the VisParamEntry is added.
  * @param param A pointer to the VisParamEntry that is added to the VisParamContainer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_PARAM_NULL or
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_PARAM_NULL or
  *    error values returned by visual_list_add () on failure.
  */
 int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param)
@@ -192,7 +186,7 @@ int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry
  * @param paramcontainer A pointer to the VisParamContainer in which the VisParamEntry is added.
  * @param param A pointer to the VisParamEntry that is added to the VisParamContainer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_PARAM_NULL or
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_PARAM_NULL or
  *    error values returned by visual_list_add () on failure.
  */
 int visual_param_container_add_with_defaults (VisParamContainer *paramcontainer, VisParamEntry *param)
@@ -226,7 +220,7 @@ int visual_param_container_add_with_defaults (VisParamContainer *paramcontainer,
  * @param paramcontainer A pointer to the VisParamContainer in which the VisParamEntry elements are added.
  * @param params A pointer to the VisParamEntry elements that are added to the VisParamContainer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL or -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL or -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params)
 {
@@ -255,7 +249,7 @@ int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParam
  * @param paramcontainer A pointer to the VisParamContainer from which a VisParamEntry needs to be removed.
  * @param name The name of the VisParamEntry that needs to be removed from the VisParamContainer.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_NULL
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_NULL
  *    or -VISUAL_ERROR_PARAM_NOT_FOUND on failure.
  */
 int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name)
@@ -285,7 +279,7 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, const char
  * @param destcont A pointer to the VisParamContainer in which the VisParamEntry values are copied.
  * @param srccont A pointer to the VisParamContainer from which the VisParamEntry values are copied.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
  */
 int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer *srccont)
 {
@@ -323,7 +317,7 @@ int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer 
  * @param destcont A pointer to the VisParamContainer in which the VisParamEntry values are copied.
  * @param srccont A pointer to the VisParamContainer from which the VisParamEntry values are copied.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
  */
 int visual_param_container_copy_match (VisParamContainer *destcont, VisParamContainer *srccont)
 {
@@ -401,7 +395,7 @@ VisParamEntry *visual_param_entry_new (char *name)
  * @param callback The notification callback, which is called on changes in the VisParamEntry.
  * @param priv A private that can be used in the callback function.
  *
- * return callback id in the form of a positive value on succes,
+ * return callback id in the form of a positive value on success,
  *     -VISUAL_ERROR_PARAM_NULL, -VISUAL_ERROR_PARAM_CALLBACK_NULL or
  *     -VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY on failure.
  */
@@ -425,7 +419,7 @@ int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallba
     pcall->id = id;
     pcall->callback = callback;
     visual_object_set_private (VISUAL_OBJECT (pcall), priv);
-    
+
     visual_list_add (&param->callbacks, pcall);
 
     return id;
@@ -437,7 +431,7 @@ int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallba
  * @param param Pointer to the VisParamEntry from which a change notification callback is removed.
  * @param id The callback ID that was given by the visual_param_entry_add_callback method.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_remove_callback (VisParamEntry *param, int id)
 {
@@ -466,13 +460,13 @@ int visual_param_entry_remove_callback (VisParamEntry *param, int id)
  * @param param Pointer to the VisParamEntry of which all the change notification
  *     callbacks need to be called.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_notify_callbacks (VisParamEntry *param)
 {
     VisListEntry *le = NULL;
     VisParamEntryCallback *pcall;
-    
+
     visual_log_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
     while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL)
@@ -502,10 +496,10 @@ int visual_param_entry_is (VisParamEntry *param, const char *name)
 /**
  * When called, emits an event in the VisParamContainer it's VisEventQueue when the VisEventQueue
  * is set.
- * 
+ *
  * @param param Pointer to the VisParamEntry that is changed.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_changed (VisParamEntry *param)
 {
@@ -531,7 +525,7 @@ int visual_param_entry_changed (VisParamEntry *param)
  *
  * @param param Pointer to the VisParamEntry from which the VisParamEntryType is requested.
  *
- * @return The VisParamEntryType on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return The VisParamEntryType on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 VisParamEntryType visual_param_entry_get_type (VisParamEntry *param)
 {
@@ -561,7 +555,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
     switch (src1->type) {
         case VISUAL_PARAM_ENTRY_TYPE_NULL:
             return TRUE;
-            
+
             break;
 
         case VISUAL_PARAM_ENTRY_TYPE_STRING:
@@ -573,7 +567,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
         case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
             if (src1->numeric.integer == src2->numeric.integer)
                 return TRUE;
-            
+
             break;
 
         case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
@@ -590,7 +584,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
 
         case VISUAL_PARAM_ENTRY_TYPE_COLOR:
             return visual_color_compare (&src1->color, &src2->color);
-            
+
             break;
 
         case VISUAL_PARAM_ENTRY_TYPE_PALETTE:
@@ -604,7 +598,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
             break;
 
         default:
-            visual_log (VISUAL_LOG_CRITICAL, _("param type is not valid"));
+            visual_log (VISUAL_LOG_ERROR, _("param type is not valid"));
 
             return -VISUAL_ERROR_PARAM_INVALID_TYPE;
 
@@ -621,7 +615,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param src Pointer to the VisParamEntry from which the value is retrieved.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL, -VISUAL_ERROR_PARAM_INVALID_TYPE on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL, -VISUAL_ERROR_PARAM_INVALID_TYPE on failure.
  */
 int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 {
@@ -639,7 +633,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
 
         case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
             visual_param_entry_set_integer (param, visual_param_entry_get_integer (src));
-            
+
             break;
 
         case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
@@ -666,15 +660,15 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
             visual_param_entry_set_object (param, visual_param_entry_get_object (src));
 
             break;
-        
+
         default:
-            visual_log (VISUAL_LOG_CRITICAL, _("param type is not valid"));
+            visual_log (VISUAL_LOG_ERROR, _("param type is not valid"));
 
             return -VISUAL_ERROR_PARAM_INVALID_TYPE;
 
             break;
     }
-    
+
     return VISUAL_OK;
 }
 
@@ -684,7 +678,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
  * @param param Pointer to the VisParamEntry to which the name is set.
  * @param name The name that is set to the VisParamEntry.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_name (VisParamEntry *param, char *name)
 {
@@ -694,7 +688,7 @@ int visual_param_entry_set_name (VisParamEntry *param, char *name)
         visual_mem_free (param->name);
 
     param->name = NULL;
-    
+
     if (name != NULL)
         param->name = strdup (name);
 
@@ -707,7 +701,7 @@ int visual_param_entry_set_name (VisParamEntry *param, char *name)
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param string The string for this parameter.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_string (VisParamEntry *param, char *string)
 {
@@ -731,7 +725,7 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
 
     } else if (strcmp (string, param->string) != 0) {
         visual_mem_free (param->string);
-        
+
         param->string = strdup (string);
 
         visual_param_entry_changed (param);
@@ -746,7 +740,7 @@ int visual_param_entry_set_string (VisParamEntry *param, char *string)
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param integer The integer value for this parameter.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_integer (VisParamEntry *param, int integer)
 {
@@ -759,7 +753,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer)
 
         visual_param_entry_changed (param);
     }
-    
+
     return VISUAL_OK;
 }
 
@@ -769,7 +763,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer)
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param floating The float value for this parameter.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_float (VisParamEntry *param, float floating)
 {
@@ -782,7 +776,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
 
         visual_param_entry_changed (param);
     }
-    
+
     return VISUAL_OK;
 }
 
@@ -792,7 +786,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating)
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param doubleflt The double value for this parameter.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
 {
@@ -817,7 +811,7 @@ int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
  * @param g The green value for this color parameter.
  * @param b The blue value for this color parameter.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, uint8_t b)
 {
@@ -840,7 +834,7 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param color Pointer to the VisColor from which the rgb values are copied into the parameter.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color)
 {
@@ -865,7 +859,7 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param pal Pointer to the VisPalette from which the palette data is retrieved for the VisParamEntry.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
 {
@@ -874,15 +868,15 @@ int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
     param->type = VISUAL_PARAM_ENTRY_TYPE_PALETTE;
 
     visual_palette_free_colors (&param->pal);
-    
+
     if (pal != NULL) {
         visual_palette_allocate_colors (&param->pal, pal->ncolors);
-        
+
         visual_palette_copy (&param->pal, pal);
     }
 
     visual_param_entry_changed (param);
-    
+
     return VISUAL_OK;
 }
 
@@ -893,7 +887,7 @@ int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
  * @param param Pointer to the VisParamEntry to which a parameter is set.
  * @param object Pointer to the VisObject that is linked to the VisParamEntry.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_PARAM_NULL on failure.
+ * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
 int visual_param_entry_set_object (VisParamEntry *param, VisObject *object)
 {
@@ -910,7 +904,7 @@ int visual_param_entry_set_object (VisParamEntry *param, VisObject *object)
         visual_object_ref (param->objdata);
 
     visual_param_entry_changed (param);
-    
+
     return VISUAL_OK;
 }
 
@@ -965,7 +959,7 @@ int visual_param_entry_set_annotation (VisParamEntry *param, char *anno)
  * Get the name of the VisParamEntry.
  *
  * @param param Pointer to the VisParamEntry from which the name is requested.
- * 
+ *
  * @return The name of the VisParamEntry or NULL.
  */
 char *visual_param_entry_get_name (VisParamEntry *param)

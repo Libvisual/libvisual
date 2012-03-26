@@ -24,15 +24,35 @@
 #ifndef _LV_OS_H
 #define _LV_OS_H
 
-#include <libvisual/lv_common.h>
+#include <libvisual/lv_defines.h>
+
+/**
+ * @defgroup VisOS VisOS
+ * @{
+ */
 
 VISUAL_BEGIN_DECLS
 
-/* prototypes */
+/**
+ * Puts the process in soft realtime mode. Be very careful with using this, it's very much possible to lock your
+ * system up. Only works as super user.
+ */
 int visual_os_scheduler_realtime_start (void);
+
+/**
+ * Returns to normal execution mode. Only works as super user.
+ */
 int visual_os_scheduler_realtime_stop (void);
+
+/**
+ * Yield the process. Don't rely on this.
+ */
 int visual_os_scheduler_yield (void);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_OS_H */

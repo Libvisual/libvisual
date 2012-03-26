@@ -24,10 +24,12 @@
 #ifndef _LV_HASHLIST_H
 #define _LV_HASHLIST_H
 
-#include <libvisual/lv_common.h>
-#include <libvisual/lv_time.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_hashmap.h>
+
+/**
+ * @defgroup VisHashlist VisHashlist
+ * @{
+ */
 
 VISUAL_BEGIN_DECLS
 
@@ -57,8 +59,13 @@ struct _VisHashlistEntry {
 	void		*data;
 };
 
-/* prototypes */
+/**
+ * Creates a new VisHashlist.
+ *
+ * @return A newly allocated VisHashlist.
+ */
 VisHashlist *visual_hashlist_new (VisCollectionDestroyerFunc destroyer, int size);
+
 int visual_hashlist_init (VisHashlist *hashlist, VisCollectionDestroyerFunc destroyer, int size);
 
 int visual_hashlist_clear (VisHashlist *hashlist);
@@ -75,5 +82,9 @@ int visual_hashlist_get_size (VisHashlist *hashlist);
 VisList *visual_hashlist_get_list (VisHashlist *hashlist);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_HASHLIST_H */

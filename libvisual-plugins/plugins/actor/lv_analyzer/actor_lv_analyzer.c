@@ -35,6 +35,8 @@
 
 /** default amount of bars */
 #define BARS_DEFAULT 25
+#define BARS_DEFAULT_SPACE 1
+
 
 /* helper macro */
 #define QTY(array)  (sizeof(array) / sizeof(*(array)))
@@ -157,8 +159,8 @@ static int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *heig
 	while (reqw % 2 || reqw % 4)
 		reqw--;
 
-	if (reqw < 32)
-		reqw = 32;
+	/*if (reqw < 32)
+		reqw = 32;*/
 
 	*width = reqw;
 
@@ -313,7 +315,6 @@ static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color)
 {
 	uint8_t *pixels = visual_video_get_pixels (video);
-	int i;
 
 	if (video->depth != VISUAL_VIDEO_DEPTH_8BIT)
 		return;
@@ -331,8 +332,6 @@ static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t c
  */
 static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
 {
-	int startx = (video->width / nbars) * index;
-	int endx = ((video->width / nbars) * (index + 1));
 	int height = video->height * amplitude;
 	int i;
 	float scale = 128.0 / video->height;
@@ -340,7 +339,7 @@ static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
 	
 	for (i = video->height - 1; i > (video->height - height); i--) 
 	{
-		draw_vline(video, index*width, index*width + width, i, (video->height - i) * scale);
+		draw_vline(video, index*width, index*width + width - BARS_DEFAULT_SPACE, i, (video->height - i) * scale);
 	}
 }
 

@@ -20,18 +20,17 @@
  * along with Blurks-libvisual.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "actor_blursk.h"
+#include "blursk.h"
+
 #include <libvisual/libvisual.h>
+#include <stdio.h>
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "actor_blursk.h"
-#include "blursk.h"
-
-
 
 /**
  * fill config with default values

@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -24,12 +24,14 @@
 #ifndef _LV_KEYSYM_H
 #define _LV_KEYSYM_H
 
+#include <libvisual/lv_defines.h>
+
 VISUAL_BEGIN_DECLS
 
 /**
  * Enumerate values used within the libvisual event system for keyboard events.
  *
- * The table is closely modelled after that of SDL and the SDL1.2 
+ * The table is closely modelled after that of SDL and the SDL1.2
  * SDLK defines can be directly translated to those of libvisual, however
  * some keys are left out, but these are rarely or never used.
  *
@@ -191,7 +193,7 @@ typedef enum {
 
 /**
  * Enumerate values used within the libvisual event system to set modifier keys.
- * 
+ *
  * Values can ben ORred together.
  *
  * @see visual_event_queue_add_keyboard

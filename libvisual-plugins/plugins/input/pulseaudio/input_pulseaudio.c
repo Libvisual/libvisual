@@ -22,7 +22,7 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <pulse/pulseaudio.h>
-
+#include <string.h>
 #include <libvisual/libvisual.h>
 
 static pa_sample_spec sample_spec = {
@@ -76,9 +76,9 @@ const VisPluginInfo *get_plugin_info( int *count ) {
         .plugname = "pulseaudio",
         .name = "Pulseaudio input plugin",
         .author = "Scott Sibley <scott@starlon.net>",
-        .version = "$Revision$",
-        .about = "Use data exported from pulseaudio",
-        .help = "",
+        .version = "1.0",
+        .about = "Use pcm input from pulseaudio",
+        .help = "This plugin requires you to call XinitThreads()",
         .license = VISUAL_PLUGIN_LICENSE_GPL,
 
         .init = inp_pulseaudio_init,

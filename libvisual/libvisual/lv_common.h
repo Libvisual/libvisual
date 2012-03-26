@@ -24,12 +24,12 @@
 #ifndef _LV_COMMON_H
 #define _LV_COMMON_H
 
+#include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
-
+#include <libvisual/lv_types.h>
 #include <libvisual/lv_mem.h>
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_error.h>
-#include <libvisual/lv_types.h>
 #include <libvisual/lv_object.h>
 
 #endif /* _LV_COMMON_H */

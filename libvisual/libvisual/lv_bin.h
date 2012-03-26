@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -30,6 +30,11 @@
 #include <libvisual/lv_video.h>
 #include <libvisual/lv_time.h>
 
+/**
+ * @defgroup VisBin VisBin
+ * @{
+ */
+
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_BIN(obj)					(VISUAL_CHECK_CAST ((obj), VisBin))
@@ -53,7 +58,7 @@ struct _VisBin {
 	VisActor	*actor;
 	VisVideo	*actvideo;
 	VisVideo	*privvid;
-	
+
 	int		 actmorphmanaged;
 	VisVideo	*actmorphvideo;
 	VisActor	*actmorph;
@@ -125,5 +130,9 @@ int visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
 int visual_bin_run (VisBin *bin);
 
 VISUAL_END_DECLS
+
+/**
+ * @}
+ */
 
 #endif /* _LV_BIN_H */
