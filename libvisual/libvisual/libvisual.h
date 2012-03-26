@@ -64,5 +64,6 @@
 #include <libvisual/lv_gl.h>
 #include <libvisual/lv_math.h>
 #include <libvisual/lv_os.h>
+#include <libvisual/lv_alpha_blend.h>
 
 #endif /* LV_LIBVISUAL_H */

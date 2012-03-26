@@ -25,6 +25,7 @@
 #include "lv_libvisual.h"
 #include "lv_common.h"
 
+#include "lv_alpha_blend.h"
 #include "lv_fourier.h"
 #include "lv_plugin_registry.h"
 #include "lv_log.h"
@@ -140,6 +141,9 @@ int visual_init (int *argc, char ***argv)
 
 	/* Initialize Mem system */
 	visual_mem_initialize ();
+
+	/* Initialize CPU-accelerated graphics functions */
+	visual_alpha_blend_initialize ();
 
 	/* Initialize Thread system */
 	visual_thread_initialize ();

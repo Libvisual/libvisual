@@ -31,22 +31,7 @@
 
 const VisPluginInfo *get_plugin_info (int *count);
 
-typedef struct {
-	uint16_t b:5, g:6, r:5;
-} _color16;
-
-static inline int alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha);
-
-/* alpha blenders */
-static inline int alpha_blend_8_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static inline int alpha_blend_16_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static inline int alpha_blend_24_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static inline int alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-
-static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static inline int alpha_blend_16_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static inline int alpha_blend_24_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
-static inline int alpha_blend_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha);
+static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha);
 
 static int lv_morph_alpha_init (VisPluginData *plugin);
 static int lv_morph_alpha_cleanup (VisPluginData *plugin);
@@ -111,213 +96,25 @@ static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *au
 	return 0;
 }
 
-static inline int alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha)
+static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha)
 {
+	uint8_t a = alpha * (1/255.0);
 
-	if (visual_cpu_get_mmx ()) {
-		if (depth == VISUAL_VIDEO_DEPTH_8BIT)
-			return alpha_blend_8_mmx (dest, src1, src2, size, alpha);
+	switch (depth) {
+		case VISUAL_VIDEO_DEPTH_8BIT:
+			visual_alpha_blend_8 (dest, src1, src2, size, a);
+			break;
 
-		if (depth == VISUAL_VIDEO_DEPTH_16BIT)
-			return alpha_blend_16_mmx (dest, src1, src2, size, alpha);
+		case VISUAL_VIDEO_DEPTH_16BIT:
+			visual_alpha_blend_16 (dest, src1, src2, size, a);
+			break;
 
-		if (depth == VISUAL_VIDEO_DEPTH_24BIT)
-			return alpha_blend_24_mmx (dest, src1, src2, size, alpha);
+		case VISUAL_VIDEO_DEPTH_24BIT:
+			visual_alpha_blend_24 (dest, src1, src2, size, a);
+			break;
 
-		if (depth == VISUAL_VIDEO_DEPTH_32BIT)
-			return alpha_blend_32_mmx (dest, src1, src2, size, alpha);
-	} else {
-		if (depth == VISUAL_VIDEO_DEPTH_8BIT)
-			return alpha_blend_8_c (dest, src1, src2, size, alpha);
-
-		if (depth == VISUAL_VIDEO_DEPTH_16BIT)
-			return alpha_blend_16_c (dest, src1, src2, size, alpha);
-
-		if (depth == VISUAL_VIDEO_DEPTH_24BIT)
-			return alpha_blend_24_c (dest, src1, src2, size, alpha);
-
-		if (depth == VISUAL_VIDEO_DEPTH_32BIT)
-			return alpha_blend_32_c (dest, src1, src2, size, alpha);
-
+		case VISUAL_VIDEO_DEPTH_32BIT:
+			visual_alpha_blend_32 (dest, src1, src2, size, a);
+			break;
 	}
-
-	return -1;
 }
-
-/* FIXME TODO blends:   c       sse     mmx
- * 8                    x		x
- * 16                   x
- * 24                   x
- * 32                   x		x
- */
-
-static inline int alpha_blend_8_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-	uint8_t ialpha = (alpha * 255);
-	int i;
-
-	for (i = 0; i < size; i++) {
-		dest[i] = (ialpha * (src2[i] - src1[i])) / 255 + src1[i];
-	}
-
-	return 0;
-}
-
-static inline int alpha_blend_16_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-	uint8_t ialpha = (alpha * 255);
-	_color16 *destr = (_color16 *) dest;
-	_color16 *src1r = (_color16 *) src1;
-	_color16 *src2r = (_color16 *) src2;
-	int i;
-
-	for (i = 0; i < size / 2; i++) {
-		destr[i].r = ((ialpha * (src2r[i].r - src1r[i].r)) / 255 + src1r[i].r);
-		destr[i].g = ((ialpha * (src2r[i].g - src1r[i].g)) / 255 + src1r[i].g);
-		destr[i].b = ((ialpha * (src2r[i].b - src1r[i].b)) / 255 + src1r[i].b);
-	}
-
-	return 0;
-}
-
-static inline int alpha_blend_24_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-	uint8_t ialpha = (alpha * 255);
-	int i;
-
-	for (i = 0; i < size; i++) {
-		dest[i] = (ialpha * (src2[i] - src1[i])) / 255 + src1[i];
-	}
-
-	return 0;
-}
-
-static inline int alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-	uint8_t ialpha = (alpha * 255);
-	int i;
-
-	for (i = 0; i < size; i++) {
-		dest[i] = (ialpha * (src2[i] - src1[i])) / 255 + src1[i];
-	}
-
-	return 0;
-}
-
-static inline int alpha_blend_8_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	uint32_t aalpha = (alpha * 255);
-	uint32_t ialpha = aalpha;
-	int i;
-
-	ialpha |= ialpha << 16;
-
-	__asm __volatile
-		("\n\t pxor %%mm6, %%mm6"
-		 ::);
-
-	for (i = size; i > 4; i -= 4) {
-		__asm __volatile
-			("\n\t movd %[alpha], %%mm3"
-			 "\n\t movd %[src2], %%mm0"
-			 "\n\t psllq $32, %%mm3"
-			 "\n\t movd %[alpha], %%mm2"
-			 "\n\t movd %[src1], %%mm1"
-			 "\n\t por %%mm3, %%mm2"
-			 "\n\t punpcklbw %%mm6, %%mm0"  /* interleaving dest */
-			 "\n\t punpcklbw %%mm6, %%mm1"  /* interleaving source */
-			 "\n\t psubsw %%mm1, %%mm0"     /* (src - dest) part */
-			 "\n\t pmullw %%mm2, %%mm0"     /* alpha * (src - dest) */
-			 "\n\t psrlw $8, %%mm0"         /* / 256 */
-			 "\n\t paddb %%mm1, %%mm0"      /* + dest */
-			 "\n\t packuswb %%mm0, %%mm0"
-			 "\n\t movd %%mm0, %[dest]"
-			 : [dest] "=m" (*(dest + i))
-			 : [src1] "m" (*(src1 + i))
-			 , [src2] "m" (*(src2 + i))
-			 , [alpha] "m" (ialpha));
-	}
-
-	while (i--)
-		dest[i] = (aalpha * (src2[i] - src1[i])) / 255 + src1[i];
-
-	__asm __volatile
-		("\n\t emms");
-#endif
-
-	return 0;
-}
-
-static inline int alpha_blend_16_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-	uint8_t ialpha = (alpha * 255);
-	_color16 *destr = (_color16 *) dest;
-	_color16 *src1r = (_color16 *) src1;
-	_color16 *src2r = (_color16 *) src2;
-	int i;
-
-	for (i = 0; i < size / 2; i++) {
-		destr[i].r = ((ialpha * (src2r[i].r - src1r[i].r)) / 255 + src1r[i].r);
-		destr[i].g = ((ialpha * (src2r[i].g - src1r[i].g)) / 255 + src1r[i].g);
-		destr[i].b = ((ialpha * (src2r[i].b - src1r[i].b)) / 255 + src1r[i].b);
-	}
-
-	return 0;
-}
-
-static inline int alpha_blend_24_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-	uint8_t ialpha = (alpha * 255);
-	int i;
-
-	for (i = 0; i < size; i++) {
-		dest[i] = (ialpha * (src2[i] - src1[i])) / 255 + src1[i];
-	}
-
-	return 0;
-}
-
-static inline int alpha_blend_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-
-	uint32_t ialpha = (alpha * 255);
-	int i;
-
-	__asm __volatile
-		("\n\t pxor %%mm6, %%mm6"
-		 ::);
-
-	for (i = 0; i < size; i += 4) {
-		__asm __volatile
-			("\n\t movd %[src2], %%mm0"
-			 "\n\t movd %[alpha], %%mm2"
-			 "\n\t movd %[src1], %%mm1"
-			 "\n\t psllq $32, %%mm2"
-			 "\n\t movd %[alpha], %%mm3"
-			 "\n\t movd %[alpha], %%mm4"
-			 "\n\t psllq $16, %%mm3"
-			 "\n\t por %%mm4, %%mm2"
-			 "\n\t punpcklbw %%mm6, %%mm0"  /* interleaving dest */
-			 "\n\t por %%mm3, %%mm2"
-			 "\n\t punpcklbw %%mm6, %%mm1"  /* interleaving source */
-			 "\n\t psubsw %%mm1, %%mm0"     /* (src - dest) part */
-			 "\n\t pmullw %%mm2, %%mm0"     /* alpha * (src - dest) */
-			 "\n\t psrlw $8, %%mm0"         /* / 256 */
-			 "\n\t paddb %%mm1, %%mm0"      /* + dest */
-			 "\n\t packuswb %%mm0, %%mm0"
-			 "\n\t movd %%mm0, %[dest]"
-			 : [dest] "=m" (*(dest + i))
-			 : [src1] "m" (*(src1 + i))
-			 , [src2] "m" (*(src2 + i))
-			 , [alpha] "m" (ialpha));
-	}
-
-	__asm __volatile
-		("\n\t emms");
-#endif
-
-	return 0;
-}
-

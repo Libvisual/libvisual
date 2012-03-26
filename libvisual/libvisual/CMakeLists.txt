@@ -55,6 +55,7 @@ SET(libvisual_HEADERS
   lv_math.h
   lv_gl.h
   lv_defines.h
+  lv_alpha_blend.h
   ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h
 )
 
@@ -98,6 +99,7 @@ SET(libvisual_SOURCES
   lv_os.c
   lv_math.c
   lv_gl.c
+  lv_alpha_blend.c
 )
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
