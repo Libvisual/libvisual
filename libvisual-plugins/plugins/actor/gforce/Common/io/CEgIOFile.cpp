@@ -4,17 +4,14 @@
 #include "CEgFileSpec.h"
 
 
-long CEgIOFile::sCreatorType = '????';
+long CEgIOFile::sCreatorType = 0x3f3f3f3f;
 
 
 CEgIOFile::CEgIOFile( int inDoTrunc, long inOBufSize ) :
-	mDoTrunc( inDoTrunc ),
-	CEgIFile(),
-	CEgOStream() {
-	
+	mDoTrunc( inDoTrunc ) {
 	mDoTrunc = inDoTrunc;
 	mOBufSize = inOBufSize;
-	
+
 	if ( mOBufSize < 100 )
 		mOBufSize = 100;
 }
@@ -67,14 +64,14 @@ CEgIOFile::~CEgIOFile() {
 
 #include <stdio.h>
 
-#define 	__OSWOpen( specPtr )			mFile = (long) fopen( (char*) (specPtr -> OSSpec()), "w+b" );		
+#define 	__OSWOpen( specPtr )			mFile = (long) fopen( (char*) (specPtr -> OSSpec()), "w+b" );
 
 #define 	__OSWrite( srcePtr, ioBytes )	unsigned long int wrote = fwrite( srcePtr, 1, ioBytes, (FILE*) mFile );				\
 											if ( wrote > 0 || ioBytes == 0 )										\
 												ioBytes = wrote;													\
 											else {																	\
 												throwErr( cWriteErr );												\
-											}	
+											}
 #endif
 
 
@@ -103,23 +100,23 @@ CEgIOFile::~CEgIOFile() {
 											if ( ! ok || ioBytes != wrote )	{										\
 												throwErr( cWriteErr );												\
 												mOSErr = ::GetLastError();											\
-											}	
+											}
 #endif
 
 
 
 void CEgIOFile::open( const CEgFileSpec* inSpecPtr ) {
-	
+
 	close();
 	throwErr( cNoErr );
-	
+
 	if ( inSpecPtr ) {
 		if ( mDoTrunc )
 			inSpecPtr -> Delete();
-			
+
 		__OSWOpen( inSpecPtr )
 	}
-		
+
 	if ( mFile == 0 ) {
 		#if EG_MAC
 		if ( mOSErr == fnfErr )
@@ -142,12 +139,12 @@ void CEgIOFile::open( const CEgFileSpec* inSpecPtr ) {
 void CEgIOFile::PutBlock( const void* inSrce, long numBytes ) {
 
 	CEgIFile::skip( numBytes );										// Keep mPos up to date
-	
+
 	// If we don't want to exceed our buffer limit...
 	if ( numBytes + (long) mOBuf.length() > mOBufSize ) {			// Uh oh, we actually  have to write to disk
 		// Get rid of what we have waiting first
 		flush();
-		
+
 		if ( numBytes > mOBufSize /4  && noErr() ) {
 			__OSWrite( inSrce, numBytes ) }
 		else
@@ -160,11 +157,11 @@ void CEgIOFile::PutBlock( const void* inSrce, long numBytes ) {
 /*
 
 void CEgIOFile::PutBlock( const void* inSrce, long numBytes ) {
-	
+
 	CEgIFile::skip( numBytes );										// Keep mPos up to date
 	if ( numBytes + (long) mOBuf.length() >= cMaxOBufSize )			// Uh oh, we actually  have to write to disk
 		flush();													// Dump our buf to disk
-		
+
 	while ( numBytes > cMaxOBufSize ) {								// We do this loop crap because to avoid code duplication/maintainance and
 		PutBlock( inSrce, cMaxOBufSize );							// to avoid giving OSWrite a 0 srce ptr (which is perfectly valid from a skip call)
 		if ( inSrce )
@@ -183,11 +180,11 @@ void CEgIOFile::PutBlock( const void* inSrce, long numBytes ) {
 
 void CEgIOFile::flush() {
 	long ioBytes = mOBuf.length();
-	
+
 	if ( ! mFile )
 		throwErr( cNotOpen );
 	else if ( ioBytes > 0 && noErr() ) {
-		__OSWrite( mOBuf.getCStr(), ioBytes )	
+		__OSWrite( mOBuf.getCStr(), ioBytes )
 		if ( noErr() ) {
 			invalidateBuf();							// Invalidate read buffer
 			mOBuf.Wipe();								// We're done with the out buffer
@@ -200,17 +197,17 @@ void CEgIOFile::flush() {
 
 long CEgIOFile::size() {
 	flush();
-	
+
 	return CEgIFile::size();
 }
 
 
 
 void CEgIOFile::seek( long inPos ) {
-	
+
 	if ( noErr() ) {
 		flush();										// Write any pending data
-		
+
 		if ( noErr() ) {
 			CEgIFile::seek( inPos );
 			diskSeek( inPos );
@@ -224,10 +221,10 @@ void CEgIOFile::seek( long inPos ) {
 
 
 void CEgIOFile::close() {
-	
+
 	if ( is_open() ) {
 		flush();
-	
+
 		CEgIFile::close();
 	}
 }

@@ -12,27 +12,27 @@
 class CEgIOFile : public CEgOStream, public CEgIFile {
 
 	private:
-		
+
 	protected:
-		
+
 		int							mDoTrunc;
 		long						mOBufSize;
-		
+
 		enum {
 			cDefaultOBufSize			= 70000
 		};
-		
-		
+
+
 
 	public:
 									CEgIOFile( int inDoTrunc = true, long inOBufSize = cDefaultOBufSize );
 		virtual 					~CEgIOFile();
-		
-		virtual void				open( const CEgFileSpec* inSpecPtr );	
+
+		virtual void				open( const CEgFileSpec* inSpecPtr );
 		virtual void				close();
 
 		void						flush();
-		
+
 		// Overrides from CEgErr
 		virtual void				seek( long inPos );
 		virtual long				size();

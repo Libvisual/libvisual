@@ -11,10 +11,6 @@ long		ScreenDevice::sOSDepth				= 16;
 long		ScreenDevice::sMinDepth 			= 16;
 
 
-
-
-
-
 ScreenDevice::ScreenDevice() {
 	mContextRef = 0;
 
@@ -23,14 +19,14 @@ ScreenDevice::ScreenDevice() {
 	sOSDepth = ::GetDeviceCaps( hdc, BITSPIXEL );
 	::ReleaseDC( 0, hdc );
 	if ( sOSDepth == 24 )
-		sOSDepth = 32;	
+		sOSDepth = 32;
 	#endif
-	
+
 	#if EG_WIN
 	mDDObj		= 0;
 	mFS_DC		= 0;
 	#endif
-	
+
 
 	/*
 	GDHandle gDevice = ::GetMainDevice();
@@ -38,7 +34,7 @@ ScreenDevice::ScreenDevice() {
 		PixMapHandle pixMap = (**gDevice).gdPMap;
 		sOSDepth = (**pixMap).pixelSize;
 		if ( sOSDepth == 8 ) {
-			::BlockMove( (**(**pixMap).pmTable).ctTable, sOSPalette, 256 * sizeof( ColorSpec ) ); 
+			::BlockMove( (**(**pixMap).pmTable).ctTable, sOSPalette, 256 * sizeof( ColorSpec ) );
 		} }
 	else
 		sOSDepth = 16;
@@ -51,7 +47,7 @@ ScreenDevice::~ScreenDevice() {
 
 
 	//EndFrame();
-	
+
 	ExitFullscreen();
 }
 
@@ -60,15 +56,15 @@ ScreenDevice::~ScreenDevice() {
 
 bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth, WindowPtr inWin ) {
 	bool ok = false;
-	
-		
+
+
 	// Check inBitDepth
 	if ( inBitDepth != 8 && inBitDepth != 16 && inBitDepth != 32 )
 		inBitDepth = sOSDepth;
 	if ( inBitDepth < sMinDepth )
 		inBitDepth = sMinDepth;
-		
-		
+
+
 	ExitFullscreen();
 	mDispID		= inDispID;
 	mBitDepth	= inBitDepth;
@@ -98,16 +94,16 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 		theGDevice = 0;
 	if ( ! theGDevice )
 		theGDevice = ::GetMainDevice();
-	
+
 	// Use RequestVideo.c to get the Disp Mgr to do what we want
 	VideoRequestRec requestRec;
 	requestRec.screenDevice		=	theGDevice;
-	requestRec.reqBitDepth		=	inBitDepth;	
+	requestRec.reqBitDepth		=	inBitDepth;
 	requestRec.reqHorizontal	=	ioSize.h;
 	requestRec.reqVertical		=	ioSize.v;
 	requestRec.displayMode		=	nil;					// must init to nil
 	requestRec.depthMode		=	nil;					// must init to nil
-	requestRec.requestFlags		=	0;						
+	requestRec.requestFlags		=	0;
 	if ( RVRequestVideoSetting( &requestRec ) == noErr ) {
 		if ( RVSetVideoRequest( &requestRec ) == noErr ) {
 			outSize.h = requestRec.availHorizontal;
@@ -115,12 +111,12 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 			ok = true;
 		}
 	}
-	
+
 	if ( ok ) {
 
 		// Make the window cover the device
 		::MoveWindow( inWin, 0, 0, true );
-		::SizeWindow( inWin, outSize.h, outSize.v, true ); 
+		::SizeWindow( inWin, outSize.h, outSize.v, true );
 		::ShowWindow( inWin );
 
 		// Setup the window as the main grafport
@@ -146,7 +142,7 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 	err = ::DSpStartup();
 	if ( ! err ) {
 		err = ::DSpGetFirstContext( inDispID, &ref );
-		
+
 		// Look for smallest size w/ for given depth
 		while ( ! err && ref ) {
 			err = DSpContext_GetAttributes( ref, &context );
@@ -154,7 +150,7 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 				if ( context.displayBestDepth == inBitDepth ) {
 					if ( context.displayWidth == ioSize.h && context.displayHeight == ioSize.v ) {
 						mContextRef = ref;
-						isInitted = true; 
+						isInitted = true;
 						break; }
 					else if ( context.displayWidth <= bestWidth && context.displayWidth >= 640 ) {
 						mContextRef = ref;
@@ -162,22 +158,22 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 						bestWidth = context.displayWidth;
 					}
 				}
-				
+
 				// Try the next context for this display
 				err = ::DSpGetNextContext( ref, &ref );
 			}
 		}
-		
+
 		if ( ! isInitted ) {
 			mContextRef = 0;
 			::DSpShutdown();
 			return false;
 		}
-			
+
 		::DSpContext_GetAttributes( mContextRef, &mContext );
 		ioSize.h = mContext.displayWidth;
 		ioSize.v = mContext.displayHeight;
-		
+
 		mContext.contextOptions 			= kDSpContextOption_DontSyncVBL;
 		mContext.frequency					= 0;
 		mContext.reserved1					= 0;
@@ -190,10 +186,10 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 		mContext.colorTable		= 0;
 		mContext.pageCount		= 1;
 		mContext.colorNeeds		= kDSpColorNeeds_Require;
-					
+
 		RGBColor back = { 0, 0, 0 };
 		::DSpSetBlankingColor( &back );
-	
+
 		// Try to reserve the device
 		err = ::DSpContext_Reserve( mContextRef, &mContext );
 		if ( ! err ) {
@@ -204,18 +200,18 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 
 			err = ::DSpContext_SetState( mContextRef, kDSpContextState_Active );
 			::DSpContext_FadeGamma( mContextRef, 100, 0 );
-			
+
 			if ( err && err != kDSpConfirmSwitchWarning ) {
 				::DSpContext_Release( mContextRef );
 				::DSpShutdown(); }
 			else {
 				ok = true;
-				
+
 				#pragma unused( inWin )
 				/*
 				// Make the window cover the device
 				::MoveWindow( inWin, 0, 0, true );
-				::SizeWindow( inWin, ioSize.h, ioSize.v, true ); 
+				::SizeWindow( inWin, ioSize.h, ioSize.v, true );
 				::ShowWindow( inWin );
 
 				// Setup the window as the main grafport
@@ -224,14 +220,14 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 			}
 		}
 	}
-	
-	
+
+
 	#elif USE_DIRECTX
 	if ( inWin ) {
 		HRESULT err = ::DirectDrawCreate( 0, &mDDObj, 0 );
 		if ( err == DD_OK ) {
 			LPDIRECTDRAWSURFACE context;
-			
+
 			err = mDDObj -> SetCooperativeLevel( inWin, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN );
 			if ( err == DD_OK ) {
 				err = mDDObj -> SetDisplayMode( ioSize.h, ioSize.v, inBitDepth );
@@ -244,13 +240,13 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 					err = mDDObj -> CreateSurface( &ddsd, &context, 0);
 				}
 			}
-			
+
 			if ( err == DD_OK ) {
 				mContextRef = context;
 				::SetForegroundWindow( inWin );
 				::SetCapture( inWin );
 				mFS_Win = inWin;
-				
+
 				PALETTEENTRY pal[ 256 ];
 				for ( int j = 0; j < 256; j++ ) {
 					pal[ j ].peRed = j;
@@ -267,12 +263,9 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 			}
 		}
 	}
-	
-	
-	#else
-	#pragma unused( ioSize, inWin )
+
 	#endif
-	
+
 	if ( ok ) {
 		#if EG_MAC
 		::HideCursor();
@@ -283,31 +276,31 @@ bool ScreenDevice::EnterFullscreen( long inDispID, Point& ioSize, int inBitDepth
 		}
 	else
 		mContextRef = 0;
-	
-	
+
+
 	return ok;
 }
-	
 
 
-	
+
+
 void ScreenDevice::ExitFullscreen() {
 
 
 	EndFrame();
-	if ( ! IsFullscreen() ) 
+	if ( ! IsFullscreen() )
 		return;
-		
+
 	#if USE_DRAW_SPROCKETS
 	::DSpContext_FadeGamma( mContextRef, 0, 0 );
 	::DSpContext_SetState( mContextRef, kDSpContextState_Inactive );
-	::DSpContext_FadeGamma( mContextRef, 100, 0 );	
+	::DSpContext_FadeGamma( mContextRef, 100, 0 );
 	::DSpContext_Release( mContextRef );
 	::DSpShutdown();
 	::InitCursor();
 	#endif
-	
-	
+
+
 	#if USE_DISP_MGR
 	RVSetVideoAsScreenPrefs();
 
@@ -316,7 +309,7 @@ void ScreenDevice::ExitFullscreen() {
 	grayRgn = ::LMGetGrayRgn();
 	::LMSetMBarHeight( mMenuBarHeight );
 	::DiffRgn( grayRgn, mMenuBarRgn, grayRgn );	// remove the menu bar from the desktop
-	::PaintOne( 0, mMenuBarRgn );			// redraw the menubar 
+	::PaintOne( 0, mMenuBarRgn );			// redraw the menubar
 	::DisposeRgn( mMenuBarRgn );
 
 	// Restore the original color table for the main device
@@ -324,13 +317,13 @@ void ScreenDevice::ExitFullscreen() {
 		::SetEntries( 0, 255, sOSPalette );
 	::InitCursor();
 	#endif
-	
-	
+
+
 	#if USE_DIRECTX
 	if ( mFS_DC ) {
 		mContextRef -> ReleaseDC( mFS_DC );
 		mFS_DC = 0;
-	}	
+	}
 	if ( mContextRef ) {
 		mContextRef -> Release();
 		mContextRef = 0;
@@ -343,7 +336,7 @@ void ScreenDevice::ExitFullscreen() {
 	::ReleaseCapture();
 	while ( ::ShowCursor( true ) < 0 ) { }
 	#endif
-	
+
 	mContextRef = 0;
 	mFS_DC = 0;
 }
@@ -353,7 +346,7 @@ void ScreenDevice::ExitFullscreen() {
 
 
 
-	
+
 void ScreenDevice::SetPalette( PixPalEntry inPal[ 256 ] ) {
 
 	if ( mBitDepth != 8 || ! IsFullscreen() )
@@ -366,11 +359,11 @@ void ScreenDevice::SetPalette( PixPalEntry inPal[ 256 ] ) {
 	}
 	mFS_Palette -> SetEntries( 0, 0, 256, pal );
 	#endif
-	
-	
+
+
 	#if EG_MAC
 	::SetEntries( 0, 255, inPal );
-		
+
 	/*	CTabHandle myTable = (**mBM).pmTable;
 		::BlockMove( inPalette, (**myTable).ctTable, 256 * sizeof( ColorSpec ) );
 		::CTabChanged( myTable );  */
@@ -378,9 +371,9 @@ void ScreenDevice::SetPalette( PixPalEntry inPal[ 256 ] ) {
 
 }
 
-	
+
 GrafPtr ScreenDevice::BeginFrame() {
-	
+
 	if ( IsFullscreen() ) {
 
 		#if USE_DRAW_SPROCKETS
@@ -394,21 +387,21 @@ GrafPtr ScreenDevice::BeginFrame() {
 				ExitFullscreen();
 		//}
 		#endif
-		
-		
+
+
 		#if USE_DISP_MGR
 		mBM	= ::GetGWorldPixMap( mWorld );
 		fix me!
 		#endif
-		
+
 
 		#if USE_DIRECTX
 		if ( mContextRef -> GetDC( &mFS_DC ) != DD_OK )
 			mFS_DC = 0;
 		#endif
-		
+
 	}
-	
+
 	return mFS_DC;
 }
 
@@ -421,8 +414,8 @@ void ScreenDevice::EndFrame() {
 		#if USE_DRAW_SPROCKETS
 		//::DSpContext_SwapBuffers( mContextRef, 0, 0 );
 		mFS_DC = 0;
-		#endif 
-		
+		#endif
+
 		#if USE_DIRECTX
 		if ( mFS_DC ) {
 			mContextRef -> ReleaseDC( mFS_DC );
@@ -443,33 +436,30 @@ long ScreenDevice::GetDisplayID( long inDeviceNum ) {
 	GDHandle theGDevice = DMGetFirstScreenDevice( false );
 	while ( theGDevice && inDeviceNum ) {
 		inDeviceNum--;
-		
+
 		theGDevice = DMGetNextScreenDevice( theGDevice, false );
 	}
-	
+
 	if ( ! theGDevice )
 		theGDevice = DMGetFirstScreenDevice( false );
-		
+
 	err = DMGetDisplayIDByGDevice( theGDevice, &id, false );
 
 	return ( err ) ? 0 : id;
 	#endif
-	
-	#if EG_WIN
-	//#pragma unused( inX, inY )
+
 	return 0;
-	#endif
 }
-	
-	
+
+
 
 long ScreenDevice::GetDisplayID( long inX, long inY ) {
-	
+
 	#if EG_MAC
 	OSStatus			err;
 	DisplayIDType		id = 0;
 	Point				inPt;
-	
+
 	inPt.h = inX;
 	inPt.v = inY;
 
@@ -484,29 +474,25 @@ long ScreenDevice::GetDisplayID( long inX, long inY ) {
 	*/
 	theGDevice = DMGetFirstScreenDevice( false );
 	while( theGDevice && ! id ) {
-		
+
 		if ( ::PtInRect( inPt, &(**theGDevice).gdRect ) ) {
-		
+
 			/* get the display ID */
 			err = DMGetDisplayIDByGDevice( theGDevice, &id, false );
 			if ( err )
 				id = 0;
 		}
-		
+
 		/* next device */
 		theGDevice = DMGetNextScreenDevice( theGDevice, false );
-	}	
+	}
 /*
-	err = ::DSpFindContextFromPoint( inPt, &ref );	
+	err = ::DSpFindContextFromPoint( inPt, &ref );
 	if ( ! err )
 		err = ::DSpContext_GetDisplayID( ref, &id );
 */
 	return ( err ) ? 0 : id;
 	#endif
-	
-	#if EG_WIN
-	#pragma unused( inX, inY )
-	return 0;
-	#endif
-}
 
+	return 0;
+}

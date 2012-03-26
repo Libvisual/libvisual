@@ -22,7 +22,7 @@
 
 #define	__OSClose						mOSErr = ::FSClose( mFile );													\
 										if ( mOSErr != ::noErr )														\
-											throwErr( cCloseErr );																					
+											throwErr( cCloseErr );
 
 
 #define __OSRead( destPtr, ioBytes )	OSErr err = ::FSRead( mFile, &ioBytes, destPtr );								\
@@ -41,7 +41,7 @@
 #include <stdio.h>
 
 #define __OSROpen( specPtr )			mFile = (long) fopen( (char*) (specPtr -> OSSpec()), "rb" );			\
-																							
+
 
 #define	__OSClose						if ( fclose( (FILE*) mFile ) != 0 ) {									\
 											throwErr( cCloseErr );																							\
@@ -91,7 +91,7 @@
 										else {																									\
 											throwErr( cReadErr );																				\
 											mOSErr = ::GetLastError();																			\
-										}	
+										}
 
 #endif
 
@@ -99,8 +99,8 @@
 
 
 CEgIFile::CEgIFile( unsigned short int inBufSize ) :
-	mFile( 0 ),
-	CEgIStream( inBufSize ) {
+	CEgIStream( inBufSize ),
+	mFile( 0 ) {
 
 }
 
@@ -128,7 +128,7 @@ void CEgIFile::close() {
 
 	if ( is_open() ) {
 		__OSClose
-		
+
 		mFile = 0;
 		invalidateBuf();
 	}
@@ -143,11 +143,11 @@ void CEgIFile::open( const CEgFileSpec* inSpec ) {
 	close();
 	throwErr( cNoErr );
 	mPos = 0;
-	
+
 	if ( inSpec ) {
-		__OSROpen( inSpec )	
+		__OSROpen( inSpec )
 	}
-	
+
 	if ( mFile == 0 ) {
 		#if EG_MAC
 		if ( mOSErr == fnfErr )
@@ -158,7 +158,7 @@ void CEgIFile::open( const CEgFileSpec* inSpec ) {
 		#endif
 			throwErr( cFileNotFound );
 		else
-			throwErr( cOpenErr ); 
+			throwErr( cOpenErr );
 	}
 
 }
@@ -167,7 +167,7 @@ void CEgIFile::open( const CEgFileSpec* inSpec ) {
 
 void CEgIFile::open( const char* inFileName ) {
 	CEgFileSpec fileSpec( inFileName );
-	
+
 	open( &fileSpec );
 }
 
@@ -176,26 +176,26 @@ void CEgIFile::open( const char* inFileName ) {
 long CEgIFile::size() {
 	long retSize = 0;
 	long curPos = tell();
-	
+
 	if ( mFile ) {
-	
+
 		#ifdef EG_MAC
 		::GetEOF( mFile, &retSize );
 		#endif
-		
+
 		#ifdef EG_WIN16
 		if ( fseek( (FILE*) mFile, 0, SEEK_CUR ) == 0 )
 			retSize = ftell( (FILE*) mFile );
 		#endif
-		
+
 		#ifdef EG_WIN32
 		retSize = ::SetFilePointer( (void*) mFile, 0, 0, FILE_END );
 		#endif
 	}
-	
-	if ( curPos >= 0 && curPos <= retSize )	
+
+	if ( curPos >= 0 && curPos <= retSize )
 		seek( curPos );
-		
+
 	return retSize;
 }
 
@@ -225,42 +225,42 @@ void CEgIFile::seekEnd() {
 
 
 void CEgIFile::diskSeek( long inPos ) {
-	
+
 	if ( noErr() && mFile ) {
-	
+
 		#ifdef EG_MAC
 		mOSErr = ::SetFPos( mFile, fsFromStart, inPos );
-		if ( mOSErr != ::noErr ) 
+		if ( mOSErr != ::noErr )
 			throwErr( cSeekErr );
 		#endif
-		
+
 		#ifdef EG_WIN16
 		fseek( (FILE*) mFile, inPos, SEEK_SET );
 		if ( ferror( (FILE*) mFile ) )
 			throwErr( cSeekErr );
 		#endif
-		
+
 		#ifdef EG_WIN32
 		if ( ::SetFilePointer( (void*) mFile, inPos, 0, FILE_BEGIN ) != inPos )
 			throwErr( cSeekErr );
 		#endif
-	}	
+	}
 }
 
 
 
 void CEgIFile::fillBlock( unsigned long inStartPos, void* destPtr, long& ioBytes ) {
-	
+
 	if ( ! mFile )
 		throwErr( cNotOpen );
-		
+
 	diskSeek( inStartPos );
-	
+
 	if ( noErr() && ioBytes > 0 ) {
-	
+
 		__OSRead( destPtr, ioBytes )
-		
-		
+
+
 		if ( noErr() && ioBytes <= 0 )
 			throwErr( cEOFErr );
 	}
@@ -275,7 +275,7 @@ void CEgIFile::Search( UtilStr& inSearchStr, void* inProcArg, bool inCaseSensiti
 	unsigned char 	srchChar, srchCharLC, c;
 	unsigned long	strLen = inSearchStr.length();
 	unsigned long	bufLen, bufPos = 0, fileSize = size();
-	
+
 	srchChar	= inSearchStr.getChar( 1 );
 	if ( srchChar >= 'a' && srchChar <= 'z' )
 		srchChar -= 32;
@@ -298,13 +298,13 @@ void CEgIFile::Search( UtilStr& inSearchStr, void* inProcArg, bool inCaseSensiti
 							bufPos = fileSize; }												// Exit block reading loop
 						else
 							curPtr += reqSkip;
-					}		
+					}
 				}
 				curPtr++;
-			}	
+			}
 			bufPos += curPtr - buf + 1;
 		}
 	}
-	
+
 	delete []buf;
 }

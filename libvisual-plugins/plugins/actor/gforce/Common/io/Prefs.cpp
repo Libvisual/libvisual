@@ -15,17 +15,17 @@
 Prefs::Prefs( const char* inPrefsName, bool inSysStored ) {
 	mSysStored	= inSysStored;
 	mDirty		= true;
-	
+
 	mPrefName.Assign( inPrefsName );
-	
+
 	#ifdef EG_MAC
   	short int	theVRef;
 	long		theDirID;
 	short		theErr;
 	FSSpec		prefSpec;
-	
+
 	if ( inSysStored ) {
-		theErr = ::FindFolder( kOnSystemDisk, kPreferencesFolderType, kCreateFolder, &theVRef, &theDirID );			
+		theErr = ::FindFolder( kOnSystemDisk, kPreferencesFolderType, kCreateFolder, &theVRef, &theDirID );
 		if ( theErr != noErr ) {
 			theVRef = 0;
 			theDirID = 0;
@@ -33,11 +33,11 @@ Prefs::Prefs( const char* inPrefsName, bool inSysStored ) {
 	else {
 		theVRef		= ( (FSSpec*) EgOSUtils::sAppSpec.OSSpec() ) -> vRefNum;
 		theDirID	= ( (FSSpec*) EgOSUtils::sAppSpec.OSSpec() ) -> parID;
-	}	
+	}
 	::FSMakeFSSpec( theVRef, theDirID, mPrefName.getPasStr(), &prefSpec );
 	mFileSpec.Assign( &prefSpec, 'TEXT' );
 	#endif
-	
+
 	#ifdef EG_WIN
 	// Note: mSysStored == true is unimplmented--just continue as mSysStored == false
 	// (yah, right--like i'm gonna even *think* about touching the registry!)
@@ -54,39 +54,39 @@ Prefs::Prefs( const char* inPrefsName, bool inSysStored ) {
 	prefPath.Append( mPrefName );
 	mFileSpec.Assign( prefPath.getCStr(), 0 );
 	#endif
-	
+
 }
 
 
 
 CEgErr Prefs::Load() {
 	CEgIFile iFile;
-	
+
 	mPrefs.Clear();
 	iFile.open( &mFileSpec );
 	mPrefs.SetArgs( &iFile );
-	
-	
+
+
 	if ( iFile.noErr() )
 		mDirty = false;
-	
+
 	return iFile;
 }
 
 
 CEgErr Prefs::Store() {
 	CEgIOFile oFile;
-	
+
 	if ( mDirty ) {
 		long origType = CEgIOFile::sCreatorType;
 		#if EG_MAC
-		CEgIOFile::sCreatorType = 'ttxt';
+		CEgIOFile::sCreatorType = 0x74747874;
 		#elif EG_WIN
-		CEgIOFile::sCreatorType = '????';
+		CEgIOFile::sCreatorType = 0x3f3f3f3f;
 		#endif
 
 		oFile.open( &mFileSpec );
-		
+
 		if ( oFile.noErr() ) {
 
 			mPrefs.ExportTo( &oFile, true );
@@ -95,16 +95,16 @@ CEgErr Prefs::Store() {
 		mDirty = false;
 		CEgIOFile::sCreatorType = origType;
 	}
-	
+
 	return oFile;
 }
 
 
-void Prefs::SetPref( long inID, const UtilStr& inData ) { 
-	
+void Prefs::SetPref( long inID, const UtilStr& inData ) {
+
 	if ( ! mDirty ) {
 		const UtilStr* str;
-		
+
 		str = mPrefs.GetStr( inID );
 		if ( str ) {
 			if ( str -> compareTo( &inData ) )
@@ -112,7 +112,7 @@ void Prefs::SetPref( long inID, const UtilStr& inData ) {
 		else
 			mDirty = true;
 	}
-	
+
 	mPrefs.SetArg( inID, inData );
 }
 
@@ -120,13 +120,13 @@ void Prefs::SetPref( long inID, const UtilStr& inData ) {
 void Prefs::SetPref( long inID, long inData ) {
 	bool exists;
 	long num;
-	
+
 	if ( ! mDirty ) {
-	
+
 		exists = mPrefs.GetArg( inID, num );
 		if ( ! exists || num != inData )
 			mDirty = true;
 	}
-	
+
 	mPrefs.SetArg( inID, inData );
 }

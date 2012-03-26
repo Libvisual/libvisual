@@ -3,11 +3,11 @@
 
 XStrList::XStrList( XStrListOptsT inOption, ListOrderingT inOrdering ) :
 	mStrings( inOrdering ) {
-	
+
 	mStrListOption = inOption;
-	
+
 	bool lowToHigh = inOrdering == cSortLowToHigh;
-	
+
 	if ( inOrdering == cSortLowToHigh || inOrdering == cSortHighToLow ) {
 		if ( mStrListOption == cNoDuplicates_CaseInsensitive )
 			mStrings.SetCompFcn( sStrComparitorCI, lowToHigh );
@@ -28,7 +28,7 @@ XStrList::~XStrList() {
 void XStrList::RemoveAll() {
 	int			i = 1;
 	UtilStr*	str;
-	
+
 	while ( mStrings.Fetch( i, (void**) &str ) ) {
 		delete str;
 		i++;
@@ -39,25 +39,25 @@ void XStrList::RemoveAll() {
 
 void XStrList::Remove( long inIndex ) {
 	UtilStr*	str;
-	
+
 	if ( mStrings.Fetch( inIndex, (void**) &str ) )
 		delete str;
-	
+
 	mStrings.RemoveElement( inIndex );
 }
- 
+
 
 long XStrList::Add( const void* inData, long inLen ) {
 	UtilStr* s		= new UtilStr( inData, inLen );
 	bool 	doAdd	= true;
-	
-	if ( mStrListOption != cDuplicatesAllowed ) 
+
+	if ( mStrListOption != cDuplicatesAllowed )
 		doAdd = FindIndexOf( *s ) == 0;
-	
+
 	if ( doAdd )
 		return mStrings.Add( s );
 	else {
-		delete s;	
+		delete s;
 		return 0;
 	}
 }
@@ -67,11 +67,11 @@ long XStrList::Add( const void* inData, long inLen ) {
 long XStrList::Add( const char* inStr ) {
 	UtilStr* s		= new UtilStr( inStr );
 	bool 	doAdd	= true;
-	
-	if ( mStrListOption != cDuplicatesAllowed ) 
+
+	if ( mStrListOption != cDuplicatesAllowed )
 		doAdd = FindIndexOf( *s ) == 0;
-	
-	if ( doAdd ) 
+
+	if ( doAdd )
 		return mStrings.Add( s );
 	else {
 		delete s;
@@ -83,23 +83,23 @@ long XStrList::Add( const char* inStr ) {
 
 long XStrList::Add( const UtilStr& inStr ) {
 	bool doAdd = true;
-	
-	if ( mStrListOption != cDuplicatesAllowed ) 
+
+	if ( mStrListOption != cDuplicatesAllowed )
 		doAdd = FindIndexOf( inStr ) == 0;
-	
+
 	if ( doAdd )
 		return mStrings.Add( new UtilStr( inStr ) );
 	else
 		return 0;
 }
-		
-		
+
+
 long XStrList::FetchBestMatch( const UtilStr& inStr ) {
 	long			best, bestScore, score, i;
 	UtilStr*		str;
-	
+
 	best = 0;
-		
+
 	for ( i = 1; mStrings.Fetch( i, (void**) &str ); i++ ) {
 		score = str -> LCSMatchScore( inStr );
 		if ( score > bestScore || i == 1 ) {
@@ -107,7 +107,7 @@ long XStrList::FetchBestMatch( const UtilStr& inStr ) {
 			bestScore = score;
 		}
 	}
-		
+
 	return best;
 }
 
@@ -118,7 +118,7 @@ long XStrList::FindIndexOf( const char* inStr ) const {
 	static UtilStr	sTemp;
 	int				i = 1;
 	UtilStr*		str;
-	
+
 	if ( mStrings.mCompFcn ) {
 		sTemp.Assign( inStr );
 		return FindIndexOf( sTemp ); }
@@ -129,7 +129,7 @@ long XStrList::FindIndexOf( const char* inStr ) const {
 			i++;
 		}
 	}
-	
+
 	return 0;
 }
 */
@@ -138,7 +138,7 @@ long XStrList::FindIndexOf( const UtilStr& inStr ) const {
 	int			i = 1;
 	UtilStr*	str;
 	bool		caseSens	= mStrListOption != cNoDuplicates_CaseInsensitive;
-	
+
 	if ( mStrings.mCompFcn ) {
 		i = mStrings.FetchPredIndex( &inStr ) + 1;
 		if ( mStrings.Fetch( i, (void**) &str ) ) {
@@ -147,7 +147,7 @@ long XStrList::FindIndexOf( const UtilStr& inStr ) const {
 		} }
 	else
 		return FindIndexOf( inStr.getCStr() );
-	
+
 	return 0;
 }
 
@@ -155,7 +155,7 @@ long XStrList::FindIndexOf( const UtilStr& inStr ) const {
 
 bool XStrList::Fetch( long inIndex, UtilStr& outStr ) const {
 	UtilStr*	str;
-	
+
 	if ( mStrings.Fetch( inIndex, (void**) &str ) ) {
 		outStr.Assign( str );
 		return true; }

@@ -6,36 +6,27 @@
 UtilStr CEgIStream::sTemp;
 
 
+CEgIStream::CEgIStream( unsigned short int inBufSize ) :
+	mIsTied( false ),
+	mReadBufSize ( inBufSize ),
+	mBufPos( 0 ),
+	mPos ( 0 ) {
 
-CEgIStream::CEgIStream( unsigned short int inBufSize ) {
-	mReadBufSize	= inBufSize;
-	mIsTied			= false;
-	mBufPos			= 0;
-	mPos			= 0;
-	
 	Wipe();
 }
 
 
-
-
-
-
-
-
-
-
-long CEgIStream::GetLong() {		
+long CEgIStream::GetLong() {
 	register unsigned long c, n = GetByte();
-	
+
 	c = GetByte();
 	n = n | ( c << 8 );
-	
+
 	c = GetByte();
 	n = n | ( c << 16 );
-	
+
 	c = GetByte();
-	
+
 	return (long) (n | ( c << 24 ));
 }
 
@@ -50,7 +41,7 @@ float CEgIStream::GetFloat() {
 
 short int CEgIStream::GetShort() {
 	register unsigned long n = GetByte();
-	
+
 	return (short int) ((GetByte() << 8) | n);
 }
 
@@ -60,7 +51,7 @@ short int CEgIStream::GetShort() {
 
 unsigned char CEgIStream::GetByte() {
 	register unsigned char c;
-	
+
 	if ( mIsTied ) {
 		if ( mPos != 0 ) {
 			c = *((unsigned char*) mNextPtr);
@@ -68,7 +59,7 @@ unsigned char CEgIStream::GetByte() {
 			mPos++; }
 		else
 			throwErr( cTiedEOS ); }
-	else if ( mPos < mBufPos + mStrLen && mPos >= mBufPos ) {
+	else if ( mPos < long(mBufPos + mStrLen) && mPos >= mBufPos ) {
 		c = *((unsigned char*) mNextPtr);
 		mNextPtr++;
 		mPos++; }
@@ -76,7 +67,7 @@ unsigned char CEgIStream::GetByte() {
 		fillBuf();
 		c = GetByte();
 	}
-	
+
 	return c;
 }
 
@@ -84,11 +75,11 @@ unsigned char CEgIStream::GetByte() {
 
 unsigned char CEgIStream::PeekByte() {
 	register unsigned char c;
-	
+
 	if ( mIsTied ) {
 		if ( mPos != 0 )
 			c = *((unsigned char*) mNextPtr); }
-	else if ( mPos < mBufPos + mStrLen && mPos >= mBufPos ) 
+	else if ( mPos < long(mBufPos + mStrLen) && mPos >= mBufPos )
 		c = *((unsigned char*) mNextPtr);
 	else if ( noErr() ) {
 		fillBuf();
@@ -97,7 +88,7 @@ unsigned char CEgIStream::PeekByte() {
 		else
 			throwErr( cNoErr );
 	}
-	
+
 	return c;
 }
 
@@ -122,17 +113,17 @@ double CEgIStream::GetDbl() {
 
 void CEgIStream::Readln( UtilStr* outStr ) {
 	unsigned char p, c = GetByte();
-	
+
 	if ( outStr ) {
 		outStr -> Wipe();
-				
+
 		while ( noErr() && c != 13 && c != 10 ) {		// Stop on a CR or LF or error
 			outStr -> Append( (char) c );
 			c = GetByte();
 		}
-		
+
 		p = PeekByte();
-		if ( ( p == 13 && c == 10 ) || ( p == 10 && c == 13 ) ) 
+		if ( ( p == 13 && c == 10 ) || ( p == 10 && c == 13 ) )
 			GetByte();
 	}
 }
@@ -142,12 +133,12 @@ void CEgIStream::Readln( UtilStr* outStr ) {
 
 void CEgIStream::Readln() {
 	unsigned char p, c = GetByte();
-			
+
 	while ( noErr() && c != 13 && c != 10 ) 		// Stop on a CR or LFor error
 		c = GetByte();
-		
+
 	p = PeekByte();
-	if ( ( p == 13 && c == 10 ) || ( p == 10 && c == 13 ) ) 
+	if ( ( p == 13 && c == 10 ) || ( p == 10 && c == 13 ) )
 		GetByte();
 
 }
@@ -166,9 +157,9 @@ unsigned char CEgIStream::GetByteSW() {
 
 bool CEgIStream::Read( UtilStr& outStr ) {
 	outStr.Wipe();
-		
+
 	unsigned char c = GetByteSW();
-				
+
 	while ( noErr() && c != 13 && c != 9 && c != 32 && c != 10 ) {	// Stop on a CR, LF, TAB, space or error
 		outStr.Append( (char) c );
 		c = GetByte();
@@ -180,7 +171,7 @@ bool CEgIStream::Read( UtilStr& outStr ) {
 
 void CEgIStream::Read() {
 	unsigned char c = GetByteSW();
-				
+
 	while ( noErr() && c != 13 && c != 9 && c != 32 && c != 10 ) 		// Stop on a CR, LF, space or error
 		c = GetByte();
 }
@@ -199,8 +190,8 @@ long CEgIStream::ReadInt() {
 	return sTemp.GetValue();
 }
 
-		
-		
+
+
 void CEgIStream::Read( UtilStr& outStr, unsigned long inBytes ) {
 	outStr.Assign( 0, inBytes );
 	GetBlock( outStr.getCStr(), inBytes );
@@ -212,7 +203,7 @@ void CEgIStream::ReadNumber( UtilStr& outStr ) {
 
 	outStr.Wipe();
 	char c = GetByteSW();
-	
+
 	while ( noErr() && ( c == '.' || (c >= '0' && c <= '9') ) ) {
 		outStr.Append( c );
 		c = GetByte();
@@ -225,20 +216,20 @@ void CEgIStream::ReadNumber( UtilStr& outStr ) {
 
 bool CEgIStream::AssertToken( const char* inStr ) {
 	char c = GetByteSW();
-	
+
 	// Check first byte
 	if ( *inStr != c || ! noErr() )
 		return false;
 	inStr++;
 
-	// Make sure following bytes in the stream match inStr 
+	// Make sure following bytes in the stream match inStr
 	while ( *inStr ) {
 		c = GetByte();
 		if ( *inStr != c || ! noErr() )
 			return false;
 		inStr++;
 	}
-	
+
 	return true;
 }
 
@@ -246,22 +237,22 @@ bool CEgIStream::AssertToken( const char* inStr ) {
 
 long CEgIStream::GetBlock( void* destPtr, unsigned long inBytes ) {
 	long bytesRead = inBytes;
-		
+
 	if ( mIsTied ) {
-		if ( - mPos >= inBytes ) 
+		if ( - mPos >= long(inBytes) )
 			UtilStr::Move( destPtr, mNextPtr, bytesRead );
 		else {
 			bytesRead = 0;
-			throwErr( cTiedEOS ); 
+			throwErr( cTiedEOS );
 		} }
-	else if ( mPos >= mBufPos && mPos + bytesRead <= mBufPos + mStrLen )
+	else if ( mPos >= mBufPos && mPos + bytesRead <= long(mBufPos + mStrLen) )
 		UtilStr::Move( destPtr, mNextPtr, bytesRead );
 	else
 		fillBlock( mPos, destPtr, bytesRead );
-		
+
 	mPos		+= bytesRead;
 	mNextPtr	+= bytesRead;
-	
+
 	return bytesRead;
 }
 
@@ -269,11 +260,11 @@ long CEgIStream::GetBlock( void* destPtr, unsigned long inBytes ) {
 
 void CEgIStream::fillBuf() {
 	long bytes = mReadBufSize;
-	
+
 	Dim( bytes );
 	mNextPtr = getCStr();
 	mBufPos = mPos;
-	if ( length() < bytes )					// Verify that we dimmed ok
+	if ( long(length()) < bytes )			// Verify that we dimmed ok
 		bytes = length();
 	fillBlock( mPos, getCStr(), bytes );
 	if ( bytes <= 0 )
@@ -287,7 +278,7 @@ void CEgIStream::fillBlock( unsigned long, void*, long& ioBytes ) {
 	ioBytes = 0;
 
 }
-	
+
 
 
 void CEgIStream::invalidateBuf() {
@@ -309,7 +300,7 @@ void CEgIStream::skip( long inBytes ) {
 
 void CEgIStream::ResetBuf() {
 	throwErr( cNoErr );
-	
+
 	mIsTied		= false;
 	mNextPtr	= getCStr();
 	mBufPos		= 0;
@@ -321,7 +312,7 @@ void CEgIStream::Assign( const UtilStr& inSrce ) {
 	Assign( inSrce.getCStr(), inSrce.length() );
 }
 
-										
+
 void CEgIStream::Assign( void* inSource, long inBytes ) {
 	UtilStr::Assign( inSource, inBytes );
 	ResetBuf();
@@ -329,15 +320,15 @@ void CEgIStream::Assign( void* inSource, long inBytes ) {
 
 
 void CEgIStream::Assign( CEgIStream* inSource, long inBytes ) {
-	
+
 
 	if ( inSource ) {
 		Dim( inBytes );
-		if ( length() < inBytes )
+		if ( long(length()) < inBytes )
 			inBytes = length();
 		inSource -> GetBlock( getCStr(), inBytes );
 	}
-	
+
 	ResetBuf();
 }
 
@@ -352,12 +343,12 @@ void CEgIStream::Tie( const UtilStr* inSource ) {
 
 
 void CEgIStream::Tie( const char* inSrce, long inNumBytes ) {
-	
+
 	throwErr( cNoErr );
 	mIsTied		= true;
 	mPos		= - inNumBytes;			// When mPos reaches zero, we're at tied end of stream
 	mNextPtr	= inSrce;				// Set up our data ptr
-	
+
 	// If -1 was passed in thru inNumBytes, must calc the length of the C str.
 	if ( inNumBytes < 0 ) {
 		mPos = 0;
@@ -366,7 +357,7 @@ void CEgIStream::Tie( const char* inSrce, long inNumBytes ) {
 			inSrce++;
 		}
 	}
-	
+
 	if ( ! mNextPtr )
 		mPos = 0;
 }

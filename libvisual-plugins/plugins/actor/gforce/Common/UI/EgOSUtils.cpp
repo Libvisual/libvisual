@@ -313,15 +313,7 @@ bool EgOSUtils::AskOpen( const char* inPrompt, CEgFileSpec& outSpec, long inType
 }
 
 
-
-
-
-
-
-
 bool EgOSUtils::AreYouSure( const UtilStr& inMsg ) {
-	int ans;
-
 	#ifdef EG_MAC
 	::ParamText( inMsg.getPasStr(), "\p", "\p", "\p");
 	//UDesktop::Deactivate();
@@ -332,9 +324,11 @@ bool EgOSUtils::AreYouSure( const UtilStr& inMsg ) {
 	#endif
 
 	#ifdef EG_WIN
-	ans = ::MessageBox( 0, inMsg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_YESNO | MB_SETFOREGROUND | MB_TASKMODAL );
+	int ans = ::MessageBox( 0, inMsg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_YESNO | MB_SETFOREGROUND | MB_TASKMODAL );
 	return ans == IDYES;
 	#endif
+
+	return true;
 }
 
 
@@ -354,12 +348,10 @@ int EgOSUtils::AskSaveChanges( const char* inName ) {
 
 
 int EgOSUtils::AskSaveChanges( const UtilStr& inName ) {
-	int ans;
-
 	#ifdef EG_MAC
 	::ParamText( inName.getPasStr(), "\p", "\p", "\p" );
 	//UDesktop::Deactivate();
-	ans = ::CautionAlert( 2001, 0 );
+	int ans = ::CautionAlert( 2001, 0 );
 	//UDesktop::Activate();
 
 	return 2 - ans;
@@ -377,6 +369,8 @@ int EgOSUtils::AskSaveChanges( const UtilStr& inName ) {
 	else
 		return 0;
 	#endif
+
+	return 0;
 }
 
 

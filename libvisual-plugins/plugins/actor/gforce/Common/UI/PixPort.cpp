@@ -892,7 +892,7 @@ void PixPort::EraseRect( const Rect* inRect ) {
 
 #include <stdio.h>
 void PixPort::Fade( const char* inSrce, char* inDest, int32_t inBytesPerRow, int32_t inX, int32_t inY, uint32_t* grad ) {
-	uint32_t x, y, u, v, u1, v1, P1, P2, P3, P4, p;
+	uint32_t u, v, u1, v1, P1, P2, P3, P4, p;
 	const char* srceMap;
 	const char* srce;
 
@@ -902,9 +902,9 @@ void PixPort::Fade( const char* inSrce, char* inDest, int32_t inBytesPerRow, int
 	srce = inSrce - HALFCORD * inBytesPerRow - HALFCORD;
 
 	// Start writing to the image...
-	for ( y = 0; y < inY; y++ ) {
+	for ( int y = 0; y < inY; y++ ) {
 
-		for ( x = 0; x < inX; x++ ) {
+		for ( int x = 0; x < inX; x++ ) {
 
 			// Format of each long:
 			// High byte: x (whole part), High-low byte: x (frac part)

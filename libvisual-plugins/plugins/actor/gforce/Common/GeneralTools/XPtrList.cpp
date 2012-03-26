@@ -29,13 +29,13 @@ long XPtrList::FetchPredIndex( const void* inPtr ) const {
 	char* base = getCStr();
 	int order = ( mOrdering == cSortHighToLow ) ? INT_MIN : 0;
 
-	if ( R < 0 ) 
+	if ( R < 0 )
 		return 0;
 	else {
 		while (L <= R) {
-			
+
 			M = (L + R) / 2;
-			
+
 			if ( (mCompFcn( inPtr, __ptr( M ) ) ^ order) >= 0 ) // If inPtr <= __ptr( M )...
 				R = M - 1;										// Throw away right half
 			else
@@ -43,8 +43,8 @@ long XPtrList::FetchPredIndex( const void* inPtr ) const {
 		}
 
 		if ( L > R )											// Catch the case where R+1==L
-			L = M;												// In this case, M specifies the critical element 
-			
+			L = M;												// In this case, M specifies the critical element
+
 		// At this point, we know L is the critical element (case: L==R or L contains M from case above)
 		if ( mCompFcn( inPtr, __ptr( L ) ) < 0 )				// If inPtr > __ptr( M )...
 			L++;
@@ -56,9 +56,9 @@ long XPtrList::FetchPredIndex( const void* inPtr ) const {
 
 void XPtrList::SetCompFcn( CompFunctionT inFcn, bool inSortLowToHigh ) {
 	mCompFcn = inFcn;
-	
+
 	RemoveAll();
-	
+
 	if ( inSortLowToHigh )
 		mOrdering = cSortLowToHigh;
 	else
@@ -68,7 +68,7 @@ void XPtrList::SetCompFcn( CompFunctionT inFcn, bool inSortLowToHigh ) {
 
 
 
-long XPtrList::FindIndexOf( const void* inMatch ) const {	
+long XPtrList::FindIndexOf( const void* inMatch ) const {
 	long	i = 0;
 	char*	curPtr, *endPtr;
 	void*	ptr;
@@ -82,7 +82,7 @@ long XPtrList::FindIndexOf( const void* inMatch ) const {
 			ptr = *((void**) curPtr);
 			if ( ptr == inMatch )
 				return i;
-				
+
 			// Stop checking when we hit items that aren't equal to inMatch
 			else if ( mCompFcn( inMatch, ptr ) != 0 )
 				break;
@@ -94,7 +94,7 @@ long XPtrList::FindIndexOf( const void* inMatch ) const {
 
 		while ( curPtr < endPtr ) {
 			i++;
-			if ( *((void**) curPtr) == inMatch ) 
+			if ( *((void**) curPtr) == inMatch )
 				return i;
 			else
 				curPtr += sizeof(void*);
@@ -109,7 +109,7 @@ long XPtrList::FindIndexOf( const void* inMatch ) const {
 
 long XPtrList::Add( const void* inPtrToAdd ) {
 	long i;
-	
+
 	if ( mCompFcn ) {
 		i = FetchPredIndex( inPtrToAdd );
 		Insert( i*sizeof(void*), (char*) &inPtrToAdd, sizeof(void*) );
@@ -125,13 +125,13 @@ long XPtrList::Add( const void* inPtrToAdd ) {
 
 
 void XPtrList::Add( const void* inPtrToAdd, long inN ) {
-	
+
 	if ( inN < 0 )
 		inN = 0;
-		
+
 	if ( inN > Count() )
 		inN = Count();
-	
+
 	Insert( inN * sizeof(void*), (char*) &inPtrToAdd, sizeof(void*) );
 }
 
@@ -144,7 +144,7 @@ void XPtrList::Add( const XPtrList& inList ) {
 		UtilStr::Append( inList );
 	else {
 		int i, n = inList.Count();
-		for ( i = 1; i <= n; i++ ) 
+		for ( i = 1; i <= n; i++ )
 			Add( inList.Fetch( i ) );
 	}
 }
@@ -152,27 +152,25 @@ void XPtrList::Add( const XPtrList& inList ) {
 
 
 
-void*& XPtrList::operator[] ( const long inIndex ) {
-	long len;
-	
+void*& XPtrList::operator[] ( long inIndex ) {
 	if ( inIndex >= 0 ) {
-		len = mStrLen;
-		if ( inIndex >= len / sizeof(void*) ) {
+		long len = mStrLen;
+		if ( inIndex >= len / long (sizeof(void*)) ) {
 			Insert( len, '\0', ( inIndex + 1 ) * sizeof(void*) - len );
 		}
-			
+
 		return *( (void**) ( mBuf + inIndex * sizeof(void*) + 1 ) ); }
 	else
 		return sDummy;
 }
-			
+
 
 
 
 
 bool XPtrList::Remove( const void* inMatchPtr ) {
 	long	idx = FindIndexOf( inMatchPtr );
-	
+
 	return RemoveElement( idx );
 }
 
@@ -180,14 +178,14 @@ bool XPtrList::Remove( const void* inMatchPtr ) {
 
 bool XPtrList::RemoveElement( long inIndex ) {
 	char* s;
-	
+
 	if ( inIndex > 0 && inIndex <= Count() ) {
 		inIndex--;
 		if ( mOrdering == cOrderNotImportant ) {
 			s = getCStr();
 			*( (void**) (s + inIndex * sizeof(void*)) ) = *( (void**) (s + length() - sizeof(void*) ) );
 			Trunc( sizeof(void*) ); }
-		else 
+		else
 			UtilStr::Remove( inIndex * sizeof(void*) + 1, sizeof(void*) );
 		return true; }
 	else
@@ -217,7 +215,7 @@ void XPtrList::RemoveAll() {
 void XPtrList::MoveToHead( long inIndex ) {
 	void* p;
 	char* s;
-	
+
 	if ( inIndex > 1 ) {
 		if ( Fetch( inIndex, &p ) ) {
 			inIndex--;
@@ -235,7 +233,7 @@ void XPtrList::MoveToHead( long inIndex ) {
 
 
 void* XPtrList::Fetch( long inIndex ) const {
-	if ( inIndex >= 1 && inIndex <= length() / sizeof(void*) )
+	if ( inIndex >= 1 && inIndex <= long (length() / sizeof(void*)) )
 		return *( (void**) (getCStr() + ( inIndex - 1 ) * sizeof(void*)) );
 	else
 		return 0;
@@ -243,15 +241,15 @@ void* XPtrList::Fetch( long inIndex ) const {
 
 
 bool XPtrList::Fetch( long inIndex, void** ioPtrDest ) const {
-	
+
 	if ( ioPtrDest ) {
-		if ( inIndex >= 1 && inIndex <= length() / sizeof(void*) ) {
+		if ( inIndex >= 1 && inIndex <= long (length() / sizeof(void*)) ) {
 			*ioPtrDest = *( (void**) (getCStr() + ( inIndex - 1 ) * sizeof(void*)) );
 			return true; }
 		else
 			*ioPtrDest = 0;
 	}
-	
+
 	return false;
 }
 
@@ -269,7 +267,7 @@ void XPtrList::Randomize() {
 		randIdx = nodeClass::Rnd( 1, n );
 		temp = ptrArray[ i ];
 		ptrArray[ i ] = ptrArray[ randIdx-1 ];
-		ptrArray[ randIdx-1 ] = temp; 
+		ptrArray[ randIdx-1 ] = temp;
 	}
 }
 

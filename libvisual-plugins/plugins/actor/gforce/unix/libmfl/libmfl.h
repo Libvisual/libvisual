@@ -44,7 +44,7 @@ mfl_font mfl_LoadRawFont(const char *fname);
 void mfl_DestroyFont(mfl_font f);
 
 /* Context management */
-mfl_context mfl_CreateContext(void *buf, unsigned int bpp, 
+mfl_context mfl_CreateContext(void *buf, unsigned int bpp,
 			      unsigned int bpl, unsigned int width,
 			      unsigned int height);
 void mfl_SetTextColor(mfl_context cx, unsigned long c);
@@ -53,18 +53,18 @@ void mfl_DestroyContext(mfl_context cx);
 void mfl_SetDrawMode(mfl_context cx, int mode);
 
 /* Info */
-inline unsigned int mfl_GetTextWidth(const mfl_context cx, 
+unsigned int mfl_GetTextWidth(const mfl_context cx,
 				     const char *s);
-inline unsigned int mfl_GetTextWidthL(const mfl_context cx, 
+unsigned int mfl_GetTextWidthL(const mfl_context cx,
 				      const char *s, int l);
 
 /* Character drawing */
 void mfl_OutChar8(const mfl_context cx, int x, int y, char c);
 
 /* String drawing */
-void mfl_OutText8L(const mfl_context cx, int x, int y, 
+void mfl_OutText8L(const mfl_context cx, int x, int y,
 		   const char *s, int l);
-void mfl_OutText8(const mfl_context cx, int x, int y, 
+void mfl_OutText8(const mfl_context cx, int x, int y,
 		  const char *s);
 
 #if defined(__cplusplus) || defined(c_plusplus)
