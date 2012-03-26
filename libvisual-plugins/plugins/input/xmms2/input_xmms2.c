@@ -85,12 +85,12 @@ static int inp_xmms2_init( VisPluginData *plugin ) {
     priv->connection = xmmsc_init("libvisual-xmms2-plugin");
 
     if(!priv->connection) {
-        visual_log(VISUAL_LOG_ERROR, "Unable to allocate xmms2 connection\n");
+        visual_log(VISUAL_LOG_ERROR, "Unable to allocate xmms2 connection");
         return -VISUAL_ERROR_GENERAL;
     }
 
     if(!xmmsc_connect(priv->connection, getenv("XMMS_PATH"))) {
-        visual_log(VISUAL_LOG_ERROR, "Connection failed. Is xmms2d running?\n");
+        visual_log(VISUAL_LOG_ERROR, "Connection failed. Is xmms2d running?");
         return -VISUAL_ERROR_GENERAL;
     }
 

@@ -211,7 +211,7 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 				param = ev.event.param.param;
 
 				if (visual_param_entry_is (param, "filename")) {
-					visual_log (VISUAL_LOG_DEBUG, "New file to be loaded: %s\n",
+					visual_log (VISUAL_LOG_DEBUG, "New file to be loaded: %s",
 							visual_param_entry_get_string (param));
 
 					load_new_file (priv, visual_param_entry_get_string (param));
