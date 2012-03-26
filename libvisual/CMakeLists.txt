@@ -221,8 +221,8 @@ IF(ENABLE_PROFILING)
 ENDIF(ENABLE_PROFILING)
 
 # Add -Werror to debug builds?
-SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS}")
-SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Wall -Wunused -Wmissing-prototypes")
+SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -Wall -Wmissing-prototypes -Wunused")
+SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
 
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
@@ -249,7 +249,7 @@ IF(ENABLE_DOCS)
 ENDIF(ENABLE_DOCS)
 
 # Pedantic checks
-OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur" no)
+OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur)" no)
 IF(ENABLE_PEDANTIC_CHECKS)
   ADD_DEFINITIONS(-DVISUAL_PEDANTIC_CHECKS)
 ENDIF(ENABLE_PEDANTIC_CHECKS)

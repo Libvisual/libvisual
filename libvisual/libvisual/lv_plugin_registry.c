@@ -31,6 +31,8 @@ char **__lv_plugpaths = NULL;
 
 int visual_init_path_add (const char *pathadd)
 {
+	visual_log (VISUAL_LOG_INFO, "Adding to plugin search path: %s", pathadd);
+
 	__lv_plugpath_cnt++;
 	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);
 
