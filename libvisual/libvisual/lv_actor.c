@@ -388,7 +388,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth
 	 * the dest video context */
 	actor->transform = visual_video_new ();
 
-	visual_log (VISUAL_LOG_INFO, _("run depth %d forced %d\n"), rundepth, forced);
+	visual_log (VISUAL_LOG_INFO, _("run depth %d forced %d"), rundepth, forced);
 
 	if (forced == TRUE)
 		visual_video_set_depth (actor->transform, rundepth);
@@ -421,7 +421,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, int rundepth
 				actor->transform->width, actor->transform->height);
 	}
 
-	visual_log (VISUAL_LOG_INFO, _("rundepth: %d transpitch %d\n"), rundepth, actor->transform->pitch);
+	visual_log (VISUAL_LOG_INFO, _("rundepth: %d transpitch %d"), rundepth, actor->transform->pitch);
 	visual_video_allocate_buffer (actor->transform);
 
 	if (actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT)

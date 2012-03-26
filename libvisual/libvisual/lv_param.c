@@ -766,7 +766,7 @@ VisPalette *visual_param_entry_get_palette (VisParamEntry *param)
     visual_log_return_val_if_fail (param != NULL, NULL);
 
     if (param->type != VISUAL_PARAM_ENTRY_TYPE_PALETTE) {
-        visual_log (VISUAL_LOG_WARNING, _("Requested palette from a non palette param\n"));
+        visual_log (VISUAL_LOG_WARNING, _("Requested palette from a non palette param"));
 
         return NULL;
     }
@@ -779,7 +779,7 @@ VisObject *visual_param_entry_get_object (VisParamEntry *param)
     visual_log_return_val_if_fail (param != NULL, NULL);
 
     if (param->type != VISUAL_PARAM_ENTRY_TYPE_OBJECT) {
-        visual_log (VISUAL_LOG_WARNING, _("Requested object from a non object param\n"));
+        visual_log (VISUAL_LOG_WARNING, _("Requested object from a non object param"));
 
         return NULL;
     }
@@ -792,7 +792,7 @@ VisCollection *visual_param_entry_get_collection (VisParamEntry *param)
     visual_log_return_val_if_fail(param != NULL, NULL)
 
     if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLLECTION) {
-        visual_log (VISUAL_LOG_WARNING, _("Requested collection from non collection param\n"));
+        visual_log (VISUAL_LOG_WARNING, _("Requested collection from non collection param"));
         return NULL;
     }
 

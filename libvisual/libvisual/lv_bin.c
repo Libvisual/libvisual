@@ -511,7 +511,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 		/* Drop a transformation environment when not needed */
 		if (bin->depthforcedmain != bin->actvideo->depth) {
 			visual_actor_video_negotiate (bin->actor, bin->depthforcedmain, TRUE, TRUE);
-			visual_log (VISUAL_LOG_DEBUG, "[[[[optionally a bogus transform environment, dropping]]]]\n");
+			visual_log (VISUAL_LOG_DEBUG, "[[[[optionally a bogus transform environment, dropping]]]]");
 		}
 
 		if (bin->actvideo->depth > video->depth
