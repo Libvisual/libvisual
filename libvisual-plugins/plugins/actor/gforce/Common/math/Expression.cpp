@@ -131,27 +131,29 @@ doOp:				if ( pos > startPos && pos + 1 < inLen ) {
 				#if EG_WIN || (defined(UNIX_X) && !defined(WORDS_BIGENDIAN))
 				fcnCall = EgOSUtils::RevBytes( fcnCall );
 				#endif
+
+#define VAL(a,b,c,d) (((a)<<24)+((b)<<16)+((c)<<8)+(d))
 				switch ( fcnCall ) {
-					case 'SQRT':	fcnCall = cSQRT;		break;
-					case 'ATAN':	fcnCall = cATAN;		break;
-					case 'ABS(':	fcnCall = cABS;			break;
-					case 'SIN(':	fcnCall = cSIN;			break;
-					case 'COS(':	fcnCall = cCOS;			break;
-					case 'TAN(':	fcnCall = cTAN;			break;
-					case 'LOG(':	fcnCall = cLOG;			break;
-					case 'EXP(':	fcnCall = cEXP;			break;
-					case 'SQR(':	fcnCall = cSQR;			break;
-					case 'SQWV':	fcnCall = cSQWV;		break;
-					case 'FLOR':	fcnCall = cFLOR;		break;
-					case 'POS(':	fcnCall = cPOS;			break;
-					case 'RAND':
-					case 'RND(':	fcnCall = cRND;			break;
-					case 'SGN(':	fcnCall = cSGN;			break;
-					case 'TRWV':	fcnCall = cTRWV;		break;
-					case 'CLIP':	fcnCall = cCLIP;		break;
-					case 'SEED':	fcnCall = cSEED;		break;
-					case 'WRAP':	fcnCall = cWRAP;		break;
-					case 'TRNC':	fcnCall = cTRNC;		break;
+					case VAL('S','Q','R','T'):	fcnCall = cSQRT;	break;
+					case VAL('A','T','A','N'):	fcnCall = cATAN;	break;
+					case VAL('A','B','S','('):	fcnCall = cABS;		break;
+					case VAL('S','I','N','('):	fcnCall = cSIN;		break;
+					case VAL('C','O','S','('):	fcnCall = cCOS;		break;
+					case VAL('T','A','N','('):	fcnCall = cTAN;		break;
+					case VAL('L','O','G','('):	fcnCall = cLOG;		break;
+					case VAL('E','X','P','('):	fcnCall = cEXP;		break;
+					case VAL('S','Q','R','('):	fcnCall = cSQR;		break;
+					case VAL('S','Q','W','V'):	fcnCall = cSQWV;	break;
+					case VAL('F','L','O','R'):	fcnCall = cFLOR;	break;
+					case VAL('P','O','S','('):	fcnCall = cPOS;		break;
+					case VAL('R','A','N','D'):
+					case VAL('R','N','D','('):	fcnCall = cRND;		break;
+					case VAL('S','G','N','('):	fcnCall = cSGN;		break;
+					case VAL('T','R','W','V'):	fcnCall = cTRWV;	break;
+					case VAL('C','L','I','P'):	fcnCall = cCLIP;	break;
+					case VAL('S','E','E','D'):	fcnCall = cSEED;	break;
+					case VAL('W','R','A','P'):	fcnCall = cWRAP;	break;
+					case VAL('T','R','N','C'):	fcnCall = cTRNC;	break;
 					default: {
 						fcnCall = 0;
 						UtilStr temp( inStr, firstParen );
@@ -159,6 +161,7 @@ doOp:				if ( pos > startPos && pos + 1 < inLen ) {
 						inVM.UserFcnOp( expr[ 0 ], fcnPtr );
 					}
 				}
+#undef VAL
 				if ( fcnCall )
 					inVM.MathOp( expr[ 0 ], fcnCall );
 			} }

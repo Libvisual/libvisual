@@ -35,7 +35,9 @@ void ParticleGroup::Load( ArgList& inArgs ) {
 	mFadeTime = ( (float) EgOSUtils::Rnd( 200, 350 ) ) / 100.0;
 
 	// Calculate how many interations/instances of this particle
-	inArgs.GetArg( 'NUM', str );
+#define VAL(a, b, c) ((a << 16) + (b << 8) + c)
+	inArgs.GetArg( VAL('N','U','M'), str );
+#undef VAL
 	expr.Compile( str, mDict );
 	mNumInstances = trunc( expr.Evaluate() );
 	if ( mNumInstances < 1 )

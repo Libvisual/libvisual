@@ -21,13 +21,13 @@ float		WaveShape::sS;
 
 WaveShape::WaveShape( float& inTPtr ) {
 	UtilStr str;
-	
+
 	mNumWaves = 0;
 	mMouseX = 0;
 	mMouseY = 0;
 
 	mNumFFTBins = 255;
-	
+
 	mDict.AddVar( "S", &sS );
 	mDict.AddVar( "T", &inTPtr );
 	mDict.AddVar( "NUM_SAMPLE_BINS", &mNumSampleBins );
@@ -35,11 +35,11 @@ WaveShape::WaveShape( float& inTPtr ) {
 	mDict.AddVar( "NUM_FFT_BINS", &mNumFFTBins );
 	mDict.AddVar( "MOUSEX", &mMouseX );
 	mDict.AddVar( "MOUSEY", &mMouseY );
-	
+
 	mTPtr = &inTPtr;
 	mPI = 3.14159265358979;
-	
-	mDict.AddVar( "PI", &mPI );	
+
+	mDict.AddVar( "PI", &mPI );
 }
 
 
@@ -58,33 +58,37 @@ void WaveShape::SetFFTFcn( ExprUserFcn** inFFTFcn ) {
 
 
 void WaveShape::Load( ArgList& inArgs, long inDefaultNumSteps ) {
+
+#define VAL(a,b,c,d) (((a)<<24)+((b)<<16)+((c)<<8)+(d))
+#define VAL2(a,b,c)  (((a)<<16)+((b)<<8)+(c))
+
 	UtilStr str;
-	
+
 	// Mix up the rnd seed
 	srand( clock() );
 
 	// Calculate mNumSampleBins -- How many pieces we chop the 0-1 s interval into
-	inArgs.GetArg( 'Stps', str );
+	inArgs.GetArg( VAL('S','t','p','s'), str );
 
 	mNum_S_Steps.Compile( str, mDict );
 	CalcNumS_Steps( 0, inDefaultNumSteps );
-	
+
 	// Compile and link all the temp exprs.  By their spec, A vars can be evaluated now
 	mA.Compile( inArgs, 'A', mDict );
-	mA.Evaluate();		
+	mA.Evaluate();
 	mB.Compile( inArgs, 'B', mDict );
 	mC.Compile( inArgs, 'C', mDict );
-			
+
 	// The intensity fcn allows drawing of arbitrary intensity
-	if ( ! inArgs.GetArg( 'Pen', str ) )
+	if ( ! inArgs.GetArg( VAL2('P','e','n'), str ) )
 		str.Assign( "1" );
 	mIntensity.Compile( str, mDict );
 
 	// If a user doesn't enter a line widh for a wave, assume width 1
-	if ( ! inArgs.GetArg( 'LWdt', str ) )
+	if ( ! inArgs.GetArg( VAL('L','W','d','t'), str ) )
 		str.Assign( "1" );
 	mLineWidth.Compile( str, mDict );
-	
+
 	mPen_Dep_S			= mIntensity.IsDependent( "s" ) || mIntensity.IsDependent( "c" ) || mIntensity.IsDependent( "rnd" );
 	mLineWidth_Dep_S	= mLineWidth.IsDependent( "s" ) || mLineWidth.IsDependent( "c" ) || mLineWidth.IsDependent( "rnd" );
 
@@ -94,27 +98,30 @@ void WaveShape::Load( ArgList& inArgs, long inDefaultNumSteps ) {
 
 	// Init all the wave shape var counters
 	mNumWaves = mWaveX.Count();
-		
-	mConnectBins		= inArgs.GetArg( 'ConB' );
-	mConnectFirstLast	= inArgs.GetArg( 'ConB' ) > 1;
-	
+
+	mConnectBins		= inArgs.GetArg( VAL('C','o','n','B') );
+	mConnectFirstLast	= inArgs.GetArg( VAL('C','o','n','B') ) > 1;
+
 	// Make copies/save original values (morph will write over the nonOrg vars)
 	_assignOrig( mConnectBins )
 	_assignOrig( mConnectFirstLast )
-		
-	mAspect1to1 = inArgs.GetArg( 'Aspc' );
+
+	mAspect1to1 = inArgs.GetArg( VAL('A','s','p','c') );
+
+#undef VAL2
+#undef VAL1
 }
 
 
 
 /*
 void WaveShape::SetSize( long inWidth, long inHeight ) {
-	
+
 	mXScale = inWidth / 2;
 	mYScale = inHeight / 2;
-	
+
 	if ( mAspect1to1 ) {
-	
+
 		// Keep the xy aspect ratio to 1, change the dim that will get stretched
 		if ( mYScale < mXScale )
 			mXScale = mYScale;
@@ -126,10 +133,10 @@ void WaveShape::SetSize( long inWidth, long inHeight ) {
 
 
 void WaveShape::SetupTransition( WaveShape* inDest ) {
-	
+
 	mIntensity.Weight( inDest -> mIntensity, &mShapeTrans, 0 );
 	mLineWidth.Weight( inDest -> mLineWidth, &mShapeTrans, 0 );
-	
+
 	mPen_Dep_S			= mPen_Dep_S || inDest -> mPen_Dep_S;
 	mLineWidth_Dep_S	= mLineWidth_Dep_S|| inDest -> mLineWidth_Dep_S;
 }
@@ -145,14 +152,14 @@ void WaveShape::SetupTransition( WaveShape* inDest ) {
 
 void WaveShape::CalcNumS_Steps( WaveShape* inWave2, long inDefaultNumBins ) {
 	int n;
-	
+
 	// See if this shape has an overriding number of s steps
 	mNumSampleBins = inDefaultNumBins;
 	mNumSampleBins = mNum_S_Steps.Evaluate();
 	if ( mNumSampleBins <= 0 )
 		mNumSampleBins = inDefaultNumBins;
-		
-		
+
+
 	if ( inWave2 ) {
 		n = inWave2 -> mNum_S_Steps.Evaluate();
 		if ( n <= 0 )
@@ -181,10 +188,10 @@ void WaveShape::Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape
 		else
 			yscale = xscale;
 	}
-				
+
 	// See if this shape has an overriding number of s steps
 	CalcNumS_Steps( inWave2, inNumSteps );
-	
+
 	// Setup default step size--inv of how many bins are available
 	if ( mNumSampleBins > 1 )
 		stepSize = 1.0 / ( mNumSampleBins - 1.0 );
@@ -195,22 +202,22 @@ void WaveShape::Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape
 	if ( ! inWave2 ) {
 		dialate = 1;
 		maxWaves = mNumWaves;
-		w2Waves = 0; 
+		w2Waves = 0;
 	}
-			
+
 	// If we're transitioning from one waveshape to another
 	else {
 		w2Waves = inWave2 -> mNumWaves;
 		dialate = inMorphPct;
 		mShapeTrans = pow( dialate, SHAPE_MORPH_ALPHA );
 		SetupFrame( inWave2, mShapeTrans );
-		
+
 		if ( mNumWaves > w2Waves ) {
 			maxWaves = mNumWaves;
 			dialate = 1.0 - dialate; }
 		else
 			maxWaves = w2Waves;
-		
+
 		// Set the wave scale factor to the wave leaving/arriving
 		dialate = 20.0 * pow( dialate, 4.0 ) + 1.0;
 
@@ -232,9 +239,9 @@ void WaveShape::Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape
 	mMouseY = ( (float) mousePt.v ) / yscale;
 
 	// Evaluate the expressions dependent on 't'/the current frame
-	mB.Evaluate();	
-	if ( inWave2 ) 
-		inWave2 -> mB.Evaluate();	
+	mB.Evaluate();
+	if ( inWave2 )
+		inWave2 -> mB.Evaluate();
 
 	// Calc linewidth, add a little to make .999 into 1.  If it's not dep on s, we can evaluate it now
 	if ( ! mLineWidth_Dep_S )
@@ -242,37 +249,37 @@ void WaveShape::Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape
 
 	// Calc pen intensity.  If it's not dep on s, we can evaluate it now.
 	if ( ! mPen_Dep_S ) {
-		__evalIntensity( rgb.red );	
+		__evalIntensity( rgb.red );
 		rgbPrev = rgb;
 	}
-					
+
 	// Step thru s (the xy exprs will give us the cords)
 	for ( sS = 0; sS <= 1.0; sS += stepSize ) {
-	
+
 		// Evaluate the expressions dependent on 's'
-		mC.Evaluate();	
-		if ( inWave2 )	
-			inWave2 -> mC.Evaluate();	
+		mC.Evaluate();
+		if ( inWave2 )
+			inWave2 -> mC.Evaluate();
 
 		// Calc linewidth, add a little to make .999 into 1.
 		if ( mLineWidth_Dep_S )
 			inDest.SetLineWidth( mLineWidth.Evaluate() + 0.001 );
-		
+
 		// Calc pen intensity
 		if ( mPen_Dep_S ) {
 			rgbPrev = rgb;
-			__evalIntensity( rgb.red );	
+			__evalIntensity( rgb.red );
 		}
-		
+
 		// Draw all the waves
 		for ( i = 0; i < maxWaves; i++ ) {
-		
+
 			if ( i < mNumWaves ) {
-				
+
 				// Find the cords for waveshape1, wave number i
 				tx = xscale * mWaveX.Evaluate( i );
 				ty = yscale * mWaveY.Evaluate( i );
-				
+
 				// If we have two waves to mix...
 				if ( i < w2Waves ) {
 					tx = mShapeTrans * tx + ( 1.0 - mShapeTrans ) * xscaleW2 * inWave2 -> mWaveX.Evaluate( i );
@@ -282,16 +289,16 @@ void WaveShape::Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape
 					ty *= dialate;
 				} }
 			else {
-				
+
 				// Find the cords for waveshape2, wave number i
 				tx = dialate * xscaleW2 * inWave2 -> mWaveX.Evaluate( i );
 				ty = dialate * yscaleW2 * inWave2 -> mWaveY.Evaluate( i );
 			}
-			
+
 			// Switch to screen cords, baby, and draw the line segment
 			x = xoff + tx;
 			y = yoff - ty;
-				
+
 			if ( mConnectBins ) {
 				if ( sS > 0 )
 					inDest.Line( sXY[ 2 * i ], sXY[ 2 * i + 1 ], x, y, rgbPrev, rgb );
@@ -302,8 +309,8 @@ void WaveShape::Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape
 				}
 				sXY[ 2 * i ] = x;
 				sXY[ 2 * i + 1 ] = y;  }
-			else 
-				inDest.Line( x, y, x, y, rgb, rgb );				
+			else
+				inDest.Line( x, y, x, y, rgb, rgb );
 		}
 	}
 
@@ -311,8 +318,8 @@ void WaveShape::Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape
 	if ( mConnectFirstLast ) {
 		for ( i = 0; i < maxWaves; i++ )
 			inDest.Line( sXY[ 2 * i ], sXY[ 2 * i + 1 ], sStartXY[ 2 * i ], sStartXY[ 2 * i + 1 ], rgb, rgbStart );
-	}	
-	
+	}
+
 	// Make sure we restore a random seed (one of the virtual machines could be seeding to the same value)
 	srand( *((long*) mTPtr) );
 
@@ -328,7 +335,7 @@ void WaveShape::Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape
 
 void WaveShape::SetupFrame( WaveShape* inDest, float inW ) {
 	float w1 = 1.0 - inW;
-		
+
 	__weightBOL( mConnectBins )
 	__weightBOL( mConnectFirstLast )
 }

@@ -32,6 +32,9 @@
 #include "Hashtable.h"
 #include "ParticleGroup.h"
 
+#define VAL(a,b,c,d) (((a)<<24)+((b)<<16)+((c)<<8)+(d))
+#define VAL2(a,b)    (((a)<<8)+(b))
+
 GForce::GForce( void* inRefCon ) :
 #if defined(UNIX_X)
 	mPrefs( ".G-Force", true ),
@@ -76,14 +79,14 @@ GForce::GForce( void* inRefCon ) :
 	mTrackTextDur		= 0;
 
 	mPrefs.Load();
-	if ( mPrefs.GetPref( 'Vers' ) != GFORCE_COMPAT_VERSION ) {
+	if ( mPrefs.GetPref( VAL('V','e','r','s') ) != GFORCE_COMPAT_VERSION ) {
 		mConsoleDelay		= 8;
 		mConsoleLineDur		= 14;
 		mMagScale 			= 1;
 		mTransitionLo		= 4;
 		mTransitionHi		= 18;
 		mScrnSaverDelay		= -1 * 60;			// Factory: screen saver mode disabled
-		mPrefs.SetPref( 'Vers', GFORCE_COMPAT_VERSION );
+		mPrefs.SetPref( VAL('V','e','r','s'), GFORCE_COMPAT_VERSION );
 		mBorderlessWind		= 0;
 		mHandleKeys			= 1;
 		mNum_S_Steps 		= 200;
@@ -113,38 +116,38 @@ GForce::GForce( void* inRefCon ) :
 		// Show the welcome msg for a pref rewrite...
 		Println( GFORCE_VERS_STR );
 		Println( "Press '?' for help" );
-		}
+	}
 	else {
-		mConsoleDelay		= mPrefs.GetPref( 'CDur' );
-		mConsoleLineDur		= mPrefs.GetPref( 'CLin' );
-		mMagScale			= mPrefs.GetPref( 'MScl' ) / 1000.0;
-		mTransitionLo		= mPrefs.GetPref( 'TrLo' );
-		mTransitionHi		= mPrefs.GetPref( 'TrHi' );
-		mScrnSaverDelay		= mPrefs.GetPref( 'SSvr' ) * 60.0;
-		mBorderlessWind		= mPrefs.GetPref( 'NoBo' );
-		mHandleKeys			= mPrefs.GetPref( 'Kybd' );
-		mNum_S_Steps		= mPrefs.GetPref( 'Stps' );
-		mFullscreenSize.h	= mPrefs.GetPref( 'FS_X' );
-		mFullscreenSize.v	= mPrefs.GetPref( 'FS_Y' );
-		mFullscreenDepth	= mPrefs.GetPref( 'FS_D' );
-		mFullscreenDevice	= mPrefs.GetPref( 'FS_#' );
-		mParticlesOn		= mPrefs.GetPref( 'P_On' );
-		mNormalizeInput		= mPrefs.GetPref( 'Norm' );
-		mMaxSize.v			= mPrefs.GetPref( 'MaxY' );
-		mMaxSize.h			= mPrefs.GetPref( 'MaxX' );
-		mNewConfigNotify	= mPrefs.GetPref( 'ShwT' );
-		mTrackTextPosMode	= mPrefs.GetPref( 'TPos' );
-		mTrackTextSize		= mPrefs.GetPref( 'TSze' );
-		mPrefs.GetPref( 'WInt', mShapeIntervalStr );
-		mPrefs.GetPref( 'DInt', mFieldIntervalStr );
-		mPrefs.GetPref( 'CInt', mColorIntervalStr );
-		mPrefs.GetPref( 'T?', mTrackTextStartStr );
-		mPrefs.GetPref( 'TDur', mTrackTextDurationStr );
-		mPrefs.GetPref( 'TFnt', mTrackFont );
-		mPrefs.GetPref( 'TStr', mTrackMetaText );
-		mPrefs.GetPref( 'PDur', mParticleDuration );
-		mPrefs.GetPref( 'PPrb', mParticleProbability );
-		mPrefs.GetPref( 'KMap', mKeyMap );
+		mConsoleDelay       = mPrefs.GetPref( VAL('C','D','u','r') );
+		mConsoleLineDur     = mPrefs.GetPref( VAL('C','L','i','n') );
+		mMagScale           = mPrefs.GetPref( VAL('M','S','c','l') ) / 1000.0;
+		mTransitionLo       = mPrefs.GetPref( VAL('T','r','L','o') );
+		mTransitionHi       = mPrefs.GetPref( VAL('T','r','H','i') );
+		mScrnSaverDelay     = mPrefs.GetPref( VAL('S','S','v','r') ) * 60.0;
+		mBorderlessWind     = mPrefs.GetPref( VAL('N','o','B','o') );
+		mHandleKeys         = mPrefs.GetPref( VAL('K','y','b','d') );
+		mNum_S_Steps        = mPrefs.GetPref( VAL('S','t','p','s') );
+		mFullscreenSize.h   = mPrefs.GetPref( VAL('F','S','_','X') );
+		mFullscreenSize.v   = mPrefs.GetPref( VAL('F','S','_','Y') );
+		mFullscreenDepth    = mPrefs.GetPref( VAL('F','S','_','D') );
+		mFullscreenDevice   = mPrefs.GetPref( VAL('F','S','_','#') );
+		mParticlesOn        = mPrefs.GetPref( VAL('P','_','O','n') );
+		mNormalizeInput     = mPrefs.GetPref( VAL('N','o','r','m') );
+		mMaxSize.v          = mPrefs.GetPref( VAL('M','a','x','Y') );
+		mMaxSize.h          = mPrefs.GetPref( VAL('M','a','x','X') );
+		mNewConfigNotify    = mPrefs.GetPref( VAL('S','h','w','T') );
+		mTrackTextPosMode   = mPrefs.GetPref( VAL('T','P','o','s') );
+		mTrackTextSize      = mPrefs.GetPref( VAL('T','S','z','e') );
+		mPrefs.GetPref( VAL('W','I','n','t'), mShapeIntervalStr );
+		mPrefs.GetPref( VAL('D','I','n','t'), mFieldIntervalStr );
+		mPrefs.GetPref( VAL('C','I','n','t'), mColorIntervalStr );
+		mPrefs.GetPref( VAL2('T','?'), mTrackTextStartStr );
+		mPrefs.GetPref( VAL('T','D','u','r'), mTrackTextDurationStr );
+		mPrefs.GetPref( VAL('T','F','n','t'), mTrackFont );
+		mPrefs.GetPref( VAL('T','S','t','r'), mTrackMetaText );
+		mPrefs.GetPref( VAL('P','D','u','r'), mParticleDuration );
+		mPrefs.GetPref( VAL('P','P','r','b'), mParticleProbability );
+		mPrefs.GetPref( VAL('K','M','a','p'), mKeyMap );
 	}
 
 	mPortA.SetTrackTextFont( mTrackFont, mTrackTextSize );
@@ -208,38 +211,37 @@ GForce::GForce( void* inRefCon ) :
 
 GForce::~GForce() {
 
-
 	// Rewrite the prefs to disk...
-	mPrefs.SetPref( 'SSvr', mScrnSaverDelay / 60.0 );
-	mPrefs.SetPref( 'TrHi', mTransitionHi );
-	mPrefs.SetPref( 'TrLo', mTransitionLo );
-	mPrefs.SetPref( 'MScl', mMagScale * 1000 );
-	mPrefs.SetPref( 'CInt', mColorIntervalStr );
-	mPrefs.SetPref( 'WInt', mShapeIntervalStr );
-	mPrefs.SetPref( 'DInt', mFieldIntervalStr );
-	mPrefs.SetPref( 'Stps', mNum_S_Steps );
-	mPrefs.SetPref( 'PDur', mParticleDuration );
-	mPrefs.SetPref( 'PPrb', mParticleProbability );
-	mPrefs.SetPref( 'NoBo', mBorderlessWind );
-	mPrefs.SetPref( 'Kybd', mHandleKeys	);
-	mPrefs.SetPref( 'FS_X', mFullscreenSize.h );
-	mPrefs.SetPref( 'FS_Y', mFullscreenSize.v );
-	mPrefs.SetPref( 'FS_D', mFullscreenDepth );
-	mPrefs.SetPref( 'FS_#', mFullscreenDevice );
-	mPrefs.SetPref( 'Norm', mNormalizeInput );
-	mPrefs.SetPref( 'MaxY', mMaxSize.v );
-	mPrefs.SetPref( 'MaxX', mMaxSize.h );
-	mPrefs.SetPref( 'TPos', mTrackTextPosMode );
-	mPrefs.SetPref( 'TSze', mTrackTextSize );
-	mPrefs.SetPref( 'TFnt', mTrackFont );
-	mPrefs.SetPref( 'TStr', mTrackMetaText );
-	mPrefs.SetPref( 'T?',   mTrackTextStartStr );
-	mPrefs.SetPref( 'TDur', mTrackTextDurationStr );
-	mPrefs.SetPref( 'KMap', mKeyMap );
-	mPrefs.SetPref( 'P_On', mParticlesOn ? 1 : 0 );
-	mPrefs.SetPref( 'ShwT', mNewConfigNotify ? 1 : 0 );
-	mPrefs.SetPref( 'CDur', mConsoleDelay );
-	mPrefs.SetPref( 'CLin', mConsoleLineDur );
+	mPrefs.SetPref( VAL('S','S','v','r'), mScrnSaverDelay / 60.0 );
+	mPrefs.SetPref( VAL('T','r','H','i'), mTransitionHi );
+	mPrefs.SetPref( VAL('T','r','L','o'), mTransitionLo );
+	mPrefs.SetPref( VAL('M','S','c','l'), mMagScale * 1000 );
+	mPrefs.SetPref( VAL('C','I','n','t'), mColorIntervalStr );
+	mPrefs.SetPref( VAL('W','I','n','t'), mShapeIntervalStr );
+	mPrefs.SetPref( VAL('D','I','n','t'), mFieldIntervalStr );
+	mPrefs.SetPref( VAL('S','t','p','s'), mNum_S_Steps );
+	mPrefs.SetPref( VAL('P','D','u','r'), mParticleDuration );
+	mPrefs.SetPref( VAL('P','P','r','b'), mParticleProbability );
+	mPrefs.SetPref( VAL('N','o','B','o'), mBorderlessWind );
+	mPrefs.SetPref( VAL('K','y','b','d'), mHandleKeys	);
+	mPrefs.SetPref( VAL('F','S','_','X'), mFullscreenSize.h );
+	mPrefs.SetPref( VAL('F','S','_','Y'), mFullscreenSize.v );
+	mPrefs.SetPref( VAL('F','S','_','D'), mFullscreenDepth );
+	mPrefs.SetPref( VAL('F','S','_','#'), mFullscreenDevice );
+	mPrefs.SetPref( VAL('N','o','r','m'), mNormalizeInput );
+	mPrefs.SetPref( VAL('M','a','x','Y'), mMaxSize.v );
+	mPrefs.SetPref( VAL('M','a','x','X'), mMaxSize.h );
+	mPrefs.SetPref( VAL('T','P','o','s'), mTrackTextPosMode );
+	mPrefs.SetPref( VAL('T','S','z','e'), mTrackTextSize );
+	mPrefs.SetPref( VAL('T','F','n','t'), mTrackFont );
+	mPrefs.SetPref( VAL('T','S','t','r'), mTrackMetaText );
+	mPrefs.SetPref( VAL2('T','?'), mTrackTextStartStr );
+	mPrefs.SetPref( VAL('T','D','u','r'), mTrackTextDurationStr );
+	mPrefs.SetPref( VAL('K','M','a','p'), mKeyMap );
+	mPrefs.SetPref( VAL('P','_','O','n'), mParticlesOn ? 1 : 0 );
+	mPrefs.SetPref( VAL('S','h','w','T'), mNewConfigNotify ? 1 : 0 );
+	mPrefs.SetPref( VAL('C','D','u','r'), mConsoleDelay );
+	mPrefs.SetPref( VAL('C','L','i','n'), mConsoleLineDur );
 
 	// Init the track text info
 	NewSong();
@@ -507,28 +509,28 @@ bool GForce::HandleKey( long inChar ) {
 				Println(_("WaveShape slideshow OFF"));
 			break;
 
-		case cSetPreset0:	StoreConfigState( 'SET0' );	break;
-		case cSetPreset1:	StoreConfigState( 'SET1' );	break;
-		case cSetPreset2:	StoreConfigState( 'SET2' );	break;
-		case cSetPreset3:	StoreConfigState( 'SET3' );	break;
-		case cSetPreset4:	StoreConfigState( 'SET4' );	break;
-		case cSetPreset5:	StoreConfigState( 'SET5' );	break;
-		case cSetPreset6:	StoreConfigState( 'SET6' );	break;
-		case cSetPreset7:	StoreConfigState( 'SET7' );	break;
-		case cSetPreset8:	StoreConfigState( 'SET8' );	break;
-		case cSetPreset9:	StoreConfigState( 'SET9' );	break;
+		case cSetPreset0:	StoreConfigState( VAL('S','E','T','0') );	break;
+		case cSetPreset1:	StoreConfigState( VAL('S','E','T','1') );	break;
+		case cSetPreset2:	StoreConfigState( VAL('S','E','T','2') );	break;
+		case cSetPreset3:	StoreConfigState( VAL('S','E','T','3') );	break;
+		case cSetPreset4:	StoreConfigState( VAL('S','E','T','4') );	break;
+		case cSetPreset5:	StoreConfigState( VAL('S','E','T','5') );	break;
+		case cSetPreset6:	StoreConfigState( VAL('S','E','T','6') );	break;
+		case cSetPreset7:	StoreConfigState( VAL('S','E','T','7') );	break;
+		case cSetPreset8:	StoreConfigState( VAL('S','E','T','8') );	break;
+		case cSetPreset9:	StoreConfigState( VAL('S','E','T','9') );	break;
 
 
-		case cPreset0:	handled = RestoreConfigState( 'SET0' );	break;
-		case cPreset1:	handled = RestoreConfigState( 'SET1' );	break;
-		case cPreset2:	handled = RestoreConfigState( 'SET2' );	break;
-		case cPreset3:	handled = RestoreConfigState( 'SET3' );	break;
-		case cPreset4:	handled = RestoreConfigState( 'SET4' );	break;
-		case cPreset5:	handled = RestoreConfigState( 'SET5' );	break;
-		case cPreset6:	handled = RestoreConfigState( 'SET6' );	break;
-		case cPreset7:	handled = RestoreConfigState( 'SET7' );	break;
-		case cPreset8:	handled = RestoreConfigState( 'SET8' );	break;
-		case cPreset9:	handled = RestoreConfigState( 'SET9' );	break;
+		case cPreset0:	handled = RestoreConfigState( VAL('S','E','T','0') );	break;
+		case cPreset1:	handled = RestoreConfigState( VAL('S','E','T','1') );	break;
+		case cPreset2:	handled = RestoreConfigState( VAL('S','E','T','2') );	break;
+		case cPreset3:	handled = RestoreConfigState( VAL('S','E','T','3') );	break;
+		case cPreset4:	handled = RestoreConfigState( VAL('S','E','T','4') );	break;
+		case cPreset5:	handled = RestoreConfigState( VAL('S','E','T','5') );	break;
+		case cPreset6:	handled = RestoreConfigState( VAL('S','E','T','6') );	break;
+		case cPreset7:	handled = RestoreConfigState( VAL('S','E','T','7') );	break;
+		case cPreset8:	handled = RestoreConfigState( VAL('S','E','T','8') );	break;
+		case cPreset9:	handled = RestoreConfigState( VAL('S','E','T','9') );	break;
 
 		default:
 			handled = false;
@@ -1127,7 +1129,7 @@ void GForce::loadColorMap( long inColorMapNum, bool inAllowMorph ) {
 
 		ok = ConfigFile::Load( spec, args );
 		if ( ok ) {
-			vers = args.GetArg( 'Vers' );
+			vers = args.GetArg( VAL('V','e','r','s') );
 			ok = vers >= 100 && vers < 110;
 			spec -> GetFileName( mColorMapName );
 		}
@@ -1185,7 +1187,7 @@ void GForce::loadDeltaField( long inFieldNum ) {
 
 		ok = ConfigFile::Load( spec, args );
 		if ( ok ) {
-			vers = args.GetArg( 'Vers' );
+			vers = args.GetArg( VAL('V','e','r','s') );
 			ok = vers >= 100 && vers < 110;
 			spec -> GetFileName( name );
 		}
@@ -1220,7 +1222,7 @@ void GForce::loadWaveShape( long inShapeNum, bool inAllowMorph ) {
 		ok = ConfigFile::Load( spec, args );
 
 		if ( ok ) {
-			vers = args.GetArg( 'Vers' );
+			vers = args.GetArg( VAL('V','e','r','s') );
 			ok = vers >= 100 && vers < 110;
 			spec -> GetFileName( mWaveShapeName );
 		}
@@ -1277,7 +1279,7 @@ void GForce::loadParticle( long inParticleNum ) {
 		mCurParticleNum = inParticleNum;
 		ok = ConfigFile::Load( spec, args );
 		if ( ok ) {
-			vers = args.GetArg( 'Vers' );
+			vers = args.GetArg( VAL('V','e','r','s') );
 			ok = vers >= 100 && vers < 110;
 
 			spec -> GetFileName( name );

@@ -29,21 +29,21 @@ DeltaFieldData* DeltaField::GetField() {
 	if ( mCurrentY >= 0 ) {
 
 		if ( ! IsCalculated() ) {
-		
+
 			EgOSUtils::ShowCursor();
-		
+
 			while ( ! IsCalculated() ) {
 				EgOSUtils::SpinCursor();
 				CalcSome();
 			}
-		
+
 			EgOSUtils::ShowCursor();
 		}
-		
+
 		return &mFieldData;
 	}
-	
-	
+
+
 	return 0;
 }
 
@@ -52,55 +52,60 @@ DeltaFieldData* DeltaField::GetField() {
 
 void DeltaField::Assign( ArgList& inArgs, UtilStr& inName ) {
 	UtilStr fx, fy;
-	
+
 	mName.Assign( inName );
-	
+
 	// Compile and link the temp exprs.  By spec, A-vars are evaluated now
 	mAVars.Compile( inArgs, 'A', mDict );
-	mAVars.Evaluate();		
+	mAVars.Evaluate();
 
 	mDVars.Compile( inArgs, 'D', mDict );
 
-	mAspect1to1	= inArgs.GetArg( 'Aspc' );
-	mPolar		= inArgs.ArgExists( 'srcR' );
+#define VAL(a,b,c,d) (((a)<<24)+((b)<<16)+((c)<<8)+(d))
+
+	mAspect1to1	= inArgs.GetArg( VAL('A','s','p','c') );
+	mPolar		= inArgs.ArgExists( VAL('s','r','c','R') );
 
 	// Compile the 2D vector field that expresses the source point for a given point
 	if ( mPolar ) {
-		inArgs.GetArg( 'srcR', fx );
-		inArgs.GetArg( 'srcT', fy ); }
-	else {
-		inArgs.GetArg( 'srcX', fx );
-		inArgs.GetArg( 'srcY', fy );
+		inArgs.GetArg( VAL('s','r','c','R'), fx );
+		inArgs.GetArg( VAL('s','r','c','T'), fy );
 	}
-	
+	else {
+		inArgs.GetArg( VAL('s','r','c','X'), fx );
+		inArgs.GetArg( VAL('s','r','c','Y'), fy );
+	}
+
+#undef VAL
+
 	mXField.Compile( fx, mDict );
 	mYField.Compile( fy, mDict );
-	
+
 	mHasRTerm		= mXField.IsDependent( "R" )		|| mYField.IsDependent( "R" )			|| mDVars.IsDependent( "R" );
 	mHasThetaTerm	= mXField.IsDependent( "THETA" )	|| mYField.IsDependent( "THETA" )		|| mDVars.IsDependent( "THETA" );
 
-	// Reset all computation of this delta field...	
+	// Reset all computation of this delta field...
 	SetSize( mWidth, mHeight, mRowSize, true );
 }
 
 
 
 void DeltaField::SetSize( long inWidth, long inHeight, long inRowSize, bool inForceRegen ) {
-	
+
 	// Only resize if the new size is different...
 	if ( inWidth != mWidth || inHeight != mHeight || inForceRegen ) {
-		
+
 		mWidth = inWidth;
 		mHeight = inHeight;
 		mRowSize = inRowSize;
-		
+
 		// Each pixel needs 4 bytes of info per pixel (max) plus 4 shorts, 2 bytes per row (max)
 		mCurrentRow = mGradBuf.Dim( 4 * mWidth * mHeight + 10 * mHeight + 64 );
 		mFieldData.mField = mCurrentRow;
-		
+
 		mXScale = 2.0 / ( (float) mWidth );
 		mYScale = 2.0 / ( (float) mHeight );
-		
+
 		// If we're to keep the xy aspect ratio to 1, change the dim that will get stretched
 		if ( mAspect1to1 ) {
 			if ( mYScale > mXScale )
@@ -108,7 +113,7 @@ void DeltaField::SetSize( long inWidth, long inHeight, long inRowSize, bool inFo
 			else
 				mYScale = mXScale;
 		}
-		
+
 		// Reset all computation of this delta field
 		mCurrentY = 0;
 	}
@@ -124,33 +129,33 @@ void DeltaField::CalcSome() {
 	unsigned long addrOffset;
 	char* g;
 	bool outOfBounds;
-	
+
 	// If we're still have stuff left to compute...
 	if ( mCurrentY >= 0 && mCurrentY < mHeight ) {
-	
+
 		// Calc the y we're currently at
 		mY_Cord = 0.5 * mYScale * ( mHeight - 2 * mCurrentY );
 
 		// Save some cycles by pre-computing indep stuff
 		xscale2 = ( (float) ( 1 << DEC_SIZE ) ) / mXScale;
 		yscale2 = ( (float) ( 1 << DEC_SIZE ) ) / mYScale;
-	
+
 		// Resume on the pixel we left off at
 		g = mCurrentRow;
-				
+
 		// Calc the mCurrentY row of the grad field
 		for ( px = 0; px < mWidth; px++ ) {
-			mX_Cord = 0.5 * mXScale * ( 2 * px - mWidth ); 
-							
+			mX_Cord = 0.5 * mXScale * ( 2 * px - mWidth );
+
 			// Calculate R and THETA only if the field uses it (don't burn cycles on sqrt() and atan())
 			if ( mHasRTerm )
 				mR_Cord = sqrt( mX_Cord * mX_Cord + mY_Cord * mY_Cord );
 			if( mHasThetaTerm )
 				mT_Cord = atan2( mY_Cord, mX_Cord );
-				
+
 			// Evaluate any temp variables
-			mDVars.Evaluate();	
-			
+			mDVars.Evaluate();
+
 			// Evaluate the source point for (mXCord, mYCord)
 			fx = mXField.Evaluate();
 			fy = mYField.Evaluate();
@@ -161,7 +166,7 @@ void DeltaField::CalcSome() {
 			}
 			sx = xscale2 * ( fx - mX_Cord );
 			sy = yscale2 * ( mY_Cord - fy );
-			
+
 			// See if the source cord for the current cord is out of the frame rect
 			outOfBounds = false;
 			t = px + ( sx >> DEC_SIZE );
@@ -170,7 +175,7 @@ void DeltaField::CalcSome() {
 			t = mCurrentY + ( sy >> DEC_SIZE );
 			if ( t >= mHeight - 1 || t < 0 )
 				outOfBounds = true;
-			
+
 			// Get rid of negative numbers
 			sx += 0x7F00;
 			sy += 0x7F00;
@@ -178,15 +183,15 @@ void DeltaField::CalcSome() {
 			// Blacken this pixel if the vector is not encodable...
 			if ( sx > ( (long) 0xFF00 ) || sx < 0 || sy > ( (long) 0xFF00 ) || sy < 0 )
 				outOfBounds = true;
-				
+
 			// If this cord is in bounds then encode it, otherwise signal PixPort::Fade()
 			if ( outOfBounds )
-				*( ( unsigned long* ) g ) = 0xFFFFFFFF; 
+				*( ( unsigned long* ) g ) = 0xFFFFFFFF;
 			else {
-				
+
 				// Precompute the address of the souce quad-pixel fence
 				addrOffset = ( sx >> 8 ) + px + ( sy >> 8 ) * mRowSize;
-				
+
 				*( ( unsigned long* ) g )	= ( addrOffset << 14 ) |
 											  ( ( sx & 0x00FE ) << 6 ) |
 											  ( ( sy & 0x00FE ) >> 1 );
@@ -194,22 +199,22 @@ void DeltaField::CalcSome() {
 
 			g += 4;
 		}
-					
+
 		// Store where this row ends
 		mCurrentRow = g;
-		
+
 		// Signal the compution of the next row
 		mCurrentY++;
 	}
-	
-	
+
+
 	if ( IsCalculated() ) {
 
 		// Give PixPort some needed info and scrap ptrs
 		/*mFieldData.mNegYExtents = 1 - ( mNegYExtents >> DEC_SIZE );
 		if ( mFieldData.mNegYExtents > mHeight )
 			mFieldData.mNegYExtents = mHeight;
-			
+
 		// 8-bit pixels, so once byte per pixel
 		mFieldData.mYExtentsBuf = mYExtentsBuf.Dim( mFieldData.mNegYExtents * mWidth ); */
 	}

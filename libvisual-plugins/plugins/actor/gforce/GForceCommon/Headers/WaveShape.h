@@ -9,26 +9,26 @@ class ArgList;
 class PixPort;
 
 class WaveShape {
-	
+
 	public:
-		
-		
+
+
 								WaveShape( float& inTPtr );
 
 		void					SetMagFcn( ExprUserFcn** inMagFcn );
-		
+
 		void					SetFFTFcn( ExprUserFcn** InFFTFcn );
-		
+
 		void					Load( ArgList& inArgs, long inDefaultNumSteps );
 
-	
+
 		void					SetupTransition( WaveShape* inDest );
 
 		#define					SHAPE_MORPH_ALPHA	1.7
-		
+
 
 		void					Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape* inWave2, float inMorphPct );
-		
+
 	protected:
 
 		// Holds a copy of the ptr to the external time index
@@ -38,7 +38,7 @@ class WaveShape {
 		// Dict vars
 		float					mPI, mNumSampleBins, mNumFFTBins;
 		float					mMouseX, mMouseY;
-		
+
 		ExpressionDict			mDict;
 		float					mShapeTrans;
 		long					mNumWaves;
@@ -48,19 +48,19 @@ class WaveShape {
 		ExprArray				mA, mB, mC;
 		ExprArray				mWaveY;
 		ExprArray				mWaveX;
-		Expression				mLineWidth;	
+		Expression				mLineWidth;
 		Expression				mNum_S_Steps;
 		Expression				mIntensity;
 		bool					mPen_Dep_S;
 		bool					mLineWidth_Dep_S;
-		
+
 
 		void					SetupFrame( WaveShape* inDest, float inW );
-		
+
 		static float			sS;
 		static long				sXY[ 2 * MAX_WAVES_PER_SHAPE ];
 		static long				sStartXY[ 2 * MAX_WAVES_PER_SHAPE ];
-	
+
 		void					CalcNumS_Steps( WaveShape* inWave2, long inDefaultNumBins );
 };
 
