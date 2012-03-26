@@ -13,17 +13,18 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Xmms2-libvisual.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdlib.h>
+
+#include <libvisual/libvisual.h>
+#include <pulse/pulseaudio.h>
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <pthread.h>
-#include <pulse/pulseaudio.h>
-#include <string.h>
-#include <libvisual/libvisual.h>
 
 static pa_sample_spec sample_spec = {
     .format = PA_SAMPLE_S16LE,
@@ -177,7 +178,7 @@ void record_thread(void *data){
     pa_context_connect(context,NULL,0,NULL);
 
     if(!(stream=pa_stream_new(context,(*td).pa_ctx_name,&sample_spec,NULL))){
-        printf("Failed to create monitoring stream\n");
+        visual_log(VISUAL_LOG_ERROR, "Failed to create monitoring stream");
         goto quit;
     }
 
@@ -188,7 +189,7 @@ void record_thread(void *data){
     snprintf(msi,sizeof(msi),"%u",monitor_source_index);
 
     if(pa_stream_connect_record(stream,msi,&attr,(pa_stream_flags_t)(PA_STREAM_DONT_MOVE|PA_STREAM_PEAK_DETECT))<0){
-        printf("Failed to connect monitoring stream\n");
+        visual_log(VISUAL_LOG_ERROR, "Failed to connect monitoring stream");
         pa_stream_unref(stream);
         goto quit;
     }
@@ -197,7 +198,7 @@ void record_thread(void *data){
         quit(pa_mlapi,0);
 
     if(pa_mainloop_run(pa_ml,&ret)<0){
-        printf("mainloop run failed.\n");
+        visual_log(VISUAL_LOG_ERROR, "Main loop failed");
         goto quit;
     }
 
@@ -246,7 +247,7 @@ uint32_t get_monitor_source_index(pa_context *context,pa_mainloop
                         &sink_index
                         );
 
-                printf("Getting sink index...\n");
+                visual_log(VISUAL_LOG_DEBUG, "Getting sink index...");
                 state++;
             break;
 
@@ -260,7 +261,7 @@ uint32_t get_monitor_source_index(pa_context *context,pa_mainloop
                         &monitor_source_index
                         );
 
-                    printf("Getting monitor source index...\n");
+                    visual_log(VISUAL_LOG_DEBUG, "Getting monitor source index...");
                     state++;
                 }
             break;
@@ -274,7 +275,7 @@ uint32_t get_monitor_source_index(pa_context *context,pa_mainloop
             break;
 
             default:
-                fprintf(stderr, "in state %d\n", state);
+                visual_log(VISUAL_LOG_DEBUG, "In state %d", state);
                 return -1;
         }
 
@@ -287,7 +288,7 @@ pa_sink_info *i,int eol,void *userdata){
     uint32_t *monitor_source_index=userdata;
 
     if (eol > 0) {
-        printf("Get monitor source index complete...\nmonitor source index=%d\n\n",*(monitor_source_index));
+        visual_log(VISUAL_LOG_DEBUG, "Get monitor source index complete... (index=%d)",*(monitor_source_index));
         return;
     }
 
@@ -299,7 +300,7 @@ pa_sink_input_info *i,int eol,void *userdata){
     uint32_t *sink_index=userdata;
 
     if (eol > 0) {
-        printf("Get Sink index complete...\nsink index=%d\n\n",*(sink_index));
+        visual_log(VISUAL_LOG_DEBUG, "Get sink index complete (index=%d)",*(sink_index));
         return;
     }
 
@@ -333,7 +334,7 @@ void read_callback(pa_stream *stream,size_t length,void *userdata){
     pulseaudio_priv_t *priv = userdata;
 
     if(pa_stream_peek(stream,&data,&length)<0){
-        printf("Failed to read data from stream\n");
+        visual_log(VISUAL_LOG_ERROR, "Failed to read data from stream");
         return;
     }
 
