@@ -363,11 +363,11 @@ int main (int argc, char **argv)
 
                                 case VISUAL_EVENT_RESIZE:
                                 {
-                                        /*
-                                         video = display_get_video (display);
-                                         visual_bin_set_video (bin, video);
-                                         visual_bin_depth_changed(bin);
-                                         */
+                                        width = ev->event.resize.width;
+                                        height = ev->event.resize.height;
+                                        display_create(display, depth, vidoptions, width, height, TRUE);
+                                        video = display_get_video (display);
+                                        visual_bin_set_video (bin, video);
                                         break;
                                 }
 
