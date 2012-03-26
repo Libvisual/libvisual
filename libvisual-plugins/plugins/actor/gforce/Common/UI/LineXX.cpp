@@ -132,15 +132,12 @@
 
 	if ( lw > 1 ) {
 
-
-
-
 		// Make a circle for the pen
 		int32_t c_x, tw = mLineWidth;
 		halfW = ( tw ) >> 1;
 
 		if ( tw < 12 ) {
-			char* c_shape;
+			const char* c_shape;
 			__circ( tw, c_shape )
 			for ( j = 0; j < tw; j++ ) {
 				c_x = c_shape[ j ];

@@ -50,7 +50,7 @@
 //	Pre:	Parens balence & all letters are capitalized
 //	Note:	I normally don't write such huge, non-compartmentalized code, but speed is important
 //	Post:	Allocates a register for the return value and returns that register
-int Expression::Compile( char* inStr, long inLen, ExpressionDict& inDict, ExprVirtualMachine& inVM ) {
+int Expression::Compile( const char* inStr, long inLen, ExpressionDict& inDict, ExprVirtualMachine& inVM ) {
 	bool			hasLetters = false;
 	float*			floatPtr, val;
 	long			highestPriority, priority, i, numExps = 0, startPos = 0;
@@ -420,7 +420,7 @@ bool Expression::GetNextToken( UtilStr& outStr, long& ioPos ) {
 
 
 
-bool Expression::IsDependent( char* inStr ) {
+bool Expression::IsDependent( const char* inStr ) {
  	long pos, len = 0, c;
 
  	while ( inStr[ len ] )

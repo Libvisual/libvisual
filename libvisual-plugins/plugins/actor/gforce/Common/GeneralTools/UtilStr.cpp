@@ -118,13 +118,13 @@ unsigned char* UtilStr::getPasStr() const {
 
 
 char* UtilStr::getCStr() const {
+	static char empty[] = "\0";
 
 	if ( mBuf ) {
 		mBuf[ mStrLen + 1 ] = '\0';
 		return &mBuf[1]; }
 	else
-		return "\0";
-
+		return empty;
 }
 
 
@@ -491,9 +491,9 @@ void UtilStr::Remove( unsigned long inPos, unsigned long inNum ) {
 
 
 
-void UtilStr::Remove( char* inStr, int inLen, bool inCaseSensitive ) {
+void UtilStr::Remove( const char* inStr, int inLen, bool inCaseSensitive ) {
 	long pos;
-	char* s;
+	const char* s;
 
 	if ( inLen < 0 ) {
 		inLen = 0;
@@ -637,8 +637,8 @@ long UtilStr::Replace( char inTarget, char inReplacement ) {
 }
 
 
-long UtilStr::Replace( char* inTarget, char* inReplacement, bool inCaseSensitive ) {
-	char* srce;
+long UtilStr::Replace( const char* inTarget, const char* inReplacement, bool inCaseSensitive ) {
+	const char* srce;
 	long count = 0, pos, prevPos = 0;
 
 	// Calc the len of the target

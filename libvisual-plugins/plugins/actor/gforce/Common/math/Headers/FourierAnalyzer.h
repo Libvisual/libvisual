@@ -10,8 +10,8 @@ class FourierAnalyzer {
 
 	public:
 								FourierAnalyzer();
-		virtual					~FourierAnalyzer();		
-							
+		virtual					~FourierAnalyzer();
+
 		/* Performs a fourier transform of inF[]:
 		Pre: 	The function to be transformed is inF[] and is inN elements
 		Pre:	outFT[] has at least inBins elements
@@ -24,7 +24,7 @@ class FourierAnalyzer {
 		float*					mTrigLookup;
 		float*					mSinFT;
 		long					mSinFTSize;
-		
+
 		float					mBinRange;
 		long					mN, mNumBins;
 };

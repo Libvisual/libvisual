@@ -22,17 +22,17 @@ class ExpressionDict {
 
 	public:
 								ExpressionDict();
-								
-								
+
+
 		void					AddVar( UtilStr& inKey, float* inPtr )				{ AddVar( inKey.getCStr(), inPtr );	}
-		void					AddVar( char* inKey, float* inPtr );
-		
-		void					AddFcn( char* inKey, ExprUserFcn** inFcn );
+		void					AddVar( const char* inKey, float* inPtr );
+
+		void					AddFcn( const char* inKey, ExprUserFcn** inFcn );
 
 
 		float*					LookupVar( const UtilStr& inName );
 		ExprUserFcn**			LookupFunc( const UtilStr& inName );
-		
+
 	protected:
 		Hashtable				mVarDict;
 		nodeClass				mFcnEntries;
@@ -41,7 +41,3 @@ class ExpressionDict {
 
 
 #endif
-
-
-
-

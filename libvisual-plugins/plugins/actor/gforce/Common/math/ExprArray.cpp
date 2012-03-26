@@ -83,7 +83,7 @@ void ExprArray::Evaluate() {
 }
 
 
-bool ExprArray::IsDependent( char* inStr ) {
+bool ExprArray::IsDependent( const char* inStr ) {
 	int i;
 
 	for ( i = 0; i < mNumExprs; i++ ) {

@@ -143,9 +143,9 @@ class GForce {
 		long					mConsoleLineDur;
 		long					mConsoleExpireTime;
 		void					DrawConsole();
-		void					Print( char* inStr );
+		void					Print( const char* inStr );
 		void					Print( UtilStr* inStr )											{ if ( inStr ) Print( inStr -> getCStr() );		}
-		void					Println( char* inStr );
+		void					Println( const char* inStr );
 		void					Println( UtilStr* inStr )										{ Println( inStr ? inStr -> getCStr() : 0 ); }
 				
 		// Palette stuff
