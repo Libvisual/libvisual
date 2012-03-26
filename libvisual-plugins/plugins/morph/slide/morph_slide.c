@@ -66,8 +66,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 	static VisPluginInfo info[] = {{
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
-		.plugname = "slide",
-		.name = "Slide morph",
+		.plugname = "slide_left",
+		.name = "Slide left morph",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
 		.about = "A slide in/out morph plugin",
