@@ -45,6 +45,15 @@ VISUAL_BEGIN_DECLS
 int visual_math_is_power_of_2 (int n);
 
 /**
+ * Rounds up to the next highest power of 2.
+ *
+ * @param n Value to round up
+ *
+ * @return Next highest power of 2
+ */
+unsigned int visual_math_round_power_of_2 (unsigned int n);
+
+/**
  * Multiplies an array of floats with one constant multiplier. The same destination and source arrays
  * are allowed. With the right cpu features in place this function is very optimized.
  *

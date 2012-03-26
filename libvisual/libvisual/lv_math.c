@@ -40,6 +40,22 @@ int visual_math_is_power_of_2 (int n)
 	return (n > 0) && !(n & (n - 1));
 }
 
+unsigned int visual_math_round_power_of_2 (unsigned int n)
+{
+    n--;
+	n |= n >> 1;
+	n |= n >> 2;
+	n |= n >> 4;
+	n |= n >> 8;
+	n |= n >> 16;
+#if SIZEOF_INT > 4
+	n |= n >> 32;
+#endif
+	n++;
+
+	return n;
+}
+
 int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *src, visual_size_t n, float multiplier)
 {
 	float *d = dest;
