@@ -83,16 +83,19 @@ struct _VisCPU {
 
 
 /**
- * Initializes the VisCPU caps structure by detecting the CPU features and flags.
+ * Initializes the VisCPU caps structure by detecting the CPU features
+ * and flags.
  *
- * This is normally called by visual_init() and is needed by visual_mem_initialize() in order to
- * detect the most optimal mem_copy and mem_set functions.
+ * This is normally called by visual_init() and is needed by
+ * visual_mem_initialize() in order to detect the most optimal
+ * mem_copy and mem_set functions.
  */
 void visual_cpu_initialize (void);
 
 /**
- * Function to get the VisCPU caps initialized by visual_cpu_initialize(), this contains information
- * regarding the CPU features and flags.
+ * Function to get the VisCPU caps initialized by
+ * visual_cpu_initialize(), this contains information regarding the
+ * CPU features and flags.
  *
  * @return The VisCPU caps structure.
  */
@@ -155,64 +158,64 @@ int visual_cpu_get_3dnow2 (void);
 int visual_cpu_get_altivec (void);
 
 /**
- * Function to set if the tsc feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the tsc feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_tsc (int enabled);
 
 /**
- * Function to set if the MMX feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the MMX feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_mmx (int enabled);
 
 /**
- * Function to set if the MMX2 feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the MMX2 feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_mmx2 (int enabled);
 
 /**
- * Function to set if the SSE feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the SSE feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_sse (int enabled);
 
 /**
- * Function to set if the SSE2 feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the SSE2 feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_sse2 (int enabled);
 
 /**
- * Function to set if the 3DNow feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the 3DNow feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_3dnow (int enabled);
 
 /**
- * Function to set if the 3dnowext feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the 3dnowext feature should be enabled or not,
+ * this function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_3dnow2 (int enabled);
 
 /**
- * Function to set if the altivec feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the altivec feature should be enabled or not,
+ * this function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
