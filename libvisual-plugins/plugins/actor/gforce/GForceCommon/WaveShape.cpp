@@ -19,7 +19,7 @@ long		WaveShape::sStartXY[ 2 * MAX_WAVES_PER_SHAPE ];
 float		WaveShape::sS;
 
 
-WaveShape::WaveShape( float* inTPtr ) {
+WaveShape::WaveShape( float& inTPtr ) {
 	UtilStr str;
 	
 	mNumWaves = 0;
@@ -29,14 +29,14 @@ WaveShape::WaveShape( float* inTPtr ) {
 	mNumFFTBins = 255;
 	
 	mDict.AddVar( "S", &sS );
-	mDict.AddVar( "T", inTPtr );
+	mDict.AddVar( "T", &inTPtr );
 	mDict.AddVar( "NUM_SAMPLE_BINS", &mNumSampleBins );
 	// FIXME, use fft here!
 	mDict.AddVar( "NUM_FFT_BINS", &mNumFFTBins );
 	mDict.AddVar( "MOUSEX", &mMouseX );
 	mDict.AddVar( "MOUSEY", &mMouseY );
 	
-	mTPtr = inTPtr;
+	mTPtr = &inTPtr;
 	mPI = 3.14159265358979;
 	
 	mDict.AddVar( "PI", &mPI );	

@@ -36,17 +36,17 @@ GForce::GForce( void* inRefCon ) :
 #if defined(UNIX_X)
 	mPrefs( ".G-Force", true ),
 #endif
-	mWave1( &mT ),
-	mWave2( &mT ),
-	mPal1( &mT, &mIntensityParam ),
-	mPal2( &mT, &mIntensityParam ),
 	mConsoleLines( cDuplicatesAllowed, cOrderImportant ),
 	mLineExpireTimes( cOrderImportant ),
-	mParticles		( cNoDuplicates_CaseInsensitive, cSortLowToHigh ),
-	mColorMaps		( cNoDuplicates_CaseInsensitive, cSortLowToHigh ),
+	mPal1( mT, mIntensityParam ),
+	mPal2( mT, mIntensityParam ),
 	mDeltaFields	( cNoDuplicates_CaseInsensitive, cSortLowToHigh ),
-	mWaveShapes		( cNoDuplicates_CaseInsensitive, cSortLowToHigh )  {
-	
+	mColorMaps		( cNoDuplicates_CaseInsensitive, cSortLowToHigh ),
+	mWaveShapes		( cNoDuplicates_CaseInsensitive, cSortLowToHigh ),
+	mParticles		( cNoDuplicates_CaseInsensitive, cSortLowToHigh ),
+	mWave1( mT ),
+	mWave2( mT )
+{
 	// Do initting...
 	mWind				= 0;
 	mOutPort			= 0;
@@ -54,7 +54,7 @@ GForce::GForce( void* inRefCon ) :
 	mFrameCount			= 0;
 	mT_MS_Base			= EgOSUtils::CurTimeMS();
 	mConsoleExpireTime	=
-	mLastCursorUpdate	= 
+	mLastCursorUpdate	=
 	mLastGetKeys		=
 	mT_MS				= 0;
 	mFrameCountStart	=
@@ -74,7 +74,7 @@ GForce::GForce( void* inRefCon ) :
 	mAtFullScreen		= false;
 	mMouseWillAwaken	= false;
 	mTrackTextDur		= 0;
-	
+
 	mPrefs.Load();
 	if ( mPrefs.GetPref( 'Vers' ) != GFORCE_COMPAT_VERSION ) {
 		mConsoleDelay		= 8;
@@ -92,10 +92,10 @@ GForce::GForce( void* inRefCon ) :
 		mFullscreenDepth	= 8;
 		mFullscreenDevice	= 0;
 		mMaxSize.h			= 30000;
-		mMaxSize.v			= 360;	
+		mMaxSize.v			= 360;
 		mTrackTextPosMode	= 5;
 		mTrackTextSize		= 18;
-		mNormalizeInput		= false;	
+		mNormalizeInput		= false;
 		mNewConfigNotify	= false;
 		mParticlesOn		= true;
 		mKeyMap					.Assign( "TLRY`SNGFZXCQWE,.M[]{}P******!@#$%^&*()1234567890" );
@@ -108,8 +108,8 @@ GForce::GForce( void* inRefCon ) :
 		mTrackMetaText			.Assign( __defaultTTFormat );
 		mParticleDuration		.Assign( "8 + rnd( 15 )" );
 		mParticleProbability	.Assign( ".09/((NUM_PARTICLES+1)^1.66)" );
-		
-		
+
+
 		// Show the welcome msg for a pref rewrite...
 		Println( GFORCE_VERS_STR );
 		Println( "Press '?' for help" );
@@ -146,7 +146,7 @@ GForce::GForce( void* inRefCon ) :
 		mPrefs.GetPref( 'PPrb', mParticleProbability );
 		mPrefs.GetPref( 'KMap', mKeyMap );
 	}
-	
+
 	mPortA.SetTrackTextFont( mTrackFont, mTrackTextSize );
 	mPortB.SetTrackTextFont( mTrackFont, mTrackTextSize );
 
@@ -156,7 +156,7 @@ GForce::GForce( void* inRefCon ) :
 
 
 	mNum_FFT_Steps = 256;
-	
+
 	// Alloc/setup the data we'll have our virtual machines accessing...
 	SetNumSampleBins( mNum_S_Steps );
 	SetNumFFTBins( mNum_FFT_Steps );
@@ -192,13 +192,13 @@ GForce::GForce( void* inRefCon ) :
 	mGF_Palette			= 0;
 	mWave				= 0;
 
-	
+
 	// Look in G-Force's support folders and see what we have to select from...
 	BuildConfigLists();
-	
+
 	mField		= &mField1;
 	mNextField	= &mField2;
-	
+
 	for ( int i = 0; i < 4; i++ )
 		mCurKeys[ i ] = 0;
 }
@@ -224,11 +224,11 @@ GForce::~GForce() {
 	mPrefs.SetPref( 'Kybd', mHandleKeys	);
 	mPrefs.SetPref( 'FS_X', mFullscreenSize.h );
 	mPrefs.SetPref( 'FS_Y', mFullscreenSize.v );
-	mPrefs.SetPref( 'FS_D', mFullscreenDepth );	
+	mPrefs.SetPref( 'FS_D', mFullscreenDepth );
 	mPrefs.SetPref( 'FS_#', mFullscreenDevice );
 	mPrefs.SetPref( 'Norm', mNormalizeInput );
-	mPrefs.SetPref( 'MaxY', mMaxSize.v );	
-	mPrefs.SetPref( 'MaxX', mMaxSize.h );	
+	mPrefs.SetPref( 'MaxY', mMaxSize.v );
+	mPrefs.SetPref( 'MaxX', mMaxSize.h );
 	mPrefs.SetPref( 'TPos', mTrackTextPosMode );
 	mPrefs.SetPref( 'TSze', mTrackTextSize );
 	mPrefs.SetPref( 'TFnt', mTrackFont );
@@ -243,9 +243,9 @@ GForce::~GForce() {
 
 	// Init the track text info
 	NewSong();
-	
-	mPrefs.Store();	
-	
+
+	mPrefs.Store();
+
 }
 
 
@@ -254,7 +254,7 @@ GForce::~GForce() {
 
 void GForce::SetNumSampleBins( long inNumBins ) {
 	float k;
-	
+
 	if ( inNumBins > 0 && inNumBins < 10000 ) {
 		mSampleFcn = (ExprUserFcn*) mSamplesBuf.Dim( sizeof( float ) * inNumBins + sizeof( ExprUserFcn ) + 32 );
 		mNum_S_Steps = inNumBins;
@@ -263,7 +263,7 @@ void GForce::SetNumSampleBins( long inNumBins ) {
 		// A fast lookup table for a sine wave
 		mSine = (float*) mSineBuf.Dim( sizeof( float ) * inNumBins );
 		k =  6.2831853071795 / ( (float) inNumBins );
-		
+
 		for ( int i = 0; i < inNumBins; i++ ) {
 			mSampleFcn -> mFcn[ i ] = 0;
 			mSine[ i ] = sin(  k * ( (float) i ) );
@@ -307,11 +307,11 @@ void GForce::ShowHelp() {
 	s.Assign( "X X X - Prev/Next/Hold DeltaField" );		__setChar( 1, cPrevDeltaField );	__setChar( 3, cNextDeltaField );		__setChar( 5, cToggleFieldShow );		Println( &s );
 	s.Assign( "X X X - Prev/Next/Hold ColorMap" );			__setChar( 1, cPrevColorMap );		__setChar( 3, cNextColorMap );			__setChar( 5, cToggleColorShow );		Println( &s );
 	s.Assign( "X X X - Prev/Next/Hold WaveShape" );			__setChar( 1, cPrevWaveShape );		__setChar( 3, cNextWaveShape );			__setChar( 5, cToggleShapeShow );		Println( &s );
-	
+
 	Println( "" );
 	Println( "Press SHIFT and a number to store the current ColorMap, Waveshape, and" );
-	Println( "   DeltaField, and press just the number to recall them." ); 
-			
+	Println( "   DeltaField, and press just the number to recall them." );
+
 	// Give the user more time than usual since this is help info
 	mConsoleExpireTime += 8000;
 }
@@ -319,7 +319,7 @@ void GForce::ShowHelp() {
 bool GForce::HandleKey( long inChar ) {
 	bool handled = true;
 	int n;
-	
+
 	// See if this keystroke is to be ignored
 	if ( ! mHandleKeys )
 		return false;
@@ -327,19 +327,19 @@ bool GForce::HandleKey( long inChar ) {
 
 	if ( inChar >= 'a' && inChar <= 'z' )
 		inChar = 'A' + ( inChar - 'a' );
-		
+
 	if ( inChar == '/' || inChar == '?' )
 		ShowHelp();
 	else if ( inChar >= ' ' && inChar < 129 ) {
 
 		inChar = mKeyMap.FindNextInstanceOf( 0, inChar );
-		
+
 		switch ( inChar ) {
-			
+
 		case cDispTrackTitle:
 			StartTrackText();
 			break;
-			
+
 		case cGetConfigInfo:
 		  {
 			Print(_("WaveShape:  "));
@@ -367,21 +367,21 @@ bool GForce::HandleKey( long inChar ) {
 			mTemp.Append(_(" frames/sec"));
 			Println( &mTemp );
 			break;
-			
+
 		case cDecMagScale:
 			mMagScale /= 1.2;
 			mTemp.SetFloatValue( mMagScale );
 			Print(_("Amplitude scale: "));
 			Println( &mTemp );
 			break;
-			
+
 		case cIncMagScale:
 			mMagScale *= 1.2;
 			mTemp.SetFloatValue( mMagScale );
 			Print(_("Amplitude scale: "));
 			Println( &mTemp );
 			break;
-			
+
 		case cToggleParticles:
 			mParticlesOn = ! mParticlesOn;
 			if ( mParticlesOn )
@@ -389,11 +389,11 @@ bool GForce::HandleKey( long inChar ) {
 			else
 				Println(_("Particles OFF"));
 			break;
-			
+
 		case cSpawnNewParticle:
 			SpawnNewParticle();
 			break;
-			
+
 		case cDecNumSSteps:
 		case cIncNumSSteps:
 			if ( inChar == cDecNumSSteps )
@@ -413,31 +413,31 @@ bool GForce::HandleKey( long inChar ) {
 			else
 				Println(_("Show names OFF"));
 			break;
-			
+
 		case cToggleNormalize:
 			mNormalizeInput = ! mNormalizeInput;
 			if ( mNormalizeInput )
 				Println(_("Normalize ON"));
 			else
 				Println(_("Normalize OFF"));
-			break;			
+			break;
 
 		case cPrevDeltaField:
 		case cNextDeltaField:
 			n = mFieldPlayList.FindIndexOf( mCurFieldNum );
 			if ( inChar == cPrevDeltaField )
 				n = n + mFieldPlayList.Count() - 2;
-				
+
 			loadDeltaField( mFieldPlayList.Fetch( 1 + n % mFieldPlayList.Count() ) );
-				
+
 			// If the pref says so, display that we're loading a new config
 			if ( mNewConfigNotify ) {
 				Print(_("Loading DeltaField: "));
 				Println( mField -> GetName() );
 			}
-			
+
 			// Turn field slide show off when we change deltafields manually
-			if ( ! mFieldSlideShow ) 
+			if ( ! mFieldSlideShow )
 				break;
 		case cToggleFieldShow:
 			mFieldSlideShow = ! mFieldSlideShow;
@@ -449,14 +449,14 @@ bool GForce::HandleKey( long inChar ) {
 				Println(_("DeltaField slideshow OFF"));
 			break;
 
-			
+
 		case cStartSlideshowAll:
 			mFieldSlideShow = true;		mNextFieldChange = mT;
 			mColorSlideShow = true;		mNextColorChange = mT;
 			mShapeSlideShow = true;		mNextShapeChange = mT;
 			Println(_("All slideshows ON"));
 			break;
-			
+
 		case cStopSlideshowAll:
 			mFieldSlideShow = false;
 			mColorSlideShow = false;
@@ -464,15 +464,15 @@ bool GForce::HandleKey( long inChar ) {
 			Println(_("All slideshows OFF"));
 			break;
 
-			
+
 		case cPrevColorMap:
 		case cNextColorMap:
 			n = mColorPlayList.FindIndexOf( mCurColorMapNum );
 			if ( inChar == cPrevColorMap )
 				n = n + mColorPlayList.Count() - 2;
-				
+
 			loadColorMap( mColorPlayList.Fetch( 1 + n % mColorPlayList.Count() ), false );
-			
+
 			// Turn slide show off when we change colormaps manually
 			if ( ! mColorSlideShow )
 				break;
@@ -485,13 +485,13 @@ bool GForce::HandleKey( long inChar ) {
 			else
 				Println(_("ColorMap slideshow OFF"));
 			break;
-	
+
 		case cPrevWaveShape:
 		case cNextWaveShape:
 			n = mShapePlayList.FindIndexOf( mCurShapeNum );
 			if ( inChar == cPrevWaveShape )
 				n = n + mShapePlayList.Count() - 2;
-				
+
 			loadWaveShape( mShapePlayList.Fetch( 1 + n % mShapePlayList.Count() ), false );
 
 			// Turn slide show off when we change shapes manually
@@ -506,7 +506,7 @@ bool GForce::HandleKey( long inChar ) {
 			else
 				Println(_("WaveShape slideshow OFF"));
 			break;
-			
+
 		case cSetPreset0:	StoreConfigState( 'SET0' );	break;
 		case cSetPreset1:	StoreConfigState( 'SET1' );	break;
 		case cSetPreset2:	StoreConfigState( 'SET2' );	break;
@@ -529,13 +529,13 @@ bool GForce::HandleKey( long inChar ) {
 		case cPreset7:	handled = RestoreConfigState( 'SET7' );	break;
 		case cPreset8:	handled = RestoreConfigState( 'SET8' );	break;
 		case cPreset9:	handled = RestoreConfigState( 'SET9' );	break;
-						
+
 		default:
 			handled = false;
 		}	}
 	else
 		handled = false;
-		
+
 	return handled;
 }
 
@@ -543,7 +543,7 @@ bool GForce::HandleKey( long inChar ) {
 
 void GForce::StoreConfigState( long inParamName ) {
 	UtilStr str;
-	
+
 	str.Assign( mWaveShapeName );		str.Append( ',' );
 	str.Append( mColorMapName );		str.Append( ',' );
 	str.Append( mField -> GetName() );	str.Append( ',' );
@@ -556,16 +556,16 @@ void GForce::StoreConfigState( long inParamName ) {
 bool GForce::RestoreConfigState( long inParamName ) {
 	UtilStr str, configName;
 	long pos, n, found = false;
-	
+
 	if ( mPrefs.GetPref( inParamName, str ) ) {
-		
+
 		// Parse the waveshape config name
 		pos = str.FindNextInstanceOf( 0, ',' );
 		configName.Assign( str.getCStr(), pos - 1 );
 		n = mWaveShapes.FetchBestMatch( configName );
 		loadWaveShape( n, false );
 		mShapeSlideShow = false;
-		
+
 		// Parse the colormap config name
 		str.Trunc( pos, false );
 		pos = str.FindNextInstanceOf( 0, ',' );
@@ -573,16 +573,16 @@ bool GForce::RestoreConfigState( long inParamName ) {
 		n = mColorMaps.FetchBestMatch( configName );
 		loadColorMap( n, false );
 		mColorSlideShow = false;
-		
+
 		// Parse the colormap config name
 		str.Trunc( pos, false );
 		n = mDeltaFields.FetchBestMatch( str );
 		loadDeltaField( n );
-		mFieldSlideShow = false;	
-		
+		mFieldSlideShow = false;
+
 		found = true;
 	}
-	
+
 	return found;
 }
 
@@ -590,7 +590,7 @@ bool GForce::RestoreConfigState( long inParamName ) {
 
 void GForce::ManageColorChanges() {
 	int i;
-	
+
 	// If in a ColorMap transition/morph
 	if ( mColorTransTime > 0 ) {
 
@@ -603,8 +603,8 @@ void GForce::ManageColorChanges() {
 			mNextColorChange = mT + mColorInterval.Evaluate();
 		}
 	}
-	
-	// Time for a color map change?	
+
+	// Time for a color map change?
 	else if ( mT > mNextColorChange && mColorSlideShow ) {
 
 		// Load the next config in the (randomized) config list...
@@ -617,17 +617,17 @@ void GForce::ManageColorChanges() {
 		}
 		loadColorMap( mColorPlayList.Fetch( i + 1 ), true );
 	}
-	
+
 	// Update the screen palette if it's time
 	if ( mT > mNextPaletteUpdate ) {
-	
+
 		// If in a ColorMap transition/morph then we must set mColorTrans, for it's linked into mGF_Palette
 		if ( mColorTransTime > 0 ) {
 			float t = (float) ( mColorTransEnd - mT_MS ) / ( (float) mColorTransTime );
 			mColorTrans = pow( t, TRANSITION_ALPHA );
-		} 
-		
-		// Evaluate the palette at this time	
+		}
+
+		// Evaluate the palette at this time
 		mGF_Palette -> Evaluate( mPalette );
 
 		// Set our offscreen ports to the right palette...
@@ -638,9 +638,9 @@ void GForce::ManageColorChanges() {
 		if ( mAtFullScreen && mFullscreenDepth == 8 ) {
 			mScreen.SetPalette( mPalette );
 			mPortA.PreventActivate( mOutPort );
-			mPortB.PreventActivate( mOutPort ); 
+			mPortB.PreventActivate( mOutPort );
 		}
-					
+
 		// Reevaluate the palette a short time from now
 		mNextPaletteUpdate = mT + .1;
 	}
@@ -650,7 +650,7 @@ void GForce::ManageColorChanges() {
 
 void GForce::ManageShapeChanges() {
 	int i;
-	
+
 	// If in a WaveShape transition/morph
 	if ( mShapeTransTime > 0 ) {
 
@@ -662,7 +662,7 @@ void GForce::ManageShapeChanges() {
 			mShapeTransTime = -1;
 			mNextShapeChange = mT + mShapeInterval.Evaluate();
 		} }
-	
+
 	// Time for a wave shape change?
 	else if ( mT > mNextShapeChange && mShapeSlideShow ) {
 
@@ -682,11 +682,11 @@ void GForce::ManageShapeChanges() {
 
 void GForce::ManageFieldChanges() {
 	long i;
-	
+
 	// If we have have a delta field in mid-calculation, chip away at it...
 	if ( ! mNextField -> IsCalculated() )
 		mNextField -> CalcSome();
-	
+
 	if ( mT > mNextFieldChange && mNextField -> IsCalculated() && mFieldSlideShow ) {
 
 		// Load the next field in the (randomized) field list...
@@ -697,13 +697,13 @@ void GForce::ManageFieldChanges() {
 			mFieldPlayList.Randomize();
 			i = 0;
 		}
-		
+
 		// loadGradField() will initiate computation on mField with a new grad field...
 		loadDeltaField( mFieldPlayList.Fetch( i + 1 ) );
 		DeltaField* temp = mField;
 		mField = mNextField;
 		mNextField = temp;
-		
+
 		// If the pref says so, display that we're loading a new config
 		if ( mNewConfigNotify ) {
 			Print( "Loaded DeltaField: " );
@@ -716,18 +716,18 @@ void GForce::ManageFieldChanges() {
 
 void GForce::ManageParticleChanges() {
 	float rndVar;
-		
+
 	if ( mT > mNextParticleCheck && mParticlesOn ) {
-	
-		// Generate a random probability value. 
+
+		// Generate a random probability value.
 		rndVar = ( (float) rand() ) / ( (float) RAND_MAX );
-		
+
 		// Comparing that to the evalated probability of a new particle being spawned determines if a new one *should* be spawned
 		if ( rndVar < mParticleProbabilityFcn.Evaluate() ) {
-		
+
 			SpawnNewParticle();
 		}
-		
+
 		// Check to make a new particle one second from now
 		mNextParticleCheck = mT + 1;
 	}
@@ -742,13 +742,13 @@ void GForce::DrawParticles( PixPort& inPort ) {
 	particle = (ParticleGroup*) mRunningParticlePool.GetHead();
 	while ( particle ) {
 		next = (ParticleGroup*) particle -> GetNext();
-		
+
 		// When particles stop, move them to a holding/stopped list
 		if ( ! particle -> IsExpired() )
 			particle -> DrawGroup( inPort );
 		else {
 			mStoppedParticlePool.addToHead( particle );
-			
+
 			// Update the var that holds how many particles are running (and is accessible in the PPrb expr)
 			mNumRunningParticles = mRunningParticlePool.shallowCount();
 		}
@@ -763,10 +763,10 @@ void GForce::DrawParticles( PixPort& inPort ) {
 
 void GForce::RecordZeroSample( long inCurTime ) {
 	int i;
-	
-	for ( i = 0; i < mNum_S_Steps; i++ ) 
+
+	for ( i = 0; i < mNum_S_Steps; i++ )
 		mSampleFcn -> mFcn[ i ] = 0;
-		
+
 	RecordSample( inCurTime );
 }
 
@@ -777,19 +777,19 @@ void GForce::RecordSample( long inCurTime, float* inFourier, long inNumBins ) {
 	long w, s, n;
 	float sample;
 	ExprUserFcn* fcn;
-		
+
 	// Now write the sample to memory, adjusted for amplitude...
-	fcn = (ExprUserFcn*) mSampleFcn; 
+	fcn = (ExprUserFcn*) mSampleFcn;
 	fcn -> mNumFcnBins = mNum_S_Steps;
-		
+
 	for ( s = 0; s < mNum_S_Steps; s++ ) {
-	
+
 		sample = 0;
 		for ( w = 0; w < inNumBins; w++ ) {
 			n = ( 2.42322211 * w + 1.9 ) * ((float) s) + 1.23231121211 * w;
 			sample += inFourier[ w ] * mSine[ n % mNum_S_Steps ];
 		}
-			
+
 		fcn -> mFcn[ s ] = sample;
 	}
 
@@ -803,23 +803,23 @@ void GForce::IdleMonitor() {
 	float pollDelay;
 	float secsUntilSleep = mScrnSaverDelay - ( mT - mLastActiveTime );
 	Point pt;
-	
+
 	// Calc time till next kybd poll (Don't waste time checking the kybd unless we've been idle a while)
 	if ( IsFullscreen() )
 		pollDelay = .6;
-		
+
 	// Don't bother rapildly checking the kybd until we're really close to going into screen saver mode
 	else if ( secsUntilSleep < 90 )
 		pollDelay = secsUntilSleep / 120.0;
 	else
 		pollDelay = 10;
-		
+
 	// If it's time to poll for activity...
 	if ( mT > mLastKeyPollTime + pollDelay ) {
-	
+
 		mLastKeyPollTime = mT;
 
-		// Check the mouse pos and record it as active if its been moved.  	
+		// Check the mouse pos and record it as active if its been moved.
 		EgOSUtils::GetMouse( pt );
 		if ( pt.h != mLastMousePt.h || pt.v != mLastMousePt.v || kybdPress ) {
 			mLastMousePt		= pt;
@@ -830,7 +830,7 @@ void GForce::IdleMonitor() {
 		if ( ! mAtFullScreen && mT - mLastActiveTime > mScrnSaverDelay ) {
 			mMouseWillAwaken = true;
 		}
-	}	
+	}
 }
 
 
@@ -839,36 +839,36 @@ void GForce::RecordSample( long inCurTime, float* inSound, float inScale, long i
 	float mag, sum;
 	int i, n;
 	ExprUserFcn* fcn;
-			
-	// Only use/process bins we'll actually use 
+
+	// Only use/process bins we'll actually use
 	if ( inNumBins > mNum_S_Steps )
 		inNumBins = mNum_S_Steps;
-		
 
-	
+
+
 	// Calc a 1/RMS avg value...
 	if ( mNormalizeInput ) {
 
 		// Find an RMS amplitude for the sample
 		for ( sum = 0.0001, i = 0; i < inNumBins; i++ ) {
-			mag = inSound[ i ];		
+			mag = inSound[ i ];
 			sum += mag * mag;
 		}
 		inScale = mMagScale * .009 * ( (float) inNumBins ) / ( sqrt( sum ) ); }
 	else
 		inScale *= mMagScale;
-	
+
 
 	// Now write the sample to memory, adjusted for amplitude...
-	fcn = (ExprUserFcn*) mSampleFcn; 
+	fcn = (ExprUserFcn*) mSampleFcn;
 	fcn -> mNumFcnBins = inNumBins;
 	for ( i = 0; i < inNumBins; i++ ) {
-		mag = inSound[ i ];		
+		mag = inSound[ i ];
 		fcn -> mFcn[ i ] = inSound[ i ] * inScale;
 	}
-	
+
 	XFloatList::GaussSmooth( 1.3, inNumBins, fcn -> mFcn );
-	
+
 	// Flatten the ends of the sample...
 	n = inNumBins / 20 + 1;
 	if ( n <= inNumBins ) {
@@ -882,12 +882,12 @@ void GForce::RecordSample( long inCurTime, float* inSound, float inScale, long i
 	// Now write the FFT data to memory, adjusted for amplitude...
 	fcn = (ExprUserFcn*) mFFTFcn;
 	fcn -> mNumFcnBins = inFFTNumBins;
-	
+
 	for ( i = 0; i < inFFTNumBins; i++ ) {
 		fcn -> mFcn[ i ] = inFFT[ i ] * inFFTScale;
 	}
 
-	
+
 	RecordSample( inCurTime );
 }
 
@@ -899,12 +899,12 @@ void GForce::RecordSample( long inCurTime ) {
 	bool drewTitleText = false;
 	long intensity;
 	float t;
-	
+
 	if ( &mPortA == mCurPort )
 		mCurPort = &mPortB;
-	else 
+	else
 		mCurPort = &mPortA;
-		
+
 	// All the waveshape virtual machines are linked to our time index
 	mT_MS = inCurTime - mT_MS_Base;
 	mT = ( (float) inCurTime ) / 1000.0;
@@ -924,12 +924,12 @@ void GForce::RecordSample( long inCurTime ) {
 		mPortB.Fade( mPortA, mField -> GetField() );
 	else
 		mPortA.Fade( mPortB, mField -> GetField() );
-	
+
         /* This redraws the image */
 
 	// Draw all the current particles
 	DrawParticles( *mCurPort );
-	
+
 	// Draw the current wave shape for the current music sample playing
 	// If there's a morph going, drawing is a mix of both waves
 	if ( mShapeTransTime > 0 ) {
@@ -944,18 +944,18 @@ void GForce::RecordSample( long inCurTime ) {
 		if ( mTrackTextStartFcn.Evaluate() > 0 )
 			StartTrackText();
 	}
-	
+
 	// If we already have a t.t. draw in progress, draw the text in the (full) foreground color
 	if ( mTrackTextDur > 0 ) {
-	
+
 		// From 0 to 1, how far are we into the text display interval?
 		t = ( mT - mTrackTextStartTime ) / mTrackTextDur;
-		
+
 		// Decrease the text intensity thru time
 		intensity = 255 * ( 1.2 - .3*t );
 		if ( intensity > 255 )
 			intensity = 255;
-		
+
 		mCurPort -> SetTextColor( mPalette[ intensity ] );
 		mCurPort -> SetTrackTextFont();
 		mCurPort -> DrawText( mTrackTextPos.h, mTrackTextPos.v, mTrackText );
@@ -963,7 +963,7 @@ void GForce::RecordSample( long inCurTime ) {
 
 	// Draw the console text to the offscreen image.  Then copy the image to the OS out port
 	if ( mT_MS < mConsoleExpireTime ) {
-		
+
 		// To ensure the console text is readable, we erase it when we're done
 		mCurPort -> SetTextMode( SRC_XOR );
 		mCurPort -> SetTextColor( mPalette[ 255 ] );
@@ -976,19 +976,19 @@ void GForce::RecordSample( long inCurTime ) {
 	else
 		DrawFrame();
 
-	// We need to avoid text all bluring together so we overwrite the foreground text we just drew 
+	// We need to avoid text all bluring together so we overwrite the foreground text we just drew
 	//  with text of a lower intensity...
 	if ( mTrackTextDur > 0 ) {
-		
+
 		// Is the text is about to expire? if not, continue drawing.
 		if ( t <= 1 ) {
-		
-			intensity = 255.5 * pow( t, 1.5 );  
+
+			intensity = 255.5 * pow( t, 1.5 );
 			mCurPort -> SetTextColor( mPalette[ intensity ] );
 			mCurPort -> SetTrackTextFont();
 			mCurPort -> DrawText( mTrackTextPos.h, mTrackTextPos.v, mTrackText ); }
 		else {
-		
+
 			// The text's duration is up so turn the draw flag off
 			mTrackTextDur = 0;
 		}
@@ -1002,7 +1002,7 @@ void GForce::RecordSample( long inCurTime ) {
 		mFrameCountStart = mT_MS;
 		mFrameCount = 0;
 	}
-		
+
 	if ( mT_MS - mLastCursorUpdate > 3000 ) {
 		mLastCursorUpdate = mT_MS;
 		if ( IsFullscreen() )
@@ -1028,13 +1028,13 @@ void GForce::DrawFrame() {
 	// If we're fullscreen, follow the API (the screen may need to do something to finish)
 	if ( mScreen.IsFullscreen() )
 		mOutPort = mScreen.BeginFrame();
-		
+
 	// Someone may have asked to clear the GF window/pane
 	if ( mNeedsPaneErased ) {
 		ErasePane();
 		mNeedsPaneErased = false;
 	}
-		
+
 	// Blt our offscreen world to the output device
 	Rect r;
 	r.left = r.top = 0;
@@ -1066,7 +1066,7 @@ void GForce::SetOutVideoBuffer( unsigned char *inVideoBuffer ) {
 	for ( i = 1; i <= specList.Count(); i++ ) {								\
 		playList.Add( i );													\
 	}																		\
-	playList.Randomize();	
+	playList.Randomize();
 
 
 void GForce::BuildConfigLists() {
@@ -1079,7 +1079,7 @@ void GForce::BuildConfigLists() {
 	__loadFolder( DATADIR "/GForceWaveShapes", mWaveShapes, mShapePlayList )
 
 	__loadFolder( DATADIR "/GForceColorMaps", mColorMaps, mColorPlayList )
-	
+
 	__loadFolder( DATADIR "/GForceParticles", mParticles, mParticlePlayList )
 }
 
@@ -1114,39 +1114,39 @@ Vers=100\
 
 
 
-	
+
 void GForce::loadColorMap( long inColorMapNum, bool inAllowMorph ) {
 	const CEgFileSpec* spec;
 	int ok = false, vers;
 	ArgList args;
-			
+
 	// Fetch the spec for our config file or folder
 	spec = mColorMaps.FetchSpec( inColorMapNum );
-	
+
 	if ( spec ) {
  		mCurColorMapNum = inColorMapNum;
-	
+
 		ok = ConfigFile::Load( spec, args );
 		if ( ok ) {
-			vers = args.GetArg( 'Vers' ); 
+			vers = args.GetArg( 'Vers' );
 			ok = vers >= 100 && vers < 110;
 			spec -> GetFileName( mColorMapName );
 		}
 	}
- 
-	
+
+
 	if ( ! ok ) {
 		args.SetArgs( __COLOR_FACTORY );
 		mColorMapName.Assign( "<Factory Default>" );
 	}
-	
+
 	// If the pref says so, display that we're loading a new config
 	if ( mNewConfigNotify ) {
 		Print( "Loaded ColorMap: " );
 		Println( &mColorMapName );
 	}
-		
-	
+
+
 	// If first time load, don't do any transition/morph, otherwise set up the morph
 	if ( mGF_Palette == 0 || ! inAllowMorph ) {
 		mGF_Palette = &mPal1;
@@ -1156,7 +1156,7 @@ void GForce::loadColorMap( long inColorMapNum, bool inAllowMorph ) {
 		mNextColorChange = mT + mColorInterval.Evaluate(); }
 	else {
 		mNextPal -> Assign( args );
-		mGF_Palette -> SetupTransition( mNextPal, &mColorTrans );
+		mGF_Palette -> SetupTransition( *mNextPal, mColorTrans );
 
 		// Calculate how long this transition/morph will be
 		mColorTransTime	= EgOSUtils::Rnd( mTransitionLo * 1000, mTransitionHi * 1000 );
@@ -1178,26 +1178,26 @@ void GForce::loadDeltaField( long inFieldNum ) {
 
 	// Fetch the spec for our config file or folder
 	spec = mDeltaFields.FetchSpec( inFieldNum );
-	
+
 	if ( spec ) {
- 		
+
 		// Know what to put a check mark next to in the popup menu
 		mCurFieldNum = inFieldNum;
-	
+
 		ok = ConfigFile::Load( spec, args );
 		if ( ok ) {
-			vers = args.GetArg( 'Vers' ); 
+			vers = args.GetArg( 'Vers' );
 			ok = vers >= 100 && vers < 110;
 			spec -> GetFileName( name );
 		}
 	}
-	
+
 	if ( ! ok ) {
 		args.SetArgs( __FIELD_FACTORY );
 		name.Assign( "<Factory Default>" );
 	}
 
-	// Initiate recomputation of mField	
+	// Initiate recomputation of mField
 	mField -> Assign( args, name );
 	mNextFieldChange = mT + mFieldInterval.Evaluate();
 }
@@ -1210,10 +1210,10 @@ void GForce::loadWaveShape( long inShapeNum, bool inAllowMorph ) {
 	const CEgFileSpec* spec;
 	int ok = false, vers;
 	ArgList	args;
-			
+
 	// Fetch the spec for our config file or folder
 	spec = mWaveShapes.FetchSpec( inShapeNum );
-	
+
 	if ( spec ) {
 		// Know what to put a check mark next to in the popup menu
 		mCurShapeNum = inShapeNum;
@@ -1221,25 +1221,25 @@ void GForce::loadWaveShape( long inShapeNum, bool inAllowMorph ) {
 		ok = ConfigFile::Load( spec, args );
 
 		if ( ok ) {
-			vers = args.GetArg( 'Vers' ); 
+			vers = args.GetArg( 'Vers' );
 			ok = vers >= 100 && vers < 110;
 			spec -> GetFileName( mWaveShapeName );
 		}
 	}
 
-		
+
 	if ( ! ok ) {
 		args.SetArgs( __SHAPE_FACTORY );
 		mWaveShapeName.Assign( "<Factory Default>" );
 	}
-	
+
 	// If the pref says so, display that we're loading a new config
 	if ( mNewConfigNotify ) {
 		Print( "Loaded WaveShape: " );
 		Println( &mWaveShapeName );
 	}
- 
-	
+
+
 	// If first time load, don't do any transition/morph, otherwise set up the morph
 	if ( mWave == 0 || ! inAllowMorph ) {
 		mWave		= &mWave1;
@@ -1250,7 +1250,7 @@ void GForce::loadWaveShape( long inShapeNum, bool inAllowMorph ) {
 	else {
 		mNextWave -> Load( args, mNum_S_Steps );
 		mWave -> SetupTransition( mNextWave );
-		
+
 		// Calculate how long this transition/morph will take
 		mShapeTransTime	= EgOSUtils::Rnd( mTransitionLo * 1000, mTransitionHi * 1000 );
 		mShapeTransEnd	= mT_MS + mShapeTransTime;
@@ -1269,20 +1269,20 @@ void GForce::loadParticle( long inParticleNum ) {
 	ArgList args;
 	ParticleGroup* newParticle;
 	UtilStr name;
-			
+
 	// Fetch the spec for our config file or folder
 	spec = mParticles.FetchSpec( inParticleNum );
-	
+
 	if ( spec ) {
-	
+
 		mCurParticleNum = inParticleNum;
 		ok = ConfigFile::Load( spec, args );
 		if ( ok ) {
-			vers = args.GetArg( 'Vers' ); 
+			vers = args.GetArg( 'Vers' );
 			ok = vers >= 100 && vers < 110;
-			
+
 			spec -> GetFileName( name );
-				
+
 			// If the pref says so, display that we're loading a new config
 			if ( mNewConfigNotify ) {
 				Print( "Loaded Particle: " );
@@ -1293,41 +1293,41 @@ void GForce::loadParticle( long inParticleNum ) {
 
 
 	if ( ok ) {
-	
+
 		// Avoid having to reallocate mem...
 		newParticle = (ParticleGroup*) mStoppedParticlePool.GetHead();
-		
+
 		// If there weren'y any particles already expired, make a new instance
 		if ( ! newParticle )
 			newParticle = new ParticleGroup( &mT, (ExprUserFcn**) &mSampleFcn );
 
 		// Add the new particle to the group that gets executed each frame
-		newParticle -> mTitle.Assign( name ); 
+		newParticle -> mTitle.Assign( name );
 		mRunningParticlePool.addToHead( newParticle );
-		
+
 		// The GF particle probability fcn has access to these variables
 		mNumRunningParticles = mRunningParticlePool.shallowCount();
 		mLastParticleStart = mT;
 
 		// Determine how long this particle will be around
 		newParticle -> SetDuration( mParticleDurationFcn.Evaluate() );
-		
+
 		// Tell the particle to compile it's config text
 		newParticle -> Load( args );
 	}
 }
-	
+
 
 void GForce::NewSong() {
-	
+
 	mTrackText.Assign( mTrackMetaText );
 	mTrackText.Replace( "\\r", "\r" );
 	mTrackText.Replace( "#ARTIST#", mArtist.getCStr(), false );
 	mTrackText.Replace( "#ALBUM#", mAlbum.getCStr(), false );
 	mTrackText.Replace( "#TITLE#", mSongTitle.getCStr(), false );
-	
+
 	CalcTrackTextPos();
-		
+
 	mLastSongStart = mT;
 }
 
@@ -1339,9 +1339,9 @@ void GForce::CalcTrackTextPos() {
 	int32_t y = mCurPort -> GetY();
 
 	mCurPort -> TextRect( mTrackText.getCStr(), width, height );
-	
+
 	switch ( mTrackTextPosMode ) {
-	
+
 		case 1:		// Upper-left corner
 			mTrackTextPos.h = 5;
 			mTrackTextPos.v = mTrackTextSize + 5;
@@ -1351,15 +1351,15 @@ void GForce::CalcTrackTextPos() {
 			mTrackTextPos.h = 5;
 			mTrackTextPos.v = y - height - 3;
 			break;
-			
+
 		case 3:		// Centered
 			mTrackTextPos.h = ( x - width )  / 2;
 			mTrackTextPos.v = ( y - height ) / 2;
 			break;
-			
+
 		default:	// Random Position
-			mTrackTextPos.h = EgOSUtils::Rnd( 5, x - width ); 
-			mTrackTextPos.v = EgOSUtils::Rnd( mTrackTextSize + 5, y - height ); 
+			mTrackTextPos.h = EgOSUtils::Rnd( 5, x - width );
+			mTrackTextPos.v = EgOSUtils::Rnd( mTrackTextSize + 5, y - height );
 			break;
 	}
 }
@@ -1368,7 +1368,7 @@ void GForce::CalcTrackTextPos() {
 
 void GForce::SpawnNewParticle() {
 	int i;
-	
+
 	// Load the next particle in the (randomized) play list...
 	i = mParticlePlayList.FindIndexOf( mCurParticleNum );
 
@@ -1377,19 +1377,19 @@ void GForce::SpawnNewParticle() {
 		mParticlePlayList.Randomize();
 		i = 0;
 	}
-	
+
 	// loadGradField() will initiate computation on mField with a new grad field...
 	loadParticle( mParticlePlayList.Fetch( i + 1 ) );
 }
 
 
 
-	
+
 
 void GForce::Print( char* inStr ) {
 	long num = mConsoleLines.Count();
 	UtilStr* lastLine = mConsoleLines.Fetch( num );
-	
+
 	// Append the text to the console text..
 	if ( lastLine )
 		lastLine -> Append( inStr );
@@ -1397,10 +1397,10 @@ void GForce::Print( char* inStr ) {
 		mConsoleLines.Add( inStr );
 		num = 1;
 	}
-		
+
 	// Setup when this line will be deleted
 	mLineExpireTimes[ num - 1 ] = mT_MS + mConsoleLineDur * 1000;
-		
+
 	// Make the console visible for the next few seconds
 	mConsoleExpireTime = mT_MS + mConsoleDelay * 1000;
 }
@@ -1408,7 +1408,7 @@ void GForce::Print( char* inStr ) {
 
 void GForce::Println( char* inStr ) {
 	Print( inStr );
-	
+
 	mConsoleLines.Add( "" );
 }
 
@@ -1420,17 +1420,17 @@ void GForce::DrawConsole() {
 	long x = mDispRect.left + 5;
 	long top = PIX_PER_LINE + 3;
 	UtilStr* theLine;
-	
+
 	if ( mConsoleLines.Count() == 0 )
 		return;
-		
+
 	// Delete console lines that are too old...
 	while ( mLineExpireTimes.Fetch( 1 ) < mT_MS && num > 0 ) {
 		mConsoleLines.Remove( 1 );
 		mLineExpireTimes.RemoveElement( 1 );
 		num--;
 	}
-	
+
 	// Check if console runs off the display rect...
 	if ( num * PIX_PER_LINE > mDispRect.bottom - mDispRect.top - top)
 		start = num - ( mDispRect.bottom - mDispRect.top - top) / PIX_PER_LINE;
@@ -1457,18 +1457,15 @@ void GForce::ErasePane() {
 
 void GForce::SetWinPort( WindowPtr inWin, const Rect* inRect ) {
 	Rect r;
-	
+
 	// mDoingSetPortWin == true is a signal that another thread is in SetWinPort()
 	if ( mDoingSetPortWin )
 		return;
 	mDoingSetPortWin = true;
 	mWind = inWin;
-		
+
 	if ( inRect )
 		r = *inRect;
-
-	int32_t x = r.right - r.left;
-	int32_t y = r.bottom - r.top;
 
 	SetPort( 0, r, false );
 
@@ -1477,7 +1474,7 @@ void GForce::SetWinPort( WindowPtr inWin, const Rect* inRect ) {
 }
 
 
-	
+
 
 void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
 	int32_t x = inRect.right - inRect.left;
@@ -1485,11 +1482,11 @@ void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
 
 	mOutPort = inPort;
 	mAtFullScreen = inFullScreen;
-	
+
 
 	// The pane rect is the rect within inPort th plugin frame occupies
 	mPaneRect = inRect;
-	
+
 	// mDispRect is the rect within inPort G-Force is drawing in (ex, the letterbox)
 	// Change the disp rect if the desired size exceeds the pixel ceiling
 	mDispRect = inRect;
@@ -1498,15 +1495,15 @@ void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
 	mPortA.Init( x, y, 8 );
 	mPortB.Init( x, y, 8 );
 	mCurPort = &mPortA;
-	
+
 	// Erase/init our output window
 	mNeedsPaneErased = true;
-	
+
 	// If setting port for the first time...
 	if ( mWave == 0 ) {
 		loadWaveShape( mShapePlayList.Fetch( 1 ), false );
 		loadColorMap( mColorPlayList.Fetch( 1 ), false );
-		
+
 		// loadGradField() will initiate computation on mField with a new grad field...
 		loadDeltaField( mFieldPlayList.Fetch( 1 ) );
 		DeltaField* temp = mField;
@@ -1518,7 +1515,7 @@ void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
 	// The grad fields have to know the pixel dimentions
 	mField1.SetSize( x, y, mPortA.GetRowSize() );
 	mField2.SetSize( x, y, mPortA.GetRowSize() );
-	
+
 	// The track text may depend on the port size
 	CalcTrackTextPos();
 

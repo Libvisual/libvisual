@@ -13,19 +13,19 @@ drawing drawing draws an intensity of 1.  */
 
 class GF_Palette {
 
-	public: 
-							GF_Palette( float* inT, float* inIntensity );
-						
-		// Compile the 'H', 'S', and 'V' expressions.	
+	public:
+		GF_Palette( float& inT, float& inIntensity );
+
+		// Compile the 'H', 'S', and 'V' expressions.
 		void				Assign( const ArgList& inArgs );
-		
-				
+
+
 		// Evaluates the palette based on the current time
 		void				Evaluate( PixPalEntry outPalette[ 256 ] );
-		
-		void				SetupTransition( GF_Palette* inDest, float* inC );
 
-	
+		void				SetupTransition( GF_Palette& inDest, float& inC );
+
+
 	protected:
 		float*				mIntensity, mPI;
 		Expression			mH, mS, mV;

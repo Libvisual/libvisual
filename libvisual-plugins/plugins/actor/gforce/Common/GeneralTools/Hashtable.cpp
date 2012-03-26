@@ -8,7 +8,7 @@
 long Hashtable::sTableSizes[ NUM_SIZES ] = { 23, 97, 397, 797, 3203, 6421, 12853, 51437, 205759, 411527, 1646237, 3292489, 6584983, 13169977, 52679969 };
 
 #define _MIN( a, b )	( (a) > (b) ? (b) : (a) )
-	
+
 
 Hashtable::Hashtable( bool inKeysOwned, int inLoadFactor ) {
 	mKeysOwned		= inKeysOwned;
@@ -17,54 +17,56 @@ Hashtable::Hashtable( bool inKeysOwned, int inLoadFactor ) {
 	mNumEntries		= 0;
 	mThreshold		= 0;
 	mLoadFactor		= inLoadFactor;
-	
+
 	// Don't let the client kill himself with a bad load factor
 	if ( mLoadFactor > 100 )
 		mLoadFactor = 100;
 	else if ( mLoadFactor < 10 )
 		mLoadFactor = 10;
-		
+
 	Rehash();
 }
 
 
 Hashtable::~Hashtable() {
 	RemoveAll();
-	
+
 	if ( mTable )
 		delete []mTable;
 }
 
-	
+
 void Hashtable::Rehash() {
-	long		i, index, oldSize = mTableSize;
-	KEntry*		temp, *entry;
-	KEntry**	oldTable = mTable;
-	
+	long          index;
+	unsigned long oldSize = mTableSize;
+	KEntry *      temp;
+	KEntry *      entry;
+	KEntry**      oldTable = mTable;
+
 	// Find the next bigger table size
-	for ( i = 0; mTableSize <= oldSize; i++ )
+	for (unsigned long i = 0; mTableSize <= oldSize; i++ )
 		mTableSize = sTableSizes[ i ];
 
-	
-	// Alloc the new table and make it empty	
+
+	// Alloc the new table and make it empty
 	mTable = new KEntry*[ mTableSize ];
-	for ( i = 0; i < mTableSize; i++ )
+	for (unsigned long i = 0; i < mTableSize; i++ )
 		mTable[ i ] = 0;
-	
+
 	// Rehash all the old values into the new table
-	for ( i = 0; i < oldSize; i++ ) {
+	for (unsigned long i = 0; i < oldSize; i++ ) {
 		for ( entry = oldTable[ i ]; entry; ) {
 			index = entry -> mKey % mTableSize;
 			temp = entry -> mNext;
 			entry -> mNext = mTable[ index ];
 			mTable[ index ]	= entry;
 			entry = temp;
-		}	
+		}
 	}
 
 	// Set the new size thet we'll rehash at
 	mThreshold = mLoadFactor * mTableSize / 100;
-	
+
 	// We don't need the old table anymore
 	if ( oldTable )
 		delete []oldTable;
@@ -82,14 +84,14 @@ void* Hashtable::put( long inKey, const Hashable* inHKey, void* inValue ) {
 	// See if we need to make the hash table bigger
 	if ( mNumEntries >= mThreshold )
 		Rehash();
-	
+
 	// If we already have the key, replace the value and pass the old one back
 	entry = fetchEntry( inKey, inHKey );
 	if ( entry ) {
 		oldVal			= entry -> mValue;
 		if ( mKeysOwned && inHKey )
 			delete inHKey; }
-	else { 
+	else {
 		oldVal				= 0;
 		index				= ((unsigned long) inKey) % mTableSize;
 		entry				= new KEntry;
@@ -99,9 +101,9 @@ void* Hashtable::put( long inKey, const Hashable* inHKey, void* inValue ) {
 		mTable[ index ]		= entry;
 		mNumEntries++;
 	}
-	
+
 	entry -> mValue		= inValue;
-	
+
 	return oldVal;
 }
 
@@ -110,7 +112,7 @@ void* Hashtable::put( long inKey, const Hashable* inHKey, void* inValue ) {
 bool Hashtable::Get( long inKey, void** outValue ) const {
 	KEntry*	entry = fetchEntry( inKey, 0 );
 
-	if ( entry && outValue ) 
+	if ( entry && outValue )
 		*outValue = entry -> mValue;
 
 	return entry != 0;
@@ -120,7 +122,7 @@ bool Hashtable::Get( long inKey, void** outValue ) const {
 bool Hashtable::Get( const Hashable* inKey, void** outValue ) const {
 	KEntry*	entry = fetchEntry( inKey -> Hash(), inKey );
 
-	if ( entry && outValue ) 
+	if ( entry && outValue )
 		*outValue = entry -> mValue;
 
 	return entry != 0;
@@ -130,12 +132,11 @@ bool Hashtable::Get( const Hashable* inKey, void** outValue ) const {
 
 void Hashtable::GetValues( XPtrList& outValues ) {
 	KEntry** entryP = mTable, *entry;
-	int i;
-	
+
 	outValues.RemoveAll();
 	outValues.Dim( 4 );
-	
-	for ( i = 0; i < mTableSize; i++ ) {
+
+	for (unsigned long i = 0; i < mTableSize; i++ ) {
 		entry = *entryP;
 		while ( entry ) {
 			outValues.Add( entry -> mValue );
@@ -149,12 +150,11 @@ void Hashtable::GetValues( XPtrList& outValues ) {
 
 void Hashtable::GetKeys( XPtrList& outKeys ) {
 	KEntry** entryP = mTable, *entry;
-	int i;
-	
+
 	outKeys.RemoveAll();
 	outKeys.Dim( 4 * NumEntries() );
-	
-	for ( i = 0; i < mTableSize; i++ ) {
+
+	for (unsigned long i = 0; i < mTableSize; i++ ) {
 		entry = *entryP;
 		while ( entry ) {
 			outKeys.Add( ( entry -> mHashable ) ? entry -> mHashable : (const Hashable*) entry -> mKey );
@@ -182,7 +182,7 @@ KEntry*	Hashtable::fetchEntry( long inKey, const Hashable* inHKey ) const {
 		}
 		entry = entry -> mNext;
 	}
-	
+
 	return 0;
 }
 
@@ -192,11 +192,10 @@ KEntry*	Hashtable::fetchEntry( long inKey, const Hashable* inHKey ) const {
 
 
 void Hashtable::RemoveAll() {
-	long i;
 	KEntry*	entry, *temp;
-	
+
 	// Step theu the dict table and delete all the KEntries
-	for ( i = 0; i < mTableSize; i++ ) {
+	for ( unsigned long i = 0; i < mTableSize; i++ ) {
 		for ( entry = mTable[ i ]; entry; ) {
 			if ( mKeysOwned && entry -> mHashable )
 				delete entry -> mHashable;
@@ -224,14 +223,14 @@ void* Hashtable::remove( long inKey, const Hashable* inHKey ) {
 				isEqual = inHKey -> Equals( entry -> mHashable );
 			else
 				isEqual = true;
-				
+
 			if ( isEqual ) {
 				if ( mKeysOwned && entry -> mHashable )
 					delete entry -> mHashable;
 
-				if ( prev == 0 ) 
+				if ( prev == 0 )
 					mTable[ index ] = 0;
-				else 
+				else
 					prev -> mNext = entry -> mNext;
 				retVal = entry -> mValue;
 				delete entry;
@@ -242,7 +241,7 @@ void* Hashtable::remove( long inKey, const Hashable* inHKey ) {
 		prev = entry;
 		entry = entry -> mNext;
 	}
-	
+
 	return 0;
 }
 
@@ -250,12 +249,12 @@ void* Hashtable::remove( long inKey, const Hashable* inHKey ) {
 
 long& Hashtable::operator[] ( const long inKey ) {
 	KEntry*	entry = fetchEntry( inKey, 0 );
-	
+
 	if ( ! entry ) {
 		Put( inKey, 0 );
 		entry = fetchEntry( inKey, 0 );
 	}
-	
+
 	return (long&) entry -> mValue;
 }
 
@@ -263,12 +262,12 @@ long& Hashtable::operator[] ( const long inKey ) {
 
 void*& Hashtable::operator[] ( const void* inKey ) {
 	KEntry*	entry = fetchEntry( (long) inKey, 0 );
-	
+
 	if ( ! entry ) {
 		Put( (long) inKey, 0 );
 		entry = fetchEntry( (long) inKey, 0 );
 	}
-	
+
 	return entry -> mValue;
 }
 
@@ -277,22 +276,22 @@ void*& Hashtable::operator[] ( const void* inKey ) {
 
 
 
-void Hashtable::Rank( XPtrList& outKeys, CompFunctionT inCompFcn, long inNumToRank ) {
-	long i, n = NumEntries();
+void Hashtable::Rank( XPtrList& outKeys, CompFunctionT inCompFcn, unsigned long inNumToRank ) {
+	unsigned long n = NumEntries();
 	KEntry** entryP = mTable, *entry;
 	const void **p, **temp = new const void*[ 2 * n ];
-	
+
 	if ( inNumToRank < 0 )
 		inNumToRank = n;
 	inNumToRank = _MIN( inNumToRank, n );
 
 	// To rank, we must sort by value, with a tag on each element of its key
 	p = temp;
-	for ( i = 0; i < mTableSize; i++ ) {
+	for ( unsigned long i = 0; i < mTableSize; i++ ) {
 		entry = *entryP;
 		while ( entry ) {
-			*p = entry -> mValue;  
-			p++; 
+			*p = entry -> mValue;
+			p++;
 			*p = ( entry -> mHashable ) ? entry -> mHashable : (const void*) entry -> mKey;
 			p++;
 			entry = entry -> mNext;
@@ -304,18 +303,18 @@ void Hashtable::Rank( XPtrList& outKeys, CompFunctionT inCompFcn, long inNumToRa
 	// Default to long-long ranking
 	if ( ! inCompFcn )
 		inCompFcn = sLongComparitor;
-	
+
 	// Sort the floats
 	qsort( temp, n, 8, inCompFcn );
-	
+
 	// Put the sorted results in the destination
 	outKeys.RemoveAll();
 	p = temp + 1;
-	for ( i = 0; i < n; i++ ) {
+	for ( unsigned long i = 0; i < n; i++ ) {
 		outKeys.Add( *p );
 		p += 2;
 	}
-	
+
 	// Cleanup
 	delete []temp;
 }

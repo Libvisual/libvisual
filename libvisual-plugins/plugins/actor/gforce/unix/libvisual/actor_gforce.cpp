@@ -1,5 +1,5 @@
 /* Libvisual-gforce - GForce interface plugin for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -58,17 +58,18 @@ typedef struct {
 	GForce		*gGF;
 } GForcePrivate;
 
-extern "C" int lv_gforce_init (VisPluginData *plugin);
-extern "C" int lv_gforce_cleanup (VisPluginData *plugin);
-extern "C" int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height);
-extern "C" int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events);
-extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin);
-extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+VISUAL_C_LINKAGE int lv_gforce_init (VisPluginData *plugin);
+VISUAL_C_LINKAGE int lv_gforce_cleanup (VisPluginData *plugin);
+VISUAL_C_LINKAGE int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height);
+VISUAL_C_LINKAGE int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+VISUAL_C_LINKAGE int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events);
+VISUAL_C_LINKAGE VisPalette *lv_gforce_palette (VisPluginData *plugin);
+VISUAL_C_LINKAGE int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-extern "C" const VisPluginInfo *get_plugin_info (int *count)
+VISUAL_C_LINKAGE
+const VisPluginInfo *get_plugin_info (int *count)
 {
 	static VisActorPlugin actor[1];
 	static VisPluginInfo info[1];
@@ -99,7 +100,8 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	return (const VisPluginInfo *) info;
 }
 
-extern "C" int lv_gforce_init (VisPluginData *plugin)
+VISUAL_C_LINKAGE
+int lv_gforce_init (VisPluginData *plugin)
 {
 	GForcePrivate *priv;
 	Rect r;
@@ -132,7 +134,8 @@ extern "C" int lv_gforce_init (VisPluginData *plugin)
 	return 0;
 }
 
-extern "C" int lv_gforce_cleanup (VisPluginData *plugin)
+VISUAL_C_LINKAGE
+int lv_gforce_cleanup (VisPluginData *plugin)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -148,7 +151,8 @@ extern "C" int lv_gforce_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-extern "C" int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
+VISUAL_C_LINKAGE
+int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -173,7 +177,8 @@ extern "C" int lv_gforce_requisition (VisPluginData *plugin, int *width, int *he
 	return 0;
 }
 
-extern "C" int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+VISUAL_C_LINKAGE
+int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	Rect r;
@@ -186,7 +191,8 @@ extern "C" int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int 
 	return 0;
 }
 
-extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
+VISUAL_C_LINKAGE
+int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
@@ -217,7 +223,8 @@ extern "C" int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin)
+VISUAL_C_LINKAGE
+VisPalette *lv_gforce_palette (VisPluginData *plugin)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	PixPalEntry *GFpal;
@@ -234,12 +241,13 @@ extern "C" VisPalette *lv_gforce_palette (VisPluginData *plugin)
 	return &priv->pal;
 }
 
-extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+VISUAL_C_LINKAGE
+int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer pcmbuf;
 	VisBuffer freqbuf;
-	int i, j = 0, ns;
+	int i;
 	long time;
 	float gSoundBuf[SND_BUF_SIZE];
 	float gFFTBuf[FFT_BUF_SIZE];
@@ -263,21 +271,6 @@ extern "C" int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	time = EgOSUtils::CurTimeMS ();
 	priv->gGF->RecordSample (time, gSoundBuf, .000043, NUMSAMPLES, gFFTBuf, 1, FFT_BUF_SIZE);
 
-	/* Overlap with a color tab */
-
-	/* Some color debug to study palettes */
-/*
-	for (i = 0; i < 256; i++) {
-		uint8_t *buf = (uint8_t *) visual_video_get_pixels (video);
-		for (j = 0; j < 20; j++) {
-			buf[(video->pitch * j) + i] = i;
-		}
-
-		buf[(video->pitch * ((priv->pal.colors[i].r / 4) + 20)) + i] = 255;
-		buf[(video->pitch * ((priv->pal.colors[i].g / 4) + 20 + 64)) + i] = 255;
-		buf[(video->pitch * ((priv->pal.colors[i].b / 4) + 20 + 128)) + i] = 255;
-	}
-*/
 	return 0;
 }
 

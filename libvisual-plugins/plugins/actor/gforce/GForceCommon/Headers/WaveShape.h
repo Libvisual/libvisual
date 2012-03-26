@@ -13,7 +13,7 @@ class WaveShape {
 	public:
 		
 		
-								WaveShape( float* inTPtr );
+								WaveShape( float& inTPtr );
 
 		void					SetMagFcn( ExprUserFcn** inMagFcn );
 		

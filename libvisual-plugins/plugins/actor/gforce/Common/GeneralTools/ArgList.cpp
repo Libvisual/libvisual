@@ -85,15 +85,15 @@ long ArgList::NumArgs() const {
 
 
 
-Arg* ArgList::FetchArg( long inID ) const {
+Arg* ArgList::FetchArg( unsigned long inID ) const {
 	Arg* arg = mHeadArg;
-	
+
 	while ( arg ) {
 		if ( arg -> GetID() == inID )
 			return arg;
 		arg = arg -> mNext;
 	}
-	
+
 	return 0;
 }
 
@@ -102,7 +102,7 @@ Arg* ArgList::FetchArg( long inID ) const {
 
 
 
-void ArgList::DeleteArg( long inArgID ) {
+void ArgList::DeleteArg( unsigned long inArgID ) {
 	Arg* prev = 0, *arg = mHeadArg;
 	
 	while ( arg ) {
@@ -123,7 +123,7 @@ void ArgList::DeleteArg( long inArgID ) {
 
 
 
-void ArgList::SetArg( long inArgID, long inArg ) {
+void ArgList::SetArg( unsigned long inArgID, long inArg ) {
 	Arg* arg = FetchArg( inArgID );
 	if ( arg )
 		arg -> Assign( inArg );
@@ -133,12 +133,12 @@ void ArgList::SetArg( long inArgID, long inArg ) {
 
 
 
-void ArgList::SetArg( long inArgID, const UtilStr& inArg ) {
+void ArgList::SetArg( unsigned long inArgID, const UtilStr& inArg ) {
 	SetArg( inArgID, inArg.getCStr() );
 }
 
 
-void ArgList::SetArg( long inArgID, const char* inArgStr ) {
+void ArgList::SetArg( unsigned long inArgID, const char* inArgStr ) {
 	Arg* arg = FetchArg( inArgID );
 	
 	if ( arg )
@@ -151,7 +151,7 @@ void ArgList::SetArg( long inArgID, const char* inArgStr ) {
 
 
 
-bool ArgList::GetArg( long inArgID, UtilStr& outStr ) const {
+bool ArgList::GetArg( unsigned long inArgID, UtilStr& outStr ) const {
 	Arg* 	arg		= FetchArg( inArgID );
 	
 	outStr.Wipe();
@@ -169,7 +169,7 @@ bool ArgList::GetArg( long inArgID, UtilStr& outStr ) const {
 }
 
 
-long ArgList::GetArraySize( long inID ) const {
+long ArgList::GetArraySize( unsigned long inID ) const {
 	long i = 0;
 	
 	while ( FetchArg( IndexedID2ID( inID, i ) ) ) {
@@ -204,7 +204,7 @@ long ArgList::IndexedID2ID( long inBaseID, long inIndex ) {
 
 
 
-const UtilStr* ArgList::GetStr( long inArgID ) const {
+const UtilStr* ArgList::GetStr( unsigned long inArgID ) const {
 	Arg* 	arg		= FetchArg( inArgID );
 	
 	if ( arg ) {
@@ -218,7 +218,7 @@ const UtilStr* ArgList::GetStr( long inArgID ) const {
 
 
 
-double ArgList::GetFloat( long inArgID ) const {
+double ArgList::GetFloat( unsigned long inArgID ) const {
 	Arg* 	arg		= FetchArg( inArgID );
 		
 	if ( arg ) {
@@ -234,7 +234,7 @@ double ArgList::GetFloat( long inArgID ) const {
 
 
 	
-bool ArgList::GetArg( long inArgID, bool& outArg ) const {
+bool ArgList::GetArg( unsigned long inArgID, bool& outArg ) const {
 	Arg* arg = FetchArg( inArgID );
 	bool		found = false;
 	
@@ -251,7 +251,7 @@ bool ArgList::GetArg( long inArgID, bool& outArg ) const {
 
 
 
-bool ArgList::GetArg( long inArgID, long& outArg ) const {
+bool ArgList::GetArg( unsigned long inArgID, long& outArg ) const {
 	Arg* 		arg 	= FetchArg( inArgID );
 	bool		found 	= false;
 		
@@ -269,7 +269,7 @@ bool ArgList::GetArg( long inArgID, long& outArg ) const {
 	
 	
 
-long ArgList::GetArg( long inArgID ) const {
+long ArgList::GetArg( unsigned long inArgID ) const {
 	Arg* 		arg 	= FetchArg( inArgID );
 		
 	if ( arg ) {
