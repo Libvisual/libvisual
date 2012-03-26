@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <libvisual/libvisual.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,8 +36,6 @@
 #include <time.h>
 
 #include <GL/gl.h>
-
-#include <libvisual/libvisual.h>
 
 const VisPluginInfo *get_plugin_info (int *count);
 
@@ -57,7 +56,7 @@ typedef struct {
 
 	float			 gdata[256];
 
-	struct timeval		 tv_past;
+	VisTimer		 timer;
 
 	/* Config */
 	int			 num_stars;
@@ -147,6 +146,8 @@ static int lv_madspin_init (VisPluginData *plugin)
 	priv->zrot = 0.0f;
 	priv->total = 0;
 	priv->frame = 0;
+
+	visual_timer_init (&priv->timer);
 
 	visual_param_container_add_many (paramcontainer, params);
 
@@ -332,9 +333,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 	int ampl = 200;
 	float elapsed_time;
 
-	struct timeval tv_now;
-
-	gettimeofday (&priv->tv_past, NULL);
+	visual_timer_start (&priv->timer);
 
 	for (i = 1; i < 50; i++)
 		priv->total += priv->gdata[i];
@@ -444,9 +443,8 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 
 	glLoadIdentity ();
 
-	gettimeofday (&tv_now, NULL);
+	elapsed_time = (float) visual_timer_elapsed_usecs (&priv->timer) / 1000000;
 
-	elapsed_time = ((float) tv_now.tv_usec - (float) priv->tv_past.tv_usec) / 1000000;
 	if (elapsed_time < 0)
 		elapsed_time = 0;
 
