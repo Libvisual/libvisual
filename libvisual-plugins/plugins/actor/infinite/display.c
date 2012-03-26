@@ -2,13 +2,13 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <math.h> 
+#include <math.h>
 
 #include "renderer.h"
 #include "display.h"
 #include "main.h"
 
-#define wrap(a) ( a < 0 ? 0 : ( a > 255 ? 255 : a )) 
+#define wrap(a) ( a < 0 ? 0 : ( a > 255 ? 255 : a ))
 #define assign_max(p,a) ( *p = ( *p > a ? *p : a ))
 #define PI 3.14159
 
@@ -53,7 +53,7 @@ void _inf_change_color(InfinitePrivate *priv, int t2,int t1,int w)
 	}
 }
 
-static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field) 
+static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 {
 	int i,j;
 	int add_dest=0,add_src;
@@ -67,7 +67,7 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 	 * every buffer containing one element, the different weights, the upper and lower part of
 	 * the interpolation coords etc, with this setup it's MUCH easier to vectorize it damn hard.
 	 */
-	
+
 	/* FIXME ok this sucked, is een mislukte actie geweest zie ik, omdat ik mmx regs te kort kwam
 	 * zat ik met restore problemen, waardoor het uiteindelijk even snel werd, moet de hele blur routine
 	 * van deze plugin from scratch doen... */
@@ -79,7 +79,7 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 		int plugwidth = priv->plugwidth;
 		uint8_t *ptr_surf = priv->surface1;
 		int aflag = 0xffff;
-	
+
 		/* Prep general used regs, mm6 as empty (un)packer, mm7 to contain plugwidth for packed words
 		 * and we use mm5 to contain 0x0000ffff0000ffff */
 		__asm __volatile
@@ -90,10 +90,10 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 
 			 "\n\t psllq $32, %%mm6"
 			 "\n\t por %%mm6, %%mm7"
-			 
+
 			 "\n\t psllq $32, %%mm4"
 			 "\n\t por %%mm4, %%mm5"
-			 
+
 			 "\n\t pxor %%mm6, %%mm6"
 			 "\n\t pxor %%mm4, %%mm4"
 			 :: [plugw] "m" (plugwidth)
@@ -107,7 +107,7 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 
 				coords[0] = interpol[0].coord;
 				coords[1] = interpol[1].coord;
-			
+
 //				return;
 //				add_src = (interpol->coord & 0xFFFF) * priv->plugwidth + (interpol->coord >> 16); // pack and do in mmx!
 
@@ -122,26 +122,24 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 						"\n\t pand %%mm5, %%mm1" /* 0xffff coord elems */
 						"\n\t pmullw %%mm7, %%mm1" /* multiply with plugwidth */
 						"\n\t paddd %%mm0, %%mm1" /* Ading >> 16 coords. mm1 now contains the right addsrc offset */
-				
+
 						"\n\t movd %[surf1], %%mm0"
 						"\n\t movd %[surf1], %%mm4"
 						"\n\t psllq $32, %%mm0"
 						"\n\t por %%mm4, %%mm0" /* Contains the ptr_surf 2 times */
 						"\n\t paddd %%mm1, %%mm0" /* Now contains the right ptr_pix2 value */
-					
+
 						"\n\t movq %%mm0, %[pix]"
 						:: [interpol] "m" (*(coords))
 						, [addsrc2] "m" (add_src2)
 						, [surf1] "m" (ptr_surf)
 						, [pix] "m" (*ptr_pix2));
-//				printf ("%x %x\n", ptr_pix2[0], ptr_pix2[1]);
-//				printf ("%p %p\n", ptr_pix2[0], ptr_pix2[1]);
 				int color1 = 0, color2 = 0;
 /*				int color1 = (*(ptr_pix2[0])
 						+ *(ptr_pix2[0] + 1)
 						+ *(ptr_pix2[0] + priv->plugwidth)
 						+ *(ptr_pix2[0] + priv->plugwidth + 1));
-				
+
 				int color2 = (*(ptr_pix2[1])
 						+ *(ptr_pix2[1] + 1)
 						+ *(ptr_pix2[1] + priv->plugwidth)
@@ -149,7 +147,7 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 */
 				priv->surface2[add_dest] = color1;
 				priv->surface2[add_dest + 1] = color2;
-				
+
 				add_dest += 2;
 			}
 		}
@@ -216,7 +214,7 @@ static void _inf_plot1(InfinitePrivate *priv, int x,int y,int c)
 static void _inf_plot2(InfinitePrivate *priv, int x,int y,int c)
 {
 	int ty;
-	
+
 	if (x>0 && x<priv->plugwidth-3 && y>0 && y<priv->plugheight-3) {
 		ty = y*priv->plugwidth;
 		assign_max(&(priv->surface1)[x+ty],c);
@@ -265,7 +263,7 @@ static void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int
 			SWAP(y1, y2);
 		}
 
-		if (y1 > y2) 
+		if (y1 > y2)
 			dxy = -1;
 		else
 			dxy = 1;
@@ -277,7 +275,7 @@ static void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int
 				cxy -= dx;
 			}
 		 	_inf_plot1(priv, x1, y1, c);
-		}		
+		}
 	}
 }
 
@@ -333,7 +331,7 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect, float data[2
 			if (y2<0)
 				y2=0;
 	}
-	
+
 	halfheight = priv->plugheight >> 1;
 	halfwidth  = priv->plugwidth >> 1;
 	for (i=step;i<priv->plugwidth;i+=step) {
@@ -344,13 +342,13 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect, float data[2
 		y2=((data[0][(i<<9)/priv->plugwidth/density_lines] * 256)*
 		    current_effect->spectral_amplitude*priv->plugheight) * (1.0 / 4096.0);
 
-		switch (current_effect->mode_spectre) { 
+		switch (current_effect->mode_spectre) {
 		case 0:
 			_inf_line(priv, i-step,halfheight+shift+old_y2,
 			     i,halfheight+shift+y2,
 			     current_effect->spectral_color);
 			break;
-		case 1: 
+		case 1:
 			_inf_line(priv, i-step,halfheight+shift+old_y1,
 			     i,halfheight+shift+y1,
 			     current_effect->spectral_color);
@@ -370,7 +368,7 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect, float data[2
 			     current_effect->spectral_color);
 			_inf_line(priv, halfwidth-shift+old_y2,i-step,
 			     halfwidth-shift+y2,i,
-			     current_effect->spectral_color);	
+			     current_effect->spectral_color);
 			break;
 		case 3:
 			if (y1<0)
@@ -387,7 +385,7 @@ void _inf_spectral(InfinitePrivate *priv, t_effect* current_effect, float data[2
 			     halfheight + sinw.f[i-step] * (shift+old_y2),
 			     halfwidth  - cosw.f[i]      * (shift+y2),
 			     halfheight + sinw.f[i]      * (shift+y2),
-			     current_effect->spectral_color);			
+			     current_effect->spectral_color);
 			break;
 		}
 	}
@@ -406,7 +404,7 @@ void _inf_curve(InfinitePrivate *priv, t_effect* current_effect)
 	float v,vr;
 	float x,y;
 	float amplitude=(float)current_effect->curve_amplitude/256;
-	
+
 	for (j=0;j<2;j++) {
 		v=80;
 		vr=0.001;
@@ -420,10 +418,10 @@ void _inf_curve(InfinitePrivate *priv, t_effect* current_effect)
 			k++;
 		}
 	}
-	current_effect->x_curve=k;  
+	current_effect->x_curve=k;
 }
 
-void _inf_init_display(InfinitePrivate *priv) 
+void _inf_init_display(InfinitePrivate *priv)
 {
 	int allocsize;
 	priv->plugwidth = priv->plugwidth;
