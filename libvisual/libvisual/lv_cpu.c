@@ -60,6 +60,10 @@
 #include <windows.h>
 #endif
 
+#if defined(VISUAL_OS_ANDROID)
+#include <cpu-features.h>
+#endif
+
 static VisCPU __lv_cpu_caps;
 static int __lv_cpu_initialized = FALSE;
 
@@ -343,9 +347,31 @@ void visual_cpu_initialize ()
 	__lv_cpu_caps.type = VISUAL_CPU_TYPE_X86;
 #elif defined(VISUAL_ARCH_POWERPC)
 	__lv_cpu_caps.type = VISUAL_CPU_TYPE_POWERPC;
+#elif defined(VISUAL_ARCH_ARM)
+	__lv_cpu.caps.type = VISUAL_CPU_TYPE_ARM;
 #else
 	__lv_cpu_caps.type = VISUAL_CPU_TYPE_OTHER;
 #endif
+
+#if defined(VISUAL_OS_ANDROID) && defined(VISUAL_ARCH_ARM)
+	if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM) {
+		uint64_t type = android_getCpuFeatures ();
+
+		if (type & ANDROID_CPU_ARM_FEATURE_ARMv7)
+			__lv_cpu_caps.hasARMv7 = 1;
+
+		if (type & ANDROID_CPU_ARM_FEATURE_VFPv3)
+			__lv_cpu_caps.hasVFPv3 = 1;
+
+		if (type & ANDROID_CPU_ARM_FEATURE_NEON)
+			__lv_cpu_caps.hasNeon = 1;
+
+		if(type & ANDROID_CPU_ARM_FEATURE_LDREX_STREX)
+			__lv_cpu_caps.hasLDREX_STREX = 1;
+
+		__lv_cpu_caps.nrcpu = android_getCpuCount();
+	}
+#endif /* VISUAL_OS_ANDROID && VISUAL_ARCH_ARM */
 
 	/* Count the number of CPUs in system */
 #if !defined(VISUAL_OS_WIN32) && !defined(VISUAL_OS_UNKNOWN) && defined(_SC_NPROCESSORS_ONLN)
@@ -438,11 +464,17 @@ void visual_cpu_initialize ()
 	__lv_cpu_caps.enabledSSE	= __lv_cpu_caps.hasSSE;
 	__lv_cpu_caps.enabledSSE2	= __lv_cpu_caps.hasSSE2;
 	__lv_cpu_caps.enabled3DNow	= __lv_cpu_caps.has3DNow;
-	__lv_cpu_caps.enabled3DNowExt	= __lv_cpu_caps.has3DNowExt;
-	__lv_cpu_caps.enabledAltiVec	= __lv_cpu_caps.hasAltiVec;
+	__lv_cpu_caps.enabled3DNowExt    = __lv_cpu_caps.has3DNowExt;
+	__lv_cpu_caps.enabledAltiVec     = __lv_cpu_caps.hasAltiVec;
+	__lv_cpu_caps.enabledARMv7       = __lv_cpu_caps.hasARMv7;
+	__lv_cpu_caps.enabledVFPv3       = __lv_cpu_caps.hasVFPv3;
+	__lv_cpu_caps.enabledNeon        = __lv_cpu_caps.hasNeon;
+	__lv_cpu_caps.enabledLDREX_STREX = __lv_cpu_caps.hasLDREX_STREX;
 
 	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", __lv_cpu_caps.nrcpu);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", __lv_cpu_caps.type);
+
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: cacheline %d", __lv_cpu_caps.cacheline);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: TSC %d", __lv_cpu_caps.hasTSC);
@@ -452,7 +484,14 @@ void visual_cpu_initialize ()
 	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE2 %d", __lv_cpu_caps.hasSSE2);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNow %d", __lv_cpu_caps.has3DNow);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNowExt %d", __lv_cpu_caps.has3DNowExt);
+#elif defined(VISUAL_ARCH_POWERPC)
 	visual_log (VISUAL_LOG_DEBUG, "CPU: AltiVec %d", __lv_cpu_caps.hasAltiVec);
+#elif defined(VISUAL_ARCH_ARM)
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM v7 %d", __lv_cpu_caps.hasARMv7);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM VFPv3 %d", __lv_cpu_caps.hasVFPv3);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM NEON %d", __lv_cpu_caps.hasNeon);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM LDREX_STREX %d", __lv_cpu_caps.hasLDREX_STREX);
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	__lv_cpu_initialized = TRUE;
 }
@@ -526,6 +565,38 @@ int visual_cpu_get_altivec ()
 		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
 
 	return __lv_cpu_caps.enabledAltiVec;
+}
+
+int visual_cpu_get_armv7 (void)
+{
+    if (__lv_cpu_initialized == FALSE)
+	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	return __lv_cpu_caps.enabledARMv7;
+}
+
+int visual_cpu_get_vfpv3 (void)
+{
+    if (__lv_cpu_initialized == FALSE)
+	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	return __lv_cpu_caps.enabledVFPv3;
+}
+
+int visual_cpu_get_neon (void)
+{
+    if (__lv_cpu_initialized == FALSE)
+        visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	return __lv_cpu_caps.enabledNeon;
+}
+
+int visual_cpu_get_ldrex_strex (void)
+{
+    if (__lv_cpu_initialized == FALSE)
+	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	return __lv_cpu_caps.enabledLDREX_STREX;
 }
 
 int visual_cpu_set_tsc (int enabled)
@@ -628,6 +699,58 @@ int visual_cpu_set_altivec (int enabled)
 		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
 
 	__lv_cpu_caps.enabledAltiVec = enabled;
+
+	return VISUAL_OK;
+}
+
+int visual_cpu_set_armv7 (int enabled)
+{
+	if (__lv_cpu_initialized == FALSE)
+		visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	if (__lv_cpu_caps.hasARMv7 == FALSE)
+		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
+
+	__lv_cpu_caps.enabledARMv7 = enabled;
+
+	return VISUAL_OK;
+}
+
+int visual_cpu_set_vfpv3 (int enabled)
+{
+    if (__lv_cpu_initialized == FALSE)
+        visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	if (__lv_cpu_caps.hasVFPv3 == FALSE)
+	    return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
+
+	__lv_cpu_caps.enabledVFPv3 = enabled;
+
+	return VISUAL_OK;
+}
+
+int visual_cpu_set_neon (int enabled)
+{
+	if (__lv_cpu_initialized == FALSE)
+		visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	if (__lv_cpu_caps.hasNeon == FALSE)
+		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
+
+	__lv_cpu_caps.enabledNeon = enabled;
+
+	return VISUAL_OK;
+}
+
+int visual_cpu_set_ldrex_strex (int enabled)
+{
+	if (__lv_cpu_initialized == FALSE)
+		visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+
+	if (__lv_cpu_caps.hasLDREX_STREX == FALSE)
+		return -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED;
+
+	__lv_cpu_caps.enabledLDREX_STREX = enabled;
 
 	return VISUAL_OK;
 }

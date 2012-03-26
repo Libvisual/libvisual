@@ -43,6 +43,7 @@ typedef enum {
 	VISUAL_CPU_TYPE_SPARC,		/**< Running on the sparc architecture. */
 	VISUAL_CPU_TYPE_X86,		/**< Running on the X86 architecture. */
 	VISUAL_CPU_TYPE_POWERPC,	/**< Running on the PowerPC architecture. */
+	VISUAL_CPU_TYPE_ARM,		/**< Running on the ARM architecture, */
 	VISUAL_CPU_TYPE_OTHER		/**< Running on an architecture that is not specified. */
 } VisCPUType;
 
@@ -69,7 +70,11 @@ struct _VisCPU {
 	int		hasSSE2;		/**< The CPU has the sse2 feature. */
 	int		has3DNow;		/**< The CPU has the 3dnow feature. */
 	int		has3DNowExt;		/**< The CPU has the 3dnowext feature. */
-	int		hasAltiVec;		/**< The CPU has the altivec feature. */
+	int		hasAltiVec;     /**< The CPU has the altivec feature. */
+	int		hasARMv7;       /**<The CPU has the ARM v7 feature. */
+	int		hasVFPv3;       /**<The CPU has the ARM VFPv3 feature. */
+	int		hasNeon;        /**<The CPU has the ARM Neon feature. */
+	int		hasLDREX_STREX; /**<The CPU has ARM LDREX_STREX feature. */
 
 	int		enabledTSC;		/**< The tsc feature is enabled. */
 	int		enabledMMX;		/**< The mmx feature is enabled. */
@@ -79,20 +84,27 @@ struct _VisCPU {
 	int		enabled3DNow;		/**< The 3dnow feature is enabled. */
 	int		enabled3DNowExt;	/**< The 3dnowext feature is enabled. */
 	int		enabledAltiVec;		/**< The altivec feature is enabled. */
+	int		enabledVFPv3;       /**< The ARM hardware floats feature is enabled. */
+	int		enabledARMv7;	    /**< The ARM v7 feature is enabled. */
+	int		enabledNeon;        /**< The ARM Neon feature is enabled. */
+	int		enabledLDREX_STREX; /**< The ARM LDREX_STREX feature is enabled. */
 };
 
 
 /**
- * Initializes the VisCPU caps structure by detecting the CPU features and flags.
+ * Initializes the VisCPU caps structure by detecting the CPU features
+ * and flags.
  *
- * This is normally called by visual_init() and is needed by visual_mem_initialize() in order to
- * detect the most optimal mem_copy and mem_set functions.
+ * This is normally called by visual_init() and is needed by
+ * visual_mem_initialize() in order to detect the most optimal
+ * mem_copy and mem_set functions.
  */
 void visual_cpu_initialize (void);
 
 /**
- * Function to get the VisCPU caps initialized by visual_cpu_initialize(), this contains information
- * regarding the CPU features and flags.
+ * Function to get the VisCPU caps initialized by
+ * visual_cpu_initialize(), this contains information regarding the
+ * CPU features and flags.
  *
  * @return The VisCPU caps structure.
  */
@@ -155,68 +167,124 @@ int visual_cpu_get_3dnow2 (void);
 int visual_cpu_get_altivec (void);
 
 /**
- * Function to set if the tsc feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to retrieve if the ARM v7 feature is enabled.
+ *
+ * @return Whether altivec is enabled or not.
+ */
+int visual_cpu_get_armv7 (void);
+
+/**
+ * Function to retrieve if the ARM VFPv3 feature is enabled.
+ *
+ * @return Whether altivec is enabled or not.
+ */
+int visual_cpu_get_vfpv3 (void);
+
+/**
+ * Function to retrieve if the ARM Neon feature is enabled.
+ *
+ * @return Whether altivec is enabled or not.
+ */
+int visual_cpu_get_neon (void);
+
+/**
+ * Function to retrieve if the ARM LDREX_STREX feature is enabled.
+ *
+ * @return Whether altivec is enabled or not.
+ */
+int visual_cpu_get_ldrex_strex (void);
+
+/**
+ * Function to set if the tsc feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_tsc (int enabled);
 
 /**
- * Function to set if the MMX feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the MMX feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_mmx (int enabled);
 
 /**
- * Function to set if the MMX2 feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the MMX2 feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_mmx2 (int enabled);
 
 /**
- * Function to set if the SSE feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the SSE feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_sse (int enabled);
 
 /**
- * Function to set if the SSE2 feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the SSE2 feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_sse2 (int enabled);
 
 /**
- * Function to set if the 3DNow feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the 3DNow feature should be enabled or not, this
+ * function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_3dnow (int enabled);
 
 /**
- * Function to set if the 3dnowext feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the 3dnowext feature should be enabled or not,
+ * this function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_3dnow2 (int enabled);
 
 /**
- * Function to set if the altivec feature should be enabled or not, this function will also check
- * if the feature is actually available.
+ * Function to set if the altivec feature should be enabled or not,
+ * this function will also check if the feature is actually available.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
  */
 int visual_cpu_set_altivec (int enabled);
+
+/**
+ * Function to set if the ARM VFPv3 (hardware floats) feature should
+ * be enabled or not, this function will also check if the feature is
+ * actually available.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
+ */
+int visual_cpu_set_armv7 (int enabled);
+
+/**
+ * Function to set if the ARM VFPv3 (hardware floats) feature should
+ * be enabled or not, this function will also check if the feature is
+ * actually available.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
+ */
+int visual_cpu_set_vfpv3 (int enabled);
+
+/**
+ * Function to set if the ARM Neon feature should be enabled or not,
+ * this function will also check if the feature is actually available.
+ *
+ * @return VISUAL_OK on succes, -VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED on failure.
+ */
+int visual_cpu_set_neon (int enabled);
+
+int visual_cpu_set_ldrex_strex (int enabled);
 
 VISUAL_END_DECLS
 
