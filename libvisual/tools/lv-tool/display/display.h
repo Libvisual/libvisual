@@ -69,6 +69,7 @@ struct _SADisplay {
 
 #include "stdout_driver.h"
 #include "sdl_driver.h"
+#include "glx_driver.h"
 
 
 
