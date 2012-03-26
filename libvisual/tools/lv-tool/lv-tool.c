@@ -74,6 +74,51 @@ SADisplayDriverDescription all_display_drivers[] =
 
 /******************************************************************************/
 
+/** print info about libvisual plugin */
+static void _print_plugin_info(VisPluginData *p)
+{
+   /** @todo: make this work
+    VisPluginInfo *i = visual_plugin_get_info(p);
+    printf(
+        "Plugin: \"%s\" (%s)\n"
+        "\tauthor:\t%s\n"
+        "\tversion:\t%s\n"
+        "\tlicense:\t%s\n"
+        "%s\n"
+        "\%s\n\n",
+        i->name, i->plugname,
+        i->author, i->version, i->license,
+        i->about, i->help); */
+}
+
+
+/** print help for plugins */
+static void _print_plugin_help()
+{
+    VisList *list;
+        
+    /* print inputs */
+    
+        
+    /* print actors */
+    if(!(list = visual_actor_get_list()))
+    {
+        fprintf(stderr, "No actors found\n");
+    }
+    else
+    {
+        int n = 0;
+        VisActor *a;
+        while((a = visual_list_get(list, n++)))
+        {
+            VisPluginData *p = visual_actor_get_plugin(a);
+            _print_plugin_info(p);
+        }
+    }
+        
+    /* print morphs */
+}
+
 /** print commandline help */
 static void _print_help(char *name)
 {
@@ -81,7 +126,7 @@ static void _print_help(char *name)
            "Usage: %s [options]\n\n"
            "Valid options:\n"
            "\t--help\t\t\t-h\t\tThis help text\n"
-           /*"\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"*/
+           "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
            "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
            "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
            "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
@@ -132,7 +177,7 @@ static int _parse_args(int argc, char *argv[])
             /* --plugin-help */
             case 'p':
             {
-                //_print_plugin_help();
+                _print_plugin_help();
                 return EXIT_FAILURE;
             }
 
@@ -270,20 +315,21 @@ int main (int argc, char **argv)
         framerate = DEFAULT_FPS;
 
 
-        /* parse commandline arguments */
-        if(_parse_args(argc, argv) != EXIT_SUCCESS)
-                return EXIT_FAILURE;
 
         /* print warm welcome */
         fprintf(stderr, "%s v0.1\n", argv[0]);
 
         /**
          * initialize libvisual once (this is meant to be called only once,
-                                      * visual_init() after visual_quit() results in undefined state) 
-                                      */
+         * visual_init() after visual_quit() results in undefined state) 
+         */
         visual_log_set_verbosity(VISUAL_LOG_DEBUG);
         visual_init (&argc, &argv);
 
+
+        /* parse commandline arguments */
+        if(_parse_args(argc, argv) != EXIT_SUCCESS)
+                goto _m_exit;
 
         /* create new VisBin for video output */
         VisBin *bin;
@@ -515,12 +561,12 @@ int main (int argc, char **argv)
 
 
 
-        _m_exit_display:
+_m_exit_display:
                 /* cleanup display stuff */
                 display_set_fullscreen(display, FALSE, TRUE);
                 display_close(display);
 
-        _m_exit:        
+_m_exit:        
                 /* cleanup resources allocated by visual_init() */
                 visual_quit ();
 
