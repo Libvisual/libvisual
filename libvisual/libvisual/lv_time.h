@@ -319,7 +319,7 @@ static inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
 }
 
 /* FIXME use uint64_t here, make sure type exists */
-static inline unsigned long long visual_timer_tsc_get_returned ()
+static inline unsigned long long visual_timer_tsc_get_returned (void)
 {
 	uint32_t lo, hi;
 

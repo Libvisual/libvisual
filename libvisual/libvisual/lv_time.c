@@ -186,7 +186,7 @@ int visual_time_usleep (unsigned long microseconds)
 #endif /* !VISUAL_OS_WIN32 */
 }
 
-VisTimer *visual_timer_new ()
+VisTimer *visual_timer_new (void)
 {
 	VisTimer *timer;
 
