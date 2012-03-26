@@ -405,20 +405,17 @@ int main (int argc, char **argv)
                                 case VISUAL_EVENT_MOUSEBUTTONDOWN:
                                 {
                                         /* switch to next actor */
-                                        const char *next_name;
-                                        if(!(next_name = visual_actor_get_next_by_name(actor->plugin->info->name)))
-                                        {
-                                                next_name = DEFAULT_ACTOR;
-                                        }
-                                        strncpy(actor_name, next_name, sizeof(actor_name)-1);
+                                        v_cycleActor(1);
+                                        v_cycleMorph();
 
                                         visual_bin_set_morph_by_name(bin, morph_name);
                                         visual_bin_switch_actor_by_name(bin, actor_name);
 
                                         /* get new actor */
-                                        actor = visual_bin_get_actor(bin);
+                                        //actor = visual_bin_get_actor(bin);
 
                                         /* handle depth of new actor */
+/*
                                         depthflag = visual_actor_get_supported_depth(actor);
                                         if(depthflag == VISUAL_VIDEO_DEPTH_GL)
                                                 visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
@@ -431,7 +428,7 @@ int main (int argc, char **argv)
                                                         visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
                                         }
                                         bin->depthforcedmain = bin->depth;
-
+*/
                                         break;
                                 }
 
@@ -491,7 +488,12 @@ int main (int argc, char **argv)
 
                 if(visual_bin_depth_changed(bin)) 
                 {
-                        visual_bin_sync(bin, TRUE);
+                    display_lock(display);
+                    display_create(display, depth, vidoptions, width, height, TRUE);
+                    VisVideo *video = display_get_video(display);
+                    visual_bin_set_video(bin, video);
+                    visual_bin_sync(bin, TRUE);
+                    display_unlock(display);
                 }
 
 
