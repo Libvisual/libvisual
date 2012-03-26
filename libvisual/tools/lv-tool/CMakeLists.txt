@@ -1,30 +1,49 @@
-INCLUDE_DIRECTORIES(
+SET(INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_BINARY_DIR}
-  ${SDL_INCLUDE_DIR}
-  ${OPENGL_INCLUDE_DIR}
-  ${X11_INCLUDE_DIR}
-)
-
-LINK_DIRECTORIES(
 )
 
 SET(SOURCES
   lv-tool.c
   display/display.c
   display/stdout_driver.c
-  display/sdl_driver.c
-  display/glx_driver.c
-  display/lv_x11_key.c
 )
+
+SET(LINK_LIBS "")
+
+# SDL driver
+IF(SDL_FOUND)
+  LIST(APPEND INCLUDE_DIRS ${SDL_INCLUDE_DIR})
+  LIST(APPEND SOURCES display/sdl_driver.c)
+  LIST(APPEND LINK_LIBS ${SDL_LIBRARY})
+ENDIF(SDL_FOUND)
+
+# GLX driver
+IF(X11_FOUND AND X11_xf86vmode_FOUND AND OPENGL_FOUND)
+  LIST(APPEND SOURCES
+    display/glx_driver.
+    display/lv_x11_key.c
+  )
+
+  LIST(APPEND INCLUDE_DIRS
+    ${X11_INCLUDE_DIR}
+    ${X11_xf86vmode_INCLUDE_PATH}
+    ${OPENGL_INCLUDE_DIR}
+  )
+
+  LIST(APPEND LINK_LIBS
+    ${X11_LIBRARIES}
+    ${OPENGL_gl_LIBRARY}
+  )
+ENDIF()
+
+INCLUDE_DIRECTORIES(${INCLUDE_DIRS})
 
 ADD_EXECUTABLE(lv-tool ${SOURCES})
 
 TARGET_LINK_LIBRARIES(lv-tool
   libvisual
-  ${SDL_LIBRARY}
-  ${OPENGL_LIBRARY}
-  ${X11_LIBRARY}
+  ${LINK_LIBS}
 )
 
 INSTALL(TARGETS lv-tool RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
