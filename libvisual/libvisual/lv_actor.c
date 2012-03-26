@@ -62,8 +62,8 @@ static VisActorPlugin *get_actor_plugin (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 
-	visual_log_return_val_if_fail (actor != NULL, NULL);
-	visual_log_return_val_if_fail (actor->plugin != NULL, NULL);
+	visual_return_val_if_fail (actor != NULL, NULL);
+	visual_return_val_if_fail (actor->plugin != NULL, NULL);
 
 	actplugin = VISUAL_ACTOR_PLUGIN (actor->plugin->info->plugin);
 
@@ -246,7 +246,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 	VisPluginEnviron *enve;
 	VisActorPluginEnviron *actenviron;
 
-	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
+	visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
 
 	if (__lv_plugins_actor == NULL && actorname != NULL) {
 		visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
@@ -291,8 +291,8 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 
 int visual_actor_realize (VisActor *actor)
 {
-	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-	visual_log_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
+	visual_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	return visual_plugin_realize (actor->plugin);
 }
@@ -301,10 +301,10 @@ VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 
-	visual_log_return_val_if_fail (actor != NULL, NULL);
+	visual_return_val_if_fail (actor != NULL, NULL);
 
 	actplugin = get_actor_plugin (actor);
-	visual_log_return_val_if_fail (actplugin != NULL, NULL);
+	visual_return_val_if_fail (actplugin != NULL, NULL);
 
 	return &actplugin->songinfo;
 }
@@ -313,7 +313,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 
-	visual_log_return_val_if_fail (actor != NULL, NULL);
+	visual_return_val_if_fail (actor != NULL, NULL);
 
 	actplugin = get_actor_plugin (actor);
 
@@ -339,10 +339,10 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
 {
 	int depthflag;
 
-	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-	visual_log_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
-	visual_log_return_val_if_fail (actor->plugin->ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
-	visual_log_return_val_if_fail (actor->video != NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
+	visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
+	visual_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_return_val_if_fail (actor->plugin->ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
+	visual_return_val_if_fail (actor->video != NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
 
 	if (actor->transform != NULL) {
 		visual_object_unref (VISUAL_OBJECT (actor->transform));
@@ -478,8 +478,8 @@ int visual_actor_get_supported_depth (VisActor *actor)
 {
 	VisActorPlugin *actplugin;
 
-	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-	visual_log_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
+	visual_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	actplugin = get_actor_plugin (actor);
 
@@ -493,8 +493,8 @@ VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *ac
 {
 	VisActorPlugin *actplugin;
 
-	visual_log_return_val_if_fail (actor != NULL, NULL);
-	visual_log_return_val_if_fail (actor->plugin != NULL, NULL);
+	visual_return_val_if_fail (actor != NULL, NULL);
+	visual_return_val_if_fail (actor->plugin != NULL, NULL);
 
 	actplugin = get_actor_plugin (actor);
 
@@ -506,7 +506,7 @@ VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *ac
 
 int visual_actor_set_video (VisActor *actor, VisVideo *video)
 {
-	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
+	visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
 
 	actor->video = video;
 
@@ -525,9 +525,9 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	/*
 	 * Really? take a look at visual_video_set_palette bellow
 	 */
-	visual_log_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-	visual_log_return_val_if_fail (actor->video != NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
+	visual_return_val_if_fail (actor->video != NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_NULL);
 
 	actplugin = get_actor_plugin (actor);
 	plugin = visual_actor_get_plugin (actor);

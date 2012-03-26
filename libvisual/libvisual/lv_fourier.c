@@ -224,7 +224,7 @@ static DFTCacheEntry *dft_cache_get (VisDFT *fourier)
 	DFTCacheEntry *fcache;
 	char key[16];
 
-	visual_log_return_val_if_fail (__lv_fourier_initialized == TRUE, NULL);
+	visual_return_val_if_fail (__lv_fourier_initialized == TRUE, NULL);
 
 	snprintf (key, 16, "%d", fourier->spectrum_size);
 	fcache = visual_cache_get (&__lv_dft_cache, key);
@@ -264,7 +264,7 @@ static LogScaleCacheEntry *log_scale_cache_get (int size)
 	LogScaleCacheEntry *lcache;
 	char key[16];
 
-	visual_log_return_val_if_fail (__lv_fourier_initialized == TRUE, NULL);
+	visual_return_val_if_fail (__lv_fourier_initialized == TRUE, NULL);
 
 	snprintf (key, 16, "%d", size);
 	lcache = visual_cache_get (&__lv_log_scale_cache, key);
@@ -327,7 +327,7 @@ VisDFT *visual_dft_new (unsigned int samples_out, unsigned int samples_in)
 
 int visual_dft_init (VisDFT *dft, unsigned int samples_out, unsigned int samples_in)
 {
-	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
+	visual_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (dft));
@@ -438,9 +438,9 @@ static void perform_fft_radix2_dit (VisDFT *dft, float *output, float *input)
 
 int visual_dft_perform (VisDFT *dft, float *output, float *input)
 {
-	visual_log_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
-	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (dft != NULL, -VISUAL_ERROR_FOURIER_NULL);
+	visual_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 
 	if (dft->brute_force)
 		perform_dft_brute_force (dft, output, input);
@@ -460,8 +460,8 @@ int visual_dft_log_scale (float *output, float *input, int size)
 	unsigned int i, j;
 	float amp;
 
-	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 
 	return visual_dft_log_scale_standard (output, input, size);
 
@@ -491,8 +491,8 @@ int visual_dft_log_scale (float *output, float *input, int size)
 
 int visual_dft_log_scale_standard (float *output, float *input, int size)
 {
-	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 
 	return visual_dft_log_scale_custom (output, input, size, AMP_LOG_SCALE_DIVISOR);
 }
@@ -501,8 +501,8 @@ int visual_dft_log_scale_custom (float *output, float *input, int size, float lo
 {
 	int i;
 
-	visual_log_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (output != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_NULL);
 
 	for (i = 0; i < size; i++) {
 		if (input[i] > AMP_LOG_SCALE_THRESHOLD0)

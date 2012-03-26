@@ -34,7 +34,7 @@ int visual_init_path_add (const char *pathadd)
 	__lv_plugpath_cnt++;
 	__lv_plugpaths = realloc (__lv_plugpaths, sizeof (char *) * __lv_plugpath_cnt);
 
-	visual_log_return_val_if_fail (__lv_plugpaths != NULL, -VISUAL_ERROR_LIBVISUAL_NO_PATHS);
+	visual_return_val_if_fail (__lv_plugpaths != NULL, -VISUAL_ERROR_LIBVISUAL_NO_PATHS);
 
 	if (pathadd == NULL)
 		__lv_plugpaths[__lv_plugpath_cnt - 1] = NULL;
@@ -67,16 +67,16 @@ int visual_plugin_registry_initialize (void)
 
 	/* Add the standard plugin paths */
 	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/actor");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+	visual_return_val_if_fail (ret == VISUAL_OK, ret);
 
 	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/input");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+	visual_return_val_if_fail (ret == VISUAL_OK, ret);
 
 	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/morph");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+	visual_return_val_if_fail (ret == VISUAL_OK, ret);
 
 	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/transform");
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+	visual_return_val_if_fail (ret == VISUAL_OK, ret);
 
 #if !defined(VISUAL_OS_WIN32) || defined(VISUAL_WITH_CYGWIN)
 	/* Add homedirectory plugin paths */
@@ -87,28 +87,28 @@ int visual_plugin_registry_initialize (void)
 
 		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/actor", homedir);
 		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+		visual_return_val_if_fail (ret == VISUAL_OK, ret);
 
 		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/input", homedir);
 		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+		visual_return_val_if_fail (ret == VISUAL_OK, ret);
 
 		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/morph", homedir);
 		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+		visual_return_val_if_fail (ret == VISUAL_OK, ret);
 
 		snprintf (temppluginpath, sizeof (temppluginpath) - 1, "%s/.libvisual/transform", homedir);
 		ret = visual_init_path_add (temppluginpath);
-		visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+		visual_return_val_if_fail (ret == VISUAL_OK, ret);
 	}
 #endif
 
 	/* And null terminate the list */
 	ret = visual_init_path_add (NULL);
-	visual_log_return_val_if_fail (ret == VISUAL_OK, ret);
+	visual_return_val_if_fail (ret == VISUAL_OK, ret);
 
 	__lv_plugins = visual_plugin_get_list ((const char**)__lv_plugpaths, TRUE);
-	visual_log_return_val_if_fail (__lv_plugins != NULL, -VISUAL_ERROR_LIBVISUAL_NO_REGISTRY);
+	visual_return_val_if_fail (__lv_plugins != NULL, -VISUAL_ERROR_LIBVISUAL_NO_REGISTRY);
 
 	__lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
 	__lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);

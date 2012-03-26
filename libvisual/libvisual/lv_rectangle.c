@@ -42,7 +42,7 @@ VisRectangle *visual_rectangle_new (int x, int y, int width, int height)
 
 int visual_rectangle_set (VisRectangle *rect, int x, int y, int width, int height)
 {
-	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	rect->x = x;
 	rect->y = y;
@@ -54,7 +54,7 @@ int visual_rectangle_set (VisRectangle *rect, int x, int y, int width, int heigh
 
 int visual_rectangle_position_within (VisRectangle *rect, int x, int y)
 {
-	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	if ((x >= rect->x) &&
 		(x <= rect->x + rect->width) &&
@@ -69,8 +69,8 @@ int visual_rectangle_position_within (VisRectangle *rect, int x, int y)
 
 int visual_rectangle_within_partially (VisRectangle *dest, VisRectangle *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	if ((src->x + src->width) < dest->x)
 		return FALSE;
@@ -89,8 +89,8 @@ int visual_rectangle_within_partially (VisRectangle *dest, VisRectangle *src)
 
 int visual_rectangle_within (VisRectangle *dest, VisRectangle *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	if (src->x < dest->x)
 		return FALSE;
@@ -109,8 +109,8 @@ int visual_rectangle_within (VisRectangle *dest, VisRectangle *src)
 
 int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	dest->x = src->x;
 	dest->y = src->y;
@@ -122,9 +122,9 @@ int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src)
 
 int visual_rectangle_clip (VisRectangle *dest, VisRectangle *within, VisRectangle *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
-	visual_log_return_val_if_fail (within != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (within != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	/* If not partially within, don't even try to clip */
 	if (visual_rectangle_within_partially (within, src) == FALSE) {
@@ -158,7 +158,7 @@ int visual_rectangle_clip (VisRectangle *dest, VisRectangle *within, VisRectangl
 
 int visual_rectangle_normalise (VisRectangle *rect)
 {
-	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	rect->x = 0;
 	rect->y = 0;
@@ -168,8 +168,8 @@ int visual_rectangle_normalise (VisRectangle *rect)
 
 int visual_rectangle_normalise_to (VisRectangle *dest, VisRectangle *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	dest->x = src->x;
 	dest->y = src->y;
@@ -179,7 +179,7 @@ int visual_rectangle_normalise_to (VisRectangle *dest, VisRectangle *src)
 
 int visual_rectangle_is_empty (VisRectangle *rect)
 {
-	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	if (rect->width <= 0 || rect->height <= 0)
 		return TRUE;
@@ -189,7 +189,7 @@ int visual_rectangle_is_empty (VisRectangle *rect)
 
 int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y)
 {
-	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	if (fx < 0)
 		fx = 0;
@@ -211,7 +211,7 @@ int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy,
 
 int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size)
 {
-	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	visual_math_vectorized_floats_to_int32s_multiply (xlist, fxlist, size, rect->width);
 	visual_math_vectorized_floats_to_int32s_multiply (ylist, fylist, size, rect->height);
@@ -221,7 +221,7 @@ int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist,
 
 int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y)
 {
-	visual_log_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	if (fx < -1)
 		fx = -1;

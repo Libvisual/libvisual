@@ -166,9 +166,9 @@ static int inp_xmms2_init( VisPluginData *plugin ) {
 static int inp_xmms2_cleanup( VisPluginData *plugin ) {
     xmms2_priv_t *priv = NULL;
 
-    visual_log_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
     priv = visual_object_get_private(VISUAL_OBJECT( plugin));
-    visual_log_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
 
     xmmsc_visualization_shutdown(priv->connection, priv->vis);
 
@@ -236,12 +236,12 @@ static int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
     const char *dictbuf;
     int dictnum;
 
-    visual_log_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
-    visual_log_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
 
     priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
-    visual_log_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
     visual_plugin_events_pump(plugin);
 
@@ -256,7 +256,7 @@ static int inp_xmms2_upload( VisPluginData *plugin, VisAudio *audio )
 
         val = xmmsc_result_get_value(res);
 
-        visual_log_return_val_if_fail(xmmsv_get_int(val, &id) > 0, -VISUAL_ERROR_GENERAL);
+        visual_return_val_if_fail(xmmsv_get_int(val, &id) > 0, -VISUAL_ERROR_GENERAL);
 
 	if(id != priv->current_id)
         {

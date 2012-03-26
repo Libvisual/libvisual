@@ -85,7 +85,7 @@ static int act_infinite_init (VisPluginData *plugin)
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_mem_new0 (InfinitePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
@@ -114,7 +114,7 @@ int act_infinite_cleanup (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -130,7 +130,7 @@ static int act_infinite_requisition (VisPluginData *plugin, int *width, int *hei
 {
 	int reqw, reqh;
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	reqw = *width;
 	reqh = *height;
@@ -157,8 +157,8 @@ static int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int w
 {
 	InfinitePrivate *priv;
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (video != NULL, -1);
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	priv->plugwidth = width;
@@ -198,7 +198,7 @@ static VisPalette *act_infinite_palette (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
 
-	visual_log_return_val_if_fail (plugin != NULL, NULL);
+	visual_return_val_if_fail (plugin != NULL, NULL);
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -210,9 +210,9 @@ static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio
 	VisBuffer buffer;
 	InfinitePrivate *priv;
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
-	visual_log_return_val_if_fail (video != NULL, -1);
-	visual_log_return_val_if_fail (audio != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (video != NULL, -1);
+	visual_return_val_if_fail (audio != NULL, -1);
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 

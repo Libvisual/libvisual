@@ -247,7 +247,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	int32_t error = 0;
 	int i;
 
-	visual_log_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	fp = fopen (filename, "rb");
 	if (fp == NULL) {

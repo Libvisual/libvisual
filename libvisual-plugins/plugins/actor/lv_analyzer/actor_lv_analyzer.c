@@ -108,7 +108,7 @@ static int lv_analyzer_init (VisPluginData *plugin)
 #endif
 
 	AnalyzerPrivate *priv = visual_mem_new0 (AnalyzerPrivate, 1);
-	visual_log_return_val_if_fail(priv != NULL, -1);
+	visual_return_val_if_fail(priv != NULL, -1);
 
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
@@ -117,7 +117,7 @@ static int lv_analyzer_init (VisPluginData *plugin)
 
 	/* get plugins param-container */
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	visual_log_return_val_if_fail(paramcontainer != NULL, -1);
+	visual_return_val_if_fail(paramcontainer != NULL, -1);
 
 	/* save paramcontainer */
 	priv->paramcontainer = paramcontainer;

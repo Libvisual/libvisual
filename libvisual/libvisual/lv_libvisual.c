@@ -50,7 +50,7 @@ static int init_params (VisParamContainer *paramcontainer)
 {
 	VisParamEntry *param;
 
-	visual_log_return_val_if_fail (paramcontainer != NULL, -1);
+	visual_return_val_if_fail (paramcontainer != NULL, -1);
 
 	/* Initialize all the global parameters here */
 

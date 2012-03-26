@@ -43,7 +43,7 @@ VisColor *visual_color_new (void)
 
 int visual_color_set_with_alpha (VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	color->r = r;
 	color->g = g;
@@ -55,7 +55,7 @@ int visual_color_set_with_alpha (VisColor *color, uint8_t r, uint8_t g, uint8_t 
 
 int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b)
 {
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	color->r = r;
 	color->g = g;
@@ -67,8 +67,8 @@ int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b)
 
 int visual_color_compare (VisColor *src1, VisColor *src2)
 {
-	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_COLOR_NULL)
-	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_COLOR_NULL)
+	visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_COLOR_NULL)
+	visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_COLOR_NULL)
 
 	if (src1->r != src2->r || src1->g != src2->g || src1->b != src2->b)
 		return FALSE;
@@ -81,7 +81,7 @@ int visual_color_from_hsv (VisColor *color, float h, float s, float v)
 	int i;
 	float f, w, q, t, r = 0, g = 0, b = 0;
 
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	if (s == 0.0)
 		s = 0.000001;
@@ -117,7 +117,7 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 {
 	float max, min, delta, r, g, b;
 
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	r = (float) color->r / 255.0;
 	g = (float) color->g / 255.0;
@@ -168,8 +168,8 @@ int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v)
 
 int visual_color_copy (VisColor *dest, VisColor *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_COLOR_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	visual_color_set_with_alpha (dest, src->r, src->g, src->b, src->a);
 
@@ -180,7 +180,7 @@ int visual_color_from_uint32 (VisColor *color, uint32_t rgb)
 {
 	uint8_t *colors = (uint8_t *) &rgb;
 
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	color->r = colors[0];
 	color->g = colors[1];
@@ -194,7 +194,7 @@ int visual_color_from_uint16 (VisColor *color, uint16_t rgb)
 {
 	_color16 *colors = (_color16 *) &rgb;
 
-	visual_log_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
+	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
 	color->r = colors->r << 3;
 	color->g = colors->g << 2;
@@ -207,7 +207,7 @@ uint32_t visual_color_to_uint32 (VisColor *color)
 {
 	uint32_t colors;
 
-	visual_log_return_val_if_fail (color != NULL, 0);
+	visual_return_val_if_fail (color != NULL, 0);
 
 	colors = (color->r << 24) |
 		(color->r << 16) |
@@ -221,7 +221,7 @@ uint16_t visual_color_to_uint16 (VisColor *color)
 {
 	_color16 colors;
 
-	visual_log_return_val_if_fail (color != NULL, 0);
+	visual_return_val_if_fail (color != NULL, 0);
 
 	colors.r = color->r >> 3;
 	colors.g = color->g >> 2;

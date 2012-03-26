@@ -48,15 +48,15 @@ VisObject *visual_object_new ()
 
 int visual_object_free (VisObject *object)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-	visual_log_return_val_if_fail (object->allocated == TRUE, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object->allocated == TRUE, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED);
 
 	return visual_mem_free (object);
 }
 
 int visual_object_destroy (VisObject *object)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	if (object->dtor != NULL)
 		object->dtor (object);
@@ -69,7 +69,7 @@ int visual_object_destroy (VisObject *object)
 
 int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFunc dtor)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	visual_object_set_dtor (object, dtor);
 	visual_object_set_allocated (object, allocated);
@@ -83,7 +83,7 @@ int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFun
 
 int visual_object_clear (VisObject *object)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	visual_object_set_private (object, NULL);
 	visual_object_set_refcount (object, 0);
@@ -93,7 +93,7 @@ int visual_object_clear (VisObject *object)
 
 int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	object->dtor = dtor;
 
@@ -102,7 +102,7 @@ int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor)
 
 int visual_object_set_allocated (VisObject *object, int allocated)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	object->allocated = allocated;
 
@@ -111,7 +111,7 @@ int visual_object_set_allocated (VisObject *object, int allocated)
 
 int visual_object_set_refcount (VisObject *object, int refcount)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	object->refcount = refcount;
 
@@ -120,7 +120,7 @@ int visual_object_set_refcount (VisObject *object, int refcount)
 
 int visual_object_ref (VisObject *object)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	object->refcount++;
 
@@ -129,7 +129,7 @@ int visual_object_ref (VisObject *object)
 
 int visual_object_unref (VisObject *object)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	object->refcount--;
 
@@ -144,7 +144,7 @@ int visual_object_unref (VisObject *object)
 
 int visual_object_set_private (VisObject *object, void *priv)
 {
-	visual_log_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
 
 	/* mhm, this can lead to a memory leak. We must check here
 	   for priv == NULL and return some -VISUAl_ERROR_NON_NULL
@@ -156,7 +156,7 @@ int visual_object_set_private (VisObject *object, void *priv)
 
 void *visual_object_get_private (VisObject *object)
 {
-	visual_log_return_val_if_fail (object != NULL, NULL);
+	visual_return_val_if_fail (object != NULL, NULL);
 
 	return object->priv;
 }

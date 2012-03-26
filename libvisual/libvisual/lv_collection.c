@@ -43,7 +43,7 @@ int visual_collection_iter_dtor (VisCollectionIter *object)
 
 int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer)
 {
-	visual_log_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
 	collection->destroyer = destroyer;
 
@@ -52,14 +52,14 @@ int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDes
 
 VisCollectionDestroyerFunc visual_collection_get_destroyer (VisCollection *collection)
 {
-	visual_log_return_val_if_fail (collection != NULL, NULL);
+	visual_return_val_if_fail (collection != NULL, NULL);
 
 	return collection->destroyer;
 }
 
 int visual_collection_set_destroy_func (VisCollection *collection, VisCollectionDestroyFunc destroyfunc)
 {
-	visual_log_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
 	collection->destroyfunc = destroyfunc;
 
@@ -68,14 +68,14 @@ int visual_collection_set_destroy_func (VisCollection *collection, VisCollection
 
 VisCollectionDestroyFunc visual_collection_get_destroy_func (VisCollection *collection)
 {
-	visual_log_return_val_if_fail (collection != NULL, NULL);
+	visual_return_val_if_fail (collection != NULL, NULL);
 
 	return collection->destroyfunc;
 }
 
 int visual_collection_set_size_func (VisCollection *collection, VisCollectionSizeFunc sizefunc)
 {
-	visual_log_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
 	collection->sizefunc = sizefunc;
 
@@ -84,14 +84,14 @@ int visual_collection_set_size_func (VisCollection *collection, VisCollectionSiz
 
 VisCollectionSizeFunc visual_collection_get_size_func (VisCollection *collection)
 {
-	visual_log_return_val_if_fail (collection != NULL, NULL);
+	visual_return_val_if_fail (collection != NULL, NULL);
 
 	return collection->sizefunc;
 }
 
 int visual_collection_set_iter_func (VisCollection *collection, VisCollectionIterFunc iterfunc)
 {
-	visual_log_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
 	collection->iterfunc = iterfunc;
 
@@ -100,7 +100,7 @@ int visual_collection_set_iter_func (VisCollection *collection, VisCollectionIte
 
 VisCollectionIterFunc visual_collection_get_iter_func (VisCollection *collection)
 {
-	visual_log_return_val_if_fail (collection != NULL, NULL);
+	visual_return_val_if_fail (collection != NULL, NULL);
 
 	return collection->iterfunc;
 }
@@ -116,7 +116,7 @@ int visual_collection_dtor (VisObject *object)
 
 int visual_collection_destroy (VisCollection *collection)
 {
-	visual_log_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
 	if (collection->destroyfunc != NULL)
 		return collection->destroyfunc (collection);
@@ -126,7 +126,7 @@ int visual_collection_destroy (VisCollection *collection)
 
 int visual_collection_size (VisCollection *collection)
 {
-	visual_log_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (collection != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
 	if (collection->sizefunc != NULL)
 		return collection->sizefunc (collection);
@@ -136,7 +136,7 @@ int visual_collection_size (VisCollection *collection)
 
 VisCollectionIter *visual_collection_get_iter (VisCollection *collection)
 {
-	visual_log_return_val_if_fail (collection != NULL, NULL);
+	visual_return_val_if_fail (collection != NULL, NULL);
 
 	if (collection->iterfunc != NULL)
 		return collection->iterfunc (collection);
@@ -167,7 +167,7 @@ int visual_collection_iter_init (VisCollectionIter *iter,
 		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
 		VisCollection *collection, VisObject *context)
 {
-	visual_log_return_val_if_fail (iter != NULL, -VISUAL_ERROR_COLLECTION_ITER_NULL);
+	visual_return_val_if_fail (iter != NULL, -VISUAL_ERROR_COLLECTION_ITER_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (iter));
@@ -190,7 +190,7 @@ int visual_collection_iter_init (VisCollectionIter *iter,
 
 void visual_collection_iter_assign (VisCollectionIter *iter, int index)
 {
-	visual_log_return_if_fail (iter != NULL);
+	visual_return_if_fail (iter != NULL);
 
 	if (iter->assignfunc != NULL)
 		iter->assignfunc (iter, iter->collection, iter->context, index);
@@ -199,7 +199,7 @@ void visual_collection_iter_assign (VisCollectionIter *iter, int index)
 
 void visual_collection_iter_next (VisCollectionIter *iter)
 {
-	visual_log_return_if_fail (iter != NULL);
+	visual_return_if_fail (iter != NULL);
 
 	if (iter->nextfunc != NULL)
 		iter->nextfunc (iter, iter->collection, iter->context);
@@ -207,7 +207,7 @@ void visual_collection_iter_next (VisCollectionIter *iter)
 
 int visual_collection_iter_has_more (VisCollectionIter *iter)
 {
-	visual_log_return_val_if_fail (iter != NULL, -VISUAL_ERROR_COLLECTION_ITER_NULL);
+	visual_return_val_if_fail (iter != NULL, -VISUAL_ERROR_COLLECTION_ITER_NULL);
 
 	if (iter->hasmorefunc != NULL)
 		return iter->hasmorefunc (iter, iter->collection, iter->context);
@@ -217,7 +217,7 @@ int visual_collection_iter_has_more (VisCollectionIter *iter)
 
 void *visual_collection_iter_get_data (VisCollectionIter *iter)
 {
-	visual_log_return_val_if_fail (iter != NULL, NULL);
+	visual_return_val_if_fail (iter != NULL, NULL);
 
 	if (iter->getdatafunc != NULL)
 		return iter->getdatafunc (iter, iter->collection, iter->context);

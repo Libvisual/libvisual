@@ -58,7 +58,7 @@ VisPalette *visual_palette_new (int ncolors)
 
 int visual_palette_init (VisPalette *pal)
 {
-	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (pal));
@@ -74,9 +74,9 @@ int visual_palette_init (VisPalette *pal)
 
 int visual_palette_copy (VisPalette *dest, VisPalette *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PALETTE_NULL);
-	visual_log_return_val_if_fail (dest->ncolors == src->ncolors, -VISUAL_ERROR_PALETTE_SIZE);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_return_val_if_fail (dest->ncolors == src->ncolors, -VISUAL_ERROR_PALETTE_SIZE);
 
 	visual_mem_copy (dest->colors, src->colors, sizeof (VisColor) * dest->ncolors);
 
@@ -85,7 +85,7 @@ int visual_palette_copy (VisPalette *dest, VisPalette *src)
 
 int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
 {
-	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
 	pal->colors = visual_mem_new0 (VisColor, ncolors);
 	pal->ncolors = ncolors;
@@ -95,7 +95,7 @@ int visual_palette_allocate_colors (VisPalette *pal, int ncolors)
 
 int visual_palette_free_colors (VisPalette *pal)
 {
-	visual_log_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_return_val_if_fail (pal != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
 	if (pal->colors != NULL)
 		visual_mem_free (pal->colors);
@@ -110,9 +110,9 @@ int visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, 
 {
 	int i;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
-	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_PALETTE_NULL);
-	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_PALETTE_NULL);
+	visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_PALETTE_NULL);
 
 	if (src1->ncolors != src2->ncolors)
 		return -VISUAL_ERROR_PALETTE_SIZE;
@@ -136,7 +136,7 @@ VisColor *visual_palette_color_cycle (VisPalette *pal, float rate)
 	unsigned char alpha;
 	float rdiff = rate - irate;
 
-	visual_log_return_val_if_fail (pal != NULL, NULL);
+	visual_return_val_if_fail (pal != NULL, NULL);
 
 	irate = irate % pal->ncolors;
 	alpha = rdiff * 255;

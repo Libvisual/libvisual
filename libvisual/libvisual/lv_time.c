@@ -48,7 +48,7 @@ VisTime *visual_time_new ()
 
 int visual_time_init (VisTime *time_)
 {
-	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (time_));
@@ -66,7 +66,7 @@ int visual_time_get (VisTime *time_)
 #if defined(VISUAL_OS_WIN32)
 	SYSTEMTIME systime;
 
-	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	GetLocalTime (&systime);
 
@@ -76,7 +76,7 @@ int visual_time_get (VisTime *time_)
 #else
 	struct timeval tv;
 
-	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	gettimeofday (&tv, NULL);
 
@@ -88,14 +88,14 @@ int visual_time_get (VisTime *time_)
 
 long visual_time_get_msecs(VisTime *time_)
 {
-    visual_log_return_val_if_fail(time_ != NULL, 0);
+    visual_return_val_if_fail(time_ != NULL, 0);
 
     return time_->tv_sec * 1000 + (time_->tv_usec + 500) / 1000;
 }
 
 int visual_time_set (VisTime *time_, long sec, long usec)
 {
-	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	time_->tv_sec = sec;
 	time_->tv_usec = usec;
@@ -105,7 +105,7 @@ int visual_time_set (VisTime *time_, long sec, long usec)
 
 int visual_time_set_from_msecs(VisTime *time_, long msecs)
 {
-    visual_log_return_val_if_fail(time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+    visual_return_val_if_fail(time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
 
     long sec = msecs / 1000;
@@ -118,8 +118,8 @@ int visual_time_set_from_msecs(VisTime *time_, long msecs)
 
 int visual_time_copy (VisTime *dest, VisTime *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	dest->tv_sec = src->tv_sec;
 	dest->tv_usec = src->tv_usec;
@@ -129,9 +129,9 @@ int visual_time_copy (VisTime *dest, VisTime *src)
 
 int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
-	visual_log_return_val_if_fail (time1 != NULL, -VISUAL_ERROR_TIME_NULL);
-	visual_log_return_val_if_fail (time2 != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (time1 != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (time2 != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	dest->tv_usec = time2->tv_usec - time1->tv_usec;
 	dest->tv_sec = time2->tv_sec - time1->tv_sec;
@@ -146,8 +146,8 @@ int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2)
 
 int visual_time_past (VisTime *time_, VisTime *past)
 {
-	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
-	visual_log_return_val_if_fail (past != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (past != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	if (time_->tv_sec > past->tv_sec)
 		return TRUE;
@@ -203,7 +203,7 @@ VisTimer *visual_timer_new ()
 
 int visual_timer_init (VisTimer *timer)
 {
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (timer));
@@ -221,7 +221,7 @@ int visual_timer_init (VisTimer *timer)
 
 int visual_timer_reset (VisTimer *timer)
 {
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
 	visual_time_set (&timer->start, 0, 0);
 	visual_time_set (&timer->stop, 0, 0);
@@ -233,14 +233,14 @@ int visual_timer_reset (VisTimer *timer)
 
 int visual_timer_is_active (VisTimer *timer)
 {
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
 	return timer->active;
 }
 
 int visual_timer_start (VisTimer *timer)
 {
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
 	visual_time_get (&timer->start);
 
@@ -251,7 +251,7 @@ int visual_timer_start (VisTimer *timer)
 
 int visual_timer_stop (VisTimer *timer)
 {
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
 	visual_time_get (&timer->stop);
 
@@ -264,8 +264,8 @@ int visual_timer_continue (VisTimer *timer)
 {
 	VisTime elapsed;
 
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
-	visual_log_return_val_if_fail (timer->active != FALSE, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer->active != FALSE, -VISUAL_ERROR_TIMER_NULL);
 
 	visual_time_difference (&elapsed, &timer->start, &timer->stop);
 
@@ -288,8 +288,8 @@ int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
 {
 	VisTime cur;
 
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
-	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	visual_time_get (&cur);
 
@@ -306,7 +306,7 @@ int visual_timer_elapsed_msecs (VisTimer *timer)
 {
 	VisTime cur;
 
-	visual_log_return_val_if_fail (timer != NULL, -1);
+	visual_return_val_if_fail (timer != NULL, -1);
 
 	visual_timer_elapsed (timer, &cur);
 
@@ -317,7 +317,7 @@ int visual_timer_elapsed_usecs (VisTimer *timer)
 {
 	VisTime cur;
 
-	visual_log_return_val_if_fail (timer != NULL, -1);
+	visual_return_val_if_fail (timer != NULL, -1);
 
 	visual_timer_elapsed (timer, &cur);
 
@@ -328,8 +328,8 @@ int visual_timer_has_passed (VisTimer *timer, VisTime *time_)
 {
 	VisTime elapsed;
 
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
-	visual_log_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
 	visual_timer_elapsed (timer, &elapsed);
 
@@ -345,7 +345,7 @@ int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec)
 {
 	VisTime passed;
 
-	visual_log_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
 
 	visual_time_set (&passed, sec, usec);
 

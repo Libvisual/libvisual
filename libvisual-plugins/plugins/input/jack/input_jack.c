@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -95,10 +95,10 @@ static int inp_jack_init (VisPluginData *plugin)
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_mem_new0 (JackPrivate, 1);
-	visual_log_return_val_if_fail (priv != NULL, -1);
+	visual_return_val_if_fail (priv != NULL, -1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	if ((priv->client = jack_client_new (_("Libvisual jackit capture"))) == NULL) {
@@ -133,7 +133,7 @@ static int inp_jack_init (VisPluginData *plugin)
 
 	visual_mem_free (ports);
 
-//	visual_buffer_init_allocate (&priv->buffer, 65536, 
+//	visual_buffer_init_allocate (&priv->buffer, 65536,
 
 	return 0;
 }
@@ -142,9 +142,9 @@ static int inp_jack_cleanup (VisPluginData *plugin)
 {
 	JackPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_log_return_val_if_fail( plugin != NULL, -1 );
+	visual_return_val_if_fail (plugin != NULL, -1);
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	visual_log_return_val_if_fail( priv != NULL, -1 );
+	visual_return_val_if_fail (priv != NULL, -1);
 
 	if (priv->client != NULL)
 		jack_client_close (priv->client);
@@ -160,12 +160,12 @@ static int inp_jack_upload (VisPluginData *plugin, VisAudio *audio)
 /*	VisBuffer buffer; */
 	int i;
 
-	visual_log_return_val_if_fail(audio != NULL, -1);
-	visual_log_return_val_if_fail(plugin != NULL, -1);
+	visual_return_val_if_fail (audio != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_log_return_val_if_fail(priv != NULL, -1);
+	visual_return_val_if_fail (priv != NULL, -1);
 
 	if (priv->shutdown == TRUE) {
 		visual_log (VISUAL_LOG_ERROR, _("The jack server seems to have shutdown"));

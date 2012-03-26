@@ -130,28 +130,6 @@ void _lv_log (VisLogSeverity severity, const char *file,
 	int line, const char *funcname, const char *fmt, ...)
 	VIS_CHECK_PRINTF_FORMAT(5, 6);
 
-/**
- * Return if @a expr is FALSE, showing a critical message with
- * useful information.
- */
-#define visual_log_return_if_fail(expr)			\
-	if (!(expr)) {								\
-		visual_log (VISUAL_LOG_WARNING,			\
-			"assertion `%s' failed", #expr);	\
-		return;									\
-	}
-
-/**
- * Return if @a val if @a expr is FALSE, showing a critical message
- * with useful information.
- */
-#define visual_log_return_val_if_fail(expr, val)	\
-	if (!(expr)) {									\
-		visual_log (VISUAL_LOG_WARNING,				\
-			"assertion `%s' failed", #expr);		\
-		return (val);								\
-	}
-
 VISUAL_END_DECLS
 
 /**

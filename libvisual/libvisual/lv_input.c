@@ -52,8 +52,8 @@ static VisInputPlugin *get_input_plugin (VisInput *input)
 {
 	VisInputPlugin *inplugin;
 
-	visual_log_return_val_if_fail (input != NULL, NULL);
-	visual_log_return_val_if_fail (input->plugin != NULL, NULL);
+	visual_return_val_if_fail (input != NULL, NULL);
+	visual_return_val_if_fail (input->plugin != NULL, NULL);
 
 	inplugin = VISUAL_INPUT_PLUGIN (input->plugin->info->plugin);
 
@@ -112,7 +112,7 @@ int visual_input_init (VisInput *input, const char *inputname)
 {
 	VisPluginRef *ref;
 
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
+	visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	if (__lv_plugins_input == NULL && inputname != NULL) {
 		visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
@@ -145,7 +145,7 @@ int visual_input_init (VisInput *input, const char *inputname)
 
 int visual_input_realize (VisInput *input)
 {
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
+	visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	if (input->plugin != NULL && input->callback == NULL)
 		return visual_plugin_realize (input->plugin);
@@ -155,7 +155,7 @@ int visual_input_realize (VisInput *input)
 
 int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv)
 {
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
+	visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	input->callback = callback;
 	visual_object_set_private (VISUAL_OBJECT (input), priv);
@@ -167,7 +167,7 @@ int visual_input_run (VisInput *input)
 {
 	VisInputPlugin *inplugin;
 
-	visual_log_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
+	visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
 	if (input->callback == NULL) {
 		inplugin = get_input_plugin (input);

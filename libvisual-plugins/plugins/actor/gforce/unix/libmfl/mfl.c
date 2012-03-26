@@ -84,7 +84,7 @@ mfl_font mfl_LoadRawFont(const char *fname) {
 }
 
 void mfl_DestroyFont(mfl_font f) {
-  visual_log_return_if_fail(f != NULL);
+  visual_return_if_fail(f != NULL);
   free(f->data);
   free(f);
 }

@@ -577,7 +577,7 @@ static void blursk_render_pcm(BlurskPrivate *priv, int16_t *data)
 
 void blursk_event_newsong(VisSongInfo *newsong) 
 {
-    visual_log_return_if_fail(newsong != NULL);
+    visual_return_if_fail(newsong != NULL);
     visual_songinfo_copy(songinfo, newsong);
     blurskinfo = TRUE;
 }

@@ -166,7 +166,7 @@ VisAudio *visual_audio_new ()
 
 int visual_audio_init (VisAudio *audio)
 {
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (audio));
@@ -190,7 +190,7 @@ int visual_audio_analyze (VisAudio *audio)
 	int i, j, y;
 #endif
 
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
 	/* Load the pcm data */
 #if 0
@@ -322,9 +322,9 @@ int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, const char *cha
 {
 	VisAudioSamplePoolChannel *channel;
 
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
-	visual_log_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	channel = visual_audio_samplepool_get_channel (audio->samplepool, channelid);
 
@@ -349,8 +349,8 @@ int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, in
 	int i;
 	int first = TRUE;
 
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
 
@@ -397,8 +397,8 @@ int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divid
 	int i;
 	int first = TRUE;
 
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
 
@@ -448,9 +448,9 @@ int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, 
 	VisBuffer temp;
 	int first = TRUE;
 
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
-	visual_log_return_val_if_fail (category != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_return_val_if_fail (category != NULL, -VISUAL_ERROR_NULL);
 
 	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
 
@@ -484,8 +484,8 @@ int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int d
 	VisBuffer temp;
 	int first = TRUE;
 
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 
 	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
 
@@ -512,9 +512,9 @@ int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen
 {
 	VisBuffer sample;
 
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
-	visual_log_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	visual_buffer_init_allocate (&sample, samplelen, visual_buffer_destroyer_free);
 
@@ -534,9 +534,9 @@ int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, in
 	float *data;
 	int datasize;
 
-	visual_log_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
-	visual_log_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	ret = visual_audio_get_spectrum (audio, buffer, samplelen, channelid, normalised);
 
@@ -552,8 +552,8 @@ int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, 
 {
 	VisDFT dft;
 
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
-	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	visual_dft_init (&dft, visual_buffer_get_size (buffer) / sizeof (float),
 			visual_buffer_get_size (sample) / sizeof (float));
@@ -575,8 +575,8 @@ int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffe
 	float *data;
 	int datasize;
 
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
-	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	ret = visual_audio_get_spectrum_for_sample (buffer, sample, normalised);
 
@@ -590,7 +590,7 @@ int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffe
 
 int visual_audio_normalise_spectrum (VisBuffer *buffer)
 {
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	visual_dft_log_scale_standard (visual_buffer_get_data (buffer),
 			visual_buffer_get_data (buffer),
@@ -616,7 +616,7 @@ VisAudioSamplePool *visual_audio_samplepool_new ()
 
 int visual_audio_samplepool_init (VisAudioSamplePool *samplepool)
 {
-	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (samplepool));
@@ -633,9 +633,9 @@ int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample 
 {
 	VisAudioSamplePoolChannel *channel;
 
-	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
-	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
-	visual_log_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_NULL);
 
 	channel = visual_audio_samplepool_get_channel (samplepool, channelid);
 
@@ -653,8 +653,8 @@ int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample 
 
 int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudioSamplePoolChannel *channel)
 {
-	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
-	visual_log_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
+	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
 
 	visual_list_add (samplepool->channels, channel);
 
@@ -666,8 +666,8 @@ VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePo
 	VisListEntry *le = NULL;
 	VisAudioSamplePoolChannel *channel;
 
-	visual_log_return_val_if_fail (samplepool != NULL, NULL);
-	visual_log_return_val_if_fail (channelid != NULL, NULL);
+	visual_return_val_if_fail (samplepool != NULL, NULL);
+	visual_return_val_if_fail (channelid != NULL, NULL);
 
 	while ((channel = visual_list_next (samplepool->channels, &le)) != NULL) {
 		if (strcmp (channel->channelid, channelid) == 0)
@@ -682,7 +682,7 @@ int visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool)
 	VisListEntry *le = NULL;
 	VisAudioSamplePoolChannel *channel;
 
-	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 
 	while ((channel = visual_list_next (samplepool->channels, &le)) != NULL) {
 		visual_audio_samplepool_channel_flush_old (channel);
@@ -696,8 +696,8 @@ int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *bu
 		VisAudioSampleFormatType format,
 		VisAudioSampleChannelType channeltype)
 {
-	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO)
 		input_interleaved_stereo (samplepool, buffer, format, rate);
@@ -714,8 +714,8 @@ int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBu
 	VisBuffer *pcmbuf;
 	VisTime timestamp;
 
-	visual_log_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
-	visual_log_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
+	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	pcmbuf = visual_buffer_new ();
 	visual_buffer_clone (pcmbuf, buffer);
@@ -747,7 +747,7 @@ VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (const char *chan
 
 int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, const char *channelid)
 {
-	visual_log_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
+	visual_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (channel));
@@ -766,8 +766,8 @@ int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, co
 
 int visual_audio_samplepool_channel_add (VisAudioSamplePoolChannel *channel, VisAudioSample *sample)
 {
-	visual_log_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
-	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
+	visual_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 
 	visual_ringbuffer_add_function (channel->samples,
 			sample_data_func,
@@ -784,7 +784,7 @@ int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channe
 	VisRingBufferEntry *rentry;
 	VisAudioSample *sample;
 
-	visual_log_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
+	visual_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
 
 	list = visual_ringbuffer_get_list (channel->samples);
 
@@ -816,9 +816,9 @@ int visual_audio_sample_buffer_mix (VisBuffer *dest, VisBuffer *src, int divide,
 	int scnt;
 	int i;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
-	visual_log_return_val_if_fail (visual_buffer_get_size (dest) == visual_buffer_get_size (src),
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (visual_buffer_get_size (dest) == visual_buffer_get_size (src),
 			-VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS);
 
 	dbuf = visual_buffer_get_data (dest);
@@ -855,7 +855,7 @@ int visual_audio_sample_buffer_mix_many (VisBuffer *dest, int divide, int channe
 	va_list ap;
 	int i;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
 	buffers = visual_mem_malloc (channels * sizeof (VisBuffer *));
 	chanmuls = visual_mem_malloc (channels * sizeof (double));
@@ -905,7 +905,7 @@ int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime
 		VisAudioSampleFormatType format,
 		VisAudioSampleRateType rate)
 {
-	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (sample));
@@ -924,7 +924,7 @@ int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime
 
 int visual_audio_sample_has_internal (VisAudioSample *sample)
 {
-	visual_log_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 
 	if (sample->processed != NULL)
 		return TRUE;
@@ -934,8 +934,8 @@ int visual_audio_sample_has_internal (VisAudioSample *sample)
 
 int visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleFormatType format)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 
 	if (dest->buffer != NULL)
 		visual_object_unref (VISUAL_OBJECT (dest->buffer));
@@ -977,8 +977,8 @@ int visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *
 
 int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleRateType rate)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 
 	/* FIXME error on dest format != src format */
 
@@ -1278,9 +1278,9 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 		{																\
 			/* do we have at least one complete frame? */				\
 			visual_size_t bufsize = visual_buffer_get_size (buffer); 	\
-			visual_log_return_val_if_fail(bufsize > sizeof(x), -1);		\
+			visual_return_val_if_fail(bufsize > sizeof(x), -1);		\
 			/* go around troubles with bufsizes <= 1) */				\
-			visual_log_return_val_if_fail(bufsize > 1, -1);				\
+			visual_return_val_if_fail(bufsize > 1, -1);				\
 																		\
 			chan1 = visual_buffer_new_allocate (sizeof (x) * ((visual_buffer_get_size (buffer) / 2)),	\
 				visual_buffer_destroyer_free);							\
@@ -1291,9 +1291,9 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 			x *chan1buf = visual_buffer_get_data (chan1);				\
 			x *chan2buf = visual_buffer_get_data (chan2);				\
 																		\
-			visual_log_return_val_if_fail (pcm != NULL, -1); 			\
-			visual_log_return_val_if_fail (chan1buf != NULL, -1); 		\
-			visual_log_return_val_if_fail (chan2buf != NULL, -1); 		\
+			visual_return_val_if_fail (pcm != NULL, -1); 			\
+			visual_return_val_if_fail (chan1buf != NULL, -1); 		\
+			visual_return_val_if_fail (chan2buf != NULL, -1); 		\
 																		\
 			for (i = 0; i < visual_buffer_get_size (buffer); i += 2) 	\
 			{															\
@@ -1331,8 +1331,8 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 	else
 		return -1;
 
-	visual_log_return_val_if_fail (chan1 != NULL, -1);
-	visual_log_return_val_if_fail (chan2 != NULL, -1);
+	visual_return_val_if_fail (chan1 != NULL, -1);
+	visual_return_val_if_fail (chan2 != NULL, -1);
 
 	visual_buffer_set_destroyer (chan1, visual_buffer_destroyer_free);
 	visual_buffer_set_destroyer (chan2, visual_buffer_destroyer_free);
@@ -1401,7 +1401,7 @@ int visual_audio_get_cheap_audio_data(VisAudio *audio, unsigned char out[2][2][5
 
 VisBeat *visual_audio_get_beat(VisAudio *audio)
 {
-    visual_log_return_val_if_fail(audio != NULL, NULL);
+    visual_return_val_if_fail(audio != NULL, NULL);
 
     return audio->beat;
 }
@@ -1410,7 +1410,7 @@ VisBeat *visual_audio_get_beat(VisAudio *audio)
 
 static int detect_beat(VisBeatAdv *adv, int32_t loudness)
 {
-    visual_log_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
+    visual_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
 
     int     beat, i, j;
     int32_t     total;
@@ -1519,7 +1519,7 @@ static int detect_beat(VisBeatAdv *adv, int32_t loudness)
 
 int visual_audio_is_beat(VisAudio *audio, VisBeatAlgorithm algo)
 {
-    visual_log_return_val_if_fail(audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
+    visual_return_val_if_fail(audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
     VisBuffer pcm;
     float buffer[BEAT_MAX_SIZE];

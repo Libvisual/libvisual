@@ -62,7 +62,7 @@ static int list_destroy (VisCollection *collection)
 	VisListEntry *le = NULL;
 	void *elem;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
 	destroyer = visual_collection_get_destroyer (collection);
 
@@ -84,7 +84,7 @@ static int list_size (VisCollection *collection)
 {
 	VisList *list = VISUAL_LIST (collection);
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 
 	return list->count;
 }
@@ -175,13 +175,13 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 
 int visual_list_count(VisList *list)
 {
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
 	return list->count;
 }
 
 int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 {
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (list));
@@ -204,8 +204,8 @@ int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 
 void *visual_list_next (VisList *list, VisListEntry **le)
 {
-	visual_log_return_val_if_fail (list != NULL, NULL);
-	visual_log_return_val_if_fail (le != NULL, NULL);
+	visual_return_val_if_fail (list != NULL, NULL);
+	visual_return_val_if_fail (le != NULL, NULL);
 
 	if (*le == NULL)
 		*le = list->head;
@@ -220,8 +220,8 @@ void *visual_list_next (VisList *list, VisListEntry **le)
 
 void *visual_list_prev (VisList *list, VisListEntry **le)
 {
-	visual_log_return_val_if_fail (list != NULL, NULL);
-	visual_log_return_val_if_fail (le != NULL, NULL);
+	visual_return_val_if_fail (list != NULL, NULL);
+	visual_return_val_if_fail (le != NULL, NULL);
 
 	if (!*le)
 		*le = list->tail;
@@ -240,8 +240,8 @@ void *visual_list_get (VisList *list, int index)
 	void *data = NULL;
 	int i, lc;
 
-	visual_log_return_val_if_fail (list != NULL, NULL);
-	visual_log_return_val_if_fail (index >= 0, NULL);
+	visual_return_val_if_fail (list != NULL, NULL);
+	visual_return_val_if_fail (index >= 0, NULL);
 
 	lc = visual_collection_size (VISUAL_COLLECTION (list));
 
@@ -262,7 +262,7 @@ int visual_list_add_at_begin (VisList *list, void *data)
 {
 	VisListEntry *le;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	/* Allocate memory for new list entry */
 	le = visual_mem_new0 (VisListEntry, 1);
@@ -279,7 +279,7 @@ int visual_list_add (VisList *list, void *data)
 {
 	VisListEntry *le;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	le = visual_mem_new0 (VisListEntry, 1);
 
@@ -295,8 +295,8 @@ int visual_list_chain_at_begin (VisList *list, VisListEntry *le)
 {
 	VisListEntry *next;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 
 	if (list->head == NULL) {
 		list->head = le;
@@ -323,8 +323,8 @@ int visual_list_chain (VisList *list, VisListEntry *le)
 {
 	VisListEntry *prev;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 
 	/* Add list entry to list */
 	/* Is this the first entry for this list ? */
@@ -359,8 +359,8 @@ int visual_list_unchain (VisList *list, VisListEntry *le)
 	VisListEntry *prev;
 	VisListEntry *next;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 
 	/* Point new to le's previous entry */
 	prev = le->prev;
@@ -386,9 +386,9 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data)
 {
 	VisListEntry *prev, *next, *current;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
-	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+	visual_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
 
 	current = visual_mem_new0 (VisListEntry, 1);
 
@@ -436,8 +436,8 @@ int visual_list_delete (VisList *list, VisListEntry **le)
 {
 	VisListEntry *next;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 
 	/* Valid list entry ? */
 	if (*le == NULL) {
@@ -460,8 +460,8 @@ int visual_list_destroy (VisList *list, VisListEntry **le)
 {
 	VisCollectionDestroyerFunc destroyer;
 
-	visual_log_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
-	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
+	visual_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 
 	destroyer = visual_collection_get_destroyer (VISUAL_COLLECTION (list));
 

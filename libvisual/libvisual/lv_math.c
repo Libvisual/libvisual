@@ -61,8 +61,8 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 	float *d = dest;
 	float *s = src;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -173,8 +173,8 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 	float *d = dest;
 	float *s = src;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -285,8 +285,8 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 	float *d = dest;
 	float *s = src;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	if (visual_cpu_get_sse () && n >= 16) {
@@ -397,9 +397,9 @@ int visual_math_vectorized_multiplier_floats_floats (float *dest, float *src1, f
 	float *s1 = src1;
 	float *s2 = src2;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -493,8 +493,8 @@ int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_
 	float *s = flts;
 	int32_t *d = ints;
 
-	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -549,8 +549,8 @@ int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_
 	int32_t *s = ints;
 	float *d = flts;
 
-	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -604,8 +604,8 @@ int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts
 	float *s = flts;
 	int32_t *d = ints;
 
-	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -664,8 +664,8 @@ int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints
 	int32_t *s = ints;
 	float *d = flts;
 
-	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	if (visual_cpu_get_3dnow ()) {
@@ -730,8 +730,8 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 	float *s = flts;
 	int32_t *d = ints;
 
-	visual_log_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	if (visual_cpu_get_3dnow ()) {
@@ -801,8 +801,8 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	float *d = dest;
 	float *s = src;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -856,9 +856,9 @@ int visual_math_vectorized_complex_to_norm (float *dest, float *real, float *ima
 	float *r = real;
 	float *i = imag;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -921,9 +921,9 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, floa
 	float *r = real;
 	float *i = imag;
 
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 

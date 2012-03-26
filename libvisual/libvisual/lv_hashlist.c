@@ -95,7 +95,7 @@ VisHashlist *visual_hashlist_new (VisCollectionDestroyerFunc destroyer, int size
 
 int visual_hashlist_init (VisHashlist *hashlist, VisCollectionDestroyerFunc destroyer, int size)
 {
-	visual_log_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
+	visual_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (hashlist));
@@ -123,7 +123,7 @@ int visual_hashlist_clear (VisHashlist *hashlist)
 {
 	VisListEntry *le = NULL;
 
-	visual_log_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
+	visual_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
 
 	/* Destroy all entries in hashlist first */
 	while (visual_list_next (hashlist->list, &le) != NULL)
@@ -143,9 +143,9 @@ int visual_hashlist_put (VisHashlist *hashlist, char *key, void *data)
 	VisHashlistEntry *hentry;
 	VisListEntry *le;
 
-	visual_log_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
-	visual_log_return_val_if_fail (key != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
+	visual_return_val_if_fail (key != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
 
 	le = visual_hashmap_get_string (hashlist->index, key);
 
@@ -174,8 +174,8 @@ int visual_hashlist_remove (VisHashlist *hashlist, char *key)
 {
 	VisListEntry *le;
 
-	visual_log_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
-	visual_log_return_val_if_fail (key != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
+	visual_return_val_if_fail (key != NULL, -VISUAL_ERROR_NULL);
 
 	le = visual_hashmap_get_string (hashlist->index, key);
 
@@ -190,8 +190,8 @@ int visual_hashlist_remove_list_entry (VisHashlist *hashlist, VisListEntry *le)
 	VisCollectionDestroyerFunc destroyer;
 	VisHashlistEntry *hentry;
 
-	visual_log_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
-	visual_log_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
+	visual_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
+	visual_return_val_if_fail (le != NULL, -VISUAL_ERROR_LIST_ENTRY_NULL);
 
 	hentry = le->data;
 
@@ -212,8 +212,8 @@ void *visual_hashlist_get (VisHashlist *hashlist, char *key)
 	VisHashlistEntry *hentry;
 	VisListEntry *le;
 
-	visual_log_return_val_if_fail (hashlist != NULL, NULL);
-	visual_log_return_val_if_fail (key != NULL, NULL);
+	visual_return_val_if_fail (hashlist != NULL, NULL);
+	visual_return_val_if_fail (key != NULL, NULL);
 
 	le = visual_hashmap_get_string (hashlist->index, key);
 
@@ -227,14 +227,14 @@ void *visual_hashlist_get (VisHashlist *hashlist, char *key)
 
 int visual_hashlist_get_size (VisHashlist *hashlist)
 {
-	visual_log_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
+	visual_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
 
 	return visual_collection_size (VISUAL_COLLECTION (hashlist->list));
 }
 
 int visual_hashlist_set_size (VisHashlist *hashlist, int size)
 {
-	visual_log_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
+	visual_return_val_if_fail (hashlist != NULL, -VISUAL_ERROR_HASHLIST_NULL);
 
 	/* FIXME limit size change, rehash the index */
 
@@ -245,7 +245,7 @@ int visual_hashlist_set_size (VisHashlist *hashlist, int size)
 
 VisList *visual_hashlist_get_list (VisHashlist *hashlist)
 {
-	visual_log_return_val_if_fail (hashlist != NULL, NULL);
+	visual_return_val_if_fail (hashlist != NULL, NULL);
 
 	return hashlist->list;
 }

@@ -49,7 +49,7 @@ VisRandomContext *visual_random_context_new (uint32_t seed)
 
 int visual_random_context_init (VisRandomContext *rcontext, uint32_t seed)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
+	visual_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
 
 	/* Do the VisObject initialization */
 	visual_object_clear (VISUAL_OBJECT (rcontext));
@@ -64,7 +64,7 @@ int visual_random_context_init (VisRandomContext *rcontext, uint32_t seed)
 
 int visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
+	visual_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
 
 	rcontext->seed = seed;
 	rcontext->seed_state = seed;
@@ -74,21 +74,21 @@ int visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed)
 
 uint32_t visual_random_context_get_seed (VisRandomContext *rcontext)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, 0);
+	visual_return_val_if_fail (rcontext != NULL, 0);
 
 	return rcontext->seed;
 }
 
 uint32_t visual_random_context_get_seed_state (VisRandomContext *rcontext)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, 0);
+	visual_return_val_if_fail (rcontext != NULL, 0);
 
 	return rcontext->seed_state;
 }
 
 uint32_t visual_random_context_int (VisRandomContext *rcontext)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, 0);
+	visual_return_val_if_fail (rcontext != NULL, 0);
 
 	return (rcontext->seed_state = val_a * rcontext->seed_state + val_c);
 }
@@ -101,11 +101,11 @@ uint32_t visual_random_context_int_range (VisRandomContext *rcontext, int min, i
 	 */
 	float fm = min; /* +10% speedup... */
 
-	visual_log_return_val_if_fail (rcontext != NULL, 0);
+	visual_return_val_if_fail (rcontext != NULL, 0);
 
 	return visual_random_context_float (rcontext) * (max - min + 1) + fm;
 #else
-	visual_log_return_val_if_fail (rcontext != NULL, 0);
+	visual_return_val_if_fail (rcontext != NULL, 0);
 
 	return (visual_random_context_int (rcontext) / (VISUAL_RANDOM_MAX / (max - min + 1))) + min;
 #endif
@@ -121,7 +121,7 @@ double visual_random_context_double (VisRandomContext *rcontext)
 #endif
 	uint32_t irnd;
 
-	visual_log_return_val_if_fail (rcontext != NULL, -1);
+	visual_return_val_if_fail (rcontext != NULL, -1);
 
 	irnd = (rcontext->seed_state = val_a * rcontext->seed_state + val_c);
 #if VISUAL_RANDOM_FAST_FP_RND
@@ -150,7 +150,7 @@ float visual_random_context_float (VisRandomContext *rcontext)
 #endif
 	uint32_t irnd;
 
-	visual_log_return_val_if_fail (rcontext != NULL, -1);
+	visual_return_val_if_fail (rcontext != NULL, -1);
 
 	irnd = (rcontext->seed_state = val_a * rcontext->seed_state + val_c);
 #if VISUAL_RANDOM_FAST_FP_RND
@@ -168,7 +168,7 @@ float visual_random_context_float (VisRandomContext *rcontext)
 
 int visual_random_context_decide (VisRandomContext *rcontext, float a)
 {
-	visual_log_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
+	visual_return_val_if_fail (rcontext != NULL, -VISUAL_ERROR_RANDOM_CONTEXT_NULL);
 
 	return visual_random_context_float (rcontext) <= a;
 }

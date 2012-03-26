@@ -210,15 +210,15 @@ int visual_thread_is_supported ()
 
 VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 {
-	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, NULL);
-	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, NULL);
-	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_initialized () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_supported () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_enabled () != FALSE, NULL);
 
 	return __lv_thread_funcs.thread_create (func, data, joinable);
 }
 int visual_thread_free (VisThread *thread)
 {
-	visual_log_return_val_if_fail (thread != NULL, -VISUAL_ERROR_THREAD_NULL);
+	visual_return_val_if_fail (thread != NULL, -VISUAL_ERROR_THREAD_NULL);
 
 	if (visual_thread_is_supported () == FALSE) {
 		visual_log (VISUAL_LOG_WARNING, _("Tried freeing thread memory while threading is not supported, simply freeing mem"));
@@ -231,45 +231,45 @@ int visual_thread_free (VisThread *thread)
 
 void *visual_thread_join (VisThread *thread)
 {
-	visual_log_return_val_if_fail (thread != NULL, NULL);
+	visual_return_val_if_fail (thread != NULL, NULL);
 
-	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, NULL);
-	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, NULL);
-	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_initialized () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_supported () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_enabled () != FALSE, NULL);
 
 	return __lv_thread_funcs.thread_join (thread);
 }
 
 void visual_thread_exit (void *retval)
 {
-	visual_log_return_if_fail (visual_thread_is_initialized () != FALSE);
-	visual_log_return_if_fail (visual_thread_is_supported () != FALSE);
-	visual_log_return_if_fail (visual_thread_is_enabled () != FALSE);
+	visual_return_if_fail (visual_thread_is_initialized () != FALSE);
+	visual_return_if_fail (visual_thread_is_supported () != FALSE);
+	visual_return_if_fail (visual_thread_is_enabled () != FALSE);
 
 	return __lv_thread_funcs.thread_exit (retval);
 }
 
 void visual_thread_yield ()
 {
-	visual_log_return_if_fail (visual_thread_is_initialized () != FALSE);
-	visual_log_return_if_fail (visual_thread_is_supported () != FALSE);
-	visual_log_return_if_fail (visual_thread_is_enabled () != FALSE);
+	visual_return_if_fail (visual_thread_is_initialized () != FALSE);
+	visual_return_if_fail (visual_thread_is_supported () != FALSE);
+	visual_return_if_fail (visual_thread_is_enabled () != FALSE);
 
 	return __lv_thread_funcs.thread_yield ();
 }
 
 VisMutex *visual_mutex_new ()
 {
-	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, NULL);
-	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, NULL);
-	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_initialized () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_supported () != FALSE, NULL);
+	visual_return_val_if_fail (visual_thread_is_enabled () != FALSE, NULL);
 
 	return __lv_thread_funcs.mutex_new ();
 }
 
 int visual_mutex_free (VisMutex *mutex)
 {
-	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
+	visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
 	if (visual_thread_is_supported () == FALSE) {
 		visual_log (VISUAL_LOG_WARNING, _("Tried freeing mutex memory while threading is not supported, simply freeing mem"));
@@ -282,44 +282,44 @@ int visual_mutex_free (VisMutex *mutex)
 
 int visual_mutex_init (VisMutex *mutex)
 {
-	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
+	visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
-	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
-	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
-	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
+	visual_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
+	visual_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+	visual_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
 
 	return __lv_thread_funcs.mutex_init (mutex);
 }
 
 int visual_mutex_lock (VisMutex *mutex)
 {
-	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
+	visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
-	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
-	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
-	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
+	visual_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
+	visual_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+	visual_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
 
 	return __lv_thread_funcs.mutex_lock (mutex);
 }
 
 int visual_mutex_trylock (VisMutex *mutex)
 {
-	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
+	visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
-	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
-	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
-	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
+	visual_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
+	visual_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+	visual_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
 
 	return __lv_thread_funcs.mutex_trylock (mutex);
 }
 
 int visual_mutex_unlock (VisMutex *mutex)
 {
-	visual_log_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
+	visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
-	visual_log_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
-	visual_log_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
-	visual_log_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
+	visual_return_val_if_fail (visual_thread_is_initialized () != FALSE, -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
+	visual_return_val_if_fail (visual_thread_is_supported () != FALSE, -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+	visual_return_val_if_fail (visual_thread_is_enabled () != FALSE, -VISUAL_ERROR_THREAD_NOT_ENABLED);
 
 	return __lv_thread_funcs.mutex_unlock (mutex);
 }
@@ -567,7 +567,7 @@ static void *thread_join_gthread (VisThread *thread)
 {
 	gpointer result;
 
-	visual_log_return_val_if_fail (thread->thread != NULL, NULL);
+	visual_return_val_if_fail (thread->thread != NULL, NULL);
 
 	result = g_thread_join (thread->thread);
 
@@ -600,7 +600,7 @@ static VisMutex *mutex_new_gthread ()
 
 static int mutex_free_gthread (VisMutex *mutex)
 {
-	visual_log_return_val_if_fail (mutex->mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
+	visual_return_val_if_fail (mutex->mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
 	g_mutex_free (mutex->mutex);
 

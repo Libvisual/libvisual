@@ -305,7 +305,7 @@ static int load_new_file (PixbufPrivate *priv, const char *filename)
 	priv->filename = strdup (filename);
 
 	priv->pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
-	visual_log_return_val_if_fail (priv->pixbuf != NULL, -1);
+	visual_return_val_if_fail (priv->pixbuf != NULL, -1);
 
 	return update_scaled_pixbuf (priv);
 }
@@ -372,12 +372,12 @@ static int update_scaled_pixbuf (PixbufPrivate *priv)
 			priv->scaled = gdk_pixbuf_scale_simple (priv->pixbuf, priv->width, priv->height, inter);
 		}
 
-		visual_log_return_val_if_fail (priv->scaled != NULL, -1);
+		visual_return_val_if_fail (priv->scaled != NULL, -1);
 
 		update_into_visvideo (priv, priv->scaled);
 
 	} else {
-		visual_log_return_val_if_fail (priv->pixbuf != NULL, -1);
+		visual_return_val_if_fail (priv->pixbuf != NULL, -1);
 
 		update_into_visvideo (priv, priv->pixbuf);
 

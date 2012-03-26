@@ -162,8 +162,8 @@ VisPluginInfo *visual_plugin_info_new ()
 
 int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 {
-	visual_log_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
-	visual_log_return_val_if_fail (src != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
+	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
+	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 
 	visual_mem_copy (dest, src, sizeof (VisPluginInfo));
 
@@ -180,7 +180,7 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 
 int visual_plugin_events_pump (VisPluginData *plugin)
 {
-	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	if (plugin->info->events != NULL) {
 		plugin->info->events (plugin, &plugin->eventqueue);
@@ -193,28 +193,28 @@ int visual_plugin_events_pump (VisPluginData *plugin)
 
 VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
 {
-	visual_log_return_val_if_fail (plugin != NULL, NULL);
+	visual_return_val_if_fail (plugin != NULL, NULL);
 
 	return &plugin->eventqueue;
 }
 
 VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
 {
-	visual_log_return_val_if_fail (plugin != NULL, NULL);
+	visual_return_val_if_fail (plugin != NULL, NULL);
 
 	return plugin->info;
 }
 
 VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
 {
-	visual_log_return_val_if_fail (plugin != NULL, NULL);
+	visual_return_val_if_fail (plugin != NULL, NULL);
 
 	return plugin->params;
 }
 
 VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
 {
-	visual_log_return_val_if_fail (plugin != NULL, NULL);
+	visual_return_val_if_fail (plugin != NULL, NULL);
 
 	return &plugin->random;
 }
@@ -223,10 +223,10 @@ void *visual_plugin_get_specific (VisPluginData *plugin)
 {
 	VisPluginInfo *pluginfo;
 
-	visual_log_return_val_if_fail (plugin != NULL, NULL);
+	visual_return_val_if_fail (plugin != NULL, NULL);
 
 	pluginfo = visual_plugin_get_info (plugin);
-	visual_log_return_val_if_fail (pluginfo != NULL, NULL);
+	visual_return_val_if_fail (pluginfo != NULL, NULL);
 
 	return pluginfo->plugin;
 }
@@ -269,7 +269,7 @@ VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain)
 	VisPluginRef *ref;
 	int ret;
 
-	visual_log_return_val_if_fail (pluglist != NULL, NULL);
+	visual_return_val_if_fail (pluglist != NULL, NULL);
 
 	list = visual_list_new (visual_object_collection_destroyer);
 
@@ -304,7 +304,7 @@ const char *visual_plugin_get_next_by_name (VisList *list, const char *name)
 	VisPluginRef *ref;
 	int tagged = FALSE;
 
-	visual_log_return_val_if_fail (list != NULL, NULL);
+	visual_return_val_if_fail (list != NULL, NULL);
 
 	while ((ref = visual_list_next (list, &entry)) != NULL) {
 		if (name == NULL)
@@ -325,7 +325,7 @@ const char *visual_plugin_get_prev_by_name (VisList *list, const char *name)
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref, *pref = NULL;
 
-	visual_log_return_val_if_fail (list != NULL, NULL);
+	visual_return_val_if_fail (list != NULL, NULL);
 
 	if (name == NULL) {
 		ref = visual_list_get (list, visual_collection_size (VISUAL_COLLECTION (list)) - 1);
@@ -450,7 +450,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 {
 	VisPluginRef *ref;
 
-	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	ref = plugin->ref;
 
@@ -505,8 +505,8 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 #endif
 	int cnt;
 
-	visual_log_return_val_if_fail (ref != NULL, NULL);
-	visual_log_return_val_if_fail (ref->info != NULL, NULL);
+	visual_return_val_if_fail (ref != NULL, NULL);
+	visual_return_val_if_fail (ref->info != NULL, NULL);
 
 	/* Check if this plugin is reentrant */
 	if (ref->usecount > 0 && (ref->info->flags & VISUAL_PLUGIN_FLAG_NOT_REENTRANT)) {
@@ -586,7 +586,7 @@ int visual_plugin_realize (VisPluginData *plugin)
 {
 	VisParamContainer *paramcontainer;
 
-	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
 	if (plugin->realized == TRUE)
 		return -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED;
@@ -613,7 +613,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 #endif
 	int cnt = 1, i;
 
-	visual_log_return_val_if_fail (pluginpath != NULL, NULL);
+	visual_return_val_if_fail (pluginpath != NULL, NULL);
 
 #if defined(VISUAL_OS_WIN32)
 	handle = LoadLibrary (pluginpath);
@@ -735,8 +735,8 @@ VisPluginRef *visual_plugin_find (VisList *list, const char *name)
 	VisListEntry *entry = NULL;
 	VisPluginRef *ref;
 
-	visual_log_return_val_if_fail (list != NULL, NULL);
-	visual_log_return_val_if_fail (name != NULL, NULL);
+	visual_return_val_if_fail (list != NULL, NULL);
+	visual_return_val_if_fail (name != NULL, NULL);
 
 	while ((ref = visual_list_next (list, &entry)) != NULL) {
 
@@ -757,14 +757,14 @@ int visual_plugin_get_api_version ()
 
 const char *visual_plugin_type_get_domain (const char *type)
 {
-	visual_log_return_val_if_fail (type != NULL, NULL);
+	visual_return_val_if_fail (type != NULL, NULL);
 
 	return get_delim_node (type, ':', 0);
 }
 
 const char *visual_plugin_type_get_package (const char *type)
 {
-	visual_log_return_val_if_fail (type != NULL, NULL);
+	visual_return_val_if_fail (type != NULL, NULL);
 
 	return get_delim_node (type, ':', 1);
 }
@@ -775,7 +775,7 @@ const char *visual_plugin_type_get_type (const char *type)
 	char *flags;
 	char *typestr;
 
-	visual_log_return_val_if_fail (type != NULL, NULL);
+	visual_return_val_if_fail (type != NULL, NULL);
 
 	str = get_delim_node (type, ':', 2);
 
@@ -798,7 +798,7 @@ VisPluginTypeDepth visual_plugin_type_get_depth (const char *type)
 {
 	int i = 0;
 
-	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
 
 	while (i < VISUAL_PLUGIN_TYPE_DEPTH_TYPE) {
 		char *part;
@@ -825,8 +825,8 @@ int visual_plugin_type_member_of (const char *domain, const char *type)
 	int diff = 0;
 	int i = 0;
 
-	visual_log_return_val_if_fail (domain != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (domain != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
 
 	ndomain = visual_mem_malloc0 (strlen (domain) + 1);
 	tmp = strchr (domain, '.');
@@ -874,7 +874,7 @@ const char *visual_plugin_type_get_flags (const char *type)
 	char *flagsret;
 	char *flagstr;
 
-	visual_log_return_val_if_fail (type != NULL, NULL);
+	visual_return_val_if_fail (type != NULL, NULL);
 
 	flagstr = strstr (type, ".[");
 
@@ -896,8 +896,8 @@ int visual_plugin_type_has_flag (const char *type, const char *flag)
 	char *flags;
 	char *nflag, *s;
 
-	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
-	visual_log_return_val_if_fail (flag != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (flag != NULL, -VISUAL_ERROR_NULL);
 
 	nflag = flags = (char *) visual_plugin_type_get_flags (type);
 
@@ -946,9 +946,9 @@ VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj
 
 int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve)
 {
-	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
-	visual_log_return_val_if_fail (enve != NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL);
-	visual_log_return_val_if_fail (enve->type != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_return_val_if_fail (enve != NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL);
+	visual_return_val_if_fail (enve->type != NULL, -VISUAL_ERROR_NULL);
 
 	visual_plugin_environ_remove (plugin, enve->type);
 
@@ -960,8 +960,8 @@ int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
 	VisPluginEnviron *enve;
 	VisListEntry *le = NULL;
 
-	visual_log_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
-	visual_log_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
+	visual_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+	visual_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
 
 	while ((enve = visual_list_next (&plugin->environment, &le)) != NULL) {
 
@@ -983,8 +983,8 @@ VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
 	VisPluginEnviron *enve;
 	VisListEntry *le = NULL;
 
-	visual_log_return_val_if_fail (plugin != NULL, NULL);
-	visual_log_return_val_if_fail (type != NULL, NULL);
+	visual_return_val_if_fail (plugin != NULL, NULL);
+	visual_return_val_if_fail (type != NULL, NULL);
 
 	while ((enve = visual_list_next (&plugin->environment, &le)) != NULL) {
 

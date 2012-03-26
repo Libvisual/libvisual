@@ -213,7 +213,7 @@ int visual_error_raise (void)
 
 int visual_error_set_handler (VisErrorHandlerFunc handler, void *priv)
 {
-	visual_log_return_val_if_fail (handler != NULL, -VISUAL_ERROR_ERROR_HANDLER_NULL);
+	visual_return_val_if_fail (handler != NULL, -VISUAL_ERROR_ERROR_HANDLER_NULL);
 
 	error_handler = handler;
 	error_handler_priv = priv;

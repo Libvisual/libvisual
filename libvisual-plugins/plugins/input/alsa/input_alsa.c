@@ -102,10 +102,10 @@ int inp_alsa_init (VisPluginData *plugin)
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
 
-	visual_log_return_val_if_fail(plugin != NULL, -1);
+	visual_return_val_if_fail(plugin != NULL, -1);
 
 	priv = visual_mem_new0 (alsaPrivate, 1);
-	visual_log_return_val_if_fail(priv != NULL, -1);
+	visual_return_val_if_fail(priv != NULL, -1);
 
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
@@ -117,7 +117,7 @@ int inp_alsa_init (VisPluginData *plugin)
 	}
 
 	snd_pcm_hw_params_malloc(&hwparams);
-	visual_log_return_val_if_fail(hwparams != NULL, -1);
+	visual_return_val_if_fail(hwparams != NULL, -1);
 
 	if (snd_pcm_hw_params_any(priv->chandle, hwparams) < 0) {
 		visual_log(VISUAL_LOG_ERROR,
@@ -208,9 +208,9 @@ int inp_alsa_cleanup (VisPluginData *plugin)
 {
 	alsaPrivate *priv = NULL;
 
-	visual_log_return_val_if_fail(plugin != NULL, -1);
+	visual_return_val_if_fail(plugin != NULL, -1);
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	visual_log_return_val_if_fail(priv != NULL, -1);
+	visual_return_val_if_fail(priv != NULL, -1);
 
 	if (priv->loaded == 1)
 		snd_pcm_close(priv->chandle);
@@ -226,10 +226,10 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 	alsaPrivate *priv = NULL;
 	int rcnt;
 
-	visual_log_return_val_if_fail(audio != NULL, -1);
-	visual_log_return_val_if_fail(plugin != NULL, -1);
+	visual_return_val_if_fail(audio != NULL, -1);
+	visual_return_val_if_fail(plugin != NULL, -1);
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	visual_log_return_val_if_fail(priv != NULL, -1);
+	visual_return_val_if_fail(priv != NULL, -1);
 
 #if 0
 	{	/* DEBUG STUFF, REMOVE IN RELEASE FIXME FIXME XXX TODO WHATEVER */

@@ -115,9 +115,9 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
 static int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv = NULL;
 
-    visual_log_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
     priv = visual_object_get_private(VISUAL_OBJECT( plugin));
-    visual_log_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
 
     priv->td.end = 1;
 
@@ -135,12 +135,12 @@ static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
     pulseaudio_priv_t *priv = NULL;
     VisBuffer buffer;
 
-    visual_log_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
-    visual_log_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
 
     priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
-    visual_log_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
     if(priv->pcm_data == NULL)
         return 0;

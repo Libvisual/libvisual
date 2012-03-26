@@ -117,7 +117,7 @@ static int lv_nastyfft_init (VisPluginData *plugin)
 {
 	NastyfftPrivate *priv;
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_mem_new0 (NastyfftPrivate, 1);
 
@@ -156,7 +156,7 @@ static int lv_nastyfft_cleanup (VisPluginData *plugin)
 {
 	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	visual_mem_free (priv);
 
@@ -191,9 +191,9 @@ static int lv_nastyfft_dimension (VisPluginData *plugin, VisVideo *video, int wi
 {
 	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_return_val_if_fail (video != NULL, -1);
 
 	visual_video_set_dimension (video, width, height);
 
@@ -211,7 +211,7 @@ static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
 
 	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -270,9 +270,9 @@ static int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 {
 	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
-	visual_log_return_val_if_fail (video != NULL, -1);
-	visual_log_return_val_if_fail (audio != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (video != NULL, -1);
+	visual_return_val_if_fail (audio != NULL, -1);
 
 	nastyfft_sound (priv, audio);
 	nastyfft_draw (priv, video);

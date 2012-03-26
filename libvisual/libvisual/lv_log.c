@@ -69,7 +69,7 @@ void visual_log_set_message_handler (VisLogSeverity severity, VisLogMessageHandl
 {
 	MessageHandler *handler;
 
-	visual_log_return_if_fail (is_valid_severity (severity));
+	visual_return_if_fail (is_valid_severity (severity));
 
 	handler = &message_handlers[severity];
 	handler->func = func;
@@ -86,8 +86,8 @@ void _lv_log (VisLogSeverity severity, const char *file,
 	char str[LV_LOG_MAX_MESSAGE_SIZE];
 	va_list va;
 
-	visual_log_return_if_fail (is_valid_severity (severity));
-	visual_log_return_if_fail (fmt != NULL);
+	visual_return_if_fail (is_valid_severity (severity));
+	visual_return_if_fail (fmt != NULL);
 
 	if (verboseness > severity)
 		 return;
@@ -117,8 +117,8 @@ void visual_log (VisLogSeverity severity, const char *fmt, ...)
 	MessageHandler *handler;
 	char str[LV_LOG_MAX_MESSAGE_SIZE];
 
-	visual_log_return_if_fail (is_valid_severity (severity));
-	visual_log_return_if_fail (fmt != NULL);
+	visual_return_if_fail (is_valid_severity (severity));
+	visual_return_if_fail (fmt != NULL);
 
 	if (verboseness > severity)
 		 return;

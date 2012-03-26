@@ -134,10 +134,10 @@ static int inp_mplayer_init( VisPluginData *plugin )
 
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_log_return_val_if_fail( plugin != NULL, -1 );
+	visual_return_val_if_fail( plugin != NULL, -1 );
 
-	visual_log_return_val_if_fail( priv != NULL, -1 );
-	visual_log_return_val_if_fail( priv->sharedfile != NULL, -1 );
+	visual_return_val_if_fail( priv != NULL, -1 );
+	visual_return_val_if_fail( priv->sharedfile != NULL, -1 );
 
 	priv->fd = open( priv->sharedfile, O_RDONLY );
 
@@ -156,7 +156,7 @@ static int inp_mplayer_init( VisPluginData *plugin )
 
 	priv->mmap_area = mmap( 0, sizeof( mplayer_data_t ),
 			PROT_READ, MAP_SHARED, priv->fd, 0 );
-	visual_log_return_val_if_fail( (intptr_t)priv->mmap_area != -1, -1 );
+	visual_return_val_if_fail( (intptr_t)priv->mmap_area != -1, -1 );
 
 	if ( priv->mmap_area->nch == 0 )
 	{
@@ -208,9 +208,9 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 	int unclean = 0;
 	mplayer_priv_t *priv = NULL;
 
-	visual_log_return_val_if_fail( plugin != NULL, -1 );
+	visual_return_val_if_fail( plugin != NULL, -1 );
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	visual_log_return_val_if_fail( priv != NULL, -1 );
+	visual_return_val_if_fail( priv != NULL, -1 );
 
 	if ( priv->loaded == 1 )
 	{
@@ -264,11 +264,11 @@ static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 {
 	mplayer_priv_t *priv = NULL;
 
-	visual_log_return_val_if_fail( audio != NULL, -1 );
-	visual_log_return_val_if_fail( plugin != NULL, -1 );
+	visual_return_val_if_fail( audio != NULL, -1 );
+	visual_return_val_if_fail( plugin != NULL, -1 );
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	visual_log_return_val_if_fail( priv != NULL, -1 );
-	visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
+	visual_return_val_if_fail( priv != NULL, -1 );
+	visual_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
 	visual_mem_copy( audio->plugpcm,
 			((void *)priv->mmap_area) + sizeof( mplayer_data_t ),

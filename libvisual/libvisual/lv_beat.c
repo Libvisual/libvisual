@@ -127,7 +127,7 @@ VisBeat *visual_beat_new()
 
 int visual_beat_init(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
+    visual_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
 
     beat->TCUsed=0;
     beat->topConfidenceCount=0;
@@ -212,7 +212,7 @@ VisBeatAdv *visual_beat_adv_new()
 
 int visual_beat_adv_init(VisBeatAdv *adv)
 {
-    visual_log_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
+    visual_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
 
     adv->beathistory = visual_mem_malloc0(BEAT_ADV_MAX * sizeof(int32_t));
     adv->aged = 0;
@@ -235,7 +235,7 @@ int visual_beat_adv_init(VisBeatAdv *adv)
 
 int visual_beat_set_config(VisBeat *beat, int smartbeat, int smartbeatsticky, int smartbeatresetnewsong, int smartbeatonlysticky)
 {
-    visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
+    visual_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
 
     beat->cfg_smartbeat = smartbeat;
     beat->cfg_smartbeatsticky = smartbeatsticky;
@@ -247,7 +247,7 @@ int visual_beat_set_config(VisBeat *beat, int smartbeat, int smartbeatsticky, in
 
 int visual_beat_set_smartbeat(VisBeat *beat, int smartbeat)
 {
-    visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
+    visual_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
 
     beat->cfg_smartbeat = smartbeat;
 
@@ -256,7 +256,7 @@ int visual_beat_set_smartbeat(VisBeat *beat, int smartbeat)
 
 int visual_beat_set_smartbeat_sticky(VisBeat *beat, int smartbeatsticky)
 {
-    visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
+    visual_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
 
     beat->cfg_smartbeatsticky = smartbeatsticky;
 
@@ -265,7 +265,7 @@ int visual_beat_set_smartbeat_sticky(VisBeat *beat, int smartbeatsticky)
 
 int visual_beat_set_smartbeat_reset_on_newsong(VisBeat *beat, int smartbeatresetnewsong)
 {
-    visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
+    visual_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
 
     beat->cfg_smartbeatresetnewsong = smartbeatresetnewsong;
 
@@ -274,7 +274,7 @@ int visual_beat_set_smartbeat_reset_on_newsong(VisBeat *beat, int smartbeatreset
 
 int visual_beat_set_smartbeat_only_sticky(VisBeat *beat, int smartbeatonlysticky)
 {
-    visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
+    visual_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
 
     beat->cfg_smartbeatonlysticky = smartbeatonlysticky;
 
@@ -283,7 +283,7 @@ int visual_beat_set_smartbeat_only_sticky(VisBeat *beat, int smartbeatonlysticky
 
 int visual_beat_change_song(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
+    visual_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
 
     beat->new_song = TRUE;
 
@@ -292,9 +292,9 @@ int visual_beat_change_song(VisBeat *beat)
 
 char *visual_beat_get_info(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, NULL);
+    visual_return_val_if_fail(beat != NULL, NULL);
 
-    visual_log_return_val_if_fail(beat->txt != NULL, NULL);
+    visual_return_val_if_fail(beat->txt != NULL, NULL);
 
     /*if(beat->oldDisplayBpm != beat->predictionBpm || beat->oldsticked != beat->sticked)
     {
@@ -317,7 +317,7 @@ char *visual_beat_get_info(VisBeat *beat)
 
 int visual_beat_reset_adapt(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
+    visual_return_val_if_fail(beat != NULL, -VISUAL_ERROR_BEAT_NULL);
 
     // Reset adaptive learning
     beat->TCUsed=0;
@@ -351,14 +351,14 @@ int visual_beat_reset_adapt(VisBeat *beat)
 
 int visual_beat_slider_get(VisBeat *beat, VisBeatSlider slider)
 {
-    visual_log_return_val_if_fail(beat != NULL, 0);
+    visual_return_val_if_fail(beat != NULL, 0);
 
     return slider == VISUAL_BEAT_SLIDE_IN ? beat->inInc : beat->outInc;
 }
 
 int visual_beat_refine_beat(VisBeat *beat, int isBeat)
 {
-    visual_log_return_val_if_fail(beat != NULL, 0);
+    visual_return_val_if_fail(beat != NULL, 0);
 
     int accepted=FALSE;
     int predicted=FALSE;
@@ -487,21 +487,21 @@ int visual_beat_refine_beat(VisBeat *beat, int isBeat)
 
 VisBeatPeak *visual_beat_get_peak(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, NULL);
+    visual_return_val_if_fail(beat != NULL, NULL);
 
     return &beat->peak;
 }
 
 VisBeatAdv *visual_beat_get_adv(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, NULL);
+    visual_return_val_if_fail(beat != NULL, NULL);
 
     return beat->adv;
 }
 
 int visual_beat_adv_set_config(VisBeatAdv *adv, int sensitivity, int max_bpm, int thick_on_beats)
 {
-    visual_log_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
+    visual_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
 
     adv->cfg_sensitivity = sensitivity;
     adv->cfg_max_detect = max_bpm;
@@ -512,7 +512,7 @@ int visual_beat_adv_set_config(VisBeatAdv *adv, int sensitivity, int max_bpm, in
 
 int visual_beat_adv_set_sensitivity(VisBeatAdv *adv, int sensitivity)
 {
-    visual_log_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
+    visual_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
 
     adv->cfg_sensitivity = sensitivity;
 
@@ -521,7 +521,7 @@ int visual_beat_adv_set_sensitivity(VisBeatAdv *adv, int sensitivity)
 
 int visual_beat_adv_set_max_detect(VisBeatAdv *adv, int max_bpm)
 {
-    visual_log_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
+    visual_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
 
     adv->cfg_max_detect = max_bpm;
 
@@ -530,7 +530,7 @@ int visual_beat_adv_set_max_detect(VisBeatAdv *adv, int max_bpm)
 
 int visual_beat_adv_set_thick_on_beats(VisBeatAdv *adv, int thick_on_beats)
 {
-    visual_log_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
+    visual_return_val_if_fail(adv != NULL, -VISUAL_ERROR_BEAT_ADV_NULL);
 
     adv->cfg_thick_on_beats = thick_on_beats;
 
@@ -540,7 +540,7 @@ int visual_beat_adv_set_thick_on_beats(VisBeatAdv *adv, int thick_on_beats)
 // The song changed or not. User sets flag with visual_beat_change_song()
 int beat_song_changed(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, FALSE);
+    visual_return_val_if_fail(beat != NULL, FALSE);
 
     if(beat->new_song)
     {
@@ -554,7 +554,7 @@ int beat_song_changed(VisBeat *beat)
 // Insert a beat in history table. May be either real beat or guessed
 void beat_insert_hist_step(VisBeat *beat, VisBeatType *t, clock_t TC, int type, int i)
 {
-    visual_log_return_if_fail(beat != NULL);
+    visual_return_if_fail(beat != NULL);
 
     if (i >= beat->TCHistSize) return;
     if (beat->insertionCount < beat->TCHistSize*2)
@@ -567,7 +567,7 @@ void beat_insert_hist_step(VisBeat *beat, VisBeatType *t, clock_t TC, int type, 
 // Doubles current beat
 void beat_double_beat(VisBeat *beat)
 {
-    visual_log_return_if_fail(beat != NULL)
+    visual_return_if_fail(beat != NULL)
 
     int i;
     int iv[8];
@@ -591,7 +591,7 @@ void beat_double_beat(VisBeat *beat)
 // Halfs current beat
 void beat_half_beat(VisBeat *beat)
 {
-    visual_log_return_if_fail(beat != NULL);
+    visual_return_if_fail(beat != NULL);
 
     int i;
     int iv[8];
@@ -617,7 +617,7 @@ void beat_half_beat(VisBeat *beat)
 
 int beat_TC_hist_step(VisBeat *beat, VisBeatType *t, int *_hdPos, clock_t TC, int type)
 {
-    visual_log_return_val_if_fail(beat != NULL, FALSE);
+    visual_return_val_if_fail(beat != NULL, FALSE);
 
     int offI;
     clock_t thisLen;
@@ -664,7 +664,7 @@ int beat_TC_hist_step(VisBeat *beat, VisBeatType *t, int *_hdPos, clock_t TC, in
 // Am i ready to learn ?
 int beat_ready_to_learn(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, FALSE);
+    visual_return_val_if_fail(beat != NULL, FALSE);
 
     int i;
     for (i=0; i < beat->TCHistSize;i++)
@@ -676,14 +676,14 @@ int beat_ready_to_learn(VisBeat *beat)
 // Am i ready to guess ?
 int beat_ready_to_guess(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, FALSE);
+    visual_return_val_if_fail(beat != NULL, FALSE);
 
     return beat->insertionCount == beat->TCHistSize*2;
 }
 
 void beat_new_bpm(VisBeat *beat, int thisBpm)
 {
-    visual_log_return_if_fail(beat != NULL);
+    visual_return_if_fail(beat != NULL);
 
     beat->smoother[beat->smPtr++] = thisBpm;
     beat->smPtr %= beat->smSize;
@@ -691,7 +691,7 @@ void beat_new_bpm(VisBeat *beat, int thisBpm)
 
 int beat_get_bpm(VisBeat *beat)
 {
-    visual_log_return_val_if_fail(beat != NULL, 0);
+    visual_return_val_if_fail(beat != NULL, 0);
 
     int i;
     int smN=0;
@@ -711,7 +711,7 @@ int beat_get_bpm(VisBeat *beat)
 // Calculate BPM according to beat history
 void beat_calc_bpm(VisBeat *beat)
 {
-    visual_log_return_if_fail(beat != NULL);
+    visual_return_if_fail(beat != NULL);
 
     int i;
     int hdCount=0;
@@ -837,7 +837,7 @@ void beat_calc_bpm(VisBeat *beat)
 
 void beat_slider_step(VisBeat *beat, int Ctl, int *slide)
 {
-    visual_log_return_if_fail(beat != NULL);
+    visual_return_if_fail(beat != NULL);
 
     *slide += Ctl == VISUAL_BEAT_SLIDE_IN ? beat->inInc : beat->outInc;
 

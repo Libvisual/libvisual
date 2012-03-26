@@ -31,6 +31,28 @@
  * @{
  */
 
+/**
+ * Return if @a expr is FALSE, showing a critical message with
+ * useful information.
+ */
+#define visual_return_if_fail(expr)			\
+	if (!(expr)) {								\
+		visual_log (VISUAL_LOG_WARNING,			\
+			"Assertion `%s' failed", #expr);	\
+		return;									\
+	}
+
+/**
+ * Return if @a val if @a expr is FALSE, showing a critical message
+ * with useful information.
+ */
+#define visual_return_val_if_fail(expr, val)	\
+	if (!(expr)) {									\
+		visual_log (VISUAL_LOG_WARNING,				\
+			"Assertion `%s' failed", #expr);		\
+		return (val);								\
+	}
+
 VISUAL_BEGIN_DECLS
 
 /* WARNING when you add an new error to this list, make sure that you update lv_error.c it's

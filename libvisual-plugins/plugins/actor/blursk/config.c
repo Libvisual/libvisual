@@ -275,7 +275,7 @@ static void _change_color(BlurskPrivate *priv, uint32_t **color, VisParamEntry *
 static void _change_string(BlurskPrivate *priv, char **string,
                            VisParamEntry *p, int *(validator)(void *value))
 {
-    visual_log_return_if_fail(visual_param_entry_get_string(p));
+    visual_return_if_fail(visual_param_entry_get_string(p));
 
     if(!validator || validator(visual_param_entry_get_string(p)))
     {
