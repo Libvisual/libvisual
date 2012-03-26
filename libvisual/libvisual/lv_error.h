@@ -201,30 +201,6 @@ enum {
 	VISUAL_ERROR_TIME_NO_USLEEP,			/**< visual_time_usleep is not working on this system. */
 	VISUAL_ERROR_TIMER_NULL,			/**< The VisTimer is NULL. */
 
-	/* Error entries for the VisUI system */
-	VISUAL_ERROR_UI_WIDGET_NULL,			/**< The VisUIWidget is NULL. */
-	VISUAL_ERROR_UI_CONTAINER_NULL,			/**< The VisUIContainer is NULL. */
-	VISUAL_ERROR_UI_BOX_NULL,			/**< The VisUIBox is NULL. */
-	VISUAL_ERROR_UI_TABLE_NULL,			/**< The VisUITable is NULL. */
-	VISUAL_ERROR_UI_NOTEBOOK_NULL,			/**< The VisUINotebook is NULL. */
-	VISUAL_ERROR_UI_FRAME_NULL,			/**< The VisUIFrame is NULL. */
-	VISUAL_ERROR_UI_LABEL_NULL,			/**< The VisUILabel is NULL. */
-	VISUAL_ERROR_UI_IMAGE_NULL,			/**< The VisUIImage is NULL. */
-	VISUAL_ERROR_UI_SEPARATOR_NULL,			/**< The VisUISperator is NULL. */
-	VISUAL_ERROR_UI_MUTATOR_NULL,			/**< The VisUIMutator is NULL. */
-	VISUAL_ERROR_UI_RANGE_NULL,			/**< The VisUIRange is NULL. */
-	VISUAL_ERROR_UI_ENTRY_NULL,			/**< The VisUIEntry is NULL. */
-	VISUAL_ERROR_UI_SLIDER_NULL,			/**< The VisUISlider is NULL. */
-	VISUAL_ERROR_UI_NUMERIC_NULL,			/**< The VisUINumeric is NULL. */
-	VISUAL_ERROR_UI_COLOR_NULL,			/**< The VisUIColor is NULL. */
-	VISUAL_ERROR_UI_CHOICE_NULL,			/**< The VisUIChoice is NULL. */
-	VISUAL_ERROR_UI_POPUP_NULL,			/**< The VisUIPopup is NULL. */
-	VISUAL_ERROR_UI_LIST_NULL,			/**< The VisUIList is NULL. */
-	VISUAL_ERROR_UI_RADIO_NULL,			/**< The VisUIRadio is NULL. */
-	VISUAL_ERROR_UI_CHECKBOX_NULL,			/**< The VisUICheckbox is NULL. */
-	VISUAL_ERROR_UI_CHOICE_ENTRY_NULL,		/**< The VisUIChoiceEntry is NULL. */
-	VISUAL_ERROR_UI_CHOICE_NONE_ACTIVE,		/**< there is no VisUIChoiceEntry active. */
-
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_ATTRIBUTE_OPTIONS_NULL,	/**< The VisVideoAttributeOptions is NULL. */
 	VISUAL_ERROR_VIDEO_NULL,			/**< The VisVideo is NULL. */
