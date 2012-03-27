@@ -1,0 +1,27 @@
+\setlength{\unitlength}{0.00083333in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+{\renewcommand{\dashlinestretch}{30}
+\begin{picture}(11274,3414)(0,-10)
+\drawline(87,3087)(12,12)(1062,12)
+	(1362,237)(1437,2787)(1062,3087)(162,3087)
+\drawline(1662,87)(1887,2712)(2187,3162)
+	(3012,3237)(3312,2862)(3462,87)
+\drawline(3237,1662)(2112,1662)
+\drawline(3837,162)(3762,3312)(4887,312)(4887,3312)
+\drawline(6312,462)(5262,387)(5337,3312)(6312,3387)
+\drawline(7587,3387)(6762,3387)(6762,387)(7812,462)
+\drawline(6762,1887)(7662,1962)
+\drawline(8412,3312)(8637,1062)
+\drawline(9687,3387)(9537,1062)
+\drawline(11262,3237)(10437,912)
+\drawline(8637,687)(8787,612)(8637,537)(8637,687)
+\drawline(9237,762)(9462,462)(9612,687)(9312,762)
+\drawline(10287,687)(10287,537)(10437,612)(10287,687)
+\end{picture}
+}
