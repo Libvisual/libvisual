@@ -1,0 +1,20 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+)
+
+SET(BENCHMARK_PROGRAMS
+  actor_throughput_bench
+  alphablend_bench
+  #blit_bench
+  depth_transform_bench
+  morph_throughput_bench
+  scale_bench
+)
+
+FOREACH(BENCHMARK IN LISTS BENCHMARK_PROGRAMS)
+  ADD_EXECUTABLE(${BENCHMARK} ${BENCHMARK}.c)
+  TARGET_LINK_LIBRARIES(${BENCHMARK}
+    libvisual
+  )
+ENDFOREACH(BENCHMARK IN LISTS BENCHMARK_PROGRAMS)

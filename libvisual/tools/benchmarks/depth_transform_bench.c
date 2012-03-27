@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define TIMES	500
 
@@ -41,5 +42,6 @@ int main (int argc, char **argv)
 		visual_video_depth_transform (dest, src);
 
 	printf ("Depth transformed %d times from %s to %s\n", TIMES, d1, d2);
-}
 
+	return EXIT_SUCCESS;
+}

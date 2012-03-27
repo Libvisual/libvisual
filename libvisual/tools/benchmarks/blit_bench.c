@@ -151,7 +151,7 @@ void sdl_create (int width, int height)
 {
 	const SDL_VideoInfo *videoinfo;
 	int videoflags;
-	
+
 	screen = SDL_SetVideoMode (width, height, bpp * 8, 0);
 }
 
@@ -180,7 +180,7 @@ int main (int argc, char *argv[])
 	int interpol = VISUAL_VIDEO_SCALE_NEAREST;
         int frames = 0;
 	VisTime start, end;
-		
+
 	bpp = 4;
 	sdl_init (width, height);
 
@@ -190,7 +190,7 @@ int main (int argc, char *argv[])
 	SDL_Event event;
 
 	visual_init (&argc, &argv);
-	
+
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
 	else
@@ -217,7 +217,7 @@ int main (int argc, char *argv[])
 	visual_video_set_depth (video32, VISUAL_VIDEO_DEPTH_32BIT);
 	visual_video_set_dimension (video32, video->width, video->height);
 	visual_video_allocate_buffer (video32);
-	
+
 	scalevid = visual_video_new ();
 	visual_video_set_depth (scalevid, VISUAL_VIDEO_DEPTH_32BIT);
 	visual_video_set_dimension (scalevid, sxsize, sysize);
@@ -228,27 +228,27 @@ int main (int argc, char *argv[])
 	visual_video_set_dimension (sdlvid, screen->w, screen->h);
 	visual_video_set_pitch (sdlvid, screen->pitch);
 	visual_video_set_buffer (sdlvid, scrbuf);
-	
+
 	input = visual_input_new ("alsa");
 	visual_input_realize (input);
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-        
+
 	visual_time_get (&start);
-	
+
 	while (1) {
 		visual_input_run (input);
 		visual_actor_run (actor, input->audio);
-	
+
 		/* place on screen */
 //		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);
-	
+
 		if (sxsize < 0)
 			sxsize = 0;
 
 		if (sysize < 0)
 			sysize = 0;
-		
+
 		if (sxsize != scalevid->width || sysize != scalevid->height) {
 			visual_video_set_dimension (scalevid, sxsize, sysize);
 			visual_video_allocate_buffer (scalevid);
@@ -258,20 +258,20 @@ int main (int argc, char *argv[])
 
 
 //		visual_video_alpha_fill (sdlvid, 0);
-		
+
 		visual_video_alpha_fill (video32, alpha);
 //		visual_video_alpha_color (video32, 0, 0, 0, 255);
-	
+
 		visual_video_scale (scalevid, video32, interpol);
 
-		
-		
+
+
 		visual_video_blit_overlay (sdlvid, actvid, 0, 0, FALSE);
 		visual_video_blit_overlay (sdlvid, scalevid, xoff, yoff, TRUE);
 
 		sdl_draw_buf ();
 		frames++;
-		
+
 		while (SDL_PollEvent (&event)) {
 			switch (event.type) {
 				case SDL_KEYDOWN:
@@ -289,7 +289,7 @@ int main (int argc, char *argv[])
 							yoff += 10;
 
 							break;
-						
+
 						case SDLK_LEFT:
 							xoff -= 10;
 
@@ -299,7 +299,7 @@ int main (int argc, char *argv[])
 							xoff += 10;
 
 							break;
-						
+
 						case SDLK_q:
 							sysize -= 10;
 
@@ -309,7 +309,7 @@ int main (int argc, char *argv[])
 							sysize += 10;
 
 							break;
-						
+
 						case SDLK_z:
 							sxsize -= 10;
 
@@ -325,7 +325,7 @@ int main (int argc, char *argv[])
 								interpol = VISUAL_VIDEO_SCALE_BILINEAR;
 							else
 								interpol = VISUAL_VIDEO_SCALE_NEAREST;
-							
+
 							break;
 
 						case SDLK_o:
@@ -341,7 +341,7 @@ int main (int argc, char *argv[])
 								alpha = 255;
 
 							break;
-							
+
 						case SDLK_ESCAPE:
 							goto out;
 							break;
@@ -360,7 +360,7 @@ int main (int argc, char *argv[])
 	}
 out:
 	visual_time_get (&end);
-	
+
 	VisTime diff;
 
 	visual_time_difference (&diff, &start, &end);

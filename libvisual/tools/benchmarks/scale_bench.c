@@ -11,7 +11,7 @@ int main (int argc, char **argv)
 {
 	VisVideo *dest, *src;
 	int i;
-	
+
 	visual_init (&argc, &argv);
 
 	dest = visual_video_new ();
@@ -29,5 +29,6 @@ int main (int argc, char **argv)
 
 	printf ("Scale bench overlay %d times, depth %d, interpol %d\n", TIMES,
 			DEPTH, INTERPOL);
-}
 
+	return EXIT_SUCCESS;
+}

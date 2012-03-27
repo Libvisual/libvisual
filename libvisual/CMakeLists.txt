@@ -264,6 +264,7 @@ IF(ENABLE_TOOLS)
   SET(HAVE_GL ${OPENGL_FOUND})
   SET(HAVE_X11 ${X11_FOUND})
   ADD_SUBDIRECTORY(tools/lv-tool)
+  ADD_SUBDIRECTORY(tools/benchmarks)
 ENDIF(ENABLE_TOOLS)
 
 # Generate pkg-config file
