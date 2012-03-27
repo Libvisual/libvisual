@@ -21,16 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
+#include "config.h"
+#include "display/display.h"
+#include <libvisual/libvisual.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
-#include <libvisual/libvisual.h>
-#include "display/display.h"
-#include "config.h"
-
-
 
 /* defaults */
 #define DEFAULT_ACTOR   "lv_analyzer"
@@ -49,7 +46,8 @@ static int  width;
 static int  height;
 static int  framerate;
 static int  driver;
-
+static int  have_seed;
+static uint32_t seed;
 
 /* list of available driver-creators - register new drivers here */
 typedef struct
@@ -132,6 +130,7 @@ static void _print_help(char *name)
            "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
            "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
            "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
+		   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
            "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",
            "http://github.com/StarVisuals/libvisual",
            name,
@@ -159,10 +158,11 @@ static int _parse_args(int argc, char *argv[])
         {"actor",       required_argument, 0, 'a'},
         {"morph",       required_argument, 0, 'm'},
         {"fps",         required_argument, 0, 'f'},
+        {"seed",        required_argument, 0, 's'},
         {0,             0,                 0,  0 }
     };
 
-    while((argument = getopt_long(argc, argv, "hpD:d:i:a:m:f:", loptions, &index)) >= 0)
+    while((argument = getopt_long(argc, argv, "hpD:d:i:a:m:f:s:", loptions, &index)) >= 0)
     {
 
         switch(argument)
@@ -181,7 +181,7 @@ static int _parse_args(int argc, char *argv[])
                 return EXIT_FAILURE;
             }
 
-                    /* --dimensions */
+            /* --dimensions */
             case 'D':
             {
                     if(sscanf(optarg, "%dx%d", &width, &height) != 2)
@@ -193,7 +193,7 @@ static int _parse_args(int argc, char *argv[])
                     break;
             }
 
-                    /* --driver */
+            /* --driver */
             case 'd':
             {
                 int n;
@@ -244,7 +244,7 @@ static int _parse_args(int argc, char *argv[])
                 break;
             }
 
-            /** --fps */
+            /* --fps */
             case 'f':
             {
                 /* set framerate */
@@ -252,10 +252,18 @@ static int _parse_args(int argc, char *argv[])
                 break;
             }
 
+            /* --seed */
+            case 's':
+            {
+                 have_seed = 1;
+                 sscanf(optarg, "%d", &seed);
+				 break;
+            }
+
             /* invalid argument */
             case '?':
             {
-                fprintf(stderr, "argument %d is invalid", index);
+                fprintf(stderr, "argument %d is invalid\n", index);
                 _print_help(argv[0]);
                 return EXIT_FAILURE;
             }
@@ -263,7 +271,7 @@ static int _parse_args(int argc, char *argv[])
             /* unhandled arguments */
             default:
             {
-                fprintf(stderr, "argument %d is invalid", index);
+                fprintf(stderr, "argument %d is invalid\n", index);
                 break;
             }
         }
@@ -314,8 +322,6 @@ int main (int argc, char **argv)
         strncpy(morph_name, DEFAULT_MORPH, sizeof(morph_name)-1);
         framerate = DEFAULT_FPS;
 
-
-
         /* print warm welcome */
         fprintf(stderr, "%s v0.1\n", argv[0]);
 
@@ -325,7 +331,6 @@ int main (int argc, char **argv)
          */
         visual_log_set_verbosity(VISUAL_LOG_DEBUG);
         visual_init (&argc, &argv);
-
 
         /* parse commandline arguments */
         if(_parse_args(argc, argv) != EXIT_SUCCESS)
@@ -344,6 +349,15 @@ int main (int argc, char **argv)
         {
                 fprintf(stderr, "Failed to load actor \"%s\"\n", actor_name);
                 goto _m_exit;
+        }
+
+        /* Set random seed */
+        if (have_seed) {
+                VisPluginData    *plugin_data = visual_actor_get_plugin(actor);
+                VisRandomContext *r_context   = visual_plugin_get_random_context (plugin_data);
+
+                visual_random_context_set_seed (r_context, seed);
+                seed++;
         }
 
         /* initialize input plugin */
@@ -557,8 +571,6 @@ int main (int argc, char **argv)
                 display_update_all(display);
                 display_fps_limit(display, framerate);
         }
-
-
 
 
 _m_exit_display:
