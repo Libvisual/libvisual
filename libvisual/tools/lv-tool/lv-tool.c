@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework cli tool
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
  * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
          *
@@ -96,10 +96,10 @@ static void _print_plugin_info(VisPluginData *p)
 static void _print_plugin_help()
 {
     VisList *list;
-        
+
     /* print inputs */
-    
-        
+
+
     /* print actors */
     if(!(list = visual_actor_get_list()))
     {
@@ -115,7 +115,7 @@ static void _print_plugin_help()
             _print_plugin_info(p);
         }
     }
-        
+
     /* print morphs */
 }
 
@@ -130,16 +130,16 @@ static void _print_help(char *name)
            "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
            "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
            "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
-           "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"               
+           "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
            "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
-           "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",               
-           "http://github.com/StarVisuals/libvisual", 
-           name, 
+           "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",
+           "http://github.com/StarVisuals/libvisual",
+           name,
            width, height,
            all_display_drivers[0].name,
-           input_name, 
-           actor_name, 
-           morph_name, 
+           input_name,
+           actor_name,
+           morph_name,
            framerate);
 }
 
@@ -157,7 +157,7 @@ static int _parse_args(int argc, char *argv[])
         {"driver",      required_argument, 0, 'd'},
         {"input",       required_argument, 0, 'i'},
         {"actor",       required_argument, 0, 'a'},
-        {"morph",       required_argument, 0, 'm'},       
+        {"morph",       required_argument, 0, 'm'},
         {"fps",         required_argument, 0, 'f'},
         {0,             0,                 0,  0 }
     };
@@ -166,7 +166,7 @@ static int _parse_args(int argc, char *argv[])
     {
 
         switch(argument)
-        {			
+        {
             /* --help */
             case 'h':
             {
@@ -186,7 +186,7 @@ static int _parse_args(int argc, char *argv[])
             {
                     if(sscanf(optarg, "%dx%d", &width, &height) != 2)
                     {
-                        fprintf(stderr, 
+                        fprintf(stderr,
                                 "Invalid dimensions: \"%s\". Use <width>x<height> (e.g. 320x200)\n", optarg);
                         return EXIT_FAILURE;
                     }
@@ -197,7 +197,7 @@ static int _parse_args(int argc, char *argv[])
             case 'd':
             {
                 int n;
-                for(n = 0; 
+                for(n = 0;
                     n < sizeof(all_display_drivers)/sizeof(SADisplayDriverDescription);
                     n++)
                 {
@@ -321,7 +321,7 @@ int main (int argc, char **argv)
 
         /**
          * initialize libvisual once (this is meant to be called only once,
-         * visual_init() after visual_quit() results in undefined state) 
+         * visual_init() after visual_quit() results in undefined state)
          */
         visual_log_set_verbosity(VISUAL_LOG_DEBUG);
         visual_init (&argc, &argv);
@@ -356,7 +356,7 @@ int main (int argc, char **argv)
         }
 
         /* handle depth? */
-        if((depthflag = visual_actor_get_supported_depth(actor)) 
+        if((depthflag = visual_actor_get_supported_depth(actor))
            == VISUAL_VIDEO_DEPTH_GL)
         {
                 depth = visual_video_depth_get_highest(depthflag);
@@ -371,7 +371,7 @@ int main (int argc, char **argv)
                 }
                 else
                 {
-                        visual_bin_set_depth(bin, 
+                        visual_bin_set_depth(bin,
                                              visual_video_depth_get_highest_nogl(
                                                                                  bin->depthflag));
                 }
@@ -415,7 +415,7 @@ int main (int argc, char **argv)
         /* main loop */
         int running = TRUE;
         int visible = TRUE;
-        while (running) 
+        while (running)
         {
                 VisEventQueue *pluginqueue;
                 VisEvent *ev;
@@ -424,13 +424,13 @@ int main (int argc, char **argv)
                 display_drain_events(display, localqueue);
 
                 pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin->actor));
-                while(visual_event_queue_poll_by_reference(localqueue, &ev)) 
+                while(visual_event_queue_poll_by_reference(localqueue, &ev))
                 {
 
                         if(ev->type != VISUAL_EVENT_RESIZE)
                                 visual_event_queue_add (pluginqueue, ev);
 
-                        switch (ev->type) 
+                        switch (ev->type)
                         {
                                 case VISUAL_EVENT_PARAM:
                                 {
@@ -489,7 +489,7 @@ int main (int argc, char **argv)
 
                                 case VISUAL_EVENT_KEYDOWN:
                                 {
-                                        switch(ev->event.keyboard.keysym.sym) 
+                                        switch(ev->event.keyboard.keysym.sym)
                                         {
                                                 case VKEY_ESCAPE:
                                                 {
@@ -536,7 +536,7 @@ int main (int argc, char **argv)
                         }
                 }
 
-                if(visual_bin_depth_changed(bin)) 
+                if(visual_bin_depth_changed(bin))
                 {
                     display_lock(display);
                     display_create(display, depth, vidoptions, width, height, TRUE);
@@ -566,7 +566,7 @@ _m_exit_display:
                 display_set_fullscreen(display, FALSE, TRUE);
                 display_close(display);
 
-_m_exit:        
+_m_exit:
                 /* cleanup resources allocated by visual_init() */
                 visual_quit ();
 
