@@ -460,7 +460,7 @@ int main (int argc, char **argv)
                                         video = display_get_video (display);
 
                                         visual_bin_set_video (bin, video);
-					visual_actor_video_negotiate (bin->actor, depth, FALSE, FALSE);
+                                        visual_actor_video_negotiate (bin->actor, depth, FALSE, FALSE);
 
                                         display_unlock(display);
                                         break;
