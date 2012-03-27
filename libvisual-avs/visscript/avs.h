@@ -6,16 +6,16 @@
 #define AVS_DEBUG 1
 #ifdef AVS_DEBUG
 	#define avs_log(args...)    visual_log(VISUAL_LOG_DEBUG, args)
-    #define avs_info(args...)   message(VISUAL_LOG_VERBOSENESS_HIGH, args)
-	#define avs_print(args...)	message(VISUAL_LOG_VERBOSENESS_MEDIUM, args)
-    #define avs_error(args...)  message(VISUAL_LOG_VERBOSENESS_LOW, args)
+    #define avs_info(args...)   message(VISUAL_LOG_INFO, args)
+	#define avs_print(args...)	message(VISUAL_LOG_WARNING, args)
+    #define avs_error(args...)  message(VISUAL_LOG_ERROR, args)
 	#define avs_call(args...)	args
 	#define avs_debug(x) avs_##x 
 #else
 	#define avs_debug(x)
 #endif
 
-void message(const VisLogVerboseness level, const char *format, ...) __attribute__ ((format(__printf__, 2, 3)));
+void message(const VisLogSeverity level, const char *format, ...) __attribute__ ((format(__printf__, 2, 3)));
 
 struct _AvsRunnableContext;
 typedef struct _AvsRunnableContext AvsRunnableContext;
