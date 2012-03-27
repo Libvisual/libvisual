@@ -17,6 +17,7 @@
 #cmakedefine HAVE_SDL          "@HAVE_SDL@"
 #cmakedefine HAVE_GL           "@HAVE_GL@"
 #cmakedefine HAVE_X11          "@HAVE_X11@"
+#cmakedefine HAVE_GLX          "@HAVE_GLX@"
 
 #cmakedefine HAVE_DIRENT_H     1
 #cmakedefine HAVE_DLFCN_H      1

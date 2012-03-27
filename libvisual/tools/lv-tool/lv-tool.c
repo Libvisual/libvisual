@@ -63,7 +63,7 @@ SADisplayDriverDescription all_display_drivers[] =
 #ifdef HAVE_SDL
         { .name = "sdl",      .creator = &sdl_driver_new      },
 #endif
-#ifdef HAVE_GL
+#ifdef HAVE_GLX
         { .name = "glx",      .creator = &glx_driver_new      },
 #endif
         { .name = "stdout",   .creator = &stdout_driver_new   },

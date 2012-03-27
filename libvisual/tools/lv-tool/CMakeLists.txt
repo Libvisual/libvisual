@@ -19,7 +19,7 @@ IF(SDL_FOUND)
 ENDIF(SDL_FOUND)
 
 # GLX driver
-IF(X11_FOUND AND X11_xf86vmode_FOUND AND OPENGL_FOUND)
+IF(HAVE_GLX)
   LIST(APPEND SOURCES
     display/glx_driver.c
     display/lv_x11_key.c
