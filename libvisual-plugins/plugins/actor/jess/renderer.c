@@ -394,7 +394,7 @@ void render_blur(JessPrivate *priv, int blur)
 				("\n\t pxor %%mm6, %%mm6"
 				 ::);
 
-			for (pix = priv->pixel; pix < (uint8_t *) bmax-1; pix += 8)
+			for (pix = priv->pixel; pix < (uint8_t *) bmax-9; pix += 8)
 			{
 				__asm __volatile
 					("\n\t movq %[pix1], %%mm0"
@@ -432,7 +432,7 @@ void render_blur(JessPrivate *priv, int blur)
 				("\n\t pxor %%mm6, %%mm6"
 				 ::);
 
-			for (pix = priv->pixel; pix < (uint8_t *) bmax-4; )
+			for (pix = priv->pixel; pix < (uint8_t *) bmax-12; )
 			{
 				__asm __volatile
 					("\n\t movq %[pix1], %%mm0"
