@@ -45,12 +45,10 @@ PKG_CHECK_MODULES(GLIB, [glib-2.0 >= 2.6.0],
 )
 
 
-AM_PATH_XML2(2.0.0, , 
-	[ADD_PC_REQUIRES([libxml2 >= 2.0.0]), XML_LIBS=`pkg-config --libs xml2`, XML_CFLAGS=`pkg-config --cflags xml2`],
+PKG_CHECK_MODULES(XML, [libxml-2.0 >= 2.0.0],
+    [ADD_PC_REQUIRES([glib-2.0 >= 2.6.0])],
 	[AC_MSG_ERROR([Cannot find xml2])]
-])
-AC_SUBST(XML_LIBS)
-AC_SUBST(XML_CFLAGS)
+)
 
 # Checks for libraries.
 build_actor=""
