@@ -104,7 +104,6 @@ SET(libvisual_SOURCES
 )
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
-#TODO: Handle linker flags: -no-undefined
 
 SET_TARGET_PROPERTIES(libvisual
   PROPERTIES
@@ -115,6 +114,8 @@ SET_TARGET_PROPERTIES(libvisual
 
 TARGET_LINK_LIBRARIES(libvisual
   ${THREAD_LIBS}
+  m
+  dl
 )
 
 INSTALL(TARGETS libvisual LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
