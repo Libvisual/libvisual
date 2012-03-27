@@ -100,8 +100,8 @@ VisColor *avs_gfx_color_cycler_run (AVSGfxColorCycler *cycler)
 		
 		visual_timer_elapsed (&cycler->timer, &elapsed);
 
-		usec_elapsed = ((double) elapsed.tv_sec) * VISUAL_USEC_PER_SEC + elapsed.tv_usec;
-		usec_morph = ((double) cycler->morphtime.tv_sec) * VISUAL_USEC_PER_SEC + cycler->morphtime.tv_usec;
+		usec_elapsed = ((double) elapsed.sec) * VISUAL_USEC_PER_SEC + elapsed.usec;
+		usec_morph = ((double) cycler->morphtime.sec) * VISUAL_USEC_PER_SEC + cycler->morphtime.usec;
 
 		cycler->timedrate = usec_elapsed / usec_morph;
 
