@@ -45,7 +45,7 @@ const VisPluginInfo *get_plugin_info( int *count ) {
         .name = "Pulseaudio input plugin",
         .author = "Scott Sibley <scott@starlon.net>",
         .version = "$Revision$",
-        .about = "Use data exported from pulseaudio",
+        .about = "Use input data from pulseaudio",
         .help = "",
         .license = VISUAL_PLUGIN_LICENSE_GPL,
 
