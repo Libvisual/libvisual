@@ -50,8 +50,7 @@ typedef struct
 	int width, height;
 } AnalyzerPrivate;
 
-static void draw_bar (VisVideo *video, int index, int nbars, float amplitude);
-static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color);
+static void draw_bar (VisVideo *video, int x, int width, float amplitude);
 
 static int lv_analyzer_init (VisPluginData *plugin);
 static int lv_analyzer_cleanup (VisPluginData *plugin);
@@ -125,11 +124,11 @@ static int lv_analyzer_init (VisPluginData *plugin)
 	/* parameter-description */
 	static VisParamEntry params[] =
 	{
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("bars", BARS_DEFAULT),
-        VISUAL_PARAM_LIST_END
-    };
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("bars", BARS_DEFAULT),
+		VISUAL_PARAM_LIST_END
+	};
 
-    /* register parameters */
+	/* register parameters */
 	visual_param_container_add_many (paramcontainer, params);
 
 	/* allocate space for palette */
@@ -243,7 +242,6 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 	VisEvent ev;
 	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-
 	while (visual_event_queue_poll (events, &ev))
 	{
 		switch (ev.type)
@@ -258,13 +256,16 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 
 			case VISUAL_EVENT_RESIZE:
 			{
+			        int total_space;
+
 				visual_video_set_dimension (ev.event.resize.video,
 						ev.event.resize.width, ev.event.resize.height);
 				priv->width = ev.event.resize.video->width;
 				priv->height = ev.event.resize.video->height;
 
-				if(priv->width > priv->bars)
-					priv->bars = priv->width;
+				total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
+				if(priv->width < priv->bars + total_space)
+					priv->bars = priv->width - total_space;
 
 				break;
 			}
@@ -287,7 +288,7 @@ static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 	for (i = 0; i < 256; i++) {
 		priv->pal.colors[i].r = 0;
 		priv->pal.colors[i].g = 0;
-		priv->pal.colors[i].r = 0;
+		priv->pal.colors[i].b = 0;
 	}
 
 	for (i = 1; i < 64; i++) {
@@ -303,42 +304,23 @@ static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 	return &priv->pal;
 }
 
-/**
- * draw vertical line to VisVideo
- * @p[in] video - VisVideo to draw on
- * @p[in] x1 - start coordinate
- * @p[in] x2 - end coordinate
- * @p[in] y - height
- * @p[in] color - color to draw bar
- */
-static inline void draw_vline (VisVideo *video, int x1, int x2, int y, uint8_t color)
+static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
 {
-	uint8_t *pixels = visual_video_get_pixels (video);
+	/* NOTES:
+	 * - We use 16:16 fixed point to incrementally calculate the color at each y
+	 * - Bar row color must be in [1,126]
+	*/
+	int y	   = (1.0 - amplitude) * video->height;
+	int color  = (1 << 16) + (amplitude * (125 << 16));
+	int dcolor = (125 << 16) / video->height;
 
-	if (video->depth != VISUAL_VIDEO_DEPTH_8BIT)
-		return;
+	uint8_t *row = video->pixel_rows[y] + x;
 
-	pixels += (y * video->pitch) + x1;
-	visual_mem_set (pixels, color, x2 - x1);
-}
+	while (y < video->height) {
+		visual_mem_set (row, color >> 16, width);
 
-/**
- * draw one vertical bar
- * @p[in] video - VisVideo to draw on
- * @p[in] index - index of this bar
- * @p[in] nbars - total amount of bars
- * @p[in] amplitude - amplitude of waveform
- */
-static void draw_bar (VisVideo *video, int index, int nbars, float amplitude)
-{
-	int height = video->height * amplitude;
-	int i;
-	float scale = 128.0 / video->height;
-	int width = (video->width-1)/nbars;
-
-	for (i = video->height - 1; i > (video->height - height); i--)
-	{
-		draw_vline(video, index*width, index*width + width - BARS_DEFAULT_SPACE, i, (video->height - i) * scale);
+		y++; row += video->pitch;
+		color -= dcolor;
 	}
 }
 
@@ -349,17 +331,11 @@ static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 {
 	VisBuffer buffer;
 	VisBuffer pcmb;
-	int bars = _bars(plugin);
 
-	/* no value configured? */
-	if(bars < 0)
-		bars = video->width/2;
+	int bars = _bars(plugin);
 
 	float freq[bars];
 	float pcm[bars * 2];
-	int i;
-
-	visual_video_fill_color (video, NULL);
 
 	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
 	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
@@ -370,13 +346,17 @@ static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 
 	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
 
-	for (i = 0; i < bars; i++)
-		draw_bar (video, i, bars, freq[i]);
+	int i;
+	int spaces = BARS_DEFAULT_SPACE * (bars - 1);
+	int width  = (video->width - spaces) / bars;
+	int x	   = ((video->width - spaces) % bars) / 2;
+
+	visual_video_fill_color (video, NULL);
+
+	for (i = 0; i < bars; i++) {
+		draw_bar (video, x, width, freq[i]);
+		x += width + BARS_DEFAULT_SPACE;
+	}
 
 	return 0;
 }
-
-
-
-
-
