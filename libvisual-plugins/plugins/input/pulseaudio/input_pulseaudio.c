@@ -19,7 +19,6 @@
 #include <libvisual/libvisual.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
-#include <pulse/gccmacro.h>
 
 #define PCM_BUF_SIZE 1024
 
