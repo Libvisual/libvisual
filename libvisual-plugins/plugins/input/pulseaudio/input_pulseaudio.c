@@ -95,7 +95,7 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
     }
 
     static VisParamEntry params[] = {
-        VISUAL_PARAM_LIST_ENTRY_STRING ("device", NULL),
+        VISUAL_PARAM_LIST_ENTRY_STRING ("device", ""),
         VISUAL_PARAM_LIST_END
     };
 
@@ -145,6 +145,11 @@ int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
                         tmp, 
                         "record", 
                         &sample_spec, NULL, NULL, &error);
+
+                    if( priv->simple == NULL ) {
+                        visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
+                        return -VISUAL_ERROR_GENERAL;
+                    }
 
                 }
                 break;
