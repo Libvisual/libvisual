@@ -79,7 +79,7 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
         NULL, 
         "lv-pulseaudio", 
         PA_STREAM_RECORD, 
-        "alsa_output.pci_1002_437b_sound_card_0_alsa_playback_0.monitor", 
+        NULL, 
         "Libvisual pulseaudio plugin", 
         &sample_spec, NULL, NULL, &error);
 
