@@ -22,6 +22,13 @@
 
 #define PCM_BUF_SIZE 1024
 
+    
+pa_sample_spec sample_spec = {
+    .format = PA_SAMPLE_S16LE,
+    .rate = 44100,
+    .channels = 2
+};
+
 typedef struct {
     pa_simple *simple;
 } pulseaudio_priv_t;
@@ -29,6 +36,7 @@ typedef struct {
 int inp_pulseaudio_init( VisPluginData *plugin );
 int inp_pulseaudio_cleanup( VisPluginData *plugin );
 int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );
+int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -50,6 +58,7 @@ const VisPluginInfo *get_plugin_info( int *count ) {
 
         .init = inp_pulseaudio_init,
         .cleanup = inp_pulseaudio_cleanup,
+        .events = inp_pulseaudio_events,
 
         .plugin = VISUAL_OBJECT(&input[0])
     }};
@@ -61,8 +70,9 @@ const VisPluginInfo *get_plugin_info( int *count ) {
 
 int inp_pulseaudio_init( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv;
-    pa_sample_spec sample_spec;
     int error;
+
+    VisParamContainer *paramcontainer = visual_plugin_get_params(plugin);
 
     priv = visual_mem_new0(pulseaudio_priv_t, 1);
 
@@ -70,9 +80,6 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
 
     memset(priv, 0, sizeof(pulseaudio_priv_t));
 
-    sample_spec.format = PA_SAMPLE_S16LE;
-    sample_spec.rate = 44100;
-    sample_spec.channels = 2;
 
     priv->simple = pa_simple_new(
         NULL, 
@@ -86,6 +93,13 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
         return -VISUAL_ERROR_GENERAL;
     }
+
+    static VisParamEntry params[] = {
+        VISUAL_PARAM_LIST_ENTRY_STRING ("device", NULL),
+        VISUAL_PARAM_LIST_END
+    };
+
+    visual_param_container_add_many (paramcontainer, params);
 
     return VISUAL_OK;
 }
@@ -105,6 +119,44 @@ int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     return VISUAL_OK;
 }
 
+int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
+{
+    pulseaudio_priv_t *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    VisEvent ev;
+    VisParamEntry *param;
+    char *tmp;
+    int error;
+
+    while (visual_event_queue_poll (events, &ev)) {
+        switch (ev.type) {
+            case VISUAL_EVENT_PARAM:
+                param = ev.event.param.param;
+
+                if (visual_param_entry_is (param, "device")) {
+                    tmp = visual_param_entry_get_string (param);
+                    
+                    if(priv->simple != NULL)
+                        pa_simple_free(priv->simple);
+
+                    priv->simple = pa_simple_new(
+                        NULL, 
+                        "lv-pulseaudio", 
+                        PA_STREAM_RECORD, 
+                        tmp, 
+                        "record", 
+                        &sample_spec, NULL, NULL, &error);
+
+                }
+                break;
+
+            default:
+                break;
+
+        }
+    }
+
+    return 0;
+}
 int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 {
     pulseaudio_priv_t *priv = NULL;
