@@ -589,10 +589,6 @@ void EgOSUtils::Beep() {
 }
 
 
-#ifdef UNIX_X
-
-	#include <sys/times.h>
-#endif
 long EgOSUtils::CurTimeMS() {
 	#if EG_WIN
 	return ::timeGetTime();
@@ -645,7 +641,7 @@ void EgOSUtils::ShowMsg( const UtilStr& inMsg ) {
 	//UDesktop::Activate();
 	#endif
 
-	#ifdef WIN32
+	#ifdef EG_WIN
 	::MessageBox( 0, inMsg.getCStr(), "Examgen Message", MB_ICONEXCLAMATION | MB_OK | MB_SETFOREGROUND | MB_APPLMODAL );
 	//ZafMessageWindow* w = new ZafMessageWindow( "Message", ZAF_EXCLAMATION_ICON, ZAF_DIALOG_OK, ZAF_DIALOG_OK, inMsg.getCStr() );
 	//zafWindowManager -> Add( w );
