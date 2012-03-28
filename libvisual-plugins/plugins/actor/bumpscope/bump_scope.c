@@ -30,8 +30,6 @@
 
 #include "bump_scope.h"
 
-#define min(x,y) ((x)<(y)?(x):(y))
-
 #define PI 3.14159265358979323846
 
 static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl);
