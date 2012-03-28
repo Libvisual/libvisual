@@ -44,7 +44,7 @@ const VisPluginInfo *get_plugin_info( int *count ) {
         .plugname = "pulseaudio",
         .name = "Pulseaudio input plugin",
         .author = "Scott Sibley <scott@starlon.net>",
-        .version = "$Revision$",
+        .version = "1.0",
         .about = "Use input data from pulseaudio",
         .help = "",
         .license = VISUAL_PLUGIN_LICENSE_GPL,
@@ -80,7 +80,7 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
         "lv-pulseaudio", 
         PA_STREAM_RECORD, 
         NULL, 
-        "Libvisual pulseaudio plugin", 
+        "record", 
         &sample_spec, NULL, NULL, &error);
 
     if( priv->simple == NULL ) {
@@ -95,7 +95,9 @@ int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv = NULL;
 
     visual_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
+
     priv = visual_object_get_private(VISUAL_OBJECT( plugin));
+
     visual_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
 
     pa_simple_free(priv->simple);
