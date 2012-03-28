@@ -18,7 +18,7 @@ ADD_LIBRARY(actor_nastyfft MODULE ${actor_nastyfft_SOURCES})
 
 TARGET_LINK_LIBRARIES(actor_nastyfft
   ${LIBVISUAL_LIBRARIES}
-  ${OPENGL_gl_LIRBARY}
+  ${OPENGL_gl_LIBRARY}
   ${OPENGL_glu_LIBRARY}
 )
 

@@ -28,7 +28,7 @@ ADD_LIBRARY(actor_madspin MODULE ${actor_madspin_SOURCES})
 
 TARGET_LINK_LIBRARIES(actor_madspin
   ${LIBVISUAL_LIBRARIES}
-  ${OPENGL_gl_LIRBARY}
+  ${OPENGL_gl_LIBRARY}
   ${OPENGL_glu_LIBRARY}
 )
 
