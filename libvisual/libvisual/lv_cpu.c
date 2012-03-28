@@ -70,6 +70,10 @@ static int __lv_cpu_initialized = FALSE;
 static int has_cpuid (void);
 static int cpuid (unsigned int ax, unsigned int *p);
 
+#if defined(VISUAL_OS_WIN32)
+LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep);
+#endif
+
 /* The sigill handlers */
 #if defined(VISUAL_ARCH_X86) //x86 (linux katmai handler check thing)
 #if defined(VISUAL_OS_LINUX) && defined(_POSIX_SOURCE)

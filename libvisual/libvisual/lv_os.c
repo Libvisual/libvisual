@@ -44,32 +44,40 @@
 int visual_os_scheduler_realtime_start ()
 {
 #ifdef HAVE_SCHED
-	struct sched_param attr;
 	int ret;
-	attr.sched_priority = 99;
 
 	/* FIXME: Do we want RR or FIFO here ? */
+#ifndef VISUAL_WITH_MINGW
+	struct sched_param attr;
+	attr.sched_priority = 99;
 	ret = sched_setscheduler (getpid (), SCHED_FIFO, &attr);
+#else
+	ret = sched_setscheduler (getpid (), SCHED_FIFO);
+#endif /* VISUAL_WITH_MINGW */
 
 	return ret >= 0 ? VISUAL_OK : -VISUAL_ERROR_OS_SCHED;
 #else
 	return -VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED;
-#endif
+#endif /* HAVE_SCHED */
 }
 
 int visual_os_scheduler_realtime_stop ()
 {
 #ifdef HAVE_SCHED
-	struct sched_param attr;
 	int ret;
-	attr.sched_priority = 0;
 
+#ifndef VISUAL_WITH_MINGW
+	struct sched_param attr;
+	attr.sched_priority = 0;
 	ret = sched_setscheduler (getpid (), SCHED_OTHER, &attr);
+#else
+	ret = sched_setscheduler (getpid (), SCHED_OTHER);
+#endif /* VISUAL_WITH_MINGW */
 
 	return ret >= 0 ? VISUAL_OK : -VISUAL_ERROR_OS_SCHED;
 #else
 	return -VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED;
-#endif
+#endif /* HAVE_SCHED */
 }
 
 int visual_os_scheduler_yield ()

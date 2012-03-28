@@ -63,9 +63,14 @@ static int free_plugpaths (void)
 
 int visual_plugin_registry_initialize (void)
 {
-	char temppluginpath[FILENAME_MAX+1];
-	char *homedir = NULL;
 	int ret;
+
+#if !defined(VISUAL_OS_WIN32) || defined(VISUAL_WITH_CYGWIN)
+	char *homedir = NULL;
+	char temppluginpath[FILENAME_MAX+1];
+#endif
+
+	visual_log (VISUAL_LOG_DEBUG, "Initializing plugin registry");
 
 	/* Add the standard plugin paths */
 	ret = visual_init_path_add (VISUAL_PLUGIN_PATH "/actor");
