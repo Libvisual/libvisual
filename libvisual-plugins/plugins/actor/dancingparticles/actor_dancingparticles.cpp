@@ -98,13 +98,10 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 	DancingParticlesPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
-	static VisParamEntryProxy params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars", FALSE, VISUAL_PARAM_LIMIT_BOOLEAN, ""),
+	static VisParamEntry params[] = {
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars", FALSE),
 		VISUAL_PARAM_LIST_END
 	};
-
-	/* UI Vars */
-	VisUIWidget *checkbox;
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
@@ -113,12 +110,7 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (DancingParticlesPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many_proxy (paramcontainer, params);
-
-	checkbox = visual_ui_checkbox_new ("Transparant bars", TRUE);
-	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox), visual_param_container_get (paramcontainer, "transparant bars"));
-
-	visual_plugin_set_userinterface (plugin, checkbox);
+	visual_param_container_add_many (paramcontainer, params);
 
 	build_sqrt_table ();
 
