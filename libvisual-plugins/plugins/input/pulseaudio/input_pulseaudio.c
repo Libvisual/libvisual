@@ -15,6 +15,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <libvisual/libvisual.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
@@ -32,6 +33,7 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
+const VisPluginInfo *get_plugin_info( int *count );
 const VisPluginInfo *get_plugin_info( int *count ) {
     static VisInputPlugin input[] = {{
         .upload = inp_pulseaudio_upload
@@ -73,7 +75,13 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
     sample_spec.rate = 44100;
     sample_spec.channels = 2;
 
-    priv->simple = pa_simple_new(NULL, "lv-pulseaudio", PA_STREAM_RECORD, NULL, "Libvisual pulseaudio plugin", &sample_spec, NULL, NULL, &error);
+    priv->simple = pa_simple_new(
+        NULL, 
+        "lv-pulseaudio", 
+        PA_STREAM_RECORD, 
+        "alsa_output.pci_1002_437b_sound_card_0_alsa_playback_0.monitor", 
+        "Libvisual pulseaudio plugin", 
+        &sample_spec, NULL, NULL, &error);
 
     if( priv->simple == NULL ) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
@@ -86,9 +94,9 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
 int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv = NULL;
 
-    visual_log_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
     priv = visual_object_get_private(VISUAL_OBJECT( plugin));
-    visual_log_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
 
     pa_simple_free(priv->simple);
 
@@ -105,12 +113,12 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 
     memset(pcm_data, 0, PCM_BUF_SIZE * sizeof(short));
 
-    visual_log_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
-    visual_log_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
 
     priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
-    visual_log_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
+    visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
     if(pa_simple_read(priv->simple, pcm_data, PCM_BUF_SIZE, &error) < 0) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_read() failed: %s", pa_strerror(error));
