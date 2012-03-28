@@ -137,8 +137,6 @@ CHECK_FUNCTION_EXISTS(select HAVE_SELECT)
 # Check for dynamic linking library
 CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DL)
 IF(HAVE_DL)
-  SET(DL_LIBRARY dl)
-ELSE(HAVE_DL)
   IF(NOT VISUAL_OS_WIN32)
     MESSAGE(FATAL_ERROR "Libvisual requires dl to build")
   ENDIF(NOT VISUAL_OS_WIN32)
