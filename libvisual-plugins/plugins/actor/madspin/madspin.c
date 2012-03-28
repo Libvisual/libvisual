@@ -267,6 +267,11 @@ static int madspin_load_textures (MadspinPrivate *priv)
 	glGenTextures (2, &priv->texture[0]);
 
 	textureimage = visual_bitmap_load_new_video (STAR_DIR "/star1.bmp");
+	if (!textureimage) {
+		visual_log (VISUAL_LOG_ERROR, "Failed to load first texture");
+		return 0;
+	}
+
 	glBindTexture (GL_TEXTURE_2D, priv->texture[0]);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -276,6 +281,11 @@ static int madspin_load_textures (MadspinPrivate *priv)
 	visual_object_unref (VISUAL_OBJECT (textureimage));
 
 	textureimage = visual_bitmap_load_new_video (STAR_DIR "/star2.bmp");
+	if (!textureimage) {
+		visual_log (VISUAL_LOG_ERROR, "Failed to load second texture");
+		return 0;
+	}
+
 	glBindTexture (GL_TEXTURE_2D, priv->texture[1]);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
