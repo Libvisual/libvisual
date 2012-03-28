@@ -26,6 +26,11 @@
 
 #include <unistd.h>
 
+/* MinGW unistd.h doesn't have *_FILENO or SEEK_* defined */
+#ifdef VISUAL_WITH_MINGW
+#  define STDOUT_FILENO 1
+#endif
+
 
 #define STDOUT_NATIVE(obj)  (VISUAL_CHECK_CAST ((obj), StdoutNative))
 

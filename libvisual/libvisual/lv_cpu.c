@@ -70,6 +70,10 @@ static int __lv_cpu_initialized = FALSE;
 static int has_cpuid (void);
 static int cpuid (unsigned int ax, unsigned int *p);
 
+#if defined(VISUAL_OS_WIN32)
+LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep);
+#endif
+
 /* The sigill handlers */
 #if defined(VISUAL_ARCH_X86) //x86 (linux katmai handler check thing)
 #if defined(VISUAL_OS_LINUX) && defined(_POSIX_SOURCE)
@@ -178,10 +182,9 @@ static void check_os_altivec_support( void )
  * and RedHat patched 2.2 kernels that have broken exception handling
  * support for user space apps that do SSE.
  */
+#if defined(VISUAL_ARCH_X86)
 static void check_os_katmai_support( void )
 {
-//	printf ("omg\n");
-#if defined(VISUAL_ARCH_X86)
 #if defined(VISUAL_OS_FREEBSD)
 	int has_sse=0, ret;
 	visual_size_t len=sizeof(has_sse);
@@ -223,8 +226,6 @@ static void check_os_katmai_support( void )
 		SetUnhandledExceptionFilter(exc_fil);
 	}
 #elif defined(VISUAL_OS_LINUX)
-//	printf ("omg1\n");
-//	printf ("omg2\n");
 	struct sigaction saved_sigill;
 	struct sigaction saved_sigfpe;
 
@@ -269,16 +270,13 @@ static void check_os_katmai_support( void )
 	sigaction( SIGFPE, &saved_sigfpe, NULL );
 
 #else
-//	printf ("hier dan3\n");
 	/* We can't use POSIX signal handling to test the availability of
 	 * SSE, so we disable it by default.
 	 */
 	__lv_cpu_caps.hasSSE=0;
 #endif /* __linux__ */
-//	printf ("hier dan\n");
-#endif
-//	printf ("hier dan ha\n");
 }
+#endif /* VISUAL_ARCH_X86 */
 
 
 static int has_cpuid (void)
@@ -440,18 +438,17 @@ void visual_cpu_initialize ()
 		__lv_cpu_caps.cacheline = regs2[2] & 0xFF;
 	}
 
-
-#if defined(VISUAL_OS_LINUX) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_CYGWIN) || defined(VISUAL_OS_OPENBSD)
+#if defined(VISUAL_ARCH_X86)
 	if (__lv_cpu_caps.hasSSE)
 		check_os_katmai_support ();
 
 	if (!__lv_cpu_caps.hasSSE)
 		__lv_cpu_caps.hasSSE2 = 0;
 #else
-	__lv_cpu_caps.hasSSE=0;
+	__lv_cpu_caps.hasSSE = 0;
 	__lv_cpu_caps.hasSSE2 = 0;
 #endif
-#endif /* VISUAL_ARCH_X86 */
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 #if defined(VISUAL_ARCH_POWERPC)
 	check_os_altivec_support ();

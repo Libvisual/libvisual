@@ -136,9 +136,11 @@ CHECK_FUNCTION_EXISTS(select HAVE_SELECT)
 
 # Check for dynamic linking library
 CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DL)
-IF(NOT HAVE_DL)
-  MESSAGE(FATAL_ERROR "Libvisual requires dl to build")
-ENDIF(NOT HAVE_DL)
+IF(HAVE_DL)
+  IF(NOT VISUAL_OS_WIN32)
+    MESSAGE(FATAL_ERROR "Libvisual requires dl to build")
+  ENDIF(NOT VISUAL_OS_WIN32)
+ENDIF(HAVE_DL)
 
 # Check for standard math library
 CHECK_LIBRARY_EXISTS(m sqrt "" HAVE_STDC_MATH)
