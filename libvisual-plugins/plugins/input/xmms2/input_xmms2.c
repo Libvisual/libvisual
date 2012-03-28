@@ -68,6 +68,7 @@ const VisPluginInfo *get_plugin_info( int *count ) {
 
 static int inp_xmms2_init( VisPluginData *plugin ) {
     xmms2_priv_t *priv;
+    xmmsv_t *val;
     const char *err_buf;
     VisParamContainer *paramcontainer = visual_plugin_get_params(plugin);
 
@@ -98,8 +99,10 @@ static int inp_xmms2_init( VisPluginData *plugin ) {
 
     xmmsc_result_wait(res);
 
-    if(xmmsc_result_iserror(res)) {
-        visual_log(VISUAL_LOG_ERROR, "%s", xmmsc_result_get_error(res));
+    val = xmmsc_result_get_value(res);
+
+    if(xmmsc_result_iserror(res) && xmmsv_get_error(val, &err_buf)) {
+        visual_log(VISUAL_LOG_ERROR, "%s", err_buf);
         return -VISUAL_ERROR_GENERAL;
     } else {
         int32_t version;
@@ -123,8 +126,10 @@ static int inp_xmms2_init( VisPluginData *plugin ) {
     res = xmmsc_visualization_init(priv->connection);
     xmmsc_result_wait(res);
 
-    if(xmmsc_result_iserror(res)) {
-        visual_log(VISUAL_LOG_ERROR, "%s", xmmsc_result_get_error(res));
+    val = xmmsc_result_get_value(res);
+
+    if(xmmsc_result_iserror(res) && xmmsv_get_error(val, &err_buf)) {
+        visual_log(VISUAL_LOG_ERROR, "%s", err_buf);
         return -VISUAL_ERROR_GENERAL;
     }
 
@@ -140,8 +145,10 @@ static int inp_xmms2_init( VisPluginData *plugin ) {
     res = xmmsc_visualization_properties_set(priv->connection, priv->vis, configdict);
     xmmsc_result_wait(res);
 
-    if( xmmsc_result_iserror( res )) {
-        visual_log(VISUAL_LOG_ERROR, "%s", xmmsc_result_get_error(res));
+    val = xmmsc_result_get_value(res);
+
+    if( xmmsc_result_iserror( res ), xmmsv_get_error(val, &err_buf)) {
+        visual_log(VISUAL_LOG_ERROR, "%s", err_buf);
         return -VISUAL_ERROR_GENERAL;
     }
     xmmsc_result_unref(res);
