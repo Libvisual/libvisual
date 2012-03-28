@@ -21,7 +21,7 @@
 #include <SDL.h>
 
 #define ACTOR "lv_analyzer"
-#define INPUT "debug"
+#define INPUT "pulseaudio"
 #define MORPH "alphablend"
 
 #define x_exit(msg) \
@@ -270,7 +270,6 @@ v_init (int argc, char **argv)
 {
     VisVideoDepth depth;
 
-    visual_log_set_verboseness (VISUAL_LOG_DEBUG);
     visual_init (&argc, &argv);
 
     v.bin    = visual_bin_new ();
@@ -279,6 +278,7 @@ v_init (int argc, char **argv)
     visual_bin_switch_set_style (v.bin, VISUAL_SWITCH_STYLE_MORPH);
     visual_bin_switch_set_steps (v.bin, 10);
 
+/*
     if (v.plugin == NULL) {
         puts ("Available plugins:");
         while ((v.plugin = visual_actor_get_next_by_name (v.plugin))) {
@@ -286,6 +286,7 @@ v_init (int argc, char **argv)
         }
         v.plugin = visual_actor_get_next_by_name (0);
     }
+*/
 
     v.plugin = ACTOR;
     v.input = INPUT;
