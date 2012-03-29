@@ -44,7 +44,8 @@ typedef struct {
 
 	int			 draw_mode;
 
-	GLuint			 texture[2];
+	GLuint			 textures[2];
+	VisVideo		*texture_images[2];
 
 	int			 maxlines;
 	float			 texsize;
@@ -73,9 +74,9 @@ static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_madspin_palette (VisPluginData *plugin);
 static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-static int madspin_load_textures (MadspinPrivate *priv);
-static int madspin_sound (MadspinPrivate *priv, VisAudio *audio);
-static int madspin_draw (MadspinPrivate *priv, VisVideo *video);
+static int  madspin_load_textures (MadspinPrivate *priv);
+static int  madspin_sound (MadspinPrivate *priv, VisAudio *audio);
+static int  madspin_draw (MadspinPrivate *priv, VisVideo *video);
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -151,27 +152,9 @@ static int lv_madspin_init (VisPluginData *plugin)
 
 	visual_param_container_add_many (paramcontainer, params);
 
-	/* GL and the such */
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity ();
-	glOrtho (-4.0, 4.0, -4.0, 4.0, -18.0, 18.0);
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();
-
-	glDisable (GL_DEPTH_TEST);
-
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glShadeModel (GL_SMOOTH);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClearDepth (1.0);
-	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
-	glEnable (GL_BLEND);
-	glEnable (GL_TEXTURE_2D);
-	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	priv->initialized = TRUE;
 
 	madspin_load_textures (priv);
-
-	priv->initialized = TRUE;
 
 	return 0;
 }
@@ -179,9 +162,13 @@ static int lv_madspin_init (VisPluginData *plugin)
 static int lv_madspin_cleanup (VisPluginData *plugin)
 {
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	
+	if (priv->initialized == TRUE) {
+		visual_object_unref (VISUAL_OBJECT (priv->texture_images[0]));
+		visual_object_unref (VISUAL_OBJECT (priv->texture_images[1]));
 
-	if (priv->initialized == TRUE)
-		glDeleteTextures (2, priv->texture);
+		glDeleteTextures (2, priv->textures);
+	}
 
 	visual_mem_free (priv);
 
@@ -207,11 +194,51 @@ static int lv_madspin_requisition (VisPluginData *plugin, int *width, int *heigh
 	return 0;
 }
 
+
+static void bind_texture (GLuint texture, VisVideo *image)
+{
+	glBindTexture (GL_TEXTURE_2D, texture);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D (GL_TEXTURE_2D, 0, 3, image->width, image->height, 0,
+		      GL_RGB, GL_UNSIGNED_BYTE, visual_video_get_pixels (image));
+}
+
+static void lv_madspin_setup_gl (VisPluginData *plugin)
+{
+	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	/* GL and the such */
+	glMatrixMode (GL_PROJECTION);
+
+	glLoadIdentity ();
+	glOrtho (-4.0, 4.0, -4.0, 4.0, -18.0, 18.0);
+	glMatrixMode (GL_MODELVIEW);
+	glLoadIdentity ();
+
+	glDisable (GL_DEPTH_TEST);
+
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glShadeModel (GL_SMOOTH);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth (1.0);
+	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
+	glEnable (GL_BLEND);
+	glEnable (GL_TEXTURE_2D);
+	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+	glGenTextures (2, priv->textures);
+	bind_texture (priv->textures[0], priv->texture_images[0]);
+	bind_texture (priv->textures[1], priv->texture_images[1]);
+}
+
 static int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	visual_video_set_dimension (video, width, height);
 
 	glViewport (0, 0, width, height);
+
+	lv_madspin_setup_gl (plugin);
 
 	return 0;
 }
@@ -262,37 +289,17 @@ static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 
 static int madspin_load_textures (MadspinPrivate *priv)
 {
-	VisVideo *textureimage;
-
-	glGenTextures (2, &priv->texture[0]);
-
-	textureimage = visual_bitmap_load_new_video (STAR_DIR "/star1.bmp");
-	if (!textureimage) {
+	priv->texture_images[0] = visual_bitmap_load_new_video (STAR_DIR "/star1.bmp");
+	if (!priv->texture_images[0]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load first texture");
-		return 0;
+		return -1;
 	}
 
-	glBindTexture (GL_TEXTURE_2D, priv->texture[0]);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D (GL_TEXTURE_2D, 0, 3, textureimage->width, textureimage->height, 0,
-			GL_RGB, GL_UNSIGNED_BYTE, visual_video_get_pixels (textureimage));
-
-	visual_object_unref (VISUAL_OBJECT (textureimage));
-
-	textureimage = visual_bitmap_load_new_video (STAR_DIR "/star2.bmp");
-	if (!textureimage) {
+	priv->texture_images[1] = visual_bitmap_load_new_video (STAR_DIR "/star2.bmp");
+	if (!priv->texture_images[1]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load second texture");
-		return 0;
+		return -1;
 	}
-
-	glBindTexture (GL_TEXTURE_2D, priv->texture[1]);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D (GL_TEXTURE_2D, 0, 3, textureimage->width, textureimage->height, 0,
-			GL_RGB, GL_UNSIGNED_BYTE, visual_video_get_pixels (textureimage));
-
-	visual_object_unref (VISUAL_OBJECT (textureimage));
 
 	return 0;
 }
@@ -383,7 +390,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 			glPushMatrix ();
 
 			glTranslatef ((float) x, (float) y, (float) z);
-			glBindTexture (GL_TEXTURE_2D, priv->texture[0]);
+			glBindTexture (GL_TEXTURE_2D, priv->textures[0]);
 
 			s1r = ((point * 1.0f) / priv->num_stars);
 			s1g = (priv->num_stars - point) / (priv->num_stars * 1.0f);
@@ -418,7 +425,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 				glEnd ();
 			}
 
-			glBindTexture (GL_TEXTURE_2D, priv->texture[1]);
+			glBindTexture (GL_TEXTURE_2D, priv->textures[1]);
 			glRotatef (priv->frame + point, 0.0f, 0.0f, 1.0f);
 
 			if (s2a > 0.005f) {
