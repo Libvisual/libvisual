@@ -146,8 +146,6 @@ static int lv_nastyfft_init (VisPluginData *plugin)
 			priv->heights[z][x]=0.0f;
 		}
 	}
-	//init_gl(priv);
-	make_all(priv);
 
 	return 0;
 }
@@ -335,14 +333,16 @@ static int nastyfft_draw (NastyfftPrivate *priv, VisVideo *video)
 
 static void init_gl(NastyfftPrivate *priv)
 {
-	glViewport(0, 0, priv->nw, priv->nh);
-
 	const double defFOVY = 30.0; // field-of-view in degrees in up direction
 	double aspect = priv->nw/priv->nh;
 	// field-of-view
 	double fov = (priv->nw < priv->nh) ? defFOVY : defFOVY/aspect;
 	float nearDist = 0.1f;
 	float farDist = 500.0f;
+
+	glViewport(0, 0, priv->nw, priv->nh);
+
+	make_all(priv);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -352,19 +352,15 @@ static void init_gl(NastyfftPrivate *priv)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-
 	//GLfloat ambientMaterial[] = { 1.0, 1.0, 1.0, 1.0 };
 	//GLfloat difuseMaterial[] = { .5, .5, .5, 1.0 };
 	GLfloat mat_specular[] = { 0.2, 0.2, 0.2, 1.0 };
 
-
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_DEPTH_TEST);
 
-
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_BLEND);
-
 
 	//glShadeModel (GL_SMOOTH);
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
