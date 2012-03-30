@@ -2008,10 +2008,15 @@ static int depth_transform_16_to_24_c (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+#ifdef VISUAL_LITTLE_ENDIAN
 			*(dbuf++) = sbuf->b << 3;
 			*(dbuf++) = sbuf->g << 2;
 			*(dbuf++) = sbuf->r << 3;
-
+#else
+			*(dbuf++) = sbuf->r << 3;
+			*(dbuf++) = sbuf->g << 2;
+			*(dbuf++) = sbuf->b << 3;
+#endif /* VISUAL_LITTLE_ENDIAN */
 			sbuf++;
 		}
 
@@ -2041,10 +2046,17 @@ static int depth_transform_16_to_32_c (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+#ifdef VISUAL_LITTLE_ENDIAN
 			*(dbuf++) = sbuf->b << 3;
 			*(dbuf++) = sbuf->g << 2;
 			*(dbuf++) = sbuf->r << 3;
-			*(dbuf++) = 0;
+			*(dbuf++) = 255;
+#else
+			*(dbuf++) = 255;
+			*(dbuf++) = sbuf->r << 3;
+			*(dbuf++) = sbuf->g << 2;
+			*(dbuf++) = sbuf->b << 3;
+#endif /* VISUAL_LITTLE_ENDIAN */
 
 			sbuf++;
 		}
@@ -2076,9 +2088,15 @@ static int depth_transform_24_to_8_c (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+#ifdef VISUAL_LITTLE_ENDIAN
 			b = *(sbuf++);
 			g = *(sbuf++);
 			r = *(sbuf++);
+#else
+			r = *(sbuf++);
+			g = *(sbuf++);
+			b = *(sbuf++);
+#endif /* VISUAL_LITTLE_ENDIAN */
 
 			col = (b + g + r) / 3;
 
@@ -2115,10 +2133,15 @@ static int depth_transform_24_to_16_c (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+#ifdef VISUAL_LITTLE_ENDIAN
 			dbuf->b = *(sbuf++) >> 3;
 			dbuf->g = *(sbuf++) >> 2;
 			dbuf->r = *(sbuf++) >> 3;
-
+#else
+			dbuf->r = *(sbuf++) >> 3;
+			dbuf->g = *(sbuf++) >> 2;
+			dbuf->b = *(sbuf++) >> 3;
+#endif
 			dbuf++;
 		}
 
