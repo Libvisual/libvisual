@@ -166,7 +166,7 @@ static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 	unsigned int i, tabsize;
 	float theta;
 
-	tabsize = fourier->spectrum_size / 2;
+	tabsize = fourier->spectrum_size / 2 + 1;
 	fcache->sintable = visual_mem_malloc0 (sizeof (float) * tabsize);
 	fcache->costable = visual_mem_malloc0 (sizeof (float) * tabsize);
 
@@ -336,7 +336,7 @@ int visual_dft_init (VisDFT *dft, unsigned int samples_out, unsigned int samples
 
 	/* Set the VisDFT data */
 	dft->samples_in = samples_in;
-	dft->spectrum_size = samples_out * 2;
+	dft->spectrum_size = samples_in;
 	dft->brute_force = !visual_math_is_power_of_2 (dft->spectrum_size);
 
 	/* Initialize the VisDFT */
@@ -357,7 +357,7 @@ static void perform_dft_brute_force (VisDFT *dft, float *output, float *input)
 	fcache = dft_cache_get (dft);
 	visual_object_ref (VISUAL_OBJECT (fcache));
 
-	for (i = 0; i < dft->spectrum_size / 2; i++) {
+	for (i = 0; i < dft->spectrum_size / 2 + 1; i++) {
 		xr = 0.0f;
 		xi = 0.0f;
 
@@ -369,7 +369,7 @@ static void perform_dft_brute_force (VisDFT *dft, float *output, float *input)
 			xi += input[j] * wi;
 
 			wtemp = wr;
-			wr = wr * fcache->costable[i] - wi * fcache->sintable[i];
+			wr = wr    * fcache->costable[i] - wi * fcache->sintable[i];
 			wi = wtemp * fcache->sintable[i] + wi * fcache->costable[i];
 		}
 
