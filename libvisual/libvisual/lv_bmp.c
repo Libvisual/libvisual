@@ -37,6 +37,21 @@
 static int load_uncompressed (FILE *fp, VisVideo *video, int depth);
 static int load_rle (FILE *fp, VisVideo *video, int mode);
 
+#ifdef VISUAL_BIG_ENDIAN
+static void flip_byte_order (VisVideo *video)
+{
+    uint8_t *pixel = visual_video_get_pixels (video);
+	unsigned int i;
+	unsigned int pixel_count = video->width * video->height;
+
+	for (i = 0; i < pixel_count; i++) {
+		pixel[0] = pixel[2];
+		pixel[2] = pixel[0];
+		pixel += 3;
+	}
+}
+#endif /* VISUAL_BIG_ENDIAN */
+
 static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 {
 	uint8_t *data;
@@ -258,7 +273,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	/* Read the magic string */
 	fread (magic, 2, 1, fp);
 	if (strncmp (magic, "BM", 2) != 0) {
-		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file")); 
+		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file"));
 		fclose (fp);
 		return -VISUAL_ERROR_BMP_NO_BMP;
 	}
@@ -381,6 +396,10 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	switch (bi_compression) {
 		case BI_RGB:
 			error = load_uncompressed (fp, video, bi_bitcount);
+#ifdef VISUAL_BIG_ENDIAN
+			if (error == VISUAL_OK)
+				flip_byte_order (video);
+#endif
 			break;
 
 		case BI_RLE4:
