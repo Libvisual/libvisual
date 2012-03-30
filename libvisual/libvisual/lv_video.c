@@ -2259,12 +2259,19 @@ static int depth_transform_32_to_16_c (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+#ifdef VISUAL_LITTLE_ENDIAN
 			dbuf->b = *(sbuf++) >> 3;
 			dbuf->g = *(sbuf++) >> 2;
 			dbuf->r = *(sbuf++) >> 3;
+			sbuf++;
+#else
+			sbuf++;
+			dbuf->r = *(sbuf++) >> 3;
+			dbuf->g = *(sbuf++) >> 2;
+			dbuf->b = *(sbuf++) >> 3;
+#endif /* VISUAL_LITTLE_ENDIAN */
 
 			dbuf++;
-			sbuf++;
 		}
 
 		dbuf += ddiff;
@@ -2296,7 +2303,6 @@ static int depth_transform_32_to_24_c (VisVideo *dest, VisVideo *src)
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
-
 			sbuf++;
 		}
 
