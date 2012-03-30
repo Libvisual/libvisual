@@ -45,8 +45,8 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_VIDEO_ATTRIBUTE_OPTIONS(obj)		(VISUAL_CHECK_CAST ((obj), VisVideoAttributeOptions))
 
 #define VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(options, attr, val)	\
-	options.gl_attributes[attr].attribute = attr;			\
-	options.gl_attributes[attr].value = val;			\
+	options.gl_attributes[attr].attribute = attr;  \
+	options.gl_attributes[attr].value = val;       \
 	options.gl_attributes[attr].mutated = TRUE;
 
 
@@ -63,30 +63,30 @@ typedef enum {
 	VISUAL_VIDEO_DEPTH_GL		= 16,	/**< openGL surface flag. */
 	VISUAL_VIDEO_DEPTH_ENDLIST	= 32,	/**< Used to mark the end of the depth list. */
 	VISUAL_VIDEO_DEPTH_ERROR	= -1,	/**< Used when there is an error. */
-	VISUAL_VIDEO_DEPTH_ALL		= VISUAL_VIDEO_DEPTH_8BIT |  \
-					  VISUAL_VIDEO_DEPTH_16BIT | \
-					  VISUAL_VIDEO_DEPTH_24BIT | \
-					  VISUAL_VIDEO_DEPTH_32BIT | \
-					  VISUAL_VIDEO_DEPTH_GL /**< All graphical depths. */
+	VISUAL_VIDEO_DEPTH_ALL		= VISUAL_VIDEO_DEPTH_8BIT
+	                            | VISUAL_VIDEO_DEPTH_16BIT
+	                            | VISUAL_VIDEO_DEPTH_24BIT
+	                            | VISUAL_VIDEO_DEPTH_32BIT
+	                            | VISUAL_VIDEO_DEPTH_GL; /**< All graphical depths. */
 } VisVideoDepth;
 
 /**
  * Enumerate that defines video rotate types, used with the visual_video_rotate_*() functions.
  */
 typedef enum {
-	VISUAL_VIDEO_ROTATE_NONE	= 0,	/**< No rotating. */
-	VISUAL_VIDEO_ROTATE_90		= 1,	/**< 90 degrees rotate. */
-	VISUAL_VIDEO_ROTATE_180		= 2,	/**< 180 degrees rotate. */
-	VISUAL_VIDEO_ROTATE_270		= 3	/**< 270 degrees rotate. */
+	VISUAL_VIDEO_ROTATE_NONE = 0,   /**< No rotating. */
+	VISUAL_VIDEO_ROTATE_90   = 1,   /**< 90 degrees rotate. */
+	VISUAL_VIDEO_ROTATE_180  = 2,   /**< 180 degrees rotate. */
+	VISUAL_VIDEO_ROTATE_270  = 3    /**< 270 degrees rotate. */
 } VisVideoRotateDegrees;
 
 /**
  * Enumerate that defines the video mirror types, used with the visual_video_mirror_*() functions.
  */
 typedef enum {
-	VISUAL_VIDEO_MIRROR_NONE	= 0,	/**< No mirroring. */
-	VISUAL_VIDEO_MIRROR_X		= 1,	/**< Mirror on the X ax. */
-	VISUAL_VIDEO_MIRROR_Y		= 2	/**< Mirror on the Y ax. */
+	VISUAL_VIDEO_MIRROR_NONE = 0,   /**< No mirroring. */
+	VISUAL_VIDEO_MIRROR_X    = 1,   /**< Mirror on the X ax. */
+	VISUAL_VIDEO_MIRROR_Y    = 2    /**< Mirror on the Y ax. */
 } VisVideoMirrorOrient;
 
 /**
@@ -101,12 +101,12 @@ typedef enum {
  * Enumerate that defines the different blitting methods for a VisVideo.
  */
 typedef enum {
-	VISUAL_VIDEO_COMPOSITE_TYPE_NONE = 0,		/**< No composite set, use default. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_SRC,		/**< Source alpha channel. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY,		/**< Colorkey alpha. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE,		/**< One alpha channel for the complete surface. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY,	/**< Use surface alpha on colorkey. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM		/**< Custom composite function (looks up on the source VisVideo. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_NONE = 0,   /**< No composite set, use default. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_SRC,        /**< Source alpha channel. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY,   /**< Colorkey alpha. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE,    /**< One alpha channel for the complete surface. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY, /**< Use surface alpha on colorkey. */
+	VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM      /**< Custom composite function (looks up on the source VisVideo. */
 } VisVideoCompositeType;
 
 
@@ -165,35 +165,33 @@ typedef int (*VisVideoCustomCompositeFunc)(VisVideo *dest, VisVideo *src);
  * Elements within the structure should be set using the VisVideo system it's methods.
  */
 struct _VisVideo {
-	VisObject			 object;	/**< The VisObject data. */
+	VisObject            object;    /**< The VisObject data. */
 
-	VisVideoDepth			 depth;		/**< Surface it's depth. */
-	int				 width;		/**< Surface it's width. */
-	int				 height;	/**< Surface it's height. */
-	int				 bpp;		/**< Surface it's bytes per pixel. */
-	int				 pitch;		/**< Surface it's pitch value. Value contains
-							 * the number of bytes per line. */
-	VisBuffer			*buffer;	/**< The video buffer. */
-	void				**pixel_rows;	/**< Pixel row start pointer table. */
-	VisPalette			*pal;		/**< Optional pointer to the palette. */
+	VisVideoDepth        depth;     /**< Surface it's depth. */
+	int                  width;	    /**< Surface it's width. */
+	int                  height;    /**< Surface it's height. */
+	int                  bpp;       /**< Surface it's bytes per pixel. */
+	int                  pitch;     /**< Surface it's pitch value. Value contains
+	                                   * the number of bytes per line. */
+	VisBuffer           *buffer;	/**< The video buffer. */
+	void               **pixel_rows;/**< Pixel row start pointer table. */
+	VisPalette          *pal;       /**< Optional pointer to the palette. */
 
 	/* Sub region */
-	VisVideo			*parent;	/**< The surface it's parent, ONLY when it is a subregion. */
-	VisRectangle			 rect;		/**< The rectangle over the parent surface. */
+	VisVideo            *parent;    /**< The surface it's parent, ONLY when it is a subregion. */
+	VisRectangle         rect;      /**< The rectangle over the parent surface. */
 
 	/* Composite control */
-	VisVideoCompositeType		 compositetype;	/**< The surface it's composite type. */
-	VisVideoCustomCompositeFunc	 compfunc;	/**< The surface it's custom composite function. */
-	VisColor			 colorkey;	/**< The surface it's alpha colorkey. */
-	uint8_t				 density;	/**< The surface it's global alpha density. */
+	VisVideoCompositeType       compositetype; /**< The surface it's composite type. */
+	VisVideoCustomCompositeFunc	compfunc;      /**< The surface it's custom composite function. */
+	VisColor             colorkey;  /**< The surface it's alpha colorkey. */
+	uint8_t              density;   /**< The surface it's global alpha density. */
 };
 
 struct _VisVideoAttributeOptions {
-	VisObject			 object;
-
-	int				 depth;
-
-	VisGLAttributeEntry		 gl_attributes[VISUAL_GL_ATTRIBUTE_LAST];
+	VisObject           object;
+	int                 depth;
+	VisGLAttributeEntry gl_attributes[VISUAL_GL_ATTRIBUTE_LAST];
 };
 
 /**
