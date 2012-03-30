@@ -407,7 +407,7 @@ static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src)
 	visual_video_allocate_buffer (target);
 
 	/* Gdk uses a different color order than we do */
-	visual_video_color_bgr_to_rgb (target, &bgr);
+	visual_video_flip_pixel_bytes (target, &bgr);
 
 	return 0;
 }
