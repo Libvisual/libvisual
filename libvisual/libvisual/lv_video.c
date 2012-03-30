@@ -1355,7 +1355,7 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
 }
 
 
-int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src)
+int visual_video_flip_bytes (VisVideo *dest, VisVideo *src)
 {
 	visual_return_val_if_fail (visual_video_compare (dest, src) == TRUE, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL);
 	visual_return_val_if_fail (visual_video_get_pixels (dest) != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);

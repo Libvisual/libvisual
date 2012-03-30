@@ -607,7 +607,7 @@ int visual_video_fill_color (VisVideo *video, VisColor *color);
 int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRectangle *rect);
 
 /**
- * Video color transforms one VisVideo bgr pixel ordering into bgr pixel ordering.
+ * Flips the byte ordering of each pixel.
  *
  * @param dest Pointer to the destination VisVideo, which should be a clone of the source VisVideo
  *	depth, pitch, dimension wise.
@@ -616,7 +616,7 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
  *	-VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-int visual_video_color_bgr_to_rgb (VisVideo *dest, VisVideo *src);
+int visual_video_flip_bytes (VisVideo *dest, VisVideo *src);
 
 int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees);
 VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees);
