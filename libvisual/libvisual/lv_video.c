@@ -2171,10 +2171,17 @@ static int depth_transform_24_to_32_c (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+#ifdef VISUAL_LITTLE_ENDIAN
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
-			*(dbuf++) = 0;
+			*(dbuf++) = 255;
+#else
+			*(dbuf++) = 255;
+			*(dbuf++) = *(sbuf++);
+			*(dbuf++) = *(sbuf++);
+			*(dbuf++) = *(sbuf++);
+#endif /* VISUAL_LITTLE_ENDIAN */
 		}
 
 		dbuf += ddiff;
