@@ -101,6 +101,10 @@ SET(libvisual_SOURCES
   lv_math.c
   lv_gl.c
   lv_alpha_blend.c
+
+  private/lv_video_convert.c
+  private/lv_video_fill.c
+  private/lv_video_scale.c
 )
 
 SET(LINK_LIBS
