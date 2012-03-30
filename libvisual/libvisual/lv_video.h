@@ -67,7 +67,7 @@ typedef enum {
 	                            | VISUAL_VIDEO_DEPTH_16BIT
 	                            | VISUAL_VIDEO_DEPTH_24BIT
 	                            | VISUAL_VIDEO_DEPTH_32BIT
-	                            | VISUAL_VIDEO_DEPTH_GL; /**< All graphical depths. */
+	                            | VISUAL_VIDEO_DEPTH_GL /**< All graphical depths. */
 } VisVideoDepth;
 
 /**
