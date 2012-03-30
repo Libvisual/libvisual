@@ -2381,11 +2381,10 @@ static int bgr_to_rgb32 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < dest->height; y++) {
 		for (x = 0; x < dest->width; x++) {
-			*(destbuf + 2) = *(srcbuf);
-			*(destbuf + 1) = *(srcbuf + 1);
-			*(destbuf) = *(srcbuf + 2);
-
-			*(destbuf + 3) = *(srcbuf + 3);
+			destbuf[0] = srcbuf[3];
+			destbuf[1] = srcbuf[2];
+			destbuf[2] = srcbuf[1];
+			destbuf[3] = srcbuf[0];
 
 			destbuf += dest->bpp;
 			srcbuf += src->bpp;
