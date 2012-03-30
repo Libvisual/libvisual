@@ -209,7 +209,7 @@ uint32_t visual_color_to_uint32 (VisColor *color)
 
 	visual_return_val_if_fail (color != NULL, 0);
 
-	colors = (color->r << 24) |
+	colors = (color->a << 24) |
 		(color->r << 16) |
 		(color->g << 8) |
 		(color->b);
