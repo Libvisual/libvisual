@@ -40,7 +40,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode);
 #ifdef VISUAL_BIG_ENDIAN
 static void flip_byte_order (VisVideo *video)
 {
-    uint8_t *pixel = visual_video_get_pixels (video);
+	uint8_t *pixel = visual_video_get_pixels (video);
 	unsigned int i;
 	unsigned int pixel_count = video->width * video->height;
 
