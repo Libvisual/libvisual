@@ -616,7 +616,7 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
  *	-VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-int visual_video_flip_bytes (VisVideo *dest, VisVideo *src);
+int visual_video_flip_pixel_bytes (VisVideo *dest, VisVideo *src);
 
 int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees);
 VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees);

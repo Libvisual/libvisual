@@ -477,7 +477,7 @@ void visual_video_argb32_to_rgb24 (VisVideo *dest, VisVideo *src)
 	}
 }
 
-void visual_video_flip_bytes_color16 (VisVideo *dest, VisVideo *src)
+void visual_video_flip_pixel_bytes_color16 (VisVideo *dest, VisVideo *src)
 {
 	rgb16_t *destbuf, *srcbuf;
 	int x, y;
@@ -499,7 +499,7 @@ void visual_video_flip_bytes_color16 (VisVideo *dest, VisVideo *src)
 	}
 }
 
-void visual_video_flip_bytes_color24 (VisVideo *dest, VisVideo *src)
+void visual_video_flip_pixel_bytes_color24 (VisVideo *dest, VisVideo *src)
 {
 	uint8_t *destbuf, *srcbuf;
 	int x, y;
@@ -522,7 +522,7 @@ void visual_video_flip_bytes_color24 (VisVideo *dest, VisVideo *src)
 	}
 }
 
-void visual_video_flip_bytes_color32 (VisVideo *dest, VisVideo *src)
+void visual_video_flip_pixel_bytes_color32 (VisVideo *dest, VisVideo *src)
 {
 	uint8_t *destbuf, *srcbuf;
 	int x, y;
