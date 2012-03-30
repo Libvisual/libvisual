@@ -1924,6 +1924,7 @@ static int depth_transform_8_to_32_c (VisVideo *dest, VisVideo *src)
 
 	for (i = 0; i < 256; ++i) {
 		colors[i] =
+			255 << 24 |
 			src->pal->colors[i].r << 16 |
 			src->pal->colors[i].g << 8 |
 			src->pal->colors[i].b;
