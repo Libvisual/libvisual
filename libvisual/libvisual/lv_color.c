@@ -182,10 +182,17 @@ int visual_color_from_uint32 (VisColor *color, uint32_t rgb)
 
 	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 
-	color->r = colors[0];
+#ifdef VISUAL_LITTLE_ENDIAN
+	color->b = colors[0];
 	color->g = colors[1];
-	color->b = colors[2];
+	color->r = colors[2];
     color->a = colors[3];
+#else
+	color->a = colors[0];
+	color->r = colors[1];
+	color->g = colors[2];
+	color->b = colors[3];
+#endif /* VISUAL_LITTLE_ENDIAN */
 
 	return VISUAL_OK;
 }
