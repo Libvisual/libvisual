@@ -2212,10 +2212,17 @@ static int depth_transform_32_to_8_c (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+#ifdef VISUAL_LITTLE_ENDIAN
 			b = *(sbuf++);
 			g = *(sbuf++);
 			r = *(sbuf++);
 			sbuf++;
+#else
+			sbuf++;
+			r = *(sbuf++);
+			g = *(sbuf++);
+			b = *(sbuf++);
+#endif /* VISUAL_LITTLE_ENDIAN */
 
 			col = (r + g + b) / 3;
 
