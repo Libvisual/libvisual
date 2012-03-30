@@ -1895,9 +1895,15 @@ static int depth_transform_8_to_24_c (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+#ifdef VISUAL_LITTLE_ENDIAN
 			*(dbuf++) = src->pal->colors[*(sbuf)].b;
 			*(dbuf++) = src->pal->colors[*(sbuf)].g;
 			*(dbuf++) = src->pal->colors[*(sbuf)].r;
+#else
+			*(dbuf++) = src->pal->colors[*(sbuf)].r;
+			*(dbuf++) = src->pal->colors[*(sbuf)].g;
+			*(dbuf++) = src->pal->colors[*(sbuf)].b;
+#endif /* VISUAL_LITTLE_ENDIAN */
 			sbuf++;
 		}
 
