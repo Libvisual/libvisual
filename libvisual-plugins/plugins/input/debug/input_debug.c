@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2005 Dennis Smit <dsmit@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -78,21 +78,20 @@ static int inp_debug_cleanup (VisPluginData *plugin)
 
 static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 {
-#define STEP 0.05
-#define AMPLITUDE 65536/2
-        
+#define STEP 0.628318
+#define AMPLITUDE 65535/2
+
 	int16_t data[4096];
 	int i;
-        static double count = 0;
-        
-	for(i = 0; i < VISUAL_TABLESIZE(data); i++)
-        {
-		data[i] = (int16_t) (AMPLITUDE*sin(count));
-                count += STEP;
-        }
+	static double count = 0;
+
+	for(i = 0; i < VISUAL_TABLESIZE(data); i++) {
+		data[i] = (int16_t) (AMPLITUDE/2*sin(count));
+		count += STEP;
+	}
 
 	VisBuffer buffer;
-	visual_buffer_init (&buffer, data, sizeof(data) / 2, NULL);
+	visual_buffer_init (&buffer, data, VISUAL_TABLESIZE(data), NULL);
 
 	visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
 			VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
