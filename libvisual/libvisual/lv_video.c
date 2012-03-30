@@ -1022,7 +1022,8 @@ static int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
 
 static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 {
-	int x, y;
+	unsigned int i;
+	unsigned int pixel_count = dest->width * dest->height;
 
 	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -1037,17 +1038,12 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 
 		int index = visual_palette_find_color (pal, &src->colorkey);
 
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				if (*srcbuf != index)
-					*destbuf = *srcbuf;
+		for (i = 0; i < pixel_count; i++) {
+			if (*srcbuf != index)
+				*destbuf = *srcbuf;
 
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
-			}
-
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
+			destbuf++;
+			srcbuf++;
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
@@ -1055,17 +1051,12 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 		uint16_t *srcbuf = visual_video_get_pixels (src);
 		uint16_t color = visual_color_to_uint16 (&src->colorkey);
 
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				if (color != *srcbuf)
-					*destbuf = *srcbuf;
+		for (i = 0; i < pixel_count; i++) {
+			if (color != *srcbuf)
+				*destbuf = *srcbuf;
 
-				destbuf++;
-				srcbuf++;
-			}
-
-			destbuf += (dest->pitch / dest->bpp) - dest->width;
-			srcbuf += (src->pitch / src->bpp) - src->width;
+			destbuf++;
+			srcbuf++;
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT) {
@@ -1075,20 +1066,15 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 		uint8_t g = src->colorkey.g;
 		uint8_t b = src->colorkey.b;
 
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				if (b != *srcbuf && g != *(srcbuf + 1) && r != *(srcbuf + 2)) {
-					*destbuf = *srcbuf;
-					*(destbuf + 1) = *(srcbuf + 1);
-					*(destbuf + 2) = *(srcbuf + 2);
-				}
-
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
+		for (i = 0; i < pixel_count; i++) {
+			if (b != srcbuf[0] && g != srcbuf[1] && r != srcbuf[2]) {
+				destbuf[0] = srcbuf[0];
+				destbuf[1] = srcbuf[1];
+				destbuf[2] = srcbuf[2];
 			}
 
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
+			destbuf += 3;
+			srcbuf  += 3;
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
@@ -1096,21 +1082,12 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 		uint32_t *srcbuf = visual_video_get_pixels (src);
 		uint32_t color = visual_color_to_uint32 (&src->colorkey);
 
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				if (color != *srcbuf) {
-					uint8_t alpha = *destbuf >> 24;
+		for (i = 0; i < pixel_count; i++) {
+			if (color != *srcbuf)
+				*destbuf = *srcbuf;
 
-					*destbuf = *srcbuf;
-					*destbuf = (*destbuf & 0x00ffffff) | alpha << 24;
-				}
-
-				destbuf++;
-				srcbuf++;
-			}
-
-			destbuf += (dest->pitch / dest->bpp) - dest->width;
-			srcbuf += (src->pitch / src->bpp) - src->width;
+			destbuf++;
+			srcbuf++;
 		}
 	}
 
