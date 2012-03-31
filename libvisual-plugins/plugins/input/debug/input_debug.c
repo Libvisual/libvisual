@@ -21,15 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <math.h>
-#include <string.h>
-#include <gettext.h>
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <math.h>
 
 #define OUTPUT_RATE       44100
 #define OUTPUT_SAMPLES    4096
@@ -63,20 +58,19 @@ const VisPluginInfo *get_plugin_info (int *count)
 	}};
 
 	static VisPluginInfo info[] = {{
-		.type = VISUAL_PLUGIN_TYPE_INPUT,
-
+		.type     = VISUAL_PLUGIN_TYPE_INPUT,
 		.plugname = "debug",
-		.name = "debug",
-		.author = "Vitaly V. Bursov <vitalyvb@urk.net>",
-		.version = "0.2",
-		.about = N_("debug input plugin"),
-		.help = N_("this will generate a sine wave for debugging purposes"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
-		.init = inp_debug_init,
-		.cleanup = inp_debug_cleanup,
-		.events = inp_debug_events,
+		.name     = "debug",
+		.author   = "Vitaly V. Bursov <vitalyvb@urk.net>",
+		.version  = "0.2",
+		.about    = N_("debug input plugin"),
+		.help     = N_("this will generate a sine wave for debugging purposes"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.plugin = VISUAL_OBJECT (&input[0])
+		.init     = inp_debug_init,
+		.cleanup  = inp_debug_cleanup,
+		.events   = inp_debug_events,
+		.plugin   = VISUAL_OBJECT (&input[0])
 	}};
 
 	*count = VISUAL_TABLESIZE (info);
@@ -91,7 +85,7 @@ static int inp_debug_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-	    VISUAL_PARAM_LIST_ENTRY_FLOAT ("frequency",  DEFAULT_FREQUENCY),
+		VISUAL_PARAM_LIST_ENTRY_FLOAT ("frequency",	 DEFAULT_FREQUENCY),
 		VISUAL_PARAM_LIST_ENTRY_FLOAT ("ampltitude", DEFAULT_AMPLITUDE),
 		VISUAL_PARAM_LIST_END
 	};
