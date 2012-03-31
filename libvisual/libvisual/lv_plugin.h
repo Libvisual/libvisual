@@ -104,10 +104,10 @@ typedef enum {
  * Enumerate to check the depth of the type wildcard/defination used, used together with the visual_plugin_type functions.
  */
 typedef enum {
-	VISUAL_PLUGIN_TYPE_DEPTH_NONE		= 0,	/**< No type found.*/
-	VISUAL_PLUGIN_TYPE_DEPTH_DOMAIN		= 1,	/**< Only domain in type. */
-	VISUAL_PLUGIN_TYPE_DEPTH_PACKAGE	= 2,	/**< Domain and package in type. */
-	VISUAL_PLUGIN_TYPE_DEPTH_TYPE		= 3,	/**< Domain, package and type found in type. */
+	VISUAL_PLUGIN_TYPE_DEPTH_NONE		= 0,    /**< No type found.*/
+	VISUAL_PLUGIN_TYPE_DEPTH_DOMAIN		= 1,    /**< Only domain in type. */
+	VISUAL_PLUGIN_TYPE_DEPTH_PACKAGE	= 2,    /**< Domain and package in type. */
+	VISUAL_PLUGIN_TYPE_DEPTH_TYPE		= 3     /**< Domain, package and type found in type. */
 } VisPluginTypeDepth;
 
 typedef struct _VisPluginRef VisPluginRef;

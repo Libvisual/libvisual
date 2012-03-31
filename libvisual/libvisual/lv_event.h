@@ -47,7 +47,7 @@ typedef enum {
 	VISUAL_EVENT_GENERIC,		/**< A Generic event. Libvisual has nothing to do with it, this can be used for custom events. */
 	VISUAL_EVENT_VISIBILITY,	/**< A visibility event. Will be emited by lvdisplay (?) or app itself when window becomes (in)visible */
 
-	VISUAL_EVENT_LAST = 0xffffff,	/**< last event number. Libvisual & friends will never use ids greater than this */
+	VISUAL_EVENT_LAST = 0xffffff	/**< last event number. Libvisual & friends will never use ids greater than this */
 } VisEventType;
 
 /**

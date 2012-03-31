@@ -32,7 +32,7 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS;
+VISUAL_BEGIN_DECLS
 
 /**
  * Enumerate containing the different architectual types.

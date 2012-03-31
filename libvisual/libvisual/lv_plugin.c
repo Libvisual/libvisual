@@ -25,9 +25,9 @@
 #include "lv_plugin.h"
 #include "lv_common.h"
 #include "lv_libvisual.h"
+#include "lv_util.h"
 #include "gettext.h"
 #include <stdio.h>
-#include <string.h>
 #include <dirent.h>
 
 #if defined(VISUAL_OS_WIN32)
@@ -167,13 +167,13 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 
 	visual_mem_copy (dest, src, sizeof (VisPluginInfo));
 
-	dest->plugname = strdup (src->plugname);
-	dest->type = strdup (src->type);
-	dest->name = strdup (src->name);
-	dest->author = strdup (src->author);
-	dest->version = strdup (src->version);
-	dest->about = strdup (src->about);
-	dest->help = strdup (src->help);
+	dest->plugname = visual_strdup (src->plugname);
+	dest->type = visual_strdup (src->type);
+	dest->name = visual_strdup (src->name);
+	dest->author = visual_strdup (src->author);
+	dest->version = visual_strdup (src->version);
+	dest->about = visual_strdup (src->about);
+	dest->help = visual_strdup (src->help);
 
 	return VISUAL_OK;
 }
@@ -692,7 +692,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 
 		ref[i]->index = i;
 		ref[i]->info = dup_info;
-		ref[i]->file = strdup (pluginpath);
+		ref[i]->file = visual_strdup (pluginpath);
 
 		visual_object_unref (plug_info[i].plugin);
 		visual_object_unref (VISUAL_OBJECT (&plug_info[i]));

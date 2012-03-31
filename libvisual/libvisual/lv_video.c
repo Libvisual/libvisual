@@ -216,13 +216,13 @@ int visual_video_have_allocated_buffer (VisVideo *video)
 
 static void precompute_row_table (VisVideo *video)
 {
-	void **table, *row;
+	uint8_t **table, *row;
 	int y;
 
 	visual_return_if_fail (video->pixel_rows != NULL);
 
-	table = video->pixel_rows;
-	row = visual_video_get_pixels (video);
+	table = (uint8_t **) video->pixel_rows;
+	row = (uint8_t *) visual_video_get_pixels (video);
 
 	for (y = 0; y < video->height; y++, row += video->pitch)
 		*table++ = row;

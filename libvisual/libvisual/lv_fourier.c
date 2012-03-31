@@ -34,8 +34,6 @@
 #include <math.h>
 
 
-#define FOURIER_PI 3.141592653589793238462643383279502884197169399f
-
 /* Log scale settings */
 #define AMP_LOG_SCALE_THRESHOLD0	0.001f
 #define AMP_LOG_SCALE_DIVISOR		6.908f	/* divisor = -log threshold */
@@ -150,7 +148,7 @@ static void fft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 	dftsize = 2;
 	i = 0;
 	while (dftsize <= fourier->spectrum_size) {
-		theta = (float) (-2.0f * FOURIER_PI / (float) dftsize);
+		theta = (float) (-2.0f * VISUAL_MATH_PI / (float) dftsize);
 
 		fcache->costable[i] = (float) cosf (theta);
 		fcache->sintable[i] = (float) sinf (theta);
@@ -171,7 +169,7 @@ static void dft_table_cossin_init (DFTCacheEntry *fcache, VisDFT *fourier)
 	fcache->costable = visual_mem_malloc0 (sizeof (float) * tabsize);
 
 	for (i = 0; i < tabsize; i++) {
-		theta = (-2.0f * FOURIER_PI * i) / fourier->spectrum_size;
+		theta = (-2.0f * VISUAL_MATH_PI * i) / fourier->spectrum_size;
 
 		fcache->costable[i] = cosf (theta);
 		fcache->sintable[i] = sinf (theta);
