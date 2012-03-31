@@ -2,11 +2,10 @@
 #include "lv_common.h"
 #include <string.h>
 
-char *visual_strdup (const char *s)
+char *visual_strdup (const char *str)
 {
-  size_t length = strlen (s);
+  size_t size = strlen (str) + 1;
+  char *new_str = visual_mem_malloc (size);
 
-  char *s2 = visual_mem_malloc ( + 1);
-
-  return (char *) memcpy (s2, s, length);
+  return (char *) memcpy (new_str, str, size);
 }
