@@ -57,6 +57,7 @@ SET(libvisual_HEADERS
   lv_gl.h
   lv_defines.h
   lv_alpha_blend.h
+  lv_util.h
   ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h
 )
 
@@ -101,6 +102,7 @@ SET(libvisual_SOURCES
   lv_math.c
   lv_gl.c
   lv_alpha_blend.c
+  lv_util.c
 
   private/lv_video_convert.c
   private/lv_video_fill.c
