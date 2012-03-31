@@ -103,7 +103,7 @@ int visual_mem_initialize (void);
  * @return On success, a pointer to a new allocated memory block
  * of size @a nbytes, on failure, program is aborted.
  */
-void *visual_mem_malloc (visual_size_t nbytes) __malloc;
+void *visual_mem_malloc (visual_size_t nbytes) VIS_ATTR_MALLOC;
 
 /**
  * Allocates @a nbytes of memory initialized to 0.
@@ -113,7 +113,7 @@ void *visual_mem_malloc (visual_size_t nbytes) __malloc;
  * @return On success, a pointer to a new allocated memory initialized
  * to 0 of size @a nbytes, on failure, program is aborted.
  */
-void *visual_mem_malloc0 (visual_size_t nbytes) __malloc;
+void *visual_mem_malloc0 (visual_size_t nbytes) VIS_ATTR_MALLOC;
 
 /**
  * Reallocates memory, can be used to grow a buffer.
@@ -123,7 +123,7 @@ void *visual_mem_malloc0 (visual_size_t nbytes) __malloc;
  *
  * @return On success, a pointer to the new reallocated memory, on failure NULL.
  */
-void *visual_mem_realloc (void *ptr, visual_size_t nbytes) __malloc;
+void *visual_mem_realloc (void *ptr, visual_size_t nbytes) VIS_ATTR_MALLOC;
 
 /**
  * Frees allocated memory.
