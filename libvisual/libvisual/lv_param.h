@@ -39,7 +39,7 @@
 VISUAL_BEGIN_DECLS
 
 #define VISUAL_PARAMCONTAINER(obj)            (VISUAL_CHECK_CAST ((obj), VisParamContainer))
-#define VISUAL_PARAMENTRY_CALLBACK(obj)            (VISUAL_CHECK_CAST ((obj), VisParamEntryCallback))
+#define VISUAL_PARAMENTRY_CALLBACK(obj)       (VISUAL_CHECK_CAST ((obj), VisParamEntryCallback))
 #define VISUAL_PARAMENTRY(obj)                (VISUAL_CHECK_CAST ((obj), VisParamEntry))
 
 /* Use 0 for pointers instead of NULL because of C++ programs shocking on ((void *) 0) */
@@ -57,16 +57,16 @@ VISUAL_BEGIN_DECLS
  * Different types of parameters that can be used.
  */
 typedef enum {
-    VISUAL_PARAM_ENTRY_TYPE_NULL,        /**< No parameter. */
-    VISUAL_PARAM_ENTRY_TYPE_STRING,        /**< String parameter. */
+    VISUAL_PARAM_ENTRY_TYPE_NULL,       /**< No parameter. */
+    VISUAL_PARAM_ENTRY_TYPE_STRING,     /**< String parameter. */
     VISUAL_PARAM_ENTRY_TYPE_INTEGER,    /**< Integer parameter. */
-    VISUAL_PARAM_ENTRY_TYPE_FLOAT,        /**< Floating point parameter. */
-    VISUAL_PARAM_ENTRY_TYPE_DOUBLE,        /**< Double floating point parameter. */
-    VISUAL_PARAM_ENTRY_TYPE_COLOR,        /**< VisColor parameter. */
+    VISUAL_PARAM_ENTRY_TYPE_FLOAT,      /**< Floating point parameter. */
+    VISUAL_PARAM_ENTRY_TYPE_DOUBLE,     /**< Double floating point parameter. */
+    VISUAL_PARAM_ENTRY_TYPE_COLOR,      /**< VisColor parameter. */
     VISUAL_PARAM_ENTRY_TYPE_PALETTE,    /**< VisPalette parameter. */
-    VISUAL_PARAM_ENTRY_TYPE_OBJECT,        /**< VisObject parameter. */
-    VISUAL_PARAM_ENTRY_TYPE_COLLECTION,    /**< VisCollection parameter. */
-    VISUAL_PARAM_ENTRY_TYPE_END        /**< List end, and used as terminator for VisParamEntry lists. */
+    VISUAL_PARAM_ENTRY_TYPE_OBJECT,     /**< VisObject parameter. */
+    VISUAL_PARAM_ENTRY_TYPE_COLLECTION, /**< VisCollection parameter. */
+    VISUAL_PARAM_ENTRY_TYPE_END         /**< List end, and used as terminator for VisParamEntry lists. */
 } VisParamEntryType;
 
 typedef struct _VisParamContainer VisParamContainer;
@@ -90,9 +90,9 @@ typedef void (*VisParamChangedCallbackFunc)(VisParamEntry *param, void *priv);
  * All members should never be accessed directly, instead methods should be used.
  */
 struct _VisParamContainer {
-    VisObject     object;    /**< The VisObject data. */
-    VisList         entries;    /**< The list that contains all the parameters. */
-    VisEventQueue    *eventqueue;    /**< Pointer to an optional eventqueue to which events can be emitted
+    VisObject      object;       /**< The VisObject data. */
+    VisList        entries;      /**< The list that contains all the parameters. */
+    VisEventQueue *eventqueue;   /**< Pointer to an optional eventqueue to which events can be emitted
                       * on parameter changes. */
 };
 
@@ -100,9 +100,9 @@ struct _VisParamContainer {
  * A parameter callback entry, used for change notification callbacks.
  */
 struct _VisParamEntryCallback {
-    VisObject             object;    /**< The VisObject data. */
-    int                 id;        /**< Callback ID. */
-    VisParamChangedCallbackFunc     callback;    /**< The param change callback function. */
+    VisObject object;                        /**< The VisObject data. */
+    int       id;                            /**< Callback ID. */
+    VisParamChangedCallbackFunc callback;    /**< The param change callback function. */
 };
 
 /**
@@ -111,42 +111,42 @@ struct _VisParamEntryCallback {
  * All members should never be accessed directly, instead methods should be used.
  */
 struct _VisParamEntry {
-    VisObject         object;    /**< The VisObject data. */
-    VisParamContainer    *parent;    /**< Parameter container in which the param entry is encapsulated. */
-    char            *name;        /**< Parameter name. */
-    VisParamEntryType     type;        /**< Parameter type. */
+    VisObject          object;     /**< The VisObject data. */
+    VisParamContainer *parent;     /**< Parameter container in which the param entry is encapsulated. */
+    char              *name;       /**< Parameter name. */
+    VisParamEntryType  type;       /**< Parameter type. */
 
-    char            *string;    /**< String data. */
+    char              *string;     /**< String data. */
 
     /* No union, we can't choose a member of the union using static initializers */
     struct {
-        int         integer;        /**< Integer data. */
-        float         floating;        /**< Floating point data. */
-        double         doubleflt;        /**< Double floating point data. */
+        int            integer;    /**< Integer data. */
+        float          floating;   /**< Floating point data. */
+        double         doubleflt;  /**< Double floating point data. */
     } numeric;
 
-    VisColor         color;        /**< VisColor data. */
+    VisColor           color;      /**< VisColor data. */
     VisPalette         pal;        /**< VisPalette data. */
-    VisObject        *objdata;    /**< VisObject data for a VisObject parameter. */
+    VisObject         *objdata;    /**< VisObject data for a VisObject parameter. */
 
-    VisList             callbacks;    /**< The change notify callbacks. */
+    VisList            callbacks;  /**< The change notify callbacks. */
 
-    VisCollection        *collection;    /**< VisCollection data. */
+    VisCollection     *collection; /**< VisCollection data. */
 
-    char             *annotation;     /**< Parameter annotation. */
+    char              *annotation; /**< Parameter annotation. */
 
     /**< Fields for  configuring minimum and maximum thresholds. */
 
     struct {
-        int     integer;
-        float    floating;
-        double     doubleflt;
+        int    integer;
+        float  floating;
+        double doubleflt;
     } min; /**< ParamEntry's minimum threshold. */
 
     struct {
-        int     integer;
-        float    floating;
-        double     doubleflt;
+        int    integer;
+        float  floating;
+        double doubleflt;
     } max; /**< ParemEntry's maximum threshold. */
 
     /**< Deault values. */
@@ -156,7 +156,7 @@ struct _VisParamEntry {
         double doubleflt;
     } defaultnum; /**< ParamEntry's default number value. */
 
-    char *defaultstring; /**< ParamEntry's default string value. */
+    char *defaultstring;   /**< ParamEntry's default string value. */
 
     VisColor defaultcolor; /**< ParamEntry's default VisColor. */
 };
