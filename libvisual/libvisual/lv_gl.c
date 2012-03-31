@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -24,8 +24,3 @@
 #include "config.h"
 #include "lv_gl.h"
 #include "lv_common.h"
-
-void *visual_gl_get_proc_address (char *procname)
-{
-	return NULL;
-}
