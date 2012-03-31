@@ -60,7 +60,7 @@
  * slowest rhythm.
  */
 #define BEAT_MAX    200
-    
+
 static void blursk_render_pcm(BlurskPrivate *priv, int16_t *data);
 
 /* This is used for slow motion */
@@ -201,7 +201,7 @@ static int detect_beat(int32_t loudness, int *thickref, int *quietref)
 static void drawfloaters(int beat)
 {
     static int prevfloaters;
-    static struct {int x, y, age; char color;} floater[10];
+    static struct {int x, y, age; uint8_t color;} floater[10];
     static int oddeven;
     int nfloaters;
     int i, j, delta, dx, dy;
@@ -282,7 +282,7 @@ static void drawfloaters(int beat)
         /* if no motion, or motion carries it off the screen, then
          * choose a new random position & contrasting color.
          */
-        if (delta == 0 
+        if (delta == 0
          || floater[i].x < 0 || floater[i].x >= img_width
          || floater[i].y < 0 || floater[i].y >= img_height)
         {
@@ -329,7 +329,7 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
         convert_ms_to_timestamp(posstr, pos);
         length = songinfo->length;
         convert_ms_to_timestamp(lenstr, length);
-        if(pos != prevpos) 
+        if(pos != prevpos)
         {
             prevpos = pos;
             beatquiet = TRUE;
@@ -338,8 +338,8 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
                 case VISUAL_SONGINFO_TYPE_SIMPLE:
                     if(config.show_timestamp)
                     {
-                        if(lenstr >= 0)
-                            sprintf(buf, "{%s/%s} %s", posstr, lenstr, songinfo->songname);
+						if(lenstr != NULL)
+							sprintf(buf, "{%s/%s} %s", posstr, lenstr, songinfo->songname);
                         else
                             sprintf(buf, "(%s) %s", posstr, songinfo->songname);
                         break;
@@ -348,21 +348,21 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
                     {
                         sprintf(buf, "%s", songinfo->songname);
                     }
-    
+
                 case VISUAL_SONGINFO_TYPE_ADVANCED:
-                    if(config.show_timestamp) 
+                    if(config.show_timestamp)
                     {
-                        if(strcmp(songinfo->artist, "(null)") == 0) 
+                        if(strcmp(songinfo->artist, "(null)") == 0)
                         {
                             if(length >= 0)
                                 sprintf(buf, "{%s/%s} %s", posstr, lenstr, songinfo->song);
                             else
                                 sprintf(buf, "(%s) %s", posstr, songinfo->song);
-                        } 
+                        }
                         else
                         {
                             if(length >= 0)
-                                sprintf(buf, "{%s/%s} %s by %s", posstr, lenstr, 
+                                sprintf(buf, "{%s/%s} %s by %s", posstr, lenstr,
                                     songinfo->song, songinfo->artist);
                             else
                                 sprintf(buf, "(%s) %s by %s", posstr, songinfo->song, songinfo->artist);
@@ -381,8 +381,8 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
                         }
                     }
                     break;
-                
-    
+
+
                 default:
                     break;
             }
@@ -390,7 +390,7 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
     }
 
     showinfo = *config.show_info;
-    if(blurskinfo || persistent) 
+    if(blurskinfo || persistent)
     {
         if(showinfo == 'N')
             return img;
@@ -401,7 +401,7 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
             persistent = TRUE;
         }
         blurskinfo = FALSE;
-    } 
+    }
 
     /* If not supposed to show text, then we're done */
     switch(showinfo) {
@@ -575,7 +575,7 @@ static void blursk_render_pcm(BlurskPrivate *priv, int16_t *data)
 }
 
 
-void blursk_event_newsong(VisSongInfo *newsong) 
+void blursk_event_newsong(VisSongInfo *newsong)
 {
     visual_return_if_fail(newsong != NULL);
     visual_songinfo_copy(songinfo, newsong);

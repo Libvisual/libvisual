@@ -268,28 +268,28 @@ static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
     VisEvent ev;
     VisParamEntry *param;
     VisSongInfo *newsong;
-    
+
     int size_update = 0;
 
     /* reset regen-colmap-flag */
     priv->update_colmap = 0;
-    
-    while(visual_event_queue_poll(events, &ev)) 
+
+    while(visual_event_queue_poll(events, &ev))
     {
-        switch(ev.type) 
+        switch(ev.type)
         {
-            
+
             case VISUAL_EVENT_RESIZE:
                 act_blursk_dimension (plugin, ev.event.resize.video,
                     ev.event.resize.width, ev.event.resize.height);
                 size_update = 1;
                 break;
 
-            
+
             case VISUAL_EVENT_PARAM:
                 param = ev.event.param.param;
                 /* change config parameter */
-                config_change_param(priv, param);          
+                config_change_param(priv, param);
                 break;
 
             case VISUAL_EVENT_NEWSONG:
@@ -301,19 +301,19 @@ static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
                 break;
         }
     }
-    
+
     /* re-generate config string */
     //if(priv->update_config_string)
     //    config_string_genstring(priv);
-    
+
     /* regenerate palette */
     if(priv->update_colmap)
         color_genmap(priv, FALSE);
-    
+
     /* resize plugin */
     if(size_update)
         img_resize(priv, config.width, config.height);
-    
+
 
     return 0;
 }
@@ -327,7 +327,7 @@ static VisPalette *act_blursk_palette (VisPluginData *plugin) {
 static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio) {
         int16_t tpcm[512];
         float *pcm;
-    
+
         BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
         priv->video = video;
@@ -337,14 +337,14 @@ static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *
                         VISUAL_AUDIO_CHANNEL_RIGHT,
                         1.0,
                         1.0);
-    
-    
+
+
         pcm = visual_buffer_get_data(priv->pcmbuf);
-    
+
         int i;
         for(i = 0; i < sizeof(tpcm)/sizeof(int16_t); i++)
             tpcm[i] = (int16_t) (pcm[i]*32767);
-    
+
         __blursk_render_pcm (priv, tpcm);
 
         visual_mem_copy (visual_video_get_pixels (video), priv->rgb_buf, visual_video_get_size (video));

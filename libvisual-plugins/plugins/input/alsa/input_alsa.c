@@ -22,14 +22,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+#include "config.h"
+#include "gettext.h"
 
+#include <libvisual/libvisual.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
+
 
 #include <alsa/version.h>
 #if (SND_LIB_MAJOR == 0 && SND_LIB_MINOR == 9)
@@ -109,7 +109,7 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	if ((err = snd_pcm_open(&priv->chandle, strdup(inp_alsa_var_cdevice),
+	if ((err = snd_pcm_open(&priv->chandle, visual_strdup(inp_alsa_var_cdevice),
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
 		visual_log(VISUAL_LOG_ERROR,
 			    _("Record open error: %s"), snd_strerror(err));
