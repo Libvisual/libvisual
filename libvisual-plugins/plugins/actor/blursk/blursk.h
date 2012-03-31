@@ -26,6 +26,8 @@
 
 #include <libvisual/libvisual.h>
 
+#define VISUAL_PI 3.14159265358979
+
 #define QTY(array)  (sizeof(array) / sizeof(*(array)))
 
 #ifdef RAND_MAX

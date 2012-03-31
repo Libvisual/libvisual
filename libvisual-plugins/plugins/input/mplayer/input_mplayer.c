@@ -186,7 +186,7 @@ static int inp_mplayer_init( VisPluginData *plugin )
 				_("Could not mremap() area from file '%s' " \
 					" (%p from %" VISUAL_SIZE_T_FORMAT " to %" VISUAL_SIZE_T_FORMAT " bytes): %s"),
 				priv->sharedfile,
-				priv->mmap_area, sizeof( mplayer_data_t ),
+				(void *) priv->mmap_area, sizeof( mplayer_data_t ),
 				sizeof( mplayer_data_t ) + priv->mmap_area->bs,
 				strerror( errno ) );
 		return -7;
@@ -271,7 +271,7 @@ static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	visual_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
 	visual_mem_copy( audio->plugpcm,
-			((void *)priv->mmap_area) + sizeof( mplayer_data_t ),
+			((uint8_t *)priv->mmap_area) + sizeof( mplayer_data_t ),
 			2048 );
 
 	return 0;

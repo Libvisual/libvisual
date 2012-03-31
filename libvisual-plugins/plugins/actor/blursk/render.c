@@ -471,8 +471,8 @@ static void plotafter(void)
         plotprevsin = plotsin;
         plotprevcos = plotcos;
         plottheta = plottheta + 0.1;
-        if (plottheta > 2 * M_PI)
-            plottheta -= 2 * M_PI;
+        if (plottheta > 2 * VISUAL_MATH_PI)
+            plottheta -= 2 * VISUAL_MATH_PI;
         plotsin = (sin(plottheta) * (double)img_height) / (2.1 * (double)img_width);
         plotcos = cos(plottheta) / 2.1;
     }
@@ -587,7 +587,7 @@ static void render_radial(int thick, int center, int ndata, int16_t *data)
     /* Take samples starting from the center out */
     plotbefore(thick, ndata);
     trigger = BEAD_THRESHOLD * 5;
-    for (theta = 0.0, step = 2.0 * M_PI / ndata, i = 0;
+    for (theta = 0.0, step = 2.0 * VISUAL_MATH_PI / ndata, i = 0;
          i < ndata;
          theta += step, i++)
     {

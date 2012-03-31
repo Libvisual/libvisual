@@ -871,7 +871,7 @@ static int cylinder(int offset)
 
     /* return sin(height) */
     if (++salt >= 100) salt = 0;
-    offset = (int)((double)salt/100.0 + 2.5 * sin((double)offset / (double)img_height * M_PI));
+    offset = (int)((double)salt/100.0 + 2.5 * sin((double)offset / (double)img_height * VISUAL_MATH_PI));
     return offset * img_bpl;
 }
 

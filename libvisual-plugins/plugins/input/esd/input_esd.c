@@ -21,18 +21,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#define _POSIX_C_SOURCE 200112L
+
 #include <config.h>
+#include <esd.h>
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
 #include <errno.h>
-
+#include <sys/select.h>
 #include <gettext.h>
-
-#include <esd.h>
 
 #include <libvisual/libvisual.h>
 

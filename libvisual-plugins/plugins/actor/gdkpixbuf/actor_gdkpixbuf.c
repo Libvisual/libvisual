@@ -302,7 +302,7 @@ static int load_new_file (PixbufPrivate *priv, const char *filename)
 	if (priv->filename != NULL)
 		free (priv->filename);
 
-	priv->filename = strdup (filename);
+	priv->filename = visual_strdup (filename);
 
 	priv->pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
 	visual_return_val_if_fail (priv->pixbuf != NULL, -1);

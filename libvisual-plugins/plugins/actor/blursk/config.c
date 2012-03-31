@@ -62,55 +62,55 @@ void config_default(BlurskConfig *conf)
     conf->color = 0x00ffff;
     if(conf->color_style)
         visual_mem_free(conf->color_style);
-    conf->color_style = strdup(config_default_color_style);
+    conf->color_style = visual_strdup(config_default_color_style);
     if(conf->signal_color)
         visual_mem_free(conf->signal_color);
-    conf->signal_color = strdup(config_default_signal_color);
+    conf->signal_color = visual_strdup(config_default_signal_color);
     conf->contour_lines = FALSE;
     conf->hue_on_beats = FALSE;
     if(conf->background)
         visual_mem_free(conf->background);
-    conf->background = strdup(config_default_background);
+    conf->background = visual_strdup(config_default_background);
     if(conf->blur_style)
         visual_mem_free(conf->blur_style);
-    conf->blur_style = strdup(config_default_blur_style);
+    conf->blur_style = visual_strdup(config_default_blur_style);
     if(conf->transition_speed)
         visual_mem_free(conf->transition_speed);
-    conf->transition_speed = strdup(config_default_transition_speed);
+    conf->transition_speed = visual_strdup(config_default_transition_speed);
     if(conf->fade_speed)
         visual_mem_free(conf->fade_speed);
-    conf->fade_speed = strdup(config_default_fade_speed);
+    conf->fade_speed = visual_strdup(config_default_fade_speed);
     if(conf->blur_when)
         visual_mem_free(conf->blur_when);
-    conf->blur_when = strdup(config_default_blur_when);
+    conf->blur_when = visual_strdup(config_default_blur_when);
     if(conf->blur_stencil)
         visual_mem_free(conf->blur_stencil);
-    conf->blur_stencil = strdup(config_default_blur_stencil);
+    conf->blur_stencil = visual_strdup(config_default_blur_stencil);
     conf->slow_motion = FALSE;
     if(conf->signal_style)
         visual_mem_free(conf->signal_style);
-    conf->signal_style = strdup(config_default_signal_style);
+    conf->signal_style = visual_strdup(config_default_signal_style);
     if(conf->plot_style)
         visual_mem_free(conf->plot_style);
-    conf->plot_style = strdup(config_default_plot_style);
+    conf->plot_style = visual_strdup(config_default_plot_style);
     conf->thick_on_beats = TRUE;
     if(conf->flash_style)
         visual_mem_free(conf->flash_style);
-    conf->flash_style = strdup(config_default_flash_style);
+    conf->flash_style = visual_strdup(config_default_flash_style);
     if(conf->overall_effect)
         visual_mem_free(conf->overall_effect);
-    conf->overall_effect = strdup(config_default_overall_effect);
+    conf->overall_effect = visual_strdup(config_default_overall_effect);
     if(conf->floaters)
         visual_mem_free(conf->floaters);
-    conf->floaters = strdup(config_default_floaters);
+    conf->floaters = visual_strdup(config_default_floaters);
 
     /* advanced options */
     if(conf->cpu_speed)
         visual_mem_free(conf->cpu_speed);
-    conf->cpu_speed = strdup(config_default_cpu_speed);
+    conf->cpu_speed = visual_strdup(config_default_cpu_speed);
     if(conf->show_info)
         visual_mem_free(conf->show_info);
-    conf->show_info = strdup(config_default_show_info);
+    conf->show_info = visual_strdup(config_default_show_info);
     conf->info_timeout = 4;
     conf->show_timestamp = 0;
     conf->beat_sensitivity = 4;
@@ -240,7 +240,7 @@ static void _change_config_string(BlurskPrivate *priv, char **string, VisParamEn
         if(*string)
             visual_mem_free(*string);
 
-        *string = strdup(visual_param_entry_get_string(p));
+        *string = visual_strdup(visual_param_entry_get_string(p));
 
         /* parse the string */
         c = paste_parsestring(*string);
@@ -283,7 +283,7 @@ static void _change_string(BlurskPrivate *priv, char **string,
         if(*string)
             visual_mem_free(*string);
 
-        *string = strdup(visual_param_entry_get_string(p));
+        *string = visual_strdup(visual_param_entry_get_string(p));
 
         priv->update_config_string = 1;
     }

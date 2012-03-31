@@ -32,6 +32,7 @@
 
 #include <libvisual/libvisual.h>
 
+
 /** default amount of bars */
 #define BARS_DEFAULT 25
 #define BARS_DEFAULT_SPACE 1
@@ -314,7 +315,7 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
 	int color  = (1 << 16) + (amplitude * (125 << 16));
 	int dcolor = (125 << 16) / video->height;
 
-	uint8_t *row = video->pixel_rows[y] + x;
+	uint8_t *row = (uint8_t *) video->pixel_rows[y] + x;
 
 	while (y < video->height) {
 		visual_mem_set (row, color >> 16, width);

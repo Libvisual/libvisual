@@ -28,12 +28,13 @@
 #include <string.h>
 
 #include "notch.h"
+#include <libvisual/libvisual.h>
 
 NOTCH_FILTER *  init_notch(float cutoff) {
     NOTCH_FILTER * l=malloc(sizeof(NOTCH_FILTER));
     float steep = 0.99;;
     float r = steep * 0.99609375;
-    float f = cos(M_PI * cutoff / SAMPLING_RATE);
+    float f = cos(VISUAL_MATH_PI * cutoff / SAMPLING_RATE);
     l->cutoff = cutoff;
     l->a0 = (1 - r) * sqrt( r * (r - 4 * (f * f) + 2) + 1);
     l->b1 = 2 * f * r;

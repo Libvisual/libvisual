@@ -109,7 +109,7 @@ unsigned char* UtilStr::getPasStr() const {
 	if ( mStrLen < 255 )
 		mBuf[0] = mStrLen;
 	else
-		mBuf[0] = 255;
+		mBuf[0] = 0xff;
 
 	return (unsigned char*) &mBuf[0];
 }

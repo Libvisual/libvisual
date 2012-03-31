@@ -148,7 +148,7 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 			for (k=0; k<3; k++)
 				rf[c*3+k]=(1.0-factor)*r[k]+factor*r_morph[k];
 
-			rf[c*3+2]=sin(c*M_PI/(NBTW*4))*0.07;
+			rf[c*3+2]=sin(c*VISUAL_MATH_PI/(NBTW*4))*0.07;
 			c+=1;
 
 		}
