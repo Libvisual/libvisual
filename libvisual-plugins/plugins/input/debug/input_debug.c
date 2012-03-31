@@ -99,17 +99,17 @@ static int inp_debug_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (DebugPriv, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	priv->frequency  = DEFAULT_FREQUENCY;
+	priv->frequency	 = DEFAULT_FREQUENCY;
 	priv->ampltitude = DEFAULT_AMPLITUDE;
 	setup_wave (priv);
 
 	visual_param_container_add_many (paramcontainer, params);
 
-    param = visual_param_container_get (paramcontainer, "frequency");
+	param = visual_param_container_get (paramcontainer, "frequency");
 	visual_param_entry_min_set_float (param, 0.0);
 	visual_param_entry_max_set_float (param, 22000.0);
 
-    param = visual_param_container_get (paramcontainer, "ampltitude");
+	param = visual_param_container_get (paramcontainer, "ampltitude");
 	visual_param_entry_min_set_float (param, 0.0);
 	visual_param_entry_max_set_float (param, 1.0);
 
