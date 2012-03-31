@@ -92,12 +92,12 @@ VISUAL_BEGIN_DECLS
  * define some of the plugin it's behavior.
  */
 typedef enum {
-	VISUAL_PLUGIN_FLAG_NONE			= 0,	/**< Used to set no flags. */
-	VISUAL_PLUGIN_FLAG_NOT_REENTRANT	= 1,	/**< Used to tell the plugin loader that this plugin
-							  * is not reentrant, and can be loaded only once. */
-	VISUAL_PLUGIN_FLAG_SPECIAL		= 2	/**< Used to tell the plugin loader that this plugin has
-							  * special purpose, like the GdkPixbuf plugin, or a webcam
-							  * plugin. */
+	VISUAL_PLUGIN_FLAG_NONE          = 0,   /**< Used to set no flags. */
+	VISUAL_PLUGIN_FLAG_NOT_REENTRANT = 1,   /**< Used to tell the plugin loader that this plugin
+	                                           * is not reentrant, and can be loaded only once. */
+	VISUAL_PLUGIN_FLAG_SPECIAL       = 2    /**< Used to tell the plugin loader that this plugin has
+	                                           * special purpose, like the GdkPixbuf plugin, or a webcam
+	                                           * plugin. */
 } VisPluginFlags;
 
 /**
@@ -168,12 +168,12 @@ typedef int (*VisPluginEventsFunc)(VisPluginData *plugin, VisEventQueue *events)
  * and does refcounting. It is also used as entries in the plugin registry.
  */
 struct _VisPluginRef {
-	VisObject		 object;	/**< The VisObject data. */
+	VisObject      object;      /**< The VisObject data. */
 
-	char			*file;		/**< The file location of the plugin. */
-	int			 index;		/**< Contains the index number for the entry in the VisPluginInfo table. */
-	int			 usecount;	/**< The use count, this indicates how many instances are loaded. */
-	VisPluginInfo		*info;		/**< A copy of the VisPluginInfo structure. */
+	char          *file;        /**< The file location of the plugin. */
+	int            index;       /**< Contains the index number for the entry in the VisPluginInfo table. */
+	int            usecount;    /**< The use count, this indicates how many instances are loaded. */
+	VisPluginInfo *info;        /**< A copy of the VisPluginInfo structure. */
 };
 
 /**
@@ -181,27 +181,27 @@ struct _VisPluginRef {
  * and is filled within the plugin itself.
  */
 struct _VisPluginInfo {
-	VisObject		 object;	/**< The VisObject data. */
+	VisObject   object;	  /**< The VisObject data. */
 
-	const char		*type;		/**< Plugin type, in the format of "domain:package:type", as example,
-						 * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
-						 * instead of filling in the string yourself. */
-	const char		*plugname;	/**< The plugin name as it's saved in the registry. */
+	const char *type;     /**< Plugin type, in the format of "domain:package:type", as example,
+	                       * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
+	                       * instead of filling in the string yourself. */
+	const char *plugname; /**< The plugin name as it's saved in the registry. */
 
-	const char		*name;		/**< Long name */
-	const char		*author;	/**< Author */
-	const char		*version;	/**< Version */
-	const char		*about;		/**< About */
-	const char		*help;		/**< Help */
-	const char		*license;	/**< License */
+	const char *name;     /**< Long name */
+	const char *author;   /**< Author */
+	const char *version;  /**< Version */
+	const char *about;    /**< About */
+	const char *help;     /**< Help */
+	const char *license;  /**< License */
 
-	VisPluginInitFunc	 init;		/**< The standard init function, every plugin has to implement this. */
-	VisPluginCleanupFunc	 cleanup;	/**< The standard cleanup function, every plugin has to implement this. */
-	VisPluginEventsFunc	 events;	/**< The standard event function, implementation is optional. */
+	VisPluginInitFunc	 init;     /**< The standard init function, every plugin has to implement this. */
+	VisPluginCleanupFunc cleanup;  /**< The standard cleanup function, every plugin has to implement this. */
+	VisPluginEventsFunc	 events;   /**< The standard event function, implementation is optional. */
 
-	int			 flags;		/**< Plugin flags from the VisPluginFlags enumerate. */
+	int flags;            /**< Plugin flags from the VisPluginFlags enumerate. */
 
-	VisObject		*plugin;	/**< Pointer to the plugin specific data structures. */
+	VisObject           *plugin;   /**< Pointer to the plugin specific data structures. */
 };
 
 /**
@@ -209,28 +209,28 @@ struct _VisPluginInfo {
  * is encapsulated in this.
  */
 struct _VisPluginData {
-	VisObject		 object;	/**< The VisObject data. */
+	VisObject            object;      /**< The VisObject data. */
 
-	VisPluginRef		*ref;		/**< Pointer to the plugin references corresponding to this VisPluginData. */
+	VisPluginRef        *ref;         /**< Pointer to the plugin references corresponding to this VisPluginData. */
+	VisPluginInfo       *info;        /**< Pointer to the VisPluginInfo that is obtained from the plugin. */
 
-	VisPluginInfo		*info;		/**< Pointer to the VisPluginInfo that is obtained from the plugin. */
+	VisEventQueue        eventqueue;  /**< The plugin it's VisEventQueue for queueing events. */
+	VisParamContainer   *params;      /**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
+	int                  plugflags;   /**< Plugin flags, currently unused but will be used in the future. */
 
-	VisEventQueue		 eventqueue;	/**< The plugin it's VisEventQueue for queueing events. */
-	VisParamContainer	*params;	/**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
-	int			 plugflags;	/**< Plugin flags, currently unused but will be used in the future. */
+	VisRandomContext	 random;      /**< Pointer to the plugin it's private random context. It's highly adviced to use
+	                                     * the plugin it's randomize functions. The reason is so more advanced apps can
+	                                     * semi reproduce visuals. */
 
-	VisRandomContext	 random;	/**< Pointer to the plugin it's private random context. It's highly adviced to use
-						  * the plugin it's randomize functions. The reason is so more advanced apps can
-						  * semi reproduce visuals. */
+	int                  realized;    /**< Flag that indicates if the plugin is realized. */
 
-	int			 realized;	/**< Flag that indicates if the plugin is realized. */
 #if defined(VISUAL_OS_WIN32)
-	HMODULE			 handle;	/**< The LoadLibrary handle for windows32 */
+	HMODULE              handle;	  /**< The LoadLibrary handle for windows32 */
 #else /* !VISUAL_OS_WIN32 */
-	void			*handle;	/**< The dlopen handle */
+	void                *handle;	  /**< The dlopen handle */
 #endif
 
-	VisList			 environment;	/**< Misc environment specific data. */
+	VisList              environment; /**< Misc environment specific data. */
 };
 
 /**
@@ -238,11 +238,11 @@ struct _VisPluginData {
  * Some types of plugins might need this internally and thus this system provides this function.
  */
 struct _VisPluginEnviron {
-	VisObject		 object;	/**< The VisObject data. */
+	VisObject   object;       /**< The VisObject data. */
 
-	const char		*type;		/**< Almost the same as _VisPluginInfo.type. */
+	const char *type;         /**< Almost the same as _VisPluginInfo.type. */
 
-	VisObject		*environment;	/**< VisObject that contains environ specific data. */
+	VisObject  *environment;  /**< VisObject that contains environ specific data. */
 };
 
 /**
