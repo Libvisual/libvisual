@@ -24,6 +24,7 @@
 #ifndef _LV_TIME_H
 #define _LV_TIME_H
 
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_object.h>
 #include <time.h>
 
@@ -319,13 +320,13 @@ static inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
 }
 
 /* FIXME use uint64_t here, make sure type exists */
-static inline unsigned long long visual_timer_tsc_get_returned (void)
+static inline uint64_t visual_timer_tsc_get_returned (void)
 {
 	uint32_t lo, hi;
 
 	visual_timer_tsc_get (&lo, &hi);
 
-	return ((unsigned long long) hi << 32) | lo;
+	return ((uint64_t) hi << 32) | lo;
 }
 
 #define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)
