@@ -25,6 +25,7 @@
 #include "lv_param.h"
 #include "lv_common.h"
 #include "gettext.h"
+#include <string.h>
 
 static int param_container_dtor (VisObject *object);
 static int param_entry_dtor (VisObject *object);
