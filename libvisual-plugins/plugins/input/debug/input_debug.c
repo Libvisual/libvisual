@@ -85,7 +85,7 @@ static int inp_debug_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_FLOAT ("frequency",	 DEFAULT_FREQUENCY),
+		VISUAL_PARAM_LIST_ENTRY_FLOAT ("frequency",  DEFAULT_FREQUENCY),
 		VISUAL_PARAM_LIST_ENTRY_FLOAT ("ampltitude", DEFAULT_AMPLITUDE),
 		VISUAL_PARAM_LIST_END
 	};
