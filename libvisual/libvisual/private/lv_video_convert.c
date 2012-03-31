@@ -1,9 +1,14 @@
 #include "lv_video_convert.h"
+#include "lv_common.h"
 
 #pragma pack(1)
 
 typedef struct {
+#ifdef VISUAL_LITTLE_ENDIAN
 	uint16_t b:5, g:6, r:5;
+#else
+	uint16_t r:5, g:6, b:5;
+#endif
 } rgb16_t;
 
 #pragma pack()

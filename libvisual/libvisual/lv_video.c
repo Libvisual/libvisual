@@ -36,9 +36,15 @@
 #include "gettext.h"
 
 #pragma pack(1)
+
 typedef struct {
+#ifdef VISUAL_LITTLE_ENDIAN
 	uint16_t b:5, g:6, r:5;
-} _color16;
+#else
+	uint16_t r:5, g:6, b:5;
+#endif
+} rgb16_t;
+
 #pragma pack()
 
 /* The VisVideo dtor function */
@@ -1068,16 +1074,16 @@ static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
 
 		for (y = 0; y < src->height; y++) {
-			_color16 *destr = (_color16 *) destbuf;
-			_color16 *srcr = (_color16 *) srcbuf;
+			rgb16_t *destr = (rgb16_t *) destbuf;
+			rgb16_t *srcr  = (rgb16_t *) srcbuf;
 
 			for (x = 0; x < src->width; x++) {
 				destr->r = ((alpha * (srcr->r - destr->r) >> 8) + destr->r);
 				destr->g = ((alpha * (srcr->g - destr->g) >> 8) + destr->g);
 				destr->b = ((alpha * (srcr->b - destr->b) >> 8) + destr->b);
 
-				destr += 1;
-				srcr += 1;
+				destr++;
+				srcr++;
 			}
 
 			destbuf += dest->pitch;
@@ -1155,8 +1161,8 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 		uint16_t color = visual_color_to_uint16 (&src->colorkey);
 
 		for (y = 0; y < src->height; y++) {
-			_color16 *destr = (_color16 *) destbuf;
-			_color16 *srcr = (_color16 *) srcbuf;
+			rgb16_t *destr = (rgb16_t *) destbuf;
+			rgb16_t *srcr  = (rgb16_t *) srcbuf;
 
 			for (x = 0; x < src->width; x++) {
 				if (color != *((uint16_t *) srcr)) {

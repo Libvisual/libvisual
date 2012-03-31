@@ -1,10 +1,14 @@
 #include "lv_video_fill.h"
-#include "lv_mem.h"
+#include "lv_common.h"
 
 #pragma pack(1)
 
 typedef struct {
+#ifdef VISUAL_LITTLE_ENDIAN
 	uint16_t b:5, g:6, r:5;
+#else
+	uint16_t r:5, g:6, b:5;
+#endif
 } rgb16_t;
 
 #pragma pack()
@@ -87,10 +91,7 @@ void visual_video_fill_color_argb32 (VisVideo *video, VisColor *color)
 {
 	int y;
 	uint32_t *buf = visual_video_get_pixels (video);
-	uint32_t col =
-		(color->r << 16) |
-		(color->g << 8) |
-		(color->b);
+	uint32_t col = (color->a << 24) | (color->r << 16) | (color->g << 8) | (color->b);
 
 	for (y = 0; y < video->height; y++) {
 		visual_mem_set32 (buf, col, video->width);

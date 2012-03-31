@@ -1,10 +1,19 @@
 #include <config.h>
 #include "lv_alpha_blend.h"
+#include "lv_common.h"
 #include "lv_cpu.h"
 
+#pragma pack(1)
+
 typedef struct {
+#ifdef VISUAL_LITTLE_ENDIAN
 	uint16_t b:5, g:6, r:5;
-} _color16;
+#else
+	uint16_t r:5, g:6, b:5;
+#endif
+} rgb16_t;
+
+#pragma pack()
 
 static void alpha_blend_8_c	 (uint8_t *dest, uint8_t *src1, uint8_t *src2, visual_size_t size, uint8_t alpha);
 static void alpha_blend_16_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, visual_size_t size, uint8_t alpha);
@@ -39,9 +48,9 @@ static void alpha_blend_8_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, visual
 
 static void alpha_blend_16_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, visual_size_t size, uint8_t alpha)
 {
-	_color16 *destr = (_color16 *) dest;
-	_color16 *src1r = (_color16 *) src1;
-	_color16 *src2r = (_color16 *) src2;
+	rgb16_t *destr = (rgb16_t *) dest;
+	rgb16_t *src1r = (rgb16_t *) src1;
+	rgb16_t *src2r = (rgb16_t *) src2;
 	visual_size_t i;
 
 	for (i = 0; i < size / 2; i++) {

@@ -1,4 +1,5 @@
 #include "lv_video_scale.h"
+#include "lv_common.h"
 
 #pragma pack(1)
 
