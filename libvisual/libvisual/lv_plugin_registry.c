@@ -1,11 +1,13 @@
 #include "config.h"
 #include "lv_plugin_registry.h"
 #include "lv_common.h"
-#include "gettext.h"
 #include "lv_actor.h"
 #include "lv_input.h"
 #include "lv_morph.h"
 #include "lv_transform.h"
+#include "lv_util.h"
+#include "gettext.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -41,7 +43,7 @@ int visual_init_path_add (const char *pathadd)
 	if (pathadd == NULL)
 		__lv_plugpaths[__lv_plugpath_cnt - 1] = NULL;
 	else
-		__lv_plugpaths[__lv_plugpath_cnt - 1] = strdup (pathadd);
+		__lv_plugpaths[__lv_plugpath_cnt - 1] = visual_strdup (pathadd);
 
 	return VISUAL_OK;
 }

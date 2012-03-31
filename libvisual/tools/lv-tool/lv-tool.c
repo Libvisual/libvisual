@@ -256,7 +256,7 @@ static int _parse_args(int argc, char *argv[])
             case 's':
             {
                  have_seed = 1;
-                 sscanf(optarg, "%d", &seed);
+                 sscanf(optarg, "%u", &seed);
 				 break;
             }
 

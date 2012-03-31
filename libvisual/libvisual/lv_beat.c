@@ -55,6 +55,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "lv_beat.h"
 #include "lv_common.h"
 #include "lv_time.h"
+#include "lv_util.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -308,7 +309,7 @@ char *visual_beat_get_info(VisBeat *beat)
     }*/
 
     snprintf(beat->txt, 255, beat->predictionBpm ? "Current BPM: %d%s" : "Learning...", beat->predictionBpm, beat->cfg_smartbeatsticky && beat->sticked ? " Got it!": "");
-    char *tmp = strdup(beat->txt);
+    char *tmp = visual_strdup(beat->txt);
     snprintf(beat->txt, 255, "%s -- Confidence: %d%%", tmp, beat->confidence);
     visual_mem_free(tmp);
 

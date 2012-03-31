@@ -25,6 +25,7 @@
 #include "lv_songinfo.h"
 #include "lv_common.h"
 #include "lv_libvisual.h"
+#include "lv_util.h"
 #include <string.h>
 
 static int songinfo_dtor (VisObject *object)
@@ -129,7 +130,7 @@ int visual_songinfo_set_simple_name (VisSongInfo *songinfo, char *name)
 	if (songinfo->songname != NULL)
 		visual_mem_free (songinfo->songname);
 
-	songinfo->songname = strdup (name);
+	songinfo->songname = visual_strdup (name);
 
 	return VISUAL_OK;
 }
@@ -141,7 +142,7 @@ int visual_songinfo_set_artist (VisSongInfo *songinfo, char *artist)
 	if (songinfo->artist != NULL)
 		visual_mem_free (songinfo->artist);
 
-	songinfo->artist = strdup (artist);
+	songinfo->artist = visual_strdup (artist);
 
 	return VISUAL_OK;
 }
@@ -153,7 +154,7 @@ int visual_songinfo_set_album (VisSongInfo *songinfo, char *album)
 	if (songinfo->album != NULL)
 		visual_mem_free (songinfo->album);
 
-	songinfo->album = strdup (album);
+	songinfo->album = visual_strdup (album);
 
 	return VISUAL_OK;
 }
@@ -165,7 +166,7 @@ int visual_songinfo_set_song (VisSongInfo *songinfo, char *song)
 	if (songinfo->song != NULL)
 		visual_mem_free (songinfo->song);
 
-	songinfo->song = strdup (song);
+	songinfo->song = visual_strdup (song);
 
 	return VISUAL_OK;
 }
@@ -237,16 +238,16 @@ int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src)
 	visual_mem_copy (&dest->timer, &src->timer, sizeof (VisTimer));
 
 	if (src->songname != NULL)
-		dest->songname = strdup (src->songname);
+		dest->songname = visual_strdup (src->songname);
 
 	if (src->artist != NULL)
-		dest->artist = strdup (src->artist);
+		dest->artist = visual_strdup (src->artist);
 
 	if (src->album != NULL)
-		dest->album = strdup (src->album);
+		dest->album = visual_strdup (src->album);
 
 	if (src->song != NULL)
-		dest->song = strdup (src->song);
+		dest->song = visual_strdup (src->song);
 
 	/* Point the coverart VisVideo to that of the original and up it's refcount */
 	dest->cover = src->cover;

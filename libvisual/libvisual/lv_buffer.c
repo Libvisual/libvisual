@@ -267,7 +267,7 @@ int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int
 	if (byteoffset + size > dest->datasize)
 		amount = dest->datasize - byteoffset;
 
-	visual_mem_copy (dest->data + byteoffset, data, amount);
+	visual_mem_copy ((uint8_t *) dest->data + byteoffset, data, amount);
 
 	return VISUAL_OK;
 }

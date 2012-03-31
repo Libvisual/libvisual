@@ -21,11 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+#include "config.h"
 #include "lv_cache.h"
 #include "lv_common.h"
-
-#include <string.h>
+#include "lv_util.h"
 
 static int cache_dtor (VisObject *object);
 static int cache_remove_list_entry (VisCache *cache, VisListEntry **le);
@@ -217,7 +216,7 @@ int visual_cache_put (VisCache *cache, char *key, void *data)
 		visual_timer_init (&centry->timer);
 		visual_timer_start (&centry->timer);
 
-		centry->key = strdup (key);
+		centry->key = visual_strdup (key);
 		centry->data = data;
 
 		visual_list_add (cache->list, centry);

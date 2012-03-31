@@ -1261,7 +1261,7 @@ int visual_video_fill_alpha (VisVideo *video, uint8_t density)
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 
-	vidbuf = visual_video_get_pixels (video) + 3;
+	vidbuf = (uint8_t *) visual_video_get_pixels (video) + 3;
 
 	/* FIXME byte order sensitive */
 	for (y = 0; y < video->height; y++) {
@@ -1504,7 +1504,7 @@ static int rotate_180 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < dest->height; y++) {
 		dbuf = dest->pixel_rows[y];
-		sbuf = src->pixel_rows[h1 - y] + w1;
+		sbuf = (uint8_t *) src->pixel_rows[h1 - y] + w1;
 
 		for (x = 0; x < dest->width; x++) {
 			for (i = 0; i < src->bpp; i++) {
@@ -1522,7 +1522,7 @@ static int rotate_270 (VisVideo *dest, VisVideo *src)
 {
 	int x, y, i;
 
-	uint8_t *tsbuf = visual_video_get_pixels (src) + src->pitch - src->bpp;
+	uint8_t *tsbuf = (uint8_t *) visual_video_get_pixels (src) + src->pitch - src->bpp;
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = tsbuf;
 
@@ -1596,7 +1596,7 @@ static int mirror_x (VisVideo *dest, VisVideo *src)
 	int x, y, i;
 
 	for (y = 0; y < dest->height; y++) {
-		sbuf = src->pixel_rows[y] + w1b;
+		sbuf = (uint8_t *) src->pixel_rows[y] + w1b;
 		dbuf = dest->pixel_rows[y];
 
 		for (x = 0; x < dest->width; x++) {

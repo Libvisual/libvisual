@@ -246,7 +246,7 @@ void visual_thread_exit (void *retval)
 	visual_return_if_fail (visual_thread_is_supported () != FALSE);
 	visual_return_if_fail (visual_thread_is_enabled () != FALSE);
 
-	return __lv_thread_funcs.thread_exit (retval);
+	__lv_thread_funcs.thread_exit (retval);
 }
 
 void visual_thread_yield ()
@@ -255,7 +255,7 @@ void visual_thread_yield ()
 	visual_return_if_fail (visual_thread_is_supported () != FALSE);
 	visual_return_if_fail (visual_thread_is_enabled () != FALSE);
 
-	return __lv_thread_funcs.thread_yield ();
+	__lv_thread_funcs.thread_yield ();
 }
 
 VisMutex *visual_mutex_new ()

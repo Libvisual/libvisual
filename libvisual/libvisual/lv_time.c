@@ -21,9 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#define _POSIX_C_SOURCE 200112L
+
 #include "config.h"
 #include "lv_time.h"
 #include "lv_common.h"
+#include <time.h>
 #include <sys/time.h>
 #include <errno.h>
 
@@ -164,7 +167,7 @@ int visual_time_usleep (unsigned long microseconds)
 	Sleep (microseconds / 1000);
 
 	return VISUAL_OK;
-#else /* !VISAUL_OS_WIN32 */
+#else /* !VISUAL_OS_WIN32 */
 #ifdef HAVE_NANOSLEEP
 	struct timespec request, remaining;
 	request.tv_sec = microseconds / VISUAL_USEC_PER_SEC;

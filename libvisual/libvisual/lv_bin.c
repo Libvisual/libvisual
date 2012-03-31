@@ -294,7 +294,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 
 		visual_log (VISUAL_LOG_DEBUG, "pitches actvideo %d, new video %d", bin->actvideo->pitch, video->pitch);
 
-		visual_log (VISUAL_LOG_DEBUG, "phase1 bin->privvid %p", bin->privvid);
+		visual_log (VISUAL_LOG_DEBUG, "phase1 bin->privvid %p", (void *) bin->privvid);
 		if (bin->actmorph->video->depth == VISUAL_VIDEO_DEPTH_GL) {
 			visual_video_set_buffer (video, NULL);
 			video = bin->actvideo;
@@ -639,7 +639,7 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 		/* Initial privvid initialize */
 
 		visual_log (VISUAL_LOG_DEBUG, "actmorph->video->depth %d %p", bin->actmorph->video->depth,
-				visual_video_get_pixels (bin->actvideo));
+				(void *) visual_video_get_pixels (bin->actvideo));
 
 		if (visual_video_get_pixels (bin->actvideo) != NULL && visual_video_get_pixels (privvid) != NULL)
 			visual_mem_copy (visual_video_get_pixels (privvid), visual_video_get_pixels (bin->actvideo),

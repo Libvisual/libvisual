@@ -32,6 +32,8 @@
 #include "lv_param.h"
 #include "lv_thread.h"
 #include "lv_cpu.h"
+#include "lv_util.h"
+
 #include "gettext.h"
 
 
@@ -114,7 +116,7 @@ int visual_init (int *argc, char ***argv)
 
 	if (argc == NULL || argv == NULL) {
 		if (argc == NULL && argv == NULL) {
-			__lv_progname = strdup (_("no progname"));
+			__lv_progname = visual_strdup (_("no progname"));
 
 
 			if (__lv_progname == NULL)
@@ -127,11 +129,8 @@ int visual_init (int *argc, char ***argv)
                  * We must copy the argument, to let the client
                  * call this method from any context.
                  */
-#ifdef __USE_GNU
-                __lv_progname = strndup (*argv[0], 1024);
-#else
-                __lv_progname = strdup (*argv[0]);
-#endif
+                __lv_progname = visual_strdup (*argv[0]);
+
                 if (__lv_progname == NULL)
                         visual_log (VISUAL_LOG_WARNING, _("Could not set program name"));
         }

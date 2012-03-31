@@ -21,13 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include "config.h"
+#include "lv_hashmap.h"
+#include "lv_common.h"
+#include "lv_util.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-
-#include "lv_common.h"
-#include "lv_hashmap.h"
 
 #define HASHMAP_ITERCONTEXT(obj)                           (VISUAL_CHECK_CAST ((obj), HashmapIterContext))
 
@@ -365,7 +365,7 @@ int visual_hashmap_put (VisHashmap *hashmap, void *key, VisHashmapKeyType keytyp
 	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
 		mentry->key.integer = *((uint32_t *) key);
 	else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING)
-		mentry->key.string = strdup ((char *) key);
+		mentry->key.string = visual_strdup ((char *) key);
 
 	mentry->data = data;
 

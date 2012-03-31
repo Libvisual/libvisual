@@ -26,6 +26,7 @@
 #include "lv_common.h"
 #include "lv_fourier.h"
 #include "lv_math.h"
+#include "lv_util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -758,7 +759,7 @@ int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, co
 	channel->samples = visual_ringbuffer_new ();
 
 	visual_time_set (&channel->samples_timeout, 1, 0); /* FIXME not safe against time screws */
-	channel->channelid = strdup (channelid);
+	channel->channelid = visual_strdup (channelid);
 	channel->factor = 1.0;
 
 	return VISUAL_OK;

@@ -304,8 +304,8 @@ static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffe
 			/* This buffer partially falls within the offset */
 			if (curoffset > offset) {
 				visual_buffer_put_data (data,
-						(visual_buffer_get_data (entry->buffer) +
-						 visual_buffer_get_size (entry->buffer)) -
+						((uint8_t *) visual_buffer_get_data (entry->buffer) +
+						visual_buffer_get_size (entry->buffer)) -
 						(curoffset - offset), curoffset - offset, 0);
 
 				*buffercorr = curoffset - offset;
@@ -323,7 +323,7 @@ static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffe
 					VisBuffer *tempbuf = entry->datafunc (ringbuffer, entry);
 
 					visual_buffer_put_data (data,
-							(visual_buffer_get_data (tempbuf) +
+							((uint8_t *) visual_buffer_get_data (tempbuf) +
 							visual_buffer_get_size (tempbuf)) -
 							(curoffset - offset), curoffset - offset, 0);
 
@@ -342,7 +342,7 @@ static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffe
 				/* This buffer partially falls within the offset */
 				if (curoffset > offset) {
 					visual_buffer_put_data (data,
-							(visual_buffer_get_data (tempbuf) +
+							((uint8_t *) visual_buffer_get_data (tempbuf) +
 							visual_buffer_get_size (tempbuf)) -
 							(curoffset - offset), curoffset - offset, 0);
 

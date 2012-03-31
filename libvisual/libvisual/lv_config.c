@@ -21,9 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
+#include "config.h"
 #include "lv_config.h"
 #include "lv_common.h"
+#include "lv_util.h"
 #include "gettext.h"
 
 #if defined(VISUAL_OS_WIN32)
@@ -96,7 +97,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 
 	registry = visual_config_registry_new ();
 
-	registry->filename = strdup (configfile);
+	registry->filename = visual_strdup (configfile);
 
 	/* Opening file */
 	fd = open (configfile, O_RDONLY);
@@ -137,7 +138,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 
 		rsection = visual_config_registry_section_new ();
 
-		rsection->name = strdup (sectionname);
+		rsection->name = visual_strdup (sectionname);
 
 		lseek (fd, (datalength > 128 ? -128 : -datalength) + strlen (sectionname), SEEK_CUR);
 
