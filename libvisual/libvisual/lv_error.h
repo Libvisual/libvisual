@@ -271,6 +271,32 @@ const char *visual_error_to_string (int err);
 
 VISUAL_END_DECLS
 
+#if __cplusplus
+
+#include <string>
+#include <stdexcept>
+
+namespace LV {
+
+  class Error
+    : public std::runtime_error
+  {
+  public:
+
+    Error (int code)
+        : std::runtime_error (visual_error_to_string (code))
+    {}
+
+    Error (int code, std::string const& reason)
+        : std::runtime_error (std::string (visual_error_to_string (code)) + ": " + reason)
+    {}
+  };
+
+} // LV namespace
+
+#endif // __cplusplus
+
+
 /**
  * @}
  */

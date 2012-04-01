@@ -67,7 +67,6 @@ SET(libvisual_SOURCES
   lv_event.c
   lv_bin.c
   lv_plugin.c
-  lv_plugin_registry.c
   lv_video.c
   lv_video_simd.c
   lv_mem.c
@@ -104,7 +103,10 @@ SET(libvisual_SOURCES
   lv_util.c
 
   lv_random.cpp
+  lv_plugin_registry.cpp
+
   lv_random_c.cpp
+  lv_plugin_registry_c.cpp
 
   private/lv_video_convert.c
   private/lv_video_fill.c
