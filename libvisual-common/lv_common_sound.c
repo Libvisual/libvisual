@@ -28,6 +28,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifdef __OPENMP
+#   include <gomp.h>
+#endif
+
 #include <math.h>
 
 #include <libvisual/libvisual.h>
@@ -41,6 +45,9 @@ int lvavs_sound_get_from_source (VisAudio *audio, float ***data)
     VisBuffer pcmbuf2;
     VisBuffer spmbuf1;
     VisBuffer spmbuf2;
+
+    uint8_t beat_buf[MAX_BEAT_SIZE];
+
     VisBuffer tmp;
     
     visual_buffer_init_allocate(&tmp, sizeof(float) * 1024, visual_buffer_destroyer_free);
@@ -69,6 +76,21 @@ int lvavs_sound_get_from_source (VisAudio *audio, float ***data)
 
     visual_object_unref(VISUAL_OBJECT(&tmp));
 
-    return 0;
+
+    float beatdata[BEAT_MAX_SIZE];
+    char visdata[BEAT_MAX_SIZE];
+
+    memcpy(beatdata, data[1][0], size * sizeof(float));
+    memcpy(beatdata + size, data[1][1], size * sizeof(float));
+
+#ifdef _OPENMP
+#pragma omp parallel for private(i)
+#endif
+
+    for(i = BEAT_MAX_SIZE - 1; i >= 0; i--) {
+        visdata[i] = (beatdata[i] + 1) / 2.0 * CHAR_MAX;
+    }
+
+    return visual_audio_is_beat_with_data(audio, VISUAL_BEAT_ALGORITHM_PEAK, visdata, BEAT_MAX_SIZE/2);
 }
 
