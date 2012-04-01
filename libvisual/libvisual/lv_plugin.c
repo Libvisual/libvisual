@@ -99,6 +99,8 @@ static int plugin_dtor (VisObject *object)
 {
 	VisPluginData *plugin = VISUAL_PLUGINDATA (object);
 
+	visual_random_context_free (plugin->random);
+
 	if (plugin->ref != NULL)
 		visual_object_unref (VISUAL_OBJECT (plugin->ref));
 
@@ -219,7 +221,7 @@ VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
 {
 	visual_return_val_if_fail (plugin != NULL, NULL);
 
-	return &plugin->random;
+	return plugin->random;
 }
 
 void *visual_plugin_get_specific (VisPluginData *plugin)
@@ -578,7 +580,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
 	/* Now the plugin is set up and ready to be realized, also random seed its random context */
 	visual_time_get (&time_);
-	visual_random_context_set_seed (&plugin->random, time_.usec);
+	plugin->random = visual_random_context_new (time_.usec);
 
 	return plugin;
 }

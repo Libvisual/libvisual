@@ -85,7 +85,6 @@ SET(libvisual_SOURCES
   lv_cpu.c
   lv_color.c
   lv_time.c
-  lv_random.c
   lv_error.c
   lv_thread.c
   lv_object.c
@@ -103,6 +102,9 @@ SET(libvisual_SOURCES
   lv_gl.c
   lv_alpha_blend.c
   lv_util.c
+
+  lv_random.cpp
+  lv_random_c.cpp
 
   private/lv_video_convert.c
   private/lv_video_fill.c

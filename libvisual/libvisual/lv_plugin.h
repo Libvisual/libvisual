@@ -218,7 +218,7 @@ struct _VisPluginData {
 	VisParamContainer   *params;      /**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
 	int                  plugflags;   /**< Plugin flags, currently unused but will be used in the future. */
 
-	VisRandomContext	 random;      /**< Pointer to the plugin it's private random context. It's highly adviced to use
+	VisRandomContext	*random;      /**< Pointer to the plugin it's private random context. It's highly adviced to use
 	                                     * the plugin it's randomize functions. The reason is so more advanced apps can
 	                                     * semi reproduce visuals. */
 
