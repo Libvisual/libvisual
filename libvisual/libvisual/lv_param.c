@@ -277,7 +277,7 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
     return NULL;
 }
 
-VisParamEntry *visual_param_entry_new (char *name)
+VisParamEntry *visual_param_entry_new (const char *name)
 {
     VisParamEntry *param;
 
@@ -509,7 +509,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
     return VISUAL_OK;
 }
 
-int visual_param_entry_set_name (VisParamEntry *param, char *name)
+int visual_param_entry_set_name (VisParamEntry *param, const char *name)
 {
     visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
@@ -524,7 +524,7 @@ int visual_param_entry_set_name (VisParamEntry *param, char *name)
     return VISUAL_OK;
 }
 
-int visual_param_entry_set_string (VisParamEntry *param, char *string)
+int visual_param_entry_set_string (VisParamEntry *param, const char *string)
 {
     visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 

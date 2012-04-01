@@ -285,7 +285,7 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
  *
  * @return A newly allocated VisParamEntry structure.
  */
-VisParamEntry *visual_param_entry_new (char *name);
+VisParamEntry *visual_param_entry_new (const char *name);
 
 
 /**
@@ -384,7 +384,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_name (VisParamEntry *param, char *name);
+int visual_param_entry_set_name (VisParamEntry *param, const char *name);
 
 /**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_STRING and
@@ -395,7 +395,7 @@ int visual_param_entry_set_name (VisParamEntry *param, char *name);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_string (VisParamEntry *param, char *string);
+int visual_param_entry_set_string (VisParamEntry *param, const char *string);
 
 /**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_INTEGER and
