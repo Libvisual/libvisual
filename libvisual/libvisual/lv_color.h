@@ -31,98 +31,119 @@
  * @{
  */
 
+#ifdef __cplusplus
+
+namespace LV {
+
+  /**
+   * Data type to describe a palette entry, or a color. The HSV isn't
+   * kept in sync with RGB automaticly but it's there especially for
+   * VisUI.
+   */
+  struct Color
+  {
+      uint8_t r;    /**< Red channel */
+      uint8_t g;    /**< Green channel */
+      uint8_t b;    /**< Blue channel */
+      uint8_t a;    /**< Alpha channel */
+
+      /**
+       * Creates a new VisColor structure
+       *
+       * @return A newly allocated VisColor.
+       */
+      Color ()
+          : r (0), g (0), b (0), a (0)
+      {}
+
+      Color (uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255)
+          : r (r_), g(g_), b(b_), a(a_)
+      {}
+
+	  friend bool operator== (Color const& c1, Color const& c2)
+      {
+          return ( c1.r == c2.r && c1.g == c2.g && c1.b == c2.b);
+      }
+
+      /**
+       * Assigns a RGB(A) color
+       *
+       * @param r The red value.
+       * @param g The green value.
+       * @param b The blue value.
+       * @param a The alpha value.
+       */
+      void set (uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255)
+      {
+          r = r_; g = g_; b = b_; a = a_;
+      }
+
+      /**
+       * Fills the VisColor it's rgb values from hsv colorspace values.
+       *
+       * @param h Hue value for the hsv colorspace, ranging from 0 to 360.
+       * @param s Saturation value for the hsv colorspace, ranging from 0 to 1.
+       * @param v Value value for the hsv colorspace, ranging from 0 to 1.
+       */
+      void set_hsv (float h, float s, float v);
+
+      /**
+       * Creates hsv colorspace values from a VisColor
+       *
+       * @param color Pointer to a VisColor from which hsv colorspace values are created.
+       * @param h Float pointer to a hue value for the hsv colorspace, ranging from 0 to 360.
+       * @param s Float pointer to a saturation value for the hsv colorspace, ranging from 0 to 1.
+       * @param v Float pointer to a value value for the hsv colorspace, ranging from 0 to 1.
+       *
+       * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
+       */
+      void get_hsv (float& h, float& s, float& v) const;
+
+      void set_from_uint16 (uint16_t rgb);
+      void set_from_uint32 (uint32_t rgba);
+
+      uint32_t to_uint32 () const;
+      uint16_t to_uint16 () const;
+
+      static Color const& white()
+      {
+          static Color color(255, 255, 255);
+          return color;
+      }
+
+      static Color const& black()
+      {
+          static Color color(0, 0, 0);
+          return color;
+      }
+  };
+
+} // LV namespace
+
+#endif // __cplusplus
+
 VISUAL_BEGIN_DECLS
 
-#define VISUAL_COLOR(obj)				(VISUAL_CHECK_CAST ((obj), VisColor))
-
+#ifdef __cplusplus
+typedef ::LV::Color VisColor;
+#else
 typedef struct _VisColor VisColor;
-
-/**
- * Data type to describe a palette entry, or a color. The HSV isn't kept in sync with RGB automaticly
- * but it's there especially for VisUI.
- */
-struct _VisColor {
-	VisObject	object;	/**< The VisObject data. */
-	uint8_t		r;	/**< The red channel of this VisColor. */
-	uint8_t		g;	/**< The green channel of this VisColor. */
-	uint8_t		b;	/**< The blue channel of this VisColor. */
-	uint8_t		a;	/**< Alpha channel of this VisColor */
+struct _VisColor
+{
+  uint8_t r, g, b, a; // NOTE: this must be synced with LV::Color
 };
+#endif
 
-/**
- * Creates a new VisColor structure
- *
- * @return A newly allocated VisColor.
- */
+#define VISUAL_COLOR(obj) (VISUAL_CHECK_CAST ((obj), VisColor))
+
 VisColor *visual_color_new (void);
+void visual_color_free (VisColor *color);
 
-/**
- * Sets the VisColor to a certain rgb value.
- *
- * @param color Pointer to the VisColor to which the rgb value is set.
- * @param r The red value.
- * @param g The green value.
- * @param b The blue value.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
-
-/**
- * Sets the VisColor to a certain rgba value.
- *
- * @param color Pointer to the VisColor to which the rgb value is set.
- * @param r The red value.
- * @param g The green value.
- * @param b The blue value.
- * @param a The alpha value.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
- */
-int visual_color_set_with_alpha(VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-
-/**
- * Compares two VisColors with each other. If they are not the same, 0 is returned, if the same 1.
- *
- * @param src1 Pointer to the first VisColor for comparison.
- * @param src2 Pointer to the second VisColor for comparison.
- *
- * @return FALSE on different, TRUE on same, -VISUAL_ERROR_COLOR_NULL on failure.
- */
+int visual_color_set_with_alpha (VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 int visual_color_compare (VisColor *src1, VisColor *src2);
-
-/**
- * Fills the VisColor it's rgb values from hsv colorspace values.
- *
- * @param color Pointer to a VisColor which rgb values are filled.
- * @param h Hue value for the hsv colorspace, ranging from 0 to 360.
- * @param s Saturation value for the hsv colorspace, ranging from 0 to 1.
- * @param v Value value for the hsv colorspace, ranging from 0 to 1.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_from_hsv (VisColor *color, float h, float s, float v);
-
-/**
- * Creates hsv colorspace values from a VisColor
- *
- * @param color Pointer to a VisColor from which hsv colorspace values are created.
- * @param h Float pointer to a hue value for the hsv colorspace, ranging from 0 to 360.
- * @param s Float pointer to a saturation value for the hsv colorspace, ranging from 0 to 1.
- * @param v Float pointer to a value value for the hsv colorspace, ranging from 0 to 1.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
-
-/**
- * Copies the RGB data of one VisColor into another.
- *
- * @param dest Pointer to the destination VisColor in which the RGB data is copied.
- * @param src Pointer to the source VisColor from which the RGB data is copied.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
- */
 int visual_color_copy (VisColor *dest, VisColor *src);
 
 int visual_color_from_uint32 (VisColor *color, uint32_t rgb);

@@ -184,7 +184,7 @@ struct _VisVideo {
 	/* Composite control */
 	VisVideoCompositeType       compositetype; /**< The surface it's composite type. */
 	VisVideoCustomCompositeFunc	compfunc;      /**< The surface it's custom composite function. */
-	VisColor             colorkey;  /**< The surface it's alpha colorkey. */
+	VisColor            *colorkey;  /**< The surface it's alpha colorkey. */
 	uint8_t              density;   /**< The surface it's global alpha density. */
 };
 

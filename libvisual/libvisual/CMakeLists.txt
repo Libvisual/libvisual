@@ -82,7 +82,6 @@ SET(libvisual_SOURCES
   lv_bmp.c
   lv_param.c
   lv_cpu.c
-  lv_color.c
   lv_time.c
   lv_error.c
   lv_thread.c
@@ -102,10 +101,12 @@ SET(libvisual_SOURCES
   lv_alpha_blend.c
   lv_util.c
 
+  lv_color.cpp
   lv_libvisual.cpp
   lv_random.cpp
   lv_plugin_registry.cpp
 
+  lv_color_c.cpp
   lv_libvisual_c.cpp
   lv_random_c.cpp
   lv_plugin_registry_c.cpp

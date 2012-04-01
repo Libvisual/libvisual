@@ -73,6 +73,9 @@ static int video_dtor (VisObject *object)
 {
 	VisVideo *video = VISUAL_VIDEO (object);
 
+	/* FIXME: Enabling this gives a double free error */
+	/*visual_color_free (video->colorkey);*/
+
 	if (video->pixel_rows != NULL)
 		visual_mem_free (video->pixel_rows);
 
@@ -128,6 +131,9 @@ int visual_video_init (VisVideo *video)
 
 	/* Composite control */
 	video->compositetype = VISUAL_VIDEO_COMPOSITE_TYPE_SRC;
+
+	/* Colors */
+	video->colorkey = visual_color_new ();
 
 	return VISUAL_OK;
 }
@@ -610,7 +616,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 	/* Copy composite */
 	dest->compositetype = src->compositetype;
 	dest->compfunc = src->compfunc;
-	visual_color_copy (&dest->colorkey, &src->colorkey);
+	visual_color_copy (dest->colorkey, src->colorkey);
 	dest->density = src->density;
 
 	if (src->pal != NULL)
@@ -680,9 +686,9 @@ int visual_video_composite_set_colorkey (VisVideo *video, VisColor *color)
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	if (color != NULL)
-		visual_color_copy (&video->colorkey, color);
+		visual_color_copy (video->colorkey, color);
 	else
-		visual_color_set (&video->colorkey, 0, 0, 0);
+		visual_color_set (video->colorkey, 0, 0, 0);
 
 	return VISUAL_OK;
 }
@@ -992,7 +998,7 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 			return VISUAL_OK;
 		}
 
-		int index = visual_palette_find_color (pal, &src->colorkey);
+		int index = visual_palette_find_color (pal, src->colorkey);
 
 		for (i = 0; i < pixel_count; i++) {
 			if (*srcbuf != index)
@@ -1005,7 +1011,7 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
 		uint16_t *destbuf = visual_video_get_pixels (dest);
 		uint16_t *srcbuf = visual_video_get_pixels (src);
-		uint16_t color = visual_color_to_uint16 (&src->colorkey);
+		uint16_t color = visual_color_to_uint16 (src->colorkey);
 
 		for (i = 0; i < pixel_count; i++) {
 			if (color != *srcbuf)
@@ -1018,9 +1024,9 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT) {
 		uint8_t *destbuf = visual_video_get_pixels (dest);
 		uint8_t *srcbuf = visual_video_get_pixels (src);
-		uint8_t r = src->colorkey.r;
-		uint8_t g = src->colorkey.g;
-		uint8_t b = src->colorkey.b;
+		uint8_t r = src->colorkey->r;
+		uint8_t g = src->colorkey->g;
+		uint8_t b = src->colorkey->b;
 
 		for (i = 0; i < pixel_count; i++) {
 			if (b != srcbuf[0] && g != srcbuf[1] && r != srcbuf[2]) {
@@ -1036,7 +1042,7 @@ static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
 		uint32_t *destbuf = visual_video_get_pixels (dest);
 		uint32_t *srcbuf = visual_video_get_pixels (src);
-		uint32_t color = visual_color_to_uint32 (&src->colorkey);
+		uint32_t color = visual_color_to_uint32 (src->colorkey);
 
 		for (i = 0; i < pixel_count; i++) {
 			if (color != *srcbuf)
@@ -1142,7 +1148,7 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 			return VISUAL_OK;
 		}
 
-		int index = visual_palette_find_color (pal, &src->colorkey);
+		int index = visual_palette_find_color (pal, src->colorkey);
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
@@ -1158,7 +1164,7 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
-		uint16_t color = visual_color_to_uint16 (&src->colorkey);
+		uint16_t color = visual_color_to_uint16 (src->colorkey);
 
 		for (y = 0; y < src->height; y++) {
 			rgb16_t *destr = (rgb16_t *) destbuf;
@@ -1180,9 +1186,9 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT) {
-		uint8_t r = src->colorkey.r;
-		uint8_t g = src->colorkey.g;
-		uint8_t b = src->colorkey.b;
+		uint8_t r = src->colorkey->r;
+		uint8_t g = src->colorkey->g;
+		uint8_t b = src->colorkey->b;
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
@@ -1201,7 +1207,7 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
-		uint32_t color = visual_color_to_uint32 (&src->colorkey);
+		uint32_t color = visual_color_to_uint32 (src->colorkey);
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
