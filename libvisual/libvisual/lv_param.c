@@ -57,7 +57,7 @@ static int param_entry_dtor (VisObject *object)
     if (param->annotation != NULL)
         visual_mem_free (param->annotation);
 
-    visual_palette_free_colors (&param->pal);
+    visual_palette_free (param->pal);
 
     visual_collection_destroy (VISUAL_COLLECTION (&param->callbacks));
 
@@ -636,12 +636,8 @@ int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
 
     param->type = VISUAL_PARAM_ENTRY_TYPE_PALETTE;
 
-    visual_palette_free_colors (&param->pal);
-
     if (pal != NULL) {
-        visual_palette_allocate_colors (&param->pal, pal->ncolors);
-
-        visual_palette_copy (&param->pal, pal);
+        visual_palette_copy (param->pal, pal);
     }
 
     visual_param_entry_changed (param);
@@ -772,7 +768,7 @@ VisPalette *visual_param_entry_get_palette (VisParamEntry *param)
         return NULL;
     }
 
-    return &param->pal;
+    return param->pal;
 }
 
 VisObject *visual_param_entry_get_object (VisParamEntry *param)

@@ -45,7 +45,7 @@ const VisPluginInfo *get_plugin_info (int *count);
 
 typedef struct
 {
-	VisPalette pal;
+	VisPalette *pal;
 	VisParamContainer *paramcontainer;
 	int bars;
 	int width, height;
@@ -133,7 +133,7 @@ static int lv_analyzer_init (VisPluginData *plugin)
 	visual_param_container_add_many (paramcontainer, params);
 
 	/* allocate space for palette */
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal = visual_palette_new (256);
 
 	return 0;
 }
@@ -142,7 +142,7 @@ static int lv_analyzer_cleanup (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_palette_free_colors (&priv->pal);
+	visual_palette_free (priv->pal);
 
 	visual_mem_free (priv);
 
@@ -284,25 +284,26 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
 	int i;
 
 	for (i = 0; i < 256; i++) {
-		priv->pal.colors[i].r = 0;
-		priv->pal.colors[i].g = 0;
-		priv->pal.colors[i].b = 0;
+		pal_colors[i].r = 0;
+		pal_colors[i].g = 0;
+		pal_colors[i].b = 0;
 	}
 
 	for (i = 1; i < 64; i++) {
-		priv->pal.colors[i].r = i * 4;
-		priv->pal.colors[i].g = 255;
-		priv->pal.colors[i].b = 0;
+		pal_colors[i].r = i * 4;
+		pal_colors[i].g = 255;
+		pal_colors[i].b = 0;
 
-		priv->pal.colors[i + 63].r = 255;
-		priv->pal.colors[i + 63].g = (63 - i) * 4;
-		priv->pal.colors[i + 63].b = 0;
+		pal_colors[i + 63].r = 255;
+		pal_colors[i + 63].g = (63 - i) * 4;
+		pal_colors[i + 63].b = 0;
 	}
 
-	return &priv->pal;
+	return priv->pal;
 }
 
 static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)

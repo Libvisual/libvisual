@@ -72,7 +72,7 @@ const int PALETTEDATA[][NB_PALETTES] = {
 
   typedef struct {
 	  VisTime		 oldtime;
-	  VisPalette	 pal;
+	  LV::Palette	*pal;
 	  Corona		*corona; /* The corona internal private struct */
 	  PaletteCycler	*pcyl;
   	  TimedLevel	 tl;
@@ -145,7 +145,7 @@ int lv_corona_init (VisPluginData *plugin)
 
 	visual_time_get (&priv->oldtime);
 
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal = new LV::Palette (256);
 
 	return 0;
 }
@@ -154,7 +154,7 @@ int lv_corona_cleanup (VisPluginData *plugin)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_palette_free_colors (&priv->pal);
+	delete priv->pal;
 
 	delete priv->corona;
 	delete priv->pcyl;
@@ -229,9 +229,9 @@ VisPalette *lv_corona_palette (VisPluginData *plugin)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	priv->pcyl->updateVisPalette (&priv->pal);
+	priv->pcyl->updateVisPalette (priv->pal);
 
-	return &priv->pal;
+	return priv->pal;
 }
 
 int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)

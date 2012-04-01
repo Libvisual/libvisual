@@ -45,7 +45,7 @@ typedef struct {
 
 	/* Randomize context from libvisual */
 	VisRandomContext *rcontext;
-	VisPalette jess_pal;
+	VisPalette *jess_pal;
 
 	VisBuffer pcm_data1;
 	VisBuffer pcm_data2;

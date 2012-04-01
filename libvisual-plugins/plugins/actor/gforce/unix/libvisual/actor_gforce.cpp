@@ -54,7 +54,7 @@
 #define SAMPSKIP 1
 
 typedef struct {
-	VisPalette	pal;
+	LV::Palette	*pal;
 	GForce		*gGF;
 } GForcePrivate;
 
@@ -115,7 +115,7 @@ int lv_gforce_init (VisPluginData *plugin)
 
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal = new LV::Palette (256);
 
 	EgOSUtils::Initialize (0);
 	ScreenDevice::sMinDepth = 8;
@@ -144,7 +144,7 @@ int lv_gforce_cleanup (VisPluginData *plugin)
 
 	EgOSUtils::Shutdown ();
 
-	visual_palette_free_colors (&priv->pal);
+	delete priv->pal;
 
 	delete priv;
 
@@ -233,12 +233,12 @@ VisPalette *lv_gforce_palette (VisPluginData *plugin)
 	GFpal = priv->gGF->GetPalette ();
 
 	for (i = 0; i < 256; i++) {
-		priv->pal.colors[i].r = GFpal[i].red;
-		priv->pal.colors[i].g = GFpal[i].green;
-		priv->pal.colors[i].b = GFpal[i].blue;
+		priv->pal->colors[i].r = GFpal[i].red;
+		priv->pal->colors[i].g = GFpal[i].green;
+		priv->pal->colors[i].b = GFpal[i].blue;
 	}
 
-	return &priv->pal;
+	return priv->pal;
 }
 
 VISUAL_C_LINKAGE

@@ -36,7 +36,7 @@ typedef struct {
 } _color16;
 
 typedef struct {
-	VisPalette whitepal;
+	VisPalette *whitepal;
 	uint8_t replacetable[256];
 } FlashPrivate;
 
@@ -89,16 +89,18 @@ static int lv_morph_flash_init (VisPluginData *plugin)
 {
 	int i;
 	FlashPrivate *priv;
+    VisColor *whitepal_colors;
 
 	priv = visual_mem_new0 (FlashPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_palette_allocate_colors (&priv->whitepal, 256);
+	priv->whitepal = visual_palette_new (256);
+	whitepal_colors = visual_palette_get_colors (priv->whitepal);
 
 	for (i = 0; i < 256; i++) {
-		priv->whitepal.colors[i].r = 0xff;
-		priv->whitepal.colors[i].g = 0xff;
-		priv->whitepal.colors[i].b = 0xff;
+		whitepal_colors[i].r = 0xff;
+		whitepal_colors[i].g = 0xff;
+		whitepal_colors[i].b = 0xff;
 	}
 
 	return 0;
@@ -107,6 +109,8 @@ static int lv_morph_flash_init (VisPluginData *plugin)
 static int lv_morph_flash_cleanup (VisPluginData *plugin)
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	visual_palette_free (priv->whitepal);
 
 	visual_mem_free (priv);
 
@@ -121,9 +125,9 @@ static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *
 		return 0;
 
 	if (rate < 0.5)
-		visual_palette_blend (pal, src1->pal, &priv->whitepal, rate * 2);
+		visual_palette_blend (pal, src1->pal, priv->whitepal, rate * 2);
 	else
-		visual_palette_blend (pal, &priv->whitepal, src2->pal, (rate - 0.5) * 2);
+		visual_palette_blend (pal, priv->whitepal, src2->pal, (rate - 0.5) * 2);
 
 	return 0;
 }

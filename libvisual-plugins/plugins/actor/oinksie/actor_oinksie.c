@@ -133,11 +133,11 @@ static int act_oinksie_init (VisPluginData *plugin)
 
     visual_param_container_add_many (paramcontainer, params);
 
-	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
-	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);
+	priv->priv1.pal_cur = visual_palette_new (256);
+	priv->priv1.pal_old = visual_palette_new (256);
 
-	visual_palette_allocate_colors (&priv->priv2.pal_cur, 256);
-	visual_palette_allocate_colors (&priv->priv2.pal_old, 256);
+	priv->priv2.pal_cur = visual_palette_new (256);
+	priv->priv2.pal_old = visual_palette_new (256);
 
 	rcontext = visual_plugin_get_random_context (plugin);
 	priv->priv1.rcontext = rcontext;
@@ -170,11 +170,11 @@ static int act_oinksie_cleanup (VisPluginData *plugin)
 			visual_mem_free (priv->tbuf2);
 	}
 
-	visual_palette_free_colors (&priv->priv1.pal_cur);
-	visual_palette_free_colors (&priv->priv1.pal_old);
+	visual_palette_free (priv->priv1.pal_cur);
+	visual_palette_free (priv->priv1.pal_old);
 
-	visual_palette_free_colors (&priv->priv2.pal_cur);
-	visual_palette_free_colors (&priv->priv2.pal_old);
+	visual_palette_free (priv->priv2.pal_cur);
+	visual_palette_free (priv->priv2.pal_old);
 
 	visual_mem_free (priv);
 

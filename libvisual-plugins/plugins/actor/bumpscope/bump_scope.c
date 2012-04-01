@@ -1,12 +1,12 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 1999, 2001 Zinx Verituse <zinx@xmms.org>
  *
  * Authors: Zinx Verituse <zinx@xmms.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
  * Notes: Bumpscope plugin originally from XMMS.
- * 
+ *
  * $Id: bump_scope.c,v 1.18 2006/02/05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ static void bumpscope_translate (BumpscopePrivate *priv, int x, int y, int *xo, 
 static void bumpscope_draw (BumpscopePrivate *priv);
 static inline void draw_vert_line(uint8_t *buffer, int x, int y1, int y2, int pitch);
 static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly);
-	
+
 static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 {
 	register unsigned int i,sum = 0;
@@ -305,12 +305,12 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 
 			xq = (priv->rgb_buf[prev_y-1]-priv->rgb_buf[prev_y+1])+dx;
 			yq = (priv->rgb_buf[prev_y-priv->video->pitch]-priv->rgb_buf[prev_y+priv->video->pitch])+dy;
-			
+
 			if (yq<0 || yq>=priv->phongres ||
 			    xq<0 || xq>=priv->phongres) {
-			
+
 				priv->rgb_buf2[prev_y] = 0;
-			    	
+
 				continue;
 			}
 
@@ -321,17 +321,18 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 
 void __bumpscope_generate_palette (BumpscopePrivate *priv, VisColor *col)
 {
+	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
+
 	int32_t i,r,g,b;
 
 	for (i = 0; i < 256; i++) {
 		r = ((float)(100*col->r/255)*priv->intense1[i]+priv->intense2[i]);
 		g = ((float)(100*col->g/255)*priv->intense1[i]+priv->intense2[i]);
 		b = ((float)(100*col->b/255)*priv->intense1[i]+priv->intense2[i]);
-		
-		priv->pal.colors[i].r = r;
-		priv->pal.colors[i].g = g;
-		priv->pal.colors[i].b = b;
-		
+
+		pal_colors[i].r = r;
+		pal_colors[i].g = g;
+		pal_colors[i].b = b;
 	}
 }
 

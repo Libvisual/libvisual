@@ -141,7 +141,7 @@ static int act_jess_init (VisPluginData *plugin)
 	priv->lys.E_moyen = 0;
 	priv->lys.dEdt_moyen = 0;
 
-	visual_palette_allocate_colors (&priv->jess_pal, 256);
+	priv->jess_pal = visual_palette_new (256);
 
 	visual_buffer_init (&priv->pcm_data1, priv->pcm_data[0], 512 * sizeof (float), NULL);
 	visual_buffer_init (&priv->pcm_data2, priv->pcm_data[1], 512 * sizeof (float), NULL);
@@ -189,7 +189,7 @@ static int act_jess_cleanup (VisPluginData *plugin)
 	if (priv->buffer != NULL)
 		visual_mem_free (priv->buffer);
 
-	visual_palette_free_colors (&priv->jess_pal);
+	visual_palette_free (priv->jess_pal);
 
 	visual_mem_free (priv);
 
@@ -298,7 +298,7 @@ static VisPalette *act_jess_palette (VisPluginData *plugin)
 		return NULL;
 	}
 
-	return &priv->jess_pal;
+	return priv->jess_pal;
 }
 
 static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)

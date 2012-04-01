@@ -37,7 +37,7 @@
 const VisPluginInfo *get_plugin_info (int *count);
 
 typedef struct {
-	VisPalette	pal;
+	VisPalette *pal;
 	VisBuffer	pcm;
 } ScopePrivate;
 
@@ -93,7 +93,7 @@ static int lv_scope_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (ScopePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal = visual_palette_new (256);
 
 	visual_buffer_init_allocate (&priv->pcm, sizeof (float) * PCM_SIZE, visual_buffer_destroyer_free);
 
@@ -104,7 +104,7 @@ static int lv_scope_cleanup (VisPluginData *plugin)
 {
 	ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_palette_free_colors (&priv->pal);
+	visual_palette_free (priv->pal);
 
 	visual_object_unref (VISUAL_OBJECT (&priv->pcm));
 
@@ -166,15 +166,16 @@ static int lv_scope_events (VisPluginData *plugin, VisEventQueue *events)
 static VisPalette *lv_scope_palette (VisPluginData *plugin)
 {
 	ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
 	int i;
 
 	for (i = 0; i < 256; i++) {
-		priv->pal.colors[i].r = i;
-		priv->pal.colors[i].g = i;
-		priv->pal.colors[i].b = i;
+		pal_colors[i].r = i;
+		pal_colors[i].g = i;
+		pal_colors[i].b = i;
 	}
 
-	return &priv->pal;
+	return priv->pal;
 }
 
 static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)

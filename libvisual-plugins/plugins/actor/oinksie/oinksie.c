@@ -76,11 +76,11 @@ VisPalette *oinksie_palette_get (OinksiePrivate *priv)
 	{
 		_oink_gfx_palette_transform (priv);
 
-		return &priv->pal_old;
+		return priv->pal_old;
 	}
 	else
 	{
-		return &priv->pal_cur;
+		return priv->pal_cur;
 	}
 }
 

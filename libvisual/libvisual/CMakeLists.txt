@@ -75,7 +75,6 @@ SET(libvisual_SOURCES
   lv_fourier.c
   lv_list.c
   lv_log.c
-  lv_palette.c
   lv_beat.c
   lv_songinfo.c
   lv_morph.c
@@ -104,11 +103,13 @@ SET(libvisual_SOURCES
   lv_color.cpp
   lv_libvisual.cpp
   lv_random.cpp
+  lv_palette.cpp
   lv_plugin_registry.cpp
 
   lv_color_c.cpp
   lv_libvisual_c.cpp
   lv_random_c.cpp
+  lv_palette_c.cpp
   lv_plugin_registry_c.cpp
 
   private/lv_video_convert.c

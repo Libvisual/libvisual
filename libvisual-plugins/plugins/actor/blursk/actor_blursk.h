@@ -29,7 +29,7 @@ typedef struct {
         int                      width;
         /* true if colormap should be regenerated */
         int                      update_colmap;
-        VisPalette               pal;
+        VisPalette              *pal;
         uint8_t                 *rgb_buf;
         VisVideo                *video;
         VisBuffer               *pcmbuf;

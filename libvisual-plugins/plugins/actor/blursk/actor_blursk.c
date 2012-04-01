@@ -114,7 +114,7 @@ static int act_blursk_init (VisPluginData *plugin) {
 
     priv->rcontext = visual_plugin_get_random_context (plugin);
 
-    visual_palette_allocate_colors (&priv->pal, 256);
+    priv->pal = visual_palette_new (256);
 
     visual_param_container_add_many (paramcontainer, params);
 
@@ -211,7 +211,7 @@ static int act_blursk_cleanup (VisPluginData *plugin) {
 
     __blursk_cleanup (priv);
 
-    visual_palette_free_colors (&priv->pal);
+    visual_palette_free (priv->pal);
 
     visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
 
@@ -321,7 +321,7 @@ static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
 static VisPalette *act_blursk_palette (VisPluginData *plugin) {
     BlurskPrivate *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
-    return &priv->pal;
+    return priv->pal;
 }
 
 static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio) {

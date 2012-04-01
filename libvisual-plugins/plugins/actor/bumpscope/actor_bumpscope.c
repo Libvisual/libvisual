@@ -104,7 +104,7 @@ static int act_bumpscope_init (VisPluginData *plugin)
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal = visual_palette_new (256);
 
 	visual_param_container_add_many (paramcontainer, params);
 
@@ -138,7 +138,7 @@ static int act_bumpscope_cleanup (VisPluginData *plugin)
 
 	__bumpscope_cleanup (priv);
 
-	visual_palette_free_colors (&priv->pal);
+	visual_palette_free (priv->pal);
 
 	visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
 
@@ -251,7 +251,7 @@ static VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	return &priv->pal;
+	return priv->pal;
 }
 
 static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)

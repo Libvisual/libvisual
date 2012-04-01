@@ -30,7 +30,7 @@ typedef struct {
 	int			 height;
 	int			 width;
 
-	VisPalette		 pal;
+	VisPalette		*pal;
 
 	float			 intense1[256];
 	float			 intense2[256];

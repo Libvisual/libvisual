@@ -59,6 +59,8 @@ uint8_t courbes_palette(JessPrivate *priv, uint8_t i, int no_courbe)
 
 void random_palette(JessPrivate *priv)
 {
+	VisColor *pal_colors = visual_palette_get_colors (priv->jess_pal);
+
 	int i,j,k,l;
 
 again_mister:
@@ -79,9 +81,9 @@ again_mister:
 		goto again_mister;
 
 	for (i = 0; i < 256; i++){
-		priv->jess_pal.colors[i].r = courbes_palette(priv, i, j);
-		priv->jess_pal.colors[i].g = courbes_palette(priv, i, k);
-		priv->jess_pal.colors[i].b = courbes_palette(priv, i, l);
+		pal_colors[i].r = courbes_palette(priv, i, j);
+		pal_colors[i].g = courbes_palette(priv, i, k);
+		pal_colors[i].b = courbes_palette(priv, i, l);
 	}
 }
 

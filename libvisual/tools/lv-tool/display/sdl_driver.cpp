@@ -281,16 +281,21 @@ static int native_updaterect (SADisplay *display, VisRectangle *rect)
 
                 visual_mem_set (colors, 0, sizeof (colors));
 
-                if (pal != NULL && pal->ncolors <= 256) {
-                        int i;
+                if (pal != NULL) {
+                        unsigned int pal_ncolors = visual_palette_get_size (pal);
 
-                        for (i = 0; i < pal->ncolors; i++) {
-                                colors[i].r = pal->colors[i].r;
-                                colors[i].g = pal->colors[i].g;
-                                colors[i].b = pal->colors[i].b;
+                        if (pal_ncolors <= 256) {
+                                unsigned int i;
+                                VisColor* pal_colors = visual_palette_get_colors (pal);
+
+                                for (i = 0; i < pal_ncolors; i++) {
+                                        colors[i].r = pal_colors[i].r;
+                                        colors[i].g = pal_colors[i].g;
+                                        colors[i].b = pal_colors[i].b;
+                                }
+
+                                SDL_SetColors (sdlscreen, colors, 0, 256);
                         }
-
-                        SDL_SetColors (sdlscreen, colors, 0, 256);
                 }
         }
 

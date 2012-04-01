@@ -39,7 +39,7 @@ static int morph_dtor (VisObject *object)
 	if (morph->plugin != NULL)
 		visual_plugin_unload (morph->plugin);
 
-	visual_palette_free_colors (&morph->morphpal);
+	visual_palette_free (morph->morphpal);
 
 	morph->plugin = NULL;
 
@@ -126,14 +126,12 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
 	/* Reset the VisMorph data */
 	morph->plugin = NULL;
 	morph->dest = NULL;
-	visual_palette_init (&morph->morphpal);
+	morph->morphpal = visual_palette_new (256);
 	visual_time_init (&morph->morphtime);
 	visual_timer_init (&morph->timer);
 	visual_morph_set_rate (morph, 0);
 	visual_morph_set_steps (morph, 0);
 	morph->stepsdone = 0;
-
-	visual_palette_allocate_colors (&morph->morphpal, 256);
 
 	visual_morph_set_mode (morph, VISUAL_MORPH_MODE_SET);
 
@@ -237,7 +235,7 @@ VisPalette *visual_morph_get_palette (VisMorph *morph)
 {
 	visual_return_val_if_fail (morph != NULL, NULL);
 
-	return &morph->morphpal;
+	return morph->morphpal;
 }
 
 int visual_morph_is_done (VisMorph *morph)
@@ -307,10 +305,10 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 		visual_timer_start (&morph->timer);
 
 	if (morphplugin->palette != NULL)
-		morphplugin->palette (morph->plugin, morph->rate, audio, &morph->morphpal, src1, src2);
+		morphplugin->palette (morph->plugin, morph->rate, audio, morph->morphpal, src1, src2);
 	else {
 		if (src1->pal != NULL && src2->pal != NULL)
-			visual_palette_blend (&morph->morphpal, src1->pal, src2->pal, morph->rate);
+			visual_palette_blend (morph->morphpal, src1->pal, src2->pal, morph->rate);
 	}
 
 	morphplugin->apply (morph->plugin, morph->rate, audio, morph->dest, src1, src2);

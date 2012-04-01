@@ -33,10 +33,12 @@ void visual_video_index8_to_rgb16 (VisVideo *dest, VisVideo *src)
 
 	rgb16_t colors[256];
 
+	VisColor* src_colors = visual_palette_get_colors (src->pal);
+
 	for(i = 0; i < 256; i++) {
-		colors[i].r = src->pal->colors[i].r >> 3;
-		colors[i].g = src->pal->colors[i].g >> 2;
-		colors[i].b = src->pal->colors[i].b >> 3;
+		colors[i].r = src_colors[i].r >> 3;
+		colors[i].g = src_colors[i].g >> 2;
+		colors[i].b = src_colors[i].b >> 3;
 	}
 
 	visual_video_convert_get_smallest (dest, src, &w, &h);
@@ -66,6 +68,8 @@ void visual_video_index8_to_rgb24 (VisVideo *dest, VisVideo *src)
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
+	VisColor* src_colors = visual_palette_get_colors (src->pal);
+
 	visual_video_convert_get_smallest (dest, src, &w, &h);
 
 	ddiff = dest->pitch - (w * dest->bpp);
@@ -74,13 +78,13 @@ void visual_video_index8_to_rgb24 (VisVideo *dest, VisVideo *src)
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
 #ifdef VISUAL_LITTLE_ENDIAN
-			*(dbuf++) = src->pal->colors[*(sbuf)].b;
-			*(dbuf++) = src->pal->colors[*(sbuf)].g;
-			*(dbuf++) = src->pal->colors[*(sbuf)].r;
+			*(dbuf++) = src_colors[*(sbuf)].b;
+			*(dbuf++) = src_colors[*(sbuf)].g;
+			*(dbuf++) = src_colors[*(sbuf)].r;
 #else
-			*(dbuf++) = src->pal->colors[*(sbuf)].r;
-			*(dbuf++) = src->pal->colors[*(sbuf)].g;
-			*(dbuf++) = src->pal->colors[*(sbuf)].b;
+			*(dbuf++) = src_colors[*(sbuf)].r;
+			*(dbuf++) = src_colors[*(sbuf)].g;
+			*(dbuf++) = src_colors[*(sbuf)].b;
 #endif /* VISUAL_LITTLE_ENDIAN */
 			sbuf++;
 		}
@@ -104,12 +108,14 @@ void visual_video_index8_to_argb32 (VisVideo *dest, VisVideo *src)
 
 	uint32_t colors[256];
 
+	VisColor* src_colors = visual_palette_get_colors (src->pal);
+
 	for (i = 0; i < 256; ++i) {
 		colors[i] =
 			255 << 24 |
-			src->pal->colors[i].r << 16 |
-			src->pal->colors[i].g << 8 |
-			src->pal->colors[i].b;
+			src_colors[i].r << 16 |
+			src_colors[i].g << 8 |
+			src_colors[i].b;
 	}
 
 	visual_video_convert_get_smallest (dest, src, &w, &h);
@@ -141,6 +147,8 @@ void visual_video_rgb16_to_index8 (VisVideo *dest, VisVideo *src)
 
 	uint8_t r, g, b, col;
 
+	VisColor* dest_colors = visual_palette_get_colors (dest->pal);
+
 	visual_video_convert_get_smallest (dest, src, &w, &h);
 
 	ddiff = dest->pitch - (w * dest->bpp);
@@ -155,9 +163,9 @@ void visual_video_rgb16_to_index8 (VisVideo *dest, VisVideo *src)
 
 			col = (r + g + b) / 3;
 
-			dest->pal->colors[col].r = r;
-			dest->pal->colors[col].g = g;
-			dest->pal->colors[col].b = b;
+			dest_colors[col].r = r;
+			dest_colors[col].g = g;
+			dest_colors[col].b = b;
 
 			*(dbuf++) = col;
 		}
@@ -255,6 +263,8 @@ void visual_video_rgb24_to_index8 (VisVideo *dest, VisVideo *src)
 	int ddiff;
 	int sdiff;
 
+	VisColor* dest_colors = visual_palette_get_colors (dest->pal);
+
 	visual_video_convert_get_smallest (dest, src, &w, &h);
 
 	ddiff = dest->pitch - (w * dest->bpp);
@@ -274,9 +284,9 @@ void visual_video_rgb24_to_index8 (VisVideo *dest, VisVideo *src)
 
 			col = (b + g + r) / 3;
 
-			dest->pal->colors[col].r = r;
-			dest->pal->colors[col].g = g;
-			dest->pal->colors[col].b = b;
+			dest_colors[col].r = r;
+			dest_colors[col].g = g;
+			dest_colors[col].b = b;
 
 			*(dbuf++) = col;
 		}
@@ -370,6 +380,8 @@ void visual_video_argb32_to_index8 (VisVideo *dest, VisVideo *src)
 	uint8_t *dbuf = visual_video_get_pixels (dest);
 	uint8_t *sbuf = visual_video_get_pixels (src);
 
+	VisColor* dest_colors = visual_palette_get_colors (dest->pal);
+
 	int ddiff;
 	int sdiff;
 
@@ -394,9 +406,9 @@ void visual_video_argb32_to_index8 (VisVideo *dest, VisVideo *src)
 
 			col = (r + g + b) / 3;
 
-			dest->pal->colors[col].r = r;
-			dest->pal->colors[col].g = g;
-			dest->pal->colors[col].b = b;
+			dest_colors[col].r = r;
+			dest_colors[col].g = g;
+			dest_colors[col].b = b;
 
 			*(dbuf++) = col;
 		}

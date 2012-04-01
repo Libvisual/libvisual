@@ -116,7 +116,7 @@ struct _VisMorph {
 	float		 rate;		/**< The rate of morph, 0 draws the first video source
 					 * 1 the second video source, 0.5 is a 50/50, final
 					 * content depends on the plugin being used. */
-	VisPalette	 morphpal;	/**< Morph plugins can also set a palette for indexed
+	VisPalette	*morphpal;	/**< Morph plugins can also set a palette for indexed
 					 * color depths. */
 	VisTime		 morphtime;	/**< Amount of time which the morphing should take. */
 	VisTimer	 timer;		/**< Private entry that holds the time elapsed from 

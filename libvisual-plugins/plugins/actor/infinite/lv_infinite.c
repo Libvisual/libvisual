@@ -95,7 +95,7 @@ static int act_infinite_init (VisPluginData *plugin)
 	priv->plugwidth = 32;
 	priv->plugheight = 32;
 
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal = visual_palette_new (256);
 
 	_inf_init_renderer (priv);
 	_inf_load_random_effect(priv, &priv->current_effect);
@@ -120,7 +120,7 @@ int act_infinite_cleanup (VisPluginData *plugin)
 
 	_inf_close_renderer (priv);
 
-	visual_palette_free_colors (&priv->pal);
+	visual_palette_free (priv->pal);
 	visual_mem_free (priv);
 
 	return 0;
@@ -202,7 +202,7 @@ static VisPalette *act_infinite_palette (VisPluginData *plugin)
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	return &priv->pal;
+	return priv->pal;
 }
 
 static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)

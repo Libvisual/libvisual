@@ -871,11 +871,13 @@ static void choosebg(int do_random)
  * This is called from blur() during its transitions.
  */
 void color_transition(
-    BlurskPrivate *priv, 
+    BlurskPrivate *priv,
     int from,   /* highest-numbered cell to change, scaled */
     int to,     /* lowest-numbered cell to change, scaled */
     int scale)  /* highest possible value of to & from */
 {
+    VisColor *pal_colors = visual_palette_get_colors (priv->pal);
+
 #if 1
     if (to < 0)
         to = 0;
@@ -923,7 +925,7 @@ void color_transition(
     for (; from > to; from--)
     {
         colors[from] = cell(from);
-        if(visual_color_from_uint32(&priv->pal.colors[from], colors[from]) < 0)
+        if(visual_color_from_uint32(&pal_colors[from], colors[from]) < 0)
             return;
     }
 
@@ -947,6 +949,7 @@ void color_transition(
  */
 void color_genmap(BlurskPrivate *priv, int do_random)
 {
+    VisColor *pal_colors = visual_palette_get_colors (priv->pal);
     int32_t i;
 
     /* Decompose the dominant color into R/G/B components */
@@ -988,7 +991,7 @@ void color_genmap(BlurskPrivate *priv, int do_random)
     for (i = 255; i >= transition_bound; i--)
     {
         colors[i] = cell(i);
-        if(visual_color_from_uint32(&priv->pal.colors[i], colors[i]) < 0)
+        if(visual_color_from_uint32(&pal_colors[i], colors[i]) < 0)
             return;
     }
 
@@ -1002,6 +1005,8 @@ void color_genmap(BlurskPrivate *priv, int do_random)
  */
 void color_bg(BlurskPrivate *priv, int ndata, int16_t *data)
 {
+    VisColor *pal_colors = visual_palette_get_colors (priv->pal);
+
     int32_t bgr, bgb, bgg, k, bg;
     int i, j;
     int16_t max, min;
@@ -1129,7 +1134,7 @@ void color_bg(BlurskPrivate *priv, int ndata, int16_t *data)
         if (k == 0)
         {
             newcolors[i] = colors[i];
-                    visual_color_from_uint32(&priv->pal.colors[i], newcolors[i]);
+                    visual_color_from_uint32(&pal_colors[i], newcolors[i]);
             continue;
         }
 
@@ -1138,7 +1143,7 @@ void color_bg(BlurskPrivate *priv, int ndata, int16_t *data)
            | ( (bgg * k)       & 0x0000ff00)
            | (((bgb * k) >> 8) & 0x000000ff);
         newcolors[i] = colors[i] + bg;
-                visual_color_from_uint32(&priv->pal.colors[i], newcolors[i]);
+                visual_color_from_uint32(&pal_colors[i], newcolors[i]);
     }
 }
 

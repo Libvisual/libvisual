@@ -364,17 +364,19 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 		 * Depth transformation depends on this */
 		video->pal = visual_palette_new (256);
 
+		VisColor *colors = visual_palette_get_colors (video->pal);
+
 		if (bi_size == 12) {
 			for (i = 0; i < bi_clrused; i++) {
-				video->pal->colors[i].b = fgetc (fp);
-				video->pal->colors[i].g = fgetc (fp);
-				video->pal->colors[i].r = fgetc (fp);
+				colors[i].b = fgetc (fp);
+				colors[i].g = fgetc (fp);
+				colors[i].r = fgetc (fp);
 			}
 		} else {
 			for (i = 0; i < bi_clrused; i++) {
-				video->pal->colors[i].b = fgetc (fp);
-				video->pal->colors[i].g = fgetc (fp);
-				video->pal->colors[i].r = fgetc (fp);
+				colors[i].b = fgetc (fp);
+				colors[i].g = fgetc (fp);
+				colors[i].r = fgetc (fp);
 				fseek (fp, 1, SEEK_CUR);
 			}
 		}

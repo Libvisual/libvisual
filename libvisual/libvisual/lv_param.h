@@ -126,7 +126,7 @@ struct _VisParamEntry {
     } numeric;
 
     VisColor           color;      /**< VisColor data. */
-    VisPalette         pal;        /**< VisPalette data. */
+    VisPalette        *pal;        /**< VisPalette data. */
     VisObject         *objdata;    /**< VisObject data for a VisObject parameter. */
 
     VisList            callbacks;  /**< The change notify callbacks. */
