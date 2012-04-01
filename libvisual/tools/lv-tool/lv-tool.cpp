@@ -22,11 +22,11 @@
  */
 
 #include "config.h"
-#include "display/display.h"
+#include "display/display.hpp"
 #include <libvisual/libvisual.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <getopt.h>
 
 /* defaults */
@@ -39,36 +39,37 @@
 
 
 /* local variables */
-static char actor_name[128];
-static char input_name[128];
-static char morph_name[128];
-static int  width;
-static int  height;
-static int  framerate;
-static int  driver;
-static int  have_seed;
-static uint32_t seed;
+namespace {
+
+char actor_name[128];
+char input_name[128];
+char morph_name[128];
+int  width;
+int  height;
+int  framerate;
+int  driver;
+int  have_seed;
+uint32_t seed;
 
 /* list of available driver-creators - register new drivers here */
-typedef struct
+struct SADisplayDriverDescription
 {
         const char name[64];
-        SADisplayDriver *(*creator)(void);
-}SADisplayDriverDescription;
-
-SADisplayDriverDescription all_display_drivers[] =
-{
-#ifdef HAVE_SDL
-        { .name = "sdl",      .creator = &sdl_driver_new      },
-#endif
-#ifdef HAVE_GLX
-        { .name = "glx",      .creator = &glx_driver_new      },
-#endif
-        { .name = "stdout",   .creator = &stdout_driver_new   },
+        SADisplayDriver *(*creator)();
 };
 
+SADisplayDriverDescription const all_display_drivers[] =
+{
+#ifdef HAVE_SDL
+        { "sdl"   , &sdl_driver_new    },
+#endif
+#ifdef HAVE_GLX
+        { "glx"   , &glx_driver_new    },
+#endif
+        { "stdout", &stdout_driver_new },
+};
 
-
+} // anonymous namespace
 
 /******************************************************************************/
 
@@ -101,13 +102,13 @@ static void _print_plugin_help()
     /* print actors */
     if(!(list = visual_actor_get_list()))
     {
-        fprintf(stderr, "No actors found\n");
+        std::fprintf(stderr, "No actors found\n");
     }
     else
     {
         int n = 0;
         VisActor *a;
-        while((a = visual_list_get(list, n++)))
+        while((a = static_cast<VisActor*>(visual_list_get(list, n++))))
         {
             VisPluginData *p = visual_actor_get_plugin(a);
             _print_plugin_info(p);
@@ -120,26 +121,26 @@ static void _print_plugin_help()
 /** print commandline help */
 static void _print_help(char *name)
 {
-    printf("libvisual commandline tool - %s\n"
-           "Usage: %s [options]\n\n"
-           "Valid options:\n"
-           "\t--help\t\t\t-h\t\tThis help text\n"
-           "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
-           "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
-           "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
-           "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
-           "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
-           "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
-		   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
-           "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",
-           "http://github.com/StarVisuals/libvisual",
-           name,
-           width, height,
-           all_display_drivers[0].name,
-           input_name,
-           actor_name,
-           morph_name,
-           framerate);
+    std::printf("libvisual commandline tool - %s\n"
+                "Usage: %s [options]\n\n"
+                "Valid options:\n"
+                "\t--help\t\t\t-h\t\tThis help text\n"
+                "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
+                "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
+                "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
+                "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
+                "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
+                "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
+                "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
+                "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",
+                "http://github.com/StarVisuals/libvisual",
+                name,
+                width, height,
+                all_display_drivers[0].name,
+                input_name,
+                actor_name,
+                morph_name,
+                framerate);
 }
 
 
@@ -184,9 +185,9 @@ static int _parse_args(int argc, char *argv[])
             /* --dimensions */
             case 'D':
             {
-                    if(sscanf(optarg, "%dx%d", &width, &height) != 2)
+                    if(std::sscanf(optarg, "%dx%d", &width, &height) != 2)
                     {
-                        fprintf(stderr,
+                        std::fprintf(stderr,
                                 "Invalid dimensions: \"%s\". Use <width>x<height> (e.g. 320x200)\n", optarg);
                         return EXIT_FAILURE;
                     }
@@ -196,7 +197,7 @@ static int _parse_args(int argc, char *argv[])
             /* --driver */
             case 'd':
             {
-                int n;
+                unsigned int n;
                 for(n = 0;
                     n < sizeof(all_display_drivers)/sizeof(SADisplayDriverDescription);
                     n++)
@@ -216,7 +217,7 @@ static int _parse_args(int argc, char *argv[])
                     break;
                 }
 
-                fprintf(stderr, "Unsupported display driver: %s\n", optarg);
+                std::fprintf(stderr, "Unsupported display driver: %s\n", optarg);
                 return EXIT_FAILURE;
             }
 
@@ -224,7 +225,7 @@ static int _parse_args(int argc, char *argv[])
             case 'i':
             {
                 /* save name for later */
-                strncpy(input_name, optarg, sizeof(input_name)-1);
+                std::strncpy(input_name, optarg, sizeof(input_name)-1);
                 break;
             }
 
@@ -232,7 +233,7 @@ static int _parse_args(int argc, char *argv[])
             case 'a':
             {
                 /* save name for later */
-                strncpy(actor_name, optarg, sizeof(actor_name)-1);
+                std::strncpy(actor_name, optarg, sizeof(actor_name)-1);
                 break;
             }
 
@@ -240,7 +241,7 @@ static int _parse_args(int argc, char *argv[])
             case 'm':
             {
                 /* save filename for later */
-                strncpy(morph_name, optarg, sizeof(morph_name)-1);
+                std::strncpy(morph_name, optarg, sizeof(morph_name)-1);
                 break;
             }
 
@@ -248,7 +249,7 @@ static int _parse_args(int argc, char *argv[])
             case 'f':
             {
                 /* set framerate */
-                sscanf(optarg, "%d", &framerate);
+                std::sscanf(optarg, "%d", &framerate);
                 break;
             }
 
@@ -256,14 +257,14 @@ static int _parse_args(int argc, char *argv[])
             case 's':
             {
                  have_seed = 1;
-                 sscanf(optarg, "%u", &seed);
-				 break;
+                 std::sscanf(optarg, "%u", &seed);
+                 break;
             }
 
             /* invalid argument */
             case '?':
             {
-                fprintf(stderr, "argument %d is invalid\n", index);
+                std::fprintf(stderr, "argument %d is invalid\n", index);
                 _print_help(argv[0]);
                 return EXIT_FAILURE;
             }
@@ -271,7 +272,7 @@ static int _parse_args(int argc, char *argv[])
             /* unhandled arguments */
             default:
             {
-                fprintf(stderr, "argument %d is invalid\n", index);
+                std::fprintf(stderr, "argument %d is invalid\n", index);
                 break;
             }
         }
@@ -290,8 +291,8 @@ static void v_cycleActor (int prev)
         name = (prev ? visual_actor_get_prev_by_name (0)
                          : visual_actor_get_next_by_name (0));
     }
-    memset(actor_name, 0, sizeof(actor_name));
-    memcpy(actor_name, name, strlen(name));
+    std::memset(actor_name, 0, sizeof(actor_name));
+    std::memcpy(actor_name, name, strlen(name));
 }
 
 static void v_cycleMorph ()
@@ -301,8 +302,8 @@ static void v_cycleMorph ()
     if(name == NULL) {
         name = visual_morph_get_next_by_name(0);
     }
-    memset(morph_name, 0, sizeof(morph_name));
-    memcpy(morph_name, name, strlen(name));
+    std::memset(morph_name, 0, sizeof(morph_name));
+    std::memcpy(morph_name, name, strlen(name));
 }
 
 /******************************************************************************
@@ -313,17 +314,20 @@ int main (int argc, char **argv)
         int depthflag;
         VisVideoDepth depth;
 
+        bool running = true;
+        bool visible = true;
+
         /* set defaults */
         width = DEFAULT_WIDTH;
         height = DEFAULT_HEIGHT;
         driver = 0;
-        strncpy(actor_name, DEFAULT_ACTOR, sizeof(actor_name)-1);
-        strncpy(input_name, DEFAULT_INPUT, sizeof(input_name)-1);
-        strncpy(morph_name, DEFAULT_MORPH, sizeof(morph_name)-1);
+        std::strncpy(actor_name, DEFAULT_ACTOR, sizeof(actor_name)-1);
+        std::strncpy(input_name, DEFAULT_INPUT, sizeof(input_name)-1);
+        std::strncpy(morph_name, DEFAULT_MORPH, sizeof(morph_name)-1);
         framerate = DEFAULT_FPS;
 
         /* print warm welcome */
-        fprintf(stderr, "%s v0.1\n", argv[0]);
+        std::fprintf(stderr, "%s v0.1\n", argv[0]);
 
         /**
          * initialize libvisual once (this is meant to be called only once,
@@ -343,11 +347,11 @@ int main (int argc, char **argv)
         visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
 
         /* initialize actor plugin */
-        fprintf(stderr, "Loading actor \"%s\"...\n", actor_name);
+        std::fprintf(stderr, "Loading actor \"%s\"...\n", actor_name);
         VisActor *actor;
         if(!(actor = visual_actor_new(actor_name)))
         {
-                fprintf(stderr, "Failed to load actor \"%s\"\n", actor_name);
+                std::fprintf(stderr, "Failed to load actor \"%s\"\n", actor_name);
                 goto _m_exit;
         }
 
@@ -361,11 +365,11 @@ int main (int argc, char **argv)
         }
 
         /* initialize input plugin */
-        fprintf(stderr, "Loading input \"%s\"...\n", input_name);
+        std::fprintf(stderr, "Loading input \"%s\"...\n", input_name);
         VisInput *input;
         if(!(input = visual_input_new(input_name)))
         {
-                fprintf(stderr, "Failed to load input \"%s\"\n", input_name);
+                std::fprintf(stderr, "Failed to load input \"%s\"\n", input_name);
                 goto _m_exit;
         }
 
@@ -401,7 +405,7 @@ int main (int argc, char **argv)
         SADisplay *display;
         if(!(display = display_new(all_display_drivers[driver].creator())))
         {
-                fprintf(stderr, "Failed to initialize display.\n");
+                std::fprintf(stderr, "Failed to initialize display.\n");
                 goto _m_exit;
         }
 
@@ -410,7 +414,7 @@ int main (int argc, char **argv)
         VisVideo *video;
         if(!(video = display_get_video(display)))
         {
-                fprintf(stderr, "Failed to get VisVideo from display.\n");
+                std::fprintf(stderr, "Failed to get VisVideo from display.\n");
                 goto _m_exit_display;
         }
 
@@ -427,8 +431,6 @@ int main (int argc, char **argv)
 
 
         /* main loop */
-        int running = TRUE;
-        int visible = TRUE;
         while (running)
         {
                 VisEventQueue *pluginqueue;
@@ -510,7 +512,7 @@ int main (int argc, char **argv)
                                         {
                                                 case VKEY_ESCAPE:
                                                 {
-                                                        running = FALSE;
+                                                        running = false;
                                                         break;
                                                 }
 
@@ -521,7 +523,7 @@ int main (int argc, char **argv)
 
                                                 default:
                                                 {
-                                                        fprintf(stderr, "keypress: %c\n", ev->event.keyboard.keysym.sym);
+                                                        std::fprintf(stderr, "keypress: %c\n", ev->event.keyboard.keysym.sym);
                                                         break;
                                                 }
                                         }

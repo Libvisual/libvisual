@@ -20,9 +20,9 @@
     slouken@libsdl.org
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <setjmp.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -34,11 +34,11 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#include "lv_x11_key.h"
+#include "lv_x11_key.hpp"
 
 int lv_x11_key_init (LVX11Key *x11key)
 {
-	int i;
+	unsigned int i;
 
 	/* Odd keys used in international keyboards */
 	for ( i=0; i<VISUAL_TABLESIZE(x11key->ODD_keymap); ++i )
@@ -186,7 +186,7 @@ VisKeySym *lv_x11_key_lookup (LVX11Key *x11key, Display *display, XKeyEvent *xke
 				keysym->sym = (VisKey)(xsym&0xFF);
 				/* Map capital letter syms to lowercase */
 				if ((keysym->sym >= 'A')&&(keysym->sym <= 'Z'))
-					keysym->sym += ('a'-'A');
+					keysym->sym = VisKey (keysym->sym + ('a'-'A'));
 				break;
 			case 0xFE:
 				keysym->sym = x11key->ODD_keymap[xsym&0xFF];

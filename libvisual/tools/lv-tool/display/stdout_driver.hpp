@@ -28,7 +28,7 @@
 
 
 
-SADisplayDriver *       stdout_driver_new(void);
+SADisplayDriver *       stdout_driver_new();
 
 
 

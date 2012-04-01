@@ -22,9 +22,9 @@
 #ifndef _LV_STANDALONE_SDLDRIVER_H
 #define _LV_STANDALONE_SDLDRIVER_H
 
-#include "display.h"
+#include "display.hpp"
 
 /* prototypes */
-SADisplayDriver *sdl_driver_new (void);
+SADisplayDriver *sdl_driver_new ();
 
 #endif /* _LV_STANDALONE_SDLDRIVER_H */

@@ -27,9 +27,8 @@
 
 #include <libvisual/libvisual.h>
 
-
-typedef struct _SADisplayDriver SADisplayDriver;
-typedef struct _SADisplay SADisplay;
+struct SADisplayDriver;
+struct SADisplay;
 
 typedef int (*SADisplayDriverCreateFunc)(SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
 		int width, int height, int resizable);
@@ -41,7 +40,7 @@ typedef int (*SADisplayDriverGetVideoFunc)(SADisplay *display, VisVideo *video);
 typedef int (*SADisplayDriverUpdateRectFunc)(SADisplay *display, VisRectangle *rect);
 typedef int (*SADisplayDriverDrainEventsFunc)(SADisplay *display, VisEventQueue *eventqueue);
 
-struct _SADisplayDriver {
+struct SADisplayDriver {
 	VisObject			object;
 
 	SADisplayDriverCreateFunc	create;
@@ -54,7 +53,7 @@ struct _SADisplayDriver {
 	SADisplayDriverDrainEventsFunc	drainevents;
 };
 
-struct _SADisplay {
+struct SADisplay {
 	VisObject	 object;
 
 	SADisplayDriver	*driver;
@@ -67,9 +66,9 @@ struct _SADisplay {
 };
 
 
-#include "stdout_driver.h"
-#include "sdl_driver.h"
-#include "glx_driver.h"
+#include "stdout_driver.hpp"
+#include "sdl_driver.hpp"
+#include "glx_driver.hpp"
 
 
 

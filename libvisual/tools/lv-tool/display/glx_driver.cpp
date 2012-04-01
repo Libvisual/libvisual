@@ -1,8 +1,8 @@
 #define _POSIX_C_SOURCE 200112L
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
-#include <stdlib.h>
 #include <sys/select.h>
 
 #include <GL/glx.h>
@@ -11,32 +11,32 @@
 #include <X11/extensions/xf86vmode.h>
 #include <X11/keysym.h>
 
-#include "lv_x11_key.h"
-#include "glx_driver.h"
+#include "lv_x11_key.hpp"
+#include "glx_driver.hpp"
 
 #define GLX_NATIVE(obj)					(VISUAL_CHECK_CAST ((obj), GLXNative))
 
 typedef struct _GLXNative GLXNative;
 
 static int __lv_glx_gl_attribute_map[] = {
-	[VISUAL_GL_ATTRIBUTE_NONE]              = -1,
-	[VISUAL_GL_ATTRIBUTE_BUFFER_SIZE]       = GLX_BUFFER_SIZE,
-	[VISUAL_GL_ATTRIBUTE_LEVEL]             = GLX_LEVEL,
-	[VISUAL_GL_ATTRIBUTE_RGBA]              = GLX_RGBA,
-	[VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER]      = GLX_DOUBLEBUFFER,
-	[VISUAL_GL_ATTRIBUTE_STEREO]            = GLX_STEREO,
-	[VISUAL_GL_ATTRIBUTE_AUX_BUFFERS]       = GLX_AUX_BUFFERS,
-	[VISUAL_GL_ATTRIBUTE_RED_SIZE]          = GLX_RED_SIZE,
-	[VISUAL_GL_ATTRIBUTE_GREEN_SIZE]        = GLX_GREEN_SIZE,
-	[VISUAL_GL_ATTRIBUTE_BLUE_SIZE]         = GLX_BLUE_SIZE,
-	[VISUAL_GL_ATTRIBUTE_ALPHA_SIZE]        = GLX_ALPHA_SIZE,
-	[VISUAL_GL_ATTRIBUTE_DEPTH_SIZE]        = GLX_DEPTH_SIZE,
-	[VISUAL_GL_ATTRIBUTE_STENCIL_SIZE]      = GLX_STENCIL_SIZE,
-	[VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE]    = GLX_ACCUM_RED_SIZE,
-	[VISUAL_GL_ATTRIBUTE_ACCUM_GREEN_SIZE]  = GLX_ACCUM_GREEN_SIZE,
-	[VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE]   = GLX_ACCUM_BLUE_SIZE,
-	[VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE]  = GLX_ACCUM_ALPHA_SIZE,
-	[VISUAL_GL_ATTRIBUTE_LAST]              = -1
+        -1,                   // VISUAL_GL_ATTRIBUTE_NONE
+        GLX_BUFFER_SIZE,      // VISUAL_GL_ATTRIBUTE_BUFFER_SIZE
+        GLX_LEVEL,            // VISUAL_GL_ATTRIBUTE_LEVEL
+        GLX_RGBA,             // VISUAL_GL_ATTRIBUTE_RGBA
+        GLX_DOUBLEBUFFER,     // VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER
+        GLX_STEREO,           // VISUAL_GL_ATTRIBUTE_STEREO
+        GLX_AUX_BUFFERS,      // VISUAL_GL_ATTRIBUTE_AUX_BUFFERS
+        GLX_RED_SIZE,         // VISUAL_GL_ATTRIBUTE_RED_SIZE
+        GLX_GREEN_SIZE,       // VISUAL_GL_ATTRIBUTE_GREEN_SIZE
+        GLX_BLUE_SIZE,        // VISUAL_GL_ATTRIBUTE_BLUE_SIZE
+        GLX_ALPHA_SIZE,       // VISUAL_GL_ATTRIBUTE_ALPHA_SIZE
+        GLX_DEPTH_SIZE,       // VISUAL_GL_ATTRIBUTE_DEPTH_SIZE
+        GLX_STENCIL_SIZE,     // VISUAL_GL_ATTRIBUTE_STENCIL_SIZE
+        GLX_ACCUM_RED_SIZE,   // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+        GLX_ACCUM_GREEN_SIZE, // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+        GLX_ACCUM_BLUE_SIZE,  // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+        GLX_ACCUM_ALPHA_SIZE, // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+        -1                    // VISUAL_GL_ATTRIBUTE_LAST
 };
 
 static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
@@ -328,8 +328,8 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 
 		switch (xevent.type) {
 			case ConfigureNotify:
-				if ((xevent.xconfigure.width != native->lastwidth) ||
-						(xevent.xconfigure.height != native->lastheight)) {
+				if ((xevent.xconfigure.width != int (native->lastwidth)) ||
+						(xevent.xconfigure.height != int (native->lastheight))) {
 
 					native->width = xevent.xconfigure.width;
 					native->height = xevent.xconfigure.height;
@@ -372,7 +372,7 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 
 			case ClientMessage:
 				if ((xevent.xclient.format == 32) &&
-						(xevent.xclient.data.l[0] == native->WM_DELETE_WINDOW)) {
+						(xevent.xclient.data.l[0] == int(native->WM_DELETE_WINDOW))) {
 
 					visual_event_queue_add_quit (eventqueue, FALSE);
 				}

@@ -22,7 +22,7 @@
  */
 
 
-#include "display.h"
+#include "display.hpp"
 
 SADisplay *display_new (SADisplayDriver *driver)
 {

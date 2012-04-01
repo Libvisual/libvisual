@@ -21,11 +21,13 @@
 
 #include <SDL/SDL.h>
 
-#include <stdio.h>
+#include <map>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
-#include <stdlib.h>
 
-#include "sdl_driver.h"
+
+#include "sdl_driver.hpp"
 
 #define SDL_NATIVE(obj)					(VISUAL_CHECK_CAST ((obj), SDLNative))
 
@@ -33,24 +35,24 @@
 typedef struct _SDLNative SDLNative;
 
 static SDL_GLattr __lv_sdl_gl_attribute_map[] = {
-        [VISUAL_GL_ATTRIBUTE_NONE]		= -1,
-        [VISUAL_GL_ATTRIBUTE_BUFFER_SIZE]	= SDL_GL_BUFFER_SIZE,
-        [VISUAL_GL_ATTRIBUTE_LEVEL]		= -1,
-        [VISUAL_GL_ATTRIBUTE_RGBA]		= -1,
-        [VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER]	= SDL_GL_DOUBLEBUFFER,
-        [VISUAL_GL_ATTRIBUTE_STEREO]		= SDL_GL_STEREO,
-        [VISUAL_GL_ATTRIBUTE_AUX_BUFFERS]	= -1,
-        [VISUAL_GL_ATTRIBUTE_RED_SIZE]		= SDL_GL_RED_SIZE,
-        [VISUAL_GL_ATTRIBUTE_GREEN_SIZE]	= SDL_GL_GREEN_SIZE,
-        [VISUAL_GL_ATTRIBUTE_BLUE_SIZE]		= SDL_GL_BLUE_SIZE,
-        [VISUAL_GL_ATTRIBUTE_ALPHA_SIZE]	= SDL_GL_ALPHA_SIZE,
-        [VISUAL_GL_ATTRIBUTE_DEPTH_SIZE]	= SDL_GL_DEPTH_SIZE,
-        [VISUAL_GL_ATTRIBUTE_STENCIL_SIZE]	= SDL_GL_STENCIL_SIZE,
-        [VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE]	= SDL_GL_ACCUM_RED_SIZE,
-        [VISUAL_GL_ATTRIBUTE_ACCUM_GREEN_SIZE]	= SDL_GL_ACCUM_GREEN_SIZE,
-        [VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE]	= SDL_GL_ACCUM_BLUE_SIZE,
-        [VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE]	= SDL_GL_ACCUM_ALPHA_SIZE,
-        [VISUAL_GL_ATTRIBUTE_LAST]		= -1
+        SDL_GLattr(-1),          // VISUAL_GL_ATTRIBUTE_NONE
+        SDL_GL_BUFFER_SIZE,      // VISUAL_GL_ATTRIBUTE_BUFFER_SIZE
+        SDL_GLattr(-1),          // VISUAL_GL_ATTRIBUTE_LEVEL
+        SDL_GLattr(-1),          // VISUAL_GL_ATTRIBUTE_RGBA
+        SDL_GL_DOUBLEBUFFER,     // VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER
+        SDL_GL_STEREO,           // VISUAL_GL_ATTRIBUTE_STEREO
+        SDL_GLattr(-1),          // VISUAL_GL_ATTRIBUTE_AUX_BUFFERS
+        SDL_GL_RED_SIZE,         // VISUAL_GL_ATTRIBUTE_RED_SIZE
+        SDL_GL_GREEN_SIZE,       // VISUAL_GL_ATTRIBUTE_GREEN_SIZE
+        SDL_GL_BLUE_SIZE,        // VISUAL_GL_ATTRIBUTE_BLUE_SIZE
+        SDL_GL_ALPHA_SIZE,       // VISUAL_GL_ATTRIBUTE_ALPHA_SIZE
+        SDL_GL_DEPTH_SIZE,       // VISUAL_GL_ATTRIBUTE_DEPTH_SIZE
+        SDL_GL_STENCIL_SIZE,     // VISUAL_GL_ATTRIBUTE_STENCIL_SIZE
+        SDL_GL_ACCUM_RED_SIZE,   // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+        SDL_GL_ACCUM_GREEN_SIZE, // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+        SDL_GL_ACCUM_BLUE_SIZE,  // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+        SDL_GL_ACCUM_ALPHA_SIZE, // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+        SDL_GLattr(-1)           // VISUAL_GL_ATTRIBUTE_LAST
 };
 
 static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
@@ -319,12 +321,12 @@ static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
 
                 switch (event.type) {
                         case SDL_KEYUP:
-                                visual_event_queue_add_keyboard (eventqueue, event.key.keysym.sym, event.key.keysym.mod,
+						        visual_event_queue_add_keyboard (eventqueue, VisKey(event.key.keysym.sym), event.key.keysym.mod,
                                                                  VISUAL_KEY_UP);
                                 break;
 
                         case SDL_KEYDOWN:
-                                visual_event_queue_add_keyboard (eventqueue, event.key.keysym.sym, event.key.keysym.mod,
+						        visual_event_queue_add_keyboard (eventqueue, VisKey(event.key.keysym.sym), event.key.keysym.mod,
                                                                  VISUAL_KEY_DOWN);
                                 break;
 

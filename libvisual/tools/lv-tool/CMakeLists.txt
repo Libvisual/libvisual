@@ -4,9 +4,9 @@ SET(INCLUDE_DIRS
 )
 
 SET(SOURCES
-  lv-tool.c
-  display/display.c
-  display/stdout_driver.c
+  lv-tool.cpp
+  display/display.cpp
+  display/stdout_driver.cpp
 )
 
 SET(LINK_LIBS "")
@@ -14,15 +14,15 @@ SET(LINK_LIBS "")
 # SDL driver
 IF(SDL_FOUND)
   LIST(APPEND INCLUDE_DIRS ${SDL_INCLUDE_DIR})
-  LIST(APPEND SOURCES display/sdl_driver.c)
+  LIST(APPEND SOURCES display/sdl_driver.cpp)
   LIST(APPEND LINK_LIBS ${SDL_LIBRARY})
 ENDIF(SDL_FOUND)
 
 # GLX driver
 IF(HAVE_GLX)
   LIST(APPEND SOURCES
-    display/glx_driver.c
-    display/lv_x11_key.c
+    display/glx_driver.cpp
+    display/lv_x11_key.cpp
   )
 
   LIST(APPEND INCLUDE_DIRS
