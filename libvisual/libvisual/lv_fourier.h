@@ -100,14 +100,14 @@ int visual_dft_log_scale (float *output, float *input, int size);
 int visual_dft_log_scale_standard (float *output, float *input, int size);
 int visual_dft_log_scale_custom (float *output, float *input, int size, float log_scale_divisor);
 
+int visual_fourier_initialize (void);
+int visual_fourier_is_initialized (void);
+int visual_fourier_deinitialize (void);
+
 VISUAL_END_DECLS
 
 /**
  * @}
  */
-
-int visual_fourier_initialize (void);
-int visual_fourier_is_initialized (void);
-int visual_fourier_deinitialize (void);
 
 #endif /* _LV_FOURIER_H */
