@@ -6,12 +6,14 @@
 
 #ifdef __cplusplus
 
+#include <libvisual/lv_singleton.hpp>
 #include <string>
 #include <memory>
 
 namespace LV {
 
   class PluginRegistry
+      : public Singleton<PluginRegistry>
   {
   public:
 
@@ -34,8 +36,6 @@ namespace LV {
   private:
 
       class Impl;
-
-      static PluginRegistry* m_instance;
 
       std::auto_ptr<Impl> m_impl;
 

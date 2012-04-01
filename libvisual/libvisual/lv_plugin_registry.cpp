@@ -30,8 +30,6 @@ extern "C" {
 
 namespace LV {
 
-  PluginRegistry* PluginRegistry::m_instance = 0;
-
   struct PluginRegistry::Impl
   {
     std::vector<std::string> plugin_paths;
