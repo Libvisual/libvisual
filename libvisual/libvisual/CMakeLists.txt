@@ -58,6 +58,7 @@ SET(libvisual_HEADERS
   lv_defines.h
   lv_alpha_blend.h
   lv_util.h
+  lv_singleton.hpp
   ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h
 )
 
@@ -76,7 +77,6 @@ SET(libvisual_SOURCES
   lv_log.c
   lv_palette.c
   lv_beat.c
-  lv_libvisual.c
   lv_songinfo.c
   lv_morph.c
   lv_bmp.c
@@ -102,9 +102,11 @@ SET(libvisual_SOURCES
   lv_alpha_blend.c
   lv_util.c
 
+  lv_libvisual.cpp
   lv_random.cpp
   lv_plugin_registry.cpp
 
+  lv_libvisual_c.cpp
   lv_random_c.cpp
   lv_plugin_registry_c.cpp
 
