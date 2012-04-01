@@ -21,7 +21,9 @@ namespace LV {
 
       static void init ()
       {
-          m_instance = new PluginRegistry;
+          if (!m_instance) {
+              m_instance = new PluginRegistry;
+          }
       }
 
       static void deinit ()
@@ -29,7 +31,8 @@ namespace LV {
           delete m_instance;
       }
 
-      static PluginRegistry* instance () {
+      static PluginRegistry* instance ()
+      {
           return m_instance;
       }
 
