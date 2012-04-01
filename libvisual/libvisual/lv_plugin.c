@@ -30,6 +30,7 @@
 #include "lv_util.h"
 #include "gettext.h"
 #include <stdio.h>
+#include <string.h>
 #include <dirent.h>
 
 #if defined(VISUAL_OS_WIN32)
