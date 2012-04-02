@@ -308,7 +308,13 @@ char *visual_beat_get_info(VisBeat *beat)
         beat->oldDisplayConfidence = beat->confidence;
     }*/
 
-    snprintf(beat->txt, 255, beat->predictionBpm ? "Current BPM: %d%s" : "Learning...", beat->predictionBpm, beat->cfg_smartbeatsticky && beat->sticked ? " Got it!": "");
+    if (beat->predictionBpm) {
+        snprintf(beat->txt, 255, "Current BPM: %d%s", beat->predictionBpm,
+                 (beat->cfg_smartbeatsticky && beat->sticked) ? " Got it!": "");
+    } else {
+        snprintf(beat->txt, 255, "Learning...");
+    }
+
     char *tmp = visual_strdup(beat->txt);
     snprintf(beat->txt, 255, "%s -- Confidence: %d%%", tmp, beat->confidence);
     visual_mem_free(tmp);
