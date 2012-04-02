@@ -134,8 +134,6 @@ extern "C" {
 
   void visual_songinfo_copy (VisSongInfo *lhs, const VisSongInfo *rhs)
   {
-	  visual_log (VISUAL_LOG_DEBUG, "Copy!");
-
       visual_return_if_fail (lhs != NULL);
       visual_return_if_fail (rhs != NULL);
 
