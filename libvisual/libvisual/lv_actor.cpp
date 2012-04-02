@@ -194,7 +194,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
 const char *visual_actor_get_prev_by_name_nogl (const char *name)
 {
     const char *prev = name;
-	bool have_gl;
+    bool have_gl;
 
     do {
         prev = visual_actor_get_prev_by_name (prev);
@@ -218,9 +218,9 @@ const char *visual_actor_get_next_by_name (const char *name)
 {
     for (unsigned int i = 0; i < LV::actor_plugins.size (); i++)
     {
-	    if (std::strcmp (LV::actor_plugins[i]->info->plugname, name) == 0)
+        if (std::strcmp (LV::actor_plugins[i]->info->plugname, name) == 0)
         {
-		    unsigned int next_i = (i + 1) % LV::actor_plugins.size ();
+            unsigned int next_i = (i + 1) % LV::actor_plugins.size ();
             return LV::actor_plugins[next_i]->info->plugname;
         }
     }
@@ -232,9 +232,9 @@ const char *visual_actor_get_prev_by_name (char const* name)
 {
     for (unsigned int i = 0; i < LV::actor_plugins.size (); i++)
     {
-	    if (std::strcmp (LV::actor_plugins[i]->info->plugname, name) == 0)
+        if (std::strcmp (LV::actor_plugins[i]->info->plugname, name) == 0)
         {
-		    unsigned int prev_i = (i + LV::actor_plugins.size () - 1) % LV::actor_plugins.size ();
+            unsigned int prev_i = (i + LV::actor_plugins.size () - 1) % LV::actor_plugins.size ();
             return LV::actor_plugins[prev_i]->info->plugname;
         }
     }
