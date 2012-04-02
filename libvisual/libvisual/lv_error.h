@@ -102,14 +102,6 @@ enum {
 	/* Error entries for the VisGL system */
 	VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED,		/**< The native callback for a gl related function is not present. */
 
-	/* Error entries for the VisHashlist system */
-	VISUAL_ERROR_HASHLIST_NULL,			/**< The VisHashlist is NULL. */
-
-	/* Error entries for the VisHashmap system */
-	VISUAL_ERROR_HASHMAP_NULL,			/**< The VisHashmap is NULL. */
-	VISUAL_ERROR_HASHMAP_NOT_IN_MAP,		/**< Key is not in hashmap. */
-	VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE,		/**< Key type is not valid. */
-
 	/* Error entries for the VisInput system */
 	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */
 	VISUAL_ERROR_INPUT_PLUGIN_NULL,			/**< The VisInputPlugin is NULL. */

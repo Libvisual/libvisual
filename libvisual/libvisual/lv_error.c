@@ -79,12 +79,6 @@ static const char *__lv_error_human_readable[] = {
 
 	[VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED] =	N_("The native callback for a gl related function is not present."),
 
-	[VISUAL_ERROR_HASHLIST_NULL] =			N_("The VisHashlist is NULL"),
-
-	[VISUAL_ERROR_HASHMAP_NULL] =			N_("VisHashmap is NULL"),
-	[VISUAL_ERROR_HASHMAP_NOT_IN_MAP] =		N_("Key is not in hashmap"),
-	[VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE] =	N_("Key type is not valid"),
-
 	[VISUAL_ERROR_INPUT_NULL] =			N_("VisInput is NULL"),
 	[VISUAL_ERROR_INPUT_PLUGIN_NULL] =		N_("VisInput it's plugin is NULL"),
 
