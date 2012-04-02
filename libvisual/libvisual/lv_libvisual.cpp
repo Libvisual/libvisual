@@ -136,7 +136,7 @@ namespace LV
       visual_thread_initialize ();
 
       /* Initialize FFT system */
-      visual_fourier_initialize ();
+	  Fourier::init ();
 
       /* Initialize the plugin registry */
       PluginRegistry::init ();
@@ -147,10 +147,8 @@ namespace LV
 
   System::~System ()
   {
-      if (visual_fourier_is_initialized ())
-          visual_fourier_deinitialize ();
-
       PluginRegistry::deinit ();
+	  Fourier::deinit();
 
       visual_object_unref (VISUAL_OBJECT (m_impl->params));
   }

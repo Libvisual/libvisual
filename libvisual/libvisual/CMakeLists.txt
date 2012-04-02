@@ -50,7 +50,6 @@ SET(libvisual_HEADERS
   lv_config.h
   lv_hashmap.h
   lv_hashlist.h
-  lv_cache.h
   lv_collection.h
   lv_os.h
   lv_math.h
@@ -72,7 +71,6 @@ SET(libvisual_SOURCES
   lv_video_simd.c
   lv_mem.c
   lv_audio.c
-  lv_fourier.c
   lv_list.c
   lv_log.c
   lv_beat.c
@@ -90,7 +88,6 @@ SET(libvisual_SOURCES
   lv_config.c
   lv_ringbuffer.c
   lv_buffer.c
-  lv_cache.c
   lv_hashmap.c
   lv_hashlist.c
   lv_collection.c
@@ -101,12 +98,14 @@ SET(libvisual_SOURCES
   lv_util.c
 
   lv_color.cpp
+  lv_fourier.cpp
   lv_libvisual.cpp
   lv_random.cpp
   lv_palette.cpp
   lv_plugin_registry.cpp
 
   lv_color_c.cpp
+  lv_fourier_c.cpp
   lv_libvisual_c.cpp
   lv_random_c.cpp
   lv_palette_c.cpp

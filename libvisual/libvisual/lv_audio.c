@@ -551,21 +551,21 @@ int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, in
 
 int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised)
 {
-	VisDFT dft;
+	VisDFT *dft;
 
 	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_return_val_if_fail (sample != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_dft_init (&dft, visual_buffer_get_size (buffer) / sizeof (float),
+	dft = visual_dft_new (visual_buffer_get_size (buffer) / sizeof (float),
 			visual_buffer_get_size (sample) / sizeof (float));
 
 	/* Fourier analyze the pcm data */
-	visual_dft_perform (&dft, visual_buffer_get_data (buffer), visual_buffer_get_data (sample));
+	visual_dft_perform (dft, visual_buffer_get_data (buffer), visual_buffer_get_data (sample));
 
 	if (normalised == TRUE)
 		visual_audio_normalise_spectrum (buffer);
 
-	visual_object_unref (VISUAL_OBJECT (&dft));
+	visual_dft_free (dft);
 
 	return VISUAL_OK;
 }
