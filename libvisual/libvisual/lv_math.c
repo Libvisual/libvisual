@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -56,10 +56,10 @@ unsigned int visual_math_round_power_of_2 (unsigned int n)
 	return n;
 }
 
-int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *src, visual_size_t n, float multiplier)
+int visual_math_vectorized_multiplier_floats_const_float (float *dest, const float *src, visual_size_t n, float multiplier)
 {
 	float *d = dest;
-	float *s = src;
+	const float *s = src;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
@@ -168,10 +168,10 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, float *sr
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visual_size_t n, float adder)
+int visual_math_vectorized_add_floats_const_float (float *dest, const float *src, visual_size_t n, float adder)
 {
 	float *d = dest;
-	float *s = src;
+	const float *s = src;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
@@ -280,10 +280,10 @@ int visual_math_vectorized_add_floats_const_float (float *dest, float *src, visu
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_substract_floats_const_float (float *dest, float *src, visual_size_t n, float substracter)
+int visual_math_vectorized_substract_floats_const_float (float *dest, const float *src, visual_size_t n, float substracter)
 {
 	float *d = dest;
-	float *s = src;
+	const float *s = src;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
@@ -391,11 +391,11 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, float *src
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_multiplier_floats_floats (float *dest, float *src1, float *src2, visual_size_t n)
+int visual_math_vectorized_multiplier_floats_floats (float *dest, const float *src1, const float *src2, visual_size_t n)
 {
 	float *d = dest;
-	float *s1 = src1;
-	float *s2 = src2;
+	const float *s1 = src1;
+	const float *s2 = src2;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_NULL);
@@ -488,9 +488,9 @@ int visual_math_vectorized_multiplier_floats_floats (float *dest, float *src1, f
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_size_t n)
+int visual_math_vectorized_floats_to_int32s (int32_t *ints, const float *flts, visual_size_t n)
 {
-	float *s = flts;
+	const float *s = flts;
 	int32_t *d = ints;
 
 	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
@@ -544,9 +544,9 @@ int visual_math_vectorized_floats_to_int32s (int32_t *ints, float *flts, visual_
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_size_t n)
+int visual_math_vectorized_int32s_to_floats (float *flts, const int32_t *ints, visual_size_t n)
 {
-	int32_t *s = ints;
+	const int32_t *s = ints;
 	float *d = flts;
 
 	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
@@ -599,9 +599,9 @@ int visual_math_vectorized_int32s_to_floats (float *flts, int32_t *ints, visual_
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts, visual_size_t n, float multiplier)
+int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, const float *flts, visual_size_t n, float multiplier)
 {
-	float *s = flts;
+	const float *s = flts;
 	int32_t *d = ints;
 
 	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
@@ -659,9 +659,9 @@ int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, float *flts
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints, visual_size_t n, float multiplier)
+int visual_math_vectorized_int32s_to_floats_multiply (float *flts, const int32_t *ints, visual_size_t n, float multiplier)
 {
-	int32_t *s = ints;
+	const int32_t *s = ints;
 	float *d = flts;
 
 	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
@@ -725,9 +725,9 @@ int visual_math_vectorized_int32s_to_floats_multiply (float *flts, int32_t *ints
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints, float *flts, visual_size_t n, float multiplier)
+int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints, const float *flts, visual_size_t n, float multiplier)
 {
-	float *s = flts;
+	const float *s = flts;
 	int32_t *d = ints;
 
 	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
@@ -796,10 +796,10 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n)
+int visual_math_vectorized_sqrt_floats (float *dest, const float *src, visual_size_t n)
 {
 	float *d = dest;
-	float *s = src;
+	const float *s = src;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
@@ -850,11 +850,11 @@ int visual_math_vectorized_sqrt_floats (float *dest, float *src, visual_size_t n
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_complex_to_norm (float *dest, float *real, float *imag, visual_size_t n)
+int visual_math_vectorized_complex_to_norm (float *dest, const float *real, const float *imag, visual_size_t n)
 {
 	float *d = dest;
-	float *r = real;
-	float *i = imag;
+	const float *r = real;
+	const float *i = imag;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
@@ -915,11 +915,11 @@ int visual_math_vectorized_complex_to_norm (float *dest, float *real, float *ima
 	return VISUAL_OK;
 }
 
-int visual_math_vectorized_complex_to_norm_scale (float *dest, float *real, float *imag, visual_size_t n, float scaler)
+int visual_math_vectorized_complex_to_norm_scale (float *dest, const float *real, const float *imag, visual_size_t n, float scaler)
 {
 	float *d = dest;
-	float *r = real;
-	float *i = imag;
+	const float *r = real;
+	const float *i = imag;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
 	visual_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
