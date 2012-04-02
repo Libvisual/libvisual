@@ -125,7 +125,7 @@ struct _VisActor {
 						 * @see visual_actor_get_palette */
 
 	/* Songinfo management */
-	VisSongInfo	 songcompare;		/**< Private member which is used to compare with new songinfo
+	VisSongInfo	*songcompare;		/**< Private member which is used to compare with new songinfo
 						  * to check if a new song event should be emitted. */
 };
 
@@ -155,7 +155,7 @@ struct _VisActorPlugin {
 	VisPluginActorPaletteFunc	 palette;	/**< Used to retrieve the desired palette from the plugin. */
 	VisPluginActorRenderFunc	 render;	/**< The main render loop. This is called to draw a frame. */
 
-	VisSongInfo			 songinfo;	/**< Pointer to VisSongInfo that contains information about
+	VisSongInfo			 *songinfo;	/**< Pointer to VisSongInfo that contains information about
 							 *the current playing song. This can be NULL. */
 
 	VisVideoAttributeOptions	 vidoptions;

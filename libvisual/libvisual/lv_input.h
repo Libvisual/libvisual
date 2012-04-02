@@ -87,16 +87,15 @@ typedef int (*VisPluginInputUploadFunc)(VisPluginData *plugin, VisAudio *audio);
  * @see visual_input_new
  */
 struct _VisInput {
-	VisObject			 object;	/**< The VisObject data. */
+    VisObject                    object;    /**< The VisObject data. */
 
-	VisPluginData			*plugin;	/**< Pointer to the plugin itself. */
-	VisAudio			*audio;		/**< Pointer to the VisAudio structure
-							  * that contains the audio analyse
-							  * results.
-							  * @see visual_audio_analyse */
-	VisInputUploadCallbackFunc	 callback;	/**< Callback function when a callback
-							  * is used instead of a plugin. */
-        VisSongInfo songinfo;
+    VisPluginData               *plugin;    /**< Pointer to the plugin itself. */
+    VisAudio                    *audio;     /**< Pointer to the VisAudio structure
+											   * that contains the audio analyse
+											   * results. @see visual_audio_analyse */
+    VisInputUploadCallbackFunc   callback;  /**< Callback function when a callback
+											  * is used instead of a plugin. */
+    VisSongInfo                 *songinfo;
 };
 
 /**

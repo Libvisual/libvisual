@@ -40,8 +40,15 @@ static int actor_dtor (VisObject *object)
 {
 	VisActor *actor = VISUAL_ACTOR (object);
 
-	if (actor->plugin != NULL)
+	if (actor->plugin != NULL) {
+	    {
+	        // FIXME: Hack to free songinfo
+	        VisActorPlugin *actplugin = (VisActorPlugin *) actor->plugin->info->plugin;
+			visual_songinfo_free (actplugin->songinfo);
+		}
+
 		visual_plugin_unload (actor->plugin);
+	}
 
 	if (actor->transform != NULL)
 		visual_object_unref (VISUAL_OBJECT (actor->transform));
@@ -49,7 +56,7 @@ static int actor_dtor (VisObject *object)
 	if (actor->fitting != NULL)
 		visual_object_unref (VISUAL_OBJECT (actor->fitting));
 
-	visual_object_unref (VISUAL_OBJECT (&actor->songcompare));
+	visual_songinfo_free (actor->songcompare);
 
 	actor->plugin = NULL;
 	actor->transform = NULL;
@@ -266,7 +273,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 	actor->fitting = NULL;
 	actor->ditherpal = NULL;
 
-	visual_mem_set (&actor->songcompare, 0, sizeof (VisSongInfo));
+	actor->songcompare = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
 
 	if (actorname == NULL)
 		return VISUAL_OK;
@@ -277,6 +284,12 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 	}
 
 	actor->plugin = visual_plugin_load (ref);
+
+	// FIXME: Hack to initialize songinfo
+	{
+	    VisActorPlugin *actplugin = (VisActorPlugin *) actor->plugin->info->plugin;
+		actplugin->songinfo = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
+	}
 
 	/* Adding the VisActorPluginEnviron */
 	actenviron = visual_mem_new0 (VisActorPluginEnviron, 1);
@@ -306,7 +319,7 @@ VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
 	actplugin = get_actor_plugin (actor);
 	visual_return_val_if_fail (actplugin != NULL, NULL);
 
-	return &actplugin->songinfo;
+	return actplugin->songinfo;
 }
 
 VisPalette *visual_actor_get_palette (VisActor *actor)
@@ -540,16 +553,16 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 	}
 
 	/* Songinfo handling */
-	if (visual_songinfo_compare (&actor->songcompare, &actplugin->songinfo) == FALSE ||
-        actor->songcompare.elapsed != actplugin->songinfo.elapsed) {
-		visual_songinfo_mark (&actplugin->songinfo);
+	if (visual_songinfo_compare (actor->songcompare, actplugin->songinfo) == FALSE ||
+        visual_songinfo_get_elapsed (actor->songcompare) != visual_songinfo_get_elapsed (actplugin->songinfo)) {
+
+		visual_songinfo_mark (actplugin->songinfo);
 
 		visual_event_queue_add_newsong (
 			visual_plugin_get_eventqueue (plugin),
-			&actplugin->songinfo);
+			actplugin->songinfo);
 
-		visual_songinfo_free_strings (&actor->songcompare);
-		visual_songinfo_copy (&actor->songcompare, &actplugin->songinfo);
+		visual_songinfo_copy (actor->songcompare, actplugin->songinfo);
 	}
 
 	video = actor->video;

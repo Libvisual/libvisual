@@ -33,9 +33,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
-#define VISUAL_SONGINFO(obj)				(VISUAL_CHECK_CAST ((obj), VisSongInfo))
 
 /**
  * Used to define the type of song info being used.
@@ -43,207 +40,211 @@ VISUAL_BEGIN_DECLS
  * information, being a simple and a advanced interface.
  */
 typedef enum {
-	VISUAL_SONGINFO_TYPE_NULL,	/**< No song info is given. */
-	VISUAL_SONGINFO_TYPE_SIMPLE,	/**< Simple interface only sets a songname. */
-	VISUAL_SONGINFO_TYPE_ADVANCED	/**< Advanced interface splits all the stats
-					  * in separated entries */
+    VISUAL_SONGINFO_TYPE_NULL,      /**< No song info is given. */
+    VISUAL_SONGINFO_TYPE_SIMPLE,    /**< Simple interface only sets a songname. */
+    VISUAL_SONGINFO_TYPE_ADVANCED   /**< Advanced interface splits all the stats
+                                       * in separated entries */
 } VisSongInfoType;
 
+
+#ifdef __cplusplus
+
+#include <string>
+
+namespace LV {
+
+  enum SongInfoType
+  {
+      SONG_INFO_TYPE_NULL     = ::VISUAL_SONGINFO_TYPE_NULL,
+      SONG_INFO_TYPE_SIMPLE   = ::VISUAL_SONGINFO_TYPE_SIMPLE,
+      SONG_INFO_TYPE_ADVANCED = ::VISUAL_SONGINFO_TYPE_ADVANCED
+  };
+
+  /**
+   * Song info class. Contains information about the current played
+   * song. Information like artist, album, song, elapsed time and even
+   * coverart can be set using the methods of the VisSongInfo system.
+   */
+  class SongInfo
+  {
+  public:
+
+      SongInfo (SongInfoType type);
+
+      ~SongInfo ();
+
+      friend bool operator== (SongInfo const& lhs, SongInfo const& rhs);
+
+      /**
+       * Sets the interface type to a VisSongInfo. Used to set the interface
+       * type to the VisSongInfo structure. The interface type defines if
+       * we're providing a simple string containing the song name or an
+       * separated set of data containing all the information about a song.
+       *
+       * @param type Interface type that is set against the VisSongInfo.
+       *
+       * @return 0 on succes -1 on failure.
+       */
+      void set_type (SongInfoType type);
+
+      SongInfoType get_type () const;
+
+      /**
+       * Sets the length of a song. Used to set the length of a song
+       * when the advanced interface is being used.
+       *
+       * @param length The length in seconds.
+       */
+      void set_length (int length);
+
+      int get_length () const;
+
+      /**
+       * Sets the elapsed time of a song. Used to set the elapsed time
+       * of a song when the advanced interface is being used.
+       *
+       * @param elapsed The elapsed time in seconds.
+       */
+      void set_elapsed (int elapsed);
+
+      int get_elapsed () const;
+
+      /**
+       * Sets a simple song name. Used when the simple interface is
+       * being used to set a song name.
+       *
+       * @param name The simple song name.
+       */
+      void set_simple_name (std::string const& name);
+
+      std::string get_simple_name () const;
+
+      /**
+       * Sets the artist name. Used to set the artist name when the advanced
+       * interface is being used.
+       *
+       * @param songinfo Pointer to a VisSongInfo to which the artist name is set.
+       * @param artist The artist name.
+       *
+       * @return 0 on succes -1 on failure.
+       */
+      void set_artist (std::string const& artist);
+
+      std::string get_artist () const;
+
+      /**
+       * Sets the album name. Used to set the album name when the
+       * advanced interface is being used.
+       *
+       * @param album The album name.
+       */
+      void set_album (std::string const& album);
+
+      std::string get_album () const;
+
+      /**
+       * Sets the song name. Used to set the song name when the advanced
+       * interface is being used.
+       *
+       * @param song The song name.
+       */
+      void set_song (std::string const& name);
+
+      std::string get_song () const;
+
+      /**
+       * Sets the cover art. Used to set the cover art when the advanced
+       * interface is being used.
+       *
+       * @param cover VisVideo object containing the cover art.
+       *
+       * @return 0 on succes -1 on failure.
+       */
+      void set_cover (VisVideo* cover);
+
+      VisVideo* get_cover () const;
+
+      /**
+       * Resets the age timer. Used to timestamp a song to the current
+       * time.
+       *
+       * @param songinfo Pointer to a VisSongInfo that is timestamped.
+       *
+       * @return 0 on succes -1 on failure.
+       */
+      void mark ();
+
+      /**
+       * Returns the age of the VisSongInfo.
+       *
+       * @return The age in seconds.
+       */
+      long get_age (); // FIXME: should be const
+
+  private:
+
+      SongInfoType     type;
+      int              length;
+      int              elapsed;
+      std::string      song_name;
+      std::string      artist;
+      std::string      album;
+      std::string      song;
+      VisTimer         timer;
+      VisVideo        *cover;
+  };
+
+} // LV namespace
+
+#endif /* __cplusplus */
+
+VISUAL_BEGIN_DECLS
+
+#define VISUAL_SONGINFO(obj)                (VISUAL_CHECK_CAST ((obj), VisSongInfo))
+
+#ifdef __cplusplus
+typedef ::LV::SongInfo VisSongInfo;
+#else
 typedef struct _VisSongInfo VisSongInfo;
+struct _VisSongInfo;
+#endif
 
-/**
- * Song info data structure.
- *
- * Contains information about the current played song. Information like
- * artist, album, song, elapsed time and even coverart can be set using the
- * methods of the VisSongInfo system.
- */
-struct _VisSongInfo {
-	VisObject	 object;	/**< The VisObject data. */
-	VisSongInfoType	 type;		/**< Sets the interface type. */
-
-	/* In seconds */
-	int		 length;	/**< Total length of the song playing. */
-	int		 elapsed;	/**< Elapsed time of the song playing. */
-
-	/* Simple type */
-	char		*songname;	/**< A string containing the song name using
-					  * the simple interface. */
-
-	/* Advanced type */
-	char		*artist;	/**< A string containing the artist name using
-					  * the advanced interface. */
-	char		*album;		/**< A string containing the album name using
-					  * the advanced interface. */
-	char		*song;		/**< A string containing the song name using
-					  * the advanced interface. */
-
-	/* Timing */
-	VisTimer	 timer;		/**< Used to internal timing to keep track on the
-					  * age of the record. */
-	/* Cover art */
-	VisVideo	*cover;		/**< Pointer to a VisVideo that contains the cover art. */
-};
-
-/**
- * Creates a new VisSongInfo structure.
- *
- * @param type Type of interface being used.
- *
- * @return 0 on succes -1 on failure.
- */
 VisSongInfo *visual_songinfo_new (VisSongInfoType type);
 
-int visual_songinfo_init (VisSongInfo *songinfo, VisSongInfoType type);
+void visual_songinfo_free (VisSongInfo *songinfo);
 
-/**
- * Frees all the strings within the structure. This frees all the
- * strings used by the structure.
- *
- * @param songinfo Pointer to a VisSongInfo of which the strings need to
- * 	freed.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_free_strings (VisSongInfo *songinfo);
+void visual_songinfo_copy (VisSongInfo *dest, VisSongInfo const *src);
 
-/**
- * Sets the interface type to a VisSongInfo. Used to set the interface
- * type to the VisSongInfo structure. The interface type defines if
- * we're providing a simple string containing the song name or an
- * separated set of data containing all the information about a song.
- *
- * @param songinfo Pointer to a VisSongInfo to which the interface type is set.
- * @param type Interface type that is set against the VisSongInfo.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type);
+int visual_songinfo_compare (VisSongInfo const *s1, VisSongInfo const *s2);
 
+void            visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type);
+VisSongInfoType visual_songinfo_get_type (VisSongInfo *songinfo);
 
-/**
- * Sets the length of a song. Used to set the length of a song when
- * the advanced interface is being used.
- *
- * @param songinfo Pointer to a VisSongInfo to which the song length is set.
- * @param length The length in seconds.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_set_length (VisSongInfo *songinfo, int length);
+void visual_songinfo_set_length (VisSongInfo *songinfo, int length);
+int  visual_songinfo_get_length (VisSongInfo *songinfo);
 
-/**
- * Sets the elapsed time of a song. Used to set the elapsed time of a
- * song when the advanced interface is being used.
- *
- * @param songinfo Pointer to a VisSongInfo to which the elapsed time is set.
- * @param elapsed The elapsed time in seconds.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed);
+void visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed);
+int  visual_songinfo_get_elapsed (VisSongInfo *songinfo);
 
+void        visual_songinfo_set_simple_name (VisSongInfo *songinfo, const char *name);
+const char *visual_songinfo_get_simple_name (VisSongInfo *songinfo);
 
-/**
- * Sets a simple song name. Used when the simple interface is being
- * used to set a song name.
- *
- * @param songinfo Pointer to a VisSongInfo to which the simple song name is set.
- * @param name The simple song name.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_set_simple_name (VisSongInfo *songinfo, char *name);
+void        visual_songinfo_set_artist (VisSongInfo *songinfo, const char *artist);
+const char *visual_songinfo_get_artist (VisSongInfo *songinfo);
 
-/**
- * Sets the artist name. Used to set the artist name when the advanced
- * interface is being used.
- *
- * @param songinfo Pointer to a VisSongInfo to which the artist name is set.
- * @param artist The artist name.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_set_artist (VisSongInfo *songinfo, char *artist);
+void        visual_songinfo_set_album (VisSongInfo *songinfo, const char *album);
+const char *visual_songinfo_get_album (VisSongInfo *songinfo);
 
-/**
- * Sets the album name. Used to set the album name when the advanced
- * interface is being used.
- *
- * @param songinfo Pointer to a VisSongInfo to which the album name is set.
- * @param album The album name.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_set_album (VisSongInfo *songinfo, char *album);
+void        visual_songinfo_set_song (VisSongInfo *songinfo, const char *song);
+const char *visual_songinfo_get_song (VisSongInfo *songinfo);
 
-/**
- * Sets the song name. Used to set the song name when the advanced
- * interface is being used.
- *
- * @param songinfo Pointer to a VisSongInfo to which the song name is set.
- * @param song The song name.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_set_song (VisSongInfo *songinfo, char *song);
+void        visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover);
+VisVideo   *visual_songinfo_get_cover (VisSongInfo *songinfo);
 
-/**
- * Sets the cover art. Used to set the cover art when the advanced
- * interface is being used.
- *
- * @param songinfo Pointer to a VisSongInfo to which the cover art is set.
- * @param cover Pointer to a VisVideo containing the cover art.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover);
+void visual_songinfo_mark (VisSongInfo *songinfo);
 
-/**
- * Resets the age timer. Used to timestamp a song to the current
- * time.
- *
- * @param songinfo Pointer to a VisSongInfo that is timestamped.
- *
- * @return 0 on succes -1 on failure.
- */
-int visual_songinfo_mark (VisSongInfo *songinfo);
+long visual_songinfo_get_age (VisSongInfo *songinfo);
 
-
-/**
- * Gives the age of the VisSongInfo. Returns the age in seconds
- * stored in a long.
- *
- * @param songinfo Pointer to a VisSongInfo of which the age is requested.
- *
- * @return The age in seconds.
- */
-long visual_songinfo_age (VisSongInfo *songinfo);
-
-
-/**
- * Copies the content of a VisSongInfo. Used to copy the content of
- * a VisSongInfo in that of another.
- *
- * @param dest Pointer to the destination VisSongInfo.
- * @param src Pointer to the source VisSongInfo.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_SONGINFO_NULL on failure.
- */
-int visual_songinfo_copy (VisSongInfo *dest, VisSongInfo *src);
-
-
-/**
- * Compares the VisSongInfo strings. Used to compare the content
- * of two VisSongInfos by comparing their strings. This can be used
- * to detect if there is a song change.
- *
- * @param s1 Pointer to the first VisSongInfo.
- * @param s2 Pointer to the second VisSongInfo.
- *
- * @return FALSE on different, TRUE on same, -VISUAL_ERROR_SONGINFO_NULL on failure.
- */
-int visual_songinfo_compare (VisSongInfo *s1, VisSongInfo *s2);
 
 VISUAL_END_DECLS
 

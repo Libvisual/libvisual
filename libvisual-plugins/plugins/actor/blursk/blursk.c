@@ -73,7 +73,7 @@ static int  beatbase;
 static int  beatquiet;  /* force "quiet" situation? */
 
 int blurskinfo = FALSE;
-VisSongInfo *songinfo;
+VisSongInfo *songinfo = NULL;
 
 
 /**
@@ -317,67 +317,68 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
     char showinfo;
     char posstr[32], lenstr[32];
 
-    if(songinfo == NULL || songinfo->type == VISUAL_SONGINFO_TYPE_NULL)
+    if(songinfo == NULL || visual_songinfo_get_type(songinfo) == VISUAL_SONGINFO_TYPE_NULL)
         return img;
 
     time(&now);
     if(now != then)
     {
         then = now;
-        pos = songinfo->elapsed;
+        pos = visual_songinfo_get_elapsed (songinfo);
 
         convert_ms_to_timestamp(posstr, pos);
-        length = songinfo->length;
+        length = visual_songinfo_get_length(songinfo);
         convert_ms_to_timestamp(lenstr, length);
         if(pos != prevpos)
         {
             prevpos = pos;
             beatquiet = TRUE;
-            switch(songinfo->type)
+            switch(visual_songinfo_get_type(songinfo))
             {
                 case VISUAL_SONGINFO_TYPE_SIMPLE:
                     if(config.show_timestamp)
                     {
-						if(lenstr != NULL)
-							sprintf(buf, "{%s/%s} %s", posstr, lenstr, songinfo->songname);
+                        if(lenstr != NULL)
+                            sprintf(buf, "{%s/%s} %s", posstr, lenstr, visual_songinfo_get_simple_name(songinfo));
                         else
-                            sprintf(buf, "(%s) %s", posstr, songinfo->songname);
+                            sprintf(buf, "(%s) %s", posstr, visual_songinfo_get_simple_name(songinfo));
                         break;
                     }
                     else
                     {
-                        sprintf(buf, "%s", songinfo->songname);
+                        sprintf(buf, "%s", visual_songinfo_get_simple_name (songinfo));
                     }
 
                 case VISUAL_SONGINFO_TYPE_ADVANCED:
                     if(config.show_timestamp)
                     {
-                        if(strcmp(songinfo->artist, "(null)") == 0)
+                        if(strcmp(visual_songinfo_get_artist(songinfo), "(null)") == 0)
                         {
                             if(length >= 0)
-                                sprintf(buf, "{%s/%s} %s", posstr, lenstr, songinfo->song);
+                                sprintf(buf, "{%s/%s} %s", posstr, lenstr, visual_songinfo_get_song(songinfo));
                             else
-                                sprintf(buf, "(%s) %s", posstr, songinfo->song);
+                                sprintf(buf, "(%s) %s", posstr, visual_songinfo_get_song(songinfo));
                         }
                         else
                         {
                             if(length >= 0)
                                 sprintf(buf, "{%s/%s} %s by %s", posstr, lenstr,
-                                    songinfo->song, songinfo->artist);
+                                    visual_songinfo_get_song(songinfo), visual_songinfo_get_artist(songinfo));
                             else
-                                sprintf(buf, "(%s) %s by %s", posstr, songinfo->song, songinfo->artist);
+                                sprintf(buf, "(%s) %s by %s", posstr,
+                                    visual_songinfo_get_song(songinfo), visual_songinfo_get_artist(songinfo));
                         }
                     }
                     else
                     {
-                        if(strcmp(songinfo->artist, "(null)") == 0)
+                        if(strcmp(visual_songinfo_get_artist(songinfo), "(null)") == 0)
                         {
-                            if(strcmp(songinfo->song, "(null)") != 0)
-                                sprintf(buf, "%s", songinfo->song);
+                            if(strcmp(visual_songinfo_get_song(songinfo), "(null)") != 0)
+                                sprintf(buf, "%s", visual_songinfo_get_song(songinfo));
                         }
                         else
                         {
-                            sprintf(buf, "%s by %s", songinfo->song, songinfo->artist);
+                            sprintf(buf, "%s by %s", visual_songinfo_get_song(songinfo), visual_songinfo_get_artist(songinfo));
                         }
                     }
                     break;
