@@ -31,21 +31,19 @@
 #include <functional>
 #include <algorithm>
 
-namespace LV {
-
-  namespace {
+namespace {
 
 
-  } // anonymous namespace
-
-  PluginList const& actor_plugin_get_list ()
+  inline LV::PluginList const&
+  get_actor_plugin_list ()
   {
-	  return PluginRegistry::instance()->get_actor_plugins ();
+      return LV::PluginRegistry::instance()->get_actor_plugins ();
   }
 
-  VisPluginRef* actor_plugin_find (std::string const& name)
+  inline VisPluginRef*
+  find_actor_plugin (std::string const& name)
   {
-	  return plugin_find (actor_plugin_get_list (), name);
+      return LV::plugin_find (get_actor_plugin_list (), name);
   }
 
 } // LV namespace
@@ -111,7 +109,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
         if (next == NULL)
             return NULL;
 
-        VisPluginRef*   ref       = LV::actor_plugin_find (next);
+        VisPluginRef*   ref       = find_actor_plugin (next);
         VisPluginData*  plugin    = visual_plugin_load (ref);
         VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
@@ -134,7 +132,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
         if (prev == NULL)
             return NULL;
 
-        VisPluginRef*   ref       = LV::actor_plugin_find (prev);
+        VisPluginRef*   ref       = find_actor_plugin (prev);
         VisPluginData*  plugin    = visual_plugin_load (ref);
         VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
@@ -157,7 +155,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
         if (next == NULL)
             return NULL;
 
-        VisPluginRef*   ref       = LV::actor_plugin_find (next);
+        VisPluginRef*   ref       = find_actor_plugin (next);
         VisPluginData*  plugin    = visual_plugin_load (ref);
         VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
@@ -180,7 +178,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
         if (prev == NULL)
             return NULL;
 
-        VisPluginRef*   ref       = LV::actor_plugin_find (prev);
+        VisPluginRef*   ref       = find_actor_plugin (prev);
         VisPluginData*  plugin    = visual_plugin_load (ref);
         VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
@@ -195,12 +193,12 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
 
 const char *visual_actor_get_next_by_name (const char *name)
 {
-    return LV::plugin_get_next_by_name (LV::actor_plugin_get_list (), name);
+    return LV::plugin_get_next_by_name (get_actor_plugin_list (), name);
 }
 
 const char *visual_actor_get_prev_by_name (char const* name)
 {
-    return LV::plugin_get_prev_by_name (LV::actor_plugin_get_list (), name);
+    return LV::plugin_get_prev_by_name (get_actor_plugin_list (), name);
 }
 
 VisActor *visual_actor_new (const char *actorname)
@@ -231,7 +229,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 
     visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
 
-    if ((actorname != 0) && LV::actor_plugin_get_list ().empty ()) {
+    if (actorname && get_actor_plugin_list ().empty ()) {
         visual_log (VISUAL_LOG_ERROR, _("the plugin list is empty"));
 
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
@@ -254,7 +252,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
     if (actorname == NULL)
         return VISUAL_OK;
 
-    ref = LV::actor_plugin_find (actorname);
+    ref = find_actor_plugin (actorname);
     if (ref == NULL) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }

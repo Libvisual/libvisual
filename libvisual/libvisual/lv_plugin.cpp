@@ -57,12 +57,12 @@ namespace LV {
         }
     };
 
-  } // anonymous namespace
-
-  PluginList const& plugin_get_list ()
-  {
+	PluginList const& plugin_get_list ()
+	{
       return PluginRegistry::instance()->get_plugins ();
-  }
+	}
+
+  } // anonymous namespace
 
   const char *plugin_get_next_by_name (PluginList const& list, const char *name)
   {

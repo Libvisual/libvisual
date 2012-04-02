@@ -120,13 +120,6 @@ struct _VisTransformPlugin {
 VisPluginData *visual_transform_get_plugin (VisTransform *transform);
 
 /**
- * Gives a list of VisTransforms in the current plugin registry.
- *
- * @return An VisList containing the VisTransforms in the plugin registry.
- */
-VisList *visual_transform_get_list (void);
-
-/**
  * Gives the next transform plugin based on the name of a plugin.
  *
  * @see visual_transform_get_prev_by_name

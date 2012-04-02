@@ -27,14 +27,21 @@
 #include "lv_plugin_registry.h"
 #include "gettext.h"
 
-namespace LV {
+namespace {
 
-  PluginList const& morph_plugin_get_list ()
+  inline LV::PluginList const&
+  get_morph_plugin_list ()
   {
-      return PluginRegistry::instance()->get_morph_plugins ();
+	  return LV::PluginRegistry::instance()->get_morph_plugins ();
   }
 
-} // LV namespace
+  inline VisPluginRef*
+  find_morph_plugin (std::string const& name)
+  {
+	  return LV::plugin_find (get_morph_plugin_list (), name);
+  }
+
+} // anonymous namespace
 
 static int morph_dtor (VisObject *object);
 
@@ -73,17 +80,17 @@ VisPluginData *visual_morph_get_plugin (VisMorph *morph)
 
 const char *visual_morph_get_next_by_name (const char *name)
 {
-    return LV::plugin_get_next_by_name (LV::morph_plugin_get_list (), name);
+    return LV::plugin_get_next_by_name (get_morph_plugin_list (), name);
 }
 
 const char *visual_morph_get_prev_by_name (const char *name)
 {
-    return LV::plugin_get_prev_by_name (LV::morph_plugin_get_list (), name);
+    return LV::plugin_get_prev_by_name (get_morph_plugin_list (), name);
 }
 
 int visual_morph_valid_by_name (const char *name)
 {
-    if (LV::plugin_find (LV::morph_plugin_get_list (), name) == NULL)
+    if (find_morph_plugin (name) == NULL)
         return FALSE;
     else
         return TRUE;
@@ -115,7 +122,7 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
 
     visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
 
-    if (morphname && LV::morph_plugin_get_list ().empty ()) {
+    if (morphname && get_morph_plugin_list ().empty ()) {
         visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
 
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
@@ -141,7 +148,7 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     if (morphname == NULL)
         return VISUAL_OK;
 
-    ref = LV::plugin_find (LV::morph_plugin_get_list (), morphname);
+    ref = find_morph_plugin (morphname);
     if (ref == NULL) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }

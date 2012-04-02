@@ -384,8 +384,6 @@ VISUAL_END_DECLS
 
 namespace LV {
 
-  PluginList const& actor_plugin_get_list ();
-
   VisPluginRef* actor_plugin_find (std::string const& name);
 
   /**

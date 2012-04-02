@@ -344,21 +344,6 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 
 VISUAL_END_DECLS
 
-#ifdef __cplusplus
-
-namespace LV {
-
-  /**
-   * Gives a list of morph plugins in the current plugin registry.
-   *
-   * @return a VisList containing the morph plugins in the plugin registry.
-   */
-  PluginList const& morph_plugin_get_list ();
-
-} // LV namespace
-
-#endif // __cplusplus
-
 /**
  * @}
  */

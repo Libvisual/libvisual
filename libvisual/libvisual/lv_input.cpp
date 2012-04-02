@@ -27,14 +27,21 @@
 #include "lv_plugin_registry.h"
 #include "gettext.h"
 
-namespace LV {
+namespace {
 
-  PluginList const& input_plugin_get_list ()
+  inline LV::PluginList const&
+  get_input_plugin_list ()
   {
-      return PluginRegistry::instance()->get_input_plugins ();
+      return LV::PluginRegistry::instance()->get_input_plugins ();
   }
 
-} // LV namespace
+  inline VisPluginRef*
+  find_input_plugin (std::string const& name)
+  {
+      return LV::plugin_find (get_input_plugin_list (), name);
+  }
+
+} // Anonymous namespace
 
 static int input_dtor (VisObject *object);
 
@@ -75,17 +82,17 @@ VisPluginData *visual_input_get_plugin (VisInput *input)
 
 const char *visual_input_get_next_by_name (const char *name)
 {
-    return LV::plugin_get_next_by_name (LV::input_plugin_get_list (), name);
+    return LV::plugin_get_next_by_name (get_input_plugin_list (), name);
 }
 
 const char *visual_input_get_prev_by_name (const char *name)
 {
-    return LV::plugin_get_prev_by_name (LV::input_plugin_get_list (), name);
+    return LV::plugin_get_prev_by_name (get_input_plugin_list (), name);
 }
 
 int visual_input_valid_by_name (const char *name)
 {
-    if (LV::plugin_find (LV::input_plugin_get_list (), name) == NULL)
+    if (find_input_plugin (name) == NULL)
         return FALSE;
     else
         return TRUE;
@@ -117,7 +124,7 @@ int visual_input_init (VisInput *input, const char *inputname)
 
     visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
-    if (inputname && LV::input_plugin_get_list ().empty ()) {
+    if (inputname && get_input_plugin_list ().empty ()) {
         visual_log (VISUAL_LOG_ERROR, _("the plugin list is empty"));
 
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
@@ -136,7 +143,7 @@ int visual_input_init (VisInput *input, const char *inputname)
     if (inputname == NULL)
         return VISUAL_OK;
 
-    ref = LV::plugin_find (LV::input_plugin_get_list (), inputname);
+    ref = find_input_plugin (inputname);
     if (ref == NULL) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }
