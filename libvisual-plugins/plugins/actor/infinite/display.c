@@ -250,7 +250,7 @@ static void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int
 		else
 			dxy = 1;
 
-		for (y1=y1; y1<y2; y1++) {
+		for (; y1<y2; y1++) {
 			cxy += dx;
 			if (cxy >= dy) {
 				x1+= dxy;
@@ -270,7 +270,7 @@ static void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int
 		else
 			dxy = 1;
 
-		for (x1=x1; x1<x2; x1++) {
+		for (; x1<x2; x1++) {
 			cxy += dy;
 			if (cxy >= dx) {
 				y1+=dxy;
