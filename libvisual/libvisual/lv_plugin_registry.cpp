@@ -59,8 +59,10 @@ namespace LV {
 
   using namespace Internal;
 
-  struct PluginRegistry::Impl
+  class PluginRegistry::Impl
   {
+  public:
+
       std::vector<std::string> plugin_paths;
 
       PluginList plugins;

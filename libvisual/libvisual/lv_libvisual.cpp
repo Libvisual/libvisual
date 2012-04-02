@@ -88,9 +88,10 @@ namespace LV
 
   } // anonymous namespace
 
-  // Nothing private, for now
-  struct System::Impl
+  class System::Impl
   {
+  public:
+
 	  VisParamContainer *params;
 
       Impl ()

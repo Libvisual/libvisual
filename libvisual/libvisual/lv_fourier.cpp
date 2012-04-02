@@ -86,13 +86,14 @@ namespace LV {
   } // anonymous namespace
 
 
-  struct Fourier::Impl
+  class Fourier::Impl
   {
       // nothing for now
   };
 
-  struct DFT::Impl
+  class DFT::Impl
   {
+  public:
       unsigned int       samples_in;
       unsigned int       spectrum_size;
       DFTMethod          method;
