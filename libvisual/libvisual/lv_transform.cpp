@@ -162,7 +162,7 @@ int visual_transform_video_negotiate (VisTransform *transform)
 
     depthflag = visual_transform_get_supported_depth (transform);
 
-    if (visual_video_depth_is_supported (depthflag, transform->video->depth) == FALSE)
+    if (!visual_video_depth_is_supported (depthflag, transform->video->depth))
         return -VISUAL_ERROR_TRANSFORM_NEGOTIATE;
 
     visual_event_queue_add_resize (&transform->plugin->eventqueue, transform->video,

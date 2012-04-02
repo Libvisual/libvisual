@@ -268,7 +268,7 @@ int visual_timer_continue (VisTimer *timer)
 	VisTime elapsed;
 
 	visual_return_val_if_fail (timer != NULL, -VISUAL_ERROR_TIMER_NULL);
-	visual_return_val_if_fail (timer->active != FALSE, -VISUAL_ERROR_TIMER_NULL);
+	visual_return_val_if_fail (timer->active, -VISUAL_ERROR_TIMER_NULL);
 
 	visual_time_difference (&elapsed, &timer->start, &timer->stop);
 
@@ -296,7 +296,7 @@ int visual_timer_elapsed (VisTimer *timer, VisTime *time_)
 
 	visual_time_get (&cur);
 
-	if (timer->active == TRUE)
+	if (timer->active)
 		visual_time_difference (time_, &timer->start, &cur);
 	else
 		visual_time_difference (time_, &timer->start, &timer->stop);

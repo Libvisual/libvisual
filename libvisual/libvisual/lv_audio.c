@@ -370,7 +370,7 @@ int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, in
 		if (visual_audio_get_sample (audio, &temp, chanids[i]) == VISUAL_OK) {
 			channel = visual_audio_samplepool_get_channel (audio->samplepool, chanids[i]);
 
-			if (first == TRUE) {
+			if (first) {
 				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, channel->factor);
 
 				first = FALSE;
@@ -420,7 +420,7 @@ int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divid
 	/* The mixing loop */
 	for (i = 0; i < channels; i++) {
 		if (visual_audio_get_sample (audio, &temp, chanids[i]) == VISUAL_OK) {
-			if (first == TRUE) {
+			if (first) {
 				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, chanmuls[i]);
 
 				first = FALSE;
@@ -460,7 +460,7 @@ int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, 
 	while ((channel = visual_list_next (samplepool->channels, &le)) != NULL) {
 		if (strstr (channel->channelid, category) != NULL) {
 			if (visual_audio_get_sample (audio, &temp, channel->channelid) == VISUAL_OK) {
-				if (first == TRUE) {
+				if (first) {
 					visual_audio_sample_buffer_mix (buffer, &temp, FALSE, 1.0);
 
 					first = FALSE;
@@ -494,7 +494,7 @@ int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int d
 
 	while ((channel = visual_list_next (samplepool->channels, &le)) != NULL) {
 		if (visual_audio_get_sample (audio, &temp, channel->channelid) == VISUAL_OK) {
-			if (first == TRUE) {
+			if (first) {
 				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, 1.0);
 
 				first = FALSE;
@@ -562,7 +562,7 @@ int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, 
 	/* Fourier analyze the pcm data */
 	visual_dft_perform (dft, visual_buffer_get_data (buffer), visual_buffer_get_data (sample));
 
-	if (normalised == TRUE)
+	if (normalised)
 		visual_audio_normalise_spectrum (buffer);
 
 	visual_dft_free (dft);
@@ -799,7 +799,7 @@ int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channe
 
 		visual_time_difference (&diff, &sample->timestamp, &curtime);
 
-		if (visual_time_past (&diff, &channel->samples_timeout) == TRUE) {
+		if (visual_time_past (&diff, &channel->samples_timeout)) {
 			visual_list_destroy (list, &le);
 
 			if (le == NULL)
@@ -828,7 +828,7 @@ int visual_audio_sample_buffer_mix (VisBuffer *dest, VisBuffer *src, int divide,
 	scnt = visual_buffer_get_size (dest) / sizeof (float);
 
 	/* FIXME make simd version of these */
-	if (divide == FALSE) {
+	if (!divide) {
 		if (multiplier == 1.0) {
 			for (i = 0; i < scnt; i++)
 				dbuf[i] += sbuf[i];
@@ -1201,9 +1201,9 @@ static int transform_format_buffer (VisBuffer *dest, VisBuffer *src, int dsize, 
 	int shifter = 0;
 	int i;
 
-	if (dsigned == TRUE && ssigned == FALSE)
+	if (dsigned && !ssigned)
 		signedcorr -= byte_max_numeric (ssize) / 2;
-	else if (dsigned == FALSE && ssigned == TRUE)
+	else if (!dsigned && ssigned)
 		signedcorr += byte_max_numeric (dsize) / 2;
 
 	if (dsize > ssize)

@@ -253,7 +253,7 @@ int visual_video_compare (VisVideo *src1, VisVideo *src2)
 	visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	if (visual_video_compare_ignore_pitch (src1, src2) == FALSE)
+	if (!visual_video_compare_ignore_pitch (src1, src2))
 		return FALSE;
 
 	if (src1->pitch != src2->pitch)
@@ -454,7 +454,7 @@ VisVideoDepth visual_video_depth_get_highest (int depthflag)
 	VisVideoDepth i = 0;
 	int firstentry = TRUE;
 
-	while (highest != i || firstentry == TRUE) {
+	while (highest != i || firstentry) {
 		highest = i;
 
 		i = visual_video_depth_get_next (depthflag, i);
@@ -598,7 +598,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
 	/* FIXME make non verbose */
-	visual_return_val_if_fail (visual_rectangle_is_empty (rect) == FALSE, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+	visual_return_val_if_fail (!visual_rectangle_is_empty (rect), -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
 
 	vrect = visual_video_get_boundary (src);
 
@@ -748,7 +748,7 @@ VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest,
 
 	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SRC) {
 
-		if (alpha == FALSE || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
+		if (!alpha || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
 			return blit_overlay_noalpha;
 
 		if (visual_cpu_get_mmx () != 0)
@@ -989,7 +989,7 @@ static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 
 	/* src and dest are completely equal, do one big mem copy instead of a per line mem copy.
 	 * Also check if the pitch is equal to it's width * bpp, this is because of subregions. */
-	if (visual_video_compare (dest, src) == TRUE && (src->pitch == (src->width * src->bpp))) {
+	if (visual_video_compare (dest, src) && (src->pitch == (src->width * src->bpp))) {
 		visual_mem_copy (destbuf, srcbuf, visual_video_get_size (dest));
 
 		return VISUAL_OK;
@@ -1427,7 +1427,7 @@ out:
 
 int visual_video_flip_pixel_bytes (VisVideo *dest, VisVideo *src)
 {
-	visual_return_val_if_fail (visual_video_compare (dest, src) == TRUE, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL);
+	visual_return_val_if_fail (visual_video_compare (dest, src), -VISUAL_ERROR_VIDEO_NOT_INDENTICAL);
 	visual_return_val_if_fail (visual_video_get_pixels (dest) != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 	visual_return_val_if_fail (visual_video_get_pixels (src)  != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 
@@ -1818,7 +1818,7 @@ int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod metho
 
 	/* If the dest and source are equal in dimension and scale_method is nearest, do a
 	 * blit overlay */
-	if (visual_video_compare_ignore_pitch (dest, src) == TRUE && method == VISUAL_VIDEO_SCALE_NEAREST) {
+	if (visual_video_compare_ignore_pitch (dest, src) && method == VISUAL_VIDEO_SCALE_NEAREST) {
 		visual_video_blit_overlay (dest, src, 0, 0, FALSE);
 
 		return VISUAL_OK;

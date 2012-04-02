@@ -336,7 +336,7 @@ int visual_plugin_unload (VisPluginData *plugin)
         return -VISUAL_ERROR_PLUGIN_HANDLE_NULL;
     }
 
-    if (plugin->realized == TRUE)
+    if (plugin->realized)
         plugin->info->cleanup (plugin);
 
     if (plugin->info->plugin != NULL)
@@ -461,7 +461,7 @@ int visual_plugin_realize (VisPluginData *plugin)
 
     visual_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
-    if (plugin->realized == TRUE)
+    if (plugin->realized)
         return -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED;
 
     paramcontainer = visual_plugin_get_params (plugin);

@@ -92,7 +92,7 @@ static int get_next_pcall_id (VisList *callbacks)
         }
 
         /* The id has NOT been found, thus is an original, and we return this as the next id */
-        if (found == FALSE)
+        if (!found)
             return i;
     }
 
@@ -621,7 +621,7 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color
 
     param->type = VISUAL_PARAM_ENTRY_TYPE_COLOR;
 
-    if (visual_color_compare (&param->color, color) == FALSE) {
+    if (!visual_color_compare (&param->color, color)) {
         visual_color_copy (&param->color, color);
 
         visual_param_entry_changed (param);

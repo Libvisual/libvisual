@@ -311,7 +311,7 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
     }
 
     /* If we're morphing using the timer, start the timer. */
-    if (visual_timer_is_active (&morph->timer) == FALSE)
+    if (!visual_timer_is_active (&morph->timer))
         visual_timer_start (&morph->timer);
 
     if (morphplugin->palette != NULL)

@@ -136,7 +136,7 @@ int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event)
 
 	more_events = visual_event_queue_poll_by_reference (eventqueue, &lev);
 
-	if (more_events != FALSE) {
+	if (more_events) {
 		visual_event_copy (event, lev);
 
 		/* FIXME when we start to ref count attributes in events, we need to unref here */
@@ -155,7 +155,7 @@ int visual_event_queue_poll_by_reference (VisEventQueue *eventqueue, VisEvent **
 	visual_return_val_if_fail (event != NULL, FALSE);
 
 	/* FIXME solve this better */
-	if (eventqueue->resizenew == TRUE) {
+	if (eventqueue->resizenew) {
 		eventqueue->resizenew = FALSE;
 
 		*event = visual_event_new ();

@@ -51,7 +51,7 @@ static int bin_dtor (VisObject *object)
 	if (bin->morph != NULL)
 		visual_object_unref (VISUAL_OBJECT (bin->morph));
 
-	if (bin->actmorphmanaged == TRUE) {
+	if (bin->actmorphmanaged) {
 		if (bin->actmorph != NULL)
 			visual_object_unref (VISUAL_OBJECT (bin->actmorph));
 
@@ -278,9 +278,8 @@ int visual_bin_sync (VisBin *bin, int noevent)
 	visual_log (VISUAL_LOG_DEBUG, "starting sync");
 
 	/* Sync the actor regarding morph */
-	if (bin->morphing == TRUE && bin->morphstyle == VISUAL_SWITCH_STYLE_MORPH &&
-			bin->actvideo->depth != VISUAL_VIDEO_DEPTH_GL &&
-			bin->depthfromGL != TRUE) {
+	if (bin->morphing && bin->morphstyle == VISUAL_SWITCH_STYLE_MORPH &&
+			bin->actvideo->depth != VISUAL_VIDEO_DEPTH_GL && !bin->depthfromGL) {
 		visual_morph_set_video (bin->morph, bin->actvideo);
 
 		video = bin->privvid;
@@ -320,7 +319,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 			video->pitch, bin->depthold,
 			bin->depthforcedmain, noevent);
 
-	if (bin->managed == TRUE) {
+	if (bin->managed) {
 		if (bin->depthold == VISUAL_VIDEO_DEPTH_GL)
 			visual_actor_video_negotiate (bin->actor, bin->depthforcedmain, FALSE, TRUE);
 		else
@@ -335,7 +334,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 	visual_log (VISUAL_LOG_DEBUG, "pitch after main actor negotiate %d", video->pitch);
 
 	/* Morphing actor */
-	if (bin->actmorphmanaged == TRUE && bin->morphing == TRUE &&
+	if (bin->actmorphmanaged && bin->morphing &&
 			bin->morphstyle == VISUAL_SWITCH_STYLE_MORPH) {
 
 		actvideo = bin->actmorphvideo;
@@ -354,7 +353,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 		visual_actor_realize (bin->actmorph);
 
 		visual_log (VISUAL_LOG_DEBUG, "phase3 pitch of real framebuffer %d", bin->actvideo->pitch);
-		if (bin->actmorphmanaged == TRUE)
+		if (bin->actmorphmanaged)
 			visual_actor_video_negotiate (bin->actmorph, bin->depthforced, FALSE, TRUE);
 		else
 			visual_actor_video_negotiate (bin->actmorph, 0, FALSE, FALSE);
@@ -398,14 +397,14 @@ int visual_bin_set_depth (VisBin *bin, int depth)
 
 	bin->depthold = bin->depth;
 
-	if (visual_video_depth_is_supported (bin->depthflag, depth) != TRUE)
+	if (!visual_video_depth_is_supported (bin->depthflag, depth))
 		return -2;
 
 	visual_log (VISUAL_LOG_DEBUG, "old: %d new: %d", bin->depth, depth);
 	if (bin->depth != depth)
 		bin->depthchanged = TRUE;
 
-	if (bin->depth == VISUAL_VIDEO_DEPTH_GL && bin->depthchanged == TRUE)
+	if (bin->depth == VISUAL_VIDEO_DEPTH_GL && bin->depthchanged)
 		bin->depthfromGL = TRUE;
 	else
 		bin->depthfromGL = FALSE;
@@ -428,7 +427,7 @@ int visual_bin_depth_changed (VisBin *bin)
 {
 	visual_return_val_if_fail (bin != NULL, -1);
 
-	if (bin->depthchanged == FALSE)
+	if (!bin->depthchanged)
 		return FALSE;
 
 	bin->depthchanged = FALSE;
@@ -440,7 +439,7 @@ VisPalette *visual_bin_get_palette (VisBin *bin)
 {
 	visual_return_val_if_fail (bin != NULL, NULL);
 
-	if (bin->morphing == TRUE)
+	if (bin->morphing)
 		return visual_morph_get_palette (bin->morph);
 	else
 		return visual_actor_get_palette (bin->actor);
@@ -459,7 +458,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 	visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s", actname, bin->actor->plugin->info->name);
 
 	/* Destroy if there already is a managed one */
-	if (bin->actmorphmanaged == TRUE) {
+	if (bin->actmorphmanaged) {
 		if (bin->actmorph != NULL) {
 			visual_object_unref (VISUAL_OBJECT (bin->actmorph));
 
@@ -477,7 +476,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 	visual_video_clone (video, bin->actvideo);
 
 	depthflag = visual_actor_get_supported_depth (actor);
-	if (visual_video_depth_is_supported (depthflag, VISUAL_VIDEO_DEPTH_GL) == TRUE) {
+	if (visual_video_depth_is_supported (depthflag, VISUAL_VIDEO_DEPTH_GL)) {
 		visual_log (VISUAL_LOG_INFO, _("Switching to Gl mode"));
 
 		bin->depthforced = VISUAL_VIDEO_DEPTH_GL;
@@ -602,14 +601,14 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 	if (bin->morphstyle == VISUAL_SWITCH_STYLE_MORPH &&
 			bin->actor->video->depth != VISUAL_VIDEO_DEPTH_GL &&
 			bin->actmorph->video->depth != VISUAL_VIDEO_DEPTH_GL &&
-			bin->depthfromGL != TRUE) {
+			!bin->depthfromGL) {
 
 		if (bin->morph != NULL && bin->morph->plugin != NULL) {
 			visual_morph_set_rate (bin->morph, 0);
 
 			visual_morph_set_video (bin->morph, bin->actvideo);
 
-			if (bin->morphautomatic == TRUE)
+			if (bin->morphautomatic)
 				visual_morph_set_mode (bin->morph, bin->morphmode);
 			else
 				visual_morph_set_mode (bin->morph, VISUAL_MORPH_MODE_SET);
@@ -672,14 +671,14 @@ int visual_bin_switch_finalize (VisBin *bin)
 	visual_return_val_if_fail (bin != NULL, -1);
 
 	visual_log (VISUAL_LOG_DEBUG, "Entering...");
-	if (bin->managed == TRUE)
+	if (bin->managed)
 		visual_object_unref (VISUAL_OBJECT (bin->actor));
 
 	/* Copy over the depth to be sure, and for GL plugins */
 /*	bin->actvideo->depth = bin->actmorphvideo->depth;
 	visual_video_set_depth (bin->actvideo, bin->actmorphvideo->depth); */
 
-	if (bin->actmorphmanaged == TRUE) {
+	if (bin->actmorphmanaged) {
 		visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
 
 		bin->actmorphvideo = NULL;
@@ -698,7 +697,7 @@ int visual_bin_switch_finalize (VisBin *bin)
 
 	bin->morphing = FALSE;
 
-	if (bin->morphmanaged == TRUE) {
+	if (bin->morphmanaged) {
 		visual_object_unref (VISUAL_OBJECT (bin->morph));
 		bin->morph = NULL;
 	}
@@ -716,7 +715,7 @@ int visual_bin_switch_finalize (VisBin *bin)
 	visual_log (VISUAL_LOG_DEBUG, "bin->depthforcedmain in finalize %d", bin->depthforcedmain);
 
 	/* FIXME replace with a depth fixer */
-	if (bin->depthchanged == TRUE) {
+	if (bin->depthchanged) {
 		visual_log (VISUAL_LOG_INFO, _("negotiate without event"));
 		visual_actor_video_negotiate (bin->actor, bin->depthforcedmain, TRUE, TRUE);
 		visual_log (VISUAL_LOG_INFO, _("end negotiate without event"));
@@ -793,7 +792,7 @@ int visual_bin_run (VisBin *bin)
 	/* If we have a direct switch, do this BEFORE we run the actor,
 	 * else we can get into trouble especially with GL, also when
 	 * switching away from a GL plugin this is needed */
-	if (bin->morphing == TRUE) {
+	if (bin->morphing) {
 		/* We realize here, because it doesn't realize
 		 * on switch, the reason for this is so that after a
 		 * switch call, especially in a managed bin the
@@ -803,10 +802,10 @@ int visual_bin_run (VisBin *bin)
 		 * to check this, it's a bit hacky */
 		visual_return_val_if_fail (bin->actmorph != NULL, -1);
 		visual_return_val_if_fail (bin->actmorph->plugin != NULL, -1);
-		if (bin->actmorph->plugin->realized == FALSE) {
+		if (!bin->actmorph->plugin->realized) {
 			visual_actor_realize (bin->actmorph);
 
-			if (bin->actmorphmanaged == TRUE)
+			if (bin->actmorphmanaged)
 				visual_actor_video_negotiate (bin->actmorph, bin->depthforced, FALSE, TRUE);
 			else
 				visual_actor_video_negotiate (bin->actmorph, 0, FALSE, FALSE);
@@ -815,10 +814,10 @@ int visual_bin_run (VisBin *bin)
 		/* When we've got multiple switch events without a sync we need
 		 * to realize the main actor as well */
 		visual_return_val_if_fail (bin->actor->plugin != NULL, -1);
-		if (bin->actor->plugin->realized == FALSE) {
+		if (!bin->actor->plugin->realized) {
 			visual_actor_realize (bin->actor);
 
-			if (bin->managed == TRUE)
+			if (bin->managed)
 				visual_actor_video_negotiate (bin->actor, bin->depthforced, FALSE, TRUE);
 			else
 				visual_actor_video_negotiate (bin->actor, 0, FALSE, FALSE);
@@ -844,7 +843,7 @@ int visual_bin_run (VisBin *bin)
 
 	visual_actor_run (bin->actor, bin->input->audio);
 
-	if (bin->morphing == TRUE) {
+	if (bin->morphing) {
 		visual_return_val_if_fail (bin->actmorph != NULL, -1);
 		visual_return_val_if_fail (bin->actmorph->video != NULL, -1);
 		visual_return_val_if_fail (bin->actor->video != NULL, -1);
@@ -866,7 +865,7 @@ int visual_bin_run (VisBin *bin)
 			visual_morph_realize (bin->morph);
 			visual_morph_run (bin->morph, bin->input->audio, bin->actor->video, bin->actmorph->video);
 
-			if (visual_morph_is_done (bin->morph) == TRUE)
+			if (visual_morph_is_done (bin->morph))
 				visual_bin_switch_finalize (bin);
 		} else {
 /*			visual_bin_switch_finalize (bin); */

@@ -49,7 +49,7 @@ VisObject *visual_object_new ()
 int visual_object_free (VisObject *object)
 {
 	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-	visual_return_val_if_fail (object->allocated == TRUE, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED);
+	visual_return_val_if_fail (object->allocated, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED);
 
 	return visual_mem_free (object);
 }
@@ -61,7 +61,7 @@ int visual_object_destroy (VisObject *object)
 	if (object->dtor != NULL)
 		object->dtor (object);
 
-	if (object->allocated == TRUE)
+	if (object->allocated)
 		return visual_object_free (object);
 
 	return VISUAL_OK;
