@@ -58,7 +58,7 @@ SET(libvisual_HEADERS
 
   lv_intrusive_ptr.hpp
   lv_singleton.hpp
-  lv_utility.hpp
+  lv_util.hpp
 
   ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h
 )
