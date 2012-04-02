@@ -79,7 +79,7 @@ namespace LV {
 
   std::string SongInfo::get_simple_name () const
   {
-	  return song_name;
+      return song_name;
   }
 
   void SongInfo::set_artist (std::string const& artist_)
@@ -89,7 +89,7 @@ namespace LV {
 
   std::string SongInfo::get_artist () const
   {
-	  return artist;
+      return artist;
   }
 
   void SongInfo::set_album (std::string const& album_)
@@ -109,7 +109,7 @@ namespace LV {
 
   std::string SongInfo::get_song () const
   {
-	  return song;
+      return song;
   }
 
   void SongInfo::set_cover (VisVideo *cover_)

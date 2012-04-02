@@ -55,15 +55,17 @@ SET(libvisual_HEADERS
   lv_defines.h
   lv_alpha_blend.h
   lv_util.h
+
+  lv_intrusive_ptr.hpp
   lv_singleton.hpp
+  lv_utility.hpp
+
   ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h
 )
 
 SET(libvisual_SOURCES
-  lv_input.c
   lv_event.c
   lv_bin.c
-  lv_plugin.c
   lv_video.c
   lv_video_simd.c
   lv_mem.c
@@ -71,7 +73,6 @@ SET(libvisual_SOURCES
   lv_list.c
   lv_log.c
   lv_beat.c
-  lv_morph.c
   lv_bmp.c
   lv_param.c
   lv_cpu.c
@@ -79,7 +80,6 @@ SET(libvisual_SOURCES
   lv_error.c
   lv_thread.c
   lv_object.c
-  lv_transform.c
   lv_rectangle.c
   lv_config.c
   lv_ringbuffer.c
@@ -94,11 +94,15 @@ SET(libvisual_SOURCES
   lv_actor.cpp
   lv_color.cpp
   lv_fourier.cpp
+  lv_input.cpp
   lv_libvisual.cpp
+  lv_morph.cpp
+  lv_plugin.cpp
   lv_random.cpp
   lv_palette.cpp
   lv_plugin_registry.cpp
   lv_songinfo.cpp
+  lv_transform.cpp
 
   lv_color_c.cpp
   lv_fourier_c.cpp

@@ -24,7 +24,7 @@
 #include "config.h"
 #include "lv_actor.h"
 #include "lv_common.h"
-#include "lv_list.h"
+#include "lv_plugin_registry.h"
 #include "gettext.h"
 #include <cstring>
 #include <vector>
@@ -35,38 +35,17 @@ namespace LV {
 
   namespace {
 
-    struct PluginHasName
-        : public std::unary_function<bool, VisPluginRef *>
-    {
-        std::string name;
-
-        PluginHasName (std::string const& name_)
-            : name (name_)
-        {}
-
-        bool operator() (VisPluginRef* ref) const
-        {
-            return name == ref->info->plugname;
-        }
-    };
 
   } // anonymous namespace
 
-  ActorPluginList actor_plugins;
+  PluginList const& actor_plugin_get_list ()
+  {
+	  return PluginRegistry::instance()->get_actor_plugins ();
+  }
 
   VisPluginRef* actor_plugin_find (std::string const& name)
   {
-      ActorPluginList::iterator iter =
-          std::find_if (actor_plugins.begin (),
-                        actor_plugins.end (),
-                        PluginHasName (name));
-
-      return (iter != actor_plugins.end ()) ? *iter : 0;
-  }
-
-  ActorPluginList const& actor_plugin_get_list ()
-  {
-      return actor_plugins;
+	  return plugin_find (actor_plugin_get_list (), name);
   }
 
 } // LV namespace
@@ -216,37 +195,12 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
 
 const char *visual_actor_get_next_by_name (const char *name)
 {
-    for (unsigned int i = 0; i < LV::actor_plugins.size (); i++)
-    {
-        if (std::strcmp (LV::actor_plugins[i]->info->plugname, name) == 0)
-        {
-            unsigned int next_i = (i + 1) % LV::actor_plugins.size ();
-            return LV::actor_plugins[next_i]->info->plugname;
-        }
-    }
-
-    return NULL;
+    return LV::plugin_get_next_by_name (LV::actor_plugin_get_list (), name);
 }
 
 const char *visual_actor_get_prev_by_name (char const* name)
 {
-    for (unsigned int i = 0; i < LV::actor_plugins.size (); i++)
-    {
-        if (std::strcmp (LV::actor_plugins[i]->info->plugname, name) == 0)
-        {
-            unsigned int prev_i = (i + LV::actor_plugins.size () - 1) % LV::actor_plugins.size ();
-            return LV::actor_plugins[prev_i]->info->plugname;
-        }
-    }
-
-    return NULL;
-}
-
-int visual_actor_valid_by_name (char const* name)
-{
-    return std::find_if (LV::actor_plugins.begin (),
-                         LV::actor_plugins.end (),
-                         LV::PluginHasName (name)) != LV::actor_plugins.end ();
+    return LV::plugin_get_prev_by_name (LV::actor_plugin_get_list (), name);
 }
 
 VisActor *visual_actor_new (const char *actorname)
@@ -277,7 +231,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 
     visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
 
-    if ((actorname != 0) && LV::actor_plugins.empty ()) {
+    if ((actorname != 0) && LV::actor_plugin_get_list ().empty ()) {
         visual_log (VISUAL_LOG_ERROR, _("the plugin list is empty"));
 
         return -VISUAL_ERROR_PLUGIN_NO_LIST;

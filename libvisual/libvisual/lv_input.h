@@ -36,13 +36,13 @@
 
 VISUAL_BEGIN_DECLS
 
-#define VISUAL_INPUT(obj)				(VISUAL_CHECK_CAST ((obj), VisInput))
-#define VISUAL_INPUT_PLUGIN(obj)			(VISUAL_CHECK_CAST ((obj), VisInputPlugin))
+#define VISUAL_INPUT(obj)               (VISUAL_CHECK_CAST ((obj), VisInput))
+#define VISUAL_INPUT_PLUGIN(obj)            (VISUAL_CHECK_CAST ((obj), VisInputPlugin))
 
 /**
  * Type defination that should be used in plugins to set the plugin type for an input  plugin.
  */
-#define VISUAL_PLUGIN_TYPE_INPUT	"Libvisual:core:input"
+#define VISUAL_PLUGIN_TYPE_INPUT    "Libvisual:core:input"
 
 typedef struct _VisInput VisInput;
 typedef struct _VisInputPlugin VisInputPlugin;
@@ -91,10 +91,10 @@ struct _VisInput {
 
     VisPluginData               *plugin;    /**< Pointer to the plugin itself. */
     VisAudio                    *audio;     /**< Pointer to the VisAudio structure
-											   * that contains the audio analyse
-											   * results. @see visual_audio_analyse */
+                                               * that contains the audio analyse
+                                               * results. @see visual_audio_analyse */
     VisInputUploadCallbackFunc   callback;  /**< Callback function when a callback
-											  * is used instead of a plugin. */
+                                              * is used instead of a plugin. */
     VisSongInfo                 *songinfo;
 };
 
@@ -106,10 +106,10 @@ struct _VisInput {
  * certain sources.
  */
 struct _VisInputPlugin {
-	VisObject			 object;	/**< The VisObject data. */
-	VisPluginInputUploadFunc	 upload;	/**< The sample upload function. This is the main function
-							  * of the plugin which uploads sample data into
-							  * libvisual. */
+    VisObject            object;    /**< The VisObject data. */
+    VisPluginInputUploadFunc     upload;    /**< The sample upload function. This is the main function
+                              * of the plugin which uploads sample data into
+                              * libvisual. */
 };
 
 /**
@@ -163,8 +163,8 @@ int visual_input_valid_by_name (const char *name);
  * Creates a new VisInput from name, the plugin will be loaded but won't be realized.
  *
  * @param inputname
- * 	The name of the plugin to load, or NULL to simply allocate a new
- * 	input.
+ *  The name of the plugin to load, or NULL to simply allocate a new
+ *  input.
  *
  * @return A newly allocated VisInput, optionally containing a loaded plugin. Or NULL on failure.
  */
@@ -178,7 +178,7 @@ VisInput *visual_input_new (const char *inputname);
  *
  * @param input Pointer to the VisInput that is initialized.
  * @param inputname
- *	The name of the plugin to load, or NULL to simply initialize a new input.
+ *  The name of the plugin to load, or NULL to simply initialize a new input.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
@@ -190,7 +190,7 @@ int visual_input_init (VisInput *input, const char *inputname);
  * @param input Pointer to a VisInput that needs to be realized.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or error values returned by
- *	visual_plugin_realize () on failure.
+ *  visual_plugin_realize () on failure.
  */
 int visual_input_realize (VisInput *input);
 

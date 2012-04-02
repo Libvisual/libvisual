@@ -241,15 +241,6 @@ const char *visual_actor_get_next_by_name (const char *name);
 const char *visual_actor_get_prev_by_name (const char *name);
 
 /**
- * Checks if the actor plugin is in the registry, based on it's name.
- *
- * @param name The name of the plugin that needs to be checked.
- *
- * @return TRUE if found, else FALSE.
- */
-int visual_actor_valid_by_name (const char *name);
-
-/**
  * Creates a new actor from name, the plugin will be loaded but won't be realized.
  *
  * @param actorname
@@ -389,14 +380,22 @@ VISUAL_END_DECLS
 
 #ifdef __cplusplus
 
-#include <vector>
+#include <string>
 
 namespace LV {
 
-  typedef std::vector<VisPluginRef*> ActorPluginList;
+  PluginList const& actor_plugin_get_list ();
 
-  ActorPluginList const& actor_plugin_get_list ();
   VisPluginRef* actor_plugin_find (std::string const& name);
+
+  /**
+   * Checks if the actor plugin is in the registry, based on it's name.
+   *
+   * @param name The name of the plugin that needs to be checked.
+   *
+   * @return TRUE if found, else FALSE.
+   */
+  bool actor_valid_by_name (std::string const& name);
 
 } // LV namespace
 

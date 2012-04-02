@@ -93,7 +93,7 @@ static void _print_plugin_info(VisPluginInfo const& info)
 /** print help for plugins */
 static void _print_plugin_help()
 {
-    LV::ActorPluginList const& list = LV::actor_plugin_get_list ();
+    LV::PluginList const& list = LV::actor_plugin_get_list ();
 
     /* print actors */
     if(!list.empty())

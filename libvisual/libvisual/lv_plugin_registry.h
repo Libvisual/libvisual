@@ -7,6 +7,7 @@
 #ifdef __cplusplus
 
 #include <libvisual/lv_singleton.hpp>
+#include <libvisual/lv_plugin.h>
 #include <string>
 #include <memory>
 
@@ -35,6 +36,18 @@ namespace LV {
       {
           return m_instance;
       }
+
+      PluginList const& get_plugins () const;
+
+      PluginList const& get_actor_plugins () const;
+
+      PluginList const& get_input_plugins () const;
+
+      PluginList const& get_morph_plugins () const;
+
+      PluginList const& get_transform_plugins () const;
+
+      void get_plugins_by_type (PluginList& list, std::string const& type);
 
   private:
 

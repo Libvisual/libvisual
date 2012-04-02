@@ -25,7 +25,6 @@
 #define _LV_PLUGIN_H
 
 #include <libvisual/lvconfig.h>
-#include <libvisual/lv_audio.h>
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param.h>
@@ -338,55 +337,6 @@ VisPluginRef *visual_plugin_ref_new (void);
 VisPluginData *visual_plugin_new (void);
 
 /**
- * Gives a VisList that contains references to all the plugins in the registry.
- *
- * @see VisPluginRef
- *
- * @return VisList of references to all the libvisual plugins.
- */
-VisList *visual_plugin_get_registry (void);
-
-/**
- * Gives a newly allocated VisList with references for one plugin type.
- *
- * @see VisPluginRef
- *
- * @param pluglist Pointer to the VisList that contains the plugin registry.
- * @param domain The plugin type that is filtered for.
- *
- * @return Newly allocated VisList that is a filtered version of the plugin registry.
- */
-VisList *visual_plugin_registry_filter (VisList *pluglist, const char *domain);
-
-/**
- * Get the next plugin based on it's name.
- *
- * @see visual_plugin_registry_filter
- *
- * @param list Pointer to the VisList containing the plugins. Adviced is to filter
- *	this list first using visual_plugin_registry_filter.
- * @param name Name of a plugin entry of which we want the next entry or NULL to get
- * 	the first entry.
- *
- * @return The name of the next plugin or NULL on failure.
- */
-const char *visual_plugin_get_next_by_name (VisList *list, const char *name);
-
-/**
- * Get the previous plugin based on it's name.
- *
- * @see visual_plugin_registry_filter
- *
- * @param list Pointer to the VisList containing the plugins. Adviced is to filter
- *	this list first using visual_plugin_registry_filter.
- * @param name Name of a plugin entry of which we want the previous entry or NULL to get
- * 	the last entry.
- *
- * @return The name of the next plugin or NULL on failure.
- */
-const char *visual_plugin_get_prev_by_name (VisList *list, const char *name);
-
-/**
  * Private function to unload a plugin. After calling this function the
  * given argument is no longer usable.
  *
@@ -426,25 +376,6 @@ int visual_plugin_realize (VisPluginData *plugin);
  * @return The optionally newly allocated VisPluginRefs for the plugin.
  */
 VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
-
-/**
- * Private function to create the complete plugin registry from a set of paths.
- *
- * @param paths A pointer list to a set of paths.
- * @param ignore_non_existing A flag that can be set with TRUE or FALSE to ignore non existing dirs.
- *
- * @return A newly allocated VisList containing the plugin registry for the set of paths.
- */
-VisList *visual_plugin_get_list (const char **paths, int ignore_non_existing);
-
-/**
- * Get the type part from a plugin type string.
- *
- * @param type The type string.
- *
- * @return A newly allocated string containing the type part of this plugin type, or NULL on failure.
- */
-VisPluginRef *visual_plugin_find (VisList *list, const char *name);
 
 /**
  * Gives the VISUAL_PLUGIN_API_VERSION value for which the library is compiled.
@@ -565,6 +496,55 @@ int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
 VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
 
 VISUAL_END_DECLS
+
+#ifdef __cplusplus
+
+#include <vector>
+
+namespace LV {
+
+  typedef std::vector<VisPluginRef*> PluginList;
+
+  /**
+   * Get the next plugin based on it's name.
+   *
+   * @see visual_plugin_registry_filter
+   *
+   * @param list Pointer to the VisList containing the plugins. Adviced is to filter
+   *	this list first using visual_plugin_registry_filter.
+   * @param name Name of a plugin entry of which we want the next entry or NULL to get
+   * 	the first entry.
+   *
+   * @return The name of the next plugin or NULL on failure.
+   */
+  const char *plugin_get_next_by_name (PluginList const& list, const char *name);
+
+  /**
+   * Get the previous plugin based on it's name.
+   *
+   * @see visual_plugin_registry_filter
+   *
+   * @param list Pointer to the VisList containing the plugins. Adviced is to filter
+   *	this list first using visual_plugin_registry_filter.
+   * @param name Name of a plugin entry of which we want the previous entry or NULL to get
+   * 	the last entry.
+   *
+   * @return The name of the next plugin or NULL on failure.
+   */
+  const char *plugin_get_prev_by_name (PluginList const& list, const char *name);
+
+  /**
+   * Get the type part from a plugin type string.
+   *
+   * @param type The type string.
+   *
+   * @return A newly allocated string containing the type part of this plugin type, or NULL on failure.
+   */
+  VisPluginRef *plugin_find (PluginList const& list, std::string const& name);
+
+} // LV namespace
+
+#endif /* __cplusplus */
 
 /**
  * @}

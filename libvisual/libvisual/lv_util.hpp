@@ -1,0 +1,37 @@
+#ifndef _LV_UTIL_HPP
+#define _LV_UTIL_HPP
+
+#include <string>
+
+namespace LV {
+
+  // This file should really not be existing; it's a collection of
+  // utility classes and functions that exist in some form in Boost or
+  // C++11
+
+  inline bool str_has_suffix (std::string const& str, std::string const& suffix)
+  {
+      if (str.length() >= suffix.length()) {
+		  return (str.compare (str.length() - suffix.length(), suffix.length(), suffix) == 0);
+	  } else {
+          return false;
+	  }
+  }
+
+  // Why oh why did they have to leave this out of C++98 by accident?
+  template <class InputIterator, class OutputIterator, class Predicate>
+  OutputIterator copy_if (InputIterator first, InputIterator last,
+                          OutputIterator result, Predicate pred)
+  {
+      while(first!=last)
+      {
+          if(pred(*first))
+              *result++ = *first;
+          ++first;
+      }
+      return result;
+  }
+
+} // LV namespace
+
+#endif // _LV_UTIL_HPP
