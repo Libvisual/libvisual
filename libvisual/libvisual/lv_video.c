@@ -602,7 +602,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 
 	vrect = visual_video_get_boundary (src);
 
-	if (visual_rectangle_contains_rect (vrect, rect)) {
+	if (!visual_rectangle_contains_rect (vrect, rect)) {
 		error = -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
 		goto out;
 	}
