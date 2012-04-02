@@ -83,6 +83,8 @@ namespace LV {
        */
       DFT (unsigned int samples_out, unsigned int samples_in);
 
+      ~DFT ();
+
       unsigned int get_spectrum_size () const;
 
       /**

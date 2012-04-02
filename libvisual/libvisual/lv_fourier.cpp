@@ -229,6 +229,11 @@ namespace LV {
       // empty
   }
 
+  DFT::~DFT ()
+  {
+      // empty
+  }
+
   void DFT::perform (float *output, float const* input)
   {
       visual_return_if_fail (output != NULL);
