@@ -35,38 +35,49 @@
 
 namespace LV {
 
-  /**
-   * Data type to describe a palette entry, or a color. The HSV isn't
-   * kept in sync with RGB automaticly but it's there especially for
-   * VisUI.
-   */
   struct Color
   {
-      uint8_t r;    /**< Red channel */
+      uint8_t r;    /**< Red channel   */
       uint8_t g;    /**< Green channel */
-      uint8_t b;    /**< Blue channel */
+      uint8_t b;    /**< Blue channel  */
       uint8_t a;    /**< Alpha channel */
 
       /**
-       * Creates a new VisColor structure
-       *
-       * @return A newly allocated VisColor.
+       * Creates a new Color object. All channels are set to 0.
        */
       Color ()
           : r (0), g (0), b (0), a (0)
       {}
 
+      /**
+       * Creates a new Color object with the given channel values.
+       *
+       * @param r red
+       * @param g green
+       * @param b blue
+       * @param a alpha
+       */
       Color (uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255)
           : r (r_), g(g_), b(b_), a(a_)
       {}
 
-	  friend bool operator== (Color const& c1, Color const& c2)
+      /**
+       * Equality operator for comparing two Color objects.
+       *
+       * @note RGB channels are compared.
+       *
+       * @param c1 a Color object
+       * @param c2 another Color object
+       *
+       * @return true if colors are equal, false otherwise
+       */
+      friend bool operator== (Color const& c1, Color const& c2)
       {
           return ( c1.r == c2.r && c1.g == c2.g && c1.b == c2.b);
       }
 
       /**
-       * Assigns a RGB(A) color
+       * Assigns a color from a set of RGBA values
        *
        * @param r The red value.
        * @param g The green value.
@@ -79,23 +90,25 @@ namespace LV {
       }
 
       /**
-       * Fills the VisColor it's rgb values from hsv colorspace values.
+       * Assigns a color given in HSV colorspace.
        *
-       * @param h Hue value for the hsv colorspace, ranging from 0 to 360.
-       * @param s Saturation value for the hsv colorspace, ranging from 0 to 1.
-       * @param v Value value for the hsv colorspace, ranging from 0 to 1.
+       * @param h Hue value in [0, 360]
+       * @param s Saturation value in [0, 1]
+       * @param v Value value in [0, 1]
        */
       void set_hsv (float h, float s, float v);
 
       /**
-       * Creates hsv colorspace values from a VisColor
+       * Converts the current color to the HSV colorspace
        *
-       * @param color Pointer to a VisColor from which hsv colorspace values are created.
-       * @param h Float pointer to a hue value for the hsv colorspace, ranging from 0 to 360.
-       * @param s Float pointer to a saturation value for the hsv colorspace, ranging from 0 to 1.
-       * @param v Float pointer to a value value for the hsv colorspace, ranging from 0 to 1.
+       * @param h Variable to store the Hue value in (values will be
+       *          in [0, 360]
        *
-       * @return VISUAL_OK on success, -VISUAL_ERROR_COLOR_NULL on failure.
+       * @param s Variable to store the Saturation value in (values
+       *          will be in [0, 1]
+       *
+       * @param v Variable to store the Value value in (values will be
+       *          in [0, 1]
        */
       void get_hsv (float& h, float& s, float& v) const;
 
@@ -130,7 +143,7 @@ typedef ::LV::Color VisColor;
 typedef struct _VisColor VisColor;
 struct _VisColor
 {
-  uint8_t r, g, b, a; // NOTE: this must be synced with LV::Color
+    uint8_t r, g, b, a; // NOTE: this must be synced with LV::Color
 };
 #endif
 

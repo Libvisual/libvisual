@@ -66,20 +66,21 @@ namespace LV {
   public:
 
       /**
-       * Function to create a new VisDFT Discrete Fourier Transform
-       * context used to calculate amplitude spectrums over audio data.
+       * Creates a DFT (Discrete Fourier Transform) object used to
+       * calculate amplitude spectrums over audio data.
        *
-       * \note For optimal performance, use a power-of-2 spectrum
-       * size. The current implementation does not use the Fast Fourier
-       * Transform for non powers of 2.
+       * @note For optimal performance, use a power-of-2 spectrum
+       * size. The current implementation does not use the Fast
+       * Fourier Transform for non powers of 2.
        *
-       * \note If samples_in is smaller than 2 * samples_out, the input
+       * note If samples_in is smaller than 2 * samples_out, the input
        * will be padded with zeroes.
        *
-       * @param samples_in  The number of samples provided to every call to
-       *                    DFT::perform() as input.
+       * @param samples_in  The number of samples provided to every
+       *                    call to DFT::perform() as input.
        *
-       * @param samples_out Size of output spectrum (number of output samples).
+       * @param samples_out Size of output spectrum (number of output
+       *                    samples).
        */
       DFT (unsigned int samples_out, unsigned int samples_in);
 
@@ -88,18 +89,15 @@ namespace LV {
       unsigned int get_spectrum_size () const;
 
       /**
-       * Function to perform a Discrete Fourier Transform over a set of data.
-       *
-       * \note Output samples are normalised to [0.0, 1.0] by dividing with the
-       * spectrum size.
+       * Performs a DFT over a set of input samples.
        *
        * @param output Array of output samples
-       * @param input Array of input samples with values in [-1.0, 1.0]
+       * @param input  Array of input samples with values in [-1.0, 1.0]
        */
       void perform (float *output, float const* input);
 
       /**
-       * Function to scale an ampltitude spectrum logarithmically.
+       * Scales an ampltitude spectrum logarithmically.
        *
        * \note Scaled values are guaranteed to be in [0.0, 1.0].
        *

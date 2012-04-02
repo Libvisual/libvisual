@@ -18,14 +18,19 @@ namespace LV {
   {
   public:
 
-      void add_path (std::string const& path);
-
       static void init ()
       {
           if (!m_instance) {
               m_instance = new PluginRegistry;
           }
       }
+
+	  /**
+	   * Adds an extra plugin search path.
+	   *
+	   * @param path Path to plugin directory
+	   */
+      void add_path (std::string const& path);
 
       ~PluginRegistry ();
 
@@ -57,13 +62,6 @@ namespace LV {
 
 VISUAL_BEGIN_DECLS
 
-/**
- * Adds extra plugin registry paths.
- *
- * @param pathadd A string containing a path where plugins are located.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NO_PATHS on failure.
- */
 int visual_init_path_add (const char *path);
 
 int visual_plugin_registry_initialize (void);

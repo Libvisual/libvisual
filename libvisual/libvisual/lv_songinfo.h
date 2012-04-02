@@ -76,38 +76,20 @@ namespace LV {
       friend bool operator== (SongInfo const& lhs, SongInfo const& rhs);
 
       /**
-       * Sets the interface type to a VisSongInfo. Used to set the interface
-       * type to the VisSongInfo structure. The interface type defines if
-       * we're providing a simple string containing the song name or an
-       * separated set of data containing all the information about a song.
+       * Sets the song information type.
+       *
+       * @note The type determines the set of information supplied by
+       * the SongInfo object.
        *
        * @param type Interface type that is set against the VisSongInfo.
        *
        * @return 0 on succes -1 on failure.
        */
+      // FIXME: Type should only be set at creation time. Ideally we
+      // should be able prevent accidental access to invalid fields.
       void set_type (SongInfoType type);
 
       SongInfoType get_type () const;
-
-      /**
-       * Sets the length of a song. Used to set the length of a song
-       * when the advanced interface is being used.
-       *
-       * @param length The length in seconds.
-       */
-      void set_length (int length);
-
-      int get_length () const;
-
-      /**
-       * Sets the elapsed time of a song. Used to set the elapsed time
-       * of a song when the advanced interface is being used.
-       *
-       * @param elapsed The elapsed time in seconds.
-       */
-      void set_elapsed (int elapsed);
-
-      int get_elapsed () const;
 
       /**
        * Sets a simple song name. Used when the simple interface is
@@ -120,41 +102,64 @@ namespace LV {
       std::string get_simple_name () const;
 
       /**
-       * Sets the artist name. Used to set the artist name when the advanced
-       * interface is being used.
+       * Sets the length of a song.
        *
-       * @param songinfo Pointer to a VisSongInfo to which the artist name is set.
-       * @param artist The artist name.
+       * @note Advanced interface only
        *
-       * @return 0 on succes -1 on failure.
+       * @param length length in seconds to set
+       */
+      void set_length (int length);
+
+      int get_length () const;
+
+      /**
+       * Sets the elapsed time of a song.
+       *
+       * @note Advanced interface only
+       *
+       * @param elapsed The elapsed time in seconds.
+       */
+      void set_elapsed (int elapsed);
+
+      int get_elapsed () const;
+
+      /**
+       * Sets the artist name.
+       *
+       * @note Advanced interface only
+       *
+       * @param artist artist name to set
        */
       void set_artist (std::string const& artist);
 
       std::string get_artist () const;
 
       /**
-       * Sets the album name. Used to set the album name when the
-       * advanced interface is being used.
+       * Sets the album name.
        *
-       * @param album The album name.
+       * @note Advanced interface only
+       *
+       * @param album album name to set
        */
       void set_album (std::string const& album);
 
       std::string get_album () const;
 
       /**
-       * Sets the song name. Used to set the song name when the advanced
-       * interface is being used.
+       * Sets the song name.
        *
-       * @param song The song name.
+       * @note Advanced interface only
+       *
+       * @param name song name to set
        */
       void set_song (std::string const& name);
 
       std::string get_song () const;
 
       /**
-       * Sets the cover art. Used to set the cover art when the advanced
-       * interface is being used.
+       * Sets the cover art.
+       *
+       * @note Advanced interface only
        *
        * @param cover VisVideo object containing the cover art.
        *
@@ -165,19 +170,15 @@ namespace LV {
       VisVideo* get_cover () const;
 
       /**
-       * Resets the age timer. Used to timestamp a song to the current
-       * time.
-       *
-       * @param songinfo Pointer to a VisSongInfo that is timestamped.
-       *
-       * @return 0 on succes -1 on failure.
+       * Resets the age timer. Use this to timestamp a song to the
+       * current time.
        */
       void mark ();
 
       /**
-       * Returns the age of the VisSongInfo.
+       * Returns the age of the song.
        *
-       * @return The age in seconds.
+       * @return age in seconds
        */
       long get_age (); // FIXME: should be const
 

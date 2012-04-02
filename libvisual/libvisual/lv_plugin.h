@@ -506,41 +506,34 @@ namespace LV {
   typedef std::vector<VisPluginRef*> PluginList;
 
   /**
-   * Get the next plugin based on it's name.
+   * Retrieves the name of the next plugin in the given list.
    *
-   * @see visual_plugin_registry_filter
+   * @param list a list of plugins
+   * @param name name of plugin to start searching from
    *
-   * @param list Pointer to the VisList containing the plugins. Adviced is to filter
-   *	this list first using visual_plugin_registry_filter.
-   * @param name Name of a plugin entry of which we want the next entry or NULL to get
-   * 	the first entry.
-   *
-   * @return The name of the next plugin or NULL on failure.
+   * @return name of the next plugin, or NULL if none can be found
    */
-  const char *plugin_get_next_by_name (PluginList const& list, const char *name);
+  char const* plugin_get_next_by_name (PluginList const& list, char const* name);
 
   /**
-   * Get the previous plugin based on it's name.
+   * Retrieves the name of the previous plugin in the given list
    *
-   * @see visual_plugin_registry_filter
+   * @param list a list of plugins
+   * @param name name of plugin to start searching from
    *
-   * @param list Pointer to the VisList containing the plugins. Adviced is to filter
-   *	this list first using visual_plugin_registry_filter.
-   * @param name Name of a plugin entry of which we want the previous entry or NULL to get
-   * 	the last entry.
-   *
-   * @return The name of the next plugin or NULL on failure.
+   * @return name of the previous plugin, or NULL if none can be found
    */
-  const char *plugin_get_prev_by_name (PluginList const& list, const char *name);
+  char const* plugin_get_prev_by_name (PluginList const& list, char const* name);
 
   /**
-   * Get the type part from a plugin type string.
+   * Retrieves information about a plugin in the given list.
    *
-   * @param type The type string.
+   * @param type a list of plugins
+   * @param name name of plugin to retrieve information from
    *
-   * @return A newly allocated string containing the type part of this plugin type, or NULL on failure.
+   * @return plugin information
    */
-  VisPluginRef *plugin_find (PluginList const& list, std::string const& name);
+  VisPluginRef* plugin_find (PluginList const& list, std::string const& name);
 
 } // LV namespace
 
