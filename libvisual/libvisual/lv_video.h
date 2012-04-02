@@ -179,7 +179,7 @@ struct _VisVideo {
 
 	/* Sub region */
 	VisVideo            *parent;    /**< The surface it's parent, ONLY when it is a subregion. */
-	VisRectangle         rect;      /**< The rectangle over the parent surface. */
+	VisRectangle        *rect;      /**< The rectangle over the parent surface. */
 
 	/* Composite control */
 	VisVideoCompositeType       compositetype; /**< The surface it's composite type. */
@@ -492,12 +492,10 @@ int visual_video_bpp_from_depth (VisVideoDepth depth);
  * position will be set to 0, 0 and it's width and height respectively to that of the VisVideo.
  *
  * @param video Pointer to the VisVideo for which the buffer boundries are requested.
- * @param rect Pointer to the VisRectangle in which the buffer boundries are set.
  *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_RECTANGLE_NULL on failure.
+ * @return New VisRectangle, or NULL on failure
  */
-int visual_video_get_boundary (VisVideo *video, VisRectangle *rect);
-
+VisRectangle *visual_video_get_boundary (VisVideo *video);
 
 /**
  * Creates a sub region of a VisVideo. An extra reference to the src VisVideo is created. The region should

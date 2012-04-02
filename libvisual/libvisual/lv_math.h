@@ -28,6 +28,22 @@
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_types.h>
 
+#ifdef __cplusplus
+
+#include <algorithm>
+
+namespace LV {
+
+  template <typename T>
+  T clamp (T value, T lower, T upper)
+  {
+      return std::max (lower, std::min (upper, value));
+  }
+
+} // LV namespce
+
+#endif /* __cplusplus */
+
 /**
  * @defgroup VisMath VisMath
  * @{

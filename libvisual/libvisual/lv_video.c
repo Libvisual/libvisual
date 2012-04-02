@@ -76,6 +76,8 @@ static int video_dtor (VisObject *object)
 	/* FIXME: Enabling this gives a double free error */
 	/*visual_color_free (video->colorkey);*/
 
+	visual_rectangle_free (video->rect);
+
 	if (video->pixel_rows != NULL)
 		visual_mem_free (video->pixel_rows);
 
@@ -127,7 +129,7 @@ int visual_video_init (VisVideo *video)
 	visual_video_set_palette (video, NULL);
 
 	video->parent = NULL;
-	visual_rectangle_set (&video->rect, 0, 0, 0, 0);
+	video->rect = visual_rectangle_new_empty ();
 
 	/* Composite control */
 	video->compositetype = VISUAL_VIDEO_COMPOSITE_TYPE_SRC;
@@ -578,19 +580,18 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
 	return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
-int visual_video_get_boundary (VisVideo *video, VisRectangle *rect)
+VisRectangle *visual_video_get_boundary (VisVideo *video)
 {
-	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
-	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
+	visual_return_val_if_fail (video != NULL, NULL);
 
-	visual_rectangle_set (rect, 0, 0, video->width, video->height);
-
-	return VISUAL_OK;
+	return visual_rectangle_new (0, 0, video->width, video->height);
 }
 
 int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 {
-	VisRectangle vrect;
+	int error = VISUAL_OK;
+	VisRectangle *vrect = NULL;
+	int rect_x, rect_y, rect_width, rect_height;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
@@ -599,19 +600,26 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 	/* FIXME make non verbose */
 	visual_return_val_if_fail (visual_rectangle_is_empty (rect) == FALSE, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
 
-	visual_video_get_boundary (src, &vrect);
+	vrect = visual_video_get_boundary (src);
 
-	/* FIXME make non verbose */
-	visual_return_val_if_fail (visual_rectangle_within (&vrect, rect) == TRUE, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+	if (visual_rectangle_contains_rect (vrect, rect)) {
+		error = -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
+		goto out;
+	}
 
-	visual_rectangle_copy (&dest->rect, rect);
+	visual_rectangle_copy (dest->rect, rect);
 	visual_object_ref (VISUAL_OBJECT (src));
 
 	dest->parent = src;
 
-	visual_video_set_attributes (dest, rect->width, rect->height,
-			(rect->width * src->bpp) + (src->pitch - (rect->width * src->bpp)), src->depth);
-	visual_video_set_buffer (dest, (uint8_t *) (visual_video_get_pixels (src)) + ((rect->y * src->pitch) + (rect->x * src->bpp)));
+	rect_x      = visual_rectangle_get_x (rect);
+	rect_y      = visual_rectangle_get_y (rect);
+	rect_width  = visual_rectangle_get_width  (rect);
+	rect_height = visual_rectangle_get_height (rect);
+
+	visual_video_set_attributes (dest, rect_width, rect_height,
+			(rect_width * src->bpp) + (src->pitch - (rect_width * src->bpp)), src->depth);
+	visual_video_set_buffer (dest, (uint8_t *) (visual_video_get_pixels (src)) + ((rect_y * src->pitch) + (rect_x * src->bpp)));
 
 	/* Copy composite */
 	dest->compositetype = src->compositetype;
@@ -624,52 +632,70 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 
 	dest->pal = src->pal;
 
+out:
+	if (vrect) visual_rectangle_free (vrect);
+
 	return VISUAL_OK;
 }
 
 int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height)
 {
-	VisRectangle rect;
+	int error = VISUAL_OK;
+	VisRectangle *rect = NULL;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	visual_rectangle_set (&rect, x, y, width, height);
+	rect = visual_rectangle_new (x, y, width, height);
 
-	return visual_video_region_sub (dest, src, &rect);
+	error = visual_video_region_sub (dest, src, rect);
+
+	visual_rectangle_free (rect);
+
+	return error;
 }
 
 int visual_video_region_sub_all (VisVideo *dest, VisVideo *src)
 {
-	VisRectangle rect;
+	int error = VISUAL_OK;
+	VisRectangle *rect = NULL;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	visual_video_get_boundary (dest, &rect);
+	rect = visual_video_get_boundary (dest);
 
-	return visual_video_region_sub (dest, src, &rect);
+	error = visual_video_region_sub (dest, src, rect);
+
+	visual_rectangle_free (rect);
+
+	return error;
 }
 
 int visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect)
 {
-	VisRectangle rsrect;
-	VisRectangle sbound;
+	int error;
+	VisRectangle *rsrect = NULL;
+	VisRectangle *sbound = NULL;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (drect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 	visual_return_val_if_fail (srect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	visual_rectangle_copy (&rsrect, srect);
-
-	visual_video_get_boundary (src, &sbound);
+	rsrect = visual_rectangle_clone (srect);
+	sbound = visual_video_get_boundary (src);
 
 	/* Merge the destination and source rect, so that only the allowed parts are sub regioned */
-	visual_rectangle_clip (&rsrect, &sbound, srect);
-	visual_rectangle_clip (&rsrect, drect, &rsrect);
+	visual_rectangle_clip (rsrect, sbound, srect);
+	visual_rectangle_clip (rsrect, drect, rsrect);
 
-	return visual_video_region_sub (dest, src, &rsrect);
+	error = visual_video_region_sub (dest, src, rsrect);
+
+	visual_rectangle_free (sbound);
+	visual_rectangle_free (rsrect);
+
+	return error;
 }
 
 int visual_video_composite_set_type (VisVideo *video, VisVideoCompositeType type)
@@ -759,9 +785,9 @@ int visual_video_blit_overlay_rectangle (VisVideo *dest, VisRectangle *drect, Vi
 int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
 		                VisVideoCustomCompositeFunc compfunc)
 {
+	int error = VISUAL_OK;
 	VisVideo vsrc;
-	VisRectangle ndrect;
-	int errret = VISUAL_OK;
+	VisRectangle *ndrect = NULL;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
@@ -770,15 +796,22 @@ int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *dr
 
 	visual_video_init (&vsrc);
 
-	visual_rectangle_copy (&ndrect, drect);
-	visual_rectangle_normalise_to (&ndrect, srect);
+	ndrect = visual_rectangle_clone (drect);
+	visual_rectangle_normalize_to (ndrect, srect);
 
-	if ((errret = visual_video_region_sub_with_boundary (&vsrc, &ndrect, src, srect)) == VISUAL_OK)
-		errret = visual_video_blit_overlay_custom (dest, &vsrc, drect->x, drect->y, compfunc);
+	if ((error = visual_video_region_sub_with_boundary (&vsrc, ndrect, src, srect)) != VISUAL_OK)
+	    goto out;
 
+	error = visual_video_blit_overlay_custom (dest, &vsrc,
+	                                          visual_rectangle_get_x (drect),
+	                                          visual_rectangle_get_y (drect),
+	                                          compfunc);
+
+out:
+	visual_rectangle_free (ndrect);
 	visual_object_unref (VISUAL_OBJECT (&vsrc));
 
-	return errret;
+	return error;
 }
 
 int visual_video_blit_overlay_rectangle_scale (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
@@ -791,11 +824,12 @@ int visual_video_blit_overlay_rectangle_scale (VisVideo *dest, VisRectangle *dre
 int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
 		                VisVideoScaleMethod scale_method, VisVideoCustomCompositeFunc compfunc)
 {
+	int error = VISUAL_OK;
+
 	VisVideo svid;
 	VisVideo ssrc;
-	VisRectangle frect;
-	VisRectangle sbound;
-	int errret = VISUAL_OK;
+	VisRectangle *frect = NULL;
+	VisRectangle *sbound = NULL;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
@@ -805,33 +839,41 @@ int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectang
 	visual_video_init (&svid);
 	visual_video_init (&ssrc);
 
-	visual_video_get_boundary (dest, &sbound);
+	sbound = visual_video_get_boundary (dest);
 
 	/* check if the rectangle is in the screen, if not, don't scale and such */
-	if (visual_rectangle_within_partially (&sbound, drect) == FALSE)
+	if (!visual_rectangle_intersects (sbound, drect)) {
+		/* FIXME: set error here */
 		goto out;
+	}
 
 	visual_video_region_sub (&ssrc, src, srect);
-	visual_video_set_attributes (&svid, drect->width, drect->height, src->bpp * drect->width, src->depth);
+
+	visual_video_set_attributes (&svid,
+	                             visual_rectangle_get_width (drect),
+	                             visual_rectangle_get_height (drect),
+	                             src->bpp * visual_rectangle_get_width (drect),
+	                             src->depth);
+
 	visual_video_allocate_buffer (&svid);
 
 	/* Scale the source to the dest rectangle it's size */
 	visual_video_scale (&svid, &ssrc, scale_method);
 
-	visual_rectangle_copy (&frect, drect);
-	visual_rectangle_normalise (&frect);
+	frect = visual_rectangle_clone (drect);
+	visual_rectangle_normalize (frect);
 
 	/* Blit the scaled source into the dest rectangle */
-	errret = visual_video_blit_overlay_rectangle_custom (dest, drect, &svid, &frect, compfunc);
+	error = visual_video_blit_overlay_rectangle_custom (dest, drect, &svid, frect, compfunc);
 
 out:
+	if (frect)  visual_rectangle_free (frect);
+	if (sbound) visual_rectangle_free (sbound);
+
 	visual_object_unref (VISUAL_OBJECT (&svid));
 	visual_object_unref (VISUAL_OBJECT (&ssrc));
 
-	return errret;
-
-
-	return VISUAL_OK;
+	return error;
 }
 
 int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha)
@@ -842,30 +884,33 @@ int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int 
 
 int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int y, VisVideoCustomCompositeFunc compfunc)
 {
+	int error = VISUAL_OK;
+
 	VisVideo *transform = NULL;
 	VisVideo *srcp = NULL;
 	VisVideo dregion;
 	VisVideo sregion;
 	VisVideo tempregion;
-	VisRectangle redestrect;
-	VisRectangle drect;
-	VisRectangle srect;
-	VisRectangle trect;
-	int ret = VISUAL_OK;
+	VisRectangle *redestrect = NULL;
+	VisRectangle *drect = NULL;
+	VisRectangle *srect = NULL;
+	VisRectangle *trect = NULL;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
-	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_return_val_if_fail (src  != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (compfunc != NULL, -VISUAL_ERROR_NULL);
 
 	/* We can't overlay GL surfaces so don't even try */
 	visual_return_val_if_fail (dest->depth != VISUAL_VIDEO_DEPTH_GL ||
 			src->depth != VISUAL_VIDEO_DEPTH_GL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 
-	visual_video_get_boundary (dest, &drect);
-	visual_video_get_boundary (src, &srect);
+	drect = visual_video_get_boundary (dest);
+	srect = visual_video_get_boundary (src);
 
-	if (visual_rectangle_within_partially (&drect, &srect) == FALSE)
-		return -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
+	if (!visual_rectangle_intersects (drect, srect)) {
+		error = -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
+		goto out;
+	}
 
 	/* We're not the same depth, converting */
 	if (dest->depth != src->depth) {
@@ -891,36 +936,40 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
 
 	/* Negative offset fixture */
 	if (x < 0) {
-		srect.x += 0 - x;
-		srect.width += x;
+		visual_rectangle_set_x (srect, visual_rectangle_get_x (srect) - x);
+		visual_rectangle_set_width (srect, visual_rectangle_get_width (srect) + x);
 		x = 0;
 	}
 
 	if (y < 0) {
-		srect.y += 0 - y;
-		srect.height += y;
+		visual_rectangle_set_y (srect, visual_rectangle_get_y (srect) - y);
+		visual_rectangle_set_height (srect, visual_rectangle_get_height (srect) + y);
 		y = 0;
 	}
 
 	/* Retrieve sub regions */
-	visual_rectangle_set (&trect, x, y, srect.width, srect.height);
+	trect = visual_rectangle_new (x, y, visual_rectangle_get_width (srect), visual_rectangle_get_height (srect));
 
-	if ((ret = visual_video_region_sub_with_boundary (&dregion, &drect, dest, &trect)) != VISUAL_OK)
+	if ((error = visual_video_region_sub_with_boundary (&dregion, drect, dest, trect)) != VISUAL_OK)
 		goto out;
 
-	visual_video_get_boundary (&dregion, &redestrect);
+	redestrect = visual_video_get_boundary (&dregion);
 
-	if ((ret = visual_video_region_sub (&tempregion, srcp, &srect)) != VISUAL_OK)
+	if ((error = visual_video_region_sub (&tempregion, srcp, srect)) != VISUAL_OK)
 		goto out;
 
-
-	if ((ret = visual_video_region_sub_with_boundary (&sregion, &drect, &tempregion, &redestrect)) != VISUAL_OK)
+	if ((error = visual_video_region_sub_with_boundary (&sregion, drect, &tempregion, redestrect)) != VISUAL_OK)
 		goto out;
 
 	/* Call blitter */
 	compfunc (&dregion, &sregion);
 
 out:
+	if (redestrect) visual_rectangle_free (redestrect);
+	if (drect)      visual_rectangle_free (drect);
+	if (srect)      visual_rectangle_free (srect);
+	if (trect)      visual_rectangle_free (trect);
+
 	/* If we had a transform buffer, it's time to get rid of it */
 	if (transform != NULL)
 		visual_object_unref (VISUAL_OBJECT (transform));
@@ -929,7 +978,7 @@ out:
 	visual_object_unref (VISUAL_OBJECT (&sregion));
 	visual_object_unref (VISUAL_OBJECT (&tempregion));
 
-	return ret;
+	return error;
 }
 
 static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
@@ -960,7 +1009,7 @@ static int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha;
 
 	for (y = 0; y < src->height; y++) {
@@ -1340,30 +1389,39 @@ int visual_video_fill_color (VisVideo *video, VisColor *rcolor)
 
 int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRectangle *rect)
 {
-	VisRectangle vrect;
-	VisRectangle dbound;
+	int error = VISUAL_OK;
+
+	VisRectangle *vrect  = NULL;
+	VisRectangle *dbound = NULL;
 	VisVideo svid;
-	int errret = VISUAL_OK;
 
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
 	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	visual_video_get_boundary (video, &vrect);
+	vrect = visual_video_get_boundary (video);
 
-	visual_return_val_if_fail (visual_rectangle_within_partially (&vrect, rect) != FALSE, -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS);
+	if (!visual_rectangle_intersects (vrect, rect)) {
+		error = -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS;
+		goto out;
+	}
 
 	visual_video_init (&svid);
 
-	visual_video_get_boundary (video, &dbound);
+	dbound = visual_video_get_boundary (video);
 
-	visual_video_region_sub_with_boundary (&svid, &dbound, video, rect);
+	visual_video_region_sub_with_boundary (&svid, dbound, video, rect);
 
-	errret = visual_video_fill_color (&svid, color);
+	error = visual_video_fill_color (&svid, color);
 
 	visual_object_unref (VISUAL_OBJECT (&svid));
 
-	return errret;
+out:
+
+	if (dbound) visual_rectangle_free (dbound);
+	if (vrect)  visual_rectangle_free (vrect);
+
+	return error;
 }
 
 
@@ -1829,8 +1887,8 @@ VisVideo *visual_video_scale_new (VisVideo *src, int width, int height, VisVideo
 
 int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method)
 {
+	int error;
 	VisVideo dtransform;
-	int errret;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
@@ -1843,11 +1901,11 @@ int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod
 
 		visual_video_depth_transform (&dtransform, src);
 
-		errret = visual_video_scale (dest, &dtransform, scale_method);
+		error = visual_video_scale (dest, &dtransform, scale_method);
 
 		visual_object_unref (VISUAL_OBJECT (&dtransform));
 
-		return errret;
+		return error;
 	} else {
 		return visual_video_scale (dest, src, scale_method);
 	}

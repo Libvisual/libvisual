@@ -80,7 +80,6 @@ SET(libvisual_SOURCES
   lv_error.c
   lv_thread.c
   lv_object.c
-  lv_rectangle.c
   lv_config.c
   lv_ringbuffer.c
   lv_buffer.c
@@ -101,6 +100,7 @@ SET(libvisual_SOURCES
   lv_random.cpp
   lv_palette.cpp
   lv_plugin_registry.cpp
+  lv_rectangle.cpp
   lv_songinfo.cpp
   lv_transform.cpp
 
@@ -110,6 +110,7 @@ SET(libvisual_SOURCES
   lv_random_c.cpp
   lv_palette_c.cpp
   lv_plugin_registry_c.cpp
+  lv_rectangle_c.cpp
   lv_songinfo_c.cpp
 
   private/lv_video_convert.c
