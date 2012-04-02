@@ -197,7 +197,7 @@ namespace LV {
         sintable.clear ();
         sintable.reserve (tab_size);
 
-        sintable.clear ();
+        costable.clear ();
         costable.reserve (tab_size);
 
         for (unsigned int i = 0; i < tab_size; i++) {
