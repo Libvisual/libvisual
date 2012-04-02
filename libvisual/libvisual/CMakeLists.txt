@@ -60,7 +60,6 @@ SET(libvisual_HEADERS
 )
 
 SET(libvisual_SOURCES
-  lv_actor.c
   lv_input.c
   lv_event.c
   lv_bin.c
@@ -92,6 +91,7 @@ SET(libvisual_SOURCES
   lv_alpha_blend.c
   lv_util.c
 
+  lv_actor.cpp
   lv_color.cpp
   lv_fourier.cpp
   lv_libvisual.cpp

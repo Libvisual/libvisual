@@ -171,13 +171,6 @@ struct _VisActorPlugin {
 VisPluginData *visual_actor_get_plugin (VisActor *actor);
 
 /**
- * Gives a list of VisActors in the current plugin registry.
- *
- * @return An VisList containing the VisActors in the plugin registry.
- */
-VisList *visual_actor_get_list (void);
-
-/**
  * Gives the next actor plugin based on the name of a plugin but skips non
  * GL plugins.
  *
@@ -393,6 +386,21 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video);
 int visual_actor_run (VisActor *actor, VisAudio *audio);
 
 VISUAL_END_DECLS
+
+#ifdef __cplusplus
+
+#include <vector>
+
+namespace LV {
+
+  typedef std::vector<VisPluginRef*> ActorPluginList;
+
+  ActorPluginList const& actor_plugin_get_list ();
+  VisPluginRef* actor_plugin_find (std::string const& name);
+
+} // LV namespace
+
+#endif
 
 /**
  * @}

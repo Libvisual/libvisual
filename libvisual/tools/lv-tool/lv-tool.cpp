@@ -27,6 +27,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 #include <getopt.h>
 
 /* defaults */
@@ -74,45 +75,37 @@ SADisplayDriverDescription const all_display_drivers[] =
 /******************************************************************************/
 
 /** print info about libvisual plugin */
-static void _print_plugin_info(VisPluginData *p)
+static void _print_plugin_info(VisPluginInfo const& info)
 {
-   /** @todo: make this work
-    VisPluginInfo *i = visual_plugin_get_info(p);
-    printf(
+	std::printf(
         "Plugin: \"%s\" (%s)\n"
         "\tauthor:\t%s\n"
         "\tversion:\t%s\n"
         "\tlicense:\t%s\n"
         "%s\n"
         "\%s\n\n",
-        i->name, i->plugname,
-        i->author, i->version, i->license,
-        i->about, i->help); */
+        info.name, info.plugname,
+        info.author, info.version, info.license,
+        info.about, info.help);
 }
 
 
 /** print help for plugins */
 static void _print_plugin_help()
 {
-    VisList *list;
-
-    /* print inputs */
-
+    LV::ActorPluginList const& list = LV::actor_plugin_get_list ();
 
     /* print actors */
-    if(!(list = visual_actor_get_list()))
+    if(!list.empty())
     {
-        std::fprintf(stderr, "No actors found\n");
+        for (unsigned int i = 0; i < list.size (); i++)
+        {
+            _print_plugin_info(*list[i]->info);
+        }
     }
     else
     {
-        int n = 0;
-        VisActor *a;
-        while((a = static_cast<VisActor*>(visual_list_get(list, n++))))
-        {
-            VisPluginData *p = visual_actor_get_plugin(a);
-            _print_plugin_info(p);
-        }
+        std::fprintf(stderr, "No actors found\n");
     }
 
     /* print morphs */
@@ -285,8 +278,8 @@ static int _parse_args(int argc, char *argv[])
 static void v_cycleActor (int prev)
 {
     const char *name;
-    name = (prev ? visual_actor_get_prev_by_name ((char *)actor_name)
-                     : visual_actor_get_next_by_name ((char *)actor_name));
+    name = (prev ? visual_actor_get_prev_by_name (actor_name)
+                     : visual_actor_get_next_by_name (actor_name));
     if (name == NULL) {
         name = (prev ? visual_actor_get_prev_by_name (0)
                          : visual_actor_get_next_by_name (0));

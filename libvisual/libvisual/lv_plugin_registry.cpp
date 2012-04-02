@@ -30,6 +30,24 @@ extern "C" {
 
 namespace LV {
 
+  extern ActorPluginList actor_plugins;
+
+  namespace {
+
+    // HACK: Convert VisList to std::vector
+    void convert_actor_plugin_list (ActorPluginList& plugin_list, VisList* vislist)
+    {
+        VisListEntry* entry = 0;
+        VisPluginRef* ref = 0;
+
+        while ((ref = static_cast<VisPluginRef*> (visual_list_next (vislist, &entry))) != NULL) {
+            actor_plugins.push_back (ref);
+            visual_log (VISUAL_LOG_DEBUG, "Found actor: %s", ref->info->plugname);
+        }
+    }
+
+  } // anonymous namespace
+
   struct PluginRegistry::Impl
   {
     std::vector<std::string> plugin_paths;
@@ -77,6 +95,8 @@ namespace LV {
       }
 
       __lv_plugins_actor = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_ACTOR);
+      convert_actor_plugin_list (actor_plugins, __lv_plugins_actor);
+
       __lv_plugins_input = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_INPUT);
       __lv_plugins_morph = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_MORPH);
       __lv_plugins_transform = visual_plugin_registry_filter (__lv_plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
