@@ -27,15 +27,7 @@ namespace LV {
           }
       }
 
-      static void deinit ()
-      {
-          delete m_instance;
-      }
-
-      static PluginRegistry* instance ()
-      {
-          return m_instance;
-      }
+      ~PluginRegistry ();
 
       PluginList const& get_plugins () const;
 
@@ -57,7 +49,6 @@ namespace LV {
 
       PluginRegistry ();
       PluginRegistry (PluginRegistry const&);
-      ~PluginRegistry ();
   };
 
 } // LV namespace

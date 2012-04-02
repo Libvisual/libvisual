@@ -21,6 +21,13 @@ namespace LV {
   protected:
 
       static T* m_instance;
+
+      Singleton () {}
+
+  private:
+
+      Singleton (Singleton const&);
+      Singleton const& operator= (Singleton const&);
   };
 
   template <class T>

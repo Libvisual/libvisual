@@ -62,6 +62,8 @@ namespace LV {
           }
       }
 
+      ~System ();
+
       /**
        * Returns the libvisual version.
        *
@@ -82,9 +84,6 @@ namespace LV {
        * @return A pointer to the libvisual global VisParamContainer.
        */
       VisParamContainer* get_params () const;
-
-	  // FIXME: Find out why gcc requires this to be public..
-      ~System ();
 
   private:
 

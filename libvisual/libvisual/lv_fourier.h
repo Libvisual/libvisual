@@ -50,7 +50,6 @@ namespace LV {
               m_instance = new Fourier;
       }
 
-      // FIXME: Hide this
       ~Fourier ();
 
   private:
