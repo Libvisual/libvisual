@@ -56,6 +56,7 @@ SET(libvisual_HEADERS
   lv_alpha_blend.h
   lv_util.h
 
+  lv_module.hpp
   lv_intrusive_ptr.hpp
   lv_scoped_ptr.hpp
   lv_singleton.hpp
@@ -125,7 +126,10 @@ SET(LINK_LIBS
 )
 
 IF(NOT VISUAL_OS_WIN32)
+  LIST(APPEND libvisual_SOURCES lv_module_dlfcn.cpp)
   LIST(APPEND LINK_LIBS dl)
+ELSE(NOT VISUAL_OS_WIN32)
+  LIST(APPEND libvisual_SOURCES lv_module_win32.cpp)
 ENDIF(NOT VISUAL_OS_WIN32)
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
