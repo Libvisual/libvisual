@@ -275,12 +275,16 @@ namespace LV {
   {
   public:
 
-    Error (int code)
+    explicit Error (int code)
         : std::runtime_error (visual_error_to_string (code))
     {}
 
     Error (int code, std::string const& reason)
         : std::runtime_error (std::string (visual_error_to_string (code)) + ": " + reason)
+    {}
+
+    explicit Error (std::string const& msg)
+        : std::runtime_error (msg)
     {}
   };
 
