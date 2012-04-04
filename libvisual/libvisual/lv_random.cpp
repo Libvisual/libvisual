@@ -33,7 +33,8 @@
 
 namespace LV {
 
-  struct RandomContext::Impl {
+  class RandomContext::Impl {
+  public:
     Seed seed;
     Seed seed_state;
   };
@@ -42,6 +43,11 @@ namespace LV {
     : m_impl (new Impl)
   {
     set_seed (seed);
+  }
+
+  RandomContext::~RandomContext ()
+  {
+    // empty
   }
 
   void RandomContext::set_seed (Seed seed)

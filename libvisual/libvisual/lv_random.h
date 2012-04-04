@@ -42,7 +42,7 @@
 
 #ifdef __cplusplus
 
-#include <memory>
+#include <libvisual/lv_scoped_ptr.hpp>
 
 namespace LV {
 
@@ -62,6 +62,8 @@ namespace LV {
 	 * @return A newly allocated VisRandomContext, or NULL on failure.
 	 */
 	RandomContext (Seed seed);
+
+	~RandomContext ();
 
 	/**
 	 * Set the seed to for a VisRandomContext.
@@ -152,9 +154,9 @@ namespace LV {
 
   private:
 
-	struct Impl;
+	class Impl;
 
-	std::auto_ptr<Impl> m_impl;
+	ScopedPtr<Impl> m_impl;
   };
 
 } // LV namespace
