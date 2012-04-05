@@ -330,6 +330,8 @@ void visual_cpu_initialize ()
 #if defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
 	int mib[2], ncpu;
 	visual_size_t len;
+#elif defined(VISUAL_OS_WIN32)
+	SYSTEM_INFO system_info;
 #endif
 
 	visual_mem_set (&__lv_cpu_caps, 0, sizeof (VisCPU));
@@ -385,7 +387,9 @@ void visual_cpu_initialize ()
 	len = sizeof (ncpu);
 	sysctl (mib, 2, &ncpu, &len, NULL, 0);
 	__lv_cpu_caps.nrcpu = ncpu;
-
+#elif defined(VISUAL_OS_WIN32)
+	GetSystemInfo (&system_info);
+	__lv_cpu_caps.nrcpu = system_info.dwNumberOfProcessors;
 #else
 	__lv_cpu_caps.nrcpu = 1;
 #endif
