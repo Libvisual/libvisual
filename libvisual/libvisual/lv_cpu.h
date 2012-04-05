@@ -63,7 +63,6 @@ struct _VisCPU {
 	int		x86cpuType;		/**< The x86 cpu family type. */
 	int		cacheline;		/**< The size of the cacheline. */
 
-	int		hasTSC;			/**< The CPU has the tsc feature. */
 	int		hasMMX;			/**< The CPU has the mmx feature. */
 	int		hasMMX2;		/**< The CPU has the mmx2 feature. */
 	int		hasSSE;			/**< The CPU has the sse feature. */

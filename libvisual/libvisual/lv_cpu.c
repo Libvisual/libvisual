@@ -410,7 +410,6 @@ void visual_cpu_initialize ()
 		    __lv_cpu_caps.x86cpuType = 8 + ((regs2[0] >> 20) & 255); /* use extended family (P4, IA64) */
 
 		/* general feature flags */
-		__lv_cpu_caps.hasTSC  = (regs2[3] & (1 << 8  )) >>  8; /* 0x0000010 */
 		__lv_cpu_caps.hasMMX  = (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
 		__lv_cpu_caps.hasSSE  = (regs2[3] & (1 << 25 )) >> 25; /* 0x2000000 */
 		__lv_cpu_caps.hasSSE2 = (regs2[3] & (1 << 26 )) >> 26; /* 0x4000000 */
@@ -455,7 +454,6 @@ void visual_cpu_initialize ()
 #endif /* VISUAL_ARCH_POWERPC */
 
 	/* Synchronizing enabled flags with has flags */
-	__lv_cpu_caps.enabledTSC	= __lv_cpu_caps.hasTSC;
 	__lv_cpu_caps.enabledMMX	= __lv_cpu_caps.hasMMX;
 	__lv_cpu_caps.enabledMMX2	= __lv_cpu_caps.hasMMX2;
 	__lv_cpu_caps.enabledSSE	= __lv_cpu_caps.hasSSE;
@@ -474,7 +472,6 @@ void visual_cpu_initialize ()
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: cacheline %d", __lv_cpu_caps.cacheline);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: TSC %d", __lv_cpu_caps.hasTSC);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX %d", __lv_cpu_caps.hasMMX);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX2 %d", __lv_cpu_caps.hasMMX2);
 	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE %d", __lv_cpu_caps.hasSSE);
@@ -499,14 +496,6 @@ VisCPU *visual_cpu_get_caps ()
 		return NULL;
 
 	return &__lv_cpu_caps;
-}
-
-int visual_cpu_get_tsc ()
-{
-	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
-
-	return __lv_cpu_caps.enabledTSC;
 }
 
 int visual_cpu_get_mmx ()

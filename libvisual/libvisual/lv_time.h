@@ -293,42 +293,6 @@ int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
 /* FIXME: does this work everywhere (x86) ? Check the cycle.h that can be found in FFTW,
  * also check liboil it's profile header: add powerpc support */
 
-/**
- * This function can be used to retrieve the real time stamp counter. This function
- * will not check if timestamping is around, the reason for this is because it will make
- * the timing less reliable since checking for timestamping gives overhead. You
- * must make arrangments for this.
- *
- * @see visual_cpu_get_tsc
- *
- * @param lo The lower 32 bits of the timestmap.
- * @param hi The higher 32 bits of the timestamp.
- *
- * @return Nothing.
- */
-static inline void visual_timer_tsc_get (uint32_t *lo, uint32_t *hi)
-{
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	__asm __volatile
-		("\n\t cpuid"
-		 "\n\t rdtsc"
-		 "\n\t movl %%edx, %0"
-		 "\n\t movl %%eax, %1"
-		 : "=r" (*hi), "=r" (*lo)
-		 :: "memory");
-#endif
-}
-
-/* FIXME use uint64_t here, make sure type exists */
-static inline uint64_t visual_timer_tsc_get_returned (void)
-{
-	uint32_t lo, hi;
-
-	visual_timer_tsc_get (&lo, &hi);
-
-	return ((uint64_t) hi << 32) | lo;
-}
-
 #define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)
 
 VISUAL_END_DECLS
