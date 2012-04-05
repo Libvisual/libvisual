@@ -758,7 +758,7 @@ int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, co
 	/* Reset the VisAudioSamplePoolChannel data */
 	channel->samples = visual_ringbuffer_new ();
 
-	visual_time_set (&channel->samples_timeout, 1, 0); /* FIXME not safe against time screws */
+	visual_time_set (&channel->samples_timeout, 1, 0); /* FIXME not safe against time skews */
 	channel->channelid = visual_strdup (channelid);
 	channel->factor = 1.0;
 

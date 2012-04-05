@@ -341,8 +341,8 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
          * on most architectures, so that won't do for now, maybe when we can lock (for threading)
          * we can look into that
          */
-        usec_elapsed = ((double) elapsed.sec) * VISUAL_USEC_PER_SEC + elapsed.usec;
-        usec_morph = ((double) morph->morphtime.sec) * VISUAL_USEC_PER_SEC + morph->morphtime.usec;
+        usec_elapsed = ((double) elapsed.sec) * VISUAL_USEC_PER_SEC + (elapsed.nsec / VISUAL_NSEC_PER_USEC);
+        usec_morph = ((double) morph->morphtime.sec) * VISUAL_USEC_PER_SEC + (morph->morphtime.nsec / VISUAL_NSEC_PER_USEC);
 
         morph->rate = usec_elapsed / usec_morph;
 

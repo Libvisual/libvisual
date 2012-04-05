@@ -776,7 +776,7 @@ int visual_bin_switch_set_time (VisBin *bin, long sec, long usec)
 {
 	visual_return_val_if_fail (bin != NULL, -1);
 
-	visual_time_set (&bin->morphtime, sec, usec);
+	visual_time_set (&bin->morphtime, sec, usec * VISUAL_NSEC_PER_USEC);
 
 	return 0;
 }

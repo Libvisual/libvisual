@@ -35,8 +35,11 @@
 
 VISUAL_BEGIN_DECLS
 
+#define VISUAL_NSEC_PER_SEC	1000000000
 #define VISUAL_USEC_PER_SEC	1000000
 #define VISUAL_MSEC_PER_SEC	1000
+#define VISUAL_NSEC_PER_MSEC	1000000
+#define VISUAL_NSEC_PER_USEC	1000
 
 #define VISUAL_TIME(obj)				(VISUAL_CHECK_CAST ((obj), VisTime))
 #define VISUAL_TIMER(obj)				(VISUAL_CHECK_CAST ((obj), VisTimer))
@@ -50,7 +53,7 @@ typedef struct _VisTimer VisTimer;
 struct _VisTime {
 	VisObject object;     /**< The VisObject data. */
 	long      sec;        /**< seconds. */
-	long      usec;       /**< microseconds. */
+	long      nsec;       /**< nanoseconds. */
 };
 
 /**
@@ -294,6 +297,8 @@ int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
  * also check liboil it's profile header: add powerpc support */
 
 #define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)
+
+void visual_time_initialize (void);
 
 VISUAL_END_DECLS
 

@@ -269,7 +269,7 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	visual_time_difference (&difftime, &priv->oldtime, &curtime);
 
-	timemilli = difftime.sec * 1000 + difftime.usec / 1000;
+	timemilli = visual_time_get_msecs (&difftime);
 
 	priv->tl.timeStamp += timemilli;
 

@@ -133,6 +133,9 @@ namespace LV
       /* Initialize CPU-accelerated graphics functions */
       visual_alpha_blend_initialize ();
 
+      /* Initialize high-resolution timer system */
+      visual_time_initialize ();
+
       /* Initialize Thread system */
       visual_thread_initialize ();
 
