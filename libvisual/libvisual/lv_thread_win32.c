@@ -23,6 +23,7 @@
 #include "lv_thread.h"
 #include "lv_common.h"
 #include "gettext.h"
+#include <windows.h>
 
 struct _VisThread {
     HANDLE thread;
@@ -57,6 +58,7 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
     // FIXME: What to do with the joinable flag?
 
     VisThread *thread;
+
     visual_return_val_if_fail (visual_thread_is_initialized (), NULL);
 
     thread = visual_mem_new0 (VisThread, 1);
@@ -76,7 +78,7 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 
 int visual_thread_free (VisThread *thread)
 {
-    visual_return_val_if_fail (visual_thread_is_initialized (), NULL);
+    visual_return_val_if_fail (visual_thread_is_initialized (), -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
     visual_return_val_if_fail (thread != NULL, -VISUAL_ERROR_THREAD_NULL);
 
     return visual_mem_free (thread);
