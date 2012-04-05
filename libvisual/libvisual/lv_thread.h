@@ -19,12 +19,21 @@
 
 VISUAL_BEGIN_DECLS
 
+/**
+ * The VisThread data structure and the VisThread subsystem is a
+ * wrapper system for native threading implementations.
+ */
 typedef struct _VisThread VisThread;
+
+/**
+ * The VisMutex data structure and the VisMutex subsystem is a wrapper
+ * system for native thread locking implementations.
+ */
 typedef struct _VisMutex VisMutex;
 
 /**
- * The function defination for a function that forms the base of a new VisThread when
- * visual_thread_create is used.
+ * The function defination for a function that forms the base of a new
+ * VisThread when visual_thread_create is used.
  *
  * @see visual_thread_create
  *
@@ -33,36 +42,6 @@ typedef struct _VisMutex VisMutex;
  * @return Pointer to the data when a thread is joined.
  */
 typedef void *(*VisThreadFunc)(void *data);
-
-/**
- * The VisThread data structure and the VisThread subsystem is a wrapper system for native
- * threading implementations.
- */
-struct _VisThread {
-#ifdef VISUAL_HAVE_THREADS
-#ifdef VISUAL_THREAD_MODEL_POSIX
-	pthread_t thread;		/**< Private used for the pthread implementation. */
-#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
-	HANDLE thread;
-	DWORD threadId;
-#endif
-#endif /* VISUAL_HAVE_THREADS */
-};
-
-/**
- * The VisMutex data structure and the VisMutex subsystem is a wrapper system for native
- * thread locking implementations.
- */
-struct _VisMutex {
-#ifdef VISUAL_HAVE_THREADS
-#ifdef VISUAL_THREAD_MODEL_POSIX
-	pthread_mutex_t mutex;		/**< Private used for the pthreads implementation. */
-#elif defined(VISUAL_THREAD_MODEL_WIN32) /* !VISUAL_THREAD_MODEL_POSIX */
-	HANDLE mutex;
-#endif
-#endif /* VISUAL_HAVE_THREADS */
-};
-
 
 /**
  * Initializes the VisThread subsystem. This function needs to be
@@ -80,26 +59,6 @@ int visual_thread_initialize (void);
  * @return TRUE if initialized, FALSE if not initialized.
  */
 int visual_thread_is_initialized (void);
-
-
-/**
- * Enable or disable threading support. This can be used to disallow
- * threads, which might be needed in some environments.
- *
- * @see visual_thread_is_enabled
- *
- * @param enabled TRUE to enable threads, FALSE to disable threads.
- */
-void visual_thread_enable (int enabled);
-
-/**
- * Request if threads are enabled or not. This function should not be
- * confused with visual_thread_is_supported().
- *
- * @return TRUE if enabled, FALSE if disabled.
- */
-int visual_thread_is_enabled (void);
-
 
 /**
  * Is used to check if threading is supported. When threading is used

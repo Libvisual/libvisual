@@ -80,7 +80,6 @@ SET(libvisual_SOURCES
   lv_cpu.c
   lv_time.c
   lv_error.c
-  lv_thread.c
   lv_object.c
   lv_config.c
   lv_ringbuffer.c
@@ -131,6 +130,14 @@ IF(NOT VISUAL_OS_WIN32)
 ELSE(NOT VISUAL_OS_WIN32)
   LIST(APPEND libvisual_SOURCES lv_module_win32.cpp)
 ENDIF(NOT VISUAL_OS_WIN32)
+
+IF(VISUAL_THREAD_MODEL_POSIX)
+  LIST(APPEND libvisual_SOURCES lv_thread_posix.c)
+ELSEIF(VISUAL_THREAD_MODEL_WIN32)
+  LIST(APPEND libvisual_SOURCES lv_thread_win32.c)
+ELSE(VISUAL_THREAD_MODEL_POSIX)
+  LIST(APPEND libvisual_SOURCES lv_thread_disabled.c)
+ENDIF(VISUAL_THREAD_MODEL_POSIX)
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
 
