@@ -169,46 +169,41 @@ namespace LV {
 
   void PluginRegistry::Impl::add_plugins_from_dir (PluginList& list, std::string const& dir)
   {
-      int cnt = 0;
-
 #if defined(VISUAL_OS_WIN32)
-      TCHAR szDir[MAX_PATH+1];
-      std::snprintf (szDir, MAX_PATH, "%s/*", dir);
+      std::string pattern = dir + "/*";
 
-      WIN32_FIND_DATA FileData;
-      HANDLE hList = FindFirstFile (szDir, &FileData);
+      WIN32_FIND_DATA file_data;
+      HANDLE hList = FindFirstFile (pattern.c_str (), &file_data);
 
       if (hList == INVALID_HANDLE_VALUE) {
           FindClose (hList);
-          return 0;
+          return;
       }
 
-      visual_mem_set (temp, 0, sizeof (temp));
+      bool finished = false;
 
-      bool fFinished = false;
-
-      while (!fFinished) {
+      while (!finished) {
           VisPluginRef **ref = NULL;
 
-          if (!(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-              snprintf (temp, 1023, "%s/%s", dir, FileData.cFileName);
-              std::size_t len = strlen (temp);
+          if (!(file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+              std::string full_path = dir + "/" + file_data.cFileName;
 
-              if (len > 5 && (strncmp (&temp[len - 4], ".dll", 4) == 0))
-                  ref = visual_plugin_get_references (temp, &cnt);
+              if (str_has_suffix (full_path, ".dll")) {
+                  int count = 0;
+                  ref = visual_plugin_get_references (full_path.c_str (), &count);
 
-              if (ref != NULL) {
-                  for (int i = 0; i < cnt; i++)
-                      visual_list_add (list, ref[i]);
+                  if (ref) {
+                      for (int i = 0; i < count; i++)
+                          list.push_back (ref[i]);
 
-                  /* This is the pointer pointer pointer, not a ref itself */
-                  visual_mem_free (ref);
+                      visual_mem_free (ref);
+                  }
               }
           }
 
-          if (!FindNextFile (hList, &FileData)) {
+          if (!FindNextFile (hList, &file_data)) {
               if (GetLastError () == ERROR_NO_MORE_FILES) {
-                  fFinished = TRUE;
+                  finished = true;
               }
           }
       }
@@ -230,6 +225,7 @@ namespace LV {
           std::string full_path = dir + "/" + namelist[i]->d_name;
 
           if (str_has_suffix (full_path, ".so")) {
+              int count = 0;
               VisPluginRef** ref = visual_plugin_get_references (full_path.c_str (), &cnt);
 
               if (ref) {
