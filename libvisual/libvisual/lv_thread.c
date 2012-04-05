@@ -26,18 +26,6 @@
 #include "lv_common.h"
 #include "gettext.h"
 
-#if defined(VISUAL_OS_WIN32)
-#include <windows.h>
-#endif
-
-#include "lv_log.h"
-#include "lv_thread.h"
-
-/* FIXME add more threading backends here:
- * native windows	(says nuff)
- */
-
-
 typedef struct _ThreadFuncs ThreadFuncs;
 
 typedef VisThread *(*ThreadFuncCreate)(VisThreadFunc func, void *data, int joinable);
@@ -412,10 +400,7 @@ static int mutex_unlock_posix (VisMutex *mutex)
 	return VISUAL_OK;
 }
 
-#endif // VISUAL_THREAD_MODEL_POSIX
-
-/* Windows32 implementation */
-#ifdef VISUAL_THREAD_MODEL_WIN32
+#elif defined(VISUAL_THREAD_MODEL_WIN32)
 
 static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joinable)
 {
@@ -508,107 +493,4 @@ static int mutex_unlock_win32 (VisMutex *mutex)
     return 0;
 }
 
-#endif /* VISUAL_THREAD_MODEL_WIN32 */
-
-/* GThread implementation */
-#ifdef VISUAL_THREAD_MODEL_GTHREAD2
-
-static VisThread *thread_create_gthread (VisThreadFunc func, void *data, int joinable)
-{
-	VisThread *thread = NULL;
-
-	thread = visual_mem_new0 (VisThread, 1);
-
-	thread->thread = g_thread_create (func, data, joinable, NULL);
-
-	if (thread->thread == NULL) {
-		visual_log (VISUAL_LOG_ERROR, _("Error while creating thread"));
-
-		visual_mem_free (thread);
-
-		return NULL;
-	}
-
-	return thread;
-}
-
-static int thread_free_gthread (VisThread *thread)
-{
-	return visual_mem_free (thread);
-}
-
-static void *thread_join_gthread (VisThread *thread)
-{
-	gpointer result;
-
-	visual_return_val_if_fail (thread->thread != NULL, NULL);
-
-	result = g_thread_join (thread->thread);
-
-	return result;
-}
-
-static void thread_exit_gthread (void *retval)
-{
-	g_thread_exit (retval);
-}
-
-static void thread_yield_gthread ()
-{
-	g_thread_yield ();
-}
-
-
-static VisMutex *mutex_new_gthread ()
-{
-	VisMutex *mutex;
-
-	mutex = visual_mem_new0 (VisMutex, 1);
-
-	mutex->static_mutex_used = FALSE;
-
-	mutex->mutex = g_mutex_new ();
-
-	return mutex;
-}
-
-static int mutex_free_gthread (VisMutex *mutex)
-{
-	visual_return_val_if_fail (mutex->mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
-
-	g_mutex_free (mutex->mutex);
-
-	return visual_mem_free (mutex);
-}
-
-static int mutex_lock_gthread (VisMutex *mutex)
-{
-	if (mutex->static_mutex_used)
-		g_static_mutex_lock (&mutex->static_mutex);
-	else
-		g_mutex_lock (mutex->mutex);
-
-	return VISUAL_OK;
-}
-
-static int mutex_trylock_gthread (VisMutex *mutex)
-{
-	if (mutex->static_mutex_used)
-		g_static_mutex_trylock (&mutex->static_mutex);
-	else
-		g_mutex_trylock (mutex->mutex);
-
-	return VISUAL_OK;
-}
-
-static int mutex_unlock_gthread (VisMutex *mutex)
-{
-	if (mutex->static_mutex_used)
-		g_static_mutex_unlock (&mutex->static_mutex);
-	else
-		g_mutex_unlock (mutex->mutex);
-
-	return VISUAL_OK;
-}
-
-#endif // VISUAL_THREAD_MODEL_GTHREAD2
+#endif /* VISUAL_THREAD_MODEL_POSIX */
