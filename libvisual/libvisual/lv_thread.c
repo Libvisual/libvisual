@@ -62,7 +62,6 @@ struct _ThreadFuncs {
 
 	MutexFuncNew		mutex_new;
 	MutexFuncFree		mutex_free;
-	MutexFuncInit		mutex_init;
 	MutexFuncLock		mutex_lock;
 	MutexFuncTrylock	mutex_trylock;
 	MutexFuncUnlock		mutex_unlock;
@@ -84,7 +83,6 @@ static void thread_yield_posix (void);
 
 static VisMutex *mutex_new_posix (void);
 static int mutex_free_posix (VisMutex *mutex);
-static int mutex_init_posix (VisMutex *mutex);
 static int mutex_lock_posix (VisMutex *mutex);
 static int mutex_trylock_posix (VisMutex *mutex);
 static int mutex_unlock_posix (VisMutex *mutex);
@@ -100,7 +98,6 @@ static void thread_yield_win32 (void);
 
 static VisMutex *mutex_new_win32 (void);
 static int mutex_free_win32 (VisMutex *mutex);
-static int mutex_init_win32 (VisMutex *mutex);
 static int mutex_lock_win32 (VisMutex *mutex);
 static int mutex_trylock_win32 (VisMutex *mutex);
 static int mutex_unlock_win32 (VisMutex *mutex);
@@ -116,7 +113,6 @@ static void thread_yield_gthread (void);
 
 static VisMutex *mutex_new_gthread (void);
 static int mutex_free_gthread (VisMutex *mutex);
-static int mutex_init_gthread (VisMutex *mutex);
 static int mutex_lock_gthread (VisMutex *mutex);
 static int mutex_trylock_gthread (VisMutex *mutex);
 static int mutex_unlock_gthread (VisMutex *mutex);
@@ -139,7 +135,6 @@ int visual_thread_initialize ()
 
 	__lv_thread_funcs.mutex_new = mutex_new_posix;
 	__lv_thread_funcs.mutex_free = mutex_free_posix;
-	__lv_thread_funcs.mutex_init = mutex_init_posix;
 	__lv_thread_funcs.mutex_lock = mutex_lock_posix;
 	__lv_thread_funcs.mutex_trylock = mutex_trylock_posix;
 	__lv_thread_funcs.mutex_unlock = mutex_unlock_posix;
@@ -156,7 +151,6 @@ int visual_thread_initialize ()
 
 	__lv_thread_funcs.mutex_new = mutex_new_win32;
 	__lv_thread_funcs.mutex_free = mutex_free_win32;
-	__lv_thread_funcs.mutex_init = mutex_init_win32;
 	__lv_thread_funcs.mutex_lock = mutex_lock_win32;
 	__lv_thread_funcs.mutex_trylock = mutex_trylock_win32;
 	__lv_thread_funcs.mutex_unlock = mutex_unlock_win32;
@@ -173,7 +167,6 @@ int visual_thread_initialize ()
 
 	__lv_thread_funcs.mutex_new = mutex_new_gthread;
 	__lv_thread_funcs.mutex_free = mutex_free_gthread;
-	__lv_thread_funcs.mutex_init = mutex_init_gthread;
 	__lv_thread_funcs.mutex_lock = mutex_lock_gthread;
 	__lv_thread_funcs.mutex_trylock = mutex_trylock_gthread;
 	__lv_thread_funcs.mutex_unlock = mutex_unlock_gthread;
@@ -278,17 +271,6 @@ int visual_mutex_free (VisMutex *mutex)
 	}
 
 	return __lv_thread_funcs.mutex_free (mutex);
-}
-
-int visual_mutex_init (VisMutex *mutex)
-{
-	visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
-
-	visual_return_val_if_fail (visual_thread_is_initialized (), -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
-	visual_return_val_if_fail (visual_thread_is_supported (), -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
-	visual_return_val_if_fail (visual_thread_is_enabled (), -VISUAL_ERROR_THREAD_NOT_ENABLED);
-
-	return __lv_thread_funcs.mutex_init (mutex);
 }
 
 int visual_mutex_lock (VisMutex *mutex)
@@ -406,15 +388,6 @@ static int mutex_free_posix (VisMutex *mutex)
 	return visual_mem_free (mutex);
 }
 
-static int mutex_init_posix (VisMutex *mutex)
-{
-	visual_mem_set (mutex, 0, sizeof (VisMutex));
-
-	pthread_mutex_init (&mutex->mutex, NULL);
-
-	return VISUAL_OK;
-}
-
 static int mutex_lock_posix (VisMutex *mutex)
 {
 	if (pthread_mutex_lock (&mutex->mutex) < 0)
@@ -459,15 +432,6 @@ static VisThread *thread_create_win32 (VisThreadFunc func, void *data, int joina
 
 		return NULL;
 	}
-/*
-	printf("Waiting for thread to finish...\n");
-	if (WaitForSingleObject(a_thread, INFINITE) != WAIT_OBJECT_0) {
-		perror("Thread join failed");
-		exit(EXIT_FAILURE);
-	}
-*/
-	// Retrieve the code returned by the thread.
-	//     GetExitCodeThread(a_thread, &thread_result);
 
 	return thread;
 }
@@ -488,6 +452,7 @@ static void *thread_join_win32 (VisThread *thread)
 		return NULL;
 	}
 
+	// FIXME: This is wrong (see thread_exit_win32() comments)
 	GetExitCodeThread(thread->thread, &thread_result);
 
 	result = (void *) thread_result;
@@ -497,40 +462,49 @@ static void *thread_join_win32 (VisThread *thread)
 
 static void thread_exit_win32 (void *retval)
 {
+    // FIXME: Windows Threads can only return an integer exit code
+    ExitThread (0);
 }
 
 static void thread_yield_win32 ()
 {
+    SwitchToThread ();
 }
-
 
 static VisMutex *mutex_new_win32 ()
 {
+    VisMutex *mutex;
+
+    mutex = visual_mem_new0 (VisMutex, 1);
+
+    mutex->mutex = CreateMutex (NULL, FALSE, NULL);
+
     return 0;
 }
 
 static int mutex_free_win32 (VisMutex *mutex)
 {
-    return 0;
-}
+    CloseHandle (mutex->mutex);
 
-static int mutex_init_win32 (VisMutex *mutex)
-{
-    return 0;
+    return visual_mem_free (mutex);
 }
 
 static int mutex_lock_win32 (VisMutex *mutex)
 {
+    WaitForSingleObject (mutex->mutex, INFINITE);
+
     return 0;
 }
 
 static int mutex_trylock_win32 (VisMutex *mutex)
 {
-    return 0;
+    return WaitForSingleObject (mutex->mutex, 0) == WAIT_OBJECT_0;
 }
 
 static int mutex_unlock_win32 (VisMutex *mutex)
 {
+    ReleaseMutex (mutex->mutex);
+
     return 0;
 }
 
@@ -605,15 +579,6 @@ static int mutex_free_gthread (VisMutex *mutex)
 	g_mutex_free (mutex->mutex);
 
 	return visual_mem_free (mutex);
-}
-
-static int mutex_init_gthread (VisMutex *mutex)
-{
-	mutex->static_mutex_used = TRUE;
-
-	g_static_mutex_init (&mutex->static_mutex);
-
-	return VISUAL_OK;
 }
 
 static int mutex_lock_gthread (VisMutex *mutex)
