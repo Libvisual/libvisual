@@ -75,7 +75,7 @@ struct _VisBin {
 	int		 morphstepsdone;
 	float		 morphrate;
 	VisMorphMode	 morphmode;
-	VisTime		 morphtime;
+	VisTime			*morphtime;
 
 	int		 depthpreferred;	/* Prefered depth, highest or lowest */
 	int		 depthflag;		/* Supported depths */

@@ -33,272 +33,239 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
-#define VISUAL_NSEC_PER_SEC	1000000000
-#define VISUAL_USEC_PER_SEC	1000000
-#define VISUAL_MSEC_PER_SEC	1000
-#define VISUAL_NSEC_PER_MSEC	1000000
-#define VISUAL_NSEC_PER_USEC	1000
-
-#define VISUAL_TIME(obj)				(VISUAL_CHECK_CAST ((obj), VisTime))
-#define VISUAL_TIMER(obj)				(VISUAL_CHECK_CAST ((obj), VisTimer))
-
-typedef struct _VisTime VisTime;
-typedef struct _VisTimer VisTimer;
+#define VISUAL_NSEC_PER_SEC    1000000000
+#define VISUAL_USEC_PER_SEC    1000000
+#define VISUAL_MSEC_PER_SEC    1000
+#define VISUAL_NSEC_PER_MSEC   1000000
+#define VISUAL_NSEC_PER_USEC   1000
 
 /**
  * The VisTime structure can contain seconds and microseconds for timing purpose.
  */
-struct _VisTime {
-	VisObject object;     /**< The VisObject data. */
-	long      sec;        /**< seconds. */
-	long      nsec;       /**< nanoseconds. */
-};
 
-/**
- * The VisTimer structure is used for timing using the visual_timer_* methods.
- */
-struct _VisTimer {
-	VisObject	object;		/**< The VisObject data. */
-	VisTime		start;		/**< Private entry to indicate the starting point,
-					 * Shouldn't be read for reliable starting point because
-					 * the visual_timer_continue method changes it's value. */
-	VisTime		stop;		/**< Private entry to indicate the stopping point. */
+#ifdef __cplusplus
 
-	int		active;		/**< Private entry to indicate if the timer is currently active or inactive. */
-};
+#include <cmath>
+#include <libvisual/lv_scoped_ptr.hpp>
 
+namespace LV {
 
-/**
- * Creates a new VisTime structure.
- *
- * @return A newly allocated VisTime.
- */
-VisTime *visual_time_new (void);
+  class Time
+  {
+  public:
 
-/**
- * Initializes a VisTime, this should not be used to reset a VisTime.
- * The resulting initialized VisTime is a valid VisObject even if it was not allocated.
- * Keep in mind that VisTime structures that were created by visual_time_new() should not
- * be passed to visual_time_init().
- *
- * @see visual_time_new
- *
- * @param time_ Pointer to the VisTime which needs to be initialized.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIME_NULL on failure.
- */
-int visual_time_init (VisTime *time_);
+      //! seconds
+      long sec;
 
-int visual_time_get (VisTime *time_);
+      //! nanoseconds
+      long nsec;
 
-/**
- * Loads the current time into the VisTime structure.
- *
- * @param time_ Pointer to the VisTime in which the current time needs to be set.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIME_NULL on failure.
- */
+      explicit Time (long sec_ = 0, long nsec_ = 0)
+          : sec  (sec_)
+          , nsec (nsec_)
+      {}
 
-/**
- * Sets the time by sec, usec in a VisTime structure.
- *
- * @param time_ Pointer to the VisTime in which the time is set.
- * @param sec The seconds.
- * @param usec The microseconds.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIME_NULL on failure.
- */
-int visual_time_set (VisTime *time_, long sec, long usec);
+      static Time from_secs (double secs)
+      {
+          double int_part, frac_part;
+          frac_part = std::modf (secs, &int_part);
 
-/**
- * Calculates the difference between two VisTime structures.
- *
- * @param dest Pointer to the VisTime that contains the difference between time1 and time2.
- * @param time1 Pointer to the first VisTime.
- * @param time2 Pointer to the second VisTime from which the first is substracted to generate a result.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIME_NULL on failure.
- */
-int visual_time_difference (VisTime *dest, VisTime *time1, VisTime *time2);
+          return Time (int_part, frac_part * VISUAL_NSEC_PER_SEC);
+      }
 
-/**
- * Checks if a VisTime is later than another VisTime.
- *
- * @param time_ Pointer to the VisTime for which is checked whether it's later or not than the other.
- * @param past Pointer to the VisTime that acts as the past time source data.
- *
- * @return TRUE if past, FALSE if not on success, -VISUAL_ERROR_TIME_NULL on failure.
- */
-int visual_time_past (VisTime *time_, VisTime *past);
+      static Time from_msecs (uint64_t msecs)
+      {
+          return Time (msecs / VISUAL_MSEC_PER_SEC,
+                       (msecs % VISUAL_MSEC_PER_SEC) * VISUAL_NSEC_PER_MSEC);
+      }
 
-/**
- * Copies ine VisTime into another.
- *
- * @param dest Pointer to the destination VisTime in which the source VisTime is copied.
- * @param src Pointer to the source VisTime that is copied to the destination VisTime.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIME_NULL on failure.
- */
-int visual_time_copy (VisTime *dest, VisTime *src);
+      static Time from_usecs (uint64_t usecs)
+      {
+          return Time (usecs / VISUAL_USEC_PER_SEC,
+                       (usecs % VISUAL_USEC_PER_SEC) * VISUAL_NSEC_PER_USEC);
+      }
 
-/**
- * Sleeps an certain amount of microseconds.
- *
- * @param microseconds The amount of microseconds we're going to sleep. To sleep a certain amount of
- *	seconds you can call this function with visual_time_usleep (VISUAL_USEC_PER_SEC * seconds).
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIME_NO_USLEEP or -1 on failure.
- */
-int visual_time_usleep (unsigned long microseconds);
+      static Time now ();
 
-/**
- * Extract the milliseconds from a VisTime
- *
- * @param The VisTime from which milliseconds are to be extracted from
- *
- * @return Milliseconds on success, -1 on failure
- */
-long visual_time_get_msecs (VisTime *time_);
+      friend Time operator- (Time const& lhs, Time const& rhs)
+      {
+          Time diff (lhs);
+          diff -= rhs;
 
-/**
- * Sets the time by msecs in a VisTime structure.
- *
- * @param time_ Pointer to the VisTime in which the time is set.
- * @param msecs The milliseconds.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIME_NULL on failure
- */
-int visual_time_set_from_msecs (VisTime *time_, long msec);
+          return diff;
+      }
 
-/**
- * Creates a new VisTimer structure.
- *
- * @return A newly allocated VisTimer.
- */
-VisTimer *visual_timer_new (void);
+      Time& operator-= (Time const& rhs)
+      {
+          sec  -= rhs.sec;
+          nsec -= rhs.nsec;
 
-/**
- * Initializes a VisTimer, this should not be used to reset a VisTimer.
- * The resulting initialized VisTimer is a valid VisObject even if it was not allocated with visual_timer_new().
- * Keep in mind that VisTimer structures that were created by visual_timer_new() should not
- * be passed to visual_timer_init().
- *
- * @see visual_timer_new
- *
- * @param timer Pointer to the VisTimer which needs to be initialized.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIMER_NULL on failure.
- */
-int visual_timer_init (VisTimer *timer);
+          if (nsec < 0) {
+              sec--;
+              nsec += VISUAL_NSEC_PER_SEC;
+          }
 
-/**
- * Resets a VisTimer.
- *
- * @param timer Pointer to the VisTimer that is to be reset.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIMER_NULL on failure.
- */
-int visual_timer_reset (VisTimer *timer);
+          return *this;
+      }
 
-/**
- * Checks if the timer is active.
- *
- * @param timer Pointer to the VisTimer of which we want to know if it's active.
- *
- * @return TRUE or FALSE, -VISUAL_ERROR_TIMER_NULL on failure.
- */
-int visual_timer_is_active (VisTimer *timer);
+      friend bool operator== (Time const& lhs, Time const& rhs)
+      {
+          return lhs.sec == rhs.sec && lhs.nsec == rhs.nsec;
+      }
 
-/**
- * Starts a timer.
- *
- * @param timer Pointer to the VisTimer in which we start the timer.
- *
- * return VISUAL_OK on success, -VISUAL_ERROR_TIMER_NULL on failure.
- */
-int visual_timer_start (VisTimer *timer);
+      friend bool operator!= (Time const& lhs, Time const& rhs)
+      {
+          return !(lhs == rhs);
+      }
 
-/**
- * Stops a timer.
- *
- * @param timer Pointer to the VisTimer that is stopped.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIMER_NULL on failure.
- */
-int visual_timer_stop (VisTimer *timer);
+      friend bool operator>= (Time const& lhs, Time const& rhs)
+      {
+          return lhs.sec >= rhs.sec;
+      }
 
-/**
- * Continues a stopped timer. The timer needs to be stopped before continueing.
- *
- * @param timer Pointer to the VisTimer that is continued.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIMER_NULL on failure.
- */
-int visual_timer_continue (VisTimer *timer);
+      friend bool operator<= (Time const& lhs, Time const& rhs)
+      {
+          return rhs >= lhs;
+      }
 
-/**
- * Retrieve the amount of time passed since the timer has started.
- *
- * @param timer Pointer to the VisTimer from which we want to know the amount of time passed.
- * @param time_ Pointer to the VisTime in which we put the amount of time passed.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
- */
-int visual_timer_elapsed (VisTimer *timer, VisTime *time_);
+      friend bool operator> (Time const& lhs, Time const& rhs)
+      {
+          return (lhs.sec > rhs.sec) || (lhs.sec == rhs.sec && lhs.nsec > rhs.nsec);
+      }
 
-/**
- * Returns the amount of milliseconds passed since the timer has
- * started.  Be careful not to confuse milliseconds with microseconds.
- *
- * @see visual_timer_elapsed_usecs
- *
- * @param timer Pointer to the VisTimer from which we want to know the amount of milliseconds passed since activation.
- *
- * @return The amount of milliseconds passed, or -1 on error, this function will fail if your system goes back in time.
- */
-int visual_timer_elapsed_msecs (VisTimer *timer);
+      friend bool operator< (Time const& lhs, Time const& rhs)
+      {
+          return rhs > lhs;
+      }
 
-/**
- * Returns the amount of microseconds passed since the timer has
- * started.  Be careful not to confuse milliseconds with microseconds.
- *
- * @see visual_timer_elapsed_msecs
- *
- * @param timer Pointer to the VisTimer from which we want to know the amount of microseconds passed since activation.
- *
- * @return The amount of microseconds passed, or -1 on error, this function will fail if your system goes back in time.
- */
-int visual_timer_elapsed_usecs (VisTimer *timer);
+      //! Converts the time to seconds
+      double to_secs () const
+      {
+          return sec + nsec * (1.0 / VISUAL_NSEC_PER_SEC);
+      }
 
-/**
- * Checks if the timer has passed a certain age.
- *
- * @param timer Pointer to the VisTimer which we check for age.
- * @param time_ Pointer to the VisTime containing the age we check against.
- *
- * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL or -VISUAL_ERROR_TIME_NULL on failure.
- */
-int visual_timer_has_passed (VisTimer *timer, VisTime *time_);
+      //! Converts the time to milliseconds
+      uint64_t to_msecs () const
+      {
+          return sec * VISUAL_MSEC_PER_SEC + nsec / VISUAL_NSEC_PER_MSEC;
+      }
 
-/**
- * Checks if the timer has passed a certain age by values.
- *
- * @param timer Pointer to the VisTimer which we check for age.
- * @param sec The number of seconds we check against.
- * @param usec The number of microseconds we check against.
- *
- * @return TRUE on passed, FALSE if not passed, -VISUAL_ERROR_TIMER_NULL on failure.
- */
-int visual_timer_has_passed_by_values (VisTimer *timer, long sec, long usec);
+      //! Converts the time to microseconds
+      uint64_t to_usecs () const
+      {
+          return sec * VISUAL_USEC_PER_SEC + nsec / VISUAL_NSEC_PER_USEC;
+      }
 
-/* FIXME: does this work everywhere (x86) ? Check the cycle.h that can be found in FFTW,
- * also check liboil it's profile header: add powerpc support */
+      // FIXME: Find a better place to put this
+      static void init ();
+  };
 
-#define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)
+  class Timer
+  {
+  public:
 
-void visual_time_initialize (void);
+      //! Creates a new Timer
+      Timer ();
+
+      ~Timer ();
+
+      // FIXME: Timer should be made non-copyable
+      Timer (Timer const& timer);
+      Timer& operator= (Timer const& rhs);
+
+      //! Checks if the timer is active.
+      bool is_active () const;
+
+      //! Resets the timer
+      void reset ();
+
+      //! Starts the timer.
+      void start ();
+
+      //! Stops the timer.
+      void stop ();
+
+      Time get_start_time () const;
+
+      Time get_end_time () const;
+
+      //! Returns the length of time since the timer was started
+      Time elapsed () const;
+
+      bool is_past (Time const& age) const;
+
+  private:
+
+      class Impl;
+
+      ScopedPtr<Impl> m_impl;
+  };
+
+  void usleep (uint64_t usecs);
+
+} // LV namespace
+
+#endif /* __cplusplus */
+
+#ifdef __cplusplus
+
+typedef LV::Time  VisTime;
+typedef LV::Timer VisTimer;
+
+#else
+
+typedef struct _VisTime VisTime;
+struct _VisTime;
+
+typedef struct _VisTimer VisTimer;
+struct _VisTimer;
+
+#endif /* __cplusplus */
+
+#define VISUAL_TIME(obj)   (VISUAL_CHECK_CAST ((obj), VisTime))
+#define VISUAL_TIMER(obj)  (VISUAL_CHECK_CAST ((obj), VisTimer))
+
+VISUAL_BEGIN_DECLS
+
+VisTime *visual_time_new  (void);
+VisTime *visual_time_new_now (void);
+VisTime *visual_time_new_with_values (long sec, long nsec);
+void     visual_time_free (VisTime *time_);
+
+void visual_time_set     (VisTime *time_, long sec, long usec);
+void visual_time_copy    (VisTime *dest, VisTime *src);
+void visual_time_get_now (VisTime *time_);
+
+void visual_time_diff    (VisTime *diff, VisTime *time1, VisTime *time2);
+int  visual_time_is_past (VisTime *time_, VisTime *ref);
+
+double   visual_time_to_secs  (VisTime *time_);
+uint64_t visual_time_to_msecs (VisTime *time_);
+uint64_t visual_time_to_usecs (VisTime *time_);
+
+void visual_usleep (uint64_t usecs);
+
+void visual_time_set_from_msecs (VisTime *time_, uint64_t msecs);
+
+VisTimer *visual_timer_new  (void);
+void      visual_timer_free (VisTimer *timer);
+
+void visual_timer_reset     (VisTimer *timer);
+void visual_timer_start     (VisTimer *timer);
+void visual_timer_stop      (VisTimer *timer);
+void visual_timer_resume    (VisTimer *timer);
+int  visual_timer_is_active (VisTimer *timer);
+
+void     visual_timer_elapsed (VisTimer *timer, VisTime *time_);
+uint64_t visual_timer_elapsed_msecs (VisTimer *timer);
+uint64_t visual_timer_elapsed_usecs (VisTimer *timer);
+double   visual_timer_elapsed_secs  (VisTimer *timer);
+
+int visual_timer_is_past  (VisTimer *timer, VisTime *time_);
+int visual_timer_is_past2 (VisTimer *timer, long sec, long nsec);
+
+// FIXME: Remove this
+//#define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)
 
 VISUAL_END_DECLS
 

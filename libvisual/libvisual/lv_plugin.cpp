@@ -368,7 +368,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 VisPluginData *visual_plugin_load (VisPluginRef *ref)
 {
     VisPluginData *plugin;
-    VisTime time_;
+    VisTime *time_;
     VisPluginInfo *pluginfo;
     VisPluginGetInfoFunc get_plugin_info;
 #if defined(VISUAL_OS_WIN32)
@@ -449,8 +449,9 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
     plugin->handle = handle;
 
     /* Now the plugin is set up and ready to be realized, also random seed its random context */
-    visual_time_get (&time_);
-    plugin->random = visual_random_context_new (time_.nsec);
+    time_ = visual_time_new_now ();
+    plugin->random = visual_random_context_new (visual_time_to_usecs (time_));
+    visual_time_free (time_);
 
     return plugin;
 }

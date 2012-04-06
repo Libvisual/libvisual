@@ -167,7 +167,7 @@ int visual_beat_init(VisBeat *beat)
     beat->cfg_smartbeatresetnewsong = TRUE;
     beat->cfg_smartbeatonlysticky = FALSE;
     beat->lastTC = 0;
-    beat->startTC = visual_time_get_now();//clock() / (float)CLOCKS_PER_SEC * 60000;
+    beat->startTC = clock() / (float)CLOCKS_PER_SEC * 60000;
     beat->txt = visual_mem_malloc0(256);
     beat->TCHist = visual_mem_malloc0(beat->TCHistSize*sizeof(VisBeatType));
     beat->smoother = visual_mem_malloc0(beat->smSize * sizeof(int));
@@ -191,6 +191,8 @@ int visual_beat_init(VisBeat *beat)
 static int beat_adv_dtor(VisObject *obj)
 {
     VisBeatAdv *adv = VISUAL_BEAT_ADV(obj);
+
+    visual_time_free (adv->lastDetect);
 
     if(adv->beathistory != NULL)
         visual_mem_free(adv->beathistory);
@@ -229,7 +231,7 @@ int visual_beat_adv_init(VisBeatAdv *adv)
     adv->cfg_max_detect = 200;
     adv->cfg_thick_on_beats = 0;
 
-    visual_time_init(&adv->lastDetect);
+    adv->lastDetect = visual_time_new ();
 
     return VISUAL_OK;
 }
@@ -342,7 +344,7 @@ int visual_beat_reset_adapt(VisBeat *beat)
     beat->predictionLastTC = 0;
     beat->halfCount=0;
     beat->doubleCount=0;
-    beat->lastTC= visual_time_get_now();//clock() / (float)CLOCKS_PER_SEC * 60000;
+    beat->lastTC= clock() / (float)CLOCKS_PER_SEC * 60000;
     beat->TCHistSize = 8;
     beat->predictionBpm=0;
     beat->bestConfidence=0;
@@ -371,14 +373,9 @@ int visual_beat_refine_beat(VisBeat *beat, int isBeat)
     int predicted=FALSE;
     int resyncin=FALSE;
     int resyncout=FALSE;
-    VisTime now;
     clock_t TCNow;
 
-    visual_time_init(&now);
-
-    visual_time_get(&now);
-
-    TCNow = visual_time_get_now();//clock() / (float)CLOCKS_PER_SEC * 60000;
+    TCNow = clock() / (float)CLOCKS_PER_SEC * 60000;
 
     if (isBeat) // Show the beat received from AVS
         beat_slider_step(beat, VISUAL_BEAT_SLIDE_IN, &beat->inSlide);

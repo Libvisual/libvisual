@@ -78,7 +78,6 @@ SET(libvisual_SOURCES
   lv_bmp.c
   lv_param.c
   lv_cpu.c
-  lv_time.c
   lv_error.c
   lv_object.c
   lv_config.c
@@ -103,6 +102,7 @@ SET(libvisual_SOURCES
   lv_plugin_registry.cpp
   lv_rectangle.cpp
   lv_songinfo.cpp
+  lv_time.cpp
   lv_transform.cpp
 
   lv_color_c.cpp
@@ -113,6 +113,7 @@ SET(libvisual_SOURCES
   lv_plugin_registry_c.cpp
   lv_rectangle_c.cpp
   lv_songinfo_c.cpp
+  lv_time_c.cpp
 
   private/lv_video_convert.c
   private/lv_video_fill.c

@@ -62,6 +62,8 @@ static int bin_dtor (VisObject *object)
 	if (bin->privvid != NULL)
 		visual_object_unref (VISUAL_OBJECT (bin->privvid));
 
+	visual_time_free (bin->morphtime);
+
 	bin->actor = NULL;
 	bin->input = NULL;
 	bin->morph = NULL;
@@ -104,7 +106,7 @@ VisBin *visual_bin_new ()
 	bin->morphautomatic = TRUE;
 
 	bin->morphmode = VISUAL_MORPH_MODE_TIME;
-	visual_time_set (&bin->morphtime, 4, 0);
+	bin->morphtime = visual_time_new_with_values (4, 0);
 
 	bin->depthpreferred = VISUAL_BIN_DEPTH_HIGHEST;
 
@@ -613,7 +615,7 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 			else
 				visual_morph_set_mode (bin->morph, VISUAL_MORPH_MODE_SET);
 
-			visual_morph_set_time (bin->morph, &bin->morphtime);
+			visual_morph_set_time (bin->morph, bin->morphtime);
 			visual_morph_set_steps (bin->morph, bin->morphsteps);
 		}
 
@@ -776,7 +778,7 @@ int visual_bin_switch_set_time (VisBin *bin, long sec, long usec)
 {
 	visual_return_val_if_fail (bin != NULL, -1);
 
-	visual_time_set (&bin->morphtime, sec, usec * VISUAL_NSEC_PER_USEC);
+	visual_time_set (bin->morphtime, sec, usec * VISUAL_NSEC_PER_USEC);
 
 	return 0;
 }

@@ -138,20 +138,19 @@ namespace LV {
 
   void SongInfo::mark ()
   {
-      visual_timer_start (&timer);
+      timer.start ();
   }
 
   long SongInfo::get_age ()
   {
-      VisTime cur;
+      Time cur = Time::now ();
+      Time start_time = timer.get_start_time();
 
-      visual_time_get (&cur);
-
-      /* Clock has been changed into the past */
-      if (cur.sec < timer.start.sec)
+      // Clock has been changed into the past
+      if (cur < start_time)
           mark ();
 
-      visual_time_difference (&cur, &timer.start, &cur);
+      cur -= start_time;
 
       return cur.sec;
   }

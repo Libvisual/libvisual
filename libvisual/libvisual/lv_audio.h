@@ -121,7 +121,7 @@ struct _VisAudioSamplePoolChannel {
 	VisObject	 object;
 
 	VisRingBuffer	*samples;
-	VisTime		 samples_timeout;
+	VisTime		    *samples_timeout;
 
 	char		*channelid;
 
@@ -131,7 +131,7 @@ struct _VisAudioSamplePoolChannel {
 struct _VisAudioSample {
 	VisObject			 object;
 
-	VisTime				 timestamp;
+	VisTime				*timestamp;
 
 	VisAudioSampleRateType		 rate;
 	VisAudioSampleFormatType	 format;

@@ -119,8 +119,8 @@ struct _VisMorph {
                      * content depends on the plugin being used. */
     VisPalette  *morphpal;  /**< Morph plugins can also set a palette for indexed
                      * color depths. */
-    VisTime      morphtime; /**< Amount of time which the morphing should take. */
-    VisTimer     timer;     /**< Private entry that holds the time elapsed from 
+    VisTime     *morphtime; /**< Amount of time which the morphing should take. */
+    VisTimer    *timer;     /**< Private entry that holds the time elapsed from 
                      * the beginning of the switch. */
     int      steps;     /**< Private entry that contains the number of steps
                      * a morph suppose to take. */
