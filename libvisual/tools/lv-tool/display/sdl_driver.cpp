@@ -21,13 +21,12 @@
 
 #include <SDL/SDL.h>
 
+#include "sdl_driver.hpp"
 #include <map>
 #include <cstdio>
 #include <cstdlib>
-#include <unistd.h>
+#include "gettext.h"
 
-
-#include "sdl_driver.hpp"
 
 #define SDL_NATIVE(obj)					(VISUAL_CHECK_CAST ((obj), SDLNative))
 
@@ -182,6 +181,8 @@ static int native_create (SADisplay *display, VisVideoDepth depth, VisVideoAttri
                                                    visual_video_depth_value_from_enum (depth),
                                                    videoflags);
         }
+
+        SDL_WM_SetCaption (_("lv-tool"), NULL);
 
         SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
