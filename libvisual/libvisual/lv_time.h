@@ -227,10 +227,11 @@ struct _VisTimer;
 
 VISUAL_BEGIN_DECLS
 
-VisTime *visual_time_new  (void);
-VisTime *visual_time_new_now (void);
+VisTime *visual_time_new             (void);
+VisTime *visual_time_new_now         (void);
 VisTime *visual_time_new_with_values (long sec, long nsec);
-void     visual_time_free (VisTime *time_);
+VisTime *visual_time_clone           (VisTime *src);
+void     visual_time_free            (VisTime *time_);
 
 void visual_time_set     (VisTime *time_, long sec, long usec);
 void visual_time_copy    (VisTime *dest, VisTime *src);

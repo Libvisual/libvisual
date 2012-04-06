@@ -19,9 +19,11 @@ extern "C" {
       return new LV::Time (sec, nsec);
   }
 
-  VisTime *visual_time_new_from_msecs (uint64_t msecs)
+  VisTime *visual_time_clone (VisTime *src)
   {
-      return new LV::Time (LV::Time::from_msecs (msecs));
+      visual_return_val_if_fail (src != NULL, NULL);
+
+      return new LV::Time (*src);
   }
 
   void visual_time_free (VisTime *self)
