@@ -27,7 +27,6 @@
 #include "lv_time.h"
 #include "lv_common.h"
 #include <time.h>
-#include <sys/time.h>
 #include <errno.h>
 
 #if defined(VISUAL_OS_WIN32)
@@ -64,18 +63,21 @@ int visual_time_get (VisTime *time_)
 #if defined(VISUAL_OS_WIN32)
 	LARGE_INTEGER perf_counter;
 
+	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
+
 	QueryPerformanceCounter (&perf_counter);
 	time_->sec  = perf_counter.QuadPart / perf_counter_freq;
 	time_->nsec = ((perf_counter.QuadPart % perf_counter_freq) * VISUAL_NSEC_PER_SEC) / perf_counter_freq;
 #else
-	struct timeval tv;
+	struct timespec clock_time;
 
 	visual_return_val_if_fail (time_ != NULL, -VISUAL_ERROR_TIME_NULL);
 
-	gettimeofday (&tv, NULL);
-
-	visual_time_set (time_, tv.tv_sec, tv.tv_usec * VISUAL_NSEC_PER_USEC);
+	clock_gettime (CLOCK_MONOTONIC, &clock_time);
+	time_->sec  = clock_time.tv_sec;
+	time_->nsec = clock_time.tv_nsec;
 #endif
+
 	return VISUAL_OK;
 }
 
