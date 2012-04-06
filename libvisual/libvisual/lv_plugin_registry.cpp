@@ -226,10 +226,10 @@ namespace LV {
 
           if (str_has_suffix (full_path, ".so")) {
               int count = 0;
-              VisPluginRef** ref = visual_plugin_get_references (full_path.c_str (), &cnt);
+              VisPluginRef** ref = visual_plugin_get_references (full_path.c_str (), &count);
 
               if (ref) {
-                  for (int j = 0; j < cnt; j++)
+                  for (int j = 0; j < count; j++)
                       list.push_back (ref[j]);
 
                   visual_mem_free (ref);
