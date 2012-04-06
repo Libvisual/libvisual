@@ -269,11 +269,11 @@ void visual_rectangle_clip           (VisRectangle *dest, VisRectangle *within, 
 void visual_rectangle_normalize    (VisRectangle *rect);
 void visual_rectangle_normalize_to (VisRectangle *dest, VisRectangle *src);
 
-void visual_rectangle_denormalize_values      (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
-void visual_rectangle_denormalize_many_values (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size);
+void visual_rectangle_denormalize_point  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
+void visual_rectangle_denormalize_points (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
 
-void visual_rectangle_denormalize_values_neg      (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
-void visual_rectangle_denormalize_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size);
+void visual_rectangle_denormalize_point_neg  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
+void visual_rectangle_denormalize_points_neg (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
 
 VISUAL_END_DECLS
 
