@@ -461,11 +461,14 @@ int visual_plugin_realize (VisPluginData *plugin)
 
     visual_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
-    if (plugin->realized)
+    if (plugin->realized) {
         return -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED;
+    }
 
     paramcontainer = visual_plugin_get_params (plugin);
     visual_param_container_set_eventqueue (paramcontainer, &plugin->eventqueue);
+
+    visual_log (VISUAL_LOG_DEBUG, "Activating plugin '%s'", plugin->info->plugname);
     plugin->info->init (plugin);
     plugin->realized = TRUE;
 
