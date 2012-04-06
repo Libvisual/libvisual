@@ -575,7 +575,7 @@ int main (int argc, char **argv)
 _m_exit_display:
                 /* cleanup display stuff */
                 display_set_fullscreen(display, FALSE, TRUE);
-                display_close(display);
+                display_free(display);
 
 _m_exit:
                 /* cleanup resources allocated by visual_init() */

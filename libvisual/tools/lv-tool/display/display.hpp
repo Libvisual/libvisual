@@ -62,7 +62,7 @@ struct SADisplay {
 	VisObject	*native;
 
 	int		 frames_drawn;
-	VisTimer	 timer;
+	LV::Timer	 timer;
 };
 
 
@@ -79,6 +79,7 @@ int display_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOp
 		int width, int height, int resizable);
 
 int display_close (SADisplay *display);
+void display_free (SADisplay *display);
 
 VisVideo *display_get_video (SADisplay *display);
 

@@ -26,9 +26,7 @@
 
 SADisplay *display_new (SADisplayDriver *driver)
 {
-	SADisplay *display;
-
-	display = visual_mem_new0 (SADisplay, 1);
+	SADisplay *display = new SADisplay;
 
 	visual_object_initialize (VISUAL_OBJECT (display), TRUE, NULL);
 
@@ -47,6 +45,12 @@ int display_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOp
 int display_close (SADisplay *display)
 {
 	return display->driver->close (display);
+}
+
+void display_free (SADisplay *display)
+{
+	display_close (display);
+	delete display;
 }
 
 VisVideo *display_get_video (SADisplay *display)
@@ -79,8 +83,8 @@ int display_update_all (SADisplay *display)
 
 	display->frames_drawn++;
 
-	if (visual_timer_is_active (&display->timer) == FALSE)
-		visual_timer_start (&display->timer);
+	if (!display->timer.is_active ())
+		display->timer.start ();
 
 	return display_update_rectangle (display, &rect);
 }
@@ -112,6 +116,5 @@ int display_fps_total (SADisplay *display)
 
 float display_fps_average (SADisplay *display)
 {
-	return display->frames_drawn / (visual_timer_elapsed_usecs (&display->timer) / (float) VISUAL_USEC_PER_SEC);
+	return display->frames_drawn / display->timer.elapsed ().to_secs ();
 }
-
