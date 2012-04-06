@@ -58,7 +58,7 @@ struct _FlowerInternal {
 
 	float audio_bars[256];
 
-	VisTimer timer;
+	VisTimer *timer;
 };
 
 /* Prototypes */

@@ -40,7 +40,6 @@
 const VisPluginInfo *get_plugin_info (int *count);
 
 typedef struct {
-	VisTime rendertime;
 	float cam_y;
 	float rot_x;
 	float step_z;

@@ -57,7 +57,7 @@ typedef struct {
 
 	float			 gdata[256];
 
-	VisTimer		 timer;
+	VisTimer		*timer;
 
 	/* Config */
 	int			 num_stars;
@@ -148,7 +148,7 @@ static int lv_madspin_init (VisPluginData *plugin)
 	priv->total = 0;
 	priv->frame = 0;
 
-	visual_timer_init (&priv->timer);
+	priv->timer = visual_timer_new ();
 
 	visual_param_container_add_many (paramcontainer, params);
 
@@ -162,8 +162,10 @@ static int lv_madspin_init (VisPluginData *plugin)
 static int lv_madspin_cleanup (VisPluginData *plugin)
 {
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	
+
 	if (priv->initialized == TRUE) {
+		visual_timer_free (priv->timer);
+
 		visual_object_unref (VISUAL_OBJECT (priv->texture_images[0]));
 		visual_object_unref (VISUAL_OBJECT (priv->texture_images[1]));
 
@@ -350,7 +352,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 	int ampl = 200;
 	float elapsed_time;
 
-	visual_timer_start (&priv->timer);
+	visual_timer_start (priv->timer);
 
 	for (i = 1; i < 50; i++)
 		priv->total += priv->gdata[i];
@@ -460,7 +462,7 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 
 	glLoadIdentity ();
 
-	elapsed_time = (float) visual_timer_elapsed_usecs (&priv->timer) / 1000000;
+	elapsed_time = (float) visual_timer_elapsed_usecs (priv->timer) / 1000000;
 
 	if (elapsed_time < 0)
 		elapsed_time = 0;

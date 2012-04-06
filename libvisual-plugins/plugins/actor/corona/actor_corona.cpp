@@ -143,7 +143,7 @@ int lv_corona_init (VisPluginData *plugin)
 	priv->tl.lastbeat  = 0;
 	priv->tl.state     = normal_state;
 
-	visual_time_get (&priv->oldtime);
+	priv->oldtime = LV::Time::now ();
 
 	priv->pal = new LV::Palette (256);
 
@@ -241,8 +241,6 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	VisBuffer pcmb;
 	float freq[2][256];
 	float pcm[256];
-	VisTime curtime;
-	VisTime difftime;
 	VisVideo vidcorona;
 	short freqdata[2][512]; // FIXME Move to floats
 	unsigned long timemilli = 0;
@@ -265,15 +263,13 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		freqdata[1][i*2+1] = freq[1][i];
 	}
 
-	visual_time_get (&curtime);
+	LV::Time curtime  = LV::Time::now ();
+	LV::Time difftime = curtime - priv->oldtime;
 
-	visual_time_difference (&difftime, &priv->oldtime, &curtime);
-
-	timemilli = visual_time_get_msecs (&difftime);
+	timemilli = difftime.to_msecs ();
 
 	priv->tl.timeStamp += timemilli;
-
-	visual_time_copy (&priv->oldtime, &curtime);
+	priv->oldtime = curtime;
 
 	for (i = 0; i < 512; ++i) {
 		priv->tl.frequency[0][i] = freqdata[0][i] * 32768;
