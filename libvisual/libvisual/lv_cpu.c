@@ -341,7 +341,7 @@ static int get_number_of_cores (void)
 
 	int ncpus;
 	int mib[2];
-	size_t len = sizeof (ncpus);
+	visual_size_t len = sizeof (ncpus);
 
 	mib[0] = CTL_HW;
 	mib[1] = HW_NCPU;
