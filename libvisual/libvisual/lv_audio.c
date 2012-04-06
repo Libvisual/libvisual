@@ -106,6 +106,8 @@ static int audio_sample_dtor (VisObject *object)
 {
 	VisAudioSample *sample = VISUAL_AUDIO_SAMPLE (object);
 
+	visual_time_free (sample->timestamp);
+
 	if (sample->buffer != NULL)
 		visual_object_unref (VISUAL_OBJECT (sample->buffer));
 
@@ -925,7 +927,7 @@ int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime
 	visual_object_set_allocated (VISUAL_OBJECT (sample), FALSE);
 
 	/* Reset the VisAudioSamplePool structure */
-	visual_time_copy (sample->timestamp, timestamp);
+	sample->timestamp = visual_time_clone (timestamp);
 	sample->rate = rate;
 	sample->format = format;
 	sample->buffer = buffer;
