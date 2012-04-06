@@ -42,6 +42,10 @@
 #endif
 #endif
 
+#if defined(VISUAL_OS_HPUX)
+#include <sys/mpctl.h>
+#endif
+
 #if defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_OPENBSD)
 #include <sys/param.h>
 #include <sys/sysctl.h>
@@ -323,17 +327,54 @@ static int cpuid (unsigned int ax, unsigned int *p)
 #endif
 }
 
+static int get_number_of_cores (void)
+{
+	/* See: http://stackoverflow.com/questions/150355/programmatically-find-the-number-of-cores-on-a-machine */
+
+#if defined(VISUAL_OS_LINUX) || defined(VISUAL_OS_SOLARIS) || defined(VISUAL_OS_AIX)
+
+	int ncpus = sysconf (_SC_NPROCESSORS_ONLN);
+
+	return ncpus != -1 ? ncpus : 1;
+
+#elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD) || defined(VISUAL_OS_DARWIN)
+
+	int ncpus;
+	int mib[2];
+	size_t len = sizeof (ncpus);
+
+	mib[0] = CTL_HW;
+	mib[1] = HW_NCPU;
+
+	sysctl (mib, 2, &ncpus, &len, NULL, 0);
+
+	return ncpus >= 1 ? ncpus : 1;
+
+#elif defined(VISUAL_OS_HPUX)
+
+	return mpctl (MPC_GETNUMSPUS, NULL, NULL);
+
+#elif defined(VISUAL_OS_IRIX)
+
+	return sysconf (_SC_NPROC_ONLN);
+
+#elif defined(VISUAL_OS_WIN32)
+
+	GetSystemInfo (&system_info);
+
+	return system_info.dwNumberOfProcessors;
+
+#else
+
+	return 1;
+
+#endif
+}
+
 void visual_cpu_initialize ()
 {
 	unsigned int regs[4];
 	unsigned int regs2[4];
-
-#if defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
-	int mib[2], ncpu;
-	visual_size_t len;
-#elif defined(VISUAL_OS_WIN32)
-	SYSTEM_INFO system_info;
-#endif
 
 	visual_mem_set (&__lv_cpu_caps, 0, sizeof (VisCPU));
 
@@ -374,26 +415,7 @@ void visual_cpu_initialize ()
 	}
 #endif /* VISUAL_OS_ANDROID && VISUAL_ARCH_ARM */
 
-	/* Count the number of CPUs in system */
-#if !defined(VISUAL_OS_WIN32) && !defined(VISUAL_OS_UNKNOWN) && defined(_SC_NPROCESSORS_ONLN)
-	__lv_cpu_caps.nrcpu = sysconf (_SC_NPROCESSORS_ONLN);
-	if (__lv_cpu_caps.nrcpu == -1)
-		__lv_cpu_caps.nrcpu = 1;
-
-#elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
-
-	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU;
-
-	len = sizeof (ncpu);
-	sysctl (mib, 2, &ncpu, &len, NULL, 0);
-	__lv_cpu_caps.nrcpu = ncpu;
-#elif defined(VISUAL_OS_WIN32)
-	GetSystemInfo (&system_info);
-	__lv_cpu_caps.nrcpu = system_info.dwNumberOfProcessors;
-#else
-	__lv_cpu_caps.nrcpu = 1;
-#endif
+	__lv_cpu_caps.nrcpu = get_number_of_cores ();
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	/* No cpuid, old 486 or lower */
