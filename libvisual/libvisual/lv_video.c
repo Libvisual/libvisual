@@ -635,7 +635,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 out:
 	if (vrect) visual_rectangle_free (vrect);
 
-	return VISUAL_OK;
+	return error;
 }
 
 int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height)
