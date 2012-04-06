@@ -31,6 +31,7 @@
 #include "lv_cpu.h"
 #include "lv_common.h"
 #include "gettext.h"
+#include <unistd.h>
 
 #if defined(VISUAL_ARCH_POWERPC)
 #if defined(VISUAL_OS_DARWIN)
