@@ -360,6 +360,8 @@ static int get_number_of_cores (void)
 
 #elif defined(VISUAL_OS_WIN32)
 
+	SYSTEM_INFO system_info;
+
 	GetSystemInfo (&system_info);
 
 	return system_info.dwNumberOfProcessors;
