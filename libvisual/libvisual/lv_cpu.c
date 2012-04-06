@@ -358,6 +358,10 @@ static int get_number_of_cores (void)
 
 	return sysconf (_SC_NPROC_ONLN);
 
+#elif defined(VISUAL_OS_ANDROID)
+
+	return android_getCpuCount();
+
 #elif defined(VISUAL_OS_WIN32)
 
 	SYSTEM_INFO system_info;
@@ -373,6 +377,25 @@ static int get_number_of_cores (void)
 #endif
 }
 
+static VisCPUType get_cpu_type (void)
+{
+#if defined(VISUAL_ARCH_MIPS)
+	return VISUAL_CPU_TYPE_MIPS;
+#elif defined(VISUAL_ARCH_ALPHA)
+	return VISUAL_CPU_TYPE_ALPHA;
+#elif defined(VISUAL_ARCH_SPARC)
+	return VISUAL_CPU_TYPE_SPARC;
+#elif defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+	return VISUAL_CPU_TYPE_X86;
+#elif defined(VISUAL_ARCH_POWERPC)
+	return VISUAL_CPU_TYPE_POWERPC;
+#elif defined(VISUAL_ARCH_ARM)
+	return VISUAL_CPU_TYPE_ARM;
+#else
+	return VISUAL_CPU_TYPE_OTHER;
+#endif
+}
+
 void visual_cpu_initialize ()
 {
 	unsigned int regs[4];
@@ -380,24 +403,11 @@ void visual_cpu_initialize ()
 
 	visual_mem_set (&__lv_cpu_caps, 0, sizeof (VisCPU));
 
-	/* Check for arch type */
-#if defined(VISUAL_ARCH_MIPS)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_MIPS;
-#elif defined(VISUAL_ARCH_ALPHA)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_ALPHA;
-#elif defined(VISUAL_ARCH_SPARC)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_SPARC;
-#elif defined(VISUAL_ARCH_X86)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_X86;
-#elif defined(VISUAL_ARCH_POWERPC)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_POWERPC;
-#elif defined(VISUAL_ARCH_ARM)
-	__lv_cpu.caps.type = VISUAL_CPU_TYPE_ARM;
-#else
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_OTHER;
-#endif
+	__lv_cpu_caps.type  = get_cpu_type ();
+	__lv_cpu_caps.nrcpu = get_number_of_cores ();
 
-#if defined(VISUAL_OS_ANDROID) && defined(VISUAL_ARCH_ARM)
+#if defined(VISUAL_ARCH_ARM)
+# if defined(VISUAL_OS_ANDROID)
 	if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM) {
 		uint64_t type = android_getCpuFeatures ();
 
@@ -412,12 +422,9 @@ void visual_cpu_initialize ()
 
 		if(type & ANDROID_CPU_ARM_FEATURE_LDREX_STREX)
 			__lv_cpu_caps.hasLDREX_STREX = 1;
-
-		__lv_cpu_caps.nrcpu = android_getCpuCount();
 	}
-#endif /* VISUAL_OS_ANDROID && VISUAL_ARCH_ARM */
-
-	__lv_cpu_caps.nrcpu = get_number_of_cores ();
+# endif /* VISUAL_OS_ANDROID */
+#endif /* VISUAL_ARCH_ARM */
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	/* No cpuid, old 486 or lower */
