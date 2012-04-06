@@ -1,11 +1,6 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  *
- * Copyright (C) 2004, 2005, 2006 Vitaly V. Bursov <vitalyvb@urk,net>
- *
- * Authors: Vitaly V. Bursov <vitalyvb@urk,net>
- *          Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: input_alsa.c,v 1.23 2006/02/13 20:36:11 synap Exp $
+ * Copyright (C) 2012 Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -192,7 +187,7 @@ namespace {
       int retval = 0;
 
       if (priv->loaded) {
-	  visual_log (VISUAL_LOG_DEBUG, "Stopping audio capturing and clearing all pending buffers");
+          visual_log (VISUAL_LOG_DEBUG, "Stopping audio capturing and clearing all pending buffers");
 
           MMRESULT result = waveInReset (priv->device_handle);
           if (result != MMSYSERR_NOERROR) {
@@ -200,7 +195,7 @@ namespace {
               retval = -1;
           }
 
-	  visual_log (VISUAL_LOG_DEBUG, "Closing capture device");
+          visual_log (VISUAL_LOG_DEBUG, "Closing capture device");
 
           result = waveInClose (priv->device_handle);
           if (result != MMSYSERR_NOERROR) {
@@ -242,7 +237,7 @@ namespace {
       while (true) {
           WaitForSingleObject (priv->mutex, INFINITE);
 
-	  buffer_to_read = priv->active_buffer ^ 0x1;
+          buffer_to_read = priv->active_buffer ^ 0x1;
 
           if (!priv->buffer_read[buffer_to_read]) {
               priv->buffer_read[buffer_to_read] = true;
