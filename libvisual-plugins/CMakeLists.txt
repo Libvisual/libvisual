@@ -48,9 +48,10 @@ MARK_AS_ADVANCED(LV_PLUGIN_DIR)
 IF(NOT DEFINED LV_PLUGIN_DIR)
   EXECUTE_PROCESS(
     COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=pluginsbasedir ${LIBVISUAL_PKG}
-    OUTPUT_VARIABLE LV_PLUGIN_DIR
+    OUTPUT_VARIABLE PLUGIN_DIR
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
+  SET(LV_PLUGIN_DIR "${PLUGIN_DIR}" CACHE PATH "Plugin installation directory")
 ENDIF(NOT DEFINED LV_PLUGIN_DIR)
 MESSAGE(STATUS "Plugins will be installed into ${LV_PLUGIN_DIR}")
 
@@ -131,7 +132,9 @@ OPTION(ENABLE_OINKSIE     "Build the Oinksie plugin" yes)
 OPTION(ENABLE_SCOPE       "Build the Scope plugin" yes)
 OPTION(ENABLE_SLIDE       "Build the Slide morph plugin" yes)
 OPTION(ENABLE_TENTACLE    "Build the Tentacle morph plugin" yes)
+OPTION(ENABLE_WAVEIN      "Build the Windows WaveIn plugin" yes)
 OPTION(ENABLE_XMMS2       "Build the XMMS2 input plugin" yes)
+
 
 # Check for plugin dependencies
 
@@ -218,6 +221,13 @@ IF(ENABLE_PULSEAUDIO)
     SET(ENABLE_PULSEAUDIO no)
   ENDIF(NOT PULSE_FOUND)
 ENDIF(ENABLE_PULSEAUDIO)
+
+IF(ENABLE_WAVEIN)
+  IF(NOT WIN32)
+    MESSAGE(WARNING "The WaveIn input plugin is only supported on Windows")
+    SET(ENABLE_WAVEIN no)
+  ENDIF(NOT WIN32)
+ENDIF(ENABLE_WAVEIN)
 
 IF(ENABLE_XMMS2)
   PKG_CHECK_MODULES(XMMS2 xmms2-client>=${XMMS2_REQUIRED_VERSION})
