@@ -22,22 +22,19 @@
 
 #include <libvisual/libvisual.h>
 #include <windows.h>
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
 
 #define PCM_BUFFER_SIZE 4096
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR;
     
-extern "C" VisPluginInfo const* get_plugin_info (int* count);
+VISUAL_C_LINKAGE VisPluginInfo const* get_plugin_info (int* count);
 
 struct WaveInPrivate {
     HWAVEIN device_handle;
     bool    loaded;
 
     WAVEHDR buffer_header;
-    char    buffers[2][PCM_BUFFER_SIZE];
+    int16_t buffers[2][PCM_BUFFER_SIZE];
 
     bool    buffer_ready[2];
     int     active_buffer;
@@ -51,12 +48,9 @@ namespace {
   int inp_wavein_events  (VisPluginData *plugin, VisEventQueue* events);
   int inp_wavein_upload  (VisPluginData *plugin, VisAudio* audio);
 
-  int const inp_wavein_var_samplerate = 44100;
-  int const inp_wavein_var_channels   = 2;
-
 } // anonymous namespace
 
-extern "C" VisPluginInfo const* get_plugin_info (int* count)
+VISUAL_C_LINKAGE VisPluginInfo const* get_plugin_info (int* count)
 {
     static VisInputPlugin input = {
         { 0 },
@@ -90,19 +84,20 @@ extern "C" VisPluginInfo const* get_plugin_info (int* count)
 
 namespace {
 
-  std::string get_wavein_error_string (MMRESULT error)
+  void log_wavein_error (std::string const& message, MMRESULT error)
   {
-      char text[MAXERRORLENGTH];
-      waveInGetErrorText (error, text, MAXERRORLENGTH);
-      return text;
+      char error_text[MAXERRORLENGTH];
+      waveInGetErrorText (error, error_text, MAXERRORLENGTH);
+
+      visual_log (VISUAL_LOG_ERROR, "%s: %s", message.c_str (), error_text);
   }
 
   void prepare_buffer (WaveInPrivate* priv, unsigned int buffer_id)
   {
       priv->buffer_ready[buffer_id] = false;
 
-      priv->buffer_header.lpData = priv->buffers[buffer_id];
-      priv->buffer_header.dwBufferLength = PCM_BUFFER_SIZE;
+      priv->buffer_header.lpData = reinterpret_cast<LPSTR> (priv->buffers[buffer_id]);
+      priv->buffer_header.dwBufferLength = PCM_BUFFER_SIZE * sizeof (int16_t);
 
       waveInPrepareHeader (priv->device_handle, &priv->buffer_header, sizeof (WAVEHDR));
       waveInAddBuffer (priv->device_handle, &priv->buffer_header, sizeof (WAVEHDR));
@@ -138,10 +133,10 @@ namespace {
                       WaitForSingleObject (priv->mutex, INFINITE);
 
                       waveInUnprepareHeader (priv->device_handle, &priv->buffer_header, sizeof (WAVEHDR));
-		      priv->buffer_ready[priv->active_buffer] = true;
+                      priv->buffer_ready[priv->active_buffer] = true;
 
                       priv->active_buffer ^= 0x1;
-		      prepare_buffer (priv, priv->active_buffer);
+                      prepare_buffer (priv, priv->active_buffer);
 
                       ReleaseMutex (priv->mutex);
 
@@ -166,13 +161,16 @@ namespace {
 
       for (unsigned int device_id = 0; device_id < num_devices; device_id++) {
           visual_log (VISUAL_LOG_DEBUG, "Querying device #%u", device_id);
-          std::fflush (stderr);
 
-          if (waveInGetDevCaps (UINT_PTR (device_id), &device_caps, sizeof (WAVEINCAPS)) == MMSYSERR_NOERROR) {
-              visual_log (VISUAL_LOG_DEBUG, "Name: %s", device_caps.szPname);
-              visual_log (VISUAL_LOG_DEBUG, "Formats supported: 0x%08x", (unsigned int) device_caps.dwFormats);
-              visual_log (VISUAL_LOG_DEBUG, "Number of channels: %d", device_caps.wChannels);
+          MMRESULT result = waveInGetDevCaps (UINT_PTR (device_id), &device_caps, sizeof (WAVEINCAPS));
+          if (result != MMSYSERR_NOERROR) {
+              log_wavein_error ("Failed to query device capabilities", result);
+              continue;
           }
+
+          visual_log (VISUAL_LOG_DEBUG, "Name: %s", device_caps.szPname);
+          visual_log (VISUAL_LOG_DEBUG, "Supported format flags: 0x%08x", (unsigned int) device_caps.dwFormats);
+          visual_log (VISUAL_LOG_DEBUG, "Number of channels: %d", device_caps.wChannels);
       }
 
       return true;
@@ -184,7 +182,7 @@ namespace {
 
       if (!check_available_devices ()) {
           visual_log (VISUAL_LOG_ERROR, "No input device can be found!");
-	  return -1;
+          return -1;
       }
 
       WaveInPrivate* priv = visual_mem_new0 (WaveInPrivate, 1);
@@ -207,7 +205,7 @@ namespace {
       MMRESULT result = waveInOpen (&priv->device_handle, WAVE_MAPPER, &format, 0, 0, WAVE_FORMAT_QUERY);
 
       if (result == WAVERR_BADFORMAT) {
-          visual_log (VISUAL_LOG_ERROR, "Audio format unsupported");
+          log_wavein_error ("Required audio format is not supported by device", result);
           return -1;
       }
 
@@ -227,7 +225,7 @@ namespace {
 
       if (result != MMSYSERR_NOERROR) {
           // FIXME: Do we need to destroy the thread?
-          visual_log (VISUAL_LOG_ERROR, "Failed to open capture device");
+          log_wavein_error ("Failed to open capture device", result);
           return -1;
       }
 
@@ -235,12 +233,13 @@ namespace {
 
       priv->mutex = CreateMutex (NULL, FALSE, NULL);
       
-      // Initialize buffers
+      // Initialize buffer statuses
 
       priv->buffer_ready[0] = false;
       priv->buffer_ready[1] = false;
 
       // Register the first buffer with the API for capture
+
       priv->active_buffer = 0;
       prepare_buffer (priv, priv->active_buffer);
 
@@ -269,7 +268,7 @@ namespace {
 
           MMRESULT result = waveInReset (priv->device_handle);
           if (result != MMSYSERR_NOERROR) {
-              visual_log (VISUAL_LOG_ERROR, "Failed to clear pending buffers");
+              log_wavein_error ("Failed to clear pending buffers", result);
               retval = -1;
           }
 
@@ -277,7 +276,7 @@ namespace {
 
           result = waveInClose (priv->device_handle);
           if (result != MMSYSERR_NOERROR) {
-              visual_log (VISUAL_LOG_ERROR, "Failed to close capture device");
+              log_wavein_error ("Failed to close capture device", result);
               retval = -1;
           }
 
@@ -318,11 +317,11 @@ namespace {
           buffer_to_read = priv->active_buffer ^ 0x1;
 
           if (priv->buffer_ready[buffer_to_read]) {
-	      VisBuffer buffer;
+              VisBuffer buffer;
 
-	      visual_buffer_init (&buffer, priv->buffers[buffer_to_read], PCM_BUFFER_SIZE/2, NULL);
-	      visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
-					     VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+              visual_buffer_init (&buffer, priv->buffers[buffer_to_read], PCM_BUFFER_SIZE, NULL);
+              visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+                                             VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
               priv->buffer_ready[buffer_to_read] = false;
 
