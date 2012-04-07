@@ -118,7 +118,7 @@ bool Corona::setUpSurface(int width, int height) {
 	}
 
 	// Change the number of particles
-	int newsize = (int) (::sqrt(m_width * m_height) * 3.0);
+	int newsize = (int) (sqrt(float(m_width * m_height)) * 3.0);
 	if (newsize < 2000) newsize = 2000;
 	int oldsize = (int) nbParticules;
 	nbParticules = newsize;
