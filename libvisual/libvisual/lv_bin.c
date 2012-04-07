@@ -176,7 +176,7 @@ int visual_bin_set_morph (VisBin *bin, VisMorph *morph)
 	return 0;
 }
 
-int visual_bin_set_morph_by_name (VisBin *bin, char *morphname)
+int visual_bin_set_morph_by_name (VisBin *bin, const char *morphname)
 {
 	VisMorph *morph;
 	int depthflag;
@@ -222,7 +222,7 @@ int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
 	return 0;
 }
 
-int visual_bin_connect_by_names (VisBin *bin, char *actname, char *inname)
+int visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname)
 {
 	VisActor *actor;
 	VisInput *input;
@@ -447,7 +447,7 @@ VisPalette *visual_bin_get_palette (VisBin *bin)
 		return visual_actor_get_palette (bin->actor);
 }
 
-int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
+int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 {
 	VisActor *actor;
 	VisVideo *video;
