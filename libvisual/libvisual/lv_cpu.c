@@ -69,6 +69,8 @@
 #include <cpu-features.h>
 #endif
 
+#define TEST_BIT(x, n)  (((x) >> (n)) & 1)
+
 static VisCPU __lv_cpu_caps;
 static int __lv_cpu_initialized = FALSE;
 
@@ -396,6 +398,30 @@ static VisCPUType get_cpu_type (void)
 #endif
 }
 
+static void print_cpu_info (void)
+{
+	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", __lv_cpu_caps.nrcpu);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", __lv_cpu_caps.type);
+
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: cacheline %d", __lv_cpu_caps.cacheline);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX %d", __lv_cpu_caps.hasMMX);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX2 %d", __lv_cpu_caps.hasMMX2);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE %d", __lv_cpu_caps.hasSSE);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE2 %d", __lv_cpu_caps.hasSSE2);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNow %d", __lv_cpu_caps.has3DNow);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNowExt %d", __lv_cpu_caps.has3DNowExt);
+#elif defined(VISUAL_ARCH_POWERPC)
+	visual_log (VISUAL_LOG_DEBUG, "CPU: AltiVec %d", __lv_cpu_caps.hasAltiVec);
+#elif defined(VISUAL_ARCH_ARM)
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM v7 %d", __lv_cpu_caps.hasARMv7);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM VFPv3 %d", __lv_cpu_caps.hasVFPv3);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM NEON %d", __lv_cpu_caps.hasNeon);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM LDREX_STREX %d", __lv_cpu_caps.hasLDREX_STREX);
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
+}
+
 void visual_cpu_initialize ()
 {
 	unsigned int regs[4];
@@ -446,9 +472,9 @@ void visual_cpu_initialize ()
 		    __lv_cpu_caps.x86cpuType = 8 + ((regs2[0] >> 20) & 255); /* use extended family (P4, IA64) */
 
 		/* general feature flags */
-		__lv_cpu_caps.hasMMX  = (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
-		__lv_cpu_caps.hasSSE  = (regs2[3] & (1 << 25 )) >> 25; /* 0x2000000 */
-		__lv_cpu_caps.hasSSE2 = (regs2[3] & (1 << 26 )) >> 26; /* 0x4000000 */
+		__lv_cpu_caps.hasMMX  = TEST_BIT (regs2[3], 23); /* 0x0800000 */
+		__lv_cpu_caps.hasSSE  = TEST_BIT (regs2[3], 25); /* 0x2000000 */
+		__lv_cpu_caps.hasSSE2 = TEST_BIT (regs2[3], 26); /* 0x4000000 */
 		__lv_cpu_caps.hasMMX2 = __lv_cpu_caps.hasSSE; /* SSE cpus supports mmxext too */
 
 		cacheline = ((regs2[1] >> 8) & 0xFF) * 8;
@@ -462,10 +488,10 @@ void visual_cpu_initialize ()
 
 		cpuid (0x80000001, regs2);
 
-		__lv_cpu_caps.hasMMX  |= (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
-		__lv_cpu_caps.hasMMX2 |= (regs2[3] & (1 << 22 )) >> 22; /* 0x400000 */
-		__lv_cpu_caps.has3DNow    = (regs2[3] & (1 << 31 )) >> 31; /* 0x80000000 */
-		__lv_cpu_caps.has3DNowExt = (regs2[3] & (1 << 30 )) >> 30;
+		__lv_cpu_caps.hasMMX  |= TEST_BIT (regs2[3], 23); /* 0x0800000 */
+		__lv_cpu_caps.hasMMX2 |= TEST_BIT (regs2[3], 22); /* 0x400000 */
+		__lv_cpu_caps.has3DNow    = TEST_BIT (regs2[3], 31); /* 0x80000000 */
+		__lv_cpu_caps.has3DNowExt = TEST_BIT (regs2[3], 30);
 	}
 
 	if (regs[0] >= 0x80000006) {
@@ -479,10 +505,8 @@ void visual_cpu_initialize ()
 
 	if (!__lv_cpu_caps.hasSSE)
 		__lv_cpu_caps.hasSSE2 = 0;
-#else
-	__lv_cpu_caps.hasSSE = 0;
-	__lv_cpu_caps.hasSSE2 = 0;
 #endif
+
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 #if defined(VISUAL_ARCH_POWERPC)
@@ -502,26 +526,7 @@ void visual_cpu_initialize ()
 	__lv_cpu_caps.enabledNeon        = __lv_cpu_caps.hasNeon;
 	__lv_cpu_caps.enabledLDREX_STREX = __lv_cpu_caps.hasLDREX_STREX;
 
-	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", __lv_cpu_caps.nrcpu);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", __lv_cpu_caps.type);
-
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: cacheline %d", __lv_cpu_caps.cacheline);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX %d", __lv_cpu_caps.hasMMX);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX2 %d", __lv_cpu_caps.hasMMX2);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE %d", __lv_cpu_caps.hasSSE);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE2 %d", __lv_cpu_caps.hasSSE2);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNow %d", __lv_cpu_caps.has3DNow);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNowExt %d", __lv_cpu_caps.has3DNowExt);
-#elif defined(VISUAL_ARCH_POWERPC)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: AltiVec %d", __lv_cpu_caps.hasAltiVec);
-#elif defined(VISUAL_ARCH_ARM)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM v7 %d", __lv_cpu_caps.hasARMv7);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM VFPv3 %d", __lv_cpu_caps.hasVFPv3);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM NEON %d", __lv_cpu_caps.hasNeon);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM LDREX_STREX %d", __lv_cpu_caps.hasLDREX_STREX);
-#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
+	print_cpu_info ();
 
 	__lv_cpu_initialized = TRUE;
 }
