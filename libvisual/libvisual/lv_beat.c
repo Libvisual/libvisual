@@ -435,7 +435,7 @@ int visual_beat_refine_beat(VisBeat *beat, int isBeat)
 
     if (beat->predictionBpm && accepted && !predicted)
     {
-        int b;
+        int b = 0;
         if (TCNow > beat->predictionLastTC + (60000 / beat->predictionBpm)*0.7)
         {
             resyncin = TRUE;
