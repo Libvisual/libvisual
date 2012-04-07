@@ -69,6 +69,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.version = "0.1",
 		.about = N_("Libvisual scope plugin"),
 		.help = N_("This is a test plugin that'll display a simple scope"),
+		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_scope_init,
 		.cleanup = lv_scope_cleanup,
