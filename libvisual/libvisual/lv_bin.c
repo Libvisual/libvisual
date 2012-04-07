@@ -457,7 +457,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 	visual_return_val_if_fail (bin != NULL, -1);
 	visual_return_val_if_fail (actname != NULL, -1);
 
-	visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s", actname, bin->actor->plugin->info->name);
+	visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s", actname, bin->actor->plugin->info->plugname);
 
 	/* Destroy if there already is a managed one */
 	if (bin->actmorphmanaged) {
