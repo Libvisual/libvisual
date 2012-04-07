@@ -63,16 +63,16 @@ namespace LV {
             // FIXME: Eliminate this constructor
             Entry () {}
 
-            Entry (DFTMethod method, unsigned int spectrum_size);
+            Entry (DFTMethod method, unsigned int sample_count);
 
         private:
 
-            void fft_bitrev_table_init (unsigned int spectrum_size);
-            void fft_cossin_table_init (unsigned int spectrum_size);
-            void dft_cossin_table_init (unsigned int spectrum_size);
+            void fft_bitrev_table_init (unsigned int sample_count);
+            void fft_cossin_table_init (unsigned int sample_count);
+            void dft_cossin_table_init (unsigned int sample_count);
         };
 
-        Entry const& get_entry (DFTMethod method, unsigned int spectrum_size);
+        Entry const& get_entry (DFTMethod method, unsigned int sample_count);
 
     private:
 
@@ -94,65 +94,66 @@ namespace LV {
   class DFT::Impl
   {
   public:
-      unsigned int       samples_in;
+      unsigned int       sample_count;
       unsigned int       spectrum_size;
+      unsigned int       samples_out;
       DFTMethod          method;
       std::vector<float> real;
       std::vector<float> imag;
 
       Impl (unsigned int samples_out, unsigned int samples_in);
 
-      void perform_brute_force (float *output, float const* input);
-      void perform_fft_radix2_dit (float *output, float const* input);
+      void perform_brute_force (float const* input);
+      void perform_fft_radix2_dit (float const* input);
 
-      DFTMethod best_method (unsigned int spectrum_size);
+      DFTMethod best_method (unsigned int sample_count);
   };
 
 
   namespace {
 
-    DFTCache::Entry const& DFTCache::get_entry (DFTMethod method, unsigned int spectrum_size)
+    DFTCache::Entry const& DFTCache::get_entry (DFTMethod method, unsigned int sample_count)
     {
-        Table::const_iterator entry = m_cache.find (spectrum_size);
+        Table::const_iterator entry = m_cache.find (sample_count);
         if (entry != m_cache.end ())
             return entry->second;
 
         // FIXME: Eliminate the copying
-        m_cache.insert (std::make_pair (spectrum_size, Entry (method, spectrum_size)));
+        m_cache.insert (std::make_pair (sample_count, Entry (method, sample_count)));
 
-        return m_cache[spectrum_size];
+        return m_cache[sample_count];
     }
 
-    DFTCache::Entry::Entry (DFTMethod method, unsigned int spectrum_size)
+    DFTCache::Entry::Entry (DFTMethod method, unsigned int sample_count)
     {
         switch (method) {
             case DFT_METHOD_BRUTE_FORCE:
-                dft_cossin_table_init (spectrum_size);
+                dft_cossin_table_init (sample_count);
                 break;
 
             case DFT_METHOD_FFT:
-                fft_bitrev_table_init (spectrum_size);
-                fft_cossin_table_init (spectrum_size);
+                fft_bitrev_table_init (sample_count);
+                fft_cossin_table_init (sample_count);
                 break;
         }
     }
 
-    void DFTCache::Entry::fft_bitrev_table_init (unsigned int spectrum_size)
+    void DFTCache::Entry::fft_bitrev_table_init (unsigned int sample_count)
     {
         bitrevtable.clear ();
-        bitrevtable.reserve (spectrum_size);
+        bitrevtable.reserve (sample_count);
 
-        for (unsigned int i = 0; i < spectrum_size; i++)
+        for (unsigned int i = 0; i < sample_count; i++)
             bitrevtable.push_back (i);
 
         unsigned int j = 0;
 
-        for (unsigned int i = 0; i < spectrum_size; i++) {
+        for (unsigned int i = 0; i < sample_count; i++) {
             if (j > i) {
                 std::swap (bitrevtable[i], bitrevtable[j]);
             }
 
-            unsigned int m = spectrum_size >> 1;
+            unsigned int m = sample_count >> 1;
 
             while (m >= 1 && j >= m) {
                 j -= m;
@@ -163,12 +164,12 @@ namespace LV {
         }
     }
 
-    void DFTCache::Entry::fft_cossin_table_init (unsigned int spectrum_size)
+    void DFTCache::Entry::fft_cossin_table_init (unsigned int sample_count)
     {
         unsigned int dft_size = 2;
         unsigned int tab_size = 0;
 
-        while (dft_size <= spectrum_size) {
+        while (dft_size <= sample_count) {
             tab_size++;
             dft_size <<= 1;
         }
@@ -181,7 +182,7 @@ namespace LV {
 
         dft_size = 2;
 
-        while (dft_size <= spectrum_size) {
+        while (dft_size <= sample_count) {
             float theta = -2.0f * VISUAL_MATH_PI / dft_size;
 
             costable.push_back (std::cos (theta));
@@ -191,18 +192,16 @@ namespace LV {
         }
     }
 
-    void DFTCache::Entry::dft_cossin_table_init (unsigned int spectrum_size)
+    void DFTCache::Entry::dft_cossin_table_init (unsigned int sample_count)
     {
-        unsigned int tab_size = (spectrum_size >> 1) + 1;
-
         sintable.clear ();
-        sintable.reserve (tab_size);
+        sintable.reserve (sample_count);
 
         costable.clear ();
-        costable.reserve (tab_size);
+        costable.reserve (sample_count);
 
-        for (unsigned int i = 0; i < tab_size; i++) {
-            float theta = (-2.0f * VISUAL_MATH_PI * i) / spectrum_size;
+        for (unsigned int i = 0; i < sample_count; i++) {
+            float theta = (-2.0f * VISUAL_MATH_PI * i) / sample_count;
 
             costable.push_back (std::cos (theta));
             sintable.push_back (std::sin (theta));
@@ -241,17 +240,16 @@ namespace LV {
 
       switch (m_impl->method) {
           case DFT_METHOD_BRUTE_FORCE:
-              m_impl->perform_brute_force (output, input);
+              m_impl->perform_brute_force (input);
               break;
 
           case DFT_METHOD_FFT:
-              m_impl->perform_fft_radix2_dit (output, input);
+              m_impl->perform_fft_radix2_dit (input);
               break;
       }
 
       visual_math_vectorized_complex_to_norm_scale (output, &m_impl->real[0], &m_impl->imag[0],
-                                                  m_impl->spectrum_size / 2,
-                                                  1.0 / m_impl->spectrum_size);
+                                                    m_impl->samples_out, 1.0 / m_impl->sample_count);
   }
 
   void DFT::log_scale (float *output, float const* input, unsigned int size)
@@ -284,35 +282,36 @@ namespace LV {
   }
 
   DFT::Impl::Impl (unsigned int samples_out_, unsigned int samples_in_)
-      : samples_in    (samples_in_),
-        spectrum_size (samples_in_),
-        method        (best_method (spectrum_size)),
-        real          (spectrum_size),
-        imag          (spectrum_size)
+      : sample_count  (samples_in_),
+		spectrum_size (sample_count/2 + 1),
+        samples_out   (std::min (samples_out_, spectrum_size)),
+        method        (best_method (sample_count)),
+        real          (sample_count),
+        imag          (sample_count)
   {
       // empty
   }
 
-  DFTMethod DFT::Impl::best_method (unsigned int spectrum_size)
+  DFTMethod DFT::Impl::best_method (unsigned int sample_count)
   {
-      if (visual_math_is_power_of_2 (spectrum_size))
+      if (visual_math_is_power_of_2 (sample_count))
           return DFT_METHOD_FFT;
       else
           return DFT_METHOD_BRUTE_FORCE;
   }
 
-  void DFT::Impl::perform_brute_force (float *output, float const* input)
+  void DFT::Impl::perform_brute_force (float const* input)
   {
-      DFTCache::Entry const& fcache = dft_cache.get_entry (method, spectrum_size);
+      DFTCache::Entry const& fcache = dft_cache.get_entry (method, sample_count);
 
-      for (unsigned int i = 0; i < spectrum_size / 2 + 1; i++) {
+      for (unsigned int i = 0; i < spectrum_size; i++) {
           float xr = 0.0f;
           float xi = 0.0f;
 
           float wr = 1.0f;
           float wi = 0.0f;
 
-          for (unsigned int j = 0; j < spectrum_size; j++) {
+          for (unsigned int j = 0; j < sample_count; j++) {
               xr += input[j] * wr;
               xi += input[j] * wi;
 
@@ -327,14 +326,14 @@ namespace LV {
       }
   }
 
-  void DFT::Impl::perform_fft_radix2_dit (float *output, float const* input)
+  void DFT::Impl::perform_fft_radix2_dit (float const* input)
   {
-    DFTCache::Entry const& fcache = dft_cache.get_entry (method, spectrum_size);
+    DFTCache::Entry const& fcache = dft_cache.get_entry (method, sample_count);
 
-    for (unsigned int i = 0; i < spectrum_size; i++) {
+    for (unsigned int i = 0; i < sample_count; i++) {
         unsigned int idx = fcache.bitrevtable[i];
 
-        if (idx < samples_in)
+        if (idx < sample_count)
             real[i] = input[idx];
         else
             real[i] = 0;
@@ -343,7 +342,7 @@ namespace LV {
     unsigned int dft_size = 2;
     unsigned int t = 0;
 
-    while (dft_size <= spectrum_size) {
+    while (dft_size <= sample_count) {
         float wpr = fcache.costable[t];
         float wpi = fcache.sintable[t];
 
@@ -353,7 +352,7 @@ namespace LV {
         unsigned int half_dft_size = dft_size >> 1;
 
         for (unsigned int m = 0; m < half_dft_size; m++) {
-            for (unsigned int i = m; i < spectrum_size; i += dft_size) {
+            for (unsigned int i = m; i < sample_count; i += dft_size) {
                 unsigned int j = i + half_dft_size;
 
                 float tempr = wr * real[j] - wi * imag[j];
