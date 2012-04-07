@@ -27,6 +27,9 @@
 
 /* FIXME: clean this entire file up */
 
+#define _POSIX_SOURCE
+#define _BSD_SOURCE
+
 #include "config.h"
 #include "lv_cpu.h"
 #include "lv_common.h"
