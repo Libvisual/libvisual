@@ -384,10 +384,7 @@ int main (int argc, char **argv)
 
         VisVideo *video;
         if(!(video = display.get_video()))
-        {
-			std::fprintf(stderr, "Failed to get VisVideo from display.\n");
-			throw;
-        }
+		    throw std::runtime_error("Failed to get VisVideo from display");
 
         // put it all together
         visual_bin_connect(bin, actor, input);
@@ -550,9 +547,6 @@ int main (int argc, char **argv)
 			display.update_all();
 			display.set_fps_limit(framerate);
         }
-
-		// cleanup display stuff
-		display.set_fullscreen(false, true);
 	}
 	catch (std::exception& error) {
 	  std::cerr << error.what () << std::endl;

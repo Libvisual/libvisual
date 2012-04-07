@@ -54,13 +54,15 @@ class GLXDriver
 {
 public:
 
-	GLXDriver (SADisplay& display)
-		: m_display (display)
-	{}
+    GLXDriver (SADisplay& display)
+        : m_display (display)
+        , m_running (false)
+    {}
 
-	virtual ~GLXDriver ()
-	{
-	}
+    virtual ~GLXDriver ()
+    {
+        close ();
+    }
 
     virtual int create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
                         unsigned int width, unsigned int height, bool resizable)
@@ -118,12 +120,12 @@ public:
 
         // create a window in window mode
         m_attr.event_mask = KeyPressMask | KeyReleaseMask
-			              | ButtonPressMask | ButtonReleaseMask
-			              | StructureNotifyMask | VisibilityChangeMask;
+                          | ButtonPressMask | ButtonReleaseMask
+                          | StructureNotifyMask | VisibilityChangeMask;
 
         m_win = XCreateWindow(m_dpy, RootWindow(m_dpy, vi->screen),
-							  0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
-							  CWBorderPixel | CWColormap | CWEventMask, &m_attr);
+                              0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
+                              CWBorderPixel | CWColormap | CWEventMask, &m_attr);
 
         XFree (vi);
 
@@ -157,11 +159,16 @@ public:
         m_lastwidth = width;
         m_lastheight = height;
 
+        m_running = true;
+
         return 0;
     }
 
     virtual int close ()
     {
+        if (!m_running)
+            return 0;
+
         if (m_ctx) {
             if (!glXMakeCurrent (m_dpy, None, NULL)) {
                 printf("Could not release drawing context.\n");
@@ -178,6 +185,8 @@ public:
         }
 
         XCloseDisplay (m_dpy);
+
+        m_running = false;
 
         return 0;
     }
@@ -228,100 +237,100 @@ public:
         return 0;
     }
 
-	virtual int get_video (VisVideo* screen)
-	{
-		visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
+    virtual int get_video (VisVideo* screen)
+    {
+        visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
 
-		visual_video_set_dimension (screen, m_width, m_height);
+        visual_video_set_dimension (screen, m_width, m_height);
 
-		m_video = screen;
+        m_video = screen;
 
-		return 0;
-	}
+        return 0;
+    }
 
-	virtual int update_rect (LV::Rect const& rect)
-	{
-		glXSwapBuffers (m_dpy, m_win);
+    virtual int update_rect (LV::Rect const& rect)
+    {
+        glXSwapBuffers (m_dpy, m_win);
 
-		return 0;
-	}
+        return 0;
+    }
 
-	virtual int drain_events (VisEventQueue& eventqueue)
-	{
-		XEvent xevent;
+    virtual int drain_events (VisEventQueue& eventqueue)
+    {
+        XEvent xevent;
 
-		while (X11_Pending (m_dpy) > 0) {
-			VisKeySym keysym;
+        while (X11_Pending (m_dpy) > 0) {
+            VisKeySym keysym;
 
-			XNextEvent (m_dpy, &xevent);
+            XNextEvent (m_dpy, &xevent);
 
-			switch (xevent.type) {
+            switch (xevent.type) {
                 case ConfigureNotify:
-					if (xevent.xconfigure.width  != int (m_lastwidth) ||
+                    if (xevent.xconfigure.width  != int (m_lastwidth) ||
                         xevent.xconfigure.height != int (m_lastheight)) {
 
-						m_width = xevent.xconfigure.width;
-						m_height = xevent.xconfigure.height;
+                        m_width = xevent.xconfigure.width;
+                        m_height = xevent.xconfigure.height;
 
-						visual_event_queue_add_resize (&eventqueue, m_video,
-													   xevent.xconfigure.width, xevent.xconfigure.height);
-					}
+                        visual_event_queue_add_resize (&eventqueue, m_video,
+                                                       xevent.xconfigure.width, xevent.xconfigure.height);
+                    }
 
-					break;
+                    break;
 
                 case ButtonPress:
-					visual_event_queue_add_mousebutton (&eventqueue, xevent.xbutton.button, VISUAL_MOUSE_DOWN,
-														xevent.xbutton.x, xevent.xbutton.y);
-					break;
+                    visual_event_queue_add_mousebutton (&eventqueue, xevent.xbutton.button, VISUAL_MOUSE_DOWN,
+                                                        xevent.xbutton.x, xevent.xbutton.y);
+                    break;
 
                 case ButtonRelease:
-					visual_event_queue_add_mousebutton (&eventqueue, xevent.xbutton.button, VISUAL_MOUSE_UP,
-														xevent.xbutton.x, xevent.xbutton.y);
-					break;
+                    visual_event_queue_add_mousebutton (&eventqueue, xevent.xbutton.button, VISUAL_MOUSE_UP,
+                                                        xevent.xbutton.x, xevent.xbutton.y);
+                    break;
 
                 case KeyPress:
-					lv_x11_key_lookup (&m_key, m_dpy, &xevent.xkey, xevent.xkey.keycode, &keysym, TRUE);
-					visual_event_queue_add_keyboard (&eventqueue, keysym.sym, keysym.mod, VISUAL_KEY_DOWN);
+                    lv_x11_key_lookup (&m_key, m_dpy, &xevent.xkey, xevent.xkey.keycode, &keysym, TRUE);
+                    visual_event_queue_add_keyboard (&eventqueue, keysym.sym, keysym.mod, VISUAL_KEY_DOWN);
 
-					break;
+                    break;
 
                 case KeyRelease:
-					lv_x11_key_lookup (&m_key, m_dpy, &xevent.xkey, xevent.xkey.keycode, &keysym, FALSE);
-					visual_event_queue_add_keyboard (&eventqueue, keysym.sym, keysym.mod, VISUAL_KEY_UP);
+                    lv_x11_key_lookup (&m_key, m_dpy, &xevent.xkey, xevent.xkey.keycode, &keysym, FALSE);
+                    visual_event_queue_add_keyboard (&eventqueue, keysym.sym, keysym.mod, VISUAL_KEY_UP);
 
-					break;
+                    break;
 
                 case ClientMessage:
-					if (xevent.xclient.format == 32 &&
+                    if (xevent.xclient.format == 32 &&
                         xevent.xclient.data.l[0] == int(m_WM_DELETE_WINDOW)) {
 
-						visual_event_queue_add_quit (&eventqueue, FALSE);
-					}
+                        visual_event_queue_add_quit (&eventqueue, FALSE);
+                    }
 
-					break;
+                    break;
 
                 case MotionNotify:
-					visual_event_queue_add_mousemotion (&eventqueue, xevent.xmotion.x, xevent.xmotion.y);
-					break;
+                    visual_event_queue_add_mousemotion (&eventqueue, xevent.xmotion.x, xevent.xmotion.y);
+                    break;
 
                 case VisibilityNotify:
-					if (xevent.xvisibility.state == VisibilityUnobscured ||
+                    if (xevent.xvisibility.state == VisibilityUnobscured ||
                         xevent.xvisibility.state == VisibilityPartiallyObscured) {
-						visual_event_queue_add_visibility (&eventqueue, TRUE);
-					} else if (xevent.xvisibility.state == VisibilityFullyObscured) {
-						visual_event_queue_add_visibility (&eventqueue, FALSE);
-					}
+                        visual_event_queue_add_visibility (&eventqueue, TRUE);
+                    } else if (xevent.xvisibility.state == VisibilityFullyObscured) {
+                        visual_event_queue_add_visibility (&eventqueue, FALSE);
+                    }
 
-					break;
-			}
-		}
+                    break;
+            }
+        }
 
-		return 0;
-	}
+        return 0;
+    }
 
 private:
 
-	SADisplay&  m_display;
+    SADisplay&  m_display;
     Display    *m_dpy;
     Window      m_win;
     int         m_screen;
@@ -352,8 +361,7 @@ private:
     int m_oldheight;
 
     bool m_resizable;
-
-    bool m_active;
+    bool m_running;
 
     VisVideo *m_video;
 

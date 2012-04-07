@@ -67,7 +67,9 @@ public:
     {}
 
     virtual ~SDLDriver ()
-    {}
+    {
+        close ();
+    }
 
     virtual int create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
                         unsigned int width, unsigned int height, bool resizable)
@@ -104,17 +106,17 @@ public:
             if (videoinfo->blit_hw)
                 videoflags |= SDL_HWACCEL;
 
-			for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
-				if (vidoptions->gl_attributes[i].mutated) {
-					SDL_GLattr sdl_attribute =
-						sdl_gl_attribute_map[vidoptions->gl_attributes[i].attribute];
+            for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
+                if (vidoptions->gl_attributes[i].mutated) {
+                    SDL_GLattr sdl_attribute =
+                        sdl_gl_attribute_map[vidoptions->gl_attributes[i].attribute];
 
-					if (sdl_attribute < 0)
-						continue;
+                    if (sdl_attribute < 0)
+                        continue;
 
-					SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attributes[i].value);
-				}
-			}
+                    SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attributes[i].value);
+                }
+            }
 
             int bpp = videoinfo->vfmt->BitsPerPixel;
             m_screen = SDL_SetVideoMode (width, height, bpp, videoflags);
@@ -129,11 +131,20 @@ public:
 
         SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
+        m_running = true;
+
         return 0;
     }
 
     virtual int close ()
     {
+        if (!m_running)
+            return 0;
+
+        SDL_Quit ();
+
+        m_running = false;
+
         return 0;
     }
 
@@ -311,6 +322,7 @@ private:
     bool m_resizable;
 
     bool m_active;
+    bool m_running;
 };
 
 void get_nearest_resolution (int& width, int& height)

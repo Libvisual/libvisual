@@ -87,7 +87,7 @@ class SADisplay::Impl
 {
 public:
 
-    SADisplayDriver *driver;
+    LV::ScopedPtr<SADisplayDriver> driver;
     VisVideo        *screen;
     unsigned int     frames_drawn;
     LV::Timer        timer;
@@ -105,7 +105,7 @@ public:
 SADisplay::SADisplay (std::string const& driver_name)
   : m_impl (new Impl)
 {
-    m_impl->driver = driver_registry.load_driver (driver_name, *this);
+    m_impl->driver.reset (driver_registry.load_driver (driver_name, *this));
 
     if (!m_impl->driver) {
 	    throw std::runtime_error ("Failed to load display driver '" + driver_name + "'");
@@ -117,7 +117,6 @@ SADisplay::SADisplay (std::string const& driver_name)
 SADisplay::~SADisplay ()
 {
     visual_object_unref (VISUAL_OBJECT (m_impl->screen));
-    //delete m_impl->driver;
 }
 
 VisVideo* SADisplay::get_screen () const

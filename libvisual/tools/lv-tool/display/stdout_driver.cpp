@@ -44,7 +44,9 @@ public:
     {}
 
     virtual ~StdoutDriver ()
-    {}
+    {
+        close ();
+    }
 
     virtual int create (VisVideoDepth depth,
                         VisVideoAttributeOptions const* vidoptions,

@@ -19,8 +19,6 @@ public:
 
     virtual int get_video (VisVideo* screen) = 0;
 
-protected:
-
     virtual ~SADisplayDriver () {}
 };
 
