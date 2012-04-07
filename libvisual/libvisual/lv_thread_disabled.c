@@ -52,7 +52,7 @@ int visual_thread_free (VisThread *thread)
 {
     visual_log (VISUAL_LOG_ERROR, "Threading is not supported");
 
-    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED;
 }
 
 void *visual_thread_join (VisThread *thread)
