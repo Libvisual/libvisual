@@ -319,9 +319,9 @@ static int has_cpuid (void)
 }
 #endif /* defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 static int cpuid (unsigned int ax, unsigned int *p)
 {
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("movl %%ebx, %%esi\n\t"
 		 "cpuid\n\t"
@@ -332,9 +332,8 @@ static int cpuid (unsigned int ax, unsigned int *p)
 
 	return VISUAL_OK;
 #else
-	return -VISUAL_ERROR_CPU_INVALID_CODE;
-#endif
 }
+#endif
 
 static int get_number_of_cores (void)
 {
