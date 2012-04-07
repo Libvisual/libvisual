@@ -888,9 +888,9 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
 
 	VisVideo *transform = NULL;
 	VisVideo *srcp = NULL;
-	VisVideo *dregion;
-	VisVideo *sregion;
-	VisVideo *tempregion;
+	VisVideo *dregion = NULL;
+	VisVideo *sregion = NULL;
+	VisVideo *tempregion = NULL;
 	VisRectangle *redestrect = NULL;
 	VisRectangle *drect = NULL;
 	VisRectangle *srect = NULL;
