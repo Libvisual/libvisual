@@ -169,7 +169,7 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
     VisBuffer buffer;
     int error;
 
-    memset(pcm_data, 0, PCM_BUF_SIZE * sizeof(short));
+    memset(pcm_data, 0, sizeof(pcm_data));
 
     visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
     visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
@@ -178,7 +178,7 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 
     visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
-    if(pa_simple_read(priv->simple, pcm_data, PCM_BUF_SIZE, &error) < 0) {
+    if(pa_simple_read(priv->simple, pcm_data, sizeof (pcm_data), &error) < 0) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_read() failed: %s", pa_strerror(error));
         return -VISUAL_ERROR_GENERAL;
     }
@@ -186,7 +186,7 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
     visual_buffer_init(&buffer, pcm_data, PCM_BUF_SIZE, NULL);
     visual_audio_samplepool_input(audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
         VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
-   
+
     return 0;
 }
 
