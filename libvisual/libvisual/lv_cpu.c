@@ -83,7 +83,7 @@ LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep);
 
 /* The sigill handlers */
 #if defined(VISUAL_ARCH_X86) //x86 (linux katmai handler check thing)
-#if defined(VISUAL_OS_LINUX) && defined(_POSIX_SOURCE)
+#if defined(VISUAL_OS_LINUX) && defined(_BSD_SOURCE)
 static void sigill_handler_sse( int signal, struct sigcontext sc )
 {
 	/* Both the "xorps %%xmm0,%%xmm0" and "divps %xmm0,%%xmm1"
@@ -232,7 +232,7 @@ static void check_os_katmai_support( void )
 		__asm __volatile ("xorps %xmm0, %xmm0");
 		SetUnhandledExceptionFilter(exc_fil);
 	}
-#elif defined(VISUAL_OS_LINUX)
+#elif defined(VISUAL_OS_LINUX) && defined(_BSD_SOURCE)
 	struct sigaction saved_sigill;
 	struct sigaction saved_sigfpe;
 
