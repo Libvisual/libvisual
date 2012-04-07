@@ -44,6 +44,14 @@ namespace LV {
       return result;
   }
 
+  template<class T>
+  inline void checked_delete (T* x)
+  {
+      typedef char type_must_be_complete[ sizeof(T) ? 1 : -1 ];
+      (void) sizeof (type_must_be_complete);
+      delete x;
+  }
+
 } // LV namespace
 
 #endif // _LV_UTIL_HPP
