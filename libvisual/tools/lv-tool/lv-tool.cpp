@@ -23,6 +23,7 @@
 
 #include "config.h"
 #include "display/display.hpp"
+#include "display/display_driver_factory.hpp"
 #include <libvisual/libvisual.h>
 #include <cstdio>
 #include <iostream>
@@ -38,6 +39,13 @@
 #define DEFAULT_HEIGHT  200
 #define DEFAULT_FPS     30
 
+#if HAVE_SDL
+# define DEFAULT_DRIVER "sdl"
+#elif HAVE_GLX
+# define DEFAULT_DRIVER "glx"
+#else
+# define DEFAULT_DRIVER "stdout"
+#endif
 
 /* local variables */
 namespace {
@@ -45,29 +53,12 @@ namespace {
   std::string actor_name = DEFAULT_ACTOR;
   std::string input_name = DEFAULT_INPUT;
   std::string morph_name = DEFAULT_MORPH;
-  int driver = 0;
+  std::string driver_name = DEFAULT_DRIVER;
   int width  = DEFAULT_WIDTH;
   int height = DEFAULT_HEIGHT;
   int framerate = DEFAULT_FPS;
   int have_seed = 0;
   uint32_t seed = 0;
-
-  /* list of available driver-creators - register new drivers here */
-  struct SADisplayDriverDescription
-  {
-      std::string name;
-  };
-
-  SADisplayDriverDescription const all_display_drivers[] =
-  {
-#ifdef HAVE_SDL
-      { "sdl"    },
-#endif
-#ifdef HAVE_GLX
-      { "glx"    },
-#endif
-      { "stdout" }
-  };
 
 } // anonymous namespace
 
@@ -129,7 +120,7 @@ static void _print_help(char *name)
                 "http://github.com/StarVisuals/libvisual",
                 name,
                 width, height,
-                all_display_drivers[0].name.c_str (),
+                driver_name.c_str (),
                 input_name.c_str (),
                 actor_name.c_str (),
                 morph_name.c_str (),
@@ -190,28 +181,14 @@ static int _parse_args(int argc, char *argv[])
             /* --driver */
             case 'd':
             {
-                unsigned int n;
-                for(n = 0;
-                    n < VISUAL_TABLESIZE(all_display_drivers);
-                    n++)
-                {
-                    /* is this our driver? */
-                    if(all_display_drivers[n].name == optarg)
+                    if (!DisplayDriverFactory::instance().has_driver (optarg))
                     {
-                        /* stop search */
-                        break;
+                         std::fprintf(stderr, "Unsupported display driver: %s\n", optarg);
+                         return EXIT_FAILURE;
                     }
-                }
 
-                /* found something? */
-                if(n < VISUAL_TABLESIZE(all_display_drivers))
-                {
-                    driver = n;
+                    driver_name = optarg;
                     break;
-                }
-
-                std::fprintf(stderr, "Unsupported display driver: %s\n", optarg);
-                return EXIT_FAILURE;
             }
 
             /* --input */
@@ -377,7 +354,7 @@ int main (int argc, char **argv)
             visual_actor_get_video_attribute_options(actor);
 
         // initialize display
-        SADisplay display (all_display_drivers[driver].name);
+        SADisplay display (driver_name);
 
         // create display
         display.create(depth, vidoptions, width, height, true);
@@ -549,7 +526,7 @@ int main (int argc, char **argv)
         }
     }
     catch (std::exception& error) {
-      std::cerr << error.what () << std::endl;
+        std::cerr << error.what () << std::endl;
     }
 
     //printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));

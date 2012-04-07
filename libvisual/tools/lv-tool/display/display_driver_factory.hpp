@@ -6,6 +6,8 @@
 
 typedef SADisplayDriver* (*DisplayDriverCreator)(SADisplay& display);
 
+typedef std::vector<std::string> DisplayDriverList;
+
 class DisplayDriverFactory
 {
 public:
@@ -20,7 +22,11 @@ public:
 
     SADisplayDriver* make (std::string const& name, SADisplay& display);
 
-    void add (std::string const& name, Creator creator);
+    void add_driver (std::string const& name, Creator creator);
+
+    bool has_driver (std::string const& name) const;
+
+    void get_driver_list (DisplayDriverList& list) const;
 
 private:
 
@@ -29,6 +35,7 @@ private:
     LV::ScopedPtr<Impl> m_impl;
 
     DisplayDriverFactory ();
+
     ~DisplayDriverFactory ();
 };
 
