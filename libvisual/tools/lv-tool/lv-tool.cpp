@@ -170,24 +170,24 @@ static int _parse_args(int argc, char *argv[])
             case 'D':
             {
                 if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
-				{
-				    std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
-					return EXIT_FAILURE;
-				}
-				break;
+                {
+                    std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
+                    return EXIT_FAILURE;
+                }
+                break;
             }
 
             /* --driver */
             case 'd':
             {
                 if (!DisplayDriverFactory::instance().has_driver (optarg))
-				{
-				    std::cerr << "Unsupported display driver: " << optarg << "\n";
-					return EXIT_FAILURE;
-				}
+                {
+                    std::cerr << "Unsupported display driver: " << optarg << "\n";
+                    return EXIT_FAILURE;
+                }
 
-				driver_name = optarg;
-				break;
+                driver_name = optarg;
+                break;
             }
 
             /* --input */
@@ -304,7 +304,7 @@ int main (int argc, char **argv)
         // initialize actor plugin
         std::cerr << "Loading actor '" << actor_name << "'...\n";
         VisActor *actor = visual_actor_new (actor_name.c_str ());
-		if (!actor)
+        if (!actor)
             throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
 
         // Set random seed
@@ -317,9 +317,9 @@ int main (int argc, char **argv)
         }
 
         // initialize input plugin
-		std::cerr << "Loading input '" << input_name << "'...\n";
+        std::cerr << "Loading input '" << input_name << "'...\n";
         VisInput *input = visual_input_new(input_name.c_str());
-		if (!input) {
+        if (!input) {
             throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
 
