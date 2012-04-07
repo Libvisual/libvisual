@@ -67,7 +67,7 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, const flo
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 	/* FIXME check what is faster on AMD (sse or 3dnow) */
-	if (visual_cpu_get_sse () && n >= 16) {
+	if (visual_cpu_has_sse () && n >= 16) {
 		float packed_multiplier[4];
 
 		packed_multiplier[0] = multiplier;
@@ -110,7 +110,7 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, const flo
 
 			n -= 16;
 		}
-	} else if (visual_cpu_get_3dnow ()) {
+	} else if (visual_cpu_has_3dnow ()) {
 		float packed_multiplier[2];
 
 		packed_multiplier[0] = multiplier;
@@ -178,7 +178,7 @@ int visual_math_vectorized_add_floats_const_float (float *dest, const float *src
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_sse () && n >= 16) {
+	if (visual_cpu_has_sse () && n >= 16) {
 		float packed_adder[4];
 
 		packed_adder[0] = adder;
@@ -222,7 +222,7 @@ int visual_math_vectorized_add_floats_const_float (float *dest, const float *src
 
 			n -= 16;
 		}
-	} else if (visual_cpu_get_3dnow ()) {
+	} else if (visual_cpu_has_3dnow ()) {
 		float packed_adder[2];
 
 		packed_adder[0] = adder;
@@ -289,7 +289,7 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, const floa
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	if (visual_cpu_get_sse () && n >= 16) {
+	if (visual_cpu_has_sse () && n >= 16) {
 		float packed_substracter[4];
 
 		packed_substracter[0] = substracter;
@@ -333,7 +333,7 @@ int visual_math_vectorized_substract_floats_const_float (float *dest, const floa
 
 			n -= 16;
 		}
-	} else if (visual_cpu_get_3dnow ()) {
+	} else if (visual_cpu_has_3dnow ()) {
 		float packed_substracter[2];
 
 		packed_substracter[0] = substracter;
@@ -403,7 +403,7 @@ int visual_math_vectorized_multiplier_floats_floats (float *dest, const float *s
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_sse () && n >= 16) {
+	if (visual_cpu_has_sse () && n >= 16) {
 		while (!VISUAL_ALIGNED(d, 16)) {
 			(*d) = (*s1) * (*s2);
 
@@ -442,7 +442,7 @@ int visual_math_vectorized_multiplier_floats_floats (float *dest, const float *s
 
 			n -= 16;
 		}
-	} else if (visual_cpu_get_3dnow ()) {
+	} else if (visual_cpu_has_3dnow ()) {
 		while (n > 8) {
 			__asm __volatile
 				("\n\t prefetch 256(%0)"
@@ -498,7 +498,7 @@ int visual_math_vectorized_floats_to_int32s (int32_t *ints, const float *flts, v
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_3dnow ()) {
+	if (visual_cpu_has_3dnow ()) {
 
 		while (n > 16) {
 			__asm __volatile
@@ -554,7 +554,7 @@ int visual_math_vectorized_int32s_to_floats (float *flts, const int32_t *ints, v
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_3dnow ()) {
+	if (visual_cpu_has_3dnow ()) {
 
 		while (n > 16) {
 			__asm __volatile
@@ -609,7 +609,7 @@ int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, const float
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_3dnow ()) {
+	if (visual_cpu_has_3dnow ()) {
 		float packed_multiplier[2];
 
 		packed_multiplier[0] = multiplier;
@@ -668,7 +668,7 @@ int visual_math_vectorized_int32s_to_floats_multiply (float *flts, const int32_t
 	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	if (visual_cpu_get_3dnow ()) {
+	if (visual_cpu_has_3dnow ()) {
 		float packed_multiplier[2];
 
 		packed_multiplier[0] = multiplier;
@@ -734,7 +734,7 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	if (visual_cpu_get_3dnow ()) {
+	if (visual_cpu_has_3dnow ()) {
 		float packed_multiplier[2];
 		float packed_normalise_mul[2];
 		float packed_adder[2];
@@ -806,7 +806,7 @@ int visual_math_vectorized_sqrt_floats (float *dest, const float *src, visual_si
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_sse () && n >= 16) {
+	if (visual_cpu_has_sse () && n >= 16) {
 		while (!VISUAL_ALIGNED(d, 16)) {
 			*d = sqrtf (*s);
 
@@ -862,7 +862,7 @@ int visual_math_vectorized_complex_to_norm (float *dest, const float *real, cons
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_sse () && n >= 16) {
+	if (visual_cpu_has_sse () && n >= 16) {
 
 		while (!VISUAL_ALIGNED(d, 16)) {
 			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i)));
@@ -927,7 +927,7 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, const float *real
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_sse () && n >= 16) {
+	if (visual_cpu_has_sse () && n >= 16) {
 		float packed_scaler[4];
 
 		packed_scaler[0] = scaler;

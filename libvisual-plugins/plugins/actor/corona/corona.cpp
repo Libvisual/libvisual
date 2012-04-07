@@ -338,7 +338,7 @@ void Corona::blurImage()
 	uint8_t *ptr = m_real_image + m_width;
 	int n = (m_real_height - 2) * m_width;
 
-	if (visual_cpu_get_mmx ()) {
+	if (visual_cpu_has_mmx ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("pxor %%mm6, %%mm6"

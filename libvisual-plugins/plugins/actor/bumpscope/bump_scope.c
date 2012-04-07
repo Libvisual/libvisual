@@ -47,7 +47,7 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 	iptr = ptr + bpl + 1;
 	i = bpl * h;
 
-	if (visual_cpu_get_mmx ()) {
+	if (visual_cpu_has_mmx ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 		__asm __volatile

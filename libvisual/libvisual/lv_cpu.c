@@ -513,25 +513,12 @@ void visual_cpu_initialize ()
 	check_os_altivec_support ();
 #endif /* VISUAL_ARCH_POWERPC */
 
-	/* Synchronizing enabled flags with has flags */
-	__lv_cpu_caps.enabledMMX	= __lv_cpu_caps.hasMMX;
-	__lv_cpu_caps.enabledMMX2	= __lv_cpu_caps.hasMMX2;
-	__lv_cpu_caps.enabledSSE	= __lv_cpu_caps.hasSSE;
-	__lv_cpu_caps.enabledSSE2	= __lv_cpu_caps.hasSSE2;
-	__lv_cpu_caps.enabled3DNow	= __lv_cpu_caps.has3DNow;
-	__lv_cpu_caps.enabled3DNowExt    = __lv_cpu_caps.has3DNowExt;
-	__lv_cpu_caps.enabledAltiVec     = __lv_cpu_caps.hasAltiVec;
-	__lv_cpu_caps.enabledARMv7       = __lv_cpu_caps.hasARMv7;
-	__lv_cpu_caps.enabledVFPv3       = __lv_cpu_caps.hasVFPv3;
-	__lv_cpu_caps.enabledNeon        = __lv_cpu_caps.hasNeon;
-	__lv_cpu_caps.enabledLDREX_STREX = __lv_cpu_caps.hasLDREX_STREX;
-
 	print_cpu_info ();
 
 	__lv_cpu_initialized = TRUE;
 }
 
-VisCPU *visual_cpu_get_caps ()
+const VisCPU *visual_cpu_get_caps ()
 {
 	if (!__lv_cpu_initialized)
 		return NULL;
@@ -539,89 +526,89 @@ VisCPU *visual_cpu_get_caps ()
 	return &__lv_cpu_caps;
 }
 
-int visual_cpu_get_mmx ()
+int visual_cpu_has_mmx ()
 {
 	if (!__lv_cpu_initialized)
 		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledMMX;
+	return __lv_cpu_caps.hasMMX;
 }
 
-int visual_cpu_get_mmx2 ()
+int visual_cpu_has_mmx2 ()
 {
 	if (!__lv_cpu_initialized)
 		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledMMX2;
+	return __lv_cpu_caps.hasMMX2;
 }
 
-int visual_cpu_get_sse ()
+int visual_cpu_has_sse ()
 {
 	if (!__lv_cpu_initialized)
 		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledSSE;
+	return __lv_cpu_caps.hasSSE;
 }
-int visual_cpu_get_sse2 ()
+int visual_cpu_has_sse2 ()
 {
 	if (!__lv_cpu_initialized)
 		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledSSE2;
+	return __lv_cpu_caps.hasSSE2;
 }
 
-int visual_cpu_get_3dnow ()
+int visual_cpu_has_3dnow ()
 {
 	if (!__lv_cpu_initialized)
 		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabled3DNow;
+	return __lv_cpu_caps.has3DNow;
 }
 
-int visual_cpu_get_3dnow2 ()
+int visual_cpu_has_3dnow2 ()
 {
 	if (!__lv_cpu_initialized)
 		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabled3DNowExt;
+	return __lv_cpu_caps.has3DNowExt;
 }
 
-int visual_cpu_get_altivec ()
+int visual_cpu_has_altivec ()
 {
 	if (!__lv_cpu_initialized)
 		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledAltiVec;
+	return __lv_cpu_caps.hasAltiVec;
 }
 
-int visual_cpu_get_armv7 (void)
+int visual_cpu_has_armv7 (void)
 {
     if (!__lv_cpu_initialized)
 	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledARMv7;
+	return __lv_cpu_caps.hasARMv7;
 }
 
-int visual_cpu_get_vfpv3 (void)
+int visual_cpu_has_vfpv3 (void)
 {
     if (!__lv_cpu_initialized)
 	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledVFPv3;
+	return __lv_cpu_caps.hasVFPv3;
 }
 
-int visual_cpu_get_neon (void)
+int visual_cpu_has_neon (void)
 {
     if (!__lv_cpu_initialized)
         visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledNeon;
+	return __lv_cpu_caps.hasNeon;
 }
 
-int visual_cpu_get_ldrex_strex (void)
+int visual_cpu_has_ldrex_strex (void)
 {
     if (!__lv_cpu_initialized)
 	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
 
-	return __lv_cpu_caps.enabledLDREX_STREX;
+	return __lv_cpu_caps.hasLDREX_STREX;
 }

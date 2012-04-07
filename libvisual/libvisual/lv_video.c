@@ -751,7 +751,7 @@ VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest,
 		if (!alpha || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
 			return blit_overlay_noalpha;
 
-		if (visual_cpu_get_mmx () != 0)
+		if (visual_cpu_has_mmx ())
 			return _lv_blit_overlay_alphasrc_mmx;
 		else
 			return blit_overlay_alphasrc;
@@ -1853,7 +1853,7 @@ int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod metho
 			if (method == VISUAL_VIDEO_SCALE_NEAREST)
 				visual_video_scale_nearest_color32 (dest, src);
 			else if (method == VISUAL_VIDEO_SCALE_BILINEAR) {
-				if (visual_cpu_get_mmx ())
+				if (visual_cpu_has_mmx ())
 					_lv_scale_bilinear_32_mmx (dest, src);
 				else
 					visual_video_scale_bilinear_color32 (dest, src);

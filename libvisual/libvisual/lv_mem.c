@@ -27,7 +27,7 @@
 #include "lv_cpu.h"
 #include <string.h>
 #include <stdlib.h>
-#include <gettext.h>
+#include "gettext.h"
 
 
 /* Standard C fallbacks */
@@ -74,7 +74,7 @@ int visual_mem_initialize ()
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-	if (visual_cpu_get_mmx () > 0) {
+	if (visual_cpu_has_mmx ()) {
 		visual_mem_copy = mem_copy_mmx;
 		visual_mem_set = mem_set8_mmx;
 		visual_mem_set16 = mem_set16_mmx;
@@ -83,11 +83,11 @@ int visual_mem_initialize ()
 
 	/* The k6-II and k6-III don't have mmx2, but of course can use the prefetch
 	 * facility that 3dnow provides. */
-	if (visual_cpu_get_3dnow () > 0) {
+	if (visual_cpu_has_3dnow ()) {
 		visual_mem_copy = mem_copy_3dnow;
 	}
 
-	if (visual_cpu_get_mmx2 () > 0) {
+	if (visual_cpu_has_mmx2 ()) {
 		visual_mem_copy = mem_copy_mmx2;
 		visual_mem_set = mem_set8_mmx2;
 		visual_mem_set16 = mem_set16_mmx2;

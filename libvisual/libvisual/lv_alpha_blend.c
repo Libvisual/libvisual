@@ -32,7 +32,7 @@ VisAlphaBlendFunc visual_alpha_blend_32 = alpha_blend_32_c;
 
 void visual_alpha_blend_initialize (void)
 {
-	if (visual_cpu_get_mmx () > 0) {
+	if (visual_cpu_has_mmx ()) {
 		visual_alpha_blend_8  = alpha_blend_8_mmx;
 		visual_alpha_blend_32 = alpha_blend_32_mmx;
 	}
