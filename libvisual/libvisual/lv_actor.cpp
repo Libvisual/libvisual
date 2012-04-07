@@ -104,7 +104,7 @@ VisPluginData *visual_actor_get_plugin (VisActor *actor)
 
 const char *visual_actor_get_next_by_name_gl (const char *name)
 {
-    const char *next;
+    const char *next = NULL;
     bool have_gl;
 
     do {
