@@ -48,11 +48,11 @@ public:
         close ();
     }
 
-    virtual int create (VisVideoDepth depth,
-                        VisVideoAttributeOptions const* vidoptions,
-                        unsigned int width,
-                        unsigned int height,
-                        bool resizable)
+    virtual bool create (VisVideoDepth depth,
+                         VisVideoAttributeOptions const* vidoptions,
+                         unsigned int width,
+                         unsigned int height,
+                         bool resizable)
     {
         unsigned int pixel_size = visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8;
 
@@ -64,48 +64,44 @@ public:
         m_height = height;
         m_depth  = depth;
 
-        return 0;
+        return true;
     }
 
-    virtual int close ()
+    virtual void close ()
     {
-        return 0;
+        // nothing to do
     }
 
-    virtual int lock ()
+    virtual void lock ()
     {
-        return 0;
+        // nothing to do
     }
 
-    virtual int unlock ()
+    virtual void unlock ()
     {
-        return 0;
+        // nothing to do
     }
 
-    virtual int set_fullscreen (bool fullscreen, bool autoscale)
+    virtual void set_fullscreen (bool fullscreen, bool autoscale)
     {
-        return 0;
+        // nothing to do
     }
 
-    virtual int get_video (VisVideo* screen)
+    virtual void get_video (VisVideo* screen)
     {
         visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
         visual_video_set_dimension (screen, m_width, m_height);
         visual_video_set_buffer (screen, &m_area[0]);
-
-        return 0;
     }
 
-    virtual int update_rect (LV::Rect const& rect)
+    virtual void update_rect (LV::Rect const& rect)
     {
-        // write data
         write(STDOUT_FILENO, &m_area[0], m_area.size());
-        return 0;
     }
 
-    virtual int drain_events (VisEventQueue& eventqueue)
+    virtual void drain_events (VisEventQueue& eventqueue)
     {
-        return 0;
+        // nothing to do
     }
 
 private:

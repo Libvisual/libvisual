@@ -8,16 +8,15 @@ class SADisplay;
 class SADisplayDriver {
 public:
 
-    virtual int create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
-						unsigned int width, unsigned int height, bool resizable) = 0;
-    virtual int close  () = 0;
-    virtual int lock   () = 0;
-    virtual int unlock () = 0;
-    virtual int set_fullscreen (bool fullscreen, bool autoscale) = 0;
-    virtual int update_rect (LV::Rect const& rect) = 0;
-    virtual int drain_events (VisEventQueue& eventqueue) = 0;
-
-    virtual int get_video (VisVideo* screen) = 0;
+    virtual bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+                         unsigned int width, unsigned int height, bool resizable) = 0;
+    virtual void close  () = 0;
+    virtual void lock   () = 0;
+    virtual void unlock () = 0;
+    virtual void set_fullscreen (bool fullscreen, bool autoscale) = 0;
+    virtual void update_rect (LV::Rect const& rect) = 0;
+    virtual void drain_events (VisEventQueue& eventqueue) = 0;
+    virtual void get_video (VisVideo* screen) = 0;
 
     virtual ~SADisplayDriver () {}
 };

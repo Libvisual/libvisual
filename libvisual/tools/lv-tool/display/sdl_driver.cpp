@@ -71,8 +71,8 @@ public:
         close ();
     }
 
-    virtual int create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
-                        unsigned int width, unsigned int height, bool resizable)
+    virtual bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+                         unsigned int width, unsigned int height, bool resizable)
     {
         int videoflags = 0;
 
@@ -82,7 +82,7 @@ public:
         if (!SDL_WasInit (SDL_INIT_VIDEO)) {
             if (SDL_Init (SDL_INIT_VIDEO) == -1) {
                 std::cerr << "Unable to init SDL VIDEO: " << SDL_GetError () << std::endl;
-                return -1;
+                return false;
             }
         }
 
@@ -133,38 +133,32 @@ public:
 
         m_running = true;
 
-        return 0;
+        return true;
     }
 
-    virtual int close ()
+    virtual void close ()
     {
         if (!m_running)
-            return 0;
+            return;
 
         SDL_Quit ();
 
         m_running = false;
-
-        return 0;
     }
 
-    virtual int lock ()
+    virtual void lock ()
     {
         if (SDL_MUSTLOCK (m_screen))
             SDL_LockSurface (m_screen);
-
-        return 0;
     }
 
-    virtual int unlock ()
+    virtual void unlock ()
     {
         if (SDL_MUSTLOCK (m_screen) == SDL_TRUE)
             SDL_UnlockSurface (m_screen);
-
-        return 0;
     }
 
-    virtual int set_fullscreen (bool fullscreen, bool autoscale)
+    virtual void set_fullscreen (bool fullscreen, bool autoscale)
     {
         if (fullscreen) {
             if (!(m_screen->flags & SDL_FULLSCREEN)) {
@@ -194,11 +188,9 @@ public:
                 }
             }
         }
-
-        return 0;
     }
 
-    virtual int get_video (VisVideo* screen)
+    virtual void get_video (VisVideo* screen)
     {
         if (m_requested_depth == VISUAL_VIDEO_DEPTH_GL)
             visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
@@ -208,11 +200,9 @@ public:
         visual_video_set_dimension (screen, m_screen->w, m_screen->h);
         visual_video_set_pitch (screen, m_screen->pitch);
         visual_video_set_buffer (screen, m_screen->pixels);
-
-        return 0;
     }
 
-    virtual int update_rect (LV::Rect const& rect)
+    virtual void update_rect (LV::Rect const& rect)
     {
         if (m_screen->format->BitsPerPixel == 8) {
             SDL_Color colors[256];
@@ -242,11 +232,9 @@ public:
             SDL_GL_SwapBuffers ();
         else
             SDL_UpdateRect (m_screen, rect.x, rect.y, rect.width, rect.height);
-
-        return 0;
     }
 
-    virtual int drain_events (VisEventQueue& eventqueue)
+    virtual void drain_events (VisEventQueue& eventqueue)
     {
         // Visible or not
 
@@ -303,8 +291,6 @@ public:
                     break;
             }
         }
-
-        return 0;
     }
 
 private:

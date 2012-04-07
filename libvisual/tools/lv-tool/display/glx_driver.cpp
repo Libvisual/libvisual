@@ -64,8 +64,8 @@ public:
         close ();
     }
 
-    virtual int create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
-                        unsigned int width, unsigned int height, bool resizable)
+    virtual bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+                         unsigned int width, unsigned int height, bool resizable)
     {
         lv_x11_key_init (&m_key);
 
@@ -164,10 +164,10 @@ public:
         return 0;
     }
 
-    virtual int close ()
+    virtual void close ()
     {
         if (!m_running)
-            return 0;
+            return;
 
         if (m_ctx) {
             if (!glXMakeCurrent (m_dpy, None, NULL)) {
@@ -188,20 +188,20 @@ public:
 
         m_running = false;
 
-        return 0;
+        return;
     }
 
-    virtual int lock ()
+    virtual void lock ()
     {
         return 0;
     }
 
-    virtual int unlock ()
+    virtual void unlock ()
     {
         return 0;
     }
 
-    virtual int set_fullscreen (bool fullscreen, bool autoscale)
+    virtual void set_fullscreen (bool fullscreen, bool autoscale)
     {
         // GLXNative *native = GLX_NATIVE (display->native);
         // Surface *screen = m_screen;
@@ -233,29 +233,23 @@ public:
         //                            m_oldheight, m_resizable);
         //     }
         // }
-
-        return 0;
     }
 
-    virtual int get_video (VisVideo* screen)
+    virtual void get_video (VisVideo* screen)
     {
         visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
 
         visual_video_set_dimension (screen, m_width, m_height);
 
         m_video = screen;
-
-        return 0;
     }
 
-    virtual int update_rect (LV::Rect const& rect)
+    virtual void update_rect (LV::Rect const& rect)
     {
         glXSwapBuffers (m_dpy, m_win);
-
-        return 0;
     }
 
-    virtual int drain_events (VisEventQueue& eventqueue)
+    virtual void drain_events (VisEventQueue& eventqueue)
     {
         XEvent xevent;
 
@@ -324,8 +318,6 @@ public:
                     break;
             }
         }
-
-        return 0;
     }
 
 private:

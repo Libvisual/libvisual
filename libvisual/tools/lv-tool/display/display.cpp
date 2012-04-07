@@ -124,35 +124,35 @@ VisVideo* SADisplay::get_screen () const
     return m_impl->screen;
 }
 
-int SADisplay::create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+bool SADisplay::create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
                        unsigned int width, unsigned int height, bool resizable)
 {
     return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
 
-int SADisplay::close ()
+void SADisplay::close ()
 {
-    return m_impl->driver->close ();
+    m_impl->driver->close ();
 }
 
-VisVideo* SADisplay::get_video ()
+VisVideo* SADisplay::get_video () const
 {
     m_impl->driver->get_video (m_impl->screen);
 
     return m_impl->screen;
 }
 
-int SADisplay::lock ()
+void SADisplay::lock ()
 {
-    return m_impl->driver->lock ();
+    m_impl->driver->lock ();
 }
 
-int SADisplay::unlock ()
+void SADisplay::unlock ()
 {
-    return m_impl->driver->unlock ();
+    m_impl->driver->unlock ();
 }
 
-int SADisplay::update_all ()
+void SADisplay::update_all ()
 {
     VisVideo *video = get_video ();
     LV::Rect rect (0, 0, video->width, video->height);
@@ -162,22 +162,22 @@ int SADisplay::update_all ()
     if (!m_impl->timer.is_active ())
         m_impl->timer.start ();
 
-    return m_impl->driver->update_rect (rect);
+    m_impl->driver->update_rect (rect);
 }
 
-int SADisplay::update_rect (LV::Rect const& rect)
+void SADisplay::update_rect (LV::Rect const& rect)
 {
-    return m_impl->driver->update_rect (rect);
+    m_impl->driver->update_rect (rect);
 }
 
-int SADisplay::set_fullscreen (bool fullscreen, bool autoscale)
+void SADisplay::set_fullscreen (bool fullscreen, bool autoscale)
 {
-    return m_impl->driver->set_fullscreen (fullscreen, autoscale);
+    m_impl->driver->set_fullscreen (fullscreen, autoscale);
 }
 
-int SADisplay::drain_events (VisEventQueue& eventqueue)
+void SADisplay::drain_events (VisEventQueue& eventqueue)
 {
-    return m_impl->driver->drain_events (eventqueue);
+    m_impl->driver->drain_events (eventqueue);
 }
 
 void SADisplay::set_fps_limit (unsigned int fps)

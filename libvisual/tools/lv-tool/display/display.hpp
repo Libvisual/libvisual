@@ -38,24 +38,24 @@ public:
 
     ~SADisplay ();
 
-    int create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
-		unsigned int width, unsigned int height, bool resizable = true);
+    bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+        unsigned int width, unsigned int height, bool resizable = true);
 
-    int close ();
+    void close ();
 
-    int lock ();
+    void lock ();
 
-    int unlock ();
+    void unlock ();
 
-    int update_all ();
+    void update_all ();
 
-    int update_rect (LV::Rect const& rect);
+    void update_rect (LV::Rect const& rect);
 
-    VisVideo* get_video ();
+    VisVideo* get_video () const;
 
-    int set_fullscreen (bool fullscreen, bool autoscale);
+    void set_fullscreen (bool fullscreen, bool autoscale);
 
-    int drain_events (VisEventQueue& eventqueue);
+    void drain_events (VisEventQueue& eventqueue);
 
     void set_fps_limit (unsigned int fps);
 
@@ -69,7 +69,6 @@ private:
 
     class Impl;
     LV::ScopedPtr<Impl> m_impl;
-
 };
 
 #endif // _LV_TOOL_DISPLAY_HPP
