@@ -193,12 +193,12 @@ public:
 
     virtual void lock ()
     {
-        return 0;
+        // nothing to do
     }
 
     virtual void unlock ()
     {
-        return 0;
+        // nothing to do
     }
 
     virtual void set_fullscreen (bool fullscreen, bool autoscale)
