@@ -22,14 +22,11 @@
  */
 
 
-#ifndef _LV_STDOUT_DRIVER_H
-#define _LV_STDOUT_DRIVER_H
+#ifndef _LV_STDOUT_DRIVER_HPP
+#define _LV_STDOUT_DRIVER_HPP
 
+#include "display_driver.hpp"
 
+SADisplayDriver *stdout_driver_new (SADisplay& display);
 
-
-SADisplayDriver *       stdout_driver_new();
-
-
-
-#endif /* _LV_STDOUT_DRIVER_H */
+#endif /* _LV_STDOUT_DRIVER_HPP */

@@ -1,9 +1,8 @@
-#ifndef _LV_STANDALONE_GLXDRIVER_H
-#define _LV_STANDALONE_GLXDRIVER_H
+#ifndef _LV_TOOL_GLX_DRIVER_HPP
+#define _LV_TOOL_GLX_DRIVER_HPP
 
-#include "display.hpp"
+#include "display_driver.hpp"
 
-/* prototypes */
-SADisplayDriver *glx_driver_new (void);
+SADisplayDriver *glx_driver_new (SADisplay& display);
 
-#endif /* _LV_STANDALONE_GLXDRIVER_H */
+#endif // _LV_TOOL_GLX_DRIVER_HPP

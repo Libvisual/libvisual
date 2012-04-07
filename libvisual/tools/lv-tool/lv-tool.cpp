@@ -25,9 +25,9 @@
 #include "display/display.hpp"
 #include <libvisual/libvisual.h>
 #include <cstdio>
+#include <iostream>
 #include <cstdlib>
 #include <cstring>
-#include <vector>
 #include <getopt.h>
 
 /* defaults */
@@ -56,18 +56,17 @@ namespace {
   struct SADisplayDriverDescription
   {
 	  std::string name;
-      SADisplayDriver *(*creator)();
   };
 
   SADisplayDriverDescription const all_display_drivers[] =
   {
 #ifdef HAVE_SDL
-      { "sdl"   , &sdl_driver_new    },
+      { "sdl"    },
 #endif
 #ifdef HAVE_GLX
-      { "glx"   , &glx_driver_new    },
+      { "glx"    },
 #endif
-      { "stdout", &stdout_driver_new },
+      { "stdout" }
   };
 
 } // anonymous namespace
@@ -308,273 +307,260 @@ static void v_cycleMorph ()
  ******************************************************************************/
 int main (int argc, char **argv)
 {
-        int depthflag;
-        VisVideoDepth depth;
+	// print warm welcome
+	std::fprintf(stderr, "%s v0.1\n", argv[0]);
 
-        bool running = true;
-        bool visible = true;
+	// initialize libvisual once (this is meant to be called only once,
+	// visual_init() after visual_quit() results in undefined state)
+	visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+	visual_init (&argc, &argv);
 
-        /* print warm welcome */
-        std::fprintf(stderr, "%s v0.1\n", argv[0]);
+	try {
+        // parse commandline arguments
+        if (_parse_args(argc, argv) != EXIT_SUCCESS)
+		    throw std::runtime_error ("Failed to parse arguments");
 
-        /**
-         * initialize libvisual once (this is meant to be called only once,
-         * visual_init() after visual_quit() results in undefined state)
-         */
-        visual_log_set_verbosity(VISUAL_LOG_DEBUG);
-        visual_init (&argc, &argv);
-
-        /* parse commandline arguments */
-        if(_parse_args(argc, argv) != EXIT_SUCCESS)
-                goto _m_exit;
-
-        /* create new VisBin for video output */
-        VisBin *bin;
-        bin = visual_bin_new();
+        // create new VisBin for video output
+        VisBin *bin = visual_bin_new();
         visual_bin_set_supported_depth(bin, VISUAL_VIDEO_DEPTH_ALL);
         visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
 
-        /* initialize actor plugin */
-        std::fprintf(stderr, "Loading actor \"%s\"...\n", actor_name.c_str());
+        // initialize actor plugin
+        std::fprintf (stderr, "Loading actor \"%s\"...\n", actor_name.c_str ());
         VisActor *actor;
-        if(!(actor = visual_actor_new(actor_name.c_str())))
-        {
-                std::fprintf(stderr, "Failed to load actor \"%s\"\n", actor_name.c_str());
-                goto _m_exit;
+        if(!(actor = visual_actor_new (actor_name.c_str ()))) {
+			throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
         }
 
-        /* Set random seed */
+        // Set random seed
         if (have_seed) {
-                VisPluginData    *plugin_data = visual_actor_get_plugin(actor);
-                VisRandomContext *r_context   = visual_plugin_get_random_context (plugin_data);
+			VisPluginData    *plugin_data = visual_actor_get_plugin(actor);
+			VisRandomContext *r_context   = visual_plugin_get_random_context (plugin_data);
 
-                visual_random_context_set_seed (r_context, seed);
-                seed++;
+			visual_random_context_set_seed (r_context, seed);
+			seed++;
         }
 
-        /* initialize input plugin */
-        std::fprintf(stderr, "Loading input \"%s\"...\n", input_name.c_str());
+        // initialize input plugin
+        std::fprintf (stderr, "Loading input \"%s\"...\n", input_name.c_str());
         VisInput *input;
-        if(!(input = visual_input_new(input_name.c_str())))
-        {
-                std::fprintf(stderr, "Failed to load input \"%s\"\n", input_name.c_str());
-                goto _m_exit;
+        if (!(input = visual_input_new(input_name.c_str()))) {
+		    throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
 
-        /* handle depth? */
-        if((depthflag = visual_actor_get_supported_depth(actor))
-           == VISUAL_VIDEO_DEPTH_GL)
+        // handle depth?
+
+        VisVideoDepth depth;
+        int depthflag;
+
+        if ((depthflag = visual_actor_get_supported_depth (actor)) == VISUAL_VIDEO_DEPTH_GL)
         {
-                depth = visual_video_depth_get_highest(depthflag);
-                visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
+			depth = visual_video_depth_get_highest (depthflag);
+			visual_bin_set_depth (bin, VISUAL_VIDEO_DEPTH_GL);
         }
         else
         {
-                depth = visual_video_depth_get_highest_nogl(depthflag);
-                if((bin->depthflag & depth) > 0)
-                {
-                        visual_bin_set_depth(bin, depth);
-                }
-                else
-                {
-                        visual_bin_set_depth(bin,
-                                             visual_video_depth_get_highest_nogl(
-                                                                                 bin->depthflag));
-                }
+			depth = visual_video_depth_get_highest_nogl(depthflag);
+			if ((bin->depthflag & depth) > 0)
+            {
+				visual_bin_set_depth(bin, depth);
+			}
+			else
+            {
+				visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
+			}
         }
 
         bin->depthforcedmain = bin->depth;
 
-        VisVideoAttributeOptions *vidoptions;
-        vidoptions = visual_actor_get_video_attribute_options(actor);
+        VisVideoAttributeOptions const* vidoptions =
+		    visual_actor_get_video_attribute_options(actor);
 
+        // initialize display
+        SADisplay display (all_display_drivers[driver].name);
 
-        /* initialize display */
-        SADisplay *display;
-        if(!(display = display_new(all_display_drivers[driver].creator())))
-        {
-                std::fprintf(stderr, "Failed to initialize display.\n");
-                goto _m_exit;
-        }
+        // create display
+        display.create(depth, vidoptions, width, height, true);
 
-        /* create display */
-        display_create(display, depth, vidoptions, width, height, TRUE);
         VisVideo *video;
-        if(!(video = display_get_video(display)))
+        if(!(video = display.get_video()))
         {
-                std::fprintf(stderr, "Failed to get VisVideo from display.\n");
-                goto _m_exit_display;
+			std::fprintf(stderr, "Failed to get VisVideo from display.\n");
+			throw;
         }
 
-        /* put it all together */
+        // put it all together
         visual_bin_connect(bin, actor, input);
         visual_bin_set_video(bin, video);
         visual_bin_realize(bin);
         visual_bin_sync(bin, FALSE);
         visual_bin_depth_changed(bin);
 
-        /* get a queue to handle events */
+        // get a queue to handle events
         VisEventQueue *localqueue;
         localqueue = visual_event_queue_new ();
 
+        // main loop
+        bool running = true;
+		bool visible = true;
 
-        /* main loop */
         while (running)
         {
-                VisEventQueue *pluginqueue;
-                VisEvent *ev;
+			VisEventQueue *pluginqueue;
+			VisEvent *ev;
 
-                /* Handle all events */
-                display_drain_events(display, localqueue);
+			// Handle all events
+			display.drain_events(*localqueue);
 
-                pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin->actor));
-                while(visual_event_queue_poll_by_reference(localqueue, &ev))
-                {
+			pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin->actor));
 
-                        if(ev->type != VISUAL_EVENT_RESIZE)
-                                visual_event_queue_add (pluginqueue, ev);
+			while (visual_event_queue_poll_by_reference(localqueue, &ev))
+			{
+				if(ev->type != VISUAL_EVENT_RESIZE)
+					visual_event_queue_add (pluginqueue, ev);
 
-                        switch (ev->type)
-                        {
-                                case VISUAL_EVENT_PARAM:
-                                {
-                                        break;
-                                }
+				switch (ev->type)
+				{
+                    case VISUAL_EVENT_PARAM:
+					{
+						break;
+					}
 
-                                case VISUAL_EVENT_RESIZE:
-                                {
-                                        display_lock(display);
-                                        width = ev->event.resize.width;
-                                        height = ev->event.resize.height;
-                                        display_create(display, depth, vidoptions, width, height, TRUE);
-                                        video = display_get_video (display);
+				    case VISUAL_EVENT_RESIZE:
+					{
+						display.lock();
+						width = ev->event.resize.width;
+						height = ev->event.resize.height;
+						display.create(depth, vidoptions, width, height, true);
+						video = display.get_video ();
 
-                                        visual_bin_set_video (bin, video);
-                                        visual_actor_video_negotiate (bin->actor, depth, FALSE, FALSE);
+						visual_bin_set_video (bin, video);
+						visual_actor_video_negotiate (bin->actor, depth, FALSE, FALSE);
 
-                                        display_unlock(display);
-                                        break;
-                                }
+						display.unlock();
+						break;
+					}
 
-                                case VISUAL_EVENT_MOUSEMOTION:
-                                {
-                                        break;
-                                }
+				    case VISUAL_EVENT_MOUSEMOTION:
+					{
+						break;
+					}
 
-                                case VISUAL_EVENT_MOUSEBUTTONDOWN:
-                                {
-                                        /* switch to next actor */
-                                        v_cycleActor(1);
-                                        v_cycleMorph();
+				    case VISUAL_EVENT_MOUSEBUTTONDOWN:
+					{
+						// switch to next actor
+						v_cycleActor(1);
+						v_cycleMorph();
 
-                                        visual_bin_set_morph_by_name(bin, morph_name.c_str());
-                                        visual_bin_switch_actor_by_name(bin, actor_name.c_str());
+						visual_bin_set_morph_by_name(bin, morph_name.c_str());
+						visual_bin_switch_actor_by_name(bin, actor_name.c_str());
 
-                                        /* get new actor */
-                                        actor = visual_bin_get_actor(bin);
+						// get new actor
+						actor = visual_bin_get_actor(bin);
 
-                                        /* handle depth of new actor */
-                                        depthflag = visual_actor_get_supported_depth(actor);
-                                        if(depthflag == VISUAL_VIDEO_DEPTH_GL)
-                                                visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
-                                        else
-                                        {
-                                                depth = visual_video_depth_get_highest(depthflag);
-                                                if((bin->depthflag & depth) > 0)
-                                                        visual_bin_set_depth(bin, depth);
-                                                else
-                                                        visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
-                                        }
-                                        bin->depthforcedmain = bin->depth;
-                                        break;
-                                }
+						// handle depth of new actor
+						depthflag = visual_actor_get_supported_depth(actor);
+						if (depthflag == VISUAL_VIDEO_DEPTH_GL)
+						{
+							visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
+						}
+						else
+						{
+							depth = visual_video_depth_get_highest(depthflag);
+							if ((bin->depthflag & depth) > 0)
+								visual_bin_set_depth(bin, depth);
+							else
+								visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
+						}
+						bin->depthforcedmain = bin->depth;
+						break;
+					}
 
-                                case VISUAL_EVENT_MOUSEBUTTONUP:
-                                {
-                                        break;
-                                }
+				    case VISUAL_EVENT_MOUSEBUTTONUP:
+					{
+						break;
+					}
 
-                                case VISUAL_EVENT_KEYDOWN:
-                                {
-                                        switch(ev->event.keyboard.keysym.sym)
-                                        {
-                                                case VKEY_ESCAPE:
-                                                {
-                                                        running = false;
-                                                        break;
-                                                }
+				    case VISUAL_EVENT_KEYDOWN:
+					{
+						switch(ev->event.keyboard.keysym.sym)
+						{
+						    case VKEY_ESCAPE:
+							{
+								running = false;
+								break;
+							}
 
-                                                case VKEY_TAB:
-                                                {
-                                                        break;
-                                                }
+						    case VKEY_TAB:
+							{
+								break;
+							}
 
-                                                default:
-                                                {
-                                                        std::fprintf(stderr, "keypress: %c\n", ev->event.keyboard.keysym.sym);
-                                                        break;
-                                                }
-                                        }
+						    default:
+							{
+								std::fprintf(stderr, "keypress: %c\n", ev->event.keyboard.keysym.sym);
+								break;
+                            }
+						}
 
-                                        break;
-                                }
+						break;
+					}
 
-                                case VISUAL_EVENT_KEYUP:
-                                {
-                                        break;
-                                }
+				    case VISUAL_EVENT_KEYUP:
+					{
+						break;
+					}
 
-                                case VISUAL_EVENT_QUIT:
-                                {
-                                        running = FALSE;
-                                        break;
-                                }
+				    case VISUAL_EVENT_QUIT:
+					{
+						running = FALSE;
+						break;
+					}
 
-                                case VISUAL_EVENT_VISIBILITY:
-                                {
-                                        visible = ev->event.visibility.is_visible;
-                                        break;
-                                }
+				    case VISUAL_EVENT_VISIBILITY:
+					{
+						visible = ev->event.visibility.is_visible;
+						break;
+					}
 
-                                default:
-                                {
-                                        break;
-                                }
-                        }
-                }
+				    default:
+					{
+						break;
+                    }
+				}
+			}
 
-                if(visual_bin_depth_changed(bin))
-                {
-                    display_lock(display);
-                    display_create(display, depth, vidoptions, width, height, TRUE);
-                    VisVideo *video = display_get_video(display);
-                    visual_bin_set_video(bin, video);
-                    visual_bin_sync(bin, TRUE);
-                    display_unlock(display);
-                }
+			if (visual_bin_depth_changed(bin))
+            {
+				display.lock();
+				display.create(depth, vidoptions, width, height, true);
+				VisVideo *video = display.get_video();
+				visual_bin_set_video(bin, video);
+				visual_bin_sync(bin, TRUE);
+				display.unlock();
+			}
 
+			// Do a run cycle
+			if (!visible)
+				continue;
 
-                /* Do a run cycle */
-                if(!visible)
-                        continue;
-
-                display_lock(display);
-                visual_bin_run(bin);
-                display_unlock(display);
-                display_update_all(display);
-                display_fps_limit(display, framerate);
+			display.lock();
+			visual_bin_run(bin);
+			display.unlock();
+			display.update_all();
+			display.set_fps_limit(framerate);
         }
 
+		// cleanup display stuff
+		display.set_fullscreen(false, true);
+	}
+	catch (std::exception& error) {
+	  std::cerr << error.what () << std::endl;
+	}
 
-_m_exit_display:
-                /* cleanup display stuff */
-                display_set_fullscreen(display, FALSE, TRUE);
-                display_free(display);
+	//printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
 
-_m_exit:
-                /* cleanup resources allocated by visual_init() */
-                visual_quit ();
+	visual_quit ();
 
-                //printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
-                return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }

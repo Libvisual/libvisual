@@ -1,10 +1,12 @@
 /* Libvisual - The audio visualisation framework cli tool
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
  * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
+ *                    Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Daniel Hiepler <daniel@niftylight.de>
+ *          Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,100 +23,175 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
+#include "config.h"
 #include "display.hpp"
+#include "stdout_driver.hpp"
 
-SADisplay *display_new (SADisplayDriver *driver)
+#if defined(HAVE_SDL)
+#include "sdl_driver.hpp"
+#endif
+
+#if defined(HAVE_GLX)
+#include "glx_driver.hpp"
+#endif
+
+#include <libvisual/libvisual.h>
+#include <libvisual/lv_singleton.hpp>
+#include <stdexcept>
+#include <string>
+#include <map>
+
+class DriverRegistry
 {
-	SADisplay *display = new SADisplay;
+public:
 
-	visual_object_initialize (VISUAL_OBJECT (display), TRUE, NULL);
+    typedef SADisplayDriver* (*DriverLoader)(SADisplay& display);
 
-	display->driver = driver;
-	display->screen = visual_video_new ();
+    DriverRegistry ()
+    {
+        m_loaders["stdout"] = stdout_driver_new;
+#if defined(HAVE_SDL)
+        m_loaders["sdl"] = sdl_driver_new;
+#endif
+#if defined(HAVE_GLX)
+        m_loaders["glx"] = glx_driver_new;
+#endif
+    }
 
-	return display;
+    void add_driver (std::string const& name, DriverLoader loader)
+    {
+        m_loaders[name] = loader;
+    }
+
+    SADisplayDriver* load_driver (std::string const& name, SADisplay& display)
+    {
+        LoaderMap::const_iterator entry = m_loaders.find (name);
+
+        if (entry == m_loaders.end())
+            return 0;
+
+        return (*entry->second) (display);
+    }
+
+private:
+
+    typedef std::map<std::string, DriverLoader> LoaderMap;
+
+    LoaderMap m_loaders;
+};
+
+static DriverRegistry driver_registry;
+
+
+class SADisplay::Impl
+{
+public:
+
+    SADisplayDriver *driver;
+    VisVideo        *screen;
+    unsigned int     frames_drawn;
+    LV::Timer        timer;
+
+    Impl ()
+        : driver       (0)
+        , screen       (0)
+        , frames_drawn (0)
+    {}
+
+    ~Impl ()
+    {}
+};
+
+SADisplay::SADisplay (std::string const& driver_name)
+  : m_impl (new Impl)
+{
+    m_impl->driver = driver_registry.load_driver (driver_name, *this);
+
+    if (!m_impl->driver) {
+	    throw std::runtime_error ("Failed to load display driver '" + driver_name + "'");
+    }
+
+    m_impl->screen = visual_video_new ();
 }
 
-int display_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
-		int width, int height, int resizable)
+SADisplay::~SADisplay ()
 {
-	return display->driver->create (display, depth, vidoptions, width, height, resizable);
+    visual_object_unref (VISUAL_OBJECT (m_impl->screen));
+    //delete m_impl->driver;
 }
 
-int display_close (SADisplay *display)
+VisVideo* SADisplay::get_screen () const
 {
-	return display->driver->close (display);
+    return m_impl->screen;
 }
 
-void display_free (SADisplay *display)
+int SADisplay::create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+                       unsigned int width, unsigned int height, bool resizable)
 {
-	display_close (display);
-	delete display;
+    return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
 
-VisVideo *display_get_video (SADisplay *display)
+int SADisplay::close ()
 {
-	display->driver->getvideo (display, display->screen);
-
-	return display->screen;
+    return m_impl->driver->close ();
 }
 
-int display_lock (SADisplay *display)
+VisVideo* SADisplay::get_video ()
 {
-	return display->driver->lock (display);
+    m_impl->driver->get_video (m_impl->screen);
+
+    return m_impl->screen;
 }
 
-int display_unlock (SADisplay *display)
+int SADisplay::lock ()
 {
-	return display->driver->unlock (display);
+    return m_impl->driver->lock ();
 }
 
-int display_update_all (SADisplay *display)
+int SADisplay::unlock ()
 {
-	VisRectangle rect;
-	VisVideo *video = display_get_video (display);
-
-	rect.x = 0;
-	rect.y = 0;
-
-	rect.width = video->width;
-	rect.height = video->height;
-
-	display->frames_drawn++;
-
-	if (!display->timer.is_active ())
-		display->timer.start ();
-
-	return display_update_rectangle (display, &rect);
+    return m_impl->driver->unlock ();
 }
 
-int display_update_rectangle (SADisplay *display, VisRectangle *rect)
+int SADisplay::update_all ()
 {
-	return display->driver->updaterect (display, rect);
+    VisVideo *video = get_video ();
+    LV::Rect rect (0, 0, video->width, video->height);
+
+    m_impl->frames_drawn++;
+
+    if (!m_impl->timer.is_active ())
+        m_impl->timer.start ();
+
+    return m_impl->driver->update_rect (rect);
 }
 
-int display_set_fullscreen (SADisplay *display, int fullscreen, int autoscale)
+int SADisplay::update_rect (LV::Rect const& rect)
 {
-	return display->driver->fullscreen (display, fullscreen, autoscale);
+    return m_impl->driver->update_rect (rect);
 }
 
-int display_drain_events (SADisplay *display, VisEventQueue *eventqueue)
+int SADisplay::set_fullscreen (bool fullscreen, bool autoscale)
 {
-	return display->driver->drainevents (display, eventqueue);
+    return m_impl->driver->set_fullscreen (fullscreen, autoscale);
 }
 
-int display_fps_limit (SADisplay *display, int fps)
+int SADisplay::drain_events (VisEventQueue& eventqueue)
 {
-	return 0;
+    return m_impl->driver->drain_events (eventqueue);
 }
 
-int display_fps_total (SADisplay *display)
+void SADisplay::set_fps_limit (unsigned int fps)
 {
-	return display->frames_drawn;
+    // FIXME: Implement this
 }
 
-float display_fps_average (SADisplay *display)
+unsigned int SADisplay::get_fps_total () const
 {
-	return display->frames_drawn / display->timer.elapsed ().to_secs ();
+    return m_impl->frames_drawn;
+}
+
+float SADisplay::get_fps_average () const
+{
+    return m_impl->frames_drawn / m_impl->timer.elapsed ().to_secs ();
 }
