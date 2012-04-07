@@ -284,7 +284,11 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
 {
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	video->pal = pal;
+	if (video->pal) {
+		visual_palette_free (video->pal);
+	}
+
+	video->pal = pal ? visual_palette_clone (pal) : NULL;
 
 	return VISUAL_OK;
 }
