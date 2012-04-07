@@ -23,7 +23,11 @@
 #include "lv_thread.h"
 #include "lv_common.h"
 #include "gettext.h"
+
+#ifdef VISUAL_THREAD_MODEL_WIN32
+
 #include <windows.h>
+
 
 struct _VisThread {
     HANDLE thread;
@@ -173,3 +177,5 @@ int visual_mutex_unlock (VisMutex *mutex)
 
     return 0;
 }
+
+#endif /* VISUAL_THREAD_MODEL_WIN32 */
