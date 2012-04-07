@@ -77,7 +77,7 @@ void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc func, vo
 }
 
 void _lv_log (VisLogSeverity severity,
-#if defined(_LV_HAVE_LOG_SOURCE)
+#if defined(_LV_LOG_HAVE_SOURCE)
     const char *file, int line, const char *funcname,
 #endif
     const char *fmt, ...)
