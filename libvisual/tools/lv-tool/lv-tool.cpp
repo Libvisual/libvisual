@@ -42,33 +42,33 @@
 /* local variables */
 namespace {
 
-char actor_name[128];
-char input_name[128];
-char morph_name[128];
-int  width;
-int  height;
-int  framerate;
-int  driver;
-int  have_seed;
-uint32_t seed;
+  std::string actor_name = DEFAULT_ACTOR;
+  std::string input_name = DEFAULT_INPUT;
+  std::string morph_name = DEFAULT_MORPH;
+  int driver = 0;
+  int width  = DEFAULT_WIDTH;
+  int height = DEFAULT_HEIGHT;
+  int framerate = DEFAULT_FPS;
+  int have_seed = 0;
+  uint32_t seed = 0;
 
-/* list of available driver-creators - register new drivers here */
-struct SADisplayDriverDescription
-{
-        const char name[64];
-        SADisplayDriver *(*creator)();
-};
+  /* list of available driver-creators - register new drivers here */
+  struct SADisplayDriverDescription
+  {
+	  std::string name;
+      SADisplayDriver *(*creator)();
+  };
 
-SADisplayDriverDescription const all_display_drivers[] =
-{
+  SADisplayDriverDescription const all_display_drivers[] =
+  {
 #ifdef HAVE_SDL
-        { "sdl"   , &sdl_driver_new    },
+      { "sdl"   , &sdl_driver_new    },
 #endif
 #ifdef HAVE_GLX
-        { "glx"   , &glx_driver_new    },
+      { "glx"   , &glx_driver_new    },
 #endif
-        { "stdout", &stdout_driver_new },
-};
+      { "stdout", &stdout_driver_new },
+  };
 
 } // anonymous namespace
 
@@ -130,10 +130,10 @@ static void _print_help(char *name)
                 "http://github.com/StarVisuals/libvisual",
                 name,
                 width, height,
-                all_display_drivers[0].name,
-                input_name,
-                actor_name,
-                morph_name,
+                all_display_drivers[0].name.c_str (),
+                input_name.c_str (),
+                actor_name.c_str (),
+                morph_name.c_str (),
                 framerate);
 }
 
@@ -193,11 +193,11 @@ static int _parse_args(int argc, char *argv[])
             {
                 unsigned int n;
                 for(n = 0;
-                    n < sizeof(all_display_drivers)/sizeof(SADisplayDriverDescription);
+                    n < VISUAL_TABLESIZE(all_display_drivers);
                     n++)
                 {
                     /* is this our driver? */
-                    if(strcmp(optarg, all_display_drivers[n].name) == 0)
+                    if(all_display_drivers[n].name == optarg)
                     {
                         /* stop search */
                         break;
@@ -205,7 +205,7 @@ static int _parse_args(int argc, char *argv[])
                 }
 
                 /* found something? */
-                if(n < sizeof(all_display_drivers)/sizeof(SADisplayDriverDescription))
+                if(n < VISUAL_TABLESIZE(all_display_drivers))
                 {
                     driver = n;
                     break;
@@ -219,7 +219,7 @@ static int _parse_args(int argc, char *argv[])
             case 'i':
             {
                 /* save name for later */
-                std::strncpy(input_name, optarg, sizeof(input_name)-1);
+				input_name = optarg;
                 break;
             }
 
@@ -227,7 +227,7 @@ static int _parse_args(int argc, char *argv[])
             case 'a':
             {
                 /* save name for later */
-                std::strncpy(actor_name, optarg, sizeof(actor_name)-1);
+                actor_name = optarg;
                 break;
             }
 
@@ -235,7 +235,7 @@ static int _parse_args(int argc, char *argv[])
             case 'm':
             {
                 /* save filename for later */
-                std::strncpy(morph_name, optarg, sizeof(morph_name)-1);
+                morph_name = optarg;
                 break;
             }
 
@@ -279,25 +279,28 @@ static int _parse_args(int argc, char *argv[])
 static void v_cycleActor (int prev)
 {
     const char *name;
-    name = (prev ? visual_actor_get_prev_by_name (actor_name)
-                     : visual_actor_get_next_by_name (actor_name));
-    if (name == NULL) {
-        name = (prev ? visual_actor_get_prev_by_name (0)
-                         : visual_actor_get_next_by_name (0));
-    }
-    std::memset(actor_name, 0, sizeof(actor_name));
-    std::memcpy(actor_name, name, strlen(name));
+
+    name = prev ? visual_actor_get_prev_by_name(actor_name.c_str())
+                : visual_actor_get_next_by_name(actor_name.c_str());
+
+    if (!name) {
+        name = prev ? visual_actor_get_prev_by_name(0)
+                    : visual_actor_get_next_by_name(0);
+	}
+
+    actor_name = name;
 }
 
 static void v_cycleMorph ()
 {
     const char *name;
-    name = visual_morph_get_next_by_name((char *)morph_name);
-    if(name == NULL) {
+
+    name = visual_morph_get_next_by_name(morph_name.c_str());
+    if(!name) {
         name = visual_morph_get_next_by_name(0);
     }
-    std::memset(morph_name, 0, sizeof(morph_name));
-    std::memcpy(morph_name, name, strlen(name));
+
+    morph_name = name;
 }
 
 /******************************************************************************
@@ -310,15 +313,6 @@ int main (int argc, char **argv)
 
         bool running = true;
         bool visible = true;
-
-        /* set defaults */
-        width = DEFAULT_WIDTH;
-        height = DEFAULT_HEIGHT;
-        driver = 0;
-        std::strncpy(actor_name, DEFAULT_ACTOR, sizeof(actor_name)-1);
-        std::strncpy(input_name, DEFAULT_INPUT, sizeof(input_name)-1);
-        std::strncpy(morph_name, DEFAULT_MORPH, sizeof(morph_name)-1);
-        framerate = DEFAULT_FPS;
 
         /* print warm welcome */
         std::fprintf(stderr, "%s v0.1\n", argv[0]);
@@ -341,11 +335,11 @@ int main (int argc, char **argv)
         visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
 
         /* initialize actor plugin */
-        std::fprintf(stderr, "Loading actor \"%s\"...\n", actor_name);
+        std::fprintf(stderr, "Loading actor \"%s\"...\n", actor_name.c_str());
         VisActor *actor;
-        if(!(actor = visual_actor_new(actor_name)))
+        if(!(actor = visual_actor_new(actor_name.c_str())))
         {
-                std::fprintf(stderr, "Failed to load actor \"%s\"\n", actor_name);
+                std::fprintf(stderr, "Failed to load actor \"%s\"\n", actor_name.c_str());
                 goto _m_exit;
         }
 
@@ -359,11 +353,11 @@ int main (int argc, char **argv)
         }
 
         /* initialize input plugin */
-        std::fprintf(stderr, "Loading input \"%s\"...\n", input_name);
+        std::fprintf(stderr, "Loading input \"%s\"...\n", input_name.c_str());
         VisInput *input;
-        if(!(input = visual_input_new(input_name)))
+        if(!(input = visual_input_new(input_name.c_str())))
         {
-                std::fprintf(stderr, "Failed to load input \"%s\"\n", input_name);
+                std::fprintf(stderr, "Failed to load input \"%s\"\n", input_name.c_str());
                 goto _m_exit;
         }
 
@@ -473,8 +467,8 @@ int main (int argc, char **argv)
                                         v_cycleActor(1);
                                         v_cycleMorph();
 
-                                        visual_bin_set_morph_by_name(bin, morph_name);
-                                        visual_bin_switch_actor_by_name(bin, actor_name);
+                                        visual_bin_set_morph_by_name(bin, morph_name.c_str());
+                                        visual_bin_switch_actor_by_name(bin, actor_name.c_str());
 
                                         /* get new actor */
                                         actor = visual_bin_get_actor(bin);
