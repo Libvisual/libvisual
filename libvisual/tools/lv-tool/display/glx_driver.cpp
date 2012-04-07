@@ -14,13 +14,9 @@
 #include "lv_x11_key.hpp"
 #include "glx_driver.hpp"
 
-#define GLX_NATIVE(obj)                 (VISUAL_CHECK_CAST ((obj), GLXNative))
-
-typedef struct _GLXNative GLXNative;
-
 namespace {
 
-  int glx_gl_attribute_map[] = {
+  int const glx_gl_attribute_map[] = {
       -1,                   // VISUAL_GL_ATTRIBUTE_NONE
       GLX_BUFFER_SIZE,      // VISUAL_GL_ATTRIBUTE_BUFFER_SIZE
       GLX_LEVEL,            // VISUAL_GL_ATTRIBUTE_LEVEL
@@ -41,329 +37,313 @@ namespace {
       -1                    // VISUAL_GL_ATTRIBUTE_LAST
   };
 
-  // int get_nearest_resolution (SADisplay *display, int *width, int *height);
-
-  int X11_Pending(Display *display);
+  int X11_Pending (Display *display);
 
   XVisualInfo *get_xvisualinfo_filter_capabilities (Display *dpy, int screen, VisVideoAttributeOptions const* vidoptions);
 
-}
+  class GLXDriver
+      : public SADisplayDriver
+  {
+  public:
 
-class GLXDriver
-    : public SADisplayDriver
-{
-public:
+      GLXDriver (SADisplay& display)
+          : m_display (display)
+          , m_running (false)
+      {}
 
-    GLXDriver (SADisplay& display)
-        : m_display (display)
-        , m_running (false)
-    {}
+      virtual ~GLXDriver ()
+      {
+          close ();
+      }
 
-    virtual ~GLXDriver ()
-    {
-        close ();
-    }
+      virtual bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+                           unsigned int width, unsigned int height, bool resizable)
+      {
+          lv_x11_key_init (&m_key);
 
-    virtual bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
-                         unsigned int width, unsigned int height, bool resizable)
-    {
-        lv_x11_key_init (&m_key);
+          // get a connection
+          m_dpy = XOpenDisplay(0);
+          m_screen = DefaultScreen(m_dpy);
 
-        // get a connection
-        m_dpy = XOpenDisplay(0);
-        m_screen = DefaultScreen(m_dpy);
+          int glxMajorVersion, glxMinorVersion;
+          int vidModeMajorVersion, vidModeMinorVersion;
 
-        int glxMajorVersion, glxMinorVersion;
-        int vidModeMajorVersion, vidModeMinorVersion;
+          XF86VidModeQueryVersion(m_dpy, &vidModeMajorVersion, &vidModeMinorVersion);
+          std::printf ("XF86VidModeExtension-Version %d.%d\n", vidModeMajorVersion, vidModeMinorVersion);
 
-        XF86VidModeQueryVersion(m_dpy, &vidModeMajorVersion, &vidModeMinorVersion);
-        std::printf ("XF86VidModeExtension-Version %d.%d\n", vidModeMajorVersion, vidModeMinorVersion);
+          XF86VidModeModeInfo **modes;
+          int modeNum;
 
-        XF86VidModeModeInfo **modes;
-        int modeNum;
+          XF86VidModeGetAllModeLines(m_dpy, m_screen, &modeNum, &modes);
 
-        XF86VidModeGetAllModeLines(m_dpy, m_screen, &modeNum, &modes);
+          // save desktop-resolution before switching modes
+          m_deskMode = *modes[0];
 
-        // save desktop-resolution before switching modes
-        m_deskMode = *modes[0];
+          // look for mode with requested resolution
+          /*
+            bestMode = 0;
 
-        // look for mode with requested resolution
-        /*
-          bestMode = 0;
+            for (i = 0; i < modeNum; i++)
+            {
+            if ((modes[i]->hdisplay == width) && (modes[i]->vdisplay == height))
+            {
+            bestMode = i;
+            }
+            }
+          */
 
-          for (i = 0; i < modeNum; i++)
-          {
-              if ((modes[i]->hdisplay == width) && (modes[i]->vdisplay == height))
-              {
-                  bestMode = i;
+          // get an appropriate visual
+          XVisualInfo* vi = get_xvisualinfo_filter_capabilities (m_dpy, m_screen, vidoptions);
+          if (!vi) {
+              std::printf ("No visual found.\n");
+              visual_error_raise (VISUAL_ERROR_GENERAL);
+          }
+
+          glXQueryVersion(m_dpy, &glxMajorVersion, &glxMinorVersion);
+          std::printf ("glX-Version %d.%d\n", glxMajorVersion, glxMinorVersion);
+
+          // create a GLX context
+          m_ctx = glXCreateContext(m_dpy, vi, 0, GL_TRUE);
+
+          // create a color map
+          Colormap cmap = XCreateColormap(m_dpy, RootWindow(m_dpy, vi->screen), vi->visual, AllocNone);
+          m_attr.colormap = cmap;
+          m_attr.border_pixel = 0;
+
+          // create a window in window mode
+          m_attr.event_mask = KeyPressMask | KeyReleaseMask
+              | ButtonPressMask | ButtonReleaseMask
+              | StructureNotifyMask | VisibilityChangeMask;
+
+          m_win = XCreateWindow(m_dpy, RootWindow(m_dpy, vi->screen),
+                                0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
+                                CWBorderPixel | CWColormap | CWEventMask, &m_attr);
+
+          XFree (vi);
+
+          // only set window title and handle wm_delete_events if in windowed mode
+
+          Atom wmDelete = XInternAtom(m_dpy, "WM_DELETE_WINDOW", True);
+
+          XSetWMProtocols(m_dpy, m_win, &wmDelete, 1);
+          XSetStandardProperties(m_dpy, m_win, "jahoor", "jahoor", None, NULL, 0, NULL);
+          XMapRaised(m_dpy, m_win);
+
+          // connect the glx-context to the window
+
+          Window winDummy;
+          unsigned int borderDummy;
+
+          glXMakeCurrent(m_dpy, m_win, m_ctx);
+          XGetGeometry(m_dpy, m_win, &winDummy, &m_x, &m_y,
+                       &m_width, &m_height, &borderDummy, &m_depth);
+
+          std::printf ("Depth %d\n", m_depth);
+
+          if (glXIsDirect(m_dpy, m_ctx))
+              std::printf("Congrats, you have Direct Rendering!\n");
+          else
+              std::printf("Sorry, no Direct Rendering possible!\n");
+
+          m_WM_DELETE_WINDOW = XInternAtom(m_dpy, "WM_DELETE_WINDOW", False);
+          XSetWMProtocols(m_dpy, m_win, &m_WM_DELETE_WINDOW, 1);
+
+          m_last_width  = width;
+          m_last_height = height;
+
+          m_running = true;
+
+          return 0;
+      }
+
+      virtual void close ()
+      {
+          if (!m_running)
+              return;
+
+          if (m_ctx) {
+              if (!glXMakeCurrent (m_dpy, None, NULL)) {
+                  printf("Could not release drawing context.\n");
+              }
+
+              glXDestroyContext (m_dpy, m_ctx);
+              m_ctx = NULL;
+          }
+
+          // switch back to original desktop resolution if we were in fs
+          if (m_fs) {
+              XF86VidModeSwitchToMode (m_dpy, m_screen, &m_deskMode);
+              XF86VidModeSetViewPort (m_dpy, m_screen, 0, 0);
+          }
+
+          XCloseDisplay (m_dpy);
+
+          m_running = false;
+
+          return;
+      }
+
+      virtual void lock ()
+      {
+          // nothing to do
+      }
+
+      virtual void unlock ()
+      {
+          // nothing to do
+      }
+
+      virtual void set_fullscreen (bool fullscreen, bool autoscale)
+      {
+          // GLXNative *native = GLX_NATIVE (display->native);
+          // Surface *screen = m_screen;
+
+          // if (fullscreen == TRUE) {
+          //     if (!(screen->flags & FULLSCREEN)) {
+          //         if (autoscale == TRUE) {
+          //             int width = display->screen->width;
+          //             int height = display->screen->height;
+
+          //             m_oldwidth = width;
+          //             m_oldheight = height;
+
+          //             get_nearest_resolution (display, &width, &height);
+
+          //             native_create (display, m_requested_depth, NULL, width, height, m_resizable);
+          //         }
+
+          //         ShowCursor (SDL_FALSE);
+          //         WM_ToggleFullScreen (screen);
+          //     }
+          // } else {
+          //     if ((screen->flags & FULLSCREEN)) {
+          //         ShowCursor (SDL_TRUE);
+          //         WM_ToggleFullScreen (screen);
+
+          //         if (autoscale == TRUE)
+          //             native_create (display, m_requested_depth, NULL, m_oldwidth,
+          //                            m_oldheight, m_resizable);
+          //     }
+          // }
+      }
+
+      virtual void get_video (VisVideo* screen)
+      {
+          visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
+
+          visual_video_set_dimension (screen, m_width, m_height);
+
+          m_video = screen;
+      }
+
+      virtual void update_rect (LV::Rect const& rect)
+      {
+          glXSwapBuffers (m_dpy, m_win);
+      }
+
+      virtual void drain_events (VisEventQueue& eventqueue)
+      {
+          XEvent xevent;
+
+          while (X11_Pending (m_dpy) > 0) {
+              VisKeySym keysym;
+
+              XNextEvent (m_dpy, &xevent);
+
+              switch (xevent.type) {
+              case ConfigureNotify:
+                  if (xevent.xconfigure.width  != int (m_last_width) ||
+                      xevent.xconfigure.height != int (m_last_height)) {
+
+                      m_width = xevent.xconfigure.width;
+                      m_height = xevent.xconfigure.height;
+
+                      visual_event_queue_add_resize (&eventqueue, m_video,
+                                                     xevent.xconfigure.width, xevent.xconfigure.height);
+                  }
+
+                  break;
+
+              case ButtonPress:
+                  visual_event_queue_add_mousebutton (&eventqueue, xevent.xbutton.button, VISUAL_MOUSE_DOWN,
+                                                      xevent.xbutton.x, xevent.xbutton.y);
+                  break;
+
+              case ButtonRelease:
+                  visual_event_queue_add_mousebutton (&eventqueue, xevent.xbutton.button, VISUAL_MOUSE_UP,
+                                                      xevent.xbutton.x, xevent.xbutton.y);
+                  break;
+
+              case KeyPress:
+                  lv_x11_key_lookup (&m_key, m_dpy, &xevent.xkey, xevent.xkey.keycode, &keysym, TRUE);
+                  visual_event_queue_add_keyboard (&eventqueue, keysym.sym, keysym.mod, VISUAL_KEY_DOWN);
+
+                  break;
+
+              case KeyRelease:
+                  lv_x11_key_lookup (&m_key, m_dpy, &xevent.xkey, xevent.xkey.keycode, &keysym, FALSE);
+                  visual_event_queue_add_keyboard (&eventqueue, keysym.sym, keysym.mod, VISUAL_KEY_UP);
+
+                  break;
+
+              case ClientMessage:
+                  if (xevent.xclient.format == 32 &&
+                      xevent.xclient.data.l[0] == int(m_WM_DELETE_WINDOW)) {
+
+                      visual_event_queue_add_quit (&eventqueue, FALSE);
+                  }
+
+                  break;
+
+              case MotionNotify:
+                  visual_event_queue_add_mousemotion (&eventqueue, xevent.xmotion.x, xevent.xmotion.y);
+                  break;
+
+              case VisibilityNotify:
+                  if (xevent.xvisibility.state == VisibilityUnobscured ||
+                      xevent.xvisibility.state == VisibilityPartiallyObscured) {
+                      visual_event_queue_add_visibility (&eventqueue, TRUE);
+                  } else if (xevent.xvisibility.state == VisibilityFullyObscured) {
+                      visual_event_queue_add_visibility (&eventqueue, FALSE);
+                  }
+
+                  break;
               }
           }
-        */
+      }
 
-        // get an appropriate visual
-        XVisualInfo* vi = get_xvisualinfo_filter_capabilities (m_dpy, m_screen, vidoptions);
-        if (!vi) {
-            std::printf ("No visual found.\n");
-            visual_error_raise (VISUAL_ERROR_GENERAL);
-        }
+  private:
 
-        glXQueryVersion(m_dpy, &glxMajorVersion, &glxMinorVersion);
-        std::printf ("glX-Version %d.%d\n", glxMajorVersion, glxMinorVersion);
+      SADisplay&  m_display;
+      Display    *m_dpy;
+      Window      m_win;
+      int         m_screen;
+      GLXContext  m_ctx;
+      XSetWindowAttributes m_attr;
+      Bool        m_fs;
+      XF86VidModeModeInfo m_deskMode;
 
-        // create a GLX context
-        m_ctx = glXCreateContext(m_dpy, vi, 0, GL_TRUE);
+      VisVideoDepth m_requested_depth;
 
-        // create a color map
-        Colormap cmap = XCreateColormap(m_dpy, RootWindow(m_dpy, vi->screen), vi->visual, AllocNone);
-        m_attr.colormap = cmap;
-        m_attr.border_pixel = 0;
+      LVX11Key m_key;
 
-        // create a window in window mode
-        m_attr.event_mask = KeyPressMask | KeyReleaseMask
-                          | ButtonPressMask | ButtonReleaseMask
-                          | StructureNotifyMask | VisibilityChangeMask;
+      int          m_x;
+      int          m_y;
+      unsigned int m_width;
+      unsigned int m_height;
+      unsigned int m_depth;
 
-        m_win = XCreateWindow(m_dpy, RootWindow(m_dpy, vi->screen),
-                              0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
-                              CWBorderPixel | CWColormap | CWEventMask, &m_attr);
+      unsigned int m_last_width;
+      unsigned int m_last_height;
 
-        XFree (vi);
+      bool         m_running;
 
-        // only set window title and handle wm_delete_events if in windowed mode
+      VisVideo*    m_video;
 
-        Atom wmDelete = XInternAtom(m_dpy, "WM_DELETE_WINDOW", True);
+      // Atoms
+      Atom m_WM_DELETE_WINDOW;
+  };
 
-        XSetWMProtocols(m_dpy, m_win, &wmDelete, 1);
-        XSetStandardProperties(m_dpy, m_win, "jahoor", "jahoor", None, NULL, 0, NULL);
-        XMapRaised(m_dpy, m_win);
-
-        // connect the glx-context to the window
-
-        Window winDummy;
-        unsigned int borderDummy;
-
-        glXMakeCurrent(m_dpy, m_win, m_ctx);
-        XGetGeometry(m_dpy, m_win, &winDummy, &m_x, &m_y,
-                     &m_width, &m_height, &borderDummy, &m_depth);
-
-        std::printf ("Depth %d\n", m_depth);
-
-        if (glXIsDirect(m_dpy, m_ctx))
-            std::printf("Congrats, you have Direct Rendering!\n");
-        else
-            std::printf("Sorry, no Direct Rendering possible!\n");
-
-        m_WM_DELETE_WINDOW = XInternAtom(m_dpy, "WM_DELETE_WINDOW", False);
-        XSetWMProtocols(m_dpy, m_win, &m_WM_DELETE_WINDOW, 1);
-
-        m_lastwidth = width;
-        m_lastheight = height;
-
-        m_running = true;
-
-        return 0;
-    }
-
-    virtual void close ()
-    {
-        if (!m_running)
-            return;
-
-        if (m_ctx) {
-            if (!glXMakeCurrent (m_dpy, None, NULL)) {
-                printf("Could not release drawing context.\n");
-            }
-
-            glXDestroyContext (m_dpy, m_ctx);
-            m_ctx = NULL;
-        }
-
-        // switch back to original desktop resolution if we were in fs
-        if (m_fs) {
-            XF86VidModeSwitchToMode (m_dpy, m_screen, &m_deskMode);
-            XF86VidModeSetViewPort (m_dpy, m_screen, 0, 0);
-        }
-
-        XCloseDisplay (m_dpy);
-
-        m_running = false;
-
-        return;
-    }
-
-    virtual void lock ()
-    {
-        // nothing to do
-    }
-
-    virtual void unlock ()
-    {
-        // nothing to do
-    }
-
-    virtual void set_fullscreen (bool fullscreen, bool autoscale)
-    {
-        // GLXNative *native = GLX_NATIVE (display->native);
-        // Surface *screen = m_screen;
-
-        // if (fullscreen == TRUE) {
-        //     if (!(screen->flags & FULLSCREEN)) {
-        //         if (autoscale == TRUE) {
-        //             int width = display->screen->width;
-        //             int height = display->screen->height;
-
-        //             m_oldwidth = width;
-        //             m_oldheight = height;
-
-        //             get_nearest_resolution (display, &width, &height);
-
-        //             native_create (display, m_requested_depth, NULL, width, height, m_resizable);
-        //         }
-
-        //         ShowCursor (SDL_FALSE);
-        //         WM_ToggleFullScreen (screen);
-        //     }
-        // } else {
-        //     if ((screen->flags & FULLSCREEN)) {
-        //         ShowCursor (SDL_TRUE);
-        //         WM_ToggleFullScreen (screen);
-
-        //         if (autoscale == TRUE)
-        //             native_create (display, m_requested_depth, NULL, m_oldwidth,
-        //                            m_oldheight, m_resizable);
-        //     }
-        // }
-    }
-
-    virtual void get_video (VisVideo* screen)
-    {
-        visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
-
-        visual_video_set_dimension (screen, m_width, m_height);
-
-        m_video = screen;
-    }
-
-    virtual void update_rect (LV::Rect const& rect)
-    {
-        glXSwapBuffers (m_dpy, m_win);
-    }
-
-    virtual void drain_events (VisEventQueue& eventqueue)
-    {
-        XEvent xevent;
-
-        while (X11_Pending (m_dpy) > 0) {
-            VisKeySym keysym;
-
-            XNextEvent (m_dpy, &xevent);
-
-            switch (xevent.type) {
-                case ConfigureNotify:
-                    if (xevent.xconfigure.width  != int (m_lastwidth) ||
-                        xevent.xconfigure.height != int (m_lastheight)) {
-
-                        m_width = xevent.xconfigure.width;
-                        m_height = xevent.xconfigure.height;
-
-                        visual_event_queue_add_resize (&eventqueue, m_video,
-                                                       xevent.xconfigure.width, xevent.xconfigure.height);
-                    }
-
-                    break;
-
-                case ButtonPress:
-                    visual_event_queue_add_mousebutton (&eventqueue, xevent.xbutton.button, VISUAL_MOUSE_DOWN,
-                                                        xevent.xbutton.x, xevent.xbutton.y);
-                    break;
-
-                case ButtonRelease:
-                    visual_event_queue_add_mousebutton (&eventqueue, xevent.xbutton.button, VISUAL_MOUSE_UP,
-                                                        xevent.xbutton.x, xevent.xbutton.y);
-                    break;
-
-                case KeyPress:
-                    lv_x11_key_lookup (&m_key, m_dpy, &xevent.xkey, xevent.xkey.keycode, &keysym, TRUE);
-                    visual_event_queue_add_keyboard (&eventqueue, keysym.sym, keysym.mod, VISUAL_KEY_DOWN);
-
-                    break;
-
-                case KeyRelease:
-                    lv_x11_key_lookup (&m_key, m_dpy, &xevent.xkey, xevent.xkey.keycode, &keysym, FALSE);
-                    visual_event_queue_add_keyboard (&eventqueue, keysym.sym, keysym.mod, VISUAL_KEY_UP);
-
-                    break;
-
-                case ClientMessage:
-                    if (xevent.xclient.format == 32 &&
-                        xevent.xclient.data.l[0] == int(m_WM_DELETE_WINDOW)) {
-
-                        visual_event_queue_add_quit (&eventqueue, FALSE);
-                    }
-
-                    break;
-
-                case MotionNotify:
-                    visual_event_queue_add_mousemotion (&eventqueue, xevent.xmotion.x, xevent.xmotion.y);
-                    break;
-
-                case VisibilityNotify:
-                    if (xevent.xvisibility.state == VisibilityUnobscured ||
-                        xevent.xvisibility.state == VisibilityPartiallyObscured) {
-                        visual_event_queue_add_visibility (&eventqueue, TRUE);
-                    } else if (xevent.xvisibility.state == VisibilityFullyObscured) {
-                        visual_event_queue_add_visibility (&eventqueue, FALSE);
-                    }
-
-                    break;
-            }
-        }
-    }
-
-private:
-
-    SADisplay&  m_display;
-    Display    *m_dpy;
-    Window      m_win;
-    int         m_screen;
-    GLXContext  m_ctx;
-    XSetWindowAttributes m_attr;
-    Bool        m_fs;
-    Bool        m_doubleBuffered;
-    XF86VidModeModeInfo m_deskMode;
-
-    VisVideoDepth m_requested_depth;
-
-    LVX11Key m_key;
-
-    unsigned int m_lastwidth;
-    unsigned int m_lastheight;
-
-    unsigned int m_width;
-    unsigned int m_height;
-    int          m_x;
-    int          m_y;
-
-    unsigned int m_depth;
-
-    int m_oldx;
-    int m_oldy;
-
-    int m_oldwidth;
-    int m_oldheight;
-
-    bool m_resizable;
-    bool m_running;
-
-    VisVideo *m_video;
-
-    // Atoms
-    Atom m_WM_DELETE_WINDOW;
-};
-
-
-namespace
-{
   // Ack!  XPending() actually performs a blocking read if no events available */
   // Taken from SDL
   int X11_Pending(Display *display)

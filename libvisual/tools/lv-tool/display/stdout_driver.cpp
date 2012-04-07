@@ -25,7 +25,6 @@
 #include "display.hpp"
 #include "display_driver.hpp"
 #include <libvisual/libvisual.h>
-
 #include <vector>
 #include <unistd.h>
 
@@ -34,84 +33,88 @@
 #  define STDOUT_FILENO 1
 #endif
 
-class StdoutDriver
-    : public SADisplayDriver
-{
-public:
+namespace {
 
-    StdoutDriver (SADisplay& display)
-        : m_display (display)
-    {}
+  class StdoutDriver
+      : public SADisplayDriver
+  {
+  public:
 
-    virtual ~StdoutDriver ()
-    {
-        close ();
-    }
+      StdoutDriver (SADisplay& display)
+          : m_display (display)
+      {}
 
-    virtual bool create (VisVideoDepth depth,
-                         VisVideoAttributeOptions const* vidoptions,
-                         unsigned int width,
-                         unsigned int height,
-                         bool resizable)
-    {
-        unsigned int pixel_size = visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8;
+      virtual ~StdoutDriver ()
+      {
+          close ();
+      }
 
-        m_area.resize (width * height * pixel_size);
-        visual_mem_set (&m_area[0], 0, m_area.size ());
+      virtual bool create (VisVideoDepth depth,
+                           VisVideoAttributeOptions const* vidoptions,
+                           unsigned int width,
+                           unsigned int height,
+                           bool resizable)
+      {
+          unsigned int pixel_size = visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8;
 
-        // save dimensions
-        m_width  = width;
-        m_height = height;
-        m_depth  = depth;
+          m_area.resize (width * height * pixel_size);
+          visual_mem_set (&m_area[0], 0, m_area.size ());
 
-        return true;
-    }
+          // save dimensions
+          m_width  = width;
+          m_height = height;
+          m_depth  = depth;
 
-    virtual void close ()
-    {
-        // nothing to do
-    }
+          return true;
+      }
 
-    virtual void lock ()
-    {
-        // nothing to do
-    }
+      virtual void close ()
+      {
+          // nothing to do
+      }
 
-    virtual void unlock ()
-    {
-        // nothing to do
-    }
+      virtual void lock ()
+      {
+          // nothing to do
+      }
 
-    virtual void set_fullscreen (bool fullscreen, bool autoscale)
-    {
-        // nothing to do
-    }
+      virtual void unlock ()
+      {
+          // nothing to do
+      }
 
-    virtual void get_video (VisVideo* screen)
-    {
-        visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
-        visual_video_set_dimension (screen, m_width, m_height);
-        visual_video_set_buffer (screen, &m_area[0]);
-    }
+      virtual void set_fullscreen (bool fullscreen, bool autoscale)
+      {
+          // nothing to do
+      }
 
-    virtual void update_rect (LV::Rect const& rect)
-    {
-        write(STDOUT_FILENO, &m_area[0], m_area.size());
-    }
+      virtual void get_video (VisVideo* screen)
+      {
+          visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
+          visual_video_set_dimension (screen, m_width, m_height);
+          visual_video_set_buffer (screen, &m_area[0]);
+      }
 
-    virtual void drain_events (VisEventQueue& eventqueue)
-    {
-        // nothing to do
-    }
+      virtual void update_rect (LV::Rect const& rect)
+      {
+          write(STDOUT_FILENO, &m_area[0], m_area.size());
+      }
 
-private:
+      virtual void drain_events (VisEventQueue& eventqueue)
+      {
+          // nothing to do
+      }
 
-    SADisplay&           m_display;
-    unsigned int         m_width;
-    unsigned int         m_height;
-    VisVideoDepth        m_depth;
-    std::vector<uint8_t> m_area;
-};
+  private:
+
+      SADisplay&           m_display;
+      unsigned int         m_width;
+      unsigned int         m_height;
+      VisVideoDepth        m_depth;
+      std::vector<uint8_t> m_area;
+  };
+
+} // anonymous namespace
 
 // creator
 SADisplayDriver* stdout_driver_new (SADisplay& display)
