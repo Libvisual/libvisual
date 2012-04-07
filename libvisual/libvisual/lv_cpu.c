@@ -331,7 +331,6 @@ static int cpuid (unsigned int ax, unsigned int *p)
 		 : "0" (ax));
 
 	return VISUAL_OK;
-#else
 }
 #endif
 
