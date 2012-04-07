@@ -2,6 +2,7 @@
 #define _LV_SCOPED_PTR_HPP
 
 #include <libvisual/lv_util.hpp>
+#include <algorithm>
 
 namespace LV {
 
@@ -17,6 +18,16 @@ namespace LV {
 	~ScopedPtr ()
 	{
 	    checked_delete (m_ptr);
+	}
+
+	void reset (T* ptr = 0)
+	{
+	    ScopedPtr (ptr).swap (*this);
+	}
+
+	void swap (ScopedPtr& s)
+	{
+	    std::swap (m_ptr, s.m_ptr);
 	}
 
 	T& operator* () const
