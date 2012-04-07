@@ -60,9 +60,14 @@ namespace {
   public:
 
       SDLDriver (SADisplay& display)
-          : m_display (display)
-          , m_screen  (0)
-          , m_running (false)
+          : m_display         (display)
+          , m_screen          (0)
+          , m_requested_depth (VISUAL_VIDEO_DEPTH_NONE)
+          , m_last_width      (0)
+          , m_last_height     (0)
+          , m_resizable       (false)
+          , m_active          (false)
+          , m_running         (false)
       {}
 
       virtual ~SDLDriver ()
