@@ -312,17 +312,20 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
 	 * - We use 16:16 fixed point to incrementally calculate the color at each y
 	 * - Bar row color must be in [1,126]
 	*/
-	int y	   = (1.0 - amplitude) * video->height;
-	int color  = (1 << 16) + (amplitude * (125 << 16));
-	int dcolor = (125 << 16) / video->height;
+	int y = (1.0 - amplitude) * video->height;
 
-	uint8_t *row = (uint8_t *) video->pixel_rows[y] + x;
+	if (y < video->height) {
+		int color  = (1 << 16) + (amplitude * (125 << 16));
+		int dcolor = (125 << 16) / video->height;
 
-	while (y < video->height) {
-		visual_mem_set (row, color >> 16, width);
+		uint8_t *row = (uint8_t *) video->pixel_rows[y] + x;
 
-		y++; row += video->pitch;
-		color -= dcolor;
+		while (y < video->height) {
+			visual_mem_set (row, color >> 16, width);
+
+			y++; row += video->pitch;
+			color -= dcolor;
+		}
 	}
 }
 
