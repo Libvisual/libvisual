@@ -77,8 +77,10 @@
 static VisCPU __lv_cpu_caps;
 static int __lv_cpu_initialized = FALSE;
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 static int has_cpuid (void);
 static int cpuid (unsigned int ax, unsigned int *p);
+#endif
 
 #if defined(VISUAL_OS_WIN32)
 LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep);
@@ -289,6 +291,7 @@ static void check_os_katmai_support( void )
 #endif /* VISUAL_ARCH_X86 */
 
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 static int has_cpuid (void)
 {
 #if defined(VISUAL_ARCH_X86)
@@ -314,6 +317,7 @@ static int has_cpuid (void)
 	return FALSE;
 #endif
 }
+#endif /* defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
 
 static int cpuid (unsigned int ax, unsigned int *p)
 {
