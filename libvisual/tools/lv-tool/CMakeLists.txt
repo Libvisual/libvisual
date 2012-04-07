@@ -6,6 +6,7 @@ SET(INCLUDE_DIRS
 SET(SOURCES
   lv-tool.cpp
   display/display.cpp
+  display/display_driver_factory.cpp
   display/stdout_driver.cpp
 )
 

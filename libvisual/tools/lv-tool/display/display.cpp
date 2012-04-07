@@ -23,65 +23,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "config.h"
 #include "display.hpp"
-#include "stdout_driver.hpp"
-
-#if defined(HAVE_SDL)
-#include "sdl_driver.hpp"
-#endif
-
-#if defined(HAVE_GLX)
-#include "glx_driver.hpp"
-#endif
-
+#include "display_driver_factory.hpp"
 #include <libvisual/libvisual.h>
-#include <libvisual/lv_singleton.hpp>
 #include <stdexcept>
 #include <string>
-#include <map>
-
-class DriverRegistry
-{
-public:
-
-    typedef SADisplayDriver* (*DriverLoader)(SADisplay& display);
-
-    DriverRegistry ()
-    {
-        m_loaders["stdout"] = stdout_driver_new;
-#if defined(HAVE_SDL)
-        m_loaders["sdl"] = sdl_driver_new;
-#endif
-#if defined(HAVE_GLX)
-        m_loaders["glx"] = glx_driver_new;
-#endif
-    }
-
-    void add_driver (std::string const& name, DriverLoader loader)
-    {
-        m_loaders[name] = loader;
-    }
-
-    SADisplayDriver* load_driver (std::string const& name, SADisplay& display)
-    {
-        LoaderMap::const_iterator entry = m_loaders.find (name);
-
-        if (entry == m_loaders.end())
-            return 0;
-
-        return (*entry->second) (display);
-    }
-
-private:
-
-    typedef std::map<std::string, DriverLoader> LoaderMap;
-
-    LoaderMap m_loaders;
-};
-
-static DriverRegistry driver_registry;
-
 
 class SADisplay::Impl
 {
@@ -105,10 +51,10 @@ public:
 SADisplay::SADisplay (std::string const& driver_name)
   : m_impl (new Impl)
 {
-    m_impl->driver.reset (driver_registry.load_driver (driver_name, *this));
+    m_impl->driver.reset (DisplayDriverFactory::instance().make (driver_name, *this));
 
     if (!m_impl->driver) {
-	    throw std::runtime_error ("Failed to load display driver '" + driver_name + "'");
+        throw std::runtime_error ("Failed to load display driver '" + driver_name + "'");
     }
 
     m_impl->screen = visual_video_new ();
