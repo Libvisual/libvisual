@@ -52,6 +52,18 @@ namespace LV {
       delete x;
   }
 
+  template <class Pair>
+  typename Pair::first_type select1st (Pair const& pair)
+  {
+      return pair.first;
+  }
+
+  template <class Pair>
+  typename Pair::second_type select2nd (Pair const& pair)
+  {
+      return pair.second;
+  }
+
 } // LV namespace
 
 #endif // _LV_UTIL_HPP
