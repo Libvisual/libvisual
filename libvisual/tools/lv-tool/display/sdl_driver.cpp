@@ -203,26 +203,18 @@ namespace {
       virtual void update_rect (LV::Rect const& rect)
       {
           if (m_screen->format->BitsPerPixel == 8) {
-              SDL_Color colors[256];
-              VisPalette *pal = m_display.get_screen ()->pal;
+              LV::Palette* pal = m_display.get_screen ()->pal;
 
-              visual_mem_set (colors, 0, sizeof (colors));
+              if (pal->size() <= 256) {
+                  SDL_Color colors[256];
 
-              if (pal != NULL) {
-                  unsigned int pal_ncolors = visual_palette_get_size (pal);
-
-                  if (pal_ncolors <= 256) {
-                      unsigned int i;
-                      VisColor* pal_colors = visual_palette_get_colors (pal);
-
-                      for (i = 0; i < pal_ncolors; i++) {
-                          colors[i].r = pal_colors[i].r;
-                          colors[i].g = pal_colors[i].g;
-                          colors[i].b = pal_colors[i].b;
-                      }
-
-                      SDL_SetColors (m_screen, colors, 0, 256);
+                  for (unsigned int i = 0; i < pal->size(); i++) {
+                      colors[i].r = pal->colors[i].r;
+                      colors[i].g = pal->colors[i].g;
+                      colors[i].b = pal->colors[i].b;
                   }
+
+                  SDL_SetColors (m_screen, colors, 0, 256);
               }
           }
 

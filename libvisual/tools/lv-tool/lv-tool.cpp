@@ -96,7 +96,7 @@ static void _print_plugin_help()
     }
     else
     {
-        std::fprintf(stderr, "No actors found\n");
+        std::cerr << "No actors found\n";
     }
 
     /* print morphs */
@@ -169,26 +169,25 @@ static int _parse_args(int argc, char *argv[])
             /* --dimensions */
             case 'D':
             {
-                    if(std::sscanf(optarg, "%dx%d", &width, &height) != 2)
-                    {
-                        std::fprintf(stderr,
-                                "Invalid dimensions: \"%s\". Use <width>x<height> (e.g. 320x200)\n", optarg);
-                        return EXIT_FAILURE;
-                    }
-                    break;
+                if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
+				{
+				    std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
+					return EXIT_FAILURE;
+				}
+				break;
             }
 
             /* --driver */
             case 'd':
             {
-                    if (!DisplayDriverFactory::instance().has_driver (optarg))
-                    {
-                         std::fprintf(stderr, "Unsupported display driver: %s\n", optarg);
-                         return EXIT_FAILURE;
-                    }
+                if (!DisplayDriverFactory::instance().has_driver (optarg))
+				{
+				    std::cerr << "Unsupported display driver: " << optarg << "\n";
+					return EXIT_FAILURE;
+				}
 
-                    driver_name = optarg;
-                    break;
+				driver_name = optarg;
+				break;
             }
 
             /* --input */
@@ -285,7 +284,7 @@ static void v_cycleMorph ()
 int main (int argc, char **argv)
 {
     // print warm welcome
-    std::fprintf(stderr, "%s v0.1\n", argv[0]);
+    std::cerr << argv[0] << " v0.1\n";
 
     // initialize libvisual once (this is meant to be called only once,
     // visual_init() after visual_quit() results in undefined state)
@@ -303,11 +302,10 @@ int main (int argc, char **argv)
         visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
 
         // initialize actor plugin
-        std::fprintf (stderr, "Loading actor \"%s\"...\n", actor_name.c_str ());
-        VisActor *actor;
-        if(!(actor = visual_actor_new (actor_name.c_str ()))) {
+        std::cerr << "Loading actor '" << actor_name << "'...\n";
+        VisActor *actor = visual_actor_new (actor_name.c_str ());
+		if (!actor)
             throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
-        }
 
         // Set random seed
         if (have_seed) {
@@ -319,9 +317,9 @@ int main (int argc, char **argv)
         }
 
         // initialize input plugin
-        std::fprintf (stderr, "Loading input \"%s\"...\n", input_name.c_str());
-        VisInput *input;
-        if (!(input = visual_input_new(input_name.c_str()))) {
+		std::cerr << "Loading input '" << input_name << "'...\n";
+        VisInput *input = visual_input_new(input_name.c_str());
+		if (!input) {
             throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
 
@@ -359,8 +357,8 @@ int main (int argc, char **argv)
         // create display
         display.create(depth, vidoptions, width, height, true);
 
-        VisVideo *video;
-        if(!(video = display.get_video()))
+        VisVideo *video = display.get_video();
+        if(!video)
             throw std::runtime_error("Failed to get VisVideo from display");
 
         // put it all together
@@ -471,10 +469,7 @@ int main (int argc, char **argv)
                             }
 
                             default:
-                            {
-                                std::fprintf(stderr, "keypress: %c\n", ev->event.keyboard.keysym.sym);
                                 break;
-                            }
                         }
 
                         break;
