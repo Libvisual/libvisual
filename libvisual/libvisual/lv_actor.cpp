@@ -71,6 +71,9 @@ static int actor_dtor (VisObject *object)
         visual_plugin_unload (actor->plugin);
     }
 
+    if (actor->ditherpal != NULL)
+        visual_palette_free (actor->ditherpal);
+
     if (actor->transform != NULL)
         visual_object_unref (VISUAL_OBJECT (actor->transform));
 
@@ -344,8 +347,7 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
     }
 
     if (actor->ditherpal != NULL) {
-        visual_object_unref (VISUAL_OBJECT (actor->ditherpal));
-
+        visual_palette_free (actor->ditherpal);
         actor->ditherpal = NULL;
     }
 
@@ -550,10 +552,8 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
      */
     visual_plugin_events_pump (actor->plugin);
 
-    visual_video_set_palette (video, visual_actor_get_palette (actor));
-
     /* Set the palette to the target video */
-    video->pal = visual_actor_get_palette (actor);
+    visual_video_set_palette (video, visual_actor_get_palette (actor));
 
     /* Yeah some transformation magic is going on here when needed */
     if (transform != NULL && (transform->depth != video->depth)) {

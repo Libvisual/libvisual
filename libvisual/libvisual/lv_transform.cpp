@@ -47,6 +47,9 @@ static int transform_dtor (VisObject *object)
 {
     VisTransform *transform = VISUAL_TRANSFORM (object);
 
+    if (transform->pal)
+        visual_palette_free (transform->pal);
+
     if (transform->plugin != NULL)
         visual_plugin_unload (transform->plugin);
 
@@ -210,9 +213,9 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video)
     transform->video = video;
 
     if (video != NULL)
-        transform->pal = video->pal;
+        visual_transform_set_palette (transform, video->pal);
     else
-        transform->pal = NULL;
+        visual_transform_set_palette (transform, NULL);
 
     return VISUAL_OK;
 }
@@ -221,7 +224,10 @@ int visual_transform_set_palette (VisTransform *transform, VisPalette *palette)
 {
     visual_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
 
-    transform->pal = palette;
+    if (transform->pal)
+        visual_palette_free (transform->pal);
+
+    transform->pal = palette ? visual_palette_clone (palette) : 0;
 
     return VISUAL_OK;
 }

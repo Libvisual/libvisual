@@ -357,12 +357,9 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 			bi_clrused = 1 << bi_bitcount;
 		}
 
-		if (video->pal != NULL)
-			visual_object_unref (VISUAL_OBJECT (video->pal));
-
 		/* Always allocate 256 palette entries.
 		 * Depth transformation depends on this */
-		video->pal = visual_palette_new (256);
+		visual_video_set_palette (video, visual_palette_new (256));
 
 		VisColor *colors = visual_palette_get_colors (video->pal);
 

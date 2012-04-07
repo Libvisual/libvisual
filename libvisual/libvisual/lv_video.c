@@ -630,10 +630,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 	visual_color_copy (dest->colorkey, src->colorkey);
 	dest->density = src->density;
 
-	if (src->pal != NULL)
-		visual_object_ref (VISUAL_OBJECT (src->pal));
-
-	dest->pal = src->pal;
+	visual_video_set_palette (dest, src->pal);
 
 out:
 	if (vrect) visual_rectangle_free (vrect);
