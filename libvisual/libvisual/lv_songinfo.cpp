@@ -31,7 +31,10 @@
 namespace LV {
 
   SongInfo::SongInfo (SongInfoType type_)
-      : type (type_)
+      : type    (type_)
+      , length  (0)
+      , elapsed (0)
+      , cover   (0)
   {
     // empty
   }
