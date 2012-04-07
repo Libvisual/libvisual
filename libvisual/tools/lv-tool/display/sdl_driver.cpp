@@ -205,8 +205,9 @@ namespace {
           if (m_screen->format->BitsPerPixel == 8) {
               LV::Palette* pal = m_display.get_screen ()->pal;
 
-              if (pal->size() <= 256) {
+              if (pal && pal->size() <= 256) {
                   SDL_Color colors[256];
+                  visual_mem_set (colors, 0, sizeof (colors));
 
                   for (unsigned int i = 0; i < pal->size(); i++) {
                       colors[i].r = pal->colors[i].r;
