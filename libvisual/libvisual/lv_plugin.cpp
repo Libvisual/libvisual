@@ -106,17 +106,32 @@ static int plugin_dtor (VisObject *object);
 
 static char *get_delim_node (const char *str, char delim, int index);
 
+
+static char* copy_info_string (char const* str)
+{
+    return visual_strdup (str ? str : "(not specified)");
+}
+
+static void free_info_string (char const* str)
+{
+    // HACK: We're forced to cast away the const because the plugin system
+    // duplicates the VisPluginInfo strings for storage.
+
+    visual_mem_free (const_cast<char*> (str));
+}
+
 static int plugin_info_dtor (VisObject *object)
 {
     VisPluginInfo *pluginfo = VISUAL_PLUGININFO (object);
 
-    pluginfo->plugname = NULL;
-    pluginfo->type = NULL;
-    pluginfo->name = NULL;
-    pluginfo->author = NULL;
-    pluginfo->version = NULL;
-    pluginfo->about = NULL;
-    pluginfo->help = NULL;
+    free_info_string (pluginfo->type);
+    free_info_string (pluginfo->plugname);
+    free_info_string (pluginfo->name);
+    free_info_string (pluginfo->author);
+    free_info_string (pluginfo->version);
+    free_info_string (pluginfo->about);
+    free_info_string (pluginfo->help);
+    free_info_string (pluginfo->license);
 
     return VISUAL_OK;
 }
@@ -221,7 +236,6 @@ VisPluginInfo *visual_plugin_info_new ()
     return pluginfo;
 }
 
-
 int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 {
     visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
@@ -229,13 +243,14 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 
     visual_mem_copy (dest, src, sizeof (VisPluginInfo));
 
-    dest->plugname = visual_strdup (src->plugname);
-    dest->type = visual_strdup (src->type);
-    dest->name = visual_strdup (src->name);
-    dest->author = visual_strdup (src->author);
-    dest->version = visual_strdup (src->version);
-    dest->about = visual_strdup (src->about);
-    dest->help = visual_strdup (src->help);
+    dest->type     = copy_info_string (src->type);
+    dest->plugname = copy_info_string (src->plugname);
+    dest->name     = copy_info_string (src->name);
+    dest->author   = copy_info_string (src->author);
+    dest->version  = copy_info_string (src->version);
+    dest->about    = copy_info_string (src->about);
+    dest->help     = copy_info_string (src->help);
+    dest->license  = copy_info_string (src->license);
 
     return VISUAL_OK;
 }
