@@ -73,7 +73,7 @@ static void _print_plugin_info(VisPluginInfo const& info)
         "\tversion:\t%s\n"
         "\tlicense:\t%s\n"
         "%s\n"
-        "\%s\n\n",
+        "%s\n\n",
         info.name, info.plugname,
         info.author, info.version, info.license,
         info.about, info.help);
