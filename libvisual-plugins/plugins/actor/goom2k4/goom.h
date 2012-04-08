@@ -20,7 +20,7 @@ void goom_set_resolution (PluginInfo *goomInfo, guint32 resx, guint32 resy);
  *      - only have a value at the start of the song
  */
 guint32 *goom_update (PluginInfo *goomInfo, gint16 data[2][512], int forceMode, float fps,
-                      char *songTitle, char *message);
+                      const char *songTitle, const char *message);
 
 /* returns 0 if the buffer wasn't accepted */
 int goom_set_screenbuffer(PluginInfo *goomInfo, void *buffer);

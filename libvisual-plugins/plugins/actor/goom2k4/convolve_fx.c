@@ -144,7 +144,7 @@ static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *de
       ifftab[i] = (double)iff / (1.0 + data->visibility * (15.0 - i) / 15.0);
   }
 
-  if (visual_cpu_get_mmx ()) {
+  if (visual_cpu_has_mmx ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	  for (y=info->screen.height;y--;) {
 		  int xtex,ytex;
@@ -236,7 +236,7 @@ static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *de
 			  xtex += c;
 			  ytex -= s;
 
-			  iff2 = ifftab[data->conv_motif[(ytex >>16) & CONV_MOTIF_WMASK][(xtex >> 16) & CONV_MOTIF_WMASK]];
+			  iff2 = ifftab[(int)data->conv_motif[(ytex >>16) & CONV_MOTIF_WMASK][(xtex >> 16) & CONV_MOTIF_WMASK]];
 
 #define sat(a) ((a)>0xFF?0xFF:(a))
 			  f0 = src[i].val;
@@ -340,10 +340,10 @@ static void convolve_apply(VisualFX *_this, Pixel *src, Pixel *dest, PluginInfo 
 
 VisualFX convolve_create(void) {
   VisualFX vfx = {
-      init: convolve_init,
-      free: convolve_free,
-      apply: convolve_apply,
-      fx_data: 0
+      .init = convolve_init,
+      .free = convolve_free,
+      .apply = convolve_apply,
+      .fx_data = 0
   };
   return vfx;
 }

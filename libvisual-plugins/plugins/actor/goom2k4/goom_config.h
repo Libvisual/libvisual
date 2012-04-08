@@ -26,3 +26,8 @@
 #define gint16 signed short int
 #define gint32 signed int
 #endif
+
+#ifndef M_PI
+#include <libvisual/lv_math.h>
+#define M_PI VISUAL_MATH_PI
+#endif

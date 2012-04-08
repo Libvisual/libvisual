@@ -1,3 +1,5 @@
+%option never-interactive noinput
+
 %{
 
 #include <math.h>
@@ -6,6 +8,7 @@
 #include "goomsl.h"
 #include "goomsl_private.h"
 #include "goomsl_yacc.h"
+
 void yyerror(char *);
 void yyparse(void);
 

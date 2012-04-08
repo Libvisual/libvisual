@@ -9,6 +9,7 @@
     #include <string.h>
     #include "goomsl.h"
     #include "goomsl_private.h"
+    #include "goomsl_yacc.h"
 
 #define STRUCT_ALIGNMENT 16
 /* #define VERBOSE  */
@@ -16,6 +17,16 @@
     int yylex(void);
     void yyerror(char *);
     extern GoomSL *currentGoomSL;
+
+    static GSL_Struct *gsl_new_struct(GSL_StructField *field);
+    static void gsl_prepare_struct(GSL_Struct *s, int s_align, int i_align, int f_align);
+    static int gsl_get_struct_id(const char *name);
+    static void gsl_add_struct(const char *name, GSL_Struct *gsl_struct);
+    static GSL_StructField *gsl_new_struct_field(const char *name, int type);
+    static GSL_StructField *gsl_new_struct_field_struct(const char *name, const char *type);
+    static void gsl_add_struct(const char *name, GSL_Struct *gsl_struct);
+    static void gsl_add_struct_field(GSL_Struct *s, GSL_StructField *field);
+    static void gsl_declare_global_variable(int type, char *name);
 
     static NodeType *nodeNew(const char *str, int type, int line_number);
     static NodeType *nodeClone(NodeType *node);

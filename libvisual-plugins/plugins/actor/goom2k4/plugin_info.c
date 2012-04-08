@@ -23,7 +23,9 @@
 
 static void setOptimizedMethods(PluginInfo *p) {
 
+#if defined(CPU_X86) || defined(CPU_POWERPC)
     unsigned int cpuFlavour = cpu_flavour();
+#endif
 
     /* set default methods */
     p->methods.draw_line = draw_line;
