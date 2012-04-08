@@ -413,7 +413,9 @@ int visual_bin_set_depth (VisBin *bin, int depth)
 
 	bin->depth = depth;
 
-	visual_video_set_depth (bin->actvideo, depth);
+	if (bin->actvideo) {
+	    visual_video_set_depth (bin->actvideo, depth);
+	}
 
 	return 0;
 }
