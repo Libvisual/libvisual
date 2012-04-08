@@ -25,6 +25,7 @@
 #include "lv_mem.h"
 #include "lv_common.h"
 #include "lv_cpu.h"
+#include "lv_bits.h"
 #include <string.h>
 #include <stdlib.h>
 #include "gettext.h"
@@ -35,16 +36,15 @@ static void *mem_copy_c (void *dest, const void *src, visual_size_t n);
 static void *mem_set8_c (void *dest, int c, visual_size_t n);
 static void *mem_set16_c (void *dest, int c, visual_size_t n);
 static void *mem_set32_c (void *dest, int c, visual_size_t n);
+static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitch2, int width, int rows);
+
 
 /* x86 SIMD optimized versions */
-
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-
 static void *mem_copy_3dnow (void *dest, const void *src, visual_size_t n);
 static void *mem_copy_mmx (void *dest, const void *src, visual_size_t n);
 static void *mem_copy_mmx2 (void *dest, const void *src, visual_size_t n);
 
-static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitch2, int width, int rows);
 static void *mem_copy_pitch_mmx (void *dest, const void *src, int pitch1, int pitch2, int width, int rows);
 static void *mem_copy_pitch_mmx2 (void *dest, const void *src, int pitch1, int pitch2, int width, int rows);
 static void *mem_copy_pitch_3dnow (void *dest, const void *src, int pitch1, int pitch2, int width, int rows);
@@ -57,17 +57,18 @@ static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n);
 
 static void *mem_set32_mmx (void *dest, int c, visual_size_t n);
 static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n);
-
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
-/* Optimal performance functions set by visual_mem_initialize(). */
 
+/* Optimal performance functions set by visual_mem_initialize(). */
 VisMemCopyFunc visual_mem_copy = mem_copy_c;
 VisMemCopyPitchFunc visual_mem_copy_pitch = mem_copy_pitch_c;
 
 VisMemSet8Func visual_mem_set = mem_set8_c;
 VisMemSet16Func visual_mem_set16 = mem_set16_c;
 VisMemSet32Func visual_mem_set32 = mem_set32_c;
+
+
 
 int visual_mem_initialize ()
 {
@@ -241,6 +242,47 @@ static void *mem_set32_c (void *dest, int c, visual_size_t n)
 }
 
 
+/* Memcopy with pitch functions */
+static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitch2, int width, int rows)
+{
+	uint32_t *d = dest;
+	const uint32_t *s = src;
+	int i;
+
+	for (i = 0; i < rows; i++) {
+		uint32_t *inner_d;
+		const uint32_t *inner_s;
+		uint8_t *inner_dc = (uint8_t*) d;
+		const uint8_t *inner_sc = (const uint8_t*) s;
+		int n = width;
+
+                while (!VISUAL_ALIGNED(inner_dc, 4) && n > 4) {
+			*inner_dc++ = *inner_sc++;
+			n--;
+		}
+
+		inner_d = (uint32_t*) inner_dc;
+		inner_s = (const uint32_t*) inner_sc;
+
+		while (n >= 4) {
+			*inner_d++ = *inner_s++;
+			n -= 4;
+		}
+
+		inner_dc = (uint8_t*) inner_d;
+		inner_sc = (const uint8_t*) inner_s;
+
+		while (n--)
+			*inner_dc++ = *inner_sc++;
+
+		d = (uint32_t*)((uint8_t*) d + pitch1);
+		s = (const uint32_t*)((const uint8_t*) s + pitch2);
+	}
+
+	return dest;
+}
+
+
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 static void *mem_copy_mmx (void *dest, const void *src, visual_size_t n)
@@ -397,45 +439,6 @@ static void *mem_copy_3dnow (void *dest, const void *src, visual_size_t n)
 	return dest;
 }
 
-/* Memcopy with pitch functions */
-static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitch2, int width, int rows)
-{
-	uint32_t *d = dest;
-	const uint32_t *s = src;
-	int i;
-
-	for (i = 0; i < rows; i++) {
-		uint32_t *inner_d;
-		const uint32_t *inner_s;
-		uint8_t *inner_dc = (uint8_t*) d;
-		const uint8_t *inner_sc = (const uint8_t*) s;
-		int n = width;
-
-                while (!VISUAL_ALIGNED(inner_dc, 4) && n > 4) {
-			*inner_dc++ = *inner_sc++;
-			n--;
-		}
-
-		inner_d = (uint32_t*) inner_dc;
-		inner_s = (const uint32_t*) inner_sc;
-
-		while (n >= 4) {
-			*inner_d++ = *inner_s++;
-			n -= 4;
-		}
-
-		inner_dc = (uint8_t*) inner_d;
-		inner_sc = (const uint8_t*) inner_s;
-
-		while (n--)
-			*inner_dc++ = *inner_sc++;
-
-		d = (uint32_t*)((uint8_t*) d + pitch1);
-		s = (const uint32_t*)((const uint8_t*) s + pitch2);
-	}
-
-	return dest;
-}
 
 static void *mem_copy_pitch_mmx (void *dest, const void *src, int pitch1, int pitch2, int width, int rows)
 {
