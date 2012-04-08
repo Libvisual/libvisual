@@ -154,7 +154,7 @@ static void do_plasma(PlazmaPrivate *priv, double x1, double y1,
 	for (y=0; y<priv->height; y++) {
 		unsigned char*tmp = priv->pixel + y * priv->video->pitch;
 		unsigned int t = y*priv->tablex, tmax=t+priv->width; 
-		for (t=t; t<tmax; t++, tmp++)
+		for (; t<tmax; t++, tmp++)
 			tmp[0]=t1[t]+t2[t];
 	}
 }
