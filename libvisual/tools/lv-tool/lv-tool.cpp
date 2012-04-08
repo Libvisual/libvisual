@@ -41,8 +41,6 @@
 
 #if HAVE_SDL
 # define DEFAULT_DRIVER "sdl"
-#elif HAVE_GLX
-# define DEFAULT_DRIVER "glx"
 #else
 # define DEFAULT_DRIVER "stdout"
 #endif

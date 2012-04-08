@@ -32,9 +32,6 @@ DisplayDriverFactory::DisplayDriverFactory ()
 #if defined(HAVE_SDL)
     add_driver ("sdl", sdl_driver_new);
 #endif
-#if defined(HAVE_GLX)
-    add_driver ("glx", glx_driver_new);
-#endif
 }
 
 DisplayDriverFactory::~DisplayDriverFactory ()

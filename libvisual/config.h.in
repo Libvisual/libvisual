@@ -16,8 +16,6 @@
 #cmakedefine LOCALE_DIR        "@CMAKE_INSTALL_FULL_LOCALEDIR@"
 #cmakedefine HAVE_SDL          1
 #cmakedefine HAVE_GL           1
-#cmakedefine HAVE_X11          1
-#cmakedefine HAVE_GLX          1
 
 #cmakedefine HAVE_DIRENT_H     1
 #cmakedefine HAVE_DLFCN_H      1
