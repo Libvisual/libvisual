@@ -112,7 +112,6 @@ OPTION(ENABLE_ALSA        "Build the ALSA input plugin" yes)
 OPTION(ENABLE_BLURSK      "Build the Blursk plugin" yes)
 OPTION(ENABLE_BUMPSCOPE   "Build the Bumpscope plugin" yes)
 OPTION(ENABLE_CORONA      "Build the Corona plugin" yes)
-OPTION(ENABLE_ESD         "Build EsounD input plugin" yes)
 OPTION(ENABLE_FLASH       "Build the Flash morph plugin" yes)
 OPTION(ENABLE_FLOWER      "Build the Pseudotoad Flower plugin" yes)
 OPTION(ENABLE_GDKPIXBUF   "Build GdkPixbuf visualization plugin" yes)
@@ -133,7 +132,6 @@ OPTION(ENABLE_SCOPE       "Build the Scope plugin" yes)
 OPTION(ENABLE_SLIDE       "Build the Slide morph plugin" yes)
 OPTION(ENABLE_TENTACLE    "Build the Tentacle morph plugin" yes)
 OPTION(ENABLE_WAVEIN      "Build the Windows WaveIn plugin" yes)
-OPTION(ENABLE_XMMS2       "Build the XMMS2 input plugin" yes)
 
 
 # Check for plugin dependencies
@@ -145,14 +143,6 @@ IF(ENABLE_ALSA)
     SET(ENABLE_ALSA no)
   ENDIF(NOT ALSA_FOUND)
 ENDIF(ENABLE_ALSA)
-
-IF(ENABLE_ESD)
-  PKG_CHECK_MODULES(ESD esound>=${ESOUND_REQUIRED_VERSION})
-  IF(NOT ESD_FOUND)
-    MESSAGE(WARNING "EsounD >= ${ESOUND_REQUIRED_VERSION} not found. The EsounD input plugin will not be built.")
-    SET(ENABLE_ESD no)
-  ENDIF(NOT ESD_FOUND)
-ENDIF(ENABLE_ESD)
 
 IF(ENABLE_FLOWER)
   IF(NOT HAVE_OPENGL)
@@ -228,14 +218,6 @@ IF(ENABLE_WAVEIN)
     SET(ENABLE_WAVEIN no)
   ENDIF(NOT WIN32)
 ENDIF(ENABLE_WAVEIN)
-
-IF(ENABLE_XMMS2)
-  PKG_CHECK_MODULES(XMMS2 xmms2-client>=${XMMS2_REQUIRED_VERSION})
-  IF(NOT XMMS2_FOUND)
-    MESSAGE(WARNING "XMMS2 client llbrary not found. The XMMS2 input plugin will not be built.")
-    SET(ENABLE_XMMS2 no)
-  ENDIF(NOT XMMS2_FOUND)
-ENDIF(ENABLE_XMMS2)
 
 # Build parameters
 
