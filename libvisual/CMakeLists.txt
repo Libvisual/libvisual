@@ -174,6 +174,7 @@ IF(ENABLE_THREADS)
     ENDIF(CMAKE_USE_PTHREADS_INIT)
   ELSE(Threads_FOUND)
     MESSAGE(WARNING "You do not have any supported thread implementation available. Libvisual will be built without thread support.")
+    SET(ENABLE_THREADS no)
   ENDIF(Threads_FOUND)
 ENDIF(ENABLE_THREADS)
 

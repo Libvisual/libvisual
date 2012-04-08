@@ -125,20 +125,44 @@ SET(LINK_LIBS
   m
 )
 
-IF(NOT VISUAL_OS_WIN32)
-  LIST(APPEND libvisual_SOURCES lv_module_dlfcn.cpp)
-  LIST(APPEND LINK_LIBS dl rt)
-ELSE(NOT VISUAL_OS_WIN32)
-  LIST(APPEND libvisual_SOURCES lv_module_win32.cpp)
-ENDIF(NOT VISUAL_OS_WIN32)
 
-IF(VISUAL_THREAD_MODEL_POSIX)
-  LIST(APPEND libvisual_SOURCES lv_thread_posix.c)
-ELSEIF(VISUAL_THREAD_MODEL_WIN32)
-  LIST(APPEND libvisual_SOURCES lv_thread_win32.c)
-ELSE(VISUAL_THREAD_MODEL_POSIX)
-  LIST(APPEND libvisual_SOURCES lv_thread_disabled.c)
-ENDIF(VISUAL_THREAD_MODEL_POSIX)
+# FIXME: Refactor this; and also define a POSIX flag so we can stop
+# saying 'not Windows'
+IF(NOT VISUAL_OS_WIN32)
+  LIST(APPEND LINK_LIBS dl rt)
+
+  LIST(APPEND libvisual_SOURCES
+	private/posix/lv_module_dlfcn.cpp
+  )
+
+  IF(ENABLE_THREADS)
+    LIST(APPEND libvisual_SOURCES
+      private/posix/lv_thread_posix.c
+    )
+  ELSE(ENABLE_THREADS)
+    LIST(APPEND libvisual_SOURCES
+      lv_thread_disabled.c
+    )
+  ENDIF(ENABLE_THREADS)
+
+ELSE(NOT VISUAL_OS_WIN32)
+
+  LIST(APPEND libvisual_SOURCES
+	private/windows/lv_module_win32.cpp
+  )
+
+  IF(ENABLE_THREADS)
+	LIST(APPEND libvisual_SOURCES
+      private/windows/lv_thread_win32.c
+    )
+  ELSE(ENABLE_THREADS)
+    LIST(APPEND libvisual_SOURCES
+      lv_thread_disabled.c
+    )
+  ENDIF(ENABLE_THREADS)
+
+ENDIF()
+
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
 

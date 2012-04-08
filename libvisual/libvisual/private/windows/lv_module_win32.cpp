@@ -2,8 +2,6 @@
 #include "lv_module.hpp"
 #include "lv_common.h"
 
-#ifdef VISUAL_OS_WIN32
-
 #include <sstream>
 #include <windows.h>
 
@@ -39,5 +37,3 @@ namespace LV {
   }
 
 } // LV namespace
-
-#endif /* VISUAL_OS_WIN32 */
