@@ -45,8 +45,6 @@
 #define SIZEOF_SHORT           @SIZEOF_SHORT@
 #define SIZEOF_SIZE_T          @SIZEOF_SIZE_T@
 
-#cmakedefine LV_HAVE_GTHREAD2 1
-
 #ifndef __cplusplus
 #cmakedefine HAVE_C_INLINE
 #cmakedefine HAVE_C_CONST
