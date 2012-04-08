@@ -100,7 +100,7 @@ int act_plazma_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (PlazmaPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_palette_allocate_colors (&priv->colors, 256);
+	priv->colors = visual_palette_new (256);
 
 	visual_param_container_add_many (paramcontainer, params);
 
@@ -118,7 +118,7 @@ int act_plazma_cleanup (VisPluginData *plugin)
 
 	_plazma_cleanup (priv);
 
-	visual_palette_free_colors (&priv->colors);
+	visual_palette_free (priv->colors);
 
 	visual_mem_free (priv);
 
@@ -221,7 +221,7 @@ VisPalette *act_plazma_palette (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	return &priv->colors;;
+	return priv->colors;
 }
 
 int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
