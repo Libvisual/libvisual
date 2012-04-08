@@ -85,14 +85,6 @@ const char *visual_transform_get_prev_by_name (const char *name)
     return LV::plugin_get_prev_by_name (LV::transform_plugin_get_list (), name);
 }
 
-int visual_transform_valid_by_name (const char *name)
-{
-    if (LV::plugin_find (LV::transform_plugin_get_list (), name) == NULL)
-        return FALSE;
-    else
-        return TRUE;
-}
-
 VisTransform *visual_transform_new (const char *transformname)
 {
     VisTransform *transform;

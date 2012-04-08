@@ -33,9 +33,9 @@ namespace LV {
     struct PluginHasType
         : public std::unary_function<bool, VisPluginRef const*>
     {
-        std::string type;
+        PluginType type;
 
-        PluginHasType (std::string const& type_)
+        PluginHasType (PluginType const& type_)
             : type (type_)
         {}
 
@@ -45,7 +45,22 @@ namespace LV {
         }
     };
 
-    void get_plugins_by_type (PluginList& output, PluginList const& input, std::string const& type)
+    struct PluginHasName
+        : public std::unary_function<bool, VisPluginRef const*>
+    {
+        std::string name;
+
+        PluginHasName (std::string const& name_)
+            : name (name_)
+        {}
+
+        bool operator() (VisPluginRef const* ref)
+        {
+            return (name == ref->info->plugname);
+        }
+    };
+
+    void get_plugins_by_type (PluginList& output, PluginList const& input, PluginType type)
     {
         output.clear ();
 
@@ -145,7 +160,30 @@ namespace LV {
       return m_impl->transform_plugins;
   }
 
-  void PluginRegistry::get_plugins_by_type (PluginList& list, std::string const& type)
+  bool PluginRegistry::has_plugin (PluginType type, std::string const& name)
+  {
+      PluginList const* list;
+
+      switch (type) {
+          case VISUAL_PLUGIN_TYPE_ACTOR:     list = &m_impl->actor_plugins; break;
+          case VISUAL_PLUGIN_TYPE_INPUT:     list = &m_impl->input_plugins; break;
+          case VISUAL_PLUGIN_TYPE_MORPH:     list = &m_impl->morph_plugins; break;
+          case VISUAL_PLUGIN_TYPE_TRANSFORM: list = &m_impl->transform_plugins; break;
+
+          default:
+              visual_log (VISUAL_LOG_ERROR, "Plugin type is invalid");
+              return false;
+      }
+
+      PluginList::const_iterator iter =
+          std::find_if (list->begin (),
+                        list->end (),
+                        PluginHasName (name));
+
+      return iter != list->end ();
+  }
+
+  void PluginRegistry::get_plugins_by_type (PluginList& list, PluginType type)
   {
       Internal::get_plugins_by_type (list, m_impl->plugins, type);
   }

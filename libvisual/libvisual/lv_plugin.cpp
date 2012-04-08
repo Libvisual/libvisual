@@ -124,7 +124,6 @@ static int plugin_info_dtor (VisObject *object)
 {
     VisPluginInfo *pluginfo = VISUAL_PLUGININFO (object);
 
-    free_info_string (pluginfo->type);
     free_info_string (pluginfo->plugname);
     free_info_string (pluginfo->name);
     free_info_string (pluginfo->author);
@@ -243,7 +242,6 @@ int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
 
     visual_mem_copy (dest, src, sizeof (VisPluginInfo));
 
-    dest->type     = copy_info_string (src->type);
     dest->plugname = copy_info_string (src->plugname);
     dest->name     = copy_info_string (src->name);
     dest->author   = copy_info_string (src->author);

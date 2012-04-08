@@ -91,14 +91,6 @@ const char *visual_morph_get_prev_by_name (const char *name)
     return LV::plugin_get_prev_by_name (get_morph_plugin_list (), name);
 }
 
-int visual_morph_valid_by_name (const char *name)
-{
-    if (find_morph_plugin (name) == NULL)
-        return FALSE;
-    else
-        return TRUE;
-}
-
 VisMorph *visual_morph_new (const char *morphname)
 {
     VisMorph *morph;

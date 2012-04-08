@@ -90,14 +90,6 @@ const char *visual_input_get_prev_by_name (const char *name)
     return LV::plugin_get_prev_by_name (get_input_plugin_list (), name);
 }
 
-int visual_input_valid_by_name (const char *name)
-{
-    if (find_input_plugin (name) == NULL)
-        return FALSE;
-    else
-        return TRUE;
-}
-
 VisInput *visual_input_new (const char *inputname)
 {
     VisInput *input;

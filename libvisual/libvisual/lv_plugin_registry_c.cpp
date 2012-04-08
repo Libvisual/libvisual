@@ -28,4 +28,9 @@ extern "C" {
       return VISUAL_OK;
   }
 
+  int visual_plugin_registry_has_plugin (VisPluginType type, const char *name)
+  {
+      return LV::PluginRegistry::instance()->has_plugin (type, name);
+  }
+
 } // C extern

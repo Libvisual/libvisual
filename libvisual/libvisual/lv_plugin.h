@@ -52,11 +52,6 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PLUGIN_API_VERSION	3004
 
 /**
- * Defination that should be used in plugins to set the plugin type for a NULL plugin.
- */
-#define VISUAL_PLUGIN_TYPE_NULL		"Libvisual:core:null"
-
-/**
  * Standard defination for GPLv1 plugins, use this for the .license entry in VisPluginInfo
  */
 #define VISUAL_PLUGIN_LICENSE_GPLv1 "GPLv1"
@@ -108,6 +103,13 @@ typedef enum {
 	VISUAL_PLUGIN_TYPE_DEPTH_PACKAGE	= 2,    /**< Domain and package in type. */
 	VISUAL_PLUGIN_TYPE_DEPTH_TYPE		= 3     /**< Domain, package and type found in type. */
 } VisPluginTypeDepth;
+
+typedef enum {
+    VISUAL_PLUGIN_TYPE_ACTOR,
+    VISUAL_PLUGIN_TYPE_INPUT,
+    VISUAL_PLUGIN_TYPE_MORPH,
+    VISUAL_PLUGIN_TYPE_TRANSFORM
+} VisPluginType;
 
 typedef struct _VisPluginRef VisPluginRef;
 typedef struct _VisPluginInfo VisPluginInfo;
@@ -180,11 +182,11 @@ struct _VisPluginRef {
  * and is filled within the plugin itself.
  */
 struct _VisPluginInfo {
-	VisObject   object;	  /**< The VisObject data. */
+	VisObject     object; /**< The VisObject data. */
 
-	const char *type;     /**< Plugin type, in the format of "domain:package:type", as example,
-	                       * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
-	                       * instead of filling in the string yourself. */
+	VisPluginType type;   /**< Plugin type, in the format of "domain:package:type", as example,
+	                         * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
+	                         * instead of filling in the string yourself. */
 	const char *plugname; /**< The plugin name as it's saved in the registry. */
 
 	const char *name;     /**< Long name */
