@@ -8,7 +8,7 @@ GLuint childdl = 0;
 int child_first = TRUE;
 
 
-void
+static void
 createchild(void)
 {
   int i;
@@ -26,7 +26,7 @@ createchild(void)
 }
 
 
-void
+static void
 drawchild(void)
 {
   glPushMatrix();
@@ -64,7 +64,7 @@ drawchild(void)
 }
 
 
-void
+static void
 render_child(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

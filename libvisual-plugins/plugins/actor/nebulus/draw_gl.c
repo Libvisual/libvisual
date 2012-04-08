@@ -254,7 +254,7 @@ recalc_perspective(void)
 }
 
 
-void
+static void
 init_effect(void)
 {
   viewperspective();
