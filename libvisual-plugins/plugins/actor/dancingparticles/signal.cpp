@@ -67,13 +67,12 @@ void beatdetector::calc_loudness(float data[3][256])
 	cloudness = 0;
 	for(i = 0 ; i < NUM_BANDS; i++)
 	{
-		float lastl;
 		y0 =  data[0][i];
 		y1 =  data[1][i];
 		y0*=y0;
 		y1*=y1;
 		y0 = (int)sqrtf(y0+y1);
-		lastl = cloudness;
+
 		cloudness += y0 *  filter[i] /filterpower;
 		filter2[i] = (filter2[i]*49 + (y0))/50 ;
 	}

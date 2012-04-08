@@ -42,7 +42,7 @@
 
 unsigned int fast_sqrt_table[0x10000];
 int titleHasChanged = 0;
-char *curtitle = "Moeders";
+const char *curtitle = "Moeders";
 
 extern "C" int lv_dancingparticles_init (VisPluginData *plugin);
 extern "C" int lv_dancingparticles_cleanup (VisPluginData *plugin);
@@ -99,7 +99,7 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars", FALSE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparent bars", FALSE),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -121,12 +121,7 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 
 extern "C" int lv_dancingparticles_cleanup (VisPluginData *plugin)
 {
-	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisUIWidget *ui;
-
-	/* Destroy the VisUI tree */
-	ui = visual_plugin_get_userinterface (plugin);
-	visual_object_unref (VISUAL_OBJECT (ui));
+	DancingParticlesPrivate *priv = static_cast<DancingParticlesPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
 
 	visual_mem_free (priv);
 
@@ -203,8 +198,6 @@ extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *vide
 {
 	VisBuffer fbuf;
 	float freq[3][256];
-	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-	int i;
 
 	visual_buffer_set_data_pair (&fbuf, freq[0], sizeof(freq[0]));
 	visual_audio_get_spectrum (audio, &fbuf, 256, VISUAL_AUDIO_CHANNEL_LEFT, FALSE);
@@ -212,7 +205,7 @@ extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *vide
 	visual_buffer_set_data_pair (&fbuf, freq[1], sizeof(freq[1]));
 	visual_audio_get_spectrum (audio, &fbuf, 256, VISUAL_AUDIO_CHANNEL_RIGHT, FALSE);
 
-	for (i = 0; i < sizeof(freq[2]); i++)
+	for (unsigned int i = 0; i < sizeof(freq[2]); i++)
 		freq[2][i] = (freq[0][i] + freq[1][i]) / 2;
 
 	/* FIXME on title change, do something */

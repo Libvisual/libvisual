@@ -11,14 +11,14 @@ parameters *ps=0;
 
 parameters p;
 
-char *configfilename = "";
+const char *configfilename = "";
 int IKnowAboutConfigFile;
 parameters p_parsed;
 static  int newconfig = 1;
 
 enum { INT, STR, FLOAT, CHAR };
-struct param_params{ char *pname; int type; void * where; };
-param_params pp[] = 
+struct param_params{ const char *pname; int type; void * where; };
+param_params pp[] =
   { { "name", STR,  &p_parsed.name },
     { "key", CHAR,  &p_parsed.key },
     { "mode", INT,  &p_parsed.mode },
@@ -78,7 +78,7 @@ void freeparams()
 void changep();
 // a very tolerant parser...
 
-int load_parameters(char * filename);
+int load_parameters(const char * filename);
 void init_parameters()
 {
   if(!load_parameters(configfilename))
@@ -86,15 +86,16 @@ void init_parameters()
       {
       }
 }
-int load_parameters(char * filename)
+int load_parameters(const char * filename)
 {
   FILE *f = fopen(filename,"r");
   if(f==NULL)
     return 0;
   char buf[1024];
-  char * ptr, *word, *err;
+  char *ptr, *word;
+  const char *err;
   int line = 1, mode = 0;
-  
+
   char *oldlocal = setlocale (LC_NUMERIC, "C");
 
 
@@ -140,14 +141,14 @@ int load_parameters(char * filename)
 		      err= "unknown Begin";
 		      goto error;
 		    }
-	      
+
 		}
-	 
+
 	    case 1:
 	      if(strcmp(word, "End") == 0)
 			{
 			  word = nextword(ptr);
-	      
+
 			  if(strcmp(word, "Effect") == 0)
 				{
 				  if(p_parsed.name==0)
@@ -161,13 +162,13 @@ int load_parameters(char * filename)
 				  else
 					ps = (parameters *) realloc(ps,nump* sizeof(parameters));
 				  ps[nump-1] = p_parsed;
-				  
+
 				}
-	     
+
 			}
 	      else
 		{
-		  char *var,  *egal, *val; 
+		  char *var,  *egal, *val;
 		  int i;
 		  var = word;
 		  egal = nextword(ptr);
@@ -219,7 +220,7 @@ int load_parameters(char * filename)
   fclose(f);
   newconfig = 1;
   allocParts();
-  changep();  
+  changep();
   return 1;
  error:
   setlocale (LC_NUMERIC, oldlocal);
@@ -230,7 +231,7 @@ int load_parameters(char * filename)
 void allocParts()
 {
   static int hasallocated = 0; // you cannot change the MaxParticles dynamicaly
-  
+
   if(!hasallocated)
     {
       hasallocated = 1;
@@ -265,7 +266,7 @@ void allocParts()
 		  Centers[i][1] = 0;
 		  Centers[i][2] = 0;
 
-		  //pts[i]=pts[i-1]+diff; 
+		  //pts[i]=pts[i-1]+diff;
 		}
     }
 }
@@ -313,15 +314,15 @@ void changep()
 	  for(j=i;i<j+ptsNum/8;i++)
 	    Centers[i]= FloatPoint( -400 + (i-j)*800/(ptsNum/8),-400 + (i-j)*800/(ptsNum/8),0);
 	  numCenters=i;
-	  
+
 	}
       if(p.mode==3)
 	{
-	  loadepic("dance.epic");
+	  loadepic(DATA_DIR "/dance.epic");
 	}
       if(p.mode==4)
 	{
-	  loadepic("xmms.epic");
+	  loadepic(DATA_DIR "/xmms.epic");
 	}
       if(p.mode == 5)
       {
@@ -337,6 +338,6 @@ void etoileinit(void)
 	allocParts();
   frames=0;
 //  changep();
-  return ;	
+  return ;
 }
 

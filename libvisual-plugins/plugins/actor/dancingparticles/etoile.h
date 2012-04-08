@@ -94,7 +94,7 @@ void  init_parameters();
 void changep();
 void allocParts();
 
-void loadepic(char *file);
+void loadepic(const char *file);
 
 class beatdetector
 {
