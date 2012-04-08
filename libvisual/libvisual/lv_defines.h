@@ -56,17 +56,11 @@
 
 /* Compiler specific optimalization macros */
 #if __GNUC__ >= 3
-# ifndef __cplusplus
-#  define inline            inline __attribute__ ((always_inline))
-# endif
 # define VIS_ATTR_MALLOC    __attribute__ ((malloc))
 # define VIS_ATTR_PACKED    __attribute__ ((packed))
 # define VIS_LIKELY(x)      __builtin_expect (!!(x), 1)
 # define VIS_UNLIKELY(x)    __builtin_expect (!!(x), 0)
 #else
-# ifndef __cplusplus
-#  define inline            /* no inline */
-# endif
 # define VIS_ATTR_MALLOC    /* no malloc */
 # define VIS_ATTR_PACKED    /* no packed */
 # define VIS_LIKELY(x)      (x)
