@@ -24,8 +24,6 @@
 #cmakedefine HAVE_FCNTL_H      1
 #cmakedefine HAVE_INTTYPES_H   1
 #cmakedefine HAVE_SCHED_H      1
-#cmakedefine HAVE_STRDUP       1
-#cmakedefine HAVE_STRNDUP      1
 #cmakedefine HAVE_SYSCONF      1
 #cmakedefine HAVE_SYS_SCHED_H  1
 #cmakedefine HAVE_SYS_SELECT_H 1
