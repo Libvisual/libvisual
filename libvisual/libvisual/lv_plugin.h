@@ -527,16 +527,6 @@ namespace LV {
    */
   char const* plugin_get_prev_by_name (PluginList const& list, char const* name);
 
-  /**
-   * Retrieves information about a plugin in the given list.
-   *
-   * @param type a list of plugins
-   * @param name name of plugin to retrieve information from
-   *
-   * @return plugin information
-   */
-  VisPluginRef* plugin_find (PluginList const& list, std::string const& name);
-
 } // LV namespace
 
 #endif /* __cplusplus */

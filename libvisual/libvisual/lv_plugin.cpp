@@ -40,25 +40,6 @@
 
 namespace LV {
 
-  namespace {
-
-    struct PluginHasName
-        : public std::unary_function<bool, VisPluginRef *>
-    {
-        std::string name;
-
-        PluginHasName (std::string const& name_)
-            : name (name_)
-        {}
-
-        bool operator() (VisPluginRef* ref) const
-        {
-            return name == ref->info->plugname;
-        }
-    };
-
-  } // anonymous namespace
-
   const char *plugin_get_next_by_name (PluginList const& list, const char *name)
   {
       for (unsigned int i = 0; i < list.size (); i++)
@@ -85,16 +66,6 @@ namespace LV {
       }
 
       return NULL;
-  }
-
-  VisPluginRef *plugin_find (PluginList const& list, std::string const& name)
-  {
-      PluginList::const_iterator iter =
-		  std::find_if (list.begin (),
-                        list.end (),
-                        PluginHasName (name));
-
-      return (iter != list.end ()) ? *iter : 0;
   }
 
 } // LV namespace

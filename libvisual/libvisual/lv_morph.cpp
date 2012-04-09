@@ -38,7 +38,7 @@ namespace {
   inline VisPluginRef*
   find_morph_plugin (std::string const& name)
   {
-	  return LV::plugin_find (get_morph_plugin_list (), name);
+      return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_MORPH, name);
   }
 
 } // anonymous namespace

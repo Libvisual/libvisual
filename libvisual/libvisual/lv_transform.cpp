@@ -129,7 +129,7 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
     if (transformname == NULL)
         return VISUAL_OK;
 
-    ref = LV::plugin_find (LV::transform_plugin_get_list (), transformname);
+    ref = LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_TRANSFORM, transformname);
     if (ref == NULL) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }

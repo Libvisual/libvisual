@@ -373,18 +373,6 @@ int visual_actor_run (VisActor *actor, VisAudio *audio);
 
 VISUAL_END_DECLS
 
-#ifdef __cplusplus
-
-#include <string>
-
-namespace LV {
-
-  VisPluginRef* actor_plugin_find (std::string const& name);
-
-} // LV namespace
-
-#endif
-
 /**
  * @}
  */

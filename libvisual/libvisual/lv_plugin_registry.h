@@ -27,16 +27,18 @@ namespace LV {
           }
       }
 
-	  /**
-	   * Adds an extra plugin search path.
-	   *
-	   * @param path Path to plugin directory
-	   */
+      /**
+       * Adds an extra plugin search path.
+       *
+       * @param path Path to plugin directory
+       */
       void add_path (std::string const& path);
 
       ~PluginRegistry ();
 
-	  bool has_plugin (PluginType type, std::string const& name);
+      VisPluginRef* find_plugin (PluginType type, std::string const& name);
+
+      bool has_plugin (PluginType type, std::string const& name);
 
       PluginList const& get_plugins () const;
 

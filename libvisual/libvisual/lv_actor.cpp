@@ -43,7 +43,7 @@ namespace {
   inline VisPluginRef*
   find_actor_plugin (std::string const& name)
   {
-      return LV::plugin_find (get_actor_plugin_list (), name);
+      return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_ACTOR, name);
   }
 
 } // LV namespace

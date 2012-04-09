@@ -38,7 +38,7 @@ namespace {
   inline VisPluginRef*
   find_input_plugin (std::string const& name)
   {
-      return LV::plugin_find (get_input_plugin_list (), name);
+      return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_INPUT, name);
   }
 
 } // Anonymous namespace

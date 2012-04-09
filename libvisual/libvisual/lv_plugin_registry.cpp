@@ -160,7 +160,7 @@ namespace LV {
       return m_impl->transform_plugins;
   }
 
-  bool PluginRegistry::has_plugin (PluginType type, std::string const& name)
+  VisPluginRef* PluginRegistry::find_plugin (PluginType type, std::string const& name)
   {
       PluginList const* list;
 
@@ -172,7 +172,7 @@ namespace LV {
 
           default:
               visual_log (VISUAL_LOG_ERROR, "Plugin type is invalid");
-              return false;
+              return 0;
       }
 
       PluginList::const_iterator iter =
@@ -180,7 +180,12 @@ namespace LV {
                         list->end (),
                         PluginHasName (name));
 
-      return iter != list->end ();
+      return iter != list->end () ? *iter : 0;
+  }
+
+  bool PluginRegistry::has_plugin (PluginType type, std::string const& name)
+  {
+      return find_plugin (type, name) != 0;
   }
 
   void PluginRegistry::get_plugins_by_type (PluginList& list, PluginType type)
