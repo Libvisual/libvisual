@@ -216,7 +216,9 @@ namespace LV {
 
           if (str_has_suffix (full_path, ".so")) {
               VisPluginRef* ref = visual_plugin_get_reference (full_path.c_str ());
-              list.push_back (ref);
+              if (ref) {
+                  list.push_back (ref);
+              }
           }
 
           visual_mem_free (namelist[i]);
