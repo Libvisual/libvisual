@@ -339,6 +339,7 @@ int visual_video_set_dimension (VisVideo *video, int width, int height)
 int visual_video_set_pitch (VisVideo *video, int pitch)
 {
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_return_val_if_fail (pitch <= 0, -VISUAL_ERROR_VIDEO_INVALID_PITCH);
 
 	if (video->bpp <= 0)
 		return -VISUAL_ERROR_VIDEO_INVALID_BPP;

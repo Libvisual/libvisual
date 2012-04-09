@@ -161,6 +161,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_VIDEO_PIXELS_NULL] =		N_("VisVideo it's pixel buffer is NULL"),
 	[VISUAL_ERROR_VIDEO_NO_ALLOCATED] =		N_("VisVideo it's pixel buffer is not allocated"),
 	[VISUAL_ERROR_VIDEO_HAS_PIXELS] =		N_("VisVideo has pixel buffer"),
+	[VISUAL_ERROR_VIDEO_INVALID_PITCH] =	N_("VisVideo has an invalid pitch"),
 	[VISUAL_ERROR_VIDEO_INVALID_BPP] =		N_("VisVideo is of invalid bytes per pixel"),
 	[VISUAL_ERROR_VIDEO_INVALID_DEPTH] =		N_("VisVideo is of invalid depth"),
 	[VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD] =	N_("Invalid scale method given"),
