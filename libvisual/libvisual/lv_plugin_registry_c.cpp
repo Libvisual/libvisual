@@ -21,7 +21,7 @@ extern "C" {
       return VISUAL_OK;
   }
 
-  int visual_plugin_regstry_add_path (const char *path)
+  int visual_plugin_registry_add_path (const char *path)
   {
       LV::PluginRegistry::instance()->add_path (path);
 
