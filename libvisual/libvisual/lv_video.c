@@ -1009,18 +1009,18 @@ static int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < src->height; y++) {
 		for (x = 0; x < src->width; x++) {
-			alpha = *(srcbuf + 3);
+			alpha = srcbuf[3];
 
-			*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-			*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-			*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+			destbuf[0] = (alpha * (srcbuf[0] - destbuf[0]) >> 8) + destbuf[0];
+			destbuf[1] = (alpha * (srcbuf[1] - destbuf[1]) >> 8) + destbuf[1];
+			destbuf[2] = (alpha * (srcbuf[2] - destbuf[2]) >> 8) + destbuf[2];
 
 			destbuf += dest->bpp;
-			srcbuf += src->bpp;
+			srcbuf  += src->bpp;
 		}
 
 		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
+		srcbuf  += src->pitch  - (src->width  * src->bpp);
 	}
 
 	return VISUAL_OK;
@@ -1118,7 +1118,7 @@ static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 			}
 
 			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
+			srcbuf  += src->pitch  - (src->width  * src->bpp);
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
@@ -1128,9 +1128,9 @@ static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 			rgb16_t *srcr  = (rgb16_t *) srcbuf;
 
 			for (x = 0; x < src->width; x++) {
-				destr->r = ((alpha * (srcr->r - destr->r) >> 8) + destr->r);
-				destr->g = ((alpha * (srcr->g - destr->g) >> 8) + destr->g);
-				destr->b = ((alpha * (srcr->b - destr->b) >> 8) + destr->b);
+				destr->r = (alpha * (srcr->r - destr->r) >> 8) + destr->r;
+				destr->g = (alpha * (srcr->g - destr->g) >> 8) + destr->g;
+				destr->b = (alpha * (srcr->b - destr->b) >> 8) + destr->b;
 
 				destr++;
 				srcr++;
@@ -1144,32 +1144,32 @@ static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
-				*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-				*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-				*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+				destbuf[0] = (alpha * (srcbuf[0] - destbuf[0]) >> 8) + destbuf[0];
+				destbuf[1] = (alpha * (srcbuf[1] - destbuf[1]) >> 8) + destbuf[1];
+				destbuf[2] = (alpha * (srcbuf[2] - destbuf[2]) >> 8) + destbuf[2];
 
 				destbuf += dest->bpp;
-				srcbuf += src->bpp;
+				srcbuf  += src->bpp;
 			}
 
 			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
+			srcbuf  += src->pitch  - (src->width  * src->bpp);
 		}
 
 	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
 
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
-				*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-				*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-				*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+				destbuf[0] = (alpha * (srcbuf[0] - destbuf[0]) >> 8) + destbuf[0];
+				destbuf[1] = (alpha * (srcbuf[1] - destbuf[1]) >> 8) + destbuf[1];
+				destbuf[2] = (alpha * (srcbuf[2] - destbuf[2]) >> 8) + destbuf[2];
 
 				destbuf += dest->bpp;
-				srcbuf += src->bpp;
+				srcbuf  += src->bpp;
 			}
 
 			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
+			srcbuf  += src->pitch  - (src->width  * src->bpp);
 		}
 	}
 
@@ -1216,9 +1216,9 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 
 			for (x = 0; x < src->width; x++) {
 				if (color != *((uint16_t *) srcr)) {
-					destr->r = ((alpha * (srcr->r - destr->r) >> 8) + destr->r);
-					destr->g = ((alpha * (srcr->g - destr->g) >> 8) + destr->g);
-					destr->b = ((alpha * (srcr->b - destr->b) >> 8) + destr->b);
+					destr->r = (alpha * (srcr->r - destr->r) >> 8) + destr->r;
+					destr->g = (alpha * (srcr->g - destr->g) >> 8) + destr->g;
+					destr->b = (alpha * (srcr->b - destr->b) >> 8) + destr->b;
 				}
 
 				destr++;
@@ -1237,9 +1237,9 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
 				if (b != *srcbuf && g != *(srcbuf + 1) && r != *(srcbuf + 2)) {
-					*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-					*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-					*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+					destbuf[0] = (alpha * (srcbuf[0] - destbuf[0]) >> 8) + destbuf[0];
+					destbuf[1] = (alpha * (srcbuf[1] - destbuf[1]) >> 8) + destbuf[1];
+					destbuf[2] = (alpha * (srcbuf[2] - destbuf[2]) >> 8) + destbuf[2];
 				}
 
 				destbuf += dest->bpp;
@@ -1256,9 +1256,9 @@ static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 		for (y = 0; y < src->height; y++) {
 			for (x = 0; x < src->width; x++) {
 				if (color == *((uint32_t *) destbuf)) {
-					*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-					*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-					*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
+					destbuf[0] = (alpha * (srcbuf[0] - destbuf[0]) >> 8) + destbuf[0];
+					destbuf[1] = (alpha * (srcbuf[1] - destbuf[1]) >> 8) + destbuf[1];
+					destbuf[2] = (alpha * (srcbuf[2] - destbuf[2]) >> 8) + destbuf[2];
 				}
 
 				destbuf += dest->bpp;
