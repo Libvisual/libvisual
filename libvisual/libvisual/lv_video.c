@@ -743,38 +743,31 @@ VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest,
 	visual_return_val_if_fail (dest != NULL, NULL);
 	visual_return_val_if_fail (src != NULL, NULL);
 
-	if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_NONE) {
-
-		return blit_overlay_noalpha;
-
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SRC) {
-
-		if (!alpha || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
+	switch (src->compositetype) {
+		case VISUAL_VIDEO_COMPOSITE_TYPE_NONE:
 			return blit_overlay_noalpha;
 
-		if (visual_cpu_has_mmx ())
-			return _lv_blit_overlay_alphasrc_mmx;
-		else
-			return blit_overlay_alphasrc;
+		case VISUAL_VIDEO_COMPOSITE_TYPE_SRC:
+			if (!alpha || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
+				return blit_overlay_noalpha;
+			else
+				return blit_overlay_alphasrc;
 
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY) {
+		case VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY:
+			return blit_overlay_colorkey;
 
-		return blit_overlay_colorkey;
+		case VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE:
+			return blit_overlay_surfacealpha;
 
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE) {
+		case VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY:
+			return blit_overlay_surfacealphacolorkey;
 
-		return blit_overlay_surfacealpha;
+		case VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM:
+			return src->compfunc;
 
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY) {
-
-		return blit_overlay_surfacealphacolorkey;
-
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM) {
-
-		return src->compfunc;
+		default:
+			return NULL;
 	}
-
-	return NULL;
 }
 
 int visual_video_blit_overlay_rectangle (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, int alpha)
@@ -1010,6 +1003,9 @@ static int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha;
+
+	if (visual_cpu_has_mmx ())
+		return _lv_blit_overlay_alphasrc_mmx (dest, src);
 
 	for (y = 0; y < src->height; y++) {
 		for (x = 0; x < src->width; x++) {
