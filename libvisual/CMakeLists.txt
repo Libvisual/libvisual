@@ -15,11 +15,11 @@ SET(LV_VERSION_SUFFIX "${LV_VERSION_MAJOR}.${LV_VERSION_MINOR}")
 # Package information
 SET(PACKAGE           "libvisual")
 SET(PACKAGE_VERSION   "${LV_VERSION}")
-SET(PACKAGE_BUGREPORT "http://libvisual.sf.net")
+SET(PACKAGE_BUGREPORT "http://github.com/Libvisual/libvisual/issues")
 SET(PACKAGE_NAME      "${PACKAGE}")
 SET(PACKAGE_STRING    "${PACKAGE}-${PACKAGE_VERSION}")
 SET(PACKAGE_TARNAME   "${PACKAGE}-${PACKAGE_VERSION}")
-SET(PACKAGE_URL       "http://libvisual.sf.net")
+SET(PACKAGE_URL       "http://libvisual.org")
 
 # Installation Paths
 INCLUDE(GNUInstallDirs)

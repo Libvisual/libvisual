@@ -3,8 +3,8 @@
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = libvisual
-PROJECT_NUMBER         =
+PROJECT_NAME           = @PACKAGE@
+PROJECT_NUMBER         = @PACKAGE_VERSION@
 OUTPUT_DIRECTORY       = docs
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = NO
