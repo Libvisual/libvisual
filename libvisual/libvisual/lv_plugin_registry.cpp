@@ -12,6 +12,7 @@
 #include "gettext.h"
 
 #include <vector>
+#include <map>
 #include <iterator>
 #include <algorithm>
 #include <functional>
@@ -26,10 +27,10 @@
 
 namespace LV {
 
-  namespace Internal {
+  namespace {
 
-    // Predicate closure that checks if a plugin entry is of a
-    // particular type
+    typedef std::map<PluginType, PluginList> PluginListMap;
+
     struct PluginHasType
         : public std::unary_function<bool, VisPluginRef const*>
     {
@@ -60,19 +61,7 @@ namespace LV {
         }
     };
 
-    void filter_plugins_by_type (PluginList& output, PluginList const& input, PluginType type)
-    {
-        output.clear ();
-
-        copy_if (input.begin(),
-                 input.end (),
-                 std::back_insert_iterator<PluginList> (output),
-                 PluginHasType (type));
-    }
-
-  } // Internal namespace
-
-  using namespace Internal;
+  }
 
   class PluginRegistry::Impl
   {
@@ -80,14 +69,9 @@ namespace LV {
 
       std::vector<std::string> plugin_paths;
 
-      PluginList plugins;
-      PluginList actor_plugins;
-      PluginList morph_plugins;
-      PluginList input_plugins;
-      PluginList transform_plugins;
+      PluginListMap plugin_list_map;
 
-      void fetch_plugin_list ();
-      void add_plugins_from_dir (PluginList& list, std::string const& dir);
+      void get_plugins_from_dir (PluginList& list, std::string const& dir);
   };
 
   PluginRegistry::PluginRegistry ()
@@ -114,8 +98,6 @@ namespace LV {
           add_path (home_dir + "/.libvisual/transform");
       }
 #endif
-
-      m_impl->fetch_plugin_list ();
   }
 
   PluginRegistry::~PluginRegistry ()
@@ -128,6 +110,17 @@ namespace LV {
       visual_log (VISUAL_LOG_INFO, "Adding to plugin search path: %s", path.c_str());
 
       m_impl->plugin_paths.push_back (path);
+
+      PluginList plugins;
+      m_impl->get_plugins_from_dir (plugins, path);
+
+      for (PluginList::iterator plugin = plugins.begin (), plugin_end = plugins.end ();
+           plugin != plugin_end;
+           ++plugin)
+      {
+          PluginList& list = m_impl->plugin_list_map[(*plugin)->info->type];
+          list.push_back (*plugin);
+      }
   }
 
   VisPluginRef* PluginRegistry::find_plugin (PluginType type, std::string const& name)
@@ -151,36 +144,17 @@ namespace LV {
   {
       static PluginList empty;
 
-      switch (type) {
-          case VISUAL_PLUGIN_TYPE_ACTOR:     return m_impl->actor_plugins;
-          case VISUAL_PLUGIN_TYPE_INPUT:     return m_impl->input_plugins;
-          case VISUAL_PLUGIN_TYPE_MORPH:     return m_impl->morph_plugins;
-          case VISUAL_PLUGIN_TYPE_TRANSFORM: return m_impl->transform_plugins;
+      PluginListMap::const_iterator match = m_impl->plugin_list_map.find (type);
+      if (match == m_impl->plugin_list_map.end ())
+          return empty;
 
-          default:
-              return empty;
-      }
+      return match->second;
   }
 
-  void PluginRegistry::Impl::fetch_plugin_list ()
+  void PluginRegistry::Impl::get_plugins_from_dir (PluginList& list, std::string const& dir)
   {
-      typedef std::vector<std::string>::const_iterator PathIter;
+      list.clear ();
 
-      for (PathIter path = plugin_paths.begin (), path_end = plugin_paths.end ();
-           path != path_end;
-           ++path)
-      {
-          add_plugins_from_dir (plugins, *path);
-      }
-
-      Internal::filter_plugins_by_type (actor_plugins, plugins, VISUAL_PLUGIN_TYPE_ACTOR);
-      Internal::filter_plugins_by_type (input_plugins, plugins, VISUAL_PLUGIN_TYPE_INPUT);
-      Internal::filter_plugins_by_type (morph_plugins, plugins, VISUAL_PLUGIN_TYPE_MORPH);
-      Internal::filter_plugins_by_type (transform_plugins, plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
-  }
-
-  void PluginRegistry::Impl::add_plugins_from_dir (PluginList& list, std::string const& dir)
-  {
 #if defined(VISUAL_OS_WIN32)
       std::string pattern = dir + "/*";
 
