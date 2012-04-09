@@ -35,7 +35,9 @@
 
 #include <libvisual/libvisual.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 static int act_jakdaw_init (VisPluginData *plugin);
 static int act_jakdaw_cleanup (VisPluginData *plugin);
@@ -45,18 +47,16 @@ static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_jakdaw_palette (VisPluginData *plugin);
 static int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_jakdaw_requisition,
 		.palette = act_jakdaw_palette,
 		.render = act_jakdaw_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "jakdaw",
@@ -71,12 +71,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_jakdaw_cleanup,
 		.events = act_jakdaw_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_jakdaw_init (VisPluginData *plugin)

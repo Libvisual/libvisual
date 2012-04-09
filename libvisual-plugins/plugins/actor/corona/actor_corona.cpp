@@ -40,7 +40,9 @@
 #include "corona.h"
 #include "palette.h"
 
-extern "C" const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+extern "C" const VisPluginInfo *get_plugin_info ();
 
 namespace {
 
@@ -88,9 +90,7 @@ const int PALETTEDATA[][NB_PALETTES] = {
 
 }
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-extern "C" const VisPluginInfo *get_plugin_info (int *count)
+extern "C" const VisPluginInfo *get_plugin_info ()
 {
     static VisActorPlugin actor;
 	static VisPluginInfo info;
@@ -115,8 +115,6 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 	info.events   = lv_corona_events;
 
 	info.plugin = VISUAL_OBJECT (&actor);
-
-	*count = 1;
 
 	return &info;
 }

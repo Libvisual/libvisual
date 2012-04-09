@@ -26,10 +26,11 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (int *count);
+const VisPluginInfo *get_plugin_info (void);
+
 static int lv_morph_slide_init_right (VisPluginData *plugin);
 
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
     static VisPluginInfo info = {
         .type = VISUAL_PLUGIN_TYPE_MORPH,
@@ -47,8 +48,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 
         .plugin = VISUAL_OBJECT (&morph)
     };
-
-    *count = 1;
 
     return &info;
 }

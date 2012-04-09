@@ -33,11 +33,12 @@
 
 #include <libvisual/libvisual.h>
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 #define NUM_BANDS 16
 #define SCOPE_DEPTH 16
-
-const VisPluginInfo *get_plugin_info (int *count);
 
 typedef struct {
 	float cam_y;
@@ -70,19 +71,17 @@ static void init_gl(NastyfftPrivate *priv);
 static void draw_scene(NastyfftPrivate *priv);
 static void make_all(NastyfftPrivate *priv);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 /* Main plugin stuff */
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_nastyfft_requisition,
 		.palette = lv_nastyfft_palette,
 		.render = lv_nastyfft_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = N_("nastyfft"),
@@ -97,19 +96,17 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_nastyfft_cleanup,
 		.events = lv_nastyfft_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
-
-	return info;
+	return &info;
 }
 
 static int lv_nastyfft_init (VisPluginData *plugin)

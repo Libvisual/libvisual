@@ -39,12 +39,12 @@
 
 #include <libvisual/libvisual.h>
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 #ifndef SHARED_FILE
 #define SHARED_FILE ".mplayer/mplayer-af_export" /**< default file name,
 						   relative to $HOME */
 #endif /* SHARED_FILE */
-
-const VisPluginInfo *get_plugin_info(int *count);
 
 /* Data structures ***********************************************************/
 typedef struct {
@@ -63,14 +63,12 @@ typedef struct {
 } mplayer_priv_t;
 
 
-
+const VisPluginInfo *get_plugin_info(void);
 
 /* Functions *****************************************************************/
 static int inp_mplayer_init( VisPluginData *plugin );
 static int inp_mplayer_cleanup( VisPluginData *plugin );
 static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio );
-
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 /**
  * set up plugin
@@ -79,13 +77,13 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
  *
  * @return plugin ready for use
  */
-const VisPluginInfo *get_plugin_info( int *count )
+const VisPluginInfo *get_plugin_info( void )
 {
-	static VisInputPlugin input[] = {{
+	static VisInputPlugin input = {
 		.upload = inp_mplayer_upload
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
 		.plugname = "mplayer",
@@ -99,12 +97,10 @@ const VisPluginInfo *get_plugin_info( int *count )
 		.init = inp_mplayer_init,
 		.cleanup = inp_mplayer_cleanup,
 
-		.plugin = VISUAL_OBJECT (&input[0])
-	}};
+		.plugin = VISUAL_OBJECT (&input)
+	};
 
-	*count = sizeof( info ) / sizeof( *info );
-
-	return info;
+	return &info;
 }
 
 /**

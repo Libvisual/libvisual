@@ -32,6 +32,9 @@
 
 #include <libvisual/libvisual.h>
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 /** default amount of bars */
 #define BARS_DEFAULT 25
@@ -40,8 +43,6 @@
 
 /* helper macro */
 #define QTY(array)  (sizeof(array) / sizeof(*(array)))
-
-const VisPluginInfo *get_plugin_info (int *count);
 
 typedef struct
 {
@@ -60,18 +61,16 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_analyzer_palette (VisPluginData *plugin);
 static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_analyzer_requisition,
 		.palette = lv_analyzer_palette,
 		.render = lv_analyzer_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "lv_analyzer",
@@ -86,12 +85,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_analyzer_cleanup,
 		.events = lv_analyzer_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int _bars(VisPluginData *plugin)

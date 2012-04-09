@@ -37,13 +37,15 @@
 
 #include "goom.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
+
 typedef struct {
 	VisBuffer	 pcmbuf1;
 	VisBuffer	 pcmbuf2;
 	PluginInfo	*goominfo; /* The goom internal private struct */
 } GoomPrivate;
-
-const VisPluginInfo *get_plugin_info (int *count);
 
 static int lv_goom_init (VisPluginData *plugin);
 static int lv_goom_cleanup (VisPluginData *plugin);
@@ -53,18 +55,16 @@ static int lv_goom_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_goom_palette (VisPluginData *plugin);
 static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_goom_requisition,
 		.palette = lv_goom_palette,
 		.render = lv_goom_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "goom2k4",
@@ -79,12 +79,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_goom_cleanup,
 		.events = lv_goom_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int lv_goom_init (VisPluginData *plugin)

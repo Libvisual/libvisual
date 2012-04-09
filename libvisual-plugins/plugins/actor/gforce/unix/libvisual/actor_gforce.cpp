@@ -47,6 +47,8 @@
 #include "RectUtils.h"
 #include "CEgFileSpec.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 #define SND_BUF_SIZE 550
 // Not doing 256, because the end of the fft buffer is kinda jumpy for some reason
 #define FFT_BUF_SIZE 180
@@ -66,38 +68,34 @@ VISUAL_C_LINKAGE int lv_gforce_events (VisPluginData *plugin, VisEventQueue *eve
 VISUAL_C_LINKAGE VisPalette *lv_gforce_palette (VisPluginData *plugin);
 VISUAL_C_LINKAGE int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 VISUAL_C_LINKAGE
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[1];
-	static VisPluginInfo info[1];
+	static VisActorPlugin actor;
+	static VisPluginInfo info;
 
-	actor[0].requisition = lv_gforce_requisition;
-	actor[0].palette = lv_gforce_palette;
-	actor[0].render = lv_gforce_render;
-	actor[0].vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT;
+	actor.requisition = lv_gforce_requisition;
+	actor.palette = lv_gforce_palette;
+	actor.render = lv_gforce_render;
+	actor.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT;
 
-	info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
+	info.type = VISUAL_PLUGIN_TYPE_ACTOR;
 
-	info[0].plugname = "gforce";
-	info[0].name = "libvisual G-Force plugin";
-	info[0].author = "Winamp version: Andy O'Meara, Unix port: Boris Gjenero, Libvisual port and cleanups: Dennis Smit <ds@nerds-incorporated.org";
-	info[0].version = "0.1.0";
-	info[0].about = N_("Libvisual G-Force plugin");
-	info[0].help = N_("This plugin is a port of the well known G-Force winamp plugin, based on an old unix port");
-	info[0].license = "Unknown",
+	info.plugname = "gforce";
+	info.name = "libvisual G-Force plugin";
+	info.author = "Winamp version: Andy O'Meara, Unix port: Boris Gjenero, Libvisual port and cleanups: Dennis Smit <ds@nerds-incorporated.org";
+	info.version = "0.1.0";
+	info.about = N_("Libvisual G-Force plugin");
+	info.help = N_("This plugin is a port of the well known G-Force winamp plugin, based on an old unix port");
+	info.license = "Unknown",
 
-	info[0].init = lv_gforce_init;
-	info[0].cleanup = lv_gforce_cleanup;
-	info[0].events = lv_gforce_events;
+	info.init = lv_gforce_init;
+	info.cleanup = lv_gforce_cleanup;
+	info.events = lv_gforce_events;
 
-	info[0].plugin = VISUAL_OBJECT (&actor[0]);
+	info.plugin = VISUAL_OBJECT (&actor);
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return (const VisPluginInfo *) info;
+	return &info;
 }
 
 VISUAL_C_LINKAGE

@@ -33,7 +33,9 @@
 #include "renderer.h"
 #include "display.h"
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 static int act_infinite_init (VisPluginData *plugin);
 static int act_infinite_cleanup (VisPluginData *plugin);
@@ -43,18 +45,16 @@ static int act_infinite_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_infinite_palette (VisPluginData *plugin);
 static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_infinite_requisition,
 		.palette = act_infinite_palette,
 		.render = act_infinite_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "infinite",
@@ -69,12 +69,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_infinite_cleanup,
 		.events = act_infinite_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_infinite_init (VisPluginData *plugin)

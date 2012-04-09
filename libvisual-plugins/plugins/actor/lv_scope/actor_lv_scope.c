@@ -32,9 +32,12 @@
 
 #include <libvisual/libvisual.h>
 
-#define PCM_SIZE	1024
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (int *count);
+const VisPluginInfo *get_plugin_info (void);
+
+
+#define PCM_SIZE	1024
 
 typedef struct {
 	VisPalette *pal;
@@ -49,18 +52,16 @@ static int lv_scope_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_scope_palette (VisPluginData *plugin);
 static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_scope_requisition,
 		.palette = lv_scope_palette,
 		.render = lv_scope_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "lv_scope",
@@ -75,12 +76,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_scope_cleanup,
 		.events = lv_scope_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int lv_scope_init (VisPluginData *plugin)

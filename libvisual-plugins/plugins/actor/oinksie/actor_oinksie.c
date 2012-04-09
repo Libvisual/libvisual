@@ -32,6 +32,10 @@
 
 #include "oinksie.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info(void);
+
 typedef struct {
 	OinksiePrivate			 priv1;
 	OinksiePrivate			 priv2;
@@ -53,8 +57,6 @@ static int composite_blend3_32_c (VisVideo *dest, VisVideo *src);
 static int composite_blend4_32_c (VisVideo *dest, VisVideo *src);
 static int composite_blend5_32_c (VisVideo *dest, VisVideo *src);
 
-const VisPluginInfo *get_plugin_info(int *count);
-
 static int act_oinksie_init (VisPluginData *plugin);
 static int act_oinksie_cleanup (VisPluginData *plugin);
 static int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height);
@@ -63,20 +65,18 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_oinksie_palette (VisPluginData *plugin);
 static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_oinksie_requisition,
 		.palette = act_oinksie_palette,
 		.render = act_oinksie_render,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "oinksie",
@@ -91,12 +91,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_oinksie_cleanup,
 		.events = act_oinksie_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_oinksie_init (VisPluginData *plugin)

@@ -30,7 +30,9 @@
 
 #include <libvisual/libvisual.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 typedef struct {
 	uint16_t b:5, g:6, r:5;
@@ -51,20 +53,18 @@ static int lv_morph_tentacle_init (VisPluginData *plugin);
 static int lv_morph_tentacle_cleanup (VisPluginData *plugin);
 static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisMorphPlugin morph[] = {{
+	static VisMorphPlugin morph = {
 		.apply = lv_morph_tentacle_apply,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
 			VISUAL_VIDEO_DEPTH_16BIT |
 			VISUAL_VIDEO_DEPTH_24BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "tentacle",
@@ -78,12 +78,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = lv_morph_tentacle_init,
 		.cleanup = lv_morph_tentacle_cleanup,
 
-		.plugin = VISUAL_OBJECT (&morph[0])
-	}};
+		.plugin = VISUAL_OBJECT (&morph)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int lv_morph_tentacle_init (VisPluginData *plugin)

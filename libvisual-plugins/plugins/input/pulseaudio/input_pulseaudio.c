@@ -20,9 +20,10 @@
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 #define PCM_BUF_SIZE 1024
 
-    
 pa_sample_spec sample_spec = {
     .format = PA_SAMPLE_S16LE,
     .rate = 44100,
@@ -33,20 +34,20 @@ typedef struct {
     pa_simple *simple;
 } pulseaudio_priv_t;
 
-int inp_pulseaudio_init( VisPluginData *plugin );
-int inp_pulseaudio_cleanup( VisPluginData *plugin );
-int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );
-int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
+const VisPluginInfo *get_plugin_info( void );
 
-const VisPluginInfo *get_plugin_info( int *count );
-const VisPluginInfo *get_plugin_info( int *count ) {
-    static VisInputPlugin input[] = {{
+static int inp_pulseaudio_init( VisPluginData *plugin );
+static int inp_pulseaudio_cleanup( VisPluginData *plugin );
+static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );
+static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events);
+
+const VisPluginInfo *get_plugin_info( void ) {
+    static VisInputPlugin input = {
         .upload = inp_pulseaudio_upload
-    }};
+    };
 
-    static VisPluginInfo info[] = {{
+    static VisPluginInfo info = {
         .type = VISUAL_PLUGIN_TYPE_INPUT,
         .plugname = "pulseaudio",
         .name = "Pulseaudio input plugin",
@@ -60,15 +61,13 @@ const VisPluginInfo *get_plugin_info( int *count ) {
         .cleanup = inp_pulseaudio_cleanup,
         .events = inp_pulseaudio_events,
 
-        .plugin = VISUAL_OBJECT(&input[0])
-    }};
+        .plugin = VISUAL_OBJECT(&input)
+    };
 
-    *count = sizeof(info) / sizeof(*info);
-
-    return info;
+    return &info;
 }
 
-int inp_pulseaudio_init( VisPluginData *plugin ) {
+static int inp_pulseaudio_init( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv;
     int error;
 
@@ -82,11 +81,11 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
 
 
     priv->simple = pa_simple_new(
-        NULL, 
-        "lv-pulseaudio", 
-        PA_STREAM_RECORD, 
-        NULL, 
-        "record", 
+        NULL,
+        "lv-pulseaudio",
+        PA_STREAM_RECORD,
+        NULL,
+        "record",
         &sample_spec, NULL, NULL, &error);
 
     if( priv->simple == NULL ) {
@@ -104,7 +103,7 @@ int inp_pulseaudio_init( VisPluginData *plugin ) {
     return VISUAL_OK;
 }
 
-int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
+static int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     pulseaudio_priv_t *priv = NULL;
 
     visual_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
@@ -119,7 +118,7 @@ int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     return VISUAL_OK;
 }
 
-int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
+static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 {
     pulseaudio_priv_t *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     VisEvent ev;
@@ -134,16 +133,16 @@ int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 
                 if (visual_param_entry_is (param, "device")) {
                     tmp = visual_param_entry_get_string (param);
-                    
+
                     if(priv->simple != NULL)
                         pa_simple_free(priv->simple);
 
                     priv->simple = pa_simple_new(
-                        NULL, 
-                        "lv-pulseaudio", 
-                        PA_STREAM_RECORD, 
-                        tmp, 
-                        "record", 
+                        NULL,
+                        "lv-pulseaudio",
+                        PA_STREAM_RECORD,
+                        tmp,
+                        "record",
                         &sample_spec, NULL, NULL, &error);
 
                     if( priv->simple == NULL ) {

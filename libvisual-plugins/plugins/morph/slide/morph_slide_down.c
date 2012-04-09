@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -24,13 +24,13 @@
 #include "common.h"
 #include <libvisual/libvisual.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 static int lv_morph_slide_init_down (VisPluginData *plugin);
 
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
     static VisPluginInfo info = {
         .type = VISUAL_PLUGIN_TYPE_MORPH,
@@ -48,8 +48,6 @@ const VisPluginInfo *get_plugin_info (int *count)
 
         .plugin = VISUAL_OBJECT (&morph)
     };
-
-    *count = 1;
 
     return &info;
 }

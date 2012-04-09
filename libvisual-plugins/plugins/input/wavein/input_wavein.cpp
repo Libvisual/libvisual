@@ -23,11 +23,11 @@
 #include <libvisual/libvisual.h>
 #include <windows.h>
 
-#define PCM_BUFFER_SIZE 4096
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR;
-    
+
 VISUAL_C_LINKAGE VisPluginInfo const* get_plugin_info (int* count);
+
+#define PCM_BUFFER_SIZE 4096
 
 struct WaveInPrivate {
     HWAVEIN device_handle;
@@ -76,8 +76,6 @@ VISUAL_C_LINKAGE VisPluginInfo const* get_plugin_info (int* count)
         0,
         VISUAL_OBJECT (&input)
     };
-
-    *count = 1;
 
     return &info;
 }
@@ -175,7 +173,7 @@ namespace {
 
       return true;
   }
-  
+
   int inp_wavein_init (VisPluginData* plugin)
   {
       visual_return_val_if_fail (plugin != NULL, -1);
@@ -232,7 +230,7 @@ namespace {
       priv->loaded = true;
 
       priv->mutex = CreateMutex (NULL, FALSE, NULL);
-      
+
       // Initialize buffer statuses
 
       priv->buffer_ready[0] = false;
@@ -244,13 +242,13 @@ namespace {
       prepare_buffer (priv, priv->active_buffer);
 
       // Start capturing samples
-      
+
       visual_log (VISUAL_LOG_DEBUG, "Starting audio capture");
 
       ResumeThread (thread);
 
       waveInStart (priv->device_handle);
-      
+
       return 0;
   }
 

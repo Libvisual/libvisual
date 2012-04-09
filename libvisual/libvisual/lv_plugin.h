@@ -129,7 +129,7 @@ typedef struct _VisPluginEnviron VisPluginEnviron;
  *
  * @return Pointer to the VisPluginInfo array which contains information about the plugin.
  */
-typedef const VisPluginInfo *(*VisPluginGetInfoFunc)(int *count);
+typedef const VisPluginInfo *(*VisPluginGetInfoFunc)(void);
 
 /* Standard plugin methods */
 
@@ -172,7 +172,6 @@ struct _VisPluginRef {
 	VisObject      object;      /**< The VisObject data. */
 
 	char          *file;        /**< The file location of the plugin. */
-	int            index;       /**< Contains the index number for the entry in the VisPluginInfo table. */
 	int            usecount;    /**< The use count, this indicates how many instances are loaded. */
 	VisPluginInfo *info;        /**< A copy of the VisPluginInfo structure. */
 };
@@ -373,11 +372,9 @@ int visual_plugin_realize (VisPluginData *plugin);
  *
  * @param pluginpath The full path and filename to the plugin of which a reference
  *	needs to be obtained.
- * @param count Int pointer that will contain the number of VisPluginRefs returned.
- *
- * @return The optionally newly allocated VisPluginRefs for the plugin.
+ * @return The newly allocated VisPluginRef for the plugin.
  */
-VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
+VisPluginRef *visual_plugin_get_reference (const char *pluginpath);
 
 /**
  * Gives the VISUAL_PLUGIN_API_VERSION value for which the library is compiled.

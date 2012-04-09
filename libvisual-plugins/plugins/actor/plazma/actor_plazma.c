@@ -35,7 +35,9 @@
 #include "plazma.h"
 #include "actor_plazma.h"
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 static int act_plazma_init (VisPluginData *plugin);
 static int act_plazma_cleanup (VisPluginData *plugin);
@@ -45,18 +47,16 @@ static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_plazma_palette (VisPluginData *plugin);
 static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_plazma_requisition,
 		.palette = act_plazma_palette,
 		.render = act_plazma_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "plazma",
@@ -71,12 +71,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_plazma_cleanup,
 		.events = act_plazma_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_plazma_init (VisPluginData *plugin)

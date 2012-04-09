@@ -360,7 +360,6 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 #else /* !VISUAL_OS_WIN32 */
     void *handle;
 #endif
-    int cnt;
 
     visual_return_val_if_fail (ref != NULL, NULL);
     visual_return_val_if_fail (ref->info != NULL, NULL);
@@ -408,7 +407,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
         return NULL;
     }
 
-    pluginfo = VISUAL_PLUGININFO (get_plugin_info (&cnt));
+    pluginfo = VISUAL_PLUGININFO (get_plugin_info ());
 
     if (pluginfo == NULL) {
         visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info while loading."));
@@ -424,7 +423,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
     plugin = visual_plugin_new ();
     plugin->ref = ref;
-    plugin->info = &pluginfo[ref->index];
+    plugin->info = pluginfo;
 
     visual_object_ref (VISUAL_OBJECT (ref));
 
@@ -460,9 +459,9 @@ int visual_plugin_realize (VisPluginData *plugin)
     return VISUAL_OK;
 }
 
-VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
+VisPluginRef *visual_plugin_get_reference (const char *pluginpath)
 {
-    VisPluginRef **ref;
+    VisPluginRef *ref;
     VisPluginInfo *plug_info;
     VisPluginInfo *dup_info;
     VisPluginGetInfoFunc get_plugin_info;
@@ -472,7 +471,6 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
 #else /* !VISUAL_OS_WIN32 */
     void *handle;
 #endif
-    int cnt = 1, i;
 
     visual_return_val_if_fail (pluginpath != NULL, NULL);
 
@@ -531,7 +529,7 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
         return NULL;
     }
 
-    plug_info = VISUAL_PLUGININFO (get_plugin_info (&cnt));
+    plug_info = VISUAL_PLUGININFO (get_plugin_info ());
 
     if (plug_info == NULL) {
         visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info"));
@@ -545,29 +543,22 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
         return NULL;
     }
 
-    ref = visual_mem_new0 (VisPluginRef *, cnt);
+    ref = visual_plugin_ref_new ();
 
-    for (i = 0; i < cnt; i++) {
-        ref[i] = visual_plugin_ref_new ();
+    dup_info = visual_plugin_info_new ();
+    visual_plugin_info_copy (dup_info, plug_info);
 
-        dup_info = visual_plugin_info_new ();
-        visual_plugin_info_copy (dup_info, &plug_info[i]);
+    ref->info = dup_info;
+    ref->file = visual_strdup (pluginpath);
 
-        ref[i]->index = i;
-        ref[i]->info = dup_info;
-        ref[i]->file = visual_strdup (pluginpath);
-
-        visual_object_unref (plug_info[i].plugin);
-        visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
-    }
+    visual_object_unref (plug_info->plugin);
+    visual_object_unref (VISUAL_OBJECT (plug_info));
 
 #if defined(VISUAL_OS_WIN32)
     FreeLibrary (handle);
 #else
     dlclose (handle);
 #endif
-
-    *count = cnt;
 
     return ref;
 }

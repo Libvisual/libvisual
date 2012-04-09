@@ -34,9 +34,9 @@
 
 #include <libvisual/libvisual.h>
 
-#define PCM_BUF_SIZE	1024
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (int *count);
+#define PCM_BUF_SIZE	1024
 
 typedef struct {
 	jack_client_t	*client;
@@ -49,6 +49,8 @@ typedef struct {
 	short		 fakebuf[PCM_BUF_SIZE];
 } JackPrivate;
 
+const VisPluginInfo *get_plugin_info (void);
+
 static int process_callback (jack_nframes_t nframes, void *arg);
 static void shutdown_callback (void *arg);
 
@@ -56,15 +58,13 @@ static int inp_jack_init (VisPluginData *plugin);
 static int inp_jack_cleanup (VisPluginData *plugin);
 static int inp_jack_upload (VisPluginData *plugin, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisInputPlugin input[] = {{
+	static VisInputPlugin input = {
 		.upload = inp_jack_upload
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
 		.plugname = "jack",
@@ -78,12 +78,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = inp_jack_init,
 		.cleanup = inp_jack_cleanup,
 
-		.plugin = VISUAL_OBJECT (&input[0])
-	}};
+		.plugin = VISUAL_OBJECT (&input)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int inp_jack_init (VisPluginData *plugin)

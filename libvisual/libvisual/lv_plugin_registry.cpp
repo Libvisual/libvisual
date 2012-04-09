@@ -215,15 +215,8 @@ namespace LV {
           std::string full_path = dir + "/" + namelist[i]->d_name;
 
           if (str_has_suffix (full_path, ".so")) {
-              int count = 0;
-              VisPluginRef** ref = visual_plugin_get_references (full_path.c_str (), &count);
-
-              if (ref) {
-                  for (int j = 0; j < count; j++)
-                      list.push_back (ref[j]);
-
-                  visual_mem_free (ref);
-              }
+              VisPluginRef* ref = visual_plugin_get_reference (full_path.c_str ());
+              list.push_back (ref);
           }
 
           visual_mem_free (namelist[i]);
