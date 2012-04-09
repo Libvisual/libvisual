@@ -32,7 +32,7 @@ namespace {
   inline LV::PluginList const&
   get_input_plugin_list ()
   {
-      return LV::PluginRegistry::instance()->get_input_plugins ();
+      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
   }
 
   inline VisPluginRef*

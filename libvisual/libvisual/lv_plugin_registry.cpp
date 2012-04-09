@@ -60,7 +60,7 @@ namespace LV {
         }
     };
 
-    void get_plugins_by_type (PluginList& output, PluginList const& input, PluginType type)
+    void filter_plugins_by_type (PluginList& output, PluginList const& input, PluginType type)
     {
         output.clear ();
 
@@ -130,57 +130,16 @@ namespace LV {
       m_impl->plugin_paths.push_back (path);
   }
 
-  PluginList const&
-  PluginRegistry::get_plugins () const
-  {
-      return m_impl->plugins;
-  }
-
-  PluginList const&
-  PluginRegistry::get_actor_plugins () const
-  {
-      return m_impl->actor_plugins;
-  }
-
-  PluginList const&
-  PluginRegistry::get_input_plugins () const
-  {
-      return m_impl->input_plugins;
-  }
-
-  PluginList const&
-  PluginRegistry::get_morph_plugins () const
-  {
-      return m_impl->morph_plugins;
-  }
-
-  PluginList const&
-  PluginRegistry::get_transform_plugins () const
-  {
-      return m_impl->transform_plugins;
-  }
-
   VisPluginRef* PluginRegistry::find_plugin (PluginType type, std::string const& name)
   {
-      PluginList const* list;
-
-      switch (type) {
-          case VISUAL_PLUGIN_TYPE_ACTOR:     list = &m_impl->actor_plugins; break;
-          case VISUAL_PLUGIN_TYPE_INPUT:     list = &m_impl->input_plugins; break;
-          case VISUAL_PLUGIN_TYPE_MORPH:     list = &m_impl->morph_plugins; break;
-          case VISUAL_PLUGIN_TYPE_TRANSFORM: list = &m_impl->transform_plugins; break;
-
-          default:
-              visual_log (VISUAL_LOG_ERROR, "Plugin type is invalid");
-              return 0;
-      }
+      PluginList const& list = get_plugins_by_type (type);
 
       PluginList::const_iterator iter =
-          std::find_if (list->begin (),
-                        list->end (),
+          std::find_if (list.begin (),
+                        list.end (),
                         PluginHasName (name));
 
-      return iter != list->end () ? *iter : 0;
+      return iter != list.end () ? *iter : 0;
   }
 
   bool PluginRegistry::has_plugin (PluginType type, std::string const& name)
@@ -188,9 +147,19 @@ namespace LV {
       return find_plugin (type, name) != 0;
   }
 
-  void PluginRegistry::get_plugins_by_type (PluginList& list, PluginType type)
+  PluginList const& PluginRegistry::get_plugins_by_type (PluginType type) const
   {
-      Internal::get_plugins_by_type (list, m_impl->plugins, type);
+      static PluginList empty;
+
+      switch (type) {
+          case VISUAL_PLUGIN_TYPE_ACTOR:     return m_impl->actor_plugins;
+          case VISUAL_PLUGIN_TYPE_INPUT:     return m_impl->input_plugins;
+          case VISUAL_PLUGIN_TYPE_MORPH:     return m_impl->morph_plugins;
+          case VISUAL_PLUGIN_TYPE_TRANSFORM: return m_impl->transform_plugins;
+
+          default:
+              return empty;
+      }
   }
 
   void PluginRegistry::Impl::fetch_plugin_list ()
@@ -204,10 +173,10 @@ namespace LV {
           add_plugins_from_dir (plugins, *path);
       }
 
-      Internal::get_plugins_by_type (actor_plugins, plugins, VISUAL_PLUGIN_TYPE_ACTOR);
-      Internal::get_plugins_by_type (input_plugins, plugins, VISUAL_PLUGIN_TYPE_INPUT);
-      Internal::get_plugins_by_type (morph_plugins, plugins, VISUAL_PLUGIN_TYPE_MORPH);
-      Internal::get_plugins_by_type (transform_plugins, plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
+      Internal::filter_plugins_by_type (actor_plugins, plugins, VISUAL_PLUGIN_TYPE_ACTOR);
+      Internal::filter_plugins_by_type (input_plugins, plugins, VISUAL_PLUGIN_TYPE_INPUT);
+      Internal::filter_plugins_by_type (morph_plugins, plugins, VISUAL_PLUGIN_TYPE_MORPH);
+      Internal::filter_plugins_by_type (transform_plugins, plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
   }
 
   void PluginRegistry::Impl::add_plugins_from_dir (PluginList& list, std::string const& dir)

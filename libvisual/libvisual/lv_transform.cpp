@@ -31,7 +31,7 @@ namespace LV {
 
   PluginList const& transform_plugin_get_list ()
   {
-      return LV::PluginRegistry::instance()->get_transform_plugins ();
+      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_TRANSFORM);
   }
 
 } // LV namespace

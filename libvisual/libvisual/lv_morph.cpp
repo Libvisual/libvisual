@@ -32,7 +32,7 @@ namespace {
   inline LV::PluginList const&
   get_morph_plugin_list ()
   {
-	  return LV::PluginRegistry::instance()->get_morph_plugins ();
+      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
   }
 
   inline VisPluginRef*

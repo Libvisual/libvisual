@@ -41,16 +41,7 @@ namespace LV {
       bool has_plugin (PluginType type, std::string const& name);
 
       PluginList const& get_plugins () const;
-
-      PluginList const& get_actor_plugins () const;
-
-      PluginList const& get_input_plugins () const;
-
-      PluginList const& get_morph_plugins () const;
-
-      PluginList const& get_transform_plugins () const;
-
-      void get_plugins_by_type (PluginList& list, PluginType type);
+      PluginList const& get_plugins_by_type (PluginType type) const;
 
   private:
 
