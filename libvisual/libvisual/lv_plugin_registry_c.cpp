@@ -7,13 +7,6 @@
 
 extern "C" {
 
-  int visual_init_path_add (const char *path)
-  {
-      LV::PluginRegistry::instance()->add_path (path);
-
-      return VISUAL_OK;
-  }
-
   int visual_plugin_registry_initialize (void)
   {
       LV::PluginRegistry::init();
@@ -24,6 +17,13 @@ extern "C" {
   int visual_plugin_registry_deinitialize (void)
   {
       LV::PluginRegistry::deinit ();
+
+      return VISUAL_OK;
+  }
+
+  int visual_plugin_regstry_add_path (const char *path)
+  {
+      LV::PluginRegistry::instance()->add_path (path);
 
       return VISUAL_OK;
   }
