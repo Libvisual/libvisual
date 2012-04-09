@@ -120,8 +120,8 @@ void visual_video_index8_to_argb32 (VisVideo *dest, VisVideo *src)
 
 	visual_video_convert_get_smallest (dest, src, &w, &h);
 
-	ddiff = (dest->pitch / dest->bpp) - w;
-	sdiff = src->pitch - (w * src->bpp);
+	ddiff = (dest->pitch >> 2) - w;
+	sdiff = src->pitch - w;
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
