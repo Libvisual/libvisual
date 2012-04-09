@@ -169,20 +169,14 @@ namespace LV {
       bool finished = false;
 
       while (!finished) {
-          VisPluginRef **ref = NULL;
-
           if (!(file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
               std::string full_path = dir + "/" + file_data.cFileName;
 
               if (str_has_suffix (full_path, ".dll")) {
-                  int count = 0;
-                  ref = visual_plugin_get_references (full_path.c_str (), &count);
+                  VisPluginRef* ref = visual_plugin_get_references (full_path.c_str (), &count);
 
                   if (ref) {
-                      for (int i = 0; i < count; i++)
-                          list.push_back (ref[i]);
-
-                      visual_mem_free (ref);
+                      list.push_back (ref);
                   }
               }
           }
@@ -216,6 +210,7 @@ namespace LV {
 
           if (str_has_suffix (full_path, ".so")) {
               VisPluginRef* ref = visual_plugin_get_reference (full_path.c_str ());
+
               if (ref) {
                   list.push_back (ref);
               }
