@@ -1,4 +1,4 @@
-%option never-interactive noinput
+%option never-interactive noinput debug
 
 %{
 

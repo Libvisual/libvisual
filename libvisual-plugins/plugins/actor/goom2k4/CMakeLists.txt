@@ -52,7 +52,7 @@ SET(actor_goom2k4_SOURCES
 #  )
 #ENDIF(VISUAL_ARCH_X86)
 
-FLEX_TARGET(goomsl_lex goomsl_lex.l ${CMAKE_CURRENT_BINARY_DIR}/goomsl_lex.c COMPILE_FLAGS -d)
+FLEX_TARGET(goomsl_lex goomsl_lex.l ${CMAKE_CURRENT_BINARY_DIR}/goomsl_lex.c)
 BISON_TARGET(goomsl_yacc goomsl_yacc.y ${CMAKE_CURRENT_BINARY_DIR}/goomsl_yacc.c)
 ADD_FLEX_BISON_DEPENDENCY(goomsl_lex goomsl_yacc)
 LIST(APPEND actor_goom2k4_SOURCES
