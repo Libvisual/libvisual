@@ -159,32 +159,15 @@ int visual_mem_free (void *ptr)
 	return VISUAL_OK;
 }
 
-
 static void *mem_copy_c (void *dest, const void *src, visual_size_t n)
 {
-	uint32_t *d = dest;
-	const uint32_t *s = src;
-	uint8_t *dc = dest;
-	const uint8_t *sc = src;
-
-	while (n >= 4) {
-		*d++ = *s++;
-		n -= 4;
-	}
-
-	dc = (uint8_t *) d;
-	sc = (const uint8_t *) s;
-
-	while (n--)
-		*dc++ = *sc++;
-
-	return dest;
+	return memcpy (dest, src, n);
 }
 
 /* Memset functions, 1 byte memset */
 static void *mem_set8_c (void *dest, int c, visual_size_t n)
 {
-	return memset(dest, c, (size_t) n);
+	return memset(dest, c, n);
 }
 
 /* Memset functions, 2 byte memset */
