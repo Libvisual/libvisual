@@ -207,20 +207,14 @@ static void *mem_set32_c (void *dest, int c, visual_size_t n)
 
 
 /* Memcopy with pitch functions */
-static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitch2, int width, int rows)
+static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitch2, int row_bytes, int rows)
 {
-	uint32_t *d = dest;
-	const uint32_t *s = src;
+	uint8_t *d = dest;
+	const uint8_t *s = src;
 	int i;
 
-	for (i = 0; i < rows; i++) {		
-		uint32_t *inner_d;
-		const uint32_t *inner_s;
-		uint8_t *inner_dc = (uint8_t*) d;
-		const uint8_t *inner_sc = (const uint8_t*) s;
-		int n = width;
-
-		memcpy(inner_dc, inner_sc, n);
+	for (i = 0; i < rows; i++) {
+		memcpy(d, s, row_bytes);
 
 		d += pitch1;
 		s += pitch2;
