@@ -117,8 +117,6 @@ static int plugin_ref_dtor (VisObject *object)
         visual_object_unref (VISUAL_OBJECT (ref->info));
     }
 
-    visual_mem_free (ref->file);
-
     return VISUAL_OK;
 }
 
