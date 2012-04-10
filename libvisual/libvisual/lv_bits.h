@@ -44,8 +44,12 @@ VISUAL_BEGIN_DECLS
 	(((w) & 0xff000000) >> 24) )
 
 
-#if (VISUAL_BIG_ENDIAN == 0) & (VISUAL_LITTLE_ENDIAN == 0)
-#	error determining system endianess.
+#if ! ((VISUAL_BIG_ENDIAN) | (VISUAL_LITTLE_ENDIAN))
+#	error determining system endianess. (none set)
+#endif
+
+#if ((VISUAL_BIG_ENDIAN == 1) & (VISUAL_LITTLE_ENDIAN == 1))
+#       error determing system endianess (both set?)
 #endif
 
 /**
