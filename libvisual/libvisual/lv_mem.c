@@ -161,13 +161,13 @@ int visual_mem_free (void *ptr)
 
 static void *mem_copy_c (void *dest, const void *src, visual_size_t n)
 {
-	return memcpy(dest, src, (size_t) n);
+	return memcpy(dest, src, n);
 }
 
 /* Memset functions, 1 byte memset */
 static void *mem_set8_c (void *dest, int c, visual_size_t n)
 {
-	return memset(dest, c, (size_t) n);
+	return memset(dest, c, n);
 }
 
 /* Memset functions, 2 byte memset */
