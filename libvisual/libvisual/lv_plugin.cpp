@@ -385,7 +385,7 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
     plugin = visual_plugin_new ();
     plugin->ref = ref;
-    plugin->info = pluginfo;
+    plugin->info = visual_plugin_info_clone (pluginfo);
 
     visual_object_ref (VISUAL_OBJECT (ref));
 
