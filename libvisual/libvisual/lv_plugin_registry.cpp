@@ -167,9 +167,9 @@ namespace LV {
   PluginRegistry::Impl::~Impl ()
   {
       for (PluginListMap::const_iterator list = plugin_list_map.begin (), list_end = plugin_list_map.end ();
-	   list != list_end;
-	   ++list) {
-	  std::for_each (list->second.begin (), list->second.end (), delete_plugin_ref);
+           list != list_end;
+           ++list) {
+          std::for_each (list->second.begin (), list->second.end (), delete_plugin_ref);
       }
   }
 
