@@ -75,9 +75,6 @@ static int plugin_ref_dtor (VisObject *object);
 static int plugin_environ_dtor (VisObject *object);
 static int plugin_dtor (VisObject *object);
 
-static char *get_delim_node (const char *str, char delim, int index);
-
-
 static char* copy_info_string (char const* str)
 {
     return visual_strdup (str ? str : "(not specified)");
@@ -119,8 +116,7 @@ static int plugin_ref_dtor (VisObject *object)
     if (ref->info != NULL)
         visual_object_unref (VISUAL_OBJECT (ref->info));
 
-    ref->file = NULL;
-    ref->info = NULL;
+    visual_mem_free (ref->file);
 
     return VISUAL_OK;
 }
@@ -151,47 +147,7 @@ static int plugin_dtor (VisObject *object)
 
     visual_collection_destroy (VISUAL_COLLECTION (&plugin->environment));
 
-    plugin->ref = NULL;
-    plugin->params = NULL;
-
     return VISUAL_OK;
-}
-
-static char *get_delim_node (const char *str, char delim, int index)
-{
-    char *buf;
-    const char *start;
-    const char *end = str;
-    int i = 0;
-
-    do {
-        start = end;
-
-        end = strchr (start + 1, delim);
-
-        if (i == index) {
-            /* Last section doesn't contain a delim */
-            if (end == NULL)
-                end = str + strlen (str);
-
-            /* Cut off the delim that is in front */
-            if (i > 0)
-                start++;
-
-            break;
-        }
-
-        i++;
-
-    } while (end != NULL);
-
-    if (end == NULL)
-        return NULL;
-
-    buf = static_cast<char *> (visual_mem_malloc0 ((end - start) + 1));
-    strncpy (buf, start, end - start);
-
-    return buf;
 }
 
 VisPluginInfo *visual_plugin_info_new ()
