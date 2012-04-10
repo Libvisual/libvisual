@@ -161,13 +161,13 @@ int visual_mem_free (void *ptr)
 
 static void *mem_copy_c (void *dest, const void *src, visual_size_t n)
 {
-	return memcpy (dest, src, n);
+	return memcpy(dest, src, (size_t) n);
 }
 
 /* Memset functions, 1 byte memset */
 static void *mem_set8_c (void *dest, int c, visual_size_t n)
 {
-	return memset(dest, c, n);
+	return memset(dest, c, (size_t) n);
 }
 
 /* Memset functions, 2 byte memset */
@@ -213,34 +213,17 @@ static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitc
 	const uint32_t *s = src;
 	int i;
 
-	for (i = 0; i < rows; i++) {
+	for (i = 0; i < rows; i++) {		
 		uint32_t *inner_d;
 		const uint32_t *inner_s;
 		uint8_t *inner_dc = (uint8_t*) d;
 		const uint8_t *inner_sc = (const uint8_t*) s;
 		int n = width;
 
-                while (!VISUAL_ALIGNED(inner_dc, 4) && n > 4) {
-			*inner_dc++ = *inner_sc++;
-			n--;
-		}
+		memcpy(inner_dc, inner_sc, n);
 
-		inner_d = (uint32_t*) inner_dc;
-		inner_s = (const uint32_t*) inner_sc;
-
-		while (n >= 4) {
-			*inner_d++ = *inner_s++;
-			n -= 4;
-		}
-
-		inner_dc = (uint8_t*) inner_d;
-		inner_sc = (const uint8_t*) inner_s;
-
-		while (n--)
-			*inner_dc++ = *inner_sc++;
-
-		d = (uint32_t*)((uint8_t*) d + pitch1);
-		s = (const uint32_t*)((const uint8_t*) s + pitch2);
+		d += pitch1;
+		s += pitch2;
 	}
 
 	return dest;
