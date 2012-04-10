@@ -26,7 +26,7 @@
 #include "lv_common.h"
 
 struct rgb16_t {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
   uint16_t b:5, g:6, r:5;
 #else
   uint16_t r:5, g:6, b:5;
@@ -120,7 +120,7 @@ namespace LV {
   {
       uint8_t const* color = reinterpret_cast<uint8_t*> (&rgba);
 
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
       b = color[0];
       g = color[1];
       r = color[2];

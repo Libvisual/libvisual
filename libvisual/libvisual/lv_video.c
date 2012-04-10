@@ -39,7 +39,7 @@
 #pragma pack(1)
 
 typedef struct {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 	uint16_t b:5, g:6, r:5;
 #else
 	uint16_t r:5, g:6, b:5;

@@ -37,7 +37,7 @@
 static int load_uncompressed (FILE *fp, VisVideo *video, int depth);
 static int load_rle (FILE *fp, VisVideo *video, int mode);
 
-#ifdef VISUAL_BIG_ENDIAN
+#if VISUAL_BIG_ENDIAN == 1
 static void flip_byte_order (VisVideo *video)
 {
 	uint8_t *pixel = visual_video_get_pixels (video);
@@ -395,7 +395,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	switch (bi_compression) {
 		case BI_RGB:
 			error = load_uncompressed (fp, video, bi_bitcount);
-#ifdef VISUAL_BIG_ENDIAN
+#if VISUAL_BIG_ENDIAN == 1
 			if (error == VISUAL_OK)
 				flip_byte_order (video);
 #endif

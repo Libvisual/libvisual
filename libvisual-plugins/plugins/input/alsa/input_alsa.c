@@ -131,7 +131,7 @@ int inp_alsa_init (VisPluginData *plugin)
 		return(-1);
 	}
 
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 	if (snd_pcm_hw_params_set_format(priv->chandle, hwparams,
 					 SND_PCM_FORMAT_S16_LE) < 0) {
 #else
