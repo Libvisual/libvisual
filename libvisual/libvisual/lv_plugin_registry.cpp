@@ -60,7 +60,6 @@ namespace LV {
             return (name == ref->info->plugname);
         }
     };
-
   }
 
   class PluginRegistry::Impl
@@ -70,6 +69,10 @@ namespace LV {
       std::vector<std::string> plugin_paths;
 
       PluginListMap plugin_list_map;
+
+      Impl ();
+
+      ~Impl ();
 
       void get_plugins_from_dir (PluginList& list, std::string const& dir);
   };
@@ -149,6 +152,25 @@ namespace LV {
           return empty;
 
       return match->second;
+  }
+
+  PluginRegistry::Impl::Impl ()
+  {
+      // empty
+  }
+
+  void delete_plugin_ref (VisPluginRef* ref)
+  {
+      visual_object_unref (VISUAL_OBJECT (ref));
+  }
+
+  PluginRegistry::Impl::~Impl ()
+  {
+      for (PluginListMap::const_iterator list = plugin_list_map.begin (), list_end = plugin_list_map.end ();
+	   list != list_end;
+	   ++list) {
+	  std::for_each (list->second.begin (), list->second.end (), delete_plugin_ref);
+      }
   }
 
   void PluginRegistry::Impl::get_plugins_from_dir (PluginList& list, std::string const& dir)

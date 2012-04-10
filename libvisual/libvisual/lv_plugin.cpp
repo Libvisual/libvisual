@@ -107,14 +107,15 @@ static int plugin_ref_dtor (VisObject *object)
 {
     VisPluginRef *ref = VISUAL_PLUGINREF (object);
 
-    if (ref->file != NULL)
-        visual_mem_free (ref->file);
-
     if (ref->usecount > 0)
         visual_log (VISUAL_LOG_ERROR, _("A plugin reference with %d instances has been destroyed."), ref->usecount);
 
-    if (ref->info != NULL)
+    if (ref->file)
+        visual_mem_free (ref->file);
+
+    if (ref->info) {
         visual_object_unref (VISUAL_OBJECT (ref->info));
+    }
 
     visual_mem_free (ref->file);
 
@@ -162,7 +163,14 @@ VisPluginInfo *visual_plugin_info_new ()
     return pluginfo;
 }
 
-int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
+VisPluginInfo *visual_plugin_info_clone (VisPluginInfo const* info)
+{
+    VisPluginInfo *clone = visual_plugin_info_new ();
+    visual_plugin_info_copy (clone, info);
+    return clone;
+}
+
+int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* src)
 {
     visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
     visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
@@ -415,28 +423,17 @@ int visual_plugin_realize (VisPluginData *plugin)
     return VISUAL_OK;
 }
 
-VisPluginRef *visual_plugin_get_reference (const char *pluginpath)
+VisPluginRef *visual_plugin_get_reference (char const* plugin_path)
 {
-    VisPluginRef *ref;
-    VisPluginInfo *plug_info;
-    VisPluginInfo *dup_info;
-    VisPluginGetInfoFunc get_plugin_info;
-    int *plugin_version;
-#if defined(VISUAL_OS_WIN32)
-    HMODULE handle;
-#else /* !VISUAL_OS_WIN32 */
-    void *handle;
-#endif
-
-    visual_return_val_if_fail (pluginpath != NULL, NULL);
+    visual_return_val_if_fail (plugin_path != NULL, NULL);
 
 #if defined(VISUAL_OS_WIN32)
-    handle = LoadLibrary (pluginpath);
+    HANDLE handle = LoadLibrary (plugin_path);
 #else
-    handle = dlopen (pluginpath, RTLD_LAZY);
+    void* handle = dlopen (plugin_path, RTLD_LAZY);
 #endif
 
-    if (handle == NULL) {
+    if (!handle) {
 #if defined(VISUAL_OS_WIN32)
         visual_log (VISUAL_LOG_ERROR, "Cannot load plugin: win32 error code: %ld", GetLastError());
 #else
@@ -447,14 +444,14 @@ VisPluginRef *visual_plugin_get_reference (const char *pluginpath)
     }
 
 #if defined(VISUAL_OS_WIN32)
-    plugin_version = (int *) GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG);
+    int* plugin_version = static_cast<int*> (GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG));
 #else
-    plugin_version = (int *) dlsym (handle, VISUAL_PLUGIN_VERSION_TAG);
+    int* plugin_version = static_cast<int*> (dlsym (handle, VISUAL_PLUGIN_VERSION_TAG));
 #endif
 
-    if (plugin_version == NULL || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
+    if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
         visual_log (VISUAL_LOG_ERROR, _("Plugin %s is not compatible with version %s of libvisual"),
-                pluginpath, visual_get_version ());
+                plugin_path, visual_get_version ());
 
 #if defined(VISUAL_OS_WIN32)
         FreeLibrary (handle);
@@ -465,13 +462,15 @@ VisPluginRef *visual_plugin_get_reference (const char *pluginpath)
         return NULL;
     }
 
+    VisPluginGetInfoFunc get_plugin_info;
+
 #if defined(VISUAL_OS_WIN32)
-    get_plugin_info = (VisPluginGetInfoFunc) GetProcAddress (handle, "get_plugin_info");
+    get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (GetProcAddress (handle, "get_plugin_info"));
 #else
-    get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
+    get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (dlsym (handle, "get_plugin_info"));
 #endif
 
-    if (get_plugin_info == NULL) {
+    if (!get_plugin_info) {
 #if defined(VISUAL_OS_WIN32)
         visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %ld", GetLastError ());
 
@@ -485,9 +484,9 @@ VisPluginRef *visual_plugin_get_reference (const char *pluginpath)
         return NULL;
     }
 
-    plug_info = VISUAL_PLUGININFO (get_plugin_info ());
+    VisPluginInfo const* plugin_info = get_plugin_info ();
 
-    if (plug_info == NULL) {
+    if (!plugin_info) {
         visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info"));
 
 #if defined(VISUAL_OS_WIN32)
@@ -499,16 +498,10 @@ VisPluginRef *visual_plugin_get_reference (const char *pluginpath)
         return NULL;
     }
 
-    ref = visual_plugin_ref_new ();
+    VisPluginRef* ref = visual_plugin_ref_new ();
 
-    dup_info = visual_plugin_info_new ();
-    visual_plugin_info_copy (dup_info, plug_info);
-
-    ref->info = dup_info;
-    ref->file = visual_strdup (pluginpath);
-
-    visual_object_unref (plug_info->plugin);
-    visual_object_unref (VISUAL_OBJECT (plug_info));
+    ref->info = visual_plugin_info_clone (plugin_info);
+    ref->file = visual_strdup (plugin_path);
 
 #if defined(VISUAL_OS_WIN32)
     FreeLibrary (handle);

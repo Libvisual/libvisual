@@ -261,7 +261,7 @@ VisPluginInfo *visual_plugin_info_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
  */
-int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src);
+int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* src);
 
 /**
  * Pumps the queued events into the plugin it's event handler if it has one.
