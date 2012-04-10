@@ -124,7 +124,7 @@ static int plugin_environ_dtor (VisObject *object)
 {
     VisPluginEnviron *enve = VISUAL_PLUGINENVIRON (object);
 
-    if (enve->environment != NULL)
+    if (enve->environment)
         visual_object_unref (enve->environment);
 
     enve->environment = NULL;
@@ -136,12 +136,12 @@ static int plugin_dtor (VisObject *object)
 {
     VisPluginData *plugin = VISUAL_PLUGINDATA (object);
 
-    visual_random_context_free (plugin->random);
+    delete plugin->random;
 
-    if (plugin->ref != NULL)
+    if (plugin->ref)
         visual_object_unref (VISUAL_OBJECT (plugin->ref));
 
-    if (plugin->params != NULL)
+    if (plugin->params)
         visual_object_unref (VISUAL_OBJECT (plugin->params));
 
     visual_collection_destroy (VISUAL_COLLECTION (&plugin->environment));
@@ -313,16 +313,6 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 VisPluginData *visual_plugin_load (VisPluginRef *ref)
 {
-    VisPluginData *plugin;
-    VisTime *time_;
-    VisPluginInfo *pluginfo;
-    VisPluginGetInfoFunc get_plugin_info;
-#if defined(VISUAL_OS_WIN32)
-    HMODULE handle;
-#else /* !VISUAL_OS_WIN32 */
-    void *handle;
-#endif
-
     visual_return_val_if_fail (ref != NULL, NULL);
     visual_return_val_if_fail (ref->info != NULL, NULL);
 
@@ -335,12 +325,12 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
     }
 
 #if defined(VISUAL_OS_WIN32)
-    handle = LoadLibrary (ref->file);
+    HMODULE handle = LoadLibrary (ref->file);
 #else
-    handle = dlopen (ref->file, RTLD_LAZY);
+    void* handle = dlopen (ref->file, RTLD_LAZY);
 #endif
 
-    if (handle == NULL) {
+    if (!handle) {
 #if defined(VISUAL_OS_WIN32)
         visual_log (VISUAL_LOG_ERROR, "Cannot load plugin: win32 error code: %ld", GetLastError ());
 #else
@@ -349,13 +339,15 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
         return NULL;
     }
 
+    VisPluginGetInfoFunc get_plugin_info;
+
 #if defined(VISUAL_OS_WIN32)
-    get_plugin_info = (VisPluginGetInfoFunc) GetProcAddress (handle, "get_plugin_info");
+    get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (GetProcAddress (handle, "get_plugin_info"));
 #else
-    get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
+    get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (dlsym (handle, "get_plugin_info"));
 #endif
 
-    if (get_plugin_info == NULL) {
+    if (!get_plugin_info) {
 #if defined(VISUAL_OS_WIN32)
         visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %ld", GetLastError ());
 
@@ -369,9 +361,9 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
         return NULL;
     }
 
-    pluginfo = VISUAL_PLUGININFO (get_plugin_info ());
+    VisPluginInfo const* plugin_info = get_plugin_info ();
 
-    if (pluginfo == NULL) {
+    if (!plugin_info) {
         visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info while loading."));
 
 #if defined(VISUAL_OS_WIN32)
@@ -383,19 +375,18 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
         return NULL;
     }
 
-    plugin = visual_plugin_new ();
+    VisPluginData *plugin = visual_plugin_new ();
     plugin->ref = ref;
-    plugin->info = visual_plugin_info_clone (pluginfo);
-
     visual_object_ref (VISUAL_OBJECT (ref));
 
+    plugin->info = visual_plugin_info_clone (plugin_info);
     plugin->realized = FALSE;
     plugin->handle = handle;
 
-    /* Now the plugin is set up and ready to be realized, also random seed its random context */
-    time_ = visual_time_new_now ();
-    plugin->random = visual_random_context_new (visual_time_to_usecs (time_));
-    visual_time_free (time_);
+    // Now the plugin is set up and ready to be realized, also random
+    // seed its random context
+    LV::Time time = LV::Time::now ();
+    plugin->random = new LV::RandomContext (time.to_usecs ());
 
     return plugin;
 }
@@ -425,7 +416,7 @@ VisPluginRef *visual_plugin_get_reference (char const* plugin_path)
     visual_return_val_if_fail (plugin_path != NULL, NULL);
 
 #if defined(VISUAL_OS_WIN32)
-    HANDLE handle = LoadLibrary (plugin_path);
+    HMODULE handle = LoadLibrary (plugin_path);
 #else
     void* handle = dlopen (plugin_path, RTLD_LAZY);
 #endif
