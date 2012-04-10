@@ -184,26 +184,7 @@ static void *mem_copy_c (void *dest, const void *src, visual_size_t n)
 /* Memset functions, 1 byte memset */
 static void *mem_set8_c (void *dest, int c, visual_size_t n)
 {
-	uint32_t *d = dest;
-	uint8_t *dc = dest;
-	uint32_t setflag32 =
-		(c & 0xff) |
-		((c << 8) & 0xff00) |
-		((c << 16) & 0xff0000) |
-		((c << 24) & 0xff000000);
-	uint8_t setflag8 = c & 0xff;
-
-	while (n >= 4) {
-		*d++ = setflag32;
-		n -= 4;
-	}
-
-	dc = (uint8_t *) d;
-
-	while (n--)
-		*dc++ = setflag8;
-
-	return dest;
+	return memset(dest, c, (size_t) n);
 }
 
 /* Memset functions, 2 byte memset */
