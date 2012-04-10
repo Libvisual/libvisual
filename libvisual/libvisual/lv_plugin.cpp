@@ -389,7 +389,6 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
 
     visual_object_ref (VISUAL_OBJECT (ref));
 
-    ref->usecount++;
     plugin->realized = FALSE;
     plugin->handle = handle;
 
