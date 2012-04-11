@@ -18,14 +18,7 @@
     #define ALPHA 0
 #endif
 
-#ifndef guint32
-#define guint8 unsigned char
-#define guin16 unsigned short
-#define guint32 unsigned int
-#define gint8 signed char
-#define gint16 signed short int
-#define gint32 signed int
-#endif
+#include <libvisual/lv_defines.h>
 
 #ifndef M_PI
 #include <libvisual/lv_math.h>

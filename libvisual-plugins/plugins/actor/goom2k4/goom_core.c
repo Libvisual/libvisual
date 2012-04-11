@@ -39,12 +39,12 @@ static void update_message (PluginInfo *goomInfo, const char *message);
 
 static void init_buffers(PluginInfo *goomInfo, int buffsize)
 {
-    goomInfo->pixel = (guint32 *) malloc (buffsize * sizeof (guint32) + 128);
-    memset (goomInfo->pixel, 0, buffsize * sizeof (guint32) + 128);
-    goomInfo->back = (guint32 *) malloc (buffsize * sizeof (guint32) + 128);
-    memset (goomInfo->back, 0, buffsize * sizeof (guint32) + 128);
-    goomInfo->conv = (Pixel *) malloc (buffsize * sizeof (guint32) + 128);
-    memset (goomInfo->conv, 0, buffsize * sizeof (guint32) + 128);
+    goomInfo->pixel = (uint32_t *) malloc (buffsize * sizeof (uint32_t) + 128);
+    memset (goomInfo->pixel, 0, buffsize * sizeof (uint32_t) + 128);
+    goomInfo->back = (uint32_t *) malloc (buffsize * sizeof (uint32_t) + 128);
+    memset (goomInfo->back, 0, buffsize * sizeof (uint32_t) + 128);
+    goomInfo->conv = (Pixel *) malloc (buffsize * sizeof (uint32_t) + 128);
+    memset (goomInfo->conv, 0, buffsize * sizeof (uint32_t) + 128);
 
     goomInfo->outputBuf = goomInfo->conv;
 
@@ -55,7 +55,7 @@ static void init_buffers(PluginInfo *goomInfo, int buffsize)
 /**************************
 *         INIT           *
 **************************/
-PluginInfo *goom_init (guint32 resx, guint32 resy)
+PluginInfo *goom_init (uint32_t resx, uint32_t resy)
 {
     PluginInfo *goomInfo = (PluginInfo*)malloc(sizeof(PluginInfo));
 
@@ -110,7 +110,7 @@ PluginInfo *goom_init (guint32 resx, guint32 resy)
 
 
 
-void goom_set_resolution (PluginInfo *goomInfo, guint32 resx, guint32 resy)
+void goom_set_resolution (PluginInfo *goomInfo, uint32_t resx, uint32_t resy)
 {
     free (goomInfo->pixel);
     free (goomInfo->back);
@@ -142,12 +142,12 @@ int goom_set_screenbuffer(PluginInfo *goomInfo, void *buffer)
 
 * WARNING: this is a 600 lines function ! (21-11-2003)
 */
-guint32 *goom_update (PluginInfo *goomInfo, gint16 data[2][512],
+uint32_t *goom_update (PluginInfo *goomInfo, int16_t data[2][512],
                       int forceMode, float fps, const char *songTitle, const char *message)
 {
     Pixel *return_val;
-    guint32 pointWidth;
-    guint32 pointHeight;
+    uint32_t pointWidth;
+    uint32_t pointHeight;
     int     i;
     float   largfactor;	/* elargissement de l'intervalle d'évolution des points */
     Pixel *tmp;
@@ -356,8 +356,8 @@ guint32 *goom_update (PluginInfo *goomInfo, gint16 data[2][512],
 
                 /* if (goomInfo->update.goomvar % 1 == 0) */
                 {
-                    guint32 vtmp;
-                    guint32 newvit;
+                    uint32_t vtmp;
+                    uint32_t newvit;
 
                     goomInfo->update.lockvar = 50;
                     newvit = STOP_SPEED + 1 - ((float)3.5f * log10(goomInfo->sound.speedvar * 60 + 1));
@@ -738,7 +738,7 @@ guint32 *goom_update (PluginInfo *goomInfo, gint16 data[2][512],
 
         goomInfo->convolve_fx.apply(&goomInfo->convolve_fx,return_val,goomInfo->outputBuf,goomInfo);
 
-        return (guint32*)goomInfo->outputBuf;
+        return (uint32_t*)goomInfo->outputBuf;
 }
 
 /****************************************

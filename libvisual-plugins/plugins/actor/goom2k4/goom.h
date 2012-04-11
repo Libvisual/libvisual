@@ -7,8 +7,8 @@
 
 #define NB_FX 10
 
-PluginInfo *goom_init (guint32 resx, guint32 resy);
-void goom_set_resolution (PluginInfo *goomInfo, guint32 resx, guint32 resy);
+PluginInfo *goom_init (uint32_t resx, uint32_t resy);
+void goom_set_resolution (PluginInfo *goomInfo, uint32_t resx, uint32_t resy);
 
 /*
  * forceMode == 0 : do nothing
@@ -19,7 +19,7 @@ void goom_set_resolution (PluginInfo *goomInfo, guint32 resx, guint32 resy);
  *      - NULL if it is not the start of the song
  *      - only have a value at the start of the song
  */
-guint32 *goom_update (PluginInfo *goomInfo, gint16 data[2][512], int forceMode, float fps,
+uint32_t *goom_update (PluginInfo *goomInfo, int16_t data[2][512], int forceMode, float fps,
                       const char *songTitle, const char *message);
 
 /* returns 0 if the buffer wasn't accepted */

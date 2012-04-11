@@ -12,7 +12,7 @@ typedef struct {
 -----
 
 >> taille du buffer de zoom
-guint32 mmx_zoom_size;
+uint32_t mmx_zoom_size;
 -----
 
 >> les buffers bruts contiennent les px et py de chaque point
@@ -23,12 +23,12 @@ signed int *brutD = 0, *freebrutD = 0; // dest
 signed int *brutT = 0, *freebrutT = 0; // temp (en cours de génération)
 
 >> pointeur vers p1
-guint32 *expix1 = 0;
+uint32_t *expix1 = 0;
 >> pointeur vers p2
-guint32 *expix2 = 0;
+uint32_t *expix2 = 0;
 
 >> largeur d'une ligne = prevX
-guint32 zoom_width;
+uint32_t zoom_width;
 
 >> largeur et hauteur des differents buffers.
 int prevX=0,prevY=0;

@@ -107,7 +107,7 @@ typedef struct _ZOOM_FILTER_FX_WRAPPER_DATA {
     signed int *brutD, *freebrutD; /* dest */
     signed int *brutT, *freebrutT; /* temp (en cours de generation) */
     
-    guint32 zoom_width;
+    uint32_t zoom_width;
     
     unsigned int prevX, prevY;
     
@@ -574,13 +574,13 @@ void zoomFilterFastRGB (PluginInfo *goomInfo, Pixel * pix1, Pixel * pix2, ZoomFi
         
         data->mustInitBuffers = 0;
         data->freebrutS = (signed int *) calloc (resx * resy * 2 + 128, sizeof(unsigned int));
-        data->brutS = (gint32 *) ((1 + ((uintptr_t) (data->freebrutS)) / 128) * 128);
+        data->brutS = (int32_t *) ((1 + ((uintptr_t) (data->freebrutS)) / 128) * 128);
         
         data->freebrutD = (signed int *) calloc (resx * resy * 2 + 128, sizeof(unsigned int));
-        data->brutD = (gint32 *) ((1 + ((uintptr_t) (data->freebrutD)) / 128) * 128);
+        data->brutD = (int32_t *) ((1 + ((uintptr_t) (data->freebrutD)) / 128) * 128);
         
         data->freebrutT = (signed int *) calloc (resx * resy * 2 + 128, sizeof(unsigned int));
-        data->brutT = (gint32 *) ((1 + ((uintptr_t) (data->freebrutT)) / 128) * 128);
+        data->brutT = (int32_t *) ((1 + ((uintptr_t) (data->freebrutT)) / 128) * 128);
         
         data->buffratio = 0;
         
