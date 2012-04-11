@@ -145,7 +145,7 @@ static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *de
   }
 
   if (visual_cpu_has_mmx ()) {
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+#if defined(VISUAL_ARCH_X86)
 	  for (y=info->screen.height;y--;) {
 		  int xtex,ytex;
 
@@ -216,7 +216,7 @@ static void create_output_with_brightness(VisualFX *_this, Pixel *src, Pixel *de
 	  }
 
 	  __asm__ __volatile__ ("\n\t emms");
-#endif
+#endif /* VISUAL_ARCH_X86 */
   } else {
 	  for (y=info->screen.height;y--;) {
 		  int xtex,ytex;
