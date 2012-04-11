@@ -77,8 +77,15 @@ void plugin_info_init(PluginInfo *pp, int nbVisuals) {
 	PluginInfo p;
 	int i;
 
+	p.sound.cycle = 0;
+	p.sound.timeSinceLastGoom = 0;
+	p.sound.goomPower = 0;
+	p.sound.timeSinceLastBigGoom = 0;
+	p.sound.volume = 1;
+	p.sound.bigGoomLimit = 1;
+
 	p.sound.speedvar = p.sound.accelvar = p.sound.totalgoom = 0;
-    p.sound.prov_max = 0;
+	p.sound.prov_max = 0;
 	p.sound.goom_limit = 1;
 	p.sound.allTimesMax = 1;
 

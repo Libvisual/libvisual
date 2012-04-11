@@ -105,8 +105,6 @@ PluginInfo *goom_init (uint32_t resx, uint32_t resy)
 
     /* goom_set_main_script(goomInfo, goomInfo->main_script_str); */
 
-    memset(&goomInfo->sound, 0, sizeof(SoundInfo));
-
     return goomInfo;
 }
 
