@@ -12,17 +12,17 @@ typedef union {
 
 struct GOOM_HASH_ENTRY {
 	char          *key;
-  HashValue      value;
+	HashValue      value;
 	GoomHashEntry *lower;
 	GoomHashEntry *upper;
 };
 
 struct GOOM_HASH {
 	GoomHashEntry *root;
-  int number_of_puts;
+	int number_of_puts;
 };
 
-GoomHash *goom_hash_new();
+GoomHash *goom_hash_new(void);
 void      goom_hash_free(GoomHash *gh);
 
 void goom_hash_put(GoomHash *gh, const char *key, HashValue value);
@@ -37,4 +37,4 @@ typedef void (*GH_Func)(GoomHash *caller, const char *key, HashValue *value);
 void goom_hash_for_each(GoomHash *_this, GH_Func func);
 int goom_hash_number_of_puts(GoomHash *_this);
 
-#endif /* _GOOM_HASH_H */
+#endif /* _GOOMSL_HASH_H */

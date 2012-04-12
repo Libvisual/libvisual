@@ -22,7 +22,7 @@ static void draw_rectangle(GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLflo
 }
 
 
-void
+static void
 draw_bar(GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue )
 {
   GLfloat width = 0.08f;
@@ -33,12 +33,12 @@ draw_bar(GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloa
   draw_rectangle(x_offset, 0.0, z_offset + 0.1, x_offset + width, height, z_offset + 0.1);
   draw_rectangle(x_offset, 0.0, z_offset, x_offset + width, height, z_offset );
   glColor3f(0.25 * red, 0.0f, 0.25 * blue);
-  draw_rectangle(x_offset, 0.0, z_offset , x_offset, height, z_offset + 0.1);	
+  draw_rectangle(x_offset, 0.0, z_offset , x_offset, height, z_offset + 0.1);
   draw_rectangle(x_offset + width, 0.0, z_offset , x_offset + width, height, z_offset + 0.1);
 }
 
 
-void
+static void
 createbars(void)
 {
   int x, y;
@@ -49,7 +49,7 @@ createbars(void)
     b_base = y * (1.0 / 14);
     r_base = 1.0 - b_base;
     for(x = 0; x < 16; x++) {
-      x_offset = -1.6 + (x * 0.2);			
+      x_offset = -1.6 + (x * 0.2);
       draw_bar(x_offset, z_offset, heights[y][x], r_base, y * (r_base/10.0f), b_base);
     }
   }
@@ -57,7 +57,7 @@ createbars(void)
 }
 
 
-void
+static void
 drawbars(void)
 {
   glDisable(GL_TEXTURE_2D);
@@ -74,7 +74,7 @@ drawbars(void)
 }
 
 
-void
+static void
 render_spectrum(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

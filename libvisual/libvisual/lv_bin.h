@@ -75,7 +75,7 @@ struct _VisBin {
 	int		 morphstepsdone;
 	float		 morphrate;
 	VisMorphMode	 morphmode;
-	VisTime		 morphtime;
+	VisTime			*morphtime;
 
 	int		 depthpreferred;	/* Prefered depth, highest or lowest */
 	int		 depthflag;		/* Supported depths */
@@ -99,11 +99,11 @@ int visual_bin_set_input (VisBin *bin, VisInput *input);
 VisInput *visual_bin_get_input (VisBin *bin);
 
 int visual_bin_set_morph (VisBin *bin, VisMorph *morph);
-int visual_bin_set_morph_by_name (VisBin *bin, char *morphname);
+int visual_bin_set_morph_by_name (VisBin *bin, const char *morphname);
 VisMorph *visual_bin_get_morph (VisBin *bin);
 
 int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input);
-int visual_bin_connect_by_names (VisBin *bin, char *actname, char *inname);
+int visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname);
 
 int visual_bin_sync (VisBin *bin, int noevent);
 
@@ -117,7 +117,7 @@ int visual_bin_depth_changed (VisBin *bin);
 
 VisPalette *visual_bin_get_palette (VisBin *bin);
 
-int visual_bin_switch_actor_by_name (VisBin *bin, char *actname);
+int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname);
 int visual_bin_switch_actor (VisBin *bin, VisActor *actor);
 int visual_bin_switch_finalize (VisBin *bin);
 int visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style);

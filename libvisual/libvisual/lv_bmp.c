@@ -37,7 +37,7 @@
 static int load_uncompressed (FILE *fp, VisVideo *video, int depth);
 static int load_rle (FILE *fp, VisVideo *video, int mode);
 
-#ifdef VISUAL_BIG_ENDIAN
+#if VISUAL_BIG_ENDIAN == 1
 static void flip_byte_order (VisVideo *video)
 {
 	uint8_t *pixel = visual_video_get_pixels (video);
@@ -357,12 +357,9 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 			bi_clrused = 1 << bi_bitcount;
 		}
 
-		if (video->pal != NULL)
-			visual_object_unref (VISUAL_OBJECT (video->pal));
-
 		/* Always allocate 256 palette entries.
 		 * Depth transformation depends on this */
-		video->pal = visual_palette_new (256);
+		visual_video_set_palette (video, visual_palette_new (256));
 
 		VisColor *colors = visual_palette_get_colors (video->pal);
 
@@ -398,7 +395,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	switch (bi_compression) {
 		case BI_RGB:
 			error = load_uncompressed (fp, video, bi_bitcount);
-#ifdef VISUAL_BIG_ENDIAN
+#if VISUAL_BIG_ENDIAN == 1
 			if (error == VISUAL_OK)
 				flip_byte_order (video);
 #endif

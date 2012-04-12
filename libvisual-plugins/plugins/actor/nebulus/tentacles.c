@@ -5,7 +5,7 @@ GLfloat tentacles_time, speed_tentacles = 50, old_speed_tentacles = 50;
 int tentacles_first = TRUE;
 
 
-void
+static void
 drawtentacle(int step, GLfloat angle, GLfloat twistangle)
 {
   if (step == 19)
@@ -20,7 +20,7 @@ drawtentacle(int step, GLfloat angle, GLfloat twistangle)
 }
 
 
-void
+static void
 drawobject(void)
 {
   GLfloat angle, twistangle;
@@ -65,7 +65,7 @@ drawobject(void)
 }
 
 
-void
+static void
 createtentacles(void)
 {
   cubedl = glGenLists(1);
@@ -101,10 +101,10 @@ createtentacles(void)
 }
 
 
-void
+static void
 drawtentacles(void)
 {
-  GLfloat angle, twistangle;
+  /* GLfloat angle, twistangle; */
 
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_TEXTURE_2D);
@@ -119,8 +119,8 @@ drawtentacles(void)
   glEnd();
   glPopMatrix();
 
-  angle = 25*sin(tentacles_time/1000);
-  twistangle = 25*sin(tentacles_time/1200);
+  /* angle = 25*sin(tentacles_time/1000); */
+  /* twistangle = 25*sin(tentacles_time/1200); */
   glPushMatrix();
   glDisable(GL_TEXTURE_2D);
   glTranslatef(0.0f, 0.0f, -18.0f);
@@ -160,7 +160,7 @@ drawtentacles(void)
 }
 
 
-void
+static void
 render_tentacles(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

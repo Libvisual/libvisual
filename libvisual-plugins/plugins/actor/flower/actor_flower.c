@@ -40,12 +40,15 @@
 #include "main.h"
 #include "notch.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
+
+
 #define NOTCH_BANDS	32
 
-const VisPluginInfo *get_plugin_info (int *count);
-
 typedef struct {
-	VisTimer		 t;
+	VisTimer		*t;
 	FlowerInternal		 flower;
 	int			 nof_bands;
 	NOTCH_FILTER		*notch[NOTCH_BANDS];
@@ -60,19 +63,17 @@ static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_flower_palette (VisPluginData *plugin);
 static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 /* Main plugin stuff */
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_flower_requisition,
 		.palette = lv_flower_palette,
 		.render = lv_flower_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "flower",
@@ -87,19 +88,17 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_flower_cleanup,
 		.events = lv_flower_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
-
-	return info;
+	return &info;
 }
 
 static int lv_flower_init (VisPluginData *plugin)
@@ -126,6 +125,7 @@ static int lv_flower_init (VisPluginData *plugin)
 	priv->flower.tension = (visual_random_context_float (priv->rcxt) - 0.5) * 8.0;
 	priv->flower.continuity = (visual_random_context_float (priv->rcxt) - 0.5) * 16.0;
 
+	priv->flower.timer = visual_timer_new ();
 
 	priv->nof_bands = NOTCH_BANDS;
 
@@ -135,6 +135,7 @@ static int lv_flower_init (VisPluginData *plugin)
 		priv->notch[i] = init_notch (b);
 	}
 
+	priv->t = visual_timer_new ();
 
 	return 0;
 }
@@ -143,6 +144,8 @@ static int lv_flower_cleanup (VisPluginData *plugin)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
+	visual_timer_free (priv->flower.timer);
+	visual_timer_free (priv->t);
 	visual_mem_free (priv);
 
 	return 0;
@@ -237,21 +240,20 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	visual_audio_get_spectrum_for_sample (&freqbuf, &pcmbuf, TRUE);
 
 	/* Activate the effect change timer */
-	if (visual_timer_is_active (&priv->t) == FALSE)
-		visual_timer_start (&priv->t);
+	if (!visual_timer_is_active (priv->t))
+		visual_timer_start (priv->t);
 
 	/* At 15 secs, do with new settings, reset timer */
-	if (visual_timer_has_passed_by_values (&priv->t, 15, 0)) {
+	if (visual_timer_is_past2 (priv->t, 15, 0)) {
 		priv->flower.tension_new = (-visual_random_context_float (priv->rcxt)) * 12.0;
 		priv->flower.continuity_new = (visual_random_context_float (priv->rcxt) - 0.5) * 32.0;
 
-		visual_timer_start (&priv->t);
+		visual_timer_start (priv->t);
 	}
 
 	/* Activate global timer */
-	if (visual_timer_is_active (&priv->flower.timer) == FALSE)
-		visual_timer_start (&priv->flower.timer);
-
+	if (!visual_timer_is_active (priv->flower.timer))
+		visual_timer_start (priv->flower.timer);
 
 	for (b=0; b<priv->nof_bands; b++)
 		temp_bars[b]=0.0;

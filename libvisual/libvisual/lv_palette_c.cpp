@@ -37,6 +37,11 @@ extern "C" {
       delete self;
   }
 
+  VisPalette *visual_palette_clone (VisPalette *self)
+  {
+      return new LV::Palette (*self);
+  }
+
   void visual_palette_copy (VisPalette *self, VisPalette *src)
   {
       visual_return_if_fail (self != NULL);

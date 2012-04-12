@@ -29,7 +29,9 @@
 
 #include <libvisual/libvisual.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 typedef struct {
 	uint16_t b:5, g:6, r:5;
@@ -49,11 +51,9 @@ static int lv_morph_flash_cleanup (VisPluginData *plugin);
 static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
 static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisMorphPlugin morph[] = {{
+	static VisMorphPlugin morph = {
 		.palette = lv_morph_flash_palette,
 		.apply = lv_morph_flash_apply,
 		.vidoptions.depth =
@@ -61,9 +61,9 @@ const VisPluginInfo *get_plugin_info (int *count)
 			VISUAL_VIDEO_DEPTH_16BIT |
 			VISUAL_VIDEO_DEPTH_24BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "flash",
@@ -77,12 +77,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = lv_morph_flash_init,
 		.cleanup = lv_morph_flash_cleanup,
 
-		.plugin = VISUAL_OBJECT (&morph[0])
-	}};
+		.plugin = VISUAL_OBJECT (&morph)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int lv_morph_flash_init (VisPluginData *plugin)

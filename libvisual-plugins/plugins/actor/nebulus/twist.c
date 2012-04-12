@@ -7,7 +7,7 @@ double rad[NR_SEGS], sinpos[NR_SEGS], xpos[NR_SEGS];
 GLfloat twist_time, twist_speed = 0.04f, old_twist_speed = 0.04f;
 
 
-void setvertex(int i, int j)
+static void setvertex(int i, int j)
 {
   GLfloat col;
 
@@ -22,7 +22,7 @@ void setvertex(int i, int j)
 }
 
 
-void
+static void
 createtwist(void)
 {
   int i, j;
@@ -40,7 +40,7 @@ createtwist(void)
 }
 
 
-void
+static void
 drawtwist(void)
 {
   int i;
@@ -61,7 +61,7 @@ drawtwist(void)
 }
 
 
-void
+static void
 render_twist(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

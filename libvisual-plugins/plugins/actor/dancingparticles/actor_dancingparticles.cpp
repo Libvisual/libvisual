@@ -40,9 +40,13 @@
 
 #include "actor_dancingparticles.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+extern "C" const VisPluginInfo *get_plugin_info ();
+
 unsigned int fast_sqrt_table[0x10000];
 int titleHasChanged = 0;
-char *curtitle = "Moeders";
+const char *curtitle = "Moeders";
 
 extern "C" int lv_dancingparticles_init (VisPluginData *plugin);
 extern "C" int lv_dancingparticles_cleanup (VisPluginData *plugin);
@@ -52,45 +56,41 @@ extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue 
 extern "C" VisPalette *lv_dancingparticles_palette (VisPluginData *plugin);
 extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 /* Main plugin stuff */
-extern "C" const VisPluginInfo *get_plugin_info (int *count)
+extern "C" const VisPluginInfo *get_plugin_info ()
 {
-	static VisActorPlugin actor[1];
-	static VisPluginInfo info[1];
+	static VisActorPlugin actor;
+	static VisPluginInfo info;
 
-	actor[0].requisition = lv_dancingparticles_requisition;
-	actor[0].palette = lv_dancingparticles_palette;
-	actor[0].render = lv_dancingparticles_render;
-	actor[0].vidoptions.depth = VISUAL_VIDEO_DEPTH_GL;
+	actor.requisition = lv_dancingparticles_requisition;
+	actor.palette = lv_dancingparticles_palette;
+	actor.render = lv_dancingparticles_render;
+	actor.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL;
 
-	info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
+	info.type = VISUAL_PLUGIN_TYPE_ACTOR;
 
-	info[0].plugname = "dancingparticles";
-	info[0].name = "libvisual Dancing Particles plugin";
-	info[0].author = N_("Original by: Pierre Tardy <tardyp@free.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>");
-	info[0].version = "0.1";
-	info[0].about = N_("Libvisual Dancing Particles plugin");
-	info[0].help =  N_("This plugin shows dancing particles");
-	info[0].license = VISUAL_PLUGIN_LICENSE_GPL,
+	info.plugname = "dancingparticles";
+	info.name = "libvisual Dancing Particles plugin";
+	info.author = N_("Original by: Pierre Tardy <tardyp@free.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>");
+	info.version = "0.1";
+	info.about = N_("Libvisual Dancing Particles plugin");
+	info.help =  N_("This plugin shows dancing particles");
+	info.license = VISUAL_PLUGIN_LICENSE_GPL,
 
-	info[0].init = lv_dancingparticles_init;
-	info[0].cleanup = lv_dancingparticles_cleanup;
-	info[0].events = lv_dancingparticles_events;
+	info.init = lv_dancingparticles_init;
+	info.cleanup = lv_dancingparticles_cleanup;
+	info.events = lv_dancingparticles_events;
 
-	info[0].plugin = VISUAL_OBJECT (&actor[0]);
+	info.plugin = VISUAL_OBJECT (&actor);
 
-	*count = sizeof (info) / sizeof (*info);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
-
-	return info;
+	return &info;
 }
 
 extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
@@ -99,7 +99,7 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
 
 	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars", FALSE),
+		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparent bars", FALSE),
 		VISUAL_PARAM_LIST_END
 	};
 
@@ -121,12 +121,7 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 
 extern "C" int lv_dancingparticles_cleanup (VisPluginData *plugin)
 {
-	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisUIWidget *ui;
-
-	/* Destroy the VisUI tree */
-	ui = visual_plugin_get_userinterface (plugin);
-	visual_object_unref (VISUAL_OBJECT (ui));
+	DancingParticlesPrivate *priv = static_cast<DancingParticlesPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
 
 	visual_mem_free (priv);
 
@@ -203,8 +198,6 @@ extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *vide
 {
 	VisBuffer fbuf;
 	float freq[3][256];
-	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-	int i;
 
 	visual_buffer_set_data_pair (&fbuf, freq[0], sizeof(freq[0]));
 	visual_audio_get_spectrum (audio, &fbuf, 256, VISUAL_AUDIO_CHANNEL_LEFT, FALSE);
@@ -212,7 +205,7 @@ extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *vide
 	visual_buffer_set_data_pair (&fbuf, freq[1], sizeof(freq[1]));
 	visual_audio_get_spectrum (audio, &fbuf, 256, VISUAL_AUDIO_CHANNEL_RIGHT, FALSE);
 
-	for (i = 0; i < sizeof(freq[2]); i++)
+	for (unsigned int i = 0; i < sizeof(freq[2]); i++)
 		freq[2][i] = (freq[0][i] + freq[1][i]) / 2;
 
 	/* FIXME on title change, do something */

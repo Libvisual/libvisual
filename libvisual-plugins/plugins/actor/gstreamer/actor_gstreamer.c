@@ -34,9 +34,11 @@
 
 #include <gst/gst.h>
 
-#define BARS 16
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (int *count);
+const VisPluginInfo *get_plugin_info (void);
+
+#define BARS 16
 
 typedef struct {
 	VisVideo *old_video;
@@ -54,18 +56,16 @@ static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_gstreamer_palette (VisPluginData *plugin);
 static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_gstreamer_requisition,
 		.palette = act_gstreamer_palette,
 		.render = act_gstreamer_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_24BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "gstreamer",
@@ -80,12 +80,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_gstreamer_cleanup,
 		.events = act_gstreamer_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_gstreamer_init (VisPluginData *plugin)

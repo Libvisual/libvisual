@@ -1,10 +1,12 @@
 /* Libvisual - The audio visualisation framework cli tool
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
  * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
+ *                    Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Daniel Hiepler <daniel@niftylight.de>
+ *          Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,97 +23,120 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
 #include "display.hpp"
+#include "display_driver_factory.hpp"
+#include <libvisual/libvisual.h>
+#include <stdexcept>
+#include <string>
 
-SADisplay *display_new (SADisplayDriver *driver)
+class SADisplay::Impl
 {
-	SADisplay *display;
+public:
 
-	display = visual_mem_new0 (SADisplay, 1);
+    LV::ScopedPtr<SADisplayDriver> driver;
+    VisVideo        *screen;
+    unsigned int     frames_drawn;
+    LV::Timer        timer;
 
-	visual_object_initialize (VISUAL_OBJECT (display), TRUE, NULL);
+    Impl ()
+        : driver       (0)
+        , screen       (0)
+        , frames_drawn (0)
+    {}
 
-	display->driver = driver;
-	display->screen = visual_video_new ();
+    ~Impl ()
+    {}
+};
 
-	return display;
+SADisplay::SADisplay (std::string const& driver_name)
+  : m_impl (new Impl)
+{
+    m_impl->driver.reset (DisplayDriverFactory::instance().make (driver_name, *this));
+
+    if (!m_impl->driver) {
+        throw std::runtime_error ("Failed to load display driver '" + driver_name + "'");
+    }
+
+    m_impl->screen = visual_video_new ();
 }
 
-int display_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
-		int width, int height, int resizable)
+SADisplay::~SADisplay ()
 {
-	return display->driver->create (display, depth, vidoptions, width, height, resizable);
+    visual_object_unref (VISUAL_OBJECT (m_impl->screen));
 }
 
-int display_close (SADisplay *display)
+VisVideo* SADisplay::get_screen () const
 {
-	return display->driver->close (display);
+    return m_impl->screen;
 }
 
-VisVideo *display_get_video (SADisplay *display)
+bool SADisplay::create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+                       unsigned int width, unsigned int height, bool resizable)
 {
-	display->driver->getvideo (display, display->screen);
-
-	return display->screen;
+    return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
 
-int display_lock (SADisplay *display)
+void SADisplay::close ()
 {
-	return display->driver->lock (display);
+    m_impl->driver->close ();
 }
 
-int display_unlock (SADisplay *display)
+VisVideo* SADisplay::get_video () const
 {
-	return display->driver->unlock (display);
+    m_impl->driver->get_video (m_impl->screen);
+
+    return m_impl->screen;
 }
 
-int display_update_all (SADisplay *display)
+void SADisplay::lock ()
 {
-	VisRectangle rect;
-	VisVideo *video = display_get_video (display);
-
-	rect.x = 0;
-	rect.y = 0;
-
-	rect.width = video->width;
-	rect.height = video->height;
-
-	display->frames_drawn++;
-
-	if (visual_timer_is_active (&display->timer) == FALSE)
-		visual_timer_start (&display->timer);
-
-	return display_update_rectangle (display, &rect);
+    m_impl->driver->lock ();
 }
 
-int display_update_rectangle (SADisplay *display, VisRectangle *rect)
+void SADisplay::unlock ()
 {
-	return display->driver->updaterect (display, rect);
+    m_impl->driver->unlock ();
 }
 
-int display_set_fullscreen (SADisplay *display, int fullscreen, int autoscale)
+void SADisplay::update_all ()
 {
-	return display->driver->fullscreen (display, fullscreen, autoscale);
+    VisVideo *video = get_video ();
+    LV::Rect rect (0, 0, video->width, video->height);
+
+    m_impl->frames_drawn++;
+
+    if (!m_impl->timer.is_active ())
+        m_impl->timer.start ();
+
+    m_impl->driver->update_rect (rect);
 }
 
-int display_drain_events (SADisplay *display, VisEventQueue *eventqueue)
+void SADisplay::update_rect (LV::Rect const& rect)
 {
-	return display->driver->drainevents (display, eventqueue);
+    m_impl->driver->update_rect (rect);
 }
 
-int display_fps_limit (SADisplay *display, int fps)
+void SADisplay::set_fullscreen (bool fullscreen, bool autoscale)
 {
-	return 0;
+    m_impl->driver->set_fullscreen (fullscreen, autoscale);
 }
 
-int display_fps_total (SADisplay *display)
+void SADisplay::drain_events (VisEventQueue& eventqueue)
 {
-	return display->frames_drawn;
+    m_impl->driver->drain_events (eventqueue);
 }
 
-float display_fps_average (SADisplay *display)
+void SADisplay::set_fps_limit (unsigned int fps)
 {
-	return display->frames_drawn / (visual_timer_elapsed_usecs (&display->timer) / (float) VISUAL_USEC_PER_SEC);
+    // FIXME: Implement this
 }
 
+unsigned int SADisplay::get_fps_total () const
+{
+    return m_impl->frames_drawn;
+}
+
+float SADisplay::get_fps_average () const
+{
+    return m_impl->frames_drawn / m_impl->timer.elapsed ().to_secs ();
+}

@@ -40,25 +40,6 @@
 
 namespace LV {
 
-  namespace {
-
-    struct PluginHasName
-        : public std::unary_function<bool, VisPluginRef *>
-    {
-        std::string name;
-
-        PluginHasName (std::string const& name_)
-            : name (name_)
-        {}
-
-        bool operator() (VisPluginRef* ref) const
-        {
-            return name == ref->info->plugname;
-        }
-    };
-
-  } // anonymous namespace
-
   const char *plugin_get_next_by_name (PluginList const& list, const char *name)
   {
       for (unsigned int i = 0; i < list.size (); i++)
@@ -87,16 +68,6 @@ namespace LV {
       return NULL;
   }
 
-  VisPluginRef *plugin_find (PluginList const& list, std::string const& name)
-  {
-      PluginList::const_iterator iter =
-		  std::find_if (list.begin (),
-                        list.end (),
-                        PluginHasName (name));
-
-      return (iter != list.end ()) ? *iter : 0;
-  }
-
 } // LV namespace
 
 static int plugin_info_dtor (VisObject *object);
@@ -104,19 +75,30 @@ static int plugin_ref_dtor (VisObject *object);
 static int plugin_environ_dtor (VisObject *object);
 static int plugin_dtor (VisObject *object);
 
-static char *get_delim_node (const char *str, char delim, int index);
+static char* copy_info_string (char const* str)
+{
+    return visual_strdup (str ? str : "(not specified)");
+}
+
+static void free_info_string (char const* str)
+{
+    // HACK: We're forced to cast away the const because the plugin system
+    // duplicates the VisPluginInfo strings for storage.
+
+    visual_mem_free (const_cast<char*> (str));
+}
 
 static int plugin_info_dtor (VisObject *object)
 {
     VisPluginInfo *pluginfo = VISUAL_PLUGININFO (object);
 
-    pluginfo->plugname = NULL;
-    pluginfo->type = NULL;
-    pluginfo->name = NULL;
-    pluginfo->author = NULL;
-    pluginfo->version = NULL;
-    pluginfo->about = NULL;
-    pluginfo->help = NULL;
+    free_info_string (pluginfo->plugname);
+    free_info_string (pluginfo->name);
+    free_info_string (pluginfo->author);
+    free_info_string (pluginfo->version);
+    free_info_string (pluginfo->about);
+    free_info_string (pluginfo->help);
+    free_info_string (pluginfo->license);
 
     return VISUAL_OK;
 }
@@ -125,17 +107,15 @@ static int plugin_ref_dtor (VisObject *object)
 {
     VisPluginRef *ref = VISUAL_PLUGINREF (object);
 
-    if (ref->file != NULL)
-        visual_mem_free (ref->file);
-
     if (ref->usecount > 0)
         visual_log (VISUAL_LOG_ERROR, _("A plugin reference with %d instances has been destroyed."), ref->usecount);
 
-    if (ref->info != NULL)
-        visual_object_unref (VISUAL_OBJECT (ref->info));
+    if (ref->file)
+        visual_mem_free (ref->file);
 
-    ref->file = NULL;
-    ref->info = NULL;
+    if (ref->info) {
+        visual_object_unref (VISUAL_OBJECT (ref->info));
+    }
 
     return VISUAL_OK;
 }
@@ -144,7 +124,7 @@ static int plugin_environ_dtor (VisObject *object)
 {
     VisPluginEnviron *enve = VISUAL_PLUGINENVIRON (object);
 
-    if (enve->environment != NULL)
+    if (enve->environment)
         visual_object_unref (enve->environment);
 
     enve->environment = NULL;
@@ -156,57 +136,17 @@ static int plugin_dtor (VisObject *object)
 {
     VisPluginData *plugin = VISUAL_PLUGINDATA (object);
 
-    visual_random_context_free (plugin->random);
+    delete plugin->random;
 
-    if (plugin->ref != NULL)
+    if (plugin->ref)
         visual_object_unref (VISUAL_OBJECT (plugin->ref));
 
-    if (plugin->params != NULL)
+    if (plugin->params)
         visual_object_unref (VISUAL_OBJECT (plugin->params));
 
     visual_collection_destroy (VISUAL_COLLECTION (&plugin->environment));
 
-    plugin->ref = NULL;
-    plugin->params = NULL;
-
     return VISUAL_OK;
-}
-
-static char *get_delim_node (const char *str, char delim, int index)
-{
-    char *buf;
-    const char *start;
-    const char *end = str;
-    int i = 0;
-
-    do {
-        start = end;
-
-        end = strchr (start + 1, delim);
-
-        if (i == index) {
-            /* Last section doesn't contain a delim */
-            if (end == NULL)
-                end = str + strlen (str);
-
-            /* Cut off the delim that is in front */
-            if (i > 0)
-                start++;
-
-            break;
-        }
-
-        i++;
-
-    } while (end != NULL);
-
-    if (end == NULL)
-        return NULL;
-
-    buf = static_cast<char *> (visual_mem_malloc0 ((end - start) + 1));
-    strncpy (buf, start, end - start);
-
-    return buf;
 }
 
 VisPluginInfo *visual_plugin_info_new ()
@@ -221,21 +161,27 @@ VisPluginInfo *visual_plugin_info_new ()
     return pluginfo;
 }
 
+VisPluginInfo *visual_plugin_info_clone (VisPluginInfo const* info)
+{
+    VisPluginInfo *clone = visual_plugin_info_new ();
+    visual_plugin_info_copy (clone, info);
+    return clone;
+}
 
-int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src)
+int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* src)
 {
     visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
     visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_PLUGIN_INFO_NULL);
 
     visual_mem_copy (dest, src, sizeof (VisPluginInfo));
 
-    dest->plugname = visual_strdup (src->plugname);
-    dest->type = visual_strdup (src->type);
-    dest->name = visual_strdup (src->name);
-    dest->author = visual_strdup (src->author);
-    dest->version = visual_strdup (src->version);
-    dest->about = visual_strdup (src->about);
-    dest->help = visual_strdup (src->help);
+    dest->plugname = copy_info_string (src->plugname);
+    dest->name     = copy_info_string (src->name);
+    dest->author   = copy_info_string (src->author);
+    dest->version  = copy_info_string (src->version);
+    dest->about    = copy_info_string (src->about);
+    dest->help     = copy_info_string (src->help);
+    dest->license  = copy_info_string (src->license);
 
     return VISUAL_OK;
 }
@@ -367,17 +313,6 @@ int visual_plugin_unload (VisPluginData *plugin)
 
 VisPluginData *visual_plugin_load (VisPluginRef *ref)
 {
-    VisPluginData *plugin;
-    VisTime time_;
-    VisPluginInfo *pluginfo;
-    VisPluginGetInfoFunc get_plugin_info;
-#if defined(VISUAL_OS_WIN32)
-    HMODULE handle;
-#else /* !VISUAL_OS_WIN32 */
-    void *handle;
-#endif
-    int cnt;
-
     visual_return_val_if_fail (ref != NULL, NULL);
     visual_return_val_if_fail (ref->info != NULL, NULL);
 
@@ -390,12 +325,12 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
     }
 
 #if defined(VISUAL_OS_WIN32)
-    handle = LoadLibrary (ref->file);
+    HMODULE handle = LoadLibrary (ref->file);
 #else
-    handle = dlopen (ref->file, RTLD_LAZY);
+    void* handle = dlopen (ref->file, RTLD_LAZY);
 #endif
 
-    if (handle == NULL) {
+    if (!handle) {
 #if defined(VISUAL_OS_WIN32)
         visual_log (VISUAL_LOG_ERROR, "Cannot load plugin: win32 error code: %ld", GetLastError ());
 #else
@@ -404,13 +339,15 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
         return NULL;
     }
 
+    VisPluginGetInfoFunc get_plugin_info;
+
 #if defined(VISUAL_OS_WIN32)
-    get_plugin_info = (VisPluginGetInfoFunc) GetProcAddress (handle, "get_plugin_info");
+    get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (GetProcAddress (handle, "get_plugin_info"));
 #else
-    get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
+    get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (dlsym (handle, "get_plugin_info"));
 #endif
 
-    if (get_plugin_info == NULL) {
+    if (!get_plugin_info) {
 #if defined(VISUAL_OS_WIN32)
         visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %ld", GetLastError ());
 
@@ -424,9 +361,9 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
         return NULL;
     }
 
-    pluginfo = VISUAL_PLUGININFO (get_plugin_info (&cnt));
+    VisPluginInfo const* plugin_info = get_plugin_info ();
 
-    if (pluginfo == NULL) {
+    if (!plugin_info) {
         visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info while loading."));
 
 #if defined(VISUAL_OS_WIN32)
@@ -438,19 +375,18 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref)
         return NULL;
     }
 
-    plugin = visual_plugin_new ();
+    VisPluginData *plugin = visual_plugin_new ();
     plugin->ref = ref;
-    plugin->info = &pluginfo[ref->index];
-
     visual_object_ref (VISUAL_OBJECT (ref));
 
-    ref->usecount++;
+    plugin->info = visual_plugin_info_clone (plugin_info);
     plugin->realized = FALSE;
     plugin->handle = handle;
 
-    /* Now the plugin is set up and ready to be realized, also random seed its random context */
-    visual_time_get (&time_);
-    plugin->random = visual_random_context_new (time_.nsec);
+    // Now the plugin is set up and ready to be realized, also random
+    // seed its random context
+    LV::Time time = LV::Time::now ();
+    plugin->random = new LV::RandomContext (time.to_usecs ());
 
     return plugin;
 }
@@ -475,29 +411,17 @@ int visual_plugin_realize (VisPluginData *plugin)
     return VISUAL_OK;
 }
 
-VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
+VisPluginRef *visual_plugin_get_reference (char const* plugin_path)
 {
-    VisPluginRef **ref;
-    VisPluginInfo *plug_info;
-    VisPluginInfo *dup_info;
-    VisPluginGetInfoFunc get_plugin_info;
-    int *plugin_version;
-#if defined(VISUAL_OS_WIN32)
-    HMODULE handle;
-#else /* !VISUAL_OS_WIN32 */
-    void *handle;
-#endif
-    int cnt = 1, i;
-
-    visual_return_val_if_fail (pluginpath != NULL, NULL);
+    visual_return_val_if_fail (plugin_path != NULL, NULL);
 
 #if defined(VISUAL_OS_WIN32)
-    handle = LoadLibrary (pluginpath);
+    HMODULE handle = LoadLibrary (plugin_path);
 #else
-    handle = dlopen (pluginpath, RTLD_LAZY);
+    void* handle = dlopen (plugin_path, RTLD_LAZY);
 #endif
 
-    if (handle == NULL) {
+    if (!handle) {
 #if defined(VISUAL_OS_WIN32)
         visual_log (VISUAL_LOG_ERROR, "Cannot load plugin: win32 error code: %ld", GetLastError());
 #else
@@ -508,14 +432,14 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
     }
 
 #if defined(VISUAL_OS_WIN32)
-    plugin_version = (int *) GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG);
+    int* plugin_version = static_cast<int*> (GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG));
 #else
-    plugin_version = (int *) dlsym (handle, VISUAL_PLUGIN_VERSION_TAG);
+    int* plugin_version = static_cast<int*> (dlsym (handle, VISUAL_PLUGIN_VERSION_TAG));
 #endif
 
-    if (plugin_version == NULL || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
+    if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
         visual_log (VISUAL_LOG_ERROR, _("Plugin %s is not compatible with version %s of libvisual"),
-                pluginpath, visual_get_version ());
+                plugin_path, visual_get_version ());
 
 #if defined(VISUAL_OS_WIN32)
         FreeLibrary (handle);
@@ -526,13 +450,15 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
         return NULL;
     }
 
+    VisPluginGetInfoFunc get_plugin_info;
+
 #if defined(VISUAL_OS_WIN32)
-    get_plugin_info = (VisPluginGetInfoFunc) GetProcAddress (handle, "get_plugin_info");
+    get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (GetProcAddress (handle, "get_plugin_info"));
 #else
-    get_plugin_info = (VisPluginGetInfoFunc) dlsym (handle, "get_plugin_info");
+    get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (dlsym (handle, "get_plugin_info"));
 #endif
 
-    if (get_plugin_info == NULL) {
+    if (!get_plugin_info) {
 #if defined(VISUAL_OS_WIN32)
         visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %ld", GetLastError ());
 
@@ -546,9 +472,9 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
         return NULL;
     }
 
-    plug_info = VISUAL_PLUGININFO (get_plugin_info (&cnt));
+    VisPluginInfo const* plugin_info = get_plugin_info ();
 
-    if (plug_info == NULL) {
+    if (!plugin_info) {
         visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info"));
 
 #if defined(VISUAL_OS_WIN32)
@@ -560,21 +486,10 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
         return NULL;
     }
 
-    ref = visual_mem_new0 (VisPluginRef *, cnt);
+    VisPluginRef* ref = visual_plugin_ref_new ();
 
-    for (i = 0; i < cnt; i++) {
-        ref[i] = visual_plugin_ref_new ();
-
-        dup_info = visual_plugin_info_new ();
-        visual_plugin_info_copy (dup_info, &plug_info[i]);
-
-        ref[i]->index = i;
-        ref[i]->info = dup_info;
-        ref[i]->file = visual_strdup (pluginpath);
-
-        visual_object_unref (plug_info[i].plugin);
-        visual_object_unref (VISUAL_OBJECT (&plug_info[i]));
-    }
+    ref->info = visual_plugin_info_clone (plugin_info);
+    ref->file = visual_strdup (plugin_path);
 
 #if defined(VISUAL_OS_WIN32)
     FreeLibrary (handle);
@@ -582,180 +497,12 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
     dlclose (handle);
 #endif
 
-    *count = cnt;
-
     return ref;
 }
 
 int visual_plugin_get_api_version ()
 {
     return VISUAL_PLUGIN_API_VERSION;
-}
-
-const char *visual_plugin_type_get_domain (const char *type)
-{
-    visual_return_val_if_fail (type != NULL, NULL);
-
-    return get_delim_node (type, ':', 0);
-}
-
-const char *visual_plugin_type_get_package (const char *type)
-{
-    visual_return_val_if_fail (type != NULL, NULL);
-
-    return get_delim_node (type, ':', 1);
-}
-
-const char *visual_plugin_type_get_type (const char *type)
-{
-    char *str;
-    char *flags;
-    char *typestr;
-
-    visual_return_val_if_fail (type != NULL, NULL);
-
-    str = get_delim_node (type, ':', 2);
-
-    flags = strchr (str, '.');
-
-    if (flags != NULL) {
-        typestr = static_cast<char*> (visual_mem_malloc0 (flags - str));
-
-        strncpy (typestr, str, flags - str);
-
-        visual_mem_free (str);
-
-        return typestr;
-    }
-
-    return str;
-}
-
-VisPluginTypeDepth visual_plugin_type_get_depth (const char *type)
-{
-    visual_return_val_if_fail (type != NULL, VisPluginTypeDepth (-VISUAL_ERROR_NULL));
-
-    int i = 0;
-
-    while (i < VISUAL_PLUGIN_TYPE_DEPTH_TYPE) {
-        char *part;
-
-        part = get_delim_node (type, ':', i);
-
-        if (part == NULL)
-            break;
-
-        i++;
-
-        visual_mem_free (part);
-    }
-
-    return VisPluginTypeDepth (i);
-}
-
-int visual_plugin_type_member_of (const char *domain, const char *type)
-{
-    visual_return_val_if_fail (domain != NULL, -VISUAL_ERROR_NULL);
-    visual_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
-
-    char* ndomain = static_cast<char*> (visual_mem_malloc0 (strlen (domain) + 1));
-    char const* tmp = std::strchr (domain, '.');
-
-    if (tmp != NULL)
-	    std::strncpy (ndomain, domain, tmp - domain);
-    else
-	    std::strcpy (ndomain, domain);
-
-    int diff = 0;
-    int i = 0;
-
-    while (i < visual_plugin_type_get_depth (ndomain)) {
-	    char* comp1 = get_delim_node (ndomain, ':', i);
-        char* comp2 = get_delim_node (type, ':', i);
-
-        if (comp1 == NULL || comp2 == NULL) {
-            if (comp1 != NULL)
-                visual_mem_free (comp1);
-
-            if (comp2 != NULL)
-                visual_mem_free (comp2);
-
-            visual_mem_free (ndomain);
-
-            return FALSE;
-        }
-
-        if (strcmp (comp1, comp2) != 0)
-            diff++;
-
-        visual_mem_free (comp1);
-        visual_mem_free (comp2);
-
-        i++;
-    }
-
-    visual_mem_free (ndomain);
-
-    if (diff > 0)
-        return FALSE;
-
-    return TRUE;
-}
-
-const char *visual_plugin_type_get_flags (const char *type)
-{
-    visual_return_val_if_fail (type != NULL, NULL);
-
-    char const* flagstr = strstr (type, ".[");
-
-    if (flagstr == NULL)
-        return NULL;
-
-    flagstr += 2; /* Skip the ".[" */
-
-    char* flagsret = static_cast<char*> (visual_mem_malloc0 (strlen (flagstr) - 1));
-
-	std::strncpy (flagsret, flagstr, strlen (flagstr) - 1);
-    flagsret[strlen (flagstr) - 1] = '\0';
-
-    return flagsret;
-}
-
-int visual_plugin_type_has_flag (const char *type, const char *flag)
-{
-    char *flags;
-    char *nflag, *s;
-
-    visual_return_val_if_fail (type != NULL, -VISUAL_ERROR_NULL);
-    visual_return_val_if_fail (flag != NULL, -VISUAL_ERROR_NULL);
-
-    nflag = flags = (char *) visual_plugin_type_get_flags (type);
-
-    if (flags == NULL)
-        return FALSE;
-
-    do {
-        s = strchr (nflag, '|');
-
-        if (s != NULL) {
-            if (strncmp (nflag, flag, s - nflag - 1) == 0) {
-                visual_mem_free (flags);
-
-                return TRUE;
-            }
-        } else {
-            if (strcmp (nflag, flag) == 0) {
-                visual_mem_free (flags);
-
-                return TRUE;
-            }
-        }
-
-    } while ((nflag = strchr (nflag, '|') + 1));
-
-    visual_mem_free (flags);
-
-    return FALSE;
 }
 
 VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj)

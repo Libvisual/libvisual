@@ -32,13 +32,13 @@ namespace {
   inline LV::PluginList const&
   get_morph_plugin_list ()
   {
-	  return LV::PluginRegistry::instance()->get_morph_plugins ();
+      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
   }
 
   inline VisPluginRef*
   find_morph_plugin (std::string const& name)
   {
-	  return LV::plugin_find (get_morph_plugin_list (), name);
+      return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_MORPH, name);
   }
 
 } // anonymous namespace
@@ -50,6 +50,9 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph);
 static int morph_dtor (VisObject *object)
 {
     VisMorph *morph = VISUAL_MORPH (object);
+
+    visual_time_free (morph->morphtime);
+    visual_timer_free (morph->timer);
 
     if (morph->plugin != NULL)
         visual_plugin_unload (morph->plugin);
@@ -86,14 +89,6 @@ const char *visual_morph_get_next_by_name (const char *name)
 const char *visual_morph_get_prev_by_name (const char *name)
 {
     return LV::plugin_get_prev_by_name (get_morph_plugin_list (), name);
-}
-
-int visual_morph_valid_by_name (const char *name)
-{
-    if (find_morph_plugin (name) == NULL)
-        return FALSE;
-    else
-        return TRUE;
 }
 
 VisMorph *visual_morph_new (const char *morphname)
@@ -137,8 +132,8 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     morph->plugin = NULL;
     morph->dest = NULL;
     morph->morphpal = visual_palette_new (256);
-    visual_time_init (&morph->morphtime);
-    visual_timer_init (&morph->timer);
+    morph->morphtime = visual_time_new ();
+    morph->timer = visual_timer_new ();
     visual_morph_set_rate (morph, 0);
     visual_morph_set_steps (morph, 0);
     morph->stepsdone = 0;
@@ -211,7 +206,9 @@ int visual_morph_set_time (VisMorph *morph, VisTime *time)
     visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
     visual_return_val_if_fail (time != NULL, -VISUAL_ERROR_TIME_NULL);
 
-    return visual_time_copy (&morph->morphtime, time);
+    visual_time_copy (morph->morphtime, time);
+
+    return VISUAL_OK;
 }
 
 int visual_morph_set_rate (VisMorph *morph, float rate)
@@ -257,7 +254,7 @@ int visual_morph_is_done (VisMorph *morph)
 
     if (morph->rate >= 1.0) {
         if (morph->mode == VISUAL_MORPH_MODE_TIME)
-            visual_timer_stop (&morph->timer);
+            visual_timer_stop (morph->timer);
 
         if (morph->mode == VISUAL_MORPH_MODE_STEPS)
             morph->stepsdone = 0;
@@ -293,8 +290,6 @@ int visual_morph_requests_audio (VisMorph *morph)
 int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2)
 {
     VisMorphPlugin *morphplugin;
-    VisTime elapsed;
-    double usec_elapsed, usec_morph;
 
     visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
     visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
@@ -311,8 +306,8 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
     }
 
     /* If we're morphing using the timer, start the timer. */
-    if (!visual_timer_is_active (&morph->timer))
-        visual_timer_start (&morph->timer);
+    if (!visual_timer_is_active (morph->timer))
+        visual_timer_start (morph->timer);
 
     if (morphplugin->palette != NULL)
         morphplugin->palette (morph->plugin, morph->rate, audio, morph->morphpal, src1, src2);
@@ -323,7 +318,7 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
 
     morphplugin->apply (morph->plugin, morph->rate, audio, morph->dest, src1, src2);
 
-    morph->dest->pal = visual_morph_get_palette (morph);
+    visual_video_set_palette (morph->dest, visual_morph_get_palette (morph));
 
     /* On automatic morphing increase the rate. */
     if (morph->mode == VISUAL_MORPH_MODE_STEPS) {
@@ -334,15 +329,13 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
             morph->rate = 1;
 
     } else if (morph->mode == VISUAL_MORPH_MODE_TIME) {
-        visual_timer_elapsed (&morph->timer, &elapsed);
-
         /**
          * @todo: We might want to have a bigger type here, but long longs aren't atomic
          * on most architectures, so that won't do for now, maybe when we can lock (for threading)
          * we can look into that
          */
-        usec_elapsed = ((double) elapsed.sec) * VISUAL_USEC_PER_SEC + (elapsed.nsec / VISUAL_NSEC_PER_USEC);
-        usec_morph = ((double) morph->morphtime.sec) * VISUAL_USEC_PER_SEC + (morph->morphtime.nsec / VISUAL_NSEC_PER_USEC);
+        double usec_elapsed = visual_timer_elapsed_usecs (morph->timer);
+        double usec_morph = visual_time_to_usecs (morph->morphtime);
 
         morph->rate = usec_elapsed / usec_morph;
 

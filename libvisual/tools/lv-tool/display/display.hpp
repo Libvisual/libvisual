@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework cli tool
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
  * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
  *
@@ -22,78 +22,53 @@
  */
 
 
-#ifndef _LV_STANDALONE_DISPLAY_H
-#define _LV_STANDALONE_DISPLAY_H
+#ifndef _LV_TOOL_DISPLAY_HPP
+#define _LV_TOOL_DISPLAY_HPP
 
+#include <string>
 #include <libvisual/libvisual.h>
+#include <libvisual/lv_scoped_ptr.hpp>
 
-struct SADisplayDriver;
-struct SADisplay;
+class SADisplayDriver;
 
-typedef int (*SADisplayDriverCreateFunc)(SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
-		int width, int height, int resizable);
-typedef int (*SADisplayDriverCloseFunc)(SADisplay *display);
-typedef int (*SADisplayDriverLockFunc)(SADisplay *display);
-typedef int (*SADisplayDriverUnlockFunc)(SADisplay *display);
-typedef int (*SADisplayDriverFullScreenFunc)(SADisplay *display, int fullscreen, int autoscale);
-typedef int (*SADisplayDriverGetVideoFunc)(SADisplay *display, VisVideo *video);
-typedef int (*SADisplayDriverUpdateRectFunc)(SADisplay *display, VisRectangle *rect);
-typedef int (*SADisplayDriverDrainEventsFunc)(SADisplay *display, VisEventQueue *eventqueue);
+class SADisplay {
+public:
 
-struct SADisplayDriver {
-	VisObject			object;
+    explicit SADisplay (std::string const& driver_name);
 
-	SADisplayDriverCreateFunc	create;
-	SADisplayDriverCloseFunc	close;
-	SADisplayDriverLockFunc		lock;
-	SADisplayDriverUnlockFunc	unlock;
-	SADisplayDriverFullScreenFunc	fullscreen;
-	SADisplayDriverGetVideoFunc	getvideo;
-	SADisplayDriverUpdateRectFunc	updaterect;
-	SADisplayDriverDrainEventsFunc	drainevents;
+    ~SADisplay ();
+
+    bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+        unsigned int width, unsigned int height, bool resizable = true);
+
+    void close ();
+
+    void lock ();
+
+    void unlock ();
+
+    void update_all ();
+
+    void update_rect (LV::Rect const& rect);
+
+    VisVideo* get_video () const;
+
+    void set_fullscreen (bool fullscreen, bool autoscale);
+
+    void drain_events (VisEventQueue& eventqueue);
+
+    void set_fps_limit (unsigned int fps);
+
+    unsigned int get_fps_total () const;
+
+    float get_fps_average () const;
+
+    VisVideo *get_screen () const;
+
+private:
+
+    class Impl;
+    LV::ScopedPtr<Impl> m_impl;
 };
 
-struct SADisplay {
-	VisObject	 object;
-
-	SADisplayDriver	*driver;
-	VisVideo	*screen;
-
-	VisObject	*native;
-
-	int		 frames_drawn;
-	VisTimer	 timer;
-};
-
-
-#include "stdout_driver.hpp"
-#include "sdl_driver.hpp"
-#include "glx_driver.hpp"
-
-
-
-/* prototypes */
-SADisplay *display_new (SADisplayDriver *driver);
-
-int display_create (SADisplay *display, VisVideoDepth depth, VisVideoAttributeOptions *vidoptions,
-		int width, int height, int resizable);
-
-int display_close (SADisplay *display);
-
-VisVideo *display_get_video (SADisplay *display);
-
-int display_lock (SADisplay *display);
-int display_unlock (SADisplay *display);
-
-int display_update_all (SADisplay *display);
-int display_update_rectangle (SADisplay *display, VisRectangle *rect);
-
-int display_set_fullscreen (SADisplay *display, int fullscreen, int autoscale);
-
-int display_drain_events (SADisplay *display, VisEventQueue *eventqueue);
-
-int display_fps_limit (SADisplay *display, int fps);
-int display_fps_total (SADisplay *display);
-float display_fps_average (SADisplay *display);
-
-#endif /* _LV_STANDALONE_DISPLAY_H */
+#endif // _LV_TOOL_DISPLAY_HPP

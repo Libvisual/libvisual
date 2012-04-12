@@ -6,7 +6,7 @@
 #pragma pack(1)
 
 typedef struct {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 	uint16_t b:5, g:6, r:5;
 #else
 	uint16_t r:5, g:6, b:5;
@@ -32,10 +32,12 @@ VisAlphaBlendFunc visual_alpha_blend_32 = alpha_blend_32_c;
 
 void visual_alpha_blend_initialize (void)
 {
-	if (visual_cpu_get_mmx () > 0) {
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+	if (visual_cpu_has_mmx ()) {
 		visual_alpha_blend_8  = alpha_blend_8_mmx;
 		visual_alpha_blend_32 = alpha_blend_32_mmx;
 	}
+#endif
 }
 
 static void alpha_blend_8_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, visual_size_t size, uint8_t alpha)

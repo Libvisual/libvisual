@@ -123,20 +123,21 @@ void _plazma_cleanup(PlazmaPrivate *priv)
 void _plazma_change_effect(PlazmaPrivate *priv)
 {
 	int c;
+	VisColor *colors = visual_palette_get_colors (priv->colors);
 
 	switch (priv->effect)	{
 		case 0:
 			for (c=0 ; c<256; c++) {
-				priv->colors.colors[c].r = (sin(((double)c)/256*6*PI+(sin(445)))+1)*127;
-				priv->colors.colors[c].g = (sin(((double)c)/256*6*PI+(sin(561)))+1)*127;
-				priv->colors.colors[c].b = (cos(((double)c)/256*6*PI+(sin(278)))+1)*127;
+				colors[c].r = (sin(((double)c)/256*6*PI+(sin(445)))+1)*127;
+				colors[c].g = (sin(((double)c)/256*6*PI+(sin(561)))+1)*127;
+				colors[c].b = (cos(((double)c)/256*6*PI+(sin(278)))+1)*127;
 			}
 			break;
 		case 1:
 			for (c=0 ; c<256; c++) {
-				priv->colors.colors[c].r = (sin(((double)c)/256*6*PI+(sin(c/4)))+1)*127;
-				priv->colors.colors[c].g = (sin(((double)c)/256*6*PI+(sin(561)))+1)*127;
-				priv->colors.colors[c].b = (cos(((double)c)/256*6*PI+(sin(278)))+1)*127;
+				colors[c].r = (sin(((double)c)/256*6*PI+(sin(c/4)))+1)*127;
+				colors[c].g = (sin(((double)c)/256*6*PI+(sin(561)))+1)*127;
+				colors[c].b = (cos(((double)c)/256*6*PI+(sin(278)))+1)*127;
 			}
 			break;
 	}
@@ -153,7 +154,7 @@ static void do_plasma(PlazmaPrivate *priv, double x1, double y1,
 	for (y=0; y<priv->height; y++) {
 		unsigned char*tmp = priv->pixel + y * priv->video->pitch;
 		unsigned int t = y*priv->tablex, tmax=t+priv->width; 
-		for (t=t; t<tmax; t++, tmp++)
+		for (; t<tmax; t++, tmp++)
 			tmp[0]=t1[t]+t2[t];
 	}
 }

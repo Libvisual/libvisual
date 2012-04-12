@@ -6,7 +6,7 @@
 #ifdef NDEBUG
 
 #define visual_return_if_fail(expr)
-#define visual_return_val_if_fail(expr)
+#define visual_return_val_if_fail(expr, val)
 
 #else /* NDEBUG */
 

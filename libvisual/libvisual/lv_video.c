@@ -33,12 +33,13 @@
 #include "private/lv_video_convert.h"
 #include "private/lv_video_fill.h"
 #include "private/lv_video_scale.h"
+#include "private/lv_video_blit.h"
 #include "gettext.h"
 
 #pragma pack(1)
 
 typedef struct {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 	uint16_t b:5, g:6, r:5;
 #else
 	uint16_t r:5, g:6, b:5;
@@ -53,13 +54,6 @@ static int video_dtor (VisObject *object);
 /* Precomputation functions */
 static void precompute_row_table (VisVideo *video);
 
-/* Blit overlay functions */
-static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src);
-static int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src);
-static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src);
-static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src);
-static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src);
-
 /* Rotate functions */
 static int rotate_90 (VisVideo *dest, VisVideo *src);
 static int rotate_180 (VisVideo *dest, VisVideo *src);
@@ -73,8 +67,7 @@ static int video_dtor (VisObject *object)
 {
 	VisVideo *video = VISUAL_VIDEO (object);
 
-	/* FIXME: Enabling this gives a double free error */
-	/*visual_color_free (video->colorkey);*/
+	visual_color_free (video->colorkey);
 
 	visual_rectangle_free (video->rect);
 
@@ -285,7 +278,11 @@ int visual_video_set_palette (VisVideo *video, VisPalette *pal)
 {
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	video->pal = pal;
+	if (video->pal) {
+		visual_palette_free (video->pal);
+	}
+
+	video->pal = pal ? visual_palette_clone (pal) : NULL;
 
 	return VISUAL_OK;
 }
@@ -336,6 +333,7 @@ int visual_video_set_dimension (VisVideo *video, int width, int height)
 int visual_video_set_pitch (VisVideo *video, int pitch)
 {
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	visual_return_val_if_fail (pitch > 0, -VISUAL_ERROR_VIDEO_INVALID_PITCH);
 
 	if (video->bpp <= 0)
 		return -VISUAL_ERROR_VIDEO_INVALID_BPP;
@@ -627,10 +625,7 @@ int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect)
 	visual_color_copy (dest->colorkey, src->colorkey);
 	dest->density = src->density;
 
-	if (src->pal != NULL)
-		visual_object_ref (VISUAL_OBJECT (src->pal));
-
-	dest->pal = src->pal;
+	visual_video_set_palette (dest, src->pal);
 
 out:
 	if (vrect) visual_rectangle_free (vrect);
@@ -742,38 +737,31 @@ VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest,
 	visual_return_val_if_fail (dest != NULL, NULL);
 	visual_return_val_if_fail (src != NULL, NULL);
 
-	if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_NONE) {
-
-		return blit_overlay_noalpha;
-
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SRC) {
-
-		if (!alpha || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
+	switch (src->compositetype) {
+		case VISUAL_VIDEO_COMPOSITE_TYPE_NONE:
 			return blit_overlay_noalpha;
 
-		if (visual_cpu_get_mmx () != 0)
-			return _lv_blit_overlay_alphasrc_mmx;
-		else
-			return blit_overlay_alphasrc;
+		case VISUAL_VIDEO_COMPOSITE_TYPE_SRC:
+			if (!alpha || src->depth != VISUAL_VIDEO_DEPTH_32BIT)
+				return blit_overlay_noalpha;
+			else
+				return blit_overlay_alphasrc;
 
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY) {
+		case VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY:
+			return blit_overlay_colorkey;
 
-		return blit_overlay_colorkey;
+		case VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE:
+			return blit_overlay_surfacealpha;
 
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE) {
+		case VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY:
+			return blit_overlay_surfacealphacolorkey;
 
-		return blit_overlay_surfacealpha;
+		case VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM:
+			return src->compfunc;
 
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY) {
-
-		return blit_overlay_surfacealphacolorkey;
-
-	} else if (src->compositetype == VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM) {
-
-		return src->compfunc;
+		default:
+			return NULL;
 	}
-
-	return NULL;
 }
 
 int visual_video_blit_overlay_rectangle (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, int alpha)
@@ -786,7 +774,7 @@ int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *dr
 		                VisVideoCustomCompositeFunc compfunc)
 {
 	int error = VISUAL_OK;
-	VisVideo vsrc;
+	VisVideo *vsrc = NULL;
 	VisRectangle *ndrect = NULL;
 
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
@@ -794,22 +782,22 @@ int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *dr
 	visual_return_val_if_fail (drect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 	visual_return_val_if_fail (srect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	visual_video_init (&vsrc);
+	vsrc = visual_video_new ();
 
 	ndrect = visual_rectangle_clone (drect);
 	visual_rectangle_normalize_to (ndrect, srect);
 
-	if ((error = visual_video_region_sub_with_boundary (&vsrc, ndrect, src, srect)) != VISUAL_OK)
+	if ((error = visual_video_region_sub_with_boundary (vsrc, ndrect, src, srect)) != VISUAL_OK)
 	    goto out;
 
-	error = visual_video_blit_overlay_custom (dest, &vsrc,
+	error = visual_video_blit_overlay_custom (dest, vsrc,
 	                                          visual_rectangle_get_x (drect),
 	                                          visual_rectangle_get_y (drect),
 	                                          compfunc);
 
 out:
 	visual_rectangle_free (ndrect);
-	visual_object_unref (VISUAL_OBJECT (&vsrc));
+	visual_object_unref (VISUAL_OBJECT (vsrc));
 
 	return error;
 }
@@ -826,8 +814,8 @@ int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectang
 {
 	int error = VISUAL_OK;
 
-	VisVideo svid;
-	VisVideo ssrc;
+	VisVideo *svid = NULL;
+	VisVideo *ssrc = NULL;
 	VisRectangle *frect = NULL;
 	VisRectangle *sbound = NULL;
 
@@ -836,8 +824,8 @@ int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectang
 	visual_return_val_if_fail (drect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 	visual_return_val_if_fail (srect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	visual_video_init (&svid);
-	visual_video_init (&ssrc);
+	svid = visual_video_new ();
+	ssrc = visual_video_new ();
 
 	sbound = visual_video_get_boundary (dest);
 
@@ -847,31 +835,31 @@ int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectang
 		goto out;
 	}
 
-	visual_video_region_sub (&ssrc, src, srect);
+	visual_video_region_sub (ssrc, src, srect);
 
-	visual_video_set_attributes (&svid,
+	visual_video_set_attributes (svid,
 	                             visual_rectangle_get_width (drect),
 	                             visual_rectangle_get_height (drect),
 	                             src->bpp * visual_rectangle_get_width (drect),
 	                             src->depth);
 
-	visual_video_allocate_buffer (&svid);
+	visual_video_allocate_buffer (svid);
 
 	/* Scale the source to the dest rectangle it's size */
-	visual_video_scale (&svid, &ssrc, scale_method);
+	visual_video_scale (svid, ssrc, scale_method);
 
 	frect = visual_rectangle_clone (drect);
 	visual_rectangle_normalize (frect);
 
 	/* Blit the scaled source into the dest rectangle */
-	error = visual_video_blit_overlay_rectangle_custom (dest, drect, &svid, frect, compfunc);
+	error = visual_video_blit_overlay_rectangle_custom (dest, drect, svid, frect, compfunc);
 
 out:
 	if (frect)  visual_rectangle_free (frect);
 	if (sbound) visual_rectangle_free (sbound);
 
-	visual_object_unref (VISUAL_OBJECT (&svid));
-	visual_object_unref (VISUAL_OBJECT (&ssrc));
+	if (svid)   visual_object_unref (VISUAL_OBJECT (svid));
+	if (ssrc)   visual_object_unref (VISUAL_OBJECT (ssrc));
 
 	return error;
 }
@@ -888,9 +876,9 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
 
 	VisVideo *transform = NULL;
 	VisVideo *srcp = NULL;
-	VisVideo dregion;
-	VisVideo sregion;
-	VisVideo tempregion;
+	VisVideo *dregion = NULL;
+	VisVideo *sregion = NULL;
+	VisVideo *tempregion = NULL;
 	VisRectangle *redestrect = NULL;
 	VisRectangle *drect = NULL;
 	VisRectangle *srect = NULL;
@@ -930,9 +918,9 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
 	else
 		srcp = src;
 
-	visual_video_init (&dregion);
-	visual_video_init (&sregion);
-	visual_video_init (&tempregion);
+	dregion = visual_video_new ();
+	sregion = visual_video_new ();
+	tempregion = visual_video_new ();
 
 	/* Negative offset fixture */
 	if (x < 0) {
@@ -950,19 +938,19 @@ int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int 
 	/* Retrieve sub regions */
 	trect = visual_rectangle_new (x, y, visual_rectangle_get_width (srect), visual_rectangle_get_height (srect));
 
-	if ((error = visual_video_region_sub_with_boundary (&dregion, drect, dest, trect)) != VISUAL_OK)
+	if ((error = visual_video_region_sub_with_boundary (dregion, drect, dest, trect)) != VISUAL_OK)
 		goto out;
 
-	redestrect = visual_video_get_boundary (&dregion);
+	redestrect = visual_video_get_boundary (dregion);
 
-	if ((error = visual_video_region_sub (&tempregion, srcp, srect)) != VISUAL_OK)
+	if ((error = visual_video_region_sub (tempregion, srcp, srect)) != VISUAL_OK)
 		goto out;
 
-	if ((error = visual_video_region_sub_with_boundary (&sregion, drect, &tempregion, redestrect)) != VISUAL_OK)
+	if ((error = visual_video_region_sub_with_boundary (sregion, drect, tempregion, redestrect)) != VISUAL_OK)
 		goto out;
 
 	/* Call blitter */
-	compfunc (&dregion, &sregion);
+	compfunc (dregion, sregion);
 
 out:
 	if (redestrect) visual_rectangle_free (redestrect);
@@ -971,312 +959,14 @@ out:
 	if (trect)      visual_rectangle_free (trect);
 
 	/* If we had a transform buffer, it's time to get rid of it */
-	if (transform != NULL)
-		visual_object_unref (VISUAL_OBJECT (transform));
-
-	visual_object_unref (VISUAL_OBJECT (&dregion));
-	visual_object_unref (VISUAL_OBJECT (&sregion));
-	visual_object_unref (VISUAL_OBJECT (&tempregion));
+	if (transform)  visual_object_unref (VISUAL_OBJECT (transform));
+	if (dregion)    visual_object_unref (VISUAL_OBJECT (dregion));
+	if (sregion)    visual_object_unref (VISUAL_OBJECT (sregion));
+	if (tempregion)	visual_object_unref (VISUAL_OBJECT (tempregion));
 
 	return error;
 }
 
-static int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
-{
-	int y;
-	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
-
-	/* src and dest are completely equal, do one big mem copy instead of a per line mem copy.
-	 * Also check if the pitch is equal to it's width * bpp, this is because of subregions. */
-	if (visual_video_compare (dest, src) && (src->pitch == (src->width * src->bpp))) {
-		visual_mem_copy (destbuf, srcbuf, visual_video_get_size (dest));
-
-		return VISUAL_OK;
-	}
-
-	for (y = 0; y < src->height; y++) {
-		visual_mem_copy (destbuf, srcbuf, src->width * src->bpp);
-
-		destbuf += dest->pitch;
-		srcbuf += src->pitch;
-	}
-
-	return VISUAL_OK;
-}
-
-static int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
-{
-	int x, y;
-	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf  = visual_video_get_pixels (src);
-	uint8_t alpha;
-
-	for (y = 0; y < src->height; y++) {
-		for (x = 0; x < src->width; x++) {
-			alpha = *(srcbuf + 3);
-
-			*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-			*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-			*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
-
-			destbuf += dest->bpp;
-			srcbuf += src->bpp;
-		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
-	}
-
-	return VISUAL_OK;
-}
-
-static int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
-{
-	unsigned int i;
-	unsigned int pixel_count = dest->width * dest->height;
-
-	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-		uint8_t *destbuf = visual_video_get_pixels (dest);
-		uint8_t *srcbuf = visual_video_get_pixels (src);
-		VisPalette *pal = src->pal;
-
-		if (pal == NULL) {
-			blit_overlay_noalpha (dest, src);
-
-			return VISUAL_OK;
-		}
-
-		int index = visual_palette_find_color (pal, src->colorkey);
-
-		for (i = 0; i < pixel_count; i++) {
-			if (*srcbuf != index)
-				*destbuf = *srcbuf;
-
-			destbuf++;
-			srcbuf++;
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
-		uint16_t *destbuf = visual_video_get_pixels (dest);
-		uint16_t *srcbuf = visual_video_get_pixels (src);
-		uint16_t color = visual_color_to_uint16 (src->colorkey);
-
-		for (i = 0; i < pixel_count; i++) {
-			if (color != *srcbuf)
-				*destbuf = *srcbuf;
-
-			destbuf++;
-			srcbuf++;
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT) {
-		uint8_t *destbuf = visual_video_get_pixels (dest);
-		uint8_t *srcbuf = visual_video_get_pixels (src);
-		uint8_t r = src->colorkey->r;
-		uint8_t g = src->colorkey->g;
-		uint8_t b = src->colorkey->b;
-
-		for (i = 0; i < pixel_count; i++) {
-			if (b != srcbuf[0] && g != srcbuf[1] && r != srcbuf[2]) {
-				destbuf[0] = srcbuf[0];
-				destbuf[1] = srcbuf[1];
-				destbuf[2] = srcbuf[2];
-			}
-
-			destbuf += 3;
-			srcbuf  += 3;
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
-		uint32_t *destbuf = visual_video_get_pixels (dest);
-		uint32_t *srcbuf = visual_video_get_pixels (src);
-		uint32_t color = visual_color_to_uint32 (src->colorkey);
-
-		for (i = 0; i < pixel_count; i++) {
-			if (color != *srcbuf)
-				*destbuf = *srcbuf;
-
-			destbuf++;
-			srcbuf++;
-		}
-	}
-
-	return VISUAL_OK;
-}
-
-static int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
-{
-	int x, y;
-	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
-	uint8_t alpha = src->density;
-
-	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
-			}
-
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
-
-		for (y = 0; y < src->height; y++) {
-			rgb16_t *destr = (rgb16_t *) destbuf;
-			rgb16_t *srcr  = (rgb16_t *) srcbuf;
-
-			for (x = 0; x < src->width; x++) {
-				destr->r = ((alpha * (srcr->r - destr->r) >> 8) + destr->r);
-				destr->g = ((alpha * (srcr->g - destr->g) >> 8) + destr->g);
-				destr->b = ((alpha * (srcr->b - destr->b) >> 8) + destr->b);
-
-				destr++;
-				srcr++;
-			}
-
-			destbuf += dest->pitch;
-			srcbuf += src->pitch;
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT) {
-
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-				*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-				*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
-
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
-			}
-
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
-
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-				*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-				*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
-
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
-			}
-
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
-		}
-	}
-
-	return VISUAL_OK;
-}
-
-static int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
-{
-	int x, y;
-	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
-	uint8_t alpha = src->density;
-
-	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-		VisPalette *pal = src->pal;
-
-		if (pal == NULL) {
-			blit_overlay_noalpha (dest, src);
-
-			return VISUAL_OK;
-		}
-
-		int index = visual_palette_find_color (pal, src->colorkey);
-
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				if (*srcbuf != index)
-					*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
-			}
-
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_16BIT) {
-		uint16_t color = visual_color_to_uint16 (src->colorkey);
-
-		for (y = 0; y < src->height; y++) {
-			rgb16_t *destr = (rgb16_t *) destbuf;
-			rgb16_t *srcr  = (rgb16_t *) srcbuf;
-
-			for (x = 0; x < src->width; x++) {
-				if (color != *((uint16_t *) srcr)) {
-					destr->r = ((alpha * (srcr->r - destr->r) >> 8) + destr->r);
-					destr->g = ((alpha * (srcr->g - destr->g) >> 8) + destr->g);
-					destr->b = ((alpha * (srcr->b - destr->b) >> 8) + destr->b);
-				}
-
-				destr++;
-				srcr++;
-			}
-
-			destbuf += dest->pitch;
-			srcbuf += src->pitch;
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_24BIT) {
-		uint8_t r = src->colorkey->r;
-		uint8_t g = src->colorkey->g;
-		uint8_t b = src->colorkey->b;
-
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				if (b != *srcbuf && g != *(srcbuf + 1) && r != *(srcbuf + 2)) {
-					*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-					*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-					*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
-				}
-
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
-			}
-
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
-		}
-
-	} else if (dest->depth == VISUAL_VIDEO_DEPTH_32BIT) {
-		uint32_t color = visual_color_to_uint32 (src->colorkey);
-
-		for (y = 0; y < src->height; y++) {
-			for (x = 0; x < src->width; x++) {
-				if (color == *((uint32_t *) destbuf)) {
-					*destbuf = ((alpha * (*srcbuf - *destbuf) >> 8) + *destbuf);
-					*(destbuf + 1) = ((alpha * (*(srcbuf + 1) - *(destbuf + 1)) >> 8) + *(destbuf + 1));
-					*(destbuf + 2) = ((alpha * (*(srcbuf + 2) - *(destbuf + 2)) >> 8) + *(destbuf + 2));
-				}
-
-				destbuf += dest->bpp;
-				srcbuf += src->bpp;
-			}
-
-			destbuf += dest->pitch - (dest->width * dest->bpp);
-			srcbuf += src->pitch - (src->width * src->bpp);
-		}
-	}
-
-	return VISUAL_OK;
-}
 
 int visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t density)
 {
@@ -1331,24 +1021,24 @@ int visual_video_fill_alpha (VisVideo *video, uint8_t density)
 
 int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t density, VisRectangle *rect)
 {
-	VisVideo rvid;
+	VisVideo *rvid = NULL;
 	int errret = VISUAL_OK;
 
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT, -VISUAL_ERROR_VIDEO_INVALID_DEPTH);
 	visual_return_val_if_fail (rect != NULL, -VISUAL_ERROR_RECTANGLE_NULL);
 
-	visual_video_init (&rvid);
+	rvid = visual_video_new ();
 
-	errret = visual_video_region_sub (video, &rvid, rect);
+	errret = visual_video_region_sub (video, rvid, rect);
 
 	if (errret < 0)
 		goto out;
 
-	visual_video_fill_alpha (&rvid, density);
+	visual_video_fill_alpha (rvid, density);
 
 out:
-	visual_object_unref (VISUAL_OBJECT (&rvid));
+	visual_object_unref (VISUAL_OBJECT (rvid));
 
 	return errret;
 }
@@ -1393,7 +1083,7 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
 
 	VisRectangle *vrect  = NULL;
 	VisRectangle *dbound = NULL;
-	VisVideo svid;
+	VisVideo *svid = NULL;
 
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (color != NULL, -VISUAL_ERROR_COLOR_NULL);
@@ -1406,20 +1096,19 @@ int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRect
 		goto out;
 	}
 
-	visual_video_init (&svid);
+	svid = visual_video_new ();
 
 	dbound = visual_video_get_boundary (video);
 
-	visual_video_region_sub_with_boundary (&svid, dbound, video, rect);
+	visual_video_region_sub_with_boundary (svid, dbound, video, rect);
 
-	error = visual_video_fill_color (&svid, color);
-
-	visual_object_unref (VISUAL_OBJECT (&svid));
+	error = visual_video_fill_color (svid, color);
 
 out:
 
 	if (dbound) visual_rectangle_free (dbound);
 	if (vrect)  visual_rectangle_free (vrect);
+	if (svid)   visual_object_unref (VISUAL_OBJECT (svid));
 
 	return error;
 }
@@ -1853,7 +1542,7 @@ int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod metho
 			if (method == VISUAL_VIDEO_SCALE_NEAREST)
 				visual_video_scale_nearest_color32 (dest, src);
 			else if (method == VISUAL_VIDEO_SCALE_BILINEAR) {
-				if (visual_cpu_get_mmx ())
+				if (visual_cpu_has_mmx ())
 					_lv_scale_bilinear_32_mmx (dest, src);
 				else
 					visual_video_scale_bilinear_color32 (dest, src);
@@ -1887,23 +1576,23 @@ VisVideo *visual_video_scale_new (VisVideo *src, int width, int height, VisVideo
 
 int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method)
 {
-	int error;
-	VisVideo dtransform;
-
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
 	if (dest->depth != src->depth) {
-		visual_video_init (&dtransform);
+		int error;
+		VisVideo *dtransform = NULL;
 
-		visual_video_set_attributes (&dtransform, dest->width, dest->height, dest->width * dest->bpp, dest->depth);
-		visual_video_allocate_buffer (&dtransform);
+		dtransform = visual_video_new ();
 
-		visual_video_depth_transform (&dtransform, src);
+		visual_video_set_attributes (dtransform, dest->width, dest->height, dest->width * dest->bpp, dest->depth);
+		visual_video_allocate_buffer (dtransform);
 
-		error = visual_video_scale (dest, &dtransform, scale_method);
+		visual_video_depth_transform (dtransform, src);
 
-		visual_object_unref (VISUAL_OBJECT (&dtransform));
+		error = visual_video_scale (dest, dtransform, scale_method);
+
+		visual_object_unref (VISUAL_OBJECT (dtransform));
 
 		return error;
 	} else {

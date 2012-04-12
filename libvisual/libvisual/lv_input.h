@@ -42,7 +42,6 @@ VISUAL_BEGIN_DECLS
 /**
  * Type defination that should be used in plugins to set the plugin type for an input  plugin.
  */
-#define VISUAL_PLUGIN_TYPE_INPUT    "Libvisual:core:input"
 
 typedef struct _VisInput VisInput;
 typedef struct _VisInputPlugin VisInputPlugin;
@@ -149,15 +148,6 @@ const char *visual_input_get_next_by_name (const char *name);
  * @return The name of the previous plugin within the list.
  */
 const char *visual_input_get_prev_by_name (const char *name);
-
-/**
- * Checks if the input plugin is in the registry, based on it's name.
- *
- * @param name The name of the plugin that needs to be checked.
- *
- * @return TRUE if found, else FALSE.
- */
-int visual_input_valid_by_name (const char *name);
 
 /**
  * Creates a new VisInput from name, the plugin will be loaded but won't be realized.

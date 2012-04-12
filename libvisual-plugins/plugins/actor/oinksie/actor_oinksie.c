@@ -32,6 +32,10 @@
 
 #include "oinksie.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info(void);
+
 typedef struct {
 	OinksiePrivate			 priv1;
 	OinksiePrivate			 priv2;
@@ -53,8 +57,6 @@ static int composite_blend3_32_c (VisVideo *dest, VisVideo *src);
 static int composite_blend4_32_c (VisVideo *dest, VisVideo *src);
 static int composite_blend5_32_c (VisVideo *dest, VisVideo *src);
 
-const VisPluginInfo *get_plugin_info(int *count);
-
 static int act_oinksie_init (VisPluginData *plugin);
 static int act_oinksie_cleanup (VisPluginData *plugin);
 static int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height);
@@ -63,20 +65,18 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_oinksie_palette (VisPluginData *plugin);
 static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_oinksie_requisition,
 		.palette = act_oinksie_palette,
 		.render = act_oinksie_render,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "oinksie",
@@ -91,12 +91,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_oinksie_cleanup,
 		.events = act_oinksie_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_oinksie_init (VisPluginData *plugin)
@@ -342,11 +340,11 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 		priv->priv1.drawbuf = visual_video_get_pixels (video);
 		oinksie_render (&priv->priv1);
 	} else {
-		VisVideo vid1;
-		VisVideo vid2;
+		VisVideo *vid1;
+		VisVideo *vid2;
 
-		visual_video_init (&vid1);
-		visual_video_init (&vid2);
+		vid1 = visual_video_new ();
+		vid2 = visual_video_new ();
 
 		oinksie_sample (&priv->priv1);
 		oinksie_sample (&priv->priv2);
@@ -357,25 +355,25 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 		oinksie_render (&priv->priv1);
 		oinksie_render (&priv->priv2);
 
-		visual_video_set_depth (&vid1, VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_dimension (&vid1, video->width, video->height);
-		visual_video_set_buffer (&vid1, priv->buf1);
-		visual_video_set_palette (&vid1, oinksie_palette_get (&priv->priv1));
+		visual_video_set_depth (vid1, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_dimension (vid1, video->width, video->height);
+		visual_video_set_buffer (vid1, priv->buf1);
+		visual_video_set_palette (vid1, oinksie_palette_get (&priv->priv1));
 
-		visual_video_blit_overlay (video, &vid1, 0, 0, FALSE);
+		visual_video_blit_overlay (video, vid1, 0, 0, FALSE);
 
-		visual_video_set_depth (&vid2, VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_dimension (&vid2, video->width, video->height);
-		visual_video_set_buffer (&vid2, priv->buf2);
-		visual_video_set_palette (&vid2, oinksie_palette_get (&priv->priv2));
+		visual_video_set_depth (vid2, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_dimension (vid2, video->width, video->height);
+		visual_video_set_buffer (vid2, priv->buf2);
+		visual_video_set_palette (vid2, oinksie_palette_get (&priv->priv2));
 
-		visual_video_composite_set_type (&vid2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
-		visual_video_composite_set_function (&vid2, priv->currentcomp);
+		visual_video_composite_set_type (vid2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
+		visual_video_composite_set_function (vid2, priv->currentcomp);
 
-		visual_video_blit_overlay (video, &vid2, 0, 0, TRUE);
+		visual_video_blit_overlay (video, vid2, 0, 0, TRUE);
 
-		visual_object_unref (VISUAL_OBJECT (&vid1));
-		visual_object_unref (VISUAL_OBJECT (&vid2));
+		visual_object_unref (VISUAL_OBJECT (vid1));
+		visual_object_unref (VISUAL_OBJECT (vid2));
 	}
 
 	return 0;

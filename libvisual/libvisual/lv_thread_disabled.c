@@ -52,7 +52,7 @@ int visual_thread_free (VisThread *thread)
 {
     visual_log (VISUAL_LOG_ERROR, "Threading is not supported");
 
-    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED;
 }
 
 void *visual_thread_join (VisThread *thread)
@@ -83,26 +83,26 @@ int visual_mutex_free (VisMutex *mutex)
 {
     visual_log (VISUAL_LOG_ERROR, "Threading is not supported");
 
-    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED;
 }
 
 int visual_mutex_lock (VisMutex *mutex)
 {
     visual_log (VISUAL_LOG_ERROR, "Threading is not supported");
 
-    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED;
 }
 
 int visual_mutex_trylock (VisMutex *mutex)
 {
     visual_log (VISUAL_LOG_ERROR, "Threading is not supported");
 
-    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED;
 }
 
 int visual_mutex_unlock (VisMutex *mutex)
 {
     visual_log (VISUAL_LOG_ERROR, "Threading is not supported");
 
-    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED);
+    return -VISUAL_ERROR_THREAD_NOT_SUPPORTED;
 }

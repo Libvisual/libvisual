@@ -19,12 +19,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_STANDALONE_SDLDRIVER_H
-#define _LV_STANDALONE_SDLDRIVER_H
+#ifndef _LV_TOOL_SDLDRIVER_HPP
+#define _LV_TOOL_SDLDRIVER_HPP
 
-#include "display.hpp"
+#include "display_driver.hpp"
 
-/* prototypes */
-SADisplayDriver *sdl_driver_new ();
+SADisplayDriver *sdl_driver_new (SADisplay& display);
 
-#endif /* _LV_STANDALONE_SDLDRIVER_H */
+#endif // _LV_TOOL_SDLDRIVER_HPP

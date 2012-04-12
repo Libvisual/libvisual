@@ -31,7 +31,7 @@ namespace LV {
 
   PluginList const& transform_plugin_get_list ()
   {
-      return LV::PluginRegistry::instance()->get_transform_plugins ();
+      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_TRANSFORM);
   }
 
 } // LV namespace
@@ -46,6 +46,9 @@ int visual_transform_init (VisTransform *transform, const char *transformname);
 static int transform_dtor (VisObject *object)
 {
     VisTransform *transform = VISUAL_TRANSFORM (object);
+
+    if (transform->pal)
+        visual_palette_free (transform->pal);
 
     if (transform->plugin != NULL)
         visual_plugin_unload (transform->plugin);
@@ -80,14 +83,6 @@ const char *visual_transform_get_next_by_name (const char *name)
 const char *visual_transform_get_prev_by_name (const char *name)
 {
     return LV::plugin_get_prev_by_name (LV::transform_plugin_get_list (), name);
-}
-
-int visual_transform_valid_by_name (const char *name)
-{
-    if (LV::plugin_find (LV::transform_plugin_get_list (), name) == NULL)
-        return FALSE;
-    else
-        return TRUE;
 }
 
 VisTransform *visual_transform_new (const char *transformname)
@@ -134,7 +129,7 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
     if (transformname == NULL)
         return VISUAL_OK;
 
-    ref = LV::plugin_find (LV::transform_plugin_get_list (), transformname);
+    ref = LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_TRANSFORM, transformname);
     if (ref == NULL) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }
@@ -210,9 +205,9 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video)
     transform->video = video;
 
     if (video != NULL)
-        transform->pal = video->pal;
+        visual_transform_set_palette (transform, video->pal);
     else
-        transform->pal = NULL;
+        visual_transform_set_palette (transform, NULL);
 
     return VISUAL_OK;
 }
@@ -221,7 +216,10 @@ int visual_transform_set_palette (VisTransform *transform, VisPalette *palette)
 {
     visual_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
 
-    transform->pal = palette;
+    if (transform->pal)
+        visual_palette_free (transform->pal);
+
+    transform->pal = palette ? visual_palette_clone (palette) : 0;
 
     return VISUAL_OK;
 }

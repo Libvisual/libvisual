@@ -1,6 +1,7 @@
 #include "goomsl_hash.h"
 #include <string.h>
 #include <stdlib.h>
+#include <libvisual/libvisual.h>
 
 static GoomHashEntry *entry_new(const char *key, HashValue value) {
 
@@ -58,7 +59,7 @@ static HashValue *entry_get(GoomHashEntry *entry, const char *key) {
 		return &(entry->value);
 }
 
-GoomHash *goom_hash_new() {
+GoomHash *goom_hash_new(void) {
 	GoomHash *_this = (GoomHash*)malloc(sizeof(GoomHash));
 	_this->root = NULL;
   _this->number_of_puts = 0;

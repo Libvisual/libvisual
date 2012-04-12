@@ -44,22 +44,24 @@ VISUAL_BEGIN_DECLS
 	(((w) & 0xff000000) >> 24) )
 
 
-#if VISUAL_BIG_ENDIAN & VISUAL_LITTLE_ENDIAN
-#	error determining system endianess.
+#if ! ((VISUAL_BIG_ENDIAN) | (VISUAL_LITTLE_ENDIAN))
+#	error determining system endianess. (none set)
+#endif
+
+#if ((VISUAL_BIG_ENDIAN == 1) & (VISUAL_LITTLE_ENDIAN == 1))
+#       error determing system endianess (both set?)
 #endif
 
 /**
  * Arch. dependant definitions
  */
 
-#if VISUAL_BIG_ENDIAN
+#if VISUAL_BIG_ENDIAN == 1
 #	define VISUAL_ENDIAN_BEI16(x) (x)
 #	define VISUAL_ENDIAN_BEI32(x) (x)
 #	define VISUAL_ENDIAN_LEI16(x) VISUAL_ENDIAN_LE_BE_I16(x)
 #	define VISUAL_ENDIAN_LEI32(x) VISUAL_ENDIAN_LE_BE_I32(x)
-#endif
-
-#if VISUAL_LITTLE_ENDIAN
+#else
 #	define VISUAL_ENDIAN_LEI16(x) (x)
 #	define VISUAL_ENDIAN_LEI32(x) (x)
 #	define VISUAL_ENDIAN_BEI16(x) VISUAL_ENDIAN_LE_BE_I16(x)
@@ -70,7 +72,7 @@ VISUAL_BEGIN_DECLS
  * Macro to check if 'x' is aligned on 'y' bytes. This macro will fail
  * when supplied with '1'. However you wouldn't want to do that anyway.
  */
-#define VISUAL_ALIGNED(x, y)	(!(((unsigned long) x) & (y - 1)))
+#define VISUAL_ALIGNED(x, y)	(!(((intptr_t) x) & (y - 1)))
 
 VISUAL_END_DECLS
 

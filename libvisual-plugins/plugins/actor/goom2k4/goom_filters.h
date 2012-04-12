@@ -39,14 +39,14 @@ struct _ZOOM_FILTER_DATA
 #define SPEEDWAY_MODE 9
 
 void pointFilter (PluginInfo *goomInfo, Pixel * pix1, Color c,
-                  float t1, float t2, float t3, float t4, guint32 cycle);
+                  float t1, float t2, float t3, float t4, uint32_t cycle);
 
 /* filtre de zoom :
  * le contenu de pix1 est copie dans pix2.
  * zf : si non NULL, configure l'effet.
  * resx,resy : taille des buffers.
  */
-void zoomFilterFastRGB (PluginInfo *goomInfo, Pixel * pix1, Pixel * pix2, ZoomFilterData * zf, guint32 resx,
-                        guint32 resy, int switchIncr, float switchMult);
+void zoomFilterFastRGB (PluginInfo *goomInfo, Pixel * pix1, Pixel * pix2, ZoomFilterData * zf, uint32_t resx,
+                        uint32_t resy, int switchIncr, float switchMult);
 
 #endif

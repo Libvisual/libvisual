@@ -12,6 +12,7 @@
 #include "gettext.h"
 
 #include <vector>
+#include <map>
 #include <iterator>
 #include <algorithm>
 #include <functional>
@@ -26,16 +27,16 @@
 
 namespace LV {
 
-  namespace Internal {
+  namespace {
 
-    // Predicate closure that checks if a plugin entry is of a
-    // particular type
+    typedef std::map<PluginType, PluginList> PluginListMap;
+
     struct PluginHasType
         : public std::unary_function<bool, VisPluginRef const*>
     {
-        std::string type;
+        PluginType type;
 
-        PluginHasType (std::string const& type_)
+        PluginHasType (PluginType const& type_)
             : type (type_)
         {}
 
@@ -45,19 +46,21 @@ namespace LV {
         }
     };
 
-    void get_plugins_by_type (PluginList& output, PluginList const& input, std::string const& type)
+    struct PluginHasName
+        : public std::unary_function<bool, VisPluginRef const*>
     {
-        output.clear ();
+        std::string name;
 
-        copy_if (input.begin(),
-                 input.end (),
-                 std::back_insert_iterator<PluginList> (output),
-                 PluginHasType (type));
-    }
+        PluginHasName (std::string const& name_)
+            : name (name_)
+        {}
 
-  } // Internal namespace
-
-  using namespace Internal;
+        bool operator() (VisPluginRef const* ref)
+        {
+            return (name == ref->info->plugname);
+        }
+    };
+  }
 
   class PluginRegistry::Impl
   {
@@ -65,14 +68,13 @@ namespace LV {
 
       std::vector<std::string> plugin_paths;
 
-      PluginList plugins;
-      PluginList actor_plugins;
-      PluginList morph_plugins;
-      PluginList input_plugins;
-      PluginList transform_plugins;
+      PluginListMap plugin_list_map;
 
-      void fetch_plugin_list ();
-      void add_plugins_from_dir (PluginList& list, std::string const& dir);
+      Impl ();
+
+      ~Impl ();
+
+      void get_plugins_from_dir (PluginList& list, std::string const& dir);
   };
 
   PluginRegistry::PluginRegistry ()
@@ -99,8 +101,6 @@ namespace LV {
           add_path (home_dir + "/.libvisual/transform");
       }
 #endif
-
-      m_impl->fetch_plugin_list ();
   }
 
   PluginRegistry::~PluginRegistry ()
@@ -113,62 +113,70 @@ namespace LV {
       visual_log (VISUAL_LOG_INFO, "Adding to plugin search path: %s", path.c_str());
 
       m_impl->plugin_paths.push_back (path);
-  }
 
-  PluginList const&
-  PluginRegistry::get_plugins () const
-  {
-      return m_impl->plugins;
-  }
+      PluginList plugins;
+      m_impl->get_plugins_from_dir (plugins, path);
 
-  PluginList const&
-  PluginRegistry::get_actor_plugins () const
-  {
-      return m_impl->actor_plugins;
-  }
-
-  PluginList const&
-  PluginRegistry::get_input_plugins () const
-  {
-      return m_impl->input_plugins;
-  }
-
-  PluginList const&
-  PluginRegistry::get_morph_plugins () const
-  {
-      return m_impl->morph_plugins;
-  }
-
-  PluginList const&
-  PluginRegistry::get_transform_plugins () const
-  {
-      return m_impl->transform_plugins;
-  }
-
-  void PluginRegistry::get_plugins_by_type (PluginList& list, std::string const& type)
-  {
-      Internal::get_plugins_by_type (list, m_impl->plugins, type);
-  }
-
-  void PluginRegistry::Impl::fetch_plugin_list ()
-  {
-      typedef std::vector<std::string>::const_iterator PathIter;
-
-      for (PathIter path = plugin_paths.begin (), path_end = plugin_paths.end ();
-           path != path_end;
-           ++path)
+      for (PluginList::iterator plugin = plugins.begin (), plugin_end = plugins.end ();
+           plugin != plugin_end;
+           ++plugin)
       {
-          add_plugins_from_dir (plugins, *path);
+          PluginList& list = m_impl->plugin_list_map[(*plugin)->info->type];
+          list.push_back (*plugin);
       }
-
-      Internal::get_plugins_by_type (actor_plugins, plugins, VISUAL_PLUGIN_TYPE_ACTOR);
-      Internal::get_plugins_by_type (input_plugins, plugins, VISUAL_PLUGIN_TYPE_INPUT);
-      Internal::get_plugins_by_type (morph_plugins, plugins, VISUAL_PLUGIN_TYPE_MORPH);
-      Internal::get_plugins_by_type (transform_plugins, plugins, VISUAL_PLUGIN_TYPE_TRANSFORM);
   }
 
-  void PluginRegistry::Impl::add_plugins_from_dir (PluginList& list, std::string const& dir)
+  VisPluginRef* PluginRegistry::find_plugin (PluginType type, std::string const& name)
   {
+      PluginList const& list = get_plugins_by_type (type);
+
+      PluginList::const_iterator iter =
+          std::find_if (list.begin (),
+                        list.end (),
+                        PluginHasName (name));
+
+      return iter != list.end () ? *iter : 0;
+  }
+
+  bool PluginRegistry::has_plugin (PluginType type, std::string const& name)
+  {
+      return find_plugin (type, name) != 0;
+  }
+
+  PluginList const& PluginRegistry::get_plugins_by_type (PluginType type) const
+  {
+      static PluginList empty;
+
+      PluginListMap::const_iterator match = m_impl->plugin_list_map.find (type);
+      if (match == m_impl->plugin_list_map.end ())
+          return empty;
+
+      return match->second;
+  }
+
+  PluginRegistry::Impl::Impl ()
+  {
+      // empty
+  }
+
+  void delete_plugin_ref (VisPluginRef* ref)
+  {
+      visual_object_unref (VISUAL_OBJECT (ref));
+  }
+
+  PluginRegistry::Impl::~Impl ()
+  {
+      for (PluginListMap::const_iterator list = plugin_list_map.begin (), list_end = plugin_list_map.end ();
+           list != list_end;
+           ++list) {
+          std::for_each (list->second.begin (), list->second.end (), delete_plugin_ref);
+      }
+  }
+
+  void PluginRegistry::Impl::get_plugins_from_dir (PluginList& list, std::string const& dir)
+  {
+      list.clear ();
+
 #if defined(VISUAL_OS_WIN32)
       std::string pattern = dir + "/*";
 
@@ -183,20 +191,14 @@ namespace LV {
       bool finished = false;
 
       while (!finished) {
-          VisPluginRef **ref = NULL;
-
           if (!(file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
               std::string full_path = dir + "/" + file_data.cFileName;
 
               if (str_has_suffix (full_path, ".dll")) {
-                  int count = 0;
-                  ref = visual_plugin_get_references (full_path.c_str (), &count);
+                  VisPluginRef* ref = visual_plugin_get_references (full_path.c_str (), &count);
 
                   if (ref) {
-                      for (int i = 0; i < count; i++)
-                          list.push_back (ref[i]);
-
-                      visual_mem_free (ref);
+                      list.push_back (ref);
                   }
               }
           }
@@ -210,10 +212,14 @@ namespace LV {
 
       FindClose (hList);
 #else
+      // NOTE: This typecast is needed for glibc versions that define
+      // alphasort() as taking const void * arguments
+
+      typedef int (*ScandirCompareFunc) (const struct dirent **, const struct dirent **);
 
       struct dirent **namelist;
 
-      int n = scandir (dir.c_str (), &namelist, NULL, alphasort);
+      int n = scandir (dir.c_str (), &namelist, NULL, ScandirCompareFunc (alphasort));
       if (n < 0)
           return;
 
@@ -225,14 +231,10 @@ namespace LV {
           std::string full_path = dir + "/" + namelist[i]->d_name;
 
           if (str_has_suffix (full_path, ".so")) {
-              int count = 0;
-              VisPluginRef** ref = visual_plugin_get_references (full_path.c_str (), &cnt);
+              VisPluginRef* ref = visual_plugin_get_reference (full_path.c_str ());
 
               if (ref) {
-                  for (int j = 0; j < cnt; j++)
-                      list.push_back (ref[j]);
-
-                  visual_mem_free (ref);
+                  list.push_back (ref);
               }
           }
 

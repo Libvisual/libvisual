@@ -114,7 +114,7 @@ struct _VisBeatPeak {
 struct _VisBeatAdv {
     VisObject   obj;
 
-    VisTime     lastDetect;
+    VisTime    *lastDetect;
     int32_t cfg_sensitivity;      // How sensitive the algorithm is to loudness
     int32_t cfg_max_detect;     // Max bpm to throttle input
     int32_t cfg_thick_on_beats; // Should we create thick lines?
@@ -176,7 +176,6 @@ struct _VisBeat {
     int stickyConfidenceCount;  // Used to decided when to go sticky
     uint8_t doResyncBpm;
     int new_song;
-    VisTimer timer;
     unsigned char logtab[256];
 };
 

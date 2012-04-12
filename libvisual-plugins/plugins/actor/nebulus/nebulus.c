@@ -35,11 +35,11 @@
 #include "nebulus.h"
 #include "config.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 typedef struct {
-
-	VisTime rendertime;
-
 	VisBuffer pcmbuf;
 } NebulusPrivate;
 
@@ -66,12 +66,12 @@ effect my_effect_old[EFFECT_NUMBER];
 
 GLint maxtexsize;
 
-int lv_nebulus_init (VisPluginData *plugin);
-int lv_nebulus_cleanup (VisPluginData *plugin);
-int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height);
-int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *lv_nebulus_palette (VisPluginData *plugin);
-int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int lv_nebulus_init (VisPluginData *plugin);
+static int lv_nebulus_cleanup (VisPluginData *plugin);
+static int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *lv_nebulus_palette (VisPluginData *plugin);
+static int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
 static int nebulus_random_effect ();
@@ -79,25 +79,23 @@ static int nebulus_detect_beat (int loudness);
 static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio);
 static int nebulus_draw (NebulusPrivate *priv, VisVideo *video);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 /* Main plugin stuff */
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_nebulus_requisition,
 		.palette = lv_nebulus_palette,
 		.render = lv_nebulus_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "nebulus",
-		.name = PACKAGE_NAME,
+		.name = "Nebulus",
 		.author = N_("Original by: Pascal Brochart <pbrochart@tuxfamily.org> and many others, Port and maintaince by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = VERSION,
+		.version = "1.0",
 		.about = N_("Libvisual nebulus plugin"),
 		.help = N_("This plugin shows multiple visual effect using openGL"),
 		.license = VISUAL_PLUGIN_LICENSE_GPL,
@@ -106,22 +104,20 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_nebulus_cleanup,
 		.events = lv_nebulus_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
-
-	return info;
+	return &info;
 }
 
-int lv_nebulus_init (VisPluginData *plugin)
+static int lv_nebulus_init (VisPluginData *plugin)
 {
 	NebulusPrivate *priv;
 
@@ -129,7 +125,7 @@ int lv_nebulus_init (VisPluginData *plugin)
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_mem_new0 (NebulusPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
@@ -157,11 +153,11 @@ int lv_nebulus_init (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_nebulus_cleanup (VisPluginData *plugin)
+static int lv_nebulus_cleanup (VisPluginData *plugin)
 {
 	NebulusPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
 
 	if (!face_first)
 		glDeleteLists(facedl, 1);
@@ -193,7 +189,7 @@ int lv_nebulus_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height)
+static int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -212,14 +208,14 @@ int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-VisPalette *lv_nebulus_palette (VisPluginData *plugin)
+static VisPalette *lv_nebulus_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
 static int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	visual_log_return_val_if_fail (video != NULL, -1);
+	visual_return_val_if_fail (video != NULL, -1);
 
 	visual_video_set_dimension (video, width, height);
 
@@ -231,7 +227,7 @@ static int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int wid
 	return 0;
 }
 
-int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
+static int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -249,13 +245,13 @@ int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	NebulusPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_log_return_val_if_fail (plugin != NULL, -1);
-	visual_log_return_val_if_fail (video != NULL, -1);
-	visual_log_return_val_if_fail (audio != NULL, -1);
+	visual_return_val_if_fail (plugin != NULL, -1);
+	visual_return_val_if_fail (video != NULL, -1);
+	visual_return_val_if_fail (audio != NULL, -1);
 
 	nebulus_sound (priv, audio);
 	nebulus_draw (priv, video);

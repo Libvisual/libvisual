@@ -45,11 +45,6 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
 
 /**
- * Type defination that should be used in plugins to set the plugin type for an actor plugin.
- */
-#define VISUAL_PLUGIN_TYPE_ACTOR	"Libvisual:core:actor"
-
-/**
  * Name defination of the standard VisActorPluginEnviron element for an actor plugin.
  */
 #define VISUAL_ACTOR_PLUGIN_ENVIRON	"Libvisual:core:actor:environ"
@@ -377,27 +372,6 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video);
 int visual_actor_run (VisActor *actor, VisAudio *audio);
 
 VISUAL_END_DECLS
-
-#ifdef __cplusplus
-
-#include <string>
-
-namespace LV {
-
-  VisPluginRef* actor_plugin_find (std::string const& name);
-
-  /**
-   * Checks if the actor plugin is in the registry, based on it's name.
-   *
-   * @param name The name of the plugin that needs to be checked.
-   *
-   * @return TRUE if found, else FALSE.
-   */
-  bool actor_valid_by_name (std::string const& name);
-
-} // LV namespace
-
-#endif
 
 /**
  * @}

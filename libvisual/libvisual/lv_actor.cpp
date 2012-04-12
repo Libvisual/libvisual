@@ -37,13 +37,13 @@ namespace {
   inline LV::PluginList const&
   get_actor_plugin_list ()
   {
-      return LV::PluginRegistry::instance()->get_actor_plugins ();
+      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
   }
 
   inline VisPluginRef*
   find_actor_plugin (std::string const& name)
   {
-      return LV::plugin_find (get_actor_plugin_list (), name);
+      return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_ACTOR, name);
   }
 
 } // LV namespace
@@ -70,6 +70,9 @@ static int actor_dtor (VisObject *object)
 
         visual_plugin_unload (actor->plugin);
     }
+
+    if (actor->ditherpal != NULL)
+        visual_palette_free (actor->ditherpal);
 
     if (actor->transform != NULL)
         visual_object_unref (VISUAL_OBJECT (actor->transform));
@@ -101,7 +104,7 @@ VisPluginData *visual_actor_get_plugin (VisActor *actor)
 
 const char *visual_actor_get_next_by_name_gl (const char *name)
 {
-    const char *next;
+    const char *next = NULL;
     bool have_gl;
 
     do {
@@ -344,8 +347,7 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
     }
 
     if (actor->ditherpal != NULL) {
-        visual_object_unref (VISUAL_OBJECT (actor->ditherpal));
-
+        visual_palette_free (actor->ditherpal);
         actor->ditherpal = NULL;
     }
 
@@ -550,10 +552,8 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
      */
     visual_plugin_events_pump (actor->plugin);
 
-    visual_video_set_palette (video, visual_actor_get_palette (actor));
-
     /* Set the palette to the target video */
-    video->pal = visual_actor_get_palette (actor);
+    visual_video_set_palette (video, visual_actor_get_palette (actor));
 
     /* Yeah some transformation magic is going on here when needed */
     if (transform != NULL && (transform->depth != video->depth)) {

@@ -118,6 +118,8 @@ VisPalette *visual_palette_new (unsigned int ncolors);
 
 void visual_palette_free (VisPalette *palette);
 
+VisPalette *visual_palette_clone (VisPalette *self);
+
 void visual_palette_copy (VisPalette *dest, VisPalette *src);
 
 VisColor *visual_palette_get_colors (VisPalette *pal);

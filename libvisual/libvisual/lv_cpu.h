@@ -74,19 +74,6 @@ struct _VisCPU {
 	int		hasVFPv3;       /**<The CPU has the ARM VFPv3 feature. */
 	int		hasNeon;        /**<The CPU has the ARM Neon feature. */
 	int		hasLDREX_STREX; /**<The CPU has ARM LDREX_STREX feature. */
-
-	int		enabledTSC;		/**< The tsc feature is enabled. */
-	int		enabledMMX;		/**< The mmx feature is enabled. */
-	int		enabledMMX2;		/**< The tsc feature is enabled. */
-	int		enabledSSE;		/**< The sse feature is enabled. */
-	int		enabledSSE2;		/**< The sse2 feature is enabled. */
-	int		enabled3DNow;		/**< The 3dnow feature is enabled. */
-	int		enabled3DNowExt;	/**< The 3dnowext feature is enabled. */
-	int		enabledAltiVec;		/**< The altivec feature is enabled. */
-	int		enabledVFPv3;       /**< The ARM hardware floats feature is enabled. */
-	int		enabledARMv7;	    /**< The ARM v7 feature is enabled. */
-	int		enabledNeon;        /**< The ARM Neon feature is enabled. */
-	int		enabledLDREX_STREX; /**< The ARM LDREX_STREX feature is enabled. */
 };
 
 
@@ -107,91 +94,91 @@ void visual_cpu_initialize (void);
  *
  * @return The VisCPU caps structure.
  */
-VisCPU *visual_cpu_get_caps (void);
+const VisCPU *visual_cpu_get_caps (void);
 
 /**
  * Function to retrieve if the tsc CPU feature is enabled.
  *
  * @return Whether tsc is enabled or not.
  */
-int visual_cpu_get_tsc (void);
+int visual_cpu_has_tsc (void);
 
 /**
  * Function to retrieve if the MMX CPU feature is enabled.
  *
  * @return Whether MMX is enabled or not.
  */
-int visual_cpu_get_mmx (void);
+int visual_cpu_has_mmx (void);
 
 /**
  * Function to retrieve if the MMX2 CPU feature is enabled.
  *
  * @return Whether MMX2 is enabled or not.
  */
-int visual_cpu_get_mmx2 (void);
+int visual_cpu_has_mmx2 (void);
 
 /**
  * Function to retrieve if the SSE CPU feature is enabled.
  *
  * @return Whether SSE is enabled or not.
  */
-int visual_cpu_get_sse (void);
+int visual_cpu_has_sse (void);
 
 /**
  * Function to retrieve if the SSE2 CPU feature is enabled.
  *
  * @return Whether SSE2 is enabled or not.
  */
-int visual_cpu_get_sse2 (void);
+int visual_cpu_has_sse2 (void);
 
 /**
  * Function to retrieve if the 3dnow CPU feature is enabled.
  *
  * @return Whether 3dnow is enabled or not.
  */
-int visual_cpu_get_3dnow (void);
+int visual_cpu_has_3dnow (void);
 
 /**
  * Function to retrieve if the 3dnowext CPU feature is enabled.
  *
  * @return Whether 3dnowext is enabled or not.
  */
-int visual_cpu_get_3dnow2 (void);
+int visual_cpu_has_3dnow2 (void);
 
 /**
  * Function to retrieve if the altivec CPU feature is enabled.
  *
  * @return Whether altivec is enabled or not.
  */
-int visual_cpu_get_altivec (void);
+int visual_cpu_has_altivec (void);
 
 /**
  * Function to retrieve if the ARM v7 feature is enabled.
  *
  * @return Whether altivec is enabled or not.
  */
-int visual_cpu_get_armv7 (void);
+int visual_cpu_has_armv7 (void);
 
 /**
  * Function to retrieve if the ARM VFPv3 feature is enabled.
  *
  * @return Whether altivec is enabled or not.
  */
-int visual_cpu_get_vfpv3 (void);
+int visual_cpu_has_vfpv3 (void);
 
 /**
  * Function to retrieve if the ARM Neon feature is enabled.
  *
  * @return Whether altivec is enabled or not.
  */
-int visual_cpu_get_neon (void);
+int visual_cpu_has_neon (void);
 
 /**
  * Function to retrieve if the ARM LDREX_STREX feature is enabled.
  *
  * @return Whether altivec is enabled or not.
  */
-int visual_cpu_get_ldrex_strex (void);
+int visual_cpu_has_ldrex_strex (void);
 
 VISUAL_END_DECLS
 

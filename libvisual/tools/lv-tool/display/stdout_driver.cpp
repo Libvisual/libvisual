@@ -21,151 +21,103 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-
+#include "stdout_driver.hpp"
 #include "display.hpp"
-
+#include "display_driver.hpp"
+#include <libvisual/libvisual.h>
+#include <vector>
 #include <unistd.h>
 
-/* MinGW unistd.h doesn't have *_FILENO or SEEK_* defined */
+// MinGW unistd.h doesn't have *_FILENO or SEEK_* defined
 #ifdef VISUAL_WITH_MINGW
 #  define STDOUT_FILENO 1
 #endif
 
+namespace {
 
-#define STDOUT_NATIVE(obj)  (VISUAL_CHECK_CAST ((obj), StdoutNative))
+  class StdoutDriver
+      : public SADisplayDriver
+  {
+  public:
 
-/** our main driver object */
-typedef struct _StdoutNative StdoutNative;
+      StdoutDriver (SADisplay& display)
+          : m_display (display)
+      {}
 
-/** private descriptor */
-struct _StdoutNative
+      virtual ~StdoutDriver ()
+      {
+          close ();
+      }
+
+      virtual bool create (VisVideoDepth depth,
+                           VisVideoAttributeOptions const* vidoptions,
+                           unsigned int width,
+                           unsigned int height,
+                           bool resizable)
+      {
+          unsigned int pixel_size = visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8;
+
+          m_area.resize (width * height * pixel_size);
+          visual_mem_set (&m_area[0], 0, m_area.size ());
+
+          // save dimensions
+          m_width  = width;
+          m_height = height;
+          m_depth  = depth;
+
+          return true;
+      }
+
+      virtual void close ()
+      {
+          // nothing to do
+      }
+
+      virtual void lock ()
+      {
+          // nothing to do
+      }
+
+      virtual void unlock ()
+      {
+          // nothing to do
+      }
+
+      virtual void set_fullscreen (bool fullscreen, bool autoscale)
+      {
+          // nothing to do
+      }
+
+      virtual void get_video (VisVideo* screen)
+      {
+          visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
+          visual_video_set_dimension (screen, m_width, m_height);
+          visual_video_set_buffer (screen, &m_area[0]);
+      }
+
+      virtual void update_rect (LV::Rect const& rect)
+      {
+          write(STDOUT_FILENO, &m_area[0], m_area.size());
+      }
+
+      virtual void drain_events (VisEventQueue& eventqueue)
+      {
+          // nothing to do
+      }
+
+  private:
+
+      SADisplay&           m_display;
+      unsigned int         m_width;
+      unsigned int         m_height;
+      VisVideoDepth        m_depth;
+      std::vector<uint8_t> m_area;
+  };
+
+} // anonymous namespace
+
+// creator
+SADisplayDriver* stdout_driver_new (SADisplay& display)
 {
-	VisObject       object;
-    int             width,height;
-    VisVideoDepth   depth;
-	void *          area;
-};
-
-/** create display */
-static int native_create(SADisplay *display,
-                         VisVideoDepth depth,
-                         VisVideoAttributeOptions *vidoptions,
-                         int width, int height, int resizable)
-{
-	StdoutNative *native;
-
-    /* allocate new private descriptor */
-	if(!(native = STDOUT_NATIVE (display->native)))
-    {
-		native = visual_mem_new0(StdoutNative, 1);
-		visual_object_initialize(VISUAL_OBJECT (native), TRUE, NULL);
-	}
-
-    /* create buffer */
-    if(native->area != NULL)
-        visual_mem_free(native->area);
-    native->area = visual_mem_malloc0(width * height * (visual_video_depth_value_from_enum(VISUAL_VIDEO_DEPTH_24BIT) / 8));
-
-    /* save dimensions */
-    native->width = width;
-    native->height = height;
-    native->depth = depth;
-
-	display->native = VISUAL_OBJECT(native);
-
-	return 0;
+    return new StdoutDriver (display);
 }
-
-/** close display */
-static int native_close (SADisplay *display)
-{
-	StdoutNative *native = STDOUT_NATIVE (display->native);
-
-	if(!native)
-		return 0;
-
-	visual_mem_free (native->area);
-	visual_object_unref (VISUAL_OBJECT(native));
-	display->native = NULL;
-
-	return 0;
-}
-
-/** lock display for drawing */
-static int native_lock (SADisplay *display)
-{
-	return 0;
-}
-
-/** unlock display after drawing */
-static int native_unlock (SADisplay *display)
-{
-	return 0;
-}
-
-/** switch to/from fullscreen */
-static int native_fullscreen (SADisplay *display, int fullscreen, int autoscale)
-{
-	return 0;
-}
-
-/** fill VisVideo descriptor */
-static int native_getvideo (SADisplay *display, VisVideo *screen)
-{
-	StdoutNative *native = STDOUT_NATIVE (display->native);
-
-	visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
-	visual_video_set_dimension (screen, native->width, native->height);
-	visual_video_set_buffer(screen, native->area);
-
-	return 0;
-}
-
-/** update rectangular portion of display */
-static int native_updaterect(SADisplay *display, VisRectangle *rect)
-{
-	StdoutNative *native = STDOUT_NATIVE(display->native);
-
-    /* write data */
-	write(STDOUT_FILENO,
-          native->area,
-          native->width *
-            native->height *
-            (visual_video_depth_value_from_enum(VISUAL_VIDEO_DEPTH_24BIT) / 8));
-	return 0;
-}
-
-static int native_drainevents (SADisplay *display, VisEventQueue *eventqueue)
-{
-	return 0;
-}
-
-
-
-
-/** creator */
-SADisplayDriver *stdout_driver_new ()
-{
-	SADisplayDriver *driver;
-
-        /* allocate new driver object */
-	driver = visual_mem_new0 (SADisplayDriver, 1);
-
-        /* initialize */
-	visual_object_initialize (VISUAL_OBJECT (driver), TRUE, NULL);
-
-        /* register methods */
-	driver->create = native_create;
-	driver->close = native_close;
-	driver->lock = native_lock;
-	driver->unlock = native_unlock;
-	driver->fullscreen = native_fullscreen;
-	driver->getvideo = native_getvideo;
-	driver->updaterect = native_updaterect;
-	driver->drainevents = native_drainevents;
-
-	return driver;
-}
-
-
-

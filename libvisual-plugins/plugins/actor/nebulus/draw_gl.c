@@ -254,7 +254,7 @@ recalc_perspective(void)
 }
 
 
-void
+static void
 init_effect(void)
 {
   viewperspective();
@@ -329,12 +329,12 @@ void
 init_gl(void)
 {
   /* Initialize bitmaps */
-  visual_bitmap_load (&child_image, BITMAP_DIR "child_texture.bmp");
-  visual_bitmap_load (&energy_image, BITMAP_DIR "energy_texture.bmp");
-  visual_bitmap_load (&tentacle_image, BITMAP_DIR "tentacle_texture.bmp");
-  visual_bitmap_load (&tunnel_image, BITMAP_DIR "tunnel_texture.bmp");
-  visual_bitmap_load (&twist_image, BITMAP_DIR "twist_texture.bmp");
-  visual_bitmap_load (&background_image, BITMAP_DIR "background_texture.bmp");
+  visual_bitmap_load (&child_image, BITMAP_DIR "/child_texture.bmp");
+  visual_bitmap_load (&energy_image, BITMAP_DIR "/energy_texture.bmp");
+  visual_bitmap_load (&tentacle_image, BITMAP_DIR "/tentacle_texture.bmp");
+  visual_bitmap_load (&tunnel_image, BITMAP_DIR "/tunnel_texture.bmp");
+  visual_bitmap_load (&twist_image, BITMAP_DIR "/twist_texture.bmp");
+  visual_bitmap_load (&background_image, BITMAP_DIR "/background_texture.bmp");
 
   glViewport(0, 0, point_general->WIDTH, point_general->HEIGHT);
   glEnable(GL_TEXTURE_2D);

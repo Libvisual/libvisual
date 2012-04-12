@@ -88,6 +88,8 @@ static int audio_samplepool_channel_dtor (VisObject *object)
 {
 	VisAudioSamplePoolChannel *channel = VISUAL_AUDIO_SAMPLEPOOL_CHANNEL (object);
 
+	visual_time_free (channel->samples_timeout);
+
 	if (channel->samples != NULL)
 		visual_object_unref (VISUAL_OBJECT (channel->samples));
 
@@ -103,6 +105,8 @@ static int audio_samplepool_channel_dtor (VisObject *object)
 static int audio_sample_dtor (VisObject *object)
 {
 	VisAudioSample *sample = VISUAL_AUDIO_SAMPLE (object);
+
+	visual_time_free (sample->timestamp);
 
 	if (sample->buffer != NULL)
 		visual_object_unref (VISUAL_OBJECT (sample->buffer));
@@ -713,7 +717,7 @@ int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBu
 {
 	VisAudioSample *sample;
 	VisBuffer *pcmbuf;
-	VisTime timestamp;
+	VisTime *timestamp;
 
 	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
@@ -721,12 +725,14 @@ int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBu
 	pcmbuf = visual_buffer_new ();
 	visual_buffer_clone (pcmbuf, buffer);
 
-	visual_time_get (&timestamp);
+	timestamp = visual_time_new_now ();
 
 	visual_buffer_set_destroyer (pcmbuf, visual_buffer_destroyer_free);
 
-	sample = visual_audio_sample_new (pcmbuf, &timestamp, format, rate);
+	sample = visual_audio_sample_new (pcmbuf, timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, channelid);
+
+	visual_time_free (timestamp);
 
 	return VISUAL_OK;
 }
@@ -758,7 +764,8 @@ int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, co
 	/* Reset the VisAudioSamplePoolChannel data */
 	channel->samples = visual_ringbuffer_new ();
 
-	visual_time_set (&channel->samples_timeout, 1, 0); /* FIXME not safe against time skews */
+	channel->samples_timeout = visual_time_new_with_values (1, 0); /* FIXME not safe against time skews */
+
 	channel->channelid = visual_strdup (channelid);
 	channel->factor = 1.0;
 
@@ -784,28 +791,34 @@ int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channe
 	VisListEntry *le = NULL;
 	VisRingBufferEntry *rentry;
 	VisAudioSample *sample;
+	VisTime *diff;
+	VisTime *curtime;
 
 	visual_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
+
+	curtime = visual_time_new ();
+	diff = visual_time_new ();
 
 	list = visual_ringbuffer_get_list (channel->samples);
 
 	while ((rentry = visual_list_next (list, &le)) != NULL) {
-		VisTime diff;
-		VisTime curtime;
 
 		sample = visual_ringbuffer_entry_get_functiondata (rentry);
+		visual_time_get_now (curtime);
 
-		visual_time_get (&curtime);
+		visual_time_diff (diff, curtime, sample->timestamp);
 
-		visual_time_difference (&diff, &sample->timestamp, &curtime);
-
-		if (visual_time_past (&diff, &channel->samples_timeout)) {
+		if (visual_time_is_past (diff, channel->samples_timeout)) {
 			visual_list_destroy (list, &le);
 
-			if (le == NULL)
+			if (le == NULL) {
 				break;
+			}
 		}
 	}
+
+	visual_time_free (diff);
+	visual_time_free (curtime);
 
 	return VISUAL_OK;
 }
@@ -914,7 +927,7 @@ int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime
 	visual_object_set_allocated (VISUAL_OBJECT (sample), FALSE);
 
 	/* Reset the VisAudioSamplePool structure */
-	visual_time_copy (&sample->timestamp, timestamp);
+	sample->timestamp = visual_time_clone (timestamp);
 	sample->rate = rate;
 	sample->format = format;
 	sample->buffer = buffer;
@@ -1310,10 +1323,8 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 	VisBuffer *chan1 = NULL;
 	VisBuffer *chan2 = NULL;
 	VisAudioSample *sample;
-	VisTime timestamp;
+	VisTime *timestamp;
 	int i;
-
-	visual_time_get (&timestamp);
 
 	if (format == VISUAL_AUDIO_SAMPLE_FORMAT_U8)
 		STEREO_INTERLEAVED(uint8_t)
@@ -1335,14 +1346,18 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 	visual_return_val_if_fail (chan1 != NULL, -1);
 	visual_return_val_if_fail (chan2 != NULL, -1);
 
+	timestamp = visual_time_new_now ();
+
 	visual_buffer_set_destroyer (chan1, visual_buffer_destroyer_free);
 	visual_buffer_set_destroyer (chan2, visual_buffer_destroyer_free);
 
-	sample = visual_audio_sample_new (chan1, &timestamp, format, rate);
+	sample = visual_audio_sample_new (chan1, timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	sample = visual_audio_sample_new (chan2, &timestamp, format, rate);
+	sample = visual_audio_sample_new (chan2, timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	visual_time_free (timestamp);
 
 	return VISUAL_OK;
 }
@@ -1416,19 +1431,20 @@ static int detect_beat(VisBeatAdv *adv, int32_t loudness)
     int     beat, i, j;
     int32_t     total;
     int     sensitivity;
-    VisTime now;
+    VisTime *now;
     int bpm, dif;
 
-    visual_time_init(&now);
-    visual_time_get(&now);
+    now = visual_time_new_now();
 
-    dif = visual_time_get_msecs(&now) - visual_time_get_msecs(&adv->lastDetect);
+    dif = visual_time_to_msecs(now) - visual_time_to_msecs(adv->lastDetect);
     bpm = 60000 / (dif ? dif : 1000);
+
+    visual_time_free(now);
 
     if(bpm && bpm < adv->cfg_max_detect)
         return 0;
 
-    visual_time_get(&adv->lastDetect);
+    visual_time_get_now(adv->lastDetect);
 
     /* Incorporate the current loudness into history */
     adv->aged = (adv->aged * 7 + loudness) >> 3;
@@ -1554,9 +1570,6 @@ int visual_audio_is_beat_with_data(VisAudio *audio, VisBeatAlgorithm algo, unsig
     int loudness;
     VisBeatPeak *peak = visual_beat_get_peak(audio->beat);
     VisBeatAdv *adv = visual_beat_get_adv(audio->beat);
-    VisTime *now = visual_time_new();
-
-    visual_time_get(now);
 
     if(algo == VISUAL_BEAT_ALGORITHM_ADV)
     {

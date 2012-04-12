@@ -134,7 +134,7 @@ namespace LV
       visual_alpha_blend_initialize ();
 
       /* Initialize high-resolution timer system */
-      visual_time_initialize ();
+	  Time::init ();
 
       /* Initialize Thread system */
       visual_thread_initialize ();

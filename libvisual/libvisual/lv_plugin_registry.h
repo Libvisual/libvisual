@@ -13,6 +13,8 @@
 
 namespace LV {
 
+  typedef ::VisPluginType PluginType;
+
   class PluginRegistry
       : public Singleton<PluginRegistry>
   {
@@ -25,26 +27,21 @@ namespace LV {
           }
       }
 
-	  /**
-	   * Adds an extra plugin search path.
-	   *
-	   * @param path Path to plugin directory
-	   */
+      /**
+       * Adds an extra plugin search path.
+       *
+       * @param path Path to plugin directory
+       */
       void add_path (std::string const& path);
 
       ~PluginRegistry ();
 
+      VisPluginRef* find_plugin (PluginType type, std::string const& name);
+
+      bool has_plugin (PluginType type, std::string const& name);
+
       PluginList const& get_plugins () const;
-
-      PluginList const& get_actor_plugins () const;
-
-      PluginList const& get_input_plugins () const;
-
-      PluginList const& get_morph_plugins () const;
-
-      PluginList const& get_transform_plugins () const;
-
-      void get_plugins_by_type (PluginList& list, std::string const& type);
+      PluginList const& get_plugins_by_type (PluginType type) const;
 
   private:
 
@@ -62,10 +59,11 @@ namespace LV {
 
 VISUAL_BEGIN_DECLS
 
-int visual_init_path_add (const char *path);
-
 int visual_plugin_registry_initialize (void);
 int visual_plugin_registry_deinitialize (void);
+
+int visual_plugin_registry_add_path (const char *path);
+int visual_plugin_registry_has_plugin (VisPluginType type, const char *name);
 
 VISUAL_END_DECLS
 

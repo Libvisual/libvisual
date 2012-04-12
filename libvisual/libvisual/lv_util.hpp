@@ -44,6 +44,26 @@ namespace LV {
       return result;
   }
 
+  template<class T>
+  inline void checked_delete (T* x)
+  {
+      typedef char type_must_be_complete[ sizeof(T) ? 1 : -1 ];
+      (void) sizeof (type_must_be_complete);
+      delete x;
+  }
+
+  template <class Pair>
+  typename Pair::first_type select1st (Pair const& pair)
+  {
+      return pair.first;
+  }
+
+  template <class Pair>
+  typename Pair::second_type select2nd (Pair const& pair)
+  {
+      return pair.second;
+  }
+
 } // LV namespace
 
 #endif // _LV_UTIL_HPP

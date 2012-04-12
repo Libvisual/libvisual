@@ -83,7 +83,7 @@ precalculate_tunnel(void)
 }
 
 
-void
+static void
 updatetunnel(void)
 {
   int i;
@@ -105,7 +105,7 @@ updatetunnel(void)
 }
 
 
-void
+static void
 drawtunnel(void)
 {
   int i, j, uring;
@@ -177,7 +177,7 @@ drawtunnel(void)
 }
 
 
-void
+static void
 render_tunnel(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

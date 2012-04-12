@@ -52,11 +52,6 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PLUGIN_API_VERSION	3004
 
 /**
- * Defination that should be used in plugins to set the plugin type for a NULL plugin.
- */
-#define VISUAL_PLUGIN_TYPE_NULL		"Libvisual:core:null"
-
-/**
  * Standard defination for GPLv1 plugins, use this for the .license entry in VisPluginInfo
  */
 #define VISUAL_PLUGIN_LICENSE_GPLv1 "GPLv1"
@@ -109,6 +104,13 @@ typedef enum {
 	VISUAL_PLUGIN_TYPE_DEPTH_TYPE		= 3     /**< Domain, package and type found in type. */
 } VisPluginTypeDepth;
 
+typedef enum {
+    VISUAL_PLUGIN_TYPE_ACTOR,
+    VISUAL_PLUGIN_TYPE_INPUT,
+    VISUAL_PLUGIN_TYPE_MORPH,
+    VISUAL_PLUGIN_TYPE_TRANSFORM
+} VisPluginType;
+
 typedef struct _VisPluginRef VisPluginRef;
 typedef struct _VisPluginInfo VisPluginInfo;
 typedef struct _VisPluginData VisPluginData;
@@ -127,7 +129,7 @@ typedef struct _VisPluginEnviron VisPluginEnviron;
  *
  * @return Pointer to the VisPluginInfo array which contains information about the plugin.
  */
-typedef const VisPluginInfo *(*VisPluginGetInfoFunc)(int *count);
+typedef const VisPluginInfo *(*VisPluginGetInfoFunc)(void);
 
 /* Standard plugin methods */
 
@@ -170,7 +172,6 @@ struct _VisPluginRef {
 	VisObject      object;      /**< The VisObject data. */
 
 	char          *file;        /**< The file location of the plugin. */
-	int            index;       /**< Contains the index number for the entry in the VisPluginInfo table. */
 	int            usecount;    /**< The use count, this indicates how many instances are loaded. */
 	VisPluginInfo *info;        /**< A copy of the VisPluginInfo structure. */
 };
@@ -180,11 +181,11 @@ struct _VisPluginRef {
  * and is filled within the plugin itself.
  */
 struct _VisPluginInfo {
-	VisObject   object;	  /**< The VisObject data. */
+	VisObject     object; /**< The VisObject data. */
 
-	const char *type;     /**< Plugin type, in the format of "domain:package:type", as example,
-	                       * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
-	                       * instead of filling in the string yourself. */
+	VisPluginType type;   /**< Plugin type, in the format of "domain:package:type", as example,
+	                         * this could be "Libvisual:core:actor". It's adviced to use the defination macros here
+	                         * instead of filling in the string yourself. */
 	const char *plugname; /**< The plugin name as it's saved in the registry. */
 
 	const char *name;     /**< Long name */
@@ -260,7 +261,7 @@ VisPluginInfo *visual_plugin_info_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
  */
-int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo *src);
+int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* src);
 
 /**
  * Pumps the queued events into the plugin it's event handler if it has one.
@@ -371,11 +372,9 @@ int visual_plugin_realize (VisPluginData *plugin);
  *
  * @param pluginpath The full path and filename to the plugin of which a reference
  *	needs to be obtained.
- * @param count Int pointer that will contain the number of VisPluginRefs returned.
- *
- * @return The optionally newly allocated VisPluginRefs for the plugin.
+ * @return The newly allocated VisPluginRef for the plugin.
  */
-VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count);
+VisPluginRef *visual_plugin_get_reference (const char *pluginpath);
 
 /**
  * Gives the VISUAL_PLUGIN_API_VERSION value for which the library is compiled.
@@ -384,75 +383,6 @@ VisPluginRef **visual_plugin_get_references (const char *pluginpath, int *count)
  * @return The VISUAL_PLUGIN_API_VERSION define value.
  */
 int visual_plugin_get_api_version (void);
-
-/**
- * Get the domain part from a plugin type string.
- *
- * @param type The type string.
- *
- * @return A newly allocated string containing the domain part of this plugin type, or NULL on failure.
- */
-const char *visual_plugin_type_get_domain (const char *type);
-
-/**
- * Get the package part from a plugin type string.
- *
- * @param type The type string.
- *
- * @return A newly allocated string containing the package part of this plugin type, or NULL on failure.
- */
-const char *visual_plugin_type_get_package (const char *type);
-
-/**
- * Get the type part from a plugin type string.
- *
- * @param type The type string.
- *
- * @return A newly allocated string containing the type part of this plugin type, or NULL on failure.
- */
-const char *visual_plugin_type_get_type (const char *type);
-
-/**
- * Get the depth of a plugin type string.
- *
- * @param type The type string.
- *
- * @return A VisPluginTypeDepth enum value that describes out of how many parts this plugin
- *	type string consists, -VISUAL_ERROR_NULL on failure.
- */
-VisPluginTypeDepth visual_plugin_type_get_depth (const char *type);
-
-/**
- * Check if a certain plugin type string falls within the domain of the other.
- *
- * @param domain The domain in which the type string should fall.
- * @param type The type string that is checked against the given domain.
- *
- * @return TRUE if it falls within the domain, FALSE when not, -VISUAL_ERROR_NULL on failure
- */
-int visual_plugin_type_member_of (const char *domain, const char *type);
-
-/**
- * Retrieves the flags section from the plugin type string.
- *
- * @param type The type string, containing the plugin type and optional flags.
- *
- * return NULL if no flags are found, the flags between the '[' and ']' braces on succes.
- *	for example when the plugin type string is "Libvisual:core:actor.[special|something]"
- *	the returned flag string would be "special|something". Keep in mind that the string is
- *	allocated and should be freed after it's not being used anylonger.
- */
-const char *visual_plugin_type_get_flags (const char *type);
-
-/**
- * Checks if a certain flag is found within a plugin type string.
- *
- * @param type The type string, containing the plugin type and optional flags.
- * @param flag The flag string to check for within the type string.
- *
- * @return TRUE in found, FALSE if not found, -VISUAL_ERROR_NULL on failure.
- */
-int visual_plugin_type_has_flag (const char *type, const char *flag);
 
 /**
  * Creates a VisPluginEnviron structure.
@@ -524,16 +454,6 @@ namespace LV {
    * @return name of the previous plugin, or NULL if none can be found
    */
   char const* plugin_get_prev_by_name (PluginList const& list, char const* name);
-
-  /**
-   * Retrieves information about a plugin in the given list.
-   *
-   * @param type a list of plugins
-   * @param name name of plugin to retrieve information from
-   *
-   * @return plugin information
-   */
-  VisPluginRef* plugin_find (PluginList const& list, std::string const& name);
 
 } // LV namespace
 

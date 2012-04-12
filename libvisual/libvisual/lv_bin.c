@@ -62,6 +62,8 @@ static int bin_dtor (VisObject *object)
 	if (bin->privvid != NULL)
 		visual_object_unref (VISUAL_OBJECT (bin->privvid));
 
+	visual_time_free (bin->morphtime);
+
 	bin->actor = NULL;
 	bin->input = NULL;
 	bin->morph = NULL;
@@ -104,7 +106,7 @@ VisBin *visual_bin_new ()
 	bin->morphautomatic = TRUE;
 
 	bin->morphmode = VISUAL_MORPH_MODE_TIME;
-	visual_time_set (&bin->morphtime, 4, 0);
+	bin->morphtime = visual_time_new_with_values (4, 0);
 
 	bin->depthpreferred = VISUAL_BIN_DEPTH_HIGHEST;
 
@@ -174,7 +176,7 @@ int visual_bin_set_morph (VisBin *bin, VisMorph *morph)
 	return 0;
 }
 
-int visual_bin_set_morph_by_name (VisBin *bin, char *morphname)
+int visual_bin_set_morph_by_name (VisBin *bin, const char *morphname)
 {
 	VisMorph *morph;
 	int depthflag;
@@ -255,7 +257,7 @@ int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
     return 0;
 }
 
-int visual_bin_connect_by_names (VisBin *bin, char *actname, char *inname)
+int visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname)
 {
 	VisActor *actor;
 	VisInput *input;
@@ -424,7 +426,9 @@ int visual_bin_set_depth (VisBin *bin, int depth)
 
 	bin->depth = depth;
 
-	visual_video_set_depth (bin->actvideo, depth);
+	if (bin->actvideo) {
+	    visual_video_set_depth (bin->actvideo, depth);
+	}
 
 	return 0;
 }
@@ -458,7 +462,7 @@ VisPalette *visual_bin_get_palette (VisBin *bin)
 		return visual_actor_get_palette (bin->actor);
 }
 
-int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
+int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 {
 	VisActor *actor;
 	VisVideo *video;
@@ -468,7 +472,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, char *actname)
 	visual_return_val_if_fail (bin != NULL, -1);
 	visual_return_val_if_fail (actname != NULL, -1);
 
-	visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s", actname, bin->actor->plugin->info->name);
+	visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s", actname, bin->actor->plugin->info->plugname);
 
 	/* Destroy if there already is a managed one */
 	if (bin->actmorphmanaged) {
@@ -626,7 +630,7 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 			else
 				visual_morph_set_mode (bin->morph, VISUAL_MORPH_MODE_SET);
 
-			visual_morph_set_time (bin->morph, &bin->morphtime);
+			visual_morph_set_time (bin->morph, bin->morphtime);
 			visual_morph_set_steps (bin->morph, bin->morphsteps);
 		}
 
@@ -789,7 +793,7 @@ int visual_bin_switch_set_time (VisBin *bin, long sec, long usec)
 {
 	visual_return_val_if_fail (bin != NULL, -1);
 
-	visual_time_set (&bin->morphtime, sec, usec * VISUAL_NSEC_PER_USEC);
+	visual_time_set (bin->morphtime, sec, usec * VISUAL_NSEC_PER_USEC);
 
 	return 0;
 }

@@ -25,6 +25,7 @@
 #include "gettext.h"
 #include <windows.h>
 
+
 struct _VisThread {
     HANDLE thread;
     DWORD threadId;
@@ -144,7 +145,7 @@ int visual_mutex_free (VisMutex *mutex)
     visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
     CloseHandle (mutex->handle);
-        
+
     return visual_mem_free (mutex);
 }
 

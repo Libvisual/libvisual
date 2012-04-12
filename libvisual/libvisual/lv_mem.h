@@ -46,6 +46,20 @@ VISUAL_BEGIN_DECLS
 typedef void *(*VisMemCopyFunc)(void *dest, const void *src, visual_size_t n);
 
 /**
+ * The visual_mem_copy_pitch function needs this signature. This function supports a negative pitch.
+ *
+ * @arg dest Pointer to the dest buffer.
+ * @arg src Pointer to the source buffer.
+ * @arg pitch1 The number of bytes a row in the dest buffer.
+ * @arg pitch2 The number of bytes a row in the src buffer.
+ * @arg width The copy width of each row.
+ * @arg rows The number of rows.
+ *
+ * @return Pointer to the dest buffer.
+ */
+typedef void *(*VisMemCopyPitchFunc)(void *dest, const void *src, int pitch1, int pitch2, int width, int rows);
+
+/**
  * The visual_mem_set function needs this signature.
  *
  * @arg dest Pointer to the dest buffer.
@@ -136,6 +150,8 @@ int visual_mem_free (void *ptr);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 extern VisMemCopyFunc visual_mem_copy;
+extern VisMemCopyPitchFunc visual_mem_copy_pitch;
+
 extern VisMemSet8Func visual_mem_set;
 extern VisMemSet16Func visual_mem_set16;
 extern VisMemSet32Func visual_mem_set32;

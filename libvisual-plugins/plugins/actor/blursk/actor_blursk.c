@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+const VisPluginInfo *get_plugin_info (void);
 
 static int act_blursk_init (VisPluginData *plugin);
 static int act_blursk_cleanup (VisPluginData *plugin);
@@ -41,16 +41,16 @@ static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-        static VisActorPlugin actor[] = {{
+        static VisActorPlugin actor = {
                 .requisition = act_blursk_requisition,
                 .palette = act_blursk_palette,
                 .render = act_blursk_render,
                 .vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-        }};
+        };
 
-        static VisPluginInfo info[] = {{
+        static VisPluginInfo info = {
                 .type = VISUAL_PLUGIN_TYPE_ACTOR,
 
                 .plugname = "blursk",
@@ -65,12 +65,10 @@ const VisPluginInfo *get_plugin_info (int *count)
                 .cleanup = act_blursk_cleanup,
                 .events = act_blursk_events,
 
-                .plugin = VISUAL_OBJECT (&actor[0])
-        }};
+                .plugin = VISUAL_OBJECT (&actor)
+        };
 
-        *count = sizeof (info) / sizeof (*info);
-
-        return info;
+        return &info;
 }
 
 static int act_blursk_init (VisPluginData *plugin) {

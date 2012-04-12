@@ -4,7 +4,7 @@
 #pragma pack(1)
 
 typedef struct {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 	uint16_t b:5, g:6, r:5;
 #else
 	uint16_t r:5, g:6, b:5;
@@ -77,7 +77,7 @@ void visual_video_index8_to_rgb24 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			*(dbuf++) = src_colors[*(sbuf)].b;
 			*(dbuf++) = src_colors[*(sbuf)].g;
 			*(dbuf++) = src_colors[*(sbuf)].r;
@@ -120,8 +120,8 @@ void visual_video_index8_to_argb32 (VisVideo *dest, VisVideo *src)
 
 	visual_video_convert_get_smallest (dest, src, &w, &h);
 
-	ddiff = (dest->pitch / dest->bpp) - w;
-	sdiff = src->pitch - (w * src->bpp);
+	ddiff = (dest->pitch >> 2) - w;
+	sdiff = src->pitch - w;
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
@@ -194,7 +194,7 @@ void visual_video_rgb16_to_rgb24 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			*(dbuf++) = sbuf->b << 3;
 			*(dbuf++) = sbuf->g << 2;
 			*(dbuf++) = sbuf->r << 3;
@@ -230,7 +230,7 @@ void visual_video_rgb16_to_argb32 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			*(dbuf++) = sbuf->b << 3;
 			*(dbuf++) = sbuf->g << 2;
 			*(dbuf++) = sbuf->r << 3;
@@ -272,7 +272,7 @@ void visual_video_rgb24_to_index8 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			b = *(sbuf++);
 			g = *(sbuf++);
 			r = *(sbuf++);
@@ -315,7 +315,7 @@ void visual_video_rgb24_to_rgb16 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			dbuf->b = *(sbuf++) >> 3;
 			dbuf->g = *(sbuf++) >> 2;
 			dbuf->r = *(sbuf++) >> 3;
@@ -351,7 +351,7 @@ void visual_video_rgb24_to_argb32 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
@@ -392,7 +392,7 @@ void visual_video_argb32_to_index8 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			b = *(sbuf++);
 			g = *(sbuf++);
 			r = *(sbuf++);
@@ -437,7 +437,7 @@ void visual_video_argb32_to_rgb16 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			dbuf->b = *(sbuf++) >> 3;
 			dbuf->g = *(sbuf++) >> 2;
 			dbuf->r = *(sbuf++) >> 3;
@@ -476,7 +476,7 @@ void visual_video_argb32_to_rgb24 (VisVideo *dest, VisVideo *src)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);
 			*(dbuf++) = *(sbuf++);

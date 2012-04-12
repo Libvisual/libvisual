@@ -1,6 +1,9 @@
 #ifndef _LV_SCOPED_PTR_HPP
 #define _LV_SCOPED_PTR_HPP
 
+#include <libvisual/lv_util.hpp>
+#include <algorithm>
+
 namespace LV {
 
   template <typename T>
@@ -15,6 +18,16 @@ namespace LV {
 	~ScopedPtr ()
 	{
 	    checked_delete (m_ptr);
+	}
+
+	void reset (T* ptr = 0)
+	{
+	    ScopedPtr (ptr).swap (*this);
+	}
+
+	void swap (ScopedPtr& s)
+	{
+	    std::swap (m_ptr, s.m_ptr);
 	}
 
 	T& operator* () const
@@ -44,14 +57,6 @@ namespace LV {
 	ScopedPtr (ScopedPtr const&);
 	ScopedPtr& operator= (ScopedPtr const&);
   };
-
-  template<class T>
-  inline void checked_delete (T* x)
-  {
-      typedef char type_must_be_complete[ sizeof(T) ? 1 : -1 ];
-      (void) sizeof (type_must_be_complete);
-      delete x;
-  }
 
 } // LV namespace
 

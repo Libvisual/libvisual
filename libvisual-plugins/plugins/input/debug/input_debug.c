@@ -26,6 +26,8 @@
 #include <libvisual/libvisual.h>
 #include <math.h>
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 #define OUTPUT_RATE       44100
 #define OUTPUT_SAMPLES    4096
 #define DEFAULT_FREQUENCY (OUTPUT_RATE/25)
@@ -39,7 +41,7 @@ typedef struct {
 	float angle_step;
 } DebugPriv;
 
-const VisPluginInfo *get_plugin_info (int *count);
+const VisPluginInfo *get_plugin_info (void);
 
 static int inp_debug_init (VisPluginData *plugin);
 static int inp_debug_cleanup (VisPluginData *plugin);
@@ -49,15 +51,13 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio);
 static void change_param (VisPluginData *plugin, VisParamEntry *param);
 static void setup_wave (DebugPriv *priv);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisInputPlugin input[] = {{
+	static VisInputPlugin input = {
 		.upload = inp_debug_upload
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type     = VISUAL_PLUGIN_TYPE_INPUT,
 		.plugname = "debug",
 		.name     = "debug",
@@ -70,12 +70,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init     = inp_debug_init,
 		.cleanup  = inp_debug_cleanup,
 		.events   = inp_debug_events,
-		.plugin   = VISUAL_OBJECT (&input[0])
-	}};
+		.plugin   = VISUAL_OBJECT (&input)
+	};
 
-	*count = VISUAL_TABLESIZE (info);
-
-	return info;
+	return &info;
 }
 
 static int inp_debug_init (VisPluginData *plugin)

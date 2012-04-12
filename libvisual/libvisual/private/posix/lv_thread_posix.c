@@ -24,6 +24,9 @@
 #include "config.h"
 #include "lv_thread.h"
 #include "lv_common.h"
+
+#ifdef VISUAL_THREAD_MODEL_POSIX
+
 #include "gettext.h"
 #include <pthread.h>
 
@@ -173,3 +176,5 @@ int visual_mutex_unlock (VisMutex *mutex)
 
     return VISUAL_OK;
 }
+
+#endif /* VISUAL_THREAD_MODEL_POSIX */

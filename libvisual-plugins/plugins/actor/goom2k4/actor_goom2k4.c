@@ -37,32 +37,34 @@
 
 #include "goom.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
+
 typedef struct {
 	VisBuffer	 pcmbuf1;
 	VisBuffer	 pcmbuf2;
 	PluginInfo	*goominfo; /* The goom internal private struct */
 } GoomPrivate;
 
-int lv_goom_init (VisPluginData *plugin);
-int lv_goom_cleanup (VisPluginData *plugin);
-int lv_goom_requisition (VisPluginData *plugin, int *width, int *height);
-int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int lv_goom_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *lv_goom_palette (VisPluginData *plugin);
-int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int lv_goom_init (VisPluginData *plugin);
+static int lv_goom_cleanup (VisPluginData *plugin);
+static int lv_goom_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_goom_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *lv_goom_palette (VisPluginData *plugin);
+static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_goom_requisition,
 		.palette = lv_goom_palette,
 		.render = lv_goom_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "goom2k4",
@@ -77,15 +79,13 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_goom_cleanup,
 		.events = lv_goom_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
-int lv_goom_init (VisPluginData *plugin)
+static int lv_goom_init (VisPluginData *plugin)
 {
 	GoomPrivate *priv;
 
@@ -104,7 +104,7 @@ int lv_goom_init (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_goom_cleanup (VisPluginData *plugin)
+static int lv_goom_cleanup (VisPluginData *plugin)
 {
 	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -116,14 +116,14 @@ int lv_goom_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-int lv_goom_requisition (VisPluginData *plugin, int *width, int *height)
+static int lv_goom_requisition (VisPluginData *plugin, int *width, int *height)
 {
-	/* We don't change the value, we can handle anything */	
+	/* We don't change the value, we can handle anything */
 
 	return 0;
 }
 
-int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -134,7 +134,7 @@ int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int he
 	return 0;
 }
 
-int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
+static int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
@@ -154,17 +154,15 @@ int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *lv_goom_palette (VisPluginData *plugin)
+static VisPalette *lv_goom_palette (VisPluginData *plugin)
 {
 	return NULL;
 }
 
-int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisSongInfo *songinfo;
-	VisParamContainer *paramcontainer;
-	VisParamEntry *param;
 	short pcmdata[2][512];
 	float fpcmdata[2][512];
 	uint32_t *buf;
@@ -184,21 +182,16 @@ int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	}
 
 	/* Retrieve the songinfo */
-	songinfo = &VISUAL_ACTOR_PLUGIN (visual_plugin_get_specific (plugin))->songinfo;
-
-	/* Check the global parameter for showing songinfo in plugins */
-	paramcontainer = visual_get_params ();
-	/* FIXME re-enable! */
-//	param = visual_param_container_get (paramcontainer, "songinfo in plugin");
-//	if (param != NULL)
-//		showinfo = visual_param_entry_get_integer (param);
+	songinfo = VISUAL_ACTOR_PLUGIN (visual_plugin_get_specific (plugin))->songinfo;
 
 	/* FIXME goom should support setting a pointer, so we don't need that final visual_mem_copy */
-	if (songinfo != NULL && visual_songinfo_age (songinfo) <= 1 && showinfo == TRUE) {
-		if (songinfo->type == VISUAL_SONGINFO_TYPE_SIMPLE)
-			buf = goom_update (priv->goominfo, pcmdata, 0, 0, songinfo->songname, NULL);
-		else if (songinfo->type == VISUAL_SONGINFO_TYPE_ADVANCED)
-			buf = goom_update (priv->goominfo, pcmdata, 0, 0, songinfo->song, NULL);
+	if (songinfo != NULL && visual_songinfo_get_age (songinfo) <= 1 && showinfo == TRUE) {
+	    VisSongInfoType songinfo_type = visual_songinfo_get_type (songinfo);
+
+		if (songinfo_type == VISUAL_SONGINFO_TYPE_SIMPLE)
+		    buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_simple_name (songinfo), NULL);
+		else if (songinfo_type == VISUAL_SONGINFO_TYPE_ADVANCED)
+		    buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_song (songinfo), NULL);
 		else
 			buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 	}

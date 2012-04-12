@@ -33,7 +33,9 @@
 #include <gdk/gdk.h>
 #include <libvisual/libvisual.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 typedef struct {
 	GdkPixbuf	*pixbuf;
@@ -67,18 +69,16 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin);
 static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_gdkpixbuf_requisition,
 		.palette = act_gdkpixbuf_palette,
 		.render = act_gdkpixbuf_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_24BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "gdkpixbuf",
@@ -93,12 +93,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_gdkpixbuf_cleanup,
 		.events = act_gdkpixbuf_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_gdkpixbuf_init (VisPluginData *plugin)

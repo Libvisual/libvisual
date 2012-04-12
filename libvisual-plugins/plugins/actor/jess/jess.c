@@ -41,7 +41,9 @@
 #include "draw_low_level.h"
 #include "jess.h"
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+const VisPluginInfo *get_plugin_info (void);
 
 static int act_jess_init (VisPluginData *plugin);
 static int act_jess_cleanup (VisPluginData *plugin);
@@ -53,20 +55,18 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 
 static void jess_init (JessPrivate *priv);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_jess_requisition,
 		.palette = act_jess_palette,
 		.render = act_jess_render,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "jess",
@@ -81,12 +81,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_jess_cleanup,
 		.events = act_jess_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_jess_init (VisPluginData *plugin)

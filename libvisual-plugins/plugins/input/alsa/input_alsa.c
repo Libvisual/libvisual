@@ -40,14 +40,16 @@
 
 #include <libvisual/libvisual.h>
 
-#define PCM_BUF_SIZE 4096
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (int *count);
+#define PCM_BUF_SIZE 4096
 
 typedef struct {
 	snd_pcm_t *chandle;
 	int loaded;
 } alsaPrivate;
+
+const VisPluginInfo *get_plugin_info (void);
 
 static int inp_alsa_init (VisPluginData *plugin);
 static int inp_alsa_cleanup (VisPluginData *plugin);
@@ -58,15 +60,13 @@ static const char *inp_alsa_var_cdevice   = "hw:0,0";
 static const int  inp_alsa_var_samplerate = 44100;
 static const int  inp_alsa_var_channels   = 2;
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisInputPlugin input[] = {{
+	static VisInputPlugin input = {
 		.upload = inp_alsa_upload
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
 		.plugname = "alsa",
@@ -80,12 +80,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = inp_alsa_init,
 		.cleanup = inp_alsa_cleanup,
 
-		.plugin = VISUAL_OBJECT (&input[0])
-	}};
+		.plugin = VISUAL_OBJECT (&input)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 int inp_alsa_init (VisPluginData *plugin)
@@ -133,7 +131,7 @@ int inp_alsa_init (VisPluginData *plugin)
 		return(-1);
 	}
 
-#ifdef VISUAL_LITTLE_ENDIAN
+#if VISUAL_LITTLE_ENDIAN == 1
 	if (snd_pcm_hw_params_set_format(priv->chandle, hwparams,
 					 SND_PCM_FORMAT_S16_LE) < 0) {
 #else

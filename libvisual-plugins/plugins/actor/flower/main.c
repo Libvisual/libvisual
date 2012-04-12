@@ -136,7 +136,7 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 
 	float vnyt,vnex;
 	float l;
-	float ti=visual_timer_elapsed_msecs(&flower->timer);
+	float ti=visual_timer_elapsed_msecs(flower->timer);
 	Vect r,r_morph,n;
 	float rf[17*NBTW*3];
 	int c;
@@ -210,7 +210,7 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 
 static void render_flower(FlowerInternal *flower) {
 	int t;
-	int time=visual_timer_elapsed_msecs(&flower->timer);
+	int time=visual_timer_elapsed_msecs(flower->timer);
 
 	flower->tension=F*flower->tension_new+(1.0-F)*flower->tension;
 	flower->continuity=F*flower->continuity_new+(1.0-F)*flower->continuity;
@@ -247,6 +247,6 @@ void render_flower_effect(FlowerInternal *flower) {
 
 	glRotatef(flower->rotx,1.0,0.0,0.0);
 	glRotatef(flower->roty,0.0,1.0,0.0);
-	glRotatef(visual_timer_elapsed_msecs(&flower->timer)*0.02,0.0,0.0,1.0);
+	glRotatef(visual_timer_elapsed_msecs(flower->timer)*0.02,0.0,0.0,1.0);
 	render_flower(flower);
 }

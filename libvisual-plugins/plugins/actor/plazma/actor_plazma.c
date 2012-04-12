@@ -35,26 +35,28 @@
 #include "plazma.h"
 #include "actor_plazma.h"
 
-int act_plazma_init (VisPluginData *plugin);
-int act_plazma_cleanup (VisPluginData *plugin);
-int act_plazma_requisition (VisPluginData *plugin, int *width, int *height);
-int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
-int act_plazma_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *act_plazma_palette (VisPluginData *plugin);
-int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void);
+
+static int act_plazma_init (VisPluginData *plugin);
+static int act_plazma_cleanup (VisPluginData *plugin);
+static int act_plazma_requisition (VisPluginData *plugin, int *width, int *height);
+static int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_plazma_palette (VisPluginData *plugin);
+static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_plazma_requisition,
 		.palette = act_plazma_palette,
 		.render = act_plazma_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "plazma",
@@ -69,15 +71,13 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_plazma_cleanup,
 		.events = act_plazma_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
-int act_plazma_init (VisPluginData *plugin)
+static int act_plazma_init (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
@@ -100,7 +100,7 @@ int act_plazma_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (PlazmaPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_palette_allocate_colors (&priv->colors, 256);
+	priv->colors = visual_palette_new (256);
 
 	visual_param_container_add_many (paramcontainer, params);
 
@@ -112,20 +112,20 @@ int act_plazma_init (VisPluginData *plugin)
 	return 0;
 }
 
-int act_plazma_cleanup (VisPluginData *plugin)
+static int act_plazma_cleanup (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	_plazma_cleanup (priv);
 
-	visual_palette_free_colors (&priv->colors);
+	visual_palette_free (priv->colors);
 
 	visual_mem_free (priv);
 
 	return 0;
 }
 
-int act_plazma_requisition (VisPluginData *plugin, int *width, int *height)
+static int act_plazma_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -150,7 +150,7 @@ int act_plazma_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -168,7 +168,7 @@ int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int
 	return 0;
 }
 
-int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
+static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
@@ -217,14 +217,14 @@ int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 	return 0;
 }
 
-VisPalette *act_plazma_palette (VisPluginData *plugin)
+static VisPalette *act_plazma_palette (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	return &priv->colors;;
+	return priv->colors;
 }
 
-int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer pcmback;

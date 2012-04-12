@@ -73,7 +73,7 @@ typedef struct {
 	/* Libvisual data */
 	VisVideo	*video;
 	uint8_t		*pixel;
-	VisPalette	colors;
+	VisPalette  *colors;
 
 } PlazmaPrivate;
 

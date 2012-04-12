@@ -32,13 +32,13 @@ namespace {
   inline LV::PluginList const&
   get_input_plugin_list ()
   {
-      return LV::PluginRegistry::instance()->get_input_plugins ();
+      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
   }
 
   inline VisPluginRef*
   find_input_plugin (std::string const& name)
   {
-      return LV::plugin_find (get_input_plugin_list (), name);
+      return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_INPUT, name);
   }
 
 } // Anonymous namespace
@@ -88,14 +88,6 @@ const char *visual_input_get_next_by_name (const char *name)
 const char *visual_input_get_prev_by_name (const char *name)
 {
     return LV::plugin_get_prev_by_name (get_input_plugin_list (), name);
-}
-
-int visual_input_valid_by_name (const char *name)
-{
-    if (find_input_plugin (name) == NULL)
-        return FALSE;
-    else
-        return TRUE;
 }
 
 VisInput *visual_input_new (const char *inputname)

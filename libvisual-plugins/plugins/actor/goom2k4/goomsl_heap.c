@@ -1,4 +1,5 @@
 #include "goomsl_heap.h"
+#include <libvisual/libvisual.h>
 #include <stdlib.h>
 
 struct _GOOM_HEAP {
@@ -39,7 +40,7 @@ static void align_it(GoomHeap *_this, int alignment)
 {
   if ((alignment > 1) && (_this->number_of_arrays>0)) {
     void *last_array = _this->arrays[_this->number_of_arrays - 1];
-    int   last_address = (int)last_array + _this->consumed_in_last_array;
+    intptr_t last_address = (intptr_t)last_array + _this->consumed_in_last_array;
     int   decal = (last_address % alignment);
     if (decal != 0) {
       _this->consumed_in_last_array += alignment - decal;
