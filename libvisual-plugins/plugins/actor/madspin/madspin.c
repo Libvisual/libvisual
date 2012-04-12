@@ -71,7 +71,7 @@ typedef struct {
 static int lv_madspin_init (VisPluginData *plugin);
 static int lv_madspin_cleanup (VisPluginData *plugin);
 static int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_madspin_resize (VisPluginData *plugin, int width, int height);
 static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_madspin_palette (VisPluginData *plugin);
 static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -232,10 +232,8 @@ static void lv_madspin_setup_gl (VisPluginData *plugin)
 	bind_texture (priv->textures[1], priv->texture_images[1]);
 }
 
-static int lv_madspin_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_madspin_resize (VisPluginData *plugin, int width, int height)
 {
-	visual_video_set_dimension (video, width, height);
-
 	glViewport (0, 0, width, height);
 
 	lv_madspin_setup_gl (plugin);
@@ -252,8 +250,7 @@ static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_madspin_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_madspin_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:

@@ -128,7 +128,6 @@ struct _VisEventMouseButton {
  * @see visual_event_queue_add_resize
  */
 struct _VisEventResize {
-	VisVideo	*video;		/**< Pointer to the VisVideo structure containing all the screen information. */
 	int		 width;		/**< Width of the surface. */
 	int		 height;	/**< Height of the surface. */
 };
@@ -332,15 +331,12 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
  * a new VisEvent will be created and added to the event queue.
  *
  * @param eventqueue Pointer to the VisEventQueue to which new events are added.
- * @param video Pointer to the VisVideo containing all the display information,
- * 	also used for negotiation so values can change within the VisVideo
- * 	structure.
  * @param width The width for the new surface.
  * @param height The height for the new surface.
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL on failure.
  */
-int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, int width, int height);
+int visual_event_queue_add_resize (VisEventQueue *eventqueue, int width, int height);
 
 /**
  * Adds a new song change event to the event queue. By giving a pointer to the

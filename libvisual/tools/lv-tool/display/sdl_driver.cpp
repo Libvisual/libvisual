@@ -260,7 +260,7 @@ namespace {
                   break;
 
               case SDL_VIDEORESIZE:
-                  visual_event_queue_add_resize (&eventqueue, m_display.get_screen (), event.resize.w, event.resize.h);
+                  visual_event_queue_add_resize (&eventqueue, event.resize.w, event.resize.h);
 
                   create (m_display.get_screen ()->depth, NULL, event.resize.w, event.resize.h, m_resizable);
                   break;

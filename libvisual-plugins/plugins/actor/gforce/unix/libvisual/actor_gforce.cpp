@@ -63,7 +63,7 @@ typedef struct {
 VISUAL_C_LINKAGE int lv_gforce_init (VisPluginData *plugin);
 VISUAL_C_LINKAGE int lv_gforce_cleanup (VisPluginData *plugin);
 VISUAL_C_LINKAGE int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height);
-VISUAL_C_LINKAGE int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+VISUAL_C_LINKAGE int lv_gforce_resize (VisPluginData *plugin, int width, int height);
 VISUAL_C_LINKAGE int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events);
 VISUAL_C_LINKAGE VisPalette *lv_gforce_palette (VisPluginData *plugin);
 VISUAL_C_LINKAGE int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -176,7 +176,7 @@ int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
 }
 
 VISUAL_C_LINKAGE
-int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+int lv_gforce_resize (VisPluginData *plugin, int width, int height)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	Rect r;
@@ -196,8 +196,7 @@ int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_gforce_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_gforce_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_MOUSEMOTION:

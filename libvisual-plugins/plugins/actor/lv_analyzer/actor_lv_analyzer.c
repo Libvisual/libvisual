@@ -57,6 +57,7 @@ static void draw_bar (VisVideo *video, int x, int width, float amplitude);
 static int lv_analyzer_init (VisPluginData *plugin);
 static int lv_analyzer_cleanup (VisPluginData *plugin);
 static int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_analyzer_resize (VisPluginData *plugin, int width, int height);
 static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_analyzer_palette (VisPluginData *plugin);
 static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -235,10 +236,25 @@ static void _change_param(VisPluginData *plugin, VisParamEntry *p)
     visual_log(VISUAL_LOG_WARNING, "Unknown param '%s'", visual_param_entry_get_name(p));
 }
 
+static int lv_analyzer_resize (VisPluginData *plugin, int width, int height)
+{
+	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	int total_space;
+
+	priv->width = width;
+	priv->height = height;
+
+	total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
+	if(priv->width < priv->bars + total_space)
+		priv->bars = priv->width - total_space;
+
+	return 0;
+}
+
 static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	while (visual_event_queue_poll (events, &ev))
 	{
@@ -246,23 +262,15 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 		{
 			case VISUAL_EVENT_PARAM:
 			{
-                VisParamEntry *param = ev.event.param.param;
-                /* change config parameter */
-                _change_param(plugin, param);
-                break;
+				VisParamEntry *param = ev.event.param.param;
+				/* change config parameter */
+				_change_param(plugin, param);
+				break;
 			}
 
 			case VISUAL_EVENT_RESIZE:
 			{
-			        int total_space;
-
-				priv->width = ev.event.resize.video->width;
-				priv->height = ev.event.resize.video->height;
-
-				total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
-				if(priv->width < priv->bars + total_space)
-					priv->bars = priv->width - total_space;
-
+				lv_analyzer_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 			}
 

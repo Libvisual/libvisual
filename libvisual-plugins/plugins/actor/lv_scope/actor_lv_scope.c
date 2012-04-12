@@ -47,7 +47,7 @@ typedef struct {
 static int lv_scope_init (VisPluginData *plugin);
 static int lv_scope_cleanup (VisPluginData *plugin);
 static int lv_scope_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_scope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_scope_resize (VisPluginData *plugin, int width, int height);
 static int lv_scope_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_scope_palette (VisPluginData *plugin);
 static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -138,7 +138,7 @@ static int lv_scope_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-static int lv_scope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_scope_resize (VisPluginData *plugin, int width, int height)
 {
 	return 0;
 }
@@ -150,8 +150,7 @@ static int lv_scope_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_scope_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_scope_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 			default: /* to avoid warnings */
 				break;

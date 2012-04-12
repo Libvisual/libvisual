@@ -51,7 +51,7 @@ static void have_data (GstElement *sink, GstBuffer *buffer, gpointer data);
 static int act_gstreamer_init (VisPluginData *plugin);
 static int act_gstreamer_cleanup (VisPluginData *plugin);
 static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_gstreamer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_gstreamer_resize (VisPluginData *plugin, int width, int height);
 static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_gstreamer_palette (VisPluginData *plugin);
 static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -115,10 +115,8 @@ static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *he
 	return 0;
 }
 
-static int act_gstreamer_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_gstreamer_resize (VisPluginData *plugin, int width, int height)
 {
-	visual_video_set_dimension (video, width, height);
-
 	return 0;
 }
 
@@ -129,8 +127,7 @@ static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_gstreamer_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				act_gstreamer_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 

@@ -42,7 +42,7 @@ const VisPluginInfo *get_plugin_info (void);
 static int act_plazma_init (VisPluginData *plugin);
 static int act_plazma_cleanup (VisPluginData *plugin);
 static int act_plazma_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_plazma_resize (VisPluginData *plugin, int width, int height);
 static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_plazma_palette (VisPluginData *plugin);
 static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -150,7 +150,7 @@ static int act_plazma_requisition (VisPluginData *plugin, int *width, int *heigh
 	return 0;
 }
 
-static int act_plazma_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_plazma_resize (VisPluginData *plugin, int width, int height)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -175,8 +175,7 @@ static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_plazma_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				act_plazma_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:

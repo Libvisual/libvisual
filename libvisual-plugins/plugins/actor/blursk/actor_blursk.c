@@ -33,7 +33,7 @@ const VisPluginInfo *get_plugin_info (void);
 static int act_blursk_init (VisPluginData *plugin);
 static int act_blursk_cleanup (VisPluginData *plugin);
 static int act_blursk_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_blursk_resize (VisPluginData *plugin, int width, int height);
 static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_blursk_palette (VisPluginData *plugin);
 static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -242,16 +242,12 @@ static int act_blursk_requisition (VisPluginData *plugin, int *width, int *heigh
         return 0;
 }
 
-static int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_blursk_resize (VisPluginData *plugin, int width, int height)
 {
         BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-        priv->video = video;
-
         priv->width = width;
         priv->height = height;
-
-        video->pitch = width;
 
         config.height = height;
         config.width = width;
@@ -276,8 +272,7 @@ static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
         {
 
             case VISUAL_EVENT_RESIZE:
-                act_blursk_dimension (plugin, ev.event.resize.video,
-                    ev.event.resize.width, ev.event.resize.height);
+                act_blursk_resize (plugin, ev.event.resize.width, ev.event.resize.height);
                 size_update = 1;
                 break;
 

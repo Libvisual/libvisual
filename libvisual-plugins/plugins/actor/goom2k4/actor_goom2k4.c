@@ -50,7 +50,7 @@ typedef struct {
 static int lv_goom_init (VisPluginData *plugin);
 static int lv_goom_cleanup (VisPluginData *plugin);
 static int lv_goom_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_goom_resize (VisPluginData *plugin, int width, int height);
 static int lv_goom_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_goom_palette (VisPluginData *plugin);
 static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -123,7 +123,7 @@ static int lv_goom_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-static int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_goom_resize (VisPluginData *plugin, int width, int height)
 {
 	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -139,9 +139,7 @@ static int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_goom_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
-
+				lv_goom_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			default: /* to avoid warnings */

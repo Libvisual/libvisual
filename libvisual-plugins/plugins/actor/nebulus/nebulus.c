@@ -69,11 +69,11 @@ GLint maxtexsize;
 static int lv_nebulus_init (VisPluginData *plugin);
 static int lv_nebulus_cleanup (VisPluginData *plugin);
 static int lv_nebulus_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_nebulus_resize (VisPluginData *plugin, int width, int height);
 static int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_nebulus_palette (VisPluginData *plugin);
 static int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-static int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
 static int nebulus_random_effect ();
 static int nebulus_detect_beat (int loudness);
 static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio);
@@ -213,12 +213,8 @@ static VisPalette *lv_nebulus_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int lv_nebulus_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_nebulus_resize (VisPluginData *plugin, int width, int height)
 {
-	visual_return_val_if_fail (video != NULL, -1);
-
-	visual_video_set_dimension (video, width, height);
-
 	glViewport (0, 0, width, height);
 
 	point_general->WIDTH = width;
@@ -234,8 +230,7 @@ static int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_nebulus_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_nebulus_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 			default:
 				break;

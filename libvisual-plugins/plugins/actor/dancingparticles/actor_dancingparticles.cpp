@@ -42,7 +42,7 @@ const char *curtitle = "Moeders";
 extern "C" int lv_dancingparticles_init (VisPluginData *plugin);
 extern "C" int lv_dancingparticles_cleanup (VisPluginData *plugin);
 extern "C" int lv_dancingparticles_requisition (VisPluginData *plugin, int *width, int *height);
-extern "C" int lv_dancingparticles_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+extern "C" int lv_dancingparticles_resize (VisPluginData *plugin, int width, int height);
 extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events);
 extern "C" VisPalette *lv_dancingparticles_palette (VisPluginData *plugin);
 extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -138,7 +138,7 @@ extern "C" int lv_dancingparticles_requisition (VisPluginData *plugin, int *widt
 	return 0;
 }
 
-extern "C" int lv_dancingparticles_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+extern "C" int lv_dancingparticles_resize (VisPluginData *plugin, int width, int height)
 {
 	glViewport(0, 0, width, height);
 
@@ -156,8 +156,7 @@ extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_dancingparticles_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_dancingparticles_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:

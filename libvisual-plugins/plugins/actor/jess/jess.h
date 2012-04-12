@@ -63,7 +63,6 @@ typedef struct {
 	uint8_t dimG[256];
 	uint8_t dimB[256];
 	uint8_t *bits;
-	uint8_t bpp;
 	uint8_t *pixel;
 	uint8_t *buffer;
 

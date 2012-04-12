@@ -83,7 +83,7 @@ const int PALETTEDATA[][NB_PALETTES] = {
   int lv_corona_init (VisPluginData *plugin);
   int lv_corona_cleanup (VisPluginData *plugin);
   int lv_corona_requisition (VisPluginData *plugin, int *width, int *height);
-  int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+  int lv_corona_resize (VisPluginData *plugin, int width, int height);
   int lv_corona_events (VisPluginData *plugin, VisEventQueue *events);
   VisPalette *lv_corona_palette (VisPluginData *plugin);
   int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -183,7 +183,7 @@ int lv_corona_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+int lv_corona_resize (VisPluginData *plugin, int width, int height)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -208,8 +208,7 @@ int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_corona_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_corona_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 
 				break;
 
@@ -237,7 +236,6 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	VisBuffer pcmb;
 	float freq[2][256];
 	float pcm[256];
-	VisVideo vidcorona;
 	short freqdata[2][512]; // FIXME Move to floats
 	unsigned long timemilli = 0;
 	int i;
@@ -275,12 +273,12 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	priv->corona->update(&priv->tl); // Update Corona
 	priv->pcyl->update(&priv->tl);    // Update Palette Cycler
 
-	visual_video_init (&vidcorona);
-	visual_video_set_depth (&vidcorona, VISUAL_VIDEO_DEPTH_8BIT);
-	visual_video_set_dimension (&vidcorona, video->width, video->height);
-	visual_video_set_buffer (&vidcorona, priv->corona->getSurface());
-
-	visual_video_mirror (video, &vidcorona, VISUAL_VIDEO_MIRROR_Y);
+	VisVideo *vidcorona = visual_video_new ();
+	visual_video_set_depth (vidcorona, VISUAL_VIDEO_DEPTH_8BIT);
+	visual_video_set_dimension (vidcorona, video->width, video->height);
+	visual_video_set_buffer (vidcorona, priv->corona->getSurface());
+	visual_video_mirror (video, vidcorona, VISUAL_VIDEO_MIRROR_Y);
+	visual_object_unref (VISUAL_OBJECT (vidcorona));
 
 	return 0;
 }

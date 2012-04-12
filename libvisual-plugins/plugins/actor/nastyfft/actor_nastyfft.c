@@ -59,10 +59,11 @@ typedef struct {
 static int lv_nastyfft_init (VisPluginData *plugin);
 static int lv_nastyfft_cleanup (VisPluginData *plugin);
 static int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_nastyfft_resize (VisPluginData *plugin, int width, int height);
 static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events);
 static int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 static VisPalette *lv_nastyfft_palette (VisPluginData *plugin);
-static int lv_nastyfft_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+
 
 static int nastyfft_sound (NastyfftPrivate *priv, VisAudio *audio);
 static int nastyfft_draw (NastyfftPrivate *priv, VisVideo *video);
@@ -181,15 +182,9 @@ static VisPalette *lv_nastyfft_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int lv_nastyfft_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_nastyfft_resize (VisPluginData *plugin, int width, int height)
 {
 	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-
-	visual_return_val_if_fail (plugin != NULL, -1);
-
-	visual_return_val_if_fail (video != NULL, -1);
-
-	visual_video_set_dimension (video, width, height);
 
 	priv->nw = width;
 	priv->nh = height;
@@ -210,9 +205,7 @@ static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_nastyfft_dimension (plugin,
-						ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_nastyfft_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 			case VISUAL_EVENT_MOUSEBUTTONUP:
 				priv->catch=0;

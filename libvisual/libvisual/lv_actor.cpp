@@ -390,8 +390,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDept
         actor->ditherpal = visual_palette_new (256);
 
     if (!noevent) {
-        visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->transform,
-                                       req_width, req_height);
+        visual_event_queue_add_resize (&actor->plugin->eventqueue, req_width, req_height);
     }
 
     return VISUAL_OK;
@@ -419,8 +418,7 @@ static int negotiate_video (VisActor *actor, int noevent)
     // here because plugins depend on this to receive information
     // about initial dimensions
     if (!noevent) {
-        visual_event_queue_add_resize (&actor->plugin->eventqueue, actor->video,
-                                       req_width, req_height);
+        visual_event_queue_add_resize (&actor->plugin->eventqueue, req_width, req_height);
     }
 
     return VISUAL_OK;

@@ -58,7 +58,7 @@ typedef struct {
 static int lv_flower_init (VisPluginData *plugin);
 static int lv_flower_cleanup (VisPluginData *plugin);
 static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_flower_resize (VisPluginData *plugin, int width, int height);
 static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_flower_palette (VisPluginData *plugin);
 static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -170,12 +170,10 @@ static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height
 	return 0;
 }
 
-static int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_flower_resize (VisPluginData *plugin, int width, int height)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	GLfloat ratio;
-
-	visual_video_set_dimension (video, width, height);
 
 	ratio = (GLfloat) width / (GLfloat) height;
 
@@ -201,8 +199,7 @@ static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_flower_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_flower_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			default: /* to avoid warnings */

@@ -64,7 +64,7 @@ static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src);
 static int act_gdkpixbuf_init (VisPluginData *plugin);
 static int act_gdkpixbuf_cleanup (VisPluginData *plugin);
 static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height);
 static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin);
 static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -171,7 +171,7 @@ static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *he
 	return 0;
 }
 
-int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
@@ -199,8 +199,7 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_gdkpixbuf_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				act_gdkpixbuf_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:

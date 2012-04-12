@@ -42,7 +42,7 @@ const VisPluginInfo *get_plugin_info (void);
 static int act_jakdaw_init (VisPluginData *plugin);
 static int act_jakdaw_cleanup (VisPluginData *plugin);
 static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_jakdaw_resize (VisPluginData *plugin, int width, int height);
 static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_jakdaw_palette (VisPluginData *plugin);
 static int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -178,11 +178,9 @@ static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *heigh
 	return 0;
 }
 
-static int act_jakdaw_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_jakdaw_resize (VisPluginData *plugin, int width, int height)
 {
 	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-
-	visual_video_set_dimension (video, width, height);
 
 	priv->xres = width;
 	priv->yres = height;
@@ -201,8 +199,7 @@ static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_jakdaw_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				act_jakdaw_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:

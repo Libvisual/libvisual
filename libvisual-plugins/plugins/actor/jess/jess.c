@@ -48,7 +48,7 @@ const VisPluginInfo *get_plugin_info (void);
 static int act_jess_init (VisPluginData *plugin);
 static int act_jess_cleanup (VisPluginData *plugin);
 static int act_jess_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_jess_resize (VisPluginData *plugin, int width, int height);
 static int act_jess_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_jess_palette (VisPluginData *plugin);
 static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -222,18 +222,9 @@ static int act_jess_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-static int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_jess_resize (VisPluginData *plugin, int width, int height)
 {
-	JessPrivate *priv;
-
-	visual_return_val_if_fail (plugin != NULL, -1);
-
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	if (priv == NULL) {
-		visual_log (VISUAL_LOG_ERROR,
-				_("The given plugin doesn't have private info"));
-		return -1;
-	}
+	JessPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	priv->resx = width;
 	priv->resy = height;
@@ -253,10 +244,6 @@ static int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width
 	if (priv->buffer != NULL)
 		visual_mem_free (priv->buffer);
 
-	priv->pitch = video->pitch;
-	priv->video = visual_video_depth_value_from_enum (video->depth);
-	priv->bpp = video->bpp;
-
 	ball_init (priv);
 	jess_init (priv);
 
@@ -270,8 +257,7 @@ static int act_jess_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_jess_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				act_jess_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 			default: /* to avoid warnings */
 				break;
@@ -341,6 +327,8 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	C_dEdt_moyen(priv);
 	C_dEdt(priv);
 
+	priv->pitch = video->pitch;
+	priv->video = visual_video_depth_value_from_enum (video->depth);
 	priv->pixel = ((uint8_t *) visual_video_get_pixels (video));
 
 	renderer (priv);

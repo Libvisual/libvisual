@@ -272,7 +272,7 @@ int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, V
 	return visual_event_queue_add (eventqueue, event);
 }
 
-int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, int width, int height)
+int visual_event_queue_add_resize (VisEventQueue *eventqueue, int width, int height)
 {
 	VisEvent *event;
 
@@ -283,7 +283,6 @@ int visual_event_queue_add_resize (VisEventQueue *eventqueue, VisVideo *video, i
 	event->type = VISUAL_EVENT_RESIZE;
 
 	/* FIXME ref counting */
-	event->event.resize.video = video;
 	event->event.resize.width = width;
 	event->event.resize.height = height;
 
