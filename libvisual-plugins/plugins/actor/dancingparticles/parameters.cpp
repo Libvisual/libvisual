@@ -1,8 +1,7 @@
-#include <iostream>
 #include "etoile.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include "t1font.h"
+#include <libvisual/libvisual.h>
+
 // or why use lex when..
 
 
@@ -16,38 +15,38 @@ int IKnowAboutConfigFile;
 parameters p_parsed;
 static  int newconfig = 1;
 
-enum { INT, STR, FLOAT, CHAR };
+enum { PARAM_INT, PARAM_STR, PARAM_FLOAT, PARAM_CHAR };
 struct param_params{ const char *pname; int type; void * where; };
 param_params pp[] =
-  { { "name", STR,  &p_parsed.name },
-    { "key", CHAR,  &p_parsed.key },
-    { "mode", INT,  &p_parsed.mode },
-    { "k", FLOAT,  &p_parsed.k },
-    { "d0min", FLOAT,  &p_parsed.d0min },
-    { "d1", FLOAT,  &p_parsed.d1 },
-    { "ag", FLOAT,  &p_parsed.ag },
-    { "agnumparts", INT,  &p_parsed.agnumparts },
-    { "antigorder", INT,  &p_parsed.antigorder },
-    { "maxantig", FLOAT,  &p_parsed.maxantig },
-    { "noagexplosion", INT,  &p_parsed.noagexplosion },
-    { "dancingpart", FLOAT,  &p_parsed.dancingpart },
-    { "dancingpartk", INT,  &p_parsed.dancingpartk },
-    { "velocity", FLOAT,  &p_parsed.velocity },
-    { "numfrq", INT,  &p_parsed.numfrq },
-    { "visc", FLOAT,  &p_parsed.visc },
-    { "rotspeed1", FLOAT,  &p_parsed.rotspeed1 },
-    { "rotspeed2", FLOAT,  &p_parsed.rotspeed2 },
-    { "strombo", FLOAT,  &p_parsed.strombo },
-    { "numpart", INT,  &p_parsed.numpart},
-    { "size", FLOAT,  &p_parsed.size},
-    { "sizeloudness", FLOAT,  &p_parsed.sizeloudness},
-    { "chance", INT,  &p_parsed.chance },
-    { "duration_f", INT,  &p_parsed.duration_f },
-    { "duration_b", INT,  &p_parsed.duration_b },
+  { { "name", PARAM_STR,  &p_parsed.name },
+    { "key", PARAM_CHAR,  &p_parsed.key },
+    { "mode", PARAM_INT,  &p_parsed.mode },
+    { "k", PARAM_FLOAT,  &p_parsed.k },
+    { "d0min", PARAM_FLOAT,  &p_parsed.d0min },
+    { "d1", PARAM_FLOAT,  &p_parsed.d1 },
+    { "ag", PARAM_FLOAT,  &p_parsed.ag },
+    { "agnumparts", PARAM_INT,  &p_parsed.agnumparts },
+    { "antigorder", PARAM_INT,  &p_parsed.antigorder },
+    { "maxantig", PARAM_FLOAT,  &p_parsed.maxantig },
+    { "noagexplosion", PARAM_INT,  &p_parsed.noagexplosion },
+    { "dancingpart", PARAM_FLOAT,  &p_parsed.dancingpart },
+    { "dancingpartk", PARAM_INT,  &p_parsed.dancingpartk },
+    { "velocity", PARAM_FLOAT,  &p_parsed.velocity },
+    { "numfrq", PARAM_INT,  &p_parsed.numfrq },
+    { "visc", PARAM_FLOAT,  &p_parsed.visc },
+    { "rotspeed1", PARAM_FLOAT,  &p_parsed.rotspeed1 },
+    { "rotspeed2", PARAM_FLOAT,  &p_parsed.rotspeed2 },
+    { "strombo", PARAM_FLOAT,  &p_parsed.strombo },
+    { "numpart", PARAM_INT,  &p_parsed.numpart},
+    { "size", PARAM_FLOAT,  &p_parsed.size},
+    { "sizeloudness", PARAM_FLOAT,  &p_parsed.sizeloudness},
+    { "chance", PARAM_INT,  &p_parsed.chance },
+    { "duration_f", PARAM_INT,  &p_parsed.duration_f },
+    { "duration_b", PARAM_INT,  &p_parsed.duration_b },
 
 
-    { "MaxParticles", INT,  &ptsNumMax },
-    { "IKnowAboutConfigFile", INT,  &IKnowAboutConfigFile },
+    { "MaxParticles", PARAM_INT,  &ptsNumMax },
+    { "IKnowAboutConfigFile", PARAM_INT,  &IKnowAboutConfigFile },
   };
 int numpp= sizeof(pp)/sizeof(pp[0]);
 
@@ -130,7 +129,7 @@ int load_parameters(const char * filename)
 			      if(strcmp(ps[i].name, word)==0)
 				{
 				  p_parsed = ps[i];
-				  p_parsed.name = strdup(p_parsed.name);
+				  p_parsed.name = visual_strdup(p_parsed.name);
 				  break;
 				}
 			    }
@@ -179,21 +178,21 @@ int load_parameters(const char * filename)
 			{
 			  switch (pp[i].type)
 			    {
-			    case INT:
+			    case PARAM_INT:
 			      sscanf(val, "%d", (int *)pp[i].where);
 			      break;
-			    case FLOAT:
+			    case PARAM_FLOAT:
 				  float val2 ;
 				  val2 = atof(val);
 				  *((float *)pp[i].where) = val2;
 			      break;
-			    case CHAR:
+			    case PARAM_CHAR:
 			      sscanf(val, "%c", (char *)pp[i].where);
 			      break;
-			    case STR:
+			    case PARAM_STR:
 			      if(*(char **)pp[i].where)
 				free(*(char **)pp[i].where);
-			      *(char **)pp[i].where = strdup(val);
+			      *(char **)pp[i].where = visual_strdup(val);
 			      break;
 			    }
 			  break;

@@ -1,17 +1,10 @@
-
-#include <pthread.h>
-#include <sched.h>
-
-
-#include <math.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
 #include "gl.h"
 #include "etoile.h"
 
-
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <pthread.h>
+#include <sched.h>
 
 GLfloat heights[NUM_BANDS];
 extern pthread_mutex_t height_mutex;

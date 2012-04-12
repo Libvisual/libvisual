@@ -21,24 +21,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <math.h>
-#include <gettext.h>
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-
+#include "config.h"
+#include "actor_dancingparticles.h"
 #include "gl.h"
 #include "fastmath.h"
 #include "etoile.h"
 
-#include "actor_dancingparticles.h"
+#include <cmath>
+#include <gettext.h>
+#include <GL/gl.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
