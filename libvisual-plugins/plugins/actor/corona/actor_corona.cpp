@@ -187,8 +187,6 @@ int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int 
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_video_set_dimension (video, width, height);
-
 	delete priv->corona;
 	delete priv->pcyl;
 

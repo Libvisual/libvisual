@@ -208,8 +208,6 @@ static int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int wi
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_video_set_dimension (video, width, height);
-
 	oinksie_size_set (&priv->priv1, video->width, video->height);
 	oinksie_size_set (&priv->priv2, video->width, video->height);
 

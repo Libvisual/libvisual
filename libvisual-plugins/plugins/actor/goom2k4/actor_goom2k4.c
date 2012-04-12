@@ -127,8 +127,6 @@ static int lv_goom_dimension (VisPluginData *plugin, VisVideo *video, int width,
 {
 	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_video_set_dimension (video, width, height);
-
 	goom_set_resolution (priv->goominfo, width, height);
 
 	return 0;

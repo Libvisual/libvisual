@@ -181,8 +181,6 @@ int lv_gforce_dimension (VisPluginData *plugin, VisVideo *video, int width, int 
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	Rect r;
 
-	visual_video_set_dimension (video, width, height);
-
 	SetRect (&r, 0, 0, width, height);
 	priv->gGF->SetWinPort (0, &r);
 

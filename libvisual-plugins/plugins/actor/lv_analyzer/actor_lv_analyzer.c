@@ -256,8 +256,6 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 			{
 			        int total_space;
 
-				visual_video_set_dimension (ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
 				priv->width = ev.event.resize.video->width;
 				priv->height = ev.event.resize.video->height;
 

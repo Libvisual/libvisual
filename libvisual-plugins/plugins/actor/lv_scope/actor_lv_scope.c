@@ -140,8 +140,6 @@ static int lv_scope_requisition (VisPluginData *plugin, int *width, int *height)
 
 static int lv_scope_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
 {
-	visual_video_set_dimension (video, width, height);
-
 	return 0;
 }
 

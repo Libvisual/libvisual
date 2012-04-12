@@ -238,8 +238,6 @@ static int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width
 	priv->resx = width;
 	priv->resy = height;
 
-	visual_video_set_dimension (video, width, height);
-
 	if (priv->table1 != NULL)
 		visual_mem_free (priv->table1);
 

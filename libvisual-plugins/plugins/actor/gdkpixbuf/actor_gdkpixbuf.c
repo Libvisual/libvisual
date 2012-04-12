@@ -175,8 +175,6 @@ int act_gdkpixbuf_dimension (VisPluginData *plugin, VisVideo *video, int width, 
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_video_set_dimension (video, width, height);
-
 	priv->width = width;
 	priv->height = height;
 

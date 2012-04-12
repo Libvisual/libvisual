@@ -174,10 +174,6 @@ static int act_bumpscope_dimension (VisPluginData *plugin, VisVideo *video, int 
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_video_set_dimension (video, width, height);
-
-	priv->video = video;
-
 	priv->width = width;
 	priv->height = height;
 
@@ -255,7 +251,6 @@ static VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-
 	priv->video = video;
 
 	visual_audio_get_sample_mixed (audio, priv->pcmbuf, TRUE, 2,
