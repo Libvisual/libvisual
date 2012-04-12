@@ -432,7 +432,7 @@ VisPluginRef *visual_plugin_get_reference (char const* plugin_path)
     }
 
 #if defined(VISUAL_OS_WIN32)
-    int* plugin_version = static_cast<int*> (GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG));
+    int* plugin_version = reinterpret_cast<int*> (GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG));
 #else
     int* plugin_version = static_cast<int*> (dlsym (handle, VISUAL_PLUGIN_VERSION_TAG));
 #endif

@@ -195,7 +195,7 @@ namespace LV {
               std::string full_path = dir + "/" + file_data.cFileName;
 
               if (str_has_suffix (full_path, ".dll")) {
-                  VisPluginRef* ref = visual_plugin_get_references (full_path.c_str (), &count);
+                  VisPluginRef* ref = visual_plugin_get_reference (full_path.c_str ());
 
                   if (ref) {
                       list.push_back (ref);
