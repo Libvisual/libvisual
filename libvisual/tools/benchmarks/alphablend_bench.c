@@ -18,7 +18,7 @@ int main (int argc, char **argv)
 	visual_video_allocate_buffer (dest);
 
 	src = visual_video_new ();
-	visual_video_clone (src, dest);
+	visual_video_copy_attrs (src, dest);
 	visual_video_allocate_buffer (src);
 
 	for (i = 0; i < TIMES; i++)

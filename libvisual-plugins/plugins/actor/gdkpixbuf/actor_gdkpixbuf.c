@@ -401,7 +401,7 @@ static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src)
 	if (visual_video_get_pixels (target) != NULL)
 		visual_video_free_buffer (target);
 
-	visual_video_clone (target, &bgr);
+	visual_video_copy_attrs (target, &bgr);
 	visual_video_allocate_buffer (target);
 
 	/* Gdk uses a different color order than we do */

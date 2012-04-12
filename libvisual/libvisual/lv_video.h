@@ -269,7 +269,7 @@ int visual_video_have_allocated_buffer (VisVideo *video);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-int visual_video_clone (VisVideo *dest, VisVideo *src);
+int visual_video_copy_attrs (VisVideo *dest, VisVideo *src);
 
 /**
  * Checks if two VisVideo objects are the same depth, pitch and dimension wise.
@@ -279,7 +279,7 @@ int visual_video_clone (VisVideo *dest, VisVideo *src);
  *
  * @return FALSE on different, TRUE on same, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-int visual_video_compare (VisVideo *src1, VisVideo *src2);
+int visual_video_compare_attrs (VisVideo *src1, VisVideo *src2);
 
 /**
  * Checks if two VisVideo objects are the same depth and dimension wise.
@@ -289,7 +289,7 @@ int visual_video_compare (VisVideo *src1, VisVideo *src2);
  *
  * @return FALSE on different, TRUE on same, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-int visual_video_compare_ignore_pitch (VisVideo *src1, VisVideo *src2);
+int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *src2);
 
 /**
  * Sets a palette to a VisVideo. Links a VisPalette to the

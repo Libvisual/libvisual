@@ -229,7 +229,7 @@ static void precompute_row_table (VisVideo *video)
 		*table++ = row;
 }
 
-int visual_video_clone (VisVideo *dest, VisVideo *src)
+int visual_video_copy_attrs (VisVideo *dest, VisVideo *src)
 {
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_VIDEO_NULL);
@@ -241,12 +241,12 @@ int visual_video_clone (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
-int visual_video_compare (VisVideo *src1, VisVideo *src2)
+int visual_video_compare_attrs (VisVideo *src1, VisVideo *src2)
 {
 	visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	if (!visual_video_compare_ignore_pitch (src1, src2))
+	if (!visual_video_compare_attrs_ignore_pitch (src1, src2))
 		return FALSE;
 
 	if (src1->pitch != src2->pitch)
@@ -256,7 +256,7 @@ int visual_video_compare (VisVideo *src1, VisVideo *src2)
 	return TRUE;
 }
 
-int visual_video_compare_ignore_pitch (VisVideo *src1, VisVideo *src2)
+int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *src2)
 {
 	visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_VIDEO_NULL);
 	visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_VIDEO_NULL);
@@ -1116,7 +1116,7 @@ out:
 
 int visual_video_flip_pixel_bytes (VisVideo *dest, VisVideo *src)
 {
-	visual_return_val_if_fail (visual_video_compare (dest, src), -VISUAL_ERROR_VIDEO_NOT_INDENTICAL);
+	visual_return_val_if_fail (visual_video_compare_attrs (dest, src), -VISUAL_ERROR_VIDEO_NOT_INDENTICAL);
 	visual_return_val_if_fail (visual_video_get_pixels (dest) != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 	visual_return_val_if_fail (visual_video_get_pixels (src)  != NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL);
 
@@ -1507,7 +1507,7 @@ int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod metho
 
 	/* If the dest and source are equal in dimension and scale_method is nearest, do a
 	 * blit overlay */
-	if (visual_video_compare_ignore_pitch (dest, src) && method == VISUAL_VIDEO_SCALE_NEAREST) {
+	if (visual_video_compare_attrs_ignore_pitch (dest, src) && method == VISUAL_VIDEO_SCALE_NEAREST) {
 		visual_video_blit_overlay (dest, src, 0, 0, FALSE);
 
 		return VISUAL_OK;

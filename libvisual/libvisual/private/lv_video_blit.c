@@ -23,7 +23,7 @@ int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 
 	/* src and dest are completely equal, do one big mem copy instead of a per line mem copy.
 	 * Also check if the pitch is equal to it's width * bpp, this is because of subregions. */
-	if (visual_video_compare (dest, src) && (src->pitch == (src->width * src->bpp))) {
+	if (visual_video_compare_attrs (dest, src) && (src->pitch == (src->width * src->bpp))) {
 		visual_mem_copy (destbuf, srcbuf, visual_video_get_size (dest));
 
 		return VISUAL_OK;

@@ -304,7 +304,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 		}
 
 		visual_video_free_buffer (video);
-		visual_video_clone (video, bin->actvideo);
+		visual_video_copy_attrs (video, bin->actvideo);
 
 		visual_log (VISUAL_LOG_DEBUG, "pitches actvideo %d, new video %d", bin->actvideo->pitch, video->pitch);
 
@@ -360,7 +360,7 @@ int visual_bin_sync (VisBin *bin, int noevent)
 
 		visual_video_free_buffer (actvideo);
 
-		visual_video_clone (actvideo, video);
+		visual_video_copy_attrs (actvideo, video);
 
 		if (bin->actor->video->depth != VISUAL_VIDEO_DEPTH_GL)
 			visual_video_allocate_buffer (actvideo);
@@ -490,7 +490,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 
 	video = visual_video_new ();
 
-	visual_video_clone (video, bin->actvideo);
+	visual_video_copy_attrs (video, bin->actvideo);
 
 	depthflag = visual_actor_get_supported_depth (actor);
 	if (visual_video_depth_is_supported (depthflag, VISUAL_VIDEO_DEPTH_GL)) {
@@ -646,7 +646,7 @@ int visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 				bin->actvideo->depth, bin->actmorph->video->depth);
 
 		visual_log (VISUAL_LOG_DEBUG, "phase 2");
-		visual_video_clone (privvid, bin->actvideo);
+		visual_video_copy_attrs (privvid, bin->actvideo);
 		visual_log (VISUAL_LOG_DEBUG, "phase 3 pitch privvid %d actvideo %d", privvid->pitch, bin->actvideo->pitch);
 
 		visual_video_allocate_buffer (privvid);

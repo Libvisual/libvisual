@@ -32,8 +32,8 @@ int main (int argc, char **argv)
 	src1 = visual_video_new ();
 	src2 = visual_video_new ();
 
-	visual_video_clone (src1, dest);
-	visual_video_clone (src2, dest);
+	visual_video_copy_attrs (src1, dest);
+	visual_video_copy_attrs (src2, dest);
 
 	visual_video_allocate_buffer (src1);
 	visual_video_allocate_buffer (src2);
