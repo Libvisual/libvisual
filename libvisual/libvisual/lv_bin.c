@@ -29,7 +29,7 @@
 
 /* WARNING: Utterly shit ahead, i've screwed up on this and i need to
  * rewrite it. And i can't say i feel like it at the moment so be
- * patient :) */
+ * patient :)  */
 
 static int bin_dtor (VisObject *object);
 
@@ -210,6 +210,7 @@ VisMorph *visual_bin_get_morph (VisBin *bin)
 	return bin->morph;
 }
 
+/*
 int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
 {
 	visual_return_val_if_fail (bin != NULL, -1);
@@ -219,41 +220,53 @@ int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
 
 	return 0;
 }
+*/
+
+int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
+{
+    int depthflag;
+    int depth;
+
+    visual_return_val_if_fail (bin != NULL, -1);
+    visual_return_val_if_fail(actor != NULL, -1);
+    visual_return_val_if_fail(input != NULL, -1);
+
+    visual_bin_set_actor (bin, actor);
+    visual_bin_set_input (bin, input);
+
+    depthflag = visual_actor_get_supported_depth(actor);
+
+    if(depthflag == VISUAL_VIDEO_DEPTH_GL)
+        visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
+    else
+    {
+        depth = bin_get_depth_using_preferred(bin, depthflag);
+        
+        if((bin->depthflag & depth) > 0)
+            visual_bin_set_depth(bin, depth);
+        else {
+            visual_bin_set_depth(bin,
+                visual_video_depth_get_highest_nogl(bin->depthflag));
+        }
+    }
+
+    bin->depthforcedmain = bin->depth;
+
+    return 0;
+}
 
 int visual_bin_connect_by_names (VisBin *bin, char *actname, char *inname)
 {
 	VisActor *actor;
 	VisInput *input;
-	int depthflag;
-	int depth;
+	//int depthflag;
+	//int depth;
 
 	visual_return_val_if_fail (bin != NULL, -1);
 
 	/* Create the actor */
 	actor = visual_actor_new (actname);
 	visual_return_val_if_fail (actor != NULL, -1);
-
-	/* Check and set required depth */
-	depthflag = visual_actor_get_supported_depth (actor);
-
-	/* GL plugin, and ONLY a GL plugin */
-	if (depthflag == VISUAL_VIDEO_DEPTH_GL)
-		visual_bin_set_depth (bin, VISUAL_VIDEO_DEPTH_GL);
-	else {
-		depth = bin_get_depth_using_preferred (bin, depthflag);
-
-		/* Is supported within bin natively */
-		if ((bin->depthflag & depth) > 0) {
-			visual_bin_set_depth (bin, depth);
-		} else {
-			/* Not supported by the bin, taking the highest depth from the bin */
-			visual_bin_set_depth (bin,
-				visual_video_depth_get_highest_nogl (bin->depthflag));
-		}
-	}
-
-	/* Initialize the managed depth */
-	bin->depthforcedmain = bin->depth;
 
 	/* Create the input */
 	input = visual_input_new (inname);
