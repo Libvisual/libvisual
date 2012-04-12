@@ -323,7 +323,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor);
  * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL,
  * 	-VISUAL_ERROR_ACTOR_VIDEO_NULL or -VISUAL_ERROR_ACTOR_GL_NEGOTIATE on failure.
  */
-int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced);
+int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced);
 
 /**
  * Gives the by the plugin natively supported depths
