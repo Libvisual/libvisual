@@ -9,15 +9,15 @@ namespace LV {
 
   class Module;
 
-  typedef IntrusivePtr<Module> SharedModule;
+  typedef IntrusivePtr<Module> ModulePtr;
 
   class Module
   {
   public:
 
-      static SharedModule load (std::string const& path)
+      static ModulePtr load (std::string const& path)
       {
-          return SharedModule (new Module (path));
+          return ModulePtr (new Module (path));
       }
 
       ~Module ();
@@ -40,12 +40,12 @@ namespace LV {
       friend void intrusive_ptr_release (Module* module);
   };
 
-  void intrusive_ptr_add_ref (Module* module)
+  inline void intrusive_ptr_add_ref (Module* module)
   {
       module->m_ref_count++;
   }
 
-  void intrusive_ptr_release (Module* module)
+  inline void intrusive_ptr_release (Module* module)
   {
       module->m_ref_count--;
       if (module->m_ref_count == 0) {
