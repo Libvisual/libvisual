@@ -75,8 +75,8 @@ static const char *shorten_filename (const char* filename, unsigned int parts)
 		s--;
 	}
 
-	/* We found the 2nd /, return the substring that begins right after it */
-	return s + 1;
+	/* We found the final /. Return the substring that begins right after it */
+	return s + 2;
 }
 
 void visual_log_set_verbosity (VisLogSeverity level)
