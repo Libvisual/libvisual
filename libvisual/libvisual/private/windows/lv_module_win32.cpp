@@ -11,14 +11,18 @@ namespace LV {
   {
   public:
 
-      HMODULE handle;
+      HMODULE     handle;
+      std::string path;
   };
 
   Module::Module (std::string const& path)
       : m_impl (new Impl)
-      , m_ref_count (0)
+      , m_ref_count (1)
   {
+      visual_log (VISUAL_LOG_DEBUG, "Loading DLL: %s", path.c_str ());
+
       m_impl->handle = LoadLibrary (path.c_str ());
+      m_impl->path = path;
 
       if (!m_impl->handle) {
           std::ostringstream msg;
@@ -29,6 +33,8 @@ namespace LV {
 
   Module::~Module ()
   {
+      visual_log (VISUAL_LOG_DEBUG, "Unloading DLL: %s", m_impl->path.c_str ());
+
       FreeLibrary (m_impl->handle);
   }
 
