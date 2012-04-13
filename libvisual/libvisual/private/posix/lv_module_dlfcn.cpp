@@ -14,6 +14,7 @@ namespace LV {
 
   Module::Module (std::string const& path)
       : m_impl (new Impl)
+      , m_ref_count (0)
   {
       m_impl->handle = dlopen (path.c_str(), RTLD_LAZY);
 

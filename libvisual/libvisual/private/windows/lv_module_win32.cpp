@@ -16,6 +16,7 @@ namespace LV {
 
   Module::Module (std::string const& path)
       : m_impl (new Impl)
+      , m_ref_count (0)
   {
       m_impl->handle = LoadLibrary (path.c_str ());
 
