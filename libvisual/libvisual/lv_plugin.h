@@ -30,10 +30,6 @@
 #include <libvisual/lv_param.h>
 #include <libvisual/lv_random.h>
 
-#if defined(VISUAL_OS_WIN32)
-#include <windows.h>
-#endif
-
 /**
  * @defgroup VisPlugin VisPlugin
  * @{
@@ -392,6 +388,7 @@ VISUAL_END_DECLS
 
 #ifdef __cplusplus
 
+#include <libvisual/lv_module.hpp>
 #include <vector>
 #include <string>
 
@@ -401,11 +398,7 @@ namespace LV {
   {
       std::string          file;
       VisPluginInfo const* info;
-#if defined(VISUAL_OS_WIN32)
-      HMODULE              handle;
-#else
-      void*                handle;
-#endif
+      ModulePtr            module;
   };
 
   typedef std::vector<PluginRef*> PluginList;

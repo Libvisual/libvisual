@@ -10,6 +10,7 @@
 #include "lv_transform.h"
 #include "lv_util.hpp"
 #include "lv_libvisual.h"
+#include "lv_module.hpp"
 #include "gettext.h"
 
 #include <vector>
@@ -20,11 +21,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <dirent.h>
-#include <dlfcn.h>
-
-#if defined(VISUAL_OS_WIN32)
+#ifdef VISUAL_OS_WIN32
 #include <windows.h>
+#else
+#include <dirent.h>
 #endif
 
 namespace LV {
@@ -79,96 +79,57 @@ namespace LV {
       void get_plugins_from_dir (PluginList& list, std::string const& dir);
   };
 
-  PluginRef *load_plugin_ref (std::string const& plugin_path)
+  PluginRef* load_plugin_ref (std::string const& plugin_path)
   {
       // NOTE: This does not check if a plugin has already been loaded
 
-#if defined(VISUAL_OS_WIN32)
-      HMODULE handle = LoadLibrary (plugin_path.c_str ());
-#else
-      void* handle = dlopen (plugin_path.c_str (), RTLD_LAZY);
-#endif
+	  try {
+		  ModulePtr module = Module::load (plugin_path);
+		  
+		  int* plugin_version = static_cast<int*> (module->get_symbol (VISUAL_PLUGIN_VERSION_TAG));
 
-      if (!handle) {
-#if defined(VISUAL_OS_WIN32)
-          visual_log (VISUAL_LOG_ERROR, "Cannot load plugin: win32 error code: %ld", GetLastError());
-#else
-          visual_log (VISUAL_LOG_ERROR, _("Cannot load plugin: %s"), dlerror ());
-#endif
+		  if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
+			  visual_log (VISUAL_LOG_ERROR, _("Plugin %s is not compatible with version %s of libvisual"),
+						  plugin_path.c_str (), visual_get_version ());
+			  return NULL;
+		  }
 
+		  VisPluginGetInfoFunc get_plugin_info =
+			  reinterpret_cast<VisPluginGetInfoFunc> (module->get_symbol ("get_plugin_info"));
+
+		  if (!get_plugin_info) {
+#if defined(VISUAL_OS_WIN32)
+			  visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %ld", GetLastError ());
+#else
+			  visual_log (VISUAL_LOG_ERROR, _("Cannot initialize plugin: %s"), dlerror ());
+       
+#endif
+			  return NULL;
+		  }
+
+		  VisPluginInfo const* plugin_info = get_plugin_info ();
+
+		  if (!plugin_info) {
+			  visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info"));
+			  return NULL;
+		  }
+
+		  PluginRef* ref = new PluginRef;
+
+		  ref->info   = plugin_info;
+		  ref->file   = plugin_path;
+		  ref->module = module;
+
+		  return ref;
+	  }
+	  catch (LV::Error& error) {
+          visual_log (VISUAL_LOG_ERROR, "Cannot load plugin (%s): %s", plugin_path.c_str (), error.what());
           return NULL;
       }
-      
-#if defined(VISUAL_OS_WIN32)
-      int* plugin_version = reinterpret_cast<int*> (GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG));
-#else
-      int* plugin_version = static_cast<int*> (dlsym (handle, VISUAL_PLUGIN_VERSION_TAG));
-#endif
-
-      if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
-          visual_log (VISUAL_LOG_ERROR, _("Plugin %s is not compatible with version %s of libvisual"),
-                      plugin_path.c_str (), visual_get_version ());
-
-#if defined(VISUAL_OS_WIN32)
-          FreeLibrary (handle);
-#else
-          dlclose (handle);
-#endif
-
-          return NULL;
-      }
-
-      VisPluginGetInfoFunc get_plugin_info;
-    
-#if defined(VISUAL_OS_WIN32)
-      get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (GetProcAddress (handle, "get_plugin_info"));
-#else
-      get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (dlsym (handle, "get_plugin_info"));
-#endif
-
-      if (!get_plugin_info) {
-#if defined(VISUAL_OS_WIN32)
-          visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %ld", GetLastError ());
-
-          FreeLibrary (handle);
-#else
-          visual_log (VISUAL_LOG_ERROR, _("Cannot initialize plugin: %s"), dlerror ());
-        
-          dlclose (handle);
-#endif
-          return NULL;
-      }
-
-      VisPluginInfo const* plugin_info = get_plugin_info ();
-
-      if (!plugin_info) {
-          visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info"));
-
-#if defined(VISUAL_OS_WIN32)
-          FreeLibrary (handle);
-#else
-          dlclose (handle);
-#endif
-
-          return NULL;
-      }
-
-      PluginRef* ref = new PluginRef;
-
-      ref->info   = plugin_info;
-      ref->file   = plugin_path;
-      ref->handle = handle;
-
-      return ref;
   }
 
   void delete_plugin_ref (PluginRef* ref)
   {
-#if defined(VISUAL_OS_WIN32)
-      FreeLibrary (ref->handle);
-#else
-      dlclose (ref->handle);
-#endif
       delete ref;
   }
 
