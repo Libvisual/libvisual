@@ -55,6 +55,30 @@ static int is_valid_severity (VisLogSeverity severity)
     return (severity >= VISUAL_LOG_DEBUG && severity <= VISUAL_LOG_CRITICAL);
 }
 
+static const char *shorten_filename (const char* filename, unsigned int parts)
+{
+	/* Start looking for '/' from the end of the filename */
+	const char *s = filename + strlen (filename);
+
+	unsigned int i;
+
+	for (i = 0; i < parts; i++) {
+		/* Scan backwards until we hit '/' or the beginning of the string */
+		while (s != filename && *s != '/')
+			s--;
+
+		/* If we hit the beginning, we just return the filename, unmodified */
+		if (s == filename)
+			return filename;
+
+		/* Skip this instance of / */
+		s--;
+	}
+
+	/* We found the 2nd /, return the substring that begins right after it */
+	return s + 1;
+}
+
 void visual_log_set_verbosity (VisLogSeverity level)
 {
 	verbosity = level;
@@ -102,7 +126,7 @@ void _lv_log (VisLogSeverity severity,
 	va_end (va);
 
 #if defined(_LV_LOG_HAVE_SOURCE)
-	source.file = file;
+	source.file = shorten_filename (file, 3);
 	source.func = funcname;
 	source.line = line;
 #else
