@@ -390,7 +390,8 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDept
         actor->ditherpal = visual_palette_new (256);
 
     if (!noevent) {
-        visual_event_queue_add_resize (&actor->plugin->eventqueue, req_width, req_height);
+        visual_event_queue_add (actor->plugin->eventqueue,
+                                visual_event_new_resize (req_width, req_height));
     }
 
     return VISUAL_OK;
@@ -418,7 +419,8 @@ static int negotiate_video (VisActor *actor, int noevent)
     // here because plugins depend on this to receive information
     // about initial dimensions
     if (!noevent) {
-        visual_event_queue_add_resize (&actor->plugin->eventqueue, req_width, req_height);
+        visual_event_queue_add (actor->plugin->eventqueue,
+                                visual_event_new_resize (req_width, req_height));
     }
 
     return VISUAL_OK;
@@ -504,9 +506,8 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 
         visual_songinfo_mark (actplugin->songinfo);
 
-        visual_event_queue_add_newsong (
-            visual_plugin_get_eventqueue (plugin),
-            actplugin->songinfo);
+        visual_event_queue_add (visual_plugin_get_eventqueue (plugin),
+                                visual_event_new_newsong (actplugin->songinfo));
 
         visual_songinfo_copy (actor->songcompare, actplugin->songinfo);
     }

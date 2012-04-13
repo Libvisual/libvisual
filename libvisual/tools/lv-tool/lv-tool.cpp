@@ -357,8 +357,7 @@ int main (int argc, char **argv)
         visual_bin_depth_changed(bin);
 
         // get a queue to handle events
-        VisEventQueue *localqueue;
-        localqueue = visual_event_queue_new ();
+        VisEventQueue localqueue;
 
         // main loop
         bool running = true;
@@ -366,20 +365,19 @@ int main (int argc, char **argv)
 
         while (running)
         {
-            VisEventQueue *pluginqueue;
-            VisEvent *ev;
+            LV::Event ev;
 
             // Handle all events
-            display.drain_events(*localqueue);
+            display.drain_events(localqueue);
 
-            pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin->actor));
+            LV::EventQueue* pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin->actor));
 
-            while (visual_event_queue_poll_by_reference(localqueue, &ev))
+            while (localqueue.poll(ev))
             {
-                if(ev->type != VISUAL_EVENT_RESIZE)
-                    visual_event_queue_add (pluginqueue, ev);
+                if(ev.type != VISUAL_EVENT_RESIZE)
+                    pluginqueue->add (ev);
 
-                switch (ev->type)
+                switch (ev.type)
                 {
                     case VISUAL_EVENT_PARAM:
                     {
@@ -389,8 +387,8 @@ int main (int argc, char **argv)
                     case VISUAL_EVENT_RESIZE:
                     {
                         display.lock();
-                        width = ev->event.resize.width;
-                        height = ev->event.resize.height;
+                        width = ev.event.resize.width;
+                        height = ev.event.resize.height;
                         display.create(depth, vidoptions, width, height, true);
                         video = display.get_video ();
 
@@ -443,7 +441,7 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_KEYDOWN:
                     {
-                        switch(ev->event.keyboard.keysym.sym)
+                        switch(ev.event.keyboard.keysym.sym)
                         {
                             case VKEY_ESCAPE:
                             {
@@ -476,7 +474,7 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_VISIBILITY:
                     {
-                        visible = ev->event.visibility.is_visible;
+                        visible = ev.event.visibility.is_visible;
                         break;
                     }
 

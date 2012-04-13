@@ -214,11 +214,11 @@ struct _VisPluginData {
 	VisPluginRef        *ref;         /**< Pointer to the plugin references corresponding to this VisPluginData. */
 	VisPluginInfo       *info;        /**< Pointer to the VisPluginInfo that is obtained from the plugin. */
 
-	VisEventQueue        eventqueue;  /**< The plugin it's VisEventQueue for queueing events. */
+	VisEventQueue       *eventqueue;  /**< The plugin it's VisEventQueue for queueing events. */
 	VisParamContainer   *params;      /**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
 	int                  plugflags;   /**< Plugin flags, currently unused but will be used in the future. */
 
-	VisRandomContext	*random;      /**< Pointer to the plugin it's private random context. It's highly adviced to use
+	VisRandomContext    *random;      /**< Pointer to the plugin it's private random context. It's highly adviced to use
 	                                     * the plugin it's randomize functions. The reason is so more advanced apps can
 	                                     * semi reproduce visuals. */
 

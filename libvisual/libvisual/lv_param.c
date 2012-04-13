@@ -375,8 +375,8 @@ int visual_param_entry_changed (VisParamEntry *param)
 
     eventqueue = param->parent->eventqueue;
 
-    if (eventqueue != NULL)
-        visual_event_queue_add_param (eventqueue, param);
+    if (eventqueue)
+        visual_event_queue_add (eventqueue, visual_event_new_param (param));
 
     visual_param_entry_notify_callbacks (param);
 

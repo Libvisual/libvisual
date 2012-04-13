@@ -38,7 +38,6 @@ VISUAL_BEGIN_DECLS
  * The basic keys are also mapped as in the ASCII table so basic
  * keyboard support is easy to implement within a libvisual client.
  *
- * @see visual_event_queue_add_keyboard
  */
 typedef enum {
 	VKEY_UNKNOWN		= 0,

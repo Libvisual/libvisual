@@ -236,10 +236,12 @@ namespace {
 
           if (((SDL_GetAppState () & SDL_APPACTIVE) == 0) && m_active) {
               m_active = false;
-              visual_event_queue_add_visibility (&eventqueue, FALSE);
+              visual_event_queue_add (&eventqueue,
+                                      visual_event_new_visibility (FALSE));
           } else if (((SDL_GetAppState () & SDL_APPACTIVE) != 0) && !m_active) {
               m_active = true;
-              visual_event_queue_add_visibility (&eventqueue, TRUE);
+              visual_event_queue_add (&eventqueue,
+                                      visual_event_new_visibility (TRUE));
           }
 
           // Events
@@ -250,37 +252,52 @@ namespace {
 
               switch (event.type) {
               case SDL_KEYUP:
-                  visual_event_queue_add_keyboard (&eventqueue, VisKey(event.key.keysym.sym), event.key.keysym.mod,
-                                                   VISUAL_KEY_UP);
+                  visual_event_queue_add (&eventqueue,
+                                          visual_event_new_keyboard (VisKey(event.key.keysym.sym),
+                                                                     event.key.keysym.mod,
+                                                                     VISUAL_KEY_UP));
                   break;
 
               case SDL_KEYDOWN:
-                  visual_event_queue_add_keyboard (&eventqueue, VisKey(event.key.keysym.sym), event.key.keysym.mod,
-                                                   VISUAL_KEY_DOWN);
+                  visual_event_queue_add (&eventqueue,
+                                          visual_event_new_keyboard (VisKey(event.key.keysym.sym),
+                                                                     event.key.keysym.mod,
+                                                                     VISUAL_KEY_DOWN));
                   break;
 
               case SDL_VIDEORESIZE:
-                  visual_event_queue_add_resize (&eventqueue, event.resize.w, event.resize.h);
+                  visual_event_queue_add (&eventqueue,
+                                          visual_event_new_resize (event.resize.w,
+                                                                   event.resize.h));
 
                   create (m_display.get_screen ()->depth, NULL, event.resize.w, event.resize.h, m_resizable);
                   break;
 
               case SDL_MOUSEMOTION:
-                  visual_event_queue_add_mousemotion (&eventqueue, event.motion.x, event.motion.y);
+                  visual_event_queue_add (&eventqueue,
+                                          visual_event_new_mousemotion (event.motion.x,
+                                                                        event.motion.y));
                   break;
 
               case SDL_MOUSEBUTTONDOWN:
-                  visual_event_queue_add_mousebutton (&eventqueue, event.button.button, VISUAL_MOUSE_DOWN,
-                                                      event.button.x, event.button.y);
+                  visual_event_queue_add (&eventqueue,
+                                          visual_event_new_mousebutton (event.button.button,
+                                                                        VISUAL_MOUSE_DOWN,
+                                                                        event.button.x,
+                                                                        event.button.y));
                   break;
 
               case SDL_MOUSEBUTTONUP:
-                  visual_event_queue_add_mousebutton (&eventqueue, event.button.button, VISUAL_MOUSE_UP,
-                                                      event.button.x, event.button.y);
+                  visual_event_queue_add (&eventqueue,
+                                          visual_event_new_mousebutton (event.button.button,
+                                                                        VISUAL_MOUSE_UP,
+                                                                        event.button.x,
+                                                                        event.button.y));
                   break;
 
               case SDL_QUIT:
-                  visual_event_queue_add_quit (&eventqueue, FALSE);
+                  visual_event_queue_add (&eventqueue,
+                                          visual_event_new_quit ());
                   break;
 
               default:

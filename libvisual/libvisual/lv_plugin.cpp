@@ -144,6 +144,8 @@ static int plugin_dtor (VisObject *object)
     if (plugin->params)
         visual_object_unref (VISUAL_OBJECT (plugin->params));
 
+    delete plugin->eventqueue;
+
     visual_collection_destroy (VISUAL_COLLECTION (&plugin->environment));
 
     return VISUAL_OK;
@@ -191,7 +193,7 @@ int visual_plugin_events_pump (VisPluginData *plugin)
     visual_return_val_if_fail (plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
     if (plugin->info->events != NULL) {
-        plugin->info->events (plugin, &plugin->eventqueue);
+        plugin->info->events (plugin, plugin->eventqueue);
 
         return VISUAL_OK;
     }
@@ -203,7 +205,7 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
 {
     visual_return_val_if_fail (plugin != NULL, NULL);
 
-    return &plugin->eventqueue;
+    return plugin->eventqueue;
 }
 
 VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin)
@@ -261,6 +263,7 @@ VisPluginData *visual_plugin_new ()
     visual_object_initialize (VISUAL_OBJECT (plugin), TRUE, plugin_dtor);
 
     plugin->params = visual_param_container_new ();
+    plugin->eventqueue = new LV::EventQueue;
 
     return plugin;
 }
@@ -402,7 +405,7 @@ int visual_plugin_realize (VisPluginData *plugin)
     }
 
     paramcontainer = visual_plugin_get_params (plugin);
-    visual_param_container_set_eventqueue (paramcontainer, &plugin->eventqueue);
+    visual_param_container_set_eventqueue (paramcontainer, plugin->eventqueue);
 
     visual_log (VISUAL_LOG_DEBUG, "Activating plugin '%s'", plugin->info->plugname);
     plugin->info->init (plugin);

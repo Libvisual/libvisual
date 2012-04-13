@@ -11,8 +11,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_EVENT_KEYBOARD(obj)			(VISUAL_CHECK_CAST ((obj), VisEventKeyboard))
 #define VISUAL_EVENT_MOUSEMOTION(obj)			(VISUAL_CHECK_CAST ((obj), VisEventMouseMotion))
 #define VISUAL_EVENT_MOUSEBUTTON(obj)			(VISUAL_CHECK_CAST ((obj), VisEventMouseButton))
@@ -23,7 +21,6 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_EVENT_GENERIC(obj)			(VISUAL_CHECK_CAST ((obj), VisEventGeneric))
 #define VISUAL_EVENT_PARAM(obj)				(VISUAL_CHECK_CAST ((obj), VisEventParam))
 #define VISUAL_EVENT(obj)				(VISUAL_CHECK_CAST ((obj), VisEvent))
-#define VISUAL_EVENTQUEUE(obj)				(VISUAL_CHECK_CAST ((obj), VisEventQueue))
 
 /**
  * Number of events allowed in the queue
@@ -77,7 +74,6 @@ typedef struct _VisEventVisibility VisEventVisibility;
 typedef struct _VisEventGeneric VisEventGeneric;
 typedef struct _VisEventParam VisEventParam;
 typedef struct _VisEvent VisEvent;
-typedef struct _VisEventQueue VisEventQueue;
 
 /**
  * Keyboard event data structure.
@@ -192,6 +188,23 @@ struct _VisEventParam {
 	void		*param;		/**< The parameter entry which has been changed. */
 };
 
+struct _VisEvent
+{
+    VisEventType type;
+
+    union {
+        VisEventKeyboard    keyboard;	 /**< Keyboard event. */
+        VisEventMouseMotion mousemotion; /**< Mouse movement event. */
+        VisEventMouseButton mousebutton; /**< Mouse button event. */
+        VisEventResize      resize;      /**< Dimension change event. */
+        VisEventNewSong     newsong;	 /**< Song change event. */
+        VisEventQuit        quit;        /**< Quit event. */
+        VisEventVisibility  visibility;  /**< Plugin visible event. */
+        VisEventGeneric     generic;	 /**< Generic event. */
+        VisEventParam       param;	 /**< Param change event. */
+    } event;
+};
+
 /**
  * The main event data structure.
  *
@@ -199,203 +212,142 @@ struct _VisEventParam {
  *
  * @see visual_event_new
  */
-struct _VisEvent {
-	VisObject	object;		/**< The VisObject data. */
-	VisEventType	type;
+#ifdef __cplusplus
 
-	union {
-		VisEventKeyboard	keyboard;	/**< Keyboard event. */
-		VisEventMouseMotion	mousemotion;	/**< Mouse movement event. */
-		VisEventMouseButton	mousebutton;	/**< Mouse button event. */
-		VisEventResize		resize;		/**< Dimension change event. */
-		VisEventNewSong		newsong;	/**< Song change event. */
-		VisEventQuit		quit;		/**< Quit event. */
-		VisEventVisibility	visibility;	/**< Plugin visible event. */
-		VisEventGeneric		generic;	/**< Generic event. */
-		VisEventParam		param;		/**< Param change event. */
-	} event;
-};
+#include <libvisual/lv_scoped_ptr.hpp>
 
-/**
- * The event queue data structure.
- *
- * Used to manage events queues and also provides quick access to
- * high piority data from events.
- *
- * @see visual_event_queue_new
- */
-struct _VisEventQueue {
-	VisObject	 object;	/**< The VisObject data. */
-	VisList		 events;	/**< List of VisEvents in the queue. */
-	VisEvent	 lastresize;	/**< Last resize event to provide quick access
-					  * to this high piority event. */
-	int		 resizenew;	/**< Flag that is set when there is a new resize event. */
-	int		 eventcount;	/**< Contains the number of events in queue. */
+namespace LV {
 
-	int		 mousex;	/**< Current absolute mouse X value. */
-	int		 mousey;	/**< Current absolute mouse Y value. */
-	VisMouseState	 mousestate;	/**< Current mouse button state. */
-};
+  typedef VisEvent Event;
 
+  class EventQueue
+  {
+  public:
 
-/**
- * Creates a new VisEvent structure.
- *
- * @see visual_actor_get_eventqueue
- *
- * @return A newly allocated VisEvent
- */
-VisEvent *visual_event_new (void);
+      EventQueue ();
 
-int visual_event_init (VisEvent *event);
-int visual_event_copy (VisEvent *dest, VisEvent *src);
+      ~EventQueue ();
 
-/**
- * Creates a new VisEventQueue data structure.
- *
- * @return Newly allocated VisEventQueue.
- */
-VisEventQueue *visual_event_queue_new (void);
+      /**
+       * Polls for new events. Looks at the event queue for new events
+       * and deletes them from the queue while loading them into the
+       * event argument.
+       *
+       * @param event First queued event, if queue is not empty
+       *
+       * @return true if an event was returned, false otherwise
+       */
+      bool poll (Event& event);
+    
+      /**
+       * Adds an event to the event queue. Add new VisEvents into the
+       * VisEventQueue.
+       *
+       * @param event Event to add
+       */
+      void add (Event const& event);
 
-int visual_event_queue_init (VisEventQueue *eventqueue);
+  private:
+
+      class Impl;
+
+      ScopedPtr<Impl> m_impl;
+
+      EventQueue (EventQueue const&);
+      EventQueue& operator= (EventQueue const&);
+  };
+
+} // LV namespace
+
+#endif /* __cplusplus */
+
+#ifdef __cplusplus
+typedef LV::EventQueue VisEventQueue;
+#else
+typedef struct _VisEventQueue VisEventQueue;
+struct _VisEventQueue;
+#endif
+
+VISUAL_BEGIN_DECLS
 
 /**
- * Polls for new events. Looks at the event queue for new events and deletes
- * them from the queue while loading them into the event argument.
+ * Creates a new keyboard event
  *
- * @param eventqueue Pointer to a VisEventQueue from which new events should be taken.
- * @param event Pointer to a VisEvent in which the new events should be loaded.
- *
- * @return TRUE when events are handled and FALSE when the queue is out of events.
- */
-int visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
-
-int visual_event_queue_poll_by_reference (VisEventQueue *eventqueue, VisEvent **event);
-
-/**
- * Adds an event to the event queue. Add new VisEvents into the VisEventQueue.
- *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
- * @param event Pointer to a VisEvent that needs to be added to the queue.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL or -VISUAL_ERROR_EVENT_NULL
- *	on failure.
- */
-int visual_event_queue_add (VisEventQueue *eventqueue, VisEvent *event);
-
-/**
- * Adds a new keyboard event to the event queue. By giving keyboard state information
- * a new VisEvent will be created and added to the event queue.
- *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param keysym A keysym from the VisKey enumerate to set the key to which the event relates.
  * @param keymod Key modifier information from the VisKeyMod enumerate.
  * @param state Contains information about whatever the key is down or up.
- *
- * return VISUAL_OK on succes -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_EVENT_NULL or error values
- *	returned by visual_event_queue_add on failure.
  */
-int visual_event_queue_add_keyboard (VisEventQueue *eventqueue, VisKey keysym, int keymod, VisKeyState state);
+VisEvent *visual_event_new_keyboard (VisKey keysym, int keymod, VisKeyState state);
 
 /**
- * Adds a new mouse movement event to the event queue. By giving absolute X and Y coordinates
- * for the mouse a new VisEvent will be created and added to the event queue.
+ * Creates a new mouse movement event
  *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
- * @param x Absolute X value for the mouse location.
- * @param y Absolute Y value for the mouse location.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL or error values returned by
- *	visual_event_queue_add () on failure.
+ * @param dx X displacement
+ * @param dy Y displacement
  */
-int visual_event_queue_add_mousemotion (VisEventQueue *eventqueue, int x, int y);
+VisEvent *visual_event_new_mousemotion (int dx, int dy);
 
 /**
- * Adds a new mouse button event to the event queue. By giving a mouse button index number and
- * a mouse button key state a new VisEvent will be created and added to the event queue.
+ * Creates a new mouse button event
  *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param button Index that indicates to which mouse button the state relates.
  * @param state Contains information about whatever the button is down or up
  * @param x Absolute X value for the mouse location.
  * @param y Absolute Y value for the mouse location.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL or error values returned by
- *	visual_event_queue_add () on failure.
  */
-int visual_event_queue_add_mousebutton (VisEventQueue *eventqueue, int button, VisMouseState state, int x, int y);
+VisEvent *visual_event_new_mousebutton (int button, VisMouseState state, int x, int y);
+    
+/**
+ * Creates a resize event.
+ *
+ * @param width New width
+ * @param height New height
+ */
+VisEvent *visual_event_new_resize (int width, int height);
+    
+/**
+ * Creates a new song change event.
+ */
+VisEvent *visual_event_new_newsong (VisSongInfo *songinfo);
 
 /**
- * Adds a new dimension change event to the event queue. By giving a pointer to
- * the VisVideo containing all the surface information and new width and height
- * a new VisEvent will be created and added to the event queue.
+ * Creates a new parameter change event
  *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
- * @param width The width for the new surface.
- * @param height The height for the new surface.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL on failure.
- */
-int visual_event_queue_add_resize (VisEventQueue *eventqueue, int width, int height);
-
-/**
- * Adds a new song change event to the event queue. By giving a pointer to the
- * new VisSongInfo structure a new VisEvent will be created and added to the event queue.
- *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
- * @param songinfo Pointer to the VisSongInfo containing all the new song information.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_SONGINFO_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
- */
-int visual_event_queue_add_newsong (VisEventQueue *eventqueue, VisSongInfo *songinfo);
-
-/**
- * Adds a new parameter change event to the event queue. By giving the pointer to the
- * VisParamEntry structure a new VisEvent will be created and added to the event queue.
- *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param param Pointer to the VisParamEntry containing the parameter that has been changed.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL, -VISUAL_ERROR_PARAM_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
  */
-int visual_event_queue_add_param (VisEventQueue *eventqueue, void *param);
-
+VisEvent *visual_event_new_param (void *param);
+    
 /**
- * Adds a new quit event to the event queue.
- *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
- * @param pass_zero_please Might be used in the future, but for now just pass.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
+ * Creates a quit event
  */
-int visual_event_queue_add_quit (VisEventQueue *eventqueue, int pass_zero_please);
+VisEvent *visual_event_new_quit (void);
 
 /**
  * Adds a new visibility event to the event queue.
  *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param is_visible TRUE when visible, FALSE when not visible.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
  */
-int visual_event_queue_add_visibility (VisEventQueue *eventqueue, int is_visible);
+VisEvent *visual_event_new_visibility (int is_visible);
+
+void visual_event_copy (VisEvent *dest, VisEvent *src);
+
+void visual_event_free (VisEvent* event);
 
 /**
  * Adds a new generic event to the event queue.
  *
- * @param eventqueue Pointer to the VisEventQueue to which new events are added.
  * @param eid ID of the custom event..
  * @param param_int Integer value for the custom event.
  * @param param_ptr Pointer to data for the custom event..
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_EVENT_QUEUE_NULL
- * 	or error values returned by visual_event_queue_add () on failure.
  */
-int visual_event_queue_add_generic (VisEventQueue *eventqueue, int eid, int param_int, void *param_ptr);
+VisEvent *visual_event_new_generic (int eid, int param_int, void *param_ptr);
+
+VisEventQueue *visual_event_queue_new  (void);
+void           visual_event_queue_free (VisEventQueue *eventqueue);
+
+void visual_event_queue_add  (VisEventQueue *eventqueue, VisEvent *event);
+int  visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
+
 
 VISUAL_END_DECLS
 
