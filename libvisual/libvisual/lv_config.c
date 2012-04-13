@@ -27,14 +27,7 @@
 #include "lv_util.h"
 #include "gettext.h"
 
-#if defined(VISUAL_OS_WIN32)
-#include <windows.h>
-#endif
-
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 static int config_registry_dtor (VisObject *object);
 static int config_registry_section_dtor (VisObject *object);
@@ -87,7 +80,7 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 {
 	VisConfigRegistry *registry;
 	VisConfigRegistrySection *rsection;
-	int fd;
+	FILE *fd;
 	int length;
 	uint32_t datalength;
 	char namebuf[64];
@@ -100,21 +93,21 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 	registry->filename = visual_strdup (configfile);
 
 	/* Opening file */
-	fd = open (configfile, O_RDONLY);
+	fd = fopen (configfile, "rb");
 
-	if (fd < 0)
+	if (!fd)
 		goto out;
 
-	length = lseek (fd, 0, SEEK_END);
+	length = fseek (fd, 0, SEEK_END);
 
-	lseek (fd, 0, SEEK_SET);
+	fseek (fd, 0, SEEK_SET);
 
 	/* Empty config registry */
 	if (length == 0)
 		goto out;
 
 	/* Checking version */
-	if (read (fd, namebuf, 19) != 19)
+	if (fread (namebuf, 19, 1, fd) != 1)
 		goto broken;
 
 	/* Different config registry version, won't load */
@@ -125,13 +118,13 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 	}
 
 	/* Loading sections */
-	while (lseek (fd, 1, SEEK_CUR) > 0) {
-		lseek (fd, -1, SEEK_CUR);
+	while (fseek (fd, 1, SEEK_CUR) > 0) {
+		fseek (fd, -1, SEEK_CUR);
 
-		if (read (fd, &datalength, sizeof (uint32_t)) != 4)
+		if (fread (&datalength, sizeof (uint32_t), 1, fd) != 1)
 			goto broken;
 
-		if (read (fd, sectionname, datalength > 128 ? 128 : datalength) != (datalength > 128 ? 128 : datalength))
+		if (fread (sectionname, datalength > 128 ? 128 : datalength, 1, fd) != 1)
 			goto broken;
 
 		sectionname[127] = '\0';
@@ -140,12 +133,12 @@ VisConfigRegistry *visual_config_registry_open (const char *configfile)
 
 		rsection->name = visual_strdup (sectionname);
 
-		lseek (fd, (datalength > 128 ? -128 : -datalength) + strlen (sectionname), SEEK_CUR);
+		fseek (fd, (datalength > 128 ? -128 : -datalength) + strlen (sectionname), SEEK_CUR);
 
 		rsection->datalength = datalength;
 		rsection->data = visual_mem_malloc0 (datalength);
 
-		if (read (fd, rsection->data, datalength) != datalength) {
+		if (fread (rsection->data, datalength, 1, fd) != datalength) {
 			visual_object_unref (VISUAL_OBJECT (rsection));
 
 			goto broken;
@@ -162,7 +155,7 @@ broken:
 	visual_collection_destroy (VISUAL_COLLECTION (&registry->sections));
 
 out:
-	close (fd);
+	fclose (fd);
 
 	return registry;
 }
