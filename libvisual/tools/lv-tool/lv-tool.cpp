@@ -101,7 +101,7 @@ static void _print_plugin_help()
 }
 
 /** print commandline help */
-static void _print_help(char *name)
+static void _print_help(const char *name)
 {
     std::printf("libvisual commandline tool - %s\n"
                 "Usage: %s [options]\n\n"
@@ -231,7 +231,6 @@ static int _parse_args(int argc, char *argv[])
             /* invalid argument */
             case '?':
             {
-                std::fprintf(stderr, "argument %d is invalid\n", index);
                 _print_help(argv[0]);
                 return EXIT_FAILURE;
             }
@@ -239,8 +238,7 @@ static int _parse_args(int argc, char *argv[])
             /* unhandled arguments */
             default:
             {
-                std::fprintf(stderr, "argument %d is invalid\n", index);
-                break;
+                abort ();
             }
         }
     }
