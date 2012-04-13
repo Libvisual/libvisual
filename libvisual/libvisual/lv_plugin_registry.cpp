@@ -98,12 +98,7 @@ namespace LV {
               reinterpret_cast<VisPluginGetInfoFunc> (module->get_symbol ("get_plugin_info"));
 
           if (!get_plugin_info) {
-#if defined(VISUAL_OS_WIN32)
-              visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %ld", GetLastError ());
-#else
-              visual_log (VISUAL_LOG_ERROR, _("Cannot initialize plugin: %s"), dlerror ());
-
-#endif
+              visual_log (VISUAL_LOG_ERROR, _("Cannot get function that returns plugin info"));
               return NULL;
           }
 
