@@ -35,7 +35,7 @@ namespace {
       return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
   }
 
-  inline VisPluginRef*
+  inline LV::PluginRef*
   find_morph_plugin (std::string const& name)
   {
       return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_MORPH, name);
@@ -113,8 +113,6 @@ VisMorph *visual_morph_new (const char *morphname)
 
 int visual_morph_init (VisMorph *morph, const char *morphname)
 {
-    VisPluginRef *ref;
-
     visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
 
     if (morphname && get_morph_plugin_list ().empty ()) {
@@ -143,12 +141,11 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     if (morphname == NULL)
         return VISUAL_OK;
 
-    ref = find_morph_plugin (morphname);
-    if (ref == NULL) {
+    if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_MORPH, morphname)) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }
 
-    morph->plugin = visual_plugin_load (ref);
+    morph->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_MORPH, morphname);
 
     return VISUAL_OK;
 }

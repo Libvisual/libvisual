@@ -107,8 +107,6 @@ VisTransform *visual_transform_new (const char *transformname)
 
 int visual_transform_init (VisTransform *transform, const char *transformname)
 {
-    VisPluginRef *ref;
-
     visual_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
 
     if (transformname && !LV::transform_plugin_get_list ().empty ()) {
@@ -129,12 +127,11 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
     if (transformname == NULL)
         return VISUAL_OK;
 
-    ref = LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_TRANSFORM, transformname);
-    if (ref == NULL) {
+    if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_TRANSFORM, transformname)) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }
 
-    transform->plugin = visual_plugin_load (ref);
+    transform->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_TRANSFORM, transformname);
 
     return VISUAL_OK;
 }
@@ -153,7 +150,6 @@ int visual_transform_video_negotiate (VisTransform *transform)
 
     visual_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
     visual_return_val_if_fail (transform->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
-    visual_return_val_if_fail (transform->plugin->ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
 
     depthflag = visual_transform_get_supported_depth (transform);
 

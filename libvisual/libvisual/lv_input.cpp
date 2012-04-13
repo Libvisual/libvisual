@@ -35,7 +35,7 @@ namespace {
       return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
   }
 
-  inline VisPluginRef*
+  inline LV::PluginRef*
   find_input_plugin (std::string const& name)
   {
       return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_INPUT, name);
@@ -112,8 +112,6 @@ VisInput *visual_input_new (const char *inputname)
 
 int visual_input_init (VisInput *input, const char *inputname)
 {
-    VisPluginRef *ref;
-
     visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
     if (inputname && get_input_plugin_list ().empty ()) {
@@ -135,12 +133,11 @@ int visual_input_init (VisInput *input, const char *inputname)
     if (inputname == NULL)
         return VISUAL_OK;
 
-    ref = find_input_plugin (inputname);
-    if (ref == NULL) {
+    if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_INPUT, inputname)) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }
 
-    input->plugin = visual_plugin_load (ref);
+    input->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_INPUT, inputname);
 
     return VISUAL_OK;
 }

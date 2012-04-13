@@ -40,7 +40,7 @@ namespace {
       return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
   }
 
-  inline VisPluginRef*
+  inline LV::PluginRef*
   find_actor_plugin (std::string const& name)
   {
       return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_ACTOR, name);
@@ -112,8 +112,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
         if (next == NULL)
             return NULL;
 
-        VisPluginRef*   ref       = find_actor_plugin (next);
-        VisPluginData*  plugin    = visual_plugin_load (ref);
+        VisPluginData*  plugin    = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, next);
         VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
         have_gl = (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0;
@@ -135,8 +134,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
         if (prev == NULL)
             return NULL;
 
-        VisPluginRef*   ref       = find_actor_plugin (prev);
-        VisPluginData*  plugin    = visual_plugin_load (ref);
+        VisPluginData*  plugin    = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, prev);
         VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
         have_gl = (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0;
@@ -158,8 +156,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
         if (next == NULL)
             return NULL;
 
-        VisPluginRef*   ref       = find_actor_plugin (next);
-        VisPluginData*  plugin    = visual_plugin_load (ref);
+        VisPluginData*  plugin    = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, next);
         VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
         have_gl = (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0;
@@ -181,8 +178,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
         if (prev == NULL)
             return NULL;
 
-        VisPluginRef*   ref       = find_actor_plugin (prev);
-        VisPluginData*  plugin    = visual_plugin_load (ref);
+        VisPluginData*  plugin    = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, prev);
         VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
 
         have_gl = (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0;
@@ -226,7 +222,6 @@ VisActor *visual_actor_new (const char *actorname)
 
 int visual_actor_init (VisActor *actor, const char *actorname)
 {
-    VisPluginRef *ref = NULL;
     VisPluginEnviron *enve;
     VisActorPluginEnviron *actenviron;
 
@@ -255,12 +250,11 @@ int visual_actor_init (VisActor *actor, const char *actorname)
     if (actorname == NULL)
         return VISUAL_OK;
 
-    ref = find_actor_plugin (actorname);
-    if (ref == NULL) {
+    if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_ACTOR, actorname)) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }
 
-    actor->plugin = visual_plugin_load (ref);
+    actor->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, actorname);
 
     // FIXME: Hack to initialize songinfo
     {
@@ -329,7 +323,6 @@ int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int n
 {
     visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
     visual_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
-    visual_return_val_if_fail (actor->plugin->ref != NULL, -VISUAL_ERROR_PLUGIN_REF_NULL);
     visual_return_val_if_fail (actor->video != NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
 
     if (actor->transform) {

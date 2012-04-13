@@ -9,6 +9,7 @@
 #include "lv_morph.h"
 #include "lv_transform.h"
 #include "lv_util.hpp"
+#include "lv_libvisual.h"
 #include "gettext.h"
 
 #include <vector>
@@ -32,7 +33,7 @@ namespace LV {
     typedef std::map<PluginType, PluginList> PluginListMap;
 
     struct PluginHasType
-        : public std::unary_function<bool, VisPluginRef const*>
+        : public std::unary_function<bool, PluginRef const*>
     {
         PluginType type;
 
@@ -40,14 +41,14 @@ namespace LV {
             : type (type_)
         {}
 
-        bool operator() (VisPluginRef const* ref)
+        bool operator() (PluginRef const* ref)
         {
             return (type == ref->info->type);
         }
     };
 
     struct PluginHasName
-        : public std::unary_function<bool, VisPluginRef const*>
+        : public std::unary_function<bool, PluginRef const*>
     {
         std::string name;
 
@@ -55,7 +56,7 @@ namespace LV {
             : name (name_)
         {}
 
-        bool operator() (VisPluginRef const* ref)
+        bool operator() (PluginRef const* ref)
         {
             return (name == ref->info->plugname);
         }
@@ -76,6 +77,99 @@ namespace LV {
 
       void get_plugins_from_dir (PluginList& list, std::string const& dir);
   };
+
+  PluginRef *load_plugin_ref (std::string const& plugin_path)
+  {
+      // NOTE: This does not check if a plugin has already been loaded
+
+#if defined(VISUAL_OS_WIN32)
+      HMODULE handle = LoadLibrary (plugin_path.c_str ());
+#else
+      void* handle = dlopen (plugin_path.c_str (), RTLD_LAZY);
+#endif
+
+      if (!handle) {
+#if defined(VISUAL_OS_WIN32)
+          visual_log (VISUAL_LOG_ERROR, "Cannot load plugin: win32 error code: %ld", GetLastError());
+#else
+          visual_log (VISUAL_LOG_ERROR, _("Cannot load plugin: %s"), dlerror ());
+#endif
+
+          return NULL;
+      }
+      
+#if defined(VISUAL_OS_WIN32)
+      int* plugin_version = reinterpret_cast<int*> (GetProcAddress (handle, VISUAL_PLUGIN_VERSION_TAG));
+#else
+      int* plugin_version = static_cast<int*> (dlsym (handle, VISUAL_PLUGIN_VERSION_TAG));
+#endif
+
+      if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
+          visual_log (VISUAL_LOG_ERROR, _("Plugin %s is not compatible with version %s of libvisual"),
+                      plugin_path.c_str (), visual_get_version ());
+
+#if defined(VISUAL_OS_WIN32)
+          FreeLibrary (handle);
+#else
+          dlclose (handle);
+#endif
+
+          return NULL;
+      }
+
+      VisPluginGetInfoFunc get_plugin_info;
+    
+#if defined(VISUAL_OS_WIN32)
+      get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (GetProcAddress (handle, "get_plugin_info"));
+#else
+      get_plugin_info = reinterpret_cast<VisPluginGetInfoFunc> (dlsym (handle, "get_plugin_info"));
+#endif
+
+      if (!get_plugin_info) {
+#if defined(VISUAL_OS_WIN32)
+          visual_log (VISUAL_LOG_ERROR, "Cannot initialize plugin: win32 error code: %ld", GetLastError ());
+
+          FreeLibrary (handle);
+#else
+          visual_log (VISUAL_LOG_ERROR, _("Cannot initialize plugin: %s"), dlerror ());
+        
+          dlclose (handle);
+#endif
+          return NULL;
+      }
+
+      VisPluginInfo const* plugin_info = get_plugin_info ();
+
+      if (!plugin_info) {
+          visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info"));
+
+#if defined(VISUAL_OS_WIN32)
+          FreeLibrary (handle);
+#else
+          dlclose (handle);
+#endif
+
+          return NULL;
+      }
+
+      PluginRef* ref = new PluginRef;
+
+      ref->info   = plugin_info;
+      ref->file   = plugin_path;
+      ref->handle = handle;
+
+      return ref;
+  }
+
+  void delete_plugin_ref (PluginRef* ref)
+  {
+#if defined(VISUAL_OS_WIN32)
+      FreeLibrary (ref->handle);
+#else
+      dlclose (ref->handle);
+#endif
+      delete ref;
+  }
 
   PluginRegistry::PluginRegistry ()
       : m_impl (new Impl)
@@ -126,7 +220,7 @@ namespace LV {
       }
   }
 
-  VisPluginRef* PluginRegistry::find_plugin (PluginType type, std::string const& name)
+  PluginRef* PluginRegistry::find_plugin (PluginType type, std::string const& name) const
   {
       PluginList const& list = get_plugins_by_type (type);
 
@@ -138,7 +232,7 @@ namespace LV {
       return iter != list.end () ? *iter : 0;
   }
 
-  bool PluginRegistry::has_plugin (PluginType type, std::string const& name)
+  bool PluginRegistry::has_plugin (PluginType type, std::string const& name) const
   {
       return find_plugin (type, name) != 0;
   }
@@ -154,14 +248,16 @@ namespace LV {
       return match->second;
   }
 
+  VisPluginInfo const* PluginRegistry::get_plugin_info (PluginType type, std::string const& name) const
+  {
+      PluginRef* ref = find_plugin (type, name);
+
+      return ref ? ref->info : 0;
+  }
+
   PluginRegistry::Impl::Impl ()
   {
       // empty
-  }
-
-  void delete_plugin_ref (VisPluginRef* ref)
-  {
-      visual_object_unref (VISUAL_OBJECT (ref));
   }
 
   PluginRegistry::Impl::~Impl ()
@@ -195,7 +291,7 @@ namespace LV {
               std::string full_path = dir + "/" + file_data.cFileName;
 
               if (str_has_suffix (full_path, ".dll")) {
-                  VisPluginRef* ref = visual_plugin_get_reference (full_path.c_str ());
+                  PluginRef* ref = load_plugin_ref (full_path);
 
                   if (ref) {
                       list.push_back (ref);
@@ -231,7 +327,7 @@ namespace LV {
           std::string full_path = dir + "/" + namelist[i]->d_name;
 
           if (str_has_suffix (full_path, ".so")) {
-              VisPluginRef* ref = visual_plugin_get_reference (full_path.c_str ());
+              PluginRef* ref = load_plugin_ref (full_path);
 
               if (ref) {
                   list.push_back (ref);

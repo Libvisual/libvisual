@@ -165,18 +165,6 @@ typedef int (*VisPluginCleanupFunc)(VisPluginData *plugin);
 typedef int (*VisPluginEventsFunc)(VisPluginData *plugin, VisEventQueue *events);
 
 /**
- * The VisPluginRef data structure contains information about the plugins
- * and does refcounting. It is also used as entries in the plugin registry.
- */
-struct _VisPluginRef {
-	VisObject      object;      /**< The VisObject data. */
-
-	char          *file;        /**< The file location of the plugin. */
-	int            usecount;    /**< The use count, this indicates how many instances are loaded. */
-	VisPluginInfo *info;        /**< A copy of the VisPluginInfo structure. */
-};
-
-/**
  * The VisPluginInfo data structure contains information about a plugin
  * and is filled within the plugin itself.
  */
@@ -211,8 +199,7 @@ struct _VisPluginInfo {
 struct _VisPluginData {
 	VisObject            object;      /**< The VisObject data. */
 
-	VisPluginRef        *ref;         /**< Pointer to the plugin references corresponding to this VisPluginData. */
-	VisPluginInfo       *info;        /**< Pointer to the VisPluginInfo that is obtained from the plugin. */
+	VisPluginInfo const *info;        /**< Pointer to the VisPluginInfo that is obtained from the plugin. */
 
 	VisEventQueue       *eventqueue;  /**< The plugin it's VisEventQueue for queueing events. */
 	VisParamContainer   *params;      /**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
@@ -223,12 +210,6 @@ struct _VisPluginData {
 	                                     * semi reproduce visuals. */
 
 	int                  realized;    /**< Flag that indicates if the plugin is realized. */
-
-#if defined(VISUAL_OS_WIN32)
-	HMODULE              handle;	  /**< The LoadLibrary handle for windows32 */
-#else /* !VISUAL_OS_WIN32 */
-	void                *handle;	  /**< The dlopen handle */
-#endif
 
 	VisList              environment; /**< Misc environment specific data. */
 };
@@ -292,7 +273,7 @@ VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
  *
  * @return The VisPluginInfo within the VisPluginData, or NULL on failure.
  */
-VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
+const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
 
 /**
  * Gives the VisParamContainer related to a VisPluginData.
@@ -322,15 +303,6 @@ VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin);
 void *visual_plugin_get_specific (VisPluginData *plugin);
 
 /**
- * Creates a new VisPluginRef structure.
- *
- * The VisPluginRef contains data for the plugin loader.
- *
- * @return Newly allocated VisPluginRef.
- */
-VisPluginRef *visual_plugin_ref_new (void);
-
-/**
  * Creates a new VisPluginData structure.
  *
  * @return A newly allocated VisPluginData.
@@ -356,7 +328,7 @@ int visual_plugin_unload (VisPluginData *plugin);
  *
  * @return A newly created and loaded VisPluginData.
  */
-VisPluginData *visual_plugin_load (VisPluginRef *ref);
+VisPluginData *visual_plugin_load (VisPluginType type, const char *name);
 
 /**
  * Private function to realize the plugin. This initializes the plugin.
@@ -366,15 +338,6 @@ VisPluginData *visual_plugin_load (VisPluginRef *ref);
  * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
  */
 int visual_plugin_realize (VisPluginData *plugin);
-
-/**
- * Private function to create VisPluginRefs from plugins.
- *
- * @param pluginpath The full path and filename to the plugin of which a reference
- *	needs to be obtained.
- * @return The newly allocated VisPluginRef for the plugin.
- */
-VisPluginRef *visual_plugin_get_reference (const char *pluginpath);
 
 /**
  * Gives the VISUAL_PLUGIN_API_VERSION value for which the library is compiled.
@@ -430,10 +393,22 @@ VISUAL_END_DECLS
 #ifdef __cplusplus
 
 #include <vector>
+#include <string>
 
 namespace LV {
 
-  typedef std::vector<VisPluginRef*> PluginList;
+  struct PluginRef
+  {
+      std::string          file;
+      VisPluginInfo const* info;
+#if defined(VISUAL_OS_WIN32)
+      HMODULE              handle;
+#else
+      void*                handle;
+#endif
+  };
+
+  typedef std::vector<PluginRef*> PluginList;
 
   /**
    * Retrieves the name of the next plugin in the given list.

@@ -36,12 +36,14 @@ namespace LV {
 
       ~PluginRegistry ();
 
-      VisPluginRef* find_plugin (PluginType type, std::string const& name);
+      PluginRef* find_plugin (PluginType type, std::string const& name) const;
 
-      bool has_plugin (PluginType type, std::string const& name);
+      bool has_plugin (PluginType type, std::string const& name) const;
 
       PluginList const& get_plugins () const;
       PluginList const& get_plugins_by_type (PluginType type) const;
+
+      VisPluginInfo const* get_plugin_info (PluginType type, std::string const& name) const;
 
   private:
 
