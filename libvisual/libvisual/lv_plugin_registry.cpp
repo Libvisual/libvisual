@@ -21,6 +21,7 @@
 #include <cstdlib>
 
 #include <dirent.h>
+#include <dlfcn.h>
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
