@@ -375,8 +375,8 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDept
     if (req_depth == VISUAL_VIDEO_DEPTH_GL)
         return -VISUAL_ERROR_ACTOR_GL_NEGOTIATE;
 
-    int req_width  = actor->transform->width;
-    int req_height = actor->transform->height;
+    int req_width  = actor->video->width;
+    int req_height = actor->video->height;
 
     actplugin->requisition (visual_actor_get_plugin (actor), &req_width, &req_height);
 
