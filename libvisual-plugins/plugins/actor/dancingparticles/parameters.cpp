@@ -1,6 +1,8 @@
+#include <string.h>
+#include <libvisual/libvisual.h>
 #include "etoile.h"
 #include "t1font.h"
-#include <libvisual/libvisual.h>
+
 
 // or why use lex when..
 
