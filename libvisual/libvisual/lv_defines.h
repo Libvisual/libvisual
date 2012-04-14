@@ -54,7 +54,8 @@
 #define TRUE	(1)
 #endif
 
-/* Compiler specific optimalization macros */
+/* Compiler specific optimization macros */
+
 #if __GNUC__ >= 3
 # define VIS_ATTR_MALLOC    __attribute__ ((malloc))
 # define VIS_ATTR_PACKED    __attribute__ ((packed))
@@ -67,10 +68,39 @@
 # define VIS_UNLIKELY(x)    (x)
 #endif /* __GNUC__ >= 3 */
 
+/* Compile-time format arguments checking macros */
+
 #if defined __GNUC__
 #  define VIS_CHECK_PRINTF_FORMAT(a, b) __attribute__ ((__format__ (__printf__, a, b)))
 #else
 #  define VIS_CHECK_PRINTF_FORMAT(a, b) /* no compile-time format string check */
 #endif /* __GNUC__ */
+
+/* Symbol visibility macros */
+
+#if defined _WIN32 || defined __CYGWIN__
+  #ifdef LV_BUILDING_DLL
+    #ifdef __GNUC__
+      #define LV_DLL_PUBLIC __attribute__ ((dllexport))
+    #else
+      #define LV_DLL_PUBLIC __declspec(dllexport) /* Note: actually gcc seems to also supports this syntax. */
+    #endif
+  #else
+    #ifdef __GNUC__
+      #define LV_DLL_PUBLIC __attribute__ ((dllimport))
+    #else
+      #define LV_DLL_PUBLIC __declspec(dllimport) /* Note: actually gcc seems to also supports this syntax. */
+    #endif
+  #endif
+  #define DLL_LOCAL
+#else
+  #if __GNUC__ >= 4
+    #define LV_DLL_PUBLIC __attribute__ ((visibility ("default")))
+    #define LV_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
+  #else
+    #define LV_DLL_PUBLIC
+    #define LV_DLL_LOCAL
+  #endif
+#endif
 
 #endif /* _LV_DEFINES_H */
