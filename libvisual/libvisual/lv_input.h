@@ -24,8 +24,7 @@
 #ifndef _LV_INPUT_H
 #define _LV_INPUT_H
 
-#include <libvisual/lvconfig.h>
-#include <libvisual/lv_defines.h>
+#include <libvisual/lv_object.h>
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_plugin.h>
 
@@ -118,14 +117,14 @@ struct _VisInputPlugin {
  *
  * @return VisPluginData that is encapsulated in the VisInput, possibly NULL.
  */
-VisPluginData *visual_input_get_plugin (VisInput *input);
+LV_DLL_PUBLIC VisPluginData *visual_input_get_plugin (VisInput *input);
 
 /**
  * Gives a list of input plugins in the current plugin registry.
  *
  * @return An VisList of VisPluginRef's containing the input plugins in the plugin registry.
  */
-VisList *visual_input_get_list (void);
+LV_DLL_PUBLIC VisList *visual_input_get_list (void);
 
 /**
  * Gives the next input plugin based on the name of a plugin.
@@ -136,7 +135,7 @@ VisList *visual_input_get_list (void);
  *
  * @return The name of the next plugin within the list.
  */
-const char *visual_input_get_next_by_name (const char *name);
+LV_DLL_PUBLIC const char *visual_input_get_next_by_name (const char *name);
 
 /**
  * Gives the previous input plugin based on the name of a plugin.
@@ -147,7 +146,7 @@ const char *visual_input_get_next_by_name (const char *name);
  *
  * @return The name of the previous plugin within the list.
  */
-const char *visual_input_get_prev_by_name (const char *name);
+LV_DLL_PUBLIC const char *visual_input_get_prev_by_name (const char *name);
 
 /**
  * Creates a new VisInput from name, the plugin will be loaded but won't be realized.
@@ -158,7 +157,7 @@ const char *visual_input_get_prev_by_name (const char *name);
  *
  * @return A newly allocated VisInput, optionally containing a loaded plugin. Or NULL on failure.
  */
-VisInput *visual_input_new (const char *inputname);
+LV_DLL_PUBLIC VisInput *visual_input_new (const char *inputname);
 
 /**
  * Initializes a VisInput, this will set the allocated flag for the object to FALSE. Should not
@@ -172,7 +171,7 @@ VisInput *visual_input_new (const char *inputname);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
-int visual_input_init (VisInput *input, const char *inputname);
+LV_DLL_PUBLIC int visual_input_init (VisInput *input, const char *inputname);
 
 /**
  * Realize the VisInput. This also calls the plugin init function.
@@ -182,7 +181,7 @@ int visual_input_init (VisInput *input, const char *inputname);
  * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or error values returned by
  *  visual_plugin_realize () on failure.
  */
-int visual_input_realize (VisInput *input);
+LV_DLL_PUBLIC int visual_input_realize (VisInput *input);
 
 
 /**
@@ -196,7 +195,7 @@ int visual_input_realize (VisInput *input);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL on failure.
  */
-int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv);
+LV_DLL_PUBLIC int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv);
 
 /**
  * This is called to run a VisInput. This function will call the plugin to upload it's samples and run it
@@ -207,7 +206,7 @@ int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callb
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_INPUT_PLUGIN_NULL on failure.
  */
-int visual_input_run (VisInput *input);
+LV_DLL_PUBLIC int visual_input_run (VisInput *input);
 
 VISUAL_END_DECLS
 

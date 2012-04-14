@@ -184,7 +184,7 @@ struct _VisBeat {
  *
  * @return A newly allocated VisBeat, or NULL on failure.
  */
-VisBeat *visual_beat_new(void);
+LV_DLL_PUBLIC VisBeat *visual_beat_new(void);
 
 /**
  * Initialize a VisBeat. This should not be used on an already initialized VisBeat.
@@ -193,7 +193,7 @@ VisBeat *visual_beat_new(void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BEAT_NULL on failure.
  */
-int visual_beat_init(VisBeat *beat);
+LV_DLL_PUBLIC int visual_beat_init(VisBeat *beat);
 
 /**
  * Refine the beat indication through adaptive learning.
@@ -203,7 +203,7 @@ int visual_beat_init(VisBeat *beat);
  *
  * @return TRUE or FALSE indicating whether this is a beat or not.
  */
-int visual_beat_refine_beat(VisBeat *beat, int beat_in);
+LV_DLL_PUBLIC int visual_beat_refine_beat(VisBeat *beat, int beat_in);
 
 /**
  * Signal that the song has changed.
@@ -212,7 +212,7 @@ int visual_beat_refine_beat(VisBeat *beat, int beat_in);
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
  */
-int visual_beat_change_song(VisBeat *beat);
+LV_DLL_PUBLIC int visual_beat_change_song(VisBeat *beat);
 
 /**
  * Reset a VisBeat so that it may readapt.
@@ -221,9 +221,9 @@ int visual_beat_change_song(VisBeat *beat);
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
  */
-int visual_beat_reset_adapt(VisBeat *beat);
+LV_DLL_PUBLIC int visual_beat_reset_adapt(VisBeat *beat);
 
-int visual_beat_slider_get(VisBeat *beat, VisBeatSlider slider);
+LV_DLL_PUBLIC int visual_beat_slider_get(VisBeat *beat, VisBeatSlider slider);
 
 /**
  * Set the configuration parameters for a VisBeat.
@@ -238,7 +238,7 @@ int visual_beat_slider_get(VisBeat *beat, VisBeatSlider slider);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BEAT_NULL on failure.
  */
-int visual_beat_set_config(VisBeat *beat, int smartbeat, int smartbeatsticky, int smartbeatresetnewsong, int smartbeatonlysticky);
+LV_DLL_PUBLIC int visual_beat_set_config(VisBeat *beat, int smartbeat, int smartbeatsticky, int smartbeatresetnewsong, int smartbeatonlysticky);
 
 /**
  * Set the smartbeat parameter for a VisBeat.
@@ -248,19 +248,9 @@ int visual_beat_set_config(VisBeat *beat, int smartbeat, int smartbeatsticky, in
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
  */
-int visual_beat_set_smartbeat(VisBeat *beat, int smartbeat);
+LV_DLL_PUBLIC int visual_beat_set_smartbeat(VisBeat *beat, int smartbeat);
 
-int visual_beat_set_smartbeat_sticky(VisBeat *beat, int smartbeatsticky);
-
-/**
- * Set the smartbeat parameter for a VisBeat.
- *
- * @param beat The VisBeat for which parameter is set.
- * @param smartbeat See visual_beat_set_config
- *
- * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
- */
-int visual_beat_set_smartbeat_reset_on_newsong(VisBeat *beat, int smartbeatnewsong);
+LV_DLL_PUBLIC int visual_beat_set_smartbeat_sticky(VisBeat *beat, int smartbeatsticky);
 
 /**
  * Set the smartbeat parameter for a VisBeat.
@@ -270,7 +260,17 @@ int visual_beat_set_smartbeat_reset_on_newsong(VisBeat *beat, int smartbeatnewso
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
  */
-int visual_beat_set_smartbeat_only_sticky(VisBeat *beat, int smartbeatonlysticky);
+LV_DLL_PUBLIC int visual_beat_set_smartbeat_reset_on_newsong(VisBeat *beat, int smartbeatnewsong);
+
+/**
+ * Set the smartbeat parameter for a VisBeat.
+ *
+ * @param beat The VisBeat for which parameter is set.
+ * @param smartbeat See visual_beat_set_config
+ *
+ * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_NULL on failure.
+ */
+LV_DLL_PUBLIC int visual_beat_set_smartbeat_only_sticky(VisBeat *beat, int smartbeatonlysticky);
 
 /**
  * Retrieve the VisBeatPeak from a VisBeat.
@@ -279,7 +279,7 @@ int visual_beat_set_smartbeat_only_sticky(VisBeat *beat, int smartbeatonlysticky
  *
  * @return The VisBeatPeak on success, NULL upon failure.
  */
-VisBeatPeak *visual_beat_get_peak(VisBeat *beat);
+LV_DLL_PUBLIC VisBeatPeak *visual_beat_get_peak(VisBeat *beat);
 
 /**
  * Retrieve the VisBeatAdv from a VisBeat.
@@ -288,7 +288,7 @@ VisBeatPeak *visual_beat_get_peak(VisBeat *beat);
  *
  * @return The VisBeatAdv on success, NULL upon failure.
  */
-VisBeatAdv *visual_beat_get_adv(VisBeat *beat);
+LV_DLL_PUBLIC VisBeatAdv *visual_beat_get_adv(VisBeat *beat);
 
 /**
  * Retrive a formatted string indicating current BPM and confidence.
@@ -297,7 +297,7 @@ VisBeatAdv *visual_beat_get_adv(VisBeat *beat);
  *
  * @return The formatted string on success, or NULL on failure.
  */
-char *visual_beat_get_info(VisBeat *beat);
+LV_DLL_PUBLIC char *visual_beat_get_info(VisBeat *beat);
 
 /**
  * @}
@@ -313,7 +313,7 @@ char *visual_beat_get_info(VisBeat *beat);
  *
  * @return A newly allocated VisBeatAdv, or NULL on failure.
  */
-VisBeatAdv *visual_beat_adv_new(void);
+LV_DLL_PUBLIC VisBeatAdv *visual_beat_adv_new(void);
 
 /**
  * Initialize a VisBeatAdv.
@@ -322,7 +322,7 @@ VisBeatAdv *visual_beat_adv_new(void);
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_ADV_NULL on failure.
  */
-int visual_beat_adv_init(VisBeatAdv *adv);
+LV_DLL_PUBLIC int visual_beat_adv_init(VisBeatAdv *adv);
 
 /**
  * Set the configuration parameters for a VisBeatAdv.
@@ -335,7 +335,7 @@ int visual_beat_adv_init(VisBeatAdv *adv);
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_BEAT_ADV_NULL on failure.
  */
-int visual_beat_adv_set_config(VisBeatAdv *adv, int sensitive, int max_bpm, int thick_on_beats);
+LV_DLL_PUBLIC int visual_beat_adv_set_config(VisBeatAdv *adv, int sensitive, int max_bpm, int thick_on_beats);
 
 /**
  * Set the sensitivy parameter for a VisBeatAdv.
@@ -344,7 +344,7 @@ int visual_beat_adv_set_config(VisBeatAdv *adv, int sensitive, int max_bpm, int 
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_ADV_NULL on failure.
  */
-int visual_beat_adv_set_sensitivity(VisBeatAdv *adv, int sensitive);
+LV_DLL_PUBLIC int visual_beat_adv_set_sensitivity(VisBeatAdv *adv, int sensitive);
 
 /**
  * Set the maximum BPM for a VisBeatAdv.
@@ -353,7 +353,7 @@ int visual_beat_adv_set_sensitivity(VisBeatAdv *adv, int sensitive);
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_ADV_NULL on failure.
  */
-int visual_beat_adv_set_max_detect(VisBeatAdv *adv, int max_detect);
+LV_DLL_PUBLIC int visual_beat_adv_set_max_detect(VisBeatAdv *adv, int max_detect);
 
 /**
  * Set the thick on beats parameter for a VisBeatAdv.
@@ -362,7 +362,7 @@ int visual_beat_adv_set_max_detect(VisBeatAdv *adv, int max_detect);
  *
  * @return VISUAL_OK on success, or -VISUAL_ERROR_ADV_NULL on failure.
  */
-int visual_beat_adv_set_thick_on_beats(VisBeatAdv *adv, int thick_on_beats);
+LV_DLL_PUBLIC int visual_beat_adv_set_thick_on_beats(VisBeatAdv *adv, int thick_on_beats);
 
 /**
  * @}

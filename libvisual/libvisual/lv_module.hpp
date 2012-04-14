@@ -1,6 +1,8 @@
 #ifndef _LV_MODULE_HPP
 #define _LV_MODULE_HPP
 
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_intrusive_ptr.hpp>
 #include <string>
@@ -11,7 +13,7 @@ namespace LV {
 
   typedef IntrusivePtr<Module> ModulePtr;
 
-  class Module
+  class LV_DLL_PUBLIC Module
   {
   public:
 

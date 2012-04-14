@@ -105,39 +105,39 @@ struct _VisCollectionIter {
 };
 
 /* prototypes */
-int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer);
-VisCollectionDestroyerFunc visual_collection_get_destroyer (VisCollection *collection);
+LV_DLL_PUBLIC int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer);
+LV_DLL_PUBLIC VisCollectionDestroyerFunc visual_collection_get_destroyer (VisCollection *collection);
 
-int visual_collection_set_destroy_func (VisCollection *collection, VisCollectionDestroyFunc destroyfunc);
-VisCollectionDestroyFunc visual_collection_get_destroy_func (VisCollection *collection);
+LV_DLL_PUBLIC int visual_collection_set_destroy_func (VisCollection *collection, VisCollectionDestroyFunc destroyfunc);
+LV_DLL_PUBLIC VisCollectionDestroyFunc visual_collection_get_destroy_func (VisCollection *collection);
 
-int visual_collection_set_size_func (VisCollection *collection, VisCollectionSizeFunc sizefunc);
-VisCollectionSizeFunc visual_collection_get_size_func (VisCollection *collection);
+LV_DLL_PUBLIC int visual_collection_set_size_func (VisCollection *collection, VisCollectionSizeFunc sizefunc);
+LV_DLL_PUBLIC VisCollectionSizeFunc visual_collection_get_size_func (VisCollection *collection);
 
-int visual_collection_set_iter_func (VisCollection *collection, VisCollectionIterFunc iterfunc);
-VisCollectionIterFunc visual_collection_get_iter_func (VisCollection *collection);
+LV_DLL_PUBLIC int visual_collection_set_iter_func (VisCollection *collection, VisCollectionIterFunc iterfunc);
+LV_DLL_PUBLIC VisCollectionIterFunc visual_collection_get_iter_func (VisCollection *collection);
 
-int visual_collection_dtor (VisObject *object);
+LV_DLL_PUBLIC int visual_collection_dtor (VisObject *object);
 
-int visual_collection_destroy (VisCollection *collection);
-int visual_collection_size (VisCollection *collection);
-VisCollectionIter *visual_collection_get_iter (VisCollection *collection);
+LV_DLL_PUBLIC int visual_collection_destroy (VisCollection *collection);
+LV_DLL_PUBLIC int visual_collection_size (VisCollection *collection);
+LV_DLL_PUBLIC VisCollectionIter *visual_collection_get_iter (VisCollection *collection);
 
 
-VisCollectionIter *visual_collection_iter_new (
+LV_DLL_PUBLIC VisCollectionIter *visual_collection_iter_new (
 		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
 		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
 		VisCollection *collection, VisObject *context);
-int visual_collection_iter_init (VisCollectionIter *iter,
+LV_DLL_PUBLIC int visual_collection_iter_init (VisCollectionIter *iter,
 		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
 		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
 		VisCollection *collection, VisObject *context);
 
-void visual_collection_iter_assign (VisCollectionIter *iter, int index);
-void visual_collection_iter_next (VisCollectionIter *iter);
-int visual_collection_iter_has_more (VisCollectionIter *iter);
-void *visual_collection_iter_get_data (VisCollectionIter *iter);
-int visual_collection_iter_dtor (VisCollectionIter *iter);
+LV_DLL_PUBLIC void visual_collection_iter_assign (VisCollectionIter *iter, int index);
+LV_DLL_PUBLIC void visual_collection_iter_next (VisCollectionIter *iter);
+LV_DLL_PUBLIC int visual_collection_iter_has_more (VisCollectionIter *iter);
+LV_DLL_PUBLIC void *visual_collection_iter_get_data (VisCollectionIter *iter);
+LV_DLL_PUBLIC int visual_collection_iter_dtor (VisCollectionIter *iter);
 
 VISUAL_END_DECLS
 

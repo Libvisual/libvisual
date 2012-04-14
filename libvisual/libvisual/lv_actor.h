@@ -163,7 +163,7 @@ struct _VisActorPlugin {
  *
  * @return VisPluginData that is encapsulated in the VisActor, possibly NULL.
  */
-VisPluginData *visual_actor_get_plugin (VisActor *actor);
+LV_DLL_PUBLIC VisPluginData *visual_actor_get_plugin (VisActor *actor);
 
 /**
  * Gives the next actor plugin based on the name of a plugin but skips non
@@ -175,7 +175,7 @@ VisPluginData *visual_actor_get_plugin (VisActor *actor);
  *
  * @return The name of the next plugin within the list that is a GL plugin.
  */
-const char *visual_actor_get_next_by_name_gl (const char *name);
+LV_DLL_PUBLIC const char *visual_actor_get_next_by_name_gl (const char *name);
 
 /**
  * Gives the previous actor plugin based on the name of a plugin but skips non
@@ -187,7 +187,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name);
  *
  * @return The name of the previous plugin within the list that is a GL plugin.
  */
-const char *visual_actor_get_prev_by_name_gl (const char *name);
+LV_DLL_PUBLIC const char *visual_actor_get_prev_by_name_gl (const char *name);
 
 /**
  * Gives the next actor plugin based on the name of a plugin but skips
@@ -199,7 +199,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name);
  *
  * @return The name of the next plugin within the list that is not a GL plugin.
  */
-const char *visual_actor_get_next_by_name_nogl (const char *name);
+LV_DLL_PUBLIC const char *visual_actor_get_next_by_name_nogl (const char *name);
 
 /**
  * Gives the previous actor plugin based on the name of a plugin but skips
@@ -211,7 +211,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name);
  *
  * @return The name of the previous plugin within the list that is not a GL plugin.
  */
-const char *visual_actor_get_prev_by_name_nogl (const char *name);
+LV_DLL_PUBLIC const char *visual_actor_get_prev_by_name_nogl (const char *name);
 
 /**
  * Gives the next actor plugin based on the name of a plugin.
@@ -222,7 +222,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name);
  *
  * @return The name of the next plugin within the list.
  */
-const char *visual_actor_get_next_by_name (const char *name);
+LV_DLL_PUBLIC const char *visual_actor_get_next_by_name (const char *name);
 
 /**
  * Gives the previous actor plugin based on the name of a plugin.
@@ -233,7 +233,7 @@ const char *visual_actor_get_next_by_name (const char *name);
  *
  * @return The name of the previous plugin within the list.
  */
-const char *visual_actor_get_prev_by_name (const char *name);
+LV_DLL_PUBLIC const char *visual_actor_get_prev_by_name (const char *name);
 
 /**
  * Creates a new actor from name, the plugin will be loaded but won't be realized.
@@ -244,7 +244,7 @@ const char *visual_actor_get_prev_by_name (const char *name);
  *
  * @return A newly allocated VisActor, optionally containing a loaded plugin. Or NULL on failure.
  */
-VisActor *visual_actor_new (const char *actorname);
+LV_DLL_PUBLIC VisActor *visual_actor_new (const char *actorname);
 
 /**
  * Initializes a VisActor, this will set the allocated flag for the object to FALSE. Should not
@@ -257,7 +257,7 @@ VisActor *visual_actor_new (const char *actorname);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
-int visual_actor_init (VisActor *actor, const char *actorname);
+LV_DLL_PUBLIC int visual_actor_init (VisActor *actor, const char *actorname);
 
 /**
  * Realize the VisActor. This also calls the plugin init function.
@@ -268,7 +268,7 @@ int visual_actor_init (VisActor *actor, const char *actorname);
  *	error values returned by visual_plugin_realize () on failure.
  *
  */
-int visual_actor_realize (VisActor *actor);
+LV_DLL_PUBLIC int visual_actor_realize (VisActor *actor);
 
 /**
  * Gives a pointer to the song info data within the VisActor. This song info data can be used
@@ -280,7 +280,7 @@ int visual_actor_realize (VisActor *actor);
  *
  * @return Pointer to the song info structure on succes or NULL on failure.
  */
-VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
+LV_DLL_PUBLIC VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
 
 /**
  * Gives a pointer to the palette within the VisActor. This can be needed to set a palette on the target
@@ -294,7 +294,7 @@ VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
  * is returned when the plugin is running in a full color mode or openGL. The returned palette is
  * read only.
  */
-VisPalette *visual_actor_get_palette (VisActor *actor);
+LV_DLL_PUBLIC VisPalette *visual_actor_get_palette (VisActor *actor);
 
 /**
  * This function negotiates the VisActor with it's target video that is set by visual_actor_set_video.
@@ -323,7 +323,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor);
  * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL,
  * 	-VISUAL_ERROR_ACTOR_VIDEO_NULL or -VISUAL_ERROR_ACTOR_GL_NEGOTIATE on failure.
  */
-int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced);
+LV_DLL_PUBLIC int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced);
 
 /**
  * Gives the by the plugin natively supported depths
@@ -334,9 +334,9 @@ int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int n
  * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
  * 	-VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-int visual_actor_get_supported_depth (VisActor *actor);
+LV_DLL_PUBLIC int visual_actor_get_supported_depth (VisActor *actor);
 
-VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *actor);
+LV_DLL_PUBLIC VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *actor);
 
 /**
  * Used to connect the target display it's VisVideo structure to the VisActor.
@@ -355,7 +355,7 @@ VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *ac
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL on failure.
  */
-int visual_actor_set_video (VisActor *actor, VisVideo *video);
+LV_DLL_PUBLIC int visual_actor_set_video (VisActor *actor, VisVideo *video);
 
 /**
  * This is called to run a VisActor. It also pump it's events when needed, checks for new song events and also does the fitting
@@ -369,7 +369,7 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video);
  * return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL, -VISUAL_ERROR_NULL or
  * 	-VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-int visual_actor_run (VisActor *actor, VisAudio *audio);
+LV_DLL_PUBLIC int visual_actor_run (VisActor *actor, VisAudio *audio);
 
 VISUAL_END_DECLS
 

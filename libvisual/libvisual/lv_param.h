@@ -167,7 +167,7 @@ struct _VisParamEntry {
  *
  * @return A newly allocated VisParamContainer structure.
  */
-VisParamContainer *visual_param_container_new (void);
+LV_DLL_PUBLIC VisParamContainer *visual_param_container_new (void);
 
 
 /**
@@ -179,7 +179,7 @@ VisParamContainer *visual_param_container_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL on failure.
  */
-int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue);
+LV_DLL_PUBLIC int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue);
 
 /**
  * Get the pointer to the VisEventQueue the VisParamContainer is
@@ -189,7 +189,7 @@ int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, Vi
  *
  * @return Pointer to the VisEventQueue possibly NULL, NULL on failure.
  */
-VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer);
+LV_DLL_PUBLIC VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer);
 
 /**
  * Adds a VisParamEntry to a VisParamContainer.
@@ -200,7 +200,7 @@ VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramco
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_PARAM_NULL or
  *    error values returned by visual_list_add () on failure.
  */
-int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param);
+LV_DLL_PUBLIC int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param);
 
 /**
  * Adds a VisParamEntry to a VisParamContainer, storing default values
@@ -212,7 +212,7 @@ int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_PARAM_NULL or
  *    error values returned by visual_list_add () on failure.
  */
-int visual_param_container_add_with_defaults (VisParamContainer *paramcontainer, VisParamEntry *param);
+LV_DLL_PUBLIC int visual_param_container_add_with_defaults (VisParamContainer *paramcontainer, VisParamEntry *param);
 
 
 /**
@@ -225,7 +225,7 @@ int visual_param_container_add_with_defaults (VisParamContainer *paramcontainer,
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL or -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params);
+LV_DLL_PUBLIC int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params);
 
 /**
  * Removes a VisParamEntry from the VisParamContainer by giving the
@@ -237,7 +237,7 @@ int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParam
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, -VISUAL_ERROR_NULL
  *    or -VISUAL_ERROR_PARAM_NOT_FOUND on failure.
  */
-int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name);
+LV_DLL_PUBLIC int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name);
 
 
 /**
@@ -251,7 +251,7 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, const char
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
  */
-int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer *srccont);
+LV_DLL_PUBLIC int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer *srccont);
 
 
 /**
@@ -263,7 +263,7 @@ int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer 
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_CONTAINER_NULL, on failure.
  */
-int visual_param_container_copy_match (VisParamContainer *destcont, VisParamContainer *srccont);
+LV_DLL_PUBLIC int visual_param_container_copy_match (VisParamContainer *destcont, VisParamContainer *srccont);
 
 
 /**
@@ -275,7 +275,7 @@ int visual_param_container_copy_match (VisParamContainer *destcont, VisParamCont
  *
  * @return Pointer to the VisParamEntry, or NULL.
  */
-VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name);
+LV_DLL_PUBLIC VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name);
 
 
 /**
@@ -285,7 +285,7 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
  *
  * @return A newly allocated VisParamEntry structure.
  */
-VisParamEntry *visual_param_entry_new (const char *name);
+LV_DLL_PUBLIC VisParamEntry *visual_param_entry_new (const char *name);
 
 
 /**
@@ -300,7 +300,7 @@ VisParamEntry *visual_param_entry_new (const char *name);
  *     -VISUAL_ERROR_PARAM_NULL, -VISUAL_ERROR_PARAM_CALLBACK_NULL or
  *     -VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY on failure.
  */
-int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallbackFunc callback, void *priv);
+LV_DLL_PUBLIC int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallbackFunc callback, void *priv);
 
 /**
  * Removes a change notification callback from the list of callbacks.
@@ -310,7 +310,7 @@ int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallba
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_remove_callback (VisParamEntry *param, int id);
+LV_DLL_PUBLIC int visual_param_entry_remove_callback (VisParamEntry *param, int id);
 
 /**
  * Notifies all the callbacks for the given VisParamEntry parameter.
@@ -320,7 +320,7 @@ int visual_param_entry_remove_callback (VisParamEntry *param, int id);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_notify_callbacks (VisParamEntry *param);
+LV_DLL_PUBLIC int visual_param_entry_notify_callbacks (VisParamEntry *param);
 
 /**
  * Checks if the VisParamEntry it's name is the given name.
@@ -330,7 +330,7 @@ int visual_param_entry_notify_callbacks (VisParamEntry *param);
  *
  * @return TRUE if the VisParamEntry is the one we requested, or FALSE if not.
  */
-int visual_param_entry_is (VisParamEntry *param, const char *name);
+LV_DLL_PUBLIC int visual_param_entry_is (VisParamEntry *param, const char *name);
 
 /**
  * Compares two parameters with each other, When they are the same,
@@ -344,7 +344,7 @@ int visual_param_entry_is (VisParamEntry *param, const char *name);
  * @return TRUE if the same, FALSE if not the same,
  *    -VISUAL_ERROR_PARAM_NULL, -VISUAL_ERROR_PARAM_INVALID_TYPE or -VISUAL_ERROR_IMPOSSIBLE on failure.
  */
-int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2);
+LV_DLL_PUBLIC int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2);
 
 /**
  * When called, emits an event in the VisParamContainer it's
@@ -354,7 +354,7 @@ int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_changed (VisParamEntry *param);
+LV_DLL_PUBLIC int visual_param_entry_changed (VisParamEntry *param);
 
 /**
  * Retrieves the VisParamEntryType from a VisParamEntry.
@@ -363,7 +363,7 @@ int visual_param_entry_changed (VisParamEntry *param);
  *
  * @return The VisParamEntryType on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-VisParamEntryType visual_param_entry_get_type (VisParamEntry *param);
+LV_DLL_PUBLIC VisParamEntryType visual_param_entry_get_type (VisParamEntry *param);
 
 /**
  * Copies the value of the src param into the param. Also sets the
@@ -374,7 +374,7 @@ VisParamEntryType visual_param_entry_get_type (VisParamEntry *param);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL, -VISUAL_ERROR_PARAM_INVALID_TYPE on failure.
  */
-int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src);
+LV_DLL_PUBLIC int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src);
 
 /**
  * Set the name for a VisParamEntry.
@@ -384,7 +384,7 @@ int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_name (VisParamEntry *param, const char *name);
+LV_DLL_PUBLIC int visual_param_entry_set_name (VisParamEntry *param, const char *name);
 
 /**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_STRING and
@@ -395,7 +395,7 @@ int visual_param_entry_set_name (VisParamEntry *param, const char *name);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_string (VisParamEntry *param, const char *string);
+LV_DLL_PUBLIC int visual_param_entry_set_string (VisParamEntry *param, const char *string);
 
 /**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_INTEGER and
@@ -406,7 +406,7 @@ int visual_param_entry_set_string (VisParamEntry *param, const char *string);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_integer (VisParamEntry *param, int integer);
+LV_DLL_PUBLIC int visual_param_entry_set_integer (VisParamEntry *param, int integer);
 
 
 /**
@@ -418,7 +418,7 @@ int visual_param_entry_set_integer (VisParamEntry *param, int integer);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_float (VisParamEntry *param, float floating);
+LV_DLL_PUBLIC int visual_param_entry_set_float (VisParamEntry *param, float floating);
 
 
 /**
@@ -430,7 +430,7 @@ int visual_param_entry_set_float (VisParamEntry *param, float floating);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_double (VisParamEntry *param, double doubleflt);
+LV_DLL_PUBLIC int visual_param_entry_set_double (VisParamEntry *param, double doubleflt);
 
 /**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_COLOR and assigns
@@ -443,7 +443,7 @@ int visual_param_entry_set_double (VisParamEntry *param, double doubleflt);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, uint8_t b);
+LV_DLL_PUBLIC int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, uint8_t b);
 
 /**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_COLOR and assigns
@@ -454,7 +454,7 @@ int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, ui
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color);
+LV_DLL_PUBLIC int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color);
 
 /**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_PALETTE and
@@ -468,7 +468,7 @@ int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal);
+LV_DLL_PUBLIC int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal);
 
 /**
  * Sets the VisParamEntry to VISUAL_PARAM_ENTRY_TYPE_OBJECT and
@@ -480,7 +480,7 @@ int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_object (VisParamEntry *param, VisObject *object);
+LV_DLL_PUBLIC int visual_param_entry_set_object (VisParamEntry *param, VisObject *object);
 
 
 /**
@@ -492,7 +492,7 @@ int visual_param_entry_set_object (VisParamEntry *param, VisObject *object);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_set_collection (VisParamEntry *param, VisCollection *collection);
+LV_DLL_PUBLIC int visual_param_entry_set_collection (VisParamEntry *param, VisCollection *collection);
 
 
 /**
@@ -504,7 +504,7 @@ int visual_param_entry_set_collection (VisParamEntry *param, VisCollection *coll
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_PARAM_NULL or -VISUAL_ERROR_PARAM_ANNO_NULL on failure.
  */
-int visual_param_entry_set_annotation (VisParamEntry *param, char *anno);
+LV_DLL_PUBLIC int visual_param_entry_set_annotation (VisParamEntry *param, char *anno);
 
 /**
  * Get the name of the VisParamEntry.
@@ -513,7 +513,7 @@ int visual_param_entry_set_annotation (VisParamEntry *param, char *anno);
  *
  * @return The name of the VisParamEntry or NULL.
  */
-char *visual_param_entry_get_name (VisParamEntry *param);
+LV_DLL_PUBLIC char *visual_param_entry_get_name (VisParamEntry *param);
 
 /**
  * Get the string parameter from a VisParamEntry.
@@ -522,7 +522,7 @@ char *visual_param_entry_get_name (VisParamEntry *param);
  *
  * @return The string parameter from the VisParamEntry or NULL.
  */
-char *visual_param_entry_get_string (VisParamEntry *param);
+LV_DLL_PUBLIC char *visual_param_entry_get_string (VisParamEntry *param);
 
 /**
  * Get the integer parameter from a VisParamEntry.
@@ -531,7 +531,7 @@ char *visual_param_entry_get_string (VisParamEntry *param);
  *
  * @return The integer parameter from the VisParamEntry.
  */
-int visual_param_entry_get_integer (VisParamEntry *param);
+LV_DLL_PUBLIC int visual_param_entry_get_integer (VisParamEntry *param);
 
 /**
  * Get the float parameter from a VisParamEntry.
@@ -540,7 +540,7 @@ int visual_param_entry_get_integer (VisParamEntry *param);
  *
  * @return The float parameter from the VisParamEntry.
  */
-float visual_param_entry_get_float (VisParamEntry *param);
+LV_DLL_PUBLIC float visual_param_entry_get_float (VisParamEntry *param);
 
 /**
  * Get the double parameter from a VisParamEntry.
@@ -549,7 +549,7 @@ float visual_param_entry_get_float (VisParamEntry *param);
  *
  * @return The double parameter from the VisParamEntry.
  */
-double visual_param_entry_get_double (VisParamEntry *param);
+LV_DLL_PUBLIC double visual_param_entry_get_double (VisParamEntry *param);
 
 
 /**
@@ -562,7 +562,7 @@ double visual_param_entry_get_double (VisParamEntry *param);
  *    can cause synchronous problems between the plugin and the parameter system. Instead use the
  *    visual_param_entry_set_color* methods to change the parameter value.
  */
-VisColor *visual_param_entry_get_color (VisParamEntry *param);
+LV_DLL_PUBLIC VisColor *visual_param_entry_get_color (VisParamEntry *param);
 
 
 /**
@@ -573,7 +573,7 @@ VisColor *visual_param_entry_get_color (VisParamEntry *param);
  * @return Pointer to the VisPalette parameter from the VisParamEntry. The returned VisPalette
  *    should be exclusively used as read only.
  */
-VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
+LV_DLL_PUBLIC VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
 
 /**
  * Get the object parameter from a VisParamEntry.
@@ -582,7 +582,7 @@ VisPalette *visual_param_entry_get_palette (VisParamEntry *param);
  *
  * @return Pointer to the VisObject parameter from the VisParamEntry.
  */
-VisObject *visual_param_entry_get_object (VisParamEntry *param);
+LV_DLL_PUBLIC VisObject *visual_param_entry_get_object (VisParamEntry *param);
 
 
 /**
@@ -592,7 +592,7 @@ VisObject *visual_param_entry_get_object (VisParamEntry *param);
  *
  * @return Pointer to the VisCollection parameter from the VisParamEntry.
  */
-VisCollection *visual_param_entry_get_collection (VisParamEntry *param);
+LV_DLL_PUBLIC VisCollection *visual_param_entry_get_collection (VisParamEntry *param);
 
 /**
  * Get the annotation parameter from a VisParamEntry.
@@ -601,7 +601,7 @@ VisCollection *visual_param_entry_get_collection (VisParamEntry *param);
  *
  * @return Pointer to the annotation string parameter from the VisParamEntry.
  */
-char *visual_param_entry_get_annotation (VisParamEntry *param);
+LV_DLL_PUBLIC char *visual_param_entry_get_annotation (VisParamEntry *param);
 
 
 /**
@@ -611,7 +611,7 @@ char *visual_param_entry_get_annotation (VisParamEntry *param);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_min_set_integer (VisParamEntry *param, int integer);
+LV_DLL_PUBLIC int visual_param_entry_min_set_integer (VisParamEntry *param, int integer);
 
 /**
  * Set the minimum float parameter for VisParamEntry.
@@ -620,7 +620,7 @@ int visual_param_entry_min_set_integer (VisParamEntry *param, int integer);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_min_set_float (VisParamEntry *param, float floating);
+LV_DLL_PUBLIC int visual_param_entry_min_set_float (VisParamEntry *param, float floating);
 
 /**
  * Set the minimum double parameter for VisParamEntry.
@@ -629,7 +629,7 @@ int visual_param_entry_min_set_float (VisParamEntry *param, float floating);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_min_set_double (VisParamEntry *param, double doubleflt);
+LV_DLL_PUBLIC int visual_param_entry_min_set_double (VisParamEntry *param, double doubleflt);
 
 /**
  * Get the minimum integer parameter from a VisParamEntry.
@@ -638,7 +638,7 @@ int visual_param_entry_min_set_double (VisParamEntry *param, double doubleflt);
  *
  * @return Pointer to the minimum integer parameter from the VisParamEntry.
  */
-int visual_param_entry_min_get_integer (VisParamEntry *param);
+LV_DLL_PUBLIC int visual_param_entry_min_get_integer (VisParamEntry *param);
 
 /**
  * Get the minimum float parameter from a VisParamEntry.
@@ -647,7 +647,7 @@ int visual_param_entry_min_get_integer (VisParamEntry *param);
  *
  * @return Pointer to the minimum float parameter from the VisParamEntry.
  */
-float visual_param_entry_min_get_float(VisParamEntry *param);
+LV_DLL_PUBLIC float visual_param_entry_min_get_float(VisParamEntry *param);
 
 /**
  * Get the minimum double parameter from a VisParamEntry.
@@ -656,7 +656,7 @@ float visual_param_entry_min_get_float(VisParamEntry *param);
  *
  * @return Pointer to the minimum double parameter from the VisParamEntry.
  */
-double visual_param_entry_min_get_double (VisParamEntry *param);
+LV_DLL_PUBLIC double visual_param_entry_min_get_double (VisParamEntry *param);
 
 /**
  * Set the maxium integer parameter for VisParamEntry.
@@ -665,7 +665,7 @@ double visual_param_entry_min_get_double (VisParamEntry *param);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_max_set_integer (VisParamEntry *param, int integer);
+LV_DLL_PUBLIC int visual_param_entry_max_set_integer (VisParamEntry *param, int integer);
 
 /**
  * Set the maxium floating point parameter for VisParamEntry.
@@ -674,7 +674,7 @@ int visual_param_entry_max_set_integer (VisParamEntry *param, int integer);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_max_set_float (VisParamEntry *param, float floating);
+LV_DLL_PUBLIC int visual_param_entry_max_set_float (VisParamEntry *param, float floating);
 
 /**
  * Set the maxium double precision parameter for VisParamEntry.
@@ -683,7 +683,7 @@ int visual_param_entry_max_set_float (VisParamEntry *param, float floating);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_max_set_double (VisParamEntry *param, double doubleflt);
+LV_DLL_PUBLIC int visual_param_entry_max_set_double (VisParamEntry *param, double doubleflt);
 
 /**
  * Get the maximum integer parameter from a VisParamEntry.
@@ -692,7 +692,7 @@ int visual_param_entry_max_set_double (VisParamEntry *param, double doubleflt);
  *
  * @return Pointer to the maximum integer parameter from the VisParamEntry.
  */
-int visual_param_entry_max_get_integer (VisParamEntry *param);
+LV_DLL_PUBLIC int visual_param_entry_max_get_integer (VisParamEntry *param);
 
 /**
  * Get the maximum float parameter from a VisParamEntry.
@@ -701,7 +701,7 @@ int visual_param_entry_max_get_integer (VisParamEntry *param);
  *
  * @return Pointer to the maximum floating point parameter from the VisParamEntry.
  */
-float visual_param_entry_max_get_float(VisParamEntry *param);
+LV_DLL_PUBLIC float visual_param_entry_max_get_float(VisParamEntry *param);
 
 
 /**
@@ -711,7 +711,7 @@ float visual_param_entry_max_get_float(VisParamEntry *param);
  *
  * @return Pointer to the maxiumum double precision parameter from the VisParamEntry.
  */
-double visual_param_entry_max_get_double (VisParamEntry *param);
+LV_DLL_PUBLIC double visual_param_entry_max_get_double (VisParamEntry *param);
 
 
 /**
@@ -721,7 +721,7 @@ double visual_param_entry_max_get_double (VisParamEntry *param);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_default_set_string(VisParamEntry *param, char *str);
+LV_DLL_PUBLIC int visual_param_entry_default_set_string(VisParamEntry *param, char *str);
 
 /**
  * Set the default integer parameter for the VisParamEntry.
@@ -730,7 +730,7 @@ int visual_param_entry_default_set_string(VisParamEntry *param, char *str);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_default_set_integer(VisParamEntry *param, int integer);
+LV_DLL_PUBLIC int visual_param_entry_default_set_integer(VisParamEntry *param, int integer);
 
 /**
  * Set the default floating point parameter for the VisParamEntry.
@@ -739,7 +739,7 @@ int visual_param_entry_default_set_integer(VisParamEntry *param, int integer);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_default_set_float (VisParamEntry *param, float floating);
+LV_DLL_PUBLIC int visual_param_entry_default_set_float (VisParamEntry *param, float floating);
 
 /**
  * Set the default floating point parameter for the VisParamEntry.
@@ -748,7 +748,7 @@ int visual_param_entry_default_set_float (VisParamEntry *param, float floating);
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_default_set_double (VisParamEntry *param, double doubleflt);
+LV_DLL_PUBLIC int visual_param_entry_default_set_double (VisParamEntry *param, double doubleflt);
 
 
 /**
@@ -758,7 +758,7 @@ int visual_param_entry_default_set_double (VisParamEntry *param, double doublefl
  *
  * @return VISUAL_OK on sucess, -VISUAL_ERROR_PARAM_NULL on failure.
  */
-int visual_param_entry_default_set_color (VisParamEntry *param, VisColor *color);
+LV_DLL_PUBLIC int visual_param_entry_default_set_color (VisParamEntry *param, VisColor *color);
 
 /**
  * Get the default string parameter from a VisParamEntry.
@@ -767,7 +767,7 @@ int visual_param_entry_default_set_color (VisParamEntry *param, VisColor *color)
  *
  * @return Pointer to the default string parameter from the VisParamEntry.
  */
-char * visual_param_entry_default_get_string (VisParamEntry *param);
+LV_DLL_PUBLIC char * visual_param_entry_default_get_string (VisParamEntry *param);
 
 /**
  * Get the default integer parameter from a VisParamEntry.
@@ -776,7 +776,7 @@ char * visual_param_entry_default_get_string (VisParamEntry *param);
  *
  * @return Pointer to the default integer parameter from the VisParamEntry.
  */
-int visual_param_entry_default_get_integer (VisParamEntry *param);
+LV_DLL_PUBLIC int visual_param_entry_default_get_integer (VisParamEntry *param);
 
 /**
  * Get the default floating point parameter from a VisParamEntry.
@@ -785,7 +785,7 @@ int visual_param_entry_default_get_integer (VisParamEntry *param);
  *
  * @return Pointer to the default floating point parameter from the VisParamEntry.
  */
-float visual_param_entry_default_get_float(VisParamEntry *param);
+LV_DLL_PUBLIC float visual_param_entry_default_get_float(VisParamEntry *param);
 
 /**
  * Get the default double precision parameter from a VisParamEntry.
@@ -794,7 +794,7 @@ float visual_param_entry_default_get_float(VisParamEntry *param);
  *
  * @return Pointer to the default double precision parameter from the VisParamEntry.
  */
-double visual_param_entry_default_get_double (VisParamEntry *param);
+LV_DLL_PUBLIC double visual_param_entry_default_get_double (VisParamEntry *param);
 
 /**
  * Get the default VisColor parameter from a VisParamEntry.
@@ -803,7 +803,7 @@ double visual_param_entry_default_get_double (VisParamEntry *param);
  *
  * @return Pointer to the default VisColor parameter from the VisParamEntry.
  */
-VisColor *visual_param_entry_default_get_color (VisParamEntry *param);
+LV_DLL_PUBLIC VisColor *visual_param_entry_default_get_color (VisParamEntry *param);
 
 VISUAL_END_DECLS
 

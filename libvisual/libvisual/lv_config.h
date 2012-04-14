@@ -72,19 +72,19 @@ struct _VisConfigRegistrySection {
 };
 
 /* prototypes */
-VisConfigRegistry *visual_config_registry_new (void);
-VisConfigRegistry *visual_config_registry_open (const char *configfile);
+LV_DLL_PUBLIC VisConfigRegistry *visual_config_registry_new (void);
+LV_DLL_PUBLIC VisConfigRegistry *visual_config_registry_open (const char *configfile);
 
-VisConfigRegistrySection *visual_config_registry_find (VisConfigRegistry *registry, const char *name);
-int visual_config_registry_remove (VisConfigRegistry *registry, const char *name);
-int visual_config_registry_add (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
+LV_DLL_PUBLIC VisConfigRegistrySection *visual_config_registry_find (VisConfigRegistry *registry, const char *name);
+LV_DLL_PUBLIC int visual_config_registry_remove (VisConfigRegistry *registry, const char *name);
+LV_DLL_PUBLIC int visual_config_registry_add (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
 
-VisConfigRegistrySection *visual_config_registry_section_new (void);
-VisConfigRegistrySection *visual_config_registry_section_open (const char *name, const char *configfile);
+LV_DLL_PUBLIC VisConfigRegistrySection *visual_config_registry_section_new (void);
+LV_DLL_PUBLIC VisConfigRegistrySection *visual_config_registry_section_open (const char *name, const char *configfile);
 
-int visual_config_registry_write_by_data (VisConfigRegistry *registry, const char *name, const char *data, int datalength);
-int visual_config_registry_write (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
-int visual_config_registry_sync (VisConfigRegistry *registry);
+LV_DLL_PUBLIC int visual_config_registry_write_by_data (VisConfigRegistry *registry, const char *name, const char *data, int datalength);
+LV_DLL_PUBLIC int visual_config_registry_write (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
+LV_DLL_PUBLIC int visual_config_registry_sync (VisConfigRegistry *registry);
 
 VISUAL_END_DECLS
 

@@ -25,7 +25,7 @@
 #ifndef _LV_FOURIER_H
 #define _LV_FOURIER_H
 
-#include <libvisual/lv_object.h>
+#include <libvisual/lv_defines.h>
 
 /**
  * @defgroup VisDFT VisDFT
@@ -39,7 +39,7 @@
 
 namespace LV {
 
-  class Fourier
+  class LV_DLL_PUBLIC Fourier
       : public Singleton<Fourier>
   {
   public:

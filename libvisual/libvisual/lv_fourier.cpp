@@ -211,7 +211,7 @@ namespace LV {
   } // anonymous namespace
 
   template <>
-  Fourier* Singleton<Fourier>::m_instance = 0;
+  LV_DLL_PUBLIC Fourier* Singleton<Fourier>::m_instance = 0;
 
   void Fourier::init ()
   {

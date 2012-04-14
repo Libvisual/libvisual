@@ -145,7 +145,7 @@ struct _VisAudioSample {
  *
  * @return A newly allocated VisAudio, or NULL on failure.
  */
-VisAudio *visual_audio_new (void);
+LV_DLL_PUBLIC VisAudio *visual_audio_new (void);
 
 /**
  * Initializes a VisAudio, this should not be used to reset a VisAudio.
@@ -159,7 +159,7 @@ VisAudio *visual_audio_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_AUDIO_NULL on failure.
  */
-int visual_audio_init (VisAudio *audio);
+LV_DLL_PUBLIC int visual_audio_init (VisAudio *audio);
 
 /**
  * This function analyzes the VisAudio, the Fourier frequency magic gets done here, also
@@ -173,59 +173,59 @@ int visual_audio_init (VisAudio *audio);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_AUDIO_NULL on failure.
  */
-int visual_audio_analyze (VisAudio *audio);
+LV_DLL_PUBLIC int visual_audio_analyze (VisAudio *audio);
 
-int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, const char *channelid);
-int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, int channels, ...);
-int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divide, int channels, ...);
-int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, const char *category, int divide);
-int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int divide);
+LV_DLL_PUBLIC int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, const char *channelid);
+LV_DLL_PUBLIC int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, int channels, ...);
+LV_DLL_PUBLIC int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divide, int channels, ...);
+LV_DLL_PUBLIC int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, const char *category, int divide);
+LV_DLL_PUBLIC int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int divide);
 
-int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, const char *channelid, int normalised);
-int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, int samplelen, const char *channelid, int normalised, float multiplier);
-int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised);
-int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffer *sample, int normalised, float multiplier);
+LV_DLL_PUBLIC int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, const char *channelid, int normalised);
+LV_DLL_PUBLIC int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, int samplelen, const char *channelid, int normalised, float multiplier);
+LV_DLL_PUBLIC int visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised);
+LV_DLL_PUBLIC int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffer *sample, int normalised, float multiplier);
 
-int visual_audio_normalise_spectrum (VisBuffer *buffer);
+LV_DLL_PUBLIC int visual_audio_normalise_spectrum (VisBuffer *buffer);
 
-VisAudioSamplePool *visual_audio_samplepool_new (void);
-int visual_audio_samplepool_init (VisAudioSamplePool *samplepool);
-int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample *sample, const char *channelid);
-int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudioSamplePoolChannel *channel);
-VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, const char *channelid);
-int visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool);
+LV_DLL_PUBLIC VisAudioSamplePool *visual_audio_samplepool_new (void);
+LV_DLL_PUBLIC int visual_audio_samplepool_init (VisAudioSamplePool *samplepool);
+LV_DLL_PUBLIC int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample *sample, const char *channelid);
+LV_DLL_PUBLIC int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudioSamplePoolChannel *channel);
+LV_DLL_PUBLIC VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, const char *channelid);
+LV_DLL_PUBLIC int visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool);
 
-int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *buffer,
+LV_DLL_PUBLIC int visual_audio_samplepool_input (VisAudioSamplePool *samplepool, VisBuffer *buffer,
 		VisAudioSampleRateType rate,
 		VisAudioSampleFormatType format,
 		VisAudioSampleChannelType channeltype);
-int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBuffer *buffer,
+LV_DLL_PUBLIC int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBuffer *buffer,
 		VisAudioSampleRateType rate,
 		VisAudioSampleFormatType format,
 		const char *channelid);
 
 VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (const char *channelid);
-int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, const char *channelid);
-int visual_audio_samplepool_channel_add (VisAudioSamplePoolChannel *channel, VisAudioSample *sample);
-int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channel);
+LV_DLL_PUBLIC int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, const char *channelid);
+LV_DLL_PUBLIC int visual_audio_samplepool_channel_add (VisAudioSamplePoolChannel *channel, VisAudioSample *sample);
+LV_DLL_PUBLIC int visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channel);
 
-int visual_audio_sample_buffer_mix (VisBuffer *dest, VisBuffer *src, int divide, float multiplier);
-int visual_audio_sample_buffer_mix_many (VisBuffer *dest, int divide, int channels, ...);
+LV_DLL_PUBLIC int visual_audio_sample_buffer_mix (VisBuffer *dest, VisBuffer *src, int divide, float multiplier);
+LV_DLL_PUBLIC int visual_audio_sample_buffer_mix_many (VisBuffer *dest, int divide, int channels, ...);
 
-VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
+LV_DLL_PUBLIC VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
 		VisAudioSampleFormatType format,
 		VisAudioSampleRateType rate);
-int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime *timestamp,
+LV_DLL_PUBLIC int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime *timestamp,
 		VisAudioSampleFormatType format,
 		VisAudioSampleRateType rate);
-int visual_audio_sample_has_internal (VisAudioSample *sample);
-int visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleFormatType format);
-int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleRateType rate);
-int visual_audio_sample_rate_get_length (VisAudioSampleRateType rate);
-int visual_audio_sample_format_get_size (VisAudioSampleFormatType format);
-int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format);
+LV_DLL_PUBLIC int visual_audio_sample_has_internal (VisAudioSample *sample);
+LV_DLL_PUBLIC int visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleFormatType format);
+LV_DLL_PUBLIC int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleRateType rate);
+LV_DLL_PUBLIC int visual_audio_sample_rate_get_length (VisAudioSampleRateType rate);
+LV_DLL_PUBLIC int visual_audio_sample_format_get_size (VisAudioSampleFormatType format);
+LV_DLL_PUBLIC int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format);
 
-VisBeat *visual_audio_get_beat(VisAudio *audio);
+LV_DLL_PUBLIC VisBeat *visual_audio_get_beat(VisAudio *audio);
 
 /**
  * Get the value indicating if we have a beat or not.
@@ -238,10 +238,10 @@ VisBeat *visual_audio_get_beat(VisAudio *audio);
  * Adv algorithm adapted from the Blursk plugin for xmms.
  * See lv_beat.h for copyright details.
  */
-int visual_audio_is_beat(VisAudio *audio, VisBeatAlgorithm algo);
+LV_DLL_PUBLIC int visual_audio_is_beat(VisAudio *audio, VisBeatAlgorithm algo);
 
-int visual_audio_is_beat_with_data(VisAudio *audio, VisBeatAlgorithm algo, unsigned char *data, int size);
-int visual_audio_get_cheap_audio_data(VisAudio *audio, unsigned char out[2][2][576]);
+LV_DLL_PUBLIC int visual_audio_is_beat_with_data(VisAudio *audio, VisBeatAlgorithm algo, unsigned char *data, int size);
+LV_DLL_PUBLIC int visual_audio_get_cheap_audio_data(VisAudio *audio, unsigned char out[2][2][576]);
 
 VISUAL_END_DECLS
 

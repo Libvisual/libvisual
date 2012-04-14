@@ -107,7 +107,7 @@ typedef void *(*VisMemSet32Func)(void *dest, int c, visual_size_t n);
  *
  * return VISUAL_OK on succes.
  */
-int visual_mem_initialize (void);
+LV_DLL_PUBLIC int visual_mem_initialize (void);
 
 /**
  * Allocates @a nbytes of uninitialized memory.
@@ -117,7 +117,7 @@ int visual_mem_initialize (void);
  * @return On success, a pointer to a new allocated memory block
  * of size @a nbytes, on failure, program is aborted.
  */
-void *visual_mem_malloc (visual_size_t nbytes) VIS_ATTR_MALLOC;
+LV_DLL_PUBLIC void *visual_mem_malloc (visual_size_t nbytes) VIS_ATTR_MALLOC;
 
 /**
  * Allocates @a nbytes of memory initialized to 0.
@@ -127,7 +127,7 @@ void *visual_mem_malloc (visual_size_t nbytes) VIS_ATTR_MALLOC;
  * @return On success, a pointer to a new allocated memory initialized
  * to 0 of size @a nbytes, on failure, program is aborted.
  */
-void *visual_mem_malloc0 (visual_size_t nbytes) VIS_ATTR_MALLOC;
+LV_DLL_PUBLIC void *visual_mem_malloc0 (visual_size_t nbytes) VIS_ATTR_MALLOC;
 
 /**
  * Reallocates memory, can be used to grow a buffer.
@@ -137,7 +137,7 @@ void *visual_mem_malloc0 (visual_size_t nbytes) VIS_ATTR_MALLOC;
  *
  * @return On success, a pointer to the new reallocated memory, on failure NULL.
  */
-void *visual_mem_realloc (void *ptr, visual_size_t nbytes) VIS_ATTR_MALLOC;
+LV_DLL_PUBLIC void *visual_mem_realloc (void *ptr, visual_size_t nbytes) VIS_ATTR_MALLOC;
 
 /**
  * Frees allocated memory.
@@ -146,15 +146,15 @@ void *visual_mem_realloc (void *ptr, visual_size_t nbytes) VIS_ATTR_MALLOC;
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_MEM_NULL on failure.
  */
-int visual_mem_free (void *ptr);
+LV_DLL_PUBLIC int visual_mem_free (void *ptr);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
-extern VisMemCopyFunc visual_mem_copy;
-extern VisMemCopyPitchFunc visual_mem_copy_pitch;
+extern LV_DLL_PUBLIC VisMemCopyFunc visual_mem_copy;
+extern LV_DLL_PUBLIC VisMemCopyPitchFunc visual_mem_copy_pitch;
 
-extern VisMemSet8Func visual_mem_set;
-extern VisMemSet16Func visual_mem_set16;
-extern VisMemSet32Func visual_mem_set32;
+extern LV_DLL_PUBLIC VisMemSet8Func visual_mem_set;
+extern LV_DLL_PUBLIC VisMemSet16Func visual_mem_set16;
+extern LV_DLL_PUBLIC VisMemSet32Func visual_mem_set32;
 
 /**
  * Convenient macro to request @a n_structs structures of type @a struct_type

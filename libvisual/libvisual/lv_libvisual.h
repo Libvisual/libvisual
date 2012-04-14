@@ -44,7 +44,7 @@
 
 namespace LV {
 
-  class System
+  class LV_DLL_PUBLIC System
       : public Singleton<System>
   {
   public:
@@ -97,18 +97,17 @@ namespace LV {
 
 VISUAL_BEGIN_DECLS
 
-int visual_init (int *argc, char ***argv);
+LV_DLL_PUBLIC int visual_init (int *argc, char ***argv);
 
-int visual_is_initialized (void);
+LV_DLL_PUBLIC int visual_is_initialized (void);
 
-int visual_quit (void);
+LV_DLL_PUBLIC int visual_quit (void);
 
-const char *visual_get_version (void);
+LV_DLL_PUBLIC const char *visual_get_version (void);
 
-int visual_get_api_version (void);
+LV_DLL_PUBLIC int visual_get_api_version (void);
 
-VisParamContainer *visual_get_params (void);
-
+LV_DLL_PUBLIC VisParamContainer *visual_get_params (void);
 
 VISUAL_END_DECLS
 

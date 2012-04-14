@@ -1,3 +1,4 @@
+
 /* Libvisual - The audio visualisation framework.
  * 
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
@@ -48,7 +49,7 @@ namespace LV {
 
   typedef uint32_t RandomSeed;
 
-  class RandomContext
+  class LV_DLL_PUBLIC RandomContext
   {
   public:
 
@@ -196,14 +197,14 @@ extern VisRandomContext __lv_internal_random_context;
 VisRandomContext *visual_random_context_new (uint32_t seed);
 void visual_random_context_free (VisRandomContext *rcontext);
 
-void visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed);
-uint32_t visual_random_context_get_seed (VisRandomContext *rcontext);
-uint32_t visual_random_context_get_seed_state (VisRandomContext *rcontext);
-uint32_t visual_random_context_int (VisRandomContext *rcontext);
-uint32_t visual_random_context_int_range (VisRandomContext *rcontext, unsigned int min, unsigned int max);
-double visual_random_context_double (VisRandomContext *rcontext);
-float visual_random_context_float (VisRandomContext *rcontext);
-int visual_random_context_decide (VisRandomContext *rcontext, float a);
+LV_DLL_PUBLIC void visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed);
+LV_DLL_PUBLIC uint32_t visual_random_context_get_seed (VisRandomContext *rcontext);
+LV_DLL_PUBLIC uint32_t visual_random_context_get_seed_state (VisRandomContext *rcontext);
+LV_DLL_PUBLIC uint32_t visual_random_context_int (VisRandomContext *rcontext);
+LV_DLL_PUBLIC uint32_t visual_random_context_int_range (VisRandomContext *rcontext, unsigned int min, unsigned int max);
+LV_DLL_PUBLIC double visual_random_context_double (VisRandomContext *rcontext);
+LV_DLL_PUBLIC float visual_random_context_float (VisRandomContext *rcontext);
+LV_DLL_PUBLIC int visual_random_context_decide (VisRandomContext *rcontext, float a);
 
 VISUAL_END_DECLS
 

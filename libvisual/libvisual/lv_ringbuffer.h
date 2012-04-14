@@ -96,9 +96,9 @@ struct _VisRingBuffer {
  *
  * @return A newly allocated VisRingBuffer.
  */
-VisRingBuffer *visual_ringbuffer_new (void);
+LV_DLL_PUBLIC VisRingBuffer *visual_ringbuffer_new (void);
 
-int visual_ringbuffer_init (VisRingBuffer *ringbuffer);
+LV_DLL_PUBLIC int visual_ringbuffer_init (VisRingBuffer *ringbuffer);
 
 /**
  * Adds a VisRingBufferEntry to the end of the ringbuffer.
@@ -109,7 +109,7 @@ int visual_ringbuffer_init (VisRingBuffer *ringbuffer);
  * @return VISUAL_OK on success, -VISUAL_ERROR_RINGBUFFER_NULL or -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL
  *	on failure.
  */
-int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
+LV_DLL_PUBLIC int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
 
 /**
  * Adds a VisBuffer to the end of the ringbuffer.
@@ -120,7 +120,7 @@ int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_RINGBUFFER_NULL, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL
  *	on failure.
  */
-int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer);
+LV_DLL_PUBLIC int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer);
 
 /**
  * Adds a portion of data to the ringbuffer of nbytes byte size.
@@ -132,15 +132,15 @@ int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer);
  * @return VISUAL_OK on succes or -VISUAL_ERROR_RINGBUFFER_NULL, -VISUAL_ERROR_NULL,
  *	-VISUAL_ERROR_RINGBUFFER_ENTRY_NULL on failure.
  */
-int visual_ringbuffer_add_buffer_by_data (VisRingBuffer *ringbuffer, void *data, int nbytes);
+LV_DLL_PUBLIC int visual_ringbuffer_add_buffer_by_data (VisRingBuffer *ringbuffer, void *data, int nbytes);
 
-int visual_ringbuffer_add_function (VisRingBuffer *ringbuffer,
+LV_DLL_PUBLIC int visual_ringbuffer_add_function (VisRingBuffer *ringbuffer,
 		VisRingBufferDataFunc datafunc,
 		VisRingBufferDestroyFunc destroyfunc,
 		VisRingBufferSizeFunc sizefunc,
 		void *functiondata);
 
-int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer);
+LV_DLL_PUBLIC int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer);
 
 /**
  * Gets a list of all ringbuffer fragments that are currently in the
@@ -150,30 +150,30 @@ int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer);
  *
  * @return A VisList of VisRingBufferEntry items or NULL on failure.
  */
-VisList *visual_ringbuffer_get_list (VisRingBuffer *ringbuffer);
+LV_DLL_PUBLIC VisList *visual_ringbuffer_get_list (VisRingBuffer *ringbuffer);
 
-int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
-int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes);
-int visual_ringbuffer_get_data_from_end (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
+LV_DLL_PUBLIC int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
+LV_DLL_PUBLIC int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes);
+LV_DLL_PUBLIC int visual_ringbuffer_get_data_from_end (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
 
-int visual_ringbuffer_get_data_without_wrap (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
+LV_DLL_PUBLIC int visual_ringbuffer_get_data_without_wrap (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes);
 
-VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int nbytes);
-VisBuffer *visual_ringbuffer_get_data_new_without_wrap (VisRingBuffer *ringbuffer, int nbytes);
+LV_DLL_PUBLIC VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int nbytes);
+LV_DLL_PUBLIC VisBuffer *visual_ringbuffer_get_data_new_without_wrap (VisRingBuffer *ringbuffer, int nbytes);
 
-VisRingBufferEntry *visual_ringbuffer_entry_new (VisBuffer *buffer);
-int visual_ringbuffer_entry_init (VisRingBufferEntry *entry, VisBuffer *buffer);
-VisRingBufferEntry *visual_ringbuffer_entry_new_function (
+LV_DLL_PUBLIC VisRingBufferEntry *visual_ringbuffer_entry_new (VisBuffer *buffer);
+LV_DLL_PUBLIC int visual_ringbuffer_entry_init (VisRingBufferEntry *entry, VisBuffer *buffer);
+LV_DLL_PUBLIC VisRingBufferEntry *visual_ringbuffer_entry_new_function (
 		VisRingBufferDataFunc datafunc,
 		VisRingBufferDestroyFunc destroyfunc,
 		VisRingBufferSizeFunc sizefunc,
 		void *functiondata);
-int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
+LV_DLL_PUBLIC int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
 		VisRingBufferDataFunc datafunc,
 		VisRingBufferDestroyFunc destroyfunc,
 		VisRingBufferSizeFunc sizefunc,
 		void *functiondata);
-void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry);
+LV_DLL_PUBLIC void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry);
 
 VISUAL_END_DECLS
 

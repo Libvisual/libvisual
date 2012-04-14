@@ -65,7 +65,7 @@ struct _VisBuffer {
  *
  * @return A newly allocated VisBuffer.
  */
-VisBuffer *visual_buffer_new (void);
+LV_DLL_PUBLIC VisBuffer *visual_buffer_new (void);
 
 /**
  * Initializes a VisBuffer, it's safe to use visual_buffer_set_data_pair on a non heap allocated VisBuffer,
@@ -83,7 +83,7 @@ VisBuffer *visual_buffer_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_init (VisBuffer *buffer, void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
+LV_DLL_PUBLIC int visual_buffer_init (VisBuffer *buffer, void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
 
 /**
  * Creates a new VisBuffer with data, datasize and destroyer set.
@@ -95,7 +95,7 @@ int visual_buffer_init (VisBuffer *buffer, void *data, visual_size_t datasize, V
  *
  * @return A newly allocated VisBuffer.
  */
-VisBuffer *visual_buffer_new_with_buffer (void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
+LV_DLL_PUBLIC VisBuffer *visual_buffer_new_with_buffer (void *data, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
 
 /**
  * Creates a new VisBuffer, allocates data, sets the destroyer.
@@ -106,7 +106,7 @@ VisBuffer *visual_buffer_new_with_buffer (void *data, visual_size_t datasize, Vi
  *
  * @return A newly allocated VisBuffer.
  */
-VisBuffer *visual_buffer_new_allocate (visual_size_t datasize, VisBufferDestroyerFunc destroyer);
+LV_DLL_PUBLIC VisBuffer *visual_buffer_new_allocate (visual_size_t datasize, VisBufferDestroyerFunc destroyer);
 
 /**
  * Initializes a VisBuffer and allocates the data, it's safe to use visual_buffer_set_data_pair on a
@@ -123,7 +123,7 @@ VisBuffer *visual_buffer_new_allocate (visual_size_t datasize, VisBufferDestroye
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_init_allocate (VisBuffer *buffer, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
+LV_DLL_PUBLIC int visual_buffer_init_allocate (VisBuffer *buffer, visual_size_t datasize, VisBufferDestroyerFunc destroyer);
 
 /**
  * Destroys the content of a VisBuffer using the VisBufferDestroyerFunc that is set to the VisBuffer.
@@ -132,7 +132,7 @@ int visual_buffer_init_allocate (VisBuffer *buffer, visual_size_t datasize, VisB
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_destroy_content (VisBuffer *buffer);
+LV_DLL_PUBLIC int visual_buffer_destroy_content (VisBuffer *buffer);
 
 /**
  * Sets the destroyer function for the content of a VisBuffer.
@@ -142,7 +142,7 @@ int visual_buffer_destroy_content (VisBuffer *buffer);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_set_destroyer (VisBuffer *buffer, VisBufferDestroyerFunc destroyer);
+LV_DLL_PUBLIC int visual_buffer_set_destroyer (VisBuffer *buffer, VisBufferDestroyerFunc destroyer);
 
 /**
  * Retrieves the destroyer function that is set to a VisBuffer.
@@ -151,7 +151,7 @@ int visual_buffer_set_destroyer (VisBuffer *buffer, VisBufferDestroyerFunc destr
  *
  * @return Pointer to the destroyer function, or NULL on failure.
  */
-VisBufferDestroyerFunc visual_buffer_get_destroyer (VisBuffer *buffer);
+LV_DLL_PUBLIC VisBufferDestroyerFunc visual_buffer_get_destroyer (VisBuffer *buffer);
 
 /**
  * Sets the data pair (data and it's size) to a VisBuffer.
@@ -162,7 +162,7 @@ VisBufferDestroyerFunc visual_buffer_get_destroyer (VisBuffer *buffer);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t datasize);
+LV_DLL_PUBLIC int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t datasize);
 
 /**
  * Sets the size of the data to a VisBuffer.
@@ -172,7 +172,7 @@ int visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t da
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_set_size (VisBuffer *buffer, visual_size_t datasize);
+LV_DLL_PUBLIC int visual_buffer_set_size (VisBuffer *buffer, visual_size_t datasize);
 
 /**
  * Sets the data to a VisBuffer.
@@ -182,7 +182,7 @@ int visual_buffer_set_size (VisBuffer *buffer, visual_size_t datasize);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_set_data (VisBuffer *buffer, void *data);
+LV_DLL_PUBLIC int visual_buffer_set_data (VisBuffer *buffer, void *data);
 
 /**
  * Allocates the data for a VisBuffer, the amount of bytes allocated is defined by the data size
@@ -192,7 +192,7 @@ int visual_buffer_set_data (VisBuffer *buffer, void *data);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_allocate_data (VisBuffer *buffer);
+LV_DLL_PUBLIC int visual_buffer_allocate_data (VisBuffer *buffer);
 
 /**
  * Gets pointer to the data that is encapsulated by the VisBuffer.
@@ -201,7 +201,7 @@ int visual_buffer_allocate_data (VisBuffer *buffer);
  *
  * @return Pointer to the data on success, NULL on failure.
  */
-void *visual_buffer_get_data (VisBuffer *buffer);
+LV_DLL_PUBLIC void *visual_buffer_get_data (VisBuffer *buffer);
 
 /**
  * Gets pointer to the data that is encapsulated by the VisBuffer using an
@@ -212,7 +212,7 @@ void *visual_buffer_get_data (VisBuffer *buffer);
  *
  * @return Pointer to the data on success, NULL on failure.
  */
-void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset);
+LV_DLL_PUBLIC void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset);
 
 /**
  * Gets the size in bytes of a VisBuffer.
@@ -221,7 +221,7 @@ void *visual_buffer_get_data_offset (VisBuffer *buffer, int byteoffset);
  *
  * @return Size in bytes on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-visual_size_t visual_buffer_get_size (VisBuffer *buffer);
+LV_DLL_PUBLIC visual_size_t visual_buffer_get_size (VisBuffer *buffer);
 
 /**
  * Return if the internal buffer is flagged as allocated or not.
@@ -230,7 +230,7 @@ visual_size_t visual_buffer_get_size (VisBuffer *buffer);
  *
  * @return TRUE or FALSE depending on the allocated flag on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_get_allocated (VisBuffer *buffer);
+LV_DLL_PUBLIC int visual_buffer_get_allocated (VisBuffer *buffer);
 
 /**
  * Clones a VisBuffer, this will copy the data.
@@ -240,7 +240,7 @@ int visual_buffer_get_allocated (VisBuffer *buffer);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_clone (VisBuffer *dest, VisBuffer *src);
+LV_DLL_PUBLIC int visual_buffer_clone (VisBuffer *dest, VisBuffer *src);
 
 /**
  * Clones a VisBuffer in the form of a newly allocated structure, this will copy the data.
@@ -249,7 +249,7 @@ int visual_buffer_clone (VisBuffer *dest, VisBuffer *src);
  *
  * @return Newly allocated cloned VisBuffer on success, NULL on failure.
  */
-VisBuffer *visual_buffer_clone_new (VisBuffer *src);
+LV_DLL_PUBLIC VisBuffer *visual_buffer_clone_new (VisBuffer *src);
 
 /**
  * Copies all the data contained by the VisBuffer into dest.
@@ -259,7 +259,7 @@ VisBuffer *visual_buffer_clone_new (VisBuffer *src);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
+LV_DLL_PUBLIC int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
 
 /**
  * Copies data into the VisBuffer from another VisBuffer starting at byteoffset. The copy is
@@ -271,7 +271,7 @@ int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
+LV_DLL_PUBLIC int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
 
 /**
  * Copies data into the VisBuffer using a data pointer and it's size. The copy is NOT atomic.
@@ -285,7 +285,7 @@ int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
+LV_DLL_PUBLIC int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
 
 /**
  * Copies data into the VisBuffer from another VisBuffer starting at byteoffset.
@@ -297,7 +297,7 @@ int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
+LV_DLL_PUBLIC int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
 
 /**
  * Copies data into the VisBuffer using a data pointer and it's size. The copy is atomic,
@@ -312,7 +312,7 @@ int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
+LV_DLL_PUBLIC int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
 
 /**
  * Appends a VisBuffer to a VisBuffer, this will also reallocate the buffer so it's big enough.
@@ -322,7 +322,7 @@ int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t si
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
+LV_DLL_PUBLIC int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
 
 /**
  * Appends data to a VisBuffer, this will also reallocate the buffer so it's big enough.
@@ -333,7 +333,7 @@ int visual_buffer_append (VisBuffer *dest, VisBuffer *src);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
-int visual_buffer_append_data (VisBuffer *dest, void *data, visual_size_t size);
+LV_DLL_PUBLIC int visual_buffer_append_data (VisBuffer *dest, void *data, visual_size_t size);
 
 /**
  * Fills the buffer with a value (byte wise).
@@ -343,7 +343,7 @@ int visual_buffer_append_data (VisBuffer *dest, void *data, visual_size_t size);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL on failure.
  */
-int visual_buffer_fill (VisBuffer *buffer, char value);
+LV_DLL_PUBLIC int visual_buffer_fill (VisBuffer *buffer, char value);
 
 /**
  * Fills the buffer with a pattern of data. This can be used to fill a buffer with a structure, floats
@@ -354,7 +354,7 @@ int visual_buffer_fill (VisBuffer *buffer, char value);
  * @param data The data pattern.
  * @param size The size of the pattern
  */
-int visual_buffer_fill_with_pattern (VisBuffer *buffer, void *data, visual_size_t size);
+LV_DLL_PUBLIC int visual_buffer_fill_with_pattern (VisBuffer *buffer, void *data, visual_size_t size);
 
 /**
  * A standard destroyer that can be set on VisBuffers. This destroyer simply frees the memory
@@ -362,7 +362,7 @@ int visual_buffer_fill_with_pattern (VisBuffer *buffer, void *data, visual_size_
  *
  * @param buffer Pointer to the VisBuffer that owns the memory that needs to be freed.
  */
-void visual_buffer_destroyer_free (VisBuffer *buffer);
+LV_DLL_PUBLIC void visual_buffer_destroyer_free (VisBuffer *buffer);
 
 VISUAL_END_DECLS
 

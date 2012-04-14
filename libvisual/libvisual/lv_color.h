@@ -35,7 +35,7 @@
 
 namespace LV {
 
-  struct Color
+  struct LV_DLL_PUBLIC Color
   {
       uint8_t r;    /**< Red channel   */
       uint8_t g;    /**< Green channel */
@@ -149,23 +149,23 @@ struct _VisColor
 
 #define VISUAL_COLOR(obj) (VISUAL_CHECK_CAST ((obj), VisColor))
 
-VisColor *visual_color_new (void);
-void visual_color_free (VisColor *color);
+LV_DLL_PUBLIC VisColor *visual_color_new (void);
+LV_DLL_PUBLIC void visual_color_free (VisColor *color);
 
-int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
-int visual_color_set_with_alpha (VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-int visual_color_compare (VisColor *src1, VisColor *src2);
-int visual_color_from_hsv (VisColor *color, float h, float s, float v);
-int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
-int visual_color_copy (VisColor *dest, VisColor *src);
+LV_DLL_PUBLIC int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
+LV_DLL_PUBLIC int visual_color_set_with_alpha (VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+LV_DLL_PUBLIC int visual_color_compare (VisColor *src1, VisColor *src2);
+LV_DLL_PUBLIC int visual_color_from_hsv (VisColor *color, float h, float s, float v);
+LV_DLL_PUBLIC int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
+LV_DLL_PUBLIC int visual_color_copy (VisColor *dest, VisColor *src);
 
-int visual_color_from_uint32 (VisColor *color, uint32_t rgb);
-int visual_color_from_uint16 (VisColor *color, uint16_t rgb);
-uint32_t visual_color_to_uint32 (VisColor *color);
-uint16_t visual_color_to_uint16 (VisColor *color);
+LV_DLL_PUBLIC int visual_color_from_uint32 (VisColor *color, uint32_t rgb);
+LV_DLL_PUBLIC int visual_color_from_uint16 (VisColor *color, uint16_t rgb);
+LV_DLL_PUBLIC uint32_t visual_color_to_uint32 (VisColor *color);
+LV_DLL_PUBLIC uint16_t visual_color_to_uint16 (VisColor *color);
 
-VisColor *visual_color_black (void);
-VisColor *visual_color_white (void);
+LV_DLL_PUBLIC VisColor *visual_color_black (void);
+LV_DLL_PUBLIC VisColor *visual_color_white (void);
 
 VISUAL_END_DECLS
 

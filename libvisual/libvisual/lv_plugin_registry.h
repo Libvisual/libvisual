@@ -15,7 +15,7 @@ namespace LV {
 
   typedef ::VisPluginType PluginType;
 
-  class PluginRegistry
+  class LV_DLL_PUBLIC PluginRegistry
       : public Singleton<PluginRegistry>
   {
   public:
@@ -56,11 +56,11 @@ namespace LV {
 
 VISUAL_BEGIN_DECLS
 
-int visual_plugin_registry_initialize (void);
-int visual_plugin_registry_deinitialize (void);
+LV_DLL_PUBLIC int visual_plugin_registry_initialize (void);
+LV_DLL_PUBLIC int visual_plugin_registry_deinitialize (void);
 
-int visual_plugin_registry_add_path (const char *path);
-int visual_plugin_registry_has_plugin (VisPluginType type, const char *name);
+LV_DLL_PUBLIC int visual_plugin_registry_add_path (const char *path);
+LV_DLL_PUBLIC int visual_plugin_registry_has_plugin (VisPluginType type, const char *name);
 
 VISUAL_END_DECLS
 

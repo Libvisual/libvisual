@@ -37,7 +37,7 @@
 
 namespace LV {
 
-  class Rect
+  class LV_DLL_PUBLIC Rect
   {
   public:
 
@@ -241,39 +241,39 @@ struct _VisRectangle;
 
 VISUAL_BEGIN_DECLS
 
-VisRectangle *visual_rectangle_new (int x, int y, int width, int height);
-VisRectangle *visual_rectangle_new_empty (void);
+LV_DLL_PUBLIC VisRectangle *visual_rectangle_new (int x, int y, int width, int height);
+LV_DLL_PUBLIC VisRectangle *visual_rectangle_new_empty (void);
 
-void visual_rectangle_free (VisRectangle *rect);
+LV_DLL_PUBLIC void visual_rectangle_free (VisRectangle *rect);
 
-void visual_rectangle_set  (VisRectangle *rect, int x, int y, int width, int height);
-void visual_rectangle_copy (VisRectangle *dest, VisRectangle *src);
+LV_DLL_PUBLIC void visual_rectangle_set  (VisRectangle *rect, int x, int y, int width, int height);
+LV_DLL_PUBLIC void visual_rectangle_copy (VisRectangle *dest, VisRectangle *src);
 
-VisRectangle *visual_rectangle_clone (VisRectangle *rect);
+LV_DLL_PUBLIC VisRectangle *visual_rectangle_clone (VisRectangle *rect);
 
-void visual_rectangle_set_x      (VisRectangle *rect, int x);
-int  visual_rectangle_get_x      (VisRectangle *rect);
-void visual_rectangle_set_y      (VisRectangle *rect, int y);
-int  visual_rectangle_get_y      (VisRectangle *rect);
-void visual_rectangle_set_width  (VisRectangle *rect, int width);
-int  visual_rectangle_get_width  (VisRectangle *rect);
-void visual_rectangle_set_height (VisRectangle *rect, int height);
-int  visual_rectangle_get_height (VisRectangle *rect);
+LV_DLL_PUBLIC void visual_rectangle_set_x      (VisRectangle *rect, int x);
+LV_DLL_PUBLIC int  visual_rectangle_get_x      (VisRectangle *rect);
+LV_DLL_PUBLIC void visual_rectangle_set_y      (VisRectangle *rect, int y);
+LV_DLL_PUBLIC int  visual_rectangle_get_y      (VisRectangle *rect);
+LV_DLL_PUBLIC void visual_rectangle_set_width  (VisRectangle *rect, int width);
+LV_DLL_PUBLIC int  visual_rectangle_get_width  (VisRectangle *rect);
+LV_DLL_PUBLIC void visual_rectangle_set_height (VisRectangle *rect, int height);
+LV_DLL_PUBLIC int  visual_rectangle_get_height (VisRectangle *rect);
 
-int  visual_rectangle_is_empty       (VisRectangle *rect);
-int  visual_rectangle_intersects     (VisRectangle *dest, VisRectangle *src);
-int  visual_rectangle_contains_point (VisRectangle *rect, int x, int y);
-int  visual_rectangle_contains_rect  (VisRectangle *dest, VisRectangle *src);
-void visual_rectangle_clip           (VisRectangle *dest, VisRectangle *within, VisRectangle *src);
+LV_DLL_PUBLIC int  visual_rectangle_is_empty       (VisRectangle *rect);
+LV_DLL_PUBLIC int  visual_rectangle_intersects     (VisRectangle *dest, VisRectangle *src);
+LV_DLL_PUBLIC int  visual_rectangle_contains_point (VisRectangle *rect, int x, int y);
+LV_DLL_PUBLIC int  visual_rectangle_contains_rect  (VisRectangle *dest, VisRectangle *src);
+LV_DLL_PUBLIC void visual_rectangle_clip           (VisRectangle *dest, VisRectangle *within, VisRectangle *src);
 
-void visual_rectangle_normalize    (VisRectangle *rect);
-void visual_rectangle_normalize_to (VisRectangle *dest, VisRectangle *src);
+LV_DLL_PUBLIC void visual_rectangle_normalize    (VisRectangle *rect);
+LV_DLL_PUBLIC void visual_rectangle_normalize_to (VisRectangle *dest, VisRectangle *src);
 
-void visual_rectangle_denormalize_point  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
-void visual_rectangle_denormalize_points (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
+LV_DLL_PUBLIC void visual_rectangle_denormalize_point  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
+LV_DLL_PUBLIC void visual_rectangle_denormalize_points (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
 
-void visual_rectangle_denormalize_point_neg  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
-void visual_rectangle_denormalize_points_neg (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
+LV_DLL_PUBLIC void visual_rectangle_denormalize_point_neg  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
+LV_DLL_PUBLIC void visual_rectangle_denormalize_points_neg (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
 
 VISUAL_END_DECLS
 

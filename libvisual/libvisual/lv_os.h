@@ -37,17 +37,17 @@ VISUAL_BEGIN_DECLS
  * Puts the process in soft realtime mode. Be very careful with using this, it's very much possible to lock your
  * system up. Only works as super user.
  */
-int visual_os_scheduler_realtime_start (void);
+LV_DLL_PUBLIC int visual_os_scheduler_realtime_start (void);
 
 /**
  * Returns to normal execution mode. Only works as super user.
  */
-int visual_os_scheduler_realtime_stop (void);
+LV_DLL_PUBLIC int visual_os_scheduler_realtime_stop (void);
 
 /**
  * Yield the process. Don't rely on this.
  */
-int visual_os_scheduler_yield (void);
+LV_DLL_PUBLIC int visual_os_scheduler_yield (void);
 
 VISUAL_END_DECLS
 

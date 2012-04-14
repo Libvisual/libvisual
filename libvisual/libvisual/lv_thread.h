@@ -50,7 +50,7 @@ typedef void *(*VisThreadFunc)(void *data);
  *
  * @return TRUE if initialized, FALSE if not initialized.
  */
-int visual_thread_initialize (void);
+LV_DLL_PUBLIC int visual_thread_initialize (void);
 
 /**
  * Request if VisThread is initialized or not. This function should
@@ -58,7 +58,7 @@ int visual_thread_initialize (void);
  *
  * @return TRUE if initialized, FALSE if not initialized.
  */
-int visual_thread_is_initialized (void);
+LV_DLL_PUBLIC int visual_thread_is_initialized (void);
 
 /**
  * Is used to check if threading is supported. When threading is used
@@ -67,7 +67,7 @@ int visual_thread_is_initialized (void);
  *
  * @return TRUE if threading is supported or FALSE if not.
  */
-int visual_thread_is_supported (void);
+LV_DLL_PUBLIC int visual_thread_is_supported (void);
 
 /**
  * Creates a new VisThread that is used in threading.
@@ -78,7 +78,7 @@ int visual_thread_is_supported (void);
  *
  * @return A newly allocated VisThread, or NULL on failure.
  */
-VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable);
+LV_DLL_PUBLIC VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable);
 
 /**
  * After a VisThread is not needed anylonger it needs to be freed
@@ -89,7 +89,7 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable);
  * @return VISUAL_OK on success, -VISUAL_ERROR_THREAD_NULL or
  *	error values returned by visual_mem_free on failure.
  */
-int visual_thread_free (VisThread *thread);
+LV_DLL_PUBLIC int visual_thread_free (VisThread *thread);
 
 /**
  * Joins a VisThread with another.
@@ -99,19 +99,19 @@ int visual_thread_free (VisThread *thread);
  * @return Possible result that was passed to visual_thread_exit as retval or
  *	NULL.
  */
-void *visual_thread_join (VisThread *thread);
+LV_DLL_PUBLIC void *visual_thread_join (VisThread *thread);
 
 /**
  * Exits a VisThread, this will terminate the thread.
  *
  * @param retval The return value that is catched by the visual_thread_join function.
  */
-void visual_thread_exit (void *retval);
+LV_DLL_PUBLIC void visual_thread_exit (void *retval);
 
 /**
  * Yield the current VisThread so another gets time.
  */
-void visual_thread_yield (void);
+LV_DLL_PUBLIC void visual_thread_yield (void);
 
 /**
  * Creates a new VisMutex that is used to do thread locking so data
@@ -120,7 +120,7 @@ void visual_thread_yield (void);
  * @return A newly allocated VisMutex that can be used with the visual_mutex_lock and
  *	visual_mutex_unlock functions or NULL on failure.
  */
-VisMutex *visual_mutex_new (void);
+LV_DLL_PUBLIC VisMutex *visual_mutex_new (void);
 
 /**
  * A VisMutex is allocated to have more flexibility with the actual
@@ -130,7 +130,7 @@ VisMutex *visual_mutex_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_MUTEX_NULL on failure.
  */
-int visual_mutex_free (VisMutex *mutex);
+LV_DLL_PUBLIC int visual_mutex_free (VisMutex *mutex);
 
 /**
  * A VisMutex that has not been allocated using visual_mutex_new ()
@@ -142,7 +142,7 @@ int visual_mutex_free (VisMutex *mutex);
  * @return VISUAL_OK on success, -VISUAL_ERROR_MUTEX_NULL,  -VISUAL_ERROR_THREAD_NOT_INTIALIZED,
  * 	-VISUAL_ERROR_THREAD_NOT_SUPPORTED or -VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
-int visual_mutex_init (VisMutex *mutex);
+LV_DLL_PUBLIC int visual_mutex_init (VisMutex *mutex);
 
 
 /**
@@ -156,7 +156,7 @@ int visual_mutex_init (VisMutex *mutex);
  *	-VISUAL_ERROR_THREAD_NOT_INITIALIZED, -VISUAL_ERROR_THREAD_NOT_SUPPORTED,
  *	-VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
-int visual_mutex_lock (VisMutex *mutex);
+LV_DLL_PUBLIC int visual_mutex_lock (VisMutex *mutex);
 
 /**
  * Tries to lock a VisMutex, however instead of visual_mutex_lock it
@@ -169,7 +169,7 @@ int visual_mutex_lock (VisMutex *mutex);
  *	-VISUAL_ERROR_THREAD_NOT_INITIALIZED, -VISUAL_ERROR_THREAD_NOT_SUPPORTED or
  *	-VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
-int visual_mutex_trylock (VisMutex *mutex);
+LV_DLL_PUBLIC int visual_mutex_trylock (VisMutex *mutex);
 
 /**
  * Unlocks a VisMutex so other threads that use the same lock can now
@@ -181,7 +181,7 @@ int visual_mutex_trylock (VisMutex *mutex);
  *	-VISUAL_ERROR_THREAD_NOT_INITIALIZED, -VISUAL_ERROR_THREAD_NOT_SUPPORTED or
  *	-VISUAL_ERROR_THREAD_NOT_ENABLED on failure.
  */
-int visual_mutex_unlock (VisMutex *mutex);
+LV_DLL_PUBLIC int visual_mutex_unlock (VisMutex *mutex);
 
 VISUAL_END_DECLS
 
