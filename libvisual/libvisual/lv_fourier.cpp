@@ -210,6 +210,8 @@ namespace LV {
 
   } // anonymous namespace
 
+  template <>
+  Fourier* Singleton<Fourier>::m_instance = 0;
 
   Fourier::Fourier ()
       : m_impl (new Impl)

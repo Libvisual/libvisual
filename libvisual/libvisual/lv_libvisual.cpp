@@ -92,12 +92,15 @@ namespace LV
   {
   public:
 
-	  VisParamContainer *params;
+      VisParamContainer *params;
 
       Impl ()
           : params (0)
       {}
   };
+
+  template <>
+  System* Singleton<System>::m_instance = 0;
 
   std::string System::get_version () const
   {

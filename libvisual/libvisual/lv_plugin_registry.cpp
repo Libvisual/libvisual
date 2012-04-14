@@ -128,6 +128,9 @@ namespace LV {
       delete ref;
   }
 
+  template <>
+  PluginRegistry* Singleton<PluginRegistry>::m_instance = 0;
+
   PluginRegistry::PluginRegistry ()
       : m_impl (new Impl)
   {

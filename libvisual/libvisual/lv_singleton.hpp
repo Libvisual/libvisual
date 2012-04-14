@@ -30,9 +30,6 @@ namespace LV {
       Singleton const& operator= (Singleton const&);
   };
 
-  template <class T>
-  T* Singleton<T>::m_instance = 0;
-
 } // LV namespace
 
 #endif // _LV_SINGLETON_HPP
