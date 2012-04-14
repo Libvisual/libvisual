@@ -153,4 +153,5 @@ static void output_to_stderr (VisLogSeverity severity, const char *msg,
 #else
 	fprintf (stderr, "%s %s\n", log_prefixes[severity], msg);
 #endif
+	fflush (stderr);
 }

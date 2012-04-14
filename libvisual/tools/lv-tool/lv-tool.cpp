@@ -89,7 +89,7 @@ static void _print_plugin_help()
     {
         for (unsigned int i = 0; i < list.size (); i++)
         {
-            _print_plugin_info(*list[i]->info);
+            _print_plugin_info(*list[i].info);
         }
     }
     else

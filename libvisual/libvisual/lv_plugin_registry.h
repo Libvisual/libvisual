@@ -31,7 +31,7 @@ namespace LV {
 
       ~PluginRegistry ();
 
-      PluginRef* find_plugin (PluginType type, std::string const& name) const;
+      PluginRef const* find_plugin (PluginType type, std::string const& name) const;
 
       bool has_plugin (PluginType type, std::string const& name) const;
 

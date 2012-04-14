@@ -38,10 +38,10 @@ namespace LV {
   {
       for (unsigned int i = 0; i < list.size (); i++)
       {
-          if (std::strcmp (list[i]->info->plugname, name) == 0)
+          if (std::strcmp (list[i].info->plugname, name) == 0)
           {
               unsigned int next_i = (i + 1) % list.size ();
-              return list[next_i]->info->plugname;
+              return list[next_i].info->plugname;
           }
       }
 
@@ -52,10 +52,10 @@ namespace LV {
   {
       for (unsigned int i = 0; i < list.size (); i++)
       {
-          if (std::strcmp (list[i]->info->plugname, name) == 0)
+          if (std::strcmp (list[i].info->plugname, name) == 0)
           {
               unsigned int prev_i = (i + list.size () - 1) % list.size ();
-              return list[prev_i]->info->plugname;
+              return list[prev_i].info->plugname;
           }
       }
 

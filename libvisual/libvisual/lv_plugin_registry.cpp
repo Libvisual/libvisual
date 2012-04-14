@@ -42,9 +42,9 @@ namespace LV {
             : type (type_)
         {}
 
-        bool operator() (PluginRef const* ref)
+        bool operator() (PluginRef const& ref)
         {
-            return (type == ref->info->type);
+            return (type == ref.info->type);
         }
     };
 
@@ -57,9 +57,9 @@ namespace LV {
             : name (name_)
         {}
 
-        bool operator() (PluginRef const* ref)
+        bool operator() (PluginRef const& ref)
         {
-            return (name == ref->info->plugname);
+            return (name == ref.info->plugname);
         }
     };
   }
@@ -123,11 +123,6 @@ namespace LV {
       }
   }
 
-  void delete_plugin_ref (PluginRef* ref)
-  {
-      delete ref;
-  }
-
   template <>
   PluginRegistry* Singleton<PluginRegistry>::m_instance = 0;
 
@@ -181,12 +176,12 @@ namespace LV {
            plugin != plugin_end;
            ++plugin)
       {
-          PluginList& list = m_impl->plugin_list_map[(*plugin)->info->type];
+          PluginList& list = m_impl->plugin_list_map[plugin->info->type];
           list.push_back (*plugin);
       }
   }
 
-  PluginRef* PluginRegistry::find_plugin (PluginType type, std::string const& name) const
+  PluginRef const* PluginRegistry::find_plugin (PluginType type, std::string const& name) const
   {
       PluginList const& list = get_plugins_by_type (type);
 
@@ -195,7 +190,7 @@ namespace LV {
                         list.end (),
                         PluginHasName (name));
 
-      return iter != list.end () ? *iter : 0;
+      return iter != list.end () ? &*iter : 0;
   }
 
   bool PluginRegistry::has_plugin (PluginType type, std::string const& name) const
@@ -216,7 +211,7 @@ namespace LV {
 
   VisPluginInfo const* PluginRegistry::get_plugin_info (PluginType type, std::string const& name) const
   {
-      PluginRef* ref = find_plugin (type, name);
+      PluginRef const* ref = find_plugin (type, name);
 
       return ref ? ref->info : 0;
   }
@@ -228,11 +223,6 @@ namespace LV {
 
   PluginRegistry::Impl::~Impl ()
   {
-      for (PluginListMap::const_iterator list = plugin_list_map.begin (), list_end = plugin_list_map.end ();
-           list != list_end;
-           ++list) {
-          std::for_each (list->second.begin (), list->second.end (), delete_plugin_ref);
-      }
   }
 
   void PluginRegistry::Impl::get_plugins_from_dir (PluginList& list, std::string const& dir)
@@ -260,7 +250,10 @@ namespace LV {
                   PluginRef* ref = load_plugin_ref (full_path);
 
                   if (ref) {
-                      list.push_back (ref);
+                      visual_log (VISUAL_LOG_DEBUG, "Adding plugin: %s", ref->info->name);
+
+                      list.push_back (*ref);
+                      delete ref;
                   }
               }
           }
@@ -296,7 +289,10 @@ namespace LV {
               PluginRef* ref = load_plugin_ref (full_path);
 
               if (ref) {
-                  list.push_back (ref);
+                  visual_log (VISUAL_LOG_DEBUG, "Adding plugin: %s", ref->info->name);
+
+                  list.push_back (*ref);
+                  delete ref;
               }
           }
 

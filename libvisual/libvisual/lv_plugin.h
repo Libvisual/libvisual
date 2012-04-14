@@ -401,7 +401,7 @@ namespace LV {
       ModulePtr            module;
   };
 
-  typedef std::vector<PluginRef*> PluginList;
+  typedef std::vector<PluginRef> PluginList;
 
   /**
    * Retrieves the name of the next plugin in the given list.
