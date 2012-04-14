@@ -56,15 +56,10 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_BUFFER_NULL] =			N_("VisBuffer is NULL"),
 	[VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS] =		N_("The requested operation on the VisBuffer is out of bounds"),
 
-	[VISUAL_ERROR_CACHE_NULL] =			N_("The VisCache is NULL"),
-
 	[VISUAL_ERROR_COLLECTION_NULL] =		N_("VisCollection is NULL"),
 	[VISUAL_ERROR_COLLECTION_ITER_NULL] =		N_("VisCollectionIter is NULL"),
 
 	[VISUAL_ERROR_COLOR_NULL] =			N_("VisColor is NULL"),
-
-	[VISUAL_ERROR_CONFIG_REGISTRY_NULL] =		N_("VisConfigRegistry is NULL"),
-	[VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL] =	N_("VisConfigRegistrySection is NULL"),
 
 	[VISUAL_ERROR_CPU_INVALID_CODE] =		N_("The code can not run on this architecture"),
 	[VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED] =	N_("CPU feature is not supported"),
@@ -73,11 +68,6 @@ static const char *__lv_error_human_readable[] = {
 
 	[VISUAL_ERROR_EVENT_NULL] =			N_("VisEvent is NULL"),
 	[VISUAL_ERROR_EVENT_QUEUE_NULL] =		N_("VisEventQueue is NULL"),
-
-	[VISUAL_ERROR_FOURIER_NULL] =			N_("VisFourier is NULL"),
-	[VISUAL_ERROR_FOURIER_NOT_INITIALIZED]	=	N_("The VisFourier subsystem is not initialized"),
-
-	[VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED] =	N_("The native callback for a gl related function is not present."),
 
 	[VISUAL_ERROR_INPUT_NULL] =			N_("VisInput is NULL"),
 	[VISUAL_ERROR_INPUT_PLUGIN_NULL] =		N_("VisInput it's plugin is NULL"),

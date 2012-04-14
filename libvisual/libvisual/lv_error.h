@@ -44,7 +44,7 @@ enum {
 	VISUAL_ERROR_GENERAL,				/**< General error. */
 	VISUAL_ERROR_NULL,				/**< Something is NULL that shouldn't be. */
 	VISUAL_ERROR_IMPOSSIBLE,			/**< The impossible happened, this should never happen. */
-    VISUAL_ERROR_FAILED_CHECK,          /**< Failed an assertion check */
+        VISUAL_ERROR_FAILED_CHECK,          /**< Failed an assertion check */
 
 	/* Error entries for the VisActor system */
 	VISUAL_ERROR_ACTOR_NULL,			/**< The VisActor is NULL. */
@@ -68,19 +68,12 @@ enum {
 	VISUAL_ERROR_BUFFER_NULL,			/**< The VisBuffer is NULL. */
 	VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS,		/**< The requested operation would be out of bounds. */
 
-	/* Error entries for the VisCache system */
-	VISUAL_ERROR_CACHE_NULL,			/**< The VisCache is NULL. */
-
 	/* Error entries for the VisCollection system */
 	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
 	VISUAL_ERROR_COLLECTION_ITER_NULL,		/**< The VisCollectionIter is NULL. */
 
 	/* Error entries for the VisColor system */
 	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
-
-	/* Error entries for the VisConfig system */
-	VISUAL_ERROR_CONFIG_REGISTRY_NULL,		/**< The VisConfigRegistry is NULL. */
-	VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL,	/**< The VisConfigRegistrySection is NULL. */
 
 	/* Error entries for arch related errors and VisCPU system */
 	VISUAL_ERROR_CPU_INVALID_CODE,			/**< Can't run a section of code. */
@@ -92,13 +85,6 @@ enum {
 	/* Error entries for the VisEvent system */
 	VISUAL_ERROR_EVENT_NULL,			/**< The VisEvent is NULL. */
 	VISUAL_ERROR_EVENT_QUEUE_NULL,			/**< The VisEventQueue is NULL. */
-
-	/* Error entries for the VisFourier system */
-	VISUAL_ERROR_FOURIER_NULL,			/**< The VisFourier is NULL. */
-	VISUAL_ERROR_FOURIER_NOT_INITIALIZED,		/**< The VisFourier subsystem is not initialized. */
-
-	/* Error entries for the VisGL system */
-	VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED,		/**< The native callback for a gl related function is not present. */
 
 	/* Error entries for the VisInput system */
 	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */
