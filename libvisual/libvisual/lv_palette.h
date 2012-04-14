@@ -105,14 +105,14 @@ namespace LV {
 
 #define VISUAL_PALETTE(obj)             (VISUAL_CHECK_CAST ((obj), VisPalette))
 
-VISUAL_BEGIN_DECLS
-
 #ifdef __cplusplus
 typedef struct LV::Palette VisPalette;
 #else
 typedef struct _VisPalette VisPalette;
 struct _VisPalette;
 #endif
+
+LV_BEGIN_DECLS
 
 LV_API VisPalette *visual_palette_new (unsigned int ncolors);
 
@@ -133,7 +133,7 @@ LV_API void visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette
 LV_API int visual_palette_find_color (VisPalette *pal, VisColor *color);
 
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

@@ -33,8 +33,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_INPUT(obj)               (VISUAL_CHECK_CAST ((obj), VisInput))
 #define VISUAL_INPUT_PLUGIN(obj)            (VISUAL_CHECK_CAST ((obj), VisInputPlugin))
 
@@ -109,6 +107,8 @@ struct _VisInputPlugin {
                               * of the plugin which uploads sample data into
                               * libvisual. */
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Gives the encapsulated VisPluginData from a VisInput.
@@ -208,7 +208,7 @@ LV_API int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFun
  */
 LV_API int visual_input_run (VisInput *input);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

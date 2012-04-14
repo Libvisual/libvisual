@@ -31,8 +31,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_COLLECTION(obj)				(VISUAL_CHECK_CAST ((obj), VisCollection))
 #define VISUAL_COLLECTIONITER(obj)			(VISUAL_CHECK_CAST ((obj), VisCollectionIter))
 
@@ -104,6 +102,8 @@ struct _VisCollectionIter {
 	VisObject			*context;
 };
 
+LV_BEGIN_DECLS
+
 /* prototypes */
 LV_API int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer);
 LV_API VisCollectionDestroyerFunc visual_collection_get_destroyer (VisCollection *collection);
@@ -139,7 +139,7 @@ LV_API int visual_collection_iter_has_more (VisCollectionIter *iter);
 LV_API void *visual_collection_iter_get_data (VisCollectionIter *iter);
 LV_API int visual_collection_iter_dtor (VisCollectionIter *iter);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

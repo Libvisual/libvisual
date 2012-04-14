@@ -199,8 +199,6 @@ namespace LV {
 
 #endif /* __cplusplus */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_SONGINFO(obj)                (VISUAL_CHECK_CAST ((obj), VisSongInfo))
 
 #ifdef __cplusplus
@@ -209,6 +207,8 @@ typedef ::LV::SongInfo VisSongInfo;
 typedef struct _VisSongInfo VisSongInfo;
 struct _VisSongInfo;
 #endif
+
+LV_BEGIN_DECLS
 
 LV_API VisSongInfo *visual_songinfo_new (VisSongInfoType type);
 
@@ -246,8 +246,7 @@ LV_API void visual_songinfo_mark (VisSongInfo *songinfo);
 
 LV_API long visual_songinfo_get_age (VisSongInfo *songinfo);
 
-
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

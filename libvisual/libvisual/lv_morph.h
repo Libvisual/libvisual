@@ -36,21 +36,19 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_MORPH(obj)               (VISUAL_CHECK_CAST ((obj), VisMorph))
-#define VISUAL_MORPH_PLUGIN(obj)            (VISUAL_CHECK_CAST ((obj), VisMorphPlugin))
+#define VISUAL_MORPH_PLUGIN(obj)        (VISUAL_CHECK_CAST ((obj), VisMorphPlugin))
 
 /**
  * Morph morphing methods.
  */
 typedef enum {
     VISUAL_MORPH_MODE_SET,      /**< Morphing is done by a rate set,
-                      * nothing is automated here. */
+                                  * nothing is automated here. */
     VISUAL_MORPH_MODE_STEPS,    /**< Morphing is done by setting a number of steps,
-                      * the morph will be automated. */
+                                  * the morph will be automated. */
     VISUAL_MORPH_MODE_TIME      /**< Morphing is done by setting a target time when the morph should be done,
-                      * This is as well automated. */
+                                  * This is as well automated. */
 } VisMorphMode;
 
 typedef struct _VisMorph VisMorph;
@@ -145,6 +143,7 @@ struct _VisMorphPlugin {
     VisVideoAttributeOptions     vidoptions;
 };
 
+LV_BEGIN_DECLS
 
 /**
  * Gives the encapsulated VisPluginData from a VisMorph.
@@ -328,7 +327,7 @@ LV_API int visual_morph_requests_audio (VisMorph *morph);
  */
 LV_API int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

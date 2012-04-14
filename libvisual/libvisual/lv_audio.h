@@ -28,8 +28,6 @@
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_ringbuffer.h>
 
-VISUAL_BEGIN_DECLS
-
 /**
  * @defgroup VisAudio VisAudio
  * @{
@@ -140,6 +138,8 @@ struct _VisAudioSample {
 	VisBuffer			*processed;
 };
 
+LV_BEGIN_DECLS
+
 /**
  * Creates a new VisAudio structure.
  *
@@ -243,7 +243,7 @@ LV_API int visual_audio_is_beat(VisAudio *audio, VisBeatAlgorithm algo);
 LV_API int visual_audio_is_beat_with_data(VisAudio *audio, VisBeatAlgorithm algo, unsigned char *data, int size);
 LV_API int visual_audio_get_cheap_audio_data(VisAudio *audio, unsigned char out[2][2][576]);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

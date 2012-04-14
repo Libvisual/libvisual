@@ -38,8 +38,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
 #define VISUAL_ACTOR_PLUGINENVIRON(obj) (VISUAL_CHECK_CAST ((obj), VisActorPluginEnviron))
 #define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
@@ -155,6 +153,8 @@ struct _VisActorPlugin {
 
 	VisVideoAttributeOptions	 vidoptions;
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Gives the encapsulated VisPluginData from a VisActor.
@@ -371,7 +371,7 @@ LV_API int visual_actor_set_video (VisActor *actor, VisVideo *video);
  */
 LV_API int visual_actor_run (VisActor *actor, VisAudio *audio);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

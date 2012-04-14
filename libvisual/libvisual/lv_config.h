@@ -33,8 +33,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_CONFIG_REGISTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisConfigRegistry))
 #define VISUAL_CONFIG_REGISTRYSECTION(obj)		(VISUAL_CHECK_CAST ((obj), VisConfigRegistrySection))
 
@@ -71,6 +69,8 @@ struct _VisConfigRegistrySection {
 	int		 datalength;	/**< Length of the data stored for this registry element. */
 };
 
+LV_BEGIN_DECLS
+
 /* prototypes */
 LV_API VisConfigRegistry *visual_config_registry_new (void);
 LV_API VisConfigRegistry *visual_config_registry_open (const char *configfile);
@@ -86,7 +86,7 @@ LV_API int visual_config_registry_write_by_data (VisConfigRegistry *registry, co
 LV_API int visual_config_registry_write (VisConfigRegistry *registry, VisConfigRegistrySection *rsection);
 LV_API int visual_config_registry_sync (VisConfigRegistry *registry);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

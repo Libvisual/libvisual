@@ -32,10 +32,7 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
-/* This is read-only */
-extern char *__lv_progname;
+LV_BEGIN_DECLS
 
 /**
  * Used to determine the severity of the log message using the visual_log
@@ -131,13 +128,13 @@ LV_API void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc h
 
 #if defined(_LV_LOG_HAVE_SOURCE)
 LV_API void _lv_log (VisLogSeverity severity, const char *file, int line, const char *funcname,
-	const char *fmt, ...) VIS_CHECK_PRINTF_FORMAT(5, 6);
+	const char *fmt, ...) LV_CHECK_PRINTF_FORMAT(5, 6);
 #else
 LV_API void _lv_log (VisLogSeverity severity, const char *fmt, ...)
-	VIS_CHECK_PRINTF_FORMAT(2, 3);
+	LV_CHECK_PRINTF_FORMAT(2, 3);
 #endif
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

@@ -27,7 +27,7 @@
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 /**
  * Macros to convert LE <-> BE
@@ -74,6 +74,6 @@ VISUAL_BEGIN_DECLS
  */
 #define VISUAL_ALIGNED(x, y)	(!(((intptr_t) x) & (y - 1)))
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #endif /* _LV_ENDIANESS_H */

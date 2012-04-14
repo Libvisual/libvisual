@@ -26,12 +26,12 @@
 
 #include <libvisual/lv_video.h>
 
-VISUAL_BEGIN_DECLS
-
 /**
  * @defgroup VisBitmap VisBitmap
  * @{
  */
+
+LV_BEGIN_DECLS
 
 /**
  * Loads a BMP file into a VisVideo. The buffer will be located
@@ -60,7 +60,7 @@ LV_API int visual_bitmap_load (VisVideo *video, const char *filename);
  */
 LV_API VisVideo *visual_bitmap_load_new_video (const char *filename);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

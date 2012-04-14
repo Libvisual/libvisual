@@ -34,8 +34,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_RINGBUFFER(obj)				(VISUAL_CHECK_CAST ((obj), VisRingBuffer))
 #define VISUAL_RINGBUFFER_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisRingBufferEntry))
 
@@ -89,6 +87,8 @@ struct _VisRingBuffer {
 
 	VisList			*entries;	/**< The ring buffer entries list. */
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Creates a new VisRingBuffer structure. The VisRingBuffer system is
@@ -175,7 +175,7 @@ LV_API int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
 		void *functiondata);
 LV_API void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

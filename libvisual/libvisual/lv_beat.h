@@ -59,8 +59,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libvisual/lv_types.h>
 #include <libvisual/lv_time.h>
 
-VISUAL_BEGIN_DECLS
-
 /**
  * @defgroup VisBeat VisBeat
  * @{
@@ -178,6 +176,8 @@ struct _VisBeat {
     int new_song;
     unsigned char logtab[256];
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Create a new VisBeat
@@ -368,6 +368,6 @@ LV_API int visual_beat_adv_set_thick_on_beats(VisBeatAdv *adv, int thick_on_beat
  * @}
  */
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #endif /* _LV_BEAT_H */

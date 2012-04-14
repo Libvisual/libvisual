@@ -33,8 +33,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_TRANSFORM(obj)               (VISUAL_CHECK_CAST ((obj), VisTransform))
 #define VISUAL_TRANSFORM_PLUGIN(obj)        (VISUAL_CHECK_CAST ((obj), VisTransformPlugin))
 
@@ -104,6 +102,8 @@ struct _VisTransformPlugin {
 
     VisVideoAttributeOptions     vidoptions;
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Gives the encapsulated VisPluginData from a VisTransform.
@@ -284,6 +284,6 @@ LV_API int visual_transform_run_palette (VisTransform *transform, VisAudio *audi
  * @}
  */
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #endif /* _LV_TRANSFORM_H */

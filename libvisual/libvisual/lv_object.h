@@ -33,8 +33,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_OBJECT(obj)				(VISUAL_CHECK_CAST ((obj), VisObject))
 
 typedef struct _VisObject VisObject;
@@ -69,6 +67,8 @@ struct _VisObject {
 	void			*priv;		/**< Private which can be used by application or plugin developers
 						 * depending on the sub class object. */
 };
+
+LV_BEGIN_DECLS
 
 /**
  * This function is a global VisListDestroyerFunc handler that unrefs VisObjects.
@@ -225,7 +225,7 @@ LV_API void *visual_object_get_private (VisObject *object);
 			(uint8_t *) (src) + sizeof (VisObject),		\
 			sizeof (struct_type) - sizeof (VisObject))
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

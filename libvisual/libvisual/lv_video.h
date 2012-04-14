@@ -39,8 +39,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_VIDEO(obj)						(VISUAL_CHECK_CAST ((obj), VisVideo))
 #define VISUAL_VIDEO_ATTRIBUTE_OPTIONS(obj)		(VISUAL_CHECK_CAST ((obj), VisVideoAttributeOptions))
 
@@ -193,6 +191,8 @@ struct _VisVideoAttributeOptions {
 	int                 depth;
 	VisGLAttributeEntry gl_attributes[VISUAL_GL_ATTRIBUTE_LAST];
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Creates a new VisVideo structure, without an associated screen buffer.
@@ -709,7 +709,7 @@ LV_API VisVideo *visual_video_scale_depth_new (VisVideo *src, int width, int hei
 int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src);
 int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

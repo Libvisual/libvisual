@@ -35,8 +35,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginRef))
 #define VISUAL_PLUGININFO(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginInfo))
 #define VISUAL_PLUGINDATA(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginData))
@@ -74,8 +72,8 @@ VISUAL_BEGIN_DECLS
 
 #define VISUAL_PLUGIN_VERSION_TAG		"__lv_plugin_libvisual_api_version"
 #define VISUAL_PLUGIN_API_VERSION_VALIDATOR \
-    VISUAL_C_LINKAGE LV_PLUGIN_EXPORT const int __lv_plugin_libvisual_api_version = VISUAL_PLUGIN_API_VERSION; \
-    VISUAL_C_LINKAGE LV_PLUGIN_EXPORT const VisPluginInfo* get_plugin_info (void);
+    LV_C_LINKAGE LV_PLUGIN_EXPORT const int __lv_plugin_libvisual_api_version = VISUAL_PLUGIN_API_VERSION; \
+    LV_C_LINKAGE LV_PLUGIN_EXPORT const VisPluginInfo* get_plugin_info (void);
 
 /**
  * Enumerate to define the plugin flags. Plugin flags can be used to
@@ -221,6 +219,8 @@ struct _VisPluginEnviron {
 
 	VisObject  *environment;  /**< VisObject that contains environ specific data. */
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Creates a new VisPluginInfo structure.
@@ -384,7 +384,7 @@ LV_API int visual_plugin_environ_remove (VisPluginData *plugin, const char *type
  */
 VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #ifdef __cplusplus
 

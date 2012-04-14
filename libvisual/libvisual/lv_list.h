@@ -36,16 +36,10 @@
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_collection.h>
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__)
-#include <sys/queue.h>
-#endif
-
 /**
  * @defgroup VisList VisList
  * @{
  */
-
-VISUAL_BEGIN_DECLS
 
 #define VISUAL_LIST(obj)				(VISUAL_CHECK_CAST ((obj), VisList))
 
@@ -76,6 +70,8 @@ struct _VisList {
 
 	int			 count;		/**< Number of entries that are in the list. */
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Creates a new VisList structure.
@@ -237,7 +233,7 @@ LV_API int visual_list_destroy (VisList *list, VisListEntry **le);
  */
 LV_API int visual_list_count (VisList *list);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

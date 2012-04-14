@@ -239,7 +239,7 @@ typedef struct _VisRectangle VisRectangle;
 struct _VisRectangle;
 #endif
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 LV_API VisRectangle *visual_rectangle_new (int x, int y, int width, int height);
 LV_API VisRectangle *visual_rectangle_new_empty (void);
@@ -275,7 +275,7 @@ LV_API void visual_rectangle_denormalize_points (VisRectangle *rect, const float
 LV_API void visual_rectangle_denormalize_point_neg  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
 LV_API void visual_rectangle_denormalize_points_neg (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

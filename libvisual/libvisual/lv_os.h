@@ -31,7 +31,7 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 /**
  * Puts the process in soft realtime mode. Be very careful with using this, it's very much possible to lock your
@@ -49,7 +49,7 @@ LV_API int visual_os_scheduler_realtime_stop (void);
  */
 LV_API int visual_os_scheduler_yield (void);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

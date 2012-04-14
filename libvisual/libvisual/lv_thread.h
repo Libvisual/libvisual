@@ -17,7 +17,7 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 /**
  * The VisThread data structure and the VisThread subsystem is a
@@ -183,7 +183,7 @@ LV_API int visual_mutex_trylock (VisMutex *mutex);
  */
 LV_API int visual_mutex_unlock (VisMutex *mutex);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

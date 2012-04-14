@@ -95,7 +95,7 @@ namespace LV {
 #endif // __cplusplus
 
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 LV_API int visual_init (int *argc, char ***argv);
 
@@ -109,7 +109,7 @@ LV_API int visual_get_api_version (void);
 
 LV_API VisParamContainer *visual_get_params (void);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

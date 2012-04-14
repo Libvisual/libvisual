@@ -32,8 +32,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 /**
  * Enumerate containing the different architectual types.
  */
@@ -76,6 +74,7 @@ struct _VisCPU {
 	int		hasLDREX_STREX; /**<The CPU has ARM LDREX_STREX feature. */
 };
 
+LV_BEGIN_DECLS
 
 /**
  * Initializes the VisCPU caps structure by detecting the CPU features
@@ -180,7 +179,7 @@ LV_API int visual_cpu_has_neon (void);
  */
 LV_API int visual_cpu_has_ldrex_strex (void);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

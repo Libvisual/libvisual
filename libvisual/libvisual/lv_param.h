@@ -36,8 +36,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_PARAMCONTAINER(obj)            (VISUAL_CHECK_CAST ((obj), VisParamContainer))
 #define VISUAL_PARAMENTRY_CALLBACK(obj)       (VISUAL_CHECK_CAST ((obj), VisParamEntryCallback))
 #define VISUAL_PARAMENTRY(obj)                (VISUAL_CHECK_CAST ((obj), VisParamEntry))
@@ -161,6 +159,7 @@ struct _VisParamEntry {
     VisColor defaultcolor; /**< ParamEntry's default VisColor. */
 };
 
+LV_BEGIN_DECLS
 
 /**
  * Creates a new VisParamContainer structure.
@@ -168,7 +167,6 @@ struct _VisParamEntry {
  * @return A newly allocated VisParamContainer structure.
  */
 LV_API VisParamContainer *visual_param_container_new (void);
-
 
 /**
  * Sets the eventqueue in the VisParamContainer, so events can be
@@ -805,7 +803,7 @@ LV_API double visual_param_entry_default_get_double (VisParamEntry *param);
  */
 LV_API VisColor *visual_param_entry_default_get_color (VisParamEntry *param);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

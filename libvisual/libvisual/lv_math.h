@@ -51,7 +51,7 @@ namespace LV {
 
 #define VISUAL_MATH_PI 3.141592653589793238462643383279502884197169399f
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 /**
  * Checks if the given value is a power of 2.
@@ -219,7 +219,7 @@ LV_API int visual_math_vectorized_complex_to_norm_scale (float *dest, const floa
 /* FIXME also look into things we might be able to generalize from VisVideo. */
 /* FIXME provide with source and dest when possible, source and dest can always be the same. */
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

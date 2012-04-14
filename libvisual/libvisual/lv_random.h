@@ -179,12 +179,12 @@ typedef ::LV::RandomContext VisRandomContext;
  * to use the visual_random_context_* functions.
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_RANDOMCONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), VisRandomContext))
 
 /* Non context random macros */
 extern VisRandomContext __lv_internal_random_context;
+
+LV_BEGIN_DECLS
 
 #define visual_random_set_seed(a) visual_random_context_set_seed(&__lv_internal_random_context, a)
 #define visual_random_get_seed() visual_random_context_get_seed(&__lv_internal_random_context)
@@ -206,7 +206,7 @@ LV_API double visual_random_context_double (VisRandomContext *rcontext);
 LV_API float visual_random_context_float (VisRandomContext *rcontext);
 LV_API int visual_random_context_decide (VisRandomContext *rcontext, float a);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

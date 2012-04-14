@@ -32,8 +32,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 /**
  * The visual_mem_copy function needs this signature.
  *
@@ -92,6 +90,8 @@ typedef void *(*VisMemSet16Func)(void *dest, int c, visual_size_t n);
  */
 typedef void *(*VisMemSet32Func)(void *dest, int c, visual_size_t n);
 
+LV_BEGIN_DECLS
+
 /**
  * Initialize the memory functions. This is used to set the function
  * pointers to the right optimized version.  It's legal to call
@@ -117,7 +117,7 @@ LV_API int visual_mem_initialize (void);
  * @return On success, a pointer to a new allocated memory block
  * of size @a nbytes, on failure, program is aborted.
  */
-LV_API void *visual_mem_malloc (visual_size_t nbytes) VIS_ATTR_MALLOC;
+LV_API void *visual_mem_malloc (visual_size_t nbytes) LV_ATTR_MALLOC;
 
 /**
  * Allocates @a nbytes of memory initialized to 0.
@@ -127,7 +127,7 @@ LV_API void *visual_mem_malloc (visual_size_t nbytes) VIS_ATTR_MALLOC;
  * @return On success, a pointer to a new allocated memory initialized
  * to 0 of size @a nbytes, on failure, program is aborted.
  */
-LV_API void *visual_mem_malloc0 (visual_size_t nbytes) VIS_ATTR_MALLOC;
+LV_API void *visual_mem_malloc0 (visual_size_t nbytes) LV_ATTR_MALLOC;
 
 /**
  * Reallocates memory, can be used to grow a buffer.
@@ -137,7 +137,7 @@ LV_API void *visual_mem_malloc0 (visual_size_t nbytes) VIS_ATTR_MALLOC;
  *
  * @return On success, a pointer to the new reallocated memory, on failure NULL.
  */
-LV_API void *visual_mem_realloc (void *ptr, visual_size_t nbytes) VIS_ATTR_MALLOC;
+LV_API void *visual_mem_realloc (void *ptr, visual_size_t nbytes) LV_ATTR_MALLOC;
 
 /**
  * Frees allocated memory.
@@ -163,7 +163,7 @@ extern LV_API VisMemSet32Func visual_mem_set32;
 #define visual_mem_new0(struct_type, n_structs)           \
     ((struct_type *) visual_mem_malloc0 (((visual_size_t) sizeof (struct_type)) * ((visual_size_t) (n_structs))))
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

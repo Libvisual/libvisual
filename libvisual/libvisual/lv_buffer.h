@@ -26,8 +26,6 @@
 
 #include <libvisual/lv_object.h>
 
-VISUAL_BEGIN_DECLS
-
 /**
  * @defgroup VisBuffer VisBuffer
  * @{
@@ -58,6 +56,8 @@ struct _VisBuffer {
 	void			*data;		/**< Pointer to the data. */
 	visual_size_t		 datasize;	/**< The size of the data in N bytes. */
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Creates a new VisBuffer. A VisBuffer encapsulates a memory buffer and it's size, it's also a VisObject so it can be
@@ -364,7 +364,7 @@ LV_API int visual_buffer_fill_with_pattern (VisBuffer *buffer, void *data, visua
  */
 LV_API void visual_buffer_destroyer_free (VisBuffer *buffer);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

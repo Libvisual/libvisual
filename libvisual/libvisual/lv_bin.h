@@ -35,8 +35,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_BIN(obj)					(VISUAL_CHECK_CAST ((obj), VisBin))
 
 typedef enum {
@@ -87,6 +85,8 @@ struct _VisBin {
 	int		 depthforcedmain;	/* Contains forced depth value, for the main actor */
 };
 
+LV_BEGIN_DECLS
+
 /* prototypes */
 LV_API VisBin *visual_bin_new (void);
 
@@ -129,7 +129,7 @@ LV_API int visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
 
 LV_API int visual_bin_run (VisBin *bin);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

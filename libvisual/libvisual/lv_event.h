@@ -268,7 +268,7 @@ typedef struct _VisEventQueue VisEventQueue;
 struct _VisEventQueue;
 #endif
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 /**
  * Creates a new keyboard event
@@ -349,7 +349,7 @@ LV_API void visual_event_queue_add  (VisEventQueue *eventqueue, VisEvent *event)
 LV_API int  visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
 
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

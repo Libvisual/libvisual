@@ -225,7 +225,7 @@ struct _VisTimer;
 #define VISUAL_TIME(obj)   (VISUAL_CHECK_CAST ((obj), VisTime))
 #define VISUAL_TIMER(obj)  (VISUAL_CHECK_CAST ((obj), VisTimer))
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 LV_API VisTime *visual_time_new             (void);
 LV_API VisTime *visual_time_new_now         (void);
@@ -268,7 +268,7 @@ LV_API int visual_timer_is_past2 (VisTimer *timer, long sec, long nsec);
 // FIXME: Remove this
 //#define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

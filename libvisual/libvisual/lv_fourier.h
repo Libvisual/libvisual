@@ -122,8 +122,6 @@ namespace LV {
 
 /* C API bindings */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_DFT(obj)                 (VISUAL_CHECK_CAST ((obj), VisDFT))
 
 #ifdef __cplusplus
@@ -132,6 +130,8 @@ typedef ::LV::DFT VisDFT;
 typedef struct _VisDFT VisDFT;
 struct _VisDFT;
 #endif
+
+LV_BEGIN_DECLS
 
 void visual_fourier_initialize (void);
 int  visual_fourier_is_initialized (void);
@@ -146,7 +146,7 @@ void visual_dft_log_scale (float *output, float const *input, unsigned int size)
 void visual_dft_log_scale_standard (float *output, float const *input, unsigned int size);
 void visual_dft_log_scale_custom (float *output, float const *input, unsigned int size, float log_scale_divisor);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

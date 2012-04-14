@@ -135,7 +135,7 @@ namespace LV {
 
 #endif // __cplusplus
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 #ifdef __cplusplus
 typedef ::LV::Color VisColor;
@@ -167,7 +167,7 @@ LV_API uint16_t visual_color_to_uint16 (VisColor *color);
 LV_API VisColor *visual_color_black (void);
 LV_API VisColor *visual_color_white (void);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

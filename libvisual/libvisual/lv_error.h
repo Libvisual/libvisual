@@ -31,8 +31,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 /* WARNING when you add an new error to this list, make sure that you update lv_error.c it's
  * human readable string list as well!!! */
 /**
@@ -229,6 +227,8 @@ enum {
  */
 typedef int (*VisErrorHandlerFunc) (int error, void *priv);
 
+LV_BEGIN_DECLS
+
 /**
  * Raise a libvisual error. With the standard error handler this will
  * do a raise(SIGTRAP). You can set your own error handler function using the
@@ -262,7 +262,7 @@ LV_API void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
  */
 LV_API const char *visual_error_to_string (int err);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #if __cplusplus
 

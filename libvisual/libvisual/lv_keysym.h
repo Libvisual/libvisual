@@ -24,10 +24,6 @@
 #ifndef _LV_KEYSYM_H
 #define _LV_KEYSYM_H
 
-#include <libvisual/lv_defines.h>
-
-VISUAL_BEGIN_DECLS
-
 /**
  * Enumerate values used within the libvisual event system for keyboard events.
  *
@@ -226,7 +222,5 @@ struct _VisKeySym {
 	VisKey		sym;	/**< Keyboard key to which everything relates. */
 	int		mod;	/**< Modifier vlags, Using key modifiers from the VisKeyMod enumerate. */
 };
-
-VISUAL_END_DECLS
 
 #endif /* _LV_KEYSYM_H */

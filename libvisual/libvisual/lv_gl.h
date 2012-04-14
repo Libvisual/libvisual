@@ -32,8 +32,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_GL_ATTRIBUTE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisGLAttributeEntry))
 
 /**
@@ -67,8 +65,6 @@ struct _VisGLAttributeEntry {
 	int            value;
 	int            mutated;
 };
-
-VISUAL_END_DECLS
 
 /**
  * @}
