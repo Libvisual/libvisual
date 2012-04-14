@@ -102,6 +102,12 @@ namespace LV
   template <>
   System* Singleton<System>::m_instance = 0;
 
+  void System::init (int& argc, char**& argv)
+  {
+      if (!m_instance)
+          m_instance = new System (argc, argv);
+  }
+
   std::string System::get_version () const
   {
       return VISUAL_VERSION;
@@ -143,7 +149,7 @@ namespace LV
       visual_thread_initialize ();
 
       /* Initialize FFT system */
-	  Fourier::init ();
+      Fourier::init ();
 
       /* Initialize the plugin registry */
       PluginRegistry::init ();

@@ -55,12 +55,7 @@ namespace LV {
        * @param argc Number of arguments
        * @param argv Argument strings
        */
-      static void init (int& argc, char**& argv)
-      {
-          if (!m_instance) {
-              m_instance = new System (argc, argv);
-          }
-      }
+      static void init (int& argc, char**& argv);
 
       ~System ();
 

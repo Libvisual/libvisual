@@ -131,6 +131,12 @@ namespace LV {
   template <>
   PluginRegistry* Singleton<PluginRegistry>::m_instance = 0;
 
+  void PluginRegistry::init ()
+  {
+      if (!m_instance)
+          m_instance = new PluginRegistry;
+  }
+
   PluginRegistry::PluginRegistry ()
       : m_impl (new Impl)
   {

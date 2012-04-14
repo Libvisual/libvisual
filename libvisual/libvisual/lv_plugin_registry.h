@@ -20,12 +20,7 @@ namespace LV {
   {
   public:
 
-      static void init ()
-      {
-          if (!m_instance) {
-              m_instance = new PluginRegistry;
-          }
-      }
+      static void init ();
 
       /**
        * Adds an extra plugin search path.

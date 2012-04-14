@@ -287,6 +287,8 @@ int main (int argc, char **argv)
     visual_log_set_verbosity(VISUAL_LOG_DEBUG);
     visual_init (&argc, &argv);
 
+    visual_log (VISUAL_LOG_DEBUG, "%p", LV::PluginRegistry::instance());
+
     try {
         // parse commandline arguments
         if (_parse_args(argc, argv) != EXIT_SUCCESS)

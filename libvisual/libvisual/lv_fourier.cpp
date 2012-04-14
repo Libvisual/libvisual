@@ -213,6 +213,12 @@ namespace LV {
   template <>
   Fourier* Singleton<Fourier>::m_instance = 0;
 
+  void Fourier::init ()
+  {
+      if (!m_instance)
+          m_instance = new Fourier;
+  }
+
   Fourier::Fourier ()
       : m_impl (new Impl)
   {

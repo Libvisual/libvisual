@@ -44,11 +44,7 @@ namespace LV {
   {
   public:
 
-      static void init ()
-      {
-          if (m_instance != 0)
-              m_instance = new Fourier;
-      }
+      static void init ();
 
       ~Fourier ();
 
