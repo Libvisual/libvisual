@@ -42,9 +42,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
-
 #define NOTCH_BANDS	32
 
 typedef struct {

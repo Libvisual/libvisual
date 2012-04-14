@@ -49,8 +49,6 @@ typedef struct {
 	short		 fakebuf[PCM_BUF_SIZE];
 } JackPrivate;
 
-const VisPluginInfo *get_plugin_info (void);
-
 static int process_callback (jack_nframes_t nframes, void *arg);
 static void shutdown_callback (void *arg);
 

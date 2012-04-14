@@ -34,8 +34,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info(void);
-
 typedef struct {
 	OinksiePrivate			 priv1;
 	OinksiePrivate			 priv2;

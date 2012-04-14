@@ -68,7 +68,6 @@ VISUAL_C_LINKAGE int lv_gforce_events (VisPluginData *plugin, VisEventQueue *eve
 VISUAL_C_LINKAGE VisPalette *lv_gforce_palette (VisPluginData *plugin);
 VISUAL_C_LINKAGE int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_C_LINKAGE
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor;

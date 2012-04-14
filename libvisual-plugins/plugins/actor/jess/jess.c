@@ -43,8 +43,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 static int act_jess_init (VisPluginData *plugin);
 static int act_jess_cleanup (VisPluginData *plugin);
 static int act_jess_requisition (VisPluginData *plugin, int *width, int *height);

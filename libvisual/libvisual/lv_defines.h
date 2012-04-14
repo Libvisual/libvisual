@@ -92,7 +92,7 @@
       #define LV_DLL_PUBLIC __declspec(dllimport) /* Note: actually gcc seems to also supports this syntax. */
     #endif
   #endif
-  #define DLL_LOCAL
+  #define LV_DLL_LOCAL
 #else
   #if __GNUC__ >= 4
     #define LV_DLL_PUBLIC __attribute__ ((visibility ("default")))
@@ -100,6 +100,22 @@
   #else
     #define LV_DLL_PUBLIC
     #define LV_DLL_LOCAL
+  #endif
+#endif
+
+/* Plugin export symbol visibility macro */
+
+#if defined _WIN32 || defined __CYGWIN__
+  #ifdef __GNUC__
+    #define LV_PLUGIN_EXPORT __attribute__ ((dllexport))
+  #else
+    #define LV_PLUGIN_EXPORT __declspec(dllexport)
+  #endif
+#else
+  #if __GNUC__ >= 4
+    #define LV_PLUGIN_EXPORT __attribute__ ((visibility ("default")))  
+  #else
+    #define LV_PLUGIN_EXPORT
   #endif
 #endif
 

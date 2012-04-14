@@ -35,8 +35,6 @@ typedef struct {
 } pulseaudio_priv_t;
 
 
-const VisPluginInfo *get_plugin_info( void );
-
 static int inp_pulseaudio_init( VisPluginData *plugin );
 static int inp_pulseaudio_cleanup( VisPluginData *plugin );
 static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );

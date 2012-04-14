@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-const VisPluginInfo *get_plugin_info (void);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 static int act_blursk_init (VisPluginData *plugin);
 static int act_blursk_cleanup (VisPluginData *plugin);
@@ -37,9 +37,6 @@ static int act_blursk_resize (VisPluginData *plugin, int width, int height);
 static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_blursk_palette (VisPluginData *plugin);
 static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
-
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 
 const VisPluginInfo *get_plugin_info (void)
 {

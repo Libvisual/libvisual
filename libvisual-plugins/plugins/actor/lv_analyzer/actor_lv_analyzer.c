@@ -34,8 +34,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 /** default amount of bars */
 #define BARS_DEFAULT 25
 #define BARS_DEFAULT_SPACE 1

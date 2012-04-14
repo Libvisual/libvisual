@@ -37,8 +37,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 static int act_jakdaw_init (VisPluginData *plugin);
 static int act_jakdaw_cleanup (VisPluginData *plugin);
 static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height);

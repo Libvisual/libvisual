@@ -23,9 +23,7 @@
 #include <libvisual/libvisual.h>
 #include <windows.h>
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR;
-
-VISUAL_C_LINKAGE VisPluginInfo const* get_plugin_info (int* count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define PCM_BUFFER_SIZE 4096
 
@@ -50,7 +48,7 @@ namespace {
 
 } // anonymous namespace
 
-VISUAL_C_LINKAGE VisPluginInfo const* get_plugin_info (int* count)
+VisPluginInfo const* get_plugin_info (int* count)
 {
     static VisInputPlugin input = {
         { 0 },

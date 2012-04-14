@@ -34,9 +34,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
-
 #define PCM_SIZE	1024
 
 typedef struct {

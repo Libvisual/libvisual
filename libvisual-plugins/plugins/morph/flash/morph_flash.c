@@ -31,8 +31,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;

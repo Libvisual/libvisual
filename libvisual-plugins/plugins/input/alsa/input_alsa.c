@@ -49,8 +49,6 @@ typedef struct {
 	int loaded;
 } alsaPrivate;
 
-const VisPluginInfo *get_plugin_info (void);
-
 static int inp_alsa_init (VisPluginData *plugin);
 static int inp_alsa_cleanup (VisPluginData *plugin);
 static int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio);

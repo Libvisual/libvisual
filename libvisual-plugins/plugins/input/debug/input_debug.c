@@ -41,8 +41,6 @@ typedef struct {
 	float angle_step;
 } DebugPriv;
 
-const VisPluginInfo *get_plugin_info (void);
-
 static int inp_debug_init (VisPluginData *plugin);
 static int inp_debug_cleanup (VisPluginData *plugin);
 static int inp_debug_events (VisPluginData *plugin, VisEventQueue *events);

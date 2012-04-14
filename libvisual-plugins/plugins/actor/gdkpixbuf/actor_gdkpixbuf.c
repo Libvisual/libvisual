@@ -35,8 +35,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 typedef struct {
 	GdkPixbuf	*pixbuf;
 	GdkPixbuf	*scaled;

@@ -73,9 +73,9 @@ VISUAL_BEGIN_DECLS
 #define VISUAL_PLUGIN_LICENSE_BSD	"BSD"
 
 #define VISUAL_PLUGIN_VERSION_TAG		"__lv_plugin_libvisual_api_version"
-#define VISUAL_PLUGIN_API_VERSION_VALIDATOR	VISUAL_C_LINKAGE const int __lv_plugin_libvisual_api_version = \
-						VISUAL_PLUGIN_API_VERSION;
-
+#define VISUAL_PLUGIN_API_VERSION_VALIDATOR \
+    VISUAL_C_LINKAGE LV_PLUGIN_EXPORT const int __lv_plugin_libvisual_api_version = VISUAL_PLUGIN_API_VERSION; \
+    VISUAL_C_LINKAGE LV_PLUGIN_EXPORT const VisPluginInfo* get_plugin_info (void);
 
 /**
  * Enumerate to define the plugin flags. Plugin flags can be used to

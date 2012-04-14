@@ -35,8 +35,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 static int act_infinite_init (VisPluginData *plugin);
 static int act_infinite_cleanup (VisPluginData *plugin);
 static int act_infinite_resize (VisPluginData *plugin, int width, int height);

@@ -33,8 +33,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-extern "C" const VisPluginInfo *get_plugin_info ();
-
 unsigned int fast_sqrt_table[0x10000];
 int titleHasChanged = 0;
 const char *curtitle = "Moeders";
@@ -48,7 +46,7 @@ extern "C" VisPalette *lv_dancingparticles_palette (VisPluginData *plugin);
 extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 /* Main plugin stuff */
-extern "C" const VisPluginInfo *get_plugin_info ()
+const VisPluginInfo *get_plugin_info ()
 {
 	static VisActorPlugin actor;
 	static VisPluginInfo info;

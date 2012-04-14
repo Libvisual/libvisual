@@ -63,8 +63,6 @@ typedef struct {
 } mplayer_priv_t;
 
 
-const VisPluginInfo *get_plugin_info(void);
-
 /* Functions *****************************************************************/
 static int inp_mplayer_init( VisPluginData *plugin );
 static int inp_mplayer_cleanup( VisPluginData *plugin );
