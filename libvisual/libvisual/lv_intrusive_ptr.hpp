@@ -32,6 +32,13 @@ namespace LV
               intrusive_ptr_add_ref (m_ptr);
       }
 
+      IntrusivePtr (IntrusivePtr const& rhs)
+          : m_ptr (rhs.m_ptr)
+      {
+          if (m_ptr)
+              intrusive_ptr_add_ref (m_ptr);
+      }
+
       ~IntrusivePtr ()
       {
           if (m_ptr)
