@@ -83,7 +83,7 @@ struct _VisList {
  *
  * @return A newly allocated VisList.
  */
-LV_DLL_PUBLIC VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
+LV_API VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
 
 /**
  * Initializes a new VisList
@@ -91,7 +91,7 @@ LV_DLL_PUBLIC VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
  * @p list - newly generated list (output of @ref visual_list_new() )
  * @p destroyer - the function that cleans up the list upon @ref visual_list_destroy()
  */
-LV_DLL_PUBLIC int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer);
+LV_API int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer);
 
 /**
  * Goes to the next entry in the list and return it's data element.
@@ -108,7 +108,7 @@ LV_DLL_PUBLIC int visual_list_init (VisList *list, VisCollectionDestroyerFunc de
  *
  * @return The data element of the next entry, or NULL.
  */
-LV_DLL_PUBLIC void *visual_list_next (VisList *list, VisListEntry **le);
+LV_API void *visual_list_next (VisList *list, VisListEntry **le);
 
 /**
  * Go to the previous entry in the list and return it's data element.
@@ -125,7 +125,7 @@ LV_DLL_PUBLIC void *visual_list_next (VisList *list, VisListEntry **le);
  *
  * @return The data element of the previous entry, or NULL.
  */
-LV_DLL_PUBLIC void *visual_list_prev (VisList *list, VisListEntry **le);
+LV_API void *visual_list_prev (VisList *list, VisListEntry **le);
 
 /**
  * Get an data entry by index. This will give the pointer to an data
@@ -137,7 +137,7 @@ LV_DLL_PUBLIC void *visual_list_prev (VisList *list, VisListEntry **le);
  *
  * @return The data element of the requested entry, or NULL.
  */
-LV_DLL_PUBLIC void *visual_list_get (VisList *list, int index);
+LV_API void *visual_list_get (VisList *list, int index);
 
 /**
  * Get an data entry by index. This will give the pointer to an data
@@ -149,7 +149,7 @@ LV_DLL_PUBLIC void *visual_list_get (VisList *list, int index);
  *
  * @return The data element of the requested entry, or NULL.
  */
-LV_DLL_PUBLIC int visual_list_add_at_begin (VisList *list, void *data);
+LV_API int visual_list_add_at_begin (VisList *list, void *data);
 
 /**
  * Adds an entry at the end of the list.
@@ -160,7 +160,7 @@ LV_DLL_PUBLIC int visual_list_add_at_begin (VisList *list, void *data);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_list_add (VisList *list, void *data);
+LV_API int visual_list_add (VisList *list, void *data);
 
 /**
  * Chains an VisListEntry at the beginning of the list.
@@ -171,7 +171,7 @@ LV_DLL_PUBLIC int visual_list_add (VisList *list, void *data);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
+LV_API int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
 
 /**
  * Chains an VisListEntry at the end of the list.
@@ -182,7 +182,7 @@ LV_DLL_PUBLIC int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_list_chain (VisList *list, VisListEntry *le);
+LV_API int visual_list_chain (VisList *list, VisListEntry *le);
 
 /**
  * Unchain a VisListEntry from a VisList, entry won't be deleted. This function will only remove the
@@ -194,7 +194,7 @@ LV_DLL_PUBLIC int visual_list_chain (VisList *list, VisListEntry *le);
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL
  * 	on failure.
  */
-LV_DLL_PUBLIC int visual_list_unchain (VisList *list, VisListEntry *le);
+LV_API int visual_list_unchain (VisList *list, VisListEntry *le);
 
 /**
  * Insert an entry in the middle of a list. By adding it
@@ -207,7 +207,7 @@ LV_DLL_PUBLIC int visual_list_unchain (VisList *list, VisListEntry *le);
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL, -VISUAL_ERROR_LIST_ENTRY_NULL or
  * 	-VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_list_insert (VisList *list, VisListEntry **le, void *data);
+LV_API int visual_list_insert (VisList *list, VisListEntry **le, void *data);
 
 /**
  * Removes an entry from the list.
@@ -217,7 +217,7 @@ LV_DLL_PUBLIC int visual_list_insert (VisList *list, VisListEntry **le, void *da
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_list_delete (VisList *list, VisListEntry **le);
+LV_API int visual_list_delete (VisList *list, VisListEntry **le);
 
 /**
  * Removes and entry from the list and uses the VisListDestroyerFunc when present to clean up the data.
@@ -227,7 +227,7 @@ LV_DLL_PUBLIC int visual_list_delete (VisList *list, VisListEntry **le);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_list_destroy (VisList *list, VisListEntry **le);
+LV_API int visual_list_destroy (VisList *list, VisListEntry **le);
 
 /**
  * Gets the amount of elements in a VisList
@@ -235,7 +235,7 @@ LV_DLL_PUBLIC int visual_list_destroy (VisList *list, VisListEntry **le);
  * @p list - the list of which the element-count is requested
  * @return amount of elements currently in list (or -VISUAL_ERROR_COLLECTION_NULL on error)
  */
-LV_DLL_PUBLIC int visual_list_count (VisList *list);
+LV_API int visual_list_count (VisList *list);
 
 VISUAL_END_DECLS
 

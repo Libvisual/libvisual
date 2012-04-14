@@ -77,7 +77,7 @@ struct _VisObject {
  *
  * @return VISUAL_OK on success, or error failures by visual_object_unref() on failure.
  */
-LV_DLL_PUBLIC int visual_object_collection_destroyer (void *data);
+LV_API int visual_object_collection_destroyer (void *data);
 
 
 /**
@@ -85,7 +85,7 @@ LV_DLL_PUBLIC int visual_object_collection_destroyer (void *data);
  *
  * @return A newly allocated VisObject, or NULL on failure.
  */
-LV_DLL_PUBLIC VisObject *visual_object_new (void);
+LV_API VisObject *visual_object_new (void);
 
 /**
  * Frees the VisObject. This does not destroy the object itself but only releases the memory it's using.
@@ -95,7 +95,7 @@ LV_DLL_PUBLIC VisObject *visual_object_new (void);
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED or error values
  *	returned by visual_mem_free on failure.
  */
-LV_DLL_PUBLIC int visual_object_free (VisObject *object);
+LV_API int visual_object_free (VisObject *object);
 
 /**
  * Destroys the VisObject. This does destruct the VisObject
@@ -107,7 +107,7 @@ LV_DLL_PUBLIC int visual_object_free (VisObject *object);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL or error values returned byvisual_object_free on failure.
  */
-LV_DLL_PUBLIC int visual_object_destroy (VisObject *object);
+LV_API int visual_object_destroy (VisObject *object);
 
 /**
  * Initializes a VisObject for usage. This also ups the refcount by
@@ -120,7 +120,7 @@ LV_DLL_PUBLIC int visual_object_destroy (VisObject *object);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFunc dtor);
+LV_API int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFunc dtor);
 
 /**
  * Clears a VisObject. This basically means setting it's private to
@@ -131,7 +131,7 @@ LV_DLL_PUBLIC int visual_object_initialize (VisObject *object, int allocated, Vi
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_object_clear (VisObject *object);
+LV_API int visual_object_clear (VisObject *object);
 
 /**
  * Sets the destructor function to a VisObject.
@@ -142,7 +142,7 @@ LV_DLL_PUBLIC int visual_object_clear (VisObject *object);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor);
+LV_API int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor);
 
 /**
  * Sets whether a VisObject is allocated or not. This is used when a
@@ -154,7 +154,7 @@ LV_DLL_PUBLIC int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc d
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_object_set_allocated (VisObject *object, int allocated);
+LV_API int visual_object_set_allocated (VisObject *object, int allocated);
 
 /**
  * Sets the refcount to a certain number. Mostly used in VisObject initialization.
@@ -164,7 +164,7 @@ LV_DLL_PUBLIC int visual_object_set_allocated (VisObject *object, int allocated)
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_object_set_refcount (VisObject *object, int refcount);
+LV_API int visual_object_set_refcount (VisObject *object, int refcount);
 
 /**
  * Increases the reference counter for a VisObject.
@@ -173,7 +173,7 @@ LV_DLL_PUBLIC int visual_object_set_refcount (VisObject *object, int refcount);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_object_ref (VisObject *object);
+LV_API int visual_object_ref (VisObject *object);
 
 /**
  * Decreases the reference counter for a VisObject. If the reference counter hits zero it will
@@ -186,7 +186,7 @@ LV_DLL_PUBLIC int visual_object_ref (VisObject *object);
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL or error values returned by
  *	visual_object_destroy on failure.
  */
-LV_DLL_PUBLIC int visual_object_unref (VisObject *object);
+LV_API int visual_object_unref (VisObject *object);
 
 /**
  * Sets the private data pointer to a VisObject.
@@ -196,7 +196,7 @@ LV_DLL_PUBLIC int visual_object_unref (VisObject *object);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_object_set_private (VisObject *object, void *priv);
+LV_API int visual_object_set_private (VisObject *object, void *priv);
 
 /**
  * Retrieves the private data from a VisObject.
@@ -205,7 +205,7 @@ LV_DLL_PUBLIC int visual_object_set_private (VisObject *object, void *priv);
  *
  * @return Pointer to the private data or NULL.
  */
-LV_DLL_PUBLIC void *visual_object_get_private (VisObject *object);
+LV_API void *visual_object_get_private (VisObject *object);
 
 /**
  * @ingroup VisObject

@@ -77,14 +77,14 @@ typedef void (*VisLogHandlerFunc) (VisLogSeverity severity, const char *message,
  *
  * @param level The verbosity level
  */
-LV_DLL_PUBLIC void visual_log_set_verbosity (VisLogSeverity level);
+LV_API void visual_log_set_verbosity (VisLogSeverity level);
 
 /**
  * Get the current library it's verbosity level.
  *
  * @return The verboseness level as a VisLogVerboseness enumerate value.
  */
-LV_DLL_PUBLIC VisLogSeverity visual_log_get_verbosity (void);
+LV_API VisLogSeverity visual_log_get_verbosity (void);
 
 /**
  * Set the callback function that handles info messages.
@@ -92,7 +92,7 @@ LV_DLL_PUBLIC VisLogSeverity visual_log_get_verbosity (void);
  * @param handler The custom message handler callback.
  * @param priv Optional private data to pass on to the handler.
  */
-LV_DLL_PUBLIC void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *priv);
+LV_API void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *priv);
 
 /**
  * Used for log messages, this is brought under a define so
@@ -130,10 +130,10 @@ LV_DLL_PUBLIC void visual_log_set_handler (VisLogSeverity severity, VisLogHandle
 #endif /* LV_HAVE_ISO_C_VARARGS */
 
 #if defined(_LV_LOG_HAVE_SOURCE)
-LV_DLL_PUBLIC void _lv_log (VisLogSeverity severity, const char *file, int line, const char *funcname,
+LV_API void _lv_log (VisLogSeverity severity, const char *file, int line, const char *funcname,
 	const char *fmt, ...) VIS_CHECK_PRINTF_FORMAT(5, 6);
 #else
-LV_DLL_PUBLIC void _lv_log (VisLogSeverity severity, const char *fmt, ...)
+LV_API void _lv_log (VisLogSeverity severity, const char *fmt, ...)
 	VIS_CHECK_PRINTF_FORMAT(2, 3);
 #endif
 

@@ -39,7 +39,7 @@
 
 namespace LV {
 
-  class LV_DLL_PUBLIC Fourier
+  class LV_API Fourier
       : public Singleton<Fourier>
   {
   public:

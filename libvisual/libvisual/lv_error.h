@@ -238,7 +238,7 @@ typedef int (*VisErrorHandlerFunc) (int error, void *priv);
  *
  * @return Returns the return value from the handler that is set.
  */
-LV_DLL_PUBLIC int visual_error_raise (int error);
+LV_API int visual_error_raise (int error);
 
 /**
  * Sets the error handler callback. By using this function you
@@ -251,7 +251,7 @@ LV_DLL_PUBLIC int visual_error_raise (int error);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
  */
-LV_DLL_PUBLIC void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
+LV_API void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
 
 /**
  * Translates an error into a human readable string, the returned string should not be freed.
@@ -260,7 +260,7 @@ LV_DLL_PUBLIC void visual_error_set_handler (VisErrorHandlerFunc handler, void *
  *
  * @return Human readable string, or NULL on failure.
  */
-LV_DLL_PUBLIC const char *visual_error_to_string (int err);
+LV_API const char *visual_error_to_string (int err);
 
 VISUAL_END_DECLS
 
@@ -271,7 +271,7 @@ VISUAL_END_DECLS
 
 namespace LV {
 
-  class LV_DLL_PUBLIC Error
+  class LV_API Error
     : public std::runtime_error
   {
   public:

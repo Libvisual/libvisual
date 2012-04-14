@@ -5,7 +5,7 @@
 
 VISUAL_BEGIN_DECLS
 
-LV_DLL_PUBLIC char *visual_strdup(const char *s);
+LV_API char *visual_strdup(const char *s);
 
 VISUAL_END_DECLS
 

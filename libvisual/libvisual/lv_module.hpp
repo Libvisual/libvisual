@@ -13,7 +13,7 @@ namespace LV {
 
   typedef IntrusivePtr<Module> ModulePtr;
 
-  class LV_DLL_PUBLIC Module
+  class LV_API Module
   {
   public:
 

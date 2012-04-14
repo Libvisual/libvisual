@@ -199,7 +199,7 @@ struct _VisVideoAttributeOptions {
  *
  * @return A newly allocated VisVideo.
  */
-LV_DLL_PUBLIC VisVideo *visual_video_new (void);
+LV_API VisVideo *visual_video_new (void);
 
 /**
  * Initializes a VisVideo, this will set the allocated flag for the object to FALSE.
@@ -215,7 +215,7 @@ LV_DLL_PUBLIC VisVideo *visual_video_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_init (VisVideo *video);
+LV_API int visual_video_init (VisVideo *video);
 
 /**
  * Creates a new VisVideo and also allocates a buffer.
@@ -226,7 +226,7 @@ LV_DLL_PUBLIC int visual_video_init (VisVideo *video);
  *
  * @return A newly allocates VisVideo with a buffer allocated.
  */
-LV_DLL_PUBLIC VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
+LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
 
 /**
  * Frees the buffer that relates to the VisVideo.
@@ -236,7 +236,7 @@ LV_DLL_PUBLIC VisVideo *visual_video_new_with_buffer (int width, int height, Vis
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or -VISUAL_ERROR_VIDEO_NO_ALLOCATED
  *	on failure.
  */
-LV_DLL_PUBLIC int visual_video_free_buffer (VisVideo *video);
+LV_API int visual_video_free_buffer (VisVideo *video);
 
 /**
  * Allocates a buffer for the VisVideo. Allocates based on the
@@ -246,7 +246,7 @@ LV_DLL_PUBLIC int visual_video_free_buffer (VisVideo *video);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_PIXELS  on failure.
  */
-LV_DLL_PUBLIC int visual_video_allocate_buffer (VisVideo *video);
+LV_API int visual_video_allocate_buffer (VisVideo *video);
 
 /**
  * Checks if the given VisVideo has a private allocated buffer.
@@ -255,7 +255,7 @@ LV_DLL_PUBLIC int visual_video_allocate_buffer (VisVideo *video);
  *
  * @return TRUE if the VisVideo has an allocated buffer, or FALSE if not.
  */
-LV_DLL_PUBLIC int visual_video_have_allocated_buffer (VisVideo *video);
+LV_API int visual_video_have_allocated_buffer (VisVideo *video);
 
 /**
  * Clones the information from a VisVideo to another.
@@ -269,7 +269,7 @@ LV_DLL_PUBLIC int visual_video_have_allocated_buffer (VisVideo *video);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_copy_attrs (VisVideo *dest, VisVideo *src);
+LV_API int visual_video_copy_attrs (VisVideo *dest, VisVideo *src);
 
 /**
  * Checks if two VisVideo objects are the same depth, pitch and dimension wise.
@@ -279,7 +279,7 @@ LV_DLL_PUBLIC int visual_video_copy_attrs (VisVideo *dest, VisVideo *src);
  *
  * @return FALSE on different, TRUE on same, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_compare_attrs (VisVideo *src1, VisVideo *src2);
+LV_API int visual_video_compare_attrs (VisVideo *src1, VisVideo *src2);
 
 /**
  * Checks if two VisVideo objects are the same depth and dimension wise.
@@ -289,7 +289,7 @@ LV_DLL_PUBLIC int visual_video_compare_attrs (VisVideo *src1, VisVideo *src2);
  *
  * @return FALSE on different, TRUE on same, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *src2);
+LV_API int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *src2);
 
 /**
  * Sets a palette to a VisVideo. Links a VisPalette to the
@@ -300,7 +300,7 @@ LV_DLL_PUBLIC int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVi
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_set_palette (VisVideo *video, VisPalette *pal);
+LV_API int visual_video_set_palette (VisVideo *video, VisPalette *pal);
 
 /**
  * Sets a buffer to a VisVideo. Links a sreenbuffer to the
@@ -314,7 +314,7 @@ LV_DLL_PUBLIC int visual_video_set_palette (VisVideo *video, VisPalette *pal);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_ALLOCATED on failure.
  */
-LV_DLL_PUBLIC int visual_video_set_buffer (VisVideo *video, void *buffer);
+LV_API int visual_video_set_buffer (VisVideo *video, void *buffer);
 
 /**
  * Sets the dimension for a VisVideo. Used to set the dimension for a
@@ -326,7 +326,7 @@ LV_DLL_PUBLIC int visual_video_set_buffer (VisVideo *video, void *buffer);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_set_dimension (VisVideo *video, int width, int height);
+LV_API int visual_video_set_dimension (VisVideo *video, int width, int height);
 
 /**
  * Sets the pitch for a VisVideo. Used to set the screen
@@ -339,7 +339,7 @@ LV_DLL_PUBLIC int visual_video_set_dimension (VisVideo *video, int width, int he
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_BPP on failure.
  */
-LV_DLL_PUBLIC int visual_video_set_pitch (VisVideo *video, int pitch);
+LV_API int visual_video_set_pitch (VisVideo *video, int pitch);
 
 /**
  * Sets the depth for a VisVideo. Used to set the depth for
@@ -350,7 +350,7 @@ LV_DLL_PUBLIC int visual_video_set_pitch (VisVideo *video, int pitch);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
+LV_API int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
 
 /**
  * Sets all attributes for a VisVideo. Used to set width, height, pitch and the depth for a VisVideo.
@@ -363,9 +363,9 @@ LV_DLL_PUBLIC int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
+LV_API int visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
 
-LV_DLL_PUBLIC int visual_video_get_size (VisVideo *video);
+LV_API int visual_video_get_size (VisVideo *video);
 
 /**
  * Retrieves the pixel buffer from a VisVideo.
@@ -374,7 +374,7 @@ LV_DLL_PUBLIC int visual_video_get_size (VisVideo *video);
  *
  * @return The VisVideo it's pixel buffer, NULL on failure.
  */
-LV_DLL_PUBLIC void *visual_video_get_pixels (VisVideo *video);
+LV_API void *visual_video_get_pixels (VisVideo *video);
 
 /**
  * Retrieves the VisBuffer object from a VisVideo.
@@ -383,7 +383,7 @@ LV_DLL_PUBLIC void *visual_video_get_pixels (VisVideo *video);
  *
  * @return The VisBuffer object, NULL on failure.
  */
-LV_DLL_PUBLIC VisBuffer *visual_video_get_buffer (VisVideo *video);
+LV_API VisBuffer *visual_video_get_buffer (VisVideo *video);
 
 /**
  * Checks if a certain depth is supported by checking against an ORred depthflag.
@@ -393,7 +393,7 @@ LV_DLL_PUBLIC VisBuffer *visual_video_get_buffer (VisVideo *video);
  *
  * @return TRUE when supported, FALSE when unsupported and -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-LV_DLL_PUBLIC int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth);
+LV_API int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth);
 
 /**
  * Get the previous depth from the ORred depthflag. By giving a depth and a depthflag
@@ -406,7 +406,7 @@ LV_DLL_PUBLIC int visual_video_depth_is_supported (int depthflag, VisVideoDepth 
  *
  * @return The previous supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
-LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth);
+LV_API VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth);
 
 /**
  * Get the next depth from the ORred depthflag. By giving a depth and a depthflag
@@ -419,7 +419,7 @@ LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideo
  *
  * @return The next supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
-LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth);
+LV_API VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth);
 
 /**
  * Return the lowest supported graphical depth from the ORred depthflag.
@@ -428,7 +428,7 @@ LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideo
  *
  * @return The lowest supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
-LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_lowest (int depthflag);
+LV_API VisVideoDepth visual_video_depth_get_lowest (int depthflag);
 
 /**
  * Return the highest supported graphical depth from the ORred depthflag.
@@ -437,7 +437,7 @@ LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_lowest (int depthflag);
  *
  * @return The highest supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
-LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_highest (int depthflag);
+LV_API VisVideoDepth visual_video_depth_get_highest (int depthflag);
 
 /**
  * Return the highest supported depth that is NOT openGL.
@@ -447,7 +447,7 @@ LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_highest (int depthflag);
  * @return The highest supported depth that is not openGL or
  *	VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
-LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag);
+LV_API VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag);
 
 /**
  * Checks if a certain value is a sane depth.
@@ -456,7 +456,7 @@ LV_DLL_PUBLIC VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag);
  *
  * @return TRUE if the depth is sane, FALSE if the depth is not sane.
  */
-LV_DLL_PUBLIC int visual_video_depth_is_sane (VisVideoDepth depth);
+LV_API int visual_video_depth_is_sane (VisVideoDepth depth);
 
 /**
  * Returns the number of bits per pixel from a VisVideoDepth enumerate value.
@@ -466,7 +466,7 @@ LV_DLL_PUBLIC int visual_video_depth_is_sane (VisVideoDepth depth);
  *
  * @return The bits per pixel or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-LV_DLL_PUBLIC int visual_video_depth_value_from_enum (VisVideoDepth depth);
+LV_API int visual_video_depth_value_from_enum (VisVideoDepth depth);
 
 /**
  * Returns a VisVideoDepth enumerate value from bits per pixel.
@@ -475,7 +475,7 @@ LV_DLL_PUBLIC int visual_video_depth_value_from_enum (VisVideoDepth depth);
  *
  * @return The corespondending enumerate value or VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
-LV_DLL_PUBLIC VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
+LV_API VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
 
 /**
  * Returns the number of bytes per pixel from the VisVideoDepth enumerate.
@@ -485,7 +485,7 @@ LV_DLL_PUBLIC VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
  *
  * @return The number of bytes per pixel, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-LV_DLL_PUBLIC int visual_video_bpp_from_depth (VisVideoDepth depth);
+LV_API int visual_video_bpp_from_depth (VisVideoDepth depth);
 
 /**
  * Converts the VisVideo it's buffer boundries to a VisRectangle. This means that the rectangle it's
@@ -495,7 +495,7 @@ LV_DLL_PUBLIC int visual_video_bpp_from_depth (VisVideoDepth depth);
  *
  * @return New VisRectangle, or NULL on failure
  */
-LV_DLL_PUBLIC VisRectangle *visual_video_get_boundary (VisVideo *video);
+LV_API VisRectangle *visual_video_get_boundary (VisVideo *video);
 
 /**
  * Creates a sub region of a VisVideo. An extra reference to the src VisVideo is created. The region should
@@ -511,7 +511,7 @@ LV_DLL_PUBLIC VisRectangle *visual_video_get_boundary (VisVideo *video);
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_RECTANGLE_NULL
  *	or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
  */
-LV_DLL_PUBLIC int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect);
+LV_API int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect);
 
 /**
  * Creates a sub region of a VisVideo likewise visual_video_region_sub() however the position and dimension is given
@@ -528,24 +528,24 @@ LV_DLL_PUBLIC int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRec
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
  */
-LV_DLL_PUBLIC int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
+LV_API int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
 
-LV_DLL_PUBLIC int visual_video_region_sub_all (VisVideo *dest, VisVideo *src);
+LV_API int visual_video_region_sub_all (VisVideo *dest, VisVideo *src);
 
-LV_DLL_PUBLIC int visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
+LV_API int visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
 
-LV_DLL_PUBLIC int visual_video_composite_set_type (VisVideo *video, VisVideoCompositeType type);
-LV_DLL_PUBLIC int visual_video_composite_set_colorkey (VisVideo *video, VisColor *color);
-LV_DLL_PUBLIC int visual_video_composite_set_surface (VisVideo *video, uint8_t alpha);
-LV_DLL_PUBLIC VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest, VisVideo *src, int alpha);
-LV_DLL_PUBLIC int visual_video_composite_set_function (VisVideo *video, VisVideoCustomCompositeFunc compfunc);
+LV_API int visual_video_composite_set_type (VisVideo *video, VisVideoCompositeType type);
+LV_API int visual_video_composite_set_colorkey (VisVideo *video, VisColor *color);
+LV_API int visual_video_composite_set_surface (VisVideo *video, uint8_t alpha);
+LV_API VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest, VisVideo *src, int alpha);
+LV_API int visual_video_composite_set_function (VisVideo *video, VisVideoCustomCompositeFunc compfunc);
 
-LV_DLL_PUBLIC int visual_video_blit_overlay_rectangle (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, int alpha);
-LV_DLL_PUBLIC int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
+LV_API int visual_video_blit_overlay_rectangle (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, int alpha);
+LV_API int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
 		VisVideoCustomCompositeFunc compfunc);
-LV_DLL_PUBLIC int visual_video_blit_overlay_rectangle_scale (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
+LV_API int visual_video_blit_overlay_rectangle_scale (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
 		int alpha, VisVideoScaleMethod scale_method);
-LV_DLL_PUBLIC int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
+LV_API int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
 		VisVideoScaleMethod scale_method, VisVideoCustomCompositeFunc compfunc);
 
 /**
@@ -560,9 +560,9 @@ LV_DLL_PUBLIC int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *de
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_INVALID_DEPTH or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
  */
-LV_DLL_PUBLIC int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
+LV_API int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
 
-LV_DLL_PUBLIC int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int y, VisVideoCustomCompositeFunc compfunc);
+LV_API int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int y, VisVideoCustomCompositeFunc compfunc);
 
 /**
  * Sets a certain color as the alpha channel and the density for the non alpha channel
@@ -574,7 +574,7 @@ LV_DLL_PUBLIC int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *sr
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-LV_DLL_PUBLIC int visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t density);
+LV_API int visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t density);
 
 /**
  * Sets a certain alpha value for the complete buffer in the VisVideo. This function
@@ -585,9 +585,9 @@ LV_DLL_PUBLIC int visual_video_fill_alpha_color (VisVideo *video, VisColor *colo
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-LV_DLL_PUBLIC int visual_video_fill_alpha (VisVideo *video, uint8_t density);
+LV_API int visual_video_fill_alpha (VisVideo *video, uint8_t density);
 
-LV_DLL_PUBLIC int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t density, VisRectangle *rect);
+LV_API int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t density, VisRectangle *rect);
 
 /**
  * This function is used to fill a VisVideo with one color. It's highly advice to use this function to fill
@@ -600,9 +600,9 @@ LV_DLL_PUBLIC int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t de
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-LV_DLL_PUBLIC int visual_video_fill_color (VisVideo *video, VisColor *color);
+LV_API int visual_video_fill_color (VisVideo *video, VisColor *color);
 
-LV_DLL_PUBLIC int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRectangle *rect);
+LV_API int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRectangle *rect);
 
 /**
  * Flips the byte ordering of each pixel.
@@ -614,13 +614,13 @@ LV_DLL_PUBLIC int visual_video_fill_color_rectangle (VisVideo *video, VisColor *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
  *	-VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-LV_DLL_PUBLIC int visual_video_flip_pixel_bytes (VisVideo *dest, VisVideo *src);
+LV_API int visual_video_flip_pixel_bytes (VisVideo *dest, VisVideo *src);
 
-LV_DLL_PUBLIC int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees);
-LV_DLL_PUBLIC VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees);
+LV_API int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees);
+LV_API VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees);
 
-LV_DLL_PUBLIC int visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient);
-LV_DLL_PUBLIC VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient);
+LV_API int visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient);
+LV_API VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient);
 
 
 /**
@@ -634,9 +634,9 @@ LV_DLL_PUBLIC VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOr
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_PALETTE_NULL, -VISUAL_ERROR_PALETTE_SIZE,
  * 	-VISUAL_ERROR_VIDEO_NOT_TRANSFORMED or error values returned by visual_video_blit_overlay on failure.
  */
-LV_DLL_PUBLIC int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
+LV_API int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
 
-LV_DLL_PUBLIC VisVideo *visual_video_zoom_new (VisVideo *src, VisVideoScaleMethod scale_method, float zoom_factor);
+LV_API VisVideo *visual_video_zoom_new (VisVideo *src, VisVideoScaleMethod scale_method, float zoom_factor);
 
 /**
  * Non interpolating fast pixel doubler zoom.
@@ -646,7 +646,7 @@ LV_DLL_PUBLIC VisVideo *visual_video_zoom_new (VisVideo *src, VisVideoScaleMetho
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_video_zoom_double (VisVideo *dest, VisVideo *src);
+LV_API int visual_video_zoom_double (VisVideo *dest, VisVideo *src);
 
 /**
  * Scale VisVideo.
@@ -657,7 +657,7 @@ LV_DLL_PUBLIC int visual_video_zoom_double (VisVideo *dest, VisVideo *src);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
-LV_DLL_PUBLIC int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
+LV_API int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
 
 /**
  * Scale VisVideo, and return a newly allocated scaled VisVideo.
@@ -669,7 +669,7 @@ LV_DLL_PUBLIC int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoSca
  *
  * @return A newly allocated scaled VisVideo, NULL on failure.
  */
-LV_DLL_PUBLIC VisVideo *visual_video_scale_new (VisVideo *src, int width, int height, VisVideoScaleMethod scale_method);
+LV_API VisVideo *visual_video_scale_new (VisVideo *src, int width, int height, VisVideoScaleMethod scale_method);
 
 /**
  * Scale VisVideo, but does an internal depth transformation when the source VisVideo is not of the
@@ -684,7 +684,7 @@ LV_DLL_PUBLIC VisVideo *visual_video_scale_new (VisVideo *src, int width, int he
  * @return VISUAL_OK on success, -VISUAL_ERROR_IMPOSSIBLE, -VISUAL_ERROR_VIDEO_NULL
  *	or error values returned by visual_video_scale() on failure.
  */
-LV_DLL_PUBLIC int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
+LV_API int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
 
 /**
  * Creates a new scaled VisVideo, but does an internal depth transformation when the
@@ -701,7 +701,7 @@ LV_DLL_PUBLIC int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVi
  * @return A newly allocated scaled version of the source VisVideo with the given width, height
  *	and depth, NULL on failure.
  */
-LV_DLL_PUBLIC VisVideo *visual_video_scale_depth_new (VisVideo *src, int width, int height, VisVideoDepth depth,
+LV_API VisVideo *visual_video_scale_depth_new (VisVideo *src, int width, int height, VisVideoDepth depth,
 		VisVideoScaleMethod scale_method);
 
 /* Optimized versions of performance sensitive routines */

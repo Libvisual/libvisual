@@ -100,7 +100,7 @@ namespace LV
   };
 
   template <>
-  LV_DLL_PUBLIC System* Singleton<System>::m_instance = 0;
+  LV_API System* Singleton<System>::m_instance = 0;
 
   void System::init (int& argc, char**& argv)
   {

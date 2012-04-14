@@ -124,7 +124,7 @@ namespace LV {
   }
 
   template <>
-  LV_DLL_PUBLIC PluginRegistry* Singleton<PluginRegistry>::m_instance = 0;
+  LV_API PluginRegistry* Singleton<PluginRegistry>::m_instance = 0;
 
   void PluginRegistry::init ()
   {

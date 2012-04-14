@@ -220,7 +220,7 @@ namespace LV {
 
   typedef VisEvent Event;
 
-  class LV_DLL_PUBLIC EventQueue
+  class LV_API EventQueue
   {
   public:
 
@@ -277,7 +277,7 @@ VISUAL_BEGIN_DECLS
  * @param keymod Key modifier information from the VisKeyMod enumerate.
  * @param state Contains information about whatever the key is down or up.
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_keyboard (VisKey keysym, int keymod, VisKeyState state);
+LV_API VisEvent *visual_event_new_keyboard (VisKey keysym, int keymod, VisKeyState state);
 
 /**
  * Creates a new mouse movement event
@@ -285,7 +285,7 @@ LV_DLL_PUBLIC VisEvent *visual_event_new_keyboard (VisKey keysym, int keymod, Vi
  * @param dx X displacement
  * @param dy Y displacement
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_mousemotion (int dx, int dy);
+LV_API VisEvent *visual_event_new_mousemotion (int dx, int dy);
 
 /**
  * Creates a new mouse button event
@@ -295,7 +295,7 @@ LV_DLL_PUBLIC VisEvent *visual_event_new_mousemotion (int dx, int dy);
  * @param x Absolute X value for the mouse location.
  * @param y Absolute Y value for the mouse location.
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_mousebutton (int button, VisMouseState state, int x, int y);
+LV_API VisEvent *visual_event_new_mousebutton (int button, VisMouseState state, int x, int y);
     
 /**
  * Creates a resize event.
@@ -303,35 +303,35 @@ LV_DLL_PUBLIC VisEvent *visual_event_new_mousebutton (int button, VisMouseState 
  * @param width New width
  * @param height New height
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_resize (int width, int height);
+LV_API VisEvent *visual_event_new_resize (int width, int height);
     
 /**
  * Creates a new song change event.
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_newsong (VisSongInfo *songinfo);
+LV_API VisEvent *visual_event_new_newsong (VisSongInfo *songinfo);
 
 /**
  * Creates a new parameter change event
  *
  * @param param Pointer to the VisParamEntry containing the parameter that has been changed.
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_param (void *param);
+LV_API VisEvent *visual_event_new_param (void *param);
     
 /**
  * Creates a quit event
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_quit (void);
+LV_API VisEvent *visual_event_new_quit (void);
 
 /**
  * Adds a new visibility event to the event queue.
  *
  * @param is_visible TRUE when visible, FALSE when not visible.
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_visibility (int is_visible);
+LV_API VisEvent *visual_event_new_visibility (int is_visible);
 
-LV_DLL_PUBLIC void visual_event_copy (VisEvent *dest, VisEvent *src);
+LV_API void visual_event_copy (VisEvent *dest, VisEvent *src);
 
-LV_DLL_PUBLIC void visual_event_free (VisEvent* event);
+LV_API void visual_event_free (VisEvent* event);
 
 /**
  * Adds a new generic event to the event queue.
@@ -340,13 +340,13 @@ LV_DLL_PUBLIC void visual_event_free (VisEvent* event);
  * @param param_int Integer value for the custom event.
  * @param param_ptr Pointer to data for the custom event..
  */
-LV_DLL_PUBLIC VisEvent *visual_event_new_generic (int eid, int param_int, void *param_ptr);
+LV_API VisEvent *visual_event_new_generic (int eid, int param_int, void *param_ptr);
 
-LV_DLL_PUBLIC VisEventQueue *visual_event_queue_new  (void);
-LV_DLL_PUBLIC void           visual_event_queue_free (VisEventQueue *eventqueue);
+LV_API VisEventQueue *visual_event_queue_new  (void);
+LV_API void           visual_event_queue_free (VisEventQueue *eventqueue);
 
-LV_DLL_PUBLIC void visual_event_queue_add  (VisEventQueue *eventqueue, VisEvent *event);
-LV_DLL_PUBLIC int  visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
+LV_API void visual_event_queue_add  (VisEventQueue *eventqueue, VisEvent *event);
+LV_API int  visual_event_queue_poll (VisEventQueue *eventqueue, VisEvent *event);
 
 
 VISUAL_END_DECLS

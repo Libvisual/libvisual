@@ -42,7 +42,7 @@ namespace LV {
   /**
    * Data type to describe the palette for an 8 bits screen depth.
    */
-  struct LV_DLL_PUBLIC Palette
+  struct LV_API Palette
   {
       std::vector<Color> colors;
 
@@ -114,23 +114,23 @@ typedef struct _VisPalette VisPalette;
 struct _VisPalette;
 #endif
 
-LV_DLL_PUBLIC VisPalette *visual_palette_new (unsigned int ncolors);
+LV_API VisPalette *visual_palette_new (unsigned int ncolors);
 
-LV_DLL_PUBLIC void visual_palette_free (VisPalette *palette);
+LV_API void visual_palette_free (VisPalette *palette);
 
-LV_DLL_PUBLIC VisPalette *visual_palette_clone (VisPalette *self);
+LV_API VisPalette *visual_palette_clone (VisPalette *self);
 
-LV_DLL_PUBLIC void visual_palette_copy (VisPalette *dest, VisPalette *src);
+LV_API void visual_palette_copy (VisPalette *dest, VisPalette *src);
 
-LV_DLL_PUBLIC VisColor *visual_palette_get_colors (VisPalette *pal);
+LV_API VisColor *visual_palette_get_colors (VisPalette *pal);
 
-LV_DLL_PUBLIC VisColor *visual_palette_get_color (VisPalette *pal, int index);
+LV_API VisColor *visual_palette_get_color (VisPalette *pal, int index);
 
-LV_DLL_PUBLIC unsigned int visual_palette_get_size (VisPalette *pal);
+LV_API unsigned int visual_palette_get_size (VisPalette *pal);
 
-LV_DLL_PUBLIC void visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate);
+LV_API void visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate);
 
-LV_DLL_PUBLIC int visual_palette_find_color (VisPalette *pal, VisColor *color);
+LV_API int visual_palette_find_color (VisPalette *pal, VisColor *color);
 
 
 VISUAL_END_DECLS

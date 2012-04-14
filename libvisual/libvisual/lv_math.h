@@ -60,7 +60,7 @@ VISUAL_BEGIN_DECLS
  *
  * @return TRUE if power of 2, FALSE if not.
  */
-LV_DLL_PUBLIC int visual_math_is_power_of_2 (int n);
+LV_API int visual_math_is_power_of_2 (int n);
 
 /**
  * Rounds up to the next highest power of 2.
@@ -69,7 +69,7 @@ LV_DLL_PUBLIC int visual_math_is_power_of_2 (int n);
  *
  * @return Next highest power of 2
  */
-LV_DLL_PUBLIC unsigned int visual_math_round_power_of_2 (unsigned int n);
+LV_API unsigned int visual_math_round_power_of_2 (unsigned int n);
 
 /**
  * Multiplies an array of floats with one constant multiplier. The same destination and source arrays
@@ -82,7 +82,7 @@ LV_DLL_PUBLIC unsigned int visual_math_round_power_of_2 (unsigned int n);
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_multiplier_floats_const_float (float *dest, const float *src, visual_size_t n, float multiplier);
+LV_API int visual_math_vectorized_multiplier_floats_const_float (float *dest, const float *src, visual_size_t n, float multiplier);
 
 /**
  * Adds an array of floats with one constant adder. The same destination and source arrays
@@ -95,7 +95,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_multiplier_floats_const_float (float *d
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_add_floats_const_float (float *dest, const float *src, visual_size_t n, float adder);
+LV_API int visual_math_vectorized_add_floats_const_float (float *dest, const float *src, visual_size_t n, float adder);
 
 /**
  * Substracts an array of floats with one constant substracter. The same destination and source arrays
@@ -108,9 +108,9 @@ LV_DLL_PUBLIC int visual_math_vectorized_add_floats_const_float (float *dest, co
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_substract_floats_const_float (float *dest, const float *src, visual_size_t n, float substracter);
+LV_API int visual_math_vectorized_substract_floats_const_float (float *dest, const float *src, visual_size_t n, float substracter);
 
-LV_DLL_PUBLIC int visual_math_vectorized_multiplier_floats_floats (float *dest, const float *src1, const float *src2, visual_size_t n);
+LV_API int visual_math_vectorized_multiplier_floats_floats (float *dest, const float *src1, const float *src2, visual_size_t n);
 
 /**
  * Converts an array of floats to integers. With the right cpu features in place this function
@@ -122,7 +122,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_multiplier_floats_floats (float *dest, 
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_floats_to_int32s (int32_t *ints, const float *flts, visual_size_t n);
+LV_API int visual_math_vectorized_floats_to_int32s (int32_t *ints, const float *flts, visual_size_t n);
 
 /**
  * Converts an array of integers to floats. With the right cpu features in place this function
@@ -134,7 +134,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_floats_to_int32s (int32_t *ints, const 
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_int32s_to_floats (float *flts, const int32_t *ints, visual_size_t n);
+LV_API int visual_math_vectorized_int32s_to_floats (float *flts, const int32_t *ints, visual_size_t n);
 
 /**
  * Converts an array of floats to integers and multiplies it with a const multiplier.
@@ -147,7 +147,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_int32s_to_floats (float *flts, const in
  *
  * @return VISUAL_OK on success or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, const float *flts, visual_size_t n, float multiplier);
+LV_API int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, const float *flts, visual_size_t n, float multiplier);
 
 /**
  * Converts an array of integers to floats and multiplies it with a const multiplier.
@@ -160,7 +160,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_floats_to_int32s_multiply (int32_t *int
  *
  * @return VISUAL_OK on success or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_int32s_to_floats_multiply (float *flts, const int32_t *ints, visual_size_t n, float multiplier);
+LV_API int visual_math_vectorized_int32s_to_floats_multiply (float *flts, const int32_t *ints, visual_size_t n, float multiplier);
 
 /**
  * Converts an array of floats to integers and multiplies it with a const multiplier. Furthermore
@@ -174,7 +174,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_int32s_to_floats_multiply (float *flts,
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints, const float *flts, visual_size_t n, float multiplier);
+LV_API int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints, const float *flts, visual_size_t n, float multiplier);
 
 /**
  * Vectorized square root for single precision floats. This function works best with data
@@ -186,7 +186,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_floats_to_int32s_multiply_denormalise (
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_sqrt_floats (float *dest, const float *src, visual_size_t n);
+LV_API int visual_math_vectorized_sqrt_floats (float *dest, const float *src, visual_size_t n);
 
 /**
  * Vectorized complex to norm conversion. Will make norm values from a real and imaginary
@@ -199,7 +199,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_sqrt_floats (float *dest, const float *
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_complex_to_norm (float *dest, const float *real, const float *imag, visual_size_t n);
+LV_API int visual_math_vectorized_complex_to_norm (float *dest, const float *real, const float *imag, visual_size_t n);
 
 /**
  * Vectorized complex to norm conversion and result value scaler. Will make norm values from a real and imaginary
@@ -213,7 +213,7 @@ LV_DLL_PUBLIC int visual_math_vectorized_complex_to_norm (float *dest, const flo
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_math_vectorized_complex_to_norm_scale (float *dest, const float *real, const float *imag, visual_size_t n, float scaler);
+LV_API int visual_math_vectorized_complex_to_norm_scale (float *dest, const float *real, const float *imag, visual_size_t n, float scaler);
 
 /* FIXME add many more to suite both rectangle and audio systems 100% */
 /* FIXME also look into things we might be able to generalize from VisVideo. */

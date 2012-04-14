@@ -10,8 +10,6 @@ LINK_DIRECTORIES(
   ${PROJECT_BINARY_DIR}/libvisual
 )
 
-ADD_DEFINITIONS(-DLV_BUILDING_DLL)
-
 SET(libvisual_HEADERS
   libvisual.h
   lv_actor.h

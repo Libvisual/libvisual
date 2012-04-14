@@ -153,7 +153,7 @@ struct _VisMorphPlugin {
  *
  * @return VisPluginData that is encapsulated in the VisMorph, possibly NULL.
  */
-LV_DLL_PUBLIC VisPluginData *visual_morph_get_plugin (VisMorph *morph);
+LV_API VisPluginData *visual_morph_get_plugin (VisMorph *morph);
 
 /**
  * Gives the next morph plugin based on the name of a plugin.
@@ -164,7 +164,7 @@ LV_DLL_PUBLIC VisPluginData *visual_morph_get_plugin (VisMorph *morph);
  *
  * @return The name of the next plugin within the list.
  */
-LV_DLL_PUBLIC const char *visual_morph_get_next_by_name (const char *name);
+LV_API const char *visual_morph_get_next_by_name (const char *name);
 
 /**
  * Gives the previous morph plugin based on the name of a plugin.
@@ -175,7 +175,7 @@ LV_DLL_PUBLIC const char *visual_morph_get_next_by_name (const char *name);
  *
  * @return The name of the previous plugin within the list.
  */
-LV_DLL_PUBLIC const char *visual_morph_get_prev_by_name (const char *name);
+LV_API const char *visual_morph_get_prev_by_name (const char *name);
 
 /**
  * Creates a new VisMorph from name, the plugin will be loaded but won't be realized.
@@ -186,7 +186,7 @@ LV_DLL_PUBLIC const char *visual_morph_get_prev_by_name (const char *name);
  *
  * @return A newly allocated VisMorph, optionally containing a loaded plugin. Or NULL on failure.
  */
-LV_DLL_PUBLIC VisMorph *visual_morph_new (const char *morphname);
+LV_API VisMorph *visual_morph_new (const char *morphname);
 
 /**
  * Initializes a VisMorph, this will set the allocated flag for the object to FALSE. Should not
@@ -200,7 +200,7 @@ LV_DLL_PUBLIC VisMorph *visual_morph_new (const char *morphname);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
  */
-LV_DLL_PUBLIC int visual_morph_init (VisMorph *morph, const char *morphname);
+LV_API int visual_morph_init (VisMorph *morph, const char *morphname);
 
 /**
  * Realize the VisMorph. This also calls the plugin init function.
@@ -210,7 +210,7 @@ LV_DLL_PUBLIC int visual_morph_init (VisMorph *morph, const char *morphname);
  * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_PLUGIN_NULL or error values
  *  returned by visual_plugin_realize () on failure.
  */
-LV_DLL_PUBLIC int visual_morph_realize (VisMorph *morph);
+LV_API int visual_morph_realize (VisMorph *morph);
 
 /**
  * Gives the by the plugin natively supported depths
@@ -220,9 +220,9 @@ LV_DLL_PUBLIC int visual_morph_realize (VisMorph *morph);
  *
  * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on success, -1 on failure
  */
-LV_DLL_PUBLIC int visual_morph_get_supported_depth (VisMorph *morph);
+LV_API int visual_morph_get_supported_depth (VisMorph *morph);
 
-LV_DLL_PUBLIC VisVideoAttributeOptions *visual_morph_get_video_attribute_options (VisMorph *morph);
+LV_API VisVideoAttributeOptions *visual_morph_get_video_attribute_options (VisMorph *morph);
 
 /**
  * Used to connect the target display, or a buffer it's VisVideo to the VisMorph plugin.
@@ -235,7 +235,7 @@ LV_DLL_PUBLIC VisVideoAttributeOptions *visual_morph_get_video_attribute_options
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_morph_set_video (VisMorph *morph, VisVideo *video);
+LV_API int visual_morph_set_video (VisMorph *morph, VisVideo *video);
 
 /**
  * Set the time when the morph should be finished morphing.
@@ -247,7 +247,7 @@ LV_DLL_PUBLIC int visual_morph_set_video (VisMorph *morph, VisVideo *video);
  * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_TIME_NULL or error values returned by
  *  visual_time_copy () on failure.
  */
-LV_DLL_PUBLIC int visual_morph_set_time (VisMorph *morph, VisTime *time);
+LV_API int visual_morph_set_time (VisMorph *morph, VisTime *time);
 
 /**
  * Used to set the rate of the VisMmorph. The rate ranges from 0 to 1
@@ -260,7 +260,7 @@ LV_DLL_PUBLIC int visual_morph_set_time (VisMorph *morph, VisTime *time);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_morph_set_rate (VisMorph *morph, float rate);
+LV_API int visual_morph_set_rate (VisMorph *morph, float rate);
 
 /**
  * Used to set the number of steps that a morph will take to finish.
@@ -270,7 +270,7 @@ LV_DLL_PUBLIC int visual_morph_set_rate (VisMorph *morph, float rate);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_morph_set_steps (VisMorph *morph, int steps);
+LV_API int visual_morph_set_steps (VisMorph *morph, int steps);
 
 /**
  * Used to set the method of morphing.
@@ -280,7 +280,7 @@ LV_DLL_PUBLIC int visual_morph_set_steps (VisMorph *morph, int steps);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_morph_set_mode (VisMorph *morph, VisMorphMode mode);
+LV_API int visual_morph_set_mode (VisMorph *morph, VisMorphMode mode);
 
 /**
  * Some morph plugins can give a custom palette while morphing two 8 bits plugins.
@@ -289,7 +289,7 @@ LV_DLL_PUBLIC int visual_morph_set_mode (VisMorph *morph, VisMorphMode mode);
  *
  * @return The pointer to the custom palette on succes or NULL on failure.
  */
-LV_DLL_PUBLIC VisPalette *visual_morph_get_palette (VisMorph *morph);
+LV_API VisPalette *visual_morph_get_palette (VisMorph *morph);
 
 /**
  * Function that helps to check if a morph is done with it's morphing.
@@ -298,7 +298,7 @@ LV_DLL_PUBLIC VisPalette *visual_morph_get_palette (VisMorph *morph);
  *
  * @return TRUE or FALSE, -VISUAL_ERROR_MORPH_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_morph_is_done (VisMorph *morph);
+LV_API int visual_morph_is_done (VisMorph *morph);
 
 /**
  * Some morph plugins request an VisAudio context to draw properly. Using this function
@@ -308,7 +308,7 @@ LV_DLL_PUBLIC int visual_morph_is_done (VisMorph *morph);
  *
  * @return TRUE or FALSE, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_MORPH_PLUGIN_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_morph_requests_audio (VisMorph *morph);
+LV_API int visual_morph_requests_audio (VisMorph *morph);
 
 /**
  * This is called to run the VisMorph. It will put the result in the buffer that is previously
@@ -326,7 +326,7 @@ LV_DLL_PUBLIC int visual_morph_requests_audio (VisMorph *morph);
  * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_AUDIO_NULL,
  *  -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_DLL_PUBLIC int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
+LV_API int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
 
 VISUAL_END_DECLS
 

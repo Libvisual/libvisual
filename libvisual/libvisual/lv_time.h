@@ -50,7 +50,7 @@
 
 namespace LV {
 
-  class LV_DLL_PUBLIC Time
+  class LV_API Time
   {
   public:
 
@@ -160,7 +160,7 @@ namespace LV {
       static void init ();
   };
 
-  class LV_DLL_PUBLIC Timer
+  class LV_API Timer
   {
   public:
 
@@ -227,43 +227,43 @@ struct _VisTimer;
 
 VISUAL_BEGIN_DECLS
 
-LV_DLL_PUBLIC VisTime *visual_time_new             (void);
-LV_DLL_PUBLIC VisTime *visual_time_new_now         (void);
-LV_DLL_PUBLIC VisTime *visual_time_new_with_values (long sec, long nsec);
-LV_DLL_PUBLIC VisTime *visual_time_clone           (VisTime *src);
-LV_DLL_PUBLIC void     visual_time_free            (VisTime *time_);
+LV_API VisTime *visual_time_new             (void);
+LV_API VisTime *visual_time_new_now         (void);
+LV_API VisTime *visual_time_new_with_values (long sec, long nsec);
+LV_API VisTime *visual_time_clone           (VisTime *src);
+LV_API void     visual_time_free            (VisTime *time_);
 
-LV_DLL_PUBLIC void visual_time_set     (VisTime *time_, long sec, long usec);
-LV_DLL_PUBLIC void visual_time_copy    (VisTime *dest, VisTime *src);
-LV_DLL_PUBLIC void visual_time_get_now (VisTime *time_);
+LV_API void visual_time_set     (VisTime *time_, long sec, long usec);
+LV_API void visual_time_copy    (VisTime *dest, VisTime *src);
+LV_API void visual_time_get_now (VisTime *time_);
 
-LV_DLL_PUBLIC void visual_time_diff    (VisTime *diff, VisTime *time1, VisTime *time2);
-LV_DLL_PUBLIC int  visual_time_is_past (VisTime *time_, VisTime *ref);
+LV_API void visual_time_diff    (VisTime *diff, VisTime *time1, VisTime *time2);
+LV_API int  visual_time_is_past (VisTime *time_, VisTime *ref);
 
-LV_DLL_PUBLIC double   visual_time_to_secs  (VisTime *time_);
-LV_DLL_PUBLIC uint64_t visual_time_to_msecs (VisTime *time_);
-LV_DLL_PUBLIC uint64_t visual_time_to_usecs (VisTime *time_);
+LV_API double   visual_time_to_secs  (VisTime *time_);
+LV_API uint64_t visual_time_to_msecs (VisTime *time_);
+LV_API uint64_t visual_time_to_usecs (VisTime *time_);
 
-LV_DLL_PUBLIC void visual_usleep (uint64_t usecs);
+LV_API void visual_usleep (uint64_t usecs);
 
-LV_DLL_PUBLIC void visual_time_set_from_msecs (VisTime *time_, uint64_t msecs);
+LV_API void visual_time_set_from_msecs (VisTime *time_, uint64_t msecs);
 
-LV_DLL_PUBLIC VisTimer *visual_timer_new  (void);
-LV_DLL_PUBLIC void      visual_timer_free (VisTimer *timer);
+LV_API VisTimer *visual_timer_new  (void);
+LV_API void      visual_timer_free (VisTimer *timer);
 
-LV_DLL_PUBLIC void visual_timer_reset     (VisTimer *timer);
-LV_DLL_PUBLIC void visual_timer_start     (VisTimer *timer);
-LV_DLL_PUBLIC void visual_timer_stop      (VisTimer *timer);
-LV_DLL_PUBLIC void visual_timer_resume    (VisTimer *timer);
-LV_DLL_PUBLIC int  visual_timer_is_active (VisTimer *timer);
+LV_API void visual_timer_reset     (VisTimer *timer);
+LV_API void visual_timer_start     (VisTimer *timer);
+LV_API void visual_timer_stop      (VisTimer *timer);
+LV_API void visual_timer_resume    (VisTimer *timer);
+LV_API int  visual_timer_is_active (VisTimer *timer);
 
-LV_DLL_PUBLIC void     visual_timer_elapsed (VisTimer *timer, VisTime *time_);
-LV_DLL_PUBLIC uint64_t visual_timer_elapsed_msecs (VisTimer *timer);
-LV_DLL_PUBLIC uint64_t visual_timer_elapsed_usecs (VisTimer *timer);
-LV_DLL_PUBLIC double   visual_timer_elapsed_secs  (VisTimer *timer);
+LV_API void     visual_timer_elapsed (VisTimer *timer, VisTime *time_);
+LV_API uint64_t visual_timer_elapsed_msecs (VisTimer *timer);
+LV_API uint64_t visual_timer_elapsed_usecs (VisTimer *timer);
+LV_API double   visual_timer_elapsed_secs  (VisTimer *timer);
 
-LV_DLL_PUBLIC int visual_timer_is_past  (VisTimer *timer, VisTime *time_);
-LV_DLL_PUBLIC int visual_timer_is_past2 (VisTimer *timer, long sec, long nsec);
+LV_API int visual_timer_is_past  (VisTimer *timer, VisTime *time_);
+LV_API int visual_timer_is_past2 (VisTimer *timer, long sec, long nsec);
 
 // FIXME: Remove this
 //#define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)

@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -79,44 +79,29 @@
 /* Symbol visibility macros */
 
 #if defined _WIN32 || defined __CYGWIN__
-  #ifdef LV_BUILDING_DLL
-    #ifdef __GNUC__
-      #define LV_DLL_PUBLIC __attribute__ ((dllexport))
-    #else
-      #define LV_DLL_PUBLIC __declspec(dllexport) /* Note: actually gcc seems to also supports this syntax. */
-    #endif
-  #else
-    #ifdef __GNUC__
-      #define LV_DLL_PUBLIC __attribute__ ((dllimport))
-    #else
-      #define LV_DLL_PUBLIC __declspec(dllimport) /* Note: actually gcc seems to also supports this syntax. */
-    #endif
-  #endif
+  #define LV_DLL_IMPORT __declspec(dllimport)
+  #define LV_DLL_EXPORT __declspec(dllexport)
   #define LV_DLL_LOCAL
 #else
-  #if __GNUC__ >= 4
-    #define LV_DLL_PUBLIC __attribute__ ((visibility ("default")))
+  #ifdef __GNUC__ >= 4
+    #define LV_DLL_IMPORT __attribute__ ((visibility ("default")))
+    #define LV_DLL_EXPORT __attribute__ ((visibility ("default")))
     #define LV_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
   #else
-    #define LV_DLL_PUBLIC
+    #define LV_DLL_IMPORT
+    #define LV_DLL_EXPORT
     #define LV_DLL_LOCAL
   #endif
 #endif
 
-/* Plugin export symbol visibility macro */
-
-#if defined _WIN32 || defined __CYGWIN__
-  #ifdef __GNUC__
-    #define LV_PLUGIN_EXPORT __attribute__ ((dllexport))
-  #else
-    #define LV_PLUGIN_EXPORT __declspec(dllexport)
-  #endif
+#ifdef libvisual_EXPORTS
+  #define LV_API LV_DLL_EXPORT
 #else
-  #if __GNUC__ >= 4
-    #define LV_PLUGIN_EXPORT __attribute__ ((visibility ("default")))  
-  #else
-    #define LV_PLUGIN_EXPORT
-  #endif
+  #define LV_API LV_DLL_IMPORT
 #endif
+
+#define LV_LOCAL LV_DLL_LOCAL
+
+#define LV_PLUGIN_EXPORT LV_DLL_EXPORT
 
 #endif /* _LV_DEFINES_H */
