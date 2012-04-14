@@ -37,7 +37,6 @@
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_color.h>
 #include <libvisual/lv_param.h>
-#include <libvisual/lv_config.h>
 #include <libvisual/lv_cpu.h>
 #include <libvisual/lv_bin.h>
 #include <libvisual/lv_event.h>

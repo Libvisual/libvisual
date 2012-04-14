@@ -47,7 +47,6 @@ SET(libvisual_HEADERS
   lv_rectangle.h
   lv_ringbuffer.h
   lv_buffer.h
-  lv_config.h
   lv_collection.h
   lv_os.h
   lv_math.h
@@ -79,7 +78,6 @@ SET(libvisual_SOURCES
   lv_cpu.c
   lv_error.c
   lv_object.c
-  lv_config.c
   lv_ringbuffer.c
   lv_buffer.c
   lv_collection.c
