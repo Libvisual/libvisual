@@ -132,7 +132,8 @@ IF(NOT VISUAL_OS_WIN32)
   LIST(APPEND LINK_LIBS dl rt)
 
   LIST(APPEND libvisual_SOURCES
-	private/posix/lv_module_dlfcn.cpp
+    private/posix/lv_module_dlfcn.cpp
+    private/posix/lv_mem_posix.cpp
   )
 
   IF(ENABLE_THREADS)
@@ -148,11 +149,12 @@ IF(NOT VISUAL_OS_WIN32)
 ELSE(NOT VISUAL_OS_WIN32)
 
   LIST(APPEND libvisual_SOURCES
-	private/windows/lv_module_win32.cpp
+    private/windows/lv_module_win32.cpp
+    private/windows/lv_mem_win32.cpp
   )
 
   IF(ENABLE_THREADS)
-	LIST(APPEND libvisual_SOURCES
+    LIST(APPEND libvisual_SOURCES
       private/windows/lv_thread_win32.c
     )
   ELSE(ENABLE_THREADS)
