@@ -128,57 +128,8 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     {
         for(row = 0, y = 0; row < dest->height; row+=size, y++)
         {
-            if(flip % 2)
-            {
-                if(x % 2)
-                {
-                    if(y % 2)
-                    {
-                        inter = src1;
-                    }
-                    else
-                    {
-                        inter = src2;
-                    }
-                }
-                else
-                {
-                    if(y % 2)
-                    {
-                        inter = src2;
-                    }
-                    else
-                    {
-                        inter = src1;
-                    }
-                }
-            }
-            else
-            {
-                if(x % 2)
-                {
-                    if(y % 2)
-                    {
-                        inter = src2;
-                    }
-                    else
-                    {
-                        inter = src1;
-                    }
-                }
-                else
-                {
-                    if(y % 2)
-                    {
-                        inter = src1;
-                    }
-                    else
-                    {
-                        inter = src2;
-                    }
-                }
+            inter = (row + col + flip) & 1 ? src1 : src2;
 
-            }
             visual_rectangle_set(srect, col, row, size, size);
             visual_video_region_sub(sub, inter, srect);
 
