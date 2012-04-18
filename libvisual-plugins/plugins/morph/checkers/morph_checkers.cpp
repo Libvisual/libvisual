@@ -32,6 +32,10 @@
 
 using namespace LV;
 
+extern "C" const VisPluginInfo *get_plugin_info (int *count);
+
+namespace {
+
 typedef struct {
     VisTimer *time;
     int flip;
@@ -41,9 +45,10 @@ int lv_morph_checkers_init (VisPluginData *plugin);
 int lv_morph_checkers_cleanup (VisPluginData *plugin);
 int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
+} // namespace
+
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-extern "C" const VisPluginInfo *get_plugin_info (int *count);
 
 extern "C" const VisPluginInfo *get_plugin_info (int *count)
 {
@@ -74,6 +79,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
     return info;
 }
 
+namespace {
 int lv_morph_checkers_init (VisPluginData *plugin)
 {
     CheckerPrivate *priv;
@@ -143,4 +149,4 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
 
     return 0;
 }
-
+} // namespace
