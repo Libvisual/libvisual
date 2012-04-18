@@ -48,7 +48,7 @@ namespace {
 
 } // anonymous namespace
 
-VisPluginInfo const* get_plugin_info (int* count)
+VisPluginInfo const* get_plugin_info ()
 {
     static VisInputPlugin input = {
         { 0 },
