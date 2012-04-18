@@ -53,7 +53,7 @@ sdl_toggleFullScreen(void)
 }
 
 /* LIBVISUAL */
-struct {
+struct V {
     VisVideo   *video;
     VisPalette *pal;
     VisBin     *bin;
@@ -180,11 +180,11 @@ sdl_event_handler(void)
 
         switch (event.type) {
         case SDL_KEYUP:
-            visual_event_queue_add_keyboard (vevent, (VisKey)event.key.keysym.sym, event.key.keysym.mod, VISUAL_KEY_UP);
+            //visual_event_queue_add_keyboard (vevent, (VisKey)event.key.keysym.sym, event.key.keysym.mod, VISUAL_KEY_UP);
             break;
 
         case SDL_KEYDOWN:
-            visual_event_queue_add_keyboard (vevent, (VisKey)event.key.keysym.sym, event.key.keysym.mod, VISUAL_KEY_DOWN);
+            //visual_event_queue_add_keyboard (vevent, (VisKey)event.key.keysym.sym, event.key.keysym.mod, VISUAL_KEY_DOWN);
 
             switch (event.key.keysym.sym) {
             //PLUGIN CONTROLS
@@ -210,7 +210,7 @@ sdl_event_handler(void)
 
             morph:
                 sdl_lock();
-                  visual_bin_set_morph_by_name (v.bin, "alphablend");
+                  visual_bin_set_morph_by_name (v.bin, v.morph);
                   visual_bin_switch_actor_by_name (v.bin, (char*)v.plugin);
                 sdl_unlock();
 
@@ -228,7 +228,7 @@ sdl_event_handler(void)
             break;
 
         case SDL_MOUSEMOTION:
-            visual_event_queue_add_mousemotion (vevent, event.motion.x, event.motion.y);
+            //visual_event_queue_add_mousemotion (vevent, event.motion.x, event.motion.y);
             break;
 
         case SDL_MOUSEBUTTONDOWN:
@@ -237,11 +237,11 @@ sdl_event_handler(void)
                 sdl_toggleFullScreen();
                 break;
             }*/
-            visual_event_queue_add_mousebutton (vevent, event.button.button, VISUAL_MOUSE_DOWN, 0, 0);
+            //visual_event_queue_add_mousebutton (vevent, event.button.button, VISUAL_MOUSE_DOWN, 0, 0);
             break;
 
         case SDL_MOUSEBUTTONUP:
-            visual_event_queue_add_mousebutton (vevent, event.button.button, VISUAL_MOUSE_UP, 0, 0);
+            //visual_event_queue_add_mousebutton (vevent, event.button.button, VISUAL_MOUSE_UP, 0, 0);
             break;
 
         case SDL_QUIT:
@@ -272,11 +272,13 @@ v_init (int argc, char **argv)
 
     visual_init (&argc, &argv);
 
+    v.plugin = ACTOR;
+    v.input = INPUT;
+    v.morph = MORPH;
+
     v.bin    = visual_bin_new ();
     depth  = visual_video_depth_enum_from_value( 24 );
 
-    visual_bin_switch_set_style (v.bin, VISUAL_SWITCH_STYLE_MORPH);
-    visual_bin_switch_set_steps (v.bin, 10);
 
 /*
     if (v.plugin == NULL) {
@@ -288,9 +290,6 @@ v_init (int argc, char **argv)
     }
 */
 
-    v.plugin = ACTOR;
-    v.input = INPUT;
-    v.morph = MORPH;
 
     visual_bin_set_supported_depth (v.bin, VISUAL_VIDEO_DEPTH_ALL);
 
@@ -325,6 +324,10 @@ v_init (int argc, char **argv)
 
     visual_bin_realize (v.bin);
     visual_bin_sync (v.bin, 0);
+
+    visual_bin_switch_set_style (v.bin, VISUAL_SWITCH_STYLE_MORPH);
+    visual_bin_switch_set_steps (v.bin, 10);
+    visual_bin_set_morph_by_name(v.bin, v.morph);
 
 }
 
