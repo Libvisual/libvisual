@@ -43,6 +43,8 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
+extern "C" const VisPluginInfo *get_plugin_info (int *count);
+
 extern "C" const VisPluginInfo *get_plugin_info (int *count)
 {
     static VisMorphPlugin morph[1];
