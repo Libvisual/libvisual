@@ -32,7 +32,7 @@
 
 using namespace LV;
 
-extern "C" const VisPluginInfo *get_plugin_info (int *count);
+extern "C" const VisPluginInfo *get_plugin_info (void);
 
 namespace {
 
@@ -50,33 +50,31 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 
-extern "C" const VisPluginInfo *get_plugin_info (int *count)
+extern "C" const VisPluginInfo *get_plugin_info (void)
 {
-    static VisMorphPlugin morph[1];
-    morph[0].apply = lv_morph_checkers_apply;
-    morph[0].vidoptions.depth =
+    static VisMorphPlugin morph;
+    morph.apply = lv_morph_checkers_apply;
+    morph.vidoptions.depth =
             VISUAL_VIDEO_DEPTH_8BIT |
             VISUAL_VIDEO_DEPTH_16BIT |
             VISUAL_VIDEO_DEPTH_24BIT |
             VISUAL_VIDEO_DEPTH_32BIT;
 
-    static VisPluginInfo info[1];
-    info[0].type = VISUAL_PLUGIN_TYPE_MORPH;
+    static VisPluginInfo info;
+    info.type = VISUAL_PLUGIN_TYPE_MORPH;
 
-    info[0].plugname = "checkers";
-    info[0].name = "Checkerboard morph";
-    info[0].author = "Scott Sibley <sisibley@gmail.com>";
-    info[0].version = "0.1";
-    info[0].about = "A checkers in/out morph plugin";
-    info[0].help = "This morph plugin morphs with a checkerboard effect..";
-    info[0].license = VISUAL_PLUGIN_LICENSE_LGPL;
-    info[0].init = lv_morph_checkers_init;
-    info[0].cleanup = lv_morph_checkers_cleanup;
-    info[0].plugin = VISUAL_OBJECT (&morph[0]);
+    info.plugname = "checkers";
+    info.name = "Checkerboard morph";
+    info.author = "Scott Sibley <sisibley@gmail.com>";
+    info.version = "0.1";
+    info.about = "A checkers in/out morph plugin";
+    info.help = "This morph plugin morphs with a checkerboard effect..";
+    info.license = VISUAL_PLUGIN_LICENSE_LGPL;
+    info.init = lv_morph_checkers_init;
+    info.cleanup = lv_morph_checkers_cleanup;
+    info.plugin = VISUAL_OBJECT (&morph);
 
-    *count = sizeof (info) / sizeof (*info);
-
-    return info;
+    return &info;
 }
 
 namespace {
@@ -125,7 +123,7 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     VisRectangle *srect = visual_rectangle_new(0, 0, size, size);
     VisVideo *inter;
     VisVideo *sub = visual_video_new();
-    visual_video_clone(sub, dest);
+    visual_video_copy_attrs(sub, dest);
     visual_video_set_dimension(sub, size, size);
     int32_t data[size * size * dest->bpp];
     visual_video_set_buffer(sub, data); 
