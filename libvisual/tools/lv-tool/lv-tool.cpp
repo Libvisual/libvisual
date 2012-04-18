@@ -126,7 +126,12 @@ static void _print_help(const char *name)
 }
 
 
-/** parse commandline arguments */
+/** 
+ * parse commandline arguments 
+ *
+ * @param argc from main()
+ * @param argv from main()
+ * @result 0 upon success, <0 upon failure, >0 if app should exit without error */
 static int _parse_args(int argc, char *argv[])
 {
     int index, argument;
@@ -154,14 +159,14 @@ static int _parse_args(int argc, char *argv[])
             case 'h':
             {
                 _print_help(argv[0]);
-                return EXIT_FAILURE;
+                return 1;
             }
 
             /* --plugin-help */
             case 'p':
             {
                 _print_plugin_help();
-                return EXIT_FAILURE;
+                return 1;
             }
 
             /* --dimensions */
@@ -170,7 +175,7 @@ static int _parse_args(int argc, char *argv[])
                 if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
                 {
                     std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
-                    return EXIT_FAILURE;
+                    return -1;
                 }
                 break;
             }
@@ -181,7 +186,7 @@ static int _parse_args(int argc, char *argv[])
                 if (!DisplayDriverFactory::instance().has_driver (optarg))
                 {
                     std::cerr << "Unsupported display driver: " << optarg << "\n";
-                    return EXIT_FAILURE;
+                    return -1;
                 }
 
                 driver_name = optarg;
@@ -232,7 +237,7 @@ static int _parse_args(int argc, char *argv[])
             case '?':
             {
                 _print_help(argv[0]);
-                return EXIT_FAILURE;
+                return -1;
             }
 
             /* unhandled arguments */
@@ -244,7 +249,7 @@ static int _parse_args(int argc, char *argv[])
     }
 
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 static void v_cycleActor (int prev)
@@ -289,9 +294,12 @@ int main (int argc, char **argv)
 
     try {
         // parse commandline arguments
-        if (_parse_args(argc, argv) != EXIT_SUCCESS)
+        int parseRes = _parse_args(argc, argv);
+        if (parseRes < 0)
             throw std::runtime_error ("Failed to parse arguments");
-
+	else if (parseRes > 0)
+	    throw std::runtime_error ("");
+	    
         // create new VisBin for video output
         VisBin *bin = visual_bin_new();
         visual_bin_set_supported_depth(bin, VISUAL_VIDEO_DEPTH_ALL);
