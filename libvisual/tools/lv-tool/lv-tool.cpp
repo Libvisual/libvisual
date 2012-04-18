@@ -55,6 +55,7 @@ namespace {
   int width  = DEFAULT_WIDTH;
   int height = DEFAULT_HEIGHT;
   int framerate = DEFAULT_FPS;
+  int framecount = 0;
   int have_seed = 0;
   uint32_t seed = 0;
 
@@ -112,7 +113,8 @@ static void _print_help(const char *name)
                 "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
                 "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                 "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
-                "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n\n",
+                "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
+                "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n",
                 "http://github.com/StarVisuals/libvisual",
                 name,
                 width, height,
@@ -146,10 +148,11 @@ static int _parse_args(int argc, char *argv[])
         {"morph",       required_argument, 0, 'm'},
         {"fps",         required_argument, 0, 'f'},
         {"seed",        required_argument, 0, 's'},
+        {"framecount",  required_argument, 0, 'F'},
         {0,             0,                 0,  0 }
     };
 
-    while((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:", loptions, &index)) >= 0)
+    while((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:", loptions, &index)) >= 0)
     {
 
         switch(argument)
@@ -239,6 +242,14 @@ static int _parse_args(int argc, char *argv[])
                  break;
             }
 
+	    /* --framecount */
+	    case 'F':
+	    {
+		/* set framecount */
+		std::sscanf(optarg, "%d", &framecount);
+		break;
+	    }
+	    
             /* invalid argument */
             case '?':
             {
@@ -374,7 +385,8 @@ int main (int argc, char **argv)
         // main loop
         bool running = true;
         bool visible = true;
-
+	int framesDrawn = 0;
+	
         while (running)
         {
             LV::Event ev;
@@ -513,6 +525,11 @@ int main (int argc, char **argv)
 
             display.lock();
             visual_bin_run(bin);
+            
+            /* all frames rendered? */
+            if((framecount > 0) && (framesDrawn++ >= framecount))
+        	running = false;
+    	    	
             display.unlock();
             display.update_all();
             display.set_fps_limit(framerate);
