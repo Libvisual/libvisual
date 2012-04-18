@@ -125,6 +125,7 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     VisVideo *sub = visual_video_new();
     visual_video_copy_attrs(sub, dest);
     visual_video_set_dimension(sub, size, size);
+    visual_video_set_pitch(sub, size * dest->bpp);
     int32_t data[size * size * dest->bpp];
     visual_video_set_buffer(sub, data); 
 
