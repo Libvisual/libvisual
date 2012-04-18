@@ -83,7 +83,7 @@
   #define LV_DLL_EXPORT __declspec(dllexport)
   #define LV_DLL_LOCAL
 #else
-  #ifdef __GNUC__ >= 4
+  #if __GNUC__ >= 4
     #define LV_DLL_IMPORT __attribute__ ((visibility ("default")))
     #define LV_DLL_EXPORT __attribute__ ((visibility ("default")))
     #define LV_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
