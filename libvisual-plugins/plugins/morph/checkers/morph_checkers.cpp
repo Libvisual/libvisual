@@ -37,11 +37,9 @@ typedef struct {
     int flip;
 } CheckerPrivate;
 
-extern "C" {
 int lv_morph_checkers_init (VisPluginData *plugin);
 int lv_morph_checkers_cleanup (VisPluginData *plugin);
 int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
-}
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
