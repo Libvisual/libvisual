@@ -67,11 +67,8 @@ static void _print_plugin_info(VisPluginInfo const& info)
 {
     std::printf(
         "Plugin: \"%s\" (%s)\n"
-        "\tauthor:\t%s\n"
-        "\tversion:\t%s\n"
-        "\tlicense:\t%s\n"
-        "%s\n"
-        "%s\n\n",
+        "\tAuthor: %s\n\tVersion: %s\tLicense: %s\n"
+        "\t%s - %s\n\n",
         info.name, info.plugname,
         info.author, info.version, info.license,
         info.about, info.help);
@@ -108,6 +105,7 @@ static void _print_help(const char *name)
                 "Valid options:\n"
                 "\t--help\t\t\t-h\t\tThis help text\n"
                 "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
+                "\t--verbose\t\t-v\t\tOutput debugging info\n"
                 "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
                 "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                 "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
@@ -140,6 +138,7 @@ static int _parse_args(int argc, char *argv[])
     {
         {"help",        no_argument,       0, 'h'},
         {"plugin-help", no_argument,       0, 'p'},
+        {"verbose",     no_argument,       0, 'v'},
         {"dimensions",  required_argument, 0, 'D'},
         {"driver",      required_argument, 0, 'd'},
         {"input",       required_argument, 0, 'i'},
@@ -150,7 +149,7 @@ static int _parse_args(int argc, char *argv[])
         {0,             0,                 0,  0 }
     };
 
-    while((argument = getopt_long(argc, argv, "hpD:d:i:a:m:f:s:", loptions, &index)) >= 0)
+    while((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:", loptions, &index)) >= 0)
     {
 
         switch(argument)
@@ -169,6 +168,13 @@ static int _parse_args(int argc, char *argv[])
                 return 1;
             }
 
+            /* --version */
+            case 'v':
+            {
+                visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+                break;
+            }
+            
             /* --dimensions */
             case 'D':
             {
@@ -289,7 +295,7 @@ int main (int argc, char **argv)
 
     // initialize libvisual once (this is meant to be called only once,
     // visual_init() after visual_quit() results in undefined state)
-    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+    visual_log_set_verbosity(VISUAL_LOG_INFO);
     visual_init (&argc, &argv);
 
     try {
