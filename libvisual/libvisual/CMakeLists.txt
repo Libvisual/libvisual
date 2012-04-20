@@ -140,13 +140,13 @@ IF(NOT VISUAL_OS_WIN32)
     LIST(APPEND libvisual_SOURCES
       private/posix/lv_thread_posix.c
     )
-  ELSE(ENABLE_THREADS)
+  ELSE()
     LIST(APPEND libvisual_SOURCES
       lv_thread_disabled.c
     )
-  ENDIF(ENABLE_THREADS)
+  ENDIF()
 
-ELSE(NOT VISUAL_OS_WIN32)
+ELSE()
 
   LIST(APPEND libvisual_SOURCES
     private/windows/lv_module_win32.cpp
@@ -157,11 +157,11 @@ ELSE(NOT VISUAL_OS_WIN32)
     LIST(APPEND libvisual_SOURCES
       private/windows/lv_thread_win32.c
     )
-  ELSE(ENABLE_THREADS)
+  ELSE()
     LIST(APPEND libvisual_SOURCES
       lv_thread_disabled.c
     )
-  ENDIF(ENABLE_THREADS)
+  ENDIF()
 
 ENDIF()
 
