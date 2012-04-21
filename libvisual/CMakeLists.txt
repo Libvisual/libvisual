@@ -58,9 +58,9 @@ ENDIF()
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
 IF(IS_BIG_ENDIAN)
   SET(VISUAL_BIG_ENDIAN 1)
-ELSE(IS_BIG_ENDIAN)
+ELSE()
   SET(VISUAL_LITTLE_ENDIAN 1)
-ENDIF(IS_BIG_ENDIAN)
+ENDIF()
 
 # Check target platform
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -109,7 +109,7 @@ CHECK_FOR_GNU_C_VARARGS(LV_HAVE_GNU_C_VARARGS)
 INCLUDE(CheckStdCHeaders)
 IF(NOT STDC_HEADERS)
   MESSAGE(FATAL ERROR "Libvisual requires standard C library headers to build")
-ENDIF(NOT STDC_HEADERS)
+ENDIF()
 
 # TODO: Generate error when a required header is missing
 CHECK_INCLUDE_FILE(dirent.h     HAVE_DIRENT_H)
@@ -135,14 +135,14 @@ CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DL)
 IF(NOT HAVE_DL)
   IF(NOT VISUAL_OS_WIN32)
     MESSAGE(FATAL_ERROR "Libvisual requires dlfcn to build")
-  ENDIF(NOT VISUAL_OS_WIN32)
-ENDIF(NOT HAVE_DL)
+  ENDIF()
+ENDIF()
 
 # Check for standard math library
 CHECK_LIBRARY_EXISTS(m sqrt "" HAVE_STDC_MATH)
 IF(NOT HAVE_STDC_MATH)
   MESSAGE(FATAL_ERROR "Libvisual requires libm to build")
-ENDIF(NOT HAVE_STDC_MATH)
+ENDIF()
 SET(HAVE_SQRT 1)
 
 # Internationalization
@@ -152,7 +152,7 @@ IF(ENABLE_NLS)
   FIND_PACKAGE(Gettext REQUIRED)
   SET(HAVE_GETTEXT ${GETTEXT_FOUND})
   ADD_SUBDIRECTORY(po)
-ENDIF(ENABLE_NLS)
+ENDIF()
 
 # Check for thread implementation
 OPTION(ENABLE_THREADS "Turn on basic thread support" yes)
@@ -167,12 +167,12 @@ IF(ENABLE_THREADS)
       SET(VISUAL_THREAD_MODEL_POSIX yes)
     ELSEIF(CMAKE_USE_WIN32_THREADS_INIT)
       SET(VISUAL_THREAD_MODEL_WIN32 yes)
-    ENDIF(CMAKE_USE_PTHREADS_INIT)
-  ELSE(Threads_FOUND)
+    ENDIF()
+  ELSE()
     MESSAGE(WARNING "You do not have any supported thread implementation available. Libvisual will be built without thread support.")
     SET(ENABLE_THREADS no)
-  ENDIF(Threads_FOUND)
-ENDIF(ENABLE_THREADS)
+  ENDIF()
+ENDIF()
 
 # Check for type sizes
 CHECK_TYPE_SIZE(short  SIZEOF_SHORT)
@@ -191,9 +191,9 @@ ELSEIF(SIZEOF_SIZE_T EQUAL SIZEOF_INT)
 ELSEIF(SIZEOF_SIZE_T EQUAL SIZEOF_LONG)
   SET(VISUAL_SIZE_TYPE long)
   SET(VISUAL_SIZE_T_FORMAT "lu")
-ELSE(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
+ELSE()
   MESSAGE(FATAL_ERROR "No type matching size_t in size")
-ENDIF(SIZEOF_SIZE_T EQUAL SIZEOF_SHORT)
+ENDIF()
 MESSAGE(STATUS "Size of size_t is ${VISUAL_SIZE_TYPE}")
 
 # Build profiles
@@ -205,11 +205,11 @@ IF(ENABLE_EXTRA_OPTIMIZATIONS)
   SET(OPT_C_FLAGS "-O3 -fexpensive-optimizations")
 ELSEIF(CMAKE_BUILD_TYPE STREQUAL Debug)
   SET(OPT_C_FLAGS "-O0")
-ENDIF(ENABLE_EXTRA_OPTIMIZATIONS)
+ENDIF()
 
 IF(ENABLE_PROFILING)
   SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg")
-ENDIF(ENABLE_PROFILING)
+ENDIF()
 
 # Add -Werror to debug builds?
 SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused -Wmissing-prototypes")
@@ -227,7 +227,7 @@ IF(ENABLE_DOCS)
   IF(DOXYGEN_FOUND)
     IF(NOT DOXYGEN_DOT_FOUND)
       MESSAGE(WARNING "Graphviz Dot tool not found. API documentation will not have diagrams")
-    ENDIF(NOT DOXYGEN_DOT_FOUND)
+    ENDIF()
     CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile)
     # FIXME/TODO: Figure out how to generate the docs in the first make run
     ADD_CUSTOM_TARGET(docs
@@ -235,17 +235,17 @@ IF(ENABLE_DOCS)
       COMMENT "Generating API documentation.."
       VERBATIM
     )
-  ELSE(DOXYGEN_FOUND)
+  ELSE()
     MESSAGE(WARNING "Doxygen not found. No API documentation will be generated")
     SET(ENABLE_DOCS no)
-  ENDIF(DOXYGEN_FOUND)
-ENDIF(ENABLE_DOCS)
+  ENDIF()
+ENDIF()
 
 # Pedantic checks
 OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur)" no)
 IF(ENABLE_PEDANTIC_CHECKS)
   ADD_DEFINITIONS(-DVISUAL_PEDANTIC_CHECKS)
-ENDIF(ENABLE_PEDANTIC_CHECKS)
+ENDIF()
 
 # Tools
 OPTION(ENABLE_TOOLS "Build Libvisual tools" yes)
@@ -258,7 +258,7 @@ IF(ENABLE_TOOLS)
 
   ADD_SUBDIRECTORY(tools/lv-tool)
   ADD_SUBDIRECTORY(tools/benchmarks)
-ENDIF(ENABLE_TOOLS)
+ENDIF()
 
 # Generate pkg-config file
 SET(LV_PKG_CONFIG_NAME   "libvisual-${LV_VERSION_SUFFIX}")
