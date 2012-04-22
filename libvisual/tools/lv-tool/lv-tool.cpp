@@ -25,6 +25,7 @@
 #include "display/display.hpp"
 #include "display/display_driver_factory.hpp"
 #include <libvisual/libvisual.h>
+#include <string>
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
@@ -439,6 +440,8 @@ int main (int argc, char **argv)
 
                         // get new actor
                         actor = visual_bin_get_actor(bin);
+
+                        display.set_title(visual_actor_get_plugin(actor)->info->name);
 
                         // handle depth of new actor
                         depthflag = visual_actor_get_supported_depth(actor);

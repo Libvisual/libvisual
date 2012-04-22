@@ -201,7 +201,7 @@ int main (int argc, char *argv[])
 	int sysize = 700;
 	int interpol = VISUAL_VIDEO_SCALE_NEAREST;
         int frames = 0;
-	VisTime start, end;
+	//VisTime start, end;
 		
 	bpp = 4;
 	sdl_init (width, height);
@@ -225,7 +225,7 @@ int main (int argc, char *argv[])
 	if (argc > 2)
 		video = visual_bitmap_load_new_video (argv[2]);
 	else
-		video = visual_bitmap_load_new_video ("bg.bmp");
+		video = visual_bitmap_load_new_video ("images/bg.bmp");
 
 	actvid = visual_video_new ();
 	visual_actor_set_video (actor, actvid);
@@ -251,12 +251,12 @@ int main (int argc, char *argv[])
 	visual_video_set_pitch (sdlvid, screen->pitch);
 	visual_video_set_buffer (sdlvid, scrbuf);
 	
-	input = visual_input_new ("xmms2");
+	input = visual_input_new ("debug");
 	visual_input_realize (input);
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
         
-	visual_time_get (&start);
+	//visual_time_get (&start);
 	
 	while (1) {
 		visual_input_run (input);
@@ -382,8 +382,9 @@ int main (int argc, char *argv[])
 		}
 	}
 out:
-	visual_time_get (&end);
+	//visual_time_get (&end);
 	
+/*
 	VisTime diff;
 
 	visual_time_difference (&diff, &start, &end);
@@ -391,6 +392,7 @@ out:
 
 	printf ("Ran: %d:%d, drawn %d frames\n",
 			diff.tv_sec, diff.tv_usec, frames);
+*/
 
 	SDL_Quit ();
 }

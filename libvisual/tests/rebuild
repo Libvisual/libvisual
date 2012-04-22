@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc -o scale_test scale-test.c `pkg-config --libs --cflags libvisual-0.5 sdl`

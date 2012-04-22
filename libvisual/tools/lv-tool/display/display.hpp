@@ -53,6 +53,8 @@ public:
 
     VisVideo* get_video () const;
 
+    void set_title(std::string title);
+
     void set_fullscreen (bool fullscreen, bool autoscale);
 
     void drain_events (VisEventQueue& eventqueue);

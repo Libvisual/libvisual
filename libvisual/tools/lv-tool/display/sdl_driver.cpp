@@ -205,6 +205,11 @@ namespace {
           visual_video_set_buffer (screen, m_screen->pixels);
       }
 
+      virtual void set_title(std::string title)
+      {
+          SDL_WM_SetCaption (title.c_str(), NULL);
+      }
+
       virtual void update_rect (LV::Rect const& rect)
       {
           if (m_screen->format->BitsPerPixel == 8) {

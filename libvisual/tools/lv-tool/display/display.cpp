@@ -88,6 +88,11 @@ VisVideo* SADisplay::get_video () const
     return m_impl->screen;
 }
 
+void SADisplay::set_title(std::string title)
+{
+    m_impl->driver->set_title(title);
+}
+
 void SADisplay::lock ()
 {
     m_impl->driver->lock ();

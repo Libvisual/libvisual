@@ -25,6 +25,7 @@
 #include "display.hpp"
 #include "display_driver.hpp"
 #include <libvisual/libvisual.h>
+#include <string>
 #include <vector>
 #include <unistd.h>
 
@@ -93,6 +94,11 @@ namespace {
           visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
           visual_video_set_dimension (screen, m_width, m_height);
           visual_video_set_buffer (screen, &m_area[0]);
+      }
+
+      virtual void set_title(std::string title)
+      {
+          // nothing to do
       }
 
       virtual void update_rect (LV::Rect const& rect)
