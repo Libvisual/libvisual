@@ -1,0 +1,4 @@
+#!/bin/bash
+gcc -o scale-test scale-test.c `pkg-config --libs --cflags libvisual-0.5 sdl`
+g++ -o blit-rectangle-test blit-rectangle-test.cpp `pkg-config --libs --cflags libvisual-0.5 sdl`
+

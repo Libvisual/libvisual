@@ -1,6 +1,7 @@
 #ifndef _LV_TOOL_DISPLAY_DRIVER_HPP
 #define _LV_TOOL_DISPLAY_DRIVER_HPP
 
+#include <string>
 #include <libvisual/libvisual.h>
 
 class SADisplay;
@@ -17,6 +18,7 @@ public:
     virtual void update_rect (LV::Rect const& rect) = 0;
     virtual void drain_events (VisEventQueue& eventqueue) = 0;
     virtual void get_video (VisVideo* screen) = 0;
+    virtual void set_title(std::string title) = 0;
 
     virtual ~SADisplayDriver () {}
 };

@@ -20,6 +20,9 @@ VisVideo *scalevid;
 VisPalette *pal;
 VisInput *input;
 
+int n_tile_cols = 5;
+int n_tile_rows = 5;
+
 void sdl_fullscreen_toggle ();
 void sdl_fullscreen_xy (int *x, int *y);
 int sdl_fullscreen_set (int mode);
@@ -133,8 +136,51 @@ void sdl_size_request (int width, int height)
 	sdl_create (width, height);
 
 	free (scrbuf);
-	scrbuf = malloc (screen->pitch * screen->h);
+	scrbuf = (unsigned char*)malloc (screen->pitch * screen->h);
 	memset (scrbuf, 0, screen->pitch * screen->h);
+}
+
+void do_checkers(VisVideo *dest, VisVideo *src1, VisVideo *src2)
+{
+    static LV::Timer timer;
+    static char flip = -1;
+
+    if(flip == -1)
+    {
+        flip = 0;
+        timer.start();
+    }
+    if(timer.elapsed().to_msecs() > 300)
+    {
+        flip != flip;
+        timer.reset();
+        timer.start();
+    }
+
+    LV::Color black = LV::Color::black();
+    visual_video_fill_color(dest, &black);
+
+    unsigned int tile_width  = src1->width  / n_tile_cols;
+    unsigned int tile_height = src1->height / n_tile_rows;
+
+    LV::Rect subregion(0, 0, tile_width, tile_height);
+
+    VisVideo *sub = visual_video_new_with_buffer (tile_width, tile_height, dest->depth);
+
+    for(unsigned int row = 0, y = 0; y < (unsigned int)src1->height; row++, y += tile_height)
+    {
+        for(unsigned int col = 0, x = 0; x < (unsigned int)src2->width; col++, x += tile_width)
+        {
+            VisVideo* src = (row + col + flip) & 1 ? src1 : src2;
+            LV::Rect region(x, y, tile_width, tile_height);
+            visual_video_region_sub(sub, src, &region);
+            visual_video_blit_overlay_rectangle(dest, &region, sub, &subregion, FALSE);
+        }
+    }
+
+    visual_object_unref(VISUAL_OBJECT(sub));
+    
+
 }
 
 void sdl_init (int width, int height)
@@ -170,7 +216,7 @@ void sdl_draw_buf ()
 void do_alpha (VisVideo *vid, uint8_t rate)
 {
 	int i;
-	uint32_t *ptr = visual_video_get_pixels(vid); //vid->pixels;
+	uint32_t *ptr = (uint32_t *)visual_video_get_pixels(vid); //vid->pixels;
 	union {
 		uint32_t c32;
 		uint8_t c8[4];
@@ -199,14 +245,14 @@ int main (int argc, char *argv[])
 	int xoff = 0, yoff = -90;
 	int sxsize = 1000;
 	int sysize = 700;
-	int interpol = VISUAL_VIDEO_SCALE_NEAREST;
-        int frames = 0;
+	VisVideoScaleMethod interpol = VISUAL_VIDEO_SCALE_NEAREST;
+    int frames = 0;
 	//VisTime start, end;
 		
 	bpp = 4;
 	sdl_init (width, height);
 
-	scrbuf = malloc (screen->pitch * screen->h);
+	scrbuf = (unsigned char *)malloc (screen->pitch * screen->h);
 	memset (scrbuf, 0, screen->pitch * screen->h);
 
 	SDL_Event event;
@@ -233,7 +279,7 @@ int main (int argc, char *argv[])
 	visual_video_set_dimension (actvid, width, height);
 	visual_video_allocate_buffer (actvid);
 
-	visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
+	visual_actor_video_negotiate (actor, VISUAL_VIDEO_DEPTH_NONE, FALSE, FALSE);
 
 	video32 = visual_video_new ();
 	visual_video_set_depth (video32, VISUAL_VIDEO_DEPTH_32BIT);
@@ -291,6 +337,8 @@ int main (int argc, char *argv[])
 		
 		visual_video_blit_overlay (sdlvid, actvid, 0, 0, FALSE);
 		visual_video_blit_overlay (sdlvid, scalevid, xoff, yoff, TRUE);
+
+        //do_checkers(sdlvid, actvid, scalevid);
 
 		sdl_draw_buf ();
 		frames++;
