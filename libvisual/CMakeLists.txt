@@ -247,21 +247,19 @@ IF(ENABLE_PEDANTIC_CHECKS)
   ADD_DEFINITIONS(-DVISUAL_PEDANTIC_CHECKS)
 ENDIF()
 
-# Build version
-EXECUTE_PROCESS(
-  COMMAND git describe --always --dirty
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  OUTPUT_VARIABLE LV_REVISION
-  ERROR_QUIET
+# Git revision
+FIND_PACKAGE(Git)
+CONFIGURE_FILE(
+  "${PROJECT_SOURCE_DIR}/update-version.sh.in"
+  "${PROJECT_BINARY_DIR}/update-version.sh"
+  @ONLY
+)
+ADD_CUSTOM_TARGET(update-version ALL
+  COMMAND /bin/sh ${PROJECT_BINARY_DIR}/update-version.sh
 )
 
-IF(NOT LV_REVISION)
-  SET(LV_REVISION "unknown")
-ENDIF()
-
 # Tools
-OPTION(ENABLE_TOOLS "Build Libvisual tools" yes)
+OPTION(ENABLE_TOOLS "Biuld Libvisual tools" yes)
 IF(ENABLE_TOOLS)
   FIND_PACKAGE(SDL)
   FIND_PACKAGE(OpenGL)
@@ -284,7 +282,6 @@ INSTALL(FILES ${PROJECT_BINARY_DIR}/${LV_PKG_CONFIG_NAME}.pc DESTINATION ${CMAKE
 # Generate config headers
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_BINARY_DIR}/config.h)
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libvisual/lvconfig.h.in ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h)
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/version.h.in ${PROJECT_BINARY_DIR}/version.h)
 
 # Build libvisual
 ADD_SUBDIRECTORY(libvisual)

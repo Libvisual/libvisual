@@ -1,0 +1,21 @@
+#!/bin/sh
+
+GIT="@GIT_EXECUTABLE@"
+
+SOURCE_DIR="@PROJECT_SOURCE_DIR@"
+BINARY_DIR="@PROJECT_BINARY_DIR@"
+
+INPUT_HEADER="$SOURCE_DIR/version.h.in"
+OUTPUT_HEADER="$BINARY_DIR/version.h"
+
+cd $SOURCE_DIR
+
+REVISION=$($GIT describe --always --dirty 2>/dev/null)
+[ -z "$REVISION" ] && REVISION="unknown"
+
+if [ -z "$(grep $REVISION $OUTPUT_HEADER 2>/dev/null)" ]; then
+    echo "Generating version.h"
+    sed -e "s/\@LV_REVISION\@/$REVISION/g" < $INPUT_HEADER > $OUTPUT_HEADER
+fi
+
+exit 0
