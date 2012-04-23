@@ -211,11 +211,10 @@ IF(ENABLE_PROFILING)
   SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg")
 ENDIF()
 
-# Add -Werror to debug builds?
 SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused -Wmissing-prototypes")
 SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c++98 -Wall -Wunused -Wno-variadic-macros")
-SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
-SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
+SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Werror")
+SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Werror")
 
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
