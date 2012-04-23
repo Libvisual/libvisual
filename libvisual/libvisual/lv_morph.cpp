@@ -35,12 +35,6 @@ namespace {
       return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
   }
 
-  inline LV::PluginRef const*
-  find_morph_plugin (std::string const& name)
-  {
-      return LV::PluginRegistry::instance()->find_plugin (VISUAL_PLUGIN_TYPE_MORPH, name);
-  }
-
 } // anonymous namespace
 
 static int morph_dtor (VisObject *object);
