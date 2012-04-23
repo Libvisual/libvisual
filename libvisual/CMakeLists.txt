@@ -259,7 +259,7 @@ ADD_CUSTOM_TARGET(update-version ALL
 )
 
 # Tools
-OPTION(ENABLE_TOOLS "Biuld Libvisual tools" yes)
+OPTION(ENABLE_TOOLS "Build Libvisual tools" yes)
 IF(ENABLE_TOOLS)
   FIND_PACKAGE(SDL)
   FIND_PACKAGE(OpenGL)
