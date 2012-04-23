@@ -13,7 +13,6 @@ SET(morph_flash_SOURCES
 )
 
 ADD_LIBRARY(morph_flash MODULE ${morph_flash_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(morph_flash
   ${LIBVISUAL_LIBRARIES}

@@ -13,7 +13,6 @@ SET(actor_lv_scope_SOURCES
 )
 
 ADD_LIBRARY(actor_lv_scope MODULE ${actor_lv_scope_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_lv_scope
   ${LIBVISUAL_LIBRARIES}

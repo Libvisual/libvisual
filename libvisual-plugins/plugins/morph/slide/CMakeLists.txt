@@ -17,7 +17,6 @@ ADD_LIBRARY(morph_slide_left  MODULE ${morph_slide_left_SOURCES})
 ADD_LIBRARY(morph_slide_right MODULE ${morph_slide_right_SOURCES})
 ADD_LIBRARY(morph_slide_up    MODULE ${morph_slide_up_SOURCES})
 ADD_LIBRARY(morph_slide_down  MODULE ${morph_slide_down_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(morph_slide_left  ${LIBVISUAL_LIBRARIES})
 TARGET_LINK_LIBRARIES(morph_slide_right ${LIBVISUAL_LIBRARIES})

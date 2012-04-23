@@ -13,7 +13,6 @@ SET(morph_checkers_SOURCES
 )
 
 ADD_LIBRARY(morph_checkers MODULE ${morph_checkers_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(morph_checkers
   ${LIBVISUAL_LIBRARIES}

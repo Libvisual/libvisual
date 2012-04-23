@@ -18,7 +18,6 @@ SET(actor_jakdaw_SOURCES
 )
 
 ADD_LIBRARY(actor_jakdaw MODULE ${actor_jakdaw_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_jakdaw
   ${LIBVISUAL_LIBRARIES}

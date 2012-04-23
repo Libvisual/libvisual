@@ -31,7 +31,6 @@ SET(actor_jess_SOURCES
 )
 
 ADD_LIBRARY(actor_jess MODULE ${actor_jess_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_jess
   ${LIBVISUAL_LIBRARIES}

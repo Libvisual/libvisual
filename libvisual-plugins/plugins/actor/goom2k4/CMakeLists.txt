@@ -61,7 +61,6 @@ LIST(APPEND actor_goom2k4_SOURCES
 )
 
 ADD_LIBRARY(actor_goom2k4 MODULE ${actor_goom2k4_SOURCES})
-#-avoid-version
 
 SET_TARGET_PROPERTIES(actor_goom2k4
   PROPERTIES COMPILE_FLAGS "-Wno-missing-braces"   # Needed to kill massive warnings with *motif.h

@@ -13,7 +13,6 @@ SET(morph_tentacle_SOURCES
 )
 
 ADD_LIBRARY(morph_tentacle MODULE ${morph_tentacle_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(morph_tentacle
   ${LIBVISUAL_LIBRARIES}

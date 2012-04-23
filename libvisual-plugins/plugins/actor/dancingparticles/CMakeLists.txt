@@ -30,7 +30,6 @@ SET(actor_dancingparticles_SCRIPTS
 )
 
 ADD_LIBRARY(actor_dancingparticles MODULE ${actor_dancingparticles_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_dancingparticles
   ${LIBVISUAL_LIBRARIES}

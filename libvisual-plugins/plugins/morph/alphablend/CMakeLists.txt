@@ -13,7 +13,6 @@ SET(morph_alphablend_SOURCES
 )
 
 ADD_LIBRARY(morph_alphablend MODULE ${morph_alphablend_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(morph_alphablend
   ${LIBVISUAL_LIBRARIES}

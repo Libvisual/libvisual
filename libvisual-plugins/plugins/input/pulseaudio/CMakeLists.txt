@@ -15,7 +15,6 @@ SET(input_pulseaudio_SOURCES
 )
 
 ADD_LIBRARY(input_pulseaudio MODULE ${input_pulseaudio_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(input_pulseaudio
   ${LIBVISUAL_LIBRARIES}

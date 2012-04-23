@@ -13,7 +13,6 @@ SET(input_wavein_SOURCES
 )
 
 ADD_LIBRARY(input_wavein MODULE ${input_wavein_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(input_wavein
   ${LIBVISUAL_LIBRARIES}

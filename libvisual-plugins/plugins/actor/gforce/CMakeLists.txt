@@ -12,5 +12,3 @@ ADD_SUBDIRECTORY(GForceWaveShapes)
 #ADD_SUBDIRECTORY(NotWorkingWaveShapes)
 ADD_SUBDIRECTORY(unix)
 ADD_SUBDIRECTORY(docs)
-
-#EXTRA_DIST = deffont

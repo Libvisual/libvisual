@@ -15,7 +15,6 @@ SET(input_jack_SOURCES
 )
 
 ADD_LIBRARY(input_jack MODULE ${input_jack_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(input_jack
   ${LIBVISUAL_LIBRARIES}

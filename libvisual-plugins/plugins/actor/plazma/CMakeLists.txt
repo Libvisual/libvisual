@@ -14,7 +14,6 @@ SET(actor_plazma_SOURCES
 )
 
 ADD_LIBRARY(actor_plazma MODULE ${actor_plazma_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_plazma
   ${LIBVISUAL_LIBRARIES}

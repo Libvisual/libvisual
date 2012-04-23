@@ -18,7 +18,6 @@ SET(actor_flower_SOURCES
 )
 
 ADD_LIBRARY(actor_flower MODULE ${actor_flower_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_flower
   ${LIBVISUAL_LIBRARIES}

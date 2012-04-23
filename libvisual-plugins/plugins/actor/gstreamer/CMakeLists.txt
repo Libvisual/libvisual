@@ -15,7 +15,6 @@ SET(actor_gstreamer_SOURCES
 )
 
 ADD_LIBRARY(actor_gstreamer MODULE ${actor_gstreamer_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_gstreamer
   ${LIBVISUAL_LIBRARIES}

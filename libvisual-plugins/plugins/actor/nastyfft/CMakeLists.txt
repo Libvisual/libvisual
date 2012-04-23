@@ -14,7 +14,6 @@ SET(actor_nastyfft_SOURCES
 )
 
 ADD_LIBRARY(actor_nastyfft MODULE ${actor_nastyfft_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_nastyfft
   ${LIBVISUAL_LIBRARIES}

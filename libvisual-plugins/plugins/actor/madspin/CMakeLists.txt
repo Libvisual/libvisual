@@ -24,7 +24,6 @@ SET(actor_madspin_IMAGES
 )
 
 ADD_LIBRARY(actor_madspin MODULE ${actor_madspin_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_madspin
   ${LIBVISUAL_LIBRARIES}

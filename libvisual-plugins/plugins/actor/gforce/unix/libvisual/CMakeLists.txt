@@ -21,7 +21,6 @@ SET(actor_gforce_SOURCES
 )
 
 ADD_LIBRARY(actor_gforce MODULE ${actor_gforce_SOURCES})
-#-avoid-version
 
 SET_TARGET_PROPERTIES(actor_gforce
   PROPERTIES COMPILE_FLAGS ${GFORCE_COMPILE_FLAGS}

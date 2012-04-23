@@ -33,7 +33,6 @@ SET(actor_nebulus_SOURCES
 FILE(GLOB actor_nebulus_IMAGES "*.bmp")
 
 ADD_LIBRARY(actor_nebulus MODULE ${actor_nebulus_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_nebulus
   ${LIBVISUAL_LIBRARIES}

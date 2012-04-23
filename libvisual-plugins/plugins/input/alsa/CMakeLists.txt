@@ -14,7 +14,6 @@ SET(input_alsa_SOURCES
 )
 
 ADD_LIBRARY(input_alsa MODULE ${input_alsa_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(input_alsa
   ${LIBVISUAL_LIBRARIES}

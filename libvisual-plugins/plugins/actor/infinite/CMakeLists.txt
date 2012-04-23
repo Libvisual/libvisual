@@ -21,7 +21,6 @@ SET(actor_infinite_SOURCES
 )
 
 ADD_LIBRARY(actor_infinite MODULE ${actor_infinite_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_infinite
   ${LIBVISUAL_LIBRARIES}

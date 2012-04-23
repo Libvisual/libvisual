@@ -43,7 +43,6 @@ SET(actor_oinksie_SOURCES
 )
 
 ADD_LIBRARY(actor_oinksie MODULE ${actor_oinksie_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_oinksie
   ${LIBVISUAL_LIBRARIES}

@@ -36,7 +36,6 @@ SET(actor_blursk_SOURCES
 )
 
 ADD_LIBRARY(actor_blursk MODULE ${actor_blursk_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_blursk
   ${LIBVISUAL_LIBRARIES}

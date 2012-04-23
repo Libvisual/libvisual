@@ -13,7 +13,6 @@ SET(actor_lv_analyzer_SOURCES
 )
 
 ADD_LIBRARY(actor_lv_analyzer MODULE ${actor_lv_analyzer_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_lv_analyzer
   ${LIBVISUAL_LIBRARIES}

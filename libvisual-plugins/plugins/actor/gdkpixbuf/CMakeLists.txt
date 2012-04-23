@@ -15,7 +15,6 @@ SET(actor_gdkpixbuf_SOURCES
 )
 
 ADD_LIBRARY(actor_gdkpixbuf MODULE ${actor_gdkpixbuf_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_gdkpixbuf
   ${LIBVISUAL_LIBRARIES}

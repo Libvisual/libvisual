@@ -16,7 +16,6 @@ SET(actor_bumpscope_SOURCES
 )
 
 ADD_LIBRARY(actor_bumpscope MODULE ${actor_bumpscope_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_bumpscope
   ${LIBVISUAL_LIBRARIES}

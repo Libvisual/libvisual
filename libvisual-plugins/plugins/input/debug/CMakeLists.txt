@@ -13,7 +13,6 @@ SET(input_debug_SOURCES
 )
 
 ADD_LIBRARY(input_debug MODULE ${input_debug_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(input_debug
   ${LIBVISUAL_LIBRARIES}

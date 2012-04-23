@@ -16,7 +16,6 @@ SET(input_mplayer_SOURCES
 )
 
 ADD_LIBRARY(input_mplayer MODULE ${input_mplayer_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(input_mplayer
   ${LIBVISUAL_LIBRARIES}

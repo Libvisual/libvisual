@@ -19,7 +19,6 @@ SET(actor_corona_SOURCES
 )
 
 ADD_LIBRARY(actor_corona MODULE ${actor_corona_SOURCES})
-#-avoid-version
 
 TARGET_LINK_LIBRARIES(actor_corona
   ${LIBVISUAL_LIBRARIES}
