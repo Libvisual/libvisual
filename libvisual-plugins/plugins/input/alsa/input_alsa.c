@@ -26,10 +26,6 @@
 #include "gettext.h"
 
 #include <libvisual/libvisual.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 
 #include <alsa/version.h>
 #if (SND_LIB_MAJOR == 0 && SND_LIB_MINOR == 9)
