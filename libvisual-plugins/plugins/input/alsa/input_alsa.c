@@ -101,7 +101,7 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	if ((err = snd_pcm_open(&priv->chandle, visual_strdup(inp_alsa_var_cdevice),
+	if ((err = snd_pcm_open(&priv->chandle, inp_alsa_var_cdevice,
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
 		visual_log(VISUAL_LOG_ERROR,
 			    "Record open error: %s", snd_strerror(err));
