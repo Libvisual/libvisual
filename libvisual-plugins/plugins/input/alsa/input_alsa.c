@@ -104,7 +104,7 @@ int inp_alsa_init (VisPluginData *plugin)
 	if ((err = snd_pcm_open(&priv->chandle, visual_strdup(inp_alsa_var_cdevice),
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
 		visual_log(VISUAL_LOG_ERROR,
-			    _("Record open error: %s"), snd_strerror(err));
+			    "Record open error: %s", snd_strerror(err));
 		return -1;
 	}
 
@@ -113,7 +113,7 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_any(priv->chandle, hwparams) < 0) {
 		visual_log(VISUAL_LOG_ERROR,
-			   _("Cannot configure this PCM device"));
+			   "Cannot configure this PCM device");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -141,21 +141,21 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_set_rate_near(priv->chandle, hwparams,
 					    &exact_rate, &dir) < 0) {
-		visual_log(VISUAL_LOG_ERROR, _("Error setting rate"));
+		visual_log(VISUAL_LOG_ERROR, "Error setting rate");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 	if (exact_rate != rate) {
 		visual_log(VISUAL_LOG_INFO,
-			   _("The rate %d Hz is not supported by your " \
+			   "The rate %d Hz is not supported by your " \
 			   "hardware.\n" \
-			   "==> Using %d Hz instead"), rate, exact_rate);
+			   "==> Using %d Hz instead", rate, exact_rate);
 	}
 	rate = exact_rate;
 
 	if (snd_pcm_hw_params_set_channels(priv->chandle, hwparams,
 					   inp_alsa_var_channels) < 0) {
-	        visual_log(VISUAL_LOG_ERROR, _("Error setting channels"));
+	        visual_log(VISUAL_LOG_ERROR, "Error setting channels");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -164,27 +164,27 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	tmp = 1000000;
 	if (snd_pcm_hw_params_set_period_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
-		visual_log(VISUAL_LOG_ERROR, _("Error setting period time"));
+		visual_log(VISUAL_LOG_ERROR, "Error setting period time");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	tmp = 1000000*4;
 	if (snd_pcm_hw_params_set_buffer_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
-		visual_log(VISUAL_LOG_ERROR, _("Error setting buffer time"));
+		visual_log(VISUAL_LOG_ERROR, "Error setting buffer time");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 
 	if (snd_pcm_hw_params(priv->chandle, hwparams) < 0) {
-		visual_log(VISUAL_LOG_ERROR, _("Error setting HW params"));
+		visual_log(VISUAL_LOG_ERROR, "Error setting HW params");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
 	if (snd_pcm_prepare(priv->chandle) < 0) {
-		visual_log(VISUAL_LOG_ERROR, _("Failed to prepare interface"));
+		visual_log(VISUAL_LOG_ERROR, "Failed to prepare interface");
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
@@ -250,11 +250,11 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 
 		if (rcnt < 0) {
 			if (rcnt == -EPIPE) {
-				visual_log(VISUAL_LOG_WARNING, _("ALSA: Buffer Overrun"));
+				visual_log(VISUAL_LOG_WARNING, "ALSA: Buffer Overrun");
 
 				if (snd_pcm_prepare(priv->chandle) < 0) {
 					visual_log(VISUAL_LOG_ERROR,
-							_("Failed to prepare interface"));
+							"Failed to prepare interface");
 					return(-1);
 				}
 			}
