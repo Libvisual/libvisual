@@ -87,7 +87,7 @@ int inp_alsa_init (VisPluginData *plugin)
 	unsigned int rate = inp_alsa_var_samplerate;
 	unsigned int exact_rate;
 	unsigned int tmp;
-	int dir;
+	int dir = 0;
 	int err;
 
 #if ENABLE_NLS
