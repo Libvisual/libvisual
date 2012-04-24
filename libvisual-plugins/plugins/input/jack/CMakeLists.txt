@@ -11,7 +11,7 @@ LINK_DIRECTORIES(
 )
 
 SET(input_jack_SOURCES
-  input_jack.c
+  input_jack.cpp
 )
 
 ADD_LIBRARY(input_jack MODULE ${input_jack_SOURCES})
