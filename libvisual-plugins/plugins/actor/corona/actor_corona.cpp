@@ -23,22 +23,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
-#include <time.h>
-#include <sys/time.h>
-
-#include <libvisual/libvisual.h>
-
+#include "config.h"
+#include "gettext.h"
 #include "corona.h"
 #include "palette.h"
+#include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 

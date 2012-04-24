@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by yodor   *
- *   yodor@developer.bg   *
+ *   Copyright (C) 2005 by yodor                                           *
+ *   yodor@developer.bg                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,20 +18,12 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <config.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
+#include "config.h"
+#include "gettext.h"
+#include <libvisual/libvisual.h>
 #include <math.h>
-
 #include <GL/gl.h>
 #include <GL/glu.h>
-
-#include <gettext.h>
-
-#include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -83,10 +75,10 @@ const VisPluginInfo *get_plugin_info (void)
 	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-		.plugname = N_("nastyfft"),
+		.plugname = "nastyfft",
 		.name = N_("Libvisual NastyFFT plugin"),
-		.author = N_("yodor <yodor@developer.bg>"),
-		.version = N_("0.5"),
+		.author = "yodor <yodor@developer.bg>",
+		.version = "0.5",
 		.about = N_("The Libvisual NastyFFT plugin"),
 		.help = N_("This plugin shows nasty fft visualization effect using OpenGL"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,

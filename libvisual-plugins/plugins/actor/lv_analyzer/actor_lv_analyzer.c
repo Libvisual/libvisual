@@ -4,8 +4,6 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_lv_analyzer.c,v 1.28 2006/01/27 20:19:16 synap Exp $
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1
@@ -21,15 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-#include <limits.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
@@ -74,7 +65,7 @@ const VisPluginInfo *get_plugin_info (void)
 
 		.plugname = "lv_analyzer",
 		.name = "libvisual analyzer",
-		.author = N_("Dennis Smit <ds@nerds-incorporated.org>"),
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "1.0",
 		.about = N_("Libvisual analyzer plugin"),
 		.help = N_("A nice simple spectrum analyzer plugin."),

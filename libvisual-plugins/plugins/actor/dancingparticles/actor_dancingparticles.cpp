@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_dancingparticles.cpp,v 1.12 2006-09-19 18:41:41 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,13 +20,12 @@
  */
 
 #include "config.h"
+#include "gettext.h"
 #include "actor_dancingparticles.h"
 #include "gl.h"
 #include "fastmath.h"
 #include "etoile.h"
-
 #include <cmath>
-#include <gettext.h>
 #include <GL/gl.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
@@ -37,13 +34,17 @@ unsigned int fast_sqrt_table[0x10000];
 int titleHasChanged = 0;
 const char *curtitle = "Moeders";
 
-extern "C" int lv_dancingparticles_init (VisPluginData *plugin);
-extern "C" int lv_dancingparticles_cleanup (VisPluginData *plugin);
-extern "C" int lv_dancingparticles_requisition (VisPluginData *plugin, int *width, int *height);
-extern "C" int lv_dancingparticles_resize (VisPluginData *plugin, int width, int height);
-extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events);
-extern "C" VisPalette *lv_dancingparticles_palette (VisPluginData *plugin);
-extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+namespace {
+
+    int lv_dancingparticles_init (VisPluginData *plugin);
+    int lv_dancingparticles_cleanup (VisPluginData *plugin);
+    int lv_dancingparticles_requisition (VisPluginData *plugin, int *width, int *height);
+    int lv_dancingparticles_resize (VisPluginData *plugin, int width, int height);
+    int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events);
+    VisPalette *lv_dancingparticles_palette (VisPluginData *plugin);
+    int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+
+}
 
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info ()
@@ -82,7 +83,9 @@ const VisPluginInfo *get_plugin_info ()
 	return &info;
 }
 
-extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
+namespace {
+
+int lv_dancingparticles_init (VisPluginData *plugin)
 {
 	DancingParticlesPrivate *priv;
 	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
@@ -108,7 +111,7 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 	return 0;
 }
 
-extern "C" int lv_dancingparticles_cleanup (VisPluginData *plugin)
+int lv_dancingparticles_cleanup (VisPluginData *plugin)
 {
 	DancingParticlesPrivate *priv = static_cast<DancingParticlesPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
 
@@ -117,7 +120,7 @@ extern "C" int lv_dancingparticles_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-extern "C" int lv_dancingparticles_requisition (VisPluginData *plugin, int *width, int *height)
+int lv_dancingparticles_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -136,7 +139,7 @@ extern "C" int lv_dancingparticles_requisition (VisPluginData *plugin, int *widt
 	return 0;
 }
 
-extern "C" int lv_dancingparticles_resize (VisPluginData *plugin, int width, int height)
+int lv_dancingparticles_resize (VisPluginData *plugin, int width, int height)
 {
 	glViewport(0, 0, width, height);
 
@@ -145,7 +148,7 @@ extern "C" int lv_dancingparticles_resize (VisPluginData *plugin, int width, int
 	return 0;
 }
 
-extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events)
+int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
@@ -177,12 +180,12 @@ extern "C" int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue 
 	return 0;
 }
 
-extern "C" VisPalette *lv_dancingparticles_palette (VisPluginData *plugin)
+VisPalette *lv_dancingparticles_palette (VisPluginData *plugin)
 {
 	return 0;
 }
 
-extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	VisBuffer fbuf;
 	float freq[3][256];
@@ -205,3 +208,4 @@ extern "C" int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *vide
 	return 0;
 }
 
+} // anonymous namespace

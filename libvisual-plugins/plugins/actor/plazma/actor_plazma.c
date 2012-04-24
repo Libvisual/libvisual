@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_plazma.c,v 1.21 2006-09-20 19:28:29 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,19 +19,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
-#include <libvisual/libvisual.h>
-
-#include "plazma.h"
+#include "config.h"
+#include "gettext.h"
 #include "actor_plazma.h"
+#include "plazma.h"
+#include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -59,10 +49,10 @@ const VisPluginInfo *get_plugin_info (void)
 
 		.plugname = "plazma",
 		.name = "Plazma plugin",
-		.author = ("Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.author = N_("Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.0.1",
-		.about = ("Libvisual Plazma visual plugin"),
-		.help = ("This is the libvisual port of the xmms Plazma plugin"),
+		.about = N_("Libvisual Plazma visual plugin"),
+		.help = N_("This is the libvisual port of the xmms Plazma plugin"),
 		.license = VISUAL_PLUGIN_LICENSE_GPL,
 
 		.init = act_plazma_init,

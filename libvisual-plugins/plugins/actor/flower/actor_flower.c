@@ -1,11 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Antti Silvast <asilvast@iki.fi>
  *
  * Authors: Antti Silvast <asilvast@iki.fi>
- *	    Dennis Smit <ds@nerds-incorporated.org>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_flower.c,v 1.11 2006/02/25 18:45:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,34 +21,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <math.h>
-#include <gettext.h>
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-
-#include <libvisual/libvisual.h>
-
+#include "config.h"
+#include "gettext.h"
 #include "main.h"
 #include "notch.h"
+#include <libvisual/libvisual.h>
+#include <math.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define NOTCH_BANDS	32
 
 typedef struct {
-	VisTimer		*t;
-	FlowerInternal		 flower;
-	int			 nof_bands;
-	NOTCH_FILTER		*notch[NOTCH_BANDS];
-	VisRandomContext	*rcxt;
+	VisTimer         *t;
+	FlowerInternal    flower;
+	int               nof_bands;
+	NOTCH_FILTER     *notch[NOTCH_BANDS];
+	VisRandomContext *rcxt;
 } FlowerPrivate;
 
 static int lv_flower_init (VisPluginData *plugin);
@@ -299,4 +289,3 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 
 	return 0;
 }
-
