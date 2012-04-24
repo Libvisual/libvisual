@@ -176,6 +176,10 @@ namespace {
   {
       visual_return_val_if_fail (plugin != NULL, -1);
 
+#if ENABLE_NLS
+      bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
       if (!check_available_devices ()) {
           visual_log (VISUAL_LOG_ERROR, "No input device can be found!");
           return -1;

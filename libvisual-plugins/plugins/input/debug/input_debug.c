@@ -86,6 +86,10 @@ static int inp_debug_init (VisPluginData *plugin)
 		VISUAL_PARAM_LIST_END
 	};
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
 	priv = visual_mem_new0 (DebugPriv, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 

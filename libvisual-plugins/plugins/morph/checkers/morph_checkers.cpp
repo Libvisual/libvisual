@@ -51,6 +51,10 @@ const VisPluginInfo *get_plugin_info (void)
 namespace {
 int lv_morph_checkers_init (VisPluginData *plugin)
 {
+#if ENABLE_NLS
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
     CheckerPrivate *priv = new CheckerPrivate;
     visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 

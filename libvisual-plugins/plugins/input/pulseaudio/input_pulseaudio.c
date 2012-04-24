@@ -71,6 +71,10 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
 
     VisParamContainer *paramcontainer = visual_plugin_get_params(plugin);
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
     priv = visual_mem_new0(pulseaudio_priv_t, 1);
 
     visual_object_set_private(VISUAL_OBJECT(plugin), priv);

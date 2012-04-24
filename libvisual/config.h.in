@@ -11,9 +11,9 @@
 
 #cmakedefine ENABLE_NLS        1
 #cmakedefine GETTEXT_PACKAGE   "@GETTEXT_PACKAGE@"
+#cmakedefine LOCALE_DIR        "@LOCALE_DIR@"
 #cmakedefine HAVE_GETTEXT      1
 #cmakedefine HAVE_ICONV        1
-#cmakedefine LOCALE_DIR        "@CMAKE_INSTALL_FULL_LOCALEDIR@"
 #cmakedefine HAVE_SDL          1
 #cmakedefine HAVE_GL           1
 

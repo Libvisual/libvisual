@@ -89,6 +89,13 @@ CHECK_FUNCTION_EXISTS(mremap HAVE_MREMAP)
 
 # Internationalization
 SET(GETTEXT_PACKAGE "libvisual-plugins-${LV_PLUGINS_VERSION_SUFFIX}")
+OPTION(ENABLE_NLS "Enable internationalization" yes)
+IF(ENABLE_NLS)
+  FIND_PACKAGE(Gettext REQUIRED)
+  SET(HAVE_GETTEXT ${GETTEXT_FOUND})
+  SET(LOCALE_DIR ${CMAKE_INSTALL_FULL_LOCALEDIR})
+  ADD_SUBDIRECTORY(po)
+ENDIF()
 
 # Check for system architecture
 

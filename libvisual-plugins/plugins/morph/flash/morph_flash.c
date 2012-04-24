@@ -83,6 +83,10 @@ static int lv_morph_flash_init (VisPluginData *plugin)
 	FlashPrivate *priv;
     VisColor *whitepal_colors;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
 	priv = visual_mem_new0 (FlashPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 

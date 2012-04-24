@@ -89,7 +89,7 @@ namespace {
   int inp_jack_init (VisPluginData* plugin)
   {
 #if ENABLE_NLS
-      bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+      bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
       visual_return_val_if_fail (plugin != NULL, -1);

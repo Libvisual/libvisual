@@ -8,6 +8,10 @@ int lv_morph_slide_init (VisPluginData *plugin, SlideType type)
 
     priv->slide_type = type;
 
+#if ENABLE_NLS
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
     return 0;
 }
 

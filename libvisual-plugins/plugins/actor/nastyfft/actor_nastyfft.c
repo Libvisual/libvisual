@@ -111,7 +111,7 @@ static int lv_nastyfft_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv->cam_y=-1.0f;

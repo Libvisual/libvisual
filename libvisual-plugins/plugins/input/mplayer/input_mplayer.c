@@ -110,7 +110,7 @@ static int inp_mplayer_init( VisPluginData *plugin )
 	mplayer_priv_t *priv = NULL;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0(mplayer_priv_t, 1);

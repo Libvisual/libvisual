@@ -66,6 +66,10 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int lv_morph_alpha_init (VisPluginData *plugin)
 {
+#if ENABLE_NLS
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
 	return 0;
 }
 

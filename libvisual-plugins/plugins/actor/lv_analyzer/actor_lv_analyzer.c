@@ -89,9 +89,8 @@ static int _bars(VisPluginData *plugin)
 
 static int lv_analyzer_init (VisPluginData *plugin)
 {
-
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	AnalyzerPrivate *priv = visual_mem_new0 (AnalyzerPrivate, 1);

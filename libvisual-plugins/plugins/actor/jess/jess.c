@@ -84,7 +84,7 @@ static int act_jess_init (VisPluginData *plugin)
 	visual_return_val_if_fail (plugin != NULL, -1);
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (JessPrivate, 1);

@@ -109,7 +109,7 @@ static int lv_gltest_init (VisPluginData *plugin)
 	int x, y;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (GLtestPrivate, 1);

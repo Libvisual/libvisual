@@ -81,7 +81,7 @@ static int act_bumpscope_init (VisPluginData *plugin)
 	};
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (BumpscopePrivate, 1);

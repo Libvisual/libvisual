@@ -36,7 +36,6 @@
 #include "lv_cpu.h"
 #include "lv_util.h"
 
-
 #include "gettext.h"
 
 extern "C" {
@@ -132,7 +131,7 @@ namespace LV
       visual_log (VISUAL_LOG_INFO, "Starting Libvisual %s", get_version ().c_str ());
 
 #if ENABLE_NLS
-      bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+      bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
       bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 #endif
 

@@ -116,7 +116,7 @@ int lv_corona_init (VisPluginData *plugin)
 	CoronaPrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = new CoronaPrivate;

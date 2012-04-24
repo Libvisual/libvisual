@@ -84,6 +84,10 @@ static int lv_morph_tentacle_init (VisPluginData *plugin)
 {
 	TentaclePrivate *priv;
 
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
 	priv = visual_mem_new0 (TentaclePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 

@@ -112,7 +112,7 @@ static int act_oinksie_init (VisPluginData *plugin)
 	/* FIXME: add UI to access the acid palette parameter */
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (OinksiePrivContainer, 1);

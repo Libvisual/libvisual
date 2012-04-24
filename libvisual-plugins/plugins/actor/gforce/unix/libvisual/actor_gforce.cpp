@@ -92,10 +92,6 @@ int lv_gforce_init (VisPluginData *plugin)
 	GForcePrivate *priv;
 	Rect r;
 
-#if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
-#endif
-
 	priv = new GForcePrivate;
 	visual_mem_set (priv, 0, sizeof (GForcePrivate));
 

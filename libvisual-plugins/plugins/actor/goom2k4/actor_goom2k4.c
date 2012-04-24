@@ -75,7 +75,7 @@ static int lv_goom_init (VisPluginData *plugin)
 	GoomPrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (GoomPrivate, 1);
