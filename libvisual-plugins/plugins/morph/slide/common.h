@@ -1,6 +1,8 @@
 #ifndef _LV_MORPH_SLIDE_COMMON_H
 #define _LV_MORPH_SLIDE_COMMON_H
 
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 typedef enum {

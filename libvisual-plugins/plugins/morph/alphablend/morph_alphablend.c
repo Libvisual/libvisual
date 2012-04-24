@@ -21,12 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
@@ -55,8 +51,8 @@ const VisPluginInfo *get_plugin_info (void)
 		.name = "alphablend morph",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "An alphablend morph plugin",
-		.help = "This morph plugin morphs between two video sources using the alphablend method",
+		.about = N_("An alphablend morph plugin"),
+		.help = N_("This morph plugin morphs between two video sources using the alphablend method"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_alpha_init,

@@ -1,3 +1,5 @@
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
@@ -36,8 +38,8 @@ const VisPluginInfo *get_plugin_info (void)
     info.name = "Checkerboard morph";
     info.author = "Scott Sibley <sisibley@gmail.com>";
     info.version = "0.1";
-    info.about = "A checkers in/out morph plugin";
-    info.help = "This morph plugin adds a checkerboard effect..";
+    info.about = N_("A checkers in/out morph plugin");
+    info.help = N_("This morph plugin adds a checkerboard effect..");
     info.license = VISUAL_PLUGIN_LICENSE_LGPL;
     info.init = lv_morph_checkers_init;
     info.cleanup = lv_morph_checkers_cleanup;

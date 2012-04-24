@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -21,12 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
@@ -68,8 +64,8 @@ const VisPluginInfo *get_plugin_info (void)
 		.name = "flash morph",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "An flash in and out morph plugin",
-		.help = "This morph plugin morphs between two video sources using a bright flash",
+		.about = N_("An flash in and out morph plugin"),
+		.help = N_("This morph plugin morphs between two video sources using a bright flash"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_flash_init,
