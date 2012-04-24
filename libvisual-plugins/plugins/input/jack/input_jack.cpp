@@ -2,9 +2,8 @@
  *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: input_jack.c,v 1.14 2006/01/22 13:25:27 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,24 +24,29 @@
 #include "gettext.h"
 #include <jack/jack.h>
 #include <libvisual/libvisual.h>
+#include <vector>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define PCM_BUF_SIZE     1024
 #define JACK_SERVER_NAME NULL
 
 namespace {
+
+  typedef std::vector<int16_t> Buffer;
 
   struct JackPrivate {
       jack_client_t* client;
       jack_port_t*   input_port;
       bool           shutdown;
-      VisBuffer*     buffer;
-      int16_t        fakebuf[PCM_BUF_SIZE];
+      jack_nframes_t buffer_size;
+      jack_nframes_t sample_rate;
+      Buffer         buffer;
   };
 
-  int  process_callback  (jack_nframes_t nframes, void* arg);
-  void shutdown_callback (void* arg);
+  int  process_callback     (jack_nframes_t nframes, void* arg);
+  void shutdown_callback    (void* arg);
+  int  buffer_size_callback (jack_nframes_t nframes, void* arg);
+  int  sample_rate_callback (jack_nframes_t nframes, void* arg);
 
   int inp_jack_init    (VisPluginData* plugin);
   int inp_jack_cleanup (VisPluginData* plugin);
@@ -97,38 +101,58 @@ namespace {
       jack_options_t options = JackNullOption;
       jack_status_t  status;
 
+      // Open client connection to JACK, automatically starting the
+      // server if needed
       priv->client = jack_client_open ("Libvisual", options, &status, JACK_SERVER_NAME);
       if (!priv->client) {
           visual_log (VISUAL_LOG_ERROR, "Cannot connect to JACK server: status = 0x%2.0x", status);
           return -1;
       }
 
+      // Check if server was started
       if (status & JackServerStarted) {
           visual_log (VISUAL_LOG_INFO, "JACK server started");
       }
 
+      // Initialize audio settings
+      priv->buffer_size = jack_get_buffer_size (priv->client);
+      priv->sample_rate = jack_get_sample_rate (priv->client);
+      priv->buffer.resize (priv->buffer_size * 2);
       priv->shutdown = false;
 
+      // Setup callbacks
       jack_set_process_callback (priv->client, process_callback, priv);
       jack_on_shutdown (priv->client, shutdown_callback, priv);
+      jack_set_sample_rate_callback (priv->client, sample_rate_callback, priv);
+      jack_set_buffer_size_callback (priv->client, buffer_size_callback, priv);
 
+      // Create an input port to receive data on
       priv->input_port = jack_port_register (priv->client, "input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
       if (!priv->input_port) {
           visual_log (VISUAL_LOG_ERROR, "No more JACK input port available");
           return -1;
       }
 
+      // Activate this client. From here on JACK will start invoking
+      // our callbacks
       if (jack_activate (priv->client) == 1) {
           visual_log (VISUAL_LOG_ERROR, "Cannot activate client");
           return -1;
       }
 
+      // Look for physical capture ports we can try and connect to
       const char **ports = jack_get_ports (priv->client, NULL, NULL, JackPortIsPhysical | JackPortIsOutput);
       if (!ports) {
           visual_log (VISUAL_LOG_ERROR, "Cannot find any physical capture ports");
           return -1;
       }
 
+      visual_log (VISUAL_LOG_INFO, "Available ports:");
+      for (char const** port = ports; *port; port++) {
+          visual_log (VISUAL_LOG_INFO, "%s", *port);
+      }
+
+      // Receive our input from the first capture port
       if (jack_connect (priv->client, ports[0], jack_port_name (priv->input_port))) {
           visual_log (VISUAL_LOG_ERROR, "Cannot connect input port");
           free (ports);
@@ -168,15 +192,31 @@ namespace {
           return -1;
       }
 
-      // VisBuffer buffer;
-      // visual_buffer_init (&buffer, data, rcnt, NULL);
-      // visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
-      //                                 VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+      VisBuffer buffer;
+      visual_buffer_init (&buffer, &priv->buffer[0], priv->buffer_size, NULL);
+      visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+                                     VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
-      for (unsigned int i = 0; i < PCM_BUF_SIZE && i < 1024; i += 2) {
-          audio->plugpcm[0][i >> 1] = priv->fakebuf[i];
-          audio->plugpcm[1][i >> 1] = priv->fakebuf[i + 1];
-      }
+      return 0;
+  }
+
+  int buffer_size_callback (jack_nframes_t nframes, void* arg)
+  {
+      JackPrivate* priv = static_cast<JackPrivate*> (arg);
+
+      // Buffer size changed, adjust buffer accordingly
+      priv->buffer_size = nframes;
+      priv->buffer.resize (priv->buffer_size * 2);
+
+      return 0;
+  }
+
+  int sample_rate_callback (jack_nframes_t nframes, void* arg)
+  {
+      JackPrivate* priv = static_cast<JackPrivate*> (arg);
+
+      // FIXME: Update sample rate setting in inp_jack_upload()
+      priv->sample_rate = nframes;
 
       return 0;
   }
@@ -188,10 +228,14 @@ namespace {
       jack_default_audio_sample_t* in =
           static_cast<jack_default_audio_sample_t*> (jack_port_get_buffer (priv->input_port, nframes));
 
-      visual_mem_set (&priv->fakebuf, 0, sizeof (priv->fakebuf));
-
-      for (unsigned int i = 0; i < nframes && i < 1024; i++)
-          priv->fakebuf[i] = in[i] * 32767;
+      // FIXME: As we're only receiving audio data from a single input
+      // port we have to duplicate it across both left and right
+      // channel. VisAudio does not accept mono inputs at the
+      // moment. Float inputs do not appeat to work at the moment
+      // either, so we convert the data to signed 16-bit
+      for (unsigned int i = 0; i < nframes; i++) {
+          priv->buffer[i << 1] = priv->buffer[(i << 1) + 1] = int16_t (in[i] * 32767);
+      }
 
       return 0;
   }
