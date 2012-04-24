@@ -229,10 +229,12 @@ namespace {
           static_cast<jack_default_audio_sample_t*> (jack_port_get_buffer (priv->input_port, nframes));
 
       // FIXME: As we're only receiving audio data from a single input
-      // port we have to duplicate it across both left and right
-      // channel. VisAudio does not accept mono inputs at the
-      // moment. Float inputs do not appeat to work at the moment
-      // either, so we convert the data to signed 16-bit
+      // port, we need to duplicate it across both left and right
+      // channels. VisAudio does not accept mono inputs yet.
+
+      // FIXME: Float inputs do not appear to work at the moment
+      // either, so we convert the data to signed 16-bit here as well.
+
       for (unsigned int i = 0; i < nframes; i++) {
           priv->buffer[i << 1] = priv->buffer[(i << 1) + 1] = int16_t (in[i] * 32767);
       }
