@@ -28,7 +28,8 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define PCM_BUF_SIZE    1024
+#define PCM_BUF_SIZE     1024
+#define JACK_SERVER_NAME NULL
 
 namespace {
 
@@ -112,21 +113,25 @@ namespace {
       jack_on_shutdown (priv->client, shutdown_callback, priv);
 
       priv->input_port = jack_port_register (priv->client, "input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-
-      if (jack_activate (priv->client) == 1) {
-          visual_log (VISUAL_LOG_ERROR, _("Cannot activate client"));
+      if (!priv->input_port) {
+          visual_log (VISUAL_LOG_ERROR, "No more JACK input port available");
           return -1;
       }
 
-      const char **ports = jack_get_ports (priv->client, NULL, NULL, JackPortIsPhysical|JackPortIsOutput);
+      if (jack_activate (priv->client) == 1) {
+          visual_log (VISUAL_LOG_ERROR, "Cannot activate client");
+          return -1;
+      }
+
+      const char **ports = jack_get_ports (priv->client, NULL, NULL, JackPortIsPhysical | JackPortIsOutput);
       if (!ports) {
-          visual_log (VISUAL_LOG_ERROR, _("Cannot find any physical capture ports"));
+          visual_log (VISUAL_LOG_ERROR, "Cannot find any physical capture ports");
           return -1;
       }
 
       if (jack_connect (priv->client, ports[0], jack_port_name (priv->input_port))) {
-          visual_log (VISUAL_LOG_ERROR, _("Cannot connect input port"));
-          visual_mem_free (ports);
+          visual_log (VISUAL_LOG_ERROR, "Cannot connect input port");
+          free (ports);
           return -1;
       }
 
@@ -159,17 +164,14 @@ namespace {
       visual_return_val_if_fail (priv != NULL, -1);
 
       if (priv->shutdown) {
-          visual_log (VISUAL_LOG_ERROR, "The JACK server seems to have shutdown");
-
+          visual_log (VISUAL_LOG_ERROR, "JACK server seems to have shutdown");
           return -1;
       }
 
-      /*
-        visual_buffer_init (&buffer, data, rcnt, NULL);
-
-        visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
-        VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
-      */
+      // VisBuffer buffer;
+      // visual_buffer_init (&buffer, data, rcnt, NULL);
+      // visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+      //                                 VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
       for (unsigned int i = 0; i < PCM_BUF_SIZE && i < 1024; i += 2) {
           audio->plugpcm[0][i >> 1] = priv->fakebuf[i];
@@ -184,7 +186,7 @@ namespace {
       JackPrivate* priv = static_cast<JackPrivate*> (arg);
 
       jack_default_audio_sample_t* in =
-		  static_cast<jack_default_audio_sample_t*> (jack_port_get_buffer (priv->input_port, nframes));
+          static_cast<jack_default_audio_sample_t*> (jack_port_get_buffer (priv->input_port, nframes));
 
       visual_mem_set (&priv->fakebuf, 0, sizeof (priv->fakebuf));
 
