@@ -93,13 +93,20 @@ namespace {
       visual_return_val_if_fail (priv != NULL, -1);
       visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	  priv->client = jack_client_new ("Libvisual");
+      jack_options_t options = JackNullOption;
+      jack_status_t  status;
+
+      priv->client = jack_client_open ("Libvisual", options, &status, JACK_SERVER_NAME);
       if (!priv->client) {
-          visual_log (VISUAL_LOG_ERROR, "Cannot connect to JACK server");
+          visual_log (VISUAL_LOG_ERROR, "Cannot connect to JACK server: status = 0x%2.0x", status);
           return -1;
       }
 
-	  priv->shutdown = false;
+      if (status & JackServerStarted) {
+          visual_log (VISUAL_LOG_INFO, "JACK server started");
+      }
+
+      priv->shutdown = false;
 
       jack_set_process_callback (priv->client, process_callback, priv);
       jack_on_shutdown (priv->client, shutdown_callback, priv);
