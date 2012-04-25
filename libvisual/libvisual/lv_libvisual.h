@@ -31,10 +31,8 @@
  * @{
  */
 
-/**
- * Indicates at which version the API is.
- */
-#define VISUAL_API_VERSION  4000
+/** s. version.h.in for current API version */
+
 
 #ifdef __cplusplus
 
