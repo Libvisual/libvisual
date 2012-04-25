@@ -13,7 +13,7 @@ cd "${SOURCE_DIR}"
 REVISION=$(${GIT} describe --always --dirty 2>/dev/null)
 [ -z "${REVISION}" ] && REVISION="unknown"
 
-OLD_REVISION=$(grep LV_REVISION < ${OUTPUT_HEADER} 2>/dev/null)
+OLD_REVISION=$(grep LV_REVISION < ${OUTPUT_HEADER} 2>/dev/null) || ""
 OLD_REVISION=${OLD_REVISION#*\"}
 OLD_REVISION=${OLD_REVISION%\"*}
 
