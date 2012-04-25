@@ -67,7 +67,6 @@ SET(libvisual_HEADERS
 SET(libvisual_SOURCES
   lv_bin.c
   lv_video.c
-  lv_video_simd.c
   lv_mem.c
   lv_audio.c
   lv_list.c
@@ -119,6 +118,7 @@ SET(libvisual_SOURCES
   private/lv_video_fill.c
   private/lv_video_scale.c
   private/lv_video_blit.c
+  private/lv_video_simd.c
 )
 
 SET(LINK_LIBS
