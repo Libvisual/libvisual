@@ -292,8 +292,8 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	visual_mem_copy (&priv->priv2.audio.freqsmall, &priv->priv1.audio.freqsmall, sizeof (float) * 4);
 
 	/* Audio energy */
-	priv->priv1.audio.energy = audio->energy;
-	priv->priv2.audio.energy = audio->energy;
+	priv->priv1.audio.energy = 0 /*audio->energy*/;
+	priv->priv2.audio.energy = 0 /*audio->energy*/;
 
 	/* Let's get rendering */
 	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {

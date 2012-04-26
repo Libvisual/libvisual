@@ -35,7 +35,6 @@ SET(libvisual_HEADERS
   lv_bits.h
   lv_cpu.h
   lv_color.h
-  lv_beat.h
   lv_time.h
   lv_random.h
   lv_error.h
@@ -71,7 +70,6 @@ SET(libvisual_SOURCES
   lv_audio.c
   lv_list.c
   lv_log.c
-  lv_beat.c
   lv_bmp.c
   lv_param.c
   lv_cpu.c
