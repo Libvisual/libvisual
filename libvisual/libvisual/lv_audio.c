@@ -953,33 +953,9 @@ int visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *
 			visual_audio_sample_rate_get_length (dest->rate) *
 			visual_audio_sample_format_get_size (format),
 			visual_buffer_destroyer_free);
-
 	dest->format = format;
 
-	if (dest->format == VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT) {
-
-		audio_sample_convert_from_float (dest->buffer, src->buffer,
-				visual_audio_sample_format_get_size (src->format),
-				visual_audio_sample_format_is_signed (src->format));
-
-	} else if (src->format == VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT) {
-
-		audio_sample_convert_to_float (dest->buffer, src->buffer,
-				visual_audio_sample_format_get_size (dest->format),
-				visual_audio_sample_format_is_signed (dest->format));
-
-	} else if (dest->format == VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT && src->format ==
-			VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT) {
-
-				visual_buffer_put (dest->buffer, src->buffer, 0);
-	} else {
-
-		audio_sample_convert (dest->buffer, src->buffer,
-				visual_audio_sample_format_get_size (dest->format),
-				visual_audio_sample_format_get_size (src->format),
-				visual_audio_sample_format_is_signed (dest->format),
-				visual_audio_sample_format_is_signed (src->format));
-	}
+	visual_audio_sample_convert (dest->buffer, dest->format, src->buffer, src->format);
 
 	return VISUAL_OK;
 }
@@ -999,8 +975,6 @@ int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *sr
 			visual_audio_sample_rate_get_length (rate) *
 			visual_audio_sample_format_get_size (src->format),
 			visual_buffer_destroyer_free);
-
-
 
 	return VISUAL_OK;
 }
@@ -1078,9 +1052,8 @@ static VisBuffer *sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntr
 			 visual_audio_sample_format_get_size (sample->format)) * sizeof (float),
 			visual_buffer_destroyer_free);
 
-	audio_sample_convert_to_float (sample->processed, sample->buffer,
-			visual_audio_sample_format_get_size (sample->format),
-			visual_audio_sample_format_is_signed (sample->format));
+	visual_audio_sample_convert (sample->processed, VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
+	                             sample->buffer, sample->format);
 
 	visual_object_ref (VISUAL_OBJECT (sample->processed));
 
