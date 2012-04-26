@@ -256,8 +256,8 @@ namespace LV {
               break;
       }
 
-      visual_math_vectorized_complex_to_norm_scale (output, &m_impl->real[0], &m_impl->imag[0],
-                                                    m_impl->samples_out, 1.0 / m_impl->sample_count);
+      visual_math_simd_complex_norm_mul_float (output, &m_impl->real[0], &m_impl->imag[0],
+                                               m_impl->samples_out, 1.0 / m_impl->sample_count);
   }
 
   void DFT::log_scale (float *output, float const* input, unsigned int size)

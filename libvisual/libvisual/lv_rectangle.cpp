@@ -100,8 +100,8 @@ namespace LV {
       visual_return_if_fail (ylist  != NULL);
       visual_return_if_fail (size > 0);
 
-      visual_math_vectorized_floats_to_int32s_multiply (xlist, fxlist, size, width);
-      visual_math_vectorized_floats_to_int32s_multiply (ylist, fylist, size, height);
+      visual_math_simd_floats_to_int32s_mul_float (xlist, fxlist, size, width);
+      visual_math_simd_floats_to_int32s_mul_float (ylist, fylist, size, height);
   }
 
   void Rect::denormalize_points_neg (float const* fxlist, float const* fylist, int32_t *xlist, int32_t *ylist, unsigned int size) const
@@ -112,8 +112,8 @@ namespace LV {
       visual_return_if_fail (ylist  != NULL);
       visual_return_if_fail (size > 0);
 
-      visual_math_vectorized_floats_to_int32s_multiply_denormalise (xlist, fxlist, size, width);
-          visual_math_vectorized_floats_to_int32s_multiply_denormalise (ylist, fylist, size, height);
+      visual_math_simd_floats_to_int32s_mul_float_denormalise (xlist, fxlist, size, width);
+      visual_math_simd_floats_to_int32s_mul_float_denormalise (ylist, fylist, size, height);
   }
 
 } // LV namespace

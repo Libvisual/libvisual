@@ -367,7 +367,7 @@ int visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *buffer, in
 	data = visual_buffer_get_data (buffer);
 	datasize = visual_buffer_get_size (buffer) / sizeof (float);
 
-	visual_math_vectorized_multiplier_floats_const_float (data, data, datasize, multiplier);
+	visual_math_simd_mul_floats_float (data, data, datasize, multiplier);
 
 	return ret;
 }
@@ -407,7 +407,7 @@ int visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffe
 	data = visual_buffer_get_data (buffer);
 	datasize = visual_buffer_get_size (buffer) / sizeof (float);
 
-	visual_math_vectorized_multiplier_floats_const_float (data, data, datasize, multiplier);
+	visual_math_simd_mul_floats_float (data, data, datasize, multiplier);
 
 	return ret;
 }
