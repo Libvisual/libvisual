@@ -45,6 +45,15 @@ namespace {
       return std::numeric_limits<T>::max () / 2 + 1;
   }
 
+  template <typename D, typename S>
+  inline int shifter()
+  {
+      if (sizeof(S) > sizeof(D))
+          return int (sizeof(S) - sizeof(D)) << 3;
+      else
+          return int (sizeof(D) - sizeof(S)) << 3;
+  }
+
   // same format conversion
   template <typename T>
   inline void convert_sample_array (T* dst, T const* src, std::size_t count)
@@ -123,11 +132,12 @@ namespace {
   typename enable_if_c<same_signedness<D, S>::value && sizeof(D) != sizeof(S) >::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
+      const int shift = shifter<D, S> ();
+
       S const* src_end = src + count;
 
-      if (sizeof(D) < sizeof(S)) {
+      if (sizeof(S) > sizeof(D)) {
           // narrowing
-          const int shift = int (sizeof(S) - sizeof(D)) << 3;
           while (src != src_end) {
               *dst = *src >> shift;
               dst++;
@@ -135,7 +145,6 @@ namespace {
           }
       } else {
           // widening
-          const int shift = int (sizeof(D) - sizeof(S)) << 3;
           while (src != src_end) {
               *dst = *src << shift;
               dst++;
@@ -150,12 +159,12 @@ namespace {
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       D a = zero<D>();
+      const int shift = shifter<D, S> ();
 
       S const* src_end = src + count;
 
       if (sizeof(D) < sizeof(S)) {
           // narrowing
-          const int shift = int (sizeof(S) - sizeof(D)) << 3;
           while (src != src_end) {
               *dst = D(*src >> shift) - a;
               dst++;
@@ -163,7 +172,6 @@ namespace {
           }
       } else {
           // widening
-          const int shift = int (sizeof(D) - sizeof(S)) << 3;
           while (src != src_end) {
               *dst = D(*src << shift) - a;
               dst++;
@@ -178,12 +186,12 @@ namespace {
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       D a = zero<D>();
+      const int shift = shifter<D, S> ();
 
       S const* src_end = src + count;
 
       if (sizeof(D) < sizeof(S)) {
           // narrowing
-          const int shift = int (sizeof(S) - sizeof(D)) << 3;
           while (src != src_end) {
               *dst = D(*src >> shift) + a;
               dst++;
@@ -191,7 +199,6 @@ namespace {
           }
       } else {
           // widening
-          const int shift = int (sizeof(D) - sizeof(S)) << 3;
           while (src != src_end) {
               *dst = D(*src << shift) + a;
               dst++;
