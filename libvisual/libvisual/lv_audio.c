@@ -1110,59 +1110,6 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 	return VISUAL_OK;
 }
 
-//out is in the format of [spectrum:0,wave:1][channel][band]
-//returns TRUE if there's a beat, FALSE otherwise.
-int visual_audio_get_cheap_audio_data(VisAudio *audio, unsigned char out[2][2][576])
-{
-    int i, ch;
-    VisBuffer pcmbuf1;
-    VisBuffer pcmbuf2;
-    VisBuffer spmbuf1;
-    VisBuffer spmbuf2;
-    VisBuffer tmp;
-    int size = 576;
-    unsigned char visdata[size*2];
-    float data[2][2][size];
-
-    visual_buffer_init_allocate(&tmp, sizeof(float) * size, visual_buffer_destroyer_free);
-
-    /* Left audio */
-    visual_buffer_set_data_pair(&pcmbuf1, data[0][0], sizeof(float) * size);
-
-    if(visual_audio_get_sample(audio, &tmp, VISUAL_AUDIO_CHANNEL_LEFT) == VISUAL_OK)
-
-        visual_audio_sample_buffer_mix(&pcmbuf1, &tmp, TRUE, 1.0);
-
-    visual_buffer_set_data_pair(&spmbuf1, &data[1][0], sizeof(float) * size);
-
-    visual_audio_get_spectrum_for_sample (&spmbuf1, &tmp, TRUE);
-
-    /* Right audio */
-    visual_buffer_set_data_pair(&pcmbuf2, data[0][1], sizeof(float) * size);
-
-    if(visual_audio_get_sample(audio, &tmp, VISUAL_AUDIO_CHANNEL_LEFT) == VISUAL_OK)
-
-        visual_audio_sample_buffer_mix(&pcmbuf2, &tmp, TRUE, 1.0);
-
-    visual_buffer_set_data_pair(&spmbuf2, data[1][1], sizeof(float) * size);
-
-    visual_audio_get_spectrum_for_sample(&spmbuf2, &tmp, TRUE);
-
-    for(ch = 0; ch < 2; ch++) {
-	    for(i = 0; i < size; i++) {
-		out[0][ch][i] = (data[0][ch][i] + 1) / 2.0 * UCHAR_MAX;
-		out[1][ch][i] = (data[1][ch][i] + 1) / 2.0 * UCHAR_MAX;
-	    }
-    }
-
-    memcpy(visdata, out[1][0], size);
-    memcpy(visdata+size, out[1][1], size);
-
-    visual_object_unref(VISUAL_OBJECT(&tmp));
-
-    return visual_audio_is_beat_with_data(audio, VISUAL_BEAT_ALGORITHM_PEAK, visdata, size);
-}
-
 VisBeat *visual_audio_get_beat(VisAudio *audio)
 {
     visual_return_val_if_fail(audio != NULL, NULL);

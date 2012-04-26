@@ -241,7 +241,6 @@ LV_API VisBeat *visual_audio_get_beat(VisAudio *audio);
 LV_API int visual_audio_is_beat(VisAudio *audio, VisBeatAlgorithm algo);
 
 LV_API int visual_audio_is_beat_with_data(VisAudio *audio, VisBeatAlgorithm algo, unsigned char *data, int size);
-LV_API int visual_audio_get_cheap_audio_data(VisAudio *audio, unsigned char out[2][2][576]);
 
 LV_END_DECLS
 
