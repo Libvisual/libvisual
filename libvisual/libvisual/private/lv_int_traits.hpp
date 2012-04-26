@@ -4,42 +4,25 @@
 namespace LV {
 
   template <typename T>
-  struct is_integral
-  {
-	  static const bool value = false;
-  };
+  struct is_signed { static const bool value = false; };
 
-  template <> struct is_integral<uint8_t>  { static const bool value = true; };
-  template <> struct is_integral<uint16_t> { static const bool value = true; };
-  template <> struct is_integral<uint32_t> { static const bool value = true; };
-  template <> struct is_integral<uint64_t> { static const bool value = true; };
-  template <> struct is_integral<int8_t>   { static const bool value = true; };
-  template <> struct is_integral<int16_t>  { static const bool value = true; };
-  template <> struct is_integral<int32_t>  { static const bool value = true; };
-  template <> struct is_integral<int64_t>  { static const bool value = true; };
-
-  template <typename T>
-  struct is_signed {};
-
-  template <> struct is_signed<uint8_t>    { static const bool value = false; };
-  template <> struct is_signed<uint16_t>   { static const bool value = false; };
-  template <> struct is_signed<uint32_t>   { static const bool value = false; };
-  template <> struct is_signed<uint64_t>   { static const bool value = false; };
   template <> struct is_signed<int8_t >    { static const bool value = true; };
   template <> struct is_signed<int16_t>    { static const bool value = true; };
   template <> struct is_signed<int32_t>    { static const bool value = true; };
   template <> struct is_signed<int64_t>    { static const bool value = true; };
 
   template <typename T>
-  struct is_unsigned_integral
-  {
-	  static const bool value = is_integral<T>::value && !is_signed<T>::value;
-  };
+  struct is_unsigned { static const bool value = false; };
+
+  template <> struct is_unsigned<uint8_t > { static const bool value = true; };
+  template <> struct is_unsigned<uint16_t> { static const bool value = true; };
+  template <> struct is_unsigned<uint32_t> { static const bool value = true; };
+  template <> struct is_unsigned<uint64_t> { static const bool value = true; };
 
   template <typename T>
-  struct is_signed_integral
+  struct is_integral
   {
-	  static const bool value = is_integral<T>::value && is_signed<T>::value;
+      static const bool value = is_unsigned<T>::value || is_signed<T>::value;
   };
 
 } // LV namespace
