@@ -98,11 +98,11 @@ static int audio_sample_dtor (VisObject *object)
 
 	visual_time_free (sample->timestamp);
 
-	if (sample->buffer != NULL)
-		visual_object_unref (VISUAL_OBJECT (sample->buffer));
+	if (sample->buffer)
+		visual_buffer_unref (sample->buffer);
 
-	if (sample->processed != NULL)
-		visual_object_unref (VISUAL_OBJECT (sample->processed));
+	if (sample->processed)
+		visual_buffer_unref (sample->processed);
 
 	sample->buffer = NULL;
 	sample->processed = NULL;
@@ -165,7 +165,7 @@ int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, const char *cha
 int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, int channels, ...)
 {
 	VisAudioSamplePoolChannel *channel;
-	VisBuffer temp;
+	VisBuffer *temp;
 	char **chanids;
 	va_list ap;
 	int i;
@@ -174,7 +174,7 @@ int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, in
 	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
+	temp = visual_buffer_new_allocate (visual_buffer_get_size (buffer));
 
 	chanids = visual_mem_malloc (channels * sizeof (char *));
 
@@ -188,22 +188,22 @@ int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, in
 
 	/* The mixing loop */
 	for (i = 0; i < channels; i++) {
-		if (visual_audio_get_sample (audio, &temp, chanids[i]) == VISUAL_OK) {
+		if (visual_audio_get_sample (audio, temp, chanids[i]) == VISUAL_OK) {
 			channel = visual_audio_samplepool_get_channel (audio->samplepool, chanids[i]);
 
 			if (first) {
-				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, channel->factor);
+				visual_audio_sample_buffer_mix (buffer, temp, FALSE, channel->factor);
 
 				first = FALSE;
 			} else {
-				visual_audio_sample_buffer_mix (buffer, &temp, TRUE, channel->factor);
+				visual_audio_sample_buffer_mix (buffer, temp, TRUE, channel->factor);
 			}
 		}
 	}
 
 	va_end (ap);
 
-	visual_object_unref (VISUAL_OBJECT (&temp));
+	visual_buffer_free (temp);
 
 	visual_mem_free (chanids);
 
@@ -212,7 +212,7 @@ int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, in
 
 int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divide, int channels, ...)
 {
-	VisBuffer temp;
+	VisBuffer *temp;
 	char **chanids;
 	double *chanmuls;
 	va_list ap;
@@ -222,7 +222,7 @@ int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divid
 	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
+	temp = visual_buffer_new_allocate (visual_buffer_get_size (buffer));
 
 	chanids = visual_mem_malloc (channels * sizeof (char *));
 	chanmuls = visual_mem_malloc (channels * sizeof (double));
@@ -240,20 +240,20 @@ int visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divid
 
 	/* The mixing loop */
 	for (i = 0; i < channels; i++) {
-		if (visual_audio_get_sample (audio, &temp, chanids[i]) == VISUAL_OK) {
+		if (visual_audio_get_sample (audio, temp, chanids[i]) == VISUAL_OK) {
 			if (first) {
-				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, chanmuls[i]);
+				visual_audio_sample_buffer_mix (buffer, temp, FALSE, chanmuls[i]);
 
 				first = FALSE;
 			} else {
-				visual_audio_sample_buffer_mix (buffer, &temp, divide, chanmuls[i]);
+				visual_audio_sample_buffer_mix (buffer, temp, divide, chanmuls[i]);
 			}
 		}
 	}
 
 	va_end (ap);
 
-	visual_object_unref (VISUAL_OBJECT (&temp));
+	visual_buffer_free (temp);
 
 	visual_mem_free (chanids);
 	visual_mem_free (chanmuls);
@@ -267,32 +267,34 @@ int visual_audio_get_sample_mixed_category (VisAudio *audio, VisBuffer *buffer, 
 	VisListEntry *le = NULL;
 	VisAudioSamplePool *samplepool;
 	VisAudioSamplePoolChannel *channel;
-	VisBuffer temp;
+	VisBuffer *temp;
 	int first = TRUE;
 
 	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 	visual_return_val_if_fail (category != NULL, -VISUAL_ERROR_NULL);
 
-	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
+	temp = visual_buffer_new_allocate (visual_buffer_get_size (buffer));
 
-	samplepool = visual_audio_samplepool_new (); // this function's broken. This line was added to get rid of a compile warning. Not sure what samplepool's supposed to be, because it appears the below code expects an already existing VisAudioSamplePool. Dunno.
+    // this function's broken. This line was added to get rid of a compile warning. Not sure what samplepool's supposed
+    // to be, because it appears the below code expects an already existing VisAudioSamplePool. Dunno.
+	samplepool = visual_audio_samplepool_new ();
 
 	while ((channel = visual_list_next (samplepool->channels, &le)) != NULL) {
 		if (strstr (channel->channelid, category) != NULL) {
-			if (visual_audio_get_sample (audio, &temp, channel->channelid) == VISUAL_OK) {
+			if (visual_audio_get_sample (audio, temp, channel->channelid) == VISUAL_OK) {
 				if (first) {
-					visual_audio_sample_buffer_mix (buffer, &temp, FALSE, 1.0);
+					visual_audio_sample_buffer_mix (buffer, temp, FALSE, 1.0);
 
 					first = FALSE;
 				} else {
-					visual_audio_sample_buffer_mix (buffer, &temp, divide, 1.0);
+					visual_audio_sample_buffer_mix (buffer, temp, divide, 1.0);
 				}
 			}
 		}
 	}
 
-	visual_object_unref (VISUAL_OBJECT (&temp));
+	visual_buffer_free (temp);
 
 	return VISUAL_OK;
 }
@@ -303,49 +305,49 @@ int visual_audio_get_sample_mixed_all (VisAudio *audio, VisBuffer *buffer, int d
 	VisListEntry *le = NULL;
 	VisAudioSamplePool *samplepool;
 	VisAudioSamplePoolChannel *channel;
-	VisBuffer temp;
+	VisBuffer *temp;
 	int first = TRUE;
 
 	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 
-	visual_buffer_init_allocate (&temp, visual_buffer_get_size (buffer), visual_buffer_destroyer_free);
+	temp = visual_buffer_new_allocate (visual_buffer_get_size (buffer));
 
 	samplepool = visual_audio_samplepool_new (); // this function's broken. This line was added to get rid of a compile warning. Not sure what samplepool's supposed to be, because it appears the below code expects an already existing VisAudioSamplePool. Dunno.
 
 	while ((channel = visual_list_next (samplepool->channels, &le)) != NULL) {
-		if (visual_audio_get_sample (audio, &temp, channel->channelid) == VISUAL_OK) {
+		if (visual_audio_get_sample (audio, temp, channel->channelid) == VISUAL_OK) {
 			if (first) {
-				visual_audio_sample_buffer_mix (buffer, &temp, FALSE, 1.0);
+				visual_audio_sample_buffer_mix (buffer, temp, FALSE, 1.0);
 
 				first = FALSE;
 			} else {
-				visual_audio_sample_buffer_mix (buffer, &temp, divide, 1.0);
+				visual_audio_sample_buffer_mix (buffer, temp, divide, 1.0);
 			}
 		}
 	}
 
-	visual_object_unref (VISUAL_OBJECT (&temp));
+	visual_buffer_free (temp);
 
 	return VISUAL_OK;
 }
 
 int visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, int samplelen, const char *channelid, int normalised)
 {
-	VisBuffer sample;
+	VisBuffer *sample;
 
 	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 	visual_return_val_if_fail (channelid != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	visual_buffer_init_allocate (&sample, samplelen, visual_buffer_destroyer_free);
+	sample = visual_buffer_new_allocate (samplelen);
 
-	if (visual_audio_get_sample (audio, &sample, channelid) == VISUAL_OK)
-		visual_audio_get_spectrum_for_sample (buffer, &sample, normalised);
+	if (visual_audio_get_sample (audio, sample, channelid) == VISUAL_OK)
+		visual_audio_get_spectrum_for_sample (buffer, sample, normalised);
 	else
 		visual_buffer_fill (buffer, 0);
 
-	visual_object_unref (VISUAL_OBJECT (&sample));
+	visual_buffer_free (sample);
 
 	return VISUAL_OK;
 }
@@ -539,12 +541,9 @@ int visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBu
 	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 	visual_return_val_if_fail (buffer != NULL, -VISUAL_ERROR_BUFFER_NULL);
 
-	pcmbuf = visual_buffer_new ();
-	visual_buffer_clone (pcmbuf, buffer);
+	pcmbuf = visual_buffer_clone (buffer);
 
 	timestamp = visual_time_new_now ();
-
-	visual_buffer_set_destroyer (pcmbuf, visual_buffer_destroyer_free);
 
 	sample = visual_audio_sample_new (pcmbuf, timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, channelid);
@@ -726,7 +725,7 @@ VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
 	visual_audio_sample_init (sample, buffer, timestamp, format, rate);
 
 	/* Do the VisObject initialization */
-        visual_object_set_allocated (VISUAL_OBJECT (sample), TRUE);
+    visual_object_set_allocated (VISUAL_OBJECT (sample), TRUE);
 	visual_object_ref (VISUAL_OBJECT (sample));
 
 	return sample;
@@ -768,13 +767,12 @@ int visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 
-	if (dest->buffer != NULL)
-		visual_object_unref (VISUAL_OBJECT (dest->buffer));
+	if (dest->buffer)
+		visual_buffer_free (dest->buffer);
 
 	dest->buffer = visual_buffer_new_allocate (
 			visual_audio_sample_rate_get_length (dest->rate) *
-			visual_audio_sample_format_get_size (format),
-			visual_buffer_destroyer_free);
+			visual_audio_sample_format_get_size (format));
 	dest->format = format;
 
 	visual_audio_sample_convert (dest->buffer, dest->format, src->buffer, src->format);
@@ -789,14 +787,12 @@ int visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *sr
 
 	/* FIXME error on dest format != src format */
 
-	if (dest->buffer != NULL)
-		visual_object_unref (VISUAL_OBJECT (dest->buffer));
-
+	if (dest->buffer)
+		visual_buffer_free (dest->buffer);
 
 	dest->buffer = visual_buffer_new_allocate (
 			visual_audio_sample_rate_get_length (rate) *
-			visual_audio_sample_format_get_size (src->format),
-			visual_buffer_destroyer_free);
+			visual_audio_sample_format_get_size (src->format));
 
 	return VISUAL_OK;
 }
@@ -864,20 +860,19 @@ static VisBuffer *sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntr
 
 	/* We have internal format ready */
 	if (sample->processed != NULL) {
-		visual_object_ref (VISUAL_OBJECT (sample->processed));
+		visual_buffer_ref (sample->processed);
 
 		return sample->processed;
 	}
 
 	sample->processed = visual_buffer_new_allocate (
 			(visual_buffer_get_size (sample->buffer) /
-			 visual_audio_sample_format_get_size (sample->format)) * sizeof (float),
-			visual_buffer_destroyer_free);
+			 visual_audio_sample_format_get_size (sample->format)) * sizeof (float));
 
 	visual_audio_sample_convert (sample->processed, VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
 	                             sample->buffer, sample->format);
 
-	visual_object_ref (VISUAL_OBJECT (sample->processed));
+	visual_buffer_ref (sample->processed);
 
 	return sample->processed;
 }
@@ -909,10 +904,8 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 
 	sample_size = visual_audio_sample_format_get_size (format);
 
-	chan1 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2),
-	                                    visual_buffer_destroyer_free);
-	chan2 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2),
-	                                    visual_buffer_destroyer_free);
+	chan1 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2));
+	chan2 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2));
 
 	visual_audio_sample_deinterleave_stereo (chan1, chan2, buffer, format);
 

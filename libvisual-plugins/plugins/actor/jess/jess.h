@@ -47,8 +47,8 @@ typedef struct {
 	VisRandomContext *rcontext;
 	VisPalette *jess_pal;
 
-	VisBuffer pcm_data1;
-	VisBuffer pcm_data2;
+	VisBuffer *pcm_data1;
+	VisBuffer *pcm_data2;
 	float pcm_data[2][512];
 
 	uint32_t *table1;

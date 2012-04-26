@@ -205,8 +205,8 @@ static VisPalette *lv_flower_palette (VisPluginData *plugin)
 static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer pcmbuf;
-	VisBuffer freqbuf;
+	VisBuffer *pcmbuf;
+	VisBuffer *freqbuf;
 	float pcm[512];
 	float freqnorm[256];
 	float temp_bars[NOTCH_BANDS];
@@ -214,14 +214,17 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	int b;
 	int i;
 
-	visual_buffer_set_data_pair (&pcmbuf, pcm, sizeof (pcm));
-	visual_buffer_set_data_pair (&freqbuf, freqnorm, sizeof (freqnorm));
+	pcmbuf = visual_buffer_new ();
+	freqbuf = visual_buffer_new ();
 
-	visual_audio_get_sample_mixed_simple (audio, &pcmbuf, 2,
+	visual_buffer_set_data_pair (pcmbuf, pcm, sizeof (pcm));
+	visual_buffer_set_data_pair (freqbuf, freqnorm, sizeof (freqnorm));
+
+	visual_audio_get_sample_mixed_simple (audio, pcmbuf, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&freqbuf, &pcmbuf, TRUE);
+	visual_audio_get_spectrum_for_sample (freqbuf, pcmbuf, TRUE);
 
 	/* Activate the effect change timer */
 	if (!visual_timer_is_active (priv->t))
@@ -286,6 +289,9 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	priv->flower.posz = +1;
 
 	render_flower_effect (&priv->flower);
+
+	visual_buffer_free (pcmbuf);
+	visual_buffer_free (freqbuf);
 
 	return 0;
 }

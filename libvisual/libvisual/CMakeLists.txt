@@ -76,7 +76,6 @@ SET(libvisual_SOURCES
   lv_error.c
   lv_object.c
   lv_ringbuffer.c
-  lv_buffer.c
   lv_collection.c
   lv_os.c
   lv_math.c
@@ -85,6 +84,7 @@ SET(libvisual_SOURCES
   lv_util.c
 
   lv_actor.cpp
+  lv_buffer.cpp
   lv_color.cpp
   lv_event.cpp
   lv_fourier.cpp
@@ -100,6 +100,7 @@ SET(libvisual_SOURCES
   lv_time.cpp
   lv_transform.cpp
 
+  lv_buffer_c.cpp
   lv_color_c.cpp
   lv_event_c.cpp
   lv_fourier_c.cpp

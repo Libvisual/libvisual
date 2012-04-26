@@ -27,8 +27,8 @@
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 typedef struct {
-	VisBuffer	 pcmbuf1;
-	VisBuffer	 pcmbuf2;
+	VisBuffer	*pcmbuf1;
+	VisBuffer	*pcmbuf2;
 	PluginInfo	*goominfo; /* The goom internal private struct */
 } GoomPrivate;
 
@@ -83,8 +83,8 @@ static int lv_goom_init (VisPluginData *plugin)
 
 	priv->goominfo = goom_init (128, 128);
 
-	visual_buffer_init (&priv->pcmbuf1, NULL, 0, NULL);
-	visual_buffer_init (&priv->pcmbuf2, NULL, 0, NULL);
+	priv->pcmbuf1 = visual_buffer_new ();
+	priv->pcmbuf2 = visual_buffer_new ();
 
 	return 0;
 }
@@ -95,6 +95,9 @@ static int lv_goom_cleanup (VisPluginData *plugin)
 
 	if (priv->goominfo != NULL)
 		goom_close (priv->goominfo);
+
+	visual_buffer_free (priv->pcmbuf1);
+	visual_buffer_free (priv->pcmbuf2);
 
 	visual_mem_free (priv);
 
@@ -151,11 +154,11 @@ static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *aud
 	int showinfo = TRUE;
 	int i;
 
-	visual_buffer_set_data_pair (&priv->pcmbuf1, fpcmdata[0], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &priv->pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_buffer_set_data_pair (priv->pcmbuf1, fpcmdata[0], sizeof (float) * 512);
+	visual_audio_get_sample (audio, priv->pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	visual_buffer_set_data_pair (&priv->pcmbuf2, fpcmdata[1], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &priv->pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_buffer_set_data_pair (priv->pcmbuf2, fpcmdata[1], sizeof (float) * 512);
+	visual_audio_get_sample (audio, priv->pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	for (i = 0; i < 512; i++) {
 		pcmdata[0][i] = fpcmdata[0][i] * 32767;

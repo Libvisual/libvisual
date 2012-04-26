@@ -128,8 +128,8 @@ static int act_jakdaw_init (VisPluginData *plugin)
 
 	visual_param_container_add_many (paramcontainer, params);
 
-	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
-	priv->freqbuf = visual_buffer_new_allocate (256 * sizeof (float), visual_buffer_destroyer_free);
+	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float));
+	priv->freqbuf = visual_buffer_new_allocate (256 * sizeof (float));
 
 	return 0;
 }
