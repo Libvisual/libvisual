@@ -32,16 +32,6 @@
  */
 
 #ifdef __cplusplus
-namespace LV {
-  class Buffer;
-}
-typedef LV::Buffer VisBuffer;
-#else
-typedef struct _VisBuffer VisBuffer;
-struct _VisBuffer;
-#endif
-
-#ifdef __cplusplus
 
 #include <libvisual/lv_scoped_ptr.hpp>
 #include <cstdlib>
@@ -52,10 +42,13 @@ namespace LV {
   {
   public:
 
+      /**
+       * Constructs a new empty Buffer.
+       */
       Buffer ();
 
       /**
-       * Constructs a new Buffer with data, size and destroyer set.
+       * Constructs a new Buffer with externally allocated content.
        *
        * @param data The which the Buffer encapsulates
        * @param size The size of the data (in bytes)
@@ -64,25 +57,21 @@ namespace LV {
       Buffer (void *data, std::size_t size, bool own = true);
 
       /**
-       * Constructs a new Buffer, allocates data, sets the destroyer.
+       * Constructs a new Buffer
        *
-       * @param size      The size of the data requested (in bytes)
-       * @param destroyer The destroyer that is to be used on the data
-       *                  when the buffer is destroyed or the refcount
-       *                  reaches 0
+       * @param size size of the buffer
        */
       explicit Buffer (std::size_t size);
 
       ~Buffer ();
 
       /**
-       * Destroys the content of a VisBuffer using the
-       * VisBufferDestroyerFunc that is set to the Buffer.
+       * Destroys the buffer content.
        */
       void destroy_content ();
 
       /**
-       * Sets the data pair (data and its size) to a VisBuffer.
+       * Sets the data pair (data and its size)
        *
        * @param data Pointer to the data.
        * @param size Size in bytes of the data.
@@ -90,22 +79,22 @@ namespace LV {
       void set (void* data, std::size_t size);
 
       /**
-       * Sets the size of the data to a VisBuffer.
+       * Sets the size of the data.
        *
        * @param size Size in bytes of the data.
        */
       void set_size (std::size_t size);
 
       /**
-       * Sets the data to a VisBuffer.
+       * Sets the data to a Buffer.
        *
        * @param data Pointer to the data.
        */
       void set_data (void* data);
 
       /**
-       * Allocates the data for a VisBuffer, the amount of bytes allocated is defined by the data size
-       * that is set to the VisBuffer.
+       * Allocates the data for a Buffer, the amount of bytes allocated is defined by the data size
+       * that is set to the Buffer.
        */
       void allocate_data ();
 
@@ -125,14 +114,14 @@ namespace LV {
       void* get_data (std::size_t offset) const;
 
       /**
-       * Gets the size in bytes of a VisBuffer.
+       * Gets the size in bytes of a Buffer.
        *
        * @return size in bytes
        */
       std::size_t get_size () const;
 
       /**
-       * Returns if the buffer content is allocated and managed
+       * Returns if the content is allocated and managed by the Buffer
        *
        * @return true if content is allocated and managed, false otherwise
        */
@@ -143,7 +132,7 @@ namespace LV {
        *
        * @param src source Buffer to clone data from
        */
-      void copy (VisBuffer const& src);
+      void copy (Buffer const& src);
 
       /**
        * Copies all the data contained by the buffer into dest.
@@ -151,35 +140,34 @@ namespace LV {
       void copy_data_to (void *dest);
 
       /**
-       * Copies data into the Buffer from another Buffer starting at a
-       * given offset.
+       * Copies data from another Buffer starting at a given offset.
        *
-       * @param src    source Buffer.
-       * @param offset The offset in the destination VisBuffer.
+       * @param src    source Buffer
+       * @param offset write offset
        */
-      void put (VisBuffer const& src, std::size_t offset);
+      void put (Buffer const& src, std::size_t offset);
 
       /**
-       * Copies a block of data into the VisBuffer.
+       * Copies a block of data.
        *
-       * @param data   Pointer to the data
-       * @param size   Size of the data
-       * @param offset Write offset
+       * @param data   pointer to data
+       * @param size   size of data
+       * @param offset write offset
        */
       void put (void const* data, std::size_t size, std::size_t offset);
 
       /**
        * Fills the buffer with a byte value.
        *
-       * @param value The value that is used to fill the buffer with.
+       * @param value fill value
        */
       void fill (uint8_t value);
 
       /**
        * Fills the buffer with a pattern of data.
        *
-       * @param data The data pattern.
-       * @param size The size of the pattern
+       * @param data pointer to memory block containing the pattern
+       * @param size size of the memory block
        */
       void fill_with_pattern (void const* data, std::size_t size);
 
@@ -197,9 +185,16 @@ namespace LV {
       Buffer& operator= (Buffer const&);
   };
 
-}
+} // LV namespace
 
 #endif /* __cplusplus */
+
+#ifdef __cplusplus
+typedef LV::Buffer VisBuffer;
+#else
+typedef struct _VisBuffer VisBuffer;
+struct _VisBuffer;
+#endif
 
 LV_BEGIN_DECLS
 

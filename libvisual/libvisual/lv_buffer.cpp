@@ -29,9 +29,9 @@ namespace LV {
   {
   public:
 
-      void*                  data;
-      std::size_t            size;
-      bool                   is_owner;
+      void*       data;
+      std::size_t size;
+      bool        is_owner;
 
       Impl ()
           : data (0)
