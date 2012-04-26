@@ -272,24 +272,6 @@ int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int
 	return VISUAL_OK;
 }
 
-int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset)
-{
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
-	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_BUFFER_NULL);
-
-	return visual_buffer_put_data_atomic (dest, src->data, src->datasize, byteoffset);
-}
-
-int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t size, int byteoffset)
-{
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);
-
-	if (byteoffset + size > dest->datasize)
-		return -VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS;
-
-	return visual_buffer_put_data (dest, data, size, byteoffset);
-}
-
 int visual_buffer_append (VisBuffer *dest, VisBuffer *src)
 {
 	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_BUFFER_NULL);

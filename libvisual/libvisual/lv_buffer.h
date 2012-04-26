@@ -262,8 +262,7 @@ LV_API VisBuffer *visual_buffer_clone_new (VisBuffer *src);
 LV_API int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
 
 /**
- * Copies data into the VisBuffer from another VisBuffer starting at byteoffset. The copy is
- * NOT atomic.
+ * Copies data into the VisBuffer from another VisBuffer starting at byteoffset.
  *
  * @param dest Pointer to the destination VisBuffer.
  * @param src Pointer to the source VisBuffer.
@@ -274,7 +273,7 @@ LV_API int visual_buffer_copy_data_to (VisBuffer *src, void *dest);
 LV_API int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
 
 /**
- * Copies data into the VisBuffer using a data pointer and it's size. The copy is NOT atomic.
+ * Copies data into the VisBuffer using a data pointer and it's size.
  *
  * @see visual_buffer_put
  *
@@ -286,33 +285,6 @@ LV_API int visual_buffer_put (VisBuffer *dest, VisBuffer *src, int byteoffset);
  * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
  */
 LV_API int visual_buffer_put_data (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
-
-/**
- * Copies data into the VisBuffer from another VisBuffer starting at byteoffset.
- * The copy is atomic, everything or nothing is copied.
- *
- * @param dest Pointer to the destination VisBuffer.
- * @param src Pointer to the source VisBuffer.
- * @param byteoffset The offset in the destination VisBuffer.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
- */
-LV_API int visual_buffer_put_atomic (VisBuffer *dest, VisBuffer *src, int byteoffset);
-
-/**
- * Copies data into the VisBuffer using a data pointer and it's size. The copy is atomic,
- * everything or nothing is copied.
- *
- * @see visual_buffer_put_atomic
- *
- * @param dest Pointer to the destination VisBuffer.
- * @param data Pointer to the data.
- * @param size The size of the data.
- * @param byteoffset The offset in the destination VisBuffer.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_BUFFER_NULL or -VISUAL_ERROR_NULL on failure.
- */
-LV_API int visual_buffer_put_data_atomic (VisBuffer *dest, void *data, visual_size_t size, int byteoffset);
 
 /**
  * Appends a VisBuffer to a VisBuffer, this will also reallocate the buffer so it's big enough.
