@@ -69,8 +69,7 @@ VisMemSet16Func visual_mem_set16 = mem_set16_c;
 VisMemSet32Func visual_mem_set32 = mem_set32_c;
 
 
-
-int visual_mem_initialize ()
+void visual_mem_initialize ()
 {
 	/* Arranged from slow to fast, so the slower version gets overloaded
 	 * every time */
@@ -110,8 +109,6 @@ int visual_mem_initialize ()
 	}
 
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
-
-	return VISUAL_OK;
 }
 
 void *visual_mem_malloc (visual_size_t nbytes)

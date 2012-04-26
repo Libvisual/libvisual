@@ -77,16 +77,6 @@ struct _VisCPU {
 LV_BEGIN_DECLS
 
 /**
- * Initializes the VisCPU caps structure by detecting the CPU features
- * and flags.
- *
- * This is normally called by visual_init() and is needed by
- * visual_mem_initialize() in order to detect the most optimal
- * mem_copy and mem_set functions.
- */
-LV_API void visual_cpu_initialize (void);
-
-/**
  * Function to get the VisCPU caps initialized by
  * visual_cpu_initialize(), this contains information regarding the
  * CPU features and flags.

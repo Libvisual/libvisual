@@ -222,7 +222,7 @@ IF(ENABLE_PROFILING)
   SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg")
 ENDIF()
 
-SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused -Wmissing-prototypes")
+SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused")
 SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c++98 -Wall -Wunused -Wno-variadic-macros")
 SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Werror")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Werror")
