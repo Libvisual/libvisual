@@ -215,7 +215,7 @@ namespace {
 
   typedef void (*ConvertFunc)(void*, void const*, std::size_t);
 
-  ConvertFunc convert_func_table[7][7] = {
+  ConvertFunc const convert_func_table[7][7] = {
       {
           convert<uint8_t, uint8_t>,
           convert<uint8_t, int8_t>,
@@ -287,6 +287,40 @@ namespace {
       }
   };
 
+  template <typename T>
+  inline void deinterleave_stereo_sample_array (T* dest1, T* dest2, T const* src, std::size_t count)
+  {
+      T const* src_end = src + count * 2;
+
+      while (src != src_end)
+      {
+          *dest1 = src[0];
+          *dest2 = src[1];
+
+          dest1++;
+          dest2++;
+          src += 2;
+      }
+  }
+
+  template <typename T>
+  void deinterleave_stereo (void* dest1, void* dest2, void const* src, std::size_t size)
+  {
+      deinterleave_stereo_sample_array (static_cast<T*> (dest1), static_cast<T*> (dest2), static_cast<T const*> (src), size / sizeof(T));
+  }
+
+  typedef void (*DeinterleaveStereoFunc)(void*, void*, void const*, std::size_t);
+
+  DeinterleaveStereoFunc const deinterleave_stereo_func_table[7] = {
+      deinterleave_stereo<uint8_t>,
+      deinterleave_stereo<int8_t>,
+      deinterleave_stereo<uint16_t>,
+      deinterleave_stereo<int16_t>,
+      deinterleave_stereo<uint32_t>,
+      deinterleave_stereo<int32_t>,
+      deinterleave_stereo<float>
+  };
+
 } // anonymous namespace
 
 void visual_audio_sample_convert (VisBuffer *dest, VisAudioSampleFormatType dest_format, VisBuffer *src, VisAudioSampleFormatType src_format)
@@ -299,4 +333,16 @@ void visual_audio_sample_convert (VisBuffer *dest, VisAudioSampleFormatType dest
     int j = int (src_format)  - 1;
 
     convert_func_table[i][j] (dbuf, sbuf, size);
+}
+
+void visual_audio_sample_deinterleave_stereo (VisBuffer *dest1, VisBuffer *dest2, VisBuffer *src, VisAudioSampleFormatType format)
+{
+    void* dbuf1 = visual_buffer_get_data (dest1);
+    void* dbuf2 = visual_buffer_get_data (dest2);
+    void const* sbuf = visual_buffer_get_data (src);
+    std::size_t size = visual_buffer_get_size (src);
+
+    int i = int (format) - 1;
+
+    deinterleave_stereo_func_table[i] (dbuf1, dbuf2, sbuf, size);
 }

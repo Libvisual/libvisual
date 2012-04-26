@@ -1075,69 +1075,29 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 		visual_audio_sample_format_get_size (sample->format)) * sizeof (float);
 }
 
-/*  functions */
-#define STEREO_INTERLEAVED(x)											\
-		{																\
-			/* do we have at least one complete frame? */				\
-			visual_size_t bufsize = visual_buffer_get_size (buffer); 	\
-			visual_return_val_if_fail(bufsize > sizeof(x), -1);		\
-			/* go around troubles with bufsizes <= 1) */				\
-			visual_return_val_if_fail(bufsize > 1, -1);				\
-																		\
-			chan1 = visual_buffer_new_allocate (sizeof (x) * ((visual_buffer_get_size (buffer) / 2)),	\
-				visual_buffer_destroyer_free);							\
-			chan2 = visual_buffer_new_allocate (sizeof (x) * ((visual_buffer_get_size (buffer) / 2)),	\
-					visual_buffer_destroyer_free);						\
-																		\
-			x *pcm = visual_buffer_get_data (buffer);					\
-			x *chan1buf = visual_buffer_get_data (chan1);				\
-			x *chan2buf = visual_buffer_get_data (chan2);				\
-																		\
-			visual_return_val_if_fail (pcm != NULL, -1); 			\
-			visual_return_val_if_fail (chan1buf != NULL, -1); 		\
-			visual_return_val_if_fail (chan2buf != NULL, -1); 		\
-																		\
-			for (i = 0; i < visual_buffer_get_size (buffer); i += 2) 	\
-			{															\
-				chan1buf[i >> 1] = pcm[i];								\
-				chan2buf[i >> 1] = pcm[i + 1];							\
-			}															\
-		}
-
 static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *buffer,
 		VisAudioSampleFormatType format,
 		VisAudioSampleRateType rate)
 {
 	VisBuffer *chan1 = NULL;
 	VisBuffer *chan2 = NULL;
+	int sample_size;
 	VisAudioSample *sample;
 	VisTime *timestamp;
-	int i;
 
-	if (format == VISUAL_AUDIO_SAMPLE_FORMAT_U8)
-		STEREO_INTERLEAVED(uint8_t)
-	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_S8)
-		STEREO_INTERLEAVED(int8_t)
-	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_U16)
-		STEREO_INTERLEAVED(uint16_t)
-	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_S16)
-		STEREO_INTERLEAVED(int16_t)
-	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_U32)
-		STEREO_INTERLEAVED(uint32_t)
-	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_S32)
-		STEREO_INTERLEAVED(int32_t)
-	else if (format == VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT)
-		STEREO_INTERLEAVED(float)
-	else
-		return -1;
+    sample_size = visual_audio_sample_format_get_size (format);
+
+    chan1 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2),
+                                        visual_buffer_destroyer_free);
+    chan2 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2),
+                                        visual_buffer_destroyer_free);
+
+    visual_audio_sample_deinterleave_stereo (chan1, chan2, buffer, format);
 
 	visual_return_val_if_fail (chan1 != NULL, -1);
 	visual_return_val_if_fail (chan2 != NULL, -1);
 
 	timestamp = visual_time_new_now ();
-
-	visual_buffer_set_destroyer (chan1, visual_buffer_destroyer_free);
-	visual_buffer_set_destroyer (chan2, visual_buffer_destroyer_free);
 
 	sample = visual_audio_sample_new (chan1, timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, VISUAL_AUDIO_CHANNEL_LEFT);

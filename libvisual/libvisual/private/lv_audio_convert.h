@@ -10,6 +10,11 @@ void visual_audio_sample_convert (VisBuffer *dest,
                                   VisBuffer *src,
                                   VisAudioSampleFormatType src_format);
 
+void visual_audio_sample_deinterleave_stereo (VisBuffer *dest1,
+                                              VisBuffer *dest2,
+                                              VisBuffer *src,
+                                              VisAudioSampleFormatType format);
+
 LV_END_DECLS
 
 #endif
