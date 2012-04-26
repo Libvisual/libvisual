@@ -15,6 +15,9 @@ namespace LV {
   template <bool cond, typename T = void>
   struct disable_if_c { typedef T type; };
 
+  template <typename T>
+  struct disable_if_c<true, T> {};
+
   template <class Cond, typename T = void>
   struct disable_if : public disable_if_c<Cond::value, T> {};
 
