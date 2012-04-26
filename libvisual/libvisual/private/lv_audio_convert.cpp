@@ -172,7 +172,7 @@ namespace {
       }
   }
 
-  // narrowing/widening unsigned->signed int conversion
+  // narrowing/widening signed->unsigned int conversion
   template <typename D, typename S>
   typename enable_if_c<is_unsigned<D>::value && is_signed<S>::value && sizeof(D) != sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
