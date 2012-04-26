@@ -113,7 +113,7 @@ SET(libvisual_SOURCES
   lv_songinfo_c.cpp
   lv_time_c.cpp
 
-  private/lv_audio_convert.c
+  private/lv_audio_convert.cpp
   private/lv_video_convert.c
   private/lv_video_fill.c
   private/lv_video_scale.c
