@@ -907,14 +907,14 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 	VisAudioSample *sample;
 	VisTime *timestamp;
 
-    sample_size = visual_audio_sample_format_get_size (format);
+	sample_size = visual_audio_sample_format_get_size (format);
 
-    chan1 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2),
-                                        visual_buffer_destroyer_free);
-    chan2 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2),
-                                        visual_buffer_destroyer_free);
+	chan1 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2),
+	                                    visual_buffer_destroyer_free);
+	chan2 = visual_buffer_new_allocate (sample_size * (visual_buffer_get_size (buffer) / 2),
+	                                    visual_buffer_destroyer_free);
 
-    visual_audio_sample_deinterleave_stereo (chan1, chan2, buffer, format);
+	visual_audio_sample_deinterleave_stereo (chan1, chan2, buffer, format);
 
 	visual_return_val_if_fail (chan1 != NULL, -1);
 	visual_return_val_if_fail (chan2 != NULL, -1);
