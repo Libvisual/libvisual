@@ -80,15 +80,8 @@ typedef struct _VisAudioSamplePool VisAudioSamplePool;
 typedef struct _VisAudioSamplePoolChannel VisAudioSamplePoolChannel;
 typedef struct _VisAudioSample VisAudioSample;
 
-/**
- * The VisAudio structure contains the sample and extra information
- * about the sample like a 256 bands analyzer, sound energy and
- * in the future BPM detection.
- *
- * @see visual_audio_new
- */
 struct _VisAudio {
-	VisObject            object;              /**< The VisObject data. */
+	VisObject            object;
 	VisAudioSamplePool	*samplepool;
 };
 
@@ -143,20 +136,6 @@ LV_API VisAudio *visual_audio_new (void);
  * @return VISUAL_OK on success, -VISUAL_ERROR_AUDIO_NULL on failure.
  */
 LV_API int visual_audio_init (VisAudio *audio);
-
-/**
- * This function analyzes the VisAudio, the Fourier frequency magic gets done here, also
- * the audio energy is calculated and some other magic to provide the developer more
- * information about the current sample and the stream.
- *
- * For every sample that is being retrieved this needs to be called. However keep in mind
- * that the VisBin runs it automaticly.
- *
- * @param audio Pointer to a VisAudio that needs to be analyzed.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_AUDIO_NULL on failure.
- */
-LV_API int visual_audio_analyze (VisAudio *audio);
 
 LV_API int visual_audio_get_sample (VisAudio *audio, VisBuffer *buffer, const char *channelid);
 LV_API int visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, int channels, ...);
