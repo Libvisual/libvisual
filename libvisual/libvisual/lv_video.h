@@ -606,12 +606,6 @@ LV_API VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
  */
 LV_API int visual_video_bpp_from_depth (VisVideoDepth depth);
 
-
-/* Optimized versions of performance sensitive routines */
-/* mmx from lv_video_simd.c */ /* FIXME can we do this nicer ? */
-int _lv_blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src);
-int _lv_scale_bilinear_32_mmx (VisVideo *dest, VisVideo *src);
-
 LV_END_DECLS
 
 /**

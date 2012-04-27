@@ -117,7 +117,8 @@ SET(libvisual_SOURCES
   private/lv_video_fill.c
   private/lv_video_scale.c
   private/lv_video_blit.c
-  private/lv_video_simd.c
+  private/lv_video_blit_simd.c
+  private/lv_video_scale_simd.c
 )
 
 SET(LINK_LIBS

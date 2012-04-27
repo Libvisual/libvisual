@@ -1,5 +1,7 @@
+#include "config.h"
 #include "lv_video_scale.h"
 #include "lv_common.h"
+#include "lv_cpu.h"
 
 #pragma pack(1)
 
@@ -17,6 +19,8 @@ typedef struct {
 
 #pragma pack()
 
+/* Defined externally */
+void visual_video_scale_bilinear_color32_mmx (VisVideo *dest, VisVideo *src);
 
 void visual_video_scale_nearest_color8 (VisVideo *dest, VisVideo *src)
 {
@@ -332,6 +336,11 @@ void visual_video_scale_bilinear_color24 (VisVideo *dest, VisVideo *src)
 
 void visual_video_scale_bilinear_color32 (VisVideo *dest, VisVideo *src)
 {
+	if (visual_cpu_has_mmx ()) {
+		visual_video_scale_bilinear_color32_mmx (dest, src);
+		return;
+	}
+
 	uint32_t y;
 	uint32_t u, v, du, dv; /* fixed point 16.16 */
 	uint32_t *dest_pixel, *src_pixel_rowu, *src_pixel_rowl;

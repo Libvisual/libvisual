@@ -1149,10 +1149,7 @@ void visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod meth
 			if (method == VISUAL_VIDEO_SCALE_NEAREST)
 				visual_video_scale_nearest_color32 (dest, src);
 			else if (method == VISUAL_VIDEO_SCALE_BILINEAR) {
-				if (visual_cpu_has_mmx ())
-					_lv_scale_bilinear_32_mmx (dest, src);
-				else
-					visual_video_scale_bilinear_color32 (dest, src);
+				visual_video_scale_bilinear_color32 (dest, src);
 			}
 
 			break;

@@ -15,6 +15,9 @@ typedef struct {
 
 #pragma pack()
 
+/* Defined externally */
+void blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src);
+
 void blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 {
 	int y;
@@ -44,7 +47,7 @@ void blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
 	uint8_t alpha;
 
 	if (visual_cpu_has_mmx ()) {
-		_lv_blit_overlay_alphasrc_mmx (dest, src);
+		blit_overlay_alphasrc_mmx (dest, src);
 		return;
 	}
 
