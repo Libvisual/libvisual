@@ -167,7 +167,7 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 {
     pulseaudio_priv_t *priv = NULL;
     short pcm_data[PCM_BUF_SIZE];
-    VisBuffer buffer;
+    VisBuffer *buffer;
     int error;
 
     visual_mem_set(pcm_data, 0, sizeof(pcm_data));
@@ -184,9 +184,10 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
         return -VISUAL_ERROR_GENERAL;
     }
 
-    visual_buffer_init(&buffer, pcm_data, PCM_BUF_SIZE, NULL);
-    visual_audio_samplepool_input(audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+    buffer = visual_buffer_new_wrap_data (pcm_data, PCM_BUF_SIZE);
+    visual_audio_samplepool_input(audio->samplepool, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
         VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+    visual_buffer_free (buffer);
 
     return 0;
 }

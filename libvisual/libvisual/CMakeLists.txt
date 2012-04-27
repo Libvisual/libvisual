@@ -35,7 +35,6 @@ SET(libvisual_HEADERS
   lv_bits.h
   lv_cpu.h
   lv_color.h
-  lv_beat.h
   lv_time.h
   lv_random.h
   lv_error.h
@@ -67,19 +66,16 @@ SET(libvisual_HEADERS
 SET(libvisual_SOURCES
   lv_bin.c
   lv_video.c
-  lv_video_simd.c
   lv_mem.c
   lv_audio.c
   lv_list.c
   lv_log.c
-  lv_beat.c
   lv_bmp.c
   lv_param.c
   lv_cpu.c
   lv_error.c
   lv_object.c
   lv_ringbuffer.c
-  lv_buffer.c
   lv_collection.c
   lv_os.c
   lv_math.c
@@ -88,6 +84,7 @@ SET(libvisual_SOURCES
   lv_util.c
 
   lv_actor.cpp
+  lv_buffer.cpp
   lv_color.cpp
   lv_event.cpp
   lv_fourier.cpp
@@ -103,6 +100,7 @@ SET(libvisual_SOURCES
   lv_time.cpp
   lv_transform.cpp
 
+  lv_buffer_c.cpp
   lv_color_c.cpp
   lv_event_c.cpp
   lv_fourier_c.cpp
@@ -114,11 +112,12 @@ SET(libvisual_SOURCES
   lv_songinfo_c.cpp
   lv_time_c.cpp
 
-  private/lv_audio_convert.c
+  private/lv_audio_convert.cpp
   private/lv_video_convert.c
   private/lv_video_fill.c
   private/lv_video_scale.c
   private/lv_video_blit.c
+  private/lv_video_simd.c
 )
 
 SET(LINK_LIBS

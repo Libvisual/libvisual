@@ -28,13 +28,6 @@
 #include "lv_cpu.h"
 #include <math.h>
 
-/* This file is getting big and bloated because of the large chunks of simd code. When all is in place we'll take a serious
- * look how we can reduce this. For example by using macros for common blocks. */
-
-/* SMALL TODO LIST:
- * Benchmark all the code very well.
- */
-
 int visual_math_is_power_of_2 (int n)
 {
 	return (n > 0) && !(n & (n - 1));
@@ -56,13 +49,13 @@ unsigned int visual_math_round_power_of_2 (unsigned int n)
 	return n;
 }
 
-int visual_math_vectorized_multiplier_floats_const_float (float *dest, const float *src, visual_size_t n, float multiplier)
+void visual_math_simd_mul_floats_float (float *dest, const float *src, visual_size_t n, float k)
 {
 	float *d = dest;
 	const float *s = src;
 
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (dest != NULL);
+	visual_return_if_fail (src  != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -70,13 +63,13 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, const flo
 	if (visual_cpu_has_sse () && n >= 16) {
 		float packed_multiplier[4];
 
-		packed_multiplier[0] = multiplier;
-		packed_multiplier[1] = multiplier;
-		packed_multiplier[2] = multiplier;
-		packed_multiplier[3] = multiplier;
+		packed_multiplier[0] = k;
+		packed_multiplier[1] = k;
+		packed_multiplier[2] = k;
+		packed_multiplier[3] = k;
 
 		while (!VISUAL_ALIGNED(d, 16)) {
-			(*d) = (*s) * multiplier;
+			(*d) = (*s) * k;
 
 			d++;
 			s++;
@@ -113,8 +106,8 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, const flo
 	} else if (visual_cpu_has_3dnow ()) {
 		float packed_multiplier[2];
 
-		packed_multiplier[0] = multiplier;
-		packed_multiplier[1] = multiplier;
+		packed_multiplier[0] = k;
+		packed_multiplier[1] = k;
 
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
@@ -159,35 +152,33 @@ int visual_math_vectorized_multiplier_floats_const_float (float *dest, const flo
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
-		(*d) = (*s) * multiplier;
+		(*d) = (*s) * k;
 
 		d++;
 		s++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_add_floats_const_float (float *dest, const float *src, visual_size_t n, float adder)
+void visual_math_simd_add_floats_float (float *dest, const float *src, visual_size_t n, float k)
 {
 	float *d = dest;
 	const float *s = src;
 
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (dest != NULL);
+	visual_return_if_fail (src  != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 	if (visual_cpu_has_sse () && n >= 16) {
 		float packed_adder[4];
 
-		packed_adder[0] = adder;
-		packed_adder[1] = adder;
-		packed_adder[2] = adder;
-		packed_adder[3] = adder;
+		packed_adder[0] = k;
+		packed_adder[1] = k;
+		packed_adder[2] = k;
+		packed_adder[3] = k;
 
 		while (!VISUAL_ALIGNED(d, 16)) {
-			(*d) = (*s) + adder;
+			(*d) = (*s) + k;
 
 			d++;
 			s++;
@@ -225,8 +216,8 @@ int visual_math_vectorized_add_floats_const_float (float *dest, const float *src
 	} else if (visual_cpu_has_3dnow ()) {
 		float packed_adder[2];
 
-		packed_adder[0] = adder;
-		packed_adder[1] = adder;
+		packed_adder[0] = k;
+		packed_adder[1] = k;
 
 		__asm __volatile
 			("\n\t movq %[adder], %%mm0"
@@ -271,135 +262,22 @@ int visual_math_vectorized_add_floats_const_float (float *dest, const float *src
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
-		(*d) = (*s) + adder;
+		(*d) = (*s) + k;
 
 		d++;
 		s++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_substract_floats_const_float (float *dest, const float *src, visual_size_t n, float substracter)
-{
-	float *d = dest;
-	const float *s = src;
-
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
-
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	if (visual_cpu_has_sse () && n >= 16) {
-		float packed_substracter[4];
-
-		packed_substracter[0] = substracter;
-		packed_substracter[1] = substracter;
-		packed_substracter[2] = substracter;
-		packed_substracter[3] = substracter;
-
-		while (!VISUAL_ALIGNED(d, 16)) {
-			(*d) = (*s) - substracter;
-
-			d++;
-			s++;
-
-			n--;
-		}
-
-		__asm __volatile
-			("\n\t movups (%0), %%xmm7"
-			 :: "r" (packed_substracter) : "memory");
-
-
-		while (n > 16) {
-			__asm __volatile
-				("\n\t prefetchnta 256(%0)"
-				 "\n\t movups (%0), %%xmm0"
-				 "\n\t movups 16(%0), %%xmm1"
-				 "\n\t movups 32(%0), %%xmm2"
-				 "\n\t movups 48(%0), %%xmm3"
-				 "\n\t subps %%xmm7, %%xmm0"
-				 "\n\t subps %%xmm7, %%xmm1"
-				 "\n\t subps %%xmm7, %%xmm2"
-				 "\n\t subps %%xmm7, %%xmm3"
-				 "\n\t movntps %%xmm0, (%1)"
-				 "\n\t movntps %%xmm1, 16(%1)"
-				 "\n\t movntps %%xmm2, 32(%1)"
-				 "\n\t movntps %%xmm3, 48(%1)"
-				 :: "r" (s), "r" (d) : "memory");
-
-			d += 16;
-			s += 16;
-
-			n -= 16;
-		}
-	} else if (visual_cpu_has_3dnow ()) {
-		float packed_substracter[2];
-
-		packed_substracter[0] = substracter;
-		packed_substracter[1] = substracter;
-
-		__asm __volatile
-			("\n\t movq %[substracter], %%mm0"
-			 :: [substracter] "m" (*packed_substracter));
-
-		while (n > 14) {
-			__asm __volatile
-				("\n\t prefetch 256(%0)"
-				 "\n\t movq (%0), %%mm1"
-				 "\n\t pfsub %%mm0, %%mm1"
-				 "\n\t movq 8(%0), %%mm2"
-				 "\n\t movq %%mm1, (%1)"
-				 "\n\t pfsub %%mm0, %%mm2"
-				 "\n\t movq 16(%0), %%mm3"
-				 "\n\t movq %%mm2, 8(%1)"
-				 "\n\t pfsub %%mm0, %%mm3"
-				 "\n\t movq 24(%0), %%mm4"
-				 "\n\t movq %%mm3, 16(%1)"
-				 "\n\t pfsub %%mm0, %%mm4"
-				 "\n\t movq 32(%0), %%mm5"
-				 "\n\t movq %%mm4, 24(%1)"
-				 "\n\t pfsub %%mm0, %%mm5"
-				 "\n\t movq 40(%0), %%mm6"
-				 "\n\t movq %%mm5, 32(%1)"
-				 "\n\t pfsub %%mm0, %%mm6"
-				 "\n\t movq 48(%0), %%mm7"
-				 "\n\t movq %%mm6, 40(%1)"
-				 "\n\t pfsub %%mm0, %%mm7"
-				 "\n\t movq %%mm7, 48(%1)"
-				 :: "r" (s), "r" (d) : "memory");
-
-			d += 14;
-			s += 14;
-
-			n -= 14;
-		}
-
-		__asm __volatile
-			("\n\t emms");
-	}
-
-#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
-
-	while (n--) {
-		(*d) = (*s) - substracter;
-
-		d++;
-		s++;
-	}
-
-	return VISUAL_OK;
-}
-
-int visual_math_vectorized_multiplier_floats_floats (float *dest, const float *src1, const float *src2, visual_size_t n)
+void visual_math_simd_mul_floats_floats (float *dest, const float *src1, const float *src2, visual_size_t n)
 {
 	float *d = dest;
 	const float *s1 = src1;
 	const float *s2 = src2;
 
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (dest != NULL);
+	visual_return_if_fail (src1 != NULL);
+	visual_return_if_fail (src2 != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -484,17 +362,15 @@ int visual_math_vectorized_multiplier_floats_floats (float *dest, const float *s
 		s1++;
 		s2++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_floats_to_int32s (int32_t *ints, const float *flts, visual_size_t n)
+void visual_math_simd_floats_to_int32s (int32_t *ints, const float *flts, visual_size_t n)
 {
 	const float *s = flts;
 	int32_t *d = ints;
 
-	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (flts != NULL);
+	visual_return_if_fail (ints != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -540,17 +416,15 @@ int visual_math_vectorized_floats_to_int32s (int32_t *ints, const float *flts, v
 		d++;
 		s++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_int32s_to_floats (float *flts, const int32_t *ints, visual_size_t n)
+void visual_math_simd_int32s_to_floats (float *flts, const int32_t *ints, visual_size_t n)
 {
 	const int32_t *s = ints;
 	float *d = flts;
 
-	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (flts != NULL);
+	visual_return_if_fail (ints != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -595,25 +469,23 @@ int visual_math_vectorized_int32s_to_floats (float *flts, const int32_t *ints, v
 		d++;
 		s++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, const float *flts, visual_size_t n, float multiplier)
+void visual_math_simd_floats_to_int32s_mul_float (int32_t *ints, const float *flts, visual_size_t n, float k)
 {
 	const float *s = flts;
 	int32_t *d = ints;
 
-	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (flts != NULL);
+	visual_return_if_fail (ints != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 	if (visual_cpu_has_3dnow ()) {
 		float packed_multiplier[2];
 
-		packed_multiplier[0] = multiplier;
-		packed_multiplier[1] = multiplier;
+		packed_multiplier[0] = k;
+		packed_multiplier[1] = k;
 
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
@@ -650,29 +522,27 @@ int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, const float
 #endif
 
 	while (n--) {
-		*d = (float) *s * multiplier;
+		*d = (float) *s * k;
 
 		d++;
 		s++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_int32s_to_floats_multiply (float *flts, const int32_t *ints, visual_size_t n, float multiplier)
+void visual_math_simd_int32s_to_floats_mul_float (float *flts, const int32_t *ints, visual_size_t n, float k)
 {
 	const int32_t *s = ints;
 	float *d = flts;
 
-	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (flts != NULL);
+	visual_return_if_fail (ints != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	if (visual_cpu_has_3dnow ()) {
 		float packed_multiplier[2];
 
-		packed_multiplier[0] = multiplier;
-		packed_multiplier[1] = multiplier;
+		packed_multiplier[0] = k;
+		packed_multiplier[1] = k;
 
 		__asm __volatile
 			("\n\t movq %[multiplier], %%mm0"
@@ -716,22 +586,20 @@ int visual_math_vectorized_int32s_to_floats_multiply (float *flts, const int32_t
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
-		*d = (float) *s * multiplier;
+		*d = (float) *s * k;
 
 		d++;
 		s++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints, const float *flts, visual_size_t n, float multiplier)
+void visual_math_simd_floats_to_int32s_mul_float_denormalise (int32_t *ints, const float *flts, visual_size_t n, float k)
 {
 	const float *s = flts;
 	int32_t *d = ints;
 
-	visual_return_val_if_fail (flts != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (ints != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (flts != NULL);
+	visual_return_if_fail (ints != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	if (visual_cpu_has_3dnow ()) {
@@ -739,8 +607,8 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 		float packed_normalise_mul[2];
 		float packed_adder[2];
 
-		packed_multiplier[0] = multiplier;
-		packed_multiplier[1] = multiplier;
+		packed_multiplier[0] = k;
+		packed_multiplier[1] = k;
 
 		packed_normalise_mul[0] = 0.5;
 		packed_normalise_mul[1] = 0.5;
@@ -787,22 +655,20 @@ int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints,
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 	while (n--) {
-		*d = (float) (((*s) + 1) * 0.5) * multiplier;
+		*d = (float) (((*s) + 1) * 0.5) * k;
 
 		d++;
 		s++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_sqrt_floats (float *dest, const float *src, visual_size_t n)
+void visual_math_simd_sqrt_floats (float *dest, const float *src, visual_size_t n)
 {
 	float *d = dest;
 	const float *s = src;
 
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (dest != NULL);
+	visual_return_if_fail (src  != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -846,19 +712,17 @@ int visual_math_vectorized_sqrt_floats (float *dest, const float *src, visual_si
 		d++;
 		s++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_complex_to_norm (float *dest, const float *real, const float *imag, visual_size_t n)
+void visual_math_simd_complex_norm (float *dest, const float *real, const float *imag, visual_size_t n)
 {
 	float *d = dest;
 	const float *r = real;
 	const float *i = imag;
 
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (dest != NULL);
+	visual_return_if_fail (real != NULL);
+	visual_return_if_fail (imag != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
@@ -911,32 +775,30 @@ int visual_math_vectorized_complex_to_norm (float *dest, const float *real, cons
 		r++;
 		i++;
 	}
-
-	return VISUAL_OK;
 }
 
-int visual_math_vectorized_complex_to_norm_scale (float *dest, const float *real, const float *imag, visual_size_t n, float scaler)
+void visual_math_simd_complex_norm_mul_float (float *dest, const float *real, const float *imag, visual_size_t n, float k)
 {
 	float *d = dest;
 	const float *r = real;
 	const float *i = imag;
 
-	visual_return_val_if_fail (dest != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (real != NULL, -VISUAL_ERROR_NULL);
-	visual_return_val_if_fail (imag != NULL, -VISUAL_ERROR_NULL);
+	visual_return_if_fail (dest != NULL);
+	visual_return_if_fail (real != NULL);
+	visual_return_if_fail (imag != NULL);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 	if (visual_cpu_has_sse () && n >= 16) {
 		float packed_scaler[4];
 
-		packed_scaler[0] = scaler;
-		packed_scaler[1] = scaler;
-		packed_scaler[2] = scaler;
-		packed_scaler[3] = scaler;
+		packed_scaler[0] = k;
+		packed_scaler[1] = k;
+		packed_scaler[2] = k;
+		packed_scaler[3] = k;
 
 		while (!VISUAL_ALIGNED(d, 16)) {
-			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * scaler;
+			*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * k;
 
 			d++;
 			r++;
@@ -983,12 +845,10 @@ int visual_math_vectorized_complex_to_norm_scale (float *dest, const float *real
 
 
 	while (n--) {
-		*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * scaler;
+		*d = sqrtf (((*r) * (*r)) + ((*i) * (*i))) * k;
 
 		d++;
 		r++;
 		i++;
 	}
-
-	return VISUAL_OK;
 }

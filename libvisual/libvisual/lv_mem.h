@@ -92,22 +92,7 @@ typedef void *(*VisMemSet32Func)(void *dest, int c, visual_size_t n);
 
 LV_BEGIN_DECLS
 
-/**
- * Initialize the memory functions. This is used to set the function
- * pointers to the right optimized version.  It's legal to call
- * visual_mem_initialize more than once in the same context if it's
- * needed to reset the optimal function pointers. This function bases
- * it's choices upon the VisCPU system.
- *
- * Be aware that visual_mem_initialize() should be called to set the
- * most optimize mem_copy() and mem_set() functions is called. Be sure
- * that visual_cpu_initialize() is called before this however if
- * possible the best solution is to just call visual_init() which will
- * call all the libvisual initialize functions.
- *
- * return VISUAL_OK on succes.
- */
-LV_API int visual_mem_initialize (void);
+void visual_mem_initialize (void);
 
 /**
  * Allocates @a nbytes of uninitialized memory.
@@ -148,16 +133,14 @@ LV_API void *visual_mem_realloc (void *ptr, visual_size_t nbytes) LV_ATTR_MALLOC
  */
 LV_API int visual_mem_free (void *ptr);
 
-
 LV_API void *visual_mem_malloc_aligned (visual_size_t size, visual_size_t alignment);
-
-LV_API void visual_mem_free_aligned (void* ptr);
+LV_API void  visual_mem_free_aligned   (void* ptr);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 extern LV_API VisMemCopyFunc visual_mem_copy;
 extern LV_API VisMemCopyPitchFunc visual_mem_copy_pitch;
 
-extern LV_API VisMemSet8Func visual_mem_set;
+extern LV_API VisMemSet8Func  visual_mem_set;
 extern LV_API VisMemSet16Func visual_mem_set16;
 extern LV_API VisMemSet32Func visual_mem_set32;
 

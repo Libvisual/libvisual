@@ -14,8 +14,6 @@ extern LV_API VisAlphaBlendFunc visual_alpha_blend_16;
 extern LV_API VisAlphaBlendFunc visual_alpha_blend_24;
 extern LV_API VisAlphaBlendFunc visual_alpha_blend_32;
 
-LV_API void visual_alpha_blend_initialize (void);
-
 LV_END_DECLS
 
 #endif /* _LV_ALPHA_BLEND_H */

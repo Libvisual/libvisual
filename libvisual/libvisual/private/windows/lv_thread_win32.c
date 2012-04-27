@@ -35,18 +35,9 @@ struct _VisMutex {
     HANDLE handle;
 };
 
-static int is_initialized = FALSE;
-
 int visual_thread_initialize (void)
 {
-    is_initialized = TRUE;
-
     return TRUE;
-}
-
-int visual_thread_is_initialized (void)
-{
-    return is_initialized;
 }
 
 int visual_thread_is_supported (void)
@@ -59,8 +50,6 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
     // FIXME: What to do with the joinable flag?
 
     VisThread *thread;
-
-    visual_return_val_if_fail (visual_thread_is_initialized (), NULL);
 
     thread = visual_mem_new0 (VisThread, 1);
 
@@ -79,7 +68,6 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 
 int visual_thread_free (VisThread *thread)
 {
-    visual_return_val_if_fail (visual_thread_is_initialized (), -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
     visual_return_val_if_fail (thread != NULL, -VISUAL_ERROR_THREAD_NULL);
 
     return visual_mem_free (thread);
@@ -87,7 +75,6 @@ int visual_thread_free (VisThread *thread)
 
 void *visual_thread_join (VisThread *thread)
 {
-    visual_return_val_if_fail (visual_thread_is_initialized (), NULL);
     visual_return_val_if_fail (thread != NULL, NULL);
 
     void *result = NULL;
@@ -109,15 +96,11 @@ void *visual_thread_join (VisThread *thread)
 
 void visual_thread_exit (void *retval)
 {
-    visual_return_if_fail (visual_thread_is_initialized ());
-
     ExitThread (0);
 }
 
 void visual_thread_yield (void)
 {
-    visual_return_if_fail (visual_thread_is_initialized ());
-
     SwitchToThread ();
 }
 
@@ -125,8 +108,6 @@ VisMutex *visual_mutex_new (void)
 {
     VisMutex *mutex;
     HANDLE handle;
-
-    visual_return_val_if_fail (visual_thread_is_initialized (), NULL);
 
     handle = CreateMutex (NULL, FALSE, NULL);
     if (!handle) {
@@ -141,7 +122,6 @@ VisMutex *visual_mutex_new (void)
 
 int visual_mutex_free (VisMutex *mutex)
 {
-    visual_return_val_if_fail (visual_thread_is_initialized (), -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
     visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
     CloseHandle (mutex->handle);
@@ -151,7 +131,6 @@ int visual_mutex_free (VisMutex *mutex)
 
 int visual_mutex_lock (VisMutex *mutex)
 {
-    visual_return_val_if_fail (visual_thread_is_initialized (), -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
     visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
     return (WaitForSingleObject (mutex->handle, INFINITE) == WAIT_OBJECT_0);
@@ -159,7 +138,6 @@ int visual_mutex_lock (VisMutex *mutex)
 
 int visual_mutex_trylock (VisMutex *mutex)
 {
-    visual_return_val_if_fail (visual_thread_is_initialized (), -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
     visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
     return (WaitForSingleObject (mutex->handle, 0) == WAIT_OBJECT_0);
@@ -167,7 +145,6 @@ int visual_mutex_trylock (VisMutex *mutex)
 
 int visual_mutex_unlock (VisMutex *mutex)
 {
-    visual_return_val_if_fail (visual_thread_is_initialized (), -VISUAL_ERROR_THREAD_NOT_INITIALIZED);
     visual_return_val_if_fail (mutex != NULL, -VISUAL_ERROR_MUTEX_NULL);
 
     ReleaseMutex (mutex->handle);

@@ -227,12 +227,14 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 		rcnt = snd_pcm_readi(priv->chandle, data, PCM_BUF_SIZE / 2);
 
 		if (rcnt > 0) {
-			VisBuffer buffer;
+			VisBuffer *buffer;
 
-			visual_buffer_init (&buffer, data, rcnt*2, NULL);
+			buffer = visual_buffer_new_wrap_data (data, rcnt*2);
 
-			visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+			visual_audio_samplepool_input (audio->samplepool, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
 					VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+
+			visual_buffer_free (buffer);
 		}
 
 		if (rcnt < 0) {

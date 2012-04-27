@@ -254,7 +254,7 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 {
 	mplayer_priv_t *priv = NULL;
-	VisBuffer buffer;
+	VisBuffer *buffer;
 
 	visual_return_val_if_fail( audio != NULL, -1 );
 	visual_return_val_if_fail( plugin != NULL, -1 );
@@ -262,11 +262,12 @@ static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	visual_return_val_if_fail( priv != NULL, -1 );
 	visual_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
-	visual_buffer_init( &buffer, (uint8_t *)priv->mmap_area + sizeof( mplayer_data_t ), 2048 / sizeof( int16_t ), NULL );
-	visual_audio_samplepool_input (audio->samplepool, &buffer,
+	buffer = visual_buffer_new_wrap_data ( (uint8_t *)priv->mmap_area + sizeof( mplayer_data_t ), 2048 / sizeof( int16_t ) );
+	visual_audio_samplepool_input (audio->samplepool, buffer,
 	                               VISUAL_AUDIO_SAMPLE_RATE_44100,
 	                               VISUAL_AUDIO_SAMPLE_FORMAT_S16,
 	                               VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+	visual_buffer_free (buffer);
 
 	return 0;
 }

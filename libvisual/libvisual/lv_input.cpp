@@ -175,7 +175,7 @@ int visual_input_run (VisInput *input)
     } else
         input->callback (input, input->audio, visual_object_get_private (VISUAL_OBJECT (input)));
 
-    visual_audio_analyze (input->audio);
+    //visual_audio_analyze (input->audio);
 
     return VISUAL_OK;
 }

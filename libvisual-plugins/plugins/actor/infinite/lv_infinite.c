@@ -186,7 +186,7 @@ static VisPalette *act_infinite_palette (VisPluginData *plugin)
 
 static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	VisBuffer buffer;
+	VisBuffer *buffer;
 	InfinitePrivate *priv;
 
 	visual_return_val_if_fail (plugin != NULL, -1);
@@ -195,14 +195,18 @@ static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_buffer_set_data_pair (&buffer, priv->pcm_data[0], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+	buffer = visual_buffer_new ();
 
-	visual_buffer_set_data_pair (&buffer, priv->pcm_data[1], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_buffer_set_data_pair (buffer, priv->pcm_data[0], sizeof (float) * 512);
+	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+
+	visual_buffer_set_data_pair (buffer, priv->pcm_data[1], sizeof (float) * 512);
+	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_LEFT);
 
 	_inf_renderer (priv);
 	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video), video->pitch);
+
+	visual_buffer_free (buffer);
 
 	return 0;
 }

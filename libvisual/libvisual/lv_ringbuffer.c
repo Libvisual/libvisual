@@ -52,7 +52,7 @@ static int ringbuffer_entry_dtor (VisObject *object)
 	if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
 
 		if (entry->buffer != NULL)
-			visual_object_unref (VISUAL_OBJECT (entry->buffer));
+			visual_buffer_free (entry->buffer);
 
 	} else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
 
@@ -128,7 +128,7 @@ int visual_ringbuffer_add_buffer_by_data (VisRingBuffer *ringbuffer, void *data,
 	visual_return_val_if_fail (ringbuffer != NULL, -VISUAL_ERROR_RINGBUFFER_NULL);
 	visual_return_val_if_fail (data != NULL, -VISUAL_ERROR_NULL);
 
-	buffer = visual_buffer_new_with_buffer (data, nbytes, NULL);
+	buffer = visual_buffer_new_wrap_data (data, nbytes);
 
 	return visual_ringbuffer_add_buffer (ringbuffer, buffer);
 }
@@ -163,7 +163,7 @@ int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer)
 		if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
 
 			if ((bsize = visual_buffer_get_size (entry->buffer)) > 0)
-					totalsize += bsize;
+				totalsize += bsize;
 
 		} else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
 
@@ -175,7 +175,7 @@ int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer)
 				if ((bsize = visual_buffer_get_size (tempbuf)) > 0)
 						totalsize += bsize;
 
-				visual_object_unref (VISUAL_OBJECT (tempbuf));
+				visual_buffer_unref (tempbuf);
 			}
 		}
 	}
@@ -250,15 +250,14 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 			}
 
 			if (curposition + visual_buffer_get_size (tempbuf) > nbytes) {
-				VisBuffer buf;
+				VisBuffer *buf;
 
-				visual_buffer_init (&buf, visual_buffer_get_data (tempbuf),
-						nbytes - curposition, NULL);
-
-				visual_buffer_put (data, &buf, curposition);
+				buf = visual_buffer_new_wrap_data (visual_buffer_get_data (tempbuf), nbytes - curposition);
+				visual_buffer_put (data, buf, curposition);
+				visual_buffer_free (buf);
 
 				if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
-					visual_object_unref (VISUAL_OBJECT (tempbuf));
+					visual_buffer_unref (tempbuf);
 
 				return VISUAL_OK;
 			}
@@ -268,7 +267,7 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 			curposition += visual_buffer_get_size (tempbuf);
 
 			if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
-				visual_object_unref (VISUAL_OBJECT (tempbuf));
+				visual_buffer_unref (tempbuf);
 
 			/* Filled without room for partial buffer addition */
 			if (curposition == nbytes)
@@ -327,7 +326,7 @@ static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffe
 							visual_buffer_get_size (tempbuf)) -
 							(curoffset - offset), curoffset - offset, 0);
 
-					visual_object_unref (VISUAL_OBJECT (tempbuf));
+					visual_buffer_unref (tempbuf);
 
 					*buffercorr = curoffset - offset;
 
@@ -351,7 +350,7 @@ static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffe
 					break;
 				}
 
-				visual_object_unref (VISUAL_OBJECT (tempbuf));
+				visual_buffer_unref (tempbuf);
 			}
 		}
 	}
@@ -389,7 +388,7 @@ VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int nbytes
 
 	visual_return_val_if_fail (ringbuffer != NULL, NULL);
 
-	buffer = visual_buffer_new_allocate (nbytes, NULL);
+	buffer = visual_buffer_new_allocate (nbytes);
 
 	visual_ringbuffer_get_data_offset (ringbuffer, buffer, 0, nbytes);
 
@@ -407,7 +406,7 @@ VisBuffer *visual_ringbuffer_get_data_new_without_wrap (VisRingBuffer *ringbuffe
 	if ((ringsize = visual_ringbuffer_get_size (ringbuffer)) < nbytes)
 		amount = ringsize;
 
-	buffer = visual_buffer_new_allocate (amount, NULL);
+	buffer = visual_buffer_new_allocate (amount);
 
 	visual_ringbuffer_get_data_without_wrap (ringbuffer, buffer, amount);
 

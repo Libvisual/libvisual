@@ -260,31 +260,36 @@ static VisPalette *act_oinksie_palette (VisPluginData *plugin)
 static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer			 pcmbuf1;
-	VisBuffer			 pcmbuf2;
-	VisBuffer			 pcmmix;
-	VisBuffer			 spmbuf;
+	VisBuffer			 *pcmbuf1;
+	VisBuffer			 *pcmbuf2;
+	VisBuffer			 *pcmmix;
+	VisBuffer			 *spmbuf;
 
 	/* Left audio */
-	visual_buffer_set_data_pair (&pcmbuf1, priv->priv1.audio.pcm[0], sizeof (float) * 4096);
-	visual_audio_get_sample (audio, &pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
+	pcmbuf1 = visual_buffer_new_wrap_data (&priv->priv1.audio.pcm[0], sizeof (float) * 4096);
+	visual_audio_get_sample (audio, pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	visual_buffer_set_data_pair (&spmbuf, &priv->priv1.audio.freq[0], sizeof (float) * 256);
-	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmbuf1, FALSE);
+	spmbuf = visual_buffer_new_wrap_data (&priv->priv1.audio.freq[0], sizeof (float) * 256);
+	visual_audio_get_spectrum_for_sample (spmbuf, pcmbuf1, FALSE);
 
 	/* Right audio */
-	visual_buffer_set_data_pair (&pcmbuf2, priv->priv1.audio.pcm[1], sizeof (float) * 4096);
-	visual_audio_get_sample (audio, &pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
+	pcmbuf2 = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[1], sizeof (float) * 4096);
+	visual_audio_get_sample (audio, pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&spmbuf, priv->priv1.audio.freq[1], sizeof (float) * 256);
-	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmbuf2, FALSE);
+	visual_buffer_set_data_pair (spmbuf, priv->priv1.audio.freq[1], sizeof (float) * 256);
+	visual_audio_get_spectrum_for_sample (spmbuf, pcmbuf2, FALSE);
 
 	/* Mix channels */
-	visual_buffer_set_data_pair (&pcmmix, priv->priv1.audio.pcm[2], sizeof (float) * 4096);
-	visual_audio_sample_buffer_mix_many (&pcmmix, TRUE, 2, &pcmbuf1, &pcmbuf2, 1.0, 1.0);
+	pcmmix = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[2], sizeof (float) * 4096);
+	visual_audio_sample_buffer_mix_many (pcmmix, TRUE, 2, pcmbuf1, pcmbuf2, 1.0, 1.0);
 
-	visual_buffer_set_data_pair (&spmbuf, priv->priv1.audio.freqsmall, sizeof (float) * 4);
-	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmmix, FALSE);
+	visual_buffer_set_data_pair (spmbuf, priv->priv1.audio.freqsmall, sizeof (float) * 4);
+	visual_audio_get_spectrum_for_sample (spmbuf, pcmmix, FALSE);
+
+	visual_buffer_free (pcmbuf1);
+	visual_buffer_free (pcmbuf2);
+	visual_buffer_free (spmbuf);
+	visual_buffer_free (pcmmix);
 
 	/* Duplicate for second oinksie instance */
 	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (float) * 4096 * 3);
@@ -292,8 +297,8 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	visual_mem_copy (&priv->priv2.audio.freqsmall, &priv->priv1.audio.freqsmall, sizeof (float) * 4);
 
 	/* Audio energy */
-	priv->priv1.audio.energy = audio->energy;
-	priv->priv2.audio.energy = audio->energy;
+	priv->priv1.audio.energy = 0 /*audio->energy*/;
+	priv->priv2.audio.energy = 0 /*audio->energy*/;
 
 	/* Let's get rendering */
 	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {

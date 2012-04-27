@@ -44,23 +44,6 @@ typedef struct _VisMutex VisMutex;
 typedef void *(*VisThreadFunc)(void *data);
 
 /**
- * Initializes the VisThread subsystem. This function needs to be
- * called before VisThread can be used. Also this function is called
- * from within visual_init().
- *
- * @return TRUE if initialized, FALSE if not initialized.
- */
-LV_API int visual_thread_initialize (void);
-
-/**
- * Request if VisThread is initialized or not. This function should
- * not be confused with visual_thread_is_supported().
- *
- * @return TRUE if initialized, FALSE if not initialized.
- */
-LV_API int visual_thread_is_initialized (void);
-
-/**
  * Is used to check if threading is supported. When threading is used
  * this should always be checked, it's possible to disable threads
  * from within the code, so no \#ifdefs should be used.

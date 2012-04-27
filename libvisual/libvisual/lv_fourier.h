@@ -133,12 +133,8 @@ struct _VisDFT;
 
 LV_BEGIN_DECLS
 
-void visual_fourier_initialize (void);
-int  visual_fourier_is_initialized (void);
-void visual_fourier_deinitialize (void);
-
-VisDFT *visual_dft_new (unsigned int samples_out, unsigned int samples_in);
-void visual_dft_free (VisDFT *dft);
+VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
+void    visual_dft_free (VisDFT *dft);
 
 void visual_dft_perform (VisDFT *dft, float *output, float const *input);
 

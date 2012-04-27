@@ -33,7 +33,6 @@
 #include "lv_log.h"
 #include "lv_param.h"
 #include "lv_thread.h"
-#include "lv_cpu.h"
 #include "lv_util.h"
 
 #include "gettext.h"
@@ -42,6 +41,11 @@ extern "C" {
 
   // Set a progname from argv[0] when we're capable of doing so.
   char *__lv_progname = 0;
+
+  void visual_alpha_blend_initialize (void);
+  void visual_cpu_initialize (void);
+  void visual_mem_initialize (void);
+  void visual_thread_initialize (void);
 }
 
 namespace LV

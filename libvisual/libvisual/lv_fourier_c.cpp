@@ -36,20 +36,5 @@ extern "C" {
       LV::DFT::log_scale_custom (output, input, size, log_scale_divisor);
   }
 
-  void visual_fourier_initialize ()
-  {
-      LV::Fourier::init ();
-  }
-
-  int visual_fourier_is_initialized ()
-  {
-      return LV::Fourier::instance() != 0;
-  }
-
-  void visual_fourier_deinitialize ()
-  {
-      LV::Fourier::deinit ();
-  }
-
 } // C extern
 

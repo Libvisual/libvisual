@@ -113,7 +113,7 @@ static int act_bumpscope_init (VisPluginData *plugin)
     visual_param_entry_set_annotation(param, "Whether to use a diamond shape light or not");
     visual_param_entry_max_set_integer(param, 1);
 
-	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
+	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float));
 
 	return 0;
 }
@@ -126,7 +126,7 @@ static int act_bumpscope_cleanup (VisPluginData *plugin)
 
 	visual_palette_free (priv->pal);
 
-	visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
+	visual_buffer_free (priv->pcmbuf);
 
 	visual_mem_free (priv);
 

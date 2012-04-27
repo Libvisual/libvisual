@@ -78,7 +78,7 @@ static int video_dtor (VisObject *object)
 		visual_object_unref (VISUAL_OBJECT (video->parent));
 
 	if (video->buffer != NULL)
-		visual_object_unref (VISUAL_OBJECT (video->buffer));
+		visual_buffer_free (video->buffer);
 
 	video->pixel_rows = NULL;
 	video->parent = NULL;
@@ -162,8 +162,7 @@ int visual_video_free_buffer (VisVideo *video)
 	if (video->pixel_rows != NULL)
 		visual_mem_free (video->pixel_rows);
 
-	if (visual_buffer_get_allocated (video->buffer)) {
-
+	if (visual_buffer_is_allocated (video->buffer)) {
 		visual_buffer_destroy_content (video->buffer);
 
 	} else {
@@ -182,7 +181,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 	visual_return_val_if_fail (video->buffer != NULL, -VISUAL_ERROR_VIDEO_BUFFER_NULL);
 
 	if (visual_video_get_pixels (video) != NULL) {
-		if (visual_buffer_get_allocated (video->buffer)) {
+		if (visual_buffer_is_allocated (video->buffer)) {
 			visual_video_free_buffer (video);
 		} else {
 			visual_log (VISUAL_LOG_ERROR, _("Trying to allocate an screen buffer on "
@@ -198,7 +197,6 @@ int visual_video_allocate_buffer (VisVideo *video)
 		return VISUAL_OK;
 	}
 
-	visual_buffer_set_destroyer (video->buffer, visual_buffer_destroyer_free);
 	visual_buffer_set_size (video->buffer, visual_video_get_size (video));
 	visual_buffer_allocate_data (video->buffer);
 
@@ -212,7 +210,7 @@ int visual_video_have_allocated_buffer (VisVideo *video)
 {
 	visual_return_val_if_fail (video != NULL, FALSE);
 
-	return visual_buffer_get_allocated (video->buffer);
+	return visual_buffer_is_allocated (video->buffer);
 }
 
 static void precompute_row_table (VisVideo *video)
@@ -291,7 +289,7 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 {
 	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
-	if (visual_buffer_get_allocated (video->buffer)) {
+	if (visual_buffer_is_allocated (video->buffer)) {
 		visual_log (VISUAL_LOG_ERROR, _("Trying to set a screen buffer on "
 				"a VisVideo structure which points to an allocated screen buffer"));
 
@@ -299,7 +297,6 @@ int visual_video_set_buffer (VisVideo *video, void *buffer)
 	}
 
 	visual_buffer_set_data (video->buffer, buffer);
-	visual_buffer_set_destroyer (video->buffer, NULL);
 
 	if (video->pixel_rows != NULL) {
 		visual_mem_free (video->pixel_rows);

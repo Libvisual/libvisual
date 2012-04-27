@@ -192,7 +192,7 @@ static int act_blursk_init (VisPluginData *plugin) {
     visual_param_entry_min_set_integer(param, 0);
     visual_param_entry_max_set_integer(param, 1);
 
-    priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
+    priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float));
 
     config_default(&config);
 
@@ -208,7 +208,7 @@ static int act_blursk_cleanup (VisPluginData *plugin) {
 
     visual_palette_free (priv->pal);
 
-    visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
+    visual_buffer_free (priv->pcmbuf);
 
     visual_mem_free (priv);
 

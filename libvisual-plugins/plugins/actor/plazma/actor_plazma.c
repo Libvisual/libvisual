@@ -212,19 +212,22 @@ static VisPalette *act_plazma_palette (VisPluginData *plugin)
 static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer pcmback;
-	VisBuffer fbuf;
+	VisBuffer *pcmback;
+	VisBuffer *fbuf;
 	int i;
 
-	visual_buffer_set_data_pair (&pcmback, priv->pcm_buffer, sizeof (float) * 1024);
-	visual_audio_get_sample_mixed (audio, &pcmback, TRUE, 2,
+	pcmback = visual_buffer_new_wrap_data (priv->pcm_buffer, sizeof (float) * 1024);
+	visual_audio_get_sample_mixed (audio, pcmback, TRUE, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT,
 			1.0,
 			1.0);
 
-	visual_buffer_set_data_pair (&fbuf, priv->render_buffer, sizeof (float) * 256);
-	visual_audio_get_spectrum_for_sample (&fbuf, &pcmback, TRUE);
+	fbuf = visual_buffer_new_wrap_data (priv->render_buffer, sizeof (float) * 256);
+	visual_audio_get_spectrum_for_sample (fbuf, pcmback, TRUE);
+
+	visual_buffer_free (pcmback);
+	visual_buffer_free (fbuf);
 
 	/* Analyse spectrum data */
 	priv->bass = 0;

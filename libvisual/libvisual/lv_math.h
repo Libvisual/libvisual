@@ -72,152 +72,126 @@ LV_API int visual_math_is_power_of_2 (int n);
 LV_API unsigned int visual_math_round_power_of_2 (unsigned int n);
 
 /**
- * Multiplies an array of floats with one constant multiplier. The same destination and source arrays
- * are allowed. With the right cpu features in place this function is very optimized.
+ * Multiplies an array of floats with a constant multiplicand.
  *
- * @param dest Pointer to the destination float array.
- * @param src Pointer to the source float array.
- * @param n The number of items in the array.
- * @param multiplier The constant multiplier with which every element in the source array is multiplied.
+ * @note When the source and destination array are the same, the multiplication will be performed in-place
+ *
+ * @param dest  pointer to the destination float array
+ * @param src   pointer to the source float array
+ * @param count number of array elements
+ * @param k     constant multiplicand
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_API int visual_math_vectorized_multiplier_floats_const_float (float *dest, const float *src, visual_size_t n, float multiplier);
+LV_API void visual_math_simd_mul_floats_float (float *dest, const float *src, visual_size_t count, float k);
 
 /**
  * Adds an array of floats with one constant adder. The same destination and source arrays
  * are allowed. With the right cpu features in place this function is very optimized.
  *
- * @param dest Pointer to the destination float array.
- * @param src Pointer to the source float array.
- * @param n The number of items in the array.
- * @param adder The constant adder that is added to every entry in the source array.
- *
- * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ * @param dest  pointer to the destination float array
+ * @param src   pointer to the source float array
+ * @param count number of array elements
+ * @param k     constant addend
  */
-LV_API int visual_math_vectorized_add_floats_const_float (float *dest, const float *src, visual_size_t n, float adder);
+LV_API void visual_math_simd_add_floats_float (float *dest, const float *src, visual_size_t count, float adder);
 
-/**
- * Substracts an array of floats with one constant substracter. The same destination and source arrays
- * are allowed. With the right cpu features in place this function is very optimized.
- *
- * @param dest Pointer to the destination float array.
- * @param src Pointer to the source float array.
- * @param n The number of items in the array.
- * @param substracter The constant substracter that is substracter from every entry in the source array.
- *
- * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
- */
-LV_API int visual_math_vectorized_substract_floats_const_float (float *dest, const float *src, visual_size_t n, float substracter);
-
-LV_API int visual_math_vectorized_multiplier_floats_floats (float *dest, const float *src1, const float *src2, visual_size_t n);
+LV_API void visual_math_simd_mul_floats_floats (float *dest, const float *src1, const float *src2, visual_size_t count);
 
 /**
  * Converts an array of floats to integers. With the right cpu features in place this function
  * is very optimized.
  *
- * @param ints Pointer to the destination int32_t array.
- * @param flts Pointer to the source float array.
- * @param n The number of items in the array.
- *
- * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ * @param ints  pointer to the destination int32_t array
+ * @param flts  pointer to the source float array
+ * @param count number of array elements
  */
-LV_API int visual_math_vectorized_floats_to_int32s (int32_t *ints, const float *flts, visual_size_t n);
+LV_API void visual_math_simd_floats_to_int32s (int32_t *ints, const float *flts, visual_size_t count);
 
 /**
  * Converts an array of integers to floats. With the right cpu features in place this function
  * is very optimized.
  *
- * @param flts Pointer to the destination float array.
- * @param ints Pointer to the source int32_t array.
- * @param n The number of items in the array.
- *
- * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
+ * @param flts  pointer to the destination float array
+ * @param ints  pointer to the source int32_t array
+ * @param count number of array elements
  */
-LV_API int visual_math_vectorized_int32s_to_floats (float *flts, const int32_t *ints, visual_size_t n);
+LV_API void visual_math_simd_int32s_to_floats (float *flts, const int32_t *ints, visual_size_t count);
 
 /**
  * Converts an array of floats to integers and multiplies it with a const multiplier.
  * With the right cpu features in place this function is very optimized.
  *
- * @param ints Pointer to the destination int32_t array.
- * @param flts Pointer to the source float array.
- * @param n The number of items in the array.
- * @param multiplier The constant multiplier with which every entry is multiplied.
- *
- * @return VISUAL_OK on success or -VISUAL_ERROR_NULL on failure.
+ * @param ints  pointer to the destination int32_t array
+ * @param flts  pointer to the source float array
+ * @param count number of array elements
+ * @param k     constant multiplicand
  */
-LV_API int visual_math_vectorized_floats_to_int32s_multiply (int32_t *ints, const float *flts, visual_size_t n, float multiplier);
+LV_API void visual_math_simd_floats_to_int32s_mul_float (int32_t *ints, const float *flts, visual_size_t count, float k);
 
 /**
  * Converts an array of integers to floats and multiplies it with a const multiplier.
  * With the right cpu features in place this function is very optimized.
  *
- * @param flts Pointer to the destination float array.
- * @param ints Pointer to the source int32_t array.
- * @param n The number of items in the array.
- * @param multiplier The constant multiplier with which every entry is multiplied.
- *
- * @return VISUAL_OK on success or -VISUAL_ERROR_NULL on failure.
+ * @param flts  pointer to the destination float array.
+ * @param ints  pointer to the source int32_t array.
+ * @param count number of array elements
+ * @param k     constant multiplicand
  */
-LV_API int visual_math_vectorized_int32s_to_floats_multiply (float *flts, const int32_t *ints, visual_size_t n, float multiplier);
+LV_API void visual_math_simd_int32s_to_floats_mul_float (float *flts, const int32_t *ints, visual_size_t count, float k);
 
 /**
  * Converts an array of floats to integers and multiplies it with a const multiplier. Furthermore
  * the float values are denormalized in the following way: -1.0 to 1.0 will be converted to:
  * 0.0 to 1.0. With the right cpu features in place this function is very optimized.
  *
- * @param ints Pointer to the destination int32_t array.
- * @param flts Pointer to the source float array.
- * @param n The number of items in the array.
- * @param multiplier The constant multiplier with which every entry is multiplied.
+ * @param ints  Pointer to the destination int32_t array.
+ * @param flts  Pointer to the source float array.
+ * @param count The number of items in the array.
+ * @param k     Constant multiplicand
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_API int visual_math_vectorized_floats_to_int32s_multiply_denormalise (int32_t *ints, const float *flts, visual_size_t n, float multiplier);
+LV_API void visual_math_simd_floats_to_int32s_mul_float_denormalise (int32_t *ints, const float *flts, visual_size_t count, float k);
 
 /**
- * Vectorized square root for single precision floats. This function works best with data
+ * Simd square root for single precision floats. This function works best with data
  * sizes larger than 16 or equal to 16.
  *
  * @param dest The destination vector of floats in which the results are placed.
  * @param src The source vector of floats of which the square roots will be calculated.
- * @param n The number of floats in the vector.
+ * @param count The number of floats in the vector.
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_API int visual_math_vectorized_sqrt_floats (float *dest, const float *src, visual_size_t n);
+LV_API void visual_math_simd_sqrt_floats (float *dest, const float *src, visual_size_t count);
 
 /**
- * Vectorized complex to norm conversion. Will make norm values from a real and imaginary
+ * Simd complex to norm conversion. Will make norm values from a real and imaginary
  * array.
  *
- * @param dest Pointer to the destination float array.
- * @param real Pointer to the real part float array.
- * @param imag pointer to the imaginary part float array.
- * @param n The number of elements to be converted.
+ * @param dest  Pointer to the destination float array.
+ * @param real  Pointer to the real part float array.
+ * @param imag  pointer to the imaginary part float array.
+ * @param count The number of elements to be converted.
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_API int visual_math_vectorized_complex_to_norm (float *dest, const float *real, const float *imag, visual_size_t n);
+LV_API void visual_math_simd_complex_norm (float *dest, const float *real, const float *imag, visual_size_t count);
 
 /**
- * Vectorized complex to norm conversion and result value scaler. Will make norm values from a real and imaginary
+ * Simd complex to norm conversion and result value scaler. Will make norm values from a real and imaginary
  * array, after the conversion has been made it will be multiplied by the scaler.
  *
- * @param dest Pointer to the destination float array.
- * @param real Pointer to the real part float array.
- * @param imag pointer to the imaginary part float array.
- * @param n The number of elements to be converted.
- * @param scaler The scaler that is used to scale the result value.
+ * @param dest  Pointer to the destination float array.
+ * @param real  Pointer to the real part float array.
+ * @param imag  Pointer to the imaginary part float array.
+ * @param count The number of elements to be converted.
+ * @param k     const multiplcand
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_API int visual_math_vectorized_complex_to_norm_scale (float *dest, const float *real, const float *imag, visual_size_t n, float scaler);
-
-/* FIXME add many more to suite both rectangle and audio systems 100% */
-/* FIXME also look into things we might be able to generalize from VisVideo. */
-/* FIXME provide with source and dest when possible, source and dest can always be the same. */
+LV_API void visual_math_simd_complex_norm_mul_float (float *dest, const float *real, const float *imag, visual_size_t count, float k);
 
 LV_END_DECLS
 
