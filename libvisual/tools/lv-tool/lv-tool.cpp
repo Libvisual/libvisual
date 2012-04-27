@@ -360,7 +360,7 @@ int main (int argc, char **argv)
 
         visual_bin_set_depth (bin, depth);
 
-        VisVideoAttributeOptions const* vidoptions =
+        VisVideoAttrOptions const* vidoptions =
             visual_actor_get_video_attribute_options(actor);
 
         // initialize display

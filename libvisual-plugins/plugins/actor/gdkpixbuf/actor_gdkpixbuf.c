@@ -265,10 +265,10 @@ static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudi
 			xoff = (video->width - priv->target.width) / 2;
 			yoff = (video->height - priv->target.height) / 2;
 
-			visual_video_blit_overlay (video, &priv->target, xoff, yoff, FALSE);
+			visual_video_blit (video, &priv->target, xoff, yoff, FALSE);
 
 		} else {
-			visual_video_blit_overlay (video, &priv->target, priv->x_offset, priv->y_offset, FALSE);
+			visual_video_blit (video, &priv->target, priv->x_offset, priv->y_offset, FALSE);
 		}
 	}
 

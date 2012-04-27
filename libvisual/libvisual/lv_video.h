@@ -40,12 +40,12 @@
  */
 
 #define VISUAL_VIDEO(obj)						(VISUAL_CHECK_CAST ((obj), VisVideo))
-#define VISUAL_VIDEO_ATTRIBUTE_OPTIONS(obj)		(VISUAL_CHECK_CAST ((obj), VisVideoAttributeOptions))
+#define VISUAL_VIDEO_ATTR_OPTIONS(obj)		(VISUAL_CHECK_CAST ((obj), VisVideoAttrOptions))
 
-#define VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(options, attr, val)	\
-	options.gl_attributes[attr].attribute = attr;  \
-	options.gl_attributes[attr].value = val;       \
-	options.gl_attributes[attr].mutated = TRUE;
+#define VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(options, attr, val)	\
+	options.gl_attrs[attr].attribute = attr;  \
+	options.gl_attrs[attr].value = val;       \
+	options.gl_attrs[attr].mutated = TRUE;
 
 
 /* NOTE: The depth find helper code in lv_actor depends on an arrangment from low to high */
@@ -99,59 +99,20 @@ typedef enum {
  * Enumerate that defines the different blitting methods for a VisVideo.
  */
 typedef enum {
-	VISUAL_VIDEO_COMPOSITE_TYPE_NONE = 0,   /**< No composite set, use default. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_SRC,        /**< Source alpha channel. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_COLORKEY,   /**< Colorkey alpha. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACE,    /**< One alpha channel for the complete surface. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_SURFACECOLORKEY, /**< Use surface alpha on colorkey. */
-	VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM      /**< Custom composite function (looks up on the source VisVideo. */
-} VisVideoCompositeType;
+	VISUAL_VIDEO_COMPOSE_TYPE_NONE = 0,   /**< No compose set, use default. */
+	VISUAL_VIDEO_COMPOSE_TYPE_SRC,        /**< Source alpha channel. */
+	VISUAL_VIDEO_COMPOSE_TYPE_COLORKEY,   /**< Colorkey alpha. */
+	VISUAL_VIDEO_COMPOSE_TYPE_SURFACE,    /**< One alpha channel for the complete surface. */
+	VISUAL_VIDEO_COMPOSE_TYPE_SURFACECOLORKEY, /**< Use surface alpha on colorkey. */
+	VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM      /**< Custom compose function (looks up on the source VisVideo. */
+} VisVideoComposeType;
 
 
 typedef struct _VisVideo VisVideo;
-typedef struct _VisVideoAttributeOptions VisVideoAttributeOptions;
+typedef struct _VisVideoAttrOptions VisVideoAttrOptions;
 
-/* VisVideo custom composite method */
-
-/**
- * A custom composite function needs this signature. Custom composite functions can be
- * used to overload the normal libvisual overlay functions, these are used by the different
- * blit methods. The following template should be used for custom composite functions:
- *
- * int custom_composite (VisVideo *dest, VisVideo *src)
- * {
- *         int i
- *         uint8_t *destbuf = dest->pixels;
- *         uint8_t *srcbuf = src->pixels;
- *
- *         for (i = 0; i < src->height; i++) {
- *                 for (j = 0; j < src->width; j++) {
- *
- *
- *	                   destbuf += dest->bpp;
- *	                   srcbuf += src->bpp;
- *                 }
- *
- *                 destbuf += dest->pitch - (dest->width * dest->bpp);
- *                 srcbuf += src->pitch - (src->width * src->bpp);
- *         }
- * }
- *
- * It's very important that the function is pitch (rowstride, bytes per line) aware, also
- * for width and height, it's compulsory to look at the source, and not the dest. Also be aware
- * that the custom composite function is correct for the depth you're using, if you want to add
- * depth awareness to the function, you could do this by checking dest->depth.
- *
- * @see visual_video_blit_overlay_rectangle_custom
- * @see visual_video_blit_overlay_rectangle_scale_custom
- * @see visual_video_blit_overlay_custom
- *
- * @arg dest a pointer to the dest visvideo source.
- * @arg src A pointer to the source VisVideo source.
- *
- * @return VISUAL_OK on succes -VISUAL_ERROR_GENERAL on error.
- */
-typedef int (*VisVideoCustomCompositeFunc)(VisVideo *dest, VisVideo *src);
+/** VisVideo custom compose method */
+typedef int (*VisVideoComposeFunc)(VisVideo *dest, VisVideo *src);
 
 /**
  * Data structure that contains all the information about a screen surface.
@@ -179,17 +140,17 @@ struct _VisVideo {
 	VisVideo            *parent;    /**< The surface it's parent, ONLY when it is a subregion. */
 	VisRectangle        *rect;      /**< The rectangle over the parent surface. */
 
-	/* Composite control */
-	VisVideoCompositeType       compositetype; /**< The surface it's composite type. */
-	VisVideoCustomCompositeFunc	compfunc;      /**< The surface it's custom composite function. */
-	VisColor            *colorkey;  /**< The surface it's alpha colorkey. */
-	uint8_t              density;   /**< The surface it's global alpha density. */
+	/* Compose control */
+	VisVideoComposeType  compose_type; /**< The surface it's compose type. */
+	VisVideoComposeFunc	 compose_func; /**< The surface it's custom compose function. */
+	VisColor            *colorkey;     /**< The surface it's alpha colorkey. */
+	uint8_t              alpha;        /**< The surface it's alpha. */
 };
 
-struct _VisVideoAttributeOptions {
-	VisObject           object;
-	int                 depth;
-	VisGLAttributeEntry gl_attributes[VISUAL_GL_ATTRIBUTE_LAST];
+struct _VisVideoAttrOptions {
+	VisObject      object;
+	int            depth;
+	VisGLAttrEntry gl_attrs[VISUAL_GL_ATTRIBUTE_LAST];
 };
 
 LV_BEGIN_DECLS
@@ -215,7 +176,7 @@ LV_API VisVideo *visual_video_new (void);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_API int visual_video_init (VisVideo *video);
+LV_API void visual_video_init (VisVideo *video);
 
 /**
  * Creates a new VisVideo and also allocates a buffer.
@@ -232,19 +193,14 @@ LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDe
  * Frees the buffer that relates to the VisVideo.
  *
  * @param video Pointer to a VisVideo of which the buffer needs to be freed.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or -VISUAL_ERROR_VIDEO_NO_ALLOCATED
- *	on failure.
  */
-LV_API int visual_video_free_buffer (VisVideo *video);
+LV_API void visual_video_free_buffer (VisVideo *video);
 
 /**
  * Allocates a buffer for the VisVideo. Allocates based on the
  * VisVideo it's information about the screen dimension and depth.
  *
  * @param video Pointer to a VisVideo that needs an allocated buffer.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_PIXELS  on failure.
  */
 LV_API int visual_video_allocate_buffer (VisVideo *video);
 
@@ -255,7 +211,7 @@ LV_API int visual_video_allocate_buffer (VisVideo *video);
  *
  * @return TRUE if the VisVideo has an allocated buffer, or FALSE if not.
  */
-LV_API int visual_video_have_allocated_buffer (VisVideo *video);
+LV_API int visual_video_has_allocated_buffer (VisVideo *video);
 
 /**
  * Clones the information from a VisVideo to another.
@@ -266,10 +222,8 @@ LV_API int visual_video_have_allocated_buffer (VisVideo *video);
  *	be placed.
  * @param src Pointer to a source VisVideo from which the information needs to
  *	be obtained.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_API int visual_video_copy_attrs (VisVideo *dest, VisVideo *src);
+LV_API void visual_video_copy_attrs (VisVideo *dest, VisVideo *src);
 
 /**
  * Checks if two VisVideo objects are the same depth, pitch and dimension wise.
@@ -297,10 +251,8 @@ LV_API int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *sr
  *
  * @param video Pointer to a VisVideo to which a VisPalette needs to be linked.
  * @param pal Pointer to a Vispalette that needs to be linked with the VisVideo.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_API int visual_video_set_palette (VisVideo *video, VisPalette *pal);
+LV_API void visual_video_set_palette (VisVideo *video, VisPalette *pal);
 
 /**
  * Sets a buffer to a VisVideo. Links a sreenbuffer to the
@@ -314,7 +266,7 @@ LV_API int visual_video_set_palette (VisVideo *video, VisPalette *pal);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_HAS_ALLOCATED on failure.
  */
-LV_API int visual_video_set_buffer (VisVideo *video, void *buffer);
+LV_API void visual_video_set_buffer (VisVideo *video, void *buffer);
 
 /**
  * Sets the dimension for a VisVideo. Used to set the dimension for a
@@ -326,7 +278,7 @@ LV_API int visual_video_set_buffer (VisVideo *video, void *buffer);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_API int visual_video_set_dimension (VisVideo *video, int width, int height);
+LV_API void visual_video_set_dimension (VisVideo *video, int width, int height);
 
 /**
  * Sets the pitch for a VisVideo. Used to set the screen
@@ -339,7 +291,7 @@ LV_API int visual_video_set_dimension (VisVideo *video, int width, int height);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_BPP on failure.
  */
-LV_API int visual_video_set_pitch (VisVideo *video, int pitch);
+LV_API void visual_video_set_pitch (VisVideo *video, int pitch);
 
 /**
  * Sets the depth for a VisVideo. Used to set the depth for
@@ -350,7 +302,7 @@ LV_API int visual_video_set_pitch (VisVideo *video, int pitch);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_API int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
+LV_API void visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
 
 /**
  * Sets all attributes for a VisVideo. Used to set width, height, pitch and the depth for a VisVideo.
@@ -363,9 +315,9 @@ LV_API int visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_API int visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
+LV_API void visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
 
-LV_API int visual_video_get_size (VisVideo *video);
+LV_API visual_size_t visual_video_get_size (VisVideo *video);
 
 /**
  * Retrieves the pixel buffer from a VisVideo.
@@ -384,6 +336,173 @@ LV_API void *visual_video_get_pixels (VisVideo *video);
  * @return The VisBuffer object, NULL on failure.
  */
 LV_API VisBuffer *visual_video_get_buffer (VisVideo *video);
+
+/**
+ * Converts the VisVideo it's buffer boundries to a VisRectangle. This means that the rectangle it's
+ * position will be set to 0, 0 and it's width and height respectively to that of the VisVideo.
+ *
+ * @param video Pointer to the VisVideo for which the buffer boundries are requested.
+ *
+ * @return New VisRectangle, or NULL on failure
+ */
+LV_API VisRectangle *visual_video_get_extents (VisVideo *video);
+
+/**
+ * Creates a sub region of a VisVideo. An extra reference to the src VisVideo is created. The region should
+ * fall completely within the src, else the region won't be created. Notice that a sub region is not a copy
+ *
+ * @see visual_video_region_sub_by_values
+ * @see visual_video_region_copy
+ *
+ * @param dest Pointer to the destination VisVideo, There should not be a buffer allocated for this VisVideo.
+ * @param src  Pointer to the source VisVideo from which a subregion is created.
+ * @param area Pointer to the rectangle containing the position and dimension information.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_RECTANGLE_NULL
+ *	or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
+ */
+LV_API void visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *area);
+
+/**
+ * Creates a sub region of a VisVideo likewise visual_video_region_sub() however the position and dimension is given
+ * by separated values instead of a VisRectangle.
+ *
+ * @see visual_video_region_sub
+ *
+ * @param dest Pointer to the destination VisVideo, There should not be a buffer allocated for this VisVideo.
+ * @param src Pointer to the source VisVideo from which a subregion is created.
+ * @param x X Position of the sub region.
+ * @param y Y Position of the sub region.
+ * @param width Width of the sub region.
+ * @param height Height Height of the sub region.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
+ */
+LV_API void visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
+
+LV_API void visual_video_region_sub_all (VisVideo *dest, VisVideo *src);
+
+LV_API void visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
+
+LV_API void visual_video_set_compose_type     (VisVideo *video, VisVideoComposeType type);
+LV_API void visual_video_set_compose_colorkey (VisVideo *video, VisColor *color);
+LV_API void visual_video_set_compose_surface  (VisVideo *video, uint8_t alpha);
+LV_API void visual_video_set_compose_function (VisVideo *video, VisVideoComposeFunc compfunc);
+
+LV_API VisVideoComposeFunc visual_video_get_compose_function (VisVideo *dest, VisVideo *src, int alpha);
+
+LV_API void visual_video_blit_area          (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, int alpha);
+LV_API void visual_video_compose_area       (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, VisVideoComposeFunc func);
+LV_API void visual_video_blit_scale_area    (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, int alpha, VisVideoScaleMethod scale_method);
+LV_API void visual_video_compose_scale_area (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, VisVideoScaleMethod scale_method, VisVideoComposeFunc compfunc);
+/**
+ * This function blits a VisVideo into another VisVideo. Placement can be done and there
+ * is support for the alpha channel.
+ *
+ * @param dest Pointer to the destination VisVideo in which the source is overlayed.
+ * @param src Pointer to the source VisVideo which is overlayed in the destination.
+ * @param x Horizontal placement offset.
+ * @param y Vertical placement offset.
+ * @param alpha Sets if we want to check the alpha channel. Use FALSE or TRUE here.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_INVALID_DEPTH or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
+ */
+LV_API void visual_video_blit (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
+LV_API void visual_video_compose (VisVideo *dest, VisVideo *src, int x, int y, VisVideoComposeFunc compfunc);
+
+/**
+ * Sets a certain color as the alpha channel and the density for the non alpha channel
+ * colors. This function can be only used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
+ *
+ * @param video Pointer to the VisVideo in which the alpha channel is made.
+ * @param color Pointer to the VisColor containing the color value for the alpha channel.
+ * @param density The alpha density for the other colors.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ */
+LV_API void visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t density);
+
+/**
+ * Sets a certain alpha value for the complete buffer in the VisVideo. This function
+ * can be only used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
+ *
+ * @param video Pointer to the VisVideo in which the alpha channel density is set.
+ * @param density The alpha density that is to be set.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ */
+LV_API void visual_video_fill_alpha (VisVideo *video, uint8_t density);
+
+LV_API void visual_video_fill_alpha_area (VisVideo *video, uint8_t density, VisRectangle *rect);
+
+/**
+ * This function is used to fill a VisVideo with one color. It's highly advice to use this function to fill
+ * a VisVideo with a color instead of using visual_mem_set, the reason is that this function takes the pitch
+ * of a line in consideration. When you use a visual_mem_set on sub regions the results won't be pretty.
+ *
+ * @param video Pointer to the VisVideo which is filled with one color
+ * @param rcolor Pointer to the VisColor that is used as color. NULL is a valid color and will be interperted
+ * 	as black.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ */
+LV_API void visual_video_fill_color (VisVideo *video, VisColor *color);
+
+LV_API void visual_video_fill_color_area (VisVideo *video, VisColor *color, VisRectangle *rect);
+
+/**
+ * Flips the byte ordering of each pixel.
+ *
+ * @param dest Pointer to the destination VisVideo, which should be a clone of the source VisVideo
+ *	depth, pitch, dimension wise.
+ * @param src Pointer to the source VisVideo from which the bgr data is read.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
+ *	-VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ */
+LV_API void visual_video_flip_pixel_bytes (VisVideo *dest, VisVideo *src);
+LV_API void visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees);
+LV_API void visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient);
+
+/**
+ * Video depth transforms one VisVideo into another using the depth information
+ * stored within the VisVideos. The dimension should be equal however the pitch
+ * value of the destination may be set.
+ *
+ * @param dest Pointer to the destination VisVideo to which the source VisVideo is transformed.
+ * @param src Pointer to the source VisVideo.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_PALETTE_NULL, -VISUAL_ERROR_PALETTE_SIZE,
+ * 	-VISUAL_ERROR_VIDEO_NOT_TRANSFORMED or error values returned by visual_video_blit_overlay on failure.
+ */
+LV_API void visual_video_convert_depth (VisVideo *viddest, VisVideo *vidsrc);
+
+/**
+ * Scale VisVideo.
+ *
+ * @param dest Pointer to VisVideo object for storing scaled image.
+ * @param src Pointer to VisVideo object whose image is to be scaled.
+ * @param scale_method Scaling method to use.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ */
+LV_API void visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
+
+/**
+ * Scale VisVideo, but does an internal depth transformation when the source VisVideo is not of the
+ * same depth as the destination VisVideo.
+ *
+ * @see visual_video_scale
+ *
+ * @param dest Pointer to the destination VisVideo in which the scaled version is stored
+ * @param src Pointer to the source VisVideo whose image is to be scaled.
+ * @param scale_method Scaling method to use.
+ *
+ * @return VISUAL_OK on success, -VISUAL_ERROR_IMPOSSIBLE, -VISUAL_ERROR_VIDEO_NULL
+ *	or error values returned by visual_video_scale() on failure.
+ */
+LV_API void visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
+
 
 /**
  * Checks if a certain depth is supported by checking against an ORred depthflag.
@@ -487,222 +606,6 @@ LV_API VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
  */
 LV_API int visual_video_bpp_from_depth (VisVideoDepth depth);
 
-/**
- * Converts the VisVideo it's buffer boundries to a VisRectangle. This means that the rectangle it's
- * position will be set to 0, 0 and it's width and height respectively to that of the VisVideo.
- *
- * @param video Pointer to the VisVideo for which the buffer boundries are requested.
- *
- * @return New VisRectangle, or NULL on failure
- */
-LV_API VisRectangle *visual_video_get_boundary (VisVideo *video);
-
-/**
- * Creates a sub region of a VisVideo. An extra reference to the src VisVideo is created. The region should
- * fall completely within the src, else the region won't be created. Notice that a sub region is not a copy
- *
- * @see visual_video_region_sub_by_values
- * @see visual_video_region_copy
- *
- * @param dest Pointer to the destination VisVideo, There should not be a buffer allocated for this VisVideo.
- * @param src Pointer to the source VisVideo from which a subregion is created.
- * @param rect Pointer to the rectangle containing the position and dimension information.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_RECTANGLE_NULL
- *	or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
- */
-LV_API int visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *rect);
-
-/**
- * Creates a sub region of a VisVideo likewise visual_video_region_sub() however the position and dimension is given
- * by separated values instead of a VisRectangle.
- *
- * @see visual_video_region_sub
- *
- * @param dest Pointer to the destination VisVideo, There should not be a buffer allocated for this VisVideo.
- * @param src Pointer to the source VisVideo from which a subregion is created.
- * @param x X Position of the sub region.
- * @param y Y Position of the sub region.
- * @param width Width of the sub region.
- * @param height Height Height of the sub region.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
- */
-LV_API int visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
-
-LV_API int visual_video_region_sub_all (VisVideo *dest, VisVideo *src);
-
-LV_API int visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
-
-LV_API int visual_video_composite_set_type (VisVideo *video, VisVideoCompositeType type);
-LV_API int visual_video_composite_set_colorkey (VisVideo *video, VisColor *color);
-LV_API int visual_video_composite_set_surface (VisVideo *video, uint8_t alpha);
-LV_API VisVideoCustomCompositeFunc visual_video_composite_get_function (VisVideo *dest, VisVideo *src, int alpha);
-LV_API int visual_video_composite_set_function (VisVideo *video, VisVideoCustomCompositeFunc compfunc);
-
-LV_API int visual_video_blit_overlay_rectangle (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect, int alpha);
-LV_API int visual_video_blit_overlay_rectangle_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
-		VisVideoCustomCompositeFunc compfunc);
-LV_API int visual_video_blit_overlay_rectangle_scale (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
-		int alpha, VisVideoScaleMethod scale_method);
-LV_API int visual_video_blit_overlay_rectangle_scale_custom (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect,
-		VisVideoScaleMethod scale_method, VisVideoCustomCompositeFunc compfunc);
-
-/**
- * This function blits a VisVideo into another VisVideo. Placement can be done and there
- * is support for the alpha channel.
- *
- * @param dest Pointer to the destination VisVideo in which the source is overlayed.
- * @param src Pointer to the source VisVideo which is overlayed in the destination.
- * @param x Horizontal placement offset.
- * @param y Vertical placement offset.
- * @param alpha Sets if we want to check the alpha channel. Use FALSE or TRUE here.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_INVALID_DEPTH or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
- */
-LV_API int visual_video_blit_overlay (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
-
-LV_API int visual_video_blit_overlay_custom (VisVideo *dest, VisVideo *src, int x, int y, VisVideoCustomCompositeFunc compfunc);
-
-/**
- * Sets a certain color as the alpha channel and the density for the non alpha channel
- * colors. This function can be only used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
- *
- * @param video Pointer to the VisVideo in which the alpha channel is made.
- * @param color Pointer to the VisColor containing the color value for the alpha channel.
- * @param density The alpha density for the other colors.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
- */
-LV_API int visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t density);
-
-/**
- * Sets a certain alpha value for the complete buffer in the VisVideo. This function
- * can be only used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
- *
- * @param video Pointer to the VisVideo in which the alpha channel density is set.
- * @param density The alpha density that is to be set.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
- */
-LV_API int visual_video_fill_alpha (VisVideo *video, uint8_t density);
-
-LV_API int visual_video_fill_alpha_rectangle (VisVideo *video, uint8_t density, VisRectangle *rect);
-
-/**
- * This function is used to fill a VisVideo with one color. It's highly advice to use this function to fill
- * a VisVideo with a color instead of using visual_mem_set, the reason is that this function takes the pitch
- * of a line in consideration. When you use a visual_mem_set on sub regions the results won't be pretty.
- *
- * @param video Pointer to the VisVideo which is filled with one color
- * @param rcolor Pointer to the VisColor that is used as color. NULL is a valid color and will be interperted
- * 	as black.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
- */
-LV_API int visual_video_fill_color (VisVideo *video, VisColor *color);
-
-LV_API int visual_video_fill_color_rectangle (VisVideo *video, VisColor *color, VisRectangle *rect);
-
-/**
- * Flips the byte ordering of each pixel.
- *
- * @param dest Pointer to the destination VisVideo, which should be a clone of the source VisVideo
- *	depth, pitch, dimension wise.
- * @param src Pointer to the source VisVideo from which the bgr data is read.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
- *	-VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
- */
-LV_API int visual_video_flip_pixel_bytes (VisVideo *dest, VisVideo *src);
-
-LV_API int visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees);
-LV_API VisVideo *visual_video_rotate_new (VisVideo *src, VisVideoRotateDegrees degrees);
-
-LV_API int visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient);
-LV_API VisVideo *visual_video_mirror_new (VisVideo *src, VisVideoMirrorOrient orient);
-
-
-/**
- * Video depth transforms one VisVideo into another using the depth information
- * stored within the VisVideos. The dimension should be equal however the pitch
- * value of the destination may be set.
- *
- * @param dest Pointer to the destination VisVideo to which the source VisVideo is transformed.
- * @param src Pointer to the source VisVideo.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_PALETTE_NULL, -VISUAL_ERROR_PALETTE_SIZE,
- * 	-VISUAL_ERROR_VIDEO_NOT_TRANSFORMED or error values returned by visual_video_blit_overlay on failure.
- */
-LV_API int visual_video_depth_transform (VisVideo *viddest, VisVideo *vidsrc);
-
-LV_API VisVideo *visual_video_zoom_new (VisVideo *src, VisVideoScaleMethod scale_method, float zoom_factor);
-
-/**
- * Non interpolating fast pixel doubler zoom.
- *
- * @param dest Pointer to destination VisVideo in which the pixel doubled VisVideo is stored.
- * @param src Pointer to source VisVideo that is pixel doubled.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
- */
-LV_API int visual_video_zoom_double (VisVideo *dest, VisVideo *src);
-
-/**
- * Scale VisVideo.
- *
- * @param dest Pointer to VisVideo object for storing scaled image.
- * @param src Pointer to VisVideo object whose image is to be scaled.
- * @param scale_method Scaling method to use.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
- */
-LV_API int visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
-
-/**
- * Scale VisVideo, and return a newly allocated scaled VisVideo.
- *
- * @param src Pointer to VisVideo object whose image is to be scaled.
- * @param scale_method Scaling method to use.
- * @param width New width.
- * @param height New height.
- *
- * @return A newly allocated scaled VisVideo, NULL on failure.
- */
-LV_API VisVideo *visual_video_scale_new (VisVideo *src, int width, int height, VisVideoScaleMethod scale_method);
-
-/**
- * Scale VisVideo, but does an internal depth transformation when the source VisVideo is not of the
- * same depth as the destination VisVideo.
- *
- * @see visual_video_scale
- *
- * @param dest Pointer to the destination VisVideo in which the scaled version is stored
- * @param src Pointer to the source VisVideo whose image is to be scaled.
- * @param scale_method Scaling method to use.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_IMPOSSIBLE, -VISUAL_ERROR_VIDEO_NULL
- *	or error values returned by visual_video_scale() on failure.
- */
-LV_API int visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
-
-/**
- * Creates a new scaled VisVideo, but does an internal depth transformation when the
- * source VisVideo is not of the same depth as the destination VisVideo.
- *
- * @see visual_video_scale_depth
- *
- * @param src Pointer to the source VisVideo whose image is to be scaled.
- * @param width The width of the new scaled VisVideo.
- * @param height The height of the new scaled VisVideo.
- * @param depth The depth of the new scaled VisVideo.
- * @param scale_method Scaling method to use.
- *
- * @return A newly allocated scaled version of the source VisVideo with the given width, height
- *	and depth, NULL on failure.
- */
-LV_API VisVideo *visual_video_scale_depth_new (VisVideo *src, int width, int height, VisVideoDepth depth,
-		VisVideoScaleMethod scale_method);
 
 /* Optimized versions of performance sensitive routines */
 /* mmx from lv_video_simd.c */ /* FIXME can we do this nicer ? */

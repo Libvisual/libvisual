@@ -100,7 +100,7 @@ struct _VisTransformPlugin {
     int              requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
                               * requires an VisAudio context in order to render properly. */
 
-    VisVideoAttributeOptions     vidoptions;
+    VisVideoAttrOptions     vidoptions;
 };
 
 LV_BEGIN_DECLS
@@ -200,7 +200,7 @@ LV_API int visual_transform_video_negotiate (VisTransform *transform);
  */
 LV_API int visual_transform_get_supported_depth (VisTransform *transform);
 
-LV_API VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTransform *transform);
+LV_API VisVideoAttrOptions *visual_transform_get_video_attribute_options (VisTransform *transform);
 
 /**
  * Used to connect the target display it's VisVideo structure to the

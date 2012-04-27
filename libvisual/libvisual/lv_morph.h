@@ -140,7 +140,7 @@ struct _VisMorphPlugin {
                               * between two VisVideo sources. */
     int              requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
                               * requires an VisAudio context in order to render properly. */
-    VisVideoAttributeOptions     vidoptions;
+    VisVideoAttrOptions     vidoptions;
 };
 
 LV_BEGIN_DECLS
@@ -221,7 +221,7 @@ LV_API int visual_morph_realize (VisMorph *morph);
  */
 LV_API int visual_morph_get_supported_depth (VisMorph *morph);
 
-LV_API VisVideoAttributeOptions *visual_morph_get_video_attribute_options (VisMorph *morph);
+LV_API VisVideoAttrOptions *visual_morph_get_video_attribute_options (VisMorph *morph);
 
 /**
  * Used to connect the target display, or a buffer it's VisVideo to the VisMorph plugin.

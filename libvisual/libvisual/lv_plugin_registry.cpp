@@ -72,10 +72,6 @@ namespace LV {
 
       PluginListMap plugin_list_map;
 
-      Impl ();
-
-      ~Impl ();
-
       void get_plugins_from_dir (PluginList& list, std::string const& dir);
   };
 
@@ -214,15 +210,6 @@ namespace LV {
       PluginRef const* ref = find_plugin (type, name);
 
       return ref ? ref->info : 0;
-  }
-
-  PluginRegistry::Impl::Impl ()
-  {
-      // empty
-  }
-
-  PluginRegistry::Impl::~Impl ()
-  {
   }
 
   void PluginRegistry::Impl::get_plugins_from_dir (PluginList& list, std::string const& dir)

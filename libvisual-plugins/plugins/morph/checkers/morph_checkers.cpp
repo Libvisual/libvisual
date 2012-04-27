@@ -100,7 +100,7 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
             VisVideo* src = (row + col + priv->flip) & 1 ? src1 : src2;
             LV::Rect region(x, y, tile_width, tile_height);
             visual_video_region_sub(sub, src, &region);
-            visual_video_blit_overlay_rectangle(dest, &region, sub, &subregion, FALSE);
+            visual_video_blit_area(dest, &region, sub, &subregion, FALSE);
         }
     }
 

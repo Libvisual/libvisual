@@ -151,7 +151,7 @@ struct _VisActorPlugin {
 	VisSongInfo			 *songinfo;	/**< Pointer to VisSongInfo that contains information about
 							 *the current playing song. This can be NULL. */
 
-	VisVideoAttributeOptions	 vidoptions;
+	VisVideoAttrOptions	 vidoptions;
 };
 
 LV_BEGIN_DECLS
@@ -336,7 +336,7 @@ LV_API int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth
  */
 LV_API int visual_actor_get_supported_depth (VisActor *actor);
 
-LV_API VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *actor);
+LV_API VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *actor);
 
 /**
  * Used to connect the target display it's VisVideo structure to the VisActor.

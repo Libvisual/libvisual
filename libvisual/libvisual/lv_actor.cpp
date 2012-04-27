@@ -437,7 +437,7 @@ int visual_actor_get_supported_depth (VisActor *actor)
     return actplugin->vidoptions.depth;
 }
 
-VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *actor)
+VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *actor)
 {
     VisActorPlugin *actplugin;
 
@@ -519,15 +519,15 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
 
         if (transform->depth == VISUAL_VIDEO_DEPTH_8BIT) {
             visual_video_set_palette (transform, visual_actor_get_palette (actor));
-            visual_video_depth_transform (video, transform);
+            visual_video_convert_depth (video, transform);
         } else {
             visual_video_set_palette (transform, actor->ditherpal);
-            visual_video_depth_transform (video, transform);
+            visual_video_convert_depth (video, transform);
         }
     } else {
         if (fitting != NULL && (fitting->width != video->width || fitting->height != video->height)) {
             actplugin->render (plugin, fitting, audio);
-            visual_video_blit_overlay (video, fitting, 0, 0, FALSE);
+            visual_video_blit (video, fitting, 0, 0, FALSE);
         } else {
             actplugin->render (plugin, video, audio);
         }

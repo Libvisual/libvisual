@@ -37,14 +37,14 @@ typedef struct {
 	uint8_t				*buf1;
 	uint8_t				*buf2;
 
-	VisVideoCustomCompositeFunc	 currentcomp;
+	VisVideoComposeFunc	 currentcomp;
 } OinksiePrivContainer;
 
-static int composite_blend1_32_c (VisVideo *dest, VisVideo *src);
-static int composite_blend2_32_c (VisVideo *dest, VisVideo *src);
-static int composite_blend3_32_c (VisVideo *dest, VisVideo *src);
-static int composite_blend4_32_c (VisVideo *dest, VisVideo *src);
-static int composite_blend5_32_c (VisVideo *dest, VisVideo *src);
+static int compose_blend1_32_c (VisVideo *dest, VisVideo *src);
+static int compose_blend2_32_c (VisVideo *dest, VisVideo *src);
+static int compose_blend3_32_c (VisVideo *dest, VisVideo *src);
+static int compose_blend4_32_c (VisVideo *dest, VisVideo *src);
+static int compose_blend5_32_c (VisVideo *dest, VisVideo *src);
 
 static int act_oinksie_init (VisPluginData *plugin);
 static int act_oinksie_cleanup (VisPluginData *plugin);
@@ -222,17 +222,17 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 					priv->color_mode = visual_param_entry_get_integer (param);
 
 					if (priv->color_mode == 0)
-						priv->currentcomp = composite_blend1_32_c;
+						priv->currentcomp = compose_blend1_32_c;
 					else if (priv->color_mode == 1)
-						priv->currentcomp = composite_blend2_32_c;
+						priv->currentcomp = compose_blend2_32_c;
 					else if (priv->color_mode == 2)
-						priv->currentcomp = composite_blend3_32_c;
+						priv->currentcomp = compose_blend3_32_c;
 					else if (priv->color_mode == 3)
-						priv->currentcomp = composite_blend4_32_c;
+						priv->currentcomp = compose_blend4_32_c;
 					else if (priv->color_mode == 4)
-						priv->currentcomp = composite_blend5_32_c;
+						priv->currentcomp = compose_blend5_32_c;
 					else
-						priv->currentcomp = composite_blend2_32_c;
+						priv->currentcomp = compose_blend2_32_c;
 				} else if (visual_param_entry_is (param, "acid palette")) {
 					priv->priv1.config.acidpalette = visual_param_entry_get_integer (param);
 				}
@@ -330,17 +330,17 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 		visual_video_set_buffer (vid1, priv->buf1);
 		visual_video_set_palette (vid1, oinksie_palette_get (&priv->priv1));
 
-		visual_video_blit_overlay (video, vid1, 0, 0, FALSE);
+		visual_video_blit (video, vid1, 0, 0, FALSE);
 
 		visual_video_set_depth (vid2, VISUAL_VIDEO_DEPTH_8BIT);
 		visual_video_set_dimension (vid2, video->width, video->height);
 		visual_video_set_buffer (vid2, priv->buf2);
 		visual_video_set_palette (vid2, oinksie_palette_get (&priv->priv2));
 
-		visual_video_composite_set_type (vid2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
-		visual_video_composite_set_function (vid2, priv->currentcomp);
+		visual_video_set_compose_type (vid2, VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM);
+		visual_video_set_compose_function (vid2, priv->currentcomp);
 
-		visual_video_blit_overlay (video, vid2, 0, 0, TRUE);
+		visual_video_blit (video, vid2, 0, 0, TRUE);
 
 		visual_object_unref (VISUAL_OBJECT (vid1));
 		visual_object_unref (VISUAL_OBJECT (vid2));
@@ -349,7 +349,7 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	return 0;
 }
 
-static int composite_blend1_32_c (VisVideo *dest, VisVideo *src)
+static int compose_blend1_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -373,7 +373,7 @@ static int composite_blend1_32_c (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
-static int composite_blend2_32_c (VisVideo *dest, VisVideo *src)
+static int compose_blend2_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -397,7 +397,7 @@ static int composite_blend2_32_c (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
-static int composite_blend3_32_c (VisVideo *dest, VisVideo *src)
+static int compose_blend3_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -421,7 +421,7 @@ static int composite_blend3_32_c (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
-static int composite_blend4_32_c (VisVideo *dest, VisVideo *src)
+static int compose_blend4_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -445,7 +445,7 @@ static int composite_blend4_32_c (VisVideo *dest, VisVideo *src)
 	return VISUAL_OK;
 }
 
-static int composite_blend5_32_c (VisVideo *dest, VisVideo *src)
+static int compose_blend5_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);

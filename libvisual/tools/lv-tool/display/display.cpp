@@ -70,7 +70,7 @@ VisVideo* SADisplay::get_screen () const
     return m_impl->screen;
 }
 
-bool SADisplay::create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+bool SADisplay::create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
                        unsigned int width, unsigned int height, bool resizable)
 {
     return m_impl->driver->create (depth, vidoptions, width, height, resizable);

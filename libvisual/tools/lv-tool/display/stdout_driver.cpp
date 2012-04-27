@@ -51,7 +51,7 @@ namespace {
       }
 
       virtual bool create (VisVideoDepth depth,
-                           VisVideoAttributeOptions const* vidoptions,
+                           VisVideoAttrOptions const* vidoptions,
                            unsigned int width,
                            unsigned int height,
                            bool resizable)

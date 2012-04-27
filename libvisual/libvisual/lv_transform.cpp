@@ -180,7 +180,7 @@ int visual_transform_get_supported_depth (VisTransform *transform)
     return transplugin->vidoptions.depth;
 }
 
-VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTransform *transform)
+VisVideoAttrOptions *visual_transform_get_video_attribute_options (VisTransform *transform)
 {
     VisTransformPlugin *transplugin;
 

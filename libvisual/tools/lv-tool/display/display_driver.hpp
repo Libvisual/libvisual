@@ -9,7 +9,7 @@ class SADisplay;
 class SADisplayDriver {
 public:
 
-    virtual bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+    virtual bool create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
                          unsigned int width, unsigned int height, bool resizable) = 0;
     virtual void close  () = 0;
     virtual void lock   () = 0;

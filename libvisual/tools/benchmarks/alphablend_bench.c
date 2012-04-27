@@ -22,7 +22,7 @@ int main (int argc, char **argv)
 	visual_video_allocate_buffer (src);
 
 	for (i = 0; i < TIMES; i++)
-		visual_video_blit_overlay (dest, src, 0, 0, TRUE);
+		visual_video_blit (dest, src, 0, 0, TRUE);
 
 	printf ("Blit overlay %d times\n", TIMES);
 

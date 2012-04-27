@@ -147,7 +147,7 @@ int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 	int x, y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf = visual_video_get_pixels (src);
-	uint8_t alpha = src->density;
+	uint8_t alpha = src->alpha;
 
 	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 
@@ -223,7 +223,7 @@ int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 	int x, y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf = visual_video_get_pixels (src);
-	uint8_t alpha = src->density;
+	uint8_t alpha = src->alpha;
 
 	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		VisPalette *pal = src->pal;

@@ -167,7 +167,7 @@ int visual_morph_get_supported_depth (VisMorph *morph)
     return morphplugin->vidoptions.depth;
 }
 
-VisVideoAttributeOptions *visual_morph_get_video_attribute_options (VisMorph *morph)
+VisVideoAttrOptions *visual_morph_get_video_attribute_options (VisMorph *morph)
 {
     VisMorphPlugin *morphplugin;
 

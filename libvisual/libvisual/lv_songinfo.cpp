@@ -133,10 +133,11 @@ namespace LV {
           caheight = visual_param_entry_get_integer (yparam);
       }
 
+      // FIXME: restore this
       // The coverart image
-      cover = visual_video_scale_depth_new (cover, cawidth, caheight,
-                                            VISUAL_VIDEO_DEPTH_32BIT,
-                                            VISUAL_VIDEO_SCALE_BILINEAR);
+      //cover = visual_video_scale_depth_new (cover, cawidth, caheight,
+      //                                      VISUAL_VIDEO_DEPTH_32BIT,
+      //                                      VISUAL_VIDEO_SCALE_BILINEAR);
   }
 
   void SongInfo::mark ()

@@ -75,7 +75,7 @@ namespace {
           close ();
       }
 
-      virtual bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
+      virtual bool create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
                            unsigned int width, unsigned int height, bool resizable)
       {
           int videoflags = 0;
@@ -111,14 +111,14 @@ namespace {
                   videoflags |= SDL_HWACCEL;
 
               for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
-                  if (vidoptions->gl_attributes[i].mutated) {
+                  if (vidoptions->gl_attrs[i].mutated) {
                       SDL_GLattr sdl_attribute =
-                          sdl_gl_attribute_map[vidoptions->gl_attributes[i].attribute];
+                          sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
 
                       if (sdl_attribute < 0)
                           continue;
 
-                      SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attributes[i].value);
+                      SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
                   }
               }
 
