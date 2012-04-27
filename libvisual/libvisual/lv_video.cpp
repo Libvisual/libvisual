@@ -1183,6 +1183,21 @@ void visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMetho
 	}
 }
 
+VisVideo *visual_video_scale_depth_new (VisVideo*           src,
+                                        int                 width,
+                                        int                 height,
+                                        VisVideoDepth       depth,
+                                        VisVideoScaleMethod scale_method)
+{
+	visual_return_val_if_fail (src != NULL, NULL);
+
+	VisVideo *video = visual_video_new_with_buffer (width, height, depth);
+
+	visual_video_scale_depth (video, src, scale_method);
+    
+	return video;
+}
+
 /* VisVideoDepth functions */
 
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
