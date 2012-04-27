@@ -724,20 +724,16 @@ out:
 
 void visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t alpha)
 {
-	int x, y;
-	int col = 0;
-	uint32_t *vidbuf;
-
 	visual_return_if_fail (video != NULL);
 	visual_return_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT);
 
-	col = (color->r << 16 | color->g << 8 | color->b);
+	uint32_t* vidbuf = static_cast<uint32_t*> (visual_video_get_pixels (video));
 
-	vidbuf = visual_video_get_pixels (video);
+	uint32_t col = (color->r << 16 | color->g << 8 | color->b);
 
 	/* FIXME byte order sensitive */
-	for (y = 0; y < video->height; y++) {
-		for (x = 0; x < video->width; x++) {
+	for (int y = 0; y < video->height; y++) {
+		for (int x = 0; x < video->width; x++) {
 			if ((*vidbuf & 0x00ffffff) == col)
 				*vidbuf = col;
 			else
@@ -752,17 +748,14 @@ void visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t al
 
 void visual_video_fill_alpha (VisVideo *video, uint8_t alpha)
 {
-	int x, y;
-	uint8_t *vidbuf;
-
 	visual_return_if_fail (video != NULL);
 	visual_return_if_fail (video->depth == VISUAL_VIDEO_DEPTH_32BIT);
 
-	vidbuf = (uint8_t *) visual_video_get_pixels (video) + 3;
+	uint8_t* vidbuf = static_cast<uint8_t *> (visual_video_get_pixels (video)) + 3;
 
 	/* FIXME byte order sensitive */
-	for (y = 0; y < video->height; y++) {
-		for (x = 0; x < video->width; x++)
+	for (int y = 0; y < video->height; y++) {
+		for (int x = 0; x < video->width; x++)
 			*(vidbuf += video->bpp) = alpha;
 
 		vidbuf += video->pitch - (video->width * video->bpp);
@@ -906,20 +899,17 @@ void visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees d
 /* FIXME: do more testing with those badasses */
 static void rotate_90 (VisVideo *dest, VisVideo *src)
 {
-	int x, y, i;
-
-	uint8_t *tsbuf = src->pixel_rows[src->height-1];
-	uint8_t *dbuf;
-	uint8_t *sbuf = tsbuf;
-
 	visual_return_if_fail (dest->width == src->height);
 	visual_return_if_fail (dest->height == src->width);
 
-	for (y = 0; y < dest->height; y++) {
-		dbuf = dest->pixel_rows[y];
+	uint8_t const* tsbuf = static_cast<uint8_t*> (src->pixel_rows[src->height-1]);
+	uint8_t const* sbuf = tsbuf;
 
-		for (x = 0; x < dest->width; x++) {
-			for (i = 0; i < dest->bpp; i++) {
+	for (int y = 0; y < dest->height; y++) {
+        uint8_t* dbuf = static_cast<uint8_t*> (dest->pixel_rows[y]);
+
+		for (int x = 0; x < dest->width; x++) {
+			for (int i = 0; i < dest->bpp; i++) {
 				*(dbuf++) = *(sbuf + i);
 			}
 
@@ -933,23 +923,18 @@ static void rotate_90 (VisVideo *dest, VisVideo *src)
 
 static void rotate_180 (VisVideo *dest, VisVideo *src)
 {
-	int x, y, i;
-
-	uint8_t *dbuf;
-	uint8_t *sbuf;
-
 	const int h1 = src->height - 1;
 	const int w1 = (src->width - 1) * src->bpp;
 
 	visual_return_if_fail (dest->width  == src->width);
 	visual_return_if_fail (dest->height == src->height);
 
-	for (y = 0; y < dest->height; y++) {
-		dbuf = dest->pixel_rows[y];
-		sbuf = (uint8_t *) src->pixel_rows[h1 - y] + w1;
+	for (int y = 0; y < dest->height; y++) {
+		uint8_t* dbuf = static_cast<uint8_t*> (dest->pixel_rows[y]);
+		uint8_t const* sbuf = static_cast<uint8_t*> (src->pixel_rows[h1 - y]) + w1;
 
-		for (x = 0; x < dest->width; x++) {
-			for (i = 0; i < src->bpp; i++) {
+		for (int x = 0; x < dest->width; x++) {
+			for (int i = 0; i < src->bpp; i++) {
 				*(dbuf++) = *(sbuf + i);
 			}
 
@@ -960,20 +945,17 @@ static void rotate_180 (VisVideo *dest, VisVideo *src)
 
 static void rotate_270 (VisVideo *dest, VisVideo *src)
 {
-	int x, y, i;
-
-	uint8_t *tsbuf = (uint8_t *) visual_video_get_pixels (src) + src->pitch - src->bpp;
-	uint8_t *dbuf = visual_video_get_pixels (dest);
-	uint8_t *sbuf = tsbuf;
+	uint8_t const* tsbuf = static_cast<uint8_t*> (visual_video_get_pixels (src)) + src->pitch - src->bpp;
+	uint8_t const* sbuf = tsbuf;
 
 	visual_return_if_fail (dest->width == src->height);
 	visual_return_if_fail (dest->height == src->width);
 
-	for (y = 0; y < dest->height; y++) {
-		dbuf = dest->pixel_rows[y];
+	for (int y = 0; y < dest->height; y++) {
+		uint8_t* dbuf = static_cast<uint8_t*> (dest->pixel_rows[y]);
 
-		for (x = 0; x < dest->width; x++) {
-			for (i = 0; i < dest->bpp; i++) {
+		for (int x = 0; x < dest->width; x++) {
+			for (int i = 0; i < dest->bpp; i++) {
 				*(dbuf++) = *(sbuf + i);
 			}
 
@@ -1004,19 +986,16 @@ void visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient or
 /* Mirror functions */
 static void mirror_x (VisVideo *dest, VisVideo *src)
 {
-	uint8_t *dbuf = visual_video_get_pixels (dest);
-	uint8_t *sbuf = visual_video_get_pixels (src);
 	const int step2 = dest->bpp << 1;
 	const int w1b = (dest->width - 1) * dest->bpp;
-	int x, y, i;
 
-	for (y = 0; y < dest->height; y++) {
-		sbuf = (uint8_t *) src->pixel_rows[y] + w1b;
-		dbuf = dest->pixel_rows[y];
+	for (int y = 0; y < dest->height; y++) {
+		uint8_t const* sbuf = static_cast<uint8_t*> (src->pixel_rows[y]) + w1b;
+		uint8_t* dbuf = static_cast<uint8_t*> (dest->pixel_rows[y]);
 
-		for (x = 0; x < dest->width; x++) {
+		for (int x = 0; x < dest->width; x++) {
 
-			for (i = 0; i < dest->bpp; i++)
+			for (int i = 0; i < dest->bpp; i++)
 				*(dbuf++) = *(sbuf++);
 
 			sbuf -= step2;
@@ -1231,14 +1210,14 @@ VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
 		i = VISUAL_VIDEO_DEPTH_8BIT;
 
 		if ((i & depthflag) > 0)
-			return i;
+			return VisVideoDepth (i);
 	}
 
 	while (i < VISUAL_VIDEO_DEPTH_GL) {
 		i *= 2;
 
 		if ((i & depthflag) > 0)
-			return i;
+			return VisVideoDepth (i);
 	}
 
 	return depth;
@@ -1258,7 +1237,7 @@ VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth)
 		i >>= 1;
 
 		if ((i & depthflag) > 0)
-			return i;
+			return VisVideoDepth (i);
 	}
 
 	return depth;
@@ -1272,7 +1251,7 @@ VisVideoDepth visual_video_depth_get_lowest (int depthflag)
 VisVideoDepth visual_video_depth_get_highest (int depthflag)
 {
 	VisVideoDepth highest = VISUAL_VIDEO_DEPTH_NONE;
-	VisVideoDepth i = 0;
+	VisVideoDepth i = VISUAL_VIDEO_DEPTH_NONE;
 	int firstentry = TRUE;
 
 	while (highest != i || firstentry) {
@@ -1304,7 +1283,7 @@ VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag)
 		return depth;
 	}
 
-	return -VISUAL_ERROR_IMPOSSIBLE;
+	return VISUAL_VIDEO_DEPTH_NONE;
 }
 
 int visual_video_depth_is_sane (VisVideoDepth depth)
@@ -1362,10 +1341,10 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
 		case 32: return VISUAL_VIDEO_DEPTH_32BIT;
 
 		default:
-            return VISUAL_VIDEO_DEPTH_ERROR;
+            return VISUAL_VIDEO_DEPTH_NONE;
 	}
 
-	return -VISUAL_ERROR_IMPOSSIBLE;
+	return VISUAL_VIDEO_DEPTH_NONE;
 }
 
 int visual_video_bpp_from_depth (VisVideoDepth depth)

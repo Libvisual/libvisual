@@ -3,6 +3,8 @@
 
 #include "lv_video.h"
 
+LV_BEGIN_DECLS
+
 void visual_video_zoom_color8  (VisVideo *dest, VisVideo *src);
 void visual_video_zoom_color16 (VisVideo *dest, VisVideo *src);
 void visual_video_zoom_color24 (VisVideo *dest, VisVideo *src);
@@ -17,5 +19,7 @@ void visual_video_scale_bilinear_color8  (VisVideo *dest, VisVideo *src);
 void visual_video_scale_bilinear_color16 (VisVideo *dest, VisVideo *src);
 void visual_video_scale_bilinear_color24 (VisVideo *dest, VisVideo *src);
 void visual_video_scale_bilinear_color32 (VisVideo *dest, VisVideo *src);
+
+LV_END_DECLS
 
 #endif /* _LV_VIDEO_SCALE_H */
