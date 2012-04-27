@@ -112,7 +112,7 @@ typedef struct _VisVideo VisVideo;
 typedef struct _VisVideoAttrOptions VisVideoAttrOptions;
 
 /** VisVideo custom compose method */
-typedef int (*VisVideoComposeFunc)(VisVideo *dest, VisVideo *src);
+typedef void (*VisVideoComposeFunc)(VisVideo *dest, VisVideo *src);
 
 /**
  * Data structure that contains all the information about a screen surface.

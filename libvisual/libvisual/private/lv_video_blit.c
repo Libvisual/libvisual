@@ -15,7 +15,7 @@ typedef struct {
 
 #pragma pack()
 
-int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
+void blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 {
 	int y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -25,8 +25,7 @@ int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 	 * Also check if the pitch is equal to it's width * bpp, this is because of subregions. */
 	if (visual_video_compare_attrs (dest, src) && (src->pitch == (src->width * src->bpp))) {
 		visual_mem_copy (destbuf, srcbuf, visual_video_get_size (dest));
-
-		return VISUAL_OK;
+		return;
 	}
 
 	for (y = 0; y < src->height; y++) {
@@ -35,19 +34,19 @@ int blit_overlay_noalpha (VisVideo *dest, VisVideo *src)
 		destbuf += dest->pitch;
 		srcbuf += src->pitch;
 	}
-
-	return VISUAL_OK;
 }
 
-int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
+void blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha;
 
-	if (visual_cpu_has_mmx ())
-		return _lv_blit_overlay_alphasrc_mmx (dest, src);
+	if (visual_cpu_has_mmx ()) {
+		_lv_blit_overlay_alphasrc_mmx (dest, src);
+		return;
+	}
 
 	for (y = 0; y < src->height; y++) {
 		for (x = 0; x < src->width; x++) {
@@ -64,11 +63,9 @@ int blit_overlay_alphasrc (VisVideo *dest, VisVideo *src)
 		destbuf += dest->pitch - (dest->width * dest->bpp);
 		srcbuf  += src->pitch  - (src->width  * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
+void blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 {
 	unsigned int i;
 	unsigned int pixel_count = dest->width * dest->height;
@@ -78,10 +75,9 @@ int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 		uint8_t *srcbuf = visual_video_get_pixels (src);
 		VisPalette *pal = src->pal;
 
-		if (pal == NULL) {
+		if (!pal) {
 			blit_overlay_noalpha (dest, src);
-
-			return VISUAL_OK;
+			return;
 		}
 
 		int index = visual_palette_find_color (pal, src->colorkey);
@@ -138,11 +134,9 @@ int blit_overlay_colorkey (VisVideo *dest, VisVideo *src)
 			srcbuf++;
 		}
 	}
-
-	return VISUAL_OK;
 }
 
-int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
+void blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -214,11 +208,9 @@ int blit_overlay_surfacealpha (VisVideo *dest, VisVideo *src)
 			srcbuf  += src->pitch  - (src->width  * src->bpp);
 		}
 	}
-
-	return VISUAL_OK;
 }
 
-int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
+void blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 {
 	int x, y;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -228,10 +220,9 @@ int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 	if (dest->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		VisPalette *pal = src->pal;
 
-		if (pal == NULL) {
+		if (!pal) {
 			blit_overlay_noalpha (dest, src);
-
-			return VISUAL_OK;
+			return;
 		}
 
 		int index = visual_palette_find_color (pal, src->colorkey);
@@ -311,6 +302,4 @@ int blit_overlay_surfacealphacolorkey (VisVideo *dest, VisVideo *src)
 			srcbuf += src->pitch - (src->width * src->bpp);
 		}
 	}
-
-	return VISUAL_OK;
 }
