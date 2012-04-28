@@ -26,25 +26,23 @@
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 typedef struct {
-	OinksiePrivate			 priv1;
-	OinksiePrivate			 priv2;
+	OinksiePrivate       priv1;
+	OinksiePrivate       priv2;
 
-	int				 color_mode;
+	int                  color_mode;
 
-	int				 depth;
-	uint8_t				*tbuf1;
-	uint8_t				*tbuf2;
-	uint8_t				*buf1;
-	uint8_t				*buf2;
+	int                  depth;
+	uint8_t             *buf1;
+	uint8_t             *buf2;
 
 	VisVideoComposeFunc	 currentcomp;
 } OinksiePrivContainer;
 
-static int compose_blend1_32_c (VisVideo *dest, VisVideo *src);
-static int compose_blend2_32_c (VisVideo *dest, VisVideo *src);
-static int compose_blend3_32_c (VisVideo *dest, VisVideo *src);
-static int compose_blend4_32_c (VisVideo *dest, VisVideo *src);
-static int compose_blend5_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend1_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend2_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend3_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend4_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend5_32_c (VisVideo *dest, VisVideo *src);
 
 static int act_oinksie_init (VisPluginData *plugin);
 static int act_oinksie_cleanup (VisPluginData *plugin);
@@ -149,12 +147,6 @@ static int act_oinksie_cleanup (VisPluginData *plugin)
 
 		if (priv->buf2)
 			visual_mem_free (priv->buf2);
-
-		if (priv->tbuf1)
-			visual_mem_free (priv->tbuf1);
-
-		if (priv->tbuf2)
-			visual_mem_free (priv->tbuf2);
 	}
 
 	visual_palette_free (priv->priv1.pal_cur);
@@ -221,18 +213,14 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 				if (visual_param_entry_is (param, "color mode")) {
 					priv->color_mode = visual_param_entry_get_integer (param);
 
-					if (priv->color_mode == 0)
-						priv->currentcomp = compose_blend1_32_c;
-					else if (priv->color_mode == 1)
-						priv->currentcomp = compose_blend2_32_c;
-					else if (priv->color_mode == 2)
-						priv->currentcomp = compose_blend3_32_c;
-					else if (priv->color_mode == 3)
-						priv->currentcomp = compose_blend4_32_c;
-					else if (priv->color_mode == 4)
-						priv->currentcomp = compose_blend5_32_c;
-					else
-						priv->currentcomp = compose_blend2_32_c;
+					switch (priv->color_mode) {
+						case 0:  priv->currentcomp = compose_blend1_32_c; break;
+						case 1:  priv->currentcomp = compose_blend2_32_c; break;
+						case 2:  priv->currentcomp = compose_blend3_32_c; break;
+						case 3:  priv->currentcomp = compose_blend4_32_c; break;
+						case 4:  priv->currentcomp = compose_blend5_32_c; break;
+						default: priv->currentcomp = compose_blend2_32_c; break;
+					}
 				} else if (visual_param_entry_is (param, "acid palette")) {
 					priv->priv1.config.acidpalette = visual_param_entry_get_integer (param);
 				}
@@ -349,121 +337,111 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	return 0;
 }
 
-static int compose_blend1_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend1_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
 		for (j = 0; j < src->width; j++) {
-			*destbuf = ((alpha * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((alpha * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+			destbuf[0] = (alpha * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (alpha * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (alpha * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
 
 		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
+		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-static int compose_blend2_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend2_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
 		for (j = 0; j < src->width; j++) {
-			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((0 * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (0          * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
 
 		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
+		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-static int compose_blend3_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend3_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
 		for (j = 0; j < src->width; j++) {
-			*destbuf = ((0 * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((*destbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+			destbuf[0] = (0          * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (destbuf[0] * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
 
 		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
+		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-static int compose_blend4_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend4_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
 	for (i = 0; i < src->height; i++) {
 		for (j = 0; j < src->width; j++) {
-			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((*srcbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (srcbuf[0]  * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
 
 		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
+		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-static int compose_blend5_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend5_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 
 	for (i = 0; i < src->height; i++) {
 		for (j = 0; j < src->width; j++) {
-			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((*srcbuf * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((*destbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (srcbuf[0]  * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (destbuf[0] * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
 
 		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
+		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
