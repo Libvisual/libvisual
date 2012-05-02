@@ -465,9 +465,9 @@ VisPalette *visual_bin_get_palette (VisBin *bin)
 int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 {
 	VisActor *actor;
-	VisVideo *video;
+	VisVideo *video = NULL;
 	int depthflag;
-	int depth;
+	int width, height, depth;
 
 	visual_return_val_if_fail (bin != NULL, -1);
 	visual_return_val_if_fail (actname != NULL, -1);
@@ -488,22 +488,21 @@ int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 	actor = visual_actor_new (actname);
 	visual_return_val_if_fail (actor != NULL, -1);
 
-	video = visual_video_new ();
-
-	visual_video_copy_attrs (video, bin->actvideo);
+	width  = bin->actvideo->width;
+	height = bin->actvideo->height;
+	depth  = bin->actvideo->depth;
 
 	depthflag = visual_actor_get_supported_depth (actor);
 	if (visual_video_depth_is_supported (depthflag, VISUAL_VIDEO_DEPTH_GL)) {
-		visual_log (VISUAL_LOG_INFO, _("Switching to Gl mode"));
+		visual_log (VISUAL_LOG_INFO, _("Switching to GL mode"));
 
 		bin->depthforced = VISUAL_VIDEO_DEPTH_GL;
 		bin->depthforcedmain = VISUAL_VIDEO_DEPTH_GL;
 
-		visual_video_set_depth (video, VISUAL_VIDEO_DEPTH_GL);
+		depth = VISUAL_VIDEO_DEPTH_GL;
 
 		visual_bin_set_depth (bin, VISUAL_VIDEO_DEPTH_GL);
 		bin->depthchanged = TRUE;
-
 	} else {
 		visual_log (VISUAL_LOG_INFO, _("Switching away from Gl mode -- or non Gl switch"));
 
@@ -569,16 +568,9 @@ int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 		}
 
 		visual_log (VISUAL_LOG_INFO, _("Target depth selected: %d"), depth);
-		visual_video_set_dimension (video, video->width, video->height);
-
-		visual_log (VISUAL_LOG_INFO, _("Switch to new pitch: %d"), bin->actvideo->pitch);
-		if (bin->actvideo->depth != VISUAL_VIDEO_DEPTH_GL)
-			visual_video_set_pitch (video, bin->actvideo->pitch);
-
-		visual_log (VISUAL_LOG_DEBUG, "before allocating buffer");
-		visual_video_allocate_buffer (video);
-		visual_log (VISUAL_LOG_DEBUG, "after allocating buffer");
 	}
+
+	video = visual_video_new_with_buffer (width, height, depth);
 
 	visual_log (VISUAL_LOG_INFO, _("video pitch of that what connects to the new actor %d"), video->pitch);
 	visual_actor_set_video (actor, video);

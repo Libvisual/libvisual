@@ -148,6 +148,21 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 	return video;
 }
 
+VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth)
+{
+    // FIXME: Support this
+    if (owner) {
+        visual_log (VISUAL_LOG_WARNING, "Memory leak: Ownership of wrapped pixel buffer is not supported at the moment");
+    }
+
+    VisVideo *video = visual_video_new ();
+    visual_video_set_depth (video, depth);
+    visual_video_set_dimension (video, width, height);
+    visual_video_set_buffer (video, buffer);
+
+    return video;
+}
+
 void visual_video_free_buffer (VisVideo *video)
 {
 	visual_return_if_fail (video != NULL);
@@ -169,6 +184,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 {
 	visual_return_val_if_fail (video != NULL, FALSE);
 	visual_return_val_if_fail (video->buffer != NULL, FALSE);
+	visual_return_val_if_fail (video->depth != VISUAL_VIDEO_DEPTH_GL, FALSE);
 
 	if (visual_video_get_pixels (video) != NULL) {
 		if (visual_buffer_is_allocated (video->buffer)) {
@@ -665,13 +681,7 @@ void visual_video_compose (VisVideo *dest, VisVideo *src, int x, int y, VisVideo
 
 	/* We're not the same depth, converting */
 	if (dest->depth != src->depth) {
-		transform = visual_video_new ();
-
-		visual_video_set_depth (transform, dest->depth);
-		visual_video_set_dimension (transform, src->width, src->height);
-
-		visual_video_allocate_buffer (transform);
-
+		transform = visual_video_new_with_buffer (src->width, src->height, dest->depth);
 		visual_video_convert_depth (transform, src);
 	}
 

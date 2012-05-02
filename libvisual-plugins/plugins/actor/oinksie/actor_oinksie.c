@@ -301,9 +301,6 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 		VisVideo *vid1;
 		VisVideo *vid2;
 
-		vid1 = visual_video_new ();
-		vid2 = visual_video_new ();
-
 		oinksie_sample (&priv->priv1);
 		oinksie_sample (&priv->priv2);
 
@@ -313,18 +310,21 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 		oinksie_render (&priv->priv1);
 		oinksie_render (&priv->priv2);
 
-		visual_video_set_depth (vid1, VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_dimension (vid1, video->width, video->height);
-		visual_video_set_buffer (vid1, priv->buf1);
+		vid1 = visual_video_new_wrap_buffer (priv->buf1,
+                                             FALSE,
+                                             video->width,
+                                             video->height,
+                                             VISUAL_VIDEO_DEPTH_8BIT);
 		visual_video_set_palette (vid1, oinksie_palette_get (&priv->priv1));
 
-		visual_video_blit (video, vid1, 0, 0, FALSE);
-
-		visual_video_set_depth (vid2, VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_dimension (vid2, video->width, video->height);
-		visual_video_set_buffer (vid2, priv->buf2);
+		vid2 = visual_video_new_wrap_buffer (priv->buf2,
+                                             FALSE,
+                                             video->width,
+                                             video->height,
+                                             VISUAL_VIDEO_DEPTH_8BIT);
 		visual_video_set_palette (vid2, oinksie_palette_get (&priv->priv2));
 
+		visual_video_blit (video, vid1, 0, 0, FALSE);
 		visual_video_set_compose_type (vid2, VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM);
 		visual_video_set_compose_function (vid2, priv->currentcomp);
 

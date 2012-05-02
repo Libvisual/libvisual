@@ -367,11 +367,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDept
 
     actplugin->requisition (visual_actor_get_plugin (actor), &req_width, &req_height);
 
-    actor->transform = visual_video_new ();
-
-    visual_video_set_depth (actor->transform, req_depth);
-    visual_video_set_dimension (actor->transform, req_width, req_height);
-    visual_video_allocate_buffer (actor->transform);
+    actor->transform = visual_video_new_with_buffer (req_width, req_height, req_depth);
 
     if (actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT)
         actor->ditherpal = visual_palette_new (256);

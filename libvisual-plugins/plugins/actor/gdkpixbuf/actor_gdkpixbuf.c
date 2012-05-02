@@ -373,25 +373,26 @@ static int update_scaled_pixbuf (PixbufPrivate *priv)
 static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src)
 {
 	VisVideo *target;
-	VisVideo bgr;
+	VisVideo *bgr;
 
 	target = &priv->target;
-
-	/* Create a VisVideo from the pixbuf */
-	visual_video_set_depth (&bgr,
-			visual_video_depth_enum_from_value (gdk_pixbuf_get_n_channels (src) * 8));
-	visual_video_set_dimension (&bgr, gdk_pixbuf_get_width (src), gdk_pixbuf_get_height (src));
-	visual_video_set_pitch (&bgr, gdk_pixbuf_get_rowstride (src));
-	visual_video_set_buffer (&bgr, gdk_pixbuf_get_pixels (src));
-
 	if (visual_video_get_pixels (target) != NULL)
 		visual_video_free_buffer (target);
 
-	visual_video_copy_attrs (target, &bgr);
+	/* Wrap pixbuf in VisVideo */
+	bgr = visual_video_new_wrap_buffer (gdk_pixbuf_get_pixels (src),
+                                        FALSE,
+                                        gdk_pixbuf_get_width (src),
+                                        gdk_pixbuf_get_height (src),
+                                        visual_video_depth_enum_from_value (gdk_pixbuf_get_n_channels (src) * 8));
+
+	visual_video_copy_attrs (target, bgr);
 	visual_video_allocate_buffer (target);
 
 	/* Gdk uses a different color order than we do */
-	visual_video_flip_pixel_bytes (target, &bgr);
+	visual_video_flip_pixel_bytes (target, bgr);
+
+	visual_object_unref (VISUAL_OBJECT (bgr));
 
 	return 0;
 }
