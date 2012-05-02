@@ -37,13 +37,15 @@ libvisual/lv_thread_disabled.c
 libvisual/lv_time.cpp
 libvisual/lv_time_c.cpp
 libvisual/lv_transform.cpp
-libvisual/lv_video.c
+libvisual/lv_video.cpp
 
 libvisual/private/lv_video_blit.c
 libvisual/private/lv_video_convert.c
 libvisual/private/lv_video_fill.c
 libvisual/private/lv_video_scale.c
-libvisual/private/lv_video_simd.c
+
+libvisual/private/lv_video_blit_simd.c
+libvisual/private/lv_video_scale_simd.c
 
 libvisual/private/windows/lv_mem_win32.cpp
 libvisual/private/windows/lv_module_win32.cpp
