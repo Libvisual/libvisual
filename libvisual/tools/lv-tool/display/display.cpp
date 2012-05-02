@@ -76,7 +76,7 @@ void SADisplay::close ()
     m_impl->driver->close ();
 }
 
-void SADisplay::set_title(std::string title)
+void SADisplay::set_title(std::string const& title)
 {
     m_impl->driver->set_title(title);
 }

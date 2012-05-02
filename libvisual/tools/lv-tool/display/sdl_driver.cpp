@@ -142,7 +142,7 @@ namespace {
                                                          m_screen->h,
                                                          depth);
 
-          SDL_WM_SetCaption (_("lv-tool"), NULL);
+          set_title (_("lv-tool"));
 
           SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
@@ -211,7 +211,7 @@ namespace {
           return m_screen_video;
       }
 
-      virtual void set_title(std::string title)
+      virtual void set_title(std::string const& title)
       {
           SDL_WM_SetCaption (title.c_str(), NULL);
       }

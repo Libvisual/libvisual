@@ -88,7 +88,7 @@ namespace {
           return m_screen_video;
       }
 
-      virtual void set_title(std::string title)
+      virtual void set_title(std::string const& title)
       {
           // nothing to do
       }

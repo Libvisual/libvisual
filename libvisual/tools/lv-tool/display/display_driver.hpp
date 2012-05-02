@@ -18,7 +18,7 @@ public:
     virtual void update_rect (LV::Rect const& rect) = 0;
     virtual void drain_events (VisEventQueue& eventqueue) = 0;
     virtual VisVideo* get_video () = 0;
-    virtual void set_title(std::string title) = 0;
+    virtual void set_title(std::string const& title) = 0;
 
     virtual ~SADisplayDriver () {}
 };
