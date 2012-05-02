@@ -34,13 +34,11 @@ class SADisplay::Impl
 public:
 
     LV::ScopedPtr<SADisplayDriver> driver;
-    VisVideo        *screen;
     unsigned int     frames_drawn;
     LV::Timer        timer;
 
     Impl ()
         : driver       (0)
-        , screen       (0)
         , frames_drawn (0)
     {}
 
@@ -56,18 +54,15 @@ SADisplay::SADisplay (std::string const& driver_name)
     if (!m_impl->driver) {
         throw std::runtime_error ("Failed to load display driver '" + driver_name + "'");
     }
-
-    m_impl->screen = visual_video_new ();
 }
 
 SADisplay::~SADisplay ()
 {
-    visual_object_unref (VISUAL_OBJECT (m_impl->screen));
 }
 
-VisVideo* SADisplay::get_screen () const
+VisVideo* SADisplay::get_video () const
 {
-    return m_impl->screen;
+    return m_impl->driver->get_video ();
 }
 
 bool SADisplay::create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
@@ -79,13 +74,6 @@ bool SADisplay::create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptio
 void SADisplay::close ()
 {
     m_impl->driver->close ();
-}
-
-VisVideo* SADisplay::get_video () const
-{
-    m_impl->driver->get_video (m_impl->screen);
-
-    return m_impl->screen;
 }
 
 void SADisplay::set_title(std::string title)

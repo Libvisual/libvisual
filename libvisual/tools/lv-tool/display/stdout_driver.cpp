@@ -26,7 +26,6 @@
 #include "display_driver.hpp"
 #include <libvisual/libvisual.h>
 #include <string>
-#include <vector>
 #include <unistd.h>
 
 // MinGW unistd.h doesn't have *_FILENO or SEEK_* defined
@@ -56,22 +55,17 @@ namespace {
                            unsigned int height,
                            bool resizable)
       {
-          unsigned int pixel_size = visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8;
+          if (m_screen_video)
+              visual_object_unref (VISUAL_OBJECT (m_screen_video));
 
-          m_area.resize (width * height * pixel_size);
-          visual_mem_set (&m_area[0], 0, m_area.size ());
-
-          // save dimensions
-          m_width  = width;
-          m_height = height;
-          m_depth  = depth;
+          m_screen_video = visual_video_new_with_buffer (width, height, VISUAL_VIDEO_DEPTH_24BIT);
 
           return true;
       }
 
       virtual void close ()
       {
-          // nothing to do
+          visual_object_unref (VISUAL_OBJECT (m_screen_video));
       }
 
       virtual void lock ()
@@ -89,11 +83,9 @@ namespace {
           // nothing to do
       }
 
-      virtual void get_video (VisVideo* screen)
+      virtual VisVideo* get_video ()
       {
-          visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
-          visual_video_set_dimension (screen, m_width, m_height);
-          visual_video_set_buffer (screen, &m_area[0]);
+          return m_screen_video;
       }
 
       virtual void set_title(std::string title)
@@ -103,7 +95,7 @@ namespace {
 
       virtual void update_rect (LV::Rect const& rect)
       {
-          write(STDOUT_FILENO, &m_area[0], m_area.size());
+          write(STDOUT_FILENO, visual_video_get_pixels (m_screen_video), visual_video_get_size (m_screen_video));
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)
@@ -114,10 +106,7 @@ namespace {
   private:
 
       SADisplay&           m_display;
-      unsigned int         m_width;
-      unsigned int         m_height;
-      VisVideoDepth        m_depth;
-      std::vector<uint8_t> m_area;
+      VisVideo*            m_screen_video;
   };
 
 } // anonymous namespace

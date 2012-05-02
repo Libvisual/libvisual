@@ -65,8 +65,6 @@ public:
 
     float get_fps_average () const;
 
-    VisVideo *get_screen () const;
-
 private:
 
     class Impl;

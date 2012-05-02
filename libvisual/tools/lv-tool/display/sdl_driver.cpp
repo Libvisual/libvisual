@@ -131,6 +131,17 @@ namespace {
                                            videoflags);
           }
 
+          // Recreate video object
+
+          if (m_screen_video)
+              visual_object_unref (VISUAL_OBJECT (m_screen_video));
+
+          m_screen_video = visual_video_new_wrap_buffer (m_screen->pixels,
+                                                         FALSE,
+                                                         m_screen->w,
+                                                         m_screen->h,
+                                                         depth);
+
           SDL_WM_SetCaption (_("lv-tool"), NULL);
 
           SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
@@ -144,6 +155,8 @@ namespace {
       {
           if (!m_running)
               return;
+
+          visual_object_unref (VISUAL_OBJECT (m_screen_video));
 
           SDL_Quit ();
 
@@ -167,8 +180,8 @@ namespace {
           if (fullscreen) {
               if (!(m_screen->flags & SDL_FULLSCREEN)) {
                   if (autoscale) {
-                      int width  = m_display.get_screen ()->width;
-                      int height = m_display.get_screen ()->height;
+                      int width  = m_display.get_video ()->width;
+                      int height = m_display.get_video ()->height;
 
                       m_last_width  = width;
                       m_last_height = height;
@@ -193,16 +206,9 @@ namespace {
           }
       }
 
-      virtual void get_video (VisVideo* screen)
+      virtual VisVideo* get_video ()
       {
-          if (m_requested_depth == VISUAL_VIDEO_DEPTH_GL)
-              visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
-          else
-              visual_video_set_depth (screen, visual_video_depth_enum_from_value (m_screen->format->BitsPerPixel));
-
-          visual_video_set_dimension (screen, m_screen->w, m_screen->h);
-          visual_video_set_pitch (screen, m_screen->pitch);
-          visual_video_set_buffer (screen, m_screen->pixels);
+          return m_screen_video;
       }
 
       virtual void set_title(std::string title)
@@ -213,7 +219,7 @@ namespace {
       virtual void update_rect (LV::Rect const& rect)
       {
           if (m_screen->format->BitsPerPixel == 8) {
-              LV::Palette* pal = m_display.get_screen ()->pal;
+              LV::Palette* pal = m_display.get_video ()->pal;
 
               if (pal && pal->size() <= 256) {
                   SDL_Color colors[256];
@@ -275,7 +281,7 @@ namespace {
                                           visual_event_new_resize (event.resize.w,
                                                                    event.resize.h));
 
-                  create (m_display.get_screen ()->depth, NULL, event.resize.w, event.resize.h, m_resizable);
+                  create (m_display.get_video ()->depth, NULL, event.resize.w, event.resize.h, m_resizable);
                   break;
 
               case SDL_MOUSEMOTION:
@@ -315,6 +321,7 @@ namespace {
 
       SADisplay&    m_display;
       SDL_Surface*  m_screen;
+      VisVideo*     m_screen_video;
       VisVideoDepth m_requested_depth;
 
       unsigned int m_last_width;
