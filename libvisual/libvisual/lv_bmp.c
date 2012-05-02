@@ -239,7 +239,7 @@ err:
 }
 
 
-int visual_bitmap_load (VisVideo *video, const char *filename)
+VisVideo *visual_bitmap_load (const char *filename)
 {
 	/* The win32 BMP header */
 	char magic[2];
@@ -262,12 +262,13 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	int32_t error = 0;
 	int i;
 
-	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	VisVideo *video = NULL;
+	VisPalette *palette = NULL;
 
 	fp = fopen (filename, "rb");
 	if (fp == NULL) {
 		visual_log (VISUAL_LOG_WARNING, _("Bitmap file not found: %s"), filename);
-		return -VISUAL_ERROR_BMP_NOT_FOUND;
+		return NULL;
 	}
 
 	/* Read the magic string */
@@ -275,7 +276,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	if (strncmp (magic, "BM", 2) != 0) {
 		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file"));
 		fclose (fp);
-		return -VISUAL_ERROR_BMP_NO_BMP;
+		return NULL;
 	}
 
 	/* Read the file size */
@@ -340,13 +341,13 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
 		visual_log (VISUAL_LOG_ERROR, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
 		fclose (fp);
-		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
+		return NULL;
 	}
 
 	if (bi_compression > 3) {
 		visual_log (VISUAL_LOG_ERROR, _("Bitmap uses an invalid or unsupported compression scheme"));
 		fclose (fp);
-		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
+		return NULL;
 	}
 
 	/* Load the palette */
@@ -359,7 +360,7 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 		/* Always allocate 256 palette entries.
 		 * Depth transformation depends on this */
-		visual_video_set_palette (video, visual_palette_new (256));
+		palette = visual_palette_new (256);
 
 		VisColor *colors = visual_palette_get_colors (video->pal);
 
@@ -384,9 +385,10 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 		depth = 8;
 
 	/* Make the target VisVideo ready for use */
-	visual_video_set_depth (video, visual_video_depth_enum_from_value (depth));
-	visual_video_set_dimension (video, bi_width, bi_height);
-	visual_video_allocate_buffer (video);
+	video = visual_video_new_with_buffer (bi_width, bi_height, visual_video_depth_enum_from_value (depth));
+
+	if (palette)
+		visual_video_set_palette (video, palette);
 
 	/* Set to the beginning of image data, note that MickeySoft likes stuff upside down .. */
 	fseek (fp, bf_bits, SEEK_SET);
@@ -411,22 +413,9 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	}
 
 	fclose (fp);
-	if (!error)
-		return VISUAL_OK;
 
-	visual_video_free_buffer (video);
-	return error;
-}
-
-VisVideo *visual_bitmap_load_new_video (const char *filename)
-{
-	VisVideo *video;
-
-	video = visual_video_new ();
-
-	if (visual_bitmap_load (video, filename) < 0) {
+	if (error != VISUAL_OK) {
 		visual_object_unref (VISUAL_OBJECT (video));
-
 		return NULL;
 	}
 

@@ -34,31 +34,13 @@
 LV_BEGIN_DECLS
 
 /**
- * Loads a BMP file into a VisVideo. The buffer will be located
- * for the VisVideo.
+ * Creates a new VisVideo from a BMP image file.
  *
- * Keep in mind that you need to free the palette by hand.
+ * @param path path to file to load
  *
- * @param video Destination video where the bitmap should be loaded in.
- * @param filename The filename of the bitmap to be loaded.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_BMP_NOT_FOUND,
- * 	-VISUAL_ERROR_BMP_NO_BMP, -VISUAL_ERROR_BMP_NOT_SUPPORTED or -VISUAL_ERROR_BMP_CORRUPTED
- * 	on failure.
+ * @return a VisVideo containing the image, or NULL on failure
  */
-LV_API int visual_bitmap_load (VisVideo *video, const char *filename);
-
-/**
- * Loads a bitmap into a VisVideo and return this, so it's not needed to
- * allocate a VisVideo before by hand.
- *
- * @see visual_bitmap_load
- *
- * @param filename The filename of the bitmap to be loaded.
- *
- * @return The VisVideo containing the bitmap or NULL on failure.
- */
-LV_API VisVideo *visual_bitmap_load_new_video (const char *filename);
+LV_API VisVideo *visual_bitmap_load (const char *path);
 
 LV_END_DECLS
 

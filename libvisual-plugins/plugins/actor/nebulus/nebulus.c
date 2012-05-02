@@ -128,12 +128,12 @@ static int lv_nebulus_init (VisPluginData *plugin)
 
 	priv->pcmbuf = visual_buffer_new_allocate (1024 * sizeof (float));
 
-	visual_video_init (&child_image);
-	visual_video_init (&energy_image);
-	visual_video_init (&tentacle_image);
-	visual_video_init (&tunnel_image);
-	visual_video_init (&twist_image);
-	visual_video_init (&background_image);
+	child_image = NULL;
+	energy_image = NULL;
+	tentacle_image = NULL;
+	tunnel_image = NULL;
+	twist_image = NULL;
+	background_image = NULL;
 
 	init_gl();
 
@@ -162,12 +162,12 @@ static int lv_nebulus_cleanup (VisPluginData *plugin)
 	delete_gl_texture(childbg);
 	delete_gl_texture(energy);
 
-	visual_object_unref (VISUAL_OBJECT (&child_image));
-	visual_object_unref (VISUAL_OBJECT (&energy_image));
-	visual_object_unref (VISUAL_OBJECT (&tentacle_image));
-	visual_object_unref (VISUAL_OBJECT (&tunnel_image));
-	visual_object_unref (VISUAL_OBJECT (&twist_image));
-	visual_object_unref (VISUAL_OBJECT (&background_image));
+	visual_object_unref (VISUAL_OBJECT (child_image));
+	visual_object_unref (VISUAL_OBJECT (energy_image));
+	visual_object_unref (VISUAL_OBJECT (tentacle_image));
+	visual_object_unref (VISUAL_OBJECT (tunnel_image));
+	visual_object_unref (VISUAL_OBJECT (twist_image));
+	visual_object_unref (VISUAL_OBJECT (background_image));
 
 	visual_buffer_free (priv->pcmbuf);
 

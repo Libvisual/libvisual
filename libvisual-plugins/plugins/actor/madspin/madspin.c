@@ -275,13 +275,13 @@ static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 
 static int madspin_load_textures (MadspinPrivate *priv)
 {
-	priv->texture_images[0] = visual_bitmap_load_new_video (STAR_DIR "/star1.bmp");
+	priv->texture_images[0] = visual_bitmap_load (STAR_DIR "/star1.bmp");
 	if (!priv->texture_images[0]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load first texture");
 		return -1;
 	}
 
-	priv->texture_images[1] = visual_bitmap_load_new_video (STAR_DIR "/star2.bmp");
+	priv->texture_images[1] = visual_bitmap_load (STAR_DIR "/star2.bmp");
 	if (!priv->texture_images[1]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load second texture");
 		return -1;
