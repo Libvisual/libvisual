@@ -367,9 +367,7 @@ int main (int argc, char **argv)
         SADisplay display (driver_name);
 
         // create display
-        display.create(depth, vidoptions, width, height, true);
-
-        VisVideo *video = display.get_video();
+        VisVideo *video = display.create(depth, vidoptions, width, height, true);
         if(!video)
             throw std::runtime_error("Failed to get VisVideo from display");
 
@@ -414,8 +412,7 @@ int main (int argc, char **argv)
                         display.lock();
                         width = ev.event.resize.width;
                         height = ev.event.resize.height;
-                        display.create(depth, vidoptions, width, height, true);
-                        video = display.get_video ();
+                        video = display.create(depth, vidoptions, width, height, true);
 
                         visual_bin_set_video (bin, video);
                         visual_actor_video_negotiate (bin->actor, depth, FALSE, FALSE);

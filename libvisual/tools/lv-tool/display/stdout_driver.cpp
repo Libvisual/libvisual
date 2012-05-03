@@ -49,18 +49,18 @@ namespace {
           close ();
       }
 
-      virtual bool create (VisVideoDepth depth,
-                           VisVideoAttrOptions const* vidoptions,
-                           unsigned int width,
-                           unsigned int height,
-                           bool resizable)
+      virtual VisVideo* create (VisVideoDepth depth,
+                                VisVideoAttrOptions const* vidoptions,
+                                unsigned int width,
+                                unsigned int height,
+                                bool resizable)
       {
           if (m_screen_video)
               visual_object_unref (VISUAL_OBJECT (m_screen_video));
 
           m_screen_video = visual_video_new_with_buffer (width, height, VISUAL_VIDEO_DEPTH_24BIT);
 
-          return true;
+          return m_screen_video;
       }
 
       virtual void close ()

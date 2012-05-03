@@ -49,7 +49,7 @@ typedef struct {
 #pragma pack()
 
 /* The VisVideo dtor function */
-static int video_dtor (VisObject *object);
+static void video_dtor (VisObject *object);
 
 /* Precomputation functions */
 static void precompute_row_table (VisVideo *video);
@@ -63,7 +63,9 @@ static void rotate_270 (VisVideo *dest, VisVideo *src);
 static void mirror_x (VisVideo *dest, VisVideo *src);
 static void mirror_y (VisVideo *dest, VisVideo *src);
 
-static int video_dtor (VisObject *object)
+static void visual_video_init (VisVideo *video);
+
+static void video_dtor (VisObject *object)
 {
 	VisVideo *video = VISUAL_VIDEO (object);
 
@@ -71,20 +73,14 @@ static int video_dtor (VisObject *object)
 
 	visual_rectangle_free (video->rect);
 
-	if (video->pixel_rows != NULL)
+	if (video->pixel_rows)
 		visual_mem_free (video->pixel_rows);
 
-	if (video->parent != NULL)
+	if (video->parent)
 		visual_object_unref (VISUAL_OBJECT (video->parent));
 
-	if (video->buffer != NULL)
+	if (video->buffer)
 		visual_buffer_free (video->buffer);
-
-	video->pixel_rows = NULL;
-	video->parent = NULL;
-	video->buffer = NULL;
-
-	return VISUAL_OK;
 }
 
 
@@ -93,12 +89,7 @@ VisVideo *visual_video_new ()
 	VisVideo *video;
 
 	video = visual_mem_new0 (VisVideo, 1);
-
 	visual_video_init (video);
-
-	/* Do the VisObject initialization */
-	visual_object_set_allocated (VISUAL_OBJECT (video), TRUE);
-	visual_object_ref (VISUAL_OBJECT (video));
 
 	return video;
 }
@@ -108,9 +99,7 @@ void visual_video_init (VisVideo *video)
 	visual_return_if_fail (video != NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (video));
-	visual_object_set_dtor (VISUAL_OBJECT (video), video_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (video), FALSE);
+	visual_object_init (VISUAL_OBJECT (video), video_dtor);
 
 	/* Reset the VisVideo data */
 	video->buffer = visual_buffer_new ();

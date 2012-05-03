@@ -45,17 +45,17 @@ namespace {
 
 extern "C" {
 
-static int actor_dtor (VisObject *object);
+static void actor_dtor (VisObject *object);
 
 static VisActorPlugin *get_actor_plugin (VisActor *actor);
 static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced);
 static int negotiate_video (VisActor *actor, int noevent);
 
-static int actor_dtor (VisObject *object)
+static void actor_dtor (VisObject *object)
 {
     VisActor *actor = VISUAL_ACTOR (object);
 
-    if (actor->plugin != NULL) {
+    if (actor->plugin) {
         {
             // FIXME: Hack to free songinfo
             VisActorPlugin *actplugin = (VisActorPlugin *) actor->plugin->info->plugin;
@@ -65,22 +65,19 @@ static int actor_dtor (VisObject *object)
         visual_plugin_unload (actor->plugin);
     }
 
-    if (actor->ditherpal != NULL)
+    if (actor->ditherpal)
         visual_palette_free (actor->ditherpal);
 
-    if (actor->transform != NULL)
+    if (actor->transform)
         visual_object_unref (VISUAL_OBJECT (actor->transform));
 
-    if (actor->fitting != NULL)
+    if (actor->fitting)
         visual_object_unref (VISUAL_OBJECT (actor->fitting));
 
+    if (actor->video)
+        visual_object_unref (VISUAL_OBJECT (actor->video));
+
     visual_songinfo_free (actor->songcompare);
-
-    actor->plugin = NULL;
-    actor->transform = NULL;
-    actor->fitting = NULL;
-
-    return VISUAL_OK;
 }
 
 static VisActorPlugin *get_actor_plugin (VisActor *actor)
@@ -207,10 +204,6 @@ VisActor *visual_actor_new (const char *actorname)
         return NULL;
     }
 
-    /* Do the VisObject initialization */
-    visual_object_set_allocated (VISUAL_OBJECT (actor), TRUE);
-    visual_object_ref (VISUAL_OBJECT (actor));
-
     return actor;
 }
 
@@ -228,9 +221,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
     }
 
     /* Do the VisObject initialization */
-    visual_object_clear (VISUAL_OBJECT (actor));
-    visual_object_set_dtor (VISUAL_OBJECT (actor), actor_dtor);
-    visual_object_set_allocated (VISUAL_OBJECT (actor), FALSE);
+    visual_object_init (VISUAL_OBJECT (actor), actor_dtor);
 
     /* Reset the VisActor data */
     actor->plugin = NULL;
@@ -258,8 +249,7 @@ int visual_actor_init (VisActor *actor, const char *actorname)
 
     /* Adding the VisActorPluginEnviron */
     actenviron = visual_mem_new0 (VisActorPluginEnviron, 1);
-
-    visual_object_initialize (VISUAL_OBJECT (actenviron), TRUE, NULL);
+    visual_object_init (VISUAL_OBJECT (actenviron), NULL);
 
     enve = visual_plugin_environ_new (VISUAL_ACTOR_PLUGIN_ENVIRON, VISUAL_OBJECT (actenviron));
     visual_plugin_environ_add (actor->plugin, enve);
@@ -452,7 +442,15 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video)
 {
     visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
 
+    if (actor->video && actor->video != video) {
+        visual_object_unref (VISUAL_OBJECT (actor->video));
+    }
+
     actor->video = video;
+
+    if (actor->video) {
+        visual_object_ref (VISUAL_OBJECT (actor->video));
+    }
 
     return VISUAL_OK;
 }

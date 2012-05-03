@@ -89,7 +89,7 @@ typedef void (*VisParamChangedCallbackFunc)(VisParamEntry *param, void *priv);
  */
 struct _VisParamContainer {
     VisObject      object;       /**< The VisObject data. */
-    VisList        entries;      /**< The list that contains all the parameters. */
+    VisList       *entries;      /**< The list that contains all the parameters. */
     VisEventQueue *eventqueue;   /**< Pointer to an optional eventqueue to which events can be emitted
                       * on parameter changes. */
 };
@@ -127,7 +127,7 @@ struct _VisParamEntry {
     VisPalette        *pal;        /**< VisPalette data. */
     VisObject         *objdata;    /**< VisObject data for a VisObject parameter. */
 
-    VisList            callbacks;  /**< The change notify callbacks. */
+    VisList           *callbacks;  /**< The change notify callbacks. */
 
     VisCollection     *collection; /**< VisCollection data. */
 

@@ -34,10 +34,10 @@
 #include <string.h>
 #include <limits.h>
 
-static int audio_dtor (VisObject *object);
-static int audio_samplepool_dtor (VisObject *object);
-static int audio_samplepool_channel_dtor (VisObject *object);
-static int audio_sample_dtor (VisObject *object);
+static void audio_dtor (VisObject *object);
+static void audio_samplepool_dtor (VisObject *object);
+static void audio_samplepool_channel_dtor (VisObject *object);
+static void audio_sample_dtor (VisObject *object);
 
 /* Ringbuffer data provider functions */
 static VisBuffer *sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
@@ -50,49 +50,36 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 		VisAudioSampleRateType rate);
 
 
-static int audio_dtor (VisObject *object)
+static void audio_dtor (VisObject *object)
 {
 	VisAudio *audio = VISUAL_AUDIO (object);
 
-	if (audio->samplepool != NULL)
+	if (audio->samplepool)
 		visual_object_unref (VISUAL_OBJECT (audio->samplepool));
-
-	audio->samplepool = NULL;
-
-	return VISUAL_OK;
 }
 
-static int audio_samplepool_dtor (VisObject *object)
+static void audio_samplepool_dtor (VisObject *object)
 {
 	VisAudioSamplePool *samplepool = VISUAL_AUDIO_SAMPLEPOOL (object);
 
-	if (samplepool->channels != NULL)
+	if (samplepool->channels)
 		visual_object_unref (VISUAL_OBJECT (samplepool->channels));
-
-	samplepool->channels = NULL;
-
-	return VISUAL_OK;
 }
 
-static int audio_samplepool_channel_dtor (VisObject *object)
+static void audio_samplepool_channel_dtor (VisObject *object)
 {
 	VisAudioSamplePoolChannel *channel = VISUAL_AUDIO_SAMPLEPOOL_CHANNEL (object);
 
 	visual_time_free (channel->samples_timeout);
 
-	if (channel->samples != NULL)
+	if (channel->samples)
 		visual_object_unref (VISUAL_OBJECT (channel->samples));
 
-	if (channel->channelid != NULL)
+	if (channel->channelid)
 		visual_mem_free (channel->channelid);
-
-	channel->samples = NULL;
-	channel->channelid= NULL;
-
-	return VISUAL_OK;
 }
 
-static int audio_sample_dtor (VisObject *object)
+static void audio_sample_dtor (VisObject *object)
 {
 	VisAudioSample *sample = VISUAL_AUDIO_SAMPLE (object);
 
@@ -103,11 +90,6 @@ static int audio_sample_dtor (VisObject *object)
 
 	if (sample->processed)
 		visual_buffer_unref (sample->processed);
-
-	sample->buffer = NULL;
-	sample->processed = NULL;
-
-	return VISUAL_OK;
 }
 
 VisAudio *visual_audio_new ()
@@ -115,12 +97,7 @@ VisAudio *visual_audio_new ()
 	VisAudio *audio;
 
 	audio = visual_mem_new0 (VisAudio, 1);
-
 	visual_audio_init (audio);
-
-	/* Do the VisObject initialization */
-	visual_object_set_allocated (VISUAL_OBJECT (audio), TRUE);
-	visual_object_ref (VISUAL_OBJECT (audio));
 
 	return audio;
 }
@@ -130,9 +107,7 @@ int visual_audio_init (VisAudio *audio)
 	visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (audio));
-	visual_object_set_dtor (VISUAL_OBJECT (audio), audio_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (audio), FALSE);
+	visual_object_init (VISUAL_OBJECT (audio), audio_dtor);
 
 	/* Reset the VisAudio data */
 	audio->samplepool = visual_audio_samplepool_new ();
@@ -428,12 +403,7 @@ VisAudioSamplePool *visual_audio_samplepool_new ()
 	VisAudioSamplePool *samplepool;
 
 	samplepool = visual_mem_new0 (VisAudioSamplePool, 1);
-
 	visual_audio_samplepool_init (samplepool);
-
-	/* Do the VisObject initialization */
-        visual_object_set_allocated (VISUAL_OBJECT (samplepool), TRUE);
-	visual_object_ref (VISUAL_OBJECT (samplepool));
 
 	return samplepool;
 }
@@ -442,10 +412,7 @@ int visual_audio_samplepool_init (VisAudioSamplePool *samplepool)
 {
 	visual_return_val_if_fail (samplepool != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL);
 
-	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (samplepool));
-	visual_object_set_dtor (VISUAL_OBJECT (samplepool), audio_samplepool_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (samplepool), FALSE);
+	visual_object_init (VISUAL_OBJECT (samplepool), audio_samplepool_dtor);
 
 	/* Reset the VisAudioSamplePool structure */
 	samplepool->channels = visual_list_new (visual_object_collection_destroyer);
@@ -561,10 +528,6 @@ VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (const char *chan
 
 	visual_audio_samplepool_channel_init (channel, channelid);
 
-	/* Do the VisObject initialization */
-	visual_object_set_allocated (VISUAL_OBJECT (channel), TRUE);
-	visual_object_ref (VISUAL_OBJECT (channel));
-
 	return channel;
 }
 
@@ -573,9 +536,7 @@ int visual_audio_samplepool_channel_init (VisAudioSamplePoolChannel *channel, co
 	visual_return_val_if_fail (channel != NULL, -VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (channel));
-	visual_object_set_dtor (VISUAL_OBJECT (channel), audio_samplepool_channel_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (channel), FALSE);
+	visual_object_init (VISUAL_OBJECT (channel), audio_samplepool_channel_dtor);
 
 	/* Reset the VisAudioSamplePoolChannel data */
 	channel->samples = visual_ringbuffer_new ();
@@ -721,12 +682,7 @@ VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
 	VisAudioSample *sample;
 
 	sample = visual_mem_new0 (VisAudioSample, 1);
-
 	visual_audio_sample_init (sample, buffer, timestamp, format, rate);
-
-	/* Do the VisObject initialization */
-    visual_object_set_allocated (VISUAL_OBJECT (sample), TRUE);
-	visual_object_ref (VISUAL_OBJECT (sample));
 
 	return sample;
 }
@@ -738,9 +694,7 @@ int visual_audio_sample_init (VisAudioSample *sample, VisBuffer *buffer, VisTime
 	visual_return_val_if_fail (sample != NULL, -VISUAL_ERROR_AUDIO_SAMPLE_NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (sample));
-	visual_object_set_dtor (VISUAL_OBJECT (sample), audio_sample_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (sample), FALSE);
+	visual_object_init (VISUAL_OBJECT (sample), audio_sample_dtor);
 
 	/* Reset the VisAudioSamplePool structure */
 	sample->timestamp = visual_time_clone (timestamp);

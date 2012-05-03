@@ -38,8 +38,8 @@ public:
 
     ~SADisplay ();
 
-    bool create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
-        unsigned int width, unsigned int height, bool resizable = true);
+    VisVideo* create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
+                      unsigned int width, unsigned int height, bool resizable = true);
 
     void close ();
 

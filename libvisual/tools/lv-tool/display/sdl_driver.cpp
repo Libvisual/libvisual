@@ -62,6 +62,7 @@ namespace {
       SDLDriver (SADisplay& display)
           : m_display         (display)
           , m_screen          (0)
+          , m_screen_video    (0)
           , m_requested_depth (VISUAL_VIDEO_DEPTH_NONE)
           , m_last_width      (0)
           , m_last_height     (0)
@@ -75,9 +76,14 @@ namespace {
           close ();
       }
 
-      virtual bool create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
-                           unsigned int width, unsigned int height, bool resizable)
+      virtual VisVideo* create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
+                                unsigned int width, unsigned int height, bool resizable)
       {
+          if (m_screen_video) {
+              visual_object_unref (VISUAL_OBJECT (m_screen_video));
+              m_screen_video = NULL;
+          }
+
           int videoflags = 0;
 
           if (resizable)
@@ -86,7 +92,7 @@ namespace {
           if (!SDL_WasInit (SDL_INIT_VIDEO)) {
               if (SDL_Init (SDL_INIT_VIDEO) == -1) {
                   std::cerr << "Unable to init SDL VIDEO: " << SDL_GetError () << std::endl;
-                  return false;
+                  return NULL;
               }
           }
 
@@ -97,7 +103,7 @@ namespace {
               SDL_VideoInfo const* videoinfo = SDL_GetVideoInfo ();
 
               if (!videoinfo) {
-                  return -1;
+                  return NULL;
               }
 
               videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE;
@@ -133,9 +139,6 @@ namespace {
 
           // Recreate video object
 
-          if (m_screen_video)
-              visual_object_unref (VISUAL_OBJECT (m_screen_video));
-
           m_screen_video = visual_video_new_wrap_buffer (m_screen->pixels,
                                                          FALSE,
                                                          m_screen->w,
@@ -148,7 +151,7 @@ namespace {
 
           m_running = true;
 
-          return true;
+          return m_screen_video;
       }
 
       virtual void close ()

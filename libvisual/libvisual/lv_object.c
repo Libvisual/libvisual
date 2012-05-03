@@ -25,12 +25,10 @@
 #include "lv_object.h"
 #include "lv_common.h"
 
-int visual_object_collection_destroyer (void *data)
+void visual_object_collection_destroyer (void *data)
 {
-	if (data == NULL)
-		return VISUAL_OK;
-
-	return visual_object_unref (VISUAL_OBJECT (data));
+	if (data)
+		visual_object_unref (VISUAL_OBJECT (data));
 }
 
 VisObject *visual_object_new ()
@@ -38,120 +36,55 @@ VisObject *visual_object_new ()
 	VisObject *object;
 
 	object = visual_mem_new0 (VisObject, 1);
-
-	object->allocated = TRUE;
-
-	visual_object_ref (object);
+    visual_object_init (object, NULL);
 
 	return object;
 }
 
-int visual_object_free (VisObject *object)
+void visual_object_destroy (VisObject *object)
 {
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-	visual_return_val_if_fail (object->allocated, -VISUAL_ERROR_OBJECT_NOT_ALLOCATED);
-
-	return visual_mem_free (object);
-}
-
-int visual_object_destroy (VisObject *object)
-{
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_if_fail (object != NULL);
 
 	if (object->dtor != NULL)
 		object->dtor (object);
+}
 
-	if (object->allocated)
-		return visual_object_free (object);
+int visual_object_init (VisObject *object, VisObjectDtorFunc dtor)
+{
+	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+
+    object->dtor = dtor;
+    object->refcount = 1;
 
 	return VISUAL_OK;
 }
 
-int visual_object_initialize (VisObject *object, int allocated, VisObjectDtorFunc dtor)
+void visual_object_ref (VisObject *object)
 {
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-
-	visual_object_set_dtor (object, dtor);
-	visual_object_set_allocated (object, allocated);
-
-	visual_object_clear (object);
-
-	visual_object_ref (object);
-
-	return VISUAL_OK;
-}
-
-int visual_object_clear (VisObject *object)
-{
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-
-	visual_object_set_private (object, NULL);
-	visual_object_set_refcount (object, 0);
-
-	return VISUAL_OK;
-}
-
-int visual_object_set_dtor (VisObject *object, VisObjectDtorFunc dtor)
-{
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-
-	object->dtor = dtor;
-
-	return VISUAL_OK;
-}
-
-int visual_object_set_allocated (VisObject *object, int allocated)
-{
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-
-	object->allocated = allocated;
-
-	return VISUAL_OK;
-}
-
-int visual_object_set_refcount (VisObject *object, int refcount)
-{
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
-
-	object->refcount = refcount;
-
-	return VISUAL_OK;
-}
-
-int visual_object_ref (VisObject *object)
-{
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_if_fail (object != NULL);
 
 	object->refcount++;
-
-	return VISUAL_OK;
 }
 
-int visual_object_unref (VisObject *object)
+void visual_object_unref (VisObject *object)
 {
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_if_fail (object != NULL);
 
 	object->refcount--;
 
-	/* No reference left, start dtoring of this VisObject */
 	if (object->refcount <= 0) {
-		object->refcount = 0;
-
-		return visual_object_destroy (object);
+		visual_object_destroy (object);
 	}
-	return VISUAL_OK;
 }
 
-int visual_object_set_private (VisObject *object, void *priv)
+void visual_object_set_private (VisObject *object, void *priv)
 {
-	visual_return_val_if_fail (object != NULL, -VISUAL_ERROR_OBJECT_NULL);
+	visual_return_if_fail (object != NULL);
 
 	/* mhm, this can lead to a memory leak. We must check here
 	   for priv == NULL and return some -VISUAl_ERROR_NON_NULL
 	   when it's not, or print some debug message at least. */
 	object->priv = priv;
-
-	return VISUAL_OK;
 }
 
 void *visual_object_get_private (VisObject *object)

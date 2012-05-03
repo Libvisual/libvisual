@@ -37,24 +37,19 @@ namespace {
 
 } // Anonymous namespace
 
-static int input_dtor (VisObject *object);
+static void input_dtor (VisObject *object);
 
 static VisInputPlugin *get_input_plugin (VisInput *input);
 
-static int input_dtor (VisObject *object)
+static void input_dtor (VisObject *object)
 {
     VisInput *input = VISUAL_INPUT (object);
 
-    if (input->plugin != NULL)
+    if (input->plugin)
         visual_plugin_unload (input->plugin);
 
-    if (input->audio != NULL)
+    if (input->audio )
         visual_object_unref (VISUAL_OBJECT (input->audio));
-
-    input->plugin = NULL;
-    input->audio = NULL;
-
-    return VISUAL_OK;
 }
 
 static VisInputPlugin *get_input_plugin (VisInput *input)
@@ -97,10 +92,6 @@ VisInput *visual_input_new (const char *inputname)
         return NULL;
     }
 
-    /* Do the VisObject initialization */
-    visual_object_set_allocated (VISUAL_OBJECT (input), TRUE);
-    visual_object_ref (VISUAL_OBJECT (input));
-
     return input;
 }
 
@@ -115,9 +106,7 @@ int visual_input_init (VisInput *input, const char *inputname)
     }
 
     /* Do the VisObject initialization */
-    visual_object_clear (VISUAL_OBJECT (input));
-    visual_object_set_dtor (VISUAL_OBJECT (input), input_dtor);
-    visual_object_set_allocated (VISUAL_OBJECT (input), FALSE);
+    visual_object_init (VISUAL_OBJECT (input), input_dtor);
 
     /* Reset the VisInput data */
     input->audio = visual_audio_new ();

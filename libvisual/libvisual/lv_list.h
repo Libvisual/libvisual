@@ -52,10 +52,10 @@ typedef struct _VisList VisList;
  * a void * to the data.
  */
 struct _VisListEntry {
-	VisListEntry		*prev;	/**< Previous entry in the list. */
-	VisListEntry		*next;	/**< Next entry in the list. */
+	VisListEntry *prev;	/**< Previous entry in the list. */
+	VisListEntry *next;	/**< Next entry in the list. */
 
-	void			*data;	/**< Pointer to the data for this entry. */
+	void         *data;	/**< Pointer to the data for this entry. */
 };
 
 /**
@@ -63,12 +63,10 @@ struct _VisListEntry {
  * VisCollection class.
  */
 struct _VisList {
-	VisCollection		 collection;	/**< The VisCollection data. */
-
-	VisListEntry		*head;		/**< Pointer to the beginning of the list. */
-	VisListEntry		*tail;		/**< Pointer to the end of the list. */
-
-	int			 count;		/**< Number of entries that are in the list. */
+	VisCollection  collection;  /**< The VisCollection data. */
+	VisListEntry  *head;        /**< Pointer to the beginning of the list. */
+	VisListEntry  *tail;        /**< Pointer to the end of the list. */
+	int            count;       /**< Number of entries that are in the list. */
 };
 
 LV_BEGIN_DECLS

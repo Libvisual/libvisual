@@ -163,22 +163,6 @@ LV_BEGIN_DECLS
 LV_API VisVideo *visual_video_new (void);
 
 /**
- * Initializes a VisVideo, this will set the allocated flag for the object to FALSE.
- * When visual_video_new() is used, this function should not be used since visual_video_new() makes
- * sure that the VisObject initialization is done right. It's best to use this function in cases where
- * the VisVideo was not being allocated. To cleanup the none allocated VisVideo you can still use
- * visual_object_unref(). When it loses all references, it will get internally cleaned up.
- * Added to that, don't use this function to reset your VisVideo.
- *
- * @see visual_video_new
- *
- * @param video Pointer to the VisVideo that is to be initialized.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
- */
-LV_API void visual_video_init (VisVideo *video);
-
-/**
  * Creates a new VisVideo and also allocates a buffer.
  *
  * @param width The width for the new buffer.

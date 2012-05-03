@@ -27,21 +27,19 @@
 #include "lv_util.h"
 #include "gettext.h"
 
-static int param_container_dtor (VisObject *object);
-static int param_entry_dtor (VisObject *object);
+static void param_container_dtor (VisObject *object);
+static void param_entry_dtor (VisObject *object);
 
 static int get_next_pcall_id (VisList *callbacks);
 
-static int param_container_dtor (VisObject *object)
+static void param_container_dtor (VisObject *object)
 {
     VisParamContainer *paramcontainer = VISUAL_PARAMCONTAINER (object);
 
-    visual_collection_destroy (VISUAL_COLLECTION (&paramcontainer->entries));
-
-    return VISUAL_OK;
+    visual_object_unref (VISUAL_OBJECT (paramcontainer->entries));
 }
 
-static int param_entry_dtor (VisObject *object)
+static void param_entry_dtor (VisObject *object)
 {
     VisParamEntry *param = VISUAL_PARAMENTRY (object);
 
@@ -59,14 +57,7 @@ static int param_entry_dtor (VisObject *object)
 
     visual_palette_free (param->pal);
 
-    visual_collection_destroy (VISUAL_COLLECTION (&param->callbacks));
-
-    param->string = NULL;
-    param->name = NULL;
-    param->objdata = NULL;
-    param->annotation = NULL;
-
-    return VISUAL_OK;
+    visual_object_unref (VISUAL_OBJECT (param->callbacks));
 }
 
 static int get_next_pcall_id (VisList *callbacks)
@@ -105,13 +96,9 @@ VisParamContainer *visual_param_container_new ()
     VisParamContainer *paramcontainer;
 
     paramcontainer = visual_mem_new0 (VisParamContainer, 1);
+    visual_object_init (VISUAL_OBJECT (paramcontainer), param_container_dtor);
 
-    visual_list_init(&paramcontainer->entries, NULL);
-
-    /* Do the VisObject initialization */
-    visual_object_initialize (VISUAL_OBJECT (paramcontainer), TRUE, param_container_dtor);
-
-    visual_collection_set_destroyer (VISUAL_COLLECTION (&paramcontainer->entries), visual_object_collection_destroyer);
+    paramcontainer->entries = visual_list_new (visual_object_collection_destroyer);
 
     return paramcontainer;
 }
@@ -143,7 +130,7 @@ int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry
      * it's event loop */
     visual_param_entry_changed (param);
 
-    return visual_list_add (&paramcontainer->entries, param);
+    return visual_list_add (paramcontainer->entries, param);
 }
 
 int visual_param_container_add_with_defaults (VisParamContainer *paramcontainer, VisParamEntry *param)
@@ -167,7 +154,7 @@ int visual_param_container_add_with_defaults (VisParamContainer *paramcontainer,
      * it's event loop */
     visual_param_entry_changed (param);
 
-    return visual_list_add (&paramcontainer->entries, param);
+    return visual_list_add (paramcontainer->entries, param);
 }
 
 int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params)
@@ -198,10 +185,10 @@ int visual_param_container_remove (VisParamContainer *paramcontainer, const char
     visual_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
     visual_return_val_if_fail (name != NULL, -VISUAL_ERROR_NULL);
 
-    while ((param = visual_list_next (&paramcontainer->entries, &le)) != NULL) {
+    while ((param = visual_list_next (paramcontainer->entries, &le)) != NULL) {
 
         if (strcmp (param->name, name) == 0) {
-            visual_list_delete (&paramcontainer->entries, &le);
+            visual_list_delete (paramcontainer->entries, &le);
 
             return VISUAL_OK;
         }
@@ -220,7 +207,7 @@ int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer 
     visual_return_val_if_fail (destcont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
     visual_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
 
-    while ((srcparam = visual_list_next (&srccont->entries, &le)) != NULL) {
+    while ((srcparam = visual_list_next (srccont->entries, &le)) != NULL) {
         tempparam = visual_param_container_get (destcont, visual_param_entry_get_name (srcparam));
 
         /* Already exists, overwrite */
@@ -249,7 +236,7 @@ int visual_param_container_copy_match (VisParamContainer *destcont, VisParamCont
     visual_return_val_if_fail (destcont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
     visual_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
 
-    while ((destparam = visual_list_next (&destcont->entries, &le)) != NULL) {
+    while ((destparam = visual_list_next (destcont->entries, &le)) != NULL) {
         srcparam = visual_param_container_get (srccont, visual_param_entry_get_name (destparam));
 
         if (srcparam != NULL)
@@ -267,7 +254,7 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
     visual_return_val_if_fail (paramcontainer != NULL, NULL);
     visual_return_val_if_fail (name != NULL, NULL);
 
-    while ((param = visual_list_next (&paramcontainer->entries, &le)) != NULL) {
+    while ((param = visual_list_next (paramcontainer->entries, &le)) != NULL) {
         param = le->data;
 
         if (strcmp (param->name, name) == 0)
@@ -284,11 +271,10 @@ VisParamEntry *visual_param_entry_new (const char *name)
     param = visual_mem_new0 (VisParamEntry, 1);
 
     /* Do the VisObject initialization */
-    visual_object_initialize (VISUAL_OBJECT (param), TRUE, param_entry_dtor);
+    visual_object_init (VISUAL_OBJECT (param), param_entry_dtor);
+    param->callbacks = visual_list_new (visual_object_collection_destroyer);
 
     visual_param_entry_set_name (param, name);
-
-    visual_collection_set_destroyer (VISUAL_COLLECTION (&param->callbacks), visual_object_collection_destroyer);
 
     return param;
 }
@@ -301,20 +287,20 @@ int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallba
     visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
     visual_return_val_if_fail (callback != NULL, -VISUAL_ERROR_PARAM_CALLBACK_NULL);
 
-    id = get_next_pcall_id (&param->callbacks);
+    id = get_next_pcall_id (param->callbacks);
 
     visual_return_val_if_fail (id >= 0, -VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY);
 
     pcall = visual_mem_new0 (VisParamEntryCallback, 1);
 
     /* Do the VisObject initialization for the VisParamEntryCallback */
-    visual_object_initialize (VISUAL_OBJECT (pcall), TRUE, NULL);
+    visual_object_init (VISUAL_OBJECT (pcall), NULL);
 
     pcall->id = id;
     pcall->callback = callback;
     visual_object_set_private (VISUAL_OBJECT (pcall), priv);
 
-    visual_list_add (&param->callbacks, pcall);
+    visual_list_add (param->callbacks, pcall);
 
     return id;
 }
@@ -327,10 +313,10 @@ int visual_param_entry_remove_callback (VisParamEntry *param, int id)
 
     visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-    while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL) {
+    while ((pcall = visual_list_next (param->callbacks, &le)) != NULL) {
 
         if (id == pcall->id) {
-            visual_list_delete (&param->callbacks, &le);
+            visual_list_delete (param->callbacks, &le);
 
             visual_object_unref (VISUAL_OBJECT (pcall));
 
@@ -348,7 +334,7 @@ int visual_param_entry_notify_callbacks (VisParamEntry *param)
 
     visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
 
-    while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL)
+    while ((pcall = visual_list_next (param->callbacks, &le)) != NULL)
         pcall->callback (param, visual_object_get_private (VISUAL_OBJECT (pcall)));
 
     return VISUAL_OK;

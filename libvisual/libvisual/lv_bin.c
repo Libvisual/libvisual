@@ -31,47 +31,36 @@
  * rewrite it. And i can't say i feel like it at the moment so be
  * patient :)  */
 
-static int bin_dtor (VisObject *object);
+static void bin_dtor (VisObject *object);
 
 static void fix_depth_with_bin (VisBin *bin, VisVideo *video, int depth);
 static int bin_get_depth_using_preferred (VisBin *bin, int depthflag);
 
-static int bin_dtor (VisObject *object)
+static void bin_dtor (VisObject *object)
 {
 	VisBin *bin = VISUAL_BIN (object);
 
-	visual_return_val_if_fail (bin != NULL, -1);
-
-	if (bin->actor != NULL)
+	if (bin->actor)
 		visual_object_unref (VISUAL_OBJECT (bin->actor));
 
-	if (bin->input != NULL)
+	if (bin->input)
 		visual_object_unref (VISUAL_OBJECT (bin->input));
 
-	if (bin->morph != NULL)
+	if (bin->morph)
 		visual_object_unref (VISUAL_OBJECT (bin->morph));
 
 	if (bin->actmorphmanaged) {
-		if (bin->actmorph != NULL)
+		if (bin->actmorph)
 			visual_object_unref (VISUAL_OBJECT (bin->actmorph));
 
-		if (bin->actmorphvideo != NULL)
+		if (bin->actmorphvideo)
 			visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
 	}
 
-	if (bin->privvid != NULL)
+	if (bin->privvid)
 		visual_object_unref (VISUAL_OBJECT (bin->privvid));
 
 	visual_time_free (bin->morphtime);
-
-	bin->actor = NULL;
-	bin->input = NULL;
-	bin->morph = NULL;
-	bin->actmorph = NULL;
-	bin->actmorphvideo = NULL;
-	bin->privvid = NULL;
-
-	return VISUAL_OK;
 }
 
 static void fix_depth_with_bin (VisBin *bin, VisVideo *video, int depth)
@@ -99,9 +88,7 @@ VisBin *visual_bin_new ()
 	VisBin *bin;
 
 	bin = visual_mem_new0 (VisBin, 1);
-
-	/* VisObject stuff.. */
-	visual_object_initialize (VISUAL_OBJECT (bin), TRUE, bin_dtor);
+	visual_object_init (VISUAL_OBJECT (bin), bin_dtor);
 
 	bin->morphautomatic = TRUE;
 
@@ -383,7 +370,15 @@ int visual_bin_set_video (VisBin *bin, VisVideo *video)
 {
 	visual_return_val_if_fail (bin != NULL, -1);
 
+	if (bin->actvideo && bin->actvideo != video) {
+		visual_object_unref (VISUAL_OBJECT (bin->actvideo));
+	}
+
 	bin->actvideo = video;
+
+	if (bin->actvideo) {
+		visual_object_ref (VISUAL_OBJECT (bin->actvideo));
+	}
 
 	return 0;
 }

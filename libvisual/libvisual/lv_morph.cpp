@@ -37,25 +37,24 @@ namespace {
 
 } // anonymous namespace
 
-static int morph_dtor (VisObject *object);
+static void morph_dtor (VisObject *object);
 
 static VisMorphPlugin *get_morph_plugin (VisMorph *morph);
 
-static int morph_dtor (VisObject *object)
+static void morph_dtor (VisObject *object)
 {
     VisMorph *morph = VISUAL_MORPH (object);
 
     visual_time_free (morph->morphtime);
     visual_timer_free (morph->timer);
 
-    if (morph->plugin != NULL)
+    if (morph->dest)
+        visual_object_unref (VISUAL_OBJECT (morph->dest));
+
+    if (morph->plugin)
         visual_plugin_unload (morph->plugin);
 
     visual_palette_free (morph->morphpal);
-
-    morph->plugin = NULL;
-
-    return VISUAL_OK;
 }
 
 static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
@@ -98,10 +97,6 @@ VisMorph *visual_morph_new (const char *morphname)
         return NULL;
     }
 
-    /* Do the VisObject initialization */
-    visual_object_set_allocated (VISUAL_OBJECT (morph), TRUE);
-    visual_object_ref (VISUAL_OBJECT (morph));
-
     return morph;
 }
 
@@ -116,9 +111,7 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     }
 
     /* Do the VisObject initialization */
-    visual_object_clear (VISUAL_OBJECT (morph));
-    visual_object_set_dtor (VISUAL_OBJECT (morph), morph_dtor);
-    visual_object_set_allocated (VISUAL_OBJECT (morph), FALSE);
+    visual_object_init (VISUAL_OBJECT (morph), morph_dtor);
 
     /* Reset the VisMorph data */
     morph->plugin = NULL;
@@ -188,6 +181,7 @@ int visual_morph_set_video (VisMorph *morph, VisVideo *video)
     visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
 
     morph->dest = video;
+    visual_object_ref (VISUAL_OBJECT (morph->dest));
 
     return VISUAL_OK;
 }

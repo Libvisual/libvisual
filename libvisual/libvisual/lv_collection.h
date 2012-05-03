@@ -45,11 +45,11 @@ typedef struct _VisCollectionIter VisCollectionIter;
  *
  * @return FIXME blah blah blah
  */
-typedef int (*VisCollectionDestroyerFunc)(void *data);
+typedef void (*VisCollectionDestroyerFunc)(void *data);
 
 /**
  */
-typedef int (*VisCollectionDestroyFunc)(VisCollection *collection);
+typedef void (*VisCollectionDestroyFunc)(VisCollection *collection);
 
 /**
  */
@@ -105,21 +105,20 @@ struct _VisCollectionIter {
 LV_BEGIN_DECLS
 
 /* prototypes */
-LV_API int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer);
+LV_API void visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer);
 LV_API VisCollectionDestroyerFunc visual_collection_get_destroyer (VisCollection *collection);
 
-LV_API int visual_collection_set_destroy_func (VisCollection *collection, VisCollectionDestroyFunc destroyfunc);
+LV_API void visual_collection_set_destroy_func (VisCollection *collection, VisCollectionDestroyFunc destroyfunc);
 LV_API VisCollectionDestroyFunc visual_collection_get_destroy_func (VisCollection *collection);
 
-LV_API int visual_collection_set_size_func (VisCollection *collection, VisCollectionSizeFunc sizefunc);
+LV_API void visual_collection_set_size_func (VisCollection *collection, VisCollectionSizeFunc sizefunc);
 LV_API VisCollectionSizeFunc visual_collection_get_size_func (VisCollection *collection);
 
-LV_API int visual_collection_set_iter_func (VisCollection *collection, VisCollectionIterFunc iterfunc);
+LV_API void visual_collection_set_iter_func (VisCollection *collection, VisCollectionIterFunc iterfunc);
 LV_API VisCollectionIterFunc visual_collection_get_iter_func (VisCollection *collection);
 
-LV_API int visual_collection_dtor (VisObject *object);
+LV_API void visual_collection_dtor (VisObject *object);
 
-LV_API int visual_collection_destroy (VisCollection *collection);
 LV_API int visual_collection_size (VisCollection *collection);
 LV_API VisCollectionIter *visual_collection_get_iter (VisCollection *collection);
 
@@ -128,6 +127,7 @@ LV_API VisCollectionIter *visual_collection_iter_new (
 		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
 		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
 		VisCollection *collection, VisObject *context);
+
 LV_API int visual_collection_iter_init (VisCollectionIter *iter,
 		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
 		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
@@ -137,7 +137,7 @@ LV_API void visual_collection_iter_assign (VisCollectionIter *iter, int index);
 LV_API void visual_collection_iter_next (VisCollectionIter *iter);
 LV_API int visual_collection_iter_has_more (VisCollectionIter *iter);
 LV_API void *visual_collection_iter_get_data (VisCollectionIter *iter);
-LV_API int visual_collection_iter_dtor (VisCollectionIter *iter);
+LV_API void visual_collection_iter_dtor (VisCollectionIter *iter);
 
 LV_END_DECLS
 
