@@ -301,7 +301,7 @@ LV_API void visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
-LV_API void visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
+LV_API void visual_video_set_attrs (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
 
 LV_API visual_size_t visual_video_get_size (VisVideo *video);
 

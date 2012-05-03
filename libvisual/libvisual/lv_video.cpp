@@ -106,7 +106,7 @@ void visual_video_init (VisVideo *video)
 
 	video->pixel_rows = NULL;
 
-	visual_video_set_attributes (video, 0, 0, 0, VISUAL_VIDEO_DEPTH_NONE);
+	visual_video_set_attrs (video, 0, 0, 0, VISUAL_VIDEO_DEPTH_NONE);
 	visual_video_set_buffer (video, NULL);
 	visual_video_set_palette (video, NULL);
 
@@ -331,7 +331,7 @@ void visual_video_set_depth (VisVideo *video, VisVideoDepth depth)
 	video->bpp = visual_video_bpp_from_depth (video->depth);
 }
 
-void visual_video_set_attributes (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth)
+void visual_video_set_attrs (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth)
 {
 	visual_return_if_fail (video != NULL);
 
@@ -368,18 +368,22 @@ VisRectangle *visual_video_get_extents (VisVideo *video)
 	return visual_rectangle_new (0, 0, video->width, video->height);
 }
 
+void *visual_video_get_pixel_ptr (VisVideo *video, int x, int y)
+{
+	visual_return_val_if_fail (video != NULL, NULL);
+
+	return static_cast<uint8_t*> (video->pixel_rows[y]) + x * video->bpp;
+}
+
 void visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *area)
 {
-	VisRectangle *vrect = NULL;
-	int area_x, area_y, area_width, area_height;
-
 	visual_return_if_fail (dest != NULL);
 	visual_return_if_fail (src  != NULL);
 	visual_return_if_fail (area != NULL);
 
 	visual_return_if_fail (!visual_rectangle_is_empty (area));
 
-	vrect = visual_video_get_extents (src);
+	VisRectangle *vrect = visual_video_get_extents (src);
 
 	if (!visual_rectangle_contains_rect (vrect, area)) {
 		goto out;
@@ -390,14 +394,8 @@ void visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *area)
 
 	dest->parent = src;
 
-	area_x      = visual_rectangle_get_x (area);
-	area_y      = visual_rectangle_get_y (area);
-	area_width  = visual_rectangle_get_width  (area);
-	area_height = visual_rectangle_get_height (area);
-
-	visual_video_set_attributes (dest, area_width, area_height,
-			(area_width * src->bpp) + (src->pitch - (area_width * src->bpp)), src->depth);
-	visual_video_set_buffer (dest, (uint8_t *) (visual_video_get_pixels (src)) + ((area_y * src->pitch) + (area_x * src->bpp)));
+	visual_video_set_attrs (dest, area->width, area->height, src->pitch, src->depth);
+	visual_video_set_buffer (dest, visual_video_get_pixel_ptr (src, area->x, area->y));
 
 	/* Copy compose */
 	dest->compose_type = src->compose_type;
@@ -413,29 +411,20 @@ out:
 
 void visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height)
 {
-	VisRectangle *rect = NULL;
-
 	visual_return_if_fail (dest != NULL);
 	visual_return_if_fail (src  != NULL);
 
-	rect = visual_rectangle_new (x, y, width, height);
-
-	visual_video_region_sub (dest, src, rect);
-
-	visual_rectangle_free (rect);
+    LV::Rect rect (x, y, width, height);
+	visual_video_region_sub (dest, src, &rect);
 }
 
 void visual_video_region_sub_all (VisVideo *dest, VisVideo *src)
 {
-	VisRectangle *rect = NULL;
-
 	visual_return_if_fail (dest != NULL);
 	visual_return_if_fail (src  != NULL);
 
-	rect = visual_video_get_extents (dest);
-
+	VisRectangle *rect = visual_video_get_extents (dest);
 	visual_video_region_sub (dest, src, rect);
-
 	visual_rectangle_free (rect);
 }
 
@@ -610,12 +599,11 @@ void visual_video_compose_scale_area (VisVideo            *dest,
 
 	visual_video_region_sub (ssrc, src, srect);
 
-	visual_video_set_attributes (svid,
-	                             visual_rectangle_get_width (drect),
-	                             visual_rectangle_get_height (drect),
-	                             src->bpp * visual_rectangle_get_width (drect),
-	                             src->depth);
-
+	visual_video_set_attrs (svid,
+	                        drect->width,
+	                        drect->height,
+	                        src->bpp * drect->width,
+	                        src->depth);
 	visual_video_allocate_buffer (svid);
 
 	/* Scale the source to the dest rectangle it's size */
@@ -683,19 +671,19 @@ void visual_video_compose (VisVideo *dest, VisVideo *src, int x, int y, VisVideo
 
 	/* Negative offset fixture */
 	if (x < 0) {
-		visual_rectangle_set_x (srect, visual_rectangle_get_x (srect) - x);
-		visual_rectangle_set_width (srect, visual_rectangle_get_width (srect) + x);
+		visual_rectangle_set_x (srect, srect->x - x);
+		visual_rectangle_set_width (srect, srect->width + x);
 		x = 0;
 	}
 
 	if (y < 0) {
-		visual_rectangle_set_y (srect, visual_rectangle_get_y (srect) - y);
-		visual_rectangle_set_height (srect, visual_rectangle_get_height (srect) + y);
+		visual_rectangle_set_y (srect, srect->y - y);
+		visual_rectangle_set_height (srect, srect->height + y);
 		y = 0;
 	}
 
 	/* Retrieve sub regions */
-	trect = visual_rectangle_new (x, y, visual_rectangle_get_width (srect), visual_rectangle_get_height (srect));
+	trect = visual_rectangle_new (x, y, srect->width, srect->height);
 
 	visual_video_region_sub_with_boundary (dregion, drect, dest, trect);
 
@@ -1169,7 +1157,7 @@ void visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMetho
 
 		dtransform = visual_video_new ();
 
-		visual_video_set_attributes (dtransform, dest->width, dest->height, dest->width * dest->bpp, dest->depth);
+		visual_video_set_attrs (dtransform, dest->width, dest->height, dest->width * dest->bpp, dest->depth);
 		visual_video_allocate_buffer (dtransform);
 
 		visual_video_convert_depth (dtransform, src);
@@ -1193,7 +1181,7 @@ VisVideo *visual_video_scale_depth_new (VisVideo*           src,
 	VisVideo *video = visual_video_new_with_buffer (width, height, depth);
 
 	visual_video_scale_depth (video, src, scale_method);
-    
+
 	return video;
 }
 
