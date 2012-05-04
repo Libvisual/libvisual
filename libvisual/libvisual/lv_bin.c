@@ -33,8 +33,7 @@
 
 static void bin_dtor (VisObject *object);
 
-static void fix_depth_with_bin (VisBin *bin, VisVideo *video, int depth);
-static int bin_get_depth_using_preferred (VisBin *bin, int depthflag);
+static VisVideoDepth bin_get_suitable_depth (VisBin *bin, VisVideoDepth depth);
 
 static void bin_dtor (VisObject *object)
 {
@@ -63,24 +62,26 @@ static void bin_dtor (VisObject *object)
 	visual_time_free (bin->morphtime);
 }
 
-static void fix_depth_with_bin (VisBin *bin, VisVideo *video, int depth)
+static VisVideoDepth bin_get_suitable_depth (VisBin *bin, int depthflag)
 {
-	/* Is supported within bin natively */
-	if ((bin->depthflag & depth) > 0) {
-		visual_video_set_depth (video, depth);
-	} else {
-		/* Not supported by the bin, taking the highest depth from the bin */
-		visual_video_set_depth (video,
-				visual_video_depth_get_highest_nogl (bin->depthflag));
-	}
-}
+	int depth;
 
-static int bin_get_depth_using_preferred (VisBin *bin, int depthflag)
-{
-	if (bin->depthpreferred == VISUAL_BIN_DEPTH_LOWEST)
-		return visual_video_depth_get_lowest (depthflag);
-	else
-		return visual_video_depth_get_highest (depthflag);
+	switch (bin->depthpreferred) {
+		case VISUAL_BIN_DEPTH_LOWEST:
+			depth = visual_video_depth_get_lowest (depthflag);
+			break;
+
+		case VISUAL_BIN_DEPTH_HIGHEST:
+			depth = visual_video_depth_get_highest (depthflag);
+			break;
+	}
+
+	/* Is supported within bin natively */
+	if (bin->depthflag & depth)
+		return depth;
+
+	/* Not supported by the bin, taking the highest depth from the bin */
+	return visual_video_depth_get_highest_nogl (bin->depthflag);
 }
 
 VisBin *visual_bin_new ()
@@ -214,7 +215,6 @@ int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
 int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
 {
     int depthflag;
-    int depth;
 
     visual_return_val_if_fail (bin != NULL, -1);
     visual_return_val_if_fail(actor != NULL, -1);
@@ -223,20 +223,12 @@ int visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
     visual_bin_set_actor (bin, actor);
     visual_bin_set_input (bin, input);
 
-    depthflag = visual_actor_get_supported_depth(actor);
+    depthflag = visual_actor_get_supported_depth (actor);
 
-    if(depthflag == VISUAL_VIDEO_DEPTH_GL)
-        visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
-    else
-    {
-        depth = bin_get_depth_using_preferred(bin, depthflag);
-        
-        if((bin->depthflag & depth) > 0)
-            visual_bin_set_depth(bin, depth);
-        else {
-            visual_bin_set_depth(bin,
-                visual_video_depth_get_highest_nogl(bin->depthflag));
-        }
+    if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
+        visual_bin_set_depth (bin, VISUAL_VIDEO_DEPTH_GL);
+    } else {
+        visual_bin_set_depth (bin, bin_get_suitable_depth(bin, depthflag));
     }
 
     bin->depthforcedmain = bin->depth;
@@ -503,9 +495,7 @@ int visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 
 
 		/* Switching from GL */
-		depth = bin_get_depth_using_preferred (bin, depthflag);
-
-		fix_depth_with_bin (bin, video, depth);
+		visual_video_set_depth (video, bin_get_suitable_depth (bin, depthflag));
 
 		visual_log (VISUAL_LOG_DEBUG, "after depth fixating");
 
@@ -708,11 +698,8 @@ int visual_bin_switch_finalize (VisBin *bin)
 
 	visual_log (VISUAL_LOG_DEBUG, " - in finalize - fscking depth from actvideo: %d %d", bin->actvideo->depth, bin->actvideo->bpp);
 
-
-/*	visual_bin_set_depth (bin, bin->actvideo->depth); */
-
 	depthflag = visual_actor_get_supported_depth (bin->actor);
-	fix_depth_with_bin (bin, bin->actvideo, bin_get_depth_using_preferred (bin, depthflag));
+	visual_video_set_depth (bin->actvideo, bin_get_suitable_depth (bin, depthflag));
 	visual_bin_set_depth (bin, bin->actvideo->depth);
 
 	bin->depthforcedmain = bin->actvideo->depth;
