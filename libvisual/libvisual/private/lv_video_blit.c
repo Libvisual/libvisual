@@ -2,6 +2,7 @@
 #include "lv_video_blit.h"
 #include "lv_common.h"
 #include "lv_cpu.h"
+#include "lv_video_private.h"
 
 #pragma pack(1)
 

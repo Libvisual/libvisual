@@ -33,8 +33,8 @@
 #define PI	3.14159265358979323846
 #endif
 
-#define RESFACTXF(par1) ( (float) priv->width*(par1)/priv->video->width )
-#define RESFACTYF(par1) ( (float) priv->height*(par1)/priv->video->height )
+#define RESFACTXF(par1) ( (float) priv->width*(par1)/video_width )
+#define RESFACTYF(par1) ( (float) priv->height*(par1)/video_height )
 
 /* New prototypes */
 static void do_plasma(PlazmaPrivate *priv, double x1, double y1, double x2, double y2, unsigned char *t);
@@ -151,8 +151,10 @@ static void do_plasma(PlazmaPrivate *priv, double x1, double y1,
 			X2=x2*(priv->tablex/2), Y2=y2*(priv->tabley/2), y;
 	unsigned char 	*t1=t+X1+Y1*priv->tablex, *t2=t+X2+Y2*priv->tablex;
 
+	int pitch = visual_video_get_pitch (priv->video);
+
 	for (y=0; y<priv->height; y++) {
-		unsigned char*tmp = priv->pixel + y * priv->video->pitch;
+		unsigned char*tmp = priv->pixel + y * pitch;
 		unsigned int t = y*priv->tablex, tmax=t+priv->width; 
 		for (; t<tmax; t++, tmp++)
 			tmp[0]=t1[t]+t2[t];
@@ -175,9 +177,11 @@ static void plazma_create(PlazmaPrivate *priv)
 static void aff_pixel(PlazmaPrivate *priv, int x, int y, int colpix)
 {
 	unsigned char*point, *old_point;
+	int pitch = visual_video_get_pitch (priv->video);
+
 	if (x<0 || x>(priv->width-1) || y<0 || y>(priv->height-1))
 		return;
-	point = priv->pixel+y*priv->video->pitch;
+	point = priv->pixel+y*pitch;
 	old_point = point;
 	point[x] = old_point[x] | colpix;
 	if (!priv->use_3d)
@@ -269,6 +273,10 @@ static void grille_3d (PlazmaPrivate *priv, float alpha, float beta, float gamma
 	float x, y, z;
 	int16_t ax = 0, ay = 0, ix, iy, i, j, nb_x, nb_y;
 	float ampli_grille = 20;
+
+	int video_width	 = visual_video_get_width  (priv->video);
+	int video_height = visual_video_get_height (priv->video);
+
 	nb_x = 32;
 	nb_y = 32;
 
@@ -299,8 +307,13 @@ static void cercle_3d (PlazmaPrivate *priv, float alpha, float beta, float gamma
 {
 	float x, y, z;
 	int16_t ax = 0, ay = 0, ix, iy, i, j, nb_x, nb_y;
+
+	int video_width	 = visual_video_get_width  (priv->video);
+	int video_height = visual_video_get_height (priv->video);
+
 	nb_x = 16;
 	nb_y = 16;
+
 	for (i = 0; i < nb_x; i++)
 	{
 		for (j = 0; j < nb_y; j++)
@@ -327,13 +340,13 @@ static void do_radial_wave(PlazmaPrivate *priv)
 {
 	int i, halfheight, halfwidth, shift, col_fleur;
 	float y1, old_y1, k, opt, opt_old;
+
 	y1 = priv->pcm_buffer[0]*82;
 	col_fleur = 74;
 	shift = priv->height/3.1;
 
 	if (priv->effect)
 		col_fleur = 72;
-
 
 	halfheight = priv->height >> 1;
 	halfwidth  = priv->width >> 1;

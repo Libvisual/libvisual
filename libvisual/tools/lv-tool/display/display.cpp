@@ -94,7 +94,7 @@ void SADisplay::unlock ()
 void SADisplay::update_all ()
 {
     VisVideo *video = get_video ();
-    LV::Rect rect (0, 0, video->width, video->height);
+    LV::Rect rect (0, 0, visual_video_get_width (video), visual_video_get_height (video));
 
     m_impl->frames_drawn++;
 

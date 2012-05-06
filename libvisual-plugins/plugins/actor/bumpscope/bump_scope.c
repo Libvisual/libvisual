@@ -297,14 +297,17 @@ static inline void draw_vert_line(uint8_t *buffer, int x, int y1, int y2, int pi
 static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 {
 	int i, j, prev_y, dy, dx, xq, yq;
+	int video_pitch;
 
-	prev_y = priv->video->pitch + 1;
+	video_pitch = visual_video_get_pitch (priv->video);
 
-	for (dy = (-ly)+(priv->phongres/2), j = 0; j < priv->height; j++, dy++, prev_y+=priv->video->pitch-priv->width) {
+	prev_y = video_pitch + 1;
+
+	for (dy = (-ly)+(priv->phongres/2), j = 0; j < priv->height; j++, dy++, prev_y+=video_pitch-priv->width) {
 		for (dx = (-lx)+(priv->phongres/2), i = 0; i < priv->width; i++, dx++, prev_y++) {
 
 			xq = (priv->rgb_buf[prev_y-1]-priv->rgb_buf[prev_y+1])+dx;
-			yq = (priv->rgb_buf[prev_y-priv->video->pitch]-priv->rgb_buf[prev_y+priv->video->pitch])+dy;
+			yq = (priv->rgb_buf[prev_y-video_pitch]-priv->rgb_buf[prev_y+video_pitch])+dy;
 
 			if (yq<0 || yq>=priv->phongres ||
 			    xq<0 || xq>=priv->phongres) {
@@ -382,7 +385,9 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 
 void __bumpscope_render_pcm (BumpscopePrivate *priv, float *data)
 {
-	int i, y, prev_y;
+	int i, y, prev_y, video_pitch;
+
+	video_pitch = visual_video_get_pitch (priv->video);
 
 	prev_y = (int)priv->height/(int)2 + (data[0] * (priv->height / 2));
 
@@ -399,11 +404,11 @@ void __bumpscope_render_pcm (BumpscopePrivate *priv, float *data)
 		if (y < 0) y = 0;
 		if(y >= priv->height) y = priv->height - 1;
 
-		draw_vert_line(priv->rgb_buf, i, prev_y, y, priv->video->pitch);
+		draw_vert_line(priv->rgb_buf, i, prev_y, y, video_pitch);
 		prev_y = y;
 	}
 
-	bumpscope_blur_8(priv->rgb_buf, priv->width, priv->height, priv->video->pitch);
+	bumpscope_blur_8(priv->rgb_buf, priv->width, priv->height, video_pitch);
 	bumpscope_draw (priv);
 }
 

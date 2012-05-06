@@ -183,8 +183,8 @@ namespace {
           if (fullscreen) {
               if (!(m_screen->flags & SDL_FULLSCREEN)) {
                   if (autoscale) {
-                      int width  = m_display.get_video ()->width;
-                      int height = m_display.get_video ()->height;
+                      int width  = visual_video_get_width  (m_display.get_video ());
+                      int height = visual_video_get_height (m_display.get_video ());
 
                       m_last_width  = width;
                       m_last_height = height;
@@ -222,7 +222,7 @@ namespace {
       virtual void update_rect (LV::Rect const& rect)
       {
           if (m_screen->format->BitsPerPixel == 8) {
-              LV::Palette* pal = m_display.get_video ()->pal;
+              LV::Palette* pal = visual_video_get_palette (m_display.get_video ());
 
               if (pal && pal->size() <= 256) {
                   SDL_Color colors[256];
@@ -284,7 +284,7 @@ namespace {
                                           visual_event_new_resize (event.resize.w,
                                                                    event.resize.h));
 
-                  create (m_display.get_video ()->depth, NULL, event.resize.w, event.resize.h, m_resizable);
+                  create (visual_video_get_depth (m_display.get_video ()), NULL, event.resize.w, event.resize.h, m_resizable);
                   break;
 
               case SDL_MOUSEMOTION:

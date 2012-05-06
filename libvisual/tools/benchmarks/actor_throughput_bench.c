@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 	for (i = 0; i < TIMES; i++)
 		visual_actor_run (actor, &audio);
 
-	printf ("Actor throughput bench %d times depthBPP %d actor: %s\n", TIMES, dest->bpp,
+	printf ("Actor throughput bench %d times depthBPP %d actor: %s\n", TIMES, visual_video_get_bpp (dest),
 			(visual_plugin_get_info (visual_actor_get_plugin (actor)))->plugname);
 
 	return EXIT_SUCCESS;

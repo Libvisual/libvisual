@@ -1,6 +1,7 @@
 #include "config.h"
 #include "lv_video_scale.h"
 #include "lv_common.h"
+#include "lv_video_private.h"
 
 void visual_video_scale_bilinear_color32_mmx (VisVideo *dest, VisVideo *src)
 {

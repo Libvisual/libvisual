@@ -182,10 +182,10 @@ static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *aud
 	else
 		buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 
-	visual_mem_copy_pitch (vidbuf, buf, video->pitch,
-			video->width * video->bpp,
-			video->width * video->bpp,
-			video->height);
+	visual_mem_copy_pitch (vidbuf, buf, visual_video_get_pitch (video),
+	                       visual_video_get_pitch (video),
+	                       visual_video_get_pitch (video),
+	                       visual_video_get_height (video));
 
 	return 0;
 }

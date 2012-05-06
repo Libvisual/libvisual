@@ -312,15 +312,15 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 
 		vid1 = visual_video_new_wrap_buffer (priv->buf1,
                                              FALSE,
-                                             video->width,
-                                             video->height,
+                                             visual_video_get_width (video),
+                                             visual_video_get_height (video),
                                              VISUAL_VIDEO_DEPTH_8BIT);
 		visual_video_set_palette (vid1, oinksie_palette_get (&priv->priv1));
 
 		vid2 = visual_video_new_wrap_buffer (priv->buf2,
                                              FALSE,
-                                             video->width,
-                                             video->height,
+                                             visual_video_get_width (video),
+                                             visual_video_get_height (video),
                                              VISUAL_VIDEO_DEPTH_8BIT);
 		visual_video_set_palette (vid2, oinksie_palette_get (&priv->priv2));
 
@@ -344,8 +344,11 @@ static void compose_blend1_32_c (VisVideo *dest, VisVideo *src)
 	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
+	int src_width  = visual_video_get_width	 (src);
+	int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
 			destbuf[0] = (alpha * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
 			destbuf[1] = (alpha * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
 			destbuf[2] = (alpha * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
@@ -353,9 +356,6 @@ static void compose_blend1_32_c (VisVideo *dest, VisVideo *src)
 			destbuf += 4;
 			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
 }
 
@@ -366,8 +366,11 @@ static void compose_blend2_32_c (VisVideo *dest, VisVideo *src)
 	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
+	int src_width  = visual_video_get_width	 (src);
+	int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
 			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
 			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
 			destbuf[2] = (0          * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
@@ -375,9 +378,6 @@ static void compose_blend2_32_c (VisVideo *dest, VisVideo *src)
 			destbuf += 4;
 			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
 }
 
@@ -388,8 +388,11 @@ static void compose_blend3_32_c (VisVideo *dest, VisVideo *src)
 	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
+	int src_width  = visual_video_get_width	 (src);
+	int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
 			destbuf[0] = (0          * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
 			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
 			destbuf[2] = (destbuf[0] * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
@@ -397,9 +400,6 @@ static void compose_blend3_32_c (VisVideo *dest, VisVideo *src)
 			destbuf += 4;
 			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
 }
 
@@ -410,8 +410,11 @@ static void compose_blend4_32_c (VisVideo *dest, VisVideo *src)
 	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
+	int src_width  = visual_video_get_width	 (src);
+	int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
 			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
 			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
 			destbuf[2] = (srcbuf[0]  * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
@@ -419,20 +422,21 @@ static void compose_blend4_32_c (VisVideo *dest, VisVideo *src)
 			destbuf += 4;
 			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
 }
 
 static void compose_blend5_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
+
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *srcbuf  = visual_video_get_pixels (src);
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
+    int src_width  = visual_video_get_width  (src);
+    int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
 			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
 			destbuf[1] = (srcbuf[0]  * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
 			destbuf[2] = (destbuf[0] * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
@@ -440,8 +444,5 @@ static void compose_blend5_32_c (VisVideo *dest, VisVideo *src)
 			destbuf += 4;
 			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf  += src->pitch  - (src->width * src->bpp);
 	}
 }

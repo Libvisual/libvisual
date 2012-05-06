@@ -30,6 +30,10 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
     uint8_t *destbuf = visual_video_get_pixels (dest);
     uint8_t *srcbuf1 = visual_video_get_pixels (src1);
     uint8_t *srcbuf2 = visual_video_get_pixels (src2);
+
+    int dest_height = visual_video_get_height (dest);
+    int dest_pitch  = visual_video_get_pitch  (dest);
+
     int i;
     int diff1;
     int diff2;
@@ -40,42 +44,42 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
     if (priv->slide_type == SLIDE_RIGHT || priv->slide_type == SLIDE_UP)
         rate = 1.0 - rate;
 
-    diff1 = dest->pitch * rate;
-    diff1 -= diff1 % dest->bpp;
+    diff1 = dest_pitch * rate;
+    diff1 -= diff1 % visual_video_get_bpp (dest);
 
-    if (diff1 > dest->pitch)
-        diff1 = dest->pitch;
+    if (diff1 > dest_pitch)
+        diff1 = dest_pitch;
 
-    diff2 = dest->pitch - diff1;
+    diff2 = dest_pitch - diff1;
 
-    hadd = dest->height * rate;
+    hadd = dest_height * rate;
 
     switch (priv->slide_type) {
         case SLIDE_LEFT:
-            for (i = 0; i < dest->height; i++) {
-                visual_mem_copy (destbuf + (i * dest->pitch), srcbuf2 + (i * dest->pitch) + diff2, diff1);
-                visual_mem_copy (destbuf + (i * dest->pitch) + (diff1), srcbuf1 + (i * dest->pitch), diff2);
+            for (i = 0; i < dest_height; i++) {
+                visual_mem_copy (destbuf + (i * dest_pitch), srcbuf2 + (i * dest_pitch) + diff2, diff1);
+                visual_mem_copy (destbuf + (i * dest_pitch) + (diff1), srcbuf1 + (i * dest_pitch), diff2);
             }
 
             break;
 
         case SLIDE_RIGHT:
-            for (i = 0; i < dest->height; i++) {
-                visual_mem_copy (destbuf + (i * dest->pitch), srcbuf1 + (i * dest->pitch) + diff2, diff1);
-                visual_mem_copy (destbuf + (i * dest->pitch) + (diff1), srcbuf2 + (i * dest->pitch), diff2);
+            for (i = 0; i < dest_height; i++) {
+                visual_mem_copy (destbuf + (i * dest_pitch), srcbuf1 + (i * dest_pitch) + diff2, diff1);
+                visual_mem_copy (destbuf + (i * dest_pitch) + (diff1), srcbuf2 + (i * dest_pitch), diff2);
             }
 
             break;
 
         case SLIDE_DOWN:
-            visual_mem_copy (destbuf, srcbuf1 + (hadd * dest->pitch), (dest->height - hadd) * dest->pitch);
-            visual_mem_copy (destbuf + ((dest->height - hadd) * dest->pitch), srcbuf2, hadd * dest->pitch);
+            visual_mem_copy (destbuf, srcbuf1 + (hadd * dest_pitch), (dest_height - hadd) * dest_pitch);
+            visual_mem_copy (destbuf + ((dest_height - hadd) * dest_pitch), srcbuf2, hadd * dest_pitch);
 
             break;
 
         case SLIDE_UP:
-            visual_mem_copy (destbuf, srcbuf2 + (hadd * dest->pitch), (dest->height - hadd) * dest->pitch);
-            visual_mem_copy (destbuf + ((dest->height - hadd) * dest->pitch), srcbuf1, hadd * dest->pitch);
+            visual_mem_copy (destbuf, srcbuf2 + (hadd * dest_pitch), (dest_height - hadd) * dest_pitch);
+            visual_mem_copy (destbuf + ((dest_height - hadd) * dest_pitch), srcbuf1, hadd * dest_pitch);
 
             break;
 

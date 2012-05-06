@@ -114,39 +114,6 @@ typedef struct _VisVideoAttrOptions VisVideoAttrOptions;
 /** VisVideo custom compose method */
 typedef void (*VisVideoComposeFunc)(VisVideo *dest, VisVideo *src);
 
-/**
- * Data structure that contains all the information about a screen surface.
- * Contains all the information regarding a screen surface like the current depth it's in,
- * width, height, bpp, the size in bytes it's pixel buffer is and the screen pitch.
- *
- * It also contains a pointer to the pixels and an optional pointer to the palette.
- *
- * Elements within the structure should be set using the VisVideo system it's methods.
- */
-struct _VisVideo {
-	VisObject            object;    /**< The VisObject data. */
-
-	VisVideoDepth        depth;     /**< Surface it's depth. */
-	int                  width;	    /**< Surface it's width. */
-	int                  height;    /**< Surface it's height. */
-	int                  bpp;       /**< Surface it's bytes per pixel. */
-	int                  pitch;     /**< Surface it's pitch value. Value contains
-	                                   * the number of bytes per line. */
-	VisBuffer           *buffer;	/**< The video buffer. */
-	void               **pixel_rows;/**< Pixel row start pointer table. */
-	VisPalette          *pal;       /**< Optional pointer to the palette. */
-
-	/* Sub region */
-	VisVideo            *parent;    /**< The surface it's parent, ONLY when it is a subregion. */
-	VisRectangle        *rect;      /**< The rectangle over the parent surface. */
-
-	/* Compose control */
-	VisVideoComposeType  compose_type; /**< The surface it's compose type. */
-	VisVideoComposeFunc	 compose_func; /**< The surface it's custom compose function. */
-	VisColor            *colorkey;     /**< The surface it's alpha colorkey. */
-	uint8_t              alpha;        /**< The surface it's alpha. */
-};
-
 struct _VisVideoAttrOptions {
 	VisObject      object;
 	int            depth;
@@ -240,6 +207,8 @@ LV_API int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *sr
  */
 LV_API void visual_video_set_palette (VisVideo *video, VisPalette *pal);
 
+LV_API VisPalette *visual_video_get_palette (VisVideo *video);
+
 /**
  * Sets a buffer to a VisVideo. Links a sreenbuffer to the
  * VisVideo.
@@ -266,6 +235,9 @@ LV_API void visual_video_set_buffer (VisVideo *video, void *buffer);
  */
 LV_API void visual_video_set_dimension (VisVideo *video, int width, int height);
 
+LV_API int visual_video_get_width  (VisVideo *video);
+LV_API int visual_video_get_height (VisVideo *video);
+
 /**
  * Sets the pitch for a VisVideo. Used to set the screen
  * pitch for a surface. If the pitch doesn't differ from the
@@ -279,6 +251,8 @@ LV_API void visual_video_set_dimension (VisVideo *video, int width, int height);
  */
 LV_API void visual_video_set_pitch (VisVideo *video, int pitch);
 
+LV_API int visual_video_get_pitch (VisVideo *video);
+
 /**
  * Sets the depth for a VisVideo. Used to set the depth for
  * a surface. This will also define the number of bytes per pixel.
@@ -289,6 +263,10 @@ LV_API void visual_video_set_pitch (VisVideo *video, int pitch);
  * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL on failure.
  */
 LV_API void visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
+
+LV_API VisVideoDepth visual_video_get_depth (VisVideo *video);
+
+LV_API int visual_video_get_bpp (VisVideo *video);
 
 /**
  * Sets all attributes for a VisVideo. Used to set width, height, pitch and the depth for a VisVideo.
@@ -313,6 +291,8 @@ LV_API visual_size_t visual_video_get_size (VisVideo *video);
  * @return The VisVideo it's pixel buffer, NULL on failure.
  */
 LV_API void *visual_video_get_pixels (VisVideo *video);
+
+LV_API void *visual_video_get_pixel_ptr (VisVideo *video, int x, int y);
 
 /**
  * Retrieves the VisBuffer object from a VisVideo.

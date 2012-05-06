@@ -189,7 +189,7 @@ static void bind_texture (GLuint texture, VisVideo *image)
 	glBindTexture (GL_TEXTURE_2D, texture);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D (GL_TEXTURE_2D, 0, 3, image->width, image->height, 0,
+	glTexImage2D (GL_TEXTURE_2D, 0, 3, visual_video_get_width (image), visual_video_get_height (image), 0,
 		      GL_RGB, GL_UNSIGNED_BYTE, visual_video_get_pixels (image));
 }
 

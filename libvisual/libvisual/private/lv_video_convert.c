@@ -1,5 +1,6 @@
 #include "lv_video_convert.h"
 #include "lv_common.h"
+#include "lv_video_private.h"
 
 #pragma pack(1)
 

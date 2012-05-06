@@ -204,7 +204,7 @@ use_gl_texture(GLuint texture)
 void
 upload_gl_texture (VisVideo *image)
 {
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, image->width, image->height,
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, visual_video_get_width (image), visual_video_get_height (image),
                0, GL_RGB, GL_UNSIGNED_BYTE, visual_video_get_pixels (image));
 }
 

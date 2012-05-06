@@ -49,7 +49,7 @@ int main (int argc, char **argv)
 			rate = 0.0;
 	}
 
-	printf ("Morph throughput bench %d times depthBPP %d morph: %s\n", TIMES, dest->bpp,
+	printf ("Morph throughput bench %d times depthBPP %d morph: %s\n", TIMES, visual_video_get_bpp (dest),
 			(visual_plugin_get_info (visual_morph_get_plugin (morph)))->plugname);
 
 	return EXIT_SUCCESS;

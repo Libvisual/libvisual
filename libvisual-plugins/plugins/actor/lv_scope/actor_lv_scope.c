@@ -169,12 +169,17 @@ static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	VisColor col;
 	float *pcmbuf;
 	int i, y, y_old;
+	int video_width, video_height, video_pitch;
 	uint8_t *buf;
 
-	if (video == NULL)
+	video_width  = visual_video_get_width  (video);
+	video_height = visual_video_get_height (video);
+	video_pitch  = visual_video_get_pitch  (video);
+
+	if (!video)
 		return -1;
 
-	y = video->height >> 1;
+	y = video_height >> 1;
 
 	visual_audio_get_sample_mixed (audio, priv->pcm, TRUE, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
@@ -189,18 +194,18 @@ static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 
 	buf = (uint8_t *) visual_video_get_pixels (video);
 
-	y_old = video->height / 2;
-	for (i = 0; i < video->width; i++) {
+	y_old = video_height / 2;
+	for (i = 0; i < video_width; i++) {
 		int j;
 
-		y = (video->height / 2) + (pcmbuf[(i >> 1) % PCM_SIZE] * (video->height / 4));
+		y = (video_height / 2) + (pcmbuf[(i >> 1) % PCM_SIZE] * (video_height / 4));
 
 		if (y > y_old) {
 			for (j = y_old; j < y; j++)
-				buf[(j * video->pitch) + i] = 255;
+				buf[(j * video_pitch) + i] = 255;
 		} else {
 			for (j = y; j < y_old; j++)
-				buf[(j * video->pitch) + i] = 255;
+				buf[(j * video_pitch) + i] = 255;
 		}
 	}
 

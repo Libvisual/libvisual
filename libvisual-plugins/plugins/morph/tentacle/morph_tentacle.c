@@ -106,8 +106,14 @@ static int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	TentaclePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *src1buf = visual_video_get_pixels (src1);
+
+    int dest_width  = visual_video_get_width  (dest);
+    int dest_height = visual_video_get_height (dest);
+
+    VisVideoDepth dest_depth = visual_video_get_depth (dest);
 
 	int height1;
 	int height2;
@@ -116,21 +122,21 @@ static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio 
 
 	float sinrate = priv->move;
 	float multiplier = 0;
-	float multiadd = 1.000 / dest->width;
+	float multiadd = 1.000 / dest_width;
 
 	int i;
 
 	visual_mem_copy (destbuf, src1buf, visual_video_get_size (src1));
 
-	for (i = 0; i < dest->width; i++) {
-		add1 = (dest->height / 2) - ((dest->height / 2) * (rate * 1.5));
-		add2 = (dest->height / 2) + ((dest->height / 2) * (rate * 1.5));
+	for (i = 0; i < dest_width; i++) {
+		add1 = (dest_height / 2) - ((dest_height / 2) * (rate * 1.5));
+		add2 = (dest_height / 2) + ((dest_height / 2) * (rate * 1.5));
 
-		height1 = (sin (sinrate) * ((dest->height / 4) * multiplier)) + add1;
-		height2 = (sin (sinrate) * ((dest->height / 4) * multiplier)) + add2;
+		height1 = (sin (sinrate) * ((dest_height / 4) * multiplier)) + add1;
+		height2 = (sin (sinrate) * ((dest_height / 4) * multiplier)) + add2;
 		multiplier += multiadd;
 
-		switch (dest->depth) {
+		switch (dest_depth) {
 			case VISUAL_VIDEO_DEPTH_8BIT:
 				vline_from_video_8 (dest, src2, i, height1, height2);
 				break;
@@ -160,72 +166,119 @@ static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio 
 
 static void sane_coords (VisVideo *dest, int *x, int *y1, int *y2)
 {
-	if (*x > dest->width)
-		*x = dest->width;
+    int width  = visual_video_get_width  (dest);
+    int height = visual_video_get_height (dest);
+
+	if (*x > width)
+		*x = width;
 	else if (*x < 0)
 		*x = 0;
 
-	if (*y1 > dest->height)
-		*y1 = dest->height;
+	if (*y1 > height)
+		*y1 = height;
 	else if (*y1 < 0)
 		*y1 = 0;
 
-	if (*y2 > dest->height)
-		*y2 = dest->height;
+	if (*y2 > height)
+		*y2 = height;
 	else if (*y2 < 0)
 		*y2 = 0;
 }
 
 static void vline_from_video_8 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *destbuf;
+	uint8_t *srcbuf;
+    int dest_step;
+    int src_step;
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
 
-	for (i = y1; i < y2; i++)
-		destbuf[(i * dest->pitch) + x] = srcbuf[(i * src->pitch) + x];
+    destbuf = visual_video_get_pixel_ptr (dest, x, y1);
+    srcbuf  = visual_video_get_pixel_ptr (src, x, y1);
+
+    dest_step = visual_video_get_width (dest);
+    src_step  = visual_video_get_width (src);
+
+	for (i = y1; i < y2; i++) {
+		*destbuf = *srcbuf;
+
+        destbuf += dest_step;
+        srcbuf  += src_step;
+    }
 }
 
 static void vline_from_video_16 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint16_t *destbuf = visual_video_get_pixels (dest);
-	uint16_t *srcbuf = visual_video_get_pixels (src);
+	uint16_t *destbuf;
+	uint16_t *srcbuf;
+    int dest_step;
+    int src_step;
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
 
-	for (i = y1; i < y2; i++)
-		destbuf[(i * (dest->pitch / dest->bpp)) + x] = srcbuf[(i * (src->pitch / src->bpp)) + x];
+    destbuf = visual_video_get_pixel_ptr (dest, x, y1);
+    srcbuf  = visual_video_get_pixel_ptr (src, x, y1);
+
+    dest_step = visual_video_get_width (dest);
+    src_step  = visual_video_get_width (src);
+
+	for (i = y1; i < y2; i++) {
+		*destbuf = *srcbuf;
+
+        destbuf += dest_step;
+        srcbuf  += src_step;
+    }
 }
 
 static void vline_from_video_24 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *destbuf;
+	uint8_t *srcbuf;
+    int dest_step;
+    int src_step;
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
 
-	x *= 3;
+    destbuf = visual_video_get_pixel_ptr (dest, x, y1);
+    srcbuf  = visual_video_get_pixel_ptr (src, x, y1);
+
+    dest_step = visual_video_get_pitch (dest);
+    src_step  = visual_video_get_pitch (src);
 
 	for (i = y1; i < y2; i++) {
-		destbuf[(i * dest->pitch) + x] = srcbuf[(i * src->pitch) + x];
-		destbuf[(i * dest->pitch) + x + 1] = srcbuf[(i * src->pitch) + x + 1];
-		destbuf[(i * dest->pitch) + x + 2] = srcbuf[(i * src->pitch) + x + 2];
+		destbuf[0] = srcbuf[0];
+		destbuf[1] = srcbuf[1];
+		destbuf[2] = srcbuf[2];
+
+        destbuf += dest_step;
+        srcbuf  += src_step;
 	}
 }
 
 static void vline_from_video_32 (VisVideo *dest, VisVideo *src, int x, int y1, int y2)
 {
-	uint32_t *destbuf = visual_video_get_pixels (dest);
-	uint32_t *srcbuf = visual_video_get_pixels (src);
+	uint32_t *destbuf;
+	uint32_t *srcbuf;
+    int dest_step;
+    int src_step;
 	int i;
 
 	sane_coords (dest, &x, &y1, &y2);
 
+    destbuf = visual_video_get_pixel_ptr (dest, x, y1);
+    srcbuf  = visual_video_get_pixel_ptr (src, x, y1);
+
+    dest_step = visual_video_get_width (dest);
+    src_step  = visual_video_get_width (src);
+
 	for (i = y1; i < y2; i++) {
-		destbuf[(i * (dest->pitch / dest->bpp)) + x] = srcbuf[(i * (src->pitch / src->bpp)) + x];
+		*destbuf = *srcbuf;
+
+        destbuf += dest_step;
+        srcbuf  += src_step;
 	}
 }

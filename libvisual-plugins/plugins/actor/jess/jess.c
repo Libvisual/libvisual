@@ -323,8 +323,8 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	C_dEdt_moyen(priv);
 	C_dEdt(priv);
 
-	priv->pitch = video->pitch;
-	priv->video = visual_video_depth_value_from_enum (video->depth);
+	priv->pitch = visual_video_get_pitch (video);
+	priv->video = visual_video_depth_value_from_enum (visual_video_get_depth (video));
 	priv->pixel = ((uint8_t *) visual_video_get_pixels (video));
 
 	renderer (priv);

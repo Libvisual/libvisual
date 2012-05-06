@@ -143,12 +143,12 @@ int visual_transform_video_negotiate (VisTransform *transform)
 
     depthflag = visual_transform_get_supported_depth (transform);
 
-    if (!visual_video_depth_is_supported (depthflag, transform->video->depth))
+    if (!visual_video_depth_is_supported (depthflag, visual_video_get_depth (transform->video)))
         return -VISUAL_ERROR_TRANSFORM_NEGOTIATE;
 
     visual_event_queue_add (transform->plugin->eventqueue,
-                            visual_event_new_resize (transform->video->width,
-                                                     transform->video->height));
+                            visual_event_new_resize (visual_video_get_width (transform->video),
+                                                     visual_video_get_height (transform->video)));
 
     visual_plugin_events_pump (transform->plugin);
 
@@ -196,7 +196,7 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video)
     transform->video = video;
 
     if (transform->video) {
-        visual_transform_set_palette (transform, video->pal);
+        visual_transform_set_palette (transform, visual_video_get_palette (video));
         visual_object_ref (VISUAL_OBJECT (transform->video));
     } else {
         visual_transform_set_palette (transform, NULL);

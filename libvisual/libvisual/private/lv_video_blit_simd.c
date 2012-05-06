@@ -25,6 +25,7 @@
 #include "config.h"
 #include "lv_video.h"
 #include "lv_common.h"
+#include "lv_video_private.h"
 
 void blit_overlay_alphasrc_mmx (VisVideo *dest, VisVideo *src)
 {

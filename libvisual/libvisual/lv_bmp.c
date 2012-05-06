@@ -42,7 +42,7 @@ static void flip_byte_order (VisVideo *video)
 {
 	uint8_t *pixel = visual_video_get_pixels (video);
 	unsigned int i;
-	unsigned int pixel_count = video->width * video->height;
+	unsigned int pixel_count = visual_video_get_width (video) * visual_video_get_height (video);
 
 	for (i = 0; i < pixel_count; i++) {
 		pixel[0] = pixel[2];
@@ -58,16 +58,16 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	int i;
 	int pad;
 
-	pad = (4 - (video->pitch & 3)) & 3;
-	data = (uint8_t *) visual_video_get_pixels (video) + (video->height * video->pitch);
+	pad = (4 - (visual_video_get_pitch (video) & 3)) & 3;
+	data = (uint8_t *) visual_video_get_pixels (video) + (visual_video_get_height (video) * visual_video_get_pitch (video));
 
 	switch (depth) {
 		case 24:
 		case 8:
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
-				data -= video->pitch;
+				data -= visual_video_get_pitch (video);
 
-				if (fread (data, video->pitch, 1, fp) != 1)
+				if (fread (data, visual_video_get_pitch (video), 1, fp) != 1)
 					goto err;
 
 				if (pad)
@@ -78,7 +78,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 		case 4:
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 4 bpp pixels aka 2 pixels per byte */
-				uint8_t *col = data - video->pitch;
+				uint8_t *col = data - visual_video_get_pitch (video);
 				uint8_t *end = (uint8_t *) ((intptr_t)data & ~1);
 				data = col;
 
@@ -88,7 +88,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 					*col++ = p & 0xf;
 				}
 
-				if (video->pitch & 1)
+				if (visual_video_get_pitch (video) & 1)
 					*col++ = fgetc (fp) >> 4;
 
 				if (pad)
@@ -99,7 +99,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 		case 1:
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 1 bpp pixels aka 8 pixels per byte */
-				uint8_t *col = data - video->pitch;
+				uint8_t *col = data - visual_video_get_pitch (video);
 				uint8_t *end = (uint8_t *) ((intptr_t)data & ~7);
 				data = col;
 
@@ -111,9 +111,9 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 					}
 				}
 
-				if (video->pitch & 7) {
+				if (visual_video_get_pitch (video) & 7) {
 					uint8_t p = fgetc (fp);
-					uint8_t count = video->pitch & 7;
+					uint8_t count = visual_video_get_pitch (video) & 7;
 					for (i=0; i < count; i++) {
 						*col++ = p >> 7;
 						p <<= 1;
@@ -141,9 +141,9 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	int c, y, k, pad;
 	int processing = 1;
 
-	end = (uint8_t *)visual_video_get_pixels (video) + (video->height * video->pitch);
-	col = end - video->pitch;
-	y = video->height - 1;
+	end = (uint8_t *)visual_video_get_pixels (video) + (visual_video_get_height (video) * visual_video_get_pitch (video));
+	col = end - visual_video_get_pitch (video);
+	y = visual_video_get_height (video) - 1;
 
 	do {
 		if ((c = fgetc (fp)) == EOF)
@@ -179,7 +179,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 
 			case 0: /* End of line */
 				y--;
-				col = (uint8_t *) visual_video_get_pixels (video) + video->pitch * y;
+				col = (uint8_t *) visual_video_get_pixels (video) + visual_video_get_pitch (video) * y;
 
 				/* Normally we would error here if y < 0.
 				 * However, some encoders apparently emit an
@@ -197,7 +197,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 
 				/* Y Delta */
 				c = (uint8_t) fgetc (fp);
-				col -= c * video->pitch;
+				col -= c * visual_video_get_pitch (video);
 				y -= c;
 
 				if (col < (uint8_t *)visual_video_get_pixels (video))
@@ -362,7 +362,7 @@ VisVideo *visual_bitmap_load (const char *filename)
 		 * Depth transformation depends on this */
 		palette = visual_palette_new (256);
 
-		VisColor *colors = visual_palette_get_colors (video->pal);
+		VisColor *colors = visual_palette_get_colors (visual_video_get_palette (video));
 
 		if (bi_size == 12) {
 			for (i = 0; i < bi_clrused; i++) {

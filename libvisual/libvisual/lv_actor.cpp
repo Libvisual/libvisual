@@ -292,7 +292,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
     }
 
     if (actor->transform != NULL &&
-        actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+        visual_video_get_depth (actor->video) == VISUAL_VIDEO_DEPTH_8BIT) {
 
         return actor->ditherpal;
 
@@ -330,8 +330,8 @@ int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int n
 
     int depthflag = visual_actor_get_supported_depth (actor);
 
-    if (!visual_video_depth_is_supported (depthflag, actor->video->depth) ||
-	(forced && actor->video->depth != rundepth))
+	if (!visual_video_depth_is_supported (depthflag, visual_video_get_depth (actor->video)) ||
+			(forced && visual_video_get_depth (actor->video) != rundepth))
         return negotiate_video_with_unsupported_depth (actor, rundepth, noevent, forced);
     else
         return negotiate_video (actor, noevent);
@@ -352,14 +352,14 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDept
     if (req_depth == VISUAL_VIDEO_DEPTH_GL)
         return -VISUAL_ERROR_ACTOR_GL_NEGOTIATE;
 
-    int req_width  = actor->video->width;
-    int req_height = actor->video->height;
+    int req_width  = visual_video_get_width (actor->video);
+    int req_height = visual_video_get_height (actor->video);
 
     actplugin->requisition (visual_actor_get_plugin (actor), &req_width, &req_height);
 
     actor->transform = visual_video_new_with_buffer (req_width, req_height, req_depth);
 
-    if (actor->video->depth == VISUAL_VIDEO_DEPTH_8BIT)
+    if (visual_video_get_depth (actor->video) == VISUAL_VIDEO_DEPTH_8BIT)
         actor->ditherpal = visual_palette_new (256);
 
     if (!noevent) {
@@ -374,15 +374,15 @@ static int negotiate_video (VisActor *actor, int noevent)
 {
     VisActorPlugin *actplugin = get_actor_plugin (actor);
 
-    int req_width  = actor->video->width;
-    int req_height = actor->video->height;
+    int req_width  = visual_video_get_width  (actor->video);
+    int req_height = visual_video_get_height (actor->video);
 
     actplugin->requisition (visual_actor_get_plugin (actor), &req_width, &req_height);
 
     // Size fitting enviroment
-    if (req_width != actor->video->width || req_height != actor->video->height) {
-        if (actor->video->depth != VISUAL_VIDEO_DEPTH_GL) {
-            actor->fitting = visual_video_new_with_buffer (req_width, req_height, actor->video->depth);
+    if (req_width != visual_video_get_width (actor->video) || req_height != visual_video_get_height (actor->video)) {
+        if (visual_video_get_depth (actor->video) != VISUAL_VIDEO_DEPTH_GL) {
+            actor->fitting = visual_video_new_with_buffer (req_width, req_height, visual_video_get_depth (actor->video));
         }
 
         visual_video_set_dimension (actor->video, req_width, req_height);
@@ -504,10 +504,10 @@ void visual_actor_run (VisActor *actor, VisAudio *audio)
     visual_video_set_palette (video, visual_actor_get_palette (actor));
 
     /* Yeah some transformation magic is going on here when needed */
-    if (transform != NULL && (transform->depth != video->depth)) {
+    if (transform != NULL && (visual_video_get_depth (transform) != visual_video_get_depth (video))) {
         actplugin->render (plugin, transform, audio);
 
-        if (transform->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+        if (visual_video_get_depth (transform) == VISUAL_VIDEO_DEPTH_8BIT) {
             visual_video_set_palette (transform, visual_actor_get_palette (actor));
             visual_video_convert_depth (video, transform);
         } else {
@@ -515,7 +515,7 @@ void visual_actor_run (VisActor *actor, VisAudio *audio)
             visual_video_convert_depth (video, transform);
         }
     } else {
-        if (fitting != NULL && (fitting->width != video->width || fitting->height != video->height)) {
+        if (fitting != NULL && (visual_video_get_width (fitting) != visual_video_get_width (video) || visual_video_get_height (fitting) != visual_video_get_height (video))) {
             actplugin->render (plugin, fitting, audio);
             visual_video_blit (video, fitting, 0, 0, FALSE);
         } else {

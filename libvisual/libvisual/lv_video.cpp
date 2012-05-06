@@ -34,6 +34,7 @@
 #include "private/lv_video_fill.h"
 #include "private/lv_video_scale.h"
 #include "private/lv_video_blit.h"
+#include "private/lv_video_private.h"
 #include "gettext.h"
 
 #pragma pack(1)
@@ -273,6 +274,13 @@ void visual_video_set_palette (VisVideo *video, VisPalette *pal)
 	video->pal = pal ? visual_palette_clone (pal) : NULL;
 }
 
+VisPalette *visual_video_get_palette (VisVideo *video)
+{
+    visual_return_val_if_fail (video != NULL, NULL);
+
+    return video->pal;
+}
+
 void visual_video_set_buffer (VisVideo *video, void *buffer)
 {
 	visual_return_if_fail (video != NULL);
@@ -310,6 +318,20 @@ void visual_video_set_dimension (VisVideo *video, int width, int height)
 	visual_buffer_set_size (video->buffer, video->pitch * video->height);
 }
 
+int visual_video_get_width (VisVideo *video)
+{
+    visual_return_val_if_fail (video != NULL, 0);
+
+    return video->width;
+}
+
+int visual_video_get_height (VisVideo *video)
+{
+    visual_return_val_if_fail (video != NULL, 0);
+
+    return video->height;
+}
+
 void visual_video_set_pitch (VisVideo *video, int pitch)
 {
 	visual_return_if_fail (video != NULL);
@@ -322,12 +344,33 @@ void visual_video_set_pitch (VisVideo *video, int pitch)
 	visual_buffer_set_size (video->buffer, video->pitch * video->height);
 }
 
+int visual_video_get_pitch (VisVideo *video)
+{
+    visual_return_val_if_fail (video != NULL, 0);
+
+    return video->pitch;
+}
+
 void visual_video_set_depth (VisVideo *video, VisVideoDepth depth)
 {
 	visual_return_if_fail (video != NULL);
 
 	video->depth = depth;
 	video->bpp = visual_video_bpp_from_depth (video->depth);
+}
+
+VisVideoDepth visual_video_get_depth (VisVideo *video)
+{
+    visual_return_val_if_fail (video != NULL, VISUAL_VIDEO_DEPTH_NONE);
+
+    return video->depth;
+}
+
+int visual_video_get_bpp (VisVideo *video)
+{
+    visual_return_val_if_fail (video != NULL, 0);
+
+    return video->bpp;
 }
 
 void visual_video_set_attrs (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth)
