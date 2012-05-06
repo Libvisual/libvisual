@@ -137,12 +137,12 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     return VISUAL_OK;
 }
 
-int visual_morph_realize (VisMorph *morph)
+void visual_morph_realize (VisMorph *morph)
 {
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
-    visual_return_val_if_fail (morph->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+    visual_return_if_fail (morph != NULL);
+    visual_return_if_fail (morph->plugin != NULL);
 
-    return visual_plugin_realize (morph->plugin);
+    visual_plugin_realize (morph->plugin);
 }
 
 int visual_morph_get_supported_depth (VisMorph *morph)
@@ -153,8 +153,7 @@ int visual_morph_get_supported_depth (VisMorph *morph)
     visual_return_val_if_fail (morph->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
 
     morphplugin = get_morph_plugin (morph);
-
-    if (morphplugin == NULL)
+    if (!morphplugin)
         return -VISUAL_ERROR_MORPH_PLUGIN_NULL;
 
     return morphplugin->vidoptions.depth;
@@ -175,52 +174,42 @@ VisVideoAttrOptions *visual_morph_get_video_attribute_options (VisMorph *morph)
     return &morphplugin->vidoptions;
 }
 
-int visual_morph_set_video (VisMorph *morph, VisVideo *video)
+void visual_morph_set_video (VisMorph *morph, VisVideo *video)
 {
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
-    visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+    visual_return_if_fail (morph != NULL);
+    visual_return_if_fail (video != NULL);
 
     morph->dest = video;
     visual_object_ref (VISUAL_OBJECT (morph->dest));
-
-    return VISUAL_OK;
 }
 
-int visual_morph_set_time (VisMorph *morph, VisTime *time)
+void visual_morph_set_time (VisMorph *morph, VisTime *time)
 {
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
-    visual_return_val_if_fail (time != NULL, -VISUAL_ERROR_TIME_NULL);
+    visual_return_if_fail (morph != NULL);
+    visual_return_if_fail (time != NULL);
 
     visual_time_copy (morph->morphtime, time);
-
-    return VISUAL_OK;
 }
 
-int visual_morph_set_rate (VisMorph *morph, float rate)
+void visual_morph_set_rate (VisMorph *morph, float rate)
 {
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
+    visual_return_if_fail (morph != NULL);
 
     morph->rate = rate;
-
-    return VISUAL_OK;
 }
 
-int visual_morph_set_steps (VisMorph *morph, int steps)
+void visual_morph_set_steps (VisMorph *morph, int steps)
 {
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
+    visual_return_if_fail (morph != NULL);
 
     morph->steps = steps;
-
-    return VISUAL_OK;
 }
 
-int visual_morph_set_mode (VisMorph *morph, VisMorphMode mode)
+void visual_morph_set_mode (VisMorph *morph, VisMorphMode mode)
 {
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
+    visual_return_if_fail (morph != NULL);
 
     morph->mode = mode;
-
-    return VISUAL_OK;
 }
 
 VisPalette *visual_morph_get_palette (VisMorph *morph)

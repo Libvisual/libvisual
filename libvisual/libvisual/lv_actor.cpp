@@ -257,12 +257,12 @@ int visual_actor_init (VisActor *actor, const char *actorname)
     return VISUAL_OK;
 }
 
-int visual_actor_realize (VisActor *actor)
+void visual_actor_realize (VisActor *actor)
 {
-    visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-    visual_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+    visual_return_if_fail (actor != NULL);
+    visual_return_if_fail (actor->plugin != NULL);
 
-    return visual_plugin_realize (actor->plugin);
+    visual_plugin_realize (actor->plugin);
 }
 
 VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
@@ -438,9 +438,9 @@ VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *actor)
     return &actplugin->vidoptions;
 }
 
-int visual_actor_set_video (VisActor *actor, VisVideo *video)
+void visual_actor_set_video (VisActor *actor, VisVideo *video)
 {
-    visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
+    visual_return_if_fail (actor != NULL);
 
     if (actor->video && actor->video != video) {
         visual_object_unref (VISUAL_OBJECT (actor->video));
@@ -451,11 +451,9 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video)
     if (actor->video) {
         visual_object_ref (VISUAL_OBJECT (actor->video));
     }
-
-    return VISUAL_OK;
 }
 
-int visual_actor_run (VisActor *actor, VisAudio *audio)
+void visual_actor_run (VisActor *actor, VisAudio *audio)
 {
     VisActorPlugin *actplugin;
     VisPluginData *plugin;
@@ -467,18 +465,16 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
     /*
      * Really? take a look at visual_video_set_palette bellow
      */
-    visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-    visual_return_val_if_fail (actor->video != NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
-    visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_NULL);
+    visual_return_if_fail (actor != NULL);
+    visual_return_if_fail (actor->video != NULL);
+    visual_return_if_fail (audio != NULL);
 
     actplugin = get_actor_plugin (actor);
     plugin = visual_actor_get_plugin (actor);
 
-    if (actplugin == NULL) {
-        visual_log (VISUAL_LOG_ERROR,
-            _("The given actor does not reference any actor plugin"));
-
-        return -VISUAL_ERROR_ACTOR_PLUGIN_NULL;
+    if (!actplugin) {
+        visual_log (VISUAL_LOG_ERROR, _("The given actor does not reference any actor plugin"));
+        return;
     }
 
     /* Songinfo handling */
@@ -526,8 +522,6 @@ int visual_actor_run (VisActor *actor, VisAudio *audio)
             actplugin->render (plugin, video, audio);
         }
     }
-
-    return VISUAL_OK;
 }
 
 } // C extern

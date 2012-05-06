@@ -50,13 +50,11 @@ static void bin_dtor (VisObject *object)
 	if (bin->morph)
 		visual_object_unref (VISUAL_OBJECT (bin->morph));
 
-	if (bin->actmorphmanaged) {
-		if (bin->actmorph)
-			visual_object_unref (VISUAL_OBJECT (bin->actmorph));
+	if (bin->actmorph)
+		visual_object_unref (VISUAL_OBJECT (bin->actmorph));
 
-		if (bin->actmorphvideo)
-			visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
-	}
+	if (bin->actmorphvideo)
+		visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
 
 	if (bin->privvid)
 		visual_object_unref (VISUAL_OBJECT (bin->privvid));

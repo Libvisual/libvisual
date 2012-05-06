@@ -268,7 +268,7 @@ LV_API int visual_actor_init (VisActor *actor, const char *actorname);
  *	error values returned by visual_plugin_realize () on failure.
  *
  */
-LV_API int visual_actor_realize (VisActor *actor);
+LV_API void visual_actor_realize (VisActor *actor);
 
 /**
  * Gives a pointer to the song info data within the VisActor. This song info data can be used
@@ -355,7 +355,7 @@ LV_API VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL on failure.
  */
-LV_API int visual_actor_set_video (VisActor *actor, VisVideo *video);
+LV_API void visual_actor_set_video (VisActor *actor, VisVideo *video);
 
 /**
  * This is called to run a VisActor. It also pump it's events when needed, checks for new song events and also does the fitting
@@ -369,7 +369,7 @@ LV_API int visual_actor_set_video (VisActor *actor, VisVideo *video);
  * return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL, -VISUAL_ERROR_NULL or
  * 	-VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-LV_API int visual_actor_run (VisActor *actor, VisAudio *audio);
+LV_API void visual_actor_run (VisActor *actor, VisAudio *audio);
 
 LV_END_DECLS
 
