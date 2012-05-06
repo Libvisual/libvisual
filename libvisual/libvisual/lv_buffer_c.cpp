@@ -86,11 +86,11 @@ int visual_buffer_is_allocated (VisBuffer *self)
     return self->is_allocated ();
 }
 
-void visual_buffer_allocate_data (VisBuffer *self)
+void visual_buffer_allocate (VisBuffer *self, visual_size_t size)
 {
     visual_return_if_fail (self != NULL);
 
-    return self->allocate_data ();
+    return self->allocate (size);
 }
 
 void visual_buffer_destroy_content (VisBuffer *self)

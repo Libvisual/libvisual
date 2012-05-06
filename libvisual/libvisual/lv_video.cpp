@@ -190,8 +190,7 @@ int visual_video_allocate_buffer (VisVideo *video)
 		return FALSE;
 	}
 
-	visual_buffer_set_size (video->buffer, visual_video_get_size (video));
-	visual_buffer_allocate_data (video->buffer);
+	visual_buffer_allocate (video->buffer, visual_video_get_size (video));
 
 	video->pixel_rows = visual_mem_new0 (void *, video->height);
 	precompute_row_table (video);

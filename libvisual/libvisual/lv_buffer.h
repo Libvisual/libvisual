@@ -96,7 +96,7 @@ namespace LV {
        * Allocates the data for a Buffer, the amount of bytes allocated is defined by the data size
        * that is set to the Buffer.
        */
-      void allocate_data ();
+      void allocate (std::size_t size);
 
       /**
        * Gets pointer to the data that is encapsulated by the VisBuffer.
@@ -214,7 +214,7 @@ LV_API void          visual_buffer_set_size (VisBuffer *buffer, visual_size_t si
 LV_API visual_size_t visual_buffer_get_size (VisBuffer *buffer);
 
 LV_API int  visual_buffer_is_allocated    (VisBuffer *buffer);
-LV_API void visual_buffer_allocate_data   (VisBuffer *buffer);
+LV_API void visual_buffer_allocate        (VisBuffer *buffer, visual_size_t size);
 LV_API void visual_buffer_destroy_content (VisBuffer *buffer);
 
 LV_API void visual_buffer_copy_data_to (VisBuffer *src, void *dest);
