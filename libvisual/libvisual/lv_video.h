@@ -39,7 +39,7 @@
  * @{
  */
 
-#define VISUAL_VIDEO(obj)						(VISUAL_CHECK_CAST ((obj), VisVideo))
+#define VISUAL_VIDEO(obj)					(VISUAL_CHECK_CAST ((obj), VisVideo))
 #define VISUAL_VIDEO_ATTR_OPTIONS(obj)		(VISUAL_CHECK_CAST ((obj), VisVideoAttrOptions))
 
 #define VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(options, attr, val)	\
