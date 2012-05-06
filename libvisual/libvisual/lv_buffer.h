@@ -34,9 +34,14 @@
 #ifdef __cplusplus
 
 #include <libvisual/lv_scoped_ptr.hpp>
+#include <libvisual/lv_intrusive_ptr.hpp>
 #include <cstdlib>
 
 namespace LV {
+
+  class Buffer;
+
+  typedef IntrusivePtr<Buffer> BufferPtr;
 
   class LV_API Buffer
   {

@@ -111,14 +111,15 @@ SET(libvisual_SOURCES
   lv_rectangle_c.cpp
   lv_songinfo_c.cpp
   lv_time_c.cpp
+  lv_video_c.cpp
 
   private/lv_audio_convert.cpp
-  private/lv_video_convert.c
-  private/lv_video_fill.c
-  private/lv_video_scale.c
-  private/lv_video_blit.c
-  private/lv_video_blit_simd.c
-  private/lv_video_scale_simd.c
+  private/lv_video_convert.cpp
+  private/lv_video_fill.cpp
+  private/lv_video_scale.cpp
+  private/lv_video_blit.cpp
+  private/lv_video_blit_simd.cpp
+  private/lv_video_scale_simd.cpp
 )
 
 SET(LINK_LIBS
