@@ -33,19 +33,6 @@
 #include "private/lv_video_convert.hpp"
 #include "private/lv_video_fill.hpp"
 #include "private/lv_video_transform.hpp"
-#include "gettext.h"
-
-#pragma pack(1)
-
-typedef struct {
-#if VISUAL_LITTLE_ENDIAN == 1
-    uint16_t b:5, g:6, r:5;
-#else
-    uint16_t r:5, g:6, b:5;
-#endif
-} rgb16_t;
-
-#pragma pack()
 
 namespace LV {
 
@@ -61,17 +48,18 @@ namespace LV {
 
 
   Video::Impl::Impl ()
-	  : buffer  (new Buffer),
-		depth   (VISUAL_VIDEO_DEPTH_NONE),
-		width   (0),
-		height  (0),
-		bpp     (0),
-		pitch   (0),
-		parent  (0)
+	  : width   (0)
+      , height  (0)
+      , depth   (VISUAL_VIDEO_DEPTH_NONE)
+      , bpp     (0)
+      , pitch   (0)
+      , buffer  (new Buffer)
+      , parent  (0)
   {}
 
   Video::Impl::~Impl ()
   {
+      // empty
   }
 
   /* Precomputation functions */
@@ -79,13 +67,14 @@ namespace LV {
   {
 	  uint8_t* ptr = static_cast<uint8_t *> (buffer->get_data ());
 
-	  for (int y = 0; y < m_impl->height; y++, ptr += m_impl->pitch)
+	  for (int y = 0; y < height; y++, ptr += pitch)
 		  pixel_rows[y] = ptr;
   }
 
   Video::Video ()
 	  : m_impl (new Impl)
   {
+      // empty
   }
 
   VideoPtr Video::create_sub (VideoPtr const& src, Rect const& area)
@@ -97,13 +86,13 @@ namespace LV {
 	  Rect const& vrect = src->get_extents ();
 
 	  if (!vrect.contains (area))
-		  return;
+		  return VideoPtr ();
 
-	  self->m_impl->rect = area;
-	  self->m_impl->parent = src;
+	  self->m_impl->extents = area;
+	  self->m_impl->parent  = src;
 
 	  self->set_attrs (area.width, area.height, src->m_impl->pitch, src->m_impl->depth);
-	  self->set_buffer (src->get_pixel_ptr (src, area.x, area.y));
+	  self->set_buffer (src->get_pixel_ptr (area.x, area.y));
 
 	  self->m_impl->compose_type = src->m_impl->compose_type;
 	  self->m_impl->compose_func = src->m_impl->compose_func;
@@ -112,9 +101,11 @@ namespace LV {
 	  self->m_impl->alpha    = src->m_impl->alpha;
 
 	  self->set_palette (src->m_impl->palette);
+
+      return self;
   }
 
-  VideoPtr Video::create_sub (Rect const& drect, VideoPtr& src, Rect const& srect)
+  VideoPtr Video::create_sub (Rect const& drect, VideoPtr const& src, Rect const& srect)
   {
 	  Rect sbound = src->m_impl->extents;
 
@@ -125,16 +116,20 @@ namespace LV {
 	  return create_sub (src, rsrect);
   }
 
-  VideoPtr Video::create (void *data, bool owner, int width, int height, VisVideoDepth depth)
+  VideoPtr Video::wrap (void *data, bool owner, int width, int height, VisVideoDepth depth)
   {
 	  // FIXME: Support this
 	  if (owner) {
 		  visual_log (VISUAL_LOG_WARNING, "Memory leak: Ownership of wrapped pixel buffer is not supported at the moment");
 	  }
 
-	  set_depth (depth);
-	  set_dimension (width, height);
-	  set_buffer (data);
+      VideoPtr self = new Video;
+
+	  self->set_depth (depth);
+	  self->set_dimension (width, height);
+	  self->set_buffer (data);
+
+      return self;
   }
 
   VideoPtr Video::create_scale_depth (VideoPtr const&     src,
@@ -175,15 +170,14 @@ namespace LV {
 
   bool Video::allocate_buffer ()
   {
-	  visual_return_val_if_fail (m_impl->buffer != NULL, FALSE);
+	  visual_return_val_if_fail (m_impl->buffer, FALSE);
 	  visual_return_val_if_fail (m_impl->depth != VISUAL_VIDEO_DEPTH_GL, FALSE);
 
-	  if (get_pixels () != NULL) {
+	  if (get_pixels ()) {
 		  if (m_impl->buffer->is_allocated ()) {
 			  free_buffer ();
 		  } else {
-			  visual_log (VISUAL_LOG_ERROR, _("Trying to allocate an screen buffer on "
-											  "a VisVideo structure which points to an external screen buffer"));
+			  visual_log (VISUAL_LOG_ERROR, "Not allocating buffer for Video with an external screen buffer");
 			  return false;
 		  }
 	  }
@@ -196,7 +190,7 @@ namespace LV {
 	  m_impl->buffer->allocate (get_size ());
 
 	  m_impl->pixel_rows.resize (m_impl->height);
-	  precompute_row_table (video);
+	  m_impl->precompute_row_table ();
 
 	  return true;
   }
@@ -247,6 +241,11 @@ namespace LV {
   Palette const& Video::get_palette () const
   {
 	  return m_impl->palette;
+  }
+
+  Palette& Video::get_palette ()
+  {
+      return m_impl->palette;
   }
 
   void Video::set_buffer (void *ptr)
@@ -332,7 +331,7 @@ namespace LV {
 
   void* Video::get_pixels () const
   {
-	  return m_impl->buffer.get_data ();
+	  return m_impl->buffer->get_data ();
   }
 
   BufferPtr Video::get_buffer () const
@@ -357,7 +356,7 @@ namespace LV {
 
   void Video::set_compose_colorkey (Color const& color)
   {
-	  visual_color_set (m_impl->colorkey, 0, 0, 0);
+	  m_impl->colorkey->set (0, 0, 0);
   }
 
   void Video::set_compose_surface (uint8_t alpha)
@@ -439,16 +438,15 @@ namespace LV {
 							 VisVideoComposeFunc compose_func)
   {
 	  Rect sbound = m_impl->extents;
-	  if (!sbound.intersects (drect)) {
-		  goto out;
-	  }
+	  if (!sbound.intersects (drect))
+		  return;
 
 	  VideoPtr ssrc = create_sub (src, srect);
 
 	  VideoPtr svid = create();
 	  svid->set_attrs (drect.width,
 					   drect.height,
-					   src->m_impl->bpp * drect->width,
+					   src->m_impl->bpp * drect.width,
 					   src->m_impl->depth);
 	  svid->allocate_buffer ();
 
@@ -478,19 +476,19 @@ namespace LV {
 	  Rect drect = get_extents ();
 	  Rect srect = src->get_extents ();
 
-	  if (!drect.visual_rectangle_intersects (srect))
-		  goto out;
+	  if (!drect.intersects (srect))
+          return;
 
 	  VideoPtr transform;
 
 	  /* We're not the same depth, converting */
 	  if (m_impl->depth != src->m_impl->depth) {
-		  transform = new Video (src->m_impl->width, src->m_impl->height, m_impl->depth);
+		  transform = create (src->m_impl->width, src->m_impl->height, m_impl->depth);
 		  transform->convert_depth (src);
 	  }
 
 	  /* Setting all the pointers right */
-	  VideoPtr srcp = transform ? transform : &src;
+	  VideoPtr srcp = transform ? transform.get () : VideoPtr (&src);
 
 	  /* Negative offset fixture */
 	  if (x < 0) {
@@ -506,17 +504,17 @@ namespace LV {
 	  }
 
 	  /* Retrieve sub regions */
-	  Rect trect (x, y, srect->width, srect->height);
+	  Rect trect (x, y, srect.width, srect.height);
 
-	  VideoPtr dregion = create_sub (dregion, drect, dest, trect);
+	  VideoPtr dregion = create_sub (drect, LV::VideoPtr (this), trect);
 
-	  Rect redestrect = dregion.get_extents ();
+	  Rect redestrect = dregion->get_extents ();
 
 	  VideoPtr tempregion = create_sub (srcp, srect);
 	  VideoPtr sregion    = create_sub (drect, tempregion, redestrect);
 
 	  /* Call blitter */
-	  compose_func (dregion, sregion);
+	  compose_func (dregion.get (), sregion.get ());
   }
 
 
@@ -526,7 +524,7 @@ namespace LV {
 
 	  uint32_t* vidbuf = static_cast<uint32_t*> (get_pixels ());
 
-	  uint32_t col = (color->r << 16 | color->g << 8 | color->b);
+	  uint32_t col = (color.r << 16 | color.g << 8 | color.b);
 
 	  /* FIXME byte order sensitive */
 	  for (int y = 0; y < m_impl->height; y++) {
@@ -562,19 +560,12 @@ namespace LV {
   {
 	  visual_return_if_fail (m_impl->depth == VISUAL_VIDEO_DEPTH_32BIT);
 
-	  VideoPtr rvid = create_sub (rvid, area);
-	  rvid.fill_alpha (alpha);
+	  VideoPtr rvid = create_sub (this, area);
+	  rvid->fill_alpha (alpha);
   }
 
-  void Video::fill_color (Color const& rcolor)
+  void Video::fill_color (Color const& color)
   {
-	  VisColor color;
-
-	  if (!rcolor)
-		  color.set (&0, 0, 0);
-	  else
-		  color = rcolor;
-
 	  switch (m_impl->depth) {
 		  case VISUAL_VIDEO_DEPTH_8BIT:
 			  VideoFill::fill_color_index8 (*this, color);
@@ -599,13 +590,10 @@ namespace LV {
 
   void Video::fill_color (Color const& color, Rect const& area)
   {
-	  Rect vrect = get_extents ();
-	  if (!vrect.intersects (area))
-		  goto out;
+	  if (m_impl->extents.intersects (area))
+		  return;
 
-	  Rect dbound = get_extents ();
-
-	  VideoPtr svid = create_sub (dbound, video, area);
+	  VideoPtr svid = create_sub (LV::VideoPtr (this), area);
 	  svid->fill_color (color);
   }
 
@@ -616,15 +604,15 @@ namespace LV {
 
 	  switch (m_impl->depth) {
 		  case VISUAL_VIDEO_DEPTH_16BIT:
-			  VideoConvert::flip_pixel_bytes_color16 (*this, src);
+			  VideoConvert::flip_pixel_bytes_color16 (*this, *src);
 			  return;
 
 		  case VISUAL_VIDEO_DEPTH_24BIT:
-			  VideoConvert::flip_pixel_bytes_color24 (*this, src);
+			  VideoConvert::flip_pixel_bytes_color24 (*this, *src);
 			  return;
 
 		  case VISUAL_VIDEO_DEPTH_32BIT:
-			  VideoConvert::flip_pixel_bytes_color32 (*this, src);
+			  VideoConvert::flip_pixel_bytes_color32 (*this, *src);
 			  return;
 
 		  default:
@@ -641,15 +629,15 @@ namespace LV {
 			  return;
 
 		  case VISUAL_VIDEO_ROTATE_90:
-			  VideoTransform::rotate_90 (dest, src);
+			  VideoTransform::rotate_90 (*this, *src);
 			  return;
 
 		  case VISUAL_VIDEO_ROTATE_180:
-			  VideoTransform::rotate_180 (dest, src);
+			  VideoTransform::rotate_180 (*this, *src);
 			  return;
 
 		  case VISUAL_VIDEO_ROTATE_270:
-			  VideoTransform::rotate_270 (dest, src);
+			  VideoTransform::rotate_270 (*this, *src);
 			  return;
 
 		  default:
@@ -667,11 +655,11 @@ namespace LV {
 			  return;
 
 		  case VISUAL_VIDEO_MIRROR_X:
-			  VideoTransform::mirror_x (*this, src);
+			  VideoTransform::mirror_x (*this, *src);
 			  return;
 
 		  case VISUAL_VIDEO_MIRROR_Y:
-			  VideoTransform::mirror_y (*this, src);
+			  VideoTransform::mirror_y (*this, *src);
 			  return;
 
 		  default:
@@ -688,71 +676,87 @@ namespace LV {
 	  }
 
 	  if (m_impl->depth == VISUAL_VIDEO_DEPTH_8BIT || src->m_impl->depth == VISUAL_VIDEO_DEPTH_8BIT) {
-		  visual_return_if_fail (src->m_impl->pal.size () == 256);
+		  visual_return_if_fail (src->m_impl->palette.size () == 256);
 	  }
 
 	  if (src->m_impl->depth == VISUAL_VIDEO_DEPTH_8BIT) {
 
 		  switch (m_impl->depth) {
 			  case VISUAL_VIDEO_DEPTH_16BIT:
-				  VideoConvert::index8_to_rgb16 (*this, src);
+				  VideoConvert::index8_to_rgb16 (*this, *src);
 				  return;
 
 			  case VISUAL_VIDEO_DEPTH_24BIT:
-				  VideoConvert::index8_to_rgb24 (*this, src);
+				  VideoConvert::index8_to_rgb24 (*this, *src);
 				  return;
 
 			  case VISUAL_VIDEO_DEPTH_32BIT:
-				  VideoConvert::index8_to_argb32 (*this, src);
+				  VideoConvert::index8_to_argb32 (*this, *src);
 				  return;
+
+              default:
+                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested");
+                  return;
 		  }
 
 	  } else if (src->m_impl->depth == VISUAL_VIDEO_DEPTH_16BIT) {
 
 		  switch (m_impl->depth) {
 			  case VISUAL_VIDEO_DEPTH_8BIT:
-				  VideoConvert::rgb16_to_index8 (*this, src);
+				  VideoConvert::rgb16_to_index8 (*this, *src);
 				  return;
 
 			  case VISUAL_VIDEO_DEPTH_24BIT:
-				  VideoConvert::rgb16_to_rgb24 (*this, src);
+				  VideoConvert::rgb16_to_rgb24 (*this, *src);
 				  return;
 
 			  case VISUAL_VIDEO_DEPTH_32BIT:
-				  VideoConvert::rgb16_to_argb32 (*this, src);
+				  VideoConvert::rgb16_to_argb32 (*this, *src);
 				  return;
+
+              default:
+                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested");
+                  return;
 		  }
 
 	  } else if (src->m_impl->depth == VISUAL_VIDEO_DEPTH_24BIT) {
 
 		  switch (m_impl->depth) {
 			  case VISUAL_VIDEO_DEPTH_8BIT:
-				  VideoConvert::rgb24_to_index8 (*this, src);
+				  VideoConvert::rgb24_to_index8 (*this, *src);
 				  return;
 
 			  case VISUAL_VIDEO_DEPTH_16BIT:
-				  VideoConvert::rgb24_to_rgb16 (*this, src);
+				  VideoConvert::rgb24_to_rgb16 (*this, *src);
 				  return;
 
 			  case VISUAL_VIDEO_DEPTH_32BIT:
-				  VideoConvert::rgb24_to_argb32 (*this, src);
+				  VideoConvert::rgb24_to_argb32 (*this, *src);
 				  return;
+
+              default:
+                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested");
+                  return;
 		  }
 
 	  } else if (src->m_impl->depth == VISUAL_VIDEO_DEPTH_32BIT) {
 
 		  switch (m_impl->depth) {
 			  case VISUAL_VIDEO_DEPTH_8BIT:
-				  VideoConvert::argb32_to_index8 (*this, src);
+				  VideoConvert::argb32_to_index8 (*this, *src);
 				  return;
 
 			  case VISUAL_VIDEO_DEPTH_16BIT:
-				  VideoConvert::argb32_to_rgb16 (*this, src);
+				  VideoConvert::argb32_to_rgb16 (*this, *src);
 				  return;
 
 			  case VISUAL_VIDEO_DEPTH_24BIT:
-				  VideoConvert::argb32_to_rgb24 (*this, src);
+				  VideoConvert::argb32_to_rgb24 (*this, *src);
 				  return;
+
+              default:
+                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested");
+                  return;
 		  }
 	  }
   }
@@ -772,39 +776,39 @@ namespace LV {
 	  switch (m_impl->depth) {
 		  case VISUAL_VIDEO_DEPTH_8BIT:
 			  if (method == VISUAL_VIDEO_SCALE_NEAREST)
-				  VideoTransform::scale_nearest_color8 (*this, src);
+				  VideoTransform::scale_nearest_color8 (*this, *src);
 			  else if (method == VISUAL_VIDEO_SCALE_BILINEAR)
-				  VideoTransform::scale_bilinear_color8 (*this, src);
+				  VideoTransform::scale_bilinear_color8 (*this, *src);
 
 			  break;
 
 		  case VISUAL_VIDEO_DEPTH_16BIT:
 			  if (method == VISUAL_VIDEO_SCALE_NEAREST)
-				  VideoTransform::scale_nearest_color16 (*this, src);
+				  VideoTransform::scale_nearest_color16 (*this, *src);
 			  else if (method == VISUAL_VIDEO_SCALE_BILINEAR)
-				  VideoTransform::scale_bilinear_color16 (*this, src);
+				  VideoTransform::scale_bilinear_color16 (*this, *src);
 
 			  break;
 
 		  case VISUAL_VIDEO_DEPTH_24BIT:
 			  if (method == VISUAL_VIDEO_SCALE_NEAREST)
-				  VideoTransform::scale_nearest_color24 (*this, src);
+				  VideoTransform::scale_nearest_color24 (*this, *src);
 			  else if (method == VISUAL_VIDEO_SCALE_BILINEAR)
-				  VideoTransform::scale_bilinear_color24 (*this, src);
+				  VideoTransform::scale_bilinear_color24 (*this, *src);
 
 			  break;
 
 		  case VISUAL_VIDEO_DEPTH_32BIT:
 			  if (method == VISUAL_VIDEO_SCALE_NEAREST)
-				  VideoTransform::scale_nearest_color32 (*this, src);
+				  VideoTransform::scale_nearest_color32 (*this, *src);
 			  else if (method == VISUAL_VIDEO_SCALE_BILINEAR) {
-				  VideoTransform::scale_bilinear_color32 (*this, src);
+				  VideoTransform::scale_bilinear_color32 (*this, *src);
 			  }
 
 			  break;
 
 		  default:
-			  visual_log (VISUAL_LOG_ERROR, _("Invalid depth passed to the scaler"));
+			  visual_log (VISUAL_LOG_ERROR, "Invalid depth passed to the scaler");
 			  break;
 	  }
   }

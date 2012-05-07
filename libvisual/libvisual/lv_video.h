@@ -107,8 +107,17 @@ typedef enum {
 	VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM      /**< Custom compose function (looks up on the source VisVideo. */
 } VisVideoComposeType;
 
-
 typedef struct _VisVideoAttrOptions VisVideoAttrOptions;
+
+#ifdef __cplusplus
+namespace LV {
+  class Video;
+}
+typedef LV::Video VisVideo;
+#else
+typedef struct _VisVideo VisVideo;
+struct _VisVideo;
+#endif
 
 /** VisVideo custom compose method */
 typedef void (*VisVideoComposeFunc)(VisVideo *dest, VisVideo *src);
@@ -201,7 +210,7 @@ namespace LV {
        * Allocates a buffer for the VisVideo based on the set
        * dimensions and pixel format
        */
-      void allocate_buffer ():
+      bool allocate_buffer ();
 
       /**
        * Frees the buffer
@@ -270,6 +279,8 @@ namespace LV {
 
       Palette const& get_palette () const;
 
+      Palette& get_palette ();
+
       /**
        * Retrieves the pixel buffer from a VisVideo.
        *
@@ -286,7 +297,7 @@ namespace LV {
        *
        * @return the extents
        */
-      Rect get_extents () const;
+      Rect const& get_extents () const;
 
       void set_compose_type (VisVideoComposeType type);
 
@@ -329,6 +340,8 @@ namespace LV {
       void fill_alpha (uint8_t density);
 
       void fill_alpha (uint8_t density, Rect const& area);
+
+      void fill_alpha_color (Color const& color, uint8_t alpha);
 
       /**
        * This function is used to fill a VisVideo with one color. It's highly advice to use this function to fill
@@ -432,23 +445,16 @@ namespace LV {
 
 #endif
 
-#ifdef __cplusplus
-typedef LV::Video VisVideo;
-#else
-typedef struct _VisVideo VisVideo;
-struct _VisVideo;
-#endif
-
 LV_BEGIN_DECLS
 
 LV_API VisVideo *visual_video_new (void);
 LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
 LV_API VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth);
 
-LV_API void visual_video_ref   (VisVideo *video):
+LV_API void visual_video_ref   (VisVideo *video);
 LV_API void visual_video_unref (VisVideo *video);
 
-LV_API void visual_video_allocate_buffer (VisVideo *video);
+LV_API int  visual_video_allocate_buffer (VisVideo *video);
 LV_API void visual_video_free_buffer (VisVideo *video);
 LV_API int  visual_video_has_allocated_buffer (VisVideo *video);
 
@@ -486,12 +492,10 @@ LV_API VisBuffer *visual_video_get_buffer (VisVideo *video);
 
 LV_API VisRectangle *visual_video_get_extents (VisVideo *video);
 
-LV_API void visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *area);
-LV_API void visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
-
-LV_API void visual_video_region_sub_all (VisVideo *dest, VisVideo *src);
-
-LV_API void visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
+LV_API VisVideo *visual_video_new_sub (VisVideo *src, VisRectangle *area);
+LV_API VisVideo *visual_video_new_sub_by_values (VisVideo *src, int x, int y, int width, int height);
+LV_API VisVideo *visual_video_new_sub_with_boundary (VisRectangle *drect, VisVideo *src, VisRectangle *srect);
+LV_API VisVideo *visual_video_new_sub_all (VisVideo *src);
 
 LV_API void visual_video_set_compose_type     (VisVideo *video, VisVideoComposeType type);
 LV_API void visual_video_set_compose_colorkey (VisVideo *video, VisColor *color);

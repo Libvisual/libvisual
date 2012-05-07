@@ -190,6 +190,17 @@ namespace LV {
       Buffer& operator= (Buffer const&);
   };
 
+  inline void intrusive_ptr_add_ref (Buffer* buffer)
+  {
+      buffer->ref ();
+  }
+
+  inline void intrusive_ptr_release (Buffer* buffer)
+  {
+      buffer->unref ();
+  }
+
+
 } // LV namespace
 
 #endif /* __cplusplus */

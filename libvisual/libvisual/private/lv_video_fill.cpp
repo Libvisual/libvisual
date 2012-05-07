@@ -21,12 +21,12 @@ namespace LV {
   {
       uint8_t* buf = static_cast<uint8_t*> (video.get_pixels ());
 
-      int8_t col = ((color->r + color->g + color->b) / 3);
+      int8_t col = ((color.r + color.g + color.b) / 3);
 
-      for (int y = 0; y < video.impl->height; y++) {
-          visual_mem_set (buf, col, video.impl->width);
+      for (int y = 0; y < video.m_impl->height; y++) {
+          visual_mem_set (buf, col, video.m_impl->width);
 
-          buf += video.impl->pitch;
+          buf += video.m_impl->pitch;
       }
   }
 
@@ -37,14 +37,14 @@ namespace LV {
       int16_t col;
 
       rgb16_t *col16 = reinterpret_cast<rgb16_t*> (&col);
-      col16->r = color->r >> 3;
-      col16->g = color->g >> 2;
-      col16->b = color->b >> 3;
+      col16->r = color.r >> 3;
+      col16->g = color.g >> 2;
+      col16->b = color.b >> 3;
 
-      for (int y = 0; y < video.impl->height; y++) {
-          visual_mem_set16 (buf, col, video.impl->width);
+      for (int y = 0; y < video.m_impl->height; y++) {
+          visual_mem_set16 (buf, col, video.m_impl->width);
 
-          buf += (video.impl->pitch / video.impl->bpp);
+          buf += (video.m_impl->pitch / video.m_impl->bpp);
       }
   }
 
@@ -53,36 +53,36 @@ namespace LV {
       uint8_t* rbuf = static_cast<uint8_t*> (video.get_pixels ());
 
       int32_t cola =
-          (color->b << 24) |
-          (color->g << 16) |
-          (color->r << 8) |
-          (color->b);
+          (color.b << 24) |
+          (color.g << 16) |
+          (color.r << 8) |
+          (color.b);
       int32_t colb =
-          (color->g << 24) |
-          (color->r << 16) |
-          (color->b << 8) |
-          (color->g);
+          (color.g << 24) |
+          (color.r << 16) |
+          (color.b << 8) |
+          (color.g);
       int32_t colc =
-          (color->r << 24) |
-          (color->b << 16) |
-          (color->g << 8) |
-          (color->r);
+          (color.r << 24) |
+          (color.b << 16) |
+          (color.g << 8) |
+          (color.r);
 
-      for (int y = 0; y < video.impl->height; y++) {
+      for (int y = 0; y < video.m_impl->height; y++) {
           uint32_t* buf = reinterpret_cast<uint32_t*> (rbuf);
 
-          for (int x = video.impl->width; x >= video.impl->bpp; x -= video.impl->bpp) {
+          for (int x = video.m_impl->width; x >= video.m_impl->bpp; x -= video.m_impl->bpp) {
               *(buf++) = cola;
               *(buf++) = colb;
               *(buf++) = colc;
           }
 
           uint8_t *buf8 = reinterpret_cast<uint8_t*> (buf);
-          *(buf8++) = color->b;
-          *(buf8++) = color->g;
-          *(buf8++) = color->r;
+          *(buf8++) = color.b;
+          *(buf8++) = color.g;
+          *(buf8++) = color.r;
 
-          rbuf += video.impl->pitch;
+          rbuf += video.m_impl->pitch;
       }
   }
 
@@ -92,10 +92,10 @@ namespace LV {
 
       uint32_t col = (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
 
-      for (int y = 0; y < video.impl->height; y++) {
-          visual_mem_set32 (buf, col, video.impl->width);
+      for (int y = 0; y < video.m_impl->height; y++) {
+          visual_mem_set32 (buf, col, video.m_impl->width);
 
-          buf += (video.impl->pitch / video.impl->bpp);
+          buf += (video.m_impl->pitch / video.m_impl->bpp);
       }
   }
 

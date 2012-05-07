@@ -1,33 +1,33 @@
 #include "config.h"
-#include "lv_video_scale.hpp"
+#include "lv_video_transform.hpp"
 #include "lv_video_private.hpp"
 #include "lv_common.h"
 
 namespace LV {
 
-  void VideoScale::scale_bilinear_color32_mmx (VisVideo& dest, VisVideo const& src)
+  void VideoTransform::scale_bilinear_color32_mmx (Video& dest, Video const& src)
   {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-      uint32_t* dest_pixel = static<uint32_t*> (dest.get_pixels ());
+      uint32_t* dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
 
-      uint32_t du = ((src.impl->width  - 1) << 16) / dest.impl->width;
-      uint32_t dv = ((src.impl->height - 1) << 16) / dest.impl->height;
+      uint32_t du = ((src.m_impl->width  - 1) << 16) / dest.m_impl->width;
+      uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
 
       uint32_t v = 0;
 
-      for (int y = dest.impl->height; y--; v += dv) {
-          if (v >> 16 >= src.impl->height - 1)
+      for (int y = dest.m_impl->height; y--; v += dv) {
+          if (v >> 16 >= src.m_impl->height - 1)
               v -= 0x10000;
 
-          uint32_t const* src_pixel_rowu = static_cast<uint32_t const*> (src.impl->pixel_rows[v >> 16]);
-          uint32_t const* src_pixel_rowl = static_cast<uint32_t const*> (src.impl->pixel_rows[(v >> 16) + 1]);
+          uint32_t const* src_pixel_rowu = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          uint32_t const* src_pixel_rowl = static_cast<uint32_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
 
           /* fracV = frac(v) = v & 0xffff */
           /* fixed point format convertion: fracV >>= 8) */
           uint32_t fracV = ((v & 0xffff) >> 12) | 0x100000;
           uint32_t u = 0;
 
-          for (int x = dest.impl->width - 1; x--; u += du) {
+          for (int x = dest.m_impl->width - 1; x--; u += du) {
 
               /* fracU = frac(u) = u & 0xffff */
               /* fixed point format convertion: fracU >>= 8) */
@@ -127,7 +127,7 @@ namespace LV {
               ++dest_pixel;
           }
 
-          dest_pixel += (dest.impl->pitch / 4) - ((dest.impl->width - 1));
+          dest_pixel += (dest.m_impl->pitch / 4) - ((dest.m_impl->width - 1));
       }
 
       __asm__ __volatile__ ("\n\t emms");

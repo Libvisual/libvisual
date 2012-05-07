@@ -26,7 +26,7 @@ namespace LV {
       static void scale_bilinear_color24 (Video& dest, Video const& src);
       static void scale_bilinear_color32 (Video& dest, Video const& src);
 
-      static void scale_bilinear_color32_mmx (Video const& dest, Video const& src);
+      static void scale_bilinear_color32_mmx (Video& dest, Video const& src);
   };
 
 } // LV namespace

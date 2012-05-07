@@ -7,6 +7,8 @@ namespace LV {
 
   class VideoBlit
   {
+  public:
+
       static void blit_overlay_noalpha      (Video& dest, Video const& src);
       static void blit_overlay_alphasrc     (Video& dest, Video const& src);
       static void blit_overlay_colorkey     (Video& dest, Video const& src);

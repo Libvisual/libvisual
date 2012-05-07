@@ -2,7 +2,7 @@
 #define _LV_VIDEO_PRIVATE_HPP
 
 #include "lv_video.h"
-#include "lv_rect.h"
+#include "lv_rectangle.h"
 #include "lv_palette.h"
 #include "lv_color.h"
 #include <vector>
@@ -13,15 +13,15 @@ namespace LV {
   {
   public:
 
-      VisVideoDepth      depth;
       int                width;
       int                height;
+      VisVideoDepth      depth;
       int                bpp;
       int                pitch;
 
       BufferPtr          buffer;
-      std::vector<void*> rows;
-      Palette            pal;
+      std::vector<void*> pixel_rows;
+      Palette            palette;
 
       VideoPtr           parent;
       Rect               extents;
@@ -34,6 +34,8 @@ namespace LV {
       Impl ();
 
       ~Impl ();
+
+      void precompute_row_table ();
   };
 
 } // LV namespace

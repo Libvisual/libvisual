@@ -7,6 +7,8 @@ namespace LV {
 
   class VideoConvert
   {
+  public:
+
       static void convert_get_smallest (Video& dest, Video const& src, int& width, int& height);
 
       static void index8_to_rgb16  (Video& dest, Video const& src);
@@ -31,4 +33,4 @@ namespace LV {
   };
 }
 
-#endif /* _LV_VIDEO_CONVERT_HPP /
+#endif // _LV_VIDEO_CONVERT_HPP

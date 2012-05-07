@@ -18,20 +18,20 @@ typedef struct {
 
 namespace LV {
 
-  void VideoConvert::convert_get_smallest (Video const& dest, Video const& src, int& width, int& height)
+  void VideoConvert::convert_get_smallest (Video& dest, Video const& src, int& width, int& height)
   {
-      width  = std::min (dest.impl->width,  src.impl->width);
-      height = std::min (dest.impl->height, src.impl->height);
+      width  = std::min (dest.m_impl->width,  src.m_impl->width);
+      height = std::min (dest.m_impl->height, src.m_impl->height);
   }
 
-  void VideoConvert::index8_to_rgb16 (Video const& dest, Video const& src)
+  void VideoConvert::index8_to_rgb16 (Video& dest, Video const& src)
   {
       rgb16_t* dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
       uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
       rgb16_t colors[256];
 
-      std::vector<Color> const& src_colors = src.impl->pal.colors;
+      std::vector<Color> const& src_colors = src.m_impl->palette.colors;
 
       for(int i = 0; i < 256; i++) {
           colors[i].r = src_colors[i].r >> 3;
@@ -42,8 +42,8 @@ namespace LV {
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = (dest.impl->pitch / dest.impl->bpp) - w;
-      int sdiff = src.impl->pitch - (w * src.impl->bpp);
+      int ddiff = (dest.m_impl->pitch / dest.m_impl->bpp) - w;
+      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -60,13 +60,13 @@ namespace LV {
       uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
       uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
-      std::vector<Color> const& src_colors = src.impl->pal.colors;
+      std::vector<Color> const& src_colors = src.m_impl->palette.colors;
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = src.impl->pitch - (w * src.impl->bpp);
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -94,7 +94,7 @@ namespace LV {
 
       uint32_t colors[256];
 
-      std::vector<Color> const& src_colors = src.impl->pal.colors;
+      std::vector<Color> const& src_colors = src.m_impl->palette.colors;
 
       for (int i = 0; i < 256; ++i) {
           colors[i] =
@@ -107,8 +107,8 @@ namespace LV {
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = (dest.impl->pitch >> 2) - w;
-      int sdiff = src.impl->pitch - w;
+      int ddiff = (dest.m_impl->pitch >> 2) - w;
+      int sdiff = src.m_impl->pitch - w;
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -125,13 +125,13 @@ namespace LV {
       uint8_t *dbuf = static_cast<uint8_t*> (dest.get_pixels ());
       rgb16_t const* sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
 
-      std::vector<Color> const& dest_colors = dest.impl->pal.colors;
+      std::vector<Color>& dest_colors = dest.m_impl->palette.colors;
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = (src.impl->pitch  / src.impl->bpp) - w;
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = (src.m_impl->pitch  / src.m_impl->bpp) - w;
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -154,7 +154,7 @@ namespace LV {
       }
   }
 
-  void VideoConvert::rgb16_to_rgb24 (Video const& dest, Video const& src)
+  void VideoConvert::rgb16_to_rgb24 (Video& dest, Video const& src)
   {
       uint8_t *dbuf = static_cast<uint8_t*> (dest.get_pixels ());
       rgb16_t const* sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
@@ -162,8 +162,8 @@ namespace LV {
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = (src.impl->pitch  / src.impl->bpp) - w;
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = (src.m_impl->pitch  / src.m_impl->bpp) - w;
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -184,7 +184,7 @@ namespace LV {
       }
   }
 
-  void VideoConvert::rgb16_to_argb32 (Video const& dest, Video const& src)
+  void VideoConvert::rgb16_to_argb32 (Video& dest, Video const& src)
   {
       uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
       rgb16_t const* sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
@@ -192,8 +192,8 @@ namespace LV {
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = (src.impl->pitch  / src.impl->bpp) - w;
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = (src.m_impl->pitch  / src.m_impl->bpp) - w;
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -222,13 +222,13 @@ namespace LV {
       uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
       uint8_t const* sbuf = static_cast<uint8_t*> (src.get_pixels ());
 
-      std::vector<Color> const& dest_colors = dest.impl->pal.colors;
+      std::vector<Color>& dest_colors = dest.m_impl->palette.colors;
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = src.impl->pitch - (w * src.impl->bpp);
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -264,8 +264,8 @@ namespace LV {
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = (src.impl->pitch / src.impl->bpp) - w;
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = (src.m_impl->pitch / src.m_impl->bpp) - w;
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -294,8 +294,8 @@ namespace LV {
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = src.impl->pitch - (w * src.impl->bpp);
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -322,13 +322,13 @@ namespace LV {
       uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
       uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
-      std::vector<Color> const& dest_colors = dest.impl->pal.colors;
+      std::vector<Color>& dest_colors = dest.m_impl->palette.colors;
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = src.impl->pitch - (w * src.impl->bpp);
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -366,8 +366,8 @@ namespace LV {
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = (dest.impl->pitch / dest.impl->bpp) - w;
-      int sdiff = src.impl->pitch - (w * src.impl->bpp);
+      int ddiff = (dest.m_impl->pitch / dest.m_impl->bpp) - w;
+      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -399,8 +399,8 @@ namespace LV {
       int w, h;
       convert_get_smallest (dest, src, w, h);
 
-      int ddiff = dest.impl->pitch - (w * dest.impl->bpp);
-      int sdiff = src.impl->pitch  - (w * src.impl->bpp);
+      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
+      int sdiff = src.m_impl->pitch  - (w * src.m_impl->bpp);
 
       for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
@@ -427,10 +427,10 @@ namespace LV {
       rgb16_t* destbuf = static_cast<rgb16_t*> (dest.get_pixels ());
       rgb16_t const* srcbuf = static_cast<rgb16_t const*> (src.get_pixels ());
 
-      int pitchdiff = (dest.impl->pitch - (dest.impl->width * dest.impl->bpp)) >> 1;
+      int pitchdiff = (dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp)) >> 1;
 
-      for (int y = 0; y < dest.impl->height; y++) {
-          for (int x = 0; x < dest.impl->width; x++) {
+      for (int y = 0; y < dest.m_impl->height; y++) {
+          for (int x = 0; x < dest.m_impl->width; x++) {
               destbuf->b = srcbuf->r;
               destbuf->g = srcbuf->g;
               destbuf->r = srcbuf->b;
@@ -448,10 +448,10 @@ namespace LV {
       uint8_t* destbuf = static_cast<uint8_t*> (dest.get_pixels ());
       uint8_t const* srcbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int pitchdiff = dest.impl->pitch - (dest.impl->width * dest.impl->bpp);
+      int pitchdiff = dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp);
 
-      for (int y = 0; y < dest.impl->height; y++) {
-          for (int x = 0; x < dest.impl->width; x++) {
+      for (int y = 0; y < dest.m_impl->height; y++) {
+          for (int x = 0; x < dest.m_impl->width; x++) {
               destbuf[2] = srcbuf[0];
               destbuf[1] = srcbuf[1];
               destbuf[0] = srcbuf[2];
@@ -469,10 +469,10 @@ namespace LV {
       uint8_t* destbuf = static_cast<uint8_t*> (dest.get_pixels ());
       uint8_t const* srcbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int pitchdiff = dest.impl->pitch - (dest.impl->width * dest.impl->bpp);
+      int pitchdiff = dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp);
 
-      for (int y = 0; y < dest.impl->height; y++) {
-          for (int x = 0; x < dest.impl->width; x++) {
+      for (int y = 0; y < dest.m_impl->height; y++) {
+          for (int x = 0; x < dest.m_impl->width; x++) {
               destbuf[0] = srcbuf[3];
               destbuf[1] = srcbuf[2];
               destbuf[2] = srcbuf[1];
