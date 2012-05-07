@@ -3,10 +3,10 @@
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Duilio J. Protti <dprotti@users.sourceforge.net>
- *	    Chong Kai Xiong <kaixiong@codeleft.sg>
- *	    Jean-Christophe Hoelt <jeko@ios-software.com>
- *	    Jaak Randmets <jaak.ra@gmail.com>
+ *      Duilio J. Protti <dprotti@users.sourceforge.net>
+ *      Chong Kai Xiong <kaixiong@codeleft.sg>
+ *      Jean-Christophe Hoelt <jeko@ios-software.com>
+ *      Jaak Randmets <jaak.ra@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,399 +30,441 @@
 
 VisVideo *visual_video_new ()
 {
-    // FIXME: implement
-    return NULL;
+    LV::VideoPtr self = LV::Video::create ();
+    self->ref ();
+
+    return self.get ();
 }
 
 VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth)
 {
-    // FIXME: implement
-    return NULL;
+    LV::VideoPtr self = LV::Video::create (width, height, depth);
+    self->ref ();
+
+    return self.get ();
 }
 
 VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth)
 {
-    // FIXME: implement
-    return NULL;
+    LV::VideoPtr self = LV::Video::wrap (buffer, owner, width, height, depth);
+    self->ref ();
+
+    return self.get ();
 }
 
-void visual_video_free_buffer (VisVideo *video)
+void visual_video_free_buffer (VisVideo *self)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
 
-    // FIXME: implement
+    self->free_buffer ();
 }
 
-int visual_video_allocate_buffer (VisVideo *video)
+int visual_video_allocate_buffer (VisVideo *self)
 {
-	visual_return_val_if_fail (video != NULL, FALSE);
+    visual_return_val_if_fail (self != NULL, FALSE);
 
-    // FIXME: implement
+    return self->allocate_buffer ();
 }
 
-int visual_video_has_allocated_buffer (VisVideo *video)
+int visual_video_has_allocated_buffer (VisVideo *self)
 {
-	visual_return_val_if_fail (video != NULL, FALSE);
+    visual_return_val_if_fail (self != NULL, FALSE);
 
-    // FIXME: implement
-	return FALSE;
+    return self->has_allocated_buffer ();
 }
 
-void visual_video_copy_attrs (VisVideo *dest, VisVideo *src)
+void visual_video_copy_attrs (VisVideo *self, VisVideo *src)
 {
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (src  != NULL);
 
-    // FIXME: implement
+    self->copy_attrs (LV::VideoPtr (src));
 }
 
-int visual_video_compare_attrs (VisVideo *src1, VisVideo *src2)
+int visual_video_compare_attrs (VisVideo *self, VisVideo *src)
 {
-	visual_return_val_if_fail (src1 != NULL, FALSE);
-	visual_return_val_if_fail (src2 != NULL, FALSE);
+    visual_return_val_if_fail (self != NULL, FALSE);
+    visual_return_val_if_fail (src  != NULL, FALSE);
 
-    // FIXME: implement
-    return FALSE;
+    return self->compare_attrs (LV::VideoPtr (src));
 }
 
-int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *src2)
+int visual_video_compare_attrs_ignore_pitch (VisVideo *self, VisVideo *src)
 {
-	visual_return_val_if_fail (src1 != NULL, FALSE);
-	visual_return_val_if_fail (src2 != NULL, FALSE);
+    visual_return_val_if_fail (self != NULL, FALSE);
+    visual_return_val_if_fail (src  != NULL, FALSE);
 
-    // FIXME: implement
-    return FALSE;
+    return self->compare_attrs_ignore_pitch (LV::VideoPtr (src));
 }
 
-void visual_video_set_palette (VisVideo *video, VisPalette *pal)
+void visual_video_set_palette (VisVideo *self, VisPalette *pal)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
 
-    // FIXME: implement
+    if (pal) {
+        self->set_palette (*pal);
+    } else {
+        self->set_palette (LV::Palette ());
+    }
 }
 
-VisPalette *visual_video_get_palette (VisVideo *video)
+VisPalette *visual_video_get_palette (VisVideo *self)
 {
-    visual_return_val_if_fail (video != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    // FIXME: implement
-    return NULL;
+    LV::Palette& palette = self->get_palette ();
+    if (!palette.empty ()) {
+        return &palette;
+    } else {
+        return NULL;
+    }
 }
 
-void visual_video_set_buffer (VisVideo *video, void *buffer)
+void visual_video_set_buffer (VisVideo *self, void *buffer)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
 
-    // FIXME: implement
+    self->set_buffer (buffer);
 }
 
-void visual_video_set_dimension (VisVideo *video, int width, int height)
+void visual_video_set_dimension (VisVideo *self, int width, int height)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
 
-    // FIXME: implement
+    self->set_dimension (width, height);
 }
 
-int visual_video_get_width (VisVideo *video)
+int visual_video_get_width (VisVideo *self)
 {
-    visual_return_val_if_fail (video != NULL, 0);
+    visual_return_val_if_fail (self != NULL, 0);
 
-    // FIXME: implement
-    return 0;
+    return self->get_width ();
 }
 
-int visual_video_get_height (VisVideo *video)
+int visual_video_get_height (VisVideo *self)
 {
-    visual_return_val_if_fail (video != NULL, 0);
+    visual_return_val_if_fail (self != NULL, 0);
 
-    // FIXME: implement
-    return 0;
+    return self->get_height ();
 }
 
-void visual_video_set_pitch (VisVideo *video, int pitch)
+void visual_video_set_pitch (VisVideo *self, int pitch)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
 
-    // FIXME: implement
+    self->set_pitch (pitch);
 }
 
-int visual_video_get_pitch (VisVideo *video)
+int visual_video_get_pitch (VisVideo *self)
 {
-    visual_return_val_if_fail (video != NULL, 0);
+    visual_return_val_if_fail (self != NULL, 0);
 
-    // FIXME: implement
-    return 0;
+    return self->get_pitch ();
 }
 
-void visual_video_set_depth (VisVideo *video, VisVideoDepth depth)
+void visual_video_set_depth (VisVideo *self, VisVideoDepth depth)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
 
-    // FIXME: implement
+    self->set_depth (depth);
 }
 
-VisVideoDepth visual_video_get_depth (VisVideo *video)
+VisVideoDepth visual_video_get_depth (VisVideo *self)
 {
-    visual_return_val_if_fail (video != NULL, VISUAL_VIDEO_DEPTH_NONE);
+    visual_return_val_if_fail (self != NULL, VISUAL_VIDEO_DEPTH_NONE);
 
-    // FIXME: implement
-    return VISUAL_VIDEO_DEPTH_NONE;
+    return self->get_depth ();
 }
 
-int visual_video_get_bpp (VisVideo *video)
+int visual_video_get_bpp (VisVideo *self)
 {
-    visual_return_val_if_fail (video != NULL, 0);
+    visual_return_val_if_fail (self != NULL, 0);
 
-    // FIXME: implement
-    return 0;
+    return self->get_bpp ();
 }
 
-void visual_video_set_attrs (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth)
+void visual_video_set_attrs (VisVideo *self, int width, int height, int pitch, VisVideoDepth depth)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
 
-    // FIXME: implement
+    self->set_attrs (width, height, pitch, depth);
 }
 
-visual_size_t visual_video_get_size (VisVideo *video)
+visual_size_t visual_video_get_size (VisVideo *self)
 {
-	visual_return_val_if_fail (video != NULL, 0);
+    visual_return_val_if_fail (self != NULL, 0);
 
-    // FIXME: implement
-	return 0;
+    return self->get_size ();
 }
 
-void *visual_video_get_pixels (VisVideo *video)
+void *visual_video_get_pixels (VisVideo *self)
 {
-	visual_return_val_if_fail (video != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    // FIXME: implement
-    return NULL;
+    return self->get_pixels ();
 }
 
-VisBuffer *visual_video_get_buffer (VisVideo *video)
+VisBuffer *visual_video_get_buffer (VisVideo *self)
 {
-	visual_return_val_if_fail (video != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    // FIXME: implement
-	return NULL;
+    LV::BufferPtr buffer = self->get_buffer ();
+    if (buffer) {
+        buffer->ref ();
+    }
+
+    return buffer.get ();
 }
 
-VisRectangle *visual_video_get_extents (VisVideo *video)
+VisRectangle *visual_video_get_extents (VisVideo *self)
 {
-	visual_return_val_if_fail (video != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    // FIXME: implement
-	return NULL;
+    return new LV::Rect (self->get_extents ());
 }
 
-void *visual_video_get_pixel_ptr (VisVideo *video, int x, int y)
+void *visual_video_get_pixel_ptr (VisVideo *self, int x, int y)
 {
-	visual_return_val_if_fail (video != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    // FIXME: implement
-	return NULL;
+    return self->get_pixel_ptr (x, y);
 }
 
-void visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *area)
+VisVideo* visual_video_new_sub (VisVideo *src, VisRectangle *area)
 {
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
-	visual_return_if_fail (area != NULL);
+    visual_return_val_if_fail (src  != NULL, NULL);
+    visual_return_val_if_fail (area != NULL, NULL);
 
-    // FIXME: implement
+    LV::VideoPtr self = LV::Video::create_sub (LV::VideoPtr (src), *area);
+    self->ref ();
+
+    return self.get ();
 }
 
-void visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height)
+VisVideo* visual_video_new_sub_by_values (VisVideo *src, int x, int y, int width, int height)
 {
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
+    visual_return_val_if_fail (src != NULL, NULL);
 
-    LV::Rect rect (x, y, width, height);
-	visual_video_region_sub (dest, src, &rect);
+    LV::VideoPtr self = LV::Video::create_sub (LV::VideoPtr (src), LV::Rect (x, y, width, height));
+    self->ref ();
+
+    return self.get ();
 }
 
-void visual_video_region_sub_all (VisVideo *dest, VisVideo *src)
+VisVideo* visual_video_new_sub_with_boundary (VisRectangle *drect, VisVideo *src, VisRectangle *srect)
 {
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
+    visual_return_val_if_fail (src   != NULL, NULL);
+    visual_return_val_if_fail (drect != NULL, NULL);
+    visual_return_val_if_fail (srect != NULL, NULL);
 
-	VisRectangle *rect = visual_video_get_extents (dest);
-	visual_video_region_sub (dest, src, rect);
-	visual_rectangle_free (rect);
+    LV::VideoPtr self = LV::Video::create_sub (*drect, LV::VideoPtr (src), *srect);
+    self->ref ();
+
+    return self.get ();
 }
 
-void visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect)
+void visual_video_set_compose_type (VisVideo *self, VisVideoComposeType type)
 {
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
-	visual_return_if_fail (drect != NULL);
-	visual_return_if_fail (srect != NULL);
+    visual_return_if_fail (self != NULL);
+
+    self->set_compose_type (type);
 }
 
-void visual_video_set_compose_type (VisVideo *video, VisVideoComposeType type)
+void visual_video_set_compose_colorkey (VisVideo *self, VisColor *color)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (color != NULL);
+
+    self->set_compose_colorkey (*color);
 }
 
-void visual_video_set_compose_colorkey (VisVideo *video, VisColor *color)
+void visual_video_set_compose_surface (VisVideo *self, uint8_t alpha)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
+
+    self->set_compose_surface (alpha);
 }
 
-void visual_video_set_compose_surface (VisVideo *video, uint8_t alpha)
+void visual_video_set_compose_function (VisVideo *self, VisVideoComposeFunc compose_func)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (compose_func != NULL);
+
+    self->set_compose_function (compose_func);
 }
 
-void visual_video_set_compose_function (VisVideo *video, VisVideoComposeFunc compose_func)
+VisVideoComposeFunc visual_video_get_compose_function (VisVideo *self, VisVideo *src, int alpha)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (src  != NULL, NULL);
+
+    return self->get_compose_function (src, alpha);
 }
 
-VisVideoComposeFunc visual_video_get_compose_function (VisVideo *dest, VisVideo *src, int alpha)
-{
-	visual_return_val_if_fail (dest != NULL, NULL);
-	visual_return_val_if_fail (src  != NULL, NULL);
-
-    return NULL;
-}
-
-void visual_video_blit_area (VisVideo     *dest,
+void visual_video_blit_area (VisVideo     *self,
                              VisRectangle *drect,
                              VisVideo     *src,
                              VisRectangle *srect,
                              int           alpha)
 {
-    // FIXME: implement
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (drect != NULL);
+    visual_return_if_fail (src   != NULL);
+    visual_return_if_fail (srect != NULL);
+
+    self->blit (*drect, LV::VideoPtr (src), *srect, alpha);
 }
 
-void visual_video_compose_area (VisVideo            *dest,
+void visual_video_compose_area (VisVideo            *self,
                                 VisRectangle        *drect,
                                 VisVideo            *src,
                                 VisRectangle        *srect,
                                 VisVideoComposeFunc  compose_func)
 {
-    // FIXME: implement
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (drect != NULL);
+    visual_return_if_fail (src   != NULL);
+    visual_return_if_fail (srect != NULL);
+    visual_return_if_fail (compose_func != NULL);
+
+    self->compose (*drect, LV::VideoPtr (src), *srect, compose_func);
 }
 
-void visual_video_blit_scale_area (VisVideo           *dest,
+void visual_video_blit_scale_area (VisVideo           *self,
                                    VisRectangle       *drect,
                                    VisVideo           *src,
                                    VisRectangle       *srect,
                                    int                 alpha,
                                    VisVideoScaleMethod scale_method)
 {
-    // FIXME: implement
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (drect != NULL);
+    visual_return_if_fail (src   != NULL);
+    visual_return_if_fail (srect != NULL);
+
+    self->blit_scale (*drect, LV::VideoPtr (src), *srect, alpha, scale_method);
 }
 
-void visual_video_compose_scale_area (VisVideo            *dest,
+void visual_video_compose_scale_area (VisVideo            *self,
                                       VisRectangle        *drect,
                                       VisVideo            *src,
                                       VisRectangle        *srect,
                                       VisVideoScaleMethod  scale_method,
                                       VisVideoComposeFunc  compose_func)
 {
-    // FIXME: implement
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (drect != NULL);
+    visual_return_if_fail (src   != NULL);
+    visual_return_if_fail (srect != NULL);
+    visual_return_if_fail (compose_func != NULL);
+
+    self->blit_scale (*drect, LV::VideoPtr (src), *srect, scale_method, compose_func);
 }
 
-void visual_video_blit (VisVideo *dest, VisVideo *src, int x, int y, int alpha)
+void visual_video_blit (VisVideo *self, VisVideo *src, int x, int y, int alpha)
 {
-    // FIXME: implement
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (src   != NULL);
+
+    self->blit (LV::VideoPtr (src), x, y, alpha);
 }
 
-void visual_video_compose (VisVideo *dest, VisVideo *src, int x, int y, VisVideoComposeFunc compose_func)
+void visual_video_compose (VisVideo *self, VisVideo *src, int x, int y, VisVideoComposeFunc compose_func)
 {
-    // FIXME: implement
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (src   != NULL);
+    visual_return_if_fail (compose_func != NULL);
+
+    self->compose (LV::VideoPtr (src), x, y, compose_func);
+}
+
+void visual_video_fill_alpha_color (VisVideo *self, VisColor *color, uint8_t alpha)
+{
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (color != NULL);
+
+    self->fill_alpha_color (*color, alpha);
+}
+
+void visual_video_fill_alpha (VisVideo *self, uint8_t alpha)
+{
+    visual_return_if_fail (self != NULL);
+
+    self->fill_alpha (alpha);
+}
+
+void visual_video_fill_alpha_area (VisVideo *self, uint8_t alpha, VisRectangle *area)
+{
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (area != NULL);
+
+    self->fill_alpha (alpha, *area);
+}
+
+void visual_video_fill_color (VisVideo *self, VisColor *color)
+{
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (color != NULL);
+
+    self->fill_color (*color);
+}
+
+void visual_video_fill_color_area (VisVideo *self, VisColor *color, VisRectangle *area)
+{
+    visual_return_if_fail (self  != NULL);
+    visual_return_if_fail (color != NULL);
+    visual_return_if_fail (area  != NULL);
+
+    self->fill_color (*color, *area);
 }
 
 
-void visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t alpha)
+void visual_video_flip_pixel_bytes (VisVideo *self, VisVideo *src)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (src  != NULL);
 
-    // FIXME: implement
+    self->flip_pixel_bytes (LV::VideoPtr (src));
 }
 
-void visual_video_fill_alpha (VisVideo *video, uint8_t alpha)
+void visual_video_rotate (VisVideo *self, VisVideo *src, VisVideoRotateDegrees degrees)
 {
-	visual_return_if_fail (video != NULL);
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (src  != NULL);
 
-    // FIXME: implement
+    self->rotate (LV::VideoPtr (src), degrees);
 }
 
-void visual_video_fill_alpha_area (VisVideo *video, uint8_t alpha, VisRectangle *area)
+void visual_video_mirror (VisVideo *self, VisVideo *src, VisVideoMirrorOrient orient)
 {
-	visual_return_if_fail (video != NULL);
-	visual_return_if_fail (area  != NULL);
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (src  != NULL);
 
-    // FIXME: implement
+    self->mirror (LV::VideoPtr (src), orient);
 }
 
-void visual_video_fill_color (VisVideo *video, VisColor *color)
+void visual_video_convert_depth (VisVideo *self, VisVideo *src)
 {
-	visual_return_if_fail (video != NULL);
-	visual_return_if_fail (color != NULL);
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (src  != NULL);
 
-    // FIXME: implement
+    self->convert_depth (LV::VideoPtr (src));
 }
 
-void visual_video_fill_color_area (VisVideo *video, VisColor *color, VisRectangle *area)
+void visual_video_scale (VisVideo *self, VisVideo *src, VisVideoScaleMethod method)
 {
-	visual_return_if_fail (video != NULL);
-	visual_return_if_fail (color != NULL);
-	visual_return_if_fail (area  != NULL);
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (src  != NULL);
 
-    // FIXME: implement
+    self->scale (LV::VideoPtr (src), method);
 }
 
-
-void visual_video_flip_pixel_bytes (VisVideo *dest, VisVideo *src)
+void visual_video_scale_depth (VisVideo *self, VisVideo *src, VisVideoScaleMethod scale_method)
 {
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (src  != NULL);
 
-    // FIXME: implement
-}
-
-void visual_video_rotate (VisVideo *dest, VisVideo *src, VisVideoRotateDegrees degrees)
-{
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
-
-    // FIXME: implement
-}
-
-void visual_video_mirror (VisVideo *dest, VisVideo *src, VisVideoMirrorOrient orient)
-{
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
-
-    // FIXME: implement
-}
-
-void visual_video_convert_depth (VisVideo *dest, VisVideo *src)
-{
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
-
-    // FIXME: implement
-}
-
-void visual_video_scale (VisVideo *dest, VisVideo *src, VisVideoScaleMethod method)
-{
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
-
-    // FIXME: implement
-}
-
-void visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method)
-{
-	visual_return_if_fail (dest != NULL);
-	visual_return_if_fail (src  != NULL);
-
-    // FIXME: implement
+    self->scale_depth (LV::VideoPtr (src), scale_method);
 }
 
 VisVideo *visual_video_scale_depth_new (VisVideo*           src,
@@ -431,9 +473,20 @@ VisVideo *visual_video_scale_depth_new (VisVideo*           src,
                                         VisVideoDepth       depth,
                                         VisVideoScaleMethod scale_method)
 {
-	visual_return_val_if_fail (src != NULL, NULL);
+    visual_return_val_if_fail (src != NULL, NULL);
 
-    // FIXME: Implement
+    LV::VideoPtr self = LV::Video::create_scale_depth (LV::VideoPtr (src), width, height, depth, scale_method);
+    self->ref ();
 
-	return NULL;
+    return self.get ();
+}
+
+void visual_video_ref (VisVideo *self)
+{
+    self->ref ();
+}
+
+void visual_video_unref (VisVideo *self)
+{
+    self->unref ();
 }
