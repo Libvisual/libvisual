@@ -3,11 +3,9 @@
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Duilio J. Protti <dprotti@users.sourceforge.net>
- *	    Chong Kai Xiong <descender@phreaker.net>
- *	    Jean-Christophe Hoelt <jeko@ios-software.com>
- *
- * $Id: lv_video.h,v 1.34.2.1 2006/03/04 12:32:48 descender Exp $
+ *      Duilio J. Protti <dprotti@users.sourceforge.net>
+ *      Chong Kai Xiong <descender@phreaker.net>
+ *      Jean-Christophe Hoelt <jeko@ios-software.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -39,13 +37,13 @@
  * @{
  */
 
-#define VISUAL_VIDEO(obj)					(VISUAL_CHECK_CAST ((obj), VisVideo))
-#define VISUAL_VIDEO_ATTR_OPTIONS(obj)		(VISUAL_CHECK_CAST ((obj), VisVideoAttrOptions))
+#define VISUAL_VIDEO(obj)                   (VISUAL_CHECK_CAST ((obj), VisVideo))
+#define VISUAL_VIDEO_ATTR_OPTIONS(obj)      (VISUAL_CHECK_CAST ((obj), VisVideoAttrOptions))
 
-#define VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(options, attr, val)	\
-	options.gl_attrs[attr].attribute = attr;  \
-	options.gl_attrs[attr].value = val;       \
-	options.gl_attrs[attr].mutated = TRUE;
+#define VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(options, attr, val)  \
+    options.gl_attrs[attr].attribute = attr;  \
+    options.gl_attrs[attr].value = val;       \
+    options.gl_attrs[attr].mutated = TRUE;
 
 
 /* NOTE: The depth find helper code in lv_actor depends on an arrangment from low to high */
@@ -53,58 +51,58 @@
  * Enumerate that defines video depths for use within plugins, libvisual functions, etc.
  */
 typedef enum {
-	VISUAL_VIDEO_DEPTH_NONE		= 0,	/**< No video surface flag. */
-	VISUAL_VIDEO_DEPTH_8BIT		= 1,	/**< 8 bits indexed surface flag. */
-	VISUAL_VIDEO_DEPTH_16BIT	= 2,	/**< 16 bits 5-6-5 surface flag. */
-	VISUAL_VIDEO_DEPTH_24BIT	= 4,	/**< 24 bits surface flag. */
-	VISUAL_VIDEO_DEPTH_32BIT	= 8,	/**< 32 bits surface flag. */
-	VISUAL_VIDEO_DEPTH_GL		= 16,	/**< openGL surface flag. */
-	VISUAL_VIDEO_DEPTH_ENDLIST	= 32,	/**< Used to mark the end of the depth list. */
-	VISUAL_VIDEO_DEPTH_ERROR	= -1,	/**< Used when there is an error. */
-	VISUAL_VIDEO_DEPTH_ALL		= VISUAL_VIDEO_DEPTH_8BIT
-	                            | VISUAL_VIDEO_DEPTH_16BIT
-	                            | VISUAL_VIDEO_DEPTH_24BIT
-	                            | VISUAL_VIDEO_DEPTH_32BIT
-	                            | VISUAL_VIDEO_DEPTH_GL /**< All graphical depths. */
+    VISUAL_VIDEO_DEPTH_NONE     = 0,    /**< No video surface flag. */
+    VISUAL_VIDEO_DEPTH_8BIT     = 1,    /**< 8 bits indexed surface flag. */
+    VISUAL_VIDEO_DEPTH_16BIT    = 2,    /**< 16 bits 5-6-5 surface flag. */
+    VISUAL_VIDEO_DEPTH_24BIT    = 4,    /**< 24 bits surface flag. */
+    VISUAL_VIDEO_DEPTH_32BIT    = 8,    /**< 32 bits surface flag. */
+    VISUAL_VIDEO_DEPTH_GL       = 16,   /**< openGL surface flag. */
+    VISUAL_VIDEO_DEPTH_ENDLIST  = 32,   /**< Used to mark the end of the depth list. */
+    VISUAL_VIDEO_DEPTH_ERROR    = -1,   /**< Used when there is an error. */
+    VISUAL_VIDEO_DEPTH_ALL      = VISUAL_VIDEO_DEPTH_8BIT
+                                | VISUAL_VIDEO_DEPTH_16BIT
+                                | VISUAL_VIDEO_DEPTH_24BIT
+                                | VISUAL_VIDEO_DEPTH_32BIT
+                                | VISUAL_VIDEO_DEPTH_GL /**< All graphical depths. */
 } VisVideoDepth;
 
 /**
  * Enumerate that defines video rotate types, used with the visual_video_rotate_*() functions.
  */
 typedef enum {
-	VISUAL_VIDEO_ROTATE_NONE = 0,   /**< No rotating. */
-	VISUAL_VIDEO_ROTATE_90   = 1,   /**< 90 degrees rotate. */
-	VISUAL_VIDEO_ROTATE_180  = 2,   /**< 180 degrees rotate. */
-	VISUAL_VIDEO_ROTATE_270  = 3    /**< 270 degrees rotate. */
+    VISUAL_VIDEO_ROTATE_NONE = 0,   /**< No rotating. */
+    VISUAL_VIDEO_ROTATE_90   = 1,   /**< 90 degrees rotate. */
+    VISUAL_VIDEO_ROTATE_180  = 2,   /**< 180 degrees rotate. */
+    VISUAL_VIDEO_ROTATE_270  = 3    /**< 270 degrees rotate. */
 } VisVideoRotateDegrees;
 
 /**
  * Enumerate that defines the video mirror types, used with the visual_video_mirror_*() functions.
  */
 typedef enum {
-	VISUAL_VIDEO_MIRROR_NONE = 0,   /**< No mirroring. */
-	VISUAL_VIDEO_MIRROR_X    = 1,   /**< Mirror on the X ax. */
-	VISUAL_VIDEO_MIRROR_Y    = 2    /**< Mirror on the Y ax. */
+    VISUAL_VIDEO_MIRROR_NONE = 0,   /**< No mirroring. */
+    VISUAL_VIDEO_MIRROR_X    = 1,   /**< Mirror on the X ax. */
+    VISUAL_VIDEO_MIRROR_Y    = 2    /**< Mirror on the Y ax. */
 } VisVideoMirrorOrient;
 
 /**
  * Enumerate that defines the different methods of scaling within VisVideo.
  */
 typedef enum {
-	VISUAL_VIDEO_SCALE_NEAREST  = 0,    /**< Nearest neighbour. */
-	VISUAL_VIDEO_SCALE_BILINEAR = 1	    /**< Bilinearly interpolated. */
+    VISUAL_VIDEO_SCALE_NEAREST  = 0,    /**< Nearest neighbour. */
+    VISUAL_VIDEO_SCALE_BILINEAR = 1     /**< Bilinearly interpolated. */
 } VisVideoScaleMethod;
 
 /**
  * Enumerate that defines the different blitting methods for a VisVideo.
  */
 typedef enum {
-	VISUAL_VIDEO_COMPOSE_TYPE_NONE = 0,   /**< No compose set, use default. */
-	VISUAL_VIDEO_COMPOSE_TYPE_SRC,        /**< Source alpha channel. */
-	VISUAL_VIDEO_COMPOSE_TYPE_COLORKEY,   /**< Colorkey alpha. */
-	VISUAL_VIDEO_COMPOSE_TYPE_SURFACE,    /**< One alpha channel for the complete surface. */
-	VISUAL_VIDEO_COMPOSE_TYPE_SURFACECOLORKEY, /**< Use surface alpha on colorkey. */
-	VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM      /**< Custom compose function (looks up on the source VisVideo. */
+    VISUAL_VIDEO_COMPOSE_TYPE_NONE = 0,   /**< No compose set, use default. */
+    VISUAL_VIDEO_COMPOSE_TYPE_SRC,        /**< Source alpha channel. */
+    VISUAL_VIDEO_COMPOSE_TYPE_COLORKEY,   /**< Colorkey alpha. */
+    VISUAL_VIDEO_COMPOSE_TYPE_SURFACE,    /**< One alpha channel for the complete surface. */
+    VISUAL_VIDEO_COMPOSE_TYPE_SURFACECOLORKEY, /**< Use surface alpha on colorkey. */
+    VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM      /**< Custom compose function (looks up on the source VisVideo. */
 } VisVideoComposeType;
 
 typedef struct _VisVideoAttrOptions VisVideoAttrOptions;
@@ -123,9 +121,9 @@ struct _VisVideo;
 typedef void (*VisVideoComposeFunc)(VisVideo *dest, VisVideo *src);
 
 struct _VisVideoAttrOptions {
-	VisObject      object;
-	int            depth;
-	VisGLAttrEntry gl_attrs[VISUAL_GL_ATTRIBUTE_LAST];
+    VisObject      object;
+    int            depth;
+    VisGLAttrEntry gl_attrs[VISUAL_GL_ATTRIBUTE_LAST];
 };
 
 #ifdef __cplusplus
@@ -350,7 +348,7 @@ namespace LV {
        *
        * @param video Pointer to the VisVideo which is filled with one color
        * @param rcolor Pointer to the VisColor that is used as color. NULL is a valid color and will be interperted
-       * 	as black.
+       *    as black.
        *
        * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
        */
@@ -362,11 +360,11 @@ namespace LV {
        * Flips the byte ordering of each pixel.
        *
        * @param dest Pointer to the destination VisVideo, which should be a clone of the source VisVideo
-       *	depth, pitch, dimension wise.
+       *    depth, pitch, dimension wise.
        * @param src Pointer to the source VisVideo from which the bgr data is read.
        *
        * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
-       *	-VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+       *    -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
        */
       void flip_pixel_bytes (VideoPtr const& src);
 
@@ -593,7 +591,7 @@ LV_API VisVideoDepth visual_video_depth_get_highest (int depthflag);
  * @param depthflag The ORred depthflag that we check against.
  *
  * @return The highest supported depth that is not openGL or
- *	VISUAL_VIDEO_DEPTH_ERROR on failure.
+ *  VISUAL_VIDEO_DEPTH_ERROR on failure.
  */
 LV_API VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag);
 
@@ -610,7 +608,7 @@ LV_API int visual_video_depth_is_sane (VisVideoDepth depth);
  * Returns the number of bits per pixel from a VisVideoDepth enumerate value.
  *
  * @param depth The VisVideodepth enumerate value from which the bits per pixel
- *	needs to be returned.
+ *  needs to be returned.
  *
  * @return The bits per pixel or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
@@ -629,7 +627,7 @@ LV_API VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
  * Returns the number of bytes per pixel from the VisVideoDepth enumerate.
  *
  * @param depth The VisVideodepth enumerate value from which the bytes per pixel
- *	needs to be returned.
+ *  needs to be returned.
  *
  * @return The number of bytes per pixel, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
  */
