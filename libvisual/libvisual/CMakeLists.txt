@@ -118,6 +118,7 @@ SET(libvisual_SOURCES
   private/lv_video_fill.cpp
   private/lv_video_scale.cpp
   private/lv_video_blit.cpp
+  private/lv_video_rotate.cpp
   private/lv_video_blit_simd.cpp
   private/lv_video_scale_simd.cpp
 )

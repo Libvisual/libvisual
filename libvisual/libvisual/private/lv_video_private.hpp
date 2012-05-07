@@ -23,7 +23,7 @@ namespace LV {
       std::vector<void*> pixel_rows;
       Palette            palette;
 
-      VideoPtr           parent;
+      VideoConstPtr      parent;
       Rect               extents;
 
       VisVideoComposeType compose_type;

@@ -77,7 +77,23 @@ namespace LV {
       // empty
   }
 
-  VideoPtr Video::create_sub (VideoPtr const& src, Rect const& area)
+  VideoPtr Video::create ()
+  {
+      return VideoPtr (new Video);
+  }
+
+  VideoPtr Video::create (int width, int height, VisVideoDepth depth)
+  {
+      VideoPtr self = new Video;
+
+      self->set_depth (depth);
+      self->set_dimension (width, height);
+      self->allocate_buffer ();
+
+      return self;
+  }
+
+  VideoPtr Video::create_sub (VideoConstPtr const& src, Rect const& area)
   {
       visual_return_val_if_fail (!area.empty (), 0);
 
@@ -105,7 +121,7 @@ namespace LV {
       return self;
   }
 
-  VideoPtr Video::create_sub (Rect const& drect, VideoPtr const& src, Rect const& srect)
+  VideoPtr Video::create_sub (Rect const& drect, VideoConstPtr const& src, Rect const& srect)
   {
       Rect sbound = src->m_impl->extents;
 
@@ -132,11 +148,11 @@ namespace LV {
       return self;
   }
 
-  VideoPtr Video::create_scale_depth (VideoPtr const&     src,
-                                      int                 width,
-                                      int                 height,
-                                      VisVideoDepth       depth,
-                                      VisVideoScaleMethod scale_method)
+  VideoPtr Video::create_scale_depth (VideoConstPtr const& src,
+                                      int                  width,
+                                      int                  height,
+                                      VisVideoDepth        depth,
+                                      VisVideoScaleMethod  scale_method)
   {
       VideoPtr self = create (width, height, depth);
       self->scale_depth (src, scale_method);
@@ -149,12 +165,12 @@ namespace LV {
       // empty
   }
 
-  void Video::ref ()
+  void Video::ref () const
   {
       m_ref_count++;
   }
 
-  void Video::unref ()
+  void Video::unref () const
   {
       if (--m_ref_count == 0) {
           delete this;
@@ -200,14 +216,14 @@ namespace LV {
       return m_impl->buffer->is_allocated ();
   }
 
-  void Video::copy_attrs (VideoPtr const& src)
+  void Video::copy_attrs (VideoConstPtr const& src)
   {
       set_depth (src->m_impl->depth);
       set_dimension (src->m_impl->width, src->m_impl->height);
       set_pitch (src->m_impl->pitch);
   }
 
-  bool Video::compare_attrs (VideoPtr const& src) const
+  bool Video::compare_attrs (VideoConstPtr const& src) const
   {
       if (!compare_attrs_ignore_pitch (src))
           return false;
@@ -218,7 +234,7 @@ namespace LV {
       return true;
   }
 
-  bool Video::compare_attrs_ignore_pitch (VideoPtr const& src) const
+  bool Video::compare_attrs_ignore_pitch (VideoConstPtr const& src) const
   {
       if (m_impl->depth != src->m_impl->depth)
           return false;
@@ -329,11 +345,6 @@ namespace LV {
       return m_impl->pitch * m_impl->height;
   }
 
-  void* Video::get_pixels () const
-  {
-      return m_impl->buffer->get_data ();
-  }
-
   BufferPtr Video::get_buffer () const
   {
       return m_impl->buffer;
@@ -342,6 +353,11 @@ namespace LV {
   Rect const& Video::get_extents () const
   {
       return m_impl->extents;
+  }
+
+  void* Video::get_pixels () const
+  {
+      return m_impl->buffer->get_data ();
   }
 
   void* Video::get_pixel_ptr (int x, int y) const
@@ -369,7 +385,7 @@ namespace LV {
       m_impl->compose_func = compose_func;
   }
 
-  VisVideoComposeFunc Video::get_compose_function (VideoPtr const& src, int alpha)
+  VisVideoComposeFunc Video::get_compose_function (VideoConstPtr const& src, int alpha)
   {
       switch (src->m_impl->compose_type) {
           case VISUAL_VIDEO_COMPOSE_TYPE_NONE:
@@ -398,20 +414,20 @@ namespace LV {
       }
   }
 
-  void Video::blit (Rect const&  drect,
-                    VideoPtr const& src,
-                    Rect const&  srect,
-                    int          alpha)
+  void Video::blit (Rect const&          drect,
+                    VideoConstPtr const& src,
+                    Rect const&          srect,
+                    int                  alpha)
   {
       VisVideoComposeFunc func = get_compose_function (src, alpha);
 
       compose (drect, src, srect, func);
   }
 
-  void Video::compose (Rect const&         drect,
-                       VideoPtr const&     src,
-                       Rect const&         srect,
-                       VisVideoComposeFunc compose_func)
+  void Video::compose (Rect const&          drect,
+                       VideoConstPtr const& src,
+                       Rect const&          srect,
+                       VisVideoComposeFunc  compose_func)
   {
       Rect ndrect = drect;
       ndrect.normalize_to (srect);
@@ -420,22 +436,22 @@ namespace LV {
       compose (vsrc, drect.x, drect.y, compose_func);
   }
 
-  void Video::blit_scale (Rect const&         drect,
-                          VideoPtr const&     src,
-                          Rect const&         srect,
-                          int                 alpha,
-                          VisVideoScaleMethod scale_method)
+  void Video::blit_scale (Rect const&          drect,
+                          VideoConstPtr const& src,
+                          Rect const&          srect,
+                          int                  alpha,
+                          VisVideoScaleMethod  scale_method)
   {
       VisVideoComposeFunc func = get_compose_function (src, alpha);
 
       return compose_scale (drect, src, srect, scale_method, func);
   }
 
-  void Video::compose_scale (Rect  const&        drect,
-                             VideoPtr const&     src,
-                             Rect const&         srect,
-                             VisVideoScaleMethod scale_method,
-                             VisVideoComposeFunc compose_func)
+  void Video::compose_scale (Rect  const&         drect,
+                             VideoConstPtr const& src,
+                             Rect const&          srect,
+                             VisVideoScaleMethod  scale_method,
+                             VisVideoComposeFunc  compose_func)
   {
       Rect sbound = m_impl->extents;
       if (!sbound.intersects (drect))
@@ -458,19 +474,18 @@ namespace LV {
       compose (drect, svid, frect, compose_func);
   }
 
-  void Video::blit (VideoPtr const& src, int x, int y, int alpha)
+  void Video::blit (VideoConstPtr const& src, int x, int y, int alpha)
   {
       VisVideoComposeFunc func = get_compose_function (src, alpha);
 
       compose (src, x, y, func);
   }
 
-  void Video::compose (VideoPtr const& src, int x, int y, VisVideoComposeFunc compose_func)
+  void Video::compose (VideoConstPtr const& src, int x, int y, VisVideoComposeFunc compose_func)
   {
       visual_return_if_fail (compose_func != NULL);
 
-      /* We can't overlay GL surfaces so don't even try */
-      visual_return_if_fail (m_impl->depth   != VISUAL_VIDEO_DEPTH_GL);
+      visual_return_if_fail (m_impl->depth != VISUAL_VIDEO_DEPTH_GL);
       visual_return_if_fail (src->m_impl->depth != VISUAL_VIDEO_DEPTH_GL);
 
       Rect drect = get_extents ();
@@ -488,7 +503,7 @@ namespace LV {
       }
 
       /* Setting all the pointers right */
-      VideoPtr srcp = transform ? transform.get () : VideoPtr (&src);
+      VideoConstPtr srcp = transform ? VideoConstPtr (transform) : src;
 
       /* Negative offset fixture */
       if (x < 0) {
@@ -598,7 +613,7 @@ namespace LV {
   }
 
 
-  void Video::flip_pixel_bytes (VideoPtr const& src)
+  void Video::flip_pixel_bytes (VideoConstPtr const& src)
   {
       visual_return_if_fail (compare_attrs (src));
 
@@ -620,7 +635,7 @@ namespace LV {
       }
   }
 
-  void Video::rotate (VideoPtr const& src, VisVideoRotateDegrees degrees)
+  void Video::rotate (VideoConstPtr const& src, VisVideoRotateDegrees degrees)
   {
       switch (degrees) {
           case VISUAL_VIDEO_ROTATE_NONE:
@@ -645,7 +660,7 @@ namespace LV {
       }
   }
 
-  void Video::mirror (VideoPtr const& src, VisVideoMirrorOrient orient)
+  void Video::mirror (VideoConstPtr const& src, VisVideoMirrorOrient orient)
   {
       visual_return_if_fail (src->m_impl->depth == m_impl->depth);
 
@@ -667,7 +682,7 @@ namespace LV {
       }
   }
 
-  void Video::convert_depth (VideoPtr const& src)
+  void Video::convert_depth (VideoConstPtr const& src)
   {
       /* We blit overlay it instead of just visual_mem_copy because the pitch can still be different */
       if (m_impl->depth == src->m_impl->depth) {
@@ -761,7 +776,7 @@ namespace LV {
       }
   }
 
-  void Video::scale (VideoPtr const& src, VisVideoScaleMethod method)
+  void Video::scale (VideoConstPtr const& src, VisVideoScaleMethod method)
   {
       visual_return_if_fail (m_impl->depth == src->m_impl->depth);
       visual_return_if_fail (is_valid_scale_method (method));
@@ -813,7 +828,7 @@ namespace LV {
       }
   }
 
-  void Video::scale_depth (VideoPtr const& src, VisVideoScaleMethod scale_method)
+  void Video::scale_depth (VideoConstPtr const& src, VisVideoScaleMethod scale_method)
   {
       if (m_impl->depth != src->m_impl->depth) {
           VideoPtr dtransform = create ();

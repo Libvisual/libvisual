@@ -27,14 +27,14 @@
 
 namespace LV {
 
-  void VideoBlit::blit_overlay_alphasrc_mmx (Video& dest, Video const& src)
+  void VideoBlit::blit_overlay_alphasrc_mmx (Video* dest, Video* src)
   {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-      uint8_t* destbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      uint8_t const* srcbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      uint8_t* destbuf = static_cast<uint8_t*> (dest->get_pixels ());
+      uint8_t const* srcbuf = static_cast<uint8_t const*> (src->get_pixels ());
 
-      for (int i = 0; i < src.m_impl->height; i++) {
-          for (int j = 0; j < src.m_impl->width; j++) {
+      for (int i = 0; i < src->m_impl->height; i++) {
+          for (int j = 0; j < src->m_impl->width; j++) {
               __asm __volatile
                   ("\n\t movd %[spix], %%mm0"
                    "\n\t movd %[dpix], %%mm1"
@@ -64,8 +64,8 @@ namespace LV {
               srcbuf += 4;
           }
 
-          destbuf += dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp);
-          srcbuf += src.m_impl->pitch - (src.m_impl->width * src.m_impl->bpp);
+          destbuf += dest->m_impl->pitch - (dest->m_impl->width * dest->m_impl->bpp);
+          srcbuf += src->m_impl->pitch - (src->m_impl->width * src->m_impl->bpp);
       }
 #endif /* !VISUAL_ARCH_X86 */
   }

@@ -1,6 +1,7 @@
 #include "config.h"
 #include "lv_video_transform.hpp"
 #include "lv_video_private.hpp"
+#include "lv_common.h"
 
 namespace LV {
 
@@ -50,7 +51,7 @@ namespace LV {
       }
   }
 
-  static void rotate_270 (Video& dest, Video const& src)
+  void VideoTransform::rotate_270 (Video& dest, Video const& src)
   {
       uint8_t const* tsbuf = static_cast<uint8_t*> (src.get_pixels ()) + src.m_impl->pitch - src.m_impl->bpp;
       uint8_t const* sbuf = tsbuf;

@@ -38,14 +38,15 @@ libvisual/lv_time.cpp
 libvisual/lv_time_c.cpp
 libvisual/lv_transform.cpp
 libvisual/lv_video.cpp
+libvisual/lv_video_c.cpp
 
-libvisual/private/lv_video_blit.c
-libvisual/private/lv_video_convert.c
-libvisual/private/lv_video_fill.c
-libvisual/private/lv_video_scale.c
+libvisual/private/lv_video_blit.cpp
+libvisual/private/lv_video_convert.cpp
+libvisual/private/lv_video_fill.cpp
+libvisual/private/lv_video_scale.cpp
 
-libvisual/private/lv_video_blit_simd.c
-libvisual/private/lv_video_scale_simd.c
+libvisual/private/lv_video_blit_simd.cpp
+libvisual/private/lv_video_scale_simd.cpp
 
 libvisual/private/windows/lv_mem_win32.cpp
 libvisual/private/windows/lv_module_win32.cpp

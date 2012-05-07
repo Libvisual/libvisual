@@ -358,7 +358,7 @@ void visual_video_compose_scale_area (VisVideo            *self,
     visual_return_if_fail (srect != NULL);
     visual_return_if_fail (compose_func != NULL);
 
-    self->blit_scale (*drect, LV::VideoPtr (src), *srect, scale_method, compose_func);
+    self->compose_scale (*drect, LV::VideoPtr (src), *srect, scale_method, compose_func);
 }
 
 void visual_video_blit (VisVideo *self, VisVideo *src, int x, int y, int alpha)

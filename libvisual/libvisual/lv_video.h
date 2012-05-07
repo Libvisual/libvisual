@@ -136,6 +136,7 @@ namespace LV {
   class Video;
 
   typedef IntrusivePtr<Video> VideoPtr;
+  typedef IntrusivePtr<Video const> VideoConstPtr;
 
   class LV_API Video
   {
@@ -157,9 +158,9 @@ namespace LV {
 
       static VideoPtr wrap (void* buffer, bool owner, int width, int height, VisVideoDepth depth);
 
-      static VideoPtr create_sub (VideoPtr const& src, Rect const& srect);
+      static VideoPtr create_sub (VideoConstPtr const& src, Rect const& srect);
 
-      static VideoPtr create_sub (Rect const& drect, VideoPtr const& src, Rect const& srect);
+      static VideoPtr create_sub (Rect const& drect, VideoConstPtr const& src, Rect const& srect);
 
       ~Video ();
 
@@ -245,7 +246,7 @@ namespace LV {
        *
        * @param src Video object to copy attributes from
        */
-      void copy_attrs (VideoPtr const& src);
+      void copy_attrs (VideoConstPtr const& src);
 
       /**
        * Checks if this Video object has the same attributes as another.
@@ -254,7 +255,7 @@ namespace LV {
        *
        * @return true if both videos have the same attributes, false otherwise
        */
-      bool compare_attrs (VideoPtr const& src) const;
+      bool compare_attrs (VideoConstPtr const& src) const;
 
       /**
        * Checks if this Video object are the same attributes as
@@ -264,7 +265,7 @@ namespace LV {
        *
        * @return true if both videos have the same attributes, false otherwise
        */
-      bool compare_attrs_ignore_pitch (VideoPtr const& src) const;
+      bool compare_attrs_ignore_pitch (VideoConstPtr const& src) const;
 
       std::size_t get_size () const;
 
@@ -303,7 +304,7 @@ namespace LV {
       void set_compose_surface  (uint8_t alpha);
       void set_compose_function (VisVideoComposeFunc func);
 
-      VisVideoComposeFunc get_compose_function (VideoPtr const& src, int alpha);
+      VisVideoComposeFunc get_compose_function (VideoConstPtr const& src, int alpha);
 
       /**
        * This function blits a VisVideo into another VisVideo. Placement can be done and there
@@ -317,14 +318,14 @@ namespace LV {
        *
        * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_INVALID_DEPTH or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
        */
-      void blit (VideoPtr const& src, int x, int y, int alpha);
-      void blit (Rect const& drect, VideoPtr const& src, Rect const& srect, int alpha);
+      void blit (VideoConstPtr const& src, int x, int y, int alpha);
+      void blit (Rect const& drect, VideoConstPtr const& src, Rect const& srect, int alpha);
 
-      void compose (VideoPtr const& src, int x, int y, VisVideoComposeFunc func);
-      void compose (Rect const& drect, VideoPtr const& src, Rect const& srect, VisVideoComposeFunc func);
+      void compose (VideoConstPtr const& src, int x, int y, VisVideoComposeFunc func);
+      void compose (Rect const& drect, VideoConstPtr const& src, Rect const& srect, VisVideoComposeFunc func);
 
-      void blit_scale    (Rect const& drect, VideoPtr const& src, Rect const& srect, int alpha, VisVideoScaleMethod scale_method);
-      void compose_scale (Rect const& drect, VideoPtr const& src, Rect const& srect, VisVideoScaleMethod scale_method, VisVideoComposeFunc func);
+      void blit_scale    (Rect const& drect, VideoConstPtr const& src, Rect const& srect, int alpha, VisVideoScaleMethod scale_method);
+      void compose_scale (Rect const& drect, VideoConstPtr const& src, Rect const& srect, VisVideoScaleMethod scale_method, VisVideoComposeFunc func);
 
       /**
        * Sets a certain alpha value for the complete buffer in the VisVideo. This function
@@ -366,10 +367,10 @@ namespace LV {
        * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
        *    -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
        */
-      void flip_pixel_bytes (VideoPtr const& src);
+      void flip_pixel_bytes (VideoConstPtr const& src);
 
-      void rotate (VideoPtr const& src, VisVideoRotateDegrees degrees);
-      void mirror (VideoPtr const& src, VisVideoMirrorOrient orient);
+      void rotate (VideoConstPtr const& src, VisVideoRotateDegrees degrees);
+      void mirror (VideoConstPtr const& src, VisVideoMirrorOrient orient);
 
       /**
        * Video depth transforms one VisVideo into another using the depth information
@@ -378,7 +379,7 @@ namespace LV {
        *
        * @param src source Video object
        */
-      void convert_depth (VideoPtr const& src);
+      void convert_depth (VideoConstPtr const& src);
 
       /**
        * Scale VisVideo.
@@ -389,7 +390,7 @@ namespace LV {
        *
        * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
        */
-      void scale (VideoPtr const& src, VisVideoScaleMethod scale_method);
+      void scale (VideoConstPtr const& src, VisVideoScaleMethod scale_method);
 
       /**
        * Scale VisVideo, but does an internal depth transformation when the source VisVideo is not of the
@@ -401,16 +402,16 @@ namespace LV {
        * @param src Pointer to the source VisVideo whose image is to be scaled.
        * @param scale_method Scaling method to use.
        */
-      void scale_depth (VideoPtr const& src, VisVideoScaleMethod scale_method);
+      void scale_depth (VideoConstPtr const& src, VisVideoScaleMethod scale_method);
 
-      static VideoPtr create_scale_depth (VideoPtr const&     src,
-                                          int                 width,
-                                          int                 height,
-                                          VisVideoDepth       depth,
-                                          VisVideoScaleMethod scale_method);
-      void ref ();
+      static VideoPtr create_scale_depth (VideoConstPtr const& src,
+                                          int                  width,
+                                          int                  height,
+                                          VisVideoDepth        depth,
+                                          VisVideoScaleMethod  scale_method);
+      void ref () const;
 
-      void unref ();
+      void unref () const;
 
   private:
 
@@ -422,7 +423,7 @@ namespace LV {
       class Impl;
 
       ScopedPtr<Impl> m_impl;
-      unsigned int    m_ref_count;
+      mutable unsigned int m_ref_count;
 
       Video ();
       Video (Video const&);
@@ -435,6 +436,16 @@ namespace LV {
   }
 
   inline void intrusive_ptr_release (Video* video)
+  {
+      video->unref ();
+  }
+
+  inline void intrusive_ptr_add_ref (Video const* video)
+  {
+      video->ref ();
+  }
+
+  inline void intrusive_ptr_release (Video const* video)
   {
       video->unref ();
   }
