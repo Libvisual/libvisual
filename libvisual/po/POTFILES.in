@@ -5,7 +5,8 @@ libvisual/lv_alpha_blend.c
 libvisual/lv_audio.c
 libvisual/lv_buffer.cpp
 libvisual/lv_buffer_c.cpp
-libvisual/lv_bin.c
+libvisual/lv_bin.cpp
+libvisual/lv_bin_c.cpp
 libvisual/lv_bmp.c
 libvisual/lv_collection.c
 libvisual/lv_color.cpp
