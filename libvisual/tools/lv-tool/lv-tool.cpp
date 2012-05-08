@@ -32,7 +32,7 @@
 #include <cstring>
 #include <getopt.h>
 
-/* defaults */
+// Defaults
 #define DEFAULT_ACTOR   "lv_analyzer"
 #define DEFAULT_INPUT   "debug"
 #define DEFAULT_MORPH   "slide_left"
@@ -46,260 +46,238 @@
 # define DEFAULT_DRIVER "stdout"
 #endif
 
-/* local variables */
 namespace {
 
   std::string actor_name = DEFAULT_ACTOR;
   std::string input_name = DEFAULT_INPUT;
   std::string morph_name = DEFAULT_MORPH;
   std::string driver_name = DEFAULT_DRIVER;
-  int width  = DEFAULT_WIDTH;
-  int height = DEFAULT_HEIGHT;
-  int framerate = DEFAULT_FPS;
-  int framecount = 0;
-  int have_seed = 0;
+
+  unsigned int width  = DEFAULT_WIDTH;
+  unsigned int height = DEFAULT_HEIGHT;
+  unsigned int framerate = DEFAULT_FPS;
+  unsigned int framecount = 0;
+
+  bool have_seed = 0;
   uint32_t seed = 0;
+
+  /** print info about libvisual plugin */
+  void print_plugin_info(VisPluginInfo const& info)
+  {
+      std::printf("Plugin: \"%s\" (%s)\n"
+                  "\tAuthor: %s\n\tVersion: %s\tLicense: %s\n"
+                  "\t%s - %s\n\n",
+                  info.name, info.plugname,
+                  info.author, info.version, info.license,
+                  info.about, info.help);
+  }
+
+
+  /** print help for plugins */
+  void print_plugin_help()
+  {
+      LV::PluginList const& list =
+          LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
+
+      /* print actors */
+      if(!list.empty())
+      {
+          for (unsigned int i = 0; i < list.size (); i++)
+          {
+              print_plugin_info(*list[i].info);
+          }
+      }
+      else
+      {
+          std::cerr << "No actors found\n";
+      }
+
+      /* print morphs */
+  }
+
+  /** print commandline help */
+  void print_help(std::string const& name)
+  {
+      std::printf("libvisual commandline tool - %s\n"
+                  "Usage: %s [options]\n\n"
+                  "Valid options:\n"
+                  "\t--help\t\t\t-h\t\tThis help text\n"
+                  "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
+                  "\t--verbose\t\t-v\t\tOutput debugging info\n"
+                  "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
+                  "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
+                  "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
+                  "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
+                  "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
+                  "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
+                  "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
+                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n",
+                  "http://github.com/StarVisuals/libvisual",
+                  name.c_str (),
+                  width, height,
+                  driver_name.c_str (),
+                  input_name.c_str (),
+                  actor_name.c_str (),
+                  morph_name.c_str (),
+                  framerate);
+  }
+
+
+  /**
+   * parse commandline arguments
+   *
+   * @param argc from main()
+   * @param argv from main()
+   * @result 0 upon success, <0 upon failure, >0 if app should exit without error */
+  int parse_args(int argc, char *argv[])
+  {
+      int index, argument;
+
+      static struct option loptions[] = {
+		  {"help",        no_argument,       0, 'h'},
+		  {"plugin-help", no_argument,       0, 'p'},
+		  {"verbose",     no_argument,       0, 'v'},
+		  {"dimensions",  required_argument, 0, 'D'},
+		  {"driver",      required_argument, 0, 'd'},
+		  {"input",       required_argument, 0, 'i'},
+		  {"actor",       required_argument, 0, 'a'},
+		  {"morph",       required_argument, 0, 'm'},
+		  {"fps",         required_argument, 0, 'f'},
+		  {"seed",        required_argument, 0, 's'},
+		  {"framecount",  required_argument, 0, 'F'},
+		  {0,             0,                 0,  0 }
+	  };
+
+      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:", loptions, &index)) >= 0) {
+
+          switch(argument) {
+              // --help
+              case 'h': {
+                  print_help(argv[0]);
+                  return 1;
+              }
+
+              // --plugin-help
+              case 'p': {
+                  print_plugin_help();
+                  return 1;
+              }
+
+              // --version
+              case 'v': {
+                  visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+                  break;
+              }
+
+              /* --dimensions */
+              case 'D': {
+                  if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
+                  {
+                      std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
+                      return -1;
+                  }
+                  break;
+              }
+
+              // --driver
+              case 'd': {
+                  if (!DisplayDriverFactory::instance().has_driver (optarg)) {
+                      std::cerr << "Unsupported display driver: " << optarg << "\n";
+                      return -1;
+                  }
+
+                  driver_name = optarg;
+                  break;
+              }
+
+              // --input
+              case 'i': {
+                  // save name for later
+                  input_name = optarg;
+                  break;
+              }
+
+              // --actor
+              case 'a': {
+                  // save name for later
+                  actor_name = optarg;
+                  break;
+              }
+
+              // --morph
+              case 'm': {
+                  /* save filename for later */
+                  morph_name = optarg;
+                  break;
+              }
+
+              // --fps
+              case 'f': {
+                  // set framerate
+                  std::sscanf(optarg, "%d", &framerate);
+                  break;
+              }
+
+              // --seed
+              case 's': {
+                  have_seed = true;
+                  std::sscanf(optarg, "%u", &seed);
+                  break;
+              }
+
+              // --framecount
+              case 'F': {
+                  // set framecount
+                  std::sscanf(optarg, "%d", &framecount);
+                  break;
+              }
+
+              // invalid argument
+              case '?': {
+                  print_help(argv[0]);
+                  return -1;
+              }
+
+              // unhandled arguments
+              default:
+                  std::abort ();
+          }
+      }
+
+
+      return 0;
+  }
+
+  void v_cycleActor (int prev)
+  {
+      const char *name;
+
+      name = prev ? visual_actor_get_prev_by_name(actor_name.c_str())
+          : visual_actor_get_next_by_name(actor_name.c_str());
+
+      if (!name) {
+          name = prev ? visual_actor_get_prev_by_name(0)
+              : visual_actor_get_next_by_name(0);
+      }
+
+      actor_name = name;
+  }
+
+  void v_cycleMorph ()
+  {
+      const char *name;
+
+      name = visual_morph_get_next_by_name(morph_name.c_str());
+      if(!name) {
+          name = visual_morph_get_next_by_name(0);
+      }
+
+      morph_name = name;
+  }
 
 } // anonymous namespace
 
-/******************************************************************************/
 
-/** print info about libvisual plugin */
-static void _print_plugin_info(VisPluginInfo const& info)
-{
-    std::printf(
-        "Plugin: \"%s\" (%s)\n"
-        "\tAuthor: %s\n\tVersion: %s\tLicense: %s\n"
-        "\t%s - %s\n\n",
-        info.name, info.plugname,
-        info.author, info.version, info.license,
-        info.about, info.help);
-}
-
-
-/** print help for plugins */
-static void _print_plugin_help()
-{
-    LV::PluginList const& list =
-        LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
-
-    /* print actors */
-    if(!list.empty())
-    {
-        for (unsigned int i = 0; i < list.size (); i++)
-        {
-            _print_plugin_info(*list[i].info);
-        }
-    }
-    else
-    {
-        std::cerr << "No actors found\n";
-    }
-
-    /* print morphs */
-}
-
-/** print commandline help */
-static void _print_help(const char *name)
-{
-    std::printf("libvisual commandline tool - %s\n"
-                "Usage: %s [options]\n\n"
-                "Valid options:\n"
-                "\t--help\t\t\t-h\t\tThis help text\n"
-                "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
-                "\t--verbose\t\t-v\t\tOutput debugging info\n"
-                "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
-                "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
-                "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
-                "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
-                "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
-                "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
-                "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
-                "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n",
-                "http://github.com/StarVisuals/libvisual",
-                name,
-                width, height,
-                driver_name.c_str (),
-                input_name.c_str (),
-                actor_name.c_str (),
-                morph_name.c_str (),
-                framerate);
-}
-
-
-/**
- * parse commandline arguments
- *
- * @param argc from main()
- * @param argv from main()
- * @result 0 upon success, <0 upon failure, >0 if app should exit without error */
-static int _parse_args(int argc, char *argv[])
-{
-    int index, argument;
-
-    static struct option loptions[] =
-    {
-        {"help",        no_argument,       0, 'h'},
-        {"plugin-help", no_argument,       0, 'p'},
-        {"verbose",     no_argument,       0, 'v'},
-        {"dimensions",  required_argument, 0, 'D'},
-        {"driver",      required_argument, 0, 'd'},
-        {"input",       required_argument, 0, 'i'},
-        {"actor",       required_argument, 0, 'a'},
-        {"morph",       required_argument, 0, 'm'},
-        {"fps",         required_argument, 0, 'f'},
-        {"seed",        required_argument, 0, 's'},
-        {"framecount",  required_argument, 0, 'F'},
-        {0,             0,                 0,  0 }
-    };
-
-    while((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:", loptions, &index)) >= 0)
-    {
-
-        switch(argument)
-        {
-            /* --help */
-            case 'h':
-            {
-                _print_help(argv[0]);
-                return 1;
-            }
-
-            /* --plugin-help */
-            case 'p':
-            {
-                _print_plugin_help();
-                return 1;
-            }
-
-            /* --version */
-            case 'v':
-            {
-                visual_log_set_verbosity(VISUAL_LOG_DEBUG);
-                break;
-            }
-
-            /* --dimensions */
-            case 'D':
-            {
-                if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
-                {
-                    std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
-                    return -1;
-                }
-                break;
-            }
-
-            /* --driver */
-            case 'd':
-            {
-                if (!DisplayDriverFactory::instance().has_driver (optarg))
-                {
-                    std::cerr << "Unsupported display driver: " << optarg << "\n";
-                    return -1;
-                }
-
-                driver_name = optarg;
-                break;
-            }
-
-            /* --input */
-            case 'i':
-            {
-                /* save name for later */
-                input_name = optarg;
-                break;
-            }
-
-            /* --actor */
-            case 'a':
-            {
-                /* save name for later */
-                actor_name = optarg;
-                break;
-            }
-
-            /* --morph */
-            case 'm':
-            {
-                /* save filename for later */
-                morph_name = optarg;
-                break;
-            }
-
-            /* --fps */
-            case 'f':
-            {
-                /* set framerate */
-                std::sscanf(optarg, "%d", &framerate);
-                break;
-            }
-
-            /* --seed */
-            case 's':
-            {
-                 have_seed = 1;
-                 std::sscanf(optarg, "%u", &seed);
-                 break;
-            }
-
-	    /* --framecount */
-	    case 'F':
-	    {
-		/* set framecount */
-		std::sscanf(optarg, "%d", &framecount);
-		break;
-	    }
-
-            /* invalid argument */
-            case '?':
-            {
-                _print_help(argv[0]);
-                return -1;
-            }
-
-            /* unhandled arguments */
-            default:
-            {
-                abort ();
-            }
-        }
-    }
-
-
-    return 0;
-}
-
-static void v_cycleActor (int prev)
-{
-    const char *name;
-
-    name = prev ? visual_actor_get_prev_by_name(actor_name.c_str())
-                : visual_actor_get_next_by_name(actor_name.c_str());
-
-    if (!name) {
-        name = prev ? visual_actor_get_prev_by_name(0)
-                    : visual_actor_get_next_by_name(0);
-    }
-
-    actor_name = name;
-}
-
-static void v_cycleMorph ()
-{
-    const char *name;
-
-    name = visual_morph_get_next_by_name(morph_name.c_str());
-    if(!name) {
-        name = visual_morph_get_next_by_name(0);
-    }
-
-    morph_name = name;
-}
-
-/******************************************************************************
- ******************************************************************************
- ******************************************************************************/
 int main (int argc, char **argv)
 {
     // print warm welcome
@@ -312,11 +290,11 @@ int main (int argc, char **argv)
 
     try {
         // parse commandline arguments
-        int parseRes = _parse_args(argc, argv);
+        int parseRes = parse_args(argc, argv);
         if (parseRes < 0)
             throw std::runtime_error ("Failed to parse arguments");
-	else if (parseRes > 0)
-	    throw std::runtime_error ("");
+        else if (parseRes > 0)
+            throw std::runtime_error ("");
 
         // create new VisBin for video output
         LV::Bin bin;
@@ -331,10 +309,10 @@ int main (int argc, char **argv)
 
         // Set random seed
         if (have_seed) {
-            VisPluginData    *plugin_data = visual_actor_get_plugin(actor);
-            VisRandomContext *r_context   = visual_plugin_get_random_context (plugin_data);
+            VisPluginData*     plugin_data = visual_actor_get_plugin(actor);
+            LV::RandomContext& r_context   = *visual_plugin_get_random_context (plugin_data);
 
-            visual_random_context_set_seed (r_context, seed);
+            r_context.set_seed (seed);
             seed++;
         }
 
@@ -379,7 +357,7 @@ int main (int argc, char **argv)
         bin.depth_changed();
 
         // get a queue to handle events
-        VisEventQueue localqueue;
+        LV::EventQueue localqueue;
 
         // main loop
         bool running = true;
@@ -531,7 +509,7 @@ int main (int argc, char **argv)
 
             /* all frames rendered? */
             if((framecount > 0) && (framesDrawn++ >= framecount))
-        	running = false;
+                running = false;
 
             display.unlock();
             display.update_all();
