@@ -186,16 +186,26 @@ namespace LV {
       VisVideoDepth get_depth () const;
 
       /**
-       * Sets the video pitch.
+       * Sets the pixel pitch i.e. row stride
        *
        * @note Use this only when the desired pitch is not equal to width * bytes per pixel.
        *
-       * @param pitch The screen pitch in bytes per line.
+       * @param pitch pitch in bytes
        */
       void set_pitch (int pitch);
 
+      /**
+       * Returns the pitch.
+       *
+       * @return pitch in bytes
+       */
       int get_pitch () const;
 
+      /**
+       * Returns the byte size of each pixel.
+       *
+       * @return pixel byte size
+       */
       int get_bpp () const;
 
       /**
@@ -233,35 +243,33 @@ namespace LV {
       /**
        * Sets all attributes.
        *
-       * @param video Pointer to a VisVideo to which the depth is set.
-       * @param width The width of the surface.
-       * @param height The height of the surface.
-       * @param pitch The pitch or rowstride of the surface.
-       * @param depth The depth coohsen from the VisVideoDepth enumerate.
+       * @param width  width in pixels
+       * @param height height in pixels
+       * @param pitch  pitch (row stride)
+       * @param depth  colour depth
        */
       void set_attrs (int width, int height, int pitch, VisVideoDepth depth);
 
       /**
-       * Copies the attributes from another Video object.
+       * Copies the attributes from another Video.
        *
        * @param src Video object to copy attributes from
        */
       void copy_attrs (VideoConstPtr const& src);
 
       /**
-       * Checks if this Video object has the same attributes as another.
+       * Checks if this Video has the same attributes as another Video.
        *
-       * @param src Video object to compare against
+       * @param src Video to compare against
        *
        * @return true if both videos have the same attributes, false otherwise
        */
       bool compare_attrs (VideoConstPtr const& src) const;
 
       /**
-       * Checks if this Video object are the same attributes as
-       * another, ignoring pitch comparisons.
+       * Checks if this Video has the same attributes as another Video, ignoring pitch comparisons.
        *
-       * @param src Video object to compare against
+       * @param src Video to compare against
        *
        * @return true if both videos have the same attributes, false otherwise
        */
@@ -276,55 +284,68 @@ namespace LV {
        */
       void set_palette (Palette const& palette);
 
+      /**
+       * Returns the color palette.
+       *
+       * @return palette
+       */
       Palette const& get_palette () const;
 
+      /**
+       * Returns the color palette.
+       *
+       * @return palette
+       */
       Palette& get_palette ();
 
       /**
-       * Retrieves the pixel buffer from a VisVideo.
+       * Returns a pointer to the pixel buffer.
        *
-       * @param video Pointer to the VisVideo from which the pixel buffer is requested.
+       * @see get_pixel_ptr
        *
        * @return pointer to pixel buffer
        */
       void* get_pixels () const;
 
+      /**
+       * Returns a pointer to a specific location in the pixel buffer.
+       *
+       * @see get_pixels
+       *
+       * @return pointer to pixel in buffer
+       */
       void* get_pixel_ptr (int x, int y) const;
 
       /**
-       * Returns the extents of this Video object.
+       * Returns the extents of this Video
        *
        * @return the extents
        */
       Rect const& get_extents () const;
 
       void set_compose_type (VisVideoComposeType type);
-
       void set_compose_colorkey (Color const& color);
       void set_compose_surface  (uint8_t alpha);
       void set_compose_function (VisVideoComposeFunc func);
 
-      VisVideoComposeFunc get_compose_function (VideoConstPtr const& src, int alpha);
+      VisVideoComposeFunc get_compose_function (VideoConstPtr const& src, bool alpha);
 
       /**
        * This function blits a VisVideo into another VisVideo. Placement can be done and there
        * is support for the alpha channel.
        *
-       * @param dest Pointer to the destination VisVideo in which the source is overlayed.
-       * @param src Pointer to the source VisVideo which is overlayed in the destination.
-       * @param x Horizontal placement offset.
-       * @param y Vertical placement offset.
-       * @param alpha Sets if we want to check the alpha channel. Use FALSE or TRUE here.
-       *
-       * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_INVALID_DEPTH or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
+       * @param src   Video to blit
+       * @param x     x-coordinate of blit position
+       * @param y     y-coordinate of blit position
+       * @param alpha set to true if alpha channel is to be checked
        */
-      void blit (VideoConstPtr const& src, int x, int y, int alpha);
-      void blit (Rect const& drect, VideoConstPtr const& src, Rect const& srect, int alpha);
+      void blit (VideoConstPtr const& src, int x, int y, bool alpha);
+      void blit (Rect const& drect, VideoConstPtr const& src, Rect const& srect, bool alpha);
 
       void compose (VideoConstPtr const& src, int x, int y, VisVideoComposeFunc func);
       void compose (Rect const& drect, VideoConstPtr const& src, Rect const& srect, VisVideoComposeFunc func);
 
-      void blit_scale    (Rect const& drect, VideoConstPtr const& src, Rect const& srect, int alpha, VisVideoScaleMethod scale_method);
+      void blit_scale    (Rect const& drect, VideoConstPtr const& src, Rect const& srect, bool alpha, VisVideoScaleMethod scale_method);
       void compose_scale (Rect const& drect, VideoConstPtr const& src, Rect const& srect, VisVideoScaleMethod scale_method, VisVideoComposeFunc func);
 
       /**
@@ -355,12 +376,7 @@ namespace LV {
       /**
        * Flips the byte ordering of each pixel.
        *
-       * @param dest Pointer to the destination VisVideo, which should be a clone of the source VisVideo
-       *    depth, pitch, dimension wise.
-       * @param src Pointer to the source VisVideo from which the bgr data is read.
-       *
-       * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NOT_INDENTICAL, -VISUAL_ERROR_VIDEO_PIXELS_NULL or
-       *    -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+       * @param src source Video
        */
       void flip_pixel_bytes (VideoConstPtr const& src);
 

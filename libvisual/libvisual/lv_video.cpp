@@ -187,8 +187,8 @@ namespace LV {
 
   bool Video::allocate_buffer ()
   {
-      visual_return_val_if_fail (m_impl->buffer, FALSE);
-      visual_return_val_if_fail (m_impl->depth != VISUAL_VIDEO_DEPTH_GL, FALSE);
+      visual_return_val_if_fail (m_impl->buffer, false);
+      visual_return_val_if_fail (m_impl->depth != VISUAL_VIDEO_DEPTH_GL, false);
 
       if (get_pixels ()) {
           if (m_impl->buffer->is_allocated ()) {
@@ -386,7 +386,7 @@ namespace LV {
       m_impl->compose_func = compose_func;
   }
 
-  VisVideoComposeFunc Video::get_compose_function (VideoConstPtr const& src, int alpha)
+  VisVideoComposeFunc Video::get_compose_function (VideoConstPtr const& src, bool alpha)
   {
       switch (src->m_impl->compose_type) {
           case VISUAL_VIDEO_COMPOSE_TYPE_NONE:
@@ -418,7 +418,7 @@ namespace LV {
   void Video::blit (Rect const&          drect,
                     VideoConstPtr const& src,
                     Rect const&          srect,
-                    int                  alpha)
+                    bool                 alpha)
   {
       VisVideoComposeFunc func = get_compose_function (src, alpha);
 
@@ -440,7 +440,7 @@ namespace LV {
   void Video::blit_scale (Rect const&          drect,
                           VideoConstPtr const& src,
                           Rect const&          srect,
-                          int                  alpha,
+                          bool                 alpha,
                           VisVideoScaleMethod  scale_method)
   {
       VisVideoComposeFunc func = get_compose_function (src, alpha);
@@ -475,7 +475,7 @@ namespace LV {
       compose (drect, svid, frect, compose_func);
   }
 
-  void Video::blit (VideoConstPtr const& src, int x, int y, int alpha)
+  void Video::blit (VideoConstPtr const& src, int x, int y, bool alpha)
   {
       VisVideoComposeFunc func = get_compose_function (src, alpha);
 
@@ -617,7 +617,7 @@ namespace LV {
       switch (degrees) {
           case VISUAL_VIDEO_ROTATE_NONE:
               if (m_impl->width == src->m_impl->width && m_impl->height == src->m_impl->height)
-                  blit (src, 0, 0, FALSE);
+                  blit (src, 0, 0, false);
               return;
 
           case VISUAL_VIDEO_ROTATE_90:
