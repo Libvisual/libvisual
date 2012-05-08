@@ -449,7 +449,7 @@ void visual_actor_set_video (VisActor *actor, VisVideo *video)
     actor->video = video;
 
     if (actor->video) {
-        visual_object_ref (VISUAL_OBJECT (actor->video));
+        visual_video_ref (actor->video);
     }
 }
 

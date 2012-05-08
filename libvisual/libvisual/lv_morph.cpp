@@ -180,7 +180,7 @@ void visual_morph_set_video (VisMorph *morph, VisVideo *video)
     visual_return_if_fail (video != NULL);
 
     morph->dest = video;
-    visual_object_ref (VISUAL_OBJECT (morph->dest));
+    visual_video_ref (morph->dest);
 }
 
 void visual_morph_set_time (VisMorph *morph, VisTime *time)

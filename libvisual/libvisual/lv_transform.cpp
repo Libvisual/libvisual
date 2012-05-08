@@ -197,7 +197,7 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video)
 
     if (transform->video) {
         visual_transform_set_palette (transform, visual_video_get_palette (video));
-        visual_object_ref (VISUAL_OBJECT (transform->video));
+        visual_video_ref (transform->video);
     } else {
         visual_transform_set_palette (transform, NULL);
     }

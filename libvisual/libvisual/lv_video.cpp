@@ -450,7 +450,7 @@ VisVideo *visual_video_new_sub (VisVideo *src, VisRectangle *area)
 	visual_rectangle_copy (video->rect, area);
 
 	video->parent = src;
-	visual_object_ref (VISUAL_OBJECT (src));
+	visual_video_ref (src);
 
 	visual_video_set_attrs (video, area->width, area->height, src->pitch, src->depth);
 	visual_video_set_buffer (video, visual_video_get_pixel_ptr (src, area->x, area->y));

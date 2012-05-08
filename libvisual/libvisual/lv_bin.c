@@ -344,7 +344,7 @@ void visual_bin_set_video (VisBin *bin, VisVideo *video)
 	bin->actvideo = video;
 
 	if (bin->actvideo) {
-		visual_object_ref (VISUAL_OBJECT (bin->actvideo));
+		visual_video_ref (bin->actvideo);
 	}
 }
 
