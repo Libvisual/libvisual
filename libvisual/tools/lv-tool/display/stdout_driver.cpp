@@ -49,23 +49,20 @@ namespace {
           close ();
       }
 
-      virtual VisVideo* create (VisVideoDepth depth,
-                                VisVideoAttrOptions const* vidoptions,
-                                unsigned int width,
-                                unsigned int height,
-                                bool resizable)
+      virtual LV::VideoPtr create (VisVideoDepth depth,
+                                   VisVideoAttrOptions const* vidoptions,
+                                   unsigned int width,
+                                   unsigned int height,
+                                   bool resizable)
       {
-          if (m_screen_video)
-              visual_object_unref (VISUAL_OBJECT (m_screen_video));
-
-          m_screen_video = visual_video_new_with_buffer (width, height, VISUAL_VIDEO_DEPTH_24BIT);
+          m_screen_video = LV::Video::create (width, height, VISUAL_VIDEO_DEPTH_24BIT);
 
           return m_screen_video;
       }
 
       virtual void close ()
       {
-          visual_object_unref (VISUAL_OBJECT (m_screen_video));
+          m_screen_video = NULL;
       }
 
       virtual void lock ()
@@ -83,7 +80,7 @@ namespace {
           // nothing to do
       }
 
-      virtual VisVideo* get_video ()
+      virtual LV::VideoPtr get_video () const
       {
           return m_screen_video;
       }
@@ -95,7 +92,7 @@ namespace {
 
       virtual void update_rect (LV::Rect const& rect)
       {
-          write(STDOUT_FILENO, visual_video_get_pixels (m_screen_video), visual_video_get_size (m_screen_video));
+          write(STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ());
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)
@@ -105,8 +102,8 @@ namespace {
 
   private:
 
-      SADisplay&           m_display;
-      VisVideo*            m_screen_video;
+      SADisplay&   m_display;
+      LV::VideoPtr m_screen_video;
   };
 
 } // anonymous namespace

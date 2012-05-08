@@ -38,8 +38,11 @@ public:
 
     ~SADisplay ();
 
-    VisVideo* create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
-                      unsigned int width, unsigned int height, bool resizable = true);
+    LV::VideoPtr create (VisVideoDepth depth,
+                         VisVideoAttrOptions const* vidoptions,
+                         unsigned int width,
+                         unsigned int height,
+                         bool resizable = true);
 
     void close ();
 
@@ -51,7 +54,7 @@ public:
 
     void update_rect (LV::Rect const& rect);
 
-    VisVideo* get_video () const;
+    LV::VideoPtr get_video () const;
 
     void set_title(std::string const& title);
 

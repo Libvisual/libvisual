@@ -60,13 +60,16 @@ SADisplay::~SADisplay ()
 {
 }
 
-VisVideo* SADisplay::get_video () const
+LV::VideoPtr SADisplay::get_video () const
 {
     return m_impl->driver->get_video ();
 }
 
-VisVideo* SADisplay::create (VisVideoDepth depth, VisVideoAttrOptions const* vidoptions,
-                             unsigned int width, unsigned int height, bool resizable)
+LV::VideoPtr SADisplay::create (VisVideoDepth depth,
+                                VisVideoAttrOptions const* vidoptions,
+                                unsigned int width,
+                                unsigned int height,
+                                bool resizable)
 {
     return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
@@ -93,8 +96,8 @@ void SADisplay::unlock ()
 
 void SADisplay::update_all ()
 {
-    VisVideo *video = get_video ();
-    LV::Rect rect (0, 0, visual_video_get_width (video), visual_video_get_height (video));
+    LV::VideoPtr video = get_video ();
+    LV::Rect rect (0, 0, video->get_width (), video->get_height ());
 
     m_impl->frames_drawn++;
 

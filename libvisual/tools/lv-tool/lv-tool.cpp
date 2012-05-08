@@ -127,8 +127,8 @@ static void _print_help(const char *name)
 }
 
 
-/** 
- * parse commandline arguments 
+/**
+ * parse commandline arguments
  *
  * @param argc from main()
  * @param argv from main()
@@ -178,7 +178,7 @@ static int _parse_args(int argc, char *argv[])
                 visual_log_set_verbosity(VISUAL_LOG_DEBUG);
                 break;
             }
-            
+
             /* --dimensions */
             case 'D':
             {
@@ -250,7 +250,7 @@ static int _parse_args(int argc, char *argv[])
 		std::sscanf(optarg, "%d", &framecount);
 		break;
 	    }
-	    
+
             /* invalid argument */
             case '?':
             {
@@ -317,7 +317,7 @@ int main (int argc, char **argv)
             throw std::runtime_error ("Failed to parse arguments");
 	else if (parseRes > 0)
 	    throw std::runtime_error ("");
-	    
+
         // create new VisBin for video output
         VisBin *bin = visual_bin_new();
         visual_bin_set_supported_depth(bin, VISUAL_VIDEO_DEPTH_ALL);
@@ -367,13 +367,14 @@ int main (int argc, char **argv)
         SADisplay display (driver_name);
 
         // create display
-        VisVideo *video = display.create(depth, vidoptions, width, height, true);
+        LV::VideoPtr video = display.create(depth, vidoptions, width, height, true);
+
         if(!video)
             throw std::runtime_error("Failed to get VisVideo from display");
 
         // put it all together
         visual_bin_connect(bin, actor, input);
-        visual_bin_set_video(bin, video);
+        visual_bin_set_video(bin, video.get());
         visual_bin_realize(bin);
         visual_bin_sync(bin, FALSE);
         visual_bin_depth_changed(bin);
@@ -414,7 +415,7 @@ int main (int argc, char **argv)
                         height = ev.event.resize.height;
                         video = display.create(depth, vidoptions, width, height, true);
 
-                        visual_bin_set_video (bin, video);
+                        visual_bin_set_video (bin, video.get());
                         visual_actor_video_negotiate (bin->actor, depth, FALSE, FALSE);
 
                         display.unlock();
@@ -513,8 +514,8 @@ int main (int argc, char **argv)
             {
                 display.lock();
                 display.create(depth, vidoptions, width, height, true);
-                VisVideo *video = display.get_video();
-                visual_bin_set_video(bin, video);
+                LV::VideoPtr video = display.get_video();
+                visual_bin_set_video(bin, video.get());
                 visual_bin_sync(bin, TRUE);
                 display.unlock();
             }
@@ -525,11 +526,11 @@ int main (int argc, char **argv)
 
             display.lock();
             visual_bin_run(bin);
-            
+
             /* all frames rendered? */
             if((framecount > 0) && (framesDrawn++ >= framecount))
         	running = false;
-    	    	
+
             display.unlock();
             display.update_all();
             display.set_fps_limit(framerate);
