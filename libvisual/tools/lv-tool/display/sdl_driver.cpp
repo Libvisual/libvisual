@@ -140,7 +140,7 @@ namespace {
           // Recreate video object
 
           m_screen_video = LV::Video::wrap (m_screen->pixels,
-                                            FALSE,
+                                            false,
                                             m_screen->w,
                                             m_screen->h,
                                             depth);

@@ -408,17 +408,17 @@ static int negotiate_video (VisActor *actor, int noevent)
  * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
  *  -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-int visual_actor_get_supported_depth (VisActor *actor)
+VisVideoDepth visual_actor_get_supported_depth (VisActor *actor)
 {
     VisActorPlugin *actplugin;
 
-    visual_return_val_if_fail (actor != NULL, -VISUAL_ERROR_ACTOR_NULL);
-    visual_return_val_if_fail (actor->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+    visual_return_val_if_fail (actor != NULL, VISUAL_VIDEO_DEPTH_NONE);
+    visual_return_val_if_fail (actor->plugin != NULL, VISUAL_VIDEO_DEPTH_NONE);
 
     actplugin = get_actor_plugin (actor);
 
     if (actplugin == NULL)
-        return -VISUAL_ERROR_ACTOR_PLUGIN_NULL;
+        return VISUAL_VIDEO_DEPTH_NONE;
 
     return actplugin->vidoptions.depth;
 }

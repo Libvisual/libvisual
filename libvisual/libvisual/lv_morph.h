@@ -219,7 +219,7 @@ LV_API void visual_morph_realize (VisMorph *morph);
  *
  * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on success, -1 on failure
  */
-LV_API int visual_morph_get_supported_depth (VisMorph *morph);
+LV_API VisVideoDepth visual_morph_get_supported_depth (VisMorph *morph);
 
 LV_API VisVideoAttrOptions *visual_morph_get_video_attribute_options (VisMorph *morph);
 

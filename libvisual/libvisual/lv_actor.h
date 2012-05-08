@@ -334,7 +334,7 @@ LV_API int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth
  * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
  * 	-VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-LV_API int visual_actor_get_supported_depth (VisActor *actor);
+LV_API VisVideoDepth visual_actor_get_supported_depth (VisActor *actor);
 
 LV_API VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *actor);
 

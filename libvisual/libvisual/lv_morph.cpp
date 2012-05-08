@@ -145,16 +145,16 @@ void visual_morph_realize (VisMorph *morph)
     visual_plugin_realize (morph->plugin);
 }
 
-int visual_morph_get_supported_depth (VisMorph *morph)
+VisVideoDepth visual_morph_get_supported_depth (VisMorph *morph)
 {
     VisMorphPlugin *morphplugin;
 
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
-    visual_return_val_if_fail (morph->plugin != NULL, -VISUAL_ERROR_PLUGIN_NULL);
+    visual_return_val_if_fail (morph != NULL, VISUAL_VIDEO_DEPTH_NONE);
+    visual_return_val_if_fail (morph->plugin != NULL, VISUAL_VIDEO_DEPTH_NONE);
 
     morphplugin = get_morph_plugin (morph);
     if (!morphplugin)
-        return -VISUAL_ERROR_MORPH_PLUGIN_NULL;
+        return VISUAL_VIDEO_DEPTH_NONE;
 
     return morphplugin->vidoptions.depth;
 }

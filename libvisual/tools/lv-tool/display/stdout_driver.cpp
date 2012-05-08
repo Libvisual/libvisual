@@ -62,7 +62,7 @@ namespace {
 
       virtual void close ()
       {
-          m_screen_video = NULL;
+          m_screen_video.reset ();
       }
 
       virtual void lock ()
@@ -92,7 +92,7 @@ namespace {
 
       virtual void update_rect (LV::Rect const& rect)
       {
-          write(STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ());
+          write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ());
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)

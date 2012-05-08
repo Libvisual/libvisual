@@ -26,10 +26,10 @@ const VisPluginInfo *get_plugin_info (void)
     static VisMorphPlugin morph;
     morph.apply = lv_morph_checkers_apply;
     morph.vidoptions.depth =
-            VISUAL_VIDEO_DEPTH_8BIT |
-            VISUAL_VIDEO_DEPTH_16BIT |
-            VISUAL_VIDEO_DEPTH_24BIT |
-            VISUAL_VIDEO_DEPTH_32BIT;
+            VisVideoDepth (VISUAL_VIDEO_DEPTH_8BIT  |
+                           VISUAL_VIDEO_DEPTH_16BIT |
+                           VISUAL_VIDEO_DEPTH_24BIT |
+                           VISUAL_VIDEO_DEPTH_32BIT);
 
     static VisPluginInfo info;
     info.type = VISUAL_PLUGIN_TYPE_MORPH;

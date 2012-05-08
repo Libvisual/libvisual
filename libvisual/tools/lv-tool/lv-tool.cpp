@@ -319,9 +319,9 @@ int main (int argc, char **argv)
 	    throw std::runtime_error ("");
 
         // create new VisBin for video output
-        VisBin *bin = visual_bin_new();
-        visual_bin_set_supported_depth(bin, VISUAL_VIDEO_DEPTH_ALL);
-        visual_bin_switch_set_style(bin, VISUAL_SWITCH_STYLE_MORPH);
+        LV::Bin bin;
+        bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
+        bin.switch_set_style(VISUAL_SWITCH_STYLE_MORPH);
 
         // initialize actor plugin
         std::cerr << "Loading actor '" << actor_name << "'...\n";
@@ -358,7 +358,7 @@ int main (int argc, char **argv)
             depth = visual_video_depth_get_highest_nogl (depthflag);
         }
 
-        visual_bin_set_depth (bin, depth);
+        bin.set_depth (depth);
 
         VisVideoAttrOptions const* vidoptions =
             visual_actor_get_video_attribute_options(actor);
@@ -368,16 +368,15 @@ int main (int argc, char **argv)
 
         // create display
         LV::VideoPtr video = display.create(depth, vidoptions, width, height, true);
-
         if(!video)
             throw std::runtime_error("Failed to get VisVideo from display");
 
         // put it all together
-        visual_bin_connect(bin, actor, input);
-        visual_bin_set_video(bin, video.get());
-        visual_bin_realize(bin);
-        visual_bin_sync(bin, FALSE);
-        visual_bin_depth_changed(bin);
+        bin.connect(actor, input);
+        bin.set_video(video);
+        bin.realize();
+        bin.sync(false);
+        bin.depth_changed();
 
         // get a queue to handle events
         VisEventQueue localqueue;
@@ -394,7 +393,7 @@ int main (int argc, char **argv)
             // Handle all events
             display.drain_events(localqueue);
 
-            LV::EventQueue* pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin->actor));
+            LV::EventQueue* pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin.get_actor()));
 
             while (localqueue.poll(ev))
             {
@@ -415,8 +414,8 @@ int main (int argc, char **argv)
                         height = ev.event.resize.height;
                         video = display.create(depth, vidoptions, width, height, true);
 
-                        visual_bin_set_video (bin, video.get());
-                        visual_actor_video_negotiate (bin->actor, depth, FALSE, FALSE);
+                        bin.set_video (video);
+                        visual_actor_video_negotiate (bin.get_actor(), depth, FALSE, FALSE);
 
                         display.unlock();
                         break;
@@ -433,11 +432,11 @@ int main (int argc, char **argv)
                         v_cycleActor(1);
                         v_cycleMorph();
 
-                        visual_bin_set_morph_by_name(bin, morph_name.c_str());
-                        visual_bin_switch_actor_by_name(bin, actor_name.c_str());
+                        bin.set_morph(morph_name);
+                        bin.switch_actor(actor_name);
 
                         // get new actor
-                        actor = visual_bin_get_actor(bin);
+                        actor = bin.get_actor();
 
                         display.set_title(visual_actor_get_plugin(actor)->info->name);
 
@@ -445,17 +444,17 @@ int main (int argc, char **argv)
                         depthflag = visual_actor_get_supported_depth(actor);
                         if (depthflag == VISUAL_VIDEO_DEPTH_GL)
                         {
-                            visual_bin_set_depth(bin, VISUAL_VIDEO_DEPTH_GL);
+                            bin.set_depth(VISUAL_VIDEO_DEPTH_GL);
                         }
                         else
                         {
                             depth = visual_video_depth_get_highest(depthflag);
-                            if ((bin->depthflag & depth) > 0)
-                                visual_bin_set_depth(bin, depth);
+                            if ((bin.get_supported_depth() & depth) > 0)
+                                bin.set_depth(depth);
                             else
-                                visual_bin_set_depth(bin, visual_video_depth_get_highest_nogl(bin->depthflag));
+                                bin.set_depth(visual_video_depth_get_highest_nogl(bin.get_supported_depth()));
                         }
-                        bin->depthforcedmain = bin->depth;
+                        bin.force_actor_depth (bin.get_depth ());
                         break;
                     }
 
@@ -510,13 +509,16 @@ int main (int argc, char **argv)
                 }
             }
 
-            if (visual_bin_depth_changed(bin))
+            if (bin.depth_changed())
             {
                 display.lock();
+
                 display.create(depth, vidoptions, width, height, true);
+
                 LV::VideoPtr video = display.get_video();
-                visual_bin_set_video(bin, video.get());
-                visual_bin_sync(bin, TRUE);
+                bin.set_video(video);
+                bin.sync(true);
+
                 display.unlock();
             }
 
@@ -525,7 +527,7 @@ int main (int argc, char **argv)
                 continue;
 
             display.lock();
-            visual_bin_run(bin);
+            bin.run();
 
             /* all frames rendered? */
             if((framecount > 0) && (framesDrawn++ >= framecount))
