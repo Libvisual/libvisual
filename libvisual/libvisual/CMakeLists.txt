@@ -65,7 +65,6 @@ SET(libvisual_HEADERS
 
 SET(libvisual_SOURCES
   lv_mem.c
-  lv_audio.c
   lv_list.c
   lv_log.c
   lv_bmp.c
@@ -82,6 +81,7 @@ SET(libvisual_SOURCES
   lv_util.c
 
   lv_actor.cpp
+  lv_audio.cpp
   lv_bin.cpp
   lv_buffer.cpp
   lv_color.cpp

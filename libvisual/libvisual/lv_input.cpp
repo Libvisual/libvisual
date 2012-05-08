@@ -48,8 +48,7 @@ static void input_dtor (VisObject *object)
     if (input->plugin)
         visual_plugin_unload (input->plugin);
 
-    if (input->audio )
-        visual_object_unref (VISUAL_OBJECT (input->audio));
+    visual_audio_free (input->audio);
 }
 
 static VisInputPlugin *get_input_plugin (VisInput *input)
