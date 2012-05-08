@@ -72,19 +72,20 @@ namespace LV {
   }
 
   Video::Video ()
-      : m_impl (new Impl)
+      : m_impl      (new Impl)
+      , m_ref_count (1)
   {
       // empty
   }
 
   VideoPtr Video::create ()
   {
-      return VideoPtr (new Video);
+      return VideoPtr (new Video, false);
   }
 
   VideoPtr Video::create (int width, int height, VisVideoDepth depth)
   {
-      VideoPtr self = new Video;
+      VideoPtr self (new Video, false);
 
       self->set_depth (depth);
       self->set_dimension (width, height);
@@ -97,7 +98,7 @@ namespace LV {
   {
       visual_return_val_if_fail (!area.empty (), 0);
 
-      VideoPtr self = new Video;
+      VideoPtr self (new Video, false);
 
       Rect const& vrect = src->get_extents ();
 
@@ -139,7 +140,7 @@ namespace LV {
           visual_log (VISUAL_LOG_WARNING, "Memory leak: Ownership of wrapped pixel buffer is not supported at the moment");
       }
 
-      VideoPtr self = new Video;
+      VideoPtr self (new Video, false);
 
       self->set_depth (depth);
       self->set_dimension (width, height);
