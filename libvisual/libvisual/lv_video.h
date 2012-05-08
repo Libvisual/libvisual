@@ -317,17 +317,14 @@ LV_API VisRectangle *visual_video_get_extents (VisVideo *video);
  * Creates a sub region of a VisVideo. An extra reference to the src VisVideo is created. The region should
  * fall completely within the src, else the region won't be created. Notice that a sub region is not a copy
  *
- * @see visual_video_region_sub_by_values
- * @see visual_video_region_copy
+ * @see visual_video_new_sub_by_values
  *
- * @param dest Pointer to the destination VisVideo, There should not be a buffer allocated for this VisVideo.
  * @param src  Pointer to the source VisVideo from which a subregion is created.
  * @param area Pointer to the rectangle containing the position and dimension information.
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_RECTANGLE_NULL
- *	or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
+ * @return Video object or NULL on failure
  */
-LV_API void visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle *area);
+LV_API VisVideo* visual_video_new_sub (VisVideo *src, VisRectangle *area);
 
 /**
  * Creates a sub region of a VisVideo likewise visual_video_region_sub() however the position and dimension is given
@@ -342,13 +339,13 @@ LV_API void visual_video_region_sub (VisVideo *dest, VisVideo *src, VisRectangle
  * @param width Width of the sub region.
  * @param height Height Height of the sub region.
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS on failure.
+ * @return Video object or NULL on failure
  */
-LV_API void visual_video_region_sub_by_values (VisVideo *dest, VisVideo *src, int x, int y, int width, int height);
+LV_API VisVideo* visual_video_new_sub_by_values (VisVideo *src, int x, int y, int width, int height);
 
-LV_API void visual_video_region_sub_all (VisVideo *dest, VisVideo *src);
+LV_API VisVideo* visual_video_new_sub_all (VisVideo *src);
 
-LV_API void visual_video_region_sub_with_boundary (VisVideo *dest, VisRectangle *drect, VisVideo *src, VisRectangle *srect);
+LV_API VisVideo* visual_video_new_sub_with_boundary (VisRectangle *drect, VisVideo *src, VisRectangle *srect);
 
 LV_API void visual_video_set_compose_type     (VisVideo *video, VisVideoComposeType type);
 LV_API void visual_video_set_compose_colorkey (VisVideo *video, VisColor *color);
