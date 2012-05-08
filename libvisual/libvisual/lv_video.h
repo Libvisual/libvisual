@@ -142,6 +142,10 @@ LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDe
 
 LV_API VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth);
 
+LV_API void visual_video_ref (VisVideo *video);
+
+LV_API void visual_video_unref (VisVideo *video);
+
 /**
  * Frees the buffer that relates to the VisVideo.
  *

@@ -103,7 +103,7 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
 
             VisVideo *sub = visual_video_new_sub(src, &region);
             visual_video_blit_area(dest, &region, sub, &subregion, FALSE);
-            visual_object_unref (VISUAL_OBJECT (sub));
+            visual_video_unref (sub);
         }
     }
 

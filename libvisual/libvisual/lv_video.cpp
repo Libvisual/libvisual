@@ -49,7 +49,7 @@ typedef struct {
 #pragma pack()
 
 /* The VisVideo dtor function */
-static void video_dtor (VisObject *object);
+static void visual_video_destroy (VisVideo *video);
 
 /* Precomputation functions */
 static void precompute_row_table (VisVideo *video);
@@ -65,10 +65,8 @@ static void mirror_y (VisVideo *dest, VisVideo *src);
 
 static void visual_video_init (VisVideo *video);
 
-static void video_dtor (VisObject *object)
+void visual_video_destroy (VisVideo *video)
 {
-	VisVideo *video = VISUAL_VIDEO (object);
-
 	visual_color_free (video->colorkey);
 
 	visual_rectangle_free (video->rect);
@@ -77,12 +75,13 @@ static void video_dtor (VisObject *object)
 		visual_mem_free (video->pixel_rows);
 
 	if (video->parent)
-		visual_object_unref (VISUAL_OBJECT (video->parent));
+		visual_video_unref (video->parent);
 
 	if (video->buffer)
 		visual_buffer_free (video->buffer);
-}
 
+	visual_mem_free (video);
+}
 
 VisVideo *visual_video_new ()
 {
@@ -98,8 +97,7 @@ void visual_video_init (VisVideo *video)
 {
 	visual_return_if_fail (video != NULL);
 
-	/* Do the VisObject initialization */
-	visual_object_init (VISUAL_OBJECT (video), video_dtor);
+	video->refcount = 1;
 
 	/* Reset the VisVideo data */
 	video->buffer = visual_buffer_new ();
@@ -120,6 +118,22 @@ void visual_video_init (VisVideo *video)
 	video->colorkey = visual_color_new ();
 }
 
+void visual_video_ref (VisVideo *video)
+{
+	visual_return_if_fail (video != NULL);
+
+	video->refcount++;
+}
+
+void visual_video_unref (VisVideo *video)
+{
+	visual_return_if_fail (video != NULL);
+
+	if (--video->refcount <= 0) {
+		visual_video_destroy (video);
+	}
+}
+
 VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth)
 {
 	VisVideo *video;
@@ -130,7 +144,7 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 	visual_video_set_dimension (video, width, height);
 
 	if (!visual_video_allocate_buffer (video)) {
-		visual_object_unref (VISUAL_OBJECT (video));
+		visual_video_unref (video);
 		return NULL;
 	}
 
@@ -428,7 +442,7 @@ VisVideo *visual_video_new_sub (VisVideo *src, VisRectangle *area)
 
 	if (!visual_rectangle_contains_rect (vrect, area)) {
 		visual_rectangle_free (vrect);
-        return NULL;
+		return NULL;
 	}
 
 	VisVideo *video = visual_video_new ();
@@ -582,7 +596,7 @@ void visual_video_compose_area (VisVideo            *dest,
                           compose_func);
 
 	visual_rectangle_free (ndrect);
-	visual_object_unref (VISUAL_OBJECT (vsrc));
+	visual_video_unref (vsrc);
 }
 
 void visual_video_blit_scale_area (VisVideo           *dest,
@@ -639,8 +653,8 @@ void visual_video_compose_scale_area (VisVideo            *dest,
 	visual_rectangle_free (frect);
 	visual_rectangle_free (sbound);
 
-	visual_object_unref (VISUAL_OBJECT (svid));
-	visual_object_unref (VISUAL_OBJECT (ssrc));
+	visual_video_unref (svid);
+	visual_video_unref (ssrc);
 }
 
 void visual_video_blit (VisVideo *dest, VisVideo *src, int x, int y, int alpha)
@@ -714,11 +728,11 @@ void visual_video_compose (VisVideo *dest, VisVideo *src, int x, int y, VisVideo
 
 	/* If we had a transform buffer, it's time to get rid of it */
 	if (transform)
-		visual_object_unref (VISUAL_OBJECT (transform));
+		visual_video_unref (transform);
 
-	visual_object_unref (VISUAL_OBJECT (dregion));
-	visual_object_unref (VISUAL_OBJECT (sregion));
-	visual_object_unref (VISUAL_OBJECT (tempregion));
+	visual_video_unref (dregion);
+	visual_video_unref (sregion);
+	visual_video_unref (tempregion);
 }
 
 
@@ -771,7 +785,7 @@ void visual_video_fill_alpha_area (VisVideo *video, uint8_t alpha, VisRectangle 
 	VisVideo *rvid = visual_video_new_sub (video, area);
 	visual_video_fill_alpha (rvid, alpha);
 
-	visual_object_unref (VISUAL_OBJECT (rvid));
+	visual_video_unref (rvid);
 }
 
 void visual_video_fill_color (VisVideo *video, VisColor *rcolor)
@@ -827,7 +841,7 @@ void visual_video_fill_color_area (VisVideo *video, VisColor *color, VisRectangl
 
 	visual_rectangle_free (dbound);
 	visual_rectangle_free (vrect);
-	visual_object_unref (VISUAL_OBJECT (svid));
+	visual_video_unref (svid);
 }
 
 
@@ -1165,7 +1179,7 @@ void visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMetho
 
 		visual_video_scale (dest, dtransform, scale_method);
 
-		visual_object_unref (VISUAL_OBJECT (dtransform));
+		visual_video_unref (dtransform);
 	} else {
 		visual_video_scale (dest, src, scale_method);
 	}
