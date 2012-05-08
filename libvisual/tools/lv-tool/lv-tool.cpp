@@ -362,7 +362,7 @@ int main (int argc, char **argv)
         // main loop
         bool running = true;
         bool visible = true;
-        int framesDrawn = 0;
+        unsigned int framesDrawn = 0;
 
         while (running)
         {

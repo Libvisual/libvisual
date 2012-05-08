@@ -16,7 +16,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = dest.m_impl->height; y--; v += dv) {
-          if (v >> 16 >= src.m_impl->height - 1)
+          if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
           uint32_t const* src_pixel_rowu = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);

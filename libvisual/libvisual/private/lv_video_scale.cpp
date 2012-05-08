@@ -33,7 +33,7 @@ namespace LV {
       for (int y = 0; y < dest.m_impl->height; y++, v += dv) {
           uint8_t const* src_pixel_row = static_cast<uint8_t const*> (src.m_impl->pixel_rows[v >> 16]);
 
-          if (v >> 16 >= src.m_impl->height)
+          if (v >> 16 >= (unsigned int) src.m_impl->height)
               v -= 0x10000;
 
           uint32_t u = 0;
@@ -56,7 +56,7 @@ namespace LV {
       for (int y = 0; y < dest.m_impl->height; y++, v += dv) {
           uint16_t const* src_pixel_row = static_cast<uint16_t const*> (src.m_impl->pixel_rows[v >> 16]);
 
-          if (v >> 16 >= src.m_impl->height)
+          if (v >> 16 >= (unsigned int) src.m_impl->height)
               v -= 0x10000;
 
           uint32_t u = 0;
@@ -79,7 +79,7 @@ namespace LV {
       for (int y = 0; y < dest.m_impl->height; y++, v += dv) {
           color24_t const* src_pixel_row = static_cast<color24_t const*> (src.m_impl->pixel_rows[v >> 16]);
 
-          if (v >> 16 >= src.m_impl->height)
+          if (v >> 16 >= (unsigned int) src.m_impl->height)
               v -= 0x10000;
 
           uint32_t u = 0;
@@ -102,7 +102,7 @@ namespace LV {
       for (int y = 0; y < dest.m_impl->height; y++, v += dv) {
           uint32_t const* src_pixel_row = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
 
-          if (v >> 16 >= src.m_impl->height)
+          if (v >> 16 >= (unsigned int) src.m_impl->height)
               v -= 0x10000;
 
           uint32_t u = 0;
@@ -123,7 +123,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = dest.m_impl->height; y--; v += dv) {
-          if (v >> 16 >= src.m_impl->height - 1)
+          if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
           uint8_t const* src_pixel_rowu = static_cast<uint8_t const*> (src.m_impl->pixel_rows[v >> 16]);
@@ -173,7 +173,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = dest.m_impl->height; y--; v += dv) {
-          if (v >> 16 >= src.m_impl->height - 1)
+          if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
           color16_t const* src_pixel_rowu = static_cast<color16_t const*> (src.m_impl->pixel_rows[v >> 16]);
@@ -238,7 +238,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = dest.m_impl->height; y--; v += dv) {
-          if (v >> 16 >= src.m_impl->height - 1)
+          if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
           color24_t const* src_pixel_rowu = static_cast<color24_t const*> (src.m_impl->pixel_rows[v >> 16]);
@@ -308,7 +308,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = dest.m_impl->height; y--; v += dv) {
-          if (v >> 16 >= src.m_impl->height - 1)
+          if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
           uint32_t const* src_pixel_rowu = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
