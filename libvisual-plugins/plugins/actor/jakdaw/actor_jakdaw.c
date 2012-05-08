@@ -140,8 +140,8 @@ static int act_jakdaw_cleanup (VisPluginData *plugin)
 
 	_jakdaw_feedback_close (priv);
 
-	visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
-	visual_object_unref (VISUAL_OBJECT (priv->freqbuf));
+	visual_buffer_unref (priv->pcmbuf);
+	visual_buffer_unref (priv->freqbuf);
 
 	visual_mem_free (priv);
 
