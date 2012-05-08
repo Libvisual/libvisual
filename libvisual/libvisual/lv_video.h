@@ -331,16 +331,11 @@ namespace LV {
        * Sets a certain alpha value for the complete buffer in the VisVideo. This function
        * can be only used on VISUAL_VIDEO_DEPTH_32BIT surfaces.
        *
-       * @param video Pointer to the VisVideo in which the alpha channel density is set.
-       * @param density The alpha density that is to be set.
-       *
-       * @return VISUAL_OK on success, -VISUAL_ERROR_VIDEO_NULL, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+       * @param alpha The alpha density that is to be set.
        */
-      void fill_alpha (uint8_t density);
+      void fill_alpha (uint8_t alpha);
 
-      void fill_alpha (uint8_t density, Rect const& area);
-
-      void fill_alpha_color (Color const& color, uint8_t alpha);
+      void fill_alpha (uint8_t alpha, Rect const& area);
 
       /**
        * This function is used to fill a VisVideo with one color. It's highly advice to use this function to fill
@@ -521,7 +516,6 @@ LV_API void visual_video_compose_scale_area (VisVideo *dest, VisRectangle *drect
 LV_API void visual_video_blit (VisVideo *dest, VisVideo *src, int x, int y, int alpha);
 LV_API void visual_video_compose (VisVideo *dest, VisVideo *src, int x, int y, VisVideoComposeFunc compfunc);
 
-LV_API void visual_video_fill_alpha_color (VisVideo *video, VisColor *color, uint8_t density);
 LV_API void visual_video_fill_alpha       (VisVideo *video, uint8_t density);
 LV_API void visual_video_fill_alpha_area  (VisVideo *video, uint8_t density, VisRectangle *rect);
 LV_API void visual_video_fill_color       (VisVideo *video, VisColor *color);

@@ -533,30 +533,6 @@ namespace LV {
       compose_func (dregion.get (), sregion.get ());
   }
 
-
-  void Video::fill_alpha_color (Color const& color, uint8_t alpha)
-  {
-      visual_return_if_fail (m_impl->depth == VISUAL_VIDEO_DEPTH_32BIT);
-
-      uint32_t* vidbuf = static_cast<uint32_t*> (get_pixels ());
-
-      uint32_t col = (color.r << 16 | color.g << 8 | color.b);
-
-      /* FIXME byte order sensitive */
-      for (int y = 0; y < m_impl->height; y++) {
-          for (int x = 0; x < m_impl->width; x++) {
-              if ((*vidbuf & 0x00ffffff) == col)
-                  *vidbuf = col;
-              else
-                  *vidbuf |= alpha << 24;
-
-              vidbuf++;
-          }
-
-          vidbuf += m_impl->pitch - (m_impl->width * m_impl->bpp);
-      }
-  }
-
   void Video::fill_alpha (uint8_t alpha)
   {
       visual_return_if_fail (m_impl->depth == VISUAL_VIDEO_DEPTH_32BIT);
@@ -711,7 +687,8 @@ namespace LV {
                   return;
 
               default:
-                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested");
+                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested (%d -> %d)",
+                              int (src->m_impl->depth), int (m_impl->depth));
                   return;
           }
 
@@ -731,7 +708,8 @@ namespace LV {
                   return;
 
               default:
-                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested");
+                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested (%d -> %d)",
+                              int (src->m_impl->depth), int (m_impl->depth));
                   return;
           }
 
@@ -751,7 +729,8 @@ namespace LV {
                   return;
 
               default:
-                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested");
+                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested (%d -> %d)",
+                              int (src->m_impl->depth), int (m_impl->depth));
                   return;
           }
 
@@ -771,7 +750,8 @@ namespace LV {
                   return;
 
               default:
-                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested");
+                  visual_log (VISUAL_LOG_ERROR, "Invalid depth conversion requested (%d -> %d)",
+                              int (src->m_impl->depth), int (m_impl->depth));
                   return;
           }
       }

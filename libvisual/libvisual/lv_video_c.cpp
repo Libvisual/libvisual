@@ -378,14 +378,6 @@ void visual_video_compose (VisVideo *self, VisVideo *src, int x, int y, VisVideo
     self->compose (LV::VideoPtr (src), x, y, compose_func);
 }
 
-void visual_video_fill_alpha_color (VisVideo *self, VisColor *color, uint8_t alpha)
-{
-    visual_return_if_fail (self  != NULL);
-    visual_return_if_fail (color != NULL);
-
-    self->fill_alpha_color (*color, alpha);
-}
-
 void visual_video_fill_alpha (VisVideo *self, uint8_t alpha)
 {
     visual_return_if_fail (self != NULL);
