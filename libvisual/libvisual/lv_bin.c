@@ -54,10 +54,10 @@ static void bin_dtor (VisObject *object)
 		visual_object_unref (VISUAL_OBJECT (bin->actmorph));
 
 	if (bin->actmorphvideo)
-		visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
+		visual_video_unref (bin->actmorphvideo);
 
 	if (bin->privvid)
-		visual_object_unref (VISUAL_OBJECT (bin->privvid));
+		visual_video_unref (bin->privvid);
 
 	visual_time_free (bin->morphtime);
 }
@@ -338,13 +338,13 @@ void visual_bin_set_video (VisBin *bin, VisVideo *video)
 	visual_return_if_fail (bin != NULL);
 
 	if (bin->actvideo && bin->actvideo != video) {
-		visual_object_unref (VISUAL_OBJECT (bin->actvideo));
+		visual_video_unref (bin->actvideo);
 	}
 
 	bin->actvideo = video;
 
 	if (bin->actvideo) {
-		visual_object_ref (VISUAL_OBJECT (bin->actvideo));
+		visual_video_ref (bin->actvideo);
 	}
 }
 
@@ -434,7 +434,7 @@ void visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
 			visual_object_unref (VISUAL_OBJECT (bin->actmorph));
 
 			if (bin->actmorphvideo != NULL)
-				visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
+				visual_video_unref (bin->actmorphvideo);
 		}
 	}
 
@@ -552,7 +552,7 @@ void visual_bin_switch_actor (VisBin *bin, VisActor *actor)
 
 	/* Free the private video */
 	if (bin->privvid != NULL) {
-		visual_object_unref (VISUAL_OBJECT (bin->privvid));
+		visual_video_unref (bin->privvid);
 
 		bin->privvid = NULL;
 	}
@@ -645,13 +645,13 @@ void visual_bin_switch_finalize (VisBin *bin)
 	visual_video_set_depth (bin->actvideo, bin->actmorphvideo->depth); */
 
 	if (bin->actmorphmanaged) {
-		visual_object_unref (VISUAL_OBJECT (bin->actmorphvideo));
+		visual_video_unref (bin->actmorphvideo);
 
 		bin->actmorphvideo = NULL;
 	}
 
 	if (bin->privvid != NULL) {
-		visual_object_unref (VISUAL_OBJECT (bin->privvid));
+		visual_video_unref (bin->privvid);
 
 		bin->privvid = NULL;
 	}

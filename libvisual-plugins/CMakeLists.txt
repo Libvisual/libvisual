@@ -145,7 +145,7 @@ OPTION(ENABLE_OINKSIE     "Build the Oinksie plugin" yes)
 OPTION(ENABLE_SLIDE       "Build the Slide morph plugin" yes)
 OPTION(ENABLE_TENTACLE    "Build the Tentacle morph plugin" yes)
 OPTION(ENABLE_WAVEIN      "Build the Windows WaveIn plugin" yes)
-OPTION(ENABLE_CHECKERS    "Build the checkers morph plugin" no)
+OPTION(ENABLE_CHECKERS    "Build the checkers morph plugin" yes)
 
 
 # Check for plugin dependencies

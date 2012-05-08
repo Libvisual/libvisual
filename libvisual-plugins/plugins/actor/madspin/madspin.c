@@ -153,8 +153,8 @@ static int lv_madspin_cleanup (VisPluginData *plugin)
 	if (priv->initialized == TRUE) {
 		visual_timer_free (priv->timer);
 
-		visual_object_unref (VISUAL_OBJECT (priv->texture_images[0]));
-		visual_object_unref (VISUAL_OBJECT (priv->texture_images[1]));
+		visual_video_unref (priv->texture_images[0]);
+		visual_video_unref (priv->texture_images[1]);
 
 		glDeleteTextures (2, priv->textures);
 	}

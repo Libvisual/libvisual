@@ -138,7 +138,7 @@ static int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 		g_object_unref (priv->scaled);
 
 	if (priv->target)
-		visual_object_unref (VISUAL_OBJECT (priv->target));
+		visual_video_unref (priv->target);
 
 	visual_mem_free (priv);
 
@@ -394,7 +394,7 @@ static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src)
 	/* Gdk uses a different color order than we do */
 	visual_video_flip_pixel_bytes (target, bgr);
 
-	visual_object_unref (VISUAL_OBJECT (bgr));
+	visual_video_unref (bgr);
 
 	return 0;
 }

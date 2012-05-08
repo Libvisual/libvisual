@@ -69,13 +69,13 @@ static void actor_dtor (VisObject *object)
         visual_palette_free (actor->ditherpal);
 
     if (actor->transform)
-        visual_object_unref (VISUAL_OBJECT (actor->transform));
+        visual_video_unref (actor->transform);
 
     if (actor->fitting)
-        visual_object_unref (VISUAL_OBJECT (actor->fitting));
+        visual_video_unref (actor->fitting);
 
     if (actor->video)
-        visual_object_unref (VISUAL_OBJECT (actor->video));
+        visual_video_unref (actor->video);
 
     visual_songinfo_free (actor->songcompare);
 }
@@ -310,12 +310,12 @@ int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int n
     visual_return_val_if_fail (actor->video != NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
 
     if (actor->transform) {
-        visual_object_unref (VISUAL_OBJECT (actor->transform));
+        visual_video_unref (actor->transform);
         actor->transform = NULL;
     }
 
     if (actor->fitting) {
-        visual_object_unref (VISUAL_OBJECT (actor->fitting));
+        visual_video_unref (actor->fitting);
         actor->fitting = NULL;
     }
 
@@ -443,13 +443,13 @@ void visual_actor_set_video (VisActor *actor, VisVideo *video)
     visual_return_if_fail (actor != NULL);
 
     if (actor->video && actor->video != video) {
-        visual_object_unref (VISUAL_OBJECT (actor->video));
+        visual_video_unref (actor->video);
     }
 
     actor->video = video;
 
     if (actor->video) {
-        visual_object_ref (VISUAL_OBJECT (actor->video));
+        visual_video_ref (actor->video);
     }
 }
 

@@ -268,7 +268,7 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	                                                    visual_video_get_height (video),
 	                                                    VISUAL_VIDEO_DEPTH_8BIT);
 	visual_video_mirror (video, vidcorona, VISUAL_VIDEO_MIRROR_Y);
-	visual_object_unref (VISUAL_OBJECT (vidcorona));
+	visual_video_unref (vidcorona);
 
 	return 0;
 }

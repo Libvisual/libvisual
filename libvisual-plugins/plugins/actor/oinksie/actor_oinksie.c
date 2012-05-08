@@ -330,8 +330,8 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 
 		visual_video_blit (video, vid2, 0, 0, TRUE);
 
-		visual_object_unref (VISUAL_OBJECT (vid1));
-		visual_object_unref (VISUAL_OBJECT (vid2));
+		visual_video_unref (vid1);
+		visual_video_unref (vid2);
 	}
 
 	return 0;

@@ -190,14 +190,14 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video)
     visual_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
 
     if (transform->video && transform->video != video) {
-        visual_object_unref (VISUAL_OBJECT (transform->video));
+        visual_video_unref (transform->video);
     }
 
     transform->video = video;
 
     if (transform->video) {
         visual_transform_set_palette (transform, visual_video_get_palette (video));
-        visual_object_ref (VISUAL_OBJECT (transform->video));
+        visual_video_ref (transform->video);
     } else {
         visual_transform_set_palette (transform, NULL);
     }

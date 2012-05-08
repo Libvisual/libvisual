@@ -415,7 +415,7 @@ VisVideo *visual_bitmap_load (const char *filename)
 	fclose (fp);
 
 	if (error != VISUAL_OK) {
-		visual_object_unref (VISUAL_OBJECT (video));
+		visual_video_unref (video);
 		return NULL;
 	}
 

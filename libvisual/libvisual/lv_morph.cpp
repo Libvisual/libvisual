@@ -49,7 +49,7 @@ static void morph_dtor (VisObject *object)
     visual_timer_free (morph->timer);
 
     if (morph->dest)
-        visual_object_unref (VISUAL_OBJECT (morph->dest));
+        visual_video_unref (morph->dest);
 
     if (morph->plugin)
         visual_plugin_unload (morph->plugin);
@@ -180,7 +180,7 @@ void visual_morph_set_video (VisMorph *morph, VisVideo *video)
     visual_return_if_fail (video != NULL);
 
     morph->dest = video;
-    visual_object_ref (VISUAL_OBJECT (morph->dest));
+    visual_video_ref (morph->dest);
 }
 
 void visual_morph_set_time (VisMorph *morph, VisTime *time)

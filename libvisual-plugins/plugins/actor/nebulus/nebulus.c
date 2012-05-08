@@ -162,12 +162,12 @@ static int lv_nebulus_cleanup (VisPluginData *plugin)
 	delete_gl_texture(childbg);
 	delete_gl_texture(energy);
 
-	visual_object_unref (VISUAL_OBJECT (child_image));
-	visual_object_unref (VISUAL_OBJECT (energy_image));
-	visual_object_unref (VISUAL_OBJECT (tentacle_image));
-	visual_object_unref (VISUAL_OBJECT (tunnel_image));
-	visual_object_unref (VISUAL_OBJECT (twist_image));
-	visual_object_unref (VISUAL_OBJECT (background_image));
+	visual_video_unref (child_image);
+	visual_video_unref (energy_image);
+	visual_video_unref (tentacle_image);
+	visual_video_unref (tunnel_image);
+	visual_video_unref (twist_image);
+	visual_video_unref (background_image);
 
 	visual_buffer_free (priv->pcmbuf);
 
