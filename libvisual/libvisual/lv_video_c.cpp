@@ -404,9 +404,12 @@ void visual_video_fill_alpha_area (VisVideo *self, uint8_t alpha, VisRectangle *
 void visual_video_fill_color (VisVideo *self, VisColor *color)
 {
     visual_return_if_fail (self  != NULL);
-    visual_return_if_fail (color != NULL);
 
-    self->fill_color (*color);
+    if (color) {
+        self->fill_color (*color);
+    } else {
+        self->fill_color (LV::Color::black ());
+    }
 }
 
 void visual_video_fill_color_area (VisVideo *self, VisColor *color, VisRectangle *area)
