@@ -318,8 +318,11 @@ namespace {
 
           if (priv->buffer_ready[buffer_to_read]) {
               LV::BufferPtr buffer = LV::Buffer::wrap (priv->buffers[buffer_to_read], PCM_BUFFER_SIZE);
-              visual_audio_samplepool_input (audio->samplepool, buffer.get (), VISUAL_AUDIO_SAMPLE_RATE_44100,
-                                             VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+
+              audio->input (buffer,
+                            VISUAL_AUDIO_SAMPLE_RATE_44100,
+                            VISUAL_AUDIO_SAMPLE_FORMAT_S16,
+                            VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
               priv->buffer_ready[buffer_to_read] = false;
 

@@ -191,10 +191,10 @@ int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio
 
 	LV::BufferPtr fbuf = LV::Buffer::create ();
 	fbuf->set (freq[0], sizeof(freq[0]));
-	visual_audio_get_spectrum (audio, fbuf.get (), 256, VISUAL_AUDIO_CHANNEL_LEFT, FALSE);
+	audio->get_spectrum (fbuf, 256, VISUAL_AUDIO_CHANNEL_LEFT, false);
 
 	fbuf->set (freq[1], sizeof(freq[1]));
-	visual_audio_get_spectrum (audio, fbuf.get (), 256, VISUAL_AUDIO_CHANNEL_RIGHT, FALSE);
+	audio->get_spectrum (fbuf, 256, VISUAL_AUDIO_CHANNEL_RIGHT, false);
 
 	for (unsigned int i = 0; i < sizeof(freq[2]); i++)
 		freq[2][i] = (freq[0][i] + freq[1][i]) / 2;

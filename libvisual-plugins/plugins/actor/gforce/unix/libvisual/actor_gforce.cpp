@@ -227,13 +227,10 @@ int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	LV::BufferPtr freqbuf = LV::Buffer::create ();
 
 	pcmbuf->set (gSoundBuf, sizeof (gSoundBuf));
-	visual_audio_get_sample_mixed_simple (audio, pcmbuf.get (), 2,
-			VISUAL_AUDIO_CHANNEL_LEFT,
-			VISUAL_AUDIO_CHANNEL_RIGHT);
+	audio->get_sample_mixed_simple (pcmbuf, 2, VISUAL_AUDIO_CHANNEL_LEFT, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	freqbuf->set (gFFTBuf, sizeof (gFFTBuf));
-
-	visual_audio_get_spectrum_for_sample_multiplied (freqbuf.get (), pcmbuf.get (), TRUE, 3.0);
+	audio->get_spectrum_for_sample (freqbuf, pcmbuf, true, 3.0);
 
 	// Increase volume
 	for (i = 0; i < SND_BUF_SIZE; i++)

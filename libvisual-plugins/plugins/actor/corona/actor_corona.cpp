@@ -229,13 +229,13 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	pcmb->set (pcm, sizeof (pcm));
 
-	visual_audio_get_sample (audio, pcmb.get (), VISUAL_AUDIO_CHANNEL_LEFT);
+	audio->get_sample (pcmb, VISUAL_AUDIO_CHANNEL_LEFT);
 	buffer->set (freq[0], sizeof (freq[0]));
-	visual_audio_get_spectrum_for_sample (buffer.get (), pcmb.get (), TRUE);
+	audio->get_spectrum_for_sample (buffer, pcmb, true);
 
-	visual_audio_get_sample (audio, pcmb.get (), VISUAL_AUDIO_CHANNEL_RIGHT);
+	audio->get_sample (pcmb, VISUAL_AUDIO_CHANNEL_RIGHT);
 	buffer->set (freq[1], sizeof (freq[1]));
-	visual_audio_get_spectrum_for_sample (buffer.get (), pcmb.get (), TRUE);
+	audio->get_spectrum_for_sample (buffer, pcmb, true);
 
 	for (unsigned int i = 0; i < 256; ++i) {
 		freqdata[0][i*2]   = freq[0][i];

@@ -83,8 +83,7 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
         priv->timer.start ();
     }
 
-    LV::Color black = LV::Color::black();
-    visual_video_fill_color(dest, &black);
+    dest->fill_color (LV::Color::black ());
 
     unsigned int dest_width  = visual_video_get_width (dest);
     unsigned int dest_height = visual_video_get_height (dest);
@@ -98,12 +97,11 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     {
         for(unsigned int col = 0, x = 0; x < dest_width; col++, x += tile_width)
         {
-            VisVideo* src = (row + col + priv->flip) & 1 ? src1 : src2;
+            LV::VideoConstPtr src = (row + col + priv->flip) & 1 ? src1 : src2;
             LV::Rect region(x, y, tile_width, tile_height);
 
-            VisVideo *sub = visual_video_new_sub(src, &region);
-            visual_video_blit_area(dest, &region, sub, &subregion, FALSE);
-            visual_video_unref (sub);
+            LV::VideoPtr sub = LV::Video::create_sub(src, region);
+            dest->blit(region, sub, subregion, false);
         }
     }
 
