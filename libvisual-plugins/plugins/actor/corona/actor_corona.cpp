@@ -61,13 +61,13 @@ const int PALETTEDATA[][NB_PALETTES] = {
 	{ 3, 0, 0xc0c0ff, 128, 0xa0a0a0, 256, 0xffffff }                      // 22. clouds
 };
 
-  typedef struct {
-	  VisTime		 oldtime;
-	  LV::Palette	*pal;
-	  Corona		*corona; /* The corona internal private struct */
-	  PaletteCycler	*pcyl;
-  	  TimedLevel	 tl;
-  } CoronaPrivate;
+  struct CoronaPrivate {
+	  LV::Time       oldtime;
+	  LV::Palette    pal;
+	  Corona*        corona; /* The corona internal private struct */
+	  PaletteCycler* pcyl;
+  	  TimedLevel     tl;
+  };
 
   int lv_corona_init (VisPluginData *plugin);
   int lv_corona_cleanup (VisPluginData *plugin);
@@ -79,9 +79,9 @@ const int PALETTEDATA[][NB_PALETTES] = {
 
 }
 
-extern "C" const VisPluginInfo *get_plugin_info ()
+const VisPluginInfo *get_plugin_info ()
 {
-    static VisActorPlugin actor;
+	static VisActorPlugin actor;
 	static VisPluginInfo info;
 
 	actor.requisition = lv_corona_requisition;
@@ -132,7 +132,7 @@ int lv_corona_init (VisPluginData *plugin)
 
 	priv->oldtime = LV::Time::now ();
 
-	priv->pal = new LV::Palette (256);
+	priv->pal.colors.resize (256);
 
 	return 0;
 }
@@ -140,8 +140,6 @@ int lv_corona_init (VisPluginData *plugin)
 int lv_corona_cleanup (VisPluginData *plugin)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-
-	delete priv->pal;
 
 	delete priv->corona;
 	delete priv->pcyl;
@@ -213,9 +211,9 @@ VisPalette *lv_corona_palette (VisPluginData *plugin)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	priv->pcyl->updateVisPalette (priv->pal);
+	priv->pcyl->updateVisPalette (&priv->pal);
 
-	return priv->pal;
+	return &priv->pal;
 }
 
 int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
@@ -262,13 +260,12 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	priv->corona->update(&priv->tl); // Update Corona
 	priv->pcyl->update(&priv->tl);    // Update Palette Cycler
 
-	VisVideo *vidcorona = visual_video_new_wrap_buffer (priv->corona->getSurface(),
-	                                                    FALSE,
-	                                                    visual_video_get_width (video),
-	                                                    visual_video_get_height (video),
-	                                                    VISUAL_VIDEO_DEPTH_8BIT);
-	visual_video_mirror (video, vidcorona, VISUAL_VIDEO_MIRROR_Y);
-	visual_video_unref (vidcorona);
+	LV::VideoPtr vidcorona = LV::Video::wrap (priv->corona->getSurface (),
+	                                          false,
+	                                          video->get_width (),
+	                                          video->get_height (),
+	                                          VISUAL_VIDEO_DEPTH_8BIT);
+	video->mirror (vidcorona, VISUAL_VIDEO_MIRROR_Y);
 
 	return 0;
 }
