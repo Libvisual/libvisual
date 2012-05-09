@@ -10,7 +10,7 @@
 int main (int argc, char **argv)
 {
 	VisActor *actor;
-	VisAudio audio;
+	VisAudio *audio;
 	VisVideo *dest;
 	int i;
 
@@ -24,6 +24,8 @@ int main (int argc, char **argv)
 	visual_actor_realize (actor);
 
 	dest = visual_video_new ();
+
+	audio = visual_audio_new ();
 
 #ifdef FORCED_DEPTH
 	visual_video_set_depth (dest, DEPTH);
@@ -41,7 +43,9 @@ int main (int argc, char **argv)
 	visual_actor_video_negotiate (actor, 0, FALSE, FALSE);
 
 	for (i = 0; i < TIMES; i++)
-		visual_actor_run (actor, &audio);
+		visual_actor_run (actor, audio);
+
+	visual_audio_free (audio);
 
 	printf ("Actor throughput bench %d times depthBPP %d actor: %s\n", TIMES, visual_video_get_bpp (dest),
 			(visual_plugin_get_info (visual_actor_get_plugin (actor)))->plugname);

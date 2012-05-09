@@ -34,6 +34,32 @@
 #include <vector>
 #include <iostream>
 
+struct _VisAudio {
+	VisAudioSamplePool* samplepool;
+};
+
+struct _VisAudioSamplePool {
+	VisObject object;
+	VisList*  channels;
+};
+
+struct _VisAudioSamplePoolChannel {
+	VisObject      object;
+	VisRingBuffer* samples;
+	VisTime*       samples_timeout;
+	char*          channelid;
+	float          factor;
+};
+
+struct _VisAudioSample {
+	VisObject                object;
+	VisTime*                 timestamp;
+	VisAudioSampleRateType	 rate;
+	VisAudioSampleFormatType format;
+	VisBuffer*               buffer;
+	VisBuffer*               processed;
+};
+
 static void audio_samplepool_dtor (VisObject *object);
 static void audio_samplepool_channel_dtor (VisObject *object);
 static void audio_sample_dtor (VisObject *object);
@@ -335,25 +361,26 @@ void visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool)
 	}
 }
 
-void visual_audio_samplepool_input (VisAudioSamplePool *samplepool,
-                                    VisBuffer *buffer,
-                                    VisAudioSampleRateType rate,
-                                    VisAudioSampleFormatType format,
-                                    VisAudioSampleChannelType channeltype)
+void visual_audio_input (VisAudio *audio,
+                         VisBuffer *buffer,
+                         VisAudioSampleRateType rate,
+                         VisAudioSampleFormatType format,
+                         VisAudioSampleChannelType channeltype)
 {
-	visual_return_if_fail (samplepool != NULL);
+	visual_return_if_fail (audio  != NULL);
 	visual_return_if_fail (buffer != NULL);
 
 	if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO)
-		input_interleaved_stereo (samplepool, buffer, format, rate);
+		input_interleaved_stereo (audio->samplepool, buffer, format, rate);
 }
 
-void visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisBuffer *buffer,
-                                            VisAudioSampleRateType rate,
-                                            VisAudioSampleFormatType format,
-                                            const char *channelid)
+void visual_audio_input_channel (VisAudio *audio,
+                                 VisBuffer *buffer,
+                                 VisAudioSampleRateType rate,
+                                 VisAudioSampleFormatType format,
+                                 const char *channelid)
 {
-	visual_return_if_fail (samplepool != NULL);
+	visual_return_if_fail (audio  != NULL);
 	visual_return_if_fail (buffer != NULL);
 
 	VisBuffer *pcmbuf = visual_buffer_clone (buffer);
@@ -361,7 +388,7 @@ void visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool, VisB
 	LV::Time timestamp = LV::Time::now ();
 
 	VisAudioSample *sample = visual_audio_sample_new (pcmbuf, &timestamp, format, rate);
-	visual_audio_samplepool_add (samplepool, sample, channelid);
+	visual_audio_samplepool_add (audio->samplepool, sample, channelid);
 }
 
 VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (const char *channelid)
@@ -638,9 +665,10 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 		visual_audio_sample_format_get_size (sample->format)) * sizeof (float);
 }
 
-static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *buffer,
-		VisAudioSampleFormatType format,
-		VisAudioSampleRateType rate)
+static int input_interleaved_stereo (VisAudioSamplePool *samplepool,
+                                     VisBuffer *buffer,
+                                     VisAudioSampleFormatType format,
+                                     VisAudioSampleRateType rate)
 {
 	std::size_t sample_size = visual_audio_sample_format_get_size (format);
 

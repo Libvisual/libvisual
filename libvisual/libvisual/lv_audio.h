@@ -32,10 +32,10 @@
  * @{
  */
 
-#define VISUAL_AUDIO(obj)				(VISUAL_CHECK_CAST ((obj), VisAudio))
-#define VISUAL_AUDIO_SAMPLEPOOL(obj)			(VISUAL_CHECK_CAST ((obj), VisAudioSamplePool))
-#define VISUAL_AUDIO_SAMPLEPOOL_CHANNEL(obj)		(VISUAL_CHECK_CAST ((obj), VisAudioSamplePoolChannel))
-#define VISUAL_AUDIO_SAMPLE(obj)			(VISUAL_CHECK_CAST ((obj), VisAudioSample))
+#define VISUAL_AUDIO(obj)                    (VISUAL_CHECK_CAST ((obj), VisAudio))
+#define VISUAL_AUDIO_SAMPLEPOOL(obj)         (VISUAL_CHECK_CAST ((obj), VisAudioSamplePool))
+#define VISUAL_AUDIO_SAMPLEPOOL_CHANNEL(obj) (VISUAL_CHECK_CAST ((obj), VisAudioSamplePoolChannel))
+#define VISUAL_AUDIO_SAMPLE(obj)             (VISUAL_CHECK_CAST ((obj), VisAudioSample))
 
 #define VISUAL_AUDIO_CHANNEL_LEFT	"front left 1"
 #define VISUAL_AUDIO_CHANNEL_RIGHT	"front right 1"
@@ -80,38 +80,6 @@ typedef struct _VisAudioSamplePool VisAudioSamplePool;
 typedef struct _VisAudioSamplePoolChannel VisAudioSamplePoolChannel;
 typedef struct _VisAudioSample VisAudioSample;
 
-struct _VisAudio {
-	VisAudioSamplePool *samplepool;
-};
-
-struct _VisAudioSamplePool {
-	VisObject	 object;
-
-	VisList		*channels;
-};
-
-struct _VisAudioSamplePoolChannel {
-	VisObject	 object;
-
-	VisRingBuffer	*samples;
-	VisTime		    *samples_timeout;
-
-	char		*channelid;
-
-	float		 factor;
-};
-
-struct _VisAudioSample {
-	VisObject			 object;
-
-	VisTime				*timestamp;
-
-	VisAudioSampleRateType		 rate;
-	VisAudioSampleFormatType	 format;
-
-	VisBuffer			*buffer;
-	VisBuffer			*processed;
-};
 
 LV_BEGIN_DECLS
 
@@ -132,6 +100,18 @@ LV_API void visual_audio_get_spectrum_multiplied (VisAudio *audio, VisBuffer *bu
 LV_API void visual_audio_get_spectrum_for_sample (VisBuffer *buffer, VisBuffer *sample, int normalised);
 LV_API void visual_audio_get_spectrum_for_sample_multiplied (VisBuffer *buffer, VisBuffer *sample, int normalised, float multiplier);
 
+LV_API void visual_audio_input (VisAudio *audio,
+                                VisBuffer *buffer,
+                                VisAudioSampleRateType rate,
+                                VisAudioSampleFormatType format,
+                                VisAudioSampleChannelType channeltype);
+
+LV_API void visual_audio_input_channel (VisAudio *audio,
+                                        VisBuffer *buffer,
+                                        VisAudioSampleRateType rate,
+                                        VisAudioSampleFormatType format,
+                                        const char *channelid);
+
 LV_API void visual_audio_normalise_spectrum (VisBuffer *buffer);
 
 LV_API VisAudioSamplePool *visual_audio_samplepool_new (void);
@@ -139,18 +119,6 @@ LV_API int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudio
 LV_API int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudioSamplePoolChannel *channel);
 LV_API VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, const char *channelid);
 LV_API void visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool);
-
-LV_API void visual_audio_samplepool_input (VisAudioSamplePool *samplepool,
-                                           VisBuffer *buffer,
-                                           VisAudioSampleRateType rate,
-                                           VisAudioSampleFormatType format,
-                                           VisAudioSampleChannelType channeltype);
-
-LV_API void visual_audio_samplepool_input_channel (VisAudioSamplePool *samplepool,
-                                                   VisBuffer *buffer,
-                                                   VisAudioSampleRateType rate,
-                                                   VisAudioSampleFormatType format,
-                                                   const char *channelid);
 
 VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (const char *channelid);
 LV_API void visual_audio_samplepool_channel_add (VisAudioSamplePoolChannel *channel, VisAudioSample *sample);

@@ -10,7 +10,7 @@ int main (int argc, char **argv)
 {
 	float rate = 0.0;
 	VisMorph *morph;
-	VisAudio audio;
+	VisAudio *audio;
 	VisVideo *dest, *src1, *src2;
 	int i;
 
@@ -29,6 +29,8 @@ int main (int argc, char **argv)
 	visual_video_set_dimension (dest, 640, 400);
 	visual_video_allocate_buffer (dest);
 
+	audio = visual_audio_new ();
+
 	src1 = visual_video_new ();
 	src2 = visual_video_new ();
 
@@ -39,15 +41,18 @@ int main (int argc, char **argv)
 	visual_video_allocate_buffer (src2);
 
 	visual_morph_set_video (morph, dest);
+
 	for (i = 0; i < TIMES; i++) {
 		visual_morph_set_rate (morph, rate);
-		visual_morph_run (morph, &audio, src1, src2);
+		visual_morph_run (morph, audio, src1, src2);
 
 		rate += 0.1;
 
 		if (rate > 1.0)
 			rate = 0.0;
 	}
+
+	visual_audio_free (audio);
 
 	printf ("Morph throughput bench %d times depthBPP %d morph: %s\n", TIMES, visual_video_get_bpp (dest),
 			(visual_plugin_get_info (visual_morph_get_plugin (morph)))->plugname);
