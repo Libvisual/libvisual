@@ -74,7 +74,7 @@ typedef enum {
 
 #include <libvisual/lv_scoped_ptr.hpp>
 #include <string>
-#include <cstddef>
+#include <cstdarg>
 
 namespace LV {
 
