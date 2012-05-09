@@ -26,6 +26,7 @@
 #include "lv_math.h"
 #include "private/lv_audio_convert.hpp"
 #include <cstdarg>
+#include <map>
 #include <vector>
 
 namespace LV {
@@ -37,7 +38,7 @@ namespace LV {
   {
   public:
 
-      typedef std::vector<AudioChannel*> ChannelList;
+      typedef std::map<std::string, AudioChannel*> ChannelList;
 
       ChannelList channels;
 
@@ -204,31 +205,24 @@ namespace LV {
            channel != channel_end;
            ++channel)
       {
-          delete *channel;
+          delete channel->second;
       }
   }
 
   void Audio::Impl::add_channel (std::string const& name, AudioSample* samples)
   {
       AudioChannel* channel = new AudioChannel (name);
-
       channel->add_samples (samples);
-      channels.push_back (channel);
+
+      channels[name] = channel;
   }
 
   AudioChannel* Audio::Impl::get_channel (std::string const& name) const
   {
       typedef ChannelList::const_iterator ChannelIter;
 
-      for (ChannelIter channel = channels.begin (), channel_end = channels.end ();
-           channel != channel_end;
-           ++channel)
-      {
-          if ((*channel)->name == name)
-              return *channel;
-      }
-
-      return NULL;
+      ChannelIter entry = channels.find (name);
+      return entry != channels.end () ? entry->second : 0;
   }
 
   AudioChannel::AudioChannel (std::string const& name_)
@@ -439,10 +433,10 @@ namespace LV {
       }
   }
 
-  void Audio::input (BufferPtr const& buffer,
-                     VisAudioSampleRateType rate,
+  void Audio::input (BufferPtr const&         buffer,
+                     VisAudioSampleRateType   rate,
                      VisAudioSampleFormatType format,
-                     std::string const& channel_name)
+                     std::string const&       channel_name)
   {
       BufferPtr pcmbuf = LV::Buffer::create ();
       pcmbuf->copy (buffer);
