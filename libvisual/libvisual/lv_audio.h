@@ -24,8 +24,7 @@
 #ifndef _LV_AUDIO_H
 #define _LV_AUDIO_H
 
-#include <libvisual/lv_time.h>
-#include <libvisual/lv_ringbuffer.h>
+#include <libvisual/lv_buffer.h>
 
 /**
  * @defgroup VisAudio VisAudio
