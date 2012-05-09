@@ -100,6 +100,7 @@ SET(libvisual_SOURCES
   lv_transform.cpp
   lv_video.cpp
 
+  lv_audio_c.cpp
   lv_bin_c.cpp
   lv_buffer_c.cpp
   lv_color_c.cpp

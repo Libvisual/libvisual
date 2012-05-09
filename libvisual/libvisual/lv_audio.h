@@ -32,62 +32,109 @@
  * @{
  */
 
-#define VISUAL_AUDIO(obj)                    (VISUAL_CHECK_CAST ((obj), VisAudio))
-#define VISUAL_AUDIO_SAMPLEPOOL(obj)         (VISUAL_CHECK_CAST ((obj), VisAudioSamplePool))
-#define VISUAL_AUDIO_SAMPLEPOOL_CHANNEL(obj) (VISUAL_CHECK_CAST ((obj), VisAudioSamplePoolChannel))
-#define VISUAL_AUDIO_SAMPLE(obj)             (VISUAL_CHECK_CAST ((obj), VisAudioSample))
+#define VISUAL_AUDIO(obj) (VISUAL_CHECK_CAST ((obj), VisAudio))
 
-#define VISUAL_AUDIO_CHANNEL_LEFT	"front left 1"
-#define VISUAL_AUDIO_CHANNEL_RIGHT	"front right 1"
+#define VISUAL_AUDIO_CHANNEL_LEFT   "front left 1"
+#define VISUAL_AUDIO_CHANNEL_RIGHT  "front right 1"
 
-#define VISUAL_AUDIO_CHANNEL_CATEGORY_FRONT	"front"
-#define VISUAL_AUDIO_CHANNEL_CATEGORY_REAR	"rear"
-#define VISUAL_AUDIO_CHANNEL_CATEGORY_RIGHT	"left"
-#define VISUAL_AUDIO_CHANNEL_CATEGORY_LEFT	"right"
+#define VISUAL_AUDIO_CHANNEL_CATEGORY_FRONT "front"
+#define VISUAL_AUDIO_CHANNEL_CATEGORY_REAR  "rear"
+#define VISUAL_AUDIO_CHANNEL_CATEGORY_RIGHT "left"
+#define VISUAL_AUDIO_CHANNEL_CATEGORY_LEFT  "right"
 
 typedef enum {
-	VISUAL_AUDIO_SAMPLE_RATE_NONE = 0,
-	VISUAL_AUDIO_SAMPLE_RATE_8000,
-	VISUAL_AUDIO_SAMPLE_RATE_11250,
-	VISUAL_AUDIO_SAMPLE_RATE_22500,
-	VISUAL_AUDIO_SAMPLE_RATE_32000,
-	VISUAL_AUDIO_SAMPLE_RATE_44100,
-	VISUAL_AUDIO_SAMPLE_RATE_48000,
-	VISUAL_AUDIO_SAMPLE_RATE_96000,
-	VISUAL_AUDIO_SAMPLE_RATE_LAST
+    VISUAL_AUDIO_SAMPLE_RATE_NONE = 0,
+    VISUAL_AUDIO_SAMPLE_RATE_8000,
+    VISUAL_AUDIO_SAMPLE_RATE_11250,
+    VISUAL_AUDIO_SAMPLE_RATE_22500,
+    VISUAL_AUDIO_SAMPLE_RATE_32000,
+    VISUAL_AUDIO_SAMPLE_RATE_44100,
+    VISUAL_AUDIO_SAMPLE_RATE_48000,
+    VISUAL_AUDIO_SAMPLE_RATE_96000,
+    VISUAL_AUDIO_SAMPLE_RATE_LAST
 } VisAudioSampleRateType;
 
 typedef enum {
-	VISUAL_AUDIO_SAMPLE_FORMAT_NONE = 0,
-	VISUAL_AUDIO_SAMPLE_FORMAT_U8,
-	VISUAL_AUDIO_SAMPLE_FORMAT_S8,
-	VISUAL_AUDIO_SAMPLE_FORMAT_U16,
-	VISUAL_AUDIO_SAMPLE_FORMAT_S16,
-	VISUAL_AUDIO_SAMPLE_FORMAT_U32,
-	VISUAL_AUDIO_SAMPLE_FORMAT_S32,
-	VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
-	VISUAL_AUDIO_SAMPLE_FORMAT_LAST
+    VISUAL_AUDIO_SAMPLE_FORMAT_NONE = 0,
+    VISUAL_AUDIO_SAMPLE_FORMAT_U8,
+    VISUAL_AUDIO_SAMPLE_FORMAT_S8,
+    VISUAL_AUDIO_SAMPLE_FORMAT_U16,
+    VISUAL_AUDIO_SAMPLE_FORMAT_S16,
+    VISUAL_AUDIO_SAMPLE_FORMAT_U32,
+    VISUAL_AUDIO_SAMPLE_FORMAT_S32,
+    VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
+    VISUAL_AUDIO_SAMPLE_FORMAT_LAST
 } VisAudioSampleFormatType;
 
 typedef enum {
-	VISUAL_AUDIO_SAMPLE_CHANNEL_NONE = 0,
-	VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO
+    VISUAL_AUDIO_SAMPLE_CHANNEL_NONE = 0,
+    VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO
 } VisAudioSampleChannelType;
 
+#ifdef __cplusplus
 
+#include <libvisual/lv_scoped_ptr.hpp>
+#include <string>
+#include <cstddef>
+
+namespace LV {
+
+  class LV_API Audio
+  {
+  public:
+
+      Audio ();
+
+      ~Audio ();
+
+      bool get_sample (BufferPtr const& buffer, std::string const& channel_name);
+
+      void get_sample_mixed_simple (BufferPtr const& buffer, unsigned int channels, ...);
+      void get_sample_mixed_simple (BufferPtr const& buffer, unsigned int channels, va_list args);
+
+      void get_sample_mixed (BufferPtr const& buffer, bool divide, unsigned int channels, ...);
+      void get_sample_mixed (BufferPtr const& buffer, bool divide, unsigned int channels, va_list args);
+
+      void get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised);
+
+      void get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised, float multiplier);
+
+      static void get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& sample, bool normalised);
+
+      static void get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& sample, bool normalised, float multiplier);
+
+      void input (BufferPtr const& buffer,
+                  VisAudioSampleRateType rate,
+                  VisAudioSampleFormatType format,
+                  VisAudioSampleChannelType channeltype);
+
+      void input (BufferPtr const& buffer,
+                  VisAudioSampleRateType rate,
+                  VisAudioSampleFormatType format,
+                  std::string const& channel_name);
+
+      static void normalise_spectrum (BufferPtr const& buffer);
+
+  private:
+
+      class Impl;
+
+      ScopedPtr<Impl> m_impl;
+  };
+
+} // LV namespace
+
+#endif /* __cplusplus */
+
+#ifdef __cplusplus
+typedef LV::Audio VisAudio;
+#else
 typedef struct _VisAudio VisAudio;
-typedef struct _VisAudioSamplePool VisAudioSamplePool;
-typedef struct _VisAudioSamplePoolChannel VisAudioSamplePoolChannel;
-typedef struct _VisAudioSample VisAudioSample;
-
+struct _VisAudio;
+#endif
 
 LV_BEGIN_DECLS
 
-/**
- * Creates a new VisAudio structure.
- *
- * @return A newly allocated VisAudio, or NULL on failure.
- */
 LV_API VisAudio *visual_audio_new (void);
 LV_API void visual_audio_free (VisAudio *audio);
 
@@ -114,25 +161,6 @@ LV_API void visual_audio_input_channel (VisAudio *audio,
 
 LV_API void visual_audio_normalise_spectrum (VisBuffer *buffer);
 
-LV_API VisAudioSamplePool *visual_audio_samplepool_new (void);
-LV_API int visual_audio_samplepool_add (VisAudioSamplePool *samplepool, VisAudioSample *sample, const char *channelid);
-LV_API int visual_audio_samplepool_add_channel (VisAudioSamplePool *samplepool, VisAudioSamplePoolChannel *channel);
-LV_API VisAudioSamplePoolChannel *visual_audio_samplepool_get_channel (VisAudioSamplePool *samplepool, const char *channelid);
-LV_API void visual_audio_samplepool_flush_old (VisAudioSamplePool *samplepool);
-
-VisAudioSamplePoolChannel *visual_audio_samplepool_channel_new (const char *channelid);
-LV_API void visual_audio_samplepool_channel_add (VisAudioSamplePoolChannel *channel, VisAudioSample *sample);
-LV_API void visual_audio_samplepool_channel_flush_old (VisAudioSamplePoolChannel *channel);
-
-LV_API void visual_audio_sample_buffer_mix (VisBuffer *dest, VisBuffer *src, int divide, float multiplier);
-LV_API void visual_audio_sample_buffer_mix_many (VisBuffer *dest, int divide, int channels, ...);
-
-LV_API VisAudioSample *visual_audio_sample_new (VisBuffer *buffer, VisTime *timestamp,
-		VisAudioSampleFormatType format,
-		VisAudioSampleRateType rate);
-LV_API int visual_audio_sample_has_internal (VisAudioSample *sample);
-LV_API void visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleFormatType format);
-LV_API void visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *src, VisAudioSampleRateType rate);
 LV_API visual_size_t visual_audio_sample_rate_get_length (VisAudioSampleRateType rate);
 LV_API visual_size_t visual_audio_sample_format_get_size (VisAudioSampleFormatType format);
 LV_API int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format);
