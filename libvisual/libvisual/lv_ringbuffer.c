@@ -48,7 +48,7 @@ static void ringbuffer_entry_dtor (VisObject *object)
 	switch (entry->type) {
         case VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER:
 			if (entry->buffer)
-				visual_buffer_free (entry->buffer);
+				visual_buffer_unref (entry->buffer);
 			break;
 
 		case VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION:
@@ -237,7 +237,7 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 
 				buf = visual_buffer_new_wrap_data (visual_buffer_get_data (tempbuf), nbytes - curposition);
 				visual_buffer_put (data, buf, curposition);
-				visual_buffer_free (buf);
+				visual_buffer_unref (buf);
 
 				if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
 					visual_buffer_unref (tempbuf);

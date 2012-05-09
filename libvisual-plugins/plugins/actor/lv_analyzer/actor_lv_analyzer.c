@@ -344,8 +344,8 @@ static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 
 	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
 
-    visual_buffer_free (buffer);
-    visual_buffer_free (pcmb);
+	visual_buffer_unref (buffer);
+	visual_buffer_unref (pcmb);
 
 	int i;
 	int spaces = BARS_DEFAULT_SPACE * (bars - 1);

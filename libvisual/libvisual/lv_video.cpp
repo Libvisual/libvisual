@@ -53,7 +53,7 @@ namespace LV {
       , depth   (VISUAL_VIDEO_DEPTH_NONE)
       , bpp     (0)
       , pitch   (0)
-      , buffer  (new Buffer)
+      , buffer  (Buffer::create ())
       , parent  (0)
   {}
 

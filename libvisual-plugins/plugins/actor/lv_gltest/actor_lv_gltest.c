@@ -253,8 +253,8 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 
 	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
 
-	visual_buffer_free (buffer);
-	visual_buffer_free (pcmb);
+	visual_buffer_unref (buffer);
+	visual_buffer_unref (pcmb);
 
 	for (y = BARS - 1; y > 0; y--)
 	{

@@ -94,7 +94,7 @@ static int lv_scope_cleanup (VisPluginData *plugin)
 
 	visual_palette_free (priv->pal);
 
-	visual_buffer_free (priv->pcm);
+	visual_buffer_unref (priv->pcm);
 
 	visual_mem_free (priv);
 

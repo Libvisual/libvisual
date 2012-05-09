@@ -267,7 +267,7 @@ static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	                               VISUAL_AUDIO_SAMPLE_RATE_44100,
 	                               VISUAL_AUDIO_SAMPLE_FORMAT_S16,
 	                               VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
-	visual_buffer_free (buffer);
+	visual_buffer_unref (buffer);
 
 	return 0;
 }

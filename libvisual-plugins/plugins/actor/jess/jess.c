@@ -177,8 +177,8 @@ static int act_jess_cleanup (VisPluginData *plugin)
 	if (priv->buffer != NULL)
 		visual_mem_free (priv->buffer);
 
-	visual_buffer_free (priv->pcm_data1);
-	visual_buffer_free (priv->pcm_data2);
+	visual_buffer_unref (priv->pcm_data1);
+	visual_buffer_unref (priv->pcm_data2);
 
 	visual_palette_free (priv->jess_pal);
 
@@ -305,8 +305,8 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	visual_audio_get_spectrum_for_sample (fbuf[0], priv->pcm_data1, FALSE);
 	visual_audio_get_spectrum_for_sample (fbuf[1], priv->pcm_data2, FALSE);
 
-	visual_buffer_free (fbuf[0]);
-	visual_buffer_free (fbuf[1]);
+	visual_buffer_unref (fbuf[0]);
+	visual_buffer_unref (fbuf[1]);
 
 	for (i = 0;i < 256; i++) {
 		freqdata[0][i] = freq[0][i] * 32768;

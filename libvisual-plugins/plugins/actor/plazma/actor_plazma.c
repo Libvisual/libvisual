@@ -226,8 +226,8 @@ static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	fbuf = visual_buffer_new_wrap_data (priv->render_buffer, sizeof (float) * 256);
 	visual_audio_get_spectrum_for_sample (fbuf, pcmback, TRUE);
 
-	visual_buffer_free (pcmback);
-	visual_buffer_free (fbuf);
+	visual_buffer_unref (pcmback);
+	visual_buffer_unref (fbuf);
 
 	/* Analyse spectrum data */
 	priv->bass = 0;

@@ -218,28 +218,29 @@ VisPalette *lv_gforce_palette (VisPluginData *plugin)
 int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer pcmbuf;
-	VisBuffer freqbuf;
 	int i;
 	long time;
 	float gSoundBuf[SND_BUF_SIZE];
 	float gFFTBuf[FFT_BUF_SIZE];
 
-	visual_buffer_set_data_pair (&pcmbuf, gSoundBuf, sizeof (gSoundBuf));
-	visual_audio_get_sample_mixed_simple (audio, &pcmbuf, 2,
+	LV::BufferPtr pcmbuf = LV::Buffer::create ();
+	LV::BufferPtr freqbuf = LV::Buffer::create ();
+
+	pcmbuf->set (gSoundBuf, sizeof (gSoundBuf));
+	visual_audio_get_sample_mixed_simple (audio, pcmbuf.get (), 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&freqbuf, gFFTBuf, sizeof (gFFTBuf));
+	freqbuf->set (gFFTBuf, sizeof (gFFTBuf));
 
-	visual_audio_get_spectrum_for_sample_multiplied (&freqbuf, &pcmbuf, TRUE, 3.0);
+	visual_audio_get_spectrum_for_sample_multiplied (freqbuf.get (), pcmbuf.get (), TRUE, 3.0);
 
 	// Increase volume
 	for (i = 0; i < SND_BUF_SIZE; i++)
 		gSoundBuf[i] *= 32768;
 
 	// Set the video buffer
-	priv->gGF->SetOutVideoBuffer ((unsigned char *) visual_video_get_pixels (video));
+	priv->gGF->SetOutVideoBuffer ((unsigned char *) video->get_pixels ());
 
 	time = EgOSUtils::CurTimeMS ();
 	priv->gGF->RecordSample (time, gSoundBuf, .000043, NUMSAMPLES, gFFTBuf, 1, FFT_BUF_SIZE);

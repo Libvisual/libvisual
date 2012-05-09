@@ -274,10 +274,10 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	visual_buffer_set_data_pair (spmbuf, priv->priv1.audio.freqsmall, sizeof (float) * 4);
 	visual_audio_get_spectrum_for_sample (spmbuf, pcmmix, FALSE);
 
-	visual_buffer_free (pcmbuf1);
-	visual_buffer_free (pcmbuf2);
-	visual_buffer_free (spmbuf);
-	visual_buffer_free (pcmmix);
+	visual_buffer_unref (pcmbuf1);
+	visual_buffer_unref (pcmbuf2);
+	visual_buffer_unref (spmbuf);
+	visual_buffer_unref (pcmmix);
 
 	/* Duplicate for second oinksie instance */
 	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (float) * 4096 * 3);

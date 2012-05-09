@@ -169,7 +169,7 @@ static int lv_nebulus_cleanup (VisPluginData *plugin)
 	visual_video_unref (twist_image);
 	visual_video_unref (background_image);
 
-	visual_buffer_free (priv->pcmbuf);
+	visual_buffer_unref (priv->pcmbuf);
 
 	visual_mem_free (priv);
 
@@ -340,7 +340,7 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 
 	buf = visual_buffer_new_wrap_data (freq, sizeof (freq));
 	visual_audio_get_spectrum_for_sample (buf, priv->pcmbuf, FALSE);
-	visual_buffer_free (buf);
+	visual_buffer_unref (buf);
 
 	fbuf = visual_buffer_get_data (priv->pcmbuf);
 

@@ -83,18 +83,27 @@ namespace LV {
   {
   }
 
-  Buffer::Buffer (void* data, std::size_t size, bool own)
-      : m_impl (new Impl)
-      , m_ref_count (1)
+  BufferPtr Buffer::create ()
   {
-      m_impl->wrap (data, size, own);
+      return new Buffer;
   }
 
-  Buffer::Buffer (std::size_t size)
-      : m_impl (new Impl)
-      , m_ref_count (1)
+  BufferPtr Buffer::create (void* data, std::size_t size, bool own)
   {
-      m_impl->allocate (size);
+      BufferPtr self (new Buffer);
+
+      self->m_impl->wrap (data, size, own);
+
+      return self;
+  }
+
+  BufferPtr Buffer::create (std::size_t size)
+  {
+      BufferPtr self (new Buffer);
+
+      self->m_impl->allocate (size);
+
+      return self;
   }
 
   Buffer::~Buffer ()
@@ -147,10 +156,10 @@ namespace LV {
       return m_impl->is_owner;
   }
 
-  void Buffer::copy (VisBuffer const& src)
+  void Buffer::copy (BufferConstPtr const& src)
   {
-      m_impl->allocate (src.m_impl->size);
-      visual_mem_copy (m_impl->data, src.m_impl->data, src.m_impl->size);
+      m_impl->allocate (src->m_impl->size);
+      visual_mem_copy (m_impl->data, src->m_impl->data, src->m_impl->size);
   }
 
   void Buffer::copy_data_to (void* dest)
@@ -160,9 +169,9 @@ namespace LV {
       visual_mem_copy (dest, m_impl->data, m_impl->size);
   }
 
-  void Buffer::put (VisBuffer const& src, std::size_t offset)
+  void Buffer::put (BufferConstPtr const& src, std::size_t offset)
   {
-      put (src.m_impl->data, src.m_impl->size, offset);
+      put (src->m_impl->data, src->m_impl->size, offset);
   }
 
   void Buffer::put (void const* data, std::size_t size, std::size_t offset)
@@ -190,12 +199,12 @@ namespace LV {
           put (data, size, offset);
   }
 
-  void Buffer::ref ()
+  void Buffer::ref () const
   {
       m_ref_count++;
   }
 
-  void Buffer::unref ()
+  void Buffer::unref () const
   {
       m_ref_count--;
       if (m_ref_count == 0) {

@@ -96,8 +96,8 @@ static int lv_goom_cleanup (VisPluginData *plugin)
 	if (priv->goominfo != NULL)
 		goom_close (priv->goominfo);
 
-	visual_buffer_free (priv->pcmbuf1);
-	visual_buffer_free (priv->pcmbuf2);
+	visual_buffer_unref (priv->pcmbuf1);
+	visual_buffer_unref (priv->pcmbuf2);
 
 	visual_mem_free (priv);
 

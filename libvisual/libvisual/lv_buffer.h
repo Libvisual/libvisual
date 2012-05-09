@@ -42,6 +42,7 @@ namespace LV {
   class Buffer;
 
   typedef IntrusivePtr<Buffer> BufferPtr;
+  typedef IntrusivePtr<Buffer const> BufferConstPtr;
 
   class LV_API Buffer
   {
@@ -50,7 +51,7 @@ namespace LV {
       /**
        * Constructs a new empty Buffer.
        */
-      Buffer ();
+      static BufferPtr create ();
 
       /**
        * Constructs a new Buffer with externally allocated content.
@@ -59,14 +60,14 @@ namespace LV {
        * @param size The size of the data (in bytes)
        * @param own  Indicates whether to take ownership
        */
-      Buffer (void *data, std::size_t size, bool own = true);
+      static BufferPtr create (void *data, std::size_t size, bool own = true);
 
       /**
        * Constructs a new Buffer
        *
        * @param size size of the buffer
        */
-      explicit Buffer (std::size_t size);
+      static BufferPtr create (std::size_t size);
 
       ~Buffer ();
 
@@ -137,7 +138,7 @@ namespace LV {
        *
        * @param src source Buffer to clone data from
        */
-      void copy (Buffer const& src);
+      void copy (BufferConstPtr const& src);
 
       /**
        * Copies all the data contained by the buffer into dest.
@@ -150,7 +151,7 @@ namespace LV {
        * @param src    source Buffer
        * @param offset write offset
        */
-      void put (Buffer const& src, std::size_t offset);
+      void put (BufferConstPtr const& src, std::size_t offset);
 
       /**
        * Copies a block of data.
@@ -176,16 +177,17 @@ namespace LV {
        */
       void fill_with_pattern (void const* data, std::size_t size);
 
-      void ref ();
-      void unref ();
+      void ref () const;
+      void unref () const;
 
   private:
 
       class Impl;
 
-      ScopedPtr<Impl> m_impl;
-      unsigned int    m_ref_count;
+      ScopedPtr<Impl>      m_impl;
+      mutable unsigned int m_ref_count;
 
+      Buffer ();
       Buffer (Buffer const&);
       Buffer& operator= (Buffer const&);
   };
@@ -200,6 +202,15 @@ namespace LV {
       buffer->unref ();
   }
 
+  inline void intrusive_ptr_add_ref (Buffer const* buffer)
+  {
+      buffer->ref ();
+  }
+
+  inline void intrusive_ptr_release (Buffer const* buffer)
+  {
+      buffer->unref ();
+  }
 
 } // LV namespace
 
@@ -219,7 +230,6 @@ LV_API VisBuffer *visual_buffer_new_with_data (void *data, visual_size_t size);
 LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size);
 LV_API VisBuffer *visual_buffer_new_allocate  (visual_size_t size);
 LV_API VisBuffer *visual_buffer_clone (VisBuffer *source);
-LV_API void       visual_buffer_free  (VisBuffer *buffer);
 
 LV_API void  visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t size);
 LV_API void  visual_buffer_set_data (VisBuffer *buffer, void *data);

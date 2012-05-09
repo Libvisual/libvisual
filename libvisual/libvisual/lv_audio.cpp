@@ -133,22 +133,22 @@ void visual_audio_get_sample_mixed_simple (VisAudio *audio, VisBuffer *buffer, u
 
 	va_end (ap);
 
-	LV::Buffer temp (buffer->get_size ());
+	LV::BufferPtr temp = LV::Buffer::create (buffer->get_size ());
 	buffer->fill (0);
 
 	bool first = true;
 
 	// The mixing loop
 	for (unsigned int i = 0; i < channels; i++) {
-		if (visual_audio_get_sample (audio, &temp, chanids[i].c_str ())) {
+		if (visual_audio_get_sample (audio, temp.get (), chanids[i].c_str ())) {
 
 			VisAudioSamplePoolChannel* channel = visual_audio_samplepool_get_channel (audio->samplepool, chanids[i].c_str ());
 
 			if (first) {
-				visual_audio_sample_buffer_mix (buffer, &temp, false, channel->factor);
+				visual_audio_sample_buffer_mix (buffer, temp.get (), false, channel->factor);
 				first = false;
 			} else {
-				visual_audio_sample_buffer_mix (buffer, &temp, true, channel->factor);
+				visual_audio_sample_buffer_mix (buffer, temp.get (), true, channel->factor);
 			}
 		}
 	}
@@ -160,10 +160,8 @@ void visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divi
 	visual_return_if_fail (buffer != NULL);
 	visual_return_if_fail (channels > 0);
 
-	visual_log (VISUAL_LOG_INFO, "Channels: %u", channels);
-
 	std::vector<std::string> chanids  (channels);
-	std::vector<double>		 chanmuls (channels);
+	std::vector<double>      chanmuls (channels);
 
 	va_list ap;
 
@@ -178,7 +176,7 @@ void visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divi
 
 	va_end (ap);
 
-	LV::Buffer temp (buffer->get_size ());
+	LV::BufferPtr temp = LV::Buffer::create (buffer->get_size ());
 
 	buffer->fill (0);
 
@@ -186,12 +184,12 @@ void visual_audio_get_sample_mixed (VisAudio *audio, VisBuffer *buffer, int divi
 
 	// The mixing loop
 	for (unsigned int i = 0; i < channels; i++) {
-		if (visual_audio_get_sample (audio, &temp, chanids[i].c_str ())) {
+		if (visual_audio_get_sample (audio, temp.get (), chanids[i].c_str ())) {
 			if (first) {
-				visual_audio_sample_buffer_mix (buffer, &temp, false, chanmuls[i]);
+				visual_audio_sample_buffer_mix (buffer, temp.get (), false, chanmuls[i]);
 				first = false;
 			} else {
-				visual_audio_sample_buffer_mix (buffer, &temp, divide, chanmuls[i]);
+				visual_audio_sample_buffer_mix (buffer, temp.get (), divide, chanmuls[i]);
 			}
 		}
 	}
@@ -203,10 +201,10 @@ void visual_audio_get_spectrum (VisAudio *audio, VisBuffer *buffer, visual_size_
 	visual_return_if_fail (buffer != NULL);
 	visual_return_if_fail (channelid != NULL);
 
-	LV::Buffer sample (samplelen);
+	LV::BufferPtr sample = LV::Buffer::create (samplelen);
 
-	if (visual_audio_get_sample (audio, &sample, channelid))
-		visual_audio_get_spectrum_for_sample (buffer, &sample, normalised);
+	if (visual_audio_get_sample (audio, sample.get (), channelid))
+		visual_audio_get_spectrum_for_sample (buffer, sample.get (), normalised);
 	else
 		buffer->fill (0);
 }
@@ -456,8 +454,8 @@ void visual_audio_sample_buffer_mix_many (VisBuffer *dest, int divide, unsigned 
 {
 	visual_return_if_fail (dest != NULL);
 
-	std::vector<LV::Buffer*> buffers  (channels);
-	std::vector<double>		 chanmuls (channels);
+	std::vector<LV::BufferPtr> buffers  (channels);
+	std::vector<double>		   chanmuls (channels);
 
 	va_list ap;
 
@@ -473,11 +471,11 @@ void visual_audio_sample_buffer_mix_many (VisBuffer *dest, int divide, unsigned 
 	va_end (ap);
 
 	dest->fill (0);
-	visual_audio_sample_buffer_mix (dest, buffers[0], false, chanmuls[0]);
+	visual_audio_sample_buffer_mix (dest, buffers[0].get (), false, chanmuls[0]);
 
 	/* The mixing loop */
 	for (unsigned int i = 1; i < channels; i++)
-		visual_audio_sample_buffer_mix (dest, buffers[0], divide, chanmuls[i]);
+		visual_audio_sample_buffer_mix (dest, buffers[0].get (), divide, chanmuls[i]);
 }
 
 VisAudioSample *visual_audio_sample_new (VisBuffer *buffer,
@@ -494,8 +492,10 @@ VisAudioSample *visual_audio_sample_new (VisBuffer *buffer,
 	sample->timestamp = visual_time_clone (timestamp);
 	sample->rate = rate;
 	sample->format = format;
-	sample->buffer = buffer;
 	sample->processed = NULL;
+
+	sample->buffer = buffer;
+    visual_buffer_ref (sample->buffer);
 
 	return sample;
 }
@@ -516,11 +516,13 @@ void visual_audio_sample_transform_format (VisAudioSample *dest, VisAudioSample 
 	visual_return_if_fail (src	!= NULL);
 
 	if (dest->buffer)
-		visual_buffer_free (dest->buffer);
+		visual_buffer_unref (dest->buffer);
 
-	dest->buffer = new LV::Buffer (
-			visual_audio_sample_rate_get_length (dest->rate) *
-			visual_audio_sample_format_get_size (format));
+	LV::BufferPtr dest_buffer = LV::Buffer::create (visual_audio_sample_rate_get_length (dest->rate) *
+	                                                visual_audio_sample_format_get_size (format));
+	dest_buffer->ref ();
+
+	dest->buffer = dest_buffer.get ();
 	dest->format = format;
 
 	visual_audio_sample_convert (dest->buffer, dest->format, src->buffer, src->format);
@@ -532,11 +534,13 @@ void visual_audio_sample_transform_rate (VisAudioSample *dest, VisAudioSample *s
 	visual_return_if_fail (src != NULL);
 
 	if (dest->buffer)
-		visual_buffer_free (dest->buffer);
+		visual_buffer_unref (dest->buffer);
 
-	dest->buffer = new LV::Buffer (
-			visual_audio_sample_rate_get_length (rate) *
-			visual_audio_sample_format_get_size (src->format));
+	LV::BufferPtr dest_buffer = LV::Buffer::create (visual_audio_sample_rate_get_length (rate) *
+	                                                visual_audio_sample_format_get_size (src->format));
+	dest_buffer->ref ();
+
+	dest->buffer = dest_buffer.get ();
 }
 
 visual_size_t visual_audio_sample_rate_get_length (VisAudioSampleRateType rate)
@@ -640,19 +644,19 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 {
 	std::size_t sample_size = visual_audio_sample_format_get_size (format);
 
-	LV::Buffer *chan1 = new LV::Buffer (sample_size * buffer->get_size () / 2);
-	LV::Buffer *chan2 = new LV::Buffer (sample_size * buffer->get_size () / 2);
+	LV::BufferPtr chan1 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
+	LV::BufferPtr chan2 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
 
-	visual_audio_sample_deinterleave_stereo (chan1, chan2, buffer, format);
+	visual_audio_sample_deinterleave_stereo (chan1.get (), chan2.get (), buffer, format);
 
 	LV::Time timestamp = LV::Time::now ();
 
 	VisAudioSample *sample;
 
-	sample = visual_audio_sample_new (chan1, &timestamp, format, rate);
+	sample = visual_audio_sample_new (chan1.get (), &timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	sample = visual_audio_sample_new (chan2, &timestamp, format, rate);
+	sample = visual_audio_sample_new (chan2.get (), &timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	return VISUAL_OK;

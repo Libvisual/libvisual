@@ -4,32 +4,46 @@
 
 VisBuffer *visual_buffer_new (void)
 {
-    return new LV::Buffer;
+    LV::BufferPtr self = LV::Buffer::create ();
+    self->ref ();
+
+    return self.get ();
 }
 
 VisBuffer *visual_buffer_new_with_data (void *data, visual_size_t size)
 {
-    return new LV::Buffer (data, size);
+    LV::BufferPtr self = LV::Buffer::create (data, size);
+    self->ref ();
+
+    return self.get ();
 }
 
 VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size)
 {
-    return new LV::Buffer (data, size, false);
+    LV::BufferPtr self = LV::Buffer::create (data, size, false);
+    self->ref ();
+
+    return self.get ();
 }
 
 VisBuffer *visual_buffer_new_allocate (visual_size_t size)
 {
-    return new LV::Buffer (size);
+    LV::BufferPtr self = LV::Buffer::create (size);
+    self->ref ();
+
+    return self.get ();
 }
 
 VisBuffer *visual_buffer_clone (VisBuffer *source)
 {
     visual_return_val_if_fail (source != NULL, NULL);
 
-    LV::Buffer* self = new LV::Buffer;
-    self->copy (*source);
+    LV::BufferPtr self = LV::Buffer::create ();
+    self->ref ();
 
-    return self;
+    self->copy (LV::BufferPtr (source));
+
+    return self.get ();
 }
 
 void visual_buffer_free (VisBuffer *self)
@@ -111,7 +125,7 @@ void visual_buffer_put (VisBuffer *self, VisBuffer *src, visual_size_t offset)
 {
    visual_return_if_fail (self != NULL);
 
-   self->put (*src, offset);
+   self->put (LV::BufferPtr (src), offset);
 }
 
 void visual_buffer_put_data (VisBuffer *self, const void *data, visual_size_t size, visual_size_t offset)

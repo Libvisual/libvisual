@@ -290,8 +290,8 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 
 	render_flower_effect (&priv->flower);
 
-	visual_buffer_free (pcmbuf);
-	visual_buffer_free (freqbuf);
+	visual_buffer_unref (pcmbuf);
+	visual_buffer_unref (freqbuf);
 
 	return 0;
 }

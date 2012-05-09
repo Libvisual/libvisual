@@ -306,8 +306,8 @@ static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
 
 	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
 
-	visual_buffer_free (buffer);
-	visual_buffer_free (pcmb);
+	visual_buffer_unref (buffer);
+	visual_buffer_unref (pcmb);
 
 	/* Make our data from the freq data */
 	for (i = 0; i < 256; i++) {
