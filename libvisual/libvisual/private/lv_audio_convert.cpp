@@ -1,5 +1,5 @@
 #include "config.h"
-#include "lv_audio_convert.h"
+#include "lv_audio_convert.hpp"
 #include "lv_audio.h"
 #include "lv_mem.h"
 #include "lv_enable_if.hpp"
@@ -323,26 +323,36 @@ namespace {
 
 } // anonymous namespace
 
-void visual_audio_sample_convert (VisBuffer *dest, VisAudioSampleFormatType dest_format, VisBuffer *src, VisAudioSampleFormatType src_format)
-{
-    void* dbuf = visual_buffer_get_data (dest);
-    void const* sbuf = visual_buffer_get_data (src);
-    std::size_t size = visual_buffer_get_size (src);
+namespace LV {
 
-    int i = int (dest_format) - 1;
-    int j = int (src_format)  - 1;
+  void AudioConvert::convert_samples (BufferPtr const&         dest,
+                                      VisAudioSampleFormatType dest_format,
+                                      BufferConstPtr const&    src,
+                                      VisAudioSampleFormatType src_format)
+    {
+        void* dbuf = dest->get_data ();
+        void const* sbuf = src->get_data ();
+        std::size_t size = src->get_size ();
 
-    convert_func_table[i][j] (dbuf, sbuf, size);
-}
+        int i = int (dest_format) - 1;
+        int j = int (src_format)  - 1;
 
-void visual_audio_sample_deinterleave_stereo (VisBuffer *dest1, VisBuffer *dest2, VisBuffer *src, VisAudioSampleFormatType format)
-{
-    void* dbuf1 = visual_buffer_get_data (dest1);
-    void* dbuf2 = visual_buffer_get_data (dest2);
-    void const* sbuf = visual_buffer_get_data (src);
-    std::size_t size = visual_buffer_get_size (src);
+        convert_func_table[i][j] (dbuf, sbuf, size);
+    }
 
-    int i = int (format) - 1;
+  void AudioConvert::deinterleave_stereo_samples (BufferPtr const&         dest1,
+                                                  BufferPtr const&         dest2,
+                                                  BufferConstPtr const&    src,
+                                                  VisAudioSampleFormatType format)
+  {
+      void* dbuf1 = dest1->get_data ();
+      void* dbuf2 = dest2->get_data ();
+      void const* sbuf = src->get_data ();
+      std::size_t size = src->get_size ();
 
-    deinterleave_stereo_func_table[i] (dbuf1, dbuf2, sbuf, size);
-}
+      int i = int (format) - 1;
+
+      deinterleave_stereo_func_table[i] (dbuf1, dbuf2, sbuf, size);
+  }
+
+} // LV namespace

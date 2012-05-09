@@ -24,13 +24,9 @@
 #include "lv_common.h"
 #include "lv_fourier.h"
 #include "lv_math.h"
-#include "lv_util.h"
-#include "private/lv_audio_convert.h"
-#include <cstring>
-#include <cstdlib>
+#include "private/lv_audio_convert.hpp"
 #include <cstdarg>
 #include <vector>
-#include <iostream>
 
 namespace LV {
 
@@ -119,8 +115,10 @@ namespace LV {
         sample->processed = visual_buffer_new_allocate ((sample->buffer->get_size () /
                                                          visual_audio_sample_format_get_size (sample->format)) * sizeof (float));
 
-        visual_audio_sample_convert (sample->processed, VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
-                                     sample->buffer, sample->format);
+        AudioConvert::convert_samples (LV::BufferPtr (sample->processed),
+                                       VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
+                                       LV::BufferPtr (sample->buffer),
+                                       sample->format);
 
         visual_buffer_ref (sample->processed);
 
@@ -425,7 +423,7 @@ namespace LV {
           LV::BufferPtr chan1 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
           LV::BufferPtr chan2 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
 
-          visual_audio_sample_deinterleave_stereo (chan1.get (), chan2.get (), buffer.get (), format);
+          AudioConvert::deinterleave_stereo_samples (chan1, chan2, buffer, format);
 
           LV::Time timestamp = LV::Time::now ();
 
