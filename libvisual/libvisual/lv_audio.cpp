@@ -305,10 +305,10 @@ namespace LV {
               AudioChannel* channel = m_impl->get_channel (chanids[i]);
 
               if (first) {
-                  sample_buffer_mix (buffer, temp.get (), false, channel->factor);
+                  sample_buffer_mix (buffer, temp, false, channel->factor);
                   first = false;
               } else {
-                  sample_buffer_mix (buffer, temp.get (), true, channel->factor);
+                  sample_buffer_mix (buffer, temp, true, channel->factor);
               }
           }
       }
@@ -345,12 +345,12 @@ namespace LV {
 
       // The mixing loop
       for (unsigned int i = 0; i < channels; i++) {
-          if (get_sample (temp.get (), chanids[i])) {
+          if (get_sample (temp, chanids[i])) {
               if (first) {
-                  sample_buffer_mix (buffer, temp.get (), false, chanmuls[i]);
+                  sample_buffer_mix (buffer, temp, false, chanmuls[i]);
                   first = false;
               } else {
-                  sample_buffer_mix (buffer, temp.get (), divide, chanmuls[i]);
+                  sample_buffer_mix (buffer, temp, divide, chanmuls[i]);
               }
           }
       }
