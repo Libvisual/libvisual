@@ -104,22 +104,17 @@ typedef int (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video, 
  * @see visual_actor_new
  */
 struct _VisActor {
-	VisObject	 object;		/**< The VisObject data. */
-
-	VisPluginData	*plugin;		/**< Pointer to the plugin itself. */
-
-	/* Video management and fake environments when needed */
-	VisVideo	*video;			/**< Pointer to the target display video.
-						 * @see visual_actor_set_video */
-	VisVideo	*transform;		/**< Private member which is used for depth transformation. */
-	VisVideo	*fitting;		/**< Private member which is used to fit the plugin. */
-	VisPalette	*ditherpal;		/**< Private member in which a palette is set when transforming
-						 * depth from true color to indexed.
-						 * @see visual_actor_get_palette */
-
-	/* Songinfo management */
-	VisSongInfo	*songcompare;		/**< Private member which is used to compare with new songinfo
-						  * to check if a new song event should be emitted. */
+	VisObject      object;      /**< The VisObject data. */
+	VisPluginData *plugin;      /**< Pointer to the plugin itself. */
+	VisVideo      *video;       /**< Pointer to the target display video.
+	                               * @see visual_actor_set_video */
+	VisVideo      *transform;   /**< Private member which is used for depth transformation. */
+	VisVideo      *fitting;     /**< Private member which is used to fit the plugin. */
+	VisPalette    *ditherpal;   /**< Private member in which a palette is set when transforming
+	                               * depth from true color to indexed.
+	                               * @see visual_actor_get_palette */
+	VisSongInfo   *songcompare; /**< Private member which is used to compare with new songinfo
+	                               * to check if a new song event should be emitted. */
 };
 
 /**
@@ -129,10 +124,10 @@ struct _VisActor {
  * or a custom target to check for changes.
  */
 struct _VisActorPluginEnviron {
-	VisObject			object;		/**< The VisObject data. */
+	VisObject object;  /**< The VisObject data. */
 
-	int				fps;		/**< The desired fps, set by the plugin, optionally read by
-							 * the display target. */
+	int       fps;     /**< The desired fps, set by the plugin, optionally read by
+	                      * the display target. */
 };
 
 /**
@@ -142,16 +137,15 @@ struct _VisActorPluginEnviron {
  * The actor plugin is the visualisation plugin.
  */
 struct _VisActorPlugin {
-	VisObject			 object;	/**< The VisObject data. */
-	VisPluginActorRequisitionFunc	 requisition;	/**< The requisition function. This is used to
-							 * get the desired VisVideo surface size of the plugin. */
-	VisPluginActorPaletteFunc	 palette;	/**< Used to retrieve the desired palette from the plugin. */
-	VisPluginActorRenderFunc	 render;	/**< The main render loop. This is called to draw a frame. */
+	VisObject                     object;         /**< The VisObject data. */
+	VisPluginActorRequisitionFunc requisition;    /**< The requisition function. This is used to
+	                                                 * get the desired VisVideo surface size of the plugin. */
+	VisPluginActorPaletteFunc     palette;        /**< Used to retrieve the desired palette from the plugin. */
+	VisPluginActorRenderFunc      render;         /**< The main render loop. This is called to draw a frame. */
 
-	VisSongInfo			 *songinfo;	/**< Pointer to VisSongInfo that contains information about
-							 *the current playing song. This can be NULL. */
-
-	VisVideoAttrOptions	 vidoptions;
+	VisSongInfo                  *songinfo;       /**< Pointer to VisSongInfo that contains information about
+	                                                 *the current playing song. This can be NULL. */
+	VisVideoAttrOptions           vidoptions;
 };
 
 LV_BEGIN_DECLS
@@ -245,19 +239,6 @@ LV_API const char *visual_actor_get_prev_by_name (const char *name);
  * @return A newly allocated VisActor, optionally containing a loaded plugin. Or NULL on failure.
  */
 LV_API VisActor *visual_actor_new (const char *actorname);
-
-/**
- * Initializes a VisActor, this will set the allocated flag for the object to FALSE. Should not
- * be used to reset a VisActor, or on a VisActor created by visual_actor_new().
- *
- * @see visual_actor_new
- *
- * @param actor Pointer to the VisActor that is initialized.
- * @param actorname The name of the plugin to load, or NULL to simply initialize a new actor.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
- */
-LV_API int visual_actor_init (VisActor *actor, const char *actorname);
 
 /**
  * Realize the VisActor. This also calls the plugin init function.

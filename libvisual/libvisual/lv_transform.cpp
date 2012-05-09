@@ -36,6 +36,7 @@ namespace LV {
 
 } // LV namespace
 
+static int visual_transform_init (VisTransform *transform, const char *transformname);
 
 static void transform_dtor (VisObject *object);
 

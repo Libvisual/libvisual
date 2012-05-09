@@ -37,6 +37,8 @@ namespace {
 
 } // Anonymous namespace
 
+static int visual_input_init (VisInput *input, const char *inputname);
+
 static void input_dtor (VisObject *object);
 
 static VisInputPlugin *get_input_plugin (VisInput *input);

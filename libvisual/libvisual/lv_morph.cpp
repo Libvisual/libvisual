@@ -37,6 +37,8 @@ namespace {
 
 } // anonymous namespace
 
+static int visual_morph_init (VisMorph *morph, const char *morphname);
+
 static void morph_dtor (VisObject *object);
 
 static VisMorphPlugin *get_morph_plugin (VisMorph *morph);

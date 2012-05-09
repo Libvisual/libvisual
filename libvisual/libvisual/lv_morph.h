@@ -131,16 +131,16 @@ struct _VisMorph {
  * VisActors.
  */
 struct _VisMorphPlugin {
-    VisObject            object;    /**< The VisObject data. */
-    VisPluginMorphPaletteFunc    palette;   /**< The plugin's palette function. This can be used
-                              * to obtain a palette for VISUAL_VIDEO_DEPTH_8BIT surfaces.
-                              * However the function may be set to NULL. In this case the
-                              * VisMorph system morphs between palettes itself. */
-    VisPluginMorphApplyFunc      apply;     /**< The plugin it's main function. This is used to morph
-                              * between two VisVideo sources. */
-    int              requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
-                              * requires an VisAudio context in order to render properly. */
-    VisVideoAttrOptions     vidoptions;
+    VisObject                 object;         /**< The VisObject data. */
+    VisPluginMorphPaletteFunc palette;        /**< The plugin's palette function. This can be used
+                                                * to obtain a palette for VISUAL_VIDEO_DEPTH_8BIT surfaces.
+                                                * However the function may be set to NULL. In this case the
+                                                * VisMorph system morphs between palettes itself. */
+    VisPluginMorphApplyFunc   apply;          /**< The plugin it's main function. This is used to morph
+                                                 * between two VisVideo sources. */
+    int                       requests_audio; /**< When set on TRUE this will indicate that the Morph plugin
+                                                 * requires an VisAudio context in order to render properly. */
+    VisVideoAttrOptions       vidoptions;
 };
 
 LV_BEGIN_DECLS
@@ -186,20 +186,6 @@ LV_API const char *visual_morph_get_prev_by_name (const char *name);
  * @return A newly allocated VisMorph, optionally containing a loaded plugin. Or NULL on failure.
  */
 LV_API VisMorph *visual_morph_new (const char *morphname);
-
-/**
- * Initializes a VisMorph, this will set the allocated flag for the object to FALSE. Should not
- * be used to reset a VisMorph, or on a VisMorph created by visual_morph_new().
- *
- * @see visual_morph_new
- *
- * @param morph Pointer to the VisMorph that is initialized.
- * @param morphname
- *  The name of the plugin to load, or NULL to simply initialize a new morph.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
- */
-LV_API int visual_morph_init (VisMorph *morph, const char *morphname);
 
 /**
  * Realize the VisMorph. This also calls the plugin init function.

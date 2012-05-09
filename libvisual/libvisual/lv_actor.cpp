@@ -43,13 +43,13 @@ namespace {
 } // LV namespace
 
 
-extern "C" {
-
 static void actor_dtor (VisObject *object);
 
 static VisActorPlugin *get_actor_plugin (VisActor *actor);
 static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced);
 static int negotiate_video (VisActor *actor, int noevent);
+
+static int visual_actor_init (VisActor *actor, const char *actorname);
 
 static void actor_dtor (VisObject *object)
 {
@@ -523,5 +523,3 @@ void visual_actor_run (VisActor *actor, VisAudio *audio)
         }
     }
 }
-
-} // C extern
