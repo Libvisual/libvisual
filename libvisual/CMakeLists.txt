@@ -106,12 +106,6 @@ INCLUDE(CheckForVarArgs)
 CHECK_FOR_ISO_C_VARARGS(LV_HAVE_ISO_C_VARARGS)
 CHECK_FOR_GNU_C_VARARGS(LV_HAVE_GNU_C_VARARGS)
 
-# Check for standard C library headers
-INCLUDE(CheckStdCHeaders)
-IF(NOT STDC_HEADERS)
-  MESSAGE(FATAL ERROR "Libvisual requires standard C library headers to build")
-ENDIF()
-
 # TODO: Generate error when a required header is missing
 CHECK_INCLUDE_FILE(dirent.h     HAVE_DIRENT_H)
 CHECK_INCLUDE_FILE(fcntl.h      HAVE_FCNTL_H)
