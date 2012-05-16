@@ -28,8 +28,6 @@
 #include "lv_bits.h"
 #include <string.h>
 #include <stdlib.h>
-#include "gettext.h"
-
 
 /* Standard C fallbacks */
 static void *mem_copy_c (void *dest, const void *src, visual_size_t n);
@@ -120,7 +118,7 @@ void *visual_mem_malloc (visual_size_t nbytes)
 	buf = malloc (nbytes);
 
 	if (buf == NULL) {
-		visual_log (VISUAL_LOG_ERROR, _("Cannot get %" VISUAL_SIZE_T_FORMAT " bytes of memory"), nbytes);
+		visual_log (VISUAL_LOG_ERROR, "Cannot get %" VISUAL_SIZE_T_FORMAT " bytes of memory", nbytes);
 
 		return NULL;
 	}

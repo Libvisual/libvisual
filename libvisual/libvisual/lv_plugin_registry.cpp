@@ -11,7 +11,6 @@
 #include "lv_util.hpp"
 #include "lv_libvisual.h"
 #include "lv_module.hpp"
-#include "gettext.h"
 
 #include <vector>
 #include <map>
@@ -85,7 +84,7 @@ namespace LV {
           int* plugin_version = static_cast<int*> (module->get_symbol (VISUAL_PLUGIN_VERSION_TAG));
 
           if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
-              visual_log (VISUAL_LOG_ERROR, _("Plugin %s is not compatible with version %s of libvisual"),
+              visual_log (VISUAL_LOG_ERROR, "Plugin %s is not compatible with version %s of libvisual",
                           plugin_path.c_str (), visual_get_version ());
               return NULL;
           }
@@ -94,14 +93,14 @@ namespace LV {
               reinterpret_cast<VisPluginGetInfoFunc> (module->get_symbol ("get_plugin_info"));
 
           if (!get_plugin_info) {
-              visual_log (VISUAL_LOG_ERROR, _("Cannot get function that returns plugin info"));
+              visual_log (VISUAL_LOG_ERROR, "Cannot get function that returns plugin info");
               return NULL;
           }
 
           VisPluginInfo const* plugin_info = get_plugin_info ();
 
           if (!plugin_info) {
-              visual_log (VISUAL_LOG_ERROR, _("Cannot get plugin info"));
+              visual_log (VISUAL_LOG_ERROR, "Cannot get plugin info");
               return NULL;
           }
 

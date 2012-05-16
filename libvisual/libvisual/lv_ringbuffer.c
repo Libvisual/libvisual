@@ -24,7 +24,6 @@
 #include "config.h"
 #include "lv_ringbuffer.h"
 #include "lv_common.h"
-#include "gettext.h"
 
 static void ringbuffer_dtor (VisObject *object);
 static void ringbuffer_entry_dtor (VisObject *object);
@@ -223,8 +222,8 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 				 * recover, it's a very obvious bug in the software */
 				if (entry->datafunc == NULL) {
 					visual_log (VISUAL_LOG_ERROR,
-							_("No VisRingBufferDataFunc data provider function set on "
-								"type VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION"));
+							"No VisRingBufferDataFunc data provider function set on "
+							"type VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION");
 
 					return -VISUAL_ERROR_IMPOSSIBLE;
 				}

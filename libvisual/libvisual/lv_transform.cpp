@@ -25,7 +25,6 @@
 #include "lv_transform.h"
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
-#include "gettext.h"
 
 namespace LV {
 
@@ -103,7 +102,7 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
     visual_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
 
     if (transformname && !LV::transform_plugin_get_list ().empty ()) {
-        visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
+        visual_log (VISUAL_LOG_ERROR, "the plugin list is NULL");
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
     }
 
@@ -249,7 +248,7 @@ int visual_transform_run_video (VisTransform *transform, VisAudio *audio)
 
     if (transplugin == NULL) {
         visual_log (VISUAL_LOG_ERROR,
-            _("The given transform does not reference any transform plugin"));
+            "The given transform does not reference any transform plugin");
 
         return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
     }
@@ -274,7 +273,7 @@ int visual_transform_run_palette (VisTransform *transform, VisAudio *audio)
 
     if (transplugin == NULL) {
         visual_log (VISUAL_LOG_ERROR,
-            _("The given transform does not reference any transform plugin"));
+            "The given transform does not reference any transform plugin");
 
         return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
     }

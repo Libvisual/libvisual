@@ -64,7 +64,7 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
     pthread_attr_destroy (&attr);
 
     if (result != 0) {
-        visual_log (VISUAL_LOG_ERROR, _("Error while creating thread"));
+        visual_log (VISUAL_LOG_ERROR, "Error while creating thread");
 
         visual_mem_free (thread);
 
@@ -88,7 +88,7 @@ void *visual_thread_join (VisThread *thread)
     visual_return_val_if_fail (thread != NULL, NULL);
 
     if (pthread_join (thread->thread, &result) < 0) {
-        visual_log (VISUAL_LOG_ERROR, _("Error while joining thread"));
+        visual_log (VISUAL_LOG_ERROR, "Error while joining thread");
 
         return NULL;
     }

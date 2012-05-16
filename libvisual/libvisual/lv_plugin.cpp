@@ -27,7 +27,6 @@
 #include "lv_libvisual.h"
 #include "lv_util.h"
 #include "lv_plugin_registry.h"
-#include "gettext.h"
 #include <algorithm>
 #include <cstdio>
 #include <cstring>

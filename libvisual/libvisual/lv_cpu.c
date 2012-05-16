@@ -33,7 +33,6 @@
 #include "config.h"
 #include "lv_cpu.h"
 #include "lv_common.h"
-#include "gettext.h"
 #include <unistd.h>
 
 #if defined(VISUAL_ARCH_POWERPC)
@@ -534,7 +533,7 @@ const VisCPU *visual_cpu_get_caps ()
 int visual_cpu_has_mmx ()
 {
 	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasMMX;
 }
@@ -542,7 +541,7 @@ int visual_cpu_has_mmx ()
 int visual_cpu_has_mmx2 ()
 {
 	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasMMX2;
 }
@@ -550,14 +549,14 @@ int visual_cpu_has_mmx2 ()
 int visual_cpu_has_sse ()
 {
 	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasSSE;
 }
 int visual_cpu_has_sse2 ()
 {
 	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasSSE2;
 }
@@ -565,7 +564,7 @@ int visual_cpu_has_sse2 ()
 int visual_cpu_has_3dnow ()
 {
 	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.has3DNow;
 }
@@ -573,7 +572,7 @@ int visual_cpu_has_3dnow ()
 int visual_cpu_has_3dnow2 ()
 {
 	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.has3DNowExt;
 }
@@ -581,7 +580,7 @@ int visual_cpu_has_3dnow2 ()
 int visual_cpu_has_altivec ()
 {
 	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasAltiVec;
 }
@@ -589,7 +588,7 @@ int visual_cpu_has_altivec ()
 int visual_cpu_has_armv7 (void)
 {
     if (!__lv_cpu_initialized)
-	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasARMv7;
 }
@@ -597,7 +596,7 @@ int visual_cpu_has_armv7 (void)
 int visual_cpu_has_vfpv3 (void)
 {
     if (!__lv_cpu_initialized)
-	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasVFPv3;
 }
@@ -605,7 +604,7 @@ int visual_cpu_has_vfpv3 (void)
 int visual_cpu_has_neon (void)
 {
     if (!__lv_cpu_initialized)
-        visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+        visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasNeon;
 }
@@ -613,7 +612,7 @@ int visual_cpu_has_neon (void)
 int visual_cpu_has_ldrex_strex (void)
 {
     if (!__lv_cpu_initialized)
-	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
 
 	return __lv_cpu_caps.hasLDREX_STREX;
 }

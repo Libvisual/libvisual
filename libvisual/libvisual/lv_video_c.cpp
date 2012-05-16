@@ -26,7 +26,6 @@
 #include <config.h>
 #include "lv_video.h"
 #include "lv_common.h"
-#include "gettext.h"
 
 VisVideo *visual_video_new ()
 {

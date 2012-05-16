@@ -23,7 +23,6 @@
 #include "lv_bin.h"
 #include "lv_common.h"
 #include "lv_list.h"
-#include "gettext.h"
 
 namespace LV {
 
@@ -454,7 +453,7 @@ namespace LV {
 
       VisVideoDepth depthflag = visual_actor_get_supported_depth (actor);
       if (visual_video_depth_is_supported (depthflag, VISUAL_VIDEO_DEPTH_GL)) {
-          visual_log (VISUAL_LOG_INFO, _("Switching to GL mode"));
+          visual_log (VISUAL_LOG_INFO, "Switching to GL mode");
 
           m_impl->depthforced = VISUAL_VIDEO_DEPTH_GL;
           m_impl->depthforcedmain = VISUAL_VIDEO_DEPTH_GL;
@@ -464,7 +463,7 @@ namespace LV {
           set_depth (VISUAL_VIDEO_DEPTH_GL);
           m_impl->depthchanged = true;
       } else {
-          visual_log (VISUAL_LOG_INFO, _("Switching away from Gl mode -- or non Gl switch"));
+          visual_log (VISUAL_LOG_INFO, "Switching away from Gl mode -- or non Gl switch");
 
           /* Switching from GL */
           video->set_depth (m_impl->get_suitable_depth (depthflag));
@@ -474,7 +473,7 @@ namespace LV {
           /* After a depth change, the pitch value needs an update from the client
            * if it's different from width * bpp, after a visual_bin_sync
            * the issues are fixed again */
-          visual_log (VISUAL_LOG_INFO, _("video depth (from fixate): %d"), video->get_depth ());
+          visual_log (VISUAL_LOG_INFO, "video depth (from fixate): %d", video->get_depth ());
 
           /* FIXME check if there are any unneeded depth transform environments and drop these */
           visual_log (VISUAL_LOG_DEBUG, "checking if we need to drop something: depthforcedmain: %d actvideo->depth %d",
@@ -490,7 +489,7 @@ namespace LV {
               && m_impl->actvideo->get_depth () != VISUAL_VIDEO_DEPTH_GL
               && m_impl->morphstyle == VISUAL_SWITCH_STYLE_MORPH) {
 
-              visual_log (VISUAL_LOG_INFO, _("old depth is higher, video depth %d, depth %d, bin depth %d"),
+              visual_log (VISUAL_LOG_INFO, "old depth is higher, video depth %d, depth %d, bin depth %d",
                           video->get_depth (), depth, m_impl->depth);
 
               m_impl->depthforced = depth;
@@ -501,7 +500,7 @@ namespace LV {
 
           } else if (m_impl->actvideo->get_depth () != VISUAL_VIDEO_DEPTH_GL) {
 
-              visual_log (VISUAL_LOG_INFO, _("new depth is higher, or equal: video depth %d, depth %d bin depth %d"),
+              visual_log (VISUAL_LOG_INFO, "new depth is higher, or equal: video depth %d, depth %d bin depth %d",
                           video->get_depth (), depth, m_impl->depth);
 
               visual_log (VISUAL_LOG_DEBUG, "depths i can locate: actvideo: %d   bin: %d     bin-old: %d",
@@ -520,16 +519,16 @@ namespace LV {
               m_impl->depthforced = video->get_depth ();
               m_impl->depthforcedmain = video->get_depth ();
 
-              visual_log (VISUAL_LOG_INFO, _("Switching from GL to framebuffer for real, framebuffer depth: %d"),
+              visual_log (VISUAL_LOG_INFO, "Switching from GL to framebuffer for real, framebuffer depth: %d",
                           video->get_depth ());
           }
 
-          visual_log (VISUAL_LOG_INFO, _("Target depth selected: %d"), depth);
+          visual_log (VISUAL_LOG_INFO, "Target depth selected: %d", depth);
       }
 
       video = Video::create (width, height, depth);
 
-      visual_log (VISUAL_LOG_INFO, _("video pitch of that what connects to the new actor %d"),
+      visual_log (VISUAL_LOG_INFO, "video pitch of that what connects to the new actor %d",
                   video->get_pitch ());
 
       visual_actor_set_video (actor, video.get ());
@@ -537,10 +536,10 @@ namespace LV {
       m_impl->actmorphvideo = video;
       m_impl->actmorphmanaged = true;
 
-      visual_log (VISUAL_LOG_INFO, _("switching... ******************************************"));
+      visual_log (VISUAL_LOG_INFO, "switching... ******************************************");
       switch_actor (actor);
 
-      visual_log (VISUAL_LOG_INFO, _("end switch actor by name function ******************"));
+      visual_log (VISUAL_LOG_INFO, "end switch actor by name function ******************");
   }
 
   void Bin::switch_actor (VisActor *actor)
@@ -555,7 +554,7 @@ namespace LV {
       /* Free the private video */
       m_impl->privvid = NULL;
 
-      visual_log (VISUAL_LOG_INFO, _("depth of the main actor: %d"),
+      visual_log (VISUAL_LOG_INFO, "depth of the main actor: %d",
                   m_impl->actor->video->get_depth ());
 
       /* Starting the morph, but first check if we don't have anything todo with openGL */
@@ -671,9 +670,9 @@ namespace LV {
 
       /* FIXME replace with a depth fixer */
       if (m_impl->depthchanged) {
-          visual_log (VISUAL_LOG_INFO, _("negotiate without event"));
+          visual_log (VISUAL_LOG_INFO, "negotiate without event");
           visual_actor_video_negotiate (m_impl->actor, m_impl->depthforcedmain, true, true);
-          visual_log (VISUAL_LOG_INFO, _("end negotiate without event"));
+          visual_log (VISUAL_LOG_INFO, "end negotiate without event");
           /*    visual_bin_sync (bin); */
       }
 

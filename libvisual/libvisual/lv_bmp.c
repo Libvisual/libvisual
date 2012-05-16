@@ -26,9 +26,9 @@
 #include "lv_bmp.h"
 #include "lv_common.h"
 #include "lv_bits.h"
-#include "gettext.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #define BI_RGB	0
 #define BI_RLE8	1
@@ -129,7 +129,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	return VISUAL_OK;
 
 err:
-	visual_log (VISUAL_LOG_ERROR, _("Bitmap data is not complete"));
+	visual_log (VISUAL_LOG_ERROR, "Bitmap data is not complete");
 
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
@@ -233,7 +233,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	return VISUAL_OK;
 
 err:
-	visual_log (VISUAL_LOG_ERROR, _("Bitmap data is not complete"));
+	visual_log (VISUAL_LOG_ERROR, "Bitmap data is not complete");
 
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
@@ -267,14 +267,14 @@ VisVideo *visual_bitmap_load (const char *filename)
 
 	fp = fopen (filename, "rb");
 	if (fp == NULL) {
-		visual_log (VISUAL_LOG_WARNING, _("Bitmap file not found: %s"), filename);
+		visual_log (VISUAL_LOG_WARNING, "Bitmap file not found: %s", filename);
 		return NULL;
 	}
 
 	/* Read the magic string */
 	fread (magic, 2, 1, fp);
 	if (strncmp (magic, "BM", 2) != 0) {
-		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file"));
+		visual_log (VISUAL_LOG_WARNING, "Not a bitmap file");
 		fclose (fp);
 		return NULL;
 	}
@@ -339,13 +339,13 @@ VisVideo *visual_bitmap_load (const char *filename)
 
 	/* Check if we can handle it */
 	if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
-		visual_log (VISUAL_LOG_ERROR, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
+		visual_log (VISUAL_LOG_ERROR, "Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported");
 		fclose (fp);
 		return NULL;
 	}
 
 	if (bi_compression > 3) {
-		visual_log (VISUAL_LOG_ERROR, _("Bitmap uses an invalid or unsupported compression scheme"));
+		visual_log (VISUAL_LOG_ERROR, "Bitmap uses an invalid or unsupported compression scheme");
 		fclose (fp);
 		return NULL;
 	}

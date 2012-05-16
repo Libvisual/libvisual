@@ -25,7 +25,6 @@
 #include "lv_input.h"
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
-#include "gettext.h"
 
 namespace {
 
@@ -101,7 +100,7 @@ int visual_input_init (VisInput *input, const char *inputname)
     visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
     if (inputname && get_input_plugin_list ().empty ()) {
-        visual_log (VISUAL_LOG_ERROR, _("the plugin list is empty"));
+        visual_log (VISUAL_LOG_ERROR, "the plugin list is empty");
 
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
     }
