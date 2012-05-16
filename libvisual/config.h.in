@@ -19,27 +19,14 @@
 
 #cmakedefine HAVE_DIRENT_H     1
 #cmakedefine HAVE_DLFCN_H      1
-#cmakedefine HAVE_FCNTL_H      1
-#cmakedefine HAVE_INTTYPES_H   1
 #cmakedefine HAVE_SCHED_H      1
-#cmakedefine HAVE_SYSCONF      1
 #cmakedefine HAVE_SYS_SCHED_H  1
-#cmakedefine HAVE_SYS_SELECT_H 1
-#cmakedefine HAVE_SYS_SOCKET_H 1
-#cmakedefine HAVE_SYS_STAT_H   1
 #cmakedefine HAVE_SYS_TIME_H   1
 #cmakedefine HAVE_UNISTD_H     1
 
-#cmakedefine HAVE_GETTIMEOFDAY 1
+#cmakedefine HAVE_SYSCONF      1
 #cmakedefine HAVE_USLEEP       1
 #cmakedefine HAVE_NANOSLEEP    1
-#cmakedefine HAVE_SELECT       1
-#cmakedefine HAVE_SQRT         1
-
-#define SIZEOF_INT             @SIZEOF_INT@
-#define SIZEOF_LONG            @SIZEOF_LONG@
-#define SIZEOF_SHORT           @SIZEOF_SHORT@
-#define SIZEOF_SIZE_T          @SIZEOF_SIZE_T@
 
 #ifndef __cplusplus
 #cmakedefine HAVE_C_INLINE
