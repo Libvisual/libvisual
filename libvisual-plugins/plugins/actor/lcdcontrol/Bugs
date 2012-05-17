@@ -1,0 +1,3 @@
+If you configure a device with two or more of the same layout, you'll have that many more widgets
+firing at the same time. Solution is to enumerate each layout in the same manner as widgets, e.g.
+layout_bar:0 and layout_bar:1

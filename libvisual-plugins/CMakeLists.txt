@@ -37,6 +37,7 @@ SET(GTK_REQUIRED_VERSION    2.0)
 SET(GST_REQUIRED_VERSION    0.8)
 SET(PULSE_REQUIRED_VERSION  1.0)
 SET(XMMS2_REQUIRED_VERSION  0.6)
+SET(LUAJIT_REQUIRED_VERSION 0.26)
 
 # Check for pkg-config
 FIND_PACKAGE(PkgConfig REQUIRED)
@@ -146,6 +147,7 @@ OPTION(ENABLE_SLIDE       "Build the Slide morph plugin" yes)
 OPTION(ENABLE_TENTACLE    "Build the Tentacle morph plugin" yes)
 OPTION(ENABLE_WAVEIN      "Build the Windows WaveIn plugin" yes)
 OPTION(ENABLE_CHECKERS    "Build the checkers morph plugin" yes)
+OPTION(ENABLE_LCDCONTROL  "Build the LCDControl actor plugin" yes)
 
 
 # Check for plugin dependencies
@@ -260,6 +262,14 @@ IF(ENABLE_WAVEIN)
     SET(ENABLE_WAVEIN no)
   ENDIF()
 ENDIF()
+
+IF(ENABLE_LCDCONTROL)
+  PKG_CHECK_MODULES(LUAJIT luajit>=${LUAJIT_REQUIRED_VERSION})
+  IF(NOT LUAJIT_FOUND)
+    MESSAGE(WARNING "LuaJIT was not found and is required for the LCDControl plugin.")
+    SET(ENABLE_LCDCONTROL no)
+  ENDIF(NOT LUAJIT_FOUND)
+ENDIF(ENABLE_LCDCONTROL)
 
 # Build parameters
 
