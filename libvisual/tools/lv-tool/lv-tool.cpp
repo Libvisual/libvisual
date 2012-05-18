@@ -522,9 +522,6 @@ int main (int argc, char **argv)
 
     //printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
 
-    visual_object_unref(VISUAL_OBJECT(actor));
-    visual_object_unref(VISUAL_OBJECT(input));
-    visual_object_unref(VISUAL_OBJECT(bin));
     visual_quit ();
 
     return EXIT_SUCCESS;
