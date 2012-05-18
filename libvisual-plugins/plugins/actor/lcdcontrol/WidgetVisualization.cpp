@@ -173,7 +173,6 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
 
     LCDError("WidgetVisualization: Using <%s> actor - requested <%s>", proxy_.plugin, actor.c_str());
 
-    bin_ = visual_bin_new();
     bin_ = new LV::Bin();
     bin_->set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
     bin_->switch_set_style(VISUAL_SWITCH_STYLE_MORPH);
@@ -435,10 +434,7 @@ void WidgetVisualization::UpdatePCM()
     
         depth_ = visual_video_depth_get_highest_nogl(depthflag);
 
-/*
         visual_video_free_buffer(proxy_.video);
-        visual_object_unref(VISUAL_OBJECT(proxy_.video));
-*/
 
         video_ = visual_video_new_with_buffer(cols_, rows_, depth_);
 
@@ -447,15 +443,12 @@ void WidgetVisualization::UpdatePCM()
         bin_->sync(TRUE);
     }
 
-    //bin_->run();
+    bin_->run();
 
     //proxy_.pal = visual_actor_get_palette(actor_);
-/*
+
     if(Draw)
         Draw(this);
-    else
-        LCDError("WidgetVisualization: No draw method");
-*/
 }
 
 void WidgetVisualization::VisualMorph() {

@@ -146,10 +146,11 @@ int lcdcontrol_cleanup (VisPluginData *plugin)
     //priv->control->Stop();
 
     /* deinitialize pthreads */
-    //pthread_attr_destroy(&priv->attr);
 
     /* join thread */
     //pthread_join(priv->id, 0);
+
+    //pthread_attr_destroy(&priv->attr);
 
     //visual_thread_free(priv->thread);
 
