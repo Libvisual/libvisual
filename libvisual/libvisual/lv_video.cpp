@@ -90,7 +90,8 @@ namespace LV {
 
       self->set_depth (depth);
       self->set_dimension (width, height);
-      self->allocate_buffer ();
+      if(depth != VISUAL_VIDEO_DEPTH_NONE)
+          self->allocate_buffer ();
 
       return self;
   }
