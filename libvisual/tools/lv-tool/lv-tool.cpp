@@ -52,6 +52,7 @@ namespace {
   std::string input_name = DEFAULT_INPUT;
   std::string morph_name = DEFAULT_MORPH;
   std::string driver_name = DEFAULT_DRIVER;
+  std::string ignore_actors;
 
   unsigned int width  = DEFAULT_WIDTH;
   unsigned int height = DEFAULT_HEIGHT;
@@ -144,11 +145,12 @@ namespace {
 		  {"morph",       required_argument, 0, 'm'},
 		  {"fps",         required_argument, 0, 'f'},
 		  {"seed",        required_argument, 0, 's'},
+          {"ignore",      required_argument, 0, 'x'},
 		  {"framecount",  required_argument, 0, 'F'},
 		  {0,             0,                 0,  0 }
 	  };
 
-      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:", loptions, &index)) >= 0) {
+      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:x:", loptions, &index)) >= 0) {
 
           switch(argument) {
               // --help
@@ -232,6 +234,12 @@ namespace {
                   break;
               }
 
+              // --ignore
+              case 'x': {
+                  ignore_actors = optarg;
+                  break;
+              }
+
               // invalid argument
               case '?': {
                   print_help(argv[0]);
@@ -261,6 +269,9 @@ namespace {
       }
 
       actor_name = name;
+
+      if(strstr(ignore_actors.c_str(), name) != 0)
+        v_cycleActor(prev);
   }
 
   void v_cycleMorph ()
