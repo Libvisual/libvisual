@@ -444,7 +444,7 @@ namespace LV {
       VisActor *actor = visual_actor_new (actname.c_str ());
       visual_return_if_fail (actor != NULL);
 
-      VideoPtr video;
+      VideoPtr video = LV::Video::create();
 
       int width  = m_impl->actvideo->get_width ();
       int height = m_impl->actvideo->get_height ();

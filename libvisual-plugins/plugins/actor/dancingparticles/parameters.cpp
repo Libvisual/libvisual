@@ -278,7 +278,7 @@ void  init_parameters();
 void changep()
 {
   int i;
-  int tot=0;
+  int tot=1;
   int r;
   static int lasti=-1;
 
