@@ -112,7 +112,8 @@ namespace {
                   "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
-                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n",
+                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n"
+                  "\t--ignore <actors>\t-x <actors>\tProvide a list of actors to ignore.\n\n",
                   "http://github.com/StarVisuals/libvisual",
                   name.c_str (),
                   width, height,
