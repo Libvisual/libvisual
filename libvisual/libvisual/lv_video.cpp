@@ -55,6 +55,7 @@ namespace LV {
       , pitch   (0)
       , buffer  (Buffer::create ())
       , parent  (0)
+      , compose_type (VISUAL_VIDEO_COMPOSE_TYPE_NONE)
   {}
 
   Video::Impl::~Impl ()
