@@ -197,7 +197,7 @@ int lcdcontrol_dimension (VisPluginData *plugin, VisVideo *video, int width, int
 
 int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
+	//LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
 
 	while (visual_event_queue_poll (events, &ev)) {
@@ -210,6 +210,7 @@ int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
 */
 				break;
             }
+/*
             case VISUAL_EVENT_GENERIC:
             {
                 priv->control->Lock();
@@ -219,6 +220,7 @@ int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
                 
                 break;
             }
+*/
 			default: /* to avoid warnings */
             {
 				break;

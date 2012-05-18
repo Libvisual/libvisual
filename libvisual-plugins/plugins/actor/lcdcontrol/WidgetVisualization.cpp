@@ -281,11 +281,7 @@ void WidgetVisualization::DoParams() {
 }
 
 WidgetVisualization::~WidgetVisualization() {
-    delete timer_;
     delete []peak_buffer_;
-    if(style_ == STYLE_PCM) {
-            delete morph_timer_;
-    }
 }
 
 void  WidgetVisualization::Resize(int rows, int cols, int old_rows, int old_cols) {
