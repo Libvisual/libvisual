@@ -52,7 +52,7 @@ namespace {
   std::string input_name = DEFAULT_INPUT;
   std::string morph_name = DEFAULT_MORPH;
   std::string driver_name = DEFAULT_DRIVER;
-  std::string ignore_actors;
+  std::string exclude_actors;
 
   unsigned int width  = DEFAULT_WIDTH;
   unsigned int height = DEFAULT_HEIGHT;
@@ -113,7 +113,7 @@ namespace {
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
                   "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n"
-                  "\t--ignore <actors>\t-x <actors>\tProvide a list of actors to ignore.\n\n",
+                  "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n\n",
                   "http://github.com/StarVisuals/libvisual",
                   name.c_str (),
                   width, height,
@@ -146,7 +146,7 @@ namespace {
 		  {"morph",       required_argument, 0, 'm'},
 		  {"fps",         required_argument, 0, 'f'},
 		  {"seed",        required_argument, 0, 's'},
-          {"ignore",      required_argument, 0, 'x'},
+          {"exclude",     required_argument, 0, 'x'},
 		  {"framecount",  required_argument, 0, 'F'},
 		  {0,             0,                 0,  0 }
 	  };
@@ -235,9 +235,9 @@ namespace {
                   break;
               }
 
-              // --ignore
+              // --exclude
               case 'x': {
-                  ignore_actors = optarg;
+                  exclude_actors = optarg;
                   break;
               }
 
@@ -271,7 +271,7 @@ namespace {
 
       actor_name = name;
 
-      if(strstr(ignore_actors.c_str(), name) != 0)
+      if(strstr(exclude_actors.c_str(), name) != 0)
         v_cycleActor(prev);
   }
 
