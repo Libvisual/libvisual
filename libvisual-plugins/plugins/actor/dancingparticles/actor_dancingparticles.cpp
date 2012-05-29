@@ -73,12 +73,12 @@ const VisPluginInfo *get_plugin_info ()
 
 	info.plugin = VISUAL_OBJECT (&actor);
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
 	return &info;
 }
@@ -187,14 +187,14 @@ VisPalette *lv_dancingparticles_palette (VisPluginData *plugin)
 
 int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	VisBuffer fbuf;
 	float freq[3][256];
 
-	visual_buffer_set_data_pair (&fbuf, freq[0], sizeof(freq[0]));
-	visual_audio_get_spectrum (audio, &fbuf, 256, VISUAL_AUDIO_CHANNEL_LEFT, FALSE);
+	LV::BufferPtr fbuf = LV::Buffer::create ();
+	fbuf->set (freq[0], sizeof(freq[0]));
+	audio->get_spectrum (fbuf, 256, VISUAL_AUDIO_CHANNEL_LEFT, false);
 
-	visual_buffer_set_data_pair (&fbuf, freq[1], sizeof(freq[1]));
-	visual_audio_get_spectrum (audio, &fbuf, 256, VISUAL_AUDIO_CHANNEL_RIGHT, FALSE);
+	fbuf->set (freq[1], sizeof(freq[1]));
+	audio->get_spectrum (fbuf, 256, VISUAL_AUDIO_CHANNEL_RIGHT, false);
 
 	for (unsigned int i = 0; i < sizeof(freq[2]); i++)
 		freq[2][i] = (freq[0][i] + freq[1][i]) / 2;

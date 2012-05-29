@@ -26,7 +26,6 @@
 #include "display_driver.hpp"
 #include <libvisual/libvisual.h>
 #include <string>
-#include <vector>
 #include <unistd.h>
 
 // MinGW unistd.h doesn't have *_FILENO or SEEK_* defined
@@ -50,28 +49,20 @@ namespace {
           close ();
       }
 
-      virtual bool create (VisVideoDepth depth,
-                           VisVideoAttributeOptions const* vidoptions,
-                           unsigned int width,
-                           unsigned int height,
-                           bool resizable)
+      virtual LV::VideoPtr create (VisVideoDepth depth,
+                                   VisVideoAttrOptions const* vidoptions,
+                                   unsigned int width,
+                                   unsigned int height,
+                                   bool resizable)
       {
-          unsigned int pixel_size = visual_video_depth_value_from_enum (VISUAL_VIDEO_DEPTH_24BIT) / 8;
+          m_screen_video = LV::Video::create (width, height, VISUAL_VIDEO_DEPTH_24BIT);
 
-          m_area.resize (width * height * pixel_size);
-          visual_mem_set (&m_area[0], 0, m_area.size ());
-
-          // save dimensions
-          m_width  = width;
-          m_height = height;
-          m_depth  = depth;
-
-          return true;
+          return m_screen_video;
       }
 
       virtual void close ()
       {
-          // nothing to do
+          m_screen_video.reset ();
       }
 
       virtual void lock ()
@@ -89,21 +80,19 @@ namespace {
           // nothing to do
       }
 
-      virtual void get_video (VisVideo* screen)
+      virtual LV::VideoPtr get_video () const
       {
-          visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_24BIT);
-          visual_video_set_dimension (screen, m_width, m_height);
-          visual_video_set_buffer (screen, &m_area[0]);
+          return m_screen_video;
       }
 
-      virtual void set_title(std::string title)
+      virtual void set_title(std::string const& title)
       {
           // nothing to do
       }
 
       virtual void update_rect (LV::Rect const& rect)
       {
-          write(STDOUT_FILENO, &m_area[0], m_area.size());
+          write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ());
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)
@@ -113,11 +102,8 @@ namespace {
 
   private:
 
-      SADisplay&           m_display;
-      unsigned int         m_width;
-      unsigned int         m_height;
-      VisVideoDepth        m_depth;
-      std::vector<uint8_t> m_area;
+      SADisplay&   m_display;
+      LV::VideoPtr m_screen_video;
   };
 
 } // anonymous namespace

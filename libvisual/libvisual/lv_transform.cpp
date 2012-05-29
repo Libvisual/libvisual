@@ -25,7 +25,6 @@
 #include "lv_transform.h"
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
-#include "gettext.h"
 
 namespace LV {
 
@@ -36,14 +35,15 @@ namespace LV {
 
 } // LV namespace
 
+static int visual_transform_init (VisTransform *transform, const char *transformname);
 
-static int transform_dtor (VisObject *object);
+static void transform_dtor (VisObject *object);
 
 static VisTransformPlugin *get_transform_plugin (VisTransform *transform);
 
 int visual_transform_init (VisTransform *transform, const char *transformname);
 
-static int transform_dtor (VisObject *object)
+static void transform_dtor (VisObject *object)
 {
     VisTransform *transform = VISUAL_TRANSFORM (object);
 
@@ -52,10 +52,6 @@ static int transform_dtor (VisObject *object)
 
     if (transform->plugin != NULL)
         visual_plugin_unload (transform->plugin);
-
-    transform->plugin = NULL;
-
-    return VISUAL_OK;
 }
 
 static VisTransformPlugin *get_transform_plugin (VisTransform *transform)
@@ -98,10 +94,6 @@ VisTransform *visual_transform_new (const char *transformname)
         return NULL;
     }
 
-    /* Do the VisObject initialization */
-    visual_object_set_allocated (VISUAL_OBJECT (transform), TRUE);
-    visual_object_ref (VISUAL_OBJECT (transform));
-
     return transform;
 }
 
@@ -110,14 +102,12 @@ int visual_transform_init (VisTransform *transform, const char *transformname)
     visual_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
 
     if (transformname && !LV::transform_plugin_get_list ().empty ()) {
-        visual_log (VISUAL_LOG_ERROR, _("the plugin list is NULL"));
+        visual_log (VISUAL_LOG_ERROR, "the plugin list is NULL");
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
     }
 
     /* Do the VisObject initialization */
-    visual_object_clear (VISUAL_OBJECT (transform));
-    visual_object_set_dtor (VISUAL_OBJECT (transform), transform_dtor);
-    visual_object_set_allocated (VISUAL_OBJECT (transform), FALSE);
+    visual_object_init (VISUAL_OBJECT (transform), transform_dtor);
 
     /* Reset the VisTransform data */
     transform->plugin = NULL;
@@ -153,12 +143,12 @@ int visual_transform_video_negotiate (VisTransform *transform)
 
     depthflag = visual_transform_get_supported_depth (transform);
 
-    if (!visual_video_depth_is_supported (depthflag, transform->video->depth))
+    if (!visual_video_depth_is_supported (depthflag, visual_video_get_depth (transform->video)))
         return -VISUAL_ERROR_TRANSFORM_NEGOTIATE;
 
     visual_event_queue_add (transform->plugin->eventqueue,
-                            visual_event_new_resize (transform->video->width,
-                                                     transform->video->height));
+                            visual_event_new_resize (visual_video_get_width (transform->video),
+                                                     visual_video_get_height (transform->video)));
 
     visual_plugin_events_pump (transform->plugin);
 
@@ -180,7 +170,7 @@ int visual_transform_get_supported_depth (VisTransform *transform)
     return transplugin->vidoptions.depth;
 }
 
-VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTransform *transform)
+VisVideoAttrOptions *visual_transform_get_video_attribute_options (VisTransform *transform)
 {
     VisTransformPlugin *transplugin;
 
@@ -199,12 +189,18 @@ int visual_transform_set_video (VisTransform *transform, VisVideo *video)
 {
     visual_return_val_if_fail (transform != NULL, -VISUAL_ERROR_TRANSFORM_NULL);
 
+    if (transform->video && transform->video != video) {
+        visual_video_unref (transform->video);
+    }
+
     transform->video = video;
 
-    if (video != NULL)
-        visual_transform_set_palette (transform, video->pal);
-    else
+    if (transform->video) {
+        visual_transform_set_palette (transform, visual_video_get_palette (video));
+        visual_video_ref (transform->video);
+    } else {
         visual_transform_set_palette (transform, NULL);
+    }
 
     return VISUAL_OK;
 }
@@ -252,7 +248,7 @@ int visual_transform_run_video (VisTransform *transform, VisAudio *audio)
 
     if (transplugin == NULL) {
         visual_log (VISUAL_LOG_ERROR,
-            _("The given transform does not reference any transform plugin"));
+            "The given transform does not reference any transform plugin");
 
         return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
     }
@@ -277,7 +273,7 @@ int visual_transform_run_palette (VisTransform *transform, VisAudio *audio)
 
     if (transplugin == NULL) {
         visual_log (VISUAL_LOG_ERROR,
-            _("The given transform does not reference any transform plugin"));
+            "The given transform does not reference any transform plugin");
 
         return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
     }

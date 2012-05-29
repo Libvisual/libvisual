@@ -39,7 +39,7 @@ int main (int argc, char **argv)
 	visual_video_allocate_buffer (src);
 
 	for (i = 0; i < TIMES; i++)
-		visual_video_depth_transform (dest, src);
+		visual_video_convert_depth (dest, src);
 
 	printf ("Depth transformed %d times from %s to %s\n", TIMES, d1, d2);
 

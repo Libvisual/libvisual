@@ -259,13 +259,12 @@ static void _change_config_string(BlurskPrivate *priv, char **string, VisParamEn
 /**
  * callback to change a color parameter (called by config_change_param)
  */
-static void _change_color(BlurskPrivate *priv, uint32_t **color, VisParamEntry *p, int *(validator)(void *value))
+static void _change_color(BlurskPrivate *priv, uint32_t *color, VisParamEntry *p, int *(validator)(void *value))
 {
     VisColor *c;
 
     c = visual_param_entry_get_color(p);
-    *color = 0;
-    *color = (uint32_t *) (intptr_t)(((c->r)<<16) + ((c->g)<<8) + c->b);
+    *color = ((c->r)<<16) + ((c->g)<<8) + c->b;
     priv->update_config_string = 1;
 }
 
@@ -296,28 +295,28 @@ static void _change_string(BlurskPrivate *priv, char **string,
 /**
  * callback to change a bool parameter (called by config_change_param)
  */
-static void _change_bool(BlurskPrivate *priv, int **boolean, VisParamEntry *p, int *(validator)(void *value))
+static void _change_bool(BlurskPrivate *priv, int *boolean, VisParamEntry *p, int *(validator)(void *value))
 {
     int t = visual_param_entry_get_integer(p);
 
     /* validate boolean */
     if(t == 0 || t == 1)
     {
-        *boolean = (int *) (intptr_t)t;
+        *boolean = t;
 
         priv->update_config_string = 1;
     }
     /* reset to previous value */
     else
-        visual_param_entry_set_integer(p, **boolean);
+        visual_param_entry_set_integer(p, *boolean);
 }
 
 /**
  * callback to change an integer parameter (called by config_change_param)
  */
-static void _change_int(BlurskPrivate *priv, int **integer, VisParamEntry *p, int *(validator)(void *value))
+static void _change_int(BlurskPrivate *priv, int *integer, VisParamEntry *p, int *(validator)(void *value))
 {
-    *integer = (int *) (intptr_t)visual_param_entry_get_integer(p);
+    *integer = visual_param_entry_get_integer(p);
 
     priv->update_config_string = 1;
 }

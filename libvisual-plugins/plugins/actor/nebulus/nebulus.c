@@ -94,12 +94,12 @@ const VisPluginInfo *get_plugin_info (void)
 		.plugin = VISUAL_OBJECT (&actor)
 	};
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
 	return &info;
 }
@@ -128,12 +128,12 @@ static int lv_nebulus_init (VisPluginData *plugin)
 
 	priv->pcmbuf = visual_buffer_new_allocate (1024 * sizeof (float));
 
-	visual_video_init (&child_image);
-	visual_video_init (&energy_image);
-	visual_video_init (&tentacle_image);
-	visual_video_init (&tunnel_image);
-	visual_video_init (&twist_image);
-	visual_video_init (&background_image);
+	child_image = NULL;
+	energy_image = NULL;
+	tentacle_image = NULL;
+	tunnel_image = NULL;
+	twist_image = NULL;
+	background_image = NULL;
 
 	init_gl();
 
@@ -162,14 +162,14 @@ static int lv_nebulus_cleanup (VisPluginData *plugin)
 	delete_gl_texture(childbg);
 	delete_gl_texture(energy);
 
-	visual_object_unref (VISUAL_OBJECT (&child_image));
-	visual_object_unref (VISUAL_OBJECT (&energy_image));
-	visual_object_unref (VISUAL_OBJECT (&tentacle_image));
-	visual_object_unref (VISUAL_OBJECT (&tunnel_image));
-	visual_object_unref (VISUAL_OBJECT (&twist_image));
-	visual_object_unref (VISUAL_OBJECT (&background_image));
+	visual_video_unref (child_image);
+	visual_video_unref (energy_image);
+	visual_video_unref (tentacle_image);
+	visual_video_unref (tunnel_image);
+	visual_video_unref (twist_image);
+	visual_video_unref (background_image);
 
-	visual_buffer_free (priv->pcmbuf);
+	visual_buffer_unref (priv->pcmbuf);
 
 	visual_mem_free (priv);
 
@@ -340,7 +340,7 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 
 	buf = visual_buffer_new_wrap_data (freq, sizeof (freq));
 	visual_audio_get_spectrum_for_sample (buf, priv->pcmbuf, FALSE);
-	visual_buffer_free (buf);
+	visual_buffer_unref (buf);
 
 	fbuf = visual_buffer_get_data (priv->pcmbuf);
 

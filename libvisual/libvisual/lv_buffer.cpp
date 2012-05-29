@@ -41,9 +41,39 @@ namespace LV {
 
       ~Impl ()
       {
+          free ();
+      }
+
+      void wrap (void* data_, std::size_t size_, bool own)
+      {
           if (is_owner) {
               visual_mem_free (data);
           }
+
+          data = data_;
+          size = size_;
+          is_owner = own;
+      }
+
+      void allocate (std::size_t size_)
+      {
+          if (is_owner) {
+              visual_mem_free (data);
+          }
+
+          data = visual_mem_malloc0 (size_);
+          size = size_;
+      }
+
+      void free ()
+      {
+          if (is_owner) {
+              visual_mem_free (data);
+          }
+
+          data = 0;
+          size = 0;
+          is_owner = false;
       }
   };
 
@@ -53,21 +83,27 @@ namespace LV {
   {
   }
 
-  Buffer::Buffer (void* data, std::size_t size, bool own)
-      : m_impl (new Impl)
-      , m_ref_count (1)
+  BufferPtr Buffer::create ()
   {
-      m_impl->data = data;
-      m_impl->size = size;
-      m_impl->is_owner = own;
+      return new Buffer;
   }
 
-  Buffer::Buffer (std::size_t size)
-      : m_impl (new Impl)
-      , m_ref_count (1)
+  BufferPtr Buffer::create (void* data, std::size_t size, bool own)
   {
-      m_impl->size = size;
-      allocate_data ();
+      BufferPtr self (new Buffer);
+
+      self->m_impl->wrap (data, size, own);
+
+      return self;
+  }
+
+  BufferPtr Buffer::create (std::size_t size)
+  {
+      BufferPtr self (new Buffer);
+
+      self->m_impl->allocate (size);
+
+      return self;
   }
 
   Buffer::~Buffer ()
@@ -77,19 +113,12 @@ namespace LV {
 
   void Buffer::destroy_content ()
   {
-      if (m_impl->data && m_impl->is_owner)
-          visual_mem_free (m_impl->data);
-
-      m_impl->is_owner = false;
-      m_impl->data = 0;
-      m_impl->size = 0;
+      m_impl->free ();
   }
 
   void Buffer::set (void* data, std::size_t size)
   {
-      m_impl->data = data;
-      m_impl->size = size;
-      m_impl->is_owner = false;
+      m_impl->wrap (data, size, false);
   }
 
   void Buffer::set_size (std::size_t size)
@@ -99,19 +128,12 @@ namespace LV {
 
   void Buffer::set_data (void *data)
   {
-      // FIXME: Deallocate data if unnecessary
-
-      m_impl->data = data;
-      m_impl->is_owner = false;
+      m_impl->wrap (data, m_impl->size, false);
   }
 
-  void Buffer::allocate_data ()
+  void Buffer::allocate (std::size_t size)
   {
-      if (m_impl->data && m_impl->is_owner)
-          visual_mem_free (m_impl->data);
-
-      m_impl->data = visual_mem_malloc0 (m_impl->size);
-      m_impl->is_owner = true;
+      m_impl->allocate (size);
   }
 
   void* Buffer::get_data () const
@@ -134,12 +156,10 @@ namespace LV {
       return m_impl->is_owner;
   }
 
-  void Buffer::copy (VisBuffer const& src)
+  void Buffer::copy (BufferConstPtr const& src)
   {
-      set_size (src.m_impl->size);
-      allocate_data ();
-
-      visual_mem_copy (m_impl->data, src.m_impl->data, src.m_impl->size);
+      m_impl->allocate (src->m_impl->size);
+      visual_mem_copy (m_impl->data, src->m_impl->data, src->m_impl->size);
   }
 
   void Buffer::copy_data_to (void* dest)
@@ -149,13 +169,14 @@ namespace LV {
       visual_mem_copy (dest, m_impl->data, m_impl->size);
   }
 
-  void Buffer::put (VisBuffer const& src, std::size_t offset)
+  void Buffer::put (BufferConstPtr const& src, std::size_t offset)
   {
-      put (src.m_impl->data, src.m_impl->size, offset);
+      put (src->m_impl->data, src->m_impl->size, offset);
   }
 
   void Buffer::put (void const* data, std::size_t size, std::size_t offset)
   {
+      visual_return_if_fail (data != NULL);
       visual_return_if_fail (offset < m_impl->size);
 
       std::size_t amount = m_impl->size;
@@ -178,12 +199,12 @@ namespace LV {
           put (data, size, offset);
   }
 
-  void Buffer::ref ()
+  void Buffer::ref () const
   {
       m_ref_count++;
   }
 
-  void Buffer::unref ()
+  void Buffer::unref () const
   {
       m_ref_count--;
       if (m_ref_count == 0) {

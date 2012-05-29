@@ -30,7 +30,7 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define OUTPUT_RATE       44100
 #define OUTPUT_SAMPLES    4096
-#define DEFAULT_FREQUENCY (OUTPUT_RATE/25)
+#define DEFAULT_FREQUENCY (OUTPUT_RATE/500)
 #define DEFAULT_AMPLITUDE 1.0
 
 typedef struct {
@@ -164,10 +164,12 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 
 	VisBuffer *buffer = visual_buffer_new_wrap_data (data, VISUAL_TABLESIZE (data));
 
-	visual_audio_samplepool_input (audio->samplepool, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
-			VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+	visual_audio_input (audio, buffer,
+	                    VISUAL_AUDIO_SAMPLE_RATE_44100,
+	                    VISUAL_AUDIO_SAMPLE_FORMAT_S16,
+	                    VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
-	visual_buffer_free (buffer);
+	visual_buffer_unref (buffer);
 
 	return 0;
 }

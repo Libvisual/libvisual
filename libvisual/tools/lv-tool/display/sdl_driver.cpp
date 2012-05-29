@@ -62,6 +62,7 @@ namespace {
       SDLDriver (SADisplay& display)
           : m_display         (display)
           , m_screen          (0)
+          , m_screen_video    (0)
           , m_requested_depth (VISUAL_VIDEO_DEPTH_NONE)
           , m_last_width      (0)
           , m_last_height     (0)
@@ -75,9 +76,14 @@ namespace {
           close ();
       }
 
-      virtual bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
-                           unsigned int width, unsigned int height, bool resizable)
+      virtual LV::VideoPtr create (VisVideoDepth depth,
+                                   VisVideoAttrOptions const* vidoptions,
+                                   unsigned int width,
+                                   unsigned int height,
+                                   bool resizable)
       {
+          m_screen_video.reset ();
+
           int videoflags = 0;
 
           if (resizable)
@@ -86,7 +92,7 @@ namespace {
           if (!SDL_WasInit (SDL_INIT_VIDEO)) {
               if (SDL_Init (SDL_INIT_VIDEO) == -1) {
                   std::cerr << "Unable to init SDL VIDEO: " << SDL_GetError () << std::endl;
-                  return false;
+                  return NULL;
               }
           }
 
@@ -97,7 +103,7 @@ namespace {
               SDL_VideoInfo const* videoinfo = SDL_GetVideoInfo ();
 
               if (!videoinfo) {
-                  return -1;
+                  return NULL;
               }
 
               videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE;
@@ -111,14 +117,14 @@ namespace {
                   videoflags |= SDL_HWACCEL;
 
               for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
-                  if (vidoptions->gl_attributes[i].mutated) {
+                  if (vidoptions->gl_attrs[i].mutated) {
                       SDL_GLattr sdl_attribute =
-                          sdl_gl_attribute_map[vidoptions->gl_attributes[i].attribute];
+                          sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
 
                       if (sdl_attribute < 0)
                           continue;
 
-                      SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attributes[i].value);
+                      SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
                   }
               }
 
@@ -131,19 +137,29 @@ namespace {
                                            videoflags);
           }
 
-          SDL_WM_SetCaption (_("lv-tool"), NULL);
+          // Recreate video object
+
+          m_screen_video = LV::Video::wrap (m_screen->pixels,
+                                            false,
+                                            m_screen->w,
+                                            m_screen->h,
+                                            depth);
+
+          set_title (_("lv-tool"));
 
           SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
           m_running = true;
 
-          return true;
+          return m_screen_video;
       }
 
       virtual void close ()
       {
           if (!m_running)
               return;
+
+          m_screen_video.reset ();
 
           SDL_Quit ();
 
@@ -167,8 +183,8 @@ namespace {
           if (fullscreen) {
               if (!(m_screen->flags & SDL_FULLSCREEN)) {
                   if (autoscale) {
-                      int width  = m_display.get_screen ()->width;
-                      int height = m_display.get_screen ()->height;
+                      int width  = m_display.get_video ()->get_width ();
+                      int height = m_display.get_video ()->get_height ();
 
                       m_last_width  = width;
                       m_last_height = height;
@@ -193,19 +209,12 @@ namespace {
           }
       }
 
-      virtual void get_video (VisVideo* screen)
+      virtual LV::VideoPtr get_video () const
       {
-          if (m_requested_depth == VISUAL_VIDEO_DEPTH_GL)
-              visual_video_set_depth (screen, VISUAL_VIDEO_DEPTH_GL);
-          else
-              visual_video_set_depth (screen, visual_video_depth_enum_from_value (m_screen->format->BitsPerPixel));
-
-          visual_video_set_dimension (screen, m_screen->w, m_screen->h);
-          visual_video_set_pitch (screen, m_screen->pitch);
-          visual_video_set_buffer (screen, m_screen->pixels);
+          return m_screen_video;
       }
 
-      virtual void set_title(std::string title)
+      virtual void set_title(std::string const& title)
       {
           SDL_WM_SetCaption (title.c_str(), NULL);
       }
@@ -213,16 +222,16 @@ namespace {
       virtual void update_rect (LV::Rect const& rect)
       {
           if (m_screen->format->BitsPerPixel == 8) {
-              LV::Palette* pal = m_display.get_screen ()->pal;
+              LV::Palette const& pal = m_display.get_video ()->get_palette ();
 
-              if (pal && pal->size() <= 256) {
+              if (!pal.empty () && pal.size() <= 256) {
                   SDL_Color colors[256];
                   visual_mem_set (colors, 0, sizeof (colors));
 
-                  for (unsigned int i = 0; i < pal->size(); i++) {
-                      colors[i].r = pal->colors[i].r;
-                      colors[i].g = pal->colors[i].g;
-                      colors[i].b = pal->colors[i].b;
+                  for (unsigned int i = 0; i < pal.size(); i++) {
+                      colors[i].r = pal.colors[i].r;
+                      colors[i].g = pal.colors[i].g;
+                      colors[i].b = pal.colors[i].b;
                   }
 
                   SDL_SetColors (m_screen, colors, 0, 256);
@@ -275,7 +284,7 @@ namespace {
                                           visual_event_new_resize (event.resize.w,
                                                                    event.resize.h));
 
-                  create (m_display.get_screen ()->depth, NULL, event.resize.w, event.resize.h, m_resizable);
+                  create (m_display.get_video ()->get_depth (), NULL, event.resize.w, event.resize.h, m_resizable);
                   break;
 
               case SDL_MOUSEMOTION:
@@ -315,6 +324,7 @@ namespace {
 
       SADisplay&    m_display;
       SDL_Surface*  m_screen;
+      LV::VideoPtr  m_screen_video;
       VisVideoDepth m_requested_depth;
 
       unsigned int m_last_width;

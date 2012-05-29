@@ -24,7 +24,6 @@
 #include "config.h"
 #include "lv_event.h"
 #include "lv_common.h"
-#include "gettext.h"
 #include <vector>
 #include <queue>
 

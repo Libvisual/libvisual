@@ -24,7 +24,6 @@
 #include "config.h"
 #include "lv_thread.h"
 #include "lv_common.h"
-#include "gettext.h"
 
 int visual_thread_initialize (void)
 {

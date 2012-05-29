@@ -205,7 +205,7 @@ struct _VisPluginData {
 
 	int                  realized;    /**< Flag that indicates if the plugin is realized. */
 
-	VisList              environment; /**< Misc environment specific data. */
+	VisList             *environment; /**< Misc environment specific data. */
 };
 
 /**

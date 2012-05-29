@@ -2,10 +2,12 @@ libvisual/lv_libvisual.cpp
 libvisual/lv_libvisual_c.cpp
 libvisual/lv_actor.cpp
 libvisual/lv_alpha_blend.c
-libvisual/lv_audio.c
+libvisual/lv_audio.cpp
+libvisual/lv_audio_c.cpp
 libvisual/lv_buffer.cpp
 libvisual/lv_buffer_c.cpp
-libvisual/lv_bin.c
+libvisual/lv_bin.cpp
+libvisual/lv_bin_c.cpp
 libvisual/lv_bmp.c
 libvisual/lv_collection.c
 libvisual/lv_color.cpp
@@ -37,13 +39,16 @@ libvisual/lv_thread_disabled.c
 libvisual/lv_time.cpp
 libvisual/lv_time_c.cpp
 libvisual/lv_transform.cpp
-libvisual/lv_video.c
+libvisual/lv_video.cpp
+libvisual/lv_video_c.cpp
 
-libvisual/private/lv_video_blit.c
-libvisual/private/lv_video_convert.c
-libvisual/private/lv_video_fill.c
-libvisual/private/lv_video_scale.c
-libvisual/private/lv_video_simd.c
+libvisual/private/lv_video_blit.cpp
+libvisual/private/lv_video_convert.cpp
+libvisual/private/lv_video_fill.cpp
+libvisual/private/lv_video_scale.cpp
+
+libvisual/private/lv_video_blit_simd.cpp
+libvisual/private/lv_video_scale_simd.cpp
 
 libvisual/private/windows/lv_mem_win32.cpp
 libvisual/private/windows/lv_module_win32.cpp

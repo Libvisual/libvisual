@@ -90,7 +90,7 @@ struct _VisInput {
                                                * that contains the audio analyse
                                                * results. @see visual_audio_analyse */
     VisInputUploadCallbackFunc   callback;  /**< Callback function when a callback
-                                              * is used instead of a plugin. */
+                                               * is used instead of a plugin. */
     VisSongInfo                 *songinfo;
 };
 
@@ -102,10 +102,10 @@ struct _VisInput {
  * certain sources.
  */
 struct _VisInputPlugin {
-    VisObject            object;    /**< The VisObject data. */
-    VisPluginInputUploadFunc     upload;    /**< The sample upload function. This is the main function
-                              * of the plugin which uploads sample data into
-                              * libvisual. */
+    VisObject                object;    /**< The VisObject data. */
+    VisPluginInputUploadFunc upload;    /**< The sample upload function. This is the main function
+                                           * of the plugin which uploads sample data into
+                                           * libvisual. */
 };
 
 LV_BEGIN_DECLS
@@ -158,20 +158,6 @@ LV_API const char *visual_input_get_prev_by_name (const char *name);
  * @return A newly allocated VisInput, optionally containing a loaded plugin. Or NULL on failure.
  */
 LV_API VisInput *visual_input_new (const char *inputname);
-
-/**
- * Initializes a VisInput, this will set the allocated flag for the object to FALSE. Should not
- * be used to reset a VisInput, or on a VisInput created by visual_input_new().
- *
- * @see visual_input_new
- *
- * @param input Pointer to the VisInput that is initialized.
- * @param inputname
- *  The name of the plugin to load, or NULL to simply initialize a new input.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
- */
-LV_API int visual_input_init (VisInput *input, const char *inputname);
 
 /**
  * Realize the VisInput. This also calls the plugin init function.

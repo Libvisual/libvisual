@@ -34,13 +34,11 @@ class SADisplay::Impl
 public:
 
     LV::ScopedPtr<SADisplayDriver> driver;
-    VisVideo        *screen;
     unsigned int     frames_drawn;
     LV::Timer        timer;
 
     Impl ()
         : driver       (0)
-        , screen       (0)
         , frames_drawn (0)
     {}
 
@@ -56,22 +54,22 @@ SADisplay::SADisplay (std::string const& driver_name)
     if (!m_impl->driver) {
         throw std::runtime_error ("Failed to load display driver '" + driver_name + "'");
     }
-
-    m_impl->screen = visual_video_new ();
 }
 
 SADisplay::~SADisplay ()
 {
-    visual_object_unref (VISUAL_OBJECT (m_impl->screen));
 }
 
-VisVideo* SADisplay::get_screen () const
+LV::VideoPtr SADisplay::get_video () const
 {
-    return m_impl->screen;
+    return m_impl->driver->get_video ();
 }
 
-bool SADisplay::create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
-                       unsigned int width, unsigned int height, bool resizable)
+LV::VideoPtr SADisplay::create (VisVideoDepth depth,
+                                VisVideoAttrOptions const* vidoptions,
+                                unsigned int width,
+                                unsigned int height,
+                                bool resizable)
 {
     return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
@@ -81,14 +79,7 @@ void SADisplay::close ()
     m_impl->driver->close ();
 }
 
-VisVideo* SADisplay::get_video () const
-{
-    m_impl->driver->get_video (m_impl->screen);
-
-    return m_impl->screen;
-}
-
-void SADisplay::set_title(std::string title)
+void SADisplay::set_title(std::string const& title)
 {
     m_impl->driver->set_title(title);
 }
@@ -105,8 +96,8 @@ void SADisplay::unlock ()
 
 void SADisplay::update_all ()
 {
-    VisVideo *video = get_video ();
-    LV::Rect rect (0, 0, video->width, video->height);
+    LV::VideoPtr video = get_video ();
+    LV::Rect rect (0, 0, video->get_width (), video->get_height ());
 
     m_impl->frames_drawn++;
 

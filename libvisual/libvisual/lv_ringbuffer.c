@@ -24,50 +24,39 @@
 #include "config.h"
 #include "lv_ringbuffer.h"
 #include "lv_common.h"
-#include "gettext.h"
 
-static int ringbuffer_dtor (VisObject *object);
-static int ringbuffer_entry_dtor (VisObject *object);
+static void ringbuffer_dtor (VisObject *object);
+static void ringbuffer_entry_dtor (VisObject *object);
 
 static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes,
 		int *buffercorr);
 
 
-static int ringbuffer_dtor (VisObject *object)
+static void ringbuffer_dtor (VisObject *object)
 {
 	VisRingBuffer *ringbuffer = VISUAL_RINGBUFFER (object);
 
-	if (ringbuffer->entries != NULL)
+	if (ringbuffer->entries)
 		visual_object_unref (VISUAL_OBJECT (ringbuffer->entries));
-
-	ringbuffer->entries = NULL;
-
-	return VISUAL_OK;
 }
 
-static int ringbuffer_entry_dtor (VisObject *object)
+static void ringbuffer_entry_dtor (VisObject *object)
 {
 	VisRingBufferEntry *entry = VISUAL_RINGBUFFER_ENTRY (object);
 
-	if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
+	switch (entry->type) {
+        case VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER:
+			if (entry->buffer)
+				visual_buffer_unref (entry->buffer);
+			break;
 
-		if (entry->buffer != NULL)
-			visual_buffer_free (entry->buffer);
+		case VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION:
+			if (entry->destroyfunc)
+				entry->destroyfunc (entry);
+			break;
 
-	} else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
-
-		if (entry->destroyfunc != NULL)
-			entry->destroyfunc (entry);
+		default:;
 	}
-
-	entry->type = VISUAL_RINGBUFFER_ENTRY_TYPE_NONE;
-	entry->datafunc = NULL;
-	entry->destroyfunc = NULL;
-	entry->sizefunc = NULL;
-	entry->buffer = NULL;
-	entry->functiondata = NULL;
-
-	return VISUAL_OK;
 }
 
 VisRingBuffer *visual_ringbuffer_new ()
@@ -75,12 +64,7 @@ VisRingBuffer *visual_ringbuffer_new ()
 	VisRingBuffer *ringbuffer;
 
 	ringbuffer = visual_mem_new0 (VisRingBuffer, 1);
-
 	visual_ringbuffer_init (ringbuffer);
-
-	/* Do the VisObject initialization */
-	visual_object_set_allocated (VISUAL_OBJECT (ringbuffer), TRUE);
-	visual_object_ref (VISUAL_OBJECT (ringbuffer));
 
 	return ringbuffer;
 }
@@ -90,9 +74,7 @@ int visual_ringbuffer_init (VisRingBuffer *ringbuffer)
 	visual_return_val_if_fail (ringbuffer != NULL, -VISUAL_ERROR_RINGBUFFER_NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (ringbuffer));
-	visual_object_set_dtor (VISUAL_OBJECT (ringbuffer), ringbuffer_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (ringbuffer), FALSE);
+	visual_object_init (VISUAL_OBJECT (ringbuffer), ringbuffer_dtor);
 
 	/* Reset the VisRingBuffer structure */
 	ringbuffer->entries = visual_list_new (visual_object_collection_destroyer);
@@ -240,8 +222,8 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 				 * recover, it's a very obvious bug in the software */
 				if (entry->datafunc == NULL) {
 					visual_log (VISUAL_LOG_ERROR,
-							_("No VisRingBufferDataFunc data provider function set on "
-								"type VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION"));
+							"No VisRingBufferDataFunc data provider function set on "
+							"type VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION");
 
 					return -VISUAL_ERROR_IMPOSSIBLE;
 				}
@@ -254,7 +236,7 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 
 				buf = visual_buffer_new_wrap_data (visual_buffer_get_data (tempbuf), nbytes - curposition);
 				visual_buffer_put (data, buf, curposition);
-				visual_buffer_free (buf);
+				visual_buffer_unref (buf);
 
 				if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
 					visual_buffer_unref (tempbuf);
@@ -418,12 +400,7 @@ VisRingBufferEntry *visual_ringbuffer_entry_new (VisBuffer *buffer)
 	VisRingBufferEntry *entry;
 
 	entry = visual_mem_new0 (VisRingBufferEntry, 1);
-
 	visual_ringbuffer_entry_init (entry, buffer);
-
-	/* Do the VisObject initialization */
-	visual_object_set_allocated (VISUAL_OBJECT (entry), TRUE);
-	visual_object_ref (VISUAL_OBJECT (entry));
 
 	return entry;
 }
@@ -433,9 +410,7 @@ int visual_ringbuffer_entry_init (VisRingBufferEntry *entry, VisBuffer *buffer)
 	visual_return_val_if_fail (entry != NULL, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (entry));
-	visual_object_set_dtor (VISUAL_OBJECT (entry), ringbuffer_entry_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (entry), FALSE);
+	visual_object_init (VISUAL_OBJECT (entry), ringbuffer_entry_dtor);
 
 	/* Reset the VisRingBufferEntry data */
 	entry->type = VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER;
@@ -457,12 +432,7 @@ VisRingBufferEntry *visual_ringbuffer_entry_new_function (
 	VisRingBufferEntry *entry;
 
 	entry = visual_mem_new0 (VisRingBufferEntry, 1);
-
 	visual_ringbuffer_entry_init_function (entry, datafunc, destroyfunc, sizefunc, functiondata);
-
-	/* Do the VisObject initialization */
-	visual_object_set_allocated (VISUAL_OBJECT (entry), TRUE);
-	visual_object_ref (VISUAL_OBJECT (entry));
 
 	return entry;
 }
@@ -476,9 +446,7 @@ int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
 	visual_return_val_if_fail (entry != NULL, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (entry));
-	visual_object_set_dtor (VISUAL_OBJECT (entry), ringbuffer_entry_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (entry), FALSE);
+	visual_object_init (VISUAL_OBJECT (entry), ringbuffer_entry_dtor);
 
 	/* Reset the VisRingBufferEntry data */
 	entry->type = VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION;

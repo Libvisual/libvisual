@@ -97,12 +97,12 @@ const VisPluginInfo *get_plugin_info (void)
 		.plugin = VISUAL_OBJECT (&actor)
 	};
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
 	return &info;
 }
@@ -153,8 +153,8 @@ static int lv_madspin_cleanup (VisPluginData *plugin)
 	if (priv->initialized == TRUE) {
 		visual_timer_free (priv->timer);
 
-		visual_object_unref (VISUAL_OBJECT (priv->texture_images[0]));
-		visual_object_unref (VISUAL_OBJECT (priv->texture_images[1]));
+		visual_video_unref (priv->texture_images[0]);
+		visual_video_unref (priv->texture_images[1]);
 
 		glDeleteTextures (2, priv->textures);
 	}
@@ -189,7 +189,7 @@ static void bind_texture (GLuint texture, VisVideo *image)
 	glBindTexture (GL_TEXTURE_2D, texture);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D (GL_TEXTURE_2D, 0, 3, image->width, image->height, 0,
+	glTexImage2D (GL_TEXTURE_2D, 0, 3, visual_video_get_width (image), visual_video_get_height (image), 0,
 		      GL_RGB, GL_UNSIGNED_BYTE, visual_video_get_pixels (image));
 }
 
@@ -275,13 +275,13 @@ static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 
 static int madspin_load_textures (MadspinPrivate *priv)
 {
-	priv->texture_images[0] = visual_bitmap_load_new_video (STAR_DIR "/star1.bmp");
+	priv->texture_images[0] = visual_bitmap_load (STAR_DIR "/star1.bmp");
 	if (!priv->texture_images[0]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load first texture");
 		return -1;
 	}
 
-	priv->texture_images[1] = visual_bitmap_load_new_video (STAR_DIR "/star2.bmp");
+	priv->texture_images[1] = visual_bitmap_load (STAR_DIR "/star2.bmp");
 	if (!priv->texture_images[1]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load second texture");
 		return -1;
@@ -306,8 +306,8 @@ static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
 
 	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
 
-	visual_buffer_free (buffer);
-	visual_buffer_free (pcmb);
+	visual_buffer_unref (buffer);
+	visual_buffer_unref (pcmb);
 
 	/* Make our data from the freq data */
 	for (i = 0; i < 256; i++) {

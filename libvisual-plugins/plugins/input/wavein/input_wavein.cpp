@@ -317,11 +317,12 @@ namespace {
           buffer_to_read = priv->active_buffer ^ 0x1;
 
           if (priv->buffer_ready[buffer_to_read]) {
-              VisBuffer buffer;
+              LV::BufferPtr buffer = LV::Buffer::wrap (priv->buffers[buffer_to_read], PCM_BUFFER_SIZE);
 
-              visual_buffer_init (&buffer, priv->buffers[buffer_to_read], PCM_BUFFER_SIZE, NULL);
-              visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
-                                             VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+              audio->input (buffer,
+                            VISUAL_AUDIO_SAMPLE_RATE_44100,
+                            VISUAL_AUDIO_SAMPLE_FORMAT_S16,
+                            VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
               priv->buffer_ready[buffer_to_read] = false;
 

@@ -56,6 +56,11 @@ namespace LV {
 
       ~Palette ();
 
+      bool empty () const
+      {
+          return colors.empty ();
+      }
+
       unsigned int size () const
       {
           return colors.size ();
@@ -96,7 +101,7 @@ namespace LV {
        */
       Color color_cycle (float rate);
 
-      int find_color (Color const& color);
+      int find_color (Color const& color) const;
   };
 
 } // LV namespace

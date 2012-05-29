@@ -26,9 +26,9 @@
 #include "lv_bmp.h"
 #include "lv_common.h"
 #include "lv_bits.h"
-#include "gettext.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #define BI_RGB	0
 #define BI_RLE8	1
@@ -42,7 +42,7 @@ static void flip_byte_order (VisVideo *video)
 {
 	uint8_t *pixel = visual_video_get_pixels (video);
 	unsigned int i;
-	unsigned int pixel_count = video->width * video->height;
+	unsigned int pixel_count = visual_video_get_width (video) * visual_video_get_height (video);
 
 	for (i = 0; i < pixel_count; i++) {
 		pixel[0] = pixel[2];
@@ -58,16 +58,16 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	int i;
 	int pad;
 
-	pad = (4 - (video->pitch & 3)) & 3;
-	data = (uint8_t *) visual_video_get_pixels (video) + (video->height * video->pitch);
+	pad = (4 - (visual_video_get_pitch (video) & 3)) & 3;
+	data = (uint8_t *) visual_video_get_pixels (video) + (visual_video_get_height (video) * visual_video_get_pitch (video));
 
 	switch (depth) {
 		case 24:
 		case 8:
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
-				data -= video->pitch;
+				data -= visual_video_get_pitch (video);
 
-				if (fread (data, video->pitch, 1, fp) != 1)
+				if (fread (data, visual_video_get_pitch (video), 1, fp) != 1)
 					goto err;
 
 				if (pad)
@@ -78,7 +78,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 		case 4:
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 4 bpp pixels aka 2 pixels per byte */
-				uint8_t *col = data - video->pitch;
+				uint8_t *col = data - visual_video_get_pitch (video);
 				uint8_t *end = (uint8_t *) ((intptr_t)data & ~1);
 				data = col;
 
@@ -88,7 +88,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 					*col++ = p & 0xf;
 				}
 
-				if (video->pitch & 1)
+				if (visual_video_get_pitch (video) & 1)
 					*col++ = fgetc (fp) >> 4;
 
 				if (pad)
@@ -99,7 +99,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 		case 1:
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 1 bpp pixels aka 8 pixels per byte */
-				uint8_t *col = data - video->pitch;
+				uint8_t *col = data - visual_video_get_pitch (video);
 				uint8_t *end = (uint8_t *) ((intptr_t)data & ~7);
 				data = col;
 
@@ -111,9 +111,9 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 					}
 				}
 
-				if (video->pitch & 7) {
+				if (visual_video_get_pitch (video) & 7) {
 					uint8_t p = fgetc (fp);
-					uint8_t count = video->pitch & 7;
+					uint8_t count = visual_video_get_pitch (video) & 7;
 					for (i=0; i < count; i++) {
 						*col++ = p >> 7;
 						p <<= 1;
@@ -129,7 +129,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 	return VISUAL_OK;
 
 err:
-	visual_log (VISUAL_LOG_ERROR, _("Bitmap data is not complete"));
+	visual_log (VISUAL_LOG_ERROR, "Bitmap data is not complete");
 
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
@@ -141,9 +141,9 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	int c, y, k, pad;
 	int processing = 1;
 
-	end = (uint8_t *)visual_video_get_pixels (video) + (video->height * video->pitch);
-	col = end - video->pitch;
-	y = video->height - 1;
+	end = (uint8_t *)visual_video_get_pixels (video) + (visual_video_get_height (video) * visual_video_get_pitch (video));
+	col = end - visual_video_get_pitch (video);
+	y = visual_video_get_height (video) - 1;
 
 	do {
 		if ((c = fgetc (fp)) == EOF)
@@ -179,7 +179,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 
 			case 0: /* End of line */
 				y--;
-				col = (uint8_t *) visual_video_get_pixels (video) + video->pitch * y;
+				col = (uint8_t *) visual_video_get_pixels (video) + visual_video_get_pitch (video) * y;
 
 				/* Normally we would error here if y < 0.
 				 * However, some encoders apparently emit an
@@ -197,7 +197,7 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 
 				/* Y Delta */
 				c = (uint8_t) fgetc (fp);
-				col -= c * video->pitch;
+				col -= c * visual_video_get_pitch (video);
 				y -= c;
 
 				if (col < (uint8_t *)visual_video_get_pixels (video))
@@ -233,13 +233,13 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 	return VISUAL_OK;
 
 err:
-	visual_log (VISUAL_LOG_ERROR, _("Bitmap data is not complete"));
+	visual_log (VISUAL_LOG_ERROR, "Bitmap data is not complete");
 
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
 
 
-int visual_bitmap_load (VisVideo *video, const char *filename)
+VisVideo *visual_bitmap_load (const char *filename)
 {
 	/* The win32 BMP header */
 	char magic[2];
@@ -262,20 +262,21 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	int32_t error = 0;
 	int i;
 
-	visual_return_val_if_fail (video != NULL, -VISUAL_ERROR_VIDEO_NULL);
+	VisVideo *video = NULL;
+	VisPalette *palette = NULL;
 
 	fp = fopen (filename, "rb");
 	if (fp == NULL) {
-		visual_log (VISUAL_LOG_WARNING, _("Bitmap file not found: %s"), filename);
-		return -VISUAL_ERROR_BMP_NOT_FOUND;
+		visual_log (VISUAL_LOG_WARNING, "Bitmap file not found: %s", filename);
+		return NULL;
 	}
 
 	/* Read the magic string */
 	fread (magic, 2, 1, fp);
 	if (strncmp (magic, "BM", 2) != 0) {
-		visual_log (VISUAL_LOG_WARNING, _("Not a bitmap file"));
+		visual_log (VISUAL_LOG_WARNING, "Not a bitmap file");
 		fclose (fp);
-		return -VISUAL_ERROR_BMP_NO_BMP;
+		return NULL;
 	}
 
 	/* Read the file size */
@@ -338,15 +339,15 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 	/* Check if we can handle it */
 	if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
-		visual_log (VISUAL_LOG_ERROR, _("Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"));
+		visual_log (VISUAL_LOG_ERROR, "Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported");
 		fclose (fp);
-		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
+		return NULL;
 	}
 
 	if (bi_compression > 3) {
-		visual_log (VISUAL_LOG_ERROR, _("Bitmap uses an invalid or unsupported compression scheme"));
+		visual_log (VISUAL_LOG_ERROR, "Bitmap uses an invalid or unsupported compression scheme");
 		fclose (fp);
-		return -VISUAL_ERROR_BMP_NOT_SUPPORTED;
+		return NULL;
 	}
 
 	/* Load the palette */
@@ -359,9 +360,9 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 
 		/* Always allocate 256 palette entries.
 		 * Depth transformation depends on this */
-		visual_video_set_palette (video, visual_palette_new (256));
+		palette = visual_palette_new (256);
 
-		VisColor *colors = visual_palette_get_colors (video->pal);
+		VisColor *colors = visual_palette_get_colors (visual_video_get_palette (video));
 
 		if (bi_size == 12) {
 			for (i = 0; i < bi_clrused; i++) {
@@ -384,9 +385,10 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 		depth = 8;
 
 	/* Make the target VisVideo ready for use */
-	visual_video_set_depth (video, visual_video_depth_enum_from_value (depth));
-	visual_video_set_dimension (video, bi_width, bi_height);
-	visual_video_allocate_buffer (video);
+	video = visual_video_new_with_buffer (bi_width, bi_height, visual_video_depth_enum_from_value (depth));
+
+	if (palette)
+		visual_video_set_palette (video, palette);
 
 	/* Set to the beginning of image data, note that MickeySoft likes stuff upside down .. */
 	fseek (fp, bf_bits, SEEK_SET);
@@ -411,22 +413,9 @@ int visual_bitmap_load (VisVideo *video, const char *filename)
 	}
 
 	fclose (fp);
-	if (!error)
-		return VISUAL_OK;
 
-	visual_video_free_buffer (video);
-	return error;
-}
-
-VisVideo *visual_bitmap_load_new_video (const char *filename)
-{
-	VisVideo *video;
-
-	video = visual_video_new ();
-
-	if (visual_bitmap_load (video, filename) < 0) {
-		visual_object_unref (VISUAL_OBJECT (video));
-
+	if (error != VISUAL_OK) {
+		visual_video_unref (video);
 		return NULL;
 	}
 

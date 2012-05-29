@@ -38,8 +38,11 @@ public:
 
     ~SADisplay ();
 
-    bool create (VisVideoDepth depth, VisVideoAttributeOptions const* vidoptions,
-        unsigned int width, unsigned int height, bool resizable = true);
+    LV::VideoPtr create (VisVideoDepth depth,
+                         VisVideoAttrOptions const* vidoptions,
+                         unsigned int width,
+                         unsigned int height,
+                         bool resizable = true);
 
     void close ();
 
@@ -51,9 +54,9 @@ public:
 
     void update_rect (LV::Rect const& rect);
 
-    VisVideo* get_video () const;
+    LV::VideoPtr get_video () const;
 
-    void set_title(std::string title);
+    void set_title(std::string const& title);
 
     void set_fullscreen (bool fullscreen, bool autoscale);
 
@@ -64,8 +67,6 @@ public:
     unsigned int get_fps_total () const;
 
     float get_fps_average () const;
-
-    VisVideo *get_screen () const;
 
 private:
 

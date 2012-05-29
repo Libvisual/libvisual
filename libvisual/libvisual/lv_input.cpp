@@ -25,7 +25,6 @@
 #include "lv_input.h"
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
-#include "gettext.h"
 
 namespace {
 
@@ -37,24 +36,20 @@ namespace {
 
 } // Anonymous namespace
 
-static int input_dtor (VisObject *object);
+static int visual_input_init (VisInput *input, const char *inputname);
+
+static void input_dtor (VisObject *object);
 
 static VisInputPlugin *get_input_plugin (VisInput *input);
 
-static int input_dtor (VisObject *object)
+static void input_dtor (VisObject *object)
 {
     VisInput *input = VISUAL_INPUT (object);
 
-    if (input->plugin != NULL)
+    if (input->plugin)
         visual_plugin_unload (input->plugin);
 
-    if (input->audio != NULL)
-        visual_object_unref (VISUAL_OBJECT (input->audio));
-
-    input->plugin = NULL;
-    input->audio = NULL;
-
-    return VISUAL_OK;
+    visual_audio_free (input->audio);
 }
 
 static VisInputPlugin *get_input_plugin (VisInput *input)
@@ -97,10 +92,6 @@ VisInput *visual_input_new (const char *inputname)
         return NULL;
     }
 
-    /* Do the VisObject initialization */
-    visual_object_set_allocated (VISUAL_OBJECT (input), TRUE);
-    visual_object_ref (VISUAL_OBJECT (input));
-
     return input;
 }
 
@@ -109,15 +100,13 @@ int visual_input_init (VisInput *input, const char *inputname)
     visual_return_val_if_fail (input != NULL, -VISUAL_ERROR_INPUT_NULL);
 
     if (inputname && get_input_plugin_list ().empty ()) {
-        visual_log (VISUAL_LOG_ERROR, _("the plugin list is empty"));
+        visual_log (VISUAL_LOG_ERROR, "the plugin list is empty");
 
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
     }
 
     /* Do the VisObject initialization */
-    visual_object_clear (VISUAL_OBJECT (input));
-    visual_object_set_dtor (VISUAL_OBJECT (input), input_dtor);
-    visual_object_set_allocated (VISUAL_OBJECT (input), FALSE);
+    visual_object_init (VISUAL_OBJECT (input), input_dtor);
 
     /* Reset the VisInput data */
     input->audio = visual_audio_new ();

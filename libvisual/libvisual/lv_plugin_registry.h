@@ -56,9 +56,6 @@ namespace LV {
 
 LV_BEGIN_DECLS
 
-LV_API int visual_plugin_registry_initialize (void);
-LV_API int visual_plugin_registry_deinitialize (void);
-
 LV_API int visual_plugin_registry_add_path (const char *path);
 LV_API int visual_plugin_registry_has_plugin (VisPluginType type, const char *name);
 

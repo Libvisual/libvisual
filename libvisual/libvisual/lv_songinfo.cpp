@@ -42,7 +42,7 @@ namespace LV {
   SongInfo::~SongInfo ()
   {
       if (cover)
-          visual_object_unref (VISUAL_OBJECT (cover));
+          visual_video_unref (cover);
   }
 
   void SongInfo::set_type (SongInfoType type_)
@@ -118,7 +118,7 @@ namespace LV {
   void SongInfo::set_cover (VisVideo *cover_)
   {
       if (cover)
-          visual_object_unref (VISUAL_OBJECT (cover));
+          visual_video_unref (cover);
 
       // Get the desired cover art size
       VisParamContainer* params = visual_get_params ();

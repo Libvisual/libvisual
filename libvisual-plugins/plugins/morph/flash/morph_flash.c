@@ -117,13 +117,16 @@ static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	if (src1->pal == NULL || src2->pal == NULL)
+	VisPalette *src1_pal = visual_video_get_palette (src1);
+	VisPalette *src2_pal = visual_video_get_palette (src2);
+
+	if (!src1_pal || !src2_pal)
 		return 0;
 
 	if (rate < 0.5)
-		visual_palette_blend (pal, src1->pal, priv->whitepal, rate * 2);
+		visual_palette_blend (pal, src1_pal, priv->whitepal, rate * 2);
 	else
-		visual_palette_blend (pal, priv->whitepal, src2->pal, (rate - 0.5) * 2);
+		visual_palette_blend (pal, priv->whitepal, src2_pal, (rate - 0.5) * 2);
 
 	return 0;
 }
@@ -132,7 +135,7 @@ static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *au
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	switch (dest->depth) {
+	switch (visual_video_get_depth (dest)) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
 			flash_8 (priv, rate, dest, src1, src2);
 			break;

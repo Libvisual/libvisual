@@ -50,8 +50,8 @@ typedef struct
     char    *color_style;
     char    *fade_speed;
     char    *signal_color;
-    int32_t contour_lines;
-    int32_t hue_on_beats;
+    int      contour_lines;
+    int      hue_on_beats;
     char    *background;
 
     /* blur/fade options */
@@ -59,12 +59,12 @@ typedef struct
     char    *transition_speed;
     char    *blur_when;
     char    *blur_stencil;
-    int32_t slow_motion;
+    int      slow_motion;
 
     /* other effects */
     char    *signal_style;
     char    *plot_style;
-    int32_t thick_on_beats;
+    int      thick_on_beats;
     char    *flash_style;
     char    *overall_effect;
     char    *floaters;

@@ -100,7 +100,7 @@ struct _VisTransformPlugin {
     int              requests_audio;/**< When set on TRUE this will indicate that the Morph plugin
                               * requires an VisAudio context in order to render properly. */
 
-    VisVideoAttributeOptions     vidoptions;
+    VisVideoAttrOptions     vidoptions;
 };
 
 LV_BEGIN_DECLS
@@ -149,22 +149,6 @@ LV_API const char *visual_transform_get_prev_by_name (const char *name);
  */
 LV_API VisTransform *visual_transform_new (const char *transformname);
 
-
-/**
- * Initializes a VisTransform, this will set the allocated flag for
- * the object to FALSE. Should not be used to reset a VisTransform, or
- * on a VisTransform created by visual_transform_new().
- *
- * @see visual_transform_new
- *
- * @param transform Pointer to the VisTransform that is initialized.
- * @param transformname
- *  The name of the plugin to load, or NULL to simply initialize a new transform.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_TRANSFORM_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
- */
-LV_API int visual_transform_init (VisTransform *transform, const char *transformname);
-
 /**
  * Realize the VisTransform. This also calls the plugin init function.
  *
@@ -200,7 +184,7 @@ LV_API int visual_transform_video_negotiate (VisTransform *transform);
  */
 LV_API int visual_transform_get_supported_depth (VisTransform *transform);
 
-LV_API VisVideoAttributeOptions *visual_transform_get_video_attribute_options (VisTransform *transform);
+LV_API VisVideoAttrOptions *visual_transform_get_video_attribute_options (VisTransform *transform);
 
 /**
  * Used to connect the target display it's VisVideo structure to the

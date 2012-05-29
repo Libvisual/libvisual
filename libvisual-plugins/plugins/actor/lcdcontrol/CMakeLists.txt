@@ -1,0 +1,103 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_SOURCE_DIR}/plugins/actor/lcdcontrol
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+  ${LIBVISUAL_INCLUDE_DIRS}
+  ${LUAJIT_INCLUDE_DIRS}
+)
+
+LINK_DIRECTORIES(
+  ${LIBVISUAL_LIBRARY_DIRS}
+  ${LUAJIT_LIBRARY_DIRS}
+)
+
+SET(actor_lcdcontrol_SOURCES
+  WidgetVisualization.cpp
+  WidgetVisualization.h
+  actor_lcdcontrol.h
+  actor_lcdcontrol.cpp  
+  GenericSerial.cpp  
+  LCDText.cpp     
+  Widget.cpp
+  BufferedReader.cpp 
+  Hash.cpp        
+  PluginCpuinfo.cpp  
+  PluginLoadavg.cpp  
+  PluginProcStat.cpp  
+  PluginUptime.cpp
+  PluginCpuinfo.h    
+  PluginLoadavg.h    
+  PluginProcStat.h    
+  PluginUptime.h
+  WidgetHistogram.cpp
+  CFG.cpp            
+  json_reader.cpp 
+  Property.cpp    
+  WidgetIcon.cpp
+  DrvVideo.cpp          
+  json_value.cpp  
+  qprintf.cpp     
+  WidgetKey.cpp
+  Evaluator.cpp      
+  json_writer.cpp 
+  RGBA.cpp        
+  WidgetScript.cpp
+  Font_6x8_bold.cpp  
+  LCDControl.cpp  
+  SpecialChar.cpp 
+  WidgetText.cpp
+  Font_6x8.cpp       
+  LCDCore.cpp     
+  WidgetBar.cpp   
+  WidgetTimer.cpp
+  Font_8x16.cpp      
+  LCDGraphic.cpp  
+  WidgetBignums.cpp
+  GenericSerial.h     
+  LCDTimer.cpp
+  LCDTimer.h    
+  Widget.h
+  BufferedReader.h 
+  Hash.h              
+  WidgetHistogram.h
+  CFG.h            
+  json_batchallocator.h  
+  Property.h    
+  WidgetIcon.h
+  json_tool.h
+  qprintf.h     
+  WidgetKey.h
+  debug.h          
+  debug.c
+  LCDBase.h           
+  RGBA.h        
+  WidgetScript.h
+  DrvVideo.h          
+  LCDControl.h        
+  SpecialChar.h 
+  WidgetText.h
+  Evaluator.h      
+  LCDCore.h           
+  WidgetTimer.h
+  Font_6x8.h       
+  LCDEvent.h          
+  Font_8x16.h      
+  LCDGraphic.h        
+  WidgetBar.h
+  Generator.h      
+  LCDText.h           
+  WidgetBignums.h
+  luascript.cpp  
+  luascript.h
+  ${EXTRA_SOURCES}
+)
+
+ADD_LIBRARY(actor_lcdcontrol MODULE ${actor_lcdcontrol_SOURCES})
+#-avoid-version
+
+TARGET_LINK_LIBRARIES(actor_lcdcontrol
+  ${LIBVISUAL_LIBRARIES}
+  ${LUAJIT_LIBRARIES}
+)
+
+INSTALL(TARGETS actor_lcdcontrol LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

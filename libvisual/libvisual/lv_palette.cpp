@@ -86,7 +86,7 @@ namespace LV {
                     (alpha * (tmp1->b - tmp2->b) >> 8) + tmp2->b);
   }
 
-  int Palette::find_color (Color const& color)
+  int Palette::find_color (Color const& color) const
   {
       for (unsigned int i = 0; i < colors.size(); i++) {
           if (colors[i] == color)

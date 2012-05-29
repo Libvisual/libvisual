@@ -53,7 +53,7 @@ VisThread *visual_thread_create (VisThreadFunc func, void *data, int joinable)
 
     thread = visual_mem_new0 (VisThread, 1);
 
-    thread->thread = CreateThread (NULL, 0, func, (PVOID) data, 0, &thread->threadId);
+    thread->thread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE) func, (PVOID) data, 0, &thread->threadId);
 
     if (thread == NULL) {
         visual_log (VISUAL_LOG_ERROR, "Error while creating thread");

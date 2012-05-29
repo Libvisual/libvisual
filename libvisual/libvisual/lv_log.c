@@ -24,9 +24,9 @@
 #include <config.h>
 #include "lv_log.h"
 #include "lv_common.h"
-#include "gettext.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 #define LV_LOG_MAX_MESSAGE_SIZE 1024
 
