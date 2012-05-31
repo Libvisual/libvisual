@@ -178,8 +178,9 @@ static VisPalette *lv_scope_palette (VisPluginData *plugin)
 
 static void run_init(ScopePrivate *priv)
 {
-    priv->n = 64;
+    priv->n = 128;
     priv->zo = 0;
+    priv->d = 0;
     visual_timer_start(priv->timer);
 }
 
@@ -189,6 +190,7 @@ static void run_frame(ScopePrivate *priv)
     priv->r1=1/7.0;
     priv->r2=4/9.0;
     priv->r3=5/3.0;
+    priv->d += priv->zo;
 }
 
 static void run_beat(ScopePrivate *priv)
@@ -211,13 +213,6 @@ static void run_point(ScopePrivate *priv)
     priv->x=(priv->r2*2-1)*priv->z1;
     priv->y=(priv->r1*2-1)*priv->z1;
     priv->color=(1-exp(-priv->z1*priv->z1)) * 255.0; 
-}
-
-static __inline int makeint(double t)
-{
-  if (t <= 0.0) return 0;
-  if (t >= 1.0) return 255;
-  return (int)(t*255.0);
 }
 
 static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
