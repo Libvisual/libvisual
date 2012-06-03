@@ -4,7 +4,7 @@
     },
     "display_video": {
         "driver": "video",
-        "layers": 3,
+        "layers": 4,
         "foreground": "FFFFFFFF",
         "background": "00000000",
         "fill": 1,
@@ -31,9 +31,6 @@
             }
         },
         "layer1": {
-            "row1": {
-                //"col10": "widget_vis_banner"
-            },
             "row2": {
                 "col1": "widget_icon_heart",
                 "col2": "widget_icon_heartbeat",
@@ -60,6 +57,10 @@
                 "col3": "widget_cpu_label",
                 "col8": "widget_bignums",
                 "col11": "widget_percent"
+            },
+            "row5": {
+                "col3": "widget_fps",
+                "col6": "widget_fps_label"
             }
         }
         
@@ -920,6 +921,15 @@
         "align": "L",
         "update": 999
     },
+    "widget_fps_label": {
+        "type": "text",
+        "expression": "return 'FPS'",
+        "foreground": "FFFFFFFF",
+        "background": "ff000000"
+    },
+    "widget_fps": {
+        "type": "fps"
+    },
     "widget_vis_banner": {
         "type": "visualization",
         "width": 48,
@@ -948,7 +958,7 @@
         "update": 50,
         "morph-timeout": 0,
         "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:oinksie:jess:lv_scope:plazma",
-        "actor": "corona",
+        "actor": "bumpscope",
         "input": "debug",
         "morph": "slide_left",
         "style": "pcm",

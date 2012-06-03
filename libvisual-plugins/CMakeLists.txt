@@ -42,6 +42,9 @@ SET(LUAJIT_REQUIRED_VERSION 0.26)
 # Check for pkg-config
 FIND_PACKAGE(PkgConfig REQUIRED)
 
+# Check for OpenMP support.
+FIND_PACKAGE(OpenMP)
+
 # Check for libvisual here so that users get told they have the
 # wrong dependencies as early in the process as possible.
 PKG_CHECK_MODULES(LIBVISUAL ${LIBVISUAL_PKG}>=${LV_REQUIRED_VERSION} REQUIRED)

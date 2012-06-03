@@ -36,6 +36,7 @@ class WidgetIcon;
 class WidgetBar;
 class WidgetHistogram;
 class WidgetBignums;
+class WidgetFPS;
 
 class LCDCore;
 
@@ -108,6 +109,8 @@ void TextHistogramDraw(WidgetHistogram *w);
 void TextIconDraw(WidgetIcon *w);
 
 void TextBignumsDraw(WidgetBignums *w);
+
+void TextFPSDraw(WidgetFPS *w);
 
 }; // End namespace
 

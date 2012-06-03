@@ -42,6 +42,7 @@ class WidgetHistogram;
 class WidgetBignums;
 class WidgetGif;
 class WidgetVisualization;
+class WidgetFPS;
 
 class SpecialChar;
 
@@ -202,6 +203,8 @@ void GraphicBarDraw(WidgetBar *w);
 void GraphicHistogramDraw(WidgetHistogram *w);
 
 void GraphicBignumsDraw(WidgetBignums *w);
+
+void GraphicFPSDraw(WidgetFPS *w);
 
 void GraphicGifDraw(WidgetGif *w);
 

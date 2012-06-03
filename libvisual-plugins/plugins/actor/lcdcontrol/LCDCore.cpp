@@ -45,6 +45,7 @@
 #include "WidgetTimer.h"
 #include "WidgetScript.h"
 #include "WidgetVisualization.h"
+#include "WidgetFPS.h"
 
 #include "debug.h"
 //#include "Generator.h"
@@ -327,6 +328,9 @@ void LCDCore::BuildLayouts() {
                    widgets[i].row, widgets[i].col, widgets[i].layer);
            } else if (type->asString() == "histogram") {
                widget = (Widget *) new WidgetHistogram(this, name, widget_v,
+                   widgets[i].row, widgets[i].col, widgets[i].layer);
+           } else if (type->asString() == "fps") {
+               widget = (Widget *) new WidgetFPS(this, name, widget_v,
                    widgets[i].row, widgets[i].col, widgets[i].layer);
            } else if (type->asString() == "bignums") {
                widget = (Widget *) new WidgetBignums(this, name, widget_v,
