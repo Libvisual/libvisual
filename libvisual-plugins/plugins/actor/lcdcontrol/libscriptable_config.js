@@ -59,8 +59,7 @@
                 "col11": "widget_percent"
             },
             "row5": {
-                "col3": "widget_fps",
-                "col6": "widget_fps_label"
+                "col3": "widget_fps"
             }
         }
         
@@ -921,14 +920,12 @@
         "align": "L",
         "update": 999
     },
-    "widget_fps_label": {
+    "widget_fps": {
         "type": "text",
-        "expression": "return 'FPS'",
+        "expression": "return fps.avg() .. ' - FPS'",
+        "length": 11,
         "foreground": "FFFFFFFF",
         "background": "ff000000"
-    },
-    "widget_fps": {
-        "type": "fps"
     },
     "widget_vis_banner": {
         "type": "visualization",

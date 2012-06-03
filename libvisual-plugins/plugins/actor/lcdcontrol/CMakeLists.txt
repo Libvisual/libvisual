@@ -55,6 +55,8 @@ SET(actor_lcdcontrol_SOURCES
   WidgetBignums.cpp
   LCDTimer.cpp
   WidgetFPS.cpp
+  PluginFPS.cpp
+  PluginFPS.h
   GenericSerial.h     
   LCDTimer.h    
   Widget.h

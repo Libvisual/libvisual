@@ -64,6 +64,7 @@ Evaluator::Evaluator()
     mLoadavg = new PluginLoadavg(mScript);
     mProcStat = new PluginProcStat(mScript);
     mUptime = new PluginUptime(mScript);
+    mFPS = new PluginFPS(mScript);
 }
 
 Evaluator::~Evaluator()
@@ -73,6 +74,7 @@ Evaluator::~Evaluator()
     delete mLoadavg;
     delete mProcStat;
     delete mUptime;
+    delete mFPS;
 }
 
 std::string Evaluator::Eval(std::string str, std::string name)

@@ -1,2 +1,3 @@
 #!/bin/sh
-lv-tool -D 512x128 -a lcdcontrol
+
+lv-tool -a lcdcontrol -x jess:gdkpixbuf:oinksie:lv_flower:dancingparticles:gforce
