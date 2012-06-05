@@ -1097,7 +1097,7 @@ void GraphicVisualizationPeakDraw(WidgetVisualization *widget) {
     else
         fb = lcd->LayoutFB[layer];
 
- #ifdef __OPENMP
+#ifdef __OPENMP
 # pragma omp porallel
 # pragma omp for
 #endif
@@ -1195,9 +1195,6 @@ void do_alpha (VisVideo *vid, uint8_t rate)
 
         col.c8[3] = rate;
 
-//      if (col.c8[0] > 140) {
-//          col.c8[3] = rate - (200 - col.c8[0]);
-//      }
         ptr[i] = col.c32;
     }
 }
@@ -1210,15 +1207,14 @@ void GraphicVisualizationPCMDraw(WidgetVisualization *widget) {
     int width = widget->GetCols();
     int height = widget->GetRows();
     int layer = widget->GetLayer();
-    proxy v = widget->GetProxy();
-    VisVideo *video = v.video;
+    VisVideo *video = widget->video_;
     VisVideo *sub = visual_video_new_with_buffer(video->get_width(),
         video->get_height(),
         VISUAL_VIDEO_DEPTH_32BIT);
 
     VisColor color;
 
-    visual_video_convert_depth(sub, v.video);
+    visual_video_convert_depth(sub, widget->video_);
 
     do_alpha(sub, widget->alpha_);
 

@@ -626,8 +626,8 @@ void TextVisualizationPeakDraw(WidgetVisualization *widget) {
 }
 
 void TextVisualizationPCMDraw(WidgetVisualization *widget) {
+/*
     LCDText *lcdText = (LCDText *)widget->GetVisitor()->GetLCD();
-LCDError("hahaha------------------------");
 
     int row = widget->GetRow();
     int col = widget->GetCol();
@@ -696,6 +696,7 @@ LCDError("hahaha------------------------");
 
     if(!lcdText->IsTransitioning())
         lcdText->TextBlit(row, col, height, width);
+    */
 }
 
 void TextVisualizationSpectrumDraw(WidgetVisualization *widget) {

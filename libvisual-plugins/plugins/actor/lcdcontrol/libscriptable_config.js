@@ -10,7 +10,7 @@
         "fill": 1,
         "cols": 256,
         "rows": 64,
-        "layout-timeout": 0,
+        "layout-timeout": 8000,
         "update": 25,
         //"widget0": "widget_key_up",
         //"widget1": "widget_key_down",
@@ -20,17 +20,17 @@
         "layout0": "layout_full"
     },
     "layout_full": {
-        "layer3": {
+        "layer4": {
             "row1": {
-                "col1": "widget_infinite_256x64"
+                //"col1": "widget_infinite_256x64"
             }
         },
-        "layer2": {
+        "layer3": {
             "row1": {
                 "col1": "widget_libvisual_256x64"
             }
         },
-        "layer1": {
+        "layer2": {
             "row2": {
                 "col1": "widget_icon_heart",
                 "col2": "widget_icon_heartbeat",
@@ -60,6 +60,11 @@
             },
             "row5": {
                 "col3": "widget_fps"
+            }
+        },
+        "layer1": {
+            "row1": {
+                "col1": "widget_dynamic_movement"
             }
         }
         
@@ -928,12 +933,11 @@
         "background": "ff000000"
     },
     "widget_vis_banner": {
-        "type": "visualization",
+        "type": "filter",
         "width": 48,
-        "height": 8,
+        "height": 16,
         "update": 100,
-        "morph-timeout": 0,
-        "actor": "corona",
+        "actor": "dmovement",
         "style": "pcm"
     },
     "widget_infinite_256x64": {
@@ -942,7 +946,8 @@
         "height": 64,
         "update": 50,
         "morph-timeout": 0,
-        "actor": "infinite",
+        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce",
+        "actor": "bumpscope",
         "input": "debug",
         "morph": "slide_left",
         "style": "pcm",
@@ -953,23 +958,17 @@
         "width": 256,
         "height": 64,
         "update": 50,
-        "morph-timeout": 0,
-        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:oinksie:jess:lv_scope:plazma",
-        "actor": "bumpscope",
+        "morph-timeout": 7000,
+        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce",
+        "actor": "lv_analyzer",
         "input": "debug",
-        "morph": "slide_left",
+        "morph": "slide_right",
         "style": "pcm",
         "alpha": 75,
         "params": {
             "oinksie": {
                 "acid palette": 1,
                 "color mode": 4
-            },
-            "blursk": {
-                "color_style": "Metal",
-                "show_info": "Always",
-                "info_timeout": 10,
-                "show_timestamp": 1
             },
             /*"blursk": { // blur scope
                 "show_info": "Always",

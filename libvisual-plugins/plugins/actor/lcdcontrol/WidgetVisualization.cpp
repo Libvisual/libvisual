@@ -111,15 +111,15 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     delete val;
 
     val = v->CFG_Fetch_Raw(section, "actor", new Json::Value("oinksie"));
-    std::string actor = val->asString(); 
+    actor_plugin_ = val->asString(); 
     delete val;
 
     val = v->CFG_Fetch_Raw(section, "input", new Json::Value("debug"));
-    std::string input = val->asString();
+    input_plugin_ = val->asString();
     delete val;
 
     val = v->CFG_Fetch_Raw(section, "morph", new Json::Value("alphablend"));
-    morph_ = val->asString();
+    morph_plugin_ = val->asString();
     delete val;
 
     val = v->CFG_Fetch(section, "morph-timeout", new Json::Value(4000));
@@ -153,33 +153,15 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     if(style_ != STYLE_PCM) 
         return;
 
-    visual_log_set_verbosity(VISUAL_LOG_INFO);
-
-    proxy_.plugin = strdup(actor.c_str());
-
-    // Find an actor
-/*
-    if(!visual_actor_valid_by_name(proxy_.plugin)) {
-        LCDError("WidgetVisualization: Actor plugin not found -- trying to find one.");
-        proxy_.plugin = visual_actor_get_next_by_name_nogl(0);
-    }
-
-    if(!visual_actor_valid_by_name(proxy_.plugin)) {
-        LCDError("WidgetVisualization: Unable to load an actor");
-        update_ = -1;
-        return;
-    }
-*/
-
-    LCDError("WidgetVisualization: Using <%s> actor - requested <%s>", proxy_.plugin, actor.c_str());
+    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
 
     bin_ = new LV::Bin();
     bin_->set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
     bin_->switch_set_style(VISUAL_SWITCH_STYLE_MORPH);
 
-    actor_ = visual_actor_new(actor.c_str());
+    actor_ = visual_actor_new(actor_plugin_.c_str());
 
-    input_ = visual_input_new(input.c_str());
+    input_ = visual_input_new(input_plugin_.c_str());
     
     // Set depth
     int depthflag = visual_actor_get_supported_depth(actor_);
@@ -189,22 +171,20 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     // ----
 
     bin_->set_depth(depth_);
+
     bin_->connect(actor_, input_);
 
-    proxy_.video = visual_video_new_with_buffer(cols_, rows_, depth_);
+    video_ = visual_video_new_with_buffer(cols_, rows_, depth_);
 
-    visual_actor_set_video(actor_, proxy_.video);
+    visual_actor_set_video(actor_, video_);
 
     visual_actor_video_negotiate(actor_, depth_, FALSE, TRUE);
 
     bin_->set_video(video_);
     bin_->realize();
-    bin_->sync(FALSE);
+    bin_->set_morph(morph_plugin_);
+    bin_->sync(true);
     bin_->depth_changed();
-
-    //FIXME visual_bin_set_morph_by_name(bin_, (char *)morph_.c_str());
-
-    //FIXME proxy_.video->pal = visual_palette_new(256);
 
 /*
     memset(&current_songinfo_, 0, sizeof(VisSongInfo));
@@ -218,20 +198,12 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
 
     DoParams();
 
-/*
-    QObject::connect(visitor_->GetWrapper(), SIGNAL(_ResizeLCD(int, int, int, int)),
-        this, SLOT(Resize(int, int, int, int)));
-    QObject::connect(visitor_->GetWrapper(), SIGNAL(_ResizeBefore(int, int)),
-        this, SLOT(ResizeBefore(int, int)));
-    QObject::connect(visitor_->GetWrapper(), SIGNAL(_ResizeAfter()),
-        this, SLOT(ResizeAfter()));
-*/
     LCDError("WidgetVisualization %s", name_.c_str());
 }
 
 void WidgetVisualization::DoParams() {
     // params
-    Json::Value *actorVal = visitor_->CFG_Fetch_Raw(section_, std::string("params.") + proxy_.plugin);
+    Json::Value *actorVal = visitor_->CFG_Fetch_Raw(section_, std::string("params.") + actor_plugin_);
     if(actorVal) {
         VisActor *actor = actor_;
         VisPluginData *plugin = visual_actor_get_plugin(actor);
@@ -294,14 +266,18 @@ void  WidgetVisualization::Resize(int rows, int cols, int old_rows, int old_cols
     row_ = round(rows * r);
     col_ = round(cols * c);
 
-    visual_video_free_buffer(proxy_.video);
-    visual_object_unref(VISUAL_OBJECT(proxy_.video));
+    visual_video_free_buffer(video_);
 
-    proxy_.video = visual_video_new_with_buffer(cols_, rows_, VISUAL_VIDEO_DEPTH_32BIT);
+    // Set depth
+    int depthflag = visual_actor_get_supported_depth(actor_);
 
-    visual_actor_set_video(actor_, proxy_.video);
+    depth_ = visual_video_depth_get_highest_nogl(depthflag);
 
-    visual_actor_video_negotiate(actor_, VISUAL_VIDEO_DEPTH_32BIT, FALSE, TRUE);
+    video_ = visual_video_new_with_buffer(cols_, rows_, depth_);
+
+    visual_actor_set_video(actor_, video_);
+
+    visual_actor_video_negotiate(actor_, depth_, FALSE, TRUE);
 }
 
 void WidgetVisualization::ResizeBefore(int rows, int cols) {
@@ -426,22 +402,23 @@ void WidgetVisualization::UpdatePCM()
     if(bin_->depth_changed())
     {
         // Set depth
-        int depthflag = visual_actor_get_supported_depth(visual_bin_get_actor(bin_));
+        actor_ = visual_bin_get_actor(bin_);
+
+        int depthflag = visual_actor_get_supported_depth(actor_);
     
+
         depth_ = visual_video_depth_get_highest_nogl(depthflag);
 
-        visual_video_free_buffer(proxy_.video);
+        visual_video_free_buffer(video_);
 
         video_ = visual_video_new_with_buffer(cols_, rows_, depth_);
 
         bin_->set_video(video_);
 
-        bin_->sync(TRUE);
+        bin_->sync(true);
     }
 
     bin_->run();
-
-    //proxy_.pal = visual_actor_get_palette(actor_);
 
     if(Draw)
         Draw(this);
@@ -449,20 +426,18 @@ void WidgetVisualization::UpdatePCM()
 
 void WidgetVisualization::VisualMorph() {
     LCDError("VisualMorph");
-    proxy_.plugin = visual_actor_get_next_by_name_nogl(proxy_.plugin);
+    const char *name = visual_actor_get_next_by_name_nogl(actor_plugin_.c_str());
 
-    if(!proxy_.plugin) {
+    if(strstr(skip_actors_.c_str(), actor_plugin_.c_str()) != 0) {
+        actor_plugin_ = name;
         VisualMorph();
         return;
     }
 
-    if(strstr(skip_actors_.c_str(), proxy_.plugin) != 0) {
-        VisualMorph();
-        return;
-    }
+    actor_plugin_ = name;
 
-    //FIXME visual_bin_set_morph_by_name(bin_, (char *)morph_.c_str());
-    visual_bin_switch_actor_by_name(bin_, (char *)proxy_.plugin);
+    bin_->set_morph(morph_plugin_);
+    bin_->switch_actor(actor_plugin_);
 
     DoParams();
 }
