@@ -16,6 +16,10 @@ SET(actor_gstreamer_SOURCES
 
 ADD_LIBRARY(actor_gstreamer MODULE ${actor_gstreamer_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_gstreamer PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_gstreamer
   ${LIBVISUAL_LIBRARIES}
   ${GSTREAMER_LIBRARIES}

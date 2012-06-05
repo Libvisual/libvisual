@@ -15,8 +15,13 @@ SET(actor_plazma_SOURCES
 
 ADD_LIBRARY(actor_plazma MODULE ${actor_plazma_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_plazma PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_plazma
   ${LIBVISUAL_LIBRARIES}
+  m
 )
 
 INSTALL(TARGETS actor_plazma LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

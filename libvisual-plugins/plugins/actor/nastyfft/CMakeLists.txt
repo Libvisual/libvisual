@@ -15,10 +15,15 @@ SET(actor_nastyfft_SOURCES
 
 ADD_LIBRARY(actor_nastyfft MODULE ${actor_nastyfft_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_nastyfft PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_nastyfft
   ${LIBVISUAL_LIBRARIES}
   ${OPENGL_gl_LIBRARY}
   ${OPENGL_glu_LIBRARY}
+  m
 )
 
 INSTALL(TARGETS actor_nastyfft LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

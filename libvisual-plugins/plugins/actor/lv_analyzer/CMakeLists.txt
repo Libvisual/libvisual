@@ -14,6 +14,10 @@ SET(actor_lv_analyzer_SOURCES
 
 ADD_LIBRARY(actor_lv_analyzer MODULE ${actor_lv_analyzer_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_lv_analyzer PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_lv_analyzer
   ${LIBVISUAL_LIBRARIES}
 )

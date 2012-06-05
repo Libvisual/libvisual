@@ -34,10 +34,15 @@ FILE(GLOB actor_nebulus_IMAGES "*.bmp")
 
 ADD_LIBRARY(actor_nebulus MODULE ${actor_nebulus_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_nebulus PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_nebulus
   ${LIBVISUAL_LIBRARIES}
   ${OPENGL_gl_LIBRARY}
   ${OPENGL_glu_LIBRARY}
+  m
 )
 
 INSTALL(TARGETS actor_nebulus LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

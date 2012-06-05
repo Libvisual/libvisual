@@ -18,6 +18,10 @@ ADD_LIBRARY(morph_slide_right MODULE ${morph_slide_right_SOURCES})
 ADD_LIBRARY(morph_slide_up    MODULE ${morph_slide_up_SOURCES})
 ADD_LIBRARY(morph_slide_down  MODULE ${morph_slide_down_SOURCES})
 
+SET_TARGET_PROPERTIES(morph_slide_left morph_slide_right morph_slide_up morph_slide_down PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(morph_slide_left  ${LIBVISUAL_LIBRARIES})
 TARGET_LINK_LIBRARIES(morph_slide_right ${LIBVISUAL_LIBRARIES})
 TARGET_LINK_LIBRARIES(morph_slide_up    ${LIBVISUAL_LIBRARIES})

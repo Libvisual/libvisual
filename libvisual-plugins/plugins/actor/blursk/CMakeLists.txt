@@ -37,8 +37,13 @@ SET(actor_blursk_SOURCES
 
 ADD_LIBRARY(actor_blursk MODULE ${actor_blursk_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_blursk PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_blursk
   ${LIBVISUAL_LIBRARIES}
+  m
 )
 
 INSTALL(TARGETS actor_blursk LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

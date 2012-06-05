@@ -14,8 +14,13 @@ SET(morph_tentacle_SOURCES
 
 ADD_LIBRARY(morph_tentacle MODULE ${morph_tentacle_SOURCES})
 
+SET_TARGET_PROPERTIES(morph_tentacle PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(morph_tentacle
   ${LIBVISUAL_LIBRARIES}
+  m
 )
 
 INSTALL(TARGETS morph_tentacle LIBRARY DESTINATION ${LV_MORPH_PLUGIN_DIR})

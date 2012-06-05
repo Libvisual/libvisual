@@ -17,8 +17,13 @@ SET(actor_bumpscope_SOURCES
 
 ADD_LIBRARY(actor_bumpscope MODULE ${actor_bumpscope_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_bumpscope PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_bumpscope
   ${LIBVISUAL_LIBRARIES}
+  m
 )
 
 INSTALL(TARGETS actor_bumpscope LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

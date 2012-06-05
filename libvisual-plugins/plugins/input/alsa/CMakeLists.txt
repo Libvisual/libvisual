@@ -15,6 +15,10 @@ SET(input_alsa_SOURCES
 
 ADD_LIBRARY(input_alsa MODULE ${input_alsa_SOURCES})
 
+SET_TARGET_PROPERTIES(input_alsa PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(input_alsa
   ${LIBVISUAL_LIBRARIES}
   ${ALSA_LIBRARY}

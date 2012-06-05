@@ -99,7 +99,10 @@ SET(actor_lcdcontrol_SOURCES
 #SET_SOURCE_FILES_PROPERTIES(LCDGraphic.cpp WidgetFPS.cpp .. PROPERTIES COMPILE_FLAGS "${OpenMP_CXX_FLAGS}")
 
 ADD_LIBRARY(actor_lcdcontrol MODULE ${actor_lcdcontrol_SOURCES})
-#-avoid-version
+
+SET_TARGET_PROPERTIES(actor_lcdcontrol PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
 
 TARGET_LINK_LIBRARIES(actor_lcdcontrol
   ${LIBVISUAL_LIBRARIES}

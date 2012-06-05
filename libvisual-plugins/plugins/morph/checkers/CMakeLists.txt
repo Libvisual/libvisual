@@ -14,6 +14,10 @@ SET(morph_checkers_SOURCES
 
 ADD_LIBRARY(morph_checkers MODULE ${morph_checkers_SOURCES})
 
+SET_TARGET_PROPERTIES(morph_checkers PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(morph_checkers
   ${LIBVISUAL_LIBRARIES}
 )

@@ -25,10 +25,15 @@ SET(actor_madspin_IMAGES
 
 ADD_LIBRARY(actor_madspin MODULE ${actor_madspin_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_madspin PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_madspin
   ${LIBVISUAL_LIBRARIES}
   ${OPENGL_gl_LIBRARY}
   ${OPENGL_glu_LIBRARY}
+  m
 )
 
 INSTALL(TARGETS actor_madspin LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

@@ -16,6 +16,10 @@ SET(input_jack_SOURCES
 
 ADD_LIBRARY(input_jack MODULE ${input_jack_SOURCES})
 
+SET_TARGET_PROPERTIES(input_jack PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(input_jack
   ${LIBVISUAL_LIBRARIES}
   ${JACK_LIBRARIES}

@@ -31,10 +31,15 @@ SET(actor_dancingparticles_SCRIPTS
 
 ADD_LIBRARY(actor_dancingparticles MODULE ${actor_dancingparticles_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_dancingparticles PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_dancingparticles
   ${LIBVISUAL_LIBRARIES}
   ${OPENGL_gl_LIBRARY}
   ${OPENGL_glu_LIBRARY}
+  m
 )
 
 INSTALL(TARGETS actor_dancingparticles LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

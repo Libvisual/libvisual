@@ -16,6 +16,10 @@ SET(actor_gdkpixbuf_SOURCES
 
 ADD_LIBRARY(actor_gdkpixbuf MODULE ${actor_gdkpixbuf_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_gdkpixbuf PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_gdkpixbuf
   ${LIBVISUAL_LIBRARIES}
   ${GTK_LIBRARIES}

@@ -32,8 +32,13 @@ SET(actor_jess_SOURCES
 
 ADD_LIBRARY(actor_jess MODULE ${actor_jess_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_jess PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_jess
   ${LIBVISUAL_LIBRARIES}
+  m
 )
 
 INSTALL(TARGETS actor_jess LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

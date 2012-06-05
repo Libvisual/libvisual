@@ -14,6 +14,10 @@ SET(morph_alphablend_SOURCES
 
 ADD_LIBRARY(morph_alphablend MODULE ${morph_alphablend_SOURCES})
 
+SET_TARGET_PROPERTIES(morph_alphablend PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(morph_alphablend
   ${LIBVISUAL_LIBRARIES}
 )

@@ -14,8 +14,13 @@ SET(actor_lv_scope_SOURCES
 
 ADD_LIBRARY(actor_lv_scope MODULE ${actor_lv_scope_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_lv_scope PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_lv_scope
   ${LIBVISUAL_LIBRARIES}
+  m
 )
 
 INSTALL(TARGETS actor_lv_scope LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

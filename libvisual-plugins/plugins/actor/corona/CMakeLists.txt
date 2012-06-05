@@ -20,8 +20,13 @@ SET(actor_corona_SOURCES
 
 ADD_LIBRARY(actor_corona MODULE ${actor_corona_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_corona PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_corona
   ${LIBVISUAL_LIBRARIES}
+  m
 )
 
 INSTALL(TARGETS actor_corona LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

@@ -16,6 +16,10 @@ SET(input_pulseaudio_SOURCES
 
 ADD_LIBRARY(input_pulseaudio MODULE ${input_pulseaudio_SOURCES})
 
+SET_TARGET_PROPERTIES(input_pulseaudio PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(input_pulseaudio
   ${LIBVISUAL_LIBRARIES}
   ${PULSE_LIBRARIES}

@@ -19,8 +19,13 @@ SET(actor_jakdaw_SOURCES
 
 ADD_LIBRARY(actor_jakdaw MODULE ${actor_jakdaw_SOURCES})
 
+SET_TARGET_PROPERTIES(actor_jakdaw PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(actor_jakdaw
   ${LIBVISUAL_LIBRARIES}
+  m
 )
 
 INSTALL(TARGETS actor_jakdaw LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

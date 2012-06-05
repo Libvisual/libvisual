@@ -17,6 +17,10 @@ SET(input_mplayer_SOURCES
 
 ADD_LIBRARY(input_mplayer MODULE ${input_mplayer_SOURCES})
 
+SET_TARGET_PROPERTIES(input_mplayer PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(input_mplayer
   ${LIBVISUAL_LIBRARIES}
 )

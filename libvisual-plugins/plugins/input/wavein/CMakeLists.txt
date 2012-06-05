@@ -14,6 +14,10 @@ SET(input_wavein_SOURCES
 
 ADD_LIBRARY(input_wavein MODULE ${input_wavein_SOURCES})
 
+SET_TARGET_PROPERTIES(input_wavein PROPERTIES
+  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+)
+
 TARGET_LINK_LIBRARIES(input_wavein
   ${LIBVISUAL_LIBRARIES}
   winmm
