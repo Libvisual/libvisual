@@ -4,7 +4,7 @@
     },
     "display_video": {
         "driver": "video",
-        "layers": 2,
+        "layers": 4,
         "foreground": "FFFFFFFF",
         "background": "00000000",
         "fill": 1,
@@ -20,14 +20,19 @@
         "layout0": "layout_full"
     },
     "layout_full": {
-        "layer3": {
+        "layer4": {
             "row1": {
                 "col1": "widget_infinite_256x64"
             }
         },
-        "layer2": {
+        "layer3": {
             "row1": {
                 "col1": "widget_libvisual_256x64"
+            }
+        },
+        "layer2": {
+            "row1": {
+                "col1": "widget_histogram_large"
             }
         },
         "layer1": {
@@ -59,7 +64,7 @@
                 "col11": "widget_percent"
             },
             "row5": {
-                "col3": "widget_fps"
+                //"col3": "widget_fps"
             }
         }
     },
@@ -958,7 +963,7 @@
         "input": "debug",
         "morph": "slide_right",
         "style": "pcm",
-        "alpha": 75,
+        "alpha": 70,
         "params": {
             "oinksie": {
                 "acid palette": 1,
