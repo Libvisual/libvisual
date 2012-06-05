@@ -329,7 +329,7 @@ LCDError("SetupChars");
 
     if( (int)lcd->special_chars.size() >= lcd->CHARS - size) {
         update_ = -1;
-        LCDError("Widget %s - unable to allocate special chars. CHARS: %d, chars_cache: %d, size: %d", 
+        LCDError("Widget %s - unable to allocate special chars. CHARS: %d, chars_cache: %" VISUAL_SIZE_T_FORMAT ", size: %d", 
             name_.c_str(), lcd->CHARS, lcd->special_chars.size(), size);
         return;
     }

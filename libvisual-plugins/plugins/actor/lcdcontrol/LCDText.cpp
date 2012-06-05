@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <map>
+#include <libvisual/libvisual.h>
 
 #include "LCDCore.h"
 #include "LCDBase.h"
@@ -116,7 +117,7 @@ int LCDText::ResizeLCD(int rows, int cols) {
 void LCDText::TextSetSpecialChars() {
     for(int i = 0; i < (int)special_chars.size(); i++ ) {
         if (i > CHARS) {
-            LCDError("Too many chars to process. Expected %d, got %d.", CHARS, 
+            LCDError("Too many chars to process. Expected %d, got %" VISUAL_SIZE_T_FORMAT ".", CHARS, 
             special_chars.size());
             break;
         }
