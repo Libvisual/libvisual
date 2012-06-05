@@ -188,7 +188,7 @@ void WidgetIcon::Start() {
 }
 
 void WidgetIcon::Stop() {
-    //timer_->stop();
+    timer_->Stop();
     started_ = false;
     ch_ = -1;
 }

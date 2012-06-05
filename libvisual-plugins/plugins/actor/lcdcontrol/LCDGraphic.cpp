@@ -692,7 +692,7 @@ void LCD::GraphicIconDraw(WidgetIcon *w) {
                 else
                     fb[i] = bg;
             } else {
-                fb[i] = lcd->BG_COL;
+                fb[i] = lcd->NO_COL;
             }
         }
     }
