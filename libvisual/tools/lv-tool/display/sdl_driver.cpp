@@ -159,7 +159,7 @@ namespace {
           if (!m_running)
               return;
 
-          m_screen_video.reset ();
+          //FIXME - free'd twice - m_screen_video.reset ();
 
           SDL_Quit ();
 

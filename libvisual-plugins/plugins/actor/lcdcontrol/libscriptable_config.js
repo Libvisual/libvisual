@@ -27,9 +27,10 @@
         },
         "layer3": {
             "row1": {
-                "col1": "widget_libvisual_256x64"
+                //"col1": "widget_libvisual_256x64"
             }
         },
+/*
         "layer2": {
             "row2": {
                 "col1": "widget_icon_heart",
@@ -62,12 +63,13 @@
                 "col3": "widget_fps"
             }
         },
+        */
+
         "layer1": {
             "row1": {
                 "col1": "widget_dynamic_movement"
             }
         }
-        
     },
     "layout_2x16": {
         "row1": {
