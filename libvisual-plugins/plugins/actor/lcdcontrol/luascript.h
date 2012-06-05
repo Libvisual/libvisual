@@ -10,7 +10,7 @@
 #include <memory>
 #include <cstdio>
 
-#include <lua/lua.hpp>
+#include <luajit-2.0/lua.hpp>
 
 class lua {
  public:
