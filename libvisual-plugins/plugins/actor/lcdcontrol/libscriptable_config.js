@@ -22,15 +22,14 @@
     "layout_full": {
         "layer4": {
             "row1": {
-                //"col1": "widget_infinite_256x64"
+                "col1": "widget_infinite_256x64"
             }
         },
         "layer3": {
             "row1": {
-                //"col1": "widget_libvisual_256x64"
+                "col1": "widget_libvisual_256x64"
             }
         },
-/*
         "layer2": {
             "row2": {
                 "col1": "widget_icon_heart",
@@ -63,7 +62,6 @@
                 "col3": "widget_fps"
             }
         },
-        */
 
         "layer1": {
             "row1": {
@@ -948,7 +946,7 @@
         "height": 64,
         "update": 50,
         "morph-timeout": 0,
-        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce",
+        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce:corona:goom2k4",
         "actor": "bumpscope",
         "input": "debug",
         "morph": "slide_left",
@@ -960,9 +958,9 @@
         "width": 256,
         "height": 64,
         "update": 50,
-        "morph-timeout": 7000,
-        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce",
-        "actor": "lv_analyzer",
+        "morph-timeout": 0,
+        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce:corona:goom2k4",
+        "actor": "blursk",
         "input": "debug",
         "morph": "slide_right",
         "style": "pcm",

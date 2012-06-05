@@ -205,7 +205,7 @@ void WidgetVisualization::DoParams() {
     // params
     Json::Value *actorVal = visitor_->CFG_Fetch_Raw(section_, std::string("params.") + actor_plugin_);
     if(actorVal) {
-        VisActor *actor = actor_;
+        VisActor *actor = visual_bin_get_actor(bin_);;
         VisPluginData *plugin = visual_actor_get_plugin(actor);
         VisParamContainer *params = visual_plugin_get_params(plugin);
         Json::Value::Members members = actorVal->getMemberNames();
@@ -425,10 +425,16 @@ void WidgetVisualization::UpdatePCM()
 }
 
 void WidgetVisualization::VisualMorph() {
-    LCDError("VisualMorph");
+/*
     const char *name = visual_actor_get_next_by_name_nogl(actor_plugin_.c_str());
+    LCDError("VisualMorph %s > %s", actor_plugin_.c_str(), name);
 
-    if(strstr(skip_actors_.c_str(), actor_plugin_.c_str()) != 0) {
+    if(!name)
+    {
+        name = visual_actor_get_next_by_name_nogl(NULL);
+    }
+
+    if(strstr(skip_actors_.c_str(), name) != 0) {
         actor_plugin_ = name;
         VisualMorph();
         return;
@@ -440,6 +446,7 @@ void WidgetVisualization::VisualMorph() {
     bin_->switch_actor(actor_plugin_);
 
     DoParams();
+*/
 }
 
 void WidgetVisualization::UpdateSpectrum() {

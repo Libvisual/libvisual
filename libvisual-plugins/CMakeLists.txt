@@ -295,6 +295,7 @@ SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden
 SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
 
+
 # Pedantic checks
 
 OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur" no)

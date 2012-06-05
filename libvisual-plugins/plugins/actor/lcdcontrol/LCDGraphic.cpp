@@ -47,7 +47,7 @@
 
 #include <libvisual/libvisual.h>
 
-#if __OPENMP
+#if _OPENMP
 # include <omp.h>
 #endif
 
@@ -165,10 +165,8 @@ VisVideo *LCDGraphic::GetVideo(int layer)
     VisVideo *video = visual_video_new_with_buffer(LCOLS, LROWS, VISUAL_VIDEO_DEPTH_32BIT);
 
     uint32_t *pixels = (uint32_t *)visual_video_get_pixels(video);
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
+
+
     for(int n = 0; n < LCOLS * LROWS; n++)
     {
         pixels[n] = DisplayFB[layer][n].ToInt();
@@ -181,10 +179,14 @@ VisVideo *LCDGraphic::GetVideo()
 {
     char *pixels = (char *)visual_video_get_pixels(video_);
     memset(pixels, 0, visual_video_get_size(video_));
-#ifdef __OPENMP
-# pragma omp porallel
+
+	//int i = 0, num_threads = omp_get_num_threads();
+
+#if _OPENMP
+# pragma omp parallel
 # pragma omp for
 #endif
+
     for(int layer = 0; layer < LAYERS; layer++)
     {
         for(int row = 0; row < LROWS; row++)
@@ -233,49 +235,29 @@ cout << "rows " << rows << " cols " << cols << "-----------=====================
     video_ = visual_video_new_with_buffer(LCOLS, LROWS, VISUAL_VIDEO_DEPTH_32BIT);
 
     DisplayFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for(int l = 0; l < layers; l++) {
         DisplayFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
     }
 
     LayoutFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for(int l = 0; l < layers; l++) {
         LayoutFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
     }
 
     TransitionFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for( int l = 0; l < layers; l++) {
         TransitionFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
     }
 
     VideoFB = (VisVideo **)malloc(sizeof(VisVideo) * layers);
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for( int l = 0; l < layers; l++) {
         VideoFB[l] = visual_video_new_with_buffer(LCOLS, LROWS, VISUAL_VIDEO_DEPTH_32BIT);
         visual_video_fill_color(VideoFB[l], NO_COL.ToColor());
     }
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for(int l = 0; l < layers; l++) {
         for(int i = 0; i < cols * rows; i++) {
@@ -293,10 +275,6 @@ cout << "rows " << rows << " cols " << cols << "-----------=====================
 
 int LCDGraphic::ResizeLCD(int rows, int cols) {
     RGBA *tmp;
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for(int l = 0; l < LAYERS; l++) {
         free(DisplayFB[l]);
@@ -428,10 +406,6 @@ void LCDGraphic::GraphicBlit(const int row, const int col, const int height, con
         int r, c, h, w;
         GraphicWindow(row, height, LROWS, &r, &h);
         GraphicWindow(col, width, LCOLS, &c, &w);
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
         if (h > 0 && w > 0) {
             for(int rr = r; rr < r + h; rr++) {
@@ -561,10 +535,6 @@ void LCDGraphic::GraphicRender(const int layer, const int row, const int col,
         } else {
             chr = Font_6x8[(int) *(unsigned char *) txt];
         }
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
         for (y = 0; y < YRES && y + r < LROWS; y++) {
             int mask = 1 << XRES;
@@ -644,10 +614,6 @@ void LCDGraphic::DrawSpecialChar(const int row, const int col,
         fb = TransitionFB[layer];
     else
         fb = LayoutFB[layer];
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for(int y = row; y < row + height; y++) {
         int mask = 1 << width;
@@ -712,10 +678,6 @@ void LCD::GraphicIconDraw(WidgetIcon *w) {
     //lcd->graphic_mutex_.lock();
 
     /* render icon */
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for (y = 0; y < lcd->YRES; y++) {
         int mask = 1 << lcd->XRES;
@@ -894,10 +856,6 @@ void LCD::GraphicHistogramDraw(WidgetHistogram *w) {
         fb = lcd->TransitionFB[layer];
     else
         fb = lcd->LayoutFB[layer];
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     //lcd->graphic_mutex_.lock();
     for(int c = 0; c < width / lcd->XRES; c++) {
@@ -956,10 +914,6 @@ void LCD::GraphicBignumsDraw(WidgetBignums *w) {
         fb = lcd->LayoutFB[layer];
 
     //lcd->graphic_mutex_.lock();
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for(int r = 0; r < 16 && row + r < lcd->LROWS; r++) {
         for(int c = 0; c < 24 && col + c < lcd->LCOLS; c++) {
@@ -1003,12 +957,6 @@ void LCD::GraphicFPSDraw(WidgetFPS *w) {
         fb = lcd->LayoutFB[layer];
 
     //lcd->graphic_mutex_.lock();
-/*
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
-*/
     for(int r = 0; r < 16 && row + r < lcd->LROWS; r++) {
         for(int c = 0; c < 24 && col + c < lcd->LCOLS; c++) {
             int n = (row + r) * lcd->LCOLS + col + c;
@@ -1097,10 +1045,6 @@ void GraphicVisualizationPeakDraw(WidgetVisualization *widget) {
     else
         fb = lcd->LayoutFB[layer];
 
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
    //lcd->graphic_mutex_.lock();
     for(int y = 0; y < height && row + y < lcd->LROWS; y++) {
         int val = (int)(((double)widget->GetHistory()[y / lcd->YRES][0] /
@@ -1185,10 +1129,6 @@ void do_alpha (VisVideo *vid, uint8_t rate)
         uint8_t c8[4];
     } col;
 
-#ifdef __OPENMP
-# pragma omp porallel
-# pragma omp for
-#endif
 
     for (i = 0; i < vid->get_width() * vid->get_height(); i++) {
         col.c32 = ptr[i];

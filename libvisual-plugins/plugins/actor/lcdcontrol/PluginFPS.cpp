@@ -22,6 +22,7 @@
  */
 
 #include <sys/time.h>
+#include <libvisual/libvisual.h>
 
 #include "PluginFPS.h"
 #include "debug.h"
@@ -63,6 +64,7 @@ static void stats_startFrame( Stats*  s );
 static void stats_endFrame( Stats*  s );
 
 class statavg_t {
+    
     public:
     static const lua::args_t *in_args()
     {
@@ -82,16 +84,36 @@ class statavg_t {
 
     static void calc(const lua::args_t& in, lua::args_t &out)
     {
-        static bool flipped = true;
-        if(flipped)
-            stats_startFrame(&stats);
-        else
-            stats_endFrame(&stats);
+        static std::vector<double> hist;
+        static double then = now_ms();
 
-        flipped = !flipped;
+        double now = now_ms();
+        double diff = now - then;
+        then = now;
 
-        double val = stats.avgFrame;
+        hist.push_back(diff);
+
+        double avg = 0.0;
+        for(unsigned int i = 0; i < hist.size(); i++)
+        {
+            avg+=hist[i];
+        }
+        avg = avg / hist.size();
+
+        double val = avg;
+
+        visual_log(VISUAL_LOG_INFO, "AVERAGE FPS %f", val);
         dynamic_cast<lua::int_arg_t&>(*out[0]).value() = val;
+
+        if(hist.size() > 20)
+        {
+            std::vector<double> tmp;
+            for(unsigned int i = 1; i < hist.size(); i++)
+            {
+                tmp.push_back(hist[i]);
+            }
+            hist = tmp;
+        }
     }
 };
 

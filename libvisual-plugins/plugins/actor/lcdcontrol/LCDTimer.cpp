@@ -21,6 +21,8 @@ LCDTimer::~LCDTimer()
 
 void LCDTimer::Start()
 {
+    if(mDuration <= .05)
+        return;
     visual_timer_start(mTimer);
 }
 
@@ -34,6 +36,7 @@ void LCDTimer::Start(int duration, void *data)
 {
     mDuration = duration;
     mEvent->mData = data;
+    Start();
 }
 
 void LCDTimer::Start(int duration, void *data, LCDEventFunc func)
