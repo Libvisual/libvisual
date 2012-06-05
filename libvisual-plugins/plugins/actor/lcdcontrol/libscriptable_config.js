@@ -4,7 +4,7 @@
     },
     "display_video": {
         "driver": "video",
-        "layers": 4,
+        "layers": 2,
         "foreground": "FFFFFFFF",
         "background": "00000000",
         "fill": 1,
@@ -20,17 +20,17 @@
         "layout0": "layout_full"
     },
     "layout_full": {
-        "layer4": {
+        "layer3": {
             "row1": {
                 "col1": "widget_infinite_256x64"
             }
         },
-        "layer3": {
+        "layer2": {
             "row1": {
                 "col1": "widget_libvisual_256x64"
             }
         },
-        "layer2": {
+        "layer1": {
             "row2": {
                 "col1": "widget_icon_heart",
                 "col2": "widget_icon_heartbeat",
@@ -60,12 +60,6 @@
             },
             "row5": {
                 "col3": "widget_fps"
-            }
-        },
-
-        "layer1": {
-            "row1": {
-                "col1": "widget_dynamic_movement"
             }
         }
     },

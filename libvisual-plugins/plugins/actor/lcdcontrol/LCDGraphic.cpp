@@ -166,6 +166,10 @@ VisVideo *LCDGraphic::GetVideo(int layer)
 
     uint32_t *pixels = (uint32_t *)visual_video_get_pixels(video);
 
+#if _OPENMP
+# pragma omp parallel
+# pragma omp for
+#endif
 
     for(int n = 0; n < LCOLS * LROWS; n++)
     {
@@ -187,21 +191,19 @@ VisVideo *LCDGraphic::GetVideo()
 # pragma omp for
 #endif
 
-    for(int layer = 0; layer < LAYERS; layer++)
+    for(int row = 0; row < LROWS; row++)
     {
-        for(int row = 0; row < LROWS; row++)
+        for(int col = 0; col < LCOLS; col++)
         {
-            for(int col = 0; col < LCOLS; col++)
-            {
-                int n = row * video_->get_pitch() + col * 4;
-                RGBA rgb =  GraphicBlend(row, col);
-                pixels[n] = rgb.R;
-                pixels[n+1] = rgb.G;
-                pixels[n+2] = rgb.B;
-                pixels[n+3] = rgb.A;
-            }
+            int n = row * video_->get_pitch() + col * 4;
+            RGBA rgb =  GraphicBlend(row, col);
+            pixels[n] = rgb.R;
+            pixels[n+1] = rgb.G;
+            pixels[n+2] = rgb.B;
+            pixels[n+3] = rgb.A;
         }
     }
+
     return video_;
 }
 
@@ -408,6 +410,11 @@ void LCDGraphic::GraphicBlit(const int row, const int col, const int height, con
         GraphicWindow(col, width, LCOLS, &c, &w);
 
         if (h > 0 && w > 0) {
+
+#if _OPENMP
+# pragma omp parallel
+# pragma omp for
+#endif
             for(int rr = r; rr < r + h; rr++) {
                 for(int cc = c; cc < c + w; cc++) {
                     for(int l = LAYERS - 1; l >= 0; l-- ) {
@@ -454,24 +461,19 @@ inline RGBA LCDGraphic::GraphicBlend(const int row, const int col, RGBA **buffer
 
     for (l = o; l >= 0; l--) {
         p = buffer[l][row * LCOLS + col];
-        switch(p.A) {
-        //if(p.A == 255) {
-        case 0:
-        break;
-        case 255:
-            ret.R = p.R;
-            ret.G = p.G;
-            ret.B = p.B;
-            ret.A = 0xff;
-            break;
-        //} else if(p.A != 0) {
-        default:
-            ret.R = (p.R * p.A + ret.R * (255 - p.A)) / 255;
-            ret.G = (p.G * p.A + ret.G * (255 - p.A)) / 255;
-            ret.B = (p.B * p.A + ret.B * (255 - p.A)) / 255;
-            ret.A = 0xff;
-            break;
-        //}
+        if(p.A != 0)
+        {
+            if(p.A == 255) {
+                ret.R = p.R;
+                ret.G = p.G;
+                ret.B = p.B;
+                ret.A = 0xff;
+            } else {
+                ret.R = (p.R * p.A + ret.R * (255 - p.A)) / 255;
+                ret.G = (p.G * p.A + ret.G * (255 - p.A)) / 255;
+                ret.B = (p.B * p.A + ret.B * (255 - p.A)) / 255;
+                ret.A = 0xff;
+            }
         }
     }
     if (INVERTED) {
@@ -1169,6 +1171,7 @@ void GraphicVisualizationPCMDraw(WidgetVisualization *widget) {
         fb = lcd->LayoutFB[layer];
 
     //lcd->graphic_mutex_.lock();
+
     for(int r = 0; r < height && row + r < lcd->LROWS; r++) {
         for(int c = 0; c < width && col + c < lcd->LCOLS; c++) {
             int n = ((row + r) * lcd->LCOLS + col + c);
