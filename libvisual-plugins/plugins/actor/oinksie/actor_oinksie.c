@@ -248,6 +248,7 @@ static VisPalette *act_oinksie_palette (VisPluginData *plugin)
 static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+#if 0
 	VisBuffer			 *pcmbuf1;
 	VisBuffer			 *pcmbuf2;
 	VisBuffer			 *pcmmix;
@@ -269,7 +270,7 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 
 	/* Mix channels */
 	pcmmix = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[2], sizeof (float) * 4096);
-	visual_audio_sample_buffer_mix_many (pcmmix, TRUE, 2, pcmbuf1, pcmbuf2, 1.0, 1.0);
+	//visual_audio_get_sample_mixed (audio, pcmmix, TRUE, 2, pcmbuf1, pcmbuf2, 1.0, 1.0);
 
 	visual_buffer_set_data_pair (spmbuf, priv->priv1.audio.freqsmall, sizeof (float) * 4);
 	visual_audio_get_spectrum_for_sample (spmbuf, pcmmix, FALSE);
@@ -283,6 +284,7 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (float) * 4096 * 3);
 	visual_mem_copy (&priv->priv2.audio.freq, &priv->priv1.audio.freq, sizeof (float) * 256 * 2);
 	visual_mem_copy (&priv->priv2.audio.freqsmall, &priv->priv1.audio.freqsmall, sizeof (float) * 4);
+#endif
 
 	/* Audio energy */
 	priv->priv1.audio.energy = 0 /*audio->energy*/;
