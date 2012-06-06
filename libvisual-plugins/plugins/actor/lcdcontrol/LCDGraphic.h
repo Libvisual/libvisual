@@ -184,6 +184,7 @@ class LCDGraphic : public LCDBase {
 
 };
 
+/*
 class LCDGraphicUpdateThread {
     LCDGraphic *visitor_;
 
@@ -193,6 +194,7 @@ class LCDGraphicUpdateThread {
     public:
     LCDGraphicUpdateThread(LCDGraphic *v) { visitor_ = v; }
 };
+*/
 
 void GraphicDraw(WidgetText *w);
 

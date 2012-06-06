@@ -33,27 +33,8 @@
 #include "LCDText.h"
 #include "Property.h"
 #include "LCDTimer.h"
+#include "Stats.h"
 #include "debug.h"
-
-/* simple stats management */
-typedef struct {
-    double  renderTime;
-    double  frameTime;
-} FrameStats;
-
-#define  MAX_FRAME_STATS  200
-#define  MAX_PERIOD_MS    1500
-
-typedef struct {
-    double  firstTime;
-    double  lastTime;
-    double  frameTime;
-
-    int         firstFrame;
-    int         numFrames;
-    FrameStats  frames[ MAX_FRAME_STATS ];
-    double avgFrame, maxFrame, minFrame, avgRender, minRender, maxRender;
-} Stats;
 
 namespace LCD {
 

@@ -31,6 +31,7 @@
 
 #include "CFG.h"
 #include "LCDTimer.h"
+#include "Stats.h"
 
 namespace LCD {
 
@@ -49,6 +50,7 @@ class LCDControl : public CFG {
 
     public:
     VisMutex *mutex_;
+    Stats stats_;
     void *priv_;
     LCDControl(void *priv, VisEventQueue *eventqueue);
     ~LCDControl();

@@ -402,7 +402,6 @@ void WidgetVisualization::UpdatePCM()
     if(bin_->depth_changed())
     {
         // Set depth
-        actor_ = visual_bin_get_actor(bin_);
 
         int depthflag = visual_actor_get_supported_depth(actor_);
     
@@ -425,7 +424,6 @@ void WidgetVisualization::UpdatePCM()
 }
 
 void WidgetVisualization::VisualMorph() {
-/*
     const char *name = visual_actor_get_next_by_name_nogl(actor_plugin_.c_str());
     LCDError("VisualMorph %s > %s", actor_plugin_.c_str(), name);
 
@@ -444,9 +442,9 @@ void WidgetVisualization::VisualMorph() {
 
     bin_->set_morph(morph_plugin_);
     bin_->switch_actor(actor_plugin_);
+    actor_ = bin_->get_actor();
 
     DoParams();
-*/
 }
 
 void WidgetVisualization::UpdateSpectrum() {
@@ -503,7 +501,7 @@ void WidgetVisualization::Start() {
     if(!started_) {
         timer_->Start();
         if(morph_timeout_ > 0 && style_ == STYLE_PCM)
-            morph_timer_->Start();
+            ;//morph_timer_->Start();
         started_ = true;
     }
     //Draw(this);

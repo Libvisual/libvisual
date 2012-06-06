@@ -32,18 +32,6 @@
 
 using namespace LCD;
 
-static void stats_init( Stats*  s );
-static void stats_startFrame( Stats*  s );
-static void stats_endFrame( Stats*  s );
-
-/* Return current time in milliseconds */
-static double now_ms(void)
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec*1000. + tv.tv_usec/1000.;
-}
-
 void fps_update(void *data)
 {
     WidgetFPS *widget = (WidgetFPS *)data;
@@ -162,87 +150,3 @@ void WidgetFPS::Stop() {
 }
 
 
-static void
-stats_init( Stats*  s )
-{
-    s->lastTime = now_ms();
-    s->firstTime = 0.;
-    s->firstFrame = 0;
-    s->numFrames  = 0;
-}
-
-static void
-stats_startFrame( Stats*  s )
-{
-    s->frameTime = now_ms();
-}
-
-static void
-stats_endFrame( Stats*  s )
-{
-    double now = now_ms();
-    double renderTime = now - s->frameTime;
-    double frameTime  = now - s->lastTime;
-    int nn;
-
-    if (now - s->firstTime >= MAX_PERIOD_MS) {
-        if (s->numFrames > 0) {
-            double minRender, maxRender, avgRender;
-            double minFrame, maxFrame, avgFrame;
-            int count;
-
-            nn = s->firstFrame;
-            minRender = maxRender = avgRender = s->frames[nn].renderTime;
-            minFrame  = maxFrame  = avgFrame  = s->frames[nn].frameTime;
-
-            for (count = s->numFrames; count > 0; count-- ) {
-                nn += 1;
-                if (nn >= MAX_FRAME_STATS)
-                    nn -= MAX_FRAME_STATS;
-                double render = s->frames[nn].renderTime;
-                if (render < minRender) minRender = render;
-                if (render > maxRender) maxRender = render;
-                double frame = s->frames[nn].frameTime;
-                if (frame < minFrame) minFrame = frame;
-                if (frame > maxFrame) maxFrame = frame;
-                avgRender += render;
-                avgFrame  += frame;
-            }
-            avgRender /= s->numFrames;
-            avgFrame  /= s->numFrames;
-
-            s->avgFrame = avgFrame;
-            s->maxFrame = maxFrame;
-            s->minFrame = minFrame;
-            s->avgRender = avgRender;
-            s->minRender = minRender;
-            s->maxRender = maxRender;
-        }
-        s->numFrames  = 0;
-        s->firstFrame = 0;
-        s->firstTime  = now;
-    }
-
-    nn = s->firstFrame + s->numFrames;
-    if (nn >= MAX_FRAME_STATS)
-        nn -= MAX_FRAME_STATS;
-
-    s->frames[nn].renderTime = renderTime;
-    s->frames[nn].frameTime  = frameTime;
-
-    if (s->numFrames < MAX_FRAME_STATS) {
-        s->numFrames += 1;
-    } else {
-        s->firstFrame += 1;
-        if (s->firstFrame >= MAX_FRAME_STATS)
-            s->firstFrame -= MAX_FRAME_STATS;
-    }
-
-    s->lastTime = now;
-}
-
-/*
-JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_renderPlasma(JNIEnv * env, jobject  obj, jobject bitmap,  jlong  time_ms)
-{
-}
-*/

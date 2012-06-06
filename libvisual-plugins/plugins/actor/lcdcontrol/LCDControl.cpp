@@ -56,6 +56,7 @@ int LCDControl::Start() {
     CFG_Init("libscriptable_config.js");
     ConfigSetup();
     active_ = true;
+    stats_init(&stats_);
 /*
     while(active_)
     {
@@ -85,7 +86,9 @@ void LCDControl::Unlock() {
 
 void LCDControl::Tick()
 {
+    stats_startFrame(&stats_);
     timers_->Tick();
+    stats_endFrame(&stats_);
 }
 
 LCDTimerBin *LCDControl::GetTimers()

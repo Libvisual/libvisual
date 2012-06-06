@@ -4,19 +4,19 @@
     },
     "display_video": {
         "driver": "video",
-        "layers": 4,
+        "layers": 3,
         "foreground": "FFFFFFFF",
         "background": "00000000",
         "fill": 1,
         "cols": 256,
         "rows": 64,
-        "layout-timeout": 0,
-        "update": 25,
+        "layout-timeout": 9,
+        "update": 100,
         //"widget0": "widget_key_up",
         //"widget1": "widget_key_down",
         //"widget2": "widget_netstat_script",
-        "transition-speed": 50,
-        "refresh-rate": 25,
+        "transition-speed": 100,
+        "refresh-rate": 100,
         "layout0": "layout_full"
     },
     "layout_full": {
@@ -59,13 +59,14 @@
                 "col20": "widget_icon_heartbeat"
             },
             "row3": {
-                "col3": "widget_cpu_label",
+                "col4": "widget_cpu_label",
                 "col8": "widget_bignums",
                 "col11": "widget_percent"
             },
             "row5": {
                 //"col3": "widget_fps"
-            }
+            },
+            "transition": "U"
         }
     },
     "layout_2x16": {
@@ -946,7 +947,7 @@
         "update": 50,
         "morph-timeout": 0,
         "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce:corona:goom2k4",
-        "actor": "bumpscope",
+        "actor": "infinite",
         "input": "debug",
         "morph": "slide_left",
         "style": "pcm",
@@ -963,7 +964,7 @@
         "input": "debug",
         "morph": "slide_right",
         "style": "pcm",
-        "alpha": 70,
+        "alpha": 30,
         "params": {
             "oinksie": {
                 "acid palette": 1,
