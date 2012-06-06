@@ -10,7 +10,7 @@
         "fill": 1,
         "cols": 256,
         "rows": 64,
-        "layout-timeout": 8000,
+        "layout-timeout": 0,
         "update": 25,
         //"widget0": "widget_key_up",
         //"widget1": "widget_key_down",

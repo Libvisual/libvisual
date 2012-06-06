@@ -185,6 +185,7 @@ void WidgetText::TextScroll()
 
     std::string str = string_;
 
+
     int num, len, width, pad;
     int srcPtr = 0, dstPtr = 0;
     std::string src, dst;
@@ -272,12 +273,22 @@ void WidgetText::TextScroll()
         pad = 0;
     }
 
+    dst.clear();
     dst.resize(cols_);
 
+    for(int i = 0; i < cols_; i++)
+    {
+        dst[i] = ' ';
+    }
+
     dstPtr = 0;
+    srcPtr = 0;
+
     num = 0;
 
+
     /* process prefix */
+/*
     src = pre;
     while (num < cols_) {
         if (srcPtr == (int)src.length())
@@ -285,6 +296,7 @@ void WidgetText::TextScroll()
         dst[dstPtr++] = src[srcPtr++];
         num++;
     }
+*/
 
     src = str;
     srcPtr = 0;
@@ -293,6 +305,7 @@ void WidgetText::TextScroll()
     if(offset < 0)
         offset = 0;
     /* wrap around on the beginning */
+/*
     while (pad > 0 && num < cols_) {
         if(align_ == ALIGN_MARQUEE) 
             dst[dstPtr++] = src[(src.size() - offset) + srcPtr++];
@@ -301,6 +314,7 @@ void WidgetText::TextScroll()
         num++;
         pad--;
     }
+*/
 
     /* skip src chars (marquee) */
     std::string tmp = src;
@@ -309,7 +323,6 @@ void WidgetText::TextScroll()
         tmp = src;
         pad++;
     }
-
 
     /* copy content */
     while (num < cols_) {
@@ -327,6 +340,9 @@ void WidgetText::TextScroll()
         dst[dstPtr++] = '*';
         num++;
     }
+
+    // Pad end
+/*
     while (num < cols_ - len) {
         if(align_ == ALIGN_MARQUEE)
             dst[dstPtr++] = str[srcPtr++];
@@ -334,17 +350,19 @@ void WidgetText::TextScroll()
             dst[dstPtr++] = ' ';
         num++;
     }
+*/
 
     srcPtr = 0;
 
     /* process postfix */
+/*
     while (num < cols_) {
         if (srcPtr >= (int)src.length())
             break;
         dst[dstPtr++] = src[srcPtr++];
         num++;
     }
-
+*/
     buffer_ = dst;
 
     /* finally, draw it! */
