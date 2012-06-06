@@ -96,12 +96,13 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     unsigned int cols = dest_width / tile_width;
     unsigned int rows = dest_height / tile_height;
 
+    LV::VideoPtr sub = LV::Video::create(tile_width, tile_height, visual_video_get_depth(dest));
+
     for(unsigned int row = 0, y = 0; row < rows && y < dest_height; row++, y += tile_height)
     {
         for(unsigned int col = 0, x = 0; col < cols && x < dest_width; col++, x += tile_width)
         {
 
-/*
             unsigned int xdiff = 0, ydiff = 0;
             
             if(y + tile_height > dest_height)
@@ -109,14 +110,14 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
 
             if(x + tile_width > dest_width)
                 xdiff = (x + tile_width) - dest_width;
-*/
-/*
+
             LV::VideoConstPtr src = (row + col + priv->flip) & 1 ? src1 : src2;
+
             LV::Rect region(x, y, tile_width - xdiff, tile_height - ydiff);
 
-            LV::VideoPtr sub = LV::Video::create_sub(src, region);
+            sub->blit(sub->get_extents(), src, region, false);
+
             dest->blit(region, sub, sub->get_extents(), false);
-*/
         }
     }
 

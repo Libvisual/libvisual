@@ -959,11 +959,11 @@
         "height": 64,
         "update": 50,
         "morph-timeout": 7000,
-        "morph-steps": 3,
+        "morph-steps": 8,
         "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce:corona:goom2k4:jakdaw",
         "actor": "lv_scope",
         "input": "debug",
-        "morph": "slide_right",
+        "morph": "tentacle",
         "style": "pcm",
         "alpha": 30,
         "params": {
