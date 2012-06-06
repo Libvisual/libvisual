@@ -501,7 +501,7 @@ void WidgetVisualization::Start() {
     if(!started_) {
         timer_->Start();
         if(morph_timeout_ > 0 && style_ == STYLE_PCM)
-            ;//morph_timer_->Start();
+            morph_timer_->Start();
         started_ = true;
     }
     //Draw(this);

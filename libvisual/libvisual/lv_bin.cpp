@@ -528,6 +528,8 @@ namespace LV {
 
       video = Video::create (width, height, depth);
 
+      video->ref(); // FIXME This shouldn't be here.
+
       visual_log (VISUAL_LOG_INFO, "video pitch of that what connects to the new actor %d",
                   video->get_pitch ());
 

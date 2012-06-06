@@ -38,6 +38,7 @@ LCDControl::LCDControl(void *priv, VisEventQueue *eventqueue) {
     active_ = false;
     timers_ = new LCDTimerBin();
     eventqueue_ = eventqueue;
+    stats_init(&stats_);
 }
 
 LCDControl::~LCDControl() {
@@ -56,7 +57,6 @@ int LCDControl::Start() {
     CFG_Init("libscriptable_config.js");
     ConfigSetup();
     active_ = true;
-    stats_init(&stats_);
 /*
     while(active_)
     {
@@ -86,9 +86,9 @@ void LCDControl::Unlock() {
 
 void LCDControl::Tick()
 {
-    stats_startFrame(&stats_);
+    //stats_startFrame(&stats_);
     timers_->Tick();
-    stats_endFrame(&stats_);
+    //stats_endFrame(&stats_);
 }
 
 LCDTimerBin *LCDControl::GetTimers()

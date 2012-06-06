@@ -60,6 +60,8 @@ int lv_morph_checkers_init (VisPluginData *plugin)
 
     priv->timer.start ();
 
+    priv->flip = true;
+
     return 0;
 }
 
@@ -91,17 +93,30 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     unsigned int tile_width  = dest_width  / n_tile_cols;
     unsigned int tile_height = dest_height / n_tile_rows;
 
-    LV::Rect subregion(0, 0, tile_width, tile_height);
+    unsigned int cols = dest_width / tile_width;
+    unsigned int rows = dest_height / tile_height;
 
-    for(unsigned int row = 0, y = 0; y < dest_height; row++, y += tile_height)
+    for(unsigned int row = 0, y = 0; row < rows && y < dest_height; row++, y += tile_height)
     {
-        for(unsigned int col = 0, x = 0; x < dest_width; col++, x += tile_width)
+        for(unsigned int col = 0, x = 0; col < cols && x < dest_width; col++, x += tile_width)
         {
+
+/*
+            unsigned int xdiff = 0, ydiff = 0;
+            
+            if(y + tile_height > dest_height)
+                ydiff = (y + tile_height) - dest_height;
+
+            if(x + tile_width > dest_width)
+                xdiff = (x + tile_width) - dest_width;
+*/
+/*
             LV::VideoConstPtr src = (row + col + priv->flip) & 1 ? src1 : src2;
-            LV::Rect region(x, y, tile_width, tile_height);
+            LV::Rect region(x, y, tile_width - xdiff, tile_height - ydiff);
 
             LV::VideoPtr sub = LV::Video::create_sub(src, region);
-            dest->blit(region, sub, subregion, false);
+            dest->blit(region, sub, sub->get_extents(), false);
+*/
         }
     }
 

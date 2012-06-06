@@ -368,6 +368,8 @@ int main (int argc, char **argv)
         bin.sync(false);
         bin.depth_changed();
 
+        bin.set_morph(morph_name);
+
         // get a queue to handle events
         LV::EventQueue localqueue;
 
@@ -420,9 +422,7 @@ int main (int argc, char **argv)
                     {
                         // switch to next actor
                         v_cycleActor(1);
-                        v_cycleMorph();
 
-                        bin.set_morph(morph_name);
                         bin.switch_actor(actor_name);
 
                         // get new actor
@@ -523,9 +523,9 @@ int main (int argc, char **argv)
             if((framecount > 0) && (framesDrawn++ >= framecount))
                 running = false;
 
-            display.unlock();
             display.update_all();
             display.set_fps_limit(framerate);
+            display.unlock();
         }
     }
     catch (std::exception& error) {
