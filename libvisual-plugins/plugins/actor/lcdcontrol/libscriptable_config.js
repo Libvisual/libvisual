@@ -4,7 +4,7 @@
     },
     "display_video": {
         "driver": "video",
-        "layers": 3,
+        "layers": 4,
         "foreground": "FFFFFFFF",
         "background": "00000000",
         "fill": 1,
@@ -16,7 +16,7 @@
         //"widget1": "widget_key_down",
         //"widget2": "widget_netstat_script",
         "transition-speed": 100,
-        "refresh-rate": 100,
+        "refresh-rate": 5,
         "layout0": "layout_full"
     },
     "layout_full": {
@@ -945,9 +945,10 @@
         "width": 256,
         "height": 64,
         "update": 50,
-        "morph-timeout": 0,
-        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce:corona:goom2k4",
-        "actor": "infinite",
+        "morph-timeout": 5000,
+        "morph-steps": 3,
+        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:goom2k4:jakdaw",
+        "actor": "gforce",
         "input": "debug",
         "morph": "slide_left",
         "style": "pcm",
@@ -960,12 +961,12 @@
         "update": 50,
         "morph-timeout": 7000,
         "morph-steps": 8,
-        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:gforce:corona:goom2k4:jakdaw",
-        "actor": "lv_scope",
+        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:goom2k4:jakdaw",
+        "actor": "lv_analyzer",
         "input": "debug",
         "morph": "tentacle",
         "style": "pcm",
-        "alpha": 30,
+        "alpha": 50,
         "params": {
             "oinksie": {
                 "acid palette": 1,
