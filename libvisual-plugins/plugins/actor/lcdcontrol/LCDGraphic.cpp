@@ -236,19 +236,19 @@ cout << "rows " << rows << " cols " << cols << "-----------=====================
 
     video_ = visual_video_new_with_buffer(LCOLS, LROWS, VISUAL_VIDEO_DEPTH_32BIT);
 
-    DisplayFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
+    DisplayFB = (RGBA **)malloc(sizeof(RGBA *) * layers);
 
     for(int l = 0; l < layers; l++) {
         DisplayFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
     }
 
-    LayoutFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
+    LayoutFB = (RGBA **)malloc(sizeof(RGBA *) * layers);
 
     for(int l = 0; l < layers; l++) {
         LayoutFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
     }
 
-    TransitionFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
+    TransitionFB = (RGBA **)malloc(sizeof(RGBA *) * layers);
 
     for( int l = 0; l < layers; l++) {
         TransitionFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
@@ -680,7 +680,6 @@ void LCD::GraphicIconDraw(WidgetIcon *w) {
     //lcd->graphic_mutex_.lock();
 
     /* render icon */
-
     for (y = 0; y < lcd->YRES; y++) {
         int mask = 1 << lcd->XRES;
         for (x = 0; x < lcd->XRES; x++) {
@@ -696,6 +695,7 @@ void LCD::GraphicIconDraw(WidgetIcon *w) {
             }
         }
     }
+
 
     //lcd->graphic_mutex_.unlock();
 

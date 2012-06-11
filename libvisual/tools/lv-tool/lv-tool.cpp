@@ -527,10 +527,16 @@ int main (int argc, char **argv)
             display.set_fps_limit(framerate);
             display.unlock();
         }
+
+        /* Cleanup */
+        //visual_plugin_unload(visual_actor_get_plugin(actor));
+        //visual_plugin_unload(visual_input_get_plugin(input));
+        
     }
     catch (std::exception& error) {
         std::cerr << error.what () << std::endl;
     }
+    
 
     //printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
 

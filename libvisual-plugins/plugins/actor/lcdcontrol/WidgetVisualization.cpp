@@ -262,6 +262,7 @@ void WidgetVisualization::DoParams() {
 
 WidgetVisualization::~WidgetVisualization() {
     delete []peak_buffer_;
+    visual_video_free_buffer(video_);
 }
 
 void  WidgetVisualization::Resize(int rows, int cols, int old_rows, int old_cols) {
