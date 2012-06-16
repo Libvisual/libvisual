@@ -282,7 +282,7 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	VisBuffer* fbuf[2];
 	float freq[2][256];
 	short freqdata[2][256];
-	int i;
+	int i, depth;
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 	visual_return_val_if_fail (audio != NULL, -1);
@@ -324,7 +324,18 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	C_dEdt(priv);
 
 	priv->pitch = visual_video_get_pitch (video);
+
+    depth = priv->video;
 	priv->video = visual_video_depth_value_from_enum (visual_video_get_depth (video));
+    if(depth != priv->video)
+    {
+        free(priv->buffer);
+        if(priv->video == 8)
+            priv->buffer = (uint8_t *)malloc(priv->resx * priv->resy);
+        else
+            priv->buffer = (uint8_t *)malloc(priv->resx * priv->resy * 4);
+    }
+
 	priv->pixel = ((uint8_t *) visual_video_get_pixels (video));
 
 	renderer (priv);
