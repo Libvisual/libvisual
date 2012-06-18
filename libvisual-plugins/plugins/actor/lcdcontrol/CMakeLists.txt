@@ -12,6 +12,8 @@ LINK_DIRECTORIES(
 )
 
 SET(actor_lcdcontrol_SOURCES
+  PluginNetinfo.cpp
+  PluginNetinfo.h
   PluginUname.cpp
   PluginUname.h
   WidgetVisualization.cpp

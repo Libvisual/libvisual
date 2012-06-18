@@ -42,6 +42,8 @@
 
 using namespace LCD;
 
+PluginNetinfo *plugnetinfo;
+
 /* socket descriptor:
  * -2   initial state
  * -1   Error: message not printed
@@ -65,7 +67,6 @@ int PluginNetinfo::OpenNet() {
 
     return 0;
 }
-
 
 double PluginNetinfo::Exists(std::string arg1) {
     char buf[10240];
@@ -111,6 +112,32 @@ double PluginNetinfo::Exists(std::string arg1) {
     return value;
 }
 
+class netinfo_Exists_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::int_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "netinfo"; }
+    static const std::string name() { return "Exists"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        double val = plugnetinfo->Exists(key);
+        dynamic_cast<lua::int_arg_t&>(*out[0]).value() = val;
+    }
+};
 
 /* get MAC address (hardware address) of network device */
 std::string PluginNetinfo::Hwaddr(std::string arg1) {
@@ -140,6 +167,33 @@ std::string PluginNetinfo::Hwaddr(std::string arg1) {
     return value;
 }
 
+class netinfo_Hwaddr_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "netinfo"; }
+    static const std::string name() { return "Hwaddr"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string val = plugnetinfo->Hwaddr(key);
+        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = val;
+    }
+};
+
 
 /* get ip address of network device */
 std::string PluginNetinfo::Ipaddr(std::string arg1) {
@@ -168,6 +222,32 @@ std::string PluginNetinfo::Ipaddr(std::string arg1) {
     return value;
 }
 
+class netinfo_Ipaddr_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "netinfo"; }
+    static const std::string name() { return "Ipaddr"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string val = plugnetinfo->Ipaddr(key);
+        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = val;
+    }
+};
 
 /* get ip netmask of network device */
 std::string PluginNetinfo::Netmask(std::string arg1) {
@@ -197,6 +277,32 @@ std::string PluginNetinfo::Netmask(std::string arg1) {
     return "";
 }
 
+class netinfo_Netmask_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "netinfo"; }
+    static const std::string name() { return "Netmask"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string val = plugnetinfo->Netmask(key);
+        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = val;
+    }
+};
 
 /* get ip broadcast address of network device */
 std::string PluginNetinfo::Bcaddr(std::string arg1) {
@@ -226,21 +332,45 @@ std::string PluginNetinfo::Bcaddr(std::string arg1) {
 }
 
 
-PluginNetinfo::PluginNetinfo() {
+class netinfo_Bcaddr_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "netinfo"; }
+    static const std::string name() { return "Bcaddr"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string str = plugnetinfo->Bcaddr(key);
+        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = str;
+    }
+};
+
+PluginNetinfo::PluginNetinfo(lua *script) {
+    plugnetinfo = this;
     socknr = -2;
     OpenNet();
+    script->register_function<netinfo_Exists_t>();
+    script->register_function<netinfo_Hwaddr_t>();
+    script->register_function<netinfo_Ipaddr_t>();
+    script->register_function<netinfo_Netmask_t>();
+    script->register_function<netinfo_Bcaddr_t>();
 }
 
 PluginNetinfo::~PluginNetinfo() {
     close(socknr);
-}
-
-void PluginNetinfo::Connect(Evaluator *visitor) {
-/*
-    QScriptEngine *engine = visitor->GetEngine();
-    QScriptValue val = engine->newObject();
-    QScriptValue objVal = engine->newQObject(val, this);
-    engine->globalObject().setProperty("netinfo", objVal);
-*/
 }
 

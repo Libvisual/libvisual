@@ -43,6 +43,7 @@ Evaluator::Evaluator()
     mUptime = new PluginUptime(mScript);
     mFPS = new PluginFPS(mScript);
     mUname = new PluginUname(mScript);
+    mNetinfo = new PluginNetinfo(mScript);
 }
 
 Evaluator::~Evaluator()

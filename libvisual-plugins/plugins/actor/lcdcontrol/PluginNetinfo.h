@@ -26,6 +26,8 @@
 
 #include <string>
 
+#include "luascript.h"
+
 namespace LCD {
 
 class Evaluator;
@@ -36,10 +38,8 @@ class PluginNetinfo {
     int OpenNet();
 
     public:
-    PluginNetinfo();
+    PluginNetinfo(lua *script);
     ~PluginNetinfo();
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
 
     double Exists(std::string arg1);
     std::string Hwaddr(std::string arg1);

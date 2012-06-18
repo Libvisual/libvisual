@@ -31,6 +31,7 @@
 #include "PluginUptime.h"
 #include "PluginFPS.h"
 #include "PluginUname.h"
+#include "PluginNetinfo.h"
 #include "luascript.h"
 
 namespace LCD {
@@ -44,6 +45,7 @@ class Evaluator {
     PluginUptime  *mUptime;
     PluginFPS *mFPS;
     PluginUname *mUname;
+    PluginNetinfo *mNetinfo;
 
     public:
     Evaluator();
