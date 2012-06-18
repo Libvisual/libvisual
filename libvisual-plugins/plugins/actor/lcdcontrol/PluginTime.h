@@ -26,6 +26,8 @@
 
 #include <string>
 
+#include "luascript.h"
+
 namespace LCD {
 
 class Evaluator;
@@ -33,13 +35,12 @@ class Evaluator;
 class PluginTime {
 
     public:
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
+    PluginTime(lua *script);
 
-    unsigned int Time();
+    double Time();
     std::string Strftime(std::string arg1, double arg2);
     std::string Strftime_tz(std::string arg1, double arg2, std::string arg3);
-    unsigned long GetTimeOfDay();
+    double GetTimeOfDay();
 };
 
 }; // End namespace

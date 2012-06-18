@@ -168,8 +168,8 @@ class netdev_Regex_t {
     static void calc(const lua::args_t& in, lua::args_t &out)
     {
         std::string dev = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
-        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
-        double delay = dynamic_cast<lua::int_arg_t&>(*in[0]).value();
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[1]).value();
+        double delay = dynamic_cast<lua::int_arg_t&>(*in[2]).value();
         double val = plugnetdev->Regex(dev, key, delay);
         dynamic_cast<lua::int_arg_t&>(*out[0]).value() = val;
     }
