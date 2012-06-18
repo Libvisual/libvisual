@@ -401,6 +401,7 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_RESIZE:
                     {
+/*
                         display.lock();
                         width = ev.event.resize.width;
                         height = ev.event.resize.height;
@@ -411,6 +412,7 @@ int main (int argc, char **argv)
 
                         display.unlock();
                         break;
+*/
                     }
 
                     case VISUAL_EVENT_MOUSEMOTION:

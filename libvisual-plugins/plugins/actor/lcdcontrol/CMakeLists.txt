@@ -12,10 +12,12 @@ LINK_DIRECTORIES(
 )
 
 SET(actor_lcdcontrol_SOURCES
+  PluginUname.cpp
+  PluginUname.h
   WidgetVisualization.cpp
   WidgetVisualization.h
-  actor_lcdcontrol.h
   actor_lcdcontrol.cpp  
+  actor_lcdcontrol.h
   GenericSerial.cpp  
   LCDText.cpp     
   Widget.cpp

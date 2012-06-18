@@ -25,6 +25,7 @@
 #define __PLUGIN_UNAME_H__
 
 #include <string>
+#include "luascript.h"
 
 namespace LCD {
 
@@ -33,8 +34,7 @@ class Evaluator;
 class PluginUname {
 
     public:
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
+    PluginUname(lua *script);
 
     std::string Uname(std::string arg1);
 

@@ -21,41 +21,18 @@
 
 #include <exception>
 #include <cstdlib>
-
+#include <iostream>
 #include <string>
 //#include <jni.h>
+#include <libvisual/libvisual.h>
+
 #include "luascript.h"
-#include <libvisual/libvisual.h>
-
-#include <iostream>
-#include <libvisual/libvisual.h>
-
 #include "Evaluator.h"
 #include "SpecialChar.h"
-#include "debug.h"
 //#include "CPtr.h"
+#include "debug.h"
 
 using namespace LCD;
-
-/*
-QScriptValue toSpecialChar(QScriptEngine *engine, const SpecialChar &ch) {
-    QScriptValue obj = engine->newObject();
-    QScriptValue array = engine->newArray(ch.Size());
-    std::vector<int> matrix = ch.Vector();
-    for(int i = 0; i < ch.Size(); i++)
-        array.setProperty(i, QScriptValue(engine, matrix[i]));
-    obj.setProperty("chars", array);
-    return obj;
-}
-*/
-
-/*
-void fromSpecialChar(const QScriptValue &obj, SpecialChar &ch) {
-    for(int i = 0; obj.property(i).isValid(); i++ )
-        ch.AddChar(obj.property(i).toUInt16());
-}
-*/
-
 
 Evaluator::Evaluator()
 {
@@ -65,6 +42,7 @@ Evaluator::Evaluator()
     mProcStat = new PluginProcStat(mScript);
     mUptime = new PluginUptime(mScript);
     mFPS = new PluginFPS(mScript);
+    mUname = new PluginUname(mScript);
 }
 
 Evaluator::~Evaluator()
