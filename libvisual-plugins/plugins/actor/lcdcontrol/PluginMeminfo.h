@@ -27,6 +27,7 @@
 #include <string>
 
 #include "Hash.h"
+#include "luascript.h"
 
 namespace LCD {
 
@@ -39,10 +40,8 @@ class PluginMeminfo {
     int ParseMeminfo();
 
     public:
-    PluginMeminfo();
+    PluginMeminfo(lua *script);
     ~PluginMeminfo();
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
 
     std::string Meminfo(std::string arg1);
         

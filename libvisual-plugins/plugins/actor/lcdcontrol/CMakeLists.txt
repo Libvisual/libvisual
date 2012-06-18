@@ -12,6 +12,8 @@ LINK_DIRECTORIES(
 )
 
 SET(actor_lcdcontrol_SOURCES
+  PluginMeminfo.cpp
+  PluginMeminfo.h
   PluginNetDev.cpp
   PluginNetDev.h
   PluginNetinfo.cpp

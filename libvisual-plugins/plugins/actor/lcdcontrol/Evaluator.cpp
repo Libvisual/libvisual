@@ -45,6 +45,7 @@ Evaluator::Evaluator()
     mUname = new PluginUname(mScript);
     mNetinfo = new PluginNetinfo(mScript);
     mNetDev = new PluginNetDev(mScript);
+    mMeminfo = new PluginMeminfo(mScript);
 }
 
 Evaluator::~Evaluator()
@@ -58,6 +59,7 @@ Evaluator::~Evaluator()
     delete mUname;
     delete mNetinfo;
     delete mNetDev;
+    delete mMeminfo;
 }
 
 std::string Evaluator::Eval(std::string str, std::string name)

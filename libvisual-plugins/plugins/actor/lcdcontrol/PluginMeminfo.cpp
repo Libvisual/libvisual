@@ -35,6 +35,8 @@
 
 using namespace LCD;
 
+PluginMeminfo *plugmeminfo;
+
 int PluginMeminfo::ParseMeminfo()
 {
     int age;
@@ -103,11 +105,40 @@ std::string PluginMeminfo::Meminfo(std::string arg1)
     return val;
 }
 
+class meminfo_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
 
-PluginMeminfo::PluginMeminfo()
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "meminfo"; }
+    static const std::string name() { return "Meminfo"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string str = plugmeminfo->Meminfo(key);
+        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = str;
+    }
+};
+
+
+PluginMeminfo::PluginMeminfo(lua *script)
 {
+    plugmeminfo = this;
     stream = NULL;
     hash_create(&MemInfo);
+    script->register_function<meminfo_t>();
 }
 
 
@@ -120,12 +151,4 @@ PluginMeminfo::~PluginMeminfo(void)
     hash_destroy(&MemInfo);
 }
 
-void PluginMeminfo::Connect(Evaluator *visitor) {
-/*
-    QScriptEngine *engine = visitor->GetEngine();
-    QScriptValue val = engine->newObject();
-    QScriptValue objVal = engine->newQObject(val, this);
-    engine->globalObject().setProperty("meminfo", objVal);
-*/
-}
 
