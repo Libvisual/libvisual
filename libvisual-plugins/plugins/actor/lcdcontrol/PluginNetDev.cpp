@@ -37,6 +37,8 @@
 using namespace LCD;
 
 
+PluginNetDev *plugnetdev;
+
 int PluginNetDev::ParseNetDev()
 {
     const char* DELIMITER = " :|\t\n";
@@ -123,7 +125,7 @@ int PluginNetDev::ParseNetDev()
     return 0;
 }
 
-double PluginNetDev::Regex(std::string arg1, std::string arg2, int arg3)
+double PluginNetDev::Regex(std::string arg1, std::string arg2, double arg3)
 {
     std::string dev, key;
     int delay;
@@ -142,7 +144,38 @@ double PluginNetDev::Regex(std::string arg1, std::string arg2, int arg3)
     return value;
 }
 
-double PluginNetDev::Fast(std::string arg1, std::string arg2, int arg3)
+class netdev_Regex_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        args->add(new lua::string_arg_t());
+        args->add(new lua::int_arg_t());
+        return args;
+    }
+
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "netdev"; }
+    static const std::string name() { return "Regex"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string dev = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        double delay = dynamic_cast<lua::int_arg_t&>(*in[0]).value();
+        double val = plugnetdev->Regex(dev, key, delay);
+        dynamic_cast<lua::int_arg_t&>(*out[0]).value() = val;
+    }
+};
+
+double PluginNetDev::Fast(std::string arg1, std::string arg2, double arg3)
 {
     std::string dev, key;
     int delay;
@@ -161,9 +194,40 @@ double PluginNetDev::Fast(std::string arg1, std::string arg2, int arg3)
     return value;
 }
 
+class netdev_Fast_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        args->add(new lua::string_arg_t());
+        args->add(new lua::int_arg_t());
+        return args;
+    }
 
-PluginNetDev::PluginNetDev()
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "netdev"; }
+    static const std::string name() { return "Fast"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string dev = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        double delay = dynamic_cast<lua::int_arg_t&>(*in[0]).value();
+        double val = plugnetdev->Fast(dev, key, delay);
+        dynamic_cast<lua::int_arg_t&>(*out[0]).value() = val;
+    }
+};
+
+PluginNetDev::PluginNetDev(lua *script)
 {
+    plugnetdev = this;
     first_time = 1;
     Stream = NULL;
     hash_create(&NetDev);
@@ -179,12 +243,4 @@ PluginNetDev::~PluginNetDev()
     hash_destroy(&NetDev);
 }
 
-void PluginNetDev::Connect(Evaluator *visitor) {
-/*
-    QScriptEngine *engine = visitor->GetEngine();
-    QScriptValue val = engine->newObject();
-    QScriptValue objVal = engine->newQObject(val, this);
-    engine->globalObject().setProperty("netdev", objVal);
-*/
-}
 

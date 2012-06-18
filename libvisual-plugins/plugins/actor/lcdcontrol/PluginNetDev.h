@@ -24,8 +24,10 @@
 #ifndef __PLUGIN_NETDEV_H__
 #define __PLUGIN_NETDEV_H__
 
-#include "Hash.h"
 #include <cstring>
+
+#include "Hash.h"
+#include "luascript.h"
 
 namespace LCD {
 
@@ -40,13 +42,11 @@ class PluginNetDev {
     int ParseNetDev();
 
     public:
-    PluginNetDev();
+    PluginNetDev(lua *script);
     ~PluginNetDev();
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
 
-    double Regex(std::string arg1, std::string arg2, int arg3);
-    double Fast(std::string arg1, std::string arg2, int arg3);
+    double Regex(std::string arg1, std::string arg2, double arg3);
+    double Fast(std::string arg1, std::string arg2, double arg3);
 };
 
 };

@@ -44,6 +44,7 @@ Evaluator::Evaluator()
     mFPS = new PluginFPS(mScript);
     mUname = new PluginUname(mScript);
     mNetinfo = new PluginNetinfo(mScript);
+    mNetDev = new PluginNetDev(mScript);
 }
 
 Evaluator::~Evaluator()
@@ -54,6 +55,9 @@ Evaluator::~Evaluator()
     delete mProcStat;
     delete mUptime;
     delete mFPS;
+    delete mUname;
+    delete mNetinfo;
+    delete mNetDev;
 }
 
 std::string Evaluator::Eval(std::string str, std::string name)
