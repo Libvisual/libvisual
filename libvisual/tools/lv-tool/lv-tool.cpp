@@ -407,7 +407,8 @@ int main (int argc, char **argv)
                         video = display.create(depth, vidoptions, width, height, true);
 
                         bin.set_video (video);
-                        visual_actor_video_negotiate (bin.get_actor(), depth, FALSE, FALSE);
+                        bin.sync(false);
+
                         display.unlock();
 
                         break;
