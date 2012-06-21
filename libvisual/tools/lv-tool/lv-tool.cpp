@@ -401,7 +401,6 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_RESIZE:
                     {
-/*
                         display.lock();
                         width = ev.event.resize.width;
                         height = ev.event.resize.height;
@@ -409,10 +408,9 @@ int main (int argc, char **argv)
 
                         bin.set_video (video);
                         visual_actor_video_negotiate (bin.get_actor(), depth, FALSE, FALSE);
-
                         display.unlock();
+
                         break;
-*/
                     }
 
                     case VISUAL_EVENT_MOUSEMOTION:
@@ -519,6 +517,7 @@ int main (int argc, char **argv)
                 continue;
 
             display.lock();
+
             bin.run();
 
             /* all frames rendered? */

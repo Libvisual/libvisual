@@ -82,7 +82,6 @@ namespace {
                                    unsigned int height,
                                    bool resizable)
       {
-          m_screen_video.reset ();
 
           int videoflags = 0;
 
@@ -138,7 +137,7 @@ namespace {
           }
 
           // Recreate video object
-
+          m_screen_video.reset ();
           m_screen_video = LV::Video::wrap (m_screen->pixels,
                                             false,
                                             m_screen->w,
@@ -159,7 +158,7 @@ namespace {
           if (!m_running)
               return;
 
-          //FIXME - free'd twice - m_screen_video.reset ();
+          m_screen_video.reset ();
 
           SDL_Quit ();
 
