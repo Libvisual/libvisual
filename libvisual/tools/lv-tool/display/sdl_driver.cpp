@@ -159,7 +159,7 @@ namespace {
           if (!m_running)
               return;
 
-          m_screen_video.reset ();
+          //m_screen_video.reset (); FIXME: Invalid pointer.
 
           SDL_Quit ();
 
