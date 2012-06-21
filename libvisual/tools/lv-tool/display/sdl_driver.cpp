@@ -98,6 +98,8 @@ namespace {
           m_resizable = resizable;
           m_requested_depth = depth;
 
+          m_screen_video.reset ();
+
           if (depth == VISUAL_VIDEO_DEPTH_GL) {
               SDL_VideoInfo const* videoinfo = SDL_GetVideoInfo ();
 
@@ -137,7 +139,6 @@ namespace {
           }
 
           // Recreate video object
-          m_screen_video.reset ();
           m_screen_video = LV::Video::wrap (m_screen->pixels,
                                             false,
                                             m_screen->w,
