@@ -309,7 +309,8 @@ namespace LV {
 
   void Video::set_pitch (int pitch)
   {
-      visual_return_if_fail (pitch > 0);
+      if(pitch <= 0)
+          return;
 
       if (m_impl->bpp <= 0)
           return;

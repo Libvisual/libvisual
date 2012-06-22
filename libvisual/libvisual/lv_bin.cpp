@@ -654,7 +654,7 @@ namespace LV {
 
       m_impl->morphing = false;
 
-      if (m_impl->morphmanaged) {
+      if (m_impl->morphmanaged && m_impl->morph != NULL) {
           visual_object_unref (VISUAL_OBJECT (m_impl->morph));
           m_impl->morph = NULL;
       }
