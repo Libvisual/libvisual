@@ -404,28 +404,41 @@ void LCDGraphic::GraphicWindow(int pos, int size, int max, int *wpos, int *wsize
 
 void LCDGraphic::GraphicBlit(const int row, const int col, const int height, const int width)
 {
-    if (GraphicRealBlit) {
-        int r, c, h, w;
-        GraphicWindow(row, height, LROWS, &r, &h);
-        GraphicWindow(col, width, LCOLS, &c, &w);
+    int r, c, h, w;
+    GraphicWindow(row, height, LROWS, &r, &h);
+    GraphicWindow(col, width, LCOLS, &c, &w);
 
-        if (h > 0 && w > 0) {
+
+    if (h > 0 && w > 0) {
 
 #if _OPENMP
 # pragma omp parallel
 # pragma omp for
 #endif
-            for(int rr = r; rr < r + h; rr++) {
-                for(int cc = c; cc < c + w; cc++) {
-                    for(int l = LAYERS - 1; l >= 0; l-- ) {
-                        if(LayoutFB[l][rr * LCOLS + cc] != NO_COL)
-                            DisplayFB[l][rr * LCOLS + cc] = 
-                                LayoutFB[l][rr * LCOLS + cc];
-                    }
+        for(int l = 0; l < LAYERS; l++) {
+            for(int r = 0; r < LROWS; r++) {
+                for(int c = 0; c < LCOLS; c++)
+                {
+                    DisplayFB[l][r * LCOLS + c] = NO_COL;
                 }
             }
-            GraphicRealBlit(this, r, c, h, w);
         }
+
+#if _OPENMP
+# pragma omp parallel
+# pragma omp for
+#endif
+        for(int rr = r; rr < r + h; rr++) {
+            for(int cc = c; cc < c + w; cc++) {
+                for(int l = LAYERS - 1; l >= 0; l-- ) {
+                    if(LayoutFB[l][rr * LCOLS + cc] != NO_COL)
+                        DisplayFB[l][rr * LCOLS + cc] = 
+                            LayoutFB[l][rr * LCOLS + cc];
+                }
+            }
+        }
+        if(GraphicRealBlit)
+            GraphicRealBlit(this, r, c, h, w);
     }
 }
 

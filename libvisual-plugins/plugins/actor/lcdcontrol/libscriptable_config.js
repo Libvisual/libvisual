@@ -64,7 +64,7 @@
                 "col11": "widget_percent"
             },
             "row5": {
-                //"col3": "widget_fps"
+                "col1": "widget_FSSpace"
             },
             "transition": "U"
         }
@@ -767,7 +767,7 @@
     },
     "widget_FSSpace": {
         "type": "text",
-        "expression": "fsspace_a = ((statfs.Statfs('/', 'bavail')*statfs.Statfs('/', 'bsize'))/ 1024/ 1024);fsspace_b = ((statfs.Statfs('/', 'bavail')*statfs.Statfs('/', 'bsize'))/1024/1024);c = '/ ' + fsspace_a + 'MB / ' + fsspace_b + ' MB';
+        "expression": "fsspace_a = ((statfs.Statfs('/', 'bavail')*statfs.Statfs('/', 'bsize'))/ 1024/ 1024);fsspace_b = ((statfs.Statfs('/', 'bavail')*statfs.Statfs('/', 'bsize'))/1024/1024);c = '/ ' .. fsspace_a .. 'MB / ' .. fsspace_b .. ' MB'; return c;
         ",
         "length": 42,
         "align": "M",
