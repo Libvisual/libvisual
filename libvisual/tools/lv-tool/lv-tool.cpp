@@ -297,7 +297,7 @@ int main (int argc, char **argv)
 
     // initialize libvisual once (this is meant to be called only once,
     // visual_init() after visual_quit() results in undefined state)
-    visual_log_set_verbosity(VISUAL_LOG_INFO);
+    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
     visual_init (&argc, &argv);
 
     try {
@@ -311,7 +311,7 @@ int main (int argc, char **argv)
         // create new VisBin for video output
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
-        bin.switch_set_style(VISUAL_SWITCH_STYLE_MORPH);
+        bin.switch_set_style(VISUAL_SWITCH_STYLE_DIRECT);
 
         // initialize actor plugin
         std::cerr << "Loading actor '" << actor_name << "'...\n";
@@ -504,10 +504,11 @@ int main (int argc, char **argv)
             {
                 display.lock();
 
-                display.create(depth, vidoptions, width, height, true);
+                display.create(bin.get_depth(), vidoptions, width, height, true);
 
                 LV::VideoPtr video = display.get_video();
                 bin.set_video(video);
+
                 bin.sync(true);
 
                 display.unlock();

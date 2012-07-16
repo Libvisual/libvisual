@@ -683,8 +683,7 @@ namespace LV {
           visual_log (VISUAL_LOG_INFO, "negotiate without event");
           visual_actor_video_negotiate (m_impl->actor, m_impl->depthforcedmain, true, true);
           visual_log (VISUAL_LOG_INFO, "end negotiate without event");
-          sync(false);
-          /*    visual_bin_sync (bin); */
+          //sync(false);
       }
 
       visual_log (VISUAL_LOG_DEBUG, "Leaving...");
