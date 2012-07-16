@@ -445,6 +445,7 @@ namespace LV {
       visual_return_if_fail (actor != NULL);
 
       VideoPtr video = LV::Video::create();
+      video->ref();
 
       int width  = m_impl->actvideo->get_width ();
       int height = m_impl->actvideo->get_height ();
@@ -452,6 +453,7 @@ namespace LV {
       VisVideoDepth depth = m_impl->actvideo->get_depth ();
 
       VisVideoDepth depthflag = visual_actor_get_supported_depth (actor);
+
       if (visual_video_depth_is_supported (depthflag, VISUAL_VIDEO_DEPTH_GL)) {
           visual_log (VISUAL_LOG_INFO, "Switching to GL mode");
 
@@ -526,9 +528,14 @@ namespace LV {
           visual_log (VISUAL_LOG_INFO, "Target depth selected: %d", depth);
       }
 
-      video = Video::create (width, height, depth);
+      video->set_dimension(width, height);
 
-      video->ref();
+      if(depth != VISUAL_VIDEO_DEPTH_GL)
+      {
+          video->set_pitch(width * visual_video_bpp_from_depth(depth));
+    
+          video->allocate_buffer();
+      }
 
       visual_log (VISUAL_LOG_INFO, "video pitch of that what connects to the new actor %d",
                   video->get_pitch ());
@@ -586,6 +593,7 @@ namespace LV {
           /* Allocate a private video for the main actor, so the morph
            * can draw to the framebuffer */
           VideoPtr privvid = Video::create ();
+          privvid->ref();
 
           visual_log (VISUAL_LOG_DEBUG, "actvideo->depth %d actmorph->video->depth %d",
                       m_impl->actvideo->get_depth (),
@@ -675,6 +683,7 @@ namespace LV {
           visual_log (VISUAL_LOG_INFO, "negotiate without event");
           visual_actor_video_negotiate (m_impl->actor, m_impl->depthforcedmain, true, true);
           visual_log (VISUAL_LOG_INFO, "end negotiate without event");
+          sync(false);
           /*    visual_bin_sync (bin); */
       }
 

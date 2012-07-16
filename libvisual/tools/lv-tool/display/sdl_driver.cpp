@@ -144,6 +144,7 @@ namespace {
                                             m_screen->w,
                                             m_screen->h,
                                             depth);
+          m_screen_video->ref();
 
           set_title (_("lv-tool"));
 
