@@ -108,7 +108,10 @@ namespace LV {
       Rect const& vrect = src->get_extents ();
 
       if (!vrect.contains (area))
+  {
+          visual_log(VISUAL_LOG_DEBUG, "provided area (%d, %d, %d, %d) is not contained by source area (%d, %d, %d, %d)", area.x, area.y, area.width, area.height, vrect.x, vrect.y, vrect.width, vrect.height);
           return VideoPtr ();
+  }
 
       self->m_impl->extents = area;
       self->m_impl->parent  = src;
@@ -440,6 +443,7 @@ namespace LV {
       ndrect.normalize_to (srect);
 
       VideoPtr vsrc = create_sub (ndrect, src, srect);
+
       compose (vsrc, drect.x, drect.y, compose_func);
   }
 

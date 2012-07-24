@@ -17,7 +17,7 @@
 
 #define ACTOR "lv_analyzer"
 #define INPUT "debug"
-#define MORPH "alphablend"
+#define MORPH "checkers"
 
 #define x_exit(msg) \
     printf ("Error: %s\n", msg); \
@@ -265,6 +265,7 @@ v_init (int argc, char **argv)
 {
     VisVideoDepth depth;
 
+    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
     visual_init (&argc, &argv);
 
     v.plugin = ACTOR;

@@ -160,27 +160,24 @@ void do_checkers(VisVideo *dest, VisVideo *src1, VisVideo *src2)
     LV::Color black = LV::Color::black();
     visual_video_fill_color(dest, &black);
 
-    unsigned int tile_width  = src1->width  / n_tile_cols;
-    unsigned int tile_height = src1->height / n_tile_rows;
+    unsigned int tile_width  = src1->get_width()  / n_tile_cols;
+    unsigned int tile_height = src1->get_height() / n_tile_rows;
 
-    LV::Rect subregion(0, 0, tile_width, tile_height);
-
-    VisVideo *sub = visual_video_new_with_buffer (tile_width, tile_height, dest->depth);
-
-    for(unsigned int row = 0, y = 0; y < (unsigned int)src1->height; row++, y += tile_height)
+    LV::VideoPtr destptr = LV::Video::wrap(dest->get_pixels(), false, dest->get_width(), dest->get_height(), dest->get_depth());
+            
+    for(unsigned int row = 0, y = 0; y < (unsigned int)src1->get_height() && row < n_tile_rows; row++, y += tile_height)
     {
-        for(unsigned int col = 0, x = 0; x < (unsigned int)src2->width; col++, x += tile_width)
+        for(unsigned int col = 0, x = 0; x < (unsigned int)src2->get_width() && col < n_tile_cols; col++, x += tile_width)
         {
             VisVideo* src = (row + col + flip) & 1 ? src1 : src2;
-            LV::Rect region(x, y, tile_width, tile_height);
-            visual_video_region_sub(sub, src, &region);
-            visual_video_blit_overlay_rectangle(dest, &region, sub, &subregion, FALSE);
+            LV::VideoPtr srcptr = LV::Video::wrap(src->get_pixels(), false, src->get_width(), src->get_height(), src->get_depth());
+        
+            LV::VideoPtr sub = srcptr->create_sub(srcptr, LV::Rect(x, y, tile_width, tile_height));
+        
+            destptr->blit(LV::Rect(x, y, tile_width, tile_height), sub, sub->get_extents(), false);
         }
     }
-
-    visual_object_unref(VISUAL_OBJECT(sub));
     
-
 }
 
 void sdl_init (int width, int height)
@@ -222,7 +219,7 @@ void do_alpha (VisVideo *vid, uint8_t rate)
 		uint8_t c8[4];
 	} col;
 
-	for (i = 0; i < vid->width * vid->height; i++) {
+	for (i = 0; i < vid->get_width() * vid->get_height(); i++) {
 		col.c32 = ptr[i];
 	
 		col.c8[3] = rate;
@@ -257,6 +254,7 @@ int main (int argc, char *argv[])
 
 	SDL_Event event;
 
+    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
 	visual_init (&argc, &argv);
 	
 	if (argc > 1)
@@ -269,9 +267,9 @@ int main (int argc, char *argv[])
 	video = visual_video_new ();
 
 	if (argc > 2)
-		video = visual_bitmap_load_new_video (argv[2]);
+		video = visual_bitmap_load (argv[2]);
 	else
-		video = visual_bitmap_load_new_video ("images/bg.bmp");
+		video = visual_bitmap_load ("images/bg.bmp");
 
 	actvid = visual_video_new ();
 	visual_actor_set_video (actor, actvid);
@@ -283,7 +281,7 @@ int main (int argc, char *argv[])
 
 	video32 = visual_video_new ();
 	visual_video_set_depth (video32, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (video32, video->width, video->height);
+	visual_video_set_dimension (video32, video->get_width(), video->get_height());
 	visual_video_allocate_buffer (video32);
 	
 	scalevid = visual_video_new ();
@@ -317,12 +315,12 @@ int main (int argc, char *argv[])
 		if (sysize < 0)
 			sysize = 0;
 		
-		if (sxsize != scalevid->width || sysize != scalevid->height) {
+		if (sxsize != scalevid->get_width() || sysize != scalevid->get_height()) {
 			visual_video_set_dimension (scalevid, sxsize, sysize);
 			visual_video_allocate_buffer (scalevid);
 		}
 
-		visual_video_depth_transform (video32, video);
+		visual_video_convert_depth (video32, video);
 
 
 //		visual_video_alpha_fill (sdlvid, 0);
@@ -335,10 +333,10 @@ int main (int argc, char *argv[])
 		visual_video_scale (scalevid, video32, interpol);
 
 		
-		visual_video_blit_overlay (sdlvid, actvid, 0, 0, FALSE);
-		visual_video_blit_overlay (sdlvid, scalevid, xoff, yoff, TRUE);
+		visual_video_blit (sdlvid, actvid, 0, 0, FALSE);
+		visual_video_blit (sdlvid, scalevid, xoff, yoff, TRUE);
 
-        //do_checkers(sdlvid, actvid, scalevid);
+        do_checkers(sdlvid, actvid, scalevid);
 
 		sdl_draw_buf ();
 		frames++;
