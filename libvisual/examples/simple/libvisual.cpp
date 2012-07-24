@@ -16,7 +16,7 @@
 #include <SDL.h>
 
 #define ACTOR "lv_analyzer"
-#define INPUT "pulseaudio"
+#define INPUT "debug"
 #define MORPH "alphablend"
 
 #define x_exit(msg) \
@@ -158,7 +158,7 @@ sdl_create (int width, int height) {
         SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
         screen = SDL_SetVideoMode (width, height, 16, videoflags);
     } else {
-        screen = SDL_SetVideoMode (width, height, v.video->bpp * 8, SDL_RESIZABLE);
+        screen = SDL_SetVideoMode (width, height, visual_video_get_bpp(v.video) * 8, SDL_RESIZABLE);
     }
     visual_video_set_buffer (v.video, screen->pixels);
     visual_video_set_pitch (v.video, screen->pitch);
@@ -205,7 +205,7 @@ sdl_event_handler(void)
 
             morph:
                 sdl_lock();
-                  visual_bin_set_morph_by_name (v.bin, v.morph);
+                  //visual_bin_set_morph_by_name (v.bin, v.morph);
                   visual_bin_switch_actor_by_name (v.bin, (char*)v.plugin);
                 sdl_unlock();
 
@@ -291,15 +291,11 @@ v_init (int argc, char **argv)
     if (!(v.video = visual_video_new ())) {
         x_exit ("Cannot create a video surface");
     }
-    if (visual_video_set_depth (v.video, depth) < 0) {
-        x_exit ("Cannot set video depth");
-    }
+    visual_video_set_depth(v.video, depth);
 
     visual_video_set_dimension (v.video, 640, 480);
 
-    if (visual_bin_set_video (v.bin, v.video)) {
-        x_exit ("Cannot set video");
-    }
+    visual_bin_set_video (v.bin, v.video);
 
     visual_bin_connect_by_names (v.bin, (char*)v.plugin, (char *)v.input);
 
@@ -322,7 +318,7 @@ v_init (int argc, char **argv)
 
     visual_bin_switch_set_style (v.bin, VISUAL_SWITCH_STYLE_MORPH);
     visual_bin_switch_set_steps (v.bin, 10);
-    visual_bin_set_morph_by_name(v.bin, v.morph);
+    //visual_bin_set_morph_by_name(v.bin, v.morph);
 
 }
 
@@ -352,7 +348,7 @@ v_render(void)
         visual_bin_run (v.bin);
         sdl_unlock ();
 
-        v.pal = visual_bin_get_palette (v.bin);
+        v.pal = (VisPalette *)visual_bin_get_palette (v.bin);
         sdl_set_pal ();
         SDL_Flip (screen);
     }

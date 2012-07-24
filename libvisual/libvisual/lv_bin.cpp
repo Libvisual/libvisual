@@ -384,6 +384,7 @@ namespace LV {
           return;
 
       visual_log (VISUAL_LOG_DEBUG, "old: %d new: %d", m_impl->depth, depth);
+
       if (m_impl->depth != depth)
           m_impl->depthchanged = true;
 
@@ -469,6 +470,7 @@ namespace LV {
 
           /* Switching from GL */
           video->set_depth (m_impl->get_suitable_depth (depthflag));
+          depth = video->get_depth();
 
           visual_log (VISUAL_LOG_DEBUG, "after depth fixating");
 
