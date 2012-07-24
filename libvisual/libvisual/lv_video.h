@@ -323,6 +323,8 @@ namespace LV {
        */
       Rect const& get_extents () const;
 
+      void set_extents(Rect area);
+
       void set_compose_type (VisVideoComposeType type);
       void set_compose_colorkey (Color const& color);
       void set_compose_surface  (uint8_t alpha);

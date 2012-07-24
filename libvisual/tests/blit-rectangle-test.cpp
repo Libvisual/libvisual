@@ -165,16 +165,23 @@ void do_checkers(VisVideo *dest, VisVideo *src1, VisVideo *src2)
 
     LV::VideoPtr destptr = LV::Video::wrap(dest->get_pixels(), false, dest->get_width(), dest->get_height(), dest->get_depth());
             
-    for(unsigned int row = 0, y = 0; y < (unsigned int)src1->get_height() && row < n_tile_rows; row++, y += tile_height)
+    for(unsigned int row = 0, y = 0; 
+        y < (unsigned int)src1->get_height() + tile_height;
+        row++, y += tile_height)
     {
-        for(unsigned int col = 0, x = 0; x < (unsigned int)src2->get_width() && col < n_tile_cols; col++, x += tile_width)
+        for(unsigned int col = 0, x = 0; 
+            x < (unsigned int)src2->get_width() + tile_width;
+            col++, x += tile_width)
         {
+            if(x + tile_width >= src2->get_width() or y + tile_height >= src2->get_height())
+                continue;
             VisVideo* src = (row + col + flip) & 1 ? src1 : src2;
             LV::VideoPtr srcptr = LV::Video::wrap(src->get_pixels(), false, src->get_width(), src->get_height(), src->get_depth());
+            srcptr->set_extents(LV::Rect(0, 0, src->get_width(), src->get_height()));
+            LV::Rect area(x, y, tile_width, tile_height);
         
-            LV::VideoPtr sub = srcptr->create_sub(srcptr, LV::Rect(x, y, tile_width, tile_height));
-        
-            destptr->blit(LV::Rect(x, y, tile_width, tile_height), sub, sub->get_extents(), false);
+            LV::VideoPtr sub = LV::Video::create_sub(srcptr, area);
+            destptr->blit(area, sub, sub->get_extents(), false);
         }
     }
     

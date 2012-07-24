@@ -360,11 +360,6 @@ namespace LV {
       return m_impl->buffer;
   }
 
-  Rect const& Video::get_extents () const
-  {
-      return m_impl->extents;
-  }
-
   void* Video::get_pixels () const
   {
       return m_impl->buffer->get_data ();
@@ -373,6 +368,16 @@ namespace LV {
   void* Video::get_pixel_ptr (int x, int y) const
   {
       return static_cast<uint8_t*> (m_impl->pixel_rows[y]) + x * m_impl->bpp;
+  }
+
+  Rect const& Video::get_extents () const
+  {
+      return m_impl->extents;
+  }
+
+  void Video::set_extents(Rect area)
+  {
+      m_impl->extents = area;
   }
 
   void Video::set_compose_type (VisVideoComposeType type)
