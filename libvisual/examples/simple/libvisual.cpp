@@ -205,7 +205,7 @@ sdl_event_handler(void)
 
             morph:
                 sdl_lock();
-                  //visual_bin_set_morph_by_name (v.bin, v.morph);
+                  visual_bin_set_morph (v.bin, v.morph);
                   visual_bin_switch_actor_by_name (v.bin, (char*)v.plugin);
                 sdl_unlock();
 
@@ -318,7 +318,7 @@ v_init (int argc, char **argv)
 
     visual_bin_switch_set_style (v.bin, VISUAL_SWITCH_STYLE_MORPH);
     visual_bin_switch_set_steps (v.bin, 10);
-    //visual_bin_set_morph_by_name(v.bin, v.morph);
+    visual_bin_set_morph(v.bin, v.morph);
 
 }
 

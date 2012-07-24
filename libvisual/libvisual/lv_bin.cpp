@@ -643,7 +643,7 @@ namespace LV {
       visual_log (VISUAL_LOG_DEBUG, "Completing actor switch...");
 
       if (m_impl->managed) {
-          visual_object_unref (VISUAL_OBJECT (m_impl->actor));
+          //visual_object_unref (VISUAL_OBJECT (m_impl->actor));
       }
 
       /* Copy over the depth to be sure, and for GL plugins */
