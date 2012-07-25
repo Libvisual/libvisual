@@ -173,8 +173,6 @@ void do_checkers(VisVideo *dest, VisVideo *src1, VisVideo *src2)
             x < (unsigned int)src2->get_width() + tile_width;
             col++, x += tile_width)
         {
-            if(x + tile_width >= src2->get_width() or y + tile_height >= src2->get_height())
-                continue;
             VisVideo* src = (row + col + flip) & 1 ? src1 : src2;
             LV::VideoPtr srcptr = LV::Video::wrap(src->get_pixels(), false, src->get_width(), src->get_height(), src->get_depth());
             srcptr->set_extents(LV::Rect(0, 0, src->get_width(), src->get_height()));
