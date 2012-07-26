@@ -150,6 +150,7 @@ void do_checkers(LV::VideoPtr destptr, LV::VideoPtr src1, LV::VideoPtr src2)
     if(flip == -1)
     {
         flip = 0;
+        timer.reset();
         timer.start();
     }
     if(timer.elapsed().to_msecs() > 300)
@@ -162,22 +163,18 @@ void do_checkers(LV::VideoPtr destptr, LV::VideoPtr src1, LV::VideoPtr src2)
     LV::Color black = LV::Color::black();
     destptr->fill_color(black);
 
+
     unsigned int tile_width  = src1->get_width()  / n_tile_cols;
     unsigned int tile_height = src1->get_height() / n_tile_rows;
 
+/*
+    LV::VideoPtr srcptr = flip & 1 ? src2 : src1;
 
-
-    LV::VideoPtr srcptr = flip & 1 ? src1 : src2;
-
-    LV::Rect area(0, 0, srcptr->get_width(), srcptr->get_height());
-
-    srcptr->set_extents(area);
-
-    destptr->set_extents(area);
+    LV::Rect area(tile_width, 0, tile_width, tile_height);
 
     destptr->blit(area, srcptr, area, false);
+*/
 
-    return;
     for(unsigned int row = 0, y = 0; 
         y < (unsigned int)src1->get_height();
         row++, y += tile_height)
@@ -187,11 +184,12 @@ void do_checkers(LV::VideoPtr destptr, LV::VideoPtr src1, LV::VideoPtr src2)
             col++, x += tile_width)
         {
             LV::VideoPtr srcptr = (row + col + flip) & 1 ? src1 : src2;
-            srcptr->set_extents(LV::Rect(0, 0, srcptr->get_width(), srcptr->get_height()));
+
             LV::Rect area(x, y, tile_width, tile_height);
+
+            area = LV::Rect::clip(destptr->get_extents(), area);
         
-            LV::VideoPtr sub = LV::Video::create_sub(srcptr, area);
-            destptr->blit(area, sub, sub->get_extents(), false);
+            destptr->blit(area, srcptr, area, false);
         }
     }
 }
@@ -295,6 +293,7 @@ int main (int argc, char *argv[])
 
     video32_actor = LV::Video::create(screen->w, screen->h, depth);
 
+
 	srcbuf = (int32_t *)malloc (screen->pitch * screen->h);
 	memset (srcbuf, 0, screen->pitch * screen->h);
 
@@ -310,15 +309,23 @@ int main (int argc, char *argv[])
 	visual_input_realize (input);
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-        
+
+    LV::Rect area(0, 0, screen->w, screen->h);
+    video32_image->set_extents(area);
+    video32_actor->set_extents(area);
+    sdlvid->set_extents(area);
+       
 	//visual_time_get (&start);
     
 	while (1) {
-		visual_input_run (input);
-		visual_actor_run (actor, input->audio);
+		//visual_input_run (input);
+		//visual_actor_run (actor, input->audio);
 
-        video32_actor->convert_depth(actvid);
-        do_checkers(sdlvid, video32_actor, video32_image);
+        //video32_actor->convert_depth(actvid);
+
+        do_checkers(sdlvid, video32_image, video32_actor);
+
+        //sdlvid->blit(video32_actor, 0, 0, true);
 
 		sdl_draw_buf ();
 		frames++;
