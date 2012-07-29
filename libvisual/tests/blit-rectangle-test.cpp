@@ -142,57 +142,6 @@ void sdl_size_request (int width, int height)
 	memset (srcbuf, 0, screen->pitch * screen->h);
 }
 
-void do_checkers(LV::VideoPtr destptr, LV::VideoPtr src1, LV::VideoPtr src2)
-{
-    static LV::Timer timer;
-    static char flip = -1;
-
-    if(flip == -1)
-    {
-        flip = 0;
-        timer.reset();
-        timer.start();
-    }
-    if(timer.elapsed().to_msecs() > 300)
-    {
-        flip != flip;
-        timer.reset();
-        timer.start();
-    }
-
-    LV::Color black = LV::Color::black();
-    destptr->fill_color(black);
-
-
-    unsigned int tile_width  = src1->get_width()  / n_tile_cols;
-    unsigned int tile_height = src1->get_height() / n_tile_rows;
-
-/*
-    LV::VideoPtr srcptr = flip & 1 ? src2 : src1;
-
-    LV::Rect area(tile_width, 0, tile_width, tile_height);
-
-    destptr->blit(area, srcptr, area, false);
-*/
-
-    for(unsigned int row = 0, y = 0; 
-        y < (unsigned int)src1->get_height();
-        row++, y += tile_height)
-    {
-        for(unsigned int col = 0, x = 0; 
-            x < (unsigned int)src2->get_width();
-            col++, x += tile_width)
-        {
-            LV::VideoPtr srcptr = (row + col + flip) & 1 ? src1 : src2;
-
-            LV::Rect area(x, y, tile_width, tile_height);
-
-            area = LV::Rect::clip(destptr->get_extents(), area);
-        
-            destptr->blit(area, srcptr, area, false);
-        }
-    }
-}
 
 void sdl_init (int width, int height)
 {
@@ -222,6 +171,58 @@ void sdl_draw_buf ()
 
 	memset (srcbuf, 0, screen->pitch * screen->h);
 	SDL_UpdateRect (screen, 0, 0, screen->w, screen->h);
+}
+
+void do_checkers(LV::VideoPtr destptr, LV::VideoPtr src1, LV::VideoPtr src2)
+{
+    static LV::Timer timer;
+    static int flip = -1;
+
+    if(flip == -1)
+    {
+        flip = 0;
+        timer.reset();
+        timer.start();
+    }
+    if(timer.elapsed().to_msecs() > 2000)
+    {
+        flip = !flip;
+        timer.reset();
+        timer.start();
+    }
+
+    LV::Color black = LV::Color::black();
+    destptr->fill_color(black);
+
+    unsigned int tile_width  = src1->get_width()  / n_tile_cols;
+    unsigned int tile_height = src1->get_height() / n_tile_rows;
+
+    LV::VideoPtr srcptr = flip % 2 == 0 ? src2 : src1;
+
+    LV::Rect area(0, 0, tile_width, tile_height);
+
+    area = LV::Rect::clip(destptr->get_extents(), area);
+
+    destptr->blit(area, srcptr, area, false);
+
+    return;
+    for(unsigned int row = 0, y = 0; 
+        y < (unsigned int)src1->get_height();
+        row++, y += tile_height)
+    {
+        for(unsigned int col = 0, x = 0; 
+            x < (unsigned int)src2->get_width();
+            col++, x += tile_width)
+        {
+            LV::VideoPtr srcptr = (row + col + flip) & 1 ? src1 : src2;
+
+            LV::Rect area(x, y, tile_width, tile_height);
+
+            area = LV::Rect::clip(destptr->get_extents(), area);
+        
+            destptr->blit(area, srcptr, area, false);
+        }
+    }
 }
 
 void do_alpha (LV::Video vid, uint8_t rate)
@@ -318,10 +319,14 @@ int main (int argc, char *argv[])
 	//visual_time_get (&start);
     
 	while (1) {
-		//visual_input_run (input);
-		//visual_actor_run (actor, input->audio);
+		visual_input_run (input);
+		visual_actor_run (actor, input->audio);
 
-        //video32_actor->convert_depth(actvid);
+        video32_actor->convert_depth(actvid);
+
+        scalevid->scale(video, interpol);
+
+        video32_image->convert_depth(scalevid);
 
         do_checkers(sdlvid, video32_image, video32_actor);
 
