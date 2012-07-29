@@ -173,7 +173,7 @@ void sdl_draw_buf ()
 	SDL_UpdateRect (screen, 0, 0, screen->w, screen->h);
 }
 
-void do_checkers(LV::VideoPtr destptr, LV::VideoPtr src1, LV::VideoPtr src2)
+void do_checkers(LV::VideoPtr const& destptr, LV::VideoPtr const& src1, LV::VideoPtr const& src2)
 {
     static LV::Timer timer;
     static int flip = -1;
@@ -205,7 +205,7 @@ void do_checkers(LV::VideoPtr destptr, LV::VideoPtr src1, LV::VideoPtr src2)
 
     destptr->blit(area, srcptr, area, false);
 
-    return;
+    //return;
     for(unsigned int row = 0, y = 0; 
         y < (unsigned int)src1->get_height();
         row++, y += tile_height)
@@ -225,16 +225,16 @@ void do_checkers(LV::VideoPtr destptr, LV::VideoPtr src1, LV::VideoPtr src2)
     }
 }
 
-void do_alpha (LV::Video vid, uint8_t rate)
+void do_alpha (LV::VideoPtr const& vid, uint8_t rate)
 {
 	int i;
-	uint32_t *ptr = (uint32_t *)vid.get_pixels();
+	uint32_t *ptr = (uint32_t *)vid->get_pixels();
 	union {
 		uint32_t c32;
 		uint8_t c8[4];
 	} col;
 
-	for (i = 0; i < vid.get_width() * vid.get_height(); i++) {
+	for (i = 0; i < vid->get_width() * vid->get_height(); i++) {
 		col.c32 = ptr[i];
 	
 		col.c8[3] = rate;
