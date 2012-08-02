@@ -39,6 +39,12 @@ namespace LV
               intrusive_ptr_add_ref (m_ptr);
       }
 
+      IntrusivePtr (IntrusivePtr&& rhs)
+          : m_ptr (rhs.m_ptr)
+      {
+          rhs.m_ptr = nullptr;
+      }
+
       ~IntrusivePtr ()
       {
           if (m_ptr)
@@ -57,6 +63,13 @@ namespace LV
           IntrusivePtr (rhs).swap (*this);
           return *this;
       }
+    
+      // FIXME: This causes a leak for some reason
+      //IntrusivePtr& operator= (IntrusivePtr&& rhs)
+      //{
+      //    IntrusivePtr (rhs).swap (*this);
+      //    return *this;
+      //}
 
       void reset ()
       {
