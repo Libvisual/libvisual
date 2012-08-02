@@ -26,12 +26,12 @@ namespace LV {
 
   void VideoConvert::index8_to_rgb16 (Video& dest, Video const& src)
   {
-      rgb16_t* dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
       rgb16_t colors[256];
 
-      std::vector<Color> const& src_colors = src.m_impl->palette.colors;
+      auto const& src_colors = src.m_impl->palette.colors;
 
       for(int i = 0; i < 256; i++) {
           colors[i].r = src_colors[i].r >> 3;
@@ -57,10 +57,10 @@ namespace LV {
 
   void VideoConvert::index8_to_rgb24 (Video& dest, Video const& src)
   {
-      uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
-      std::vector<Color> const& src_colors = src.m_impl->palette.colors;
+      auto const& src_colors = src.m_impl->palette.colors;
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -89,12 +89,12 @@ namespace LV {
 
   void VideoConvert::index8_to_argb32 (Video& dest, Video const& src)
   {
-      uint32_t *dbuf = static_cast<uint32_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<uint32_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
       uint32_t colors[256];
 
-      std::vector<Color> const& src_colors = src.m_impl->palette.colors;
+      auto const& src_colors = src.m_impl->palette.colors;
 
       for (int i = 0; i < 256; ++i) {
           colors[i] =
@@ -122,10 +122,10 @@ namespace LV {
 
   void VideoConvert::rgb16_to_index8 (Video& dest, Video const& src)
   {
-      uint8_t *dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      rgb16_t const* sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
 
-      std::vector<Color>& dest_colors = dest.m_impl->palette.colors;
+      auto& dest_colors = dest.m_impl->palette.colors;
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -156,8 +156,8 @@ namespace LV {
 
   void VideoConvert::rgb16_to_rgb24 (Video& dest, Video const& src)
   {
-      uint8_t *dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      rgb16_t const* sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -186,8 +186,8 @@ namespace LV {
 
   void VideoConvert::rgb16_to_argb32 (Video& dest, Video const& src)
   {
-      uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      rgb16_t const* sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto const* sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -219,10 +219,10 @@ namespace LV {
 
   void VideoConvert::rgb24_to_index8 (Video& dest, Video const& src)
   {
-      uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t*> (src.get_pixels ());
+      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t*> (src.get_pixels ());
 
-      std::vector<Color>& dest_colors = dest.m_impl->palette.colors;
+      auto& dest_colors = dest.m_impl->palette.colors;
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -258,8 +258,8 @@ namespace LV {
 
   void VideoConvert::rgb24_to_rgb16 (Video& dest, Video const& src)
   {
-      rgb16_t* dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -288,8 +288,8 @@ namespace LV {
 
   void VideoConvert::rgb24_to_argb32 (Video& dest, Video const& src)
   {
-      uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -319,10 +319,10 @@ namespace LV {
 
   void VideoConvert::argb32_to_index8 (Video& dest, Video const& src)
   {
-      uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
-      std::vector<Color>& dest_colors = dest.m_impl->palette.colors;
+      auto& dest_colors = dest.m_impl->palette.colors;
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -360,8 +360,8 @@ namespace LV {
 
   void VideoConvert::argb32_to_rgb16 (Video& dest, Video const& src)
   {
-      rgb16_t* dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -393,8 +393,8 @@ namespace LV {
 
   void VideoConvert::argb32_to_rgb24 (Video& dest, Video const& src)
   {
-      uint8_t* dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      uint8_t const* sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
@@ -424,8 +424,8 @@ namespace LV {
 
   void VideoConvert::flip_pixel_bytes_color16 (Video& dest, Video const& src)
   {
-      rgb16_t* destbuf = static_cast<rgb16_t*> (dest.get_pixels ());
-      rgb16_t const* srcbuf = static_cast<rgb16_t const*> (src.get_pixels ());
+      auto destbuf = static_cast<rgb16_t*> (dest.get_pixels ());
+      auto srcbuf  = static_cast<rgb16_t const*> (src.get_pixels ());
 
       int pitchdiff = (dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp)) >> 1;
 
@@ -445,8 +445,8 @@ namespace LV {
 
   void VideoConvert::flip_pixel_bytes_color24 (Video& dest, Video const& src)
   {
-      uint8_t* destbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      uint8_t const* srcbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto destbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto srcbuf  = static_cast<uint8_t const*> (src.get_pixels ());
 
       int pitchdiff = dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp);
 
@@ -466,8 +466,8 @@ namespace LV {
 
   void VideoConvert::flip_pixel_bytes_color32 (Video& dest, Video const& src)
   {
-      uint8_t* destbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      uint8_t const* srcbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      auto destbuf = static_cast<uint8_t*> (dest.get_pixels ());
+      auto srcbuf  = static_cast<uint8_t const*> (src.get_pixels ());
 
       int pitchdiff = dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp);
 

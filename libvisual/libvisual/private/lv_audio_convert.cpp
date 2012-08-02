@@ -66,9 +66,9 @@ namespace {
   typename enable_if_c<is_unsigned<D>::value && is_signed<S>::value && sizeof(D) == sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      D a = zero<D> ();
+      auto a = zero<D> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       while (src != src_end) {
           *dst = *src + a;
@@ -82,9 +82,9 @@ namespace {
   typename enable_if_c<is_signed<D>::value && is_unsigned<S>::value && sizeof(D) == sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      S a = zero<S> ();
+      auto a = zero<S> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       while (src != src_end) {
           *dst = *src - a;
@@ -118,7 +118,7 @@ namespace {
       float a = half_range<D> ();
       float b = zero<D> ();
 
-      float const* src_end = src + count;
+      auto src_end = src + count;
 
       while (src != src_end) {
           *dst = *src * a + b;
@@ -134,7 +134,7 @@ namespace {
   {
       const int shift = shifter<D, S> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       if (sizeof(S) > sizeof(D)) {
           // narrowing
@@ -158,10 +158,10 @@ namespace {
   typename enable_if_c<is_signed<D>::value && is_unsigned<S>::value && sizeof(D) != sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      D a = zero<D>();
+      auto a = zero<D>();
       const int shift = shifter<D, S> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       if (sizeof(D) < sizeof(S)) {
           // narrowing
@@ -185,10 +185,10 @@ namespace {
   typename enable_if_c<is_unsigned<D>::value && is_signed<S>::value && sizeof(D) != sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      D a = zero<D>();
+      auto a = zero<D>();
       const int shift = shifter<D, S> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       if (sizeof(D) < sizeof(S)) {
           // narrowing
@@ -290,7 +290,7 @@ namespace {
   template <typename T>
   inline void deinterleave_stereo_sample_array (T* dest1, T* dest2, T const* src, std::size_t count)
   {
-      T const* src_end = src + count * 2;
+      auto src_end = src + count * 2;
 
       while (src != src_end)
       {
@@ -330,8 +330,8 @@ namespace LV {
                                       BufferConstPtr const&    src,
                                       VisAudioSampleFormatType src_format)
     {
-        void* dbuf = dest->get_data ();
-        void const* sbuf = src->get_data ();
+        auto dbuf = dest->get_data ();
+        auto sbuf = src->get_data ();
         std::size_t size = src->get_size ();
 
         int i = int (dest_format) - 1;
@@ -345,9 +345,9 @@ namespace LV {
                                                   BufferConstPtr const&    src,
                                                   VisAudioSampleFormatType format)
   {
-      void* dbuf1 = dest1->get_data ();
-      void* dbuf2 = dest2->get_data ();
-      void const* sbuf = src->get_data ();
+      auto dbuf1 = dest1->get_data ();
+      auto dbuf2 = dest2->get_data ();
+      auto sbuf = src->get_data ();
       std::size_t size = src->get_size ();
 
       int i = int (format) - 1;

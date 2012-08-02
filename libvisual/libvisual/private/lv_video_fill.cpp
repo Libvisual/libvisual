@@ -19,7 +19,7 @@ namespace LV {
 
   void VideoFill::fill_color_index8 (Video& video, Color const& color)
   {
-      uint8_t* buf = static_cast<uint8_t*> (video.get_pixels ());
+      auto buf = static_cast<uint8_t*> (video.get_pixels ());
 
       int8_t col = ((color.r + color.g + color.b) / 3);
 
@@ -32,11 +32,11 @@ namespace LV {
 
   void VideoFill::fill_color_rgb16 (Video& video, Color const& color)
   {
-      uint16_t* buf = static_cast<uint16_t*> (video.get_pixels ());
+      auto buf = static_cast<uint16_t*> (video.get_pixels ());
 
       int16_t col;
 
-      rgb16_t *col16 = reinterpret_cast<rgb16_t*> (&col);
+      auto col16 = reinterpret_cast<rgb16_t*> (&col);
       col16->r = color.r >> 3;
       col16->g = color.g >> 2;
       col16->b = color.b >> 3;
@@ -50,7 +50,7 @@ namespace LV {
 
   void VideoFill::fill_color_rgb24 (Video& video, Color const& color)
   {
-      uint8_t* rbuf = static_cast<uint8_t*> (video.get_pixels ());
+      auto rbuf = static_cast<uint8_t*> (video.get_pixels ());
 
       int32_t cola =
           (color.b << 24) |
@@ -88,7 +88,7 @@ namespace LV {
 
   void VideoFill::fill_color_argb32 (Video& video, Color const& color)
   {
-      uint32_t *buf = static_cast<uint32_t*> (video.get_pixels ());
+      auto buf = static_cast<uint32_t*> (video.get_pixels ());
 
       uint32_t col = (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
 

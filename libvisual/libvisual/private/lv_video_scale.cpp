@@ -23,7 +23,7 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color8 (Video& dest, Video const& src)
   {
-      uint8_t* dest_pixel = static_cast<uint8_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint8_t*> (dest.get_pixels ());
 
       uint32_t du = (src.m_impl->width  << 16) / dest.m_impl->width;
       uint32_t dv = (src.m_impl->height << 16) / dest.m_impl->height;
@@ -46,7 +46,7 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color16 (Video& dest, Video const& src)
   {
-      uint16_t* dest_pixel = static_cast<uint16_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint16_t*> (dest.get_pixels ());
 
       uint32_t du = (src.m_impl->width  << 16) / dest.m_impl->width;
       uint32_t dv = (src.m_impl->height << 16) / dest.m_impl->height;
@@ -69,7 +69,7 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color24 (Video& dest, Video const& src)
   {
-      color24_t* dest_pixel = static_cast<color24_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<color24_t*> (dest.get_pixels ());
 
       uint32_t du = (src.m_impl->width << 16)  / dest.m_impl->width;
       uint32_t dv = (src.m_impl->height << 16) / dest.m_impl->height;
@@ -92,7 +92,7 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color32 (Video& dest, Video const& src)
   {
-      uint32_t* dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
 
       uint32_t du = (src.m_impl->width  << 16) / dest.m_impl->width;
       uint32_t dv = (src.m_impl->height << 16) / dest.m_impl->height;
@@ -115,7 +115,7 @@ namespace LV {
 
   void VideoTransform::scale_bilinear_color8 (Video& dest, Video const& src)
   {
-      uint8_t* dest_pixel = static_cast<uint8_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint8_t*> (dest.get_pixels ());
 
       uint32_t du = ((src.m_impl->width  - 1) << 16) / dest.m_impl->width;
       uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
@@ -165,7 +165,7 @@ namespace LV {
 
   void VideoTransform::scale_bilinear_color16 (Video& dest, Video const& src)
   {
-      color16_t* dest_pixel = static_cast<color16_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<color16_t*> (dest.get_pixels ());
 
       uint32_t du = ((src.m_impl->width - 1)  << 16) / dest.m_impl->width;
       uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
@@ -230,7 +230,7 @@ namespace LV {
 
   void VideoTransform::scale_bilinear_color24 (Video& dest, Video const& src)
   {
-      color24_t* dest_pixel = static_cast<color24_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<color24_t*> (dest.get_pixels ());
 
       uint32_t du = ((src.m_impl->width  - 1) << 16) / dest.m_impl->width;
       uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
@@ -300,7 +300,7 @@ namespace LV {
           return;
       }
 
-      uint32_t* dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
 
       uint32_t du = ((src.m_impl->width  - 1) << 16) / dest.m_impl->width;
       uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;

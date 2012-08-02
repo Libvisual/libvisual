@@ -30,8 +30,8 @@ namespace LV {
   void VideoBlit::blit_overlay_alphasrc_mmx (Video* dest, Video* src)
   {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-      uint8_t* destbuf = static_cast<uint8_t*> (dest->get_pixels ());
-      uint8_t const* srcbuf = static_cast<uint8_t const*> (src->get_pixels ());
+      auto destbuf = static_cast<uint8_t*> (dest->get_pixels ());
+      auto srcbuf = static_cast<uint8_t const*> (src->get_pixels ());
 
       for (int i = 0; i < src->m_impl->height; i++) {
           for (int j = 0; j < src->m_impl->width; j++) {
