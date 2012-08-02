@@ -32,7 +32,6 @@
 #include "lv_plugin_registry.h"
 #include "lv_log.h"
 #include "lv_param.h"
-#include "lv_thread.h"
 #include "lv_util.h"
 
 #include "gettext.h"
@@ -45,7 +44,6 @@ extern "C" {
   void visual_alpha_blend_initialize (void);
   void visual_cpu_initialize (void);
   void visual_mem_initialize (void);
-  void visual_thread_initialize (void);
 }
 
 namespace LV
@@ -152,9 +150,6 @@ namespace LV
 
       /* Initialize high-resolution timer system */
 	  Time::init ();
-
-      /* Initialize Thread system */
-      visual_thread_initialize ();
 
       /* Initialize FFT system */
       Fourier::init ();

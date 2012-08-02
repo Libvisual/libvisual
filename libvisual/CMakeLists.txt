@@ -150,26 +150,6 @@ IF(ENABLE_NLS)
   ADD_SUBDIRECTORY(po)
 ENDIF()
 
-# Check for thread implementation
-OPTION(ENABLE_THREADS "Turn on basic thread support" yes)
-IF(ENABLE_THREADS)
-  FIND_PACKAGE(Threads)
-  IF(Threads_FOUND)
-    SET(VISUAL_HAVE_THREADS yes)
-    SET(THREAD_INCLUDE_DIRS "")
-    SET(THREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
-
-    IF(CMAKE_USE_PTHREADS_INIT)
-      SET(VISUAL_THREAD_MODEL_POSIX yes)
-    ELSEIF(CMAKE_USE_WIN32_THREADS_INIT)
-      SET(VISUAL_THREAD_MODEL_WIN32 yes)
-    ENDIF()
-  ELSE()
-    MESSAGE(WARNING "You do not have any supported thread implementation available. Libvisual will be built without thread support.")
-    SET(ENABLE_THREADS no)
-  ENDIF()
-ENDIF()
-
 # Check for type sizes
 CHECK_TYPE_SIZE(short  SIZEOF_SHORT)
 CHECK_TYPE_SIZE(int    SIZEOF_INT)

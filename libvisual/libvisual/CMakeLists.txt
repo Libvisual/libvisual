@@ -3,7 +3,6 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_BINARY_DIR}
   ${PROJECT_SOURCE_DIR}/libvisual
   ${PROJECT_BINARY_DIR}/libvisual
-  ${THREAD_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(
@@ -40,7 +39,6 @@ SET(libvisual_HEADERS
   lv_error.h
   lv_checks.h
   lv_types.h
-  lv_thread.h
   lv_object.h
   lv_transform.h
   lv_rectangle.h
@@ -126,7 +124,6 @@ SET(libvisual_SOURCES
 )
 
 SET(LINK_LIBS
-  ${THREAD_LIBS}
   m
 )
 
@@ -135,41 +132,16 @@ SET(LINK_LIBS
 # saying 'not Windows'
 IF(NOT VISUAL_OS_WIN32)
   LIST(APPEND LINK_LIBS dl rt)
-
   LIST(APPEND libvisual_SOURCES
     private/posix/lv_module_dlfcn.cpp
     private/posix/lv_mem_posix.cpp
   )
-
-  IF(ENABLE_THREADS)
-    LIST(APPEND libvisual_SOURCES
-      private/posix/lv_thread_posix.c
-    )
-  ELSE()
-    LIST(APPEND libvisual_SOURCES
-      lv_thread_disabled.c
-    )
-  ENDIF()
-
 ELSE()
-
   LIST(APPEND libvisual_SOURCES
     private/windows/lv_module_win32.cpp
     private/windows/lv_mem_win32.cpp
   )
-
-  IF(ENABLE_THREADS)
-    LIST(APPEND libvisual_SOURCES
-      private/windows/lv_thread_win32.c
-    )
-  ELSE()
-    LIST(APPEND libvisual_SOURCES
-      lv_thread_disabled.c
-    )
-  ENDIF()
-
 ENDIF()
-
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
 
