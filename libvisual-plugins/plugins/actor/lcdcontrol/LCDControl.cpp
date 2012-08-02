@@ -34,7 +34,6 @@ using namespace LCD;
 
 LCDControl::LCDControl(void *priv, VisEventQueue *eventqueue) {
     priv_ = priv;
-    mutex_ = visual_mutex_new();
     active_ = false;
     timers_ = new LCDTimerBin();
     eventqueue_ = eventqueue;
@@ -42,7 +41,6 @@ LCDControl::LCDControl(void *priv, VisEventQueue *eventqueue) {
 }
 
 LCDControl::~LCDControl() {
-    visual_mutex_free(mutex_);
 /*
     Shutdown();
     for(std::vector<std::string>::iterator it = display_keys_.begin();
@@ -60,11 +58,11 @@ int LCDControl::Start() {
 /*
     while(active_)
     {
-        visual_mutex_lock(mutex_);
+        mutex_.lock();
 
         timers_->Tick();
 
-        visual_mutex_unlock(mutex_);
+        mutex_.unlock();
 
         visual_usleep(0.2 * VISUAL_USEC_PER_SEC);
     }
@@ -77,11 +75,11 @@ void LCDControl::Stop() {
 }
 
 void LCDControl::Lock() {
-    visual_mutex_lock(mutex_);
+    mutex_.lock();
 }
 
 void LCDControl::Unlock() {
-    visual_mutex_unlock(mutex_);
+    mutex_.unlock();
 }
 
 void LCDControl::Tick()

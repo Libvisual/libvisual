@@ -168,10 +168,10 @@ int lua::lua_callback(lua_State* L) {
     throw lua::exception(fmt.str());
   }
 
-  std::auto_ptr<lua::args_t> in_args(lua_func_t<T>::in_args()->clone());
+  std::unique_ptr<lua::args_t> in_args(lua_func_t<T>::in_args()->clone());
   in_args->unpack(L);
 
-  std::auto_ptr<lua::args_t> out_args(lua_func_t<T>::out_args()->clone());
+  std::unique_ptr<lua::args_t> out_args(lua_func_t<T>::out_args()->clone());
   lua_func_t<T>::calc(*in_args, *out_args);
   out_args->pack(L);
   return out_args->size();
