@@ -2,7 +2,7 @@
 #define _LV_TOOL_DISPLAY_DRIVER_FACTORY_HPP
 
 #include "display_driver.hpp"
-#include <libvisual/lv_scoped_ptr.hpp>
+#include <memory>
 
 typedef SADisplayDriver* (*DisplayDriverCreator)(SADisplay& display);
 
@@ -31,8 +31,7 @@ public:
 private:
 
     class Impl;
-
-    LV::ScopedPtr<Impl> m_impl;
+    const std::unique_ptr<Impl> m_impl;
 
     DisplayDriverFactory ();
 

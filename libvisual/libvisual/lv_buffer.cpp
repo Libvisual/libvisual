@@ -164,7 +164,7 @@ namespace LV {
 
   void Buffer::copy_data_to (void* dest)
   {
-      visual_return_if_fail (dest != NULL);
+      visual_return_if_fail (dest != nullptr);
 
       visual_mem_copy (dest, m_impl->data, m_impl->size);
   }
@@ -176,7 +176,7 @@ namespace LV {
 
   void Buffer::put (void const* data, std::size_t size, std::size_t offset)
   {
-      visual_return_if_fail (data != NULL);
+      visual_return_if_fail (data != nullptr);
       visual_return_if_fail (offset < m_impl->size);
 
       std::size_t amount = m_impl->size;
@@ -193,7 +193,7 @@ namespace LV {
 
   void Buffer::fill_with_pattern (void const* data, std::size_t size)
   {
-      visual_return_if_fail (data != NULL);
+      visual_return_if_fail (data != nullptr);
 
       for (std::size_t offset = 0; offset < m_impl->size; offset += size)
           put (data, size, offset);

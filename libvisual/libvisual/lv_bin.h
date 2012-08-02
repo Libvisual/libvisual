@@ -47,7 +47,7 @@ typedef enum {
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
+#include <memory>
 #include <string>
 
 namespace LV {
@@ -58,7 +58,11 @@ namespace LV {
 
 	  Bin ();
 
+	  Bin (Bin const&) = delete;
+
 	  ~Bin ();
+
+	  Bin& operator= (Bin const&) = delete;
 
 	  void realize ();
 
@@ -121,10 +125,7 @@ namespace LV {
 
 	  class Impl;
 
-	  ScopedPtr<Impl> m_impl;
-
-	  Bin (Bin const&);
-	  Bin& operator= (Bin const&);
+      const std::unique_ptr<Impl> m_impl;
   };
 
 } // LV namespace

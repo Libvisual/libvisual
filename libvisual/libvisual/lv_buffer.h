@@ -33,8 +33,8 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_intrusive_ptr.hpp>
+#include <memory>
 #include <cstdlib>
 
 namespace LV {
@@ -47,6 +47,10 @@ namespace LV {
   class LV_API Buffer
   {
   public:
+
+      Buffer (Buffer const&) = delete;
+
+      Buffer& operator= (Buffer const&) = delete;
 
       /**
        * Constructs a new empty Buffer.
@@ -183,13 +187,11 @@ namespace LV {
   private:
 
       class Impl;
+      const std::unique_ptr<Impl> m_impl;
 
-      ScopedPtr<Impl>      m_impl;
       mutable unsigned int m_ref_count;
 
       Buffer ();
-      Buffer (Buffer const&);
-      Buffer& operator= (Buffer const&);
   };
 
   inline void intrusive_ptr_add_ref (Buffer* buffer)

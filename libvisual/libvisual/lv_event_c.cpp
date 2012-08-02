@@ -16,7 +16,7 @@ void visual_event_queue_free (VisEventQueue *self)
 
 void visual_event_queue_add  (VisEventQueue *self, VisEvent *event)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
     self->add (*event);
     visual_event_free (event);
@@ -24,8 +24,8 @@ void visual_event_queue_add  (VisEventQueue *self, VisEvent *event)
 
 int visual_event_queue_poll (VisEventQueue *self, VisEvent *event)
 {
-    visual_return_val_if_fail (self != NULL, FALSE);
-    visual_return_val_if_fail (self != NULL, FALSE);
+    visual_return_val_if_fail (self != nullptr, FALSE);
+    visual_return_val_if_fail (self != nullptr, FALSE);
 
     return self->poll (*event);
 }
@@ -55,7 +55,7 @@ VisEvent* visual_event_new_mousemotion (int dx, int dy)
     //event->event.mousemotion.state = eventqueue->mousestate;
     event->event.mousemotion.x = dx;
     event->event.mousemotion.y = dy;
-    
+
     return event;
 }
 
@@ -147,8 +147,8 @@ VisEvent* visual_event_new_generic (int eid, int param_int, void *param_ptr)
 
 void visual_event_copy (VisEvent *dest, VisEvent *src)
 {
-    visual_return_if_fail (dest != NULL);
-    visual_return_if_fail (src != NULL);
+    visual_return_if_fail (dest != nullptr);
+    visual_return_if_fail (src != nullptr);
 
     *dest = *src;
 }

@@ -94,10 +94,10 @@ namespace LV {
 
   void Rect::denormalize_points (float const* fxlist, float const* fylist, int32_t *xlist, int32_t *ylist, unsigned int size) const
   {
-      visual_return_if_fail (fxlist != NULL);
-      visual_return_if_fail (fylist != NULL);
-      visual_return_if_fail (xlist  != NULL);
-      visual_return_if_fail (ylist  != NULL);
+      visual_return_if_fail (fxlist != nullptr);
+      visual_return_if_fail (fylist != nullptr);
+      visual_return_if_fail (xlist  != nullptr);
+      visual_return_if_fail (ylist  != nullptr);
       visual_return_if_fail (size > 0);
 
       visual_math_simd_floats_to_int32s_mul_float (xlist, fxlist, size, width);
@@ -106,10 +106,10 @@ namespace LV {
 
   void Rect::denormalize_points_neg (float const* fxlist, float const* fylist, int32_t *xlist, int32_t *ylist, unsigned int size) const
   {
-      visual_return_if_fail (fxlist != NULL);
-      visual_return_if_fail (fylist != NULL);
-      visual_return_if_fail (xlist  != NULL);
-      visual_return_if_fail (ylist  != NULL);
+      visual_return_if_fail (fxlist != nullptr);
+      visual_return_if_fail (fylist != nullptr);
+      visual_return_if_fail (xlist  != nullptr);
+      visual_return_if_fail (ylist  != nullptr);
       visual_return_if_fail (size > 0);
 
       visual_math_simd_floats_to_int32s_mul_float_denormalise (xlist, fxlist, size, width);

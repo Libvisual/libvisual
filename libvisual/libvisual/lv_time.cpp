@@ -160,7 +160,7 @@ namespace LV {
       struct timeval tv;
       tv.tv_sec = usecs / VISUAL_USEC_PER_SEC;
       tv.tv_usec = usecs % VISUAL_USEC_PER_SEC;
-      select (0, NULL, NULL, NULL, &tv);
+      select (0, nullptr, nullptr, nullptr, &tv);
 #elif defined(HAVE_USLEEP)
       usleep (usecs);
 #elif defined(VISUAL_OS_WIN32)

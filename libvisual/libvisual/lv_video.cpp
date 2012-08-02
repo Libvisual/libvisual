@@ -86,7 +86,7 @@ namespace LV {
 
   VideoPtr Video::create (int width, int height, VisVideoDepth depth)
   {
-      visual_return_val_if_fail(depth != VISUAL_VIDEO_DEPTH_ERROR, NULL);
+      visual_return_val_if_fail(depth != VISUAL_VIDEO_DEPTH_ERROR, nullptr);
 
       VideoPtr self (new Video);
 
@@ -190,7 +190,7 @@ namespace LV {
   {
       m_impl->pixel_rows.clear ();
 
-      m_impl->buffer->set (NULL, 0);
+      m_impl->buffer->set (nullptr, 0);
   }
 
   bool Video::allocate_buffer ()
@@ -208,7 +208,7 @@ namespace LV {
       }
 
       if (get_size () == 0) {
-          m_impl->buffer->set_data (NULL);
+          m_impl->buffer->set_data (nullptr);
           return false;
       }
 
@@ -425,7 +425,7 @@ namespace LV {
               return src->m_impl->compose_func;
 
           default:
-              return NULL;
+              return nullptr;
       }
   }
 
@@ -499,7 +499,7 @@ namespace LV {
 
   void Video::compose (VideoConstPtr const& src, int x, int y, VisVideoComposeFunc compose_func)
   {
-      visual_return_if_fail (compose_func != NULL);
+      visual_return_if_fail (compose_func != nullptr);
 
       visual_return_if_fail (m_impl->depth != VISUAL_VIDEO_DEPTH_GL);
       visual_return_if_fail (src->m_impl->depth != VISUAL_VIDEO_DEPTH_GL);

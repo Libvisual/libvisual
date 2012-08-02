@@ -66,12 +66,13 @@ namespace LV {
 
       ~AudioChannel ();
 
+      AudioChannel& operator= (AudioChannel const&) = delete;
+
       void add_samples (AudioSample& sample);
 
   private:
 
       AudioChannel (AudioChannel const&);
-      AudioChannel& operator= (AudioChannel const&);
   };
 
   class AudioSample

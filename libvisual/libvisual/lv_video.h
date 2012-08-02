@@ -128,7 +128,7 @@ struct _VisVideoAttrOptions {
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
+#include <memory>
 #include <libvisual/lv_intrusive_ptr.hpp>
 
 namespace LV {
@@ -141,6 +141,10 @@ namespace LV {
   class LV_API Video
   {
   public:
+
+      Video (Video const&) = delete;
+
+      Video& operator= (Video const&) = delete;
 
       /**
        * Creates a new empty Video object.
@@ -422,13 +426,11 @@ namespace LV {
       friend class VideoBlit;
 
       class Impl;
+      const std::unique_ptr<Impl> m_impl;
 
-      ScopedPtr<Impl> m_impl;
       mutable unsigned int m_ref_count;
 
       Video ();
-      Video (Video const&);
-      Video& operator= (Video const&);
   };
 
   inline void intrusive_ptr_add_ref (Video* video)

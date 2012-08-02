@@ -45,8 +45,8 @@
 
 #ifdef __cplusplus
 
+#include <memory>
 #include <cmath>
-#include <libvisual/lv_scoped_ptr.hpp>
 
 namespace LV {
 
@@ -197,8 +197,7 @@ namespace LV {
   private:
 
       class Impl;
-
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
   };
 
   void usleep (uint64_t usecs);

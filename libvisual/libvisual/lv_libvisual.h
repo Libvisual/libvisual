@@ -38,8 +38,8 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_singleton.hpp>
+#include <memory>
 #include <string>
 
 namespace LV {
@@ -84,7 +84,7 @@ namespace LV {
 
       class Impl;
 
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
 
       System (int& argc, char**& argv);
       System (System const&);

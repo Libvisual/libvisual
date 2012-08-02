@@ -26,7 +26,7 @@ namespace LV {
 
       static T* m_instance;
 
-      Singleton () {}
+      Singleton () = default;
   };
 
 } // LV namespace

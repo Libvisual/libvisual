@@ -33,12 +33,13 @@ class SADisplay::Impl
 {
 public:
 
-    LV::ScopedPtr<SADisplayDriver> driver;
-    unsigned int     frames_drawn;
-    LV::Timer        timer;
+    std::unique_ptr<SADisplayDriver> driver;
+
+    unsigned int frames_drawn;
+    LV::Timer    timer;
 
     Impl ()
-        : driver       (0)
+        : driver       (nullptr)
         , frames_drawn (0)
     {}
 

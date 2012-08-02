@@ -25,9 +25,9 @@
 #ifndef _LV_TOOL_DISPLAY_HPP
 #define _LV_TOOL_DISPLAY_HPP
 
-#include <string>
 #include <libvisual/libvisual.h>
-#include <libvisual/lv_scoped_ptr.hpp>
+#include <memory>
+#include <string>
 
 class SADisplayDriver;
 
@@ -36,7 +36,11 @@ public:
 
     explicit SADisplay (std::string const& driver_name);
 
+    SADisplay (SADisplay const&) = delete;
+
     ~SADisplay ();
+
+    SADisplay& operator= (SADisplay const&) = delete;
 
     LV::VideoPtr create (VisVideoDepth depth,
                          VisVideoAttrOptions const* vidoptions,
@@ -71,7 +75,7 @@ public:
 private:
 
     class Impl;
-    LV::ScopedPtr<Impl> m_impl;
+    const std::unique_ptr<Impl> m_impl;
 };
 
 #endif // _LV_TOOL_DISPLAY_HPP

@@ -214,7 +214,7 @@ struct _VisEvent
  */
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
+#include <memory>
 
 namespace LV {
 
@@ -226,7 +226,11 @@ namespace LV {
 
       EventQueue ();
 
+      EventQueue (EventQueue const&) = delete;
+
       ~EventQueue ();
+
+      EventQueue& operator= (EventQueue const&) = delete;
 
       /**
        * Polls for new events. Looks at the event queue for new events
@@ -250,11 +254,7 @@ namespace LV {
   private:
 
       class Impl;
-
-      ScopedPtr<Impl> m_impl;
-
-      EventQueue (EventQueue const&);
-      EventQueue& operator= (EventQueue const&);
+      const std::unique_ptr<Impl> m_impl;
   };
 
 } // LV namespace

@@ -54,7 +54,6 @@ SET(libvisual_HEADERS
 
   lv_module.hpp
   lv_intrusive_ptr.hpp
-  lv_scoped_ptr.hpp
   lv_singleton.hpp
   lv_util.hpp
 

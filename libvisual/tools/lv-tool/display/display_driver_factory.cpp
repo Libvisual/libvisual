@@ -10,13 +10,9 @@
 #include "glx_driver.hpp"
 #endif
 
-#include <algorithm>
-#include <iterator>
-#include <map>
+#include <unordered_map>
 
-
-typedef std::map<std::string, DisplayDriverCreator> CreatorMap;
-
+typedef std::unordered_map<std::string, DisplayDriverCreator> CreatorMap;
 
 class DisplayDriverFactory::Impl
 {
@@ -46,7 +42,7 @@ void DisplayDriverFactory::add_driver (std::string const& name, Creator creator)
 
 SADisplayDriver* DisplayDriverFactory::make (std::string const& name, SADisplay& display)
 {
-    CreatorMap::const_iterator entry = m_impl->creators.find (name);
+    auto entry = m_impl->creators.find (name);
 
     if (entry == m_impl->creators.end())
         return 0;
@@ -61,13 +57,10 @@ bool DisplayDriverFactory::has_driver (std::string const& name) const
 
 void DisplayDriverFactory::get_driver_list (DisplayDriverList& list) const
 {
-    typedef std::back_insert_iterator<DisplayDriverList> BackInserter;
-
     list.clear ();
     list.reserve (m_impl->creators.size ());
 
-    std::transform (m_impl->creators.begin (),
-                    m_impl->creators.end (),
-                    BackInserter (list),
-                    LV::select1st<CreatorMap::value_type>);
+    for (auto creator : m_impl->creators) {
+        list.push_back (creator.first);
+    }
 }
