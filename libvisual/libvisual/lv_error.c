@@ -197,7 +197,7 @@ static int log_and_exit (int error)
 	visual_log (VISUAL_LOG_CRITICAL, "Aborting due to error: %s",
 		visual_error_to_string (error));
 
-#if !defined(VISUAL_OS_WIN32)
+#ifdef VISUAL_OS_POSIX
 	raise (SIGTRAP);
 #endif
 

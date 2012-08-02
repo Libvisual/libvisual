@@ -58,10 +58,8 @@ CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 
 # Check for dynamic linking library
 CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DLFCN)
-IF(NOT HAVE_DLFCN)
-  IF(NOT VISUAL_OS_WIN32)
-    MESSAGE(FATAL_ERROR "Libvisual requires dlfcn to build")
-  ENDIF()
+IF(VISUAL_OS_POSIX AND NOT HAVE_DLFCN)
+  MESSAGE(FATAL_ERROR "Libvisual requires dlfcn to build")
 ENDIF()
 
 # Check for standard math library

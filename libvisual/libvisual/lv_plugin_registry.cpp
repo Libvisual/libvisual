@@ -102,7 +102,7 @@ namespace LV {
       add_path (VISUAL_PLUGIN_PATH "/morph");
       add_path (VISUAL_PLUGIN_PATH "/transform");
 
-#if !defined(VISUAL_OS_WIN32) || defined(VISUAL_WITH_CYGWIN)
+#if defined(VISUAL_OS_POSIX)
       // Add homedirectory plugin paths
       auto const home_env = std::getenv ("HOME");
 
