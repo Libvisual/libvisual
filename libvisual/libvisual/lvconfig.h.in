@@ -18,10 +18,6 @@
 
 #cmakedefine LV_HAVE_GNU_C_VARARGS 1
 
-/* Needed for lv/types.h */
-#cmakedefine _LV_HAVE_STDINT_H    1
-#cmakedefine _LV_HAVE_INTTYPES_H  1
-
 #cmakedefine VISUAL_BIG_ENDIAN    1
 #cmakedefine VISUAL_LITTLE_ENDIAN 1
 
