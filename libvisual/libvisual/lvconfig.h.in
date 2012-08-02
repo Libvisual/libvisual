@@ -42,8 +42,4 @@ typedef unsigned @VISUAL_SIZE_TYPE@ visual_size_t;
 #cmakedefine VISUAL_WITH_CYGWIN
 #cmakedefine VISUAL_WITH_MINGW
 
-#cmakedefine VISUAL_HAVE_THREADS
-#cmakedefine VISUAL_THREAD_MODEL_WIN32
-#cmakedefine VISUAL_THREAD_MODEL_POSIX
-
 #endif /* LV_CONFIG_H */
