@@ -98,6 +98,14 @@ ENDIF()
 SET(VISUAL_WITH_CYGWIN ${CYGWIN})
 SET(VISUAL_WITH_MINGW  ${MINGW})
 
+# Check for C++11 features
+INCLUDE(CheckCXX11Features)
+FOREACH(FEATURE AUTO NULLPTR LAMBDA STATIC_ASSERT RVALUE_REFERENCES DECLTYPE CSTDINT_H)
+  IF(NOT DEFINED HAS_CXX11_${FEATURE})
+    MESSAGE(FATAL_ERROR "Required C++11 feature support not found (${FEATURE})")
+  ENDIF()
+ENDFOREACH()
+
 # Check for typedefs, structures, and compiler characteristics
 INCLUDE(CheckCCompiler)
 CHECK_C_COMPILER_SUPPORTS_CONST(HAVE_C_CONST)
@@ -105,13 +113,6 @@ CHECK_C_COMPILER_SUPPORTS_INLINE(INLINE HAVE_C_INLINE)
 INCLUDE(CheckForVarArgs)
 CHECK_FOR_ISO_C_VARARGS(LV_HAVE_ISO_C_VARARGS)
 CHECK_FOR_GNU_C_VARARGS(LV_HAVE_GNU_C_VARARGS)
-
-# Check for fixed-width int headers
-CHECK_INCLUDE_FILE(stdint.h   _LV_HAVE_STDINT_H)
-CHECK_INCLUDE_FILE(inttypes.h _LV_HAVE_INTTYPES_H)
-IF (NOT _LV_HAVE_STDINT_H OR NOT _LV_HAVE_INTTYPES_H)
-  MESSAGE(FATAL_ERROR "The headers stdint.h and inttypes.h are required to build LV")
-ENDIF()
 
 # Check for Unix specific functions
 # TODO: Generate error when a required header is missing
@@ -216,7 +217,7 @@ IF(ENABLE_PROFILING)
 ENDIF()
 
 SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c++98 -Wall -Wunused -Wno-variadic-macros")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c++0x -Wall -Wunused -Wno-variadic-macros")
 SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Werror")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Werror")
 
