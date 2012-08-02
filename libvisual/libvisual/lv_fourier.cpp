@@ -210,7 +210,7 @@ namespace LV {
   } // anonymous namespace
 
   template <>
-  LV_API Fourier* Singleton<Fourier>::m_instance = 0;
+  LV_API Fourier* Singleton<Fourier>::m_instance = nullptr;
 
   void Fourier::init ()
   {

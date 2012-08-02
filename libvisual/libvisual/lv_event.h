@@ -242,7 +242,7 @@ namespace LV {
        * @return true if an event was returned, false otherwise
        */
       bool poll (Event& event);
-    
+
       /**
        * Adds an event to the event queue. Add new VisEvents into the
        * VisEventQueue.

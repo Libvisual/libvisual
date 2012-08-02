@@ -28,7 +28,7 @@ extern "C" {
 
   int visual_is_initialized ()
   {
-      return LV::System::instance() != 0;
+      return LV::System::instance() != nullptr;
   }
 
   int visual_quit ()

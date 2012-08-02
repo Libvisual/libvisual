@@ -97,7 +97,7 @@ namespace LV
 
       operator bool () const
       {
-          return m_ptr != 0;
+          return m_ptr != nullptr;
       }
 
       void swap (IntrusivePtr& rhs)
