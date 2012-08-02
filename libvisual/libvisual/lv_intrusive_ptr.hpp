@@ -64,12 +64,11 @@ namespace LV
           return *this;
       }
     
-      // FIXME: This causes a leak for some reason
-      //IntrusivePtr& operator= (IntrusivePtr&& rhs)
-      //{
-      //    IntrusivePtr (rhs).swap (*this);
-      //    return *this;
-      //}
+      IntrusivePtr& operator= (IntrusivePtr&& rhs)
+      {
+          IntrusivePtr (rhs).swap (*this);
+          return *this;
+      }
 
       void reset ()
       {

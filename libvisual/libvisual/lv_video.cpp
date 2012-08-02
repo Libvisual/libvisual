@@ -88,7 +88,7 @@ namespace LV {
   {
       visual_return_val_if_fail(depth != VISUAL_VIDEO_DEPTH_ERROR, nullptr);
 
-      VideoPtr self (new Video);
+      VideoPtr self (new Video, false);
 
       self->set_depth (depth);
       self->set_dimension (width, height);
@@ -103,7 +103,7 @@ namespace LV {
   {
       visual_return_val_if_fail (!area.empty (), nullptr);
 
-      VideoPtr self (new Video);
+      VideoPtr self (new Video, false);
 
       auto vrect = src->get_extents ();
 
@@ -148,7 +148,7 @@ namespace LV {
           visual_log (VISUAL_LOG_WARNING, "Memory leak: Ownership of wrapped pixel buffer is not supported at the moment");
       }
 
-      VideoPtr self (new Video);
+      VideoPtr self (new Video, false);
 
       self->set_depth (depth);
       self->set_dimension (width, height);

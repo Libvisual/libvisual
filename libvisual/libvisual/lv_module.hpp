@@ -17,14 +17,13 @@ namespace LV {
   {
   public:
 
-
       Module (Module const&) = delete;
 
       Module& operator= (Module const&) = delete;
 
       static ModulePtr load (std::string const& path)
       {
-          return ModulePtr (new Module (path));
+          return ModulePtr (new Module (path), false);
       }
 
       ~Module ();

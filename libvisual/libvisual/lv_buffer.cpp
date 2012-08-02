@@ -86,12 +86,12 @@ namespace LV {
 
   BufferPtr Buffer::create ()
   {
-      return new Buffer;
+      return BufferPtr (new Buffer, false);
   }
 
   BufferPtr Buffer::create (void* data, std::size_t size, bool own)
   {
-      BufferPtr self (new Buffer);
+      BufferPtr self (new Buffer, false);
 
       self->m_impl->wrap (data, size, own);
 
@@ -100,7 +100,7 @@ namespace LV {
 
   BufferPtr Buffer::create (std::size_t size)
   {
-      BufferPtr self (new Buffer);
+      BufferPtr self (new Buffer, false);
 
       self->m_impl->allocate (size);
 
