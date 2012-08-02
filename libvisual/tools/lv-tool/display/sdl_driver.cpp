@@ -223,7 +223,7 @@ namespace {
       virtual void update_rect (LV::Rect const& rect)
       {
           if (m_screen->format->BitsPerPixel == 8) {
-              LV::Palette const& pal = m_display.get_video ()->get_palette ();
+              auto const& pal = m_display.get_video ()->get_palette ();
 
               if (!pal.empty () && pal.size() <= 256) {
                   SDL_Color colors[256];

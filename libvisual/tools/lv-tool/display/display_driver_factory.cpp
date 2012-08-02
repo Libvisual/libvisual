@@ -55,12 +55,12 @@ bool DisplayDriverFactory::has_driver (std::string const& name) const
     return (m_impl->creators.find (name) != m_impl->creators.end ());
 }
 
-void DisplayDriverFactory::get_driver_list (DisplayDriverList& list) const
+DisplayDriverList DisplayDriverFactory::get_driver_list () const
 {
-    list.clear ();
-    list.reserve (m_impl->creators.size ());
+    DisplayDriverList list (m_impl->creators.size ());
 
-    for (auto creator : m_impl->creators) {
+    for (auto creator : m_impl->creators)
         list.push_back (creator.first);
-    }
+
+    return list;
 }

@@ -26,7 +26,7 @@ public:
 
     bool has_driver (std::string const& name) const;
 
-    void get_driver_list (DisplayDriverList& list) const;
+    DisplayDriverList get_driver_list () const;
 
 private:
 
