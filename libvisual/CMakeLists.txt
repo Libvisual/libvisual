@@ -170,26 +170,29 @@ IF(IS_SYSTEM_DIR STREQUAL "-1")
   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
 ENDIF()
 
-# Build profiles
-
-OPTION(ENABLE_PROFILING "Enable profiling" no)
+# Compiler optimizations
 OPTION(ENABLE_EXTRA_OPTIMIZATIONS "Enable extra optimizations" no)
-
 IF(ENABLE_EXTRA_OPTIMIZATIONS)
   SET(OPT_C_FLAGS "-O3 -fexpensive-optimizations")
 ELSEIF(CMAKE_BUILD_TYPE STREQUAL Debug)
   SET(OPT_C_FLAGS "-O0")
 ENDIF()
 
+# Profiling
+OPTION(ENABLE_PROFILING "Enable profiling" no)
 IF(ENABLE_PROFILING)
   SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg")
 ENDIF()
 
+# Build profiles
+# Standard
 SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c++0x -Wall -Wunused -Wno-variadic-macros")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c++0x -Wall -Wunused")
+# Debug
 SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Werror")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Werror")
 
+# Miscellaneous optimizations
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
 
