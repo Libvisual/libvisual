@@ -63,6 +63,7 @@ namespace LV {
 
           data = visual_mem_malloc0 (size_);
           size = size_;
+          is_owner = true;
       }
 
       void free ()
