@@ -69,7 +69,7 @@ extern "C" {
       visual_return_val_if_fail (self != nullptr, nullptr);
       visual_return_val_if_fail (self->size() > 0, nullptr);
 
-      return &self->colors[0];
+      return self->colors.data ();
   }
 
   VisColor *visual_palette_get_color (VisPalette *self, int index)
