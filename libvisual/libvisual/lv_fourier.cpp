@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * The FFT implementation found in this file is based upon the NULLSOFT
+ * The FFT implementation found in this file is based upon the nullptrSOFT
  * Milkdrop FFT implementation.
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -114,7 +114,7 @@ namespace LV {
 
     DFTCache::Entry const& DFTCache::get_entry (DFTMethod method, unsigned int sample_count)
     {
-        Table::const_iterator entry = m_cache.find (sample_count);
+        auto entry = m_cache.find (sample_count);
         if (entry != m_cache.end ())
             return entry->second;
 
@@ -243,8 +243,8 @@ namespace LV {
 
   void DFT::perform (float *output, float const* input)
   {
-      visual_return_if_fail (output != NULL);
-      visual_return_if_fail (input  != NULL);
+      visual_return_if_fail (output != nullptr);
+      visual_return_if_fail (input  != nullptr);
 
       switch (m_impl->method) {
           case DFT_METHOD_BRUTE_FORCE:
@@ -262,24 +262,24 @@ namespace LV {
 
   void DFT::log_scale (float *output, float const* input, unsigned int size)
   {
-      visual_return_if_fail (output != NULL);
-      visual_return_if_fail (input  != NULL);
+      visual_return_if_fail (output != nullptr);
+      visual_return_if_fail (input  != nullptr);
 
       return log_scale_standard (output, input, size);
   }
 
   void DFT::log_scale_standard (float *output, float const* input, unsigned int size)
   {
-      visual_return_if_fail (output != NULL);
-      visual_return_if_fail (input  != NULL);
+      visual_return_if_fail (output != nullptr);
+      visual_return_if_fail (input  != nullptr);
 
       return log_scale_custom (output, input, size, AMP_LOG_SCALE_DIVISOR);
   }
 
   void DFT::log_scale_custom (float* output, float const* input, unsigned int size, float log_scale_divisor)
   {
-      visual_return_if_fail (output != NULL);
-      visual_return_if_fail (input  != NULL);
+      visual_return_if_fail (output != nullptr);
+      visual_return_if_fail (input  != nullptr);
 
       for (unsigned int i = 0; i < size; i++) {
           if (input[i] > AMP_LOG_SCALE_THRESHOLD0)

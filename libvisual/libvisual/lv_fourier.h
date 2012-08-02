@@ -34,8 +34,8 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_singleton.hpp>
+#include <memory>
 
 namespace LV {
 
@@ -52,7 +52,7 @@ namespace LV {
 
       class Impl;
 
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
 
       Fourier ();
   };
@@ -112,7 +112,7 @@ namespace LV {
 
       class Impl;
 
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
   };
 
 }  // LV namespace

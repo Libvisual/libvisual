@@ -6,10 +6,10 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_singleton.hpp>
 #include <libvisual/lv_plugin.h>
 #include <string>
+#include <memory>
 
 namespace LV {
 
@@ -19,6 +19,8 @@ namespace LV {
       : public Singleton<PluginRegistry>
   {
   public:
+
+      PluginRegistry (PluginRegistry const&) = delete;
 
       static void init ();
 
@@ -44,10 +46,9 @@ namespace LV {
 
       class Impl;
 
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
 
       PluginRegistry ();
-      PluginRegistry (PluginRegistry const&);
   };
 
 } // LV namespace

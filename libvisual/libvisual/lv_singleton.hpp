@@ -8,6 +8,10 @@ namespace LV {
   {
   public:
 
+      Singleton (Singleton const&) = delete;
+
+      Singleton const& operator= (Singleton const&) = delete;
+
       static void deinit ()
       {
           delete m_instance;
@@ -23,11 +27,6 @@ namespace LV {
       static T* m_instance;
 
       Singleton () {}
-
-  private:
-
-      Singleton (Singleton const&);
-      Singleton const& operator= (Singleton const&);
   };
 
 } // LV namespace

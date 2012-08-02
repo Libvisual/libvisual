@@ -28,7 +28,7 @@
 #include "lv_ringbuffer.h"
 #include "lv_time.h"
 #include <cstdarg>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 namespace LV {
@@ -40,7 +40,7 @@ namespace LV {
   {
   public:
 
-      typedef std::map<std::string, AudioChannel*> ChannelList;
+      typedef std::unordered_map<std::string, AudioChannel*> ChannelList;
 
       ChannelList channels;
 
@@ -48,7 +48,7 @@ namespace LV {
 
       ~Impl ();
 
-      void add_channel (std::string const& name, AudioSample* samples);
+      void add_channel (std::string const& name, AudioSample& samples);
 
       AudioChannel* get_channel (std::string const& name) const;
   };
@@ -66,7 +66,7 @@ namespace LV {
 
       ~AudioChannel ();
 
-      void add_samples (AudioSample *sample);
+      void add_samples (AudioSample& sample);
 
   private:
 
@@ -91,14 +91,14 @@ namespace LV {
 
     void sample_destroy_func (VisRingBufferEntry *entry)
     {
-        AudioSample *sample = static_cast<AudioSample*> (entry->functiondata);
+        auto sample = static_cast<AudioSample*> (entry->functiondata);
 
         visual_object_unref (VISUAL_OBJECT (sample));
     }
 
     int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry)
     {
-        AudioSample *sample = static_cast<AudioSample*> (entry->functiondata);
+        auto sample = static_cast<AudioSample*> (entry->functiondata);
 
         return (sample->buffer->get_size () /
                 visual_audio_sample_format_get_size (sample->format)) * sizeof (float);
@@ -106,7 +106,7 @@ namespace LV {
 
     VisBuffer* sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry)
     {
-        AudioSample *sample = static_cast<AudioSample*> (entry->functiondata);
+        auto sample = static_cast<AudioSample*> (entry->functiondata);
 
         /* We have internal format ready */
         if (sample->processed) {
@@ -130,7 +130,7 @@ namespace LV {
 
     void audio_sample_dtor (VisObject *object)
     {
-        AudioSample *sample = reinterpret_cast<AudioSample*> (object);
+        auto sample = reinterpret_cast<AudioSample*> (object);
 
         delete sample->timestamp;
 
@@ -146,7 +146,7 @@ namespace LV {
                                    VisAudioSampleFormatType format,
                                    VisAudioSampleRateType   rate)
     {
-        AudioSample *sample = visual_mem_new0 (AudioSample, 1);
+        auto sample = visual_mem_new0 (AudioSample, 1);
 
         /* Do the VisObject initialization */
         visual_object_init (VISUAL_OBJECT (sample), audio_sample_dtor);
@@ -155,7 +155,7 @@ namespace LV {
         sample->timestamp = new Time (timestamp);
         sample->rate = rate;
         sample->format = format;
-        sample->processed = NULL;
+        sample->processed = nullptr;
 
         sample->buffer = buffer.get ();
         buffer->ref ();
@@ -167,8 +167,8 @@ namespace LV {
     {
         visual_return_if_fail (dest->get_size () == src->get_size ());
 
-        float* dbuf = static_cast<float*> (dest->get_data ());
-        float const* sbuf = static_cast<float const*> (src->get_data ());
+        auto dbuf = static_cast<float*> (dest->get_data ());
+        auto const sbuf = static_cast<float const*> (src->get_data ());
 
         std::size_t scnt = dest->get_size () / sizeof (float);
 
@@ -201,19 +201,15 @@ namespace LV {
 
   Audio::Impl::~Impl ()
   {
-      typedef ChannelList::iterator ChannelIter;
-
-      for (ChannelIter channel = channels.begin (), channel_end = channels.end ();
-           channel != channel_end;
-           ++channel)
+      for (auto const& channel : channels)
       {
-          delete channel->second;
+          delete channel.second;
       }
   }
 
-  void Audio::Impl::add_channel (std::string const& name, AudioSample* samples)
+  void Audio::Impl::add_channel (std::string const& name, AudioSample& samples)
   {
-      AudioChannel* channel = new AudioChannel (name);
+      auto channel = new AudioChannel (name);
       channel->add_samples (samples);
 
       channels[name] = channel;
@@ -221,10 +217,8 @@ namespace LV {
 
   AudioChannel* Audio::Impl::get_channel (std::string const& name) const
   {
-      typedef ChannelList::const_iterator ChannelIter;
-
-      ChannelIter entry = channels.find (name);
-      return entry != channels.end () ? entry->second : 0;
+      auto entry = channels.find (name);
+      return entry != channels.end () ? entry->second : nullptr;
   }
 
   AudioChannel::AudioChannel (std::string const& name_)
@@ -240,15 +234,13 @@ namespace LV {
           visual_object_unref (VISUAL_OBJECT (samples));
   }
 
-  void AudioChannel::add_samples (AudioSample *sample)
+  void AudioChannel::add_samples (AudioSample& sample)
   {
-      visual_return_if_fail (sample != NULL);
-
       visual_ringbuffer_add_function (samples,
                                       sample_data_func,
                                       sample_destroy_func,
                                       sample_size_func,
-                                      sample);
+                                      &sample);
   }
 
   Audio::Audio ()
@@ -264,7 +256,7 @@ namespace LV {
 
   bool Audio::get_sample (BufferPtr const& buffer, std::string const& channel_name)
   {
-      AudioChannel *channel = m_impl->get_channel (channel_name);
+      auto channel = m_impl->get_channel (channel_name);
 
       if (!channel) {
           buffer->fill (0);
@@ -295,7 +287,7 @@ namespace LV {
       for (unsigned int i = 0; i < channels; i++)
           chanids[i] = va_arg (args, const char *);
 
-      LV::BufferPtr temp = LV::Buffer::create (buffer->get_size ());
+      auto temp = LV::Buffer::create (buffer->get_size ());
       buffer->fill (0);
 
       bool first = true;
@@ -339,7 +331,7 @@ namespace LV {
       for (unsigned int i = 0; i < channels; i++)
           chanmuls[i] = va_arg (args, double);
 
-      LV::BufferPtr temp = LV::Buffer::create (buffer->get_size ());
+      auto temp = LV::Buffer::create (buffer->get_size ());
 
       buffer->fill (0);
 
@@ -360,7 +352,7 @@ namespace LV {
 
   void Audio::get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised)
   {
-      LV::BufferPtr sample = LV::Buffer::create (samplelen);
+      auto sample = LV::Buffer::create (samplelen);
 
       if (get_sample (sample, channel_name))
           get_spectrum_for_sample (buffer, sample, normalised);
@@ -372,7 +364,7 @@ namespace LV {
   {
       get_spectrum (buffer, samplelen, channel_name, normalised);
 
-      float* data = static_cast<float*> (buffer->get_data ());
+      auto data = static_cast<float*> (buffer->get_data ());
       std::size_t datasize = buffer->get_size () / sizeof (float);
 
       visual_math_simd_mul_floats_float (data, data, datasize, multiplier);
@@ -395,7 +387,7 @@ namespace LV {
   {
       get_spectrum_for_sample (buffer, sample, normalised);
 
-      float* data = static_cast<float*> (buffer->get_data ());
+      auto data = static_cast<float*> (buffer->get_data ());
       std::size_t datasize = buffer->get_size () / sizeof (float);
 
       visual_math_simd_mul_floats_float (data, data, datasize, multiplier);
@@ -416,21 +408,21 @@ namespace LV {
       if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO) {
           std::size_t sample_size = visual_audio_sample_format_get_size (format);
 
-          LV::BufferPtr chan1 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
-          LV::BufferPtr chan2 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
+          auto chan1 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
+          auto chan2 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
 
           AudioConvert::deinterleave_stereo_samples (chan1, chan2, buffer, format);
 
-          LV::Time timestamp = LV::Time::now ();
+          auto timestamp = LV::Time::now ();
 
           AudioSample *sample;
 
           sample = audio_sample_new (chan1, timestamp, format, rate);
-          m_impl->add_channel (VISUAL_AUDIO_CHANNEL_LEFT, sample);
+          m_impl->add_channel (VISUAL_AUDIO_CHANNEL_LEFT, *sample);
           visual_object_unref (VISUAL_OBJECT (sample));
 
           sample = audio_sample_new (chan2, timestamp, format, rate);
-          m_impl->add_channel (VISUAL_AUDIO_CHANNEL_RIGHT, sample);
+          m_impl->add_channel (VISUAL_AUDIO_CHANNEL_RIGHT, *sample);
           visual_object_unref (VISUAL_OBJECT (sample));
       }
   }
@@ -440,13 +432,13 @@ namespace LV {
                      VisAudioSampleFormatType format,
                      std::string const&       channel_name)
   {
-      BufferPtr pcmbuf = LV::Buffer::create ();
+      auto pcmbuf = LV::Buffer::create ();
       pcmbuf->copy (buffer);
 
-      LV::Time timestamp = LV::Time::now ();
+      auto timestamp = LV::Time::now ();
 
-      AudioSample *sample = audio_sample_new (pcmbuf, timestamp, format, rate);
-      m_impl->add_channel (channel_name, sample);
+      auto sample = audio_sample_new (pcmbuf, timestamp, format, rate);
+      m_impl->add_channel (channel_name, *sample);
       visual_object_unref (VISUAL_OBJECT (sample));
   }
 
