@@ -81,7 +81,7 @@ namespace LV {
 
   VideoPtr Video::create ()
   {
-      return VideoPtr (new Video);
+      return VideoPtr (new Video, false);
   }
 
   VideoPtr Video::create (int width, int height, VisVideoDepth depth)
@@ -536,7 +536,7 @@ namespace LV {
       /* Retrieve sub regions */
       Rect trect (x, y, srect.width, srect.height);
 
-      auto dregion = create_sub (drect, LV::VideoPtr (this), trect);
+      auto dregion = create_sub (drect, VideoPtr (this), trect);
 
       auto redestrect = dregion->get_extents ();
 
@@ -599,7 +599,7 @@ namespace LV {
       if (m_impl->extents.intersects (area))
           return;
 
-      auto svid = create_sub (LV::VideoPtr (this), area);
+      auto svid = create_sub (VideoPtr (this), area);
       svid->fill_color (color);
   }
 
