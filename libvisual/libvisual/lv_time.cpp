@@ -147,27 +147,4 @@ namespace LV {
       return elapsed () > age;
   }
 
-
-  void usleep (uint64_t usecs)
-  {
-#ifdef HAVE_NANOSLEEP
-      struct timespec request, remaining;
-      request.tv_sec  = usecs / VISUAL_USEC_PER_SEC;
-      request.tv_nsec = 1000 * (usecs % VISUAL_USEC_PER_SEC);
-      while (nanosleep (&request, &remaining) == EINTR)
-          request = remaining;
-#elif defined(HAVE_SELECT)
-      struct timeval tv;
-      tv.tv_sec = usecs / VISUAL_USEC_PER_SEC;
-      tv.tv_usec = usecs % VISUAL_USEC_PER_SEC;
-      select (0, nullptr, nullptr, nullptr, &tv);
-#elif defined(HAVE_USLEEP)
-      usleep (usecs);
-#elif defined(VISUAL_OS_WIN32)
-      Sleep (usecs / 1000);
-#else
-#     warning LV::usleep() will not work!
-#endif // HAVE_NANOSLEEP
-  }
-
 } // LV namespace

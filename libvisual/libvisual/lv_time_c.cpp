@@ -1,6 +1,7 @@
 #include "config.h"
 #include "lv_time.h"
 #include "lv_common.h"
+#include <thread>
 
 extern "C" {
 
@@ -95,7 +96,7 @@ extern "C" {
 
   void visual_usleep (uint64_t usecs)
   {
-      LV::usleep (usecs);
+      std::this_thread::sleep_for (std::chrono::microseconds (usecs));
   }
 
   VisTimer *visual_timer_new ()

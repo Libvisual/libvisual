@@ -200,8 +200,6 @@ namespace LV {
       const std::unique_ptr<Impl> m_impl;
   };
 
-  void usleep (uint64_t usecs);
-
 } // LV namespace
 
 #endif /* __cplusplus */
