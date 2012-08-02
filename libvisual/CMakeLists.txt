@@ -108,11 +108,6 @@ ENDFOREACH()
 
 # Check for typedefs, structures, and compiler characteristics
 INCLUDE(CheckCCompiler)
-CHECK_C_COMPILER_SUPPORTS_CONST(HAVE_C_CONST)
-CHECK_C_COMPILER_SUPPORTS_INLINE(INLINE HAVE_C_INLINE)
-INCLUDE(CheckForVarArgs)
-CHECK_FOR_ISO_C_VARARGS(LV_HAVE_ISO_C_VARARGS)
-CHECK_FOR_GNU_C_VARARGS(LV_HAVE_GNU_C_VARARGS)
 
 # Check for Unix specific functions
 # TODO: Generate error when a required header is missing

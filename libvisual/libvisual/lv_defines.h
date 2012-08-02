@@ -102,4 +102,9 @@
 
 #define LV_PLUGIN_EXPORT LV_DLL_EXPORT
 
+/* Utility macros */
+#ifdef _MSC_VER
+  #define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
+
 #endif /* _LV_DEFINES_H */

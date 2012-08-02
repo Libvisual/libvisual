@@ -41,16 +41,16 @@ LV_BEGIN_DECLS
  * @see visual_log
  */
 typedef enum {
-	VISUAL_LOG_DEBUG,	 /**< Debug message, to use for debug messages. */
-	VISUAL_LOG_INFO,	 /**< Informative message, can be used for general info. */
-	VISUAL_LOG_WARNING,	 /**< Warning message, use to warn the user. */
-	VISUAL_LOG_ERROR,	 /**< Error message, use to notify the user of fatals. */
+	VISUAL_LOG_DEBUG,    /**< Debug message, to use for debug messages. */
+	VISUAL_LOG_INFO,     /**< Informative message, can be used for general info. */
+	VISUAL_LOG_WARNING,  /**< Warning message, use to warn the user. */
+	VISUAL_LOG_ERROR,    /**< Error message, use to notify the user of fatals. */
 	VISUAL_LOG_CRITICAL  /**< Critical message, when a critical situation happens. */
 } VisLogSeverity;
 
 typedef struct {
-	const char	 *file;
-	const char	 *func;
+	const char   *file;
+	const char   *func;
 	unsigned int  line;
 } VisLogSource;
 
@@ -92,47 +92,22 @@ LV_API VisLogSeverity visual_log_get_verbosity (void);
 LV_API void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *priv);
 
 /**
- * Used for log messages, this is brought under a define so
- * that the __FILE__ and __LINE__ macros (and probably __PRETTY_FUNC__) work,
- * and thus provide better information.
- *
- * @see VisLogSeverity
+ * Logs a message
  *
  * @param severity Determines the severity of the message using VisLogSeverity.
  * @param format The format string of the log message.
+ *
+ * @see VisLogSeverity
  */
-#ifdef LV_HAVE_ISO_C_VARARGS
+#define visual_log(severity,...)      \
+	_lv_log (severity,            \
+	         __FILE__,            \
+	         __LINE__,            \
+	         __PRETTY_FUNCTION__, \
+	         __VA_ARGS__)
 
-#define _LV_LOG_HAVE_SOURCE
-#define visual_log(severity,...)		\
-	_lv_log (severity,					\
-		__FILE__,						\
-		__LINE__,						\
-		__PRETTY_FUNCTION__,			\
-		__VA_ARGS__)
-
-#elif defined(LV_HAVE_GNU_C_VARARGS)
-
-#define _LV_LOG_HAVE_SOURCE
-#define visual_log(severity,format...)	\
-	_lv_log (severity,					\
-		__FILE__,						\
-		__LINE__,						\
-		__PRETTY_FUNCTION__,			\
-		format)
-#else
-
-#define visual_log _lv_log
-
-#endif /* LV_HAVE_ISO_C_VARARGS */
-
-#if defined(_LV_LOG_HAVE_SOURCE)
 LV_API void _lv_log (VisLogSeverity severity, const char *file, int line, const char *funcname,
 	const char *fmt, ...) LV_CHECK_PRINTF_FORMAT(5, 6);
-#else
-LV_API void _lv_log (VisLogSeverity severity, const char *fmt, ...)
-	LV_CHECK_PRINTF_FORMAT(2, 3);
-#endif
 
 LV_END_DECLS
 
