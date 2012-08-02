@@ -9,6 +9,15 @@ LINK_DIRECTORIES(
   ${PROJECT_BINARY_DIR}/libvisual
 )
 
+# FIXME: Define a POSIX flag so we can stop saying 'not Windows'
+IF(VISUAL_OS_POSIX)
+  SET(PLATFORM_SPECIFIC_LIBS dl rt m)
+  SET(PLATFORM_SPECIFIC_SOURCE_DIR private/posix)
+ELSEIF(VISUAL_OS_WIN32)
+  SET(PLATFORM_SPECIFIC_LIBS m)
+  SET(PLATFORM_SPECIFIC_SOURCE_DIR private/windows)
+ENDIF()
+
 SET(libvisual_HEADERS
   libvisual.h
   lv_actor.h
@@ -120,27 +129,10 @@ SET(libvisual_SOURCES
   private/lv_video_rotate.cpp
   private/lv_video_blit_simd.cpp
   private/lv_video_scale_simd.cpp
+
+  ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
+  ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp
 )
-
-SET(LINK_LIBS
-  m
-)
-
-
-# FIXME: Refactor this; and also define a POSIX flag so we can stop
-# saying 'not Windows'
-IF(NOT VISUAL_OS_WIN32)
-  LIST(APPEND LINK_LIBS dl rt)
-  LIST(APPEND libvisual_SOURCES
-    private/posix/lv_module_dlfcn.cpp
-    private/posix/lv_mem_posix.cpp
-  )
-ELSE()
-  LIST(APPEND libvisual_SOURCES
-    private/windows/lv_module_win32.cpp
-    private/windows/lv_mem_win32.cpp
-  )
-ENDIF()
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
 
@@ -153,7 +145,7 @@ SET_TARGET_PROPERTIES(libvisual
   LINK_FLAGS -Wl,--no-undefined
 )
 
-TARGET_LINK_LIBRARIES(libvisual ${LINK_LIBS})
+TARGET_LINK_LIBRARIES(libvisual ${PLATFORM_SPECIFIC_LIBS})
 
 INSTALL(TARGETS libvisual DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
