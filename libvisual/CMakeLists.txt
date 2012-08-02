@@ -102,7 +102,7 @@ SET(VISUAL_WITH_MINGW  ${MINGW})
 INCLUDE(CheckCXX11Features)
 FOREACH(FEATURE AUTO NULLPTR LAMBDA STATIC_ASSERT RVALUE_REFERENCES DECLTYPE CSTDINT_H)
   IF(NOT DEFINED HAS_CXX11_${FEATURE})
-    MESSAGE(FATAL_ERROR "Required C++11 feature support not found (${FEATURE})")
+    MESSAGE(FATAL_ERROR "Required C++11 feature support not found (${FEATURE})\nRecommended C++ compilers: gcc >= 4.6, clang >= 3.1")
   ENDIF()
 ENDFOREACH()
 
