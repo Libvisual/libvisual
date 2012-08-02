@@ -27,7 +27,7 @@
 
 #include <SDL/SDL.h>
 #include <iostream>
-#include <map>
+#include <array>
 
 namespace {
 
@@ -91,7 +91,7 @@ namespace {
           if (!SDL_WasInit (SDL_INIT_VIDEO)) {
               if (SDL_Init (SDL_INIT_VIDEO) == -1) {
                   std::cerr << "Unable to init SDL VIDEO: " << SDL_GetError () << std::endl;
-                  return NULL;
+                  return nullptr;
               }
           }
 
@@ -104,7 +104,7 @@ namespace {
               SDL_VideoInfo const* videoinfo = SDL_GetVideoInfo ();
 
               if (!videoinfo) {
-                  return NULL;
+                  return nullptr;
               }
 
               videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE;
@@ -192,7 +192,7 @@ namespace {
 
                       get_nearest_resolution (width, height);
 
-                      create (m_requested_depth, NULL, width, height, m_resizable);
+                      create (m_requested_depth, nullptr, width, height, m_resizable);
                   }
 
                   SDL_ShowCursor (SDL_FALSE);
@@ -204,7 +204,7 @@ namespace {
                   SDL_WM_ToggleFullScreen (m_screen);
 
                   if (autoscale) {
-                      create (m_requested_depth, NULL, m_last_width, m_last_height, m_resizable);
+                      create (m_requested_depth, nullptr, m_last_width, m_last_height, m_resizable);
                   }
               }
           }
@@ -217,7 +217,7 @@ namespace {
 
       virtual void set_title(std::string const& title)
       {
-          SDL_WM_SetCaption (title.c_str(), NULL);
+          SDL_WM_SetCaption (title.c_str(), nullptr);
       }
 
       virtual void update_rect (LV::Rect const& rect)
@@ -226,8 +226,8 @@ namespace {
               auto const& pal = m_display.get_video ()->get_palette ();
 
               if (!pal.empty () && pal.size() <= 256) {
-                  SDL_Color colors[256];
-                  visual_mem_set (colors, 0, sizeof (colors));
+                  std::array<SDL_Color, 256> colors;
+                  visual_mem_set (colors.data (), 0, sizeof (colors));
 
                   for (unsigned int i = 0; i < pal.size(); i++) {
                       colors[i].r = pal.colors[i].r;
@@ -235,7 +235,7 @@ namespace {
                       colors[i].b = pal.colors[i].b;
                   }
 
-                  SDL_SetColors (m_screen, colors, 0, 256);
+                  SDL_SetColors (m_screen, colors.data (), 0, 256);
               }
           }
 
@@ -285,7 +285,7 @@ namespace {
                                           visual_event_new_resize (event.resize.w,
                                                                    event.resize.h));
 
-                  create (m_display.get_video ()->get_depth (), NULL, event.resize.w, event.resize.h, m_resizable);
+                  create (m_display.get_video ()->get_depth (), nullptr, event.resize.w, event.resize.h, m_resizable);
                   break;
 
               case SDL_MOUSEMOTION:
@@ -339,8 +339,8 @@ namespace {
 
   void get_nearest_resolution (int& width, int& height)
   {
-      SDL_Rect **modelist = SDL_ListModes (NULL, SDL_FULLSCREEN);
-      if (modelist == NULL)
+      auto modelist = SDL_ListModes (nullptr, SDL_FULLSCREEN);
+      if (!modelist)
           return;
 
       int w = width;

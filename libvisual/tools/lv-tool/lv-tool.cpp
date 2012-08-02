@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
  * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
-         *
+ *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Daniel Hiepler <daniel@niftylight.de>
  *
@@ -10,7 +10,7 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
-         *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -77,23 +77,19 @@ namespace {
   /** print help for plugins */
   void print_plugin_help()
   {
-      LV::PluginList const& list =
+      auto const& actors =
           LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
 
-      /* print actors */
-      if(!list.empty())
+      // print actors
+      if(!actors.empty())
       {
-          for (unsigned int i = 0; i < list.size (); i++)
-          {
-              print_plugin_info(*list[i].info);
-          }
+          for (auto actor : actors)
+              print_plugin_info(*actor.info);
       }
       else
       {
           std::cerr << "No actors found\n";
       }
-
-      /* print morphs */
   }
 
   /** print commandline help */
@@ -133,8 +129,6 @@ namespace {
    * @result 0 upon success, <0 upon failure, >0 if app should exit without error */
   int parse_args(int argc, char *argv[])
   {
-      int index, argument;
-
       static struct option loptions[] = {
 		  {"help",        no_argument,       0, 'h'},
 		  {"plugin-help", no_argument,       0, 'p'},
@@ -150,6 +144,8 @@ namespace {
 		  {"framecount",  required_argument, 0, 'F'},
 		  {0,             0,                 0,  0 }
 	  };
+
+      int index, argument;
 
       while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:x:", loptions, &index)) >= 0) {
 
@@ -172,7 +168,7 @@ namespace {
                   break;
               }
 
-              /* --dimensions */
+              // --dimensions
               case 'D': {
                   if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
                   {
@@ -259,27 +255,24 @@ namespace {
 
   void v_cycleActor (int prev)
   {
-      const char *name;
-
-      name = prev ? visual_actor_get_prev_by_name(actor_name.c_str())
-          : visual_actor_get_next_by_name(actor_name.c_str());
+      auto name = prev ? visual_actor_get_prev_by_name(actor_name.c_str())
+                       : visual_actor_get_next_by_name(actor_name.c_str());
 
       if (!name) {
           name = prev ? visual_actor_get_prev_by_name(0)
-              : visual_actor_get_next_by_name(0);
+                      : visual_actor_get_next_by_name(0);
       }
 
       actor_name = name;
 
-      if(strstr(exclude_actors.c_str(), name) != 0)
-        v_cycleActor(prev);
+      if (std::strstr (exclude_actors.c_str(), name) != 0)
+          v_cycleActor(prev);
   }
 
   void v_cycleMorph ()
   {
-      const char *name;
+      auto name = visual_morph_get_next_by_name(morph_name.c_str());
 
-      name = visual_morph_get_next_by_name(morph_name.c_str());
       if(!name) {
           name = visual_morph_get_next_by_name(0);
       }
@@ -297,7 +290,7 @@ int main (int argc, char **argv)
 
     // initialize libvisual once (this is meant to be called only once,
     // visual_init() after visual_quit() results in undefined state)
-    visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+    visual_log_set_verbosity (VISUAL_LOG_DEBUG);
     visual_init (&argc, &argv);
 
     try {
@@ -315,14 +308,14 @@ int main (int argc, char **argv)
 
         // initialize actor plugin
         std::cerr << "Loading actor '" << actor_name << "'...\n";
-        VisActor *actor = visual_actor_new (actor_name.c_str ());
+        auto actor = visual_actor_new (actor_name.c_str ());
         if (!actor)
             throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
 
         // Set random seed
         if (have_seed) {
-            VisPluginData*     plugin_data = visual_actor_get_plugin(actor);
-            LV::RandomContext& r_context   = *visual_plugin_get_random_context (plugin_data);
+            auto  plugin_data = visual_actor_get_plugin(actor);
+            auto& r_context   = *visual_plugin_get_random_context (plugin_data);
 
             r_context.set_seed (seed);
             seed++;
@@ -330,7 +323,7 @@ int main (int argc, char **argv)
 
         // initialize input plugin
         std::cerr << "Loading input '" << input_name << "'...\n";
-        VisInput *input = visual_input_new(input_name.c_str());
+        auto input = visual_input_new (input_name.c_str());
         if (!input) {
             throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
@@ -350,14 +343,13 @@ int main (int argc, char **argv)
 
         bin.set_depth (depth);
 
-        VisVideoAttrOptions const* vidoptions =
-            visual_actor_get_video_attribute_options(actor);
+        auto vidoptions = visual_actor_get_video_attribute_options(actor);
 
         // initialize display
         SADisplay display (driver_name);
 
         // create display
-        LV::VideoPtr video = display.create(depth, vidoptions, width, height, true);
+        auto video = display.create(depth, vidoptions, width, height, true);
         if(!video)
             throw std::runtime_error("Failed to get VisVideo from display");
 
@@ -385,7 +377,7 @@ int main (int argc, char **argv)
             // Handle all events
             display.drain_events(localqueue);
 
-            LV::EventQueue* pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin.get_actor()));
+            auto pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin.get_actor()));
 
             while (localqueue.poll(ev))
             {
@@ -506,7 +498,7 @@ int main (int argc, char **argv)
 
                 display.create(bin.get_depth(), vidoptions, width, height, true);
 
-                LV::VideoPtr video = display.get_video();
+                auto video = display.get_video();
                 bin.set_video(video);
 
                 bin.sync(true);
@@ -534,14 +526,11 @@ int main (int argc, char **argv)
         /* Cleanup */
         //visual_plugin_unload(visual_actor_get_plugin(actor));
         //visual_plugin_unload(visual_input_get_plugin(input));
-        
+
     }
     catch (std::exception& error) {
         std::cerr << error.what () << std::endl;
     }
-    
-
-    //printf ("Total frames: %d, average fps: %f\n", display_fps_total (display), display_fps_average (display));
 
     visual_quit ();
 
