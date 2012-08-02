@@ -73,7 +73,7 @@ namespace LV {
 
       uint8_t alpha = rdiff * 255;
 
-      Color const* tmp1 = &colors[irate];
+      auto const tmp1 = &colors[irate];
       Color const* tmp2;
 
       if (irate == int (size() - 1))

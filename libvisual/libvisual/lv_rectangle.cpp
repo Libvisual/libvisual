@@ -69,7 +69,7 @@ namespace LV {
           return Rect ();
       }
 
-      Rect result (r);
+      auto result = r;
 
       // Left, Upper boundries
       if (r.x < bounds.x) {

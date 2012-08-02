@@ -118,7 +118,7 @@ namespace LV {
 
   void Color::set_from_uint32 (uint32_t rgba)
   {
-      uint8_t const* color = reinterpret_cast<uint8_t*> (&rgba);
+      auto const color = reinterpret_cast<uint8_t*> (&rgba);
 
 #if VISUAL_LITTLE_ENDIAN == 1
       b = color[0];
@@ -135,7 +135,7 @@ namespace LV {
 
   void Color::set_from_uint16 (uint16_t rgb)
   {
-      rgb16_t const& color = *(reinterpret_cast<rgb16_t*> (&rgb));
+      auto color = *(reinterpret_cast<rgb16_t*> (&rgb));
 
       r = color.r << 3;
       g = color.g << 2;

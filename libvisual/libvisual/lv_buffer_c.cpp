@@ -4,7 +4,7 @@
 
 VisBuffer *visual_buffer_new (void)
 {
-    LV::BufferPtr self = LV::Buffer::create ();
+    auto self = LV::Buffer::create ();
     self->ref ();
 
     return self.get ();
@@ -12,7 +12,7 @@ VisBuffer *visual_buffer_new (void)
 
 VisBuffer *visual_buffer_new_with_data (void *data, visual_size_t size)
 {
-    LV::BufferPtr self = LV::Buffer::create (data, size);
+    auto self = LV::Buffer::create (data, size);
     self->ref ();
 
     return self.get ();
@@ -20,7 +20,7 @@ VisBuffer *visual_buffer_new_with_data (void *data, visual_size_t size)
 
 VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size)
 {
-    LV::BufferPtr self = LV::Buffer::create (data, size, false);
+    auto self = LV::Buffer::create (data, size, false);
     self->ref ();
 
     return self.get ();
@@ -28,7 +28,7 @@ VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size)
 
 VisBuffer *visual_buffer_new_allocate (visual_size_t size)
 {
-    LV::BufferPtr self = LV::Buffer::create (size);
+    auto self = LV::Buffer::create (size);
     self->ref ();
 
     return self.get ();
@@ -38,7 +38,7 @@ VisBuffer *visual_buffer_clone (VisBuffer *source)
 {
     visual_return_val_if_fail (source != nullptr, nullptr);
 
-    LV::BufferPtr self = LV::Buffer::create ();
+    auto self = LV::Buffer::create ();
     self->ref ();
 
     self->copy (LV::BufferPtr (source));

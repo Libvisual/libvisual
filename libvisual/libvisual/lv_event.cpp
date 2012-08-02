@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -40,8 +40,8 @@ namespace LV {
     {
         bool operator() (VisEvent const& event1, VisEvent const& event2) const
         {
-	    return get_event_priority (event1) < get_event_priority (event2);
-	}
+            return get_event_priority (event1) < get_event_priority (event2);
+        }
     };
 
   } // anonymous namespace
@@ -49,24 +49,23 @@ namespace LV {
   class EventQueue::Impl
   {
   public:
-     
+
       typedef std::priority_queue<Event, std::vector<Event>, EventPriorityLesser> Queue;
- 
+
       Queue events;
 
       // FIXME: We need custom input handlers for actors
-      int		    mousex;
-      int		    mousey;
-      VisMouseState	    mousestate;
+      int           mousex;
+      int           mousey;
+      VisMouseState mousestate;
 
       Impl ()
-	  : mousex (0)
-	  , mousey (0)
-	  , mousestate (VISUAL_MOUSE_UP)
-      {
-      }
+          : mousex (0)
+          , mousey (0)
+          , mousestate (VISUAL_MOUSE_UP)
+      {}
   };
-  
+
   EventQueue::EventQueue ()
       : m_impl (new Impl)
   {
@@ -81,12 +80,11 @@ namespace LV {
   bool EventQueue::poll (VisEvent& event)
   {
       if (!m_impl->events.empty ()) {
-	  event = m_impl->events.top ();
-	  m_impl->events.pop ();
-
-	  return true;
+          event = m_impl->events.top ();
+          m_impl->events.pop ();
+          return true;
       } else {
-	  return false;
+          return false;
       }
   }
 

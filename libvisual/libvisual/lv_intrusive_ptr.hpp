@@ -14,7 +14,7 @@ namespace LV
       typedef T element_type;
 
       IntrusivePtr ()
-          : m_ptr (0)
+          : m_ptr (nullptr)
       {}
 
       IntrusivePtr (T* ptr, bool add_ref = true)

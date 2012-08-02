@@ -121,9 +121,9 @@ namespace LV {
           visual_video_unref (cover);
 
       // Get the desired cover art size
-      VisParamContainer* params = visual_get_params ();
-      VisParamEntry* xparam = visual_param_container_get (params, "songinfo cover size x");
-      VisParamEntry* yparam = visual_param_container_get (params, "songinfo cover size y");
+      auto params = visual_get_params ();
+      auto xparam = visual_param_container_get (params, "songinfo cover size x");
+      auto yparam = visual_param_container_get (params, "songinfo cover size y");
 
       int cawidth = 64;
       int caheight = 64;
@@ -146,8 +146,8 @@ namespace LV {
 
   long SongInfo::get_age ()
   {
-      Time cur = Time::now ();
-      Time start_time = timer.get_start_time();
+      auto cur = Time::now ();
+      auto start_time = timer.get_start_time();
 
       // Clock has been changed into the past
       if (cur < start_time)

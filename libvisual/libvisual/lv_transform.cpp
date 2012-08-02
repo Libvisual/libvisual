@@ -45,7 +45,7 @@ int visual_transform_init (VisTransform *transform, const char *transformname);
 
 static void transform_dtor (VisObject *object)
 {
-    VisTransform *transform = VISUAL_TRANSFORM (object);
+    auto transform = VISUAL_TRANSFORM (object);
 
     if (transform->pal)
         visual_palette_free (transform->pal);
@@ -56,14 +56,10 @@ static void transform_dtor (VisObject *object)
 
 static VisTransformPlugin *get_transform_plugin (VisTransform *transform)
 {
-    VisTransformPlugin *transplugin;
-
     visual_return_val_if_fail (transform != nullptr, nullptr);
     visual_return_val_if_fail (transform->plugin != nullptr, nullptr);
 
-    transplugin = VISUAL_TRANSFORM_PLUGIN (transform->plugin->info->plugin);
-
-    return transplugin;
+    return VISUAL_TRANSFORM_PLUGIN (transform->plugin->info->plugin);
 }
 
 VisPluginData *visual_transform_get_plugin (VisTransform *transform)
@@ -83,12 +79,9 @@ const char *visual_transform_get_prev_by_name (const char *name)
 
 VisTransform *visual_transform_new (const char *transformname)
 {
-    VisTransform *transform;
-    int result;
+    auto transform = visual_mem_new0 (VisTransform, 1);
 
-    transform = visual_mem_new0 (VisTransform, 1);
-
-    result = visual_transform_init (transform, transformname);
+    auto result = visual_transform_init (transform, transformname);
     if (result != VISUAL_OK) {
         visual_mem_free (transform);
         return nullptr;
@@ -136,12 +129,10 @@ int visual_transform_realize (VisTransform *transform)
 
 int visual_transform_video_negotiate (VisTransform *transform)
 {
-    int depthflag;
-
     visual_return_val_if_fail (transform != nullptr, -VISUAL_ERROR_TRANSFORM_NULL);
     visual_return_val_if_fail (transform->plugin != nullptr, -VISUAL_ERROR_PLUGIN_NULL);
 
-    depthflag = visual_transform_get_supported_depth (transform);
+    auto depthflag = visual_transform_get_supported_depth (transform);
 
     if (!visual_video_depth_is_supported (depthflag, visual_video_get_depth (transform->video)))
         return -VISUAL_ERROR_TRANSFORM_NEGOTIATE;
@@ -157,12 +148,10 @@ int visual_transform_video_negotiate (VisTransform *transform)
 
 int visual_transform_get_supported_depth (VisTransform *transform)
 {
-    VisTransformPlugin *transplugin;
-
     visual_return_val_if_fail (transform != nullptr, -VISUAL_ERROR_TRANSFORM_NULL);
     visual_return_val_if_fail (transform->plugin != nullptr, -VISUAL_ERROR_PLUGIN_NULL);
 
-    transplugin = get_transform_plugin (transform);
+    auto transplugin = get_transform_plugin (transform);
 
     if (!transplugin)
         return -VISUAL_ERROR_TRANSFORM_PLUGIN_NULL;
@@ -172,12 +161,10 @@ int visual_transform_get_supported_depth (VisTransform *transform)
 
 VisVideoAttrOptions *visual_transform_get_video_attribute_options (VisTransform *transform)
 {
-    VisTransformPlugin *transplugin;
-
     visual_return_val_if_fail (transform != nullptr, nullptr);
     visual_return_val_if_fail (transform->plugin != nullptr, nullptr);
 
-    transplugin = get_transform_plugin (transform);
+    auto transplugin = get_transform_plugin (transform);
 
     if (!transplugin)
         return nullptr;
@@ -219,8 +206,9 @@ int visual_transform_set_palette (VisTransform *transform, VisPalette *palette)
 
 int visual_transform_run (VisTransform *transform, VisAudio *audio)
 {
-    int ret;
     visual_return_val_if_fail (transform != nullptr, -VISUAL_ERROR_TRANSFORM_NULL);
+
+    int ret;
 
     if (transform->video) {
         if ((ret = visual_transform_run_video (transform, audio)) != VISUAL_OK)
@@ -237,14 +225,11 @@ int visual_transform_run (VisTransform *transform, VisAudio *audio)
 
 int visual_transform_run_video (VisTransform *transform, VisAudio *audio)
 {
-    VisTransformPlugin *transplugin;
-    VisPluginData *plugin;
-
     visual_return_val_if_fail (transform != nullptr, -VISUAL_ERROR_TRANSFORM_NULL);
     visual_return_val_if_fail (transform->video != nullptr, -VISUAL_ERROR_TRANSFORM_VIDEO_NULL);
 
-    transplugin = get_transform_plugin (transform);
-    plugin = visual_transform_get_plugin (transform);
+    auto transplugin = get_transform_plugin (transform);
+    auto plugin = visual_transform_get_plugin (transform);
 
     if (!transplugin) {
         visual_log (VISUAL_LOG_ERROR,
@@ -262,14 +247,11 @@ int visual_transform_run_video (VisTransform *transform, VisAudio *audio)
 
 int visual_transform_run_palette (VisTransform *transform, VisAudio *audio)
 {
-    VisTransformPlugin *transplugin;
-    VisPluginData *plugin;
-
     visual_return_val_if_fail (transform != nullptr, -VISUAL_ERROR_TRANSFORM_NULL);
     visual_return_val_if_fail (transform->pal != nullptr, -VISUAL_ERROR_TRANSFORM_PALETTE_NULL);
 
-    transplugin = get_transform_plugin (transform);
-    plugin = visual_transform_get_plugin (transform);
+    auto transplugin = get_transform_plugin (transform);
+    auto plugin = visual_transform_get_plugin (transform);
 
     if (!transplugin) {
         visual_log (VISUAL_LOG_ERROR,

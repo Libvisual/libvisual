@@ -94,13 +94,13 @@ namespace LV {
 
 
   Bin::Impl::Impl ()
-      : actor           (0)
+      : actor           (nullptr)
       , actmorphmanaged (false)
-      , actmorph        (0)
-      , inputmanaged    (0)
-      , input           (0)
+      , actmorph        (nullptr)
+      , inputmanaged    (false)
+      , input           (nullptr)
       , morphmanaged    (false)
-      , morph           (0)
+      , morph           (nullptr)
       , morphstyle      (0)
       , morphing        (false)
       , morphautomatic  (true)
@@ -232,7 +232,7 @@ namespace LV {
       set_actor (actor);
       set_input (input);
 
-      VisVideoDepth depthflag = visual_actor_get_supported_depth (actor);
+      auto depthflag = visual_actor_get_supported_depth (actor);
 
       if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
           set_depth (VISUAL_VIDEO_DEPTH_GL);
@@ -246,11 +246,11 @@ namespace LV {
   void Bin::connect (std::string const& actname, std::string const& inname)
   {
       /* Create the actor */
-      VisActor* actor = visual_actor_new (actname.c_str ());
+      auto actor = visual_actor_new (actname.c_str ());
       visual_return_if_fail (actor != nullptr);
 
       /* Create the input */
-      VisInput* input = visual_input_new (inname.c_str ());
+      auto input = visual_input_new (inname.c_str ());
       visual_return_if_fail (input != nullptr);
 
       /* Connect */
@@ -329,7 +329,7 @@ namespace LV {
       if (m_impl->actmorphmanaged && m_impl->morphing &&
           m_impl->morphstyle == VISUAL_SWITCH_STYLE_MORPH) {
 
-          VideoPtr actvideo = m_impl->actmorphvideo;
+          auto actvideo = m_impl->actmorphvideo;
           if (!actvideo) {
               visual_log (VISUAL_LOG_DEBUG, "Morph video is nullptr");
               return;
@@ -442,18 +442,18 @@ namespace LV {
       }
 
       /* Create a new managed actor */
-      VisActor *actor = visual_actor_new (actname.c_str ());
+      auto actor = visual_actor_new (actname.c_str ());
       visual_return_if_fail (actor != nullptr);
 
-      VideoPtr video = LV::Video::create();
+      auto video = LV::Video::create();
       video->ref();
 
       int width  = m_impl->actvideo->get_width ();
       int height = m_impl->actvideo->get_height ();
 
-      VisVideoDepth depth = m_impl->actvideo->get_depth ();
+      auto depth = m_impl->actvideo->get_depth ();
 
-      VisVideoDepth depthflag = visual_actor_get_supported_depth (actor);
+      auto depthflag = visual_actor_get_supported_depth (actor);
 
       if (visual_video_depth_is_supported (depthflag, VISUAL_VIDEO_DEPTH_GL)) {
           visual_log (VISUAL_LOG_INFO, "Switching to GL mode");
@@ -535,7 +535,7 @@ namespace LV {
       if(depth != VISUAL_VIDEO_DEPTH_GL)
       {
           video->set_pitch(width * visual_video_bpp_from_depth(depth));
-    
+
           video->allocate_buffer();
       }
 
@@ -594,7 +594,7 @@ namespace LV {
           visual_log (VISUAL_LOG_DEBUG, "phase 1");
           /* Allocate a private video for the main actor, so the morph
            * can draw to the framebuffer */
-          VideoPtr privvid = Video::create ();
+          auto privvid = Video::create ();
           privvid->ref();
 
           visual_log (VISUAL_LOG_DEBUG, "actvideo->depth %d actmorph->video->depth %d",
@@ -807,7 +807,7 @@ namespace LV {
               if (visual_morph_is_done (m_impl->morph))
                   switch_finalize ();
           } else {
-              /*            visual_bin_switch_finalize (bin); */
+              /* visual_bin_switch_finalize (bin); */
           }
       }
   }

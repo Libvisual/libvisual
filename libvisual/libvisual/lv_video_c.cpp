@@ -29,7 +29,7 @@
 
 VisVideo *visual_video_new ()
 {
-    LV::VideoPtr self = LV::Video::create ();
+    auto self = LV::Video::create ();
     self->ref ();
 
     return self.get ();
@@ -37,7 +37,7 @@ VisVideo *visual_video_new ()
 
 VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth)
 {
-    LV::VideoPtr self = LV::Video::create (width, height, depth);
+    auto self = LV::Video::create (width, height, depth);
     self->ref ();
 
     return self.get ();
@@ -45,7 +45,7 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 
 VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth)
 {
-    LV::VideoPtr self = LV::Video::wrap (buffer, owner, width, height, depth);
+    auto self = LV::Video::wrap (buffer, owner, width, height, depth);
     self->ref ();
 
     return self.get ();
@@ -111,7 +111,7 @@ VisPalette *visual_video_get_palette (VisVideo *self)
 {
     visual_return_val_if_fail (self != nullptr, nullptr);
 
-    LV::Palette& palette = self->get_palette ();
+    auto& palette = self->get_palette ();
     if (!palette.empty ()) {
         return &palette;
     } else {
@@ -469,7 +469,7 @@ VisVideo *visual_video_scale_depth_new (VisVideo*           src,
 {
     visual_return_val_if_fail (src != nullptr, nullptr);
 
-    LV::VideoPtr self = LV::Video::create_scale_depth (LV::VideoPtr (src), width, height, depth, scale_method);
+    auto self = LV::Video::create_scale_depth (LV::VideoPtr (src), width, height, depth, scale_method);
     self->ref ();
 
     return self.get ();

@@ -44,7 +44,7 @@ static VisInputPlugin *get_input_plugin (VisInput *input);
 
 static void input_dtor (VisObject *object)
 {
-    VisInput *input = VISUAL_INPUT (object);
+    auto input = VISUAL_INPUT (object);
 
     if (input->plugin)
         visual_plugin_unload (input->plugin);
@@ -54,12 +54,10 @@ static void input_dtor (VisObject *object)
 
 static VisInputPlugin *get_input_plugin (VisInput *input)
 {
-    VisInputPlugin *inplugin;
-
     visual_return_val_if_fail (input != nullptr, nullptr);
     visual_return_val_if_fail (input->plugin != nullptr, nullptr);
 
-    inplugin = VISUAL_INPUT_PLUGIN (input->plugin->info->plugin);
+    auto inplugin = VISUAL_INPUT_PLUGIN (input->plugin->info->plugin);
 
     return inplugin;
 }
@@ -81,12 +79,9 @@ const char *visual_input_get_prev_by_name (const char *name)
 
 VisInput *visual_input_new (const char *inputname)
 {
-    VisInput *input;
-    int result;
+    auto input = visual_mem_new0 (VisInput, 1);
 
-    input = visual_mem_new0 (VisInput, 1);
-
-    result = visual_input_init (input, inputname);
+    auto result = visual_input_init (input, inputname);
     if (result != VISUAL_OK) {
         visual_mem_free (input);
         return nullptr;
@@ -147,12 +142,10 @@ int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callb
 
 int visual_input_run (VisInput *input)
 {
-    VisInputPlugin *inplugin;
-
     visual_return_val_if_fail (input != nullptr, -VISUAL_ERROR_INPUT_NULL);
 
     if (!input->callback) {
-        inplugin = get_input_plugin (input);
+        auto inplugin = get_input_plugin (input);
 
         if (!inplugin) {
             visual_log (VISUAL_LOG_ERROR, "The input plugin is not loaded correctly.");
