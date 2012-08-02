@@ -35,7 +35,6 @@ libvisual/lv_rectangle.cpp
 libvisual/lv_ringbuffer.c
 libvisual/lv_songinfo.cpp
 libvisual/lv_songinfo_c.cpp
-libvisual/lv_thread_disabled.c
 libvisual/lv_time.cpp
 libvisual/lv_time_c.cpp
 libvisual/lv_transform.cpp
@@ -52,11 +51,9 @@ libvisual/private/lv_video_scale_simd.cpp
 
 libvisual/private/windows/lv_mem_win32.cpp
 libvisual/private/windows/lv_module_win32.cpp
-libvisual/private/windows/lv_thread_win32.c
 
 libvisual/private/posix/lv_mem_posix.cpp
 libvisual/private/posix/lv_module_dlfcn.cpp
-libvisual/private/posix/lv_thread_posix.c
 
 tools/lv-tool/lv-tool.cpp
 tools/lv-tool/display/display.cpp
