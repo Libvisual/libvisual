@@ -106,9 +106,6 @@ FOREACH(FEATURE AUTO NULLPTR LAMBDA STATIC_ASSERT RVALUE_REFERENCES DECLTYPE CST
   ENDIF()
 ENDFOREACH()
 
-# Check for typedefs, structures, and compiler characteristics
-INCLUDE(CheckCCompiler)
-
 # Check for Unix specific functions
 # TODO: Generate error when a required header is missing
 CHECK_INCLUDE_FILE(unistd.h    HAVE_UNISTD_H)

@@ -25,13 +25,4 @@
 
 #cmakedefine HAVE_SYSCONF      1
 
-#ifndef __cplusplus
-#cmakedefine HAVE_C_INLINE
-#cmakedefine HAVE_C_CONST
-#cmakedefine inline @INLINE@
-#ifndef HAVE_C_CONST
-#  define const
-#endif
-#endif
-
 #endif /* CONFIG_H */

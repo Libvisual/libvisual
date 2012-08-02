@@ -65,13 +65,8 @@ SET(LV_ACTOR_PLUGIN_DIR "${LV_PLUGIN_DIR}/actor")
 SET(LV_INPUT_PLUGIN_DIR "${LV_PLUGIN_DIR}/input")
 SET(LV_MORPH_PLUGIN_DIR "${LV_PLUGIN_DIR}/morph")
 
-# Check for typedefs, structures, and compiler characteristics.
-INCLUDE(CheckIncludeFiles)
-INCLUDE(CheckCCompiler)
-CHECK_C_COMPILER_SUPPORTS_CONST(HAVE_C_CONST)
-CHECK_C_COMPILER_SUPPORTS_INLINE(INLINE HAVE_C_INLINE)
-
 # 'Standard' header files.
+INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckStdCHeaders)
 IF(NOT STDC_HEADERS)
   MESSAGE(FATAL ERROR "Libvisual-plugins requires standard C library headers to build")
