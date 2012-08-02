@@ -36,7 +36,7 @@ namespace LV {
 
       PluginListMap plugin_list_map;
 
-      void get_plugins_from_dir (PluginList& list, std::string const& dir);
+      PluginList get_plugins_from_dir (std::string const& dir) const;
   };
 
   PluginRef* load_plugin_ref (std::string const& plugin_path)
@@ -129,8 +129,7 @@ namespace LV {
 
       m_impl->plugin_paths.push_back (path);
 
-      PluginList plugins;
-      m_impl->get_plugins_from_dir (plugins, path);
+      auto plugins = m_impl->get_plugins_from_dir (path);
 
       for (auto& plugin : plugins)
       {
@@ -173,10 +172,8 @@ namespace LV {
       return ref ? ref->info : nullptr;
   }
 
-  void PluginRegistry::Impl::get_plugins_from_dir (PluginList& list, std::string const& dir)
+  PluginList PluginRegistry::Impl::get_plugins_from_dir (std::string const& dir) const
   {
-      list.clear ();
-
 #if defined(VISUAL_OS_WIN32)
       auto pattern = dir + "/*";
 
@@ -187,6 +184,8 @@ namespace LV {
           FindClose (hList);
           return;
       }
+
+      PluginList list;
 
       auto finished = false;
 
@@ -224,11 +223,13 @@ namespace LV {
 
       auto n = scandir (dir.c_str (), &namelist, nullptr, ScandirCompareFunc (alphasort));
       if (n < 0)
-          return;
+          return {};
 
       // First two entries are '.' and '..'
       visual_mem_free (namelist[0]);
       visual_mem_free (namelist[1]);
+
+      PluginList list;
 
       for (auto i = 2; i < n; i++) {
           auto full_path = dir + "/" + namelist[i]->d_name;
@@ -248,8 +249,9 @@ namespace LV {
       }
 
       visual_mem_free (namelist);
-
 #endif
+
+      return list;
   }
 
 } // LV namespace
