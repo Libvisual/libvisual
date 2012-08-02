@@ -136,10 +136,10 @@ namespace LV {
         delete sample->timestamp;
 
         if (sample->buffer)
-            visual_buffer_unref (sample->buffer);
+            sample->buffer->unref ();
 
         if (sample->processed)
-            visual_buffer_unref (sample->processed);
+            sample->processed->unref ();
     }
 
     AudioSample *audio_sample_new (BufferPtr const&         buffer,
@@ -237,6 +237,7 @@ namespace LV {
 
   void AudioChannel::add_samples (AudioSample& sample)
   {
+      visual_object_ref (VISUAL_OBJECT (&sample));
       visual_ringbuffer_add_function (samples,
                                       sample_data_func,
                                       sample_destroy_func,
