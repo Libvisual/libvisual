@@ -38,7 +38,7 @@ namespace LV {
 
   namespace {
 
-    inline int is_valid_scale_method (VisVideoScaleMethod scale_method)
+    bool is_valid_scale_method (VisVideoScaleMethod scale_method)
     {
         return scale_method == VISUAL_VIDEO_SCALE_NEAREST
             || scale_method == VISUAL_VIDEO_SCALE_BILINEAR;
