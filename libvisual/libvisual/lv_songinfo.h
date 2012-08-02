@@ -69,7 +69,7 @@ namespace LV {
   {
   public:
 
-      SongInfo (SongInfoType type);
+      explicit SongInfo (SongInfoType type);
 
       ~SongInfo ();
 
@@ -165,9 +165,9 @@ namespace LV {
        *
        * @return 0 on succes -1 on failure.
        */
-      void set_cover (VisVideo* cover);
+      void set_cover (VideoPtr const& cover);
 
-      VisVideo* get_cover () const;
+      VideoPtr get_cover () const;
 
       /**
        * Resets the age timer. Use this to timestamp a song to the
@@ -184,15 +184,15 @@ namespace LV {
 
   private:
 
-      SongInfoType     type;
-      int              length;
-      int              elapsed;
-      std::string      song_name;
-      std::string      artist;
-      std::string      album;
-      std::string      song;
-      VisTimer         timer;
-      VisVideo        *cover;
+      SongInfoType m_type;
+      int          m_length;
+      int          m_elapsed;
+      std::string  m_song_name;
+      std::string  m_artist;
+      std::string  m_album;
+      std::string  m_song;
+      Timer        m_timer;
+      VideoPtr     m_cover;
   };
 
 } // LV namespace
