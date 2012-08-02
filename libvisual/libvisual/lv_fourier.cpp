@@ -31,8 +31,7 @@
 #include "lv_math.h"
 #include <cmath>
 #include <vector>
-#include <map>
-#include <utility>
+#include <unordered_map>
 
 // Log scale settings
 #define AMP_LOG_SCALE_THRESHOLD0    0.001f
@@ -76,7 +75,7 @@ namespace LV {
 
     private:
 
-        typedef std::map<unsigned int, Entry> Table;
+        typedef std::unordered_map<unsigned int, Entry> Table;
 
         Table m_cache;
     };
@@ -118,8 +117,8 @@ namespace LV {
         if (entry != m_cache.end ())
             return entry->second;
 
-        // FIXME: Eliminate the copying
-        m_cache.insert (std::make_pair (sample_count, Entry (method, sample_count)));
+        // FIXME: Use emplace() when libstdc++ supports it
+        m_cache[sample_count] = Entry (method, sample_count);
 
         return m_cache[sample_count];
     }

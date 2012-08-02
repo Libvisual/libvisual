@@ -13,7 +13,7 @@
 #include "lv_module.hpp"
 
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <cstdlib>
 
 #ifdef VISUAL_OS_WIN32
@@ -25,7 +25,7 @@
 namespace LV {
 
   namespace {
-    typedef std::map<PluginType, PluginList> PluginListMap;
+    typedef std::unordered_map<PluginType, PluginList, std::hash<int>> PluginListMap;
   }
 
   class PluginRegistry::Impl
