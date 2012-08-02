@@ -27,8 +27,6 @@
 #include "lv_libvisual.h"
 #include "lv_util.h"
 #include "lv_plugin_registry.h"
-#include <algorithm>
-#include <cstdio>
 #include <cstring>
 
 namespace LV {
@@ -247,7 +245,7 @@ int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
     while ((enve = static_cast<VisPluginEnviron*>(visual_list_next (plugin->environment, &le))) != nullptr) {
 
         /* Remove from list */
-        if (strcmp (enve->type, type) == 0) {
+        if (std::strcmp (enve->type, type) == 0) {
             visual_list_delete (plugin->environment, &le);
 
             visual_object_unref (VISUAL_OBJECT (enve));
@@ -269,7 +267,7 @@ VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
 
     while ((enve = static_cast<VisPluginEnviron*> (visual_list_next (plugin->environment, &le))) != nullptr) {
 
-        if (strcmp (enve->type, type) == 0)
+        if (std::strcmp (enve->type, type) == 0)
             return enve->environment;
     }
 
