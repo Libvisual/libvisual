@@ -45,7 +45,7 @@ static void ringbuffer_entry_dtor (VisObject *object)
 	VisRingBufferEntry *entry = VISUAL_RINGBUFFER_ENTRY (object);
 
 	switch (entry->type) {
-        case VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER:
+		case VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER:
 			if (entry->buffer)
 				visual_buffer_unref (entry->buffer);
 			break;
@@ -417,8 +417,10 @@ int visual_ringbuffer_entry_init (VisRingBufferEntry *entry, VisBuffer *buffer)
 	entry->datafunc = NULL;
 	entry->destroyfunc = NULL;
 	entry->sizefunc = NULL;
-	entry->buffer = buffer;
 	entry->functiondata = NULL;
+
+	entry->buffer = buffer;
+	visual_buffer_ref (buffer);
 
 	return VISUAL_OK;
 }
