@@ -113,7 +113,7 @@ VisPluginInfo const* visual_plugin_get_info (VisPluginData *plugin)
     return plugin->info;
 }
 
-VisParamContainer *visual_plugin_get_params (VisPluginData *plugin)
+VisParamList *visual_plugin_get_params (VisPluginData *plugin)
 {
     visual_return_val_if_fail (plugin != nullptr, nullptr);
 
@@ -144,7 +144,7 @@ VisPluginData *visual_plugin_new ()
     /* Do the VisObject initialization */
     visual_object_init (VISUAL_OBJECT (plugin), plugin_dtor);
 
-    plugin->params = visual_param_container_new ();
+    plugin->params = visual_param_list_new ();
     plugin->environment = visual_list_new (nullptr);
     plugin->eventqueue = new LV::EventQueue;
 
@@ -161,7 +161,7 @@ int visual_plugin_unload (VisPluginData *plugin)
     if (plugin->info->plugin)
         visual_object_unref (VISUAL_OBJECT (plugin->info->plugin));
 
-    visual_param_container_set_eventqueue (plugin->params, nullptr);
+    visual_param_list_set_eventqueue (plugin->params, nullptr);
 
     visual_object_unref (VISUAL_OBJECT (plugin));
 
@@ -193,8 +193,8 @@ int visual_plugin_realize (VisPluginData *plugin)
         return -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED;
     }
 
-    auto paramcontainer = visual_plugin_get_params (plugin);
-    visual_param_container_set_eventqueue (paramcontainer, plugin->eventqueue);
+    auto params = visual_plugin_get_params (plugin);
+    visual_param_list_set_eventqueue (params, plugin->eventqueue);
 
     visual_log (VISUAL_LOG_DEBUG, "Activating plugin '%s'", plugin->info->plugname);
     plugin->info->init (plugin);

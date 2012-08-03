@@ -51,41 +51,41 @@ namespace LV
 
   namespace {
 
-    int init_params (VisParamContainer *paramcontainer)
+    int init_params (VisParamList *params)
     {
-        VisParamEntry *param;
+        visual_return_val_if_fail (params != NULL, -1);
 
-        visual_return_val_if_fail (paramcontainer != NULL, -1);
+        // Song information parameters
 
-        /* Initialize all the global parameters here */
+        visual_param_list_add (params,
+                               visual_param_new ("songinfo-show",
+                                                 NULL,
+                                                 VISUAL_PARAM_TYPE_INTEGER,
+                                                 (void *) 1));
 
-        /* Song information parameters */
-        /* Show songinfo */
-        param = visual_param_entry_new ("songinfo show");
-        visual_param_entry_set_integer (param, 1);
-        visual_param_container_add (paramcontainer, param);
+        visual_param_list_add (params,
+                               visual_param_new ("songinfo-timeout",
+                                                 "Songinfo timeout in seconds",
+                                                 VISUAL_PARAM_TYPE_INTEGER,
+                                                 (void *) 5));
 
-        /* Songinfo timeout, in seconds */
-        param = visual_param_entry_new ("songinfo timeout");
-        visual_param_entry_set_integer (param, 5);
-        visual_param_container_add (paramcontainer, param);
+        visual_param_list_add (params,
+                               visual_param_new ("songinfo-in-plugins",
+                                                 "Show songinfo in plugins",
+                                                 VISUAL_PARAM_TYPE_INTEGER,
+                                                 (void *) TRUE));
 
-        /*
-         * Show songinfo in plugins, plugins that optionally show song
-         * info should query this parameter
-         */
-        param = visual_param_entry_new ("songinfo in plugin");
-        visual_param_entry_set_integer (param, 1);
-        visual_param_container_add (paramcontainer, param);
+        visual_param_list_add (params,
+                               visual_param_new ("songinfo-cover-width",
+                                                 "Song cover art width",
+                                                 VISUAL_PARAM_TYPE_INTEGER,
+                                                 (void *) 128));
 
-        /* Cover art dimension */
-        param = visual_param_entry_new ("songinfo cover size x");
-        visual_param_entry_set_integer (param, 128);
-        visual_param_container_add (paramcontainer, param);
-
-        param = visual_param_entry_new ("songinfo cover size y");
-        visual_param_entry_set_integer (param, 128);
-        visual_param_container_add (paramcontainer, param);
+        visual_param_list_add (params,
+                               visual_param_new ("songinfo-cover-height",
+                                                 "Song cover art height",
+                                                 VISUAL_PARAM_TYPE_INTEGER,
+                                                 (void *) 128));
 
         return 0;
     }
@@ -96,7 +96,7 @@ namespace LV
   {
   public:
 
-      VisParamContainer *params;
+      VisParamList *params;
 
       Impl ()
           : params (0)
@@ -122,7 +122,7 @@ namespace LV
       return VISUAL_API_VERSION;
   }
 
-  VisParamContainer *System::get_params () const
+  VisParamList *System::get_params () const
   {
       return m_impl->params;
   }
@@ -157,7 +157,7 @@ namespace LV
       /* Initialize the plugin registry */
       PluginRegistry::init ();
 
-      m_impl->params = visual_param_container_new ();
+      m_impl->params = visual_param_list_new ();
       init_params (m_impl->params);
   }
 

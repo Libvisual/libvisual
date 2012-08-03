@@ -117,19 +117,19 @@ namespace LV {
   {
       // Get the desired cover art size
       auto params = visual_get_params ();
-      auto xparam = visual_param_container_get (params, "songinfo cover size x");
-      auto yparam = visual_param_container_get (params, "songinfo cover size y");
+      auto xparam = visual_param_list_get (params, "songinfo-cover-width");
+      auto yparam = visual_param_list_get (params, "songinfo-cover-height");
 
-      int cawidth = 64;
-      int caheight = 64;
+      int cover_width = 64;
+      int cover_height = 64;
 
       if (xparam && yparam) {
-          cawidth = visual_param_entry_get_integer (xparam);
-          caheight = visual_param_entry_get_integer (yparam);
+          cover_width  = visual_param_get_value_integer (xparam);
+          cover_height = visual_param_get_value_integer (yparam);
       }
 
       // The coverart image
-      m_cover = Video::create_scale_depth (cover, cawidth, caheight,
+      m_cover = Video::create_scale_depth (cover, cover_width, cover_height,
                                            VISUAL_VIDEO_DEPTH_32BIT,
                                            VISUAL_VIDEO_SCALE_BILINEAR);
   }
