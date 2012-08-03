@@ -56,36 +56,23 @@ namespace LV
         visual_return_val_if_fail (params != NULL, -1);
 
         // Song information parameters
-
-        visual_param_list_add (params,
-                               visual_param_new ("songinfo-show",
-                                                 NULL,
-                                                 VISUAL_PARAM_TYPE_INTEGER,
-                                                 (void *) 1));
-
-        visual_param_list_add (params,
-                               visual_param_new ("songinfo-timeout",
-                                                 "Songinfo timeout in seconds",
-                                                 VISUAL_PARAM_TYPE_INTEGER,
-                                                 (void *) 5));
-
-        visual_param_list_add (params,
-                               visual_param_new ("songinfo-in-plugins",
-                                                 "Show songinfo in plugins",
-                                                 VISUAL_PARAM_TYPE_INTEGER,
-                                                 (void *) TRUE));
-
-        visual_param_list_add (params,
-                               visual_param_new ("songinfo-cover-width",
-                                                 "Song cover art width",
-                                                 VISUAL_PARAM_TYPE_INTEGER,
-                                                 (void *) 128));
-
-        visual_param_list_add (params,
-                               visual_param_new ("songinfo-cover-height",
-                                                 "Song cover art height",
-                                                 VISUAL_PARAM_TYPE_INTEGER,
-                                                 (void *) 128));
+        visual_param_list_add_many (params,
+            visual_param_new_int ("songinfo-show",
+                                  NULL,
+                                  1),
+            visual_param_new_int ("songinfo-timeout",
+                                  "Songinfo timeout in seconds",
+                                  5),
+            visual_param_new_int ("songinfo-in-plugins",
+                                  "Show songinfo in plugins",
+                                  TRUE),
+            visual_param_new_int ("songinfo-cover-width",
+                                  "Song cover art width",
+                                  128),
+            visual_param_new_int ("songinfo-cover-height",
+                                  "Song cover art height",
+                                  128),
+            NULL);
 
         return 0;
     }

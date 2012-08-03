@@ -22,6 +22,7 @@
 #include "lv_param.h"
 #include "lv_common.h"
 #include "lv_util.h"
+#include <stdarg.h>
 #include <string.h>
 
 static void visual_param_list_dtor (VisObject *object);
@@ -72,7 +73,7 @@ int visual_param_list_add (VisParamList *self, VisParam *param)
     return FALSE;
 }
 
-unsigned int visual_param_list_add_many (VisParamList *self, VisParam **params, unsigned int nparams)
+unsigned int visual_param_list_add_array (VisParamList *self, VisParam **params, unsigned int nparams)
 {
     visual_return_val_if_fail (self   != NULL, 0);
     visual_return_val_if_fail (params != NULL, 0);
@@ -85,6 +86,27 @@ unsigned int visual_param_list_add_many (VisParamList *self, VisParam **params, 
             added++;
         }
     }
+
+    return added;
+}
+
+unsigned int visual_param_list_add_many (VisParamList *self, ...)
+{
+    va_list args;
+
+    va_start (args, self);
+
+    VisParam *param;
+    unsigned int added = 0;
+
+    do {
+        param = va_arg (args, VisParam *);
+        if (param && visual_param_list_add (self, param)) {
+            added++;
+        }
+    } while (param);
+
+    va_end (args);
 
     return added;
 }
@@ -162,6 +184,48 @@ void visual_param_dtor (VisObject *obj)
     visual_param_value_free_value (&self->default_value);
 
     visual_object_unref (VISUAL_OBJECT (self->changed_handlers));
+}
+
+VisParam *visual_param_new_int (const char *name,
+                                const char *description,
+                                int         default_value)
+{
+    return visual_param_new (name, description, VISUAL_PARAM_TYPE_INTEGER, (void *) (intptr_t) default_value);
+}
+
+VisParam *visual_param_new_float (const char *name,
+                                  const char *description,
+                                  float       default_value)
+{
+    return visual_param_new (name, description, VISUAL_PARAM_TYPE_FLOAT, (void *) (intptr_t) *(int32_t *) &default_value);
+}
+
+VisParam *visual_param_new_double (const char *name,
+                                   const char *description,
+                                   double      default_value)
+{
+    return visual_param_new (name, description, VISUAL_PARAM_TYPE_DOUBLE, (void *) &default_value);
+}
+
+VisParam *visual_param_new_string (const char *name,
+                                   const char *description,
+                                   const char *default_value)
+{
+    return visual_param_new (name, description, VISUAL_PARAM_TYPE_STRING, (void *) default_value);
+}
+
+VisParam *visual_param_new_color (const char *name,
+                                  const char *description,
+                                  VisColor   *default_value)
+{
+    return visual_param_new (name, description, VISUAL_PARAM_TYPE_COLOR, (void *) default_value);
+}
+
+VisParam *visual_param_new_palette (const char *name,
+                                    const char *description,
+                                    VisPalette *default_value)
+{
+    return visual_param_new (name, description, VISUAL_PARAM_TYPE_PALETTE, (void *) default_value);
 }
 
 VisParamChangedClosure *visual_param_add_callback (VisParam *          self,

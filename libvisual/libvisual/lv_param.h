@@ -132,7 +132,17 @@ LV_API int visual_param_list_add (VisParamList *list, VisParam *entry);
  *
  * @return Number of entries added
  */
-LV_API unsigned int visual_param_list_add_many (VisParamList *list, VisParam **params, unsigned int nparams);
+LV_API unsigned int visual_param_list_add_array (VisParamList *list, VisParam **params, unsigned int nparams);
+
+/**
+ * Adds a list of parameters.
+ *
+ * @param list Parameter list
+ * @param ...  List of newly constructed VisParams, ending with a NULL
+ *
+ * @return Number of entries added
+ */
+LV_API unsigned int visual_param_list_add_many (VisParamList *list, ...);
 
 /**
  * Removes a parameter by name.
@@ -168,6 +178,27 @@ LV_API VisParam *visual_param_new (const char * name,
                                    const char * description,
                                    VisParamType type,
                                    void *       default_value);
+
+/* Type-safe variants of visual_param_new */
+
+LV_API VisParam *visual_param_new_int     (const char *name,
+                                           const char *description,
+                                           int         default_value);
+LV_API VisParam *visual_param_new_float   (const char *name,
+                                           const char *description,
+                                           float       default_value);
+LV_API VisParam *visual_param_new_double  (const char *name,
+                                           const char *description,
+                                           double      default_value);
+LV_API VisParam *visual_param_new_string  (const char *name,
+                                           const char *description,
+                                           const char *default_value);
+LV_API VisParam *visual_param_new_color   (const char *name,
+                                           const char *description,
+                                           VisColor *  default_value);
+LV_API VisParam *visual_param_new_palette (const char *name,
+                                           const char *description,
+                                           VisPalette *default_value);
 
 /**
  * Adds a change notification callback.
