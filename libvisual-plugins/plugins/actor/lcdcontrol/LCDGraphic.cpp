@@ -1189,7 +1189,7 @@ void GraphicVisualizationPCMDraw(WidgetVisualization *widget) {
         for(int c = 0; c < width && col + c < lcd->LCOLS; c++) {
             int n = ((row + r) * lcd->LCOLS + col + c);
             uint32_t pixel = buffer[r * width + c];
-    		visual_color_from_uint32(&color, pixel);
+    		visual_color_set_from_uint32(&color, pixel);
 	    	fb[n].R = color.r;
 		    fb[n].G = color.g;
     		fb[n].B = color.b;
