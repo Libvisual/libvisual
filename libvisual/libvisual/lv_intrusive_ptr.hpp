@@ -58,12 +58,18 @@ namespace LV
           return *this;
       }
 
+      IntrusivePtr& operator= (IntrusivePtr const& rhs)
+      {
+          IntrusivePtr (rhs).swap (*this);
+          return *this;
+      }
+
       IntrusivePtr& operator= (T* rhs)
       {
           IntrusivePtr (rhs).swap (*this);
           return *this;
       }
-    
+
       IntrusivePtr& operator= (IntrusivePtr&& rhs)
       {
           IntrusivePtr (rhs).swap (*this);
