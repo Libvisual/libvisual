@@ -31,6 +31,7 @@
 #ifdef __cplusplus
 
 #include <vector>
+#include <memory>
 
 /**
  * @defgroup RingBuffer RingBuffer
@@ -41,6 +42,8 @@ namespace LV {
 
   class RingBuffer;
   class RingBufferEntry;
+
+  typedef std::unique_ptr<RingBufferEntry> RingBufferEntryPtr;
 
   /**
    * The RingBufferEntry data structure is an entry within the
@@ -57,14 +60,14 @@ namespace LV {
           TYPE_FUNCTION = 2   /**< Data retrieval using a callback. */
       };
 
-      typedef Buffer* (*DataFunc)    (RingBufferEntry* entry, RingBuffer* ringbuffer);
-      typedef int     (*SizeFunc)    (RingBufferEntry* entry, RingBuffer* ringbuffer);
-      typedef void    (*DestroyFunc) (RingBufferEntry* entry);
+      typedef BufferPtr (*DataFunc)    (RingBufferEntry& entry, RingBuffer& ringbuffer);
+      typedef int       (*SizeFunc)    (RingBufferEntry& entry, RingBuffer& ringbuffer);
+      typedef void      (*DestroyFunc) (RingBufferEntry& entry);
 
       Type        type;
 
       // Used only when type is Buffer
-      Buffer*     buffer;
+      BufferPtr   buffer;
 
       // Used only when type is function
       DataFunc    data_func;
@@ -72,7 +75,7 @@ namespace LV {
       SizeFunc    size_func;
       void*       func_data;
 
-      explicit RingBufferEntry (Buffer *buffer);
+      explicit RingBufferEntry (BufferPtr const& buffer);
 
       RingBufferEntry (DataFunc    data_func,
                        DestroyFunc destroy_func,
@@ -93,9 +96,10 @@ namespace LV {
   {
   public:
 
-      typedef RingBufferEntry Entry;
+      typedef RingBufferEntry    Entry;
+      typedef RingBufferEntryPtr EntryPtr;
 
-      typedef std::vector<Entry*> EntryList;
+      typedef std::vector<EntryPtr> EntryList;
 
       EntryList entries;
 
@@ -116,14 +120,14 @@ namespace LV {
        *
        * @param entry Entry to add
        */
-      void add_entry (Entry* entry);
+      void add_entry (EntryPtr&& entry);
 
       /**
        * Adds a Buffer to the end of the ringbuffer.
        *
        * @param buffer The Buffer that is added to the RingBuffer.
        */
-      void add_buffer (Buffer *buffer);
+      void add_buffer (BufferPtr const& buffer);
 
       /**
        * Adds a portion of data to the ringbuffer of nbytes byte size.
@@ -151,14 +155,14 @@ namespace LV {
           return entries;
       }
 
-      int get_data (Buffer *data, int nbytes);
-      int get_data_offset (Buffer *data, int offset, int nbytes);
-      int get_data_from_end (Buffer *data, int nbytes);
+      int get_data (BufferPtr const& data, int nbytes);
+      int get_data_offset (BufferPtr const& data, int offset, int nbytes);
+      int get_data_from_end (BufferPtr const& data, int nbytes);
 
-      int get_data_without_wrap (Buffer *data, int nbytes);
+      int get_data_without_wrap (BufferPtr const& data, int nbytes);
 
-      Buffer* get_data_new (int nbytes);
-      Buffer* get_data_new_without_wrap (int nbytes);
+      BufferPtr get_data_new (int nbytes);
+      BufferPtr get_data_new_without_wrap (int nbytes);
   };
 
 } // LV namespace

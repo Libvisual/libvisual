@@ -100,28 +100,27 @@ namespace LV {
 
   namespace {
 
-    void sample_destroy_func (RingBufferEntry* entry)
+    void sample_destroy_func (RingBufferEntry& entry)
     {
-        auto sample = static_cast<AudioSample*> (entry->func_data);
+        auto sample = static_cast<AudioSample*> (entry.func_data);
         delete sample;
     }
 
-    int sample_size_func (RingBufferEntry* entry, RingBuffer* ringbuffer)
+    int sample_size_func (RingBufferEntry& entry, RingBuffer& ringbuffer)
     {
-        auto sample = static_cast<AudioSample*> (entry->func_data);
+        auto sample = static_cast<AudioSample*> (entry.func_data);
 
         return (sample->buffer->get_size () /
                 visual_audio_sample_format_get_size (sample->format)) * sizeof (float);
     }
 
-    Buffer* sample_data_func (RingBufferEntry* entry, RingBuffer* ringbuffer)
+    BufferPtr sample_data_func (RingBufferEntry& entry, RingBuffer& ringbuffer)
     {
-        auto sample = static_cast<AudioSample*> (entry->func_data);
+        auto sample = static_cast<AudioSample*> (entry.func_data);
 
         /* We have internal format ready */
         if (sample->processed) {
-            sample->processed->ref ();
-            return sample->processed.get ();
+            return sample->processed;
         }
 
         sample->processed = Buffer::create ((sample->buffer->get_size () /
@@ -132,9 +131,7 @@ namespace LV {
                                        sample->buffer,
                                        sample->format);
 
-        sample->processed->ref ();
-
-        return sample->processed.get ();
+        return sample->processed;
     }
 
     void sample_buffer_mix (BufferPtr const& dest, BufferPtr const& src, bool divide, float multiplier)
