@@ -126,7 +126,7 @@ ENDIF()
 # Build profiles
 # Standard
 SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c++0x -Wall -Wunused")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} ${CXX11_FLAGS} -Wall -Wunused")
 # Debug
 SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Werror")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Werror")
