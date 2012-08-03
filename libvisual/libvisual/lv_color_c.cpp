@@ -14,88 +14,81 @@ extern "C" {
       delete color;
   }
 
-  int visual_color_set (VisColor* color, uint8_t r, uint8_t g, uint8_t b)
+  VisColor *visual_color_clone (VisColor* src)
   {
-      visual_return_val_if_fail (color != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_val_if_fail (src != nullptr, nullptr);
 
-      color->set (r, g, b);
-
-      return VISUAL_OK;
+      return new LV::Color (*src);
   }
 
-  int visual_color_set_with_alpha (VisColor* color, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+  void visual_color_copy (VisColor* dest, VisColor* src)
   {
-      visual_return_val_if_fail (color != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_if_fail (dest != nullptr);
+      visual_return_if_fail (src  != nullptr);
+
+      *dest = *src;
+  }
+
+  void visual_color_set (VisColor* color, uint8_t r, uint8_t g, uint8_t b)
+  {
+      visual_return_if_fail (color != nullptr);
+
+      color->set (r, g, b);
+  }
+
+  void visual_color_set_rgba (VisColor* color, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+  {
+      visual_return_if_fail (color != nullptr);
 
       color->set (r, g, b, a);
-
-      return VISUAL_OK;
   }
 
   int visual_color_compare (VisColor* src1, VisColor* src2)
   {
-      visual_return_val_if_fail (src1 != nullptr, -VISUAL_ERROR_COLOR_NULL);
-      visual_return_val_if_fail (src2 != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_val_if_fail (src1 != nullptr, FALSE);
+      visual_return_val_if_fail (src2 != nullptr, FALSE);
 
       return ( *src1 == *src2 );
   }
 
-  int visual_color_from_hsv (VisColor* color, float h, float s, float v)
+  void visual_color_set_hsv (VisColor* color, float h, float s, float v)
   {
-      visual_return_val_if_fail (color != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_if_fail (color != nullptr);
 
       color->set_hsv (h, s, v);
-
-      return VISUAL_OK;
   }
 
-  int visual_color_to_hsv (VisColor* color, float* h, float* s, float* v)
+  void visual_color_get_hsv (VisColor* color, float* h, float* s, float* v)
   {
-      visual_return_val_if_fail (color != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_if_fail (color != nullptr);
 
       color->get_hsv (*h, *s, *v);
-
-      return VISUAL_OK;
   }
 
-  int visual_color_copy (VisColor* dest, VisColor* src)
+  void visual_color_set_from_uint32 (VisColor* color, uint32_t rgba)
   {
-      visual_return_val_if_fail (dest != nullptr, -VISUAL_ERROR_COLOR_NULL);
-      visual_return_val_if_fail (src  != nullptr, -VISUAL_ERROR_COLOR_NULL);
-
-      *dest = *src;
-
-      return VISUAL_OK;
-  }
-
-  int visual_color_from_uint32 (VisColor* color, uint32_t rgba)
-  {
-      visual_return_val_if_fail (color != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_if_fail (color != nullptr);
 
       color->set_from_uint32 (rgba);
-
-      return VISUAL_OK;
   }
 
-  int visual_color_from_uint16 (VisColor* color, uint16_t rgb)
+  void visual_color_set_from_uint16 (VisColor* color, uint16_t rgb)
   {
-      visual_return_val_if_fail (color != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_if_fail (color != nullptr);
 
       color->set_from_uint16 (rgb);
-
-      return VISUAL_OK;
   }
 
   uint32_t visual_color_to_uint32 (VisColor* color)
   {
-      visual_return_val_if_fail (color != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_val_if_fail (color != nullptr, 0);
 
       return color->to_uint32 ();
   }
 
   uint16_t visual_color_to_uint16 (VisColor* color)
   {
-      visual_return_val_if_fail (color != nullptr, -VISUAL_ERROR_COLOR_NULL);
+      visual_return_val_if_fail (color != nullptr, 0);
 
       return color->to_uint16 ();
   }
