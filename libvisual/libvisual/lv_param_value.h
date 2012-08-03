@@ -1,0 +1,81 @@
+/* Libvisual - The audio visualisation framework.
+ *
+ * Copyright (C) 2012 Chong Kai Xiong <kaixiong@codeleft.sg>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+#ifndef _LV_PARAM_VALUE_H
+#define _LV_PARAM_VALUE_H
+
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
+#include <libvisual/lv_color.h>
+#include <libvisual/lv_palette.h>
+
+#define VISUAL_PARAM_VALUE(obj) ((VisParamValue *) (obj))
+
+typedef struct _VisParamValue VisParamValue;
+
+typedef enum {
+    VISUAL_PARAM_TYPE_NONE,
+    VISUAL_PARAM_TYPE_INTEGER,
+    VISUAL_PARAM_TYPE_FLOAT,
+    VISUAL_PARAM_TYPE_DOUBLE,
+    VISUAL_PARAM_TYPE_COLOR,
+    VISUAL_PARAM_TYPE_STRING,
+    VISUAL_PARAM_TYPE_PALETTE,
+} VisParamType;
+
+struct _VisParamValue
+{
+    VisParamType type;
+
+    union {
+        int          integer;
+        float        single_float;
+        double       double_float;
+        char *       string;
+        VisColor *   color;
+        VisPalette * palette;
+    } value;
+};
+
+LV_BEGIN_DECLS
+
+LV_API VisParamValue *visual_param_value_new        (VisParamType type, void *value);
+LV_API void           visual_param_value_copy       (VisParamValue *value, VisParamValue *src);
+LV_API void           visual_param_value_set        (VisParamValue *value, void *new_value);
+LV_API int            visual_param_value_compare    (VisParamValue *lhs, VisParamValue *rhs);
+LV_API void           visual_param_value_free       (VisParamValue *value);
+LV_API void           visual_param_value_free_value (VisParamValue *value);
+
+LV_API void visual_param_value_set_integer (VisParamValue *value, int new_value);
+LV_API void visual_param_value_set_float   (VisParamValue *value, float new_value);
+LV_API void visual_param_value_set_double  (VisParamValue *value, double new_value);
+LV_API void visual_param_value_set_string  (VisParamValue *value, const char *string);
+LV_API void visual_param_value_set_color   (VisParamValue *value, VisColor *color);
+LV_API void visual_param_value_set_palette (VisParamValue *value, VisPalette *color);
+
+LV_API int         visual_param_value_get_integer (VisParamValue *value);
+LV_API float       visual_param_value_get_float   (VisParamValue *value);
+LV_API double      visual_param_value_get_double  (VisParamValue *value);
+LV_API const char *visual_param_value_get_string  (VisParamValue *value);
+LV_API VisColor *  visual_param_value_get_color   (VisParamValue *value);
+LV_API VisPalette *visual_param_value_get_palette (VisParamValue *value);
+
+LV_END_DECLS
+
+#endif /* LV_PARAM_VALUE_H */

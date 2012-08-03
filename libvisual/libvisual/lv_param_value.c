@@ -1,0 +1,251 @@
+/* Libvisual - The audio visualisation framework.
+ *
+ * Copyright (C) 2012 Chong Kai Xiong <kaixiong@codeleft.sg>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+#include "config.h"
+#include "lv_param_value.h"
+#include "lv_common.h"
+#include "lv_util.h"
+#include <string.h>
+
+VisParamValue *visual_param_value_new  (VisParamType type, void *value)
+{
+    VisParamValue *self = visual_mem_new0 (VisParamValue, 1);
+    visual_param_value_set (self, value);
+    return self;
+}
+
+void visual_param_value_copy (VisParamValue *self, VisParamValue *src)
+{
+    visual_return_if_fail (self != NULL);
+
+    visual_param_value_free_value (self);
+
+    self->type = src->type;
+
+    switch (src->type)
+    {
+        case VISUAL_PARAM_TYPE_NONE:
+            break;
+        case VISUAL_PARAM_TYPE_INTEGER:
+        case VISUAL_PARAM_TYPE_FLOAT:
+        case VISUAL_PARAM_TYPE_DOUBLE:
+            self->value = self->value;
+            break;
+        case VISUAL_PARAM_TYPE_COLOR:
+            self->value.color = visual_color_clone (src->value.color);
+            break;
+        case VISUAL_PARAM_TYPE_STRING:
+            self->value.string = visual_strdup (src->value.string);
+            break;
+        case VISUAL_PARAM_TYPE_PALETTE:
+            self->value.palette = visual_palette_clone (VISUAL_PALETTE (src->value.palette));
+            break;
+        default:
+            break;
+    }
+}
+
+void visual_param_value_set (VisParamValue *self, void *value)
+{
+    visual_return_if_fail (self != NULL);
+
+    visual_param_value_free_value (self);
+
+    switch (self->type)
+    {
+        case VISUAL_PARAM_TYPE_NONE:
+            break;
+        case VISUAL_PARAM_TYPE_STRING:
+            self->value.string = visual_strdup ((const char *) value);
+            break;
+        case VISUAL_PARAM_TYPE_INTEGER:
+            self->value.integer = (intptr_t) value;
+            break;
+        case VISUAL_PARAM_TYPE_FLOAT: {
+            int32_t x = (intptr_t) value;
+            self->value.single_float = *(float *) &x;
+            break;
+        }
+        case VISUAL_PARAM_TYPE_DOUBLE:
+            self->value.double_float = *(double *) value;
+            break;
+        case VISUAL_PARAM_TYPE_COLOR:
+            self->value.color = visual_color_clone (VISUAL_COLOR (value));
+            break;
+        case VISUAL_PARAM_TYPE_PALETTE:
+            self->value.palette = visual_palette_clone (VISUAL_PALETTE (value));
+            break;
+        default:
+            break;
+    }
+}
+
+void visual_param_value_free_value (VisParamValue *self)
+{
+    visual_return_if_fail (self != NULL);
+
+    switch (self->type)
+    {
+        case VISUAL_PARAM_TYPE_STRING:
+            visual_mem_free (self->value.string);
+            break;
+        case VISUAL_PARAM_TYPE_COLOR:
+            visual_color_free (self->value.color);
+            break;
+        case VISUAL_PARAM_TYPE_PALETTE:
+            visual_palette_free (self->value.palette);
+            break;
+        default:
+            break;
+    }
+
+    self->type = VISUAL_PARAM_TYPE_NONE;
+}
+
+void visual_param_value_free (VisParamValue *self)
+{
+    visual_return_if_fail (self != NULL);
+
+    visual_param_value_free_value (self);
+    visual_mem_free (self);
+}
+
+int visual_param_value_compare (VisParamValue *lhs, VisParamValue *rhs)
+{
+    visual_return_val_if_fail (lhs != NULL, FALSE);
+    visual_return_val_if_fail (rhs != NULL, FALSE);
+
+    if (lhs->type != rhs->type)
+        return FALSE;
+
+    switch (lhs->type) {
+        case VISUAL_PARAM_TYPE_NONE:
+            return TRUE;
+        case VISUAL_PARAM_TYPE_STRING:
+            return strcmp (lhs->value.string, rhs->value.string) == 0;
+        case VISUAL_PARAM_TYPE_INTEGER:
+            return lhs->value.integer == rhs->value.integer;
+        case VISUAL_PARAM_TYPE_FLOAT:
+            return lhs->value.single_float == rhs->value.single_float;
+        case VISUAL_PARAM_TYPE_DOUBLE:
+            return lhs->value.double_float == rhs->value.double_float;
+        case VISUAL_PARAM_TYPE_COLOR:
+            return visual_color_compare (lhs->value.color, rhs->value.color);
+        case VISUAL_PARAM_TYPE_PALETTE:
+            return FALSE;
+        default:
+            return FALSE;
+    }
+}
+
+void visual_param_value_set_integer (VisParamValue *self, int value)
+{
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self->type != VISUAL_PARAM_TYPE_INTEGER);
+
+    visual_param_value_set (self, (void *) (intptr_t) value);
+}
+
+void visual_param_value_set_float (VisParamValue *self, float value)
+{
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self->type != VISUAL_PARAM_TYPE_FLOAT);
+
+    visual_param_value_set (self, (void *) (intptr_t) *(int32_t *) &value);
+}
+
+void visual_param_value_set_double (VisParamValue *self, double value)
+{
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self->type != VISUAL_PARAM_TYPE_DOUBLE);
+
+    visual_param_value_set (self, &value);
+}
+
+void visual_param_value_set_string (VisParamValue *self, const char *string)
+{
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self->type != VISUAL_PARAM_TYPE_STRING);
+
+    visual_param_value_set (self, (void *) string);
+}
+
+void visual_param_value_set_color (VisParamValue *self, VisColor *color)
+{
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self->type != VISUAL_PARAM_TYPE_COLOR);
+
+    visual_param_value_set (self, color);
+}
+
+void visual_param_value_set_palette (VisParamValue *self, VisPalette *palette)
+{
+    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self->type != VISUAL_PARAM_TYPE_PALETTE);
+
+    visual_param_value_set (self, palette);
+}
+
+const char *visual_param_value_get_string (VisParamValue *self)
+{
+    visual_return_val_if_fail (self != NULL, 0);
+    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_STRING, 0);
+
+    return self->value.string;
+}
+
+int visual_param_value_get_integer (VisParamValue *self)
+{
+    visual_return_val_if_fail (self != NULL, 0);
+    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_INTEGER, 0);
+
+    return self->value.integer;
+}
+
+float visual_param_value_get_float (VisParamValue *self)
+{
+    visual_return_val_if_fail (self != NULL, 0.0f);
+    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_FLOAT, 0.0f);
+
+    return self->value.single_float;
+}
+
+double visual_param_value_get_double (VisParamValue *self)
+{
+    visual_return_val_if_fail (self != NULL, 0.0);
+    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_DOUBLE, 0.0);
+
+    return self->value.double_float;
+}
+
+VisColor *visual_param_value_get_color (VisParamValue *self)
+{
+    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_COLOR, NULL);
+
+    return self->value.color;
+}
+
+VisPalette *visual_param_value_get_palette (VisParamValue *self)
+{
+    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_PALETTE, NULL);
+
+    return self->value.palette;
+}

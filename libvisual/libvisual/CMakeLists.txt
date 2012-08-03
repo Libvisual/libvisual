@@ -74,6 +74,7 @@ SET(libvisual_SOURCES
   lv_log.c
   lv_bmp.c
   lv_param.c
+  lv_param_value.c
   lv_cpu.c
   lv_error.c
   lv_object.c
