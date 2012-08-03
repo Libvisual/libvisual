@@ -115,11 +115,11 @@ namespace LV {
           return entries;
       }
 
-      int get_data (BufferPtr const& data, int nbytes);
-      int get_data_offset (BufferPtr const& data, int offset, int nbytes);
-      int get_data_from_end (BufferPtr const& data, int nbytes);
+      bool get_data (BufferPtr const& data, int nbytes);
+      bool get_data_offset (BufferPtr const& data, int offset, int nbytes);
+      bool get_data_from_end (BufferPtr const& data, int nbytes);
 
-      int get_data_without_wrap (BufferPtr const& data, int nbytes);
+      bool get_data_without_wrap (BufferPtr const& data, int nbytes);
 
       BufferPtr get_data_new (int nbytes);
       BufferPtr get_data_new_without_wrap (int nbytes);

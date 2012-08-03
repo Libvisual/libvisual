@@ -43,23 +43,15 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_ACTOR_PLUGIN_NULL] =		N_("VisActor it's plugin is NULL"),
 	[VISUAL_ERROR_ACTOR_GL_NEGOTIATE] =		N_("VisActor failed while trying to forcefully negotiate a GL surface"),
 
-	[VISUAL_ERROR_AUDIO_NULL] =			N_("VisAudio is NULL"),
-	[VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL] =		N_("The VisAudioSamplePool is NULL"),
-	[VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL] =	N_("The VisAudioSamplePoolChannel is NULL"),
-	[VISUAL_ERROR_AUDIO_SAMPLE_NULL] =		N_("The VisAudioSample is NULL"),
+	[VISUAL_ERROR_AUDIO_NULL] =         N_ ("VisAudio is NULL"),
 
 	[VISUAL_ERROR_BMP_NO_BMP] =			N_("Bitmap is not a bitmap file"),
 	[VISUAL_ERROR_BMP_NOT_FOUND] =			N_("Bitmap can not be found"),
 	[VISUAL_ERROR_BMP_NOT_SUPPORTED] =		N_("Bitmap is not supported"),
 	[VISUAL_ERROR_BMP_CORRUPTED] =			N_("Bitmap is corrupted"),
 
-	[VISUAL_ERROR_BUFFER_NULL] =			N_("VisBuffer is NULL"),
-	[VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS] =		N_("The requested operation on the VisBuffer is out of bounds"),
-
 	[VISUAL_ERROR_COLLECTION_NULL] =		N_("VisCollection is NULL"),
 	[VISUAL_ERROR_COLLECTION_ITER_NULL] =		N_("VisCollectionIter is NULL"),
-
-	[VISUAL_ERROR_COLOR_NULL] =			N_("VisColor is NULL"),
 
 	[VISUAL_ERROR_CPU_INVALID_CODE] =		N_("The code can not run on this architecture"),
 	[VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED] =	N_("CPU feature is not supported"),
@@ -89,9 +81,6 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_OS_SCHED] =			N_("The scheduler related call wasn't succesful."),
 	[VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED] =		N_("Scheduler operations are not supported on the platform."),
 
-	[VISUAL_ERROR_PALETTE_NULL] =			N_("VisPalette is NULL"),
-	[VISUAL_ERROR_PALETTE_SIZE] =			N_("VisPalette it's size conflicts"),
-
 	[VISUAL_ERROR_PARAM_NULL] =			N_("VisParamEntry is NULL"),
 	[VISUAL_ERROR_PARAM_CONTAINER_NULL] =		N_("VisParamContainer is NULL"),
 	[VISUAL_ERROR_PARAM_NOT_FOUND] =		N_("VisParamEntry not found in VisParamContainer"),
@@ -109,27 +98,6 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_PLUGIN_NO_LIST] =			N_("Plugin list can not be found in memory"),
 	[VISUAL_ERROR_PLUGIN_NOT_FOUND] =       N_("Plugin cannot be found"),
 
-	[VISUAL_ERROR_RANDOM_CONTEXT_NULL] =		N_("VisRandomContext is NULL"),
-
-	[VISUAL_ERROR_RECTANGLE_NULL] =			N_("VisRectangle is NULL"),
-	[VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS] =	N_("The VisRectangle operation is out of bounds"),
-
-	[VISUAL_ERROR_RINGBUFFER_NULL] =		N_("The VisRingBuffer is NULL"),
-	[VISUAL_ERROR_RINGBUFFER_ENTRY_NULL] =		N_("The VisRingBufferEntry is NULL"),
-	[VISUAL_ERROR_RINGBUFFER_DATAFUNC_NULL] =	N_("The VisRingBufferDataFunc data provider function callback is NULL"),
-
-	[VISUAL_ERROR_SONGINFO_NULL] =			N_("VisSongInfo is NULL"),
-
-	[VISUAL_ERROR_THREAD_NULL] =			N_("VisThread is NULL"),
-	[VISUAL_ERROR_THREAD_NOT_INITIALIZED] =		N_("The VisThread subsystem is not initialized"),
-	[VISUAL_ERROR_THREAD_NOT_SUPPORTED] =		N_("The VisThread subsystem couldn't find any threading model to use"),
-	[VISUAL_ERROR_THREAD_NOT_ENABLED] =		N_("The VisThread subsystem is not enabled"),
-
-	[VISUAL_ERROR_MUTEX_NULL] =			N_("VisMutex is NULL"),
-	[VISUAL_ERROR_MUTEX_LOCK_FAILURE] =		N_("VisMutex lock failed"),
-	[VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE] =		N_("VisMutex trylock failed"),
-	[VISUAL_ERROR_MUTEX_UNLOCK_FAILURE] =		N_("VisMutex unlock failed"),
-
 	[VISUAL_ERROR_TRANSFORM_NULL] =			N_("VisTransform is NULL"),
 	[VISUAL_ERROR_TRANSFORM_NEGOTIATE] =		N_("The VisTransform negotiate with the target VisVideo failed"),
 	[VISUAL_ERROR_TRANSFORM_PLUGIN_NULL] =		N_("The VisTransform it's plugin is NULL"),
@@ -139,10 +107,6 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_OBJECT_DTOR_FAILED] =		N_("VisObject destruction failed"),
 	[VISUAL_ERROR_OBJECT_NULL] =			N_("VisObject is NULL"),
 	[VISUAL_ERROR_OBJECT_NOT_ALLOCATED] =		N_("VisObject is not allocated"),
-
-	[VISUAL_ERROR_TIME_NULL] =			N_("VisTime is NULL"),
-	[VISUAL_ERROR_TIME_NO_USLEEP] =			N_("visual_time_usleep() is not supported"),
-	[VISUAL_ERROR_TIMER_NULL] =			N_("VisTimer is NULL"),
 
 	[VISUAL_ERROR_VIDEO_ATTRIBUTE_OPTIONS_NULL] =	N_("The VisVideoAttributeOptions is NULL."),
 	[VISUAL_ERROR_VIDEO_NULL] =			N_("VisVideo is NULL"),

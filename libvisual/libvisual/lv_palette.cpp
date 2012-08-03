@@ -45,11 +45,8 @@ namespace LV {
 
   void Palette::blend (Palette const& src1, Palette const& src2, float rate)
   {
-      if (src1.size () != src2.size ())
-          throw Error(VISUAL_ERROR_PALETTE_SIZE, "Palette sizes do not match");
-
-      if (size () != src1.size ())
-          throw Error(VISUAL_ERROR_PALETTE_SIZE, "Palette sizes do not match");
+      visual_return_if_fail (src1.size () != src2.size ());
+      visual_return_if_fail (size ()      != src1.size ());
 
       for (unsigned int i = 0; i < colors.size (); i++) {
           colors[i].r = src1.colors[i].r + ((src2.colors[i].r - src1.colors[i].r) * rate);
