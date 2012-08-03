@@ -25,230 +25,163 @@
 #include "lv_ringbuffer.h"
 #include "lv_common.h"
 
-static void ringbuffer_dtor (VisObject *object);
-static void ringbuffer_entry_dtor (VisObject *object);
-
 static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes,
                                              int& buffercorr);
 
-void ringbuffer_dtor (VisObject *object)
+VisRingBuffer::VisRingBuffer ()
 {
-	auto ringbuffer = VISUAL_RINGBUFFER (object);
-
-	if (ringbuffer->entries)
-		visual_object_unref (VISUAL_OBJECT (ringbuffer->entries));
 }
 
-void ringbuffer_entry_dtor (VisObject *object)
+VisRingBuffer::~VisRingBuffer ()
 {
-	auto entry = VISUAL_RINGBUFFER_ENTRY (object);
-
-	switch (entry->type) {
-		case VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER:
-			if (entry->buffer)
-				visual_buffer_unref (entry->buffer);
-			break;
-
-		case VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION:
-			if (entry->destroyfunc)
-				entry->destroyfunc (entry);
-			break;
-
-		default:;
-	}
+    for (auto& entry : entries) {
+        delete entry;
+    }
 }
 
-VisRingBuffer *visual_ringbuffer_new ()
+void VisRingBuffer::add_entry (VisRingBufferEntry* entry)
 {
-	auto ringbuffer = visual_mem_new0 (VisRingBuffer, 1);
-	visual_ringbuffer_init (ringbuffer);
+    visual_return_if_fail (entry != nullptr);
 
-	return ringbuffer;
+    entries.push_back (entry);
 }
 
-int visual_ringbuffer_init (VisRingBuffer *ringbuffer)
+void VisRingBuffer::add_buffer (VisBuffer *buffer)
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, -VISUAL_ERROR_RINGBUFFER_NULL);
-
-	/* Do the VisObject initialization */
-	visual_object_init (VISUAL_OBJECT (ringbuffer), ringbuffer_dtor);
-
-	/* Reset the VisRingBuffer structure */
-	ringbuffer->entries = visual_list_new (visual_object_collection_destroyer);
-
-	return VISUAL_OK;
+    auto entry = new Entry (buffer);
+    add_entry (entry);
 }
 
-int visual_ringbuffer_add_entry (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry)
+void VisRingBuffer::add_buffer_by_data (void *data, int nbytes)
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, -VISUAL_ERROR_RINGBUFFER_NULL);
-	visual_return_val_if_fail (entry != nullptr, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL);
+    visual_return_if_fail (data != nullptr);
 
-	visual_list_add (ringbuffer->entries, entry);
-
-	return VISUAL_OK;
+    auto buffer = visual_buffer_new_wrap_data (data, nbytes);
+    add_buffer (buffer);
 }
 
-int visual_ringbuffer_add_buffer (VisRingBuffer *ringbuffer, VisBuffer *buffer)
+void VisRingBuffer::add_function (VisRingBufferDataFunc datafunc,
+                                  VisRingBufferDestroyFunc destroyfunc,
+                                  VisRingBufferSizeFunc sizefunc,
+                                  void *functiondata)
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, -VISUAL_ERROR_RINGBUFFER_NULL);
+    visual_return_if_fail (datafunc != nullptr);
 
-	auto entry = visual_ringbuffer_entry_new (buffer);
-
-	return visual_ringbuffer_add_entry (ringbuffer, entry);
+    auto entry = new Entry (datafunc, destroyfunc, sizefunc, functiondata);
+    add_entry (entry);
 }
 
-int visual_ringbuffer_add_buffer_by_data (VisRingBuffer *ringbuffer, void *data, int nbytes)
+int VisRingBuffer::get_size ()
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, -VISUAL_ERROR_RINGBUFFER_NULL);
-	visual_return_val_if_fail (data != nullptr, -VISUAL_ERROR_NULL);
+    int totalsize = 0;
 
-	auto buffer = visual_buffer_new_wrap_data (data, nbytes);
+    for (auto& entry : entries) {
+        switch (entry->type) {
+            case VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER: {
+                totalsize += std::max (0, int (entry->buffer->get_size()));
+                break;
+            }
+            case VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION: {
+                if (entry->sizefunc) {
+                    totalsize += entry->sizefunc (this, entry);
+                } else {
+                    auto tempbuf = entry->datafunc (this, entry);
+                    totalsize += std::max (0, int (tempbuf->get_size ()));
+                    tempbuf->unref ();
+                }
+                break;
+            }
+            default:;
+        }
+    }
 
-	return visual_ringbuffer_add_buffer (ringbuffer, buffer);
+    return totalsize;
 }
 
-int visual_ringbuffer_add_function (VisRingBuffer *ringbuffer,
-                                    VisRingBufferDataFunc datafunc,
-                                    VisRingBufferDestroyFunc destroyfunc,
-                                    VisRingBufferSizeFunc sizefunc,
-                                    void *functiondata)
+int VisRingBuffer::get_data (VisBuffer *data, int nbytes)
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, -VISUAL_ERROR_RINGBUFFER_NULL);
-	visual_return_val_if_fail (datafunc != nullptr, -VISUAL_ERROR_RINGBUFFER_DATAFUNC_NULL);
-
-	auto entry = visual_ringbuffer_entry_new_function (datafunc, destroyfunc, sizefunc, functiondata);
-
-	return visual_ringbuffer_add_entry (ringbuffer, entry);
+    return get_data_offset (data, 0, nbytes);
 }
 
-int visual_ringbuffer_get_size (VisRingBuffer *ringbuffer)
+int VisRingBuffer::get_data_offset (VisBuffer *data, int offset, int nbytes)
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, -VISUAL_ERROR_RINGBUFFER_NULL);
+    visual_return_val_if_fail (data != nullptr, -VISUAL_ERROR_BUFFER_NULL);
 
-	VisListEntry *le = nullptr;
-	VisRingBufferEntry *entry;
-	int totalsize = 0;
+    int startat = 0;
+    int buffercorr = 0;
 
-	while ((entry = static_cast<VisRingBufferEntry*> (visual_list_next (ringbuffer->entries, &le))) != nullptr) {
-		int bsize = 0;
+    /* Fixate possible partial buffer */
+    if (offset > 0)
+        startat = fixate_with_partial_data_request (this, data, offset, nbytes, buffercorr);
 
-		if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
+    int curposition = buffercorr;
 
-			if ((bsize = visual_buffer_get_size (entry->buffer)) > 0)
-				totalsize += bsize;
+    /* Buffer fixated with partial segment, request the other segments */
+    while (curposition < nbytes) {
+        /* return immediately if there are no elements in the list */
+        if (entries.empty ())
+            return VISUAL_OK;
 
-		} else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
+        int lindex = 0;
 
-			if (entry->sizefunc != nullptr) {
-				totalsize += entry->sizefunc (ringbuffer, entry);
-			} else {
-				VisBuffer *tempbuf = entry->datafunc (ringbuffer, entry);
+        for (auto& entry : entries) {
 
-				if ((bsize = visual_buffer_get_size (tempbuf)) > 0)
-						totalsize += bsize;
+            VisBuffer *tempbuf = nullptr;
 
-				visual_buffer_unref (tempbuf);
-			}
-		}
-	}
+            lindex++;
 
-	return totalsize;
-}
+            /* Skip to the right offset buffer fragment */
+            if (lindex <= startat)
+                continue;
 
-VisList *visual_ringbuffer_get_list (VisRingBuffer *ringbuffer)
-{
-	visual_return_val_if_fail (ringbuffer != nullptr, nullptr);
+            switch (entry->type) {
+                case VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER: {
+                    tempbuf = entry->buffer;
+                    break;
+                }
+                case VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION: {
+                    if (!entry->datafunc) {
+                        visual_log (VISUAL_LOG_ERROR,
+                                    "No VisRingBufferDataFunc data provider function set on "
+                                    "type VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION");
 
-	return ringbuffer->entries;
-}
+                        return -VISUAL_ERROR_IMPOSSIBLE;
+                    }
 
-int visual_ringbuffer_get_data (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes)
-{
-	return visual_ringbuffer_get_data_offset (ringbuffer, data, 0, nbytes);
-}
+                    tempbuf = entry->datafunc (this, entry);
+                    break;
+                }
+                default:;
+            }
 
-int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes)
-{
-	visual_return_val_if_fail (ringbuffer != nullptr, -VISUAL_ERROR_RINGBUFFER_NULL);
-	visual_return_val_if_fail (data != nullptr, -VISUAL_ERROR_BUFFER_NULL);
+            if (curposition + int (visual_buffer_get_size (tempbuf)) > nbytes) {
+                auto buf = visual_buffer_new_wrap_data (tempbuf->get_data (), nbytes - curposition);
+                data->put (buf, curposition);
+                buf->unref ();
 
-	int startat = 0;
-	int buffercorr = 0;
+                if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
+                    tempbuf->unref ();
 
-	/* Fixate possible partial buffer */
-	if (offset > 0)
-		startat = fixate_with_partial_data_request (ringbuffer, data, offset, nbytes, buffercorr);
+                return VISUAL_OK;
+            }
 
-	int curposition = buffercorr;
+            data->put (tempbuf, curposition);
 
-	/* Buffer fixated with partial segment, request the other segments */
-	while (curposition < nbytes) {
-		/* return immediately if there are no elements in the list */
-		if(visual_list_count(ringbuffer->entries) == 0)
-			return VISUAL_OK;
+            curposition += tempbuf->get_size ();
 
-        VisRingBufferEntry *entry;
-        VisListEntry *le = nullptr;
-		int lindex = 0;
+            if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
+                tempbuf->unref ();
+            }
 
-		while ((entry = static_cast<VisRingBufferEntry*> (visual_list_next (ringbuffer->entries, &le))) != nullptr) {
-			VisBuffer *tempbuf = nullptr;
+            /* Filled without room for partial buffer addition */
+            if (curposition == nbytes)
+                return VISUAL_OK;
+        }
 
-			lindex++;
+        startat = 0;
+    }
 
-			/* Skip to the right offset buffer fragment */
-			if (lindex <= startat)
-				continue;
-
-			if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
-
-				tempbuf = entry->buffer;
-
-			} else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
-
-				/* Will bail out through visual_error_raise(), this is fatal, let's not try to
-				 * recover, it's a very obvious bug in the software */
-				if (entry->datafunc == nullptr) {
-					visual_log (VISUAL_LOG_ERROR,
-							"No VisRingBufferDataFunc data provider function set on "
-							"type VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION");
-
-					return -VISUAL_ERROR_IMPOSSIBLE;
-				}
-
-				tempbuf = entry->datafunc (ringbuffer, entry);
-			}
-
-			if (curposition + int (visual_buffer_get_size (tempbuf)) > nbytes) {
-				VisBuffer *buf;
-
-				buf = visual_buffer_new_wrap_data (visual_buffer_get_data (tempbuf), nbytes - curposition);
-				visual_buffer_put (data, buf, curposition);
-				visual_buffer_unref (buf);
-
-				if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
-					visual_buffer_unref (tempbuf);
-
-				return VISUAL_OK;
-			}
-
-			visual_buffer_put (data, tempbuf, curposition);
-
-			curposition += visual_buffer_get_size (tempbuf);
-
-			if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
-				visual_buffer_unref (tempbuf);
-
-			/* Filled without room for partial buffer addition */
-			if (curposition == nbytes)
-				return VISUAL_OK;
-		}
-
-		startat = 0;
-	}
-
-	return VISUAL_OK;
+    return VISUAL_OK;
 }
 
 int fixate_with_partial_data_request (VisRingBuffer *ringbuffer,
@@ -257,191 +190,148 @@ int fixate_with_partial_data_request (VisRingBuffer *ringbuffer,
                                       int nbytes,
                                       int& buffercorr)
 {
-	VisListEntry *le = nullptr;
-	VisRingBufferEntry *entry;
-	int curoffset = 0;
-	int startat = 0;
+    int curoffset = 0;
+    int startat = 0;
 
-	buffercorr = 0;
+    buffercorr = 0;
 
-	while ((entry = static_cast<VisRingBufferEntry*> (visual_list_next (ringbuffer->entries, &le))) != nullptr) {
-		int bsize = 0;
+    for (auto& entry : ringbuffer->get_entries ()) {
 
-		startat++;
+        int bsize = 0;
 
-		if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
+        startat++;
 
-			if ((bsize = visual_buffer_get_size (entry->buffer)) > 0)
-				curoffset += bsize;
+        if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER) {
 
-			/* This buffer partially falls within the offset */
-			if (curoffset > offset) {
-				visual_buffer_put_data (data,
-						((uint8_t *) visual_buffer_get_data (entry->buffer) +
-						visual_buffer_get_size (entry->buffer)) -
-						(curoffset - offset), curoffset - offset, 0);
+            if ((bsize = entry->buffer->get_size ()) > 0)
+                curoffset += bsize;
 
-				buffercorr = curoffset - offset;
+            /* This buffer partially falls within the offset */
+            if (curoffset > offset) {
+                data->put (static_cast<uint8_t*> (entry->buffer->get_data ()) + entry->buffer->get_size () - (curoffset - offset),
+                           curoffset - offset, 0);
 
-				break;
-			}
-		} else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
+                buffercorr = curoffset - offset;
 
-			if (entry->sizefunc != nullptr) {
-				curoffset += entry->sizefunc (ringbuffer, entry);
+                break;
+            }
+        } else if (entry->type == VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION) {
 
-				/* This buffer partially falls within the offset */
-				if (curoffset > offset) {
+            if (entry->sizefunc != nullptr) {
+                curoffset += entry->sizefunc (ringbuffer, entry);
 
-					VisBuffer *tempbuf = entry->datafunc (ringbuffer, entry);
+                /* This buffer partially falls within the offset */
+                if (curoffset > offset) {
 
-					visual_buffer_put_data (data,
-							((uint8_t *) visual_buffer_get_data (tempbuf) +
-							visual_buffer_get_size (tempbuf)) -
-							(curoffset - offset), curoffset - offset, 0);
+                    auto tempbuf = entry->datafunc (ringbuffer, entry);
 
-					visual_buffer_unref (tempbuf);
+                    data->put (static_cast<uint8_t*> (tempbuf->get_data ()) + tempbuf->get_size () - (curoffset - offset),
+                               curoffset - offset, 0);
 
-					buffercorr = curoffset - offset;
+                    tempbuf->unref ();
 
-					break;
-				}
-			} else {
-				VisBuffer *tempbuf = entry->datafunc (ringbuffer, entry);
+                    buffercorr = curoffset - offset;
 
-				if ((bsize = visual_buffer_get_size (tempbuf)) > 0)
-					curoffset += bsize;
+                    break;
+                }
+            } else {
+                auto tempbuf = entry->datafunc (ringbuffer, entry);
 
-				/* This buffer partially falls within the offset */
-				if (curoffset > offset) {
-					visual_buffer_put_data (data,
-							((uint8_t *) visual_buffer_get_data (tempbuf) +
-							visual_buffer_get_size (tempbuf)) -
-							(curoffset - offset), curoffset - offset, 0);
+                if ((bsize = tempbuf->get_size ()) > 0)
+                    curoffset += bsize;
 
-					buffercorr = curoffset - offset;
+                /* This buffer partially falls within the offset */
+                if (curoffset > offset) {
+                    data->put (static_cast<uint8_t*> (tempbuf->get_data ()) + tempbuf->get_size () - (curoffset - offset),
+                               curoffset - offset, 0);
 
-					break;
-				}
+                    buffercorr = curoffset - offset;
 
-				visual_buffer_unref (tempbuf);
-			}
-		}
-	}
+                    break;
+                }
 
-	return startat;
+                tempbuf->unref ();
+            }
+        }
+    }
+
+    return startat;
 }
 
-int visual_ringbuffer_get_data_from_end (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes)
+int VisRingBuffer::get_data_from_end (VisBuffer *data, int nbytes)
 {
-	int totalsize = visual_ringbuffer_get_size (ringbuffer);
-	int offset = totalsize - nbytes;
+    int totalsize = get_size ();
+    int offset = totalsize - nbytes;
 
-	if ((nbytes / totalsize) > 0)
-		offset = totalsize - (nbytes % totalsize);
+    if ((nbytes / totalsize) > 0)
+        offset = totalsize - (nbytes % totalsize);
 
-	return visual_ringbuffer_get_data_offset (ringbuffer, data, offset, nbytes);
+    return get_data_offset (data, offset, nbytes);
 }
 
-int visual_ringbuffer_get_data_without_wrap (VisRingBuffer *ringbuffer, VisBuffer *data, int nbytes)
+int VisRingBuffer::get_data_without_wrap (VisBuffer *data, int nbytes)
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, -VISUAL_ERROR_RINGBUFFER_NULL);
+    int ringsize = get_size ();
+    int amount = std::min (ringsize, nbytes);
 
-	int ringsize = visual_ringbuffer_get_size (ringbuffer);
-	int amount = std::min (ringsize, nbytes);
-
-	return visual_ringbuffer_get_data_offset (ringbuffer, data, 0, amount);
+    return get_data_offset (data, 0, amount);
 }
 
-VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int nbytes)
+VisBuffer *VisRingBuffer::get_data_new (int nbytes)
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, nullptr);
+    auto buffer = visual_buffer_new_allocate (nbytes);
+    get_data_offset (buffer, 0, nbytes);
 
-	auto buffer = visual_buffer_new_allocate (nbytes);
-
-	visual_ringbuffer_get_data_offset (ringbuffer, buffer, 0, nbytes);
-
-	return buffer;
+    return buffer;
 }
 
-VisBuffer *visual_ringbuffer_get_data_new_without_wrap (VisRingBuffer *ringbuffer, int nbytes)
+VisBuffer *VisRingBuffer::get_data_new_without_wrap (int nbytes)
 {
-	visual_return_val_if_fail (ringbuffer != nullptr, nullptr);
+    int ringsize = get_size ();
+    int amount = std::min (ringsize, nbytes);
 
-	int ringsize = visual_ringbuffer_get_size (ringbuffer);
-	int amount = std::min (ringsize, nbytes);
+    auto buffer = visual_buffer_new_allocate (amount);
+    get_data_without_wrap (buffer, amount);
 
-	auto buffer = visual_buffer_new_allocate (amount);
-
-	visual_ringbuffer_get_data_without_wrap (ringbuffer, buffer, amount);
-
-	return buffer;
+    return buffer;
 }
 
-VisRingBufferEntry *visual_ringbuffer_entry_new (VisBuffer *buffer)
+VisRingBufferEntry::VisRingBufferEntry (VisBuffer *buffer_)
+    : type         (VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER)
+    , datafunc     (nullptr)
+    , destroyfunc  (nullptr)
+    , sizefunc     (nullptr)
+    , buffer       (buffer_)
+    , functiondata (nullptr)
 {
-	auto entry = visual_mem_new0 (VisRingBufferEntry, 1);
-	visual_ringbuffer_entry_init (entry, buffer);
-
-	return entry;
+    visual_buffer_ref (buffer);
 }
 
-int visual_ringbuffer_entry_init (VisRingBufferEntry *entry, VisBuffer *buffer)
+VisRingBufferEntry::VisRingBufferEntry (VisRingBufferDataFunc datafunc_,
+                                        VisRingBufferDestroyFunc destroyfunc_,
+                                        VisRingBufferSizeFunc sizefunc_,
+                                        void *functiondata_)
+    : type         (VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION)
+    , datafunc     (datafunc_)
+    , destroyfunc  (destroyfunc_)
+    , sizefunc     (sizefunc_)
+    , buffer       (nullptr)
+    , functiondata (functiondata_)
+{}
+
+VisRingBufferEntry::~VisRingBufferEntry ()
 {
-	visual_return_val_if_fail (entry != nullptr, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL);
+    switch (type) {
+        case VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER:
+            if (buffer)
+                buffer->unref ();
+            break;
 
-	/* Do the VisObject initialization */
-	visual_object_init (VISUAL_OBJECT (entry), ringbuffer_entry_dtor);
+        case VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION:
+            if (destroyfunc)
+                destroyfunc (this);
+            break;
 
-	/* Reset the VisRingBufferEntry data */
-	entry->type = VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER;
-	entry->datafunc = nullptr;
-	entry->destroyfunc = nullptr;
-	entry->sizefunc = nullptr;
-	entry->functiondata = nullptr;
-
-	entry->buffer = buffer;
-	visual_buffer_ref (buffer);
-
-	return VISUAL_OK;
-}
-
-VisRingBufferEntry *visual_ringbuffer_entry_new_function (VisRingBufferDataFunc datafunc,
-                                                          VisRingBufferDestroyFunc destroyfunc,
-                                                          VisRingBufferSizeFunc sizefunc,
-                                                          void *functiondata)
-{
-    auto entry = visual_mem_new0 (VisRingBufferEntry, 1);
-	visual_ringbuffer_entry_init_function (entry, datafunc, destroyfunc, sizefunc, functiondata);
-
-	return entry;
-}
-
-int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
-                                           VisRingBufferDataFunc datafunc,
-                                           VisRingBufferDestroyFunc destroyfunc,
-                                           VisRingBufferSizeFunc sizefunc,
-                                           void *functiondata)
-{
-	visual_return_val_if_fail (entry != nullptr, -VISUAL_ERROR_RINGBUFFER_ENTRY_NULL);
-
-	/* Do the VisObject initialization */
-	visual_object_init (VISUAL_OBJECT (entry), ringbuffer_entry_dtor);
-
-	/* Reset the VisRingBufferEntry data */
-	entry->type = VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION;
-	entry->datafunc = datafunc;
-	entry->destroyfunc = destroyfunc;
-	entry->sizefunc = sizefunc;
-	entry->buffer = nullptr;
-	entry->functiondata = functiondata;
-
-	return VISUAL_OK;
-}
-
-void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry)
-{
-	visual_return_val_if_fail (entry != nullptr, nullptr);
-
-	return entry->functiondata;
+        default:;
+    }
 }

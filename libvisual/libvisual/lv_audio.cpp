@@ -224,25 +224,24 @@ namespace LV {
 
   AudioChannel::AudioChannel (std::string const& name_)
       : name            (name_)
-      , samples         (visual_ringbuffer_new ())
+      , samples         (new VisRingBuffer)
       , samples_timeout (LV::Time (1, 0))
       , factor          (1.0)
   {}
 
   AudioChannel::~AudioChannel ()
   {
-      if (samples)
-          visual_object_unref (VISUAL_OBJECT (samples));
+      delete samples;
   }
 
   void AudioChannel::add_samples (AudioSample& sample)
   {
       visual_object_ref (VISUAL_OBJECT (&sample));
-      visual_ringbuffer_add_function (samples,
-                                      sample_data_func,
-                                      sample_destroy_func,
-                                      sample_size_func,
-                                      &sample);
+
+      samples->add_function (sample_data_func,
+                             sample_destroy_func,
+                             sample_size_func,
+                             &sample);
   }
 
   Audio::Audio ()
@@ -265,7 +264,7 @@ namespace LV {
           return false;
       }
 
-      visual_ringbuffer_get_data_from_end (channel->samples, buffer.get (), buffer->get_size ());
+      channel->samples->get_data_from_end (buffer.get (), buffer->get_size ());
 
       return true;
   }
