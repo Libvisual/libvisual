@@ -34,16 +34,16 @@
  * @{
  */
 
-#define VISUAL_RINGBUFFER(obj)				(VISUAL_CHECK_CAST ((obj), VisRingBuffer))
-#define VISUAL_RINGBUFFER_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisRingBufferEntry))
+#define VISUAL_RINGBUFFER(obj)        (VISUAL_CHECK_CAST ((obj), VisRingBuffer))
+#define VISUAL_RINGBUFFER_ENTRY(obj)  (VISUAL_CHECK_CAST ((obj), VisRingBufferEntry))
 
 /**
  * Enum defining the VisRingBufferEntryTypes.
  */
 typedef enum {
-	VISUAL_RINGBUFFER_ENTRY_TYPE_NONE	= 0,	/**< State less entry. */
-	VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER	= 1,	/**< Normal byte buffer. */
-	VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION	= 2	/**< Data retrieval using a callback. */
+	VISUAL_RINGBUFFER_ENTRY_TYPE_NONE	  = 0,	/**< State less entry. */
+	VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER	  = 1,	/**< Normal byte buffer. */
+	VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION = 2	/**< Data retrieval using a callback. */
 } VisRingBufferEntryType;
 
 typedef struct _VisRingBufferEntry VisRingBufferEntry;
@@ -67,16 +67,16 @@ typedef int (*VisRingBufferSizeFunc)(VisRingBuffer *ringbuffer, VisRingBufferEnt
  * The VisRingBufferEntry data structure is an entry within the ringbuffer.
  */
 struct _VisRingBufferEntry {
-	VisObject			 object;
+	VisObject                object;
 
-	VisRingBufferEntryType		 type;
-	VisRingBufferDataFunc		 datafunc;
-	VisRingBufferDestroyFunc	 destroyfunc;
-	VisRingBufferSizeFunc		 sizefunc;
+	VisRingBufferEntryType   type;
+	VisRingBufferDataFunc    datafunc;
+	VisRingBufferDestroyFunc destroyfunc;
+	VisRingBufferSizeFunc    sizefunc;
 
-	VisBuffer			*buffer;
+	VisBuffer               *buffer;
 
-	void				*functiondata;
+	void                    *functiondata;
 };
 
 /**
@@ -162,17 +162,21 @@ LV_API VisBuffer *visual_ringbuffer_get_data_new (VisRingBuffer *ringbuffer, int
 LV_API VisBuffer *visual_ringbuffer_get_data_new_without_wrap (VisRingBuffer *ringbuffer, int nbytes);
 
 LV_API VisRingBufferEntry *visual_ringbuffer_entry_new (VisBuffer *buffer);
+
 LV_API int visual_ringbuffer_entry_init (VisRingBufferEntry *entry, VisBuffer *buffer);
+
 LV_API VisRingBufferEntry *visual_ringbuffer_entry_new_function (
 		VisRingBufferDataFunc datafunc,
 		VisRingBufferDestroyFunc destroyfunc,
 		VisRingBufferSizeFunc sizefunc,
 		void *functiondata);
+
 LV_API int visual_ringbuffer_entry_init_function (VisRingBufferEntry *entry,
 		VisRingBufferDataFunc datafunc,
 		VisRingBufferDestroyFunc destroyfunc,
 		VisRingBufferSizeFunc sizefunc,
 		void *functiondata);
+
 LV_API void *visual_ringbuffer_entry_get_functiondata (VisRingBufferEntry *entry);
 
 LV_END_DECLS

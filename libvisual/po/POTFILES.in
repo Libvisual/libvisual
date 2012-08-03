@@ -32,7 +32,7 @@ libvisual/lv_random_c.cpp
 libvisual/lv_random.cpp
 libvisual/lv_rectangle_c.cpp
 libvisual/lv_rectangle.cpp
-libvisual/lv_ringbuffer.c
+libvisual/lv_ringbuffer.cpp
 libvisual/lv_songinfo.cpp
 libvisual/lv_songinfo_c.cpp
 libvisual/lv_time.cpp
