@@ -120,4 +120,15 @@ namespace LV
 
 } // LV namespace
 
+namespace std {
+
+  // std::swap() overload for efficiently swapping IntrusivePtrs
+  template <class T>
+  void swap (LV::IntrusivePtr<T>& lhs, LV::IntrusivePtr<T>& rhs)
+  {
+      lhs.swap (rhs);
+  }
+
+} // std namespace
+
 #endif // _LV_INTRUSIVE_HPP
