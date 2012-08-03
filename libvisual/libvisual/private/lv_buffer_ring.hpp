@@ -1,10 +1,8 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_ringbuffer.h,v 1.6 2006/01/22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,48 +19,39 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_RINGBUFFER_H
-#define _LV_RINGBUFFER_H
+#ifndef _LV_BUFFER_RING_HPP
+#define _LV_BUFFER_RING_HPP
 
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_buffer.h>
 
-#ifdef __cplusplus
-
 #include <vector>
 #include <memory>
-
-/**
- * @defgroup RingBuffer RingBuffer
- * @{
- */
+#include <functional>
 
 namespace LV {
 
-  class RingBuffer;
-  class RingBufferEntry;
+  class BufferRing;
+  class BufferRingEntry;
 
-  typedef std::unique_ptr<RingBufferEntry> RingBufferEntryPtr;
+  typedef std::unique_ptr<BufferRingEntry> BufferRingEntryPtr;
+  typedef std::unique_ptr<BufferRing>      BufferRingPtr;
 
-  /**
-   * The RingBufferEntry data structure is an entry within the
-   * ringbuffer.
-   */
-  class LV_API RingBufferEntry
+  class BufferRingEntry
   {
   public:
 
-      /** Enum defining the RingBufferEntryTypes. */
+      /** Enum defining the BufferRingEntryTypes. */
       enum Type {
           TYPE_NONE     = 0,  /**< State less entry. */
           TYPE_BUFFER   = 1,  /**< Normal byte buffer. */
           TYPE_FUNCTION = 2   /**< Data retrieval using a callback. */
       };
 
-      typedef BufferPtr (*DataFunc)    (RingBufferEntry& entry, RingBuffer& ringbuffer);
-      typedef int       (*SizeFunc)    (RingBufferEntry& entry, RingBuffer& ringbuffer);
-      typedef void      (*DestroyFunc) (RingBufferEntry& entry);
+      typedef std::function<BufferPtr (BufferRingEntry&)> DataFunc;
+      typedef std::function<int (BufferRingEntry&)>       SizeFunc;
+      typedef std::function<void (BufferRingEntry&)>      DestroyFunc;
 
       Type        type;
 
@@ -75,66 +64,43 @@ namespace LV {
       SizeFunc    size_func;
       void*       func_data;
 
-      explicit RingBufferEntry (BufferPtr const& buffer);
+      explicit BufferRingEntry (BufferPtr const& buffer);
 
-      RingBufferEntry (DataFunc    data_func,
+      BufferRingEntry (DataFunc    data_func,
                        DestroyFunc destroy_func,
                        SizeFunc    size_func,
                        void*       func_data);
 
-      RingBufferEntry (RingBufferEntry const&) = delete;
+      ~BufferRingEntry ();
 
-      ~RingBufferEntry ();
-
-      RingBufferEntry& operator= (RingBufferEntry const&) = delete;
+      // Non-copyable
+      BufferRingEntry (BufferRingEntry const&) = delete;
+      BufferRingEntry& operator= (BufferRingEntry const&) = delete;
   };
 
-  /**
-   * The RingBuffer data structure holding the ringbuffer.
-   */
-  class LV_API RingBuffer
+  class BufferRing
   {
   public:
 
-      typedef RingBufferEntry    Entry;
-      typedef RingBufferEntryPtr EntryPtr;
+      typedef BufferRingEntry    Entry;
+      typedef BufferRingEntryPtr EntryPtr;
 
       typedef std::vector<EntryPtr> EntryList;
 
       EntryList entries;
 
-      /**
-       * Creates a new RingBuffer structure. The RingBuffer system is
-       * a double linked ringbuffer implementation.
-       */
-      RingBuffer ();
+      BufferRing ();
 
-      RingBuffer (RingBuffer const&) = delete;
+      ~BufferRing ();
 
-      ~RingBuffer ();
+      // Non-copyable
+      BufferRing (BufferRing const&) = delete;
+      BufferRing& operator= (BufferRing const&) = delete;
 
-      RingBuffer& operator= (RingBuffer const&) = delete;
-
-      /**
-       * Adds a RingBufferEntry to the end of the ringbuffer.
-       *
-       * @param entry Entry to add
-       */
       void add_entry (EntryPtr&& entry);
 
-      /**
-       * Adds a Buffer to the end of the ringbuffer.
-       *
-       * @param buffer The Buffer that is added to the RingBuffer.
-       */
       void add_buffer (BufferPtr const& buffer);
 
-      /**
-       * Adds a portion of data to the ringbuffer of nbytes byte size.
-       *
-       * @param data Pointer to the data that is added to the ringbuffer.
-       * @param nbytes The size of the data that is added to the ringbuffer.
-       */
       void add_buffer_by_data (void *data, int nbytes);
 
       void add_function (Entry::DataFunc    data_func,
@@ -144,12 +110,6 @@ namespace LV {
 
       int get_size ();
 
-      /**
-       * Gets a list of all ringbuffer fragments that are currently in
-       * the ringbuffer.
-       *
-       * @return A list of LV::RingBufferEntry items
-       */
       EntryList const& get_entries () const
       {
           return entries;
@@ -167,10 +127,4 @@ namespace LV {
 
 } // LV namespace
 
-/**
- * @}
- */
-
-#endif
-
-#endif /* _LV_RINGBUFFER_H */
+#endif // _LV_BUFFER_RING_HPP

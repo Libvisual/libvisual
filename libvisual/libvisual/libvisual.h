@@ -56,7 +56,6 @@
 #include <libvisual/lv_bmp.h>
 #include <libvisual/lv_random.h>
 #include <libvisual/lv_collection.h>
-#include <libvisual/lv_ringbuffer.h>
 #include <libvisual/lv_rectangle.h>
 #include <libvisual/lv_gl.h>
 #include <libvisual/lv_math.h>

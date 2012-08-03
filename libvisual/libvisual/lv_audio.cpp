@@ -22,10 +22,10 @@
 #include "config.h"
 #include "lv_audio.h"
 #include "private/lv_audio_convert.hpp"
+#include "private/lv_buffer_ring.hpp"
 #include "lv_common.h"
 #include "lv_fourier.h"
 #include "lv_math.h"
-#include "lv_ringbuffer.h"
 #include "lv_time.h"
 #include "lv_util.hpp"
 #include <cstdarg>
@@ -60,17 +60,17 @@ namespace LV {
   {
   public:
 
-      std::string name;
-      RingBuffer* samples;
-      Time        samples_timeout;
-      float       factor;
+      std::string   name;
+      BufferRingPtr samples;
+      Time          samples_timeout;
+      float         factor;
 
-      explicit AudioChannel (std::string const& name_);
-
-      AudioChannel (AudioChannel const&) = delete;
+      explicit AudioChannel (std::string const& name);
 
       ~AudioChannel ();
 
+      // Non-copyable
+      AudioChannel (AudioChannel const&) = delete;
       AudioChannel& operator= (AudioChannel const&) = delete;
 
       void add_samples (AudioSample& sample);
@@ -100,13 +100,13 @@ namespace LV {
 
   namespace {
 
-    void sample_destroy_func (RingBufferEntry& entry)
+    void sample_destroy_func (BufferRingEntry& entry)
     {
         auto sample = static_cast<AudioSample*> (entry.func_data);
         delete sample;
     }
 
-    int sample_size_func (RingBufferEntry& entry, RingBuffer& ringbuffer)
+    int sample_size_func (BufferRingEntry& entry)
     {
         auto sample = static_cast<AudioSample*> (entry.func_data);
 
@@ -114,7 +114,7 @@ namespace LV {
                 visual_audio_sample_format_get_size (sample->format)) * sizeof (float);
     }
 
-    BufferPtr sample_data_func (RingBufferEntry& entry, RingBuffer& ringbuffer)
+    BufferPtr sample_data_func (BufferRingEntry& entry)
     {
         auto sample = static_cast<AudioSample*> (entry.func_data);
 
@@ -208,14 +208,14 @@ namespace LV {
 
   AudioChannel::AudioChannel (std::string const& name_)
       : name            (name_)
-      , samples         (new RingBuffer)
+      , samples         (new BufferRing)
       , samples_timeout (Time (1, 0))
       , factor          (1.0)
   {}
 
   AudioChannel::~AudioChannel ()
   {
-      delete samples;
+      // empty
   }
 
   void AudioChannel::add_samples (AudioSample& sample)
@@ -270,7 +270,7 @@ namespace LV {
       for (unsigned int i = 0; i < channels; i++)
           chanids[i] = va_arg (args, const char *);
 
-      auto temp = LV::Buffer::create (buffer->get_size ());
+      auto temp = Buffer::create (buffer->get_size ());
       buffer->fill (0);
 
       bool first = true;
@@ -314,7 +314,7 @@ namespace LV {
       for (unsigned int i = 0; i < channels; i++)
           chanmuls[i] = va_arg (args, double);
 
-      auto temp = LV::Buffer::create (buffer->get_size ());
+      auto temp = Buffer::create (buffer->get_size ());
 
       buffer->fill (0);
 
@@ -335,7 +335,7 @@ namespace LV {
 
   void Audio::get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised)
   {
-      auto sample = LV::Buffer::create (samplelen);
+      auto sample = Buffer::create (samplelen);
 
       if (get_sample (sample, channel_name))
           get_spectrum_for_sample (buffer, sample, normalised);
@@ -355,8 +355,8 @@ namespace LV {
 
   void Audio::get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& sample, bool normalised)
   {
-      LV::DFT dft (buffer->get_size () / sizeof (float),
-                   sample->get_size () / sizeof (float));
+      DFT dft (buffer->get_size () / sizeof (float),
+               sample->get_size () / sizeof (float));
 
       // Fourier analyze the pcm data
       dft.perform (static_cast<float*> (buffer->get_data ()),
@@ -378,9 +378,9 @@ namespace LV {
 
   void Audio::normalise_spectrum (BufferPtr const& buffer)
   {
-      LV::DFT::log_scale_standard (static_cast<float*> (buffer->get_data ()),
-                                   static_cast<float*> (buffer->get_data ()),
-                                   buffer->get_size () / sizeof (float));
+      DFT::log_scale_standard (static_cast<float*> (buffer->get_data ()),
+                               static_cast<float*> (buffer->get_data ()),
+                               buffer->get_size () / sizeof (float));
   }
 
   void Audio::input (BufferPtr const&          buffer,
@@ -391,12 +391,12 @@ namespace LV {
       if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO) {
           std::size_t sample_size = visual_audio_sample_format_get_size (format);
 
-          auto chan1 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
-          auto chan2 = LV::Buffer::create (sample_size * buffer->get_size () / 2);
+          auto chan1 = Buffer::create (sample_size * buffer->get_size () / 2);
+          auto chan2 = Buffer::create (sample_size * buffer->get_size () / 2);
 
           AudioConvert::deinterleave_stereo_samples (chan1, chan2, buffer, format);
 
-          auto timestamp = LV::Time::now ();
+          auto timestamp = Time::now ();
 
           auto sample1 = new AudioSample (chan1, timestamp, format, rate);
           m_impl->add_channel (VISUAL_AUDIO_CHANNEL_LEFT, *sample1);
@@ -411,10 +411,10 @@ namespace LV {
                      VisAudioSampleFormatType format,
                      std::string const&       channel_name)
   {
-      auto pcmbuf = LV::Buffer::create ();
+      auto pcmbuf = Buffer::create ();
       pcmbuf->copy (buffer);
 
-      auto timestamp = LV::Time::now ();
+      auto timestamp = Time::now ();
 
       auto sample = new AudioSample (pcmbuf, timestamp, format, rate);
       m_impl->add_channel (channel_name, *sample);

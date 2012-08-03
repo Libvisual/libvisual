@@ -51,7 +51,6 @@ SET(libvisual_HEADERS
   lv_object.h
   lv_transform.h
   lv_rectangle.h
-  lv_ringbuffer.h
   lv_buffer.h
   lv_collection.h
   lv_os.h
@@ -100,7 +99,6 @@ SET(libvisual_SOURCES
   lv_palette.cpp
   lv_plugin_registry.cpp
   lv_rectangle.cpp
-  lv_ringbuffer.cpp
   lv_songinfo.cpp
   lv_time.cpp
   lv_transform.cpp
@@ -129,6 +127,7 @@ SET(libvisual_SOURCES
   private/lv_video_rotate.cpp
   private/lv_video_blit_simd.cpp
   private/lv_video_scale_simd.cpp
+  private/lv_buffer_ring.cpp
 
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp

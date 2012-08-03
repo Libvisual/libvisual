@@ -32,7 +32,6 @@ libvisual/lv_random_c.cpp
 libvisual/lv_random.cpp
 libvisual/lv_rectangle_c.cpp
 libvisual/lv_rectangle.cpp
-libvisual/lv_ringbuffer.cpp
 libvisual/lv_songinfo.cpp
 libvisual/lv_songinfo_c.cpp
 libvisual/lv_time.cpp
@@ -40,6 +39,8 @@ libvisual/lv_time_c.cpp
 libvisual/lv_transform.cpp
 libvisual/lv_video.cpp
 libvisual/lv_video_c.cpp
+
+libvisual/private/lv_buffer_ring.cpp
 
 libvisual/private/lv_video_blit.cpp
 libvisual/private/lv_video_convert.cpp
