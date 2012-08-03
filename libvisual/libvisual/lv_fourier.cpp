@@ -2,13 +2,8 @@
  *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * The FFT implementation found in this file is based upon the nullptrSOFT
- * Milkdrop FFT implementation.
- *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *          Chong Kai Xiong <descender@phreaker.net>
- *
- * $Id: lv_fourier.c,v 1.15 2006/02/13 20:54:08 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
