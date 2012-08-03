@@ -1,10 +1,7 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
- *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_songinfo.c,v 1.24 2006/01/22 13:23:37 synap Exp $
+ * Copyright (C) 2012      Chong Kai Xiong <kaixiong@codeleft.sg>
+ *               2004-2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,7 +22,6 @@
 #include "lv_songinfo.h"
 #include "lv_common.h"
 #include "lv_libvisual.h"
-#include "lv_util.h"
 #include <string.h>
 
 namespace LV {
@@ -117,19 +113,19 @@ namespace LV {
   {
       // Get the desired cover art size
       auto params = visual_get_params ();
-      auto xparam = visual_param_container_get (params, "songinfo cover size x");
-      auto yparam = visual_param_container_get (params, "songinfo cover size y");
+      auto xparam = visual_param_container_get (params, "songinfo-cover-width");
+      auto yparam = visual_param_container_get (params, "songinfo-cover-height");
 
-      int cawidth = 64;
-      int caheight = 64;
+      int cover_width  = 64;
+      int cover_height = 64;
 
       if (xparam && yparam) {
-          cawidth = visual_param_entry_get_integer (xparam);
-          caheight = visual_param_entry_get_integer (yparam);
+          cover_width  = visual_param_entry_get_integer (xparam);
+          cover_height = visual_param_entry_get_integer (yparam);
       }
 
       // The coverart image
-      m_cover = Video::create_scale_depth (cover, cawidth, caheight,
+      m_cover = Video::create_scale_depth (cover, cover_width, cover_height,
                                            VISUAL_VIDEO_DEPTH_32BIT,
                                            VISUAL_VIDEO_SCALE_BILINEAR);
   }

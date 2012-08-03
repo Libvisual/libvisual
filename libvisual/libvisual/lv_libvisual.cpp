@@ -1,10 +1,7 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_libvisual.c,v 1.39 2006/01/22 13:23:37 synap Exp $
+ * Copyright (C) 2012      Chong Kai Xiong <kaixiong@codeleft.sg>
+ *               2004-2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -37,10 +34,6 @@
 #include "gettext.h"
 
 extern "C" {
-
-  // Set a progname from argv[0] when we're capable of doing so.
-  char *__lv_progname = 0;
-
   void visual_alpha_blend_initialize (void);
   void visual_cpu_initialize (void);
   void visual_mem_initialize (void);
@@ -51,43 +44,40 @@ namespace LV
 
   namespace {
 
-    int init_params (VisParamContainer *paramcontainer)
+    void init_params (VisParamContainer *paramcontainer)
     {
+        visual_return_if_fail (paramcontainer != nullptr);
+
+        // Initialize all the global parameters here
+
         VisParamEntry *param;
 
-        visual_return_val_if_fail (paramcontainer != NULL, -1);
+        // Song information parameters
 
-        /* Initialize all the global parameters here */
-
-        /* Song information parameters */
-        /* Show songinfo */
-        param = visual_param_entry_new ("songinfo show");
+        // Show songinfo
+        param = visual_param_entry_new ("songinfo-show");
         visual_param_entry_set_integer (param, 1);
         visual_param_container_add (paramcontainer, param);
 
-        /* Songinfo timeout, in seconds */
-        param = visual_param_entry_new ("songinfo timeout");
+        // Songinfo timeout, in seconds
+        param = visual_param_entry_new ("songinfo-timeout");
         visual_param_entry_set_integer (param, 5);
         visual_param_container_add (paramcontainer, param);
 
-        /*
-         * Show songinfo in plugins, plugins that optionally show song
-         * info should query this parameter
-         */
-        param = visual_param_entry_new ("songinfo in plugin");
+        // Show songinfo in plugins, plugins that optionally show song
+        // info should query this parameter
+        param = visual_param_entry_new ("songinfo-in-plugin");
         visual_param_entry_set_integer (param, 1);
         visual_param_container_add (paramcontainer, param);
 
         /* Cover art dimension */
-        param = visual_param_entry_new ("songinfo cover size x");
+        param = visual_param_entry_new ("songinfo-cover-width");
         visual_param_entry_set_integer (param, 128);
         visual_param_container_add (paramcontainer, param);
 
-        param = visual_param_entry_new ("songinfo cover size y");
+        param = visual_param_entry_new ("songinfo-cover-height");
         visual_param_entry_set_integer (param, 128);
         visual_param_container_add (paramcontainer, param);
-
-        return 0;
     }
 
   } // anonymous namespace
@@ -96,15 +86,15 @@ namespace LV
   {
   public:
 
-      VisParamContainer *params;
+      VisParamContainer* params;
 
       Impl ()
-          : params (0)
+          : params (nullptr)
       {}
   };
 
   template <>
-  LV_API System* Singleton<System>::m_instance = 0;
+  LV_API System* Singleton<System>::m_instance = nullptr;
 
   void System::init (int& argc, char**& argv)
   {
@@ -122,7 +112,7 @@ namespace LV
       return VISUAL_API_VERSION;
   }
 
-  VisParamContainer *System::get_params () const
+  VisParamContainer* System::get_params () const
   {
       return m_impl->params;
   }
@@ -137,24 +127,22 @@ namespace LV
       bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 #endif
 
-      __lv_progname = visual_strdup (argv[0]);
-
-      /* Initialize CPU caps */
+      // Initialize CPU caps
       visual_cpu_initialize ();
 
-      /* Initialize Mem system */
+      // Initialize Mem system
       visual_mem_initialize ();
 
-      /* Initialize CPU-accelerated graphics functions */
+      // Initialize CPU-accelerated graphics functions
       visual_alpha_blend_initialize ();
 
-      /* Initialize high-resolution timer system */
+      // Initialize high-resolution timer system
 	  Time::init ();
 
-      /* Initialize FFT system */
+      // Initialize FFT system
       Fourier::init ();
 
-      /* Initialize the plugin registry */
+      // Initialize the plugin registry
       PluginRegistry::init ();
 
       m_impl->params = visual_param_container_new ();
@@ -164,7 +152,7 @@ namespace LV
   System::~System ()
   {
       PluginRegistry::deinit ();
-	  Fourier::deinit();
+      Fourier::deinit();
 
       visual_object_unref (VISUAL_OBJECT (m_impl->params));
   }
