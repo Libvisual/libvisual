@@ -2,8 +2,15 @@
 #define _LV_UTIL_HPP
 
 #include <string>
+#include <memory>
 
 namespace LV {
+
+  template<typename T, typename ...Args>
+  std::unique_ptr<T> make_unique( Args&& ...args )
+  {
+      return std::unique_ptr<T> (new T (std::forward<Args> (args)... ));
+  }
 
   /**
    * Checks if a string has a given suffix.
