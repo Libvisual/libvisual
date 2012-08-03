@@ -33,147 +33,135 @@
 #include <vector>
 
 /**
- * @defgroup VisRingBuffer VisRingBuffer
+ * @defgroup RingBuffer RingBuffer
  * @{
  */
 
-#define VISUAL_RINGBUFFER(obj)        (VISUAL_CHECK_CAST ((obj), VisRingBuffer))
-#define VISUAL_RINGBUFFER_ENTRY(obj)  (VISUAL_CHECK_CAST ((obj), VisRingBufferEntry))
+namespace LV {
 
-/**
- * Enum defining the VisRingBufferEntryTypes.
- */
-typedef enum {
-    VISUAL_RINGBUFFER_ENTRY_TYPE_NONE     = 0,  /**< State less entry. */
-    VISUAL_RINGBUFFER_ENTRY_TYPE_BUFFER   = 1,  /**< Normal byte buffer. */
-    VISUAL_RINGBUFFER_ENTRY_TYPE_FUNCTION = 2   /**< Data retrieval using a callback. */
-} VisRingBufferEntryType;
+  class RingBuffer;
+  class RingBufferEntry;
 
-class VisRingBuffer;
-class VisRingBufferEntry;
+  /**
+   * The RingBufferEntry data structure is an entry within the
+   * ringbuffer.
+   */
+  class LV_API RingBufferEntry
+  {
+  public:
 
-/**
- * A VisRingBuffer data provider function needs this signature. It can be used to provide
- * ringbuffer entry data on runtime through a callback.
- *
- * @arg ringbuffer The VisRingBuffer data structure.
- * @arg entry The VisRingBufferEntry to which the callback entry is connected.
- */
-typedef VisBuffer *(*VisRingBufferDataFunc)(VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
+      /** Enum defining the RingBufferEntryTypes. */
+      enum Type {
+          TYPE_NONE     = 0,  /**< State less entry. */
+          TYPE_BUFFER   = 1,  /**< Normal byte buffer. */
+          TYPE_FUNCTION = 2   /**< Data retrieval using a callback. */
+      };
 
-typedef void (*VisRingBufferDestroyFunc)(VisRingBufferEntry *entry);
+      typedef Buffer* (*DataFunc)    (RingBufferEntry* entry, RingBuffer* ringbuffer);
+      typedef int     (*SizeFunc)    (RingBufferEntry* entry, RingBuffer* ringbuffer);
+      typedef void    (*DestroyFunc) (RingBufferEntry* entry);
 
-typedef int (*VisRingBufferSizeFunc)(VisRingBuffer *ringbuffer, VisRingBufferEntry *entry);
+      Type        type;
 
+      // Used only when type is Buffer
+      Buffer*     buffer;
 
-/**
- * The VisRingBufferEntry data structure is an entry within the ringbuffer.
- */
-class LV_API VisRingBufferEntry
-{
-public:
+      // Used only when type is function
+      DataFunc    data_func;
+      DestroyFunc destroy_func;
+      SizeFunc    size_func;
+      void*       func_data;
 
-    VisRingBufferEntryType   type;
-    VisRingBufferDataFunc    datafunc;
-    VisRingBufferDestroyFunc destroyfunc;
-    VisRingBufferSizeFunc    sizefunc;
+      explicit RingBufferEntry (Buffer *buffer);
 
-    VisBuffer               *buffer;
+      RingBufferEntry (DataFunc    data_func,
+                       DestroyFunc destroy_func,
+                       SizeFunc    size_func,
+                       void*       func_data);
 
-    void                    *functiondata;
+      RingBufferEntry (RingBufferEntry const&) = delete;
 
-    explicit VisRingBufferEntry (VisBuffer *buffer);
+      ~RingBufferEntry ();
 
-    VisRingBufferEntry (VisRingBufferDataFunc datafunc,
-                        VisRingBufferDestroyFunc destroyfunc,
-                        VisRingBufferSizeFunc sizefunc,
-                        void *functiondata);
+      RingBufferEntry& operator= (RingBufferEntry const&) = delete;
+  };
 
-    VisRingBufferEntry (VisRingBufferEntry const&) = delete;
+  /**
+   * The RingBuffer data structure holding the ringbuffer.
+   */
+  class LV_API RingBuffer
+  {
+  public:
 
-    ~VisRingBufferEntry ();
+      typedef RingBufferEntry Entry;
 
-    VisRingBufferEntry& operator= (VisRingBufferEntry const&) = delete;
+      typedef std::vector<Entry*> EntryList;
 
-    void *get_functiondata (VisRingBufferEntry *entry) const
-    {
-        return functiondata;
-    }
-};
+      EntryList entries;
 
-/**
- * The VisRingBuffer data structure holding the ringbuffer.
- */
-class LV_API VisRingBuffer {
-public:
+      /**
+       * Creates a new RingBuffer structure. The RingBuffer system is
+       * a double linked ringbuffer implementation.
+       */
+      RingBuffer ();
 
-    typedef VisRingBufferEntry Entry;
+      RingBuffer (RingBuffer const&) = delete;
 
-    typedef std::vector<Entry*> EntryList;
+      ~RingBuffer ();
 
-    EntryList entries;
+      RingBuffer& operator= (RingBuffer const&) = delete;
 
-    /**
-     * Creates a new VisRingBuffer structure. The VisRingBuffer system is
-     * a double linked ringbuffer implementation.
-     */
-    VisRingBuffer ();
+      /**
+       * Adds a RingBufferEntry to the end of the ringbuffer.
+       *
+       * @param entry Entry to add
+       */
+      void add_entry (Entry* entry);
 
-    VisRingBuffer (VisRingBuffer const&) = delete;
+      /**
+       * Adds a Buffer to the end of the ringbuffer.
+       *
+       * @param buffer The Buffer that is added to the RingBuffer.
+       */
+      void add_buffer (Buffer *buffer);
 
-    ~VisRingBuffer ();
+      /**
+       * Adds a portion of data to the ringbuffer of nbytes byte size.
+       *
+       * @param data Pointer to the data that is added to the ringbuffer.
+       * @param nbytes The size of the data that is added to the ringbuffer.
+       */
+      void add_buffer_by_data (void *data, int nbytes);
 
-    VisRingBuffer& operator= (VisRingBuffer const&) = delete;
+      void add_function (Entry::DataFunc    data_func,
+                         Entry::DestroyFunc destroy_func,
+                         Entry::SizeFunc    size_func,
+                         void*              func_data);
 
-    /**
-     * Adds a VisRingBufferEntry to the end of the ringbuffer.
-     *
-     * @param entry Entry to add
-     */
-    void add_entry (Entry* entry);
+      int get_size ();
 
-    /**
-     * Adds a VisBuffer to the end of the ringbuffer.
-     *
-     * @param buffer The VisBuffer that is added to the VisRingBuffer.
-     */
-    void add_buffer (VisBuffer *buffer);
+      /**
+       * Gets a list of all ringbuffer fragments that are currently in
+       * the ringbuffer.
+       *
+       * @return A list of LV::RingBufferEntry items
+       */
+      EntryList const& get_entries () const
+      {
+          return entries;
+      }
 
-    /**
-     * Adds a portion of data to the ringbuffer of nbytes byte size.
-     *
-     * @param data Pointer to the data that is added to the ringbuffer.
-     * @param nbytes The size of the data that is added to the ringbuffer.
-     */
-    void add_buffer_by_data (void *data, int nbytes);
+      int get_data (Buffer *data, int nbytes);
+      int get_data_offset (Buffer *data, int offset, int nbytes);
+      int get_data_from_end (Buffer *data, int nbytes);
 
-    void add_function (VisRingBufferDataFunc datafunc,
-                       VisRingBufferDestroyFunc destroyfunc,
-                       VisRingBufferSizeFunc sizefunc,
-                       void *functiondata);
+      int get_data_without_wrap (Buffer *data, int nbytes);
 
-    int get_size ();
+      Buffer* get_data_new (int nbytes);
+      Buffer* get_data_new_without_wrap (int nbytes);
+  };
 
-    /**
-     * Gets a list of all ringbuffer fragments that are currently in the
-     * ringbuffer.
-     *
-     * @return A VisList of VisRingBufferEntry items or NULL on failure.
-     */
-    EntryList const& get_entries () const
-    {
-        return entries;
-    }
-
-    int get_data (VisBuffer *data, int nbytes);
-    int get_data_offset (VisBuffer *data, int offset, int nbytes);
-    int get_data_from_end (VisBuffer *data, int nbytes);
-
-    int get_data_without_wrap (VisBuffer *data, int nbytes);
-
-    VisBuffer* get_data_new (int nbytes);
-    VisBuffer* get_data_new_without_wrap (int nbytes);
-};
+} // LV namespace
 
 /**
  * @}

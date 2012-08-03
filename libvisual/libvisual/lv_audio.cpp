@@ -57,10 +57,10 @@ namespace LV {
   {
   public:
 
-      std::string    name;
-      VisRingBuffer* samples;
-      LV::Time       samples_timeout;
-      float          factor;
+      std::string  name;
+      RingBuffer*  samples;
+      Time         samples_timeout;
+      float        factor;
 
       AudioChannel (std::string const& name_);
 
@@ -90,24 +90,24 @@ namespace LV {
   /* Ringbuffer data provider functions */
   namespace {
 
-    void sample_destroy_func (VisRingBufferEntry *entry)
+    void sample_destroy_func (RingBufferEntry* entry)
     {
-        auto sample = static_cast<AudioSample*> (entry->functiondata);
+        auto sample = static_cast<AudioSample*> (entry->func_data);
 
         visual_object_unref (VISUAL_OBJECT (sample));
     }
 
-    int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry)
+    int sample_size_func (RingBufferEntry* entry, RingBuffer* ringbuffer)
     {
-        auto sample = static_cast<AudioSample*> (entry->functiondata);
+        auto sample = static_cast<AudioSample*> (entry->func_data);
 
         return (sample->buffer->get_size () /
                 visual_audio_sample_format_get_size (sample->format)) * sizeof (float);
     }
 
-    VisBuffer* sample_data_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entry)
+    VisBuffer* sample_data_func (RingBufferEntry* entry, RingBuffer* ringbuffer)
     {
-        auto sample = static_cast<AudioSample*> (entry->functiondata);
+        auto sample = static_cast<AudioSample*> (entry->func_data);
 
         /* We have internal format ready */
         if (sample->processed) {
@@ -224,8 +224,8 @@ namespace LV {
 
   AudioChannel::AudioChannel (std::string const& name_)
       : name            (name_)
-      , samples         (new VisRingBuffer)
-      , samples_timeout (LV::Time (1, 0))
+      , samples         (new RingBuffer)
+      , samples_timeout (Time (1, 0))
       , factor          (1.0)
   {}
 
