@@ -128,8 +128,9 @@ struct _VisVideoAttrOptions {
 
 #ifdef __cplusplus
 
-#include <memory>
 #include <libvisual/lv_intrusive_ptr.hpp>
+#include <iosfwd>
+#include <memory>
 
 namespace LV {
 
@@ -174,6 +175,8 @@ namespace LV {
        * @return a Video object containing the image, or nullptr on failure
        */
       static VideoPtr create_from_file (std::string const& path);
+
+      static VideoPtr create_from_stream (std::istream& input);
 
       ~Video ();
 

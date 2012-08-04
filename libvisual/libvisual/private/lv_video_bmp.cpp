@@ -26,7 +26,7 @@
 #include "lv_bits.h"
 #include "lv_util.hpp"
 
-#include <cstdio>
+#include <istream>
 #include <cstring>
 
 #define BI_RGB  0
@@ -51,7 +51,7 @@ namespace LV {
     }
     #endif // VISUAL_BIG_ENDIAN
 
-    int load_uncompressed (FILE *fp, VideoPtr const& video, int depth)
+    int load_uncompressed (std::istream& fp, VideoPtr const& video, int depth)
     {
         auto video_pixels = static_cast<uint8_t*> (video->get_pixels ());
         int video_pitch  = video->get_pitch ();
@@ -66,32 +66,32 @@ namespace LV {
                 while (data > video_pixels) {
                     data -= video_pitch;
 
-                    if (std::fread (data, video_pitch, 1, fp) != 1)
+                    if (!fp.read (reinterpret_cast<char*> (data), video_pitch))
                         goto err;
 
                     if (pad)
-                        std::fseek (fp, pad, SEEK_CUR);
+                        fp.seekg (pad, std::ios::cur);
                 }
                 break;
 
             case 4:
                 while (data > video_pixels) {
-                    /* Unpack 4 bpp pixels aka 2 pixels per byte */
+                    // Unpack 4 bpp pixels aka 2 pixels per byte
                     auto col = data - video_pitch;
                     auto end = reinterpret_cast<uint8_t*> ((intptr_t)data & ~1);
                     data = col;
 
                     while (col < end) {
-                        uint8_t p = std::fgetc (fp);
+                        uint8_t p = fp.get ();
                         *col++ = p >> 4;
                         *col++ = p & 0xf;
                     }
 
                     if (video_pitch & 1)
-                        *col++ = std::fgetc (fp) >> 4;
+                        *col++ = fp.get () >> 4;
 
                     if (pad)
-                        std::fseek (fp, pad, SEEK_CUR);
+                        fp.seekg (pad, std::ios::cur);
                 }
                 break;
 
@@ -103,7 +103,7 @@ namespace LV {
                     data = col;
 
                     while (col < end) {
-                        uint8_t p = std::fgetc (fp);
+                        uint8_t p = fp.get ();
                         for (int i = 0; i < 8; i++) {
                             *col++ = p >> 7;
                             p <<= 1;
@@ -111,7 +111,7 @@ namespace LV {
                     }
 
                     if (video_pitch & 7) {
-                        uint8_t p = std::fgetc (fp);
+                        uint8_t p = fp.get ();
                         uint8_t count = video_pitch & 7;
                         for (int i = 0; i < count; i++) {
                             *col++ = p >> 7;
@@ -120,7 +120,7 @@ namespace LV {
                     }
 
                     if (pad)
-                        std::fseek (fp, pad, SEEK_CUR);
+                        fp.seekg (pad, std::ios::cur);
                 }
                 break;
         }
@@ -133,7 +133,7 @@ namespace LV {
         return -VISUAL_ERROR_BMP_CORRUPTED;
     }
 
-    int load_rle (FILE *fp, VideoPtr const& video, int mode)
+    int load_rle (std::istream& fp, VideoPtr const& video, int mode)
     {
         auto video_pixels = static_cast<uint8_t*> (video->get_pixels ());
         int video_pitch  = video->get_pitch ();
@@ -146,7 +146,7 @@ namespace LV {
         bool processing = true;
 
         do {
-            int c = std::fgetc (fp);
+            int c = fp.get();
 
             if (c == EOF)
                 goto err;
@@ -156,7 +156,7 @@ namespace LV {
                     goto err;
 
                 /* Encoded mode */
-                uint8_t p = std::fgetc (fp); /* Color */
+                uint8_t p = fp.get (); /* Color */
                 if (mode == BI_RLE8) {
                     while (c-- && col < end)
                         *col++ = p;
@@ -174,7 +174,7 @@ namespace LV {
             }
 
             /* Escape sequence */
-            c = std::fgetc (fp);
+            c = fp.get ();
             switch (c) {
                 case EOF:
                     goto err;
@@ -195,10 +195,10 @@ namespace LV {
 
                 case 2: /* Delta */
                     /* X Delta */
-                    col += (uint8_t) std::fgetc (fp);
+                    col += (uint8_t) fp.get ();
 
                     /* Y Delta */
-                    c = (uint8_t) std::fgetc (fp);
+                    c = (uint8_t) fp.get ();
                     col -= c * video_pitch;
                     y -= c;
 
@@ -212,22 +212,22 @@ namespace LV {
                     if (mode == BI_RLE8) {
                         pad = c & 1;
                         while (c-- && col < end)
-                            *col++ = std::fgetc (fp);
+                            *col++ = fp.get ();
                     } else {
                         pad = ((c + 1) >> 1) & 1;
                         int k = c >> 1; /* Even count */
                         while (k-- && col < end - 1) {
-                            uint8_t p = std::fgetc (fp);
+                            uint8_t p = fp.get ();
                             *col++ = p >> 4;
                             *col++ = p & 0xf;
                         }
 
                         if (c & 1 && col < end)
-                            *col++ = std::fgetc (fp) >> 4;
+                            *col++ = fp.get () >> 4;
                     }
 
                     if (pad)
-                        std::fgetc (fp);
+                        fp.get ();
                     break;
 
             }
@@ -243,7 +243,7 @@ namespace LV {
 
   } // anonymous namespace
 
-  VideoPtr bitmap_load_bmp (std::string const& filename)
+  VideoPtr bitmap_load_bmp (std::istream& fp)
   {
       /* The win32 BMP header */
       uint32_t bf_size = 0;
@@ -263,89 +263,80 @@ namespace LV {
 
       std::unique_ptr<Palette> palette;
 
-      FILE* fp = std::fopen (filename.c_str (), "rb");
-      if (!fp) {
-          visual_log (VISUAL_LOG_WARNING, "Bitmap file not found: %s", filename.c_str ());
-          return VideoPtr ();
-      }
-
       /* Read the magic string */
       char magic[2];
-      std::fread (magic, 2, 1, fp);
-      if (strncmp (magic, "BM", 2) != 0) {
+      fp.read (magic, 2);
+      if (std::strncmp (magic, "BM", 2) != 0) {
           visual_log (VISUAL_LOG_WARNING, "Not a bitmap file");
-          std::fclose (fp);
-          return VideoPtr ();
+          return nullptr;
       }
 
       /* Read the file size */
-      std::fread (&bf_size, 4, 1, fp);
+      fp.read (reinterpret_cast<char*> (&bf_size), 4);
       bf_size = VISUAL_ENDIAN_LEI32 (bf_size);
 
       /* Skip past the reserved bits */
-      std::fseek (fp, 4, SEEK_CUR);
+      fp.seekg (4, std::ios::cur);
 
       /* Read the offset bits */
-      std::fread (&bf_bits, 4, 1, fp);
+      fp.read (reinterpret_cast<char*> (&bf_bits), 4);
       bf_bits = VISUAL_ENDIAN_LEI32 (bf_bits);
 
       /* Read the info structure size */
-      std::fread (&bi_size, 4, 1, fp);
+      fp.read (reinterpret_cast<char*> (&bi_size), 4);
       bi_size = VISUAL_ENDIAN_LEI32 (bi_size);
 
       if (bi_size == 12) {
           /* And read the width, height */
-          std::fread (&bi_width, 2, 1, fp);
-          std::fread (&bi_height, 2, 1, fp);
+          fp.read (reinterpret_cast<char*> (&bi_width), 2);
+          fp.read (reinterpret_cast<char*> (&bi_height), 2);
           bi_width = VISUAL_ENDIAN_LEI16 (bi_width);
           bi_height = VISUAL_ENDIAN_LEI16 (bi_height);
 
           /* Skip over the planet */
-          std::fseek (fp, 2, SEEK_CUR);
+          fp.seekg (2, std::ios::cur);
 
           /* Read the bits per pixel */
-          std::fread (&bi_bitcount, 2, 1, fp);
+          fp.read (reinterpret_cast<char*> (&bi_bitcount), 2);
           bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
           bi_compression = BI_RGB;
       } else {
           /* And read the width, height */
-          std::fread (&bi_width, 4, 1, fp);
-          std::fread (&bi_height, 4, 1, fp);
+          fp.read (reinterpret_cast<char*> (&bi_width), 4);
+          fp.read (reinterpret_cast<char*> (&bi_height), 4);
           bi_width = VISUAL_ENDIAN_LEI32 (bi_width);
           bi_height = VISUAL_ENDIAN_LEI32 (bi_height);
 
           /* Skip over the planet */
-          std::fseek (fp, 2, SEEK_CUR);
+          fp.seekg (2, std::ios::cur);
 
           /* Read the bits per pixel */
-          std::fread (&bi_bitcount, 2, 1, fp);
+          fp.read (reinterpret_cast<char*> (&bi_bitcount), 2);
           bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 
           /* Read the compression flag */
-          std::fread (&bi_compression, 4, 1, fp);
+          fp.read (reinterpret_cast<char*> (&bi_compression), 4);
           bi_compression = VISUAL_ENDIAN_LEI32 (bi_compression);
 
           /* Skip over the nonsense we don't want to know */
-          std::fseek (fp, 12, SEEK_CUR);
+          fp.seekg (12, std::ios::cur);
 
           /* Number of colors in palette */
-          std::fread (&bi_clrused, 4, 1, fp);
+          fp.read (reinterpret_cast<char*> (&bi_clrused), 4);
           bi_clrused = VISUAL_ENDIAN_LEI32 (bi_clrused);
 
           /* Skip over the other nonsense */
-          std::fseek (fp, 4, SEEK_CUR);
+          fp.seekg (4, std::ios::cur);
       }
 
       /* Check if we can handle it */
       if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
           visual_log (VISUAL_LOG_ERROR, "Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported");
-          std::fclose (fp);
           return nullptr;
       }
 
       if (bi_compression > 3) {
           visual_log (VISUAL_LOG_ERROR, "Bitmap uses an invalid or unsupported compression scheme");
-          std::fclose (fp);
           return nullptr;
       }
 
@@ -363,16 +354,16 @@ namespace LV {
 
           if (bi_size == 12) {
               for (uint32_t i = 0; i < bi_clrused; i++) {
-                  palette->colors[i].b = std::fgetc (fp);
-                  palette->colors[i].g = std::fgetc (fp);
-                  palette->colors[i].r = std::fgetc (fp);
+                  palette->colors[i].b = fp.get ();
+                  palette->colors[i].g = fp.get ();
+                  palette->colors[i].r = fp.get ();
               }
           } else {
               for (uint32_t i = 0; i < bi_clrused; i++) {
-                  palette->colors[i].b = std::fgetc (fp);
-                  palette->colors[i].g = std::fgetc (fp);
-                  palette->colors[i].r = std::fgetc (fp);
-                  std::fseek (fp, 1, SEEK_CUR);
+                  palette->colors[i].b = fp.get ();
+                  palette->colors[i].g = fp.get ();
+                  palette->colors[i].r = fp.get ();
+                  fp.seekg (1, std::ios::cur);
               }
           }
       }
@@ -388,7 +379,7 @@ namespace LV {
           video->set_palette (*palette);
 
       /* Set to the beginning of image data, note that MickeySoft likes stuff upside down .. */
-      std::fseek (fp, bf_bits, SEEK_SET);
+      fp.seekg (bf_bits, std::ios::beg);
 
       /* Load image data */
       switch (bi_compression) {
@@ -408,8 +399,6 @@ namespace LV {
               error = load_rle (fp, video, BI_RLE8);
               break;
       }
-
-      std::fclose (fp);
 
       if (error != VISUAL_OK) {
           return nullptr;

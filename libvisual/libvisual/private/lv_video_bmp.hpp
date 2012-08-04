@@ -23,9 +23,10 @@
 #define _LV_VIDEO_BMP_HPP
 
 #include <libvisual/lv_video.h>
+#include <iosfwd>
 
 namespace LV {
-  VideoPtr bitmap_load_bmp (std::string const& path);
+  VideoPtr bitmap_load_bmp (std::istream& input);
 }
 
 #endif // _LV_VIDEO_BMP_HPP
