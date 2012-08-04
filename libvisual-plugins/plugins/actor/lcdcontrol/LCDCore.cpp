@@ -363,7 +363,7 @@ void LCDCore::StartLayout(std::string key) {
     }
 
     LCDError("StartLayout: %s", current_layout_.c_str());
-    //emit static_cast<LCDEvents *>(wrapper_)->_LayoutChangeBefore();
+    lcd_->LayoutChangeBefore();
     std::map<std::string, Widget *> widgets = widgets_;
     for(std::map<std::string,Widget *>::iterator w = widgets.begin(); 
         w != widgets.end(); w++){
@@ -379,7 +379,7 @@ void LCDCore::StartLayout(std::string key) {
     	}
     }
 
-    //emit static_cast<LCDEvents *>(wrapper_)->_LayoutChangeAfter();
+    lcd_->LayoutChangeAfter();
 
     Json::Value *timeout = CFG_Fetch(CFG_Get_Root(), 
         current_layout_ + ".timeout", new Json::Value(layout_timeout_));
