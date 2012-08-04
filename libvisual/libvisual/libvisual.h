@@ -53,7 +53,6 @@
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_morph.h>
 #include <libvisual/lv_transform.h>
-#include <libvisual/lv_bmp.h>
 #include <libvisual/lv_random.h>
 #include <libvisual/lv_collection.h>
 #include <libvisual/lv_rectangle.h>

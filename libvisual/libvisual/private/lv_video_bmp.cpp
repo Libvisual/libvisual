@@ -1,11 +1,9 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  * 	    Sepp Wijnands <sw@nerds-incorporated.org>
- *
- * $Id: lv_bmp.c,v 1.25 2006/01/22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,29 +20,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-#include "lv_bmp.h"
+#include "config.h"
+#include "lv_video_bmp.hpp"
 #include "lv_common.h"
 #include "lv_bits.h"
+#include "lv_util.hpp"
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #define BI_RGB	0
 #define BI_RLE8	1
 #define BI_RLE4	2
 
-static int load_uncompressed (FILE *fp, VisVideo *video, int depth);
-static int load_rle (FILE *fp, VisVideo *video, int mode);
+namespace LV {
+
+namespace {
 
 #if VISUAL_BIG_ENDIAN == 1
-static void flip_byte_order (VisVideo *video)
+void flip_byte_order (VideoPtr const& video)
 {
-	uint8_t *pixel = visual_video_get_pixels (video);
-	unsigned int i;
-	unsigned int pixel_count = visual_video_get_width (video) * visual_video_get_height (video);
+	auto pixel = static_cast<uint8_t*> (video->get_pixels ());
+	unsigned int pixel_count = video->get_width () * video->get_height ();
 
-	for (i = 0; i < pixel_count; i++) {
+	for (unsigned int i = 0; i < pixel_count; i++) {
 		pixel[0] = pixel[2];
 		pixel[2] = pixel[0];
 		pixel += 3;
@@ -52,76 +51,76 @@ static void flip_byte_order (VisVideo *video)
 }
 #endif /* VISUAL_BIG_ENDIAN */
 
-static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
+int load_uncompressed (FILE *fp, VideoPtr const& video, int depth)
 {
-	uint8_t *data;
-	int i;
-	int pad;
+    auto video_pixels = static_cast<uint8_t*> (video->get_pixels ());
+    int video_pitch  = video->get_pitch ();
+    int video_height = video->get_height ();
 
-	pad = (4 - (visual_video_get_pitch (video) & 3)) & 3;
-	data = (uint8_t *) visual_video_get_pixels (video) + (visual_video_get_height (video) * visual_video_get_pitch (video));
+	int pad = (4 - (video_pitch & 3)) & 3;
+	auto data = video_pixels + video_height * video_pitch;
 
 	switch (depth) {
 		case 24:
 		case 8:
-			while (data > (uint8_t *) visual_video_get_pixels (video)) {
-				data -= visual_video_get_pitch (video);
+			while (data > video_pixels) {
+				data -= video_pitch;
 
-				if (fread (data, visual_video_get_pitch (video), 1, fp) != 1)
+				if (std::fread (data, video_pitch, 1, fp) != 1)
 					goto err;
 
 				if (pad)
-					fseek (fp, pad, SEEK_CUR);
+					std::fseek (fp, pad, SEEK_CUR);
 			}
 			break;
 
 		case 4:
-			while (data > (uint8_t *) visual_video_get_pixels (video)) {
+			while (data > video_pixels) {
 				/* Unpack 4 bpp pixels aka 2 pixels per byte */
-				uint8_t *col = data - visual_video_get_pitch (video);
-				uint8_t *end = (uint8_t *) ((intptr_t)data & ~1);
+				auto col = data - video_pitch;
+				auto end = reinterpret_cast<uint8_t*> ((intptr_t)data & ~1);
 				data = col;
 
 				while (col < end) {
-					uint8_t p = fgetc (fp);
+					uint8_t p = std::fgetc (fp);
 					*col++ = p >> 4;
 					*col++ = p & 0xf;
 				}
 
-				if (visual_video_get_pitch (video) & 1)
-					*col++ = fgetc (fp) >> 4;
+				if (video_pitch & 1)
+					*col++ = std::fgetc (fp) >> 4;
 
 				if (pad)
-					fseek (fp, pad, SEEK_CUR);
+					std::fseek (fp, pad, SEEK_CUR);
 			}
 			break;
 
 		case 1:
-			while (data > (uint8_t *) visual_video_get_pixels (video)) {
+            while (data > video_pixels) {
 				/* Unpack 1 bpp pixels aka 8 pixels per byte */
-				uint8_t *col = data - visual_video_get_pitch (video);
-				uint8_t *end = (uint8_t *) ((intptr_t)data & ~7);
+				auto col = data - video_pitch;
+				auto end = reinterpret_cast<uint8_t*> ((intptr_t)data & ~7);
 				data = col;
 
 				while (col < end) {
-					uint8_t p = fgetc (fp);
-					for (i=0; i < 8; i++) {
+					uint8_t p = std::fgetc (fp);
+					for (int i = 0; i < 8; i++) {
 						*col++ = p >> 7;
 						p <<= 1;
 					}
 				}
 
-				if (visual_video_get_pitch (video) & 7) {
-					uint8_t p = fgetc (fp);
-					uint8_t count = visual_video_get_pitch (video) & 7;
-					for (i=0; i < count; i++) {
+				if (video_pitch & 7) {
+					uint8_t p = std::fgetc (fp);
+					uint8_t count = video_pitch & 7;
+					for (int i = 0; i < count; i++) {
 						*col++ = p >> 7;
 						p <<= 1;
 					}
 				}
 
 				if (pad)
-					fseek (fp, pad, SEEK_CUR);
+					std::fseek (fp, pad, SEEK_CUR);
 			}
 			break;
 	}
@@ -134,19 +133,22 @@ err:
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
 
-static int load_rle (FILE *fp, VisVideo *video, int mode)
+int load_rle (FILE *fp, VideoPtr const& video, int mode)
 {
-	uint8_t *col, *end;
-	uint8_t p;
-	int c, y, k, pad;
-	int processing = 1;
+    auto video_pixels = static_cast<uint8_t*> (video->get_pixels ());
+    int video_pitch  = video->get_pitch ();
+    int video_height = video->get_height ();
 
-	end = (uint8_t *)visual_video_get_pixels (video) + (visual_video_get_height (video) * visual_video_get_pitch (video));
-	col = end - visual_video_get_pitch (video);
-	y = visual_video_get_height (video) - 1;
+	auto end = video_pixels + video_height * video_pitch;
+    auto col = end - video_pitch;
+	int y = video_height - 1;
+
+	bool processing = true;
 
 	do {
-		if ((c = fgetc (fp)) == EOF)
+		int c = std::fgetc (fp);
+
+		if (c == EOF)
 			goto err;
 
 		if (c) {
@@ -154,12 +156,12 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 				goto err;
 
 			/* Encoded mode */
-			p = fgetc (fp); /* Color */
+			uint8_t p = std::fgetc (fp); /* Color */
 			if (mode == BI_RLE8) {
 				while (c-- && col < end)
 					*col++ = p;
 			} else {
-				k = c >> 1; /* Even count */
+				int k = c >> 1; /* Even count */
 				while (k-- && col < end - 1) {
 					*col++ = p >> 4;
 					*col++ = p & 0xf;
@@ -172,14 +174,14 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 		}
 
 		/* Escape sequence */
-		c = fgetc (fp);
+		c = std::fgetc (fp);
 		switch (c) {
 			case EOF:
 				goto err;
 
 			case 0: /* End of line */
 				y--;
-				col = (uint8_t *) visual_video_get_pixels (video) + visual_video_get_pitch (video) * y;
+				col = video_pixels + video_pitch * y;
 
 				/* Normally we would error here if y < 0.
 				 * However, some encoders apparently emit an
@@ -188,43 +190,44 @@ static int load_rle (FILE *fp, VisVideo *video, int mode)
 				break;
 
 			case 1: /* End of bitmap */
-				processing = 0;
+				processing = false;
 				break;
 
 			case 2: /* Delta */
 				/* X Delta */
-				col += (uint8_t) fgetc (fp);
+				col += (uint8_t) std::fgetc (fp);
 
 				/* Y Delta */
-				c = (uint8_t) fgetc (fp);
-				col -= c * visual_video_get_pitch (video);
+				c = (uint8_t) std::fgetc (fp);
+				col -= c * video_pitch;
 				y -= c;
 
-				if (col < (uint8_t *)visual_video_get_pixels (video))
+				if (col < video_pixels)
 					goto err;
 
 				break;
 
 			default: /* Absolute mode: 3 - 255 */
+                int pad;
 				if (mode == BI_RLE8) {
 					pad = c & 1;
 					while (c-- && col < end)
-						*col++ = fgetc (fp);
+						*col++ = std::fgetc (fp);
 				} else {
 					pad = ((c + 1) >> 1) & 1;
-					k = c >> 1; /* Even count */
+					int k = c >> 1; /* Even count */
 					while (k-- && col < end - 1) {
-						p = fgetc (fp);
+						uint8_t p = std::fgetc (fp);
 						*col++ = p >> 4;
 						*col++ = p & 0xf;
 					}
 
 					if (c & 1 && col < end)
-						*col++ = fgetc (fp) >> 4;
+						*col++ = std::fgetc (fp) >> 4;
 				}
 
 				if (pad)
-					fgetc (fp);
+					std::fgetc (fp);
 				break;
 
 		}
@@ -238,11 +241,11 @@ err:
 	return -VISUAL_ERROR_BMP_CORRUPTED;
 }
 
+} // anonymous namespace
 
-VisVideo *visual_bitmap_load (const char *filename)
+VideoPtr bitmap_load_bmp (std::string const& filename)
 {
 	/* The win32 BMP header */
-	char magic[2];
 	uint32_t bf_size = 0;
 	uint32_t bf_bits = 0;
 
@@ -254,100 +257,96 @@ VisVideo *visual_bitmap_load (const char *filename)
 	uint32_t bi_compression;
 	uint32_t bi_clrused;
 
-	/* File read vars */
-	FILE *fp;
-
 	/* Worker vars */
 	uint8_t depth = 24;
 	int32_t error = 0;
-	int i;
 
-	VisVideo *video = NULL;
-	VisPalette *palette = NULL;
+    std::unique_ptr<Palette> palette;
 
-	fp = fopen (filename, "rb");
-	if (fp == NULL) {
-		visual_log (VISUAL_LOG_WARNING, "Bitmap file not found: %s", filename);
-		return NULL;
+	FILE* fp = std::fopen (filename.c_str (), "rb");
+	if (!fp) {
+		visual_log (VISUAL_LOG_WARNING, "Bitmap file not found: %s", filename.c_str ());
+		return VideoPtr ();
 	}
 
 	/* Read the magic string */
-	fread (magic, 2, 1, fp);
+	char magic[2];
+	std::fread (magic, 2, 1, fp);
 	if (strncmp (magic, "BM", 2) != 0) {
 		visual_log (VISUAL_LOG_WARNING, "Not a bitmap file");
-		fclose (fp);
-		return NULL;
+		std::fclose (fp);
+		return VideoPtr ();
 	}
 
 	/* Read the file size */
-	fread (&bf_size, 4, 1, fp);
+	std::fread (&bf_size, 4, 1, fp);
 	bf_size = VISUAL_ENDIAN_LEI32 (bf_size);
 
 	/* Skip past the reserved bits */
-	fseek (fp, 4, SEEK_CUR);
+	std::fseek (fp, 4, SEEK_CUR);
 
 	/* Read the offset bits */
-	fread (&bf_bits, 4, 1, fp);
+	std::fread (&bf_bits, 4, 1, fp);
 	bf_bits = VISUAL_ENDIAN_LEI32 (bf_bits);
 
 	/* Read the info structure size */
-	fread (&bi_size, 4, 1, fp);
+	std::fread (&bi_size, 4, 1, fp);
 	bi_size = VISUAL_ENDIAN_LEI32 (bi_size);
 
 	if (bi_size == 12) {
 		/* And read the width, height */
-		fread (&bi_width, 2, 1, fp);
-		fread (&bi_height, 2, 1, fp);
+		std::fread (&bi_width, 2, 1, fp);
+		std::fread (&bi_height, 2, 1, fp);
 		bi_width = VISUAL_ENDIAN_LEI16 (bi_width);
 		bi_height = VISUAL_ENDIAN_LEI16 (bi_height);
 
 		/* Skip over the planet */
-		fseek (fp, 2, SEEK_CUR);
+		std::fseek (fp, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
-		fread (&bi_bitcount, 2, 1, fp);
+		std::fread (&bi_bitcount, 2, 1, fp);
 		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 		bi_compression = BI_RGB;
 	} else {
 		/* And read the width, height */
-		fread (&bi_width, 4, 1, fp);
-		fread (&bi_height, 4, 1, fp);
+		std::fread (&bi_width, 4, 1, fp);
+		std::fread (&bi_height, 4, 1, fp);
 		bi_width = VISUAL_ENDIAN_LEI32 (bi_width);
 		bi_height = VISUAL_ENDIAN_LEI32 (bi_height);
 
 		/* Skip over the planet */
-		fseek (fp, 2, SEEK_CUR);
+		std::fseek (fp, 2, SEEK_CUR);
 
 		/* Read the bits per pixel */
-		fread (&bi_bitcount, 2, 1, fp);
+		std::fread (&bi_bitcount, 2, 1, fp);
 		bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
 
 		/* Read the compression flag */
-		fread (&bi_compression, 4, 1, fp);
+		std::fread (&bi_compression, 4, 1, fp);
 		bi_compression = VISUAL_ENDIAN_LEI32 (bi_compression);
 
 		/* Skip over the nonsense we don't want to know */
-		fseek (fp, 12, SEEK_CUR);
+		std::fseek (fp, 12, SEEK_CUR);
 
 		/* Number of colors in palette */
-		fread (&bi_clrused, 4, 1, fp);
+		std::fread (&bi_clrused, 4, 1, fp);
 		bi_clrused = VISUAL_ENDIAN_LEI32 (bi_clrused);
 
 		/* Skip over the other nonsense */
-		fseek (fp, 4, SEEK_CUR);
+		std::fseek (fp, 4, SEEK_CUR);
 	}
 
 	/* Check if we can handle it */
 	if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
 		visual_log (VISUAL_LOG_ERROR, "Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported");
-		fclose (fp);
-		return NULL;
+		std::fclose (fp);
+		return nullptr;
 	}
 
 	if (bi_compression > 3) {
 		visual_log (VISUAL_LOG_ERROR, "Bitmap uses an invalid or unsupported compression scheme");
-		fclose (fp);
-		return NULL;
+		std::fclose (fp);
+		return nullptr;
 	}
 
 	/* Load the palette */
@@ -360,22 +359,20 @@ VisVideo *visual_bitmap_load (const char *filename)
 
 		/* Always allocate 256 palette entries.
 		 * Depth transformation depends on this */
-		palette = visual_palette_new (256);
-
-		VisColor *colors = visual_palette_get_colors (visual_video_get_palette (video));
+		palette = make_unique<LV::Palette> (256);
 
 		if (bi_size == 12) {
-			for (i = 0; i < bi_clrused; i++) {
-				colors[i].b = fgetc (fp);
-				colors[i].g = fgetc (fp);
-				colors[i].r = fgetc (fp);
+			for (uint32_t i = 0; i < bi_clrused; i++) {
+				palette->colors[i].b = std::fgetc (fp);
+				palette->colors[i].g = std::fgetc (fp);
+				palette->colors[i].r = std::fgetc (fp);
 			}
 		} else {
-			for (i = 0; i < bi_clrused; i++) {
-				colors[i].b = fgetc (fp);
-				colors[i].g = fgetc (fp);
-				colors[i].r = fgetc (fp);
-				fseek (fp, 1, SEEK_CUR);
+			for (uint32_t i = 0; i < bi_clrused; i++) {
+				palette->colors[i].b = std::fgetc (fp);
+				palette->colors[i].g = std::fgetc (fp);
+				palette->colors[i].r = std::fgetc (fp);
+				std::fseek (fp, 1, SEEK_CUR);
 			}
 		}
 	}
@@ -385,13 +382,13 @@ VisVideo *visual_bitmap_load (const char *filename)
 		depth = 8;
 
 	/* Make the target VisVideo ready for use */
-	video = visual_video_new_with_buffer (bi_width, bi_height, visual_video_depth_enum_from_value (depth));
+	auto video = Video::create (bi_width, bi_height, visual_video_depth_enum_from_value (depth));
 
 	if (palette)
-		visual_video_set_palette (video, palette);
+		video->set_palette (*palette);
 
 	/* Set to the beginning of image data, note that MickeySoft likes stuff upside down .. */
-	fseek (fp, bf_bits, SEEK_SET);
+	std::fseek (fp, bf_bits, SEEK_SET);
 
 	/* Load image data */
 	switch (bi_compression) {
@@ -412,12 +409,13 @@ VisVideo *visual_bitmap_load (const char *filename)
 			break;
 	}
 
-	fclose (fp);
+	std::fclose (fp);
 
 	if (error != VISUAL_OK) {
-		visual_video_unref (video);
-		return NULL;
+		return nullptr;
 	}
 
 	return video;
 }
+
+} // LV namespace

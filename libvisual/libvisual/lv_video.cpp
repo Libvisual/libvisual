@@ -33,6 +33,7 @@
 #include "private/lv_video_convert.hpp"
 #include "private/lv_video_fill.hpp"
 #include "private/lv_video_transform.hpp"
+#include "private/lv_video_bmp.hpp"
 
 namespace LV {
 
@@ -155,6 +156,11 @@ namespace LV {
       self->set_buffer (data);
 
       return self;
+  }
+
+  VideoPtr Video::create_from_file (std::string const& path)
+  {
+      return bitmap_load_bmp (path);
   }
 
   VideoPtr Video::create_scale_depth (VideoConstPtr const& src,

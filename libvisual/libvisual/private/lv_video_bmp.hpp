@@ -1,10 +1,8 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_bmp.h,v 1.6 2006/01/22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,31 +19,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_BMP_H
-#define _LV_BMP_H
+#ifndef _LV_VIDEO_BMP_HPP
+#define _LV_VIDEO_BMP_HPP
 
 #include <libvisual/lv_video.h>
 
-/**
- * @defgroup VisBitmap VisBitmap
- * @{
- */
+namespace LV {
+  VideoPtr bitmap_load_bmp (std::string const& path);
+}
 
-LV_BEGIN_DECLS
-
-/**
- * Creates a new VisVideo from a BMP image file.
- *
- * @param path path to file to load
- *
- * @return a VisVideo containing the image, or NULL on failure
- */
-LV_API VisVideo *visual_bitmap_load (const char *path);
-
-LV_END_DECLS
-
-/**
- * @}
- */
-
-#endif /* _LV_BMP_H */
+#endif // _LV_VIDEO_BMP_HPP
