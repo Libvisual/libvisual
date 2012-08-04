@@ -2,8 +2,11 @@
 #include <libvisual/lv_aligned_allocator.hpp>
 #include <vector>
 #include <chrono>
+#include <random>
 #include <iostream>
 
+typedef std::mt19937_64 RandomNumGen;
+typedef std::chrono::system_clock SystemClock;
 typedef std::chrono::high_resolution_clock PerfClock;
 typedef std::chrono::duration<double, std::micro> Duration;
 
@@ -37,9 +40,10 @@ int main (int argc, char** argv)
               << std::endl;
 
     // Put random stuff
+    RandomNumGen rng { SystemClock::to_time_t (SystemClock::now ()) };
     for (unsigned int i = 0; i < input1.size (); i++) {
-        input1[i] = float (2.0 / RAND_MAX) * std::rand ();
-        input2[i] = float (2.0 / RAND_MAX) * std::rand ();
+        input1[i] = std::generate_canonical<float, 32> (rng);
+        input2[i] = std::generate_canonical<float, 32> (rng);
     }
 
     auto start_time = PerfClock::now ();
