@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -100,8 +100,8 @@ namespace LV {
       visual_return_if_fail (ylist  != nullptr);
       visual_return_if_fail (size > 0);
 
-      visual_math_simd_floats_to_int32s_mul_float (xlist, fxlist, size, width);
-      visual_math_simd_floats_to_int32s_mul_float (ylist, fylist, size, height);
+      visual_math_simd_denorm_floats_to_int32s (xlist, fxlist, width, size);
+      visual_math_simd_denorm_floats_to_int32s (ylist, fylist, height, size);
   }
 
   void Rect::denormalize_points_neg (float const* fxlist, float const* fylist, int32_t *xlist, int32_t *ylist, unsigned int size) const
@@ -112,8 +112,8 @@ namespace LV {
       visual_return_if_fail (ylist  != nullptr);
       visual_return_if_fail (size > 0);
 
-      visual_math_simd_floats_to_int32s_mul_float_denormalise (xlist, fxlist, size, width);
-      visual_math_simd_floats_to_int32s_mul_float_denormalise (ylist, fylist, size, height);
+      visual_math_simd_denorm_neg_floats_to_int32s (xlist, fxlist, size, width);
+      visual_math_simd_denorm_neg_floats_to_int32s (ylist, fylist, size, height);
   }
 
 } // LV namespace
