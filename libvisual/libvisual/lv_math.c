@@ -49,7 +49,7 @@ unsigned int visual_math_round_power_of_2 (unsigned int n)
 	return n;
 }
 
-void visual_math_simd_mul_floats_float (float *dest, const float *src, visual_size_t n, float k)
+void visual_math_simd_mul_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float k, int n)
 {
 	float *d = dest;
 	const float *s = src;
@@ -159,7 +159,7 @@ void visual_math_simd_mul_floats_float (float *dest, const float *src, visual_si
 	}
 }
 
-void visual_math_simd_add_floats_float (float *dest, const float *src, visual_size_t n, float k)
+void visual_math_simd_add_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float k, int n)
 {
 	float *d = dest;
 	const float *s = src;
@@ -269,7 +269,7 @@ void visual_math_simd_add_floats_float (float *dest, const float *src, visual_si
 	}
 }
 
-void visual_math_simd_mul_floats_floats (float *dest, const float *src1, const float *src2, visual_size_t n)
+void visual_math_simd_mul_floats_floats (float *LV_RESTRICT dest, const float *LV_RESTRICT src1, const float *LV_RESTRICT src2, int n)
 {
 	float *d = dest;
 	const float *s1 = src1;
@@ -364,7 +364,7 @@ void visual_math_simd_mul_floats_floats (float *dest, const float *src1, const f
 	}
 }
 
-void visual_math_simd_floats_to_int32s (int32_t *ints, const float *flts, visual_size_t n)
+void visual_math_simd_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, int n)
 {
 	const float *s = flts;
 	int32_t *d = ints;
@@ -418,7 +418,7 @@ void visual_math_simd_floats_to_int32s (int32_t *ints, const float *flts, visual
 	}
 }
 
-void visual_math_simd_int32s_to_floats (float *flts, const int32_t *ints, visual_size_t n)
+void visual_math_simd_int32s_to_floats (float *LV_RESTRICT flts, const int32_t *LV_RESTRICT ints, int n)
 {
 	const int32_t *s = ints;
 	float *d = flts;
@@ -471,7 +471,7 @@ void visual_math_simd_int32s_to_floats (float *flts, const int32_t *ints, visual
 	}
 }
 
-void visual_math_simd_floats_to_int32s_mul_float (int32_t *ints, const float *flts, visual_size_t n, float k)
+void visual_math_simd_floats_to_int32s_mul_float (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, int n)
 {
 	const float *s = flts;
 	int32_t *d = ints;
@@ -529,7 +529,7 @@ void visual_math_simd_floats_to_int32s_mul_float (int32_t *ints, const float *fl
 	}
 }
 
-void visual_math_simd_int32s_to_floats_mul_float (float *flts, const int32_t *ints, visual_size_t n, float k)
+void visual_math_simd_int32s_to_floats_mul_float (float *LV_RESTRICT flts, const int32_t *LV_RESTRICT ints, float k, int n)
 {
 	const int32_t *s = ints;
 	float *d = flts;
@@ -593,7 +593,7 @@ void visual_math_simd_int32s_to_floats_mul_float (float *flts, const int32_t *in
 	}
 }
 
-void visual_math_simd_floats_to_int32s_mul_float_denormalise (int32_t *ints, const float *flts, visual_size_t n, float k)
+void visual_math_simd_denorm_neg_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, int n)
 {
 	const float *s = flts;
 	int32_t *d = ints;
@@ -662,7 +662,7 @@ void visual_math_simd_floats_to_int32s_mul_float_denormalise (int32_t *ints, con
 	}
 }
 
-void visual_math_simd_sqrt_floats (float *dest, const float *src, visual_size_t n)
+void visual_math_simd_sqrt_floats (float *LV_RESTRICT dest, const float *LV_RESTRICT src, int n)
 {
 	float *d = dest;
 	const float *s = src;
@@ -714,7 +714,7 @@ void visual_math_simd_sqrt_floats (float *dest, const float *src, visual_size_t 
 	}
 }
 
-void visual_math_simd_complex_norm (float *dest, const float *real, const float *imag, visual_size_t n)
+void visual_math_simd_complex_norm (float *LV_RESTRICT dest, const float *LV_RESTRICT real, const float *LV_RESTRICT imag, int n)
 {
 	float *d = dest;
 	const float *r = real;
@@ -777,7 +777,7 @@ void visual_math_simd_complex_norm (float *dest, const float *real, const float 
 	}
 }
 
-void visual_math_simd_complex_norm_mul_float (float *dest, const float *real, const float *imag, visual_size_t n, float k)
+void visual_math_simd_complex_scaled_norm (float *LV_RESTRICT dest, const float *LV_RESTRICT real, const float *LV_RESTRICT imag, float k, int n)
 {
 	float *d = dest;
 	const float *r = real;
