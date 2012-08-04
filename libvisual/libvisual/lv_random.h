@@ -190,8 +190,8 @@ LV_BEGIN_DECLS
 #define visual_random_get_seed() visual_random_context_get_seed(&__lv_internal_random_context)
 #define visual_random_int() visual_random_context_int(&__lv_internal_random_context)
 #define visual_random_int_range(a, b) visual_random_context_int(&__lv_internal_random_context, a, b)
-#define visual_random_double () visual_random_context_double(&__lv_internal_random_context);
-#define visual_random_float () visual_random_context_float(&__lv_internal_random_context);
+#define visual_random_double() visual_random_context_double(&__lv_internal_random_context);
+#define visual_random_float() visual_random_context_float(&__lv_internal_random_context);
 #define visual_random_decide(a) visual_random_int(&__lv_internal_random_context, a)
 
 LV_API VisRandomContext *visual_random_context_new  (uint32_t seed);
