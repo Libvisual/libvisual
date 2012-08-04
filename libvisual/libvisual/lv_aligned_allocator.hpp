@@ -16,7 +16,7 @@ namespace LV {
   {
       typedef void        value_type;
       typedef void*       pointer;
-      typedef const void* const_pointer;
+      typedef void const* const_pointer;
 
       template <typename U>
       struct rebind { typedef AlignedAllocator<U, alignment> other; };
@@ -27,8 +27,8 @@ namespace LV {
   {
       typedef T*             pointer;
       typedef T&             reference;
-      typedef const T*       const_pointer;
-      typedef const T&       const_reference;
+      typedef T const*       const_pointer;
+      typedef T const&       const_reference;
       typedef T              value_type;
       typedef std::size_t    size_type;
       typedef std::ptrdiff_t difference_type;
@@ -53,7 +53,7 @@ namespace LV {
           return &x;
       }
 
-      pointer allocate (size_type n, typename AlignedAllocator<void, alignment>::pointer = 0)
+      pointer allocate (size_type n, typename AlignedAllocator<void, alignment>::pointer = nullptr)
       {
           void* ptr = visual_mem_malloc_aligned (n * sizeof (T), alignment);
 
@@ -63,7 +63,7 @@ namespace LV {
           return pointer (ptr);
       }
 
-      void deallocate (pointer ptr, size_type) throw()
+      void deallocate (pointer ptr, size_type) noexcept
       {
           visual_mem_free_aligned (ptr);
       }
@@ -73,7 +73,7 @@ namespace LV {
           return size_type (-1) / sizeof (T);
       }
 
-      void construct (pointer p, const value_type& x)
+      void construct (pointer p, const_reference x)
       {
           new (p) T (x);
       }
