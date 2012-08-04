@@ -145,6 +145,12 @@ LV_GENERATE_ORC_SOURCES(
   math.h
 )
 
+SET_SOURCE_FILES_PROPERTIES(
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.c
+  PROPERTIES
+  COMPILE_FLAGS -fvisibility=default
+)
+
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
 
 SET_TARGET_PROPERTIES(libvisual
