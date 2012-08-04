@@ -210,17 +210,6 @@ int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
 */
 				break;
             }
-/*
-            case VISUAL_EVENT_GENERIC:
-            {
-                priv->control->Lock();
-                LCDEvent *lcd_event = (LCDEvent *)ev.event.generic.data_ptr;
-                lcd_event->mFunc(lcd_event->mData);
-                priv->control->Unlock();
-                
-                break;
-            }
-*/
 			default: /* to avoid warnings */
             {
 				break;

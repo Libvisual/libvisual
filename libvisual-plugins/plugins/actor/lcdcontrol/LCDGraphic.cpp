@@ -208,7 +208,7 @@ VisVideo *LCDGraphic::GetVideo()
 }
 
 void LCDGraphic::LayoutChangeBefore() {
-	//GraphicClear();
+	GraphicFill();
 }
 
 void LCDGraphic::LayoutChangeAfter() {
@@ -408,21 +408,9 @@ void LCDGraphic::GraphicBlit(const int row, const int col, const int height, con
     GraphicWindow(row, height, LROWS, &r, &h);
     GraphicWindow(col, width, LCOLS, &c, &w);
 
+    GraphicClear();
 
     if (h > 0 && w > 0) {
-
-#if _OPENMP
-# pragma omp parallel
-# pragma omp for
-#endif
-        for(int l = 0; l < LAYERS; l++) {
-            for(int r = 0; r < LROWS; r++) {
-                for(int c = 0; c < LCOLS; c++)
-                {
-                    DisplayFB[l][r * LCOLS + c] = NO_COL;
-                }
-            }
-        }
 
 #if _OPENMP
 # pragma omp parallel
@@ -578,16 +566,17 @@ void LCDGraphic::GraphicRender(const int layer, const int row, const int col,
 }
 
 void LCDGraphic::GraphicClear() {
+
+#if _OPENMP
+# pragma omp parallel
+# pragma omp for
+#endif
+
     for (int l = 0; l < LAYERS; l++) {
         for (int i = 0; i < LCOLS * LROWS; i++) {
             DisplayFB[l][i] = NO_COL;
-            LayoutFB[l][i] = NO_COL;
-            TransitionFB[l][i] = NO_COL;
         }
     }
-
-    GraphicUpdate(0, 0, LROWS, LCOLS);
-    GraphicBlit(0, 0, LROWS, LCOLS);
 }
 
 void LCDGraphic::GraphicFill() {
