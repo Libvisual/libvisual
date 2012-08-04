@@ -60,6 +60,7 @@ SET(libvisual_HEADERS
   lv_alpha_blend.h
   lv_util.h
 
+  lv_aligned_allocator.hpp
   lv_module.hpp
   lv_intrusive_ptr.hpp
   lv_singleton.hpp
