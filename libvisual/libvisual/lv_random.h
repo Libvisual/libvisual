@@ -194,8 +194,8 @@ LV_BEGIN_DECLS
 #define visual_random_float () visual_random_context_float(&__lv_internal_random_context);
 #define visual_random_decide(a) visual_random_int(&__lv_internal_random_context, a)
 
-VisRandomContext *visual_random_context_new (uint32_t seed);
-void visual_random_context_free (VisRandomContext *rcontext);
+LV_API VisRandomContext *visual_random_context_new  (uint32_t seed);
+LV_API void              visual_random_context_free (VisRandomContext *rcontext);
 
 LV_API void visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed);
 LV_API uint32_t visual_random_context_get_seed (VisRandomContext *rcontext);
