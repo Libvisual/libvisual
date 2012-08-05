@@ -28,6 +28,7 @@
 #include <libvisual/lv_list.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param_value.h>
+#include <libvisual/lv_param_validators.h>
 
 /**
  * @defgroup VisParam VisParam
@@ -41,7 +42,7 @@ typedef struct _VisParam      VisParam;
 typedef struct _VisParamList  VisParamList;
 typedef struct _VisClosure    VisClosure;
 
-typedef int  (*VisParamValidateFunc) (VisParamValue *value, VisParamValue *old_value, void *priv);
+typedef int  (*VisParamValidateFunc) (VisParamValue *value, void *priv);
 typedef void (*VisParamChangedFunc)  (VisParam *param, void *priv);
 typedef void (*VisDestroyFunc)       (void *data);
 
@@ -58,7 +59,7 @@ struct _VisParam
     char *         description;
     VisParamValue  value;
     VisParamValue  default_value;
-    VisClosure     validate_handler;
+    VisClosure *   validator;
     VisList *      changed_handlers;
     VisParamList * parent;
 };
@@ -75,6 +76,9 @@ struct _VisParamList {
 };
 
 LV_BEGIN_DECLS
+
+LV_API VisClosure *visual_closure_new  (void *func, void *data, void *destroy_func);
+LV_API void        visual_closure_free (VisClosure *self);
 
 /**
  * Creates a new VisParamList object.
@@ -166,28 +170,8 @@ LV_API VisParam *visual_param_list_get (VisParamList *list, const char *name);
 LV_API VisParam *visual_param_new (const char * name,
                                    const char * description,
                                    VisParamType type,
-                                   void *       default_value);
-
-/* Type-safe variants of visual_param_new */
-
-LV_API VisParam *visual_param_new_int     (const char *name,
-                                           const char *description,
-                                           int         default_value);
-LV_API VisParam *visual_param_new_float   (const char *name,
-                                           const char *description,
-                                           float       default_value);
-LV_API VisParam *visual_param_new_double  (const char *name,
-                                           const char *description,
-                                           double      default_value);
-LV_API VisParam *visual_param_new_string  (const char *name,
-                                           const char *description,
-                                           const char *default_value);
-LV_API VisParam *visual_param_new_color   (const char *name,
-                                           const char *description,
-                                           VisColor *  default_value);
-LV_API VisParam *visual_param_new_palette (const char *name,
-                                           const char *description,
-                                           VisPalette *default_value);
+                                   void *       default_value,
+                                   VisClosure * validator);
 
 /**
  * Adds a change notification callback.
@@ -253,6 +237,23 @@ LV_API float       visual_param_get_value_float   (VisParam *param);
 LV_API double      visual_param_get_value_double  (VisParam *param);
 LV_API VisColor *  visual_param_get_value_color   (VisParam *param);
 LV_API VisPalette *visual_param_get_value_palette (VisParam *param);
+
+
+/* Type-safe variants of visual_param_new() */
+
+#define _LV_DEFINE_PARAM_NEW(func,ctype,type,marshal) \
+  static inline VisParam *visual_param_new_##func (const char *name,          \
+                                                   const char *description,   \
+                                                   ctype       default_value, \
+                                                   VisClosure *validator)     \
+  { return visual_param_new (name, description, VISUAL_PARAM_TYPE_##type, _LV_PARAM_MARSHAL_##marshal (default_value), validator); }
+
+_LV_DEFINE_PARAM_NEW (integer, int               , INTEGER, INTEGER)
+_LV_DEFINE_PARAM_NEW (float  , float             , FLOAT  , FLOAT)
+_LV_DEFINE_PARAM_NEW (double , double            , DOUBLE , DOUBLE)
+_LV_DEFINE_PARAM_NEW (string , const char *      , STRING , POINTER)
+_LV_DEFINE_PARAM_NEW (color  , const VisColor *  , COLOR  , POINTER)
+_LV_DEFINE_PARAM_NEW (palette, const VisPalette *, PALETTE, POINTER)
 
 LV_END_DECLS
 

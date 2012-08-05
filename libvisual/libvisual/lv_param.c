@@ -27,25 +27,15 @@
 
 static void visual_param_free (VisParam *param);
 
-static VisClosure *visual_closure_new  (void *func, void *data, void *destroy_func);
-static void        visual_closure_init (VisClosure *self, void *func, void *data, void *destroy_func);
-static void        visual_closure_free (VisClosure *self);
-
 VisClosure *visual_closure_new (void *func, void *data, void *destroy_func)
 {
     VisClosure *self = visual_mem_new0 (VisClosure, 1);
-    visual_closure_init (self, func, data, destroy_func);
-
-    return self;
-}
-
-void visual_closure_init (VisClosure *self, void *func, void *data, void *destroy_func)
-{
-    visual_return_if_fail (self != NULL);
 
     self->func = func;
     self->data = data;
     self->destroy_func = destroy_func;
+
+    return self;
 }
 
 void visual_closure_free (VisClosure *self)
@@ -184,7 +174,8 @@ VisParam *visual_param_list_get (VisParamList *self, const char *name)
 VisParam *visual_param_new (const char * name,
                             const char * description,
                             VisParamType type,
-                            void *       default_value)
+                            void *       default_value,
+                            VisClosure * validator)
 {
     visual_return_val_if_fail (name != NULL, NULL);
     visual_return_val_if_fail (type != VISUAL_PARAM_TYPE_NONE, NULL);
@@ -194,9 +185,10 @@ VisParam *visual_param_new (const char * name,
 
     self->name        = visual_strdup (name);
     self->description = visual_strdup (description);
+    self->validator   = validator;
 
-    visual_param_value_set (&self->value, default_value);
-    visual_param_value_set (&self->default_value, default_value);
+    visual_param_value_set (&self->value, type, default_value);
+    visual_param_value_set (&self->default_value, type, default_value);
 
     self->changed_handlers = visual_list_new ((VisCollectionDestroyerFunc) visual_closure_free);
 
@@ -214,51 +206,11 @@ void visual_param_free (VisParam *self)
     visual_param_value_free_value (&self->value);
     visual_param_value_free_value (&self->default_value);
 
+    visual_closure_free (self->validator);
+
     visual_object_unref (VISUAL_OBJECT (self->changed_handlers));
 
     visual_mem_free (self);
-}
-
-VisParam *visual_param_new_int (const char *name,
-                                const char *description,
-                                int         default_value)
-{
-    return visual_param_new (name, description, VISUAL_PARAM_TYPE_INTEGER, (void *) (intptr_t) default_value);
-}
-
-VisParam *visual_param_new_float (const char *name,
-                                  const char *description,
-                                  float       default_value)
-{
-    return visual_param_new (name, description, VISUAL_PARAM_TYPE_FLOAT, (void *) (intptr_t) *(int32_t *) &default_value);
-}
-
-VisParam *visual_param_new_double (const char *name,
-                                   const char *description,
-                                   double      default_value)
-{
-    return visual_param_new (name, description, VISUAL_PARAM_TYPE_DOUBLE, (void *) &default_value);
-}
-
-VisParam *visual_param_new_string (const char *name,
-                                   const char *description,
-                                   const char *default_value)
-{
-    return visual_param_new (name, description, VISUAL_PARAM_TYPE_STRING, (void *) default_value);
-}
-
-VisParam *visual_param_new_color (const char *name,
-                                  const char *description,
-                                  VisColor   *default_value)
-{
-    return visual_param_new (name, description, VISUAL_PARAM_TYPE_COLOR, (void *) default_value);
-}
-
-VisParam *visual_param_new_palette (const char *name,
-                                    const char *description,
-                                    VisPalette *default_value)
-{
-    return visual_param_new (name, description, VISUAL_PARAM_TYPE_PALETTE, (void *) default_value);
 }
 
 VisClosure *visual_param_add_callback (VisParam *          self,
