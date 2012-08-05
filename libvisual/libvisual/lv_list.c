@@ -68,13 +68,13 @@ static void list_destroy (VisCollection *collection)
 
 	/* Walk through the given list, possibly calling the destroyer for it */
 	if (destroyer) {
-		while ((elem = visual_list_next (list, &le)) != NULL)
-			visual_list_delete (list, &le);
-	} else {
 		while ((elem = visual_list_next (list, &le)) != NULL) {
 			destroyer (elem);
 			visual_list_delete (list, &le);
 		}
+	} else {
+		while ((elem = visual_list_next (list, &le)) != NULL)
+			visual_list_delete (list, &le);
 	}
 }
 
