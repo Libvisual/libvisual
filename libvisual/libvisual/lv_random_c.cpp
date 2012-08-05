@@ -24,20 +24,6 @@ extern "C" {
       rcontext->set_seed (seed);
   }
 
-  uint32_t visual_random_context_get_seed (VisRandomContext *rcontext)
-  {
-      visual_return_val_if_fail (rcontext != nullptr, 0);
-
-      return rcontext->get_seed ();
-  }
-
-  uint32_t visual_random_context_get_seed_state (VisRandomContext *rcontext)
-  {
-      visual_return_val_if_fail (rcontext != nullptr, 0);
-
-      return rcontext->get_seed_state ();
-  }
-
   uint32_t visual_random_context_int (VisRandomContext *rcontext)
   {
       visual_return_val_if_fail (rcontext != nullptr, 0);

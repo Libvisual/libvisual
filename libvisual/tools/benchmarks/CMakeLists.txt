@@ -4,17 +4,17 @@ INCLUDE_DIRECTORIES(
 )
 
 SET(BENCHMARK_PROGRAMS
-  actor_throughput_bench
-  alphablend_bench
+  actor_throughput_bench.c
+  alphablend_bench.c
   #blit_bench
-  depth_transform_bench
-  morph_throughput_bench
-  scale_bench
+  depth_transform_bench.c
+  morph_throughput_bench.c
+  scale_bench.c
+  math_simd_bench.cpp
 )
 
 FOREACH(BENCHMARK IN LISTS BENCHMARK_PROGRAMS)
-  ADD_EXECUTABLE(${BENCHMARK} ${BENCHMARK}.c)
-  TARGET_LINK_LIBRARIES(${BENCHMARK}
-    libvisual
-  )
+  GET_FILENAME_COMPONENT(EXECUTABLE ${BENCHMARK} NAME_WE)
+  ADD_EXECUTABLE(${EXECUTABLE} ${BENCHMARK})
+  TARGET_LINK_LIBRARIES(${EXECUTABLE} libvisual)
 ENDFOREACH()

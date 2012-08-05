@@ -51,6 +51,14 @@ VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int 
     return self.get ();
 }
 
+VisVideo *visual_video_load_from_file (const char *path)
+{
+    auto self = LV::Video::create_from_file (path);
+    self->ref ();
+
+    return self.get ();
+}
+
 void visual_video_free_buffer (VisVideo *self)
 {
     visual_return_if_fail (self != nullptr);

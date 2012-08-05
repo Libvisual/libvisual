@@ -40,7 +40,6 @@ SET(libvisual_HEADERS
   lv_libvisual.h
   lv_songinfo.h
   lv_morph.h
-  lv_bmp.h
   lv_param.h
   lv_mem.h
   lv_bits.h
@@ -63,6 +62,7 @@ SET(libvisual_HEADERS
   lv_alpha_blend.h
   lv_util.h
 
+  lv_aligned_allocator.hpp
   lv_module.hpp
   lv_intrusive_ptr.hpp
   lv_singleton.hpp
@@ -75,7 +75,6 @@ SET(libvisual_SOURCES
   lv_mem.c
   lv_list.c
   lv_log.c
-  lv_bmp.c
   lv_param.c
   lv_cpu.c
   lv_error.c
@@ -130,6 +129,7 @@ SET(libvisual_SOURCES
   private/lv_video_rotate.cpp
   private/lv_video_blit_simd.cpp
   private/lv_video_scale_simd.cpp
+  private/lv_video_bmp.cpp
   private/lv_buffer_ring.cpp
 
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
