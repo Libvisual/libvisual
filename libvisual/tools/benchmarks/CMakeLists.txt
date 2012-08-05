@@ -4,8 +4,8 @@ INCLUDE_DIRECTORIES(
 )
 
 SET(BENCHMARK_PROGRAMS
-  actor_throughput_bench.c
-  morph_throughput_bench.c
+  actor_bench.cpp
+  morph_bench.cpp
   video_alpha_blend_bench.cpp
   video_convert_depth_bench.cpp
   video_scale_bench.cpp

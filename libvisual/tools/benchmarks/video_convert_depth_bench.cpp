@@ -16,14 +16,14 @@ int main (int argc, char **argv)
         depth2 = visual_video_depth_enum_from_value (std::atoi (argv[2]));
     }
 
-    if (depth1 == depth2) {
-        std::cerr << "Bit depths are the same, Nothing to test!\n";
-        return EXIT_FAILURE;
-    }
-
     if (depth1 == VISUAL_VIDEO_DEPTH_NONE || depth2 == VISUAL_VIDEO_DEPTH_NONE)
     {
         std::cerr << "Invalid bit depths specified!\n";
+        return EXIT_FAILURE;
+    }
+
+    if (depth1 == depth2) {
+        std::cerr << "Bit depths are the same, Nothing to test!\n";
         return EXIT_FAILURE;
     }
 
