@@ -25,24 +25,56 @@
 #include <stdarg.h>
 #include <string.h>
 
-static void visual_param_list_dtor (VisObject *object);
-static void visual_param_dtor      (VisObject *object);
+static void visual_param_free (VisParam *param);
+
+static VisClosure *visual_closure_new  (void *func, void *data, void *destroy_func);
+static void        visual_closure_init (VisClosure *self, void *func, void *data, void *destroy_func);
+static void        visual_closure_free (VisClosure *self);
+
+VisClosure *visual_closure_new (void *func, void *data, void *destroy_func)
+{
+    VisClosure *self = visual_mem_new0 (VisClosure, 1);
+    visual_closure_init (self, func, data, destroy_func);
+
+    return self;
+}
+
+void visual_closure_init (VisClosure *self, void *func, void *data, void *destroy_func)
+{
+    visual_return_if_fail (self != NULL);
+
+    self->func = func;
+    self->data = data;
+    self->destroy_func = destroy_func;
+}
+
+void visual_closure_free (VisClosure *self)
+{
+    if (!self)
+        return;
+
+    if (self->data && self->destroy_func)
+        self->destroy_func (self->data);
+
+    visual_mem_free (self);
+}
 
 VisParamList *visual_param_list_new (void)
 {
     VisParamList *self = visual_mem_new0 (VisParamList, 1);
 
-    visual_object_init (VISUAL_OBJECT (self), visual_param_list_dtor);
-
-    self->entries = visual_list_new (visual_object_collection_destroyer);
+    self->entries = visual_list_new ((VisCollectionDestroyerFunc) visual_param_free);
 
     return self;
 }
 
-void visual_param_list_dtor (VisObject *obj)
+void visual_param_list_free (VisParamList *self)
 {
-    VisParamList *self = VISUAL_PARAM_LIST (obj);
+    if (!self)
+        return;
+
     visual_object_unref (VISUAL_OBJECT (self->entries));
+    visual_mem_free (self);
 }
 
 void visual_param_list_set_eventqueue (VisParamList *self, VisEventQueue *eventqueue)
@@ -160,22 +192,21 @@ VisParam *visual_param_new (const char * name,
 
     VisParam *self = visual_mem_new0 (VisParam, 1);
 
-    visual_object_init (VISUAL_OBJECT (self), visual_param_dtor);
-
     self->name        = visual_strdup (name);
     self->description = visual_strdup (description);
 
     visual_param_value_set (&self->value, default_value);
     visual_param_value_set (&self->default_value, default_value);
 
-    self->changed_handlers = visual_list_new (visual_object_collection_destroyer);
+    self->changed_handlers = visual_list_new ((VisCollectionDestroyerFunc) visual_closure_free);
 
     return self;
 }
 
-void visual_param_dtor (VisObject *obj)
+void visual_param_free (VisParam *self)
 {
-    VisParam *self = VISUAL_PARAM (obj);
+    if (!self)
+        return;
 
     visual_mem_free (self->name);
     visual_mem_free (self->description);
@@ -184,6 +215,8 @@ void visual_param_dtor (VisObject *obj)
     visual_param_value_free_value (&self->default_value);
 
     visual_object_unref (VISUAL_OBJECT (self->changed_handlers));
+
+    visual_mem_free (self);
 }
 
 VisParam *visual_param_new_int (const char *name,
@@ -228,41 +261,30 @@ VisParam *visual_param_new_palette (const char *name,
     return visual_param_new (name, description, VISUAL_PARAM_TYPE_PALETTE, (void *) default_value);
 }
 
-VisParamChangedClosure *visual_param_add_callback (VisParam *          self,
-                                                   VisParamChangedFunc func,
-                                                   void *              priv,
-                                                   VisDestroyFunc      destroy_func)
+VisClosure *visual_param_add_callback (VisParam *          self,
+                                       VisParamChangedFunc func,
+                                       void *              priv,
+                                       VisDestroyFunc      destroy_func)
 {
     visual_return_val_if_fail (self != NULL, NULL);
     visual_return_val_if_fail (func != NULL, NULL);
 
-    VisParamChangedClosure *closure = visual_mem_new0 (VisParamChangedClosure, 1);
-    closure->func = func;
-    closure->data = priv;
-    closure->destroy_func = destroy_func;
-
+    VisClosure *closure = visual_closure_new (func, priv, destroy_func);
     visual_list_add (self->changed_handlers, closure);
 
     return closure;
 }
 
-int visual_param_remove_callback (VisParam *self, VisParamChangedClosure *to_remove)
+int visual_param_remove_callback (VisParam *self, VisClosure *to_remove)
 {
     visual_return_val_if_fail (self != NULL, FALSE);
 
     VisListEntry *le = NULL;
-    VisParamChangedClosure *closure;
+    VisClosure *closure;
 
     while ((closure = visual_list_next (self->changed_handlers, &le)) != NULL) {
         if (closure == to_remove) {
             visual_list_delete (self->changed_handlers, &le);
-
-            if (closure->destroy_func) {
-                closure->destroy_func (closure->data);
-            }
-
-            visual_mem_free (closure);
-
             return TRUE;
         }
     }
@@ -297,10 +319,11 @@ void visual_param_notify_callbacks (VisParam *self)
     visual_return_if_fail (self != NULL);
 
     VisListEntry *le = NULL;
-    VisParamChangedClosure *closure;
+    VisClosure *closure;
 
-    while ((closure = visual_list_next (self->changed_handlers, &le)) != NULL)
-        closure->func (self, closure->data);
+    while ((closure = visual_list_next (self->changed_handlers, &le)) != NULL) {
+        (*(VisParamChangedFunc) (closure->func)) (self, closure->data);
+    }
 }
 
 VisParamType visual_param_get_type (VisParam *self)

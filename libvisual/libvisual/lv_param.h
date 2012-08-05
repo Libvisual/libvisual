@@ -39,38 +39,28 @@
 
 typedef struct _VisParam      VisParam;
 typedef struct _VisParamList  VisParamList;
-
-typedef struct _VisParamValidateClosure VisParamValidateClosure;
-typedef struct _VisParamChangedClosure  VisParamChangedClosure;
+typedef struct _VisClosure    VisClosure;
 
 typedef int  (*VisParamValidateFunc) (VisParamValue *value, VisParamValue *old_value, void *priv);
 typedef void (*VisParamChangedFunc)  (VisParam *param, void *priv);
 typedef void (*VisDestroyFunc)       (void *data);
 
-struct _VisParamChangedClosure
+struct _VisClosure
 {
-    VisParamChangedFunc func;
-    void *              data;
-    VisDestroyFunc      destroy_func;
-};
-
-struct _VisParamValidateClosure
-{
-    VisParamValidateFunc func;
-    void *               data;
-    VisDestroyFunc       destroy_func;
+    void           (*func) (void);
+    void *         data;
+    VisDestroyFunc destroy_func;
 };
 
 struct _VisParam
 {
-    VisObject               object;
-    char *                  name;
-    char *                  description;
-    VisParamValue           value;
-    VisParamValue           default_value;
-    VisParamValidateClosure validate_handler;
-    VisList *               changed_handlers;
-    VisParamList*           parent;
+    char *         name;
+    char *         description;
+    VisParamValue  value;
+    VisParamValue  default_value;
+    VisClosure     validate_handler;
+    VisList *      changed_handlers;
+    VisParamList * parent;
 };
 
 /**
@@ -79,7 +69,6 @@ struct _VisParam
  * All members should never be accessed directly, instead methods should be used.
  */
 struct _VisParamList {
-    VisObject       object;       /**< The VisObject data. */
     VisList *       entries;      /**< The list that contains all the parameters. */
     VisEventQueue * eventqueue;   /**< Pointer to an optional eventqueue to which events can be emitted
                                     *  on parameter changes. */
@@ -207,10 +196,10 @@ LV_API VisParam *visual_param_new_palette (const char *name,
  * @param callback The notification callback, which is called on changes in the VisParam.
  * @param priv     A private that can be used in the callback function.
  */
-LV_API VisParamChangedClosure *visual_param_add_callback (VisParam *          param,
-                                                          VisParamChangedFunc func,
-                                                          void *              priv,
-                                                          VisDestroyFunc      destroy_func);
+LV_API VisClosure *visual_param_add_callback (VisParam *          param,
+                                              VisParamChangedFunc func,
+                                              void *              priv,
+                                              VisDestroyFunc      destroy_func);
 
 /**
  * Removes a change notification callback.
@@ -220,7 +209,7 @@ LV_API VisParamChangedClosure *visual_param_add_callback (VisParam *          pa
  *
  * @return TRUE on successful removeal, FALSE otherwise
  */
-LV_API int visual_param_remove_callback (VisParam *param, VisParamChangedClosure *closure);
+LV_API int visual_param_remove_callback (VisParam *param, VisClosure *closure);
 
 /**
  * Notifies all callbacks.
