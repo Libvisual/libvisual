@@ -3,8 +3,10 @@
 
 #include "display_driver.hpp"
 #include <memory>
+#include <functional>
+#include <vector>
 
-typedef SADisplayDriver* (*DisplayDriverCreator)(SADisplay& display);
+typedef std::function<DisplayDriver* (Display& display)> DisplayDriverCreator;
 
 typedef std::vector<std::string> DisplayDriverList;
 
@@ -20,9 +22,9 @@ public:
 	    return m_instance;
     }
 
-    SADisplayDriver* make (std::string const& name, SADisplay& display);
+    DisplayDriver* make (std::string const& name, Display& display);
 
-    void add_driver (std::string const& name, Creator creator);
+    void add_driver (std::string const& name, Creator const& creator);
 
     bool has_driver (std::string const& name) const;
 

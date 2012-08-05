@@ -55,11 +55,11 @@ namespace {
   void get_nearest_resolution (int& width, int& height);
 
   class SDLDriver
-      : public SADisplayDriver
+      : public DisplayDriver
   {
   public:
 
-      SDLDriver (SADisplay& display)
+      SDLDriver (Display& display)
           : m_display         (display)
           , m_screen          (0)
           , m_screen_video    (0)
@@ -323,7 +323,7 @@ namespace {
 
   private:
 
-      SADisplay&    m_display;
+      Display&    m_display;
       SDL_Surface*  m_screen;
       LV::VideoPtr  m_screen_video;
       VisVideoDepth m_requested_depth;
@@ -367,7 +367,7 @@ namespace {
 
 } // anonymous namespace
 
-SADisplayDriver* sdl_driver_new (SADisplay& display)
+DisplayDriver* sdl_driver_new (Display& display)
 {
     return new SDLDriver (display);
 }

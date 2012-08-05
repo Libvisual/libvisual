@@ -57,6 +57,8 @@ namespace LV {
        */
       static void init (int& argc, char**& argv);
 
+      System (System const&) = delete;
+
       ~System ();
 
       /**
@@ -87,7 +89,6 @@ namespace LV {
       const std::unique_ptr<Impl> m_impl;
 
       System (int& argc, char**& argv);
-      System (System const&);
   };
 
 } // LV namespace

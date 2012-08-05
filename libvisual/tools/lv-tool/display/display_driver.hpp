@@ -4,9 +4,9 @@
 #include <string>
 #include <libvisual/libvisual.h>
 
-class SADisplay;
+class Display;
 
-class SADisplayDriver {
+class DisplayDriver {
 public:
 
     virtual LV::VideoPtr create (VisVideoDepth depth,
@@ -31,7 +31,7 @@ public:
 
     virtual void set_title(std::string const& title) = 0;
 
-    virtual ~SADisplayDriver () {}
+    virtual ~DisplayDriver () {}
 };
 
 #endif // _LV_TOOL_DISPLAY_DRIVER_HPP

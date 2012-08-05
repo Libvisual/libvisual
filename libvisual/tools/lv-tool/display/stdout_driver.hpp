@@ -27,6 +27,6 @@
 
 #include "display_driver.hpp"
 
-SADisplayDriver *stdout_driver_new (SADisplay& display);
+DisplayDriver *stdout_driver_new (Display& display);
 
 #endif /* _LV_STDOUT_DRIVER_HPP */
