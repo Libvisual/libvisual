@@ -64,20 +64,12 @@ static void alpha_blend_16_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, visua
 
 static void alpha_blend_24_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, visual_size_t size, uint8_t alpha)
 {
-	visual_size_t i;
-
-	for (i = 0; i < size; i++) {
-		dest[i] = (alpha * (src2[i] - src1[i])) / 255 + src1[i];
-	}
+	visual_alpha_blend_8 (dest, src1, src2, size * 3, alpha);
 }
 
 static void alpha_blend_32_c (uint8_t *dest, uint8_t *src1, uint8_t *src2, visual_size_t size, uint8_t alpha)
 {
-	visual_size_t i;
-
-	for (i = 0; i < size; i++) {
-		dest[i] = (alpha * (src2[i] - src1[i])) / 255 + src1[i];
-	}
+	visual_alpha_blend_8 (dest, src1, src2, size * 4, alpha);
 }
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
