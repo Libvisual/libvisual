@@ -1,3 +1,23 @@
+/* Libvisual - The audio visualisation framework.
+ *
+ * Copyright (C) 2012      Chong Kai Xiong <kaixiong@codeleft.sg>
+ *               2004-2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 #include "config.h"
 #include "lv_songinfo.h"
 #include "lv_common.h"
@@ -7,6 +27,13 @@ extern "C" {
   VisSongInfo *visual_songinfo_new (VisSongInfoType type)
   {
       return new LV::SongInfo (LV::SongInfoType (type));
+  }
+
+  VisSongInfo *visual_songinfo_clone (VisSongInfo *src)
+  {
+      visual_return_val_if_fail (src != nullptr, nullptr);
+
+      return new LV::SongInfo (*src);
   }
 
   void visual_songinfo_free (VisSongInfo *self)

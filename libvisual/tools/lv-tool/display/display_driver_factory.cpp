@@ -35,19 +35,20 @@ DisplayDriverFactory::~DisplayDriverFactory ()
     // nothing to do
 }
 
-void DisplayDriverFactory::add_driver (std::string const& name, Creator creator)
+void DisplayDriverFactory::add_driver (std::string const& name, Creator const& creator)
 {
     m_impl->creators[name] = creator;
 }
 
-SADisplayDriver* DisplayDriverFactory::make (std::string const& name, SADisplay& display)
+DisplayDriver* DisplayDriverFactory::make (std::string const& name, Display& display)
 {
     auto entry = m_impl->creators.find (name);
 
-    if (entry == m_impl->creators.end())
-        return 0;
+    if (entry == m_impl->creators.end ()) {
+        return nullptr;
+    }
 
-    return (*entry->second) (display);
+    return entry->second (display);
 }
 
 bool DisplayDriverFactory::has_driver (std::string const& name) const
@@ -57,7 +58,9 @@ bool DisplayDriverFactory::has_driver (std::string const& name) const
 
 DisplayDriverList DisplayDriverFactory::get_driver_list () const
 {
-    DisplayDriverList list (m_impl->creators.size ());
+    DisplayDriverList list;
+
+    list.reserve (m_impl->creators.size ());
 
     for (auto creator : m_impl->creators)
         list.push_back (creator.first);

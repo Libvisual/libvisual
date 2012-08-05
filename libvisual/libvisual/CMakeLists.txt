@@ -1,15 +1,18 @@
+INCLUDE(LVBuild)
+
 INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_BINARY_DIR}
-  ${PROJECT_SOURCE_DIR}/libvisual
-  ${PROJECT_BINARY_DIR}/libvisual
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${ORC_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(
-  ${PROJECT_BINARY_DIR}/libvisual
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${ORC_LIBRARY_DIRS}
 )
 
-# FIXME: Define a POSIX flag so we can stop saying 'not Windows'
 IF(VISUAL_OS_POSIX)
   SET(PLATFORM_SPECIFIC_LIBS dl rt m)
   SET(PLATFORM_SPECIFIC_SOURCE_DIR private/posix)
@@ -37,7 +40,6 @@ SET(libvisual_HEADERS
   lv_libvisual.h
   lv_songinfo.h
   lv_morph.h
-  lv_bmp.h
   lv_param.h
   lv_mem.h
   lv_bits.h
@@ -60,19 +62,19 @@ SET(libvisual_HEADERS
   lv_alpha_blend.h
   lv_util.h
 
+  lv_aligned_allocator.hpp
   lv_module.hpp
   lv_intrusive_ptr.hpp
   lv_singleton.hpp
   lv_util.hpp
 
-  ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h
+  ${CMAKE_CURRENT_BINARY_DIR}/lvconfig.h
 )
 
 SET(libvisual_SOURCES
   lv_mem.c
   lv_list.c
   lv_log.c
-  lv_bmp.c
   lv_param.c
   lv_param_value.c
   lv_cpu.c
@@ -128,10 +130,26 @@ SET(libvisual_SOURCES
   private/lv_video_rotate.cpp
   private/lv_video_blit_simd.cpp
   private/lv_video_scale_simd.cpp
+  private/lv_video_bmp.cpp
   private/lv_buffer_ring.cpp
 
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp
+
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.c
+)
+
+LV_GENERATE_ORC_SOURCES(
+  ${CMAKE_CURRENT_SOURCE_DIR}/lv_math.orc
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.c
+  math.h
+)
+
+SET_SOURCE_FILES_PROPERTIES(
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.c
+  PROPERTIES
+  COMPILE_FLAGS -fvisibility=default
 )
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
@@ -145,7 +163,10 @@ SET_TARGET_PROPERTIES(libvisual
   LINK_FLAGS -Wl,--no-undefined
 )
 
-TARGET_LINK_LIBRARIES(libvisual ${PLATFORM_SPECIFIC_LIBS})
+TARGET_LINK_LIBRARIES(libvisual
+  ${ORC_LIBRARIES}
+  ${PLATFORM_SPECIFIC_LIBS}
+)
 
 INSTALL(TARGETS libvisual DESTINATION ${CMAKE_INSTALL_LIBDIR})
 

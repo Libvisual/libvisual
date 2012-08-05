@@ -925,8 +925,7 @@ void color_transition(
     for (; from > to; from--)
     {
         colors[from] = cell(from);
-        if(visual_color_from_uint32(&pal_colors[from], colors[from]) < 0)
-            return;
+        visual_color_set_from_uint32(&pal_colors[from], colors[from]);
     }
 
     /* Adjust the background, and then activate the new colormap.  */
@@ -991,8 +990,7 @@ void color_genmap(BlurskPrivate *priv, int do_random)
     for (i = 255; i >= transition_bound; i--)
     {
         colors[i] = cell(i);
-        if(visual_color_from_uint32(&pal_colors[i], colors[i]) < 0)
-            return;
+        visual_color_set_from_uint32(&pal_colors[i], colors[i]);
     }
 
     /* Adjust the background, and then activate the new colormap.  */
@@ -1134,7 +1132,7 @@ void color_bg(BlurskPrivate *priv, int ndata, int16_t *data)
         if (k == 0)
         {
             newcolors[i] = colors[i];
-                    visual_color_from_uint32(&pal_colors[i], newcolors[i]);
+            visual_color_set_from_uint32(&pal_colors[i], newcolors[i]);
             continue;
         }
 
@@ -1143,7 +1141,7 @@ void color_bg(BlurskPrivate *priv, int ndata, int16_t *data)
            | ( (bgg * k)       & 0x0000ff00)
            | (((bgb * k) >> 8) & 0x000000ff);
         newcolors[i] = colors[i] + bg;
-                visual_color_from_uint32(&pal_colors[i], newcolors[i]);
+        visual_color_set_from_uint32(&pal_colors[i], newcolors[i]);
     }
 }
 

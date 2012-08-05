@@ -155,7 +155,7 @@ void homothetie_cos_radial(float *n_fx,float *n_fy, float rad_factor, float cx, 
 
 void noize(JessPrivate *priv, float *n_fx,float *n_fy, float intensity)
 {
-	*n_fx +=2*((float)visual_random_context_int(priv->rcontext)/VISUAL_RANDOM_MAX-0.5)*intensity;
-	*n_fy +=2*((float)visual_random_context_int(priv->rcontext)/VISUAL_RANDOM_MAX-0.5)*intensity-5; 
+	*n_fx +=2*(visual_random_context_float(priv->rcontext)-0.5)*intensity;
+	*n_fy +=2*(visual_random_context_float(priv->rcontext)-0.5)*intensity-5;
 }
 

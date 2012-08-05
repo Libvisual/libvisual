@@ -45,7 +45,7 @@ class RGBA {
     }
     RGBA(int val) {
         
-	    visual_color_from_uint32(&rgb, val);
+	    visual_color_set_from_uint32(&rgb, val);
     	R = rgb.r;
 	    G = rgb.g;
     	B = rgb.b;

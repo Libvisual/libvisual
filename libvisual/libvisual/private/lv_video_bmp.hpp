@@ -1,10 +1,8 @@
 /* Libvisual - The audio visualisation framework.
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_x11_key.h,v 1.2 2006/03/22 18:24:09 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,36 +19,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_X11_KEY_H
-#define _LV_X11_KEY_H
+#ifndef _LV_VIDEO_BMP_HPP
+#define _LV_VIDEO_BMP_HPP
 
-#include <libvisual/libvisual.h>
+#include <libvisual/lv_video.h>
+#include <iosfwd>
 
-VISUAL_BEGIN_DECLS
+namespace LV {
+  VideoPtr bitmap_load_bmp (std::istream& input);
+}
 
-typedef struct _LVX11Key LVX11Key;
-
-struct _LVX11Key {
-	VisKey ODD_keymap[256];
-	VisKey MISC_keymap[256];
-
-	XComposeStatus compose_state;
-
-	int lshift;
-	int rshift;
-	int lctrl;
-	int rctrl;
-	int lalt;
-	int ralt;
-	int num;
-	int caps;
-};
-
-int lv_x11_key_init (LVX11Key *x11key);
-
-VisKeySym *lv_x11_key_lookup (LVX11Key *x11key, Display *display, XKeyEvent *xkey, KeyCode kc, VisKeySym *keysym,
-		int pressed);
-
-VISUAL_END_DECLS
-
-#endif /* _LV_X11_KEY_H */
+#endif // _LV_VIDEO_BMP_HPP

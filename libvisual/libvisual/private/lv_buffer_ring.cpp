@@ -144,14 +144,14 @@ namespace LV {
       return totalsize;
   }
 
-  int BufferRing::get_data (BufferPtr const& data, int nbytes)
+  bool BufferRing::get_data (BufferPtr const& data, int nbytes)
   {
       return get_data_offset (data, 0, nbytes);
   }
 
-  int BufferRing::get_data_offset (BufferPtr const& data, int offset, int nbytes)
+  bool BufferRing::get_data_offset (BufferPtr const& data, int offset, int nbytes)
   {
-      visual_return_val_if_fail (data, -VISUAL_ERROR_BUFFER_NULL);
+      visual_return_val_if_fail (data, false);
 
       int startat = 0;
       int buffercorr = 0;
@@ -166,7 +166,7 @@ namespace LV {
       while (curposition < nbytes) {
           /* return immediately if there are no elements in the list */
           if (entries.empty ())
-              return VISUAL_OK;
+              return true;
 
           int lindex = 0;
 
@@ -204,7 +204,7 @@ namespace LV {
                   auto buf = Buffer::create (tempbuf->get_data (), nbytes - curposition, false);
                   data->put (buf, curposition);
 
-                  return VISUAL_OK;
+                  return true;
               }
 
               data->put (tempbuf, curposition);
@@ -213,16 +213,16 @@ namespace LV {
 
               /* Filled without room for partial buffer addition */
               if (curposition == nbytes)
-                  return VISUAL_OK;
+                  return true;
           }
 
           startat = 0;
       }
 
-      return VISUAL_OK;
+      return true;
   }
 
-  int BufferRing::get_data_from_end (BufferPtr const& data, int nbytes)
+  bool BufferRing::get_data_from_end (BufferPtr const& data, int nbytes)
   {
       int totalsize = get_size ();
       int offset = totalsize - nbytes;
@@ -233,7 +233,7 @@ namespace LV {
       return get_data_offset (data, offset, nbytes);
   }
 
-  int BufferRing::get_data_without_wrap (BufferPtr const& data, int nbytes)
+  bool BufferRing::get_data_without_wrap (BufferPtr const& data, int nbytes)
   {
       int ringsize = get_size ();
       int amount = std::min (ringsize, nbytes);

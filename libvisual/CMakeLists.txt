@@ -135,6 +135,9 @@ SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Werror")
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})
 SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
 
+# ORC
+FIND_PACKAGE(ORC REQUIRED)
+
 # API Documentation
 OPTION(ENABLE_DOCS "Enable the creation of API documentation" no)
 IF(ENABLE_DOCS)
@@ -182,6 +185,7 @@ IF(ENABLE_TOOLS)
   SET(HAVE_SDL ${SDL_FOUND})
   SET(HAVE_GL ${OPENGL_FOUND})
 
+  ADD_SUBDIRECTORY(tools/tests)
   ADD_SUBDIRECTORY(tools/lv-tool)
   ADD_SUBDIRECTORY(tools/benchmarks)
 ENDIF()

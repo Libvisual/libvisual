@@ -324,12 +324,12 @@ init_gl(void)
 {
   /* Initialize bitmaps */
 
-  child_image      = visual_bitmap_load (BITMAP_DIR "/child_texture.bmp");
-  energy_image     = visual_bitmap_load (BITMAP_DIR "/energy_texture.bmp");
-  tentacle_image   = visual_bitmap_load (BITMAP_DIR "/tentacle_texture.bmp");
-  tunnel_image     = visual_bitmap_load (BITMAP_DIR "/tunnel_texture.bmp");
-  twist_image      = visual_bitmap_load (BITMAP_DIR "/twist_texture.bmp");
-  background_image = visual_bitmap_load (BITMAP_DIR "/background_texture.bmp");
+  child_image      = visual_video_load_from_file (BITMAP_DIR "/child_texture.bmp");
+  energy_image     = visual_video_load_from_file (BITMAP_DIR "/energy_texture.bmp");
+  tentacle_image   = visual_video_load_from_file (BITMAP_DIR "/tentacle_texture.bmp");
+  tunnel_image     = visual_video_load_from_file (BITMAP_DIR "/tunnel_texture.bmp");
+  twist_image      = visual_video_load_from_file (BITMAP_DIR "/twist_texture.bmp");
+  background_image = visual_video_load_from_file (BITMAP_DIR "/background_texture.bmp");
 
   glViewport(0, 0, point_general->WIDTH, point_general->HEIGHT);
   glEnable(GL_TEXTURE_2D);

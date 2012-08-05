@@ -1,10 +1,7 @@
+#include <libvisual/libvisual.h>
+#include <SDL.h>
 #include <unistd.h>
 #include <stdlib.h>
-
-#include <SDL/SDL.h>
-
-#include <libvisual/libvisual.h>
-
 
 SDL_Surface *screen;
 SDL_Color colors[256];
@@ -128,6 +125,8 @@ int sdl_fullscreen_set (int mode)
 		default:
 			break;
 	}
+
+    return 0;
 }
 
 /* Sdl stuff */
@@ -156,16 +155,12 @@ void sdl_init (int width, int height)
 
 void sdl_create (int width, int height)
 {
-	const SDL_VideoInfo *videoinfo;
-	int videoflags;
-	
 	screen = SDL_SetVideoMode (width, height, visual_video_bpp_from_depth(depth) * 8, 0);
 }
 
 void sdl_draw_buf ()
 {
 	unsigned char *str = (unsigned char *) screen->pixels;
-	int i;
 
 	memcpy (str, srcbuf, screen->pitch * screen->h);
 
@@ -206,11 +201,11 @@ void do_checkers(LV::VideoPtr const& destptr, LV::VideoPtr const& src1, LV::Vide
     destptr->blit(area, srcptr, area, false);
 
     //return;
-    for(unsigned int row = 0, y = 0; 
+    for(unsigned int row = 0, y = 0;
         y < (unsigned int)src1->get_height();
         row++, y += tile_height)
     {
-        for(unsigned int col = 0, x = 0; 
+        for(unsigned int col = 0, x = 0;
             x < (unsigned int)src2->get_width();
             col++, x += tile_width)
         {
@@ -219,7 +214,7 @@ void do_checkers(LV::VideoPtr const& destptr, LV::VideoPtr const& src1, LV::Vide
             LV::Rect area(x, y, tile_width, tile_height);
 
             area = LV::Rect::clip(destptr->get_extents(), area);
-        
+
             destptr->blit(area, srcptr, area, false);
         }
     }
@@ -236,9 +231,9 @@ void do_alpha (LV::VideoPtr const& vid, uint8_t rate)
 
 	for (i = 0; i < vid->get_width() * vid->get_height(); i++) {
 		col.c32 = ptr[i];
-	
+
 		col.c8[3] = rate;
-		
+
 //		if (col.c8[0] > 140) {
 //			col.c8[3] = rate - (200 - col.c8[0]);
 //		}
@@ -250,14 +245,11 @@ void do_alpha (LV::VideoPtr const& vid, uint8_t rate)
 int main (int argc, char *argv[])
 {
 	int width = 512, height = 128;
-	int i, j;
-	int freeze = 0;
-	int depthflag = 0;
 	int alpha = 190;
 	int xoff = 0, yoff = -90;
     int frames = 0;
 	//VisTime start, end;
-		
+
 
 	sdl_init (width, height);
 
@@ -265,7 +257,7 @@ int main (int argc, char *argv[])
 
     visual_log_set_verbosity(VISUAL_LOG_DEBUG);
 	visual_init (&argc, &argv);
-	
+
 
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
@@ -277,9 +269,9 @@ int main (int argc, char *argv[])
 	VisVideo *tmpvid;
 
 	if (argc > 2)
-		tmpvid = visual_bitmap_load (argv[2]);
+		tmpvid = visual_video_load_from_file (argv[2]);
 	else
-		tmpvid = visual_bitmap_load ("images/bg.bmp");
+		tmpvid = visual_video_load_from_file ("images/bg.bmp");
 
     video = LV::Video::wrap(tmpvid->get_pixels(), false, tmpvid->get_width(), tmpvid->get_height(), tmpvid->get_depth());
 
@@ -305,7 +297,7 @@ int main (int argc, char *argv[])
 	visual_actor_set_video (actor, actvid.get());
 
 	visual_actor_video_negotiate (actor, VISUAL_VIDEO_DEPTH_NONE, FALSE, FALSE);
-	
+
 	input = visual_input_new ("debug");
 	visual_input_realize (input);
 
@@ -315,9 +307,9 @@ int main (int argc, char *argv[])
     video32_image->set_extents(area);
     video32_actor->set_extents(area);
     sdlvid->set_extents(area);
-       
+
 	//visual_time_get (&start);
-    
+
 	while (1) {
 		visual_input_run (input);
 		visual_actor_run (actor, input->audio);
@@ -334,7 +326,7 @@ int main (int argc, char *argv[])
 
 		sdl_draw_buf ();
 		frames++;
-		
+
 		while (SDL_PollEvent (&event)) {
 			switch (event.type) {
 				case SDL_KEYDOWN:
@@ -352,7 +344,7 @@ int main (int argc, char *argv[])
 							yoff += 10;
 
 							break;
-						
+
 						case SDLK_LEFT:
 							xoff -= 10;
 
@@ -362,7 +354,7 @@ int main (int argc, char *argv[])
 							xoff += 10;
 
 							break;
-						
+
 						case SDLK_q:
 							//sysize -= 10;
 
@@ -372,7 +364,7 @@ int main (int argc, char *argv[])
 							//sysize += 10;
 
 							break;
-						
+
 						case SDLK_z:
 							//sxsize -= 10;
 
@@ -388,7 +380,7 @@ int main (int argc, char *argv[])
 								interpol = VISUAL_VIDEO_SCALE_BILINEAR;
 							else
 								interpol = VISUAL_VIDEO_SCALE_NEAREST;
-							
+
 							break;
 
 						case SDLK_o:
@@ -404,9 +396,12 @@ int main (int argc, char *argv[])
 								alpha = 255;
 
 							break;
-							
+
 						case SDLK_ESCAPE:
 							goto out;
+							break;
+
+						default:
 							break;
 					}
 					break;
@@ -423,7 +418,7 @@ int main (int argc, char *argv[])
 	}
 out:
 	//visual_time_get (&end);
-	
+
 /*
 	VisTime diff;
 

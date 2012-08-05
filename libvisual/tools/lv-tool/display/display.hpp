@@ -29,18 +29,18 @@
 #include <memory>
 #include <string>
 
-class SADisplayDriver;
+class DisplayDriver;
 
-class SADisplay {
+class Display {
 public:
 
-    explicit SADisplay (std::string const& driver_name);
+    explicit Display (std::string const& driver_name);
 
-    SADisplay (SADisplay const&) = delete;
+    Display (Display const&) = delete;
 
-    ~SADisplay ();
+    ~Display ();
 
-    SADisplay& operator= (SADisplay const&) = delete;
+    Display& operator= (Display const&) = delete;
 
     LV::VideoPtr create (VisVideoDepth depth,
                          VisVideoAttrOptions const* vidoptions,

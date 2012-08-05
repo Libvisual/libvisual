@@ -8,7 +8,6 @@ libvisual/lv_buffer.cpp
 libvisual/lv_buffer_c.cpp
 libvisual/lv_bin.cpp
 libvisual/lv_bin_c.cpp
-libvisual/lv_bmp.c
 libvisual/lv_collection.c
 libvisual/lv_color.cpp
 libvisual/lv_color_c.cpp
@@ -41,6 +40,8 @@ libvisual/lv_video.cpp
 libvisual/lv_video_c.cpp
 
 libvisual/private/lv_buffer_ring.cpp
+
+libvisual/private/lv_video_bmp.cpp
 
 libvisual/private/lv_video_blit.cpp
 libvisual/private/lv_video_convert.cpp

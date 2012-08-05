@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #include <libvisual/libvisual.h>
 
@@ -27,6 +27,7 @@ void sdl_size_request (int width, int height);
 void sdl_init (int width, int height);
 void sdl_create (int width, int height);
 void sdl_draw_buf ();
+void do_alpha (VisVideo *vid, uint8_t rate);
 
 /* Fullscreen stuff */
 void sdl_fullscreen_toggle ()
@@ -122,6 +123,8 @@ int sdl_fullscreen_set (int mode)
 		default:
 			break;
 	}
+
+    return 0;
 }
 
 /* Sdl stuff */
@@ -149,16 +152,12 @@ void sdl_init (int width, int height)
 
 void sdl_create (int width, int height)
 {
-	const SDL_VideoInfo *videoinfo;
-	int videoflags;
-
 	screen = SDL_SetVideoMode (width, height, bpp * 8, 0);
 }
 
 void sdl_draw_buf ()
 {
 	unsigned char *str = (unsigned char *) screen->pixels;
-	int i;
 
 	memcpy (str, scrbuf, screen->pitch * screen->h);
 
@@ -166,20 +165,38 @@ void sdl_draw_buf ()
 	SDL_UpdateRect (screen, 0, 0, screen->w, screen->h);
 }
 
+void do_alpha (VisVideo *vid, uint8_t rate)
+{
+	int i;
+	uint32_t *ptr = visual_video_get_pixels(vid); //vid->pixels;
+	union {
+		uint32_t c32;
+		uint8_t c8[4];
+	} col;
+
+	for (i = 0; i < visual_video_get_width (vid) * visual_video_get_height (vid); i++) {
+		col.c32 = ptr[i];
+
+		col.c8[3] = rate;
+
+//		if (col.c8[0] > 140) {
+//			col.c8[3] = rate - (200 - col.c8[0]);
+//		}
+		ptr[i] = col.c32;
+	}
+}
+
 /* Main stuff */
 int main (int argc, char *argv[])
 {
 	int width = 1000, height = 600;
-	int i, j;
-	int freeze = 0;
-	int depthflag = 0;
-	int alpha = 128;
+	int alpha = 190;
 	int xoff = 0, yoff = -90;
 	int sxsize = 1000;
 	int sysize = 700;
 	int interpol = VISUAL_VIDEO_SCALE_NEAREST;
         int frames = 0;
-	VisTime start, end;
+	//VisTime start, end;
 
 	bpp = 4;
 	sdl_init (width, height);
@@ -194,16 +211,16 @@ int main (int argc, char *argv[])
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
 	else
-		actor = visual_actor_new ("G-Force");
+		actor = visual_actor_new ("corona");
 
 	visual_actor_realize (actor);
 
 	video = visual_video_new ();
 
 	if (argc > 2)
-		video = visual_bitmap_load_new_video (argv[2]);
+		video = visual_video_load_from_file (argv[2]);
 	else
-		video = visual_bitmap_load_new_video ("alphachantest.bmp");
+		video = visual_video_load_from_file ("images/bg.bmp");
 
 	actvid = visual_video_new ();
 	visual_actor_set_video (actor, actvid);
@@ -215,7 +232,7 @@ int main (int argc, char *argv[])
 
 	video32 = visual_video_new ();
 	visual_video_set_depth (video32, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (video32, video->width, video->height);
+	visual_video_set_dimension (video32, visual_video_get_width (video), visual_video_get_height (video));
 	visual_video_allocate_buffer (video32);
 
 	scalevid = visual_video_new ();
@@ -229,12 +246,12 @@ int main (int argc, char *argv[])
 	visual_video_set_pitch (sdlvid, screen->pitch);
 	visual_video_set_buffer (sdlvid, scrbuf);
 
-	input = visual_input_new ("alsa");
+	input = visual_input_new ("debug");
 	visual_input_realize (input);
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
-	visual_time_get (&start);
+	//visual_time_get (&start);
 
 	while (1) {
 		visual_input_run (input);
@@ -249,25 +266,26 @@ int main (int argc, char *argv[])
 		if (sysize < 0)
 			sysize = 0;
 
-		if (sxsize != scalevid->width || sysize != scalevid->height) {
+		if (sxsize != visual_video_get_width (scalevid) || sysize != visual_video_get_height (scalevid)) {
 			visual_video_set_dimension (scalevid, sxsize, sysize);
 			visual_video_allocate_buffer (scalevid);
 		}
 
-		visual_video_depth_transform (video32, video);
+		visual_video_convert_depth (video32, video);
 
 
 //		visual_video_alpha_fill (sdlvid, 0);
 
-		visual_video_alpha_fill (video32, alpha);
+//		visual_video_alpha_fill (video32, alpha);
 //		visual_video_alpha_color (video32, 0, 0, 0, 255);
 
+
+		do_alpha (video32, alpha);
 		visual_video_scale (scalevid, video32, interpol);
 
 
-
-		visual_video_blit_overlay (sdlvid, actvid, 0, 0, FALSE);
-		visual_video_blit_overlay (sdlvid, scalevid, xoff, yoff, TRUE);
+		visual_video_blit (sdlvid, actvid, 0, 0, FALSE);
+		visual_video_blit (sdlvid, scalevid, xoff, yoff, TRUE);
 
 		sdl_draw_buf ();
 		frames++;
@@ -345,6 +363,9 @@ int main (int argc, char *argv[])
 						case SDLK_ESCAPE:
 							goto out;
 							break;
+
+						default:
+							break;
 					}
 					break;
 
@@ -359,8 +380,9 @@ int main (int argc, char *argv[])
 		}
 	}
 out:
-	visual_time_get (&end);
+	//visual_time_get (&end);
 
+/*
 	VisTime diff;
 
 	visual_time_difference (&diff, &start, &end);
@@ -368,6 +390,7 @@ out:
 
 	printf ("Ran: %d:%d, drawn %d frames\n",
 			diff.tv_sec, diff.tv_usec, frames);
+*/
 
 	SDL_Quit ();
 }

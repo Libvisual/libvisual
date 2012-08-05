@@ -291,7 +291,7 @@ int main (int argc, char **argv)
     // initialize libvisual once (this is meant to be called only once,
     // visual_init() after visual_quit() results in undefined state)
     visual_log_set_verbosity (VISUAL_LOG_DEBUG);
-    visual_init (&argc, &argv);
+    LV::System::init (argc, argv);
 
     try {
         // parse commandline arguments
@@ -346,7 +346,7 @@ int main (int argc, char **argv)
         auto vidoptions = visual_actor_get_video_attribute_options(actor);
 
         // initialize display
-        SADisplay display (driver_name);
+        Display display (driver_name);
 
         // create display
         auto video = display.create(depth, vidoptions, width, height, true);

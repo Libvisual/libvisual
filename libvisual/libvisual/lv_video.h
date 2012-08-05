@@ -58,7 +58,6 @@ typedef enum {
     VISUAL_VIDEO_DEPTH_32BIT    = 8,    /**< 32 bits surface flag. */
     VISUAL_VIDEO_DEPTH_GL       = 16,   /**< openGL surface flag. */
     VISUAL_VIDEO_DEPTH_ENDLIST  = 32,   /**< Used to mark the end of the depth list. */
-    VISUAL_VIDEO_DEPTH_ERROR    = -1,   /**< Used when there is an error. */
     VISUAL_VIDEO_DEPTH_ALL      = VISUAL_VIDEO_DEPTH_8BIT
                                 | VISUAL_VIDEO_DEPTH_16BIT
                                 | VISUAL_VIDEO_DEPTH_24BIT
@@ -128,8 +127,9 @@ struct _VisVideoAttrOptions {
 
 #ifdef __cplusplus
 
-#include <memory>
 #include <libvisual/lv_intrusive_ptr.hpp>
+#include <iosfwd>
+#include <memory>
 
 namespace LV {
 
@@ -165,6 +165,17 @@ namespace LV {
       static VideoPtr create_sub (VideoConstPtr const& src, Rect const& srect);
 
       static VideoPtr create_sub (Rect const& drect, VideoConstPtr const& src, Rect const& srect);
+
+      /**
+       * Creates a new Video object from an image file.
+       *
+       * @param path path to file to load
+       *
+       * @return a Video object containing the image, or nullptr on failure
+       */
+      static VideoPtr create_from_file (std::string const& path);
+
+      static VideoPtr create_from_stream (std::istream& input);
 
       ~Video ();
 
@@ -287,6 +298,8 @@ namespace LV {
        * @param palette palette
        */
       void set_palette (Palette const& palette);
+
+      void set_palette (Palette&& palette);
 
       /**
        * Returns the color palette.
@@ -462,6 +475,7 @@ LV_BEGIN_DECLS
 LV_API VisVideo *visual_video_new (void);
 LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
 LV_API VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth);
+LV_API VisVideo *visual_video_load_from_file  (const char *path);
 
 LV_API void visual_video_ref   (VisVideo *video);
 LV_API void visual_video_unref (VisVideo *video);

@@ -2,13 +2,8 @@
  *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * The FFT implementation found in this file is based upon the nullptrSOFT
- * Milkdrop FFT implementation.
- *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *          Chong Kai Xiong <descender@phreaker.net>
- *
- * $Id: lv_fourier.c,v 1.15 2006/02/13 20:54:08 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -255,8 +250,8 @@ namespace LV {
               break;
       }
 
-      visual_math_simd_complex_norm_mul_float (output, m_impl->real.data (), m_impl->imag.data (),
-                                               m_impl->samples_out, 1.0 / m_impl->sample_count);
+      visual_math_simd_complex_scaled_norm (output, m_impl->real.data (), m_impl->imag.data (),
+                                            1.0 / m_impl->sample_count, m_impl->samples_out);
   }
 
   void DFT::log_scale (float *output, float const* input, unsigned int size)

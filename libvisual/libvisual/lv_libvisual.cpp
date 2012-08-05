@@ -2,9 +2,8 @@
  * 
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_libvisual.c,v 1.39 2006/01/22 13:23:37 synap Exp $
+ * Copyright (C) 2012      Chong Kai Xiong <kaixiong@codeleft.sg>
+ *               2004-2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -37,10 +36,6 @@
 #include "gettext.h"
 
 extern "C" {
-
-  // Set a progname from argv[0] when we're capable of doing so.
-  char *__lv_progname = 0;
-
   void visual_alpha_blend_initialize (void);
   void visual_cpu_initialize (void);
   void visual_mem_initialize (void);
@@ -51,10 +46,8 @@ namespace LV
 
   namespace {
 
-    int init_params (VisParamList *params)
+    void init_params (VisParamList *params)
     {
-        visual_return_val_if_fail (params != NULL, -1);
-
         // Song information parameters
         visual_param_list_add_many (params,
             visual_param_new_int ("songinfo-show",
@@ -72,9 +65,7 @@ namespace LV
             visual_param_new_int ("songinfo-cover-height",
                                   "Song cover art height",
                                   128),
-            NULL);
-
-        return 0;
+            nullptr);
     }
 
   } // anonymous namespace
@@ -91,7 +82,7 @@ namespace LV
   };
 
   template <>
-  LV_API System* Singleton<System>::m_instance = 0;
+  LV_API System* Singleton<System>::m_instance = nullptr;
 
   void System::init (int& argc, char**& argv)
   {
@@ -124,24 +115,22 @@ namespace LV
       bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 #endif
 
-      __lv_progname = visual_strdup (argv[0]);
-
-      /* Initialize CPU caps */
+      // Initialize CPU caps
       visual_cpu_initialize ();
 
-      /* Initialize Mem system */
+      // Initialize Mem system
       visual_mem_initialize ();
 
-      /* Initialize CPU-accelerated graphics functions */
+      // Initialize CPU-accelerated graphics functions
       visual_alpha_blend_initialize ();
 
-      /* Initialize high-resolution timer system */
+      // Initialize high-resolution timer system
 	  Time::init ();
 
-      /* Initialize FFT system */
+      // Initialize FFT system
       Fourier::init ();
 
-      /* Initialize the plugin registry */
+      // Initialize the plugin registry
       PluginRegistry::init ();
 
       m_impl->params = visual_param_list_new ();
@@ -151,7 +140,7 @@ namespace LV
   System::~System ()
   {
       PluginRegistry::deinit ();
-	  Fourier::deinit();
+      Fourier::deinit();
 
       visual_object_unref (VISUAL_OBJECT (m_impl->params));
   }

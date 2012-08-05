@@ -36,11 +36,11 @@
 namespace {
 
   class StdoutDriver
-      : public SADisplayDriver
+      : public DisplayDriver
   {
   public:
 
-      StdoutDriver (SADisplay& display)
+      StdoutDriver (Display& display)
           : m_display (display)
       {}
 
@@ -102,14 +102,14 @@ namespace {
 
   private:
 
-      SADisplay&   m_display;
+      Display&     m_display;
       LV::VideoPtr m_screen_video;
   };
 
 } // anonymous namespace
 
 // creator
-SADisplayDriver* stdout_driver_new (SADisplay& display)
+DisplayDriver* stdout_driver_new (Display& display)
 {
     return new StdoutDriver (display);
 }

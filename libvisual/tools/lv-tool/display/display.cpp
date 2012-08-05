@@ -29,11 +29,11 @@
 #include <stdexcept>
 #include <string>
 
-class SADisplay::Impl
+class Display::Impl
 {
 public:
 
-    std::unique_ptr<SADisplayDriver> driver;
+    std::unique_ptr<DisplayDriver> driver;
 
     unsigned int frames_drawn;
     LV::Timer    timer;
@@ -47,7 +47,7 @@ public:
     {}
 };
 
-SADisplay::SADisplay (std::string const& driver_name)
+Display::Display (std::string const& driver_name)
   : m_impl (new Impl)
 {
     m_impl->driver.reset (DisplayDriverFactory::instance().make (driver_name, *this));
@@ -57,16 +57,16 @@ SADisplay::SADisplay (std::string const& driver_name)
     }
 }
 
-SADisplay::~SADisplay ()
+Display::~Display ()
 {
 }
 
-LV::VideoPtr SADisplay::get_video () const
+LV::VideoPtr Display::get_video () const
 {
     return m_impl->driver->get_video ();
 }
 
-LV::VideoPtr SADisplay::create (VisVideoDepth depth,
+LV::VideoPtr Display::create (VisVideoDepth depth,
                                 VisVideoAttrOptions const* vidoptions,
                                 unsigned int width,
                                 unsigned int height,
@@ -75,27 +75,27 @@ LV::VideoPtr SADisplay::create (VisVideoDepth depth,
     return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
 
-void SADisplay::close ()
+void Display::close ()
 {
     m_impl->driver->close ();
 }
 
-void SADisplay::set_title(std::string const& title)
+void Display::set_title(std::string const& title)
 {
     m_impl->driver->set_title(title);
 }
 
-void SADisplay::lock ()
+void Display::lock ()
 {
     m_impl->driver->lock ();
 }
 
-void SADisplay::unlock ()
+void Display::unlock ()
 {
     m_impl->driver->unlock ();
 }
 
-void SADisplay::update_all ()
+void Display::update_all ()
 {
     LV::VideoPtr video = get_video ();
     LV::Rect rect (0, 0, video->get_width (), video->get_height ());
@@ -108,32 +108,32 @@ void SADisplay::update_all ()
     m_impl->driver->update_rect (rect);
 }
 
-void SADisplay::update_rect (LV::Rect const& rect)
+void Display::update_rect (LV::Rect const& rect)
 {
     m_impl->driver->update_rect (rect);
 }
 
-void SADisplay::set_fullscreen (bool fullscreen, bool autoscale)
+void Display::set_fullscreen (bool fullscreen, bool autoscale)
 {
     m_impl->driver->set_fullscreen (fullscreen, autoscale);
 }
 
-void SADisplay::drain_events (VisEventQueue& eventqueue)
+void Display::drain_events (VisEventQueue& eventqueue)
 {
     m_impl->driver->drain_events (eventqueue);
 }
 
-void SADisplay::set_fps_limit (unsigned int fps)
+void Display::set_fps_limit (unsigned int fps)
 {
     // FIXME: Implement this
 }
 
-unsigned int SADisplay::get_fps_total () const
+unsigned int Display::get_fps_total () const
 {
     return m_impl->frames_drawn;
 }
 
-float SADisplay::get_fps_average () const
+float Display::get_fps_average () const
 {
     return m_impl->frames_drawn / m_impl->timer.elapsed ().to_secs ();
 }

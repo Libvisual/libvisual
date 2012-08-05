@@ -350,7 +350,7 @@ namespace LV {
       auto data = static_cast<float*> (buffer->get_data ());
       std::size_t datasize = buffer->get_size () / sizeof (float);
 
-      visual_math_simd_mul_floats_float (data, data, datasize, multiplier);
+      visual_math_simd_mul_floats_float (data, data, multiplier, datasize);
   }
 
   void Audio::get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& sample, bool normalised)
@@ -373,7 +373,7 @@ namespace LV {
       auto data = static_cast<float*> (buffer->get_data ());
       std::size_t datasize = buffer->get_size () / sizeof (float);
 
-      visual_math_simd_mul_floats_float (data, data, datasize, multiplier);
+      visual_math_simd_mul_floats_float (data, data, multiplier, datasize);
   }
 
   void Audio::normalise_spectrum (BufferPtr const& buffer)
