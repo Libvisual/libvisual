@@ -70,7 +70,6 @@ void visual_param_list_free (VisParamList *self)
 void visual_param_list_set_eventqueue (VisParamList *self, VisEventQueue *eventqueue)
 {
     visual_return_if_fail (self != NULL);
-    visual_return_if_fail (eventqueue != NULL);
 
     self->eventqueue = eventqueue;
 }

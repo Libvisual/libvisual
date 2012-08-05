@@ -67,53 +67,36 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int act_bumpscope_init (VisPluginData *plugin)
 {
-	BumpscopePrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-    VisParamEntry *param;
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_COLOR	("color",		122, 204, 255),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("light size",		256),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color cycle",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("moving light",	TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("diamond",		FALSE),
-		VISUAL_PARAM_LIST_END
-	};
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (BumpscopePrivate, 1);
+	VisParamList *params = visual_plugin_get_params (plugin);
+	visual_param_list_add_many (params,
+                                visual_param_new_color_rgb ("color", N_("The light's color"),
+                                                            122, 204, 255,
+                                                            NULL),
+                                visual_param_new_integer   ("light size", N_("The size of the light"),
+                                                            256,
+                                                            visual_param_in_range_integer (0, 1000)),
+                                visual_param_new_integer   ("color cycle", N_("Whether to cycle colors"),
+                                                            TRUE,
+                                                            visual_param_in_range_integer (0, 1)),
+                                visual_param_new_integer   ("moving light", N_("Whether the light moves with the mouse"),
+                                                            TRUE,
+                                                            visual_param_in_range_integer (0, 1)),
+                                visual_param_new_integer   ("diamond", N_("Whether to use a diamond shape light"),
+                                                            FALSE,
+                                                            visual_param_in_range_integer (0, 1)),
+                                NULL);
+
+	BumpscopePrivate *priv = visual_mem_new0 (BumpscopePrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+
 	priv->phongres = 256;
-
 	priv->rcontext = visual_plugin_get_random_context (plugin);
-
-	priv->pal = visual_palette_new (256);
-
-	visual_param_container_add_many (paramcontainer, params);
-
-    param = visual_param_container_get(paramcontainer, "color");
-    visual_param_entry_set_annotation(param, "The light's color");
-
-    param = visual_param_container_get(paramcontainer, "light size");
-    visual_param_entry_set_annotation(param, "The size of the light");
-    visual_param_entry_max_set_integer(param, 1);
-
-    param = visual_param_container_get(paramcontainer, "color cycle");
-    visual_param_entry_set_annotation(param, "Whether to cycle colors");
-    visual_param_entry_max_set_integer(param, 1);
-
-    param = visual_param_container_get(paramcontainer, "moving light");
-    visual_param_entry_set_annotation(param, "Whether the light moves with the mouse");
-    visual_param_entry_max_set_integer(param, 1);
-
-    param = visual_param_container_get(paramcontainer, "diamond");
-    visual_param_entry_set_annotation(param, "Whether to use a diamond shape light or not");
-    visual_param_entry_max_set_integer(param, 1);
-
-	priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float));
+	priv->pal      = visual_palette_new (256);
+	priv->pcmbuf   = visual_buffer_new_allocate (512 * sizeof (float));
 
 	return 0;
 }
@@ -175,7 +158,7 @@ static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 	VisColor *tmp;
 
 	while (visual_event_queue_poll (events, &ev)) {
@@ -195,25 +178,26 @@ static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "color")) {
-					tmp = visual_param_entry_get_color (param);
+				if (visual_param_has_name (param, "color")) {
+					tmp = visual_param_get_value_color (param);
 					visual_color_copy (&priv->color, tmp);
 
 					__bumpscope_generate_palette (priv, &priv->color);
-				} else if (visual_param_entry_is (param, "light size")) {
-					priv->phongres = visual_param_entry_get_integer (param);
+
+				} else if (visual_param_has_name (param, "light size")) {
+					priv->phongres = visual_param_get_value_integer (param);
 
 					__bumpscope_cleanup (priv);
 					__bumpscope_init (priv);
 
-				} else if (visual_param_entry_is (param, "color cycle")) {
-					priv->color_cycle = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "color cycle")) {
+					priv->color_cycle = visual_param_get_value_integer (param);
 
-				} else if (visual_param_entry_is (param, "moving light")) {
-					priv->moving_light = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "moving light")) {
+					priv->moving_light = visual_param_get_value_integer (param);
 
-				} else if (visual_param_entry_is (param, "diamond")) {
-					priv->diamond = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "diamond")) {
+					priv->diamond = visual_param_get_value_integer (param);
 
 					__bumpscope_generate_phongdat (priv);
 				}
@@ -258,8 +242,8 @@ static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudi
 
 	if (priv->colorchanged == TRUE && priv->colorupdate == 0) {
 		/* I couldn't hold myself */
-		visual_param_entry_set_color_by_color (
-			visual_param_container_get (
+		visual_param_set_value_color (
+			visual_param_list_get (
 				visual_plugin_get_params (plugin), "color"), &priv->color);
 	}
 

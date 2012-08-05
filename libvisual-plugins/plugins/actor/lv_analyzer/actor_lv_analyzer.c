@@ -36,7 +36,6 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 typedef struct
 {
 	VisPalette *pal;
-	VisParamContainer *paramcontainer;
 	int bars;
 	int width, height;
 } AnalyzerPrivate;
@@ -94,29 +93,18 @@ static int lv_analyzer_init (VisPluginData *plugin)
 #endif
 
 	AnalyzerPrivate *priv = visual_mem_new0 (AnalyzerPrivate, 1);
-	visual_return_val_if_fail(priv != NULL, -1);
-
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+
+	/* get plugins param-container */
+	VisParamList *params = visual_plugin_get_params (plugin);
+	visual_param_list_add_many (params,
+                                visual_param_new_integer ("bars", "Number of bars in graph",
+                                                          BARS_DEFAULT,
+                                                          NULL),
+                                NULL);
 
 	/* default values */
 	priv->bars = BARS_DEFAULT;
-
-	/* get plugins param-container */
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	visual_return_val_if_fail(paramcontainer != NULL, -1);
-
-	/* save paramcontainer */
-	priv->paramcontainer = paramcontainer;
-
-	/* parameter-description */
-	static VisParamEntry params[] =
-	{
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("bars", BARS_DEFAULT),
-		VISUAL_PARAM_LIST_END
-	};
-
-	/* register parameters */
-	visual_param_container_add_many (paramcontainer, params);
 
 	/* allocate space for palette */
 	priv->pal = visual_palette_new (256);
@@ -163,11 +151,12 @@ static int _validate_bars(VisPluginData *plugin, int *bars)
 }
 
 static void _change_bars(VisPluginData *plugin,
-                       VisParamEntry *p, int (*validator)(VisPluginData *plugin, void *value))
+                         VisParam *p,
+                         int (*validator)(VisPluginData *plugin, void *value))
 {
 	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	int integer = visual_param_entry_get_integer(p);
+	int integer = visual_param_get_value_integer(p);
 
 	if(!validator || validator(plugin, &integer))
     {
@@ -176,10 +165,10 @@ static void _change_bars(VisPluginData *plugin,
     }
     /* reset to previous value */
     else
-        visual_param_entry_set_integer(p, priv->bars);
+        visual_param_set_value_integer(p, priv->bars);
 }
 
-static void _change_param(VisPluginData *plugin, VisParamEntry *p)
+static void _change_param(VisPluginData *plugin, VisParam *p)
 {
 	/**
      * structure defining handler functions for configuration values
@@ -192,7 +181,7 @@ static void _change_param(VisPluginData *plugin, VisParamEntry *p)
         int (*validator)(void *value);
         /* function called to change parameter */
         void (*change)(VisPluginData *plugin,
-                       VisParamEntry *parameter, int (*validator)(void *value));
+                       VisParam *parameter, int (*validator)(void *value));
         /* function called after parameter change */
         void (*postchange)(VisPluginData *plugin);
     } parms[] =
@@ -200,14 +189,12 @@ static void _change_param(VisPluginData *plugin, VisParamEntry *p)
         {"bars", (void *) _validate_bars, (void *) _change_bars, NULL},
     };
 
-
-
     /** look for parameter in our structure */
     int i;
     for(i = 0; i < QTY(parms); i++)
     {
         /* not our parameter? -> continue the quest */
-        if(!visual_param_entry_is(p, parms[i].name))
+        if(!visual_param_has_name(p, parms[i].name))
             continue;
 
         /* call this parameters' change handler */
@@ -221,7 +208,7 @@ static void _change_param(VisPluginData *plugin, VisParamEntry *p)
         return;
     }
 
-    visual_log(VISUAL_LOG_WARNING, "Unknown param '%s'", visual_param_entry_get_name(p));
+    visual_log(VISUAL_LOG_WARNING, "Unknown param '%s'", visual_param_get_name(p));
 }
 
 static int lv_analyzer_resize (VisPluginData *plugin, int width, int height)
@@ -250,7 +237,7 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 		{
 			case VISUAL_EVENT_PARAM:
 			{
-				VisParamEntry *param = ev.event.param.param;
+				VisParam *param = ev.event.param.param;
 				/* change config parameter */
 				_change_param(plugin, param);
 				break;

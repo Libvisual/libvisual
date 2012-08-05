@@ -108,7 +108,7 @@ void __blursk_cleanup (BlurskPrivate *priv);
 
 
 /* in config.c */
-extern void config_change_param(BlurskPrivate *priv, VisParamEntry *p);
+extern void config_change_param(BlurskPrivate *priv, VisParam *p);
 extern void config_default(BlurskConfig *conf);
 extern void config_string_genstring(BlurskPrivate *priv);
 
