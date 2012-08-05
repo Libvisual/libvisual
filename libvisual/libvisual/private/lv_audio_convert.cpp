@@ -2,8 +2,7 @@
 #include "lv_audio_convert.hpp"
 #include "lv_audio.h"
 #include "lv_mem.h"
-#include "lv_enable_if.hpp"
-#include "lv_int_traits.hpp"
+#include <type_traits>
 #include <limits>
 
 using namespace LV;
@@ -13,33 +12,33 @@ namespace {
   template <typename D, typename S>
   struct same_signedness
   {
-      static const bool value = (is_signed<D>::value && is_signed<S>::value) ||
-                                (is_unsigned<D>::value && is_unsigned<S>::value);
+      static const bool value = (std::is_signed<D>::value && std::is_signed<S>::value) ||
+                                (std::is_unsigned<D>::value && std::is_unsigned<S>::value);
   };
 
   template <typename T>
-  inline typename enable_if<is_signed<T>, T>::type
+  inline typename std::enable_if<std::is_signed<T>::value, T>::type
   half_range ()
   {
       return std::numeric_limits<T>::max ();
   }
 
   template <typename T>
-  inline typename enable_if<is_unsigned<T>, T>::type
+  inline typename std::enable_if<std::is_unsigned<T>::value, T>::type
   half_range ()
   {
       return std::numeric_limits<T>::max () / 2;
   }
 
   template <typename T>
-  inline typename enable_if<is_signed<T>, T>::type
+  inline typename std::enable_if<std::is_signed<T>::value, T>::type
   zero ()
   {
       return 0;
   }
 
   template <typename T>
-  inline typename enable_if<is_unsigned<T>, T>::type
+  inline typename std::enable_if<std::is_unsigned<T>::value, T>::type
   zero ()
   {
       return std::numeric_limits<T>::max () / 2 + 1;
@@ -63,7 +62,7 @@ namespace {
 
   // signed->unsigned int conversion (same width)
   template <typename D, typename S>
-  typename enable_if_c<is_unsigned<D>::value && is_signed<S>::value && sizeof(D) == sizeof(S)>::type
+  typename std::enable_if<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) == sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       auto a = zero<D> ();
@@ -79,7 +78,7 @@ namespace {
 
   // unsigned->signed int conversion (same width)
   template <typename D, typename S>
-  typename enable_if_c<is_signed<D>::value && is_unsigned<S>::value && sizeof(D) == sizeof(S)>::type
+  typename std::enable_if<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) == sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       auto a = zero<S> ();
@@ -95,7 +94,7 @@ namespace {
 
   // int->float conversions
   template <typename S>
-  typename enable_if<is_integral<S> >::type
+  typename std::enable_if<std::is_integral<S>::value>::type
   inline convert_sample_array (float* dst, S const* src, std::size_t count)
   {
       float a = 1.0 / (half_range<S> () + 1);
@@ -112,7 +111,7 @@ namespace {
 
   // float->int conversions
   template <typename D>
-  typename enable_if<is_integral<D> >::type
+  typename std::enable_if<std::is_integral<D>::value>::type
   inline convert_sample_array (D* dst, float const* src, std::size_t count)
   {
       float a = half_range<D> ();
@@ -129,7 +128,7 @@ namespace {
 
   // narrowing/widening int conversion (same signedness)
   template <typename D, typename S>
-  typename enable_if_c<same_signedness<D, S>::value && sizeof(D) != sizeof(S) >::type
+  typename std::enable_if<same_signedness<D, S>::value && sizeof(D) != sizeof(S) >::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       const int shift = shifter<D, S> ();
@@ -155,7 +154,7 @@ namespace {
 
   // narrowing/widening unsigned->signed int conversion
   template <typename D, typename S>
-  typename enable_if_c<is_signed<D>::value && is_unsigned<S>::value && sizeof(D) != sizeof(S)>::type
+  typename std::enable_if<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) != sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       auto a = zero<D>();
@@ -182,7 +181,7 @@ namespace {
 
   // narrowing/widening signed->unsigned int conversion
   template <typename D, typename S>
-  typename enable_if_c<is_unsigned<D>::value && is_signed<S>::value && sizeof(D) != sizeof(S)>::type
+  typename std::enable_if<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) != sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       auto a = zero<D>();
