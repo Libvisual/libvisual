@@ -68,95 +68,32 @@ LV_API void           visual_param_value_free_value (VisParamValue *value);
 #define _LV_PARAM_MARSHAL_DOUBLE(x)    (&x)
 #define _LV_PARAM_MARSHAL_POINTER(x)   ((void *) (x))
 
-static inline void visual_param_value_set_integer (VisParamValue *self, int value)
-{
-    visual_return_if_fail (self != NULL);
+#define _LV_DEFINE_PARAM_VALUE_SET(func,ctype,name,marshal) \
+    static inline void visual_param_value_set_##func (VisParamValue *self, ctype value) {             \
+        visual_return_if_fail (self != NULL);                                                         \
+        visual_param_value_set (self, VISUAL_PARAM_TYPE_##name, _LV_PARAM_MARSHAL_##marshal (value)); \
+    }
 
-    visual_param_value_set (self, VISUAL_PARAM_TYPE_INTEGER, _LV_PARAM_MARSHAL_INTEGER (value));
-}
+_LV_DEFINE_PARAM_VALUE_SET(integer, int               , INTEGER, INTEGER)
+_LV_DEFINE_PARAM_VALUE_SET(float  , float             , FLOAT  , FLOAT)
+_LV_DEFINE_PARAM_VALUE_SET(double , double            , DOUBLE , DOUBLE)
+_LV_DEFINE_PARAM_VALUE_SET(string , const char *      , STRING , POINTER)
+_LV_DEFINE_PARAM_VALUE_SET(color  , const VisColor *  , COLOR  , POINTER)
+_LV_DEFINE_PARAM_VALUE_SET(palette, const VisPalette *, PALETTE, POINTER)
 
-static inline void visual_param_value_set_float (VisParamValue *self, float value)
-{
-    visual_return_if_fail (self != NULL);
+#define _LV_DEFINE_PARAM_VALUE_GET(func,ctype,name,member,defvalue)                   \
+    static inline ctype visual_param_value_get_##func (VisParamValue *self)  {        \
+        visual_return_val_if_fail (self != NULL, 0);                                  \
+        visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_##name, defvalue); \
+        return self->value.member;                                                    \
+    }
 
-    visual_param_value_set (self, VISUAL_PARAM_TYPE_FLOAT, _LV_PARAM_MARSHAL_FLOAT (value));
-}
-
-static inline void visual_param_value_set_double (VisParamValue *self, double value)
-{
-    visual_return_if_fail (self != NULL);
-
-    visual_param_value_set (self, VISUAL_PARAM_TYPE_DOUBLE, _LV_PARAM_MARSHAL_DOUBLE (value));
-}
-
-static inline void visual_param_value_set_string (VisParamValue *self, const char *string)
-{
-    visual_return_if_fail (self != NULL);
-
-    visual_param_value_set (self, VISUAL_PARAM_TYPE_STRING, _LV_PARAM_MARSHAL_POINTER (string));
-}
-
-static inline void visual_param_value_set_color (VisParamValue *self, VisColor *color)
-{
-    visual_return_if_fail (self != NULL);
-
-    visual_param_value_set (self, VISUAL_PARAM_TYPE_COLOR, _LV_PARAM_MARSHAL_POINTER (color));
-}
-
-static inline void visual_param_value_set_palette (VisParamValue *self, VisPalette *palette)
-{
-    visual_return_if_fail (self != NULL);
-
-    visual_param_value_set (self, VISUAL_PARAM_TYPE_PALETTE, _LV_PARAM_MARSHAL_POINTER (palette));
-}
-
-static inline const char *visual_param_value_get_string (VisParamValue *self)
-{
-    visual_return_val_if_fail (self != NULL, 0);
-    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_STRING, 0);
-
-    return self->value.string;
-}
-
-static inline int visual_param_value_get_integer (VisParamValue *self)
-{
-    visual_return_val_if_fail (self != NULL, 0);
-    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_INTEGER, 0);
-
-    return self->value.integer;
-}
-
-static inline float visual_param_value_get_float (VisParamValue *self)
-{
-    visual_return_val_if_fail (self != NULL, 0.0f);
-    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_FLOAT, 0.0f);
-
-    return self->value.single_float;
-}
-
-static inline double visual_param_value_get_double (VisParamValue *self)
-{
-    visual_return_val_if_fail (self != NULL, 0.0);
-    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_DOUBLE, 0.0);
-
-    return self->value.double_float;
-}
-
-static inline VisColor *visual_param_value_get_color (VisParamValue *self)
-{
-    visual_return_val_if_fail (self != NULL, NULL);
-    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_COLOR, NULL);
-
-    return self->value.color;
-}
-
-static inline VisPalette *visual_param_value_get_palette (VisParamValue *self)
-{
-    visual_return_val_if_fail (self != NULL, NULL);
-    visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_PALETTE, NULL);
-
-    return self->value.palette;
-}
+_LV_DEFINE_PARAM_VALUE_GET(integer, int         , INTEGER, integer     , 0)
+_LV_DEFINE_PARAM_VALUE_GET(float  , float       , FLOAT  , single_float, 0.0f)
+_LV_DEFINE_PARAM_VALUE_GET(double , double      , DOUBLE , double_float, 0.0)
+_LV_DEFINE_PARAM_VALUE_GET(string , const char *, STRING , string      , NULL)
+_LV_DEFINE_PARAM_VALUE_GET(color  , VisColor *  , COLOR  , color       , NULL)
+_LV_DEFINE_PARAM_VALUE_GET(palette, VisPalette *, PALETTE, palette     , NULL)
 
 LV_END_DECLS
 
