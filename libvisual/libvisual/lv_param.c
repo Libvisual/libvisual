@@ -178,6 +178,7 @@ VisParam *visual_param_new (const char * name,
                             VisClosure * validator)
 {
     visual_return_val_if_fail (name != NULL, NULL);
+    visual_return_val_if_fail (description != NULL, NULL);
     visual_return_val_if_fail (type != VISUAL_PARAM_TYPE_NONE, NULL);
     visual_return_val_if_fail (default_value != NULL, NULL);
 

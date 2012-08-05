@@ -51,7 +51,7 @@ namespace LV
         // Song information parameters
         visual_param_list_add_many (params,
             visual_param_new_integer ("songinfo-show",
-                                      NULL,
+                                      "Show song info",
                                       1,
                                       NULL),
             visual_param_new_integer ("songinfo-timeout",
