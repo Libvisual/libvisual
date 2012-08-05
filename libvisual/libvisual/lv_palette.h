@@ -52,7 +52,21 @@ namespace LV {
 
       explicit Palette (unsigned int ncolors);
 
+      Palette (Palette const&) = default;
+
+      Palette (Palette&& palette)
+          : colors (std::move (palette.colors))
+      {}
+
       ~Palette ();
+
+      Palette& operator= (Palette const& rhs) = default;
+
+      Palette& operator= (Palette&& rhs)
+      {
+          colors.swap (rhs.colors);
+          return *this;
+      }
 
       bool empty () const
       {

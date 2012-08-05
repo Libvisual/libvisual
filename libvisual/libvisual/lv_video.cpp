@@ -280,6 +280,11 @@ namespace LV {
       m_impl->palette = palette;
   }
 
+  void Video::set_palette (Palette&& palette)
+  {
+      m_impl->palette = std::move (palette);
+  }
+
   Palette const& Video::get_palette () const
   {
       return m_impl->palette;

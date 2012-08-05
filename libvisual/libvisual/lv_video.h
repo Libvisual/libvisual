@@ -299,6 +299,8 @@ namespace LV {
        */
       void set_palette (Palette const& palette);
 
+      void set_palette (Palette&& palette);
+
       /**
        * Returns the color palette.
        *
