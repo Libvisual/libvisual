@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #include <libvisual/libvisual.h>
 
@@ -123,6 +123,8 @@ int sdl_fullscreen_set (int mode)
 		default:
 			break;
 	}
+
+    return 0;
 }
 
 /* Sdl stuff */
@@ -150,16 +152,12 @@ void sdl_init (int width, int height)
 
 void sdl_create (int width, int height)
 {
-	const SDL_VideoInfo *videoinfo;
-	int videoflags;
-	
 	screen = SDL_SetVideoMode (width, height, bpp * 8, 0);
 }
 
 void sdl_draw_buf ()
 {
 	unsigned char *str = (unsigned char *) screen->pixels;
-	int i;
 
 	memcpy (str, scrbuf, screen->pitch * screen->h);
 
@@ -176,11 +174,11 @@ void do_alpha (VisVideo *vid, uint8_t rate)
 		uint8_t c8[4];
 	} col;
 
-	for (i = 0; i < vid->width * vid->height; i++) {
+	for (i = 0; i < visual_video_get_width (vid) * visual_video_get_height (vid); i++) {
 		col.c32 = ptr[i];
-	
+
 		col.c8[3] = rate;
-		
+
 //		if (col.c8[0] > 140) {
 //			col.c8[3] = rate - (200 - col.c8[0]);
 //		}
@@ -192,9 +190,6 @@ void do_alpha (VisVideo *vid, uint8_t rate)
 int main (int argc, char *argv[])
 {
 	int width = 1000, height = 600;
-	int i, j;
-	int freeze = 0;
-	int depthflag = 0;
 	int alpha = 190;
 	int xoff = 0, yoff = -90;
 	int sxsize = 1000;
@@ -202,7 +197,7 @@ int main (int argc, char *argv[])
 	int interpol = VISUAL_VIDEO_SCALE_NEAREST;
         int frames = 0;
 	//VisTime start, end;
-		
+
 	bpp = 4;
 	sdl_init (width, height);
 
@@ -212,7 +207,7 @@ int main (int argc, char *argv[])
 	SDL_Event event;
 
 	visual_init (&argc, &argv);
-	
+
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
 	else
@@ -223,9 +218,9 @@ int main (int argc, char *argv[])
 	video = visual_video_new ();
 
 	if (argc > 2)
-		video = visual_bitmap_load_new_video (argv[2]);
+		video = visual_video_load_from_file (argv[2]);
 	else
-		video = visual_bitmap_load_new_video ("images/bg.bmp");
+		video = visual_video_load_from_file ("images/bg.bmp");
 
 	actvid = visual_video_new ();
 	visual_actor_set_video (actor, actvid);
@@ -237,9 +232,9 @@ int main (int argc, char *argv[])
 
 	video32 = visual_video_new ();
 	visual_video_set_depth (video32, VISUAL_VIDEO_DEPTH_32BIT);
-	visual_video_set_dimension (video32, video->width, video->height);
+	visual_video_set_dimension (video32, visual_video_get_width (video), visual_video_get_height (video));
 	visual_video_allocate_buffer (video32);
-	
+
 	scalevid = visual_video_new ();
 	visual_video_set_depth (scalevid, VISUAL_VIDEO_DEPTH_32BIT);
 	visual_video_set_dimension (scalevid, sxsize, sysize);
@@ -250,51 +245,51 @@ int main (int argc, char *argv[])
 	visual_video_set_dimension (sdlvid, screen->w, screen->h);
 	visual_video_set_pitch (sdlvid, screen->pitch);
 	visual_video_set_buffer (sdlvid, scrbuf);
-	
+
 	input = visual_input_new ("debug");
 	visual_input_realize (input);
 
 	SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-        
+
 	//visual_time_get (&start);
-	
+
 	while (1) {
 		visual_input_run (input);
 		visual_actor_run (actor, input->audio);
-	
+
 		/* place on screen */
 //		visual_video_blit_overlay (sdlvid, video, 0, 0, FALSE);
-	
+
 		if (sxsize < 0)
 			sxsize = 0;
 
 		if (sysize < 0)
 			sysize = 0;
-		
-		if (sxsize != scalevid->width || sysize != scalevid->height) {
+
+		if (sxsize != visual_video_get_width (scalevid) || sysize != visual_video_get_height (scalevid)) {
 			visual_video_set_dimension (scalevid, sxsize, sysize);
 			visual_video_allocate_buffer (scalevid);
 		}
 
-		visual_video_depth_transform (video32, video);
+		visual_video_convert_depth (video32, video);
 
 
 //		visual_video_alpha_fill (sdlvid, 0);
-		
+
 //		visual_video_alpha_fill (video32, alpha);
 //		visual_video_alpha_color (video32, 0, 0, 0, 255);
-	
+
 
 		do_alpha (video32, alpha);
 		visual_video_scale (scalevid, video32, interpol);
 
-		
-		visual_video_blit_overlay (sdlvid, actvid, 0, 0, FALSE);
-		visual_video_blit_overlay (sdlvid, scalevid, xoff, yoff, TRUE);
+
+		visual_video_blit (sdlvid, actvid, 0, 0, FALSE);
+		visual_video_blit (sdlvid, scalevid, xoff, yoff, TRUE);
 
 		sdl_draw_buf ();
 		frames++;
-		
+
 		while (SDL_PollEvent (&event)) {
 			switch (event.type) {
 				case SDL_KEYDOWN:
@@ -312,7 +307,7 @@ int main (int argc, char *argv[])
 							yoff += 10;
 
 							break;
-						
+
 						case SDLK_LEFT:
 							xoff -= 10;
 
@@ -322,7 +317,7 @@ int main (int argc, char *argv[])
 							xoff += 10;
 
 							break;
-						
+
 						case SDLK_q:
 							sysize -= 10;
 
@@ -332,7 +327,7 @@ int main (int argc, char *argv[])
 							sysize += 10;
 
 							break;
-						
+
 						case SDLK_z:
 							sxsize -= 10;
 
@@ -348,7 +343,7 @@ int main (int argc, char *argv[])
 								interpol = VISUAL_VIDEO_SCALE_BILINEAR;
 							else
 								interpol = VISUAL_VIDEO_SCALE_NEAREST;
-							
+
 							break;
 
 						case SDLK_o:
@@ -364,9 +359,12 @@ int main (int argc, char *argv[])
 								alpha = 255;
 
 							break;
-							
+
 						case SDLK_ESCAPE:
 							goto out;
+							break;
+
+						default:
 							break;
 					}
 					break;
@@ -383,7 +381,7 @@ int main (int argc, char *argv[])
 	}
 out:
 	//visual_time_get (&end);
-	
+
 /*
 	VisTime diff;
 
