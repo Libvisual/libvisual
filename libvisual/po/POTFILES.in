@@ -60,6 +60,5 @@ libvisual/private/posix/lv_module.cpp
 tools/lv-tool/lv-tool.cpp
 tools/lv-tool/display/display.cpp
 tools/lv-tool/display/display_driver_factory.cpp
-tools/lv-tool/display/lv_x11_key.cpp
 tools/lv-tool/display/sdl_driver.cpp
 tools/lv-tool/display/stdout_driver.cpp
