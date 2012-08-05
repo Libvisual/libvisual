@@ -86,15 +86,19 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int act_oinksie_init (VisPluginData *plugin)
 {
-	OinksiePrivContainer *priv;
-	VisRandomContext *rcontext;
-        VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("acid palette", 0),
-		VISUAL_PARAM_LIST_END
-	};
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_integer ("color_mode", N_("Color mode"),
+                                                          1,
+                                                          NULL),
+                                visual_param_new_integer ("acid_palette", N_("Acid palette"),
+                                                          0,
+                                                          NULL),
+                                NULL);
 
 /*
 	static VisParamEntry cmodeparamchoices[] = {
@@ -109,14 +113,8 @@ static int act_oinksie_init (VisPluginData *plugin)
 
 	/* FIXME: add UI to access the acid palette parameter */
 
-#if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
-#endif
-
-	priv = visual_mem_new0 (OinksiePrivContainer, 1);
+	OinksiePrivContainer *priv = visual_mem_new0 (OinksiePrivContainer, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
-
-    visual_param_container_add_many (paramcontainer, params);
 
 	priv->priv1.pal_cur = visual_palette_new (256);
 	priv->priv1.pal_old = visual_palette_new (256);
@@ -124,7 +122,7 @@ static int act_oinksie_init (VisPluginData *plugin)
 	priv->priv2.pal_cur = visual_palette_new (256);
 	priv->priv2.pal_old = visual_palette_new (256);
 
-	rcontext = visual_plugin_get_random_context (plugin);
+	VisRandomContext *rcontext = visual_plugin_get_random_context (plugin);
 	priv->priv1.rcontext = rcontext;
 	priv->priv2.rcontext = rcontext;
 
@@ -199,7 +197,7 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -210,8 +208,8 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "color mode")) {
-					priv->color_mode = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "color mode")) {
+					priv->color_mode = visual_param_get_value_integer (param);
 
 					switch (priv->color_mode) {
 						case 0:  priv->currentcomp = compose_blend1_32_c; break;
@@ -221,8 +219,8 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 						case 4:  priv->currentcomp = compose_blend5_32_c; break;
 						default: priv->currentcomp = compose_blend2_32_c; break;
 					}
-				} else if (visual_param_entry_is (param, "acid palette")) {
-					priv->priv1.config.acidpalette = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "acid palette")) {
+					priv->priv1.config.acidpalette = visual_param_get_value_integer (param);
 				}
 
 				break;

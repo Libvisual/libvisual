@@ -98,24 +98,19 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int lv_gltest_init (VisPluginData *plugin)
 {
-	GLtestPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE),
-		VISUAL_PARAM_LIST_END
-	};
-
-	int x, y;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (GLtestPrivate, 1);
+	GLtestPrivate *priv = visual_mem_new0 (GLtestPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
+	VisParamList *params = visual_plugin_get_params (plugin);
+	visual_param_list_add_many (params,
+                                visual_param_new_integer ("transparent_bars", N_("Transparent bars"),
+                                                          TRUE,
+                                                          visual_param_in_range_integer (0, 1)),
+                                NULL);
 
 	/* GL setting up the rest! */
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -133,6 +128,8 @@ static int lv_gltest_init (VisPluginData *plugin)
 	glDepthFunc (GL_LESS);
 
 	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
+
+	int x, y;
 
 	for (x = 0; x < 16; x++) {
 		for (y = 0; y < 16; y++) {
@@ -200,7 +197,7 @@ static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -211,8 +208,8 @@ static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "transparant bars")) {
-					priv->transparant = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "transparent_bars")) {
+					priv->transparant = visual_param_get_value_integer (param);
 
 					if (priv->transparant == FALSE)
 						glDisable (GL_BLEND);

@@ -109,21 +109,22 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int lv_madspin_init (VisPluginData *plugin)
 {
-	MadspinPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715),
-		VISUAL_PARAM_LIST_END
-	};
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (MadspinPrivate, 1);
+	MadspinPrivate *priv = visual_mem_new0 (MadspinPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_integer ("num_stars", N_("Number of stars"),
+                                                          512,
+                                                          NULL),
+                                visual_param_new_integer ("speed", N_("Speed"),
+                                                          715,
+                                                          NULL),
+                                NULL);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
@@ -136,8 +137,6 @@ static int lv_madspin_init (VisPluginData *plugin)
 	priv->frame = 0;
 
 	priv->timer = visual_timer_new ();
-
-	visual_param_container_add_many (paramcontainer, params);
 
 	priv->initialized = TRUE;
 
@@ -234,7 +233,7 @@ static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -245,10 +244,10 @@ static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "num stars"))
-					priv->num_stars = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "speed"))
-					priv->speed = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "num stars"))
+					priv->num_stars = visual_param_get_value_integer (param);
+				else if (visual_param_has_name (param, "speed"))
+					priv->speed = visual_param_get_value_integer (param);
 
 			default: /* to avoid warnings */
 				break;

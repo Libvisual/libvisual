@@ -215,39 +215,41 @@ void WidgetVisualization::DoParams() {
     if(actorVal) {
         VisActor *actor = visual_bin_get_actor(bin_);;
         VisPluginData *plugin = visual_actor_get_plugin(actor);
-        VisParamContainer *params = visual_plugin_get_params(plugin);
+        VisParamList *params = visual_plugin_get_params(plugin);
         Json::Value::Members members = actorVal->getMemberNames();
         for(std::vector<std::string>::iterator it = members.begin();
             it != members.end(); it++) {
-            VisParamEntry *entry = visual_param_container_get(params, it->c_str());
+            VisParam *entry = visual_param_list_get(params, it->c_str());
             if(entry) {
                 Json::Value *val = visitor_->CFG_Fetch_Raw(actorVal, *it);
-                switch(entry->type) {
-                case VISUAL_PARAM_ENTRY_TYPE_STRING:
+                switch(visual_param_get_type (entry)) {
+                case VISUAL_PARAM_TYPE_STRING:
                     if(val->isString()) {
-                        visual_param_entry_set_string(entry, (char *)val->asCString());
+                        visual_param_set_value_string(entry, (char *)val->asCString());
                     }
                     break;
-                case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
+                case VISUAL_PARAM_TYPE_INTEGER:
                     if(val->isInt()) {
-                        visual_param_entry_set_integer(entry, val->asInt());
+                        visual_param_set_value_integer(entry, val->asInt());
                     }
                     break;
-                case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
+                case VISUAL_PARAM_TYPE_FLOAT:
                     if(val->isDouble()) {
-                        visual_param_entry_set_float(entry, (float)val->asDouble());
+                        visual_param_set_value_float(entry, (float)val->asDouble());
                     }
                     break;
-                case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
+                case VISUAL_PARAM_TYPE_DOUBLE:
                     if(val->isDouble()) {
-                        visual_param_entry_set_double(entry, val->asDouble());
+                        visual_param_set_value_double(entry, val->asDouble());
                     }
                     break;
-                case VISUAL_PARAM_ENTRY_TYPE_COLOR:
+                case VISUAL_PARAM_TYPE_COLOR:
                     if(val->isString()) {
                         int r, g, b;
                         sscanf(val->asCString(), "r=%d,g=%d,b=%d", &r, &g, &b);
-                        visual_param_entry_set_color(entry, r, g, b);
+                        VisColor color;
+                        visual_color_set (&color, r, g, b);
+                        visual_param_set_value_color(entry, &color);
                     }
                     break;
                 default:

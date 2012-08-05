@@ -87,28 +87,25 @@ namespace {
 
 int lv_dancingparticles_init (VisPluginData *plugin)
 {
-	DancingParticlesPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparent bars", FALSE),
-		VISUAL_PARAM_LIST_END
-	};
-
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (DancingParticlesPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    DancingParticlesPrivate *priv = visual_mem_new0 (DancingParticlesPrivate, 1);
+    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_integer ("transparent_bars", N_("Transparent bars"),
+                                                      FALSE,
+                                                      visual_param_in_range_integer (0, 1)),
+                                NULL);
 
-	build_sqrt_table ();
+    build_sqrt_table ();
 
-	init_gl ();
+    init_gl ();
 
-	return 0;
+    return 0;
 }
 
 int lv_dancingparticles_cleanup (VisPluginData *plugin)
@@ -152,7 +149,7 @@ int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -161,10 +158,10 @@ int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events)
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = static_cast<VisParamEntry *> (ev.event.param.param);
+				param = static_cast<VisParam *> (ev.event.param.param);
 
-				if (visual_param_entry_is (param, "transparant bars")) {
-					priv->transparant = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "transparent_bars")) {
+					priv->transparant = visual_param_get_value_integer (param);
 
 					if (priv->transparant == FALSE)
 						glDisable (GL_BLEND);

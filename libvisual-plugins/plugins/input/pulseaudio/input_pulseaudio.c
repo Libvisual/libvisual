@@ -14,12 +14,14 @@
  *    along with Xmms2-libvisual.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <libvisual/libvisual.h>
+#include "gettext.h"
 #include <stdlib.h>
 #include <string.h>
-#include <libvisual/libvisual.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
 #include <pthread.h>
+
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -98,21 +100,22 @@ const VisPluginInfo *get_plugin_info( void ) {
 }
 
 static int inp_pulseaudio_init( VisPluginData *plugin ) {
-    pulseaudio_priv_t *priv;
-    int error;
-
-    VisParamContainer *paramcontainer = visual_plugin_get_params(plugin);
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-    priv = visual_mem_new0(pulseaudio_priv_t, 1);
-
+    pulseaudio_priv_t *priv = visual_mem_new0(pulseaudio_priv_t, 1);
     visual_object_set_private(VISUAL_OBJECT(plugin), priv);
 
-    visual_mem_set(priv, 0, sizeof(pulseaudio_priv_t));
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_string ("device", N_("Device name"),
+                                                         "",
+                                                         NULL),
+                                NULL);
 
+    int error;
 
     priv->simple = pa_simple_new(
         NULL,
@@ -126,13 +129,6 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
         return -VISUAL_ERROR_GENERAL;
     }
-
-    static VisParamEntry params[] = {
-        VISUAL_PARAM_LIST_ENTRY_STRING ("device", ""),
-        VISUAL_PARAM_LIST_END
-    };
-
-    visual_param_container_add_many (paramcontainer, params);
 
     pthread_attr_init(&priv->pthread_custom_attr);
     pthread_create(&priv->thread, &priv->pthread_custom_attr, update_thread, (void *)priv);
@@ -163,7 +159,7 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 {
     pulseaudio_priv_t *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     VisEvent ev;
-    VisParamEntry *param;
+    VisParam *param;
     char *tmp;
     int error;
 
@@ -172,8 +168,8 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
             case VISUAL_EVENT_PARAM:
                 param = ev.event.param.param;
 
-                if (visual_param_entry_is (param, "device")) {
-                    tmp = visual_param_entry_get_string (param);
+                if (visual_param_has_name (param, "device")) {
+                    tmp = visual_param_get_value_string (param);
 
                     if(priv->simple != NULL)
                         pa_simple_free(priv->simple);

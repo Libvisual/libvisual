@@ -90,38 +90,53 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int act_gdkpixbuf_init (VisPluginData *plugin)
 {
-	PixbufPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);;
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_STRING	("filename",	""),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("scaled",	TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("aspect",	FALSE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("center",	TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("set size",	FALSE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("width",	0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("height",	0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("x",		0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("y",		0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("interpolate",	0),
-		VISUAL_PARAM_LIST_END
-	};
+    /* Initialize GObjects, needed for GdkPixbuf */
+    g_type_init ();
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (PixbufPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    PixbufPrivate *priv = visual_mem_new0 (PixbufPrivate, 1);
+    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	priv->target = visual_video_new ();
+    VisParamList *params = visual_plugin_get_params (plugin);;
+    visual_param_list_add_many (params,
+                                visual_param_new_string  ("filename", N_("Input filename"),
+                                                          "",
+                                                          NULL),
+                                visual_param_new_integer ("scaled", N_("Scaled"),
+                                                          TRUE,
+                                                          visual_param_in_range_integer (0, 1)),
+                                visual_param_new_integer ("aspect", N_("Aspect"),
+                                                          TRUE,
+                                                          visual_param_in_range_integer (0, 1)),
+                                visual_param_new_integer ("center", N_("Centered"),
+                                                          TRUE,
+                                                          visual_param_in_range_integer (0, 1)),
+                                visual_param_new_integer ("set_size", N_("Set size"),
+                                                          FALSE,
+                                                          visual_param_in_range_integer (0, 1)),
+                                visual_param_new_integer ("width", N_("Width"),
+                                                          0,
+                                                          visual_param_in_range_integer (0, INT_MAX)),
+                                visual_param_new_integer ("height", N_("Height"),
+                                                          0,
+                                                          visual_param_in_range_integer (0, INT_MAX)),
+                                visual_param_new_integer ("x", N_("x"),
+                                                          0,
+                                                          visual_param_in_range_integer (0, INT_MAX)),
+                                visual_param_new_integer ("y", N_("y"),
+                                                          0,
+                                                          visual_param_in_range_integer (0, INT_MAX)),
+                                visual_param_new_integer ("interpolate", N_("Interpolation method"),
+                                                          0,
+                                                          NULL),
+                                NULL);
 
-	/* Initialize g_type, needed for GdkPixbuf */
-	g_type_init ();
+    priv->target = visual_video_new ();
 
-	visual_param_container_add_many (paramcontainer, params);
-
-	return 0;
+    return 0;
 }
 
 static int act_gdkpixbuf_cleanup (VisPluginData *plugin)
@@ -184,7 +199,7 @@ int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
 static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisParamEntry *param;
+	VisParam *param;
 	VisEvent ev;
 
 	while (visual_event_queue_poll (events, &ev)) {
@@ -196,48 +211,48 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "filename")) {
+				if (visual_param_has_name (param, "filename")) {
 					visual_log (VISUAL_LOG_DEBUG, "New file to be loaded: %s",
-							visual_param_entry_get_string (param));
+							visual_param_get_value_string (param));
 
-					load_new_file (priv, visual_param_entry_get_string (param));
+					load_new_file (priv, visual_param_get_value_string (param));
 
-				} else if (visual_param_entry_is (param, "scaled")) {
-					priv->set_scaled = visual_param_entry_get_integer (param);
-
-					update_scaled_pixbuf (priv);
-
-				} else if (visual_param_entry_is (param, "aspect")) {
-					priv->aspect = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "scaled")) {
+					priv->set_scaled = visual_param_get_value_integer (param);
 
 					update_scaled_pixbuf (priv);
 
-				} else if (visual_param_entry_is (param, "center")) {
-					priv->center = visual_param_entry_get_integer (param);
-
-				} else if (visual_param_entry_is (param, "set size")) {
-					priv->set_size = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "aspect")) {
+					priv->aspect = visual_param_get_value_integer (param);
 
 					update_scaled_pixbuf (priv);
 
-				} else if (visual_param_entry_is (param, "width")) {
-					priv->set_width = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "center")) {
+					priv->center = visual_param_get_value_integer (param);
+
+				} else if (visual_param_has_name (param, "set size")) {
+					priv->set_size = visual_param_get_value_integer (param);
 
 					update_scaled_pixbuf (priv);
 
-				} else if (visual_param_entry_is (param, "height")) {
-					priv->set_height = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "width")) {
+					priv->set_width = visual_param_get_value_integer (param);
 
 					update_scaled_pixbuf (priv);
 
-				} else if (visual_param_entry_is (param, "x")) {
-					priv->x_offset = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "height")) {
+					priv->set_height = visual_param_get_value_integer (param);
 
-				} else if (visual_param_entry_is (param, "y")) {
-					priv->y_offset = visual_param_entry_get_integer (param);
+					update_scaled_pixbuf (priv);
 
-				} else if (visual_param_entry_is (param, "interpolate")) {
-					priv->interpolate = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "x")) {
+					priv->x_offset = visual_param_get_value_integer (param);
+
+				} else if (visual_param_has_name (param, "y")) {
+					priv->y_offset = visual_param_get_value_integer (param);
+
+				} else if (visual_param_has_name (param, "interpolate")) {
+					priv->interpolate = visual_param_get_value_integer (param);
 
 					update_scaled_pixbuf (priv);
 
