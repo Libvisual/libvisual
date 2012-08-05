@@ -41,8 +41,8 @@ SET(libvisual_HEADERS
   lv_songinfo.h
   lv_morph.h
   lv_param.h
-  lv_param_validators.h>
-  lv_param_value.h>
+  lv_param_validators.h
+  lv_param_value.h
   lv_mem.h
   lv_bits.h
   lv_cpu.h
