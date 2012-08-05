@@ -88,7 +88,7 @@ namespace LV {
 
   VideoPtr Video::create (int width, int height, VisVideoDepth depth)
   {
-      visual_return_val_if_fail(depth != VISUAL_VIDEO_DEPTH_ERROR, nullptr);
+      visual_return_val_if_fail (depth != VISUAL_VIDEO_DEPTH_NONE, nullptr);
 
       VideoPtr self (new Video, false);
 
@@ -874,7 +874,7 @@ VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
     int i = depth;
 
     if (visual_video_depth_is_sane (depth) == 0)
-        return VISUAL_VIDEO_DEPTH_ERROR;
+        return VISUAL_VIDEO_DEPTH_NONE;
 
     if (i == VISUAL_VIDEO_DEPTH_NONE) {
         i = VISUAL_VIDEO_DEPTH_8BIT;
@@ -898,7 +898,7 @@ VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth)
     int i = depth;
 
     if (visual_video_depth_is_sane (depth) == 0)
-        return VISUAL_VIDEO_DEPTH_ERROR;
+        return VISUAL_VIDEO_DEPTH_NONE;
 
     if (i == VISUAL_VIDEO_DEPTH_NONE)
         return VISUAL_VIDEO_DEPTH_NONE;
@@ -945,7 +945,7 @@ VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag)
 
         /* Is it still on openGL ? Return an error */
         if (depth == VISUAL_VIDEO_DEPTH_GL)
-            return VISUAL_VIDEO_DEPTH_ERROR;
+            return VISUAL_VIDEO_DEPTH_NONE;
 
     } else {
         return depth;
@@ -1025,8 +1025,6 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
         case VISUAL_VIDEO_DEPTH_GL:    return 0;
 
         default:
-            return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+            return VISUAL_VIDEO_DEPTH_NONE;
     }
-
-    return -VISUAL_ERROR_IMPOSSIBLE;
 }

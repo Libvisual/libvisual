@@ -58,7 +58,6 @@ typedef enum {
     VISUAL_VIDEO_DEPTH_32BIT    = 8,    /**< 32 bits surface flag. */
     VISUAL_VIDEO_DEPTH_GL       = 16,   /**< openGL surface flag. */
     VISUAL_VIDEO_DEPTH_ENDLIST  = 32,   /**< Used to mark the end of the depth list. */
-    VISUAL_VIDEO_DEPTH_ERROR    = -1,   /**< Used when there is an error. */
     VISUAL_VIDEO_DEPTH_ALL      = VISUAL_VIDEO_DEPTH_8BIT
                                 | VISUAL_VIDEO_DEPTH_16BIT
                                 | VISUAL_VIDEO_DEPTH_24BIT
