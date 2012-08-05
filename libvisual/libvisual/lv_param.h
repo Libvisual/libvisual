@@ -255,6 +255,17 @@ _LV_DEFINE_PARAM_NEW (string , const char *      , STRING , POINTER)
 _LV_DEFINE_PARAM_NEW (color  , const VisColor *  , COLOR  , POINTER)
 _LV_DEFINE_PARAM_NEW (palette, const VisPalette *, PALETTE, POINTER)
 
+static inline VisParam *visual_param_new_color_rgb (const char *name,
+                                                    const char *description,
+                                                    uint8_t     red,
+                                                    uint8_t     green,
+                                                    uint8_t     blue,
+                                                    VisClosure *validator)
+{
+    VisColor color = { red, green, blue, 255 };
+    return visual_param_new_color (name, description, &color, validator);
+}
+
 LV_END_DECLS
 
 /**
