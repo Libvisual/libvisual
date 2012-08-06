@@ -88,8 +88,6 @@ namespace LV {
 
   VideoPtr Video::create (int width, int height, VisVideoDepth depth)
   {
-      visual_return_val_if_fail (depth != VISUAL_VIDEO_DEPTH_NONE, nullptr);
-
       VideoPtr self (new Video, false);
 
       self->set_depth (depth);
