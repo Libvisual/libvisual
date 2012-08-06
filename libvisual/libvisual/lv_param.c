@@ -44,9 +44,8 @@ struct _VisParam
 };
 
 struct _VisParamList {
-    VisList *       entries;      /**< The list that contains all the parameters. */
-    VisEventQueue * eventqueue;   /**< Pointer to an optional eventqueue to which events can be emitted
-                                    *  on parameter changes. */
+    VisList *       entries;
+    VisEventQueue * eventqueue;
 };
 
 static inline int validate_param_value (VisParamValue *value, VisClosure *validator)

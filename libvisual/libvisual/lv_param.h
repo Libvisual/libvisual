@@ -146,6 +146,13 @@ LV_API VisParam *visual_param_new (const char * name,
                                    VisClosure * validator);
 
 /**
+ * Frees a parameter entry.
+ *
+ * @param param Param to free
+ */
+LV_API void visual_param_free (VisParam *param);
+
+/**
  * Adds a change notification callback.
  *
  * @param param    VisParam to add a change notification callback to.
