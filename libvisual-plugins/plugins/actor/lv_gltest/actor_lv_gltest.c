@@ -25,7 +25,7 @@
 #include "gettext.h"
 #include <libvisual/libvisual.h>
 #include <GL/gl.h>
-#include <GL/glu.h>
+#include <math.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -175,6 +175,18 @@ static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height
 
 	return 0;
 }
+void gluPerspective(double fovy, double aspect, double zNear, double zFar)
+{
+ // Start in projection mode.
+ glMatrixMode(GL_PROJECTION);
+ glLoadIdentity();
+ double xmin, xmax, ymin, ymax;
+ ymax = zNear * tan(fovy * VISUAL_MATH_PI / 360.0);
+ ymin = -ymax;
+ xmin = ymin * aspect;
+ xmax = ymax * aspect;
+ glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
+}
 
 static int lv_gltest_resize (VisPluginData *plugin, int width, int height)
 {
@@ -294,41 +306,63 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 /* Drawing stuff */
 static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2)
 {
-	if (y1 == y2) {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    if (y1 == y2) {
 
-		glVertex3f (x1, y1, z1);
-		glVertex3f (x2, y1, z1);
-		glVertex3f (x2, y2, z2);
+        const GLfloat vertices[] = {
+            x1, y1, z1,
+            x2, y1, z1,
+            x2, y2, z2,
 
-		glVertex3f (x2, y2, z2);
-		glVertex3f (x1, y2, z2);
-		glVertex3f (x1, y1, z1);
-	} else {
-		glVertex3f (x1, y1, z1);
-		glVertex3f (x2, y1, z2);
-		glVertex3f (x2, y2, z2);
+            x2, y2, z2,
+            x1, y2, z2,
+            x1, y1, z1,
 
-		glVertex3f (x2, y2, z2);
-		glVertex3f (x1, y2, z1);
-		glVertex3f (x1, y1, z1);
-	}
+        };
+        glVertexPointer(3, GL_FLOAT, 0, vertices);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+
+    } else {
+        const GLfloat vertices[] = {
+            x1, y1, z1,
+            x2, y1, z2,
+            x2, y2, z2,
+
+            x2, y2, z2,
+            x1, y2, z1,
+            x1, y1, z1,
+
+        };
+        glVertexPointer(3, GL_FLOAT, 0, vertices);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+    }
+    glDisableClientState(GL_VERTEX_ARRAY);
 }
+
 
 static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue)
 {
 	GLfloat width = 0.1;
 
-	glColor3f (red,green,blue);
+    const GLfloat colors[] = {
+        red, green, blue,
+        0.5 * red, 0.5 * green, 0.5 * blue,
+        0.25 * red, 0.25 * green, 0.25 * blue
+
+    };
+    glEnableClientState(GL_COLOR_ARRAY);
+
+    glColorPointer(3, GL_FLOAT, 0, colors);
+
 	draw_rectangle (priv, x_offset, height, z_offset, x_offset + width, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset, 0, z_offset, x_offset + width, 0, z_offset + 0.1);
 
-	glColor3f (0.5 * red, 0.5 * green, 0.5 * blue);
 	draw_rectangle (priv, x_offset, 0.0, z_offset + 0.1, x_offset + width, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset, 0.0, z_offset, x_offset + width, height, z_offset );
 
-	glColor3f (0.25 * red, 0.25 * green, 0.25 * blue);
 	draw_rectangle (priv, x_offset, 0.0, z_offset , x_offset, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset + width, 0.0, z_offset , x_offset + width, height, z_offset + 0.1);
+    glDisableClientState(GL_COLOR_ARRAY);
 }
 
 static void draw_bars (GLtestPrivate *priv)

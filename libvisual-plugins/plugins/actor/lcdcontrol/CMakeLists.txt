@@ -105,6 +105,7 @@ SET(actor_lcdcontrol_SOURCES
   luascript.h
   Stats.h
   Stats.cpp
+  lcdcontrol_config.cpp
   ${EXTRA_SOURCES}
 )
 
