@@ -21,6 +21,7 @@
 #cmakedefine HAVE_X            1
 #cmakedefine HAVE_XF86VMODE    1
 #cmakedefine HAVE_OPENGL       1
+#cmakedefine HAVE_OPENGL_GLU   1
 
 #cmakedefine STDC_HEADERS      1
 
