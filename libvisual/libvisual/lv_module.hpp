@@ -30,6 +30,8 @@ namespace LV {
 
       void* get_symbol (std::string const& name);
 
+      static std::string const& path_suffix ();
+
   private:
 
       class Impl;

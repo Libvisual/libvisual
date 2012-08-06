@@ -1,5 +1,3 @@
-#define _SVID_SOURCE
-
 #include "config.h"
 #include "lv_plugin_registry.h"
 
@@ -15,12 +13,6 @@
 #include <vector>
 #include <unordered_map>
 #include <cstdlib>
-
-#ifdef VISUAL_OS_WIN32
-#include <windows.h>
-#else
-#include <dirent.h>
-#endif
 
 namespace LV {
 
@@ -173,82 +165,24 @@ namespace LV {
 
   PluginList PluginRegistry::Impl::get_plugins_from_dir (std::string const& dir) const
   {
-#if defined(VISUAL_OS_WIN32)
-      auto pattern = dir + "/*";
-
-      WIN32_FIND_DATA file_data;
-      auto hList = FindFirstFile (pattern.c_str (), &file_data);
-
-      if (hList == INVALID_HANDLE_VALUE) {
-          FindClose (hList);
-          return;
-      }
-
       PluginList list;
+      list.reserve (30);
 
-      auto finished = false;
+      for_each_file_in_dir (dir,
+                            [&] (std::string const& path) -> bool {
+                                return str_has_suffix (path, Module::path_suffix ());
+                            },
+                            [&] (std::string const& path) -> bool {
+                                auto ref = load_plugin_ref (path);
 
-      while (!finished) {
-          if (!(file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-              auto full_path = dir + "/" + file_data.cFileName;
+                                if (ref) {
+                                    visual_log (VISUAL_LOG_DEBUG, "Adding plugin: %s", ref->info->name);
+                                    list.push_back (*ref);
+                                    delete ref;
+                                }
 
-              if (str_has_suffix (full_path, ".dll")) {
-                  auto ref = load_plugin_ref (full_path);
-
-                  if (ref) {
-                      visual_log (VISUAL_LOG_DEBUG, "Adding plugin: %s", ref->info->name);
-
-                      list.push_back (*ref);
-                      delete ref;
-                  }
-              }
-          }
-
-          if (!FindNextFile (hList, &file_data)) {
-              if (GetLastError () == ERROR_NO_MORE_FILES) {
-                  finished = true;
-              }
-          }
-      }
-
-      FindClose (hList);
-#else
-      // NOTE: This typecast is needed for glibc versions that define
-      // alphasort() as taking const void * arguments
-
-      typedef int (*ScandirCompareFunc) (const struct dirent **, const struct dirent **);
-
-      struct dirent **namelist;
-
-      auto n = scandir (dir.c_str (), &namelist, nullptr, ScandirCompareFunc (alphasort));
-      if (n < 0)
-          return {};
-
-      // First two entries are '.' and '..'
-      visual_mem_free (namelist[0]);
-      visual_mem_free (namelist[1]);
-
-      PluginList list;
-
-      for (auto i = 2; i < n; i++) {
-          auto full_path = dir + "/" + namelist[i]->d_name;
-
-          if (str_has_suffix (full_path, ".so")) {
-              auto ref = load_plugin_ref (full_path);
-
-              if (ref) {
-                  visual_log (VISUAL_LOG_DEBUG, "Adding plugin: %s", ref->info->name);
-
-                  list.push_back (*ref);
-                  delete ref;
-              }
-          }
-
-          visual_mem_free (namelist[i]);
-      }
-
-      visual_mem_free (namelist);
-#endif
+                                return true;
+                            });
 
       return list;
   }
