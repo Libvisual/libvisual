@@ -104,19 +104,32 @@ ENDIF()
 
 # Check for libraries
 
-# Xlib
-FIND_PACKAGE(X11)
-SET(HAVE_X ${X11_FOUND})
-
 # OpenGL
-FIND_PACKAGE(OpenGL)
-SET(HAVE_OPENGL ${OPENGL_FOUND})
-SET(HAVE_OPENGL_GLU ${OPENGL_GLU_FOUND})
-SET(HAVE_XF86VMODE ${X11_xf86vmode_FOUND})
+OPTION(USE_OPENGL_ES1 "Force use of OpenGL ES 1.x (for development only)" no)
+IF(NOT USE_OPENGL_ES1)
+  FIND_PACKAGE(OpenGL)
+  SET(HAVE_OPENGL ${OPENGL_FOUND})
+  SET(HAVE_OPENGL_GLU ${OPENGL_GLU_FOUND})
+ELSE()
+  MESSAGE(STATUS "Forcing use of OpenGL ES 1.x")
+  FIND_PACKAGE(OpenGLES1)
+  SET(HAVE_OPENGL ${OPENGLES1_FOUND})
+  SET(HAVE_OPENGL_GLU ${OPENGLES1_FOUND})
+  IF(OPENGLES1_FOUND)
+    SET(HAVE_OPENGL_GLU yes)
+    SET(OPENGL_INCLUDE_DIR ${OPENGL_ES1_INCLUDE_DIR})
+    SET(OPENGL_gl_LIBRARY ${OPENGL_ES1_LIBRARY})
+    SET(OPENGL_glu_LIBRARY GLU)
+    ADD_DEFINITIONS(-DUSE_OPENGL_ES)
+    ADD_SUBDIRECTORY(common/GL)
+  ELSE()
+    MESSAGE(WARNING "No OpenGL ES 1.x implementation found, OpenGL support is now disabled")
+  ENDIF()
+ENDIF()
 
 # Plugin build options
-OPTION(ENABLE_ALPHABLEND  "Build the Alphablend morph plugin" no)
-OPTION(ENABLE_ALSA        "Build the ALSA input plugin" no)
+OPTION(ENABLE_ALPHABLEND  "Build the Alphablend morph plugin" yes)
+OPTION(ENABLE_ALSA        "Build the ALSA input plugin" yes)
 OPTION(ENABLE_BLURSK      "Build the Blursk plugin" yes)
 OPTION(ENABLE_BUMPSCOPE   "Build the Bumpscope plugin" yes)
 OPTION(ENABLE_CORONA      "Build the Corona plugin" yes)
@@ -289,7 +302,6 @@ SET(CMAKE_C_FLAGS         "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden
 SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused")
 SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
-
 
 # Pedantic checks
 

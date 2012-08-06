@@ -24,9 +24,15 @@
 #include "config.h"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <math.h>
+
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#include "common/GL/glu.h"
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <math.h>
+#endif
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -121,7 +127,11 @@ static int lv_gltest_init (VisPluginData *plugin)
 
 	glLoadIdentity ();
 
+#ifdef USE_OPENGL_ES
+	glFrustumf (-1, 1, -1, 1, 1.5, 10);
+#else
 	glFrustum (-1, 1, -1, 1, 1.5, 10);
+#endif
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
