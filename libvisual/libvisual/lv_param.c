@@ -49,7 +49,10 @@ struct _VisParamList {
                                     *  on parameter changes. */
 };
 
-static void visual_param_free (VisParam *param);
+static inline int validate_param_value (VisParamValue *value, VisClosure *validator)
+{
+    return (* (VisParamValidateFunc) validator->func) (value, validator->data);
+}
 
 VisClosure *visual_closure_new (void *func, void *data, void *destroy_func)
 {
@@ -203,6 +206,12 @@ VisParam *visual_param_new (const char * name,
     visual_return_val_if_fail (name != NULL, NULL);
     visual_return_val_if_fail (description != NULL, NULL);
     visual_return_val_if_fail (type != VISUAL_PARAM_TYPE_NONE, NULL);
+
+    if (validator) {
+        VisParamValue value;
+        visual_param_value_set (&value, type, default_value);
+        visual_return_val_if_fail (validate_param_value (&value, validator), NULL);
+    }
 
     VisParam *self = visual_mem_new0 (VisParam, 1);
 
