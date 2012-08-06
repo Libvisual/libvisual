@@ -296,31 +296,6 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 /* Drawing stuff */
 static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2)
 {
-    if (y1 == y2) {
-
-        glVertex3f (x1, y1, z1);
-        glVertex3f (x2, y1, z1);
-        glVertex3f (x2, y2, z2);
-
-        glVertex3f (x2, y2, z2);
-        glVertex3f (x1, y2, z2);
-        glVertex3f (x1, y1, z1);
-    } else {
-        glVertex3f (x1, y1, z1);
-        glVertex3f (x2, y1, z2);
-        glVertex3f (x2, y2, z2);
-
-        glVertex3f (x2, y2, z2);
-        glVertex3f (x1, y2, z1);
-        glVertex3f (x1, y1, z1);
-    }
-}
-
-
-/* Drawing stuff */
-/*
-static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2)
-{
     glEnableClientState(GL_VERTEX_ARRAY);
     if (y1 == y2) {
 
@@ -335,7 +310,7 @@ static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat
 
         };
         glVertexPointer(3, GL_FLOAT, 0, vertices);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
     } else {
         const GLfloat vertices[] = {
@@ -346,14 +321,12 @@ static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat
             x2, y2, z2,
             x1, y2, z1,
             x1, y1, z1,
-
         };
         glVertexPointer(3, GL_FLOAT, 0, vertices);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
     glDisableClientState(GL_VERTEX_ARRAY);
 }
-*/
 
 static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue)
 {
@@ -371,7 +344,6 @@ static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, G
     glColor4f(0.25 * red, 0.25 * green, 0.25 * blue, 1.0f);
 	draw_rectangle (priv, x_offset, 0.0, z_offset , x_offset, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset + width, 0.0, z_offset , x_offset + width, height, z_offset + 0.1);
-
 }
 
 static void draw_bars (GLtestPrivate *priv)
@@ -388,7 +360,6 @@ static void draw_bars (GLtestPrivate *priv)
 	glRotatef (priv->y_angle,0.0,1.0,0.0);
 	glRotatef (priv->z_angle,0.0,0.0,1.0);
 
-	glBegin (GL_TRIANGLES);
 	for (y = 0; y < 16; y++)
 	{
 		z_offset = -1.6 + ((15 - y) * 0.2);
@@ -402,7 +373,6 @@ static void draw_bars (GLtestPrivate *priv)
 			draw_bar (priv, x_offset, z_offset, priv->heights[y][x] * 0.2, r_base - (x * (r_base / 15.0)), x * (1.0 / 15), b_base);
 		}
 	}
-	glEnd ();
 
 	glPopMatrix ();
 }
