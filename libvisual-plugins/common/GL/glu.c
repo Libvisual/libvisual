@@ -158,7 +158,11 @@ gluLookAt(_GL_REAL eyex, _GL_REAL eyey, _GL_REAL eyez, _GL_REAL centerx,
     m[2][2] = -forward[2];
 
     glMultMatrixf(&m[0][0]);
+#ifdef USE_OPENGL_ES
+    glTranslatef(-eyex, -eyey, -eyez);
+#else
     glTranslated(-eyex, -eyey, -eyez);
+#endif
 }
 
 static void __gluMultMatrixVecd(const _GL_REAL matrix[16], const _GL_REAL in[4],
