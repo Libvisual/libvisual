@@ -46,7 +46,7 @@ static int inp_debug_cleanup (VisPluginData *plugin);
 static int inp_debug_events (VisPluginData *plugin, VisEventQueue *events);
 static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio);
 
-static void change_param (VisPluginData *plugin, VisParamEntry *param);
+static void change_param (VisPluginData *plugin, VisParam *param);
 static void setup_wave (DebugPriv *priv);
 
 const VisPluginInfo *get_plugin_info (void)
@@ -76,36 +76,29 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int inp_debug_init (VisPluginData *plugin)
 {
-	DebugPriv *priv;
-	VisParamEntry *param;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_FLOAT ("frequency",  DEFAULT_FREQUENCY),
-		VISUAL_PARAM_LIST_ENTRY_FLOAT ("ampltitude", DEFAULT_AMPLITUDE),
-		VISUAL_PARAM_LIST_END
-	};
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (DebugPriv, 1);
+	DebugPriv *priv = visual_mem_new0 (DebugPriv, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+
+	VisParamList *params = visual_plugin_get_params (plugin);
+	visual_param_list_add_many (params,
+                                visual_param_new_float ("frequency",
+                                                        N_("Frequency of sine wave"),
+                                                        DEFAULT_FREQUENCY,
+                                                        visual_param_in_range_float (0.0f, 22000.0f)),
+                                visual_param_new_float ("ampltitude",
+                                                        N_("Ampltitude of sine wave"),
+                                                        DEFAULT_AMPLITUDE,
+                                                        visual_param_in_range_float (0.0f, 1.0f)),
+                                NULL);
 
 	priv->frequency	 = DEFAULT_FREQUENCY;
 	priv->ampltitude = DEFAULT_AMPLITUDE;
+
 	setup_wave (priv);
-
-	visual_param_container_add_many (paramcontainer, params);
-
-	param = visual_param_container_get (paramcontainer, "frequency");
-	visual_param_entry_min_set_float (param, 0.0);
-	visual_param_entry_max_set_float (param, 22000.0);
-
-	param = visual_param_container_get (paramcontainer, "ampltitude");
-	visual_param_entry_min_set_float (param, 0.0);
-	visual_param_entry_max_set_float (param, 1.0);
 
 	return 0;
 }
@@ -121,7 +114,7 @@ static void setup_wave (DebugPriv *priv)
 	priv->angle_step = (2 * VISUAL_MATH_PI * priv->frequency) / OUTPUT_RATE;
 }
 
-static void change_param (VisPluginData *plugin, VisParamEntry *param)
+static void change_param (VisPluginData *plugin, VisParam *param)
 {
 	/* FIXME: Implement */
 }
@@ -133,7 +126,7 @@ static int inp_debug_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_PARAM: {
-				VisParamEntry *param = ev.event.param.param;
+				VisParam *param = ev.event.param.param;
 				change_param (plugin, param);
 			}
 			default:; /* discard */

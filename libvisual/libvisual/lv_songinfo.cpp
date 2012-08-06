@@ -113,15 +113,15 @@ namespace LV {
   {
       // Get the desired cover art size
       auto params = visual_get_params ();
-      auto xparam = visual_param_container_get (params, "songinfo-cover-width");
-      auto yparam = visual_param_container_get (params, "songinfo-cover-height");
+      auto xparam = visual_param_list_get (params, "songinfo-cover-width");
+      auto yparam = visual_param_list_get (params, "songinfo-cover-height");
 
-      int cover_width  = 64;
+      int cover_width = 64;
       int cover_height = 64;
 
       if (xparam && yparam) {
-          cover_width  = visual_param_entry_get_integer (xparam);
-          cover_height = visual_param_entry_get_integer (yparam);
+          cover_width  = visual_param_get_value_integer (xparam);
+          cover_height = visual_param_get_value_integer (yparam);
       }
 
       // The coverart image

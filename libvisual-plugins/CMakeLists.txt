@@ -114,8 +114,8 @@ SET(HAVE_OPENGL ${OPENGL_FOUND})
 SET(HAVE_XF86VMODE ${X11_xf86vmode_FOUND})
 
 # Plugin build options
-OPTION(ENABLE_ALPHABLEND  "Build the Alphablend morph plugin" yes)
-OPTION(ENABLE_ALSA        "Build the ALSA input plugin" yes)
+OPTION(ENABLE_ALPHABLEND  "Build the Alphablend morph plugin" no)
+OPTION(ENABLE_ALSA        "Build the ALSA input plugin" no)
 OPTION(ENABLE_BLURSK      "Build the Blursk plugin" yes)
 OPTION(ENABLE_BUMPSCOPE   "Build the Bumpscope plugin" yes)
 OPTION(ENABLE_CORONA      "Build the Corona plugin" yes)

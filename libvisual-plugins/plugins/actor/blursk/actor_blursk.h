@@ -1,5 +1,4 @@
-/* $Id$
- * $URL$
+/* Libvisual-plugins - Standard plugins for libvisual
  *
  * Copyright (C) 2009 Scott Sibley <scott@starlon.net>
  *
@@ -19,8 +18,8 @@
  * along with Blurks-libvisual.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTOR_BLURSK_H_
-#define ACTOR_BLURSK_H
+#ifndef _LV_ACTOR_BLURSK_H
+#define _LV_ACTOR_BLURSK_H
 
 #include <libvisual/libvisual.h>
 
@@ -39,5 +38,4 @@ typedef struct {
         int                     update_config_string;
 } BlurskPrivate;
 
-#endif
-
+#endif /* _LV_ACTOR_BLURSK_H */
