@@ -59,7 +59,6 @@ static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat
 static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue);
 static void draw_bars (GLtestPrivate *priv);
 
-//static void gluPerspective(double fovy, double aspect, double zNear, double zFar);
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -407,18 +406,3 @@ static void draw_bars (GLtestPrivate *priv)
 
 	glPopMatrix ();
 }
-
-/*
-static void gluPerspective(double fovy, double aspect, double zNear, double zFar)
-{
- // Start in projection mode.
- glMatrixMode(GL_PROJECTION);
- glLoadIdentity();
- double xmin, xmax, ymin, ymax;
- ymax = zNear * tan(fovy * VISUAL_MATH_PI / 360.0);
- ymin = -ymax;
- xmin = ymin * aspect;
- xmax = ymax * aspect;
- glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
-}
-*/
