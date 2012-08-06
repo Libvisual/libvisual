@@ -26,7 +26,6 @@
 #include <iostream>
 #include <fstream>
 #include <libvisual/libvisual.h>
-#include "lcdcontrol_config.h"
 
 #include "CFG.h"
 #include "debug.h"
