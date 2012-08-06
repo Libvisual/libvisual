@@ -58,7 +58,7 @@ namespace LV
                                       "Songinfo timeout in seconds",
                                       5,
                                       NULL),
-            visual_param_new_integer ("songinfo-in-plugins",
+            visual_param_new_bool    ("songinfo-in-plugins",
                                       "Show songinfo in plugins",
                                       TRUE,
                                       NULL),
