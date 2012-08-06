@@ -160,7 +160,7 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
     pulseaudio_priv_t *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     VisEvent ev;
     VisParam *param;
-    char *tmp;
+    const char *tmp;
     int error;
 
     while (visual_event_queue_poll (events, &ev)) {
