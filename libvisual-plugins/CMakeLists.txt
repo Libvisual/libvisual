@@ -125,8 +125,8 @@ ELSE()
 ENDIF()
 
 # Plugin build options
-OPTION(ENABLE_ALPHABLEND  "Build the Alphablend morph plugin" no)
-OPTION(ENABLE_ALSA        "Build the ALSA input plugin" no)
+OPTION(ENABLE_ALPHABLEND  "Build the Alphablend morph plugin" yes)
+OPTION(ENABLE_ALSA        "Build the ALSA input plugin" yes)
 OPTION(ENABLE_BLURSK      "Build the Blursk plugin" yes)
 OPTION(ENABLE_BUMPSCOPE   "Build the Bumpscope plugin" yes)
 OPTION(ENABLE_CORONA      "Build the Corona plugin" yes)
@@ -299,7 +299,6 @@ SET(CMAKE_C_FLAGS         "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden
 SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused")
 SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
-
 
 # Pedantic checks
 
