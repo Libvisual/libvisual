@@ -69,6 +69,8 @@ void visual_param_value_set (VisParamValue *self, VisParamType type, void *value
 
     visual_param_value_free_value (self);
 
+    self->type = type;
+
     switch (type)
     {
         case VISUAL_PARAM_TYPE_NONE:
