@@ -83,6 +83,8 @@ bool CFG::CFG_Init( std::string path ) {
 
     bool r = reader_.parse( stream_in, *root_, true );
 
+    stream_in.close();
+
     if( r ) {
         return true;
     } else {
