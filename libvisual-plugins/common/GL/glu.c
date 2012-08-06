@@ -64,6 +64,25 @@ static void __gluMakeIdentityf(GLfloat m[16])
     m[3+4*0] = 0; m[3+4*1] = 0; m[3+4*2] = 0; m[3+4*3] = 1;
 }
 
+#ifdef USE_OPENGL_ES
+/* OpenGL ES doesn't have glOrtho(), we roll our own here */
+void glOrtho(_GL_REAL left, _GL_REAL right, _GL_REAL bottom, _GL_REAL top,
+    _GL_REAL nearVal, _GL_REAL farVal)
+{
+    _GL_REAL m[4][4];
+
+    __gluMakeIdentityd(&m[0][0]);
+    m[0][0] = 2.0 / (right - left);
+    m[1][1] = 2.0 / (top - bottom);
+    m[2][2] = 2.0 / (farVal - nearVal);
+    m[3][0] = -(right + left) / (right - left);
+    m[3][1] = -(top + bottom) / (top - bottom);
+    m[3][2] = -(farVal + nearVal) / (farVal - nearVal);
+
+    glMultMatrixf(&m[0][0]);
+}
+#endif
+
 void GLAPIENTRY
 gluOrtho2D(_GL_REAL left, _GL_REAL right, _GL_REAL bottom, _GL_REAL top)
 {
