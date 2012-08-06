@@ -25,6 +25,7 @@
 #include "gettext.h"
 #include <libvisual/libvisual.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 #include <math.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
@@ -58,6 +59,7 @@ static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat
 static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue);
 static void draw_bars (GLtestPrivate *priv);
 
+//static void gluPerspective(double fovy, double aspect, double zNear, double zFar);
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -175,18 +177,7 @@ static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height
 
 	return 0;
 }
-void gluPerspective(double fovy, double aspect, double zNear, double zFar)
-{
- // Start in projection mode.
- glMatrixMode(GL_PROJECTION);
- glLoadIdentity();
- double xmin, xmax, ymin, ymax;
- ymax = zNear * tan(fovy * VISUAL_MATH_PI / 360.0);
- ymin = -ymax;
- xmin = ymin * aspect;
- xmax = ymax * aspect;
- glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
-}
+
 
 static int lv_gltest_resize (VisPluginData *plugin, int width, int height)
 {
@@ -320,7 +311,7 @@ static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat
 
         };
         glVertexPointer(3, GL_FLOAT, 0, vertices);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 
     } else {
         const GLfloat vertices[] = {
@@ -334,7 +325,7 @@ static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat
 
         };
         glVertexPointer(3, GL_FLOAT, 0, vertices);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
     }
     glDisableClientState(GL_VERTEX_ARRAY);
 }
@@ -344,22 +335,31 @@ static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, G
 {
 	GLfloat width = 0.1;
 
-    const GLfloat colors[] = {
-        red, green, blue,
-        0.5 * red, 0.5 * green, 0.5 * blue,
-        0.25 * red, 0.25 * green, 0.25 * blue
-
-    };
     glEnableClientState(GL_COLOR_ARRAY);
+    const GLfloat colors1[] = {
+        red, green, blue,
+    };
 
-    glColorPointer(3, GL_FLOAT, 0, colors);
+    glColorPointer(3, GL_FLOAT, 0, colors1);
 
 	draw_rectangle (priv, x_offset, height, z_offset, x_offset + width, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset, 0, z_offset, x_offset + width, 0, z_offset + 0.1);
 
+    const GLfloat colors2[] = {
+        0.5 * red, 0.5 * green, 0.5 * blue,
+    };
+
+
+    glColorPointer(3, GL_FLOAT, 0, colors2);
 	draw_rectangle (priv, x_offset, 0.0, z_offset + 0.1, x_offset + width, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset, 0.0, z_offset, x_offset + width, height, z_offset );
 
+    const GLfloat colors3[] = {
+        0.25 * red, 0.25 * green, 0.25 * blue
+
+    };
+
+    glColorPointer(3, GL_FLOAT, 0, colors3);
 	draw_rectangle (priv, x_offset, 0.0, z_offset , x_offset, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset + width, 0.0, z_offset , x_offset + width, height, z_offset + 0.1);
     glDisableClientState(GL_COLOR_ARRAY);
@@ -398,3 +398,17 @@ static void draw_bars (GLtestPrivate *priv)
 	glPopMatrix ();
 }
 
+/*
+static void gluPerspective(double fovy, double aspect, double zNear, double zFar)
+{
+ // Start in projection mode.
+ glMatrixMode(GL_PROJECTION);
+ glLoadIdentity();
+ double xmin, xmax, ymin, ymax;
+ ymax = zNear * tan(fovy * VISUAL_MATH_PI / 360.0);
+ ymin = -ymax;
+ xmin = ymin * aspect;
+ xmax = ymax * aspect;
+ glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
+}
+*/
