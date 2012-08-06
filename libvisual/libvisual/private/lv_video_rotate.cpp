@@ -14,7 +14,7 @@ namespace LV {
       auto sbuf  = tsbuf;
 
       for (int y = 0; y < dest.m_impl->height; y++) {
-          uint8_t* dbuf = static_cast<uint8_t*> (dest.m_impl->pixel_rows[y]);
+          auto dbuf = static_cast<uint8_t*> (dest.m_impl->pixel_rows[y]);
 
           for (int x = 0; x < dest.m_impl->width; x++) {
               for (int i = 0; i < dest.m_impl->bpp; i++) {
@@ -38,8 +38,8 @@ namespace LV {
       visual_return_if_fail (dest.m_impl->height == src.m_impl->height);
 
       for (int y = 0; y < dest.m_impl->height; y++) {
-          uint8_t* dbuf = static_cast<uint8_t*> (dest.m_impl->pixel_rows[y]);
-          uint8_t const* sbuf = static_cast<uint8_t*> (src.m_impl->pixel_rows[h1 - y]) + w1;
+          auto dbuf = static_cast<uint8_t*> (dest.m_impl->pixel_rows[y]);
+          auto sbuf = static_cast<uint8_t const*> (src.m_impl->pixel_rows[h1 - y]) + w1;
 
           for (int x = 0; x < dest.m_impl->width; x++) {
               for (int i = 0; i < src.m_impl->bpp; i++) {
