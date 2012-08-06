@@ -1,8 +1,11 @@
 #ifndef _LV_UTIL_HPP
 #define _LV_UTIL_HPP
 
+#include <lvconfig.h>
+#include <lv_defines.h>
 #include <string>
 #include <memory>
+#include <functional>
 
 namespace LV {
 
@@ -28,6 +31,10 @@ namespace LV {
           return false;
       }
   }
+
+  LV_API bool for_each_file_in_dir (std::string const&                       path,
+                                    std::function<bool (std::string const&)> filter,
+                                    std::function<bool (std::string const&)> func);
 
 } // LV namespace
 

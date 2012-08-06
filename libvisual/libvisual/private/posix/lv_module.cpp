@@ -40,4 +40,10 @@ namespace LV {
       return dlsym (m_impl->handle, name.c_str ());
   }
 
+  std::string const& Module::path_suffix ()
+  {
+      static std::string str (".so");
+      return str;
+  }
+
 } // LV namespace

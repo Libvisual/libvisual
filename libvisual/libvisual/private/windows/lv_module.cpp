@@ -43,4 +43,10 @@ namespace LV {
       return reinterpret_cast<void*> (GetProcAddress (m_impl->handle, name.c_str ()));
   }
 
+  std::string const& Module::path_suffix ()
+  {
+      static std::string str (".dll");
+      return str;
+  }
+
 } // LV namespace
