@@ -224,17 +224,19 @@ LV_API VisParamType visual_param_get_type        (VisParam *param);
 LV_API const char * visual_param_get_description (VisParam *param);
 
 LV_API void visual_param_set_value         (VisParam *param, VisParamValue *value);
-LV_API void visual_param_set_value_string  (VisParam *param, const char *string);
+LV_API void visual_param_set_value_bool    (VisParam *param, int boolean);
 LV_API void visual_param_set_value_integer (VisParam *param, int integer);
 LV_API void visual_param_set_value_float   (VisParam *param, float flt);
 LV_API void visual_param_set_value_double  (VisParam *param, double dbl);
+LV_API void visual_param_set_value_string  (VisParam *param, const char *string);
 LV_API void visual_param_set_value_color   (VisParam *param, VisColor *color);
 LV_API void visual_param_set_value_palette (VisParam *param, VisPalette *pal);
 
-LV_API const char *visual_param_get_value_string  (VisParam *param);
+LV_API int         visual_param_get_value_bool    (VisParam *param);
 LV_API int         visual_param_get_value_integer (VisParam *param);
 LV_API float       visual_param_get_value_float   (VisParam *param);
 LV_API double      visual_param_get_value_double  (VisParam *param);
+LV_API const char *visual_param_get_value_string  (VisParam *param);
 LV_API VisColor *  visual_param_get_value_color   (VisParam *param);
 LV_API VisPalette *visual_param_get_value_palette (VisParam *param);
 
@@ -248,6 +250,7 @@ LV_API VisPalette *visual_param_get_value_palette (VisParam *param);
                                                    VisClosure *validator)     \
   { return visual_param_new (name, description, VISUAL_PARAM_TYPE_##type, _LV_PARAM_MARSHAL_##marshal (default_value), validator); }
 
+_LV_DEFINE_PARAM_NEW (bool   , int               , BOOL   , INTEGER)
 _LV_DEFINE_PARAM_NEW (integer, int               , INTEGER, INTEGER)
 _LV_DEFINE_PARAM_NEW (float  , float             , FLOAT  , FLOAT)
 _LV_DEFINE_PARAM_NEW (double , double            , DOUBLE , DOUBLE)

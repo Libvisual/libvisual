@@ -299,6 +299,13 @@ const char *visual_param_get_description (VisParam *self)
     return self->description;
 }
 
+void visual_param_set_value_bool (VisParam *self, int value)
+{
+    visual_return_if_fail (self != NULL);
+
+    visual_param_value_set_bool (&self->value, value);
+}
+
 void visual_param_set_value_integer (VisParam *self, int value)
 {
     visual_return_if_fail (self != NULL);
@@ -339,6 +346,13 @@ void visual_param_set_value_palette (VisParam *self, VisPalette *palette)
     visual_return_if_fail (self != NULL);
 
     visual_param_value_set_palette (&self->value, palette);
+}
+
+int visual_param_get_value_bool (VisParam *self)
+{
+    visual_return_val_if_fail (self != NULL, 0);
+
+    return visual_param_value_get_bool (&self->value);
 }
 
 int visual_param_get_value_integer (VisParam *self)

@@ -32,6 +32,7 @@ typedef struct _VisParamValue VisParamValue;
 
 typedef enum {
     VISUAL_PARAM_TYPE_NONE,
+    VISUAL_PARAM_TYPE_BOOL,
     VISUAL_PARAM_TYPE_INTEGER,
     VISUAL_PARAM_TYPE_FLOAT,
     VISUAL_PARAM_TYPE_DOUBLE,
@@ -74,6 +75,7 @@ LV_API void           visual_param_value_free_value (VisParamValue *value);
         visual_param_value_set (self, VISUAL_PARAM_TYPE_##name, _LV_PARAM_MARSHAL_##marshal (value)); \
     }
 
+_LV_DEFINE_PARAM_VALUE_SET(bool   , int               , BOOL   , INTEGER)
 _LV_DEFINE_PARAM_VALUE_SET(integer, int               , INTEGER, INTEGER)
 _LV_DEFINE_PARAM_VALUE_SET(float  , float             , FLOAT  , FLOAT)
 _LV_DEFINE_PARAM_VALUE_SET(double , double            , DOUBLE , DOUBLE)
@@ -88,6 +90,7 @@ _LV_DEFINE_PARAM_VALUE_SET(palette, const VisPalette *, PALETTE, POINTER)
         return self->value.member;                                                    \
     }
 
+_LV_DEFINE_PARAM_VALUE_GET(bool   , int         , BOOL   , integer     , FALSE)
 _LV_DEFINE_PARAM_VALUE_GET(integer, int         , INTEGER, integer     , 0)
 _LV_DEFINE_PARAM_VALUE_GET(float  , float       , FLOAT  , single_float, 0.0f)
 _LV_DEFINE_PARAM_VALUE_GET(double , double      , DOUBLE , double_float, 0.0)

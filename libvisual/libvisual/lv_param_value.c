@@ -42,6 +42,7 @@ void visual_param_value_copy (VisParamValue *self, VisParamValue *src)
     {
         case VISUAL_PARAM_TYPE_NONE:
             break;
+        case VISUAL_PARAM_TYPE_BOOL:
         case VISUAL_PARAM_TYPE_INTEGER:
         case VISUAL_PARAM_TYPE_FLOAT:
         case VISUAL_PARAM_TYPE_DOUBLE:
@@ -72,9 +73,7 @@ void visual_param_value_set (VisParamValue *self, VisParamType type, void *value
     {
         case VISUAL_PARAM_TYPE_NONE:
             break;
-        case VISUAL_PARAM_TYPE_STRING:
-            self->value.string = visual_strdup ((const char *) value);
-            break;
+        case VISUAL_PARAM_TYPE_BOOL:
         case VISUAL_PARAM_TYPE_INTEGER:
             self->value.integer = (intptr_t) value;
             break;
@@ -85,6 +84,9 @@ void visual_param_value_set (VisParamValue *self, VisParamType type, void *value
         }
         case VISUAL_PARAM_TYPE_DOUBLE:
             self->value.double_float = *(double *) value;
+            break;
+        case VISUAL_PARAM_TYPE_STRING:
+            self->value.string = visual_strdup ((const char *) value);
             break;
         case VISUAL_PARAM_TYPE_COLOR:
             self->value.color = visual_color_clone (VISUAL_COLOR (value));
@@ -138,14 +140,15 @@ int visual_param_value_compare (VisParamValue *lhs, VisParamValue *rhs)
     switch (lhs->type) {
         case VISUAL_PARAM_TYPE_NONE:
             return TRUE;
-        case VISUAL_PARAM_TYPE_STRING:
-            return strcmp (lhs->value.string, rhs->value.string) == 0;
+        case VISUAL_PARAM_TYPE_BOOL:
         case VISUAL_PARAM_TYPE_INTEGER:
             return lhs->value.integer == rhs->value.integer;
         case VISUAL_PARAM_TYPE_FLOAT:
             return lhs->value.single_float == rhs->value.single_float;
         case VISUAL_PARAM_TYPE_DOUBLE:
             return lhs->value.double_float == rhs->value.double_float;
+        case VISUAL_PARAM_TYPE_STRING:
+            return strcmp (lhs->value.string, rhs->value.string) == 0;
         case VISUAL_PARAM_TYPE_COLOR:
             return visual_color_compare (lhs->value.color, rhs->value.color);
         case VISUAL_PARAM_TYPE_PALETTE:
