@@ -254,7 +254,11 @@ int lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
     priv->control->Lock();
     priv->control->Tick();
-    visual_video_scale(video, priv->control->GetVideo(), VISUAL_VIDEO_SCALE_BILINEAR);
+    VisVideo *vid = priv->control->GetVideo();
+    if(vid != NULL)
+    {
+        visual_video_scale(video, vid, VISUAL_VIDEO_SCALE_BILINEAR);
+    }
     priv->control->Unlock();
 
 	return 0;

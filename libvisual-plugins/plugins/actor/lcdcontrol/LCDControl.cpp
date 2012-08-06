@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 #include <json/json.h>
+#include <cstdlib>
 
 #include "Property.h"
 #include "LCDControl.h"
@@ -52,21 +53,13 @@ LCDControl::~LCDControl() {
 }
 
 int LCDControl::Start() {
-    CFG_Init("libscriptable_config.js");
-    ConfigSetup();
-    active_ = true;
-/*
-    while(active_)
+    std::string file = ((std::string)getenv("HOME")) + "/.lcdcontrol_config.js";
+
+    if((active_ = CFG_Init(file)))
     {
-        mutex_.lock();
-
-        timers_->Tick();
-
-        mutex_.unlock();
-
-        visual_usleep(0.2 * VISUAL_USEC_PER_SEC);
+        ConfigSetup();
     }
-*/
+
     return 1;
 }
 
@@ -84,6 +77,8 @@ void LCDControl::Unlock() {
 
 void LCDControl::Tick()
 {
+    if(not active_)
+        return;
     //stats_startFrame(&stats_);
     timers_->Tick();
     //stats_endFrame(&stats_);
@@ -95,6 +90,8 @@ LCDTimerBin *LCDControl::GetTimers()
 }
 
 VisVideo *LCDControl::GetVideo() {
+    if(not active_ or not device_)
+        return NULL;
     return device_->GetVideo();
 }
 void LCDControl::TryLock() {
