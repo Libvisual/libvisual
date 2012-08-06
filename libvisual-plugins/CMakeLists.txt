@@ -226,7 +226,6 @@ IF(ENABLE_MADSPIN)
 ENDIF()
 
 IF(ENABLE_MPLAYER)
-  # FIXME: Missing check for MPlayer...
   IF(NOT HAVE_MREMAP)
     MESSAGE(WARNING "There is no working mremap() function available. The MPlayer input plugin will not be built.")
     SET(ENABLE_MPLAYER no)
