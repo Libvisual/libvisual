@@ -24,9 +24,15 @@
 #include "config.h"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <math.h>
+
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#include "common/GL/glu.h"
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <math.h>
+#endif
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
