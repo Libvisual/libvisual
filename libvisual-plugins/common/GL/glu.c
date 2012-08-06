@@ -31,23 +31,24 @@
  */
 
 #include <math.h>
-#include <GL/gl.h>
 #include "glu.h"
 
-#ifdef _EXTENSIONS_
+#ifdef USE_OPENGL_ES
 #define COS cosf
 #define SIN sinf
 #define SQRT sqrtf
+#define REAL float
 #else
 #define COS cos
 #define SIN sin
 #define SQRT sqrt
+#define REAL double
 #endif
 
 /*
 ** Make m an identity matrix
 */
-static void __gluMakeIdentityd(GLdouble m[16])
+static void __gluMakeIdentityd(_GL_REAL m[16])
 {
     m[0+4*0] = 1; m[0+4*1] = 0; m[0+4*2] = 0; m[0+4*3] = 0;
     m[1+4*0] = 0; m[1+4*1] = 1; m[1+4*2] = 0; m[1+4*3] = 0;
@@ -64,7 +65,7 @@ static void __gluMakeIdentityf(GLfloat m[16])
 }
 
 void GLAPIENTRY
-gluOrtho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top)
+gluOrtho2D(_GL_REAL left, _GL_REAL right, _GL_REAL bottom, _GL_REAL top)
 {
     glOrtho(left, right, bottom, top, -1, 1);
 }
@@ -72,11 +73,11 @@ gluOrtho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top)
 #define __glPi 3.14159265358979323846
 
 void GLAPIENTRY
-gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
+gluPerspective(_GL_REAL fovy, _GL_REAL aspect, _GL_REAL zNear, _GL_REAL zFar)
 {
-    GLdouble m[4][4];
-    double sine, cotangent, deltaZ;
-    double radians = fovy / 2 * __glPi / 180;
+    REAL m[4][4];
+    REAL sine, cotangent, deltaZ;
+    REAL radians = fovy / 2 * __glPi / 180;
 
     deltaZ = zFar - zNear;
     sine = sin(radians);
@@ -92,7 +93,11 @@ gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
     m[2][3] = -1;
     m[3][2] = -2 * zNear * zFar / deltaZ;
     m[3][3] = 0;
+#ifdef USE_OPENGL_ES
+    glMultMatrixf(&m[0][0]);
+#else
     glMultMatrixd(&m[0][0]);
+#endif
 }
 
 static void normalize(float v[3])
@@ -115,9 +120,9 @@ static void cross(float v1[3], float v2[3], float result[3])
 }
 
 void GLAPIENTRY
-gluLookAt(GLdouble eyex, GLdouble eyey, GLdouble eyez, GLdouble centerx,
-      GLdouble centery, GLdouble centerz, GLdouble upx, GLdouble upy,
-      GLdouble upz)
+gluLookAt(_GL_REAL eyex, _GL_REAL eyey, _GL_REAL eyez, _GL_REAL centerx,
+      _GL_REAL centery, _GL_REAL centerz, _GL_REAL upx, _GL_REAL upy,
+      _GL_REAL upz)
 {
     float forward[3], side[3], up[3];
     GLfloat m[4][4];
@@ -156,8 +161,8 @@ gluLookAt(GLdouble eyex, GLdouble eyey, GLdouble eyez, GLdouble centerx,
     glTranslated(-eyex, -eyey, -eyez);
 }
 
-static void __gluMultMatrixVecd(const GLdouble matrix[16], const GLdouble in[4],
-              GLdouble out[4])
+static void __gluMultMatrixVecd(const _GL_REAL matrix[16], const _GL_REAL in[4],
+              _GL_REAL out[4])
 {
     int i;
 
@@ -174,7 +179,7 @@ static void __gluMultMatrixVecd(const GLdouble matrix[16], const GLdouble in[4],
 ** Invert 4x4 matrix.
 ** Contributed by David Moore (See Mesa bug #6748)
 */
-static int __gluInvertMatrixd(const GLdouble m[16], GLdouble invOut[16])
+static int __gluInvertMatrixd(const _GL_REAL m[16], _GL_REAL invOut[16])
 {
     double inv[16], det;
     int i;
@@ -224,8 +229,8 @@ static int __gluInvertMatrixd(const GLdouble m[16], GLdouble invOut[16])
     return GL_TRUE;
 }
 
-static void __gluMultMatricesd(const GLdouble a[16], const GLdouble b[16],
-                GLdouble r[16])
+static void __gluMultMatricesd(const _GL_REAL a[16], const _GL_REAL b[16],
+                _GL_REAL r[16])
 {
     int i, j;
 
@@ -241,14 +246,14 @@ static void __gluMultMatricesd(const GLdouble a[16], const GLdouble b[16],
 }
 
 GLint GLAPIENTRY
-gluProject(GLdouble objx, GLdouble objy, GLdouble objz,
-          const GLdouble modelMatrix[16],
-          const GLdouble projMatrix[16],
+gluProject(_GL_REAL objx, _GL_REAL objy, _GL_REAL objz,
+          const _GL_REAL modelMatrix[16],
+          const _GL_REAL projMatrix[16],
               const GLint viewport[4],
-          GLdouble *winx, GLdouble *winy, GLdouble *winz)
+          _GL_REAL *winx, _GL_REAL *winy, _GL_REAL *winz)
 {
-    double in[4];
-    double out[4];
+    REAL in[4];
+    REAL out[4];
 
     in[0]=objx;
     in[1]=objy;
@@ -276,15 +281,15 @@ gluProject(GLdouble objx, GLdouble objy, GLdouble objz,
 }
 
 GLint GLAPIENTRY
-gluUnProject(GLdouble winx, GLdouble winy, GLdouble winz,
-        const GLdouble modelMatrix[16],
-        const GLdouble projMatrix[16],
-                const GLint viewport[4],
-            GLdouble *objx, GLdouble *objy, GLdouble *objz)
+gluUnProject(_GL_REAL winx, _GL_REAL winy, _GL_REAL winz,
+        const _GL_REAL modelMatrix[16],
+        const _GL_REAL projMatrix[16],
+        const GLint viewport[4],
+        _GL_REAL *objx, _GL_REAL *objy, _GL_REAL *objz)
 {
-    double finalMatrix[16];
-    double in[4];
-    double out[4];
+    REAL finalMatrix[16];
+    REAL in[4];
+    REAL out[4];
 
     __gluMultMatricesd(modelMatrix, projMatrix, finalMatrix);
     if (!__gluInvertMatrixd(finalMatrix, finalMatrix)) return(GL_FALSE);
@@ -315,17 +320,17 @@ gluUnProject(GLdouble winx, GLdouble winy, GLdouble winz,
 }
 
 GLint GLAPIENTRY
-gluUnProject4(GLdouble winx, GLdouble winy, GLdouble winz, GLdouble clipw,
-          const GLdouble modelMatrix[16],
-          const GLdouble projMatrix[16],
+gluUnProject4(_GL_REAL winx, _GL_REAL winy, _GL_REAL winz, _GL_REAL clipw,
+          const _GL_REAL modelMatrix[16],
+          const _GL_REAL projMatrix[16],
           const GLint viewport[4],
-          GLclampd nearVal, GLclampd farVal,
-          GLdouble *objx, GLdouble *objy, GLdouble *objz,
-          GLdouble *objw)
+          _GL_CLAMP_REAL nearVal, _GL_CLAMP_REAL farVal,
+          _GL_REAL *objx, _GL_REAL *objy, _GL_REAL *objz,
+          _GL_REAL *objw)
 {
-    double finalMatrix[16];
-    double in[4];
-    double out[4];
+    REAL finalMatrix[16];
+    REAL in[4];
+    REAL out[4];
 
     __gluMultMatricesd(modelMatrix, projMatrix, finalMatrix);
     if (!__gluInvertMatrixd(finalMatrix, finalMatrix)) return(GL_FALSE);
@@ -355,7 +360,7 @@ gluUnProject4(GLdouble winx, GLdouble winy, GLdouble winz, GLdouble clipw,
 }
 
 void GLAPIENTRY
-gluPickMatrix(GLdouble x, GLdouble y, GLdouble deltax, GLdouble deltay,
+gluPickMatrix(_GL_REAL x, _GL_REAL y, _GL_REAL deltax, _GL_REAL deltay,
           GLint viewport[4])
 {
     if (deltax <= 0 || deltay <= 0) {
