@@ -3,6 +3,7 @@
 #include "lv_video_private.hpp"
 #include "lv_common.h"
 #include <algorithm>
+#include <array>
 
 #pragma pack(1)
 
@@ -29,7 +30,7 @@ namespace LV {
       auto dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
       auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
-      rgb16_t colors[256];
+      std::array<rgb16_t, 256> colors;
 
       auto const& src_colors = src.m_impl->palette.colors;
 
@@ -92,7 +93,7 @@ namespace LV {
       auto dbuf = static_cast<uint32_t*> (dest.get_pixels ());
       auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
 
-      uint32_t colors[256];
+      std::array<uint32_t, 256> colors;
 
       auto const& src_colors = src.m_impl->palette.colors;
 
