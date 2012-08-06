@@ -86,7 +86,7 @@ _LV_DEFINE_PARAM_VALUE_SET(palette, const VisPalette *, PALETTE, POINTER)
 #define _LV_DEFINE_PARAM_VALUE_GET(func,ctype,name,member,defvalue)                   \
     static inline ctype visual_param_value_get_##func (VisParamValue *self)  {        \
         visual_return_val_if_fail (self != NULL, 0);                                  \
-        visual_return_val_if_fail (self->type != VISUAL_PARAM_TYPE_##name, defvalue); \
+        visual_return_val_if_fail (self->type == VISUAL_PARAM_TYPE_##name, defvalue); \
         return self->value.member;                                                    \
     }
 
