@@ -188,7 +188,7 @@ namespace LV {
   void VideoConvert::rgb16_to_argb32 (Video& dest, Video const& src)
   {
       auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto const* sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
+      auto sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
 
       int w, h;
       convert_get_smallest (dest, src, w, h);
