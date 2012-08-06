@@ -195,7 +195,7 @@ static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
             case VISUAL_EVENT_PARAM:
                 param = ev.event.param.param;
 
-                visual_log (VISUAL_LOG_DEBUG, "Param changed: %s", param->name);
+                visual_log (VISUAL_LOG_DEBUG, "Param changed: %s", visual_param_get_name (param));
 
                 if (visual_param_has_name (param, "zoom mode")) {
                     visual_log (VISUAL_LOG_DEBUG, "New value for the zoom mode param: %d",
