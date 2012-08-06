@@ -73,21 +73,26 @@ static int act_bumpscope_init (VisPluginData *plugin)
 
 	VisParamList *params = visual_plugin_get_params (plugin);
 	visual_param_list_add_many (params,
-                                visual_param_new_color_rgb ("color", N_("The light's color"),
+                                visual_param_new_color_rgb ("color",
+                                                            N_("The light's color"),
                                                             122, 204, 255,
                                                             NULL),
-                                visual_param_new_integer   ("light size", N_("The size of the light"),
+                                visual_param_new_integer   ("light_size",
+                                                            N_("The size of the light"),
                                                             256,
                                                             visual_param_in_range_integer (0, 1000)),
-                                visual_param_new_integer   ("color cycle", N_("Whether to cycle colors"),
+                                visual_param_new_bool      ("color_cycle",
+                                                            N_("Whether to cycle colors"),
                                                             TRUE,
-                                                            visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer   ("moving light", N_("Whether the light moves with the mouse"),
+                                                            NULL),
+                                visual_param_new_bool      ("moving_light",
+                                                            N_("Whether the light moves with the mouse"),
                                                             TRUE,
-                                                            visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer   ("diamond", N_("Whether to use a diamond shape light"),
+                                                            NULL),
+                                visual_param_new_bool      ("diamond",
+                                                            N_("Whether to use a diamond shape light"),
                                                             FALSE,
-                                                            visual_param_in_range_integer (0, 1)),
+                                                            NULL),
                                 NULL);
 
 	BumpscopePrivate *priv = visual_mem_new0 (BumpscopePrivate, 1);
@@ -190,14 +195,14 @@ static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 					__bumpscope_cleanup (priv);
 					__bumpscope_init (priv);
 
-				} else if (visual_param_has_name (param, "color cycle")) {
-					priv->color_cycle = visual_param_get_value_integer (param);
+				} else if (visual_param_has_name (param, "color_cycle")) {
+					priv->color_cycle = visual_param_get_value_bool (param);
 
-				} else if (visual_param_has_name (param, "moving light")) {
-					priv->moving_light = visual_param_get_value_integer (param);
+				} else if (visual_param_has_name (param, "moving_light")) {
+					priv->moving_light = visual_param_get_value_bool (param);
 
 				} else if (visual_param_has_name (param, "diamond")) {
-					priv->diamond = visual_param_get_value_integer (param);
+					priv->diamond = visual_param_get_value_bool (param);
 
 					__bumpscope_generate_phongdat (priv);
 				}
@@ -249,4 +254,3 @@ static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudi
 
 	return 0;
 }
-

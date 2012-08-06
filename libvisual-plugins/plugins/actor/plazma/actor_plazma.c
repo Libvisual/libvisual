@@ -24,6 +24,7 @@
 #include "actor_plazma.h"
 #include "plazma.h"
 #include <libvisual/libvisual.h>
+#include <limits.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -76,25 +77,32 @@ static int act_plazma_init (VisPluginData *plugin)
 
     VisParamList *params = visual_plugin_get_params (plugin);
     visual_param_list_add_many (params,
-                                visual_param_new_integer ("bass_sensitivity", N_("Bass sensitivity"),
+                                visual_param_new_integer ("bass_sensitivity",
+                                                          N_("Bass sensitivity"),
                                                           0,
+                                                          visual_param_in_range_integer (0, INT_MAX)),
+                                visual_param_new_bool    ("plasma_effect",
+                                                          N_("Plasma effect"),
+                                                          TRUE,
                                                           NULL),
-                                visual_param_new_integer ("plazma_effect", N_("Plazma effect"),
-                                                          TRUE,
-                                                          visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer ("3d_effect_option", N_("3D effect option"),
+                                visual_param_new_bool    ("3d_effect_option",
+                                                          N_("3D effect option"),
                                                           FALSE,
-                                                          visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer ("lines", N_("Lines"),
+                                                          NULL),
+                                visual_param_new_bool    ("lines",
+                                                          N_("Lines"),
                                                           TRUE,
-                                                          visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer ("spectrum", N_("Spectrum"),
+                                                          NULL),
+                                visual_param_new_bool    ("spectrum",
+                                                          N_("Spectrum"),
                                                           TRUE,
-                                                          visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer ("3d_effect", N_("3D effect"),
+                                                          NULL),
+                                visual_param_new_bool    ("3d_effect",
+                                                          N_("3D effect"),
                                                           TRUE,
-                                                          visual_param_in_range_integer (0, 1)),
-                                visual_param_new_float   ("rotation_speed", N_("Rotation speed"),
+                                                          NULL),
+                                visual_param_new_float   ("rotation_speed",
+                                                          N_("Rotation speed"),
                                                           0.4,
                                                           NULL),
                                 NULL);
@@ -182,20 +190,20 @@ static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 					priv->bass_sensibility = visual_param_get_value_integer (param);
 
 				} else if (visual_param_has_name (param, "plasma_effect")) {
-					priv->effect = visual_param_get_value_integer (param);
+					priv->effect = visual_param_get_value_bool (param);
 					_plazma_change_effect (priv);
 
 				} else if (visual_param_has_name (param, "3d_effect_option")) {
-					priv->options = visual_param_get_value_integer (param);
+					priv->options = visual_param_get_value_bool (param);
 
 				} else if (visual_param_has_name (param, "lines")) {
-					priv->lines = visual_param_get_value_integer (param);
+					priv->lines = visual_param_get_value_bool (param);
 
 				} else if (visual_param_has_name (param, "spectrum")) {
-					priv->spectrum = visual_param_get_value_integer (param);
+					priv->spectrum = visual_param_get_value_bool (param);
 
 				} else if (visual_param_has_name (param, "3d_effect")) {
-					priv->use_3d = visual_param_get_value_integer (param);
+					priv->use_3d = visual_param_get_value_bool (param);
 
 				} else if (visual_param_has_name (param, "rotation_speed")) {
 					priv->rot_tourni = visual_param_get_value_float (param);

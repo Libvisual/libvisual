@@ -85,10 +85,12 @@ static int inp_debug_init (VisPluginData *plugin)
 
 	VisParamList *params = visual_plugin_get_params (plugin);
 	visual_param_list_add_many (params,
-                                visual_param_new_float ("frequency", N_("Frequency of sine wave"),
+                                visual_param_new_float ("frequency",
+                                                        N_("Frequency of sine wave"),
                                                         DEFAULT_FREQUENCY,
                                                         visual_param_in_range_float (0.0f, 22000.0f)),
-                                visual_param_new_float ("ampltitude", N_("Ampltitude of sine wave"),
+                                visual_param_new_float ("ampltitude",
+                                                        N_("Ampltitude of sine wave"),
                                                         DEFAULT_AMPLITUDE,
                                                         visual_param_in_range_float (0.0f, 1.0f)),
                                 NULL);

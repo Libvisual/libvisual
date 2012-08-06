@@ -141,8 +141,8 @@ static void _config_load_preset(BlurskPrivate *priv, BlurskConfig *conf)
 {
     struct
     {
-        char *name;
-        int type;
+        const char *name;
+        VisParamType type;
         void *val;
     }entries[] =
     {
@@ -150,23 +150,21 @@ static void _config_load_preset(BlurskPrivate *priv, BlurskConfig *conf)
         {"color_style", VISUAL_PARAM_TYPE_STRING, &conf->color_style},
         {"fade_speed", VISUAL_PARAM_TYPE_STRING, &conf->fade_speed},
         {"signal_color", VISUAL_PARAM_TYPE_STRING, &conf->signal_color},
-        {"contour_lines", VISUAL_PARAM_TYPE_INTEGER, &conf->contour_lines},
-        {"hue_on_beats", VISUAL_PARAM_TYPE_INTEGER, &conf->hue_on_beats},
+        {"contour_lines", VISUAL_PARAM_TYPE_BOOL, &conf->contour_lines},
+        {"hue_on_beats", VISUAL_PARAM_TYPE_BOOL, &conf->hue_on_beats},
         {"background", VISUAL_PARAM_TYPE_STRING, &conf->background},
         {"blur_style", VISUAL_PARAM_TYPE_STRING, &conf->blur_style},
         {"transition_speed", VISUAL_PARAM_TYPE_STRING, &conf->transition_speed},
         {"blur_when", VISUAL_PARAM_TYPE_STRING, &conf->blur_when},
         {"blur_stencil", VISUAL_PARAM_TYPE_STRING, &conf->blur_stencil},
-        {"slow_motion", VISUAL_PARAM_TYPE_INTEGER, &conf->slow_motion},
+        {"slow_motion", VISUAL_PARAM_TYPE_BOOL, &conf->slow_motion},
         {"signal_style", VISUAL_PARAM_TYPE_STRING, &conf->signal_style},
         {"plot_style", VISUAL_PARAM_TYPE_STRING, &conf->plot_style},
-        {"thick_on_beats", VISUAL_PARAM_TYPE_INTEGER, &conf->thick_on_beats},
+        {"thick_on_beats", VISUAL_PARAM_TYPE_BOOL, &conf->thick_on_beats},
         {"flash_style", VISUAL_PARAM_TYPE_STRING, &conf->flash_style},
         {"overall_effect", VISUAL_PARAM_TYPE_STRING, &conf->overall_effect},
         {"floaters", VISUAL_PARAM_TYPE_STRING, &conf->floaters},
     };
-
-
 
     int i;
 
@@ -214,6 +212,9 @@ static void _config_load_preset(BlurskPrivate *priv, BlurskConfig *conf)
                     visual_param_set_value_string(ptmp, *string);
                 break;
             }
+
+            default:
+                break;
         }
     }
 }
@@ -297,7 +298,7 @@ static void _change_string(BlurskPrivate *priv, char **string,
  */
 static void _change_bool(BlurskPrivate *priv, int *boolean, VisParam *p, int *(validator)(void *value))
 {
-    int t = visual_param_get_value_integer(p);
+    int t = visual_param_get_value_bool(p);
 
     /* validate boolean */
     if(t == 0 || t == 1)
@@ -308,7 +309,7 @@ static void _change_bool(BlurskPrivate *priv, int *boolean, VisParam *p, int *(v
     }
     /* reset to previous value */
     else
-        visual_param_set_value_integer(p, *boolean);
+        visual_param_set_value_bool(p, *boolean);
 }
 
 /**

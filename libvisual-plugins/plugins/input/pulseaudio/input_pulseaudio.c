@@ -110,7 +110,8 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
 
     VisParamList *params = visual_plugin_get_params (plugin);
     visual_param_list_add_many (params,
-                                visual_param_new_string ("device", N_("Device name"),
+                                visual_param_new_string ("device",
+                                                         N_("Device name"),
                                                          "",
                                                          NULL),
                                 NULL);

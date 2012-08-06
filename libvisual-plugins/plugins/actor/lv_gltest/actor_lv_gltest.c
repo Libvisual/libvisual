@@ -107,9 +107,10 @@ static int lv_gltest_init (VisPluginData *plugin)
 
 	VisParamList *params = visual_plugin_get_params (plugin);
 	visual_param_list_add_many (params,
-                                visual_param_new_integer ("transparent_bars", N_("Transparent bars"),
-                                                          TRUE,
-                                                          visual_param_in_range_integer (0, 1)),
+                                visual_param_new_bool ("transparent_bars",
+                                                       N_("Transparent bars"),
+                                                       TRUE,
+                                                       NULL),
                                 NULL);
 
 	/* GL setting up the rest! */
@@ -209,7 +210,7 @@ static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 				param = ev.event.param.param;
 
 				if (visual_param_has_name (param, "transparent_bars")) {
-					priv->transparant = visual_param_get_value_integer (param);
+					priv->transparant = visual_param_get_value_bool (param);
 
 					if (priv->transparant == FALSE)
 						glDisable (GL_BLEND);

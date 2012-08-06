@@ -105,18 +105,18 @@ static int act_gdkpixbuf_init (VisPluginData *plugin)
                                 visual_param_new_string  ("filename", N_("Input filename"),
                                                           "",
                                                           NULL),
-                                visual_param_new_integer ("scaled", N_("Scaled"),
+                                visual_param_new_bool    ("scaled", N_("Scaled"),
                                                           TRUE,
-                                                          visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer ("aspect", N_("Aspect"),
+                                                          NULL),
+                                visual_param_new_bool    ("aspect", N_("Aspect"),
                                                           TRUE,
-                                                          visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer ("center", N_("Centered"),
+                                                          NULL),
+                                visual_param_new_bool    ("center", N_("Centered"),
                                                           TRUE,
-                                                          visual_param_in_range_integer (0, 1)),
-                                visual_param_new_integer ("set_size", N_("Set size"),
+                                                          NULL),
+                                visual_param_new_bool    ("set_size", N_("Set size"),
                                                           FALSE,
-                                                          visual_param_in_range_integer (0, 1)),
+                                                          NULL),
                                 visual_param_new_integer ("width", N_("Width"),
                                                           0,
                                                           visual_param_in_range_integer (0, INT_MAX)),
@@ -218,20 +218,20 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 					load_new_file (priv, visual_param_get_value_string (param));
 
 				} else if (visual_param_has_name (param, "scaled")) {
-					priv->set_scaled = visual_param_get_value_integer (param);
+					priv->set_scaled = visual_param_get_value_bool (param);
 
 					update_scaled_pixbuf (priv);
 
 				} else if (visual_param_has_name (param, "aspect")) {
-					priv->aspect = visual_param_get_value_integer (param);
+					priv->aspect = visual_param_get_value_bool (param);
 
 					update_scaled_pixbuf (priv);
 
 				} else if (visual_param_has_name (param, "center")) {
-					priv->center = visual_param_get_value_integer (param);
+					priv->center = visual_param_get_value_bool (param);
 
 				} else if (visual_param_has_name (param, "set size")) {
-					priv->set_size = visual_param_get_value_integer (param);
+					priv->set_size = visual_param_get_value_bool (param);
 
 					update_scaled_pixbuf (priv);
 

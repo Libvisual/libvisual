@@ -102,7 +102,7 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     LV::Color col(255, 255, 255);
     sub->fill_color(col);
 
-            
+
     LV::Rect region(0, 0, 10, 10);
 
     LV::VideoConstPtr src = priv->flip ? src1 : src2;
@@ -121,7 +121,7 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
 
 /*
             unsigned int xdiff = 0, ydiff = 0;
-            
+
             if(y + tile_height > dest_height)
                 ydiff = (y + tile_height) - dest_height;
 
