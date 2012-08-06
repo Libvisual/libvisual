@@ -25,6 +25,30 @@
 #include <stdarg.h>
 #include <string.h>
 
+struct _VisClosure
+{
+    void           (*func) (void);
+    void *         data;
+    VisDestroyFunc destroy_func;
+};
+
+struct _VisParam
+{
+    char *         name;
+    char *         description;
+    VisParamValue  value;
+    VisParamValue  default_value;
+    VisClosure *   validator;
+    VisList *      changed_handlers;
+    VisParamList * parent;
+};
+
+struct _VisParamList {
+    VisList *       entries;      /**< The list that contains all the parameters. */
+    VisEventQueue * eventqueue;   /**< Pointer to an optional eventqueue to which events can be emitted
+                                    *  on parameter changes. */
+};
+
 static void visual_param_free (VisParam *param);
 
 VisClosure *visual_closure_new (void *func, void *data, void *destroy_func)
@@ -179,7 +203,6 @@ VisParam *visual_param_new (const char * name,
     visual_return_val_if_fail (name != NULL, NULL);
     visual_return_val_if_fail (description != NULL, NULL);
     visual_return_val_if_fail (type != VISUAL_PARAM_TYPE_NONE, NULL);
-    visual_return_val_if_fail (default_value != NULL, NULL);
 
     VisParam *self = visual_mem_new0 (VisParam, 1);
 

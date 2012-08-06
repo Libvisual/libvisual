@@ -24,8 +24,6 @@
 #include "config.h"
 #include "lv_math.h"
 #include "lv_common.h"
-#include "lv_bits.h"
-#include "lv_cpu.h"
 #include <math.h>
 
 int visual_math_is_power_of_2 (int n)

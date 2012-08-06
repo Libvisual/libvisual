@@ -46,35 +46,6 @@ typedef int  (*VisParamValidateFunc) (VisParamValue *value, void *priv);
 typedef void (*VisParamChangedFunc)  (VisParam *param, void *priv);
 typedef void (*VisDestroyFunc)       (void *data);
 
-struct _VisClosure
-{
-    void           (*func) (void);
-    void *         data;
-    VisDestroyFunc destroy_func;
-};
-
-struct _VisParam
-{
-    char *         name;
-    char *         description;
-    VisParamValue  value;
-    VisParamValue  default_value;
-    VisClosure *   validator;
-    VisList *      changed_handlers;
-    VisParamList * parent;
-};
-
-/**
- * Parameter container, is the container for a set of parameters.
- *
- * All members should never be accessed directly, instead methods should be used.
- */
-struct _VisParamList {
-    VisList *       entries;      /**< The list that contains all the parameters. */
-    VisEventQueue * eventqueue;   /**< Pointer to an optional eventqueue to which events can be emitted
-                                    *  on parameter changes. */
-};
-
 LV_BEGIN_DECLS
 
 LV_API VisClosure *visual_closure_new  (void *func, void *data, void *destroy_func);
@@ -164,6 +135,7 @@ LV_API VisParam *visual_param_list_get (VisParamList *list, const char *name);
  * @param type          Type
  * @param description   Description
  * @param default_value Default Value
+ * @param validator     Validator function (closure)
  *
  * @return A newly allocated VisParam
  */
@@ -178,11 +150,11 @@ LV_API VisParam *visual_param_new (const char * name,
  *
  * @param param    VisParam to add a change notification callback to.
  * @param callback The notification callback, which is called on changes in the VisParam.
- * @param priv     A private that can be used in the callback function.
+ * @param data     Additional data to be passed to the callback function.
  */
 LV_API VisClosure *visual_param_add_callback (VisParam *          param,
                                               VisParamChangedFunc func,
-                                              void *              priv,
+                                              void *              data,
                                               VisDestroyFunc      destroy_func);
 
 /**
