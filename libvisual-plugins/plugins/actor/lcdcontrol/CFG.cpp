@@ -61,16 +61,17 @@ std::string CFG::CFG_Source() {
 bool CFG::CFG_Init( std::string path ) {
 
     std::cout << "wtf\n";
-    std::ifstream stream_in(path);
+    std::ifstream stream_in;
     std::ofstream stream_out;
+
+    stream_in.open(path, std::ios::binary);
 
     if(not stream_in.is_open())
     {
         stream_out.open(path);
         stream_out << lcdcontrol_config;
         stream_out.close();
-
-        stream_in.open(path);
+        stream_in.open(path, std::ios::binary);
     }
     if(not stream_in.is_open())
     {
@@ -78,15 +79,9 @@ bool CFG::CFG_Init( std::string path ) {
         return false;
     }
 
+    root_ = new Json::Value();
 
-    std::cout << "wtf2\n";
-    std::string text;
-    stream_in >> text;
-
-    std::cout << text << std::endl;
-
-    std::cout << "wtf3\n";
-    bool r = reader_.parse( text, *root_ );
+    bool r = reader_.parse( stream_in, *root_, true );
 
     if( r ) {
         return true;

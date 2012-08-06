@@ -90,6 +90,8 @@ LCDTimerBin *LCDControl::GetTimers()
 }
 
 VisVideo *LCDControl::GetVideo() {
+    if(not active_ or not device_)
+        return NULL;
     return device_->GetVideo();
 }
 void LCDControl::TryLock() {
