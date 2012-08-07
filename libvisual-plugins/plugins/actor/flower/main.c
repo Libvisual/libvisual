@@ -181,7 +181,7 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 		n[2]/=l;
 
 		glEnable(GL_LIGHTING);
-		glColor3f(1.0,1.0,1.0);
+		glColor4f(1.0,1.0,1.0,1.0);
 		glPolygonOffset(3.0,2.0);
 		glEnable(GL_POLYGON_OFFSET_FILL);
 
@@ -209,7 +209,7 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glLineWidth(2.0);
 		glDisable(GL_LIGHTING);
-		glColor3f(0.0,0.0,0.0);
+		glColor4f(0.0,0.0,0.0,1.0);
 
 		set_vector(vertices[0],1.0*rf[i*3],-rf[i*3+2],rf[i*3+1]*1);
 		set_vector(vertices[1],1.0*rf[i*3+3],-rf[i*3+3+2],rf[i*3+3+1]*1);
