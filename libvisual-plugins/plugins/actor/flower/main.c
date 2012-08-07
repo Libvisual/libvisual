@@ -40,9 +40,9 @@ static void set_vector (Vect v, float x, float y, float z)
 
 static void copy_vector (Vect v, Vect src)
 {
-    v[0] = src[0];
-    v[1] = src[1];
-    v[2] = src[2];
+	v[0] = src[0];
+	v[1] = src[1];
+	v[2] = src[2];
 }
 
 int init_flower(FlowerInternal *flower)
