@@ -135,6 +135,8 @@ static int lv_madspin_init (VisPluginData *plugin)
 	priv->zrot = 0.0f;
 	priv->total = 0;
 	priv->frame = 0;
+	priv->num_stars = 512;
+	priv->speed = 715;
 
 	priv->timer = visual_timer_new ();
 
