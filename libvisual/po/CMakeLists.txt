@@ -28,8 +28,12 @@ ADD_CUSTOM_TARGET(nls-update-sources
 
 ADD_CUSTOM_COMMAND(OUTPUT ${po_BINARY_DIR}/${DOMAIN}.pot
   COMMAND ${XGETTEXT}
-  ARGS --files-from ${po_SOURCE_DIR}/POTFILES.in -o ${po_BINARY_DIR}/${DOMAIN}.pot
-       --copyright-holder=${COPYRIGHT_HOLDER} --msgid-bugs-address=${MSGID_BUGS_ADDRESS}
+  ARGS --files-from ${po_SOURCE_DIR}/POTFILES.in
+       -o ${po_BINARY_DIR}/${DOMAIN}.pot
+       --package-name=${PACKAGE}
+       --package-version=${PACKAGE_VERSION}
+       --copyright-holder=${COPYRIGHT_HOLDER}
+       --msgid-bugs-address=${MSGID_BUGS_ADDRESS}
        ${XGETTEXT_OPTIONS}
   DEPENDS ${po_SOURCE_DIR}/POTFILES.in
   WORKING_DIRECTORY ${libvisual_SOURCE_DIR}
