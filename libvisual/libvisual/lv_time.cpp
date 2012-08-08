@@ -26,13 +26,12 @@
 #include "config.h"
 #include "lv_time.h"
 #include "lv_common.h"
+#include <thread>
 
 #if defined(VISUAL_OS_WIN32)
 #include <windows.h>
 #else
-#include <unistd.h>
 #include <time.h>
-#include <errno.h>
 #endif
 
 namespace LV {
@@ -51,7 +50,6 @@ namespace LV {
     Time end;
     bool active;
   };
-
 
   void Time::init ()
   {
