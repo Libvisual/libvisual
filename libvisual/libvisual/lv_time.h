@@ -36,6 +36,7 @@
 #define VISUAL_NSEC_PER_SEC    1000000000
 #define VISUAL_USEC_PER_SEC    1000000
 #define VISUAL_MSEC_PER_SEC    1000
+#define VISUAL_USEC_PER_MSEC   1000
 #define VISUAL_NSEC_PER_MSEC   1000000
 #define VISUAL_NSEC_PER_USEC   1000
 
@@ -156,8 +157,16 @@ namespace LV {
           return sec * VISUAL_USEC_PER_SEC + nsec / VISUAL_NSEC_PER_USEC;
       }
 
-      // FIXME: Find a better place to put this
+      //! Sleeps for a period of time. This will yield the calling thread.
+      static void usleep (uint64_t usecs);
+
+      // FIXME: Find a better place to put these functions
+
+      //! Initializes LV's timer subsystem. DO NOT use.
       static void init ();
+
+      //! Deinitializes LV's timer subsystem. DO NOT use.
+      static void deinit ();
   };
 
   class LV_API Timer

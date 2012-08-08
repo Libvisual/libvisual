@@ -130,7 +130,7 @@ namespace LV
       visual_alpha_blend_initialize ();
 
       // Initialize high-resolution timer system
-	  Time::init ();
+      Time::init ();
 
       // Initialize FFT system
       Fourier::init ();
@@ -145,7 +145,8 @@ namespace LV
   System::~System ()
   {
       PluginRegistry::deinit ();
-      Fourier::deinit();
+      Fourier::deinit ();
+      Time::deinit ();
 
       visual_object_unref (VISUAL_OBJECT (m_impl->params));
   }

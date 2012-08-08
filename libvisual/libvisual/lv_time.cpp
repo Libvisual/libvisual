@@ -60,6 +60,18 @@ namespace LV {
       QueryPerformanceFrequency (&freq);
       perf_counter_freq = freq.QuadPart;
 #endif
+
+      // Increase timer resolution for fine-grained sleeps
+#if defined(VISUAL_WITH_MINGW) && defined(ENABLE_WIN32_HIGH_RES_SLEEP)
+      timeBeginPeriod (1);
+#endif
+  }
+
+  void Time::deinit ()
+  {
+#if defined(VISUAL_WITH_MINGW) && defined(ENABLE_WIN32_HIGH_RES_SLEEP)
+      timeEndPeriod (1);
+#endif
   }
 
   Time Time::now ()
@@ -75,6 +87,18 @@ namespace LV {
       clock_gettime (CLOCK_MONOTONIC, &clock_time);
 
       return Time (clock_time.tv_sec, clock_time.tv_nsec);
+#endif
+  }
+
+  void Time::usleep (uint64_t usecs)
+  {
+#if defined(VISUAL_WITH_MINGW)
+      // MinGW libstdc++'s sleep_for() requires the POSIX function
+      // nanosleep() to work. This is a workaround using the Windows
+      // Sleep() function.
+      Sleep (usecs / VISUAL_USEC_PER_MSEC);
+#else
+      std::this_thread::sleep_for (std::chrono::microseconds (usecs));
 #endif
   }
 
