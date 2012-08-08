@@ -56,6 +56,9 @@ CHECK_INCLUDE_FILE(sched.h     HAVE_SCHED_H)
 CHECK_INCLUDE_FILE(sys/sched.h HAVE_SYS_SCHED_H)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 
+# Check threading implementation
+FIND_PACKAGE(Threads)
+
 # Check for dynamic linking library
 CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DLFCN)
 IF(VISUAL_OS_POSIX AND NOT HAVE_DLFCN)
