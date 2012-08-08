@@ -393,5 +393,7 @@ out:
 */
 
 	SDL_Quit ();
+
+	return EXIT_SUCCESS;
 }
 
