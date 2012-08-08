@@ -40,7 +40,6 @@
 
 typedef struct _VisParam      VisParam;
 typedef struct _VisParamList  VisParamList;
-typedef struct _VisClosure    VisClosure;
 
 typedef int  (*VisParamValidateFunc) (VisParamValue *value, void *priv);
 typedef void (*VisParamChangedFunc)  (VisParam *param, void *priv);

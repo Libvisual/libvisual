@@ -56,6 +56,9 @@ CHECK_INCLUDE_FILE(sched.h     HAVE_SCHED_H)
 CHECK_INCLUDE_FILE(sys/sched.h HAVE_SYS_SCHED_H)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 
+# Check threading implementation
+FIND_PACKAGE(Threads)
+
 # Check for dynamic linking library
 CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DLFCN)
 IF(VISUAL_OS_POSIX AND NOT HAVE_DLFCN)
@@ -128,11 +131,16 @@ ENDIF()
 
 # Build profiles
 # Standard
-SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} ${CXX11_FLAGS} -Wall -Wunused")
+SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused -Werror")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} ${CXX11_FLAGS} -Wall -Wunused -Werror")
 # Debug
-SET(CMAKE_C_FLAGS_DEBUG "-ggdb3 -Werror")
-SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Werror")
+IF(CMAKE_COMPILER_IS_GNUCXX)
+  SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
+ELSEif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_C_FLAGS_DEBUG "-ggdb")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
+ENDIF()
 
 # Miscellaneous optimizations
 OPTION(ENABLE_FAST_FP_RNG "Enable faster random floating point generator" ${ENABLE_EXTRA_OPTIMIZATIONS})

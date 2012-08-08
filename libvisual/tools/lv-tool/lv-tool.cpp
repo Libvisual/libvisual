@@ -269,6 +269,7 @@ namespace {
           v_cycleActor(prev);
   }
 
+#if 0
   void v_cycleMorph ()
   {
       auto name = visual_morph_get_next_by_name(morph_name.c_str());
@@ -279,6 +280,7 @@ namespace {
 
       morph_name = name;
   }
+#endif
 
 } // anonymous namespace
 
