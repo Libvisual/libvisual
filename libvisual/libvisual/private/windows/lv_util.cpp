@@ -4,7 +4,7 @@
 
 namespace LV {
 
-  void for_each_file_in_dir (std::string const&                       dir_path,
+  bool for_each_file_in_dir (std::string const&                       dir_path,
                              std::function<bool (std::string const&)> filter,
                              std::function<bool (std::string const&)> func)
   {
@@ -15,7 +15,7 @@ namespace LV {
 
       if (hList == INVALID_HANDLE_VALUE) {
           FindClose (hList);
-          return;
+          return false;
       }
 
       auto finished = false;
