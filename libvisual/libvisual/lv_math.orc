@@ -18,12 +18,12 @@ addf dst, src, k
 
 .function visual_math_simd_floats_to_int32s
 .dest 4 dst
-.dest 4 src float
+.source 4 src float
 convfl dst, src
 
 .function visual_math_simd_int32s_to_floats
 .dest 4 dst
-.dest 4 src float
+.source 4 src float
 convlf dst, src
 
 .function visual_math_simd_sqrt_floats
