@@ -1,5 +1,5 @@
 /* Libvisual - The audio visualisation framework cli tool
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -343,9 +343,6 @@ namespace {
       if (!modelist)
           return;
 
-      int w = width;
-      int h = height;
-
       // Window is bigger than highest resolution
       if (modelist[0]->w <= width || modelist[0]->h <= height) {
           width  = modelist[0]->w;
@@ -353,11 +350,14 @@ namespace {
           return;
       }
 
+      int w = width;
+      int h = height;
+
       for (unsigned int i = 0; modelist[i]; i++) {
           if (modelist[i]->w >= width && modelist[i]->h >= height) {
               w = modelist[i]->w;
               h = modelist[i]->h;
-              return;
+              break;
           }
       }
 
