@@ -1,6 +1,14 @@
 #include "common.h"
 #include <libvisual/libvisual.h>
 
+VisMorphPlugin morph = {
+	.apply = lv_morph_slide_apply,
+	.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
+	                  | VISUAL_VIDEO_DEPTH_16BIT
+	                  | VISUAL_VIDEO_DEPTH_24BIT
+	                  | VISUAL_VIDEO_DEPTH_32BIT
+};
+
 int lv_morph_slide_init (VisPluginData *plugin, SlideType type)
 {
     SlidePrivate *priv = visual_mem_new0 (SlidePrivate, 1);

@@ -22,13 +22,6 @@ int lv_morph_slide_cleanup (VisPluginData *plugin);
 
 int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-static VisMorphPlugin morph = {
-	.apply = lv_morph_slide_apply,
-	.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-	                  | VISUAL_VIDEO_DEPTH_16BIT
-	                  | VISUAL_VIDEO_DEPTH_24BIT
-	                  | VISUAL_VIDEO_DEPTH_32BIT
-};
+extern VisMorphPlugin morph;
 
 #endif /* _LV_MORPH_SLIDE_COMMON_H */
-
