@@ -95,7 +95,7 @@ void loadepic2(const char *file)
 
 void loadepic(const char *file)
 {
-  char filename[255];
+  char filename[FILENAME_MAX];
   strncpy (filename, "/usr/local/share/dancingparticles/",255);
   strncat (filename, file,255);
   loadepic2(filename);

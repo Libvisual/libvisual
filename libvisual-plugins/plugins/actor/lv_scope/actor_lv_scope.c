@@ -237,8 +237,6 @@ static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
     if (!video)
         return -1;
 
-    y = video_height >> 1;
-
     visual_audio_get_sample_mixed (audio, priv->pcm, TRUE, 2,
             VISUAL_AUDIO_CHANNEL_LEFT,
             VISUAL_AUDIO_CHANNEL_RIGHT,

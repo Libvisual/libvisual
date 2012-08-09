@@ -103,6 +103,8 @@ static void splineTCP(FlowerInternal *flower, float u, Vect * control, Vect * re
 					+ (1-flower->bias)*(1+flower->continuity)*(control[2][1]-control[1][1])))
 		+ (u*u*u - u*u)*(0.5*(1-flower->tension)*((1+flower->bias)*(1+flower->continuity)*(control[2][1]-control[1][1])
 					+ (1-flower->bias)*(1-flower->continuity)*(control[3][1]-control[2][1])));
+
+    (*result)[2] = 0;
 }
 
 static void lights(FlowerInternal *flower) {

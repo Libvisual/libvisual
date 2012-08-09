@@ -65,7 +65,8 @@ reduce_vsync_inv(GLfloat rotate)
 void
 drawblur(GLfloat times, GLfloat inc, GLfloat spost)
 {
-  GLfloat alpha = 0.2f, alphainc = 0.9f / times;
+  GLfloat alpha = 0.2f;
+  GLfloat alphainc;
   GLint i;
 
   glDisable(GL_TEXTURE_GEN_S);
@@ -84,7 +85,7 @@ drawblur(GLfloat times, GLfloat inc, GLfloat spost)
     glColor4f(1.0f, 1.0f, 1.0f, alpha);
     glTexCoord2f(0 + spost, 1 - spost);
     glVertex2f(0,0);
- 
+
     glTexCoord2f(0 + spost, 0 + spost);
     glVertex2f(0, point_general->HEIGHT);
 

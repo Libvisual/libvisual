@@ -151,7 +151,6 @@ int inp_alsa_init (VisPluginData *plugin)
 			   "hardware.\n" \
 			   "==> Using %d Hz instead", rate, exact_rate);
 	}
-	rate = exact_rate;
 
 	if (snd_pcm_hw_params_set_channels(priv->chandle, hwparams,
 					   inp_alsa_var_channels) < 0) {
