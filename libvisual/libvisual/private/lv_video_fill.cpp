@@ -5,13 +5,17 @@
 
 #pragma pack(1)
 
-typedef struct {
-#ifdef VISUAL_LITTLE_ENDIAN
-    uint16_t b:5, g:6, r:5;
-#else
-    uint16_t r:5, g:6, b:5;
-#endif
-} rgb16_t;
+union pixel16_t {
+    struct {
+    #ifdef VISUAL_LITTLE_ENDIAN
+        uint16_t b:5, g:6, r:5;
+    #else
+        uint16_t r:5, g:6, b:5;
+    #endif
+    } rgb;
+
+    uint16_t value;
+};
 
 #pragma pack()
 
@@ -34,15 +38,13 @@ namespace LV {
   {
       auto buf = static_cast<uint16_t*> (video.get_pixels ());
 
-      int16_t col;
-
-      auto col16 = reinterpret_cast<rgb16_t*> (&col);
-      col16->r = color.r >> 3;
-      col16->g = color.g >> 2;
-      col16->b = color.b >> 3;
+      pixel16_t pixel;
+      pixel.rgb.r = color.r >> 3;
+      pixel.rgb.g = color.g >> 2;
+      pixel.rgb.b = color.b >> 3;
 
       for (int y = 0; y < video.m_impl->height; y++) {
-          visual_mem_set16 (buf, col, video.m_impl->width);
+          visual_mem_set16 (buf, pixel.value, video.m_impl->width);
 
           buf += (video.m_impl->pitch / video.m_impl->bpp);
       }
