@@ -111,9 +111,9 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     sub->unref();
 
     return 0;
-    for(unsigned int row = 0, y = 0; row < rows && y < dest_height; row++, y += tile_height)
+    for(unsigned int row = 0, y = 0; y < dest_height; row++, y += tile_height)
     {
-        for(unsigned int col = 0, x = 0; col < cols && x < dest_width; col++, x += tile_width)
+        for(unsigned int col = 0, x = 0; x < dest_width; col++, x += tile_width)
         {
 
 /*
