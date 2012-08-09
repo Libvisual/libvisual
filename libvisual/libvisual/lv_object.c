@@ -68,8 +68,6 @@ void visual_object_ref (VisObject *object)
 
 void visual_object_unref (VisObject *object)
 {
-    if(object == NULL)
-        {int *f = NULL; *f = 1;}
 	visual_return_if_fail (object != NULL);
 
 	object->refcount--;
