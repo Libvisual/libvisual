@@ -332,6 +332,7 @@ int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int n
 static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced)
 {
     auto actplugin = get_actor_plugin (actor);
+    visual_return_val_if_fail (actplugin != nullptr, -VISUAL_ERROR_IMPOSSIBLE);
 
     auto depthflag = visual_actor_get_supported_depth (actor);
 
@@ -363,6 +364,7 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDept
 static int negotiate_video (VisActor *actor, int noevent)
 {
     auto actplugin = get_actor_plugin (actor);
+    visual_return_val_if_fail (actplugin != nullptr, -VISUAL_ERROR_IMPOSSIBLE);
 
     int req_width  = visual_video_get_width  (actor->video);
     int req_height = visual_video_get_height (actor->video);
