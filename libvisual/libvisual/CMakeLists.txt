@@ -140,7 +140,14 @@ SET(libvisual_SOURCES
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_util.cpp
 
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_alpha_blend_orc.h
   ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h
+)
+
+LV_GENERATE_ORC_INLINE_SOURCE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/lv_alpha_blend.orc
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_alpha_blend_orc.h
+  HEADER
 )
 
 LV_GENERATE_ORC_INLINE_SOURCE(

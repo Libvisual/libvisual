@@ -36,7 +36,6 @@
 #include "gettext.h"
 
 extern "C" {
-  void visual_alpha_blend_initialize (void);
   void visual_cpu_initialize (void);
   void visual_mem_initialize (void);
 }
@@ -125,9 +124,6 @@ namespace LV
 
       // Initialize Mem system
       visual_mem_initialize ();
-
-      // Initialize CPU-accelerated graphics functions
-      visual_alpha_blend_initialize ();
 
       // Initialize high-resolution timer system
       Time::init ();
