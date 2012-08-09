@@ -1,29 +1,7 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-  ${OPENGL_INCLUDE_DIR}
+INCLUDE(LVBuildPlugin)
+
+LV_BUILD_ACTOR_PLUGIN(lv_gltest
+  SOURCES      actor_lv_gltest.c
+  INCLUDE_DIRS ${OPENGL_INCLUDE_DIR}
+  LINK_LIBS    ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} m
 )
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_lv_gltest_SOURCES
-  actor_lv_gltest.c
-)
-
-ADD_LIBRARY(actor_lv_gltest MODULE ${actor_lv_gltest_SOURCES})
-
-SET_TARGET_PROPERTIES(actor_lv_gltest PROPERTIES
-  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
-)
-
-TARGET_LINK_LIBRARIES(actor_lv_gltest
-  ${LIBVISUAL_LIBRARIES}
-  ${OPENGL_gl_LIBRARY}
-  ${OPENGL_glu_LIBRARY}
-  m
-)
-
-INSTALL(TARGETS actor_lv_gltest LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

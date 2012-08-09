@@ -1,25 +1,5 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
+INCLUDE(LVBuildPlugin)
+
+LV_BUILD_ACTOR_PLUGIN(lv_analyzer
+  SOURCES actor_lv_analyzer.c
 )
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_lv_analyzer_SOURCES
-  actor_lv_analyzer.c
-)
-
-ADD_LIBRARY(actor_lv_analyzer MODULE ${actor_lv_analyzer_SOURCES})
-
-SET_TARGET_PROPERTIES(actor_lv_analyzer PROPERTIES
-  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
-)
-
-TARGET_LINK_LIBRARIES(actor_lv_analyzer
-  ${LIBVISUAL_LIBRARIES}
-)
-
-INSTALL(TARGETS actor_lv_analyzer LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

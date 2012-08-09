@@ -1,14 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-)
+INCLUDE(LVBuildPlugin)
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_jakdaw_SOURCES
+SET(SOURCES
   actor_jakdaw.c
   actor_jakdaw.h
   feedback.c
@@ -17,15 +9,7 @@ SET(actor_jakdaw_SOURCES
   plotter.h
 )
 
-ADD_LIBRARY(actor_jakdaw MODULE ${actor_jakdaw_SOURCES})
-
-SET_TARGET_PROPERTIES(actor_jakdaw PROPERTIES
-  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+LV_BUILD_ACTOR_PLUGIN(jakdaw
+  SOURCES   ${SOURCES}
+  LINK_LIBS m
 )
-
-TARGET_LINK_LIBRARIES(actor_jakdaw
-  ${LIBVISUAL_LIBRARIES}
-  m
-)
-
-INSTALL(TARGETS actor_jakdaw LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

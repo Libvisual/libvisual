@@ -44,6 +44,7 @@ FIND_PACKAGE(PkgConfig REQUIRED)
 
 # Check for OpenMP support.
 FIND_PACKAGE(OpenMP)
+SET(HAVE_OPENMP ${OPENMP_FOUND})
 
 # Check for libvisual here so that users get told they have the
 # wrong dependencies as early in the process as possible.

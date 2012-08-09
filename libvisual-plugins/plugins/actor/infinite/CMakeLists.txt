@@ -1,14 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-)
+INCLUDE(LVBuildPlugin)
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_infinite_SOURCES
+SET(SOURCES
   compute.c
   compute.h
   display.c
@@ -20,15 +12,7 @@ SET(actor_infinite_SOURCES
   main.h
 )
 
-ADD_LIBRARY(actor_infinite MODULE ${actor_infinite_SOURCES})
-
-SET_TARGET_PROPERTIES(actor_infinite PROPERTIES
-  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
+LV_BUILD_ACTOR_PLUGIN(infinite
+  SOURCES   ${SOURCES}
+  LINK_LIBS m
 )
-
-TARGET_LINK_LIBRARIES(actor_infinite
-  ${LIBVISUAL_LIBRARIES}
-  m
-)
-
-INSTALL(TARGETS actor_infinite LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})
