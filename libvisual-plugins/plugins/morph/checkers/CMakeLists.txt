@@ -1,25 +1,5 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
+INCLUDE(LVBuildPlugin)
+
+LV_BUILD_MORPH_PLUGIN(checkers
+  SOURCES morph_checkers.cpp
 )
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(morph_checkers_SOURCES
-  morph_checkers.cpp
-)
-
-ADD_LIBRARY(morph_checkers MODULE ${morph_checkers_SOURCES})
-
-SET_TARGET_PROPERTIES(morph_checkers PROPERTIES
-  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
-)
-
-TARGET_LINK_LIBRARIES(morph_checkers
-  ${LIBVISUAL_LIBRARIES}
-)
-
-INSTALL(TARGETS morph_checkers LIBRARY DESTINATION ${LV_MORPH_PLUGIN_DIR})

@@ -1,26 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
+INCLUDE(LVBuildPlugin)
+
+LV_BUILD_MORPH_PLUGIN(tentacle
+  SOURCES   morph_tentacle.c
+  LINK_LIBS m
 )
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(morph_tentacle_SOURCES
-  morph_tentacle.c
-)
-
-ADD_LIBRARY(morph_tentacle MODULE ${morph_tentacle_SOURCES})
-
-SET_TARGET_PROPERTIES(morph_tentacle PROPERTIES
-  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
-)
-
-TARGET_LINK_LIBRARIES(morph_tentacle
-  ${LIBVISUAL_LIBRARIES}
-  m
-)
-
-INSTALL(TARGETS morph_tentacle LIBRARY DESTINATION ${LV_MORPH_PLUGIN_DIR})

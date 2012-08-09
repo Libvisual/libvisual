@@ -42,6 +42,9 @@ SET(LUAJIT_REQUIRED_VERSION 0.26)
 # Check for pkg-config
 FIND_PACKAGE(PkgConfig REQUIRED)
 
+# Check for threading implementation
+FIND_PACKAGE(Threads)
+
 # Check for OpenMP support.
 FIND_PACKAGE(OpenMP)
 SET(HAVE_OPENMP ${OPENMP_FOUND})
