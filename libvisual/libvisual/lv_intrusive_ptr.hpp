@@ -58,29 +58,34 @@ namespace LV
           return *this;
       }
 
+      //! Copy assignment operator
       IntrusivePtr& operator= (IntrusivePtr const& rhs)
       {
           IntrusivePtr (rhs).swap (*this);
           return *this;
       }
 
+      //! Raw-pointer assignment operator
       IntrusivePtr& operator= (T* rhs)
       {
           IntrusivePtr (rhs).swap (*this);
           return *this;
       }
 
+      //! Move assignment
       IntrusivePtr& operator= (IntrusivePtr&& rhs)
       {
           IntrusivePtr (rhs).swap (*this);
           return *this;
       }
 
+      //! Reset to pointer to null
       void reset ()
       {
           IntrusivePtr ().swap (*this);
       }
 
+      //
       void reset (T* rhs)
       {
           IntrusivePtr (rhs).swap (*this);
