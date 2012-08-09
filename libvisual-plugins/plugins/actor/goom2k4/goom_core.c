@@ -65,6 +65,10 @@ PluginInfo *goom_init (uint32_t resx, uint32_t resy)
 
     plugin_info_init(goomInfo,4);
 
+    goomInfo->screen.width = resx;
+    goomInfo->screen.height = resy;
+    goomInfo->screen.size = resx * resy;
+
     goomInfo->star_fx = flying_star_create();
     goomInfo->star_fx.init(&goomInfo->star_fx, goomInfo);
 
@@ -81,10 +85,6 @@ PluginInfo *goom_init (uint32_t resx, uint32_t resy)
     plugin_info_add_visual (goomInfo, 1, &goomInfo->tentacles_fx);
     plugin_info_add_visual (goomInfo, 2, &goomInfo->star_fx);
     plugin_info_add_visual (goomInfo, 3, &goomInfo->convolve_fx);
-
-    goomInfo->screen.width = resx;
-    goomInfo->screen.height = resy;
-    goomInfo->screen.size = resx * resy;
 
     init_buffers(goomInfo, goomInfo->screen.size);
     goomInfo->gRandom = goom_random_init((uintptr_t)goomInfo->pixel);
