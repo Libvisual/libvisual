@@ -451,7 +451,7 @@ namespace LV {
       int width  = m_impl->actvideo->get_width ();
       int height = m_impl->actvideo->get_height ();
 
-      auto depth = m_impl->actvideo->get_depth ();
+      VisVideoDepth depth;
 
       auto depthflag = visual_actor_get_supported_depth (actor);
 
@@ -532,7 +532,7 @@ namespace LV {
 
       video->set_dimension(width, height);
 
-      if(depth != VISUAL_VIDEO_DEPTH_GL)
+      if (depth != VISUAL_VIDEO_DEPTH_GL)
       {
           video->set_pitch(width * visual_video_bpp_from_depth(depth));
 
