@@ -65,32 +65,32 @@ void visual_math_simd_mul_floats_floats (float *LV_RESTRICT dest, const float *L
 
 void visual_math_simd_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, visual_size_t count)
 {
-    simd_floats_to_int32s ((uint32_t *) ints, flts, (int) count);
+    simd_floats_to_int32s ((uint32_t *LV_RESTRICT) ints, flts, (int) count);
 }
 
 void visual_math_simd_int32s_to_floats (float *LV_RESTRICT flts, const int32_t *LV_RESTRICT ints, visual_size_t count)
 {
-    simd_int32s_to_floats (flts, (const uint32_t *) ints, (int) count);
+    simd_int32s_to_floats (flts, (const uint32_t *LV_RESTRICT) ints, (int) count);
 }
 
 void visual_math_simd_floats_to_int32s_mul_float (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, visual_size_t count)
 {
-    simd_floats_to_int32s_mul_float ((uint32_t *) ints, flts, k, (int) count);
+    simd_floats_to_int32s_mul_float ((uint32_t *LV_RESTRICT) ints, flts, k, (int) count);
 }
 
 void visual_math_simd_int32s_to_floats_mul_float (float *LV_RESTRICT flts, const int32_t *LV_RESTRICT ints, float k, visual_size_t count)
 {
-    simd_int32s_to_floats_mul_float (flts, (const uint32_t *) ints, k, (int) count);
+    simd_int32s_to_floats_mul_float (flts, (const uint32_t *LV_RESTRICT) ints, k, (int) count);
 }
 
 void visual_math_simd_denorm_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, visual_size_t count)
 {
-    simd_denorm_floats_to_int32s ((uint32_t *) ints, flts, k, (int) count);
+    simd_denorm_floats_to_int32s ((uint32_t *LV_RESTRICT) ints, flts, k, (int) count);
 }
 
 void visual_math_simd_denorm_neg_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, visual_size_t count)
 {
-    simd_denorm_neg_floats_to_int32s ((uint32_t *) ints, flts, k, (int) count);
+    simd_denorm_neg_floats_to_int32s ((uint32_t *LV_RESTRICT) ints, flts, k, (int) count);
 }
 
 void visual_math_simd_sqrt_floats (float *LV_RESTRICT dest, const float *LV_RESTRICT src, visual_size_t count)
