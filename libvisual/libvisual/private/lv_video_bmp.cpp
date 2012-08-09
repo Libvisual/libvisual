@@ -300,6 +300,7 @@ namespace LV {
           fp.read (reinterpret_cast<char*> (&bi_bitcount), 2);
           bi_bitcount = VISUAL_ENDIAN_LEI16 (bi_bitcount);
           bi_compression = BI_RGB;
+          bi_clrused = 0;
       } else {
           /* And read the width, height */
           fp.read (reinterpret_cast<char*> (&bi_width), 4);
