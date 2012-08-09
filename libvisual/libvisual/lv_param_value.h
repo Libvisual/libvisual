@@ -65,7 +65,7 @@ LV_API void           visual_param_value_free       (VisParamValue *value);
 LV_API void           visual_param_value_free_value (VisParamValue *value);
 
 #define _LV_PARAM_MARSHAL_INTEGER(x)   ((void *) (intptr_t) (x))
-#define _LV_PARAM_MARSHAL_FLOAT(x)     ((void *) (intptr_t) *(int32_t *) &x)
+#define _LV_PARAM_MARSHAL_FLOAT(x)     ((void *) (&x))
 #define _LV_PARAM_MARSHAL_DOUBLE(x)    ((void *) (&x))
 #define _LV_PARAM_MARSHAL_POINTER(x)   ((void *) (x))
 

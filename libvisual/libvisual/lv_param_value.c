@@ -80,8 +80,7 @@ void visual_param_value_set (VisParamValue *self, VisParamType type, void *value
             self->value.integer = (intptr_t) value;
             break;
         case VISUAL_PARAM_TYPE_FLOAT: {
-            int32_t x = (intptr_t) value;
-            self->value.single_float = *(float *) &x;
+            self->value.single_float = *(float *) value;
             break;
         }
         case VISUAL_PARAM_TYPE_DOUBLE:
