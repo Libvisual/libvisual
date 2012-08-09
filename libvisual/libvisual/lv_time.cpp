@@ -100,7 +100,7 @@ namespace LV {
   #elif defined(VISUAL_OS_ANDROID)
       timespec request;
       request.tv_sec  = usecs / VISUAL_USEC_PER_SEC;
-      request.tv_nsec = usecs % VISUAL_USEC_PER_SEC;
+      request.tv_nsec = VISUAL_NSEC_PER_USEC * (usecs % VISUAL_USEC_PER_SEC);
       nanosleep (&request, nullptr);
   #else
       std::this_thread::sleep_for (std::chrono::microseconds (usecs));
