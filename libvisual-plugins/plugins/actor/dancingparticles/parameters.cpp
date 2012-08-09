@@ -85,6 +85,7 @@ void init_parameters()
   if(!load_parameters(configfilename))
     if(!load_parameters("/usr/local/share/dancingparticles/dancingparticles.conf"))
       {
+        visual_log(VISUAL_LOG_ERROR, "Failed to load config file");
       }
 }
 int load_parameters(const char * filename)
@@ -224,6 +225,7 @@ int load_parameters(const char * filename)
   changep();
   return 1;
  error:
+  visual_log (VISUAL_LOG_ERROR, "Failed to load parameters from file: %s", err);
   setlocale (LC_NUMERIC, oldlocal);
   fclose(f);
   return 0;
