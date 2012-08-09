@@ -29,13 +29,11 @@
 #include <thread>
 
 #if defined(VISUAL_OS_WIN32)
+// Performance counters, timer resolution, and sleep function
 #include <windows.h>
 #else
+// High-resolution monotonic clock, and nanosleep (Android)
 #include <time.h>
-#endif
-
-#if defined(VISUAL_OS_ANDROID)
-#include <unistd.h> // for nanosecond()
 #endif
 
 namespace LV {
