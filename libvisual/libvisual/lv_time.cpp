@@ -34,6 +34,10 @@
 #include <time.h>
 #endif
 
+#if defined(VISUAL_OS_ANDROID)
+#include <unistd.h> // for nanosecond()
+#endif
+
 namespace LV {
 
 #if defined(VISUAL_OS_WIN32)
@@ -90,11 +94,13 @@ namespace LV {
 
   void Time::usleep (uint64_t usecs)
   {
-#if defined(VISUAL_WITH_MINGW)
-      // MinGW libstdc++'s sleep_for() requires the POSIX function
+      // libstdc++'s sleep_for() requires the POSIX function
       // nanosleep() to work. This is a workaround using the Windows
       // Sleep() function.
+#if defined(VISUAL_WITH_MINGW)
       Sleep (usecs / VISUAL_USEC_PER_MSEC);
+#elif defined(VISUAL_OS_ANDROID)
+      nanosecond (usecs * VISUAL_TIME_NSEC_PER_USEC);
 #else
       std::this_thread::sleep_for (std::chrono::microseconds (usecs));
 #endif
