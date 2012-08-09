@@ -146,7 +146,8 @@ SET(libvisual_SOURCES
 LV_GENERATE_ORC_INLINE_SOURCE(
   ${CMAKE_CURRENT_SOURCE_DIR}/lv_math.orc
   ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h
-  math.h
+  HEADER
+  INCLUDES math.h
 )
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
