@@ -25,12 +25,16 @@
 #include "lv_color.h"
 #include "lv_common.h"
 
-struct rgb16_t {
-#if VISUAL_LITTLE_ENDIAN == 1
-  uint16_t b:5, g:6, r:5;
-#else
-  uint16_t r:5, g:6, b:5;
-#endif
+union pixel16_t {
+    struct {
+    #if VISUAL_LITTLE_ENDIAN == 1
+        uint16_t b:5, g:6, r:5;
+    #else
+        uint16_t r:5, g:6, b:5;
+    #endif
+    } rgb;
+
+    uint16_t value;
 };
 
 namespace LV {
@@ -135,11 +139,12 @@ namespace LV {
 
   void Color::set_from_uint16 (uint16_t rgb)
   {
-      auto color = *(reinterpret_cast<rgb16_t*> (&rgb));
+      pixel16_t pixel;
+      pixel.value = rgb;
 
-      r = color.r << 3;
-      g = color.g << 2;
-      b = color.b << 3;
+      r = pixel.rgb.r << 3;
+      g = pixel.rgb.g << 2;
+      b = pixel.rgb.b << 3;
   }
 
   uint32_t Color::to_uint32 () const
@@ -149,13 +154,13 @@ namespace LV {
 
   uint16_t Color::to_uint16 () const
   {
-      rgb16_t color;
+      pixel16_t pixel;
 
-      color.r = r >> 3;
-      color.g = g >> 2;
-      color.b = b >> 3;
+      pixel.rgb.r = r >> 3;
+      pixel.rgb.g = g >> 2;
+      pixel.rgb.b = b >> 3;
 
-      return *reinterpret_cast<uint16_t*> (&color);
+      return pixel.value;
   }
 
 } // LV namespace
