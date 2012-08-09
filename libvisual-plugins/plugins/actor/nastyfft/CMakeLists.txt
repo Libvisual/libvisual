@@ -1,29 +1,7 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-  ${OPENGL_INCLUDE_DIR}
+INCLUDE(LVBuildPlugin)
+
+LV_BUILD_ACTOR_PLUGIN(nastyfft
+  SOURCES      actor_nastyfft.c
+  INCLUDE_DIRS ${OPENGL_INCLUDE_DIR}
+  LINK_LIBS    ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} m
 )
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_nastyfft_SOURCES
-  actor_nastyfft.c
-)
-
-ADD_LIBRARY(actor_nastyfft MODULE ${actor_nastyfft_SOURCES})
-
-SET_TARGET_PROPERTIES(actor_nastyfft PROPERTIES
-  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
-)
-
-TARGET_LINK_LIBRARIES(actor_nastyfft
-  ${LIBVISUAL_LIBRARIES}
-  ${OPENGL_gl_LIBRARY}
-  ${OPENGL_glu_LIBRARY}
-  m
-)
-
-INSTALL(TARGETS actor_nastyfft LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

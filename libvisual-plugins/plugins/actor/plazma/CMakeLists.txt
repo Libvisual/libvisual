@@ -1,27 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
+INCLUDE(LVBuildPlugin)
+
+LV_BUILD_ACTOR_PLUGIN(plazma
+  SOURCES   actor_plazma.c plazma.c
+  LINK_LIBS m
 )
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_plazma_SOURCES
-  actor_plazma.c
-  plazma.c
-)
-
-ADD_LIBRARY(actor_plazma MODULE ${actor_plazma_SOURCES})
-
-SET_TARGET_PROPERTIES(actor_plazma PROPERTIES
-  LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
-)
-
-TARGET_LINK_LIBRARIES(actor_plazma
-  ${LIBVISUAL_LIBRARIES}
-  m
-)
-
-INSTALL(TARGETS actor_plazma LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})
