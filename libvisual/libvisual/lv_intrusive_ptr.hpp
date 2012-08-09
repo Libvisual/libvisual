@@ -39,6 +39,7 @@ namespace LV
               intrusive_ptr_add_ref (m_ptr);
       }
 
+      //! Move constructor
       IntrusivePtr (IntrusivePtr&& rhs)
           : m_ptr (rhs.m_ptr)
       {
@@ -79,13 +80,12 @@ namespace LV
           return *this;
       }
 
-      //! Reset to pointer to null
+      //! Resets to pointer to null
       void reset ()
       {
           IntrusivePtr ().swap (*this);
       }
 
-      //
       void reset (T* rhs)
       {
           IntrusivePtr (rhs).swap (*this);

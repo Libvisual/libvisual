@@ -140,20 +140,13 @@ SET(libvisual_SOURCES
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_util.cpp
 
-  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.c
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h
 )
 
-LV_GENERATE_ORC_SOURCES(
+LV_GENERATE_ORC_INLINE_SOURCE(
   ${CMAKE_CURRENT_SOURCE_DIR}/lv_math.orc
   ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h
-  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.c
   math.h
-)
-
-SET_SOURCE_FILES_PROPERTIES(
-  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.c
-  PROPERTIES
-  COMPILE_FLAGS -fvisibility=default
 )
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})

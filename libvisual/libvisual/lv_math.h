@@ -81,7 +81,7 @@ LV_API unsigned int visual_math_round_power_of_2 (unsigned int n);
  *
  * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
-LV_API void visual_math_simd_mul_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float k, int count);
+LV_API void visual_math_simd_mul_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float k, visual_size_t count);
 
 /**
  * Adds an array of floats with a constant addend, using SIMD instructions on supported CPUs.
@@ -93,9 +93,9 @@ LV_API void visual_math_simd_mul_floats_float (float *LV_RESTRICT dest, const fl
  * @param k     constant addend
  * @param count number of elements
  */
-LV_API void visual_math_simd_add_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float adder, int count);
+LV_API void visual_math_simd_add_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float adder, visual_size_t count);
 
-LV_API void visual_math_simd_mul_floats_floats (float *LV_RESTRICT dest, const float *LV_RESTRICT src1, const float *LV_RESTRICT src2, int count);
+LV_API void visual_math_simd_mul_floats_floats (float *LV_RESTRICT dest, const float *LV_RESTRICT src1, const float *LV_RESTRICT src2, visual_size_t count);
 
 /**
  * Converts an array of floats to 32-bit integers, using SIMD instructions on supported CPUs.
@@ -104,7 +104,7 @@ LV_API void visual_math_simd_mul_floats_floats (float *LV_RESTRICT dest, const f
  * @param flts  pointer to the source float array
  * @param count number of elements
  */
-LV_API void visual_math_simd_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, int count);
+LV_API void visual_math_simd_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, visual_size_t count);
 
 /**
  * Converts an array of integers to floats, using SIMD instructions on supported CPUs.
@@ -113,7 +113,7 @@ LV_API void visual_math_simd_floats_to_int32s (int32_t *LV_RESTRICT ints, const 
  * @param ints  pointer to the source int32_t array
  * @param count number of elements
  */
-LV_API void visual_math_simd_int32s_to_floats (float *LV_RESTRICT flts, const int32_t *LV_RESTRICT ints, int count);
+LV_API void visual_math_simd_int32s_to_floats (float *LV_RESTRICT flts, const int32_t *LV_RESTRICT ints, visual_size_t count);
 
 /**
  * Converts an array of floats to integers and multiplies it with a const multiplicand, using SIMD instructions on
@@ -124,7 +124,7 @@ LV_API void visual_math_simd_int32s_to_floats (float *LV_RESTRICT flts, const in
  * @param k     constant multiplicand
  * @param count number of elements
  */
-LV_API void visual_math_simd_floats_to_int32s_mul_float (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, int count);
+LV_API void visual_math_simd_floats_to_int32s_mul_float (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, visual_size_t count);
 
 /**
  * Converts an array of integers to floats and multiplies it with a const multiplier.
@@ -134,7 +134,7 @@ LV_API void visual_math_simd_floats_to_int32s_mul_float (int32_t *LV_RESTRICT in
  * @param k     constant multiplicand
  * @param count number of elements
  */
-LV_API void visual_math_simd_int32s_to_floats_mul_float (float *LV_RESTRICT flts, const int32_t *LV_RESTRICT ints, float k, int count);
+LV_API void visual_math_simd_int32s_to_floats_mul_float (float *LV_RESTRICT flts, const int32_t *LV_RESTRICT ints, float k, visual_size_t count);
 
 /**
  * Denormalizes an array of floats, each in [0.0, 1.0], to integers, using SIMD instructions on supported CPUs.
@@ -146,7 +146,7 @@ LV_API void visual_math_simd_int32s_to_floats_mul_float (float *LV_RESTRICT flts
  * @param k     constant multiplicand
  * @param count number of elements
  */
-LV_API void visual_math_simd_denorm_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, int count);
+LV_API void visual_math_simd_denorm_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, visual_size_t count);
 
 /**
  * Denormalizes an array of floats, each in [-1.0, 1.0], to integers, using SIMD instructions on supported CPUs.
@@ -160,7 +160,7 @@ LV_API void visual_math_simd_denorm_floats_to_int32s (int32_t *LV_RESTRICT ints,
  * @param k     constant multiplicand
  * @param count number of elements
  */
-LV_API void visual_math_simd_denorm_neg_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, int count);
+LV_API void visual_math_simd_denorm_neg_floats_to_int32s (int32_t *LV_RESTRICT ints, const float *LV_RESTRICT flts, float k, visual_size_t count);
 
 /**
  * Calculates the square root of each float element in the input array, using SIMD instructions on supported CPUs.
@@ -171,7 +171,7 @@ LV_API void visual_math_simd_denorm_neg_floats_to_int32s (int32_t *LV_RESTRICT i
  * @param src   array of floats
  * @param count number of elements
  */
-LV_API void visual_math_simd_sqrt_floats (float *LV_RESTRICT dest, const float *LV_RESTRICT src, int count);
+LV_API void visual_math_simd_sqrt_floats (float *LV_RESTRICT dest, const float *LV_RESTRICT src, visual_size_t count);
 
 /**
  * Calculates the norm of a list of complex numbers, using SIMD instructions on supported CPUs. The real and imaginary
@@ -182,7 +182,7 @@ LV_API void visual_math_simd_sqrt_floats (float *LV_RESTRICT dest, const float *
  * @param imag  array of imaginary parts
  * @param count number of elements
  */
-LV_API void visual_math_simd_complex_norm (float *LV_RESTRICT dest, const float *LV_RESTRICT real, const float *LV_RESTRICT imag, int count);
+LV_API void visual_math_simd_complex_norm (float *LV_RESTRICT dest, const float *LV_RESTRICT real, const float *LV_RESTRICT imag, visual_size_t count);
 
 /**
  * Calculates the scaled norm of a list of complex numbers, using SIMD instructions on supported CPUs. The real and
@@ -194,7 +194,7 @@ LV_API void visual_math_simd_complex_norm (float *LV_RESTRICT dest, const float 
  * @param k     const multiplcand
  * @param count number of elements
  */
-LV_API void visual_math_simd_complex_scaled_norm (float *LV_RESTRICT dest, const float *LV_RESTRICT real, const float *LV_RESTRICT imag, float k, int count);
+LV_API void visual_math_simd_complex_scaled_norm (float *LV_RESTRICT dest, const float *LV_RESTRICT real, const float *LV_RESTRICT imag, float k, visual_size_t count);
 
 LV_END_DECLS
 

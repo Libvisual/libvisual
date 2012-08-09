@@ -1,37 +1,37 @@
-.function visual_math_simd_mul_floats_float
+.function simd_mul_floats_float
 .dest 4 dst float
 .source 4 src float
 .floatparam 4 k
 mulf dst, src, k
 
-.function visual_math_simd_mul_floats_floats
+.function simd_mul_floats_floats
 .dest 4 dst float
 .source 4 src1 float
 .source 4 src2 float
 mulf dst, src1, src2
 
-.function visual_math_simd_add_floats_float
+.function simd_add_floats_float
 .dest 4 dst float
 .source 4 src float
 .floatparam 4 k
 addf dst, src, k
 
-.function visual_math_simd_floats_to_int32s
+.function simd_floats_to_int32s
 .dest 4 dst
 .source 4 src float
 convfl dst, src
 
-.function visual_math_simd_int32s_to_floats
-.dest 4 dst
-.source 4 src float
+.function simd_int32s_to_floats
+.dest 4 dst float
+.source 4 src
 convlf dst, src
 
-.function visual_math_simd_sqrt_floats
+.function simd_sqrt_floats
 .dest 4 dst float
 .source 4 src float
 sqrtf dst, src
 
-.function visual_math_simd_floats_to_int32s_mul_float
+.function simd_floats_to_int32s_mul_float
 .dest 4 dst
 .source 4 src float
 .floatparam 4 k
@@ -39,7 +39,7 @@ sqrtf dst, src
 convfl t1, src
 mulf dst, k, t1
 
-.function visual_math_simd_int32s_to_floats_mul_float
+.function simd_int32s_to_floats_mul_float
 .dest 4 dst float
 .source 4 src
 .floatparam 4 k
@@ -47,7 +47,7 @@ mulf dst, k, t1
 convlf t1, src
 mulf dst, k, t1
 
-.function visual_math_simd_complex_norm
+.function simd_complex_norm
 .dest 4 dst float
 .source 4 real float
 .source 4 imag float
@@ -58,7 +58,7 @@ mulf t2, imag, imag
 addf t1, t1, t2
 sqrtf dst, t1
 
-.function visual_math_simd_complex_scaled_norm
+.function simd_complex_scaled_norm
 .dest 4 dst float
 .source 4 real float
 .source 4 imag float
@@ -71,7 +71,7 @@ addf t1, t1, t2
 sqrtf t2, t1
 mulf dst, t2, k
 
-.function visual_math_simd_denorm_floats_to_int32s
+.function simd_denorm_floats_to_int32s
 .dest 4 dst
 .source 4 src float
 .floatparam 4 k
@@ -84,7 +84,7 @@ minf t2, t1, upper
 mulf t1, t2, k
 convfl dst, t1
 
-.function visual_math_simd_denorm_neg_floats_to_int32s
+.function simd_denorm_neg_floats_to_int32s
 .dest 4 dst
 .source 4 src float
 .floatparam 4 k
