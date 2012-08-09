@@ -95,14 +95,16 @@ namespace LV {
       // libstdc++'s sleep_for() requires the POSIX function
       // nanosleep() to work. This is a workaround using the Windows
       // Sleep() function.
-#if defined(VISUAL_WITH_MINGW)
+  #if defined(VISUAL_WITH_MINGW)
       Sleep (usecs / VISUAL_USEC_PER_MSEC);
-#elif defined(VISUAL_OS_ANDROID)
-      timespec request = { usecs / VISUAL_SEC_PER_USEC, usecs * VISUAL_NSEC_PER_USEC };
+  #elif defined(VISUAL_OS_ANDROID)
+      timespec request;
+      request.tv_sec  = usecs / VISUAL_USEC_PER_SEC;
+      request.tv_nsec = usecs % VISUAL_USEC_PER_SEC;
       nanosleep (&request, nullptr);
-#else
+  #else
       std::this_thread::sleep_for (std::chrono::microseconds (usecs));
-#endif
+  #endif
   }
 
   Timer::Timer ()
