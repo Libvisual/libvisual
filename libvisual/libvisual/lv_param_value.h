@@ -57,7 +57,8 @@ struct _VisParamValue
 
 LV_BEGIN_DECLS
 
-LV_API VisParamValue *visual_param_value_new        (VisParamType type, void *value);
+LV_API VisParamValue *visual_param_value_new        (VisParamType   type, void *value);
+LV_API void           visual_param_value_init       (VisParamValue *self, VisParamType type, void *value);
 LV_API void           visual_param_value_copy       (VisParamValue *value, VisParamValue *src);
 LV_API void           visual_param_value_set        (VisParamValue *value, VisParamType type, void *new_value);
 LV_API int            visual_param_value_compare    (VisParamValue *lhs, VisParamValue *rhs);

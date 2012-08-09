@@ -208,7 +208,7 @@ VisParam *visual_param_new (const char * name,
 
     if (validator) {
         VisParamValue value;
-        visual_param_value_set (&value, type, default_value);
+        visual_param_value_init (&value, type, default_value);
         visual_return_val_if_fail (validate_param_value (&value, validator), NULL);
     }
 

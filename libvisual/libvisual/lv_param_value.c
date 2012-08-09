@@ -30,6 +30,12 @@ VisParamValue *visual_param_value_new  (VisParamType type, void *value)
     return self;
 }
 
+void visual_param_value_init (VisParamValue *self, VisParamType type, void *value)
+{
+    self->type = VISUAL_PARAM_TYPE_NONE;
+    visual_param_value_set (self, type, value);
+}
+
 void visual_param_value_copy (VisParamValue *self, VisParamValue *src)
 {
     visual_return_if_fail (self != NULL);
