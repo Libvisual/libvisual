@@ -7,7 +7,7 @@
 namespace LV {
   namespace Tools {
 
-    // Creates a vector filled with random values, each in the interval [min, max]
+    // Creates a container filled with random values, each in the interval [min, max]
     template <class Container>
     Container make_random (typename Container::value_type min, typename Container::value_type max, typename Container::size_type size)
     {
