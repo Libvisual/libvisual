@@ -38,7 +38,7 @@
 
 namespace LV {
 
-  class LV_API Fourier
+  class Fourier
       : public Singleton<Fourier>
   {
   public:
@@ -56,7 +56,7 @@ namespace LV {
       Fourier ();
   };
 
-  class DFT
+  class LV_API DFT
   {
   public:
 
