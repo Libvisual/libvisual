@@ -44,9 +44,26 @@ very useful information regarding our coding policies and such.
 Software Requirements
 ---------------------
 
-The core library is fairly self-contained and requires almost no
-external dependency other than the standard C99 and C++11
-libraries. GNU Gettext is required (see note) for
+###C/C++ compiler###
+
+Libvisual uses several C99 and C++11 features for its modern API
+design and implementation, and as such, requires an up-to-date C/C++
+compiler to build. Compilers tested and known to work are GCC 4.6 and
+Clang 3.1.
+
+*There is a known problem using Clang 3.1 with libstdc++ 4.6/4.7. It
+is easily fixed with the one-line patch to libstdc++ found
+[here](http://clang.llvm.org/libstdc++4.7-clang11.patch).*
+
+###Libraries####
+
+The core library is fairly self-contained and requires almost very
+little dependencies other than the standard C99 and C++11 libraries.
+
+The [Oil Runtime Compiler](http://code.entropywave.com/orc) (ORC) is
+required for generating a portion of Libvisual's SIMD routines.
+
+GNU Gettext is optionally required (see note) for
 internationalisation.
 
 The bundled examples, benchmarks and test programs mostly require
