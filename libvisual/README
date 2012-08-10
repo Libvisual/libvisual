@@ -13,18 +13,18 @@ developers who write visualisations.
 Why Libvisual?
 --------------
 
-As an application developer, using libvisual provides you an easy way
-to do audio visualisation. When using libvisual you'll have easy
-access to all the visualisations that are written for libvisual.
+As an application developer, using Libvisual provides you an easy way
+to do audio visualisation. When using Libvisual you'll have easy
+access to all the visualisations that are written for Libvisual.
 
-As a plugin writer, libvisual provides a nice host for your plugin.
+As a plugin writer, Libvisual provides a nice host for your plugin.
 It runs analysis over the audio input usage and handles all everything
-necessary for display in any libvisual-using application.
+necessary for display in any Libvisual-using application.
 
 License
 -------
 
-The libvisual library that is in libvisual/ is licensed under the
+The Libvisual library that is in Libvisual/ is licensed under the
 Lesser GNU General Public License (LGPL) v2.1.
 
 The example applications in examples/ are licensed under the General
@@ -39,22 +39,40 @@ Full license texts:
 Development
 -----------
 
-If you would like to use libvisual for your applications, write
+If you would like to use Libvisual for your applications, write
 plugins or hack on the core, please read HACKING. It contains some
 very useful information regarding our coding policies and such.
 
 Software Requirements
 ---------------------
 
-The core library is fairly self-contained and requires almost no
-external dependency other than the standard C99 and C++11
-libraries. GNU Gettext is required (see note) for
-internationalisation.
+C/C++11 compiler
 
-The bundled examples, benchmarks and test programs mostly require
-SDL 1.2 (http://libsdl.org).
+    Libvisual uses several C99 and C++11 features for its modern API
+    design and implementation, and as such, requires an up-to-date
+    C/C++ compiler to build. Compilers tested and known to work are
+    GCC 4.6 and Clang 3.1.
 
-Note: Gettext is integrated into glibc on Linux.
+    ** There is a known problem using Clang 3.1 with libstdc++
+       4.6/4.7. It is easily fixed with the one-line patch to
+       libstdc++ found here
+       (http://clang.llvm.org/libstdc++4.7-clang11.patch).
+
+Libraries
+
+    The core library is fairly self-contained and requires almost very
+    little dependencies other than the standard C99 and C++11 libraries.
+
+    The Oil Runtime Compiler (http://code.entropywave.com/orc) (ORC)
+    is required for generating a portion of Libvisual's SIMD routines.
+
+    GNU Gettext is optionally required (see note) for
+    internationalisation.
+
+    The bundled examples, benchmarks and test programs mostly require
+    SDL 1.2 (http://libsdl.org).
+
+    ** Note: Gettext is integrated into glibc on Linux.
 
 Compiling and installing
 ------------------------

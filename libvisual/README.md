@@ -5,7 +5,7 @@ What's Libvisual?
 ------------------
 
 Libvisual is a library that acts as a middle layer between
-applications that want audio visualisation, and audio visualisation
+Applications that want audio visualisation, and audio visualisation
 plugins. It is aimed at providing a common interface between
 application developers with a need for audio visualisation and
 developers who write visualisations.
@@ -13,18 +13,18 @@ developers who write visualisations.
 Why Libvisual?
 --------------
 
-As an application developer, using libvisual provides you an easy way
-to do audio visualisation. When using libvisual you'll have easy
-access to all the visualisations that are written for libvisual.
+As an application developer, using Libvisual provides you an easy way
+to do audio visualisation. When using Libvisual you'll have easy
+access to all the visualisations that are written for Libvisual.
 
-As a plugin writer, libvisual provides a nice host for your plugin.
+As a plugin writer, Libvisual provides a nice host for your plugin.
 It runs analysis over the audio input usage and handles all everything
-necessary for display in any libvisual-using application.
+necessary for display in any Libvisual-using application.
 
 License
 -------
 
-The libvisual library that is in libvisual/ is licensed under the
+The Libvisual library that is in libvisual/ is licensed under the
 Lesser GNU General Public License (LGPL) v2.1
 ([full text](http://www.gnu.org/licenses/lgpl-2.1.html)).
 
@@ -37,7 +37,7 @@ The tools in tools/ are licensed under the GPLv2.
 Development
 -----------
 
-If you would like to use libvisual for your applications, write
+If you would like to use Libvisual for your applications, write
 plugins or hack on the core, please read HACKING. It contains some
 very useful information regarding our coding policies and such.
 
@@ -47,7 +47,7 @@ Software Requirements
 ###C/C++ compiler###
 
 Libvisual uses several C99 and C++11 features for its modern API
-design and implementation, and as such, requires an up-to-date C/C++
+Design And implementation, and as such, requires an up-to-date C/C++
 compiler to build. Compilers tested and known to work are GCC 4.6 and
 Clang 3.1.
 
