@@ -35,7 +35,7 @@ Development
 -----------
 
 If you would like to use libvisual for your applications, write
-plugins or hack on the core. Please read HACKING. It contains some
+plugins or hack on the core, please read HACKING. It contains some
 very useful information regarding our coding policies and such.
 
 Requirement

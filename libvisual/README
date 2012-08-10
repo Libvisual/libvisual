@@ -28,15 +28,15 @@ The tools in tools/ are licensed under the GPL.
 -- Development --
 
 If you would like to use libvisual for your applications, write
-plugins or hack on the core. Please read HACKING. It contains some
+plugins or hack on the core, please read HACKING. It contains some
 very useful information regarding our coding policies and such.
 
 -- Requirement --
 
 The core library is fairly self-contained and requires almost no
-external dependency other than the standard C99 and C++11
-libraries. GNU Gettext required for internationalization (note: it is
-integrated into glibc on Linux).
+external dependency other than the standard C99 and C++11 libraries.
+GNU Gettext required for internationalization (note: it is integrated
+into glibc on Linux).
 
 The bundled examples, benchmarks and test programs mostly require SDL.
 
