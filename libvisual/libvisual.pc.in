@@ -5,6 +5,7 @@ includedir=@LV_INCLUDE_DIR_FULL@
 pluginsbasedir=@LV_PLUGIN_DIR_FULL@
 datarootdir=@CMAKE_INSTALL_FULL_DATADIR@
 datadir=${datarootdir}
+localedir=@CMAKE_INSTALL_FULL_LOCALEDIR@
 
 Name: libvisual
 Version: @LV_VERSION@
