@@ -9,6 +9,7 @@ SET(BENCHMARK_PROGRAMS
   video_alpha_blend_bench.cpp
   video_convert_depth_bench.cpp
   video_scale_bench.cpp
+  dft_bench.cpp
   math_simd_bench.cpp
 )
 
