@@ -46,13 +46,13 @@ Software Requirements
 
 The core library is fairly self-contained and requires almost no
 external dependency other than the standard C99 and C++11
-libraries. GNU Gettext [required][gettext-note] for
-internationalization.
+libraries. GNU Gettext is required (see note) for
+internationalisation.
 
 The bundled examples, benchmarks and test programs mostly require
 [SDL 1.2](http://libsdl.org).
 
-[gettext-note]: Gettext is Integrated into glibc on Linux.
+Note: Gettext is integrated into glibc on Linux.
 
 Compiling and installing
 ------------------------
