@@ -38,7 +38,6 @@
 #include <arpa/inet.h>              /* inet_ntoa() */
 
 #include "PluginNetinfo.h"
-#include "Evaluator.h"
 
 using namespace LCD;
 

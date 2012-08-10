@@ -26,10 +26,9 @@
 
 #include "Hash.h"
 #include <string>
+#include "luascript.h"
 
 namespace LCD {
-
-class Evaluator;
 
 class PluginDiskstats {
 
@@ -38,10 +37,8 @@ class PluginDiskstats {
     int ParseDiskstats();
 
     public:
-    PluginDiskstats();
+    PluginDiskstats(lua *script);
     ~PluginDiskstats();
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
 
     double Diskstats(std::string arg1, std::string arg2, int arg3);
 };

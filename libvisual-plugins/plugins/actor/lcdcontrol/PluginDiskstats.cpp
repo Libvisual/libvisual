@@ -35,6 +35,8 @@
 using namespace std;
 using namespace LCD;
 
+PluginDiskstats *mDiskstats;
+
 int PluginDiskstats::ParseDiskstats()
 {
     int age;
@@ -111,7 +113,38 @@ double PluginDiskstats::Diskstats(std::string arg1, std::string arg2, int arg3)
 }
 
 
-PluginDiskstats::PluginDiskstats()
+class diskstats_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        args->add(new lua::string_arg_t());
+        args->add(new lua::int_arg_t());
+        return args;
+    }
+
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::int_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "diskstats"; }
+    static const std::string name() { return "Disstats"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string arg1 = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string arg2 = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        int arg3 = dynamic_cast<lua::int_arg_t&>(*in[0]).value();
+        double value = mDiskstats->Diskstats(arg1, arg2, arg3);
+        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = value;
+    }
+};
+
+PluginDiskstats::PluginDiskstats(lua *script)
 {
     int i;
     const char *header[] = { "major", "minor", "name",
@@ -127,6 +160,8 @@ PluginDiskstats::PluginDiskstats()
     }
 
     stream = NULL;
+
+    script->register_function<diskstats_t>();
 }
 
 PluginDiskstats::~PluginDiskstats()
@@ -138,12 +173,4 @@ PluginDiskstats::~PluginDiskstats()
     hash_destroy(&DISKSTATS);
 }
 
-void PluginDiskstats::Connect(Evaluator *visitor) {
-/*
-    QScriptEngine *engine = visitor->GetEngine();
-    QScriptValue val = engine->newObject();
-    QScriptValue objVal = engine->newQObject(val, this);
-    engine->globalObject().setProperty("diskstats", objVal);
-*/
-}
 

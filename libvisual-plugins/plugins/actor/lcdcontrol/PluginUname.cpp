@@ -28,7 +28,6 @@
 #include <sys/utsname.h>
 
 #include "PluginUname.h"
-#include "Evaluator.h"
 #include "luascript.h"
 #include "debug.h"
 

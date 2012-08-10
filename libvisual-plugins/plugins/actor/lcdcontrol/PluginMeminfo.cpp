@@ -31,7 +31,6 @@
 
 #include "Hash.h"
 #include "PluginMeminfo.h"
-#include "Evaluator.h"
 
 using namespace LCD;
 

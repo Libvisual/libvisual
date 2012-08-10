@@ -32,7 +32,6 @@
 
 #include "debug.h"
 #include "PluginFifo.h"
-#include "Evaluator.h"
 
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -40,15 +39,18 @@
 
 using namespace LCD;
 
+PluginFifo *mFifo;
+
 void PluginFifo::ConfigureFifo(void)
 {
+/*
     memset(fifopath, 0, 1024);
-    std::string path = visitor_->CFG_Key() + ".fifopath";
+    std::string path = "lcdcontrol.fifo";
     Json::Value *s = visitor_->CFG_Fetch_Raw(visitor_->CFG_Get_Root(), path);
     if (!s) {
         LCDInfo("[FIFO] empty '%s.fifopath' entry from %s, assuming '/tmp/lcdcontrol.fifo'", 
             path.c_str(), visitor_->CFG_Source().c_str());
-        strcpy(fifopath, "/tmp/lcd4linux.fifo");
+        strcpy(fifopath, "/etc/lcdcontrol.fifo");
         return;
     } else {
         strcpy(fifopath, s->asCString());
@@ -56,6 +58,7 @@ void PluginFifo::ConfigureFifo(void)
             path.c_str(), fifopath);
     }
     delete s;
+*/
 }
 
 
@@ -182,22 +185,40 @@ std::string PluginFifo::Fiforead()
     return msg;
 }
 
-PluginFifo::PluginFifo() {
+class fifo_t {
+    public:
+    static const lua::args_t *in_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        return args;
+    }
+
+    static const lua::args_t *out_args()
+    {
+        lua::args_t *args = new lua::args_t();
+        args->add(new lua::string_arg_t());
+        return args;
+    }
+
+    static const std::string ns() { return "fifo"; }
+    static const std::string name() { return "Read"; }
+
+    static void calc(const lua::args_t& in, lua::args_t &out)
+    {
+        std::string fmt = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
+        std::string str = mFifo->Fiforead();
+        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = str;
+    }
+};
+
+PluginFifo::PluginFifo(lua *script) {
     fd.path = NULL;
     fd.input = -1;
     fd.created = 0;
+    
 }
 
 PluginFifo::~PluginFifo() {
     CloseFifo();
 }
 
-void PluginFifo::Connect(Evaluator *visitor) {
-/*
-    visitor_ = dynamic_cast<CFG *>(visitor);
-    QScriptEngine *engine = visitor->GetEngine();
-    QScriptValue val = engine->newObject();
-    QScriptValue objVal = engine->newQObject(val, this);
-    engine->globalObject().setProperty("fifo", objVal);
-*/
-}

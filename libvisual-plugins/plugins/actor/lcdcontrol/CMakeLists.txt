@@ -96,6 +96,10 @@ SET(SOURCES
   Stats.cpp
   PluginStatfs.cpp
   PluginStatfs.h
+  PluginDiskstats.cpp
+  PluginDiskstats.h
+  PluginFifo.cpp
+  PluginFifo.h
   lcdcontrol_config.cpp
   ${EXTRA_SOURCES}
 )

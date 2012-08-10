@@ -29,8 +29,6 @@
 
 namespace LCD {
 
-class Evaluator;
-
 class PluginUname {
 
     public:

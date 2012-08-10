@@ -32,7 +32,6 @@
 #include "qprintf.h"
 #include "Hash.h"
 #include "PluginNetDev.h"
-#include "Evaluator.h"
 
 using namespace LCD;
 

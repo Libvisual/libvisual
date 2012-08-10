@@ -31,8 +31,6 @@
 
 namespace LCD {
 
-class Evaluator;
-
 class PluginNetDev {
 
     HASH NetDev;

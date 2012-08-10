@@ -30,8 +30,6 @@
 
 namespace LCD {
 
-class Evaluator;
-
 class PluginProcStat {
 
     HASH Stat;

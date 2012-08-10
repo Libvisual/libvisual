@@ -29,11 +29,9 @@
 #include <json/json.h>
 #include <string>
 
-#include "CFG.h"
+#include "luascript.h"
 
 namespace LCD {
-
-class Evaluator;
 
 class PluginFifo{
 
@@ -47,8 +45,6 @@ class PluginFifo{
     char msg[FIFO_BUFFER_SIZE];
     char fifopath[1024];
 
-    CFG *visitor_;
-
     void ConfigureFifo();
     void RemoveFifo();
     void CloseFifo();
@@ -58,10 +54,8 @@ class PluginFifo{
     void StartFifo();
 
     public:
-    PluginFifo();
+    PluginFifo(lua *script);
     ~PluginFifo();
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
 
     std::string Fiforead();
     int Test(char *foo);

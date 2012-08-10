@@ -29,7 +29,6 @@
 
 #include "debug.h"
 #include "PluginTime.h"
-#include "Evaluator.h"
 
 using namespace LCD;
 
