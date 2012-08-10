@@ -25,17 +25,16 @@
 #define __PLUGIN_STATFS_H__
 
 #include <string>
+#include "luascript.h"
 
 namespace LCD {
 
-class Evaluator;
-
 class PluginStatfs {
     public:
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
-
     double Statfs(std::string arg1, std::string arg2);
+    PluginStatfs(lua *script);
+    PluginStatfs();
+    ~PluginStatfs();
 };
 
 }; // End namespace

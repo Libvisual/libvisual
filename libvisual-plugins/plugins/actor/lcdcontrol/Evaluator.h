@@ -34,6 +34,8 @@
 #include "PluginNetinfo.h"
 #include "PluginNetDev.h"
 #include "PluginMeminfo.h"
+#include "PluginStatfs.h"
+
 #include "luascript.h"
 
 namespace LCD {
@@ -50,6 +52,7 @@ class Evaluator {
     PluginNetinfo *mNetinfo;
     PluginNetDev *mNetDev;
     PluginMeminfo *mMeminfo;
+    PluginStatfs *mStatfs;
 
     public:
     Evaluator();
