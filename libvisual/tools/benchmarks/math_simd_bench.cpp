@@ -3,8 +3,6 @@
 #include "benchmark.hpp"
 #include "random.hpp"
 #include <vector>
-#include <chrono>
-#include <iostream>
 #include <cstdlib>
 
 namespace {
