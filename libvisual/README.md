@@ -47,7 +47,7 @@ Software Requirements
 ###C/C++ compiler###
 
 Libvisual uses several C99 and C++11 features for its modern API
-Design And implementation, and as such, requires an up-to-date C/C++
+design and implementation, and as such, requires an up-to-date C/C++
 compiler to build. Compilers tested and known to work are GCC 4.6 and
 Clang 3.1.
 
