@@ -9,8 +9,6 @@ SET(LV_PLUGINS_VERSION_MICRO  0)
 SET(LV_PLUGINS_VERSION        ${LV_PLUGINS_VERSION_MAJOR}.${LV_PLUGINS_VERSION_MINOR}.${LV_PLUGINS_VERSION_MICRO})
 SET(LV_PLUGINS_VERSION_SUFFIX ${LV_PLUGINS_VERSION_MAJOR}.${LV_PLUGINS_VERSION_MINOR})
 
-SET(LIBVISUAL_PKG "libvisual-${LV_PLUGINS_VERSION_SUFFIX}")
-
 # Package information
 
 SET(PACKAGE           "libvisual-plugins")
@@ -23,13 +21,7 @@ SET(PACKAGE_URL       "http://libvisual.org")
 SET(PACKAGE_CONTACT   "http://libvisual.org")
 SET(PACKAGE_SUMMARY   "Core plugins for Libvisual")
 
-# Installation Paths
-INCLUDE(GNUInstallDirs)
-SET(LV_PLUGINS_DATA_DIR "${CMAKE_INSTALL_DATADIR}/libvisual-plugins-${LV_PLUGINS_VERSION_SUFFIX}")
-SET(LV_PLUGINS_DATA_DIR_FULL "${CMAKE_INSTALL_FULL_DATADIR}/libvisual-plugins-${LV_PLUGINS_VERSION_SUFFIX}")
-
 # Required versions for dependencies
-
 SET(LV_REQUIRED_VERSION     ${LV_PLUGINS_VERSION})
 SET(ESOUND_REQUIRED_VERSION 0.2.28)
 SET(JACK_REQUIRED_VERSION   0.98.0)
@@ -38,6 +30,10 @@ SET(GST_REQUIRED_VERSION    0.8)
 SET(PULSE_REQUIRED_VERSION  1.0)
 SET(XMMS2_REQUIRED_VERSION  0.6)
 SET(LUAJIT_REQUIRED_VERSION 0.26)
+
+# Check for libvisual early so that users get told they have the wrong
+# dependencies as early in the process as possible.
+FIND_PACKAGE(Libvisual 0.5 REQUIRED)
 
 # Check for pkg-config
 FIND_PACKAGE(PkgConfig REQUIRED)
@@ -48,26 +44,6 @@ FIND_PACKAGE(Threads)
 # Check for OpenMP support.
 FIND_PACKAGE(OpenMP)
 SET(HAVE_OPENMP ${OPENMP_FOUND})
-
-# Check for libvisual here so that users get told they have the
-# wrong dependencies as early in the process as possible.
-PKG_CHECK_MODULES(LIBVISUAL ${LIBVISUAL_PKG}>=${LV_REQUIRED_VERSION} REQUIRED)
-
-# Determine plugin installation paths
-MARK_AS_ADVANCED(LV_PLUGIN_DIR)
-IF(NOT DEFINED LV_PLUGIN_DIR)
-  EXECUTE_PROCESS(
-    COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=pluginsbasedir ${LIBVISUAL_PKG}
-    OUTPUT_VARIABLE PLUGIN_DIR
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-  SET(LV_PLUGIN_DIR "${PLUGIN_DIR}" CACHE PATH "Plugin installation directory")
-ENDIF()
-MESSAGE(STATUS "Plugins will be installed into ${LV_PLUGIN_DIR}")
-
-SET(LV_ACTOR_PLUGIN_DIR "${LV_PLUGIN_DIR}/actor")
-SET(LV_INPUT_PLUGIN_DIR "${LV_PLUGIN_DIR}/input")
-SET(LV_MORPH_PLUGIN_DIR "${LV_PLUGIN_DIR}/morph")
 
 # 'Standard' header files.
 INCLUDE(CheckIncludeFiles)
@@ -96,7 +72,7 @@ OPTION(ENABLE_NLS "Enable internationalization" yes)
 IF(ENABLE_NLS)
   FIND_PACKAGE(Gettext REQUIRED)
   SET(HAVE_GETTEXT ${GETTEXT_FOUND})
-  SET(LOCALE_DIR ${CMAKE_INSTALL_FULL_LOCALEDIR})
+  SET(LOCALE_DIR ${LV_PLUGIN_LOCALE_DIR})
   ADD_SUBDIRECTORY(po)
 ENDIF()
 
