@@ -1,6 +1,8 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012 Chong Kai Xiong <kaixiong@codeleft.sg>
+ * Copyright (C) 2012 Libvisual team
+ *
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

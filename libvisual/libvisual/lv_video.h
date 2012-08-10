@@ -1,11 +1,12 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *      Duilio J. Protti <dprotti@users.sourceforge.net>
- *      Chong Kai Xiong <descender@phreaker.net>
- *      Jean-Christophe Hoelt <jeko@ios-software.com>
+ *          Duilio J. Protti <dprotti@users.sourceforge.net>
+ *          Chong Kai Xiong <descender@phreaker.net>
+ *          Jean-Christophe Hoelt <jeko@ios-software.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
