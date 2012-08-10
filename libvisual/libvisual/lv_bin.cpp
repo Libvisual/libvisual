@@ -74,7 +74,7 @@ namespace LV {
 
   VisVideoDepth Bin::Impl::get_suitable_depth (VisVideoDepth depthflag)
   {
-      VisVideoDepth depth;
+      VisVideoDepth depth = VISUAL_VIDEO_DEPTH_NONE;
 
       switch (depthpreferred) {
           case VISUAL_BIN_DEPTH_LOWEST:
