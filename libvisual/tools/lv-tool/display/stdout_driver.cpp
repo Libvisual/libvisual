@@ -93,7 +93,8 @@ namespace {
 
       virtual void update_rect (LV::Rect const& rect)
       {
-          write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ());
+          if (write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
+              visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)
