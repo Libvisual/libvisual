@@ -1,8 +1,8 @@
 #ifndef _LV_UTIL_HPP
 #define _LV_UTIL_HPP
 
-#include <lvconfig.h>
-#include <lv_defines.h>
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <string>
 #include <memory>
 #include <functional>
