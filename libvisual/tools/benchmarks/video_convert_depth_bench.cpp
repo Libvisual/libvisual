@@ -1,5 +1,6 @@
 #include "benchmark.hpp"
 #include <libvisual/libvisual.h>
+#include <libvisual/lv_util.hpp>
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
@@ -38,14 +39,14 @@ namespace {
       LV::VideoPtr m_dst;
   };
 
-  VideoConvertDepthBench make_benchmark (int& argc, char**& argv)
+  std::unique_ptr<VideoConvertDepthBench> make_benchmark (int& argc, char**& argv)
   {
       unsigned int  width     = 640;
       unsigned int  height    = 480;
       VisVideoDepth src_depth = VISUAL_VIDEO_DEPTH_24BIT;
       VisVideoDepth dst_depth = VISUAL_VIDEO_DEPTH_16BIT;
 
-      if (argc > 1) {
+      if (argc > 2) {
           int value1 = std::atoi (argv[1]);
           int value2 = std::atoi (argv[2]);
 
@@ -59,7 +60,7 @@ namespace {
           argc -= 2; argv += 2;
       }
 
-      if (argc > 3) {
+      if (argc > 2) {
           src_depth = visual_video_depth_enum_from_value (std::atoi (argv[1]));
           dst_depth = visual_video_depth_enum_from_value (std::atoi (argv[2]));
 
@@ -74,9 +75,10 @@ namespace {
           argc -= 2; argv += 2;
       }
 
-      return { width, height, src_depth, dst_depth };
+      return LV::make_unique<VideoConvertDepthBench> (width, height, src_depth, dst_depth);
   }
-}
+
+} // anonymous
 
 int main (int argc, char **argv)
 {
@@ -97,7 +99,7 @@ int main (int argc, char **argv)
         }
 
         auto benchmark = make_benchmark (argc, argv);
-        LV::Tools::run_benchmark (benchmark, max_runs);
+        LV::Tools::run_benchmark (*benchmark, max_runs);
     }
     catch (std::exception& error) {
         std::cerr << "Exception caught: " << error.what () << std::endl;
