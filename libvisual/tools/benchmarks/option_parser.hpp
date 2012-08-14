@@ -42,27 +42,13 @@ namespace LV {
         ArgIter parse_partial (ArgIter start, ArgIter end, ArgList& unparsed_args);
     };
 
-    class OptionSpec
+    struct OptionSpec
     {
-    public:
-
         char           short_name;
         std::string    long_name;
         std::string    description;
         bool           required;
         OptionValuePtr value;
-
-        OptionSpec (char                  short_name_,
-                    std::string const&    long_name_,
-                    std::string const&    description_,
-                    bool                  required_,
-                    OptionValuePtr const& value_)
-            : short_name  (short_name_)
-            , long_name   (long_name_)
-            , description (description_)
-            , required    (required_)
-            , value       (value_)
-        {}
     };
 
     class OptionValue
