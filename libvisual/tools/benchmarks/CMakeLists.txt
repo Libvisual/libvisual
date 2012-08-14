@@ -15,6 +15,7 @@ SET(BENCHMARK_PROGRAMS
 
 ADD_LIBRARY(benchmark STATIC
   benchmark.cpp
+  option_parser.cpp
 )
 
 FOREACH(BENCHMARK IN LISTS BENCHMARK_PROGRAMS)
