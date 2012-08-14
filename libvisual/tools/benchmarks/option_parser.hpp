@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 #include <initializer_list>
-#include <unordered_map>
 #include <stdexcept>
 
 namespace LV {
@@ -26,10 +25,8 @@ namespace LV {
         class Error;
 
         typedef std::vector<std::string> ArgList;
-        typedef ArgList::const_iterator  ArgIter;
 
         OptionParser (std::initializer_list<OptionSpec> const& option_specs);
-
         ~OptionParser ();
 
         void parse (int argc, char** argv, ArgList& unparsed_args);
@@ -37,15 +34,8 @@ namespace LV {
 
     private:
 
-        typedef std::vector<OptionSpec>  OptionSpecList;
-        typedef OptionSpecList::iterator OptionSpecListIter;
-
-        std::unordered_map<char, OptionSpecListIter>        m_short_name_map;
-        std::unordered_map<std::string, OptionSpecListIter> m_long_name_map;
-        OptionSpecList                                      m_option_specs;
-
-        ArgIter parse_short_option (ArgIter start, ArgIter end);
-        ArgIter parse_long_option  (ArgIter start, ArgIter end);
+        class Impl;
+        const std::unique_ptr<Impl> m_impl;
     };
 
     struct OptionSpec
