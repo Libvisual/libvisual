@@ -49,6 +49,7 @@ void LoadTexture()
   glTexImage2D(GL_TEXTURE_2D, 0, 3, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE,&imageData[0][0][0] );
 
 }
+
 void init_gl(void)
 {
   LoadTexture();
@@ -178,22 +179,39 @@ void draw_gl(void)
 
       if(p.mode < 50)
 		{
+		  static const GLfloat vertices[4][2] = {
+			{ -1.0, -1.0 },
+			{  1.0, -1.0 },
+			{  1.0,	 1.0 },
+			{ -1.0,	 1.0 }
+		  };
+
+		  static const GLfloat tex_coords[4][2] = {
+			{ 0.0, 0.0 },
+			{ 1.0, 0.0 },
+			{ 1.0, 1.0 },
+			{ 0.0, 1.0 }
+		  };
+
 		  glBindTexture(GL_TEXTURE_2D, texture[0]);   // choose the texture to use.
 		  glEnable(GL_TEXTURE_2D);
 		  glPushMatrix();
 		  glTranslatef(pts[i][0]/100,pts[i][1]/100,pts[i][2]/100);
+		  glScalef(SIZE, SIZE, 1.0);
 
 		  int c = i%3;
 		  glColor4f(colors[c][0], colors[c][1], colors[c][2], 1.0f);
 
-		  glBegin(GL_TRIANGLE_STRIP);
-		  //cout<<i<<  " :"<<pts[i][0] << " " <<pts[i][1] << " " << pts[i][2] << endl;
-		  glTexCoord2f(0,0);        glVertex3f(-SIZE, -SIZE, 0);
-		  glTexCoord2f(1,0);        glVertex3f(SIZE,-SIZE, 0);
-		  glTexCoord2f(1,1);        glVertex3f(SIZE, SIZE, 0);
-		  glTexCoord2f(0,1);        glVertex3f(-SIZE, SIZE, 0);
+		  glEnableClientState(GL_VERTEX_ARRAY);
+		  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-		  glEnd();
+		  glVertexPointer(2, GL_FLOAT, 0, vertices);
+		  glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
+		  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		  glDisableClientState(GL_VERTEX_ARRAY);
+
 		  glPopMatrix();
 		}
       else
@@ -202,32 +220,33 @@ void draw_gl(void)
 		  glDisable(GL_TEXTURE_2D);
 		  if(pts[(i+1)%ptsNum][0]>pts[i][0])
 			{
-			  glBegin(GL_TRIANGLE_STRIP);
 			  /*	      if(speed[i][0]>0)
 						  {
-						  //		  glColor3fv(colors[0] );
+						  glColor4f(colors[0][0], colors[0][1], colors[0][2], 1.0f);
+						  glBegin(GL_QUADS);
 						  glVertex3f(pts[i][0]/100,1,pts[i][2]/100);
 						  glVertex3f(pts[i][0]/100+SIZE2,1,pts[i][2]/100);
 						  glVertex3f(pts[i][0]/100+SIZE2, 1+SIZE2, pts[(i+1)%ptsNum][2]/100);
 						  glVertex3f(pts[i][0]/100,1+SIZE2,pts[(i+1)%ptsNum][2]/100);
 						  glEnd();
-
-						  glBegin(GL_QUADS);
-						  //		  cout <<"tptp\n";
 						  }
 			  */
 			  glColor4f(colors[2][0], colors[2][1], colors[2][2], 1.0f);
-			  glVertex3f(pts[i][0]/100,pts[i][1]/100,0);
-			  glVertex3f(pts[i][0]/100+SIZE,pts[i][1]/100,0);
-			  glVertex3f(pts[(i+1)%ptsNum][0]/100+SIZE, pts[(i+1)%ptsNum][1]/100,0);
-			  glVertex3f(pts[(i+1)%ptsNum][0]/100,pts[(i+1)%ptsNum][1]/100,0);
-			  glEnd();
+
+			  GLfloat vertices[4][2] = {
+				{ pts[i][0]/100,pts[i][1]/100 },
+				{ pts[i][0]/100+SIZE,pts[i][1]/100 },
+				{ pts[(i+1)%ptsNum][0]/100+SIZE, pts[(i+1)%ptsNum][1]/100 },
+				{ pts[(i+1)%ptsNum][0]/100,pts[(i+1)%ptsNum][1]/100 }
+			  };
+
+			  glEnableClientState(GL_VERTEX_ARRAY);
+			  glVertexPointer(2,GL_FLOAT,0,vertices);
+			  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			  glDisableClientState(GL_VERTEX_ARRAY);
 			}
 		}
     }
 
 #endif
 }
-
-
-
