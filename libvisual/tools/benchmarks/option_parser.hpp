@@ -63,13 +63,13 @@ namespace LV {
 
         typedef std::function<void (T const&)> Setter;
 
-        OptionSingleArg (Setter const& setter, T const& default_value = T ())
+        explicit OptionSingleArg (Setter const& setter, T const& default_value = T ())
             : m_setter (setter)
         {
             m_setter (default_value);
         }
 
-        OptionSingleArg (T& var, T const& default_value = T ())
+        explicit OptionSingleArg (T& var, T const& default_value = T ())
             : m_setter ([&] (T const& value) { var = value; })
         {
             m_setter (default_value);
