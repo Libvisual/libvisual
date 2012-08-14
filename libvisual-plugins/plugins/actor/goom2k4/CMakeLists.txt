@@ -1,5 +1,4 @@
-SET(GOOM2K4_DATA_DIR ${LV_PLUGINS_DATA_DIR}/actor/actor_goom2k4)
-SET(GOOM2K4_DATA_DIR_FULL ${LV_PLUGINS_DATA_DIR_FULL}/actor/actor_goom2k4)
+SET(GOOM2K4_DATA_DIR ${LV_PLUGIN_DATA_DIR}/actor/actor_goom2k4)
 
 SET(SOURCES
   actor_goom2k4.c
