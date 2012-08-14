@@ -4,8 +4,10 @@
 namespace LV {
   namespace Tools {
 
-    OptionParser::OptionParser (std::initializer_list<OptionSpec>& option_specs)
+    OptionParser::OptionParser (std::initializer_list<OptionSpec> const& option_specs)
     {
+        m_option_specs.reserve (option_specs.size ());
+
         for (auto const& option_spec : option_specs) {
             m_option_specs.emplace_back (option_spec, 0);
 
@@ -32,7 +34,7 @@ namespace LV {
         // passing to the actual parser
 
         ArgList args;
-        args.reserve (argc);
+        args.reserve (argc + 1);
         for (int i = 0; i <= argc; i++) {
             args.emplace_back (argv[i]);
         }

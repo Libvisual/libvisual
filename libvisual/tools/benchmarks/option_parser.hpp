@@ -23,7 +23,7 @@ namespace LV {
         typedef std::vector<std::string> ArgList;
         typedef ArgList::const_iterator  ArgIter;
 
-        OptionParser (std::initializer_list<OptionSpec>& option_specs);
+        OptionParser (std::initializer_list<OptionSpec> const& option_specs);
 
         ~OptionParser ();
 
