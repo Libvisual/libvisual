@@ -83,7 +83,7 @@ int load_parameters(const char * filename);
 void init_parameters()
 {
   if(!load_parameters(configfilename))
-    if(!load_parameters("/usr/local/share/dancingparticles/dancingparticles.conf"))
+    if(!load_parameters(DATA_DIR "/dancingparticles.conf"))
       {
         visual_log(VISUAL_LOG_ERROR, "Failed to load config file");
       }

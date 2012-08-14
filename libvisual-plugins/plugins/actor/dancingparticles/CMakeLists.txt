@@ -22,6 +22,9 @@ LV_BUILD_ACTOR_PLUGIN(dancingparticles
 SET(SCRIPTS
   dance.epic
   dance.fig
+  dancingparticles.conf
+  xmms.epic
+  xmms.fig
 )
 
 INSTALL(FILES ${SCRIPTS} DESTINATION ${DANCINGPARTICLES_DATA_DIR})
