@@ -27,42 +27,42 @@ void LoadTexture()
       imageData[i][j][0]= (GLubyte)x;
       imageData[i][j][1]= (GLubyte)x;
       imageData[i][j][2]= (GLubyte)x;
-      
+
     }
   }
-  // Create Texture	
+  // Create Texture
   glGenTextures(1, &texture[0]);
   glBindTexture(GL_TEXTURE_2D, texture[0]);   // 2d texture (x and y size)
 
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); // scale linearly when image bigger than texture
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); // scale linearly when image smalled than texture
-  
-  // 2d texture, level of detail 0 (normal), 3 components (red, green, blue), x size from image, y size from image, 
+
+  // 2d texture, level of detail 0 (normal), 3 components (red, green, blue), x size from image, y size from image,
   // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
   glTexImage2D(GL_TEXTURE_2D, 0, 3, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE,&imageData[0][0][0] );
 
 }
 void init_gl(void)
 {
- // glViewport(0, 0, 640, 480);
   LoadTexture();
-//  glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
-//  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	// Clear The Background Color To Blue 
-//  glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
-//  glDepthFunc(GL_LESS);			// The Type Of Depth Test To Do
-//  glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
-//  glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
-    
-//  glMatrixMode(GL_PROJECTION);
-//  glLoadIdentity();				// Reset The Projection Matrix
-    
-    
-//  gluPerspective(45.0f,(GLfloat)640/(GLfloat)480,0.1f,100.0f);	// Calculate The Aspect Ratio Of The Window
-    
+
+  glViewport(0, 0, 640, 480);
+  glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
+  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	// Clear The Background Color To Blue
+  glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
+  glDepthFunc(GL_LESS);			// The Type Of Depth Test To Do
+  glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
+  glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();				// Reset The Projection Matrix
+
+  gluPerspective(45.0f,(GLfloat)640/(GLfloat)480,0.1f,100.0f);	// Calculate The Aspect Ratio Of The Window
+
   glMatrixMode(GL_MODELVIEW);
- etoileinit();
-    
+  etoileinit();
 }
+
 extern int *newline;
 extern int numCenters;
 extern int gloudness;
@@ -129,7 +129,7 @@ void draw_gl(void)
 		}
 	  if(i>0 && i <199)
 		glVertex3f(x/30,y,0);
-	  
+
 	}
   double y = maxgloudness;
   y = 4*(y-100)/200;
@@ -155,11 +155,11 @@ void draw_gl(void)
 
   for(int i=0;i<ptsNum;i++)
     {
-      GLfloat colors[][3]={ 
+      GLfloat colors[][3]={
         {1.,0.2,0.2   }
         ,{0.2,1.,0.2}
         ,{0.4,0.4,1}};
-        
+
       if(p.mode < 50)
 		{
 		  glBindTexture(GL_TEXTURE_2D, texture[0]);   // choose the texture to use.
@@ -168,13 +168,13 @@ void draw_gl(void)
 		  glTranslatef(pts[i][0]/100,pts[i][1]/100,pts[i][2]/100);
 		  glBegin(GL_QUADS);
 		  glColor3fv(colors[i%3] );
-        
+
 		  //cout<<i<<  " :"<<pts[i][0] << " " <<pts[i][1] << " " << pts[i][2] << endl;
 		  glTexCoord2f(0,0);        glVertex3f(-SIZE, -SIZE, 0);
 		  glTexCoord2f(1,0);        glVertex3f(SIZE,-SIZE, 0);
 		  glTexCoord2f(1,1);        glVertex3f(SIZE, SIZE, 0);
 		  glTexCoord2f(0,1);        glVertex3f(-SIZE, SIZE, 0);
-        
+
 		  glEnd();
 		  glPopMatrix();
 		}
@@ -207,7 +207,7 @@ void draw_gl(void)
 			}
 		}
     }
-  
+
 #endif
 }
 
