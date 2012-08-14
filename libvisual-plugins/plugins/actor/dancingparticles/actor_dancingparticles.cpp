@@ -26,7 +26,12 @@
 #include "fastmath.h"
 #include "etoile.h"
 #include <cmath>
+
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -185,16 +190,18 @@ VisPalette *lv_dancingparticles_palette (VisPluginData *plugin)
 
 int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	float freq[3][256];
+	const unsigned int size = 256;
+
+	float freq[3][size];
 
 	LV::BufferPtr fbuf = LV::Buffer::create ();
-	fbuf->set (freq[0], sizeof(freq[0]));
-	audio->get_spectrum (fbuf, 256, VISUAL_AUDIO_CHANNEL_LEFT, false);
+	fbuf->set (freq[0], size * sizeof(float));
+	audio->get_spectrum (fbuf, size, VISUAL_AUDIO_CHANNEL_LEFT, false);
 
-	fbuf->set (freq[1], sizeof(freq[1]));
-	audio->get_spectrum (fbuf, 256, VISUAL_AUDIO_CHANNEL_RIGHT, false);
+	fbuf->set (freq[1], size * sizeof(float));
+	audio->get_spectrum (fbuf, size, VISUAL_AUDIO_CHANNEL_RIGHT, false);
 
-	for (unsigned int i = 0; i < sizeof(freq[2]); i++)
+	for (unsigned int i = 0; i < size; i++)
 		freq[2][i] = (freq[0][i] + freq[1][i]) / 2;
 
 	/* FIXME on title change, do something */

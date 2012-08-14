@@ -187,7 +187,7 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     bin_->realize();
     bin_->set_morph(morph_plugin_);
     bin_->switch_set_steps(morphsteps);
-    bin_->switch_set_style(VISUAL_SWITCH_STYLE_MORPH);
+    bin_->switch_set_style(VISUAL_SWITCH_STYLE_DIRECT);
     bin_->switch_set_automatic(true);
     bin_->switch_set_rate(.5);
     bin_->switch_set_mode(VISUAL_MORPH_MODE_STEPS);

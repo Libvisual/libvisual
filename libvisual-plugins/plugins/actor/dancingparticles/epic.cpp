@@ -93,11 +93,8 @@ void loadepic2(const char *file)
 
 }
 
-void loadepic(const char *file)
+void loadepic(const char *filename)
 {
-  char filename[FILENAME_MAX];
-  strncpy (filename, "/usr/local/share/dancingparticles/",255);
-  strncat (filename, file,255);
   loadepic2(filename);
   numCenters=0;
   Centers[numCenters++]=Centers2[0];

@@ -35,8 +35,16 @@ beatdetector::beatdetector()
 		//      cout << f<<endl;
 		filterpower+=f;
 	}
+    freq = 0;
+    variance = 0;
+    loudness = 0;
+    beat = 0;
 	avloudness=0;
+    uplimit = 0;
+    downlimit = 0;
 	state = 0;
+    beatbase = 0;
+    beatquiet = 0;
 	for(int i = 0;i<10;i++)
 		lastbeats[i]=0;
 }

@@ -31,7 +31,7 @@ extern int gloudness;
 void affloudness(int i)
 {
   static int curi =0;
-  
+
   if(i== 0)
     {
       curi++;
@@ -73,7 +73,7 @@ void etoileLoop(void)
    if(p.size<1E-6)
 	 {
 	   init_parameters();
-	   std::cout << "sorry, but the bug with strtof has come, please report.." <<std::endl;
+	   visual_log (VISUAL_LOG_INFO, "Size is too small, possible bug with strtof()");
 	   //p.size=.2;
 	 }
   frames++;
@@ -123,18 +123,18 @@ void etoileLoop(void)
 		  break;
 		}
     }
-    	
+
 }
 void Elastantig(short i , FloatPoint & ctr)
 {
   FloatPoint dist = pts[i]-ctr;
   float d=(float)dist.length();
   FloatPoint vectunite=(dist / d);
-  
+
   // antigravitation  try not to make it n^2
   for(int k=0;k<p.agnumparts;k++)
     {
-      int j = (frames + k + i )%ptsNum; 
+      int j = (frames + k + i )%ptsNum;
       /*      if((i==0) &&(k==0))
 			  cout << j << " ";
       */
@@ -149,7 +149,7 @@ void Elastantig(short i , FloatPoint & ctr)
 			  for(int k=0; k< p.antigorder;k++)
 				d2=d2*d1;
 			  d2=(10*p.ag)/d2;
-	      
+
 			  if(d2>p.maxantig)
 				d2=p.maxantig;
 			  vect=(vect * d2);
@@ -171,7 +171,7 @@ void Elastantig(short i , FloatPoint & ctr)
   float f=-p.k*(d-d0);
   vectunite = vectunite* f;
   speed[i]+= vectunite ;
-  
+
 
   speed[i]= speed[i]  /p.visc;
   pts[i]+= speed[i];// /1000;
@@ -210,7 +210,7 @@ FloatPoint eSetCenter(long time)
       float d0=p.d1;
       FloatPoint vectunite=(dist / d);
       float f=-1*(d-d0);
-  
+
       vectunite = vectunite* f;
       a+= vectunite ;
     }
