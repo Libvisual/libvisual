@@ -8,8 +8,8 @@ namespace LV {
     {
         m_option_specs.reserve (option_specs.size ());
 
-        for (auto const& option_spec : option_specs) {
-            m_option_specs.emplace_back (option_spec, 0);
+        for (auto& option_spec : option_specs) {
+            m_option_specs.emplace_back (option_spec);
 
             // Get iterator to the appended entry
             auto back_iter = m_option_specs.end ();
@@ -42,60 +42,137 @@ namespace LV {
         parse (args, unparsed_args);
     }
 
-    void OptionParser::parse (ArgList const& args, ArgList& unparsed_args)
+    OptionParser::ArgIter OptionParser::parse_long_option (ArgIter current, ArgIter end)
     {
-        auto start = args.begin ();
-        auto end   = args.end ();
+        auto name_end_pos = current->find ('=');
 
-        while (start != end) {
-            start = parse_partial (start, end, unparsed_args);
+        auto option_name = current->substr (2, name_end_pos - 2);
+        auto option_arg  = current->substr (name_end_pos + 1);
+
+        ++current;
+
+        auto entry = m_long_name_map.find (option_name);
+
+        if (entry == m_long_name_map.end ()) {
+            throw Error::invalid_option (option_name);
         }
 
-        // Check if required arguments are parsed
-        for (auto const& entry : m_option_specs) {
-            OptionSpec const& spec  = std::get<0> (entry);
-            int               count = std::get<1> (entry);
+        auto& option_spec = entry->second;
 
-            if (spec.required && count == 0) {
-                throw std::runtime_error ("Required option not set");
+        if (!option_spec->argument) {
+            if (!option_arg.empty ()) {
+                throw Error::unexpected_arg (option_name, option_arg);
             }
+            return current;
+        }
+
+        if (option_arg.empty ()) {
+            if (current != end && (*current)[0] != '-') {
+                option_arg = *current;
+                ++current;
+            } else {
+                throw Error::missing_arg (option_name);
+            }
+        }
+
+        if (!option_spec->argument->parse (option_arg)) {
+            throw Error::invalid_arg (option_name, option_arg);
+        }
+
+        return current;
+    }
+
+    OptionParser::ArgIter OptionParser::parse_short_option (ArgIter current, ArgIter end)
+    {
+        auto option_name = (*current)[1];
+        auto option_arg  = current->substr (2);
+
+        ++current;
+
+        auto entry = m_short_name_map.find (option_name);
+
+        if (entry == m_short_name_map.end ()) {
+            throw Error::invalid_option (std::string (1, option_name));
+        }
+
+        auto& option_spec = entry->second;
+
+        if (!option_spec->argument) {
+            if (!option_arg.empty ()) {
+                throw Error::unexpected_arg (std::string (1, option_name), option_arg);
+            }
+            return current;
+        }
+
+        if (option_arg.empty ()) {
+            if (current != end && (*current)[0] != '-') {
+                option_arg = *current;
+                ++current;
+            } else {
+                throw Error::missing_arg (std::string (1, option_name));
+            }
+        }
+
+        if (!option_spec->argument->parse (option_arg)) {
+            throw Error::invalid_arg (std::string (1, option_name), option_arg);
+        }
+
+        return current;
+    }
+
+    void OptionParser::parse (ArgList const& args, ArgList& unparsed_args)
+    {
+        unparsed_args.clear ();
+
+        auto current = args.begin ();
+        bool parse_options = true;
+
+        while (current != args.end ()) {
+            if (*current == "--") {
+                parse_options = false;
+                ++current;
+                continue;
+            }
+
+            if (parse_options) {
+                if ((*current)[0] == '-') {
+                    if ((*current)[1] == '-') {
+                        current = parse_long_option (current, args.end ());
+                        continue;
+                    } else {
+                        current = parse_short_option (current, args.end ());
+                        continue;
+                    }
+                }
+            }
+
+            unparsed_args.emplace_back (*current);
+            ++current;
         }
     }
 
-    OptionParser::ArgIter OptionParser::parse_partial (ArgIter start, ArgIter end, ArgList& unparsed_args)
+    OptionParser::Error::Error (std::string const& what)
+        : m_what (what)
+    {}
+
+    OptionParser::Error OptionParser::Error::invalid_option (std::string const& name)
     {
-        if ((*start)[0] == '-') {
-            OptionSpecListIter spec = m_option_specs.end ();
+        return Error ("Invalid option '" + name + "'");
+    }
 
-            if ((*start)[1] == '-') {
-                // Lookup long option name
-                auto entry = m_long_name_map.find (start->substr (2));
-                if (entry == m_long_name_map.end ()) {
-                    throw std::runtime_error ("Invalid short option");
-                }
+    OptionParser::Error OptionParser::Error::missing_arg (std::string const& name)
+    {
+        return Error ("Option '" + name + "' requires an argument");
+    }
 
-                spec = entry->second;
-                ++start;
-            }
-            else {
-                // Lookup short option name
-                auto entry = m_short_name_map.find ((*start) [1]);
-                if (entry == m_short_name_map.end ()) {
-                    throw std::runtime_error ("Invalid long option");
-                }
+    OptionParser::Error OptionParser::Error::invalid_arg (std::string const& name, std::string const& arg)
+    {
+        return Error ("Invalid argument '" + arg + "' to option '" + name + "'");
+    }
 
-                spec = entry->second;
-                ++start;
-            }
-
-            return std::get<0> (*spec).value->parse (start, end);
-        }
-        else {
-            unparsed_args.emplace_back (*start);
-            ++start;
-
-            return start;
-        }
+    OptionParser::Error OptionParser::Error::unexpected_arg  (std::string const& name, std::string const& arg)
+    {
+        return Error ("Unexpected argument '" + arg + "' to option '" + name + "'");
     }
 
   } // Tools namespace

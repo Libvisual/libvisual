@@ -6,19 +6,24 @@
 #include <memory>
 #include <initializer_list>
 #include <unordered_map>
+#include <stdexcept>
 
 namespace LV {
   namespace Tools {
 
-    class OptionValue;
+    class OptionArg;
 
-    class OptionSpec;
+    struct OptionSpec;
 
-    typedef std::shared_ptr<OptionValue> OptionValuePtr;
+    class OptionParserError;
+
+    typedef std::shared_ptr<OptionArg> OptionArgPtr;
 
     class OptionParser
     {
     public:
+
+        class Error;
 
         typedef std::vector<std::string> ArgList;
         typedef ArgList::const_iterator  ArgIter;
@@ -32,74 +37,69 @@ namespace LV {
 
     private:
 
-        typedef std::vector<std::tuple<OptionSpec, int>>    OptionSpecList;
-        typedef OptionSpecList::iterator                    OptionSpecListIter;
+        typedef std::vector<OptionSpec>  OptionSpecList;
+        typedef OptionSpecList::iterator OptionSpecListIter;
 
         std::unordered_map<char, OptionSpecListIter>        m_short_name_map;
         std::unordered_map<std::string, OptionSpecListIter> m_long_name_map;
         OptionSpecList                                      m_option_specs;
 
-        ArgIter parse_partial (ArgIter start, ArgIter end, ArgList& unparsed_args);
+        ArgIter parse_short_option (ArgIter start, ArgIter end);
+        ArgIter parse_long_option  (ArgIter start, ArgIter end);
     };
 
     struct OptionSpec
     {
-        char           short_name;
-        std::string    long_name;
-        std::string    description;
-        bool           required;
-        OptionValuePtr value;
+        char         short_name;
+        std::string  long_name;
+        std::string  description;
+        OptionArgPtr argument;
     };
 
-    class OptionValue
+    class OptionArg
     {
     public:
 
-        virtual OptionParser::ArgIter parse (OptionParser::ArgIter start, OptionParser::ArgIter const& end) = 0;
+        virtual bool parse (std::string const& arg) = 0;
 
-        virtual ~OptionValue () {}
+        virtual ~OptionArg () {}
     };
 
     template <typename T>
-    class OptionSingleValue
-        : public OptionValue
+    class OptionSingleArg
+        : public OptionArg
     {
     public:
 
         typedef std::function<void (T const&)> Setter;
 
-        OptionSingleValue (Setter const& setter, T const& default_value = T ())
+        OptionSingleArg (Setter const& setter, T const& default_value = T ())
             : m_setter (setter)
         {
             m_setter (default_value);
         }
 
-        OptionSingleValue (T& var, T const& default_value = T ())
+        OptionSingleArg (T& var, T const& default_value = T ())
             : m_setter ([&] (T const& value) { var = value; })
         {
             m_setter (default_value);
         }
 
-        virtual OptionParser::ArgIter parse (OptionParser::ArgIter start, OptionParser::ArgIter const& end)
+        virtual bool parse (std::string const& arg)
         {
-            if (start == end) {
-                return start;
+            std::istringstream stream (arg);
+            T parsed_arg;
+
+            if (!(stream >> parsed_arg)) {
+                return false;
             }
 
-            std::istringstream stream { *start };
-            T parsed_value;
+            m_setter (parsed_arg);
 
-            if (!(stream >> parsed_value)) {
-                return start;
-            }
-
-            m_setter (parsed_value);
-            ++start;
-
-            return start;
+            return true;
         }
 
-        virtual ~OptionSingleValue ()
+        virtual ~OptionSingleArg ()
         {}
 
     private:
@@ -107,6 +107,32 @@ namespace LV {
         Setter m_setter;
     };
 
+    class OptionParser::Error
+        : public std::exception
+    {
+    public:
+
+        Error () = delete;
+
+        static Error invalid_option (std::string const& name);
+        static Error missing_arg    (std::string const& name);
+        static Error invalid_arg    (std::string const& name, std::string const& arg);
+        static Error unexpected_arg (std::string const& name, std::string const& arg);
+
+        virtual char const* what () const noexcept
+        {
+            return m_what.c_str ();
+        }
+
+        virtual ~Error () noexcept
+        {}
+
+    private:
+
+        std::string m_what;
+
+        explicit Error (std::string const& what);
+    };
 
   } // Tools namespace
 } // LV namespace
