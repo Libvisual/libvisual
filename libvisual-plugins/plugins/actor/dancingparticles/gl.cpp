@@ -1,8 +1,15 @@
+#include "config.h"
 #include "gl.h"
 #include "etoile.h"
 
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#include "common/GL/glu.h"
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
+
 #include <pthread.h>
 #include <sched.h>
 
@@ -49,7 +56,11 @@ void init_gl(void)
   glViewport(0, 0, 640, 480);
   glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
   glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	// Clear The Background Color To Blue
+#ifdef USE_OPENGL_ES
+  glClearDepthf(1.0);
+#else
   glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
+#endif
   glDepthFunc(GL_LESS);			// The Type Of Depth Test To Do
   glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
   glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
@@ -87,7 +98,11 @@ void draw_gl(void)
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+#ifdef USE_OPENGL_ES
+  glFrustumf(-1, 1, -1, 1, 1.5, 40);
+#else
   glFrustum(-1, 1, -1, 1, 1.5, 40);
+#endif
   gluLookAt(0, 0, 6,
 			0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
@@ -100,7 +115,7 @@ void draw_gl(void)
   if(beat>0)
     {
       beat--;
-	  glBegin(GL_QUADS);
+	  glBegin(GL_TRIANGLE_STRIP);
       glColor3f(0.1 , 0.9 , 0.1 );// subliminal beat..
       glVertex3f(2,2,0);
       glVertex3f(-2,2,0);
@@ -156,9 +171,10 @@ void draw_gl(void)
   for(int i=0;i<ptsNum;i++)
     {
       GLfloat colors[][3]={
-        {1.,0.2,0.2   }
-        ,{0.2,1.,0.2}
-        ,{0.4,0.4,1}};
+         {1.0,0.2,0.2},
+         {0.2,1.0,0.2},
+         {0.4,0.4,1.0}
+      };
 
       if(p.mode < 50)
 		{
@@ -166,9 +182,11 @@ void draw_gl(void)
 		  glEnable(GL_TEXTURE_2D);
 		  glPushMatrix();
 		  glTranslatef(pts[i][0]/100,pts[i][1]/100,pts[i][2]/100);
-		  glBegin(GL_QUADS);
-		  glColor3fv(colors[i%3] );
 
+		  int c = i%3;
+		  glColor4f(colors[c][0], colors[c][1], colors[c][2], 1.0f);
+
+		  glBegin(GL_TRIANGLE_STRIP);
 		  //cout<<i<<  " :"<<pts[i][0] << " " <<pts[i][1] << " " << pts[i][2] << endl;
 		  glTexCoord2f(0,0);        glVertex3f(-SIZE, -SIZE, 0);
 		  glTexCoord2f(1,0);        glVertex3f(SIZE,-SIZE, 0);
@@ -184,7 +202,7 @@ void draw_gl(void)
 		  glDisable(GL_TEXTURE_2D);
 		  if(pts[(i+1)%ptsNum][0]>pts[i][0])
 			{
-			  glBegin(GL_QUADS);
+			  glBegin(GL_TRIANGLE_STRIP);
 			  /*	      if(speed[i][0]>0)
 						  {
 						  //		  glColor3fv(colors[0] );
@@ -198,7 +216,7 @@ void draw_gl(void)
 						  //		  cout <<"tptp\n";
 						  }
 			  */
-			  glColor3fv(colors[2] );
+			  glColor4f(colors[2][0], colors[2][1], colors[2][2], 1.0f);
 			  glVertex3f(pts[i][0]/100,pts[i][1]/100,0);
 			  glVertex3f(pts[i][0]/100+SIZE,pts[i][1]/100,0);
 			  glVertex3f(pts[(i+1)%ptsNum][0]/100+SIZE, pts[(i+1)%ptsNum][1]/100,0);
