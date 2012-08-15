@@ -449,30 +449,30 @@ namespace LV {
 
       auto video = LV::Video::create();
       video->ref();
-
-      int width  = m_impl->actvideo->get_width ();
-      int height = m_impl->actvideo->get_height ();
-
-      VisVideoDepth depth;
+      video->copy_attrs(m_impl->actvideo);
 
       auto depthflag = visual_actor_get_supported_depth (actor);
+      VisVideoDepth depth;
 
       if (visual_video_depth_is_supported (depthflag, VISUAL_VIDEO_DEPTH_GL)) {
           visual_log (VISUAL_LOG_INFO, "Switching to GL mode");
 
-          m_impl->depthforced = VISUAL_VIDEO_DEPTH_GL;
-          m_impl->depthforcedmain = VISUAL_VIDEO_DEPTH_GL;
-
           depth = VISUAL_VIDEO_DEPTH_GL;
 
-          set_depth (VISUAL_VIDEO_DEPTH_GL);
+          m_impl->depthforced = depth;
+          m_impl->depthforcedmain = depth;
+
+          video->set_depth(depth);
+
+          set_depth (depth);
+
           m_impl->depthchanged = true;
       } else {
           visual_log (VISUAL_LOG_INFO, "Switching away from Gl mode -- or non Gl switch");
 
           /* Switching from GL */
-          video->set_depth (m_impl->get_suitable_depth (depthflag));
-          depth = video->get_depth();
+          depth = m_impl->get_suitable_depth (depthflag);
+          video->set_depth(depth);
 
           visual_log (VISUAL_LOG_DEBUG, "after depth fixating");
 
@@ -495,10 +495,10 @@ namespace LV {
               && m_impl->actvideo->get_depth () != VISUAL_VIDEO_DEPTH_GL
               && m_impl->morphstyle == VISUAL_SWITCH_STYLE_MORPH) {
 
-              visual_log (VISUAL_LOG_INFO, "old depth is higher, video depth %d, depth %d, bin depth %d",
-                          video->get_depth (), depth, m_impl->depth);
+              visual_log (VISUAL_LOG_INFO, "old depth is higher, video depth %d, bin depth %d",
+                          video->get_depth (), m_impl->depth);
 
-              m_impl->depthforced = depth;
+              m_impl->depthforced = depth;;
               m_impl->depthforcedmain = m_impl->depth;
 
               set_depth (m_impl->actvideo->get_depth ());
@@ -530,16 +530,12 @@ namespace LV {
           }
 
           visual_log (VISUAL_LOG_INFO, "Target depth selected: %d", depth);
-      }
 
-      video->set_dimension(width, height);
-
-      if (depth != VISUAL_VIDEO_DEPTH_GL)
-      {
-          video->set_pitch(width * visual_video_bpp_from_depth(depth));
+          video->set_pitch(video->get_width() * visual_video_bpp_from_depth(depth));
 
           video->allocate_buffer();
       }
+
 
       visual_log (VISUAL_LOG_INFO, "video pitch of that what connects to the new actor %d",
                   video->get_pitch ());
