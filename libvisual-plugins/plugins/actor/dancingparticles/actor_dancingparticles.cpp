@@ -26,7 +26,12 @@
 #include "fastmath.h"
 #include "etoile.h"
 #include <cmath>
+
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
