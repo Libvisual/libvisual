@@ -309,9 +309,12 @@ int main (int argc, char **argv)
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
         bin.switch_set_style(VISUAL_SWITCH_STYLE_DIRECT);
 
+        // Let the bin manage plugins. There's a bug otherwise.
+        bin.connect(actor_name, input_name);
+
         // initialize actor plugin
         std::cerr << "Loading actor '" << actor_name << "'...\n";
-        auto actor = visual_actor_new (actor_name.c_str ());
+        auto actor = bin.get_actor();
         if (!actor)
             throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
 
@@ -326,7 +329,7 @@ int main (int argc, char **argv)
 
         // initialize input plugin
         std::cerr << "Loading input '" << input_name << "'...\n";
-        auto input = visual_input_new (input_name.c_str());
+        auto input = bin.get_input();
         if (!input) {
             throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
@@ -357,7 +360,6 @@ int main (int argc, char **argv)
             throw std::runtime_error("Failed to get VisVideo from display");
 
         // put it all together
-        bin.connect(actor, input);
         bin.set_video(video);
         bin.realize();
         bin.sync(false);
@@ -421,6 +423,7 @@ int main (int argc, char **argv)
 
                         bin.switch_actor(actor_name);
 
+/*
                         // get new actor
                         actor = bin.get_actor();
 
@@ -441,6 +444,7 @@ int main (int argc, char **argv)
                                 bin.set_depth(visual_video_depth_get_highest_nogl(bin.get_supported_depth()));
                         }
                         bin.force_actor_depth (bin.get_depth ());
+*/
                         break;
                     }
 
@@ -498,10 +502,12 @@ int main (int argc, char **argv)
             if (bin.depth_changed())
             {
                 display.lock();
+                int depthflag = bin.get_depth();
+                VisVideoDepth depth = visual_video_depth_get_highest(depthflag);
 
-                display.create(bin.get_depth(), vidoptions, width, height, true);
+                display.create(depth, vidoptions, width, height, true);
 
-                auto video = display.get_video();
+                video = display.get_video();
                 bin.set_video(video);
 
                 bin.sync(true);
@@ -514,6 +520,7 @@ int main (int argc, char **argv)
                 continue;
 
             display.lock();
+
 
             bin.run();
 

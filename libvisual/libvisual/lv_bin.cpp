@@ -96,7 +96,8 @@ namespace LV {
 
 
   Bin::Impl::Impl ()
-      : actor           (nullptr)
+      : managed (false)
+      , actor           (nullptr)
       , actmorphmanaged (false)
       , actmorph        (nullptr)
       , inputmanaged    (false)
