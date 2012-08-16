@@ -26,15 +26,14 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define BARS 16
-
 typedef struct {
-	VisVideo *old_video;
-	GstPipeline *pipe;
-} GstreamerPrivate;
+    GstElement *pipeline;
+    GMainLoop  *glib_main_loop;
+    GstBuffer  *buffer;
+} GStreamerPrivate;
 
 
-static void have_data (GstElement *sink, GstBuffer *buffer, gpointer data);
+static void have_data (GstElement *sink, GstBuffer *buffer, GStreamerPrivate *data);
 
 static int act_gstreamer_init (VisPluginData *plugin);
 static int act_gstreamer_cleanup (VisPluginData *plugin);
@@ -46,146 +45,177 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
 
 const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor = {
-		.requisition = act_gstreamer_requisition,
-		.palette = act_gstreamer_palette,
-		.render = act_gstreamer_render,
-		.vidoptions.depth = VISUAL_VIDEO_DEPTH_24BIT
-	};
+    static VisActorPlugin actor = {
+        .requisition = act_gstreamer_requisition,
+        .palette = act_gstreamer_palette,
+        .render = act_gstreamer_render,
+        .vidoptions.depth = VISUAL_VIDEO_DEPTH_24BIT
+    };
 
-	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+    static VisPluginInfo info = {
+        .type = VISUAL_PLUGIN_TYPE_ACTOR,
 
-		.plugname = "gstreamer",
-		.name = "libvisual gstreamer",
-		.author = N_("Dennis Smit  <synap@yourbase.nl>"),
-		.version = "0.1",
-		.about = N_("Libvisual gstreamer plugin"),
-		.help = N_("Capable of using gstreamer to play video, or do effects using the gstreamer pipeline"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+        .plugname = "gstreamer",
+        .name = "libvisual gstreamer",
+        .author = N_("Dennis Smit  <synap@yourbase.nl>"),
+        .version = "0.1",
+        .about = N_("Libvisual gstreamer plugin"),
+        .help = N_("Capable of using gstreamer to play video, or do effects using the gstreamer pipeline"),
+        .license = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = act_gstreamer_init,
-		.cleanup = act_gstreamer_cleanup,
-		.events = act_gstreamer_events,
+        .init = act_gstreamer_init,
+        .cleanup = act_gstreamer_cleanup,
+        .events = act_gstreamer_events,
 
-		.plugin = VISUAL_OBJECT (&actor)
-	};
+        .plugin = VISUAL_OBJECT (&actor)
+    };
 
-	return &info;
+    return &info;
 }
 
 static int act_gstreamer_init (VisPluginData *plugin)
 {
-	GstreamerPrivate *priv;
+    GStreamerPrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (GstreamerPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    priv = visual_mem_new0 (GStreamerPrivate, 1);
+    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	return 0;
+    priv->glib_main_loop = g_main_loop_new (NULL, FALSE);
+
+    gst_init (NULL, NULL);
+
+    char pipe[1024];
+    snprintf(pipe, 1024,
+             "filesrc location=%s ! decodebin ! ffmpegcolorspace ! "
+             "video/x-raw-rgb,bpp=24,depth=24 ! "
+             "fakesink name=sink signal-handoffs=true", "test.mpg");
+
+    GError *err = NULL;
+    priv->pipeline = gst_parse_launch (pipe, &err);
+    priv->buffer   = NULL;
+
+    if (err) {
+        visual_log (VISUAL_LOG_ERROR, "Failed to create pipeline: %s", err->message);
+        g_error_free (err);
+        return -1;
+    }
+
+    GstElement *sink = gst_bin_get_by_name (GST_BIN (priv->pipeline), "sink");
+    g_signal_connect (sink, "handoff", G_CALLBACK (have_data), priv);
+    gst_object_unref (sink);
+
+    return 0;
 }
 
 static int act_gstreamer_cleanup (VisPluginData *plugin)
 {
-	GstreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    GStreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_mem_free (priv);
+    gst_object_unref (priv->pipeline);
+    g_main_loop_unref (priv->glib_main_loop);
 
-	return 0;
+    visual_mem_free (priv);
+
+    return 0;
 }
 
 static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height)
 {
 
-	return 0;
+    return 0;
 }
 
 static int act_gstreamer_resize (VisPluginData *plugin, int width, int height)
 {
-	return 0;
+    return 0;
 }
 
 static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	VisEvent ev;
+    VisEvent ev;
 
-	while (visual_event_queue_poll (events, &ev)) {
-		switch (ev.type) {
-			case VISUAL_EVENT_RESIZE:
-				act_gstreamer_resize (plugin, ev.event.resize.width, ev.event.resize.height);
-				break;
+    while (visual_event_queue_poll (events, &ev)) {
+        switch (ev.type) {
+            case VISUAL_EVENT_RESIZE:
+                act_gstreamer_resize (plugin, ev.event.resize.width, ev.event.resize.height);
+                break;
 
+            default:
+                break;
+        }
+    }
 
-			default:
-				break;
-		}
-	}
-
-	return 0;
+    return 0;
 }
 
 static VisPalette *act_gstreamer_palette (VisPluginData *plugin)
 {
-	return NULL;
+    return NULL;
 }
 
 static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	GstreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	static int playing = 0;
+    GStreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	if (playing == 0) {
-		char pipe[1024];
+    GstState state, pending_state;
+    GstStateChangeReturn status;
 
-		gst_init (NULL, NULL);
-/*
-		snprintf(pipe, 1024, "filesrc location=%s ! decodebin ! ffmpegcolorspace ! "
-				"videoscale ! video/x-raw-rgb,bpp=32,depth=32,width=%d,height=%d,"
-				"red_mask=0xff000000,green_mask=0x00ff0000,blue_mask=0x0000ff00 !"
-				"fakesink name=sink sync=true", "test.mpg", video->width, video->height);
+    /* Set pipeline state to PLAYING if it is only just initialized */
+    gst_element_get_state (priv->pipeline, &state, &pending_state, GST_CLOCK_TIME_NONE);
+    if (state == GST_STATE_NULL && pending_state != GST_STATE_PLAYING) {
+        gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
+    }
 
-*/
-		snprintf(pipe, 1024, "filesrc location=%s ! decodebin ! ffmpegcolorspace ! "
-				"video/x-raw-rgb,bpp=24,depth=24 ! "
-				"fakesink name=sink signal-handoffs=true", "test.mpg");
+    /* Check pipeline state, make sure it's already playing, or going to be set playing */
+    status = gst_element_get_state (priv->pipeline, &state, &pending_state, 10 * GST_MSECOND);
+    if (state != GST_STATE_PLAYING) {
+        if (pending_state == GST_STATE_PLAYING) {
+            if (status == GST_STATE_CHANGE_ASYNC) {
+                visual_log (VISUAL_LOG_INFO, "Waiting for pipeline to get ready (Current state: %s)", gst_element_state_get_name (state));
+                return 0;
+            } else if (status == GST_STATE_CHANGE_FAILURE) {
+                visual_log (VISUAL_LOG_INFO, "Failed to animate pipeline");
+                return -1;
+            }
+        } else {
+            visual_log (VISUAL_LOG_ERROR, "Pipeline in indeterminate state");
+            return -1;
+        }
+    }
 
-		GError *err = NULL;
+    /* Process any messages on the bus */
+    g_main_context_iteration (g_main_loop_get_context (priv->glib_main_loop), FALSE);
 
-		priv->pipe = GST_PIPELINE_CAST(gst_parse_launch (pipe, &err));
+    /* Draw if we have a buffer */
+    if (priv->buffer) {
+        /* FIXME: Extract the last frame from the GStreamer buffer into the target video buffer */
+        /* FIXME: This contains a buffer overrun if the buffer has multiple frames */
+        /* FIXME: This contains a race if have_data() is called asynchronously.. */
 
-		if (err) {
-			visual_log (VISUAL_LOG_ERROR, "Failed to create pipeline", err->message);
-			return;
-		}
+        memcpy (visual_video_get_pixels (video),
+                GST_BUFFER_DATA (priv->buffer),
+                GST_BUFFER_SIZE (priv->buffer));
 
-		gst_element_set_state (GST_ELEMENT (priv->pipe), GST_STATE_PLAYING);
+        gst_buffer_unref (priv->buffer);
 
-		g_signal_connect (gst_bin_get_by_name_recurse_up (GST_BIN (priv->pipe), "sink"),
-				"handoff", G_CALLBACK (have_data), video);
+        priv->buffer = NULL;
+    }
 
-		playing = 1;
-	}
-
-//	g_signal_handlers_disconnect_by_func (gst_bin_get_by_name_recurse_up (GST_BIN (priv->pipe), "sink"),
-//			G_CALLBACK (have_data), priv->old_video);
-
-
-	gst_bin_iterate (GST_BIN (priv->pipe));
-
-	priv->old_video = video;
-
-	return 0;
+    return 0;
 }
 
-static void have_data (GstElement *sink, GstBuffer *buffer, gpointer data)
+static void have_data (GstElement *sink, GstBuffer *buffer, GStreamerPrivate* priv)
 {
-	VisVideo *video = data;
-	uint32_t *dest = visual_video_get_pixels (video);
-	uint32_t *src = (uint32_t *) GST_BUFFER_DATA (buffer);
+    /* Keep the most recently received buffer alive for rendering */
 
-	visual_mem_copy (dest, src, GST_BUFFER_SIZE (buffer));
+    if (priv->buffer) {
+        gst_buffer_unref (priv->buffer);
+    }
+
+    priv->buffer = buffer;
+    gst_buffer_ref (priv->buffer);
 }
-
