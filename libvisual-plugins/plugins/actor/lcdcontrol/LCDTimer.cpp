@@ -103,7 +103,7 @@ void LCDTimerBin::Stop()
     unsigned int i;
     for(i = 0; i < mTimers.size(); i++)
     {
-        //(mTimers[i])->Stop();
+        mTimers[i]->Stop();
     }
 }
 
