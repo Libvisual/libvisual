@@ -1,8 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual Team
+ *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,10 +32,12 @@ typedef struct {
     GstElement *pipeline;
     GMainLoop  *glib_main_loop;
     GstBuffer  *buffer;
+    GstElement *sink;
+    GMutex     *mutex;
 } GStreamerPrivate;
 
 
-static void have_data (GstElement *sink, GstBuffer *buffer, GStreamerPrivate *data);
+static void have_data (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate *data);
 
 static int act_gstreamer_init (VisPluginData *plugin);
 static int act_gstreamer_cleanup (VisPluginData *plugin);
@@ -92,11 +96,10 @@ static int act_gstreamer_init (VisPluginData *plugin)
     snprintf(pipe, 1024,
              "filesrc location=%s ! decodebin ! ffmpegcolorspace ! "
              "video/x-raw-rgb,bpp=24,depth=24 ! "
-             "fakesink name=sink signal-handoffs=true", "test.mpg");
+             "fakesink name=sink signal-handoffs=true sync=true", "test.mpg");
 
     GError *err = NULL;
     priv->pipeline = gst_parse_launch (pipe, &err);
-    priv->buffer   = NULL;
 
     if (err) {
         visual_log (VISUAL_LOG_ERROR, "Failed to create pipeline: %s", err->message);
@@ -104,9 +107,21 @@ static int act_gstreamer_init (VisPluginData *plugin)
         return -1;
     }
 
-    GstElement *sink = gst_bin_get_by_name (GST_BIN (priv->pipeline), "sink");
-    g_signal_connect (sink, "handoff", G_CALLBACK (have_data), priv);
-    gst_object_unref (sink);
+    priv->buffer = NULL;
+    priv->mutex  = g_mutex_new ();
+
+    priv->sink = gst_bin_get_by_name (GST_BIN (priv->pipeline), "sink");
+    g_signal_connect (priv->sink, "handoff", G_CALLBACK (have_data), priv);
+
+    gst_element_set_state (priv->pipeline, GST_STATE_PAUSED);
+
+    GstState state;
+    GstStateChangeReturn status = gst_element_get_state (priv->pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
+
+    if (status != GST_STATE_CHANGE_SUCCESS) {
+        visual_log (VISUAL_LOG_ERROR, "Failed to ready pipeline");
+        return -1;
+    }
 
     return 0;
 }
@@ -115,8 +130,14 @@ static int act_gstreamer_cleanup (VisPluginData *plugin)
 {
     GStreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-    gst_object_unref (priv->pipeline);
     g_main_loop_unref (priv->glib_main_loop);
+
+    gst_object_unref (priv->sink);
+
+    gst_element_set_state (priv->pipeline, GST_STATE_NULL);
+    gst_object_unref (priv->pipeline);
+
+    g_mutex_free (priv->mutex);
 
     visual_mem_free (priv);
 
@@ -125,12 +146,31 @@ static int act_gstreamer_cleanup (VisPluginData *plugin)
 
 static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height)
 {
+    GStreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-    return 0;
-}
+    GstPad  *pad  = gst_element_get_static_pad (priv->sink, "sink");
+    GstCaps *caps = gst_pad_get_negotiated_caps (pad);
 
-static int act_gstreamer_resize (VisPluginData *plugin, int width, int height)
-{
+    if (caps == NULL) {
+        visual_log (VISUAL_LOG_ERROR, "Sink pad caps is not negotiated yet");
+        return -1;
+    }
+
+    int bpp = 0;
+
+    GstStructure *structure = gst_caps_get_structure (caps, 0);
+    gst_structure_get (structure,
+                       "width" , G_TYPE_INT, width,
+                       "height", G_TYPE_INT, height,
+                       "bpp"   , G_TYPE_INT, &bpp,
+                       NULL);
+
+    visual_log (VISUAL_LOG_INFO, "Video dimension set on negotiated caps: %d x %d x %d",
+                *width, *height, bpp);
+
+    gst_caps_unref (caps);
+    gst_object_unref (pad);
+
     return 0;
 }
 
@@ -152,6 +192,11 @@ static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
     return 0;
 }
 
+static int act_gstreamer_resize (VisPluginData *plugin, int width, int height)
+{
+    return 0;
+}
+
 static VisPalette *act_gstreamer_palette (VisPluginData *plugin)
 {
     return NULL;
@@ -164,26 +209,23 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
     GstState state, pending_state;
     GstStateChangeReturn status;
 
-    /* Set pipeline state to PLAYING if it is only just initialized */
-    gst_element_get_state (priv->pipeline, &state, &pending_state, GST_CLOCK_TIME_NONE);
-    if (state == GST_STATE_NULL && pending_state != GST_STATE_PLAYING) {
+    gst_element_get_state (priv->pipeline, &state, &pending_state, 0);
+    if (state != GST_STATE_PLAYING && pending_state != GST_STATE_PLAYING) {
+        /* Set pipeline to playing if not already done so */
         gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
-    }
 
-    /* Check pipeline state, make sure it's already playing, or going to be set playing */
-    status = gst_element_get_state (priv->pipeline, &state, &pending_state, 10 * GST_MSECOND);
-    if (state != GST_STATE_PLAYING) {
-        if (pending_state == GST_STATE_PLAYING) {
-            if (status == GST_STATE_CHANGE_ASYNC) {
-                visual_log (VISUAL_LOG_INFO, "Waiting for pipeline to get ready (Current state: %s)", gst_element_state_get_name (state));
+        /* Check pipeline state, make sure it's already playing, or going to be set playing */
+        status = gst_element_get_state (priv->pipeline, &state, &pending_state, 10 * GST_MSECOND);
+        switch (status) {
+            case GST_STATE_CHANGE_ASYNC:
+                visual_log (VISUAL_LOG_INFO, "Waiting for pipeline to get ready (Current state: %s)",
+                            gst_element_state_get_name (state));
                 return 0;
-            } else if (status == GST_STATE_CHANGE_FAILURE) {
+            case GST_STATE_CHANGE_FAILURE:
                 visual_log (VISUAL_LOG_INFO, "Failed to animate pipeline");
                 return -1;
-            }
-        } else {
-            visual_log (VISUAL_LOG_ERROR, "Pipeline in indeterminate state");
-            return -1;
+
+            default: /* nothing */;
         }
     }
 
@@ -191,11 +233,8 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
     g_main_context_iteration (g_main_loop_get_context (priv->glib_main_loop), FALSE);
 
     /* Draw if we have a buffer */
+    g_mutex_lock (priv->mutex);
     if (priv->buffer) {
-        /* FIXME: Extract the last frame from the GStreamer buffer into the target video buffer */
-        /* FIXME: This contains a buffer overrun if the buffer has multiple frames */
-        /* FIXME: This contains a race if have_data() is called asynchronously.. */
-
         memcpy (visual_video_get_pixels (video),
                 GST_BUFFER_DATA (priv->buffer),
                 GST_BUFFER_SIZE (priv->buffer));
@@ -204,18 +243,22 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
 
         priv->buffer = NULL;
     }
+    g_mutex_unlock (priv->mutex);
 
     return 0;
 }
 
-static void have_data (GstElement *sink, GstBuffer *buffer, GStreamerPrivate* priv)
+static void have_data (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate* priv)
 {
-    /* Keep the most recently received buffer alive for rendering */
+    g_mutex_lock (priv->mutex);
 
+    /* Keep the most recently received buffer alive for rendering */
     if (priv->buffer) {
         gst_buffer_unref (priv->buffer);
     }
 
     priv->buffer = buffer;
     gst_buffer_ref (priv->buffer);
+
+    g_mutex_unlock (priv->mutex);
 }
