@@ -19,8 +19,8 @@ LV::VideoPtr sdlvid;
 LV::VideoPtr scalevid;
 VisPalette *pal;
 
-int n_tile_cols = 5;
-int n_tile_rows = 5;
+int n_tile_cols = 3;
+int n_tile_rows = 3;
 
 void sdl_fullscreen_toggle ();
 void sdl_fullscreen_xy (int *x, int *y);
@@ -192,6 +192,7 @@ void do_checkers(LV::VideoPtr const& destptr, LV::VideoPtr const& src1, LV::Vide
     unsigned int tile_width  = src1->get_width()  / n_tile_cols;
     unsigned int tile_height = src1->get_height() / n_tile_rows;
 
+/*
     LV::VideoPtr srcptr = flip % 2 == 0 ? src2 : src1;
 
     LV::Rect area(0, 0, tile_width, tile_height);
@@ -201,6 +202,7 @@ void do_checkers(LV::VideoPtr const& destptr, LV::VideoPtr const& src1, LV::Vide
     destptr->blit(area, srcptr, area, false);
 
     //return;
+*/
     for(unsigned int row = 0, y = 0;
         y < (unsigned int)src1->get_height();
         row++, y += tile_height)
@@ -244,7 +246,7 @@ void do_alpha (LV::VideoPtr const& vid, uint8_t rate)
 /* Main stuff */
 int main (int argc, char *argv[])
 {
-	int width = 512, height = 128;
+	int width = 512, height = 512;
 	int alpha = 190;
 	int xoff = 0, yoff = -90;
     int frames = 0;
