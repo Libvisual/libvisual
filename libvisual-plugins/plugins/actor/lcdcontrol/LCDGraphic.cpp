@@ -1307,8 +1307,6 @@ void LCDGraphic::TransitionLeftRight() {
     transition_tick_+=XRES;
     if( transition_tick_ >= (int)LCOLS) {
         transition_tick_ = 0;
-        //emit static_cast<LCDEvents *>(
-        //    visitor_->GetWrapper())->_TransitionFinished();
         for(int l = 0; l < LAYERS; l++) {
             memcpy(LayoutFB[l], TransitionFB[l], LCOLS * LROWS * sizeof(RGBA));
             for(int n = 0; n < LCOLS * LROWS; n++)
@@ -1320,6 +1318,7 @@ void LCDGraphic::TransitionLeftRight() {
         }
         transitioning_ = false;
         GraphicBlit(0, 0, LROWS, LCOLS);
+        visitor_->TransitionFinished();
     }
     LCDError("TransitionLeftRight %d", transition_tick_);
 }
@@ -1363,6 +1362,7 @@ void LCDGraphic::TransitionUpDown() {
         transition_tick_ = 0;
         //emit static_cast<LCDEvents *>(
         //    visitor_->GetWrapper())->_TransitionFinished();
+        visitor_->TransitionFinished();
         for(int l = 0; l < LAYERS; l++) {
             memcpy(LayoutFB[l], TransitionFB[l], LCOLS * LROWS * sizeof(RGBA));
             for(int n = 0; n < LROWS * LCOLS; n++) {
@@ -1443,6 +1443,7 @@ void LCDGraphic::TransitionTentacle() {
         transition_tick_ = 0;
         //emit static_cast<LCDEvents *>(
         //    visitor_->GetWrapper())->_TransitionFinished();
+        visitor_->TransitionFinished();
         for(int l = 0; l < LAYERS; l++) {
             memcpy(LayoutFB[l], TransitionFB[l], LCOLS * LROWS * sizeof(RGBA));
             for(int n = 0; n < LCOLS * LROWS; n++)
@@ -1497,6 +1498,7 @@ void LCDGraphic::TransitionAlphaBlend() {
         transition_tick_ = 0;
         //emit static_cast<LCDEvents *>(
         //    visitor_->GetWrapper())->_TransitionFinished();
+        visitor_->TransitionFinished();
         for(int l = 0; l < LAYERS; l++) {
             memcpy(LayoutFB[l], TransitionFB[l], LCOLS * LROWS * sizeof(RGBA));
             for(int n = 0; n < LCOLS * LROWS; n++) {

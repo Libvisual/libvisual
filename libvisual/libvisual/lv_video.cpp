@@ -388,7 +388,7 @@ namespace LV {
 
   void* Video::get_pixel_ptr (int x, int y) const
   {
-      return static_cast<uint8_t*> (m_impl->pixel_rows[y]) + x * m_impl->bpp;
+      return static_cast<uint8_t*> (get_pixels ()) + y * m_impl->pitch + x * m_impl->bpp;
   }
 
   Rect const& Video::get_extents () const
