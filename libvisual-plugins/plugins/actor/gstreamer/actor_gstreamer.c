@@ -265,9 +265,15 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
          * buffers received from GStreamer before their corresponding
          * resizes were completed. */
         if (GST_BUFFER_SIZE (priv->buffer) == buffer_size) {
-            memcpy (visual_video_get_pixels (video),
-                    GST_BUFFER_DATA (priv->buffer),
-                    GST_BUFFER_SIZE (priv->buffer));
+            VisVideo *source = visual_video_new_wrap_buffer (GST_BUFFER_DATA (priv->buffer),
+                                                             FALSE,
+                                                             visual_video_get_width  (video),
+                                                             visual_video_get_height (video),
+                                                             24);
+
+            visual_video_flip_pixel_bytes (video, source);
+
+            visual_video_unref (source);
         }
 
         gst_buffer_unref (priv->buffer);
