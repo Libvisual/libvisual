@@ -228,7 +228,7 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 		if (rcnt > 0) {
 			VisBuffer *buffer;
 
-			buffer = visual_buffer_new_wrap_data (data, rcnt*2);
+			buffer = visual_buffer_new_wrap_data (data, rcnt*2, FALSE);
 
 			visual_audio_input (audio, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
 					VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);

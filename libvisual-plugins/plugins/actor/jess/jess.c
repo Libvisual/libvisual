@@ -131,8 +131,8 @@ static int act_jess_init (VisPluginData *plugin)
 
 	priv->jess_pal = visual_palette_new (256);
 
-	priv->pcm_data1 = visual_buffer_new_wrap_data (priv->pcm_data[0], 512 * sizeof (float));
-	priv->pcm_data2 = visual_buffer_new_wrap_data (priv->pcm_data[1], 512 * sizeof (float));
+	priv->pcm_data1 = visual_buffer_new_wrap_data (priv->pcm_data[0], 512 * sizeof (float), FALSE);
+	priv->pcm_data2 = visual_buffer_new_wrap_data (priv->pcm_data[1], 512 * sizeof (float), FALSE);
 
 	start_ticks (priv);
 
@@ -299,8 +299,8 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	visual_audio_get_sample (audio, priv->pcm_data1, VISUAL_AUDIO_CHANNEL_LEFT);
 	visual_audio_get_sample (audio, priv->pcm_data2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	fbuf[0] = visual_buffer_new_wrap_data (freq[0], sizeof (freq[0]));
-	fbuf[1] = visual_buffer_new_wrap_data (freq[1], sizeof (freq[1]));
+	fbuf[0] = visual_buffer_new_wrap_data (freq[0], sizeof (freq[0]), FALSE);
+	fbuf[1] = visual_buffer_new_wrap_data (freq[1], sizeof (freq[1]), FALSE);
 
 	visual_audio_get_spectrum_for_sample (fbuf[0], priv->pcm_data1, FALSE);
 	visual_audio_get_spectrum_for_sample (fbuf[1], priv->pcm_data2, FALSE);

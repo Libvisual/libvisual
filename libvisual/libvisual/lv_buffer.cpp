@@ -91,7 +91,7 @@ namespace LV {
       return BufferPtr (new Buffer, false);
   }
 
-  BufferPtr Buffer::create (void* data, std::size_t size, bool own)
+  BufferPtr Buffer::wrap (void* data, std::size_t size, bool own)
   {
       BufferPtr self (new Buffer, false);
 

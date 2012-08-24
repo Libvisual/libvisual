@@ -10,17 +10,9 @@ VisBuffer *visual_buffer_new (void)
     return self.get ();
 }
 
-VisBuffer *visual_buffer_new_with_data (void *data, visual_size_t size)
+VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own)
 {
-    auto self = LV::Buffer::create (data, size);
-    self->ref ();
-
-    return self.get ();
-}
-
-VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size)
-{
-    auto self = LV::Buffer::create (data, size, false);
+    auto self = LV::Buffer::wrap (data, size, own);
     self->ref ();
 
     return self.get ();
