@@ -338,7 +338,7 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	buf = visual_buffer_new_wrap_data (freq, sizeof (freq));
+	buf = visual_buffer_new_wrap_data (freq, sizeof (freq), FALSE);
 	visual_audio_get_spectrum_for_sample (buf, priv->pcmbuf, FALSE);
 	visual_buffer_unref (buf);
 

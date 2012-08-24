@@ -212,7 +212,7 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
     visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
 
-    visbuffer = visual_buffer_new_wrap_data (priv->pcm_data[buffer(priv, TRUE)], SAMPLES);
+    visbuffer = visual_buffer_new_wrap_data (priv->pcm_data[buffer(priv, TRUE)], SAMPLES, FALSE);
 
     visual_audio_input(audio, visbuffer,
                        VISUAL_AUDIO_SAMPLE_RATE_44100,

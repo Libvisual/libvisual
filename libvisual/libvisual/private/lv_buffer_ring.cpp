@@ -104,7 +104,7 @@ namespace LV {
   {
       visual_return_if_fail (data != nullptr);
 
-      auto buffer = Buffer::create (data, nbytes, false);
+      auto buffer = Buffer::wrap (data, nbytes, false);
       add_buffer (buffer);
   }
 
@@ -201,7 +201,7 @@ namespace LV {
               }
 
               if (curposition + int (tempbuf->get_size ()) > nbytes) {
-                  auto buf = Buffer::create (tempbuf->get_data (), nbytes - curposition, false);
+                  auto buf = Buffer::wrap (tempbuf->get_data (), nbytes - curposition, false);
                   data->put (buf, curposition);
 
                   return true;

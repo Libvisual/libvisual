@@ -312,8 +312,8 @@ static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
 	float freq[256];
 	float pcm[256];
 
-	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq));
-	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm));
+	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq), FALSE);
+	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm), FALSE);
 
 	visual_audio_get_sample_mixed_simple (audio, pcmb, 2, VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);

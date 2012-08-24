@@ -262,7 +262,7 @@ static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	visual_return_val_if_fail( priv != NULL, -1 );
 	visual_return_val_if_fail( priv->mmap_area != NULL, -1 );
 
-	buffer = visual_buffer_new_wrap_data ( (uint8_t *)priv->mmap_area + sizeof( mplayer_data_t ), 2048 / sizeof( int16_t ) );
+	buffer = visual_buffer_new_wrap_data ( (uint8_t *)priv->mmap_area + sizeof( mplayer_data_t ), 2048 / sizeof( int16_t ), FALSE );
 	visual_audio_input (audio, buffer,
 	                    VISUAL_AUDIO_SAMPLE_RATE_44100,
 	                    VISUAL_AUDIO_SAMPLE_FORMAT_S16,

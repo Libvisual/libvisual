@@ -62,11 +62,12 @@ namespace LV {
       /**
        * Constructs a new Buffer with externally allocated content.
        *
-       * @param data The which the Buffer encapsulates
+       * @param data Pointer to the data which the newly allocated
+       *             Buffer encapsulates
        * @param size The size of the data (in bytes)
        * @param own  Indicates whether to take ownership
        */
-      static BufferPtr create (void *data, std::size_t size, bool own = true);
+      static BufferPtr wrap (void *data, std::size_t size, bool own = true);
 
       /**
        * Constructs a new Buffer
@@ -230,8 +231,7 @@ struct _VisBuffer;
 LV_BEGIN_DECLS
 
 LV_API VisBuffer *visual_buffer_new (void);
-LV_API VisBuffer *visual_buffer_new_with_data (void *data, visual_size_t size);
-LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size);
+LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own);
 LV_API VisBuffer *visual_buffer_new_allocate  (visual_size_t size);
 LV_API VisBuffer *visual_buffer_clone (VisBuffer *source);
 
