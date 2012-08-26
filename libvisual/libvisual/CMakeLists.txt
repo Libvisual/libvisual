@@ -6,7 +6,10 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${ORC_INCLUDE_DIRS}
+  ${PNG_INCLUDE_DIRS}
 )
+
+ADD_DEFINITIONS(${PNG_DEFINITIONS})
 
 LINK_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
@@ -134,6 +137,7 @@ SET(libvisual_SOURCES
   private/lv_video_blit_simd.cpp
   private/lv_video_scale_simd.cpp
   private/lv_video_bmp.cpp
+  private/lv_video_png.cpp
   private/lv_buffer_ring.cpp
 
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
@@ -172,6 +176,7 @@ TARGET_LINK_LIBRARIES(libvisual
   ${ORC_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
   ${PLATFORM_SPECIFIC_LIBS}
+  ${PNG_LIBRARIES}
 )
 
 INSTALL(TARGETS libvisual DESTINATION ${CMAKE_INSTALL_LIBDIR})

@@ -35,6 +35,7 @@
 #include "private/lv_video_fill.hpp"
 #include "private/lv_video_transform.hpp"
 #include "private/lv_video_bmp.hpp"
+#include "private/lv_video_png.hpp"
 #include <fstream>
 
 namespace LV {
@@ -165,12 +166,22 @@ namespace LV {
           return nullptr;
       }
 
-      return bitmap_load_bmp (stream);
+      return create_from_stream (stream);
   }
 
   VideoPtr Video::create_from_stream (std::istream& input)
   {
-      return bitmap_load_bmp (input);
+      auto image = bitmap_load_bmp (input);
+      if (image) {
+          return image;
+      }
+
+      image = bitmap_load_png (input);
+      if (image) {
+          return image;
+      }
+
+      return {};
   }
 
   VideoPtr Video::create_scale_depth (VideoConstPtr const& src,
