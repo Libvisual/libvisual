@@ -35,7 +35,9 @@ namespace LV {
         auto  io_ptr = png_get_io_ptr (png_ptr);
         auto& input  = *static_cast<std::istream*> (io_ptr);
 
-        input.read (reinterpret_cast<char*> (data), length);
+        if (!input.read (reinterpret_cast<char*> (data), length)) {
+            std::longjmp (png_jmpbuf (png_ptr), -1);
+        }
     }
 
     void handle_png_warning (png_structp png_ptr, char const* message)
@@ -52,6 +54,8 @@ namespace LV {
 
   VideoPtr bitmap_load_png (std::istream& input)
   {
+      auto saved_stream_pos = input.tellg ();
+
       png_byte signature[8];
       input.read (reinterpret_cast<char*> (signature), sizeof (signature));
 
@@ -82,6 +86,8 @@ namespace LV {
       uint8_t** pixel_row_ptrs = nullptr;
 
       if (setjmp (png_jmpbuf (png_ptr))) {
+          input.seekg (saved_stream_pos);
+
           png_destroy_read_struct (&png_ptr, &info_ptr, &end_info);
 
           delete []pixel_row_ptrs;

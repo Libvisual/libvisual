@@ -247,6 +247,8 @@ namespace LV {
 
   VideoPtr bitmap_load_bmp (std::istream& fp)
   {
+      auto saved_stream_pos = fp.tellg ();
+
       /* The win32 BMP header */
       uint32_t bf_size = 0;
       uint32_t bf_bits = 0;
@@ -270,6 +272,7 @@ namespace LV {
       fp.read (magic, 2);
       if (std::strncmp (magic, "BM", 2) != 0) {
           visual_log (VISUAL_LOG_WARNING, "Not a bitmap file");
+          fp.seekg (saved_stream_pos);
           return nullptr;
       }
 
@@ -335,11 +338,13 @@ namespace LV {
       /* Check if we can handle it */
       if (bi_bitcount != 1 && bi_bitcount != 4 && bi_bitcount != 8 && bi_bitcount != 24) {
           visual_log (VISUAL_LOG_ERROR, "Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported");
+          fp.seekg (saved_stream_pos);
           return nullptr;
       }
 
       if (bi_compression > 3) {
           visual_log (VISUAL_LOG_ERROR, "Bitmap uses an invalid or unsupported compression scheme");
+          fp.seekg (saved_stream_pos);
           return nullptr;
       }
 
@@ -404,6 +409,7 @@ namespace LV {
       }
 
       if (error != VISUAL_OK) {
+          fp.seekg (saved_stream_pos);
           return nullptr;
       }
 
