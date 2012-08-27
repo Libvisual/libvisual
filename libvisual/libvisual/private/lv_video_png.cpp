@@ -155,7 +155,7 @@ namespace LV {
 
       pixel_row_ptrs = new uint8_t*[height];
 
-      for (int y = 0; y < height; y++) {
+      for (unsigned int y = 0; y < height; y++) {
           pixel_row_ptrs[y] = pixels + y * row_stride;
       }
 
