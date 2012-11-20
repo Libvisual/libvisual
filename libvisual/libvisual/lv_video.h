@@ -1,11 +1,12 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *      Duilio J. Protti <dprotti@users.sourceforge.net>
- *      Chong Kai Xiong <descender@phreaker.net>
- *      Jean-Christophe Hoelt <jeko@ios-software.com>
+ *          Duilio J. Protti <dprotti@users.sourceforge.net>
+ *          Chong Kai Xiong <descender@phreaker.net>
+ *          Jean-Christophe Hoelt <jeko@ios-software.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -58,7 +59,6 @@ typedef enum {
     VISUAL_VIDEO_DEPTH_32BIT    = 8,    /**< 32 bits surface flag. */
     VISUAL_VIDEO_DEPTH_GL       = 16,   /**< openGL surface flag. */
     VISUAL_VIDEO_DEPTH_ENDLIST  = 32,   /**< Used to mark the end of the depth list. */
-    VISUAL_VIDEO_DEPTH_ERROR    = -1,   /**< Used when there is an error. */
     VISUAL_VIDEO_DEPTH_ALL      = VISUAL_VIDEO_DEPTH_8BIT
                                 | VISUAL_VIDEO_DEPTH_16BIT
                                 | VISUAL_VIDEO_DEPTH_24BIT
@@ -128,8 +128,9 @@ struct _VisVideoAttrOptions {
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_intrusive_ptr.hpp>
+#include <iosfwd>
+#include <memory>
 
 namespace LV {
 
@@ -141,6 +142,10 @@ namespace LV {
   class LV_API Video
   {
   public:
+
+      Video (Video const&) = delete;
+
+      Video& operator= (Video const&) = delete;
 
       /**
        * Creates a new empty Video object.
@@ -161,6 +166,17 @@ namespace LV {
       static VideoPtr create_sub (VideoConstPtr const& src, Rect const& srect);
 
       static VideoPtr create_sub (Rect const& drect, VideoConstPtr const& src, Rect const& srect);
+
+      /**
+       * Creates a new Video object from an image file.
+       *
+       * @param path path to file to load
+       *
+       * @return a Video object containing the image, or nullptr on failure
+       */
+      static VideoPtr create_from_file (std::string const& path);
+
+      static VideoPtr create_from_stream (std::istream& input);
 
       ~Video ();
 
@@ -284,6 +300,8 @@ namespace LV {
        */
       void set_palette (Palette const& palette);
 
+      void set_palette (Palette&& palette);
+
       /**
        * Returns the color palette.
        *
@@ -322,6 +340,8 @@ namespace LV {
        * @return the extents
        */
       Rect const& get_extents () const;
+
+      void set_extents(Rect area);
 
       void set_compose_type (VisVideoComposeType type);
       void set_compose_colorkey (Color const& color);
@@ -420,13 +440,11 @@ namespace LV {
       friend class VideoBlit;
 
       class Impl;
+      const std::unique_ptr<Impl> m_impl;
 
-      ScopedPtr<Impl> m_impl;
       mutable unsigned int m_ref_count;
 
       Video ();
-      Video (Video const&);
-      Video& operator= (Video const&);
   };
 
   inline void intrusive_ptr_add_ref (Video* video)
@@ -458,6 +476,7 @@ LV_BEGIN_DECLS
 LV_API VisVideo *visual_video_new (void);
 LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
 LV_API VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth);
+LV_API VisVideo *visual_video_load_from_file  (const char *path);
 
 LV_API void visual_video_ref   (VisVideo *video);
 LV_API void visual_video_unref (VisVideo *video);

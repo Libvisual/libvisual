@@ -1,8 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,8 +35,8 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_intrusive_ptr.hpp>
+#include <memory>
 #include <cstdlib>
 
 namespace LV {
@@ -48,6 +50,10 @@ namespace LV {
   {
   public:
 
+      Buffer (Buffer const&) = delete;
+
+      Buffer& operator= (Buffer const&) = delete;
+
       /**
        * Constructs a new empty Buffer.
        */
@@ -56,11 +62,12 @@ namespace LV {
       /**
        * Constructs a new Buffer with externally allocated content.
        *
-       * @param data The which the Buffer encapsulates
+       * @param data Pointer to the data which the newly allocated
+       *             Buffer encapsulates
        * @param size The size of the data (in bytes)
        * @param own  Indicates whether to take ownership
        */
-      static BufferPtr create (void *data, std::size_t size, bool own = true);
+      static BufferPtr wrap (void *data, std::size_t size, bool own = true);
 
       /**
        * Constructs a new Buffer
@@ -183,13 +190,11 @@ namespace LV {
   private:
 
       class Impl;
+      const std::unique_ptr<Impl> m_impl;
 
-      ScopedPtr<Impl>      m_impl;
       mutable unsigned int m_ref_count;
 
       Buffer ();
-      Buffer (Buffer const&);
-      Buffer& operator= (Buffer const&);
   };
 
   inline void intrusive_ptr_add_ref (Buffer* buffer)
@@ -226,8 +231,7 @@ struct _VisBuffer;
 LV_BEGIN_DECLS
 
 LV_API VisBuffer *visual_buffer_new (void);
-LV_API VisBuffer *visual_buffer_new_with_data (void *data, visual_size_t size);
-LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size);
+LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own);
 LV_API VisBuffer *visual_buffer_new_allocate  (visual_size_t size);
 LV_API VisBuffer *visual_buffer_clone (VisBuffer *source);
 

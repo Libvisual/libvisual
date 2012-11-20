@@ -38,6 +38,13 @@ static void set_vector (Vect v, float x, float y, float z)
 	v[2] = z;
 }
 
+static void copy_vector (Vect v, Vect src)
+{
+	v[0] = src[0];
+	v[1] = src[1];
+	v[2] = src[2];
+}
+
 int init_flower(FlowerInternal *flower)
 {
 	Vect *v;
@@ -96,6 +103,8 @@ static void splineTCP(FlowerInternal *flower, float u, Vect * control, Vect * re
 					+ (1-flower->bias)*(1+flower->continuity)*(control[2][1]-control[1][1])))
 		+ (u*u*u - u*u)*(0.5*(1-flower->tension)*((1+flower->bias)*(1+flower->continuity)*(control[2][1]-control[1][1])
 					+ (1-flower->bias)*(1-flower->continuity)*(control[3][1]-control[2][1])));
+
+    (*result)[2] = 0;
 }
 
 static void lights(FlowerInternal *flower) {
@@ -139,8 +148,8 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 	float ti=visual_timer_elapsed_msecs(flower->timer);
 	Vect r,r_morph,n;
 	float rf[17*NBTW*3];
-	int c;
-	c=0;
+	int c = 0;
+
 	for (i=0; i<size-3; i++) {
 		for (j=0; j<NBTW; j++) {
 			splineTCP(flower, (float)j/NBTW, &flower->kukka[i], &r);
@@ -149,10 +158,13 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 				rf[c*3+k]=(1.0-factor)*r[k]+factor*r_morph[k];
 
 			rf[c*3+2]=sin(c*VISUAL_MATH_PI/(NBTW*4))*0.07;
-			c+=1;
-
+			c++;
 		}
 	}
+
+	Vect vertices[4];
+	Vect normals[4];
+
 	for (i=0; i<(c-1); i++) {
 		vnyt=(float)i/(float)(c-1)*(float)(size-3);
 		vnex=(float)(i+1.0)/(float)(c-1)*(float)(size-3);
@@ -171,19 +183,26 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 		n[2]/=l;
 
 		glEnable(GL_LIGHTING);
-		glColor3f(1.0,1.0,1.0);
+		glColor4f(1.0,1.0,1.0,1.0);
 		glPolygonOffset(3.0,2.0);
 		glEnable(GL_POLYGON_OFFSET_FILL);
-		glBegin(GL_POLYGON);
-		glNormal3fv((GLfloat *)n);
-		glVertex3f(1.0*rf[i*3],-rf[i*3+2],rf[i*3+1]);
-		glNormal3fv((GLfloat *)n);
-		glVertex3f(1.0*rf[i*3+3],-rf[i*3+3+2],rf[i*3+3+1]);
-		glNormal3fv((GLfloat *)n);
-		glVertex3f(1.0*rf[i*3+3],+rf[i*3+3+2],rf[i*3+3+1]);
-		glNormal3fv((GLfloat *)n);
-		glVertex3f(1.0*rf[i*3],+rf[i*3+2],rf[i*3+1]);
-		glEnd();
+
+		set_vector(vertices[0],1.0*rf[i*3],-rf[i*3+2],rf[i*3+1]);
+		copy_vector(normals[0],n);
+		set_vector(vertices[1],1.0*rf[i*3+3],-rf[i*3+3+2],rf[i*3+3+1]);
+		copy_vector(normals[1],n);
+		set_vector(vertices[2],1.0*rf[i*3+3],+rf[i*3+3+2],rf[i*3+3+1]);
+		copy_vector(normals[2],n);
+		set_vector(vertices[3],1.0*rf[i*3],+rf[i*3+2],rf[i*3+1]);
+		copy_vector(normals[3],n);
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, vertices);
+		glNormalPointer(GL_FLOAT, 0, normals);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_DST_COLOR,GL_SRC_COLOR);
@@ -192,13 +211,17 @@ static void spline3DMorph(FlowerInternal *flower, float factor, float poikkeama)
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glLineWidth(2.0);
 		glDisable(GL_LIGHTING);
-		glColor3f(0.0,0.0,0.0);
-		glBegin(GL_LINE_LOOP);
-		glVertex3f(1.0*rf[i*3],-rf[i*3+2],rf[i*3+1]*1);
-		glVertex3f(1.0*rf[i*3+3],-rf[i*3+3+2],rf[i*3+3+1]*1);
-		glVertex3f(1.0*rf[i*3+3],+rf[i*3+3+2],rf[i*3+3+1]*1);
-		glVertex3f(1.0*rf[i*3],+rf[i*3+2],rf[i*3+1]*1);
-		glEnd();
+		glColor4f(0.0,0.0,0.0,1.0);
+
+		set_vector(vertices[0],1.0*rf[i*3],-rf[i*3+2],rf[i*3+1]*1);
+		set_vector(vertices[1],1.0*rf[i*3+3],-rf[i*3+3+2],rf[i*3+3+1]*1);
+		set_vector(vertices[2],1.0*rf[i*3+3],+rf[i*3+3+2],rf[i*3+3+1]*1);
+		set_vector(vertices[3],1.0*rf[i*3],+rf[i*3+2],rf[i*3+1]*1);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, vertices);
+		glDrawArrays(GL_LINE_LOOP, 0, 4);
+		glDisableClientState(GL_VERTEX_ARRAY);
+
 		glEnable(GL_LIGHTING);
 		glEnable(GL_DEPTH_TEST);
 	}

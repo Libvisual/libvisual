@@ -131,8 +131,8 @@ static int act_jess_init (VisPluginData *plugin)
 
 	priv->jess_pal = visual_palette_new (256);
 
-	priv->pcm_data1 = visual_buffer_new_wrap_data (priv->pcm_data[0], 512 * sizeof (float));
-	priv->pcm_data2 = visual_buffer_new_wrap_data (priv->pcm_data[1], 512 * sizeof (float));
+	priv->pcm_data1 = visual_buffer_new_wrap_data (priv->pcm_data[0], 512 * sizeof (float), FALSE);
+	priv->pcm_data2 = visual_buffer_new_wrap_data (priv->pcm_data[1], 512 * sizeof (float), FALSE);
 
 	start_ticks (priv);
 
@@ -282,7 +282,7 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	VisBuffer* fbuf[2];
 	float freq[2][256];
 	short freqdata[2][256];
-	int i;
+	int i, depth;
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 	visual_return_val_if_fail (audio != NULL, -1);
@@ -299,8 +299,8 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	visual_audio_get_sample (audio, priv->pcm_data1, VISUAL_AUDIO_CHANNEL_LEFT);
 	visual_audio_get_sample (audio, priv->pcm_data2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	fbuf[0] = visual_buffer_new_wrap_data (freq[0], sizeof (freq[0]));
-	fbuf[1] = visual_buffer_new_wrap_data (freq[1], sizeof (freq[1]));
+	fbuf[0] = visual_buffer_new_wrap_data (freq[0], sizeof (freq[0]), FALSE);
+	fbuf[1] = visual_buffer_new_wrap_data (freq[1], sizeof (freq[1]), FALSE);
 
 	visual_audio_get_spectrum_for_sample (fbuf[0], priv->pcm_data1, FALSE);
 	visual_audio_get_spectrum_for_sample (fbuf[1], priv->pcm_data2, FALSE);
@@ -324,7 +324,18 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	C_dEdt(priv);
 
 	priv->pitch = visual_video_get_pitch (video);
+
+    depth = priv->video;
 	priv->video = visual_video_depth_value_from_enum (visual_video_get_depth (video));
+    if(depth != priv->video)
+    {
+        free(priv->buffer);
+        if(priv->video == 8)
+            priv->buffer = (uint8_t *)malloc(priv->resx * priv->resy);
+        else
+            priv->buffer = (uint8_t *)malloc(priv->resx * priv->resy * 4);
+    }
+
 	priv->pixel = ((uint8_t *) visual_video_get_pixels (video));
 
 	renderer (priv);

@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_time.c,v 1.29 2006/01/23 22:32:42 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,13 +26,14 @@
 #include "config.h"
 #include "lv_time.h"
 #include "lv_common.h"
+#include <thread>
 
 #if defined(VISUAL_OS_WIN32)
+// Performance counters, timer resolution, and sleep function
 #include <windows.h>
 #else
-#include <unistd.h>
+// High-resolution monotonic clock, and nanosleep (Android)
 #include <time.h>
-#include <errno.h>
 #endif
 
 namespace LV {
@@ -52,13 +53,24 @@ namespace LV {
     bool active;
   };
 
-
   void Time::init ()
   {
 #if defined(VISUAL_OS_WIN32)
       LARGE_INTEGER freq;
       QueryPerformanceFrequency (&freq);
       perf_counter_freq = freq.QuadPart;
+#endif
+
+      // Increase timer resolution for fine-grained sleeps
+#if defined(VISUAL_WITH_MINGW) && defined(ENABLE_WIN32_HIGH_RES_SLEEP)
+      timeBeginPeriod (1);
+#endif
+  }
+
+  void Time::deinit ()
+  {
+#if defined(VISUAL_WITH_MINGW) && defined(ENABLE_WIN32_HIGH_RES_SLEEP)
+      timeEndPeriod (1);
 #endif
   }
 
@@ -76,6 +88,23 @@ namespace LV {
 
       return Time (clock_time.tv_sec, clock_time.tv_nsec);
 #endif
+  }
+
+  void Time::usleep (uint64_t usecs)
+  {
+      // libstdc++'s sleep_for() requires the POSIX function
+      // nanosleep() to work. This is a workaround using the Windows
+      // Sleep() function.
+  #if defined(VISUAL_WITH_MINGW)
+      Sleep (usecs / VISUAL_USEC_PER_MSEC);
+  #elif defined(VISUAL_OS_ANDROID)
+      timespec request;
+      request.tv_sec  = usecs / VISUAL_USEC_PER_SEC;
+      request.tv_nsec = VISUAL_NSEC_PER_USEC * (usecs % VISUAL_USEC_PER_SEC);
+      nanosleep (&request, nullptr);
+  #else
+      std::this_thread::sleep_for (std::chrono::microseconds (usecs));
+  #endif
   }
 
   Timer::Timer ()
@@ -145,29 +174,6 @@ namespace LV {
   bool Timer::is_past (Time const& age) const
   {
       return elapsed () > age;
-  }
-
-
-  void usleep (uint64_t usecs)
-  {
-#ifdef HAVE_NANOSLEEP
-      struct timespec request, remaining;
-      request.tv_sec  = usecs / VISUAL_USEC_PER_SEC;
-      request.tv_nsec = 1000 * (usecs % VISUAL_USEC_PER_SEC);
-      while (nanosleep (&request, &remaining) == EINTR)
-          request = remaining;
-#elif defined(HAVE_SELECT)
-      struct timeval tv;
-      tv.tv_sec = usecs / VISUAL_USEC_PER_SEC;
-      tv.tv_usec = usecs % VISUAL_USEC_PER_SEC;
-      select (0, NULL, NULL, NULL, &tv);
-#elif defined(HAVE_USLEEP)
-      usleep (usecs);
-#elif defined(VISUAL_OS_WIN32)
-      Sleep (usecs / 1000);
-#else
-#     warning LV::usleep() will not work!
-#endif // HAVE_NANOSLEEP
   }
 
 } // LV namespace

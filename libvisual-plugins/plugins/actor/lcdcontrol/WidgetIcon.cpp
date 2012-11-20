@@ -166,14 +166,18 @@ void WidgetIcon::Update() {
 void WidgetIcon::Start() {
     if(update_ < 0) 
         return;
-    std::map<std::string, Widget *> widgets;
-    widgets = visitor_->GetWidgets();
-    for(std::map<std::string, Widget *>::iterator it = widgets.begin();
-        it != widgets.end() && lcd_type_ == LCD_TEXT; it++) {
-        if(it->second->GetWidgetBase() == widget_base_ && 
-            it->second->GetStarted()) {
-            started_ = true;
-            break;
+    started_ = false;
+    if(type_ == LCD_TEXT)
+    {
+        std::map<std::string, Widget *> widgets;
+        widgets = visitor_->GetWidgets();
+        for(std::map<std::string, Widget *>::iterator it = widgets.begin();
+            it != widgets.end() && lcd_type_ == LCD_TEXT; it++) {
+            if(it->second->GetWidgetBase() == widget_base_ && 
+                it->second->GetStarted()) {
+                started_ = true;
+                break;
+            }
         }
     }
     if(!started_) {
@@ -184,7 +188,7 @@ void WidgetIcon::Start() {
 }
 
 void WidgetIcon::Stop() {
-    //timer_->stop();
+    timer_->Stop();
     started_ = false;
     ch_ = -1;
 }

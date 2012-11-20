@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_time.h,v 1.21 2006/02/05 18:45:57 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,6 +36,7 @@
 #define VISUAL_NSEC_PER_SEC    1000000000
 #define VISUAL_USEC_PER_SEC    1000000
 #define VISUAL_MSEC_PER_SEC    1000
+#define VISUAL_USEC_PER_MSEC   1000
 #define VISUAL_NSEC_PER_MSEC   1000000
 #define VISUAL_NSEC_PER_USEC   1000
 
@@ -45,8 +46,8 @@
 
 #ifdef __cplusplus
 
+#include <memory>
 #include <cmath>
-#include <libvisual/lv_scoped_ptr.hpp>
 
 namespace LV {
 
@@ -156,8 +157,16 @@ namespace LV {
           return sec * VISUAL_USEC_PER_SEC + nsec / VISUAL_NSEC_PER_USEC;
       }
 
-      // FIXME: Find a better place to put this
+      //! Sleeps for a period of time. This will yield the calling thread.
+      static void usleep (uint64_t usecs);
+
+      // FIXME: Find a better place to put these functions
+
+      //! Initializes LV's timer subsystem. DO NOT use.
       static void init ();
+
+      //! Deinitializes LV's timer subsystem. DO NOT use.
+      static void deinit ();
   };
 
   class LV_API Timer
@@ -197,11 +206,8 @@ namespace LV {
   private:
 
       class Impl;
-
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
   };
-
-  void usleep (uint64_t usecs);
 
 } // LV namespace
 

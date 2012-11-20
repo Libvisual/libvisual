@@ -24,6 +24,7 @@
 #include "actor_plazma.h"
 #include "plazma.h"
 #include <libvisual/libvisual.h>
+#include <limits.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -67,30 +68,46 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int act_plazma_init (VisPluginData *plugin)
 {
-	PlazmaPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("bass sensitivity",	0),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("plazma effect",	TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect option",	FALSE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("lines",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("spectrum",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER	("3d effect",		TRUE),
-		VISUAL_PARAM_LIST_ENTRY_FLOAT	("rotation speed",	0.4),
-		VISUAL_PARAM_LIST_END
-	};
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (PlazmaPrivate, 1);
+	PlazmaPrivate *priv = visual_mem_new0 (PlazmaPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	priv->colors = visual_palette_new (256);
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_integer ("bass_sensitivity",
+                                                          N_("Bass sensitivity"),
+                                                          0,
+                                                          visual_param_in_range_integer (0, INT_MAX)),
+                                visual_param_new_bool    ("plasma_effect",
+                                                          N_("Plasma effect"),
+                                                          TRUE,
+                                                          NULL),
+                                visual_param_new_bool    ("3d_effect_option",
+                                                          N_("3D effect option"),
+                                                          FALSE,
+                                                          NULL),
+                                visual_param_new_bool    ("lines",
+                                                          N_("Lines"),
+                                                          TRUE,
+                                                          NULL),
+                                visual_param_new_bool    ("spectrum",
+                                                          N_("Spectrum"),
+                                                          TRUE,
+                                                          NULL),
+                                visual_param_new_bool    ("3d_effect",
+                                                          N_("3D effect"),
+                                                          TRUE,
+                                                          NULL),
+                                visual_param_new_float   ("rotation_speed",
+                                                          N_("Rotation speed"),
+                                                          0.4,
+                                                          NULL),
+                                NULL);
 
-	visual_param_container_add_many (paramcontainer, params);
+	priv->colors = visual_palette_new (256);
 
 	priv->val_maxi =		127;
 	priv->chcol0 =			36;
@@ -158,7 +175,7 @@ static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -169,27 +186,27 @@ static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "bass sensitivity")) {
-					priv->bass_sensibility = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "bass_sensitivity")) {
+					priv->bass_sensibility = visual_param_get_value_integer (param);
 
-				} else if (visual_param_entry_is (param, "plasma effect")) {
-					priv->effect = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "plasma_effect")) {
+					priv->effect = visual_param_get_value_bool (param);
 					_plazma_change_effect (priv);
 
-				} else if (visual_param_entry_is (param, "3d effect option")) {
-					priv->options = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "3d_effect_option")) {
+					priv->options = visual_param_get_value_bool (param);
 
-				} else if (visual_param_entry_is (param, "lines")) {
-					priv->lines = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "lines")) {
+					priv->lines = visual_param_get_value_bool (param);
 
-				} else if (visual_param_entry_is (param, "spectrum")) {
-					priv->spectrum = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "spectrum")) {
+					priv->spectrum = visual_param_get_value_bool (param);
 
-				} else if (visual_param_entry_is (param, "3d effect")) {
-					priv->use_3d = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "3d_effect")) {
+					priv->use_3d = visual_param_get_value_bool (param);
 
-				} else if (visual_param_entry_is (param, "rotation speed")) {
-					priv->rot_tourni = visual_param_entry_get_float (param);
+				} else if (visual_param_has_name (param, "rotation_speed")) {
+					priv->rot_tourni = visual_param_get_value_float (param);
 				}
 
 				break;
@@ -216,14 +233,14 @@ static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	VisBuffer *fbuf;
 	int i;
 
-	pcmback = visual_buffer_new_wrap_data (priv->pcm_buffer, sizeof (float) * 1024);
+	pcmback = visual_buffer_new_wrap_data (priv->pcm_buffer, sizeof (float) * 1024, FALSE);
 	visual_audio_get_sample_mixed (audio, pcmback, TRUE, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT,
 			1.0,
 			1.0);
 
-	fbuf = visual_buffer_new_wrap_data (priv->render_buffer, sizeof (float) * 256);
+	fbuf = visual_buffer_new_wrap_data (priv->render_buffer, sizeof (float) * 256, FALSE);
 	visual_audio_get_spectrum_for_sample (fbuf, pcmback, TRUE);
 
 	visual_buffer_unref (pcmback);

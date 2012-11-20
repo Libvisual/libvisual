@@ -1,10 +1,11 @@
 /* Libvisual - The audio visualisation framework cli tool
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
- * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *          Daniel Hiepler <daniel@niftylight.de>
+ * Authors: Daniel Hiepler <daniel@niftylight.de>
+ *          Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,18 +26,22 @@
 #ifndef _LV_TOOL_DISPLAY_HPP
 #define _LV_TOOL_DISPLAY_HPP
 
-#include <string>
 #include <libvisual/libvisual.h>
-#include <libvisual/lv_scoped_ptr.hpp>
+#include <memory>
+#include <string>
 
-class SADisplayDriver;
+class DisplayDriver;
 
-class SADisplay {
+class Display {
 public:
 
-    explicit SADisplay (std::string const& driver_name);
+    explicit Display (std::string const& driver_name);
 
-    ~SADisplay ();
+    Display (Display const&) = delete;
+
+    ~Display ();
+
+    Display& operator= (Display const&) = delete;
 
     LV::VideoPtr create (VisVideoDepth depth,
                          VisVideoAttrOptions const* vidoptions,
@@ -71,7 +76,7 @@ public:
 private:
 
     class Impl;
-    LV::ScopedPtr<Impl> m_impl;
+    const std::unique_ptr<Impl> m_impl;
 };
 
 #endif // _LV_TOOL_DISPLAY_HPP

@@ -38,13 +38,6 @@
 
 namespace LCD {
 
-struct proxy {
-    VisVideo *video;
-    VisPalette *pal;
-    const char *plugin;
-    int16_t pcm_data[1024];
-};
-
 class LCDText;
 class LCDGraphic;
 
@@ -74,7 +67,6 @@ class WidgetVisualization : public Widget {
     void *buffer_;
 
     public:
-    proxy proxy_;
     LV::Video *video_;
     LV::Bin *bin_;
     VisActor *actor_;
@@ -82,10 +74,12 @@ class WidgetVisualization : public Widget {
     VisAudio *audio_;
 
     VisVideoDepth depth_;
-    std::string morph_;
+    std::string morph_plugin_;
+    std::string actor_plugin_;
+    std::string input_plugin_;
+    std::string skip_actors_;
     int morph_timeout_;
     bool morph_chosen_;
-    std::string skip_actors_;
     char alpha_;
 
     void (*Draw)(WidgetVisualization *widget);
@@ -102,7 +96,6 @@ class WidgetVisualization : public Widget {
     void Start();
     void Stop();
     int GetStyle() { return style_; }
-    proxy GetProxy() { return proxy_; }
     void *GetBuffer() { return buffer_; }
     char *GetPeakBuffer() { return peak_buffer_; }
     bool HasChars() { return has_chars_; }

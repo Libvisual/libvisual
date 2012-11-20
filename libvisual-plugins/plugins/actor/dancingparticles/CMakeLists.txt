@@ -1,20 +1,8 @@
-SET(DANCINGPARTICLES_DATA_DIR ${LV_PLUGINS_DATA_DIR}/actor/actor_dancingparticles)
-SET(DANCINGPARTICLES_DATA_DIR_FULL ${LV_PLUGINS_DATA_DIR_FULL}/actor/actor_dancingparticles)
+INCLUDE(LVBuildPlugin)
 
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-  ${OPENGL_INCLUDE_DIR}
-)
+SET(DANCINGPARTICLES_DATA_DIR ${LV_PLUGIN_DATA_DIR}/actor/actor_dancingparticles)
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-ADD_DEFINITIONS(-DDATA_DIR="${DANCINGPARTICLES_DATA_DIR_FULL}")
-
-SET(actor_dancingparticles_SOURCES
+SET(SOURCES
   actor_dancingparticles.cpp
   epic.cpp
   etoile.cpp
@@ -24,18 +12,20 @@ SET(actor_dancingparticles_SOURCES
   t1font.cpp
 )
 
-SET(actor_dancingparticles_SCRIPTS
+LV_BUILD_ACTOR_PLUGIN(dancingparticles
+  SOURCES      ${SOURCES}
+  COMPILE_DEFS -DDATA_DIR="${DANCINGPARTICLES_DATA_DIR}"
+  INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} ${T1LIB_INCLUDE_DIR}
+  LINK_LIBS    ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${T1LIB_LIBRARY} m
+)
+
+SET(DATA_FILES
   dance.epic
   dance.fig
+  dancingparticles.conf
+  font.pfb
+  xmms.epic
+  xmms.fig
 )
 
-ADD_LIBRARY(actor_dancingparticles MODULE ${actor_dancingparticles_SOURCES})
-
-TARGET_LINK_LIBRARIES(actor_dancingparticles
-  ${LIBVISUAL_LIBRARIES}
-  ${OPENGL_gl_LIBRARY}
-  ${OPENGL_glu_LIBRARY}
-)
-
-INSTALL(TARGETS actor_dancingparticles LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})
-INSTALL(FILES ${actor_dancingparticles_SCRIPTS} DESTINATION ${DANCINGPARTICLES_DATA_DIR})
+INSTALL(FILES ${DATA_FILES} DESTINATION ${DANCINGPARTICLES_DATA_DIR})

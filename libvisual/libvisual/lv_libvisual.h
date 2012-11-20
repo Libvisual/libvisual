@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_libvisual.h,v 1.11 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,8 +36,8 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_singleton.hpp>
+#include <memory>
 #include <string>
 
 namespace LV {
@@ -54,6 +54,8 @@ namespace LV {
        * @param argv Argument strings
        */
       static void init (int& argc, char**& argv);
+
+      System (System const&) = delete;
 
       ~System ();
 
@@ -72,20 +74,19 @@ namespace LV {
       int get_api_version () const;
 
       /**
-       * Returns a pointer to the libvisual global VisParamContainer.
+       * Returns a pointer to the libvisual global parameters.
        *
-       * @return A pointer to the libvisual global VisParamContainer.
+       * @return A pointer to the libvisual global parameters.
        */
-      VisParamContainer* get_params () const;
+      VisParamList* get_params () const;
 
   private:
 
       class Impl;
 
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
 
       System (int& argc, char**& argv);
-      System (System const&);
   };
 
 } // LV namespace
@@ -105,7 +106,7 @@ LV_API const char *visual_get_version (void);
 
 LV_API int visual_get_api_version (void);
 
-LV_API VisParamContainer *visual_get_params (void);
+LV_API VisParamList *visual_get_params (void);
 
 LV_END_DECLS
 

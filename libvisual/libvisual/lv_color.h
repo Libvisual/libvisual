@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_color.h,v 1.17 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -149,18 +149,21 @@ struct _VisColor
 
 #define VISUAL_COLOR(obj) (VISUAL_CHECK_CAST ((obj), VisColor))
 
-LV_API VisColor *visual_color_new (void);
-LV_API void visual_color_free (VisColor *color);
+LV_API VisColor *visual_color_new   (void);
+LV_API VisColor *visual_color_clone (VisColor *color);
+LV_API void      visual_color_free  (VisColor *color);
 
-LV_API int visual_color_set (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
-LV_API int visual_color_set_with_alpha (VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 LV_API int visual_color_compare (VisColor *src1, VisColor *src2);
-LV_API int visual_color_from_hsv (VisColor *color, float h, float s, float v);
-LV_API int visual_color_to_hsv (VisColor *color, float *h, float *s, float *v);
-LV_API int visual_color_copy (VisColor *dest, VisColor *src);
 
-LV_API int visual_color_from_uint32 (VisColor *color, uint32_t rgb);
-LV_API int visual_color_from_uint16 (VisColor *color, uint16_t rgb);
+LV_API void visual_color_copy     (VisColor *dest, VisColor *src);
+LV_API void visual_color_set      (VisColor *color, uint8_t r, uint8_t g, uint8_t b);
+LV_API void visual_color_set_rgba (VisColor *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+LV_API void visual_color_set_hsv  (VisColor *color, float h, float s, float v);
+LV_API void visual_color_get_hsv  (VisColor *color, float *h, float *s, float *v);
+
+LV_API void visual_color_set_from_uint32 (VisColor *color, uint32_t rgb);
+LV_API void visual_color_set_from_uint16 (VisColor *color, uint16_t rgb);
+
 LV_API uint32_t visual_color_to_uint32 (VisColor *color);
 LV_API uint16_t visual_color_to_uint16 (VisColor *color);
 

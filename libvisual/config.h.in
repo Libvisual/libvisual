@@ -21,20 +21,8 @@
 #cmakedefine HAVE_DLFCN_H      1
 #cmakedefine HAVE_SCHED_H      1
 #cmakedefine HAVE_SYS_SCHED_H  1
-#cmakedefine HAVE_SYS_TIME_H   1
 #cmakedefine HAVE_UNISTD_H     1
 
 #cmakedefine HAVE_SYSCONF      1
-#cmakedefine HAVE_USLEEP       1
-#cmakedefine HAVE_NANOSLEEP    1
-
-#ifndef __cplusplus
-#cmakedefine HAVE_C_INLINE
-#cmakedefine HAVE_C_CONST
-#cmakedefine inline @INLINE@
-#ifndef HAVE_C_CONST
-#  define const
-#endif
-#endif
 
 #endif /* CONFIG_H */

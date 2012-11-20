@@ -1,3 +1,26 @@
+/* Libvisual - The audio visualisation framework.
+ *
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
+ *
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 #include "config.h"
 #include "lv_video_transform.hpp"
 #include "lv_video_private.hpp"
@@ -23,7 +46,7 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color8 (Video& dest, Video const& src)
   {
-      uint8_t* dest_pixel = static_cast<uint8_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint8_t*> (dest.get_pixels ());
 
       uint32_t du = (src.m_impl->width  << 16) / dest.m_impl->width;
       uint32_t dv = (src.m_impl->height << 16) / dest.m_impl->height;
@@ -31,7 +54,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = 0; y < dest.m_impl->height; y++, v += dv) {
-          uint8_t const* src_pixel_row = static_cast<uint8_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_row = static_cast<uint8_t const*> (src.m_impl->pixel_rows[v >> 16]);
 
           if (v >> 16 >= (unsigned int) src.m_impl->height)
               v -= 0x10000;
@@ -46,7 +69,7 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color16 (Video& dest, Video const& src)
   {
-      uint16_t* dest_pixel = static_cast<uint16_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint16_t*> (dest.get_pixels ());
 
       uint32_t du = (src.m_impl->width  << 16) / dest.m_impl->width;
       uint32_t dv = (src.m_impl->height << 16) / dest.m_impl->height;
@@ -54,7 +77,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = 0; y < dest.m_impl->height; y++, v += dv) {
-          uint16_t const* src_pixel_row = static_cast<uint16_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_row = static_cast<uint16_t const*> (src.m_impl->pixel_rows[v >> 16]);
 
           if (v >> 16 >= (unsigned int) src.m_impl->height)
               v -= 0x10000;
@@ -69,7 +92,7 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color24 (Video& dest, Video const& src)
   {
-      color24_t* dest_pixel = static_cast<color24_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<color24_t*> (dest.get_pixels ());
 
       uint32_t du = (src.m_impl->width << 16)  / dest.m_impl->width;
       uint32_t dv = (src.m_impl->height << 16) / dest.m_impl->height;
@@ -77,7 +100,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = 0; y < dest.m_impl->height; y++, v += dv) {
-          color24_t const* src_pixel_row = static_cast<color24_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_row = static_cast<color24_t const*> (src.m_impl->pixel_rows[v >> 16]);
 
           if (v >> 16 >= (unsigned int) src.m_impl->height)
               v -= 0x10000;
@@ -92,7 +115,7 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color32 (Video& dest, Video const& src)
   {
-      uint32_t* dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
 
       uint32_t du = (src.m_impl->width  << 16) / dest.m_impl->width;
       uint32_t dv = (src.m_impl->height << 16) / dest.m_impl->height;
@@ -100,7 +123,7 @@ namespace LV {
       uint32_t v = 0;
 
       for (int y = 0; y < dest.m_impl->height; y++, v += dv) {
-          uint32_t const* src_pixel_row = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_row = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
 
           if (v >> 16 >= (unsigned int) src.m_impl->height)
               v -= 0x10000;
@@ -115,7 +138,7 @@ namespace LV {
 
   void VideoTransform::scale_bilinear_color8 (Video& dest, Video const& src)
   {
-      uint8_t* dest_pixel = static_cast<uint8_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint8_t*> (dest.get_pixels ());
 
       uint32_t du = ((src.m_impl->width  - 1) << 16) / dest.m_impl->width;
       uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
@@ -126,8 +149,8 @@ namespace LV {
           if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
-          uint8_t const* src_pixel_rowu = static_cast<uint8_t const*> (src.m_impl->pixel_rows[v >> 16]);
-          uint8_t const* src_pixel_rowl = static_cast<uint8_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
+          auto src_pixel_rowu = static_cast<uint8_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_rowl = static_cast<uint8_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
 
           /* fracV = frac(v) = v & 0xffff */
           /* fixed point format convertion: fracV >>= 8) */
@@ -165,7 +188,7 @@ namespace LV {
 
   void VideoTransform::scale_bilinear_color16 (Video& dest, Video const& src)
   {
-      color16_t* dest_pixel = static_cast<color16_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<color16_t*> (dest.get_pixels ());
 
       uint32_t du = ((src.m_impl->width - 1)  << 16) / dest.m_impl->width;
       uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
@@ -176,8 +199,8 @@ namespace LV {
           if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
-          color16_t const* src_pixel_rowu = static_cast<color16_t const*> (src.m_impl->pixel_rows[v >> 16]);
-          color16_t const* src_pixel_rowl = static_cast<color16_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
+          auto src_pixel_rowu = static_cast<color16_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_rowl = static_cast<color16_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
 
           /* fracV = frac(v) = v & 0xffff */
           /* fixed point format convertion: fracV >>= 8) */
@@ -230,7 +253,7 @@ namespace LV {
 
   void VideoTransform::scale_bilinear_color24 (Video& dest, Video const& src)
   {
-      color24_t* dest_pixel = static_cast<color24_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<color24_t*> (dest.get_pixels ());
 
       uint32_t du = ((src.m_impl->width  - 1) << 16) / dest.m_impl->width;
       uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
@@ -241,8 +264,8 @@ namespace LV {
           if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
-          color24_t const* src_pixel_rowu = static_cast<color24_t const*> (src.m_impl->pixel_rows[v >> 16]);
-          color24_t const* src_pixel_rowl = static_cast<color24_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
+          auto src_pixel_rowu = static_cast<color24_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_rowl = static_cast<color24_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
 
           /* fracV = frac(v) = v & 0xffff */
           /* fixed point format convertion: fracV >>= 8) */
@@ -300,7 +323,7 @@ namespace LV {
           return;
       }
 
-      uint32_t* dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
+      auto dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
 
       uint32_t du = ((src.m_impl->width  - 1) << 16) / dest.m_impl->width;
       uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
@@ -311,8 +334,8 @@ namespace LV {
           if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
-          uint32_t const* src_pixel_rowu = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
-          uint32_t const* src_pixel_rowl = static_cast<uint32_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
+          auto src_pixel_rowu = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_rowl = static_cast<uint32_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
 
           /* fracV = frac(v) = v & 0xffff */
           /* fixed point format convertion: fracV >>= 8) */

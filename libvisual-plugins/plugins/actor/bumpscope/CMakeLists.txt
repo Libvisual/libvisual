@@ -1,24 +1,13 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-)
+INCLUDE(LVBuildPlugin)
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_bumpscope_SOURCES
+SET(SOURCES
   actor_bumpscope.c
   actor_bumpscope.h
   bump_scope.c
   bump_scope.h
 )
 
-ADD_LIBRARY(actor_bumpscope MODULE ${actor_bumpscope_SOURCES})
-
-TARGET_LINK_LIBRARIES(actor_bumpscope
-  ${LIBVISUAL_LIBRARIES}
+LV_BUILD_ACTOR_PLUGIN(bumpscope
+  SOURCES   ${SOURCES}
+  LINK_LIBS m
 )
-
-INSTALL(TARGETS actor_bumpscope LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

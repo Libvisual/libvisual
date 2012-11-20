@@ -1,15 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-  ${PROJECT_SOURCE_DIR}/plugins/actor/oinksie
-)
+INCLUDE(LVBuildPlugin)
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_oinksie_SOURCES
+SET(SOURCES
   actor_oinksie.c
   oinksie.c
   oinksie.h
@@ -42,10 +33,7 @@ SET(actor_oinksie_SOURCES
   actor_oinksie.c
 )
 
-ADD_LIBRARY(actor_oinksie MODULE ${actor_oinksie_SOURCES})
-
-TARGET_LINK_LIBRARIES(actor_oinksie
-  ${LIBVISUAL_LIBRARIES}
+LV_BUILD_ACTOR_PLUGIN(oinksie
+  SOURCES   ${SOURCES}
+  LINK_LIBS m
 )
-
-INSTALL(TARGETS actor_oinksie LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

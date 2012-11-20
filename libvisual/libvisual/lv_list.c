@@ -1,18 +1,13 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2004-2006 Dennis Smit
  *
  * List implementation from RCL.
- * Copyright (C) 2002, 2003, 2004
- *				Dennis Smit <ds@nerds-incorporated.org>,
- *				Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *				Tom Wimmenhove <nohup@nerds-incorporated.org>
+ * Copyright (C) 2002-2004 Dennis Smit, Sepp Wijnands, Tom Wimmenhove
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
- *
- * $Id: lv_list.c,v 1.30 2006/01/22 13:23:37 synap Exp $
+ *	        Sepp Wijnands <mrrazz@nerds-incorporated.org>,
+ *	        Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -68,13 +63,13 @@ static void list_destroy (VisCollection *collection)
 
 	/* Walk through the given list, possibly calling the destroyer for it */
 	if (destroyer) {
-		while ((elem = visual_list_next (list, &le)) != NULL)
-			visual_list_delete (list, &le);
-	} else {
 		while ((elem = visual_list_next (list, &le)) != NULL) {
 			destroyer (elem);
 			visual_list_delete (list, &le);
 		}
+	} else {
+		while ((elem = visual_list_next (list, &le)) != NULL)
+			visual_list_delete (list, &le);
 	}
 }
 

@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_songinfo.h,v 1.14 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,12 +27,10 @@
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_video.h>
 
-
 /**
  * @defgroup VisSongInfo VisSongInfo
  * @{
  */
-
 
 /**
  * Used to define the type of song info being used.
@@ -69,7 +67,7 @@ namespace LV {
   {
   public:
 
-      SongInfo (SongInfoType type);
+      explicit SongInfo (SongInfoType type);
 
       ~SongInfo ();
 
@@ -165,9 +163,9 @@ namespace LV {
        *
        * @return 0 on succes -1 on failure.
        */
-      void set_cover (VisVideo* cover);
+      void set_cover (VideoPtr const& cover);
 
-      VisVideo* get_cover () const;
+      VideoPtr get_cover () const;
 
       /**
        * Resets the age timer. Use this to timestamp a song to the
@@ -184,22 +182,22 @@ namespace LV {
 
   private:
 
-      SongInfoType     type;
-      int              length;
-      int              elapsed;
-      std::string      song_name;
-      std::string      artist;
-      std::string      album;
-      std::string      song;
-      VisTimer         timer;
-      VisVideo        *cover;
+      SongInfoType m_type;
+      int          m_length;
+      int          m_elapsed;
+      std::string  m_song_name;
+      std::string  m_artist;
+      std::string  m_album;
+      std::string  m_song;
+      Timer        m_timer;
+      VideoPtr     m_cover;
   };
 
 } // LV namespace
 
 #endif /* __cplusplus */
 
-#define VISUAL_SONGINFO(obj)                (VISUAL_CHECK_CAST ((obj), VisSongInfo))
+#define VISUAL_SONGINFO(obj)   (VISUAL_CHECK_CAST ((obj), VisSongInfo))
 
 #ifdef __cplusplus
 typedef ::LV::SongInfo VisSongInfo;
@@ -210,13 +208,12 @@ struct _VisSongInfo;
 
 LV_BEGIN_DECLS
 
-LV_API VisSongInfo *visual_songinfo_new (VisSongInfoType type);
+LV_API VisSongInfo *visual_songinfo_new   (VisSongInfoType type);
+LV_API VisSongInfo *visual_songinfo_clone (VisSongInfo *src);
+LV_API void         visual_songinfo_free  (VisSongInfo *songinfo);
 
-LV_API void visual_songinfo_free (VisSongInfo *songinfo);
-
-LV_API void visual_songinfo_copy (VisSongInfo *dest, VisSongInfo const *src);
-
-LV_API int visual_songinfo_compare (VisSongInfo const *s1, VisSongInfo const *s2);
+LV_API void visual_songinfo_copy    (VisSongInfo *dest, VisSongInfo const *src);
+LV_API int  visual_songinfo_compare (VisSongInfo const *s1, VisSongInfo const *s2);
 
 LV_API void            visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type);
 LV_API VisSongInfoType visual_songinfo_get_type (VisSongInfo *songinfo);

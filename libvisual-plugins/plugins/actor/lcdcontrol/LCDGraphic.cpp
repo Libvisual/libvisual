@@ -41,10 +41,15 @@
 #include "WidgetIcon.h"
 #include "WidgetHistogram.h"
 #include "WidgetBignums.h"
+#include "WidgetFPS.h"
 #include "WidgetVisualization.h"
 #include "debug.h"
 
 #include <libvisual/libvisual.h>
+
+#if _OPENMP
+# include <omp.h>
+#endif
 
 #undef NULL
 #define NULL 0
@@ -160,6 +165,12 @@ VisVideo *LCDGraphic::GetVideo(int layer)
     VisVideo *video = visual_video_new_with_buffer(LCOLS, LROWS, VISUAL_VIDEO_DEPTH_32BIT);
 
     uint32_t *pixels = (uint32_t *)visual_video_get_pixels(video);
+
+#if _OPENMP
+# pragma omp parallel
+# pragma omp for
+#endif
+
     for(int n = 0; n < LCOLS * LROWS; n++)
     {
         pixels[n] = DisplayFB[layer][n].ToInt();
@@ -172,26 +183,32 @@ VisVideo *LCDGraphic::GetVideo()
 {
     char *pixels = (char *)visual_video_get_pixels(video_);
     memset(pixels, 0, visual_video_get_size(video_));
-    for(int layer = 0; layer < LAYERS; layer++)
+
+	//int i = 0, num_threads = omp_get_num_threads();
+
+#if _OPENMP
+# pragma omp parallel
+# pragma omp for
+#endif
+
+    for(int row = 0; row < LROWS; row++)
     {
-        for(int row = 0; row < LROWS; row++)
+        for(int col = 0; col < LCOLS; col++)
         {
-            for(int col = 0; col < LCOLS; col++)
-            {
-                int n = row * video_->get_pitch() + col * 4;
-                RGBA rgb =  GraphicBlend(row, col);
-                pixels[n] = rgb.R;
-                pixels[n+1] = rgb.G;
-                pixels[n+2] = rgb.B;
-                pixels[n+3] = rgb.A;
-            }
+            int n = row * video_->get_pitch() + col * 4;
+            RGBA rgb =  GraphicBlend(row, col);
+            pixels[n] = rgb.R;
+            pixels[n+1] = rgb.G;
+            pixels[n+2] = rgb.B;
+            pixels[n+3] = rgb.A;
         }
     }
+
     return video_;
 }
 
 void LCDGraphic::LayoutChangeBefore() {
-	//GraphicClear();
+	GraphicFill();
 }
 
 void LCDGraphic::LayoutChangeAfter() {
@@ -219,19 +236,19 @@ cout << "rows " << rows << " cols " << cols << "-----------=====================
 
     video_ = visual_video_new_with_buffer(LCOLS, LROWS, VISUAL_VIDEO_DEPTH_32BIT);
 
-    DisplayFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
+    DisplayFB = (RGBA **)malloc(sizeof(RGBA *) * layers);
 
     for(int l = 0; l < layers; l++) {
         DisplayFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
     }
 
-    LayoutFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
+    LayoutFB = (RGBA **)malloc(sizeof(RGBA *) * layers);
 
     for(int l = 0; l < layers; l++) {
         LayoutFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
     }
 
-    TransitionFB = (RGBA **)malloc(sizeof(RGBA) * layers * rows * cols);
+    TransitionFB = (RGBA **)malloc(sizeof(RGBA *) * layers);
 
     for( int l = 0; l < layers; l++) {
         TransitionFB[l] = (RGBA *)malloc(sizeof(RGBA) * rows * cols);
@@ -387,22 +404,29 @@ void LCDGraphic::GraphicWindow(int pos, int size, int max, int *wpos, int *wsize
 
 void LCDGraphic::GraphicBlit(const int row, const int col, const int height, const int width)
 {
-    if (GraphicRealBlit) {
-        int r, c, h, w;
-        GraphicWindow(row, height, LROWS, &r, &h);
-        GraphicWindow(col, width, LCOLS, &c, &w);
-        if (h > 0 && w > 0) {
-            for(int rr = r; rr < r + h; rr++) {
-                for(int cc = c; cc < c + w; cc++) {
-                    for(int l = LAYERS - 1; l >= 0; l-- ) {
-                        if(LayoutFB[l][rr * LCOLS + cc] != NO_COL)
-                            DisplayFB[l][rr * LCOLS + cc] = 
-                                LayoutFB[l][rr * LCOLS + cc];
-                    }
+    int r, c, h, w;
+    GraphicWindow(row, height, LROWS, &r, &h);
+    GraphicWindow(col, width, LCOLS, &c, &w);
+
+    GraphicClear();
+
+    if (h > 0 && w > 0) {
+
+#if _OPENMP
+# pragma omp parallel
+# pragma omp for
+#endif
+        for(int rr = r; rr < r + h; rr++) {
+            for(int cc = c; cc < c + w; cc++) {
+                for(int l = LAYERS - 1; l >= 0; l-- ) {
+                    if(LayoutFB[l][rr * LCOLS + cc] != NO_COL)
+                        DisplayFB[l][rr * LCOLS + cc] = 
+                            LayoutFB[l][rr * LCOLS + cc];
                 }
             }
-            GraphicRealBlit(this, r, c, h, w);
         }
+        if(GraphicRealBlit)
+            GraphicRealBlit(this, r, c, h, w);
     }
 }
 
@@ -438,24 +462,19 @@ inline RGBA LCDGraphic::GraphicBlend(const int row, const int col, RGBA **buffer
 
     for (l = o; l >= 0; l--) {
         p = buffer[l][row * LCOLS + col];
-        switch(p.A) {
-        //if(p.A == 255) {
-        case 0:
-        break;
-        case 255:
-            ret.R = p.R;
-            ret.G = p.G;
-            ret.B = p.B;
-            ret.A = 0xff;
-            break;
-        //} else if(p.A != 0) {
-        default:
-            ret.R = (p.R * p.A + ret.R * (255 - p.A)) / 255;
-            ret.G = (p.G * p.A + ret.G * (255 - p.A)) / 255;
-            ret.B = (p.B * p.A + ret.B * (255 - p.A)) / 255;
-            ret.A = 0xff;
-            break;
-        //}
+        if(p.A != 0)
+        {
+            if(p.A == 255) {
+                ret.R = p.R;
+                ret.G = p.G;
+                ret.B = p.B;
+                ret.A = 0xff;
+            } else {
+                ret.R = (p.R * p.A + ret.R * (255 - p.A)) / 255;
+                ret.G = (p.G * p.A + ret.G * (255 - p.A)) / 255;
+                ret.B = (p.B * p.A + ret.B * (255 - p.A)) / 255;
+                ret.A = 0xff;
+            }
         }
     }
     if (INVERTED) {
@@ -547,16 +566,17 @@ void LCDGraphic::GraphicRender(const int layer, const int row, const int col,
 }
 
 void LCDGraphic::GraphicClear() {
+
+#if _OPENMP
+# pragma omp parallel
+# pragma omp for
+#endif
+
     for (int l = 0; l < LAYERS; l++) {
         for (int i = 0; i < LCOLS * LROWS; i++) {
             DisplayFB[l][i] = NO_COL;
-            LayoutFB[l][i] = NO_COL;
-            TransitionFB[l][i] = NO_COL;
         }
     }
-
-    GraphicUpdate(0, 0, LROWS, LCOLS);
-    GraphicBlit(0, 0, LROWS, LCOLS);
 }
 
 void LCDGraphic::GraphicFill() {
@@ -673,10 +693,11 @@ void LCD::GraphicIconDraw(WidgetIcon *w) {
                 else
                     fb[i] = bg;
             } else {
-                fb[i] = lcd->BG_COL;
+                fb[i] = lcd->NO_COL;
             }
         }
     }
+
 
     //lcd->graphic_mutex_.unlock();
 
@@ -897,6 +918,49 @@ void LCD::GraphicBignumsDraw(WidgetBignums *w) {
         fb = lcd->LayoutFB[layer];
 
     //lcd->graphic_mutex_.lock();
+
+    for(int r = 0; r < 16 && row + r < lcd->LROWS; r++) {
+        for(int c = 0; c < 24 && col + c < lcd->LCOLS; c++) {
+            int n = (row + r) * lcd->LCOLS + col + c;
+            if(w->GetFB()[r * 24 + c] == '.') {
+                fb[n] = fg;
+            } else {
+                fb[n] = bg;
+            }
+        }
+    }
+    //lcd->graphic_mutex_.unlock();
+
+   if(!lcd->IsTransitioning())
+        lcd->GraphicUpdate(row, col, 16, 24);
+}
+
+void LCD::GraphicFPSDraw(WidgetFPS *w) {
+    LCDGraphic *lcd = (LCDGraphic *)w->GetVisitor()->GetLCD();
+    int layer, row, col;
+
+    layer = w->GetLayer();
+    row = w->GetRow() * lcd->YRES;
+    col = w->GetCol() * lcd->XRES;
+
+    if (layer < 0 || layer >= lcd->LAYERS ) {
+        LCDError("%s: layer %d out of bounds (0..%d)",
+        lcd->GetVisitor()->GetName().c_str(), layer, lcd->LAYERS - 1);
+        return;
+    }
+
+    RGBA fg = w->GetFGValid() ? w->GetFGColor() : lcd->FG_COL;
+    RGBA bg = w->GetBGValid() ? w->GetBGColor() : lcd->BG_COL;
+
+    RGBA *fb;
+
+    if(lcd->IsTransitioning() &&
+        w->GetLayoutBase() == lcd->GetTransitionLayout())
+        fb = lcd->TransitionFB[layer];
+    else
+        fb = lcd->LayoutFB[layer];
+
+    //lcd->graphic_mutex_.lock();
     for(int r = 0; r < 16 && row + r < lcd->LROWS; r++) {
         for(int c = 0; c < 24 && col + c < lcd->LCOLS; c++) {
             int n = (row + r) * lcd->LCOLS + col + c;
@@ -985,7 +1049,7 @@ void GraphicVisualizationPeakDraw(WidgetVisualization *widget) {
     else
         fb = lcd->LayoutFB[layer];
 
-    //lcd->graphic_mutex_.lock();
+   //lcd->graphic_mutex_.lock();
     for(int y = 0; y < height && row + y < lcd->LROWS; y++) {
         int val = (int)(((double)widget->GetHistory()[y / lcd->YRES][0] /
             (double)SHRT_MAX) * (width / 2 - 1));
@@ -1069,14 +1133,12 @@ void do_alpha (VisVideo *vid, uint8_t rate)
         uint8_t c8[4];
     } col;
 
+
     for (i = 0; i < vid->get_width() * vid->get_height(); i++) {
         col.c32 = ptr[i];
 
         col.c8[3] = rate;
 
-//      if (col.c8[0] > 140) {
-//          col.c8[3] = rate - (200 - col.c8[0]);
-//      }
         ptr[i] = col.c32;
     }
 }
@@ -1089,15 +1151,14 @@ void GraphicVisualizationPCMDraw(WidgetVisualization *widget) {
     int width = widget->GetCols();
     int height = widget->GetRows();
     int layer = widget->GetLayer();
-    proxy v = widget->GetProxy();
-    VisVideo *video = v.video;
+    VisVideo *video = widget->video_;
     VisVideo *sub = visual_video_new_with_buffer(video->get_width(),
         video->get_height(),
         VISUAL_VIDEO_DEPTH_32BIT);
 
     VisColor color;
 
-    visual_video_convert_depth(sub, v.video);
+    visual_video_convert_depth(sub, widget->video_);
 
     do_alpha(sub, widget->alpha_);
 
@@ -1112,11 +1173,12 @@ void GraphicVisualizationPCMDraw(WidgetVisualization *widget) {
         fb = lcd->LayoutFB[layer];
 
     //lcd->graphic_mutex_.lock();
+
     for(int r = 0; r < height && row + r < lcd->LROWS; r++) {
         for(int c = 0; c < width && col + c < lcd->LCOLS; c++) {
             int n = ((row + r) * lcd->LCOLS + col + c);
             uint32_t pixel = buffer[r * width + c];
-    		visual_color_from_uint32(&color, pixel);
+    		visual_color_set_from_uint32(&color, pixel);
 	    	fb[n].R = color.r;
 		    fb[n].G = color.g;
     		fb[n].B = color.b;
@@ -1245,8 +1307,6 @@ void LCDGraphic::TransitionLeftRight() {
     transition_tick_+=XRES;
     if( transition_tick_ >= (int)LCOLS) {
         transition_tick_ = 0;
-        //emit static_cast<LCDEvents *>(
-        //    visitor_->GetWrapper())->_TransitionFinished();
         for(int l = 0; l < LAYERS; l++) {
             memcpy(LayoutFB[l], TransitionFB[l], LCOLS * LROWS * sizeof(RGBA));
             for(int n = 0; n < LCOLS * LROWS; n++)
@@ -1258,6 +1318,7 @@ void LCDGraphic::TransitionLeftRight() {
         }
         transitioning_ = false;
         GraphicBlit(0, 0, LROWS, LCOLS);
+        visitor_->TransitionFinished();
     }
     LCDError("TransitionLeftRight %d", transition_tick_);
 }
@@ -1301,6 +1362,7 @@ void LCDGraphic::TransitionUpDown() {
         transition_tick_ = 0;
         //emit static_cast<LCDEvents *>(
         //    visitor_->GetWrapper())->_TransitionFinished();
+        visitor_->TransitionFinished();
         for(int l = 0; l < LAYERS; l++) {
             memcpy(LayoutFB[l], TransitionFB[l], LCOLS * LROWS * sizeof(RGBA));
             for(int n = 0; n < LROWS * LCOLS; n++) {
@@ -1381,6 +1443,7 @@ void LCDGraphic::TransitionTentacle() {
         transition_tick_ = 0;
         //emit static_cast<LCDEvents *>(
         //    visitor_->GetWrapper())->_TransitionFinished();
+        visitor_->TransitionFinished();
         for(int l = 0; l < LAYERS; l++) {
             memcpy(LayoutFB[l], TransitionFB[l], LCOLS * LROWS * sizeof(RGBA));
             for(int n = 0; n < LCOLS * LROWS; n++)
@@ -1435,6 +1498,7 @@ void LCDGraphic::TransitionAlphaBlend() {
         transition_tick_ = 0;
         //emit static_cast<LCDEvents *>(
         //    visitor_->GetWrapper())->_TransitionFinished();
+        visitor_->TransitionFinished();
         for(int l = 0; l < LAYERS; l++) {
             memcpy(LayoutFB[l], TransitionFB[l], LCOLS * LROWS * sizeof(RGBA));
             for(int n = 0; n < LCOLS * LROWS; n++) {

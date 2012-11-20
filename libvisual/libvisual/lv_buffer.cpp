@@ -1,8 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -63,6 +65,7 @@ namespace LV {
 
           data = visual_mem_malloc0 (size_);
           size = size_;
+          is_owner = true;
       }
 
       void free ()
@@ -85,12 +88,12 @@ namespace LV {
 
   BufferPtr Buffer::create ()
   {
-      return new Buffer;
+      return BufferPtr (new Buffer, false);
   }
 
-  BufferPtr Buffer::create (void* data, std::size_t size, bool own)
+  BufferPtr Buffer::wrap (void* data, std::size_t size, bool own)
   {
-      BufferPtr self (new Buffer);
+      BufferPtr self (new Buffer, false);
 
       self->m_impl->wrap (data, size, own);
 
@@ -99,7 +102,7 @@ namespace LV {
 
   BufferPtr Buffer::create (std::size_t size)
   {
-      BufferPtr self (new Buffer);
+      BufferPtr self (new Buffer, false);
 
       self->m_impl->allocate (size);
 
@@ -164,7 +167,7 @@ namespace LV {
 
   void Buffer::copy_data_to (void* dest)
   {
-      visual_return_if_fail (dest != NULL);
+      visual_return_if_fail (dest != nullptr);
 
       visual_mem_copy (dest, m_impl->data, m_impl->size);
   }
@@ -176,7 +179,7 @@ namespace LV {
 
   void Buffer::put (void const* data, std::size_t size, std::size_t offset)
   {
-      visual_return_if_fail (data != NULL);
+      visual_return_if_fail (data != nullptr);
       visual_return_if_fail (offset < m_impl->size);
 
       std::size_t amount = m_impl->size;
@@ -193,7 +196,7 @@ namespace LV {
 
   void Buffer::fill_with_pattern (void const* data, std::size_t size)
   {
-      visual_return_if_fail (data != NULL);
+      visual_return_if_fail (data != nullptr);
 
       for (std::size_t offset = 0; offset < m_impl->size; offset += size)
           put (data, size, offset);

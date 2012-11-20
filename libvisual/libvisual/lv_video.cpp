@@ -1,12 +1,13 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *      Duilio J. Protti <dprotti@users.sourceforge.net>
- *      Chong Kai Xiong <kaixiong@codeleft.sg>
- *      Jean-Christophe Hoelt <jeko@ios-software.com>
- *      Jaak Randmets <jaak.ra@gmail.com>
+ *          Duilio J. Protti <dprotti@users.sourceforge.net>
+ *          Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Jean-Christophe Hoelt <jeko@ios-software.com>
+ *          Jaak Randmets <jaak.ra@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,12 +34,15 @@
 #include "private/lv_video_convert.hpp"
 #include "private/lv_video_fill.hpp"
 #include "private/lv_video_transform.hpp"
+#include "private/lv_video_bmp.hpp"
+#include "private/lv_video_png.hpp"
+#include <fstream>
 
 namespace LV {
 
   namespace {
 
-    inline int is_valid_scale_method (VisVideoScaleMethod scale_method)
+    bool is_valid_scale_method (VisVideoScaleMethod scale_method)
     {
         return scale_method == VISUAL_VIDEO_SCALE_NEAREST
             || scale_method == VISUAL_VIDEO_SCALE_BILINEAR;
@@ -54,7 +58,7 @@ namespace LV {
       , bpp     (0)
       , pitch   (0)
       , buffer  (Buffer::create ())
-      , parent  (0)
+      , parent  ()
       , compose_type (VISUAL_VIDEO_COMPOSE_TYPE_NONE)
   {}
 
@@ -66,7 +70,7 @@ namespace LV {
   /* Precomputation functions */
   void Video::Impl::precompute_row_table ()
   {
-      uint8_t* ptr = static_cast<uint8_t *> (buffer->get_data ());
+      auto ptr = static_cast<uint8_t *> (buffer->get_data ());
 
       for (int y = 0; y < height; y++, ptr += pitch)
           pixel_rows[y] = ptr;
@@ -81,16 +85,17 @@ namespace LV {
 
   VideoPtr Video::create ()
   {
-      return VideoPtr (new Video);
+      return VideoPtr (new Video, false);
   }
 
   VideoPtr Video::create (int width, int height, VisVideoDepth depth)
   {
-      VideoPtr self (new Video);
+      VideoPtr self (new Video, false);
 
       self->set_depth (depth);
       self->set_dimension (width, height);
-      if(depth != VISUAL_VIDEO_DEPTH_NONE)
+
+      if(depth != VISUAL_VIDEO_DEPTH_NONE && depth != VISUAL_VIDEO_DEPTH_GL)
           self->allocate_buffer ();
 
       return self;
@@ -98,14 +103,17 @@ namespace LV {
 
   VideoPtr Video::create_sub (VideoConstPtr const& src, Rect const& area)
   {
-      visual_return_val_if_fail (!area.empty (), 0);
+      visual_return_val_if_fail (!area.empty (), nullptr);
 
-      VideoPtr self (new Video);
+      VideoPtr self (new Video, false);
 
-      Rect const& vrect = src->get_extents ();
+      auto vrect = src->get_extents ();
 
       if (!vrect.contains (area))
+      {
+          visual_log(VISUAL_LOG_DEBUG, "provided area (%d, %d, %d, %d) is not contained by source area (%d, %d, %d, %d)", area.x, area.y, area.width, area.height, vrect.x, vrect.y, vrect.width, vrect.height);
           return VideoPtr ();
+      }
 
       self->m_impl->extents = area;
       self->m_impl->parent  = src;
@@ -126,9 +134,9 @@ namespace LV {
 
   VideoPtr Video::create_sub (Rect const& drect, VideoConstPtr const& src, Rect const& srect)
   {
-      Rect sbound = src->m_impl->extents;
+      auto sbound = src->m_impl->extents;
 
-      Rect rsrect = srect;
+      auto rsrect = srect;
       rsrect.clip (sbound, srect);
       rsrect.clip (drect, rsrect);
 
@@ -142,7 +150,7 @@ namespace LV {
           visual_log (VISUAL_LOG_WARNING, "Memory leak: Ownership of wrapped pixel buffer is not supported at the moment");
       }
 
-      VideoPtr self (new Video);
+      VideoPtr self (new Video, false);
 
       self->set_depth (depth);
       self->set_dimension (width, height);
@@ -151,13 +159,38 @@ namespace LV {
       return self;
   }
 
+  VideoPtr Video::create_from_file (std::string const& path)
+  {
+      std::ifstream stream (path);
+      if (!stream) {
+          return nullptr;
+      }
+
+      return create_from_stream (stream);
+  }
+
+  VideoPtr Video::create_from_stream (std::istream& input)
+  {
+      auto image = bitmap_load_bmp (input);
+      if (image) {
+          return image;
+      }
+
+      image = bitmap_load_png (input);
+      if (image) {
+          return image;
+      }
+
+      return {};
+  }
+
   VideoPtr Video::create_scale_depth (VideoConstPtr const& src,
                                       int                  width,
                                       int                  height,
                                       VisVideoDepth        depth,
                                       VisVideoScaleMethod  scale_method)
   {
-      VideoPtr self = create (width, height, depth);
+      auto self = create (width, height, depth);
       self->scale_depth (src, scale_method);
 
       return self;
@@ -184,7 +217,7 @@ namespace LV {
   {
       m_impl->pixel_rows.clear ();
 
-      m_impl->buffer->set (NULL, 0);
+      m_impl->buffer->set (nullptr, 0);
   }
 
   bool Video::allocate_buffer ()
@@ -202,7 +235,7 @@ namespace LV {
       }
 
       if (get_size () == 0) {
-          m_impl->buffer->set_data (NULL);
+          m_impl->buffer->set_data (nullptr);
           return false;
       }
 
@@ -257,6 +290,11 @@ namespace LV {
       m_impl->palette = palette;
   }
 
+  void Video::set_palette (Palette&& palette)
+  {
+      m_impl->palette = std::move (palette);
+  }
+
   Palette const& Video::get_palette () const
   {
       return m_impl->palette;
@@ -306,7 +344,8 @@ namespace LV {
 
   void Video::set_pitch (int pitch)
   {
-      visual_return_if_fail (pitch > 0);
+      if(pitch <= 0)
+          return;
 
       if (m_impl->bpp <= 0)
           return;
@@ -353,11 +392,6 @@ namespace LV {
       return m_impl->buffer;
   }
 
-  Rect const& Video::get_extents () const
-  {
-      return m_impl->extents;
-  }
-
   void* Video::get_pixels () const
   {
       return m_impl->buffer->get_data ();
@@ -365,7 +399,17 @@ namespace LV {
 
   void* Video::get_pixel_ptr (int x, int y) const
   {
-      return static_cast<uint8_t*> (m_impl->pixel_rows[y]) + x * m_impl->bpp;
+      return static_cast<uint8_t*> (get_pixels ()) + y * m_impl->pitch + x * m_impl->bpp;
+  }
+
+  Rect const& Video::get_extents () const
+  {
+      return m_impl->extents;
+  }
+
+  void Video::set_extents(Rect area)
+  {
+      m_impl->extents = area;
   }
 
   void Video::set_compose_type (VisVideoComposeType type)
@@ -413,7 +457,7 @@ namespace LV {
               return src->m_impl->compose_func;
 
           default:
-              return NULL;
+              return nullptr;
       }
   }
 
@@ -422,7 +466,7 @@ namespace LV {
                     Rect const&          srect,
                     bool                 alpha)
   {
-      VisVideoComposeFunc func = get_compose_function (src, alpha);
+      auto func = get_compose_function (src, alpha);
 
       compose (drect, src, srect, func);
   }
@@ -432,10 +476,10 @@ namespace LV {
                        Rect const&          srect,
                        VisVideoComposeFunc  compose_func)
   {
-      Rect ndrect = drect;
+      auto ndrect = drect;
       ndrect.normalize_to (srect);
 
-      VideoPtr vsrc = create_sub (ndrect, src, srect);
+      auto vsrc = create_sub (ndrect, src, srect);
       compose (vsrc, drect.x, drect.y, compose_func);
   }
 
@@ -456,13 +500,13 @@ namespace LV {
                              VisVideoScaleMethod  scale_method,
                              VisVideoComposeFunc  compose_func)
   {
-      Rect sbound = m_impl->extents;
+      auto sbound = m_impl->extents;
       if (!sbound.intersects (drect))
           return;
 
-      VideoPtr ssrc = create_sub (src, srect);
+      auto ssrc = create_sub (src, srect);
 
-      VideoPtr svid = create();
+      auto svid = create ();
       svid->set_attrs (drect.width,
                        drect.height,
                        src->m_impl->bpp * drect.width,
@@ -471,7 +515,7 @@ namespace LV {
 
       svid->scale (ssrc, scale_method);
 
-      Rect frect = drect;
+      auto frect = drect;
       frect.normalize ();
 
       compose (drect, svid, frect, compose_func);
@@ -486,13 +530,13 @@ namespace LV {
 
   void Video::compose (VideoConstPtr const& src, int x, int y, VisVideoComposeFunc compose_func)
   {
-      visual_return_if_fail (compose_func != NULL);
+      visual_return_if_fail (compose_func != nullptr);
 
       visual_return_if_fail (m_impl->depth != VISUAL_VIDEO_DEPTH_GL);
       visual_return_if_fail (src->m_impl->depth != VISUAL_VIDEO_DEPTH_GL);
 
-      Rect drect = get_extents ();
-      Rect srect = src->get_extents ();
+      auto drect = get_extents ();
+      auto srect = src->get_extents ();
 
       if (!drect.intersects (srect))
           return;
@@ -524,12 +568,12 @@ namespace LV {
       /* Retrieve sub regions */
       Rect trect (x, y, srect.width, srect.height);
 
-      VideoPtr dregion = create_sub (drect, LV::VideoPtr (this), trect);
+      auto dregion = create_sub (drect, VideoPtr (this), trect);
 
-      Rect redestrect = dregion->get_extents ();
+      auto redestrect = dregion->get_extents ();
 
-      VideoPtr tempregion = create_sub (srcp, srect);
-      VideoPtr sregion    = create_sub (drect, tempregion, redestrect);
+      auto tempregion = create_sub (srcp, srect);
+      auto sregion    = create_sub (drect, tempregion, redestrect);
 
       /* Call blitter */
       compose_func (dregion.get (), sregion.get ());
@@ -539,7 +583,7 @@ namespace LV {
   {
       visual_return_if_fail (m_impl->depth == VISUAL_VIDEO_DEPTH_32BIT);
 
-      uint8_t* vidbuf = static_cast<uint8_t *> (get_pixels ()) + 3;
+      auto vidbuf = static_cast<uint8_t *> (get_pixels ()) + 3;
 
       /* FIXME byte order sensitive */
       for (int y = 0; y < m_impl->height; y++) {
@@ -554,7 +598,7 @@ namespace LV {
   {
       visual_return_if_fail (m_impl->depth == VISUAL_VIDEO_DEPTH_32BIT);
 
-      VideoPtr rvid = create_sub (this, area);
+      auto rvid = create_sub (this, area);
       rvid->fill_alpha (alpha);
   }
 
@@ -587,7 +631,7 @@ namespace LV {
       if (m_impl->extents.intersects (area))
           return;
 
-      VideoPtr svid = create_sub (LV::VideoPtr (this), area);
+      auto svid = create_sub (VideoPtr (this), area);
       svid->fill_color (color);
   }
 
@@ -814,7 +858,7 @@ namespace LV {
   void Video::scale_depth (VideoConstPtr const& src, VisVideoScaleMethod scale_method)
   {
       if (m_impl->depth != src->m_impl->depth) {
-          VideoPtr dtransform = create ();
+          auto dtransform = create ();
           dtransform->set_attrs (m_impl->width, m_impl->height, m_impl->width * m_impl->bpp, m_impl->depth);
           dtransform->allocate_buffer ();
           dtransform->convert_depth (src);
@@ -845,7 +889,7 @@ VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
     int i = depth;
 
     if (visual_video_depth_is_sane (depth) == 0)
-        return VISUAL_VIDEO_DEPTH_ERROR;
+        return VISUAL_VIDEO_DEPTH_NONE;
 
     if (i == VISUAL_VIDEO_DEPTH_NONE) {
         i = VISUAL_VIDEO_DEPTH_8BIT;
@@ -869,7 +913,7 @@ VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth)
     int i = depth;
 
     if (visual_video_depth_is_sane (depth) == 0)
-        return VISUAL_VIDEO_DEPTH_ERROR;
+        return VISUAL_VIDEO_DEPTH_NONE;
 
     if (i == VISUAL_VIDEO_DEPTH_NONE)
         return VISUAL_VIDEO_DEPTH_NONE;
@@ -891,8 +935,8 @@ VisVideoDepth visual_video_depth_get_lowest (int depthflag)
 
 VisVideoDepth visual_video_depth_get_highest (int depthflag)
 {
-    VisVideoDepth highest = VISUAL_VIDEO_DEPTH_NONE;
-    VisVideoDepth i = VISUAL_VIDEO_DEPTH_NONE;
+    auto highest = VISUAL_VIDEO_DEPTH_NONE;
+    auto i = VISUAL_VIDEO_DEPTH_NONE;
     int firstentry = TRUE;
 
     while (highest != i || firstentry) {
@@ -908,9 +952,7 @@ VisVideoDepth visual_video_depth_get_highest (int depthflag)
 
 VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag)
 {
-    VisVideoDepth depth;
-
-    depth = visual_video_depth_get_highest (depthflag);
+    auto depth = visual_video_depth_get_highest (depthflag);
 
     /* Get previous depth if the highest is openGL */
     if (depth == VISUAL_VIDEO_DEPTH_GL) {
@@ -918,7 +960,7 @@ VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag)
 
         /* Is it still on openGL ? Return an error */
         if (depth == VISUAL_VIDEO_DEPTH_GL)
-            return VISUAL_VIDEO_DEPTH_ERROR;
+            return VISUAL_VIDEO_DEPTH_NONE;
 
     } else {
         return depth;
@@ -929,14 +971,14 @@ VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag)
 
 int visual_video_depth_is_sane (VisVideoDepth depth)
 {
-    int count = 0;
-    int i = 1;
-
     if (depth == VISUAL_VIDEO_DEPTH_NONE)
         return TRUE;
 
     if (depth >= VISUAL_VIDEO_DEPTH_ENDLIST)
         return FALSE;
+
+    int count = 0;
+    int i = 1;
 
     while (i < VISUAL_VIDEO_DEPTH_ENDLIST) {
         if ((i & depth) > 0)
@@ -998,8 +1040,6 @@ int visual_video_bpp_from_depth (VisVideoDepth depth)
         case VISUAL_VIDEO_DEPTH_GL:    return 0;
 
         default:
-            return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+            return VISUAL_VIDEO_DEPTH_NONE;
     }
-
-    return -VISUAL_ERROR_IMPOSSIBLE;
 }

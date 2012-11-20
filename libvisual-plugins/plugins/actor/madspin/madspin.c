@@ -26,7 +26,12 @@
 #include "gettext.h"
 #include <libvisual/libvisual.h>
 #include <math.h>
+
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -109,21 +114,22 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int lv_madspin_init (VisPluginData *plugin)
 {
-	MadspinPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("num stars",	512),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("speed",	715),
-		VISUAL_PARAM_LIST_END
-	};
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (MadspinPrivate, 1);
+	MadspinPrivate *priv = visual_mem_new0 (MadspinPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_integer ("num_stars", N_("Number of stars"),
+                                                          512,
+                                                          NULL),
+                                visual_param_new_integer ("speed", N_("Speed"),
+                                                          715,
+                                                          NULL),
+                                NULL);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
@@ -134,10 +140,10 @@ static int lv_madspin_init (VisPluginData *plugin)
 	priv->zrot = 0.0f;
 	priv->total = 0;
 	priv->frame = 0;
+	priv->num_stars = 512;
+	priv->speed = 715;
 
 	priv->timer = visual_timer_new ();
-
-	visual_param_container_add_many (paramcontainer, params);
 
 	priv->initialized = TRUE;
 
@@ -189,7 +195,7 @@ static void bind_texture (GLuint texture, VisVideo *image)
 	glBindTexture (GL_TEXTURE_2D, texture);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D (GL_TEXTURE_2D, 0, 3, visual_video_get_width (image), visual_video_get_height (image), 0,
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, visual_video_get_width (image), visual_video_get_height (image), 0,
 		      GL_RGB, GL_UNSIGNED_BYTE, visual_video_get_pixels (image));
 }
 
@@ -201,7 +207,11 @@ static void lv_madspin_setup_gl (VisPluginData *plugin)
 	glMatrixMode (GL_PROJECTION);
 
 	glLoadIdentity ();
+#ifdef USE_OPENGL_ES
+	glOrthof (-4.0f, 4.0f, -4.0f, 4.0f, -18.0f, 18.0f);
+#else
 	glOrtho (-4.0, 4.0, -4.0, 4.0, -18.0, 18.0);
+#endif
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
 
@@ -210,7 +220,11 @@ static void lv_madspin_setup_gl (VisPluginData *plugin)
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glShadeModel (GL_SMOOTH);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+#ifdef USE_OPENGL_ES
+	glClearDepthf (1.0f);
+#else
 	glClearDepth (1.0);
+#endif
 	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
 	glEnable (GL_BLEND);
 	glEnable (GL_TEXTURE_2D);
@@ -234,7 +248,7 @@ static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -245,10 +259,10 @@ static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "num stars"))
-					priv->num_stars = visual_param_entry_get_integer (param);
-				else if (visual_param_entry_is (param, "speed"))
-					priv->speed = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "num stars"))
+					priv->num_stars = visual_param_get_value_integer (param);
+				else if (visual_param_has_name (param, "speed"))
+					priv->speed = visual_param_get_value_integer (param);
 
 			default: /* to avoid warnings */
 				break;
@@ -275,13 +289,13 @@ static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 
 static int madspin_load_textures (MadspinPrivate *priv)
 {
-	priv->texture_images[0] = visual_bitmap_load (STAR_DIR "/star1.bmp");
+	priv->texture_images[0] = visual_video_load_from_file (STAR_DIR "/star1.bmp");
 	if (!priv->texture_images[0]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load first texture");
 		return -1;
 	}
 
-	priv->texture_images[1] = visual_bitmap_load (STAR_DIR "/star2.bmp");
+	priv->texture_images[1] = visual_video_load_from_file (STAR_DIR "/star2.bmp");
 	if (!priv->texture_images[1]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load second texture");
 		return -1;
@@ -298,8 +312,8 @@ static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
 	float freq[256];
 	float pcm[256];
 
-	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq));
-	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm));
+	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq), FALSE);
+	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm), FALSE);
 
 	visual_audio_get_sample_mixed_simple (audio, pcmb, 2, VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
@@ -339,6 +353,20 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 	int ampl = 200;
 	float elapsed_time;
 
+	const GLfloat vertices[4][2] = {
+		{  1.0f,  1.0f },
+		{ -1.0f,  1.0f },
+		{  1.0f, -1.0f },
+		{ -1.0f, -1.0f }
+	};
+
+	const GLfloat texcoords[4][2] = {
+		{ 1.0f, 1.0f },
+		{ 0.0f, 1.0f },
+		{ 1.0f, 0.0f },
+		{ 0.0f, 0.0f }
+	};
+
 	visual_timer_start (priv->timer);
 
 	for (i = 1; i < 50; i++)
@@ -352,6 +380,16 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
 	glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
+
+	glMatrixMode (GL_MODELVIEW);
+	glPushMatrix ();
+	glLoadIdentity ();
+
+	glEnableClientState (GL_VERTEX_ARRAY);
+	glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+
+	glVertexPointer (2, GL_FLOAT, 0, vertices);
+	glTexCoordPointer (2, GL_FLOAT, 0, texcoords);
 
 	for (line = priv->maxlines; line > 0; line--) {
 		for (point = 0; point <= priv->num_stars; point++) {
@@ -378,76 +416,59 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 
 			glPushMatrix ();
 
-			glTranslatef ((float) x, (float) y, (float) z);
-			glBindTexture (GL_TEXTURE_2D, priv->textures[0]);
-
-			s1r = ((point * 1.0f) / priv->num_stars);
-			s1g = (priv->num_stars - point) / (priv->num_stars * 1.0f);
-			s1b = ((point * 1.0f) / priv->num_stars) * 0.5f;
 			s1a = ((priv->gdata[(int) (point / priv->num_stars * 220)] + (priv->total / 200.0f)) / 4.0f);
-
-			s2r = sin (priv->frame / 400.0f);
-			s2g = cos (priv->frame / 200.0f);
-			s2b = cos (priv->frame / 300.0f);
 			s2a = (priv->gdata[(int) (point / priv->num_stars * 220)] / 2.0f );
 
 			if (s1a > 0.008f) {
-				glBegin (GL_TRIANGLE_STRIP);
-				glColor4f ((float) s1r, (float) s1g, (float) s1b, (float) s1a);
+				s1r = ((point * 1.0f) / priv->num_stars);
+				s1g = (priv->num_stars - point) / (priv->num_stars * 1.0f);
+				s1b = ((point * 1.0f) / priv->num_stars) * 0.5f;
+
 				priv->texsize = (((priv->gdata[(int) (point / priv->num_stars * 220)]))
 						/ (2048.01f - (point * 4.0f))) *
 						(((point - priv->num_stars) / (-priv->num_stars)) * 18.0f) + 0.15f;
 
-				/* Top Right */
-				glTexCoord2d (1, 1);
-				glVertex3f (priv->texsize, priv->texsize, (float) z);
-				/* Top Left */
-				glTexCoord2d (0, 1);
-				glVertex3f (-priv->texsize, priv->texsize, (float) z);
-				/* Bottom Right */
-				glTexCoord2d (1, 0);
-				glVertex3f (priv->texsize, -priv->texsize, (float) z);
-				/* Bottom Left */
-				glTexCoord2d (0, 0);
-				glVertex3f (-priv->texsize, -priv->texsize, (float) z);
+				glBindTexture (GL_TEXTURE_2D, priv->textures[0]);
+				glTranslatef ((float) x, (float) y, (float) z);
 
-				glEnd ();
+				glPushMatrix ();
+				glTranslatef (0.0f, 0.0f, (float) z);
+				glScalef (priv->texsize, priv->texsize, 1.0f);
+				glColor4f ((float) s1r, (float) s1g, (float) s1b, (float) s1a);
+				glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
+				glPopMatrix ();
 			}
 
-			glBindTexture (GL_TEXTURE_2D, priv->textures[1]);
-			glRotatef (priv->frame + point, 0.0f, 0.0f, 1.0f);
-
 			if (s2a > 0.005f) {
-				glBegin (GL_TRIANGLE_STRIP);
-				glColor4f ((float) s2r, (float) s2g, (float) s2b, (float) s2a);
+				s2r = sin (priv->frame / 400.0f);
+				s2g = cos (priv->frame / 200.0f);
+				s2b = cos (priv->frame / 300.0f);
+
 				priv->texsize = (((priv->gdata[(int) (point / priv->num_stars * 220)]))
 						/ (2048.01f - (point * 4.0f))) *
 						(((point - priv->num_stars) / (-priv->num_stars)) * 18.0f) + 0.35f;
 
 				priv->texsize *= ((visual_random_context_int(priv->rcontext) % 100) / 100.0f) * 2.0f;
 
-				/* Top Right */
-				glTexCoord2d (1, 1);
-				glVertex3f (priv->texsize, priv->texsize, (float) z);
-				/* Top Left */
-				glTexCoord2d (0, 1);
-				glVertex3f (-priv->texsize, priv->texsize, (float) z);
-				/* Bottom Right */
-				glTexCoord2d (1, 0);
-				glVertex3f (priv->texsize, -priv->texsize, (float) z);
-				/* Bottom Left */
-				glTexCoord2d (0, 0);
-				glVertex3f (-priv->texsize, -priv->texsize, (float) z);
+				glBindTexture (GL_TEXTURE_2D, priv->textures[1]);
+				glRotatef (priv->frame + point, 0.0f, 0.0f, 1.0f);
 
-				glEnd ();
+				glPushMatrix ();
+				glTranslatef (0.0f, 0.0f, (float) z);
+				glScalef (priv->texsize, priv->texsize, 1.0f);
+				glColor4f ((float) s2r, (float) s2g, (float) s2b, (float) s2a);
+				glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
+				glPopMatrix ();
 			}
 
-			/* Move back to main position */
 			glPopMatrix ();
 		}
 	}
 
-	glLoadIdentity ();
+	glDisableClientState (GL_VERTEX_ARRAY);
+	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+
+	glPopMatrix ();
 
 	elapsed_time = (float) visual_timer_elapsed_usecs (priv->timer) / 1000000;
 

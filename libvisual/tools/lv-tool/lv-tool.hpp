@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework cli tool
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
- * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *          Daniel Hiepler <daniel@niftylight.de>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit <ds@nerds-incorporated.org>,
+ *
+ * Authors: Daniel Hiepler <daniel@niftylight.de>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

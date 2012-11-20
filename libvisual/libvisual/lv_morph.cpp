@@ -1,10 +1,9 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      ibvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_morph.c,v 1.31 2006/01/27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,7 +27,7 @@
 
 namespace {
 
-  inline LV::PluginList const&
+  LV::PluginList const&
   get_morph_plugin_list ()
   {
       return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
@@ -44,7 +43,7 @@ static VisMorphPlugin *get_morph_plugin (VisMorph *morph);
 
 static void morph_dtor (VisObject *object)
 {
-    VisMorph *morph = VISUAL_MORPH (object);
+    auto morph = VISUAL_MORPH (object);
 
     visual_time_free (morph->morphtime);
     visual_timer_free (morph->timer);
@@ -60,14 +59,10 @@ static void morph_dtor (VisObject *object)
 
 static VisMorphPlugin *get_morph_plugin (VisMorph *morph)
 {
-    VisMorphPlugin *morphplugin;
+    visual_return_val_if_fail (morph != nullptr, nullptr);
+    visual_return_val_if_fail (morph->plugin != nullptr, nullptr);
 
-    visual_return_val_if_fail (morph != NULL, NULL);
-    visual_return_val_if_fail (morph->plugin != NULL, NULL);
-
-    morphplugin = VISUAL_MORPH_PLUGIN (morph->plugin->info->plugin);
-
-    return morphplugin;
+    return VISUAL_MORPH_PLUGIN (morph->plugin->info->plugin);
 }
 
 VisPluginData *visual_morph_get_plugin (VisMorph *morph)
@@ -87,15 +82,12 @@ const char *visual_morph_get_prev_by_name (const char *name)
 
 VisMorph *visual_morph_new (const char *morphname)
 {
-    VisMorph *morph;
-    int result;
+    auto morph = visual_mem_new0 (VisMorph, 1);
 
-    morph = visual_mem_new0 (VisMorph, 1);
-
-    result = visual_morph_init (morph, morphname);
+    auto result = visual_morph_init (morph, morphname);
     if (result != VISUAL_OK) {
         visual_mem_free (morph);
-        return NULL;
+        return nullptr;
     }
 
     return morph;
@@ -103,10 +95,10 @@ VisMorph *visual_morph_new (const char *morphname)
 
 int visual_morph_init (VisMorph *morph, const char *morphname)
 {
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
+    visual_return_val_if_fail (morph != nullptr, -VISUAL_ERROR_MORPH_NULL);
 
     if (morphname && get_morph_plugin_list ().empty ()) {
-        visual_log (VISUAL_LOG_ERROR, "the plugin list is NULL");
+        visual_log (VISUAL_LOG_ERROR, "the plugin list is nullptr");
 
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
     }
@@ -115,8 +107,8 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     visual_object_init (VISUAL_OBJECT (morph), morph_dtor);
 
     /* Reset the VisMorph data */
-    morph->plugin = NULL;
-    morph->dest = NULL;
+    morph->plugin = nullptr;
+    morph->dest = nullptr;
     morph->morphpal = visual_palette_new (256);
     morph->morphtime = visual_time_new ();
     morph->timer = visual_timer_new ();
@@ -126,7 +118,7 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
 
     visual_morph_set_mode (morph, VISUAL_MORPH_MODE_SET);
 
-    if (morphname == NULL)
+    if (!morphname)
         return VISUAL_OK;
 
     if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_MORPH, morphname)) {
@@ -140,20 +132,18 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
 
 void visual_morph_realize (VisMorph *morph)
 {
-    visual_return_if_fail (morph != NULL);
-    visual_return_if_fail (morph->plugin != NULL);
+    visual_return_if_fail (morph != nullptr);
+    visual_return_if_fail (morph->plugin != nullptr);
 
     visual_plugin_realize (morph->plugin);
 }
 
 VisVideoDepth visual_morph_get_supported_depth (VisMorph *morph)
 {
-    VisMorphPlugin *morphplugin;
+    visual_return_val_if_fail (morph != nullptr, VISUAL_VIDEO_DEPTH_NONE);
+    visual_return_val_if_fail (morph->plugin != nullptr, VISUAL_VIDEO_DEPTH_NONE);
 
-    visual_return_val_if_fail (morph != NULL, VISUAL_VIDEO_DEPTH_NONE);
-    visual_return_val_if_fail (morph->plugin != NULL, VISUAL_VIDEO_DEPTH_NONE);
-
-    morphplugin = get_morph_plugin (morph);
+    auto morphplugin = get_morph_plugin (morph);
     if (!morphplugin)
         return VISUAL_VIDEO_DEPTH_NONE;
 
@@ -162,23 +152,20 @@ VisVideoDepth visual_morph_get_supported_depth (VisMorph *morph)
 
 VisVideoAttrOptions *visual_morph_get_video_attribute_options (VisMorph *morph)
 {
-    VisMorphPlugin *morphplugin;
+    visual_return_val_if_fail (morph != nullptr, nullptr);
+    visual_return_val_if_fail (morph->plugin != nullptr, nullptr);
 
-    visual_return_val_if_fail (morph != NULL, NULL);
-    visual_return_val_if_fail (morph->plugin != NULL, NULL);
-
-    morphplugin = get_morph_plugin (morph);
-
-    if (morphplugin == NULL)
-        return NULL;
+    auto morphplugin = get_morph_plugin (morph);
+    if (!morphplugin)
+        return nullptr;
 
     return &morphplugin->vidoptions;
 }
 
 void visual_morph_set_video (VisMorph *morph, VisVideo *video)
 {
-    visual_return_if_fail (morph != NULL);
-    visual_return_if_fail (video != NULL);
+    visual_return_if_fail (morph != nullptr);
+    visual_return_if_fail (video != nullptr);
 
     morph->dest = video;
     visual_video_ref (morph->dest);
@@ -186,43 +173,43 @@ void visual_morph_set_video (VisMorph *morph, VisVideo *video)
 
 void visual_morph_set_time (VisMorph *morph, VisTime *time)
 {
-    visual_return_if_fail (morph != NULL);
-    visual_return_if_fail (time != NULL);
+    visual_return_if_fail (morph != nullptr);
+    visual_return_if_fail (time != nullptr);
 
     visual_time_copy (morph->morphtime, time);
 }
 
 void visual_morph_set_rate (VisMorph *morph, float rate)
 {
-    visual_return_if_fail (morph != NULL);
+    visual_return_if_fail (morph != nullptr);
 
     morph->rate = rate;
 }
 
 void visual_morph_set_steps (VisMorph *morph, int steps)
 {
-    visual_return_if_fail (morph != NULL);
+    visual_return_if_fail (morph != nullptr);
 
     morph->steps = steps;
 }
 
 void visual_morph_set_mode (VisMorph *morph, VisMorphMode mode)
 {
-    visual_return_if_fail (morph != NULL);
+    visual_return_if_fail (morph != nullptr);
 
     morph->mode = mode;
 }
 
 VisPalette *visual_morph_get_palette (VisMorph *morph)
 {
-    visual_return_val_if_fail (morph != NULL, NULL);
+    visual_return_val_if_fail (morph != nullptr, nullptr);
 
     return morph->morphpal;
 }
 
 int visual_morph_is_done (VisMorph *morph)
 {
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
+    visual_return_val_if_fail (morph != nullptr, -VISUAL_ERROR_MORPH_NULL);
 
     if (morph->mode == VISUAL_MORPH_MODE_SET)
         return FALSE;
@@ -246,13 +233,10 @@ int visual_morph_is_done (VisMorph *morph)
 
 int visual_morph_requests_audio (VisMorph *morph)
 {
-    VisMorphPlugin *morphplugin;
+    visual_return_val_if_fail (morph != nullptr, -VISUAL_ERROR_MORPH_NULL);
 
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
-
-    morphplugin = get_morph_plugin (morph);
-
-    if (morphplugin == NULL) {
+    auto morphplugin = get_morph_plugin (morph);
+    if (!morphplugin) {
         visual_log (VISUAL_LOG_ERROR,
             "The given morph does not reference any plugin");
 
@@ -264,16 +248,13 @@ int visual_morph_requests_audio (VisMorph *morph)
 
 int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2)
 {
-    VisMorphPlugin *morphplugin;
+    visual_return_val_if_fail (morph != nullptr, -VISUAL_ERROR_MORPH_NULL);
+    visual_return_val_if_fail (audio != nullptr, -VISUAL_ERROR_AUDIO_NULL);
+    visual_return_val_if_fail (src1 != nullptr, -VISUAL_ERROR_VIDEO_NULL);
+    visual_return_val_if_fail (src2 != nullptr, -VISUAL_ERROR_VIDEO_NULL);
 
-    visual_return_val_if_fail (morph != NULL, -VISUAL_ERROR_MORPH_NULL);
-    visual_return_val_if_fail (audio != NULL, -VISUAL_ERROR_AUDIO_NULL);
-    visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_VIDEO_NULL);
-    visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_VIDEO_NULL);
-
-    morphplugin = get_morph_plugin (morph);
-
-    if (morphplugin == NULL) {
+    auto morphplugin = get_morph_plugin (morph);
+    if (!morphplugin) {
         visual_log (VISUAL_LOG_ERROR,
             "The given morph does not reference any plugin");
 
@@ -284,11 +265,11 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
     if (!visual_timer_is_active (morph->timer))
         visual_timer_start (morph->timer);
 
-    if (morphplugin->palette != NULL)
+    if (morphplugin->palette)
         morphplugin->palette (morph->plugin, morph->rate, audio, morph->morphpal, src1, src2);
     else {
-        VisPalette *src1_pal = visual_video_get_palette (src1);
-        VisPalette *src2_pal = visual_video_get_palette (src2);
+        auto src1_pal = visual_video_get_palette (src1);
+        auto src2_pal = visual_video_get_palette (src2);
 
         if (src1_pal && src2_pal)
             visual_palette_blend (morph->morphpal, src1_pal, src2_pal, morph->rate);

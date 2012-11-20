@@ -78,6 +78,8 @@ static void convolve_init(VisualFX *_this, PluginInfo *info) {
   data = (ConvData*)malloc(sizeof(ConvData));
   _this->fx_data = (void*)data;
 
+  data->h_height = 0;
+
   data->light = secure_f_param("Screen Brightness");
   data->light.param.fval.max = 300.0f;
   data->light.param.fval.step = 1.0f;

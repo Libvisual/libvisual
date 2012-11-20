@@ -255,7 +255,7 @@ long& Hashtable::operator[] ( const long inKey ) {
 		entry = fetchEntry( inKey, 0 );
 	}
 
-	return (long&) entry -> mValue;
+	return * (long *) entry -> mValue;
 }
 
 

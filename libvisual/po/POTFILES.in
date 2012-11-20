@@ -8,7 +8,6 @@ libvisual/lv_buffer.cpp
 libvisual/lv_buffer_c.cpp
 libvisual/lv_bin.cpp
 libvisual/lv_bin_c.cpp
-libvisual/lv_bmp.c
 libvisual/lv_collection.c
 libvisual/lv_color.cpp
 libvisual/lv_color_c.cpp
@@ -32,15 +31,17 @@ libvisual/lv_random_c.cpp
 libvisual/lv_random.cpp
 libvisual/lv_rectangle_c.cpp
 libvisual/lv_rectangle.cpp
-libvisual/lv_ringbuffer.c
 libvisual/lv_songinfo.cpp
 libvisual/lv_songinfo_c.cpp
-libvisual/lv_thread_disabled.c
 libvisual/lv_time.cpp
 libvisual/lv_time_c.cpp
 libvisual/lv_transform.cpp
 libvisual/lv_video.cpp
 libvisual/lv_video_c.cpp
+
+libvisual/private/lv_buffer_ring.cpp
+
+libvisual/private/lv_video_bmp.cpp
 
 libvisual/private/lv_video_blit.cpp
 libvisual/private/lv_video_convert.cpp
@@ -50,17 +51,14 @@ libvisual/private/lv_video_scale.cpp
 libvisual/private/lv_video_blit_simd.cpp
 libvisual/private/lv_video_scale_simd.cpp
 
-libvisual/private/windows/lv_mem_win32.cpp
-libvisual/private/windows/lv_module_win32.cpp
-libvisual/private/windows/lv_thread_win32.c
+libvisual/private/windows/lv_mem.cpp
+libvisual/private/windows/lv_module.cpp
 
-libvisual/private/posix/lv_mem_posix.cpp
-libvisual/private/posix/lv_module_dlfcn.cpp
-libvisual/private/posix/lv_thread_posix.c
+libvisual/private/posix/lv_mem.cpp
+libvisual/private/posix/lv_module.cpp
 
 tools/lv-tool/lv-tool.cpp
 tools/lv-tool/display/display.cpp
 tools/lv-tool/display/display_driver_factory.cpp
-tools/lv-tool/display/lv_x11_key.cpp
 tools/lv-tool/display/sdl_driver.cpp
 tools/lv-tool/display/stdout_driver.cpp

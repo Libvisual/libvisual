@@ -1,13 +1,19 @@
 #ifndef _LV_UTIL_HPP
 #define _LV_UTIL_HPP
 
+#include <libvisual/lvconfig.h>
+#include <libvisual/lv_defines.h>
 #include <string>
+#include <memory>
+#include <functional>
 
 namespace LV {
 
-  // This file should really not be existing; it's a collection of
-  // utility classes and functions that exist in some form in Boost or
-  // C++11
+  template<typename T, typename ...Args>
+  std::unique_ptr<T> make_unique( Args&& ...args )
+  {
+      return std::unique_ptr<T> (new T (std::forward<Args> (args)... ));
+  }
 
   /**
    * Checks if a string has a given suffix.
@@ -26,43 +32,9 @@ namespace LV {
       }
   }
 
-  /**
-   * An conditional version of std::copy() that filters container
-   * elements according to a given predicate.
-   */
-  // Why oh why did they have to leave this out of C++98 by accident?
-  template <class InputIterator, class OutputIterator, class Predicate>
-  OutputIterator copy_if (InputIterator first, InputIterator last,
-                          OutputIterator result, Predicate pred)
-  {
-      while (first != last)
-      {
-          if (pred (*first))
-              *result++ = *first;
-          ++first;
-      }
-      return result;
-  }
-
-  template<class T>
-  inline void checked_delete (T* x)
-  {
-      typedef char type_must_be_complete[ sizeof(T) ? 1 : -1 ];
-      (void) sizeof (type_must_be_complete);
-      delete x;
-  }
-
-  template <class Pair>
-  typename Pair::first_type select1st (Pair const& pair)
-  {
-      return pair.first;
-  }
-
-  template <class Pair>
-  typename Pair::second_type select2nd (Pair const& pair)
-  {
-      return pair.second;
-  }
+  LV_API bool for_each_file_in_dir (std::string const&                       path,
+                                    std::function<bool (std::string const&)> filter,
+                                    std::function<bool (std::string const&)> func);
 
 } // LV namespace
 

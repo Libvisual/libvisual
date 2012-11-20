@@ -21,41 +21,18 @@
 
 #include <exception>
 #include <cstdlib>
-
+#include <iostream>
 #include <string>
 //#include <jni.h>
+#include <libvisual/libvisual.h>
+
 #include "luascript.h"
-#include <libvisual/libvisual.h>
-
-#include <iostream>
-#include <libvisual/libvisual.h>
-
 #include "Evaluator.h"
 #include "SpecialChar.h"
-#include "debug.h"
 //#include "CPtr.h"
+#include "debug.h"
 
 using namespace LCD;
-
-/*
-QScriptValue toSpecialChar(QScriptEngine *engine, const SpecialChar &ch) {
-    QScriptValue obj = engine->newObject();
-    QScriptValue array = engine->newArray(ch.Size());
-    std::vector<int> matrix = ch.Vector();
-    for(int i = 0; i < ch.Size(); i++)
-        array.setProperty(i, QScriptValue(engine, matrix[i]));
-    obj.setProperty("chars", array);
-    return obj;
-}
-*/
-
-/*
-void fromSpecialChar(const QScriptValue &obj, SpecialChar &ch) {
-    for(int i = 0; obj.property(i).isValid(); i++ )
-        ch.AddChar(obj.property(i).toUInt16());
-}
-*/
-
 
 Evaluator::Evaluator()
 {
@@ -64,6 +41,14 @@ Evaluator::Evaluator()
     mLoadavg = new PluginLoadavg(mScript);
     mProcStat = new PluginProcStat(mScript);
     mUptime = new PluginUptime(mScript);
+    mFPS = new PluginFPS(mScript);
+    mUname = new PluginUname(mScript);
+    mNetinfo = new PluginNetinfo(mScript);
+    mNetDev = new PluginNetDev(mScript);
+    mMeminfo = new PluginMeminfo(mScript);
+    mStatfs = new PluginStatfs(mScript);
+    mDiskstats = new PluginDiskstats(mScript);
+    mFifo = new PluginFifo(mScript);
 }
 
 Evaluator::~Evaluator()
@@ -73,6 +58,13 @@ Evaluator::~Evaluator()
     delete mLoadavg;
     delete mProcStat;
     delete mUptime;
+    delete mFPS;
+    delete mUname;
+    delete mNetinfo;
+    delete mNetDev;
+    delete mStatfs;
+    delete mDiskstats;
+    delete mFifo;
 }
 
 std::string Evaluator::Eval(std::string str, std::string name)

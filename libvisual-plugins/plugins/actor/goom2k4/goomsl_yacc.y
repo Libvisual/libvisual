@@ -43,10 +43,10 @@
     static NodeType *new_nop(const char *str);
     static NodeType *new_op(const char *str, int type, int nbOp);
 
-    static int  allocateLabel();
-    static int  allocateTemp();
+    static int  allocateLabel(void);
+    static int  allocateTemp(void);
     static void releaseTemp(int n);
-    static void releaseAllTemps();
+    static void releaseAllTemps(void);
 
     static int is_tmp_expr(NodeType *node) {
         if (node->str) {
@@ -1007,10 +1007,10 @@
     } /* }}} */
 
 #if 1
-    int allocateTemp() {
+    int allocateTemp(void) {
       return allocateLabel();
     }
-    void releaseAllTemps() {}
+    void releaseAllTemps(void) {}
     void releaseTemp(int n) {}
 #else
     static int nbTemp = 0;
@@ -1053,7 +1053,7 @@
 #endif
 
     static int lastLabel = 0;
-    int allocateLabel() {
+    int allocateLabel(void) {
         return ++lastLabel; /* {{{ */
     } /* }}} */
 

@@ -1,24 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-)
+INCLUDE(LVBuildPlugin)
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(EXTRA_SOURCES loop.c)
-
-# FIXME: Factor this out into the top-level CMakeLists.txt
-IF(TARGET_ARCH_X86)
-  ENABLE_LANGUAGE(ASM-ATT)
-  IF(CMAKE_ASM-ATT_COMPILER_WORKS)
-	SET(EXTRA_SOURCES loopx86.s)
-  ENDIF()
-ENDIF()
-
-SET(actor_blursk_SOURCES
+SET(SOURCES
   actor_blursk.c
   actor_blursk.h
   blur.c
@@ -32,13 +14,18 @@ SET(actor_blursk_SOURCES
   bitmap.c
   paste.c
   text.c
-  ${EXTRA_SOURCES}
 )
 
-ADD_LIBRARY(actor_blursk MODULE ${actor_blursk_SOURCES})
+SET(EXTRA_SOURCES loop.c)
+# FIXME: Factor this out into the top-level CMakeLists.txt
+IF(TARGET_ARCH_X86)
+  ENABLE_LANGUAGE(ASM-ATT)
+  IF(CMAKE_ASM-ATT_COMPILER_WORKS)
+	SET(EXTRA_SOURCES loopx86.s)
+  ENDIF()
+ENDIF()
 
-TARGET_LINK_LIBRARIES(actor_blursk
-  ${LIBVISUAL_LIBRARIES}
+LV_BUILD_PLUGIN(blursk actor
+  SOURCES   ${SOURCES} ${EXTRA_SOURCES}
+  LINK_LIBS m
 )
-
-INSTALL(TARGETS actor_blursk LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

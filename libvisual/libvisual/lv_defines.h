@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_defines.h,v 1.7 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -41,8 +41,6 @@
 #ifndef NULL
 # ifndef __cplusplus
 #   define NULL ((void *) 0)
-# else
-#   define NULL 0
 # endif
 #endif /* NULL */
 
@@ -76,6 +74,18 @@
 #  define LV_CHECK_PRINTF_FORMAT(a, b) /* no compile-time format string check */
 #endif /* __GNUC__ */
 
+/* Restrict */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#  define LV_RESTRICT restrict
+#elif defined(__GNUC__) && __GNU__ >= 4
+#  define LV_RESTRICT __restrict__
+#elif defined(_MSC_VER) && _MSC_VER >= 1600
+#  define LV_RESTRICT __restrict
+#else
+#  define LV_RESTRICT
+#endif
+
 /* Symbol visibility macros */
 
 #if defined _WIN32 || defined __CYGWIN__
@@ -103,5 +113,10 @@
 #define LV_LOCAL LV_DLL_LOCAL
 
 #define LV_PLUGIN_EXPORT LV_DLL_EXPORT
+
+/* Utility macros */
+#ifdef _MSC_VER
+  #define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
 
 #endif /* _LV_DEFINES_H */

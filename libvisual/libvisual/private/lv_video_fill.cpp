@@ -1,3 +1,26 @@
+/* Libvisual - The audio visualisation framework.
+ *
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
+ *
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 #include "config.h"
 #include "lv_video_fill.hpp"
 #include "lv_video_private.hpp"
@@ -5,13 +28,17 @@
 
 #pragma pack(1)
 
-typedef struct {
-#ifdef VISUAL_LITTLE_ENDIAN
-    uint16_t b:5, g:6, r:5;
-#else
-    uint16_t r:5, g:6, b:5;
-#endif
-} rgb16_t;
+union pixel16_t {
+    struct {
+    #ifdef VISUAL_LITTLE_ENDIAN
+        uint16_t b:5, g:6, r:5;
+    #else
+        uint16_t r:5, g:6, b:5;
+    #endif
+    } rgb;
+
+    uint16_t value;
+};
 
 #pragma pack()
 
@@ -19,7 +46,7 @@ namespace LV {
 
   void VideoFill::fill_color_index8 (Video& video, Color const& color)
   {
-      uint8_t* buf = static_cast<uint8_t*> (video.get_pixels ());
+      auto buf = static_cast<uint8_t*> (video.get_pixels ());
 
       int8_t col = ((color.r + color.g + color.b) / 3);
 
@@ -32,17 +59,15 @@ namespace LV {
 
   void VideoFill::fill_color_rgb16 (Video& video, Color const& color)
   {
-      uint16_t* buf = static_cast<uint16_t*> (video.get_pixels ());
+      auto buf = static_cast<uint16_t*> (video.get_pixels ());
 
-      int16_t col;
-
-      rgb16_t *col16 = reinterpret_cast<rgb16_t*> (&col);
-      col16->r = color.r >> 3;
-      col16->g = color.g >> 2;
-      col16->b = color.b >> 3;
+      pixel16_t pixel;
+      pixel.rgb.r = color.r >> 3;
+      pixel.rgb.g = color.g >> 2;
+      pixel.rgb.b = color.b >> 3;
 
       for (int y = 0; y < video.m_impl->height; y++) {
-          visual_mem_set16 (buf, col, video.m_impl->width);
+          visual_mem_set16 (buf, pixel.value, video.m_impl->width);
 
           buf += (video.m_impl->pitch / video.m_impl->bpp);
       }
@@ -50,7 +75,7 @@ namespace LV {
 
   void VideoFill::fill_color_rgb24 (Video& video, Color const& color)
   {
-      uint8_t* rbuf = static_cast<uint8_t*> (video.get_pixels ());
+      auto rbuf = static_cast<uint8_t*> (video.get_pixels ());
 
       int32_t cola =
           (color.b << 24) |
@@ -88,7 +113,7 @@ namespace LV {
 
   void VideoFill::fill_color_argb32 (Video& video, Color const& color)
   {
-      uint32_t *buf = static_cast<uint32_t*> (video.get_pixels ());
+      auto buf = static_cast<uint32_t*> (video.get_pixels ());
 
       uint32_t col = (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
 

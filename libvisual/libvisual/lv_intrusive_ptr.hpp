@@ -14,7 +14,7 @@ namespace LV
       typedef T element_type;
 
       IntrusivePtr ()
-          : m_ptr (0)
+          : m_ptr (nullptr)
       {}
 
       IntrusivePtr (T* ptr, bool add_ref = true)
@@ -39,6 +39,13 @@ namespace LV
               intrusive_ptr_add_ref (m_ptr);
       }
 
+      //! Move constructor
+      IntrusivePtr (IntrusivePtr&& rhs)
+          : m_ptr (rhs.m_ptr)
+      {
+          rhs.m_ptr = nullptr;
+      }
+
       ~IntrusivePtr ()
       {
           if (m_ptr)
@@ -52,12 +59,28 @@ namespace LV
           return *this;
       }
 
+      //! Copy assignment operator
+      IntrusivePtr& operator= (IntrusivePtr const& rhs)
+      {
+          IntrusivePtr (rhs).swap (*this);
+          return *this;
+      }
+
+      //! Raw-pointer assignment operator
       IntrusivePtr& operator= (T* rhs)
       {
           IntrusivePtr (rhs).swap (*this);
           return *this;
       }
 
+      //! Move assignment
+      IntrusivePtr& operator= (IntrusivePtr&& rhs)
+      {
+          IntrusivePtr (rhs).swap (*this);
+          return *this;
+      }
+
+      //! Resets to pointer to null
       void reset ()
       {
           IntrusivePtr ().swap (*this);
@@ -83,9 +106,9 @@ namespace LV
           return m_ptr;
       }
 
-      operator bool () const
+      explicit operator bool () const
       {
-          return m_ptr != 0;
+          return m_ptr != nullptr;
       }
 
       void swap (IntrusivePtr& rhs)
@@ -101,5 +124,16 @@ namespace LV
   };
 
 } // LV namespace
+
+namespace std {
+
+  // std::swap() overload for efficiently swapping IntrusivePtrs
+  template <class T>
+  void swap (LV::IntrusivePtr<T>& lhs, LV::IntrusivePtr<T>& rhs)
+  {
+      lhs.swap (rhs);
+  }
+
+} // std namespace
 
 #endif // _LV_INTRUSIVE_HPP

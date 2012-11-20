@@ -1,9 +1,29 @@
+/* Libvisual - The audio visualisation framework.
+ *
+ * Copyright (C) 2012 Libvisual team
+ *
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 #include "config.h"
 #include "lv_audio_convert.hpp"
 #include "lv_audio.h"
 #include "lv_mem.h"
-#include "lv_enable_if.hpp"
-#include "lv_int_traits.hpp"
+#include <type_traits>
 #include <limits>
 
 using namespace LV;
@@ -13,33 +33,33 @@ namespace {
   template <typename D, typename S>
   struct same_signedness
   {
-      static const bool value = (is_signed<D>::value && is_signed<S>::value) ||
-                                (is_unsigned<D>::value && is_unsigned<S>::value);
+      static const bool value = (std::is_signed<D>::value && std::is_signed<S>::value) ||
+                                (std::is_unsigned<D>::value && std::is_unsigned<S>::value);
   };
 
   template <typename T>
-  inline typename enable_if<is_signed<T>, T>::type
+  inline typename std::enable_if<std::is_signed<T>::value, T>::type
   half_range ()
   {
       return std::numeric_limits<T>::max ();
   }
 
   template <typename T>
-  inline typename enable_if<is_unsigned<T>, T>::type
+  inline typename std::enable_if<std::is_unsigned<T>::value, T>::type
   half_range ()
   {
       return std::numeric_limits<T>::max () / 2;
   }
 
   template <typename T>
-  inline typename enable_if<is_signed<T>, T>::type
+  inline typename std::enable_if<std::is_signed<T>::value, T>::type
   zero ()
   {
       return 0;
   }
 
   template <typename T>
-  inline typename enable_if<is_unsigned<T>, T>::type
+  inline typename std::enable_if<std::is_unsigned<T>::value, T>::type
   zero ()
   {
       return std::numeric_limits<T>::max () / 2 + 1;
@@ -63,12 +83,12 @@ namespace {
 
   // signed->unsigned int conversion (same width)
   template <typename D, typename S>
-  typename enable_if_c<is_unsigned<D>::value && is_signed<S>::value && sizeof(D) == sizeof(S)>::type
+  typename std::enable_if<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) == sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      D a = zero<D> ();
+      auto a = zero<D> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       while (src != src_end) {
           *dst = *src + a;
@@ -79,12 +99,12 @@ namespace {
 
   // unsigned->signed int conversion (same width)
   template <typename D, typename S>
-  typename enable_if_c<is_signed<D>::value && is_unsigned<S>::value && sizeof(D) == sizeof(S)>::type
+  typename std::enable_if<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) == sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      S a = zero<S> ();
+      auto a = zero<S> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       while (src != src_end) {
           *dst = *src - a;
@@ -95,7 +115,7 @@ namespace {
 
   // int->float conversions
   template <typename S>
-  typename enable_if<is_integral<S> >::type
+  typename std::enable_if<std::is_integral<S>::value>::type
   inline convert_sample_array (float* dst, S const* src, std::size_t count)
   {
       float a = 1.0 / (half_range<S> () + 1);
@@ -112,13 +132,13 @@ namespace {
 
   // float->int conversions
   template <typename D>
-  typename enable_if<is_integral<D> >::type
+  typename std::enable_if<std::is_integral<D>::value>::type
   inline convert_sample_array (D* dst, float const* src, std::size_t count)
   {
       float a = half_range<D> ();
       float b = zero<D> ();
 
-      float const* src_end = src + count;
+      auto src_end = src + count;
 
       while (src != src_end) {
           *dst = *src * a + b;
@@ -129,12 +149,12 @@ namespace {
 
   // narrowing/widening int conversion (same signedness)
   template <typename D, typename S>
-  typename enable_if_c<same_signedness<D, S>::value && sizeof(D) != sizeof(S) >::type
+  typename std::enable_if<same_signedness<D, S>::value && sizeof(D) != sizeof(S) >::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       const int shift = shifter<D, S> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       if (sizeof(S) > sizeof(D)) {
           // narrowing
@@ -155,13 +175,13 @@ namespace {
 
   // narrowing/widening unsigned->signed int conversion
   template <typename D, typename S>
-  typename enable_if_c<is_signed<D>::value && is_unsigned<S>::value && sizeof(D) != sizeof(S)>::type
+  typename std::enable_if<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) != sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      D a = zero<D>();
+      auto a = zero<D>();
       const int shift = shifter<D, S> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       if (sizeof(D) < sizeof(S)) {
           // narrowing
@@ -182,13 +202,13 @@ namespace {
 
   // narrowing/widening signed->unsigned int conversion
   template <typename D, typename S>
-  typename enable_if_c<is_unsigned<D>::value && is_signed<S>::value && sizeof(D) != sizeof(S)>::type
+  typename std::enable_if<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) != sizeof(S)>::type
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      D a = zero<D>();
+      auto a = zero<D>();
       const int shift = shifter<D, S> ();
 
-      S const* src_end = src + count;
+      auto src_end = src + count;
 
       if (sizeof(D) < sizeof(S)) {
           // narrowing
@@ -290,7 +310,7 @@ namespace {
   template <typename T>
   inline void deinterleave_stereo_sample_array (T* dest1, T* dest2, T const* src, std::size_t count)
   {
-      T const* src_end = src + count * 2;
+      auto src_end = src + count * 2;
 
       while (src != src_end)
       {
@@ -330,8 +350,8 @@ namespace LV {
                                       BufferConstPtr const&    src,
                                       VisAudioSampleFormatType src_format)
     {
-        void* dbuf = dest->get_data ();
-        void const* sbuf = src->get_data ();
+        auto dbuf = dest->get_data ();
+        auto sbuf = src->get_data ();
         std::size_t size = src->get_size ();
 
         int i = int (dest_format) - 1;
@@ -345,9 +365,9 @@ namespace LV {
                                                   BufferConstPtr const&    src,
                                                   VisAudioSampleFormatType format)
   {
-      void* dbuf1 = dest1->get_data ();
-      void* dbuf2 = dest2->get_data ();
-      void const* sbuf = src->get_data ();
+      auto dbuf1 = dest1->get_data ();
+      auto dbuf2 = dest2->get_data ();
+      auto sbuf = src->get_data ();
       std::size_t size = src->get_size ();
 
       int i = int (format) - 1;

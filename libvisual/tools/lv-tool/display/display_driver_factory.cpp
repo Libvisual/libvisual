@@ -1,3 +1,24 @@
+/* Libvisual - The audio visualisation framework cli tool
+ *
+ * Copyright (C) 2012 Libvisual team
+ *
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 #include "config.h"
 #include "display_driver_factory.hpp"
 #include "stdout_driver.hpp"
@@ -10,13 +31,9 @@
 #include "glx_driver.hpp"
 #endif
 
-#include <algorithm>
-#include <iterator>
-#include <map>
+#include <unordered_map>
 
-
-typedef std::map<std::string, DisplayDriverCreator> CreatorMap;
-
+typedef std::unordered_map<std::string, DisplayDriverCreator> CreatorMap;
 
 class DisplayDriverFactory::Impl
 {
@@ -39,19 +56,20 @@ DisplayDriverFactory::~DisplayDriverFactory ()
     // nothing to do
 }
 
-void DisplayDriverFactory::add_driver (std::string const& name, Creator creator)
+void DisplayDriverFactory::add_driver (std::string const& name, Creator const& creator)
 {
     m_impl->creators[name] = creator;
 }
 
-SADisplayDriver* DisplayDriverFactory::make (std::string const& name, SADisplay& display)
+DisplayDriver* DisplayDriverFactory::make (std::string const& name, Display& display)
 {
-    CreatorMap::const_iterator entry = m_impl->creators.find (name);
+    auto entry = m_impl->creators.find (name);
 
-    if (entry == m_impl->creators.end())
-        return 0;
+    if (entry == m_impl->creators.end ()) {
+        return nullptr;
+    }
 
-    return (*entry->second) (display);
+    return entry->second (display);
 }
 
 bool DisplayDriverFactory::has_driver (std::string const& name) const
@@ -59,15 +77,14 @@ bool DisplayDriverFactory::has_driver (std::string const& name) const
     return (m_impl->creators.find (name) != m_impl->creators.end ());
 }
 
-void DisplayDriverFactory::get_driver_list (DisplayDriverList& list) const
+DisplayDriverList DisplayDriverFactory::get_driver_list () const
 {
-    typedef std::back_insert_iterator<DisplayDriverList> BackInserter;
+    DisplayDriverList list;
 
-    list.clear ();
     list.reserve (m_impl->creators.size ());
 
-    std::transform (m_impl->creators.begin (),
-                    m_impl->creators.end (),
-                    BackInserter (list),
-                    LV::select1st<CreatorMap::value_type>);
+    for (auto creator : m_impl->creators)
+        list.push_back (creator.first);
+
+    return list;
 }

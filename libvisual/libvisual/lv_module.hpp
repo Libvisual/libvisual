@@ -3,8 +3,8 @@
 
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_intrusive_ptr.hpp>
+#include <memory>
 #include <string>
 
 namespace LV {
@@ -17,26 +17,29 @@ namespace LV {
   {
   public:
 
+      Module (Module const&) = delete;
+
+      Module& operator= (Module const&) = delete;
+
       static ModulePtr load (std::string const& path)
       {
-          return ModulePtr (new Module (path));
+          return ModulePtr (new Module (path), false);
       }
 
       ~Module ();
 
       void* get_symbol (std::string const& name);
 
+      static std::string const& path_suffix ();
+
   private:
 
       class Impl;
+      const std::unique_ptr<Impl> m_impl;
 
-      ScopedPtr<Impl> m_impl;
-      unsigned int    m_ref_count;
+      unsigned int m_ref_count;
 
       explicit Module (std::string const& path);
-
-      Module (Module const&);
-      Module& operator= (Module const&);
 
       friend void intrusive_ptr_add_ref (Module* module);
       friend void intrusive_ptr_release (Module* module);

@@ -42,6 +42,7 @@ class WidgetHistogram;
 class WidgetBignums;
 class WidgetGif;
 class WidgetVisualization;
+class WidgetFPS;
 
 class SpecialChar;
 
@@ -183,6 +184,7 @@ class LCDGraphic : public LCDBase {
 
 };
 
+/*
 class LCDGraphicUpdateThread {
     LCDGraphic *visitor_;
 
@@ -192,6 +194,7 @@ class LCDGraphicUpdateThread {
     public:
     LCDGraphicUpdateThread(LCDGraphic *v) { visitor_ = v; }
 };
+*/
 
 void GraphicDraw(WidgetText *w);
 
@@ -202,6 +205,8 @@ void GraphicBarDraw(WidgetBar *w);
 void GraphicHistogramDraw(WidgetHistogram *w);
 
 void GraphicBignumsDraw(WidgetBignums *w);
+
+void GraphicFPSDraw(WidgetFPS *w);
 
 void GraphicGifDraw(WidgetGif *w);
 

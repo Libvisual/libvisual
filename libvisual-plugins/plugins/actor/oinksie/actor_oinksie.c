@@ -86,15 +86,19 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int act_oinksie_init (VisPluginData *plugin)
 {
-	OinksiePrivContainer *priv;
-	VisRandomContext *rcontext;
-        VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("acid palette", 0),
-		VISUAL_PARAM_LIST_END
-	};
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_integer ("color_mode", N_("Color mode"),
+                                                          1,
+                                                          NULL),
+                                visual_param_new_integer ("acid_palette", N_("Acid palette"),
+                                                          0,
+                                                          NULL),
+                                NULL);
 
 /*
 	static VisParamEntry cmodeparamchoices[] = {
@@ -109,14 +113,8 @@ static int act_oinksie_init (VisPluginData *plugin)
 
 	/* FIXME: add UI to access the acid palette parameter */
 
-#if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
-#endif
-
-	priv = visual_mem_new0 (OinksiePrivContainer, 1);
+	OinksiePrivContainer *priv = visual_mem_new0 (OinksiePrivContainer, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
-
-    visual_param_container_add_many (paramcontainer, params);
 
 	priv->priv1.pal_cur = visual_palette_new (256);
 	priv->priv1.pal_old = visual_palette_new (256);
@@ -124,7 +122,7 @@ static int act_oinksie_init (VisPluginData *plugin)
 	priv->priv2.pal_cur = visual_palette_new (256);
 	priv->priv2.pal_old = visual_palette_new (256);
 
-	rcontext = visual_plugin_get_random_context (plugin);
+	VisRandomContext *rcontext = visual_plugin_get_random_context (plugin);
 	priv->priv1.rcontext = rcontext;
 	priv->priv2.rcontext = rcontext;
 
@@ -199,7 +197,7 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -210,8 +208,8 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "color mode")) {
-					priv->color_mode = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "color mode")) {
+					priv->color_mode = visual_param_get_value_integer (param);
 
 					switch (priv->color_mode) {
 						case 0:  priv->currentcomp = compose_blend1_32_c; break;
@@ -221,8 +219,8 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 						case 4:  priv->currentcomp = compose_blend5_32_c; break;
 						default: priv->currentcomp = compose_blend2_32_c; break;
 					}
-				} else if (visual_param_entry_is (param, "acid palette")) {
-					priv->priv1.config.acidpalette = visual_param_entry_get_integer (param);
+				} else if (visual_param_has_name (param, "acid palette")) {
+					priv->priv1.config.acidpalette = visual_param_get_value_integer (param);
 				}
 
 				break;
@@ -254,22 +252,22 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	VisBuffer			 *spmbuf;
 
 	/* Left audio */
-	pcmbuf1 = visual_buffer_new_wrap_data (&priv->priv1.audio.pcm[0], sizeof (float) * 4096);
+	pcmbuf1 = visual_buffer_new_wrap_data (&priv->priv1.audio.pcm[0], sizeof (float) * 4096, FALSE);
 	visual_audio_get_sample (audio, pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	spmbuf = visual_buffer_new_wrap_data (&priv->priv1.audio.freq[0], sizeof (float) * 256);
+	spmbuf = visual_buffer_new_wrap_data (&priv->priv1.audio.freq[0], sizeof (float) * 256, FALSE);
 	visual_audio_get_spectrum_for_sample (spmbuf, pcmbuf1, FALSE);
 
 	/* Right audio */
-	pcmbuf2 = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[1], sizeof (float) * 4096);
+	pcmbuf2 = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[1], sizeof (float) * 4096, FALSE);
 	visual_audio_get_sample (audio, pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	visual_buffer_set_data_pair (spmbuf, priv->priv1.audio.freq[1], sizeof (float) * 256);
 	visual_audio_get_spectrum_for_sample (spmbuf, pcmbuf2, FALSE);
 
 	/* Mix channels */
-	pcmmix = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[2], sizeof (float) * 4096);
-	visual_audio_sample_buffer_mix_many (pcmmix, TRUE, 2, pcmbuf1, pcmbuf2, 1.0, 1.0);
+	pcmmix = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[2], sizeof (float) * 4096, FALSE);
+	visual_audio_get_sample_mixed (audio, pcmmix, TRUE, 2, pcmbuf1, pcmbuf2, 1.0, 1.0);
 
 	visual_buffer_set_data_pair (spmbuf, priv->priv1.audio.freqsmall, sizeof (float) * 4);
 	visual_audio_get_spectrum_for_sample (spmbuf, pcmmix, FALSE);

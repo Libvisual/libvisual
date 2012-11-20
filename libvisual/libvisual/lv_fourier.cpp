@@ -1,14 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * The FFT implementation found in this file is based upon the NULLSOFT
- * Milkdrop FFT implementation.
- *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *          Chong Kai Xiong <descender@phreaker.net>
- *
- * $Id: lv_fourier.c,v 1.15 2006/02/13 20:54:08 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,8 +27,7 @@
 #include "lv_math.h"
 #include <cmath>
 #include <vector>
-#include <map>
-#include <utility>
+#include <unordered_map>
 
 // Log scale settings
 #define AMP_LOG_SCALE_THRESHOLD0    0.001f
@@ -76,7 +71,7 @@ namespace LV {
 
     private:
 
-        typedef std::map<unsigned int, Entry> Table;
+        typedef std::unordered_map<unsigned int, Entry> Table;
 
         Table m_cache;
     };
@@ -114,12 +109,12 @@ namespace LV {
 
     DFTCache::Entry const& DFTCache::get_entry (DFTMethod method, unsigned int sample_count)
     {
-        Table::const_iterator entry = m_cache.find (sample_count);
+        auto entry = m_cache.find (sample_count);
         if (entry != m_cache.end ())
             return entry->second;
 
-        // FIXME: Eliminate the copying
-        m_cache.insert (std::make_pair (sample_count, Entry (method, sample_count)));
+        // FIXME: Use emplace() when libstdc++ supports it
+        m_cache[sample_count] = Entry (method, sample_count);
 
         return m_cache[sample_count];
     }
@@ -211,7 +206,7 @@ namespace LV {
   } // anonymous namespace
 
   template <>
-  LV_API Fourier* Singleton<Fourier>::m_instance = 0;
+  LV_API Fourier* Singleton<Fourier>::m_instance = nullptr;
 
   void Fourier::init ()
   {
@@ -243,8 +238,8 @@ namespace LV {
 
   void DFT::perform (float *output, float const* input)
   {
-      visual_return_if_fail (output != NULL);
-      visual_return_if_fail (input  != NULL);
+      visual_return_if_fail (output != nullptr);
+      visual_return_if_fail (input  != nullptr);
 
       switch (m_impl->method) {
           case DFT_METHOD_BRUTE_FORCE:
@@ -256,30 +251,30 @@ namespace LV {
               break;
       }
 
-      visual_math_simd_complex_norm_mul_float (output, &m_impl->real[0], &m_impl->imag[0],
-                                               m_impl->samples_out, 1.0 / m_impl->sample_count);
+      visual_math_simd_complex_scaled_norm (output, m_impl->real.data (), m_impl->imag.data (),
+                                            1.0 / m_impl->sample_count, m_impl->samples_out);
   }
 
   void DFT::log_scale (float *output, float const* input, unsigned int size)
   {
-      visual_return_if_fail (output != NULL);
-      visual_return_if_fail (input  != NULL);
+      visual_return_if_fail (output != nullptr);
+      visual_return_if_fail (input  != nullptr);
 
       return log_scale_standard (output, input, size);
   }
 
   void DFT::log_scale_standard (float *output, float const* input, unsigned int size)
   {
-      visual_return_if_fail (output != NULL);
-      visual_return_if_fail (input  != NULL);
+      visual_return_if_fail (output != nullptr);
+      visual_return_if_fail (input  != nullptr);
 
       return log_scale_custom (output, input, size, AMP_LOG_SCALE_DIVISOR);
   }
 
   void DFT::log_scale_custom (float* output, float const* input, unsigned int size, float log_scale_divisor)
   {
-      visual_return_if_fail (output != NULL);
-      visual_return_if_fail (input  != NULL);
+      visual_return_if_fail (output != nullptr);
+      visual_return_if_fail (input  != nullptr);
 
       for (unsigned int i = 0; i < size; i++) {
           if (input[i] > AMP_LOG_SCALE_THRESHOLD0)

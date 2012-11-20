@@ -26,7 +26,12 @@
 #include "fastmath.h"
 #include "etoile.h"
 #include <cmath>
+
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -87,28 +92,26 @@ namespace {
 
 int lv_dancingparticles_init (VisPluginData *plugin)
 {
-	DancingParticlesPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparent bars", FALSE),
-		VISUAL_PARAM_LIST_END
-	};
-
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (DancingParticlesPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    DancingParticlesPrivate *priv = visual_mem_new0 (DancingParticlesPrivate, 1);
+    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_bool ("transparent_bars",
+                                                       N_("Transparent bars"),
+                                                       FALSE,
+                                                       NULL),
+                                NULL);
 
-	build_sqrt_table ();
+    build_sqrt_table ();
 
-	init_gl ();
+    init_gl ();
 
-	return 0;
+    return 0;
 }
 
 int lv_dancingparticles_cleanup (VisPluginData *plugin)
@@ -152,7 +155,7 @@ int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -161,10 +164,10 @@ int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events)
 				break;
 
 			case VISUAL_EVENT_PARAM:
-				param = static_cast<VisParamEntry *> (ev.event.param.param);
+				param = static_cast<VisParam *> (ev.event.param.param);
 
-				if (visual_param_entry_is (param, "transparant bars")) {
-					priv->transparant = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "transparent_bars")) {
+					priv->transparant = visual_param_get_value_bool (param);
 
 					if (priv->transparant == FALSE)
 						glDisable (GL_BLEND);
@@ -187,16 +190,18 @@ VisPalette *lv_dancingparticles_palette (VisPluginData *plugin)
 
 int lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	float freq[3][256];
+	const unsigned int size = 256;
+
+	float freq[3][size];
 
 	LV::BufferPtr fbuf = LV::Buffer::create ();
-	fbuf->set (freq[0], sizeof(freq[0]));
-	audio->get_spectrum (fbuf, 256, VISUAL_AUDIO_CHANNEL_LEFT, false);
+	fbuf->set (freq[0], size * sizeof(float));
+	audio->get_spectrum (fbuf, size, VISUAL_AUDIO_CHANNEL_LEFT, false);
 
-	fbuf->set (freq[1], sizeof(freq[1]));
-	audio->get_spectrum (fbuf, 256, VISUAL_AUDIO_CHANNEL_RIGHT, false);
+	fbuf->set (freq[1], size * sizeof(float));
+	audio->get_spectrum (fbuf, size, VISUAL_AUDIO_CHANNEL_RIGHT, false);
 
-	for (unsigned int i = 0; i < sizeof(freq[2]); i++)
+	for (unsigned int i = 0; i < size; i++)
 		freq[2][i] = (freq[0][i] + freq[1][i]) / 2;
 
 	/* FIXME on title change, do something */

@@ -9,8 +9,6 @@ SET(LV_PLUGINS_VERSION_MICRO  0)
 SET(LV_PLUGINS_VERSION        ${LV_PLUGINS_VERSION_MAJOR}.${LV_PLUGINS_VERSION_MINOR}.${LV_PLUGINS_VERSION_MICRO})
 SET(LV_PLUGINS_VERSION_SUFFIX ${LV_PLUGINS_VERSION_MAJOR}.${LV_PLUGINS_VERSION_MINOR})
 
-SET(LIBVISUAL_PKG "libvisual-${LV_PLUGINS_VERSION_SUFFIX}")
-
 # Package information
 
 SET(PACKAGE           "libvisual-plugins")
@@ -23,52 +21,32 @@ SET(PACKAGE_URL       "http://libvisual.org")
 SET(PACKAGE_CONTACT   "http://libvisual.org")
 SET(PACKAGE_SUMMARY   "Core plugins for Libvisual")
 
-# Installation Paths
-INCLUDE(GNUInstallDirs)
-SET(LV_PLUGINS_DATA_DIR "${CMAKE_INSTALL_DATADIR}/libvisual-plugins-${LV_PLUGINS_VERSION_SUFFIX}")
-SET(LV_PLUGINS_DATA_DIR_FULL "${CMAKE_INSTALL_FULL_DATADIR}/libvisual-plugins-${LV_PLUGINS_VERSION_SUFFIX}")
-
 # Required versions for dependencies
-
 SET(LV_REQUIRED_VERSION     ${LV_PLUGINS_VERSION})
 SET(ESOUND_REQUIRED_VERSION 0.2.28)
 SET(JACK_REQUIRED_VERSION   0.98.0)
 SET(GTK_REQUIRED_VERSION    2.0)
-SET(GST_REQUIRED_VERSION    0.8)
+SET(GST_REQUIRED_VERSION    0.10)
 SET(PULSE_REQUIRED_VERSION  1.0)
 SET(XMMS2_REQUIRED_VERSION  0.6)
 SET(LUAJIT_REQUIRED_VERSION 0.26)
 
+# Check for libvisual early so that users get told they have the wrong
+# dependencies as early in the process as possible.
+FIND_PACKAGE(Libvisual 0.5 REQUIRED)
+
 # Check for pkg-config
 FIND_PACKAGE(PkgConfig REQUIRED)
 
-# Check for libvisual here so that users get told they have the
-# wrong dependencies as early in the process as possible.
-PKG_CHECK_MODULES(LIBVISUAL ${LIBVISUAL_PKG}>=${LV_REQUIRED_VERSION} REQUIRED)
+# Check for threading implementation
+FIND_PACKAGE(Threads)
 
-# Determine plugin installation paths
-MARK_AS_ADVANCED(LV_PLUGIN_DIR)
-IF(NOT DEFINED LV_PLUGIN_DIR)
-  EXECUTE_PROCESS(
-    COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=pluginsbasedir ${LIBVISUAL_PKG}
-    OUTPUT_VARIABLE PLUGIN_DIR
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-  SET(LV_PLUGIN_DIR "${PLUGIN_DIR}" CACHE PATH "Plugin installation directory")
-ENDIF()
-MESSAGE(STATUS "Plugins will be installed into ${LV_PLUGIN_DIR}")
-
-SET(LV_ACTOR_PLUGIN_DIR "${LV_PLUGIN_DIR}/actor")
-SET(LV_INPUT_PLUGIN_DIR "${LV_PLUGIN_DIR}/input")
-SET(LV_MORPH_PLUGIN_DIR "${LV_PLUGIN_DIR}/morph")
-
-# Check for typedefs, structures, and compiler characteristics.
-INCLUDE(CheckIncludeFiles)
-INCLUDE(CheckCCompiler)
-CHECK_C_COMPILER_SUPPORTS_CONST(HAVE_C_CONST)
-CHECK_C_COMPILER_SUPPORTS_INLINE(INLINE HAVE_C_INLINE)
+# Check for OpenMP support.
+FIND_PACKAGE(OpenMP)
+SET(HAVE_OPENMP ${OPENMP_FOUND})
 
 # 'Standard' header files.
+INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckStdCHeaders)
 IF(NOT STDC_HEADERS)
   MESSAGE(FATAL ERROR "Libvisual-plugins requires standard C library headers to build")
@@ -94,7 +72,7 @@ OPTION(ENABLE_NLS "Enable internationalization" yes)
 IF(ENABLE_NLS)
   FIND_PACKAGE(Gettext REQUIRED)
   SET(HAVE_GETTEXT ${GETTEXT_FOUND})
-  SET(LOCALE_DIR ${CMAKE_INSTALL_FULL_LOCALEDIR})
+  SET(LOCALE_DIR ${LV_PLUGIN_LOCALE_DIR})
   ADD_SUBDIRECTORY(po)
 ENDIF()
 
@@ -106,14 +84,28 @@ ENDIF()
 
 # Check for libraries
 
-# Xlib
-FIND_PACKAGE(X11)
-SET(HAVE_X ${X11_FOUND})
-
 # OpenGL
-FIND_PACKAGE(OpenGL)
-SET(HAVE_OPENGL ${OPENGL_FOUND})
-SET(HAVE_XF86VMODE ${X11_xf86vmode_FOUND})
+OPTION(USE_OPENGL_ES1 "Force use of OpenGL ES 1.x (for development only)" no)
+IF(NOT USE_OPENGL_ES1)
+  FIND_PACKAGE(OpenGL)
+  SET(HAVE_OPENGL ${OPENGL_FOUND})
+  SET(HAVE_OPENGL_GLU ${OPENGL_GLU_FOUND})
+ELSE()
+  MESSAGE(STATUS "Forcing use of OpenGL ES 1.x")
+  FIND_PACKAGE(OpenGLES1)
+  SET(HAVE_OPENGL ${OPENGLES1_FOUND})
+  SET(HAVE_OPENGL_GLU ${OPENGLES1_FOUND})
+  IF(OPENGLES1_FOUND)
+    SET(HAVE_OPENGL_GLU yes)
+    SET(OPENGL_INCLUDE_DIR ${OPENGL_ES1_INCLUDE_DIR})
+    SET(OPENGL_gl_LIBRARY ${OPENGL_ES1_LIBRARY})
+    SET(OPENGL_glu_LIBRARY miniGLU)
+    ADD_DEFINITIONS(-DUSE_OPENGL_ES)
+    ADD_SUBDIRECTORY(common/GL)
+  ELSE()
+    MESSAGE(WARNING "No OpenGL ES 1.x implementation found, OpenGL support is now disabled")
+  ENDIF()
+ENDIF()
 
 # Plugin build options
 OPTION(ENABLE_ALPHABLEND  "Build the Alphablend morph plugin" yes)
@@ -161,14 +153,15 @@ IF(ENABLE_ALSA)
 ENDIF()
 
 IF(ENABLE_DANCINGPARTICLES)
-  IF(NOT HAVE_OPENGL)
+  FIND_PACKAGE(T1lib)
+  IF(NOT T1LIB_FOUND OR NOT HAVE_OPENGL OR NOT HAVE_OPENGL_GLU)
     MESSAGE(WARNING "No OpenGL found. The Dancing Particles plugin will not be built.")
     SET(ENABLE_DANCINGPARTICLES no)
   ENDIF()
 ENDIF()
 
 IF(ENABLE_FLOWER)
-  IF(NOT HAVE_OPENGL)
+  IF(NOT HAVE_OPENGL OR NOT HAVE_OPENGL_GLU)
     MESSAGE(WARNING "No OpenGL found. The Pseudotoad Flower plugin will not be built.")
     SET(ENABLE_FLOWER no)
   ENDIF()
@@ -197,7 +190,7 @@ IF(ENABLE_GOOM2K4)
 ENDIF()
 
 IF(ENABLE_GSTREAMER)
-  PKG_CHECK_MODULES(GSTREAMER gstreamer-0.8>=${GST_REQUIRED_VERSION})
+  PKG_CHECK_MODULES(GSTREAMER gstreamer-0.10>=${GST_REQUIRED_VERSION})
   IF(NOT GSTREAMER_FOUND)
     MESSAGE(WARNING "GStreamer >= ${GST_REQUIRED_VERSION} is not found. The GStreamer viewer plugin will not be built.")
     SET(ENABLE_GSTREAMER no)
@@ -213,21 +206,20 @@ IF(ENABLE_JACK)
 ENDIF()
 
 IF(ENABLE_LV_GLTEST)
-  IF(NOT HAVE_OPENGL)
+  IF(NOT HAVE_OPENGL OR NOT HAVE_OPENGL_GLU)
     MESSAGE(WARNING "No OpenGL found. The lv_gltest plugin will not be built.")
     SET(ENABLE_LV_GLTEST no)
   ENDIF()
 ENDIF()
 
 IF(ENABLE_MADSPIN)
-  IF(NOT HAVE_OPENGL)
+  IF(NOT HAVE_OPENGL OR NOT HAVE_OPENGL_GLU)
     MESSAGE(WARNING "No OpenGL found. The Madspin plugin will not be built.")
     SET(ENABLE_MADSPIN no)
   ENDIF()
 ENDIF()
 
 IF(ENABLE_MPLAYER)
-  # FIXME: Missing check for MPlayer...
   IF(NOT HAVE_MREMAP)
     MESSAGE(WARNING "There is no working mremap() function available. The MPlayer input plugin will not be built.")
     SET(ENABLE_MPLAYER no)
@@ -235,14 +227,14 @@ IF(ENABLE_MPLAYER)
 ENDIF()
 
 IF(ENABLE_NASTYFFT)
-  IF(NOT HAVE_OPENGL)
+  IF(NOT HAVE_OPENGL OR NOT HAVE_OPENGL_GLU)
     MESSAGE(WARNING "No OpenGL found. The nastyfft plugin will not be built.")
     SET(ENABLE_NASTYFFT no)
   ENDIF()
 ENDIF()
 
 IF(ENABLE_NEBULUS)
-  IF(NOT HAVE_OPENGL)
+  IF(NOT HAVE_OPENGL OR NOT HAVE_OPENGL_GLU)
     MESSAGE(WARNING "No OpenGL found. The Nebulus plugin will not be built.")
     SET(ENABLE_NEBULUS no)
   ENDIF()
@@ -287,8 +279,8 @@ IF(ENABLE_PROFILING)
 ENDIF()
 
 # Add -Werror to debug builds?
-SET(CMAKE_C_FLAGS         "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes")
-SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++98 -Wall -Wunused -Wno-variadic-macros")
+SET(CMAKE_C_FLAGS         "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes -Werror -fstrict-aliasing")
+SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused -Werror -fstrict-aliasing")
 SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
 

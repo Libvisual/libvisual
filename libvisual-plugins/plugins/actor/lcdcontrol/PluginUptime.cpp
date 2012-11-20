@@ -275,7 +275,7 @@ PluginUptime::PluginUptime() {
 
 PluginUptime::PluginUptime(lua *script) {
     script->register_function<uptime1_t>();
-    //script->register_function<uptime2_t>();
+    script->register_function<uptime2_t>(); // FIXME this may be broken
     uptime = 0;    
     fd = -2;
     mUptime = this;

@@ -65,7 +65,7 @@ class Widget {
     Widget(LCDCore *visitor, std::string name, Json::Value *config, 
         int row, int col, 
         int layer, int type);
-    ~Widget();
+    virtual ~Widget();
     virtual void Start();
     virtual void Stop();
     virtual void SetupChars();

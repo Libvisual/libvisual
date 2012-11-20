@@ -1,9 +1,11 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *      Jean-Christophe Hoelt <jeko@ios-software.com>
+ *          Jean-Christophe Hoelt <jeko@ios-software.com>
+ *          Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,8 +32,8 @@ namespace LV {
   void VideoBlit::blit_overlay_alphasrc_mmx (Video* dest, Video* src)
   {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-      uint8_t* destbuf = static_cast<uint8_t*> (dest->get_pixels ());
-      uint8_t const* srcbuf = static_cast<uint8_t const*> (src->get_pixels ());
+      auto destbuf = static_cast<uint8_t*> (dest->get_pixels ());
+      auto srcbuf = static_cast<uint8_t const*> (src->get_pixels ());
 
       for (int i = 0; i < src->m_impl->height; i++) {
           for (int j = 0; j < src->m_impl->width; j++) {

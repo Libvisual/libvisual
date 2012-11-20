@@ -1,11 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *      Chong Kai Xiong <descender@phreaker.net>
- *
- * $Id: lv_fourier.h,v 1.8 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,12 +33,12 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
 #include <libvisual/lv_singleton.hpp>
+#include <memory>
 
 namespace LV {
 
-  class LV_API Fourier
+  class Fourier
       : public Singleton<Fourier>
   {
   public:
@@ -52,12 +51,12 @@ namespace LV {
 
       class Impl;
 
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
 
       Fourier ();
   };
 
-  class DFT
+  class LV_API DFT
   {
   public:
 
@@ -112,7 +111,7 @@ namespace LV {
 
       class Impl;
 
-      ScopedPtr<Impl> m_impl;
+      const std::unique_ptr<Impl> m_impl;
   };
 
 }  // LV namespace

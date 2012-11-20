@@ -1,21 +1,5 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
+INCLUDE(LVBuildPlugin)
+
+LV_BUILD_MORPH_PLUGIN(alphablend
+  SOURCES morph_alphablend.c
 )
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(morph_alphablend_SOURCES
-  morph_alphablend.c
-)
-
-ADD_LIBRARY(morph_alphablend MODULE ${morph_alphablend_SOURCES})
-
-TARGET_LINK_LIBRARIES(morph_alphablend
-  ${LIBVISUAL_LIBRARIES}
-)
-
-INSTALL(TARGETS morph_alphablend LIBRARY DESTINATION ${LV_MORPH_PLUGIN_DIR})

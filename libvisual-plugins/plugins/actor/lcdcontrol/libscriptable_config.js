@@ -11,29 +11,31 @@
         "cols": 256,
         "rows": 64,
         "layout-timeout": 0,
-        "update": 25,
+        "update": 100,
         //"widget0": "widget_key_up",
         //"widget1": "widget_key_down",
         //"widget2": "widget_netstat_script",
-        "transition-speed": 50,
-        "refresh-rate": 25,
+        "transition-speed": 100,
+        "refresh-rate": 5,
         "layout0": "layout_full"
     },
     "layout_full": {
-        "layer3": {
+        "layer4": {
             "row1": {
                 "col1": "widget_infinite_256x64"
             }
         },
-        "layer2": {
+        "layer3": {
             "row1": {
                 "col1": "widget_libvisual_256x64"
             }
         },
-        "layer1": {
+        "layer2": {
             "row1": {
-                //"col10": "widget_vis_banner"
-            },
+                "col1": "widget_histogram_large"
+            }
+        },
+        "layer1": {
             "row2": {
                 "col1": "widget_icon_heart",
                 "col2": "widget_icon_heartbeat",
@@ -57,12 +59,15 @@
                 "col20": "widget_icon_heartbeat"
             },
             "row3": {
-                "col3": "widget_cpu_label",
+                "col4": "widget_cpu_label",
                 "col8": "widget_bignums",
                 "col11": "widget_percent"
-            }
+            },
+            "row5": {
+                "col1": "widget_FSSpace"
+            },
+            "transition": "U"
         }
-        
     },
     "layout_2x16": {
         "row1": {
@@ -762,7 +767,7 @@
     },
     "widget_FSSpace": {
         "type": "text",
-        "expression": "fsspace_a = ((statfs.Statfs('/', 'bavail')*statfs.Statfs('/', 'bsize'))/ 1024/ 1024);fsspace_b = ((statfs.Statfs('/', 'bavail')*statfs.Statfs('/', 'bsize'))/1024/1024);c = '/ ' + fsspace_a + 'MB / ' + fsspace_b + ' MB';
+        "expression": "fsspace_a = ((statfs.Statfs('/', 'bavail')*statfs.Statfs('/', 'bsize'))/ 1024/ 1024);fsspace_b = ((statfs.Statfs('/', 'bavail')*statfs.Statfs('/', 'bsize'))/1024/1024);c = '/ ' .. fsspace_a .. 'MB / ' .. fsspace_b .. ' MB'; return c;
         ",
         "length": 42,
         "align": "M",
@@ -920,13 +925,19 @@
         "align": "L",
         "update": 999
     },
+    "widget_fps": {
+        "type": "text",
+        "expression": "return fps.avg() .. ' - FPS'",
+        "length": 11,
+        "foreground": "FFFFFFFF",
+        "background": "ff000000"
+    },
     "widget_vis_banner": {
-        "type": "visualization",
+        "type": "filter",
         "width": 48,
-        "height": 8,
+        "height": 16,
         "update": 100,
-        "morph-timeout": 0,
-        "actor": "corona",
+        "actor": "dmovement",
         "style": "pcm"
     },
     "widget_infinite_256x64": {
@@ -935,9 +946,11 @@
         "height": 64,
         "update": 50,
         "morph-timeout": 0,
-        "actor": "infinite",
+        "morph-steps": 10,
+        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:goom2k4:jakdaw",
+        "actor": "gforce",
         "input": "debug",
-        "morph": "slide_left",
+        "morph": "slide_up",
         "style": "pcm",
         "alpha": 255
     },
@@ -947,22 +960,17 @@
         "height": 64,
         "update": 50,
         "morph-timeout": 0,
-        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:oinksie:jess:lv_scope:plazma",
-        "actor": "corona",
+        "morph-steps": 18,
+        "skip-actors": "gstreamer:gdkpixbuf:lcdcontrol:jess:oinksie:goom2k4:jakdaw",
+        "actor": "lv_analyzer",
         "input": "debug",
-        "morph": "slide_left",
+        "morph": "tentacle",
         "style": "pcm",
-        "alpha": 75,
+        "alpha": 50,
         "params": {
             "oinksie": {
                 "acid palette": 1,
                 "color mode": 4
-            },
-            "blursk": {
-                "color_style": "Metal",
-                "show_info": "Always",
-                "info_timeout": 10,
-                "show_timestamp": 1
             },
             /*"blursk": { // blur scope
                 "show_info": "Always",
@@ -1986,7 +1994,7 @@
             "row7": "..*..|.....|..*..|.....|.....|.....", 
             "row8": ".....|.....|.....|.....|.....|....."
         }, 
-        "speed": 100, 
+        "speed": 500, 
         "type": "icon"
     }, 
     "widget_icon_heartbeat": {
@@ -2000,7 +2008,7 @@
             "row7": "..*..|..*..", 
             "row8": ".....|....."
         }, 
-        "speed": 100, 
+        "speed": 500, 
         "type": "icon"
     }, 
     "widget_icon_karo": {

@@ -282,7 +282,6 @@ double PluginProcStat::Cpu(std::string arg1, int arg2) {
     //const char *key;
     std::string key = arg1;
     int delay = arg2;
-    double value;
     double cpu_user, cpu_nice, cpu_system, cpu_idle, cpu_total;
     double cpu_iow, cpu_irq, cpu_sirq;
 
@@ -305,6 +304,8 @@ double PluginProcStat::Cpu(std::string arg1, int arg2) {
 
     cpu_total = cpu_user + cpu_nice + cpu_system + cpu_idle + cpu_iow + cpu_irq + cpu_sirq;
 
+    double value = 0.0;
+
     if (key == "user")
         value = cpu_user;
     else if (key == "nice")
@@ -321,6 +322,7 @@ double PluginProcStat::Cpu(std::string arg1, int arg2) {
         value = cpu_sirq;
     else if (key == "busy")
         value = cpu_total - cpu_idle;
+
     if (cpu_total > 0.0)
         value = 100 * value / cpu_total;
     else

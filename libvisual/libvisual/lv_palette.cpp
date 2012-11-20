@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_palette.c,v 1.21 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -45,11 +45,8 @@ namespace LV {
 
   void Palette::blend (Palette const& src1, Palette const& src2, float rate)
   {
-      if (src1.size () != src2.size ())
-          throw Error(VISUAL_ERROR_PALETTE_SIZE, "Palette sizes do not match");
-
-      if (size () != src1.size ())
-          throw Error(VISUAL_ERROR_PALETTE_SIZE, "Palette sizes do not match");
+      visual_return_if_fail (src1.size () != src2.size ());
+      visual_return_if_fail (size ()      != src1.size ());
 
       for (unsigned int i = 0; i < colors.size (); i++) {
           colors[i].r = src1.colors[i].r + ((src2.colors[i].r - src1.colors[i].r) * rate);
@@ -73,7 +70,7 @@ namespace LV {
 
       uint8_t alpha = rdiff * 255;
 
-      Color const* tmp1 = &colors[irate];
+      auto const tmp1 = &colors[irate];
       Color const* tmp2;
 
       if (irate == int (size() - 1))

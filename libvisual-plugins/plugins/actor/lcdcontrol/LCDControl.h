@@ -28,9 +28,11 @@
 #include <string>
 #include <cstring>
 #include <libvisual/libvisual.h>
+#include <mutex>
 
 #include "CFG.h"
 #include "LCDTimer.h"
+#include "Stats.h"
 
 namespace LCD {
 
@@ -48,7 +50,8 @@ class LCDControl : public CFG {
     void ConfigSetup();
 
     public:
-    VisMutex *mutex_;
+    std::mutex mutex_;
+    Stats stats_;
     void *priv_;
     LCDControl(void *priv, VisEventQueue *eventqueue);
     ~LCDControl();

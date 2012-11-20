@@ -1,8 +1,10 @@
 /* Libvisual - The audio visualisation framework cli tool
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
+ *
+ * Copyright (C) 2012      LIbvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ *          Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,7 +29,7 @@
 
 #include <SDL/SDL.h>
 #include <iostream>
-#include <map>
+#include <array>
 
 namespace {
 
@@ -55,11 +57,11 @@ namespace {
   void get_nearest_resolution (int& width, int& height);
 
   class SDLDriver
-      : public SADisplayDriver
+      : public DisplayDriver
   {
   public:
 
-      SDLDriver (SADisplay& display)
+      SDLDriver (Display& display)
           : m_display         (display)
           , m_screen          (0)
           , m_screen_video    (0)
@@ -82,7 +84,6 @@ namespace {
                                    unsigned int height,
                                    bool resizable)
       {
-          m_screen_video.reset ();
 
           int videoflags = 0;
 
@@ -92,18 +93,20 @@ namespace {
           if (!SDL_WasInit (SDL_INIT_VIDEO)) {
               if (SDL_Init (SDL_INIT_VIDEO) == -1) {
                   std::cerr << "Unable to init SDL VIDEO: " << SDL_GetError () << std::endl;
-                  return NULL;
+                  return nullptr;
               }
           }
 
           m_resizable = resizable;
           m_requested_depth = depth;
 
+          m_screen_video.reset ();
+
           if (depth == VISUAL_VIDEO_DEPTH_GL) {
               SDL_VideoInfo const* videoinfo = SDL_GetVideoInfo ();
 
               if (!videoinfo) {
-                  return NULL;
+                  return nullptr;
               }
 
               videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE;
@@ -138,12 +141,12 @@ namespace {
           }
 
           // Recreate video object
-
           m_screen_video = LV::Video::wrap (m_screen->pixels,
                                             false,
                                             m_screen->w,
                                             m_screen->h,
                                             depth);
+          m_screen_video->ref();
 
           set_title (_("lv-tool"));
 
@@ -159,7 +162,7 @@ namespace {
           if (!m_running)
               return;
 
-          m_screen_video.reset ();
+          //m_screen_video.reset (); FIXME: Invalid pointer.
 
           SDL_Quit ();
 
@@ -191,7 +194,7 @@ namespace {
 
                       get_nearest_resolution (width, height);
 
-                      create (m_requested_depth, NULL, width, height, m_resizable);
+                      create (m_requested_depth, nullptr, width, height, m_resizable);
                   }
 
                   SDL_ShowCursor (SDL_FALSE);
@@ -203,7 +206,7 @@ namespace {
                   SDL_WM_ToggleFullScreen (m_screen);
 
                   if (autoscale) {
-                      create (m_requested_depth, NULL, m_last_width, m_last_height, m_resizable);
+                      create (m_requested_depth, nullptr, m_last_width, m_last_height, m_resizable);
                   }
               }
           }
@@ -216,17 +219,17 @@ namespace {
 
       virtual void set_title(std::string const& title)
       {
-          SDL_WM_SetCaption (title.c_str(), NULL);
+          SDL_WM_SetCaption (title.c_str(), nullptr);
       }
 
       virtual void update_rect (LV::Rect const& rect)
       {
           if (m_screen->format->BitsPerPixel == 8) {
-              LV::Palette const& pal = m_display.get_video ()->get_palette ();
+              auto const& pal = m_display.get_video ()->get_palette ();
 
               if (!pal.empty () && pal.size() <= 256) {
-                  SDL_Color colors[256];
-                  visual_mem_set (colors, 0, sizeof (colors));
+                  std::array<SDL_Color, 256> colors;
+                  visual_mem_set (colors.data (), 0, sizeof (colors));
 
                   for (unsigned int i = 0; i < pal.size(); i++) {
                       colors[i].r = pal.colors[i].r;
@@ -234,7 +237,7 @@ namespace {
                       colors[i].b = pal.colors[i].b;
                   }
 
-                  SDL_SetColors (m_screen, colors, 0, 256);
+                  SDL_SetColors (m_screen, colors.data (), 0, 256);
               }
           }
 
@@ -284,7 +287,7 @@ namespace {
                                           visual_event_new_resize (event.resize.w,
                                                                    event.resize.h));
 
-                  create (m_display.get_video ()->get_depth (), NULL, event.resize.w, event.resize.h, m_resizable);
+                  create (m_display.get_video ()->get_depth (), nullptr, event.resize.w, event.resize.h, m_resizable);
                   break;
 
               case SDL_MOUSEMOTION:
@@ -322,7 +325,7 @@ namespace {
 
   private:
 
-      SADisplay&    m_display;
+      Display&    m_display;
       SDL_Surface*  m_screen;
       LV::VideoPtr  m_screen_video;
       VisVideoDepth m_requested_depth;
@@ -338,12 +341,9 @@ namespace {
 
   void get_nearest_resolution (int& width, int& height)
   {
-      SDL_Rect **modelist = SDL_ListModes (NULL, SDL_FULLSCREEN);
-      if (modelist == NULL)
+      auto modelist = SDL_ListModes (nullptr, SDL_FULLSCREEN);
+      if (!modelist)
           return;
-
-      int w = width;
-      int h = height;
 
       // Window is bigger than highest resolution
       if (modelist[0]->w <= width || modelist[0]->h <= height) {
@@ -352,11 +352,14 @@ namespace {
           return;
       }
 
+      int w = width;
+      int h = height;
+
       for (unsigned int i = 0; modelist[i]; i++) {
           if (modelist[i]->w >= width && modelist[i]->h >= height) {
               w = modelist[i]->w;
               h = modelist[i]->h;
-              return;
+              break;
           }
       }
 
@@ -366,7 +369,7 @@ namespace {
 
 } // anonymous namespace
 
-SADisplayDriver* sdl_driver_new (SADisplay& display)
+DisplayDriver* sdl_driver_new (Display& display)
 {
     return new SDLDriver (display);
 }

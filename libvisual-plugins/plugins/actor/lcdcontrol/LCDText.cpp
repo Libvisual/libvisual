@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <map>
+#include <libvisual/libvisual.h>
 
 #include "LCDCore.h"
 #include "LCDBase.h"
@@ -35,6 +36,7 @@
 #include "WidgetHistogram.h"
 #include "WidgetIcon.h"
 #include "WidgetBignums.h"
+#include "WidgetFPS.h"
 #include "WidgetVisualization.h"
 #include "Widget.h"
 #include "RGBA.h"
@@ -115,7 +117,7 @@ int LCDText::ResizeLCD(int rows, int cols) {
 void LCDText::TextSetSpecialChars() {
     for(int i = 0; i < (int)special_chars.size(); i++ ) {
         if (i > CHARS) {
-            LCDError("Too many chars to process. Expected %d, got %d.", CHARS, 
+            LCDError("Too many chars to process. Expected %d, got %" VISUAL_SIZE_T_FORMAT ".", CHARS, 
             special_chars.size());
             break;
         }
@@ -445,6 +447,59 @@ void LCD::TextBignumsDraw(WidgetBignums *widget) {
         lcd->TextBlit(row, col, 2, 4);
 }
 
+void LCD::TextFPSDraw(WidgetFPS *widget) {
+    LCDText *lcd = (LCDText *)widget->GetVisitor()->GetLCD();
+
+    if( lcd->CHARS < 8 || lcd->YRES < 8 || lcd->XRES < 6 )
+        return;
+
+    std::vector<SpecialChar> tmp;
+    tmp.resize(8);
+    for(int i = 0; i < 8; i++  ) {
+        tmp[i] = SpecialChar(8);
+    }
+
+    for(int row = 0; row < 16; row++ ) {
+        int i = row / 8;
+        int rr = row % 8;
+        for(int col = 0; col < 24; col++ ) {
+            int j = col / 6;
+            int cc = col % 6;
+            int n = i * 4 + j;
+
+            if( widget->GetFB()[row * 24 + col] == '.' ) {
+                tmp[n][rr] = tmp[n][rr] ^ (1<<(5-cc));
+            }
+        }
+    }
+
+    for(int i = 0; i < 8; i++ ) {
+        lcd->special_chars[widget->GetCh()[i]] = tmp[i];
+        lcd->TextSpecialCharChanged(widget->GetCh()[i]);
+    }
+
+    int row = widget->GetRow();
+    int col = widget->GetCol();
+    int layer = widget->GetLayer();
+
+    unsigned char *fb;
+    if(lcd->IsTransitioning() && widget->GetLayoutBase() == lcd->GetTransitionLayout())
+        fb = lcd->TransitionFB[layer];
+    else
+        fb = lcd->LayoutFB[layer];
+
+    int n = 0;
+    for(int i = 0; i < 2 && i + row < lcd->LROWS; i++) {
+        for(int j = 0; j < 4 && j + col < lcd->LCOLS; j++ ) {
+            fb[(row + i) * lcd->LCOLS + col + j] = 
+                (char)(n + widget->GetCh()[0] + lcd->CHAR0);
+            n++;
+        }
+    }
+    if(!lcd->IsTransitioning()) 
+        lcd->TextBlit(row, col, 2, 4);
+}
+
 /*
 void LCD::TextGifDraw(WidgetGif *widget) {
     LCDText *lcdText = (LCDText *)widget->GetVisitor()->GetLCD();
@@ -572,8 +627,8 @@ void TextVisualizationPeakDraw(WidgetVisualization *widget) {
 }
 
 void TextVisualizationPCMDraw(WidgetVisualization *widget) {
+/*
     LCDText *lcdText = (LCDText *)widget->GetVisitor()->GetLCD();
-LCDError("hahaha------------------------");
 
     int row = widget->GetRow();
     int col = widget->GetCol();
@@ -642,6 +697,7 @@ LCDError("hahaha------------------------");
 
     if(!lcdText->IsTransitioning())
         lcdText->TextBlit(row, col, height, width);
+    */
 }
 
 void TextVisualizationSpectrumDraw(WidgetVisualization *widget) {

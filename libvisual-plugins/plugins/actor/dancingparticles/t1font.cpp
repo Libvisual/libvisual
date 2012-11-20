@@ -1,29 +1,29 @@
-//#include "t1font.h"
+#include "t1font.h"
 #include "etoile.h"
-//#include  <t1lib.h> 
-#include <cstdio>
-#include <cstdlib>
+#include <t1lib.h>
+#include <cstring>
 
-void loadString(char *str)
+void loadString(const char *str)
 {
-#if 0
   static bool inited = false;
   static int fontID;
+
   if(!inited)
 	{
-	  inited = true; 
+	  inited = true;
 	  T1_InitLib(NO_LOGFILE);
 	  T1_AASetBitsPerPixel(8);
 	  T1_AASetLevel(T1_AA_LOW);
 	  T1_AASetGrayValues( 0,65,127,191,255 );
-	  fontID = T1_AddFont("/usr/local/share/dancingparticles/font.pfb");
+	  fontID = T1_AddFont(const_cast<char*>(DATA_DIR "/font.pfb"));
 	}
+
   GLYPH* glyph;
-  int length =  strlen(str);
-  if(length > (ptsNum/50))length = ptsNum/50;
-  glyph = T1_AASetString(  fontID, str,length, 
-						 0, 0, 
-						 25, 0);
+  int length = std::strlen(str);
+  if(length > (ptsNum/50))
+	length = ptsNum/50;
+
+  glyph = T1_AASetString(fontID, const_cast<char*>(str), length, 0, 0, 25, 0);
   if(glyph && glyph->bits)
 	{
 	  int height_c = glyph->metrics.ascent - glyph->metrics.descent;
@@ -52,7 +52,7 @@ void loadString(char *str)
 			  lastscore = curscore;
 			  curscore +=c;
 			  if(c!=0)
-				while(lastscore < scoreToGo  && curscore >= scoreToGo) 
+				while(lastscore < scoreToGo  && curscore >= scoreToGo)
 				  {
 					Centers[numPart++]=FloatPoint(x*4-width_c*2,height_c*8-y*16+a,0);
 					scoreToGo= (numPart*maxscore)/numCenters;
@@ -60,13 +60,9 @@ void loadString(char *str)
 				  }
 			}
 		}
-	  
-	
+
+
 	}
   else
-	std::cout <<"no glyph!!\n";
-
-#endif
+	visual_log (VISUAL_LOG_WARNING, "No glyph");
 }
-
-

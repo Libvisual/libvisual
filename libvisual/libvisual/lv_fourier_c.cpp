@@ -16,7 +16,7 @@ extern "C" {
 
   void visual_dft_perform (VisDFT *self, float *output, float const *input)
   {
-      visual_return_if_fail (self != NULL);
+      visual_return_if_fail (self != nullptr);
 
       self->perform (output, input);
   }

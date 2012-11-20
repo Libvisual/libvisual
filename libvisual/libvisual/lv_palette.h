@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_palette.h,v 1.15 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -54,7 +54,21 @@ namespace LV {
 
       explicit Palette (unsigned int ncolors);
 
+      Palette (Palette const&) = default;
+
+      Palette (Palette&& palette)
+          : colors (std::move (palette.colors))
+      {}
+
       ~Palette ();
+
+      Palette& operator= (Palette const& rhs) = default;
+
+      Palette& operator= (Palette&& rhs)
+      {
+          colors.swap (rhs.colors);
+          return *this;
+      }
 
       bool empty () const
       {

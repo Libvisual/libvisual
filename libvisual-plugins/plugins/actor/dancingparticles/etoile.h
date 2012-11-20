@@ -1,8 +1,10 @@
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
-#include <iostream>
+#endif
 
 #include "actor_dancingparticles.h"
-
 #include "fastmath.h"
 #include "floatpoint.h"
 
@@ -41,7 +43,7 @@ struct parameters
   myfloat sizeloudness;
 
   int chance;
-  int duration_f; 
+  int duration_f;
   int duration_b;
 };
 
@@ -77,7 +79,7 @@ extern GLfloat heights[NUM_BANDS];
 
 void etoileLoop(void);
 
-void	DrawPt(int i);	
+void	DrawPt(int i);
 void DrawCenter();
 void BeginDrawing();
 void EndDrawing();
@@ -114,7 +116,7 @@ public:
 
   int	beatbase;
   int	beatquiet;	/* force "quiet" situation? */
-  
+
   beatdetector();
   void calc_loudness(float data[3][256]);
   void detect_beat();
@@ -123,5 +125,5 @@ public:
 };
 extern beatdetector detector;
 
-extern int forceEffectChange; 
-extern int nextEffect; 
+extern int forceEffectChange;
+extern int nextEffect;

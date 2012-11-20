@@ -1,12 +1,11 @@
-
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- * 	    Vitaly V. Bursov <vitalyvb@ukr.net>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_random.h,v 1.15 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
+ * 	        Vitaly V. Bursov <vitalyvb@ukr.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,15 +34,9 @@
  * @{
  */
 
-
-/**
- * The highest random nummer.
- */
-#define VISUAL_RANDOM_MAX	4294967295U
-
 #ifdef __cplusplus
 
-#include <libvisual/lv_scoped_ptr.hpp>
+#include <memory>
 
 namespace LV {
 
@@ -62,7 +55,7 @@ namespace LV {
 	 *
 	 * @return A newly allocated VisRandomContext, or NULL on failure.
 	 */
-	RandomContext (Seed seed);
+	explicit RandomContext (Seed seed);
 
 	~RandomContext ();
 
@@ -75,29 +68,6 @@ namespace LV {
 	 * @return VISUAL_OK on success, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
 	 */
 	void set_seed (uint32_t seed);
-
-	/**
-	 * Get the seed that has been set to the VisRandomContext. This returns
-	 * the initial seed. Not the state seed.
-	 *
-	 * @see visual_random_context_get_seed_state
-	 *
-	 * @param rcontext The pointer to the VisRandomContext of which the initial random seed is requested.
-	 *
-	 * @return The initial random seed.
-	 */
-	Seed get_seed () const;
-
-	/**
-	 * Get the current state seed for the VisRandomContext.
-	 *
-	 * @see visual_random_context_get_seed
-	 *
-	 * @param rcontext The pointer to the VisRandomContext of which the state seed is requested.
-	 *
-	 * @return The current state seed for the randomizer.
-	 */
-	Seed get_seed_state () const;
 
 	/**
 	 * Gives a random integer using the VisRandomContext as context for the randomizer.
@@ -156,8 +126,7 @@ namespace LV {
   private:
 
 	class Impl;
-
-	ScopedPtr<Impl> m_impl;
+	const std::unique_ptr<Impl> m_impl;
   };
 
 } // LV namespace
@@ -179,32 +148,19 @@ typedef ::LV::RandomContext VisRandomContext;
  * to use the visual_random_context_* functions.
  */
 
-#define VISUAL_RANDOMCONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), VisRandomContext))
-
-/* Non context random macros */
-extern VisRandomContext __lv_internal_random_context;
+#define VISUAL_RANDOM_CONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), VisRandomContext))
 
 LV_BEGIN_DECLS
 
-#define visual_random_set_seed(a) visual_random_context_set_seed(&__lv_internal_random_context, a)
-#define visual_random_get_seed() visual_random_context_get_seed(&__lv_internal_random_context)
-#define visual_random_int() visual_random_context_int(&__lv_internal_random_context)
-#define visual_random_int_range(a, b) visual_random_context_int(&__lv_internal_random_context, a, b)
-#define visual_random_double () visual_random_context_double(&__lv_internal_random_context);
-#define visual_random_float () visual_random_context_float(&__lv_internal_random_context);
-#define visual_random_decide(a) visual_random_int(&__lv_internal_random_context, a)
+LV_API VisRandomContext *visual_random_context_new  (uint32_t seed);
+LV_API void              visual_random_context_free (VisRandomContext *rcontext);
 
-VisRandomContext *visual_random_context_new (uint32_t seed);
-void visual_random_context_free (VisRandomContext *rcontext);
-
-LV_API void visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed);
-LV_API uint32_t visual_random_context_get_seed (VisRandomContext *rcontext);
-LV_API uint32_t visual_random_context_get_seed_state (VisRandomContext *rcontext);
-LV_API uint32_t visual_random_context_int (VisRandomContext *rcontext);
+LV_API void     visual_random_context_set_seed  (VisRandomContext *rcontext, uint32_t seed);
+LV_API uint32_t visual_random_context_int       (VisRandomContext *rcontext);
 LV_API uint32_t visual_random_context_int_range (VisRandomContext *rcontext, unsigned int min, unsigned int max);
-LV_API double visual_random_context_double (VisRandomContext *rcontext);
-LV_API float visual_random_context_float (VisRandomContext *rcontext);
-LV_API int visual_random_context_decide (VisRandomContext *rcontext, float a);
+LV_API double   visual_random_context_double    (VisRandomContext *rcontext);
+LV_API float    visual_random_context_float     (VisRandomContext *rcontext);
+LV_API int      visual_random_context_decide    (VisRandomContext *rcontext, float a);
 
 LV_END_DECLS
 

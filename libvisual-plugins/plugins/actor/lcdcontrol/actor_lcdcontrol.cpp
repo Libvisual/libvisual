@@ -210,17 +210,6 @@ int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
 */
 				break;
             }
-/*
-            case VISUAL_EVENT_GENERIC:
-            {
-                priv->control->Lock();
-                LCDEvent *lcd_event = (LCDEvent *)ev.event.generic.data_ptr;
-                lcd_event->mFunc(lcd_event->mData);
-                priv->control->Unlock();
-                
-                break;
-            }
-*/
 			default: /* to avoid warnings */
             {
 				break;
@@ -265,7 +254,11 @@ int lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
     priv->control->Lock();
     priv->control->Tick();
-    visual_video_scale(video, priv->control->GetVideo(), VISUAL_VIDEO_SCALE_BILINEAR);
+    VisVideo *vid = priv->control->GetVideo();
+    if(vid != NULL)
+    {
+        visual_video_scale(video, vid, VISUAL_VIDEO_SCALE_BILINEAR);
+    }
     priv->control->Unlock();
 
 	return 0;

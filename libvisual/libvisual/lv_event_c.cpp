@@ -16,7 +16,7 @@ void visual_event_queue_free (VisEventQueue *self)
 
 void visual_event_queue_add  (VisEventQueue *self, VisEvent *event)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
     self->add (*event);
     visual_event_free (event);
@@ -24,8 +24,8 @@ void visual_event_queue_add  (VisEventQueue *self, VisEvent *event)
 
 int visual_event_queue_poll (VisEventQueue *self, VisEvent *event)
 {
-    visual_return_val_if_fail (self != NULL, FALSE);
-    visual_return_val_if_fail (self != NULL, FALSE);
+    visual_return_val_if_fail (self != nullptr, FALSE);
+    visual_return_val_if_fail (self != nullptr, FALSE);
 
     return self->poll (*event);
 }
@@ -33,7 +33,7 @@ int visual_event_queue_poll (VisEventQueue *self, VisEvent *event)
 VisEvent* visual_event_new_keyboard (VisKey keysym, int keymod, VisKeyState state)
 {
     // FIXME name to VISUAL_KEYB_DOWN and KEYB_UP
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     if (state == VISUAL_KEY_DOWN)
         event->type = VISUAL_EVENT_KEYDOWN;
@@ -48,20 +48,20 @@ VisEvent* visual_event_new_keyboard (VisKey keysym, int keymod, VisKeyState stat
 
 VisEvent* visual_event_new_mousemotion (int dx, int dy)
 {
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     event->type = VISUAL_EVENT_MOUSEMOTION;
 
     //event->event.mousemotion.state = eventqueue->mousestate;
     event->event.mousemotion.x = dx;
     event->event.mousemotion.y = dy;
-    
+
     return event;
 }
 
 VisEvent* visual_event_new_mousebutton (int button, VisMouseState state, int x, int y)
 {
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     if (state == VISUAL_MOUSE_DOWN)
         event->type = VISUAL_EVENT_MOUSEBUTTONDOWN;
@@ -79,7 +79,7 @@ VisEvent* visual_event_new_mousebutton (int button, VisMouseState state, int x, 
 
 VisEvent* visual_event_new_resize (int width, int height)
 {
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     event->type = VISUAL_EVENT_RESIZE;
 
@@ -91,7 +91,7 @@ VisEvent* visual_event_new_resize (int width, int height)
 
 VisEvent* visual_event_new_newsong (VisSongInfo *songinfo)
 {
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     event->type = VISUAL_EVENT_NEWSONG;
 
@@ -103,7 +103,7 @@ VisEvent* visual_event_new_newsong (VisSongInfo *songinfo)
 
 VisEvent* visual_event_new_param (void *param)
 {
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     event->type = VISUAL_EVENT_PARAM;
 
@@ -115,7 +115,7 @@ VisEvent* visual_event_new_param (void *param)
 
 VisEvent* visual_event_new_quit ()
 {
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     event->type = VISUAL_EVENT_QUIT;
 
@@ -124,7 +124,7 @@ VisEvent* visual_event_new_quit ()
 
 VisEvent* visual_event_new_visibility (int is_visible)
 {
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     event->type = VISUAL_EVENT_VISIBILITY;
     event->event.visibility.is_visible = is_visible;
@@ -134,7 +134,7 @@ VisEvent* visual_event_new_visibility (int is_visible)
 
 VisEvent* visual_event_new_generic (int eid, int param_int, void *param_ptr)
 {
-    LV::Event* event = new LV::Event;
+    auto event = new LV::Event;
 
     event->type = VISUAL_EVENT_GENERIC;
 
@@ -147,8 +147,8 @@ VisEvent* visual_event_new_generic (int eid, int param_int, void *param_ptr)
 
 void visual_event_copy (VisEvent *dest, VisEvent *src)
 {
-    visual_return_if_fail (dest != NULL);
-    visual_return_if_fail (src != NULL);
+    visual_return_if_fail (dest != nullptr);
+    visual_return_if_fail (src != nullptr);
 
     *dest = *src;
 }

@@ -1,10 +1,8 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012 Libvisual team
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_songinfo.c,v 1.24 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,129 +23,123 @@
 #include "lv_songinfo.h"
 #include "lv_common.h"
 #include "lv_libvisual.h"
-#include "lv_util.h"
 #include <string.h>
 
 namespace LV {
 
-  SongInfo::SongInfo (SongInfoType type_)
-      : type    (type_)
-      , length  (0)
-      , elapsed (0)
-      , cover   (0)
+  SongInfo::SongInfo (SongInfoType type)
+      : m_type    (type)
+      , m_length  (0)
+      , m_elapsed (0)
   {
-    // empty
+      // empty
   }
 
   SongInfo::~SongInfo ()
   {
-      if (cover)
-          visual_video_unref (cover);
+      // empty
   }
 
-  void SongInfo::set_type (SongInfoType type_)
+  void SongInfo::set_type (SongInfoType type)
   {
-      type = type_;
+      m_type = type;
   }
 
   SongInfoType SongInfo::get_type () const
   {
-      return type;
+      return m_type;
   }
 
-  void SongInfo::set_length (int length_)
+  void SongInfo::set_length (int length)
   {
-      length = length_;
+      m_length = length;
   }
 
   int SongInfo::get_length () const
   {
-      return length;
+      return m_length;
   }
 
-  void SongInfo::set_elapsed (int elapsed_)
+  void SongInfo::set_elapsed (int elapsed)
   {
-      elapsed = elapsed_;
+      m_elapsed = elapsed;
   }
 
   int SongInfo::get_elapsed () const
   {
-      return elapsed;
+      return m_elapsed;
   }
 
   void SongInfo::set_simple_name (std::string const& name)
   {
-      song_name = name;
+      m_song_name = name;
   }
 
   std::string SongInfo::get_simple_name () const
   {
-      return song_name;
+      return m_song_name;
   }
 
-  void SongInfo::set_artist (std::string const& artist_)
+  void SongInfo::set_artist (std::string const& artist)
   {
-      artist = artist_;
+      m_artist = artist;
   }
 
   std::string SongInfo::get_artist () const
   {
-      return artist;
+      return m_artist;
   }
 
-  void SongInfo::set_album (std::string const& album_)
+  void SongInfo::set_album (std::string const& album)
   {
-      album = album_;
+      m_album = album;
   }
 
   std::string SongInfo::get_album () const
   {
-      return album;
+      return m_album;
   }
 
-  void SongInfo::set_song (std::string const& song_)
+  void SongInfo::set_song (std::string const& song)
   {
-      song = song_;
+      m_song = song;
   }
 
   std::string SongInfo::get_song () const
   {
-      return song;
+      return m_song;
   }
 
-  void SongInfo::set_cover (VisVideo *cover_)
+  void SongInfo::set_cover (VideoPtr const& cover)
   {
-      if (cover)
-          visual_video_unref (cover);
-
       // Get the desired cover art size
-      VisParamContainer* params = visual_get_params ();
-      VisParamEntry* xparam = visual_param_container_get (params, "songinfo cover size x");
-      VisParamEntry* yparam = visual_param_container_get (params, "songinfo cover size y");
+      auto params = visual_get_params ();
+      auto xparam = visual_param_list_get (params, "songinfo-cover-width");
+      auto yparam = visual_param_list_get (params, "songinfo-cover-height");
 
-      int cawidth = 64;
-      int caheight = 64;
+      int cover_width = 64;
+      int cover_height = 64;
 
       if (xparam && yparam) {
-          cawidth = visual_param_entry_get_integer (xparam);
-          caheight = visual_param_entry_get_integer (yparam);
+          cover_width  = visual_param_get_value_integer (xparam);
+          cover_height = visual_param_get_value_integer (yparam);
       }
 
       // The coverart image
-      cover = visual_video_scale_depth_new (cover, cawidth, caheight,
-                                            VISUAL_VIDEO_DEPTH_32BIT,
-                                            VISUAL_VIDEO_SCALE_BILINEAR);
+      m_cover = Video::create_scale_depth (cover, cover_width, cover_height,
+                                           VISUAL_VIDEO_DEPTH_32BIT,
+                                           VISUAL_VIDEO_SCALE_BILINEAR);
   }
 
   void SongInfo::mark ()
   {
-      timer.start ();
+      m_timer.start ();
   }
 
   long SongInfo::get_age ()
   {
-      Time cur = Time::now ();
-      Time start_time = timer.get_start_time();
+      auto cur = Time::now ();
+      auto start_time = m_timer.get_start_time ();
 
       // Clock has been changed into the past
       if (cur < start_time)
@@ -160,16 +152,16 @@ namespace LV {
 
   bool operator== (SongInfo const& lhs, SongInfo const& rhs)
   {
-      if (lhs.song_name != rhs.song_name)
+      if (lhs.m_song_name != rhs.m_song_name)
           return false;
 
-      if (lhs.artist != rhs.artist)
+      if (lhs.m_artist != rhs.m_artist)
           return false;
 
-      if (lhs.album != rhs.album)
+      if (lhs.m_album != rhs.m_album)
           return false;
 
-      if (lhs.song != rhs.song)
+      if (lhs.m_song != rhs.m_song)
           return false;
 
       return true;

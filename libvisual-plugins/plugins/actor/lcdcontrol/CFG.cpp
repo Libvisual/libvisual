@@ -23,12 +23,16 @@
 #include <iostream>
 #include <stdio.h>
 #include <json/json.h>
+#include <iostream>
+#include <fstream>
 #include <libvisual/libvisual.h>
 
 #include "CFG.h"
 #include "debug.h"
 
 using namespace LCD;
+
+extern std::string lcdcontrol_config;
 
 CFG::CFG() {
     main_root_ = true;
@@ -54,26 +58,32 @@ std::string CFG::CFG_Source() {
 }
 
 bool CFG::CFG_Init( std::string path ) {
-    FILE *file = fopen( path.c_str(), "rb" );
-    if( !file ) 
+
+    std::cout << "wtf\n";
+    std::ifstream stream_in;
+    std::ofstream stream_out;
+
+    stream_in.open(path, std::ios::binary);
+
+    if(not stream_in.is_open())
     {
-        visual_log(VISUAL_LOG_DEBUG, "Can't open %s", path.c_str());
+        stream_out.open(path);
+        stream_out << lcdcontrol_config;
+        stream_out.close();
+        stream_in.open(path, std::ios::binary);
+    }
+    if(not stream_in.is_open())
+    {
+        visual_log(VISUAL_LOG_CRITICAL, "LCDControl could not load a config file.");
         return false;
     }
-    fseek( file, 0, SEEK_END );
-    long size = ftell( file);
-    fseek( file, 0, SEEK_SET );
-    std::string text;
-    char *buffer = new char[size+1];
-    buffer[size] = 0x0;
-    if ( fread( buffer, 1, size, file ) != (unsigned long) size )
-        return false;
-    else
-       text = buffer;
-    delete []buffer;
-    fclose(file);
+
     root_ = new Json::Value();
-    bool r = reader_.parse( text, *root_ );
+
+    bool r = reader_.parse( stream_in, *root_, true );
+
+    stream_in.close();
+
     if( r ) {
         return true;
     } else {

@@ -24,8 +24,15 @@
 #include "config.h"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <math.h>
+
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#include "common/GL/glu.h"
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -98,24 +105,20 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int lv_gltest_init (VisPluginData *plugin)
 {
-	GLtestPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE),
-		VISUAL_PARAM_LIST_END
-	};
-
-	int x, y;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (GLtestPrivate, 1);
+	GLtestPrivate *priv = visual_mem_new0 (GLtestPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
+	VisParamList *params = visual_plugin_get_params (plugin);
+	visual_param_list_add_many (params,
+                                visual_param_new_bool ("transparent_bars",
+                                                       N_("Transparent bars"),
+                                                       TRUE,
+                                                       NULL),
+                                NULL);
 
 	/* GL setting up the rest! */
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -124,7 +127,11 @@ static int lv_gltest_init (VisPluginData *plugin)
 
 	glLoadIdentity ();
 
+#ifdef USE_OPENGL_ES
+	glFrustumf (-1, 1, -1, 1, 1.5, 10);
+#else
 	glFrustum (-1, 1, -1, 1, 1.5, 10);
+#endif
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
@@ -133,6 +140,8 @@ static int lv_gltest_init (VisPluginData *plugin)
 	glDepthFunc (GL_LESS);
 
 	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
+
+	int x, y;
 
 	for (x = 0; x < 16; x++) {
 		for (y = 0; y < 16; y++) {
@@ -178,6 +187,7 @@ static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height
 	return 0;
 }
 
+
 static int lv_gltest_resize (VisPluginData *plugin, int width, int height)
 {
 	GLfloat ratio;
@@ -200,7 +210,7 @@ static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -211,8 +221,8 @@ static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "transparant bars")) {
-					priv->transparant = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "transparent_bars")) {
+					priv->transparant = visual_param_get_value_bool (param);
 
 					if (priv->transparant == FALSE)
 						glDisable (GL_BLEND);
@@ -244,8 +254,8 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	int y;
 	float ff;
 
-	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq));
-	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm));
+	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq), FALSE);
+	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm), FALSE);
 
 	visual_audio_get_sample_mixed_simple (audio, pcmb, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
@@ -296,39 +306,52 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 /* Drawing stuff */
 static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2)
 {
-	if (y1 == y2) {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    if (y1 == y2) {
 
-		glVertex3f (x1, y1, z1);
-		glVertex3f (x2, y1, z1);
-		glVertex3f (x2, y2, z2);
+        const GLfloat vertices[] = {
+            x1, y1, z1,
+            x2, y1, z1,
+            x2, y2, z2,
 
-		glVertex3f (x2, y2, z2);
-		glVertex3f (x1, y2, z2);
-		glVertex3f (x1, y1, z1);
-	} else {
-		glVertex3f (x1, y1, z1);
-		glVertex3f (x2, y1, z2);
-		glVertex3f (x2, y2, z2);
+            x2, y2, z2,
+            x1, y2, z2,
+            x1, y1, z1,
 
-		glVertex3f (x2, y2, z2);
-		glVertex3f (x1, y2, z1);
-		glVertex3f (x1, y1, z1);
-	}
+        };
+        glVertexPointer(3, GL_FLOAT, 0, vertices);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    } else {
+        const GLfloat vertices[] = {
+            x1, y1, z1,
+            x2, y1, z2,
+            x2, y2, z2,
+
+            x2, y2, z2,
+            x1, y2, z1,
+            x1, y1, z1,
+        };
+        glVertexPointer(3, GL_FLOAT, 0, vertices);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue)
 {
 	GLfloat width = 0.1;
 
-	glColor3f (red,green,blue);
+    glColor4f(red, green, blue, 1.0f);
+
 	draw_rectangle (priv, x_offset, height, z_offset, x_offset + width, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset, 0, z_offset, x_offset + width, 0, z_offset + 0.1);
 
-	glColor3f (0.5 * red, 0.5 * green, 0.5 * blue);
+    glColor4f(0.5 * red, 0.5 * green, 0.5 * blue, 1.0f);
 	draw_rectangle (priv, x_offset, 0.0, z_offset + 0.1, x_offset + width, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset, 0.0, z_offset, x_offset + width, height, z_offset );
 
-	glColor3f (0.25 * red, 0.25 * green, 0.25 * blue);
+    glColor4f(0.25 * red, 0.25 * green, 0.25 * blue, 1.0f);
 	draw_rectangle (priv, x_offset, 0.0, z_offset , x_offset, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset + width, 0.0, z_offset , x_offset + width, height, z_offset + 0.1);
 }
@@ -347,7 +370,6 @@ static void draw_bars (GLtestPrivate *priv)
 	glRotatef (priv->y_angle,0.0,1.0,0.0);
 	glRotatef (priv->z_angle,0.0,0.0,1.0);
 
-	glBegin (GL_TRIANGLES);
 	for (y = 0; y < 16; y++)
 	{
 		z_offset = -1.6 + ((15 - y) * 0.2);
@@ -361,8 +383,6 @@ static void draw_bars (GLtestPrivate *priv)
 			draw_bar (priv, x_offset, z_offset, priv->heights[y][x] * 0.2, r_base - (x * (r_base / 15.0)), x * (1.0 / 15), b_base);
 		}
 	}
-	glEnd ();
 
 	glPopMatrix ();
 }
-

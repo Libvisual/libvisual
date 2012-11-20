@@ -192,7 +192,7 @@ namespace {
           return -1;
       }
 
-      LV::BufferPtr buffer = LV::Buffer::create (&priv->buffer[0], priv->buffer_size, false);
+      LV::BufferPtr buffer = LV::Buffer::wrap (&priv->buffer[0], priv->buffer_size, false);
       audio->input (buffer,
                     VISUAL_AUDIO_SAMPLE_RATE_44100,
                     VISUAL_AUDIO_SAMPLE_FORMAT_S16,

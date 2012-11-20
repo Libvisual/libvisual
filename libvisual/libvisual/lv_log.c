@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_log.c,v 1.23 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -101,9 +101,7 @@ void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc func, vo
 }
 
 void _lv_log (VisLogSeverity severity,
-#if defined(_LV_LOG_HAVE_SOURCE)
     const char *file, int line, const char *funcname,
-#endif
     const char *fmt, ...)
 {
 	VisLogSource source;
@@ -125,15 +123,9 @@ void _lv_log (VisLogSeverity severity,
 	vsnprintf (message, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
 	va_end (va);
 
-#if defined(_LV_LOG_HAVE_SOURCE)
 	source.file = shorten_filename (file, 3);
 	source.func = funcname;
 	source.line = line;
-#else
-	source.file = "(unknown file)";
-	source.func = "(unknown func)";
-	source.line = 0;
-#endif
 
 	handler = &log_handlers[severity];
 
@@ -147,11 +139,7 @@ void _lv_log (VisLogSeverity severity,
 static void output_to_stderr (VisLogSeverity severity, const char *msg,
 	VisLogSource const *source)
 {
-#if defined(_LV_LOG_HAVE_SOURCE)
 	fprintf (stderr, "%s %s:%d:%s: %s\n", log_prefixes[severity],
 		 source->file, source->line, source->func, msg);
-#else
-	fprintf (stderr, "%s %s\n", log_prefixes[severity], msg);
-#endif
 	fflush (stderr);
 }

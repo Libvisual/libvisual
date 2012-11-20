@@ -1,10 +1,9 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_plugin.h,v 1.51 2006/02/13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -196,7 +195,7 @@ struct _VisPluginData {
 	VisPluginInfo const *info;        /**< Pointer to the VisPluginInfo that is obtained from the plugin. */
 
 	VisEventQueue       *eventqueue;  /**< The plugin it's VisEventQueue for queueing events. */
-	VisParamContainer   *params;      /**< The plugin it's VisParamContainer in which VisParamEntries can be placed. */
+	VisParamList        *params;      /**< The plugin it's VisParamList in which VisParams can be placed. */
 	int                  plugflags;   /**< Plugin flags, currently unused but will be used in the future. */
 
 	VisRandomContext    *random;      /**< Pointer to the plugin it's private random context. It's highly adviced to use
@@ -272,13 +271,13 @@ LV_API VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
 LV_API const VisPluginInfo *visual_plugin_get_info (VisPluginData *plugin);
 
 /**
- * Gives the VisParamContainer related to a VisPluginData.
+ * Gives the VisParamList related to a VisPluginData.
  *
- * @param plugin The VisPluginData of which the VisParamContainer is requested.
+ * @param plugin The VisPluginData of which the VisParamList is requested.
  *
- * @return The VisParamContainer within the VisPluginData, or NULL on failure.
+ * @return The VisParamList within the VisPluginData, or NULL on failure.
  */
-LV_API VisParamContainer *visual_plugin_get_params (VisPluginData *plugin);
+LV_API VisParamList *visual_plugin_get_params (VisPluginData *plugin);
 
 /**
  * Gives the VisRandomContext related to a VisPluginData.

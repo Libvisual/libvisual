@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 #include <json/json.h>
+#include <cstdlib>
 
 #include "Property.h"
 #include "LCDControl.h"
@@ -34,14 +35,13 @@ using namespace LCD;
 
 LCDControl::LCDControl(void *priv, VisEventQueue *eventqueue) {
     priv_ = priv;
-    mutex_ = visual_mutex_new();
     active_ = false;
     timers_ = new LCDTimerBin();
     eventqueue_ = eventqueue;
+    stats_init(&stats_);
 }
 
 LCDControl::~LCDControl() {
-    visual_mutex_free(mutex_);
 /*
     Shutdown();
     for(std::vector<std::string>::iterator it = display_keys_.begin();
@@ -53,21 +53,13 @@ LCDControl::~LCDControl() {
 }
 
 int LCDControl::Start() {
-    CFG_Init("libscriptable_config.js");
-    ConfigSetup();
-    active_ = true;
-/*
-    while(active_)
+    std::string file = ((std::string)getenv("HOME")) + "/.lcdcontrol_config.js";
+
+    if((active_ = CFG_Init(file)))
     {
-        visual_mutex_lock(mutex_);
-
-        timers_->Tick();
-
-        visual_mutex_unlock(mutex_);
-
-        visual_usleep(0.2 * VISUAL_USEC_PER_SEC);
+        ConfigSetup();
     }
-*/
+
     return 1;
 }
 
@@ -76,16 +68,20 @@ void LCDControl::Stop() {
 }
 
 void LCDControl::Lock() {
-    visual_mutex_lock(mutex_);
+    mutex_.lock();
 }
 
 void LCDControl::Unlock() {
-    visual_mutex_unlock(mutex_);
+    mutex_.unlock();
 }
 
 void LCDControl::Tick()
 {
+    if(not active_)
+        return;
+    //stats_startFrame(&stats_);
     timers_->Tick();
+    //stats_endFrame(&stats_);
 }
 
 LCDTimerBin *LCDControl::GetTimers()
@@ -94,6 +90,8 @@ LCDTimerBin *LCDControl::GetTimers()
 }
 
 VisVideo *LCDControl::GetVideo() {
+    if(not active_ or not device_)
+        return NULL;
     return device_->GetVideo();
 }
 void LCDControl::TryLock() {

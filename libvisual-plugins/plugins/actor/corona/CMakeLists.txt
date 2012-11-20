@@ -1,14 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-)
+INCLUDE(LVBuildPlugin)
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_corona_SOURCES
+SET(SOURCES
   actor_corona.cpp
   autopal.h
   corona.cpp
@@ -18,10 +10,7 @@ SET(actor_corona_SOURCES
   palette.h
 )
 
-ADD_LIBRARY(actor_corona MODULE ${actor_corona_SOURCES})
-
-TARGET_LINK_LIBRARIES(actor_corona
-  ${LIBVISUAL_LIBRARIES}
+LV_BUILD_ACTOR_PLUGIN(corona
+  SOURCES   ${SOURCES}
+  LINK_LIBS m
 )
-
-INSTALL(TARGETS actor_corona LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

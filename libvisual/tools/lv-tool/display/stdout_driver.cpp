@@ -1,10 +1,11 @@
 /* Libvisual - The audio visualisation framework cli tool
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>,
- * Copyright (C) 2012 Daniel Hiepler <daniel@niftylight.de>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *          Daniel Hiepler <daniel@niftylight.de>
+ *          Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,11 +37,11 @@
 namespace {
 
   class StdoutDriver
-      : public SADisplayDriver
+      : public DisplayDriver
   {
   public:
 
-      StdoutDriver (SADisplay& display)
+      StdoutDriver (Display& display)
           : m_display (display)
       {}
 
@@ -92,7 +93,8 @@ namespace {
 
       virtual void update_rect (LV::Rect const& rect)
       {
-          write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ());
+          if (write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
+              visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)
@@ -102,14 +104,14 @@ namespace {
 
   private:
 
-      SADisplay&   m_display;
+      Display&     m_display;
       LV::VideoPtr m_screen_video;
   };
 
 } // anonymous namespace
 
 // creator
-SADisplayDriver* stdout_driver_new (SADisplay& display)
+DisplayDriver* stdout_driver_new (Display& display)
 {
     return new StdoutDriver (display);
 }

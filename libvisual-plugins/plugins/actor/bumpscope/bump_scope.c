@@ -203,7 +203,7 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 
 	if (priv->color_cycle) {
 		if (!was_color) {
-			visual_color_to_hsv (&priv->color, &h, &s, &v);
+			visual_color_get_hsv (&priv->color, &h, &s, &v);
 
 			was_color = 1;
 
@@ -216,7 +216,7 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 			}
 		}
 
-		visual_color_from_hsv (&priv->color, h, s, v);
+		visual_color_set_hsv (&priv->color, h, s, v);
 		__bumpscope_generate_palette (priv, &priv->color);
 
 		if (hd) {

@@ -14,7 +14,7 @@ extern "C" {
       return LV::System::instance()->get_api_version ();
   }
 
-  VisParamContainer *visual_get_params ()
+  VisParamList *visual_get_params ()
   {
       return LV::System::instance()->get_params ();
   }
@@ -28,7 +28,7 @@ extern "C" {
 
   int visual_is_initialized ()
   {
-      return LV::System::instance() != 0;
+      return LV::System::instance() != nullptr;
   }
 
   int visual_quit ()
