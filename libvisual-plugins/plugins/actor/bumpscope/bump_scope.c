@@ -1,12 +1,12 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 1999, 2001 Zinx Verituse <zinx@xmms.org>
  *
  * Authors: Zinx Verituse <zinx@xmms.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
  * Notes: Bumpscope plugin originally from XMMS.
- * 
+ *
  * $Id: bump_scope.c,v 1.18 2006/02/05 18:47:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ static void bumpscope_translate (BumpscopePrivate *priv, int x, int y, int *xo, 
 static void bumpscope_draw (BumpscopePrivate *priv);
 static inline void draw_vert_line(uint8_t *buffer, int x, int y1, int y2, int pitch);
 static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly);
-	
+
 static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 {
 	register unsigned int i,sum = 0;
@@ -47,7 +47,7 @@ static void bumpscope_blur_8 (uint8_t *ptr, int w, int h, int bpl)
 	iptr = ptr + bpl + 1;
 	i = bpl * h;
 
-	if (visual_cpu_get_mmx ()) {
+	if (visual_cpu_has_mmx ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
 		__asm __volatile
@@ -203,7 +203,7 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 
 	if (priv->color_cycle) {
 		if (!was_color) {
-			visual_color_to_hsv (&priv->color, &h, &s, &v);
+			visual_color_get_hsv (&priv->color, &h, &s, &v);
 
 			was_color = 1;
 
@@ -216,7 +216,7 @@ static void bumpscope_draw (BumpscopePrivate *priv)
 			}
 		}
 
-		visual_color_from_hsv (&priv->color, h, s, v);
+		visual_color_set_hsv (&priv->color, h, s, v);
 		__bumpscope_generate_palette (priv, &priv->color);
 
 		if (hd) {
@@ -297,20 +297,23 @@ static inline void draw_vert_line(uint8_t *buffer, int x, int y1, int y2, int pi
 static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 {
 	int i, j, prev_y, dy, dx, xq, yq;
+	int video_pitch;
 
-	prev_y = priv->video->pitch + 1;
+	video_pitch = visual_video_get_pitch (priv->video);
 
-	for (dy = (-ly)+(priv->phongres/2), j = 0; j < priv->height; j++, dy++, prev_y+=priv->video->pitch-priv->width) {
+	prev_y = video_pitch + 1;
+
+	for (dy = (-ly)+(priv->phongres/2), j = 0; j < priv->height; j++, dy++, prev_y+=video_pitch-priv->width) {
 		for (dx = (-lx)+(priv->phongres/2), i = 0; i < priv->width; i++, dx++, prev_y++) {
 
 			xq = (priv->rgb_buf[prev_y-1]-priv->rgb_buf[prev_y+1])+dx;
-			yq = (priv->rgb_buf[prev_y-priv->video->pitch]-priv->rgb_buf[prev_y+priv->video->pitch])+dy;
-			
+			yq = (priv->rgb_buf[prev_y-video_pitch]-priv->rgb_buf[prev_y+video_pitch])+dy;
+
 			if (yq<0 || yq>=priv->phongres ||
 			    xq<0 || xq>=priv->phongres) {
-			
+
 				priv->rgb_buf2[prev_y] = 0;
-			    	
+
 				continue;
 			}
 
@@ -321,17 +324,18 @@ static void bumpscope_render_light (BumpscopePrivate *priv, int lx, int ly)
 
 void __bumpscope_generate_palette (BumpscopePrivate *priv, VisColor *col)
 {
+	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
+
 	int32_t i,r,g,b;
 
 	for (i = 0; i < 256; i++) {
 		r = ((float)(100*col->r/255)*priv->intense1[i]+priv->intense2[i]);
 		g = ((float)(100*col->g/255)*priv->intense1[i]+priv->intense2[i]);
 		b = ((float)(100*col->b/255)*priv->intense1[i]+priv->intense2[i]);
-		
-		priv->pal.colors[i].r = r;
-		priv->pal.colors[i].g = g;
-		priv->pal.colors[i].b = b;
-		
+
+		pal_colors[i].r = r;
+		pal_colors[i].g = g;
+		pal_colors[i].b = b;
 	}
 }
 
@@ -381,7 +385,9 @@ void __bumpscope_generate_phongdat (BumpscopePrivate *priv)
 
 void __bumpscope_render_pcm (BumpscopePrivate *priv, float *data)
 {
-	int i, y, prev_y;
+	int i, y, prev_y, video_pitch;
+
+	video_pitch = visual_video_get_pitch (priv->video);
 
 	prev_y = (int)priv->height/(int)2 + (data[0] * (priv->height / 2));
 
@@ -398,19 +404,19 @@ void __bumpscope_render_pcm (BumpscopePrivate *priv, float *data)
 		if (y < 0) y = 0;
 		if(y >= priv->height) y = priv->height - 1;
 
-		draw_vert_line(priv->rgb_buf, i, prev_y, y, priv->video->pitch);
+		draw_vert_line(priv->rgb_buf, i, prev_y, y, video_pitch);
 		prev_y = y;
 	}
 
-	bumpscope_blur_8(priv->rgb_buf, priv->width, priv->height, priv->video->pitch);
+	bumpscope_blur_8(priv->rgb_buf, priv->width, priv->height, video_pitch);
 	bumpscope_draw (priv);
 }
 
 void __bumpscope_init (BumpscopePrivate *priv)
 {
 	priv->phongdat = visual_mem_malloc0 (priv->phongres * priv->phongres * 2);
-	priv->rgb_buf = visual_mem_malloc0 (visual_video_get_size (priv->video) + (priv->video->pitch * 2) + 1);
-	priv->rgb_buf2 = visual_mem_malloc0 (visual_video_get_size (priv->video) + (priv->video->pitch * 2) + 1);
+	priv->rgb_buf  = visual_mem_malloc0 (priv->width*2 * priv->height + 1);
+	priv->rgb_buf2 = visual_mem_malloc0 (priv->width*2 * priv->height + 1);
 
 	__bumpscope_generate_phongdat (priv);
 	bumpscope_generate_intense (priv);

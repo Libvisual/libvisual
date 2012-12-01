@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -21,15 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha);
 
@@ -37,43 +33,43 @@ static int lv_morph_alpha_init (VisPluginData *plugin);
 static int lv_morph_alpha_cleanup (VisPluginData *plugin);
 static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisMorphPlugin morph[] = {{
+	static VisMorphPlugin morph = {
 		.apply = lv_morph_alpha_apply,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT  |
 			VISUAL_VIDEO_DEPTH_16BIT |
 			VISUAL_VIDEO_DEPTH_24BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "alphablend",
 		.name = "alphablend morph",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "An alphablend morph plugin",
-		.help = "This morph plugin morphs between two video sources using the alphablend method",
+		.about = N_("An alphablend morph plugin"),
+		.help = N_("This morph plugin morphs between two video sources using the alphablend method"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_alpha_init,
 		.cleanup = lv_morph_alpha_cleanup,
 
-		.plugin = VISUAL_OBJECT (&morph[0])
-	}};
+		.plugin = VISUAL_OBJECT (&morph)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int lv_morph_alpha_init (VisPluginData *plugin)
 {
+#if ENABLE_NLS
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
 	return 0;
 }
 
@@ -89,9 +85,11 @@ static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *au
 	visual_return_val_if_fail (src2 != NULL, -1);
 
 	alpha_blend_buffer (visual_video_get_pixels (dest),
-			visual_video_get_pixels (src1),
-			visual_video_get_pixels (src2),
-			visual_video_get_size (dest), dest->depth, rate);
+	                    visual_video_get_pixels (src1),
+	                    visual_video_get_pixels (src2),
+	                    visual_video_get_size (dest),
+	                    visual_video_get_depth (dest),
+	                    rate);
 
 	return 0;
 }

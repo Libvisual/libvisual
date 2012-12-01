@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_libvisual.h,v 1.11 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,61 +31,86 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 /**
  * Indicates at which version the API is.
  */
-#define VISUAL_API_VERSION	4000
+#define VISUAL_API_VERSION  4000
 
-/**
- * Gives the libvisual version.
- *
- * @return A const char containing the libvisual version.
- */
-const char *visual_get_version (void);
+#ifdef __cplusplus
 
-/**
- * Gives the libvisual API verison. Can be used to compare against the
- * compile time VISUAL_API_VERSION to validate if the API is at the right version.
- *
- * @return A const integer equal to VISUAL_API_VERSION.
- */
-int visual_get_api_version (void);
+#include <libvisual/lv_singleton.hpp>
+#include <memory>
+#include <string>
 
-/**
- * Returns a pointer to the libvisual global VisParamContainer.
- *
- * @return A pointer to the libvisual global VisParamContainer.
- */
-VisParamContainer *visual_get_params (void);
+namespace LV {
 
-/**
- * Initialize libvisual. Sets up a plugin registry, register the program name and such.
- *
- * @param argc Pointer to an int containing the number of arguments within argv or NULL.
- * @param argv Pointer to a list of strings that make up the argument vector or NULL.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED,
- *	-VISUAL_ERROR_LIBVISUAL_NO_REGISTRY or error values returned by visual_init_path_add () on failure.
- */
-int visual_init (int *argc, char ***argv);
+  class LV_API System
+      : public Singleton<System>
+  {
+  public:
 
-/*
- * Tells whether Libvisual is (correctly) initialized.
- *
-* @return TRUE if is it is initialized, FALSE otherwise.
- */
-int visual_is_initialized (void);
+      /**
+       * Initializes libvisual
+       *
+       * @param argc Number of arguments
+       * @param argv Argument strings
+       */
+      static void init (int& argc, char**& argv);
 
-/**
- * Quits libvisual, destroys all the plugin registries.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED on failure.
- */
-int visual_quit (void);
+      System (System const&) = delete;
 
-VISUAL_END_DECLS
+      ~System ();
+
+      /**
+       * Returns the libvisual version.
+       *
+       * @return version string
+       */
+      std::string get_version () const;
+
+      /**
+       * Returns the libvisual API verison.
+	   *
+       * @return API version
+       */
+      int get_api_version () const;
+
+      /**
+       * Returns a pointer to the libvisual global parameters.
+       *
+       * @return A pointer to the libvisual global parameters.
+       */
+      VisParamList* get_params () const;
+
+  private:
+
+      class Impl;
+
+      const std::unique_ptr<Impl> m_impl;
+
+      System (int& argc, char**& argv);
+  };
+
+} // LV namespace
+
+#endif // __cplusplus
+
+
+LV_BEGIN_DECLS
+
+LV_API int visual_init (int *argc, char ***argv);
+
+LV_API int visual_is_initialized (void);
+
+LV_API int visual_quit (void);
+
+LV_API const char *visual_get_version (void);
+
+LV_API int visual_get_api_version (void);
+
+LV_API VisParamList *visual_get_params (void);
+
+LV_END_DECLS
 
 /**
  * @}

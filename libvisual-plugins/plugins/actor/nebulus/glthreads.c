@@ -9,7 +9,7 @@ GLfloat speed_xval = 0.3f, old_speed_xval = 0.3f;
 GLfloat speed_xabs = 0.008f, old_speed_xabs = 0.008f;
 
 
-void
+static void
 createglthreads(void)
 {
   int i, j;
@@ -55,7 +55,7 @@ createglthreads(void)
 }
 
 
-void
+static void
 drawglthreads(void)
 {
   glPushMatrix();
@@ -69,7 +69,7 @@ drawglthreads(void)
 }
 
 
-void
+static void
 render_glthreads(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

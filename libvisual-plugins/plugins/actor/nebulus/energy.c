@@ -8,7 +8,7 @@ typedef struct
 } ctexel;
 
 
-void
+static void
 put_quad(ctexel cuvpos)
 {
   glTexCoord2f(0 + cuvpos.fu, 0 + cuvpos.fv);
@@ -22,7 +22,7 @@ put_quad(ctexel cuvpos)
 }
 
 
-void
+static void
 drawenergy(GLfloat ftime)
 {
   ctexel cuvpos;
@@ -67,7 +67,7 @@ drawenergy(GLfloat ftime)
 }
 
 
-void
+static void
 render_energy(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

@@ -1,10 +1,8 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012 Libvisual team
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_param.c,v 1.50 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,249 +23,171 @@
 #include "lv_param.h"
 #include "lv_common.h"
 #include "lv_util.h"
-#include "gettext.h"
+#include <stdarg.h>
+#include <string.h>
 
-static int param_container_dtor (VisObject *object);
-static int param_entry_dtor (VisObject *object);
-
-static int get_next_pcall_id (VisList *callbacks);
-
-static int param_container_dtor (VisObject *object)
+struct _VisClosure
 {
-    VisParamContainer *paramcontainer = VISUAL_PARAMCONTAINER (object);
+    void           (*func) (void);
+    void *         data;
+    VisDestroyFunc destroy_func;
+};
 
-    visual_collection_destroy (VISUAL_COLLECTION (&paramcontainer->entries));
+struct _VisParam
+{
+    char *         name;
+    char *         description;
+    VisParamValue  value;
+    VisParamValue  default_value;
+    VisClosure *   validator;
+    VisList *      changed_handlers;
+    VisParamList * parent;
+};
 
-    return VISUAL_OK;
+struct _VisParamList {
+    VisList *       entries;
+    VisEventQueue * eventqueue;
+};
+
+static inline int validate_param_value (VisParamValue *value, VisClosure *validator)
+{
+    return (* (VisParamValidateFunc) validator->func) (value, validator->data);
 }
 
-static int param_entry_dtor (VisObject *object)
+VisClosure *visual_closure_new (void *func, void *data, void *destroy_func)
 {
-    VisParamEntry *param = VISUAL_PARAMENTRY (object);
+    VisClosure *self = visual_mem_new0 (VisClosure, 1);
 
-    if (param->string != NULL)
-        visual_mem_free (param->string);
+    self->func = func;
+    self->data = data;
+    self->destroy_func = destroy_func;
 
-    if (param->name != NULL)
-        visual_mem_free (param->name);
-
-    if (param->objdata != NULL)
-        visual_object_unref (param->objdata);
-
-    if (param->annotation != NULL)
-        visual_mem_free (param->annotation);
-
-    visual_palette_free_colors (&param->pal);
-
-    visual_collection_destroy (VISUAL_COLLECTION (&param->callbacks));
-
-    param->string = NULL;
-    param->name = NULL;
-    param->objdata = NULL;
-    param->annotation = NULL;
-
-    return VISUAL_OK;
+    return self;
 }
 
-static int get_next_pcall_id (VisList *callbacks)
+void visual_closure_free (VisClosure *self)
 {
-    VisListEntry *le = NULL;
-    VisParamEntryCallback *pcall;
-    int found = FALSE;
-    int i;
+    if (!self)
+        return;
 
-    /* Walk through all possible ids */
-    for (i = 0; i < VISUAL_PARAM_CALLBACK_ID_MAX; i++) {
+    if (self->data && self->destroy_func)
+        self->destroy_func (self->data);
 
-        found = FALSE;
-        /* Check all the callbacks if the id is used */
-        while ((pcall = visual_list_next (callbacks, &le)) != NULL) {
+    visual_mem_free (self);
+}
 
-            /* Found the ID, break and get ready for the next iterate */
-            if (pcall->id == i) {
-                found = TRUE;
+VisParamList *visual_param_list_new (void)
+{
+    VisParamList *self = visual_mem_new0 (VisParamList, 1);
 
-                break;
-            }
+    self->entries = visual_list_new ((VisCollectionDestroyerFunc) visual_param_free);
+
+    return self;
+}
+
+void visual_param_list_free (VisParamList *self)
+{
+    if (!self)
+        return;
+
+    visual_object_unref (VISUAL_OBJECT (self->entries));
+    visual_mem_free (self);
+}
+
+void visual_param_list_set_eventqueue (VisParamList *self, VisEventQueue *eventqueue)
+{
+    visual_return_if_fail (self != NULL);
+
+    self->eventqueue = eventqueue;
+}
+
+VisEventQueue *visual_param_list_get_eventqueue (VisParamList *self)
+{
+    visual_return_val_if_fail (self != NULL, NULL);
+
+    return self->eventqueue;
+}
+
+int visual_param_list_add (VisParamList *self, VisParam *param)
+{
+    visual_return_val_if_fail (self != NULL, FALSE);
+    visual_return_val_if_fail (param != NULL, FALSE);
+
+    if (visual_list_add (self->entries, param)) {
+        param->parent = self;
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+unsigned int visual_param_list_add_array (VisParamList *self, VisParam **params, unsigned int nparams)
+{
+    visual_return_val_if_fail (self   != NULL, 0);
+    visual_return_val_if_fail (params != NULL, 0);
+
+    unsigned int i;
+    unsigned int added = 0;
+
+    for (i = 0; i < nparams; i++) {
+        if (visual_param_list_add (self, params[i])) {
+            added++;
         }
-
-        /* The id has NOT been found, thus is an original, and we return this as the next id */
-        if (found == FALSE)
-            return i;
     }
 
-    /* This is virtually impossible, or something very wrong is going ok, but no id seems to be left */
-    return -1;
+    return added;
 }
 
-VisParamContainer *visual_param_container_new ()
+unsigned int visual_param_list_add_many (VisParamList *self, ...)
 {
-    VisParamContainer *paramcontainer;
+    va_list args;
 
-    paramcontainer = visual_mem_new0 (VisParamContainer, 1);
+    va_start (args, self);
 
-    visual_list_init(&paramcontainer->entries, NULL);
+    VisParam *param;
+    unsigned int added = 0;
 
-    /* Do the VisObject initialization */
-    visual_object_initialize (VISUAL_OBJECT (paramcontainer), TRUE, param_container_dtor);
+    do {
+        param = va_arg (args, VisParam *);
+        if (param && visual_param_list_add (self, param)) {
+            added++;
+        }
+    } while (param);
 
-    visual_collection_set_destroyer (VISUAL_COLLECTION (&paramcontainer->entries), visual_object_collection_destroyer);
+    va_end (args);
 
-    return paramcontainer;
+    return added;
 }
 
-int visual_param_container_set_eventqueue (VisParamContainer *paramcontainer, VisEventQueue *eventqueue)
+int visual_param_list_remove (VisParamList *self, const char *name)
 {
-    visual_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
+    visual_return_val_if_fail (self != NULL, FALSE);
+    visual_return_val_if_fail (name != NULL, FALSE);
 
-    paramcontainer->eventqueue = eventqueue;
-
-    return VISUAL_OK;
-}
-
-VisEventQueue *visual_param_container_get_eventqueue (VisParamContainer *paramcontainer)
-{
-    visual_return_val_if_fail (paramcontainer != NULL, NULL);
-
-    return paramcontainer->eventqueue;
-}
-
-int visual_param_container_add (VisParamContainer *paramcontainer, VisParamEntry *param)
-{
-    visual_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    param->parent = paramcontainer;
-
-    /* On container add, we always set changed once, so vars can be synchronised in the plugin
-     * it's event loop */
-    visual_param_entry_changed (param);
-
-    return visual_list_add (&paramcontainer->entries, param);
-}
-
-int visual_param_container_add_with_defaults (VisParamContainer *paramcontainer, VisParamEntry *param)
-{
-    visual_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    param->parent = paramcontainer;
-
-    visual_mem_copy(&param->defaultnum, &param->numeric, sizeof(param->defaultnum));
-
-    if(param->type == VISUAL_PARAM_ENTRY_TYPE_STRING)
-        param->defaultstring = visual_strdup(param->string);
-
-/*
-    if(param->type == VISUAL_PARAM_ENTRY_TYPE_COLOR)
-        visual_color_copy(&param->defaultcolor, &param->color);
-*/
-
-    /* On container add, we always set changed once, so vars can be synchronised in the plugin
-     * it's event loop */
-    visual_param_entry_changed (param);
-
-    return visual_list_add (&paramcontainer->entries, param);
-}
-
-int visual_param_container_add_many (VisParamContainer *paramcontainer, VisParamEntry *params)
-{
-    VisParamEntry *pnew;
-    int i = 0;
-
-    visual_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-    visual_return_val_if_fail (params != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    while (params[i].type != VISUAL_PARAM_ENTRY_TYPE_END) {
-        pnew = visual_param_entry_new (visual_param_entry_get_name (&params[i]));
-        visual_param_entry_set_from_param (pnew, &params[i]);
-
-        visual_param_container_add_with_defaults (paramcontainer, pnew);
-
-        i++;
-    }
-
-    return VISUAL_OK;
-}
-
-int visual_param_container_remove (VisParamContainer *paramcontainer, const char *name)
-{
     VisListEntry *le = NULL;
-    VisParamEntry *param;
+    VisParam *param;
 
-    visual_return_val_if_fail (paramcontainer != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-    visual_return_val_if_fail (name != NULL, -VISUAL_ERROR_NULL);
-
-    while ((param = visual_list_next (&paramcontainer->entries, &le)) != NULL) {
+    while ((param = visual_list_next (self->entries, &le)) != NULL) {
 
         if (strcmp (param->name, name) == 0) {
-            visual_list_delete (&paramcontainer->entries, &le);
+            visual_list_delete (self->entries, &le);
 
-            return VISUAL_OK;
+            return TRUE;
         }
     }
 
-    return -VISUAL_ERROR_PARAM_NOT_FOUND;
+    return FALSE;
 }
 
-int visual_param_container_copy (VisParamContainer *destcont, VisParamContainer *srccont)
+VisParam *visual_param_list_get (VisParamList *self, const char *name)
 {
-    VisListEntry *le = NULL;
-    VisParamEntry *destparam;
-    VisParamEntry *srcparam;
-    VisParamEntry *tempparam;
-
-    visual_return_val_if_fail (destcont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-    visual_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-
-    while ((srcparam = visual_list_next (&srccont->entries, &le)) != NULL) {
-        tempparam = visual_param_container_get (destcont, visual_param_entry_get_name (srcparam));
-
-        /* Already exists, overwrite */
-        if (tempparam != NULL) {
-            visual_param_entry_set_from_param (tempparam, srcparam);
-
-            continue;
-        }
-
-        /* Does not yet exist, create a new entry */
-        destparam = visual_param_entry_new (visual_param_entry_get_name (srcparam));
-        visual_param_entry_set_from_param (destparam, srcparam);
-
-        visual_param_container_add (destcont, destparam);
-    }
-
-    return VISUAL_OK;
-}
-
-int visual_param_container_copy_match (VisParamContainer *destcont, VisParamContainer *srccont)
-{
-    VisListEntry *le = NULL;
-    VisParamEntry *destparam;
-    VisParamEntry *srcparam;
-
-    visual_return_val_if_fail (destcont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-    visual_return_val_if_fail (srccont != NULL, -VISUAL_ERROR_PARAM_CONTAINER_NULL);
-
-    while ((destparam = visual_list_next (&destcont->entries, &le)) != NULL) {
-        srcparam = visual_param_container_get (srccont, visual_param_entry_get_name (destparam));
-
-        if (srcparam != NULL)
-            visual_param_entry_set_from_param (destparam, srcparam);
-    }
-
-    return VISUAL_OK;
-}
-
-VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, const char *name)
-{
-    VisListEntry *le = NULL;
-    VisParamEntry *param;
-
-    visual_return_val_if_fail (paramcontainer != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
     visual_return_val_if_fail (name != NULL, NULL);
 
-    while ((param = visual_list_next (&paramcontainer->entries, &le)) != NULL) {
+    VisListEntry *le = NULL;
+    VisParam *param;
+
+    while ((param = visual_list_next (self->entries, &le)) != NULL) {
         param = le->data;
 
         if (strcmp (param->name, name) == 0)
@@ -277,708 +197,234 @@ VisParamEntry *visual_param_container_get (VisParamContainer *paramcontainer, co
     return NULL;
 }
 
-VisParamEntry *visual_param_entry_new (char *name)
+VisParam *visual_param_new (const char * name,
+                            const char * description,
+                            VisParamType type,
+                            void *       default_value,
+                            VisClosure * validator)
 {
-    VisParamEntry *param;
+    visual_return_val_if_fail (name != NULL, NULL);
+    visual_return_val_if_fail (description != NULL, NULL);
+    visual_return_val_if_fail (type != VISUAL_PARAM_TYPE_NONE, NULL);
 
-    param = visual_mem_new0 (VisParamEntry, 1);
-
-    /* Do the VisObject initialization */
-    visual_object_initialize (VISUAL_OBJECT (param), TRUE, param_entry_dtor);
-
-    visual_param_entry_set_name (param, name);
-
-    visual_collection_set_destroyer (VISUAL_COLLECTION (&param->callbacks), visual_object_collection_destroyer);
-
-    return param;
-}
-
-int visual_param_entry_add_callback (VisParamEntry *param, VisParamChangedCallbackFunc callback, void *priv)
-{
-    VisParamEntryCallback *pcall;
-    int id;
-
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-    visual_return_val_if_fail (callback != NULL, -VISUAL_ERROR_PARAM_CALLBACK_NULL);
-
-    id = get_next_pcall_id (&param->callbacks);
-
-    visual_return_val_if_fail (id >= 0, -VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY);
-
-    pcall = visual_mem_new0 (VisParamEntryCallback, 1);
-
-    /* Do the VisObject initialization for the VisParamEntryCallback */
-    visual_object_initialize (VISUAL_OBJECT (pcall), TRUE, NULL);
-
-    pcall->id = id;
-    pcall->callback = callback;
-    visual_object_set_private (VISUAL_OBJECT (pcall), priv);
-
-    visual_list_add (&param->callbacks, pcall);
-
-    return id;
-}
-
-
-int visual_param_entry_remove_callback (VisParamEntry *param, int id)
-{
-    VisListEntry *le = NULL;
-    VisParamEntryCallback *pcall;
-
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL) {
-
-        if (id == pcall->id) {
-            visual_list_delete (&param->callbacks, &le);
-
-            visual_object_unref (VISUAL_OBJECT (pcall));
-
-            return VISUAL_OK;
-        }
+    if (validator) {
+        VisParamValue value;
+        visual_param_value_init (&value, type, default_value);
+        visual_return_val_if_fail (validate_param_value (&value, validator), NULL);
     }
 
-    return VISUAL_OK;
+    VisParam *self = visual_mem_new0 (VisParam, 1);
+
+    self->name        = visual_strdup (name);
+    self->description = visual_strdup (description);
+    self->validator   = validator;
+
+    visual_param_value_set (&self->value, type, default_value);
+    visual_param_value_set (&self->default_value, type, default_value);
+
+    self->changed_handlers = visual_list_new ((VisCollectionDestroyerFunc) visual_closure_free);
+
+    return self;
 }
 
-int visual_param_entry_notify_callbacks (VisParamEntry *param)
+void visual_param_free (VisParam *self)
 {
+    if (!self)
+        return;
+
+    visual_mem_free (self->name);
+    visual_mem_free (self->description);
+
+    visual_param_value_free_value (&self->value);
+    visual_param_value_free_value (&self->default_value);
+
+    visual_closure_free (self->validator);
+
+    visual_object_unref (VISUAL_OBJECT (self->changed_handlers));
+
+    visual_mem_free (self);
+}
+
+VisClosure *visual_param_add_callback (VisParam *          self,
+                                       VisParamChangedFunc func,
+                                       void *              priv,
+                                       VisDestroyFunc      destroy_func)
+{
+    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (func != NULL, NULL);
+
+    VisClosure *closure = visual_closure_new (func, priv, destroy_func);
+    visual_list_add (self->changed_handlers, closure);
+
+    return closure;
+}
+
+int visual_param_remove_callback (VisParam *self, VisClosure *to_remove)
+{
+    visual_return_val_if_fail (self != NULL, FALSE);
+
     VisListEntry *le = NULL;
-    VisParamEntryCallback *pcall;
+    VisClosure *closure;
 
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    while ((pcall = visual_list_next (&param->callbacks, &le)) != NULL)
-        pcall->callback (param, visual_object_get_private (VISUAL_OBJECT (pcall)));
-
-    return VISUAL_OK;
-}
-
-int visual_param_entry_is (VisParamEntry *param, const char *name)
-{
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    if (strcmp (param->name, name) == 0)
-        return TRUE;
+    while ((closure = visual_list_next (self->changed_handlers, &le)) != NULL) {
+        if (closure == to_remove) {
+            visual_list_delete (self->changed_handlers, &le);
+            return TRUE;
+        }
+    }
 
     return FALSE;
 }
 
-int visual_param_entry_changed (VisParamEntry *param)
+int visual_param_has_name (VisParam *self, const char *name)
 {
-    VisEventQueue *eventqueue;
+    visual_return_val_if_fail (self != NULL, FALSE);
 
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    if (param->parent == NULL)
-        return VISUAL_OK;
-
-    eventqueue = param->parent->eventqueue;
-
-    if (eventqueue != NULL)
-        visual_event_queue_add_param (eventqueue, param);
-
-    visual_param_entry_notify_callbacks (param);
-
-    return VISUAL_OK;
+    return strcmp (self->name, name);
 }
 
-VisParamEntryType visual_param_entry_get_type (VisParamEntry *param)
+void visual_param_changed (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    return param->type;
-}
+    if (!self->parent)
+        return;
 
-int visual_param_entry_compare (VisParamEntry *src1, VisParamEntry *src2)
-{
-    visual_return_val_if_fail (src1 != NULL, -VISUAL_ERROR_PARAM_NULL);
-    visual_return_val_if_fail (src2 != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    if (src1->type != src2->type)
-        return FALSE;
-
-    switch (src1->type) {
-        case VISUAL_PARAM_ENTRY_TYPE_NULL:
-            return TRUE;
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_STRING:
-            if (!strcmp (src1->string, src2->string))
-                return TRUE;
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
-            if (src1->numeric.integer == src2->numeric.integer)
-                return TRUE;
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
-            if (src1->numeric.floating == src2->numeric.floating)
-                return TRUE;
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
-            if (src1->numeric.doubleflt == src2->numeric.doubleflt)
-                return TRUE;
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_COLOR:
-            return visual_color_compare (&src1->color, &src2->color);
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_PALETTE:
-            return FALSE;
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_OBJECT:
-            return FALSE;
-
-            break;
-
-        default:
-            visual_log (VISUAL_LOG_ERROR, _("param type is not valid"));
-
-            return -VISUAL_ERROR_PARAM_INVALID_TYPE;
-
-            break;
+    VisEventQueue *eventqueue = self->parent->eventqueue;
+    if (eventqueue) {
+        visual_event_queue_add (eventqueue, visual_event_new_param (self));
     }
 
-    return -VISUAL_ERROR_IMPOSSIBLE;
+    visual_param_notify_callbacks (self);
 }
 
-int visual_param_entry_set_from_param (VisParamEntry *param, VisParamEntry *src)
+void visual_param_notify_callbacks (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
-    visual_return_val_if_fail (src != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    switch (src->type) {
-        case VISUAL_PARAM_ENTRY_TYPE_NULL:
+    VisListEntry *le = NULL;
+    VisClosure *closure;
 
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_STRING:
-            visual_param_entry_set_string (param, visual_param_entry_get_string (src));
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_INTEGER:
-            visual_param_entry_set_integer (param, visual_param_entry_get_integer (src));
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_FLOAT:
-            visual_param_entry_set_float (param, visual_param_entry_get_float (src));
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_DOUBLE:
-            visual_param_entry_set_double (param, visual_param_entry_get_double (src));
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_COLOR:
-            visual_param_entry_set_color_by_color (param, visual_param_entry_get_color (src));
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_PALETTE:
-            visual_param_entry_set_palette (param, visual_param_entry_get_palette (src));
-
-            break;
-
-        case VISUAL_PARAM_ENTRY_TYPE_OBJECT:
-            visual_param_entry_set_object (param, visual_param_entry_get_object (src));
-
-            break;
-
-        default:
-            visual_log (VISUAL_LOG_ERROR, _("param type is not valid"));
-
-            return -VISUAL_ERROR_PARAM_INVALID_TYPE;
-
-            break;
+    while ((closure = visual_list_next (self->changed_handlers, &le)) != NULL) {
+        (*(VisParamChangedFunc) (closure->func)) (self, closure->data);
     }
-
-    return VISUAL_OK;
 }
 
-int visual_param_entry_set_name (VisParamEntry *param, char *name)
+VisParamType visual_param_get_type (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_val_if_fail (self != NULL, VISUAL_PARAM_TYPE_NONE);
 
-    if (param->name != NULL)
-        visual_mem_free (param->name);
-
-    param->name = NULL;
-
-    if (name != NULL)
-        param->name = visual_strdup (name);
-
-    return VISUAL_OK;
+    return self->value.type;
 }
 
-int visual_param_entry_set_string (VisParamEntry *param, char *string)
+const char *visual_param_get_name (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_STRING;
-
-    if (string == NULL && param->string == NULL)
-        return VISUAL_OK;
-
-    if (string == NULL && param->string != NULL) {
-        visual_mem_free (param->string);
-        param->string = NULL;
-
-        visual_param_entry_changed (param);
-
-    } else if (param->string == NULL && string != NULL) {
-        param->string = visual_strdup (string);
-
-        visual_param_entry_changed (param);
-
-    } else if (strcmp (string, param->string) != 0) {
-        visual_mem_free (param->string);
-
-        param->string = visual_strdup (string);
-
-        visual_param_entry_changed (param);
-    }
-
-    return VISUAL_OK;
+    return self->name;
 }
 
-int visual_param_entry_set_integer (VisParamEntry *param, int integer)
+const char *visual_param_get_description (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_INTEGER;
-
-    if (param->numeric.integer != integer) {
-        param->numeric.integer = integer;
-
-        visual_param_entry_changed (param);
-    }
-
-    return VISUAL_OK;
+    return self->description;
 }
 
-int visual_param_entry_set_float (VisParamEntry *param, float floating)
+void visual_param_set_value_bool (VisParam *self, int value)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_FLOAT;
-
-    if (param->numeric.floating != floating) {
-        param->numeric.floating = floating;
-
-        visual_param_entry_changed (param);
-    }
-
-    return VISUAL_OK;
+    visual_param_value_set_bool (&self->value, value);
 }
 
-int visual_param_entry_set_double (VisParamEntry *param, double doubleflt)
+void visual_param_set_value_integer (VisParam *self, int value)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_DOUBLE;
-
-    if (param->numeric.doubleflt != doubleflt) {
-        param->numeric.doubleflt = doubleflt;
-
-        visual_param_entry_changed (param);
-    }
-
-    return VISUAL_OK;
+    visual_param_value_set_integer (&self->value, value);
 }
 
-int visual_param_entry_set_color (VisParamEntry *param, uint8_t r, uint8_t g, uint8_t b)
+void visual_param_set_value_float (VisParam *self, float value)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_COLOR;
-
-    if (param->color.r != r || param->color.g != g || param->color.b != b) {
-        visual_color_set (&param->color, r, g, b);
-
-        visual_param_entry_changed (param);
-    }
-
-    return VISUAL_OK;
+    visual_param_value_set_float (&self->value, value);
 }
 
-int visual_param_entry_set_color_by_color (VisParamEntry *param, VisColor *color)
+void visual_param_set_value_double (VisParam *self, double value)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_COLOR;
-
-    if (visual_color_compare (&param->color, color) == FALSE) {
-        visual_color_copy (&param->color, color);
-
-        visual_param_entry_changed (param);
-    }
-
-    return VISUAL_OK;
+    visual_param_value_set_double (&self->value, value);
 }
 
-int visual_param_entry_set_palette (VisParamEntry *param, VisPalette *pal)
+void visual_param_set_value_string (VisParam *self, const char *string)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_PALETTE;
-
-    visual_palette_free_colors (&param->pal);
-
-    if (pal != NULL) {
-        visual_palette_allocate_colors (&param->pal, pal->ncolors);
-
-        visual_palette_copy (&param->pal, pal);
-    }
-
-    visual_param_entry_changed (param);
-
-    return VISUAL_OK;
+    visual_param_value_set_string (&self->value, string);
 }
 
-int visual_param_entry_set_object (VisParamEntry *param, VisObject *object)
+void visual_param_set_value_color (VisParam *self, VisColor *color)
 {
-    visual_return_val_if_fail (param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_OBJECT;
-
-    if (param->objdata != NULL)
-        visual_object_unref (param->objdata);
-
-    param->objdata = object;
-
-    if (param->objdata != NULL)
-        visual_object_ref (param->objdata);
-
-    visual_param_entry_changed (param);
-
-    return VISUAL_OK;
+    visual_param_value_set_color (&self->value, color);
 }
 
-int visual_param_entry_set_collection (VisParamEntry *param, VisCollection *collection)
+void visual_param_set_value_palette (VisParam *self, VisPalette *palette)
 {
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
+    visual_return_if_fail (self != NULL);
 
-    param->type = VISUAL_PARAM_ENTRY_TYPE_COLLECTION;
-
-    if (param->collection != NULL)
-        visual_object_unref (VISUAL_OBJECT(param->collection));
-
-    param->collection = collection;
-
-    if (param->collection != NULL)
-        visual_object_ref(VISUAL_OBJECT(param->collection));
-
-    return VISUAL_OK;
+    visual_param_value_set_palette (&self->value, palette);
 }
 
-int visual_param_entry_set_annotation (VisParamEntry *param, char *anno)
+int visual_param_get_value_bool (VisParam *self)
 {
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-;
-    visual_return_val_if_fail(anno != NULL, -VISUAL_ERROR_PARAM_ANNO_NULL);
+    visual_return_val_if_fail (self != NULL, 0);
 
-    if (param->annotation != NULL)
-        visual_mem_free(param->annotation);
-
-    param->annotation = visual_strdup(anno);
-
-    return VISUAL_OK;
+    return visual_param_value_get_bool (&self->value);
 }
 
-char *visual_param_entry_get_name (VisParamEntry *param)
+int visual_param_get_value_integer (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, 0);
 
-    return param->name;
+    return visual_param_value_get_integer (&self->value);
 }
 
-char *visual_param_entry_get_string (VisParamEntry *param)
+float visual_param_get_value_float (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, 0.0f);
 
-    if (param->type != VISUAL_PARAM_ENTRY_TYPE_STRING) {
-        visual_log (VISUAL_LOG_WARNING, _("Requesting string from a non string param"));
-
-        return NULL;
-    }
-
-    return param->string;
+    return visual_param_value_get_float (&self->value);
 }
 
-int visual_param_entry_get_integer (VisParamEntry *param)
+double visual_param_get_value_double (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, 0);
+    visual_return_val_if_fail (self != NULL, 0.0);
 
-    if (param->type != VISUAL_PARAM_ENTRY_TYPE_INTEGER)
-        visual_log (VISUAL_LOG_WARNING, _("Requesting integer from a non integer param"));
-
-    return param->numeric.integer;
+    return visual_param_value_get_double (&self->value);
 }
 
-float visual_param_entry_get_float (VisParamEntry *param)
+const char *visual_param_get_value_string (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, 0);
+    visual_return_val_if_fail (self != NULL, 0);
 
-    if (param->type != VISUAL_PARAM_ENTRY_TYPE_FLOAT)
-        visual_log (VISUAL_LOG_WARNING, _("Requesting float from a non float param"));
-
-    return param->numeric.floating;
+    return visual_param_value_get_string (&self->value);
 }
 
-double visual_param_entry_get_double (VisParamEntry *param)
+VisColor *visual_param_get_value_color (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, 0);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    if (param->type != VISUAL_PARAM_ENTRY_TYPE_DOUBLE)
-        visual_log (VISUAL_LOG_WARNING, _("Requesting double from a non double param"));
-
-    return param->numeric.doubleflt;
+    return visual_param_value_get_color (&self->value);
 }
 
-VisColor *visual_param_entry_get_color (VisParamEntry *param)
+VisPalette *visual_param_get_value_palette (VisParam *self)
 {
-    visual_return_val_if_fail (param != NULL, NULL);
+    visual_return_val_if_fail (self != NULL, NULL);
 
-    if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLOR) {
-        visual_log (VISUAL_LOG_WARNING, _("Requesting color from a non color param"));
-
-        return NULL;
-    }
-
-    return &param->color;
+    return visual_param_value_get_palette (&self->value);
 }
-
-VisPalette *visual_param_entry_get_palette (VisParamEntry *param)
-{
-    visual_return_val_if_fail (param != NULL, NULL);
-
-    if (param->type != VISUAL_PARAM_ENTRY_TYPE_PALETTE) {
-        visual_log (VISUAL_LOG_WARNING, _("Requested palette from a non palette param"));
-
-        return NULL;
-    }
-
-    return &param->pal;
-}
-
-VisObject *visual_param_entry_get_object (VisParamEntry *param)
-{
-    visual_return_val_if_fail (param != NULL, NULL);
-
-    if (param->type != VISUAL_PARAM_ENTRY_TYPE_OBJECT) {
-        visual_log (VISUAL_LOG_WARNING, _("Requested object from a non object param"));
-
-        return NULL;
-    }
-
-    return param->objdata;
-}
-
-VisCollection *visual_param_entry_get_collection (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, NULL)
-
-    if (param->type != VISUAL_PARAM_ENTRY_TYPE_COLLECTION) {
-        visual_log (VISUAL_LOG_WARNING, _("Requested collection from non collection param"));
-        return NULL;
-    }
-
-    return param->collection;
-}
-
-char *visual_param_entry_get_annotation (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, NULL)
-
-    return param->annotation;
-}
-
-int visual_param_entry_min_set_integer (VisParamEntry *param, int integer)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    param->min.integer = integer;
-
-    return VISUAL_OK;
-}
-
-int visual_param_entry_min_set_float (VisParamEntry *param, float floating)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    param->min.floating= floating;
-
-    return VISUAL_OK;
-}
-
-int visual_param_entry_min_set_double (VisParamEntry *param, double doubleflt)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    param->min.doubleflt = doubleflt;
-
-    return VISUAL_OK;
-
-}
-
-int visual_param_entry_min_get_integer (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0);
-
-    return param->min.integer;
-
-}
-
-float visual_param_entry_min_get_float(VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0.0);
-
-    return param->min.floating;
-
-}
-
-double visual_param_entry_min_get_double (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0.0);
-
-    return param->min.doubleflt;
-
-}
-
-int visual_param_entry_max_set_integer (VisParamEntry *param, int integer)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    param->max.integer = integer;
-
-    return VISUAL_OK;
-
-}
-
-int visual_param_entry_max_set_float (VisParamEntry *param, float floating)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    param->max.floating = floating;
-
-    return VISUAL_OK;
-
-}
-
-int visual_param_entry_max_set_double (VisParamEntry *param, double doubleflt)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    param->max.doubleflt = doubleflt;
-
-    return VISUAL_OK;
-}
-
-int visual_param_entry_max_get_integer (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0);
-
-    return param->max.integer;
-
-}
-
-float visual_param_entry_max_get_float(VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0.0);
-
-    return param->max.floating;
-
-}
-
-double visual_param_entry_max_get_double (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0.0);
-
-    return param->max.doubleflt;
-
-}
-
-int visual_param_entry_default_set_string(VisParamEntry *param, char *str)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-
-    if(param->defaultstring)
-        visual_mem_free(param->defaultstring);
-
-    param->defaultstring = visual_strdup(str);
-
-    return VISUAL_OK;
-}
-
-int visual_param_entry_default_set_integer(VisParamEntry *param, int integer)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-    param->defaultnum.integer = integer;
-    return VISUAL_OK;
-}
-
-int visual_param_entry_default_set_float (VisParamEntry *param, float floating)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-    param->defaultnum.floating = floating;
-    return VISUAL_OK;
-}
-
-int visual_param_entry_default_set_double (VisParamEntry *param, double doubleflt)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-    param->defaultnum.doubleflt = doubleflt;
-    return VISUAL_OK;
-}
-
-int visual_param_entry_default_set_color (VisParamEntry *param, VisColor *color)
-{
-    visual_return_val_if_fail(param != NULL, -VISUAL_ERROR_PARAM_NULL);
-    visual_color_copy(&param->defaultcolor, color);
-    return VISUAL_OK;
-}
-
-char * visual_param_entry_default_get_string (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, NULL);
-    return param->defaultstring;
-}
-
-int visual_param_entry_default_get_integer (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0.0);
-    return param->defaultnum.integer;
-}
-
-float visual_param_entry_default_get_float(VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0.0);
-    return param->defaultnum.floating;
-}
-
-double visual_param_entry_default_get_double (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, 0.0);
-    return param->defaultnum.doubleflt;
-}
-
-VisColor *visual_param_entry_default_get_color (VisParamEntry *param)
-{
-    visual_return_val_if_fail(param != NULL, NULL);
-    return &param->defaultcolor;
-}
-

@@ -18,7 +18,7 @@ typedef struct
 tknotobject knotobject;
 
 
-void
+static void
 initknot(int scaling_factor1, int scaling_factor2, GLfloat radius1, GLfloat radius2, GLfloat radius3)
 {
   int count1, count2;
@@ -104,7 +104,7 @@ initknot(int scaling_factor1, int scaling_factor2, GLfloat radius1, GLfloat radi
 }
 
 
-void
+static void
 recalcknot(int scaling_factor1, int scaling_factor2, GLfloat radius1, GLfloat radius2, GLfloat radius3)
 {
   int count1, count2;
@@ -178,7 +178,7 @@ recalcknot(int scaling_factor1, int scaling_factor2, GLfloat radius1, GLfloat ra
 }
 
 
-void
+static void
 draw_the_knot(void)
 {
   int i, j, num;
@@ -194,7 +194,7 @@ draw_the_knot(void)
 }
 
 
-void
+static void
 createknot(void)
 {
   recalcknot(16, 64, 3.4*sin(0.02*knot_time)-1, 4*cos(0.006*knot_time)-2, 1.1);
@@ -206,7 +206,7 @@ createknot(void)
 }
 
 
-void
+static void
 drawknot(void)
 {
   glPushMatrix();
@@ -215,7 +215,7 @@ drawknot(void)
 }
 
 
-void
+static void
 render_knot(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

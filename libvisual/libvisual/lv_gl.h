@@ -1,10 +1,9 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_gl.h,v 1.5.2.1 2006/03/04 12:32:47 descender Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -32,9 +31,7 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
-#define VISUAL_GL_ATTRIBUTE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisGLAttributeEntry))
+#define VISUAL_GL_ATTRIBUTE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisGLAttrEntry))
 
 /**
  * Enumerate with GL attributes.
@@ -58,17 +55,15 @@ typedef enum {
 	VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE,   /**< Number of blue accum bits. */
 	VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE,  /**< Number of alpha accum bits. */
 	VISUAL_GL_ATTRIBUTE_LAST
-} VisGLAttribute;
+} VisGLAttr;
 
-typedef struct _VisGLAttributeEntry VisGLAttributeEntry;
+typedef struct _VisGLAttrEntry VisGLAttrEntry;
 
-struct _VisGLAttributeEntry {
-	VisGLAttribute attribute;
-	int            value;
-	int            mutated;
+struct _VisGLAttrEntry {
+	VisGLAttr attribute;
+	int       value;
+	int       mutated;
 };
-
-VISUAL_END_DECLS
 
 /**
  * @}

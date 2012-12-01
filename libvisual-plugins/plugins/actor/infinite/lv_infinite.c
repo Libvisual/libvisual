@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -21,40 +21,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <gettext.h>
-
+#include "config.h"
+#include "gettext.h"
 #include "main.h"
 #include "renderer.h"
 #include "display.h"
+#include <libvisual/libvisual.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 static int act_infinite_init (VisPluginData *plugin);
 static int act_infinite_cleanup (VisPluginData *plugin);
-static int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_infinite_resize (VisPluginData *plugin, int width, int height);
 static int act_infinite_requisition (VisPluginData *plugin, int *width, int *height);
 static int act_infinite_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_infinite_palette (VisPluginData *plugin);
 static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_infinite_requisition,
 		.palette = act_infinite_palette,
 		.render = act_infinite_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "infinite",
@@ -69,12 +62,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_infinite_cleanup,
 		.events = act_infinite_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_infinite_init (VisPluginData *plugin)
@@ -82,7 +73,7 @@ static int act_infinite_init (VisPluginData *plugin)
 	InfinitePrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	visual_return_val_if_fail (plugin != NULL, -1);
@@ -95,7 +86,7 @@ static int act_infinite_init (VisPluginData *plugin)
 	priv->plugwidth = 32;
 	priv->plugheight = 32;
 
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal = visual_palette_new (256);
 
 	_inf_init_renderer (priv);
 	_inf_load_random_effect(priv, &priv->current_effect);
@@ -120,7 +111,7 @@ int act_infinite_cleanup (VisPluginData *plugin)
 
 	_inf_close_renderer (priv);
 
-	visual_palette_free_colors (&priv->pal);
+	visual_palette_free (priv->pal);
 	visual_mem_free (priv);
 
 	return 0;
@@ -153,24 +144,13 @@ static int act_infinite_requisition (VisPluginData *plugin, int *width, int *hei
 	return 0;
 }
 
-static int act_infinite_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_infinite_resize (VisPluginData *plugin, int width, int height)
 {
-	InfinitePrivate *priv;
-
-	visual_return_val_if_fail (plugin != NULL, -1);
-	visual_return_val_if_fail (video != NULL, -1);
-
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	InfinitePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	priv->plugwidth = width;
 	priv->plugheight = height;
 
-	visual_video_set_dimension (video, width, height);
-
 	_inf_close_renderer (priv);
-
-	if (video->depth != VISUAL_VIDEO_DEPTH_8BIT)
-		return -1;
-
 	_inf_init_renderer (priv);
 
 	return 0;
@@ -183,8 +163,7 @@ static int act_infinite_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_infinite_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				act_infinite_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 			default: /* to avoid warnings */
 				break;
@@ -202,12 +181,12 @@ static VisPalette *act_infinite_palette (VisPluginData *plugin)
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	return &priv->pal;
+	return priv->pal;
 }
 
 static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	VisBuffer buffer;
+	VisBuffer *buffer;
 	InfinitePrivate *priv;
 
 	visual_return_val_if_fail (plugin != NULL, -1);
@@ -216,14 +195,18 @@ static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio
 
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_buffer_set_data_pair (&buffer, priv->pcm_data[0], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+	buffer = visual_buffer_new ();
 
-	visual_buffer_set_data_pair (&buffer, priv->pcm_data[1], sizeof (float) * 512);
-	visual_audio_get_sample (audio, &buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_buffer_set_data_pair (buffer, priv->pcm_data[0], sizeof (float) * 512);
+	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+
+	visual_buffer_set_data_pair (buffer, priv->pcm_data[1], sizeof (float) * 512);
+	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_LEFT);
 
 	_inf_renderer (priv);
-	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video), video->pitch);
+	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video), visual_video_get_pitch (video));
+
+	visual_buffer_unref (buffer);
 
 	return 0;
 }

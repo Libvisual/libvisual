@@ -121,8 +121,8 @@ typedef struct {
 	/* Palette vars */
 	OinksiePalFade		 pal_fades[256];
 	OinksiePalData		 pal_data;
-	VisPalette		 pal_cur;
-	VisPalette		 pal_old;
+	VisPalette		*pal_cur;
+	VisPalette		*pal_old;
 	int			 pal_startup;
 
 	/* Screen vars */

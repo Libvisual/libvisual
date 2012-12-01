@@ -1,17 +1,17 @@
-
-#include <pthread.h>
-#include <sched.h>
-
-
-#include <math.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
+#include "config.h"
 #include "gl.h"
 #include "etoile.h"
 
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#include "common/GL/glu.h"
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
 
+#include <pthread.h>
+#include <sched.h>
 
 GLfloat heights[NUM_BANDS];
 extern pthread_mutex_t height_mutex;
@@ -34,42 +34,46 @@ void LoadTexture()
       imageData[i][j][0]= (GLubyte)x;
       imageData[i][j][1]= (GLubyte)x;
       imageData[i][j][2]= (GLubyte)x;
-      
+
     }
   }
-  // Create Texture	
+  // Create Texture
   glGenTextures(1, &texture[0]);
   glBindTexture(GL_TEXTURE_2D, texture[0]);   // 2d texture (x and y size)
 
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); // scale linearly when image bigger than texture
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); // scale linearly when image smalled than texture
-  
-  // 2d texture, level of detail 0 (normal), 3 components (red, green, blue), x size from image, y size from image, 
-  // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE,&imageData[0][0][0] );
 
+  // 2d texture, level of detail 0 (normal), 3 components (red, green, blue), x size from image, y size from image,
+  // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE,&imageData[0][0][0] );
 }
+
 void init_gl(void)
 {
- // glViewport(0, 0, 640, 480);
   LoadTexture();
-//  glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
-//  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	// Clear The Background Color To Blue 
-//  glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
-//  glDepthFunc(GL_LESS);			// The Type Of Depth Test To Do
-//  glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
-//  glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
-    
-//  glMatrixMode(GL_PROJECTION);
-//  glLoadIdentity();				// Reset The Projection Matrix
-    
-    
-//  gluPerspective(45.0f,(GLfloat)640/(GLfloat)480,0.1f,100.0f);	// Calculate The Aspect Ratio Of The Window
-    
+
+  glViewport(0, 0, 640, 480);
+  glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
+  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	// Clear The Background Color To Blue
+#ifdef USE_OPENGL_ES
+  glClearDepthf(1.0);
+#else
+  glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
+#endif
+  glDepthFunc(GL_LESS);			// The Type Of Depth Test To Do
+  glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
+  glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();				// Reset The Projection Matrix
+
+  gluPerspective(45.0f,(GLfloat)640/(GLfloat)480,0.1f,100.0f);	// Calculate The Aspect Ratio Of The Window
+
   glMatrixMode(GL_MODELVIEW);
- etoileinit();
-    
+  etoileinit();
 }
+
 extern int *newline;
 extern int numCenters;
 extern int gloudness;
@@ -94,7 +98,11 @@ void draw_gl(void)
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+#ifdef USE_OPENGL_ES
+  glFrustumf(-1, 1, -1, 1, 1.5, 40);
+#else
   glFrustum(-1, 1, -1, 1, 1.5, 40);
+#endif
   gluLookAt(0, 0, 6,
 			0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
@@ -107,7 +115,7 @@ void draw_gl(void)
   if(beat>0)
     {
       beat--;
-	  glBegin(GL_QUADS);
+	  glBegin(GL_TRIANGLE_STRIP);
       glColor3f(0.1 , 0.9 , 0.1 );// subliminal beat..
       glVertex3f(2,2,0);
       glVertex3f(-2,2,0);
@@ -136,7 +144,7 @@ void draw_gl(void)
 		}
 	  if(i>0 && i <199)
 		glVertex3f(x/30,y,0);
-	  
+
 	}
   double y = maxgloudness;
   y = 4*(y-100)/200;
@@ -162,27 +170,47 @@ void draw_gl(void)
 
   for(int i=0;i<ptsNum;i++)
     {
-      GLfloat colors[][3]={ 
-        {1.,0.2,0.2   }
-        ,{0.2,1.,0.2}
-        ,{0.4,0.4,1}};
-        
+      GLfloat colors[][3]={
+         {1.0,0.2,0.2},
+         {0.2,1.0,0.2},
+         {0.4,0.4,1.0}
+      };
+
       if(p.mode < 50)
 		{
+		  static const GLfloat vertices[4][2] = {
+			{ -1.0, -1.0 },
+			{  1.0, -1.0 },
+			{  1.0,	 1.0 },
+			{ -1.0,	 1.0 }
+		  };
+
+		  static const GLfloat tex_coords[4][2] = {
+			{ 0.0, 0.0 },
+			{ 1.0, 0.0 },
+			{ 1.0, 1.0 },
+			{ 0.0, 1.0 }
+		  };
+
 		  glBindTexture(GL_TEXTURE_2D, texture[0]);   // choose the texture to use.
 		  glEnable(GL_TEXTURE_2D);
 		  glPushMatrix();
 		  glTranslatef(pts[i][0]/100,pts[i][1]/100,pts[i][2]/100);
-		  glBegin(GL_QUADS);
-		  glColor3fv(colors[i%3] );
-        
-		  //cout<<i<<  " :"<<pts[i][0] << " " <<pts[i][1] << " " << pts[i][2] << endl;
-		  glTexCoord2f(0,0);        glVertex3f(-SIZE, -SIZE, 0);
-		  glTexCoord2f(1,0);        glVertex3f(SIZE,-SIZE, 0);
-		  glTexCoord2f(1,1);        glVertex3f(SIZE, SIZE, 0);
-		  glTexCoord2f(0,1);        glVertex3f(-SIZE, SIZE, 0);
-        
-		  glEnd();
+		  glScalef(SIZE, SIZE, 1.0);
+
+		  int c = i%3;
+		  glColor4f(colors[c][0], colors[c][1], colors[c][2], 1.0f);
+
+		  glEnableClientState(GL_VERTEX_ARRAY);
+		  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		  glVertexPointer(2, GL_FLOAT, 0, vertices);
+		  glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
+		  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		  glDisableClientState(GL_VERTEX_ARRAY);
+
 		  glPopMatrix();
 		}
       else
@@ -191,32 +219,33 @@ void draw_gl(void)
 		  glDisable(GL_TEXTURE_2D);
 		  if(pts[(i+1)%ptsNum][0]>pts[i][0])
 			{
-			  glBegin(GL_QUADS);
 			  /*	      if(speed[i][0]>0)
 						  {
-						  //		  glColor3fv(colors[0] );
+						  glColor4f(colors[0][0], colors[0][1], colors[0][2], 1.0f);
+						  glBegin(GL_QUADS);
 						  glVertex3f(pts[i][0]/100,1,pts[i][2]/100);
 						  glVertex3f(pts[i][0]/100+SIZE2,1,pts[i][2]/100);
 						  glVertex3f(pts[i][0]/100+SIZE2, 1+SIZE2, pts[(i+1)%ptsNum][2]/100);
 						  glVertex3f(pts[i][0]/100,1+SIZE2,pts[(i+1)%ptsNum][2]/100);
 						  glEnd();
-
-						  glBegin(GL_QUADS);
-						  //		  cout <<"tptp\n";
 						  }
 			  */
-			  glColor3fv(colors[2] );
-			  glVertex3f(pts[i][0]/100,pts[i][1]/100,0);
-			  glVertex3f(pts[i][0]/100+SIZE,pts[i][1]/100,0);
-			  glVertex3f(pts[(i+1)%ptsNum][0]/100+SIZE, pts[(i+1)%ptsNum][1]/100,0);
-			  glVertex3f(pts[(i+1)%ptsNum][0]/100,pts[(i+1)%ptsNum][1]/100,0);
-			  glEnd();
+			  glColor4f(colors[2][0], colors[2][1], colors[2][2], 1.0f);
+
+			  GLfloat vertices[4][2] = {
+				{ pts[i][0]/100,pts[i][1]/100 },
+				{ pts[i][0]/100+SIZE,pts[i][1]/100 },
+				{ pts[(i+1)%ptsNum][0]/100+SIZE, pts[(i+1)%ptsNum][1]/100 },
+				{ pts[(i+1)%ptsNum][0]/100,pts[(i+1)%ptsNum][1]/100 }
+			  };
+
+			  glEnableClientState(GL_VERTEX_ARRAY);
+			  glVertexPointer(2,GL_FLOAT,0,vertices);
+			  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			  glDisableClientState(GL_VERTEX_ARRAY);
 			}
 		}
     }
-  
+
 #endif
 }
-
-
-

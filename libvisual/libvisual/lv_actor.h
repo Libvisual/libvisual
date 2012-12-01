@@ -1,10 +1,9 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_actor.h,v 1.19 2006/01/27 20:18:26 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -38,16 +37,9 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
 #define VISUAL_ACTOR_PLUGINENVIRON(obj) (VISUAL_CHECK_CAST ((obj), VisActorPluginEnviron))
 #define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
-
-/**
- * Type defination that should be used in plugins to set the plugin type for an actor plugin.
- */
-#define VISUAL_PLUGIN_TYPE_ACTOR	"Libvisual:core:actor"
 
 /**
  * Name defination of the standard VisActorPluginEnviron element for an actor plugin.
@@ -111,22 +103,17 @@ typedef int (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video, 
  * @see visual_actor_new
  */
 struct _VisActor {
-	VisObject	 object;		/**< The VisObject data. */
-
-	VisPluginData	*plugin;		/**< Pointer to the plugin itself. */
-
-	/* Video management and fake environments when needed */
-	VisVideo	*video;			/**< Pointer to the target display video.
-						 * @see visual_actor_set_video */
-	VisVideo	*transform;		/**< Private member which is used for depth transformation. */
-	VisVideo	*fitting;		/**< Private member which is used to fit the plugin. */
-	VisPalette	*ditherpal;		/**< Private member in which a palette is set when transforming
-						 * depth from true color to indexed.
-						 * @see visual_actor_get_palette */
-
-	/* Songinfo management */
-	VisSongInfo	 songcompare;		/**< Private member which is used to compare with new songinfo
-						  * to check if a new song event should be emitted. */
+	VisObject      object;      /**< The VisObject data. */
+	VisPluginData *plugin;      /**< Pointer to the plugin itself. */
+	VisVideo      *video;       /**< Pointer to the target display video.
+	                               * @see visual_actor_set_video */
+	VisVideo      *transform;   /**< Private member which is used for depth transformation. */
+	VisVideo      *fitting;     /**< Private member which is used to fit the plugin. */
+	VisPalette    *ditherpal;   /**< Private member in which a palette is set when transforming
+	                               * depth from true color to indexed.
+	                               * @see visual_actor_get_palette */
+	VisSongInfo   *songcompare; /**< Private member which is used to compare with new songinfo
+	                               * to check if a new song event should be emitted. */
 };
 
 /**
@@ -136,10 +123,10 @@ struct _VisActor {
  * or a custom target to check for changes.
  */
 struct _VisActorPluginEnviron {
-	VisObject			object;		/**< The VisObject data. */
+	VisObject object;  /**< The VisObject data. */
 
-	int				fps;		/**< The desired fps, set by the plugin, optionally read by
-							 * the display target. */
+	int       fps;     /**< The desired fps, set by the plugin, optionally read by
+	                      * the display target. */
 };
 
 /**
@@ -149,17 +136,18 @@ struct _VisActorPluginEnviron {
  * The actor plugin is the visualisation plugin.
  */
 struct _VisActorPlugin {
-	VisObject			 object;	/**< The VisObject data. */
-	VisPluginActorRequisitionFunc	 requisition;	/**< The requisition function. This is used to
-							 * get the desired VisVideo surface size of the plugin. */
-	VisPluginActorPaletteFunc	 palette;	/**< Used to retrieve the desired palette from the plugin. */
-	VisPluginActorRenderFunc	 render;	/**< The main render loop. This is called to draw a frame. */
+	VisObject                     object;         /**< The VisObject data. */
+	VisPluginActorRequisitionFunc requisition;    /**< The requisition function. This is used to
+	                                                 * get the desired VisVideo surface size of the plugin. */
+	VisPluginActorPaletteFunc     palette;        /**< Used to retrieve the desired palette from the plugin. */
+	VisPluginActorRenderFunc      render;         /**< The main render loop. This is called to draw a frame. */
 
-	VisSongInfo			 songinfo;	/**< Pointer to VisSongInfo that contains information about
-							 *the current playing song. This can be NULL. */
-
-	VisVideoAttributeOptions	 vidoptions;
+	VisSongInfo                  *songinfo;       /**< Pointer to VisSongInfo that contains information about
+	                                                 *the current playing song. This can be NULL. */
+	VisVideoAttrOptions           vidoptions;
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Gives the encapsulated VisPluginData from a VisActor.
@@ -168,14 +156,7 @@ struct _VisActorPlugin {
  *
  * @return VisPluginData that is encapsulated in the VisActor, possibly NULL.
  */
-VisPluginData *visual_actor_get_plugin (VisActor *actor);
-
-/**
- * Gives a list of VisActors in the current plugin registry.
- *
- * @return An VisList containing the VisActors in the plugin registry.
- */
-VisList *visual_actor_get_list (void);
+LV_API VisPluginData *visual_actor_get_plugin (VisActor *actor);
 
 /**
  * Gives the next actor plugin based on the name of a plugin but skips non
@@ -187,7 +168,7 @@ VisList *visual_actor_get_list (void);
  *
  * @return The name of the next plugin within the list that is a GL plugin.
  */
-const char *visual_actor_get_next_by_name_gl (const char *name);
+LV_API const char *visual_actor_get_next_by_name_gl (const char *name);
 
 /**
  * Gives the previous actor plugin based on the name of a plugin but skips non
@@ -199,7 +180,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name);
  *
  * @return The name of the previous plugin within the list that is a GL plugin.
  */
-const char *visual_actor_get_prev_by_name_gl (const char *name);
+LV_API const char *visual_actor_get_prev_by_name_gl (const char *name);
 
 /**
  * Gives the next actor plugin based on the name of a plugin but skips
@@ -211,7 +192,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name);
  *
  * @return The name of the next plugin within the list that is not a GL plugin.
  */
-const char *visual_actor_get_next_by_name_nogl (const char *name);
+LV_API const char *visual_actor_get_next_by_name_nogl (const char *name);
 
 /**
  * Gives the previous actor plugin based on the name of a plugin but skips
@@ -223,7 +204,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name);
  *
  * @return The name of the previous plugin within the list that is not a GL plugin.
  */
-const char *visual_actor_get_prev_by_name_nogl (const char *name);
+LV_API const char *visual_actor_get_prev_by_name_nogl (const char *name);
 
 /**
  * Gives the next actor plugin based on the name of a plugin.
@@ -234,7 +215,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name);
  *
  * @return The name of the next plugin within the list.
  */
-const char *visual_actor_get_next_by_name (const char *name);
+LV_API const char *visual_actor_get_next_by_name (const char *name);
 
 /**
  * Gives the previous actor plugin based on the name of a plugin.
@@ -245,16 +226,7 @@ const char *visual_actor_get_next_by_name (const char *name);
  *
  * @return The name of the previous plugin within the list.
  */
-const char *visual_actor_get_prev_by_name (const char *name);
-
-/**
- * Checks if the actor plugin is in the registry, based on it's name.
- *
- * @param name The name of the plugin that needs to be checked.
- *
- * @return TRUE if found, else FALSE.
- */
-int visual_actor_valid_by_name (const char *name);
+LV_API const char *visual_actor_get_prev_by_name (const char *name);
 
 /**
  * Creates a new actor from name, the plugin will be loaded but won't be realized.
@@ -265,20 +237,7 @@ int visual_actor_valid_by_name (const char *name);
  *
  * @return A newly allocated VisActor, optionally containing a loaded plugin. Or NULL on failure.
  */
-VisActor *visual_actor_new (const char *actorname);
-
-/**
- * Initializes a VisActor, this will set the allocated flag for the object to FALSE. Should not
- * be used to reset a VisActor, or on a VisActor created by visual_actor_new().
- *
- * @see visual_actor_new
- *
- * @param actor Pointer to the VisActor that is initialized.
- * @param actorname The name of the plugin to load, or NULL to simply initialize a new actor.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL or -VISUAL_ERROR_PLUGIN_NO_LIST on failure.
- */
-int visual_actor_init (VisActor *actor, const char *actorname);
+LV_API VisActor *visual_actor_new (const char *actorname);
 
 /**
  * Realize the VisActor. This also calls the plugin init function.
@@ -289,7 +248,7 @@ int visual_actor_init (VisActor *actor, const char *actorname);
  *	error values returned by visual_plugin_realize () on failure.
  *
  */
-int visual_actor_realize (VisActor *actor);
+LV_API void visual_actor_realize (VisActor *actor);
 
 /**
  * Gives a pointer to the song info data within the VisActor. This song info data can be used
@@ -301,7 +260,7 @@ int visual_actor_realize (VisActor *actor);
  *
  * @return Pointer to the song info structure on succes or NULL on failure.
  */
-VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
+LV_API VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
 
 /**
  * Gives a pointer to the palette within the VisActor. This can be needed to set a palette on the target
@@ -315,7 +274,7 @@ VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
  * is returned when the plugin is running in a full color mode or openGL. The returned palette is
  * read only.
  */
-VisPalette *visual_actor_get_palette (VisActor *actor);
+LV_API VisPalette *visual_actor_get_palette (VisActor *actor);
 
 /**
  * This function negotiates the VisActor with it's target video that is set by visual_actor_set_video.
@@ -344,7 +303,7 @@ VisPalette *visual_actor_get_palette (VisActor *actor);
  * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_REF_NULL,
  * 	-VISUAL_ERROR_ACTOR_VIDEO_NULL or -VISUAL_ERROR_ACTOR_GL_NEGOTIATE on failure.
  */
-int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, int forced);
+LV_API int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced);
 
 /**
  * Gives the by the plugin natively supported depths
@@ -355,9 +314,9 @@ int visual_actor_video_negotiate (VisActor *actor, int rundepth, int noevent, in
  * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
  * 	-VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-int visual_actor_get_supported_depth (VisActor *actor);
+LV_API VisVideoDepth visual_actor_get_supported_depth (VisActor *actor);
 
-VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *actor);
+LV_API VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *actor);
 
 /**
  * Used to connect the target display it's VisVideo structure to the VisActor.
@@ -376,7 +335,7 @@ VisVideoAttributeOptions *visual_actor_get_video_attribute_options (VisActor *ac
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL on failure.
  */
-int visual_actor_set_video (VisActor *actor, VisVideo *video);
+LV_API void visual_actor_set_video (VisActor *actor, VisVideo *video);
 
 /**
  * This is called to run a VisActor. It also pump it's events when needed, checks for new song events and also does the fitting
@@ -390,9 +349,9 @@ int visual_actor_set_video (VisActor *actor, VisVideo *video);
  * return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_ACTOR_VIDEO_NULL, -VISUAL_ERROR_NULL or
  * 	-VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-int visual_actor_run (VisActor *actor, VisAudio *audio);
+LV_API void visual_actor_run (VisActor *actor, VisAudio *audio);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

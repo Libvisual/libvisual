@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_bumpscope.h,v 1.8 2006/01/22 13:25:23 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _ACTOR_BUMPSCOPE_H
-#define _ACTOR_BUMPSCOPE_H
+#ifndef _LV_ACTOR_BUMPSCOPE_H
+#define _LV_ACTOR_BUMPSCOPE_H
 
 #include <libvisual/libvisual.h>
 
@@ -30,7 +28,7 @@ typedef struct {
 	int			 height;
 	int			 width;
 
-	VisPalette		 pal;
+	VisPalette		*pal;
 
 	float			 intense1[256];
 	float			 intense2[256];
@@ -66,4 +64,4 @@ typedef struct {
 
 } BumpscopePrivate;
 
-#endif /* _ACTOR_BUMPSCOPE_H */
+#endif /* _LV_ACTOR_BUMPSCOPE_H */

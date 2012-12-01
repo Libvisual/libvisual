@@ -1,0 +1,118 @@
+INCLUDE(LVBuildPlugin)
+
+SET(SOURCES
+  PluginTime.cpp
+  PluginTime.h
+  PluginMeminfo.cpp
+  PluginMeminfo.h
+  PluginNetDev.cpp
+  PluginNetDev.h
+  PluginNetinfo.cpp
+  PluginNetinfo.h
+  PluginUname.cpp
+  PluginUname.h
+  WidgetVisualization.cpp
+  WidgetVisualization.h
+  actor_lcdcontrol.cpp
+  actor_lcdcontrol.h
+  GenericSerial.cpp
+  LCDText.cpp
+  Widget.cpp
+  BufferedReader.cpp
+  Hash.cpp
+  PluginCpuinfo.cpp
+  PluginLoadavg.cpp
+  PluginProcStat.cpp
+  PluginUptime.cpp
+  PluginCpuinfo.h
+  PluginLoadavg.h
+  PluginProcStat.h
+  PluginUptime.h
+  WidgetHistogram.cpp
+  CFG.cpp
+  json_reader.cpp
+  Property.cpp
+  WidgetIcon.cpp
+  DrvVideo.cpp
+  json_value.cpp
+  qprintf.cpp
+  WidgetKey.cpp
+  Evaluator.cpp
+  json_writer.cpp
+  RGBA.cpp
+  WidgetScript.cpp
+  Font_6x8_bold.cpp
+  LCDControl.cpp
+  SpecialChar.cpp
+  WidgetText.cpp
+  Font_6x8.cpp
+  LCDCore.cpp
+  WidgetBar.cpp
+  WidgetTimer.cpp
+  Font_8x16.cpp
+  LCDGraphic.cpp
+  WidgetBignums.cpp
+  LCDTimer.cpp
+  WidgetFPS.cpp
+  PluginFPS.cpp
+  PluginFPS.h
+  GenericSerial.h
+  LCDTimer.h
+  Widget.h
+  BufferedReader.h
+  Hash.h
+  WidgetHistogram.h
+  CFG.h
+  json_batchallocator.h
+  Property.h
+  WidgetIcon.h
+  json_tool.h
+  qprintf.h
+  WidgetKey.h
+  debug.h
+  debug.c
+  LCDBase.h
+  RGBA.h
+  WidgetScript.h
+  DrvVideo.h
+  LCDControl.h
+  SpecialChar.h
+  WidgetText.h
+  Evaluator.h
+  LCDCore.h
+  WidgetTimer.h
+  Font_6x8.h
+  LCDEvent.h
+  Font_8x16.h
+  LCDGraphic.h
+  WidgetBar.h
+  Generator.h
+  LCDText.h
+  WidgetBignums.h
+  WidgetFPS.h
+  luascript.cpp
+  luascript.h
+  Stats.h
+  Stats.cpp
+  PluginStatfs.cpp
+  PluginStatfs.h
+  PluginDiskstats.cpp
+  PluginDiskstats.h
+  PluginFifo.cpp
+  PluginFifo.h
+  lcdcontrol_config.cpp
+  ${EXTRA_SOURCES}
+)
+
+IF(HAVE_OPENMP)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+ENDIF()
+
+LV_BUILD_ACTOR_PLUGIN(lcdcontrol
+  SOURCES      ${SOURCES}
+  INCLUDE_DIRS ${LUAJIT_INCLUDE_DIRS}
+  LINK_DIRS    ${LUAJIT_LIBRARY_DIRS}
+  LINK_LIBS    ${LUAJIT_LIBRARIES}
+)

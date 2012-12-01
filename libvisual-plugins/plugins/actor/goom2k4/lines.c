@@ -28,7 +28,7 @@ static inline unsigned char lighten (unsigned char value, float power)
 	}
 }
 
-static void lightencolor (guint32 *col, float power)
+static void lightencolor (uint32_t *col, float power)
 {
 	unsigned char *color;
 
@@ -78,7 +78,7 @@ genline (int id, float param, GMUnitPointer * l, int rx, int ry)
 	}
 }
 
-static guint32 getcouleur (int mode)
+static uint32_t getcouleur (int mode)
 {
 	switch (mode) {
 	case GML_RED:
@@ -203,11 +203,11 @@ goom_lines_free (GMLine ** l)
 	l = NULL;
 }
 
-void goom_lines_draw (PluginInfo *plug, GMLine * line, gint16 data[512], Pixel *p)
+void goom_lines_draw (PluginInfo *plug, GMLine * line, int16_t data[512], Pixel *p)
 {
 	if (line != NULL) {
 		int     i, x1, y1;
-		guint32 color = line->color;
+		uint32_t color = line->color;
 		GMUnitPointer *pt = &(line->points[0]);
 
 		float   cosa = cos (pt->angle) / 1000.0f;

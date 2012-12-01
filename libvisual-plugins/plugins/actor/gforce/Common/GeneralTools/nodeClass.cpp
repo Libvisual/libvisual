@@ -913,11 +913,10 @@ void nodeClass::RandomizeSubs() {
 long nodeClass::Rnd( long min, long max ) {
 	long maxRnd 	= RAND_MAX;
 	long retNum;
-	VisTime curTime;
 
-	visual_time_get (&curTime);
-	
-	srand (curTime.usec + curTime.sec);
+	LV::Time curTime = LV::Time::now ();
+
+	srand (curTime.nsec + curTime.sec);
 	retNum = rand() / (maxRnd / (max - min + 1)) + min;
 
 	if ( retNum >= max )

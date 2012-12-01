@@ -75,12 +75,12 @@ void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x0, int 
 
 		if (y0 < 0)
 			y0 = 0;
-		else if (y0 > priv->screen_height - 1);
+		else if (y0 > priv->screen_height - 1)
 			y0 = priv->screen_height - 1;
 
 		if (y1 < 0)
 			y1 = 0;
-		else if (y1 > priv->screen_height - 1);
+		else if (y1 > priv->screen_height - 1)
 			y1 = priv->screen_height - 1;
 
 		return; /* FIXME */

@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -21,22 +21,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
 
 typedef struct {
-	VisPalette whitepal;
+	VisPalette *whitepal;
 	uint8_t replacetable[256];
 } FlashPrivate;
 
@@ -49,11 +45,9 @@ static int lv_morph_flash_cleanup (VisPluginData *plugin);
 static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
 static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisMorphPlugin morph[] = {{
+	static VisMorphPlugin morph = {
 		.palette = lv_morph_flash_palette,
 		.apply = lv_morph_flash_apply,
 		.vidoptions.depth =
@@ -61,44 +55,48 @@ const VisPluginInfo *get_plugin_info (int *count)
 			VISUAL_VIDEO_DEPTH_16BIT |
 			VISUAL_VIDEO_DEPTH_24BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "flash",
 		.name = "flash morph",
 		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "0.1",
-		.about = "An flash in and out morph plugin",
-		.help = "This morph plugin morphs between two video sources using a bright flash",
+		.about = N_("An flash in and out morph plugin"),
+		.help = N_("This morph plugin morphs between two video sources using a bright flash"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = lv_morph_flash_init,
 		.cleanup = lv_morph_flash_cleanup,
 
-		.plugin = VISUAL_OBJECT (&morph[0])
-	}};
+		.plugin = VISUAL_OBJECT (&morph)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int lv_morph_flash_init (VisPluginData *plugin)
 {
 	int i;
 	FlashPrivate *priv;
+    VisColor *whitepal_colors;
+
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
 	priv = visual_mem_new0 (FlashPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_palette_allocate_colors (&priv->whitepal, 256);
+	priv->whitepal = visual_palette_new (256);
+	whitepal_colors = visual_palette_get_colors (priv->whitepal);
 
 	for (i = 0; i < 256; i++) {
-		priv->whitepal.colors[i].r = 0xff;
-		priv->whitepal.colors[i].g = 0xff;
-		priv->whitepal.colors[i].b = 0xff;
+		whitepal_colors[i].r = 0xff;
+		whitepal_colors[i].g = 0xff;
+		whitepal_colors[i].b = 0xff;
 	}
 
 	return 0;
@@ -107,6 +105,8 @@ static int lv_morph_flash_init (VisPluginData *plugin)
 static int lv_morph_flash_cleanup (VisPluginData *plugin)
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	visual_palette_free (priv->whitepal);
 
 	visual_mem_free (priv);
 
@@ -117,13 +117,16 @@ static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	if (src1->pal == NULL || src2->pal == NULL)
+	VisPalette *src1_pal = visual_video_get_palette (src1);
+	VisPalette *src2_pal = visual_video_get_palette (src2);
+
+	if (!src1_pal || !src2_pal)
 		return 0;
 
 	if (rate < 0.5)
-		visual_palette_blend (pal, src1->pal, &priv->whitepal, rate * 2);
+		visual_palette_blend (pal, src1_pal, priv->whitepal, rate * 2);
 	else
-		visual_palette_blend (pal, &priv->whitepal, src2->pal, (rate - 0.5) * 2);
+		visual_palette_blend (pal, priv->whitepal, src2_pal, (rate - 0.5) * 2);
 
 	return 0;
 }
@@ -132,7 +135,7 @@ static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *au
 {
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	switch (dest->depth) {
+	switch (visual_video_get_depth (dest)) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
 			flash_8 (priv, rate, dest, src1, src2);
 			break;

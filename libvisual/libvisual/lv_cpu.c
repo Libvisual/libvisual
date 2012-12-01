@@ -1,14 +1,13 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Chong Kai Xiong <descender@phreaker.net>
- *	    Eric Anholt <anholt@FreeBSD.org>
+ *	        Chong Kai Xiong <kaixiong@codeleft.sga>
+ *	        Eric Anholt <anholt@freebsd.org>
  *
  * Extra Credits: MPlayer cpudetect hackers.
- *
- * $Id: lv_cpu.c,v 1.27 2006/01/22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,10 +26,13 @@
 
 /* FIXME: clean this entire file up */
 
+#define _POSIX_SOURCE
+#define _BSD_SOURCE
+
 #include "config.h"
 #include "lv_cpu.h"
 #include "lv_common.h"
-#include "gettext.h"
+#include <unistd.h>
 
 #if defined(VISUAL_ARCH_POWERPC)
 #if defined(VISUAL_OS_DARWIN)
@@ -39,6 +41,10 @@
 #include <signal.h>
 #include <setjmp.h>
 #endif
+#endif
+
+#if defined(VISUAL_OS_HPUX)
+#include <sys/mpctl.h>
 #endif
 
 #if defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_OPENBSD)
@@ -64,11 +70,15 @@
 #include <cpu-features.h>
 #endif
 
+#define TEST_BIT(x, n)  (((x) >> (n)) & 1)
+
 static VisCPU __lv_cpu_caps;
 static int __lv_cpu_initialized = FALSE;
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 static int has_cpuid (void);
 static int cpuid (unsigned int ax, unsigned int *p);
+#endif
 
 #if defined(VISUAL_OS_WIN32)
 LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep);
@@ -76,7 +86,7 @@ LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep);
 
 /* The sigill handlers */
 #if defined(VISUAL_ARCH_X86) //x86 (linux katmai handler check thing)
-#if defined(VISUAL_OS_LINUX) && defined(_POSIX_SOURCE)
+#if defined(VISUAL_OS_LINUX)
 static void sigill_handler_sse( int signal, struct sigcontext sc )
 {
 	/* Both the "xorps %%xmm0,%%xmm0" and "divps %xmm0,%%xmm1"
@@ -109,7 +119,7 @@ static void sigfpe_handler_sse( int signal, struct sigcontext sc )
 	}
 }
 #endif
-#endif /* VISUAL_OS_LINUX && _POSIX_SOURCE && X86_FXSR_MAGIC */
+#endif /* VISUAL_OS_LINUX */
 
 #if defined(VISUAL_OS_WIN32)
 LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep)
@@ -279,6 +289,7 @@ static void check_os_katmai_support( void )
 #endif /* VISUAL_ARCH_X86 */
 
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 static int has_cpuid (void)
 {
 #if defined(VISUAL_ARCH_X86)
@@ -304,10 +315,11 @@ static int has_cpuid (void)
 	return FALSE;
 #endif
 }
+#endif /* defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 static int cpuid (unsigned int ax, unsigned int *p)
 {
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	__asm __volatile
 		("movl %%ebx, %%esi\n\t"
 		 "cpuid\n\t"
@@ -317,9 +329,100 @@ static int cpuid (unsigned int ax, unsigned int *p)
 		 : "0" (ax));
 
 	return VISUAL_OK;
-#else
-	return -VISUAL_ERROR_CPU_INVALID_CODE;
+}
 #endif
+
+static int get_number_of_cores (void)
+{
+	/* See: http://stackoverflow.com/questions/150355/programmatically-find-the-number-of-cores-on-a-machine */
+
+#if defined(VISUAL_OS_LINUX) || defined(VISUAL_OS_SOLARIS) || defined(VISUAL_OS_AIX)
+
+	int ncpus = sysconf (_SC_NPROCESSORS_ONLN);
+
+	return ncpus != -1 ? ncpus : 1;
+
+#elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD) || defined(VISUAL_OS_DARWIN)
+
+	int ncpus;
+	int mib[2];
+	visual_size_t len = sizeof (ncpus);
+
+	mib[0] = CTL_HW;
+	mib[1] = HW_NCPU;
+
+	sysctl (mib, 2, &ncpus, &len, NULL, 0);
+
+	return ncpus >= 1 ? ncpus : 1;
+
+#elif defined(VISUAL_OS_HPUX)
+
+	return mpctl (MPC_GETNUMSPUS, NULL, NULL);
+
+#elif defined(VISUAL_OS_IRIX)
+
+	return sysconf (_SC_NPROC_ONLN);
+
+#elif defined(VISUAL_OS_ANDROID)
+
+	return android_getCpuCount();
+
+#elif defined(VISUAL_OS_WIN32)
+
+	SYSTEM_INFO system_info;
+
+	GetSystemInfo (&system_info);
+
+	return system_info.dwNumberOfProcessors;
+
+#else
+
+	return 1;
+
+#endif
+}
+
+static VisCPUType get_cpu_type (void)
+{
+#if defined(VISUAL_ARCH_MIPS)
+	return VISUAL_CPU_TYPE_MIPS;
+#elif defined(VISUAL_ARCH_ALPHA)
+	return VISUAL_CPU_TYPE_ALPHA;
+#elif defined(VISUAL_ARCH_SPARC)
+	return VISUAL_CPU_TYPE_SPARC;
+#elif defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+	return VISUAL_CPU_TYPE_X86;
+#elif defined(VISUAL_ARCH_POWERPC)
+	return VISUAL_CPU_TYPE_POWERPC;
+#elif defined(VISUAL_ARCH_ARM)
+	return VISUAL_CPU_TYPE_ARM;
+#else
+	return VISUAL_CPU_TYPE_OTHER;
+#endif
+}
+
+static void print_cpu_info (void)
+{
+	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", __lv_cpu_caps.nrcpu);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", __lv_cpu_caps.type);
+
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: cacheline %d", __lv_cpu_caps.cacheline);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX %d", __lv_cpu_caps.hasMMX);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX2 %d", __lv_cpu_caps.hasMMX2);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE %d", __lv_cpu_caps.hasSSE);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE2 %d", __lv_cpu_caps.hasSSE2);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNow %d", __lv_cpu_caps.has3DNow);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNowExt %d", __lv_cpu_caps.has3DNowExt);
+#elif defined(VISUAL_ARCH_POWERPC)
+	visual_log (VISUAL_LOG_DEBUG, "CPU: AltiVec %d", __lv_cpu_caps.hasAltiVec);
+#elif defined(VISUAL_ARCH_ARM)
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM v7 %d", __lv_cpu_caps.hasARMv7);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM VFPv3 %d", __lv_cpu_caps.hasVFPv3);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM NEON %d", __lv_cpu_caps.hasNeon);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM LDREX_STREX %d", __lv_cpu_caps.hasLDREX_STREX);
+#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 }
 
 void visual_cpu_initialize ()
@@ -327,31 +430,13 @@ void visual_cpu_initialize ()
 	unsigned int regs[4];
 	unsigned int regs2[4];
 
-#if defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
-	int mib[2], ncpu;
-	visual_size_t len;
-#endif
-
 	visual_mem_set (&__lv_cpu_caps, 0, sizeof (VisCPU));
 
-	/* Check for arch type */
-#if defined(VISUAL_ARCH_MIPS)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_MIPS;
-#elif defined(VISUAL_ARCH_ALPHA)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_ALPHA;
-#elif defined(VISUAL_ARCH_SPARC)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_SPARC;
-#elif defined(VISUAL_ARCH_X86)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_X86;
-#elif defined(VISUAL_ARCH_POWERPC)
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_POWERPC;
-#elif defined(VISUAL_ARCH_ARM)
-	__lv_cpu.caps.type = VISUAL_CPU_TYPE_ARM;
-#else
-	__lv_cpu_caps.type = VISUAL_CPU_TYPE_OTHER;
-#endif
+	__lv_cpu_caps.type  = get_cpu_type ();
+	__lv_cpu_caps.nrcpu = get_number_of_cores ();
 
-#if defined(VISUAL_OS_ANDROID) && defined(VISUAL_ARCH_ARM)
+#if defined(VISUAL_ARCH_ARM)
+# if defined(VISUAL_OS_ANDROID)
 	if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM) {
 		uint64_t type = android_getCpuFeatures ();
 
@@ -366,29 +451,9 @@ void visual_cpu_initialize ()
 
 		if(type & ANDROID_CPU_ARM_FEATURE_LDREX_STREX)
 			__lv_cpu_caps.hasLDREX_STREX = 1;
-
-		__lv_cpu_caps.nrcpu = android_getCpuCount();
 	}
-#endif /* VISUAL_OS_ANDROID && VISUAL_ARCH_ARM */
-
-	/* Count the number of CPUs in system */
-#if !defined(VISUAL_OS_WIN32) && !defined(VISUAL_OS_UNKNOWN) && defined(_SC_NPROCESSORS_ONLN)
-	__lv_cpu_caps.nrcpu = sysconf (_SC_NPROCESSORS_ONLN);
-	if (__lv_cpu_caps.nrcpu == -1)
-		__lv_cpu_caps.nrcpu = 1;
-
-#elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_FREEBSD) || defined(VISUAL_OS_OPENBSD)
-
-	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU;
-
-	len = sizeof (ncpu);
-	sysctl (mib, 2, &ncpu, &len, NULL, 0);
-	__lv_cpu_caps.nrcpu = ncpu;
-
-#else
-	__lv_cpu_caps.nrcpu = 1;
-#endif
+# endif /* VISUAL_OS_ANDROID */
+#endif /* VISUAL_ARCH_ARM */
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	/* No cpuid, old 486 or lower */
@@ -410,10 +475,9 @@ void visual_cpu_initialize ()
 		    __lv_cpu_caps.x86cpuType = 8 + ((regs2[0] >> 20) & 255); /* use extended family (P4, IA64) */
 
 		/* general feature flags */
-		__lv_cpu_caps.hasTSC  = (regs2[3] & (1 << 8  )) >>  8; /* 0x0000010 */
-		__lv_cpu_caps.hasMMX  = (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
-		__lv_cpu_caps.hasSSE  = (regs2[3] & (1 << 25 )) >> 25; /* 0x2000000 */
-		__lv_cpu_caps.hasSSE2 = (regs2[3] & (1 << 26 )) >> 26; /* 0x4000000 */
+		__lv_cpu_caps.hasMMX  = TEST_BIT (regs2[3], 23); /* 0x0800000 */
+		__lv_cpu_caps.hasSSE  = TEST_BIT (regs2[3], 25); /* 0x2000000 */
+		__lv_cpu_caps.hasSSE2 = TEST_BIT (regs2[3], 26); /* 0x4000000 */
 		__lv_cpu_caps.hasMMX2 = __lv_cpu_caps.hasSSE; /* SSE cpus supports mmxext too */
 
 		cacheline = ((regs2[1] >> 8) & 0xFF) * 8;
@@ -427,10 +491,10 @@ void visual_cpu_initialize ()
 
 		cpuid (0x80000001, regs2);
 
-		__lv_cpu_caps.hasMMX  |= (regs2[3] & (1 << 23 )) >> 23; /* 0x0800000 */
-		__lv_cpu_caps.hasMMX2 |= (regs2[3] & (1 << 22 )) >> 22; /* 0x400000 */
-		__lv_cpu_caps.has3DNow    = (regs2[3] & (1 << 31 )) >> 31; /* 0x80000000 */
-		__lv_cpu_caps.has3DNowExt = (regs2[3] & (1 << 30 )) >> 30;
+		__lv_cpu_caps.hasMMX  |= TEST_BIT (regs2[3], 23); /* 0x0800000 */
+		__lv_cpu_caps.hasMMX2 |= TEST_BIT (regs2[3], 22); /* 0x400000 */
+		__lv_cpu_caps.has3DNow    = TEST_BIT (regs2[3], 31); /* 0x80000000 */
+		__lv_cpu_caps.has3DNowExt = TEST_BIT (regs2[3], 30);
 	}
 
 	if (regs[0] >= 0x80000006) {
@@ -444,154 +508,110 @@ void visual_cpu_initialize ()
 
 	if (!__lv_cpu_caps.hasSSE)
 		__lv_cpu_caps.hasSSE2 = 0;
-#else
-	__lv_cpu_caps.hasSSE = 0;
-	__lv_cpu_caps.hasSSE2 = 0;
 #endif
+
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 #if defined(VISUAL_ARCH_POWERPC)
 	check_os_altivec_support ();
 #endif /* VISUAL_ARCH_POWERPC */
 
-	/* Synchronizing enabled flags with has flags */
-	__lv_cpu_caps.enabledTSC	= __lv_cpu_caps.hasTSC;
-	__lv_cpu_caps.enabledMMX	= __lv_cpu_caps.hasMMX;
-	__lv_cpu_caps.enabledMMX2	= __lv_cpu_caps.hasMMX2;
-	__lv_cpu_caps.enabledSSE	= __lv_cpu_caps.hasSSE;
-	__lv_cpu_caps.enabledSSE2	= __lv_cpu_caps.hasSSE2;
-	__lv_cpu_caps.enabled3DNow	= __lv_cpu_caps.has3DNow;
-	__lv_cpu_caps.enabled3DNowExt    = __lv_cpu_caps.has3DNowExt;
-	__lv_cpu_caps.enabledAltiVec     = __lv_cpu_caps.hasAltiVec;
-	__lv_cpu_caps.enabledARMv7       = __lv_cpu_caps.hasARMv7;
-	__lv_cpu_caps.enabledVFPv3       = __lv_cpu_caps.hasVFPv3;
-	__lv_cpu_caps.enabledNeon        = __lv_cpu_caps.hasNeon;
-	__lv_cpu_caps.enabledLDREX_STREX = __lv_cpu_caps.hasLDREX_STREX;
-
-	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", __lv_cpu_caps.nrcpu);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", __lv_cpu_caps.type);
-
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: cacheline %d", __lv_cpu_caps.cacheline);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: TSC %d", __lv_cpu_caps.hasTSC);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX %d", __lv_cpu_caps.hasMMX);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX2 %d", __lv_cpu_caps.hasMMX2);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE %d", __lv_cpu_caps.hasSSE);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE2 %d", __lv_cpu_caps.hasSSE2);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNow %d", __lv_cpu_caps.has3DNow);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNowExt %d", __lv_cpu_caps.has3DNowExt);
-#elif defined(VISUAL_ARCH_POWERPC)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: AltiVec %d", __lv_cpu_caps.hasAltiVec);
-#elif defined(VISUAL_ARCH_ARM)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM v7 %d", __lv_cpu_caps.hasARMv7);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM VFPv3 %d", __lv_cpu_caps.hasVFPv3);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM NEON %d", __lv_cpu_caps.hasNeon);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM LDREX_STREX %d", __lv_cpu_caps.hasLDREX_STREX);
-#endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
+	print_cpu_info ();
 
 	__lv_cpu_initialized = TRUE;
 }
 
-VisCPU *visual_cpu_get_caps ()
+const VisCPU *visual_cpu_get_caps ()
 {
-	if (__lv_cpu_initialized == FALSE)
+	if (!__lv_cpu_initialized)
 		return NULL;
 
 	return &__lv_cpu_caps;
 }
 
-int visual_cpu_get_tsc ()
+int visual_cpu_has_mmx ()
 {
-	if (__lv_cpu_initialized == FALSE)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+	if (!__lv_cpu_initialized)
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabledTSC;
+	return __lv_cpu_caps.hasMMX;
 }
 
-int visual_cpu_get_mmx ()
+int visual_cpu_has_mmx2 ()
 {
-	if (__lv_cpu_initialized == FALSE)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+	if (!__lv_cpu_initialized)
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabledMMX;
+	return __lv_cpu_caps.hasMMX2;
 }
 
-int visual_cpu_get_mmx2 ()
+int visual_cpu_has_sse ()
 {
-	if (__lv_cpu_initialized == FALSE)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+	if (!__lv_cpu_initialized)
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabledMMX2;
+	return __lv_cpu_caps.hasSSE;
+}
+int visual_cpu_has_sse2 ()
+{
+	if (!__lv_cpu_initialized)
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
+
+	return __lv_cpu_caps.hasSSE2;
 }
 
-int visual_cpu_get_sse ()
+int visual_cpu_has_3dnow ()
 {
-	if (__lv_cpu_initialized == FALSE)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+	if (!__lv_cpu_initialized)
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabledSSE;
-}
-int visual_cpu_get_sse2 ()
-{
-	if (__lv_cpu_initialized == FALSE)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
-
-	return __lv_cpu_caps.enabledSSE2;
+	return __lv_cpu_caps.has3DNow;
 }
 
-int visual_cpu_get_3dnow ()
+int visual_cpu_has_3dnow2 ()
 {
-	if (__lv_cpu_initialized == FALSE)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+	if (!__lv_cpu_initialized)
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabled3DNow;
+	return __lv_cpu_caps.has3DNowExt;
 }
 
-int visual_cpu_get_3dnow2 ()
+int visual_cpu_has_altivec ()
 {
-	if (__lv_cpu_initialized == FALSE)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+	if (!__lv_cpu_initialized)
+		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabled3DNowExt;
+	return __lv_cpu_caps.hasAltiVec;
 }
 
-int visual_cpu_get_altivec ()
+int visual_cpu_has_armv7 (void)
 {
-	if (__lv_cpu_initialized == FALSE)
-		visual_log (VISUAL_LOG_ERROR, _("The VisCPU system is not initialized."));
+    if (!__lv_cpu_initialized)
+	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabledAltiVec;
+	return __lv_cpu_caps.hasARMv7;
 }
 
-int visual_cpu_get_armv7 (void)
+int visual_cpu_has_vfpv3 (void)
 {
-    if (__lv_cpu_initialized == FALSE)
-	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+    if (!__lv_cpu_initialized)
+	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabledARMv7;
+	return __lv_cpu_caps.hasVFPv3;
 }
 
-int visual_cpu_get_vfpv3 (void)
+int visual_cpu_has_neon (void)
 {
-    if (__lv_cpu_initialized == FALSE)
-	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+    if (!__lv_cpu_initialized)
+        visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabledVFPv3;
+	return __lv_cpu_caps.hasNeon;
 }
 
-int visual_cpu_get_neon (void)
+int visual_cpu_has_ldrex_strex (void)
 {
-    if (__lv_cpu_initialized == FALSE)
-        visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
+    if (!__lv_cpu_initialized)
+	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
 
-	return __lv_cpu_caps.enabledNeon;
-}
-
-int visual_cpu_get_ldrex_strex (void)
-{
-    if (__lv_cpu_initialized == FALSE)
-	    visual_log (VISUAL_LOG_CRITICAL, _("The VisCPU system is not initialized."));
-
-	return __lv_cpu_caps.enabledLDREX_STREX;
+	return __lv_cpu_caps.hasLDREX_STREX;
 }

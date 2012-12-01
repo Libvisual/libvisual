@@ -35,8 +35,16 @@ beatdetector::beatdetector()
 		//      cout << f<<endl;
 		filterpower+=f;
 	}
+    freq = 0;
+    variance = 0;
+    loudness = 0;
+    beat = 0;
 	avloudness=0;
+    uplimit = 0;
+    downlimit = 0;
 	state = 0;
+    beatbase = 0;
+    beatquiet = 0;
 	for(int i = 0;i<10;i++)
 		lastbeats[i]=0;
 }
@@ -67,13 +75,12 @@ void beatdetector::calc_loudness(float data[3][256])
 	cloudness = 0;
 	for(i = 0 ; i < NUM_BANDS; i++)
 	{
-		float lastl;
 		y0 =  data[0][i];
 		y1 =  data[1][i];
 		y0*=y0;
 		y1*=y1;
 		y0 = (int)sqrtf(y0+y1);
-		lastl = cloudness;
+
 		cloudness += y0 *  filter[i] /filterpower;
 		filter2[i] = (filter2[i]*49 + (y0))/50 ;
 	}

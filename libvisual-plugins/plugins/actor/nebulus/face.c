@@ -8,7 +8,7 @@ GLuint facedl = 0;
 int face_first = TRUE;
 
 
-void
+static void
 createvertex(GLuint face0, GLuint face1)
 {
   glNormal3f(normals[face1][0], normals[face1][1], normals[face1][2]);
@@ -16,7 +16,7 @@ createvertex(GLuint face0, GLuint face1)
 }
 
 
-void
+static void
 createface(void)
 {
   int i;
@@ -36,7 +36,7 @@ createface(void)
 }
 
 
-void
+static void
 drawface(void)
 {
   GLfloat MaterialColor[4] = { 0.4f, 0.2f, 0.8f, 1.0f };
@@ -58,7 +58,7 @@ drawface(void)
 }
 
 
-void
+static void
 render_face(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

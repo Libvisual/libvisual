@@ -11,49 +11,18 @@
 
 #cmakedefine ENABLE_NLS        1
 #cmakedefine GETTEXT_PACKAGE   "@GETTEXT_PACKAGE@"
+#cmakedefine LOCALE_DIR        "@LOCALE_DIR@"
 #cmakedefine HAVE_GETTEXT      1
 #cmakedefine HAVE_ICONV        1
-#cmakedefine LOCALE_DIR        "@CMAKE_INSTALL_FULL_LOCALEDIR@"
-#cmakedefine HAVE_SDL          "@HAVE_SDL@"
-#cmakedefine HAVE_GL           "@HAVE_GL@"
-#cmakedefine HAVE_X11          "@HAVE_X11@"
-#cmakedefine HAVE_GLX          "@HAVE_GLX@"
+#cmakedefine HAVE_SDL          1
+#cmakedefine HAVE_GL           1
 
 #cmakedefine HAVE_DIRENT_H     1
 #cmakedefine HAVE_DLFCN_H      1
-#cmakedefine HAVE_FCNTL_H      1
-#cmakedefine HAVE_INTTYPES_H   1
 #cmakedefine HAVE_SCHED_H      1
-#cmakedefine HAVE_STRDUP       1
-#cmakedefine HAVE_STRNDUP      1
-#cmakedefine HAVE_SYSCONF      1
 #cmakedefine HAVE_SYS_SCHED_H  1
-#cmakedefine HAVE_SYS_SELECT_H 1
-#cmakedefine HAVE_SYS_SOCKET_H 1
-#cmakedefine HAVE_SYS_STAT_H   1
-#cmakedefine HAVE_SYS_TIME_H   1
 #cmakedefine HAVE_UNISTD_H     1
 
-#cmakedefine HAVE_GETTIMEOFDAY 1
-#cmakedefine HAVE_USLEEP       1
-#cmakedefine HAVE_NANOSLEEP    1
-#cmakedefine HAVE_SELECT       1
-#cmakedefine HAVE_SQRT         1
-
-#define SIZEOF_INT             @SIZEOF_INT@
-#define SIZEOF_LONG            @SIZEOF_LONG@
-#define SIZEOF_SHORT           @SIZEOF_SHORT@
-#define SIZEOF_SIZE_T          @SIZEOF_SIZE_T@
-
-#cmakedefine LV_HAVE_GTHREAD2 1
-
-#ifndef __cplusplus
-#cmakedefine HAVE_C_INLINE
-#cmakedefine HAVE_C_CONST
-#cmakedefine inline @INLINE@
-#ifndef HAVE_C_CONST
-#  define const
-#endif
-#endif
+#cmakedefine HAVE_SYSCONF      1
 
 #endif /* CONFIG_H */

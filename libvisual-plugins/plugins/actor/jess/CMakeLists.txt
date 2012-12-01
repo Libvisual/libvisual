@@ -1,14 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
-)
+INCLUDE(LVBuildPlugin)
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_jess_SOURCES
+SET(SOURCES
   analyser.c
   analyser.h
   analyser_struct.h
@@ -30,11 +22,7 @@ SET(actor_jess_SOURCES
   struct.h
 )
 
-ADD_LIBRARY(actor_jess MODULE ${actor_jess_SOURCES})
-#-avoid-version
-
-TARGET_LINK_LIBRARIES(actor_jess
-  ${LIBVISUAL_LIBRARIES}
+LV_BUILD_ACTOR_PLUGIN(jess
+  SOURCES   ${SOURCES}
+  LINK_LIBS m
 )
-
-INSTALL(TARGETS actor_jess LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})

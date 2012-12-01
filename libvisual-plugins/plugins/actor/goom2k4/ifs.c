@@ -49,7 +49,7 @@
 
 typedef struct _ifsPoint
 {
-	gint32  x, y;
+	int32_t  x, y;
 }
 IFSPoint;
 

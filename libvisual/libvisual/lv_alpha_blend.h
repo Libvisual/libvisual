@@ -5,17 +5,13 @@
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_types.h>
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
-typedef void (*VisAlphaBlendFunc) (uint8_t *dest, uint8_t *src1, uint8_t *src2, visual_size_t size, uint8_t alpha);
+LV_API void visual_alpha_blend_8  (uint8_t *LV_RESTRICT dest, const uint8_t *LV_RESTRICT src1, const uint8_t *LV_RESTRICT src2, visual_size_t size, uint8_t alpha);
+LV_API void visual_alpha_blend_16 (uint8_t *LV_RESTRICT dest, const uint8_t *LV_RESTRICT src1, const uint8_t *LV_RESTRICT src2, visual_size_t size, uint8_t alpha);
+LV_API void visual_alpha_blend_24 (uint8_t *LV_RESTRICT dest, const uint8_t *LV_RESTRICT src1, const uint8_t *LV_RESTRICT src2, visual_size_t size, uint8_t alpha);
+LV_API void visual_alpha_blend_32 (uint8_t *LV_RESTRICT dest, const uint8_t *LV_RESTRICT src1, const uint8_t *LV_RESTRICT src2, visual_size_t size, uint8_t alpha);
 
-extern VisAlphaBlendFunc visual_alpha_blend_8;
-extern VisAlphaBlendFunc visual_alpha_blend_16;
-extern VisAlphaBlendFunc visual_alpha_blend_24;
-extern VisAlphaBlendFunc visual_alpha_blend_32;
-
-void visual_alpha_blend_initialize (void);
-
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #endif /* _LV_ALPHA_BLEND_H */

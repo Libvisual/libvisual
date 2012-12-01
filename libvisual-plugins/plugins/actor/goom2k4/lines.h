@@ -30,8 +30,8 @@ struct _GMLINE
 	float   amplitude;
 
 	int     nbPoints;
-	guint32 color;     /* pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera */
-	guint32 color2;
+	uint32_t color;     /* pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera */
+	uint32_t color2;
 
 	int     screenX;
 	int     screenY;
@@ -76,6 +76,6 @@ void    goom_lines_set_res (GMLine * gml, int rx, int ry);
 
 void    goom_lines_free (GMLine ** gml);
 
-void    goom_lines_draw (PluginInfo *plugInfo, GMLine * gml, gint16 data[512], Pixel *p);
+void    goom_lines_draw (PluginInfo *plugInfo, GMLine * gml, int16_t data[512], Pixel *p);
 
 #endif /* _LINES_H */

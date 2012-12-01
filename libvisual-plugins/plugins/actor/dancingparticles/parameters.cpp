@@ -1,8 +1,9 @@
-#include <iostream>
+#include <string.h>
+#include <libvisual/libvisual.h>
 #include "etoile.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include "t1font.h"
+
+
 // or why use lex when..
 
 
@@ -11,43 +12,43 @@ parameters *ps=0;
 
 parameters p;
 
-char *configfilename = "";
+const char *configfilename = "";
 int IKnowAboutConfigFile;
 parameters p_parsed;
 static  int newconfig = 1;
 
-enum { INT, STR, FLOAT, CHAR };
-struct param_params{ char *pname; int type; void * where; };
-param_params pp[] = 
-  { { "name", STR,  &p_parsed.name },
-    { "key", CHAR,  &p_parsed.key },
-    { "mode", INT,  &p_parsed.mode },
-    { "k", FLOAT,  &p_parsed.k },
-    { "d0min", FLOAT,  &p_parsed.d0min },
-    { "d1", FLOAT,  &p_parsed.d1 },
-    { "ag", FLOAT,  &p_parsed.ag },
-    { "agnumparts", INT,  &p_parsed.agnumparts },
-    { "antigorder", INT,  &p_parsed.antigorder },
-    { "maxantig", FLOAT,  &p_parsed.maxantig },
-    { "noagexplosion", INT,  &p_parsed.noagexplosion },
-    { "dancingpart", FLOAT,  &p_parsed.dancingpart },
-    { "dancingpartk", INT,  &p_parsed.dancingpartk },
-    { "velocity", FLOAT,  &p_parsed.velocity },
-    { "numfrq", INT,  &p_parsed.numfrq },
-    { "visc", FLOAT,  &p_parsed.visc },
-    { "rotspeed1", FLOAT,  &p_parsed.rotspeed1 },
-    { "rotspeed2", FLOAT,  &p_parsed.rotspeed2 },
-    { "strombo", FLOAT,  &p_parsed.strombo },
-    { "numpart", INT,  &p_parsed.numpart},
-    { "size", FLOAT,  &p_parsed.size},
-    { "sizeloudness", FLOAT,  &p_parsed.sizeloudness},
-    { "chance", INT,  &p_parsed.chance },
-    { "duration_f", INT,  &p_parsed.duration_f },
-    { "duration_b", INT,  &p_parsed.duration_b },
+enum { PARAM_INT, PARAM_STR, PARAM_FLOAT, PARAM_CHAR };
+struct param_params{ const char *pname; int type; void * where; };
+param_params pp[] =
+  { { "name", PARAM_STR,  &p_parsed.name },
+    { "key", PARAM_CHAR,  &p_parsed.key },
+    { "mode", PARAM_INT,  &p_parsed.mode },
+    { "k", PARAM_FLOAT,  &p_parsed.k },
+    { "d0min", PARAM_FLOAT,  &p_parsed.d0min },
+    { "d1", PARAM_FLOAT,  &p_parsed.d1 },
+    { "ag", PARAM_FLOAT,  &p_parsed.ag },
+    { "agnumparts", PARAM_INT,  &p_parsed.agnumparts },
+    { "antigorder", PARAM_INT,  &p_parsed.antigorder },
+    { "maxantig", PARAM_FLOAT,  &p_parsed.maxantig },
+    { "noagexplosion", PARAM_INT,  &p_parsed.noagexplosion },
+    { "dancingpart", PARAM_FLOAT,  &p_parsed.dancingpart },
+    { "dancingpartk", PARAM_INT,  &p_parsed.dancingpartk },
+    { "velocity", PARAM_FLOAT,  &p_parsed.velocity },
+    { "numfrq", PARAM_INT,  &p_parsed.numfrq },
+    { "visc", PARAM_FLOAT,  &p_parsed.visc },
+    { "rotspeed1", PARAM_FLOAT,  &p_parsed.rotspeed1 },
+    { "rotspeed2", PARAM_FLOAT,  &p_parsed.rotspeed2 },
+    { "strombo", PARAM_FLOAT,  &p_parsed.strombo },
+    { "numpart", PARAM_INT,  &p_parsed.numpart},
+    { "size", PARAM_FLOAT,  &p_parsed.size},
+    { "sizeloudness", PARAM_FLOAT,  &p_parsed.sizeloudness},
+    { "chance", PARAM_INT,  &p_parsed.chance },
+    { "duration_f", PARAM_INT,  &p_parsed.duration_f },
+    { "duration_b", PARAM_INT,  &p_parsed.duration_b },
 
 
-    { "MaxParticles", INT,  &ptsNumMax },
-    { "IKnowAboutConfigFile", INT,  &IKnowAboutConfigFile },
+    { "MaxParticles", PARAM_INT,  &ptsNumMax },
+    { "IKnowAboutConfigFile", PARAM_INT,  &IKnowAboutConfigFile },
   };
 int numpp= sizeof(pp)/sizeof(pp[0]);
 
@@ -78,23 +79,25 @@ void freeparams()
 void changep();
 // a very tolerant parser...
 
-int load_parameters(char * filename);
+int load_parameters(const char * filename);
 void init_parameters()
 {
   if(!load_parameters(configfilename))
-    if(!load_parameters("/usr/local/share/dancingparticles/dancingparticles.conf"))
+    if(!load_parameters(DATA_DIR "/dancingparticles.conf"))
       {
+        visual_log(VISUAL_LOG_ERROR, "Failed to load config file");
       }
 }
-int load_parameters(char * filename)
+int load_parameters(const char * filename)
 {
   FILE *f = fopen(filename,"r");
   if(f==NULL)
     return 0;
   char buf[1024];
-  char * ptr, *word, *err;
+  char *ptr, *word;
+  const char *err;
   int line = 1, mode = 0;
-  
+
   char *oldlocal = setlocale (LC_NUMERIC, "C");
 
 
@@ -129,7 +132,7 @@ int load_parameters(char * filename)
 			      if(strcmp(ps[i].name, word)==0)
 				{
 				  p_parsed = ps[i];
-				  p_parsed.name = strdup(p_parsed.name);
+				  p_parsed.name = visual_strdup(p_parsed.name);
 				  break;
 				}
 			    }
@@ -140,14 +143,14 @@ int load_parameters(char * filename)
 		      err= "unknown Begin";
 		      goto error;
 		    }
-	      
+
 		}
-	 
+
 	    case 1:
 	      if(strcmp(word, "End") == 0)
 			{
 			  word = nextword(ptr);
-	      
+
 			  if(strcmp(word, "Effect") == 0)
 				{
 				  if(p_parsed.name==0)
@@ -161,13 +164,13 @@ int load_parameters(char * filename)
 				  else
 					ps = (parameters *) realloc(ps,nump* sizeof(parameters));
 				  ps[nump-1] = p_parsed;
-				  
+
 				}
-	     
+
 			}
 	      else
 		{
-		  char *var,  *egal, *val; 
+		  char *var,  *egal, *val;
 		  int i;
 		  var = word;
 		  egal = nextword(ptr);
@@ -178,21 +181,21 @@ int load_parameters(char * filename)
 			{
 			  switch (pp[i].type)
 			    {
-			    case INT:
+			    case PARAM_INT:
 			      sscanf(val, "%d", (int *)pp[i].where);
 			      break;
-			    case FLOAT:
+			    case PARAM_FLOAT:
 				  float val2 ;
 				  val2 = atof(val);
 				  *((float *)pp[i].where) = val2;
 			      break;
-			    case CHAR:
+			    case PARAM_CHAR:
 			      sscanf(val, "%c", (char *)pp[i].where);
 			      break;
-			    case STR:
+			    case PARAM_STR:
 			      if(*(char **)pp[i].where)
 				free(*(char **)pp[i].where);
-			      *(char **)pp[i].where = strdup(val);
+			      *(char **)pp[i].where = visual_strdup(val);
 			      break;
 			    }
 			  break;
@@ -219,9 +222,10 @@ int load_parameters(char * filename)
   fclose(f);
   newconfig = 1;
   allocParts();
-  changep();  
+  changep();
   return 1;
  error:
+  visual_log (VISUAL_LOG_ERROR, "Failed to load parameters from file: %s", err);
   setlocale (LC_NUMERIC, oldlocal);
   fclose(f);
   return 0;
@@ -230,7 +234,7 @@ int load_parameters(char * filename)
 void allocParts()
 {
   static int hasallocated = 0; // you cannot change the MaxParticles dynamicaly
-  
+
   if(!hasallocated)
     {
       hasallocated = 1;
@@ -265,7 +269,7 @@ void allocParts()
 		  Centers[i][1] = 0;
 		  Centers[i][2] = 0;
 
-		  //pts[i]=pts[i-1]+diff; 
+		  //pts[i]=pts[i-1]+diff;
 		}
     }
 }
@@ -276,7 +280,7 @@ void  init_parameters();
 void changep()
 {
   int i;
-  int tot=0;
+  int tot=1;
   int r;
   static int lasti=-1;
 
@@ -313,15 +317,15 @@ void changep()
 	  for(j=i;i<j+ptsNum/8;i++)
 	    Centers[i]= FloatPoint( -400 + (i-j)*800/(ptsNum/8),-400 + (i-j)*800/(ptsNum/8),0);
 	  numCenters=i;
-	  
+
 	}
       if(p.mode==3)
 	{
-	  loadepic("dance.epic");
+	  loadepic(DATA_DIR "/dance.epic");
 	}
       if(p.mode==4)
 	{
-	  loadepic("xmms.epic");
+	  loadepic(DATA_DIR "/xmms.epic");
 	}
       if(p.mode == 5)
       {
@@ -337,6 +341,6 @@ void etoileinit(void)
 	allocParts();
   frames=0;
 //  changep();
-  return ;	
+  return ;
 }
 

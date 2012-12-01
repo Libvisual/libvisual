@@ -4,8 +4,6 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_lv_analyzer.c,v 1.28 2006/01/27 20:19:16 synap Exp $
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1
@@ -21,17 +19,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-#include <limits.h>
-
+#include "config.h"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 /** default amount of bars */
 #define BARS_DEFAULT 25
@@ -41,12 +33,9 @@
 /* helper macro */
 #define QTY(array)  (sizeof(array) / sizeof(*(array)))
 
-const VisPluginInfo *get_plugin_info (int *count);
-
 typedef struct
 {
-	VisPalette pal;
-	VisParamContainer *paramcontainer;
+	VisPalette *pal;
 	int bars;
 	int width, height;
 } AnalyzerPrivate;
@@ -56,27 +45,26 @@ static void draw_bar (VisVideo *video, int x, int width, float amplitude);
 static int lv_analyzer_init (VisPluginData *plugin);
 static int lv_analyzer_cleanup (VisPluginData *plugin);
 static int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height);
+static int lv_analyzer_resize (VisPluginData *plugin, int width, int height);
 static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_analyzer_palette (VisPluginData *plugin);
 static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_analyzer_requisition,
 		.palette = lv_analyzer_palette,
 		.render = lv_analyzer_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "lv_analyzer",
 		.name = "libvisual analyzer",
-		.author = N_("Dennis Smit <ds@nerds-incorporated.org>"),
+		.author = "Dennis Smit <ds@nerds-incorporated.org>",
 		.version = "1.0",
 		.about = N_("Libvisual analyzer plugin"),
 		.help = N_("A nice simple spectrum analyzer plugin."),
@@ -86,12 +74,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_analyzer_cleanup,
 		.events = lv_analyzer_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int _bars(VisPluginData *plugin)
@@ -102,38 +88,26 @@ static int _bars(VisPluginData *plugin)
 
 static int lv_analyzer_init (VisPluginData *plugin)
 {
-
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	AnalyzerPrivate *priv = visual_mem_new0 (AnalyzerPrivate, 1);
-	visual_return_val_if_fail(priv != NULL, -1);
-
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+
+	/* get plugins param-container */
+	VisParamList *params = visual_plugin_get_params (plugin);
+	visual_param_list_add_many (params,
+                                visual_param_new_integer ("bars", "Number of bars in graph",
+                                                          BARS_DEFAULT,
+                                                          NULL),
+                                NULL);
 
 	/* default values */
 	priv->bars = BARS_DEFAULT;
 
-	/* get plugins param-container */
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-	visual_return_val_if_fail(paramcontainer != NULL, -1);
-
-	/* save paramcontainer */
-	priv->paramcontainer = paramcontainer;
-
-	/* parameter-description */
-	static VisParamEntry params[] =
-	{
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("bars", BARS_DEFAULT),
-		VISUAL_PARAM_LIST_END
-	};
-
-	/* register parameters */
-	visual_param_container_add_many (paramcontainer, params);
-
 	/* allocate space for palette */
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal = visual_palette_new (256);
 
 	return 0;
 }
@@ -142,7 +116,7 @@ static int lv_analyzer_cleanup (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_palette_free_colors (&priv->pal);
+	visual_palette_free (priv->pal);
 
 	visual_mem_free (priv);
 
@@ -177,11 +151,12 @@ static int _validate_bars(VisPluginData *plugin, int *bars)
 }
 
 static void _change_bars(VisPluginData *plugin,
-                       VisParamEntry *p, int (*validator)(VisPluginData *plugin, void *value))
+                         VisParam *p,
+                         int (*validator)(VisPluginData *plugin, void *value))
 {
 	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	int integer = visual_param_entry_get_integer(p);
+	int integer = visual_param_get_value_integer(p);
 
 	if(!validator || validator(plugin, &integer))
     {
@@ -190,10 +165,10 @@ static void _change_bars(VisPluginData *plugin,
     }
     /* reset to previous value */
     else
-        visual_param_entry_set_integer(p, priv->bars);
+        visual_param_set_value_integer(p, priv->bars);
 }
 
-static void _change_param(VisPluginData *plugin, VisParamEntry *p)
+static void _change_param(VisPluginData *plugin, VisParam *p)
 {
 	/**
      * structure defining handler functions for configuration values
@@ -206,7 +181,7 @@ static void _change_param(VisPluginData *plugin, VisParamEntry *p)
         int (*validator)(void *value);
         /* function called to change parameter */
         void (*change)(VisPluginData *plugin,
-                       VisParamEntry *parameter, int (*validator)(void *value));
+                       VisParam *parameter, int (*validator)(void *value));
         /* function called after parameter change */
         void (*postchange)(VisPluginData *plugin);
     } parms[] =
@@ -214,14 +189,12 @@ static void _change_param(VisPluginData *plugin, VisParamEntry *p)
         {"bars", (void *) _validate_bars, (void *) _change_bars, NULL},
     };
 
-
-
     /** look for parameter in our structure */
     int i;
     for(i = 0; i < QTY(parms); i++)
     {
         /* not our parameter? -> continue the quest */
-        if(!visual_param_entry_is(p, parms[i].name))
+        if(!visual_param_has_name(p, parms[i].name))
             continue;
 
         /* call this parameters' change handler */
@@ -235,13 +208,28 @@ static void _change_param(VisPluginData *plugin, VisParamEntry *p)
         return;
     }
 
-    visual_log(VISUAL_LOG_WARNING, "Unknown param '%s'", visual_param_entry_get_name(p));
+    visual_log(VISUAL_LOG_WARNING, "Unknown param '%s'", visual_param_get_name(p));
+}
+
+static int lv_analyzer_resize (VisPluginData *plugin, int width, int height)
+{
+	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	int total_space;
+
+	priv->width = width;
+	priv->height = height;
+
+	total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
+	if(priv->width < priv->bars + total_space)
+		priv->bars = priv->width - total_space;
+
+	return 0;
 }
 
 static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	while (visual_event_queue_poll (events, &ev))
 	{
@@ -249,25 +237,15 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 		{
 			case VISUAL_EVENT_PARAM:
 			{
-                VisParamEntry *param = ev.event.param.param;
-                /* change config parameter */
-                _change_param(plugin, param);
-                break;
+				VisParam *param = ev.event.param.param;
+				/* change config parameter */
+				_change_param(plugin, param);
+				break;
 			}
 
 			case VISUAL_EVENT_RESIZE:
 			{
-			        int total_space;
-
-				visual_video_set_dimension (ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
-				priv->width = ev.event.resize.video->width;
-				priv->height = ev.event.resize.video->height;
-
-				total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
-				if(priv->width < priv->bars + total_space)
-					priv->bars = priv->width - total_space;
-
+				lv_analyzer_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 			}
 
@@ -284,25 +262,26 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
 	int i;
 
 	for (i = 0; i < 256; i++) {
-		priv->pal.colors[i].r = 0;
-		priv->pal.colors[i].g = 0;
-		priv->pal.colors[i].b = 0;
+		pal_colors[i].r = 0;
+		pal_colors[i].g = 0;
+		pal_colors[i].b = 0;
 	}
 
 	for (i = 1; i < 64; i++) {
-		priv->pal.colors[i].r = i * 4;
-		priv->pal.colors[i].g = 255;
-		priv->pal.colors[i].b = 0;
+		pal_colors[i].r = i * 4;
+		pal_colors[i].g = 255;
+		pal_colors[i].b = 0;
 
-		priv->pal.colors[i + 63].r = 255;
-		priv->pal.colors[i + 63].g = (63 - i) * 4;
-		priv->pal.colors[i + 63].b = 0;
+		pal_colors[i + 63].r = 255;
+		pal_colors[i + 63].g = (63 - i) * 4;
+		pal_colors[i + 63].b = 0;
 	}
 
-	return &priv->pal;
+	return priv->pal;
 }
 
 static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
@@ -311,17 +290,22 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
 	 * - We use 16:16 fixed point to incrementally calculate the color at each y
 	 * - Bar row color must be in [1,126]
 	*/
-	int y	   = (1.0 - amplitude) * video->height;
-	int color  = (1 << 16) + (amplitude * (125 << 16));
-	int dcolor = (125 << 16) / video->height;
+	int video_height = visual_video_get_height (video);
+	int video_pitch	 = visual_video_get_pitch (video);
+	int y = (1.0 - amplitude) * video_height;
 
-	uint8_t *row = (uint8_t *) video->pixel_rows[y] + x;
+	if (y < video_height) {
+		int color  = (1 << 16) + (amplitude * (125 << 16));
+		int dcolor = (125 << 16) / video_height;
 
-	while (y < video->height) {
-		visual_mem_set (row, color >> 16, width);
+		uint8_t *row = (uint8_t *) visual_video_get_pixel_ptr (video, x, y);
 
-		y++; row += video->pitch;
-		color -= dcolor;
+		while (y < video_height) {
+			visual_mem_set (row, color >> 16, width);
+
+			y++; row += video_pitch;
+			color -= dcolor;
+		}
 	}
 }
 
@@ -330,27 +314,30 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
  */
 static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	VisBuffer buffer;
-	VisBuffer pcmb;
+	VisBuffer *buffer;
+	VisBuffer *pcmb;
 
 	int bars = _bars(plugin);
 
 	float freq[bars];
 	float pcm[bars * 2];
 
-	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
-	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq), FALSE);
+	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm), FALSE);
 
-	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2,
+	visual_audio_get_sample_mixed_simple (audio, pcmb, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
+
+	visual_buffer_unref (buffer);
+	visual_buffer_unref (pcmb);
 
 	int i;
 	int spaces = BARS_DEFAULT_SPACE * (bars - 1);
-	int width  = (video->width - spaces) / bars;
-	int x	   = ((video->width - spaces) % bars) / 2;
+	int width  = (visual_video_get_width (video) - spaces) / bars;
+	int x	   = ((visual_video_get_width (video) - spaces) % bars) / 2;
 
 	visual_video_fill_color (video, NULL);
 

@@ -172,7 +172,7 @@ void _oink_gfx_scope_bulbous (OinksiePrivate *priv, uint8_t *buf, int color, int
 
 void _oink_gfx_scope_normal (OinksiePrivate *priv, uint8_t *buf, int color, int height)
 {
-	VisRectangle rect;
+	VisRectangle *rect = NULL;
 	int i;
 	float fx[512];
 	float fy[512];
@@ -180,15 +180,15 @@ void _oink_gfx_scope_normal (OinksiePrivate *priv, uint8_t *buf, int color, int 
 	int y[512];
 	int yold = priv->screen_halfheight;
 
-	visual_rectangle_set (&rect, 0, 0, priv->screen_width, priv->screen_height);
-
 	for (i = 0; i < 512; i++) {
 		fx[i] = (1.0 / 512.0) * i;
 		fy[i] = (1 + sin(i)) * 0.5;
 		fy[i] = 0.5 + ((priv->audio.pcm[2][i]) * 0.2);
 	}
 
-	visual_rectangle_denormalise_many_values (&rect, fx, fy, x, y, 512);
+	rect = visual_rectangle_new (0, 0, priv->screen_width, priv->screen_height);
+	visual_rectangle_denormalize_points (rect, fx, fy, x, y, 512);
+	visual_rectangle_free (rect);
 
 	for (i = 0; i < 512; i++) {
 		_oink_gfx_vline (priv, buf, color, x[i], y[i], yold);

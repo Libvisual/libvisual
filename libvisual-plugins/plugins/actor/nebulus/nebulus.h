@@ -64,12 +64,12 @@ typedef struct
   GLfloat x, y, z;
 } glcoord;
 
-VisVideo child_image;
-VisVideo energy_image;
-VisVideo tentacle_image;
-VisVideo tunnel_image;
-VisVideo twist_image;
-VisVideo background_image;
+VisVideo *child_image;
+VisVideo *energy_image;
+VisVideo *tentacle_image;
+VisVideo *tunnel_image;
+VisVideo *twist_image;
+VisVideo *background_image;
 
 extern nebulus general;
 extern nebulus *point_general;
@@ -114,6 +114,7 @@ extern void viewortho(void);
 extern void viewperspective(void);
 extern int gen_gl_texture(GLuint texture);
 extern void use_gl_texture(GLuint texture);
+extern void upload_gl_texture(VisVideo *image);
 extern void delete_gl_texture(GLuint texture);
 extern void use_twist_texture(void);
 extern void use_child_texture(void);

@@ -1,10 +1,9 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2012      Libvisual
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_collection.h,v 1.7 2006/01/22 13:23:37 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,8 +30,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 #define VISUAL_COLLECTION(obj)				(VISUAL_CHECK_CAST ((obj), VisCollection))
 #define VISUAL_COLLECTIONITER(obj)			(VISUAL_CHECK_CAST ((obj), VisCollectionIter))
 
@@ -47,11 +44,11 @@ typedef struct _VisCollectionIter VisCollectionIter;
  *
  * @return FIXME blah blah blah
  */
-typedef int (*VisCollectionDestroyerFunc)(void *data);
+typedef void (*VisCollectionDestroyerFunc)(void *data);
 
 /**
  */
-typedef int (*VisCollectionDestroyFunc)(VisCollection *collection);
+typedef void (*VisCollectionDestroyFunc)(VisCollection *collection);
 
 /**
  */
@@ -104,42 +101,44 @@ struct _VisCollectionIter {
 	VisObject			*context;
 };
 
+LV_BEGIN_DECLS
+
 /* prototypes */
-int visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer);
-VisCollectionDestroyerFunc visual_collection_get_destroyer (VisCollection *collection);
+LV_API void visual_collection_set_destroyer (VisCollection *collection, VisCollectionDestroyerFunc destroyer);
+LV_API VisCollectionDestroyerFunc visual_collection_get_destroyer (VisCollection *collection);
 
-int visual_collection_set_destroy_func (VisCollection *collection, VisCollectionDestroyFunc destroyfunc);
-VisCollectionDestroyFunc visual_collection_get_destroy_func (VisCollection *collection);
+LV_API void visual_collection_set_destroy_func (VisCollection *collection, VisCollectionDestroyFunc destroyfunc);
+LV_API VisCollectionDestroyFunc visual_collection_get_destroy_func (VisCollection *collection);
 
-int visual_collection_set_size_func (VisCollection *collection, VisCollectionSizeFunc sizefunc);
-VisCollectionSizeFunc visual_collection_get_size_func (VisCollection *collection);
+LV_API void visual_collection_set_size_func (VisCollection *collection, VisCollectionSizeFunc sizefunc);
+LV_API VisCollectionSizeFunc visual_collection_get_size_func (VisCollection *collection);
 
-int visual_collection_set_iter_func (VisCollection *collection, VisCollectionIterFunc iterfunc);
-VisCollectionIterFunc visual_collection_get_iter_func (VisCollection *collection);
+LV_API void visual_collection_set_iter_func (VisCollection *collection, VisCollectionIterFunc iterfunc);
+LV_API VisCollectionIterFunc visual_collection_get_iter_func (VisCollection *collection);
 
-int visual_collection_dtor (VisObject *object);
+LV_API void visual_collection_dtor (VisObject *object);
 
-int visual_collection_destroy (VisCollection *collection);
-int visual_collection_size (VisCollection *collection);
-VisCollectionIter *visual_collection_get_iter (VisCollection *collection);
+LV_API int visual_collection_size (VisCollection *collection);
+LV_API VisCollectionIter *visual_collection_get_iter (VisCollection *collection);
 
 
-VisCollectionIter *visual_collection_iter_new (
-		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
-		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
-		VisCollection *collection, VisObject *context);
-int visual_collection_iter_init (VisCollectionIter *iter,
+LV_API VisCollectionIter *visual_collection_iter_new (
 		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
 		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
 		VisCollection *collection, VisObject *context);
 
-void visual_collection_iter_assign (VisCollectionIter *iter, int index);
-void visual_collection_iter_next (VisCollectionIter *iter);
-int visual_collection_iter_has_more (VisCollectionIter *iter);
-void *visual_collection_iter_get_data (VisCollectionIter *iter);
-int visual_collection_iter_dtor (VisCollectionIter *iter);
+LV_API int visual_collection_iter_init (VisCollectionIter *iter,
+		VisCollectionIterAssignFunc assignfunc, VisCollectionIterNextFunc nextfunc,
+		VisCollectionIterHasMoreFunc hasmorefunc, VisCollectionIterGetDataFunc getdatafunc,
+		VisCollection *collection, VisObject *context);
 
-VISUAL_END_DECLS
+LV_API void visual_collection_iter_assign (VisCollectionIter *iter, int index);
+LV_API void visual_collection_iter_next (VisCollectionIter *iter);
+LV_API int visual_collection_iter_has_more (VisCollectionIter *iter);
+LV_API void *visual_collection_iter_get_data (VisCollectionIter *iter);
+LV_API void visual_collection_iter_dtor (VisCollectionIter *iter);
+
+LV_END_DECLS
 
 /**
  * @}

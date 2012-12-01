@@ -45,10 +45,10 @@ typedef struct {
 
 	/* Randomize context from libvisual */
 	VisRandomContext *rcontext;
-	VisPalette jess_pal;
+	VisPalette *jess_pal;
 
-	VisBuffer pcm_data1;
-	VisBuffer pcm_data2;
+	VisBuffer *pcm_data1;
+	VisBuffer *pcm_data2;
 	float pcm_data[2][512];
 
 	uint32_t *table1;
@@ -63,7 +63,6 @@ typedef struct {
 	uint8_t dimG[256];
 	uint8_t dimB[256];
 	uint8_t *bits;
-	uint8_t bpp;
 	uint8_t *pixel;
 	uint8_t *buffer;
 

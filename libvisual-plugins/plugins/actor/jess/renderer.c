@@ -388,7 +388,7 @@ void render_blur(JessPrivate *priv, int blur)
 	{
 		bmax = priv->resx * (priv->resy-1) + (intptr_t) priv->pixel;
 
-		if (visual_cpu_get_mmx ()) {
+		if (visual_cpu_has_mmx ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"
@@ -426,7 +426,7 @@ void render_blur(JessPrivate *priv, int blur)
 		pitch_4 = priv->pitch+4;
 		bmax = priv->pitch*(priv->resy-1) + (intptr_t) priv->pixel;
 
-		if (visual_cpu_get_mmx ()) {
+		if (visual_cpu_has_mmx ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"

@@ -4,8 +4,6 @@
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: input_debug.c,v 1.3 2005/12/22 21:50:10 synap Exp $
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1
@@ -26,9 +24,11 @@
 #include <libvisual/libvisual.h>
 #include <math.h>
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 #define OUTPUT_RATE       44100
 #define OUTPUT_SAMPLES    4096
-#define DEFAULT_FREQUENCY (OUTPUT_RATE/25)
+#define DEFAULT_FREQUENCY (OUTPUT_RATE/500)
 #define DEFAULT_AMPLITUDE 1.0
 
 typedef struct {
@@ -39,25 +39,21 @@ typedef struct {
 	float angle_step;
 } DebugPriv;
 
-const VisPluginInfo *get_plugin_info (int *count);
-
 static int inp_debug_init (VisPluginData *plugin);
 static int inp_debug_cleanup (VisPluginData *plugin);
 static int inp_debug_events (VisPluginData *plugin, VisEventQueue *events);
 static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio);
 
-static void change_param (VisPluginData *plugin, VisParamEntry *param);
+static void change_param (VisPluginData *plugin, VisParam *param);
 static void setup_wave (DebugPriv *priv);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisInputPlugin input[] = {{
+	static VisInputPlugin input = {
 		.upload = inp_debug_upload
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type     = VISUAL_PLUGIN_TYPE_INPUT,
 		.plugname = "debug",
 		.name     = "debug",
@@ -70,42 +66,37 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init     = inp_debug_init,
 		.cleanup  = inp_debug_cleanup,
 		.events   = inp_debug_events,
-		.plugin   = VISUAL_OBJECT (&input[0])
-	}};
+		.plugin   = VISUAL_OBJECT (&input)
+	};
 
-	*count = VISUAL_TABLESIZE (info);
-
-	return info;
+	return &info;
 }
 
 static int inp_debug_init (VisPluginData *plugin)
 {
-	DebugPriv *priv;
-	VisParamEntry *param;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_FLOAT ("frequency",  DEFAULT_FREQUENCY),
-		VISUAL_PARAM_LIST_ENTRY_FLOAT ("ampltitude", DEFAULT_AMPLITUDE),
-		VISUAL_PARAM_LIST_END
-	};
-
-	priv = visual_mem_new0 (DebugPriv, 1);
+	DebugPriv *priv = visual_mem_new0 (DebugPriv, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+
+	VisParamList *params = visual_plugin_get_params (plugin);
+	visual_param_list_add_many (params,
+                                visual_param_new_float ("frequency",
+                                                        N_("Frequency of sine wave"),
+                                                        DEFAULT_FREQUENCY,
+                                                        visual_param_in_range_float (0.0f, 22000.0f)),
+                                visual_param_new_float ("ampltitude",
+                                                        N_("Ampltitude of sine wave"),
+                                                        DEFAULT_AMPLITUDE,
+                                                        visual_param_in_range_float (0.0f, 1.0f)),
+                                NULL);
 
 	priv->frequency	 = DEFAULT_FREQUENCY;
 	priv->ampltitude = DEFAULT_AMPLITUDE;
+
 	setup_wave (priv);
-
-	visual_param_container_add_many (paramcontainer, params);
-
-	param = visual_param_container_get (paramcontainer, "frequency");
-	visual_param_entry_min_set_float (param, 0.0);
-	visual_param_entry_max_set_float (param, 22000.0);
-
-	param = visual_param_container_get (paramcontainer, "ampltitude");
-	visual_param_entry_min_set_float (param, 0.0);
-	visual_param_entry_max_set_float (param, 1.0);
 
 	return 0;
 }
@@ -121,7 +112,7 @@ static void setup_wave (DebugPriv *priv)
 	priv->angle_step = (2 * VISUAL_MATH_PI * priv->frequency) / OUTPUT_RATE;
 }
 
-static void change_param (VisPluginData *plugin, VisParamEntry *param)
+static void change_param (VisPluginData *plugin, VisParam *param)
 {
 	/* FIXME: Implement */
 }
@@ -133,7 +124,7 @@ static int inp_debug_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_PARAM: {
-				VisParamEntry *param = ev.event.param.param;
+				VisParam *param = ev.event.param.param;
 				change_param (plugin, param);
 			}
 			default:; /* discard */
@@ -162,11 +153,14 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 		}
 	}
 
-	VisBuffer buffer;
-	visual_buffer_init (&buffer, data, VISUAL_TABLESIZE (data), NULL);
+	VisBuffer *buffer = visual_buffer_new_wrap_data (data, VISUAL_TABLESIZE (data), FALSE);
 
-	visual_audio_samplepool_input (audio->samplepool, &buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
-			VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+	visual_audio_input (audio, buffer,
+	                    VISUAL_AUDIO_SAMPLE_RATE_44100,
+	                    VISUAL_AUDIO_SAMPLE_FORMAT_S16,
+	                    VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+
+	visual_buffer_unref (buffer);
 
 	return 0;
 }

@@ -1,7 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
+INCLUDE(LVBuildPlugin)
+
+SET(INCLUDE_DIRS
   ${GFORCE_SOURCE_DIR}/GForceCommon/Headers
   ${GFORCE_SOURCE_DIR}/Common/UI/Headers
   ${GFORCE_SOURCE_DIR}/Common
@@ -12,23 +11,7 @@ INCLUDE_DIRECTORIES(
   ${GFORCE_SOURCE_DIR}/unix/libmfl
 )
 
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-SET(actor_gforce_SOURCES
-  actor_gforce.cpp
-)
-
-ADD_LIBRARY(actor_gforce MODULE ${actor_gforce_SOURCES})
-#-avoid-version
-
-SET_TARGET_PROPERTIES(actor_gforce
-  PROPERTIES COMPILE_FLAGS ${GFORCE_COMPILE_FLAGS}
-)
-
-TARGET_LINK_LIBRARIES(actor_gforce
-  ${LIBVISUAL_LIBRARIES}
+SET(LIBS
   gforce_common
   gforce_io
   gforce_math
@@ -37,4 +20,13 @@ TARGET_LINK_LIBRARIES(actor_gforce
   gforce_unix_mfl
 )
 
-INSTALL(TARGETS actor_gforce LIBRARY DESTINATION ${LV_ACTOR_PLUGIN_DIR})
+SET(SOURCES
+  actor_gforce.cpp
+)
+
+LV_BUILD_ACTOR_PLUGIN(gforce
+  SOURCES       ${SOURCES}
+  COMPILE_FLAGS ${GFORCE_COMPILE_FLAGS}
+  INCLUDE_DIRS  ${INCLUDE_DIRS}
+  LINK_LIBS     ${LIBS}
+)

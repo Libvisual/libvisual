@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <iostream>
 #include "etoile.h"
@@ -39,16 +40,16 @@ void addpoints(char *p)
       t=FloatPoint(x/15 - 300,y/15-200,0);
       if(!newline2[numCenters2])
         totLength+=(t-Centers2[numCenters2-1]).length();
-        
+
       Centers2[numCenters2++]=t;
       newline2[numCenters2]=0;
     }
-  
-    
+
+
 }
 
 // we should change this hack..
-void loadepic2(char *file)
+void loadepic2(const char *file)
 {
   FILE *f = fopen(file,"r");
   int mode=0;
@@ -82,7 +83,7 @@ void loadepic2(char *file)
 	  addpoints(buf);
 	  break;
 
-	     
+
 	}
       fgets(buf,255,f);
     }
@@ -92,11 +93,8 @@ void loadepic2(char *file)
 
 }
 
-void loadepic(char *file)
+void loadepic(const char *filename)
 {
-  char filename[255];
-  strncpy (filename, "/usr/local/share/dancingparticles/",255);
-  strncat (filename, file,255);
   loadepic2(filename);
   numCenters=0;
   Centers[numCenters++]=Centers2[0];
