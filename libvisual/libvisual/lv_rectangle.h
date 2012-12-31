@@ -51,12 +51,12 @@ namespace LV {
       {}
 
       /**
-       * Creates a new VisRectangle.
+       * Creates a new Rect.
        *
-       * @param x X Position of the upper left corner.
-       * @param y Y Position of the upper left corner.
-       * @param width The width of the rectangle.
-       * @param height The height of the rectangle.
+       * @param x      X-coordinate of upper-left corner
+       * @param y      Y-coordinate of upper-left corner
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
        */
       Rect (int x_, int y_, int width_, int height_)
           : x (x_), y (y_), width (width_), height (height_)
@@ -65,10 +65,10 @@ namespace LV {
       /**
        * Sets the rectangle boundary.
        *
-       * @param x X Position of the upper left corner.
-       * @param y Y Position of the upper left corner.
-       * @param width The width of the rectangle.
-       * @param height The height of the rectangle.
+       * @param x      X-coordinate of upper-left corner
+       * @param y      Y-coordinate of upper-left corner
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
        */
       void set (int x_, int y_, int width_, int height_)
       {
