@@ -121,18 +121,3 @@ void Display::drain_events (VisEventQueue& eventqueue)
 {
     m_impl->driver->drain_events (eventqueue);
 }
-
-void Display::set_fps_limit (unsigned int fps)
-{
-    // FIXME: Implement this
-}
-
-unsigned int Display::get_fps_total () const
-{
-    return m_impl->frames_drawn;
-}
-
-float Display::get_fps_average () const
-{
-    return m_impl->frames_drawn / m_impl->timer.elapsed ().to_secs ();
-}

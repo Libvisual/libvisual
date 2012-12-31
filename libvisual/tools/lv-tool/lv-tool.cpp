@@ -57,8 +57,9 @@ namespace {
 
   unsigned int width  = DEFAULT_WIDTH;
   unsigned int height = DEFAULT_HEIGHT;
-  unsigned int framerate = DEFAULT_FPS;
-  unsigned int framecount = 0;
+
+  unsigned int frame_rate  = DEFAULT_FPS;
+  unsigned int frame_count = 0;
 
   bool have_seed = 0;
   uint32_t seed = 0;
@@ -118,7 +119,7 @@ namespace {
                   input_name.c_str (),
                   actor_name.c_str (),
                   morph_name.c_str (),
-                  framerate);
+                  frame_rate);
   }
 
 
@@ -213,8 +214,8 @@ namespace {
 
               // --fps
               case 'f': {
-                  // set framerate
-                  std::sscanf(optarg, "%d", &framerate);
+                  // set frame_rate
+                  std::sscanf(optarg, "%d", &frame_rate);
                   break;
               }
 
@@ -228,7 +229,7 @@ namespace {
               // --framecount
               case 'F': {
                   // set framecount
-                  std::sscanf(optarg, "%d", &framecount);
+                  std::sscanf(optarg, "%d", &frame_count);
                   break;
               }
 
@@ -370,10 +371,12 @@ int main (int argc, char **argv)
         // get a queue to handle events
         LV::EventQueue localqueue;
 
+        // rendering statistics
+        uint64_t frames_drawn = 0;
+
         // main loop
         bool running = true;
         bool visible = true;
-        unsigned int framesDrawn = 0;
 
         while (running)
         {
@@ -521,15 +524,14 @@ int main (int argc, char **argv)
 
             display.lock();
 
-
             bin.run();
 
-            /* all frames rendered? */
-            if((framecount > 0) && (framesDrawn++ >= framecount))
+            // All frames rendered?
+            frames_drawn++;
+            if (frame_count > 0 && frames_drawn >= frame_count)
                 running = false;
 
             display.update_all();
-            display.set_fps_limit(framerate);
             display.unlock();
         }
 
