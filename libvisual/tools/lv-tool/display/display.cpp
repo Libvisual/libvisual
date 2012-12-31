@@ -62,16 +62,20 @@ LV::VideoPtr Display::get_video () const
 }
 
 LV::VideoPtr Display::create (VisVideoDepth depth,
-                                VisVideoAttrOptions const* vidoptions,
-                                unsigned int width,
-                                unsigned int height,
-                                bool resizable)
+                              VisVideoAttrOptions const* vidoptions,
+                              unsigned int width,
+                              unsigned int height,
+                              bool resizable)
 {
+    visual_log (VISUAL_LOG_INFO, "Attempting to create display (%dx%d)", width, height);
+
     return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
 
 void Display::close ()
 {
+    visual_log (VISUAL_LOG_INFO, "Closing display");
+
     m_impl->driver->close ();
 }
 
