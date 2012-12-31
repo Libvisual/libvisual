@@ -141,11 +141,11 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 
 	DebugPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	int16_t data[OUTPUT_SAMPLES];
+	int16_t data[OUTPUT_SAMPLES*2];
 	int i;
 
-	for(i = 0; i < VISUAL_TABLESIZE(data); i++) {
-		data[i] = (int16_t) (65535/2 * priv->ampltitude * sin (priv->angle));
+	for(i = 0; i < OUTPUT_SAMPLES*2; i += 2) {
+		data[i] = data[i+1] = (int16_t) (65535/2 * priv->ampltitude * sin (priv->angle));
 
 		priv->angle += priv->angle_step;
 		if (priv->angle >= 2 * VISUAL_MATH_PI) {
