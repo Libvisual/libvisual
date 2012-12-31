@@ -38,7 +38,7 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define PCM_BUF_SIZE 4096
+#define PCM_BUF_SIZE 1024
 
 typedef struct {
 	snd_pcm_t *chandle;

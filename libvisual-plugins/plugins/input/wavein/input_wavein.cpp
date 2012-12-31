@@ -25,7 +25,7 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define PCM_BUFFER_SIZE 4096
+#define PCM_BUFFER_SIZE 1024
 
 struct WaveInPrivate {
     HWAVEIN device_handle;
