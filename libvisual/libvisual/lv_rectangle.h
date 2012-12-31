@@ -63,7 +63,17 @@ namespace LV {
       {}
 
       /**
-       * Sets the rectangle boundary.
+       * Creates a new Rect of the given dimensions.
+       *
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
+       */
+      Rect (int width_, int height_)
+          : x (0), y (0), width (width_), height (height_)
+      {}
+
+      /**
+       * Sets rectangle extents
        *
        * @param x      X-coordinate of upper-left corner
        * @param y      Y-coordinate of upper-left corner
