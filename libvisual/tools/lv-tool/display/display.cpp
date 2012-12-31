@@ -34,12 +34,8 @@ public:
 
     std::unique_ptr<DisplayDriver> driver;
 
-    unsigned int frames_drawn;
-    LV::Timer    timer;
-
     Impl ()
-        : driver       (nullptr)
-        , frames_drawn (0)
+        : driver (nullptr)
     {}
 
     ~Impl ()
@@ -97,12 +93,7 @@ void Display::unlock ()
 void Display::update_all ()
 {
     LV::VideoPtr video = get_video ();
-    LV::Rect rect (0, 0, video->get_width (), video->get_height ());
-
-    m_impl->frames_drawn++;
-
-    if (!m_impl->timer.is_active ())
-        m_impl->timer.start ();
+    LV::Rect rect (video->get_width (), video->get_height ());
 
     m_impl->driver->update_rect (rect);
 }
