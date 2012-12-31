@@ -28,7 +28,7 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define PCM_SIZE    1024
+#define PCM_SIZE 512
 
 typedef struct {
     VisPalette *pal;
