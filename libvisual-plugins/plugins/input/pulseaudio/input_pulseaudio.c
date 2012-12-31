@@ -22,7 +22,6 @@
 #include <pulse/error.h>
 #include <pthread.h>
 
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define SAMPLES 4096
@@ -43,7 +42,7 @@ typedef struct {
     pthread_attr_t pthread_custom_attr;
     int currentBuffer;
     int recordingState;
-    uint16_t pcm_data[BUFFERS][SAMPLES];
+    int16_t pcm_data[BUFFERS][SAMPLES*2];
 } pulseaudio_priv_t;
 
 static int buffer(pulseaudio_priv_t *priv, int flip)
