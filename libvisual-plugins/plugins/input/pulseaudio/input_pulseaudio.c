@@ -25,7 +25,7 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define SAMPLES 512
+#define SAMPLES 4096
 #define BUFFERS 2
 
 #define PRIV_RECORDING 1
@@ -153,6 +153,7 @@ static int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     pthread_join(priv->thread, NULL);
 
     visual_mem_free (priv);
+
     return VISUAL_OK;
 }
 
