@@ -67,7 +67,8 @@ LV::VideoPtr Display::create (VisVideoDepth depth,
                               unsigned int height,
                               bool resizable)
 {
-    visual_log (VISUAL_LOG_INFO, "Attempting to create display (%dx%d)", width, height);
+    visual_log (VISUAL_LOG_INFO, "Attempting to create display (%dx%d %s)",
+                width, height, visual_video_depth_name (depth));
 
     return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
