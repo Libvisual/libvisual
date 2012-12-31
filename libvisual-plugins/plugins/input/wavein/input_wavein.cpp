@@ -317,7 +317,7 @@ namespace {
           buffer_to_read = priv->active_buffer ^ 0x1;
 
           if (priv->buffer_ready[buffer_to_read]) {
-              LV::BufferPtr buffer = LV::Buffer::wrap (priv->buffers[buffer_to_read], PCM_BUFFER_SIZE, false);
+              LV::BufferPtr buffer = LV::Buffer::wrap (priv->buffers[buffer_to_read], PCM_BUFFER_SIZE*2*sizeof(int16_t), false);
 
               audio->input (buffer,
                             VISUAL_AUDIO_SAMPLE_RATE_44100,

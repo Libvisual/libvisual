@@ -202,7 +202,6 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 {
     pulseaudio_priv_t *priv = NULL;
-    VisBuffer *visbuffer;
 
     visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
     visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
@@ -211,8 +210,7 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 
     visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
-
-    visbuffer = visual_buffer_new_wrap_data (priv->pcm_data[buffer(priv, TRUE)], SAMPLES, FALSE);
+    VisBuffer *visbuffer = visual_buffer_new_wrap_data (priv->pcm_data[buffer(priv, TRUE)], sizeof(priv->pcm_data[0]), FALSE);
 
     visual_audio_input(audio, visbuffer,
                        VISUAL_AUDIO_SAMPLE_RATE_44100,

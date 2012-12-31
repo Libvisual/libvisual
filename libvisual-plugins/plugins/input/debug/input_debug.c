@@ -153,7 +153,7 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 		}
 	}
 
-	VisBuffer *buffer = visual_buffer_new_wrap_data (data, VISUAL_TABLESIZE (data), FALSE);
+	VisBuffer *buffer = visual_buffer_new_wrap_data (data, sizeof (data), FALSE);
 
 	visual_audio_input (audio, buffer,
 	                    VISUAL_AUDIO_SAMPLE_RATE_44100,

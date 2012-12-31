@@ -391,10 +391,8 @@ namespace LV {
                      VisAudioSampleChannelType channeltype)
   {
       if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO) {
-          std::size_t sample_size = visual_audio_sample_format_get_size (format);
-
-          auto chan1 = Buffer::create (sample_size * buffer->get_size () / 2);
-          auto chan2 = Buffer::create (sample_size * buffer->get_size () / 2);
+          auto chan1 = Buffer::create (buffer->get_size () / 2);
+          auto chan2 = Buffer::create (buffer->get_size () / 2);
 
           AudioConvert::deinterleave_stereo_samples (chan1, chan2, buffer, format);
 
