@@ -559,6 +559,8 @@ LV_API VisVideo *visual_video_scale_depth_new (VisVideo*           src,
                                                VisVideoDepth       depth,
                                                VisVideoScaleMethod scale_method);
 
+LV_API const char *visual_video_depth_name (VisVideoDepth depth);
+
 /**
  * Checks if a certain depth is supported by checking against an ORred depthflag.
  *
