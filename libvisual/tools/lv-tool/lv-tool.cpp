@@ -40,6 +40,7 @@
 #define DEFAULT_WIDTH   320
 #define DEFAULT_HEIGHT  200
 #define DEFAULT_FPS     30
+#define DEFAULT_COLOR_DEPTH 0
 
 #if HAVE_SDL
 # define DEFAULT_DRIVER "sdl"
@@ -57,6 +58,7 @@ namespace {
 
   unsigned int width  = DEFAULT_WIDTH;
   unsigned int height = DEFAULT_HEIGHT;
+  unsigned int color_depth = DEFAULT_COLOR_DEPTH;
 
   unsigned int frame_rate  = DEFAULT_FPS;
   unsigned int frame_count = 0;
@@ -104,6 +106,7 @@ namespace {
                   "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
                   "\t--verbose\t\t-v\t\tOutput debugging info\n"
                   "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
+                  "\t--depth <depth>\t-c <depth>\tSet output colour depth (automatic by default)\n"
                   "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                   "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
                   "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
@@ -144,12 +147,13 @@ namespace {
 		  {"seed",        required_argument, 0, 's'},
           {"exclude",     required_argument, 0, 'x'},
 		  {"framecount",  required_argument, 0, 'F'},
+		  {"depth",       required_argument, 0, 'c'},
 		  {0,             0,                 0,  0 }
 	  };
 
       int index, argument;
 
-      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:x:", loptions, &index)) >= 0) {
+      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:x:c:", loptions, &index)) >= 0) {
 
           switch(argument) {
               // --help
@@ -173,6 +177,17 @@ namespace {
               // --dimensions
               case 'D': {
                   if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
+                  {
+                      std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
+                      return -1;
+                  }
+                  break;
+              }
+
+              // --depth
+              case 'c': {
+                  if (std::sscanf (optarg, "%d", &color_depth) != 1 ||
+                      visual_video_depth_enum_from_value(color_depth) == VISUAL_VIDEO_DEPTH_NONE)
                   {
                       std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
                       return -1;
@@ -335,17 +350,23 @@ int main (int argc, char **argv)
             throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
 
-        // Pick the best display depth
-
-        int depthflag = visual_actor_get_supported_depth (actor);
+        // Select output colour depth
 
         VisVideoDepth depth;
 
-        if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
-            depth = visual_video_depth_get_highest (depthflag);
-        }
-        else {
-            depth = visual_video_depth_get_highest_nogl (depthflag);
+        if (color_depth == 0) {
+            // Pick the best display depth directly supported by actor
+
+            int depthflag = visual_actor_get_supported_depth (actor);
+
+            if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
+                depth = visual_video_depth_get_highest (depthflag);
+            }
+            else {
+                depth = visual_video_depth_get_highest_nogl (depthflag);
+            }
+        } else {
+            depth = visual_video_depth_enum_from_value (color_depth);
         }
 
         bin.set_depth (depth);
