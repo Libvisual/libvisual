@@ -447,28 +447,6 @@ int main (int argc, char **argv)
 
                         bin.switch_actor(actor_name);
 
-/*
-                        // get new actor
-                        actor = bin.get_actor();
-
-                        display.set_title(visual_actor_get_plugin(actor)->info->name);
-
-                        // handle depth of new actor
-                        depthflag = visual_actor_get_supported_depth(actor);
-                        if (depthflag == VISUAL_VIDEO_DEPTH_GL)
-                        {
-                            bin.set_depth(VISUAL_VIDEO_DEPTH_GL);
-                        }
-                        else
-                        {
-                            depth = visual_video_depth_get_highest(depthflag);
-                            if ((bin.get_supported_depth() & depth) > 0)
-                                bin.set_depth(depth);
-                            else
-                                bin.set_depth(visual_video_depth_get_highest_nogl(bin.get_supported_depth()));
-                        }
-                        bin.force_actor_depth (bin.get_depth ());
-*/
                         break;
                     }
 
