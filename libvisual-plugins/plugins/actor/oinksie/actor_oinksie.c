@@ -52,6 +52,9 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_oinksie_palette (VisPluginData *plugin);
 static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
+static void act_oinksie_set_color_mode (OinksiePrivContainer *self, int mode);
+static void act_oinksie_set_acid_palette (OinksiePrivContainer *self, int palette);
+
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
@@ -128,6 +131,9 @@ static int act_oinksie_init (VisPluginData *plugin)
 
 	oinksie_init (&priv->priv1, 64, 64);
 	oinksie_init (&priv->priv2, 64, 64);
+
+	act_oinksie_set_color_mode (priv, 1);
+	act_oinksie_set_acid_palette (priv, 0);
 
 	return 0;
 }
@@ -209,18 +215,9 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 				param = ev.event.param.param;
 
 				if (visual_param_has_name (param, "color mode")) {
-					priv->color_mode = visual_param_get_value_integer (param);
-
-					switch (priv->color_mode) {
-						case 0:  priv->currentcomp = compose_blend1_32_c; break;
-						case 1:  priv->currentcomp = compose_blend2_32_c; break;
-						case 2:  priv->currentcomp = compose_blend3_32_c; break;
-						case 3:  priv->currentcomp = compose_blend4_32_c; break;
-						case 4:  priv->currentcomp = compose_blend5_32_c; break;
-						default: priv->currentcomp = compose_blend2_32_c; break;
-					}
+					act_oinksie_set_color_mode (priv, visual_param_get_value_integer (param));
 				} else if (visual_param_has_name (param, "acid palette")) {
-					priv->priv1.config.acidpalette = visual_param_get_value_integer (param);
+					act_oinksie_set_acid_palette (priv, visual_param_get_value_integer (param));
 				}
 
 				break;
@@ -330,6 +327,25 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	}
 
 	return 0;
+}
+
+static void act_oinksie_set_color_mode (OinksiePrivContainer *self, int mode)
+{
+	self->color_mode = mode;
+
+	switch (self->color_mode) {
+		case 0:	 self->currentcomp = compose_blend1_32_c; break;
+		case 1:	 self->currentcomp = compose_blend2_32_c; break;
+		case 2:	 self->currentcomp = compose_blend3_32_c; break;
+		case 3:	 self->currentcomp = compose_blend4_32_c; break;
+		case 4:	 self->currentcomp = compose_blend5_32_c; break;
+		default: self->currentcomp = compose_blend2_32_c; break;
+	}
+}
+
+static void act_oinksie_set_acid_palette (OinksiePrivContainer *self, int palette)
+{
+	self->priv1.config.acidpalette = palette;
 }
 
 static void compose_blend1_32_c (VisVideo *dest, VisVideo *src)
