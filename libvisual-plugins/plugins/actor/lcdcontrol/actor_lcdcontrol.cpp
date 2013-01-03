@@ -240,11 +240,9 @@ int lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
 
 /*
-	visual_audio_get_sample_mixed (audio, &priv->pcm, TRUE, 2,
+	visual_audio_get_sample_mixed_simple (audio, &priv->pcm, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
-			VISUAL_AUDIO_CHANNEL_RIGHT,
-			1.0,
-			1.0);
+			VISUAL_AUDIO_CHANNEL_RIGHT);
 */
 /*
 	float *pcmbuf = (float *)visual_buffer_get_data (&priv->pcm);

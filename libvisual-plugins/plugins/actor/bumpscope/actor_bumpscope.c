@@ -229,11 +229,9 @@ static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudi
 	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	priv->video = video;
 
-	visual_audio_get_sample_mixed (audio, priv->pcmbuf, TRUE, 2,
+	visual_audio_get_sample_mixed_simple (audio, priv->pcmbuf, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
-			VISUAL_AUDIO_CHANNEL_RIGHT,
-			1.0,
-			1.0);
+			VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	__bumpscope_render_pcm (priv, visual_buffer_get_data (priv->pcmbuf));
 
