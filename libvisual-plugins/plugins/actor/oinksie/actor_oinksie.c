@@ -31,10 +31,6 @@ typedef struct {
 
 	int                  color_mode;
 
-	int                  depth;
-	uint8_t             *buf1;
-	uint8_t             *buf2;
-
 	VisVideoComposeFunc	 currentcomp;
 } OinksiePrivContainer;
 
@@ -144,14 +140,6 @@ static int act_oinksie_cleanup (VisPluginData *plugin)
 
 	oinksie_quit (&priv->priv1);
 	oinksie_quit (&priv->priv2);
-
-	if (priv->depth != VISUAL_VIDEO_DEPTH_8BIT) {
-		if (priv->buf1)
-			visual_mem_free (priv->buf1);
-
-		if (priv->buf2)
-			visual_mem_free (priv->buf2);
-	}
 
 	visual_palette_free (priv->priv1.pal_cur);
 	visual_palette_free (priv->priv1.pal_old);
@@ -281,7 +269,10 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	priv->priv2.audio.energy = 0 /*audio->energy*/;
 
 	/* Let's get rendering */
-	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+
+	VisVideoDepth video_depth = visual_video_get_depth (video);
+
+	if (video_depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		oinksie_sample (&priv->priv1);
 
 		/* FIXME this is not pitch safe, will screw up region buffers.
@@ -290,36 +281,28 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 		priv->priv1.drawbuf = visual_video_get_pixels (video);
 		oinksie_render (&priv->priv1);
 	} else {
-		VisVideo *vid1;
-		VisVideo *vid2;
+		int width  = visual_video_get_width (video);
+		int height = visual_video_get_height (video);
+
+		VisVideo *vid1 = visual_video_new_with_buffer (width, height, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_palette (vid1, oinksie_palette_get (&priv->priv1));
+
+		VisVideo *vid2 = visual_video_new_with_buffer (width, height, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_palette (vid2, oinksie_palette_get (&priv->priv2));
+
+		priv->priv1.drawbuf = visual_video_get_pixels (vid1);
+		priv->priv2.drawbuf = visual_video_get_pixels (vid2);
 
 		oinksie_sample (&priv->priv1);
 		oinksie_sample (&priv->priv2);
 
-		priv->priv1.drawbuf = priv->buf1;
-		priv->priv2.drawbuf = priv->buf2;
-
 		oinksie_render (&priv->priv1);
 		oinksie_render (&priv->priv2);
 
-		vid1 = visual_video_new_wrap_buffer (priv->buf1,
-                                             FALSE,
-                                             visual_video_get_width (video),
-                                             visual_video_get_height (video),
-                                             VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_palette (vid1, oinksie_palette_get (&priv->priv1));
-
-		vid2 = visual_video_new_wrap_buffer (priv->buf2,
-                                             FALSE,
-                                             visual_video_get_width (video),
-                                             visual_video_get_height (video),
-                                             VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_palette (vid2, oinksie_palette_get (&priv->priv2));
-
 		visual_video_blit (video, vid1, 0, 0, FALSE);
+
 		visual_video_set_compose_type (vid2, VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM);
 		visual_video_set_compose_function (vid2, priv->currentcomp);
-
 		visual_video_blit (video, vid2, 0, 0, TRUE);
 
 		visual_video_unref (vid1);
