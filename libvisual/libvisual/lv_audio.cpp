@@ -65,7 +65,6 @@ namespace LV {
       std::string   name;
       BufferRingPtr samples;
       Time          samples_timeout;
-      float         factor;
 
       explicit AudioChannel (std::string const& name);
 
@@ -136,7 +135,7 @@ namespace LV {
         return sample->processed;
     }
 
-    void sample_buffer_mix (BufferPtr const& dest, BufferPtr const& src, bool divide, float multiplier)
+    void sample_buffer_mix (BufferPtr const& dest, BufferPtr const& src, float multiplier)
     {
         visual_return_if_fail (dest->get_size () == src->get_size ());
 
@@ -145,24 +144,8 @@ namespace LV {
 
         std::size_t scnt = dest->get_size () / sizeof (float);
 
-        /* FIXME make simd version of these */
-        if (!divide) {
-            if (multiplier == 1.0) {
-                for (unsigned int i = 0; i < scnt; i++)
-                    dbuf[i] += sbuf[i];
-            } else {
-                for (unsigned int i = 0; i < scnt; i++)
-                    dbuf[i] += (sbuf[i] * multiplier);
-            }
-        } else {
-            if (multiplier == 1.0) {
-                for (unsigned int i = 0; i < scnt; i++)
-                    dbuf[i] = (dbuf[i] + sbuf[i]) * 0.5;
-            } else {
-                for (unsigned int i = 0; i < scnt; i++)
-                    dbuf[i] = (dbuf[i] + (sbuf[i] * multiplier)) * 0.5;
-            }
-        }
+        for (unsigned int i = 0; i < scnt; i++)
+            dbuf[i] += sbuf[i] * multiplier;
     }
 
   } // anonymous
@@ -212,7 +195,6 @@ namespace LV {
       : name            (name_)
       , samples         (new BufferRing)
       , samples_timeout (Time (1, 0))
-      , factor          (1.0)
   {}
 
   AudioChannel::~AudioChannel ()
@@ -262,33 +244,24 @@ namespace LV {
       va_end (args);
   }
 
-  // FIXME: too much code duplication with get_sample_mixed
   void Audio::get_sample_mixed_simple (BufferPtr const& buffer, unsigned int channels, va_list args)
   {
       visual_return_if_fail (channels > 0);
 
-      std::vector<std::string> chanids (channels);
+      std::vector<std::string> channel_ids (channels);
 
       for (unsigned int i = 0; i < channels; i++)
-          chanids[i] = va_arg (args, const char *);
+          channel_ids[i] = va_arg (args, const char *);
 
-      auto temp = Buffer::create (buffer->get_size ());
+      float factor = 1.0 / channels;
+
+      auto channel_samples = Buffer::create (buffer->get_size ());
       buffer->fill (0);
-
-      bool first = true;
 
       // The mixing loop
       for (unsigned int i = 0; i < channels; i++) {
-          if (get_sample (temp, chanids[i])) {
-
-              AudioChannel* channel = m_impl->get_channel (chanids[i]);
-
-              if (first) {
-                  sample_buffer_mix (buffer, temp, false, channel->factor);
-                  first = false;
-              } else {
-                  sample_buffer_mix (buffer, temp, true, channel->factor);
-              }
+          if (get_sample (channel_samples, channel_ids[i])) {
+              sample_buffer_mix (buffer, channel_samples, factor);
           }
       }
   }
@@ -306,31 +279,24 @@ namespace LV {
   {
       visual_return_if_fail (channels > 0);
 
-      std::vector<std::string> chanids  (channels);
-      std::vector<double>      chanmuls (channels);
-
+      std::vector<std::string> channel_ids (channels);
       for (unsigned int i = 0; i < channels; i++) {
-          chanids[i] = va_arg (args, const char *);
+          channel_ids[i] = va_arg (args, const char *);
       }
 
+      std::vector<double> channel_factors (channels);
       for (unsigned int i = 0; i < channels; i++)
-          chanmuls[i] = va_arg (args, double);
+          channel_factors[i] = va_arg (args, double);
 
-      auto temp = Buffer::create (buffer->get_size ());
+      float factor = divide ? (1.0 / channels) : 1.0;
 
+      auto channel_samples = Buffer::create (buffer->get_size ());
       buffer->fill (0);
-
-      bool first = true;
 
       // The mixing loop
       for (unsigned int i = 0; i < channels; i++) {
-          if (get_sample (temp, chanids[i])) {
-              if (first) {
-                  sample_buffer_mix (buffer, temp, false, chanmuls[i]);
-                  first = false;
-              } else {
-                  sample_buffer_mix (buffer, temp, divide, chanmuls[i]);
-              }
+          if (get_sample (channel_samples, channel_ids[i])) {
+              sample_buffer_mix (buffer, channel_samples, channel_factors[i] * factor);
           }
       }
   }
