@@ -135,10 +135,7 @@ namespace LV {
   VideoPtr Video::create_sub (Rect const& drect, VideoConstPtr const& src, Rect const& srect)
   {
       auto sbound = src->m_impl->extents;
-
-      auto rsrect = srect;
-      rsrect.clip (sbound, srect);
-      rsrect.clip (drect, rsrect);
+      auto rsrect = drect.clip (sbound.clip (srect));
 
       return create_sub (src, rsrect);
   }

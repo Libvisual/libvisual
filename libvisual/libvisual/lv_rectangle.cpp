@@ -62,32 +62,32 @@ namespace LV {
       return true;
   }
 
-  Rect Rect::clip (Rect const& bounds, Rect const& r)
+  Rect Rect::clip (Rect const& r) const
   {
       // Return an empty rectangle
-      if (!bounds.intersects (r)) {
+      if (!intersects (r)) {
           return Rect ();
       }
 
       auto result = r;
 
       // Left, Upper boundries
-      if (r.x < bounds.x) {
-          result.width = r.width - (bounds.x - r.x);
-          result.x = bounds.x;
+      if (r.x < x) {
+          result.width = r.width - (x - r.x);
+          result.x = x;
       }
 
-      if (r.y < bounds.y) {
-          result.height = r.height - (bounds.y - r.y);
-          result.y = bounds.y;
+      if (r.y < y) {
+          result.height = r.height - (y - r.y);
+          result.y = y;
       }
 
       // Right, Lower boundries
-      if (result.x + result.width > bounds.width)
-          result.width = bounds.width - result.x;
+      if (result.x + result.width > width)
+          result.width = width - result.x;
 
-      if (result.y + result.height > bounds.height)
-          result.height = bounds.height - result.y;
+      if (result.y + result.height > height)
+          result.height = height - result.y;
 
       return result;
   }

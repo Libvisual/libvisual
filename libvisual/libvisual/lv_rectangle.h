@@ -136,7 +136,7 @@ namespace LV {
        *
        * @return Clipped rectangle
        */
-      static Rect clip (Rect const& bounds, Rect const& r);
+      Rect clip (Rect const& r) const;
 
       /**
        * Normalizes this rectangle to the origin. The top-corner will
