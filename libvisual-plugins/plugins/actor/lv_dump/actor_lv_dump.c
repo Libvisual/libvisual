@@ -159,15 +159,11 @@ static int lv_dump_render (VisPluginData *plugin, VisVideo *video, VisAudio *aud
 {
     LVDumpPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-    float pcm[priv->samples_per_frame];
-
-    VisBuffer *pcm_buffer = visual_buffer_new_wrap_data (pcm, sizeof (pcm), FALSE);
+    VisBuffer *pcm_buffer = visual_buffer_new_allocate (priv->samples_per_frame * sizeof (float));
 
     visual_audio_get_sample_mixed_simple (audio, pcm_buffer, 2,
         VISUAL_AUDIO_CHANNEL_LEFT,
         VISUAL_AUDIO_CHANNEL_RIGHT);
-
-    visual_buffer_unref (pcm_buffer);
 
     int width  = visual_video_get_width(video);
     int height = visual_video_get_height(video);
@@ -175,7 +171,12 @@ static int lv_dump_render (VisPluginData *plugin, VisVideo *video, VisAudio *aud
     unsigned int samples_to_render = MIN(width * height, priv->samples_per_frame);
 
     visual_video_fill_color (video, NULL);
-    visual_mem_copy(visual_video_get_pixels(video), pcm, samples_to_render * sizeof(float));
+
+    visual_mem_copy (visual_video_get_pixels(video),
+                     visual_buffer_get_data (pcm_buffer),
+                     samples_to_render * sizeof(float));
+
+    visual_buffer_unref (pcm_buffer);
 
     return 0;
 }
