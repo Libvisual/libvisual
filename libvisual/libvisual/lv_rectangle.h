@@ -129,10 +129,9 @@ namespace LV {
       bool intersects (Rect const& r) const;
 
       /**
-       * Clips a rectangle to another rectangle.
+       * Clips a rectangle to this rectangle.
        *
-       * @param bounds rectangle to clip against
-       * @param r      rectangle to clip
+       * @param r rectangle to clip
        *
        * @return Clipped rectangle
        */
