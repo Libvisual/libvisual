@@ -20,15 +20,11 @@
 #include <string.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
-#include <pthread.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define SAMPLES 1024
 #define BUFFERS 2
-
-#define PRIV_RECORDING 1
-#define PRIV_STOPPED 2
 
 pa_sample_spec sample_spec = {
     .format = PA_SAMPLE_S16LE,
@@ -38,35 +34,8 @@ pa_sample_spec sample_spec = {
 
 typedef struct {
     pa_simple *simple;
-    pthread_t thread;
-    pthread_attr_t pthread_custom_attr;
-    int currentBuffer;
-    int recordingState;
-    int16_t pcm_data[BUFFERS][SAMPLES*2];
+    int16_t pcm_data[SAMPLES*2];
 } pulseaudio_priv_t;
-
-static int buffer(pulseaudio_priv_t *priv, int flip)
-{
-    int f = priv->currentBuffer % BUFFERS;
-    if(flip)
-        priv->currentBuffer++;
-    return f;
-}
-
-static void *update_thread(void *data)
-{
-    int error;
-    pulseaudio_priv_t * priv = (pulseaudio_priv_t *)data;
-    priv->recordingState = PRIV_RECORDING;
-    while(priv->recordingState)
-    {
-        if(pa_simple_read(priv->simple, priv->pcm_data[buffer(priv, FALSE)], sizeof(priv->pcm_data[0]), &error) < 0) {
-            visual_log(VISUAL_LOG_CRITICAL, "pa_simple_read() failed: %s", pa_strerror(error));
-            return NULL;
-        }
-    }
-    return NULL;
-}
 
 static int inp_pulseaudio_init( VisPluginData *plugin );
 static int inp_pulseaudio_cleanup( VisPluginData *plugin );
@@ -130,9 +99,6 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
         return -VISUAL_ERROR_GENERAL;
     }
 
-    pthread_attr_init(&priv->pthread_custom_attr);
-    pthread_create(&priv->thread, &priv->pthread_custom_attr, update_thread, (void *)priv);
-
     return VISUAL_OK;
 }
 
@@ -146,10 +112,6 @@ static int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
     visual_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
 
     pa_simple_free(priv->simple);
-
-    priv->recordingState = PRIV_STOPPED;
-
-    pthread_join(priv->thread, NULL);
 
     visual_mem_free (priv);
 
@@ -201,16 +163,20 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 }
 int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 {
-    pulseaudio_priv_t *priv = NULL;
-
     visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
     visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
 
-    priv = visual_object_get_private(VISUAL_OBJECT(plugin));
-
+    pulseaudio_priv_t *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
     visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
-    VisBuffer *visbuffer = visual_buffer_new_wrap_data (priv->pcm_data[buffer(priv, TRUE)], sizeof(priv->pcm_data[0]), FALSE);
+    int error;
+
+    if (pa_simple_read(priv->simple, priv->pcm_data, sizeof(priv->pcm_data), &error) < 0) {
+        visual_log(VISUAL_LOG_CRITICAL, "pa_simple_read() failed: %s", pa_strerror(error));
+        return -1;
+    }
+
+    VisBuffer *visbuffer = visual_buffer_new_wrap_data (priv->pcm_data, sizeof(priv->pcm_data), FALSE);
 
     visual_audio_input(audio, visbuffer,
                        VISUAL_AUDIO_SAMPLE_RATE_44100,
