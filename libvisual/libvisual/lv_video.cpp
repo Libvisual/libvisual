@@ -330,6 +330,8 @@ namespace LV {
       m_impl->pitch  = m_impl->width * m_impl->bpp;
 
       m_impl->buffer->set_size (m_impl->pitch * m_impl->height);
+
+      m_impl->extents = Rect (width, height);
   }
 
   int Video::get_width () const
