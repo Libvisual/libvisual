@@ -310,7 +310,7 @@ namespace {
   template <typename T>
   inline void deinterleave_stereo_sample_array (T* dest1, T* dest2, T const* src, std::size_t count)
   {
-      auto src_end = src + count * 2;
+      auto src_end = src + count;
 
       while (src != src_end)
       {

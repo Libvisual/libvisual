@@ -35,6 +35,7 @@
 #include "private/lv_video_fill.hpp"
 #include "private/lv_video_transform.hpp"
 #include "private/lv_video_bmp.hpp"
+#include "private/lv_video_png.hpp"
 #include <fstream>
 
 namespace LV {
@@ -134,10 +135,7 @@ namespace LV {
   VideoPtr Video::create_sub (Rect const& drect, VideoConstPtr const& src, Rect const& srect)
   {
       auto sbound = src->m_impl->extents;
-
-      auto rsrect = srect;
-      rsrect.clip (sbound, srect);
-      rsrect.clip (drect, rsrect);
+      auto rsrect = drect.clip (sbound.clip (srect));
 
       return create_sub (src, rsrect);
   }
@@ -165,12 +163,22 @@ namespace LV {
           return nullptr;
       }
 
-      return bitmap_load_bmp (stream);
+      return create_from_stream (stream);
   }
 
   VideoPtr Video::create_from_stream (std::istream& input)
   {
-      return bitmap_load_bmp (input);
+      auto image = bitmap_load_bmp (input);
+      if (image) {
+          return image;
+      }
+
+      image = bitmap_load_png (input);
+      if (image) {
+          return image;
+      }
+
+      return {};
   }
 
   VideoPtr Video::create_scale_depth (VideoConstPtr const& src,
@@ -319,6 +327,8 @@ namespace LV {
       m_impl->pitch  = m_impl->width * m_impl->bpp;
 
       m_impl->buffer->set_size (m_impl->pitch * m_impl->height);
+
+      m_impl->extents = Rect (width, height);
   }
 
   int Video::get_width () const
@@ -861,6 +871,32 @@ namespace LV {
 } // LV namespace
 
 /* VisVideoDepth functions */
+
+const char *visual_video_depth_name (VisVideoDepth depth)
+{
+    switch (depth) {
+        case VISUAL_VIDEO_DEPTH_8BIT:
+            return "8-bit indexed RGB";
+
+        case VISUAL_VIDEO_DEPTH_16BIT:
+            return "16-bit RGB";
+
+        case VISUAL_VIDEO_DEPTH_24BIT:
+            return "24-bit RGB";
+
+        case VISUAL_VIDEO_DEPTH_32BIT:
+            return "32-bit ARGB";
+
+        case VISUAL_VIDEO_DEPTH_GL:
+            return "OpenGL";
+
+        case VISUAL_VIDEO_DEPTH_NONE:
+            return "(none)";
+
+        default:
+            return "(set)";
+    }
+}
 
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 {

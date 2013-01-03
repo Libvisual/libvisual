@@ -56,7 +56,13 @@ namespace {
                                    unsigned int height,
                                    bool resizable)
       {
-          m_screen_video = LV::Video::create (width, height, VISUAL_VIDEO_DEPTH_24BIT);
+          if (depth == VISUAL_VIDEO_DEPTH_GL)
+          {
+              visual_log (VISUAL_LOG_ERROR, "Cannot use stdout driver for OpenGL rendering");
+              return nullptr;
+          }
+
+          m_screen_video = LV::Video::create (width, height, depth);
 
           return m_screen_video;
       }

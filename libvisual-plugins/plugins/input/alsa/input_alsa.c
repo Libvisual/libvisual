@@ -38,7 +38,7 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define PCM_BUF_SIZE 4096
+#define PCM_BUF_SIZE 1024
 
 typedef struct {
 	snd_pcm_t *chandle;
@@ -228,7 +228,7 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 		if (rcnt > 0) {
 			VisBuffer *buffer;
 
-			buffer = visual_buffer_new_wrap_data (data, rcnt*2, FALSE);
+			buffer = visual_buffer_new_wrap_data (data, rcnt*2*sizeof(int16_t), FALSE);
 
 			visual_audio_input (audio, buffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
 					VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);

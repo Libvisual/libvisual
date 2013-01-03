@@ -1,0 +1,178 @@
+The Libvisual Hacking Guide for Developers
+==========================================
+
+General information
+-------------------
+
+Website:
+http://libvisual.org
+
+IRC channel:
+#libvisual on FreeNode (irc.freenode.net)
+
+
+Downloading LV
+--------------
+
+LV is hosted on GitHub at libvisual.github.com.
+
+To obtain the latest development snapshot:
+
+    git clone https://github.com/Libvisual/libvisual.git
+
+
+Building LV
+-----------
+
+Requirements
+
+    LV is written in a mix of C99 and C++11, and as such, requires an
+    up-to-date C/C++ compiler to build. Compilers tested and known to
+    work are GCC 4.6 and Clang 3.1.
+
+    ** There is a known problem using Clang 3.1 with libstdc++
+       4.6/4.7. It is easily fixed with the one-line patch to
+       libstdc++ found here
+       (http://clang.llvm.org/libstdc++4.7-clang11.patch).
+
+
+Configuration
+
+    Building Libvisual requires CMake 2.8 (http://www.cmake.org) or
+    above. The command to configure the build is:
+
+        cmake .
+
+    ** For general development, we recommend building out-of-source. This
+       keeps the source tree clean, and makes it possible to create
+       multiple test builds with different options. To build LV
+       out-of-source, enter a new directory and run:
+
+           cmake <PATH-TO-SOURCE-TREE>
+
+    Options:
+
+        Build options are configured with the -D argument e.g.:
+
+            cmake -D<NAME>=<VALUE> <...>
+
+        Below is a list of common options for developers. For a full
+        list, run: cmake -L <...>
+
+            CMAKE_INSTALL_PREFIX
+            Root installation directory. Defaults to /usr/local on
+            Linux.
+
+            CMAKE_BUILD_TYPE
+            Build profile. Options: Release, Debug
+
+            ENABLE_DOCS
+            Enable documentation. Options: yes, no
+
+            ENABLE_PROFILING
+            Build with profiling information (for gprof)
+
+     Compiler Selection:
+
+         Use the enviroment variables CC and CXX to set the C and C++
+         compiler of your choice. Here is an example for Clang:
+
+             CC=clang CXX=clang++ cmake <...>
+
+     Forcing Reconfiguration:
+
+         CMake stores its build configuration in a cache
+         (CMakeCache.txt) to avoid re-running expensive tests on each
+         build. To force a complete reconfiguration, you can delete the
+         cache file:
+
+            rm -f CMakeCache.txt
+
+Building
+
+    Once configuration is complete, run Make to begin the compiling:
+
+        make
+
+    To see every command run during a build, including compiler flags:
+
+        make VERBOSE=1
+
+Installing
+
+    After compilation is finished, install the built library with:
+
+        make install
+
+
+Hacking LV
+----------
+
+Coding style (FIXME: Format and edit this)
+
+    * LV Core follows a single style. No tabs, or trailing whitespaces
+
+    * Ditto for build scripts
+
+    * Plugin scaffolding, the part that interfaces with LV, are
+      written in the same style. Some use tabs for indentation, but
+      this is just a holdover from older LV releases which used tab
+      indentation.
+
+    * Plugin implementation are written in various styles, as they're
+      largely retained from the original code we imported. We're not
+      mass reformatting or reindenting to avoid making the commit
+      history hard to trace (the blame view will become less useful).
+
+    * The golden rule is to follow the style of whatever's already
+      written, depending on the source file.
+
+Documentation (FIXME: Format and edit this)
+
+    * We use Doxygen. Use -DENABLE_DOCS=yes to build documentation.
+
+    * Please follow the general style described in the official
+      Javadoc style guide:
+
+          http://tinyurl.com/2vrongv
+
+Source Control (FIXME: Format and edit this)
+
+    * We obviously use git. The GitHub repository is the master
+      repository.
+
+    * All development currently happens in cxx, so please base your
+      development there. cxx will become the new master once the new
+      C++ API is complete and 0.5 is released. Workflow: flying fish.
+
+    * In the future, once cxx becomes master, we will create a
+      separate devel branch and work there. Then on, HEAD will be the
+      latest stable.  New features must be written in separate
+      branches, branched off devel. Once a feature branch is proven
+      relatively stable, we will integrate it into devel. Once devel
+      proves stable and ready for release, we will merge it into
+      master. For more information on this workflow, see:
+
+          http://nvie.com/posts/a-successful-git-branching-model
+
+    * Good Git guide: Pro Git (http://git-scm.com/book)
+
+Communication (FIXME: Format and edit this)
+
+    * IRC! #libvisual on FreeNode (irc.freenode.net)
+
+    * Come and park in the channel, we're a fun bunch!
+
+    * But please observe basic etiquette and mutual respect.
+
+Bug Reporting
+
+    * Use IRC for quick communication
+
+    * Track bugs in the GitHub issue queue
+      (https://github.com/Libvisual/libvisual/issues).
+
+    * Please include a basic description of the issue, and how to
+      reproduce it. The issue queue is also used to file enhancement
+      requests and general development goals. For these, include a
+      description and some rationale.

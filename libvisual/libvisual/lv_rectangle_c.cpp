@@ -131,7 +131,7 @@ extern "C" {
       visual_return_if_fail (bounds != nullptr);
       visual_return_if_fail (src    != nullptr);
 
-      *result = LV::Rect::clip (*bounds, *src);
+      *result = bounds->clip (*src);
   }
 
   void visual_rectangle_normalize (VisRectangle *self)

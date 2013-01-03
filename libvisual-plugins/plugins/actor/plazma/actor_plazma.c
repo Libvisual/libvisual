@@ -234,11 +234,10 @@ static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	int i;
 
 	pcmback = visual_buffer_new_wrap_data (priv->pcm_buffer, sizeof (float) * 1024, FALSE);
-	visual_audio_get_sample_mixed (audio, pcmback, TRUE, 2,
+	visual_audio_get_sample_mixed_simple (audio, pcmback, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
-			VISUAL_AUDIO_CHANNEL_RIGHT,
-			1.0,
-			1.0);
+			VISUAL_AUDIO_CHANNEL_RIGHT);
+
 
 	fbuf = visual_buffer_new_wrap_data (priv->render_buffer, sizeof (float) * 256, FALSE);
 	visual_audio_get_spectrum_for_sample (fbuf, pcmback, TRUE);

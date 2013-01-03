@@ -69,7 +69,7 @@ typedef struct {
 
 	int highest;
 
-	float pcm[3][4096];
+	float pcm[3][512];
 	float freq[2][256];
 	float freqsmall[4];
 

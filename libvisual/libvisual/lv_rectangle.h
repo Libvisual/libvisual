@@ -41,196 +41,205 @@ namespace LV {
   {
   public:
 
-	  int x;
-	  int y;
-	  int width;
-	  int height;
+      int x;
+      int y;
+      int width;
+      int height;
 
-	  Rect ()
-		  : x (0), y (0), width (0), height (0)
-	  {}
+      Rect ()
+          : x (0), y (0), width (0), height (0)
+      {}
 
-	  /**
-	   * Creates a new VisRectangle.
-	   *
-	   * @param x X Position of the upper left corner.
-	   * @param y Y Position of the upper left corner.
-	   * @param width The width of the rectangle.
-	   * @param height The height of the rectangle.
-	   */
-	  Rect (int x_, int y_, int width_, int height_)
- 		  : x (x_), y (y_), width (width_), height (height_)
-	  {}
+      /**
+       * Creates a new Rect.
+       *
+       * @param x      X-coordinate of upper-left corner
+       * @param y      Y-coordinate of upper-left corner
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
+       */
+      Rect (int x_, int y_, int width_, int height_)
+          : x (x_), y (y_), width (width_), height (height_)
+      {}
 
-	  /**
-	   * Sets the rectangle boundary.
-	   *
-	   * @param x X Position of the upper left corner.
-	   * @param y Y Position of the upper left corner.
-	   * @param width The width of the rectangle.
-	   * @param height The height of the rectangle.
-	   */
-	  void set (int x_, int y_, int width_, int height_)
-	  {
-		  x = x_; y = y_; width = width_; height = height_;
-	  }
+      /**
+       * Creates a new Rect of the given dimensions.
+       *
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
+       */
+      Rect (int width_, int height_)
+          : x (0), y (0), width (width_), height (height_)
+      {}
 
-	  /**
-	   * Checks if this rectangle has a non-zero area
-	   *
-	   * @return true is rectangle has a non-zero area, false
-	   *         otherwise
-	   */
-	  bool empty () const
-	  {
-		  return ( width <= 0 || height <= 0 );
-	  }
+      /**
+       * Sets rectangle extents
+       *
+       * @param x      X-coordinate of upper-left corner
+       * @param y      Y-coordinate of upper-left corner
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
+       */
+      void set (int x_, int y_, int width_, int height_)
+      {
+          x = x_; y = y_; width = width_; height = height_;
+      }
 
-	  /**
-	   * Tests if a given point falls within this rectangle.
-	   *
-	   * @param x x position of point
-	   * @param y y position of point
-	   *
-	   * @return true if within rectangle, false otherwise
-	   */
-	  bool contains (int x_, int y_) const
-	  {
-		  return ( x_ >= x && x_ <= x + width && y_ >= y && y_ <= y + height );
-	  }
+      /**
+       * Checks if this rectangle has a non-zero area
+       *
+       * @return true is rectangle has a non-zero area, false
+       *         otherwise
+       */
+      bool empty () const
+      {
+          return ( width <= 0 || height <= 0 );
+      }
 
-	  /**
-	   * Tests if this rectangle completely contains with another
-	   *
-	   * @param r rectangle to test containment
-	   *
-	   * @return true if given rectangle completely contained, false
-	   *         otherwise
-	   */
-	  bool contains (Rect const& r) const;
+      /**
+       * Tests if a given point falls within this rectangle.
+       *
+       * @param x x position of point
+       * @param y y position of point
+       *
+       * @return true if within rectangle, false otherwise
+       */
+      bool contains (int x_, int y_) const
+      {
+          return ( x_ >= x && x_ <= x + width && y_ >= y && y_ <= y + height );
+      }
 
-	  /**
-	   * tests if this rectangle intersects with another
-	   *
-	   * @param r rectangle to test intersection with
-	   *
-	   * @return true if rectangles intersect, false otherwise
-	   */
-	  bool intersects (Rect const& r) const;
+      /**
+       * Tests if this rectangle completely contains with another
+       *
+       * @param r rectangle to test containment
+       *
+       * @return true if given rectangle completely contained, false
+       *         otherwise
+       */
+      bool contains (Rect const& r) const;
 
-	  /**
-	   * Clips a rectangle to another rectangle.
-	   *
-	   * @param bounds rectangle to clip against
-	   * @param r      rectangle to clip
-	   *
-	   * @return Clipped rectangle
-	   */
-	  static Rect clip (Rect const& bounds, Rect const& r);
+      /**
+       * tests if this rectangle intersects with another
+       *
+       * @param r rectangle to test intersection with
+       *
+       * @return true if rectangles intersect, false otherwise
+       */
+      bool intersects (Rect const& r) const;
 
-	  /**
-	   * Normalizes this rectangle to the origin. The top-corner will
-	   * be set to (0, 0)
-	   *
-	   * @param src rectangle to normalize to
-	   */
-	  void normalize ()
-	  {
-		  x = y = 0;
-	  }
+      /**
+       * Clips a rectangle to this rectangle.
+       *
+       * @param r rectangle to clip
+       *
+       * @return Clipped rectangle
+       */
+      Rect clip (Rect const& r) const;
 
-	  /**
-	   * Normalizes this rectangle to another. The top-corner will be
-	   * set to that of the given rectangle.
-	   *
-	   * @param src rectangle to normalize to
-	   */
-	  void normalize_to (Rect const& r)
-	  {
-		  x = r.x; y = r.y;
-	  }
+      /**
+       * Normalizes this rectangle to the origin. The top-corner will
+       * be set to (0, 0)
+       *
+       * @param src rectangle to normalize to
+       */
+      void normalize ()
+      {
+          x = y = 0;
+      }
 
-	  /**
-	   * Transforms a point with relative coordinates in [(0,0),
-	   * (1,1)] to absolute positions in this rectangle. (0,0) and
-	   * (1,1) are respectively mapped to the top-left and
-	   * bottom-right corners.
-	   *
-	   * @note Out of range coordinates are clamped.
-	   *
-	   * @see denormalize_points()
-	   *
-	   * @param fx Normalized X coordinate of point
-	   * @param fy Normalized Y coordinate of point
-	   * @param x  Integer variable to store the absolute X coordinate
-	   * @param y  Integer variable to store the absolute Y coordinate
-	   */
-	  void denormalize_point (float fx, float fy, int32_t& x_, int32_t& y_) const
-	  {
-		  fx = clamp (fx, 0.0f, 1.0f);
-		  fy = clamp (fx, 0.0f, 1.0f);
+      /**
+       * Normalizes this rectangle to another. The top-corner will be
+       * set to that of the given rectangle.
+       *
+       * @param src rectangle to normalize to
+       */
+      void normalize_to (Rect const& r)
+      {
+          x = r.x; y = r.y;
+      }
 
-		  x_ = x + fx * width;
-		  y_ = y + fy * height;
-	  }
+      /**
+       * Transforms a point with relative coordinates in [(0,0),
+       * (1,1)] to absolute positions in this rectangle. (0,0) and
+       * (1,1) are respectively mapped to the top-left and
+       * bottom-right corners.
+       *
+       * @note Out of range coordinates are clamped.
+       *
+       * @see denormalize_points()
+       *
+       * @param fx Normalized X coordinate of point
+       * @param fy Normalized Y coordinate of point
+       * @param x  Integer variable to store the absolute X coordinate
+       * @param y  Integer variable to store the absolute Y coordinate
+       */
+      void denormalize_point (float fx, float fy, int32_t& x_, int32_t& y_) const
+      {
+          fx = clamp (fx, 0.0f, 1.0f);
+          fy = clamp (fx, 0.0f, 1.0f);
 
-	  /**
-	   * A fast array version of denormalize_point().
-	   *
-	   * @note Unlike denormalize_point(), out of range input
-	   * coordinates are NOT clamped for performance reasons.
-	   *
-	   * @param fxlist input array of x coordinates, each in [0.0, 1.0]
-	   * @param fylist input array of y coordinates, each in [0.0, 1.0]
-	   * @param xlist  output array of x coordinates
-	   * @param ylist  output array of y coordinates
-	   * @param size   number of points
-	   */
-	  void denormalize_points (float const* fxlist, float const* fylist, int32_t* xlist, int32_t* ylist, unsigned int size) const;
+          x_ = x + fx * width;
+          y_ = y + fy * height;
+      }
 
-	  /**
-	   * Transform a point with relative coordinates in [(-1,-1),
-	   * (1,1)] to absolute positions in this rectangle. (-1,-1) and (1,1)
-	   * are respectively mapped to the top-left and bottom-right corners.
-	   *
-	   * @note Out of range coordinates are clamped.
-	   *
-	   * @see denormalize_points()
-	   *
-	   * @param fx Normalized X coordinate of point
-	   * @param fy Normalized Y coordinate of point
-	   * @param x  Integer variable to store the absolute X coordinate
-	   * @param y  Integer variable to store the absolute Y coordinate
-	   */
-	  void denormalize_point_neg (float fx, float fy, int32_t& x_, int32_t& y_) const
-	  {
-		  fx = clamp (fx, -1.0f, 1.0f) * 0.5f + 0.5f;
-		  fy = clamp (fy, -1.0f, 1.0f) * 0.5f + 0.5f;
+      /**
+       * A fast array version of denormalize_point().
+       *
+       * @note Unlike denormalize_point(), out of range input
+       * coordinates are NOT clamped for performance reasons.
+       *
+       * @param fxlist input array of x coordinates, each in [0.0, 1.0]
+       * @param fylist input array of y coordinates, each in [0.0, 1.0]
+       * @param xlist  output array of x coordinates
+       * @param ylist  output array of y coordinates
+       * @param size   number of points
+       */
+      void denormalize_points (float const* fxlist, float const* fylist, int32_t* xlist, int32_t* ylist, unsigned int size) const;
 
-		  x_ = x + fx * width;
-		  y_ = y + fy * height;
-	  }
+      /**
+       * Transform a point with relative coordinates in [(-1,-1),
+       * (1,1)] to absolute positions in this rectangle. (-1,-1) and (1,1)
+       * are respectively mapped to the top-left and bottom-right corners.
+       *
+       * @note Out of range coordinates are clamped.
+       *
+       * @see denormalize_points()
+       *
+       * @param fx Normalized X coordinate of point
+       * @param fy Normalized Y coordinate of point
+       * @param x  Integer variable to store the absolute X coordinate
+       * @param y  Integer variable to store the absolute Y coordinate
+       */
+      void denormalize_point_neg (float fx, float fy, int32_t& x_, int32_t& y_) const
+      {
+          fx = clamp (fx, -1.0f, 1.0f) * 0.5f + 0.5f;
+          fy = clamp (fy, -1.0f, 1.0f) * 0.5f + 0.5f;
 
-	  /**
-	   * A fast array version of denormalize_point_neg()
-	   *
-	   * @note Unlike denormalize_point_neg(), out of range input
-	   * coordinates are NOT clamped for performance reasons.
-	   *
-	   * @param fxlist input array of x coordinates, each in [-1.0, 1.0]
-	   * @param fylist input array of y coordinates, each in [-1,0, 1.0]
-	   * @param xlist  output array of x coordinates
-	   * @param ylist  output array of y coordinates
-	   * @param size   number of points
-	   */
-	  void denormalize_points_neg (float const* fxlist, float const* fylist, int32_t* xlist, int32_t* ylist, unsigned int size) const;
+          x_ = x + fx * width;
+          y_ = y + fy * height;
+      }
+
+      /**
+       * A fast array version of denormalize_point_neg()
+       *
+       * @note Unlike denormalize_point_neg(), out of range input
+       * coordinates are NOT clamped for performance reasons.
+       *
+       * @param fxlist input array of x coordinates, each in [-1.0, 1.0]
+       * @param fylist input array of y coordinates, each in [-1,0, 1.0]
+       * @param xlist  output array of x coordinates
+       * @param ylist  output array of y coordinates
+       * @param size   number of points
+       */
+      void denormalize_points_neg (float const* fxlist, float const* fylist, int32_t* xlist, int32_t* ylist, unsigned int size) const;
   };
 
 } // LV namespace
 
 #endif /* __cplusplus */
 
-#define VISUAL_RECTANGLE(obj)				(VISUAL_CHECK_CAST ((obj, VisRectangle))
+#define VISUAL_RECTANGLE(obj)               (VISUAL_CHECK_CAST ((obj, VisRectangle))
 
 #ifdef __cplusplus
 typedef ::LV::Rect VisRectangle;

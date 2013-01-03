@@ -201,7 +201,7 @@ static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio
 	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_LEFT);
 
 	visual_buffer_set_data_pair (buffer, priv->pcm_data[1], sizeof (float) * 512);
-	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_audio_get_sample (audio, buffer, VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	_inf_renderer (priv);
 	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video), visual_video_get_pitch (video));
