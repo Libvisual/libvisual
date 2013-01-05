@@ -280,7 +280,7 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
                                                              FALSE,
                                                              visual_video_get_width  (video),
                                                              visual_video_get_height (video),
-                                                             24);
+                                                             VISUAL_VIDEO_DEPTH_24BIT);
 
             visual_video_flip_pixel_bytes (video, source);
 
