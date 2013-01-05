@@ -280,8 +280,8 @@ IF(ENABLE_PROFILING)
 ENDIF()
 
 # Add -Werror to debug builds?
-SET(CMAKE_C_FLAGS   "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes -Werror -fstrict-aliasing")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused -Werror -fstrict-aliasing")
+SET(CMAKE_C_FLAGS   "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes -Werror -fstrict-aliasing -Wno-tautological-compare")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused -Werror -fstrict-aliasing -Wno-tautological-compare")
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
