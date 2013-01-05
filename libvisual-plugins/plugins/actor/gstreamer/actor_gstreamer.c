@@ -117,7 +117,12 @@ static int act_gstreamer_init (VisPluginData *plugin)
     gst_caps_unref (caps);
 
     priv->buffer = NULL;
-    priv->mutex  = g_mutex_new ();
+#if GLIB_VERSION_CUR_STABLE >= GLIB_2_32
+    priv->mutex = g_slice_new0 (GMutex);
+    g_mutex_init (priv->mutex);
+#else
+    priv->mutex = g_mutex_new ();
+#endif
 
     priv->sink = gst_bin_get_by_name (GST_BIN (priv->pipeline), "sink");
     g_signal_connect (priv->sink, "handoff", G_CALLBACK (handle_sink_data), priv);
@@ -159,7 +164,13 @@ static int act_gstreamer_cleanup (VisPluginData *plugin)
         gst_object_unref (priv->pipeline);
 
         gst_buffer_unref (priv->buffer);
+
+#if GLIB_VERSION_CUR_STABLE >= GLIB_2_32
+        g_mutex_clear (priv->mutex);
+        g_slice_free (GMutex, priv->mutex);
+#else
         g_mutex_free (priv->mutex);
+#endif
     }
 
     visual_mem_free (priv);
