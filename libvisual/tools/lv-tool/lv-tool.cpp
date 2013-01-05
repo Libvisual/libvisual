@@ -106,7 +106,7 @@ namespace {
                   "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
                   "\t--verbose\t\t-v\t\tOutput debugging info\n"
                   "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
-                  "\t--depth <depth>\t-c <depth>\tSet output colour depth (automatic by default)\n"
+                  "\t--depth <depth> \t-c <depth>\tSet output colour depth (automatic by default)\n"
                   "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                   "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
                   "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
