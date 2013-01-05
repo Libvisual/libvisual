@@ -29,13 +29,13 @@
 #include "config.h"
 #include "gettext.h"
 
+#include <libvisual/libvisual.h>
+
 #include "G-Force_Proj.h"
 #include "G-Force.h"
 #include "EgOSUtils.h"
 #include "RectUtils.h"
 #include "CEgFileSpec.h"
-
-#include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
