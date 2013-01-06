@@ -45,7 +45,7 @@
 #if HAVE_SDL
 # define DEFAULT_DRIVER "sdl"
 #else
-# define DEFAULT_DRIVER "stdout"
+# define DEFAULT_DRIVER "null"
 #endif
 
 namespace {
