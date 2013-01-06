@@ -104,7 +104,7 @@ namespace {
                   "Valid options:\n"
                   "\t--help\t\t\t-h\t\tThis help text\n"
                   "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
-                  "\t--verbose\t\t-v\t\tOutput debugging info\n"
+                  "\t--verbose\t\t-v\t\tIncrease verbosity (use multiple times for more effect)\n"
                   "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
                   "\t--depth <depth> \t-c <depth>\tSet output colour depth (automatic by default)\n"
                   "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
@@ -168,9 +168,15 @@ namespace {
                   return 1;
               }
 
-              // --version
+              // --verbose
               case 'v': {
-                  visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+				  VisLogSeverity v = visual_log_get_verbosity();
+				  v = (VisLogSeverity) ((int) v-1);
+				  
+				  if(v <= VISUAL_LOG_MIN)
+					  break;
+				  
+                  visual_log_set_verbosity(v);
                   break;
               }
 
@@ -307,10 +313,12 @@ int main (int argc, char **argv)
     // print warm welcome
     std::cerr << argv[0] << " v0.1\n";
 
-    // initialize libvisual once (this is meant to be called only once,
+    // default loglevel
+    visual_log_set_verbosity (VISUAL_LOG_ERROR);
+	
+	// initialize libvisual once (this is meant to be called only once,
     // visual_init() after visual_quit() results in undefined state)
-    visual_log_set_verbosity (VISUAL_LOG_DEBUG);
-    LV::System::init (argc, argv);
+	LV::System::init (argc, argv);
 
     try {
         // parse commandline arguments
