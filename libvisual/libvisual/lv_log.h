@@ -41,11 +41,13 @@ LV_BEGIN_DECLS
  * @see visual_log
  */
 typedef enum {
+	VISUAL_LOG_MIN,      /**< this should always remain the FIRST entry */
 	VISUAL_LOG_DEBUG,    /**< Debug message, to use for debug messages. */
 	VISUAL_LOG_INFO,     /**< Informative message, can be used for general info. */
 	VISUAL_LOG_WARNING,  /**< Warning message, use to warn the user. */
 	VISUAL_LOG_ERROR,    /**< Error message, use to notify the user of fatals. */
-	VISUAL_LOG_CRITICAL  /**< Critical message, when a critical situation happens. */
+	VISUAL_LOG_CRITICAL, /**< Critical message, when a critical situation happens. */
+	VISUAL_LOG_MAX,      /**< this should always remain the LAST entry */
 } VisLogSeverity;
 
 typedef struct {
