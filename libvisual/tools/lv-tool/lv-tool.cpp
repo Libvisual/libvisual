@@ -81,19 +81,53 @@ namespace {
   /** print help for plugins */
   void print_plugin_help()
   {
+      std::printf("===== INPUTS =====\n");
+      auto const& inputs =
+          LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
+
+      // print inputs
+      if(inputs.empty())
+      {
+          std::cerr << "No input plugins found\n";
+      }
+      else
+      {
+          for (auto input : inputs)
+              print_plugin_info(*input.info);
+      }
+
+      
+      std::printf("===== ACTORS =====\n");
       auto const& actors =
           LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
 
       // print actors
-      if(!actors.empty())
+      if(actors.empty())
+      {
+          std::cerr << "No actor plugins found\n";
+      }
+      else
       {
           for (auto actor : actors)
               print_plugin_info(*actor.info);
       }
+      
+      
+      std::printf("===== MORPHS =====\n");
+      auto const& morphs =
+          LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
+
+      // print morphs
+      if(morphs.empty())
+      {
+          std::cerr << "No morph plugins found\n";
+      }
       else
       {
-          std::cerr << "No actors found\n";
+          for (auto morph : morphs)
+              print_plugin_info(*morph.info);
       }
+      
   }
 
   /** print commandline help */
