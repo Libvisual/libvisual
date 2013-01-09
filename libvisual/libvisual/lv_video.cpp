@@ -135,10 +135,7 @@ namespace LV {
   VideoPtr Video::create_sub (Rect const& drect, VideoConstPtr const& src, Rect const& srect)
   {
       auto sbound = src->m_impl->extents;
-
-      auto rsrect = srect;
-      rsrect.clip (sbound, srect);
-      rsrect.clip (drect, rsrect);
+      auto rsrect = drect.clip (sbound.clip (srect));
 
       return create_sub (src, rsrect);
   }
@@ -330,6 +327,8 @@ namespace LV {
       m_impl->pitch  = m_impl->width * m_impl->bpp;
 
       m_impl->buffer->set_size (m_impl->pitch * m_impl->height);
+
+      m_impl->extents = Rect (width, height);
   }
 
   int Video::get_width () const
@@ -872,6 +871,32 @@ namespace LV {
 } // LV namespace
 
 /* VisVideoDepth functions */
+
+const char *visual_video_depth_name (VisVideoDepth depth)
+{
+    switch (depth) {
+        case VISUAL_VIDEO_DEPTH_8BIT:
+            return "8-bit indexed RGB";
+
+        case VISUAL_VIDEO_DEPTH_16BIT:
+            return "16-bit RGB";
+
+        case VISUAL_VIDEO_DEPTH_24BIT:
+            return "24-bit RGB";
+
+        case VISUAL_VIDEO_DEPTH_32BIT:
+            return "32-bit ARGB";
+
+        case VISUAL_VIDEO_DEPTH_GL:
+            return "OpenGL";
+
+        case VISUAL_VIDEO_DEPTH_NONE:
+            return "(none)";
+
+        default:
+            return "(set)";
+    }
+}
 
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 {

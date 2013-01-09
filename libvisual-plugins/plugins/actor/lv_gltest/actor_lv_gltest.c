@@ -246,25 +246,22 @@ static VisPalette *lv_gltest_palette (VisPluginData *plugin)
 static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer *buffer;
-	VisBuffer *pcmb;
-	float freq[256];
-	float pcm[256];
+
 	int i,c;
 	int y;
 	float ff;
 
-	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq), FALSE);
-	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm), FALSE);
-
-	visual_audio_get_sample_mixed_simple (audio, pcmb, 2,
+	VisBuffer *pcm_buffer = visual_buffer_new_allocate (512 * sizeof (float));
+	visual_audio_get_sample_mixed_simple (audio, pcm_buffer, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
+	VisBuffer *freq_buffer = visual_buffer_new_allocate (256 * sizeof (float));
+	visual_audio_get_spectrum_for_sample (freq_buffer, pcm_buffer, TRUE);
 
-	visual_buffer_unref (buffer);
-	visual_buffer_unref (pcmb);
+	visual_buffer_unref (pcm_buffer);
+
+	float *freq = (float *) visual_buffer_get_data (freq_buffer);
 
 	for (y = BARS - 1; y > 0; y--)
 	{
@@ -299,6 +296,8 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 		priv->z_angle -= 360.0;
 
 	draw_bars (priv);
+
+	visual_buffer_unref (freq_buffer);
 
 	return 0;
 }

@@ -67,12 +67,6 @@ public:
 
     void drain_events (VisEventQueue& eventqueue);
 
-    void set_fps_limit (unsigned int fps);
-
-    unsigned int get_fps_total () const;
-
-    float get_fps_average () const;
-
 private:
 
     class Impl;

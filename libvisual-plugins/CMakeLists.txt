@@ -126,6 +126,7 @@ OPTION(ENABLE_JACK        "Build the JACK input plugin" yes)
 OPTION(ENABLE_JAKDAW      "build the Jakdaw plugin" yes)
 OPTION(ENABLE_JESS        "Build the JESS plugin" yes)
 OPTION(ENABLE_LV_ANALYZER "Build the LV Analyzer plugin" yes)
+OPTION(ENABLE_LV_DUMP     "Build the LV Data Dump plugin" yes)
 OPTION(ENABLE_LV_GLTEST   "Build the LV GL Test plugin" yes)
 OPTION(ENABLE_LV_SCOPE    "Build the LV Scope plugin" yes)
 OPTION(ENABLE_MADSPIN     "Build the Madspin plugin" yes)
@@ -279,10 +280,16 @@ IF(ENABLE_PROFILING)
 ENDIF()
 
 # Add -Werror to debug builds?
-SET(CMAKE_C_FLAGS         "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes -Werror -fstrict-aliasing")
-SET(CMAKE_CXX_FLAGS       "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused -Werror -fstrict-aliasing")
-SET(CMAKE_C_FLAGS_DEBUG   "-ggdb3")
-SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
+SET(CMAKE_C_FLAGS   "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes -Werror -fstrict-aliasing -Wno-tautological-compare")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused -Werror -fstrict-aliasing -Wno-tautological-compare")
+
+IF(CMAKE_COMPILER_IS_GNUCXX)
+  SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
+ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_C_FLAGS_DEBUG "-g")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+ENDIF()
 
 # Pedantic checks
 

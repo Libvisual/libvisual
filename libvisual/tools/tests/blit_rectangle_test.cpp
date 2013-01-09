@@ -215,7 +215,7 @@ void do_checkers(LV::VideoPtr const& destptr, LV::VideoPtr const& src1, LV::Vide
 
             LV::Rect area(x, y, tile_width, tile_height);
 
-            area = LV::Rect::clip(destptr->get_extents(), area);
+            area = destptr->get_extents().clip (area);
 
             destptr->blit(area, srcptr, area, false);
         }

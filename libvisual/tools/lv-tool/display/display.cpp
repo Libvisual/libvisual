@@ -34,12 +34,8 @@ public:
 
     std::unique_ptr<DisplayDriver> driver;
 
-    unsigned int frames_drawn;
-    LV::Timer    timer;
-
     Impl ()
-        : driver       (nullptr)
-        , frames_drawn (0)
+        : driver (nullptr)
     {}
 
     ~Impl ()
@@ -52,7 +48,7 @@ Display::Display (std::string const& driver_name)
     m_impl->driver.reset (DisplayDriverFactory::instance().make (driver_name, *this));
 
     if (!m_impl->driver) {
-        throw std::runtime_error ("Failed to load display driver '" + driver_name + "'");
+        throw std::runtime_error ("Failed to load display driver '" + driver_name + "'. Valid driver set? (\"--driver\" parameter)");
     }
 }
 
@@ -66,16 +62,21 @@ LV::VideoPtr Display::get_video () const
 }
 
 LV::VideoPtr Display::create (VisVideoDepth depth,
-                                VisVideoAttrOptions const* vidoptions,
-                                unsigned int width,
-                                unsigned int height,
-                                bool resizable)
+                              VisVideoAttrOptions const* vidoptions,
+                              unsigned int width,
+                              unsigned int height,
+                              bool resizable)
 {
+    visual_log (VISUAL_LOG_INFO, "Attempting to create display (%dx%d %s)",
+                width, height, visual_video_depth_name (depth));
+
     return m_impl->driver->create (depth, vidoptions, width, height, resizable);
 }
 
 void Display::close ()
 {
+    visual_log (VISUAL_LOG_INFO, "Closing display");
+
     m_impl->driver->close ();
 }
 
@@ -97,12 +98,7 @@ void Display::unlock ()
 void Display::update_all ()
 {
     LV::VideoPtr video = get_video ();
-    LV::Rect rect (0, 0, video->get_width (), video->get_height ());
-
-    m_impl->frames_drawn++;
-
-    if (!m_impl->timer.is_active ())
-        m_impl->timer.start ();
+    LV::Rect rect (video->get_width (), video->get_height ());
 
     m_impl->driver->update_rect (rect);
 }
@@ -120,19 +116,4 @@ void Display::set_fullscreen (bool fullscreen, bool autoscale)
 void Display::drain_events (VisEventQueue& eventqueue)
 {
     m_impl->driver->drain_events (eventqueue);
-}
-
-void Display::set_fps_limit (unsigned int fps)
-{
-    // FIXME: Implement this
-}
-
-unsigned int Display::get_fps_total () const
-{
-    return m_impl->frames_drawn;
-}
-
-float Display::get_fps_average () const
-{
-    return m_impl->frames_drawn / m_impl->timer.elapsed ().to_secs ();
 }

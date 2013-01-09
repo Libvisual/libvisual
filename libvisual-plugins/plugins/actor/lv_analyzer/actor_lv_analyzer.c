@@ -314,25 +314,17 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
  */
 static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	VisBuffer *buffer;
-	VisBuffer *pcmb;
-
 	int bars = _bars(plugin);
 
-	float freq[bars];
-	float pcm[bars * 2];
-
-	buffer = visual_buffer_new_wrap_data (freq, sizeof (freq), FALSE);
-	pcmb   = visual_buffer_new_wrap_data (pcm, sizeof (pcm), FALSE);
-
-	visual_audio_get_sample_mixed_simple (audio, pcmb, 2,
+	VisBuffer *pcm_buffer = visual_buffer_new_allocate (bars*2 * sizeof (float));
+	visual_audio_get_sample_mixed_simple (audio, pcm_buffer, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (buffer, pcmb, TRUE);
+	VisBuffer *freq_buffer = visual_buffer_new_allocate (bars * sizeof (float));
+	visual_audio_get_spectrum_for_sample (freq_buffer, pcm_buffer, TRUE);
 
-	visual_buffer_unref (buffer);
-	visual_buffer_unref (pcmb);
+	visual_buffer_unref (pcm_buffer);
 
 	int i;
 	int spaces = BARS_DEFAULT_SPACE * (bars - 1);
@@ -341,10 +333,14 @@ static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 
 	visual_video_fill_color (video, NULL);
 
+	float *freq = (float *) visual_buffer_get_data (freq_buffer);
+
 	for (i = 0; i < bars; i++) {
 		draw_bar (video, x, width, freq[i]);
 		x += width + BARS_DEFAULT_SPACE;
 	}
+
+    visual_buffer_unref (freq_buffer);
 
 	return 0;
 }

@@ -27,7 +27,7 @@
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define OUTPUT_RATE       44100
-#define OUTPUT_SAMPLES    4096
+#define OUTPUT_SAMPLES    1024
 #define DEFAULT_FREQUENCY (OUTPUT_RATE/500)
 #define DEFAULT_AMPLITUDE 1.0
 
@@ -141,11 +141,11 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 
 	DebugPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	int16_t data[OUTPUT_SAMPLES];
+	int16_t data[OUTPUT_SAMPLES*2];
 	int i;
 
-	for(i = 0; i < VISUAL_TABLESIZE(data); i++) {
-		data[i] = (int16_t) (65535/2 * priv->ampltitude * sin (priv->angle));
+	for(i = 0; i < OUTPUT_SAMPLES*2; i += 2) {
+		data[i] = data[i+1] = (int16_t) (65535/2 * priv->ampltitude * sin (priv->angle));
 
 		priv->angle += priv->angle_step;
 		if (priv->angle >= 2 * VISUAL_MATH_PI) {
@@ -153,7 +153,7 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 		}
 	}
 
-	VisBuffer *buffer = visual_buffer_new_wrap_data (data, VISUAL_TABLESIZE (data), FALSE);
+	VisBuffer *buffer = visual_buffer_new_wrap_data (data, sizeof (data), FALSE);
 
 	visual_audio_input (audio, buffer,
 	                    VISUAL_AUDIO_SAMPLE_RATE_44100,

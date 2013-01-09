@@ -46,7 +46,7 @@ namespace {
 int lcdcontrol_init (VisPluginData *plugin);
 int lcdcontrol_cleanup (VisPluginData *plugin);
 int lcdcontrol_requisition (VisPluginData *plugin, int *width, int *height);
-int lcdcontrol_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+int lcdcontrol_resize (VisPluginData *plugin, int width, int height);
 int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events);
 VisPalette *lcdcontrol_palette (VisPluginData *plugin);
 int lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -184,40 +184,35 @@ int lcdcontrol_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int lcdcontrol_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+int lcdcontrol_resize (VisPluginData *plugin, int width, int height)
 {
-	//LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
+    //LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_video_set_dimension (video, width, height);
+    // FIXME: Implement this
 
-    visual_video_set_pitch(video, width * sizeof(int));
-
-	return 0;
+    return 0;
 }
 
 int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	//LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisEvent ev;
+    //LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
+    VisEvent ev;
 
-	while (visual_event_queue_poll (events, &ev)) {
-		switch (ev.type) {
-			case VISUAL_EVENT_RESIZE:
+    while (visual_event_queue_poll (events, &ev)) {
+        switch (ev.type) {
+            case VISUAL_EVENT_RESIZE:
             {
-/*
-				lcdcontrol_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
-*/
-				break;
+                lcdcontrol_resize (plugin, ev.event.resize.width, ev.event.resize.height);
+                break;
             }
-			default: /* to avoid warnings */
+            default: /* to avoid warnings */
             {
-				break;
+                break;
             }
-		}
-	}
+        }
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -240,11 +235,9 @@ int lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
 
 /*
-	visual_audio_get_sample_mixed (audio, &priv->pcm, TRUE, 2,
+	visual_audio_get_sample_mixed_simple (audio, &priv->pcm, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
-			VISUAL_AUDIO_CHANNEL_RIGHT,
-			1.0,
-			1.0);
+			VISUAL_AUDIO_CHANNEL_RIGHT);
 */
 /*
 	float *pcmbuf = (float *)visual_buffer_get_data (&priv->pcm);

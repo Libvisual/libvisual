@@ -20,7 +20,6 @@
  */
 
 #include <json/json.h>
-#include <boost/bind.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <vector>

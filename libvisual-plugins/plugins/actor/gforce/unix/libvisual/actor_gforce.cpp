@@ -29,19 +29,18 @@
 #include "config.h"
 #include "gettext.h"
 
+#include <libvisual/libvisual.h>
+
 #include "G-Force_Proj.h"
 #include "G-Force.h"
 #include "EgOSUtils.h"
 #include "RectUtils.h"
 #include "CEgFileSpec.h"
 
-#include <libvisual/libvisual.h>
-
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-#define SND_BUF_SIZE 550
-// Not doing 256, because the end of the fft buffer is kinda jumpy for some reason
-#define FFT_BUF_SIZE 180
+#define SND_BUF_SIZE 512
+#define FFT_BUF_SIZE 256
 #define NUMSAMPLES 200
 #define SAMPSKIP 1
 
