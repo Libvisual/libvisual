@@ -280,13 +280,17 @@ IF(ENABLE_PROFILING)
 ENDIF()
 
 # Add -Werror to debug builds?
-SET(CMAKE_C_FLAGS   "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes -Werror -fstrict-aliasing -Wno-tautological-compare")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused -Werror -fstrict-aliasing -Wno-tautological-compare")
+SET(CMAKE_C_FLAGS   "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes -Werror -fstrict-aliasing")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused -Werror -fstrict-aliasing")
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
   SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
 ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  # Get rid of warnings about comparisons of unsigned integers being smaller than 0
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-tautological-compare")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-tautological-compare")
+
   SET(CMAKE_C_FLAGS_DEBUG "-g")
   SET(CMAKE_CXX_FLAGS_DEBUG "-g")
 ENDIF()
