@@ -61,25 +61,20 @@ VisPluginInfo const* get_plugin_info ()
         inp_jack_upload
     };
 
-    static VisPluginInfo info = {
-        { 0 },
-        VISUAL_PLUGIN_TYPE_INPUT,
+    static VisPluginInfo info;
+    
+    info.type = VISUAL_PLUGIN_TYPE_INPUT;
+    info.plugname = "jack";
+    info.name = "JACK input";
+    info.author = "Dennis Smit <ds@nerds-incorporated.org>";
+    info.version = "0.1";
+    info.about = N_("Jackit capture plugin");
+    info.help =  N_("Use this plugin to capture PCM data from jackd");
+    info.license = VISUAL_PLUGIN_LICENSE_LGPL;
 
-        "jack",
-        "JACK input",
-        "Dennis Smit <ds@nerds-incorporated.org>",
-        "0.1",
-        N_("Jackit capture plugin"),
-        N_("Use this plugin to capture PCM data from jackd"),
-        VISUAL_PLUGIN_LICENSE_LGPL,
-
-        inp_jack_init,
-        inp_jack_cleanup,
-        NULL,
-
-        0,
-        VISUAL_OBJECT (&input)
-    };
+    info.init = inp_jack_init;
+    info.cleanup = inp_jack_cleanup;
+    info.plugin = VISUAL_OBJECT (&input);
 
     return &info;
 }
