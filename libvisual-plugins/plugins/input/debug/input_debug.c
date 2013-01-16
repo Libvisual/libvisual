@@ -59,6 +59,7 @@ const VisPluginInfo *get_plugin_info (void)
 		.name     = "debug",
 		.author   = "Vitaly V. Bursov <vitalyvb@urk.net>",
 		.version  = "0.2",
+		.url      = "http://libvisual.org",
 		.about    = N_("debug input plugin"),
 		.help     = N_("this will generate a sine wave for debugging purposes"),
 		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
