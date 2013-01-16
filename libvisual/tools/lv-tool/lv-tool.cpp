@@ -70,9 +70,11 @@ namespace {
   void print_plugin_info(VisPluginInfo const& info)
   {
       std::printf("Plugin: \"%s\" (%s)\n"
+                  "\tURL: %s\n"
                   "\tAuthor: %s\n\tVersion: %s\tLicense: %s\n"
                   "\t%s - %s\n\n",
                   info.name, info.plugname,
+                  info.url ? info.url : "<n/a>",
                   info.author, info.version, info.license,
                   info.about, info.help);
   }

@@ -42,7 +42,7 @@
 /**
  * Indicates at which version the plugin API is.
  */
-#define VISUAL_PLUGIN_API_VERSION	3004
+#define VISUAL_PLUGIN_API_VERSION	3005
 
 /**
  * Standard defination for GPLv1 plugins, use this for the .license entry in VisPluginInfo
@@ -175,7 +175,8 @@ struct _VisPluginInfo {
 	const char *about;    /**< About */
 	const char *help;     /**< Help */
 	const char *license;  /**< License */
-
+	const char *url;	  /**< URL that points to further plugin info */
+		
 	VisPluginInitFunc	 init;     /**< The standard init function, every plugin has to implement this. */
 	VisPluginCleanupFunc cleanup;  /**< The standard cleanup function, every plugin has to implement this. */
 	VisPluginEventsFunc	 events;   /**< The standard event function, implementation is optional. */
