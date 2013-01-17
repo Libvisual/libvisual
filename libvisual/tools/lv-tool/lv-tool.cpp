@@ -489,6 +489,7 @@ int main (int argc, char **argv)
                         // switch to next actor
                         v_cycleActor(1);
 
+                        std::cerr << "Switching to actor '" << actor_name << "'...\n";
                         bin.switch_actor(actor_name);
 
                         break;
