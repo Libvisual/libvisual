@@ -13,12 +13,12 @@ developers who write visualisations.
 Why Libvisual?
 --------------
 
-As an application developer, using Libvisual provides you an easy way
-to do audio visualisation. When using Libvisual you'll have easy
-access to all the visualisations that are written for Libvisual.
+As an application developer, Libvisual provides you an easy way to do
+audio visualisation. Using Libvisual gets you easy access to all the
+visualisations that are written for Libvisual.
 
 As a plugin writer, Libvisual provides a nice host for your plugin.
-It runs analysis over the audio input usage and handles all everything
+It runs analysis over the audio input usage and handles everything
 necessary for display in any Libvisual-using application.
 
 License
