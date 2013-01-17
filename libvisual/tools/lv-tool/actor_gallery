@@ -8,10 +8,10 @@
 # path where actor plugins are
 ACTORPATH="/usr/local/lib/libvisual-0.5/actor"
 # dimensions of snapshot
-WIDTH=320
-HEIGHT=200
+WIDTH=10000
+HEIGHT=1024
 # snapshot the n-th rendered frame
-FRAME=100
+FRAME=30
 
 
 # walk through all actors
@@ -24,5 +24,5 @@ for ACTORFILE in ${ACTORPATH}/libactor_* ; do
 
     # render & snapshot
     echo "Snapshotting ${ACTOR}"
-    lv-tool -F$[FRAME+1] -d stdout -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | convert -size ${WIDTH}x${HEIGHT}+${SKIP} -depth 8 rgb:- -separate -swap 0,2 -combine ${ACTOR}.png
+    lv-tool -F$[FRAME+1] -s ${RANDOM} -d stdout -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | convert -size ${WIDTH}x${HEIGHT}+${SKIP} -depth 8 rgb:- -separate -swap 0,2 -combine ${ACTOR}.png
 done
